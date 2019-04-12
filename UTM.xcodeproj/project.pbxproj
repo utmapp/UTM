@@ -1,0 +1,468 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 50;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		CE31C245225E555600A965DD /* UTMConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = CE31C244225E555600A965DD /* UTMConfiguration.m */; };
+		CE31C24B225EA37400A965DD /* VMConfigViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CE31C24A225EA37400A965DD /* VMConfigViewController.m */; };
+		CE31C24D225EA4A200A965DD /* VMConfigCreateViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CE31C24C225EA4A200A965DD /* VMConfigCreateViewController.m */; };
+		CE550BCE225947990063E575 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CE550BCD225947990063E575 /* AppDelegate.m */; };
+		CE550BD1225947990063E575 /* VMListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CE550BD0225947990063E575 /* VMListViewController.m */; };
+		CE550BD4225947990063E575 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CE550BD2225947990063E575 /* Main.storyboard */; };
+		CE550BD62259479D0063E575 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CE550BD52259479D0063E575 /* Assets.xcassets */; };
+		CE550BD92259479D0063E575 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CE550BD72259479D0063E575 /* LaunchScreen.storyboard */; };
+		CE550BDC2259479D0063E575 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = CE550BDB2259479D0063E575 /* main.m */; };
+		CE550BE422596E790063E575 /* VMListViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = CE550BE322596E790063E575 /* VMListViewCell.m */; };
+		CE5E4958225C5A4400148CEF /* VMConfigExistingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CE5E4957225C5A4400148CEF /* VMConfigExistingViewController.m */; };
+		CE74C288225D88ED004E4FF1 /* VMConfigNetworkingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CE74C276225D88EC004E4FF1 /* VMConfigNetworkingViewController.m */; };
+		CE74C28A225D88ED004E4FF1 /* VMConfigPrintingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CE74C279225D88EC004E4FF1 /* VMConfigPrintingViewController.m */; };
+		CE74C28B225D88ED004E4FF1 /* VMConfigDisplayViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CE74C27D225D88EC004E4FF1 /* VMConfigDisplayViewController.m */; };
+		CE74C28C225D88ED004E4FF1 /* VMConfigDriveDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CE74C27E225D88EC004E4FF1 /* VMConfigDriveDetailViewController.m */; };
+		CE74C28D225D88ED004E4FF1 /* VMConfigInputViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CE74C27F225D88EC004E4FF1 /* VMConfigInputViewController.m */; };
+		CE74C28E225D88ED004E4FF1 /* VMConfigSharingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CE74C280225D88EC004E4FF1 /* VMConfigSharingViewController.m */; };
+		CE74C28F225D88ED004E4FF1 /* VMConfigSoundViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CE74C284225D88ED004E4FF1 /* VMConfigSoundViewController.m */; };
+		CE74C290225D88ED004E4FF1 /* VMConfigSystemViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CE74C285225D88ED004E4FF1 /* VMConfigSystemViewController.m */; };
+		CE7BED4C225FBB8600A1E1B6 /* VMConfigDrivesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CE7BED4B225FBB8600A1E1B6 /* VMConfigDrivesViewController.m */; };
+		CEDC1DF22260EE4B008D9A6D /* StaticDataTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CEDC1DF12260EE4B008D9A6D /* StaticDataTableViewController.m */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		CE31C243225E553500A965DD /* UTMConfiguration.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UTMConfiguration.h; sourceTree = "<group>"; };
+		CE31C244225E555600A965DD /* UTMConfiguration.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UTMConfiguration.m; sourceTree = "<group>"; };
+		CE31C246225E9FED00A965DD /* UTMConfigurationDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UTMConfigurationDelegate.h; sourceTree = "<group>"; };
+		CE31C249225EA37400A965DD /* VMConfigViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VMConfigViewController.h; sourceTree = "<group>"; };
+		CE31C24A225EA37400A965DD /* VMConfigViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VMConfigViewController.m; sourceTree = "<group>"; };
+		CE31C24C225EA4A200A965DD /* VMConfigCreateViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VMConfigCreateViewController.m; sourceTree = "<group>"; };
+		CE550BC9225947990063E575 /* UTM.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = UTM.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		CE550BCC225947990063E575 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		CE550BCD225947990063E575 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		CE550BCF225947990063E575 /* VMListViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VMListViewController.h; sourceTree = "<group>"; };
+		CE550BD0225947990063E575 /* VMListViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VMListViewController.m; sourceTree = "<group>"; };
+		CE550BD3225947990063E575 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		CE550BD52259479D0063E575 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		CE550BD82259479D0063E575 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		CE550BDA2259479D0063E575 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		CE550BDB2259479D0063E575 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		CE550BE222596E790063E575 /* VMListViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VMListViewCell.h; sourceTree = "<group>"; };
+		CE550BE322596E790063E575 /* VMListViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VMListViewCell.m; sourceTree = "<group>"; };
+		CE5E4956225C5A4400148CEF /* VMConfigExistingViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VMConfigExistingViewController.h; sourceTree = "<group>"; };
+		CE5E4957225C5A4400148CEF /* VMConfigExistingViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VMConfigExistingViewController.m; sourceTree = "<group>"; };
+		CE74C276225D88EC004E4FF1 /* VMConfigNetworkingViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VMConfigNetworkingViewController.m; sourceTree = "<group>"; };
+		CE74C277225D88EC004E4FF1 /* VMConfigSystemViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VMConfigSystemViewController.h; sourceTree = "<group>"; };
+		CE74C279225D88EC004E4FF1 /* VMConfigPrintingViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VMConfigPrintingViewController.m; sourceTree = "<group>"; };
+		CE74C27A225D88EC004E4FF1 /* VMConfigPrintingViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VMConfigPrintingViewController.h; sourceTree = "<group>"; };
+		CE74C27B225D88EC004E4FF1 /* VMConfigCreateViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VMConfigCreateViewController.h; sourceTree = "<group>"; };
+		CE74C27C225D88EC004E4FF1 /* VMConfigNetworkingViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VMConfigNetworkingViewController.h; sourceTree = "<group>"; };
+		CE74C27D225D88EC004E4FF1 /* VMConfigDisplayViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VMConfigDisplayViewController.m; sourceTree = "<group>"; };
+		CE74C27E225D88EC004E4FF1 /* VMConfigDriveDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VMConfigDriveDetailViewController.m; sourceTree = "<group>"; };
+		CE74C27F225D88EC004E4FF1 /* VMConfigInputViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VMConfigInputViewController.m; sourceTree = "<group>"; };
+		CE74C280225D88EC004E4FF1 /* VMConfigSharingViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VMConfigSharingViewController.m; sourceTree = "<group>"; };
+		CE74C281225D88EC004E4FF1 /* VMConfigDisplayViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VMConfigDisplayViewController.h; sourceTree = "<group>"; };
+		CE74C282225D88ED004E4FF1 /* VMConfigInputViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VMConfigInputViewController.h; sourceTree = "<group>"; };
+		CE74C283225D88ED004E4FF1 /* VMConfigSoundViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VMConfigSoundViewController.h; sourceTree = "<group>"; };
+		CE74C284225D88ED004E4FF1 /* VMConfigSoundViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VMConfigSoundViewController.m; sourceTree = "<group>"; };
+		CE74C285225D88ED004E4FF1 /* VMConfigSystemViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VMConfigSystemViewController.m; sourceTree = "<group>"; };
+		CE74C286225D88ED004E4FF1 /* VMConfigSharingViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VMConfigSharingViewController.h; sourceTree = "<group>"; };
+		CE74C287225D88ED004E4FF1 /* VMConfigDriveDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VMConfigDriveDetailViewController.h; sourceTree = "<group>"; };
+		CE7BED4A225FBB8600A1E1B6 /* VMConfigDrivesViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VMConfigDrivesViewController.h; sourceTree = "<group>"; };
+		CE7BED4B225FBB8600A1E1B6 /* VMConfigDrivesViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VMConfigDrivesViewController.m; sourceTree = "<group>"; };
+		CEDC1DF02260EE4B008D9A6D /* StaticDataTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StaticDataTableViewController.h; sourceTree = "<group>"; };
+		CEDC1DF12260EE4B008D9A6D /* StaticDataTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StaticDataTableViewController.m; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		CE550BC6225947990063E575 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		CE31C242225E543A00A965DD /* Configuration */ = {
+			isa = PBXGroup;
+			children = (
+				CE31C243225E553500A965DD /* UTMConfiguration.h */,
+				CE31C244225E555600A965DD /* UTMConfiguration.m */,
+				CE31C246225E9FED00A965DD /* UTMConfigurationDelegate.h */,
+			);
+			path = Configuration;
+			sourceTree = "<group>";
+		};
+		CE550BC0225947990063E575 = {
+			isa = PBXGroup;
+			children = (
+				CE31C242225E543A00A965DD /* Configuration */,
+				CE5E4954225C593C00148CEF /* ConfigurationViews */,
+				CE7BED4D22600F5000A1E1B6 /* Views */,
+				CE550BCB225947990063E575 /* UTM */,
+				CE550BCA225947990063E575 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		CE550BCA225947990063E575 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				CE550BC9225947990063E575 /* UTM.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		CE550BCB225947990063E575 /* UTM */ = {
+			isa = PBXGroup;
+			children = (
+				CE550BCC225947990063E575 /* AppDelegate.h */,
+				CE550BCD225947990063E575 /* AppDelegate.m */,
+				CE550BD2225947990063E575 /* Main.storyboard */,
+				CE550BD52259479D0063E575 /* Assets.xcassets */,
+				CE550BD72259479D0063E575 /* LaunchScreen.storyboard */,
+				CE550BDA2259479D0063E575 /* Info.plist */,
+				CE550BDB2259479D0063E575 /* main.m */,
+			);
+			path = UTM;
+			sourceTree = "<group>";
+		};
+		CE5E4954225C593C00148CEF /* ConfigurationViews */ = {
+			isa = PBXGroup;
+			children = (
+				CEDC1DEF2260EE34008D9A6D /* StaticDataTableViewController */,
+				CE31C249225EA37400A965DD /* VMConfigViewController.h */,
+				CE31C24A225EA37400A965DD /* VMConfigViewController.m */,
+				CE74C27B225D88EC004E4FF1 /* VMConfigCreateViewController.h */,
+				CE31C24C225EA4A200A965DD /* VMConfigCreateViewController.m */,
+				CE74C281225D88EC004E4FF1 /* VMConfigDisplayViewController.h */,
+				CE74C27D225D88EC004E4FF1 /* VMConfigDisplayViewController.m */,
+				CE74C287225D88ED004E4FF1 /* VMConfigDriveDetailViewController.h */,
+				CE74C27E225D88EC004E4FF1 /* VMConfigDriveDetailViewController.m */,
+				CE7BED4A225FBB8600A1E1B6 /* VMConfigDrivesViewController.h */,
+				CE7BED4B225FBB8600A1E1B6 /* VMConfigDrivesViewController.m */,
+				CE5E4956225C5A4400148CEF /* VMConfigExistingViewController.h */,
+				CE5E4957225C5A4400148CEF /* VMConfigExistingViewController.m */,
+				CE74C282225D88ED004E4FF1 /* VMConfigInputViewController.h */,
+				CE74C27F225D88EC004E4FF1 /* VMConfigInputViewController.m */,
+				CE74C27C225D88EC004E4FF1 /* VMConfigNetworkingViewController.h */,
+				CE74C276225D88EC004E4FF1 /* VMConfigNetworkingViewController.m */,
+				CE74C27A225D88EC004E4FF1 /* VMConfigPrintingViewController.h */,
+				CE74C279225D88EC004E4FF1 /* VMConfigPrintingViewController.m */,
+				CE74C286225D88ED004E4FF1 /* VMConfigSharingViewController.h */,
+				CE74C280225D88EC004E4FF1 /* VMConfigSharingViewController.m */,
+				CE74C283225D88ED004E4FF1 /* VMConfigSoundViewController.h */,
+				CE74C284225D88ED004E4FF1 /* VMConfigSoundViewController.m */,
+				CE74C277225D88EC004E4FF1 /* VMConfigSystemViewController.h */,
+				CE74C285225D88ED004E4FF1 /* VMConfigSystemViewController.m */,
+			);
+			path = ConfigurationViews;
+			sourceTree = "<group>";
+		};
+		CE7BED4D22600F5000A1E1B6 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				CE550BCF225947990063E575 /* VMListViewController.h */,
+				CE550BD0225947990063E575 /* VMListViewController.m */,
+				CE550BE222596E790063E575 /* VMListViewCell.h */,
+				CE550BE322596E790063E575 /* VMListViewCell.m */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		CEDC1DEF2260EE34008D9A6D /* StaticDataTableViewController */ = {
+			isa = PBXGroup;
+			children = (
+				CEDC1DF02260EE4B008D9A6D /* StaticDataTableViewController.h */,
+				CEDC1DF12260EE4B008D9A6D /* StaticDataTableViewController.m */,
+			);
+			path = StaticDataTableViewController;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		CE550BC8225947990063E575 /* UTM */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = CE550BDF2259479D0063E575 /* Build configuration list for PBXNativeTarget "UTM" */;
+			buildPhases = (
+				CE550BC5225947990063E575 /* Sources */,
+				CE550BC6225947990063E575 /* Frameworks */,
+				CE550BC7225947990063E575 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = UTM;
+			productName = UTM;
+			productReference = CE550BC9225947990063E575 /* UTM.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		CE550BC1225947990063E575 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 1020;
+				ORGANIZATIONNAME = Halts;
+				TargetAttributes = {
+					CE550BC8225947990063E575 = {
+						CreatedOnToolsVersion = 10.2;
+					};
+				};
+			};
+			buildConfigurationList = CE550BC4225947990063E575 /* Build configuration list for PBXProject "UTM" */;
+			compatibilityVersion = "Xcode 9.3";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = CE550BC0225947990063E575;
+			productRefGroup = CE550BCA225947990063E575 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				CE550BC8225947990063E575 /* UTM */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		CE550BC7225947990063E575 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CE550BD92259479D0063E575 /* LaunchScreen.storyboard in Resources */,
+				CE550BD62259479D0063E575 /* Assets.xcassets in Resources */,
+				CE550BD4225947990063E575 /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		CE550BC5225947990063E575 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CE550BD1225947990063E575 /* VMListViewController.m in Sources */,
+				CE31C24D225EA4A200A965DD /* VMConfigCreateViewController.m in Sources */,
+				CE74C288225D88ED004E4FF1 /* VMConfigNetworkingViewController.m in Sources */,
+				CE74C28E225D88ED004E4FF1 /* VMConfigSharingViewController.m in Sources */,
+				CE74C28F225D88ED004E4FF1 /* VMConfigSoundViewController.m in Sources */,
+				CE5E4958225C5A4400148CEF /* VMConfigExistingViewController.m in Sources */,
+				CE550BE422596E790063E575 /* VMListViewCell.m in Sources */,
+				CE74C28A225D88ED004E4FF1 /* VMConfigPrintingViewController.m in Sources */,
+				CE550BDC2259479D0063E575 /* main.m in Sources */,
+				CEDC1DF22260EE4B008D9A6D /* StaticDataTableViewController.m in Sources */,
+				CE550BCE225947990063E575 /* AppDelegate.m in Sources */,
+				CE74C290225D88ED004E4FF1 /* VMConfigSystemViewController.m in Sources */,
+				CE31C24B225EA37400A965DD /* VMConfigViewController.m in Sources */,
+				CE74C28C225D88ED004E4FF1 /* VMConfigDriveDetailViewController.m in Sources */,
+				CE31C245225E555600A965DD /* UTMConfiguration.m in Sources */,
+				CE7BED4C225FBB8600A1E1B6 /* VMConfigDrivesViewController.m in Sources */,
+				CE74C28D225D88ED004E4FF1 /* VMConfigInputViewController.m in Sources */,
+				CE74C28B225D88ED004E4FF1 /* VMConfigDisplayViewController.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		CE550BD2225947990063E575 /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				CE550BD3225947990063E575 /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		CE550BD72259479D0063E575 /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				CE550BD82259479D0063E575 /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		CE550BDD2259479D0063E575 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.2;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+			};
+			name = Debug;
+		};
+		CE550BDE2259479D0063E575 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.2;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		CE550BE02259479D0063E575 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = "";
+				INFOPLIST_FILE = UTM/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.halts.UTM;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		CE550BE12259479D0063E575 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = "";
+				INFOPLIST_FILE = UTM/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.halts.UTM;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		CE550BC4225947990063E575 /* Build configuration list for PBXProject "UTM" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				CE550BDD2259479D0063E575 /* Debug */,
+				CE550BDE2259479D0063E575 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		CE550BDF2259479D0063E575 /* Build configuration list for PBXNativeTarget "UTM" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				CE550BE02259479D0063E575 /* Debug */,
+				CE550BE12259479D0063E575 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = CE550BC1225947990063E575 /* Project object */;
+}

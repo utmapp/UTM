@@ -1,0 +1,3 @@
+[submodule "ConfigurationViews/StaticDataTableViewController"]
+	path = ConfigurationViews/StaticDataTableViewController
+	url = https://github.com/peterpaulis/StaticDataTableViewController.git
