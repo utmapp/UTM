@@ -22,6 +22,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (strong, nonatomic) IBOutlet UICollectionView *vmCollection;
 
+- (IBAction)unwindToMainFromCreate:(UIStoryboardSegue*)sender;
+- (IBAction)unwindToMainFromEdit:(UIStoryboardSegue*)sender;
+
 @end
 
 NS_ASSUME_NONNULL_END

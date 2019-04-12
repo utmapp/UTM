@@ -411,7 +411,7 @@
                         </barButtonItem>
                         <barButtonItem key="rightBarButtonItem" systemItem="done" id="CIG-Ca-qeI">
                             <connections>
-                                <action selector="donePressed:" destination="wwu-oM-NlF" id="4ry-jO-LwC"/>
+                                <segue destination="02X-bv-TXV" kind="unwind" unwindAction="unwindToMainFromEdit:" id="4fz-x9-Oyb"/>
                             </connections>
                         </barButtonItem>
                         <connections>
@@ -423,6 +423,7 @@
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="yqY-fN-Wux" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <exit id="02X-bv-TXV" userLabel="Exit" sceneMemberID="exit"/>
             </objects>
             <point key="canvasLocation" x="3822" y="879"/>
         </scene>
@@ -1473,7 +1474,7 @@
                         </barButtonItem>
                         <barButtonItem key="rightBarButtonItem" systemItem="save" id="8d3-Up-KUL">
                             <connections>
-                                <action selector="savePressed:" destination="kXN-s4-nI5" id="MYc-Wd-1rS"/>
+                                <segue destination="7o9-KZ-PyF" kind="unwind" unwindAction="unwindToMainFromCreate:" id="G7j-G1-4nJ"/>
                             </connections>
                         </barButtonItem>
                         <connections>
@@ -1495,6 +1496,7 @@
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="frc-FT-FWD" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <exit id="7o9-KZ-PyF" userLabel="Exit" sceneMemberID="exit"/>
             </objects>
             <point key="canvasLocation" x="3822" y="-174"/>
         </scene>
@@ -2171,6 +2173,6 @@
     </resources>
     <inferredMetricsTieBreakers>
         <segue reference="M4J-mO-49e"/>
-        <segue reference="QMb-O0-K4I"/>
+        <segue reference="eOg-7f-ZC7"/>
     </inferredMetricsTieBreakers>
 </document>

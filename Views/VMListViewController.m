@@ -21,6 +21,10 @@
 
 @interface VMListViewController ()
 
+@property (nonatomic, nullable, strong) UIAlertController *alert;
+@property (nonatomic, strong) dispatch_semaphore_t viewVisibleSema;
+@property (nonatomic, strong) dispatch_queue_t viewVisibleQueue;
+
 @end
 
 @implementation VMListViewController
@@ -35,14 +39,42 @@ static NSString * const reuseIdentifier = @"vmListCell";
     
     // Do any additional setup after loading the view.
     [[self vmCollection] setDragInteractionEnabled:YES];
+    
+    self.viewVisibleSema = dispatch_semaphore_create(0);
+    self.viewVisibleQueue = dispatch_queue_create("View Visible Queue", DISPATCH_QUEUE_SERIAL);
+    dispatch_async(self.viewVisibleQueue, ^{
+        dispatch_semaphore_wait(self.viewVisibleSema, DISPATCH_TIME_FOREVER);
+    });
 }
+
+- (void)viewDidDisappear:(BOOL)animated {
+    [super viewDidDisappear:animated];
+    dispatch_async(self.viewVisibleQueue, ^{
+        dispatch_semaphore_wait(self.viewVisibleSema, DISPATCH_TIME_FOREVER);
+    });
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    dispatch_semaphore_signal(self.viewVisibleSema);
+}
+
+#pragma mark - Properties
 
 #pragma mark - Navigation
 
 // In a storyboard-based application, you will often want to do a little preparation before navigation
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    if([segue.identifier isEqualToString:@"editVMConfig"]){
+    if ([segue.identifier isEqualToString:@"editVMConfig"]){
+        NSAssert([segue.destinationViewController isKindOfClass:[UINavigationController class]], @"Destination not a navigation view");
         UINavigationController *navController = (UINavigationController *)segue.destinationViewController;
+        NSAssert([navController.topViewController conformsToProtocol:@protocol(UTMConfigurationDelegate)], @"Invalid segue destination");
+        id<UTMConfigurationDelegate> controller = (id<UTMConfigurationDelegate>)navController.topViewController;
+        controller.configuration = [[UTMConfiguration alloc] initWithDefaults];
+    } else if ([segue.identifier isEqualToString:@"newVM"]) {
+        NSAssert([segue.destinationViewController isKindOfClass:[UINavigationController class]], @"Destination not a navigation view");
+        UINavigationController *navController = (UINavigationController *)segue.destinationViewController;
+        NSAssert([navController.topViewController conformsToProtocol:@protocol(UTMConfigurationDelegate)], @"Invalid segue destination");
         id<UTMConfigurationDelegate> controller = (id<UTMConfigurationDelegate>)navController.topViewController;
         controller.configuration = [[UTMConfiguration alloc] initWithDefaults];
     }
@@ -122,6 +154,63 @@ VMState test_state;
 #pragma mark <UICollectionViewDropDelegate>
 
 - (void)collectionView:(nonnull UICollectionView *)collectionView performDropWithCoordinator:(nonnull id<UICollectionViewDropCoordinator>)coordinator {
+}
+
+#pragma mark - Work status indicator
+
+- (void)workStartedWhenVisibleWithMessage:(NSString *)message {
+    dispatch_async(self.viewVisibleQueue, ^{
+        dispatch_semaphore_t waitUntilCompletion = dispatch_semaphore_create(0);
+        dispatch_sync(dispatch_get_main_queue(), ^{
+            UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil message:message preferredStyle:UIAlertControllerStyleAlert];
+            UIActivityIndicatorView *spinner = [[UIActivityIndicatorView alloc] initWithFrame:CGRectMake(10, 5, 50, 50)];
+            spinner.hidesWhenStopped = YES;
+            spinner.activityIndicatorViewStyle = UIActivityIndicatorViewStyleGray;
+            [spinner startAnimating];
+            [alert.view addSubview:spinner];
+            self.alert = alert;
+            [self presentViewController:alert animated:YES completion:^{
+                dispatch_semaphore_signal(waitUntilCompletion);
+            }];
+        });
+        dispatch_semaphore_wait(waitUntilCompletion, DISPATCH_TIME_FOREVER);
+    });
+}
+
+- (void)workCompletedWhenVisibleWithMessage:(NSString *)message {
+    dispatch_async(self.viewVisibleQueue, ^{
+        dispatch_sync(dispatch_get_main_queue(), ^{
+            [self.alert dismissViewControllerAnimated:YES completion:nil];
+            if (message) {
+                UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil message:message preferredStyle:UIAlertControllerStyleAlert];
+                UIAlertAction *okay = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil];
+                [alert addAction:okay];
+                [self presentViewController:alert animated:YES completion:nil];
+            }
+        });
+    });
+}
+
+#pragma mark - Returning from configuration
+
+- (IBAction)unwindToMainFromCreate:(UIStoryboardSegue*)sender {
+    NSAssert([sender.sourceViewController conformsToProtocol:@protocol(UTMConfigurationDelegate)], @"Invalid source for unwind");
+    id<UTMConfigurationDelegate> source = (id<UTMConfigurationDelegate>)sender.sourceViewController;
+    dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), ^{
+        [self workStartedWhenVisibleWithMessage:[NSString stringWithFormat:@"Creating %@...", source.configuration.name]];
+        [NSThread sleepForTimeInterval:5.0f];
+        [self workCompletedWhenVisibleWithMessage:@"Done"];
+    });
+}
+
+- (IBAction)unwindToMainFromEdit:(UIStoryboardSegue*)sender {
+    NSAssert([sender.sourceViewController conformsToProtocol:@protocol(UTMConfigurationDelegate)], @"Invalid source for unwind");
+    id<UTMConfigurationDelegate> source = (id<UTMConfigurationDelegate>)sender.sourceViewController;
+    dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), ^{
+        [self workStartedWhenVisibleWithMessage:[NSString stringWithFormat:@"Saving %@...", source.configuration.changeName]];
+        [NSThread sleepForTimeInterval:5.0f];
+        [self workCompletedWhenVisibleWithMessage:@"Done"];
+    });
 }
 
 @end
