@@ -1445,11 +1445,11 @@
                                         <rect key="frame" x="0.0" y="787.33333333333337" width="375" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="1Mz-8y-xuP" id="DIe-iC-1u8">
-                                            <rect key="frame" x="0.0" y="0.0" width="343" height="43.666666666666664"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="335" height="43.666666666666664"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="Open Configuration after Creation" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="7DJ-Cp-oMO">
-                                                    <rect key="frame" x="15" y="0.0" width="325" height="43.666666666666664"/>
+                                                    <rect key="frame" x="16" y="0.0" width="319" height="43.666666666666664"/>
                                                     <autoresizingMask key="autoresizingMask"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <nil key="textColor"/>
@@ -1474,7 +1474,7 @@
                         </barButtonItem>
                         <barButtonItem key="rightBarButtonItem" systemItem="save" id="8d3-Up-KUL">
                             <connections>
-                                <segue destination="7o9-KZ-PyF" kind="unwind" unwindAction="unwindToMainFromConfiguration:" id="a0C-1L-34D"/>
+                                <action selector="savePressed:" destination="kXN-s4-nI5" id="Yx2-EW-Snx"/>
                             </connections>
                         </barButtonItem>
                         <connections>
@@ -1482,6 +1482,7 @@
                         </connections>
                     </navigationItem>
                     <connections>
+                        <outlet property="advancedConfigurationCell" destination="1Mz-8y-xuP" id="ZW2-bO-nzp"/>
                         <outlet property="architectureCell" destination="qee-8g-Jp9" id="Jjp-yH-uoN"/>
                         <outlet property="architectureLabel" destination="dhz-mO-gca" id="MLT-IZ-A81"/>
                         <outlet property="architecturePicker" destination="YFu-oU-5Lh" id="ItX-Nn-8Co"/>
@@ -1493,6 +1494,8 @@
                         <outlet property="cpuCountField" destination="VBD-VX-Usg" id="qYL-RD-lGz"/>
                         <outlet property="memorySizeField" destination="S2s-iX-Lul" id="ezQ-w3-PtG"/>
                         <outlet property="nameField" destination="0TR-HU-09X" id="zWp-xu-yF7"/>
+                        <segue destination="wwu-oM-NlF" kind="show" identifier="createVMToConfiguration" id="Ch9-qF-y79"/>
+                        <segue destination="7o9-KZ-PyF" kind="unwind" identifier="createVMDone" unwindAction="unwindToMainFromConfiguration:" id="STr-lU-oz5"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="frc-FT-FWD" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -2173,6 +2176,7 @@
     </resources>
     <inferredMetricsTieBreakers>
         <segue reference="M4J-mO-49e"/>
-        <segue reference="eOg-7f-ZC7"/>
+        <segue reference="QMb-O0-K4I"/>
+        <segue reference="Ch9-qF-y79"/>
     </inferredMetricsTieBreakers>
 </document>

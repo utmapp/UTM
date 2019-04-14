@@ -20,7 +20,9 @@
 
 @end
 
-@implementation VMConfigCreateViewController
+@implementation VMConfigCreateViewController {
+    BOOL _advancedConfiguration;
+}
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -32,13 +34,42 @@
     self.nameField.text = self.configuration.changeName;
 }
 
+#pragma mark - Properties
+
+- (BOOL)advancedConfiguration {
+    return _advancedConfiguration;
+}
+
+- (void)setAdvancedConfiguration:(BOOL)advancedConfiguration {
+    _advancedConfiguration = advancedConfiguration;
+    if (advancedConfiguration) {
+        self.advancedConfigurationCell.accessoryType = UITableViewCellAccessoryCheckmark;
+    } else {
+        self.advancedConfigurationCell.accessoryType = UITableViewCellAccessoryNone;
+    }
+}
+
+#pragma mark - Table delegate
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    if ([tableView cellForRowAtIndexPath:indexPath] == self.advancedConfigurationCell) {
+        self.advancedConfiguration = !self.advancedConfiguration;
+        [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    }
+}
+
 #pragma mark - Event handlers
+
+- (IBAction)savePressed:(UIBarButtonItem *)sender {
+    if (self.advancedConfiguration) {
+        [self performSegueWithIdentifier:@"createVMToConfiguration" sender:sender];
+    } else {
+        [self performSegueWithIdentifier:@"createVMDone" sender:sender];
+    }
+}
 
 - (IBAction)cancelPressed:(id)sender {
     [self dismissViewControllerAnimated:YES completion:nil];
-}
-
-- (IBAction)savePressed:(id)sender {
 }
 
 - (IBAction)nameFieldEdited:(UITextField *)sender {

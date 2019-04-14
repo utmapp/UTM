@@ -23,9 +23,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (weak, nonatomic) IBOutlet UITextField *nameField;
 @property (nonatomic, assign) BOOL advancedConfiguration;
+@property (weak, nonatomic) IBOutlet UITableViewCell *advancedConfigurationCell;
 
-- (IBAction)cancelPressed:(id)sender;
-- (IBAction)savePressed:(id)sender;
+- (IBAction)savePressed:(UIBarButtonItem *)sender;
+- (IBAction)cancelPressed:(UIBarButtonItem *)sender;
 - (IBAction)nameFieldEdited:(UITextField *)sender;
 
 @end
