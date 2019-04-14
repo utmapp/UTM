@@ -37,9 +37,6 @@
 
 - (void)refreshViewFromConfiguration {
     [super refreshViewFromConfiguration];
-    if (!self.configuration.changeName) {
-        self.configuration.changeName = self.configuration.name;
-    }
     self.nameField.text = self.configuration.changeName;
 }
 
@@ -99,6 +96,12 @@
 
 #pragma mark - Event handlers
 
+- (IBAction)screenTapped:(UITapGestureRecognizer *)sender {
+    if (sender.state == UIGestureRecognizerStateEnded) {
+        [self.view endEditing:YES];
+    }
+}
+
 - (IBAction)nameFieldEdited:(UITextField *)sender {
     NSAssert(sender == self.nameField, @"Invalid sender");
     // TODO: input validation
@@ -107,9 +110,6 @@
 
 - (IBAction)cancelPressed:(id)sender {
     [self dismissViewControllerAnimated:YES completion:nil];
-}
-
-- (IBAction)donePressed:(id)sender {
 }
 
 @end

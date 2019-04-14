@@ -155,9 +155,6 @@
                             <outlet property="rightBarButtonItem" destination="e5k-lL-Xj6" id="87b-9t-bNR"/>
                         </connections>
                     </navigationItem>
-                    <connections>
-                        <outlet property="vmCollection" destination="2R6-2u-EVP" id="Wya-XJ-CS7"/>
-                    </connections>
                 </collectionViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="gzw-ao-My7" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
@@ -171,6 +168,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="812"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
+                        <gestureRecognizers/>
                         <sections>
                             <tableViewSection headerTitle="Name" id="BlT-6O-Tm8">
                                 <cells>
@@ -183,6 +181,7 @@
                                             <subviews>
                                                 <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Name" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="2Kh-jJ-awN">
                                                     <rect key="frame" x="16" y="11.333333333333336" width="343" height="21"/>
+                                                    <gestureRecognizers/>
                                                     <nil key="textColor"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" returnKeyType="done" enablesReturnKeyAutomatically="YES" smartDashesType="no" smartInsertDeleteType="no" smartQuotesType="no"/>
@@ -198,6 +197,7 @@
                                                 <constraint firstAttribute="trailing" secondItem="2Kh-jJ-awN" secondAttribute="trailing" constant="16" id="oYU-ze-9uK"/>
                                             </constraints>
                                         </tableViewCellContentView>
+                                        <gestureRecognizers/>
                                     </tableViewCell>
                                 </cells>
                             </tableViewSection>
@@ -411,7 +411,7 @@
                         </barButtonItem>
                         <barButtonItem key="rightBarButtonItem" systemItem="done" id="CIG-Ca-qeI">
                             <connections>
-                                <segue destination="02X-bv-TXV" kind="unwind" unwindAction="unwindToMainFromEdit:" id="4fz-x9-Oyb"/>
+                                <segue destination="02X-bv-TXV" kind="unwind" unwindAction="unwindToMainFromConfiguration:" id="2rX-Um-tE1"/>
                             </connections>
                         </barButtonItem>
                         <connections>
@@ -419,7 +419,7 @@
                         </connections>
                     </navigationItem>
                     <connections>
-                        <outlet property="nameField" destination="2Kh-jJ-awN" id="TQa-on-Xdd"/>
+                        <outlet property="nameField" destination="2Kh-jJ-awN" id="rec-m9-Zvs"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="yqY-fN-Wux" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -1368,10 +1368,10 @@
                                     </tableViewCell>
                                 </cells>
                             </tableViewSection>
-                            <tableViewSection headerTitle="Drives" footerTitle="Long press to rearrange drives. Swipe left to remove." id="wDi-gr-I7A">
+                            <tableViewSection headerTitle="Drives" id="wDi-gr-I7A">
                                 <cells>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" textLabel="AP0-ME-jBc" style="IBUITableViewCellStyleDefault" id="POc-sX-Hg2">
-                                        <rect key="frame" x="0.0" y="550.66666666666674" width="375" height="44"/>
+                                        <rect key="frame" x="0.0" y="543.33333333333337" width="375" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="POc-sX-Hg2" id="c2R-t0-duR">
                                             <rect key="frame" x="0.0" y="0.0" width="341" height="43.666666666666664"/>
@@ -1391,7 +1391,7 @@
                                         </connections>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" textLabel="wrM-Ql-L8D" detailTextLabel="gaX-u8-yz8" style="IBUITableViewCellStyleValue1" id="UAO-KH-tjE">
-                                        <rect key="frame" x="0.0" y="594.66666666666674" width="375" height="44"/>
+                                        <rect key="frame" x="0.0" y="587.33333333333337" width="375" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="UAO-KH-tjE" id="Mn0-LS-cbn">
                                             <rect key="frame" x="0.0" y="0.0" width="375" height="43.666666666666664"/>
@@ -1415,7 +1415,7 @@
                                         </tableViewCellContentView>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" rowHeight="100" id="sht-Hg-il9">
-                                        <rect key="frame" x="0.0" y="638.66666666666674" width="375" height="100"/>
+                                        <rect key="frame" x="0.0" y="631.33333333333337" width="375" height="100"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="sht-Hg-il9" id="Nhm-cJ-dDa">
                                             <rect key="frame" x="0.0" y="0.0" width="375" height="99.666666666666671"/>
@@ -1442,7 +1442,7 @@
                             <tableViewSection headerTitle="Advanced" id="F7q-42-AmC">
                                 <cells>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" accessoryType="checkmark" indentationWidth="10" textLabel="7DJ-Cp-oMO" style="IBUITableViewCellStyleDefault" id="1Mz-8y-xuP">
-                                        <rect key="frame" x="0.0" y="806.66666666666674" width="375" height="44"/>
+                                        <rect key="frame" x="0.0" y="787.33333333333337" width="375" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="1Mz-8y-xuP" id="DIe-iC-1u8">
                                             <rect key="frame" x="0.0" y="0.0" width="343" height="43.666666666666664"/>
@@ -1474,7 +1474,7 @@
                         </barButtonItem>
                         <barButtonItem key="rightBarButtonItem" systemItem="save" id="8d3-Up-KUL">
                             <connections>
-                                <segue destination="7o9-KZ-PyF" kind="unwind" unwindAction="unwindToMainFromCreate:" id="G7j-G1-4nJ"/>
+                                <segue destination="7o9-KZ-PyF" kind="unwind" unwindAction="unwindToMainFromConfiguration:" id="a0C-1L-34D"/>
                             </connections>
                         </barButtonItem>
                         <connections>

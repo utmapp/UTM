@@ -15,21 +15,11 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "UTMVirtualMachineDelegate.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-typedef NS_ENUM(NSUInteger, VMState) {
-    kStopped,
-    kStarting,
-    kStarted,
-    kPausing,
-    kPaused,
-    kResuming,
-    kResumed,
-    kStopping
-};
-
-@interface VMListViewCell : UICollectionViewCell
+@interface VMListViewCell : UICollectionViewCell <UTMVirtualMachineDelegate>
 
 @property (weak, nonatomic) IBOutlet UILabel *nameLabel;
 @property (weak, nonatomic) IBOutlet UIVisualEffectView *screenBlurEffect;
@@ -38,9 +28,10 @@ typedef NS_ENUM(NSUInteger, VMState) {
 @property (weak, nonatomic) IBOutlet UIActivityIndicatorView *statusIndicator;
 @property (weak, nonatomic) IBOutlet UIButton *editButton;
 
-- (void)changeState:(VMState)state withScreen:(nullable UIImage *)image;
-- (void)changeState:(VMState)state;
+- (void)changeState:(UTMVMState)state withScreen:(nullable UIImage *)image;
+- (void)changeState:(UTMVMState)state;
 - (void)setName:(NSString *)name;
+- (void)virtualMachine:(UTMVirtualMachine *)vm transitionToState:(UTMVMState)state;
 - (IBAction)playButtonAction:(id)sender;
 - (IBAction)screenButtonAction:(id)sender;
 - (IBAction)editAction:(id)sender;

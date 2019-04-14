@@ -201,41 +201,46 @@ const NSString *const kUTMConfigCdromKey = @"Cdrom";
 - (id)init {
     self = [super init];
     if (self) {
-        _rootDict = [[NSMutableDictionary alloc] initWithCapacity:8];
-        _systemDict = [[NSMutableDictionary alloc] init];
-        _displayDict = [[NSMutableDictionary alloc] init];
-        _inputDict = [[NSMutableDictionary alloc] init];
-        _networkingDict = [[NSMutableDictionary alloc] init];
-        _printingDict = [[NSMutableDictionary alloc] init];
-        _soundDict = [[NSMutableDictionary alloc] init];
-        _sharingDict = [[NSMutableDictionary alloc] init];
-        _drivesDicts = [[NSMutableArray alloc] init];
-        _rootDict[kUTMConfigSystemKey] = _systemDict;
-        _rootDict[kUTMConfigDisplayKey] = _displayDict;
-        _rootDict[kUTMConfigInputKey] = _inputDict;
-        _rootDict[kUTMConfigNetworkingKey] = _networkingDict;
-        _rootDict[kUTMConfigPrintingKey] = _printingDict;
-        _rootDict[kUTMConfigSoundKey] = _soundDict;
-        _rootDict[kUTMConfigSharingKey] = _sharingDict;
-        _rootDict[kUTMConfigDrivesKey] = _drivesDicts;
         _newDrivesDict = [[NSMutableArray alloc] init];
     }
     return self;
 }
 
-- (id)initWithDefaults {
+- (id)initDefaults:(NSString *)name {
     self = [self init];
-    self.systemArchitecture = @"x86_64";
-    self.systemMemory = @512;
-    self.systemCPUCount = @2;
-    self.systemBootDevice = @"CD/DVD";
-    self.displayFixedResolutionWidth = @800;
-    self.displayFixedResolutionHeight = @600;
-    self.displayFixedResolution = NO;
-    self.networkEnabled = YES;
-    self.printEnabled = YES;
-    self.soundEnabled = YES;
-    self.sharingClipboardEnabled = YES;
+    if (self) {
+        _rootDict = [[NSMutableDictionary alloc] initWithCapacity:8];
+        _rootDict[kUTMConfigSystemKey] = [[NSMutableDictionary alloc] init];
+        _rootDict[kUTMConfigDisplayKey] = [[NSMutableDictionary alloc] init];
+        _rootDict[kUTMConfigInputKey] = [[NSMutableDictionary alloc] init];
+        _rootDict[kUTMConfigNetworkingKey] = [[NSMutableDictionary alloc] init];
+        _rootDict[kUTMConfigPrintingKey] = [[NSMutableDictionary alloc] init];
+        _rootDict[kUTMConfigSoundKey] = [[NSMutableDictionary alloc] init];
+        _rootDict[kUTMConfigSharingKey] = [[NSMutableDictionary alloc] init];
+        _rootDict[kUTMConfigDrivesKey] = [[NSMutableArray alloc] init];
+        self.systemArchitecture = @"x86_64";
+        self.systemMemory = @512;
+        self.systemCPUCount = @2;
+        self.systemBootDevice = @"CD/DVD";
+        self.displayFixedResolutionWidth = @800;
+        self.displayFixedResolutionHeight = @600;
+        self.displayFixedResolution = NO;
+        self.networkEnabled = YES;
+        self.printEnabled = YES;
+        self.soundEnabled = YES;
+        self.sharingClipboardEnabled = YES;
+        self.changeName = name;
+    }
+    return self;
+}
+
+- (id)initWithDictionary:(NSMutableDictionary *)dictionary name:(NSString *)name {
+    self = [self init];
+    if (self) {
+        _rootDict = dictionary;
+        self.name = name;
+        self.changeName = name;
+    }
     return self;
 }
 

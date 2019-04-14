@@ -18,12 +18,21 @@
 #import "VMListViewCell.h"
 #import "UTMConfigurationDelegate.h"
 #import "UTMConfiguration.h"
+#import "UTMVirtualMachine.h"
 
 @interface VMListViewController ()
 
+@property (weak, readonly) NSURL *documentsPath;
+@property (strong, nonatomic) UTMVirtualMachine *activeVM;
+@property (strong, nonatomic) UTMVirtualMachine *modifyingVM;
+@property (nonatomic, strong) NSArray<NSURL *> *vmList;
 @property (nonatomic, nullable, strong) UIAlertController *alert;
 @property (nonatomic, strong) dispatch_semaphore_t viewVisibleSema;
 @property (nonatomic, strong) dispatch_queue_t viewVisibleQueue;
+
+- (NSArray<NSURL *> *)fetchVirtualMachines;
+- (void)workStartedWhenVisible:(NSString *)message;
+- (void)workCompletedWhenVisible:(NSString *)message;
 
 @end
 
@@ -38,7 +47,7 @@ static NSString * const reuseIdentifier = @"vmListCell";
     // self.clearsSelectionOnViewWillAppear = NO;
     
     // Do any additional setup after loading the view.
-    [[self vmCollection] setDragInteractionEnabled:YES];
+    [self.collectionView setDragInteractionEnabled:YES];
     
     self.viewVisibleSema = dispatch_semaphore_create(0);
     self.viewVisibleQueue = dispatch_queue_create("View Visible Queue", DISPATCH_QUEUE_SERIAL);
@@ -57,9 +66,49 @@ static NSString * const reuseIdentifier = @"vmListCell";
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     dispatch_semaphore_signal(self.viewVisibleSema);
+    
+    // refresh list
+    dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INTERACTIVE, 0), ^{
+        self.vmList = [self fetchVirtualMachines];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.collectionView reloadData];
+        });
+    });
 }
 
 #pragma mark - Properties
+
+- (NSURL *)documentsPath {
+    return [[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask][0];
+}
+
+#pragma mark - Helpers
+
+- (NSArray<NSURL *> *)fetchVirtualMachines {
+    NSArray<NSURL *> *files = [[NSFileManager defaultManager] contentsOfDirectoryAtURL:self.documentsPath includingPropertiesForKeys:@[NSURLIsDirectoryKey] options:NSDirectoryEnumerationSkipsHiddenFiles error:nil];
+    NSMutableArray<NSURL *> *vmFiles = [[NSMutableArray alloc] initWithCapacity:files.count];
+    for (NSURL *file in files) {
+        if ([UTMVirtualMachine URLisVirtualMachine:file]) {
+            [vmFiles addObject:file];
+        }
+    }
+    return vmFiles;
+}
+
+- (NSString *)createNewDefaultName {
+    NSString *(^nameForId)(NSUInteger) = ^(NSUInteger i) {
+        return [NSString stringWithFormat:@"Virtual Machine %lu", i];
+    };
+    NSUInteger idx = 1;
+    do {
+        NSString *name = nameForId(idx);
+        NSURL *file = [UTMVirtualMachine virtualMachinePath:name inParentURL:self.documentsPath];
+        if (![[NSFileManager defaultManager] fileExistsAtPath:file.path]) {
+            return name;
+        }
+    } while (idx++ < 1000);
+    return [[NSProcessInfo processInfo] globallyUniqueString];
+}
 
 #pragma mark - Navigation
 
@@ -70,95 +119,68 @@ static NSString * const reuseIdentifier = @"vmListCell";
         UINavigationController *navController = (UINavigationController *)segue.destinationViewController;
         NSAssert([navController.topViewController conformsToProtocol:@protocol(UTMConfigurationDelegate)], @"Invalid segue destination");
         id<UTMConfigurationDelegate> controller = (id<UTMConfigurationDelegate>)navController.topViewController;
-        controller.configuration = [[UTMConfiguration alloc] initWithDefaults];
+        NSAssert([sender isKindOfClass:[UIButton class]], @"Sender is not a UIButton");
+        id cell = ((UIButton *)sender).superview.superview;
+        NSIndexPath *index = [self.collectionView indexPathForCell:cell];
+        NSAssert(index, @"Cannot find index for selected VM");
+        NSAssert(index.section == 0, @"Invalid section");
+        self.modifyingVM = [[UTMVirtualMachine alloc] initWithURL:self.vmList[index.row]];
+        controller.configuration = self.modifyingVM.configuration;
     } else if ([segue.identifier isEqualToString:@"newVM"]) {
         NSAssert([segue.destinationViewController isKindOfClass:[UINavigationController class]], @"Destination not a navigation view");
         UINavigationController *navController = (UINavigationController *)segue.destinationViewController;
         NSAssert([navController.topViewController conformsToProtocol:@protocol(UTMConfigurationDelegate)], @"Invalid segue destination");
         id<UTMConfigurationDelegate> controller = (id<UTMConfigurationDelegate>)navController.topViewController;
-        controller.configuration = [[UTMConfiguration alloc] initWithDefaults];
+        self.modifyingVM = [[UTMVirtualMachine alloc] initDefaults:[self createNewDefaultName] withDestinationURL:self.documentsPath];
+        controller.configuration = self.modifyingVM.configuration;
     }
 }
 
-#pragma mark <UICollectionViewDataSource>
+#pragma mark Collection view delegates
 
 - (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView {
-#warning Incomplete implementation, return the number of sections
     return 1;
 }
 
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
-#warning Incomplete implementation, return the number of items
-    return 5;
+    NSAssert(section == 0, @"Invalid section");
+    return self.vmList.count;
 }
 
-VMListViewCell *test_cell;
-VMState test_state;
-
 - (VMListViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
+    NSAssert(indexPath.section == 0, @"Invalid section");
     VMListViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:reuseIdentifier forIndexPath:indexPath];
     
     // Configure the cell
-    [cell setName:@"Test VM"];
-    [cell changeState:kStopped];
-    test_state = kStopped;
-    test_cell = cell;
+    [cell setName:[UTMVirtualMachine virtualMachineName:self.vmList[indexPath.row]]];
+    if (cell != self.activeVM.delegate) {
+        [cell changeState:kVMStopped];
+    } else {
+        [cell changeState:self.activeVM.state];
+    }
     
     return cell;
 }
-
-#pragma mark <UICollectionViewDelegate>
-
-/*
- // Uncomment this method to specify if the specified item should be highlighted during tracking
- - (BOOL)collectionView:(UICollectionView *)collectionView shouldHighlightItemAtIndexPath:(NSIndexPath *)indexPath {
- return YES;
- }
-*/
-
-/*
- // Uncomment this method to specify if the specified item should be selected
- - (BOOL)collectionView:(UICollectionView *)collectionView shouldSelectItemAtIndexPath:(NSIndexPath *)indexPath {
- return YES;
- }
-*/
-
-/*
- // Uncomment these methods to specify if an action menu should be displayed for the specified item, and react to actions performed on the item
- - (BOOL)collectionView:(UICollectionView *)collectionView shouldShowMenuForItemAtIndexPath:(NSIndexPath *)indexPath {
- return NO;
- }
- 
- - (BOOL)collectionView:(UICollectionView *)collectionView canPerformAction:(SEL)action forItemAtIndexPath:(NSIndexPath *)indexPath withSender:(id)sender {
- return NO;
- }
- 
- - (void)collectionView:(UICollectionView *)collectionView performAction:(SEL)action forItemAtIndexPath:(NSIndexPath *)indexPath withSender:(id)sender {
- 
- }
- */
 
 - (BOOL)collectionView:(UICollectionView *)collectionView canMoveItemAtIndexPath:(nonnull NSIndexPath *)indexPath {
     return YES;
 }
 
-#pragma mark <UICollectionViewDragDelegate>
-
 - (nonnull NSArray<UIDragItem *> *)collectionView:(nonnull UICollectionView *)collectionView itemsForBeginningDragSession:(nonnull id<UIDragSession>)session atIndexPath:(nonnull NSIndexPath *)indexPath {
-    NSItemProvider *provider = [[NSItemProvider alloc] init];
+    NSAssert(indexPath.section == 0, @"Invalid section");
+    NSItemProvider *provider = [[NSItemProvider alloc] initWithContentsOfURL:self.vmList[indexPath.row]];
     UIDragItem *drag = [[UIDragItem alloc] initWithItemProvider:provider];
     return @[drag];
 }
 
-#pragma mark <UICollectionViewDropDelegate>
-
 - (void)collectionView:(nonnull UICollectionView *)collectionView performDropWithCoordinator:(nonnull id<UICollectionViewDropCoordinator>)coordinator {
+    // TODO: implement this
 }
 
 #pragma mark - Work status indicator
 
-- (void)workStartedWhenVisibleWithMessage:(NSString *)message {
+- (void)workStartedWhenVisible:(NSString *)message {
     dispatch_async(self.viewVisibleQueue, ^{
         dispatch_semaphore_t waitUntilCompletion = dispatch_semaphore_create(0);
         dispatch_sync(dispatch_get_main_queue(), ^{
@@ -177,9 +199,11 @@ VMState test_state;
     });
 }
 
-- (void)workCompletedWhenVisibleWithMessage:(NSString *)message {
+- (void)workCompletedWhenVisible:(NSString *)message {
     dispatch_async(self.viewVisibleQueue, ^{
+        self.vmList = [self fetchVirtualMachines];
         dispatch_sync(dispatch_get_main_queue(), ^{
+            [self.collectionView reloadData];
             [self.alert dismissViewControllerAnimated:YES completion:nil];
             if (message) {
                 UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil message:message preferredStyle:UIAlertControllerStyleAlert];
@@ -193,23 +217,20 @@ VMState test_state;
 
 #pragma mark - Returning from configuration
 
-- (IBAction)unwindToMainFromCreate:(UIStoryboardSegue*)sender {
+- (IBAction)unwindToMainFromConfiguration:(UIStoryboardSegue*)sender {
     NSAssert([sender.sourceViewController conformsToProtocol:@protocol(UTMConfigurationDelegate)], @"Invalid source for unwind");
     id<UTMConfigurationDelegate> source = (id<UTMConfigurationDelegate>)sender.sourceViewController;
     dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), ^{
-        [self workStartedWhenVisibleWithMessage:[NSString stringWithFormat:@"Creating %@...", source.configuration.name]];
-        [NSThread sleepForTimeInterval:5.0f];
-        [self workCompletedWhenVisibleWithMessage:@"Done"];
-    });
-}
-
-- (IBAction)unwindToMainFromEdit:(UIStoryboardSegue*)sender {
-    NSAssert([sender.sourceViewController conformsToProtocol:@protocol(UTMConfigurationDelegate)], @"Invalid source for unwind");
-    id<UTMConfigurationDelegate> source = (id<UTMConfigurationDelegate>)sender.sourceViewController;
-    dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), ^{
-        [self workStartedWhenVisibleWithMessage:[NSString stringWithFormat:@"Saving %@...", source.configuration.changeName]];
-        [NSThread sleepForTimeInterval:5.0f];
-        [self workCompletedWhenVisibleWithMessage:@"Done"];
+        NSError *err;
+        [self workStartedWhenVisible:[NSString stringWithFormat:@"Saving %@...", source.configuration.changeName]];
+        if (source.configuration == self.modifyingVM.configuration) {
+            [self.modifyingVM saveUTMWithError:&err];
+            self.modifyingVM = nil; // must do this BEFORE work complete, or user might press another button
+            [self workCompletedWhenVisible:err.localizedFailureReason];
+        } else {
+            NSLog(@"Trying to save configuration for a VM that is not being edited!\n");
+            [self workCompletedWhenVisible:@"An internal error has occured!"];
+        }
     });
 }
 

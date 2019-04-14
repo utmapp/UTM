@@ -14,18 +14,26 @@
 // limitations under the License.
 //
 
-#import <UIKit/UIKit.h>
-#import "VMConfigViewController.h"
+#import <Foundation/Foundation.h>
+
+@class UTMVirtualMachine;
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface VMConfigExistingViewController : VMConfigViewController
+typedef NS_ENUM(NSUInteger, UTMVMState) {
+    kVMStopped,
+    kVMStarting,
+    kVMStarted,
+    kVMPausing,
+    kVMPaused,
+    kVMResuming,
+    kVMResumed,
+    kVMStopping
+};
 
-@property (weak, nonatomic) IBOutlet UITextField *nameField;
+@protocol UTMVirtualMachineDelegate <NSObject>
 
-- (IBAction)screenTapped:(UITapGestureRecognizer *)sender;
-- (IBAction)nameFieldEdited:(UITextField *)sender;
-- (IBAction)cancelPressed:(id)sender;
+- (void)virtualMachine:(UTMVirtualMachine *)vm transitionToState:(UTMVMState)state;
 
 @end
 

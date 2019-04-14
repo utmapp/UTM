@@ -18,33 +18,33 @@
 
 @implementation VMListViewCell
 
-- (void)changeState:(VMState)state withScreen:(nullable UIImage *)image {
+- (void)changeState:(UTMVMState)state withScreen:(nullable UIImage *)image {
     [[self screenButton] setImage:image forState:UIControlStateNormal];
     switch (state) {
-        case kStopped:
+        case kVMStopped:
         default: {
             [[self statusIndicator] stopAnimating];
             [[self screenBlurEffect] setHidden:NO];
             [[self playButton] setImage:[UIImage imageNamed:@"Play Icon"] forState:UIControlStateNormal];
             break;
         }
-        case kStarting:
-        case kPausing:
-        case kResuming:
-        case kStopping: {
+        case kVMStarting:
+        case kVMPausing:
+        case kVMResuming:
+        case kVMStopping: {
             [[self screenBlurEffect] setHidden:NO];
             [[self statusIndicator] startAnimating];
             [[self playButton] setImage:nil forState:UIControlStateNormal];
             break;
         }
-        case kStarted:
-        case kResumed: {
+        case kVMStarted:
+        case kVMResumed: {
             [[self screenBlurEffect] setHidden:YES];
             [[self statusIndicator] stopAnimating];
             [[self playButton] setImage:nil forState:UIControlStateNormal];
             break;
         }
-        case kPaused: {
+        case kVMPaused: {
             [[self statusIndicator] stopAnimating];
             [[self screenBlurEffect] setHidden:NO];
             [[self playButton] setImage:[UIImage imageNamed:@"Resume Icon"] forState:UIControlStateNormal];
@@ -53,12 +53,16 @@
     }
 }
 
-- (void)changeState:(VMState)state {
+- (void)changeState:(UTMVMState)state {
     [self changeState:state withScreen:nil];
 }
 
 - (void)setName:(NSString *)name {
     [[self nameLabel] setText:name];
+}
+
+- (void)virtualMachine:(UTMVirtualMachine *)vm transitionToState:(UTMVMState)state {
+    
 }
 
 - (IBAction)playButtonAction:(id)sender {

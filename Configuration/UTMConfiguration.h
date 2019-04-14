@@ -68,7 +68,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, assign) BOOL sharingClipboardEnabled;
 
-- (id)initWithDefaults;
+- (id)initDefaults:(NSString *)name;
+- (id)initWithDictionary:(NSMutableDictionary *)dictionary name:(NSString *)name;
 - (NSUInteger)countDrives;
 - (NSUInteger)newDefaultDrive;
 - (nullable NSString *)driveImagePathForIndex:(NSUInteger)index;

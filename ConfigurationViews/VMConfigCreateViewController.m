@@ -29,7 +29,7 @@
 - (void)refreshViewFromConfiguration {
     [super refreshViewFromConfiguration];
     self.advancedConfiguration = NO;
-    self.nameField.text = self.configuration.name;
+    self.nameField.text = self.configuration.changeName;
 }
 
 #pragma mark - Event handlers
@@ -44,7 +44,7 @@
 - (IBAction)nameFieldEdited:(UITextField *)sender {
     NSAssert(sender == self.nameField, @"Invalid sender");
     // TODO: validate input
-    self.configuration.name = sender.text;
+    self.configuration.changeName = sender.text;
 }
 
 @end

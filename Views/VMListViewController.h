@@ -15,15 +15,13 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "UTMVirtualMachine.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface VMListViewController : UICollectionViewController<UICollectionViewDragDelegate, UICollectionViewDropDelegate>
 
-@property (strong, nonatomic) IBOutlet UICollectionView *vmCollection;
-
-- (IBAction)unwindToMainFromCreate:(UIStoryboardSegue*)sender;
-- (IBAction)unwindToMainFromEdit:(UIStoryboardSegue*)sender;
+- (IBAction)unwindToMainFromConfiguration:(UIStoryboardSegue*)sender;
 
 @end
 
