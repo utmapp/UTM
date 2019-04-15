@@ -10,6 +10,8 @@
 		CE31C245225E555600A965DD /* UTMConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = CE31C244225E555600A965DD /* UTMConfiguration.m */; };
 		CE31C24B225EA37400A965DD /* VMConfigViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CE31C24A225EA37400A965DD /* VMConfigViewController.m */; };
 		CE31C24D225EA4A200A965DD /* VMConfigCreateViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CE31C24C225EA4A200A965DD /* VMConfigCreateViewController.m */; };
+		CE4AA1492263B24F002E4A54 /* CSDisplayMetal.m in Sources */ = {isa = PBXBuildFile; fileRef = CE4AA1482263B24F002E4A54 /* CSDisplayMetal.m */; };
+		CE4AA14C2264004F002E4A54 /* CSConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = CE4AA14B2264004F002E4A54 /* CSConnection.m */; };
 		CE550BCE225947990063E575 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CE550BCD225947990063E575 /* AppDelegate.m */; };
 		CE550BD1225947990063E575 /* VMListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CE550BD0225947990063E575 /* VMListViewController.m */; };
 		CE550BD4225947990063E575 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CE550BD2225947990063E575 /* Main.storyboard */; };
@@ -40,6 +42,11 @@
 		CE31C249225EA37400A965DD /* VMConfigViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VMConfigViewController.h; sourceTree = "<group>"; };
 		CE31C24A225EA37400A965DD /* VMConfigViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VMConfigViewController.m; sourceTree = "<group>"; };
 		CE31C24C225EA4A200A965DD /* VMConfigCreateViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VMConfigCreateViewController.m; sourceTree = "<group>"; };
+		CE4AA1472263B24F002E4A54 /* CSDisplayMetal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CSDisplayMetal.h; sourceTree = "<group>"; };
+		CE4AA1482263B24F002E4A54 /* CSDisplayMetal.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CSDisplayMetal.m; sourceTree = "<group>"; };
+		CE4AA14A2264004F002E4A54 /* CSConnection.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CSConnection.h; sourceTree = "<group>"; };
+		CE4AA14B2264004F002E4A54 /* CSConnection.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CSConnection.m; sourceTree = "<group>"; };
+		CE4AA14D22642EB4002E4A54 /* CSConnectionDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CSConnectionDelegate.h; sourceTree = "<group>"; };
 		CE550BC9225947990063E575 /* UTM.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = UTM.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CE550BCC225947990063E575 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		CE550BCD225947990063E575 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -99,9 +106,22 @@
 			path = Configuration;
 			sourceTree = "<group>";
 		};
+		CE4AA1462262FB58002E4A54 /* CocoaSpice */ = {
+			isa = PBXGroup;
+			children = (
+				CE4AA14A2264004F002E4A54 /* CSConnection.h */,
+				CE4AA14B2264004F002E4A54 /* CSConnection.m */,
+				CE4AA14D22642EB4002E4A54 /* CSConnectionDelegate.h */,
+				CE4AA1472263B24F002E4A54 /* CSDisplayMetal.h */,
+				CE4AA1482263B24F002E4A54 /* CSDisplayMetal.m */,
+			);
+			path = CocoaSpice;
+			sourceTree = "<group>";
+		};
 		CE550BC0225947990063E575 = {
 			isa = PBXGroup;
 			children = (
+				CE4AA1462262FB58002E4A54 /* CocoaSpice */,
 				CE31C242225E543A00A965DD /* Configuration */,
 				CE5E4954225C593C00148CEF /* ConfigurationViews */,
 				CE5F1659226138AB00F3D56B /* Managers */,
@@ -275,6 +295,7 @@
 				CE74C28A225D88ED004E4FF1 /* VMConfigPrintingViewController.m in Sources */,
 				CE550BDC2259479D0063E575 /* main.m in Sources */,
 				CE5F165C2261395000F3D56B /* UTMVirtualMachine.m in Sources */,
+				CE4AA1492263B24F002E4A54 /* CSDisplayMetal.m in Sources */,
 				CEDC1DF22260EE4B008D9A6D /* StaticDataTableViewController.m in Sources */,
 				CE550BCE225947990063E575 /* AppDelegate.m in Sources */,
 				CE74C290225D88ED004E4FF1 /* VMConfigSystemViewController.m in Sources */,
@@ -284,6 +305,7 @@
 				CE7BED4C225FBB8600A1E1B6 /* VMConfigDrivesViewController.m in Sources */,
 				CE74C28D225D88ED004E4FF1 /* VMConfigInputViewController.m in Sources */,
 				CE74C28B225D88ED004E4FF1 /* VMConfigDisplayViewController.m in Sources */,
+				CE4AA14C2264004F002E4A54 /* CSConnection.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -427,6 +449,14 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = "";
+				HEADER_SEARCH_PATHS = (
+					"$(PROJECT_DIR)/build/sysroot/include",
+					"$(PROJECT_DIR)/build/sysroot/include/gstreamer-1.0",
+					"$(PROJECT_DIR)/build/sysroot/include/glib-2.0",
+					"$(PROJECT_DIR)/build/sysroot/lib/glib-2.0/include",
+					"$(PROJECT_DIR)/build/sysroot/include/spice-client-glib-2.0",
+					"$(PROJECT_DIR)/build/sysroot/include/spice-1",
+				);
 				INFOPLIST_FILE = UTM/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -445,6 +475,14 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = "";
+				HEADER_SEARCH_PATHS = (
+					"$(PROJECT_DIR)/build/sysroot/include",
+					"$(PROJECT_DIR)/build/sysroot/include/gstreamer-1.0",
+					"$(PROJECT_DIR)/build/sysroot/include/glib-2.0",
+					"$(PROJECT_DIR)/build/sysroot/lib/glib-2.0/include",
+					"$(PROJECT_DIR)/build/sysroot/include/spice-client-glib-2.0",
+					"$(PROJECT_DIR)/build/sysroot/include/spice-1",
+				);
 				INFOPLIST_FILE = UTM/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = (
