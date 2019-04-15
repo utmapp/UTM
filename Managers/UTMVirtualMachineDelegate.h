@@ -33,7 +33,7 @@ typedef NS_ENUM(NSUInteger, UTMVMState) {
 
 @protocol UTMVirtualMachineDelegate <NSObject>
 
-- (void)virtualMachine:(UTMVirtualMachine *)vm transitionToState:(UTMVMState)state;
+- (void)virtualMachine:(UTMVirtualMachine *)vm transitionToState:(UTMVMState)state withScreen:(nullable UIImage *)image;
 
 @end
 

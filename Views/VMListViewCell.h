@@ -26,15 +26,11 @@ NS_ASSUME_NONNULL_BEGIN
 @property (weak, nonatomic) IBOutlet UIButton *playButton;
 @property (weak, nonatomic) IBOutlet UIButton *screenButton;
 @property (weak, nonatomic) IBOutlet UIActivityIndicatorView *statusIndicator;
-@property (weak, nonatomic) IBOutlet UIButton *editButton;
 
 - (void)changeState:(UTMVMState)state withScreen:(nullable UIImage *)image;
 - (void)changeState:(UTMVMState)state;
 - (void)setName:(NSString *)name;
-- (void)virtualMachine:(UTMVirtualMachine *)vm transitionToState:(UTMVMState)state;
-- (IBAction)playButtonAction:(id)sender;
-- (IBAction)screenButtonAction:(id)sender;
-- (IBAction)editAction:(id)sender;
+- (void)virtualMachine:(UTMVirtualMachine *)vm transitionToState:(UTMVMState)state withScreen:(nullable UIImage *)image;
 
 @end
 

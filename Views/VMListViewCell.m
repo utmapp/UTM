@@ -61,20 +61,8 @@
     [[self nameLabel] setText:name];
 }
 
-- (void)virtualMachine:(UTMVirtualMachine *)vm transitionToState:(UTMVMState)state {
-    
-}
-
-- (IBAction)playButtonAction:(id)sender {
-    NSLog(@"button clicked!\n");
-}
-
-- (IBAction)screenButtonAction:(id)sender {
-    NSLog(@"button 2 clicked!\n");
-}
-
-- (IBAction)editAction:(id)sender {
-    NSLog(@"edit clicked!\n");
+- (void)virtualMachine:(UTMVirtualMachine *)vm transitionToState:(UTMVMState)state withScreen:(nullable UIImage *)image {
+    [self changeState:state withScreen:image];
 }
 
 @end

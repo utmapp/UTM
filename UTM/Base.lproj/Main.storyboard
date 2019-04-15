@@ -39,9 +39,6 @@
                                                 <constraint firstAttribute="height" constant="100" id="HTN-L4-8OJ"/>
                                                 <constraint firstAttribute="width" constant="150" id="psZ-ev-pT6"/>
                                             </constraints>
-                                            <connections>
-                                                <action selector="screenButtonAction:" destination="RU3-XR-GS5" eventType="touchUpInside" id="fUJ-Gi-fp0"/>
-                                            </connections>
                                         </button>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Name" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="VQv-L6-Wpd">
                                             <rect key="frame" x="0.0" y="100" width="120" height="50"/>
@@ -71,9 +68,6 @@
                                                                         <accessibilityTraits key="traits" button="YES"/>
                                                                     </accessibility>
                                                                     <state key="normal" image="Play Icon"/>
-                                                                    <connections>
-                                                                        <action selector="playButtonAction:" destination="RU3-XR-GS5" eventType="touchUpInside" id="ocQ-WO-xNY"/>
-                                                                    </connections>
                                                                 </button>
                                                             </subviews>
                                                             <constraints>
@@ -104,7 +98,6 @@
                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="detailDisclosure" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="LpV-bC-fzU">
                                             <rect key="frame" x="124" y="114" width="22" height="22"/>
                                             <connections>
-                                                <action selector="editAction:" destination="RU3-XR-GS5" eventType="touchUpInside" id="585-9q-SwU"/>
                                                 <segue destination="fxo-tK-lAq" kind="presentation" identifier="editVMConfig" modalPresentationStyle="formSheet" id="3tV-yy-VRS"/>
                                             </connections>
                                         </button>
@@ -127,7 +120,6 @@
                                     <constraint firstAttribute="trailing" secondItem="fao-Hy-kRI" secondAttribute="trailing" id="zow-Fc-oiq"/>
                                 </constraints>
                                 <connections>
-                                    <outlet property="editButton" destination="LpV-bC-fzU" id="baN-hM-vny"/>
                                     <outlet property="nameLabel" destination="VQv-L6-Wpd" id="SSj-XC-PZz"/>
                                     <outlet property="playButton" destination="byz-Gf-XHC" id="APa-c0-qZ0"/>
                                     <outlet property="screenBlurEffect" destination="fao-Hy-kRI" id="G0p-rR-1xp"/>
