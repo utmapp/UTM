@@ -99,7 +99,8 @@ static void cs_display_monitors(SpiceChannel *display, GParamSpec *pspec,
     }
     
     // clear any extra displays
-    for (i = monitors->len; i < self->_monitors.count; i++) {
+    NSUInteger total = self->_monitors.count;
+    for (i = monitors->len; i < total; i++) {
         [self->_monitors[chid] removeLastObject];
     }
     
