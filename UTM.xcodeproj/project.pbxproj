@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		CE2D63D32265154700FC7E63 /* UTMRenderer.m in Sources */ = {isa = PBXBuildFile; fileRef = CE2D63CF2265154700FC7E63 /* UTMRenderer.m */; };
+		CE2D63D42265154700FC7E63 /* UTMShaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = CE2D63D02265154700FC7E63 /* UTMShaders.metal */; };
 		CE31C245225E555600A965DD /* UTMConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = CE31C244225E555600A965DD /* UTMConfiguration.m */; };
 		CE31C24B225EA37400A965DD /* VMConfigViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CE31C24A225EA37400A965DD /* VMConfigViewController.m */; };
 		CE31C24D225EA4A200A965DD /* VMConfigCreateViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CE31C24C225EA4A200A965DD /* VMConfigCreateViewController.m */; };
@@ -36,6 +38,11 @@
 /* Begin PBXFileReference section */
 		CE2B89332262A21E00C6D9D8 /* UTMVirtualMachine.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UTMVirtualMachine.h; sourceTree = "<group>"; };
 		CE2B89352262B2F600C6D9D8 /* UTMVirtualMachineDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UTMVirtualMachineDelegate.h; sourceTree = "<group>"; };
+		CE2D63CF2265154700FC7E63 /* UTMRenderer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UTMRenderer.m; sourceTree = "<group>"; };
+		CE2D63D02265154700FC7E63 /* UTMShaders.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = UTMShaders.metal; sourceTree = "<group>"; };
+		CE2D63D12265154700FC7E63 /* UTMShaderTypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UTMShaderTypes.h; sourceTree = "<group>"; };
+		CE2D63D22265154700FC7E63 /* UTMRenderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UTMRenderer.h; sourceTree = "<group>"; };
+		CE2D63D5226517D600FC7E63 /* UTMRendererDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UTMRendererDelegate.h; sourceTree = "<group>"; };
 		CE31C243225E553500A965DD /* UTMConfiguration.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UTMConfiguration.h; sourceTree = "<group>"; };
 		CE31C244225E555600A965DD /* UTMConfiguration.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UTMConfiguration.m; sourceTree = "<group>"; };
 		CE31C246225E9FED00A965DD /* UTMConfigurationDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UTMConfigurationDelegate.h; sourceTree = "<group>"; };
@@ -96,6 +103,18 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		CE2D63CE2265150F00FC7E63 /* Renderer */ = {
+			isa = PBXGroup;
+			children = (
+				CE2D63D22265154700FC7E63 /* UTMRenderer.h */,
+				CE2D63CF2265154700FC7E63 /* UTMRenderer.m */,
+				CE2D63D5226517D600FC7E63 /* UTMRendererDelegate.h */,
+				CE2D63D02265154700FC7E63 /* UTMShaders.metal */,
+				CE2D63D12265154700FC7E63 /* UTMShaderTypes.h */,
+			);
+			path = Renderer;
+			sourceTree = "<group>";
+		};
 		CE31C242225E543A00A965DD /* Configuration */ = {
 			isa = PBXGroup;
 			children = (
@@ -125,6 +144,7 @@
 				CE31C242225E543A00A965DD /* Configuration */,
 				CE5E4954225C593C00148CEF /* ConfigurationViews */,
 				CE5F1659226138AB00F3D56B /* Managers */,
+				CE2D63CE2265150F00FC7E63 /* Renderer */,
 				CE7BED4D22600F5000A1E1B6 /* Views */,
 				CE550BCB225947990063E575 /* UTM */,
 				CE550BCA225947990063E575 /* Products */,
@@ -304,8 +324,10 @@
 				CE31C245225E555600A965DD /* UTMConfiguration.m in Sources */,
 				CE7BED4C225FBB8600A1E1B6 /* VMConfigDrivesViewController.m in Sources */,
 				CE74C28D225D88ED004E4FF1 /* VMConfigInputViewController.m in Sources */,
+				CE2D63D42265154700FC7E63 /* UTMShaders.metal in Sources */,
 				CE74C28B225D88ED004E4FF1 /* VMConfigDisplayViewController.m in Sources */,
 				CE4AA14C2264004F002E4A54 /* CSConnection.m in Sources */,
+				CE2D63D32265154700FC7E63 /* UTMRenderer.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

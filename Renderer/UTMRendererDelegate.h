@@ -15,23 +15,16 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "UTMRendererDelegate.h"
-@import CoreGraphics;
-
-typedef struct _SpiceSession SpiceSession;
+@import MetalKit;
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface CSDisplayMetal : NSObject <UTMRendererDelegate>
+@protocol UTMRendererDelegate <NSObject>
 
-@property (nonatomic, assign) BOOL ready;
-@property (nonatomic, readonly, assign) SpiceSession *session;
-@property (nonatomic, readonly, assign) NSInteger channelID;
-@property (nonatomic, readonly, assign) NSInteger monitorID;
-
-- (id)initWithSession:(nonnull SpiceSession *)session channelID:(NSInteger)channelID monitorID:(NSInteger)monitorID;
-- (id)initWithSession:(nonnull SpiceSession *)session channelID:(NSInteger)channelID;
-- (void)updateVisibleAreaWithRect:(CGRect)rect;
+@property (nonatomic, nullable, weak) id<MTLDevice> device;
+@property (nonatomic, nullable, readonly) id<MTLTexture> texture;
+@property (nonatomic, readonly) NSUInteger numVertices;
+@property (nonatomic, nullable, readonly) id<MTLBuffer> vertices;
 
 @end
 
