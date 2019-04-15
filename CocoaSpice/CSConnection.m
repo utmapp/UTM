@@ -208,6 +208,10 @@ static void cs_connection_destroy(SpiceSession *session,
     return nshost;
 }
 
++ (void)spiceSetDebug:(BOOL)enabled {
+    spice_util_set_debug(enabled);
+}
+
 - (id)init {
     self = [super init];
     if (self) {

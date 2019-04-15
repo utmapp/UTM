@@ -30,6 +30,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy) NSString *port;
 @property (nonatomic, assign) BOOL audioEnabled;
 
++ (void)spiceSetDebug:(BOOL)enabled;
 - (id)initWithHost:(NSString *)host port:(NSString *)port;
 - (void)connectWithCompletion:(void (^)(BOOL))completion;
 - (void)disconnectWithCompletion:(void (^)(BOOL))completion;
