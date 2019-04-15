@@ -15,8 +15,9 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "UTMConfiguration.h"
 #import "UTMVirtualMachineDelegate.h"
+
+@class UTMConfiguration;
 
 NS_ASSUME_NONNULL_BEGIN
 

@@ -15,7 +15,8 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "UTMConfiguration.h"
+
+@class UTMConfiguration;
 
 NS_ASSUME_NONNULL_BEGIN
 

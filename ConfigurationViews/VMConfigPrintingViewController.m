@@ -15,6 +15,7 @@
 //
 
 #import "VMConfigPrintingViewController.h"
+#import "UTMConfiguration.h"
 
 @interface VMConfigPrintingViewController ()
 

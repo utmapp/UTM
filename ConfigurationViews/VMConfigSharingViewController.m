@@ -15,6 +15,7 @@
 //
 
 #import "VMConfigSharingViewController.h"
+#import "UTMConfiguration.h"
 
 @interface VMConfigSharingViewController ()
 

@@ -15,6 +15,7 @@
 //
 
 #import "VMConfigNetworkingViewController.h"
+#import "UTMConfiguration.h"
 
 @interface VMConfigNetworkingViewController ()
 

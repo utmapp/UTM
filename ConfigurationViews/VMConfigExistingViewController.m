@@ -15,7 +15,7 @@
 //
 
 #import "VMConfigExistingViewController.h"
-#import "UTMConfigurationDelegate.h"
+#import "UTMConfiguration.h"
 
 @interface VMConfigExistingViewController ()
 

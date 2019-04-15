@@ -15,6 +15,7 @@
 //
 
 #import "UTMVirtualMachine.h"
+#import "UTMConfiguration.h"
 
 NSString *const kUTMBundleConfigFilename = @"config.plist";
 NSString *const kUTMBundleExtension = @"utm";

@@ -15,6 +15,7 @@
 //
 
 #import "VMConfigCreateViewController.h"
+#import "UTMConfiguration.h"
 
 @interface VMConfigCreateViewController ()
 
