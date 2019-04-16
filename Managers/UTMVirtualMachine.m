@@ -16,7 +16,9 @@
 
 #import "UTMVirtualMachine.h"
 #import "UTMConfiguration.h"
+#import "UTMQemuImg.h"
 
+NSString *const kUTMErrorDomain = @"com.halts.utm";
 NSString *const kUTMBundleConfigFilename = @"config.plist";
 NSString *const kUTMBundleExtension = @"utm";
 
@@ -83,7 +85,7 @@ NSString *const kUTMBundleExtension = @"utm";
 
 - (void)saveUTMWithError:(NSError * _Nullable *)err {
     NSURL *url = [self packageURLForName:self.configuration.changeName];
-    NSError *_err;
+    __block NSError *_err;
     if (!self.configuration.name) { // new package
         [[NSFileManager defaultManager] createDirectoryAtURL:url withIntermediateDirectories:YES attributes:nil error:&_err];
         if (_err && err) {
@@ -109,7 +111,26 @@ NSString *const kUTMBundleExtension = @"utm";
     [data writeToURL:[url URLByAppendingPathComponent:kUTMBundleConfigFilename] options:NSDataWritingAtomic error:&_err];
     if (_err && err) {
         *err = _err;
+        return;
     }
+    // create disk images
+    dispatch_semaphore_t sema = dispatch_semaphore_create(0);
+    for (NSUInteger i = 0; i < self.configuration.countDrives; i++) {
+        UTMNewDrive *newDrive = [self.configuration driveNewParamsAtIndex:i];
+        if (newDrive.valid) {
+            UTMQemuImg *imgCreate = [[UTMQemuImg alloc] init];
+            imgCreate.op = kUTMQemuImgCreate;
+            imgCreate.outputPath = [url URLByAppendingPathComponent:[self.configuration driveImagePathForIndex:i]];
+            imgCreate.sizeMiB = newDrive.sizeMB;
+            imgCreate.compressed = newDrive.isQcow2;
+            [imgCreate startWithCompletion:^(BOOL success, NSString *msg){
+                _err = [NSError errorWithDomain:kUTMErrorDomain code:-1 userInfo:@{NSLocalizedDescriptionKey: msg}];
+                dispatch_semaphore_signal(sema);
+            }];
+        }
+    }
+    dispatch_semaphore_wait(sema, DISPATCH_TIME_FOREVER);
+    *err = _err;
 }
 
 @end

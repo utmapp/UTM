@@ -39,7 +39,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) NSUInteger driveIndex;
 @property (nonatomic, assign) BOOL driveImageExisting;
 @property (nonatomic, nullable, strong) NSString *driveInterfaceType;
-@property (nonatomic) NSNumber *nonexistingImageSize;
+@property (nonatomic) NSUInteger nonexistingImageSize;
 
 - (IBAction)nonexistingImageExpandingSwitchChanged:(UISwitch *)sender;
 - (IBAction)existingImageMakeCopySwitchChanged:(UISwitch *)sender;

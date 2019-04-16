@@ -70,12 +70,12 @@
     self.driveLocationLabel.text = driveInterfaceType;
 }
 
-- (NSNumber *)nonexistingImageSize {
-    return [NSNumber numberWithLong:[self.nonexistingImageSizeField.text intValue]];
+- (NSUInteger)nonexistingImageSize {
+    return [self.nonexistingImageSizeField.text intValue];
 }
 
-- (void)setNonexistingImageSize:(NSNumber *)nonexistingImageSize {
-    self.nonexistingImageSizeField.text = [nonexistingImageSize stringValue];
+- (void)setNonexistingImageSize:(NSUInteger)nonexistingImageSize {
+    self.nonexistingImageSizeField.text = [NSString stringWithFormat:@"%lu", nonexistingImageSize];
 }
 
 #pragma mark - Table delegate

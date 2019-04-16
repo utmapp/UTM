@@ -17,7 +17,15 @@
 #import <UIKit/UIKit.h>
 #import "AppDelegate.h"
 
+extern int ptrace(int request, pid_t pid, caddr_t addr, int data);
+
 int main(int argc, char * argv[]) {
+    // Thanks to this comment: https://news.ycombinator.com/item?id=18431524
+    // We use this hack to allow mmap with PROT_EXEC which requires
+    // dynamic_codesign entitlement and the process to be tricked into thinking
+    // that Xcode is debugging it. We abuse the fact that JIT is needed to
+    // debug the process.
+    ptrace(0, 0, NULL, 0);
     @autoreleasepool {
         return UIApplicationMain(argc, argv, nil, NSStringFromClass([AppDelegate class]));
     }

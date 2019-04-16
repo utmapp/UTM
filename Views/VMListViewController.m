@@ -207,7 +207,7 @@ static NSString * const reuseIdentifier = @"vmListCell";
             [self.alert dismissViewControllerAnimated:YES completion:nil];
             if (message) {
                 UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil message:message preferredStyle:UIAlertControllerStyleAlert];
-                UIAlertAction *okay = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil];
+                UIAlertAction *okay = [UIAlertAction actionWithTitle:NSLocalizedString(@"OK", @"OK button") style:UIAlertActionStyleDefault handler:nil];
                 [alert addAction:okay];
                 [self presentViewController:alert animated:YES completion:nil];
             }
@@ -222,14 +222,14 @@ static NSString * const reuseIdentifier = @"vmListCell";
     id<UTMConfigurationDelegate> source = (id<UTMConfigurationDelegate>)sender.sourceViewController;
     dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), ^{
         NSError *err;
-        [self workStartedWhenVisible:[NSString stringWithFormat:@"Saving %@...", source.configuration.changeName]];
+        [self workStartedWhenVisible:[NSString stringWithFormat:NSLocalizedString(@"Saving %@...", @"Save VM overlay"), source.configuration.changeName]];
         if (source.configuration == self.modifyingVM.configuration) {
             [self.modifyingVM saveUTMWithError:&err];
             self.modifyingVM = nil; // must do this BEFORE work complete, or user might press another button
             [self workCompletedWhenVisible:err.localizedFailureReason];
         } else {
             NSLog(@"Trying to save configuration for a VM that is not being edited!\n");
-            [self workCompletedWhenVisible:@"An internal error has occured!"];
+            [self workCompletedWhenVisible:NSLocalizedString(@"An internal error has occured!", @"Alert message")];
         }
     });
 }

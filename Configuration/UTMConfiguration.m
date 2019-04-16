@@ -75,7 +75,7 @@ const NSString *const kUTMConfigCdromKey = @"Cdrom";
     NSMutableDictionary *_soundDict;
     NSMutableDictionary *_sharingDict;
     NSMutableArray<NSMutableDictionary *> *_drivesDicts;
-    NSMutableArray<UTMNewDrive *> *_newDrivesDict;
+    NSMutableArray<UTMNewDrive *> *_newDrivesList;
 }
 
 #pragma mark - Constant supported values
@@ -154,9 +154,9 @@ const NSString *const kUTMConfigCdromKey = @"Cdrom";
 
 + (NSArray<NSString *>*)supportedBootDevices {
     return @[
-             @"Hard Disk",
-             @"CD/DVD",
-             @"Floppy"
+             NSLocalizedString(@"Hard Disk", "Configuration boot device"),
+             NSLocalizedString(@"CD/DVD", "Configuration boot device"),
+             NSLocalizedString(@"Floppy", "Configuration boot device")
              ];
 }
 
@@ -201,7 +201,7 @@ const NSString *const kUTMConfigCdromKey = @"Cdrom";
 - (id)init {
     self = [super init];
     if (self) {
-        _newDrivesDict = [[NSMutableArray alloc] init];
+        _newDrivesList = [[NSMutableArray alloc] init];
     }
     return self;
 }
@@ -436,9 +436,9 @@ const NSString *const kUTMConfigCdromKey = @"Cdrom";
     [_rootDict[kUTMConfigDrivesKey] addObject:drive];
     UTMNewDrive *driveParams = [[UTMNewDrive alloc] init];
     driveParams.valid = YES;
-    driveParams.sizeMB = @1024;
+    driveParams.sizeMB = 1024;
     driveParams.isQcow2 = YES;
-    [_newDrivesDict addObject:driveParams];
+    [_newDrivesList addObject:driveParams];
     return index;
 }
 
@@ -470,18 +470,18 @@ const NSString *const kUTMConfigCdromKey = @"Cdrom";
     NSMutableDictionary *drive = _rootDict[kUTMConfigDrivesKey][index];
     [_rootDict[kUTMConfigDrivesKey] removeObjectAtIndex:index];
     [_rootDict[kUTMConfigDrivesKey] insertObject:drive atIndex:newIndex];
-    UTMNewDrive *driveParams = _newDrivesDict[index];
-    [_newDrivesDict removeObjectAtIndex:index];
-    [_newDrivesDict insertObject:driveParams atIndex:newIndex];
+    UTMNewDrive *driveParams = _newDrivesList[index];
+    [_newDrivesList removeObjectAtIndex:index];
+    [_newDrivesList insertObject:driveParams atIndex:newIndex];
 }
 
 - (void)removeDriveAtIndex:(NSUInteger)index {
     [_rootDict[kUTMConfigDrivesKey] removeObjectAtIndex:index];
-    [_newDrivesDict removeObjectAtIndex:index];
+    [_newDrivesList removeObjectAtIndex:index];
 }
 
 - (nullable UTMNewDrive *)driveNewParamsAtIndex:(NSUInteger)index {
-    return _newDrivesDict[index];
+    return _newDrivesList[index];
 }
 
 @end

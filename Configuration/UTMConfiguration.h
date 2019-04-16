@@ -21,7 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface UTMNewDrive : NSObject
 
 @property (nonatomic, assign) BOOL valid;
-@property (nonatomic, nullable, strong) NSNumber *sizeMB;
+@property (nonatomic, assign) NSUInteger sizeMB;
 @property (nonatomic, assign) BOOL isQcow2;
 
 @end
