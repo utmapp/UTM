@@ -1,0 +1,369 @@
+diff -aur a/config.h.in b/config.h.in
+--- a/config.h.in	2019-01-16 05:38:41.000000000 -0800
++++ b/config.h.in	2019-04-01 15:08:41.000000000 -0700
+@@ -61,6 +61,9 @@
+ /* Define to 1 if you have the <inttypes.h> header file. */
+ #undef HAVE_INTTYPES_H
+ 
++/* Use libucontext? */
++#undef HAVE_LIBUCONTEXT
++
+ /* Define if libva is available */
+ #undef HAVE_LIBVA
+ 
+diff -aur a/configure b/configure
+--- a/configure	2019-01-16 05:38:40.000000000 -0800
++++ b/configure	2019-04-01 15:08:40.000000000 -0700
+@@ -727,6 +727,7 @@
+ INTROSPECTION_SCANNER
+ HAVE_INTROSPECTION_FALSE
+ HAVE_INTROSPECTION_TRUE
++UCONTEXT_LIBS
+ WITH_GTHREAD_FALSE
+ WITH_GTHREAD_TRUE
+ WITH_WINFIBER_FALSE
+@@ -17851,6 +17852,97 @@
+ 
+ fi
+ fi
++
++pkg_failed=no
++{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for cairo >= 1.2.0" >&5
++$as_echo_n "checking for cairo >= 1.2.0... " >&6; }
++
++if test -n "$CAIRO_CFLAGS"; then
++    pkg_cv_CAIRO_CFLAGS="$CAIRO_CFLAGS"
++ elif test -n "$PKG_CONFIG"; then
++    if test -n "$PKG_CONFIG" && \
++    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"cairo >= 1.2.0\""; } >&5
++  ($PKG_CONFIG --exists --print-errors "cairo >= 1.2.0") 2>&5
++  ac_status=$?
++  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
++  test $ac_status = 0; }; then
++  pkg_cv_CAIRO_CFLAGS=`$PKG_CONFIG --cflags "cairo >= 1.2.0" 2>/dev/null`
++		      test "x$?" != "x0" && pkg_failed=yes
++else
++  pkg_failed=yes
++fi
++ else
++    pkg_failed=untried
++fi
++if test -n "$CAIRO_LIBS"; then
++    pkg_cv_CAIRO_LIBS="$CAIRO_LIBS"
++ elif test -n "$PKG_CONFIG"; then
++    if test -n "$PKG_CONFIG" && \
++    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"cairo >= 1.2.0\""; } >&5
++  ($PKG_CONFIG --exists --print-errors "cairo >= 1.2.0") 2>&5
++  ac_status=$?
++  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
++  test $ac_status = 0; }; then
++  pkg_cv_CAIRO_LIBS=`$PKG_CONFIG --libs "cairo >= 1.2.0" 2>/dev/null`
++		      test "x$?" != "x0" && pkg_failed=yes
++else
++  pkg_failed=yes
++fi
++ else
++    pkg_failed=untried
++fi
++
++
++
++if test $pkg_failed = yes; then
++        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
++$as_echo "no" >&6; }
++
++if $PKG_CONFIG --atleast-pkgconfig-version 0.20; then
++        _pkg_short_errors_supported=yes
++else
++        _pkg_short_errors_supported=no
++fi
++        if test $_pkg_short_errors_supported = yes; then
++	        CAIRO_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "cairo >= 1.2.0" 2>&1`
++        else
++	        CAIRO_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "cairo >= 1.2.0" 2>&1`
++        fi
++	# Put the nasty error message in config.log where it belongs
++	echo "$CAIRO_PKG_ERRORS" >&5
++
++	as_fn_error $? "Package requirements (cairo >= 1.2.0) were not met:
++
++$CAIRO_PKG_ERRORS
++
++Consider adjusting the PKG_CONFIG_PATH environment variable if you
++installed software in a non-standard prefix.
++
++Alternatively, you may set the environment variables CAIRO_CFLAGS
++and CAIRO_LIBS to avoid the need to call pkg-config.
++See the pkg-config man page for more details." "$LINENO" 5
++elif test $pkg_failed = untried; then
++        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
++$as_echo "no" >&6; }
++	{ { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
++$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
++as_fn_error $? "The pkg-config script could not be found or is too old.  Make sure it
++is in your PATH or set the PKG_CONFIG environment variable to the full
++path to pkg-config.
++
++Alternatively, you may set the environment variables CAIRO_CFLAGS
++and CAIRO_LIBS to avoid the need to call pkg-config.
++See the pkg-config man page for more details.
++
++To get pkg-config, see <http://pkg-config.freedesktop.org/>.
++See \`config.log' for more details" "$LINENO" 5; }
++else
++	CAIRO_CFLAGS=$pkg_cv_CAIRO_CFLAGS
++	CAIRO_LIBS=$pkg_cv_CAIRO_LIBS
++        { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
++$as_echo "yes" >&6; }
++
++fi
+       GTK_CFLAGS="$GTK_CFLAGS -DGDK_VERSION_MIN_REQUIRED=$GTK_ENCODED_VERSION \
+                                -DGDK_VERSION_MAX_ALLOWED=$GTK_ENCODED_VERSION"
+ fi
+@@ -18264,100 +18356,8 @@
+ 
+ 
+ pkg_failed=no
+-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for CAIRO" >&5
+-$as_echo_n "checking for CAIRO... " >&6; }
+-
+-if test -n "$CAIRO_CFLAGS"; then
+-    pkg_cv_CAIRO_CFLAGS="$CAIRO_CFLAGS"
+- elif test -n "$PKG_CONFIG"; then
+-    if test -n "$PKG_CONFIG" && \
+-    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"cairo >= 1.2.0\""; } >&5
+-  ($PKG_CONFIG --exists --print-errors "cairo >= 1.2.0") 2>&5
+-  ac_status=$?
+-  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+-  test $ac_status = 0; }; then
+-  pkg_cv_CAIRO_CFLAGS=`$PKG_CONFIG --cflags "cairo >= 1.2.0" 2>/dev/null`
+-		      test "x$?" != "x0" && pkg_failed=yes
+-else
+-  pkg_failed=yes
+-fi
+- else
+-    pkg_failed=untried
+-fi
+-if test -n "$CAIRO_LIBS"; then
+-    pkg_cv_CAIRO_LIBS="$CAIRO_LIBS"
+- elif test -n "$PKG_CONFIG"; then
+-    if test -n "$PKG_CONFIG" && \
+-    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"cairo >= 1.2.0\""; } >&5
+-  ($PKG_CONFIG --exists --print-errors "cairo >= 1.2.0") 2>&5
+-  ac_status=$?
+-  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+-  test $ac_status = 0; }; then
+-  pkg_cv_CAIRO_LIBS=`$PKG_CONFIG --libs "cairo >= 1.2.0" 2>/dev/null`
+-		      test "x$?" != "x0" && pkg_failed=yes
+-else
+-  pkg_failed=yes
+-fi
+- else
+-    pkg_failed=untried
+-fi
+-
+-
+-
+-if test $pkg_failed = yes; then
+-   	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+-$as_echo "no" >&6; }
+-
+-if $PKG_CONFIG --atleast-pkgconfig-version 0.20; then
+-        _pkg_short_errors_supported=yes
+-else
+-        _pkg_short_errors_supported=no
+-fi
+-        if test $_pkg_short_errors_supported = yes; then
+-	        CAIRO_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "cairo >= 1.2.0" 2>&1`
+-        else
+-	        CAIRO_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "cairo >= 1.2.0" 2>&1`
+-        fi
+-	# Put the nasty error message in config.log where it belongs
+-	echo "$CAIRO_PKG_ERRORS" >&5
+-
+-	as_fn_error $? "Package requirements (cairo >= 1.2.0) were not met:
+-
+-$CAIRO_PKG_ERRORS
+-
+-Consider adjusting the PKG_CONFIG_PATH environment variable if you
+-installed software in a non-standard prefix.
+-
+-Alternatively, you may set the environment variables CAIRO_CFLAGS
+-and CAIRO_LIBS to avoid the need to call pkg-config.
+-See the pkg-config man page for more details." "$LINENO" 5
+-elif test $pkg_failed = untried; then
+-     	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+-$as_echo "no" >&6; }
+-	{ { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+-$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+-as_fn_error $? "The pkg-config script could not be found or is too old.  Make sure it
+-is in your PATH or set the PKG_CONFIG environment variable to the full
+-path to pkg-config.
+-
+-Alternatively, you may set the environment variables CAIRO_CFLAGS
+-and CAIRO_LIBS to avoid the need to call pkg-config.
+-See the pkg-config man page for more details.
+-
+-To get pkg-config, see <http://pkg-config.freedesktop.org/>.
+-See \`config.log' for more details" "$LINENO" 5; }
+-else
+-	CAIRO_CFLAGS=$pkg_cv_CAIRO_CFLAGS
+-	CAIRO_LIBS=$pkg_cv_CAIRO_LIBS
+-        { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+-$as_echo "yes" >&6; }
+-
+-fi
+-
+-
+-pkg_failed=no
+ { $as_echo "$as_me:${as_lineno-$LINENO}: checking for GTHREAD" >&5
+ $as_echo_n "checking for GTHREAD... " >&6; }
+ 
+ if test -n "$GTHREAD_CFLAGS"; then
+     pkg_cv_GTHREAD_CFLAGS="$GTHREAD_CFLAGS"
+@@ -20119,6 +20119,50 @@
+ fi
+ 
+ 
++{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for libucontext_makecontext in -lucontext" >&5
++$as_echo_n "checking for libucontext_makecontext in -lucontext... " >&6; }
++if ${ac_cv_lib_ucontext_libucontext_makecontext+:} false; then :
++  $as_echo_n "(cached) " >&6
++else
++  ac_check_lib_save_LIBS=$LIBS
++LIBS="-lucontext  $LIBS"
++cat confdefs.h - <<_ACEOF >conftest.$ac_ext
++/* end confdefs.h.  */
++
++/* Override any GCC internal prototype to avoid an error.
++   Use char because int might match the return type of a GCC
++   builtin and then its argument prototype would still apply.  */
++#ifdef __cplusplus
++extern "C"
++#endif
++char libucontext_makecontext ();
++int
++main ()
++{
++return libucontext_makecontext ();
++  ;
++  return 0;
++}
++_ACEOF
++if ac_fn_c_try_link "$LINENO"; then :
++  ac_cv_lib_ucontext_libucontext_makecontext=yes
++else
++  ac_cv_lib_ucontext_libucontext_makecontext=no
++fi
++rm -f core conftest.err conftest.$ac_objext \
++    conftest$ac_exeext conftest.$ac_ext
++LIBS=$ac_check_lib_save_LIBS
++fi
++{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_ucontext_libucontext_makecontext" >&5
++$as_echo "$ac_cv_lib_ucontext_libucontext_makecontext" >&6; }
++if test "x$ac_cv_lib_ucontext_libucontext_makecontext" = xyes; then :
++  UCONTEXT_LIBS='-lucontext'
++$as_echo "#define HAVE_LIBUCONTEXT 1" >>confdefs.h
++
++fi
++
++
++
+  if test "0" = "1"; then
+   HAVE_INTROSPECTION_TRUE=
+   HAVE_INTROSPECTION_FALSE='#'
+diff -aur a/configure.ac b/configure.ac
+--- a/configure.ac	2019-01-16 03:31:42.000000000 -0800
++++ b/configure.ac	2019-04-01 15:08:24.000000000 -0700
+@@ -147,7 +147,8 @@
+ AS_IF([test "x$with_gtk" != "xno"],
+       [AS_IF([test "x$os_win32" = "xyes"],
+              [PKG_CHECK_MODULES(GTK, gtk+-3.0 >= $GTK_REQUIRED)],
+-             [PKG_CHECK_MODULES(GTK, gtk+-3.0 >= $GTK_REQUIRED epoxy)])]
++             [PKG_CHECK_MODULES(GTK, gtk+-3.0 >= $GTK_REQUIRED epoxy)])
++        PKG_CHECK_MODULES(CAIRO, cairo >= 1.2.0)]
+       [GTK_CFLAGS="$GTK_CFLAGS -DGDK_VERSION_MIN_REQUIRED=$GTK_ENCODED_VERSION \
+                                -DGDK_VERSION_MAX_ALLOWED=$GTK_ENCODED_VERSION"])
+ SPICE_GTK_REQUIRES="${SPICE_GTK_REQUIRES} gtk+-3.0 >= $GTK_REQUIRED"
+@@ -169,8 +170,6 @@
+ 
+ PKG_CHECK_MODULES(GIO, gio-2.0 >= 2.36 $gio_os)
+ 
+-PKG_CHECK_MODULES(CAIRO, cairo >= 1.2.0)
+-
+ PKG_CHECK_MODULES(GTHREAD, gthread-2.0)
+ 
+ PKG_CHECK_MODULES(JSON, json-glib-1.0)
+@@ -435,6 +434,9 @@
+ AC_DEFINE_UNQUOTED([WITH_GTHREAD],[$WITH_GTHREAD], [Whether to use gthread coroutine impl])
+ AM_CONDITIONAL(WITH_GTHREAD, [test "x$WITH_GTHREAD" = "x1"])
+ 
++AC_CHECK_LIB(ucontext, libucontext_makecontext, UCONTEXT_LIBS='-lucontext' AC_DEFINE([HAVE_LIBUCONTEXT], 1, [Use libucontext?]), [])
++AC_SUBST(UCONTEXT_LIBS)
++
+ AM_CONDITIONAL([HAVE_INTROSPECTION], [test "0" = "1"])
+ m4_ifdef([GOBJECT_INTROSPECTION_CHECK],[
+     PKG_CHECK_EXISTS([GOBJECT_INTROSPECTION],
+diff -aur a/src/Makefile.am b/src/Makefile.am
+--- a/src/Makefile.am	2019-01-16 03:31:42.000000000 -0800
++++ b/src/Makefile.am	2019-04-01 15:09:24.000000000 -0700
+@@ -201,6 +201,7 @@
+ 	$(USBREDIR_LIBS)						\
+ 	$(GUDEV_LIBS)							\
+ 	$(PHODAV_LIBS)							\
++	$(UCONTEXT_LIBS)					\
+ 	$(NULL)
+ 
+ if WITH_POLKIT
+diff -aur a/src/Makefile.in b/src/Makefile.in
+--- a/src/Makefile.in	2019-01-16 05:38:41.000000000 -0800
++++ b/src/Makefile.in	2019-04-01 15:10:59.000000000 -0700
+@@ -210,8 +210,8 @@
+ 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+ 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+ 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+-	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_2) \
+-	$(am__DEPENDENCIES_1)
++	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
++	$(am__DEPENDENCIES_2) $(am__DEPENDENCIES_1)
+ am__libspice_client_glib_impl_la_SOURCES_DIST = bio-gio.c bio-gio.h \
+ 	spice-audio.c spice-audio-priv.h spice-gstaudio.c \
+ 	spice-gstaudio.h spice-common.h spice-util.c spice-util-priv.h \
+@@ -628,6 +628,7 @@
+ SSL_LIBS = @SSL_LIBS@
+ STOW = @STOW@
+ STRIP = @STRIP@
++UCONTEXT_LIBS = @UCONTEXT_LIBS@
+ USBREDIR_CFLAGS = @USBREDIR_CFLAGS@
+ USBREDIR_LIBS = @USBREDIR_LIBS@
+ USB_IDS = @USB_IDS@
+@@ -848,7 +849,8 @@
+ 	$(JPEG_LIBS) $(JSON_LIBS) $(Z_LIBS) $(LZ4_LIBS) $(PIXMAN_LIBS) \
+ 	$(SSL_LIBS) $(PULSE_LIBS) $(GSTAUDIO_LIBS) $(GSTVIDEO_LIBS) \
+ 	$(SASL_LIBS) $(SMARTCARD_LIBS) $(USBREDIR_LIBS) $(GUDEV_LIBS) \
+-	$(PHODAV_LIBS) $(NULL) $(am__append_10) $(am__append_12)
++	$(PHODAV_LIBS) $(UCONTEXT_LIBS) $(NULL) $(am__append_10) \
++	$(am__append_12)
+ @WITH_POLKIT_FALSE@USB_ACL_HELPER_SRCS = 
+ @WITH_POLKIT_TRUE@USB_ACL_HELPER_SRCS = \
+ @WITH_POLKIT_TRUE@	usb-acl-helper.c			\
+diff -aur a/src/continuation.h b/src/continuation.h
+--- a/src/continuation.h	2017-06-20 09:14:41.000000000 -0700
++++ b/src/continuation.h	2019-04-01 15:10:46.000000000 -0700
+@@ -23,7 +23,16 @@
+ 
+ #include "spice-common.h"
+ #include <stddef.h>
++#ifdef HAVE_LIBUCONTEXT
++#include <libucontext.h>
++#define ucontext_t libucontext_ucontext_t
++#define getcontext libucontext_getcontext
++#define setcontext libucontext_setcontext
++#define swapcontext libucontext_swapcontext
++#define makecontext libucontext_makecontext
++#else
+ #include <ucontext.h>
++#endif
+ #include <setjmp.h>
+ 
+ struct continuation

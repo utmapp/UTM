@@ -1,0 +1,12 @@
+diff -aur a/gst-libs/gst/rtp/gstrtcpbuffer.c b/gst-libs/gst/rtp/gstrtcpbuffer.c
+--- a/gst-libs/gst/rtp/gstrtcpbuffer.c	2019-01-26 10:51:01.000000000 -0800
++++ b/gst-libs/gst/rtp/gstrtcpbuffer.c	2019-04-01 14:27:21.000000000 -0700
+@@ -564,7 +564,7 @@
+    * start a compount packet. Next we figure out if we have enough free space in
+    * the buffer to continue. */
+   len = rtcp_packet_min_length (type);
+-  if (type == -1)
++  if ((int)type == -1)
+     goto unknown_type;
+   if (packet->offset + len >= maxsize)
+     goto no_space;

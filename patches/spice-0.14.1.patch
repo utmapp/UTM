@@ -1,0 +1,89 @@
+diff -aur a/Makefile.in b/Makefile.in
+--- a/Makefile.in	2018-08-22 04:32:02.000000000 -0700
++++ b/Makefile.in	2019-03-30 12:26:29.000000000 -0700
+@@ -422,7 +422,7 @@
+ valgrind_tools = @valgrind_tools@
+ NULL = 
+ ACLOCAL_AMFLAGS = -I m4
+-SUBDIRS = subprojects/spice-common server docs tools
++SUBDIRS = subprojects/spice-common server docs
+ pkgconfigdir = $(libdir)/pkgconfig
+ pkgconfig_DATA = spice-server.pc
+ DISTCHECK_CONFIGURE_FLAGS = \
+diff -aur a/server/red-stream.c b/server/red-stream.c
+--- a/server/red-stream.c	2018-07-23 03:01:37.000000000 -0700
++++ b/server/red-stream.c	2019-03-30 11:00:26.000000000 -0700
+@@ -352,8 +352,16 @@
+         memcpy(CMSG_DATA(cmsg), &fd, fd_size);
+     }
+ 
++#if defined(__APPLE__)
++    int set = 1;
++    setsockopt(stream->socket, SOL_SOCKET, SO_NOSIGPIPE, (void *)&set, sizeof(int));
++#endif
+     do {
++#if defined(__APPLE__)
++        r = sendmsg(stream->socket, &msgh, 0);
++#else
+         r = sendmsg(stream->socket, &msgh, MSG_NOSIGNAL);
++#endif
+     } while (r < 0 && (errno == EINTR || errno == EAGAIN));
+ 
+     return r;
+diff -aur a/server/red-worker.c b/server/red-worker.c
+--- a/server/red-worker.c	2018-08-09 04:09:22.000000000 -0700
++++ b/server/red-worker.c	2019-03-30 11:02:48.000000000 -0700
+@@ -1391,7 +1391,9 @@
+         spice_error("create thread failed %d", r);
+     }
+     pthread_sigmask(SIG_SETMASK, &curr_sig_mask, NULL);
++#if !defined(__APPLE__) // not supported
+     pthread_setname_np(worker->thread, "SPICE Worker");
++#endif
+ 
+     return r == 0;
+ }
+diff -aur a/server/reds.c b/server/reds.c
+--- a/server/reds.c  2018-08-09 04:09:22.000000000 -0700
++++ b/server/reds.c  2019-03-31 10:39:25.000000000 -0700
+@@ -3555,6 +3555,7 @@
+ static const char* parse_next_video_codec(const char *codecs, char **encoder,
+                                           char **codec)
+ {
++    size_t len;
+     if (!codecs) {
+         return NULL;
+     }
+@@ -3562,8 +3563,22 @@
+     if (!*codecs) {
+         return NULL;
+     }
++    len = strcspn(codecs, ";");
+     int n;
+     *encoder = *codec = NULL;
++#if defined(__APPLE__)
++    char *aencoder = malloc(len);
++    char *acodec = malloc(len);
++    if (sscanf(codecs, "%[0-9a-zA-Z_]:%[0-9a-zA-Z_]%n", aencoder, acodec, &n) == 2) {
++        // this avoids accepting "encoder:codec" followed by garbage like "$%*"
++        if (codecs[n] != ';' && codecs[n] != '\0') {
++            free(acodec);
++            acodec = NULL;
++        }
++    }
++    *encoder = aencoder;
++    *codec = acodec;
++#else
+     if (sscanf(codecs, "%m[0-9a-zA-Z_]:%m[0-9a-zA-Z_]%n", encoder, codec, &n) == 2) {
+         // this avoids accepting "encoder:codec" followed by garbage like "$%*"
+         if (codecs[n] != ';' && codecs[n] != '\0') {
+@@ -3571,7 +3586,8 @@
+             *codec = NULL;
+         }
+     }
+-    return codecs + strcspn(codecs, ";");
++#endif
++    return codecs + len;
+ }
+ 
+ static void reds_set_video_codecs_from_string(RedsState *reds, const char *codecs)

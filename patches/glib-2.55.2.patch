@@ -1,0 +1,29 @@
+diff -aur a/glib/genviron.c b/glib/genviron.c
+--- a/glib/genviron.c	2018-01-22 12:28:02.000000000 -0800
++++ b/glib/genviron.c	2019-03-26 13:50:40.000000000 -0700
+@@ -29,8 +29,16 @@
+ #include <stdlib.h>
+ #include <string.h>
+ #ifdef HAVE_CRT_EXTERNS_H
++#ifdef __APPLE__
++#include "TargetConditionals.h"
++#if !TARGET_OS_IPHONE && !TARGET_IPHONE_SIMULATOR
++#define APPLE_USE_CRT_EXTERNS
++#endif
++#endif
++#ifdef APPLE_USE_CRT_EXTERNS
+ #include <crt_externs.h> /* for _NSGetEnviron */
+ #endif
++#endif
+ #ifdef G_OS_WIN32
+ #include <windows.h>
+ #endif
+@@ -303,7 +311,7 @@
+   return result == 0;
+ }
+ 
+-#ifdef HAVE__NSGETENVIRON
++#ifdef APPLE_USE_CRT_EXTERNS
+ #define environ (*_NSGetEnviron())
+ #else
+ /* According to the Single Unix Specification, environ is not

@@ -1,0 +1,49 @@
+diff -aur a/Makefile.am b/Makefile.am
+--- a/Makefile.am	2019-01-21 03:17:13.000000000 -0800
++++ b/Makefile.am	2019-03-25 13:38:31.000000000 -0700
+@@ -1,4 +1,4 @@
+-SUBDIRS = pixman demos test
++SUBDIRS = pixman
+ 
+ pkgconfigdir=$(libdir)/pkgconfig
+ pkgconfig_DATA=pixman-1.pc
+diff -aur a/Makefile.in b/Makefile.in
+--- a/Makefile.in	2019-02-11 04:24:53.000000000 -0800
++++ b/Makefile.in	2019-03-25 13:39:24.000000000 -0700
+@@ -190,7 +190,7 @@
+ am__DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/config.h.in \
+ 	$(srcdir)/pixman-1-uninstalled.pc.in $(srcdir)/pixman-1.pc.in \
+ 	AUTHORS COPYING ChangeLog INSTALL NEWS README compile \
+-	config.guess config.sub install-sh ltmain.sh missing
++	config.guess config.sub depcomp install-sh ltmain.sh missing
+ DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
+ distdir = $(PACKAGE)-$(VERSION)
+ top_distdir = $(distdir)
+@@ -373,7 +373,6 @@
+ prefix = @prefix@
+ program_transform_name = @program_transform_name@
+ psdir = @psdir@
+-runstatedir = @runstatedir@
+ sbindir = @sbindir@
+ sharedstatedir = @sharedstatedir@
+ srcdir = @srcdir@
+@@ -382,7 +381,7 @@
+ top_build_prefix = @top_build_prefix@
+ top_builddir = @top_builddir@
+ top_srcdir = @top_srcdir@
+-SUBDIRS = pixman demos test
++SUBDIRS = pixman
+ pkgconfigdir = $(libdir)/pkgconfig
+ pkgconfig_DATA = pixman-1.pc
+ GPGKEY = 3892336E
+diff -aur a/test/Makefile.in b/test/Makefile.in
+--- a/test/Makefile.in	2019-02-11 04:24:53.000000000 -0800
++++ b/test/Makefile.in	2019-03-25 13:35:30.000000000 -0700
+@@ -812,7 +812,6 @@
+ prefix = @prefix@
+ program_transform_name = @program_transform_name@
+ psdir = @psdir@
+-runstatedir = @runstatedir@
+ sbindir = @sbindir@
+ sharedstatedir = @sharedstatedir@
+ srcdir = @srcdir@
