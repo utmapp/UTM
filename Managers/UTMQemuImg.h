@@ -15,6 +15,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "UTMQemu.h"
 
 typedef NS_ENUM(NSUInteger, UTMQemuImgOperation) {
     kUTMQemuImgNoop,
@@ -33,7 +34,7 @@ typedef NS_ENUM(NSUInteger, UTMQemuImgOperation) {
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface UTMQemuImg : NSObject
+@interface UTMQemuImg : UTMQemu
 
 @property (nonatomic, assign) UTMQemuImgOperation op;
 @property (nonatomic, strong) NSURL *outputPath;

@@ -18,58 +18,39 @@
 #import <dlfcn.h>
 #import <pthread.h>
 
-@implementation UTMQemuImg {
-    int (*_qemu_img_main)(int, const char *[]);
-    NSMutableArray<NSString *> *_argv;
-}
-
-void *start_qemu_img(void *args) {
-    UTMQemuImg *self = (__bridge_transfer UTMQemuImg *)args;
-    intptr_t status;
-    
-    NSCAssert(self->_qemu_img_main != NULL, @"Started thread with invalid pointer.");
-    
-    int argc = (int)self->_argv.count;
-    const char *argv[argc];
-    for (int i = 0; i < self->_argv.count; i++) {
-        argv[i] = [self->_argv[i] UTF8String];
-    }
-    status = self->_qemu_img_main(argc, argv);
-    return (void *)status;
-}
+@implementation UTMQemuImg
 
 - (void)buildArgv {
-    _argv = [NSMutableArray<NSString *> array];
-    [_argv addObject:@"qemu-img"];
+    [self pushArgv:@"qemu-img"];
     switch (self.op) {
         case kUTMQemuImgCreate: {
-            [_argv addObject:@"create"];
-            [_argv addObject:@"-f"];
-            self.compressed ? [_argv addObject:@"qcow2"] : [_argv addObject:@"raw"];
+            [self pushArgv:@"create"];
+            [self pushArgv:@"-f"];
+            self.compressed ? [self pushArgv:@"qcow2"] : [self pushArgv:@"raw"];
             if (self.encrypted) {
-                [_argv addObject:@"-o"];
-                [_argv addObject:[NSString stringWithFormat:@"encrypt.format=aes,encrypt.key-secret=%@", self.password]];
+                [self pushArgv:@"-o"];
+                [self pushArgv:[NSString stringWithFormat:@"encrypt.format=aes,encrypt.key-secret=%@", self.password]];
             }
-            [_argv addObject:self.outputPath.path];
-            [_argv addObject:[NSString stringWithFormat:@"%luM", self.sizeMiB]];
+            [self pushArgv:self.outputPath.path];
+            [self pushArgv:[NSString stringWithFormat:@"%luM", self.sizeMiB]];
             break;
         }
         case kUTMQemuImgResize: {
-            [_argv addObject:@"resize"];
-            [_argv addObject:self.outputPath.path];
-            [_argv addObject:[NSString stringWithFormat:@"%luM", self.sizeMiB]];
+            [self pushArgv:@"resize"];
+            [self pushArgv:self.outputPath.path];
+            [self pushArgv:[NSString stringWithFormat:@"%luM", self.sizeMiB]];
             break;
         }
         case kUTMQemuImgConvert: {
-            [_argv addObject:@"convert"];
-            [_argv addObject:@"-O"];
-            self.compressed ? [_argv addObject:@"qcow2"] : [_argv addObject:@"raw"];
+            [self pushArgv:@"convert"];
+            [self pushArgv:@"-O"];
+            self.compressed ? [self pushArgv:@"qcow2"] : [self pushArgv:@"raw"];
             if (self.encrypted) {
-                [_argv addObject:@"-o"];
-                [_argv addObject:[NSString stringWithFormat:@"encrypt.format=aes,encrypt.key-secret=%@", self.password]];
+                [self pushArgv:@"-o"];
+                [self pushArgv:[NSString stringWithFormat:@"encrypt.format=aes,encrypt.key-secret=%@", self.password]];
             }
-            [_argv addObject:self.inputPath.path];
-            [_argv addObject:self.outputPath.path];
+            [self pushArgv:self.inputPath.path];
+            [self pushArgv:self.outputPath.path];
             break;
         }
         default: {
@@ -80,47 +61,15 @@ void *start_qemu_img(void *args) {
 }
 
 - (void)startWithCompletion:(void(^)(BOOL, NSString *))completion {
-    void *dlctx;
-    pthread_t qemu_thread;
-    
     // FIXME: get rid of this
     static BOOL once = NO;
     if (once) {
         completion(NO, NSLocalizedString(@"Running qemu-img more than once is unimplemented. Restart the app to create another disk.", nil));
         return;
     }
-    
-    dlctx = dlopen("libqemu-img.dylib", RTLD_LOCAL);
-    if (dlctx == NULL) {
-        NSString *err = [NSString stringWithUTF8String:dlerror()];
-        completion(NO, err);
-        return;
-    }
-    _qemu_img_main = dlsym(dlctx, "qemu_img_main");
-    if (_qemu_img_main == NULL) {
-        NSString *err = [NSString stringWithUTF8String:dlerror()];
-        dlclose(dlctx);
-        completion(NO, err);
-        return;
-    }
     [self buildArgv];
-    // TODO: fix issues with launching qemu-img twice
-    pthread_create(&qemu_thread, NULL, &start_qemu_img, (__bridge_retained void *)self);
-    dispatch_async(dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0), ^{
-        void *status;
-        if (pthread_join(qemu_thread, &status)) {
-            dlclose(dlctx);
-            completion(NO, NSLocalizedString(@"Internal error has occurred.", @"qemu pthread join fail"));
-        } else {
-            if (dlclose(dlctx) < 0) {
-                NSString *err = [NSString stringWithUTF8String:dlerror()];
-                completion(NO, err);
-            } else {
-                once = YES;
-                completion(YES, nil);
-            }
-        }
-    });
+    [self startDylib:@"libqemu-img.dylib" main:@"qemu_img_main" completion:completion];
+    once = YES;
 }
 
 @end
