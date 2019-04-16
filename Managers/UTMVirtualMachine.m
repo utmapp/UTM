@@ -124,12 +124,17 @@ NSString *const kUTMBundleExtension = @"utm";
             imgCreate.sizeMiB = newDrive.sizeMB;
             imgCreate.compressed = newDrive.isQcow2;
             [imgCreate startWithCompletion:^(BOOL success, NSString *msg){
-                _err = [NSError errorWithDomain:kUTMErrorDomain code:-1 userInfo:@{NSLocalizedDescriptionKey: msg}];
+                if (!success) {
+                    if (!msg) {
+                        msg = NSLocalizedString(@"Disk creation failed.", "Alert message");
+                    }
+                    _err = [NSError errorWithDomain:kUTMErrorDomain code:-1 userInfo:@{NSLocalizedDescriptionKey: msg}];
+                }
                 dispatch_semaphore_signal(sema);
             }];
+            dispatch_semaphore_wait(sema, DISPATCH_TIME_FOREVER);
         }
     }
-    dispatch_semaphore_wait(sema, DISPATCH_TIME_FOREVER);
     *err = _err;
 }
 

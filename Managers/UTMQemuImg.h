@@ -15,7 +15,6 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "UTMProcessDelegate.h"
 
 typedef NS_ENUM(NSUInteger, UTMQemuImgOperation) {
     kUTMQemuImgNoop,

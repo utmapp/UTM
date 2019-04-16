@@ -24,7 +24,7 @@
 }
 
 void *start_qemu_img(void *args) {
-    UTMQemuImg *self = (__bridge UTMQemuImg *)args;
+    UTMQemuImg *self = (__bridge_transfer UTMQemuImg *)args;
     intptr_t status;
     
     NSCAssert(self->_qemu_img_main != NULL, @"Started thread with invalid pointer.");
@@ -83,6 +83,13 @@ void *start_qemu_img(void *args) {
     void *dlctx;
     pthread_t qemu_thread;
     
+    // FIXME: get rid of this
+    static BOOL once = NO;
+    if (once) {
+        completion(NO, NSLocalizedString(@"Running qemu-img more than once is unimplemented. Restart the app to create another disk.", nil));
+        return;
+    }
+    
     dlctx = dlopen("libqemu-img.dylib", RTLD_LOCAL);
     if (dlctx == NULL) {
         NSString *err = [NSString stringWithUTF8String:dlerror()];
@@ -92,17 +99,26 @@ void *start_qemu_img(void *args) {
     _qemu_img_main = dlsym(dlctx, "qemu_img_main");
     if (_qemu_img_main == NULL) {
         NSString *err = [NSString stringWithUTF8String:dlerror()];
+        dlclose(dlctx);
         completion(NO, err);
         return;
     }
     [self buildArgv];
-    pthread_create(&qemu_thread, NULL, &start_qemu_img, (__bridge void *)self);
+    // TODO: fix issues with launching qemu-img twice
+    pthread_create(&qemu_thread, NULL, &start_qemu_img, (__bridge_retained void *)self);
     dispatch_async(dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0), ^{
         void *status;
         if (pthread_join(qemu_thread, &status)) {
+            dlclose(dlctx);
             completion(NO, NSLocalizedString(@"Internal error has occurred.", @"qemu pthread join fail"));
         } else {
-            completion(YES, nil);
+            if (dlclose(dlctx) < 0) {
+                NSString *err = [NSString stringWithUTF8String:dlerror()];
+                completion(NO, err);
+            } else {
+                once = YES;
+                completion(YES, nil);
+            }
         }
     });
 }

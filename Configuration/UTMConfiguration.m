@@ -240,6 +240,9 @@ const NSString *const kUTMConfigCdromKey = @"Cdrom";
         _rootDict = dictionary;
         self.name = name;
         self.changeName = name;
+        for (NSUInteger i = 0; i < self.countDrives; i++) {
+            [_newDrivesList addObject:[[UTMNewDrive alloc] init]];
+        }
     }
     return self;
 }
