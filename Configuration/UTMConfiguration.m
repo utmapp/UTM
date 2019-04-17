@@ -152,11 +152,19 @@ const NSString *const kUTMConfigCdromKey = @"Cdrom";
              ];
 }
 
-+ (NSArray<NSString *>*)supportedBootDevices {
++ (NSArray<NSString *>*)supportedBootDevicesPretty {
     return @[
              NSLocalizedString(@"Hard Disk", "Configuration boot device"),
              NSLocalizedString(@"CD/DVD", "Configuration boot device"),
              NSLocalizedString(@"Floppy", "Configuration boot device")
+             ];
+}
+
++ (NSArray<NSString *>*)supportedBootDevices {
+    return @[
+             @"hdd",
+             @"cd",
+             @"floppy"
              ];
 }
 

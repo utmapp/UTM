@@ -160,7 +160,8 @@
 		CE9D19782265425A00355E14 /* libgstvideotestsrc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CE9D19642265425A00355E14 /* libgstvideotestsrc.a */; };
 		CE9D19792265425A00355E14 /* libgstosxaudio.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CE9D19652265425A00355E14 /* libgstosxaudio.a */; };
 		CE9D197C226542FE00355E14 /* UTMQemu.m in Sources */ = {isa = PBXBuildFile; fileRef = CE9D197B226542FE00355E14 /* UTMQemu.m */; };
-		CED33ADC22664CBE00FF1977 /* UTMQemuImg.m in Sources */ = {isa = PBXBuildFile; fileRef = CED33ADB22664CBE00FF1977 /* UTMQemuImg.m */; };
+		CED33AE02267892200FF1977 /* UTMQemuSystem.m in Sources */ = {isa = PBXBuildFile; fileRef = CED33ADF2267892200FF1977 /* UTMQemuSystem.m */; };
+		CED33AE32267893D00FF1977 /* UTMQemuImg.m in Sources */ = {isa = PBXBuildFile; fileRef = CED33AE22267893D00FF1977 /* UTMQemuImg.m */; };
 		CEDC1DF22260EE4B008D9A6D /* StaticDataTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CEDC1DF12260EE4B008D9A6D /* StaticDataTableViewController.m */; };
 /* End PBXBuildFile section */
 
@@ -389,8 +390,10 @@
 		CE9D19652265425A00355E14 /* libgstosxaudio.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libgstosxaudio.a; path = "sysroot/lib/gstreamer-1.0/libgstosxaudio.a"; sourceTree = "<group>"; };
 		CE9D197A226542FE00355E14 /* UTMQemu.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UTMQemu.h; sourceTree = "<group>"; };
 		CE9D197B226542FE00355E14 /* UTMQemu.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UTMQemu.m; sourceTree = "<group>"; };
-		CED33ADA22664CBE00FF1977 /* UTMQemuImg.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UTMQemuImg.h; sourceTree = "<group>"; };
-		CED33ADB22664CBE00FF1977 /* UTMQemuImg.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UTMQemuImg.m; sourceTree = "<group>"; };
+		CED33ADE2267892200FF1977 /* UTMQemuSystem.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UTMQemuSystem.h; sourceTree = "<group>"; };
+		CED33ADF2267892200FF1977 /* UTMQemuSystem.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UTMQemuSystem.m; sourceTree = "<group>"; };
+		CED33AE12267893D00FF1977 /* UTMQemuImg.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UTMQemuImg.h; sourceTree = "<group>"; };
+		CED33AE22267893D00FF1977 /* UTMQemuImg.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UTMQemuImg.m; sourceTree = "<group>"; };
 		CEDC1DF02260EE4B008D9A6D /* StaticDataTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StaticDataTableViewController.h; sourceTree = "<group>"; };
 		CEDC1DF12260EE4B008D9A6D /* StaticDataTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StaticDataTableViewController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -668,8 +671,10 @@
 			children = (
 				CE9D197A226542FE00355E14 /* UTMQemu.h */,
 				CE9D197B226542FE00355E14 /* UTMQemu.m */,
-				CED33ADA22664CBE00FF1977 /* UTMQemuImg.h */,
-				CED33ADB22664CBE00FF1977 /* UTMQemuImg.m */,
+				CED33AE12267893D00FF1977 /* UTMQemuImg.h */,
+				CED33AE22267893D00FF1977 /* UTMQemuImg.m */,
+				CED33ADE2267892200FF1977 /* UTMQemuSystem.h */,
+				CED33ADF2267892200FF1977 /* UTMQemuSystem.m */,
 				CE2B89352262B2F600C6D9D8 /* UTMVirtualMachineDelegate.h */,
 				CE2B89332262A21E00C6D9D8 /* UTMVirtualMachine.h */,
 				CE5F165B2261395000F3D56B /* UTMVirtualMachine.m */,
@@ -780,7 +785,6 @@
 				CE74C28A225D88ED004E4FF1 /* VMConfigPrintingViewController.m in Sources */,
 				CE550BDC2259479D0063E575 /* main.m in Sources */,
 				CE5F165C2261395000F3D56B /* UTMVirtualMachine.m in Sources */,
-				CED33ADC22664CBE00FF1977 /* UTMQemuImg.m in Sources */,
 				CE4AA1492263B24F002E4A54 /* CSDisplayMetal.m in Sources */,
 				CEDC1DF22260EE4B008D9A6D /* StaticDataTableViewController.m in Sources */,
 				CE550BCE225947990063E575 /* AppDelegate.m in Sources */,
@@ -789,8 +793,10 @@
 				CE74C28C225D88ED004E4FF1 /* VMConfigDriveDetailViewController.m in Sources */,
 				CE31C245225E555600A965DD /* UTMConfiguration.m in Sources */,
 				CE7BED4C225FBB8600A1E1B6 /* VMConfigDrivesViewController.m in Sources */,
+				CED33AE02267892200FF1977 /* UTMQemuSystem.m in Sources */,
 				CE74C28D225D88ED004E4FF1 /* VMConfigInputViewController.m in Sources */,
 				CE2D63D42265154700FC7E63 /* UTMShaders.metal in Sources */,
+				CED33AE32267893D00FF1977 /* UTMQemuImg.m in Sources */,
 				CE74C28B225D88ED004E4FF1 /* VMConfigDisplayViewController.m in Sources */,
 				CE4AA14C2264004F002E4A54 /* CSConnection.m in Sources */,
 				CE2D63D32265154700FC7E63 /* UTMRenderer.m in Sources */,

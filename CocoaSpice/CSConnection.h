@@ -23,7 +23,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface CSConnection : NSObject
 
-@property (nonatomic, readonly, strong) NSArray<NSArray<CSDisplayMetal *> *> *monitors;
+@property (nonatomic, readonly) NSArray<NSArray<CSDisplayMetal *> *> *monitors;
 @property (nonatomic, readonly) CSDisplayMetal *firstDisplay;
 @property (nonatomic, weak) id<CSConnectionDelegate> delegate;
 @property (nonatomic, copy) NSString *host;

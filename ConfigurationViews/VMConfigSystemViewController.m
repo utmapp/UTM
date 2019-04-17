@@ -128,7 +128,7 @@
     if (pickerView == self.architecturePicker) {
         return [UTMConfiguration supportedArchitecturesPretty].count;
     } else if (pickerView == self.bootPicker) {
-        return [UTMConfiguration supportedBootDevices].count;
+        return [UTMConfiguration supportedBootDevicesPretty].count;
     } else if (pickerView == self.systemPicker) {
         return [UTMConfiguration supportedTargetsForArchitecture:@"FIXME: arch here"].count;
     } else {
@@ -142,7 +142,7 @@
     if (pickerView == self.architecturePicker) {
         return [UTMConfiguration supportedArchitecturesPretty][row];
     } else if (pickerView == self.bootPicker) {
-        return [UTMConfiguration supportedBootDevices][row];
+        return [UTMConfiguration supportedBootDevicesPretty][row];
     } else if (pickerView == self.systemPicker) {
         return [UTMConfiguration supportedTargetsForArchitecture:@"FIXME: arch here"][row];
     } else {
@@ -157,7 +157,7 @@
         self.architectureLabel.text = [UTMConfiguration supportedArchitecturesPretty][row];
         self.configuration.systemArchitecture = self.architectureLabel.text;
     } else if (pickerView == self.bootPicker) {
-        self.bootLabel.text = [UTMConfiguration supportedBootDevices][row];
+        self.bootLabel.text = [UTMConfiguration supportedBootDevicesPretty][row];
         self.configuration.systemBootDevice = self.bootLabel.text;
     } else if (pickerView == self.systemPicker) {
         self.systemLabel.text = [UTMConfiguration supportedTargetsForArchitecture:@"FIXME: arch here"][row];

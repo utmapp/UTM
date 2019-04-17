@@ -32,25 +32,26 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (NSArray<NSString *>*)supportedArchitecturesPretty;
 + (NSArray<NSString *>*)supportedArchitectures;
++ (NSArray<NSString *>*)supportedBootDevicesPretty;
 + (NSArray<NSString *>*)supportedBootDevices;
 + (NSArray<NSString *>*)supportedTargetsForArchitecture:(NSString *)architecture;
 + (NSArray<NSString *>*)supportedResolutions;
 + (NSArray<NSString *>*)supportedDriveInterfaces;
 
-@property (nonatomic, nullable, strong) NSString *name;
-@property (nonatomic, nullable, strong) NSString *changeName;
+@property (nonatomic, nullable, copy) NSString *name;
+@property (nonatomic, nullable, copy) NSString *changeName;
 
-@property (nonatomic, nullable, strong) NSString *systemArchitecture;
-@property (nonatomic, nullable, strong) NSNumber *systemMemory;
-@property (nonatomic, nullable, strong) NSNumber *systemCPUCount;
-@property (nonatomic, nullable, strong) NSString *systemTarget;
-@property (nonatomic, nullable, strong) NSString *systemBootDevice;
-@property (nonatomic, nullable, strong) NSString *systemAddArgs;
+@property (nonatomic, nullable, copy) NSString *systemArchitecture;
+@property (nonatomic, nullable, copy) NSNumber *systemMemory;
+@property (nonatomic, nullable, copy) NSNumber *systemCPUCount;
+@property (nonatomic, nullable, copy) NSString *systemTarget;
+@property (nonatomic, nullable, copy) NSString *systemBootDevice;
+@property (nonatomic, nullable, copy) NSString *systemAddArgs;
 
 @property (nonatomic, assign) BOOL displayConsoleOnly;
 @property (nonatomic, assign) BOOL displayFixedResolution;
-@property (nonatomic, nullable, strong) NSNumber *displayFixedResolutionWidth;
-@property (nonatomic, nullable, strong) NSNumber *displayFixedResolutionHeight;
+@property (nonatomic, nullable, copy) NSNumber *displayFixedResolutionWidth;
+@property (nonatomic, nullable, copy) NSNumber *displayFixedResolutionHeight;
 @property (nonatomic, assign) BOOL displayZoomScale;
 @property (nonatomic, assign) BOOL displayZoomLetterBox;
 
@@ -59,8 +60,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, assign) BOOL networkEnabled;
 @property (nonatomic, assign) BOOL networkLocalhostOnly;
-@property (nonatomic, nullable, strong) NSString *networkIPSubnet;
-@property (nonatomic, nullable, strong) NSString *networkDHCPStart;
+@property (nonatomic, nullable, copy) NSString *networkIPSubnet;
+@property (nonatomic, nullable, copy) NSString *networkDHCPStart;
 
 @property (nonatomic, assign) BOOL printEnabled;
 

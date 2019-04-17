@@ -37,12 +37,12 @@ NS_ASSUME_NONNULL_BEGIN
 @interface UTMQemuImg : UTMQemu
 
 @property (nonatomic, assign) UTMQemuImgOperation op;
-@property (nonatomic, strong) NSURL *outputPath;
-@property (nonatomic, strong) NSURL *inputPath;
+@property (nonatomic, copy) NSURL *outputPath;
+@property (nonatomic, copy) NSURL *inputPath;
 @property (nonatomic, assign) NSUInteger sizeMiB;
 @property (nonatomic, assign) BOOL compressed;
 @property (nonatomic, assign) BOOL encrypted;
-@property (nonatomic, strong) NSString *password; // TODO: Use keychain
+@property (nonatomic, copy) NSString *password; // TODO: Use keychain
 @property (nonatomic, assign) NSUInteger snapshotID;
 
 - (void)startWithCompletion:(void(^)(BOOL, NSString *))completion;

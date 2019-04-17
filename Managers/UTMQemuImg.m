@@ -21,6 +21,7 @@
 @implementation UTMQemuImg
 
 - (void)buildArgv {
+    [self clearArgv];
     [self pushArgv:@"qemu-img"];
     switch (self.op) {
         case kUTMQemuImgCreate: {

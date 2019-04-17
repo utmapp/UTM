@@ -46,6 +46,10 @@ void *start_qemu(void *args) {
     [_argv addObject:arg];
 }
 
+- (void)clearArgv {
+    _argv = nil;
+}
+
 - (void)startDylib:(nonnull NSString *)dylib main:(nonnull NSString *)main completion:(void(^)(BOOL,NSString *))completion {
     void *dlctx;
     pthread_t qemu_thread;

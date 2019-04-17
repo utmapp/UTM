@@ -14,17 +14,19 @@
 // limitations under the License.
 //
 
-#import <Foundation/Foundation.h>
+#import "UTMQemu.h"
 
 @class UTMConfiguration;
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface UTMQemu : NSObject
+@interface UTMQemuSystem : UTMQemu
 
-- (void)pushArgv:(NSString *)arg;
-- (void)clearArgv;
-- (void)startDylib:(nonnull NSString *)dylib main:(nonnull NSString *)main completion:(void(^)(BOOL,NSString *))completion;
+@property (nonatomic, strong) UTMConfiguration *configuration;
+@property (nonatomic, copy) NSURL *imgPath;
+
+- (id)initWithConfiguration:(UTMConfiguration *)configuration imgPath:(NSURL *)imgPath;
+- (void)startWithCompletion:(void(^)(BOOL, NSString *))completion;
 
 @end
 
