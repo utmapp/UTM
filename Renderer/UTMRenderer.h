@@ -5,13 +5,13 @@ Abstract:
 Header for renderer class which performs Metal setup and per frame rendering
 */
 
-#import "UTMRendererDelegate.h"
+#import "UTMRenderSource.h"
 @import MetalKit;
 
 // Our platform independent renderer class
 @interface UTMRenderer : NSObject<MTKViewDelegate>
 
-@property (nonatomic, weak, nullable) id<UTMRendererDelegate> delegate;
+@property (nonatomic, weak, nullable) id<UTMRenderSource> source;
 
 - (nonnull instancetype)initWithMetalKitView:(nonnull MTKView *)mtkView;
 

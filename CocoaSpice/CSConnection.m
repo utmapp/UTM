@@ -19,12 +19,46 @@
 #import <glib.h>
 #import <spice-client.h>
 
+#define GLIB_OBJC_RETAIN(x) (__bridge_retained void *)(x)
+#define GLIB_OBJC_RELEASE(x) (__bridge void *)(__bridge_transfer NSObject *)(__bridge void *)(x)
+
 @implementation CSConnection {
     SpiceSession     *_session;
     SpiceMainChannel *_main;
     SpiceAudio       *_audio;
     NSMutableArray<NSMutableArray<CSDisplayMetal *> *> *_monitors;
-    void             (^_connectionCallback)(BOOL);
+}
+
+static void logHandler(const gchar *log_domain, GLogLevelFlags log_level,
+                 const gchar *message, gpointer user_data)
+{
+    GDateTime *now;
+    gchar *dateTimeStr;
+    
+    char* levelStr = "UNKNOWN";
+    if (log_level & G_LOG_LEVEL_ERROR) {
+        levelStr = "ERROR";
+    } else if (log_level & G_LOG_LEVEL_CRITICAL) {
+        levelStr = "CRITICAL";
+    } else if (log_level & G_LOG_LEVEL_WARNING) {
+        levelStr = "WARNING";
+    } else if (log_level & G_LOG_LEVEL_MESSAGE) {
+        levelStr = "MESSAGE";
+    } else if (log_level & G_LOG_LEVEL_INFO) {
+        levelStr = "INFO";
+    } else if (log_level & G_LOG_LEVEL_DEBUG) {
+        levelStr = "DEBUG";
+    }
+    
+    now = g_date_time_new_now_local();
+    dateTimeStr = g_date_time_format(now, "%Y-%m-%d %T");
+    
+    fprintf(stderr, "%s,%03d %s %s-%s\n", dateTimeStr,
+             g_date_time_get_microsecond(now) / 1000, levelStr,
+             log_domain, message);
+    
+    g_date_time_unref(now);
+    g_free(dateTimeStr);
 }
 
 static void cs_main_channel_event(SpiceChannel *channel, SpiceChannelEvent event,
@@ -36,8 +70,6 @@ static void cs_main_channel_event(SpiceChannel *channel, SpiceChannelEvent event
     switch (event) {
         case SPICE_CHANNEL_OPENED:
             g_message("main channel: opened");
-            self->_connectionCallback(YES);
-            self->_connectionCallback = nil;
             [self.delegate spiceConnected:self];
             break;
         case SPICE_CHANNEL_SWITCHING:
@@ -47,8 +79,6 @@ static void cs_main_channel_event(SpiceChannel *channel, SpiceChannelEvent event
             /* this event is only sent if the channel was succesfully opened before */
             g_message("main channel: closed");
             spice_session_disconnect(self->_session);
-            self->_connectionCallback(YES);
-            self->_connectionCallback = nil;
             break;
         case SPICE_CHANNEL_ERROR_IO:
         case SPICE_CHANNEL_ERROR_TLS:
@@ -59,8 +89,7 @@ static void cs_main_channel_event(SpiceChannel *channel, SpiceChannelEvent event
             if (error) {
                 g_message("channel error: %s", error->message);
             }
-            self->_connectionCallback(NO);
-            self->_connectionCallback = nil;
+            [self.delegate spiceError:self err:(error ? [NSString stringWithUTF8String:error->message] : nil)];
             break;
         default:
             /* TODO: more sophisticated error handling */
@@ -84,7 +113,7 @@ static void cs_display_monitors(SpiceChannel *display, GParamSpec *pspec,
                  NULL);
     g_return_if_fail(monitors != NULL);
     
-    if (self->_monitors) {
+    if (!self->_monitors) {
         self->_monitors = [NSMutableArray<NSMutableArray<CSDisplayMetal *> *> array];
     }
     
@@ -94,8 +123,10 @@ static void cs_display_monitors(SpiceChannel *display, GParamSpec *pspec,
     }
     
     // create new monitors for this display
-    for (i = self->_monitors.count; i < monitors->len; i++) {
-        [self->_monitors[chid] addObject:[[CSDisplayMetal alloc] initWithSession:self->_session channelID:chid monitorID:i]];
+    for (i = self->_monitors[chid].count; i < monitors->len; i++) {
+        CSDisplayMetal *monitor = [[CSDisplayMetal alloc] initWithSession:self->_session channelID:chid monitorID:i];
+        [self->_monitors[chid] addObject:monitor];
+        [self.delegate spiceDisplayCreated:self display:monitor];
     }
     
     // clear any extra displays
@@ -119,14 +150,16 @@ static void cs_channel_new(SpiceSession *s, SpiceChannel *channel, gpointer data
         SPICE_DEBUG("new main channel");
         g_assert(!self->_main); // should only be 1 main channel
         self->_main = SPICE_MAIN_CHANNEL(channel);
+        NSLog(@"%s:%d", __FUNCTION__, __LINE__);
         g_signal_connect(channel, "channel-event",
-                         G_CALLBACK(cs_main_channel_event), (__bridge void *)self);
+                         G_CALLBACK(cs_main_channel_event), GLIB_OBJC_RETAIN(self));
     }
     
     if (SPICE_IS_DISPLAY_CHANNEL(channel)) {
         SPICE_DEBUG("new display channel (#%d)", chid);
+        NSLog(@"%s:%d", __FUNCTION__, __LINE__);
         g_signal_connect(channel, "notify::monitors",
-                         G_CALLBACK(cs_display_monitors), (__bridge void *)self);
+                         G_CALLBACK(cs_display_monitors), GLIB_OBJC_RETAIN(self));
         spice_channel_connect(channel);
     }
     
@@ -147,14 +180,16 @@ static void cs_channel_destroy(SpiceSession *s, SpiceChannel *channel, gpointer 
     
     g_object_get(channel, "channel-id", &chid, NULL);
     if (SPICE_IS_MAIN_CHANNEL(channel)) {
+        NSLog(@"%s:%d", __FUNCTION__, __LINE__);
         SPICE_DEBUG("zap main channel");
         self->_main = NULL;
-        g_signal_handlers_disconnect_by_func(channel, G_CALLBACK(cs_main_channel_event), (__bridge void *)self);
+        g_signal_handlers_disconnect_by_func(channel, G_CALLBACK(cs_main_channel_event), GLIB_OBJC_RELEASE(self));
     }
     
     if (SPICE_IS_DISPLAY_CHANNEL(channel)) {
+        NSLog(@"%s:%d", __FUNCTION__, __LINE__);
         SPICE_DEBUG("zap display channel (#%d)", chid);
-        g_signal_handlers_disconnect_by_func(channel, G_CALLBACK(cs_display_monitors), (__bridge void *)self);
+        g_signal_handlers_disconnect_by_func(channel, G_CALLBACK(cs_display_monitors), GLIB_OBJC_RELEASE(self));
         [self->_monitors[chid] removeAllObjects];
     }
     
@@ -173,15 +208,6 @@ static void cs_connection_destroy(SpiceSession *session,
 
 - (NSArray<NSArray<CSDisplayMetal *> *> *)monitors {
     return _monitors;
-}
-
-- (CSDisplayMetal *)firstDisplay {
-    if (_monitors.count > 0) {
-        if (_monitors[0].count > 0) {
-            return _monitors[0][0];
-        }
-    }
-    return nil;
 }
 
 - (void)setHost:(NSString *)host {
@@ -210,26 +236,29 @@ static void cs_connection_destroy(SpiceSession *session,
 
 + (void)spiceSetDebug:(BOOL)enabled {
     spice_util_set_debug(enabled);
+    g_log_set_default_handler(logHandler, NULL);
 }
 
 - (id)init {
     self = [super init];
     if (self) {
         _session = spice_session_new();
+        NSLog(@"%s:%d", __FUNCTION__, __LINE__);
         g_signal_connect(_session, "channel-new",
-                         G_CALLBACK(cs_channel_new), (__bridge void *)self);
+                         G_CALLBACK(cs_channel_new), GLIB_OBJC_RETAIN(self));
         g_signal_connect(_session, "channel-destroy",
-                         G_CALLBACK(cs_channel_destroy), (__bridge void *)self);
+                         G_CALLBACK(cs_channel_destroy), GLIB_OBJC_RETAIN(self));
         g_signal_connect(_session, "disconnected",
-                         G_CALLBACK(cs_connection_destroy), (__bridge void *)self);
+                         G_CALLBACK(cs_connection_destroy), GLIB_OBJC_RETAIN(self));
     }
     return self;
 }
 
 - (void)dealloc {
-    g_signal_handlers_disconnect_by_func(_session, G_CALLBACK(cs_channel_new), (__bridge void *)self);
-    g_signal_handlers_disconnect_by_func(_session, G_CALLBACK(cs_channel_destroy), (__bridge void *)self);
-    g_signal_handlers_disconnect_by_func(_session, G_CALLBACK(cs_connection_destroy), (__bridge void *)self);
+    NSLog(@"%s:%d", __FUNCTION__, __LINE__);
+    g_signal_handlers_disconnect_by_func(_session, G_CALLBACK(cs_channel_new), GLIB_OBJC_RELEASE(self));
+    g_signal_handlers_disconnect_by_func(_session, G_CALLBACK(cs_channel_destroy), GLIB_OBJC_RELEASE(self));
+    g_signal_handlers_disconnect_by_func(_session, G_CALLBACK(cs_connection_destroy), GLIB_OBJC_RELEASE(self));
     g_object_unref(_session);
     _session = NULL;
 }
@@ -243,16 +272,11 @@ static void cs_connection_destroy(SpiceSession *session,
     return self;
 }
 
-- (void)connectWithCompletion:(void (^)(BOOL))completion {
-    _connectionCallback = completion;
-    if (!spice_session_connect(_session)) {
-        completion(NO);
-        _connectionCallback = nil;
-    }
+- (BOOL)connect {
+    return spice_session_connect(_session);
 }
 
-- (void)disconnectWithCompletion:(void (^)(BOOL))completion {
-    _connectionCallback = completion;
+- (void)disconnect {
     spice_session_disconnect(_session);
 }
 

@@ -83,6 +83,6 @@ samplingShader(RasterizerData in [[stage_in]],
     const half4 colorSample = colorTexture.sample(textureSampler, in.textureCoordinate);
 
     // We return the color of the texture inverted
-    return float4(colorSample.argb);
+    return float4(colorSample);
 }
 

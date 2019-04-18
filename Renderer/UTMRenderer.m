@@ -30,6 +30,11 @@ Implementation of renderer class which performs Metal setup and per frame render
     vector_uint2 _viewportSize;
 }
 
+- (void)setSource:(id<UTMRenderSource>)source {
+    source.device = _device;
+    _source = source;
+}
+
 /// Initialize with the MetalKit view from which we'll obtain our Metal device
 - (nonnull instancetype)initWithMetalKitView:(nonnull MTKView *)mtkView
 {
@@ -55,6 +60,7 @@ Implementation of renderer class which performs Metal setup and per frame render
         pipelineStateDescriptor.vertexFunction = vertexFunction;
         pipelineStateDescriptor.fragmentFunction = fragmentFunction;
         pipelineStateDescriptor.colorAttachments[0].pixelFormat = mtkView.colorPixelFormat;
+        pipelineStateDescriptor.depthAttachmentPixelFormat = mtkView.depthStencilPixelFormat;
 
         NSError *error = NULL;
         _pipelineState = [_device newRenderPipelineStateWithDescriptor:pipelineStateDescriptor
@@ -95,7 +101,7 @@ Implementation of renderer class which performs Metal setup and per frame render
     // Obtain a renderPassDescriptor generated from the view's drawable textures
     MTLRenderPassDescriptor *renderPassDescriptor = view.currentRenderPassDescriptor;
 
-    if(renderPassDescriptor != nil)
+    if(renderPassDescriptor != nil && self.source != nil)
     {
         // Create a render command encoder so we can render into something
         id<MTLRenderCommandEncoder> renderEncoder =
@@ -107,7 +113,7 @@ Implementation of renderer class which performs Metal setup and per frame render
 
         [renderEncoder setRenderPipelineState:_pipelineState];
 
-        [renderEncoder setVertexBuffer:self.delegate.vertices
+        [renderEncoder setVertexBuffer:self.source.vertices
                                 offset:0
                               atIndex:UTMVertexInputIndexVertices];
 
@@ -118,13 +124,13 @@ Implementation of renderer class which performs Metal setup and per frame render
         // Set the texture object.  The UTMTextureIndexBaseColor enum value corresponds
         ///  to the 'colorMap' argument in our 'samplingShader' function because its
         //   texture attribute qualifier also uses UTMTextureIndexBaseColor for its index
-        [renderEncoder setFragmentTexture:self.delegate.texture
+        [renderEncoder setFragmentTexture:self.source.texture
                                   atIndex:UTMTextureIndexBaseColor];
 
         // Draw the vertices of our triangles
         [renderEncoder drawPrimitives:MTLPrimitiveTypeTriangle
                           vertexStart:0
-                          vertexCount:self.delegate.numVertices];
+                          vertexCount:self.source.numVertices];
 
         [renderEncoder endEncoding];
 

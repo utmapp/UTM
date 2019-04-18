@@ -17,6 +17,11 @@
 #import "UTMVirtualMachine.h"
 #import "UTMConfiguration.h"
 #import "UTMQemuImg.h"
+#import "UTMQemuSystem.h"
+#import "CSConnection.h"
+#import "CSDisplayMetal.h"
+
+const int kMaxConnectionTries = 10; // qemu needs to start spice server first
 
 NSString *const kUTMErrorDomain = @"com.halts.utm";
 NSString *const kUTMBundleConfigFilename = @"config.plist";
@@ -28,7 +33,15 @@ NSString *const kUTMBundleExtension = @"utm";
 
 @end
 
-@implementation UTMVirtualMachine
+@implementation UTMVirtualMachine {
+    UTMQemuSystem *_qemu;
+    CSConnection *_spice;
+}
+
+- (void)setDelegate:(id<UTMVirtualMachineDelegate>)delegate {
+    _delegate = delegate;
+    _delegate.vmRendering = self.primaryRendering;
+}
 
 + (BOOL)URLisVirtualMachine:(NSURL *)url {
     return [url.pathExtension isEqualToString:kUTMBundleExtension];
@@ -65,7 +78,7 @@ NSString *const kUTMBundleExtension = @"utm";
             self = nil;
             return self;
         }
-        self.configuration = [[UTMConfiguration alloc] initWithDictionary:plist name:name];
+        _configuration = [[UTMConfiguration alloc] initWithDictionary:plist name:name];
     }
     return self;
 }
@@ -74,7 +87,7 @@ NSString *const kUTMBundleExtension = @"utm";
     self = [self init];
     if (self) {
         self.parentPath = dstUrl;
-        self.configuration = [[UTMConfiguration alloc] initDefaults:name];
+        _configuration = [[UTMConfiguration alloc] initDefaults:name];
     }
     return self;
 }
@@ -83,21 +96,21 @@ NSString *const kUTMBundleExtension = @"utm";
     return [[self.parentPath URLByAppendingPathComponent:name] URLByAppendingPathExtension:kUTMBundleExtension];
 }
 
-- (void)saveUTMWithError:(NSError * _Nullable *)err {
+- (BOOL)saveUTMWithError:(NSError * _Nullable *)err {
     NSURL *url = [self packageURLForName:self.configuration.changeName];
     __block NSError *_err;
     if (!self.configuration.name) { // new package
         [[NSFileManager defaultManager] createDirectoryAtURL:url withIntermediateDirectories:YES attributes:nil error:&_err];
         if (_err && err) {
             *err = _err;
-            return;
+            return NO;
         }
         self.configuration.name = self.configuration.changeName;
     } else if (![self.configuration.name isEqualToString:self.configuration.changeName]) { // rename if needed
         [[NSFileManager defaultManager] moveItemAtURL:[self packageURLForName:self.configuration.name] toURL:url error:&_err];
         if (_err && err) {
             *err = _err;
-            return;
+            return NO;
         }
         self.configuration.name = self.configuration.changeName;
     }
@@ -105,13 +118,13 @@ NSString *const kUTMBundleExtension = @"utm";
     NSData *data = [NSPropertyListSerialization dataWithPropertyList:self.configuration.dictRepresentation format:NSPropertyListXMLFormat_v1_0 options:0 error:&_err];
     if (_err && err) {
         *err = _err;
-        return;
+        return NO;
     }
     // write config.plist
     [data writeToURL:[url URLByAppendingPathComponent:kUTMBundleConfigFilename] options:NSDataWritingAtomic error:&_err];
     if (_err && err) {
         *err = _err;
-        return;
+        return NO;
     }
     // create disk images
     dispatch_semaphore_t sema = dispatch_semaphore_create(0);
@@ -135,7 +148,72 @@ NSString *const kUTMBundleExtension = @"utm";
             dispatch_semaphore_wait(sema, DISPATCH_TIME_FOREVER);
         }
     }
-    *err = _err;
+    if (_err && err) {
+        *err = _err;
+        return NO;
+    }
+    return YES;
+}
+
+- (void)errorTriggered:(nullable NSString *)msg {
+    // TODO: kill qemu
+    self.delegate.vmMessage = msg;
+    [self.delegate virtualMachine:self transitionToState:kVMError];
+}
+
+- (void)startVM {
+    if (!_qemu) {
+        _qemu = [[UTMQemuSystem alloc] initWithConfiguration:self.configuration imgPath:[self packageURLForName:self.configuration.name]];
+    }
+    if (!_spice) {
+        _spice = [[CSConnection alloc] initWithHost:@"127.0.0.1" port:@"5930"];
+        _spice.delegate = self;
+    }
+    self.delegate.vmMessage = nil;
+    self.delegate.vmScreenshot = nil;
+    self.delegate.vmRendering = nil;
+    _primaryRendering = nil;
+    [self.delegate virtualMachine:self transitionToState:kVMStarting];
+    [_qemu startWithCompletion:^(BOOL success, NSString *msg){
+        if (!success) {
+            [self errorTriggered:msg];
+        } else {
+            
+        }
+    }];
+    [CSConnection spiceSetDebug:YES];
+    int tries = kMaxConnectionTries;
+    do {
+        [NSThread sleepForTimeInterval:0.1f];
+        if ([_spice connect]) {
+            break;
+        }
+    } while (tries-- > 0);
+    if (tries == 0) {
+        [self errorTriggered:NSLocalizedString(@"Failed to connect to display server.", @"UTMVirtualMachine")];
+    }
+}
+
+- (void)spiceConnected:(CSConnection *)connection {
+    NSAssert(connection == _spice, @"Unknown connection");
+}
+
+- (void)spiceDisconnected:(CSConnection *)connection {
+    NSAssert(connection == _spice, @"Unknown connection");
+}
+
+- (void)spiceError:(CSConnection *)connection err:(NSString *)msg {
+    NSAssert(connection == _spice, @"Unknown connection");
+    [self errorTriggered:msg];
+}
+
+- (void)spiceDisplayCreated:(CSConnection *)connection display:(CSDisplayMetal *)display {
+    NSAssert(connection == _spice, @"Unknown connection");
+    if (display.channelID == 0 && display.monitorID == 0) {
+        self.delegate.vmRendering = display;
+        _primaryRendering = display;
+        [self.delegate virtualMachine:self transitionToState:kVMStarted];
+    }
 }
 
 @end

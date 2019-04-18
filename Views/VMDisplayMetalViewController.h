@@ -15,31 +15,15 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "UTMRenderSource.h"
+#import "UTMVirtualMachineDelegate.h"
 
 @class UTMVirtualMachine;
 
 NS_ASSUME_NONNULL_BEGIN
 
-typedef NS_ENUM(NSUInteger, UTMVMState) {
-    kVMStopped,
-    kVMError,
-    kVMStarting,
-    kVMStarted,
-    kVMPausing,
-    kVMPaused,
-    kVMResuming,
-    kVMResumed,
-    kVMStopping
-};
+@interface VMDisplayMetalViewController : UIViewController<UTMVirtualMachineDelegate>
 
-@protocol UTMVirtualMachineDelegate <NSObject>
-
-@property (nonatomic, nullable, strong) UIImage *vmScreenshot;
-@property (nonatomic, nullable, copy) NSString *vmMessage;
-@property (nonatomic, weak) id<UTMRenderSource> vmRendering;
-
-- (void)virtualMachine:(UTMVirtualMachine *)vm transitionToState:(UTMVMState)state;
+@property (nonatomic, strong) UTMVirtualMachine *vm;
 
 @end
 

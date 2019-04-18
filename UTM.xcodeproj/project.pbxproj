@@ -162,6 +162,7 @@
 		CE9D197C226542FE00355E14 /* UTMQemu.m in Sources */ = {isa = PBXBuildFile; fileRef = CE9D197B226542FE00355E14 /* UTMQemu.m */; };
 		CED33AE02267892200FF1977 /* UTMQemuSystem.m in Sources */ = {isa = PBXBuildFile; fileRef = CED33ADF2267892200FF1977 /* UTMQemuSystem.m */; };
 		CED33AE32267893D00FF1977 /* UTMQemuImg.m in Sources */ = {isa = PBXBuildFile; fileRef = CED33AE22267893D00FF1977 /* UTMQemuImg.m */; };
+		CED33AE62267CAB500FF1977 /* VMDisplayMetalViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CED33AE52267CAB500FF1977 /* VMDisplayMetalViewController.m */; };
 		CEDC1DF22260EE4B008D9A6D /* StaticDataTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CEDC1DF12260EE4B008D9A6D /* StaticDataTableViewController.m */; };
 /* End PBXBuildFile section */
 
@@ -253,7 +254,7 @@
 		CE2D63D02265154700FC7E63 /* UTMShaders.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = UTMShaders.metal; sourceTree = "<group>"; };
 		CE2D63D12265154700FC7E63 /* UTMShaderTypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UTMShaderTypes.h; sourceTree = "<group>"; };
 		CE2D63D22265154700FC7E63 /* UTMRenderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UTMRenderer.h; sourceTree = "<group>"; };
-		CE2D63D5226517D600FC7E63 /* UTMRendererDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UTMRendererDelegate.h; sourceTree = "<group>"; };
+		CE2D63D5226517D600FC7E63 /* UTMRenderSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UTMRenderSource.h; sourceTree = "<group>"; };
 		CE2D63D722653C7300FC7E63 /* libqemu-system-i386.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libqemu-system-i386.dylib"; path = "sysroot/lib/libqemu-system-i386.dylib"; sourceTree = "<group>"; };
 		CE2D63D822653C7300FC7E63 /* libgmodule-2.0.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libgmodule-2.0.0.dylib"; path = "sysroot/lib/libgmodule-2.0.0.dylib"; sourceTree = "<group>"; };
 		CE2D63D922653C7300FC7E63 /* libjpeg.62.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libjpeg.62.dylib; path = sysroot/lib/libjpeg.62.dylib; sourceTree = "<group>"; };
@@ -394,6 +395,8 @@
 		CED33ADF2267892200FF1977 /* UTMQemuSystem.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UTMQemuSystem.m; sourceTree = "<group>"; };
 		CED33AE12267893D00FF1977 /* UTMQemuImg.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UTMQemuImg.h; sourceTree = "<group>"; };
 		CED33AE22267893D00FF1977 /* UTMQemuImg.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UTMQemuImg.m; sourceTree = "<group>"; };
+		CED33AE42267CAB500FF1977 /* VMDisplayMetalViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VMDisplayMetalViewController.h; sourceTree = "<group>"; };
+		CED33AE52267CAB500FF1977 /* VMDisplayMetalViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VMDisplayMetalViewController.m; sourceTree = "<group>"; };
 		CEDC1DF02260EE4B008D9A6D /* StaticDataTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StaticDataTableViewController.h; sourceTree = "<group>"; };
 		CEDC1DF12260EE4B008D9A6D /* StaticDataTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StaticDataTableViewController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -472,7 +475,7 @@
 			children = (
 				CE2D63D22265154700FC7E63 /* UTMRenderer.h */,
 				CE2D63CF2265154700FC7E63 /* UTMRenderer.m */,
-				CE2D63D5226517D600FC7E63 /* UTMRendererDelegate.h */,
+				CE2D63D5226517D600FC7E63 /* UTMRenderSource.h */,
 				CE2D63D02265154700FC7E63 /* UTMShaders.metal */,
 				CE2D63D12265154700FC7E63 /* UTMShaderTypes.h */,
 			);
@@ -685,6 +688,8 @@
 		CE7BED4D22600F5000A1E1B6 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				CED33AE42267CAB500FF1977 /* VMDisplayMetalViewController.h */,
+				CED33AE52267CAB500FF1977 /* VMDisplayMetalViewController.m */,
 				CE550BCF225947990063E575 /* VMListViewController.h */,
 				CE550BD0225947990063E575 /* VMListViewController.m */,
 				CE550BE222596E790063E575 /* VMListViewCell.h */,
@@ -791,6 +796,7 @@
 				CE74C290225D88ED004E4FF1 /* VMConfigSystemViewController.m in Sources */,
 				CE31C24B225EA37400A965DD /* VMConfigViewController.m in Sources */,
 				CE74C28C225D88ED004E4FF1 /* VMConfigDriveDetailViewController.m in Sources */,
+				CED33AE62267CAB500FF1977 /* VMDisplayMetalViewController.m in Sources */,
 				CE31C245225E555600A965DD /* UTMConfiguration.m in Sources */,
 				CE7BED4C225FBB8600A1E1B6 /* VMConfigDrivesViewController.m in Sources */,
 				CED33AE02267892200FF1977 /* UTMQemuSystem.m in Sources */,

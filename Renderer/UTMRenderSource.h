@@ -19,9 +19,9 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@protocol UTMRendererDelegate <NSObject>
+@protocol UTMRenderSource <NSObject>
 
-@property (nonatomic, nullable, weak) id<MTLDevice> device;
+@property (nonatomic, nullable, strong) id<MTLDevice> device;
 @property (nonatomic, nullable, readonly) id<MTLTexture> texture;
 @property (nonatomic, readonly) NSUInteger numVertices;
 @property (nonatomic, nullable, readonly) id<MTLBuffer> vertices;

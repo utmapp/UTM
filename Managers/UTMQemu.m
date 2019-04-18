@@ -54,7 +54,7 @@ void *start_qemu(void *args) {
     void *dlctx;
     pthread_t qemu_thread;
     
-    dlctx = dlopen([main UTF8String], RTLD_LOCAL);
+    dlctx = dlopen([dylib UTF8String], RTLD_LOCAL);
     if (dlctx == NULL) {
         NSString *err = [NSString stringWithUTF8String:dlerror()];
         completion(NO, err);

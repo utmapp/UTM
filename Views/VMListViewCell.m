@@ -18,10 +18,11 @@
 
 @implementation VMListViewCell
 
-- (void)changeState:(UTMVMState)state withScreen:(nullable UIImage *)image {
+- (void)changeState:(UTMVMState)state image:(nullable UIImage *)image {
     [[self screenButton] setImage:image forState:UIControlStateNormal];
     switch (state) {
         case kVMStopped:
+        case kVMError:
         default: {
             [[self statusIndicator] stopAnimating];
             [[self screenBlurEffect] setHidden:NO];
@@ -53,16 +54,8 @@
     }
 }
 
-- (void)changeState:(UTMVMState)state {
-    [self changeState:state withScreen:nil];
-}
-
 - (void)setName:(NSString *)name {
     [[self nameLabel] setText:name];
-}
-
-- (void)virtualMachine:(UTMVirtualMachine *)vm transitionToState:(UTMVMState)state withScreen:(nullable UIImage *)image {
-    [self changeState:state withScreen:image];
 }
 
 @end

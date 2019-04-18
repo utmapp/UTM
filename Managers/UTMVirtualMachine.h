@@ -16,24 +16,31 @@
 
 #import <Foundation/Foundation.h>
 #import "UTMVirtualMachineDelegate.h"
+#import "CSConnectionDelegate.h"
+#import "UTMRenderSource.h"
 
 @class UTMConfiguration;
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface UTMVirtualMachine : NSObject
+@interface UTMVirtualMachine : NSObject<CSConnectionDelegate>
 
-@property (nonatomic, strong) id<UTMVirtualMachineDelegate> delegate;
+@property (nonatomic, readonly, nullable) id<UTMRenderSource> primaryRendering;
+@property (nonatomic, weak, nullable) id<UTMVirtualMachineDelegate> delegate;
 @property (nonatomic, strong) NSURL *parentPath;
-@property (nonatomic, strong) UTMConfiguration *configuration;
+@property (nonatomic, strong, readonly) UTMConfiguration *configuration;
 @property (nonatomic, assign, readonly) UTMVMState state;
 
 + (BOOL)URLisVirtualMachine:(NSURL *)url;
 + (NSString *)virtualMachineName:(NSURL *)url;
 + (NSURL *)virtualMachinePath:(NSString *)name inParentURL:(NSURL *)parent;
+
 - (id)initWithURL:(NSURL *)url;
 - (id)initDefaults:(NSString *)name withDestinationURL:(NSURL *)dstUrl;
-- (void)saveUTMWithError:(NSError * _Nullable *)err;
+
+- (BOOL)saveUTMWithError:(NSError * _Nullable *)err;
+
+- (void)startVM;
 
 @end
 

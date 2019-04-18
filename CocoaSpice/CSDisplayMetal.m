@@ -20,6 +20,9 @@
 #import <spice-client.h>
 #import <spice/protocol.h>
 
+#define GLIB_OBJC_RETAIN(x) (__bridge_retained void *)(x)
+#define GLIB_OBJC_RELEASE(x) (__bridge void *)(__bridge_transfer NSObject *)(__bridge void *)(x)
+
 #define DISPLAY_DEBUG(display, fmt, ...) \
     SPICE_DEBUG("%d:%d " fmt, \
                 (int)display.channelID, \
@@ -69,7 +72,6 @@ static void cs_primary_destroy(SpiceDisplayChannel *channel, gpointer data) {
         self->_canvasFormat = 0;
         self->_canvasStride = 0;
         self->_canvasData = NULL;
-        self->_texture = nil;
     }
 }
 
@@ -162,18 +164,19 @@ static void cs_channel_new(SpiceSession *s, SpiceChannel *channel, gpointer data
         }
         self->_display = SPICE_DISPLAY_CHANNEL(channel);
         NSCAssert(!self->_sigsconnected, @"Signals already connected!");
+        NSLog(@"%s:%d", __FUNCTION__, __LINE__);
         g_signal_connect(channel, "display-primary-create",
-                         G_CALLBACK(cs_primary_create), (__bridge void *)self);
+                         G_CALLBACK(cs_primary_create), GLIB_OBJC_RETAIN(self));
         g_signal_connect(channel, "display-primary-destroy",
-                         G_CALLBACK(cs_primary_destroy), (__bridge void *)self);
+                         G_CALLBACK(cs_primary_destroy), GLIB_OBJC_RETAIN(self));
         g_signal_connect(channel, "display-invalidate",
-                         G_CALLBACK(cs_invalidate), (__bridge void *)self);
+                         G_CALLBACK(cs_invalidate), GLIB_OBJC_RETAIN(self));
         g_signal_connect_after(channel, "display-mark",
-                               G_CALLBACK(cs_mark), (__bridge void *)self);
+                               G_CALLBACK(cs_mark), GLIB_OBJC_RETAIN(self));
         g_signal_connect_after(channel, "notify::monitors",
-                               G_CALLBACK(cs_update_monitor_area), (__bridge void *)self);
+                               G_CALLBACK(cs_update_monitor_area), GLIB_OBJC_RETAIN(self));
         g_signal_connect_after(channel, "gst-video-overlay",
-                               G_CALLBACK(cs_set_overlay), (__bridge void *)self);
+                               G_CALLBACK(cs_set_overlay), GLIB_OBJC_RETAIN(self));
         self->_sigsconnected = YES;
         if (spice_display_channel_get_primary(channel, 0, &primary)) {
             cs_primary_create(channel, primary.format, primary.width, primary.height,
@@ -200,12 +203,13 @@ static void cs_channel_destroy(SpiceSession *s, SpiceChannel *channel, gpointer 
         cs_primary_destroy(self->_display, (__bridge void *)self);
         self->_display = NULL;
         NSCAssert(self->_sigsconnected, @"Signals not connected!");
-        g_signal_handlers_disconnect_by_func(channel, G_CALLBACK(cs_primary_create), (__bridge void *)self);
-        g_signal_handlers_disconnect_by_func(channel, G_CALLBACK(cs_primary_destroy), (__bridge void *)self);
-        g_signal_handlers_disconnect_by_func(channel, G_CALLBACK(cs_invalidate), (__bridge void *)self);
-        g_signal_handlers_disconnect_by_func(channel, G_CALLBACK(cs_mark), (__bridge void *)self);
-        g_signal_handlers_disconnect_by_func(channel, G_CALLBACK(cs_update_monitor_area), (__bridge void *)self);
-        g_signal_handlers_disconnect_by_func(channel, G_CALLBACK(cs_set_overlay), (__bridge void *)self);
+        NSLog(@"%s:%d", __FUNCTION__, __LINE__);
+        g_signal_handlers_disconnect_by_func(channel, G_CALLBACK(cs_primary_create), GLIB_OBJC_RELEASE(self));
+        g_signal_handlers_disconnect_by_func(channel, G_CALLBACK(cs_primary_destroy), GLIB_OBJC_RELEASE(self));
+        g_signal_handlers_disconnect_by_func(channel, G_CALLBACK(cs_invalidate), GLIB_OBJC_RELEASE(self));
+        g_signal_handlers_disconnect_by_func(channel, G_CALLBACK(cs_mark), GLIB_OBJC_RELEASE(self));
+        g_signal_handlers_disconnect_by_func(channel, G_CALLBACK(cs_update_monitor_area), GLIB_OBJC_RELEASE(self));
+        g_signal_handlers_disconnect_by_func(channel, G_CALLBACK(cs_set_overlay), GLIB_OBJC_RELEASE(self));
         self->_sigsconnected = NO;
         return;
     }
@@ -225,9 +229,9 @@ static void cs_channel_destroy(SpiceSession *s, SpiceChannel *channel, gpointer 
     return _device;
 }
 
-@synthesize texture;
-@synthesize numVertices;
-@synthesize vertices;
+@synthesize texture = _texture;
+@synthesize numVertices = _numVertices;
+@synthesize vertices = _vertices;
 
 - (id)initWithSession:(nonnull SpiceSession *)session channelID:(NSInteger)channelID monitorID:(NSInteger)monitorID {
     self = [self init];
@@ -241,10 +245,11 @@ static void cs_channel_destroy(SpiceSession *s, SpiceChannel *channel, gpointer 
         _sigsconnected = NO;
         g_object_ref(session);
         
+        NSLog(@"%s:%d", __FUNCTION__, __LINE__);
         g_signal_connect(session, "channel-new",
-                         G_CALLBACK(cs_channel_new), (__bridge void *)self);
+                         G_CALLBACK(cs_channel_new), GLIB_OBJC_RETAIN(self));
         g_signal_connect(session, "channel-destroy",
-                         G_CALLBACK(cs_channel_destroy), (__bridge void *)self);
+                         G_CALLBACK(cs_channel_destroy), GLIB_OBJC_RETAIN(self));
         list = spice_session_get_channels(session);
         for (it = g_list_first(list); it != NULL; it = g_list_next(it)) {
             if (SPICE_IS_DISPLAY_CHANNEL(it->data)) {
@@ -264,8 +269,9 @@ static void cs_channel_destroy(SpiceSession *s, SpiceChannel *channel, gpointer 
     if (_display) {
         cs_channel_destroy(self.session, SPICE_CHANNEL(_display), (__bridge void *)self);
     }
-    g_signal_handlers_disconnect_by_func(_session, G_CALLBACK(cs_channel_new), (__bridge void *)self);
-    g_signal_handlers_disconnect_by_func(_session, G_CALLBACK(cs_channel_destroy), (__bridge void *)self);
+    NSLog(@"%s:%d", __FUNCTION__, __LINE__);
+    g_signal_handlers_disconnect_by_func(_session, G_CALLBACK(cs_channel_new), GLIB_OBJC_RELEASE(self));
+    g_signal_handlers_disconnect_by_func(_session, G_CALLBACK(cs_channel_destroy), GLIB_OBJC_RELEASE(self));
     g_object_unref(_session);
     _session = NULL;
 }

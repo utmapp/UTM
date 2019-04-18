@@ -19,7 +19,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface VMListViewCell : UICollectionViewCell <UTMVirtualMachineDelegate>
+@interface VMListViewCell : UICollectionViewCell
 
 @property (weak, nonatomic) IBOutlet UILabel *nameLabel;
 @property (weak, nonatomic) IBOutlet UIVisualEffectView *screenBlurEffect;
@@ -27,10 +27,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (weak, nonatomic) IBOutlet UIButton *screenButton;
 @property (weak, nonatomic) IBOutlet UIActivityIndicatorView *statusIndicator;
 
-- (void)changeState:(UTMVMState)state withScreen:(nullable UIImage *)image;
-- (void)changeState:(UTMVMState)state;
+- (void)changeState:(UTMVMState)state image:(nullable UIImage *)image;
 - (void)setName:(NSString *)name;
-- (void)virtualMachine:(UTMVirtualMachine *)vm transitionToState:(UTMVMState)state withScreen:(nullable UIImage *)image;
 
 @end
 

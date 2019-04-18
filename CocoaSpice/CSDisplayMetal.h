@@ -15,17 +15,17 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "UTMRendererDelegate.h"
+#import "UTMRenderSource.h"
 @import CoreGraphics;
 
 typedef struct _SpiceSession SpiceSession;
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface CSDisplayMetal : NSObject <UTMRendererDelegate>
+@interface CSDisplayMetal : NSObject <UTMRenderSource>
 
 @property (nonatomic, assign) BOOL ready;
-@property (nonatomic, readonly, assign) SpiceSession *session;
+@property (nonatomic, readonly, nullable) SpiceSession *session;
 @property (nonatomic, readonly, assign) NSInteger channelID;
 @property (nonatomic, readonly, assign) NSInteger monitorID;
 

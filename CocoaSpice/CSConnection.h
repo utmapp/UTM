@@ -24,16 +24,15 @@ NS_ASSUME_NONNULL_BEGIN
 @interface CSConnection : NSObject
 
 @property (nonatomic, readonly) NSArray<NSArray<CSDisplayMetal *> *> *monitors;
-@property (nonatomic, readonly) CSDisplayMetal *firstDisplay;
-@property (nonatomic, weak) id<CSConnectionDelegate> delegate;
+@property (nonatomic, weak, nullable) id<CSConnectionDelegate> delegate;
 @property (nonatomic, copy) NSString *host;
 @property (nonatomic, copy) NSString *port;
 @property (nonatomic, assign) BOOL audioEnabled;
 
 + (void)spiceSetDebug:(BOOL)enabled;
 - (id)initWithHost:(NSString *)host port:(NSString *)port;
-- (void)connectWithCompletion:(void (^)(BOOL))completion;
-- (void)disconnectWithCompletion:(void (^)(BOOL))completion;
+- (BOOL)connect;
+- (void)disconnect;
 
 @end
 

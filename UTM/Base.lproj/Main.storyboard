@@ -39,6 +39,9 @@
                                                 <constraint firstAttribute="height" constant="100" id="HTN-L4-8OJ"/>
                                                 <constraint firstAttribute="width" constant="150" id="psZ-ev-pT6"/>
                                             </constraints>
+                                            <connections>
+                                                <action selector="startVMFromScreen:" destination="krH-Hz-4fz" eventType="touchUpInside" id="rgh-fC-4kx"/>
+                                            </connections>
                                         </button>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Name" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="VQv-L6-Wpd">
                                             <rect key="frame" x="0.0" y="100" width="120" height="50"/>
@@ -68,6 +71,9 @@
                                                                         <accessibilityTraits key="traits" button="YES"/>
                                                                     </accessibility>
                                                                     <state key="normal" image="Play Icon"/>
+                                                                    <connections>
+                                                                        <action selector="startVMFromButton:" destination="krH-Hz-4fz" eventType="touchUpInside" id="X2m-Qa-jMY"/>
+                                                                    </connections>
                                                                 </button>
                                                             </subviews>
                                                             <constraints>
@@ -147,6 +153,9 @@
                             <outlet property="rightBarButtonItem" destination="e5k-lL-Xj6" id="87b-9t-bNR"/>
                         </connections>
                     </navigationItem>
+                    <connections>
+                        <segue destination="ckC-eO-gxn" kind="show" identifier="startVM" id="psC-T5-Ggl"/>
+                    </connections>
                 </collectionViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="gzw-ao-My7" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
@@ -1437,11 +1446,11 @@
                                         <rect key="frame" x="0.0" y="787.33333333333337" width="375" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="1Mz-8y-xuP" id="DIe-iC-1u8">
-                                            <rect key="frame" x="0.0" y="0.0" width="335" height="43.666666666666664"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="343" height="43.666666666666664"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="Open Configuration after Creation" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="7DJ-Cp-oMO">
-                                                    <rect key="frame" x="16" y="0.0" width="319" height="43.666666666666664"/>
+                                                    <rect key="frame" x="15" y="0.0" width="325" height="43.666666666666664"/>
                                                     <autoresizingMask key="autoresizingMask"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <nil key="textColor"/>
@@ -1895,6 +1904,26 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="1VP-fj-5tk" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="3012" y="879"/>
+        </scene>
+        <!--Display Metal View Controller-->
+        <scene sceneID="oup-Kt-Gnx">
+            <objects>
+                <viewController modalTransitionStyle="flipHorizontal" hidesBottomBarWhenPushed="YES" id="ckC-eO-gxn" customClass="VMDisplayMetalViewController" sceneMemberID="viewController">
+                    <mtkView key="view" contentMode="scaleToFill" colorPixelFormat="BGRA8Unorm" depthStencilPixelFormat="Depth32Float" id="gsZ-vD-iXd">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="812"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                    </mtkView>
+                    <nil key="simulatedTopBarMetrics"/>
+                    <nil key="simulatedBottomBarMetrics"/>
+                    <splitViewMasterSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+                    <connections>
+                        <segue destination="HWN-B0-AD0" kind="unwind" identifier="returnToList" unwindAction="unwindToMainFromVM:" id="dX7-Ni-UhX"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="DZc-Sg-gjO" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <exit id="HWN-B0-AD0" userLabel="Exit" sceneMemberID="exit"/>
+            </objects>
+            <point key="canvasLocation" x="1830" y="-624"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="2bS-UE-pwf">

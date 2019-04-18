@@ -68,7 +68,7 @@
         [self pushArgv:@"curses"];
     } else {
         [self pushArgv:@"-spice"];
-        [self pushArgv:@"disable-ticketing,image-compression=off,playback-compression=off,streaming-video=filter"];
+        [self pushArgv:@"port=5930,addr=127.0.0.1,disable-ticketing,image-compression=off,playback-compression=off,streaming-video=filter"];
         [self pushArgv:@"-vga"];
         [self pushArgv:@"qxl"];
     }
@@ -90,6 +90,7 @@
 
 - (void)startWithCompletion:(void (^)(BOOL, NSString * _Nonnull))completion {
     NSString *dylib = [NSString stringWithFormat:@"libqemu-system-%@.dylib", self.configuration.systemArchitecture];
+    [self argsFromConfiguration];
     [self startDylib:dylib main:@"qemu_main" completion:completion];
 }
 

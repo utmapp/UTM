@@ -15,13 +15,16 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "UTMVirtualMachine.h"
+#import "UTMVirtualMachineDelegate.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface VMListViewController : UICollectionViewController<UICollectionViewDragDelegate, UICollectionViewDropDelegate>
+@interface VMListViewController : UICollectionViewController<UICollectionViewDragDelegate, UICollectionViewDropDelegate, UTMVirtualMachineDelegate>
 
 - (IBAction)unwindToMainFromConfiguration:(UIStoryboardSegue*)sender;
+- (IBAction)unwindToMainFromVM:(UIStoryboardSegue*)sender;
+- (IBAction)startVMFromButton:(UIButton *)sender;
+- (IBAction)startVMFromScreen:(UIButton *)sender;
 
 @end
 
