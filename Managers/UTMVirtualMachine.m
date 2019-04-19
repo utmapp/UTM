@@ -211,6 +211,7 @@ NSString *const kUTMBundleExtension = @"utm";
     if (display.channelID == 0 && display.monitorID == 0) {
         self.delegate.vmRendering = display;
         _primaryRendering = display;
+        _primaryInput = input;
         [self.delegate virtualMachine:self transitionToState:kVMStarted];
     }
 }

@@ -14,25 +14,16 @@
 // limitations under the License.
 //
 
-#import <UIKit/UIKit.h>
-#import "UTMVirtualMachineDelegate.h"
-#import "VMKeyboardViewDelegate.h"
+#import <Foundation/Foundation.h>
 
-@class UTMVirtualMachine;
 @class VMKeyboardView;
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface VMDisplayMetalViewController : UIViewController<UTMVirtualMachineDelegate, VMKeyboardViewDelegate>
+@protocol VMKeyboardViewDelegate <NSObject>
 
-@property (nonatomic, strong) UTMVirtualMachine *vm;
-@property (weak, nonatomic) IBOutlet MTKView *mtkView;
-@property (weak, nonatomic) IBOutlet VMKeyboardView *keyboardView;
-@property (weak, nonatomic) IBOutlet UIView *inputAccessoryView;
-
-- (IBAction)gestureSwipeUp:(UISwipeGestureRecognizer *)sender;
-- (IBAction)gestureSwipeDown:(UISwipeGestureRecognizer *)sender;
-- (IBAction)keyboardDonePressed:(UIButton *)sender;
+- (void)keyboardView:(VMKeyboardView *)keyboardView didPressKeyDown:(int)scancode;
+- (void)keyboardView:(VMKeyboardView *)keyboardView didPressKeyUp:(int)scancode;
 
 @end
 

@@ -117,6 +117,7 @@
 		CE31C245225E555600A965DD /* UTMConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = CE31C244225E555600A965DD /* UTMConfiguration.m */; };
 		CE31C24B225EA37400A965DD /* VMConfigViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CE31C24A225EA37400A965DD /* VMConfigViewController.m */; };
 		CE31C24D225EA4A200A965DD /* VMConfigCreateViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CE31C24C225EA4A200A965DD /* VMConfigCreateViewController.m */; };
+		CE4507D2226A5BE200A28D22 /* VMKeyboardView.m in Sources */ = {isa = PBXBuildFile; fileRef = CE4507D1226A5BE200A28D22 /* VMKeyboardView.m */; };
 		CE4AA1492263B24F002E4A54 /* CSDisplayMetal.m in Sources */ = {isa = PBXBuildFile; fileRef = CE4AA1482263B24F002E4A54 /* CSDisplayMetal.m */; };
 		CE4AA14C2264004F002E4A54 /* CSConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = CE4AA14B2264004F002E4A54 /* CSConnection.m */; };
 		CE4AA1502265B15B002E4A54 /* libqemu-img.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE4AA14E2265B152002E4A54 /* libqemu-img.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
@@ -330,6 +331,9 @@
 		CE31C249225EA37400A965DD /* VMConfigViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VMConfigViewController.h; sourceTree = "<group>"; };
 		CE31C24A225EA37400A965DD /* VMConfigViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VMConfigViewController.m; sourceTree = "<group>"; };
 		CE31C24C225EA4A200A965DD /* VMConfigCreateViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VMConfigCreateViewController.m; sourceTree = "<group>"; };
+		CE4507D0226A5BE200A28D22 /* VMKeyboardView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VMKeyboardView.h; sourceTree = "<group>"; };
+		CE4507D1226A5BE200A28D22 /* VMKeyboardView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VMKeyboardView.m; sourceTree = "<group>"; };
+		CE4507D3226A5C9900A28D22 /* VMKeyboardViewDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VMKeyboardViewDelegate.h; sourceTree = "<group>"; };
 		CE4AA1472263B24F002E4A54 /* CSDisplayMetal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CSDisplayMetal.h; sourceTree = "<group>"; };
 		CE4AA1482263B24F002E4A54 /* CSDisplayMetal.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CSDisplayMetal.m; sourceTree = "<group>"; };
 		CE4AA14A2264004F002E4A54 /* CSConnection.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CSConnection.h; sourceTree = "<group>"; };
@@ -701,6 +705,9 @@
 			children = (
 				CED33AE42267CAB500FF1977 /* VMDisplayMetalViewController.h */,
 				CED33AE52267CAB500FF1977 /* VMDisplayMetalViewController.m */,
+				CE4507D0226A5BE200A28D22 /* VMKeyboardView.h */,
+				CE4507D1226A5BE200A28D22 /* VMKeyboardView.m */,
+				CE4507D3226A5C9900A28D22 /* VMKeyboardViewDelegate.h */,
 				CE550BCF225947990063E575 /* VMListViewController.h */,
 				CE550BD0225947990063E575 /* VMListViewController.m */,
 				CE550BE222596E790063E575 /* VMListViewCell.h */,
@@ -796,6 +803,7 @@
 				CE74C288225D88ED004E4FF1 /* VMConfigNetworkingViewController.m in Sources */,
 				CE74C28E225D88ED004E4FF1 /* VMConfigSharingViewController.m in Sources */,
 				CE74C28F225D88ED004E4FF1 /* VMConfigSoundViewController.m in Sources */,
+				CE4507D2226A5BE200A28D22 /* VMKeyboardView.m in Sources */,
 				CE5E4958225C5A4400148CEF /* VMConfigExistingViewController.m in Sources */,
 				CE550BE422596E790063E575 /* VMListViewCell.m in Sources */,
 				CE74C28A225D88ED004E4FF1 /* VMConfigPrintingViewController.m in Sources */,

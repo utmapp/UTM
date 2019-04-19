@@ -6,6 +6,7 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14490.49"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -1905,22 +1906,70 @@
             </objects>
             <point key="canvasLocation" x="3012" y="879"/>
         </scene>
-        <!--Display Metal View Controller-->
+        <!--Display Metal-->
         <scene sceneID="oup-Kt-Gnx">
             <objects>
-                <viewController modalTransitionStyle="flipHorizontal" hidesBottomBarWhenPushed="YES" id="ckC-eO-gxn" customClass="VMDisplayMetalViewController" sceneMemberID="viewController">
-                    <mtkView key="view" contentMode="scaleToFill" colorPixelFormat="BGRA8Unorm" depthStencilPixelFormat="Depth32Float" id="gsZ-vD-iXd">
+                <viewController modalTransitionStyle="flipHorizontal" hidesBottomBarWhenPushed="YES" id="ckC-eO-gxn" userLabel="Display Metal" customClass="VMDisplayMetalViewController" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="WSe-Ri-b4c">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="812"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                    </mtkView>
+                        <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="0Mf-V7-Aot" customClass="VMKeyboardView">
+                                <rect key="frame" x="0.0" y="44" width="0.0" height="0.0"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" id="UwZ-as-GT6"/>
+                                    <constraint firstAttribute="height" id="r0l-BT-kIN"/>
+                                </constraints>
+                                <connections>
+                                    <outlet property="delegate" destination="ckC-eO-gxn" id="7Cy-ax-RNV"/>
+                                </connections>
+                            </view>
+                            <mtkView contentMode="scaleToFill" colorPixelFormat="BGRA8Unorm" depthStencilPixelFormat="Depth32Float" translatesAutoresizingMaskIntoConstraints="NO" id="ZK0-vH-7ok">
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="812"/>
+                            </mtkView>
+                        </subviews>
+                        <gestureRecognizers/>
+                        <constraints>
+                            <constraint firstItem="0Mf-V7-Aot" firstAttribute="leading" secondItem="Bio-ez-YeW" secondAttribute="leading" id="L0U-9R-jjD"/>
+                            <constraint firstAttribute="bottom" secondItem="ZK0-vH-7ok" secondAttribute="bottom" id="cgW-vJ-VjV"/>
+                            <constraint firstAttribute="trailing" secondItem="ZK0-vH-7ok" secondAttribute="trailing" id="dMk-GY-XOa"/>
+                            <constraint firstItem="ZK0-vH-7ok" firstAttribute="top" secondItem="WSe-Ri-b4c" secondAttribute="top" id="fbF-cf-IeV"/>
+                            <constraint firstItem="0Mf-V7-Aot" firstAttribute="top" secondItem="Bio-ez-YeW" secondAttribute="top" id="ntS-ba-sAF"/>
+                            <constraint firstItem="ZK0-vH-7ok" firstAttribute="leading" secondItem="WSe-Ri-b4c" secondAttribute="leading" id="ws8-g9-a5x"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="Bio-ez-YeW"/>
+                    </view>
                     <nil key="simulatedTopBarMetrics"/>
                     <nil key="simulatedBottomBarMetrics"/>
                     <splitViewMasterSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
                     <connections>
+                        <outlet property="inputAccessoryView" destination="H7m-pq-dCg" id="Cgj-Ig-VfV"/>
+                        <outlet property="keyboardView" destination="0Mf-V7-Aot" id="MgM-9f-E25"/>
+                        <outlet property="mtkView" destination="ZK0-vH-7ok" id="x0C-ao-tuC"/>
                         <segue destination="HWN-B0-AD0" kind="unwind" identifier="returnToList" unwindAction="unwindToMainFromVM:" id="dX7-Ni-UhX"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="DZc-Sg-gjO" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <view contentMode="scaleToFill" id="H7m-pq-dCg">
+                    <rect key="frame" x="0.0" y="0.0" width="300" height="50"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                    <subviews>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="F32-dg-1Zk">
+                            <rect key="frame" x="245" y="10" width="39" height="30"/>
+                            <state key="normal" title="Close"/>
+                            <connections>
+                                <action selector="keyboardDonePressed:" destination="ckC-eO-gxn" eventType="touchUpInside" id="Gwz-Os-LSp"/>
+                            </connections>
+                        </button>
+                    </subviews>
+                    <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <constraints>
+                        <constraint firstItem="M5c-nM-HyU" firstAttribute="trailing" secondItem="F32-dg-1Zk" secondAttribute="trailing" constant="16" id="bYG-2J-8fy"/>
+                        <constraint firstItem="F32-dg-1Zk" firstAttribute="centerY" secondItem="H7m-pq-dCg" secondAttribute="centerY" id="m8W-A2-4ck"/>
+                    </constraints>
+                    <viewLayoutGuide key="safeArea" id="M5c-nM-HyU"/>
+                </view>
                 <exit id="HWN-B0-AD0" userLabel="Exit" sceneMemberID="exit"/>
             </objects>
             <point key="canvasLocation" x="1830" y="-624"/>

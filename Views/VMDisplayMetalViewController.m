@@ -17,13 +17,14 @@
 #import "VMDisplayMetalViewController.h"
 #import "UTMRenderer.h"
 #import "UTMVirtualMachine.h"
+#import "VMKeyboardView.h"
+#import "CSInput.h"
 
 @interface VMDisplayMetalViewController ()
 
 @end
 
 @implementation VMDisplayMetalViewController {
-    MTKView *_view;
     UTMRenderer *_renderer;
 }
 
@@ -31,38 +32,58 @@
 @synthesize vmMessage;
 @synthesize vmRendering;
 
+- (BOOL)prefersStatusBarHidden {
+    return YES;
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     
     // Set the view to use the default device
-    _view = (MTKView *)self.view;
-    _view.device = MTLCreateSystemDefaultDevice();
-    if (!_view.device) {
+    self.mtkView.device = MTLCreateSystemDefaultDevice();
+    if (!self.mtkView.device) {
         NSLog(@"Metal is not supported on this device");
         return;
     }
     
-    _renderer = [[UTMRenderer alloc] initWithMetalKitView:_view];
+    _renderer = [[UTMRenderer alloc] initWithMetalKitView:self.mtkView];
     if (!_renderer) {
         NSLog(@"Renderer failed initialization");
         return;
     }
     
     // Initialize our renderer with the view size
-    [_renderer mtkView:_view drawableSizeWillChange:_view.drawableSize];
+    [_renderer mtkView:self.mtkView drawableSizeWillChange:self.mtkView.drawableSize];
     _renderer.source = self.vmRendering;
     
-    _view.delegate = _renderer;
+    self.mtkView.delegate = _renderer;
+    
+    // Setup keyboard accessory
+    self.keyboardView.inputAccessoryView = self.inputAccessoryView;
+    
+    // Set up gesture recognizers because Storyboards is BROKEN and doing it there crashes!
+    UISwipeGestureRecognizer *swipeUp = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(gestureSwipeUp:)];
+    swipeUp.numberOfTouchesRequired = 3;
+    swipeUp.direction = UISwipeGestureRecognizerDirectionUp;
+    UISwipeGestureRecognizer *swipeDown = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(gestureSwipeDown:)];
+    swipeDown.numberOfTouchesRequired = 3;
+    swipeDown.direction = UISwipeGestureRecognizerDirectionDown;
+    [self.view addGestureRecognizer:swipeUp];
+    [self.view addGestureRecognizer:swipeDown];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     [self.navigationController setNavigationBarHidden:YES animated:animated];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
     [self.navigationController setNavigationBarHidden:NO animated:animated];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillShowNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillHideNotification object:nil];
 }
 
 - (void)virtualMachine:(UTMVirtualMachine *)vm transitionToState:(UTMVMState)state {
@@ -96,6 +117,52 @@
             break; // TODO: Implement
         }
     }
+}
+
+#pragma mark - Swipe gestures
+
+- (IBAction)gestureSwipeUp:(UISwipeGestureRecognizer *)sender {
+    if (sender.state == UIGestureRecognizerStateEnded) {
+        [self.keyboardView becomeFirstResponder];
+    }
+}
+
+- (IBAction)gestureSwipeDown:(UISwipeGestureRecognizer *)sender {
+    if (sender.state == UIGestureRecognizerStateEnded) {
+        [self.keyboardView resignFirstResponder];
+    }
+}
+
+#pragma mark - Keyboard
+
+- (void)keyboardWillShow:(NSNotification *)notification {
+    CGSize keyboardSize = [[[notification userInfo] objectForKey:UIKeyboardFrameBeginUserInfoKey] CGRectValue].size;
+    
+    [UIView animateWithDuration:0.3 animations:^{
+        CGRect f = self.view.frame;
+        f.origin.y = -keyboardSize.height;
+        self.view.frame = f;
+    }];
+}
+
+- (void)keyboardWillHide:(NSNotification *)notification {
+    [UIView animateWithDuration:0.3 animations:^{
+        CGRect f = self.view.frame;
+        f.origin.y = 0.0f;
+        self.view.frame = f;
+    }];
+}
+
+- (void)keyboardView:(nonnull VMKeyboardView *)keyboardView didPressKeyDown:(int)scancode {
+    [self.vm.primaryInput sendKey:SEND_KEY_PRESS code:scancode];
+}
+
+- (void)keyboardView:(nonnull VMKeyboardView *)keyboardView didPressKeyUp:(int)scancode {
+    [self.vm.primaryInput sendKey:SEND_KEY_RELEASE code:scancode];
+}
+
+- (IBAction)keyboardDonePressed:(UIButton *)sender {
+    [self.keyboardView resignFirstResponder];
 }
 
 @end

@@ -15,24 +15,14 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "UTMVirtualMachineDelegate.h"
 #import "VMKeyboardViewDelegate.h"
-
-@class UTMVirtualMachine;
-@class VMKeyboardView;
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface VMDisplayMetalViewController : UIViewController<UTMVirtualMachineDelegate, VMKeyboardViewDelegate>
+@interface VMKeyboardView : UIView <UITextInputTraits, UIKeyInput>
 
-@property (nonatomic, strong) UTMVirtualMachine *vm;
-@property (weak, nonatomic) IBOutlet MTKView *mtkView;
-@property (weak, nonatomic) IBOutlet VMKeyboardView *keyboardView;
-@property (weak, nonatomic) IBOutlet UIView *inputAccessoryView;
-
-- (IBAction)gestureSwipeUp:(UISwipeGestureRecognizer *)sender;
-- (IBAction)gestureSwipeDown:(UISwipeGestureRecognizer *)sender;
-- (IBAction)keyboardDonePressed:(UIButton *)sender;
+@property (nonatomic, weak) IBOutlet id<VMKeyboardViewDelegate> delegate;
+@property (nonatomic, readwrite, strong) UIView *inputAccessoryView;
 
 @end
 

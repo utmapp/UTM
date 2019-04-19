@@ -20,12 +20,14 @@
 #import "UTMRenderSource.h"
 
 @class UTMConfiguration;
+@class CSInput;
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface UTMVirtualMachine : NSObject<CSConnectionDelegate>
 
 @property (nonatomic, readonly, nullable) id<UTMRenderSource> primaryRendering;
+@property (nonatomic, readonly, nullable) CSInput *primaryInput;
 @property (nonatomic, weak, nullable) id<UTMVirtualMachineDelegate> delegate;
 @property (nonatomic, strong) NSURL *parentPath;
 @property (nonatomic, strong, readonly) UTMConfiguration *configuration;
