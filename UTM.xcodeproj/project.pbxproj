@@ -129,6 +129,8 @@
 		CE550BE422596E790063E575 /* VMListViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = CE550BE322596E790063E575 /* VMListViewCell.m */; };
 		CE5E4958225C5A4400148CEF /* VMConfigExistingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CE5E4957225C5A4400148CEF /* VMConfigExistingViewController.m */; };
 		CE5F165C2261395000F3D56B /* UTMVirtualMachine.m in Sources */ = {isa = PBXBuildFile; fileRef = CE5F165B2261395000F3D56B /* UTMVirtualMachine.m */; };
+		CE66450D2269313200B0849A /* MetalKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE66450C2269313200B0849A /* MetalKit.framework */; };
+		CE664511226935F000B0849A /* CSInput.m in Sources */ = {isa = PBXBuildFile; fileRef = CE664510226935F000B0849A /* CSInput.m */; };
 		CE74C288225D88ED004E4FF1 /* VMConfigNetworkingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CE74C276225D88EC004E4FF1 /* VMConfigNetworkingViewController.m */; };
 		CE74C28A225D88ED004E4FF1 /* VMConfigPrintingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CE74C279225D88EC004E4FF1 /* VMConfigPrintingViewController.m */; };
 		CE74C28B225D88ED004E4FF1 /* VMConfigDisplayViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CE74C27D225D88EC004E4FF1 /* VMConfigDisplayViewController.m */; };
@@ -349,6 +351,10 @@
 		CE5E4956225C5A4400148CEF /* VMConfigExistingViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VMConfigExistingViewController.h; sourceTree = "<group>"; };
 		CE5E4957225C5A4400148CEF /* VMConfigExistingViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VMConfigExistingViewController.m; sourceTree = "<group>"; };
 		CE5F165B2261395000F3D56B /* UTMVirtualMachine.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UTMVirtualMachine.m; sourceTree = "<group>"; };
+		CE66450C2269313200B0849A /* MetalKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MetalKit.framework; path = System/Library/Frameworks/MetalKit.framework; sourceTree = SDKROOT; };
+		CE66450E2269355F00B0849A /* CocoaSpice.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CocoaSpice.h; sourceTree = "<group>"; };
+		CE66450F226935F000B0849A /* CSInput.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CSInput.h; sourceTree = "<group>"; };
+		CE664510226935F000B0849A /* CSInput.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CSInput.m; sourceTree = "<group>"; };
 		CE74C276225D88EC004E4FF1 /* VMConfigNetworkingViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VMConfigNetworkingViewController.m; sourceTree = "<group>"; };
 		CE74C277225D88EC004E4FF1 /* VMConfigSystemViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VMConfigSystemViewController.h; sourceTree = "<group>"; };
 		CE74C279225D88EC004E4FF1 /* VMConfigPrintingViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VMConfigPrintingViewController.m; sourceTree = "<group>"; };
@@ -406,6 +412,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CE66450D2269313200B0849A /* MetalKit.framework in Frameworks */,
 				CE9D19662265425A00355E14 /* libgstautodetect.a in Frameworks */,
 				CE9D19672265425A00355E14 /* libgstaudiotestsrc.a in Frameworks */,
 				CE9D19682265425A00355E14 /* libgstvideoconvert.a in Frameworks */,
@@ -485,6 +492,7 @@
 		CE2D63D622653C7300FC7E63 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				CE66450C2269313200B0849A /* MetalKit.framework */,
 				CE9D195D2265425900355E14 /* libgstadder.a */,
 				CE9D19612265425900355E14 /* libgstapp.a */,
 				CE9D19552265425900355E14 /* libgstaudioconvert.a */,
@@ -596,6 +604,8 @@
 				CE4AA14D22642EB4002E4A54 /* CSConnectionDelegate.h */,
 				CE4AA1472263B24F002E4A54 /* CSDisplayMetal.h */,
 				CE4AA1482263B24F002E4A54 /* CSDisplayMetal.m */,
+				CE66450F226935F000B0849A /* CSInput.h */,
+				CE664510226935F000B0849A /* CSInput.m */,
 			);
 			path = CocoaSpice;
 			sourceTree = "<group>";
@@ -794,6 +804,7 @@
 				CE4AA1492263B24F002E4A54 /* CSDisplayMetal.m in Sources */,
 				CEDC1DF22260EE4B008D9A6D /* StaticDataTableViewController.m in Sources */,
 				CE550BCE225947990063E575 /* AppDelegate.m in Sources */,
+				CE664511226935F000B0849A /* CSInput.m in Sources */,
 				CE74C290225D88ED004E4FF1 /* VMConfigSystemViewController.m in Sources */,
 				CE31C24B225EA37400A965DD /* VMConfigViewController.m in Sources */,
 				CE74C28C225D88ED004E4FF1 /* VMConfigDriveDetailViewController.m in Sources */,

@@ -15,10 +15,49 @@
 //
 
 #import <Foundation/Foundation.h>
+@import CoreGraphics;
+
+typedef struct _SpiceSession SpiceSession;
+
+typedef NS_ENUM(NSUInteger, SendKeyType) {
+    SEND_KEY_PRESS,
+    SEND_KEY_RELEASE
+};
+
+typedef NS_ENUM(NSUInteger, SendButtonType) {
+    SEND_BUTTON_NONE = 0,
+    SEND_BUTTON_LEFT = 1,
+    SEND_BUTTON_MIDDLE = 2,
+    SEND_BUTTON_RIGHT = 4
+};
+
+typedef NS_ENUM(NSUInteger, SendScrollType) {
+    SEND_SCROLL_UP,
+    SEND_SCROLL_DOWN,
+    SEND_SCROLL_SMOOTH
+};
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface CSInput : NSObject
+
+@property (nonatomic, readonly, nullable) SpiceSession *session;
+@property (nonatomic, readonly, assign) NSInteger channelID;
+@property (nonatomic, readonly, assign) NSInteger monitorID;
+@property (nonatomic, assign) NSUInteger keypressDelay;
+@property (nonatomic, assign) BOOL disableInputs;
+@property (nonatomic, assign) CGFloat scale;
+
+- (void)sendKey:(SendKeyType)type code:(int)scancode;
+- (void)sendPause:(SendKeyType)type;
+- (void)releaseKeys;
+
+- (void)sendMouseMotion:(SendButtonType)button x:(CGFloat)x y:(CGFloat)y;
+- (void)sendMouseScroll:(SendScrollType)type button:(SendButtonType)button dy:(CGFloat)dy;
+- (void)sendMouseButton:(SendButtonType)button pressed:(BOOL)pressed x:(CGFloat)x y:(CGFloat)y;
+- (void)mouseMode:(BOOL)server;
+
+- (id)initWithSession:(nonnull SpiceSession *)session channelID:(NSInteger)channelID monitorID:(NSInteger)monitorID;
 
 @end
 
