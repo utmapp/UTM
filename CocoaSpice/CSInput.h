@@ -15,17 +15,10 @@
 //
 
 #import <Foundation/Foundation.h>
-@import MetalKit;
 
 NS_ASSUME_NONNULL_BEGIN
 
-@protocol UTMRenderSource <NSObject>
-
-@property (nonatomic, readonly) dispatch_semaphore_t drawLock;
-@property (nonatomic, nullable, strong) id<MTLDevice> device;
-@property (nonatomic, nullable, readonly) id<MTLTexture> texture;
-@property (nonatomic, readonly) NSUInteger numVertices;
-@property (nonatomic, nullable, readonly) id<MTLBuffer> vertices;
+@interface CSInput : NSObject
 
 @end
 

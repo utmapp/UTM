@@ -14,19 +14,19 @@
 // limitations under the License.
 //
 
-#import <Foundation/Foundation.h>
-@import MetalKit;
+#ifndef CocoaSpice_h
+#define CocoaSpice_h
 
-NS_ASSUME_NONNULL_BEGIN
+#include "CSConnection.h"
+#include "CSDisplayMetal.h"
 
-@protocol UTMRenderSource <NSObject>
+#define GLIB_OBJC_RETAIN(x) (__bridge_retained void *)(x)
+#define GLIB_OBJC_RELEASE(x) (__bridge void *)(__bridge_transfer NSObject *)(__bridge void *)(x)
 
-@property (nonatomic, readonly) dispatch_semaphore_t drawLock;
-@property (nonatomic, nullable, strong) id<MTLDevice> device;
-@property (nonatomic, nullable, readonly) id<MTLTexture> texture;
-@property (nonatomic, readonly) NSUInteger numVertices;
-@property (nonatomic, nullable, readonly) id<MTLBuffer> vertices;
+#define DISPLAY_DEBUG(display, fmt, ...) \
+    SPICE_DEBUG("%d:%d " fmt, \
+        (int)display.channelID, \
+        (int)display.monitorID, \
+        ## __VA_ARGS__)
 
-@end
-
-NS_ASSUME_NONNULL_END
+#endif /* CocoaSpice_h */

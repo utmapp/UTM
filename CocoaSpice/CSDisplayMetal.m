@@ -14,14 +14,11 @@
 // limitations under the License.
 //
 
-#import "CSDisplayMetal.h"
 #import "UTMShaderTypes.h"
+#import "CocoaSpice.h"
 #import <glib.h>
 #import <spice-client.h>
 #import <spice/protocol.h>
-
-#define GLIB_OBJC_RETAIN(x) (__bridge_retained void *)(x)
-#define GLIB_OBJC_RELEASE(x) (__bridge void *)(__bridge_transfer NSObject *)(__bridge void *)(x)
 
 #define DISPLAY_DEBUG(display, fmt, ...) \
     SPICE_DEBUG("%d:%d " fmt, \
@@ -34,7 +31,6 @@
     
     BOOL                    _sigsconnected;
     
-    /* Modifying the following REQUIRES lock held */
     //gint                    _mark;
     gint                    _canvasFormat;
     gint                    _canvasStride;
@@ -46,6 +42,7 @@
     id<MTLTexture>          _texture;
     id<MTLBuffer>           _vertices;
     NSUInteger              _numVertices;
+    dispatch_semaphore_t    _drawLock;
 }
 
 static void cs_primary_create(SpiceChannel *channel, gint format,
@@ -54,35 +51,29 @@ static void cs_primary_create(SpiceChannel *channel, gint format,
     CSDisplayMetal *self = (__bridge CSDisplayMetal *)data;
     
     g_assert(format == SPICE_SURFACE_FMT_32_xRGB || format == SPICE_SURFACE_FMT_16_555);
-    @synchronized (self) {
-        self->_canvasArea = CGRectMake(0, 0, width, height);
-        self->_canvasFormat = format;
-        self->_canvasStride = stride;
-        self->_canvasData = imgdata;
-    }
+    self->_canvasArea = CGRectMake(0, 0, width, height);
+    self->_canvasFormat = format;
+    self->_canvasStride = stride;
+    self->_canvasData = imgdata;
     
-    cs_update_monitor_area(channel, data);
+    cs_update_monitor_area(channel, NULL, data);
 }
 
 static void cs_primary_destroy(SpiceDisplayChannel *channel, gpointer data) {
     CSDisplayMetal *self = (__bridge CSDisplayMetal *)data;
     self.ready = NO;
-    @synchronized (self) {
-        self->_canvasArea = CGRectZero;
-        self->_canvasFormat = 0;
-        self->_canvasStride = 0;
-        self->_canvasData = NULL;
-    }
+    self->_canvasArea = CGRectZero;
+    self->_canvasFormat = 0;
+    self->_canvasStride = 0;
+    self->_canvasData = NULL;
 }
 
 static void cs_invalidate(SpiceChannel *channel,
                        gint x, gint y, gint w, gint h, gpointer data) {
     CSDisplayMetal *self = (__bridge CSDisplayMetal *)data;
-    @synchronized (self) {
-        CGRect rect = CGRectIntersection(CGRectMake(x, y, w, h), self->_visibleArea);
-        if (!CGRectIsEmpty(rect)) {
-            [self drawRegion:rect];
-        }
+    CGRect rect = CGRectIntersection(CGRectMake(x, y, w, h), self->_visibleArea);
+    if (!CGRectIsEmpty(rect)) {
+        [self drawRegion:rect];
     }
 }
 
@@ -99,7 +90,7 @@ static gboolean cs_set_overlay(SpiceChannel *channel, void* pipeline_ptr, gpoint
     return false;
 }
 
-static void cs_update_monitor_area(SpiceChannel *channel, gpointer data) {
+static void cs_update_monitor_area(SpiceChannel *channel, GParamSpec *pspec, gpointer data) {
     CSDisplayMetal *self = (__bridge CSDisplayMetal *)data;
     SpiceDisplayMonitorConfig *cfg, *c = NULL;
     GArray *monitors = NULL;
@@ -218,9 +209,7 @@ static void cs_channel_destroy(SpiceSession *s, SpiceChannel *channel, gpointer 
 }
 
 - (void)setDevice:(id<MTLDevice>)device {
-    @synchronized (self) {
-        _device = device;
-    }
+    _device = device;
     [self rebuildTexture];
     [self rebuildVertices];
 }
@@ -229,9 +218,18 @@ static void cs_channel_destroy(SpiceSession *s, SpiceChannel *channel, gpointer 
     return _device;
 }
 
+@synthesize drawLock = _drawLock;
 @synthesize texture = _texture;
 @synthesize numVertices = _numVertices;
 @synthesize vertices = _vertices;
+
+- (id)init {
+    self = [super init];
+    if (self) {
+        _drawLock = dispatch_semaphore_create(1);
+    }
+    return self;
+}
 
 - (id)initWithSession:(nonnull SpiceSession *)session channelID:(NSInteger)channelID monitorID:(NSInteger)monitorID {
     self = [self init];
@@ -277,73 +275,67 @@ static void cs_channel_destroy(SpiceSession *s, SpiceChannel *channel, gpointer 
 }
 
 - (void)updateVisibleAreaWithRect:(CGRect)rect {
-    @synchronized (self) {
-        CGRect visible = CGRectIntersection(_canvasArea, rect);
-        if (CGRectIsNull(visible)) {
-            DISPLAY_DEBUG(self, "The monitor area is not intersecting primary surface");
-            self.ready = NO;
-            _visibleArea = CGRectZero;
-        } else {
-            _visibleArea = visible;
-        }
+    CGRect visible = CGRectIntersection(_canvasArea, rect);
+    if (CGRectIsNull(visible)) {
+        DISPLAY_DEBUG(self, "The monitor area is not intersecting primary surface");
+        self.ready = NO;
+        _visibleArea = CGRectZero;
+    } else {
+        _visibleArea = visible;
     }
     [self rebuildTexture];
     [self rebuildVertices];
 }
 
 - (void)rebuildTexture {
-    @synchronized (self) {
-        if (CGRectIsEmpty(_canvasArea) || !_device) {
-            return;
-        }
-        MTLTextureDescriptor *textureDescriptor = [[MTLTextureDescriptor alloc] init];
-        // don't worry that that components are reversed, we fix it in shaders
-        textureDescriptor.pixelFormat = (_canvasFormat == SPICE_SURFACE_FMT_32_xRGB) ? MTLPixelFormatBGRA8Unorm : MTLPixelFormatBGR5A1Unorm;
-        textureDescriptor.width = _visibleArea.size.width;
-        textureDescriptor.height = _visibleArea.size.height;
-        _texture = [_device newTextureWithDescriptor:textureDescriptor];
-        [self drawRegion:_visibleArea];
+    if (CGRectIsEmpty(_canvasArea) || !_device) {
+        return;
     }
+    MTLTextureDescriptor *textureDescriptor = [[MTLTextureDescriptor alloc] init];
+    // don't worry that that components are reversed, we fix it in shaders
+    textureDescriptor.pixelFormat = (_canvasFormat == SPICE_SURFACE_FMT_32_xRGB) ? MTLPixelFormatBGRA8Unorm : MTLPixelFormatBGR5A1Unorm;
+    textureDescriptor.width = _visibleArea.size.width;
+    textureDescriptor.height = _visibleArea.size.height;
+    _texture = [_device newTextureWithDescriptor:textureDescriptor];
+    [self drawRegion:_visibleArea];
 }
 
 - (void)rebuildVertices {
-    @synchronized (self) {
-        // We flip the y-coordinates because pixman renders flipped
-        UTMVertex quadVertices[] =
-        {
-            // Pixel positions, Texture coordinates
-            { {  _visibleArea.size.width/2,   _visibleArea.size.height/2 },  { 1.f, 0.f } },
-            { { -_visibleArea.size.width/2,   _visibleArea.size.height/2 },  { 0.f, 0.f } },
-            { { -_visibleArea.size.width/2,  -_visibleArea.size.height/2 },  { 0.f, 1.f } },
-            
-            { {  _visibleArea.size.width/2,   _visibleArea.size.height/2 },  { 1.f, 0.f } },
-            { { -_visibleArea.size.width/2,  -_visibleArea.size.height/2 },  { 0.f, 1.f } },
-            { {  _visibleArea.size.width/2,  -_visibleArea.size.height/2 },  { 1.f, 1.f } },
-        };
+    // We flip the y-coordinates because pixman renders flipped
+    UTMVertex quadVertices[] =
+    {
+        // Pixel positions, Texture coordinates
+        { {  _visibleArea.size.width/2,   _visibleArea.size.height/2 },  { 1.f, 0.f } },
+        { { -_visibleArea.size.width/2,   _visibleArea.size.height/2 },  { 0.f, 0.f } },
+        { { -_visibleArea.size.width/2,  -_visibleArea.size.height/2 },  { 0.f, 1.f } },
         
-        // Create our vertex buffer, and initialize it with our quadVertices array
-        _vertices = [_device newBufferWithBytes:quadVertices
-                                         length:sizeof(quadVertices)
-                                        options:MTLResourceStorageModeShared];
+        { {  _visibleArea.size.width/2,   _visibleArea.size.height/2 },  { 1.f, 0.f } },
+        { { -_visibleArea.size.width/2,  -_visibleArea.size.height/2 },  { 0.f, 1.f } },
+        { {  _visibleArea.size.width/2,  -_visibleArea.size.height/2 },  { 1.f, 1.f } },
+    };
     
-        // Calculate the number of vertices by dividing the byte length by the size of each vertex
-        _numVertices = sizeof(quadVertices) / sizeof(UTMVertex);
-    }
+    // Create our vertex buffer, and initialize it with our quadVertices array
+    _vertices = [_device newBufferWithBytes:quadVertices
+                                     length:sizeof(quadVertices)
+                                    options:MTLResourceStorageModeShared];
+
+    // Calculate the number of vertices by dividing the byte length by the size of each vertex
+    _numVertices = sizeof(quadVertices) / sizeof(UTMVertex);
 }
 
 - (void)drawRegion:(CGRect)rect {
-    @synchronized (self) {
-        NSInteger pixelSize = (_canvasFormat == SPICE_SURFACE_FMT_32_xRGB) ? 4 : 2;
-        // copy texture
-        MTLRegion region = {
-            { rect.origin.x-_visibleArea.origin.x, rect.origin.y-_visibleArea.origin.y, 0 }, // MTLOrigin
-            { rect.size.width, rect.size.height, 1} // MTLSize
-        };
-        [_texture replaceRegion:region
-                    mipmapLevel:0
-                      withBytes:(const char *)_canvasData + (NSUInteger)(rect.origin.y*_canvasStride + rect.origin.x*pixelSize)
-                    bytesPerRow:_canvasStride];
-    }
+    NSInteger pixelSize = (_canvasFormat == SPICE_SURFACE_FMT_32_xRGB) ? 4 : 2;
+    // copy texture
+    MTLRegion region = {
+        { rect.origin.x-_visibleArea.origin.x, rect.origin.y-_visibleArea.origin.y, 0 }, // MTLOrigin
+        { rect.size.width, rect.size.height, 1} // MTLSize
+    };
+    dispatch_semaphore_wait(_drawLock, DISPATCH_TIME_FOREVER);
+    [_texture replaceRegion:region
+                mipmapLevel:0
+                  withBytes:(const char *)_canvasData + (NSUInteger)(rect.origin.y*_canvasStride + rect.origin.x*pixelSize)
+                bytesPerRow:_canvasStride];
+    dispatch_semaphore_signal(_drawLock);
 }
 
 @end

@@ -590,6 +590,7 @@
 		CE4AA1462262FB58002E4A54 /* CocoaSpice */ = {
 			isa = PBXGroup;
 			children = (
+				CE66450E2269355F00B0849A /* CocoaSpice.h */,
 				CE4AA14A2264004F002E4A54 /* CSConnection.h */,
 				CE4AA14B2264004F002E4A54 /* CSConnection.m */,
 				CE4AA14D22642EB4002E4A54 /* CSConnectionDelegate.h */,

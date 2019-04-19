@@ -133,9 +133,21 @@ Implementation of renderer class which performs Metal setup and per frame render
                           vertexCount:self.source.numVertices];
 
         [renderEncoder endEncoding];
+        
+        __weak dispatch_semaphore_t semaphore = self.source.drawLock;
+        
+        // Wait for any texture updates to be done
+        dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
 
         // Schedule a present once the framebuffer is complete using the current drawable
         [commandBuffer presentDrawable:view.currentDrawable];
+        
+        // Release lock after GPU is done
+        [commandBuffer addCompletedHandler:^(id<MTLCommandBuffer> commandBuffer) {
+            // GPU work is complete
+            // Signal the semaphore to start the CPU work
+            dispatch_semaphore_signal(semaphore);
+        }];
     }
 
 
