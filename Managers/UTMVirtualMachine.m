@@ -18,8 +18,7 @@
 #import "UTMConfiguration.h"
 #import "UTMQemuImg.h"
 #import "UTMQemuSystem.h"
-#import "CSConnection.h"
-#import "CSDisplayMetal.h"
+#import "CocoaSpice.h"
 
 const int kMaxConnectionTries = 10; // qemu needs to start spice server first
 
@@ -207,7 +206,7 @@ NSString *const kUTMBundleExtension = @"utm";
     [self errorTriggered:msg];
 }
 
-- (void)spiceDisplayCreated:(CSConnection *)connection display:(CSDisplayMetal *)display {
+- (void)spiceDisplayCreated:(CSConnection *)connection display:(CSDisplayMetal *)display input:(CSInput *)input {
     NSAssert(connection == _spice, @"Unknown connection");
     if (display.channelID == 0 && display.monitorID == 0) {
         self.delegate.vmRendering = display;

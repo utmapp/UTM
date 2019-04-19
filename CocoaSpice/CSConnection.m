@@ -23,6 +23,7 @@
     SpiceMainChannel *_main;
     SpiceAudio       *_audio;
     NSMutableArray<NSMutableArray<CSDisplayMetal *> *> *_monitors;
+    NSMutableArray<NSMutableArray<CSInput *> *> *_inputs;
 }
 
 static void logHandler(const gchar *log_domain, GLogLevelFlags log_level,
@@ -112,23 +113,37 @@ static void cs_display_monitors(SpiceChannel *display, GParamSpec *pspec,
     if (!self->_monitors) {
         self->_monitors = [NSMutableArray<NSMutableArray<CSDisplayMetal *> *> array];
     }
+    if (!self->_inputs) {
+        self->_inputs = [NSMutableArray<NSMutableArray<CSInput *> *> array];
+    }
     
     // create enough outer arrays to let us index
     while (self->_monitors.count <= chid) {
         [self->_monitors addObject:[NSMutableArray<CSDisplayMetal *> array]];
+    }
+    while (self->_inputs.count <= chid) {
+        [self->_inputs addObject:[NSMutableArray<CSInput *> array]];
     }
     
     // create new monitors for this display
     for (i = self->_monitors[chid].count; i < monitors->len; i++) {
         CSDisplayMetal *monitor = [[CSDisplayMetal alloc] initWithSession:self->_session channelID:chid monitorID:i];
         [self->_monitors[chid] addObject:monitor];
-        [self.delegate spiceDisplayCreated:self display:monitor];
+        
+        CSInput *input = [[CSInput alloc] initWithSession:self->_session channelID:chid monitorID:i];
+        [self->_inputs[chid] addObject:input];
+        
+        [self.delegate spiceDisplayCreated:self display:monitor input:input];
     }
     
     // clear any extra displays
     NSUInteger total = self->_monitors.count;
     for (i = monitors->len; i < total; i++) {
         [self->_monitors[chid] removeLastObject];
+    }
+    total = self->_inputs.count;
+    for (i = monitors->len; i < total; i++) {
+        [self->_inputs[chid] removeLastObject];
     }
     
     g_clear_pointer(&monitors, g_array_unref);
@@ -187,6 +202,7 @@ static void cs_channel_destroy(SpiceSession *s, SpiceChannel *channel, gpointer 
         SPICE_DEBUG("zap display channel (#%d)", chid);
         g_signal_handlers_disconnect_by_func(channel, G_CALLBACK(cs_display_monitors), GLIB_OBJC_RELEASE(self));
         [self->_monitors[chid] removeAllObjects];
+        [self->_inputs[chid] removeAllObjects];
     }
     
     if (SPICE_IS_PLAYBACK_CHANNEL(channel)) {
@@ -204,6 +220,10 @@ static void cs_connection_destroy(SpiceSession *session,
 
 - (NSArray<NSArray<CSDisplayMetal *> *> *)monitors {
     return _monitors;
+}
+
+- (NSArray<NSArray<CSInput *> *> *)inputs {
+    return _inputs;
 }
 
 - (void)setHost:(NSString *)host {
