@@ -218,6 +218,10 @@ static void cs_channel_destroy(SpiceSession *s, SpiceChannel *channel, gpointer 
     return _device;
 }
 
+- (CGSize)displaySize {
+    return _visibleArea.size;
+}
+
 @synthesize drawLock = _drawLock;
 @synthesize texture = _texture;
 @synthesize numVertices = _numVertices;

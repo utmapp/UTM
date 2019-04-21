@@ -137,6 +137,49 @@
 
 #pragma mark - Helpers
 
+static CGRect CGRectClipToBounds(CGRect rect1, CGRect rect2) {
+    if (rect2.origin.x < rect1.origin.x) {
+        rect2.origin.x = rect1.origin.x;
+    } else if (rect2.origin.x + rect2.size.width > rect1.origin.x + rect1.size.width) {
+        rect2.origin.x = rect1.origin.x + rect1.size.width - rect2.size.width;
+    }
+    if (rect2.origin.y < rect1.origin.y) {
+        rect2.origin.y = rect1.origin.y;
+    } else if (rect2.origin.y + rect2.size.height > rect1.origin.y + rect1.size.height) {
+        rect2.origin.y = rect1.origin.y + rect1.size.height - rect2.size.height;
+    }
+    return rect2;
+}
+
+- (CGPoint)clipPan:(CGPoint)target {
+    CGSize screenSize = self.mtkView.drawableSize;
+    CGSize scaledSize = {
+        self.vmRendering.displaySize.width * _renderer.viewportScale,
+        self.vmRendering.displaySize.height * _renderer.viewportScale
+    };
+    CGRect drawRect = CGRectMake(
+        target.x + screenSize.width/2 - scaledSize.width/2,
+        target.y + screenSize.height/2 - scaledSize.height/2,
+        scaledSize.width,
+        scaledSize.height
+    );
+    CGRect boundRect = {
+        {
+            screenSize.width - MAX(screenSize.width, scaledSize.width),
+            screenSize.height - MAX(screenSize.height, scaledSize.height)
+            
+        },
+        {
+            2*MAX(screenSize.width, scaledSize.width) - screenSize.width,
+            2*MAX(screenSize.height, scaledSize.height) - screenSize.height
+        }
+    };
+    CGRect clippedRect = CGRectClipToBounds(boundRect, drawRect);
+    clippedRect.origin.x -= (screenSize.width/2 - scaledSize.width/2);
+    clippedRect.origin.y -= (screenSize.height/2 - scaledSize.height/2);
+    return CGPointMake(clippedRect.origin.x, clippedRect.origin.y);
+}
+
 - (CGPoint)translateToDisplay:(CGPoint)pos {
     return pos;
 }
@@ -158,7 +201,10 @@
         CGPoint viewport = _renderer.viewportOrigin;
         viewport.x = 2*translation.x + _lastTwoPanOrigin.x;
         viewport.y = 2*translation.y + _lastTwoPanOrigin.y;
-        _renderer.viewportOrigin = viewport;
+        _renderer.viewportOrigin = [self clipPan:viewport];
+    }
+    if (sender.state == UIGestureRecognizerStateEnded) {
+        // TODO: decelerate
     }
 }
 

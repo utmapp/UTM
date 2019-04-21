@@ -26,6 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, nullable, readonly) id<MTLTexture> texture;
 @property (nonatomic, readonly) NSUInteger numVertices;
 @property (nonatomic, nullable, readonly) id<MTLBuffer> vertices;
+@property (nonatomic, readonly, assign) CGSize displaySize;
 
 @end
 
