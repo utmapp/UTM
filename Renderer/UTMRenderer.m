@@ -76,6 +76,10 @@ Implementation of renderer class which performs Metal setup and per frame render
 
         // Create the command queue
         _commandQueue = [_device newCommandQueue];
+        
+        // Setup viewport
+        self.viewportScale = 1.0f;
+        self.viewportOrigin = CGPointMake(0, 0);
     }
 
     return self;
@@ -109,7 +113,16 @@ Implementation of renderer class which performs Metal setup and per frame render
         renderEncoder.label = @"MyRenderEncoder";
 
         // Set the region of the drawable to which we'll draw.
-        [renderEncoder setViewport:(MTLViewport){0.0, 0.0, _viewportSize.x, _viewportSize.y, -1.0, 1.0 }];
+        CGSize scaled = CGSizeMake(_viewportSize.x * self.viewportScale, _viewportSize.y * self.viewportScale);
+        MTLViewport viewport = {
+            self.viewportOrigin.x + -scaled.width /2 + _viewportSize.x/2,
+            self.viewportOrigin.y + -scaled.height/2 + _viewportSize.y/2,
+            scaled.width,
+            scaled.height,
+            -1.0,
+            1.0
+        };
+        [renderEncoder setViewport:viewport];
 
         [renderEncoder setRenderPipelineState:_pipelineState];
 

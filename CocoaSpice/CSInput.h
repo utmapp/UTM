@@ -44,7 +44,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly, nullable) SpiceSession *session;
 @property (nonatomic, readonly, assign) NSInteger channelID;
 @property (nonatomic, readonly, assign) NSInteger monitorID;
-@property (nonatomic, assign) NSUInteger keypressDelay;
+@property (nonatomic, readonly, assign) BOOL serverModeCursor;
 @property (nonatomic, assign) BOOL disableInputs;
 @property (nonatomic, assign) CGFloat scale;
 

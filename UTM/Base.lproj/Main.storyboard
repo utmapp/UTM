@@ -1922,7 +1922,7 @@
                                     <constraint firstAttribute="height" id="r0l-BT-kIN"/>
                                 </constraints>
                                 <connections>
-                                    <outlet property="delegate" destination="ckC-eO-gxn" id="7Cy-ax-RNV"/>
+                                    <outlet property="delegate" destination="ckC-eO-gxn" id="84Z-Xs-yhV"/>
                                 </connections>
                             </view>
                             <mtkView contentMode="scaleToFill" colorPixelFormat="BGRA8Unorm" depthStencilPixelFormat="Depth32Float" translatesAutoresizingMaskIntoConstraints="NO" id="ZK0-vH-7ok">

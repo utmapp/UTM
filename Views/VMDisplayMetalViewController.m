@@ -26,6 +26,7 @@
 
 @implementation VMDisplayMetalViewController {
     UTMRenderer *_renderer;
+    CGPoint _lastTwoPanOrigin;
 }
 
 @synthesize vmScreenshot;
@@ -68,8 +69,23 @@
     UISwipeGestureRecognizer *swipeDown = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(gestureSwipeDown:)];
     swipeDown.numberOfTouchesRequired = 3;
     swipeDown.direction = UISwipeGestureRecognizerDirectionDown;
+    UIPanGestureRecognizer *pan = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(gesturePan:)];
+    pan.minimumNumberOfTouches = 1;
+    pan.maximumNumberOfTouches = 1;
+    UIPanGestureRecognizer *twoPan = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(gestureTwoPan:)];
+    twoPan.minimumNumberOfTouches = 2;
+    twoPan.maximumNumberOfTouches = 2;
+    UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(gestureTap:)];
+    UITapGestureRecognizer *twoTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(gestureTwoTap:)];
+    twoTap.numberOfTouchesRequired = 2;
+    UIPinchGestureRecognizer *pinch = [[UIPinchGestureRecognizer alloc] initWithTarget:self action:@selector(gesturePinch:)];
     [self.view addGestureRecognizer:swipeUp];
     [self.view addGestureRecognizer:swipeDown];
+    [self.view addGestureRecognizer:pan];
+    [self.view addGestureRecognizer:twoPan];
+    [self.view addGestureRecognizer:tap];
+    [self.view addGestureRecognizer:twoTap];
+    [self.view addGestureRecognizer:pinch];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -119,7 +135,45 @@
     }
 }
 
-#pragma mark - Swipe gestures
+#pragma mark - Helpers
+
+- (CGPoint)translateToDisplay:(CGPoint)pos {
+    return pos;
+}
+
+#pragma mark - Gestures
+
+- (IBAction)gesturePan:(UIPanGestureRecognizer *)sender {
+    if (self.vm.primaryInput.serverModeCursor) {
+        
+    }
+}
+
+- (IBAction)gestureTwoPan:(UIPanGestureRecognizer *)sender {
+    if (sender.state == UIGestureRecognizerStateBegan) {
+        _lastTwoPanOrigin = _renderer.viewportOrigin;
+    }
+    if (sender.state != UIGestureRecognizerStateCancelled) {
+        CGPoint translation = [sender translationInView:sender.view];
+        CGPoint viewport = _renderer.viewportOrigin;
+        viewport.x = 2*translation.x + _lastTwoPanOrigin.x;
+        viewport.y = 2*translation.y + _lastTwoPanOrigin.y;
+        _renderer.viewportOrigin = viewport;
+    }
+}
+
+- (IBAction)gestureTap:(UITapGestureRecognizer *)sender {
+    
+}
+
+- (IBAction)gestureTwoTap:(UITapGestureRecognizer *)sender {
+    
+}
+
+- (IBAction)gesturePinch:(UIPinchGestureRecognizer *)sender {
+    _renderer.viewportScale *= sender.scale;
+    sender.scale = 1.0;
+}
 
 - (IBAction)gestureSwipeUp:(UISwipeGestureRecognizer *)sender {
     if (sender.state == UIGestureRecognizerStateEnded) {

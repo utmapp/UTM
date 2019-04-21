@@ -25,7 +25,6 @@
     SpiceCursorChannel      *_cursor;
     SpiceInputsChannel      *_inputs;
     
-    enum SpiceMouseMode     _mouse_mode;
     int                     _mouse_grab_active;
     bool                    _mouse_have_pointer;
     int                     _mouse_last_x;
@@ -48,19 +47,16 @@
 static void cs_update_mouse_mode(SpiceChannel *channel, gpointer data)
 {
     CSInput *self = (__bridge CSInput *)data;
+    enum SpiceMouseMode mouse_mode;
     
-    g_object_get(channel, "mouse-mode", &self->_mouse_mode, NULL);
-    DISPLAY_DEBUG(self, "mouse mode %u", self->_mouse_mode);
+    g_object_get(channel, "mouse-mode", &mouse_mode, NULL);
+    DISPLAY_DEBUG(self, "mouse mode %u", mouse_mode);
     
-    switch (self->_mouse_mode) {
-        case SPICE_MOUSE_MODE_CLIENT:
-            break;
-        case SPICE_MOUSE_MODE_SERVER:
-            self->_mouse_guest_x = -1;
-            self->_mouse_guest_y = -1;
-            break;
-        default:
-            g_warn_if_reached();
+    self->_serverModeCursor = (mouse_mode == SPICE_MOUSE_MODE_SERVER);
+    
+    if (self.serverModeCursor) {
+        self->_mouse_guest_x = -1;
+        self->_mouse_guest_y = -1;
     }
 }
 
@@ -91,7 +87,7 @@ static void cs_cursor_set(SpiceCursorChannel *channel,
     
     if (self->_show_cursor) {
         /* unhide */
-        if (self->_mouse_mode == SPICE_MOUSE_MODE_SERVER) {
+        if (self.serverModeCursor) {
             /* keep a hidden cursor, will be shown in cursor_move() */
             self->_show_cursor = YES;
             return;
@@ -326,27 +322,18 @@ static int cs_button_to_spice(SendButtonType button)
     x = floor(x * self.scale);
     y = floor(y * self.scale);
     
-    switch (self->_mouse_mode) {
-        case SPICE_MOUSE_MODE_CLIENT: {
-            spice_inputs_channel_position(self->_inputs, x, y, (int)self.monitorID,
-                                          cs_button_mask_to_spice(button));
-            break;
-        }
-        case SPICE_MOUSE_MODE_SERVER: {
-            gint dx = self->_mouse_last_x != -1 ? x - self->_mouse_last_x : 0;
-            gint dy = self->_mouse_last_y != -1 ? y - self->_mouse_last_y : 0;
-            
-            spice_inputs_channel_motion(self->_inputs, dx, dy,
-                                        cs_button_mask_to_spice(button));
-            
-            self->_mouse_last_x = x;
-            self->_mouse_last_y = y;
-            break;
-        }
-        default: {
-            g_warn_if_reached();
-            break;
-        }
+    if (self.serverModeCursor) {
+        gint dx = self->_mouse_last_x != -1 ? x - self->_mouse_last_x : 0;
+        gint dy = self->_mouse_last_y != -1 ? y - self->_mouse_last_y : 0;
+        
+        spice_inputs_channel_motion(self->_inputs, dx, dy,
+                                    cs_button_mask_to_spice(button));
+        
+        self->_mouse_last_x = x;
+        self->_mouse_last_y = y;
+    } else {
+        spice_inputs_channel_position(self->_inputs, x, y, (int)self.monitorID,
+                                      cs_button_mask_to_spice(button));
     }
 }
 
@@ -399,7 +386,7 @@ static int cs_button_to_spice(SendButtonType button)
     x = floor(x * self.scale);
     y = floor(y * self.scale);
     if ((x < 0 || y < 0) &&
-        self->_mouse_mode == SPICE_MOUSE_MODE_CLIENT) {
+        !self.serverModeCursor) {
         /* rule out clicks in outside region */
         return;
     }

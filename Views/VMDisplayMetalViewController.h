@@ -30,6 +30,11 @@ NS_ASSUME_NONNULL_BEGIN
 @property (weak, nonatomic) IBOutlet VMKeyboardView *keyboardView;
 @property (weak, nonatomic) IBOutlet UIView *inputAccessoryView;
 
+- (IBAction)gesturePan:(UIPanGestureRecognizer *)sender;
+- (IBAction)gestureTwoPan:(UIPanGestureRecognizer *)sender;
+- (IBAction)gestureTap:(UITapGestureRecognizer *)sender;
+- (IBAction)gestureTwoTap:(UITapGestureRecognizer *)sender;
+- (IBAction)gesturePinch:(UIPinchGestureRecognizer *)sender;
 - (IBAction)gestureSwipeUp:(UISwipeGestureRecognizer *)sender;
 - (IBAction)gestureSwipeDown:(UISwipeGestureRecognizer *)sender;
 - (IBAction)keyboardDonePressed:(UIButton *)sender;
