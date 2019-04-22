@@ -379,18 +379,18 @@ static CGFloat CGPointToPixel(CGFloat point) {
     _keyboardViewHeight = keyboardSize.height;
     
     [UIView animateWithDuration:0.3 animations:^{
-        CGRect f = self.view.frame;
+        CGRect f = self.mtkView.frame;
         f.origin.y = -self->_keyboardViewHeight;
-        self.view.frame = f;
+        self.mtkView.frame = f;
     }];
 }
 
 - (void)keyboardWillHide:(NSNotification *)notification {
     [UIView animateWithDuration:0.3 animations:^{
-        CGRect f = self.view.frame;
+        CGRect f = self.mtkView.frame;
         f.origin.y = 0.0f;
         self->_keyboardViewHeight = 0;
-        self.view.frame = f;
+        self.mtkView.frame = f;
     }];
 }
 
@@ -436,12 +436,12 @@ static CGFloat CGPointToPixel(CGFloat point) {
     CGSize displaySize = self.vmRendering.displaySize;
     CGSize scaled = CGSizeMake(viewSize.width / displaySize.width, viewSize.height / displaySize.height);
     _renderer.viewportScale = MIN(scaled.width, scaled.height);
-    _renderer.viewportOrigin = CGPointMake(0, _keyboardViewHeight);
+    _renderer.viewportOrigin = CGPointMake(0, -_keyboardViewHeight);
 }
 
 - (void)resetDisplay {
     _renderer.viewportScale = 1.0;
-    _renderer.viewportOrigin = CGPointMake(0, _keyboardViewHeight);
+    _renderer.viewportOrigin = CGPointMake(0, -_keyboardViewHeight);
 }
 
 - (IBAction)changeDisplayZoom:(UIButton *)sender {
