@@ -1929,20 +1929,20 @@
                                 <rect key="frame" x="0.0" y="0.0" width="375" height="812"/>
                             </mtkView>
                             <visualEffectView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="VFv-zJ-H5K" userLabel="Toolbar Accessory View">
-                                <rect key="frame" x="0.0" y="44" width="375" height="40"/>
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="84"/>
                                 <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="9yD-Nn-OmR">
-                                    <rect key="frame" x="0.0" y="0.0" width="375" height="40"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="375" height="84"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <visualEffectView opaque="NO" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FYx-cc-jqE">
-                                            <rect key="frame" x="0.0" y="0.0" width="375" height="40"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="84"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" ambiguous="YES" insetsLayoutMarginsFromSafeArea="NO" id="TyK-03-3ux">
-                                                <rect key="frame" x="0.0" y="0.0" width="375" height="40"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="375" height="84"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
-                                                    <button opaque="NO" contentMode="scaleToFill" ambiguous="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="n4h-eO-NXh">
-                                                        <rect key="frame" x="321" y="8" width="46" height="30"/>
+                                                    <button opaque="NO" contentMode="scaleToFill" ambiguous="YES" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="n4h-eO-NXh">
+                                                        <rect key="frame" x="321" y="46" width="46" height="30"/>
                                                         <state key="normal" title="Button"/>
                                                         <connections>
                                                             <action selector="changeDisplayZoom:" destination="ckC-eO-gxn" eventType="touchUpInside" id="eW8-kf-d4d"/>
@@ -1963,7 +1963,7 @@
                                     </subviews>
                                 </view>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="40" id="Rxb-iT-8Or"/>
+                                    <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="40" id="Rxb-iT-8Or"/>
                                     <constraint firstAttribute="width" relation="lessThanOrEqual" constant="600" id="rvS-eu-C19"/>
                                 </constraints>
                                 <blurEffect style="light"/>
@@ -1971,15 +1971,15 @@
                         </subviews>
                         <gestureRecognizers/>
                         <constraints>
+                            <constraint firstItem="VFv-zJ-H5K" firstAttribute="top" secondItem="WSe-Ri-b4c" secondAttribute="top" id="3Ee-g7-mwo"/>
                             <constraint firstItem="0Mf-V7-Aot" firstAttribute="leading" secondItem="Bio-ez-YeW" secondAttribute="leading" id="L0U-9R-jjD"/>
-                            <constraint firstItem="Bio-ez-YeW" firstAttribute="trailing" secondItem="VFv-zJ-H5K" secondAttribute="trailing" priority="750" id="Wv3-cK-cPU"/>
                             <constraint firstAttribute="bottom" secondItem="ZK0-vH-7ok" secondAttribute="bottom" id="cgW-vJ-VjV"/>
                             <constraint firstAttribute="trailing" secondItem="ZK0-vH-7ok" secondAttribute="trailing" id="dMk-GY-XOa"/>
                             <constraint firstItem="ZK0-vH-7ok" firstAttribute="top" secondItem="WSe-Ri-b4c" secondAttribute="top" id="fbF-cf-IeV"/>
                             <constraint firstItem="VFv-zJ-H5K" firstAttribute="leading" secondItem="Bio-ez-YeW" secondAttribute="leading" priority="750" id="ha4-D3-bRt"/>
                             <constraint firstItem="0Mf-V7-Aot" firstAttribute="top" secondItem="Bio-ez-YeW" secondAttribute="top" id="ntS-ba-sAF"/>
                             <constraint firstItem="VFv-zJ-H5K" firstAttribute="centerX" secondItem="WSe-Ri-b4c" secondAttribute="centerX" id="okU-XJ-CrC"/>
-                            <constraint firstItem="VFv-zJ-H5K" firstAttribute="top" secondItem="Bio-ez-YeW" secondAttribute="top" id="vEm-qT-m5h"/>
+                            <constraint firstItem="VFv-zJ-H5K" firstAttribute="bottom" secondItem="Bio-ez-YeW" secondAttribute="top" constant="40" id="vEm-qT-m5h"/>
                             <constraint firstItem="ZK0-vH-7ok" firstAttribute="leading" secondItem="WSe-Ri-b4c" secondAttribute="leading" id="ws8-g9-a5x"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="Bio-ez-YeW"/>

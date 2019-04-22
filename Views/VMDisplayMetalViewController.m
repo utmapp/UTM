@@ -30,6 +30,9 @@
     CGPoint _lastCursor;
     CGFloat _keyboardViewHeight;
     
+    // status bar
+    BOOL _prefersStatusBarHidden;
+    
     // gestures
     UISwipeGestureRecognizer *_swipeUp;
     UISwipeGestureRecognizer *_swipeDown;
@@ -45,7 +48,12 @@
 @synthesize vmRendering;
 
 - (BOOL)prefersStatusBarHidden {
-    return YES;
+    return _prefersStatusBarHidden;
+}
+
+- (void)setPrefersStatusBarHidden:(BOOL)prefersStatusBarHidden {
+    _prefersStatusBarHidden = prefersStatusBarHidden;
+    [self setNeedsStatusBarAppearanceUpdate];
 }
 
 - (void)viewDidLoad {
@@ -310,6 +318,7 @@ static CGFloat CGPointToPixel(CGFloat point) {
         if (!self.toolbarAccessoryView.hidden) {
             [UIView transitionWithView:self.view duration:0.3 options:UIViewAnimationOptionTransitionCrossDissolve animations:^{
                 self.toolbarAccessoryView.hidden = YES;
+                self.prefersStatusBarHidden = YES;
             } completion:nil];
         } else if (!self.keyboardView.isFirstResponder) {
             [self.keyboardView becomeFirstResponder];
@@ -324,6 +333,7 @@ static CGFloat CGPointToPixel(CGFloat point) {
         } else if (self.toolbarAccessoryView.hidden) {
             [UIView transitionWithView:self.view duration:0.3 options:UIViewAnimationOptionTransitionCrossDissolve animations:^{
                 self.toolbarAccessoryView.hidden = NO;
+                self.prefersStatusBarHidden = NO;
             } completion:nil];
         }
     }
