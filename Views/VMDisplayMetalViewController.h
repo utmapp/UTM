@@ -23,12 +23,13 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface VMDisplayMetalViewController : UIViewController<UTMVirtualMachineDelegate, VMKeyboardViewDelegate>
+@interface VMDisplayMetalViewController : UIViewController<UTMVirtualMachineDelegate, VMKeyboardViewDelegate, UIGestureRecognizerDelegate>
 
 @property (nonatomic, strong) UTMVirtualMachine *vm;
 @property (weak, nonatomic) IBOutlet MTKView *mtkView;
 @property (weak, nonatomic) IBOutlet VMKeyboardView *keyboardView;
-@property (weak, nonatomic) IBOutlet UIView *inputAccessoryView;
+@property (strong, nonatomic) IBOutlet UIView *inputAccessoryView;
+@property (strong, nonatomic) IBOutlet UIView *toolbarAccessoryView;
 @property (strong, nonatomic) UISelectionFeedbackGenerator *clickFeedbackGenerator;
 @property (strong, nonatomic) UIImpactFeedbackGenerator *resizeFeedbackGenerator;
 @property (nonatomic, assign) BOOL lastDisplayChangeResize;

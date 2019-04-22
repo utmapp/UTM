@@ -29,6 +29,15 @@
     CGPoint _lastTwoPanOrigin;
     CGPoint _lastCursor;
     CGFloat _keyboardViewHeight;
+    
+    // gestures
+    UISwipeGestureRecognizer *_swipeUp;
+    UISwipeGestureRecognizer *_swipeDown;
+    UIPanGestureRecognizer *_pan;
+    UIPanGestureRecognizer *_twoPan;
+    UITapGestureRecognizer *_tap;
+    UITapGestureRecognizer *_twoTap;
+    UIPinchGestureRecognizer *_pinch;
 }
 
 @synthesize vmScreenshot;
@@ -65,29 +74,36 @@
     self.keyboardView.inputAccessoryView = self.inputAccessoryView;
     
     // Set up gesture recognizers because Storyboards is BROKEN and doing it there crashes!
-    UISwipeGestureRecognizer *swipeUp = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(gestureSwipeUp:)];
-    swipeUp.numberOfTouchesRequired = 3;
-    swipeUp.direction = UISwipeGestureRecognizerDirectionUp;
-    UISwipeGestureRecognizer *swipeDown = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(gestureSwipeDown:)];
-    swipeDown.numberOfTouchesRequired = 3;
-    swipeDown.direction = UISwipeGestureRecognizerDirectionDown;
-    UIPanGestureRecognizer *pan = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(gesturePan:)];
-    pan.minimumNumberOfTouches = 1;
-    pan.maximumNumberOfTouches = 1;
-    UIPanGestureRecognizer *twoPan = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(gestureTwoPan:)];
-    twoPan.minimumNumberOfTouches = 2;
-    twoPan.maximumNumberOfTouches = 2;
-    UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(gestureTap:)];
-    UITapGestureRecognizer *twoTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(gestureTwoTap:)];
-    twoTap.numberOfTouchesRequired = 2;
-    UIPinchGestureRecognizer *pinch = [[UIPinchGestureRecognizer alloc] initWithTarget:self action:@selector(gesturePinch:)];
-    [self.view addGestureRecognizer:swipeUp];
-    [self.view addGestureRecognizer:swipeDown];
-    [self.view addGestureRecognizer:pan];
-    [self.view addGestureRecognizer:twoPan];
-    [self.view addGestureRecognizer:tap];
-    [self.view addGestureRecognizer:twoTap];
-    [self.view addGestureRecognizer:pinch];
+    _swipeUp = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(gestureSwipeUp:)];
+    _swipeUp.numberOfTouchesRequired = 3;
+    _swipeUp.direction = UISwipeGestureRecognizerDirectionUp;
+    _swipeUp.delegate = self;
+    _swipeDown = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(gestureSwipeDown:)];
+    _swipeDown.numberOfTouchesRequired = 3;
+    _swipeDown.direction = UISwipeGestureRecognizerDirectionDown;
+    _swipeDown.delegate = self;
+    _pan = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(gesturePan:)];
+    _pan.minimumNumberOfTouches = 1;
+    _pan.maximumNumberOfTouches = 1;
+    _pan.delegate = self;
+    _twoPan = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(gestureTwoPan:)];
+    _twoPan.minimumNumberOfTouches = 2;
+    _twoPan.maximumNumberOfTouches = 2;
+    _twoPan.delegate = self;
+    _tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(gestureTap:)];
+    _tap.delegate = self;
+    _twoTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(gestureTwoTap:)];
+    _twoTap.numberOfTouchesRequired = 2;
+    _twoTap.delegate = self;
+    _pinch = [[UIPinchGestureRecognizer alloc] initWithTarget:self action:@selector(gesturePinch:)];
+    _pinch.delegate = self;
+    [self.view addGestureRecognizer:_swipeUp];
+    [self.view addGestureRecognizer:_swipeDown];
+    [self.view addGestureRecognizer:_pan];
+    [self.view addGestureRecognizer:_twoPan];
+    [self.view addGestureRecognizer:_tap];
+    [self.view addGestureRecognizer:_twoTap];
+    [self.view addGestureRecognizer:_pinch];
     
     // Feedback generator for clicks
     self.clickFeedbackGenerator = [[UISelectionFeedbackGenerator alloc] init];
@@ -291,13 +307,64 @@ static CGFloat CGPointToPixel(CGFloat point) {
 
 - (IBAction)gestureSwipeUp:(UISwipeGestureRecognizer *)sender {
     if (sender.state == UIGestureRecognizerStateEnded) {
-        [self.keyboardView becomeFirstResponder];
+        if (!self.toolbarAccessoryView.hidden) {
+            [UIView transitionWithView:self.view duration:0.3 options:UIViewAnimationOptionTransitionCrossDissolve animations:^{
+                self.toolbarAccessoryView.hidden = YES;
+            } completion:nil];
+        } else if (!self.keyboardView.isFirstResponder) {
+            [self.keyboardView becomeFirstResponder];
+        }
     }
 }
 
 - (IBAction)gestureSwipeDown:(UISwipeGestureRecognizer *)sender {
     if (sender.state == UIGestureRecognizerStateEnded) {
-        [self.keyboardView resignFirstResponder];
+        if (self.keyboardView.isFirstResponder) {
+            [self.keyboardView resignFirstResponder];
+        } else if (self.toolbarAccessoryView.hidden) {
+            [UIView transitionWithView:self.view duration:0.3 options:UIViewAnimationOptionTransitionCrossDissolve animations:^{
+                self.toolbarAccessoryView.hidden = NO;
+            } completion:nil];
+        }
+    }
+}
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRequireFailureOfGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
+    if (gestureRecognizer == _twoPan && otherGestureRecognizer == _swipeUp) {
+        return YES;
+    }
+    if (gestureRecognizer == _twoPan && otherGestureRecognizer == _swipeDown) {
+        return YES;
+    }
+    if (gestureRecognizer == _twoTap && otherGestureRecognizer == _swipeDown) {
+        return YES;
+    }
+    if (gestureRecognizer == _twoTap && otherGestureRecognizer == _swipeUp) {
+        return YES;
+    }
+    if (gestureRecognizer == _tap && otherGestureRecognizer == _twoTap) {
+        return YES;
+    }
+    if (gestureRecognizer == _pinch && otherGestureRecognizer == _swipeDown) {
+        return YES;
+    }
+    if (gestureRecognizer == _pinch && otherGestureRecognizer == _swipeUp) {
+        return YES;
+    }
+    if (gestureRecognizer == _pan && otherGestureRecognizer == _swipeUp) {
+        return YES;
+    }
+    if (gestureRecognizer == _pan && otherGestureRecognizer == _swipeDown) {
+        return YES;
+    }
+    return NO;
+}
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
+    if (gestureRecognizer == _twoPan && otherGestureRecognizer == _pinch) {
+        return YES;
+    } else {
+        return NO;
     }
 }
 

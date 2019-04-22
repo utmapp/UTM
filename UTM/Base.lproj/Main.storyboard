@@ -974,7 +974,7 @@
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="eAV-yI-ZCT">
-                                                    <rect key="frame" x="8" y="8.0000000000000018" width="359" height="27.666666666666671"/>
+                                                    <rect key="frame" x="8" y="8.0000000000000018" width="796" height="27.666666666666671"/>
                                                     <nil key="textColor"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" keyboardType="alphabet" returnKeyType="done" enablesReturnKeyAutomatically="YES" smartDashesType="no" smartInsertDeleteType="no" smartQuotesType="no"/>
@@ -1928,14 +1928,58 @@
                             <mtkView contentMode="scaleToFill" colorPixelFormat="BGRA8Unorm" depthStencilPixelFormat="Depth32Float" translatesAutoresizingMaskIntoConstraints="NO" id="ZK0-vH-7ok">
                                 <rect key="frame" x="0.0" y="0.0" width="375" height="812"/>
                             </mtkView>
+                            <visualEffectView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="VFv-zJ-H5K" userLabel="Toolbar Accessory View">
+                                <rect key="frame" x="0.0" y="44" width="375" height="40"/>
+                                <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="9yD-Nn-OmR">
+                                    <rect key="frame" x="0.0" y="0.0" width="375" height="40"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                    <subviews>
+                                        <visualEffectView opaque="NO" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FYx-cc-jqE">
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="40"/>
+                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                            <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" ambiguous="YES" insetsLayoutMarginsFromSafeArea="NO" id="TyK-03-3ux">
+                                                <rect key="frame" x="0.0" y="0.0" width="375" height="40"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                <subviews>
+                                                    <button opaque="NO" contentMode="scaleToFill" ambiguous="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="n4h-eO-NXh">
+                                                        <rect key="frame" x="321" y="8" width="46" height="30"/>
+                                                        <state key="normal" title="Button"/>
+                                                        <connections>
+                                                            <action selector="changeDisplayZoom:" destination="ckC-eO-gxn" eventType="touchUpInside" id="eW8-kf-d4d"/>
+                                                        </connections>
+                                                    </button>
+                                                </subviews>
+                                                <constraints>
+                                                    <constraint firstItem="n4h-eO-NXh" firstAttribute="trailing" secondItem="TyK-03-3ux" secondAttribute="trailingMargin" id="Dx0-5E-sL6"/>
+                                                    <constraint firstItem="n4h-eO-NXh" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="TyK-03-3ux" secondAttribute="leadingMargin" id="PJP-Oq-IOp"/>
+                                                    <constraint firstItem="n4h-eO-NXh" firstAttribute="top" secondItem="TyK-03-3ux" secondAttribute="topMargin" id="pJw-il-oGa"/>
+                                                    <constraint firstAttribute="bottomMargin" secondItem="n4h-eO-NXh" secondAttribute="bottom" id="xsp-jq-cd7"/>
+                                                </constraints>
+                                            </view>
+                                            <vibrancyEffect>
+                                                <blurEffect style="light"/>
+                                            </vibrancyEffect>
+                                        </visualEffectView>
+                                    </subviews>
+                                </view>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="40" id="Rxb-iT-8Or"/>
+                                    <constraint firstAttribute="width" relation="lessThanOrEqual" constant="600" id="rvS-eu-C19"/>
+                                </constraints>
+                                <blurEffect style="light"/>
+                            </visualEffectView>
                         </subviews>
                         <gestureRecognizers/>
                         <constraints>
                             <constraint firstItem="0Mf-V7-Aot" firstAttribute="leading" secondItem="Bio-ez-YeW" secondAttribute="leading" id="L0U-9R-jjD"/>
+                            <constraint firstItem="Bio-ez-YeW" firstAttribute="trailing" secondItem="VFv-zJ-H5K" secondAttribute="trailing" priority="750" id="Wv3-cK-cPU"/>
                             <constraint firstAttribute="bottom" secondItem="ZK0-vH-7ok" secondAttribute="bottom" id="cgW-vJ-VjV"/>
                             <constraint firstAttribute="trailing" secondItem="ZK0-vH-7ok" secondAttribute="trailing" id="dMk-GY-XOa"/>
                             <constraint firstItem="ZK0-vH-7ok" firstAttribute="top" secondItem="WSe-Ri-b4c" secondAttribute="top" id="fbF-cf-IeV"/>
+                            <constraint firstItem="VFv-zJ-H5K" firstAttribute="leading" secondItem="Bio-ez-YeW" secondAttribute="leading" priority="750" id="ha4-D3-bRt"/>
                             <constraint firstItem="0Mf-V7-Aot" firstAttribute="top" secondItem="Bio-ez-YeW" secondAttribute="top" id="ntS-ba-sAF"/>
+                            <constraint firstItem="VFv-zJ-H5K" firstAttribute="centerX" secondItem="WSe-Ri-b4c" secondAttribute="centerX" id="okU-XJ-CrC"/>
+                            <constraint firstItem="VFv-zJ-H5K" firstAttribute="top" secondItem="Bio-ez-YeW" secondAttribute="top" id="vEm-qT-m5h"/>
                             <constraint firstItem="ZK0-vH-7ok" firstAttribute="leading" secondItem="WSe-Ri-b4c" secondAttribute="leading" id="ws8-g9-a5x"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="Bio-ez-YeW"/>
@@ -1947,6 +1991,7 @@
                         <outlet property="inputAccessoryView" destination="H7m-pq-dCg" id="Cgj-Ig-VfV"/>
                         <outlet property="keyboardView" destination="0Mf-V7-Aot" id="MgM-9f-E25"/>
                         <outlet property="mtkView" destination="ZK0-vH-7ok" id="x0C-ao-tuC"/>
+                        <outlet property="toolbarAccessoryView" destination="VFv-zJ-H5K" id="hkm-Wv-Reu"/>
                         <segue destination="HWN-B0-AD0" kind="unwind" identifier="returnToList" unwindAction="unwindToMainFromVM:" id="dX7-Ni-UhX"/>
                     </connections>
                 </viewController>
