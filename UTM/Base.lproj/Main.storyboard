@@ -14,7 +14,7 @@
         <scene sceneID="dh4-cV-Whe">
             <objects>
                 <collectionViewController id="krH-Hz-4fz" customClass="VMListViewController" sceneMemberID="viewController">
-                    <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" keyboardDismissMode="onDrag" dataMode="prototypes" id="2R6-2u-EVP">
+                    <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" contentInsetAdjustmentBehavior="always" keyboardDismissMode="onDrag" dataMode="prototypes" id="2R6-2u-EVP">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="812"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -1910,9 +1910,9 @@
         <scene sceneID="oup-Kt-Gnx">
             <objects>
                 <viewController modalTransitionStyle="flipHorizontal" hidesBottomBarWhenPushed="YES" id="ckC-eO-gxn" userLabel="Display Metal" customClass="VMDisplayMetalViewController" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="WSe-Ri-b4c">
+                    <view key="view" contentMode="scaleToFill" id="WSe-Ri-b4c">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="812"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <autoresizingMask key="autoresizingMask"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="0Mf-V7-Aot" customClass="VMKeyboardView">
                                 <rect key="frame" x="0.0" y="44" width="0.0" height="0.0"/>
@@ -1929,31 +1929,122 @@
                                 <rect key="frame" x="0.0" y="0.0" width="375" height="812"/>
                             </mtkView>
                             <visualEffectView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="VFv-zJ-H5K" userLabel="Toolbar Accessory View">
-                                <rect key="frame" x="0.0" y="0.0" width="375" height="84"/>
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="89"/>
                                 <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="9yD-Nn-OmR">
-                                    <rect key="frame" x="0.0" y="0.0" width="375" height="84"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="375" height="89"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
-                                        <visualEffectView opaque="NO" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FYx-cc-jqE">
-                                            <rect key="frame" x="0.0" y="0.0" width="375" height="84"/>
-                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                            <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" ambiguous="YES" insetsLayoutMarginsFromSafeArea="NO" id="TyK-03-3ux">
-                                                <rect key="frame" x="0.0" y="0.0" width="375" height="84"/>
+                                        <visualEffectView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="FYx-cc-jqE">
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="89"/>
+                                            <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="TyK-03-3ux">
+                                                <rect key="frame" x="0.0" y="0.0" width="375" height="89"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
-                                                    <button opaque="NO" contentMode="scaleToFill" ambiguous="YES" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="n4h-eO-NXh">
-                                                        <rect key="frame" x="321" y="46" width="46" height="30"/>
-                                                        <state key="normal" title="Button"/>
+                                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="M5V-xj-Rzw">
+                                                        <rect key="frame" x="329" y="51" width="30" height="30"/>
+                                                        <constraints>
+                                                            <constraint firstAttribute="height" constant="30" id="AU1-ZK-V5s"/>
+                                                            <constraint firstAttribute="width" constant="30" id="bvT-hD-DfR"/>
+                                                        </constraints>
+                                                        <state key="normal" image="Toolbar Hide"/>
                                                         <connections>
-                                                            <action selector="changeDisplayZoom:" destination="ckC-eO-gxn" eventType="touchUpInside" id="eW8-kf-d4d"/>
+                                                            <action selector="hideToolbarButton:" destination="ckC-eO-gxn" eventType="touchUpInside" id="sbT-co-Dk1"/>
+                                                        </connections>
+                                                    </button>
+                                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ESi-T5-nUB">
+                                                        <rect key="frame" x="291" y="51" width="30" height="30"/>
+                                                        <constraints>
+                                                            <constraint firstAttribute="width" constant="30" id="OvE-ls-mRd"/>
+                                                            <constraint firstAttribute="height" constant="30" id="a7h-Be-9Pf"/>
+                                                        </constraints>
+                                                        <state key="normal" image="Toolbar Settings"/>
+                                                        <connections>
+                                                            <segue destination="fxo-tK-lAq" kind="popoverPresentation" popoverAnchorView="ESi-T5-nUB" id="116-me-d8B">
+                                                                <popoverArrowDirection key="popoverArrowDirection" up="YES" down="YES" left="YES" right="YES"/>
+                                                            </segue>
+                                                        </connections>
+                                                    </button>
+                                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Grb-jH-Oxk">
+                                                        <rect key="frame" x="253" y="51" width="30" height="30"/>
+                                                        <constraints>
+                                                            <constraint firstAttribute="width" constant="30" id="Vbt-yx-YKe"/>
+                                                            <constraint firstAttribute="height" constant="30" id="aaW-cl-mMY"/>
+                                                        </constraints>
+                                                        <state key="normal" image="Toolbar Keyboard"/>
+                                                        <connections>
+                                                            <action selector="showKeyboardButton:" destination="ckC-eO-gxn" eventType="touchUpInside" id="Zd4-8I-vO3"/>
+                                                        </connections>
+                                                    </button>
+                                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="HpT-OM-Xpa">
+                                                        <rect key="frame" x="16" y="51" width="30" height="30"/>
+                                                        <constraints>
+                                                            <constraint firstAttribute="height" constant="30" id="K5G-Gx-hvf"/>
+                                                            <constraint firstAttribute="width" constant="30" id="kuS-FT-KuL"/>
+                                                        </constraints>
+                                                        <state key="normal" image="Toolbar Left"/>
+                                                        <connections>
+                                                            <segue destination="HWN-B0-AD0" kind="unwind" unwindAction="unwindToMainFromVM:" id="wuY-gV-w1x"/>
+                                                        </connections>
+                                                    </button>
+                                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="bjd-4T-OVm">
+                                                        <rect key="frame" x="54" y="51" width="30" height="30"/>
+                                                        <constraints>
+                                                            <constraint firstAttribute="height" constant="30" id="nYs-LT-jdK"/>
+                                                            <constraint firstAttribute="width" constant="30" id="y8T-Ka-0dx"/>
+                                                        </constraints>
+                                                        <state key="normal" image="Toolbar Pause"/>
+                                                        <connections>
+                                                            <action selector="touchResumePressed:" destination="ckC-eO-gxn" eventType="touchUpInside" id="DYI-VN-mcQ"/>
+                                                        </connections>
+                                                    </button>
+                                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0Wo-4E-exJ">
+                                                        <rect key="frame" x="92" y="51" width="30" height="30"/>
+                                                        <constraints>
+                                                            <constraint firstAttribute="width" constant="30" id="5Wz-bh-zCb"/>
+                                                            <constraint firstAttribute="height" constant="30" id="mR0-xw-gEw"/>
+                                                        </constraints>
+                                                        <state key="normal" image="Toolbar Power"/>
+                                                        <connections>
+                                                            <action selector="powerPressed:" destination="ckC-eO-gxn" eventType="touchUpInside" id="89w-f5-kg9"/>
+                                                        </connections>
+                                                    </button>
+                                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="m9f-Az-rlH">
+                                                        <rect key="frame" x="215" y="51" width="30" height="30"/>
+                                                        <constraints>
+                                                            <constraint firstAttribute="height" constant="30" id="LWY-pA-fh8"/>
+                                                            <constraint firstAttribute="width" constant="30" id="Z1u-wJ-bug"/>
+                                                        </constraints>
+                                                        <state key="normal" image="Toolbar Maximize"/>
+                                                        <connections>
+                                                            <action selector="changeDisplayZoom:" destination="ckC-eO-gxn" eventType="touchUpInside" id="Q0W-5s-X8Y"/>
                                                         </connections>
                                                     </button>
                                                 </subviews>
                                                 <constraints>
-                                                    <constraint firstItem="n4h-eO-NXh" firstAttribute="trailing" secondItem="TyK-03-3ux" secondAttribute="trailingMargin" id="Dx0-5E-sL6"/>
-                                                    <constraint firstItem="n4h-eO-NXh" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="TyK-03-3ux" secondAttribute="leadingMargin" id="PJP-Oq-IOp"/>
-                                                    <constraint firstItem="n4h-eO-NXh" firstAttribute="top" secondItem="TyK-03-3ux" secondAttribute="topMargin" id="pJw-il-oGa"/>
-                                                    <constraint firstAttribute="bottomMargin" secondItem="n4h-eO-NXh" secondAttribute="bottom" id="xsp-jq-cd7"/>
+                                                    <constraint firstItem="Grb-jH-Oxk" firstAttribute="bottom" secondItem="TyK-03-3ux" secondAttribute="bottomMargin" id="1ts-kO-D4R"/>
+                                                    <constraint firstItem="m9f-Az-rlH" firstAttribute="bottom" secondItem="TyK-03-3ux" secondAttribute="bottomMargin" id="6S4-1i-7sd"/>
+                                                    <constraint firstItem="M5V-xj-Rzw" firstAttribute="bottom" secondItem="TyK-03-3ux" secondAttribute="bottomMargin" id="6bD-NB-R1b"/>
+                                                    <constraint firstItem="ESi-T5-nUB" firstAttribute="leading" secondItem="Grb-jH-Oxk" secondAttribute="trailing" constant="16" id="EOJ-SE-PNZ">
+                                                        <variation key="widthClass=compact" constant="8"/>
+                                                    </constraint>
+                                                    <constraint firstItem="HpT-OM-Xpa" firstAttribute="bottom" secondItem="TyK-03-3ux" secondAttribute="bottomMargin" id="FGJ-dW-zxy"/>
+                                                    <constraint firstItem="HpT-OM-Xpa" firstAttribute="leading" secondItem="TyK-03-3ux" secondAttribute="leadingMargin" constant="8" id="XeW-xf-FnY"/>
+                                                    <constraint firstItem="Grb-jH-Oxk" firstAttribute="leading" secondItem="m9f-Az-rlH" secondAttribute="trailing" constant="16" id="dnr-DV-JdS">
+                                                        <variation key="widthClass=compact" constant="8"/>
+                                                    </constraint>
+                                                    <constraint firstItem="bjd-4T-OVm" firstAttribute="leading" secondItem="HpT-OM-Xpa" secondAttribute="trailing" constant="16" id="g17-C2-hBo">
+                                                        <variation key="widthClass=compact" constant="8"/>
+                                                    </constraint>
+                                                    <constraint firstItem="ESi-T5-nUB" firstAttribute="bottom" secondItem="TyK-03-3ux" secondAttribute="bottomMargin" id="giX-hu-XvO"/>
+                                                    <constraint firstAttribute="trailingMargin" secondItem="M5V-xj-Rzw" secondAttribute="trailing" constant="8" id="jWB-yF-IkZ"/>
+                                                    <constraint firstItem="0Wo-4E-exJ" firstAttribute="leading" secondItem="bjd-4T-OVm" secondAttribute="trailing" constant="16" id="lXW-z0-Irt">
+                                                        <variation key="widthClass=compact" constant="8"/>
+                                                    </constraint>
+                                                    <constraint firstItem="bjd-4T-OVm" firstAttribute="bottom" secondItem="TyK-03-3ux" secondAttribute="bottomMargin" id="ueA-2J-e2a"/>
+                                                    <constraint firstItem="0Wo-4E-exJ" firstAttribute="bottom" secondItem="TyK-03-3ux" secondAttribute="bottomMargin" id="xOs-1g-QK8"/>
+                                                    <constraint firstItem="M5V-xj-Rzw" firstAttribute="leading" secondItem="ESi-T5-nUB" secondAttribute="trailing" constant="16" id="xw3-6m-jj9">
+                                                        <variation key="widthClass=compact" constant="8"/>
+                                                    </constraint>
                                                 </constraints>
                                             </view>
                                             <vibrancyEffect>
@@ -1961,12 +2052,28 @@
                                             </vibrancyEffect>
                                         </visualEffectView>
                                     </subviews>
+                                    <constraints>
+                                        <constraint firstItem="FYx-cc-jqE" firstAttribute="leading" secondItem="9yD-Nn-OmR" secondAttribute="leading" id="M2r-YD-ahy"/>
+                                        <constraint firstAttribute="bottom" secondItem="FYx-cc-jqE" secondAttribute="bottom" id="Sgx-SU-7j1"/>
+                                        <constraint firstAttribute="trailing" secondItem="FYx-cc-jqE" secondAttribute="trailing" id="bWi-Yp-gQt"/>
+                                        <constraint firstItem="FYx-cc-jqE" firstAttribute="top" secondItem="9yD-Nn-OmR" secondAttribute="top" id="v9j-A7-cVQ"/>
+                                    </constraints>
                                 </view>
                                 <constraints>
-                                    <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="40" id="Rxb-iT-8Or"/>
-                                    <constraint firstAttribute="width" relation="lessThanOrEqual" constant="600" id="rvS-eu-C19"/>
+                                    <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="45" id="Rxb-iT-8Or"/>
+                                    <constraint firstAttribute="width" constant="300" id="nIh-6e-A5U"/>
                                 </constraints>
                                 <blurEffect style="light"/>
+                                <variation key="default">
+                                    <mask key="constraints">
+                                        <exclude reference="nIh-6e-A5U"/>
+                                    </mask>
+                                </variation>
+                                <variation key="heightClass=compact">
+                                    <mask key="constraints">
+                                        <include reference="nIh-6e-A5U"/>
+                                    </mask>
+                                </variation>
                             </visualEffectView>
                         </subviews>
                         <gestureRecognizers/>
@@ -1977,21 +2084,23 @@
                             <constraint firstAttribute="trailing" secondItem="ZK0-vH-7ok" secondAttribute="trailing" id="dMk-GY-XOa"/>
                             <constraint firstItem="ZK0-vH-7ok" firstAttribute="top" secondItem="WSe-Ri-b4c" secondAttribute="top" id="fbF-cf-IeV"/>
                             <constraint firstItem="VFv-zJ-H5K" firstAttribute="leading" secondItem="Bio-ez-YeW" secondAttribute="leading" priority="750" id="ha4-D3-bRt"/>
+                            <constraint firstItem="VFv-zJ-H5K" firstAttribute="trailing" secondItem="Bio-ez-YeW" secondAttribute="trailing" priority="750" id="j1r-dg-ACo"/>
                             <constraint firstItem="0Mf-V7-Aot" firstAttribute="top" secondItem="Bio-ez-YeW" secondAttribute="top" id="ntS-ba-sAF"/>
                             <constraint firstItem="VFv-zJ-H5K" firstAttribute="centerX" secondItem="WSe-Ri-b4c" secondAttribute="centerX" id="okU-XJ-CrC"/>
-                            <constraint firstItem="VFv-zJ-H5K" firstAttribute="bottom" secondItem="Bio-ez-YeW" secondAttribute="top" constant="40" id="vEm-qT-m5h"/>
+                            <constraint firstItem="VFv-zJ-H5K" firstAttribute="bottom" secondItem="Bio-ez-YeW" secondAttribute="top" constant="45" id="vEm-qT-m5h"/>
                             <constraint firstItem="ZK0-vH-7ok" firstAttribute="leading" secondItem="WSe-Ri-b4c" secondAttribute="leading" id="ws8-g9-a5x"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="Bio-ez-YeW"/>
                     </view>
                     <nil key="simulatedTopBarMetrics"/>
                     <nil key="simulatedBottomBarMetrics"/>
-                    <splitViewMasterSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
                     <connections>
                         <outlet property="inputAccessoryView" destination="H7m-pq-dCg" id="Cgj-Ig-VfV"/>
                         <outlet property="keyboardView" destination="0Mf-V7-Aot" id="MgM-9f-E25"/>
                         <outlet property="mtkView" destination="ZK0-vH-7ok" id="x0C-ao-tuC"/>
+                        <outlet property="pauseResumeButton" destination="bjd-4T-OVm" id="uJK-aZ-KnO"/>
                         <outlet property="toolbarAccessoryView" destination="VFv-zJ-H5K" id="hkm-Wv-Reu"/>
+                        <outlet property="zoomButton" destination="m9f-Az-rlH" id="mfe-Ou-UL7"/>
                         <segue destination="HWN-B0-AD0" kind="unwind" identifier="returnToList" unwindAction="unwindToMainFromVM:" id="dX7-Ni-UhX"/>
                     </connections>
                 </viewController>
@@ -2010,6 +2119,7 @@
                     </subviews>
                     <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <constraints>
+                        <constraint firstItem="F32-dg-1Zk" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="M5c-nM-HyU" secondAttribute="leading" constant="16" id="VLQ-k7-noO"/>
                         <constraint firstItem="M5c-nM-HyU" firstAttribute="trailing" secondItem="F32-dg-1Zk" secondAttribute="trailing" constant="16" id="bYG-2J-8fy"/>
                         <constraint firstItem="F32-dg-1Zk" firstAttribute="centerY" secondItem="H7m-pq-dCg" secondAttribute="centerY" id="m8W-A2-4ck"/>
                     </constraints>
@@ -2288,8 +2398,16 @@
         <image name="Printer Icon" width="44" height="44"/>
         <image name="Share Icon" width="44" height="44"/>
         <image name="Sound Icon" width="44" height="44"/>
+        <image name="Toolbar Hide" width="30" height="30"/>
+        <image name="Toolbar Keyboard" width="30" height="30"/>
+        <image name="Toolbar Left" width="30" height="30"/>
+        <image name="Toolbar Maximize" width="30" height="30"/>
+        <image name="Toolbar Pause" width="30" height="30"/>
+        <image name="Toolbar Power" width="30" height="30"/>
+        <image name="Toolbar Settings" width="30" height="30"/>
     </resources>
     <inferredMetricsTieBreakers>
+        <segue reference="116-me-d8B"/>
         <segue reference="M4J-mO-49e"/>
         <segue reference="QMb-O0-K4I"/>
         <segue reference="Ch9-qF-y79"/>

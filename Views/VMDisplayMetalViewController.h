@@ -34,6 +34,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (strong, nonatomic) UISelectionFeedbackGenerator *clickFeedbackGenerator;
 @property (strong, nonatomic) UIImpactFeedbackGenerator *resizeFeedbackGenerator;
 @property (nonatomic, assign) BOOL lastDisplayChangeResize;
+@property (weak, nonatomic) IBOutlet UIButton *pauseResumeButton;
+@property (weak, nonatomic) IBOutlet UIButton *zoomButton;
 
 - (IBAction)gesturePan:(UIPanGestureRecognizer *)sender;
 - (IBAction)gestureTwoPan:(UIPanGestureRecognizer *)sender;
@@ -44,6 +46,10 @@ NS_ASSUME_NONNULL_BEGIN
 - (IBAction)gestureSwipeDown:(UISwipeGestureRecognizer *)sender;
 - (IBAction)keyboardDonePressed:(UIButton *)sender;
 - (IBAction)changeDisplayZoom:(UIButton *)sender;
+- (IBAction)touchResumePressed:(UIButton *)sender;
+- (IBAction)powerPressed:(UIButton *)sender;
+- (IBAction)showKeyboardButton:(UIButton *)sender;
+- (IBAction)hideToolbarButton:(UIButton *)sender;
 
 @end
 

@@ -316,10 +316,7 @@ static CGFloat CGPointToPixel(CGFloat point) {
 - (IBAction)gestureSwipeUp:(UISwipeGestureRecognizer *)sender {
     if (sender.state == UIGestureRecognizerStateEnded) {
         if (!self.toolbarAccessoryView.hidden) {
-            [UIView transitionWithView:self.view duration:0.3 options:UIViewAnimationOptionTransitionCrossDissolve animations:^{
-                self.toolbarAccessoryView.hidden = YES;
-                self.prefersStatusBarHidden = YES;
-            } completion:nil];
+            [self hideToolbar];
         } else if (!self.keyboardView.isFirstResponder) {
             [self.keyboardView becomeFirstResponder];
         }
@@ -331,10 +328,7 @@ static CGFloat CGPointToPixel(CGFloat point) {
         if (self.keyboardView.isFirstResponder) {
             [self.keyboardView resignFirstResponder];
         } else if (self.toolbarAccessoryView.hidden) {
-            [UIView transitionWithView:self.view duration:0.3 options:UIViewAnimationOptionTransitionCrossDissolve animations:^{
-                self.toolbarAccessoryView.hidden = NO;
-                self.prefersStatusBarHidden = NO;
-            } completion:nil];
+            [self showToolbar];
         }
     }
 }
@@ -412,7 +406,30 @@ static CGFloat CGPointToPixel(CGFloat point) {
     [self.keyboardView resignFirstResponder];
 }
 
-#pragma mark - Resize display
+#pragma mark - Toolbar actions
+
+- (void)hideToolbar {
+    [UIView transitionWithView:self.view duration:0.3 options:UIViewAnimationOptionTransitionCrossDissolve animations:^{
+        self.toolbarAccessoryView.hidden = YES;
+        self.prefersStatusBarHidden = YES;
+    } completion:nil];
+}
+
+- (void)showToolbar {
+    [UIView transitionWithView:self.view duration:0.3 options:UIViewAnimationOptionTransitionCrossDissolve animations:^{
+        self.toolbarAccessoryView.hidden = NO;
+        self.prefersStatusBarHidden = NO;
+    } completion:nil];
+}
+
+- (void)setLastDisplayChangeResize:(BOOL)lastDisplayChangeResize {
+    _lastDisplayChangeResize = lastDisplayChangeResize;
+    if (lastDisplayChangeResize) {
+        [self.zoomButton setImage:[UIImage imageNamed:@"Toolbar Minimize"] forState:UIControlStateNormal];
+    } else {
+        [self.zoomButton setImage:[UIImage imageNamed:@"Toolbar Maximize"] forState:UIControlStateNormal];
+    }
+}
 
 - (void)resizeDisplayToFit {
     CGSize viewSize = self.mtkView.drawableSize;
@@ -434,6 +451,33 @@ static CGFloat CGPointToPixel(CGFloat point) {
         [self resizeDisplayToFit];
     }
     self.lastDisplayChangeResize = !self.lastDisplayChangeResize;
+}
+
+- (IBAction)touchResumePressed:(UIButton *)sender {
+}
+
+- (IBAction)powerPressed:(UIButton *)sender {
+}
+
+- (IBAction)showKeyboardButton:(UIButton *)sender {
+    if (self.keyboardView.isFirstResponder) {
+        [self.keyboardView resignFirstResponder];
+    } else {
+        [self.keyboardView becomeFirstResponder];
+    }
+}
+
+- (IBAction)hideToolbarButton:(UIButton *)sender {
+    [self hideToolbar];
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    if (![defaults boolForKey:@"HasShownHideToolbarAlert"]) {
+        UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil message:NSLocalizedString(@"Hint: To show the toolbar again, use a three-finger swipe down on the screen.", @"Shown once when hiding toolbar.") preferredStyle:UIAlertControllerStyleAlert];
+        UIAlertAction *okay = [UIAlertAction actionWithTitle:NSLocalizedString(@"OK", @"OK button") style:UIAlertActionStyleDefault handler:nil];
+        [alert addAction:okay];
+        [self presentViewController:alert animated:YES completion:^{
+            [defaults setBool:YES forKey:@"HasShownHideToolbarAlert"];
+        }];
+    }
 }
 
 @end
