@@ -27,6 +27,7 @@
 @implementation VMDisplayMetalViewController {
     UTMRenderer *_renderer;
     CGPoint _lastTwoPanOrigin;
+    CGPoint _lastCursor;
 }
 
 @synthesize vmScreenshot;
@@ -86,6 +87,10 @@
     [self.view addGestureRecognizer:tap];
     [self.view addGestureRecognizer:twoTap];
     [self.view addGestureRecognizer:pinch];
+    
+    // Feedback generator for clicks
+    self.clickFeedbackGenerator = [[UISelectionFeedbackGenerator alloc] init];
+    self.resizeFeedbackGenerator = [[UIImpactFeedbackGenerator alloc] init];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -135,7 +140,7 @@
     }
 }
 
-#pragma mark - Helpers
+#pragma mark - Converting view points to VM display points
 
 static CGRect CGRectClipToBounds(CGRect rect1, CGRect rect2) {
     if (rect2.origin.x < rect1.origin.x) {
@@ -151,7 +156,40 @@ static CGRect CGRectClipToBounds(CGRect rect1, CGRect rect2) {
     return rect2;
 }
 
-- (CGPoint)clipPan:(CGPoint)target {
+static CGFloat CGPointToPixel(CGFloat point) {
+    return point * [UIScreen mainScreen].scale; // FIXME: multiple screens?
+}
+
+- (CGPoint)clipCursorToDisplay:(CGPoint)pos {
+    CGSize screenSize = self.mtkView.drawableSize;
+    CGSize scaledSize = {
+        self.vmRendering.displaySize.width * _renderer.viewportScale,
+        self.vmRendering.displaySize.height * _renderer.viewportScale
+    };
+    CGRect drawRect = CGRectMake(
+        _renderer.viewportOrigin.x + screenSize.width/2 - scaledSize.width/2,
+        _renderer.viewportOrigin.y + screenSize.height/2 - scaledSize.height/2,
+        scaledSize.width,
+        scaledSize.height
+    );
+    pos.x -= drawRect.origin.x;
+    pos.y -= drawRect.origin.y;
+    if (pos.x < 0) {
+        pos.x = 0;
+    } else if (pos.x > scaledSize.width) {
+        pos.x = scaledSize.width;
+    }
+    if (pos.y < 0) {
+        pos.y = 0;
+    } else if (pos.y > scaledSize.height) {
+        pos.y = scaledSize.height;
+    }
+    pos.x /= _renderer.viewportScale;
+    pos.y /= _renderer.viewportScale;
+    return pos;
+}
+
+- (CGPoint)clipDisplayToView:(CGPoint)target {
     CGSize screenSize = self.mtkView.drawableSize;
     CGSize scaledSize = {
         self.vmRendering.displaySize.width * _renderer.viewportScale,
@@ -180,15 +218,24 @@ static CGRect CGRectClipToBounds(CGRect rect1, CGRect rect2) {
     return CGPointMake(clippedRect.origin.x, clippedRect.origin.y);
 }
 
-- (CGPoint)translateToDisplay:(CGPoint)pos {
-    return pos;
-}
-
 #pragma mark - Gestures
 
 - (IBAction)gesturePan:(UIPanGestureRecognizer *)sender {
     if (self.vm.primaryInput.serverModeCursor) {
-        
+        CGPoint translation = [sender translationInView:sender.view];
+        if (sender.state == UIGestureRecognizerStateBegan) {
+            _lastCursor = translation;
+        }
+        if (sender.state != UIGestureRecognizerStateCancelled) {
+            CGPoint cursor;
+            cursor.x = CGPointToPixel(translation.x - _lastCursor.x) / _renderer.viewportScale;
+            cursor.y = CGPointToPixel(translation.y - _lastCursor.y) / _renderer.viewportScale;
+            _lastCursor = translation;
+            [self.vm.primaryInput sendMouseMotion:SEND_BUTTON_NONE point:cursor];
+        }
+        if (sender.state == UIGestureRecognizerStateEnded) {
+            // TODO: decelerate
+        }
     }
 }
 
@@ -199,9 +246,9 @@ static CGRect CGRectClipToBounds(CGRect rect1, CGRect rect2) {
     if (sender.state != UIGestureRecognizerStateCancelled) {
         CGPoint translation = [sender translationInView:sender.view];
         CGPoint viewport = _renderer.viewportOrigin;
-        viewport.x = 2*translation.x + _lastTwoPanOrigin.x;
-        viewport.y = 2*translation.y + _lastTwoPanOrigin.y;
-        _renderer.viewportOrigin = [self clipPan:viewport];
+        viewport.x = CGPointToPixel(translation.x) + _lastTwoPanOrigin.x;
+        viewport.y = CGPointToPixel(translation.y) + _lastTwoPanOrigin.y;
+        _renderer.viewportOrigin = [self clipDisplayToView:viewport];
     }
     if (sender.state == UIGestureRecognizerStateEnded) {
         // TODO: decelerate
@@ -209,11 +256,31 @@ static CGRect CGRectClipToBounds(CGRect rect1, CGRect rect2) {
 }
 
 - (IBAction)gestureTap:(UITapGestureRecognizer *)sender {
-    
+    if (sender.state == UIGestureRecognizerStateEnded) {
+        CGPoint translated = [sender locationInView:sender.view];
+        translated.x = CGPointToPixel(translated.x);
+        translated.y = CGPointToPixel(translated.y);
+        translated = [self clipCursorToDisplay:translated];
+        if (self.vm.primaryInput.serverModeCursor) {
+            translated = _lastCursor;
+        }
+        [self.vm.primaryInput sendMouseButton:SEND_BUTTON_LEFT pressed:YES point:translated];
+        [self.clickFeedbackGenerator selectionChanged];
+    }
 }
 
 - (IBAction)gestureTwoTap:(UITapGestureRecognizer *)sender {
-    
+    if (sender.state == UIGestureRecognizerStateEnded) {
+        CGPoint translated = [sender locationInView:sender.view];
+        translated.x = CGPointToPixel(translated.x);
+        translated.y = CGPointToPixel(translated.y);
+        translated = [self clipCursorToDisplay:translated];
+        if (self.vm.primaryInput.serverModeCursor) {
+            translated = _lastCursor;
+        }
+        [self.vm.primaryInput sendMouseButton:SEND_BUTTON_RIGHT pressed:YES point:translated];
+        [self.clickFeedbackGenerator selectionChanged];
+    }
 }
 
 - (IBAction)gesturePinch:(UIPinchGestureRecognizer *)sender {

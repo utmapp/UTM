@@ -27,8 +27,6 @@
     
     int                     _mouse_grab_active;
     bool                    _mouse_have_pointer;
-    int                     _mouse_last_x;
-    int                     _mouse_last_y;
     int                     _mouse_guest_x;
     int                     _mouse_guest_y;
     BOOL                    _show_cursor;
@@ -313,26 +311,17 @@ static int cs_button_to_spice(SendButtonType button)
     return spice;
 }
 
-- (void)sendMouseMotion:(SendButtonType)button x:(CGFloat)x y:(CGFloat)y {
+- (void)sendMouseMotion:(SendButtonType)button point:(CGPoint)point {
     if (!self->_inputs)
         return;
     if (self.disableInputs)
         return;
     
-    x = floor(x * self.scale);
-    y = floor(y * self.scale);
-    
     if (self.serverModeCursor) {
-        gint dx = self->_mouse_last_x != -1 ? x - self->_mouse_last_x : 0;
-        gint dy = self->_mouse_last_y != -1 ? y - self->_mouse_last_y : 0;
-        
-        spice_inputs_channel_motion(self->_inputs, dx, dy,
+        spice_inputs_channel_motion(self->_inputs, point.x, point.y,
                                     cs_button_mask_to_spice(button));
-        
-        self->_mouse_last_x = x;
-        self->_mouse_last_y = y;
     } else {
-        spice_inputs_channel_position(self->_inputs, x, y, (int)self.monitorID,
+        spice_inputs_channel_position(self->_inputs, point.x, point.y, (int)self.monitorID,
                                       cs_button_mask_to_spice(button));
     }
 }
@@ -375,7 +364,7 @@ static int cs_button_to_spice(SendButtonType button)
     }
 }
 
-- (void)sendMouseButton:(SendButtonType)button pressed:(BOOL)pressed x:(CGFloat)x y:(CGFloat)y {
+- (void)sendMouseButton:(SendButtonType)button pressed:(BOOL)pressed point:(CGPoint)point {
     DISPLAY_DEBUG(self, "%s %s: button %u", __FUNCTION__,
                   pressed ? "press" : "release",
                   (unsigned int)button);
@@ -383,9 +372,7 @@ static int cs_button_to_spice(SendButtonType button)
     if (self.disableInputs)
         return;
     
-    x = floor(x * self.scale);
-    y = floor(y * self.scale);
-    if ((x < 0 || y < 0) &&
+    if ((point.x < 0 || point.y < 0) &&
         !self.serverModeCursor) {
         /* rule out clicks in outside region */
         return;
@@ -414,14 +401,6 @@ static int cs_button_to_spice(SendButtonType button)
 }
 
 #pragma mark - Initializers
-
-- (id)init {
-    self = [super init];
-    if (self) {
-        self.scale = 1.0f;
-    }
-    return self;
-}
 
 - (id)initWithSession:(nonnull SpiceSession *)session channelID:(NSInteger)channelID monitorID:(NSInteger)monitorID {
     self = [self init];

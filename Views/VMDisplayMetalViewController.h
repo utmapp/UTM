@@ -29,6 +29,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (weak, nonatomic) IBOutlet MTKView *mtkView;
 @property (weak, nonatomic) IBOutlet VMKeyboardView *keyboardView;
 @property (weak, nonatomic) IBOutlet UIView *inputAccessoryView;
+@property (strong, nonatomic) UISelectionFeedbackGenerator *clickFeedbackGenerator;
+@property (strong, nonatomic) UIImpactFeedbackGenerator *resizeFeedbackGenerator;
 
 - (IBAction)gesturePan:(UIPanGestureRecognizer *)sender;
 - (IBAction)gestureTwoPan:(UIPanGestureRecognizer *)sender;

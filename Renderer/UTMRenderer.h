@@ -9,6 +9,8 @@ Header for renderer class which performs Metal setup and per frame rendering
 @import MetalKit;
 @import CoreGraphics;
 
+NS_ASSUME_NONNULL_BEGIN
+
 // Our platform independent renderer class
 @interface UTMRenderer : NSObject<MTKViewDelegate>
 
@@ -18,4 +20,8 @@ Header for renderer class which performs Metal setup and per frame rendering
 
 - (nonnull instancetype)initWithMetalKitView:(nonnull MTKView *)mtkView;
 
+- (IBAction)keyboardDonePressed:(UIButton *)sender;
+
 @end
+
+NS_ASSUME_NONNULL_END
