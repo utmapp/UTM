@@ -20,8 +20,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nonnull instancetype)initWithMetalKitView:(nonnull MTKView *)mtkView;
 
-- (IBAction)keyboardDonePressed:(UIButton *)sender;
-
 @end
 
 NS_ASSUME_NONNULL_END

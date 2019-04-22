@@ -1952,11 +1952,11 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="DZc-Sg-gjO" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <view contentMode="scaleToFill" id="H7m-pq-dCg">
-                    <rect key="frame" x="0.0" y="0.0" width="300" height="50"/>
+                    <rect key="frame" x="0.0" y="0.0" width="300" height="40"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     <subviews>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="F32-dg-1Zk">
-                            <rect key="frame" x="245" y="10" width="39" height="30"/>
+                            <rect key="frame" x="245" y="5" width="39" height="30"/>
                             <state key="normal" title="Close"/>
                             <connections>
                                 <action selector="keyboardDonePressed:" destination="ckC-eO-gxn" eventType="touchUpInside" id="Gwz-Os-LSp"/>

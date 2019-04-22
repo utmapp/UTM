@@ -28,6 +28,7 @@
     UTMRenderer *_renderer;
     CGPoint _lastTwoPanOrigin;
     CGPoint _lastCursor;
+    CGFloat _keyboardViewHeight;
 }
 
 @synthesize vmScreenshot;
@@ -304,10 +305,11 @@ static CGFloat CGPointToPixel(CGFloat point) {
 
 - (void)keyboardWillShow:(NSNotification *)notification {
     CGSize keyboardSize = [[[notification userInfo] objectForKey:UIKeyboardFrameBeginUserInfoKey] CGRectValue].size;
+    _keyboardViewHeight = keyboardSize.height;
     
     [UIView animateWithDuration:0.3 animations:^{
         CGRect f = self.view.frame;
-        f.origin.y = -keyboardSize.height;
+        f.origin.y = -self->_keyboardViewHeight;
         self.view.frame = f;
     }];
 }
@@ -316,6 +318,7 @@ static CGFloat CGPointToPixel(CGFloat point) {
     [UIView animateWithDuration:0.3 animations:^{
         CGRect f = self.view.frame;
         f.origin.y = 0.0f;
+        self->_keyboardViewHeight = 0;
         self.view.frame = f;
     }];
 }
@@ -330,6 +333,30 @@ static CGFloat CGPointToPixel(CGFloat point) {
 
 - (IBAction)keyboardDonePressed:(UIButton *)sender {
     [self.keyboardView resignFirstResponder];
+}
+
+#pragma mark - Resize display
+
+- (void)resizeDisplayToFit {
+    CGSize viewSize = self.mtkView.drawableSize;
+    CGSize displaySize = self.vmRendering.displaySize;
+    CGSize scaled = CGSizeMake(viewSize.width / displaySize.width, viewSize.height / displaySize.height);
+    _renderer.viewportScale = MIN(scaled.width, scaled.height);
+    _renderer.viewportOrigin = CGPointMake(0, _keyboardViewHeight);
+}
+
+- (void)resetDisplay {
+    _renderer.viewportScale = 1.0;
+    _renderer.viewportOrigin = CGPointMake(0, _keyboardViewHeight);
+}
+
+- (IBAction)changeDisplayZoom:(UIButton *)sender {
+    if (self.lastDisplayChangeResize) {
+        [self resetDisplay];
+    } else {
+        [self resizeDisplayToFit];
+    }
+    self.lastDisplayChangeResize = !self.lastDisplayChangeResize;
 }
 
 @end
