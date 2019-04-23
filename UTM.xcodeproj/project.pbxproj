@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		CE26FC25226EBC5A0090BE9B /* CSMain.m in Sources */ = {isa = PBXBuildFile; fileRef = CE26FC24226EBC5A0090BE9B /* CSMain.m */; };
 		CE2D63D32265154700FC7E63 /* UTMRenderer.m in Sources */ = {isa = PBXBuildFile; fileRef = CE2D63CF2265154700FC7E63 /* UTMRenderer.m */; };
 		CE2D63D42265154700FC7E63 /* UTMShaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = CE2D63D02265154700FC7E63 /* UTMShaders.metal */; };
 		CE2D641B22653C7600FC7E63 /* libgmodule-2.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63D822653C7300FC7E63 /* libgmodule-2.0.0.dylib */; };
@@ -251,6 +252,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		CE26FC23226EBC5A0090BE9B /* CSMain.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CSMain.h; sourceTree = "<group>"; };
+		CE26FC24226EBC5A0090BE9B /* CSMain.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CSMain.m; sourceTree = "<group>"; };
 		CE2B89332262A21E00C6D9D8 /* UTMVirtualMachine.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UTMVirtualMachine.h; sourceTree = "<group>"; };
 		CE2B89352262B2F600C6D9D8 /* UTMVirtualMachineDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UTMVirtualMachineDelegate.h; sourceTree = "<group>"; };
 		CE2D63CF2265154700FC7E63 /* UTMRenderer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UTMRenderer.m; sourceTree = "<group>"; };
@@ -610,6 +613,8 @@
 				CE4AA1482263B24F002E4A54 /* CSDisplayMetal.m */,
 				CE66450F226935F000B0849A /* CSInput.h */,
 				CE664510226935F000B0849A /* CSInput.m */,
+				CE26FC23226EBC5A0090BE9B /* CSMain.h */,
+				CE26FC24226EBC5A0090BE9B /* CSMain.m */,
 			);
 			path = CocoaSpice;
 			sourceTree = "<group>";
@@ -803,6 +808,7 @@
 				CE74C288225D88ED004E4FF1 /* VMConfigNetworkingViewController.m in Sources */,
 				CE74C28E225D88ED004E4FF1 /* VMConfigSharingViewController.m in Sources */,
 				CE74C28F225D88ED004E4FF1 /* VMConfigSoundViewController.m in Sources */,
+				CE26FC25226EBC5A0090BE9B /* CSMain.m in Sources */,
 				CE4507D2226A5BE200A28D22 /* VMKeyboardView.m in Sources */,
 				CE5E4958225C5A4400148CEF /* VMConfigExistingViewController.m in Sources */,
 				CE550BE422596E790063E575 /* VMListViewCell.m in Sources */,

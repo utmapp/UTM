@@ -15,25 +15,17 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "CSConnectionDelegate.h"
-
-@class CSDisplayMetal;
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface CSConnection : NSObject
+@interface CSMain : NSObject
 
-@property (nonatomic, readonly) NSArray<NSArray<CSDisplayMetal *> *> *monitors;
-@property (nonatomic, readonly) NSArray<NSArray<CSInput *> *> *inputs;
-@property (nonatomic, weak, nullable) id<CSConnectionDelegate> delegate;
-@property (nonatomic, copy) NSString *host;
-@property (nonatomic, copy) NSString *port;
-@property (nonatomic, assign) BOOL audioEnabled;
-@property (nonatomic, assign, nullable) void *glibMainContext;
+@property (nonatomic, readonly) BOOL running;
+@property (nonatomic, readonly) void *glibMainContext;
 
-- (id)initWithHost:(NSString *)host port:(NSString *)port;
-- (BOOL)connect;
-- (void)disconnect;
+- (void)spiceSetDebug:(BOOL)enabled;
+- (BOOL)spiceStart;
+- (void)spiceStop;
 
 @end
 

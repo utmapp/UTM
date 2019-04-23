@@ -26,38 +26,6 @@
     NSMutableArray<NSMutableArray<CSInput *> *> *_inputs;
 }
 
-static void logHandler(const gchar *log_domain, GLogLevelFlags log_level,
-                 const gchar *message, gpointer user_data)
-{
-    GDateTime *now;
-    gchar *dateTimeStr;
-    
-    char* levelStr = "UNKNOWN";
-    if (log_level & G_LOG_LEVEL_ERROR) {
-        levelStr = "ERROR";
-    } else if (log_level & G_LOG_LEVEL_CRITICAL) {
-        levelStr = "CRITICAL";
-    } else if (log_level & G_LOG_LEVEL_WARNING) {
-        levelStr = "WARNING";
-    } else if (log_level & G_LOG_LEVEL_MESSAGE) {
-        levelStr = "MESSAGE";
-    } else if (log_level & G_LOG_LEVEL_INFO) {
-        levelStr = "INFO";
-    } else if (log_level & G_LOG_LEVEL_DEBUG) {
-        levelStr = "DEBUG";
-    }
-    
-    now = g_date_time_new_now_local();
-    dateTimeStr = g_date_time_format(now, "%Y-%m-%d %T");
-    
-    fprintf(stderr, "%s,%03d %s %s-%s\n", dateTimeStr,
-             g_date_time_get_microsecond(now) / 1000, levelStr,
-             log_domain, message);
-    
-    g_date_time_unref(now);
-    g_free(dateTimeStr);
-}
-
 static void cs_main_channel_event(SpiceChannel *channel, SpiceChannelEvent event,
                                gpointer data)
 {
@@ -177,7 +145,7 @@ static void cs_channel_new(SpiceSession *s, SpiceChannel *channel, gpointer data
     if (SPICE_IS_PLAYBACK_CHANNEL(channel)) {
         SPICE_DEBUG("new audio channel");
         if (self.audioEnabled) {
-            self->_audio = spice_audio_get(s, NULL);
+            self->_audio = spice_audio_get(s, self.glibMainContext);
         } else {
             SPICE_DEBUG("audio disabled");
         }
@@ -250,9 +218,14 @@ static void cs_connection_destroy(SpiceSession *session,
     return nshost;
 }
 
-+ (void)spiceSetDebug:(BOOL)enabled {
-    spice_util_set_debug(enabled);
-    g_log_set_default_handler(logHandler, NULL);
+- (void)setGlibMainContext:(void *)glibMainContext {
+    if (_glibMainContext != NULL) {
+        g_main_context_unref((GMainContext *)_glibMainContext);
+    }
+    if (glibMainContext) {
+        g_main_context_ref((GMainContext *)glibMainContext);
+    }
+    _glibMainContext = glibMainContext;
 }
 
 - (id)init {
@@ -277,6 +250,7 @@ static void cs_connection_destroy(SpiceSession *session,
     g_signal_handlers_disconnect_by_func(_session, G_CALLBACK(cs_connection_destroy), GLIB_OBJC_RELEASE(self));
     g_object_unref(_session);
     _session = NULL;
+    self.glibMainContext = NULL;
 }
 
 - (id)initWithHost:(NSString *)host port:(NSString *)port {

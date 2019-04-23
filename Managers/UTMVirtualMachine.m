@@ -34,7 +34,8 @@ NSString *const kUTMBundleExtension = @"utm";
 
 @implementation UTMVirtualMachine {
     UTMQemuSystem *_qemu;
-    CSConnection *_spice;
+    CSConnection *_spice_connection;
+    CSMain *_spice;
 }
 
 - (void)setDelegate:(id<UTMVirtualMachineDelegate>)delegate {
@@ -165,14 +166,28 @@ NSString *const kUTMBundleExtension = @"utm";
         _qemu = [[UTMQemuSystem alloc] initWithConfiguration:self.configuration imgPath:[self packageURLForName:self.configuration.name]];
     }
     if (!_spice) {
-        _spice = [[CSConnection alloc] initWithHost:@"127.0.0.1" port:@"5930"];
-        _spice.delegate = self;
+        _spice = [[CSMain alloc] init];
     }
+    if (!_spice_connection) {
+        _spice_connection = [[CSConnection alloc] initWithHost:@"127.0.0.1" port:@"5930"];
+        _spice_connection.delegate = self;
+    }
+    if (!_qemu || !_spice || !_spice_connection) {
+        [self errorTriggered:NSLocalizedString(@"Internal error starting VM.", @"UTMVirtualMachine")];
+        return;
+    }
+    _spice_connection.glibMainContext = _spice.glibMainContext;
     self.delegate.vmMessage = nil;
     self.delegate.vmScreenshot = nil;
     self.delegate.vmRendering = nil;
     _primaryRendering = nil;
+    
     [self.delegate virtualMachine:self transitionToState:kVMStarting];
+    [_spice spiceSetDebug:YES];
+    if (![_spice spiceStart]) {
+        [self errorTriggered:NSLocalizedString(@"Internal error starting main loop.", @"UTMVirtualMachine")];
+        return;
+    }
     [_qemu startWithCompletion:^(BOOL success, NSString *msg){
         if (!success) {
             [self errorTriggered:msg];
@@ -180,11 +195,10 @@ NSString *const kUTMBundleExtension = @"utm";
             
         }
     }];
-    [CSConnection spiceSetDebug:YES];
     int tries = kMaxConnectionTries;
     do {
         [NSThread sleepForTimeInterval:0.1f];
-        if ([_spice connect]) {
+        if ([_spice_connection connect]) {
             break;
         }
     } while (tries-- > 0);
@@ -194,20 +208,20 @@ NSString *const kUTMBundleExtension = @"utm";
 }
 
 - (void)spiceConnected:(CSConnection *)connection {
-    NSAssert(connection == _spice, @"Unknown connection");
+    NSAssert(connection == _spice_connection, @"Unknown connection");
 }
 
 - (void)spiceDisconnected:(CSConnection *)connection {
-    NSAssert(connection == _spice, @"Unknown connection");
+    NSAssert(connection == _spice_connection, @"Unknown connection");
 }
 
 - (void)spiceError:(CSConnection *)connection err:(NSString *)msg {
-    NSAssert(connection == _spice, @"Unknown connection");
+    NSAssert(connection == _spice_connection, @"Unknown connection");
     [self errorTriggered:msg];
 }
 
 - (void)spiceDisplayCreated:(CSConnection *)connection display:(CSDisplayMetal *)display input:(CSInput *)input {
-    NSAssert(connection == _spice, @"Unknown connection");
+    NSAssert(connection == _spice_connection, @"Unknown connection");
     if (display.channelID == 0 && display.monitorID == 0) {
         self.delegate.vmRendering = display;
         _primaryRendering = display;
