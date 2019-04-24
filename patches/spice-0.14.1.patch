@@ -1,6 +1,6 @@
 diff -aur a/Makefile.in b/Makefile.in
 --- a/Makefile.in	2018-08-22 04:32:02.000000000 -0700
-+++ b/Makefile.in	2019-03-30 12:26:29.000000000 -0700
++++ b/Makefile.in	2019-04-23 11:52:06.000000000 -0700
 @@ -422,7 +422,7 @@
  valgrind_tools = @valgrind_tools@
  NULL = 
@@ -12,8 +12,60 @@ diff -aur a/Makefile.in b/Makefile.in
  DISTCHECK_CONFIGURE_FLAGS = \
 diff -aur a/server/red-stream.c b/server/red-stream.c
 --- a/server/red-stream.c	2018-07-23 03:01:37.000000000 -0700
-+++ b/server/red-stream.c	2019-03-30 11:00:26.000000000 -0700
-@@ -352,8 +352,16 @@
++++ b/server/red-stream.c	2019-04-24 09:26:53.000000000 -0700
+@@ -39,7 +39,7 @@
+ #include "reds.h"
+ 
+ // compatibility for *BSD systems
+-#ifndef TCP_CORK
++#if !defined(TCP_CORK) && !defined(__APPLE__)
+ #define TCP_CORK TCP_NOPUSH
+ #endif
+ 
+@@ -100,6 +100,7 @@
+     SpiceCoreInterfaceInternal *core;
+ };
+ 
++#if !defined(__APPLE__) // TCP_CORK doesn't exist and TCP_NOPUSH is broken
+ /**
+  * Set TCP_CORK on socket
+  */
+@@ -109,6 +110,7 @@
+     SPICE_VERIFY(sizeof(enabled) == sizeof(int));
+     return setsockopt(socket, IPPROTO_TCP, TCP_CORK, &enabled, sizeof(enabled));
+ }
++#endif
+ 
+ static ssize_t stream_write_cb(RedStream *s, const void *buf, size_t size)
+ {
+@@ -223,6 +225,7 @@
+ 
+ bool red_stream_set_auto_flush(RedStream *s, bool auto_flush)
+ {
++#if !defined(__APPLE__)
+     if (s->priv->use_cork == !auto_flush) {
+         return true;
+     }
+@@ -239,15 +242,18 @@
+         socket_set_cork(s->socket, 0);
+         s->priv->corked = false;
+     }
++#endif
+     return true;
+ }
+ 
+ void red_stream_flush(RedStream *s)
+ {
++#if !defined(__APPLE__)
+     if (s->priv->corked) {
+         socket_set_cork(s->socket, 0);
+         socket_set_cork(s->socket, 1);
+     }
++#endif
+ }
+ 
+ #if HAVE_SASL
+@@ -352,8 +358,16 @@
          memcpy(CMSG_DATA(cmsg), &fd, fd_size);
      }
  
@@ -32,7 +84,7 @@ diff -aur a/server/red-stream.c b/server/red-stream.c
      return r;
 diff -aur a/server/red-worker.c b/server/red-worker.c
 --- a/server/red-worker.c	2018-08-09 04:09:22.000000000 -0700
-+++ b/server/red-worker.c	2019-03-30 11:02:48.000000000 -0700
++++ b/server/red-worker.c	2019-04-23 11:52:06.000000000 -0700
 @@ -1391,7 +1391,9 @@
          spice_error("create thread failed %d", r);
      }
@@ -44,8 +96,8 @@ diff -aur a/server/red-worker.c b/server/red-worker.c
      return r == 0;
  }
 diff -aur a/server/reds.c b/server/reds.c
---- a/server/reds.c  2018-08-09 04:09:22.000000000 -0700
-+++ b/server/reds.c  2019-03-31 10:39:25.000000000 -0700
+--- a/server/reds.c	2018-08-09 04:09:22.000000000 -0700
++++ b/server/reds.c	2019-04-23 11:52:06.000000000 -0700
 @@ -3555,6 +3555,7 @@
  static const char* parse_next_video_codec(const char *codecs, char **encoder,
                                            char **codec)

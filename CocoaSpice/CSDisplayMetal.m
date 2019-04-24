@@ -73,7 +73,9 @@ static void cs_invalidate(SpiceChannel *channel,
     CSDisplayMetal *self = (__bridge CSDisplayMetal *)data;
     CGRect rect = CGRectIntersection(CGRectMake(x, y, w, h), self->_visibleArea);
     if (!CGRectIsEmpty(rect)) {
-        [self drawRegion:rect];
+        dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), ^{
+            [self drawRegion:rect];
+        });
     }
 }
 
