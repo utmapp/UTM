@@ -30,6 +30,7 @@ OPUS_SRC="https://archive.mozilla.org/pub/opus/opus-1.3.tar.gz"
 SPICE_PROTOCOL_SRC="https://www.spice-space.org/download/releases/spice-protocol-0.12.15.tar.bz2"
 SPICE_SERVER_SRC="https://www.spice-space.org/download/releases/spice-server/spice-0.14.1.tar.bz2"
 NCURSES_SRC="https://invisible-mirror.net/archives/ncurses/ncurses-6.1.tar.gz"
+QEMU_SRC="https://download.qemu.org/qemu-4.0.0.tar.xz"
 QEMU_GIT="https://github.com/halts/qemu.git"
 
 # Source files for spice-client
@@ -131,6 +132,7 @@ download_all () {
     download $GST_BASE_SRC
     download $GST_GOOD_SRC
     download $SPICE_CLIENT_SRC
+    download $QEMU_SRC
 }
 
 build_openssl() {
@@ -209,11 +211,11 @@ build_qemu_dependencies () {
 }
 
 build_qemu () {
-    QEMU_DIR="$BUILD_DIR/qemu"
-    if [ ! -d "$QEMU_DIR" ]; then
-        echo "${GREEN}Cloning qemu...${NC}"
-        git clone --depth 1 --recursive --shallow-submodules "$QEMU_GIT" "$QEMU_DIR"
-    fi
+    #QEMU_DIR="$BUILD_DIR/qemu"
+    #if [ ! -d "$QEMU_DIR" ]; then
+    #    echo "${GREEN}Cloning qemu...${NC}"
+    #    git clone --depth 1 --recursive --shallow-submodules "$QEMU_GIT" "$QEMU_DIR"
+    #fi
     QEMU_CFLAGS="$CFLAGS"
     QEMU_CXXFLAGS="$CXXFLAGS"
     QEMU_LDFLAGS="$LDFLAGS"
@@ -223,7 +225,7 @@ build_qemu () {
     CFLAGS=
     CXXFLAGS=
     LDFLAGS=
-    build qemu --enable-shared-lib
+    build $QEMU_SRC --enable-shared-lib
     CFLAGS="$QEMU_CFLAGS"
     CXXFLAGS="$QEMU_CXXFLAGS"
     LDFLAGS="$QEMU_LDFLAGS"

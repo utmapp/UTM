@@ -1,0 +1,3916 @@
+From ae790c9a8192688489c5e809a3c312c5d2855d58 Mon Sep 17 00:00:00 2001
+From: halts <dev@getutm.app>
+Date: Wed, 24 Apr 2019 20:16:48 -0700
+Subject: [PATCH 1/9] build: Add support for iOS host
+
+Fix build errors with clang
+---
+ Makefile                 |  2 +-
+ block.c                  |  2 +-
+ block/file-posix.c       | 38 ++++++++++++++++++++-----------
+ configure                | 49 +++++++++++++++++++++++++++++++++++++++-
+ net/slirp.c              | 16 ++++++-------
+ qga/commands-posix.c     |  6 +++++
+ target/arm/arm-semi.c    |  2 ++
+ target/m68k/m68k-semi.c  |  2 ++
+ tcg/aarch64/tcg-target.h | 10 ++++++++
+ 9 files changed, 103 insertions(+), 24 deletions(-)
+
+diff --git a/Makefile b/Makefile
+index 04a0d45050..a90c08b60a 100644
+--- a/Makefile
++++ b/Makefile
+@@ -475,7 +475,7 @@ subdir-capstone: .git-submodule-status
+ 	$(call quiet-command,$(MAKE) -C $(SRC_PATH)/capstone CAPSTONE_SHARED=no BUILDDIR="$(BUILD_DIR)/capstone" CC="$(CC)" AR="$(AR)" LD="$(LD)" RANLIB="$(RANLIB)" CFLAGS="$(CAP_CFLAGS)" $(SUBDIR_MAKEFLAGS) $(BUILD_DIR)/capstone/$(LIBCAPSTONE))
+ 
+ subdir-slirp: .git-submodule-status
+-	$(call quiet-command,$(MAKE) -C $(SRC_PATH)/slirp BUILD_DIR="$(BUILD_DIR)/slirp" CC="$(CC)" AR="$(AR)" LD="$(LD)" RANLIB="$(RANLIB)" CFLAGS="$(QEMU_CFLAGS)")
++	$(call quiet-command,$(MAKE) -C $(SRC_PATH)/slirp BUILD_DIR="$(BUILD_DIR)/slirp" CC="$(CC)" AR="$(AR)" LD="$(LD)" RANLIB="$(RANLIB)" CFLAGS="$(CFLAGS) $(QEMU_CFLAGS)")
+ 
+ $(SUBDIR_RULES): libqemuutil.a $(common-obj-y) $(chardev-obj-y) \
+ 	$(qom-obj-y) $(crypto-aes-obj-$(CONFIG_USER_ONLY))
+diff --git a/block.c b/block.c
+index 16615bc876..695b095d3a 100644
+--- a/block.c
++++ b/block.c
+@@ -51,7 +51,7 @@
+ #ifdef CONFIG_BSD
+ #include <sys/ioctl.h>
+ #include <sys/queue.h>
+-#ifndef __DragonFly__
++#if !defined(__DragonFly__) && !defined(CONFIG_IOS)
+ #include <sys/disk.h>
+ #endif
+ #endif
+diff --git a/block/file-posix.c b/block/file-posix.c
+index 1cf4ee49eb..4a538c4a40 100644
+--- a/block/file-posix.c
++++ b/block/file-posix.c
+@@ -39,7 +39,7 @@
+ #include "scsi/pr-manager.h"
+ #include "scsi/constants.h"
+ 
+-#if defined(__APPLE__) && (__MACH__)
++#if defined(CONFIG_HOST_DEVICE) && defined(__APPLE__) && (__MACH__)
+ #include <paths.h>
+ #include <sys/param.h>
+ #include <IOKit/IOKitLib.h>
+@@ -170,7 +170,16 @@ typedef struct BDRVRawReopenState {
+     bool check_cache_dropped;
+ } BDRVRawReopenState;
+ 
+-static int fd_open(BlockDriverState *bs);
++static int fd_open(BlockDriverState *bs)
++{
++    BDRVRawState *s = bs->opaque;
++
++    /* this is just to ensure s->fd is sane (its called by io ops) */
++    if (s->fd >= 0)
++        return 0;
++    return -EIO;
++}
++
+ static int64_t raw_getlength(BlockDriverState *bs);
+ 
+ typedef struct RawPosixAIOData {
+@@ -241,6 +250,12 @@ static int raw_normalize_devicepath(const char **filename, Error **errp)
+ }
+ #endif
+ 
++#if defined(CONFIG_IOS)
++static int probe_logical_blocksize(int fd, unsigned int *sector_size_p)
++{
++    return -ENOTSUP; // not supported on iOS
++}
++#else /* CONFIG_IOS */
+ /*
+  * Get logical block size via ioctl. On success store it in @sector_size_p.
+  */
+@@ -273,6 +288,7 @@ static int probe_logical_blocksize(int fd, unsigned int *sector_size_p)
+ 
+     return success ? 0 : -errno;
+ }
++#endif /* !CONFIG_IOS */
+ 
+ /**
+  * Get physical block size of @fd.
+@@ -2142,7 +2158,7 @@ again:
+         }
+         if (size == 0)
+ #endif
+-#if defined(__APPLE__) && defined(__MACH__)
++#if !defined(CONFIG_IOS) && defined(__APPLE__) && defined(__MACH__)
+         {
+             uint64_t sectors = 0;
+             uint32_t sector_size = 0;
+@@ -2914,6 +2930,8 @@ BlockDriver bdrv_file = {
+ /***********************************************/
+ /* host device */
+ 
++#if defined(CONFIG_HOST_DEVICE)
++
+ #if defined(__APPLE__) && defined(__MACH__)
+ static kern_return_t GetBSDPath(io_iterator_t mediaIterator, char *bsdPath,
+                                 CFIndex maxPathSize, int flags);
+@@ -3250,16 +3268,6 @@ hdev_co_ioctl(BlockDriverState *bs, unsigned long int req, void *buf)
+ }
+ #endif /* linux */
+ 
+-static int fd_open(BlockDriverState *bs)
+-{
+-    BDRVRawState *s = bs->opaque;
+-
+-    /* this is just to ensure s->fd is sane (its called by io ops) */
+-    if (s->fd >= 0)
+-        return 0;
+-    return -EIO;
+-}
+-
+ static coroutine_fn int
+ hdev_co_pdiscard(BlockDriverState *bs, int64_t offset, int bytes)
+ {
+@@ -3644,6 +3652,8 @@ static BlockDriver bdrv_host_cdrom = {
+ };
+ #endif /* __FreeBSD__ */
+ 
++#endif /* CONFIG_HOST_DEVICE */
++
+ static void bdrv_file_init(void)
+ {
+     /*
+@@ -3651,6 +3661,7 @@ static void bdrv_file_init(void)
+      * registered last will get probed first.
+      */
+     bdrv_register(&bdrv_file);
++#if defined(CONFIG_HOST_DEVICE)
+     bdrv_register(&bdrv_host_device);
+ #ifdef __linux__
+     bdrv_register(&bdrv_host_cdrom);
+@@ -3658,6 +3669,7 @@ static void bdrv_file_init(void)
+ #if defined(__FreeBSD__) || defined(__FreeBSD_kernel__)
+     bdrv_register(&bdrv_host_cdrom);
+ #endif
++#endif /* CONFIG_HOST_DEVICE */
+ }
+ 
+ block_init(bdrv_file_init);
+diff --git a/configure b/configure
+index 1c563a7027..34e290acad 100755
+--- a/configure
++++ b/configure
+@@ -491,6 +491,7 @@ docker="no"
+ debug_mutex="no"
+ libpmem=""
+ default_devices="yes"
++host_device_support="yes"
+ 
+ # cross compilers defaults, can be overridden with --cross-cc-ARCH
+ cross_cc_aarch64="aarch64-linux-gnu-gcc"
+@@ -621,6 +622,19 @@ EOF
+   compile_object
+ }
+ 
++check_ios() {
++  cat > $TMPC <<EOF
++#ifdef __APPLE__
++#import "TargetConditionals.h" 
++#if !TARGET_OS_IPHONE
++#error TARGET_OS_IPHONE not true
++#endif
++#endif
++int main(void) { return 0; }
++EOF
++  compile_object
++}
++
+ check_include() {
+ cat > $TMPC <<EOF
+ #include <$1>
+@@ -654,7 +668,11 @@ elif check_define __DragonFly__ ; then
+ elif check_define __NetBSD__; then
+   targetos='NetBSD'
+ elif check_define __APPLE__; then
+-  targetos='Darwin'
++  if check_ios ; then
++    targetos='iOS'
++  else
++    targetos='Darwin'
++  fi
+ else
+   # This is a fatal error, but don't report it yet, because we
+   # might be going to just print the --help text, or it might
+@@ -859,6 +877,27 @@ Darwin)
+   HOST_VARIANT_DIR="darwin"
+   supported_os="yes"
+ ;;
++iOS)
++  bsd="yes"
++  darwin="yes"
++  ios="yes"
++  hax="yes"
++  hvf="yes"
++  LDFLAGS_SHARED="-bundle -undefined dynamic_lookup"
++  if [ "$cpu" = "x86_64" ] ; then
++    QEMU_CFLAGS="-arch x86_64 $QEMU_CFLAGS"
++    LDFLAGS="-arch x86_64 $LDFLAGS"
++  fi
++  host_device_support="no"
++  audio_drv_list=""
++  audio_possible_drivers=""
++  LDFLAGS="-framework CoreFoundation $LDFLAGS"
++  # Disable attempts to use ObjectiveC features in os/object.h since they
++  # won't work when we're compiling with gcc as a C compiler.
++  QEMU_CFLAGS="-DOS_OBJECT_USE_OBJC=0 $QEMU_CFLAGS"
++  HOST_VARIANT_DIR="ios"
++  supported_os="yes"
++;;
+ SunOS)
+   solaris="yes"
+   make="${MAKE-gmake}"
+@@ -6438,6 +6477,7 @@ echo "docker            $docker"
+ echo "libpmem support   $libpmem"
+ echo "libudev           $libudev"
+ echo "default devices   $default_devices"
++echo "host device support  $host_device_support"
+ 
+ if test "$supported_cpu" = "no"; then
+     echo
+@@ -6504,6 +6544,9 @@ if test "$default_devices" = "yes" ; then
+ else
+   echo "CONFIG_MINIKCONF_MODE=--allnoconfig" >> $config_host_mak
+ fi
++if test "$host_device_support" = "yes" ; then
++  echo "CONFIG_HOST_DEVICE=y" >> $config_host_mak
++fi
+ if test "$debug_tcg" = "yes" ; then
+   echo "CONFIG_DEBUG_TCG=y" >> $config_host_mak
+ fi
+@@ -6553,6 +6596,10 @@ if test "$darwin" = "yes" ; then
+   echo "CONFIG_DARWIN=y" >> $config_host_mak
+ fi
+ 
++if test "$ios" = "yes" ; then
++  echo "CONFIG_IOS=y" >> $config_host_mak
++fi
++
+ if test "$solaris" = "yes" ; then
+   echo "CONFIG_SOLARIS=y" >> $config_host_mak
+ fi
+diff --git a/net/slirp.c b/net/slirp.c
+index 95934fb36d..75137630c4 100644
+--- a/net/slirp.c
++++ b/net/slirp.c
+@@ -27,7 +27,7 @@
+ #include "net/slirp.h"
+ 
+ 
+-#ifndef _WIN32
++#if !defined(_WIN32) && !defined(CONFIG_IOS)
+ #include <pwd.h>
+ #include <sys/wait.h>
+ #endif
+@@ -90,7 +90,7 @@ typedef struct SlirpState {
+     Slirp *slirp;
+     Notifier poll_notifier;
+     Notifier exit_notifier;
+-#ifndef _WIN32
++#if !defined(_WIN32) && !defined(CONFIG_IOS)
+     gchar *smb_dir;
+ #endif
+     GSList *fwd;
+@@ -103,7 +103,7 @@ static QTAILQ_HEAD(, SlirpState) slirp_stacks =
+ static int slirp_hostfwd(SlirpState *s, const char *redir_str, Error **errp);
+ static int slirp_guestfwd(SlirpState *s, const char *config_str, Error **errp);
+ 
+-#ifndef _WIN32
++#if !defined(_WIN32) && !defined(CONFIG_IOS)
+ static int slirp_smb(SlirpState *s, const char *exported_dir,
+                      struct in_addr vserver_addr, Error **errp);
+ static void slirp_smb_cleanup(SlirpState *s);
+@@ -368,7 +368,7 @@ static int net_slirp_init(NetClientState *peer, const char *model,
+     struct in6_addr ip6_prefix;
+     struct in6_addr ip6_host;
+     struct in6_addr ip6_dns;
+-#ifndef _WIN32
++#if !defined(_WIN32) && !defined(CONFIG_IOS)
+     struct in_addr smbsrv = { .s_addr = 0 };
+ #endif
+     NetClientState *nc;
+@@ -478,7 +478,7 @@ static int net_slirp_init(NetClientState *peer, const char *model,
+         return -1;
+     }
+ 
+-#ifndef _WIN32
++#if !defined(_WIN32) && !defined(CONFIG_IOS)
+     if (vsmbserver && !inet_aton(vsmbserver, &smbsrv)) {
+         error_setg(errp, "Failed to parse SMB address");
+         return -1;
+@@ -592,7 +592,7 @@ static int net_slirp_init(NetClientState *peer, const char *model,
+             }
+         }
+     }
+-#ifndef _WIN32
++#if !defined(_WIN32) && !defined(CONFIG_IOS)
+     if (smb_export) {
+         if (slirp_smb(s, smb_export, smbsrv, errp) < 0) {
+             goto error;
+@@ -804,7 +804,7 @@ void hmp_hostfwd_add(Monitor *mon, const QDict *qdict)
+ 
+ }
+ 
+-#ifndef _WIN32
++#if !defined(_WIN32) && !defined(CONFIG_IOS)
+ 
+ /* automatic user mode samba server configuration */
+ static void slirp_smb_cleanup(SlirpState *s)
+@@ -919,7 +919,7 @@ static int slirp_smb(SlirpState* s, const char *exported_dir,
+     return 0;
+ }
+ 
+-#endif /* !defined(_WIN32) */
++#endif /* !defined(_WIN32) && !defined(CONFIG_IOS) */
+ 
+ static int guestfwd_can_read(void *opaque)
+ {
+diff --git a/qga/commands-posix.c b/qga/commands-posix.c
+index 7ee6a33cce..7d3ffbb946 100644
+--- a/qga/commands-posix.c
++++ b/qga/commands-posix.c
+@@ -32,6 +32,12 @@
+ 
+ #ifndef CONFIG_HAS_ENVIRON
+ #ifdef __APPLE__
++#include "TargetConditionals.h"
++#if !TARGET_OS_IPHONE && !TARGET_IPHONE_SIMULATOR
++#define APPLE_USE_CRT_EXTERNS
++#endif
++#endif
++#ifdef APPLE_USE_CRT_EXTERNS
+ #include <crt_externs.h>
+ #define environ (*_NSGetEnviron())
+ #else
+diff --git a/target/arm/arm-semi.c b/target/arm/arm-semi.c
+index b2b22d231e..f2ec5899e2 100644
+--- a/target/arm/arm-semi.c
++++ b/target/arm/arm-semi.c
+@@ -450,6 +450,7 @@ target_ulong do_arm_semihosting(CPUARMState *env)
+         return clock() / (CLOCKS_PER_SEC / 100);
+     case TARGET_SYS_TIME:
+         return set_swi_errno(ts, time(NULL));
++#if !defined(CONFIG_IOS) // iOS does not have system()
+     case TARGET_SYS_SYSTEM:
+         GET_ARG(0);
+         GET_ARG(1);
+@@ -466,6 +467,7 @@ target_ulong do_arm_semihosting(CPUARMState *env)
+             unlock_user(s, arg0, 0);
+             return ret;
+         }
++#endif /* CONFIG_IOS */
+     case TARGET_SYS_ERRNO:
+ #ifdef CONFIG_USER_ONLY
+         return ts->swi_errno;
+diff --git a/target/m68k/m68k-semi.c b/target/m68k/m68k-semi.c
+index 1402145c8f..c6f0638b28 100644
+--- a/target/m68k/m68k-semi.c
++++ b/target/m68k/m68k-semi.c
+@@ -400,6 +400,7 @@ void do_m68k_semihosting(CPUM68KState *env, int nr)
+             result = isatty(arg0);
+         }
+         break;
++#if !defined(CONFIG_IOS) // iOS does not have system()
+     case HOSTED_SYSTEM:
+         GET_ARG(0);
+         GET_ARG(1);
+@@ -418,6 +419,7 @@ void do_m68k_semihosting(CPUM68KState *env, int nr)
+             }
+         }
+         break;
++#endif /* CONFIG_IOS */
+     case HOSTED_INIT_SIM:
+ #if defined(CONFIG_USER_ONLY)
+         {
+diff --git a/tcg/aarch64/tcg-target.h b/tcg/aarch64/tcg-target.h
+index 2d93cf404e..75b2593c4d 100644
+--- a/tcg/aarch64/tcg-target.h
++++ b/tcg/aarch64/tcg-target.h
+@@ -141,9 +141,19 @@ typedef enum {
+ #define TCG_TARGET_DEFAULT_MO (0)
+ #define TCG_TARGET_HAS_MEMORY_BSWAP     1
+ 
++#ifdef __APPLE__
++void sys_icache_invalidate(void *start, size_t len);
++#endif
++
+ static inline void flush_icache_range(uintptr_t start, uintptr_t stop)
+ {
++#if defined(__APPLE__)
++    sys_icache_invalidate((char *)start, stop-start);
++#elif defined(__GNUC__)
+     __builtin___clear_cache((char *)start, (char *)stop);
++#else
++#error "Missing builtin to flush instruction cache"
++#endif
+ }
+ 
+ void tb_target_set_jmp_target(uintptr_t, uintptr_t, uintptr_t);
+-- 
+2.20.1 (Apple Git-117)
+
+From f4ff66da545ed13663bc01204f6b564ce1150abb Mon Sep 17 00:00:00 2001
+From: halts <dev@getutm.app>
+Date: Wed, 27 Mar 2019 14:47:00 -0700
+Subject: [PATCH 2/9] build: Added support for building QEMU as a shared
+ library
+
+---
+ Makefile.target | 24 +++++++++++++++++++++++-
+ configure       | 17 ++++++++++++++++-
+ rules.mak       |  6 ++++++
+ vl.c            |  2 +-
+ 4 files changed, 46 insertions(+), 3 deletions(-)
+
+diff --git a/Makefile.target b/Makefile.target
+index ae02495951..e202b4abd4 100644
+--- a/Makefile.target
++++ b/Makefile.target
+@@ -37,6 +37,14 @@ endif
+ endif
+ 
+ PROGS=$(QEMU_PROG) $(QEMU_PROGW)
++
++ifdef CONFIG_DARWIN
++QEMU_SHARED_LIBRARY=lib$(QEMU_PROG).dylib
++else
++QEMU_SHARED_LIBRARY=lib$(QEMU_PROG).so
++endif
++SOBJS=$(QEMU_SHARED_LIBRARY)
++
+ STPFILES=
+ 
+ # Makefile Tests
+@@ -98,7 +106,11 @@ stap:
+ endif
+ .PHONY: stap
+ 
++ifdef CONFIG_SHARED_LIB
++all: $(SOBJS) stap
++else
+ all: $(PROGS) stap
++endif
+ 
+ # Dummy command so that make thinks it has done something
+ 	@true
+@@ -207,6 +219,10 @@ ifdef CONFIG_DARWIN
+ 	$(call quiet-command,SetFile -a C $@,"SETFILE","$(TARGET_DIR)$@")
+ endif
+ 
++$(QEMU_SHARED_LIBRARY): LDFLAGS += $(LDFLAGS_SHARED)
++$(QEMU_SHARED_LIBRARY): $(all-obj-y) $(COMMON_LDADDS)
++	$(call LINK, $(filter-out %.mak, $^))
++
+ gdbstub-xml.c: $(TARGET_XML_FILES) $(SRC_PATH)/scripts/feature_to_c.sh
+ 	$(call quiet-command,rm -f $@ && $(SHELL) $(SRC_PATH)/scripts/feature_to_c.sh $@ $(TARGET_XML_FILES),"GEN","$(TARGET_DIR)$@")
+ 
+@@ -217,7 +233,7 @@ hmp-commands-info.h: $(SRC_PATH)/hmp-commands-info.hx $(SRC_PATH)/scripts/hxtool
+ 	$(call quiet-command,sh $(SRC_PATH)/scripts/hxtool -h < $< > $@,"GEN","$(TARGET_DIR)$@")
+ 
+ clean: clean-target
+-	rm -f *.a *~ $(PROGS)
++	rm -f *.a *~ $(PROGS) $(SOBJS)
+ 	rm -f $(shell find . -name '*.[od]')
+ 	rm -f hmp-commands.h gdbstub-xml.c
+ 	rm -f trace/generated-helpers.c trace/generated-helpers.c-timestamp
+@@ -226,9 +242,15 @@ ifdef CONFIG_TRACE_SYSTEMTAP
+ endif
+ 
+ install: all
++ifdef CONFIG_SHARED_LIB
++ifneq ($(SOBJS),)
++	$(call install-so,$(SOBJS),$(DESTDIR)$(libdir))
++endif
++else
+ ifneq ($(PROGS),)
+ 	$(call install-prog,$(PROGS),$(DESTDIR)$(bindir))
+ endif
++endif
+ ifdef CONFIG_TRACE_SYSTEMTAP
+ 	$(INSTALL_DIR) "$(DESTDIR)$(qemu_datadir)/../systemtap/tapset"
+ 	$(INSTALL_DATA) $(QEMU_PROG).stp-installed "$(DESTDIR)$(qemu_datadir)/../systemtap/tapset/$(QEMU_PROG).stp"
+diff --git a/configure b/configure
+index 34e290acad..b965796557 100755
+--- a/configure
++++ b/configure
+@@ -492,6 +492,7 @@ debug_mutex="no"
+ libpmem=""
+ default_devices="yes"
+ host_device_support="yes"
++shared_lib="no"
+ 
+ # cross compilers defaults, can be overridden with --cross-cc-ARCH
+ cross_cc_aarch64="aarch64-linux-gnu-gcc"
+@@ -861,6 +862,7 @@ Darwin)
+   darwin="yes"
+   hax="yes"
+   hvf="yes"
++  DSOSUF=".dylib"
+   LDFLAGS_SHARED="-bundle -undefined dynamic_lookup"
+   if [ "$cpu" = "x86_64" ] ; then
+     QEMU_CFLAGS="-arch x86_64 $QEMU_CFLAGS"
+@@ -883,7 +885,8 @@ iOS)
+   ios="yes"
+   hax="yes"
+   hvf="yes"
+-  LDFLAGS_SHARED="-bundle -undefined dynamic_lookup"
++  DSOSUF=".dylib"
++  LDFLAGS_SHARED="-dynamiclib"
+   if [ "$cpu" = "x86_64" ] ; then
+     QEMU_CFLAGS="-arch x86_64 $QEMU_CFLAGS"
+     LDFLAGS="-arch x86_64 $LDFLAGS"
+@@ -1557,6 +1560,13 @@ for opt do
+   ;;
+   --disable-libpmem) libpmem=no
+   ;;
++  --enable-shared-lib)
++      shared_lib=yes
++      QEMU_CFLAGS="$QEMU_CFLAGS -fPIC"
++      DSOSUF="-module$DSOSUF" # fix for make 2.81 not building target order correctly
++  ;;
++  --disable-shared-lib) shared_lib=no
++  ;;
+   *)
+       echo "ERROR: unknown option $opt"
+       echo "Try '$0 --help' for more information"
+@@ -1755,6 +1765,7 @@ Advanced options (experts only):
+   --enable-profiler        profiler support
+   --enable-debug-stack-usage
+                            track the maximum stack usage of stacks created by qemu_alloc_stack
++  --enable-shared-lib      build QEMU as a shared library instead of an application
+ 
+ Optional features, enabled with --enable-FEATURE and
+ disabled with --disable-FEATURE, default is enabled if available:
+@@ -6478,6 +6489,7 @@ echo "libpmem support   $libpmem"
+ echo "libudev           $libudev"
+ echo "default devices   $default_devices"
+ echo "host device support  $host_device_support"
++echo "build shared lib  $shared_lib"
+ 
+ if test "$supported_cpu" = "no"; then
+     echo
+@@ -6547,6 +6559,9 @@ fi
+ if test "$host_device_support" = "yes" ; then
+   echo "CONFIG_HOST_DEVICE=y" >> $config_host_mak
+ fi
++if test "$shared_lib" = "yes" ; then
++  echo "CONFIG_SHARED_LIB=y" >> $config_host_mak
++fi
+ if test "$debug_tcg" = "yes" ; then
+   echo "CONFIG_DEBUG_TCG=y" >> $config_host_mak
+ fi
+diff --git a/rules.mak b/rules.mak
+index df45bcffb4..0ef8957082 100644
+--- a/rules.mak
++++ b/rules.mak
+@@ -154,6 +154,12 @@ define install-prog
+ 	$(if $(STRIP),$(STRIP) $(foreach T,$1,"$2/$(notdir $T)"),)
+ endef
+ 
++# install-so list, dir
++define install-so
++    $(INSTALL_DIR) "$2"
++    $(INSTALL_LIB) $1 "$2"
++endef
++
+ # find-in-path
+ # Usage: $(call find-in-path, prog)
+ # Looks in the PATH if the argument contains no slash, else only considers one
+diff --git a/vl.c b/vl.c
+index c696ad2a13..5f76adf710 100644
+--- a/vl.c
++++ b/vl.c
+@@ -44,7 +44,7 @@ int main(int argc, char **argv)
+ #endif
+ #endif /* CONFIG_SDL */
+ 
+-#ifdef CONFIG_COCOA
++#if defined(CONFIG_COCOA) || defined(CONFIG_SHARED_LIB)
+ #undef main
+ #define main qemu_main
+ #endif /* CONFIG_COCOA */
+-- 
+2.20.1 (Apple Git-117)
+
+From 561368aa75b77e8c2a91d832de7758cb9b6b67a5 Mon Sep 17 00:00:00 2001
+From: halts <dev@getutm.app>
+Date: Thu, 28 Mar 2019 14:47:23 -0700
+Subject: [PATCH 3/9] Revert "tcg: allocate TB structs before the corresponding
+ translated code"
+
+iOS requires W^X so we cannot store TB structs in code memory.
+
+This reverts commit 6e3b2bfd6af488a896f7936e99ef160f8f37e6f2.
+---
+ accel/tcg/cpu-exec.c      | 10 ++++++++--
+ accel/tcg/translate-all.c | 38 ++++++++++++++++++++++++++++++++++++--
+ include/exec/exec-all.h   |  4 ++++
+ include/exec/tb-context.h |  2 ++
+ tcg/tcg.c                 | 25 -------------------------
+ tcg/tcg.h                 |  2 +-
+ 6 files changed, 51 insertions(+), 30 deletions(-)
+
+diff --git a/accel/tcg/cpu-exec.c b/accel/tcg/cpu-exec.c
+index 45ef41ebb2..4c11854547 100644
+--- a/accel/tcg/cpu-exec.c
++++ b/accel/tcg/cpu-exec.c
+@@ -226,6 +226,9 @@ static void cpu_exec_nocache(CPUState *cpu, int max_cycles,
+     tb_phys_invalidate(tb, -1);
+     mmap_unlock();
+     tcg_tb_remove(tb);
++    mmap_lock();
++    tb_free(tb);
++    mmap_unlock();
+ }
+ #endif
+ 
+@@ -302,7 +305,8 @@ static bool tb_lookup_cmp(const void *p, const void *d)
+         tb->cs_base == desc->cs_base &&
+         tb->flags == desc->flags &&
+         tb->trace_vcpu_dstate == desc->trace_vcpu_dstate &&
+-        (tb_cflags(tb) & (CF_HASH_MASK | CF_INVALID)) == desc->cf_mask) {
++        (tb_cflags(tb) & (CF_HASH_MASK | CF_INVALID)) == desc->cf_mask &&
++        !atomic_read(&tb->invalid)) {
+         /* check next page if needed */
+         if (tb->page_addr[1] == -1) {
+             return true;
+@@ -420,7 +424,9 @@ static inline TranslationBlock *tb_find(CPUState *cpu,
+ #endif
+     /* See if we can patch the calling TB. */
+     if (last_tb) {
+-        tb_add_jump(last_tb, tb_exit, tb);
++        if (!tb->invalid) {
++            tb_add_jump(last_tb, tb_exit, tb);
++        }
+     }
+     return tb;
+ }
+diff --git a/accel/tcg/translate-all.c b/accel/tcg/translate-all.c
+index 8f593b926f..eb390bb9fa 100644
+--- a/accel/tcg/translate-all.c
++++ b/accel/tcg/translate-all.c
+@@ -404,6 +404,10 @@ bool cpu_restore_state(CPUState *cpu, uintptr_t host_pc, bool will_exit)
+                 /* one-shot translation, invalidate it immediately */
+                 tb_phys_invalidate(tb, -1);
+                 tcg_tb_remove(tb);
++
++                mmap_lock();
++                tb_free(tb);
++                mmap_unlock();
+             }
+             r = true;
+         }
+@@ -1113,6 +1117,13 @@ static inline void code_gen_alloc(size_t tb_size)
+         fprintf(stderr, "Could not allocate dynamic translator buffer\n");
+         exit(1);
+     }
++
++    /* Estimate a good size for the number of TBs we can support.  We
++       still haven't deducted the prologue from the buffer size here,
++       but that's minimal and won't affect the estimate much.  */
++    tcg_ctx->code_gen_max_blocks
++        = tcg_ctx->code_gen_buffer_size / CODE_GEN_AVG_BLOCK_SIZE;
++    tb_ctx.tbs = g_new(TranslationBlock, tcg_ctx->code_gen_max_blocks);
+ }
+ 
+ static bool tb_cmp(const void *ap, const void *bp)
+@@ -1163,13 +1174,30 @@ static TranslationBlock *tb_alloc(target_ulong pc)
+ 
+     assert_memory_lock();
+ 
+-    tb = tcg_tb_alloc(tcg_ctx);
+-    if (unlikely(tb == NULL)) {
++    if (tb_ctx.nb_tbs >= tcg_ctx->code_gen_max_blocks) {
+         return NULL;
+     }
++    tb = &tb_ctx.tbs[tb_ctx.nb_tbs++];
++    tb->pc = pc;
++    tb->cflags = 0;
++    tb->invalid = false;
+     return tb;
+ }
+ 
++void tb_free(TranslationBlock *tb)
++{
++    assert_memory_lock();
++
++    /* In practice this is mostly used for single use temporary TB
++       Ignore the hard cases and just back up if this TB happens to
++       be the last one generated.  */
++    if (tb_ctx.nb_tbs > 0 &&
++            tb == &tb_ctx.tbs[tb_ctx.nb_tbs - 1]) {
++        tcg_ctx->code_gen_ptr = tb->tc.ptr;
++        tb_ctx.nb_tbs--;
++    }
++}
++
+ /* call with @p->lock held */
+ static inline void invalidate_page_bitmap(PageDesc *p)
+ {
+@@ -1249,6 +1277,7 @@ static void do_tb_flush(CPUState *cpu, run_on_cpu_data tb_flush_count)
+         cpu_tb_jmp_cache_clear(cpu);
+     }
+ 
++    tb_ctx.nb_tbs = 0;
+     qht_reset_size(&tb_ctx.htable, CODE_GEN_HTABLE_SIZE);
+     page_flush_tb();
+ 
+@@ -1431,6 +1460,8 @@ static void do_tb_phys_invalidate(TranslationBlock *tb, bool rm_from_page_list)
+ 
+     assert_memory_lock();
+ 
++    atomic_set(&tb->invalid, true);
++
+     /* make sure no further incoming jumps will be chained to this TB */
+     qemu_spin_lock(&tb->jmp_lock);
+     atomic_set(&tb->cflags, tb->cflags | CF_INVALID);
+@@ -2186,6 +2217,9 @@ void cpu_io_recompile(CPUState *cpu, uintptr_t retaddr)
+             tb_phys_invalidate(tb->orig_tb, -1);
+         }
+         tcg_tb_remove(tb);
++        mmap_lock();
++        tb_free(tb);
++        mmap_unlock();
+     }
+ 
+     /* TODO: If env->pc != tb->pc (i.e. the faulting instruction was not
+diff --git a/include/exec/exec-all.h b/include/exec/exec-all.h
+index 97b90cb0db..87016914c3 100644
+--- a/include/exec/exec-all.h
++++ b/include/exec/exec-all.h
+@@ -356,6 +356,8 @@ struct TranslationBlock {
+ /* cflags' mask for hashing/comparison */
+ #define CF_HASH_MASK   \
+     (CF_COUNT_MASK | CF_LAST_IO | CF_USE_ICOUNT | CF_PARALLEL | CF_CLUSTER_MASK)
++    
++    uint16_t invalid;
+ 
+     /* Per-vCPU dynamic tracing state used to generate this TB */
+     uint32_t trace_vcpu_dstate;
+@@ -421,6 +423,8 @@ static inline uint32_t curr_cflags(void)
+          | (use_icount ? CF_USE_ICOUNT : 0);
+ }
+ 
++void tb_free(TranslationBlock *tb);
++
+ /* TranslationBlock invalidate API */
+ #if defined(CONFIG_USER_ONLY)
+ void tb_invalidate_phys_addr(target_ulong addr);
+diff --git a/include/exec/tb-context.h b/include/exec/tb-context.h
+index feb585e0a7..378d3fc5d3 100644
+--- a/include/exec/tb-context.h
++++ b/include/exec/tb-context.h
+@@ -31,7 +31,9 @@ typedef struct TBContext TBContext;
+ 
+ struct TBContext {
+ 
++    TranslationBlock *tbs;
+     struct qht htable;
++    int nb_tbs;
+ 
+     /* statistics */
+     unsigned tb_flush_count;
+diff --git a/tcg/tcg.c b/tcg/tcg.c
+index 9b2bf7f439..a97ee9993e 100644
+--- a/tcg/tcg.c
++++ b/tcg/tcg.c
+@@ -969,31 +969,6 @@ void tcg_context_init(TCGContext *s)
+     cpu_env = temp_tcgv_ptr(ts);
+ }
+ 
+-/*
+- * Allocate TBs right before their corresponding translated code, making
+- * sure that TBs and code are on different cache lines.
+- */
+-TranslationBlock *tcg_tb_alloc(TCGContext *s)
+-{
+-    uintptr_t align = qemu_icache_linesize;
+-    TranslationBlock *tb;
+-    void *next;
+-
+- retry:
+-    tb = (void *)ROUND_UP((uintptr_t)s->code_gen_ptr, align);
+-    next = (void *)ROUND_UP((uintptr_t)(tb + 1), align);
+-
+-    if (unlikely(next > s->code_gen_highwater)) {
+-        if (tcg_region_alloc(s)) {
+-            return NULL;
+-        }
+-        goto retry;
+-    }
+-    atomic_set(&s->code_gen_ptr, next);
+-    s->data_gen_ptr = NULL;
+-    return tb;
+-}
+-
+ void tcg_prologue_init(TCGContext *s)
+ {
+     size_t prologue_size, total_size;
+diff --git a/tcg/tcg.h b/tcg/tcg.h
+index 32b7cf3489..55dba9878b 100644
+--- a/tcg/tcg.h
++++ b/tcg/tcg.h
+@@ -699,6 +699,7 @@ struct TCGContext {
+        here, because there's too much arithmetic throughout that relies
+        on addition and subtraction working on bytes.  Rely on the GCC
+        extension that allows arithmetic on void*.  */
++    int code_gen_max_blocks;
+     void *code_gen_prologue;
+     void *code_gen_epilogue;
+     void *code_gen_buffer;
+@@ -876,7 +877,6 @@ static inline bool tcg_op_buf_full(void)
+ /* user-mode: mmap_lock must be held for tcg_malloc_internal. */
+ void *tcg_malloc_internal(TCGContext *s, int size);
+ void tcg_pool_reset(TCGContext *s);
+-TranslationBlock *tcg_tb_alloc(TCGContext *s);
+ 
+ void tcg_region_init(void);
+ void tcg_region_reset_all(void);
+-- 
+2.20.1 (Apple Git-117)
+
+From 9cc54ea7c91490e4c2740661f03e01208a04a1f2 Mon Sep 17 00:00:00 2001
+From: halts <dev@getutm.app>
+Date: Fri, 29 Mar 2019 15:40:52 -0700
+Subject: [PATCH 4/9] tcg: fix remaining issues with iOS JIT
+
+---
+ accel/tcg/translate-all.c    | 10 ++++++++++
+ tcg/aarch64/tcg-target.h     | 25 +++++++++++++++++++++++++
+ tcg/aarch64/tcg-target.inc.c |  7 +++++++
+ tcg/tcg.c                    | 29 ++++++++++++++++++++++++++++-
+ 4 files changed, 70 insertions(+), 1 deletion(-)
+
+diff --git a/accel/tcg/translate-all.c b/accel/tcg/translate-all.c
+index eb390bb9fa..6ee5a6a197 100644
+--- a/accel/tcg/translate-all.c
++++ b/accel/tcg/translate-all.c
+@@ -1031,7 +1031,11 @@ static inline void *alloc_code_gen_buffer(void)
+ #else
+ static inline void *alloc_code_gen_buffer(void)
+ {
++#if defined(CONFIG_IOS) // iOS requires W^X
++    int prot = PROT_WRITE | PROT_READ;
++#else
+     int prot = PROT_WRITE | PROT_READ | PROT_EXEC;
++#endif
+     int flags = MAP_PRIVATE | MAP_ANONYMOUS;
+     uintptr_t start = 0;
+     size_t size = tcg_ctx->code_gen_buffer_size;
+@@ -1783,7 +1787,13 @@ TranslationBlock *tb_gen_code(CPUState *cpu,
+     if (unlikely(gen_code_size < 0)) {
+         goto buffer_overflow;
+     }
++#if defined(CONFIG_IOS)
++    unlock_exec_memory((void *)gen_code_buf + gen_code_size, 0x1000); //FIXME_IOS
++#endif
+     search_size = encode_search(tb, (void *)gen_code_buf + gen_code_size);
++#if defined(CONFIG_IOS)
++    lock_exec_memory((void *)gen_code_buf + gen_code_size, 0x1000); //FIXME_IOS
++#endif
+     if (unlikely(search_size < 0)) {
+         goto buffer_overflow;
+     }
+diff --git a/tcg/aarch64/tcg-target.h b/tcg/aarch64/tcg-target.h
+index 75b2593c4d..d6d1195a38 100644
+--- a/tcg/aarch64/tcg-target.h
++++ b/tcg/aarch64/tcg-target.h
+@@ -156,6 +156,31 @@ static inline void flush_icache_range(uintptr_t start, uintptr_t stop)
+ #endif
+ }
+ 
++#if defined(CONFIG_IOS)
++#define EXEC_PAGE_SIZE (0x4000)
++static inline void lock_exec_memory(void *addr, size_t len)
++{
++    void *start = (void *)((uintptr_t)addr & ~(EXEC_PAGE_SIZE-1));
++    size_t total = ((uintptr_t)addr - (uintptr_t)start + len + (EXEC_PAGE_SIZE-1)) & ~(EXEC_PAGE_SIZE-1);
++    if (mprotect(start, total, PROT_READ | PROT_EXEC) < 0)
++    {
++        fprintf(stderr, "Failed to lock exec memory\n");
++        exit(1);
++    }
++}
++
++static inline void unlock_exec_memory(void *addr, size_t len)
++{
++    void *start = (void *)((uintptr_t)addr & ~(EXEC_PAGE_SIZE-1));
++    size_t total = ((uintptr_t)addr - (uintptr_t)start + len + (EXEC_PAGE_SIZE-1)) & ~(EXEC_PAGE_SIZE-1);
++    if (mprotect(start, total, PROT_READ | PROT_WRITE) < 0)
++    {
++        fprintf(stderr, "Failed to unlock exec memory\n");
++        exit(1);
++    }
++}
++#endif
++
+ void tb_target_set_jmp_target(uintptr_t, uintptr_t, uintptr_t);
+ 
+ #ifdef CONFIG_SOFTMMU
+diff --git a/tcg/aarch64/tcg-target.inc.c b/tcg/aarch64/tcg-target.inc.c
+index d57f9e500f..6a0822606e 100644
+--- a/tcg/aarch64/tcg-target.inc.c
++++ b/tcg/aarch64/tcg-target.inc.c
+@@ -1182,7 +1182,14 @@ void tb_target_set_jmp_target(uintptr_t tc_ptr, uintptr_t jmp_addr,
+         i2 = I3401_ADDI | rt << 31 | (addr & 0xfff) << 10 | rd << 5 | rd;
+     }
+     pair = (uint64_t)i2 << 32 | i1;
++
++#if defined(CONFIG_IOS)
++    unlock_exec_memory((void *)jmp_addr, 8);
++#endif
+     atomic_set((uint64_t *)jmp_addr, pair);
++#if defined(CONFIG_IOS)
++    lock_exec_memory((void *)jmp_addr, 8);
++#endif
+     flush_icache_range(jmp_addr, jmp_addr + 8);
+ }
+ 
+diff --git a/tcg/tcg.c b/tcg/tcg.c
+index a97ee9993e..ee6bbb9f89 100644
+--- a/tcg/tcg.c
++++ b/tcg/tcg.c
+@@ -991,6 +991,10 @@ void tcg_prologue_init(TCGContext *s)
+     s->pool_labels = NULL;
+ #endif
+ 
++#if defined(CONFIG_IOS)
++    unlock_exec_memory(buf0, total_size);
++#endif
++
+     /* Generate the prologue.  */
+     tcg_target_qemu_prologue(s);
+ 
+@@ -1003,10 +1007,13 @@ void tcg_prologue_init(TCGContext *s)
+ #endif
+ 
+     buf1 = s->code_ptr;
++    prologue_size = tcg_current_code_size(s);
++#if defined(CONFIG_IOS)
++    lock_exec_memory(buf0, prologue_size);
++#endif
+     flush_icache_range((uintptr_t)buf0, (uintptr_t)buf1);
+ 
+     /* Deduct the prologue from the buffer.  */
+-    prologue_size = tcg_current_code_size(s);
+     s->code_gen_ptr = buf1;
+     s->code_gen_buffer = buf1;
+     s->code_buf = buf1;
+@@ -3790,6 +3797,9 @@ int tcg_gen_code(TCGContext *s, TranslationBlock *tb)
+ #endif
+     int i, num_insns;
+     TCGOp *op;
++#if defined(CONFIG_IOS)
++    uintptr_t last_page, cur_page, end_page;
++#endif
+ 
+ #ifdef CONFIG_PROFILER
+     {
+@@ -3901,6 +3911,12 @@ int tcg_gen_code(TCGContext *s, TranslationBlock *tb)
+ #endif
+ 
+     num_insns = -1;
++#if defined(CONFIG_IOS)
++    cur_page = (uintptr_t)s->code_ptr & ~(EXEC_PAGE_SIZE-1);
++    end_page = (uintptr_t)s->code_gen_highwater & ~(EXEC_PAGE_SIZE-1);
++    unlock_exec_memory((void *)cur_page, cur_page < end_page ? 2*EXEC_PAGE_SIZE : EXEC_PAGE_SIZE);
++    last_page = cur_page;
++#endif
+     QTAILQ_FOREACH(op, &s->ops, link) {
+         TCGOpcode opc = op->opc;
+ 
+@@ -3908,6 +3924,14 @@ int tcg_gen_code(TCGContext *s, TranslationBlock *tb)
+         atomic_set(&prof->table_op_count[opc], prof->table_op_count[opc] + 1);
+ #endif
+ 
++#if defined(CONFIG_IOS)
++        cur_page = (uintptr_t)s->code_ptr & ~(EXEC_PAGE_SIZE-1);
++        if (last_page != cur_page) {
++            unlock_exec_memory((void *)cur_page, cur_page < end_page ? 2*EXEC_PAGE_SIZE : EXEC_PAGE_SIZE);
++            last_page = cur_page;
++        }
++#endif
++
+         switch (opc) {
+         case INDEX_op_mov_i32:
+         case INDEX_op_mov_i64:
+@@ -3982,6 +4006,9 @@ int tcg_gen_code(TCGContext *s, TranslationBlock *tb)
+     }
+ #endif
+ 
++#if defined(CONFIG_IOS)
++    lock_exec_memory(s->code_buf, tcg_current_code_size(s));
++#endif
+     /* flush instruction cache */
+     flush_icache_range((uintptr_t)s->code_buf, (uintptr_t)s->code_ptr);
+ 
+-- 
+2.20.1 (Apple Git-117)
+
+From bc54672eacd6e75d90d0f5c678f811287c05fb70 Mon Sep 17 00:00:00 2001
+From: halts <dev@getutm.app>
+Date: Fri, 29 Mar 2019 15:41:07 -0700
+Subject: [PATCH 5/9] coroutine: add libucontext as external library
+
+iOS does not support ucontext natively for aarch64 and the sigaltstack is also unsupported (even worse, it fails silently, see: https://openradar.appspot.com/13002712 )
+---
+ .gitmodules               |  3 +++
+ Makefile                  |  6 ++++++
+ configure                 | 27 +++++++++++++++++++++++++--
+ util/coroutine-ucontext.c |  9 +++++++++
+ 4 files changed, 43 insertions(+), 2 deletions(-)
+
+diff --git a/.gitmodules b/.gitmodules
+index ceafb0ee29..d862f58ac7 100644
+--- a/.gitmodules
++++ b/.gitmodules
+@@ -52,3 +52,6 @@
+ [submodule "roms/edk2"]
+ 	path = roms/edk2
+ 	url = https://github.com/tianocore/edk2.git
++[submodule "libucontext"]
++	path = libucontext
++	url = https://github.com/halts/libucontext.git
+diff --git a/Makefile b/Makefile
+index a90c08b60a..f6743d30bb 100644
+--- a/Makefile
++++ b/Makefile
+@@ -471,12 +471,18 @@ CAP_CFLAGS += -DCAPSTONE_HAS_ARM64
+ CAP_CFLAGS += -DCAPSTONE_HAS_POWERPC
+ CAP_CFLAGS += -DCAPSTONE_HAS_X86
+ 
++LIBUCONTEXT_CFLAGS = $(CFLAGS) $(QEMU_CFLAGS)
++LIBUCONTEXT_CFLAGS += -DCUSTOM_IMPL
++
+ subdir-capstone: .git-submodule-status
+ 	$(call quiet-command,$(MAKE) -C $(SRC_PATH)/capstone CAPSTONE_SHARED=no BUILDDIR="$(BUILD_DIR)/capstone" CC="$(CC)" AR="$(AR)" LD="$(LD)" RANLIB="$(RANLIB)" CFLAGS="$(CAP_CFLAGS)" $(SUBDIR_MAKEFLAGS) $(BUILD_DIR)/capstone/$(LIBCAPSTONE))
+ 
+ subdir-slirp: .git-submodule-status
+ 	$(call quiet-command,$(MAKE) -C $(SRC_PATH)/slirp BUILD_DIR="$(BUILD_DIR)/slirp" CC="$(CC)" AR="$(AR)" LD="$(LD)" RANLIB="$(RANLIB)" CFLAGS="$(CFLAGS) $(QEMU_CFLAGS)")
+ 
++subdir-libucontext: .git-submodule-status
++	$(call quiet-command,$(MAKE) -C $(SRC_PATH)/libucontext ARCH="$(ARCH)" BUILD_DIR="$(BUILD_DIR)/libucontext" CC="$(CC)" AR="$(AR)" LD="$(LD)" RANLIB="$(RANLIB)" CFLAGS="$(LIBUCONTEXT_CFLAGS)")
++
+ $(SUBDIR_RULES): libqemuutil.a $(common-obj-y) $(chardev-obj-y) \
+ 	$(qom-obj-y) $(crypto-aes-obj-$(CONFIG_USER_ONLY))
+ 
+diff --git a/configure b/configure
+index b965796557..71696d6468 100755
+--- a/configure
++++ b/configure
+@@ -1754,7 +1754,7 @@ Advanced options (experts only):
+   --oss-lib                path to OSS library
+   --cpu=CPU                Build for host CPU [$cpu]
+   --with-coroutine=BACKEND coroutine backend. Supported options:
+-                           ucontext, sigaltstack, windows
++                           ucontext, libucontext, sigaltstack, windows
+   --enable-gcov            enable test coverage analysis with gcov
+   --gcov=GCOV              use specified gcov [$gcov_tool]
+   --disable-blobs          disable installing provided firmware blobs
+@@ -5261,6 +5261,8 @@ if test "$coroutine" = ""; then
+     coroutine=win32
+   elif test "$ucontext_works" = "yes"; then
+     coroutine=ucontext
++  elif test "$ios" = "yes"; then
++    coroutine=libucontext
+   else
+     coroutine=sigaltstack
+   fi
+@@ -5284,12 +5286,29 @@ else
+       error_exit "only the 'windows' coroutine backend is valid for Windows"
+     fi
+     ;;
++  libucontext)
++  ;;
+   *)
+     error_exit "unknown coroutine backend $coroutine"
+     ;;
+   esac
+ fi
+ 
++case $coroutine in
++libucontext)
++  git_submodules="${git_submodules} libucontext"
++  mkdir -p libucontext
++  QEMU_CFLAGS="$QEMU_CFLAGS -I\$(SRC_PATH)/libucontext/include"
++  LIBS="-L\$(BUILD_DIR)/libucontext -lucontext $LIBS"
++  ;;
++esac
++
++if test "$coroutine" == "libucontext"; then
++  coroutine_impl=ucontext
++else
++  coroutine_impl=$coroutine
++fi
++
+ if test "$coroutine_pool" = ""; then
+   coroutine_pool=yes
+ fi
+@@ -7061,7 +7080,7 @@ if test "$rbd" = "yes" ; then
+   echo "RBD_LIBS=$rbd_libs" >> $config_host_mak
+ fi
+ 
+-echo "CONFIG_COROUTINE_BACKEND=$coroutine" >> $config_host_mak
++echo "CONFIG_COROUTINE_BACKEND=$coroutine_impl" >> $config_host_mak
+ if test "$coroutine_pool" = "yes" ; then
+   echo "CONFIG_COROUTINE_POOL=1" >> $config_host_mak
+ else
+@@ -7905,6 +7924,10 @@ fi
+ if [ "$capstone" = "git" -o "$capstone" = "internal" ]; then
+   echo "config-host.h: subdir-capstone" >> $config_host_mak
+ fi
++if [ "$coroutine" = "libucontext" ]; then
++  echo "config-host.h: subdir-libucontext" >> $config_host_mak
++  echo "CONFIG_LIBUCONTEXT=y" >> $config_host_mak
++fi
+ if test -n "$LIBCAPSTONE"; then
+   echo "LIBCAPSTONE=$LIBCAPSTONE" >> $config_host_mak
+ fi
+diff --git a/util/coroutine-ucontext.c b/util/coroutine-ucontext.c
+index 090ba21a13..7bfb64ba58 100644
+--- a/util/coroutine-ucontext.c
++++ b/util/coroutine-ucontext.c
+@@ -23,7 +23,16 @@
+ #undef _FORTIFY_SOURCE
+ #endif
+ #include "qemu/osdep.h"
++#if defined(CONFIG_LIBUCONTEXT)
++#include <libucontext.h>
++#define ucontext_t libucontext_ucontext_t
++#define getcontext libucontext_getcontext
++#define setcontext libucontext_setcontext
++#define swapcontext libucontext_swapcontext
++#define makecontext libucontext_makecontext
++#else
+ #include <ucontext.h>
++#endif
+ #include "qemu-common.h"
+ #include "qemu/coroutine_int.h"
+ 
+-- 
+2.20.1 (Apple Git-117)
+
+From cb53d9b4cc6a89fd22146fee5624fb6c4d44c599 Mon Sep 17 00:00:00 2001
+From: halts <dev@getutm.app>
+Date: Fri, 5 Apr 2019 13:59:41 -0700
+Subject: [PATCH 6/9] tcg (aarch64 target): use indirect jumps on iOS for TB
+ linking
+
+Unlocking/locking 16KiB pages is expensive. We lose cache/branch prediction performance with indirect jumps, but that's a small loss for the TLB/cache flushes caused by mprotect()
+---
+ tcg/aarch64/tcg-target.h | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/tcg/aarch64/tcg-target.h b/tcg/aarch64/tcg-target.h
+index d6d1195a38..b8190fe3e2 100644
+--- a/tcg/aarch64/tcg-target.h
++++ b/tcg/aarch64/tcg-target.h
+@@ -120,7 +120,12 @@ typedef enum {
+ #define TCG_TARGET_HAS_muls2_i64        0
+ #define TCG_TARGET_HAS_muluh_i64        1
+ #define TCG_TARGET_HAS_mulsh_i64        1
++
++#if defined(CONFIG_IOS) // In iOS, we have to unlock exe memory which is very slow
++#define TCG_TARGET_HAS_direct_jump      0
++#else
+ #define TCG_TARGET_HAS_direct_jump      1
++#endif
+ 
+ #define TCG_TARGET_HAS_v64              1
+ #define TCG_TARGET_HAS_v128             1
+-- 
+2.20.1 (Apple Git-117)
+
+From 5101e9ad6f2b464ff1c8f68867a8defd2c1e9048 Mon Sep 17 00:00:00 2001
+From: halts <dev@getutm.app>
+Date: Fri, 5 Apr 2019 14:01:06 -0700
+Subject: [PATCH 7/9] tcg (aarch64 target): fix indirect tb jumps
+
+The LDR only works in a +/- 1MiB range. We expand this to a 4GiB range by using ADRP+LDR when needed.
+---
+ tcg/aarch64/tcg-target.inc.c | 11 +++++++++--
+ 1 file changed, 9 insertions(+), 2 deletions(-)
+
+diff --git a/tcg/aarch64/tcg-target.inc.c b/tcg/aarch64/tcg-target.inc.c
+index 6a0822606e..deaff07b23 100644
+--- a/tcg/aarch64/tcg-target.inc.c
++++ b/tcg/aarch64/tcg-target.inc.c
+@@ -1739,8 +1739,15 @@ static void tcg_out_op(TCGContext *s, TCGOpcode opc,
+         } else {
+             /* !TCG_TARGET_HAS_direct_jump */
+             tcg_debug_assert(s->tb_jmp_target_addr != NULL);
+-            intptr_t offset = tcg_pcrel_diff(s, (s->tb_jmp_target_addr + a0)) >> 2;
+-            tcg_out_insn(s, 3305, LDR, offset, TCG_REG_TMP);
++            uintptr_t target_addr = (uintptr_t)(s->tb_jmp_target_addr + a0);
++            ptrdiff_t offset = tcg_pcrel_diff(s, (void *)target_addr);
++            if (offset < 0x100000 && offset > -0x100000) { // check it's in +/- 1MiB range
++                tcg_out_insn(s, 3305, LDR, offset >> 2, TCG_REG_TMP);
++            } else { // TODO: what if +/- 4GiB is not enough?
++                offset = (target_addr >> 12) - ((uintptr_t)s->code_ptr >> 12);
++                tcg_out_insn(s, 3406, ADRP, TCG_REG_TMP, offset);
++                tcg_out_ld(s, TCG_TYPE_PTR, TCG_REG_TMP, TCG_REG_TMP, target_addr & 0xfff);
++            }
+         }
+         tcg_out_insn(s, 3207, BR, TCG_REG_TMP);
+         set_jmp_reset_offset(s, a0);
+-- 
+2.20.1 (Apple Git-117)
+
+From 2cb3bec86b9fcc36b5b746130fdf5f08cdbcf76e Mon Sep 17 00:00:00 2001
+From: halts <dev@getutm.app>
+Date: Fri, 5 Apr 2019 16:25:12 -0700
+Subject: [PATCH 8/9] tcg (iOS): implemented improved exec memory lock/unlock
+
+We will only call mprotect on the current page where code is being emitted and only once before execution.
+---
+ accel/tcg/cpu-exec.c         |  4 ++
+ accel/tcg/translate-all.c    | 17 ++++---
+ include/exec/exec-all.h      |  3 ++
+ tcg/aarch64/tcg-target.h     | 25 ----------
+ tcg/aarch64/tcg-target.inc.c |  7 ---
+ tcg/tcg.c                    | 88 ++++++++++++++++++++++++++----------
+ tcg/tcg.h                    | 16 +++++++
+ 7 files changed, 98 insertions(+), 62 deletions(-)
+
+diff --git a/accel/tcg/cpu-exec.c b/accel/tcg/cpu-exec.c
+index 4c11854547..e57faf4c0c 100644
+--- a/accel/tcg/cpu-exec.c
++++ b/accel/tcg/cpu-exec.c
+@@ -167,6 +167,10 @@ static inline tcg_target_ulong cpu_tb_exec(CPUState *cpu, TranslationBlock *itb)
+     }
+ #endif /* DEBUG_DISAS */
+ 
++#if defined(CONFIG_IOS)
++    tb_exec_memory_lock();
++#endif
++
+     cpu->can_do_io = !use_icount;
+     ret = tcg_qemu_tb_exec(env, tb_ptr);
+     cpu->can_do_io = 1;
+diff --git a/accel/tcg/translate-all.c b/accel/tcg/translate-all.c
+index 6ee5a6a197..af10a0ff2d 100644
+--- a/accel/tcg/translate-all.c
++++ b/accel/tcg/translate-all.c
+@@ -1778,6 +1778,10 @@ TranslationBlock *tb_gen_code(CPUState *cpu,
+     ti = profile_getclock();
+ #endif
+ 
++#ifdef CONFIG_IOS
++    tcg_exec_memory_unlock(tcg_ctx);
++#endif
++
+     /* ??? Overflow could be handled better here.  In particular, we
+        don't need to re-do gen_intermediate_code, nor should we re-do
+        the tcg optimization currently hidden inside tcg_gen_code.  All
+@@ -1787,13 +1791,7 @@ TranslationBlock *tb_gen_code(CPUState *cpu,
+     if (unlikely(gen_code_size < 0)) {
+         goto buffer_overflow;
+     }
+-#if defined(CONFIG_IOS)
+-    unlock_exec_memory((void *)gen_code_buf + gen_code_size, 0x1000); //FIXME_IOS
+-#endif
+     search_size = encode_search(tb, (void *)gen_code_buf + gen_code_size);
+-#if defined(CONFIG_IOS)
+-    lock_exec_memory((void *)gen_code_buf + gen_code_size, 0x1000); //FIXME_IOS
+-#endif
+     if (unlikely(search_size < 0)) {
+         goto buffer_overflow;
+     }
+@@ -2685,3 +2683,10 @@ void tcg_flush_softmmu_tlb(CPUState *cs)
+     tlb_flush(cs);
+ #endif
+ }
++
++#ifdef CONFIG_IOS
++void tb_exec_memory_lock(void)
++{
++    tcg_exec_memory_lock(tcg_ctx);
++}
++#endif
+diff --git a/include/exec/exec-all.h b/include/exec/exec-all.h
+index 87016914c3..9da9659daf 100644
+--- a/include/exec/exec-all.h
++++ b/include/exec/exec-all.h
+@@ -511,6 +511,9 @@ void tlb_set_dirty(CPUState *cpu, target_ulong vaddr);
+ /* exec.c */
+ void tb_flush_jmp_cache(CPUState *cpu, target_ulong addr);
+ 
++/* translate-all.c */
++void tb_exec_memory_lock(void);
++
+ MemoryRegionSection *
+ address_space_translate_for_iotlb(CPUState *cpu, int asidx, hwaddr addr,
+                                   hwaddr *xlat, hwaddr *plen,
+diff --git a/tcg/aarch64/tcg-target.h b/tcg/aarch64/tcg-target.h
+index b8190fe3e2..704962ec7d 100644
+--- a/tcg/aarch64/tcg-target.h
++++ b/tcg/aarch64/tcg-target.h
+@@ -161,31 +161,6 @@ static inline void flush_icache_range(uintptr_t start, uintptr_t stop)
+ #endif
+ }
+ 
+-#if defined(CONFIG_IOS)
+-#define EXEC_PAGE_SIZE (0x4000)
+-static inline void lock_exec_memory(void *addr, size_t len)
+-{
+-    void *start = (void *)((uintptr_t)addr & ~(EXEC_PAGE_SIZE-1));
+-    size_t total = ((uintptr_t)addr - (uintptr_t)start + len + (EXEC_PAGE_SIZE-1)) & ~(EXEC_PAGE_SIZE-1);
+-    if (mprotect(start, total, PROT_READ | PROT_EXEC) < 0)
+-    {
+-        fprintf(stderr, "Failed to lock exec memory\n");
+-        exit(1);
+-    }
+-}
+-
+-static inline void unlock_exec_memory(void *addr, size_t len)
+-{
+-    void *start = (void *)((uintptr_t)addr & ~(EXEC_PAGE_SIZE-1));
+-    size_t total = ((uintptr_t)addr - (uintptr_t)start + len + (EXEC_PAGE_SIZE-1)) & ~(EXEC_PAGE_SIZE-1);
+-    if (mprotect(start, total, PROT_READ | PROT_WRITE) < 0)
+-    {
+-        fprintf(stderr, "Failed to unlock exec memory\n");
+-        exit(1);
+-    }
+-}
+-#endif
+-
+ void tb_target_set_jmp_target(uintptr_t, uintptr_t, uintptr_t);
+ 
+ #ifdef CONFIG_SOFTMMU
+diff --git a/tcg/aarch64/tcg-target.inc.c b/tcg/aarch64/tcg-target.inc.c
+index deaff07b23..4390988cdf 100644
+--- a/tcg/aarch64/tcg-target.inc.c
++++ b/tcg/aarch64/tcg-target.inc.c
+@@ -1182,14 +1182,7 @@ void tb_target_set_jmp_target(uintptr_t tc_ptr, uintptr_t jmp_addr,
+         i2 = I3401_ADDI | rt << 31 | (addr & 0xfff) << 10 | rd << 5 | rd;
+     }
+     pair = (uint64_t)i2 << 32 | i1;
+-
+-#if defined(CONFIG_IOS)
+-    unlock_exec_memory((void *)jmp_addr, 8);
+-#endif
+     atomic_set((uint64_t *)jmp_addr, pair);
+-#if defined(CONFIG_IOS)
+-    lock_exec_memory((void *)jmp_addr, 8);
+-#endif
+     flush_icache_range(jmp_addr, jmp_addr + 8);
+ }
+ 
+diff --git a/tcg/tcg.c b/tcg/tcg.c
+index ee6bbb9f89..d1e9073928 100644
+--- a/tcg/tcg.c
++++ b/tcg/tcg.c
+@@ -524,6 +524,12 @@ static void tcg_region_assign(TCGContext *s, size_t curr_region)
+     s->code_gen_ptr = start;
+     s->code_gen_buffer_size = end - start;
+     s->code_gen_highwater = end - TCG_HIGHWATER;
++
++#if defined(CONFIG_IOS)
++    s->code_locked = 0;
++    s->code_locked_bottom_page = (void *)((uintptr_t)start & qemu_host_page_mask);
++    s->code_locked_top_page = s->code_locked_bottom_page;
++#endif
+ }
+ 
+ static bool tcg_region_alloc__locked(TCGContext *s)
+@@ -576,6 +582,7 @@ void tcg_region_reset_all(void)
+ 
+     for (i = 0; i < n_ctxs; i++) {
+         TCGContext *s = atomic_read(&tcg_ctxs[i]);
++        tcg_exec_memory_destroy(s);
+         bool err = tcg_region_initial_alloc__locked(s);
+ 
+         g_assert(!err);
+@@ -663,6 +670,10 @@ void tcg_region_init(void)
+ 
+     n_regions = tcg_n_regions();
+ 
++#if defined(CONFIG_IOS)
++    g_assert(!tcg_init_ctx.code_locked);
++#endif
++
+     /* The first region will be 'aligned - buf' bytes larger than the others */
+     aligned = QEMU_ALIGN_PTR_UP(buf, page_size);
+     g_assert(aligned < tcg_init_ctx.code_gen_buffer + size);
+@@ -677,6 +688,11 @@ void tcg_region_init(void)
+     /* A region must have at least 2 pages; one code, one guard */
+     g_assert(region_size >= 2 * page_size);
+ 
++#if defined(CONFIG_IOS)
++    g_assert(tcg_init_ctx.code_locked_bottom_page + region_size >= 
++             tcg_init_ctx.code_locked_top_page + qemu_host_page_size);
++#endif
++
+     /* init the region struct */
+     qemu_mutex_init(&region.lock);
+     region.n = n_regions;
+@@ -992,7 +1008,9 @@ void tcg_prologue_init(TCGContext *s)
+ #endif
+ 
+ #if defined(CONFIG_IOS)
+-    unlock_exec_memory(buf0, total_size);
++    s->code_locked = 0;
++    s->code_locked_bottom_page = (void *)((uintptr_t)buf0 & qemu_host_page_mask);
++    s->code_locked_top_page = s->code_locked_bottom_page;
+ #endif
+ 
+     /* Generate the prologue.  */
+@@ -1008,9 +1026,6 @@ void tcg_prologue_init(TCGContext *s)
+ 
+     buf1 = s->code_ptr;
+     prologue_size = tcg_current_code_size(s);
+-#if defined(CONFIG_IOS)
+-    lock_exec_memory(buf0, prologue_size);
+-#endif
+     flush_icache_range((uintptr_t)buf0, (uintptr_t)buf1);
+ 
+     /* Deduct the prologue from the buffer.  */
+@@ -3797,9 +3812,6 @@ int tcg_gen_code(TCGContext *s, TranslationBlock *tb)
+ #endif
+     int i, num_insns;
+     TCGOp *op;
+-#if defined(CONFIG_IOS)
+-    uintptr_t last_page, cur_page, end_page;
+-#endif
+ 
+ #ifdef CONFIG_PROFILER
+     {
+@@ -3911,12 +3923,6 @@ int tcg_gen_code(TCGContext *s, TranslationBlock *tb)
+ #endif
+ 
+     num_insns = -1;
+-#if defined(CONFIG_IOS)
+-    cur_page = (uintptr_t)s->code_ptr & ~(EXEC_PAGE_SIZE-1);
+-    end_page = (uintptr_t)s->code_gen_highwater & ~(EXEC_PAGE_SIZE-1);
+-    unlock_exec_memory((void *)cur_page, cur_page < end_page ? 2*EXEC_PAGE_SIZE : EXEC_PAGE_SIZE);
+-    last_page = cur_page;
+-#endif
+     QTAILQ_FOREACH(op, &s->ops, link) {
+         TCGOpcode opc = op->opc;
+ 
+@@ -3924,14 +3930,6 @@ int tcg_gen_code(TCGContext *s, TranslationBlock *tb)
+         atomic_set(&prof->table_op_count[opc], prof->table_op_count[opc] + 1);
+ #endif
+ 
+-#if defined(CONFIG_IOS)
+-        cur_page = (uintptr_t)s->code_ptr & ~(EXEC_PAGE_SIZE-1);
+-        if (last_page != cur_page) {
+-            unlock_exec_memory((void *)cur_page, cur_page < end_page ? 2*EXEC_PAGE_SIZE : EXEC_PAGE_SIZE);
+-            last_page = cur_page;
+-        }
+-#endif
+-
+         switch (opc) {
+         case INDEX_op_mov_i32:
+         case INDEX_op_mov_i64:
+@@ -4006,9 +4004,6 @@ int tcg_gen_code(TCGContext *s, TranslationBlock *tb)
+     }
+ #endif
+ 
+-#if defined(CONFIG_IOS)
+-    lock_exec_memory(s->code_buf, tcg_current_code_size(s));
+-#endif
+     /* flush instruction cache */
+     flush_icache_range((uintptr_t)s->code_buf, (uintptr_t)s->code_ptr);
+ 
+@@ -4356,3 +4351,48 @@ void tcg_expand_vec_op(TCGOpcode o, TCGType t, unsigned e, TCGArg a0, ...)
+     g_assert_not_reached();
+ }
+ #endif
++
++#ifdef CONFIG_IOS
++void tcg_exec_memory_unlock(TCGContext *s)
++{
++    /* We only need to unlock the top page as all the pages above it are 
++       still unlocked */
++    if (tcg_ctx->code_locked)
++    {
++        if (mprotect(tcg_ctx->code_locked_top_page, qemu_host_page_size, PROT_READ | PROT_WRITE) < 0)
++        {
++            fprintf(stderr, "Failed to lock exec memory\n");
++            exit(1);
++        }
++        tcg_ctx->code_locked = 0;
++    }
++}
++
++void tcg_exec_memory_lock(TCGContext *s)
++{
++    if (!tcg_ctx->code_locked)
++    {
++        void *old_top = tcg_ctx->code_locked_top_page;
++        void *new_top = (void *)((uintptr_t)s->code_gen_ptr & qemu_host_page_mask);
++        if (mprotect(old_top, (new_top - old_top) + qemu_host_page_size, PROT_READ | PROT_EXEC) < 0)
++        {
++            fprintf(stderr, "Failed to unlock exec memory\n");
++            exit(1);
++        }
++        tcg_ctx->code_locked_top_page = new_top;
++        tcg_ctx->code_locked = 1;
++    }
++}
++
++void tcg_exec_memory_destroy(TCGContext *s)
++{
++    size_t len = (ptrdiff_t)(tcg_ctx->code_locked_top_page - tcg_ctx->code_locked_bottom_page) + qemu_host_page_size;
++    if (mprotect(tcg_ctx->code_locked_bottom_page, len, PROT_READ | PROT_WRITE) < 0)
++    {
++        fprintf(stderr, "Failed to unlock exec memory\n");
++        exit(1);
++    }
++    tcg_ctx->code_locked_top_page = tcg_ctx->code_locked_bottom_page;
++    tcg_ctx->code_locked = 0;
++}
++#endif
+diff --git a/tcg/tcg.h b/tcg/tcg.h
+index 55dba9878b..417923d96d 100644
+--- a/tcg/tcg.h
++++ b/tcg/tcg.h
+@@ -707,6 +707,16 @@ struct TCGContext {
+     void *code_gen_ptr;
+     void *data_gen_ptr;
+ 
++#ifdef CONFIG_IOS
++    /* Code memory locking/unlocking. On W^X platforms, we need to keep 
++       track of when a page is RW or RX. We take advantage of the fact 
++       that generated code only grows downwards so at any point in time 
++       we only need to have 1 or 0 page unlocked. */
++    int code_locked;
++    void *code_locked_top_page;
++    void *code_locked_bottom_page;
++#endif
++
+     /* Threshold to flush the translated code buffer.  */
+     void *code_gen_highwater;
+ 
+@@ -1279,6 +1289,12 @@ uintptr_t tcg_qemu_tb_exec(CPUArchState *env, uint8_t *tb_ptr);
+ 
+ void tcg_register_jit(void *buf, size_t buf_size);
+ 
++#ifdef CONFIG_IOS
++void tcg_exec_memory_unlock(TCGContext *s);
++void tcg_exec_memory_lock(TCGContext *s);
++void tcg_exec_memory_destroy(TCGContext *s);
++#endif
++
+ #if TCG_TARGET_MAYBE_vec
+ /* Return zero if the tuple (opc, type, vece) is unsupportable;
+    return > 0 if it is directly supportable;
+-- 
+2.20.1 (Apple Git-117)
+
+From 60f35cb2976ecb11be8abf4338c6eb31b490bc7e Mon Sep 17 00:00:00 2001
+From: halts <dev@getutm.app>
+Date: Mon, 15 Apr 2019 23:42:15 -0700
+Subject: [PATCH 9/9] qemu-img: support building as shared library
+
+---
+ Makefile   | 21 +++++++++++++++++++++
+ configure  |  1 +
+ qemu-img.c |  5 +++++
+ 3 files changed, 27 insertions(+)
+
+diff --git a/Makefile b/Makefile
+index f6743d30bb..e03980addb 100644
+--- a/Makefile
++++ b/Makefile
+@@ -420,6 +420,9 @@ dummy := $(call unnest-vars,, \
+ include $(SRC_PATH)/tests/Makefile.include
+ 
+ all: $(DOCS) $(if $(BUILD_DOCS),sphinxdocs) $(TOOLS) $(HELPERS-y) recurse-all modules
++ifdef CONFIG_SHARED_LIB
++all: $(SOBJS)
++endif
+ 
+ qemu-version.h: FORCE
+ 	$(call quiet-command, \
+@@ -506,6 +509,13 @@ Makefile: $(version-obj-y)
+ libqemuutil.a: $(util-obj-y) $(trace-obj-y) $(stub-obj-y)
+ libvhost-user.a: $(libvhost-user-obj-y) $(util-obj-y) $(stub-obj-y)
+ 
++ifdef CONFIG_DARWIN
++QEMU_IMG_SHARED_LIBRARY=libqemu-img.dylib
++else
++QEMU_IMG_SHARED_LIBRARY=libqemu-img.so
++endif
++SOBJS=$(QEMU_IMG_SHARED_LIBRARY)
++
+ ######################################################################
+ 
+ COMMON_LDADDS = libqemuutil.a
+@@ -513,6 +523,11 @@ COMMON_LDADDS = libqemuutil.a
+ qemu-img.o: qemu-img-cmds.h
+ 
+ qemu-img$(EXESUF): qemu-img.o $(authz-obj-y) $(block-obj-y) $(crypto-obj-y) $(io-obj-y) $(qom-obj-y) $(COMMON_LDADDS)
++
++$(QEMU_IMG_SHARED_LIBRARY): LDFLAGS += $(LDFLAGS_SHARED)
++$(QEMU_IMG_SHARED_LIBRARY): qemu-img.o $(authz-obj-y) $(block-obj-y) $(crypto-obj-y) $(io-obj-y) $(qom-obj-y) $(COMMON_LDADDS)
++	$(call LINK, $(filter-out %.mak, $^))
++
+ qemu-nbd$(EXESUF): qemu-nbd.o $(authz-obj-y) $(block-obj-y) $(crypto-obj-y) $(io-obj-y) $(qom-obj-y) $(COMMON_LDADDS)
+ qemu-io$(EXESUF): qemu-io.o $(authz-obj-y) $(block-obj-y) $(crypto-obj-y) $(io-obj-y) $(qom-obj-y) $(COMMON_LDADDS)
+ 
+@@ -640,6 +655,7 @@ clean:
+ 		! -path ./roms/edk2/BaseTools/Source/Python/UPT/Dll/sqlite3.dll \
+ 		-exec rm {} +
+ 	rm -f $(filter-out %.tlb,$(TOOLS)) $(HELPERS-y) qemu-ga TAGS cscope.* *.pod *~ */*~
++	rm -f $(SOBJS)
+ 	rm -f fsdev/*.pod scsi/*.pod
+ 	rm -f qemu-img-cmds.h
+ 	rm -f ui/shader/*-vert.h ui/shader/*-frag.h
+@@ -796,6 +812,11 @@ install: all $(if $(BUILD_DOCS),install-doc) install-datadir install-localstated
+ ifneq ($(TOOLS),)
+ 	$(call install-prog,$(subst qemu-ga,qemu-ga$(EXESUF),$(TOOLS)),$(DESTDIR)$(bindir))
+ endif
++ifdef CONFIG_SHARED_LIB
++ifneq ($(SOBJS),)
++	$(call install-so,$(SOBJS),$(DESTDIR)$(libdir))
++endif
++endif
+ ifneq ($(CONFIG_MODULES),)
+ 	$(INSTALL_DIR) "$(DESTDIR)$(qemu_moddir)"
+ 	for s in $(modules-m:.mo=$(DSOSUF)); do \
+diff --git a/configure b/configure
+index 71696d6468..333d55d872 100755
+--- a/configure
++++ b/configure
+@@ -1562,6 +1562,7 @@ for opt do
+   ;;
+   --enable-shared-lib)
+       shared_lib=yes
++      want_tools=no
+       QEMU_CFLAGS="$QEMU_CFLAGS -fPIC"
+       DSOSUF="-module$DSOSUF" # fix for make 2.81 not building target order correctly
+   ;;
+diff --git a/qemu-img.c b/qemu-img.c
+index aa6f81f1ea..b8304b98c7 100644
+--- a/qemu-img.c
++++ b/qemu-img.c
+@@ -46,6 +46,11 @@
+ #include "crypto/init.h"
+ #include "trace/control.h"
+ 
++#if defined(CONFIG_SHARED_LIB)
++#undef main
++#define main qemu_img_main
++#endif
++
+ #define QEMU_IMG_VERSION "qemu-img version " QEMU_FULL_VERSION \
+                           "\n" QEMU_COPYRIGHT "\n"
+ 
+-- 
+2.20.1 (Apple Git-117)
+
+
+diff -Naur a/libucontext/.gitignore b/libucontext/.gitignore
+--- a/libucontext/.gitignore  1969-12-31 16:00:00.000000000 -0800
++++ b/libucontext/.gitignore  2019-03-29 10:54:08.000000000 -0700
+@@ -0,0 +1,38 @@
++# http://www.gnu.org/software/automake
++
++Makefile.in
++/ar-lib
++/mdate-sh
++/py-compile
++/test-driver
++/ylwrap
++
++# http://www.gnu.org/software/autoconf
++
++/autom4te.cache
++/autoscan.log
++/autoscan-*.log
++/aclocal.m4
++/compile
++/config.guess
++/config.h.in
++/config.sub
++/configure
++/configure.scan
++/depcomp
++/install-sh
++/missing
++/stamp-h1
++
++# https://www.gnu.org/software/libtool/
++
++/ltmain.sh
++
++# http://www.gnu.org/software/texinfo
++
++/texinfo.tex
++
++*.o
++test_libucontext
++libucontext.so
++libucontext.so.*
+diff -Naur a/libucontext/LICENSE b/libucontext/LICENSE
+--- a/libucontext/LICENSE 1969-12-31 16:00:00.000000000 -0800
++++ b/libucontext/LICENSE 2019-03-29 10:54:08.000000000 -0700
+@@ -0,0 +1,9 @@
++Copyright (c) 2018 William Pitcock <nenolod@dereferenced.org>
++
++Permission to use, copy, modify, and/or distribute this software for any
++purpose with or without fee is hereby granted, provided that the above
++copyright notice and this permission notice appear in all copies.
++
++This software is provided 'as is' and without any warranty, express or
++implied.  In no event shall the authors be liable for any damages arising
++from the use of this software.
+diff -Naur a/libucontext/Makefile b/libucontext/Makefile
+--- a/libucontext/Makefile  1969-12-31 16:00:00.000000000 -0800
++++ b/libucontext/Makefile  2019-04-24 21:28:31.000000000 -0700
+@@ -0,0 +1,51 @@
++ARCH := $(shell uname -m)
++
++ROOT_DIR := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
++BUILD_DIR ?= .
++
++LIBUCONTEXT = $(BUILD_DIR)/libucontext.a
++
++all: $(LIBUCONTEXT)
++
++CSRCS := $(wildcard arch/${ARCH}/*.c)
++SSRCS := $(wildcard arch/${ARCH}/*.S)
++OBJS := $(CSRCS:%.c=$(BUILD_DIR)/%.o) $(SSRCS:%.S=$(BUILD_DIR)/%.o)
++DEPS := $(OBJS:%.o=%.d)
++
++INC_DIRS := include $(BUILD_DIR)/arch/${ARCH}
++INC_FLAGS := $(addprefix -I,$(INC_DIRS))
++
++override CFLAGS +=         \
++ -DG_LOG_DOMAIN='"ucontext"'     \
++ $(INC_FLAGS)          \
++ -MMD -MP
++
++$(LIBUCONTEXT): $(OBJS)
++
++.PHONY: clean
++
++clean:
++ rm -r $(OBJS) $(DEPS) $(LIBUCONTEXT)
++
++$(BUILD_DIR)/arch/${ARCH}/%.o: $(ROOT_DIR)/arch/${ARCH}/%.c
++ @$(MKDIR_P) $(dir $@)
++ $(call quiet-command,$(CC) $(CFLAGS) -c -o $@ $<,"CC","$@")
++
++$(BUILD_DIR)/arch/${ARCH}/%.o: $(ROOT_DIR)/arch/${ARCH}/%.S
++ @$(MKDIR_P) $(dir $@)
++ $(call quiet-command,$(CC) $(CFLAGS) -c -o $@ $<,"CC","$@")
++
++%.a:
++ $(call quiet-command,rm -f $@ && $(AR) rcs $@ $^,"AR","$@")
++
++MKDIR_P ?= mkdir -p
++quiet-command-run = $(if $(V),,$(if $2,printf "  %-7s %s\n" $2 $3 && ))$1
++quiet-@ = $(if $(V),,@)
++quiet-command = $(quiet-@)$(call quiet-command-run,$1,$2,$3)
++
++print-%:
++ @echo '$*=$($*)'
++
++.SUFFIXES:
++
++-include $(DEPS)
+diff -Naur a/libucontext/README.md b/libucontext/README.md
+--- a/libucontext/README.md 1969-12-31 16:00:00.000000000 -0800
++++ b/libucontext/README.md 2019-03-29 10:54:08.000000000 -0700
+@@ -0,0 +1,43 @@
++# `libucontext`
++
++`libucontext` is a library which provides the `ucontext.h` C API.  Unlike other implementations,
++it faithfully follows the kernel process ABI when doing context swaps.
++
++Notably, when combined with `gcompat`, it provides a fully compatible implementation of the ucontext
++functions that are ABI compatible with glibc.
++
++
++## supported architectures
++
++Adding support for new architectures is easy, but you need to know assembly language to do it.
++
++Right now these archs are supported and should work on bare metal:
++
++ * x86
++ * x86_64
++ * armv6+ (`arm`)
++ * aarch64
++ * s390x
++
++These archs require kernel assistance and use a syscall (the only assembly is the trampoline):
++
++ * ppc
++ * ppc64 (ELFv2 ABI spec only, ELFv1 not supported)
++
++
++## building
++
++`libucontext` uses a simple makefile build system.  You should define `ARCH=` at build time, otherwise
++the build system will attempt to guess using `uname -m`.
++
++```
++$ make ARCH=x86_64
++$ make ARCH=x86_64 check
++$ make ARCH=x86_64 DESTDIR=out install
++```
++
++
++## support
++
++`libucontext` is offered as part of the `gcompat` project.  Accordingly, please address all questions
++and bug reports to gcompat@lists.adelielinux.org.
+diff -Naur a/libucontext/arch/aarch64/defs.h b/libucontext/arch/aarch64/defs.h
+--- a/libucontext/arch/aarch64/defs.h 1969-12-31 16:00:00.000000000 -0800
++++ b/libucontext/arch/aarch64/defs.h 2019-03-29 13:18:37.000000000 -0700
+@@ -0,0 +1,25 @@
++#ifndef __ARCH_AARCH64_DEFS_H
++#define __ARCH_AARCH64_DEFS_H
++
++#define REGSZ   8
++#ifdef CUSTOM_IMPL
++#define R0_OFFSET 56
++#define SP_OFFSET 304
++#define PC_OFFSET 312
++#define PSTATE_OFFSET 320
++#else
++#define R0_OFFSET 184
++#define SP_OFFSET 432
++#define PC_OFFSET 440
++#define PSTATE_OFFSET 448
++#endif
++
++#ifndef FPSIMD_MAGIC
++# define FPSIMD_MAGIC  0x46508001
++#endif
++
++#ifndef ESR_MAGIC
++# define ESR_MAGIC 0x45535201
++#endif
++
++#endif
+diff -Naur a/libucontext/arch/aarch64/getcontext.S b/libucontext/arch/aarch64/getcontext.S
+--- a/libucontext/arch/aarch64/getcontext.S 1969-12-31 16:00:00.000000000 -0800
++++ b/libucontext/arch/aarch64/getcontext.S 2019-03-29 14:21:52.000000000 -0700
+@@ -0,0 +1,56 @@
++/*
++ * Copyright (c) 2018 William Pitcock <nenolod@dereferenced.org>
++ *
++ * Permission to use, copy, modify, and/or distribute this software for any
++ * purpose with or without fee is hereby granted, provided that the above
++ * copyright notice and this permission notice appear in all copies.
++ *
++ * This software is provided 'as is' and without any warranty, express or
++ * implied.  In no event shall the authors be liable for any damages arising
++ * from the use of this software.
++ */
++
++#include "defs.h"
++
++.globl _libucontext_getcontext;
++_libucontext_getcontext:
++ str xzr, [x0, #R0_OFFSET + (0 * REGSZ)]
++
++ /* save GPRs */
++ stp x0, x1,   [x0, #R0_OFFSET + (0 * REGSZ)]
++ stp x2, x3,   [x0, #R0_OFFSET + (2 * REGSZ)]
++ stp x4, x5,   [x0, #R0_OFFSET + (4 * REGSZ)]
++ stp x6, x7,   [x0, #R0_OFFSET + (6 * REGSZ)]
++ stp x8, x9,   [x0, #R0_OFFSET + (8 * REGSZ)]
++ stp x10, x11, [x0, #R0_OFFSET + (10 * REGSZ)]
++ stp x12, x13, [x0, #R0_OFFSET + (12 * REGSZ)]
++ stp x14, x15, [x0, #R0_OFFSET + (14 * REGSZ)]
++ stp x16, x17, [x0, #R0_OFFSET + (16 * REGSZ)]
++ stp x18, x19, [x0, #R0_OFFSET + (18 * REGSZ)]
++ stp x20, x21, [x0, #R0_OFFSET + (20 * REGSZ)]
++ stp x22, x23, [x0, #R0_OFFSET + (22 * REGSZ)]
++ stp x24, x25, [x0, #R0_OFFSET + (24 * REGSZ)]
++ stp x26, x27, [x0, #R0_OFFSET + (26 * REGSZ)]
++ stp x28, x29, [x0, #R0_OFFSET + (28 * REGSZ)]
++ str x30,      [x0, #R0_OFFSET + (30 * REGSZ)]
++
++ /* save current program counter in link register */
++ str x30, [x0, #PC_OFFSET]
++
++ /* save current stack pointer */
++ mov x2, sp
++ str x2, [x0, #SP_OFFSET]
++
++ /* save pstate */
++ str xzr, [x0, #PSTATE_OFFSET]
++
++ /* TODO: SIMD / FPRs */
++
++ mov x0, #0
++ ret
++.align 2
++
++#ifndef CUSTOM_IMPL
++.weak getcontext;
++getcontext = _libucontext_getcontext;
++#endif
+diff -Naur a/libucontext/arch/aarch64/makecontext.c b/libucontext/arch/aarch64/makecontext.c
+--- a/libucontext/arch/aarch64/makecontext.c  1969-12-31 16:00:00.000000000 -0800
++++ b/libucontext/arch/aarch64/makecontext.c  2019-03-29 14:14:52.000000000 -0700
+@@ -0,0 +1,65 @@
++/*
++ * Copyright (c) 2018 William Pitcock <nenolod@dereferenced.org>
++ *
++ * Permission to use, copy, modify, and/or distribute this software for any
++ * purpose with or without fee is hereby granted, provided that the above
++ * copyright notice and this permission notice appear in all copies.
++ *
++ * This software is provided 'as is' and without any warranty, express or
++ * implied.  In no event shall the authors be liable for any damages arising
++ * from the use of this software.
++ */
++
++#include <stddef.h>
++#include <stdint.h>
++#include <stdarg.h>
++#ifdef CUSTOM_IMPL
++#include <libucontext.h>
++#define UCONTEXT_T libucontext_ucontext_t
++#else
++#define UCONTEXT_T ucontext_t
++#define _GNU_SOURCE
++#include <signal.h>
++#include <string.h>
++#include <stdio.h>
++#endif
++#include "defs.h"
++
++
++extern void _start_context(void);
++
++
++void
++libucontext_makecontext(UCONTEXT_T *ucp, void (*func)(void), int argc, ...)
++{
++ unsigned long *sp;
++ unsigned long *regp;
++ va_list va;
++ int i;
++
++ sp = (unsigned long *) ((uintptr_t) ucp->uc_stack.ss_sp + ucp->uc_stack.ss_size);
++ sp -= argc < 8 ? 0 : argc - 8;
++ sp = (unsigned long *) (((uintptr_t) sp & -16L));
++
++ ucp->uc_mcontext.sp = (uintptr_t) sp;
++ ucp->uc_mcontext.pc = (uintptr_t) func;
++ ucp->uc_mcontext.regs[19] = (uintptr_t) ucp->uc_link;
++ ucp->uc_mcontext.regs[30] = (uintptr_t) &_start_context;
++
++ va_start(va, argc);
++
++ regp = &(ucp->uc_mcontext.regs[0]);
++
++ for (i = 0; (i < argc && i < 8); i++)
++   *regp++ = va_arg (va, unsigned long);
++
++ for (; i < argc; i++)
++   *sp++ = va_arg (va, unsigned long);
++
++ va_end(va);
++}
++
++
++#ifndef CUSTOM_IMPL
++extern __typeof(libucontext_makecontext) makecontext __attribute__((weak, __alias__("libucontext_makecontext")));
++#endif
+diff -Naur a/libucontext/arch/aarch64/setcontext.S b/libucontext/arch/aarch64/setcontext.S
+--- a/libucontext/arch/aarch64/setcontext.S 1969-12-31 16:00:00.000000000 -0800
++++ b/libucontext/arch/aarch64/setcontext.S 2019-03-29 14:21:52.000000000 -0700
+@@ -0,0 +1,58 @@
++/*
++ * Copyright (c) 2018 William Pitcock <nenolod@dereferenced.org>
++ *
++ * Permission to use, copy, modify, and/or distribute this software for any
++ * purpose with or without fee is hereby granted, provided that the above
++ * copyright notice and this permission notice appear in all copies.
++ *
++ * This software is provided 'as is' and without any warranty, express or
++ * implied.  In no event shall the authors be liable for any damages arising
++ * from the use of this software.
++ */
++
++#include "defs.h"
++
++.globl _libucontext_setcontext;
++_libucontext_setcontext:
++ /* restore GPRs */
++ ldp x18, x19, [x0, #R0_OFFSET + (18 * REGSZ)]
++ ldp x20, x21, [x0, #R0_OFFSET + (20 * REGSZ)]
++ ldp x22, x23, [x0, #R0_OFFSET + (22 * REGSZ)]
++ ldp x24, x25, [x0, #R0_OFFSET + (24 * REGSZ)]
++ ldp x26, x27, [x0, #R0_OFFSET + (26 * REGSZ)]
++ ldp x28, x29, [x0, #R0_OFFSET + (28 * REGSZ)]
++ ldr x30,      [x0, #R0_OFFSET + (30 * REGSZ)]
++
++ /* save current stack pointer */
++ ldr x2, [x0, #SP_OFFSET]
++ mov sp, x2
++
++ /* TODO: SIMD / FPRs */
++
++ /* save current program counter in link register */
++ ldr x16, [x0, #PC_OFFSET]
++
++ /* restore args */
++ ldp x2, x3, [x0, #R0_OFFSET + (2 * REGSZ)]
++ ldp x4, x5, [x0, #R0_OFFSET + (4 * REGSZ)]
++ ldp x6, x7, [x0, #R0_OFFSET + (6 * REGSZ)]
++ ldp x0, x1, [x0, #R0_OFFSET + (0 * REGSZ)]
++
++ /* jump to new PC */
++ br  x16
++.align 2
++
++.globl __start_context;
++__start_context:
++ /* get the proper context into position and test for NULL */
++ mov x0, x19
++ cbnz  x0, _libucontext_setcontext
++
++ /* something went wrong, exit */
++ b _exit
++.align 2
++
++#ifndef CUSTOM_IMPL
++.weak setcontext;
++setcontext = _libucontext_setcontext;
++#endif
+diff -Naur a/libucontext/arch/aarch64/swapcontext.S b/libucontext/arch/aarch64/swapcontext.S
+--- a/libucontext/arch/aarch64/swapcontext.S  1969-12-31 16:00:00.000000000 -0800
++++ b/libucontext/arch/aarch64/swapcontext.S  2019-03-29 14:21:52.000000000 -0700
+@@ -0,0 +1,62 @@
++/*
++ * Copyright (c) 2018 William Pitcock <nenolod@dereferenced.org>
++ *
++ * Permission to use, copy, modify, and/or distribute this software for any
++ * purpose with or without fee is hereby granted, provided that the above
++ * copyright notice and this permission notice appear in all copies.
++ *
++ * This software is provided 'as is' and without any warranty, express or
++ * implied.  In no event shall the authors be liable for any damages arising
++ * from the use of this software.
++ */
++
++#include "defs.h"
++
++.globl _libucontext_swapcontext;
++_libucontext_swapcontext:
++ str xzr, [x0, #R0_OFFSET + (0 * REGSZ)]
++
++ /* save GPRs */
++ stp x2, x3,   [x0, #R0_OFFSET + (2 * REGSZ)]
++ stp x4, x5,   [x0, #R0_OFFSET + (4 * REGSZ)]
++ stp x6, x7,   [x0, #R0_OFFSET + (6 * REGSZ)]
++ stp x8, x9,   [x0, #R0_OFFSET + (8 * REGSZ)]
++ stp x10, x11, [x0, #R0_OFFSET + (10 * REGSZ)]
++ stp x12, x13, [x0, #R0_OFFSET + (12 * REGSZ)]
++ stp x14, x15, [x0, #R0_OFFSET + (14 * REGSZ)]
++ stp x16, x17, [x0, #R0_OFFSET + (16 * REGSZ)]
++ stp x18, x19, [x0, #R0_OFFSET + (18 * REGSZ)]
++ stp x20, x21, [x0, #R0_OFFSET + (20 * REGSZ)]
++ stp x22, x23, [x0, #R0_OFFSET + (22 * REGSZ)]
++ stp x24, x25, [x0, #R0_OFFSET + (24 * REGSZ)]
++ stp x26, x27, [x0, #R0_OFFSET + (26 * REGSZ)]
++ stp x28, x29, [x0, #R0_OFFSET + (28 * REGSZ)]
++ str x30,      [x0, #R0_OFFSET + (30 * REGSZ)]
++
++ /* save current program counter in link register */
++ str x30, [x0, #PC_OFFSET]
++
++ /* save current stack pointer */
++ mov x2, sp
++ str x2, [x0, #SP_OFFSET]
++
++ /* save pstate */
++ str xzr, [x0, #PSTATE_OFFSET]
++
++ /* context to swap to is in x1 so... we move to x0 and call setcontext */
++ /* store our link register in x28 */
++ mov x28, x30
++
++ /* move x1 to x0 and call setcontext */
++ mov x0, x1
++ bl  _libucontext_setcontext
++
++ /* hmm, we came back here try to return */
++ mov x30, x28
++ ret
++.align 2
++
++#ifndef CUSTOM_IMPL
++.weak swapcontext;
++swapcontext = _libucontext_swapcontext;
++#endif
+diff -Naur a/libucontext/arch/arm/getcontext.S b/libucontext/arch/arm/getcontext.S
+--- a/libucontext/arch/arm/getcontext.S 1969-12-31 16:00:00.000000000 -0800
++++ b/libucontext/arch/arm/getcontext.S 2019-03-29 10:54:08.000000000 -0700
+@@ -0,0 +1,27 @@
++/*
++ * Copyright (c) 2018 William Pitcock <nenolod@dereferenced.org>
++ *
++ * Permission to use, copy, modify, and/or distribute this software for any
++ * purpose with or without fee is hereby granted, provided that the above
++ * copyright notice and this permission notice appear in all copies.
++ *
++ * This software is provided 'as is' and without any warranty, express or
++ * implied.  In no event shall the authors be liable for any damages arising
++ * from the use of this software.
++ */
++
++.globl __getcontext;
++__getcontext:
++ /* copy all of the current registers into the ucontext structure */
++ add r1, r0, #48
++ stmia r1, {r4-r12}
++ str r13, [r0,#84]
++ str r14, [r0,#92]
++
++ /* return 0 */
++ mov r0, #0
++ mov pc, lr
++
++
++.weak getcontext;
++getcontext = __getcontext;
+diff -Naur a/libucontext/arch/arm/makecontext.c b/libucontext/arch/arm/makecontext.c
+--- a/libucontext/arch/arm/makecontext.c  1969-12-31 16:00:00.000000000 -0800
++++ b/libucontext/arch/arm/makecontext.c  2019-03-29 10:54:08.000000000 -0700
+@@ -0,0 +1,65 @@
++/*
++ * Copyright (c) 2018 William Pitcock <nenolod@dereferenced.org>
++ *
++ * Permission to use, copy, modify, and/or distribute this software for any
++ * purpose with or without fee is hereby granted, provided that the above
++ * copyright notice and this permission notice appear in all copies.
++ *
++ * This software is provided 'as is' and without any warranty, express or
++ * implied.  In no event shall the authors be liable for any damages arising
++ * from the use of this software.
++ */
++
++#define _GNU_SOURCE
++#include <stddef.h>
++#include <stdarg.h>
++#include <signal.h>
++#include <string.h>
++#include <stdint.h>
++#include <stdio.h>
++
++
++extern void __start_context(void);
++
++
++void
++__makecontext(ucontext_t *ucp, void (*func)(void), int argc, ...)
++{
++ unsigned long *sp;
++ unsigned long *regp;
++ va_list va;
++ int i;
++
++ sp = (unsigned long *) ((uintptr_t) ucp->uc_stack.ss_sp + ucp->uc_stack.ss_size);
++ sp = (unsigned long *) (((uintptr_t) sp & -16L) - 8);
++
++ if (argc > 4)
++   sp -= (argc - 4);
++
++ ucp->uc_mcontext.arm_sp = (uintptr_t) sp;
++ ucp->uc_mcontext.arm_pc = (uintptr_t) func;
++ ucp->uc_mcontext.arm_r4 = (uintptr_t) ucp->uc_link;
++ ucp->uc_mcontext.arm_lr = (uintptr_t) &__start_context;
++
++ va_start(va, argc);
++
++ regp = &(ucp->uc_mcontext.arm_r0);
++
++ for (i = 0; (i < argc && i < 4); i++)
++   *regp++ = va_arg (va, unsigned long);
++
++ for (; i < argc; i++)
++   *sp++ = va_arg (va, unsigned long);
++
++ va_end(va);
++
++/*
++ printf("R4 offset = %d\n", offsetof(ucontext_t, uc_mcontext.arm_r4));
++ printf("SP offset = %d\n", offsetof(ucontext_t, uc_mcontext.arm_sp));
++ printf("LR offset = %d\n", offsetof(ucontext_t, uc_mcontext.arm_lr));
++ printf("PC offset = %d\n", offsetof(ucontext_t, uc_mcontext.arm_pc));
++ */
++}
++
++
++extern __typeof(__makecontext) makecontext __attribute__((weak, __alias__("__makecontext")));
+diff -Naur a/libucontext/arch/arm/setcontext.S b/libucontext/arch/arm/setcontext.S
+--- a/libucontext/arch/arm/setcontext.S 1969-12-31 16:00:00.000000000 -0800
++++ b/libucontext/arch/arm/setcontext.S 2019-03-29 10:54:08.000000000 -0700
+@@ -0,0 +1,26 @@
++/*
++ * Copyright (c) 2018 William Pitcock <nenolod@dereferenced.org>
++ *
++ * Permission to use, copy, modify, and/or distribute this software for any
++ * purpose with or without fee is hereby granted, provided that the above
++ * copyright notice and this permission notice appear in all copies.
++ *
++ * This software is provided 'as is' and without any warranty, express or
++ * implied.  In no event shall the authors be liable for any damages arising
++ * from the use of this software.
++ */
++
++.globl __setcontext;
++__setcontext:
++ /* copy all of the current registers into the ucontext structure */
++ add r14, r0, #32
++ ldmia r14, {r0-r12}
++ ldr r13, [r14, #52]
++ add r14, r14, #56
++
++ /* load link register and jump to new context */
++ ldmia r14, {r14, pc}
++
++
++.weak setcontext;
++setcontext = __setcontext;
+diff -Naur a/libucontext/arch/arm/startcontext.S b/libucontext/arch/arm/startcontext.S
+--- a/libucontext/arch/arm/startcontext.S 1969-12-31 16:00:00.000000000 -0800
++++ b/libucontext/arch/arm/startcontext.S 2019-03-29 10:54:08.000000000 -0700
+@@ -0,0 +1,23 @@
++/*
++ * Copyright (c) 2018 William Pitcock <nenolod@dereferenced.org>
++ *
++ * Permission to use, copy, modify, and/or distribute this software for any
++ * purpose with or without fee is hereby granted, provided that the above
++ * copyright notice and this permission notice appear in all copies.
++ *
++ * This software is provided 'as is' and without any warranty, express or
++ * implied.  In no event shall the authors be liable for any damages arising
++ * from the use of this software.
++ */
++
++.globl __start_context;
++.fnstart
++.cantunwind
++ nop
++__start_context:
++ /* get the proper context into position and test for NULL */
++ movs  r0, r4
++ bne __setcontext@plt
++
++ /* we are returning into a null context, it seems, so maybe we should exit */
++ b exit@plt
+diff -Naur a/libucontext/arch/arm/swapcontext.S b/libucontext/arch/arm/swapcontext.S
+--- a/libucontext/arch/arm/swapcontext.S  1969-12-31 16:00:00.000000000 -0800
++++ b/libucontext/arch/arm/swapcontext.S  2019-03-29 10:54:08.000000000 -0700
+@@ -0,0 +1,30 @@
++/*
++ * Copyright (c) 2018 William Pitcock <nenolod@dereferenced.org>
++ *
++ * Permission to use, copy, modify, and/or distribute this software for any
++ * purpose with or without fee is hereby granted, provided that the above
++ * copyright notice and this permission notice appear in all copies.
++ *
++ * This software is provided 'as is' and without any warranty, express or
++ * implied.  In no event shall the authors be liable for any damages arising
++ * from the use of this software.
++ */
++
++.globl __swapcontext;
++__swapcontext:
++ /* copy all of the current registers into the ucontext structure */
++ add r2, r0, #32
++ stmia r2, {r0-r12}
++ str r13, [r0,#84]
++ str r14, [r0,#92]
++
++ /* load new registers from the second ucontext structure */
++ add r14, r1, #32
++ ldmia r14, {r0-r12}
++ ldr r13, [r14, #52]
++ add r14, r14, #56
++ ldmia r14, {r14, pc}
++
++
++.weak swapcontext;
++swapcontext = __swapcontext;
+diff -Naur a/libucontext/arch/ppc/defs.h b/libucontext/arch/ppc/defs.h
+--- a/libucontext/arch/ppc/defs.h 1969-12-31 16:00:00.000000000 -0800
++++ b/libucontext/arch/ppc/defs.h 2019-03-29 10:54:08.000000000 -0700
+@@ -0,0 +1,62 @@
++#ifndef __ARCH_PPC_DEFS_H
++#define __ARCH_PPC_DEFS_H
++
++#define REG_R0   (0)
++#define REG_R1   (1)
++#define REG_R2   (2)
++#define REG_R3   (3)
++#define REG_R4   (4)
++#define REG_R5   (5)
++#define REG_R6   (6)
++#define REG_R7   (7)
++#define REG_R8   (8)
++#define REG_R9   (9)
++#define REG_R10    (10)
++#define REG_R11    (11)
++#define REG_R12    (12)
++#define REG_R13    (13)
++#define REG_R14    (14)
++#define REG_R15    (15)
++#define REG_R16    (16)
++#define REG_R17    (17)
++#define REG_R18    (18)
++#define REG_R19    (19)
++#define REG_R20    (20)
++#define REG_R21    (21)
++#define REG_R22    (22)
++#define REG_R23    (23)
++#define REG_R24    (24)
++#define REG_R25    (25)
++#define REG_R26    (26)
++#define REG_R27    (27)
++#define REG_R28    (28)
++#define REG_R29    (29)
++#define REG_R30    (30)
++#define REG_R31    (31)
++#define REG_R32    (32)
++#define REG_R33    (33)
++#define REG_R34    (34)
++#define REG_R35    (35)
++#define REG_R36    (36)
++#define REG_R37    (37)
++#define REG_R38    (38)
++#define REG_R39    (39)
++#define REG_R40    (40)
++#define REG_R41    (41)
++#define REG_R42    (42)
++#define REG_R43    (43)
++#define REG_R44    (44)
++#define REG_R45    (45)
++#define REG_R46    (46)
++#define REG_R47    (47)
++
++/* sp register is actually %r1 */
++#define REG_SP   REG_R1
++
++/* nip register is actually %srr0 (r32) */
++#define REG_NIP    REG_R32
++
++/* lnk register is actually r32 */
++#define REG_LNK    REG_R36
++
++#endif
+diff -Naur a/libucontext/arch/ppc/getcontext.c b/libucontext/arch/ppc/getcontext.c
+--- a/libucontext/arch/ppc/getcontext.c 1969-12-31 16:00:00.000000000 -0800
++++ b/libucontext/arch/ppc/getcontext.c 2019-03-29 10:54:08.000000000 -0700
+@@ -0,0 +1,45 @@
++/*
++ * Copyright (c) 2018 William Pitcock <nenolod@dereferenced.org>
++ *
++ * Permission to use, copy, modify, and/or distribute this software for any
++ * purpose with or without fee is hereby granted, provided that the above
++ * copyright notice and this permission notice appear in all copies.
++ *
++ * This software is provided 'as is' and without any warranty, express or
++ * implied.  In no event shall the authors be liable for any damages arising
++ * from the use of this software.
++ */
++
++#define _GNU_SOURCE
++#include <stddef.h>
++#include <stdarg.h>
++#include <signal.h>
++#include <string.h>
++#include <stdint.h>
++#include <errno.h>
++#include <unistd.h>
++#include <sys/syscall.h>
++
++
++int
++__getcontext(ucontext_t *ucp)
++{
++#ifdef SYS_swapcontext
++ int r;
++
++ r = syscall(SYS_swapcontext, ucp, NULL, sizeof(ucontext_t));
++ if (r < 0)
++ {
++   errno = -r;
++   return -1;
++ }
++
++ return 0;
++#else
++ errno = ENOSYS;
++ return -1;
++#endif
++}
++
++
++extern __typeof(__getcontext) getcontext __attribute__((weak, __alias__("__getcontext")));
+diff -Naur a/libucontext/arch/ppc/makecontext.c b/libucontext/arch/ppc/makecontext.c
+--- a/libucontext/arch/ppc/makecontext.c  1969-12-31 16:00:00.000000000 -0800
++++ b/libucontext/arch/ppc/makecontext.c  2019-03-29 10:54:08.000000000 -0700
+@@ -0,0 +1,75 @@
++/*
++ * Copyright (c) 2018 William Pitcock <nenolod@dereferenced.org>
++ *
++ * Permission to use, copy, modify, and/or distribute this software for any
++ * purpose with or without fee is hereby granted, provided that the above
++ * copyright notice and this permission notice appear in all copies.
++ *
++ * This software is provided 'as is' and without any warranty, express or
++ * implied.  In no event shall the authors be liable for any damages arising
++ * from the use of this software.
++ */
++
++#define _GNU_SOURCE
++#include <stddef.h>
++#include <stdarg.h>
++#include <signal.h>
++#include <string.h>
++#include <stdint.h>
++
++
++#include "defs.h"
++
++
++extern void __start_context(void);
++
++
++void
++__makecontext(ucontext_t *ucp, void (*func)(void), int argc, ...)
++{
++ greg_t *sp, *argp;
++ va_list va;
++ int i;
++ unsigned int uc_link, stack_args;
++
++ stack_args = argc > 8 ? argc - 8 : 0;
++ uc_link = stack_args + 1;
++
++ sp = (greg_t *) ((uintptr_t) ucp->uc_stack.ss_sp + ucp->uc_stack.ss_size);
++ sp -= (uc_link + 1);
++ sp = (greg_t *) (((uintptr_t) sp & -16L) - 8);
++
++ ucp->uc_mcontext.gregs[REG_NIP]  = (uintptr_t) func;
++ ucp->uc_mcontext.gregs[REG_LNK]  = (uintptr_t) &__start_context;
++ ucp->uc_mcontext.gregs[REG_R31]  = (uintptr_t) ucp->uc_link;
++ ucp->uc_mcontext.gregs[REG_SP]   = (uintptr_t) sp;
++
++ sp[0] = (uintptr_t) &__start_context;
++ sp[uc_link] = (uintptr_t) ucp->uc_link;
++ argp = &sp[2];
++
++ va_start(va, argc);
++
++ for (i = 0; i < argc; i++)
++   switch (i)
++   {
++   case 0:
++   case 1:
++   case 2:
++   case 3:
++   case 4:
++   case 5:
++   case 6:
++   case 7:
++     ucp->uc_mcontext.gregs[i + 3] = va_arg (va, greg_t);
++     break;
++   default:
++     *argp++ = va_arg (va, greg_t);
++     break;
++   }
++
++ va_end(va);
++}
++
++
++extern __typeof(__makecontext) makecontext __attribute__((weak, __alias__("__makecontext")));
+diff -Naur a/libucontext/arch/ppc/setcontext.c b/libucontext/arch/ppc/setcontext.c
+--- a/libucontext/arch/ppc/setcontext.c 1969-12-31 16:00:00.000000000 -0800
++++ b/libucontext/arch/ppc/setcontext.c 2019-03-29 10:54:08.000000000 -0700
+@@ -0,0 +1,45 @@
++/*
++ * Copyright (c) 2018 William Pitcock <nenolod@dereferenced.org>
++ *
++ * Permission to use, copy, modify, and/or distribute this software for any
++ * purpose with or without fee is hereby granted, provided that the above
++ * copyright notice and this permission notice appear in all copies.
++ *
++ * This software is provided 'as is' and without any warranty, express or
++ * implied.  In no event shall the authors be liable for any damages arising
++ * from the use of this software.
++ */
++
++#define _GNU_SOURCE
++#include <stddef.h>
++#include <stdarg.h>
++#include <signal.h>
++#include <string.h>
++#include <stdint.h>
++#include <errno.h>
++#include <unistd.h>
++#include <sys/syscall.h>
++
++
++int
++__setcontext(const ucontext_t *ucp)
++{
++#ifdef SYS_swapcontext
++ int r;
++
++ r = syscall(SYS_swapcontext, NULL, (void *) ucp, sizeof(ucontext_t));
++ if (r < 0)
++ {
++   errno = -r;
++   return -1;
++ }
++
++ return r;
++#else
++ errno = ENOSYS;
++ return -1;
++#endif
++}
++
++
++extern __typeof(__setcontext) setcontext __attribute__((weak, __alias__("__setcontext")));
+diff -Naur a/libucontext/arch/ppc/startcontext.S b/libucontext/arch/ppc/startcontext.S
+--- a/libucontext/arch/ppc/startcontext.S 1969-12-31 16:00:00.000000000 -0800
++++ b/libucontext/arch/ppc/startcontext.S 2019-03-29 10:54:08.000000000 -0700
+@@ -0,0 +1,25 @@
++/*
++ * Copyright (c) 2018 William Pitcock <nenolod@dereferenced.org>
++ *
++ * Permission to use, copy, modify, and/or distribute this software for any
++ * purpose with or without fee is hereby granted, provided that the above
++ * copyright notice and this permission notice appear in all copies.
++ *
++ * This software is provided 'as is' and without any warranty, express or
++ * implied.  In no event shall the authors be liable for any damages arising
++ * from the use of this software.
++ */
++
++.globl __start_context;
++__start_context:
++ /* get the proper context into position and test for NULL */
++ mr. 3,31
++
++ /* if we have no linked context, lets get out of here */
++ beq no_linked_context
++
++ /* jump to setcontext */
++ bl  __setcontext@local
++
++no_linked_context:
++ b exit@GOT
+diff -Naur a/libucontext/arch/ppc/swapcontext.c b/libucontext/arch/ppc/swapcontext.c
+--- a/libucontext/arch/ppc/swapcontext.c  1969-12-31 16:00:00.000000000 -0800
++++ b/libucontext/arch/ppc/swapcontext.c  2019-03-29 10:54:08.000000000 -0700
+@@ -0,0 +1,45 @@
++/*
++ * Copyright (c) 2018 William Pitcock <nenolod@dereferenced.org>
++ *
++ * Permission to use, copy, modify, and/or distribute this software for any
++ * purpose with or without fee is hereby granted, provided that the above
++ * copyright notice and this permission notice appear in all copies.
++ *
++ * This software is provided 'as is' and without any warranty, express or
++ * implied.  In no event shall the authors be liable for any damages arising
++ * from the use of this software.
++ */
++
++#define _GNU_SOURCE
++#include <stddef.h>
++#include <stdarg.h>
++#include <signal.h>
++#include <string.h>
++#include <stdint.h>
++#include <errno.h>
++#include <unistd.h>
++#include <sys/syscall.h>
++
++
++int
++__swapcontext(ucontext_t *oucp, const ucontext_t *ucp)
++{
++#ifdef SYS_swapcontext
++ int r;
++
++ r = syscall(SYS_swapcontext, oucp, ucp, sizeof(ucontext_t));
++ if (r < 0)
++ {
++   errno = -r;
++   return -1;
++ }
++
++ return r;
++#else
++ errno = ENOSYS;
++ return -1;
++#endif
++}
++
++
++extern __typeof(__swapcontext) swapcontext __attribute__((weak, __alias__("__swapcontext")));
+diff -Naur a/libucontext/arch/ppc64/defs.h b/libucontext/arch/ppc64/defs.h
+--- a/libucontext/arch/ppc64/defs.h 1969-12-31 16:00:00.000000000 -0800
++++ b/libucontext/arch/ppc64/defs.h 2019-03-29 10:54:08.000000000 -0700
+@@ -0,0 +1,65 @@
++#ifndef __ARCH_PPC_DEFS_H
++#define __ARCH_PPC_DEFS_H
++
++#define REG_R0   (0)
++#define REG_R1   (1)
++#define REG_R2   (2)
++#define REG_R3   (3)
++#define REG_R4   (4)
++#define REG_R5   (5)
++#define REG_R6   (6)
++#define REG_R7   (7)
++#define REG_R8   (8)
++#define REG_R9   (9)
++#define REG_R10    (10)
++#define REG_R11    (11)
++#define REG_R12    (12)
++#define REG_R13    (13)
++#define REG_R14    (14)
++#define REG_R15    (15)
++#define REG_R16    (16)
++#define REG_R17    (17)
++#define REG_R18    (18)
++#define REG_R19    (19)
++#define REG_R20    (20)
++#define REG_R21    (21)
++#define REG_R22    (22)
++#define REG_R23    (23)
++#define REG_R24    (24)
++#define REG_R25    (25)
++#define REG_R26    (26)
++#define REG_R27    (27)
++#define REG_R28    (28)
++#define REG_R29    (29)
++#define REG_R30    (30)
++#define REG_R31    (31)
++#define REG_R32    (32)
++#define REG_R33    (33)
++#define REG_R34    (34)
++#define REG_R35    (35)
++#define REG_R36    (36)
++#define REG_R37    (37)
++#define REG_R38    (38)
++#define REG_R39    (39)
++#define REG_R40    (40)
++#define REG_R41    (41)
++#define REG_R42    (42)
++#define REG_R43    (43)
++#define REG_R44    (44)
++#define REG_R45    (45)
++#define REG_R46    (46)
++#define REG_R47    (47)
++
++/* sp register is actually %r1 */
++#define REG_SP   REG_R1
++
++/* nip register is actually %srr0 (r32) */
++#define REG_NIP    REG_R32
++
++/* entry register is actually %r12 */
++#define REG_ENTRY  REG_R12
++
++/* lnk register is actually %r36 */
++#define REG_LNK    REG_R36
++
++#endif
+diff -Naur a/libucontext/arch/ppc64/getcontext.c b/libucontext/arch/ppc64/getcontext.c
+--- a/libucontext/arch/ppc64/getcontext.c 1969-12-31 16:00:00.000000000 -0800
++++ b/libucontext/arch/ppc64/getcontext.c 2019-03-29 10:54:08.000000000 -0700
+@@ -0,0 +1,45 @@
++/*
++ * Copyright (c) 2018 William Pitcock <nenolod@dereferenced.org>
++ *
++ * Permission to use, copy, modify, and/or distribute this software for any
++ * purpose with or without fee is hereby granted, provided that the above
++ * copyright notice and this permission notice appear in all copies.
++ *
++ * This software is provided 'as is' and without any warranty, express or
++ * implied.  In no event shall the authors be liable for any damages arising
++ * from the use of this software.
++ */
++
++#define _GNU_SOURCE
++#include <stddef.h>
++#include <stdarg.h>
++#include <signal.h>
++#include <string.h>
++#include <stdint.h>
++#include <errno.h>
++#include <unistd.h>
++#include <sys/syscall.h>
++
++
++int
++__getcontext(ucontext_t *ucp)
++{
++#ifdef SYS_swapcontext
++ int r;
++
++ r = syscall(SYS_swapcontext, ucp, NULL, sizeof(ucontext_t));
++ if (r < 0)
++ {
++   errno = -r;
++   return -1;
++ }
++
++ return 0;
++#else
++ errno = ENOSYS;
++ return -1;
++#endif
++}
++
++
++extern __typeof(__getcontext) getcontext __attribute__((weak, __alias__("__getcontext")));
+diff -Naur a/libucontext/arch/ppc64/makecontext.c b/libucontext/arch/ppc64/makecontext.c
+--- a/libucontext/arch/ppc64/makecontext.c  1969-12-31 16:00:00.000000000 -0800
++++ b/libucontext/arch/ppc64/makecontext.c  2019-03-29 10:54:08.000000000 -0700
+@@ -0,0 +1,76 @@
++/*
++ * Copyright (c) 2018 William Pitcock <nenolod@dereferenced.org>
++ *
++ * Permission to use, copy, modify, and/or distribute this software for any
++ * purpose with or without fee is hereby granted, provided that the above
++ * copyright notice and this permission notice appear in all copies.
++ *
++ * This software is provided 'as is' and without any warranty, express or
++ * implied.  In no event shall the authors be liable for any damages arising
++ * from the use of this software.
++ */
++
++#define _GNU_SOURCE
++#include <stddef.h>
++#include <stdarg.h>
++#include <signal.h>
++#include <string.h>
++#include <stdint.h>
++
++
++#include "defs.h"
++
++
++extern void __start_context(void);
++
++
++void
++__makecontext(ucontext_t *ucp, void (*func)(void), int argc, ...)
++{
++ greg_t *sp, *argp;
++ va_list va;
++ int i;
++ unsigned int uc_link, stack_args;
++
++ stack_args = argc > 8 ? argc - 8 : 0;
++ uc_link = stack_args + 1;
++
++ sp = (greg_t *) ((uintptr_t) ucp->uc_stack.ss_sp + ucp->uc_stack.ss_size);
++ sp -= (uc_link + 1);
++ sp = (greg_t *) (((uintptr_t) sp & -16L));
++
++ ucp->uc_mcontext.gp_regs[REG_NIP]   = (uintptr_t) func;
++ ucp->uc_mcontext.gp_regs[REG_LNK]   = (uintptr_t) &__start_context;
++ ucp->uc_mcontext.gp_regs[REG_SP]    = (uintptr_t) sp;
++ ucp->uc_mcontext.gp_regs[REG_ENTRY] = (uintptr_t) func;
++ ucp->uc_mcontext.gp_regs[REG_R31]   = (uintptr_t) ucp->uc_link;
++
++ sp[0] = (uintptr_t) &__start_context;
++ sp[uc_link] = (uintptr_t) ucp->uc_link;
++ argp = &sp[2];
++
++ va_start(va, argc);
++
++ for (i = 0; i < argc; i++)
++   switch (i)
++   {
++   case 0:
++   case 1:
++   case 2:
++   case 3:
++   case 4:
++   case 5:
++   case 6:
++   case 7:
++     ucp->uc_mcontext.gp_regs[i + 3] = va_arg (va, greg_t);
++     break;
++   default:
++     *argp++ = va_arg (va, greg_t);
++     break;
++   }
++
++ va_end(va);
++}
++
++
++extern __typeof(__makecontext) makecontext __attribute__((weak, __alias__("__makecontext")));
+diff -Naur a/libucontext/arch/ppc64/setcontext.c b/libucontext/arch/ppc64/setcontext.c
+--- a/libucontext/arch/ppc64/setcontext.c 1969-12-31 16:00:00.000000000 -0800
++++ b/libucontext/arch/ppc64/setcontext.c 2019-03-29 10:54:08.000000000 -0700
+@@ -0,0 +1,45 @@
++/*
++ * Copyright (c) 2018 William Pitcock <nenolod@dereferenced.org>
++ *
++ * Permission to use, copy, modify, and/or distribute this software for any
++ * purpose with or without fee is hereby granted, provided that the above
++ * copyright notice and this permission notice appear in all copies.
++ *
++ * This software is provided 'as is' and without any warranty, express or
++ * implied.  In no event shall the authors be liable for any damages arising
++ * from the use of this software.
++ */
++
++#define _GNU_SOURCE
++#include <stddef.h>
++#include <stdarg.h>
++#include <signal.h>
++#include <string.h>
++#include <stdint.h>
++#include <errno.h>
++#include <unistd.h>
++#include <sys/syscall.h>
++
++
++int
++__setcontext(const ucontext_t *ucp)
++{
++#ifdef SYS_swapcontext
++ int r;
++
++ r = syscall(SYS_swapcontext, NULL, (void *) ucp, sizeof(ucontext_t));
++ if (r < 0)
++ {
++   errno = -r;
++   return -1;
++ }
++
++ return r;
++#else
++ errno = ENOSYS;
++ return -1;
++#endif
++}
++
++
++extern __typeof(__setcontext) setcontext __attribute__((weak, __alias__("__setcontext")));
+diff -Naur a/libucontext/arch/ppc64/startcontext.S b/libucontext/arch/ppc64/startcontext.S
+--- a/libucontext/arch/ppc64/startcontext.S 1969-12-31 16:00:00.000000000 -0800
++++ b/libucontext/arch/ppc64/startcontext.S 2019-03-29 10:54:08.000000000 -0700
+@@ -0,0 +1,31 @@
++/*
++ * Copyright (c) 2018 William Pitcock <nenolod@dereferenced.org>
++ *
++ * Permission to use, copy, modify, and/or distribute this software for any
++ * purpose with or without fee is hereby granted, provided that the above
++ * copyright notice and this permission notice appear in all copies.
++ *
++ * This software is provided 'as is' and without any warranty, express or
++ * implied.  In no event shall the authors be liable for any damages arising
++ * from the use of this software.
++ */
++
++.globl __start_context;
++.hidden __start_context;
++__start_context:
++ cmpdi 31,0      /* test if ucontext link pointer is null */
++ beq no_linked_context /* if it is, exit */
++
++ /* now, call SYS_swapcontext */
++ mr      4,31      /* ucp is in r31 */
++ li      3,0     /* don't care about restoring, set oucp to NULL */
++ li      5,1696      /* sizeof(ucontext_t) */
++ li      0,249     /* SYS_swapcontext */
++ sc
++
++ /* we should not wind back up here, if we do, exit with -1 */
++ li  3,-1
++
++no_linked_context:
++ b exit@GOT
++ nop
+diff -Naur a/libucontext/arch/ppc64/swapcontext.c b/libucontext/arch/ppc64/swapcontext.c
+--- a/libucontext/arch/ppc64/swapcontext.c  1969-12-31 16:00:00.000000000 -0800
++++ b/libucontext/arch/ppc64/swapcontext.c  2019-03-29 10:54:08.000000000 -0700
+@@ -0,0 +1,45 @@
++/*
++ * Copyright (c) 2018 William Pitcock <nenolod@dereferenced.org>
++ *
++ * Permission to use, copy, modify, and/or distribute this software for any
++ * purpose with or without fee is hereby granted, provided that the above
++ * copyright notice and this permission notice appear in all copies.
++ *
++ * This software is provided 'as is' and without any warranty, express or
++ * implied.  In no event shall the authors be liable for any damages arising
++ * from the use of this software.
++ */
++
++#define _GNU_SOURCE
++#include <stddef.h>
++#include <stdarg.h>
++#include <signal.h>
++#include <string.h>
++#include <stdint.h>
++#include <errno.h>
++#include <unistd.h>
++#include <sys/syscall.h>
++
++
++int
++__swapcontext(ucontext_t *oucp, const ucontext_t *ucp)
++{
++#ifdef SYS_swapcontext
++ int r;
++
++ r = syscall(SYS_swapcontext, oucp, ucp, sizeof(ucontext_t));
++ if (r < 0)
++ {
++   errno = -r;
++   return -1;
++ }
++
++ return r;
++#else
++ errno = ENOSYS;
++ return -1;
++#endif
++}
++
++
++extern __typeof(__swapcontext) swapcontext __attribute__((weak, __alias__("__swapcontext")));
+diff -Naur a/libucontext/arch/s390x/defs.h b/libucontext/arch/s390x/defs.h
+--- a/libucontext/arch/s390x/defs.h 1969-12-31 16:00:00.000000000 -0800
++++ b/libucontext/arch/s390x/defs.h 2019-03-29 10:54:08.000000000 -0700
+@@ -0,0 +1,8 @@
++#ifndef __ARCH_S390X_DEFS_H
++#define __ARCH_S390X_DEFS_H
++
++#define OFFSET_GREGS (56)
++#define OFFSET_AREGS (184)
++#define OFFSET_FPREGS  (248)
++
++#endif
+diff -Naur a/libucontext/arch/s390x/getcontext.S b/libucontext/arch/s390x/getcontext.S
+--- a/libucontext/arch/s390x/getcontext.S 1969-12-31 16:00:00.000000000 -0800
++++ b/libucontext/arch/s390x/getcontext.S 2019-03-29 10:54:08.000000000 -0700
+@@ -0,0 +1,28 @@
++/*
++ * Copyright (c) 2018 William Pitcock <nenolod@dereferenced.org>
++ *
++ * Permission to use, copy, modify, and/or distribute this software for any
++ * purpose with or without fee is hereby granted, provided that the above
++ * copyright notice and this permission notice appear in all copies.
++ *
++ * This software is provided 'as is' and without any warranty, express or
++ * implied.  In no event shall the authors be liable for any damages arising
++ * from the use of this software.
++ */
++
++#include "defs.h"
++
++
++.globl __getcontext;
++__getcontext:
++ lgr %r1, %r2      /* use %r1 as our working register */
++ la  %r2, 0        /* we will return 0 */
++
++ stam  %a0, %a15, OFFSET_AREGS(%r1)  /* store access registers */
++ stmg  %r0, %r15, OFFSET_GREGS(%r1)  /* store general-purpose registers */
++
++ br  %r14        /* return to where we came from */
++
++
++.weak getcontext;
++getcontext = __getcontext;
+diff -Naur a/libucontext/arch/s390x/makecontext.c b/libucontext/arch/s390x/makecontext.c
+--- a/libucontext/arch/s390x/makecontext.c  1969-12-31 16:00:00.000000000 -0800
++++ b/libucontext/arch/s390x/makecontext.c  2019-03-29 10:54:08.000000000 -0700
+@@ -0,0 +1,78 @@
++/*
++ * Copyright (c) 2018 William Pitcock <nenolod@dereferenced.org>
++ *
++ * Permission to use, copy, modify, and/or distribute this software for any
++ * purpose with or without fee is hereby granted, provided that the above
++ * copyright notice and this permission notice appear in all copies.
++ *
++ * This software is provided 'as is' and without any warranty, express or
++ * implied.  In no event shall the authors be liable for any damages arising
++ * from the use of this software.
++ */
++
++#define _GNU_SOURCE
++#include <stddef.h>
++#include <stdarg.h>
++#include <signal.h>
++#include <string.h>
++#include <stdint.h>
++
++
++#include "defs.h"
++
++
++extern void __start_context(void);
++extern int __setcontext(const ucontext_t *ucp);
++
++
++void
++__makecontext(ucontext_t *ucp, void (*func)(void), int argc, ...)
++{
++ greg_t *sp, *argp;
++ va_list va;
++ int i;
++ unsigned int stack_args;
++
++ stack_args = argc > 5 ? argc - 5 : 0;
++
++ sp = (greg_t *) ((uintptr_t) ucp->uc_stack.ss_sp + ucp->uc_stack.ss_size);
++ sp -= stack_args;   // maybe +1
++ sp = (greg_t *) (((uintptr_t) sp & -16L));
++
++ ucp->uc_mcontext.gregs[7]  = (uintptr_t) func;
++ ucp->uc_mcontext.gregs[8]  = (uintptr_t) ucp->uc_link;
++ ucp->uc_mcontext.gregs[9]  = (uintptr_t) &__setcontext;
++ ucp->uc_mcontext.gregs[14] = (uintptr_t) &__start_context;
++
++ argp = sp;
++
++ va_start(va, argc);
++
++ for (i = 0; i < argc; i++)
++   switch (i)
++   {
++   case 0:
++   case 1:
++   case 2:
++   case 3:
++   case 4:
++   case 5:
++     ucp->uc_mcontext.gregs[i + 2] = va_arg (va, greg_t);
++     break;
++   default:
++     *argp++ = va_arg (va, greg_t);
++     break;
++   }
++
++ va_end(va);
++
++ /* make room for backchain / register save area */
++ sp -= 20;
++ *sp = 0;
++
++ /* set up %r15 as sp */
++ ucp->uc_mcontext.gregs[15] = (uintptr_t) sp;
++}
++
++
++extern __typeof(__makecontext) makecontext __attribute__((weak, __alias__("__makecontext")));
+diff -Naur a/libucontext/arch/s390x/setcontext.S b/libucontext/arch/s390x/setcontext.S
+--- a/libucontext/arch/s390x/setcontext.S 1969-12-31 16:00:00.000000000 -0800
++++ b/libucontext/arch/s390x/setcontext.S 2019-03-29 10:54:08.000000000 -0700
+@@ -0,0 +1,27 @@
++/*
++ * Copyright (c) 2018 William Pitcock <nenolod@dereferenced.org>
++ *
++ * Permission to use, copy, modify, and/or distribute this software for any
++ * purpose with or without fee is hereby granted, provided that the above
++ * copyright notice and this permission notice appear in all copies.
++ *
++ * This software is provided 'as is' and without any warranty, express or
++ * implied.  In no event shall the authors be liable for any damages arising
++ * from the use of this software.
++ */
++
++#include "defs.h"
++
++
++.globl __setcontext;
++__setcontext:
++ lgr %r1, %r2      /* use %r1 as our working register */
++
++ lam %a2, %a15, OFFSET_AREGS+8(%r1)  /* load access registers, but skip %a0 and %a1 which are for TLS */
++ lmg %r0, %r15, OFFSET_GREGS(%r1)  /* store general-purpose registers */
++
++ br  %r14        /* return to new link register address */
++
++
++.weak setcontext;
++setcontext = __setcontext;
+diff -Naur a/libucontext/arch/s390x/startcontext.S b/libucontext/arch/s390x/startcontext.S
+--- a/libucontext/arch/s390x/startcontext.S 1969-12-31 16:00:00.000000000 -0800
++++ b/libucontext/arch/s390x/startcontext.S 2019-03-29 10:54:08.000000000 -0700
+@@ -0,0 +1,30 @@
++/*
++ * Copyright (c) 2018 William Pitcock <nenolod@dereferenced.org>
++ *
++ * Permission to use, copy, modify, and/or distribute this software for any
++ * purpose with or without fee is hereby granted, provided that the above
++ * copyright notice and this permission notice appear in all copies.
++ *
++ * This software is provided 'as is' and without any warranty, express or
++ * implied.  In no event shall the authors be liable for any damages arising
++ * from the use of this software.
++ */
++
++#include "defs.h"
++
++
++.globl __start_context;
++__start_context:
++ basr  %r14, %r7     /* run function pointer (%r7) and return here */
++ ltgr  %r8, %r8      /* check to see if uc_link (%r8) is null */
++
++ jz  no_linked_context   /* if we have no linked context, prepare to exit */
++
++ lgr %r2, %r8      /* copy the uc_link structure address to %r2 */
++ br  %r9       /* call setcontext */
++
++no_linked_context:
++ la  %r2, 0        /* return 0 */
++ brasl %r14, exit@plt      /* call exit */
++
++ j .+2       /* crash if exit returns */
+diff -Naur a/libucontext/arch/s390x/swapcontext.S b/libucontext/arch/s390x/swapcontext.S
+--- a/libucontext/arch/s390x/swapcontext.S  1969-12-31 16:00:00.000000000 -0800
++++ b/libucontext/arch/s390x/swapcontext.S  2019-03-29 10:54:08.000000000 -0700
+@@ -0,0 +1,32 @@
++/*
++ * Copyright (c) 2018 William Pitcock <nenolod@dereferenced.org>
++ *
++ * Permission to use, copy, modify, and/or distribute this software for any
++ * purpose with or without fee is hereby granted, provided that the above
++ * copyright notice and this permission notice appear in all copies.
++ *
++ * This software is provided 'as is' and without any warranty, express or
++ * implied.  In no event shall the authors be liable for any damages arising
++ * from the use of this software.
++ */
++
++#include "defs.h"
++
++
++.globl __swapcontext;
++__swapcontext:
++ lgr %r1, %r2      /* use %r1 to save current context to */
++ lgr %r0, %r3      /* use %r0 for source context */
++
++ stam  %a0, %a15, OFFSET_AREGS(%r1)  /* store access registers */
++ stmg  %r0, %r15, OFFSET_GREGS(%r1)  /* store general-purpose registers */
++
++ lgr %r2, %r0      /* swap %r0 to %r2 (XXX: figure out why it hates loading from %r0) */
++ lam %a2, %a15, OFFSET_AREGS+8(%r2)  /* load access registers, but skip %a0 and %a1 which are for TLS */
++ lmg %r0, %r15, OFFSET_GREGS(%r2)  /* load general-purpose registers */
++
++ br  %r14        /* return to new link register address */
++
++
++.weak swapcontext;
++swapcontext = __swapcontext;
+diff -Naur a/libucontext/arch/x86/defs.h b/libucontext/arch/x86/defs.h
+--- a/libucontext/arch/x86/defs.h 1969-12-31 16:00:00.000000000 -0800
++++ b/libucontext/arch/x86/defs.h 2019-03-29 10:54:08.000000000 -0700
+@@ -0,0 +1,18 @@
++#ifndef __ARCH_X86_DEFS_H
++#define __ARCH_X86_DEFS_H
++
++#define OFFSET_REG_GS  20
++#define OFFSET_REG_FS  24
++#define OFFSET_REG_ES  28
++#define OFFSET_REG_DS  32
++#define OFFSET_REG_EDI 36
++#define OFFSET_REG_ESI 40
++#define OFFSET_REG_EBP 44
++#define OFFSET_REG_ESP 48
++#define OFFSET_REG_EBX 52
++#define OFFSET_REG_EDX 56
++#define OFFSET_REG_ECX 60
++#define OFFSET_REG_EAX 64
++#define OFFSET_REG_EIP 76
++
++#endif
+diff -Naur a/libucontext/arch/x86/getcontext.S b/libucontext/arch/x86/getcontext.S
+--- a/libucontext/arch/x86/getcontext.S 1969-12-31 16:00:00.000000000 -0800
++++ b/libucontext/arch/x86/getcontext.S 2019-03-29 10:54:08.000000000 -0700
+@@ -0,0 +1,51 @@
++/*
++ * Copyright (c) 2018 William Pitcock <nenolod@dereferenced.org>
++ *
++ * Permission to use, copy, modify, and/or distribute this software for any
++ * purpose with or without fee is hereby granted, provided that the above
++ * copyright notice and this permission notice appear in all copies.
++ *
++ * This software is provided 'as is' and without any warranty, express or
++ * implied.  In no event shall the authors be liable for any damages arising
++ * from the use of this software.
++ */
++
++#include "defs.h"
++
++.globl __getcontext;
++__getcontext:
++ /* load address of the ucontext structure */
++ movl  4(%esp), %eax
++
++ /* EAX is not a preserved register */
++ movl  $0, OFFSET_REG_EAX(%eax)
++
++ /* copy all of the current registers into the ucontext structure */
++ movl  %ecx, OFFSET_REG_ECX(%eax)
++ movl  %ebx, OFFSET_REG_EBX(%eax)
++ movl  %edx, OFFSET_REG_EDX(%eax)
++ movl  %edi, OFFSET_REG_EDI(%eax)
++ movl  %esi, OFFSET_REG_ESI(%eax)
++ movl  %ebp, OFFSET_REG_EBP(%eax)
++
++ /* the first argument on the stack is the jump target (%eip), so we store it in the EIP
++    register in the ucontext structure. */
++ movl  (%esp), %ecx
++ movl  %ecx, OFFSET_REG_EIP(%eax)
++
++ /* take the stack pointer address (%esp) offsetting by 4 to skip over the jump target. */
++ leal  4(%esp), %ecx
++ movl  %ecx, OFFSET_REG_ESP(%eax)
++
++ /* finally, save the FS segment register */
++ xorl  %ecx, %ecx
++ movw  %fs, %cx
++ movl  %ecx, OFFSET_REG_FS(%eax)
++
++ /* we're all done here, return 0 */
++ xorl  %eax, %eax
++ ret
++
++
++.weak getcontext;
++getcontext = __getcontext;
+diff -Naur a/libucontext/arch/x86/makecontext.c b/libucontext/arch/x86/makecontext.c
+--- a/libucontext/arch/x86/makecontext.c  1969-12-31 16:00:00.000000000 -0800
++++ b/libucontext/arch/x86/makecontext.c  2019-03-29 10:54:08.000000000 -0700
+@@ -0,0 +1,55 @@
++/*
++ * Copyright (c) 2018 William Pitcock <nenolod@dereferenced.org>
++ *
++ * Permission to use, copy, modify, and/or distribute this software for any
++ * purpose with or without fee is hereby granted, provided that the above
++ * copyright notice and this permission notice appear in all copies.
++ *
++ * This software is provided 'as is' and without any warranty, express or
++ * implied.  In no event shall the authors be liable for any damages arising
++ * from the use of this software.
++ */
++
++#define _GNU_SOURCE
++#include <stddef.h>
++#include <stdarg.h>
++#include <signal.h>
++#include <string.h>
++#include <stdint.h>
++
++
++extern void __start_context(void);
++
++
++void
++__makecontext(ucontext_t *ucp, void (*func)(void), int argc, ...)
++{
++ greg_t *sp, *argp;
++ va_list va;
++ int i;
++ unsigned int uc_link;
++
++ uc_link = (argc > 6 ? argc - 6 : 0) + 1;
++
++ sp = (greg_t *) ((uintptr_t) ucp->uc_stack.ss_sp + ucp->uc_stack.ss_size);
++ sp -= uc_link;
++ sp = (greg_t *) (((uintptr_t) sp & -16L) - 8);
++
++ ucp->uc_mcontext.gregs[REG_EIP] = (uintptr_t) func;
++ ucp->uc_mcontext.gregs[REG_EBX] = (uintptr_t) argc;
++ ucp->uc_mcontext.gregs[REG_ESP] = (uintptr_t) sp;
++
++ argp = sp;
++ *argp++ = (uintptr_t) &__start_context;
++ *argp++ = (uintptr_t) ucp->uc_link;
++
++ va_start(va, argc);
++
++ for (i = 0; i < argc; i++)
++   *argp++ = va_arg (va, greg_t);
++
++ va_end(va);
++}
++
++
++extern __typeof(__makecontext) makecontext __attribute__((weak, __alias__("__makecontext")));
+diff -Naur a/libucontext/arch/x86/setcontext.S b/libucontext/arch/x86/setcontext.S
+--- a/libucontext/arch/x86/setcontext.S 1969-12-31 16:00:00.000000000 -0800
++++ b/libucontext/arch/x86/setcontext.S 2019-03-29 10:54:08.000000000 -0700
+@@ -0,0 +1,46 @@
++/*
++ * Copyright (c) 2018 William Pitcock <nenolod@dereferenced.org>
++ *
++ * Permission to use, copy, modify, and/or distribute this software for any
++ * purpose with or without fee is hereby granted, provided that the above
++ * copyright notice and this permission notice appear in all copies.
++ *
++ * This software is provided 'as is' and without any warranty, express or
++ * implied.  In no event shall the authors be liable for any damages arising
++ * from the use of this software.
++ */
++
++#include "defs.h"
++
++.globl __setcontext;
++__setcontext:
++ /* load address of the ucontext structure */
++ movl  4(%esp), %eax
++
++ /* set up the FS segment register */
++ movl  OFFSET_REG_FS(%eax), %ecx
++ movw  %cx, %fs
++
++ /* fetch the new EIP */
++ movl  OFFSET_REG_EIP(%eax), %ecx
++
++ /* set up the new stack pointer */
++ movl  OFFSET_REG_ESP(%eax), %esp
++
++ /* push the return address onto the stack */
++ pushl %ecx
++
++ /* set all of the registers */
++ movl  OFFSET_REG_EBX(%eax), %ebx
++ movl  OFFSET_REG_ECX(%eax), %ecx
++ movl  OFFSET_REG_EDX(%eax), %edx
++ movl  OFFSET_REG_EBP(%eax), %ebp
++ movl  OFFSET_REG_EDI(%eax), %edi
++ movl  OFFSET_REG_ESI(%eax), %esi
++ movl  OFFSET_REG_EAX(%eax), %eax
++
++ ret
++
++
++.weak setcontext;
++setcontext = __setcontext;
+diff -Naur a/libucontext/arch/x86/startcontext.S b/libucontext/arch/x86/startcontext.S
+--- a/libucontext/arch/x86/startcontext.S 1969-12-31 16:00:00.000000000 -0800
++++ b/libucontext/arch/x86/startcontext.S 2019-03-29 10:54:08.000000000 -0700
+@@ -0,0 +1,40 @@
++/*
++ * Copyright (c) 2018 William Pitcock <nenolod@dereferenced.org>
++ *
++ * Permission to use, copy, modify, and/or distribute this software for any
++ * purpose with or without fee is hereby granted, provided that the above
++ * copyright notice and this permission notice appear in all copies.
++ *
++ * This software is provided 'as is' and without any warranty, express or
++ * implied.  In no event shall the authors be liable for any damages arising
++ * from the use of this software.
++ */
++
++.globl __start_context;
++__start_context:
++ /* get the proper context into position and test for NULL */
++ leal  (%esp,%ebx,4), %esp
++ cmpl  $0, (%esp)
++
++ /* restore global offset table, exit@plt and __setcontext@plt need this */
++ call  __i686.get_pc_thunk.bx
++ addl  $_GLOBAL_OFFSET_TABLE_, %ebx
++
++ /* if we have no linked context, lets get out of here */
++ je  no_linked_context
++
++ /* call setcontext to switch to the linked context */
++ call  __setcontext@plt
++ movl  %eax, (%esp)
++
++no_linked_context:
++ /* we are returning into a null context, it seems, so maybe we should exit */
++ call  exit@plt
++
++ /* something is really hosed, call hlt to force termination */
++ hlt
++
++
++__i686.get_pc_thunk.bx:
++ mov (%esp), %ebx
++ ret
+diff -Naur a/libucontext/arch/x86/swapcontext.S b/libucontext/arch/x86/swapcontext.S
+--- a/libucontext/arch/x86/swapcontext.S  1969-12-31 16:00:00.000000000 -0800
++++ b/libucontext/arch/x86/swapcontext.S  2019-03-29 10:54:08.000000000 -0700
+@@ -0,0 +1,74 @@
++/*
++ * Copyright (c) 2018 William Pitcock <nenolod@dereferenced.org>
++ *
++ * Permission to use, copy, modify, and/or distribute this software for any
++ * purpose with or without fee is hereby granted, provided that the above
++ * copyright notice and this permission notice appear in all copies.
++ *
++ * This software is provided 'as is' and without any warranty, express or
++ * implied.  In no event shall the authors be liable for any damages arising
++ * from the use of this software.
++ */
++
++#include "defs.h"
++
++.globl __swapcontext;
++__swapcontext:
++ /* load address of the ucontext structure */
++ movl  4(%esp), %eax
++
++ /* EAX is not a preserved register */
++ movl  $0, OFFSET_REG_EAX(%eax)
++
++ /* copy all of the current registers into the ucontext structure */
++ movl  %ecx, OFFSET_REG_ECX(%eax)
++ movl  %ebx, OFFSET_REG_EBX(%eax)
++ movl  %edx, OFFSET_REG_EDX(%eax)
++ movl  %edi, OFFSET_REG_EDI(%eax)
++ movl  %esi, OFFSET_REG_ESI(%eax)
++ movl  %ebp, OFFSET_REG_EBP(%eax)
++
++ /* the first argument on the stack is the jump target (%eip), so we store it in the EIP
++    register in the ucontext structure. */
++ movl  (%esp), %ecx
++ movl  %ecx, OFFSET_REG_EIP(%eax)
++
++ /* take the stack pointer address (%esp) offsetting by 4 to skip over the jump target. */
++ leal  4(%esp), %ecx
++ movl  %ecx, OFFSET_REG_ESP(%eax)
++
++ /* finally, save the FS segment register */
++ xorl  %ecx, %ecx
++ movw  %fs, %cx
++ movl  %ecx, OFFSET_REG_FS(%eax)
++
++ /* load address of the ucontext structure */
++ movl  8(%esp), %eax
++
++ /* set up the FS segment register */
++ movl  OFFSET_REG_FS(%eax), %ecx
++ movw  %cx, %fs
++
++ /* fetch the new EIP */
++ movl  OFFSET_REG_EIP(%eax), %ecx
++
++ /* set up the new stack pointer */
++ movl  OFFSET_REG_ESP(%eax), %esp
++
++ /* push the return address onto the stack */
++ pushl %ecx
++
++ /* set all of the registers */
++ movl  OFFSET_REG_EBX(%eax), %ebx
++ movl  OFFSET_REG_ECX(%eax), %ecx
++ movl  OFFSET_REG_EDX(%eax), %edx
++ movl  OFFSET_REG_EBP(%eax), %ebp
++ movl  OFFSET_REG_EDI(%eax), %edi
++ movl  OFFSET_REG_ESI(%eax), %esi
++ movl  OFFSET_REG_EAX(%eax), %eax
++
++ ret
++
++
++.weak swapcontext;
++swapcontext = __swapcontext;
+diff -Naur a/libucontext/arch/x86_64/getcontext.S b/libucontext/arch/x86_64/getcontext.S
+--- a/libucontext/arch/x86_64/getcontext.S  1969-12-31 16:00:00.000000000 -0800
++++ b/libucontext/arch/x86_64/getcontext.S  2019-03-29 10:54:08.000000000 -0700
+@@ -0,0 +1,48 @@
++/*
++ * Copyright (c) 2018 William Pitcock <nenolod@dereferenced.org>
++ *
++ * Permission to use, copy, modify, and/or distribute this software for any
++ * purpose with or without fee is hereby granted, provided that the above
++ * copyright notice and this permission notice appear in all copies.
++ *
++ * This software is provided 'as is' and without any warranty, express or
++ * implied.  In no event shall the authors be liable for any damages arising
++ * from the use of this software.
++ */
++
++.globl __getcontext;
++__getcontext:
++ /* copy all of the current registers into the ucontext structure */
++ movq  %r8, 40(%rdi)
++ movq  %r9, 48(%rdi)
++ movq  %r10, 56(%rdi)
++ movq  %r11, 64(%rdi)
++ movq  %r12, 72(%rdi)
++ movq  %r13, 80(%rdi)
++ movq  %r14, 88(%rdi)
++ movq  %r15, 96(%rdi)
++ movq  %rdi, 104(%rdi)
++ movq  %rsi, 112(%rdi)
++ movq  %rbp, 120(%rdi)
++ movq  %rbx, 128(%rdi)
++ movq  %rdx, 136(%rdi)
++ movq  $1, 144(%rdi)   /* $1 is %rax */
++ movq  %rcx, 152(%rdi)
++
++ /* the first argument on the stack is the jump target (%rip), so we store it in the RIP
++    register in the ucontext structure. */
++ movq  (%rsp), %rcx
++ movq  %rcx, 168(%rdi)
++
++ /* finally take the stack pointer address (%rsp) offsetting by 8 to skip over the jump
++    target. */
++ leaq  8(%rsp), %rcx
++ movq  %rcx, 160(%rdi)
++
++ /* we're all done here, return 0 */
++ xorl  %eax, %eax
++ ret
++
++
++.weak getcontext;
++getcontext = __getcontext;
+diff -Naur a/libucontext/arch/x86_64/makecontext.c b/libucontext/arch/x86_64/makecontext.c
+--- a/libucontext/arch/x86_64/makecontext.c 1969-12-31 16:00:00.000000000 -0800
++++ b/libucontext/arch/x86_64/makecontext.c 2019-03-29 10:54:08.000000000 -0700
+@@ -0,0 +1,77 @@
++/*
++ * Copyright (c) 2018 William Pitcock <nenolod@dereferenced.org>
++ *
++ * Permission to use, copy, modify, and/or distribute this software for any
++ * purpose with or without fee is hereby granted, provided that the above
++ * copyright notice and this permission notice appear in all copies.
++ *
++ * This software is provided 'as is' and without any warranty, express or
++ * implied.  In no event shall the authors be liable for any damages arising
++ * from the use of this software.
++ */
++
++#define _GNU_SOURCE
++#include <stddef.h>
++#include <stdarg.h>
++#include <signal.h>
++#include <string.h>
++#include <stdint.h>
++
++
++extern void __start_context(void);
++
++
++void
++__makecontext(ucontext_t *ucp, void (*func)(void), int argc, ...)
++{
++ greg_t *sp;
++ va_list va;
++ int i;
++ unsigned int uc_link;
++
++ uc_link = (argc > 6 ? argc - 6 : 0) + 1;
++
++ sp = (greg_t *) ((uintptr_t) ucp->uc_stack.ss_sp + ucp->uc_stack.ss_size);
++ sp -= uc_link;
++ sp = (greg_t *) (((uintptr_t) sp & -16L) - 8);
++
++ ucp->uc_mcontext.gregs[REG_RIP] = (uintptr_t) func;
++ ucp->uc_mcontext.gregs[REG_RBX] = (uintptr_t) &sp[uc_link];
++ ucp->uc_mcontext.gregs[REG_RSP] = (uintptr_t) sp;
++
++ sp[0] = (uintptr_t) &__start_context;
++ sp[uc_link] = (uintptr_t) ucp->uc_link;
++
++ va_start(va, argc);
++
++ for (i = 0; i < argc; i++)
++   switch (i)
++   {
++   case 0:
++     ucp->uc_mcontext.gregs[REG_RDI] = va_arg (va, greg_t);
++     break;
++   case 1:
++     ucp->uc_mcontext.gregs[REG_RSI] = va_arg (va, greg_t);
++     break;
++   case 2:
++     ucp->uc_mcontext.gregs[REG_RDX] = va_arg (va, greg_t);
++     break;
++   case 3:
++     ucp->uc_mcontext.gregs[REG_RCX] = va_arg (va, greg_t);
++     break;
++   case 4:
++     ucp->uc_mcontext.gregs[REG_R8] = va_arg (va, greg_t);
++     break;
++   case 5:
++     ucp->uc_mcontext.gregs[REG_R9] = va_arg (va, greg_t);
++     break;
++   default:
++     sp[i - 5] = va_arg (va, greg_t);
++     break;
++   }
++
++ va_end(va);
++}
++
++
++extern __typeof(__makecontext) makecontext __attribute__((weak, __alias__("__makecontext")));
+diff -Naur a/libucontext/arch/x86_64/setcontext.S b/libucontext/arch/x86_64/setcontext.S
+--- a/libucontext/arch/x86_64/setcontext.S  1969-12-31 16:00:00.000000000 -0800
++++ b/libucontext/arch/x86_64/setcontext.S  2019-03-29 10:54:08.000000000 -0700
+@@ -0,0 +1,44 @@
++/*
++ * Copyright (c) 2018 William Pitcock <nenolod@dereferenced.org>
++ *
++ * Permission to use, copy, modify, and/or distribute this software for any
++ * purpose with or without fee is hereby granted, provided that the above
++ * copyright notice and this permission notice appear in all copies.
++ *
++ * This software is provided 'as is' and without any warranty, express or
++ * implied.  In no event shall the authors be liable for any damages arising
++ * from the use of this software.
++ */
++
++.globl __setcontext;
++__setcontext:
++ /* set all of the registers */
++ movq    40(%rdi), %r8
++ movq    48(%rdi), %r9
++ movq    56(%rdi), %r10
++ movq    64(%rdi), %r11
++ movq    72(%rdi), %r12
++ movq    80(%rdi), %r13
++ movq    88(%rdi), %r14
++ movq    96(%rdi), %r15
++ movq    112(%rdi), %rsi
++ movq    120(%rdi), %rbp
++ movq    128(%rdi), %rbx
++ movq    136(%rdi), %rdx
++ movq    144(%rdi), %rax
++ movq    152(%rdi), %rcx
++ movq    160(%rdi), %rsp
++
++ /* set the jump target by pushing it to the stack.
++    ret will pop the new %rip from the stack, causing us to jump there. */
++ pushq   168(%rdi)
++
++ /* finally, set %rdi correctly. */
++ movq    104(%rdi), %rdi
++
++ /* we're all done here, return 0 */
++ xorl    %eax, %eax
++ ret
++
++.weak setcontext;
++setcontext = __setcontext;
+diff -Naur a/libucontext/arch/x86_64/startcontext.S b/libucontext/arch/x86_64/startcontext.S
+--- a/libucontext/arch/x86_64/startcontext.S  1969-12-31 16:00:00.000000000 -0800
++++ b/libucontext/arch/x86_64/startcontext.S  2019-03-29 10:54:08.000000000 -0700
+@@ -0,0 +1,32 @@
++/*
++ * Copyright (c) 2018 William Pitcock <nenolod@dereferenced.org>
++ *
++ * Permission to use, copy, modify, and/or distribute this software for any
++ * purpose with or without fee is hereby granted, provided that the above
++ * copyright notice and this permission notice appear in all copies.
++ *
++ * This software is provided 'as is' and without any warranty, express or
++ * implied.  In no event shall the authors be liable for any damages arising
++ * from the use of this software.
++ */
++
++.globl __start_context;
++__start_context:
++ /* get the proper context into position and test for NULL */
++ movq  %rbx, %rsp
++ movq  (%rsp), %rdi
++ testq %rdi, %rdi
++
++ /* if we have no linked context, lets get out of here */
++ je  no_linked_context
++
++ /* call setcontext to switch to the linked context */
++ call  __setcontext@plt
++ movq  %rax, %rdi
++
++no_linked_context:
++ /* we are returning into a null context, it seems, so maybe we should exit */
++ call  exit@plt
++
++ /* something is really hosed, call hlt to force termination */
++ hlt
+diff -Naur a/libucontext/arch/x86_64/swapcontext.S b/libucontext/arch/x86_64/swapcontext.S
+--- a/libucontext/arch/x86_64/swapcontext.S 1969-12-31 16:00:00.000000000 -0800
++++ b/libucontext/arch/x86_64/swapcontext.S 2019-03-29 10:54:08.000000000 -0700
+@@ -0,0 +1,74 @@
++/*
++ * Copyright (c) 2018 William Pitcock <nenolod@dereferenced.org>
++ *
++ * Permission to use, copy, modify, and/or distribute this software for any
++ * purpose with or without fee is hereby granted, provided that the above
++ * copyright notice and this permission notice appear in all copies.
++ *
++ * This software is provided 'as is' and without any warranty, express or
++ * implied.  In no event shall the authors be liable for any damages arising
++ * from the use of this software.
++ */
++
++.globl __swapcontext;
++__swapcontext:
++ /* copy all of the current registers into the ucontext structure pointed by
++    the first argument */
++ movq  %r8, 40(%rdi)
++ movq  %r9, 48(%rdi)
++ movq  %r10, 56(%rdi)
++ movq  %r11, 64(%rdi)
++ movq  %r12, 72(%rdi)
++ movq  %r13, 80(%rdi)
++ movq  %r14, 88(%rdi)
++ movq  %r15, 96(%rdi)
++ movq  %rdi, 104(%rdi)
++ movq  %rsi, 112(%rdi)
++ movq  %rbp, 120(%rdi)
++ movq  %rbx, 128(%rdi)
++ movq  %rdx, 136(%rdi)
++ movq  $1, 144(%rdi)   /* $1 is %rax */
++ movq  %rcx, 152(%rdi)
++
++ /* the first argument on the stack is the jump target (%rip), so we store it in the RIP
++    register in the ucontext structure. */
++ movq  (%rsp), %rcx
++ movq  %rcx, 168(%rdi)
++
++ /* finally take the stack pointer address (%rsp) offsetting by 8 to skip over the jump
++    target. */
++ leaq  8(%rsp), %rcx
++ movq  %rcx, 160(%rdi)
++
++ /* set all of the registers to their new states, stored in the second
++    ucontext structure */  
++ movq  40(%rsi), %r8
++ movq  48(%rsi), %r9
++ movq  56(%rsi), %r10
++ movq  64(%rsi), %r11
++ movq  72(%rsi), %r12
++ movq  80(%rsi), %r13
++ movq  88(%rsi), %r14
++ movq  96(%rsi), %r15
++ movq  104(%rsi), %rdi
++ movq  120(%rsi), %rbp
++ movq  128(%rsi), %rbx
++ movq  136(%rsi), %rdx
++ movq  144(%rsi), %rax
++ movq  152(%rsi), %rcx
++ movq  160(%rsi), %rsp
++
++ /* set the jump target by pushing it to the stack.
++    ret will pop the new %rip from the stack, causing us to jump there. */
++ pushq 168(%rsi)
++
++ /* finally, set %rsi correctly since we do not need it anymore. */
++ movq  112(%rsi), %rsi
++
++ /* we're all done here, return 0 */
++ xorl  %eax, %eax
++ ret
++
++
++.weak swapcontext;
++swapcontext = __swapcontext;
+diff -Naur a/libucontext/include/libucontext.h b/libucontext/include/libucontext.h
+--- a/libucontext/include/libucontext.h 1969-12-31 16:00:00.000000000 -0800
++++ b/libucontext/include/libucontext.h 2019-03-29 13:41:18.000000000 -0700
+@@ -0,0 +1,66 @@
++#ifndef __LIBUCONTEXT_H
++#define __LIBUCONTEXT_H
++
++/* Structure describing a signal stack.  */
++typedef struct
++  {
++    void *ss_sp;
++    size_t ss_size;
++    int ss_flags;
++  } libucontext_stack_t;
++
++typedef unsigned long int libucontext_sigset_t;
++
++#ifdef __aarch64__
++/* Context to describe whole processor state.  This only describes
++   the core registers; coprocessor registers get saved elsewhere
++   (e.g. in uc_regspace, or somewhere unspecified on the stack
++   during non-RT signal handlers).  */
++typedef struct
++  {
++    unsigned long long int fault_address;
++    unsigned long long int regs[31];
++    unsigned long long int sp;
++    unsigned long long int pc;
++    unsigned long long int pstate;
++    /* This field contains extension records for additional processor
++       state such as the FP/SIMD state.  It has to match the definition
++       of the corresponding field in the sigcontext struct, see the
++       arch/arm64/include/uapi/asm/sigcontext.h linux header for details.  */
++    unsigned char __reserved[4096] __attribute__ ((__aligned__ (16)));
++  } libucontext_mcontext_t;
++#else
++#error "mcontext not implemented!"
++#endif
++
++/* Userlevel context.  */
++typedef struct libucontext_ucontext
++  {
++    unsigned long uc_flags;
++    struct libucontext_ucontext *uc_link;
++    libucontext_stack_t uc_stack;
++    libucontext_sigset_t uc_sigmask;
++    libucontext_mcontext_t uc_mcontext;
++  } libucontext_ucontext_t;
++
++/* Get user context and store it in variable pointed to by UCP.  */
++int libucontext_getcontext (libucontext_ucontext_t *__ucp);
++
++/* Set user context from information of variable pointed to by UCP.  */
++int libucontext_setcontext (const libucontext_ucontext_t *__ucp);
++
++/* Save current context in context variable pointed to by OUCP and set
++   context from variable pointed to by UCP.  */
++int libucontext_swapcontext (libucontext_ucontext_t *__restrict __oucp,
++      const libucontext_ucontext_t *__restrict __ucp);
++
++/* Manipulate user context UCP to continue with calling functions FUNC
++   and the ARGC-1 parameters following ARGC when the context is used
++   the next time in `setcontext' or `swapcontext'.
++
++   We cannot say anything about the parameters FUNC takes; `void'
++   is as good as any other choice.  */
++void libucontext_makecontext (libucontext_ucontext_t *__ucp, void (*__func) (void),
++       int __argc, ...);
++
++#endif
+diff -Naur a/libucontext/test_libucontext.c b/libucontext/test_libucontext.c
+--- a/libucontext/test_libucontext.c  1969-12-31 16:00:00.000000000 -0800
++++ b/libucontext/test_libucontext.c  2019-03-29 10:54:08.000000000 -0700
+@@ -0,0 +1,55 @@
++/*
++ * libucontext test program based on POSIX example program.
++ * Public domain.
++ */
++
++#include <stdio.h>
++#include <ucontext.h>
++#include <stdint.h>
++#include <string.h>
++
++
++static ucontext_t ctx[3];
++
++
++static void f1 (void) {
++ printf("start f1\n");
++ swapcontext(&ctx[1], &ctx[2]);
++ printf("finish f1\n");
++}
++
++
++static void f2 (void) {
++ printf("start f2\n");
++ swapcontext(&ctx[2], &ctx[1]);
++ printf("finish f2\n");
++}
++
++
++int main (int argc, const char *argv[]) {
++ char st1[8192];
++ char st2[8192];
++
++
++ /* poison each coroutine's stack memory for debugging purposes */
++ memset(st1, 'A', sizeof st1);
++ memset(st2, 'B', sizeof st2);
++
++
++ getcontext(&ctx[1]);
++ ctx[1].uc_stack.ss_sp = st1;
++ ctx[1].uc_stack.ss_size = sizeof st1;
++ ctx[1].uc_link = &ctx[0];
++ makecontext(&ctx[1], f1, 0);
++
++
++ getcontext(&ctx[2]);
++ ctx[2].uc_stack.ss_sp = st2;
++ ctx[2].uc_stack.ss_size = sizeof st2;
++ ctx[2].uc_link = &ctx[1];
++ makecontext(&ctx[2], f2, 0);
++
++
++ swapcontext(&ctx[0], &ctx[2]);
++ return 0;
++}
