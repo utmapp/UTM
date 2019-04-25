@@ -252,6 +252,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		CE258ACC22715F8300E5A333 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		CE26FC23226EBC5A0090BE9B /* CSMain.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CSMain.h; sourceTree = "<group>"; };
 		CE26FC24226EBC5A0090BE9B /* CSMain.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CSMain.m; sourceTree = "<group>"; };
 		CE2B89332262A21E00C6D9D8 /* UTMVirtualMachine.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UTMVirtualMachine.h; sourceTree = "<group>"; };
@@ -622,6 +623,7 @@
 		CE550BC0225947990063E575 = {
 			isa = PBXGroup;
 			children = (
+				CE258ACC22715F8300E5A333 /* README.md */,
 				CE4AA1462262FB58002E4A54 /* CocoaSpice */,
 				CE31C242225E543A00A965DD /* Configuration */,
 				CE5E4954225C593C00148CEF /* ConfigurationViews */,
