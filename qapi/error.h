@@ -161,9 +161,9 @@ ErrorClass error_get_class(const Error *err);
  * exit(), because that's more obvious.
  * Likewise, don't error_setg(&error_abort, ...), use assert().
  */
-#define error_setg(errp, fmt, ...)                              \
-    error_setg_internal((errp), __FILE__, __LINE__, __func__,   \
-                        (fmt), ## __VA_ARGS__)
+//#define error_setg(errp, fmt, ...)                              \
+//    error_setg_internal((errp), __FILE__, __LINE__, __func__,   \
+//                        (fmt), ## __VA_ARGS__)
 void error_setg_internal(Error **errp,
                          const char *src, int line, const char *func,
                          const char *fmt, ...)
@@ -217,7 +217,7 @@ void error_setg_win32_internal(Error **errp,
  * Please don't error_propagate(&error_fatal, ...), use
  * error_report_err() and exit(), because that's more obvious.
  */
-void error_propagate(Error **dst_errp, Error *local_err);
+//void error_propagate(Error **dst_errp, Error *local_err);
 
 
 /*

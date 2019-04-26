@@ -328,7 +328,7 @@ static void cf_input_check_list(Visitor *v, Error **errp)
 
     if (tos->index != tos->count) {
         error_setg(errp, "Only %u list elements expected in %s",
-                   tos->index + 1, full_name_nth(qiv, NULL, 1));
+                   (unsigned)tos->index + 1, full_name_nth(qiv, NULL, 1));
     }
 }
 

@@ -31,6 +31,15 @@ typedef struct Visitor Visitor;
         (type *) ((char *) __mptr - offsetof(type, member));})
 #endif
 
+void error_setg_internal(Error **errp,
+                         const char *src, int line, const char *func,
+                         const char *fmt, ...);
+
+#define error_setg(errp, fmt, ...) \
+        fprintf(stderr, "[%s:%s:%d] " fmt, __FILE__, __func__, __LINE__, ## __VA_ARGS__)
+
+#define error_propagate(...)
+
 #define trace_visit_complete(...)
 #define trace_visit_free(...)
 #define trace_visit_start_struct(...)
