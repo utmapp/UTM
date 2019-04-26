@@ -164,6 +164,11 @@
 		CE9D19782265425A00355E14 /* libgstvideotestsrc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CE9D19642265425A00355E14 /* libgstvideotestsrc.a */; };
 		CE9D19792265425A00355E14 /* libgstosxaudio.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CE9D19652265425A00355E14 /* libgstosxaudio.a */; };
 		CE9D197C226542FE00355E14 /* UTMQemu.m in Sources */ = {isa = PBXBuildFile; fileRef = CE9D197B226542FE00355E14 /* UTMQemu.m */; };
+		CECC76512273A7D50059B955 /* cf-input-visitor.c in Sources */ = {isa = PBXBuildFile; fileRef = CECC764C2273A7D50059B955 /* cf-input-visitor.c */; };
+		CECC76522273A7D50059B955 /* qapi-dealloc-visitor.c in Sources */ = {isa = PBXBuildFile; fileRef = CECC764D2273A7D50059B955 /* qapi-dealloc-visitor.c */; };
+		CECC76532273A7D50059B955 /* qapi-util.c in Sources */ = {isa = PBXBuildFile; fileRef = CECC764E2273A7D50059B955 /* qapi-util.c */; };
+		CECC76542273A7D50059B955 /* qapi-visit-core.c in Sources */ = {isa = PBXBuildFile; fileRef = CECC764F2273A7D50059B955 /* qapi-visit-core.c */; };
+		CECC76552273A7D50059B955 /* cf-output-visitor.c in Sources */ = {isa = PBXBuildFile; fileRef = CECC76502273A7D50059B955 /* cf-output-visitor.c */; };
 		CED33AE02267892200FF1977 /* UTMQemuSystem.m in Sources */ = {isa = PBXBuildFile; fileRef = CED33ADF2267892200FF1977 /* UTMQemuSystem.m */; };
 		CED33AE32267893D00FF1977 /* UTMQemuImg.m in Sources */ = {isa = PBXBuildFile; fileRef = CED33AE22267893D00FF1977 /* UTMQemuImg.m */; };
 		CED33AE62267CAB500FF1977 /* VMDisplayMetalViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CED33AE52267CAB500FF1977 /* VMDisplayMetalViewController.m */; };
@@ -335,6 +340,17 @@
 		CE31C249225EA37400A965DD /* VMConfigViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VMConfigViewController.h; sourceTree = "<group>"; };
 		CE31C24A225EA37400A965DD /* VMConfigViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VMConfigViewController.m; sourceTree = "<group>"; };
 		CE31C24C225EA4A200A965DD /* VMConfigCreateViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VMConfigCreateViewController.m; sourceTree = "<group>"; };
+		CE3559992273AEA10059CB2D /* cf-output-visitor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "cf-output-visitor.h"; sourceTree = "<group>"; };
+		CE35599A2273AEA20059CB2D /* error.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = error.h; sourceTree = "<group>"; };
+		CE35599B2273AEA20059CB2D /* util.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = util.h; sourceTree = "<group>"; };
+		CE35599C2273AEA20059CB2D /* cf-input-visitor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "cf-input-visitor.h"; sourceTree = "<group>"; };
+		CE35599D2273AEA20059CB2D /* dealloc-visitor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "dealloc-visitor.h"; sourceTree = "<group>"; };
+		CE35599E2273AEA20059CB2D /* visitor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = visitor.h; sourceTree = "<group>"; };
+		CE35599F2273AEA20059CB2D /* visitor-impl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "visitor-impl.h"; sourceTree = "<group>"; };
+		CE3559A02273AEA20059CB2D /* qapi-builtin-types.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "qapi-builtin-types.h"; sourceTree = "<group>"; };
+		CE3559A12273AEE80059CB2D /* queue.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = queue.h; sourceTree = "<group>"; };
+		CE3559A22273AF6F0059CB2D /* qapi-types-common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "qapi-types-common.h"; sourceTree = "<group>"; };
+		CE3559A32273B49D0059CB2D /* qerror.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = qerror.h; sourceTree = "<group>"; };
 		CE4507D0226A5BE200A28D22 /* VMKeyboardView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VMKeyboardView.h; sourceTree = "<group>"; };
 		CE4507D1226A5BE200A28D22 /* VMKeyboardView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VMKeyboardView.m; sourceTree = "<group>"; };
 		CE4507D3226A5C9900A28D22 /* VMKeyboardViewDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VMKeyboardViewDelegate.h; sourceTree = "<group>"; };
@@ -405,6 +421,12 @@
 		CE9D19652265425A00355E14 /* libgstosxaudio.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libgstosxaudio.a; path = "sysroot/lib/gstreamer-1.0/libgstosxaudio.a"; sourceTree = "<group>"; };
 		CE9D197A226542FE00355E14 /* UTMQemu.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UTMQemu.h; sourceTree = "<group>"; };
 		CE9D197B226542FE00355E14 /* UTMQemu.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UTMQemu.m; sourceTree = "<group>"; };
+		CECC764C2273A7D50059B955 /* cf-input-visitor.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "cf-input-visitor.c"; sourceTree = "<group>"; };
+		CECC764D2273A7D50059B955 /* qapi-dealloc-visitor.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "qapi-dealloc-visitor.c"; sourceTree = "<group>"; };
+		CECC764E2273A7D50059B955 /* qapi-util.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "qapi-util.c"; sourceTree = "<group>"; };
+		CECC764F2273A7D50059B955 /* qapi-visit-core.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "qapi-visit-core.c"; sourceTree = "<group>"; };
+		CECC76502273A7D50059B955 /* cf-output-visitor.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "cf-output-visitor.c"; sourceTree = "<group>"; };
+		CECC76562273A88F0059B955 /* qemu-compat.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "qemu-compat.h"; sourceTree = "<group>"; };
 		CED33ADE2267892200FF1977 /* UTMQemuSystem.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UTMQemuSystem.h; sourceTree = "<group>"; };
 		CED33ADF2267892200FF1977 /* UTMQemuSystem.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UTMQemuSystem.m; sourceTree = "<group>"; };
 		CED33AE12267893D00FF1977 /* UTMQemuImg.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UTMQemuImg.h; sourceTree = "<group>"; };
@@ -628,6 +650,7 @@
 				CE31C242225E543A00A965DD /* Configuration */,
 				CE5E4954225C593C00148CEF /* ConfigurationViews */,
 				CE5F1659226138AB00F3D56B /* Managers */,
+				CECC76492273A7AE0059B955 /* qapi */,
 				CE2D63CE2265150F00FC7E63 /* Renderer */,
 				CE7BED4D22600F5000A1E1B6 /* Views */,
 				CE550BCB225947990063E575 /* UTM */,
@@ -723,6 +746,30 @@
 			path = Views;
 			sourceTree = "<group>";
 		};
+		CECC76492273A7AE0059B955 /* qapi */ = {
+			isa = PBXGroup;
+			children = (
+				CE35599C2273AEA20059CB2D /* cf-input-visitor.h */,
+				CE3559992273AEA10059CB2D /* cf-output-visitor.h */,
+				CE35599D2273AEA20059CB2D /* dealloc-visitor.h */,
+				CE35599A2273AEA20059CB2D /* error.h */,
+				CE3559A02273AEA20059CB2D /* qapi-builtin-types.h */,
+				CE3559A22273AF6F0059CB2D /* qapi-types-common.h */,
+				CECC76562273A88F0059B955 /* qemu-compat.h */,
+				CE3559A32273B49D0059CB2D /* qerror.h */,
+				CE3559A12273AEE80059CB2D /* queue.h */,
+				CE35599B2273AEA20059CB2D /* util.h */,
+				CE35599F2273AEA20059CB2D /* visitor-impl.h */,
+				CE35599E2273AEA20059CB2D /* visitor.h */,
+				CECC764C2273A7D50059B955 /* cf-input-visitor.c */,
+				CECC76502273A7D50059B955 /* cf-output-visitor.c */,
+				CECC764D2273A7D50059B955 /* qapi-dealloc-visitor.c */,
+				CECC764E2273A7D50059B955 /* qapi-util.c */,
+				CECC764F2273A7D50059B955 /* qapi-visit-core.c */,
+			);
+			path = qapi;
+			sourceTree = "<group>";
+		};
 		CEDC1DEF2260EE34008D9A6D /* StaticDataTableViewController */ = {
 			isa = PBXGroup;
 			children = (
@@ -809,8 +856,11 @@
 				CE9D197C226542FE00355E14 /* UTMQemu.m in Sources */,
 				CE74C288225D88ED004E4FF1 /* VMConfigNetworkingViewController.m in Sources */,
 				CE74C28E225D88ED004E4FF1 /* VMConfigSharingViewController.m in Sources */,
+				CECC76542273A7D50059B955 /* qapi-visit-core.c in Sources */,
+				CECC76512273A7D50059B955 /* cf-input-visitor.c in Sources */,
 				CE74C28F225D88ED004E4FF1 /* VMConfigSoundViewController.m in Sources */,
 				CE26FC25226EBC5A0090BE9B /* CSMain.m in Sources */,
+				CECC76532273A7D50059B955 /* qapi-util.c in Sources */,
 				CE4507D2226A5BE200A28D22 /* VMKeyboardView.m in Sources */,
 				CE5E4958225C5A4400148CEF /* VMConfigExistingViewController.m in Sources */,
 				CE550BE422596E790063E575 /* VMListViewCell.m in Sources */,
@@ -819,6 +869,7 @@
 				CE5F165C2261395000F3D56B /* UTMVirtualMachine.m in Sources */,
 				CE4AA1492263B24F002E4A54 /* CSDisplayMetal.m in Sources */,
 				CEDC1DF22260EE4B008D9A6D /* StaticDataTableViewController.m in Sources */,
+				CECC76522273A7D50059B955 /* qapi-dealloc-visitor.c in Sources */,
 				CE550BCE225947990063E575 /* AppDelegate.m in Sources */,
 				CE664511226935F000B0849A /* CSInput.m in Sources */,
 				CE74C290225D88ED004E4FF1 /* VMConfigSystemViewController.m in Sources */,
@@ -830,6 +881,7 @@
 				CED33AE02267892200FF1977 /* UTMQemuSystem.m in Sources */,
 				CE74C28D225D88ED004E4FF1 /* VMConfigInputViewController.m in Sources */,
 				CE2D63D42265154700FC7E63 /* UTMShaders.metal in Sources */,
+				CECC76552273A7D50059B955 /* cf-output-visitor.c in Sources */,
 				CED33AE32267893D00FF1977 /* UTMQemuImg.m in Sources */,
 				CE74C28B225D88ED004E4FF1 /* VMConfigDisplayViewController.m in Sources */,
 				CE4AA14C2264004F002E4A54 /* CSConnection.m in Sources */,
