@@ -12,10 +12,8 @@
  * the COPYING.LIB file in the top-level directory.
  */
 
-#include "qemu/osdep.h"
-#include "qapi/error.h"
-#include "qemu-common.h"
-#include "qemu/error-report.h"
+#include "qemu-compat.h"
+#include "error.h"
 
 struct Error
 {
