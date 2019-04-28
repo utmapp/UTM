@@ -21,7 +21,7 @@ UTM is a full featured virtual machine host for iOS. In short, it allows you to 
     `brew install bison pkg-config gettext glib`
    Make sure to add `bison` to your `$PATH` environment!
 2. `git submodule update --init --recursive` if you haven't already
-3. Run `./build_dependencies.sh` and wait for everything to build
+3. Run `./scripts/gendeps.sh` and wait for everything to build
 4. Open `UTM.xcodeproj` and select your signing certificate
 5. Build and deploy from Xcode
 
@@ -31,7 +31,7 @@ Apple does not permit any apps that has interpreted or generated code therefore 
 
 ## License
 
-UTM is distributed under the permissive Apache 2.0 license. However, it uses several (L)GPL components. Most are dynamically linked but the gstreamer plugins are LGPL and statically linked. Please be aware of this if you intend on redistributing this application.
+UTM is distributed under the permissive Apache 2.0 license. However, it uses several (L)GPL components. Most are dynamically linked but the gstreamer plugins are statically linked and parts of the code are taken from qemu. Please be aware of this if you intend on redistributing this application.
 
 Several CC BY-SA 4.0 licensed icons are obtained from [www.flaticon.com](www.flaticon.com) and used in this project.
 
