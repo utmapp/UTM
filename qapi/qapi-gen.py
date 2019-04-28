@@ -13,8 +13,8 @@ from qapi.types import gen_types
 from qapi.visit import gen_visit
 from qapi.commands import gen_commands
 from qapi.events import gen_events
-from qapi.introspect import gen_introspect
-from qapi.doc import gen_doc
+#from qapi.introspect import gen_introspect
+#from qapi.doc import gen_doc
 
 
 def main(argv):
@@ -49,8 +49,8 @@ def main(argv):
     gen_visit(schema, args.output_dir, args.prefix, args.builtins)
     gen_commands(schema, args.output_dir, args.prefix)
     gen_events(schema, args.output_dir, args.prefix)
-    gen_introspect(schema, args.output_dir, args.prefix, args.unmask)
-    gen_doc(schema, args.output_dir, args.prefix)
+    #gen_introspect(schema, args.output_dir, args.prefix, args.unmask)
+    #gen_doc(schema, args.output_dir, args.prefix)
 
 
 if __name__ == '__main__':
