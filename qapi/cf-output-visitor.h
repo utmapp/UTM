@@ -13,8 +13,8 @@
  *
  */
 
-#ifndef QOBJECT_OUTPUT_VISITOR_H
-#define QOBJECT_OUTPUT_VISITOR_H
+#ifndef CF_OUTPUT_VISITOR_H
+#define CF_OUTPUT_VISITOR_H
 
 #include "visitor.h"
 

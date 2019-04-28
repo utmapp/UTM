@@ -42,7 +42,7 @@ static CFObjectOutputVisitor *to_qov(Visitor *v)
     return container_of(v, CFObjectOutputVisitor, visitor);
 }
 
-/* Push @value onto the stack of current QObjects being built */
+/* Push @value onto the stack of current CFType being built */
 static void cf_output_push_obj(CFObjectOutputVisitor *qov, CFTypeRef value,
                                     void *qapi)
 {
@@ -55,7 +55,7 @@ static void cf_output_push_obj(CFObjectOutputVisitor *qov, CFTypeRef value,
     QSLIST_INSERT_HEAD(&qov->stack, e, node);
 }
 
-/* Pop a value off the stack of QObjects being built, and return it. */
+/* Pop a value off the stack of CFType being built, and return it. */
 static CFTypeRef cf_output_pop(CFObjectOutputVisitor *qov, void *qapi)
 {
     QStackEntry *e = QSLIST_FIRST(&qov->stack);
@@ -198,7 +198,7 @@ static void cf_output_type_null(Visitor *v, const char *name,
 
 /* Finish building, and return the root object.
  * The root object is never null. The caller becomes the object's
- * owner, and should use cf_unref() when done with it.  */
+ * owner, and should use CFRelease() when done with it.  */
 static void cf_output_complete(Visitor *v, void *opaque)
 {
     CFObjectOutputVisitor *qov = to_qov(v);

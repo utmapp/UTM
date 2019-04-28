@@ -14,8 +14,8 @@
  *
  */
 
-#ifndef QOBJECT_INPUT_VISITOR_H
-#define QOBJECT_INPUT_VISITOR_H
+#ifndef CF_INPUT_VISITOR_H
+#define CF_INPUT_VISITOR_H
 
 #include "visitor.h"
 
