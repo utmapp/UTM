@@ -14,7 +14,7 @@
  *
  */
 
-#include <CoreFoundation/CoreFoundation.h>
+#include "qemu-compat.h"
 #include "visitor-impl.h"
 #include "queue.h"
 #include "cf-output-visitor.h"

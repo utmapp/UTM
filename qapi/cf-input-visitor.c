@@ -20,7 +20,6 @@
 #include "queue.h"
 #include "qerror.h"
 #include "cf-input-visitor.h"
-#include <CoreFoundation/CoreFoundation.h>
 #include <math.h>
 
 typedef struct StackObject {

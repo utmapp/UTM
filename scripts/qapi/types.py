@@ -185,27 +185,27 @@ class QAPISchemaGenTypeVisitor(QAPISchemaModularCVisitor):
             __doc__)
         self._add_system_module(None, ' * Built-in QAPI types')
         self._genc.preamble_add(mcgen('''
-#include "qemu/osdep.h"
-#include "qapi/dealloc-visitor.h"
-#include "qapi/qapi-builtin-types.h"
-#include "qapi/qapi-builtin-visit.h"
+#include "qemu-compat.h"
+#include "dealloc-visitor.h"
+#include "qapi-builtin-types.h"
+#include "qapi-builtin-visit.h"
 '''))
         self._genh.preamble_add(mcgen('''
-#include "qapi/util.h"
+#include "util.h"
 '''))
 
     def _begin_user_module(self, name):
         types = self._module_basename('qapi-types', name)
         visit = self._module_basename('qapi-visit', name)
         self._genc.preamble_add(mcgen('''
-#include "qemu/osdep.h"
-#include "qapi/dealloc-visitor.h"
+#include "qemu-compat.h"
+#include "dealloc-visitor.h"
 #include "%(types)s.h"
 #include "%(visit)s.h"
 ''',
                                       types=types, visit=visit))
         self._genh.preamble_add(mcgen('''
-#include "qapi/qapi-builtin-types.h"
+#include "qapi-builtin-types.h"
 '''))
 
     def visit_begin(self, schema):
@@ -239,9 +239,9 @@ class QAPISchemaGenTypeVisitor(QAPISchemaModularCVisitor):
                 self._genh.add(gen_upcast(name, base))
             # TODO Worth changing the visitor signature, so we could
             # directly use rather than repeat type.is_implicit()?
-            if not name.startswith('q_'):
+            #if not name.startswith('q_'):
                 # implicit types won't be directly allocated/freed
-                self._gen_type_cleanup(name)
+            self._gen_type_cleanup(name)
 
     def visit_alternate_type(self, name, info, ifcond, variants):
         with ifcontext(ifcond, self._genh):

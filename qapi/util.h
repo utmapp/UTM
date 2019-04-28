@@ -11,7 +11,7 @@
 #ifndef QAPI_UTIL_H
 #define QAPI_UTIL_H
 
-typedef struct Error Error;
+#include "qemu-compat.h"
 
 typedef struct QEnumLookup {
     const char *const *array;

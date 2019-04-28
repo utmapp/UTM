@@ -31,7 +31,7 @@ def gen_event_dispatch_decl(name, arg_type, boxed):
     return mcgen('''
 
 %(proto)s;
-void qapi_event_dispatch_%(name)s(%(handler_type)s handler, CFDictTypeRef data);
+void qapi_event_dispatch_%(name)s(%(handler_type)s handler, CFDictionaryRef data);
 ''',
                  proto=build_event_handler_proto(name, arg_type, boxed),
                  name=name,
@@ -52,7 +52,7 @@ def gen_call_handler(typ):
             ret += 'arg->' + c_name(memb.name)
         return ret
     else:
-        return 'void'
+        return ''
 
 
 def gen_event_dispatch(name, arg_type, boxed, event_enum_name, event_dispatch):
@@ -64,7 +64,7 @@ def gen_event_dispatch(name, arg_type, boxed, event_enum_name, event_dispatch):
     # 'param' object then calls another to do the real work.
     ret = mcgen('''
 
-void qapi_event_dispatch_%(name)s(%(handler_type)s handler, CFDictTypeRef data)
+void qapi_event_dispatch_%(name)s(%(handler_type)s handler, CFDictionaryRef data)
 {
 ''',
                 name=name, handler_type=build_handler_name(name))
@@ -72,7 +72,6 @@ void qapi_event_dispatch_%(name)s(%(handler_type)s handler, CFDictTypeRef data)
     if arg_type and not arg_type.is_empty():
         ret += mcgen('''
     %(c_name)s *arg;
-    CFTypeRef obj;
     Visitor *v;
 ''',
                     c_name=arg_type.c_name())
@@ -87,11 +86,6 @@ void qapi_event_dispatch_%(name)s(%(handler_type)s handler, CFDictTypeRef data)
     visit_type_%(c_name)s(v, "data", &arg, &error_abort);
 ''',
                          name=name, c_name=arg_type.c_name())
-        
-        ret += mcgen('''
-
-    visit_complete(v, &obj);
-''')
 
     ret += mcgen('''
     handler(%(param)s);
@@ -116,7 +110,7 @@ void qapi_event_dispatch_%(name)s(%(handler_type)s handler, CFDictTypeRef data)
 def gen_dispatcher(name, event_enum_name, events):
     ret = mcgen('''
 
-void %(name)s(const char *event, CFDictTypeRef data)
+void %(name)s(const char *event, CFDictionaryRef data)
 {
     %(event_enum)s num;
 
@@ -129,14 +123,16 @@ void %(name)s(const char *event, CFDictTypeRef data)
                 event_enum=event_enum_name, name=name)
 
     for event in events:
+        ret += gen_if(event[0])
         ret += mcgen('''
         case %(enum_name)s:
-            if (qapi_enum_handler_registry.%(handler_name)s) {
-                %(event_name)s(qapi_enum_handler_registry.%(handler_name)s, data);
+            if (qapi_enum_handler_registry_data.%(handler_name)s) {
+                %(event_name)s(qapi_enum_handler_registry_data.%(handler_name)s, data);
             }
             break;
 ''',
-                enum_name=event[0], event_name=event[1], handler_name=event[2])
+                enum_name=event[1], event_name=event[2], handler_name=event[3])
+        ret += gen_endif(event[0])
 
     ret += mcgen('''
     }
@@ -152,10 +148,12 @@ typedef struct {
 ''')
 
     for event in events:
+        ret += gen_if(event[0])
         ret += mcgen('''
     %(handler_name)s %(handler_name)s;
 ''',
-                handler_name=event[2])
+                handler_name=event[3])
+        ret += gen_endif(event[0])
 
     ret += mcgen('''
 } qapi_enum_handler_registry;
@@ -186,7 +184,8 @@ class QAPISchemaGenEventVisitor(QAPISchemaModularCVisitor):
 #include "%(events)s.h"
 #include "%(visit)s.h"
 #include "error.h"
-#include "cf-output-visitor.h"
+#include "cf-input-visitor.h"
+#include "dealloc-visitor.h"
 
 ''',
                              events=events, visit=visit,
@@ -202,9 +201,11 @@ class QAPISchemaGenEventVisitor(QAPISchemaModularCVisitor):
         self._genc.preamble_add(mcgen('''
 #include "qemu-compat.h"
 #include "%(prefix)sqapi-dispatch-events.h"
+#include "error.h"
 ''',
                                       prefix=self._prefix))
         self._genh.preamble_add(mcgen('''
+#include "qapi-events.h"
 #include "util.h"
 '''))
         self._genh.add(gen_enum(self._event_enum_name,
@@ -222,10 +223,10 @@ class QAPISchemaGenEventVisitor(QAPISchemaModularCVisitor):
             self._genc.add(gen_event_dispatch(name, arg_type, boxed,
                                           self._event_enum_name,
                                           self._event_dispatch_name))
+            self._event_registry.append((ifcond, c_enum_const(self._event_enum_name, name), 'qapi_event_dispatch_%s' % name, build_handler_name(name)))
         # Note: we generate the enum member regardless of @ifcond, to
         # keep the enumeration usable in target-independent code.
         self._event_enum_members.append(QAPISchemaMember(name))
-        self._event_registry.append((c_enum_const(self._event_enum_name, name), 'qapi_event_dispatch_%s' % name, build_handler_name(name)))
 
 
 def gen_events(schema, output_dir, prefix):

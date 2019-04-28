@@ -286,14 +286,13 @@ class QAPISchemaGenVisitVisitor(QAPISchemaModularCVisitor):
             __doc__)
         self._add_system_module(None, ' * Built-in QAPI visitors')
         self._genc.preamble_add(mcgen('''
-#include "qemu/osdep.h"
-#include "qemu-common.h"
-#include "qapi/error.h"
-#include "qapi/qapi-builtin-visit.h"
+#include "qemu-compat.h"
+#include "error.h"
+#include "qapi-builtin-visit.h"
 '''))
         self._genh.preamble_add(mcgen('''
-#include "qapi/visitor.h"
-#include "qapi/qapi-builtin-types.h"
+#include "visitor.h"
+#include "qapi-builtin-types.h"
 
 ''',
                                       prefix=prefix))
@@ -302,15 +301,14 @@ class QAPISchemaGenVisitVisitor(QAPISchemaModularCVisitor):
         types = self._module_basename('qapi-types', name)
         visit = self._module_basename('qapi-visit', name)
         self._genc.preamble_add(mcgen('''
-#include "qemu/osdep.h"
-#include "qemu-common.h"
-#include "qapi/error.h"
-#include "qapi/qmp/qerror.h"
+#include "qemu-compat.h"
+#include "error.h"
+#include "qerror.h"
 #include "%(visit)s.h"
 ''',
                                       visit=visit))
         self._genh.preamble_add(mcgen('''
-#include "qapi/qapi-builtin-visit.h"
+#include "qapi-builtin-visit.h"
 #include "%(types)s.h"
 
 ''',
@@ -336,10 +334,10 @@ class QAPISchemaGenVisitVisitor(QAPISchemaModularCVisitor):
                                                     members, variants))
             # TODO Worth changing the visitor signature, so we could
             # directly use rather than repeat type.is_implicit()?
-            if not name.startswith('q_'):
+            #if not name.startswith('q_'):
                 # only explicit types need an allocating visit
-                self._genh.add(gen_visit_decl(name))
-                self._genc.add(gen_visit_object(name, base, members, variants))
+            self._genh.add(gen_visit_decl(name))
+            self._genc.add(gen_visit_object(name, base, members, variants))
 
     def visit_alternate_type(self, name, info, ifcond, variants):
         with ifcontext(ifcond, self._genh, self._genc):

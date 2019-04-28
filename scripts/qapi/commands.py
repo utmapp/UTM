@@ -31,11 +31,11 @@ def gen_command_decl(name, arg_type, boxed, ret_type, proto=True):
 def gen_marshal_rpc(ret_type):
     return mcgen('''
 
-static %(c_type)s qmp_marshal_rpc_%(c_name)s(CFDictTypeRef args, Error **errp)
+static %(c_type)s qmp_marshal_rpc_%(c_name)s(CFDictionaryRef args, Error **errp)
 {
     Error *err = NULL;
     Visitor *v;
-    CFDictTypeRef cfret;
+    CFDictionaryRef cfret;
     %(c_type)s ret = {0};
 
     qmp_rpc_call(args, &cfret, &err);
@@ -45,9 +45,6 @@ static %(c_type)s qmp_marshal_rpc_%(c_name)s(CFDictTypeRef args, Error **errp)
     }
     v = cf_input_visitor_new(args);
     visit_type_%(c_name)s(v, "return", &ret, &err);
-    if (!err) {
-        visit_complete(v, ret_out);
-    }
     error_propagate(errp, err);
     visit_free(v);
     CFRelease(cfret);
@@ -65,14 +62,15 @@ def gen_rpc_call(name, arg_type, boxed, ret_type):
 %(proto)s
 {
     const char *cmdname = "%(name)s";
-    CFDictTypeRef cfargs;
+    CFDictionaryRef cfargs;
     Error *err = NULL;
+    Visitor *v = NULL;
 ''',
                 name=name, proto=gen_command_decl(name, arg_type, boxed, ret_type, proto=False))
 
     if ret_type:
         ret += mcgen('''
-    %(c_type)s ret;
+    %(c_type)s ret = {0};
 ''',
                      c_type=ret_type.c_type())
 
@@ -88,8 +86,7 @@ def gen_rpc_call(name, arg_type, boxed, ret_type):
             visit_type = ('visit_type_%s(v, "arguments", &argp, &err);'
                              % arg_type.c_name())
             ret += mcgen('''
-    Visitor *v;
-    %(c_name)s arg = {
+    %(c_name)s _arg = {
 ''',
                      c_name=arg_type.c_name())
             if arg_type:
@@ -101,23 +98,22 @@ def gen_rpc_call(name, arg_type, boxed, ret_type):
 ''',
                                      c_name=c_name(memb.name))
                     ret += mcgen('''
-        .%(c_name)s = %(c_name)s,
+        .%(c_name)s = %(cast)s%(c_name)s,
 ''',
-                                     c_name=c_name(memb.name))
+                                     cast='(char *)' if memb.type.name == 'str' else '', c_name=c_name(memb.name))
             ret += mcgen('''
     };
-    %(c_name)s *argp = &arg;
+    %(c_name)s *argp = &_arg;
 ''',
                                      c_name=arg_type.c_name())
     else:
         visit_type = ''
         ret += mcgen('''
-    Visitor *v = NULL;
 
 ''')
 
     ret += mcgen('''
-    v = cf_output_visitor_new(&cfargs);
+    v = cf_output_visitor_new((CFTypeRef *)&cfargs);
     visit_type_str(v, "execute", (char **)&cmdname, &err);
     if (err) {
         goto out;

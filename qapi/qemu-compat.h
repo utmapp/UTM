@@ -17,6 +17,7 @@
 #ifndef qemu_compat_h
 #define qemu_compat_h
 
+#include <CoreFoundation/CoreFoundation.h>
 #include <stdarg.h>
 #include <stdbool.h>
 #include <stdint.h>
@@ -63,6 +64,8 @@ typedef struct Visitor Visitor;
 #define trace_visit_type_any(...)
 #define trace_visit_type_null(...)
 #define trace_visit_type_enum(...)
+
+void qmp_rpc_call(CFDictionaryRef args, CFDictionaryRef *ret, Error **err);
 
 #define GCC_FMT_ATTR(n, m)
 
