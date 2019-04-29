@@ -24,14 +24,14 @@ def build_handler_name(name):
 def build_event_handler_proto(name, arg_type, boxed):
     return 'typedef void (*%(handler)s)(%(param)s)' % {
         'handler': build_handler_name(name),
-        'param': build_params(arg_type, boxed)}
+        'param': build_params(arg_type, boxed, extra='void *ctx')}
 
 
 def gen_event_dispatch_decl(name, arg_type, boxed):
     return mcgen('''
 
 %(proto)s;
-void qapi_event_dispatch_%(name)s(%(handler_type)s handler, CFDictionaryRef data);
+void qapi_event_dispatch_%(name)s(%(handler_type)s handler, CFDictionaryRef data, void *ctx);
 ''',
                  proto=build_event_handler_proto(name, arg_type, boxed),
                  name=name,
@@ -50,9 +50,10 @@ def gen_call_handler(typ):
             if memb.optional:
                 ret += 'arg->has_' + c_name(memb.name) + sep
             ret += 'arg->' + c_name(memb.name)
+        ret += sep + 'ctx'
         return ret
     else:
-        return ''
+        return 'ctx'
 
 
 def gen_event_dispatch(name, arg_type, boxed, event_enum_name, event_dispatch):
@@ -64,7 +65,7 @@ def gen_event_dispatch(name, arg_type, boxed, event_enum_name, event_dispatch):
     # 'param' object then calls another to do the real work.
     ret = mcgen('''
 
-void qapi_event_dispatch_%(name)s(%(handler_type)s handler, CFDictionaryRef data)
+void qapi_event_dispatch_%(name)s(%(handler_type)s handler, CFDictionaryRef data, void *ctx)
 {
 ''',
                 name=name, handler_type=build_handler_name(name))
@@ -107,10 +108,18 @@ void qapi_event_dispatch_%(name)s(%(handler_type)s handler, CFDictionaryRef data
     return ret
 
 
+def gen_dispatcher_proto(name):
+    return mcgen('''
+
+void %(name)s(const char *event, CFDictionaryRef data, void *ctx);
+''',
+                name=name)
+
+
 def gen_dispatcher(name, event_enum_name, events):
     ret = mcgen('''
 
-void %(name)s(const char *event, CFDictionaryRef data)
+void %(name)s(const char *event, CFDictionaryRef data, void *ctx)
 {
     %(event_enum)s num;
 
@@ -127,7 +136,7 @@ void %(name)s(const char *event, CFDictionaryRef data)
         ret += mcgen('''
         case %(enum_name)s:
             if (qapi_enum_handler_registry_data.%(handler_name)s) {
-                %(event_name)s(qapi_enum_handler_registry_data.%(handler_name)s, data);
+                %(event_name)s(qapi_enum_handler_registry_data.%(handler_name)s, data, ctx);
             }
             break;
 ''',
@@ -213,6 +222,7 @@ class QAPISchemaGenEventVisitor(QAPISchemaModularCVisitor):
         self._genc.add(gen_enum_lookup(self._event_enum_name,
                                        self._event_enum_members))
         self._genh.add(gen_registry(self._event_registry))
+        self._genh.add(gen_dispatcher_proto(self._event_dispatch_name))
         self._genc.add(gen_dispatcher(self._event_dispatch_name,
                                       self._event_enum_name,
                                       self._event_registry))

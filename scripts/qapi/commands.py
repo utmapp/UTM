@@ -25,20 +25,20 @@ def gen_command_decl(name, arg_type, boxed, ret_type, proto=True):
                  proto=';' if proto else '', 
                  c_type=(ret_type and ret_type.c_type()) or 'void',
                  c_name=c_name(name),
-                 params=build_params(arg_type, boxed, 'Error **errp'))
+                 params=build_params(arg_type, boxed, 'Error **errp, void *ctx'))
 
 
 def gen_marshal_rpc(ret_type):
     return mcgen('''
 
-static %(c_type)s qmp_marshal_rpc_%(c_name)s(CFDictionaryRef args, Error **errp)
+static %(c_type)s qmp_marshal_rpc_%(c_name)s(CFDictionaryRef args, Error **errp, void *ctx)
 {
     Error *err = NULL;
     Visitor *v;
     CFDictionaryRef cfret;
     %(c_type)s ret = {0};
 
-    qmp_rpc_call(args, &cfret, &err);
+    qmp_rpc_call(args, &cfret, &err, ctx);
     if (!err) {
         error_propagate(errp, err);
         return ret;
@@ -114,6 +114,10 @@ def gen_rpc_call(name, arg_type, boxed, ret_type):
 
     ret += mcgen('''
     v = cf_output_visitor_new((CFTypeRef *)&cfargs);
+    visit_start_struct(v, "command", NULL, 0, &err);
+    if (err) {
+        goto out;
+    }
     visit_type_str(v, "execute", (char **)&cmdname, &err);
     if (err) {
         goto out;
@@ -122,18 +126,19 @@ def gen_rpc_call(name, arg_type, boxed, ret_type):
     if (err) {
         goto out;
     }
+    visit_end_struct(v, NULL);
     visit_complete(v, &cfargs);
 ''',
                  visit_type=visit_type)
 
     if ret_type:
         ret += mcgen('''
-    ret = qmp_marshal_rpc_%(c_type)s(cfargs, &err);
+    ret = qmp_marshal_rpc_%(c_type)s(cfargs, &err, ctx);
 ''',
                     c_type=ret_type.c_name())
     else:
         ret += mcgen('''
-    qmp_rpc_call(cfargs, NULL, &err);
+    qmp_rpc_call(cfargs, NULL, &err, ctx);
 ''')
 
     ret += mcgen('''
