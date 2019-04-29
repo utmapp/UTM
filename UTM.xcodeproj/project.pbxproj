@@ -210,6 +210,8 @@
 		CE36B26422753123004A1435 /* qapi-events-authz.c in Sources */ = {isa = PBXBuildFile; fileRef = CE36B20722753122004A1435 /* qapi-events-authz.c */; };
 		CE36B26522753123004A1435 /* qapi-types-audio.c in Sources */ = {isa = PBXBuildFile; fileRef = CE36B20922753122004A1435 /* qapi-types-audio.c */; };
 		CE36B26622753123004A1435 /* qapi-visit-rocker.c in Sources */ = {isa = PBXBuildFile; fileRef = CE36B20B22753122004A1435 /* qapi-visit-rocker.c */; };
+		CE36B26A22763F28004A1435 /* UTMJSONStream.m in Sources */ = {isa = PBXBuildFile; fileRef = CE36B26922763F28004A1435 /* UTMJSONStream.m */; };
+		CE36B281227668D1004A1435 /* UTMQemuManager.m in Sources */ = {isa = PBXBuildFile; fileRef = CE36B280227668D1004A1435 /* UTMQemuManager.m */; };
 		CE4507D2226A5BE200A28D22 /* VMKeyboardView.m in Sources */ = {isa = PBXBuildFile; fileRef = CE4507D1226A5BE200A28D22 /* VMKeyboardView.m */; };
 		CE4AA1492263B24F002E4A54 /* CSDisplayMetal.m in Sources */ = {isa = PBXBuildFile; fileRef = CE4AA1482263B24F002E4A54 /* CSDisplayMetal.m */; };
 		CE4AA14C2264004F002E4A54 /* CSConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = CE4AA14B2264004F002E4A54 /* CSConnection.m */; };
@@ -624,6 +626,11 @@
 		CE36B20922753122004A1435 /* qapi-types-audio.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "qapi-types-audio.c"; sourceTree = "<group>"; };
 		CE36B20A22753122004A1435 /* qapi-visit-crypto.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "qapi-visit-crypto.h"; sourceTree = "<group>"; };
 		CE36B20B22753122004A1435 /* qapi-visit-rocker.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "qapi-visit-rocker.c"; sourceTree = "<group>"; };
+		CE36B26822763F28004A1435 /* UTMJSONStream.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UTMJSONStream.h; sourceTree = "<group>"; };
+		CE36B26922763F28004A1435 /* UTMJSONStream.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UTMJSONStream.m; sourceTree = "<group>"; };
+		CE36B27E227665B7004A1435 /* UTMJSONStreamDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UTMJSONStreamDelegate.h; sourceTree = "<group>"; };
+		CE36B27F227668D1004A1435 /* UTMQemuManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UTMQemuManager.h; sourceTree = "<group>"; };
+		CE36B280227668D1004A1435 /* UTMQemuManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UTMQemuManager.m; sourceTree = "<group>"; };
 		CE4507D0226A5BE200A28D22 /* VMKeyboardView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VMKeyboardView.h; sourceTree = "<group>"; };
 		CE4507D1226A5BE200A28D22 /* VMKeyboardView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VMKeyboardView.m; sourceTree = "<group>"; };
 		CE4507D3226A5C9900A28D22 /* VMKeyboardViewDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VMKeyboardViewDelegate.h; sourceTree = "<group>"; };
@@ -1179,10 +1186,15 @@
 		CE5F1659226138AB00F3D56B /* Managers */ = {
 			isa = PBXGroup;
 			children = (
+				CE36B26822763F28004A1435 /* UTMJSONStream.h */,
+				CE36B26922763F28004A1435 /* UTMJSONStream.m */,
+				CE36B27E227665B7004A1435 /* UTMJSONStreamDelegate.h */,
 				CE9D197A226542FE00355E14 /* UTMQemu.h */,
 				CE9D197B226542FE00355E14 /* UTMQemu.m */,
 				CED33AE12267893D00FF1977 /* UTMQemuImg.h */,
 				CED33AE22267893D00FF1977 /* UTMQemuImg.m */,
+				CE36B27F227668D1004A1435 /* UTMQemuManager.h */,
+				CE36B280227668D1004A1435 /* UTMQemuManager.m */,
 				CED33ADE2267892200FF1977 /* UTMQemuSystem.h */,
 				CED33ADF2267892200FF1977 /* UTMQemuSystem.m */,
 				CE2B89352262B2F600C6D9D8 /* UTMVirtualMachineDelegate.h */,
@@ -1346,6 +1358,7 @@
 				CE36B25922753123004A1435 /* qapi-types-rocker.c in Sources */,
 				CE36B24822753123004A1435 /* qapi-visit-job.c in Sources */,
 				CE36B22722753123004A1435 /* qapi-events-trace.c in Sources */,
+				CE36B26A22763F28004A1435 /* UTMJSONStream.m in Sources */,
 				CE36B21922753123004A1435 /* qapi-commands.c in Sources */,
 				CE36B23222753123004A1435 /* qapi-commands-audio.c in Sources */,
 				CE36B25D22753123004A1435 /* qapi-events-net.c in Sources */,
@@ -1407,6 +1420,7 @@
 				CE31C24B225EA37400A965DD /* VMConfigViewController.m in Sources */,
 				CE36B23722753123004A1435 /* qapi-visit-block-core.c in Sources */,
 				CE36B24C22753123004A1435 /* qapi-visit-misc.c in Sources */,
+				CE36B281227668D1004A1435 /* UTMQemuManager.m in Sources */,
 				CE36B26422753123004A1435 /* qapi-events-authz.c in Sources */,
 				CE74C28C225D88ED004E4FF1 /* VMConfigDriveDetailViewController.m in Sources */,
 				CED33AE62267CAB500FF1977 /* VMDisplayMetalViewController.m in Sources */,

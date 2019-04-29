@@ -17,6 +17,7 @@
 #import "UTMVirtualMachine.h"
 #import "UTMConfiguration.h"
 #import "UTMQemuImg.h"
+#import "UTMQemuManager.h"
 #import "UTMQemuSystem.h"
 #import "CocoaSpice.h"
 
@@ -33,7 +34,7 @@ NSString *const kUTMBundleExtension = @"utm";
 @end
 
 @implementation UTMVirtualMachine {
-    UTMQemuSystem *_qemu;
+    UTMQemuSystem *_qemu_system;
     CSConnection *_spice_connection;
     CSMain *_spice;
 }
@@ -156,14 +157,15 @@ NSString *const kUTMBundleExtension = @"utm";
 }
 
 - (void)errorTriggered:(nullable NSString *)msg {
-    // TODO: kill qemu
+    [self quitVM];
     self.delegate.vmMessage = msg;
     [self.delegate virtualMachine:self transitionToState:kVMError];
 }
 
 - (void)startVM {
-    if (!_qemu) {
-        _qemu = [[UTMQemuSystem alloc] initWithConfiguration:self.configuration imgPath:[self packageURLForName:self.configuration.name]];
+    if (!_qemu_system) {
+        _qemu_system = [[UTMQemuSystem alloc] initWithConfiguration:self.configuration imgPath:[self packageURLForName:self.configuration.name]];
+        _qemu = [[UTMQemuManager alloc] init];
     }
     if (!_spice) {
         _spice = [[CSMain alloc] init];
@@ -172,7 +174,7 @@ NSString *const kUTMBundleExtension = @"utm";
         _spice_connection = [[CSConnection alloc] initWithHost:@"127.0.0.1" port:@"5930"];
         _spice_connection.delegate = self;
     }
-    if (!_qemu || !_spice || !_spice_connection) {
+    if (!_qemu_system || !_spice || !_spice_connection) {
         [self errorTriggered:NSLocalizedString(@"Internal error starting VM.", @"UTMVirtualMachine")];
         return;
     }
@@ -188,11 +190,10 @@ NSString *const kUTMBundleExtension = @"utm";
         [self errorTriggered:NSLocalizedString(@"Internal error starting main loop.", @"UTMVirtualMachine")];
         return;
     }
-    [_qemu startWithCompletion:^(BOOL success, NSString *msg){
+    [_qemu_system startWithCompletion:^(BOOL success, NSString *msg){
         if (!success) {
             [self errorTriggered:msg];
         } else {
-            
         }
     }];
     int tries = kMaxConnectionTries;
@@ -205,6 +206,25 @@ NSString *const kUTMBundleExtension = @"utm";
     if (tries == 0) {
         [self errorTriggered:NSLocalizedString(@"Failed to connect to display server.", @"UTMVirtualMachine")];
     }
+    [self->_qemu connect];
+}
+
+- (void)quitVM {
+    [self.delegate virtualMachine:self transitionToState:kVMStopping];
+    
+    [self->_qemu vmQuit:nil];
+    [self->_qemu disconnect];
+    self->_qemu = nil;
+    
+    [_spice_connection disconnect];
+    _spice_connection.delegate = nil;
+    _spice_connection = nil;
+    [_spice spiceStop];
+    _spice = nil;
+    
+    _qemu_system = nil; // should be stopped by vmQuit
+    
+    [self.delegate virtualMachine:self transitionToState:kVMStopped];
 }
 
 - (void)spiceConnected:(CSConnection *)connection {

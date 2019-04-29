@@ -33,6 +33,8 @@
     [self pushArgv:@"qemu"];
     [self pushArgv:@"-L"];
     [self pushArgv:[[NSBundle mainBundle] URLForResource:@"qemu" withExtension:nil].path];
+    [self pushArgv:@"-qmp"];
+    [self pushArgv:@"tcp:localhost:4444,server,nowait"];
     [self pushArgv:@"-smp"];
     [self pushArgv:[NSString stringWithFormat:@"cpus=%@", self.configuration.systemCPUCount]];
     if (![self.configuration.systemBootDevice isEqualToString:@"hdd"]) {

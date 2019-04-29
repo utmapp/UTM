@@ -20,6 +20,7 @@
 #import "UTMRenderSource.h"
 
 @class UTMConfiguration;
+@class UTMQemuManager;
 @class CSInput;
 
 NS_ASSUME_NONNULL_BEGIN
@@ -32,6 +33,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) NSURL *parentPath;
 @property (nonatomic, strong, readonly) UTMConfiguration *configuration;
 @property (nonatomic, assign, readonly) UTMVMState state;
+@property (nonatomic, readonly, nullable) UTMQemuManager *qemu;
 
 + (BOOL)URLisVirtualMachine:(NSURL *)url;
 + (NSString *)virtualMachineName:(NSURL *)url;
@@ -43,6 +45,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)saveUTMWithError:(NSError * _Nullable *)err;
 
 - (void)startVM;
+- (void)quitVM;
 
 @end
 

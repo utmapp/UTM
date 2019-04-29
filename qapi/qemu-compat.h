@@ -65,7 +65,10 @@ typedef struct Visitor Visitor;
 #define trace_visit_type_null(...)
 #define trace_visit_type_enum(...)
 
-void qmp_rpc_call(CFDictionaryRef args, CFDictionaryRef *ret, Error **err);
+void qmp_rpc_call(CFDictionaryRef args, CFDictionaryRef *ret, Error **err, void *ctx);
+
+// TODO: make this match with qemu build
+#define CONFIG_SPICE 1
 
 #define GCC_FMT_ATTR(n, m)
 
