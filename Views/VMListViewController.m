@@ -273,7 +273,7 @@
         if (source.configuration == self.modifyingVM.configuration) {
             [self.modifyingVM saveUTMWithError:&err];
             self.modifyingVM = nil; // must do this BEFORE work complete, or user might press another button
-            [self workCompletedWhenVisible:err.localizedFailureReason];
+            [self workCompletedWhenVisible:err.localizedDescription];
         } else {
             NSLog(@"Trying to save configuration for a VM that is not being edited!\n");
             [self workCompletedWhenVisible:NSLocalizedString(@"An internal error has occured!", @"Alert message")];

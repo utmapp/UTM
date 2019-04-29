@@ -19,6 +19,8 @@
 #import "UTMVirtualMachine.h"
 #import "VMKeyboardView.h"
 #import "CSInput.h"
+#import "UTMQemuManager.h"
+#import "VMConfigExistingViewController.h"
 
 @interface VMDisplayMetalViewController ()
 
@@ -135,15 +137,10 @@
 - (void)virtualMachine:(UTMVirtualMachine *)vm transitionToState:(UTMVMState)state {
     switch (state) {
         case kVMError: {
-            NSString *msg = self.vmMessage ? self.vmMessage : NSLocalizedString(@"An internal error has occured.", @"Alert message");
-            UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil message:msg preferredStyle:UIAlertControllerStyleAlert];
-            UIAlertAction *okay = [UIAlertAction actionWithTitle:NSLocalizedString(@"OK", @"OK button") style:UIAlertActionStyleDefault handler:nil];
-            [alert addAction:okay];
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [self presentViewController:alert animated:YES completion:^{
-                    [self performSegueWithIdentifier:@"returnToList" sender:self];
-                }];
-            });
+            NSString *msg = self.vmMessage ? self.vmMessage : NSLocalizedString(@"An internal error has occured.", @"UTMQemuManager");
+            [self showAlert:msg completion:^{
+                [self performSegueWithIdentifier:@"returnToList" sender:self];
+            }];
             break;
         }
         case kVMStopping:
@@ -457,6 +454,20 @@ static CGFloat CGPointToPixel(CGFloat point) {
 }
 
 - (IBAction)powerPressed:(UIButton *)sender {
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil message:NSLocalizedString(@"Are you sure you want to stop this VM?", @"VMDisplayMetalViewController") preferredStyle:UIAlertControllerStyleAlert];
+    UIAlertAction *yes = [UIAlertAction actionWithTitle:NSLocalizedString(@"Yes", @"VMDisplayMetalViewController") style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action){
+        dispatch_async(dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0), ^{
+            NSError *err;
+            [self.vm.qemu vmStop:&err];
+            if (err) {
+                [self showAlert:err.localizedDescription completion:nil];
+            }
+        });
+    }];
+    UIAlertAction *no = [UIAlertAction actionWithTitle:NSLocalizedString(@"No", @"VMDisplayMetalViewController") style:UIAlertActionStyleCancel handler:nil];
+    [alert addAction:yes];
+    [alert addAction:no];
+    [self presentViewController:alert animated:YES completion:nil];
 }
 
 - (IBAction)showKeyboardButton:(UIButton *)sender {
@@ -471,13 +482,34 @@ static CGFloat CGPointToPixel(CGFloat point) {
     [self hideToolbar];
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     if (![defaults boolForKey:@"HasShownHideToolbarAlert"]) {
-        UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil message:NSLocalizedString(@"Hint: To show the toolbar again, use a three-finger swipe down on the screen.", @"Shown once when hiding toolbar.") preferredStyle:UIAlertControllerStyleAlert];
-        UIAlertAction *okay = [UIAlertAction actionWithTitle:NSLocalizedString(@"OK", @"OK button") style:UIAlertActionStyleDefault handler:nil];
-        [alert addAction:okay];
-        [self presentViewController:alert animated:YES completion:^{
+        [self showAlert:NSLocalizedString(@"Hint: To show the toolbar again, use a three-finger swipe down on the screen.", @"Shown once when hiding toolbar.") completion:^{
             [defaults setBool:YES forKey:@"HasShownHideToolbarAlert"];
         }];
     }
+}
+
+#pragma mark - Segues
+
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
+    if ([segue.identifier isEqualToString:@"editVMConfig"]){
+        NSAssert([segue.destinationViewController isKindOfClass:[UINavigationController class]], @"Destination not a navigation view");
+        UINavigationController *navController = (UINavigationController *)segue.destinationViewController;
+        NSAssert([navController.topViewController isKindOfClass:[VMConfigExistingViewController class]], @"Invalid segue destination");
+        VMConfigExistingViewController *controller = (VMConfigExistingViewController *)navController.topViewController;
+        controller.configuration = self.vm.configuration;
+        controller.nameReadOnly = YES;
+    }
+}
+
+#pragma mark - Messages
+
+- (void)showAlert:(NSString *)msg completion:(nullable void (^)(void))completion {
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil message:msg preferredStyle:UIAlertControllerStyleAlert];
+    UIAlertAction *okay = [UIAlertAction actionWithTitle:NSLocalizedString(@"OK", @"OK button") style:UIAlertActionStyleDefault handler:nil];
+    [alert addAction:okay];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self presentViewController:alert animated:YES completion:completion];
+    });
 }
 
 @end

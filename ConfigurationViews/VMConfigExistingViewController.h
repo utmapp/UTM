@@ -22,6 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface VMConfigExistingViewController : VMConfigViewController
 
 @property (weak, nonatomic) IBOutlet UITextField *nameField;
+@property (nonatomic, assign) BOOL nameReadOnly;
 
 - (IBAction)screenTapped:(UITapGestureRecognizer *)sender;
 - (IBAction)nameFieldEdited:(UITextField *)sender;

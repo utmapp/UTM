@@ -28,6 +28,10 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    if (self.nameReadOnly) {
+        self.nameField.enabled = NO;
+    }
+    
     // Uncomment the following line to preserve selection between presentations.
     // self.clearsSelectionOnViewWillAppear = NO;
     
@@ -38,6 +42,11 @@
 - (void)refreshViewFromConfiguration {
     [super refreshViewFromConfiguration];
     self.nameField.text = self.configuration.changeName;
+}
+
+- (void)setNameReadOnly:(BOOL)nameReadOnly {
+    self.nameField.enabled = !nameReadOnly;
+    _nameReadOnly = nameReadOnly;
 }
 
 /*

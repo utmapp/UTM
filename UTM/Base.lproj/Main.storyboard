@@ -974,7 +974,7 @@
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="eAV-yI-ZCT">
-                                                    <rect key="frame" x="8" y="8.0000000000000018" width="796" height="27.666666666666671"/>
+                                                    <rect key="frame" x="8" y="8.0000000000000018" width="359" height="27.666666666666671"/>
                                                     <nil key="textColor"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" keyboardType="alphabet" returnKeyType="done" enablesReturnKeyAutomatically="YES" smartDashesType="no" smartInsertDeleteType="no" smartQuotesType="no"/>
@@ -1959,7 +1959,7 @@
                                                         </constraints>
                                                         <state key="normal" image="Toolbar Settings"/>
                                                         <connections>
-                                                            <segue destination="fxo-tK-lAq" kind="popoverPresentation" popoverAnchorView="ESi-T5-nUB" id="116-me-d8B">
+                                                            <segue destination="fxo-tK-lAq" kind="popoverPresentation" identifier="editVMConfig" popoverAnchorView="ESi-T5-nUB" id="116-me-d8B">
                                                                 <popoverArrowDirection key="popoverArrowDirection" up="YES" down="YES" left="YES" right="YES"/>
                                                             </segue>
                                                         </connections>
@@ -1986,7 +1986,7 @@
                                                             <segue destination="HWN-B0-AD0" kind="unwind" unwindAction="unwindToMainFromVM:" id="wuY-gV-w1x"/>
                                                         </connections>
                                                     </button>
-                                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="bjd-4T-OVm">
+                                                    <button opaque="NO" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="bjd-4T-OVm">
                                                         <rect key="frame" x="54" y="51" width="30" height="30"/>
                                                         <constraints>
                                                             <constraint firstAttribute="height" constant="30" id="nYs-LT-jdK"/>
