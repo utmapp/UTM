@@ -28,7 +28,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (id)initHost:(NSString *)host port:(UInt32)port;
 - (void)connect;
 - (void)disconnect;
-- (void)sendDictionary:(NSDictionary *)dict;
+- (BOOL)sendDictionary:(NSDictionary *)dict;
 
 @end
 

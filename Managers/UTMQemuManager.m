@@ -114,7 +114,9 @@ void qmp_rpc_call(CFDictionaryRef args, CFDictionaryRef *ret, Error **err, void 
         dispatch_semaphore_signal(rpc_sema);
         self->_rpc_finish = nil;
     };
-    [self.jsonStream sendDictionary:(__bridge NSDictionary *)args];
+    if (![self.jsonStream sendDictionary:(__bridge NSDictionary *)args]) {
+        self->_rpc_finish(nil, [NSError errorWithDomain:kUTMErrorDomain code:-1 userInfo:@{NSLocalizedDescriptionKey: NSLocalizedString(@"No connection for RPC.", "UTMQemuManager")}]);
+    }
     if (dispatch_semaphore_wait(rpc_sema, dispatch_time(DISPATCH_TIME_NOW, kRPCTimeout)) != 0) {
         self->_rpc_finish = nil;
         nserr = [NSError errorWithDomain:kUTMErrorDomain code:-1 userInfo:@{NSLocalizedDescriptionKey: NSLocalizedString(@"Timed out waiting for RPC.", "UTMQemuManager")}];

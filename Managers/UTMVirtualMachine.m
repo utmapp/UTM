@@ -212,7 +212,9 @@ NSString *const kUTMBundleExtension = @"utm";
 - (void)quitVM {
     [self.delegate virtualMachine:self transitionToState:kVMStopping];
     
-    [self->_qemu vmQuit:nil];
+    [self->_qemu vmQuitWithCompletion:^(NSError *err) {
+        
+    }];
     [self->_qemu disconnect];
     self->_qemu = nil;
     

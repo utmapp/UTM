@@ -54,29 +54,33 @@ enum ParserState {
     CFReadStreamRef readStream;
     CFWriteStreamRef writeStream;
     CFStreamCreatePairWithSocketToHost(kCFAllocatorDefault, (__bridge CFStringRef)self.host, self.port, &readStream, &writeStream);
-    _inputStream = CFBridgingRelease(readStream);
-    _outputStream = CFBridgingRelease(writeStream);
-    _data = [NSMutableData data];
-    _parsedBytes = 0;
-    _open_curly_count = -1;
-    [_inputStream setDelegate:self];
-    [_inputStream scheduleInRunLoop:[NSRunLoop mainRunLoop] forMode:NSDefaultRunLoopMode];
-    [_inputStream open];
-    [_outputStream setDelegate:self];
-    [_outputStream scheduleInRunLoop:[NSRunLoop mainRunLoop] forMode:NSDefaultRunLoopMode];
-    [_outputStream open];
+    @synchronized (self) {
+        _inputStream = CFBridgingRelease(readStream);
+        _outputStream = CFBridgingRelease(writeStream);
+        _data = [NSMutableData data];
+        _parsedBytes = 0;
+        _open_curly_count = -1;
+        [_inputStream setDelegate:self];
+        [_inputStream scheduleInRunLoop:[NSRunLoop mainRunLoop] forMode:NSDefaultRunLoopMode];
+        [_inputStream open];
+        [_outputStream setDelegate:self];
+        [_outputStream scheduleInRunLoop:[NSRunLoop mainRunLoop] forMode:NSDefaultRunLoopMode];
+        [_outputStream open];
+    }
 }
 
 - (void)disconnect {
-    [_inputStream close];
-    [_inputStream removeFromRunLoop:[NSRunLoop mainRunLoop] forMode:NSDefaultRunLoopMode];
-    [_inputStream setDelegate:nil];
-    _inputStream = nil;
-    [_outputStream close];
-    [_outputStream removeFromRunLoop:[NSRunLoop mainRunLoop] forMode:NSDefaultRunLoopMode];
-    [_outputStream setDelegate:nil];
-    _outputStream = nil;
-    _data = nil;
+    @synchronized (self) {
+        [_inputStream close];
+        [_inputStream removeFromRunLoop:[NSRunLoop mainRunLoop] forMode:NSDefaultRunLoopMode];
+        [_inputStream setDelegate:nil];
+        _inputStream = nil;
+        [_outputStream close];
+        [_outputStream removeFromRunLoop:[NSRunLoop mainRunLoop] forMode:NSDefaultRunLoopMode];
+        [_outputStream setDelegate:nil];
+        _outputStream = nil;
+        _data = nil;
+    }
 }
 
 - (void)parseData {
@@ -203,23 +207,19 @@ enum ParserState {
     }
 }
 
-- (void)sendDictionary:(NSDictionary *)dict {
-    NSAssert(_outputStream, @"No stream opened.");
+- (BOOL)sendDictionary:(NSDictionary *)dict {
+    if (!_outputStream) {
+        return NO;
+    }
     NSLog(@"Debug JSON send -> %@", dict);
     NSError *err;
     [NSJSONSerialization writeJSONObject:dict toStream:_outputStream options:0 error:&err];
-    /*
-    dispatch_async(dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0), ^{
-        NSError *err;
-        //[NSJSONSerialization writeJSONObject:dict toStream:self->_outputStream options:0 error:&err];
-        NSData *data = [NSJSONSerialization dataWithJSONObject:dict options:0 error:&err];
-        [self->_outputStream write:data.bytes maxLength:data.length];
-        [self->_outputStream write:(const uint8_t *)"\r\n" maxLength:2];
-        if (err) {
-            [self.delegate jsonStream:self seenError:err];
-        }
-    });
-     */
+    if (err) {
+        NSLog(@"Error sending dict: %@", err);
+        return NO;
+    } else {
+        return YES;
+    }
 }
 
 @end
