@@ -17,6 +17,7 @@
 #import "UTMJSONStream.h"
 
 extern NSString *const kUTMErrorDomain;
+const int kMaxBufferSize = 1024;
 
 enum ParserState {
     PARSER_NOT_IN_STRING,
@@ -57,7 +58,7 @@ enum ParserState {
     _outputStream = CFBridgingRelease(writeStream);
     _data = [NSMutableData data];
     _parsedBytes = 0;
-    _open_curly_count = 0;
+    _open_curly_count = -1;
     [_inputStream setDelegate:self];
     [_inputStream scheduleInRunLoop:[NSRunLoop mainRunLoop] forMode:NSDefaultRunLoopMode];
     [_inputStream open];
@@ -92,6 +93,9 @@ enum ParserState {
                 switch (str[i]) {
                     case '{': {
                         if (self->_state == PARSER_NOT_IN_STRING) {
+                            if (self->_open_curly_count == -1) {
+                                self->_open_curly_count = 0;
+                            }
                             self->_open_curly_count++;
                         }
                         break;
@@ -153,7 +157,9 @@ enum ParserState {
 
 - (void)consumeJSONLength:(NSUInteger)length {
     NSData *jsonData = [_data subdataWithRange:NSMakeRange(0, length)];
-    _data = [NSMutableData dataWithData:[_data subdataWithRange:NSMakeRange(length, _data.length)]];
+    _data = [NSMutableData dataWithData:[_data subdataWithRange:NSMakeRange(length, _data.length - length)]];
+    _parsedBytes = 0;
+    _open_curly_count = -1;
     NSError *err;
     id json = [NSJSONSerialization JSONObjectWithData:jsonData options:0 error:&err];
     if (err) {
@@ -162,25 +168,30 @@ enum ParserState {
     }
     NSAssert([json isKindOfClass:[NSDictionary class]], @"JSON data not dictionary");
     NSLog(@"Debug JSON recieved <- %@", json);
-    [self.delegate jsonStream:self receivedDictionary:(NSDictionary *)json];
+    dispatch_async(dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0), ^{
+        [self.delegate jsonStream:self receivedDictionary:(NSDictionary *)json];
+    });
 }
 
 - (void)stream:(NSStream *)aStream handleEvent:(NSStreamEvent)eventCode {
     switch (eventCode) {
         case NSStreamEventHasBytesAvailable: {
             NSAssert(aStream == _inputStream, @"Invalid stream");
-            uint8_t *buf;
-            NSUInteger len;
-            if ([_inputStream getBuffer:&buf length:&len]) {
-                [_data appendBytes:buf length:len];
-                [self parseData];
+            uint8_t buf[kMaxBufferSize];
+            NSInteger res;
+            if ((res = [_inputStream read:buf maxLength:kMaxBufferSize]) != 0) {
+                if (res > 0) {
+                    [_data appendBytes:buf length:res];
+                    [self parseData];
+                } else {
+                    [self.delegate jsonStream:self seenError:[_inputStream streamError]];
+                }
             }
             break;
         }
         case NSStreamEventErrorOccurred: {
-            NSLog(@"Stream error %@", aStream);
-            NSError *err = [NSError errorWithDomain:kUTMErrorDomain code:-1 userInfo:@{NSLocalizedDescriptionKey: NSLocalizedString(@"Error connecting to JSON socket.", "UTMJSONStream")}];
-            [self.delegate jsonStream:self seenError:err];
+            NSLog(@"Stream error %@", [aStream streamError]);
+            [self.delegate jsonStream:self seenError:[aStream streamError]];
         }
         case NSStreamEventEndEncountered: {
             [self disconnect];
@@ -193,15 +204,22 @@ enum ParserState {
 }
 
 - (void)sendDictionary:(NSDictionary *)dict {
-    NSError *err;
     NSAssert(_outputStream, @"No stream opened.");
     NSLog(@"Debug JSON send -> %@", dict);
+    NSError *err;
     [NSJSONSerialization writeJSONObject:dict toStream:_outputStream options:0 error:&err];
-    //NSData *data = [NSJSONSerialization dataWithJSONObject:dict options:0 error:&err];
-    //[_outputStream write:data.bytes maxLength:data.length];
-    if (err) {
-        [self.delegate jsonStream:self seenError:err];
-    }
+    /*
+    dispatch_async(dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0), ^{
+        NSError *err;
+        //[NSJSONSerialization writeJSONObject:dict toStream:self->_outputStream options:0 error:&err];
+        NSData *data = [NSJSONSerialization dataWithJSONObject:dict options:0 error:&err];
+        [self->_outputStream write:data.bytes maxLength:data.length];
+        [self->_outputStream write:(const uint8_t *)"\r\n" maxLength:2];
+        if (err) {
+            [self.delegate jsonStream:self seenError:err];
+        }
+    });
+     */
 }
 
 @end

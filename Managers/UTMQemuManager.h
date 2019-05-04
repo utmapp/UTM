@@ -28,10 +28,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)connect;
 - (void)disconnect;
 
-- (void)vmPowerDown:(NSError * _Nullable *)err;
-- (void)vmReset:(NSError * _Nullable *)err;
-- (void)vmStop:(NSError * _Nullable *)err;
-- (void)vmQuit:(NSError * _Nullable *)err;
+- (void)vmPowerDownWithCompletion:(void (^ _Nullable)(NSError * _Nullable))completion;
+- (void)vmResetWithCompletion:(void (^ _Nullable)(NSError * _Nullable))completion;
+- (void)vmStopWithCompletion:(void (^ _Nullable)(NSError * _Nullable))completion;
+- (void)vmQuitWithCompletion:(void (^ _Nullable)(NSError * _Nullable))completion;
+- (void)testFuncs;
 
 @end
 

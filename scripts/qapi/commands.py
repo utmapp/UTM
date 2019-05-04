@@ -39,13 +39,19 @@ static %(c_type)s qmp_marshal_rpc_%(c_name)s(CFDictionaryRef args, Error **errp,
     %(c_type)s ret = {0};
 
     qmp_rpc_call(args, &cfret, &err, ctx);
-    if (!err) {
+    if (err) {
         error_propagate(errp, err);
         return ret;
     }
-    v = cf_input_visitor_new(args);
+    v = cf_input_visitor_new(cfret);
+    visit_start_struct(v, "command", NULL, 0, &err);
+    if (err) {
+        error_propagate(errp, err);
+        return ret;
+    }
     visit_type_%(c_name)s(v, "return", &ret, &err);
     error_propagate(errp, err);
+    visit_end_struct(v, NULL);
     visit_free(v);
     CFRelease(cfret);
     return ret;

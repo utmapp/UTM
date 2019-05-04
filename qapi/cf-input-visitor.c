@@ -434,14 +434,27 @@ static void cf_input_type_str(Visitor *v, const char *name, char **obj,
         return;
     }
     cfstr = (CFStringRef)cfobj;
-    if (CFGetTypeID(cfobj) != CFStringGetTypeID() || 
-        ((str = CFStringGetCStringPtr(cfstr, CFStringGetFastestEncoding(cfstr)))) == NULL) {
+    if (CFGetTypeID(cfobj) != CFStringGetTypeID()) {
         error_setg(errp, QERR_INVALID_PARAMETER_TYPE,
                    full_name(qiv, name), "string");
         return;
     }
-
-    *obj = g_strdup(str);
+        
+    str = CFStringGetCStringPtr(cfstr, CFStringGetFastestEncoding(cfstr));
+    if (str == NULL) {
+        CFIndex length = CFStringGetLength(cfstr);
+        CFIndex maxSize = CFStringGetMaximumSizeForEncoding(length, kCFStringEncodingUTF8) + 1;
+        char *buffer = (char *)g_malloc(maxSize);
+        if (!CFStringGetCString(cfstr, buffer, maxSize, kCFStringEncodingUTF8)) {
+            error_setg(errp, QERR_INVALID_PARAMETER_TYPE,
+                       full_name(qiv, name), "string");
+            g_free(buffer);
+        } else {
+            *obj = buffer;
+        }
+    } else {
+        *obj = g_strdup(str);
+    }
 }
 
 static void cf_input_type_number(Visitor *v, const char *name, double *obj,

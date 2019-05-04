@@ -84,7 +84,9 @@ void qapi_event_dispatch_%(name)s(%(handler_type)s handler, CFDictionaryRef data
     v = cf_input_visitor_new(data);
 ''')
         ret += mcgen('''
+    visit_start_struct(v, "event", NULL, 0, &error_abort);
     visit_type_%(c_name)s(v, "data", &arg, &error_abort);
+    visit_end_struct(v, NULL);
 ''',
                          name=name, c_name=arg_type.c_name())
 
