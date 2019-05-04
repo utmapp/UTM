@@ -32,7 +32,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)vmResetWithCompletion:(void (^ _Nullable)(NSError * _Nullable))completion;
 - (void)vmStopWithCompletion:(void (^ _Nullable)(NSError * _Nullable))completion;
 - (void)vmQuitWithCompletion:(void (^ _Nullable)(NSError * _Nullable))completion;
-- (void)testFuncs;
 
 @end
 

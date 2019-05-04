@@ -223,47 +223,6 @@ void qmp_rpc_call(CFDictionaryRef args, CFDictionaryRef *ret, Error **err, void 
     [self vmPowerAction:qmp_quit completion:completion];
 }
 
-- (void)testFuncs {
-    dispatch_async(dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0), ^{
-        Error *qerr = NULL;
-        BlockDirtyBitmapSha256 *obj = qmp_x_debug_block_dirty_bitmap_sha256("asdf", "asdf", &qerr, (__bridge void *)self);
-        qapi_free_BlockDirtyBitmapSha256(obj);
-        if (qerr) {
-            NSLog(@"Error: %@", [self errorForQerror:qerr]);
-            error_free(qerr);
-        }
-    });
-    dispatch_async(dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0), ^{
-        Error *qerr = NULL;
-        NumaOptions args = {
-            .type = NUMA_OPTIONS_TYPE_CPU,
-            .u = {
-                .cpu = {
-                    .has_node_id = 1,
-                    .node_id = 999,
-                    .has_socket_id = 0,
-                    .has_core_id = 0,
-                    .has_thread_id = 0
-                }
-            }
-        };
-        qmp_set_numa_node(&args, &qerr, (__bridge void *)self);
-        if (qerr) {
-            NSLog(@"Error: %@", [self errorForQerror:qerr]);
-            error_free(qerr);
-        }
-    });
-    dispatch_async(dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0), ^{
-        Error *qerr = NULL;
-        DumpQueryResult *res = qmp_query_dump(&qerr, (__bridge void *)self);
-        qapi_free_DumpQueryResult(res);
-        if (qerr) {
-            NSLog(@"Error: %@", [self errorForQerror:qerr]);
-            error_free(qerr);
-        }
-    });
-}
-
 @end
 
 qapi_enum_handler_registry qapi_enum_handler_registry_data = {
