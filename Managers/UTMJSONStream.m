@@ -186,7 +186,9 @@ enum ParserState {
             if ((res = [_inputStream read:buf maxLength:kMaxBufferSize]) != 0) {
                 if (res > 0) {
                     [_data appendBytes:buf length:res];
-                    [self parseData];
+                    while (_parsedBytes < [_data length]) {
+                        [self parseData];
+                    }
                 } else {
                     [self.delegate jsonStream:self seenError:[_inputStream streamError]];
                 }
