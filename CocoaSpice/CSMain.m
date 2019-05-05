@@ -113,6 +113,7 @@ void *spice_main_loop(void *args) {
 - (void)spiceStop {
     if (self.running) {
         void *status;
+        g_main_loop_quit(_main_loop);
         pthread_join(_spice_thread, &status);
         _running = NO;
     }

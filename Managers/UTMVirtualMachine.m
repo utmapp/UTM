@@ -38,7 +38,8 @@ NSString *const kUTMBundleExtension = @"utm";
     UTMQemuSystem *_qemu_system;
     CSConnection *_spice_connection;
     CSMain *_spice;
-    dispatch_semaphore_t _stop_request_sema;
+    dispatch_semaphore_t _will_quit_sema;
+    dispatch_semaphore_t _qemu_exit_sema;
     BOOL _is_stopping;
 }
 
@@ -62,7 +63,8 @@ NSString *const kUTMBundleExtension = @"utm";
 - (id)init {
     self = [super init];
     if (self) {
-        _stop_request_sema = dispatch_semaphore_create(0);
+        _will_quit_sema = dispatch_semaphore_create(0);
+        _qemu_exit_sema = dispatch_semaphore_create(0);
     }
     return self;
 }
@@ -208,8 +210,8 @@ NSString *const kUTMBundleExtension = @"utm";
     [_qemu_system startWithCompletion:^(BOOL success, NSString *msg){
         if (!success) {
             [self errorTriggered:msg];
-        } else {
         }
+        dispatch_semaphore_signal(self->_qemu_exit_sema);
     }];
     int tries = kMaxConnectionTries;
     do {
@@ -232,10 +234,9 @@ NSString *const kUTMBundleExtension = @"utm";
     }
     [self changeState:kVMStopping];
     
-    [_qemu vmStopWithCompletion:nil];
-    if (!dispatch_semaphore_wait(_stop_request_sema, dispatch_time(DISPATCH_TIME_NOW, kStopTimeout))) {
-        // force shutdown
-        [_qemu vmQuitWithCompletion:nil];
+    [_qemu vmQuitWithCompletion:nil];
+    if (dispatch_semaphore_wait(_will_quit_sema, dispatch_time(DISPATCH_TIME_NOW, kStopTimeout)) != 0) {
+        // TODO: force shutdown
     }
     [_qemu disconnect];
     _qemu.delegate = nil;
@@ -247,7 +248,10 @@ NSString *const kUTMBundleExtension = @"utm";
     [_spice spiceStop];
     _spice = nil;
     
-    _qemu_system = nil; // should be stopped by vmQuit
+    if (dispatch_semaphore_wait(_qemu_exit_sema, dispatch_time(DISPATCH_TIME_NOW, kStopTimeout)) != 0) {
+        // TODO: force shutdown
+    }
+    _qemu_system = nil;
     _is_stopping = NO;
     [self changeState:kVMStopped];
 }
@@ -288,10 +292,7 @@ NSString *const kUTMBundleExtension = @"utm";
 }
 
 - (void)qemuHasStopped:(UTMQemuManager *)manager {
-    dispatch_semaphore_signal(_stop_request_sema);
-    if (!_is_stopping) {
-        [self quitVM];
-    }
+    
 }
 
 - (void)qemuHasReset:(UTMQemuManager *)manager guest:(BOOL)guest reason:(ShutdownCause)reason {
@@ -300,6 +301,13 @@ NSString *const kUTMBundleExtension = @"utm";
 
 - (void)qemuHasSuspended:(UTMQemuManager *)manager {
     
+}
+
+- (void)qemuWillQuit:(UTMQemuManager *)manager guest:(BOOL)guest reason:(ShutdownCause)reason {
+    dispatch_semaphore_signal(_will_quit_sema);
+    if (!_is_stopping) {
+        [self quitVM];
+    }
 }
 
 @end

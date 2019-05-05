@@ -25,7 +25,8 @@ extern NSString *const kUTMErrorDomain;
 const int64_t kRPCTimeout = (int64_t)10*1000000000;
 
 static void utm_shutdown_handler(bool guest, ShutdownCause reason, void *ctx) {
-    
+    UTMQemuManager *self = (__bridge UTMQemuManager *)ctx;
+    [self.delegate qemuWillQuit:self guest:guest reason:reason];
 }
 
 static void utm_powerdown_handler(void *ctx) {
