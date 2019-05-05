@@ -180,18 +180,19 @@ enum ParserState {
 - (void)stream:(NSStream *)aStream handleEvent:(NSStreamEvent)eventCode {
     switch (eventCode) {
         case NSStreamEventHasBytesAvailable: {
-            NSAssert(aStream == _inputStream, @"Invalid stream");
             uint8_t buf[kMaxBufferSize];
             NSInteger res;
-            if ((res = [_inputStream read:buf maxLength:kMaxBufferSize]) != 0) {
-                if (res > 0) {
-                    [_data appendBytes:buf length:res];
-                    while (_parsedBytes < [_data length]) {
-                        [self parseData];
-                    }
-                } else {
-                    [self.delegate jsonStream:self seenError:[_inputStream streamError]];
+            @synchronized (self) {
+                NSAssert(aStream == _inputStream, @"Invalid stream");
+                res = [_inputStream read:buf maxLength:kMaxBufferSize];
+            }
+            if (res > 0) {
+                [_data appendBytes:buf length:res];
+                while (_parsedBytes < [_data length]) {
+                    [self parseData];
                 }
+            } else if (res < 0) {
+                [self.delegate jsonStream:self seenError:[_inputStream streamError]];
             }
             break;
         }
@@ -210,12 +211,14 @@ enum ParserState {
 }
 
 - (BOOL)sendDictionary:(NSDictionary *)dict {
-    if (!_outputStream) {
-        return NO;
-    }
-    NSLog(@"Debug JSON send -> %@", dict);
     NSError *err;
-    [NSJSONSerialization writeJSONObject:dict toStream:_outputStream options:0 error:&err];
+    @synchronized (self) {
+        if (!_outputStream || _outputStream.streamStatus != NSStreamStatusOpen) {
+            return NO;
+        }
+        NSLog(@"Debug JSON send -> %@", dict);
+        [NSJSONSerialization writeJSONObject:dict toStream:_outputStream options:0 error:&err];
+    }
     if (err) {
         NSLog(@"Error sending dict: %@", err);
         return NO;
