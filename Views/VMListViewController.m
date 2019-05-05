@@ -176,7 +176,7 @@
     NSString *name = [UTMVirtualMachine virtualMachineName:self.vmList[indexPath.row]];
     [cell setName:name];
     if ([self.activeVM.configuration.name isEqualToString:name]) {
-        [cell changeState:self.activeVM.state image:self.vmScreenshot];
+        [cell changeState:self.activeVM.state image:self.activeVM.primaryRendering.screenshot];
     } else {
         [cell changeState:kVMStopped image:nil];
     }
@@ -283,7 +283,6 @@
 
 - (IBAction)unwindToMainFromVM:(UIStoryboardSegue*)sender {
     self.activeVM.delegate = self;
-    [self.activeCell changeState:self.activeVM.state image:nil];
 }
 
 - (IBAction)startVMFromButton:(UIButton *)sender {

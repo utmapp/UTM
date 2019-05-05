@@ -27,6 +27,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) NSUInteger numVertices;
 @property (nonatomic, nullable, readonly) id<MTLBuffer> vertices;
 @property (nonatomic, readonly, assign) CGSize displaySize;
+@property (nonatomic, readonly, nullable) UIImage *screenshot;
 
 @end
 

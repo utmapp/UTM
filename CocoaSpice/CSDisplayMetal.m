@@ -16,6 +16,7 @@
 
 #import "UTMShaderTypes.h"
 #import "CocoaSpice.h"
+#import <UIKit/UIKit.h>
 #import <glib.h>
 #import <spice-client.h>
 #import <spice/protocol.h>
@@ -222,6 +223,20 @@ static void cs_channel_destroy(SpiceSession *s, SpiceChannel *channel, gpointer 
 
 - (CGSize)displaySize {
     return _visibleArea.size;
+}
+
+- (UIImage *)screenshot {
+    if (!_canvasData) {
+        return nil;
+    }
+    CGColorSpaceRef colorSpaceRef = CGColorSpaceCreateDeviceRGB();
+    CGDataProviderRef dataProviderRef = CGDataProviderCreateWithData(NULL, _canvasData, _canvasStride * _canvasArea.size.height, nil);
+    CGImageRef img = CGImageCreate(_canvasArea.size.width, _canvasArea.size.height, 8, 32, _canvasStride, colorSpaceRef, kCGBitmapByteOrder32Little | kCGImageAlphaPremultipliedFirst, dataProviderRef, NULL, NO, kCGRenderingIntentDefault);
+    CGColorSpaceRelease(colorSpaceRef);
+    CGDataProviderRelease(dataProviderRef);
+    UIImage *uiimg = [UIImage imageWithCGImage:img];
+    CGImageRelease(img);
+    return uiimg;
 }
 
 @synthesize drawLock = _drawLock;
