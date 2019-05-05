@@ -287,6 +287,7 @@ static CGFloat CGPointToPixel(CGFloat point) {
             translated = _lastCursor;
         }
         [self.vm.primaryInput sendMouseButton:SEND_BUTTON_LEFT pressed:YES point:translated];
+        [self.vm.primaryInput sendMouseButton:SEND_BUTTON_LEFT pressed:NO point:translated];
         [self.clickFeedbackGenerator selectionChanged];
     }
 }
@@ -301,6 +302,7 @@ static CGFloat CGPointToPixel(CGFloat point) {
             translated = _lastCursor;
         }
         [self.vm.primaryInput sendMouseButton:SEND_BUTTON_RIGHT pressed:YES point:translated];
+        [self.vm.primaryInput sendMouseButton:SEND_BUTTON_RIGHT pressed:NO point:translated];
         [self.clickFeedbackGenerator selectionChanged];
     }
 }
