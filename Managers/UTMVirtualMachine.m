@@ -22,6 +22,7 @@
 #import "CocoaSpice.h"
 
 const int kMaxConnectionTries = 10; // qemu needs to start spice server first
+const int64_t kStopTimeout = (int64_t)30*1000000000;
 
 NSString *const kUTMErrorDomain = @"com.halts.utm";
 NSString *const kUTMBundleConfigFilename = @"config.plist";
@@ -37,6 +38,8 @@ NSString *const kUTMBundleExtension = @"utm";
     UTMQemuSystem *_qemu_system;
     CSConnection *_spice_connection;
     CSMain *_spice;
+    dispatch_semaphore_t _stop_request_sema;
+    BOOL _is_stopping;
 }
 
 - (void)setDelegate:(id<UTMVirtualMachineDelegate>)delegate {
@@ -58,6 +61,9 @@ NSString *const kUTMBundleExtension = @"utm";
 
 - (id)init {
     self = [super init];
+    if (self) {
+        _stop_request_sema = dispatch_semaphore_create(0);
+    }
     return self;
 }
 
@@ -91,6 +97,11 @@ NSString *const kUTMBundleExtension = @"utm";
         _configuration = [[UTMConfiguration alloc] initDefaults:name];
     }
     return self;
+}
+
+- (void)changeState:(UTMVMState)state {
+    _state = state;
+    [self.delegate virtualMachine:self transitionToState:state];
 }
 
 - (NSURL *)packageURLForName:(NSString *)name {
@@ -159,13 +170,17 @@ NSString *const kUTMBundleExtension = @"utm";
 - (void)errorTriggered:(nullable NSString *)msg {
     [self quitVM];
     self.delegate.vmMessage = msg;
-    [self.delegate virtualMachine:self transitionToState:kVMError];
+    [self changeState:kVMError];
 }
 
 - (void)startVM {
+    if (self.state != kVMStopped) {
+        return; // already started
+    }
     if (!_qemu_system) {
         _qemu_system = [[UTMQemuSystem alloc] initWithConfiguration:self.configuration imgPath:[self packageURLForName:self.configuration.name]];
         _qemu = [[UTMQemuManager alloc] init];
+        _qemu.delegate = self;
     }
     if (!_spice) {
         _spice = [[CSMain alloc] init];
@@ -184,7 +199,7 @@ NSString *const kUTMBundleExtension = @"utm";
     self.delegate.vmRendering = nil;
     _primaryRendering = nil;
     
-    [self.delegate virtualMachine:self transitionToState:kVMStarting];
+    [self changeState:kVMStarting];
     [_spice spiceSetDebug:YES];
     if (![_spice spiceStart]) {
         [self errorTriggered:NSLocalizedString(@"Internal error starting main loop.", @"UTMVirtualMachine")];
@@ -210,13 +225,21 @@ NSString *const kUTMBundleExtension = @"utm";
 }
 
 - (void)quitVM {
-    [self.delegate virtualMachine:self transitionToState:kVMStopping];
+    if (_is_stopping || self.state != kVMStarted) {
+        return; // already stopping
+    } else {
+        _is_stopping = YES;
+    }
+    [self changeState:kVMStopping];
     
-    [self->_qemu vmQuitWithCompletion:^(NSError *err) {
-        
-    }];
-    [self->_qemu disconnect];
-    self->_qemu = nil;
+    [_qemu vmStopWithCompletion:nil];
+    if (!dispatch_semaphore_wait(_stop_request_sema, dispatch_time(DISPATCH_TIME_NOW, kStopTimeout))) {
+        // force shutdown
+        [_qemu vmQuitWithCompletion:nil];
+    }
+    [_qemu disconnect];
+    _qemu.delegate = nil;
+    _qemu = nil;
     
     [_spice_connection disconnect];
     _spice_connection.delegate = nil;
@@ -225,9 +248,11 @@ NSString *const kUTMBundleExtension = @"utm";
     _spice = nil;
     
     _qemu_system = nil; // should be stopped by vmQuit
-    
-    [self.delegate virtualMachine:self transitionToState:kVMStopped];
+    _is_stopping = NO;
+    [self changeState:kVMStopped];
 }
+
+#pragma mark - Spice connection delegate
 
 - (void)spiceConnected:(CSConnection *)connection {
     NSAssert(connection == _spice_connection, @"Unknown connection");
@@ -248,8 +273,33 @@ NSString *const kUTMBundleExtension = @"utm";
         self.delegate.vmRendering = display;
         _primaryRendering = display;
         _primaryInput = input;
-        [self.delegate virtualMachine:self transitionToState:kVMStarted];
+        [self changeState:kVMStarted];
     }
+}
+
+#pragma mark - Qemu manager delegate
+
+- (void)qemuHasWakeup:(UTMQemuManager *)manager {
+    
+}
+
+- (void)qemuHasResumed:(UTMQemuManager *)manager {
+    
+}
+
+- (void)qemuHasStopped:(UTMQemuManager *)manager {
+    dispatch_semaphore_signal(_stop_request_sema);
+    if (!_is_stopping) {
+        [self quitVM];
+    }
+}
+
+- (void)qemuHasReset:(UTMQemuManager *)manager guest:(BOOL)guest reason:(ShutdownCause)reason {
+    
+}
+
+- (void)qemuHasSuspended:(UTMQemuManager *)manager {
+    
 }
 
 @end

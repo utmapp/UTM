@@ -1951,18 +1951,13 @@
                                                             <action selector="hideToolbarButton:" destination="ckC-eO-gxn" eventType="touchUpInside" id="sbT-co-Dk1"/>
                                                         </connections>
                                                     </button>
-                                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ESi-T5-nUB">
+                                                    <button opaque="NO" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ESi-T5-nUB">
                                                         <rect key="frame" x="291" y="51" width="30" height="30"/>
                                                         <constraints>
                                                             <constraint firstAttribute="width" constant="30" id="OvE-ls-mRd"/>
                                                             <constraint firstAttribute="height" constant="30" id="a7h-Be-9Pf"/>
                                                         </constraints>
                                                         <state key="normal" image="Toolbar Settings"/>
-                                                        <connections>
-                                                            <segue destination="fxo-tK-lAq" kind="popoverPresentation" identifier="editVMConfig" popoverAnchorView="ESi-T5-nUB" id="116-me-d8B">
-                                                                <popoverArrowDirection key="popoverArrowDirection" up="YES" down="YES" left="YES" right="YES"/>
-                                                            </segue>
-                                                        </connections>
                                                     </button>
                                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Grb-jH-Oxk">
                                                         <rect key="frame" x="253" y="51" width="30" height="30"/>
@@ -2407,7 +2402,6 @@
         <image name="Toolbar Settings" width="30" height="30"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="116-me-d8B"/>
         <segue reference="M4J-mO-49e"/>
         <segue reference="QMb-O0-K4I"/>
         <segue reference="Ch9-qF-y79"/>

@@ -18,6 +18,7 @@
 #import "UTMVirtualMachineDelegate.h"
 #import "CSConnectionDelegate.h"
 #import "UTMRenderSource.h"
+#import "UTMQemuManagerDelegate.h"
 
 @class UTMConfiguration;
 @class UTMQemuManager;
@@ -25,7 +26,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface UTMVirtualMachine : NSObject<CSConnectionDelegate>
+@interface UTMVirtualMachine : NSObject<CSConnectionDelegate, UTMQemuManagerDelegate>
 
 @property (nonatomic, readonly, nullable) id<UTMRenderSource> primaryRendering;
 @property (nonatomic, readonly, nullable) CSInput *primaryInput;

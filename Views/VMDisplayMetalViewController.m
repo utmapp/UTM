@@ -107,13 +107,13 @@
     _twoTap.delegate = self;
     _pinch = [[UIPinchGestureRecognizer alloc] initWithTarget:self action:@selector(gesturePinch:)];
     _pinch.delegate = self;
-    [self.view addGestureRecognizer:_swipeUp];
-    [self.view addGestureRecognizer:_swipeDown];
-    [self.view addGestureRecognizer:_pan];
-    [self.view addGestureRecognizer:_twoPan];
-    [self.view addGestureRecognizer:_tap];
-    [self.view addGestureRecognizer:_twoTap];
-    [self.view addGestureRecognizer:_pinch];
+    [self.mtkView addGestureRecognizer:_swipeUp];
+    [self.mtkView addGestureRecognizer:_swipeDown];
+    [self.mtkView addGestureRecognizer:_pan];
+    [self.mtkView addGestureRecognizer:_twoPan];
+    [self.mtkView addGestureRecognizer:_tap];
+    [self.mtkView addGestureRecognizer:_twoTap];
+    [self.mtkView addGestureRecognizer:_pinch];
     
     // Feedback generator for clicks
     self.clickFeedbackGenerator = [[UISelectionFeedbackGenerator alloc] init];
@@ -458,7 +458,7 @@ static CGFloat CGPointToPixel(CGFloat point) {
     UIAlertAction *yes = [UIAlertAction actionWithTitle:NSLocalizedString(@"Yes", @"VMDisplayMetalViewController") style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action){
         dispatch_async(dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0), ^{
             NSError *err;
-            [self.vm.qemu vmStop:&err];
+            [self.vm quitVM];
             if (err) {
                 [self showAlert:err.localizedDescription completion:nil];
             }

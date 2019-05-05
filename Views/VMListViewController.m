@@ -283,6 +283,7 @@
 
 - (IBAction)unwindToMainFromVM:(UIStoryboardSegue*)sender {
     self.activeVM.delegate = self;
+    [self.activeCell changeState:self.activeVM.state image:nil];
 }
 
 - (IBAction)startVMFromButton:(UIButton *)sender {
@@ -292,6 +293,7 @@
     self.activeCell = cell;
     self.activeVM.delegate = self;
     [self.activeVM startVM];
+    [self virtualMachine:self.activeVM transitionToState:self.activeVM.state];
 }
 
 - (IBAction)startVMFromScreen:(UIButton *)sender {
@@ -301,6 +303,7 @@
     self.activeCell = cell;
     self.activeVM.delegate = self;
     [self.activeVM startVM];
+    [self virtualMachine:self.activeVM transitionToState:self.activeVM.state];
 }
 
 @end

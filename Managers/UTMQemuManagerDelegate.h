@@ -15,25 +15,19 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "UTMJSONStreamDelegate.h"
-#import "UTMQemuManagerDelegate.h"
-
-@class UTMJSONStream;
+#import "qapi-events.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface UTMQemuManager : NSObject<UTMJSONStreamDelegate>
+@class UTMQemuManager;
 
-@property (nonatomic, readonly) UTMJSONStream *jsonStream;
-@property (nonatomic, weak) id<UTMQemuManagerDelegate> delegate;
+@protocol UTMQemuManagerDelegate <NSObject>
 
-- (void)connect;
-- (void)disconnect;
-
-- (void)vmPowerDownWithCompletion:(void (^ _Nullable)(NSError * _Nullable))completion;
-- (void)vmResetWithCompletion:(void (^ _Nullable)(NSError * _Nullable))completion;
-- (void)vmStopWithCompletion:(void (^ _Nullable)(NSError * _Nullable))completion;
-- (void)vmQuitWithCompletion:(void (^ _Nullable)(NSError * _Nullable))completion;
+- (void)qemuHasStopped:(UTMQemuManager *)manager;
+- (void)qemuHasReset:(UTMQemuManager *)manager guest:(BOOL)guest reason:(ShutdownCause)reason;
+- (void)qemuHasResumed:(UTMQemuManager *)manager;
+- (void)qemuHasSuspended:(UTMQemuManager *)manager;
+- (void)qemuHasWakeup:(UTMQemuManager *)manager;
 
 @end
 

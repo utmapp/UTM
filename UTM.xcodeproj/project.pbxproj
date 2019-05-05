@@ -678,6 +678,7 @@
 		CE74C287225D88ED004E4FF1 /* VMConfigDriveDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VMConfigDriveDetailViewController.h; sourceTree = "<group>"; };
 		CE7BED4A225FBB8600A1E1B6 /* VMConfigDrivesViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VMConfigDrivesViewController.h; sourceTree = "<group>"; };
 		CE7BED4B225FBB8600A1E1B6 /* VMConfigDrivesViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VMConfigDrivesViewController.m; sourceTree = "<group>"; };
+		CE8E6620227E5DF2003B9903 /* UTMQemuManagerDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UTMQemuManagerDelegate.h; sourceTree = "<group>"; };
 		CE9D18F72265410E00355E14 /* qemu */ = {isa = PBXFileReference; lastKnownFileType = folder; name = qemu; path = sysroot/share/qemu; sourceTree = "<group>"; };
 		CE9D19522265425900355E14 /* libgstautodetect.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libgstautodetect.a; path = "sysroot/lib/gstreamer-1.0/libgstautodetect.a"; sourceTree = "<group>"; };
 		CE9D19532265425900355E14 /* libgstaudiotestsrc.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libgstaudiotestsrc.a; path = "sysroot/lib/gstreamer-1.0/libgstaudiotestsrc.a"; sourceTree = "<group>"; };
@@ -1195,6 +1196,7 @@
 				CED33AE22267893D00FF1977 /* UTMQemuImg.m */,
 				CE36B27F227668D1004A1435 /* UTMQemuManager.h */,
 				CE36B280227668D1004A1435 /* UTMQemuManager.m */,
+				CE8E6620227E5DF2003B9903 /* UTMQemuManagerDelegate.h */,
 				CED33ADE2267892200FF1977 /* UTMQemuSystem.h */,
 				CED33ADF2267892200FF1977 /* UTMQemuSystem.m */,
 				CE2B89352262B2F600C6D9D8 /* UTMVirtualMachineDelegate.h */,
