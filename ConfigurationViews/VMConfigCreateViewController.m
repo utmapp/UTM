@@ -32,7 +32,7 @@
 - (void)refreshViewFromConfiguration {
     [super refreshViewFromConfiguration];
     self.advancedConfiguration = NO;
-    self.nameField.text = self.configuration.changeName;
+    self.nameField.text = self.configuration.name;
 }
 
 #pragma mark - Properties
@@ -62,6 +62,7 @@
 #pragma mark - Event handlers
 
 - (IBAction)savePressed:(UIBarButtonItem *)sender {
+    [self.view endEditing:YES];
     if (self.advancedConfiguration) {
         [self performSegueWithIdentifier:@"createVMToConfiguration" sender:sender];
     } else {
@@ -76,7 +77,7 @@
 - (IBAction)nameFieldEdited:(UITextField *)sender {
     NSAssert(sender == self.nameField, @"Invalid sender");
     // TODO: validate input
-    self.configuration.changeName = sender.text;
+    self.configuration.name = sender.text;
 }
 
 @end

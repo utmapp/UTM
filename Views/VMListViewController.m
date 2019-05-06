@@ -269,7 +269,7 @@
     id<UTMConfigurationDelegate> source = (id<UTMConfigurationDelegate>)sender.sourceViewController;
     dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), ^{
         NSError *err;
-        [self workStartedWhenVisible:[NSString stringWithFormat:NSLocalizedString(@"Saving %@...", @"Save VM overlay"), source.configuration.changeName]];
+        [self workStartedWhenVisible:[NSString stringWithFormat:NSLocalizedString(@"Saving %@...", @"Save VM overlay"), source.configuration.name]];
         if (source.configuration == self.modifyingVM.configuration) {
             [self.modifyingVM saveUTMWithError:&err];
             self.modifyingVM = nil; // must do this BEFORE work complete, or user might press another button

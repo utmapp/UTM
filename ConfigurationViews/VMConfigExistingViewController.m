@@ -41,7 +41,7 @@
 
 - (void)refreshViewFromConfiguration {
     [super refreshViewFromConfiguration];
-    self.nameField.text = self.configuration.changeName;
+    self.nameField.text = self.configuration.name;
 }
 
 - (void)setNameReadOnly:(BOOL)nameReadOnly {
@@ -114,7 +114,7 @@
 - (IBAction)nameFieldEdited:(UITextField *)sender {
     NSAssert(sender == self.nameField, @"Invalid sender");
     // TODO: input validation
-    configuration.changeName = sender.text;
+    configuration.name = sender.text;
 }
 
 - (IBAction)cancelPressed:(id)sender {

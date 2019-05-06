@@ -138,7 +138,7 @@
     switch (state) {
         case kVMError: {
             NSString *msg = self.vmMessage ? self.vmMessage : NSLocalizedString(@"An internal error has occured.", @"UTMQemuManager");
-            [self showAlert:msg completion:^{
+            [self showAlert:msg completion:^(UIAlertAction *action){
                 [self performSegueWithIdentifier:@"returnToList" sender:self];
             }];
             break;
@@ -480,7 +480,7 @@ static CGFloat CGPointToPixel(CGFloat point) {
     [self hideToolbar];
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     if (![defaults boolForKey:@"HasShownHideToolbarAlert"]) {
-        [self showAlert:NSLocalizedString(@"Hint: To show the toolbar again, use a three-finger swipe down on the screen.", @"Shown once when hiding toolbar.") completion:^{
+        [self showAlert:NSLocalizedString(@"Hint: To show the toolbar again, use a three-finger swipe down on the screen.", @"Shown once when hiding toolbar.") completion:^(UIAlertAction *action){
             [defaults setBool:YES forKey:@"HasShownHideToolbarAlert"];
         }];
     }
@@ -501,12 +501,12 @@ static CGFloat CGPointToPixel(CGFloat point) {
 
 #pragma mark - Messages
 
-- (void)showAlert:(NSString *)msg completion:(nullable void (^)(void))completion {
+- (void)showAlert:(NSString *)msg completion:(nullable void (^)(UIAlertAction *action))completion {
     UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil message:msg preferredStyle:UIAlertControllerStyleAlert];
-    UIAlertAction *okay = [UIAlertAction actionWithTitle:NSLocalizedString(@"OK", @"OK button") style:UIAlertActionStyleDefault handler:nil];
+    UIAlertAction *okay = [UIAlertAction actionWithTitle:NSLocalizedString(@"OK", @"OK button") style:UIAlertActionStyleDefault handler:completion];
     [alert addAction:okay];
     dispatch_async(dispatch_get_main_queue(), ^{
-        [self presentViewController:alert animated:YES completion:completion];
+        [self presentViewController:alert animated:YES completion:nil];
     });
 }
 

@@ -57,10 +57,6 @@ const NSString *const kUTMConfigImagePathKey = @"ImagePath";
 const NSString *const kUTMConfigInterfaceTypeKey = @"InterfaceType";
 const NSString *const kUTMConfigCdromKey = @"Cdrom";
 
-@implementation UTMNewDrive
-
-@end
-
 @interface UTMConfiguration ()
 
 @end
@@ -75,7 +71,6 @@ const NSString *const kUTMConfigCdromKey = @"Cdrom";
     NSMutableDictionary *_soundDict;
     NSMutableDictionary *_sharingDict;
     NSMutableArray<NSMutableDictionary *> *_drivesDicts;
-    NSMutableArray<UTMNewDrive *> *_newDrivesList;
 }
 
 #pragma mark - Constant supported values
@@ -204,15 +199,15 @@ const NSString *const kUTMConfigCdromKey = @"Cdrom";
              ];
 }
 
-#pragma mark - Initialization
-
-- (id)init {
-    self = [super init];
-    if (self) {
-        _newDrivesList = [[NSMutableArray alloc] init];
-    }
-    return self;
++ (NSString *)diskImagesDirectory {
+    return @"Images";
 }
+
++ (NSString *)defaultDriveInterface {
+    return [self supportedDriveInterfaces][0];
+}
+
+#pragma mark - Initialization
 
 - (id)initDefaults:(NSString *)name {
     self = [self init];
@@ -237,20 +232,17 @@ const NSString *const kUTMConfigCdromKey = @"Cdrom";
         self.printEnabled = YES;
         self.soundEnabled = YES;
         self.sharingClipboardEnabled = YES;
-        self.changeName = name;
+        self.existingPath = nil;
     }
     return self;
 }
 
-- (id)initWithDictionary:(NSMutableDictionary *)dictionary name:(NSString *)name {
+- (id)initWithDictionary:(NSMutableDictionary *)dictionary name:(NSString *)name path:(NSURL *)path {
     self = [self init];
     if (self) {
         _rootDict = dictionary;
         self.name = name;
-        self.changeName = name;
-        for (NSUInteger i = 0; i < self.countDrives; i++) {
-            [_newDrivesList addObject:[[UTMNewDrive alloc] init]];
-        }
+        self.existingPath = path;
     }
     return self;
 }
@@ -437,19 +429,14 @@ const NSString *const kUTMConfigCdromKey = @"Cdrom";
     return [_rootDict[kUTMConfigDrivesKey] count];
 }
 
-- (NSUInteger)newDefaultDrive {
+- (NSUInteger)newDrive:(NSString *)name interface:(NSString *)interface isCdrom:(BOOL)isCdrom {
     NSUInteger index = [self countDrives];
     NSMutableDictionary *drive = [[NSMutableDictionary alloc] initWithDictionary:@{
-                                                                                   kUTMConfigImagePathKey: [NSString stringWithFormat:@"disk-%lu.img", (unsigned long)index],
-                                                                                   kUTMConfigInterfaceTypeKey: @"ide",
-                                                                                   kUTMConfigCdromKey: @NO
+                                                                                   kUTMConfigImagePathKey: name,
+                                                                                   kUTMConfigInterfaceTypeKey: interface,
+                                                                                   kUTMConfigCdromKey: [NSNumber numberWithBool:isCdrom]
                                                                                    }];
     [_rootDict[kUTMConfigDrivesKey] addObject:drive];
-    UTMNewDrive *driveParams = [[UTMNewDrive alloc] init];
-    driveParams.valid = YES;
-    driveParams.sizeMB = 1024;
-    driveParams.isQcow2 = YES;
-    [_newDrivesList addObject:driveParams];
     return index;
 }
 
@@ -481,18 +468,10 @@ const NSString *const kUTMConfigCdromKey = @"Cdrom";
     NSMutableDictionary *drive = _rootDict[kUTMConfigDrivesKey][index];
     [_rootDict[kUTMConfigDrivesKey] removeObjectAtIndex:index];
     [_rootDict[kUTMConfigDrivesKey] insertObject:drive atIndex:newIndex];
-    UTMNewDrive *driveParams = _newDrivesList[index];
-    [_newDrivesList removeObjectAtIndex:index];
-    [_newDrivesList insertObject:driveParams atIndex:newIndex];
 }
 
 - (void)removeDriveAtIndex:(NSUInteger)index {
     [_rootDict[kUTMConfigDrivesKey] removeObjectAtIndex:index];
-    [_newDrivesList removeObjectAtIndex:index];
-}
-
-- (nullable UTMNewDrive *)driveNewParamsAtIndex:(NSUInteger)index {
-    return _newDrivesList[index];
 }
 
 @end

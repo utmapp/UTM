@@ -60,7 +60,7 @@
         if ([path characterAtIndex:0] == '/') {
             fullPathURL = [NSURL fileURLWithPath:path isDirectory:NO];
         } else {
-            fullPathURL = [self.imgPath URLByAppendingPathComponent:[self.configuration driveImagePathForIndex:i]];
+            fullPathURL = [[self.imgPath URLByAppendingPathComponent:[UTMConfiguration diskImagesDirectory]] URLByAppendingPathComponent:[self.configuration driveImagePathForIndex:i]];
         }
         [self pushArgv:@"-drive"];
         [self pushArgv:[NSString stringWithFormat:@"file=%@,if=%@,media=%@", fullPathURL.path, [self.configuration driveInterfaceTypeForIndex:i], [self.configuration driveIsCdromForIndex:i] ? @"cdrom" : @"disk"]];

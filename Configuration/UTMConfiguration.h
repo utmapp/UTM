@@ -18,14 +18,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface UTMNewDrive : NSObject
-
-@property (nonatomic, assign) BOOL valid;
-@property (nonatomic, assign) NSUInteger sizeMB;
-@property (nonatomic, assign) BOOL isQcow2;
-
-@end
-
 @interface UTMConfiguration : NSObject
 
 @property (nonatomic, weak, readonly) NSDictionary *dictRepresentation;
@@ -37,9 +29,11 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSArray<NSString *>*)supportedTargetsForArchitecture:(NSString *)architecture;
 + (NSArray<NSString *>*)supportedResolutions;
 + (NSArray<NSString *>*)supportedDriveInterfaces;
++ (NSString *)diskImagesDirectory;
++ (NSString *)defaultDriveInterface;
 
 @property (nonatomic, nullable, copy) NSString *name;
-@property (nonatomic, nullable, copy) NSString *changeName;
+@property (nonatomic, nullable, copy) NSURL *existingPath;
 
 @property (nonatomic, nullable, copy) NSString *systemArchitecture;
 @property (nonatomic, nullable, copy) NSNumber *systemMemory;
@@ -70,9 +64,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) BOOL sharingClipboardEnabled;
 
 - (id)initDefaults:(NSString *)name;
-- (id)initWithDictionary:(NSMutableDictionary *)dictionary name:(NSString *)name;
+- (id)initWithDictionary:(NSMutableDictionary *)dictionary name:(NSString *)name path:(NSURL *)path;
 - (NSUInteger)countDrives;
-- (NSUInteger)newDefaultDrive;
+- (NSUInteger)newDrive:(NSString *)name interface:(NSString *)interface isCdrom:(BOOL)isCdrom;
 - (nullable NSString *)driveImagePathForIndex:(NSUInteger)index;
 - (void)setImagePath:(NSString *)path forIndex:(NSUInteger)index;
 - (nullable NSString *)driveInterfaceTypeForIndex:(NSUInteger)index;
@@ -80,7 +74,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)driveIsCdromForIndex:(NSUInteger)index;
 - (void)setDriveIsCdrom:(BOOL)isCdrom forIndex:(NSUInteger)index;
 - (void)moveDriveIndex:(NSUInteger)index to:(NSUInteger)newIndex;
-- (nullable UTMNewDrive *)driveNewParamsAtIndex:(NSUInteger)index;
 - (void)removeDriveAtIndex:(NSUInteger)index;
 
 @end

@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		CE26FC25226EBC5A0090BE9B /* CSMain.m in Sources */ = {isa = PBXBuildFile; fileRef = CE26FC24226EBC5A0090BE9B /* CSMain.m */; };
+		CE2C67D8227F6F1200AEF1D0 /* VMConfigDrivePickerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CE2C67D7227F6F1200AEF1D0 /* VMConfigDrivePickerViewController.m */; };
+		CE2C67DB227F769300AEF1D0 /* VMConfigDriveCreateViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CE2C67DA227F769300AEF1D0 /* VMConfigDriveCreateViewController.m */; };
 		CE2D63D32265154700FC7E63 /* UTMRenderer.m in Sources */ = {isa = PBXBuildFile; fileRef = CE2D63CF2265154700FC7E63 /* UTMRenderer.m */; };
 		CE2D63D42265154700FC7E63 /* UTMShaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = CE2D63D02265154700FC7E63 /* UTMShaders.metal */; };
 		CE2D641B22653C7600FC7E63 /* libgmodule-2.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63D822653C7300FC7E63 /* libgmodule-2.0.0.dylib */; };
@@ -356,6 +358,10 @@
 		CE26FC24226EBC5A0090BE9B /* CSMain.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CSMain.m; sourceTree = "<group>"; };
 		CE2B89332262A21E00C6D9D8 /* UTMVirtualMachine.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UTMVirtualMachine.h; sourceTree = "<group>"; };
 		CE2B89352262B2F600C6D9D8 /* UTMVirtualMachineDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UTMVirtualMachineDelegate.h; sourceTree = "<group>"; };
+		CE2C67D6227F6F1200AEF1D0 /* VMConfigDrivePickerViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VMConfigDrivePickerViewController.h; sourceTree = "<group>"; };
+		CE2C67D7227F6F1200AEF1D0 /* VMConfigDrivePickerViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VMConfigDrivePickerViewController.m; sourceTree = "<group>"; };
+		CE2C67D9227F769300AEF1D0 /* VMConfigDriveCreateViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VMConfigDriveCreateViewController.h; sourceTree = "<group>"; };
+		CE2C67DA227F769300AEF1D0 /* VMConfigDriveCreateViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VMConfigDriveCreateViewController.m; sourceTree = "<group>"; };
 		CE2D63CF2265154700FC7E63 /* UTMRenderer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UTMRenderer.m; sourceTree = "<group>"; };
 		CE2D63D02265154700FC7E63 /* UTMShaders.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = UTMShaders.metal; sourceTree = "<group>"; };
 		CE2D63D12265154700FC7E63 /* UTMShaderTypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UTMShaderTypes.h; sourceTree = "<group>"; };
@@ -1162,8 +1168,12 @@
 				CE31C24C225EA4A200A965DD /* VMConfigCreateViewController.m */,
 				CE74C281225D88EC004E4FF1 /* VMConfigDisplayViewController.h */,
 				CE74C27D225D88EC004E4FF1 /* VMConfigDisplayViewController.m */,
+				CE2C67D9227F769300AEF1D0 /* VMConfigDriveCreateViewController.h */,
+				CE2C67DA227F769300AEF1D0 /* VMConfigDriveCreateViewController.m */,
 				CE74C287225D88ED004E4FF1 /* VMConfigDriveDetailViewController.h */,
 				CE74C27E225D88EC004E4FF1 /* VMConfigDriveDetailViewController.m */,
+				CE2C67D6227F6F1200AEF1D0 /* VMConfigDrivePickerViewController.h */,
+				CE2C67D7227F6F1200AEF1D0 /* VMConfigDrivePickerViewController.m */,
 				CE7BED4A225FBB8600A1E1B6 /* VMConfigDrivesViewController.h */,
 				CE7BED4B225FBB8600A1E1B6 /* VMConfigDrivesViewController.m */,
 				CE5E4956225C5A4400148CEF /* VMConfigExistingViewController.h */,
@@ -1365,6 +1375,8 @@
 				CE36B23222753123004A1435 /* qapi-commands-audio.c in Sources */,
 				CE36B25D22753123004A1435 /* qapi-events-net.c in Sources */,
 				CE36B21422753123004A1435 /* qapi-types-run-state.c in Sources */,
+				CE2C67D8227F6F1200AEF1D0 /* VMConfigDrivePickerViewController.m in Sources */,
+				CE2C67DB227F769300AEF1D0 /* VMConfigDriveCreateViewController.m in Sources */,
 				CE36B23122753123004A1435 /* qapi-commands-rocker.c in Sources */,
 				CE26FC25226EBC5A0090BE9B /* CSMain.m in Sources */,
 				CE36B22022753123004A1435 /* qapi-events.c in Sources */,

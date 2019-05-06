@@ -16,6 +16,7 @@
 
 #import "VMConfigDriveDetailViewController.h"
 #import "UTMConfiguration.h"
+#import "VMConfigDrivePickerViewController.h"
 
 @interface VMConfigDriveDetailViewController ()
 
@@ -27,17 +28,21 @@
     [super viewDidLoad];
 }
 
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    [self refreshViewFromConfiguration];
+}
+
 - (void)refreshViewFromConfiguration {
     [super refreshViewFromConfiguration];
     self.driveLocationPickerActive = NO;
-    UTMNewDrive *driveParams = [self.configuration driveNewParamsAtIndex:self.driveIndex];
-    self.driveImageExisting = !driveParams.valid;
-    self.nonexistingImageSize = driveParams.sizeMB;
-    self.nonexistingImageExpandingSwitch.on = driveParams.isQcow2;
-    self.nonexistingPathName.text = [self.configuration driveImagePathForIndex:self.driveIndex];
-    self.existingPathLabel.text = [self.configuration driveImagePathForIndex:self.driveIndex];
-    self.isCdromSwitch.on = [self.configuration driveIsCdromForIndex:self.driveIndex];
-    self.driveInterfaceType = [self.configuration driveInterfaceTypeForIndex:self.driveIndex];
+    if (self.valid) {
+        self.existingPathLabel.text = [self.configuration driveImagePathForIndex:self.driveIndex];
+        self.isCdromSwitch.on = [self.configuration driveIsCdromForIndex:self.driveIndex];
+        self.driveInterfaceType = [self.configuration driveInterfaceTypeForIndex:self.driveIndex];
+    } else {
+        self.driveInterfaceType = [UTMConfiguration defaultDriveInterface];
+    }
 }
 
 #pragma mark - Properties
@@ -47,35 +52,12 @@
     [self pickerCell:self.driveLocationPickerCell setActive:driveLocationPickerActive];
 }
 
-- (void)setDriveImageExisting:(BOOL)driveImageExisting {
-    _driveImageExisting = driveImageExisting;
-    if (driveImageExisting) {
-        [self cells:self.nonexistingImageCells setHidden:YES];
-        [self cells:self.existingImageCells setHidden:NO];
-        [self reloadDataAnimated:self.doneLoadingConfiguration];
-        [self.driveTypeExistingCell setAccessoryType:UITableViewCellAccessoryCheckmark];
-        [self.driveTypeNewCell setAccessoryType:UITableViewCellAccessoryNone];
-    } else {
-        [self cells:self.existingImageCells setHidden:YES];
-        [self cells:self.nonexistingImageCells setHidden:NO];
-        [self reloadDataAnimated:self.doneLoadingConfiguration];
-        [self.driveTypeExistingCell setAccessoryType:UITableViewCellAccessoryNone];
-        [self.driveTypeNewCell setAccessoryType:UITableViewCellAccessoryCheckmark];
-    }
-}
-
 - (void)setDriveInterfaceType:(NSString *)driveInterfaceType {
     _driveInterfaceType = driveInterfaceType;
-    [self.configuration setDriveInterfaceType:driveInterfaceType forIndex:self.driveIndex];
+    if (self.valid) {
+        [self.configuration setDriveInterfaceType:driveInterfaceType forIndex:self.driveIndex];
+    }
     self.driveLocationLabel.text = driveInterfaceType;
-}
-
-- (NSUInteger)nonexistingImageSize {
-    return [self.nonexistingImageSizeField.text intValue];
-}
-
-- (void)setNonexistingImageSize:(NSUInteger)nonexistingImageSize {
-    self.nonexistingImageSizeField.text = [NSString stringWithFormat:@"%lu", nonexistingImageSize];
 }
 
 #pragma mark - Table delegate
@@ -83,18 +65,6 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     if ([tableView cellForRowAtIndexPath:indexPath] == self.driveLocationCell) {
         self.driveLocationPickerActive = !self.driveLocationPickerActive;
-        [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    }
-    if ([tableView cellForRowAtIndexPath:indexPath] == self.driveTypeExistingCell) {
-        UTMNewDrive *driveParams = [self.configuration driveNewParamsAtIndex:self.driveIndex];
-        self.driveImageExisting = YES;
-        driveParams.valid = NO;
-        [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    }
-    if ([tableView cellForRowAtIndexPath:indexPath] == self.driveTypeNewCell) {
-        UTMNewDrive *driveParams = [self.configuration driveNewParamsAtIndex:self.driveIndex];
-        self.driveImageExisting = NO;
-        driveParams.valid = YES;
         [tableView deselectRowAtIndexPath:indexPath animated:YES];
     }
 }
@@ -139,31 +109,35 @@
     }
 }
 
+#pragma mark - Navigation
+
+// In a storyboard-based application, you will often want to do a little preparation before navigation
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
+    if ([segue.identifier isEqualToString:@"selectDiskSegue"]) {
+        NSAssert([segue.destinationViewController conformsToProtocol:@protocol(UTMConfigurationDelegate)], @"Invalid segue destination");
+        id<UTMConfigurationDelegate> controller = (id<UTMConfigurationDelegate>)segue.destinationViewController;
+        controller.configuration = self.configuration;
+    }
+}
+
+- (IBAction)unwindToDriveDetailFromDrivePicker:(UIStoryboardSegue*)sender {
+    NSAssert([sender.sourceViewController isKindOfClass:[VMConfigDrivePickerViewController class]], @"Invalid segue destination");
+    VMConfigDrivePickerViewController *source = (VMConfigDrivePickerViewController *)sender.sourceViewController;
+    if (!self.valid) {
+        self.valid = YES;
+        self.driveIndex = [self.configuration newDrive:source.selectedName interface:self.driveInterfaceType isCdrom:self.isCdromSwitch.on];
+    } else {
+        [self.configuration setImagePath:source.selectedName forIndex:self.driveIndex];
+    }
+}
+
 #pragma mark - Event handlers
-
-- (IBAction)nonexistingImageExpandingSwitchChanged:(UISwitch *)sender {
-    NSAssert(sender == self.nonexistingImageExpandingSwitch, @"Invalid sender");
-    [self.configuration driveNewParamsAtIndex:self.driveIndex].isQcow2 = sender.on;
-}
-
-- (IBAction)existingImageMakeCopySwitchChanged:(UISwitch *)sender {
-    NSAssert(sender == self.existingImageMakeCopySwitch, @"Invalid sender");
-    // TODO: implement me
-}
-
-- (IBAction)nonexistingPathNameChanged:(UITextField *)sender {
-    NSAssert(sender == self.nonexistingPathName, @"Invalid sender");
-    [self.configuration setImagePath:sender.text forIndex:self.driveIndex];
-}
-
-- (IBAction)nonexistingImageSizeChanged:(UITextField *)sender {
-    NSAssert(sender == self.nonexistingImageSizeField, @"Invalid sender");
-    [self.configuration driveNewParamsAtIndex:self.driveIndex].sizeMB = self.nonexistingImageSize;
-}
 
 - (IBAction)isCdromSwitchChanged:(UISwitch *)sender {
     NSAssert(sender == self.isCdromSwitch, @"Invalid sender");
-    [self.configuration setDriveIsCdrom:sender.on forIndex:self.driveIndex];
+    if (self.valid) {
+        [self.configuration setDriveIsCdrom:sender.on forIndex:self.driveIndex];
+    }
 }
 
 @end
