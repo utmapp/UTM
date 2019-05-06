@@ -70,7 +70,7 @@
         [self pushArgv:@"curses"];
     } else {
         [self pushArgv:@"-spice"];
-        [self pushArgv:@"port=5930,addr=127.0.0.1,disable-ticketing,image-compression=off,playback-compression=off,streaming-video=filter"];
+        [self pushArgv:@"port=5930,addr=127.0.0.1,disable-ticketing,image-compression=off,playback-compression=off,streaming-video=off"];
         [self pushArgv:@"-vga"];
         [self pushArgv:@"qxl"];
     }
