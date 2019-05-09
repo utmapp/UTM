@@ -15,14 +15,15 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "VMKeyboardViewDelegate.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface VMKeyboardView : UIView <UITextInputTraits, UIKeyInput>
+IB_DESIGNABLE @interface VMKeyboardButton : UIButton
 
-@property (nonatomic, weak) IBOutlet id<VMKeyboardViewDelegate> delegate;
-@property (nonatomic, readwrite, strong) IBOutlet UIView *inputAccessoryView;
+@property (nonatomic, assign) IBInspectable UIKeyboardAppearance keyAppearance;
+@property (nonatomic, assign) IBInspectable BOOL secondary;
+@property (nonatomic, assign) IBInspectable BOOL toggleable;
+@property (nonatomic, assign) IBInspectable int scanCode;
 
 @end
 

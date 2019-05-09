@@ -29,7 +29,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) UTMVirtualMachine *vm;
 @property (weak, nonatomic) IBOutlet MTKView *mtkView;
 @property (weak, nonatomic) IBOutlet VMKeyboardView *keyboardView;
-@property (strong, nonatomic) IBOutlet UIView *inputAccessoryView;
+@property (strong, nonatomic) IBOutlet UIInputView *inputAccessoryView;
 @property (strong, nonatomic) IBOutlet UIView *toolbarAccessoryView;
 @property (strong, nonatomic) UISelectionFeedbackGenerator *clickFeedbackGenerator;
 @property (strong, nonatomic) UIImpactFeedbackGenerator *resizeFeedbackGenerator;

@@ -269,6 +269,7 @@
 		CED33AE32267893D00FF1977 /* UTMQemuImg.m in Sources */ = {isa = PBXBuildFile; fileRef = CED33AE22267893D00FF1977 /* UTMQemuImg.m */; };
 		CED33AE62267CAB500FF1977 /* VMDisplayMetalViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CED33AE52267CAB500FF1977 /* VMDisplayMetalViewController.m */; };
 		CEDC1DF22260EE4B008D9A6D /* StaticDataTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CEDC1DF12260EE4B008D9A6D /* StaticDataTableViewController.m */; };
+		CEEB66462284B942002737B2 /* VMKeyboardButton.m in Sources */ = {isa = PBXBuildFile; fileRef = CEEB66452284B942002737B2 /* VMKeyboardButton.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -722,6 +723,8 @@
 		CED33AE52267CAB500FF1977 /* VMDisplayMetalViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VMDisplayMetalViewController.m; sourceTree = "<group>"; };
 		CEDC1DF02260EE4B008D9A6D /* StaticDataTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StaticDataTableViewController.h; sourceTree = "<group>"; };
 		CEDC1DF12260EE4B008D9A6D /* StaticDataTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StaticDataTableViewController.m; sourceTree = "<group>"; };
+		CEEB66442284B942002737B2 /* VMKeyboardButton.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VMKeyboardButton.h; sourceTree = "<group>"; };
+		CEEB66452284B942002737B2 /* VMKeyboardButton.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VMKeyboardButton.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1221,6 +1224,8 @@
 			children = (
 				CED33AE42267CAB500FF1977 /* VMDisplayMetalViewController.h */,
 				CED33AE52267CAB500FF1977 /* VMDisplayMetalViewController.m */,
+				CEEB66442284B942002737B2 /* VMKeyboardButton.h */,
+				CEEB66452284B942002737B2 /* VMKeyboardButton.m */,
 				CE4507D0226A5BE200A28D22 /* VMKeyboardView.h */,
 				CE4507D1226A5BE200A28D22 /* VMKeyboardView.m */,
 				CE4507D3226A5C9900A28D22 /* VMKeyboardViewDelegate.h */,
@@ -1434,6 +1439,7 @@
 				CE31C24B225EA37400A965DD /* VMConfigViewController.m in Sources */,
 				CE36B23722753123004A1435 /* qapi-visit-block-core.c in Sources */,
 				CE36B24C22753123004A1435 /* qapi-visit-misc.c in Sources */,
+				CEEB66462284B942002737B2 /* VMKeyboardButton.m in Sources */,
 				CE36B281227668D1004A1435 /* UTMQemuManager.m in Sources */,
 				CE36B26422753123004A1435 /* qapi-events-authz.c in Sources */,
 				CE74C28C225D88ED004E4FF1 /* VMConfigDriveDetailViewController.m in Sources */,

@@ -1929,6 +1929,7 @@
                                 </constraints>
                                 <connections>
                                     <outlet property="delegate" destination="ckC-eO-gxn" id="84Z-Xs-yhV"/>
+                                    <outlet property="inputAccessoryView" destination="H7m-pq-dCg" id="2hf-h9-mbD"/>
                                 </connections>
                             </view>
                             <mtkView contentMode="scaleToFill" colorPixelFormat="BGRA8Unorm" depthStencilPixelFormat="Depth32Float" translatesAutoresizingMaskIntoConstraints="NO" id="ZK0-vH-7ok">
@@ -2106,23 +2107,297 @@
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="DZc-Sg-gjO" userLabel="First Responder" sceneMemberID="firstResponder"/>
-                <view contentMode="scaleToFill" id="H7m-pq-dCg">
-                    <rect key="frame" x="0.0" y="0.0" width="300" height="40"/>
+                <view contentMode="scaleToFill" id="H7m-pq-dCg" customClass="UIInputView">
+                    <rect key="frame" x="0.0" y="0.0" width="1000" height="45"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     <subviews>
-                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="F32-dg-1Zk">
-                            <rect key="frame" x="245" y="5" width="39" height="30"/>
-                            <state key="normal" title="Close"/>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="F32-dg-1Zk">
+                            <rect key="frame" x="954" y="7.6666666666666679" width="30" height="30.000000000000004"/>
+                            <state key="normal" image="Keyboard Hide"/>
                             <connections>
                                 <action selector="keyboardDonePressed:" destination="ckC-eO-gxn" eventType="touchUpInside" id="Gwz-Os-LSp"/>
                             </connections>
                         </button>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="bHg-KE-i2P">
+                            <rect key="frame" x="916" y="7.6666666666666679" width="30" height="30.000000000000004"/>
+                            <state key="normal" image="Keyboard Paste"/>
+                        </button>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="1LD-5d-0Ee" customClass="VMKeyboardButton">
+                            <rect key="frame" x="16" y="2.6666666666666679" width="30" height="40"/>
+                            <constraints>
+                                <constraint firstAttribute="height" constant="40" id="tMu-Wu-Fyk"/>
+                            </constraints>
+                            <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                            <state key="normal" title="⌃">
+                                <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
+                            </state>
+                        </button>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="PvO-bn-C3P" customClass="VMKeyboardButton">
+                            <rect key="frame" x="54" y="2.6666666666666679" width="30" height="40"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                            <state key="normal" title="⌥">
+                                <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
+                            </state>
+                        </button>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="XWu-4O-XGa" customClass="VMKeyboardButton">
+                            <rect key="frame" x="92" y="2.6666666666666679" width="30" height="40"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                            <state key="normal" title="⌘">
+                                <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
+                            </state>
+                        </button>
+                        <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" ambiguous="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2BY-mt-E6G">
+                            <rect key="frame" x="130" y="0.0" width="778" height="45"/>
+                            <subviews>
+                                <view contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ABA-n5-7v4">
+                                    <rect key="frame" x="0.0" y="2.6666666666666679" width="697" height="40"/>
+                                    <subviews>
+                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="BXG-l7-BeY" customClass="VMKeyboardButton">
+                                            <rect key="frame" x="0.0" y="2.6666666666666679" width="30" height="40"/>
+                                            <constraints>
+                                                <constraint firstAttribute="height" constant="40" id="rj8-90-AYn"/>
+                                            </constraints>
+                                            <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                            <state key="normal" title="⇥">
+                                                <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
+                                            </state>
+                                        </button>
+                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="yDQ-hh-V1x" customClass="VMKeyboardButton">
+                                            <rect key="frame" x="38" y="2.6666666666666679" width="30" height="40"/>
+                                            <constraints>
+                                                <constraint firstAttribute="height" constant="40" id="rbj-wP-Bcc"/>
+                                            </constraints>
+                                            <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                            <state key="normal" title="⎋">
+                                                <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
+                                            </state>
+                                        </button>
+                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="wPb-ec-tXw" customClass="VMKeyboardButton">
+                                            <rect key="frame" x="76" y="2.6666666666666679" width="30" height="40"/>
+                                            <constraints>
+                                                <constraint firstAttribute="height" constant="40" id="afK-W2-ZsH"/>
+                                            </constraints>
+                                            <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                            <state key="normal" title="F1">
+                                                <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
+                                            </state>
+                                        </button>
+                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="m3u-Hy-WNb" customClass="VMKeyboardButton">
+                                            <rect key="frame" x="114" y="2.6666666666666679" width="30" height="40"/>
+                                            <constraints>
+                                                <constraint firstAttribute="height" constant="40" id="dQO-4c-ITP"/>
+                                            </constraints>
+                                            <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                            <state key="normal" title="F2">
+                                                <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
+                                            </state>
+                                        </button>
+                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="4XD-uH-MNJ" customClass="VMKeyboardButton">
+                                            <rect key="frame" x="152" y="2.6666666666666679" width="30" height="40"/>
+                                            <constraints>
+                                                <constraint firstAttribute="height" constant="40" id="k1L-ec-ZH1"/>
+                                            </constraints>
+                                            <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                            <state key="normal" title="F3">
+                                                <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
+                                            </state>
+                                        </button>
+                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="876-Dc-Xg3" customClass="VMKeyboardButton">
+                                            <rect key="frame" x="190" y="2.6666666666666679" width="30" height="40"/>
+                                            <constraints>
+                                                <constraint firstAttribute="height" constant="40" id="a1R-WF-bFZ"/>
+                                            </constraints>
+                                            <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                            <state key="normal" title="F4">
+                                                <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
+                                            </state>
+                                        </button>
+                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ZrI-oI-jIY" customClass="VMKeyboardButton">
+                                            <rect key="frame" x="228" y="2.6666666666666679" width="30" height="40"/>
+                                            <constraints>
+                                                <constraint firstAttribute="height" constant="40" id="QtO-ZW-OP8"/>
+                                            </constraints>
+                                            <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                            <state key="normal" title="F5">
+                                                <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
+                                            </state>
+                                        </button>
+                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="wMD-ug-3bW" customClass="VMKeyboardButton">
+                                            <rect key="frame" x="266" y="2.6666666666666679" width="30" height="40"/>
+                                            <constraints>
+                                                <constraint firstAttribute="height" constant="40" id="Lb0-zU-mzB"/>
+                                            </constraints>
+                                            <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                            <state key="normal" title="F6">
+                                                <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
+                                            </state>
+                                        </button>
+                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="yuk-bm-ipJ" customClass="VMKeyboardButton">
+                                            <rect key="frame" x="304" y="2.6666666666666679" width="30" height="40"/>
+                                            <constraints>
+                                                <constraint firstAttribute="height" constant="40" id="Lns-vu-cm9"/>
+                                            </constraints>
+                                            <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                            <state key="normal" title="F7">
+                                                <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
+                                            </state>
+                                        </button>
+                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="2Ed-0S-kjc" customClass="VMKeyboardButton">
+                                            <rect key="frame" x="342" y="2.6666666666666679" width="30" height="40"/>
+                                            <constraints>
+                                                <constraint firstAttribute="height" constant="40" id="Skb-rn-myb"/>
+                                            </constraints>
+                                            <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                            <state key="normal" title="F8">
+                                                <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
+                                            </state>
+                                        </button>
+                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="n2Z-fx-LHS" customClass="VMKeyboardButton">
+                                            <rect key="frame" x="380" y="2.6666666666666679" width="30" height="40"/>
+                                            <constraints>
+                                                <constraint firstAttribute="height" constant="40" id="53r-9g-tGr"/>
+                                            </constraints>
+                                            <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                            <state key="normal" title="F9">
+                                                <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
+                                            </state>
+                                        </button>
+                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8zW-rN-u2M" customClass="VMKeyboardButton">
+                                            <rect key="frame" x="418" y="2.6666666666666679" width="33" height="40"/>
+                                            <constraints>
+                                                <constraint firstAttribute="height" constant="40" id="tGw-lp-M14"/>
+                                            </constraints>
+                                            <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                            <state key="normal" title="F10">
+                                                <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
+                                            </state>
+                                        </button>
+                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="7Jq-kj-K2V" customClass="VMKeyboardButton">
+                                            <rect key="frame" x="459" y="2.6666666666666679" width="30" height="40"/>
+                                            <constraints>
+                                                <constraint firstAttribute="height" constant="40" id="rFV-iR-zvw"/>
+                                            </constraints>
+                                            <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                            <state key="normal" title="F11">
+                                                <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
+                                            </state>
+                                        </button>
+                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="EIz-R9-Ca8" customClass="VMKeyboardButton">
+                                            <rect key="frame" x="497" y="2.6666666666666679" width="32" height="40"/>
+                                            <constraints>
+                                                <constraint firstAttribute="height" constant="40" id="Ee3-ag-4VF"/>
+                                            </constraints>
+                                            <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                            <state key="normal" title="F12">
+                                                <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
+                                            </state>
+                                        </button>
+                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="cMr-vl-R93" customClass="VMKeyboardButton">
+                                            <rect key="frame" x="537" y="2.6666666666666679" width="30" height="40"/>
+                                            <constraints>
+                                                <constraint firstAttribute="height" constant="40" id="7M5-c3-vDS"/>
+                                            </constraints>
+                                            <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                            <state key="normal" title="↑">
+                                                <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
+                                            </state>
+                                        </button>
+                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="sOo-ak-Mlv" customClass="VMKeyboardButton">
+                                            <rect key="frame" x="575" y="2.6666666666666679" width="30" height="40"/>
+                                            <constraints>
+                                                <constraint firstAttribute="height" constant="40" id="hKT-0R-ESI"/>
+                                            </constraints>
+                                            <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                            <state key="normal" title="↓">
+                                                <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
+                                            </state>
+                                        </button>
+                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="nG1-Lj-efg" customClass="VMKeyboardButton">
+                                            <rect key="frame" x="613" y="2.6666666666666679" width="30" height="40"/>
+                                            <constraints>
+                                                <constraint firstAttribute="height" constant="40" id="h1i-Wu-gDe"/>
+                                            </constraints>
+                                            <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                            <state key="normal" title="←">
+                                                <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
+                                            </state>
+                                        </button>
+                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="6Oy-qX-zoY" customClass="VMKeyboardButton">
+                                            <rect key="frame" x="651" y="2.6666666666666679" width="30" height="40"/>
+                                            <constraints>
+                                                <constraint firstAttribute="height" constant="40" id="JPS-VM-OVo"/>
+                                            </constraints>
+                                            <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                            <state key="normal" title="→">
+                                                <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
+                                            </state>
+                                        </button>
+                                    </subviews>
+                                    <constraints>
+                                        <constraint firstItem="yDQ-hh-V1x" firstAttribute="leading" secondItem="BXG-l7-BeY" secondAttribute="trailing" constant="8" id="0yc-zt-eh7"/>
+                                        <constraint firstItem="nG1-Lj-efg" firstAttribute="centerY" secondItem="ABA-n5-7v4" secondAttribute="centerY" id="50c-6x-38E"/>
+                                        <constraint firstItem="sOo-ak-Mlv" firstAttribute="centerY" secondItem="ABA-n5-7v4" secondAttribute="centerY" id="7XS-kW-0fV"/>
+                                        <constraint firstItem="2Ed-0S-kjc" firstAttribute="centerY" secondItem="ABA-n5-7v4" secondAttribute="centerY" id="Atn-9y-CMH"/>
+                                        <constraint firstItem="wPb-ec-tXw" firstAttribute="leading" secondItem="yDQ-hh-V1x" secondAttribute="trailing" constant="8" id="B1P-2H-lc5"/>
+                                        <constraint firstItem="8zW-rN-u2M" firstAttribute="leading" secondItem="n2Z-fx-LHS" secondAttribute="trailing" constant="8" id="B7D-cl-jWA"/>
+                                        <constraint firstItem="4XD-uH-MNJ" firstAttribute="leading" secondItem="m3u-Hy-WNb" secondAttribute="trailing" constant="8" id="BAE-Ap-Vrr"/>
+                                        <constraint firstItem="m3u-Hy-WNb" firstAttribute="centerY" secondItem="ABA-n5-7v4" secondAttribute="centerY" id="D34-Y2-SSr"/>
+                                        <constraint firstItem="n2Z-fx-LHS" firstAttribute="leading" secondItem="2Ed-0S-kjc" secondAttribute="trailing" constant="8" id="Fos-fa-dcZ"/>
+                                        <constraint firstItem="876-Dc-Xg3" firstAttribute="centerY" secondItem="ABA-n5-7v4" secondAttribute="centerY" id="GIv-nV-68r"/>
+                                        <constraint firstAttribute="trailingMargin" secondItem="6Oy-qX-zoY" secondAttribute="trailing" constant="8" id="Ha3-52-3ye"/>
+                                        <constraint firstItem="876-Dc-Xg3" firstAttribute="leading" secondItem="4XD-uH-MNJ" secondAttribute="trailing" constant="8" id="IS9-M4-jql"/>
+                                        <constraint firstItem="8zW-rN-u2M" firstAttribute="centerY" secondItem="ABA-n5-7v4" secondAttribute="centerY" id="Ifg-Ll-rRF"/>
+                                        <constraint firstItem="yuk-bm-ipJ" firstAttribute="centerY" secondItem="ABA-n5-7v4" secondAttribute="centerY" id="LzW-Kb-P9D"/>
+                                        <constraint firstItem="BXG-l7-BeY" firstAttribute="centerY" secondItem="ABA-n5-7v4" secondAttribute="centerY" id="M5e-Nh-NLH"/>
+                                        <constraint firstItem="ZrI-oI-jIY" firstAttribute="centerY" secondItem="ABA-n5-7v4" secondAttribute="centerY" id="N6h-Wl-eIy"/>
+                                        <constraint firstItem="ZrI-oI-jIY" firstAttribute="leading" secondItem="876-Dc-Xg3" secondAttribute="trailing" constant="8" id="N8K-oJ-tga"/>
+                                        <constraint firstItem="4XD-uH-MNJ" firstAttribute="centerY" secondItem="ABA-n5-7v4" secondAttribute="centerY" id="OyT-br-1tM"/>
+                                        <constraint firstItem="2Ed-0S-kjc" firstAttribute="leading" secondItem="yuk-bm-ipJ" secondAttribute="trailing" constant="8" id="Pxs-VS-WaD"/>
+                                        <constraint firstItem="wMD-ug-3bW" firstAttribute="centerY" secondItem="ABA-n5-7v4" secondAttribute="centerY" id="SlV-HO-zKM"/>
+                                        <constraint firstItem="wMD-ug-3bW" firstAttribute="leading" secondItem="ZrI-oI-jIY" secondAttribute="trailing" constant="8" id="VUB-ZC-c4d"/>
+                                        <constraint firstItem="BXG-l7-BeY" firstAttribute="leading" secondItem="ABA-n5-7v4" secondAttribute="leading" id="WWr-LW-HWg"/>
+                                        <constraint firstItem="wPb-ec-tXw" firstAttribute="centerY" secondItem="ABA-n5-7v4" secondAttribute="centerY" id="ZVz-OU-tDN"/>
+                                        <constraint firstItem="EIz-R9-Ca8" firstAttribute="centerY" secondItem="ABA-n5-7v4" secondAttribute="centerY" id="aMb-Qe-00L"/>
+                                        <constraint firstItem="EIz-R9-Ca8" firstAttribute="leading" secondItem="7Jq-kj-K2V" secondAttribute="trailing" constant="8" id="eUz-em-J4j"/>
+                                        <constraint firstItem="nG1-Lj-efg" firstAttribute="leading" secondItem="sOo-ak-Mlv" secondAttribute="trailing" constant="8" id="eXw-oJ-SV8"/>
+                                        <constraint firstItem="7Jq-kj-K2V" firstAttribute="leading" secondItem="8zW-rN-u2M" secondAttribute="trailing" constant="8" id="hXH-X8-a3t"/>
+                                        <constraint firstItem="6Oy-qX-zoY" firstAttribute="leading" secondItem="nG1-Lj-efg" secondAttribute="trailing" constant="8" id="lje-On-ngW"/>
+                                        <constraint firstItem="n2Z-fx-LHS" firstAttribute="centerY" secondItem="ABA-n5-7v4" secondAttribute="centerY" id="nH4-Y2-Jv5"/>
+                                        <constraint firstItem="sOo-ak-Mlv" firstAttribute="leading" secondItem="cMr-vl-R93" secondAttribute="trailing" constant="8" id="oi2-Rc-NAV"/>
+                                        <constraint firstItem="7Jq-kj-K2V" firstAttribute="centerY" secondItem="ABA-n5-7v4" secondAttribute="centerY" id="rH6-15-jA4"/>
+                                        <constraint firstItem="6Oy-qX-zoY" firstAttribute="centerY" secondItem="ABA-n5-7v4" secondAttribute="centerY" id="rPE-Hk-mYc"/>
+                                        <constraint firstItem="cMr-vl-R93" firstAttribute="centerY" secondItem="ABA-n5-7v4" secondAttribute="centerY" id="sRD-Bw-waS"/>
+                                        <constraint firstItem="cMr-vl-R93" firstAttribute="leading" secondItem="EIz-R9-Ca8" secondAttribute="trailing" constant="8" id="tZc-vE-Cjq"/>
+                                        <constraint firstItem="m3u-Hy-WNb" firstAttribute="leading" secondItem="wPb-ec-tXw" secondAttribute="trailing" constant="8" id="uCL-pb-GHY"/>
+                                        <constraint firstItem="yDQ-hh-V1x" firstAttribute="centerY" secondItem="ABA-n5-7v4" secondAttribute="centerY" id="und-9b-lQd"/>
+                                        <constraint firstItem="yuk-bm-ipJ" firstAttribute="leading" secondItem="wMD-ug-3bW" secondAttribute="trailing" constant="8" id="vsi-bH-yKp"/>
+                                    </constraints>
+                                </view>
+                            </subviews>
+                            <constraints>
+                                <constraint firstItem="ABA-n5-7v4" firstAttribute="height" secondItem="2BY-mt-E6G" secondAttribute="height" id="5O8-jY-TWK"/>
+                                <constraint firstAttribute="trailing" secondItem="ABA-n5-7v4" secondAttribute="trailing" id="STF-Qa-9AV"/>
+                                <constraint firstItem="ABA-n5-7v4" firstAttribute="leading" secondItem="2BY-mt-E6G" secondAttribute="leading" id="qsd-Qy-0LD"/>
+                            </constraints>
+                        </scrollView>
                     </subviews>
-                    <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <constraints>
-                        <constraint firstItem="F32-dg-1Zk" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="M5c-nM-HyU" secondAttribute="leading" constant="16" id="VLQ-k7-noO"/>
+                        <constraint firstItem="PvO-bn-C3P" firstAttribute="height" secondItem="1LD-5d-0Ee" secondAttribute="height" id="6A4-kW-OUJ"/>
+                        <constraint firstItem="PvO-bn-C3P" firstAttribute="leading" secondItem="1LD-5d-0Ee" secondAttribute="trailing" constant="8" id="9Ev-PW-G2U"/>
+                        <constraint firstItem="2BY-mt-E6G" firstAttribute="top" secondItem="H7m-pq-dCg" secondAttribute="top" id="Dnt-LP-1vA"/>
+                        <constraint firstItem="F32-dg-1Zk" firstAttribute="leading" secondItem="bHg-KE-i2P" secondAttribute="trailing" constant="8" id="Fk5-1S-zYF"/>
+                        <constraint firstItem="bHg-KE-i2P" firstAttribute="centerY" secondItem="H7m-pq-dCg" secondAttribute="centerY" id="HxF-vi-OHW"/>
+                        <constraint firstItem="XWu-4O-XGa" firstAttribute="height" secondItem="PvO-bn-C3P" secondAttribute="height" id="Pfs-5l-gXH"/>
+                        <constraint firstItem="PvO-bn-C3P" firstAttribute="centerY" secondItem="H7m-pq-dCg" secondAttribute="centerY" id="Vat-3y-LUJ"/>
+                        <constraint firstItem="XWu-4O-XGa" firstAttribute="leading" secondItem="PvO-bn-C3P" secondAttribute="trailing" constant="8" id="XQn-y7-wzH"/>
+                        <constraint firstItem="1LD-5d-0Ee" firstAttribute="leading" secondItem="M5c-nM-HyU" secondAttribute="leading" constant="16" id="a0J-Ca-tBj"/>
+                        <constraint firstItem="2BY-mt-E6G" firstAttribute="leading" secondItem="XWu-4O-XGa" secondAttribute="trailing" constant="8" id="aN7-kB-3Ey"/>
                         <constraint firstItem="M5c-nM-HyU" firstAttribute="trailing" secondItem="F32-dg-1Zk" secondAttribute="trailing" constant="16" id="bYG-2J-8fy"/>
                         <constraint firstItem="F32-dg-1Zk" firstAttribute="centerY" secondItem="H7m-pq-dCg" secondAttribute="centerY" id="m8W-A2-4ck"/>
+                        <constraint firstItem="XWu-4O-XGa" firstAttribute="centerY" secondItem="H7m-pq-dCg" secondAttribute="centerY" id="mIs-YS-zGd"/>
+                        <constraint firstAttribute="bottom" secondItem="2BY-mt-E6G" secondAttribute="bottom" id="rbq-Ax-Dy3"/>
+                        <constraint firstItem="bHg-KE-i2P" firstAttribute="leading" secondItem="2BY-mt-E6G" secondAttribute="trailing" constant="8" id="x6k-dL-6qs"/>
+                        <constraint firstItem="1LD-5d-0Ee" firstAttribute="centerY" secondItem="H7m-pq-dCg" secondAttribute="centerY" id="zxj-zy-vb1"/>
                     </constraints>
                     <viewLayoutGuide key="safeArea" id="M5c-nM-HyU"/>
                 </view>
@@ -2394,6 +2669,8 @@
         <image name="Display Icon" width="44" height="44"/>
         <image name="HDD Icon" width="44" height="44"/>
         <image name="Input Icon" width="44" height="44"/>
+        <image name="Keyboard Hide" width="30" height="30"/>
+        <image name="Keyboard Paste" width="30" height="30"/>
         <image name="Networking Icon" width="44" height="44"/>
         <image name="Play Icon" width="50" height="50"/>
         <image name="Printer Icon" width="44" height="44"/>

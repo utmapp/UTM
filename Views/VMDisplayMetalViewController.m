@@ -80,9 +80,6 @@
     
     self.mtkView.delegate = _renderer;
     
-    // Setup keyboard accessory
-    self.keyboardView.inputAccessoryView = self.inputAccessoryView;
-    
     // Set up gesture recognizers because Storyboards is BROKEN and doing it there crashes!
     _swipeUp = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(gestureSwipeUp:)];
     _swipeUp.numberOfTouchesRequired = 3;
