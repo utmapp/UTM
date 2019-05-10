@@ -21,6 +21,7 @@
 #import "CSInput.h"
 #import "UTMQemuManager.h"
 #import "VMConfigExistingViewController.h"
+#import "VMKeyboardButton.h"
 
 @interface VMDisplayMetalViewController ()
 
@@ -396,6 +397,7 @@ static CGFloat CGPointToPixel(CGFloat point) {
 
 - (void)keyboardView:(nonnull VMKeyboardView *)keyboardView didPressKeyUp:(int)scancode {
     [self.vm.primaryInput sendKey:SEND_KEY_RELEASE code:scancode];
+    [self resetModifierToggles];
 }
 
 - (IBAction)keyboardDonePressed:(UIButton *)sender {
@@ -480,6 +482,42 @@ static CGFloat CGPointToPixel(CGFloat point) {
         [self showAlert:NSLocalizedString(@"Hint: To show the toolbar again, use a three-finger swipe down on the screen.", @"Shown once when hiding toolbar.") completion:^(UIAlertAction *action){
             [defaults setBool:YES forKey:@"HasShownHideToolbarAlert"];
         }];
+    }
+}
+
+- (void)sendExtendedKey:(SendKeyType)type code:(int)code {
+    uint32_t x = __builtin_bswap32(code);
+    while ((x & 0xFF) == 0) {
+        x = x >> 8;
+    }
+    while (x) {
+        [self.vm.primaryInput sendKey:SEND_KEY_PRESS code:(x & 0xFF)];
+        x = x >> 8;
+    }
+}
+
+- (void)resetModifierToggles {
+    for (VMKeyboardButton *button in self.customKeyModifierButtons) {
+        button.toggled = NO;
+    }
+}
+
+- (IBAction)customKeyTouchDown:(VMKeyboardButton *)sender {
+    if (!sender.toggleable) {
+        [self sendExtendedKey:SEND_KEY_PRESS code:sender.scanCode];
+    }
+}
+
+- (IBAction)customKeyTouchUp:(VMKeyboardButton *)sender {
+    if (sender.toggleable) {
+        sender.toggled = !sender.toggled;
+    } else {
+        [self resetModifierToggles];
+    }
+    if (sender.toggleable && sender.toggled) {
+        [self sendExtendedKey:SEND_KEY_PRESS code:sender.scanCode];
+    } else {
+        [self sendExtendedKey:SEND_KEY_RELEASE code:sender.scanCode];
     }
 }
 

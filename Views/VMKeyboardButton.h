@@ -24,6 +24,7 @@ IB_DESIGNABLE @interface VMKeyboardButton : UIButton
 @property (nonatomic, assign) IBInspectable BOOL secondary;
 @property (nonatomic, assign) IBInspectable BOOL toggleable;
 @property (nonatomic, assign) IBInspectable int scanCode;
+@property (nonatomic, assign) IBInspectable BOOL toggled;
 
 @end
 

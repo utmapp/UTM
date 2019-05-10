@@ -20,6 +20,7 @@
 
 @class UTMVirtualMachine;
 @class VMKeyboardView;
+@class VMKeyboardButton;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -36,6 +37,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) BOOL lastDisplayChangeResize;
 @property (weak, nonatomic) IBOutlet UIButton *pauseResumeButton;
 @property (weak, nonatomic) IBOutlet UIButton *zoomButton;
+@property (strong, nonatomic) IBOutletCollection(VMKeyboardButton) NSArray *customKeyButtons;
+@property (strong, nonatomic) IBOutletCollection(VMKeyboardButton) NSArray *customKeyModifierButtons;
 
 - (IBAction)gesturePan:(UIPanGestureRecognizer *)sender;
 - (IBAction)gestureTwoPan:(UIPanGestureRecognizer *)sender;
@@ -50,6 +53,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (IBAction)powerPressed:(UIButton *)sender;
 - (IBAction)showKeyboardButton:(UIButton *)sender;
 - (IBAction)hideToolbarButton:(UIButton *)sender;
+- (IBAction)customKeyTouchDown:(VMKeyboardButton *)sender;
+- (IBAction)customKeyTouchUp:(VMKeyboardButton *)sender;
 
 @end
 

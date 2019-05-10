@@ -61,7 +61,7 @@
 }
 
 - (void)chooseBackground {
-    if (self.selected || self.highlighted) {
+    if (self.selected || self.highlighted || (self.toggleable && self.toggled)) {
         self.backgroundColor = self.highlightedColor;
     } else {
         [UIView animateWithDuration:0 delay:0.1 options:UIViewAnimationOptionAllowUserInteraction animations:^{
@@ -79,8 +79,9 @@
     [super setHighlighted:highlighted];
     [self chooseBackground];
 }
-- (void)setSelected:(BOOL)selected {
-    [super setSelected:selected];
+
+- (void)setToggled:(BOOL)toggled {
+    _toggled = toggled;
     [self chooseBackground];
 }
 
