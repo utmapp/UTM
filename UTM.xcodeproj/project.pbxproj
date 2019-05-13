@@ -227,7 +227,6 @@
 		CE550BE422596E790063E575 /* VMListViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = CE550BE322596E790063E575 /* VMListViewCell.m */; };
 		CE5E4958225C5A4400148CEF /* VMConfigExistingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CE5E4957225C5A4400148CEF /* VMConfigExistingViewController.m */; };
 		CE5F165C2261395000F3D56B /* UTMVirtualMachine.m in Sources */ = {isa = PBXBuildFile; fileRef = CE5F165B2261395000F3D56B /* UTMVirtualMachine.m */; };
-		CE66450D2269313200B0849A /* MetalKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE66450C2269313200B0849A /* MetalKit.framework */; };
 		CE664511226935F000B0849A /* CSInput.m in Sources */ = {isa = PBXBuildFile; fileRef = CE664510226935F000B0849A /* CSInput.m */; };
 		CE74C288225D88ED004E4FF1 /* VMConfigNetworkingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CE74C276225D88EC004E4FF1 /* VMConfigNetworkingViewController.m */; };
 		CE74C28A225D88ED004E4FF1 /* VMConfigPrintingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CE74C279225D88EC004E4FF1 /* VMConfigPrintingViewController.m */; };
@@ -270,6 +269,7 @@
 		CED33AE62267CAB500FF1977 /* VMDisplayMetalViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CED33AE52267CAB500FF1977 /* VMDisplayMetalViewController.m */; };
 		CEDC1DF22260EE4B008D9A6D /* StaticDataTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CEDC1DF12260EE4B008D9A6D /* StaticDataTableViewController.m */; };
 		CEEB66462284B942002737B2 /* VMKeyboardButton.m in Sources */ = {isa = PBXBuildFile; fileRef = CEEB66452284B942002737B2 /* VMKeyboardButton.m */; };
+		CEFE75DB228933DE0050ABCC /* gst_ios_init.m in Sources */ = {isa = PBXBuildFile; fileRef = CEFE75D9228933DE0050ABCC /* gst_ios_init.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -725,6 +725,8 @@
 		CEDC1DF12260EE4B008D9A6D /* StaticDataTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StaticDataTableViewController.m; sourceTree = "<group>"; };
 		CEEB66442284B942002737B2 /* VMKeyboardButton.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VMKeyboardButton.h; sourceTree = "<group>"; };
 		CEEB66452284B942002737B2 /* VMKeyboardButton.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VMKeyboardButton.m; sourceTree = "<group>"; };
+		CEFE75D9228933DE0050ABCC /* gst_ios_init.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = gst_ios_init.m; sourceTree = "<group>"; };
+		CEFE75DA228933DE0050ABCC /* gst_ios_init.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = gst_ios_init.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -732,7 +734,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CE66450D2269313200B0849A /* MetalKit.framework in Frameworks */,
 				CE9D19662265425A00355E14 /* libgstautodetect.a in Frameworks */,
 				CE9D19672265425A00355E14 /* libgstaudiotestsrc.a in Frameworks */,
 				CE9D19682265425A00355E14 /* libgstvideoconvert.a in Frameworks */,
@@ -1128,6 +1129,7 @@
 				CE4AA1462262FB58002E4A54 /* CocoaSpice */,
 				CE31C242225E543A00A965DD /* Configuration */,
 				CE5E4954225C593C00148CEF /* ConfigurationViews */,
+				CEFE75D8228933870050ABCC /* gstreamer */,
 				CE5F1659226138AB00F3D56B /* Managers */,
 				CECC76492273A7AE0059B955 /* qapi */,
 				CE2D63CE2265150F00FC7E63 /* Renderer */,
@@ -1270,6 +1272,15 @@
 			path = StaticDataTableViewController;
 			sourceTree = "<group>";
 		};
+		CEFE75D8228933870050ABCC /* gstreamer */ = {
+			isa = PBXGroup;
+			children = (
+				CEFE75DA228933DE0050ABCC /* gst_ios_init.h */,
+				CEFE75D9228933DE0050ABCC /* gst_ios_init.m */,
+			);
+			path = gstreamer;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -1365,6 +1376,7 @@
 				CE36B24422753123004A1435 /* qapi-events-misc.c in Sources */,
 				CECC76542273A7D50059B955 /* qapi-visit-core.c in Sources */,
 				CE36B25022753123004A1435 /* qapi-types-rdma.c in Sources */,
+				CEFE75DB228933DE0050ABCC /* gst_ios_init.m in Sources */,
 				CE36B21B22753123004A1435 /* qapi-events-run-state.c in Sources */,
 				CECC76512273A7D50059B955 /* cf-input-visitor.c in Sources */,
 				CE74C28F225D88ED004E4FF1 /* VMConfigSoundViewController.m in Sources */,
