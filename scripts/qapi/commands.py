@@ -3,13 +3,13 @@ QAPI command marshaller generator
 
 Copyright IBM, Corp. 2011
 Copyright (C) 2014-2018 Red Hat, Inc.
-Copyright (c) 2019 Halts
+Copyright (c) 2019 osy
 
 Authors:
  Anthony Liguori <aliguori@us.ibm.com>
  Michael Roth <mdroth@linux.vnet.ibm.com>
  Markus Armbruster <armbru@redhat.com>
- Halts <dev@getutm.app>
+ osy <dev@getutm.app>
 
 This work is licensed under the terms of the GNU GPL, version 2.
 See the COPYING file in the top-level directory.

@@ -17,7 +17,7 @@
 			<string>Owner</string>
 			<key>LSItemContentTypes</key>
 			<array>
-				<string>com.halts.utm</string>
+				<string>com.osy86.utm</string>
 			</array>
 			<key>LSTypeIsPackage</key>
 			<true/>
@@ -76,7 +76,7 @@
 			<key>UTTypeIconFiles</key>
 			<array/>
 			<key>UTTypeIdentifier</key>
-			<string>com.halts.utm</string>
+			<string>com.osy86.utm</string>
 			<key>UTTypeTagSpecification</key>
 			<dict>
 				<key>public.filename-extension</key>

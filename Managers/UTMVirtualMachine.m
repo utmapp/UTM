@@ -1,5 +1,5 @@
 //
-// Copyright © 2019 Halts. All rights reserved.
+// Copyright © 2019 osy. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@
 const int kMaxConnectionTries = 10; // qemu needs to start spice server first
 const int64_t kStopTimeout = (int64_t)30*1000000000;
 
-NSString *const kUTMErrorDomain = @"com.halts.utm";
+NSString *const kUTMErrorDomain = @"com.osy86.utm";
 NSString *const kUTMBundleConfigFilename = @"config.plist";
 NSString *const kUTMBundleExtension = @"utm";
 

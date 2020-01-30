@@ -3,12 +3,12 @@ QAPI event generator
 
 Copyright (c) 2014 Wenchao Xia
 Copyright (c) 2015-2018 Red Hat Inc.
-Copyright (c) 2019 Halts
+Copyright (c) 2019 osy
 
 Authors:
  Wenchao Xia <wenchaoqemu@gmail.com>
  Markus Armbruster <armbru@redhat.com>
- Halts <dev@getutm.app>
+ osy <dev@getutm.app>
 
 This work is licensed under the terms of the GNU GPL, version 2.
 See the COPYING file in the top-level directory.

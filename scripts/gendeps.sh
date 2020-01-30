@@ -31,7 +31,7 @@ SPICE_PROTOCOL_SRC="https://www.spice-space.org/download/releases/spice-protocol
 SPICE_SERVER_SRC="https://www.spice-space.org/download/releases/spice-server/spice-0.14.1.tar.bz2"
 NCURSES_SRC="https://invisible-mirror.net/archives/ncurses/ncurses-6.1.tar.gz"
 QEMU_SRC="https://download.qemu.org/qemu-4.0.0.tar.xz"
-QEMU_GIT="https://github.com/halts/qemu.git"
+QEMU_GIT="https://github.com/utmapp/qemu.git"
 
 # Source files for spice-client
 JSON_GLIB_SRC="https://ftp.gnome.org/pub/GNOME/sources/json-glib/1.2/json-glib-1.2.8.tar.xz"

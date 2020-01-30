@@ -1,5 +1,5 @@
 From ae790c9a8192688489c5e809a3c312c5d2855d58 Mon Sep 17 00:00:00 2001
-From: halts <dev@getutm.app>
+From: osy <osy86@users.noreply.github.com>
 Date: Wed, 24 Apr 2019 20:16:48 -0700
 Subject: [PATCH 1/9] build: Add support for iOS host
 
@@ -417,7 +417,7 @@ index 2d93cf404e..75b2593c4d 100644
 2.20.1 (Apple Git-117)
 
 From f4ff66da545ed13663bc01204f6b564ce1150abb Mon Sep 17 00:00:00 2001
-From: halts <dev@getutm.app>
+From: osy <osy86@users.noreply.github.com>
 Date: Wed, 27 Mar 2019 14:47:00 -0700
 Subject: [PATCH 2/9] build: Added support for building QEMU as a shared
  library
@@ -600,7 +600,7 @@ index c696ad2a13..5f76adf710 100644
 2.20.1 (Apple Git-117)
 
 From 561368aa75b77e8c2a91d832de7758cb9b6b67a5 Mon Sep 17 00:00:00 2001
-From: halts <dev@getutm.app>
+From: osy <osy86@users.noreply.github.com>
 Date: Thu, 28 Mar 2019 14:47:23 -0700
 Subject: [PATCH 3/9] Revert "tcg: allocate TB structs before the corresponding
  translated code"
@@ -837,7 +837,7 @@ index 32b7cf3489..55dba9878b 100644
 2.20.1 (Apple Git-117)
 
 From 9cc54ea7c91490e4c2740661f03e01208a04a1f2 Mon Sep 17 00:00:00 2001
-From: halts <dev@getutm.app>
+From: osy <osy86@users.noreply.github.com>
 Date: Fri, 29 Mar 2019 15:40:52 -0700
 Subject: [PATCH 4/9] tcg: fix remaining issues with iOS JIT
 
@@ -1015,7 +1015,7 @@ index a97ee9993e..ee6bbb9f89 100644
 2.20.1 (Apple Git-117)
 
 From bc54672eacd6e75d90d0f5c678f811287c05fb70 Mon Sep 17 00:00:00 2001
-From: halts <dev@getutm.app>
+From: osy <osy86@users.noreply.github.com>
 Date: Fri, 29 Mar 2019 15:41:07 -0700
 Subject: [PATCH 5/9] coroutine: add libucontext as external library
 
@@ -1037,7 +1037,7 @@ index ceafb0ee29..d862f58ac7 100644
  	url = https://github.com/tianocore/edk2.git
 +[submodule "libucontext"]
 +	path = libucontext
-+	url = https://github.com/halts/libucontext.git
++	url = https://github.com/utmapp/libucontext.git
 diff --git a/Makefile b/Makefile
 index a90c08b60a..f6743d30bb 100644
 --- a/Makefile
@@ -1158,7 +1158,7 @@ index 090ba21a13..7bfb64ba58 100644
 2.20.1 (Apple Git-117)
 
 From cb53d9b4cc6a89fd22146fee5624fb6c4d44c599 Mon Sep 17 00:00:00 2001
-From: halts <dev@getutm.app>
+From: osy <osy86@users.noreply.github.com>
 Date: Fri, 5 Apr 2019 13:59:41 -0700
 Subject: [PATCH 6/9] tcg (aarch64 target): use indirect jumps on iOS for TB
  linking
@@ -1189,7 +1189,7 @@ index d6d1195a38..b8190fe3e2 100644
 2.20.1 (Apple Git-117)
 
 From 5101e9ad6f2b464ff1c8f68867a8defd2c1e9048 Mon Sep 17 00:00:00 2001
-From: halts <dev@getutm.app>
+From: osy <osy86@users.noreply.github.com>
 Date: Fri, 5 Apr 2019 14:01:06 -0700
 Subject: [PATCH 7/9] tcg (aarch64 target): fix indirect tb jumps
 
@@ -1224,7 +1224,7 @@ index 6a0822606e..deaff07b23 100644
 2.20.1 (Apple Git-117)
 
 From 2cb3bec86b9fcc36b5b746130fdf5f08cdbcf76e Mon Sep 17 00:00:00 2001
-From: halts <dev@getutm.app>
+From: osy <osy86@users.noreply.github.com>
 Date: Fri, 5 Apr 2019 16:25:12 -0700
 Subject: [PATCH 8/9] tcg (iOS): implemented improved exec memory lock/unlock
 
@@ -1567,7 +1567,7 @@ index 55dba9878b..417923d96d 100644
 2.20.1 (Apple Git-117)
 
 From 60f35cb2976ecb11be8abf4338c6eb31b490bc7e Mon Sep 17 00:00:00 2001
-From: halts <dev@getutm.app>
+From: osy <osy86@users.noreply.github.com>
 Date: Mon, 15 Apr 2019 23:42:15 -0700
 Subject: [PATCH 9/9] qemu-img: support building as shared library
 

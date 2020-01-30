@@ -1309,7 +1309,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastUpgradeCheck = 1020;
-				ORGANIZATIONNAME = Halts;
+				ORGANIZATIONNAME = osy;
 				TargetAttributes = {
 					CE550BC8225947990063E575 = {
 						CreatedOnToolsVersion = 10.2;
@@ -1648,7 +1648,7 @@
 					"$(PROJECT_DIR)/sysroot/lib",
 					"$(PROJECT_DIR)/sysroot/lib/gstreamer-1.0",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.halts.UTM;
+				PRODUCT_BUNDLE_IDENTIFIER = com.osy86.UTM;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -1679,7 +1679,7 @@
 					"$(PROJECT_DIR)/sysroot/lib",
 					"$(PROJECT_DIR)/sysroot/lib/gstreamer-1.0",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.halts.UTM;
+				PRODUCT_BUNDLE_IDENTIFIER = com.osy86.UTM;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
