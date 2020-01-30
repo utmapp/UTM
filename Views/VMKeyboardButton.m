@@ -28,7 +28,15 @@
     self.layer.shadowOpacity = 0.4;
     self.layer.shadowRadius = 0;
     self.backgroundColor = self.defaultColor;
-    self.keyAppearance = UIKeyboardAppearanceLight;
+    if (@available(iOS 13.0, *)) {
+        if (UITraitCollection.currentTraitCollection.userInterfaceStyle == UIUserInterfaceStyleDark) {
+            self.keyAppearance = UIKeyboardAppearanceDark;
+        } else {
+            self.keyAppearance = UIKeyboardAppearanceLight;
+        }
+    } else {
+        self.keyAppearance = UIKeyboardAppearanceLight;
+    }
     self.accessibilityTraits |= UIAccessibilityTraitKeyboardKey;
 }
 
