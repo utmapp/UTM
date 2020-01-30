@@ -52,10 +52,12 @@ static void cs_primary_create(SpiceChannel *channel, gint format,
     CSDisplayMetal *self = (__bridge CSDisplayMetal *)data;
     
     g_assert(format == SPICE_SURFACE_FMT_32_xRGB || format == SPICE_SURFACE_FMT_16_555);
+    dispatch_semaphore_wait(self->_drawLock, DISPATCH_TIME_FOREVER);
     self->_canvasArea = CGRectMake(0, 0, width, height);
     self->_canvasFormat = format;
     self->_canvasStride = stride;
     self->_canvasData = imgdata;
+    dispatch_semaphore_signal(self->_drawLock);
     
     cs_update_monitor_area(channel, NULL, data);
 }
@@ -63,10 +65,13 @@ static void cs_primary_create(SpiceChannel *channel, gint format,
 static void cs_primary_destroy(SpiceDisplayChannel *channel, gpointer data) {
     CSDisplayMetal *self = (__bridge CSDisplayMetal *)data;
     self.ready = NO;
+    
+    dispatch_semaphore_wait(self->_drawLock, DISPATCH_TIME_FOREVER);
     self->_canvasArea = CGRectZero;
     self->_canvasFormat = 0;
     self->_canvasStride = 0;
     self->_canvasData = NULL;
+    dispatch_semaphore_signal(self->_drawLock);
 }
 
 static void cs_invalidate(SpiceChannel *channel,
@@ -226,17 +231,28 @@ static void cs_channel_destroy(SpiceSession *s, SpiceChannel *channel, gpointer 
 }
 
 - (UIImage *)screenshot {
-    if (!_canvasData) {
+    CGImageRef img;
+    CGColorSpaceRef colorSpaceRef = CGColorSpaceCreateDeviceRGB();
+    
+    dispatch_semaphore_wait(_drawLock, DISPATCH_TIME_FOREVER); // TODO: separate read lock so we don't block texture copy
+    if (_canvasData) { // may be destroyed at this point
+        CGDataProviderRef dataProviderRef = CGDataProviderCreateWithData(NULL, _canvasData, _canvasStride * _canvasArea.size.height, nil);
+        img = CGImageCreate(_canvasArea.size.width, _canvasArea.size.height, 8, 32, _canvasStride, colorSpaceRef, kCGBitmapByteOrder32Little | kCGImageAlphaPremultipliedFirst, dataProviderRef, NULL, NO, kCGRenderingIntentDefault);
+        CGDataProviderRelease(dataProviderRef);
+    } else {
+        img = NULL;
+    }
+    dispatch_semaphore_signal(_drawLock);
+    
+    CGColorSpaceRelease(colorSpaceRef);
+    
+    if (img) {
+        UIImage *uiimg = [UIImage imageWithCGImage:img];
+        CGImageRelease(img);
+        return uiimg;
+    } else {
         return nil;
     }
-    CGColorSpaceRef colorSpaceRef = CGColorSpaceCreateDeviceRGB();
-    CGDataProviderRef dataProviderRef = CGDataProviderCreateWithData(NULL, _canvasData, _canvasStride * _canvasArea.size.height, nil);
-    CGImageRef img = CGImageCreate(_canvasArea.size.width, _canvasArea.size.height, 8, 32, _canvasStride, colorSpaceRef, kCGBitmapByteOrder32Little | kCGImageAlphaPremultipliedFirst, dataProviderRef, NULL, NO, kCGRenderingIntentDefault);
-    CGColorSpaceRelease(colorSpaceRef);
-    CGDataProviderRelease(dataProviderRef);
-    UIImage *uiimg = [UIImage imageWithCGImage:img];
-    CGImageRelease(img);
-    return uiimg;
 }
 
 @synthesize drawLock = _drawLock;
@@ -346,16 +362,18 @@ static void cs_channel_destroy(SpiceSession *s, SpiceChannel *channel, gpointer 
 
 - (void)drawRegion:(CGRect)rect {
     NSInteger pixelSize = (_canvasFormat == SPICE_SURFACE_FMT_32_xRGB) ? 4 : 2;
-    // copy texture
+    // create draw region
     MTLRegion region = {
         { rect.origin.x-_visibleArea.origin.x, rect.origin.y-_visibleArea.origin.y, 0 }, // MTLOrigin
         { rect.size.width, rect.size.height, 1} // MTLSize
     };
     dispatch_semaphore_wait(_drawLock, DISPATCH_TIME_FOREVER);
-    [_texture replaceRegion:region
-                mipmapLevel:0
-                  withBytes:(const char *)_canvasData + (NSUInteger)(rect.origin.y*_canvasStride + rect.origin.x*pixelSize)
-                bytesPerRow:_canvasStride];
+    if (_canvasData != NULL) { // canvas may be destroyed by this time
+        [_texture replaceRegion:region
+                    mipmapLevel:0
+                      withBytes:(const char *)_canvasData + (NSUInteger)(rect.origin.y*_canvasStride + rect.origin.x*pixelSize)
+                    bytesPerRow:_canvasStride];
+    }
     dispatch_semaphore_signal(_drawLock);
 }
 
