@@ -27,6 +27,7 @@ extern NSString *const kUTMErrorDomain;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    _imageExpanding = self.imageExpandingSwitch.on;
 }
 
 - (void)viewWillAppear:(BOOL)animated {
