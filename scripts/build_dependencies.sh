@@ -15,29 +15,8 @@
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 set -e
 
-# Source files for qemu
-FFI_SRC="https://sourceware.org/ftp/libffi/libffi-3.2.1.tar.gz"
-ICONV_SRC="https://ftp.gnu.org/gnu/libiconv/libiconv-1.15.tar.gz"
-GETTEXT_SRC="https://ftp.gnu.org/gnu/gettext/gettext-0.19.8.1.tar.gz"
-PNG_SRC="https://ftp.osuosl.org/pub/blfs/conglomeration/libpng/libpng-1.6.36.tar.xz"
-JPEG_TURBO_SRC="https://ftp.osuosl.org/pub/blfs/conglomeration/libjpeg-turbo/libjpeg-turbo-1.5.3.tar.gz"
-GLIB_SRC="ftp://ftp.gnome.org/pub/GNOME/sources/glib/2.55/glib-2.55.2.tar.xz"
-GPG_ERROR_SRC="https://www.gnupg.org/ftp/gcrypt/libgpg-error/libgpg-error-1.36.tar.gz"
-GCRYPT_SRC="https://www.gnupg.org/ftp/gcrypt/libgcrypt/libgcrypt-1.8.4.tar.gz"
-PIXMAN_SRC="https://www.cairographics.org/releases/pixman-0.38.0.tar.gz"
-OPENSSL_SRC="https://www.openssl.org/source/openssl-1.1.1b.tar.gz"
-OPUS_SRC="https://archive.mozilla.org/pub/opus/opus-1.3.tar.gz"
-SPICE_PROTOCOL_SRC="https://www.spice-space.org/download/releases/spice-protocol-0.12.15.tar.bz2"
-SPICE_SERVER_SRC="https://www.spice-space.org/download/releases/spice-server/spice-0.14.1.tar.bz2"
-NCURSES_SRC="https://invisible-mirror.net/archives/ncurses/ncurses-6.1.tar.gz"
-QEMU_SRC="https://download.qemu.org/qemu-4.0.0.tar.xz"
-
-# Source files for spice-client
-JSON_GLIB_SRC="https://ftp.gnome.org/pub/GNOME/sources/json-glib/1.2/json-glib-1.2.8.tar.xz"
-GST_SRC="https://gstreamer.freedesktop.org/src/gstreamer/gstreamer-1.15.2.tar.xz"
-GST_BASE_SRC="https://gstreamer.freedesktop.org/src/gst-plugins-base/gst-plugins-base-1.15.2.tar.xz"
-GST_GOOD_SRC="https://gstreamer.freedesktop.org/src/gst-plugins-good/gst-plugins-good-1.15.2.tar.xz"
-SPICE_CLIENT_SRC="https://www.spice-space.org/download/gtk/spice-gtk-0.36.tar.bz2"
+# Include URL list
+source "$(dirname $0)/sources"
 
 # Directories
 BUILD_DIR="build"
@@ -398,7 +377,7 @@ export PKG_CONFIG_LIBDIR
 
 check_env
 if [ -z "$REBUILD" ]; then
-    echo download_all
+    download_all
 fi
 if [ -z "$QEMU_ONLY" ]; then
     build_qemu_dependencies
