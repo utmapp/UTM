@@ -31,7 +31,6 @@ SPICE_PROTOCOL_SRC="https://www.spice-space.org/download/releases/spice-protocol
 SPICE_SERVER_SRC="https://www.spice-space.org/download/releases/spice-server/spice-0.14.1.tar.bz2"
 NCURSES_SRC="https://invisible-mirror.net/archives/ncurses/ncurses-6.1.tar.gz"
 QEMU_SRC="https://download.qemu.org/qemu-4.0.0.tar.xz"
-QEMU_GIT="https://github.com/utmapp/qemu.git"
 
 # Source files for spice-client
 JSON_GLIB_SRC="https://ftp.gnome.org/pub/GNOME/sources/json-glib/1.2/json-glib-1.2.8.tar.xz"
@@ -51,7 +50,6 @@ RED='\033[0;31m'
 NC='\033[0m'
 
 # Build environment
-ARCH=$1
 CHOST=
 SDK=
 SDKMINVER="8.0"
@@ -65,14 +63,17 @@ command -v realpath >/dev/null 2>&1 || realpath() {
 PREFIX="$(realpath "$SYSROOT_DIR")"
 
 usage () {
-    echo "Usage: [VARIABLE...] $(basename $0) [architecture]"
+    echo "Usage: [VARIABLE...] $(basename $0) [-a architecture] [-d] [-r] [-q]"
     echo ""
-    echo "  architecture   Target architecture. Default arm64. [armv7|armv7s|arm64|i386|x86_64]"
+    echo "  -a architecture  Target architecture. Default arm64. [armv7|armv7s|arm64|i386|x86_64]"
+    echo "  -d, --download   Force re-download of source even if already downloaded."
+    echo "  -r, --rebuild    Build only. Do not download, patch, configure."
+    echo "  -q, --qemu       Build qemu only. Do not build other projects."
     echo ""
     echo "  VARIABLEs are:"
-    echo "    SDKVERSION   Target a specific SDK version."
-    echo "    CHOST        Configure host, set if not deducable by ARCH."
-    echo "    SDK          SDK target, set if not deducable by ARCH. [iphoneos|iphonesimulator]"
+    echo "    SDKVERSION     Target a specific SDK version."
+    echo "    CHOST          Configure host, set if not deducable by ARCH."
+    echo "    SDK            SDK target, set if not deducable by ARCH. [iphoneos|iphonesimulator]"
     echo ""
     echo "    CFLAGS CPPFLAGS CXXFLAGS LDFLAGS PKG_CONFIG_PATH"
     echo ""
@@ -83,6 +84,7 @@ check_env () {
     command -v pkg-config >/dev/null 2>&1 || { echo >&2 "${RED}You must install 'pkg-config' on your host machine.${NC}"; exit 1; }
     command -v msgfmt >/dev/null 2>&1 || { echo >&2 "${RED}You must install 'gettext' on your host machine.\n\t'msgfmt' needs to be in your \$PATH as well.${NC}"; exit 1; }
     command -v glib-mkenums >/dev/null 2>&1 || { echo >&2 "${RED}You must install 'glib' on your host machine.\n\t'glib-mkenums' needs to be in your \$PATH as well.${NC}"; exit 1; }
+    command -v gpg-error-config >/dev/null 2>&1 || { echo >&2 "${RED}You must install 'libgpg-error' on your host machine.\n\t'gpg-error-config' needs to be in your \$PATH as well.${NC}"; exit 1; }
     command -v xcrun >/dev/null 2>&1 || { echo >&2 "${RED}'xcrun' is not found. Make sure you are running on OSX."; exit 1; }
     command -v otool >/dev/null 2>&1 || { echo >&2 "${RED}'otool' is not found. Make sure you are running on OSX."; exit 1; }
     command -v install_name_tool >/dev/null 2>&1 || { echo >&2 "${RED}'install_name_tool' is not found. Make sure you are running on OSX."; exit 1; }
@@ -96,12 +98,16 @@ download () {
     TARGET="$BUILD_DIR/$FILE"
     DIR="$BUILD_DIR/$NAME"
     PATCH="$PATCHES_DIR/${NAME}.patch"
-    if [ -f "$TARGET" ]; then
-        echo "${GREEN}$TARGET already downloaded! Delete it to re-download.${NC}"
+    if [ -f "$TARGET" -a -z "$REDOWNLOAD" ]; then
+        echo "${GREEN}$TARGET already downloaded! Run with -d to force re-download.${NC}"
     else
         echo "${GREEN}Downloading ${URL}...${NC}"
         curl -L -O "$URL"
         mv "$FILE" "$TARGET"
+    fi
+    if [ -d "$DIR" ]; then
+        echo "${GREEN}Deleting existing build directory ${DIR}...${NC}"
+        rm -rf "$DIR"
     fi
     echo "${GREEN}Unpacking ${NAME}...${NC}"
     tar -xf "$TARGET" -C "$BUILD_DIR"
@@ -166,8 +172,10 @@ build_openssl() {
     esac
 
     cd "$DIR"
-    echo "${GREEN}Configuring ${NAME}...${NC}"
-    ./Configure $OPENSSL_CROSS no-dso no-hw no-engine --prefix="$PREFIX" $@
+    if [ -z "$REBUILD" ]; then
+        echo "${GREEN}Configuring ${NAME}...${NC}"
+        ./Configure $OPENSSL_CROSS no-dso no-hw no-engine --prefix="$PREFIX" $@
+    fi
     echo "${GREEN}Building ${NAME}...${NC}"
     make "$MAKEFLAGS"
     echo "${GREEN}Installing ${NAME}...${NC}"
@@ -184,8 +192,10 @@ build () {
     pwd="$(pwd)"
 
     cd "$DIR"
-    echo "${GREEN}Configuring ${NAME}...${NC}"
-    ./configure --prefix="$PREFIX" --host="$CHOST" $@
+    if [ -z "$REBUILD" ]; then
+        echo "${GREEN}Configuring ${NAME}...${NC}"
+        ./configure --prefix="$PREFIX" --host="$CHOST" $@
+    fi
     echo "${GREEN}Building ${NAME}...${NC}"
     make "$MAKEFLAGS"
     echo "${GREEN}Installing ${NAME}...${NC}"
@@ -233,8 +243,10 @@ build_qemu () {
 
 steal_libucontext () {
     # HACK: use the libucontext built by qemu
-    cp "$BUILD_DIR/qemu/libucontext/libucontext.a" "$PREFIX/lib/libucontext.a"
-    cp "$BUILD_DIR/qemu/libucontext/include/libucontext.h" "$PREFIX/include/libucontext.h"
+    FILE="$(basename $QEMU_SRC)"
+    NAME="${FILE%.tar.*}"
+    cp "$BUILD_DIR/$NAME/libucontext/libucontext.a" "$PREFIX/lib/libucontext.a"
+    cp "$BUILD_DIR/$NAME/libucontext/include/libucontext.h" "$PREFIX/include/libucontext.h"
 }
 
 build_spice_client () {
@@ -277,6 +289,33 @@ fixup_all () {
 remove_shared_gst_plugins () {
     find "$SYSROOT_DIR/lib/gstreamer-1.0" \( -name '*.so' -or -name '*.la' \) -exec rm \{\} \;
 }
+
+# parse args
+ARCH=
+REBUILD=
+QEMU_ONLY=
+REDOWNLOAD=
+while [ "x$1" != "x" ]; do
+    case $1 in
+    -a )
+        ARCH=$2
+        shift
+        ;;
+    -d | --download )
+        REDOWNLOAD=y
+        ;;
+    -r | --rebuild )
+        REBUILD=y
+        ;;
+    -q | --qemu )
+        QEMU_ONLY=y
+        ;;
+    * )
+        usage
+        ;;
+    esac
+    shift
+done
 
 if [ "x$ARCH" == "x" ]; then
     ARCH=arm64
@@ -358,11 +397,17 @@ export PKG_CONFIG_PATH
 export PKG_CONFIG_LIBDIR
 
 check_env
-download_all
-build_qemu_dependencies
+if [ -z "$REBUILD" ]; then
+    echo download_all
+fi
+if [ -z "$QEMU_ONLY" ]; then
+    build_qemu_dependencies
+fi
 build_qemu
-steal_libucontext # should be a better way...
-build_spice_client
+if [ -z "$QEMU_ONLY" ]; then
+    steal_libucontext # should be a better way...
+    build_spice_client
+fi
 fixup_all
 remove_shared_gst_plugins # another hack...
 echo "${GREEN}All done!${NC}"

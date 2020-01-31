@@ -18,7 +18,7 @@ UTM is a full featured virtual machine host for iOS. In short, it allows you to 
 ## Building
 
 1. Install Xcode command line and the following build prerequisites
-    `brew install bison pkg-config gettext glib`
+    `brew install bison pkg-config gettext glib libgpg-error`
    Make sure to add `bison` to your `$PATH` environment!
 2. `git submodule update --init --recursive` if you haven't already
 3. Run `./scripts/gendeps.sh` and wait for everything to build
