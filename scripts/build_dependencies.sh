@@ -31,7 +31,7 @@ NC='\033[0m'
 # Build environment
 CHOST=
 SDK=
-SDKMINVER="8.0"
+SDKMINVER="9.0"
 NCPU=$(sysctl -n hw.ncpu)
 
 command -v realpath >/dev/null 2>&1 || realpath() {
@@ -376,10 +376,21 @@ export PKG_CONFIG_PATH
 export PKG_CONFIG_LIBDIR
 
 check_env
+
+if [ ! -f "$BUILD_DIR/BUILD_SUCCESS" ]; then
+    if [ ! -z "$REBUILD" -o ! -z "$QEMU_ONLY" ]; then
+        echo "${RED}Error, no previous successful build found.${NC}"
+        exit 1
+    fi
+fi
+
 if [ -z "$REBUILD" ]; then
     download_all
 fi
 if [ -z "$QEMU_ONLY" ]; then
+    echo "${GREEN}Deleting old sysroot!${NC}"
+    rm -rf "$PREFIX/"*
+    rm -f "$BUILD_DIR/BUILD_SUCCESS"
     build_qemu_dependencies
 fi
 build_qemu
@@ -390,3 +401,4 @@ fi
 fixup_all
 remove_shared_gst_plugins # another hack...
 echo "${GREEN}All done!${NC}"
+touch "$BUILD_DIR/BUILD_SUCCESS"
