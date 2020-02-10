@@ -40,12 +40,3 @@ Apple does not permit any apps that has interpreted or generated code therefore 
 ## License
 
 UTM is distributed under the permissive Apache 2.0 license. However, it uses several (L)GPL components. Most are dynamically linked but the gstreamer plugins are statically linked and parts of the code are taken from qemu. Please be aware of this if you intend on redistributing this application.
-
-Several CC BY-SA 4.0 licensed icons are obtained from [www.flaticon.com](www.flaticon.com) and used in this project.
-
-* [Smashicons](https://smashicons.com/)
-* [freepik](https://www.freepik.com/)
-* [mynamepong](https://www.flaticon.com/authors/mynamepong)
-* [Pixel Buddha](https://www.flaticon.com/authors/pixel-buddha)
-* [Those Icons](https://www.flaticon.com/authors/those-icons)
-* [Google](https://www.flaticon.com/authors/google)
