@@ -259,6 +259,7 @@
 		CE9D19782265425A00355E14 /* libgstvideotestsrc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CE9D19642265425A00355E14 /* libgstvideotestsrc.a */; };
 		CE9D19792265425A00355E14 /* libgstosxaudio.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CE9D19652265425A00355E14 /* libgstosxaudio.a */; };
 		CE9D197C226542FE00355E14 /* UTMQemu.m in Sources */ = {isa = PBXBuildFile; fileRef = CE9D197B226542FE00355E14 /* UTMQemu.m */; };
+		CEC4B4E423F122460086B562 /* MetalKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE66450C2269313200B0849A /* MetalKit.framework */; };
 		CECC76512273A7D50059B955 /* cf-input-visitor.c in Sources */ = {isa = PBXBuildFile; fileRef = CECC764C2273A7D50059B955 /* cf-input-visitor.c */; };
 		CECC76522273A7D50059B955 /* qapi-dealloc-visitor.c in Sources */ = {isa = PBXBuildFile; fileRef = CECC764D2273A7D50059B955 /* qapi-dealloc-visitor.c */; };
 		CECC76532273A7D50059B955 /* qapi-util.c in Sources */ = {isa = PBXBuildFile; fileRef = CECC764E2273A7D50059B955 /* qapi-util.c */; };
@@ -739,6 +740,7 @@
 				CE9D19682265425A00355E14 /* libgstvideoconvert.a in Frameworks */,
 				CE9D19692265425A00355E14 /* libgstaudioconvert.a in Frameworks */,
 				CE9D196A2265425A00355E14 /* libgstvideoscale.a in Frameworks */,
+				CEC4B4E423F122460086B562 /* MetalKit.framework in Frameworks */,
 				CE9D196B2265425A00355E14 /* libgstvolume.a in Frameworks */,
 				CE9D196C2265425A00355E14 /* libgstcoreelements.a in Frameworks */,
 				CE9D196D2265425A00355E14 /* libgstvideorate.a in Frameworks */,
