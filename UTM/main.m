@@ -16,16 +16,30 @@
 
 #import <UIKit/UIKit.h>
 #import "AppDelegate.h"
-#import "ptrace.h"
+
+extern int ptrace(int request, pid_t pid, caddr_t addr, int data);
+
+#define PTRACE_TRACEME 0
+#define PT_DENY_ATTACH 31
 
 int main(int argc, char * argv[]) {
-    // Thanks to this comment: https://news.ycombinator.com/item?id=18431524
-    // We use this hack to allow mmap with PROT_EXEC which requires
-    // dynamic_codesign entitlement and the process to be tricked into thinking
-    // that Xcode is debugging it. We abuse the fact that JIT is needed to
-    // debug the process.
-    ptrace(PTRACE_TRACEME, 0, NULL, 0);
     @autoreleasepool {
-        return UIApplicationMain(argc, argv, nil, NSStringFromClass([AppDelegate class]));
+        @try {
+            // Thanks to this comment: https://news.ycombinator.com/item?id=18431524
+            // We use this hack to allow mmap with PROT_EXEC which requires
+            // dynamic_codesign entitlement and the process to be tricked into thinking
+            // that Xcode is debugging it. We abuse the fact that JIT is needed to
+            // debug the process.
+            ptrace(PTRACE_TRACEME, 0, NULL, 0);
+            return UIApplicationMain(argc, argv, nil, NSStringFromClass([AppDelegate class]));
+        }
+        @finally {
+            // New in iOS 13: due to some kernel/system bug, if we leave a process
+            // with PT_TRACE_ME, it will not get terminated properly and will refuse
+            // to launch again.
+            ptrace(PT_DENY_ATTACH, 0, NULL, 0);
+            // for debugging uncaught exception crashes, set a breakpoint on exceptions
+            // and then use `po $arg1` to dump the exception string.
+        }
     }
 }

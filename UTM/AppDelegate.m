@@ -15,7 +15,6 @@
 //
 
 #import "AppDelegate.h"
-#import "ptrace.h"
 
 @interface AppDelegate ()
 
@@ -54,8 +53,6 @@
 
 - (void)applicationWillTerminate:(UIApplication *)application {
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
-    // New in iOS 13: due to some kernel/system bug, if we leave a process with PT_TRACE_ME, it will not get terminated properly and will refuse to launch again.
-    ptrace(PT_DENY_ATTACH, 0, NULL, 0);
 }
 
 
