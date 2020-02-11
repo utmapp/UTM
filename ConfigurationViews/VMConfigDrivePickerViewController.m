@@ -75,7 +75,7 @@
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
     NSAssert(indexPath.section == 0, @"Invalid section");
     if (editingStyle == UITableViewCellEditingStyleDelete) {
-        [self deleteDiskImage:self.images[indexPath.row] success:^{
+        [self deleteDiskImage:self.images[indexPath.row] forCell:[tableView cellForRowAtIndexPath:indexPath] success:^{
             dispatch_async(dispatch_get_main_queue(), ^{
                 [self.images removeObjectAtIndex:indexPath.row];
                 [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
@@ -159,7 +159,7 @@
     [self.tableView reloadData];
 }
 
-- (void)deleteDiskImage:(NSURL *)path success:(nullable void (^)(void))completion {
+- (void)deleteDiskImage:(NSURL *)path forCell:(nullable UITableViewCell *)cell success:(nullable void (^)(void))completion {
     UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil message:NSLocalizedString(@"Are you sure you want to permanently delete this disk image?", @"VMConfigDrivePickerViewController") preferredStyle:UIAlertControllerStyleActionSheet];
     UIAlertAction *delete = [UIAlertAction actionWithTitle:NSLocalizedString(@"Delete", @"Delete button") style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action){
         NSError *err;
@@ -171,6 +171,8 @@
         }
     }];
     UIAlertAction *cancel = [UIAlertAction actionWithTitle:NSLocalizedString(@"Cancel", @"Cancel button") style:UIAlertActionStyleCancel handler:nil];
+    alert.popoverPresentationController.sourceView = cell;
+    alert.popoverPresentationController.sourceRect = cell.bounds;
     [alert addAction:delete];
     [alert addAction:cancel];
     dispatch_async(dispatch_get_main_queue(), ^{
@@ -192,6 +194,7 @@
         [self performSegueWithIdentifier:@"newDiskImageSegue" sender:action];
     }];
     UIAlertAction *cancel = [UIAlertAction actionWithTitle:NSLocalizedString(@"Cancel", @"Cancel button") style:UIAlertActionStyleCancel handler:nil];
+    alert.popoverPresentationController.barButtonItem = sender;
     [alert addAction:import];
     [alert addAction:create];
     [alert addAction:cancel];
