@@ -75,6 +75,8 @@
         [self pushArgv:@"qxl"];
     }
     if (self.configuration.networkEnabled) {
+        [self pushArgv:@"-device"];
+        [self pushArgv:@"rtl8139,netdev=net0"];
         [self pushArgv:@"-netdev"];
         NSMutableString *netstr = [NSMutableString stringWithString:@"user,id=net0"];
         if (self.configuration.networkIPSubnet) {
