@@ -45,6 +45,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly, assign) NSInteger channelID;
 @property (nonatomic, readonly, assign) NSInteger monitorID;
 @property (nonatomic, readonly, assign) BOOL serverModeCursor;
+@property (nonatomic, readonly, assign) BOOL hasCursor;
 @property (nonatomic, assign) BOOL disableInputs;
 
 - (void)sendKey:(SendKeyType)type code:(int)scancode;
@@ -54,7 +55,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)sendMouseMotion:(SendButtonType)button point:(CGPoint)point;
 - (void)sendMouseScroll:(SendScrollType)type button:(SendButtonType)button dy:(CGFloat)dy;
 - (void)sendMouseButton:(SendButtonType)button pressed:(BOOL)pressed point:(CGPoint)point;
-- (void)mouseMode:(BOOL)server;
+- (void)requestMouseMode:(BOOL)server;
 
 - (id)initWithSession:(nonnull SpiceSession *)session channelID:(NSInteger)channelID monitorID:(NSInteger)monitorID;
 

@@ -248,8 +248,12 @@ static CGFloat CGPointToPixel(CGFloat point) {
         }
         if (sender.state != UIGestureRecognizerStateCancelled) {
             CGPoint cursor;
-            cursor.x = CGPointToPixel(translation.x - _lastCursor.x) / _renderer.viewportScale;
-            cursor.y = CGPointToPixel(translation.y - _lastCursor.y) / _renderer.viewportScale;
+            if (self.vm.primaryInput.serverModeCursor) {
+                cursor.x = CGPointToPixel(translation.x - _lastCursor.x) / _renderer.viewportScale;
+                cursor.y = CGPointToPixel(translation.y - _lastCursor.y) / _renderer.viewportScale;
+            } else {
+                cursor = [self clipCursorToDisplay:translation];
+            }
             _lastCursor = translation;
             [self.vm.primaryInput sendMouseMotion:SEND_BUTTON_NONE point:cursor];
         }
@@ -281,8 +285,9 @@ static CGFloat CGPointToPixel(CGFloat point) {
         translated.x = CGPointToPixel(translated.x);
         translated.y = CGPointToPixel(translated.y);
         translated = [self clipCursorToDisplay:translated];
-        if (self.vm.primaryInput.serverModeCursor) {
-            translated = _lastCursor;
+        if (!self.vm.primaryInput.serverModeCursor) {
+            CGPoint translation = [sender locationInView:sender.view];
+            [self.vm.primaryInput sendMouseMotion:SEND_BUTTON_NONE point:translation];
         }
         [self.vm.primaryInput sendMouseButton:SEND_BUTTON_LEFT pressed:YES point:translated];
         [self.vm.primaryInput sendMouseButton:SEND_BUTTON_LEFT pressed:NO point:translated];
@@ -296,8 +301,9 @@ static CGFloat CGPointToPixel(CGFloat point) {
         translated.x = CGPointToPixel(translated.x);
         translated.y = CGPointToPixel(translated.y);
         translated = [self clipCursorToDisplay:translated];
-        if (self.vm.primaryInput.serverModeCursor) {
-            translated = _lastCursor;
+        if (!self.vm.primaryInput.serverModeCursor) {
+            CGPoint translation = [sender locationInView:sender.view];
+            [self.vm.primaryInput sendMouseMotion:SEND_BUTTON_NONE point:translation];
         }
         [self.vm.primaryInput sendMouseButton:SEND_BUTTON_RIGHT pressed:YES point:translated];
         [self.vm.primaryInput sendMouseButton:SEND_BUTTON_RIGHT pressed:NO point:translated];

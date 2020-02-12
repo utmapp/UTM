@@ -29,7 +29,6 @@
     bool                    _mouse_have_pointer;
     int                     _mouse_guest_x;
     int                     _mouse_guest_y;
-    BOOL                    _show_cursor;
     CGPoint                 _mouse_hotspot;
     CGFloat                 _scroll_delta_y;
     
@@ -60,7 +59,8 @@ static void cs_update_mouse_mode(SpiceChannel *channel, gpointer data)
 
 static void cs_cursor_invalidate(CSInput *self)
 {
-    // TODO: implement this
+    // TODO: calculate the area of screen to invalidate and invalidate it
+#warning Unimplemented
 }
 
 static void cs_cursor_set(SpiceCursorChannel *channel,
@@ -81,17 +81,10 @@ static void cs_cursor_set(SpiceCursorChannel *channel,
     cs_cursor_invalidate(self);
     self->_mouse_hotspot.x = cursor_shape->hot_spot_x;
     self->_mouse_hotspot.y = cursor_shape->hot_spot_y;
-    // TODO: save cursor_shape->data
+    // TODO: save cursor_shape->data to some local buffer
+    self->_hasCursor = YES;
     
-    if (self->_show_cursor) {
-        /* unhide */
-        if (self.serverModeCursor) {
-            /* keep a hidden cursor, will be shown in cursor_move() */
-            self->_show_cursor = YES;
-            return;
-        }
-    }
-    
+    // TODO: copy cursor image into draw buffer
     cs_cursor_invalidate(self);
 }
 
@@ -99,17 +92,16 @@ static void cs_cursor_move(SpiceCursorChannel *channel, gint x, gint y, gpointer
 {
     CSInput *self = (__bridge CSInput *)data;
     
-    cs_cursor_invalidate(self);
+    cs_cursor_invalidate(self); // old pointer buffer
     
     self->_mouse_guest_x = x;
     self->_mouse_guest_y = y;
     
-    cs_cursor_invalidate(self);
+    cs_cursor_invalidate(self); // new pointer buffer
     
     /* apparently we have to restore cursor when "cursor_move" */
-    if (self->_show_cursor) {
-        // TODO: draw cursor
-        self->_show_cursor = NO;
+    if (self->_hasCursor) {
+        // TODO: copy cursor image into draw buffer
     }
 }
 
@@ -117,11 +109,9 @@ static void cs_cursor_hide(SpiceCursorChannel *channel, gpointer data)
 {
     CSInput *self = (__bridge CSInput *)data;
     
-    if (!self->_show_cursor) /* then we are already hidden */
-        return;
+#warning Unimplemented
     
     cs_cursor_invalidate(self);
-    self->_show_cursor = NO;
 }
 
 static void cs_cursor_reset(SpiceCursorChannel *channel, gpointer data)
@@ -129,9 +119,9 @@ static void cs_cursor_reset(SpiceCursorChannel *channel, gpointer data)
     CSInput *self = (__bridge CSInput *)data;
     
     DISPLAY_DEBUG(self, "%s",  __FUNCTION__);
-    // clear cached cursor
+    self->_hasCursor = NO;
+    // TODO: free locally stored cursor buffer
     cs_cursor_invalidate(self);
-    self->_show_cursor = NO;
 }
 
 static void cs_channel_new(SpiceSession *s, SpiceChannel *channel, gpointer data)
@@ -392,11 +382,11 @@ static int cs_button_to_spice(SendButtonType button)
     }
 }
 
-- (void)mouseMode:(BOOL)server {
+- (void)requestMouseMode:(BOOL)server {
     if (server) {
-        spice_main_channel_request_mouse_mode(NULL, SPICE_MOUSE_MODE_SERVER);
+        spice_main_channel_request_mouse_mode(_main, SPICE_MOUSE_MODE_SERVER);
     } else {
-        spice_main_channel_request_mouse_mode(NULL, SPICE_MOUSE_MODE_CLIENT);
+        spice_main_channel_request_mouse_mode(_main, SPICE_MOUSE_MODE_CLIENT);
     }
 }
 
