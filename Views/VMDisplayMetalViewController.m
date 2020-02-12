@@ -59,6 +59,10 @@
     [self setNeedsStatusBarAppearanceUpdate];
 }
 
+- (BOOL)prefersHomeIndicatorAutoHidden {
+    return YES; // always hide home indicator
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     
