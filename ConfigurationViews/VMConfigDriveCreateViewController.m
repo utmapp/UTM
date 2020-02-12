@@ -61,8 +61,8 @@ extern NSString *const kUTMErrorDomain;
     });
 }
 
-- (void)createDisk:(NSError * _Nullable *)err {
-    __block NSError *perr;
+- (BOOL)createDisk:(NSError * _Nullable *)err {
+    __block NSError *perr = nil;
     dispatch_semaphore_t sema = dispatch_semaphore_create(0);
     UTMQemuImg *imgCreate = [[UTMQemuImg alloc] init];
     imgCreate.op = kUTMQemuImgCreate;
@@ -79,7 +79,10 @@ extern NSString *const kUTMErrorDomain;
         dispatch_semaphore_signal(sema);
     }];
     dispatch_semaphore_wait(sema, DISPATCH_TIME_FOREVER);
-    *err = perr;
+    if (err) {
+        *err = perr;
+    }
+    return (perr == nil);
 }
 
 - (void)workWithIndicator:(NSString *)msg block:(void(^)(void))block completion:(void (^)(void))completion  {

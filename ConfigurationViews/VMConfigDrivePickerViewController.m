@@ -36,6 +36,7 @@
 
 - (void)viewWillAppear:(BOOL)animated {
     [self refreshList];
+    [super viewWillAppear:animated];
 }
 
 - (void)refreshViewFromConfiguration {
