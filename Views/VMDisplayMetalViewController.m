@@ -501,14 +501,17 @@ static CGFloat CGPointToPixel(CGFloat point) {
         x = x >> 8;
     }
     while (x) {
-        [self.vm.primaryInput sendKey:SEND_KEY_PRESS code:(x & 0xFF)];
+        [self.vm.primaryInput sendKey:type code:(x & 0xFF)];
         x = x >> 8;
     }
 }
 
 - (void)resetModifierToggles {
     for (VMKeyboardButton *button in self.customKeyModifierButtons) {
-        button.toggled = NO;
+        if (button.toggled) {
+            [self sendExtendedKey:SEND_KEY_RELEASE code:button.scanCode];
+            button.toggled = NO;
+        }
     }
 }
 
