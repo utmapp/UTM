@@ -142,7 +142,7 @@ extern NSString *const kUTMErrorDomain;
                 // create images directory
                 if (![[NSFileManager defaultManager] fileExistsAtPath:self.imagesPath.path isDirectory:&isdir]) {
                     if ([[NSFileManager defaultManager] createDirectoryAtURL:self.imagesPath withIntermediateDirectories:NO attributes:nil error:&err]) {
-                        direxists = isdir;
+                        direxists = YES;
                     }
                 } else if (!isdir) {
                     err = [NSError errorWithDomain:kUTMErrorDomain code:-1 userInfo:@{NSLocalizedDescriptionKey: NSLocalizedString(@"Cannot create directory for disk image.", @"VMConfigDriveCreateViewController")}];
