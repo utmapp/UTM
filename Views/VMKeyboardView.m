@@ -423,4 +423,16 @@ static int indexForExtChar(const ext_key_mapping_t *table, size_t table_len, cha
     return YES;
 }
 
+- (UITextSmartDashesType)smartDashesType {
+    return UITextSmartDashesTypeNo;
+}
+
+- (UITextSmartQuotesType)smartQuotesType {
+    return UITextSmartQuotesTypeNo;
+}
+
+- (UITextSmartInsertDeleteType)smartInsertDeleteType {
+    return UITextSmartInsertDeleteTypeNo;
+}
+
 @end
