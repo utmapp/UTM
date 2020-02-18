@@ -1,0 +1,63 @@
+name: Build
+on:
+  push:
+    paths-ignore:
+      - 'LICENSE'
+      - '**.md'
+    tags-ignore: # prevent double action on releases
+      - 'v**'
+  pull_request:
+  release:
+    types: [created]
+
+jobs:
+  build:
+    name: Build UTM
+    runs-on: macos-latest
+    strategy:
+      matrix:
+        arch: [arm64, x86_64]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+        with:
+          submodules: recursive
+      - name: Cache Sysroot
+        id: cache-sysroot
+        uses: actions/cache@v1
+        with:
+          path: sysroot
+          key: ${{ matrix.arch }}-${{ hashFiles('scripts/build_dependencies.sh') }}-${{ hashFiles('patches/**') }}
+      - name: Setup Path
+        shell: bash
+        run: |
+          echo "::add-path::/usr/local/opt/gettext/bin"
+          echo "::add-path::/usr/local/opt/bison/bin"
+      - name: Build Sysroot
+        if: steps.cache-sysroot.outputs.cache-hit != 'true'
+        run: |
+          brew install bison pkg-config nasm
+          rm -f /usr/local/lib/pkgconfig/*.pc
+          ./scripts/build_dependencies.sh -a ${{ matrix.arch }}
+      - name: Compress Sysroot
+        run: |
+          mkdir sysroot_tar
+          tar cf sysroot_tar/sysroot.tgz sysroot
+      - name: Upload Sysroot
+        uses: actions/upload-artifact@v1
+        with:
+          name: Sysroot-${{ matrix.arch }}
+          path: sysroot_tar
+      - name: Build UTM (Simulator)
+        if: matrix.arch == 'x86_64'
+        run: |
+          xcodebuild archive -archivePath build-utm/UTM -scheme UTM -sdk iphonesimulator -configuration Release
+      - name: Build UTM (iOS)
+        if: matrix.arch == 'arm64'
+        run: |
+          xcodebuild archive -archivePath build-utm/UTM -scheme UTM -sdk iphoneos -configuration Release CODE_SIGNING_ALLOWED=NO
+      - name: Upload UTM
+        uses: actions/upload-artifact@v1
+        with:
+          name: UTM-${{ matrix.arch }}
+          path: build-utm
