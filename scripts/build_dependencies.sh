@@ -186,7 +186,7 @@ build () {
 build_qemu_dependencies () {
     build $FFI_SRC
     build $ICONV_SRC
-    build $GETTEXT_SRC
+    build $GETTEXT_SRC --disable-java
     build $PNG_SRC
     build $JPEG_TURBO_SRC
     build $GLIB_SRC glib_cv_stack_grows=no glib_cv_uscore=no --with-pcre=internal
