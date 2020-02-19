@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # QAPI texi generator
 #
 # This work is licensed under the terms of the GNU LGPL, version 2+.
@@ -7,12 +6,13 @@
 
 from __future__ import print_function
 import re
-import qapi.common
+from qapi.gen import QAPIGenDoc, QAPISchemaVisitor
+
 
 MSG_FMT = """
 @deftypefn {type} {{}} {name}
 
-{body}
+{body}{members}{features}{sections}
 @end deftypefn
 
 """.format
@@ -20,7 +20,7 @@ MSG_FMT = """
 TYPE_FMT = """
 @deftp {{{type}}} {name}
 
-{body}
+{body}{members}{features}{sections}
 @end deftp
 
 """.format
@@ -149,7 +149,8 @@ def texi_member(member, desc, suffix):
         suffix, desc, texi_if(member.ifcond, prefix='@*'))
 
 
-def texi_members(doc, what, base, variants, member_func):
+def texi_members(doc, what, base=None, variants=None,
+                 member_func=texi_member):
     """Format the table of members"""
     items = ''
     for section in doc.args.values():
@@ -182,6 +183,25 @@ def texi_members(doc, what, base, variants, member_func):
     return '\n@b{%s:}\n@table @asis\n%s@end table\n' % (what, items)
 
 
+def texi_arguments(doc, boxed_arg_type):
+    if boxed_arg_type:
+        assert not doc.args
+        return ('\n@b{Arguments:} the members of @code{%s}\n'
+                % boxed_arg_type.name)
+    return texi_members(doc, 'Arguments')
+
+
+def texi_features(doc):
+    """Format the table of features"""
+    items = ''
+    for section in doc.features.values():
+        desc = texi_format(section.text)
+        items += '@item @code{%s}\n%s' % (section.name, desc)
+    if not items:
+        return ''
+    return '\n@b{Features:}\n@table @asis\n%s@end table\n' % (items)
+
+
 def texi_sections(doc, ifcond):
     """Format additional sections following arguments"""
     body = ''
@@ -197,17 +217,28 @@ def texi_sections(doc, ifcond):
     return body
 
 
-def texi_entity(doc, what, ifcond, base=None, variants=None,
-                member_func=texi_member):
-    return (texi_body(doc)
-            + texi_members(doc, what, base, variants, member_func)
-            + texi_sections(doc, ifcond))
+def texi_type(typ, doc, ifcond, members):
+    return TYPE_FMT(type=typ,
+                    name=doc.symbol,
+                    body=texi_body(doc),
+                    members=members,
+                    features=texi_features(doc),
+                    sections=texi_sections(doc, ifcond))
 
 
-class QAPISchemaGenDocVisitor(qapi.common.QAPISchemaVisitor):
+def texi_msg(typ, doc, ifcond, members):
+    return MSG_FMT(type=typ,
+                   name=doc.symbol,
+                   body=texi_body(doc),
+                   members=members,
+                   features=texi_features(doc),
+                   sections=texi_sections(doc, ifcond))
+
+
+class QAPISchemaGenDocVisitor(QAPISchemaVisitor):
     def __init__(self, prefix):
         self._prefix = prefix
-        self._gen = qapi.common.QAPIGenDoc(self._prefix + 'qapi-doc.texi')
+        self._gen = QAPIGenDoc(self._prefix + 'qapi-doc.texi')
         self.cur_doc = None
 
     def write(self, output_dir):
@@ -215,45 +246,36 @@ class QAPISchemaGenDocVisitor(qapi.common.QAPISchemaVisitor):
 
     def visit_enum_type(self, name, info, ifcond, members, prefix):
         doc = self.cur_doc
-        self._gen.add(TYPE_FMT(type='Enum',
-                               name=doc.symbol,
-                               body=texi_entity(doc, 'Values', ifcond,
-                                                member_func=texi_enum_value)))
+        self._gen.add(texi_type('Enum', doc, ifcond,
+                                texi_members(doc, 'Values',
+                                             member_func=texi_enum_value)))
 
-    def visit_object_type(self, name, info, ifcond, base, members, variants):
+    def visit_object_type(self, name, info, ifcond, base, members, variants,
+                          features):
         doc = self.cur_doc
         if base and base.is_implicit():
             base = None
-        self._gen.add(TYPE_FMT(type='Object',
-                               name=doc.symbol,
-                               body=texi_entity(doc, 'Members', ifcond,
-                                                base, variants)))
+        self._gen.add(texi_type('Object', doc, ifcond,
+                                texi_members(doc, 'Members', base, variants)))
 
     def visit_alternate_type(self, name, info, ifcond, variants):
         doc = self.cur_doc
-        self._gen.add(TYPE_FMT(type='Alternate',
-                               name=doc.symbol,
-                               body=texi_entity(doc, 'Members', ifcond)))
+        self._gen.add(texi_type('Alternate', doc, ifcond,
+                                texi_members(doc, 'Members')))
 
     def visit_command(self, name, info, ifcond, arg_type, ret_type, gen,
-                      success_response, boxed, allow_oob, allow_preconfig):
+                      success_response, boxed, allow_oob, allow_preconfig,
+                      features):
         doc = self.cur_doc
-        if boxed:
-            body = texi_body(doc)
-            body += ('\n@b{Arguments:} the members of @code{%s}\n'
-                     % arg_type.name)
-            body += texi_sections(doc, ifcond)
-        else:
-            body = texi_entity(doc, 'Arguments', ifcond)
-        self._gen.add(MSG_FMT(type='Command',
-                              name=doc.symbol,
-                              body=body))
+        self._gen.add(texi_msg('Command', doc, ifcond,
+                               texi_arguments(doc,
+                                              arg_type if boxed else None)))
 
     def visit_event(self, name, info, ifcond, arg_type, boxed):
         doc = self.cur_doc
-        self._gen.add(MSG_FMT(type='Event',
-                              name=doc.symbol,
-                              body=texi_entity(doc, 'Arguments', ifcond)))
+        self._gen.add(texi_msg('Event', doc, ifcond,
+                               texi_arguments(doc,
+                                              arg_type if boxed else None)))
 
     def symbol(self, doc, entity):
         if self._gen._body:
@@ -270,8 +292,6 @@ class QAPISchemaGenDocVisitor(qapi.common.QAPISchemaVisitor):
 
 
 def gen_doc(schema, output_dir, prefix):
-    if not qapi.common.doc_required:
-        return
     vis = QAPISchemaGenDocVisitor(prefix)
     vis.visit_begin(schema)
     for doc in schema.docs:

@@ -15,6 +15,9 @@ See the COPYING file in the top-level directory.
 """
 
 from qapi.common import *
+from qapi.gen import QAPISchemaModularCVisitor, ifcontext
+from qapi.schema import QAPISchemaEnumMember
+from qapi.types import gen_enum, gen_enum_lookup
 
 
 def build_handler_name(name):
@@ -63,6 +66,7 @@ def gen_event_dispatch(name, arg_type, boxed, event_enum_name, event_dispatch):
     # practice, we can rename our local variables with a leading _ prefix,
     # or split the code into a wrapper function that creates a boxed
     # 'param' object then calls another to do the real work.
+    have_args = boxed or (arg_type and not arg_type.is_empty())
     ret = mcgen('''
 
 void qapi_event_dispatch_%(name)s(%(handler_type)s handler, CFDictionaryRef data, void *ctx)
@@ -70,16 +74,14 @@ void qapi_event_dispatch_%(name)s(%(handler_type)s handler, CFDictionaryRef data
 ''',
                 name=name, handler_type=build_handler_name(name))
 
-    if arg_type and not arg_type.is_empty():
+    if have_args:
         ret += mcgen('''
     %(c_name)s *arg;
     Visitor *v;
 ''',
                     c_name=arg_type.c_name())
-    else:
-        assert not boxed
 
-    if arg_type and not arg_type.is_empty():
+    if have_args:
         ret += mcgen('''
     v = cf_input_visitor_new(data);
 ''')
@@ -96,7 +98,7 @@ void qapi_event_dispatch_%(name)s(%(handler_type)s handler, CFDictionaryRef data
 ''',
                  param='arg' if boxed else gen_call_handler(arg_type))
 
-    if arg_type and not arg_type.is_empty():
+    if have_args:
         ret += mcgen('''
     visit_free(v);
     v = qapi_dealloc_visitor_new();
@@ -238,7 +240,7 @@ class QAPISchemaGenEventVisitor(QAPISchemaModularCVisitor):
             self._event_registry.append((ifcond, c_enum_const(self._event_enum_name, name), 'qapi_event_dispatch_%s' % name, build_handler_name(name)))
         # Note: we generate the enum member regardless of @ifcond, to
         # keep the enumeration usable in target-independent code.
-        self._event_enum_members.append(QAPISchemaMember(name))
+        self._event_enum_members.append(QAPISchemaEnumMember(name, None))
 
 
 def gen_events(schema, output_dir, prefix):

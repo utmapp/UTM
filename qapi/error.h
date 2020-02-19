@@ -119,7 +119,7 @@
 #ifndef ERROR_H
 #define ERROR_H
 
-#include "qapi-types-common.h"
+#include "qapi-types-error.h"
 
 /*
  * Overall category of an error.

@@ -16,6 +16,7 @@ See the COPYING file in the top-level directory.
 """
 
 from qapi.common import *
+from qapi.gen import QAPIGenCCode, QAPISchemaModularCVisitor, ifcontext
 
 
 def gen_command_decl(name, arg_type, boxed, ret_type, proto=True):
@@ -61,7 +62,7 @@ static %(c_type)s qmp_marshal_rpc_%(c_name)s(CFDictionaryRef args, Error **errp,
 
 
 def gen_rpc_call(name, arg_type, boxed, ret_type):
-    have_args = arg_type and not arg_type.is_empty()
+    have_args = boxed or (arg_type and not arg_type.is_empty())
 
     ret = mcgen('''
 
@@ -197,7 +198,8 @@ class QAPISchemaGenCommandVisitor(QAPISchemaModularCVisitor):
                              types=types))
 
     def visit_command(self, name, info, ifcond, arg_type, ret_type, gen,
-                      success_response, boxed, allow_oob, allow_preconfig):
+                      success_response, boxed, allow_oob, allow_preconfig,
+                      features):
         if not gen:
             return
         # FIXME: If T is a user-defined type, the user is responsible

@@ -14,11 +14,72 @@ This work is licensed under the terms of the GNU GPL, version 2.
 """
 
 from qapi.common import *
+from qapi.gen import QAPISchemaModularCVisitor, ifcontext
+from qapi.schema import QAPISchemaEnumMember, QAPISchemaObjectType
 
 
 # variants must be emitted before their container; track what has already
 # been output
 objects_seen = set()
+
+
+def gen_enum_lookup(name, members, prefix=None):
+    ret = mcgen('''
+
+const QEnumLookup %(c_name)s_lookup = {
+    .array = (const char *const[]) {
+''',
+                c_name=c_name(name))
+    for m in members:
+        ret += gen_if(m.ifcond)
+        index = c_enum_const(name, m.name, prefix)
+        ret += mcgen('''
+        [%(index)s] = "%(name)s",
+''',
+                     index=index, name=m.name)
+        ret += gen_endif(m.ifcond)
+
+    ret += mcgen('''
+    },
+    .size = %(max_index)s
+};
+''',
+                 max_index=c_enum_const(name, '_MAX', prefix))
+    return ret
+
+
+def gen_enum(name, members, prefix=None):
+    # append automatically generated _MAX value
+    enum_members = members + [QAPISchemaEnumMember('_MAX', None)]
+
+    ret = mcgen('''
+
+typedef enum %(c_name)s {
+''',
+                c_name=c_name(name))
+
+    for m in enum_members:
+        ret += gen_if(m.ifcond)
+        ret += mcgen('''
+    %(c_enum)s,
+''',
+                     c_enum=c_enum_const(name, m.name, prefix))
+        ret += gen_endif(m.ifcond)
+
+    ret += mcgen('''
+} %(c_name)s;
+''',
+                 c_name=c_name(name))
+
+    ret += mcgen('''
+
+#define %(c_name)s_str(val) \\
+    qapi_enum_lookup(&%(c_name)s_lookup, (val))
+
+extern const QEnumLookup %(c_name)s_lookup;
+''',
+                 c_name=c_name(name))
+    return ret
 
 
 def gen_fwd_object_or_array(name):
@@ -227,7 +288,8 @@ class QAPISchemaGenTypeVisitor(QAPISchemaModularCVisitor):
             self._genh.add(gen_array(name, element_type))
             self._gen_type_cleanup(name)
 
-    def visit_object_type(self, name, info, ifcond, base, members, variants):
+    def visit_object_type(self, name, info, ifcond, base, members, variants,
+                          features):
         # Nothing to do for the special empty builtin
         if name == 'q_empty':
             return

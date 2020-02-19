@@ -10,7 +10,12 @@ This work is licensed under the terms of the GNU GPL, version 2.
 See the COPYING file in the top-level directory.
 """
 
+import string
+
 from qapi.common import *
+from qapi.gen import QAPISchemaMonolithicCVisitor
+from qapi.schema import (QAPISchemaArrayType, QAPISchemaBuiltinType,
+                         QAPISchemaType)
 
 
 def to_qlit(obj, level=0, suppress_first_indent=False):
@@ -188,11 +193,15 @@ const QLitObject %(c_name)s = %(c_string)s;
         self._gen_qlit('[' + element + ']', 'array', {'element-type': element},
                        ifcond)
 
-    def visit_object_type_flat(self, name, info, ifcond, members, variants):
+    def visit_object_type_flat(self, name, info, ifcond, members, variants,
+                               features):
         obj = {'members': [self._gen_member(m) for m in members]}
         if variants:
             obj.update(self._gen_variants(variants.tag_member.name,
                                           variants.variants))
+        if features:
+            obj['features'] = [(f.name, {'if': f.ifcond}) for f in features]
+
         self._gen_qlit(name, 'object', obj, ifcond)
 
     def visit_alternate_type(self, name, info, ifcond, variants):
@@ -202,13 +211,18 @@ const QLitObject %(c_name)s = %(c_string)s;
                            for m in variants.variants]}, ifcond)
 
     def visit_command(self, name, info, ifcond, arg_type, ret_type, gen,
-                      success_response, boxed, allow_oob, allow_preconfig):
+                      success_response, boxed, allow_oob, allow_preconfig,
+                      features):
         arg_type = arg_type or self._schema.the_empty_object_type
         ret_type = ret_type or self._schema.the_empty_object_type
         obj = {'arg-type': self._use_type(arg_type),
                'ret-type': self._use_type(ret_type)}
         if allow_oob:
             obj['allow-oob'] = allow_oob
+
+        if features:
+            obj['features'] = [(f.name, {'if': f.ifcond}) for f in features]
+
         self._gen_qlit(name, 'command', obj, ifcond)
 
     def visit_event(self, name, info, ifcond, arg_type, boxed):
