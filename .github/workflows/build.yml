@@ -56,6 +56,10 @@ jobs:
         if: matrix.arch == 'arm64'
         run: |
           xcodebuild archive -archivePath build-utm/UTM -scheme UTM -sdk iphoneos -configuration Release CODE_SIGNING_ALLOWED=NO
+      - name: Package UTM (iOS)
+        if: matrix.arch == 'arm64'
+        run: |
+          xcodebuild -exportArchive -archivePath build-utm/UTM -exportPath build-utm/UTM -exportFormat ipa
       - name: Upload UTM
         uses: actions/upload-artifact@v1
         with:
