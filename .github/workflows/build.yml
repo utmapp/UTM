@@ -59,7 +59,7 @@ jobs:
       - name: Package UTM (iOS)
         if: matrix.arch == 'arm64'
         run: |
-          xcodebuild -exportArchive -archivePath build-utm/UTM -exportPath build-utm/UTM
+          xcodebuild -exportArchive -archivePath build-utm/UTM -exportPath build-utm/UTM -exportOptionsPlist UTM/ExportOptions.plist
       - name: Upload UTM
         uses: actions/upload-artifact@v1
         with:
