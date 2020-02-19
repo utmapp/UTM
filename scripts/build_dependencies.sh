@@ -40,6 +40,7 @@ command -v realpath >/dev/null 2>&1 || realpath() {
 
 [ -d "$SYSROOT_DIR" ] || mkdir -p "$SYSROOT_DIR"
 PREFIX="$(realpath "$SYSROOT_DIR")"
+BASEDIR="$(dirname "$(realpath $0)")"
 
 usage () {
     echo "Usage: [VARIABLE...] $(basename $0) [-a architecture] [-d] [-r] [-q]"
@@ -269,6 +270,16 @@ remove_shared_gst_plugins () {
     find "$SYSROOT_DIR/lib/gstreamer-1.0" \( -name '*.so' -or -name '*.la' \) -exec rm \{\} \;
 }
 
+generate_qapi () {
+    FILE="$(basename $1)"
+    NAME="${FILE%.tar.*}"
+    DIR="$BUILD_DIR/$NAME"
+    APIS="$DIR/qapi/qapi-schema.json"
+
+    echo "${GREEN}Generating qapi sources from ${APIS}...${NC}"
+    python "$BASEDIR/qapi-gen.py" -b -o "$SYSROOT_DIR/qapi" "$APIS"
+}
+
 # parse args
 ARCH=
 REBUILD=
@@ -400,5 +411,6 @@ if [ -z "$QEMU_ONLY" ]; then
 fi
 fixup_all
 remove_shared_gst_plugins # another hack...
+generate_qapi $QEMU_SRC
 echo "${GREEN}All done!${NC}"
 touch "$BUILD_DIR/BUILD_SUCCESS"
