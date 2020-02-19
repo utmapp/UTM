@@ -61,3 +61,27 @@ jobs:
         with:
           name: UTM-${{ matrix.arch }}
           path: build-utm
+  package:
+    name: Package
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.event_name == 'release'
+    steps:
+      - name: Download Artifact
+        uses: actions/download-artifact@v1
+        with:
+          name: UTM-arm64
+      - name: Package IPA
+        run: |
+          mkdir Payload
+          mv UTM-arm64/UTM.xcarchive/Products/Applications/UTM.app Payload/UTM.app
+          zip -r UTM.zip Payload
+      - name: Upload Release Asset
+        uses: actions/upload-release-asset@v1.0.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: UTM.zip
+          asset_name: UTM.ipa
+          asset_content_type: application/octet-stream

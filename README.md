@@ -40,7 +40,11 @@ If you want to build the dependencies yourself, it is highly recommended that yo
 
 Since iOS 13.3.1, it [appears Apple has stopped allowing free developer profiles to sign dylibs][2]. As a workaround, you can either spend $99/year on an Apple developer program or < $10/year on some third party iOS signing certificate (you can search for it online, do not ask for help with this).
 
-## Signing Existing Build
+## Signing Release
+
+If you want to sign an `ipa` from the [release page][3], there are a variety of ways. You can search online for information on sideloading IPA. One thing to note is if you are given the choice between signing for "development" or "distribution", you must chose "development". More specifically, you need the `get-task-allow` entitlement. Most signing services and tools already do this.
+
+## Signing Development Build
 
 If you want to sign an `xcarchive` such as from a [Github Actions][1] built artifact, you can use the following command:
 
@@ -60,3 +64,4 @@ UTM is distributed under the permissive Apache 2.0 license. However, it uses sev
 
   [1]: https://github.com/utmapp/UTM/actions?query=workflow%3ABuild
   [2]: https://github.com/flutter/flutter/issues/49504#issuecomment-581090664
+  [3]: https://github.com/utmapp/UTM/releases
