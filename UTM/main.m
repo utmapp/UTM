@@ -19,7 +19,7 @@
 
 extern int ptrace(int request, pid_t pid, caddr_t addr, int data);
 
-#define PTRACE_TRACEME 0
+#define PT_TRACE_ME 0
 #define PT_DENY_ATTACH 31
 
 int main(int argc, char * argv[]) {
@@ -30,7 +30,7 @@ int main(int argc, char * argv[]) {
             // dynamic_codesign entitlement and the process to be tricked into thinking
             // that Xcode is debugging it. We abuse the fact that JIT is needed to
             // debug the process.
-            ptrace(PTRACE_TRACEME, 0, NULL, 0);
+            ptrace(PT_TRACE_ME, 0, NULL, 0);
             return UIApplicationMain(argc, argv, nil, NSStringFromClass([AppDelegate class]));
         }
         @finally {
