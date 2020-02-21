@@ -155,7 +155,7 @@
     NSAssert(component == 0, @"Invalid component");
     if (pickerView == self.architecturePicker) {
         self.architectureLabel.text = [UTMConfiguration supportedArchitecturesPretty][row];
-        self.configuration.systemArchitecture = self.architectureLabel.text;
+        self.configuration.systemArchitecture = [UTMConfiguration supportedArchitectures][row];
     } else if (pickerView == self.bootPicker) {
         self.bootLabel.text = [UTMConfiguration supportedBootDevicesPretty][row];
         self.configuration.systemBootDevice = self.bootLabel.text;

@@ -37,6 +37,16 @@
     [self pushArgv:@"tcp:localhost:4444,server,nowait"];
     [self pushArgv:@"-smp"];
     [self pushArgv:[NSString stringWithFormat:@"cpus=%@", self.configuration.systemCPUCount]];
+    if ([self.configuration.systemArchitecture isEqualToString:@"aarch64"]) {
+        [self pushArgv:@"-machine"];
+        [self pushArgv:@"virt"];
+        [self pushArgv:@"-device"];
+        [self pushArgv:@"virtio-gpu-pci"];
+    }
+    else {
+        [self pushArgv:@"-vga"];
+        [self pushArgv:@"qxl"];
+    }
     if (![self.configuration.systemBootDevice isEqualToString:@"hdd"]) {
         [self pushArgv:@"-boot"];
         if ([self.configuration.systemBootDevice isEqualToString:@"floppy"]) {
@@ -71,8 +81,7 @@
     } else {
         [self pushArgv:@"-spice"];
         [self pushArgv:@"port=5930,addr=127.0.0.1,disable-ticketing,image-compression=off,playback-compression=off,streaming-video=off"];
-        [self pushArgv:@"-vga"];
-        [self pushArgv:@"qxl"];
+
     }
     if (self.configuration.networkEnabled) {
         [self pushArgv:@"-device"];
