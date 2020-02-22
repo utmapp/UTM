@@ -42,7 +42,7 @@ Since iOS 13.3.1, it [appears Apple has stopped allowing free developer profiles
 
 ## Signing Release
 
-If you want to sign an `ipa` from the [release page][3], there are a variety of ways. You can search online for information on sideloading IPA. One thing to note is if you are given the choice between signing for "development" or "distribution", you must chose "development". More specifically, you need the `get-task-allow` entitlement. Most signing services and tools already do this.
+If you want to sign an `ipa` from the [release page][3], there are a variety of ways. You can search online for information on sideloading IPA. One thing to note is if you are given the choice between signing for "development" or "distribution", you must choose "development". More specifically, you need the `get-task-allow` entitlement. Most signing services and tools already do this.
 
 ## Signing Development Build
 
@@ -52,11 +52,11 @@ If you want to sign an `xcarchive` such as from a [Github Actions][1] built arti
 ./scripts/resign.sh UTM.xcarchive PROFILE_NAME TEAM_ID outputPath
 ```
 
-Where `PROFILE_NAME` is the name of the provision profile and `TEAM_ID` is the identifier next to the team name in the provision profile. Make sure the signing key is imported into your keychain and the provision profile is installed on your iOS device.
+Where `PROFILE_NAME` is the name of the provisioning profile and `TEAM_ID` is the identifier next to the team name in the provisioning profile. Make sure the signing key is imported into your keychain and the provision profile is installed on your iOS device.
 
 ## Why isn't this in the AppStore?
 
-Apple does not permit any apps that has interpreted or generated code therefore it is unlikely that UTM will ever be allowed. However, there are various ways people on the internet have come up to side load apps without requiring a jailbreak. We do not condone or support any of these methods.
+Apple does not permit any apps that have interpreted or generated code therefore it is unlikely that UTM will ever be allowed. However, there are various ways people on the internet have come up to sideload apps without requiring a jailbreak. We do not condone or support any of these methods.
 
 ## License
 
