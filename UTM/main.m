@@ -17,6 +17,7 @@
 #import <UIKit/UIKit.h>
 #import <mach/mach.h>
 #import <pthread.h>
+#import <sys/sysctl.h>
 #import "AppDelegate.h"
 
 extern boolean_t exc_server(mach_msg_header_t *, mach_msg_header_t *);
@@ -42,7 +43,16 @@ void *exception_handler(void *argument) {
     return NULL;
 }
 
+static BOOL am_i_being_debugged() {
+    int mib[] = {CTL_KERN, KERN_PROC, KERN_PROC_PID, getpid()};
+    struct kinfo_proc info = {};
+    size_t size = sizeof(info);
+    return !sysctl(mib, sizeof(mib) / sizeof(*mib), &info, &size, NULL, 0) && !!(info.kp_proc.p_flag & P_TRACED);
+}
+
 int main(int argc, char * argv[]) {
+    BOOL debugged = am_i_being_debugged();
+    
     // Thanks to this comment: https://news.ycombinator.com/item?id=18431524
     // We use this hack to allow mmap with PROT_EXEC (which usually requires the
     // dynamic-codesigning entitlement) by tricking the process into thinking
@@ -53,22 +63,25 @@ int main(int argc, char * argv[]) {
     // ptracing ourselves confuses the kernel and will cause bad things to
     // happen to the system (hangs…) if an exception or signal occurs. Setup
     // some "safety nets" so we can cause the process to exit in a somewhat sane
-    // state.
-    
-    // First, ensure that signals are delivered as a Mach software exception…
-    ptrace(PT_SIGEXC, 0, NULL, 0);
-    
-    // …then ensure that this exception goes through our exception handler. I
-    // think it's OK to just watch for EXC_SOFTWARE because the other exceptions
-    // (e.g. EXC_BAD_ACCESS, EXC_BAD_INSTRUCTION, and friends) will end up being
-    // delivered as signals anyways, and we can get them once they're resent as
-    // a software exception.
-    mach_port_t port = MACH_PORT_NULL;
-    mach_port_allocate(mach_task_self(), MACH_PORT_RIGHT_RECEIVE, &port);
-    mach_port_insert_right(mach_task_self(), port, port, MACH_MSG_TYPE_MAKE_SEND);
-    task_set_exception_ports(mach_task_self(), EXC_MASK_SOFTWARE, port, EXCEPTION_DEFAULT, THREAD_STATE_NONE);
-    pthread_t thread;
-    pthread_create(&thread, NULL, exception_handler, (void *)&port);
+    // state. We only need to do this if the debugger isn't attached. (It'll do
+    // this itself, and if we do it we'll interfere with its normal operation
+    // anyways.)
+    if (!debugged) {
+        // First, ensure that signals are delivered as Mach software exceptions…
+        ptrace(PT_SIGEXC, 0, NULL, 0);
+        
+        // …then ensure that this exception goes through our exception handler.
+        // I think it's OK to just watch for EXC_SOFTWARE because the other
+        // exceptions (e.g. EXC_BAD_ACCESS, EXC_BAD_INSTRUCTION, and friends)
+        // will end up being delivered as signals anyways, and we can get them
+        // once they're resent as a software exception.
+        mach_port_t port = MACH_PORT_NULL;
+        mach_port_allocate(mach_task_self(), MACH_PORT_RIGHT_RECEIVE, &port);
+        mach_port_insert_right(mach_task_self(), port, port, MACH_MSG_TYPE_MAKE_SEND);
+        task_set_exception_ports(mach_task_self(), EXC_MASK_SOFTWARE, port, EXCEPTION_DEFAULT, THREAD_STATE_NONE);
+        pthread_t thread;
+        pthread_create(&thread, NULL, exception_handler, (void *)&port);
+    }
     
     // Continue with normal application launch.
     @autoreleasepool {
