@@ -1262,6 +1262,7 @@
 				CE2D63D622653C7300FC7E63 /* Frameworks */,
 			);
 			sourceTree = "<group>";
+			usesTabs = 0;
 		};
 		CE550BCA225947990063E575 /* Products */ = {
 			isa = PBXGroup;
