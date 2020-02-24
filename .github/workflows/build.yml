@@ -63,25 +63,28 @@ jobs:
           path: build-utm
   package:
     name: Package
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     needs: build
     if: github.event_name == 'release'
     steps:
+      - name: Checkout
+        uses: actions/checkout@v1
       - name: Download Artifact
         uses: actions/download-artifact@v1
         with:
           name: UTM-arm64
-      - name: Package IPA
+      - name: Install ldid
         run: |
-          mkdir Payload
-          mv UTM-arm64/UTM.xcarchive/Products/Applications/UTM.app Payload/UTM.app
-          zip -r UTM.zip Payload
+          brew install ldid
+      - name: Fakesign IPA
+        run: |
+          ./scripts/resign.sh UTM-arm64/UTM.xcarchive .
       - name: Upload Release Asset
         uses: actions/upload-release-asset@v1.0.1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ github.event.release.upload_url }}
-          asset_path: UTM.zip
+          asset_path: UTM.ipa
           asset_name: UTM.ipa
           asset_content_type: application/octet-stream
