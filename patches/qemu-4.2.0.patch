@@ -838,7 +838,7 @@ index bd593e61bc..86347ad78f 100644
 -- 
 2.21.1 (Apple Git-122.3)
 
-From 7258634fa959c133044e1eb50bd9f6d4c3e97423 Mon Sep 17 00:00:00 2001
+From ccde4851e1bebdd83e22155b2545bc1510db0257 Mon Sep 17 00:00:00 2001
 From: osy <osy86@users.noreply.github.com>
 Date: Sun, 23 Feb 2020 22:13:35 -0800
 Subject: [PATCH 4/4] tcg: implement bulletproof JIT
@@ -858,33 +858,33 @@ Because data cache flush is OS defined on some architectures, we do not
 provide implementations for non iOS platforms (ARM/x86).
 ---
  accel/tcg/cpu-exec.c         |  7 +++-
- accel/tcg/translate-all.c    | 75 ++++++++++++++++++++++++++++++++++--
+ accel/tcg/translate-all.c    | 77 ++++++++++++++++++++++++++++++++++--
  configure                    |  1 +
  docs/devel/ios.rst           | 40 +++++++++++++++++++
  include/exec/exec-all.h      |  7 ++++
- tcg/aarch64/tcg-target.h     | 12 +++++-
- tcg/aarch64/tcg-target.inc.c | 46 +++++++++++++---------
+ tcg/aarch64/tcg-target.h     | 13 +++++-
+ tcg/aarch64/tcg-target.inc.c | 48 +++++++++++++---------
  tcg/arm/tcg-target.h         |  9 ++++-
- tcg/arm/tcg-target.inc.c     | 35 +++++++++--------
- tcg/i386/tcg-target.h        | 24 +++++++++++-
- tcg/i386/tcg-target.inc.c    | 28 +++++++-------
- tcg/mips/tcg-target.h        |  7 +++-
+ tcg/arm/tcg-target.inc.c     | 35 +++++++++-------
+ tcg/i386/tcg-target.h        | 24 ++++++++++-
+ tcg/i386/tcg-target.inc.c    | 28 ++++++-------
+ tcg/mips/tcg-target.h        |  8 +++-
  tcg/mips/tcg-target.inc.c    | 62 +++++++++++++++++------------
  tcg/ppc/tcg-target.h         |  8 +++-
  tcg/ppc/tcg-target.inc.c     | 51 +++++++++++++++---------
  tcg/riscv/tcg-target.h       |  9 ++++-
  tcg/riscv/tcg-target.inc.c   | 51 +++++++++++++-----------
- tcg/s390/tcg-target.h        | 13 ++++++-
+ tcg/s390/tcg-target.h        | 13 +++++-
  tcg/s390/tcg-target.inc.c    | 25 ++++++------
- tcg/sparc/tcg-target.h       |  7 +++-
+ tcg/sparc/tcg-target.h       |  8 +++-
  tcg/sparc/tcg-target.inc.c   | 29 ++++++++------
  tcg/tcg-ldst.inc.c           |  2 +-
  tcg/tcg-pool.inc.c           |  9 +++--
- tcg/tcg.c                    | 60 +++++++++++++++++++----------
+ tcg/tcg.c                    | 60 ++++++++++++++++++----------
  tcg/tcg.h                    | 18 +++++++--
- tcg/tci/tcg-target.h         | 13 ++++++-
+ tcg/tci/tcg-target.h         | 13 +++++-
  tcg/tci/tcg-target.inc.c     |  8 ++--
- 27 files changed, 473 insertions(+), 183 deletions(-)
+ 27 files changed, 479 insertions(+), 184 deletions(-)
  create mode 100644 docs/devel/ios.rst
 
 diff --git a/accel/tcg/cpu-exec.c b/accel/tcg/cpu-exec.c
@@ -906,7 +906,7 @@ index c01f59c743..a1fef809ee 100644
          tb->jmp_target_arg[n] = addr;
      }
 diff --git a/accel/tcg/translate-all.c b/accel/tcg/translate-all.c
-index 9f48da9472..d8ecffc7a7 100644
+index 9f48da9472..7301ace32a 100644
 --- a/accel/tcg/translate-all.c
 +++ b/accel/tcg/translate-all.c
 @@ -58,6 +58,22 @@
@@ -932,27 +932,31 @@ index 9f48da9472..d8ecffc7a7 100644
  /* #define DEBUG_TB_INVALIDATE */
  /* #define DEBUG_TB_FLUSH */
  /* make various TB consistency checks */
-@@ -295,8 +311,8 @@ static target_long decode_sleb128(uint8_t **pp)
+@@ -295,10 +311,12 @@ static target_long decode_sleb128(uint8_t **pp)
  
  static int encode_search(TranslationBlock *tb, uint8_t *block)
  {
 -    uint8_t *highwater = tcg_ctx->code_gen_highwater;
 -    uint8_t *p = block;
-+    uint8_t *highwater = TCG_CODE_PTR_RW(tcg_ctx, tcg_ctx->code_gen_highwater);
-+    uint8_t *p = TCG_CODE_PTR_RW(tcg_ctx, block);
++    uint8_t *highwater;
++    uint8_t *p;
      int i, j, n;
  
++    highwater = (uint8_t *)TCG_CODE_PTR_RW(tcg_ctx, tcg_ctx->code_gen_highwater);
++    p = (uint8_t *)TCG_CODE_PTR_RW(tcg_ctx, block);
      for (i = 0, n = tb->icount; i < n; ++i) {
-@@ -322,7 +338,7 @@ static int encode_search(TranslationBlock *tb, uint8_t *block)
+         target_ulong prev;
+ 
+@@ -322,7 +340,7 @@ static int encode_search(TranslationBlock *tb, uint8_t *block)
          }
      }
  
 -    return p - block;
-+    return p - TCG_CODE_PTR_RW(tcg_ctx, block);
++    return p - (uint8_t *)TCG_CODE_PTR_RW(tcg_ctx, block);
  }
  
  /* The cpu state corresponding to 'searched_pc' is restored.
-@@ -1030,7 +1046,11 @@ static inline void *alloc_code_gen_buffer(void)
+@@ -1030,7 +1048,11 @@ static inline void *alloc_code_gen_buffer(void)
  #else
  static inline void *alloc_code_gen_buffer(void)
  {
@@ -964,7 +968,7 @@ index 9f48da9472..d8ecffc7a7 100644
      int flags = MAP_PRIVATE | MAP_ANONYMOUS;
      uintptr_t start = 0;
      size_t size = tcg_ctx->code_gen_buffer_size;
-@@ -1108,6 +1128,39 @@ static inline void *alloc_code_gen_buffer(void)
+@@ -1108,6 +1130,39 @@ static inline void *alloc_code_gen_buffer(void)
  }
  #endif /* USE_STATIC_CODE_GEN_BUFFER, WIN32, POSIX */
  
@@ -1004,7 +1008,7 @@ index 9f48da9472..d8ecffc7a7 100644
  static inline void code_gen_alloc(size_t tb_size)
  {
      tcg_ctx->code_gen_buffer_size = size_code_gen_buffer(tb_size);
-@@ -1116,6 +1169,19 @@ static inline void code_gen_alloc(size_t tb_size)
+@@ -1116,6 +1171,19 @@ static inline void code_gen_alloc(size_t tb_size)
          fprintf(stderr, "Could not allocate dynamic translator buffer\n");
          exit(1);
      }
@@ -1024,7 +1028,7 @@ index 9f48da9472..d8ecffc7a7 100644
  }
  
  static bool tb_cmp(const void *ap, const void *bp)
-@@ -1711,6 +1777,9 @@ TranslationBlock *tb_gen_code(CPUState *cpu,
+@@ -1711,6 +1779,9 @@ TranslationBlock *tb_gen_code(CPUState *cpu,
          cpu_loop_exit(cpu);
      }
  
@@ -1111,7 +1115,7 @@ index d85e610e85..c115b78cd8 100644
  
  extern bool parallel_cpus;
 diff --git a/tcg/aarch64/tcg-target.h b/tcg/aarch64/tcg-target.h
-index 80d3b42b19..c58cd9ad8a 100644
+index 80d3b42b19..9bf041eac5 100644
 --- a/tcg/aarch64/tcg-target.h
 +++ b/tcg/aarch64/tcg-target.h
 @@ -148,6 +148,7 @@ typedef enum {
@@ -1122,11 +1126,12 @@ index 80d3b42b19..c58cd9ad8a 100644
  #endif
  
  static inline void flush_icache_range(uintptr_t start, uintptr_t stop)
-@@ -161,7 +162,16 @@ static inline void flush_icache_range(uintptr_t start, uintptr_t stop)
+@@ -161,7 +162,17 @@ static inline void flush_icache_range(uintptr_t start, uintptr_t stop)
  #endif
  }
  
 -void tb_target_set_jmp_target(uintptr_t, uintptr_t, uintptr_t);
++void tb_target_set_jmp_target(uintptr_t, uintptr_t, uintptr_t, uintptr_t);
 +#if defined(CONFIG_IOS_JIT)
 +static inline void flush_dcache_range(uintptr_t start, uintptr_t stop)
 +{
@@ -1141,7 +1146,7 @@ index 80d3b42b19..c58cd9ad8a 100644
  #ifdef CONFIG_SOFTMMU
  #define TCG_TARGET_NEED_LDST_LABELS
 diff --git a/tcg/aarch64/tcg-target.inc.c b/tcg/aarch64/tcg-target.inc.c
-index 3f921015d3..b4d1da013b 100644
+index 3f921015d3..725f7f4d4d 100644
 --- a/tcg/aarch64/tcg-target.inc.c
 +++ b/tcg/aarch64/tcg-target.inc.c
 @@ -78,38 +78,44 @@ static const int tcg_target_call_oarg_regs[1] = {
@@ -1243,6 +1248,15 @@ index 3f921015d3..b4d1da013b 100644
      flush_icache_range(jmp_addr, jmp_addr + 8);
  }
  
+@@ -1570,7 +1579,7 @@ static void * const qemu_st_helpers[16] = {
+     [MO_BEQ]  = helper_be_stq_mmu,
+ };
+ 
+-static inline void tcg_out_adr(TCGContext *s, TCGReg rd, void *target)
++static inline void tcg_out_adr(TCGContext *s, TCGReg rd, const void *target)
+ {
+     ptrdiff_t offset = tcg_pcrel_diff(s, target);
+     tcg_debug_assert(offset == sextract64(offset, 0, 21));
 @@ -1583,7 +1592,7 @@ static bool tcg_out_qemu_ld_slow_path(TCGContext *s, TCGLabelQemuLdst *lb)
      MemOp opc = get_memop(oi);
      MemOp size = opc & MO_SIZE;
@@ -1290,7 +1304,7 @@ index 3f921015d3..b4d1da013b 100644
      int i;
      for (i = 0; i < count; ++i) {
 -        p[i] = NOP;
-+        TCG_CODE_PTR_RW(s, p)[i] = NOP;
++        (TCG_CODE_PTR_RW(s, p))[i] = NOP;
      }
  }
  
@@ -1316,7 +1330,7 @@ index 17e771374d..d8d7e7e239 100644
  #ifdef CONFIG_SOFTMMU
  #define TCG_TARGET_NEED_LDST_LABELS
 diff --git a/tcg/arm/tcg-target.inc.c b/tcg/arm/tcg-target.inc.c
-index 94d80d79d1..e92f1d3a03 100644
+index 94d80d79d1..4a6202b96f 100644
 --- a/tcg/arm/tcg-target.inc.c
 +++ b/tcg/arm/tcg-target.inc.c
 @@ -187,17 +187,22 @@ static const uint8_t tcg_cond_to_arm_cond[] = {
@@ -1435,7 +1449,7 @@ index 94d80d79d1..e92f1d3a03 100644
      int i;
      for (i = 0; i < count; ++i) {
 -        p[i] = INSN_NOP;
-+        TCG_CODE_PTR_RW(s, p)[i] = INSN_NOP;
++        (TCG_CODE_PTR_RW(s, p))[i] = INSN_NOP;
      }
  }
  
@@ -1585,14 +1599,15 @@ index 9d8ed974e0..ab3b3458dd 100644
  
  static void tcg_target_init(TCGContext *s)
 diff --git a/tcg/mips/tcg-target.h b/tcg/mips/tcg-target.h
-index c6b091d849..5f68509d8a 100644
+index c6b091d849..80dcba5358 100644
 --- a/tcg/mips/tcg-target.h
 +++ b/tcg/mips/tcg-target.h
-@@ -212,7 +212,12 @@ static inline void flush_icache_range(uintptr_t start, uintptr_t stop)
+@@ -212,7 +212,13 @@ static inline void flush_icache_range(uintptr_t start, uintptr_t stop)
      cacheflush ((void *)start, stop-start, ICACHE);
  }
  
 -void tb_target_set_jmp_target(uintptr_t, uintptr_t, uintptr_t);
++void tb_target_set_jmp_target(uintptr_t, uintptr_t, uintptr_t, uintptr_t);
 +#if defined(CONFIG_IOS_JIT)
 +static inline void flush_dcache_range(uintptr_t start, uintptr_t stop)
 +{
@@ -1780,7 +1795,7 @@ index 5442167045..56992ad94f 100644
  }
  
 diff --git a/tcg/ppc/tcg-target.h b/tcg/ppc/tcg-target.h
-index 4fa21f0e71..b2865895d3 100644
+index 4fa21f0e71..cdce0e4f59 100644
 --- a/tcg/ppc/tcg-target.h
 +++ b/tcg/ppc/tcg-target.h
 @@ -172,7 +172,13 @@ extern bool have_vsx;
@@ -1788,7 +1803,7 @@ index 4fa21f0e71..b2865895d3 100644
  
  void flush_icache_range(uintptr_t start, uintptr_t stop);
 -void tb_target_set_jmp_target(uintptr_t, uintptr_t, uintptr_t);
-+
++void tb_target_set_jmp_target(uintptr_t, uintptr_t, uintptr_t, uintptr_t);
 +#if defined(CONFIG_IOS_JIT)
 +static inline void flush_dcache_range(uintptr_t start, uintptr_t stop)
 +{
@@ -1799,7 +1814,7 @@ index 4fa21f0e71..b2865895d3 100644
  #define TCG_TARGET_DEFAULT_MO (0)
  #define TCG_TARGET_HAS_MEMORY_BSWAP     1
 diff --git a/tcg/ppc/tcg-target.inc.c b/tcg/ppc/tcg-target.inc.c
-index d308d69aba..7a5495d4d7 100644
+index d308d69aba..c971ad4854 100644
 --- a/tcg/ppc/tcg-target.inc.c
 +++ b/tcg/ppc/tcg-target.inc.c
 @@ -62,7 +62,7 @@
@@ -1962,7 +1977,7 @@ index d308d69aba..7a5495d4d7 100644
      int i;
      for (i = 0; i < count; ++i) {
 -        p[i] = NOP;
-+        TCG_CODE_PTR_RW(s, p)[i] = NOP;
++        (TCG_CODE_PTR_RW(s, p))[i] = NOP;
      }
  }
  
@@ -1988,7 +2003,7 @@ index 032439d806..d42b361991 100644
  #define TCG_TARGET_DEFAULT_MO (0)
  
 diff --git a/tcg/riscv/tcg-target.inc.c b/tcg/riscv/tcg-target.inc.c
-index 7018509693..5a908f41f4 100644
+index 7018509693..a087b93155 100644
 --- a/tcg/riscv/tcg-target.inc.c
 +++ b/tcg/riscv/tcg-target.inc.c
 @@ -415,11 +415,11 @@ static void tcg_out_opc_jump(TCGContext *s, RISCVInsn opc,
@@ -2001,7 +2016,7 @@ index 7018509693..5a908f41f4 100644
      int i;
      for (i = 0; i < count; ++i) {
 -        p[i] = encode_i(OPC_ADDI, TCG_REG_ZERO, TCG_REG_ZERO, 0);
-+        TCG_CODE_PTR_RW(s, p)[i] = encode_i(OPC_ADDI, TCG_REG_ZERO, TCG_REG_ZERO, 0);
++        (TCG_CODE_PTR_RW(s, p))[i] = encode_i(OPC_ADDI, TCG_REG_ZERO, TCG_REG_ZERO, 0);
      }
  }
  
@@ -2018,7 +2033,7 @@ index 7018509693..5a908f41f4 100644
  
      if (offset == sextreg(offset, 1, 12) << 1) {
 -        code_ptr[0] |= encode_sbimm12(offset);
-+        TCG_CODE_PTR_RW(s, code_ptr)[0] |= encode_sbimm12(offset);
++        (TCG_CODE_PTR_RW(s, code_ptr))[0] |= encode_sbimm12(offset);
          return true;
      }
  
@@ -2034,7 +2049,7 @@ index 7018509693..5a908f41f4 100644
  
      if (offset == sextreg(offset, 1, 20) << 1) {
 -        code_ptr[0] |= encode_ujimm20(offset);
-+        TCG_CODE_PTR_RW(s, code_ptr)[0] |= encode_ujimm20(offset);
++        (TCG_CODE_PTR_RW(s, code_ptr))[0] |= encode_ujimm20(offset);
          return true;
      }
  
@@ -2053,8 +2068,8 @@ index 7018509693..5a908f41f4 100644
      if (offset == hi + lo) {
 -        code_ptr[0] |= encode_uimm20(hi);
 -        code_ptr[1] |= encode_imm12(lo);
-+        TCG_CODE_PTR_RW(s, code_ptr)[0] |= encode_uimm20(hi);
-+        TCG_CODE_PTR_RW(s, code_ptr)[1] |= encode_imm12(lo);
++        (TCG_CODE_PTR_RW(s, code_ptr))[0] |= encode_uimm20(hi);
++        (TCG_CODE_PTR_RW(s, code_ptr))[1] |= encode_imm12(lo);
          return true;
      }
  
@@ -2300,14 +2315,15 @@ index 8aaa4cebe8..9755369b78 100644
  
  typedef struct {
 diff --git a/tcg/sparc/tcg-target.h b/tcg/sparc/tcg-target.h
-index 633841ebf2..a890b00e68 100644
+index 633841ebf2..d102e13692 100644
 --- a/tcg/sparc/tcg-target.h
 +++ b/tcg/sparc/tcg-target.h
-@@ -176,7 +176,12 @@ static inline void flush_icache_range(uintptr_t start, uintptr_t stop)
+@@ -176,7 +176,13 @@ static inline void flush_icache_range(uintptr_t start, uintptr_t stop)
      }
  }
  
 -void tb_target_set_jmp_target(uintptr_t, uintptr_t, uintptr_t);
++void tb_target_set_jmp_target(uintptr_t, uintptr_t, uintptr_t, uintptr_t);
 +#if defined(CONFIG_IOS_JIT)
 +static inline void flush_dcache_range(uintptr_t start, uintptr_t stop)
 +{
@@ -2318,7 +2334,7 @@ index 633841ebf2..a890b00e68 100644
  #define TCG_TARGET_NEED_POOL_LABELS
  
 diff --git a/tcg/sparc/tcg-target.inc.c b/tcg/sparc/tcg-target.inc.c
-index d7986cda5c..def3233769 100644
+index d7986cda5c..ec9c7bbea8 100644
 --- a/tcg/sparc/tcg-target.inc.c
 +++ b/tcg/sparc/tcg-target.inc.c
 @@ -291,14 +291,14 @@ static inline int check_fit_i32(int32_t val, unsigned int bits)
@@ -2377,7 +2393,7 @@ index d7986cda5c..def3233769 100644
      int i;
      for (i = 0; i < count; ++i) {
 -        p[i] = NOP;
-+        TCG_CODE_PTR_RW(s, p)[i] = NOP;
++        (TCG_CODE_PTR_RW(s, p))[i] = NOP;
      }
  }
  
