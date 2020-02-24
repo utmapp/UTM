@@ -7,6 +7,8 @@
 
 UTM is a full featured virtual machine host for iOS. In short, it allows you to run Windows, Android, and more on your iPhone and iPad.
 
+[![screenshots](./readmeAssets/screenshots.jpg)](https://getutm.app/)
+
 ## Features
 
 * 30+ processors supported including x86_64, ARM64, and RISC-V thanks to qemu as a backend
