@@ -53,6 +53,14 @@
 #pragma mark - Table delegate
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    if ([tableView cellForRowAtIndexPath:indexPath] == self.architectureCell) {
+        self.architecturePickerActive = !self.architecturePickerActive;
+        [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    }
+    if ([tableView cellForRowAtIndexPath:indexPath] == self.bootCell) {
+        self.bootPickerActive = !self.bootPickerActive;
+        [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    }
     if ([tableView cellForRowAtIndexPath:indexPath] == self.advancedConfigurationCell) {
         self.advancedConfiguration = !self.advancedConfiguration;
         [tableView deselectRowAtIndexPath:indexPath animated:YES];
