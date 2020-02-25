@@ -4,8 +4,6 @@ on:
     paths-ignore:
       - 'LICENSE'
       - '**.md'
-    tags-ignore: # prevent double action on releases
-      - 'v**'
   pull_request:
   release:
     types: [created]
