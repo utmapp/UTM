@@ -243,13 +243,13 @@ fixup () {
     OLDIFS=$IFS
     IFS=$'\n'
     echo "${GREEN}Fixing up $FILE...${NC}"
-    install_name_tool -id "@rpath/$(basename "$FILE")" "$FILE"
+    install_name_tool -id "@executable_path/Frameworks/$(basename "$FILE")" "$FILE"
     for f in $LIST
     do
         base=$(basename "$f")
         dir=$(dirname "$f")
         if [ "$dir" == "$PREFIX/lib" ]; then
-            install_name_tool -change "$f" "@rpath/$base" "$FILE"
+            install_name_tool -change "$f" "@executable_path/Frameworks/$base" "$FILE"
         fi
     done
     IFS=$OLDIFS
