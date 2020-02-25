@@ -5,7 +5,9 @@
 
 -- <cite>Alan Turing, 1936</cite>
 
-UTM is a full featured virtual machine host for iOS. In short, it allows you to run Windows, Android, and more on your iPhone and iPad.
+UTM is a full featured virtual machine host for iOS. In short, it allows you to run Windows, Android, and more on your iPhone and iPad. More information at https://getutm.app/
+
+![Screenshot of UTM running on iPhone][4]
 
 ## Features
 
@@ -49,10 +51,16 @@ If you want to sign an `ipa` from the [release page][3], there are a variety of 
 If you want to sign an `xcarchive` such as from a [Github Actions][1] built artifact, you can use the following command:
 
 ```
-./scripts/resign.sh UTM.xcarchive PROFILE_NAME TEAM_ID outputPath
+./scripts/resign.sh UTM.xcarchive outputPath PROFILE_NAME TEAM_ID
 ```
 
 Where `PROFILE_NAME` is the name of the provisioning profile and `TEAM_ID` is the identifier next to the team name in the provisioning profile. Make sure the signing key is imported into your keychain and the provision profile is installed on your iOS device.
+
+If you have a jailbroken device, you can also fake-sign it (with `ldid` installed):
+
+```
+./scripts/resign.sh UTM.xcarchive outputPath
+```
 
 ## Why isn't this in the AppStore?
 
@@ -65,3 +73,4 @@ UTM is distributed under the permissive Apache 2.0 license. However, it uses sev
   [1]: https://github.com/utmapp/UTM/actions?query=workflow%3ABuild
   [2]: https://github.com/flutter/flutter/issues/49504#issuecomment-581090664
   [3]: https://github.com/utmapp/UTM/releases
+  [4]: screen.png
