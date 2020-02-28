@@ -20,6 +20,8 @@
 
 #import "VMKeyboardButton.h"
 
+extern UIAccessibilityTraits UIAccessibilityTraitToggle;
+
 @implementation VMKeyboardButton
 
 - (void)setup {
@@ -38,6 +40,9 @@
         self.keyAppearance = UIKeyboardAppearanceLight;
     }
     self.accessibilityTraits |= UIAccessibilityTraitKeyboardKey;
+    if (self.toggleable) {
+        self.accessibilityTraits |= 0x20000000000000;
+    }
 }
 
 - (void)awakeFromNib {
@@ -88,10 +93,11 @@
         } completion:nil];
     }
     if (self.keyAppearance == UIKeyboardAppearanceLight) {
-        [self setTitleColor:UIColor.blackColor forState:UIControlStateNormal];
+        self.tintColor = UIColor.blackColor;
     } else {
-        [self setTitleColor:UIColor.whiteColor forState:UIControlStateNormal];
+        self.tintColor = UIColor.whiteColor;
     }
+    [self setTitleColor:self.tintColor forState:UIControlStateNormal];
 }
 
 - (void)setHighlighted:(BOOL)highlighted {
@@ -107,6 +113,13 @@
 - (void)setKeyAppearance:(UIKeyboardAppearance)keyAppearance {
     _keyAppearance = keyAppearance;
     [self chooseBackground];
+}
+
+- (NSString *)accessibilityValue {
+    if (self.toggleable) {
+        return self.selected ? @"1" : @"0";
+    }
+    return nil;
 }
 
 - (void)prepareForInterfaceBuilder {
