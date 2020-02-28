@@ -2091,17 +2091,19 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="DZc-Sg-gjO" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <view contentMode="scaleToFill" id="H7m-pq-dCg" customClass="UIInputView">
-                    <rect key="frame" x="0.0" y="0.0" width="1000" height="45"/>
+                    <rect key="frame" x="0.0" y="0.0" width="1000" height="68"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     <subviews>
-                        <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" alignment="top" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="EQJ-rh-CTl">
-                            <rect key="frame" x="8" y="4" width="144" height="39"/>
+                        <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="EQJ-rh-CTl">
+                            <rect key="frame" x="8" y="4" width="264" height="60"/>
                             <subviews>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="1LD-5d-0Ee" customClass="VMKeyboardButton">
-                                    <rect key="frame" x="0.0" y="0.0" width="30" height="36"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="60" height="60"/>
                                     <accessibility key="accessibilityConfiguration" label="Control"/>
                                     <constraints>
-                                        <constraint firstAttribute="width" constant="30" id="AeY-H4-9v6"/>
+                                        <constraint firstAttribute="width" constant="30" id="AeY-H4-9v6">
+                                            <variation key="heightClass=regular-widthClass=regular" constant="60"/>
+                                        </constraint>
                                     </constraints>
                                     <fontDescription key="fontDescription" type="system" pointSize="20"/>
                                     <state key="normal" title="⌃">
@@ -2120,7 +2122,7 @@
                                     </connections>
                                 </button>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="PvO-bn-C3P" customClass="VMKeyboardButton">
-                                    <rect key="frame" x="38" y="0.0" width="30" height="36"/>
+                                    <rect key="frame" x="68" y="0.0" width="60" height="60"/>
                                     <accessibility key="accessibilityConfiguration" label="Option"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="20"/>
                                     <state key="normal" title="⌥">
@@ -2139,8 +2141,8 @@
                                     </connections>
                                 </button>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="S2Y-JX-D2o" customClass="VMKeyboardButton">
-                                    <rect key="frame" x="76" y="0.0" width="30" height="36"/>
-                                    <accessibility key="accessibilityConfiguration" label="Option"/>
+                                    <rect key="frame" x="136" y="0.0" width="60" height="60"/>
+                                    <accessibility key="accessibilityConfiguration" label="Command"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="20"/>
                                     <state key="normal" title="⌘">
                                         <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
@@ -2158,8 +2160,8 @@
                                     </connections>
                                 </button>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="XWu-4O-XGa" customClass="VMKeyboardButton">
-                                    <rect key="frame" x="114" y="0.0" width="30" height="36"/>
-                                    <accessibility key="accessibilityConfiguration" label="Command"/>
+                                    <rect key="frame" x="204" y="0.0" width="60" height="60"/>
+                                    <accessibility key="accessibilityConfiguration" label="Shift"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="20"/>
                                     <state key="normal" title="⇧">
                                         <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
@@ -2179,7 +2181,7 @@
                             </subviews>
                         </stackView>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="F32-dg-1Zk">
-                            <rect key="frame" x="962" y="7" width="30" height="30"/>
+                            <rect key="frame" x="962" y="19" width="30" height="30"/>
                             <accessibility key="accessibilityConfiguration" label="Hide Keyboard"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="30" id="CFx-gn-WDj"/>
@@ -2191,7 +2193,7 @@
                             </connections>
                         </button>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="bHg-KE-i2P">
-                            <rect key="frame" x="924" y="7" width="30" height="30"/>
+                            <rect key="frame" x="924" y="19" width="30" height="30"/>
                             <accessibility key="accessibilityConfiguration" label="Paste"/>
                             <constraints>
                                 <constraint firstAttribute="width" constant="30" id="V44-c9-PFU"/>
@@ -2200,13 +2202,13 @@
                             <state key="normal" image="Keyboard Paste"/>
                         </button>
                         <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2BY-mt-E6G">
-                            <rect key="frame" x="160" y="0.0" width="756" height="45"/>
+                            <rect key="frame" x="280" y="0.0" width="636" height="68"/>
                             <subviews>
-                                <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" alignment="top" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="p57-ic-h8k">
-                                    <rect key="frame" x="0.0" y="0.0" width="676" height="40"/>
+                                <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="p57-ic-h8k">
+                                    <rect key="frame" x="0.0" y="4" width="1216" height="60"/>
                                     <subviews>
                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="BXG-l7-BeY" customClass="VMKeyboardButton">
-                                            <rect key="frame" x="0.0" y="4" width="30" height="36"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="60" height="60"/>
                                             <accessibility key="accessibilityConfiguration" label="Tab"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="20"/>
                                             <state key="normal" title="⇥">
@@ -2223,7 +2225,7 @@
                                             </connections>
                                         </button>
                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="yDQ-hh-V1x" customClass="VMKeyboardButton">
-                                            <rect key="frame" x="38" y="4" width="30" height="36"/>
+                                            <rect key="frame" x="68" y="0.0" width="60" height="60"/>
                                             <accessibility key="accessibilityConfiguration" label="Escape"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="20"/>
                                             <state key="normal" title="⎋">
@@ -2240,7 +2242,7 @@
                                             </connections>
                                         </button>
                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="cMr-vl-R93" customClass="VMKeyboardButton">
-                                            <rect key="frame" x="76" y="4" width="30" height="36"/>
+                                            <rect key="frame" x="136" y="0.0" width="60" height="60"/>
                                             <accessibility key="accessibilityConfiguration" label="Up"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="20"/>
                                             <state key="normal" title="↑">
@@ -2257,7 +2259,7 @@
                                             </connections>
                                         </button>
                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="sOo-ak-Mlv" customClass="VMKeyboardButton">
-                                            <rect key="frame" x="114" y="4" width="30" height="36"/>
+                                            <rect key="frame" x="204" y="0.0" width="60" height="60"/>
                                             <accessibility key="accessibilityConfiguration" label="Down"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="20"/>
                                             <state key="normal" title="↓">
@@ -2274,7 +2276,7 @@
                                             </connections>
                                         </button>
                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="nG1-Lj-efg" customClass="VMKeyboardButton">
-                                            <rect key="frame" x="152" y="4" width="30" height="36"/>
+                                            <rect key="frame" x="272" y="0.0" width="60" height="60"/>
                                             <accessibility key="accessibilityConfiguration" label="Left"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="20"/>
                                             <state key="normal" title="←">
@@ -2291,7 +2293,7 @@
                                             </connections>
                                         </button>
                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="6Oy-qX-zoY" customClass="VMKeyboardButton">
-                                            <rect key="frame" x="190" y="4" width="30" height="36"/>
+                                            <rect key="frame" x="340" y="0.0" width="60" height="60"/>
                                             <accessibility key="accessibilityConfiguration" label="Right"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="20"/>
                                             <state key="normal" title="→">
@@ -2308,7 +2310,7 @@
                                             </connections>
                                         </button>
                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="wPb-ec-tXw" customClass="VMKeyboardButton">
-                                            <rect key="frame" x="228" y="4" width="30" height="36"/>
+                                            <rect key="frame" x="408" y="0.0" width="60" height="60"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="20"/>
                                             <state key="normal" title="F1">
                                                 <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
@@ -2324,7 +2326,7 @@
                                             </connections>
                                         </button>
                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="m3u-Hy-WNb" customClass="VMKeyboardButton">
-                                            <rect key="frame" x="266" y="4" width="30" height="36"/>
+                                            <rect key="frame" x="476" y="0.0" width="60" height="60"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="20"/>
                                             <state key="normal" title="F2">
                                                 <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
@@ -2340,7 +2342,7 @@
                                             </connections>
                                         </button>
                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="4XD-uH-MNJ" customClass="VMKeyboardButton">
-                                            <rect key="frame" x="304" y="4" width="30" height="36"/>
+                                            <rect key="frame" x="544" y="0.0" width="60" height="60"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="20"/>
                                             <state key="normal" title="F3">
                                                 <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
@@ -2356,7 +2358,7 @@
                                             </connections>
                                         </button>
                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="876-Dc-Xg3" customClass="VMKeyboardButton">
-                                            <rect key="frame" x="342" y="4" width="30" height="36"/>
+                                            <rect key="frame" x="612" y="0.0" width="60" height="60"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="20"/>
                                             <state key="normal" title="F4">
                                                 <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
@@ -2372,7 +2374,7 @@
                                             </connections>
                                         </button>
                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ZrI-oI-jIY" customClass="VMKeyboardButton">
-                                            <rect key="frame" x="380" y="4" width="30" height="36"/>
+                                            <rect key="frame" x="680" y="0.0" width="60" height="60"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="20"/>
                                             <state key="normal" title="F5">
                                                 <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
@@ -2388,7 +2390,7 @@
                                             </connections>
                                         </button>
                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="wMD-ug-3bW" customClass="VMKeyboardButton">
-                                            <rect key="frame" x="418" y="4" width="30" height="36"/>
+                                            <rect key="frame" x="748" y="0.0" width="60" height="60"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="20"/>
                                             <state key="normal" title="F6">
                                                 <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
@@ -2404,7 +2406,7 @@
                                             </connections>
                                         </button>
                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="yuk-bm-ipJ" customClass="VMKeyboardButton">
-                                            <rect key="frame" x="456" y="4" width="30" height="36"/>
+                                            <rect key="frame" x="816" y="0.0" width="60" height="60"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="20"/>
                                             <state key="normal" title="F7">
                                                 <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
@@ -2420,7 +2422,7 @@
                                             </connections>
                                         </button>
                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="2Ed-0S-kjc" customClass="VMKeyboardButton">
-                                            <rect key="frame" x="494" y="4" width="30" height="36"/>
+                                            <rect key="frame" x="884" y="0.0" width="60" height="60"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="20"/>
                                             <state key="normal" title="F8">
                                                 <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
@@ -2436,7 +2438,7 @@
                                             </connections>
                                         </button>
                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="n2Z-fx-LHS" customClass="VMKeyboardButton">
-                                            <rect key="frame" x="532" y="4" width="30" height="36"/>
+                                            <rect key="frame" x="952" y="0.0" width="60" height="60"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="20"/>
                                             <state key="normal" title="F9">
                                                 <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
@@ -2452,7 +2454,7 @@
                                             </connections>
                                         </button>
                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8zW-rN-u2M" customClass="VMKeyboardButton">
-                                            <rect key="frame" x="570" y="4" width="30" height="34"/>
+                                            <rect key="frame" x="1020" y="0.0" width="60" height="60"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="18"/>
                                             <state key="normal" title="F10">
                                                 <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
@@ -2468,7 +2470,7 @@
                                             </connections>
                                         </button>
                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="7Jq-kj-K2V" customClass="VMKeyboardButton">
-                                            <rect key="frame" x="608" y="4" width="30" height="34"/>
+                                            <rect key="frame" x="1088" y="0.0" width="60" height="60"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="18"/>
                                             <state key="normal" title="F11">
                                                 <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
@@ -2484,7 +2486,7 @@
                                             </connections>
                                         </button>
                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="EIz-R9-Ca8" customClass="VMKeyboardButton">
-                                            <rect key="frame" x="646" y="4" width="30" height="34"/>
+                                            <rect key="frame" x="1156" y="0.0" width="60" height="60"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="18"/>
                                             <state key="normal" title="F12">
                                                 <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
@@ -2503,31 +2505,35 @@
                                 </stackView>
                             </subviews>
                             <constraints>
-                                <constraint firstItem="p57-ic-h8k" firstAttribute="height" relation="lessThanOrEqual" secondItem="2BY-mt-E6G" secondAttribute="height" id="3Y3-rX-4CR"/>
-                                <constraint firstItem="p57-ic-h8k" firstAttribute="top" secondItem="2BY-mt-E6G" secondAttribute="top" id="RUv-vM-xQO"/>
+                                <constraint firstItem="p57-ic-h8k" firstAttribute="top" secondItem="2BY-mt-E6G" secondAttribute="top" priority="250" id="RUv-vM-xQO"/>
                                 <constraint firstItem="p57-ic-h8k" firstAttribute="trailing" secondItem="2BY-mt-E6G" secondAttribute="trailing" id="fsI-O5-eOh"/>
-                                <constraint firstItem="p57-ic-h8k" firstAttribute="bottom" secondItem="2BY-mt-E6G" secondAttribute="bottom" id="uBg-eL-Swv"/>
+                                <constraint firstItem="p57-ic-h8k" firstAttribute="bottom" secondItem="2BY-mt-E6G" secondAttribute="bottom" priority="250" id="uBg-eL-Swv"/>
                                 <constraint firstItem="p57-ic-h8k" firstAttribute="leading" secondItem="2BY-mt-E6G" secondAttribute="leading" id="wun-GQ-Bzt"/>
                             </constraints>
                         </scrollView>
                     </subviews>
                     <constraints>
+                        <constraint firstItem="p57-ic-h8k" firstAttribute="bottom" secondItem="EQJ-rh-CTl" secondAttribute="bottom" id="1Xb-PR-MG0"/>
                         <constraint firstItem="BXG-l7-BeY" firstAttribute="width" secondItem="1LD-5d-0Ee" secondAttribute="width" id="5r8-PR-vl0"/>
-                        <constraint firstItem="BXG-l7-BeY" firstAttribute="height" secondItem="1LD-5d-0Ee" secondAttribute="height" id="D1X-25-btE"/>
-                        <constraint firstItem="BXG-l7-BeY" firstAttribute="centerY" secondItem="1LD-5d-0Ee" secondAttribute="centerY" id="DWR-uW-Vxo"/>
-                        <constraint firstItem="2BY-mt-E6G" firstAttribute="top" secondItem="H7m-pq-dCg" secondAttribute="top" id="Dnt-LP-1vA"/>
                         <constraint firstItem="F32-dg-1Zk" firstAttribute="leading" secondItem="bHg-KE-i2P" secondAttribute="trailing" constant="8" id="Fk5-1S-zYF"/>
-                        <constraint firstItem="EQJ-rh-CTl" firstAttribute="top" secondItem="H7m-pq-dCg" secondAttribute="top" constant="4" id="GMi-Eh-PWZ"/>
+                        <constraint firstItem="EQJ-rh-CTl" firstAttribute="top" secondItem="M5c-nM-HyU" secondAttribute="top" constant="4" id="GMi-Eh-PWZ"/>
                         <constraint firstItem="EQJ-rh-CTl" firstAttribute="leading" secondItem="M5c-nM-HyU" secondAttribute="leading" constant="8" id="Wl9-QD-yFA"/>
                         <constraint firstItem="F32-dg-1Zk" firstAttribute="trailing" secondItem="H7m-pq-dCg" secondAttribute="trailing" constant="-8" id="bYG-2J-8fy"/>
                         <constraint firstItem="bHg-KE-i2P" firstAttribute="centerY" secondItem="1LD-5d-0Ee" secondAttribute="centerY" id="bml-ze-DLb"/>
-                        <constraint firstItem="EQJ-rh-CTl" firstAttribute="bottom" secondItem="H7m-pq-dCg" secondAttribute="bottom" constant="-2" id="gqh-mK-Wt5"/>
+                        <constraint firstItem="p57-ic-h8k" firstAttribute="top" secondItem="EQJ-rh-CTl" secondAttribute="top" id="cXf-Jd-rs5"/>
+                        <constraint firstItem="EQJ-rh-CTl" firstAttribute="bottom" secondItem="M5c-nM-HyU" secondAttribute="bottom" constant="-4" id="gqh-mK-Wt5"/>
                         <constraint firstItem="F32-dg-1Zk" firstAttribute="centerY" secondItem="1LD-5d-0Ee" secondAttribute="centerY" id="pv2-48-GJQ"/>
                         <constraint firstItem="2BY-mt-E6G" firstAttribute="leading" secondItem="EQJ-rh-CTl" secondAttribute="trailing" constant="8" id="r7r-Tu-8px"/>
                         <constraint firstItem="2BY-mt-E6G" firstAttribute="bottom" secondItem="H7m-pq-dCg" secondAttribute="bottom" id="rbq-Ax-Dy3"/>
+                        <constraint firstItem="2BY-mt-E6G" firstAttribute="top" secondItem="H7m-pq-dCg" secondAttribute="top" id="uDn-at-SeU"/>
                         <constraint firstItem="bHg-KE-i2P" firstAttribute="leading" secondItem="2BY-mt-E6G" secondAttribute="trailing" constant="8" id="x6k-dL-6qs"/>
                     </constraints>
                     <viewLayoutGuide key="safeArea" id="M5c-nM-HyU"/>
+                    <userDefinedRuntimeAttributes>
+                        <userDefinedRuntimeAttribute type="number" keyPath="autoresizingMask">
+                            <integer key="value" value="16"/>
+                        </userDefinedRuntimeAttribute>
+                    </userDefinedRuntimeAttributes>
                 </view>
                 <exit id="HWN-B0-AD0" userLabel="Exit" sceneMemberID="exit"/>
             </objects>

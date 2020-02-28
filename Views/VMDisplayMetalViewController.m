@@ -127,6 +127,7 @@
     [self.navigationController setNavigationBarHidden:YES animated:animated];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillChangeFrame:) name:UIKeyboardWillChangeFrameNotification object:nil];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -134,6 +135,7 @@
     [self.navigationController setNavigationBarHidden:NO animated:animated];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillShowNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillHideNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillChangeFrameNotification object:nil];
 }
 
 - (void)virtualMachine:(UTMVirtualMachine *)vm transitionToState:(UTMVMState)state {
@@ -390,6 +392,7 @@ static CGFloat CGPointToPixel(CGFloat point) {
         f.origin.y = -self->_keyboardViewHeight;
         self.mtkView.frame = f;
     }];
+    [self updateKeyboardAccessoryFrame];
 }
 
 - (void)keyboardWillHide:(NSNotification *)notification {
@@ -399,6 +402,18 @@ static CGFloat CGPointToPixel(CGFloat point) {
         self->_keyboardViewHeight = 0;
         self.mtkView.frame = f;
     }];
+}
+
+- (void)keyboardWillChangeFrame:(NSNotification *)notification {
+    [self updateKeyboardAccessoryFrame];
+}
+
+- (void)updateKeyboardAccessoryFrame {
+    if (self.inputAccessoryView.safeAreaInsets.bottom > 0) {
+        self.keyboardView.softKeyboardVisible = YES;
+    } else {
+        self.keyboardView.softKeyboardVisible = NO;
+    }
 }
 
 - (void)keyboardView:(nonnull VMKeyboardView *)keyboardView didPressKeyDown:(int)scancode {

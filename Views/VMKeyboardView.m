@@ -258,6 +258,10 @@ const key_mapping_t pc104_us[] = {
     {'"', 0x0, 0x0, 0x36, 0x28},
 };
 
+const int kLargeAccessoryViewHeight = 68;
+const int kSmallAccessoryViewHeight = 45;
+const int kSafeAreaHeight = 25;
+
 static int indexForChar(const key_mapping_t *table, size_t table_len, char tc) {
     int i;
     
@@ -312,14 +316,33 @@ static int indexForExtChar(const ext_key_mapping_t *table, size_t table_len, cha
     }
 }
 
-- (id)initWithFrame:(CGRect)frame {
-    self = [super initWithFrame:frame];
-    if (self) {
-        [self setAutocapitalizationType:UITextAutocapitalizationTypeNone];
-        [self setAutocorrectionType:UITextAutocorrectionTypeNo];
-        [self setKeyboardType:UIKeyboardTypeASCIICapable];
+- (void)setSoftKeyboardVisible:(BOOL)softKeyboardVisible {
+    _softKeyboardVisible = softKeyboardVisible;
+    [self updateAccessoryViewHeight];
+}
+
+- (void)traitCollectionDidChange:(UITraitCollection *)previousTraitCollection {
+    [super traitCollectionDidChange:previousTraitCollection];
+    [self updateAccessoryViewHeight];
+}
+
+- (void)updateAccessoryViewHeight {
+    CGRect currentFrame = self.inputAccessoryView.frame;
+    CGFloat height;
+    if (self.traitCollection.horizontalSizeClass == UIUserInterfaceSizeClassRegular && self.traitCollection.verticalSizeClass == UIUserInterfaceSizeClassRegular) {
+        // we want large keys
+        height = kLargeAccessoryViewHeight;
+    } else {
+        height = kSmallAccessoryViewHeight;
     }
-    return self;
+    if (self.softKeyboardVisible) {
+        height += kSafeAreaHeight;
+    }
+    if (height != currentFrame.size.height) {
+        currentFrame.size.height = height;
+        self.inputAccessoryView.frame = currentFrame;
+        [self reloadInputViews];
+    }
 }
 
 - (BOOL)hasText {
