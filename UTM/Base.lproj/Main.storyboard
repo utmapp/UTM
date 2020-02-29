@@ -1875,7 +1875,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="1366" height="1024"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="0Mf-V7-Aot" customClass="VMKeyboardView">
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="0Mf-V7-Aot" customClass="VMSoftKeyboardView">
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
                                     <constraint firstAttribute="width" id="UwZ-as-GT6"/>
@@ -1884,6 +1884,16 @@
                                 <connections>
                                     <outlet property="delegate" destination="ckC-eO-gxn" id="84Z-Xs-yhV"/>
                                     <outlet property="inputAccessoryView" destination="H7m-pq-dCg" id="2hf-h9-mbD"/>
+                                </connections>
+                            </view>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="YSN-Vm-nYw" customClass="VMKeyboardView">
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" id="LUi-lD-0vd"/>
+                                    <constraint firstAttribute="height" id="ajE-yw-NSM"/>
+                                </constraints>
+                                <connections>
+                                    <outlet property="delegate" destination="ckC-eO-gxn" id="HSt-L6-sKN"/>
                                 </connections>
                             </view>
                             <mtkView contentMode="scaleToFill" colorPixelFormat="BGRA8Unorm" depthStencilPixelFormat="Depth32Float" translatesAutoresizingMaskIntoConstraints="NO" id="ZK0-vH-7ok">
@@ -2041,6 +2051,7 @@
                         <constraints>
                             <constraint firstItem="VFv-zJ-H5K" firstAttribute="top" secondItem="WSe-Ri-b4c" secondAttribute="top" id="3Ee-g7-mwo"/>
                             <constraint firstItem="0Mf-V7-Aot" firstAttribute="leading" secondItem="Bio-ez-YeW" secondAttribute="leading" id="L0U-9R-jjD"/>
+                            <constraint firstItem="YSN-Vm-nYw" firstAttribute="top" secondItem="Bio-ez-YeW" secondAttribute="top" constant="20" symbolic="YES" id="VYU-Sx-lFe"/>
                             <constraint firstAttribute="bottom" secondItem="ZK0-vH-7ok" secondAttribute="bottom" id="cgW-vJ-VjV"/>
                             <constraint firstAttribute="trailing" secondItem="ZK0-vH-7ok" secondAttribute="trailing" id="dMk-GY-XOa"/>
                             <constraint firstItem="ZK0-vH-7ok" firstAttribute="top" secondItem="WSe-Ri-b4c" secondAttribute="top" id="fbF-cf-IeV"/>
@@ -2050,16 +2061,18 @@
                             <constraint firstItem="VFv-zJ-H5K" firstAttribute="centerX" secondItem="WSe-Ri-b4c" secondAttribute="centerX" id="okU-XJ-CrC"/>
                             <constraint firstItem="VFv-zJ-H5K" firstAttribute="bottom" secondItem="Bio-ez-YeW" secondAttribute="top" constant="45" id="vEm-qT-m5h"/>
                             <constraint firstItem="ZK0-vH-7ok" firstAttribute="leading" secondItem="WSe-Ri-b4c" secondAttribute="leading" id="ws8-g9-a5x"/>
+                            <constraint firstItem="YSN-Vm-nYw" firstAttribute="leading" secondItem="Bio-ez-YeW" secondAttribute="leading" id="yzg-Vx-AOF"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="Bio-ez-YeW"/>
                     </view>
                     <nil key="simulatedTopBarMetrics"/>
                     <nil key="simulatedBottomBarMetrics"/>
                     <connections>
+                        <outlet property="hardKeyboardView" destination="YSN-Vm-nYw" id="Jnd-Ri-nbp"/>
                         <outlet property="inputAccessoryView" destination="H7m-pq-dCg" id="Cgj-Ig-VfV"/>
-                        <outlet property="keyboardView" destination="0Mf-V7-Aot" id="MgM-9f-E25"/>
                         <outlet property="mtkView" destination="ZK0-vH-7ok" id="x0C-ao-tuC"/>
                         <outlet property="pauseResumeButton" destination="bjd-4T-OVm" id="uJK-aZ-KnO"/>
+                        <outlet property="softKeyboardView" destination="0Mf-V7-Aot" id="MgM-9f-E25"/>
                         <outlet property="toolbarAccessoryView" destination="VFv-zJ-H5K" id="hkm-Wv-Reu"/>
                         <outlet property="zoomButton" destination="m9f-Az-rlH" id="mfe-Ou-UL7"/>
                         <outletCollection property="customKeyButtons" destination="1LD-5d-0Ee" id="joR-H1-pbq"/>
