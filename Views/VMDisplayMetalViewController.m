@@ -450,6 +450,19 @@ static CGFloat CGPointToPixel(CGFloat point) {
     [self toggleSoftKeyboard:NO];
 }
 
+- (void)keyboardPastePressed:(UIButton *)sender {
+    UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
+    NSString *string = pasteboard.string;
+    if (string) {
+        NSLog(@"Pasting: %@", string);
+        [string enumerateSubstringsInRange:NSMakeRange(0, string.length) options:NSStringEnumerationByComposedCharacterSequences usingBlock:^(NSString * _Nullable substring, NSRange substringRange, NSRange enclosingRange, BOOL * _Nonnull stop) {
+            [self.softKeyboardView insertText:substring];
+        }];
+    } else {
+        NSLog(@"No string to paste.");
+    }
+}
+
 #pragma mark - Toolbar actions
 
 - (void)hideToolbar {

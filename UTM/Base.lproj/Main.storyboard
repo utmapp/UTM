@@ -2213,6 +2213,9 @@
                                 <constraint firstAttribute="height" constant="30" id="tY2-rA-3Vo"/>
                             </constraints>
                             <state key="normal" image="Keyboard Paste"/>
+                            <connections>
+                                <action selector="keyboardPastePressed:" destination="ckC-eO-gxn" eventType="touchUpInside" id="hAG-23-YnR"/>
+                            </connections>
                         </button>
                         <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2BY-mt-E6G">
                             <rect key="frame" x="280" y="0.0" width="636" height="68"/>
