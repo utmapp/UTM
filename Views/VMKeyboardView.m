@@ -356,8 +356,13 @@ static int indexForExtChar(const ext_key_mapping_t *table, size_t table_len, cha
 }
 
 - (void)insertText:(nonnull NSString *)text {
-    NSLog(@"insertText: %@, length=%lu", text, (unsigned long)text.length);
-    const char *ctext = [text UTF8String];
+    [text enumerateSubstringsInRange:NSMakeRange(0, text.length) options:NSStringEnumerationByComposedCharacterSequences usingBlock:^(NSString * _Nullable substring, NSRange substringRange, NSRange enclosingRange, BOOL * _Nonnull stop) {
+        const char *seq = [substring UTF8String];
+        [self insertUTF8Sequence:seq];
+    }];
+}
+
+- (void)insertUTF8Sequence:(const char *)ctext {
     unsigned long ctext_len = strlen(ctext);
     NSLog(@"ctext length=%lu\n", ctext_len);
     unsigned char tc = ctext[0];

@@ -455,9 +455,7 @@ static CGFloat CGPointToPixel(CGFloat point) {
     NSString *string = pasteboard.string;
     if (string) {
         NSLog(@"Pasting: %@", string);
-        [string enumerateSubstringsInRange:NSMakeRange(0, string.length) options:NSStringEnumerationByComposedCharacterSequences usingBlock:^(NSString * _Nullable substring, NSRange substringRange, NSRange enclosingRange, BOOL * _Nonnull stop) {
-            [self.softKeyboardView insertText:substring];
-        }];
+        [self.softKeyboardView insertText:string];
     } else {
         NSLog(@"No string to paste.");
     }
