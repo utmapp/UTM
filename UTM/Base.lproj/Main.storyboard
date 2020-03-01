@@ -2051,7 +2051,7 @@
                         <constraints>
                             <constraint firstItem="VFv-zJ-H5K" firstAttribute="top" secondItem="WSe-Ri-b4c" secondAttribute="top" id="3Ee-g7-mwo"/>
                             <constraint firstItem="0Mf-V7-Aot" firstAttribute="leading" secondItem="Bio-ez-YeW" secondAttribute="leading" id="L0U-9R-jjD"/>
-                            <constraint firstItem="YSN-Vm-nYw" firstAttribute="top" secondItem="Bio-ez-YeW" secondAttribute="top" constant="20" symbolic="YES" id="VYU-Sx-lFe"/>
+                            <constraint firstItem="YSN-Vm-nYw" firstAttribute="top" secondItem="Bio-ez-YeW" secondAttribute="top" symbolic="YES" id="VYU-Sx-lFe"/>
                             <constraint firstAttribute="bottom" secondItem="ZK0-vH-7ok" secondAttribute="bottom" id="cgW-vJ-VjV"/>
                             <constraint firstAttribute="trailing" secondItem="ZK0-vH-7ok" secondAttribute="trailing" id="dMk-GY-XOa"/>
                             <constraint firstItem="ZK0-vH-7ok" firstAttribute="top" secondItem="WSe-Ri-b4c" secondAttribute="top" id="fbF-cf-IeV"/>
@@ -2553,7 +2553,182 @@
                 </view>
                 <exit id="HWN-B0-AD0" userLabel="Exit" sceneMemberID="exit"/>
             </objects>
-            <point key="canvasLocation" x="1830" y="-624"/>
+            <point key="canvasLocation" x="1829" y="-804"/>
+        </scene>
+        <!--Display Metal-->
+        <scene sceneID="JNh-Pq-IaO">
+            <objects>
+                <viewController modalTransitionStyle="flipHorizontal" hidesBottomBarWhenPushed="YES" id="Nen-bt-V44" userLabel="Display Metal" customClass="VMTerminalViewController" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="ekG-nW-ktk">
+                        <rect key="frame" x="0.0" y="0.0" width="1366" height="1024"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <subviews>
+                            <wkWebView contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="es2-y2-iG9">
+                                <rect key="frame" x="0.0" y="0.0" width="1366" height="1024"/>
+                                <color key="backgroundColor" red="0.36078431370000003" green="0.38823529410000002" blue="0.4039215686" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <wkWebViewConfiguration key="configuration">
+                                    <audiovisualMediaTypes key="mediaTypesRequiringUserActionForPlayback" none="YES"/>
+                                    <wkPreferences key="preferences"/>
+                                </wkWebViewConfiguration>
+                            </wkWebView>
+                            <visualEffectView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="pSV-Kz-9ar" userLabel="Toolbar Accessory View">
+                                <rect key="frame" x="0.0" y="0.0" width="1366" height="45"/>
+                                <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="kdf-xB-pU1">
+                                    <rect key="frame" x="0.0" y="0.0" width="1366" height="45"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                    <subviews>
+                                        <visualEffectView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="6Zm-be-ZSb">
+                                            <rect key="frame" x="0.0" y="0.0" width="1366" height="45"/>
+                                            <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="Ylq-Eq-BeV">
+                                                <rect key="frame" x="0.0" y="0.0" width="1366" height="45"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                <subviews>
+                                                    <stackView opaque="NO" contentMode="scaleToFill" spacing="16" translatesAutoresizingMaskIntoConstraints="NO" id="yP3-BT-kx0">
+                                                        <rect key="frame" x="1182" y="7" width="168" height="30"/>
+                                                        <subviews>
+                                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gCa-sm-3xz">
+                                                                <rect key="frame" x="0.0" y="0.0" width="30" height="30"/>
+                                                                <accessibility key="accessibilityConfiguration" label="Zoom"/>
+                                                                <constraints>
+                                                                    <constraint firstAttribute="width" constant="30" id="hhr-12-JPD"/>
+                                                                    <constraint firstAttribute="height" constant="30" id="im8-pu-nqF"/>
+                                                                </constraints>
+                                                                <inset key="imageEdgeInsets" minX="2" minY="2" maxX="2" maxY="2"/>
+                                                                <state key="normal" image="Toolbar Maximize"/>
+                                                            </button>
+                                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gFL-3M-wsD">
+                                                                <rect key="frame" x="46" y="0.0" width="30" height="30"/>
+                                                                <accessibility key="accessibilityConfiguration" label="Keyboard"/>
+                                                                <constraints>
+                                                                    <constraint firstAttribute="height" constant="30" id="2m7-r6-Zh2"/>
+                                                                    <constraint firstAttribute="width" constant="30" id="xoB-Jj-CuA"/>
+                                                                </constraints>
+                                                                <state key="normal" image="Toolbar Keyboard"/>
+                                                            </button>
+                                                            <button opaque="NO" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="SXa-j7-wWI">
+                                                                <rect key="frame" x="92" y="0.0" width="30" height="30"/>
+                                                                <accessibility key="accessibilityConfiguration" label="Settings"/>
+                                                                <constraints>
+                                                                    <constraint firstAttribute="height" constant="30" id="6EI-rP-9gR"/>
+                                                                    <constraint firstAttribute="width" constant="30" id="USW-AV-Gmz"/>
+                                                                </constraints>
+                                                                <state key="normal" image="Toolbar Settings"/>
+                                                            </button>
+                                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="7Jt-gO-ZMS">
+                                                                <rect key="frame" x="138" y="0.0" width="30" height="30"/>
+                                                                <accessibility key="accessibilityConfiguration" label="Hide Toolbar"/>
+                                                                <constraints>
+                                                                    <constraint firstAttribute="height" constant="30" id="AlM-aI-0fY"/>
+                                                                    <constraint firstAttribute="width" constant="30" id="qOp-ma-FK9"/>
+                                                                </constraints>
+                                                                <state key="normal" image="Toolbar Hide"/>
+                                                            </button>
+                                                        </subviews>
+                                                        <variation key="widthClass=compact" spacing="8"/>
+                                                        <variation key="heightClass=compact-widthClass=regular" spacing="8"/>
+                                                    </stackView>
+                                                    <stackView opaque="NO" contentMode="scaleToFill" spacing="16" translatesAutoresizingMaskIntoConstraints="NO" id="bG0-b9-QzE">
+                                                        <rect key="frame" x="16" y="7" width="122" height="30"/>
+                                                        <subviews>
+                                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="bUN-Hi-L9L">
+                                                                <rect key="frame" x="0.0" y="0.0" width="30" height="30"/>
+                                                                <accessibility key="accessibilityConfiguration" label="Back"/>
+                                                                <constraints>
+                                                                    <constraint firstAttribute="height" constant="30" id="0nM-JO-fFW"/>
+                                                                    <constraint firstAttribute="width" constant="30" id="GrS-eP-4wj"/>
+                                                                </constraints>
+                                                                <inset key="imageEdgeInsets" minX="4" minY="4" maxX="4" maxY="4"/>
+                                                                <state key="normal" image="Toolbar Left"/>
+                                                                <connections>
+                                                                    <segue destination="dnX-hr-5QR" kind="unwind" unwindAction="unwindToMainFromVM:" id="4Xo-Y5-EK6"/>
+                                                                </connections>
+                                                            </button>
+                                                            <button opaque="NO" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="y8S-ia-RVP">
+                                                                <rect key="frame" x="46" y="0.0" width="30" height="30"/>
+                                                                <accessibility key="accessibilityConfiguration" label="Pause"/>
+                                                                <constraints>
+                                                                    <constraint firstAttribute="height" constant="30" id="G2f-0R-W9H"/>
+                                                                    <constraint firstAttribute="width" constant="30" id="g42-gl-UlC"/>
+                                                                </constraints>
+                                                                <inset key="imageEdgeInsets" minX="4" minY="4" maxX="4" maxY="4"/>
+                                                                <state key="normal" image="Toolbar Pause"/>
+                                                            </button>
+                                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="cIe-Bu-ydq">
+                                                                <rect key="frame" x="92" y="0.0" width="30" height="30"/>
+                                                                <accessibility key="accessibilityConfiguration" label="Power"/>
+                                                                <constraints>
+                                                                    <constraint firstAttribute="height" constant="30" id="pUr-gF-0iU"/>
+                                                                    <constraint firstAttribute="width" constant="30" id="woM-7O-Mm0"/>
+                                                                </constraints>
+                                                                <inset key="imageEdgeInsets" minX="2" minY="2" maxX="2" maxY="2"/>
+                                                                <state key="normal" image="Toolbar Power"/>
+                                                            </button>
+                                                        </subviews>
+                                                        <variation key="widthClass=compact" spacing="8"/>
+                                                        <variation key="heightClass=compact-widthClass=regular" spacing="8"/>
+                                                    </stackView>
+                                                </subviews>
+                                                <constraints>
+                                                    <constraint firstAttribute="bottomMargin" secondItem="yP3-BT-kx0" secondAttribute="bottom" id="4xx-55-9JH"/>
+                                                    <constraint firstItem="bG0-b9-QzE" firstAttribute="leading" secondItem="Ylq-Eq-BeV" secondAttribute="leading" constant="16" id="Or6-wU-NzR"/>
+                                                    <constraint firstAttribute="trailing" secondItem="yP3-BT-kx0" secondAttribute="trailing" constant="16" id="d0D-98-9bA"/>
+                                                    <constraint firstAttribute="bottomMargin" secondItem="bG0-b9-QzE" secondAttribute="bottom" id="rKq-fJ-Tow"/>
+                                                </constraints>
+                                            </view>
+                                            <vibrancyEffect>
+                                                <blurEffect style="light"/>
+                                            </vibrancyEffect>
+                                        </visualEffectView>
+                                    </subviews>
+                                    <constraints>
+                                        <constraint firstAttribute="trailing" secondItem="6Zm-be-ZSb" secondAttribute="trailing" id="8dE-ja-KwC"/>
+                                        <constraint firstAttribute="bottom" secondItem="6Zm-be-ZSb" secondAttribute="bottom" id="IYE-Nf-lLu"/>
+                                        <constraint firstItem="6Zm-be-ZSb" firstAttribute="leading" secondItem="kdf-xB-pU1" secondAttribute="leading" id="pWY-7T-Qpu"/>
+                                        <constraint firstItem="6Zm-be-ZSb" firstAttribute="top" secondItem="kdf-xB-pU1" secondAttribute="top" id="vhT-pR-dF7"/>
+                                    </constraints>
+                                </view>
+                                <constraints>
+                                    <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="45" id="KVc-Tk-aap"/>
+                                    <constraint firstAttribute="width" constant="300" id="qhw-Mc-SlO"/>
+                                </constraints>
+                                <blurEffect style="light"/>
+                                <variation key="default">
+                                    <mask key="constraints">
+                                        <exclude reference="qhw-Mc-SlO"/>
+                                    </mask>
+                                </variation>
+                                <variation key="heightClass=compact">
+                                    <mask key="constraints">
+                                        <include reference="qhw-Mc-SlO"/>
+                                    </mask>
+                                </variation>
+                            </visualEffectView>
+                        </subviews>
+                        <gestureRecognizers/>
+                        <constraints>
+                            <constraint firstAttribute="bottom" secondItem="es2-y2-iG9" secondAttribute="bottom" id="67M-kH-iti"/>
+                            <constraint firstItem="pSV-Kz-9ar" firstAttribute="centerX" secondItem="ekG-nW-ktk" secondAttribute="centerX" id="6kG-GW-4gC"/>
+                            <constraint firstItem="es2-y2-iG9" firstAttribute="top" secondItem="Z6B-oG-xjm" secondAttribute="top" id="DBM-c7-TWA"/>
+                            <constraint firstItem="pSV-Kz-9ar" firstAttribute="top" secondItem="ekG-nW-ktk" secondAttribute="top" id="Huv-dt-ljk"/>
+                            <constraint firstItem="pSV-Kz-9ar" firstAttribute="trailing" secondItem="Z6B-oG-xjm" secondAttribute="trailing" priority="750" id="IyQ-YH-EbO"/>
+                            <constraint firstItem="Z6B-oG-xjm" firstAttribute="trailing" secondItem="es2-y2-iG9" secondAttribute="trailing" id="Rgr-yh-aWa"/>
+                            <constraint firstItem="es2-y2-iG9" firstAttribute="leading" secondItem="Z6B-oG-xjm" secondAttribute="leading" id="W6q-bj-Pj3"/>
+                            <constraint firstItem="pSV-Kz-9ar" firstAttribute="leading" secondItem="Z6B-oG-xjm" secondAttribute="leading" priority="750" id="ZuH-NC-IG6"/>
+                            <constraint firstItem="pSV-Kz-9ar" firstAttribute="bottom" secondItem="Z6B-oG-xjm" secondAttribute="top" constant="45" id="d6T-yX-6qp"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="Z6B-oG-xjm"/>
+                    </view>
+                    <nil key="simulatedTopBarMetrics"/>
+                    <nil key="simulatedBottomBarMetrics"/>
+                    <connections>
+                        <outlet property="webView" destination="es2-y2-iG9" id="ZCx-zz-cuG"/>
+                        <segue destination="dnX-hr-5QR" kind="unwind" identifier="returnToList" unwindAction="unwindToMainFromVM:" id="Xix-wh-kcI"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="zcN-pa-RPf" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <exit id="dnX-hr-5QR" userLabel="Exit" sceneMemberID="exit"/>
+            </objects>
+            <point key="canvasLocation" x="1829" y="-1557"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="2bS-UE-pwf">

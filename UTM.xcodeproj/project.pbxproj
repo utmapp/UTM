@@ -300,6 +300,7 @@
 		E28394BA240C219F006742E2 /* terminal.html in Resources */ = {isa = PBXBuildFile; fileRef = E28394B8240C219F006742E2 /* terminal.html */; };
 		E28394BB240C219F006742E2 /* terminal.js in Resources */ = {isa = PBXBuildFile; fileRef = E28394B9240C219F006742E2 /* terminal.js */; };
 		E28394BE240C22F1006742E2 /* hterm_all.js in Resources */ = {isa = PBXBuildFile; fileRef = E28394BD240C22F1006742E2 /* hterm_all.js */; };
+		E28394C1240C268A006742E2 /* VMTerminalViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = E28394C0240C268A006742E2 /* VMTerminalViewController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -814,6 +815,8 @@
 		E28394B8240C219F006742E2 /* terminal.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = terminal.html; sourceTree = "<group>"; };
 		E28394B9240C219F006742E2 /* terminal.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = terminal.js; sourceTree = "<group>"; };
 		E28394BD240C22F1006742E2 /* hterm_all.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = hterm_all.js; path = libapps/hterm/dist/js/hterm_all.js; sourceTree = "<group>"; };
+		E28394BF240C268A006742E2 /* VMTerminalViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VMTerminalViewController.h; sourceTree = "<group>"; };
+		E28394C0240C268A006742E2 /* VMTerminalViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VMTerminalViewController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1365,6 +1368,8 @@
 			isa = PBXGroup;
 			children = (
 				E28394B7240C2191006742E2 /* HTerm */,
+				E28394BF240C268A006742E2 /* VMTerminalViewController.h */,
+				E28394C0240C268A006742E2 /* VMTerminalViewController.m */,
 				CED33AE42267CAB500FF1977 /* VMDisplayMetalViewController.h */,
 				CED33AE52267CAB500FF1977 /* VMDisplayMetalViewController.m */,
 				CEEB66442284B942002737B2 /* VMKeyboardButton.h */,
@@ -1648,6 +1653,7 @@
 				CEEB66462284B942002737B2 /* VMKeyboardButton.m in Sources */,
 				CE23C1A623FCEC0A001177D6 /* qapi-commands-introspect.c in Sources */,
 				CE23C1AC23FCEC0A001177D6 /* qapi-types-sockets.c in Sources */,
+				E28394C1240C268A006742E2 /* VMTerminalViewController.m in Sources */,
 				CE23C19A23FCEC0A001177D6 /* qapi-events-block-core.c in Sources */,
 				CE36B281227668D1004A1435 /* UTMQemuManager.m in Sources */,
 				CE23C19423FCEC0A001177D6 /* qapi-types-crypto.c in Sources */,
