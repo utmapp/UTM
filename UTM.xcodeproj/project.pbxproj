@@ -296,6 +296,10 @@
 		CEDC1DF22260EE4B008D9A6D /* StaticDataTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CEDC1DF12260EE4B008D9A6D /* StaticDataTableViewController.m */; };
 		CEEB66462284B942002737B2 /* VMKeyboardButton.m in Sources */ = {isa = PBXBuildFile; fileRef = CEEB66452284B942002737B2 /* VMKeyboardButton.m */; };
 		CEFE75DB228933DE0050ABCC /* gst_ios_init.m in Sources */ = {isa = PBXBuildFile; fileRef = CEFE75D9228933DE0050ABCC /* gst_ios_init.m */; };
+		E28394B6240C20E1006742E2 /* UTMTerminal.m in Sources */ = {isa = PBXBuildFile; fileRef = E28394B3240C20E0006742E2 /* UTMTerminal.m */; };
+		E28394BA240C219F006742E2 /* terminal.html in Resources */ = {isa = PBXBuildFile; fileRef = E28394B8240C219F006742E2 /* terminal.html */; };
+		E28394BB240C219F006742E2 /* terminal.js in Resources */ = {isa = PBXBuildFile; fileRef = E28394B9240C219F006742E2 /* terminal.js */; };
+		E28394BE240C22F1006742E2 /* hterm_all.js in Resources */ = {isa = PBXBuildFile; fileRef = E28394BD240C22F1006742E2 /* hterm_all.js */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -804,6 +808,12 @@
 		CEEB66452284B942002737B2 /* VMKeyboardButton.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VMKeyboardButton.m; sourceTree = "<group>"; };
 		CEFE75D9228933DE0050ABCC /* gst_ios_init.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = gst_ios_init.m; sourceTree = "<group>"; };
 		CEFE75DA228933DE0050ABCC /* gst_ios_init.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = gst_ios_init.h; sourceTree = "<group>"; };
+		E28394B3240C20E0006742E2 /* UTMTerminal.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UTMTerminal.m; sourceTree = "<group>"; };
+		E28394B4240C20E1006742E2 /* UTMTerminalDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UTMTerminalDelegate.h; sourceTree = "<group>"; };
+		E28394B5240C20E1006742E2 /* UTMTerminal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UTMTerminal.h; sourceTree = "<group>"; };
+		E28394B8240C219F006742E2 /* terminal.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = terminal.html; sourceTree = "<group>"; };
+		E28394B9240C219F006742E2 /* terminal.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = terminal.js; sourceTree = "<group>"; };
+		E28394BD240C22F1006742E2 /* hterm_all.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = hterm_all.js; path = libapps/hterm/dist/js/hterm_all.js; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1344,6 +1354,9 @@
 				CE2B89352262B2F600C6D9D8 /* UTMVirtualMachineDelegate.h */,
 				CE2B89332262A21E00C6D9D8 /* UTMVirtualMachine.h */,
 				CE5F165B2261395000F3D56B /* UTMVirtualMachine.m */,
+				E28394B5240C20E1006742E2 /* UTMTerminal.h */,
+				E28394B3240C20E0006742E2 /* UTMTerminal.m */,
+				E28394B4240C20E1006742E2 /* UTMTerminalDelegate.h */,
 			);
 			path = Managers;
 			sourceTree = "<group>";
@@ -1351,6 +1364,7 @@
 		CE7BED4D22600F5000A1E1B6 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				E28394B7240C2191006742E2 /* HTerm */,
 				CED33AE42267CAB500FF1977 /* VMDisplayMetalViewController.h */,
 				CED33AE52267CAB500FF1977 /* VMDisplayMetalViewController.m */,
 				CEEB66442284B942002737B2 /* VMKeyboardButton.h */,
@@ -1410,6 +1424,16 @@
 			path = gstreamer;
 			sourceTree = "<group>";
 		};
+		E28394B7240C2191006742E2 /* HTerm */ = {
+			isa = PBXGroup;
+			children = (
+				E28394BD240C22F1006742E2 /* hterm_all.js */,
+				E28394B8240C219F006742E2 /* terminal.html */,
+				E28394B9240C219F006742E2 /* terminal.js */,
+			);
+			path = HTerm;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -1419,6 +1443,7 @@
 			buildPhases = (
 				CE550BC5225947990063E575 /* Sources */,
 				CE550BC6225947990063E575 /* Frameworks */,
+				E28394BC240C224B006742E2 /* ShellScript */,
 				CE550BC7225947990063E575 /* Resources */,
 				CE2D64A022653C8700FC7E63 /* Embed Libraries */,
 			);
@@ -1469,14 +1494,39 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E28394BB240C219F006742E2 /* terminal.js in Resources */,
 				CE9D18F82265410E00355E14 /* qemu in Resources */,
 				CE550BD92259479D0063E575 /* LaunchScreen.storyboard in Resources */,
 				CE550BD62259479D0063E575 /* Assets.xcassets in Resources */,
+				E28394BA240C219F006742E2 /* terminal.html in Resources */,
 				CE550BD4225947990063E575 /* Main.storyboard in Resources */,
+				E28394BE240C22F1006742E2 /* hterm_all.js in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		E28394BC240C224B006742E2 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${SRCROOT}/Views/HTerm/libapps/hterm",
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"${SRCROOT}/Views/HTerm/libapps/hterm/dist/js/hterm_all.js",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "${SRCROOT}/Views/HTerm/libapps/hterm/bin/mkdist\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		CE550BC5225947990063E575 /* Sources */ = {
@@ -1634,6 +1684,7 @@
 				CE36B1552275061B004A1435 /* error.c in Sources */,
 				CECC76552273A7D50059B955 /* cf-output-visitor.c in Sources */,
 				CE23C1B023FCEC0A001177D6 /* qapi-types-audio.c in Sources */,
+				E28394B6240C20E1006742E2 /* UTMTerminal.m in Sources */,
 				CED33AE32267893D00FF1977 /* UTMQemuImg.m in Sources */,
 				CE23C1B623FCEC0A001177D6 /* qapi-types-char.c in Sources */,
 				CE74C28B225D88ED004E4FF1 /* VMConfigDisplayViewController.m in Sources */,
@@ -1786,7 +1837,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = JE2494MFB5;
 				ENABLE_BITCODE = NO;
 				HEADER_SEARCH_PATHS = (
 					"$(PROJECT_DIR)/sysroot/include",
@@ -1817,7 +1868,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = JE2494MFB5;
 				ENABLE_BITCODE = NO;
 				HEADER_SEARCH_PATHS = (
 					"$(PROJECT_DIR)/sysroot/include",
