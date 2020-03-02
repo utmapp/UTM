@@ -117,13 +117,25 @@
     return [[NSProcessInfo processInfo] globallyUniqueString];
 }
 
+- (void)showAlert:(NSString *)msg actions:(nullable NSArray<UIAlertAction *> *)actions completion:(nullable void (^)(void))completion {
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil message:msg preferredStyle:UIAlertControllerStyleAlert];
+    if (!actions) {
+        UIAlertAction *okay = [UIAlertAction actionWithTitle:NSLocalizedString(@"OK", @"OK button") style:UIAlertActionStyleDefault handler:nil];
+        [alert addAction:okay];
+    } else {
+        for (UIAlertAction *action in actions) {
+            [alert addAction:action];
+        }
+    }
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self presentViewController:alert animated:YES completion:completion];
+    });
+}
+
 - (void)showStartupMessage {
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     if (![defaults boolForKey:@"HasShownStartupAlert"]) {
-        UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil message:NSLocalizedString(@"Welcome to UTM! Due to a bug in iOS, if you force kill this app, your system will be unstable and you cannot launch UTM again until you reboot. The recommended way to terminate this app is the bottom on the top left. Another limitation is that you can only start one VM per launch, so you must terminate and re-launch to start a new VM.", @"Startup message") preferredStyle:UIAlertControllerStyleAlert];
-        UIAlertAction *okay = [UIAlertAction actionWithTitle:NSLocalizedString(@"OK", @"OK button") style:UIAlertActionStyleDefault handler:nil];
-        [alert addAction:okay];
-        [self presentViewController:alert animated:YES completion:^{
+        [self showAlert:NSLocalizedString(@"Welcome to UTM! Due to a bug in iOS, if you force kill this app, the system will be unstable and you cannot launch UTM again until you reboot. The recommended way to terminate this app is the button on the top left.", @"Startup message") actions:nil completion:^{
             [defaults setBool:YES forKey:@"HasShownStartupAlert"];
         }];
     }
@@ -224,10 +236,7 @@
         switch (state) {
             case kVMError: {
                 NSString *msg = self.vmMessage ? self.vmMessage : NSLocalizedString(@"An internal error has occured.", @"Alert message");
-                UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil message:msg preferredStyle:UIAlertControllerStyleAlert];
-                UIAlertAction *okay = [UIAlertAction actionWithTitle:NSLocalizedString(@"OK", @"OK button") style:UIAlertActionStyleDefault handler:nil];
-                [alert addAction:okay];
-                [self presentViewController:alert animated:YES completion:nil];
+                [self showAlert:msg actions:nil completion:nil];
                 break;
             }
             case kVMStarted:
@@ -270,10 +279,7 @@
             [self.collectionView reloadData];
             [self.alert dismissViewControllerAnimated:YES completion:nil];
             if (message) {
-                UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil message:message preferredStyle:UIAlertControllerStyleAlert];
-                UIAlertAction *okay = [UIAlertAction actionWithTitle:NSLocalizedString(@"OK", @"OK button") style:UIAlertActionStyleDefault handler:nil];
-                [alert addAction:okay];
-                [self presentViewController:alert animated:YES completion:nil];
+                [self showAlert:message actions:nil completion:nil];
             }
         });
     });
@@ -302,35 +308,37 @@
     self.activeVM.delegate = self;
 }
 
-- (IBAction)startVMFromButton:(UIButton *)sender {
-    id cell = sender.superview.superview.superview.superview.superview.superview;
+- (void)startVM:(id)cell {
     NSAssert([cell isKindOfClass:[VMListViewCell class]], @"Invalid cell class");
+    // TODO: Fix the need for this
+    if (self.activeVM != nil) {
+        UTMVirtualMachine *newActive = [self cachedVMForCell:cell];
+        if (self.activeVM != newActive) {
+            [self showAlert:NSLocalizedString(@"Launching another VM is not implemented. Please close UTM with the top left button and re-launch it.", nil) actions:nil completion:nil];
+            return;
+        }
+    }
     self.activeVM = [self cachedVMForCell:cell];
     self.activeCell = cell;
     self.activeVM.delegate = self;
     [self.activeVM startVM];
     [self virtualMachine:self.activeVM transitionToState:self.activeVM.state];
+}
+
+- (IBAction)startVMFromButton:(UIButton *)sender {
+    [self startVM:sender.superview.superview.superview.superview.superview.superview];
 }
 
 - (IBAction)startVMFromScreen:(UIButton *)sender {
-    id cell = sender.superview.superview;
-    NSAssert([cell isKindOfClass:[VMListViewCell class]], @"Invalid cell class");
-    self.activeVM = [self cachedVMForCell:cell];
-    self.activeCell = cell;
-    self.activeVM.delegate = self;
-    [self.activeVM startVM];
-    [self virtualMachine:self.activeVM transitionToState:self.activeVM.state];
+    [self startVM:sender.superview.superview];
 }
 
 - (IBAction)exitUTM:(UIBarButtonItem *)sender {
-    UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil message:NSLocalizedString(@"Are you sure you want to exit UTM? Any running VM will be killed.", @"Exit confirmation") preferredStyle:UIAlertControllerStyleAlert];
     UIAlertAction *yes = [UIAlertAction actionWithTitle:NSLocalizedString(@"Yes", @"Yes button") style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action){
         exit(0);
     }];
     UIAlertAction *no = [UIAlertAction actionWithTitle:NSLocalizedString(@"No", @"No button") style:UIAlertActionStyleCancel handler:nil];
-    [alert addAction:no];
-    [alert addAction:yes];
-    [self presentViewController:alert animated:YES completion:nil];
+    [self showAlert:NSLocalizedString(@"Are you sure you want to exit UTM? Any running VM will be killed.", @"Exit confirmation") actions:@[yes, no] completion:nil];
 }
 
 @end
