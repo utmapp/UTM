@@ -624,4 +624,10 @@ static CGFloat CGPointToPixel(CGFloat point) {
     });
 }
 
+#pragma mark - Memory warning
+
+- (void)didReceiveMemoryWarning {
+    [self showAlert:NSLocalizedString(@"Running low on memory! UTM might soon be killed by iOS. You can prevent this by decreasing the amount of memory and/or JIT cache assigned to this VM", @"Low memory warning") completion:nil];
+}
+
 @end
