@@ -141,6 +141,11 @@
                         </connections>
                     </collectionView>
                     <navigationItem key="navigationItem" title="Virtual Machines" id="y7c-vs-jlM">
+                        <barButtonItem key="leftBarButtonItem" systemItem="stop" id="Jnw-zM-dyF">
+                            <connections>
+                                <action selector="exitUTM:" destination="krH-Hz-4fz" id="wcV-cc-N6y"/>
+                            </connections>
+                        </barButtonItem>
                         <barButtonItem key="rightBarButtonItem" systemItem="add" id="e5k-lL-Xj6">
                             <connections>
                                 <segue destination="2Ff-Ox-yNa" kind="popoverPresentation" identifier="newVM" popoverAnchorBarButtonItem="e5k-lL-Xj6" id="uhI-Ry-wJ8">
@@ -148,9 +153,6 @@
                                 </segue>
                             </connections>
                         </barButtonItem>
-                        <connections>
-                            <outlet property="rightBarButtonItem" destination="e5k-lL-Xj6" id="87b-9t-bNR"/>
-                        </connections>
                     </navigationItem>
                     <connections>
                         <segue destination="ckC-eO-gxn" kind="show" identifier="startVM" id="psC-T5-Ggl"/>
@@ -2829,7 +2831,7 @@
     <inferredMetricsTieBreakers>
         <segue reference="0fe-13-GUd"/>
         <segue reference="M4J-mO-49e"/>
-        <segue reference="QMb-O0-K4I"/>
+        <segue reference="eOg-7f-ZC7"/>
         <segue reference="Ch9-qF-y79"/>
     </inferredMetricsTieBreakers>
 </document>

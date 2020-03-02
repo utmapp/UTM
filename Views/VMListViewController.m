@@ -78,6 +78,9 @@
             [self.collectionView reloadData];
         });
     });
+    
+    // show any message
+    [self showStartupMessage];
 }
 
 #pragma mark - Properties
@@ -112,6 +115,18 @@
         }
     } while (idx++ < 1000);
     return [[NSProcessInfo processInfo] globallyUniqueString];
+}
+
+- (void)showStartupMessage {
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    if (![defaults boolForKey:@"HasShownStartupAlert"]) {
+        UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil message:NSLocalizedString(@"Welcome to UTM! Due to a bug in iOS, if you force kill this app, your system will be unstable and you cannot launch UTM again until you reboot. The recommended way to terminate this app is the bottom on the top left. Another limitation is that you can only start one VM per launch, so you must terminate and re-launch to start a new VM.", @"Startup message") preferredStyle:UIAlertControllerStyleAlert];
+        UIAlertAction *okay = [UIAlertAction actionWithTitle:NSLocalizedString(@"OK", @"OK button") style:UIAlertActionStyleDefault handler:nil];
+        [alert addAction:okay];
+        [self presentViewController:alert animated:YES completion:^{
+            [defaults setBool:YES forKey:@"HasShownStartupAlert"];
+        }];
+    }
 }
 
 #pragma mark - Navigation
@@ -305,6 +320,17 @@
     self.activeVM.delegate = self;
     [self.activeVM startVM];
     [self virtualMachine:self.activeVM transitionToState:self.activeVM.state];
+}
+
+- (IBAction)exitUTM:(UIBarButtonItem *)sender {
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil message:NSLocalizedString(@"Are you sure you want to exit UTM? Any running VM will be killed.", @"Exit confirmation") preferredStyle:UIAlertControllerStyleAlert];
+    UIAlertAction *yes = [UIAlertAction actionWithTitle:NSLocalizedString(@"Yes", @"Yes button") style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action){
+        exit(0);
+    }];
+    UIAlertAction *no = [UIAlertAction actionWithTitle:NSLocalizedString(@"No", @"No button") style:UIAlertActionStyleCancel handler:nil];
+    [alert addAction:no];
+    [alert addAction:yes];
+    [self presentViewController:alert animated:YES completion:nil];
 }
 
 @end

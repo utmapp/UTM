@@ -25,6 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (IBAction)unwindToMainFromVM:(UIStoryboardSegue*)sender;
 - (IBAction)startVMFromButton:(UIButton *)sender;
 - (IBAction)startVMFromScreen:(UIButton *)sender;
+- (IBAction)exitUTM:(UIBarButtonItem *)sender;
 
 @end
 
