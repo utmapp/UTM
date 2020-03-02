@@ -289,16 +289,20 @@ static CGFloat CGPointToPixel(CGFloat point) {
     }
 }
 
+- (CGPoint)moveMouse:(CGPoint)location {
+    CGPoint translated = location;
+    translated.x = CGPointToPixel(translated.x);
+    translated.y = CGPointToPixel(translated.y);
+    translated = [self clipCursorToDisplay:translated];
+    if (!self.vm.primaryInput.serverModeCursor) {
+        [self.vm.primaryInput sendMouseMotion:SEND_BUTTON_NONE point:translated];
+    }
+    return translated;
+}
+
 - (IBAction)gestureTap:(UITapGestureRecognizer *)sender {
     if (sender.state == UIGestureRecognizerStateEnded) {
-        CGPoint translated = [sender locationInView:sender.view];
-        translated.x = CGPointToPixel(translated.x);
-        translated.y = CGPointToPixel(translated.y);
-        translated = [self clipCursorToDisplay:translated];
-        if (!self.vm.primaryInput.serverModeCursor) {
-            CGPoint translation = [sender locationInView:sender.view];
-            [self.vm.primaryInput sendMouseMotion:SEND_BUTTON_NONE point:translation];
-        }
+        CGPoint translated = [self moveMouse:[sender locationInView:sender.view]];
         [self.vm.primaryInput sendMouseButton:SEND_BUTTON_LEFT pressed:YES point:translated];
         [self.vm.primaryInput sendMouseButton:SEND_BUTTON_LEFT pressed:NO point:translated];
         [self.clickFeedbackGenerator selectionChanged];
@@ -307,14 +311,7 @@ static CGFloat CGPointToPixel(CGFloat point) {
 
 - (IBAction)gestureTwoTap:(UITapGestureRecognizer *)sender {
     if (sender.state == UIGestureRecognizerStateEnded) {
-        CGPoint translated = [sender locationInView:sender.view];
-        translated.x = CGPointToPixel(translated.x);
-        translated.y = CGPointToPixel(translated.y);
-        translated = [self clipCursorToDisplay:translated];
-        if (!self.vm.primaryInput.serverModeCursor) {
-            CGPoint translation = [sender locationInView:sender.view];
-            [self.vm.primaryInput sendMouseMotion:SEND_BUTTON_NONE point:translation];
-        }
+        CGPoint translated = [self moveMouse:[sender locationInView:sender.view]];
         [self.vm.primaryInput sendMouseButton:SEND_BUTTON_RIGHT pressed:YES point:translated];
         [self.vm.primaryInput sendMouseButton:SEND_BUTTON_RIGHT pressed:NO point:translated];
         [self.clickFeedbackGenerator selectionChanged];
