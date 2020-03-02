@@ -13,12 +13,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface UTMTerminal : NSObject
 
-@property (readonly) dispatch_queue_t queue;
-@property (readonly, nullable) NSURL* pipeURL;
-@property (weak, nullable) id<UTMTerminalDelegate> delegate;
+@property (nonatomic, readonly) NSURL* outPipeURL;
+@property (nonatomic, readonly) NSURL* inPipeURL;
+@property (nonatomic, weak, nullable) id<UTMTerminalDelegate> delegate;
 
-- (BOOL)connectWithError: (NSError**) error;
+- (id)initWithName: (NSString*) name;
+- (BOOL)connectWithError: (NSError** _Nullable) error;
 - (void)disconnect;
+- (BOOL)isConnected;
 - (void)sendInput: (NSString*) inputStr;
 
 @end

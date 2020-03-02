@@ -16,25 +16,44 @@
 
 #import "VMTerminalViewController.h"
 
-@interface VMTerminalViewController ()
-
-@end
+NSString *const kVMSendInputHandler = @"UTMSendInput";
 
 @implementation VMTerminalViewController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    // Do any additional setup after loading the view.
+    // ...get vm name
+    // terminal setup
+    _terminal = [[UTMTerminal alloc] initWithName: @"vmName"];
+    [_terminal setDelegate: self];
+    // message handlers
+    [[[_webView configuration] userContentController] addScriptMessageHandler: self name: kVMSendInputHandler];
+    
+    // load terminal.html
+    NSURL* resourceURL = [[NSBundle mainBundle] resourceURL];
+    NSURL* indexFile = [resourceURL URLByAppendingPathComponent: @"terminal.html"];
+    [_webView loadFileURL: indexFile allowingReadAccessToURL: resourceURL];
 }
 
-/*
-#pragma mark - Navigation
+#pragma mark - WKScriptMessageHandler
 
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
+- (void)userContentController:(WKUserContentController *)userContentController didReceiveScriptMessage:(WKScriptMessage *)message {
+    if ([[message name] isEqualToString: kVMSendInputHandler]) {
+        NSLog(@"Received input from HTerm: %@", (NSString*) message.body);
+        [_terminal sendInput: (NSString*) message.body];
+    }
 }
-*/
+
+- (void)terminal:(UTMTerminal *)terminal didReceiveData:(NSData *)data {
+    NSString* dataString;
+    NSString* jsString = [NSString stringWithFormat: @"writeData(new Uint8Array(%@));", dataString];
+    [_webView evaluateJavaScript: jsString completionHandler:^(id _Nullable _, NSError * _Nullable error) {
+        if (error == nil) {
+            NSLog(@"JS evaluation success");
+        } else {
+            NSLog(@"JS evaluation failed: %@", [error localizedDescription]);
+        }
+    }];
+}
 
 @end

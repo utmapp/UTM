@@ -12,83 +12,133 @@
 
 #define kTerminalBufferSize 2048
 
+dispatch_io_t createInputIO(NSURL* url, dispatch_queue_t queue) {
+    const char* cPath = [[url path] cStringUsingEncoding: NSUTF8StringEncoding];
+    dispatch_io_t io =
+        dispatch_io_create_with_path(
+            DISPATCH_IO_STREAM,
+            cPath,
+            O_RDWR | O_NONBLOCK,
+            0,
+            queue,
+            ^(int error) {
+            NSLog(@"Input dispatch_io is being closed");
+        });
+    
+    return io;
+}
+
+@interface UTMTerminal ()
+
+@property (strong, nonatomic, nonnull) dispatch_queue_t inputQueue;
+@property (strong, nonatomic, nonnull) dispatch_queue_t outputQueue;
+@property (strong, nonatomic, nonnull) dispatch_io_t inputPipeIO;
+@property (strong, nonatomic, nullable) dispatch_source_t outputObservationSource;
+
+@end
+
 @implementation UTMTerminal {
-    int32_t _namedPipeFd;
-    dispatch_source_t _fdObserveSource;
+    int32_t _outPipeFd;
     uint8_t _byteBuffer[kTerminalBufferSize];
 }
 
-- (instancetype)init {
+- (id)initWithName:(NSString *)name {
     self = [super init];
     if (self) {
-        self->_queue = dispatch_queue_create("terminal_queue", NULL);
-        self->_namedPipeFd = -1;
-        if (![self configure]) {
+        // serial queues for input/output processing
+        self->_outputQueue = dispatch_queue_create("com.osy86.UTM.TerminalOutputQueue", NULL);
+        self->_inputQueue = dispatch_queue_create("com.osy86.UTM.TerminalInputQueue", NULL);
+        
+        self->_outPipeFd = -1;
+        if (![self configurePipesUsingName: name]) {
             NSLog(@"Terminal configutation failed!");
+            [self cleanup];
+            self = nil;
+        }
+        // setup non-blocking io for writing
+        self->_inputPipeIO = createInputIO(_inPipeURL, _inputQueue);
+        if (self->_inputPipeIO == nil) {
+            NSLog(@"Terminal configutation failed!");
+            [self cleanup];
             self = nil;
         }
     }
     return self;
 }
 
-- (void)dealloc {
-    [self disconnect];
-}
+#pragma mark - Configuration
 
-- (BOOL)configure {
+- (BOOL)configurePipesUsingName: (NSString*) name {
     if ([self isConfigured]) {
         return YES;
     }
     
-    // create pipe name
-    NSString* uuidString = [[NSUUID new] UUIDString];
-    NSString* pipeName = [NSString stringWithFormat: @"pipe_%@", uuidString];
-    // path in temp dir
+    // named pipe names
+    NSString* outPipeName = [NSString stringWithFormat: @"%@.out", name];
+    NSString* inPipeName = [NSString stringWithFormat: @"%@.in", name];
+    // paths
     NSURL* tmpDir = [[NSFileManager defaultManager] temporaryDirectory];
-    NSURL* pipeURL = [tmpDir URLByAppendingPathComponent: pipeName];
-    
-    const char* pipeCPath = [[pipeURL path] cStringUsingEncoding: NSUTF8StringEncoding];
-    if (mkfifo(pipeCPath, 0666) != 0) {
-        NSLog(@"Failed to mkfifo!");
-        // TODO Error
+    NSURL* outPipeURL = [tmpDir URLByAppendingPathComponent: outPipeName];
+    NSURL* inPipeURL = [tmpDir URLByAppendingPathComponent: inPipeName];
+    // create named pipes usign mkfifos
+    const char* outPipeCPath = [[outPipeURL path] cStringUsingEncoding: NSUTF8StringEncoding];
+    if (remove(outPipeCPath) != 0 || mkfifo(outPipeCPath, 0666) != 0) {
+        NSLog(@"Failed to create output pipe using mkfifo!");
         return NO;
     }
     
-    self->_pipeURL = pipeURL;
+    const char* inPipeCPath = [[inPipeURL path] cStringUsingEncoding: NSUTF8StringEncoding];
+    if (remove(inPipeCPath) != 0 || mkfifo(inPipeCPath, 0666) != 0) {
+        NSLog(@"Failed to create input pipe using mkfifo!");
+        return NO;
+    }
+    
+    self->_outPipeURL = outPipeURL;
+    self->_inPipeURL = inPipeURL;
     
     return YES;
 }
 
 - (BOOL)isConfigured {
-    if (_pipeURL == nil) {
+    if (_outPipeURL == nil || _inPipeURL == nil) {
         return NO;
     }
     
-    return [[NSFileManager defaultManager] fileExistsAtPath: [_pipeURL path]];
+    return
+        [[NSFileManager defaultManager] fileExistsAtPath: [_outPipeURL path]] &&
+        [[NSFileManager defaultManager] fileExistsAtPath: [_inPipeURL path]];
 }
 
-- (BOOL)connectWithError: (NSError**) error {
+#pragma mark - Connection
+
+- (BOOL)connectWithError: (NSError** _Nullable) error {
     if (![self isConfigured]) {
         *error = [UTMTerminal notInitializedError];
         return NO;
     }
     
-    const char* pipeCPath = [[_pipeURL path] cStringUsingEncoding: NSUTF8StringEncoding];
-    _namedPipeFd = open(pipeCPath, O_RDONLY | O_NONBLOCK);
-    if (_namedPipeFd == -1) {
+    const char* pipeCPath = [[_outPipeURL path] cStringUsingEncoding: NSUTF8StringEncoding];
+    _outPipeFd = open(pipeCPath, O_RDONLY | O_NONBLOCK);
+    if (_outPipeFd == -1) {
         *error = [UTMTerminal namedPipeError];
         return NO;
     }
     
-    _fdObserveSource = [self startObservationUsingDescriptor: _namedPipeFd queue: _queue];
+    _outputObservationSource = [self startObservationUsingDescriptor: _outPipeFd queue: _outputQueue];
     return YES;
 }
 
 - (void)disconnect {
-    if (_fdObserveSource != nil) {
-        dispatch_source_cancel(_fdObserveSource);
+    if (_outputObservationSource != nil) {
+        dispatch_source_cancel(_outputObservationSource);
     }
 }
+
+- (BOOL)isConnected {
+    return _outputObservationSource != nil;
+}
+
+#pragma mark - Output pipe observation
 
 - (dispatch_source_t)startObservationUsingDescriptor: (int32_t) fd queue: (dispatch_queue_t) queue {
     dispatch_source_t source =
@@ -96,9 +146,11 @@
     dispatch_source_set_event_handler(source, ^{
         size_t estimated = dispatch_source_get_data(source);
         NSData* bytesRead = [self evaluateChangesForDescriptor: fd estimatedSize: estimated];
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [[self delegate] terminal: self DidReceiveData: bytesRead];
-        });
+        if (bytesRead != nil) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [[self delegate] terminal: self didReceiveData: bytesRead];
+            });
+        }
     });
     dispatch_source_set_cancel_handler(source, ^{
         NSLog(@"Source got cancelled");
@@ -108,26 +160,48 @@
     return source;
 }
 
-- (NSData*)evaluateChangesForDescriptor: (int32_t) fd estimatedSize: (size_t) estimated {
-    NSMutableData* data = [NSMutableData data];
+- (NSData* _Nullable)evaluateChangesForDescriptor: (int32_t) fd estimatedSize: (size_t) estimated {
+    NSData* data;
     size_t step = (estimated > kTerminalBufferSize) ? kTerminalBufferSize : estimated;
-    size_t totalRead = 0;
-    size_t bytesRead;
+    ssize_t bytesRead;
     
-    while (totalRead < estimated) {
-        if ((bytesRead = read(fd, self->_byteBuffer, step)) > 0) {
-            [data appendBytes: self->_byteBuffer length: bytesRead];
-            totalRead += bytesRead;
-        } else {
-            break;
-        }
+    if ((bytesRead = read(fd, self->_byteBuffer, step)) > 0) {
+        data = [NSData dataWithBytes: self->_byteBuffer length: bytesRead];
     }
     
     return data;
 }
 
 - (void)sendInput:(NSString *)inputStr {
+    const char* bytes = [inputStr UTF8String];
+    NSUInteger length = [inputStr lengthOfBytesUsingEncoding: NSUTF8StringEncoding];
+    dispatch_data_t messageData = dispatch_data_create(bytes, length, _inputQueue, DISPATCH_DATA_DESTRUCTOR_DEFAULT);
+    dispatch_io_write(_inputPipeIO, 0, messageData, _inputQueue, ^(bool done, dispatch_data_t  _Nullable data, int error) {
+        NSLog(@"Input write done: %d with error: %d", done, error);
+    });
+}
+
+#pragma mark - Cleanup
+
+- (void)dealloc {
+    [self disconnect];
+    [self cleanup];
+}
+
+- (void)cleanup {
+    NSFileManager* fm = [NSFileManager defaultManager];
     
+    if (_inputPipeIO != nil) {
+        dispatch_io_close(_inputPipeIO, DISPATCH_IO_STOP);
+    }
+    
+    if (_inPipeURL != nil) {
+        [fm removeItemAtURL: _inPipeURL error: nil];
+    }
+    
+    if (_outPipeURL != nil) {
+        [fm removeItemAtURL: _outPipeURL error: nil];
+    }
 }
 
 #pragma mark - Custom errors

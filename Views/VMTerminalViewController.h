@@ -16,12 +16,17 @@
 
 #import <UIKit/UIKit.h>
 #import <WebKit/WebKit.h>
+#import "UTMTerminal.h"
+#import "UTMTerminalDelegate.h"
+#import "UTMVirtualMachine.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface VMTerminalViewController : UIViewController
+@interface VMTerminalViewController : UIViewController <WKScriptMessageHandler, UTMTerminalDelegate>
 
 @property (weak, nonatomic) IBOutlet WKWebView *webView;
+@property (nonatomic, strong, nullable) UTMTerminal* terminal;
+@property (nonatomic, strong) UTMVirtualMachine* vm;
 
 @end
 
