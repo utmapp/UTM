@@ -280,11 +280,11 @@ static int cs_button_mask_to_spice(SendButtonType button)
     int spice = 0;
     
     if (button & SEND_BUTTON_LEFT)
-        spice = SPICE_MOUSE_BUTTON_MASK_LEFT;
+        spice |= SPICE_MOUSE_BUTTON_MASK_LEFT;
     if (button & SEND_BUTTON_MIDDLE)
-        spice = SPICE_MOUSE_BUTTON_MASK_MIDDLE;
+        spice |= SPICE_MOUSE_BUTTON_MASK_MIDDLE;
     if (button & SEND_BUTTON_RIGHT)
-        spice = SPICE_MOUSE_BUTTON_MASK_RIGHT;
+        spice |= SPICE_MOUSE_BUTTON_MASK_RIGHT;
     return spice;
 }
 
@@ -293,11 +293,11 @@ static int cs_button_to_spice(SendButtonType button)
     int spice = 0;
     
     if (button & SEND_BUTTON_LEFT)
-        spice = SPICE_MOUSE_BUTTON_LEFT;
+        spice |= SPICE_MOUSE_BUTTON_LEFT;
     if (button & SEND_BUTTON_MIDDLE)
-        spice = SPICE_MOUSE_BUTTON_MIDDLE;
+        spice |= SPICE_MOUSE_BUTTON_MIDDLE;
     if (button & SEND_BUTTON_RIGHT)
-        spice = SPICE_MOUSE_BUTTON_RIGHT;
+        spice |= SPICE_MOUSE_BUTTON_RIGHT;
     return spice;
 }
 
