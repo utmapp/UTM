@@ -33,6 +33,7 @@
     CGPoint _lastTwoPanOrigin;
     CGPoint _lastCursor;
     CGFloat _keyboardViewHeight;
+    BOOL _mouseDown;
     
     // status bar
     BOOL _prefersStatusBarHidden;
@@ -44,6 +45,7 @@
     UIPanGestureRecognizer *_twoPan;
     UITapGestureRecognizer *_tap;
     UITapGestureRecognizer *_twoTap;
+    UILongPressGestureRecognizer *_longPress;
     UIPinchGestureRecognizer *_pinch;
 }
 
@@ -108,6 +110,8 @@
     _twoTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(gestureTwoTap:)];
     _twoTap.numberOfTouchesRequired = 2;
     _twoTap.delegate = self;
+    _longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(gestureLongPress:)];
+    _longPress.delegate = self;
     _pinch = [[UIPinchGestureRecognizer alloc] initWithTarget:self action:@selector(gesturePinch:)];
     _pinch.delegate = self;
     [self.mtkView addGestureRecognizer:_swipeUp];
@@ -116,6 +120,7 @@
     [self.mtkView addGestureRecognizer:_twoPan];
     [self.mtkView addGestureRecognizer:_tap];
     [self.mtkView addGestureRecognizer:_twoTap];
+    [self.mtkView addGestureRecognizer:_longPress];
     [self.mtkView addGestureRecognizer:_pinch];
     
     // Feedback generator for clicks
@@ -265,7 +270,7 @@ static CGFloat CGPointToPixel(CGFloat point) {
                 cursor = [self clipCursorToDisplay:translation];
             }
             _lastCursor = translation;
-            [self.vm.primaryInput sendMouseMotion:SEND_BUTTON_NONE point:cursor];
+            [self.vm.primaryInput sendMouseMotion:(_mouseDown ? SEND_BUTTON_LEFT : SEND_BUTTON_NONE) point:cursor];
         }
         if (sender.state == UIGestureRecognizerStateEnded) {
             // TODO: decelerate
@@ -318,6 +323,15 @@ static CGFloat CGPointToPixel(CGFloat point) {
     }
 }
 
+- (IBAction)gestureLongPress:(UILongPressGestureRecognizer *)sender {
+    if (sender.state == UIGestureRecognizerStateBegan) {
+        [self.clickFeedbackGenerator selectionChanged];
+        _mouseDown = YES;
+    } else if (sender.state == UIGestureRecognizerStateEnded) {
+        _mouseDown = NO;
+    }
+}
+
 - (IBAction)gesturePinch:(UIPinchGestureRecognizer *)sender {
     _renderer.viewportScale *= sender.scale;
     sender.scale = 1.0;
@@ -359,6 +373,12 @@ static CGFloat CGPointToPixel(CGFloat point) {
     if (gestureRecognizer == _tap && otherGestureRecognizer == _twoTap) {
         return YES;
     }
+    if (gestureRecognizer == _longPress && otherGestureRecognizer == _tap) {
+        return YES;
+    }
+    if (gestureRecognizer == _longPress && otherGestureRecognizer == _twoTap) {
+        return YES;
+    }
     if (gestureRecognizer == _pinch && otherGestureRecognizer == _swipeDown) {
         return YES;
     }
@@ -376,6 +396,8 @@ static CGFloat CGPointToPixel(CGFloat point) {
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
     if (gestureRecognizer == _twoPan && otherGestureRecognizer == _pinch) {
+        return YES;
+    } else if (gestureRecognizer == _pan && otherGestureRecognizer == _longPress) {
         return YES;
     } else {
         return NO;
