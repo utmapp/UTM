@@ -44,9 +44,17 @@
 @synthesize vmScreenshot;
 @synthesize vmRendering;
 
+//perform a network requrest in order to show up the alert of "allow network usage"
+- (void) initNetwork {
+    NSURL * url = [NSURL URLWithString:@"https://www.apple.com"];
+    NSURLRequest * request = [[NSURLRequest alloc]initWithURL:url cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:10];
+    NSData * recieved = [NSURLConnection sendSynchronousRequest:request returningResponse:nil error:nil];
+    NSString * str = [[NSString alloc] initWithData:recieved encoding:NSUTF8StringEncoding];
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
+    [self initNetwork];
     // Uncomment the following line to preserve selection between presentations
     // self.clearsSelectionOnViewWillAppear = NO;
     
