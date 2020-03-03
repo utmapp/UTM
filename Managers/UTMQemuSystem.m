@@ -36,7 +36,7 @@
     [self pushArgv:@"-qmp"];
     [self pushArgv:@"tcp:localhost:4444,server,nowait"];
     [self pushArgv:@"-smp"];
-    [self pushArgv:[NSString stringWithFormat:@"cpus=%@", self.configuration.systemCPUCount]];
+    [self pushArgv:[NSString stringWithFormat:@"cpus=%@,sockets=1", self.configuration.systemCPUCount]];
     if ([self.configuration.systemArchitecture isEqualToString:@"aarch64"]) {
         [self pushArgv:@"-machine"];
         [self pushArgv:@"virt"];
