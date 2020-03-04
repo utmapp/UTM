@@ -2210,7 +2210,7 @@
                             <rect key="frame" x="280" y="0.0" width="636" height="68"/>
                             <subviews>
                                 <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="p57-ic-h8k">
-                                    <rect key="frame" x="0.0" y="4" width="1216" height="60"/>
+                                    <rect key="frame" x="0.0" y="4" width="1284" height="60"/>
                                     <subviews>
                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="BXG-l7-BeY" customClass="VMKeyboardButton">
                                             <rect key="frame" x="0.0" y="0.0" width="60" height="60"/>
@@ -2314,8 +2314,25 @@
                                                 <action selector="customKeyTouchUp:" destination="ckC-eO-gxn" eventType="touchUpInside" id="mzC-oX-FtA"/>
                                             </connections>
                                         </button>
-                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="wPb-ec-tXw" customClass="VMKeyboardButton">
+                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Xlj-Hd-dHd" customClass="VMKeyboardButton">
                                             <rect key="frame" x="408" y="0.0" width="60" height="60"/>
+                                            <accessibility key="accessibilityConfiguration" label="Right"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                            <state key="normal" title="Del">
+                                                <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
+                                            </state>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="number" keyPath="scanCode">
+                                                    <integer key="value" value="57427"/>
+                                                </userDefinedRuntimeAttribute>
+                                            </userDefinedRuntimeAttributes>
+                                            <connections>
+                                                <action selector="customKeyTouchDown:" destination="ckC-eO-gxn" eventType="touchDown" id="SYv-aP-qrD"/>
+                                                <action selector="customKeyTouchUp:" destination="ckC-eO-gxn" eventType="touchUpInside" id="5xr-gK-INf"/>
+                                            </connections>
+                                        </button>
+                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="wPb-ec-tXw" customClass="VMKeyboardButton">
+                                            <rect key="frame" x="476" y="0.0" width="60" height="60"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="20"/>
                                             <state key="normal" title="F1">
                                                 <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
@@ -2331,7 +2348,7 @@
                                             </connections>
                                         </button>
                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="m3u-Hy-WNb" customClass="VMKeyboardButton">
-                                            <rect key="frame" x="476" y="0.0" width="60" height="60"/>
+                                            <rect key="frame" x="544" y="0.0" width="60" height="60"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="20"/>
                                             <state key="normal" title="F2">
                                                 <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
@@ -2347,7 +2364,7 @@
                                             </connections>
                                         </button>
                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="4XD-uH-MNJ" customClass="VMKeyboardButton">
-                                            <rect key="frame" x="544" y="0.0" width="60" height="60"/>
+                                            <rect key="frame" x="612" y="0.0" width="60" height="60"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="20"/>
                                             <state key="normal" title="F3">
                                                 <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
@@ -2363,7 +2380,7 @@
                                             </connections>
                                         </button>
                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="876-Dc-Xg3" customClass="VMKeyboardButton">
-                                            <rect key="frame" x="612" y="0.0" width="60" height="60"/>
+                                            <rect key="frame" x="680" y="0.0" width="60" height="60"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="20"/>
                                             <state key="normal" title="F4">
                                                 <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
@@ -2379,7 +2396,7 @@
                                             </connections>
                                         </button>
                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ZrI-oI-jIY" customClass="VMKeyboardButton">
-                                            <rect key="frame" x="680" y="0.0" width="60" height="60"/>
+                                            <rect key="frame" x="748" y="0.0" width="60" height="60"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="20"/>
                                             <state key="normal" title="F5">
                                                 <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
@@ -2395,7 +2412,7 @@
                                             </connections>
                                         </button>
                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="wMD-ug-3bW" customClass="VMKeyboardButton">
-                                            <rect key="frame" x="748" y="0.0" width="60" height="60"/>
+                                            <rect key="frame" x="816" y="0.0" width="60" height="60"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="20"/>
                                             <state key="normal" title="F6">
                                                 <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
@@ -2411,7 +2428,7 @@
                                             </connections>
                                         </button>
                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="yuk-bm-ipJ" customClass="VMKeyboardButton">
-                                            <rect key="frame" x="816" y="0.0" width="60" height="60"/>
+                                            <rect key="frame" x="884" y="0.0" width="60" height="60"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="20"/>
                                             <state key="normal" title="F7">
                                                 <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
@@ -2427,7 +2444,7 @@
                                             </connections>
                                         </button>
                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="2Ed-0S-kjc" customClass="VMKeyboardButton">
-                                            <rect key="frame" x="884" y="0.0" width="60" height="60"/>
+                                            <rect key="frame" x="952" y="0.0" width="60" height="60"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="20"/>
                                             <state key="normal" title="F8">
                                                 <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
@@ -2443,7 +2460,7 @@
                                             </connections>
                                         </button>
                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="n2Z-fx-LHS" customClass="VMKeyboardButton">
-                                            <rect key="frame" x="952" y="0.0" width="60" height="60"/>
+                                            <rect key="frame" x="1020" y="0.0" width="60" height="60"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="20"/>
                                             <state key="normal" title="F9">
                                                 <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
@@ -2459,7 +2476,7 @@
                                             </connections>
                                         </button>
                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8zW-rN-u2M" customClass="VMKeyboardButton">
-                                            <rect key="frame" x="1020" y="0.0" width="60" height="60"/>
+                                            <rect key="frame" x="1088" y="0.0" width="60" height="60"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="18"/>
                                             <state key="normal" title="F10">
                                                 <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
@@ -2475,7 +2492,7 @@
                                             </connections>
                                         </button>
                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="7Jq-kj-K2V" customClass="VMKeyboardButton">
-                                            <rect key="frame" x="1088" y="0.0" width="60" height="60"/>
+                                            <rect key="frame" x="1156" y="0.0" width="60" height="60"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="18"/>
                                             <state key="normal" title="F11">
                                                 <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
@@ -2491,7 +2508,7 @@
                                             </connections>
                                         </button>
                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="EIz-R9-Ca8" customClass="VMKeyboardButton">
-                                            <rect key="frame" x="1156" y="0.0" width="60" height="60"/>
+                                            <rect key="frame" x="1224" y="0.0" width="60" height="60"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="18"/>
                                             <state key="normal" title="F12">
                                                 <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
