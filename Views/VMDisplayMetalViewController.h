@@ -20,7 +20,6 @@
 
 @class UTMVirtualMachine;
 @class VMKeyboardView;
-@class VMSoftKeyboardView;
 @class VMKeyboardButton;
 
 NS_ASSUME_NONNULL_BEGIN
@@ -30,8 +29,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readwrite) BOOL prefersStatusBarHidden;
 @property (nonatomic, strong) UTMVirtualMachine *vm;
 @property (weak, nonatomic) IBOutlet MTKView *mtkView;
-@property (weak, nonatomic) IBOutlet VMKeyboardView *hardKeyboardView;
-@property (weak, nonatomic) IBOutlet VMSoftKeyboardView *softKeyboardView;
+@property (weak, nonatomic) IBOutlet VMKeyboardView *keyboardView;
 @property (strong, nonatomic) IBOutlet UIInputView *inputAccessoryView;
 @property (strong, nonatomic) IBOutlet UIView *toolbarAccessoryView;
 @property (strong, nonatomic) UISelectionFeedbackGenerator *clickFeedbackGenerator;
@@ -41,7 +39,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (weak, nonatomic) IBOutlet UIButton *zoomButton;
 @property (strong, nonatomic) IBOutletCollection(VMKeyboardButton) NSArray *customKeyButtons;
 @property (strong, nonatomic) IBOutletCollection(VMKeyboardButton) NSArray *customKeyModifierButtons;
-@property (nonatomic, assign) BOOL softKeyboardVisible;
 
 - (IBAction)gesturePan:(UIPanGestureRecognizer *)sender;
 - (IBAction)gestureTwoPan:(UIPanGestureRecognizer *)sender;
