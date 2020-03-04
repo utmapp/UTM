@@ -16,7 +16,6 @@
 
 #import <UIKit/UIKit.h>
 #import "UTMVirtualMachineDelegate.h"
-#import "VMKeyboardViewDelegate.h"
 #import "CSInput.h"
 
 @class UTMVirtualMachine;
@@ -25,7 +24,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface VMDisplayMetalViewController : UIViewController<UTMVirtualMachineDelegate, VMKeyboardViewDelegate, UIGestureRecognizerDelegate> {
+@interface VMDisplayMetalViewController : UIViewController<UTMVirtualMachineDelegate, UIGestureRecognizerDelegate> {
     NSMutableArray<UIKeyCommand *> *_keyCommands;
 }
 
@@ -50,17 +49,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (IBAction)gesturePinch:(UIPinchGestureRecognizer *)sender;
 - (IBAction)gestureSwipeUp:(UISwipeGestureRecognizer *)sender;
 - (IBAction)gestureSwipeDown:(UISwipeGestureRecognizer *)sender;
-- (IBAction)keyboardDonePressed:(UIButton *)sender;
-- (IBAction)keyboardPastePressed:(UIButton *)sender;
 - (IBAction)changeDisplayZoom:(UIButton *)sender;
 - (IBAction)touchResumePressed:(UIButton *)sender;
 - (IBAction)powerPressed:(UIButton *)sender;
 - (IBAction)showKeyboardButton:(UIButton *)sender;
 - (IBAction)hideToolbarButton:(UIButton *)sender;
-- (IBAction)customKeyTouchDown:(VMKeyboardButton *)sender;
-- (IBAction)customKeyTouchUp:(VMKeyboardButton *)sender;
-
-- (void)sendExtendedKey:(SendKeyType)type code:(int)code;
 
 @end
 

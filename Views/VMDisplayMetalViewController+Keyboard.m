@@ -15,9 +15,97 @@
 //
 
 #import "VMDisplayMetalViewController+Keyboard.h"
+#import "UTMVirtualMachine.h"
 #import "VMKeyboardView.h"
+#import "VMKeyboardButton.h"
 
 @implementation VMDisplayMetalViewController (Keyboard)
+
+#pragma mark - Common Code
+
+- (void)sendExtendedKey:(SendKeyType)type code:(int)code {
+    uint32_t x = __builtin_bswap32(code);
+    while ((x & 0xFF) == 0) {
+        x = x >> 8;
+    }
+    while (x) {
+        [self.vm.primaryInput sendKey:type code:(x & 0xFF)];
+        x = x >> 8;
+    }
+}
+
+#pragma mark - Software Keyboard
+
+- (void)keyboardWillShow:(NSNotification *)notification {
+    [self updateKeyboardAccessoryFrame];
+}
+
+- (void)keyboardWillHide:(NSNotification *)notification {
+}
+
+- (void)keyboardWillChangeFrame:(NSNotification *)notification {
+    [self updateKeyboardAccessoryFrame];
+}
+
+- (void)updateKeyboardAccessoryFrame {
+    if (self.inputAccessoryView.safeAreaInsets.bottom > 0) {
+        self.keyboardView.softKeyboardVisible = YES;
+    } else {
+        self.keyboardView.softKeyboardVisible = NO;
+    }
+}
+
+- (void)keyboardView:(nonnull VMKeyboardView *)keyboardView didPressKeyDown:(int)scancode {
+    [self sendExtendedKey:SEND_KEY_PRESS code:scancode];
+}
+
+- (void)keyboardView:(nonnull VMKeyboardView *)keyboardView didPressKeyUp:(int)scancode {
+    [self sendExtendedKey:SEND_KEY_RELEASE code:scancode];
+    [self resetModifierToggles];
+}
+
+- (IBAction)keyboardDonePressed:(UIButton *)sender {
+    [self.keyboardView resignFirstResponder];
+}
+
+- (IBAction)keyboardPastePressed:(UIButton *)sender {
+    UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
+    NSString *string = pasteboard.string;
+    if (string) {
+        NSLog(@"Pasting: %@", string);
+        [self.keyboardView insertText:string];
+    } else {
+        NSLog(@"No string to paste.");
+    }
+}
+
+- (void)resetModifierToggles {
+    for (VMKeyboardButton *button in self.customKeyModifierButtons) {
+        if (button.toggled) {
+            [self sendExtendedKey:SEND_KEY_RELEASE code:button.scanCode];
+            button.toggled = NO;
+        }
+    }
+}
+
+- (IBAction)customKeyTouchDown:(VMKeyboardButton *)sender {
+    if (!sender.toggleable) {
+        [self sendExtendedKey:SEND_KEY_PRESS code:sender.scanCode];
+    }
+}
+
+- (IBAction)customKeyTouchUp:(VMKeyboardButton *)sender {
+    if (sender.toggleable) {
+        sender.toggled = !sender.toggled;
+    } else {
+        [self resetModifierToggles];
+    }
+    if (sender.toggleable && sender.toggled) {
+        [self sendExtendedKey:SEND_KEY_PRESS code:sender.scanCode];
+    } else {
+        [self sendExtendedKey:SEND_KEY_RELEASE code:sender.scanCode];
+    }
+}
 
 #pragma mark - Hardware Keyboard
 

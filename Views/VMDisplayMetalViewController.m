@@ -15,12 +15,12 @@
 //
 
 #import "VMDisplayMetalViewController.h"
+#import "VMDisplayMetalViewController+Keyboard.h"
 #import "UTMRenderer.h"
 #import "UTMVirtualMachine.h"
 #import "VMKeyboardView.h"
 #import "UTMQemuManager.h"
 #import "VMConfigExistingViewController.h"
-#import "VMKeyboardButton.h"
 
 @interface VMDisplayMetalViewController ()
 
@@ -30,7 +30,6 @@
     UTMRenderer *_renderer;
     CGPoint _lastTwoPanOrigin;
     CGPoint _lastCursor;
-    CGFloat _keyboardViewHeight;
     BOOL _mouseDown;
     
     // status bar
@@ -399,64 +398,7 @@ static CGFloat CGPointToPixel(CGFloat point) {
     }
 }
 
-#pragma mark - Keyboard
 
-- (void)keyboardWillShow:(NSNotification *)notification {
-    CGSize keyboardSize = [[[notification userInfo] objectForKey:UIKeyboardFrameBeginUserInfoKey] CGRectValue].size;
-    _keyboardViewHeight = keyboardSize.height;
-    
-    [UIView animateWithDuration:0.3 animations:^{
-        CGRect f = self.mtkView.frame;
-        f.origin.y = -self->_keyboardViewHeight;
-        self.mtkView.frame = f;
-    }];
-    [self updateKeyboardAccessoryFrame];
-}
-
-- (void)keyboardWillHide:(NSNotification *)notification {
-    [UIView animateWithDuration:0.3 animations:^{
-        CGRect f = self.mtkView.frame;
-        f.origin.y = 0.0f;
-        self->_keyboardViewHeight = 0;
-        self.mtkView.frame = f;
-    }];
-}
-
-- (void)keyboardWillChangeFrame:(NSNotification *)notification {
-    [self updateKeyboardAccessoryFrame];
-}
-
-- (void)updateKeyboardAccessoryFrame {
-    if (self.inputAccessoryView.safeAreaInsets.bottom > 0) {
-        self.keyboardView.softKeyboardVisible = YES;
-    } else {
-        self.keyboardView.softKeyboardVisible = NO;
-    }
-}
-
-- (void)keyboardView:(nonnull VMKeyboardView *)keyboardView didPressKeyDown:(int)scancode {
-    [self.vm.primaryInput sendKey:SEND_KEY_PRESS code:scancode];
-}
-
-- (void)keyboardView:(nonnull VMKeyboardView *)keyboardView didPressKeyUp:(int)scancode {
-    [self.vm.primaryInput sendKey:SEND_KEY_RELEASE code:scancode];
-    [self resetModifierToggles];
-}
-
-- (IBAction)keyboardDonePressed:(UIButton *)sender {
-    [self.keyboardView resignFirstResponder];
-}
-
-- (void)keyboardPastePressed:(UIButton *)sender {
-    UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
-    NSString *string = pasteboard.string;
-    if (string) {
-        NSLog(@"Pasting: %@", string);
-        [self.keyboardView insertText:string];
-    } else {
-        NSLog(@"No string to paste.");
-    }
-}
 
 #pragma mark - Toolbar actions
 
@@ -488,12 +430,12 @@ static CGFloat CGPointToPixel(CGFloat point) {
     CGSize displaySize = self.vmRendering.displaySize;
     CGSize scaled = CGSizeMake(viewSize.width / displaySize.width, viewSize.height / displaySize.height);
     _renderer.viewportScale = MIN(scaled.width, scaled.height);
-    _renderer.viewportOrigin = CGPointMake(0, -_keyboardViewHeight);
+    _renderer.viewportOrigin = CGPointMake(0, 0);
 }
 
 - (void)resetDisplay {
     _renderer.viewportScale = 1.0;
-    _renderer.viewportOrigin = CGPointMake(0, -_keyboardViewHeight);
+    _renderer.viewportOrigin = CGPointMake(0, 0);
 }
 
 - (IBAction)changeDisplayZoom:(UIButton *)sender {
@@ -536,45 +478,6 @@ static CGFloat CGPointToPixel(CGFloat point) {
         [self showAlert:NSLocalizedString(@"Hint: To show the toolbar again, use a three-finger swipe down on the screen.", @"Shown once when hiding toolbar.") completion:^(UIAlertAction *action){
             [defaults setBool:YES forKey:@"HasShownHideToolbarAlert"];
         }];
-    }
-}
-
-- (void)sendExtendedKey:(SendKeyType)type code:(int)code {
-    uint32_t x = __builtin_bswap32(code);
-    while ((x & 0xFF) == 0) {
-        x = x >> 8;
-    }
-    while (x) {
-        [self.vm.primaryInput sendKey:type code:(x & 0xFF)];
-        x = x >> 8;
-    }
-}
-
-- (void)resetModifierToggles {
-    for (VMKeyboardButton *button in self.customKeyModifierButtons) {
-        if (button.toggled) {
-            [self sendExtendedKey:SEND_KEY_RELEASE code:button.scanCode];
-            button.toggled = NO;
-        }
-    }
-}
-
-- (IBAction)customKeyTouchDown:(VMKeyboardButton *)sender {
-    if (!sender.toggleable) {
-        [self sendExtendedKey:SEND_KEY_PRESS code:sender.scanCode];
-    }
-}
-
-- (IBAction)customKeyTouchUp:(VMKeyboardButton *)sender {
-    if (sender.toggleable) {
-        sender.toggled = !sender.toggled;
-    } else {
-        [self resetModifierToggles];
-    }
-    if (sender.toggleable && sender.toggled) {
-        [self sendExtendedKey:SEND_KEY_PRESS code:sender.scanCode];
-    } else {
-        [self sendExtendedKey:SEND_KEY_RELEASE code:sender.scanCode];
     }
 }
 
