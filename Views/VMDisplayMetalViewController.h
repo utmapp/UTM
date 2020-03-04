@@ -17,6 +17,7 @@
 #import <UIKit/UIKit.h>
 #import "UTMVirtualMachineDelegate.h"
 #import "VMKeyboardViewDelegate.h"
+#import "CSInput.h"
 
 @class UTMVirtualMachine;
 @class VMKeyboardView;
@@ -24,7 +25,9 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface VMDisplayMetalViewController : UIViewController<UTMVirtualMachineDelegate, VMKeyboardViewDelegate, UIGestureRecognizerDelegate>
+@interface VMDisplayMetalViewController : UIViewController<UTMVirtualMachineDelegate, VMKeyboardViewDelegate, UIGestureRecognizerDelegate> {
+    NSMutableArray<UIKeyCommand *> *_keyCommands;
+}
 
 @property (nonatomic, readwrite) BOOL prefersStatusBarHidden;
 @property (nonatomic, strong) UTMVirtualMachine *vm;
@@ -56,6 +59,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (IBAction)hideToolbarButton:(UIButton *)sender;
 - (IBAction)customKeyTouchDown:(VMKeyboardButton *)sender;
 - (IBAction)customKeyTouchUp:(VMKeyboardButton *)sender;
+
+- (void)sendExtendedKey:(SendKeyType)type code:(int)code;
 
 @end
 

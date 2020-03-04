@@ -18,7 +18,6 @@
 #import "UTMRenderer.h"
 #import "UTMVirtualMachine.h"
 #import "VMKeyboardView.h"
-#import "CSInput.h"
 #import "UTMQemuManager.h"
 #import "VMConfigExistingViewController.h"
 #import "VMKeyboardButton.h"
@@ -453,7 +452,7 @@ static CGFloat CGPointToPixel(CGFloat point) {
     NSString *string = pasteboard.string;
     if (string) {
         NSLog(@"Pasting: %@", string);
-        [self.softKeyboardView insertText:string];
+        [self.keyboardView insertText:string];
     } else {
         NSLog(@"No string to paste.");
     }
