@@ -46,9 +46,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (IBAction)gestureTwoPan:(UIPanGestureRecognizer *)sender;
 - (IBAction)gestureTap:(UITapGestureRecognizer *)sender;
 - (IBAction)gestureTwoTap:(UITapGestureRecognizer *)sender;
+- (IBAction)gestureLongPress:(UILongPressGestureRecognizer *)sender;
 - (IBAction)gesturePinch:(UIPinchGestureRecognizer *)sender;
 - (IBAction)gestureSwipeUp:(UISwipeGestureRecognizer *)sender;
 - (IBAction)gestureSwipeDown:(UISwipeGestureRecognizer *)sender;
+- (IBAction)gestureSwipeScroll:(UISwipeGestureRecognizer *)sender;
 - (IBAction)changeDisplayZoom:(UIButton *)sender;
 - (IBAction)touchResumePressed:(UIButton *)sender;
 - (IBAction)powerPressed:(UIButton *)sender;

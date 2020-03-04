@@ -38,6 +38,8 @@
     // gestures
     UISwipeGestureRecognizer *_swipeUp;
     UISwipeGestureRecognizer *_swipeDown;
+    UISwipeGestureRecognizer *_swipeScrollUp;
+    UISwipeGestureRecognizer *_swipeScrollDown;
     UIPanGestureRecognizer *_pan;
     UIPanGestureRecognizer *_twoPan;
     UITapGestureRecognizer *_tap;
@@ -94,6 +96,14 @@
     _swipeDown.numberOfTouchesRequired = 3;
     _swipeDown.direction = UISwipeGestureRecognizerDirectionDown;
     _swipeDown.delegate = self;
+    _swipeScrollUp = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(gestureSwipeScroll:)];
+    _swipeScrollUp.numberOfTouchesRequired = 2;
+    _swipeScrollUp.direction = UISwipeGestureRecognizerDirectionUp;
+    _swipeScrollUp.delegate = self;
+    _swipeScrollDown = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(gestureSwipeScroll:)];
+    _swipeScrollDown.numberOfTouchesRequired = 2;
+    _swipeScrollDown.direction = UISwipeGestureRecognizerDirectionDown;
+    _swipeScrollDown.delegate = self;
     _pan = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(gesturePan:)];
     _pan.minimumNumberOfTouches = 1;
     _pan.maximumNumberOfTouches = 1;
@@ -113,6 +123,8 @@
     _pinch.delegate = self;
     [self.mtkView addGestureRecognizer:_swipeUp];
     [self.mtkView addGestureRecognizer:_swipeDown];
+    [self.mtkView addGestureRecognizer:_swipeScrollUp];
+    [self.mtkView addGestureRecognizer:_swipeScrollDown];
     [self.mtkView addGestureRecognizer:_pan];
     [self.mtkView addGestureRecognizer:_twoPan];
     [self.mtkView addGestureRecognizer:_tap];
@@ -351,11 +363,29 @@ static CGFloat CGPointToPixel(CGFloat point) {
     }
 }
 
+- (IBAction)gestureSwipeScroll:(UISwipeGestureRecognizer *)sender {
+    if (sender.state == UIGestureRecognizerStateEnded) {
+        if (sender == _swipeScrollUp) {
+            [self.vm.primaryInput sendMouseScroll:SEND_SCROLL_UP button:SEND_BUTTON_NONE dy:0];
+        } else if (sender == _swipeScrollDown) {
+            [self.vm.primaryInput sendMouseScroll:SEND_SCROLL_DOWN button:SEND_BUTTON_NONE dy:0];
+        } else {
+            NSAssert(0, @"Invalid call to gestureSwipeScroll");
+        }
+    }
+}
+
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRequireFailureOfGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
     if (gestureRecognizer == _twoPan && otherGestureRecognizer == _swipeUp) {
         return YES;
     }
     if (gestureRecognizer == _twoPan && otherGestureRecognizer == _swipeDown) {
+        return YES;
+    }
+    if (gestureRecognizer == _twoPan && otherGestureRecognizer == _swipeScrollUp) {
+        return YES;
+    }
+    if (gestureRecognizer == _twoPan && otherGestureRecognizer == _swipeScrollDown) {
         return YES;
     }
     if (gestureRecognizer == _twoTap && otherGestureRecognizer == _swipeDown) {
