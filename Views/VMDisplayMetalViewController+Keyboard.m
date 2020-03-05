@@ -109,7 +109,7 @@
 
 #pragma mark - Hardware Keyboard
 
-static NSString *kAllKeys = @"`1234567890-=qwertyuiop[]\\asdfghjkl;'zxcvbnm,./ \t\n\b";
+static NSString *kAllKeys = @"`1234567890-=qwertyuiop[]\\asdfghjkl;'zxcvbnm,./ \t\r\n\b";
 
 - (void)handleKeyCommand:(UIKeyCommand *)command {
     NSString *key = command.input;
