@@ -53,6 +53,13 @@
     // Do any additional setup after loading the view.
     [self.collectionView setDragInteractionEnabled:YES];
     
+    // Set up context menu
+    UIMenuItem *deleteItem = [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"Delete", @"Delete context menu")
+                                                        action:NSSelectorFromString(@"deleteAction:")];
+    UIMenuItem *duplicateItem = [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"Clone", @"Clone context menu")
+                                                           action:NSSelectorFromString(@"cloneAction:")];
+    [[UIMenuController sharedMenuController] setMenuItems:@[deleteItem, duplicateItem]];
+    
     self.viewVisibleSema = dispatch_semaphore_create(0);
     self.viewVisibleQueue = dispatch_queue_create("View Visible Queue", DISPATCH_QUEUE_SERIAL);
     dispatch_async(self.viewVisibleQueue, ^{
@@ -73,10 +80,7 @@
     
     // refresh list
     dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INTERACTIVE, 0), ^{
-        self.vmList = [self fetchVirtualMachines];
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self.collectionView reloadData];
-        });
+        [self reloadData];
     });
     
     // show any message
@@ -90,6 +94,13 @@
 }
 
 #pragma mark - Helpers
+
+- (void)reloadData {
+    self.vmList = [self fetchVirtualMachines];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self.collectionView reloadData];
+    });
+}
 
 - (NSArray<NSURL *> *)fetchVirtualMachines {
     NSArray<NSURL *> *files = [[NSFileManager defaultManager] contentsOfDirectoryAtURL:self.documentsPath includingPropertiesForKeys:@[NSURLIsDirectoryKey] options:NSDirectoryEnumerationSkipsHiddenFiles error:nil];
@@ -139,6 +150,43 @@
             [defaults setBool:YES forKey:@"HasShownStartupAlert"];
         }];
     }
+}
+
+- (void)cloneVM:(NSURL *)url {
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Name", @"Clone VM name prompt title")
+                                                                   message:NSLocalizedString(@"New VM name", @"Clone VM name prompt message")
+                                                            preferredStyle:UIAlertControllerStyleAlert];
+    [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"OK", @"OK button") style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+        NSString *name = alert.textFields[0].text;
+        NSURL *newPath = [UTMVirtualMachine virtualMachinePath:name inParentURL:self.documentsPath];
+        dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), ^{
+            NSError *err = nil;
+            [self workStartedWhenVisible:[NSString stringWithFormat:NSLocalizedString(@"Saving %@...", @"Save VM overlay"), name]];
+            [[NSFileManager defaultManager] copyItemAtURL:url toURL:newPath error:&err];
+            [self workCompletedWhenVisible:err.localizedDescription];
+            [self reloadData];
+        });
+    }]];
+    [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"Cancel", @"Cancel button") style:UIAlertActionStyleCancel handler:nil]];
+    [alert addTextFieldWithConfigurationHandler:^(UITextField * _Nonnull textField) {
+        textField.text = [UTMVirtualMachine virtualMachineName:url];
+    }];
+    [self presentViewController:alert animated:YES completion:nil];
+}
+
+- (void)deleteVM:(NSURL *)url {
+    NSString *name = [UTMVirtualMachine virtualMachineName:url];
+    UIAlertAction *yes = [UIAlertAction actionWithTitle:NSLocalizedString(@"Yes", @"Yes button") style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action){
+        dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), ^{
+            NSError *err = nil;
+            [self workStartedWhenVisible:[NSString stringWithFormat:NSLocalizedString(@"Deleting %@...", @"Delete VM overlay"), name]];
+            [[NSFileManager defaultManager] removeItemAtURL:url error:&err];
+            [self workCompletedWhenVisible:err.localizedDescription];
+            [self reloadData];
+        });
+    }];
+    UIAlertAction *no = [UIAlertAction actionWithTitle:NSLocalizedString(@"No", @"No button") style:UIAlertActionStyleCancel handler:nil];
+    [self showAlert:NSLocalizedString(@"Are you sure you want to delete this VM? Any drives associated will also be deleted.", @"Delete confirmation") actions:@[yes, no] completion:nil];
 }
 
 #pragma mark - Navigation
@@ -216,6 +264,28 @@
     NSItemProvider *provider = [[NSItemProvider alloc] initWithContentsOfURL:self.vmList[indexPath.row]];
     UIDragItem *drag = [[UIDragItem alloc] initWithItemProvider:provider];
     return @[drag];
+}
+
+- (BOOL)collectionView:(UICollectionView *)collectionView canPerformAction:(SEL)action forItemAtIndexPath:(NSIndexPath *)indexPath withSender:(id)sender {
+    if (action == NSSelectorFromString(@"deleteAction:") || action == NSSelectorFromString(@"cloneAction:")) {
+        return YES;
+    } else {
+        return NO;
+    }
+}
+
+- (BOOL)collectionView:(UICollectionView *)collectionView shouldShowMenuForItemAtIndexPath:(NSIndexPath *)indexPath {
+    return YES; // show context menu
+}
+
+- (void)collectionView:(UICollectionView *)collectionView performAction:(SEL)action forItemAtIndexPath:(NSIndexPath *)indexPath withSender:(id)sender {
+    NSAssert(indexPath.section == 0, @"Invalid section");
+    NSURL *source = self.vmList[indexPath.row];
+    if (action == NSSelectorFromString(@"deleteAction:")) {
+        [self deleteVM:source];
+    } else if (action == NSSelectorFromString(@"cloneAction:")) {
+        [self cloneVM:source];
+    }
 }
 
 /*
