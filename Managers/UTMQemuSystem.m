@@ -101,6 +101,30 @@
         }
         [self pushArgv:netstr];
     }
+    
+    if (self.configuration.systemArguments.count != 0) {
+        NSArray *addArgs = self.configuration.systemArguments;
+        // Splits all spaces into their own, except when between quotes.
+        NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"(\"[^\"]+\"|\\+|\\S+)" options:0 error:nil];
+        
+        for (NSString *arg in addArgs) {
+            // No need to operate on empty arguments.
+            if (arg.length == 0) {
+                continue;
+            }
+            
+            NSArray *splitArgsArray = [regex matchesInString:arg
+                                              options:0
+                                                range:NSMakeRange(0, [arg length])];
+            
+            
+            for (NSTextCheckingResult *match in splitArgsArray) {
+                NSRange matchRange = [match rangeAtIndex:1];
+                NSString *argFragment = [arg substringWithRange:matchRange];
+                [self pushArgv:argFragment];
+            }
+        }
+    }
 }
 
 - (void)startWithCompletion:(void (^)(BOOL, NSString * _Nonnull))completion {
