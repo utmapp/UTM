@@ -21,19 +21,6 @@
 
 @implementation VMDisplayMetalViewController (Keyboard)
 
-#pragma mark - Common Code
-
-- (void)sendExtendedKey:(SendKeyType)type code:(int)code {
-    uint32_t x = __builtin_bswap32(code);
-    while ((x & 0xFF) == 0) {
-        x = x >> 8;
-    }
-    while (x) {
-        [self.vm.primaryInput sendKey:type code:(x & 0xFF)];
-        x = x >> 8;
-    }
-}
-
 #pragma mark - Software Keyboard
 
 - (void)keyboardWillShow:(NSNotification *)notification {

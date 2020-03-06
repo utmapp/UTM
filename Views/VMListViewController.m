@@ -226,7 +226,7 @@
     } else if ([segue.identifier isEqualToString:@"startVM"]) {
         NSAssert([segue.destinationViewController isKindOfClass:[VMDisplayMetalViewController class]], @"Destination not a metal view");
         VMDisplayMetalViewController *metalView = (VMDisplayMetalViewController *)segue.destinationViewController;
-        metalView.vm = self.activeVM;
+        [metalView changeVM:self.activeVM];
         self.activeVM.delegate = metalView;
     }
 }

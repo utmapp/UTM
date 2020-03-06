@@ -29,7 +29,6 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 @property (nonatomic, readwrite) BOOL prefersStatusBarHidden;
-@property (nonatomic, strong) UTMVirtualMachine *vm;
 @property (weak, nonatomic) IBOutlet MTKView *mtkView;
 @property (weak, nonatomic) IBOutlet VMKeyboardView *keyboardView;
 @property (strong, nonatomic) IBOutlet UIInputView *inputAccessoryView;
@@ -41,6 +40,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (weak, nonatomic) IBOutlet UIButton *zoomButton;
 @property (strong, nonatomic) IBOutletCollection(VMKeyboardButton) NSArray *customKeyButtons;
 @property (strong, nonatomic) IBOutletCollection(VMKeyboardButton) NSArray *customKeyModifierButtons;
+
+- (void)changeVM:(UTMVirtualMachine *)vm;
+- (void)sendExtendedKey:(SendKeyType)type code:(int)code;
 
 - (IBAction)gesturePan:(UIPanGestureRecognizer *)sender;
 - (IBAction)gestureTwoPan:(UIPanGestureRecognizer *)sender;
