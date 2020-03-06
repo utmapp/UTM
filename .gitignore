@@ -68,4 +68,4 @@ fastlane/test_output
 iOSInjectionProject/
 
 build/
-sysroot/
+sysroot*/
