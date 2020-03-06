@@ -21,6 +21,8 @@
 #import "VMKeyboardView.h"
 #import "UTMQemuManager.h"
 #import "VMConfigExistingViewController.h"
+#import "UTMConfiguration.h"
+#import "VMCursor.h"
 
 @interface VMDisplayMetalViewController ()
 
@@ -31,8 +33,11 @@
 @implementation VMDisplayMetalViewController {
     UTMRenderer *_renderer;
     CGPoint _lastTwoPanOrigin;
-    CGPoint _lastCursor;
     BOOL _mouseDown;
+    
+    // cursor handling
+    UIDynamicAnimator *_animator;
+    VMCursor *_cursor;
     
     // status bar
     BOOL _prefersStatusBarHidden;
@@ -67,6 +72,14 @@
     return YES; // always hide home indicator
 }
 
+- (BOOL)serverModeCursor {
+    return self.vm.primaryInput.serverModeCursor;
+}
+
+- (BOOL)touchscreen {
+    return self.vm.configuration.inputTouchscreenMode;
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     
@@ -88,6 +101,10 @@
     _renderer.source = self.vmRendering;
     
     self.mtkView.delegate = _renderer;
+    
+    // mouse cursor
+    _animator = [[UIDynamicAnimator alloc] initWithReferenceView:self.view];
+    _cursor = [[VMCursor alloc] initWithVMViewController:self];
     
     // Set up gesture recognizers because Storyboards is BROKEN and doing it there crashes!
     _swipeUp = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(gestureSwipeUp:)];
@@ -279,25 +296,20 @@ static CGFloat CGPointToPixel(CGFloat point) {
 #pragma mark - Gestures
 
 - (IBAction)gesturePan:(UIPanGestureRecognizer *)sender {
-    if (self.vm.primaryInput.serverModeCursor) {
-        CGPoint translation = [sender translationInView:sender.view];
-        if (sender.state == UIGestureRecognizerStateBegan) {
-            _lastCursor = translation;
-        }
-        if (sender.state != UIGestureRecognizerStateCancelled) {
-            CGPoint cursor;
-            if (self.vm.primaryInput.serverModeCursor) {
-                cursor.x = CGPointToPixel(translation.x - _lastCursor.x) / _renderer.viewportScale;
-                cursor.y = CGPointToPixel(translation.y - _lastCursor.y) / _renderer.viewportScale;
-            } else {
-                cursor = [self clipCursorToDisplay:translation];
-            }
-            _lastCursor = translation;
-            [self.vm.primaryInput sendMouseMotion:(_mouseDown ? SEND_BUTTON_LEFT : SEND_BUTTON_NONE) point:cursor];
-        }
-        if (sender.state == UIGestureRecognizerStateEnded) {
-            // TODO: decelerate
-        }
+    CGPoint location = [sender locationInView:sender.view];
+    CGPoint velocity = [sender velocityInView:sender.view];
+    if (sender.state == UIGestureRecognizerStateBegan) {
+        [_cursor startMovement:location];
+        [_animator removeAllBehaviors];
+    }
+    if (sender.state != UIGestureRecognizerStateCancelled) {
+        [_cursor updateMovement:location];
+    }
+    if (sender.state == UIGestureRecognizerStateEnded) {
+        UIDynamicItemBehavior *behavior = [[UIDynamicItemBehavior alloc] initWithItems:@[ _cursor ]];
+        [behavior addLinearVelocity:velocity forItem:_cursor];
+        behavior.resistance = 50;
+        [_animator addBehavior:behavior];
     }
 }
 
@@ -317,20 +329,36 @@ static CGFloat CGPointToPixel(CGFloat point) {
     }
 }
 
-- (CGPoint)moveMouse:(CGPoint)location {
+- (CGPoint)moveMouseAbsolute:(CGPoint)location {
     CGPoint translated = location;
     translated.x = CGPointToPixel(translated.x);
     translated.y = CGPointToPixel(translated.y);
     translated = [self clipCursorToDisplay:translated];
     if (!self.vm.primaryInput.serverModeCursor) {
         [self.vm.primaryInput sendMouseMotion:SEND_BUTTON_NONE point:translated];
+    } else {
+        NSLog(@"Warning: ignored mouse set (%f, %f) while mouse is in server mode", translated.x, translated.y);
     }
     return translated;
 }
 
+- (CGPoint)moveMouseRelative:(CGPoint)translation {
+    translation.x = CGPointToPixel(translation.x) / _renderer.viewportScale;
+    translation.y = CGPointToPixel(translation.y) / _renderer.viewportScale;
+    if (self.vm.primaryInput.serverModeCursor) {
+        [self.vm.primaryInput sendMouseMotion:SEND_BUTTON_NONE point:translation];
+    } else {
+        NSLog(@"Warning: ignored mouse motion (%f, %f) while mouse is in client mode", translation.x, translation.y);
+    }
+    return translation;
+}
+
 - (IBAction)gestureTap:(UITapGestureRecognizer *)sender {
     if (sender.state == UIGestureRecognizerStateEnded) {
-        CGPoint translated = [self moveMouse:[sender locationInView:sender.view]];
+        CGPoint translated = CGPointZero;
+        if (self.touchscreen) {
+            _cursor.center = [sender locationInView:sender.view];
+        }
         [self.vm.primaryInput sendMouseButton:SEND_BUTTON_LEFT pressed:YES point:translated];
         [self.vm.primaryInput sendMouseButton:SEND_BUTTON_LEFT pressed:NO point:translated];
         [self.clickFeedbackGenerator selectionChanged];
@@ -339,7 +367,10 @@ static CGFloat CGPointToPixel(CGFloat point) {
 
 - (IBAction)gestureTwoTap:(UITapGestureRecognizer *)sender {
     if (sender.state == UIGestureRecognizerStateEnded) {
-        CGPoint translated = [self moveMouse:[sender locationInView:sender.view]];
+        CGPoint translated = CGPointZero;
+        if (self.touchscreen) {
+            _cursor.center = [sender locationInView:sender.view];
+        }
         [self.vm.primaryInput sendMouseButton:SEND_BUTTON_RIGHT pressed:YES point:translated];
         [self.vm.primaryInput sendMouseButton:SEND_BUTTON_RIGHT pressed:NO point:translated];
         [self.clickFeedbackGenerator selectionChanged];

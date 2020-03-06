@@ -40,9 +40,15 @@ NS_ASSUME_NONNULL_BEGIN
 @property (weak, nonatomic) IBOutlet UIButton *zoomButton;
 @property (strong, nonatomic) IBOutletCollection(VMKeyboardButton) NSArray *customKeyButtons;
 @property (strong, nonatomic) IBOutletCollection(VMKeyboardButton) NSArray *customKeyModifierButtons;
+@property (nonatomic, readonly) BOOL serverModeCursor;
+@property (nonatomic, readonly) BOOL touchscreen;
 
 - (void)changeVM:(UTMVirtualMachine *)vm;
 - (void)sendExtendedKey:(SendKeyType)type code:(int)code;
+
+- (CGPoint)clipCursorToDisplay:(CGPoint)pos;
+- (CGPoint)moveMouseAbsolute:(CGPoint)location;
+- (CGPoint)moveMouseRelative:(CGPoint)translation;
 
 - (IBAction)gesturePan:(UIPanGestureRecognizer *)sender;
 - (IBAction)gestureTwoPan:(UIPanGestureRecognizer *)sender;
