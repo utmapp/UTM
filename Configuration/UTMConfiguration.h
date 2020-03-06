@@ -40,7 +40,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, nullable, copy) NSNumber *systemCPUCount;
 @property (nonatomic, nullable, copy) NSString *systemTarget;
 @property (nonatomic, nullable, copy) NSString *systemBootDevice;
-@property (nonatomic, nullable, copy) NSString *systemAddArgs;
 
 @property (nonatomic, assign) BOOL displayConsoleOnly;
 @property (nonatomic, assign) BOOL displayFixedResolution;
@@ -63,8 +62,18 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, assign) BOOL sharingClipboardEnabled;
 
+- (void)migrateDictionaryIfNecessary;
 - (id)initDefaults:(NSString *)name;
 - (id)initWithDictionary:(NSMutableDictionary *)dictionary name:(NSString *)name path:(NSURL *)path;
+
+- (NSUInteger)countArguments;
+- (NSUInteger)newArgument:(NSString *)argument;
+- (nullable NSString *)argumentForIndex:(NSUInteger)index;
+- (void)moveArgumentIndex:(NSUInteger)index to:(NSUInteger)newIndex;
+- (void)updateArgumentAtIndex:(NSUInteger)index withValue:(NSString*)argument;
+- (void)removeArgumentAtIndex:(NSUInteger)index;
+- (NSArray *)systemArguments;
+
 - (NSUInteger)countDrives;
 - (NSUInteger)newDrive:(NSString *)name interface:(NSString *)interface isCdrom:(BOOL)isCdrom;
 - (nullable NSString *)driveImagePathForIndex:(NSUInteger)index;
