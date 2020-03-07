@@ -16,12 +16,16 @@
 
 #import "VMTerminalViewController.h"
 #import "UTMConfiguration.h"
+#import "UIViewController+Extensions.h"
 
 NSString *const kVMSendInputHandler = @"UTMSendInput";
 
 @implementation VMTerminalViewController {
     // status bar
     BOOL _prefersStatusBarHidden;
+    // gestures
+    UISwipeGestureRecognizer *_swipeUp;
+    UISwipeGestureRecognizer *_swipeDown;
 }
 
 - (BOOL)prefersStatusBarHidden {
@@ -38,28 +42,29 @@ NSString *const kVMSendInputHandler = @"UTMSendInput";
 }
 
 - (void)viewDidLoad {
-    [super viewDidLoad];    
+    [super viewDidLoad];
+    // UI setup
+    [self.navigationController setNavigationBarHidden:YES animated: YES];
+    [self setUpGestures];
     // terminal setup
     NSURL* terminalIOURL = [[_vm configuration] terminalInputOutputURL];
     _terminal = [[UTMTerminal alloc] initWithURL: terminalIOURL];
     [_terminal setDelegate: self];
-    
     NSError* error;
     [_terminal connectWithError: &error];
     if (error != nil) {
-        NSLog(@"Terminal connection error!");
+        NSLog(@"Unable to connect with terminal!: %@", error.localizedDescription);
+        return;
     }
     
     [_vm startVM];
-    // message handlers
+    // webview setup
     [[[_webView configuration] userContentController] addScriptMessageHandler: self name: kVMSendInputHandler];
     
     // load terminal.html
     NSURL* resourceURL = [[NSBundle mainBundle] resourceURL];
     NSURL* indexFile = [resourceURL URLByAppendingPathComponent: @"terminal.html"];
     [_webView loadFileURL: indexFile allowingReadAccessToURL: resourceURL];
-    
-    [self updateWebViewScrollOffset: NO];
 }
 
 - (void)viewDidLayoutSubviews {
@@ -69,7 +74,38 @@ NSString *const kVMSendInputHandler = @"UTMSendInput";
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear: animated];
-    [self.navigationController setNavigationBarHidden:YES animated:animated];
+}
+
+#pragma mark - Gestures
+
+- (void)setUpGestures {
+    _swipeUp = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(gestureSwipe:)];
+    _swipeUp.numberOfTouchesRequired = 3;
+    _swipeUp.direction = UISwipeGestureRecognizerDirectionUp;
+    _swipeUp.delegate = self;
+    _swipeDown = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(gestureSwipe:)];
+    _swipeDown.numberOfTouchesRequired = 3;
+    _swipeDown.direction = UISwipeGestureRecognizerDirectionDown;
+    _swipeDown.delegate = self;
+    [_webView addGestureRecognizer: _swipeUp];
+    [_webView addGestureRecognizer: _swipeDown];
+}
+
+- (void)gestureSwipe: (UISwipeGestureRecognizer*) sender {
+    NSLog(@"GEsture!!");
+    if (sender.direction == UISwipeGestureRecognizerDirectionUp) {
+        if (!self.toolbarAccessoryView.isHidden) {
+            [self hideToolbar];
+        }
+    } else if (sender.direction == UISwipeGestureRecognizerDirectionDown) {
+        if (self.toolbarAccessoryView.isHidden) {
+            [self showToolbar];
+        }
+    }
+}
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
+    return YES;
 }
 
 #pragma mark - WKScriptMessageHandler
@@ -80,6 +116,8 @@ NSString *const kVMSendInputHandler = @"UTMSendInput";
         [_terminal sendInput: (NSString*) message.body];
     }
 }
+
+#pragma mark - UTMTerminalDelegate
 
 - (void)terminal:(UTMTerminal *)terminal didReceiveData:(NSData *)data {
     NSMutableString* dataString = [NSMutableString stringWithString: @"["];
@@ -99,6 +137,8 @@ NSString *const kVMSendInputHandler = @"UTMSendInput";
     }];
 }
 
+#pragma mark - Toolbar IBActions
+
 - (IBAction)resumePressed:(UIButton *)sender {
 }
 
@@ -116,11 +156,26 @@ NSString *const kVMSendInputHandler = @"UTMSendInput";
 }
 
 - (IBAction)showKeyboardPressed:(UIButton *)sender {
-    // set focus on some element in JS 
+    // FIXME: element.focus() from JS doesn't work in WKWebView, needs some workaround
+    // set focus on some element in JS
+    NSString* jsString = @"focusTerminal()";
+    [_webView evaluateJavaScript: jsString completionHandler:^(id _Nullable _, NSError * _Nullable error) {
+        if (error == nil) {
+            NSLog(@"Successfuly focused terminal element");
+        } else {
+            NSLog(@"Error while focusing terminal element");
+        }
+    }];
 }
 
 - (IBAction)hideToolbarPressed:(UIButton *)sender {
     [self hideToolbar];
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    if (![defaults boolForKey:@"HasShownHideToolbarAlert"]) {
+        [self showAlert:NSLocalizedString(@"Hint: To show the toolbar again, use a three-finger swipe down on the screen.", @"Shown once when hiding toolbar.") completion:^(UIAlertAction *action){
+            [defaults setBool:YES forKey:@"HasShownHideToolbarAlert"];
+        }];
+    }
 }
 
 #pragma mark - Toolbar actions
@@ -142,10 +197,14 @@ NSString *const kVMSendInputHandler = @"UTMSendInput";
 }
 
 - (void)updateWebViewScrollOffset: (BOOL) toolbarHidden {
-//    CGFloat offset = 0.0;
-//    if (!toolbarHidden) {
-//        offset = self.toolbarAccessoryView.bounds.size.height;
-//    }
+    CGFloat offset = 0.0;
+    if (!toolbarHidden) {
+        offset = self.toolbarAccessoryView.bounds.size.height;
+    }
+    [UIView animateWithDuration:0.3 animations:^{
+        [self.webViewTopConstraint setConstant: offset];
+        [self.webView layoutIfNeeded];
+    }];
 }
 
 @end

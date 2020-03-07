@@ -22,10 +22,12 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface VMTerminalViewController : UIViewController <WKScriptMessageHandler, UTMTerminalDelegate>
+@interface VMTerminalViewController : UIViewController <WKScriptMessageHandler, UTMTerminalDelegate, UIGestureRecognizerDelegate>
 
 @property (weak, nonatomic) IBOutlet WKWebView *webView;
 @property (weak, nonatomic) IBOutlet UIView *toolbarAccessoryView;
+@property (weak, nonatomic) IBOutlet UIInputView *inputAccessoryView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *webViewTopConstraint;
 @property (nonatomic, strong, nullable) UTMTerminal* terminal;
 @property (nonatomic, strong) UTMVirtualMachine* vm;
 

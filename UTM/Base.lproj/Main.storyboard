@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="15702" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="cR9-D8-uOs">
-    <device id="ipad12_9rounded" orientation="landscape" layout="fullscreen" appearance="light"/>
+    <device id="ipad12_9rounded" orientation="portrait" layout="fullscreen" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15704"/>
@@ -13,7 +13,7 @@
             <objects>
                 <collectionViewController id="krH-Hz-4fz" customClass="VMListViewController" sceneMemberID="viewController">
                     <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" contentInsetAdjustmentBehavior="always" keyboardDismissMode="onDrag" dataMode="prototypes" id="2R6-2u-EVP">
-                        <rect key="frame" x="0.0" y="0.0" width="1366" height="1024"/>
+                        <rect key="frame" x="0.0" y="0.0" width="1024" height="1366"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                         <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="20" minimumInteritemSpacing="20" id="Hle-hi-gGv">
@@ -1149,7 +1149,7 @@
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="cR9-D8-uOs" sceneMemberID="viewController">
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="qTC-Hg-D1R">
-                        <rect key="frame" x="0.0" y="0.0" width="1366" height="50"/>
+                        <rect key="frame" x="0.0" y="0.0" width="1024" height="50"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
                     <nil name="viewControllers"/>
@@ -1873,7 +1873,7 @@
             <objects>
                 <viewController modalTransitionStyle="flipHorizontal" hidesBottomBarWhenPushed="YES" id="ckC-eO-gxn" userLabel="Display Metal" customClass="VMDisplayMetalViewController" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="WSe-Ri-b4c">
-                        <rect key="frame" x="0.0" y="0.0" width="1366" height="1024"/>
+                        <rect key="frame" x="0.0" y="0.0" width="1024" height="1366"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="0Mf-V7-Aot" customClass="VMSoftKeyboardView">
@@ -1898,22 +1898,22 @@
                                 </connections>
                             </view>
                             <mtkView contentMode="scaleToFill" colorPixelFormat="BGRA8Unorm" depthStencilPixelFormat="Depth32Float" translatesAutoresizingMaskIntoConstraints="NO" id="ZK0-vH-7ok">
-                                <rect key="frame" x="0.0" y="0.0" width="1366" height="1024"/>
+                                <rect key="frame" x="0.0" y="0.0" width="1024" height="1366"/>
                             </mtkView>
                             <visualEffectView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="VFv-zJ-H5K" userLabel="Toolbar Accessory View">
-                                <rect key="frame" x="0.0" y="0.0" width="1366" height="45"/>
+                                <rect key="frame" x="0.0" y="0.0" width="1024" height="45"/>
                                 <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="9yD-Nn-OmR">
-                                    <rect key="frame" x="0.0" y="0.0" width="1366" height="45"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="1024" height="45"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <visualEffectView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="FYx-cc-jqE">
-                                            <rect key="frame" x="0.0" y="0.0" width="1366" height="45"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="1024" height="45"/>
                                             <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="TyK-03-3ux">
-                                                <rect key="frame" x="0.0" y="0.0" width="1366" height="45"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="1024" height="45"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
                                                     <stackView opaque="NO" contentMode="scaleToFill" spacing="16" translatesAutoresizingMaskIntoConstraints="NO" id="Z0A-c7-3p0">
-                                                        <rect key="frame" x="1182" y="7" width="168" height="30"/>
+                                                        <rect key="frame" x="840" y="7" width="168" height="30"/>
                                                         <subviews>
                                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="m9f-Az-rlH">
                                                                 <rect key="frame" x="0.0" y="0.0" width="30" height="30"/>
@@ -2561,31 +2561,30 @@
             <objects>
                 <viewController storyboardIdentifier="xcxgddf" modalTransitionStyle="flipHorizontal" hidesBottomBarWhenPushed="YES" id="Nen-bt-V44" userLabel="Display HTerm" customClass="VMTerminalViewController" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="ekG-nW-ktk">
-                        <rect key="frame" x="0.0" y="0.0" width="1366" height="1024"/>
+                        <rect key="frame" x="0.0" y="0.0" width="1024" height="1366"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
-                            <wkWebView contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="es2-y2-iG9">
-                                <rect key="frame" x="0.0" y="0.0" width="1366" height="1024"/>
-                                <color key="backgroundColor" red="0.36078431370000003" green="0.38823529410000002" blue="0.4039215686" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            <wkWebView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="es2-y2-iG9">
+                                <rect key="frame" x="0.0" y="0.0" width="1024" height="1366"/>
                                 <wkWebViewConfiguration key="configuration">
                                     <audiovisualMediaTypes key="mediaTypesRequiringUserActionForPlayback" none="YES"/>
                                     <wkPreferences key="preferences"/>
                                 </wkWebViewConfiguration>
                             </wkWebView>
                             <visualEffectView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="pSV-Kz-9ar" userLabel="Toolbar Accessory View">
-                                <rect key="frame" x="0.0" y="0.0" width="1366" height="45"/>
+                                <rect key="frame" x="0.0" y="0.0" width="1024" height="45"/>
                                 <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="kdf-xB-pU1">
-                                    <rect key="frame" x="0.0" y="0.0" width="1366" height="45"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="1024" height="45"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <visualEffectView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="6Zm-be-ZSb">
-                                            <rect key="frame" x="0.0" y="0.0" width="1366" height="45"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="1024" height="45"/>
                                             <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="Ylq-Eq-BeV">
-                                                <rect key="frame" x="0.0" y="0.0" width="1366" height="45"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="1024" height="45"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
                                                     <stackView opaque="NO" contentMode="scaleToFill" spacing="16" translatesAutoresizingMaskIntoConstraints="NO" id="yP3-BT-kx0">
-                                                        <rect key="frame" x="1228" y="7" width="122" height="30"/>
+                                                        <rect key="frame" x="886" y="7" width="122" height="30"/>
                                                         <subviews>
                                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gFL-3M-wsD">
                                                                 <rect key="frame" x="0.0" y="0.0" width="30" height="30"/>
@@ -2712,7 +2711,7 @@
                         <constraints>
                             <constraint firstAttribute="bottom" secondItem="es2-y2-iG9" secondAttribute="bottom" id="67M-kH-iti"/>
                             <constraint firstItem="pSV-Kz-9ar" firstAttribute="centerX" secondItem="ekG-nW-ktk" secondAttribute="centerX" id="6kG-GW-4gC"/>
-                            <constraint firstItem="es2-y2-iG9" firstAttribute="top" secondItem="Z6B-oG-xjm" secondAttribute="top" id="DBM-c7-TWA"/>
+                            <constraint firstItem="es2-y2-iG9" firstAttribute="top" secondItem="ekG-nW-ktk" secondAttribute="top" id="DBM-c7-TWA"/>
                             <constraint firstItem="pSV-Kz-9ar" firstAttribute="top" secondItem="ekG-nW-ktk" secondAttribute="top" id="Huv-dt-ljk"/>
                             <constraint firstItem="pSV-Kz-9ar" firstAttribute="trailing" secondItem="Z6B-oG-xjm" secondAttribute="trailing" priority="750" id="IyQ-YH-EbO"/>
                             <constraint firstItem="Z6B-oG-xjm" firstAttribute="trailing" secondItem="es2-y2-iG9" secondAttribute="trailing" id="Rgr-yh-aWa"/>
@@ -2726,8 +2725,10 @@
                     <nil key="simulatedTopBarMetrics"/>
                     <nil key="simulatedBottomBarMetrics"/>
                     <connections>
+                        <outlet property="inputAccessoryView" destination="nlm-55-ehd" id="Xtb-Py-ujz"/>
                         <outlet property="toolbarAccessoryView" destination="pSV-Kz-9ar" id="vbn-YO-bu9"/>
-                        <outlet property="webView" destination="es2-y2-iG9" id="ZCx-zz-cuG"/>
+                        <outlet property="webView" destination="es2-y2-iG9" id="wHw-8b-MlA"/>
+                        <outlet property="webViewTopConstraint" destination="DBM-c7-TWA" id="Dcr-BI-QDS"/>
                         <segue destination="dnX-hr-5QR" kind="unwind" identifier="returnToList" unwindAction="unwindToMainFromVM:" id="Xix-wh-kcI"/>
                     </connections>
                 </viewController>

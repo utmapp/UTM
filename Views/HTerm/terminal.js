@@ -11,6 +11,14 @@ function writeData(data) {
     term.io.print(str);
 }
 
+function focusTerminal() {
+    // doesn't work. Looks like it needs some kind of workaround
+//    const term = window.term;
+//    term.scrollPort_.focus()
+//    var element = document.getElementById("terminal");
+//    element.focus();
+}
+
 function terminalSetup() {
     const term = new hterm.Terminal();
     term.onTerminalReady = function() {

@@ -296,6 +296,7 @@
 		CEDC1DF22260EE4B008D9A6D /* StaticDataTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CEDC1DF12260EE4B008D9A6D /* StaticDataTableViewController.m */; };
 		CEEB66462284B942002737B2 /* VMKeyboardButton.m in Sources */ = {isa = PBXBuildFile; fileRef = CEEB66452284B942002737B2 /* VMKeyboardButton.m */; };
 		CEFE75DB228933DE0050ABCC /* gst_ios_init.m in Sources */ = {isa = PBXBuildFile; fileRef = CEFE75D9228933DE0050ABCC /* gst_ios_init.m */; };
+		E2151A59241451120008E6AC /* UIViewController+Extensions.m in Sources */ = {isa = PBXBuildFile; fileRef = E2151A58241451120008E6AC /* UIViewController+Extensions.m */; };
 		E28394B6240C20E1006742E2 /* UTMTerminal.m in Sources */ = {isa = PBXBuildFile; fileRef = E28394B3240C20E0006742E2 /* UTMTerminal.m */; };
 		E28394BA240C219F006742E2 /* terminal.html in Resources */ = {isa = PBXBuildFile; fileRef = E28394B8240C219F006742E2 /* terminal.html */; };
 		E28394BB240C219F006742E2 /* terminal.js in Resources */ = {isa = PBXBuildFile; fileRef = E28394B9240C219F006742E2 /* terminal.js */; };
@@ -810,6 +811,8 @@
 		CEEB66452284B942002737B2 /* VMKeyboardButton.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VMKeyboardButton.m; sourceTree = "<group>"; };
 		CEFE75D9228933DE0050ABCC /* gst_ios_init.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = gst_ios_init.m; sourceTree = "<group>"; };
 		CEFE75DA228933DE0050ABCC /* gst_ios_init.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = gst_ios_init.h; sourceTree = "<group>"; };
+		E2151A57241451120008E6AC /* UIViewController+Extensions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UIViewController+Extensions.h"; sourceTree = "<group>"; };
+		E2151A58241451120008E6AC /* UIViewController+Extensions.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UIViewController+Extensions.m"; sourceTree = "<group>"; };
 		E28394B3240C20E0006742E2 /* UTMTerminal.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UTMTerminal.m; sourceTree = "<group>"; };
 		E28394B4240C20E1006742E2 /* UTMTerminalDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UTMTerminalDelegate.h; sourceTree = "<group>"; };
 		E28394B5240C20E1006742E2 /* UTMTerminal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UTMTerminal.h; sourceTree = "<group>"; };
@@ -1388,6 +1391,8 @@
 				CE550BE322596E790063E575 /* VMListViewCell.m */,
 				CE9F4A5C2409DA21007C6BF9 /* VMSoftKeyboardView.h */,
 				CE9F4A5D2409DA21007C6BF9 /* VMSoftKeyboardView.m */,
+				E2151A57241451120008E6AC /* UIViewController+Extensions.h */,
+				E2151A58241451120008E6AC /* UIViewController+Extensions.m */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -1615,6 +1620,7 @@
 				CE23C19823FCEC0A001177D6 /* qapi-visit-char.c in Sources */,
 				CE23C1AF23FCEC0A001177D6 /* qapi-types-error.c in Sources */,
 				CE23C17223FCEC0A001177D6 /* qapi-commands-authz.c in Sources */,
+				E2151A59241451120008E6AC /* UIViewController+Extensions.m in Sources */,
 				CE23C17C23FCEC0A001177D6 /* qapi-types.c in Sources */,
 				CE23C17823FCEC0A001177D6 /* qapi-events-sockets.c in Sources */,
 				CE23C1A723FCEC0A001177D6 /* qapi-visit-sockets.c in Sources */,
