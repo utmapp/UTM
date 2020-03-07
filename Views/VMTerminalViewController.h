@@ -25,8 +25,14 @@ NS_ASSUME_NONNULL_BEGIN
 @interface VMTerminalViewController : UIViewController <WKScriptMessageHandler, UTMTerminalDelegate>
 
 @property (weak, nonatomic) IBOutlet WKWebView *webView;
+@property (weak, nonatomic) IBOutlet UIView *toolbarAccessoryView;
 @property (nonatomic, strong, nullable) UTMTerminal* terminal;
 @property (nonatomic, strong) UTMVirtualMachine* vm;
+
+- (IBAction)resumePressed:(UIButton *)sender;
+- (IBAction)powerPressed:(UIButton *)sender;
+- (IBAction)showKeyboardPressed:(UIButton *)sender;
+- (IBAction)hideToolbarPressed:(UIButton *)sender;
 
 @end
 

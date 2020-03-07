@@ -817,6 +817,7 @@
 		E28394BD240C22F1006742E2 /* hterm_all.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = hterm_all.js; path = libapps/hterm/dist/js/hterm_all.js; sourceTree = "<group>"; };
 		E28394BF240C268A006742E2 /* VMTerminalViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VMTerminalViewController.h; sourceTree = "<group>"; };
 		E28394C0240C268A006742E2 /* VMTerminalViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VMTerminalViewController.m; sourceTree = "<group>"; };
+		E2A798512413D405005FADD3 /* UTMInputOutput.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UTMInputOutput.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1360,6 +1361,7 @@
 				E28394B5240C20E1006742E2 /* UTMTerminal.h */,
 				E28394B3240C20E0006742E2 /* UTMTerminal.m */,
 				E28394B4240C20E1006742E2 /* UTMTerminalDelegate.h */,
+				E2A798512413D405005FADD3 /* UTMInputOutput.h */,
 			);
 			path = Managers;
 			sourceTree = "<group>";

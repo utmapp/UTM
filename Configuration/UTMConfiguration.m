@@ -232,6 +232,7 @@ const NSString *const kUTMConfigCdromKey = @"Cdrom";
         self.printEnabled = YES;
         self.soundEnabled = YES;
         self.sharingClipboardEnabled = YES;
+        self.name = name;
         self.existingPath = nil;
     }
     return self;
@@ -472,6 +473,13 @@ const NSString *const kUTMConfigCdromKey = @"Cdrom";
 
 - (void)removeDriveAtIndex:(NSUInteger)index {
     [_rootDict[kUTMConfigDrivesKey] removeObjectAtIndex:index];
+}
+
+- (NSURL*)terminalInputOutputURL {
+    NSURL* tmpDir = [[NSFileManager defaultManager] temporaryDirectory];
+    NSString* ioFileName = [NSString stringWithFormat: @"%@.terminal", self.name];
+    NSURL* ioFile = [tmpDir URLByAppendingPathComponent: ioFileName];
+    return ioFile;
 }
 
 @end

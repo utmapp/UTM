@@ -32,7 +32,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSString *)diskImagesDirectory;
 + (NSString *)defaultDriveInterface;
 
-@property (nonatomic, nullable, copy) NSString *name;
+@property (nonatomic, copy) NSString *name;
 @property (nonatomic, nullable, copy) NSURL *existingPath;
 
 @property (nonatomic, nullable, copy) NSString *systemArchitecture;
@@ -75,6 +75,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setDriveIsCdrom:(BOOL)isCdrom forIndex:(NSUInteger)index;
 - (void)moveDriveIndex:(NSUInteger)index to:(NSUInteger)newIndex;
 - (void)removeDriveAtIndex:(NSUInteger)index;
+- (NSURL*)terminalInputOutputURL;
 
 @end
 

@@ -76,8 +76,11 @@
         [self pushArgv:[NSString stringWithFormat:@"file=%@,if=%@,media=%@", fullPathURL.path, [self.configuration driveInterfaceTypeForIndex:i], [self.configuration driveIsCdromForIndex:i] ? @"cdrom" : @"disk"]];
     }
     if (self.configuration.displayConsoleOnly) {
-        [self pushArgv:@"-display"];
-        [self pushArgv:@"curses"];
+        [self pushArgv:@"-nographic"];
+        // terminal character device
+        NSURL* ioFile = [self.configuration terminalInputOutputURL];
+        [self pushArgv: [NSString stringWithFormat: @"-chardev pipe,id=term0,path=%@", ioFile.path]];
+        [self pushArgv: @"-serial chardev:term0"];
     } else {
         [self pushArgv:@"-spice"];
         [self pushArgv:@"port=5930,addr=127.0.0.1,disable-ticketing,image-compression=off,playback-compression=off,streaming-video=off"];

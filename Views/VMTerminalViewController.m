@@ -56,4 +56,26 @@ NSString *const kVMSendInputHandler = @"UTMSendInput";
     }];
 }
 
+- (IBAction)resumePressed:(UIButton *)sender {
+}
+
+- (IBAction)powerPressed:(UIButton *)sender {
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil message:NSLocalizedString(@"Are you sure you want to stop this VM?", @"VMDisplayMetalViewController") preferredStyle:UIAlertControllerStyleAlert];
+    UIAlertAction *yes = [UIAlertAction actionWithTitle:NSLocalizedString(@"Yes", @"VMDisplayMetalViewController") style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action){
+        dispatch_async(dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0), ^{
+            [self.vm quitVM];
+        });
+    }];
+    UIAlertAction *no = [UIAlertAction actionWithTitle:NSLocalizedString(@"No", @"VMDisplayMetalViewController") style:UIAlertActionStyleCancel handler:nil];
+    [alert addAction:yes];
+    [alert addAction:no];
+    [self presentViewController:alert animated:YES completion:nil];
+}
+
+- (IBAction)showKeyboardPressed:(UIButton *)sender {
+}
+
+- (IBAction)hideToolbarPressed:(UIButton *)sender {
+}
+
 @end

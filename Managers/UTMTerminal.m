@@ -10,7 +10,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
-#define kTerminalBufferSize 2048
+#define kUTMTerminalBufferSize 2048
 
 dispatch_io_t createInputIO(NSURL* url, dispatch_queue_t queue) {
     const char* cPath = [[url path] cStringUsingEncoding: NSUTF8StringEncoding];
@@ -39,7 +39,7 @@ dispatch_io_t createInputIO(NSURL* url, dispatch_queue_t queue) {
 
 @implementation UTMTerminal {
     int32_t _outPipeFd;
-    uint8_t _byteBuffer[kTerminalBufferSize];
+    uint8_t _byteBuffer[kUTMTerminalBufferSize];
 }
 
 - (id)initWithName:(NSString *)name {
@@ -82,13 +82,21 @@ dispatch_io_t createInputIO(NSURL* url, dispatch_queue_t queue) {
     NSURL* inPipeURL = [tmpDir URLByAppendingPathComponent: inPipeName];
     // create named pipes usign mkfifos
     const char* outPipeCPath = [[outPipeURL path] cStringUsingEncoding: NSUTF8StringEncoding];
-    if (remove(outPipeCPath) != 0 || mkfifo(outPipeCPath, 0666) != 0) {
+    if (access(outPipeCPath, F_OK) != -1 && remove(outPipeCPath) != 0) {
+        NSLog(@"Failed to remove existing out pipe");
+        return NO;
+    }
+    if (mkfifo(outPipeCPath, 0666) != 0) {
         NSLog(@"Failed to create output pipe using mkfifo!");
         return NO;
     }
     
     const char* inPipeCPath = [[inPipeURL path] cStringUsingEncoding: NSUTF8StringEncoding];
-    if (remove(inPipeCPath) != 0 || mkfifo(inPipeCPath, 0666) != 0) {
+    if (access(inPipeCPath, F_OK) != -1 && remove(inPipeCPath) != 0) {
+        NSLog(@"Failed to remove existing in pipe");
+        return NO;
+    }
+    if (mkfifo(inPipeCPath, 0666) != 0) {
         NSLog(@"Failed to create input pipe using mkfifo!");
         return NO;
     }
@@ -162,7 +170,7 @@ dispatch_io_t createInputIO(NSURL* url, dispatch_queue_t queue) {
 
 - (NSData* _Nullable)evaluateChangesForDescriptor: (int32_t) fd estimatedSize: (size_t) estimated {
     NSData* data;
-    size_t step = (estimated > kTerminalBufferSize) ? kTerminalBufferSize : estimated;
+    size_t step = (estimated > kUTMTerminalBufferSize) ? kUTMTerminalBufferSize : estimated;
     ssize_t bytesRead;
     
     if ((bytesRead = read(fd, self->_byteBuffer, step)) > 0) {
