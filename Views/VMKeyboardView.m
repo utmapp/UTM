@@ -167,7 +167,12 @@ const key_mapping_t pc104_es[] = {
     {'`', 0x0, 0x0, 0x0, 0x1a},
     {'<', 0x0, 0x0, 0x0, 0x56},
     {'>', 0x0, 0x0, 0x36, 0x56},
+    {'\r', 0x0, 0x0, 0x0, 0x1c},
     {'\n', 0x0, 0x0, 0x0, 0x1c},
+    {'\'', 0x0, 0x0, 0x0, 0x28},
+    {'"', 0x0, 0x0, 0x36, 0x28},
+    {'\t', 0x0, 0x0, 0x0, 0x0F},
+    {'\b', 0x0, 0x0, 0x0, 0x0E},
 };
 
 const ext_key_mapping_t pc104_us_ext[] = {
@@ -253,10 +258,17 @@ const key_mapping_t pc104_us[] = {
     {'`', 0x0, 0x0, 0x0, 0x29},
     {'<', 0x0, 0x0, 0x36, 0x33},
     {'>', 0x0, 0x0, 0x36, 0x34},
+    {'\r', 0x0, 0x0, 0x0, 0x1c},
     {'\n', 0x0, 0x0, 0x0, 0x1c},
     {'\'', 0x0, 0x0, 0x0, 0x28},
     {'"', 0x0, 0x0, 0x36, 0x28},
+    {'\t', 0x0, 0x0, 0x0, 0x0F},
+    {'\b', 0x0, 0x0, 0x0, 0x0E},
 };
+
+const int kLargeAccessoryViewHeight = 68;
+const int kSmallAccessoryViewHeight = 45;
+const int kSafeAreaHeight = 25;
 
 static int indexForChar(const key_mapping_t *table, size_t table_len, char tc) {
     int i;
@@ -322,14 +334,6 @@ static int indexForExtChar(const ext_key_mapping_t *table, size_t table_len, cha
     return UITextSmartInsertDeleteTypeNo;
 }
 
-- (UIView *)inputView {
-    return [[UIView alloc] initWithFrame:CGRectZero];
-}
-
-- (UIView *)inputAccessoryView {
-    return nil;
-}
-
 - (void)configureTables {
     NSString *language = [[NSLocale preferredLanguages] objectAtIndex:0];
     
@@ -346,6 +350,35 @@ static int indexForExtChar(const ext_key_mapping_t *table, size_t table_len, cha
     }
 }
 
+- (void)setSoftKeyboardVisible:(BOOL)softKeyboardVisible {
+    _softKeyboardVisible = softKeyboardVisible;
+    [self updateAccessoryViewHeight];
+}
+
+- (void)traitCollectionDidChange:(UITraitCollection *)previousTraitCollection {
+    [super traitCollectionDidChange:previousTraitCollection];
+    [self updateAccessoryViewHeight];
+}
+
+- (void)updateAccessoryViewHeight {
+    CGRect currentFrame = self.inputAccessoryView.frame;
+    CGFloat height;
+    if (self.traitCollection.horizontalSizeClass == UIUserInterfaceSizeClassRegular && self.traitCollection.verticalSizeClass == UIUserInterfaceSizeClassRegular) {
+        // we want large keys
+        height = kLargeAccessoryViewHeight;
+    } else {
+        height = kSmallAccessoryViewHeight;
+    }
+    if (self.softKeyboardVisible) {
+        height += kSafeAreaHeight;
+    }
+    if (height != currentFrame.size.height) {
+        currentFrame.size.height = height;
+        self.inputAccessoryView.frame = currentFrame;
+        [self reloadInputViews];
+    }
+}
+
 - (BOOL)hasText {
     return YES;
 }
@@ -356,8 +389,13 @@ static int indexForExtChar(const ext_key_mapping_t *table, size_t table_len, cha
 }
 
 - (void)insertText:(nonnull NSString *)text {
-    NSLog(@"insertText: %@, length=%lu", text, (unsigned long)text.length);
-    const char *ctext = [text UTF8String];
+    [text enumerateSubstringsInRange:NSMakeRange(0, text.length) options:NSStringEnumerationByComposedCharacterSequences usingBlock:^(NSString * _Nullable substring, NSRange substringRange, NSRange enclosingRange, BOOL * _Nonnull stop) {
+        const char *seq = [substring UTF8String];
+        [self insertUTF8Sequence:seq];
+    }];
+}
+
+- (void)insertUTF8Sequence:(const char *)ctext {
     unsigned long ctext_len = strlen(ctext);
     NSLog(@"ctext length=%lu\n", ctext_len);
     unsigned char tc = ctext[0];

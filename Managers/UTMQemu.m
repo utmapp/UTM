@@ -18,6 +18,8 @@
 #import <dlfcn.h>
 #import <pthread.h>
 
+const uint64_t kQemuExitErrorStatus = 0xAABBCCDD;
+
 @implementation UTMQemu {
     int (*_main)(int, const char *[]);
     NSMutableArray<NSString *> *_argv;
@@ -52,7 +54,7 @@ void *start_qemu(void *args) {
 
 - (void)startDylib:(nonnull NSString *)dylib main:(nonnull NSString *)main completion:(void(^)(BOOL,NSString *))completion {
     void *dlctx;
-    pthread_t qemu_thread;
+    __block pthread_t qemu_thread;
     
     dlctx = dlopen([dylib UTF8String], RTLD_LOCAL);
     if (dlctx == NULL) {
@@ -67,16 +69,26 @@ void *start_qemu(void *args) {
         completion(NO, err);
         return;
     }
+    if (atexit_b(^{
+        if (pthread_self() == qemu_thread) {
+            pthread_exit((void *)kQemuExitErrorStatus);
+        }
+    }) != 0) {
+        completion(NO, NSLocalizedString(@"Internal error has occurred.", @"qemu pthread fail"));
+        return;
+    }
     pthread_create(&qemu_thread, NULL, &start_qemu, (__bridge_retained void *)self);
     dispatch_async(dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0), ^{
         void *status;
         if (pthread_join(qemu_thread, &status)) {
             dlclose(dlctx);
-            completion(NO, NSLocalizedString(@"Internal error has occurred.", @"qemu pthread join fail"));
+            completion(NO, NSLocalizedString(@"Internal error has occurred.", @"qemu pthread fail"));
         } else {
             if (dlclose(dlctx) < 0) {
                 NSString *err = [NSString stringWithUTF8String:dlerror()];
                 completion(NO, err);
+            } else if (status == (void *)kQemuExitErrorStatus) {
+                completion(NO, NSLocalizedString(@"QEMU exited from an error.", @"qemu pthread fail"));
             } else {
                 completion(YES, nil);
             }

@@ -362,7 +362,7 @@
 "rbw-FB-I5Q.text" = "hda1";
 
 /* Class = "UILabel"; text = "System"; ObjectID = "riB-R9-dTb"; */
-"riB-R9-dTb.text" = "z系统";
+"riB-R9-dTb.text" = "系统";
 
 /* Class = "UIButton"; normalTitle = "↓"; ObjectID = "sOo-ak-Mlv"; */
 "sOo-ak-Mlv.normalTitle" = "↓";

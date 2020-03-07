@@ -54,6 +54,13 @@
     // Do any additional setup after loading the view.
     [self.collectionView setDragInteractionEnabled:YES];
     
+    // Set up context menu
+    UIMenuItem *deleteItem = [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"Delete", @"Delete context menu")
+                                                        action:NSSelectorFromString(@"deleteAction:")];
+    UIMenuItem *duplicateItem = [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"Clone", @"Clone context menu")
+                                                           action:NSSelectorFromString(@"cloneAction:")];
+    [[UIMenuController sharedMenuController] setMenuItems:@[deleteItem, duplicateItem]];
+    
     self.viewVisibleSema = dispatch_semaphore_create(0);
     self.viewVisibleQueue = dispatch_queue_create("View Visible Queue", DISPATCH_QUEUE_SERIAL);
     dispatch_async(self.viewVisibleQueue, ^{
@@ -74,11 +81,11 @@
     
     // refresh list
     dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INTERACTIVE, 0), ^{
-        self.vmList = [self fetchVirtualMachines];
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self.collectionView reloadData];
-        });
+        [self reloadData];
     });
+    
+    // show any message
+    [self showStartupMessage];
 }
 
 #pragma mark - Properties
@@ -88,6 +95,13 @@
 }
 
 #pragma mark - Helpers
+
+- (void)reloadData {
+    self.vmList = [self fetchVirtualMachines];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self.collectionView reloadData];
+    });
+}
 
 - (NSArray<NSURL *> *)fetchVirtualMachines {
     NSArray<NSURL *> *files = [[NSFileManager defaultManager] contentsOfDirectoryAtURL:self.documentsPath includingPropertiesForKeys:@[NSURLIsDirectoryKey] options:NSDirectoryEnumerationSkipsHiddenFiles error:nil];
@@ -113,6 +127,67 @@
         }
     } while (idx++ < 1000);
     return [[NSProcessInfo processInfo] globallyUniqueString];
+}
+
+- (void)showAlert:(NSString *)msg actions:(nullable NSArray<UIAlertAction *> *)actions completion:(nullable void (^)(void))completion {
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"" message:msg preferredStyle:UIAlertControllerStyleAlert];
+    if (!actions) {
+        UIAlertAction *okay = [UIAlertAction actionWithTitle:NSLocalizedString(@"OK", @"OK button") style:UIAlertActionStyleDefault handler:nil];
+        [alert addAction:okay];
+    } else {
+        for (UIAlertAction *action in actions) {
+            [alert addAction:action];
+        }
+    }
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self presentViewController:alert animated:YES completion:completion];
+    });
+}
+
+- (void)showStartupMessage {
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    if (![defaults boolForKey:@"HasShownStartupAlert"]) {
+        [self showAlert:NSLocalizedString(@"Welcome to UTM! Due to a bug in iOS, if you force kill this app, the system will be unstable and you cannot launch UTM again until you reboot. The recommended way to terminate this app is the button on the top left.", @"Startup message") actions:nil completion:^{
+            [defaults setBool:YES forKey:@"HasShownStartupAlert"];
+        }];
+    }
+}
+
+- (void)cloneVM:(NSURL *)url {
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Name", @"Clone VM name prompt title")
+                                                                   message:NSLocalizedString(@"New VM name", @"Clone VM name prompt message")
+                                                            preferredStyle:UIAlertControllerStyleAlert];
+    [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"OK", @"OK button") style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+        NSString *name = alert.textFields[0].text;
+        NSURL *newPath = [UTMVirtualMachine virtualMachinePath:name inParentURL:self.documentsPath];
+        dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), ^{
+            NSError *err = nil;
+            [self workStartedWhenVisible:[NSString stringWithFormat:NSLocalizedString(@"Saving %@...", @"Save VM overlay"), name]];
+            [[NSFileManager defaultManager] copyItemAtURL:url toURL:newPath error:&err];
+            [self workCompletedWhenVisible:err.localizedDescription];
+            [self reloadData];
+        });
+    }]];
+    [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"Cancel", @"Cancel button") style:UIAlertActionStyleCancel handler:nil]];
+    [alert addTextFieldWithConfigurationHandler:^(UITextField * _Nonnull textField) {
+        textField.text = [UTMVirtualMachine virtualMachineName:url];
+    }];
+    [self presentViewController:alert animated:YES completion:nil];
+}
+
+- (void)deleteVM:(NSURL *)url {
+    NSString *name = [UTMVirtualMachine virtualMachineName:url];
+    UIAlertAction *yes = [UIAlertAction actionWithTitle:NSLocalizedString(@"Yes", @"Yes button") style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action){
+        dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), ^{
+            NSError *err = nil;
+            [self workStartedWhenVisible:[NSString stringWithFormat:NSLocalizedString(@"Deleting %@...", @"Delete VM overlay"), name]];
+            [[NSFileManager defaultManager] removeItemAtURL:url error:&err];
+            [self workCompletedWhenVisible:err.localizedDescription];
+            [self reloadData];
+        });
+    }];
+    UIAlertAction *no = [UIAlertAction actionWithTitle:NSLocalizedString(@"No", @"No button") style:UIAlertActionStyleCancel handler:nil];
+    [self showAlert:NSLocalizedString(@"Are you sure you want to delete this VM? Any drives associated will also be deleted.", @"Delete confirmation") actions:@[yes, no] completion:nil];
 }
 
 #pragma mark - Navigation
@@ -152,7 +227,7 @@
     } else if ([segue.identifier isEqualToString:@"startVM"]) {
         NSAssert([segue.destinationViewController isKindOfClass:[VMDisplayMetalViewController class]], @"Destination not a metal view");
         VMDisplayMetalViewController *metalView = (VMDisplayMetalViewController *)segue.destinationViewController;
-        metalView.vm = self.activeVM;
+        [metalView changeVM:self.activeVM];
         self.activeVM.delegate = metalView;
     } else if ([[segue identifier] isEqualToString:@"startVMConsole"]) {
         NSLog(@"Hereeeeee");
@@ -197,6 +272,28 @@
     return @[drag];
 }
 
+- (BOOL)collectionView:(UICollectionView *)collectionView canPerformAction:(SEL)action forItemAtIndexPath:(NSIndexPath *)indexPath withSender:(id)sender {
+    if (action == NSSelectorFromString(@"deleteAction:") || action == NSSelectorFromString(@"cloneAction:")) {
+        return YES;
+    } else {
+        return NO;
+    }
+}
+
+- (BOOL)collectionView:(UICollectionView *)collectionView shouldShowMenuForItemAtIndexPath:(NSIndexPath *)indexPath {
+    return YES; // show context menu
+}
+
+- (void)collectionView:(UICollectionView *)collectionView performAction:(SEL)action forItemAtIndexPath:(NSIndexPath *)indexPath withSender:(id)sender {
+    NSAssert(indexPath.section == 0, @"Invalid section");
+    NSURL *source = self.vmList[indexPath.row];
+    if (action == NSSelectorFromString(@"deleteAction:")) {
+        [self deleteVM:source];
+    } else if (action == NSSelectorFromString(@"cloneAction:")) {
+        [self cloneVM:source];
+    }
+}
+
 /*
 - (BOOL)collectionView:(UICollectionView *)collectionView canHandleDropSession:(id<UIDropSession>)session {
     // TODO: implement this
@@ -215,10 +312,7 @@
         switch (state) {
             case kVMError: {
                 NSString *msg = self.vmMessage ? self.vmMessage : NSLocalizedString(@"An internal error has occured.", @"Alert message");
-                UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil message:msg preferredStyle:UIAlertControllerStyleAlert];
-                UIAlertAction *okay = [UIAlertAction actionWithTitle:NSLocalizedString(@"OK", @"OK button") style:UIAlertActionStyleDefault handler:nil];
-                [alert addAction:okay];
-                [self presentViewController:alert animated:YES completion:nil];
+                [self showAlert:msg actions:nil completion:nil];
                 break;
             }
             case kVMStarted:
@@ -265,10 +359,7 @@
             [self.collectionView reloadData];
             [self.alert dismissViewControllerAnimated:YES completion:nil];
             if (message) {
-                UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil message:message preferredStyle:UIAlertControllerStyleAlert];
-                UIAlertAction *okay = [UIAlertAction actionWithTitle:NSLocalizedString(@"OK", @"OK button") style:UIAlertActionStyleDefault handler:nil];
-                [alert addAction:okay];
-                [self presentViewController:alert animated:YES completion:nil];
+                [self showAlert:message actions:nil completion:nil];
             }
         });
     });
@@ -297,9 +388,16 @@
     self.activeVM.delegate = self;
 }
 
-- (IBAction)startVMFromButton:(UIButton *)sender {
-    id cell = sender.superview.superview.superview.superview.superview.superview;
+- (void)startVM:(id)cell {
     NSAssert([cell isKindOfClass:[VMListViewCell class]], @"Invalid cell class");
+    // TODO: Fix the need for this
+    if (self.activeVM != nil) {
+        UTMVirtualMachine *newActive = [self cachedVMForCell:cell];
+        if (self.activeVM != newActive) {
+            [self showAlert:NSLocalizedString(@"Launching another VM is not implemented. Please close UTM with the top left button and re-launch it.", nil) actions:nil completion:nil];
+            return;
+        }
+    }
     self.activeVM = [self cachedVMForCell:cell];
     self.activeCell = cell;
     //self.activeVM.delegate = self;
@@ -307,14 +405,20 @@
     [self virtualMachine:self.activeVM transitionToState:kVMStarted];
 }
 
+- (IBAction)startVMFromButton:(UIButton *)sender {
+    [self startVM:sender.superview.superview.superview.superview.superview.superview];
+}
+
 - (IBAction)startVMFromScreen:(UIButton *)sender {
-    id cell = sender.superview.superview;
-    NSAssert([cell isKindOfClass:[VMListViewCell class]], @"Invalid cell class");
-    self.activeVM = [self cachedVMForCell:cell];
-    self.activeCell = cell;
-    //self.activeVM.delegate = self;
-    //[self.activeVM startVM];
-    [self virtualMachine:self.activeVM transitionToState:kVMStarted];
+    [self startVM:sender.superview.superview];
+}
+
+- (IBAction)exitUTM:(UIBarButtonItem *)sender {
+    UIAlertAction *yes = [UIAlertAction actionWithTitle:NSLocalizedString(@"Yes", @"Yes button") style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action){
+        exit(0);
+    }];
+    UIAlertAction *no = [UIAlertAction actionWithTitle:NSLocalizedString(@"No", @"No button") style:UIAlertActionStyleCancel handler:nil];
+    [self showAlert:NSLocalizedString(@"Are you sure you want to exit UTM? Any running VM will be killed.", @"Exit confirmation") actions:@[yes, no] completion:nil];
 }
 
 @end

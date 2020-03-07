@@ -14,14 +14,23 @@
 // limitations under the License.
 //
 
-#import "VMKeyboardView.h"
+#import "VMDisplayMetalViewController.h"
+#import "VMKeyboardViewDelegate.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface VMSoftKeyboardView : VMKeyboardView
+@interface VMDisplayMetalViewController (Keyboard) <VMKeyboardViewDelegate>
 
-@property (nonatomic, readwrite, strong) IBOutlet UIView *inputAccessoryView;
-@property (nonatomic, assign) BOOL softKeyboardVisible;
+@property (nonatomic, readonly) NSArray<UIKeyCommand *> *keyCommands;
+
+- (IBAction)keyboardDonePressed:(UIButton *)sender;
+- (IBAction)keyboardPastePressed:(UIButton *)sender;
+- (IBAction)customKeyTouchDown:(VMKeyboardButton *)sender;
+- (IBAction)customKeyTouchUp:(VMKeyboardButton *)sender;
+
+- (void)keyboardWillShow:(NSNotification *)notification;
+- (void)keyboardWillHide:(NSNotification *)notification;
+- (void)keyboardWillChangeFrame:(NSNotification *)notification;
 
 @end
 

@@ -1,5 +1,5 @@
 //
-// Copyright © 2019 osy. All rights reserved.
+// Copyright © 2020 osy. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,19 +15,19 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "UTMVirtualMachineDelegate.h"
+
+@class VMDisplayMetalViewController;
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface VMListViewController : UICollectionViewController<UICollectionViewDragDelegate, UICollectionViewDropDelegate, UTMVirtualMachineDelegate>
+@interface VMCursor : NSObject <UIDynamicItem>
 
-- (IBAction)unwindToMainFromConfiguration:(UIStoryboardSegue*)sender;
-- (IBAction)unwindToMainFromVM:(UIStoryboardSegue*)sender;
-- (IBAction)startVMFromButton:(UIButton *)sender;
-- (IBAction)startVMFromScreen:(UIButton *)sender;
-- (IBAction)exitUTM:(UIBarButtonItem *)sender;
+@property (nonatomic, readwrite) CGRect bounds;
+
+- (id)initWithVMViewController:(VMDisplayMetalViewController *)controller;
+- (void)startMovement:(CGPoint)startPoint;
+- (void)updateMovement:(CGPoint)point;
 
 @end
 
 NS_ASSUME_NONNULL_END
-
