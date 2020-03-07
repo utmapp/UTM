@@ -79,8 +79,10 @@
         [self pushArgv:@"-nographic"];
         // terminal character device
         NSURL* ioFile = [self.configuration terminalInputOutputURL];
-        [self pushArgv: [NSString stringWithFormat: @"-chardev pipe,id=term0,path=%@", ioFile.path]];
-        [self pushArgv: @"-serial chardev:term0"];
+        [self pushArgv: @"-chardev"];
+        [self pushArgv: [NSString stringWithFormat: @"pipe,id=term0,path=%@", ioFile.path]];
+        [self pushArgv: @"-serial"];
+        [self pushArgv: @"chardev:term0"];
     } else {
         [self pushArgv:@"-spice"];
         [self pushArgv:@"port=5930,addr=127.0.0.1,disable-ticketing,image-compression=off,playback-compression=off,streaming-video=off"];

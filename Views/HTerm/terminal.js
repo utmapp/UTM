@@ -7,8 +7,8 @@ function sendInputMessage(str) {
 
 function writeData(data) {
     const term = window.term;
-    const str = new TextDecoder().decode(data);
-    term.interpret(str);
+    const str = String.fromCharCode.apply(null, data);
+    term.io.print(str);
 }
 
 function terminalSetup() {

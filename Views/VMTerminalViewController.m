@@ -15,17 +15,42 @@
 //
 
 #import "VMTerminalViewController.h"
+#import "UTMConfiguration.h"
 
 NSString *const kVMSendInputHandler = @"UTMSendInput";
 
-@implementation VMTerminalViewController
+@implementation VMTerminalViewController {
+    // status bar
+    BOOL _prefersStatusBarHidden;
+}
+
+- (BOOL)prefersStatusBarHidden {
+    return _prefersStatusBarHidden;
+}
+
+- (void)setPrefersStatusBarHidden:(BOOL)prefersStatusBarHidden {
+    _prefersStatusBarHidden = prefersStatusBarHidden;
+    [self setNeedsStatusBarAppearanceUpdate];
+}
+
+- (BOOL)prefersHomeIndicatorAutoHidden {
+    return YES; // always hide home indicator
+}
 
 - (void)viewDidLoad {
-    [super viewDidLoad];
-    // ...get vm name
+    [super viewDidLoad];    
     // terminal setup
-    _terminal = [[UTMTerminal alloc] initWithName: @"vmName"];
+    NSURL* terminalIOURL = [[_vm configuration] terminalInputOutputURL];
+    _terminal = [[UTMTerminal alloc] initWithURL: terminalIOURL];
     [_terminal setDelegate: self];
+    
+    NSError* error;
+    [_terminal connectWithError: &error];
+    if (error != nil) {
+        NSLog(@"Terminal connection error!");
+    }
+    
+    [_vm startVM];
     // message handlers
     [[[_webView configuration] userContentController] addScriptMessageHandler: self name: kVMSendInputHandler];
     
@@ -33,6 +58,18 @@ NSString *const kVMSendInputHandler = @"UTMSendInput";
     NSURL* resourceURL = [[NSBundle mainBundle] resourceURL];
     NSURL* indexFile = [resourceURL URLByAppendingPathComponent: @"terminal.html"];
     [_webView loadFileURL: indexFile allowingReadAccessToURL: resourceURL];
+    
+    [self updateWebViewScrollOffset: NO];
+}
+
+- (void)viewDidLayoutSubviews {
+    [super viewDidLayoutSubviews];
+    [self updateWebViewScrollOffset: [self.toolbarAccessoryView isHidden]];
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear: animated];
+    [self.navigationController setNavigationBarHidden:YES animated:animated];
 }
 
 #pragma mark - WKScriptMessageHandler
@@ -45,7 +82,13 @@ NSString *const kVMSendInputHandler = @"UTMSendInput";
 }
 
 - (void)terminal:(UTMTerminal *)terminal didReceiveData:(NSData *)data {
-    NSString* dataString;
+    NSMutableString* dataString = [NSMutableString stringWithString: @"["];
+    const uint8_t* buf = (uint8_t*) [data bytes];
+    for (size_t i = 0; i < [data length]; i++) {
+        [dataString appendFormat: @"%u,", buf[i]];
+    }
+    [dataString appendString:@"]"];
+    //NSLog(@"Array: %@", dataString);
     NSString* jsString = [NSString stringWithFormat: @"writeData(new Uint8Array(%@));", dataString];
     [_webView evaluateJavaScript: jsString completionHandler:^(id _Nullable _, NSError * _Nullable error) {
         if (error == nil) {
@@ -73,9 +116,36 @@ NSString *const kVMSendInputHandler = @"UTMSendInput";
 }
 
 - (IBAction)showKeyboardPressed:(UIButton *)sender {
+    // set focus on some element in JS 
 }
 
 - (IBAction)hideToolbarPressed:(UIButton *)sender {
+    [self hideToolbar];
+}
+
+#pragma mark - Toolbar actions
+
+- (void)hideToolbar {
+    [UIView transitionWithView:self.view duration:0.3 options:UIViewAnimationOptionTransitionCrossDissolve animations:^{
+        self.toolbarAccessoryView.hidden = YES;
+        self.prefersStatusBarHidden = YES;
+    } completion:nil];
+    [self updateWebViewScrollOffset:YES];
+}
+
+- (void)showToolbar {
+    [UIView transitionWithView:self.view duration:0.3 options:UIViewAnimationOptionTransitionCrossDissolve animations:^{
+        self.toolbarAccessoryView.hidden = NO;
+        self.prefersStatusBarHidden = NO;
+    } completion:nil];
+    [self updateWebViewScrollOffset:NO];
+}
+
+- (void)updateWebViewScrollOffset: (BOOL) toolbarHidden {
+//    CGFloat offset = 0.0;
+//    if (!toolbarHidden) {
+//        offset = self.toolbarAccessoryView.bounds.size.height;
+//    }
 }
 
 @end

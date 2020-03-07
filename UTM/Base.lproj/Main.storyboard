@@ -154,6 +154,7 @@
                     </navigationItem>
                     <connections>
                         <segue destination="ckC-eO-gxn" kind="show" identifier="startVM" id="psC-T5-Ggl"/>
+                        <segue destination="Nen-bt-V44" kind="show" identifier="startVMConsole" id="c3m-ve-cBj"/>
                     </connections>
                 </collectionViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="gzw-ao-My7" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -2706,6 +2707,7 @@
                                 </variation>
                             </visualEffectView>
                         </subviews>
+                        <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <gestureRecognizers/>
                         <constraints>
                             <constraint firstAttribute="bottom" secondItem="es2-y2-iG9" secondAttribute="bottom" id="67M-kH-iti"/>
@@ -2720,6 +2722,7 @@
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="Z6B-oG-xjm"/>
                     </view>
+                    <navigationItem key="navigationItem" id="eS3-Hq-J7j"/>
                     <nil key="simulatedTopBarMetrics"/>
                     <nil key="simulatedBottomBarMetrics"/>
                     <connections>
@@ -3179,7 +3182,7 @@
                 </view>
                 <exit id="dnX-hr-5QR" userLabel="Exit" sceneMemberID="exit"/>
             </objects>
-            <point key="canvasLocation" x="1829" y="-1557"/>
+            <point key="canvasLocation" x="887" y="-804"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="2bS-UE-pwf">

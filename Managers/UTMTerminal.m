@@ -42,7 +42,7 @@ dispatch_io_t createInputIO(NSURL* url, dispatch_queue_t queue) {
     uint8_t _byteBuffer[kUTMTerminalBufferSize];
 }
 
-- (id)initWithName:(NSString *)name {
+- (id)initWithURL: (NSURL*) url {
     self = [super init];
     if (self) {
         // serial queues for input/output processing
@@ -50,7 +50,7 @@ dispatch_io_t createInputIO(NSURL* url, dispatch_queue_t queue) {
         self->_inputQueue = dispatch_queue_create("com.osy86.UTM.TerminalInputQueue", NULL);
         
         self->_outPipeFd = -1;
-        if (![self configurePipesUsingName: name]) {
+        if (![self configurePipesUsingURL: url]) {
             NSLog(@"Terminal configutation failed!");
             [self cleanup];
             self = nil;
@@ -68,18 +68,14 @@ dispatch_io_t createInputIO(NSURL* url, dispatch_queue_t queue) {
 
 #pragma mark - Configuration
 
-- (BOOL)configurePipesUsingName: (NSString*) name {
+- (BOOL)configurePipesUsingURL: (NSURL*) url {
     if ([self isConfigured]) {
         return YES;
     }
     
-    // named pipe names
-    NSString* outPipeName = [NSString stringWithFormat: @"%@.out", name];
-    NSString* inPipeName = [NSString stringWithFormat: @"%@.in", name];
     // paths
-    NSURL* tmpDir = [[NSFileManager defaultManager] temporaryDirectory];
-    NSURL* outPipeURL = [tmpDir URLByAppendingPathComponent: outPipeName];
-    NSURL* inPipeURL = [tmpDir URLByAppendingPathComponent: inPipeName];
+    NSURL* outPipeURL = [url URLByAppendingPathExtension: @"out"];
+    NSURL* inPipeURL = [url URLByAppendingPathExtension: @"in"];
     // create named pipes usign mkfifos
     const char* outPipeCPath = [[outPipeURL path] cStringUsingEncoding: NSUTF8StringEncoding];
     if (access(outPipeCPath, F_OK) != -1 && remove(outPipeCPath) != 0) {

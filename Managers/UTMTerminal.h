@@ -17,7 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) NSURL* inPipeURL;
 @property (nonatomic, weak, nullable) id<UTMTerminalDelegate> delegate;
 
-- (id)initWithName: (NSString*) name;
+- (id)initWithURL: (NSURL*) url;
 - (BOOL)connectWithError: (NSError** _Nullable) error;
 - (void)disconnect;
 - (BOOL)isConnected;

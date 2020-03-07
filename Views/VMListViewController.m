@@ -20,6 +20,7 @@
 #import "UTMConfiguration.h"
 #import "UTMVirtualMachine.h"
 #import "VMDisplayMetalViewController.h"
+#import "VMTerminalViewController.h"
 
 @interface VMListViewController ()
 
@@ -153,6 +154,11 @@
         VMDisplayMetalViewController *metalView = (VMDisplayMetalViewController *)segue.destinationViewController;
         metalView.vm = self.activeVM;
         self.activeVM.delegate = metalView;
+    } else if ([[segue identifier] isEqualToString:@"startVMConsole"]) {
+        NSLog(@"Hereeeeee");
+        NSAssert([segue.destinationViewController isKindOfClass:[VMTerminalViewController class]], @"Destination not a terminal view");
+        VMTerminalViewController *terminalView = (VMTerminalViewController *)segue.destinationViewController;
+        terminalView.vm = self.activeVM;
     }
 }
 
@@ -217,7 +223,11 @@
             }
             case kVMStarted:
             case kVMResumed: {
-                [self performSegueWithIdentifier:@"startVM" sender:self];
+                if (vm.configuration.displayConsoleOnly) {
+                    [self performSegueWithIdentifier:@"startVMConsole" sender:self];
+                } else {
+                    [self performSegueWithIdentifier:@"startVM" sender:self];
+                }
                 break;
             }
             default: {
@@ -292,9 +302,9 @@
     NSAssert([cell isKindOfClass:[VMListViewCell class]], @"Invalid cell class");
     self.activeVM = [self cachedVMForCell:cell];
     self.activeCell = cell;
-    self.activeVM.delegate = self;
-    [self.activeVM startVM];
-    [self virtualMachine:self.activeVM transitionToState:self.activeVM.state];
+    //self.activeVM.delegate = self;
+    //[self.activeVM startVM];
+    [self virtualMachine:self.activeVM transitionToState:kVMStarted];
 }
 
 - (IBAction)startVMFromScreen:(UIButton *)sender {
@@ -302,9 +312,9 @@
     NSAssert([cell isKindOfClass:[VMListViewCell class]], @"Invalid cell class");
     self.activeVM = [self cachedVMForCell:cell];
     self.activeCell = cell;
-    self.activeVM.delegate = self;
-    [self.activeVM startVM];
-    [self virtualMachine:self.activeVM transitionToState:self.activeVM.state];
+    //self.activeVM.delegate = self;
+    //[self.activeVM startVM];
+    [self virtualMachine:self.activeVM transitionToState:kVMStarted];
 }
 
 @end
