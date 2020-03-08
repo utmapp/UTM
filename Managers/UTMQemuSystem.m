@@ -59,7 +59,7 @@
     [self pushArgv:[self.configuration.systemMemory stringValue]];
     if (self.configuration.soundEnabled) {
         [self pushArgv:@"-soundhw"];
-        [self pushArgv:@"hda"];
+        [self pushArgv:@"all"];
     }
     [self pushArgv:@"-name"];
     [self pushArgv:self.configuration.name];
