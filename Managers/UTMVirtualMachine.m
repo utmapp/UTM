@@ -46,6 +46,7 @@ NSString *const kUTMBundleExtension = @"utm";
 - (void)setDelegate:(id<UTMVirtualMachineDelegate>)delegate {
     _delegate = delegate;
     _delegate.vmDisplay = self.primaryDisplay;
+    _delegate.vmInput = self.primaryInput;
     _delegate.vmConfiguration = self.configuration;
 }
 
@@ -189,6 +190,7 @@ NSString *const kUTMBundleExtension = @"utm";
     self.delegate.vmMessage = nil;
     self.delegate.vmScreenshot = nil;
     self.delegate.vmDisplay = nil;
+    self.delegate.vmInput = nil;
     _primaryDisplay = nil;
     
     [self changeState:kVMStarting];
@@ -265,6 +267,7 @@ NSString *const kUTMBundleExtension = @"utm";
     NSAssert(connection == _spice_connection, @"Unknown connection");
     if (display.channelID == 0 && display.monitorID == 0) {
         self.delegate.vmDisplay = display;
+        self.delegate.vmInput = input;
         _primaryDisplay = display;
         _primaryInput = input;
         [self changeState:kVMStarted];

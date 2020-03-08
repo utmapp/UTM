@@ -44,6 +44,7 @@
 @synthesize vmMessage;
 @synthesize vmScreenshot;
 @synthesize vmDisplay;
+@synthesize vmInput;
 @synthesize vmConfiguration;
 
 - (void)viewDidLoad {
