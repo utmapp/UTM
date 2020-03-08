@@ -70,8 +70,10 @@
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
     NSAssert(indexPath.section == 0, @"Invalid section");
     if (editingStyle == UITableViewCellEditingStyleDelete) {
+        NSString *name = [self.configuration driveImagePathForIndex:indexPath.row];
         [self.configuration removeDriveAtIndex:indexPath.row];
         [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
+        [self promptDelete:name];
     }
 }
 
@@ -106,6 +108,40 @@
         view.configuration = self.configuration;
         view.valid = NO;
     }
+}
+
+#pragma mark - Delete Disk
+
+- (void)showAlert:(NSString *)msg completion:(nullable void (^)(UIAlertAction *action))completion {
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"" message:msg preferredStyle:UIAlertControllerStyleAlert];
+    UIAlertAction *okay = [UIAlertAction actionWithTitle:NSLocalizedString(@"OK", @"OK button") style:UIAlertActionStyleDefault handler:completion];
+    [alert addAction:okay];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self presentViewController:alert animated:YES completion:nil];
+    });
+}
+
+- (void)promptDelete:(NSString *)name {
+    NSURL *path;
+    if (self.configuration.existingPath) {
+        path = [self.configuration.existingPath URLByAppendingPathComponent:[UTMConfiguration diskImagesDirectory] isDirectory:YES];
+    } else {
+        path = [[NSFileManager defaultManager].temporaryDirectory URLByAppendingPathComponent:[UTMConfiguration diskImagesDirectory] isDirectory:YES];
+    }
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Delete Data", @"VMConfigDrivesViewController") message:NSLocalizedString(@"Do you want to also delete the disk image data? If yes, the data will be lost. Otherwise, you can create a new drive with the existing data.", @"VMConfigDrivesViewController") preferredStyle:UIAlertControllerStyleAlert];
+    UIAlertAction *delete = [UIAlertAction actionWithTitle:NSLocalizedString(@"Yes", @"Yes button") style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action){
+        NSError *err;
+        [[NSFileManager defaultManager] removeItemAtURL:[path URLByAppendingPathComponent:name] error:&err];
+        if (err) {
+            [self showAlert:err.localizedDescription completion:nil];
+        }
+    }];
+    UIAlertAction *cancel = [UIAlertAction actionWithTitle:NSLocalizedString(@"No", @"No button") style:UIAlertActionStyleCancel handler:nil];
+    [alert addAction:delete];
+    [alert addAction:cancel];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self presentViewController:alert animated:YES completion:nil];
+    });
 }
 
 @end
