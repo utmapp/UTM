@@ -28,6 +28,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly, nullable) SpiceSession *session;
 @property (nonatomic, readonly, assign) NSInteger channelID;
 @property (nonatomic, readonly, assign) NSInteger monitorID;
+@property (nonatomic, assign) CGSize displaySize;
+@property (nonatomic, readonly, nullable) UIImage *screenshot;
 
 - (id)initWithSession:(nonnull SpiceSession *)session channelID:(NSInteger)channelID monitorID:(NSInteger)monitorID;
 - (id)initWithSession:(nonnull SpiceSession *)session channelID:(NSInteger)channelID;

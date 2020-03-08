@@ -23,6 +23,7 @@
 #import "VMConfigExistingViewController.h"
 #import "UTMConfiguration.h"
 #import "VMCursor.h"
+#import "CSDisplayMetal.h"
 
 @interface VMDisplayMetalViewController ()
 
@@ -57,7 +58,7 @@
 
 @synthesize vmScreenshot;
 @synthesize vmMessage;
-@synthesize vmRendering;
+@synthesize vmDisplay;
 
 - (BOOL)prefersStatusBarHidden {
     return _prefersStatusBarHidden;
@@ -98,7 +99,7 @@
     
     // Initialize our renderer with the view size
     [_renderer mtkView:self.mtkView drawableSizeWillChange:self.mtkView.drawableSize];
-    _renderer.source = self.vmRendering;
+    _renderer.sourceScreen = self.vmDisplay;
     
     self.mtkView.delegate = _renderer;
     
@@ -191,7 +192,7 @@
             break;
         }
         case kVMStarted: {
-            _renderer.source = self.vmRendering;
+            _renderer.sourceScreen = self.vmDisplay;
             break;
         }
         default: {
@@ -238,12 +239,12 @@ static CGFloat CGPointToPixel(CGFloat point) {
 - (CGPoint)clipCursorToDisplay:(CGPoint)pos {
     CGSize screenSize = self.mtkView.drawableSize;
     CGSize scaledSize = {
-        self.vmRendering.displaySize.width * _renderer.viewportScale,
-        self.vmRendering.displaySize.height * _renderer.viewportScale
+        self.vmDisplay.displaySize.width * self.vmDisplay.viewportScale,
+        self.vmDisplay.displaySize.height * self.vmDisplay.viewportScale
     };
     CGRect drawRect = CGRectMake(
-        _renderer.viewportOrigin.x + screenSize.width/2 - scaledSize.width/2,
-        _renderer.viewportOrigin.y + screenSize.height/2 - scaledSize.height/2,
+        self.vmDisplay.viewportOrigin.x + screenSize.width/2 - scaledSize.width/2,
+        self.vmDisplay.viewportOrigin.y + screenSize.height/2 - scaledSize.height/2,
         scaledSize.width,
         scaledSize.height
     );
@@ -259,16 +260,16 @@ static CGFloat CGPointToPixel(CGFloat point) {
     } else if (pos.y > scaledSize.height) {
         pos.y = scaledSize.height;
     }
-    pos.x /= _renderer.viewportScale;
-    pos.y /= _renderer.viewportScale;
+    pos.x /= self.vmDisplay.viewportScale;
+    pos.y /= self.vmDisplay.viewportScale;
     return pos;
 }
 
 - (CGPoint)clipDisplayToView:(CGPoint)target {
     CGSize screenSize = self.mtkView.drawableSize;
     CGSize scaledSize = {
-        self.vmRendering.displaySize.width * _renderer.viewportScale,
-        self.vmRendering.displaySize.height * _renderer.viewportScale
+        self.vmDisplay.displaySize.width * self.vmDisplay.viewportScale,
+        self.vmDisplay.displaySize.height * self.vmDisplay.viewportScale
     };
     CGRect drawRect = CGRectMake(
         target.x + screenSize.width/2 - scaledSize.width/2,
@@ -315,14 +316,14 @@ static CGFloat CGPointToPixel(CGFloat point) {
 
 - (IBAction)gestureTwoPan:(UIPanGestureRecognizer *)sender {
     if (sender.state == UIGestureRecognizerStateBegan) {
-        _lastTwoPanOrigin = _renderer.viewportOrigin;
+        _lastTwoPanOrigin = self.vmDisplay.viewportOrigin;
     }
     if (sender.state != UIGestureRecognizerStateCancelled) {
         CGPoint translation = [sender translationInView:sender.view];
-        CGPoint viewport = _renderer.viewportOrigin;
+        CGPoint viewport = self.vmDisplay.viewportOrigin;
         viewport.x = CGPointToPixel(translation.x) + _lastTwoPanOrigin.x;
         viewport.y = CGPointToPixel(translation.y) + _lastTwoPanOrigin.y;
-        _renderer.viewportOrigin = [self clipDisplayToView:viewport];
+        self.vmDisplay.viewportOrigin = [self clipDisplayToView:viewport];
     }
     if (sender.state == UIGestureRecognizerStateEnded) {
         // TODO: decelerate
@@ -343,8 +344,8 @@ static CGFloat CGPointToPixel(CGFloat point) {
 }
 
 - (CGPoint)moveMouseRelative:(CGPoint)translation {
-    translation.x = CGPointToPixel(translation.x) / _renderer.viewportScale;
-    translation.y = CGPointToPixel(translation.y) / _renderer.viewportScale;
+    translation.x = CGPointToPixel(translation.x) / self.vmDisplay.viewportScale;
+    translation.y = CGPointToPixel(translation.y) / self.vmDisplay.viewportScale;
     if (self.vm.primaryInput.serverModeCursor) {
         [self.vm.primaryInput sendMouseMotion:SEND_BUTTON_NONE point:translation];
     } else {
@@ -387,7 +388,7 @@ static CGFloat CGPointToPixel(CGFloat point) {
 }
 
 - (IBAction)gesturePinch:(UIPinchGestureRecognizer *)sender {
-    _renderer.viewportScale *= sender.scale;
+    self.vmDisplay.viewportScale *= sender.scale;
     sender.scale = 1.0;
 }
 
@@ -505,15 +506,15 @@ static CGFloat CGPointToPixel(CGFloat point) {
 
 - (void)resizeDisplayToFit {
     CGSize viewSize = self.mtkView.drawableSize;
-    CGSize displaySize = self.vmRendering.displaySize;
+    CGSize displaySize = self.vmDisplay.displaySize;
     CGSize scaled = CGSizeMake(viewSize.width / displaySize.width, viewSize.height / displaySize.height);
-    _renderer.viewportScale = MIN(scaled.width, scaled.height);
-    _renderer.viewportOrigin = CGPointMake(0, 0);
+    self.vmDisplay.viewportScale = MIN(scaled.width, scaled.height);
+    self.vmDisplay.viewportOrigin = CGPointMake(0, 0);
 }
 
 - (void)resetDisplay {
-    _renderer.viewportScale = 1.0;
-    _renderer.viewportOrigin = CGPointMake(0, 0);
+    self.vmDisplay.viewportScale = 1.0;
+    self.vmDisplay.viewportOrigin = CGPointMake(0, 0);
 }
 
 - (IBAction)changeDisplayZoom:(UIButton *)sender {
