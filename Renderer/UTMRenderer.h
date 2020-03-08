@@ -15,6 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface UTMRenderer : NSObject<MTKViewDelegate>
 
 @property (nonatomic, weak, nullable) id<UTMRenderSource> sourceScreen;
+@property (nonatomic, weak, nullable) id<UTMRenderSource> sourceCursor;
 
 - (nonnull instancetype)initWithMetalKitView:(nonnull MTKView *)mtkView;
 

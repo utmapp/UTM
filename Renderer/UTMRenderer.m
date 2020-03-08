@@ -35,6 +35,11 @@ Implementation of renderer class which performs Metal setup and per frame render
     _sourceScreen = source;
 }
 
+- (void)setSourceCursor:(id<UTMRenderSource>)source {
+    source.device = _device;
+    _sourceCursor = source;
+}
+
 /// Initialize with the MetalKit view from which we'll obtain our Metal device
 - (nonnull instancetype)initWithMetalKitView:(nonnull MTKView *)mtkView
 {
@@ -104,6 +109,7 @@ Implementation of renderer class which performs Metal setup and per frame render
     if(renderPassDescriptor != nil)
     {
         __weak dispatch_semaphore_t screenLock = nil;
+        __weak dispatch_semaphore_t cursorLock = nil;
 
         // Create a render command encoder so we can render into something
         id<MTLRenderCommandEncoder> renderEncoder =
@@ -150,7 +156,37 @@ Implementation of renderer class which performs Metal setup and per frame render
                               vertexStart:0
                               vertexCount:self.sourceScreen.numVertices];
         }
-        
+
+        if (self.sourceCursor && self.sourceCursor.visible) {
+            // Lock cursor updates
+            cursorLock = self.sourceCursor.drawLock;
+            dispatch_semaphore_wait(cursorLock, DISPATCH_TIME_FOREVER);
+
+            // Next render the cursor
+            CGSize scaled = CGSizeMake(_viewportSize.x * self.sourceCursor.viewportScale,
+                                       _viewportSize.y * self.sourceCursor.viewportScale);
+            MTLViewport cursorViewport = {
+                self.sourceCursor.viewportOrigin.x + -scaled.width /2 + _viewportSize.x/2,
+                self.sourceCursor.viewportOrigin.y + -scaled.height/2 + _viewportSize.y/2,
+                scaled.width,
+                scaled.height,
+                -1.0,
+                1.0
+            };
+            [renderEncoder setViewport:cursorViewport];
+            [renderEncoder setVertexBuffer:self.sourceCursor.vertices
+                                    offset:0
+                                  atIndex:UTMVertexInputIndexVertices];
+            [renderEncoder setVertexBytes:&_viewportSize
+                                   length:sizeof(_viewportSize)
+                                  atIndex:UTMVertexInputIndexViewportSize];
+            [renderEncoder setFragmentTexture:self.sourceCursor.texture
+                                      atIndex:UTMTextureIndexBaseColor];
+            [renderEncoder drawPrimitives:MTLPrimitiveTypeTriangle
+                              vertexStart:0
+                              vertexCount:self.sourceCursor.numVertices];
+        }
+
         [renderEncoder endEncoding];
 
         // Schedule a present once the framebuffer is complete using the current drawable
@@ -162,6 +198,9 @@ Implementation of renderer class which performs Metal setup and per frame render
             // Signal the semaphore to start the CPU work
             if (screenLock) {
                 dispatch_semaphore_signal(screenLock);
+            }
+            if (cursorLock) {
+                dispatch_semaphore_signal(cursorLock);
             }
         }];
     }

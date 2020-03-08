@@ -102,6 +102,7 @@
     // Initialize our renderer with the view size
     [_renderer mtkView:self.mtkView drawableSizeWillChange:self.mtkView.drawableSize];
     _renderer.sourceScreen = self.vmDisplay;
+    _renderer.sourceCursor = self.vmInput;
     
     self.mtkView.delegate = _renderer;
     
@@ -165,6 +166,8 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillChangeFrame:) name:UIKeyboardWillChangeFrameNotification object:nil];
+    [self addObserver:self forKeyPath:@"vmDisplay.viewportScale" options:0 context:nil];
+    [self addObserver:self forKeyPath:@"vmDisplay.displaySize" options:0 context:nil];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -173,6 +176,17 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillShowNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillHideNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillChangeFrameNotification object:nil];
+    [self removeObserver:self forKeyPath:@"vmDisplay.viewportScale"];
+    [self removeObserver:self forKeyPath:@"vmDisplay.displaySize"];
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context {
+    // make sure the CSDisplay properties are synced with the CSInput
+    if ([keyPath isEqualToString:@"vmDisplay.viewportScale"]) {
+        self.vmInput.viewportScale = self.vmDisplay.viewportScale;
+    } else if ([keyPath isEqualToString:@"vmDisplay.displaySize"]) {
+        self.vmInput.displaySize = self.vmDisplay.displaySize;
+    }
 }
 
 - (void)virtualMachine:(UTMVirtualMachine *)vm transitionToState:(UTMVMState)state {
@@ -195,6 +209,7 @@
         }
         case kVMStarted: {
             _renderer.sourceScreen = self.vmDisplay;
+            _renderer.sourceCursor = self.vmInput;
             break;
         }
         default: {
