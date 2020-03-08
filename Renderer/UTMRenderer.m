@@ -166,8 +166,8 @@ Implementation of renderer class which performs Metal setup and per frame render
             CGSize scaled = CGSizeMake(_viewportSize.x * self.sourceCursor.viewportScale,
                                        _viewportSize.y * self.sourceCursor.viewportScale);
             MTLViewport cursorViewport = {
-                self.sourceCursor.viewportOrigin.x + -scaled.width /2 + _viewportSize.x/2,
-                self.sourceCursor.viewportOrigin.y + -scaled.height/2 + _viewportSize.y/2,
+                self.sourceCursor.viewportOrigin.x + self.sourceScreen.viewportOrigin.x + -scaled.width /2 + _viewportSize.x/2,
+                self.sourceCursor.viewportOrigin.y + self.sourceScreen.viewportOrigin.y + -scaled.height/2 + _viewportSize.y/2,
                 scaled.width,
                 scaled.height,
                 -1.0,
