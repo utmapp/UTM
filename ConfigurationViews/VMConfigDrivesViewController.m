@@ -58,11 +58,6 @@
     
     cell.textLabel.text = [self.configuration driveImagePathForIndex:indexPath.row];
     cell.detailTextLabel.text = [self.configuration driveInterfaceTypeForIndex:indexPath.row];
-    if ([self.configuration driveIsCdromForIndex:indexPath.row]) {
-        cell.imageView.image = [UIImage imageNamed:@"Media Icon"];
-    } else {
-        cell.imageView.image = [UIImage imageNamed:@"HDD Icon"];
-    }
     
     return cell;
 }
