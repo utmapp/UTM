@@ -46,6 +46,7 @@ NSString *const kUTMBundleExtension = @"utm";
 - (void)setDelegate:(id<UTMVirtualMachineDelegate>)delegate {
     _delegate = delegate;
     _delegate.vmDisplay = self.primaryDisplay;
+    _delegate.vmConfiguration = self.configuration;
 }
 
 + (BOOL)URLisVirtualMachine:(NSURL *)url {

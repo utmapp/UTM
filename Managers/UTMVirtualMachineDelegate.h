@@ -18,6 +18,7 @@
 #import "UTMRenderSource.h"
 
 @class UTMVirtualMachine;
+@class UTMConfiguration;
 @class CSDisplayMetal;
 
 NS_ASSUME_NONNULL_BEGIN
@@ -39,6 +40,7 @@ typedef NS_ENUM(NSUInteger, UTMVMState) {
 @property (nonatomic, nullable, strong) UIImage *vmScreenshot;
 @property (nonatomic, nullable, copy) NSString *vmMessage;
 @property (nonatomic, weak) CSDisplayMetal *vmDisplay;
+@property (nonatomic, weak) UTMConfiguration *vmConfiguration;
 
 - (void)virtualMachine:(UTMVirtualMachine *)vm transitionToState:(UTMVMState)state;
 

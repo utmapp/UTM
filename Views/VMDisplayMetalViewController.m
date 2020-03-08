@@ -59,6 +59,7 @@
 @synthesize vmScreenshot;
 @synthesize vmMessage;
 @synthesize vmDisplay;
+@synthesize vmConfiguration;
 
 - (BOOL)prefersStatusBarHidden {
     return _prefersStatusBarHidden;
@@ -78,7 +79,7 @@
 }
 
 - (BOOL)touchscreen {
-    return self.vm.configuration.inputTouchscreenMode;
+    return self.vmConfiguration.inputTouchscreenMode;
 }
 
 - (void)viewDidLoad {
@@ -568,7 +569,7 @@ static CGFloat CGPointToPixel(CGFloat point) {
         UINavigationController *navController = (UINavigationController *)segue.destinationViewController;
         NSAssert([navController.topViewController isKindOfClass:[VMConfigExistingViewController class]], @"Invalid segue destination");
         VMConfigExistingViewController *controller = (VMConfigExistingViewController *)navController.topViewController;
-        controller.configuration = self.vm.configuration;
+        controller.configuration = self.vmConfiguration;
         controller.nameReadOnly = YES;
     }
 }
