@@ -1,0 +1,51 @@
+/* 
+  Localizable.strings
+  UTM
+
+  Created by John on 2020/3/8.
+  Copyright © 2020 osy. All rights reserved.
+*/
+
+// Operation
+
+"OK" = "好";
+"Yes" = "是的";
+"No" = "不";
+"Delete" = "删除";
+"Cancel" = "取消";
+"Import" = "导入";
+"Create" = "创建";
+"Delete" = "删除";
+"Clone" = "复制";
+//Label
+"Name" = "名字";
+// Device
+"Hard Disk" = "硬盘";
+"CD/DVD" = "CD/DVD";
+"Floppy" = "软盘";
+// Message
+"Disk creation failed." = "磁盘镜像创建失败";
+"A file already exists for this name, if you proceed, it; will be replaced." = "此名称的文件已存在，如果继续，它将被替换";
+"Invalid size" = "无效大小";
+"Invalid name" = "无效名称";
+"Creating disk..." = "磁盘创建中...";
+"Cannot create directory for disk image." = "无法在路径中创建磁盘镜像";
+"Error renaming file" = "重命名失败";
+"Are you sure you want to permanently delete this disk image?" = "您确定要永久删除该磁盘镜像吗？";
+"Would you like to import an existing disk image or create a new one?" = "您是想导入一个磁盘镜像还是创建新的空白磁盘镜像？";
+"Error parsing JSON." = "解析JSON时出错";
+"Internal error has occurred." = "发生内部错误";
+"QEMU exited from an error." = "虚拟机发生错误意外退出(内存设置过大?)";
+"Running qemu-img more than once is unimplemented. Restart the app to create another disk." = "同时运行多个虚拟机的功能还未完成，请点左上角X重新启动UTM后再试";
+"Are you sure you want to stop this VM?" = "您确定要强制关闭虚拟机吗？";
+"Hint: To show the toolbar again, use a three-finger swipe down on the screen." = "提示：要再次显示工具栏，请使用三指在屏幕上向下滑动";
+"Running low on memory! UTM might soon be killed by iOS. You can prevent this by decreasing the amount of memory and/or JIT cache assigned to this VM" = "内存不足！ UTM可能很快会被iOS强制终止 您可以通过减少分配给该虚拟机的内存或JIT缓存来防止这种情况";
+"Welcome to UTM! Due to a bug in iOS, if you force kill this app, the system will be unstable and you cannot launch UTM again until you reboot. The recommended way to terminate this app is the button on the top left." = "欢迎使用UTM！由于iOS中的一个Bug，如果您强制关闭UTM，系统将变得不稳定，并且您必须重新启动您的设备才能再次使用UTM建议点击左上方的按钮来退出UTM";
+"New VM name" = "输入新的虚拟机的名字";
+"Saving %@..." = "正在保存 %@...";
+"Deleting %@..." = "正在删除 %@...";
+"Are you sure you want to delete this VM? Any drives associated will also be deleted." = "您确定要删除此虚拟机吗？所有关联的磁盘/光盘镜像也将被删除";
+"An internal error has occured." = "发生了一个内部的错误";
+"Saving %@..." = "%@保存中...";
+"Launching another VM is not implemented. Please close UTM with the top left button and re-launch it." = "关闭虚拟机后再次运行虚拟机还未开发完成，请点左上角X重新启动UTM后再试";
+"Are you sure you want to exit UTM? Any running VM will be killed." = "您确定要退出UTM吗？任何正在运行的虚拟机都将被强制关闭";

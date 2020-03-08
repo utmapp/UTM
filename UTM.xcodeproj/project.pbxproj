@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		521F3EF92414F73800130500 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 521F3EFB2414F73800130500 /* Localizable.strings */; };
 		CE23C16123FCEC0A001177D6 /* qapi-commands-run-state.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C07E23FCEBFF001177D6 /* qapi-commands-run-state.c */; };
 		CE23C16223FCEC0A001177D6 /* qapi-visit-tpm.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C07F23FCEBFF001177D6 /* qapi-visit-tpm.c */; };
 		CE23C16323FCEC0A001177D6 /* qapi-commands-rocker.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C08123FCEBFF001177D6 /* qapi-commands-rocker.c */; };
@@ -381,6 +382,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		521F3EFA2414F73800130500 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		7D75C517240427170098CF2F /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Main.strings"; sourceTree = "<group>"; };
 		CE23C07B23FCEBFF001177D6 /* qapi-visit-error.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-visit-error.h"; path = "sysroot-$(PLATFORM_PREFERRED_ARCH)/qapi/qapi-visit-error.h"; sourceTree = SOURCE_ROOT; };
 		CE23C07C23FCEBFF001177D6 /* qapi-events-machine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-events-machine.h"; path = "sysroot-$(PLATFORM_PREFERRED_ARCH)/qapi/qapi-events-machine.h"; sourceTree = SOURCE_ROOT; };
@@ -1254,6 +1256,7 @@
 		CE550BC0225947990063E575 = {
 			isa = PBXGroup;
 			children = (
+				521F3EFB2414F73800130500 /* Localizable.strings */,
 				CE258ACC22715F8300E5A333 /* README.md */,
 				CE4AA1462262FB58002E4A54 /* CocoaSpice */,
 				CE31C242225E543A00A965DD /* Configuration */,
@@ -1474,6 +1477,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				521F3EF92414F73800130500 /* Localizable.strings in Resources */,
 				CE9D18F82265410E00355E14 /* qemu in Resources */,
 				CE550BD92259479D0063E575 /* LaunchScreen.storyboard in Resources */,
 				CE550BD62259479D0063E575 /* Assets.xcassets in Resources */,
@@ -1653,6 +1657,15 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXVariantGroup section */
+		521F3EFB2414F73800130500 /* Localizable.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				521F3EFA2414F73800130500 /* zh-Hans */,
+			);
+			name = Localizable.strings;
+			sourceTree = "<group>";
+			usesTabs = 0;
+		};
 		CE550BD2225947990063E575 /* Main.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
