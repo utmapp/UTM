@@ -65,6 +65,13 @@ Implementation of renderer class which performs Metal setup and per frame render
         pipelineStateDescriptor.vertexFunction = vertexFunction;
         pipelineStateDescriptor.fragmentFunction = fragmentFunction;
         pipelineStateDescriptor.colorAttachments[0].pixelFormat = mtkView.colorPixelFormat;
+        pipelineStateDescriptor.colorAttachments[0].blendingEnabled = YES;
+        pipelineStateDescriptor.colorAttachments[0].rgbBlendOperation = MTLBlendOperationAdd;
+        pipelineStateDescriptor.colorAttachments[0].alphaBlendOperation = MTLBlendOperationAdd;
+        pipelineStateDescriptor.colorAttachments[0].sourceRGBBlendFactor = MTLBlendFactorSourceAlpha;
+        pipelineStateDescriptor.colorAttachments[0].destinationRGBBlendFactor = MTLBlendFactorOneMinusSourceAlpha;
+        pipelineStateDescriptor.colorAttachments[0].sourceAlphaBlendFactor = MTLBlendFactorOne;
+        pipelineStateDescriptor.colorAttachments[0].destinationAlphaBlendFactor = MTLBlendFactorOne;
         pipelineStateDescriptor.depthAttachmentPixelFormat = mtkView.depthStencilPixelFormat;
 
         NSError *error = NULL;
@@ -118,6 +125,7 @@ Implementation of renderer class which performs Metal setup and per frame render
         
         if (self.sourceScreen && self.sourceScreen.visible) {
             // Lock screen updates
+            bool hasAlpha = NO;
             screenLock = self.sourceScreen.drawLock;
             dispatch_semaphore_wait(screenLock, DISPATCH_TIME_FOREVER);
             
@@ -145,6 +153,10 @@ Implementation of renderer class which performs Metal setup and per frame render
                                    length:sizeof(_viewportSize)
                                   atIndex:UTMVertexInputIndexViewportSize];
 
+            [renderEncoder setVertexBytes:&hasAlpha
+                                   length:sizeof(hasAlpha)
+                                  atIndex:UTMVertexInputIndexHasAlpha];
+
             // Set the texture object.  The UTMTextureIndexBaseColor enum value corresponds
             ///  to the 'colorMap' argument in our 'samplingShader' function because its
             //   texture attribute qualifier also uses UTMTextureIndexBaseColor for its index
@@ -159,6 +171,7 @@ Implementation of renderer class which performs Metal setup and per frame render
 
         if (self.sourceCursor && self.sourceCursor.visible) {
             // Lock cursor updates
+            bool hasAlpha = YES;
             cursorLock = self.sourceCursor.drawLock;
             dispatch_semaphore_wait(cursorLock, DISPATCH_TIME_FOREVER);
 
@@ -180,6 +193,9 @@ Implementation of renderer class which performs Metal setup and per frame render
             [renderEncoder setVertexBytes:&_viewportSize
                                    length:sizeof(_viewportSize)
                                   atIndex:UTMVertexInputIndexViewportSize];
+            [renderEncoder setVertexBytes:&hasAlpha
+                                 length:sizeof(hasAlpha)
+                                atIndex:UTMVertexInputIndexHasAlpha];
             [renderEncoder setFragmentTexture:self.sourceCursor.texture
                                       atIndex:UTMTextureIndexBaseColor];
             [renderEncoder drawPrimitives:MTLPrimitiveTypeTriangle
