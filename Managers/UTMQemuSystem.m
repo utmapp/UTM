@@ -40,6 +40,8 @@
     if ([self.configuration.systemArchitecture isEqualToString:@"aarch64"]) {
         [self pushArgv:@"-machine"];
         [self pushArgv:@"virt"];
+        [self pushArgv:@"-cpu"];
+        [self pushArgv:@"cortex-a72"];
         [self pushArgv:@"-device"];
         [self pushArgv:@"VGA"];
     }
