@@ -1256,7 +1256,6 @@
 		CE550BC0225947990063E575 = {
 			isa = PBXGroup;
 			children = (
-				521F3EFB2414F73800130500 /* Localizable.strings */,
 				CE258ACC22715F8300E5A333 /* README.md */,
 				CE4AA1462262FB58002E4A54 /* CocoaSpice */,
 				CE31C242225E543A00A965DD /* Configuration */,
@@ -1285,6 +1284,7 @@
 		CE550BCB225947990063E575 /* UTM */ = {
 			isa = PBXGroup;
 			children = (
+				521F3EFB2414F73800130500 /* Localizable.strings */,
 				CE550BCC225947990063E575 /* AppDelegate.h */,
 				CE550BCD225947990063E575 /* AppDelegate.m */,
 				CE550BD2225947990063E575 /* Main.storyboard */,
