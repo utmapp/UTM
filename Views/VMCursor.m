@@ -42,6 +42,13 @@
     return self;
 }
 
+- (CGRect)bounds {
+    CGRect bounds = CGRectZero;
+    bounds.size.width = MAX(1, _controller.vmInput.cursorSize.width);
+    bounds.size.height = MAX(1, _controller.vmInput.cursorSize.height);
+    return bounds;
+}
+
 - (CGPoint)center {
     return _center;
 }

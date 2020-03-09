@@ -140,6 +140,7 @@ static void cs_update_monitor_area(SpiceChannel *channel, GParamSpec *pspec, gpo
     } else {
         [self updateVisibleAreaWithRect:CGRectMake(c->x, c->y, c->width, c->height)];
     }
+    self.ready = YES;
     g_clear_pointer(&monitors, g_array_unref);
     return;
     
@@ -226,10 +227,6 @@ static void cs_channel_destroy(SpiceSession *s, SpiceChannel *channel, gpointer 
     return _device;
 }
 
-- (CGSize)displaySize {
-    return _visibleArea.size;
-}
-
 - (UIImage *)screenshot {
     CGImageRef img;
     CGColorSpaceRef colorSpaceRef = CGColorSpaceCreateDeviceRGB();
@@ -259,11 +256,15 @@ static void cs_channel_destroy(SpiceSession *s, SpiceChannel *channel, gpointer 
 @synthesize texture = _texture;
 @synthesize numVertices = _numVertices;
 @synthesize vertices = _vertices;
+@synthesize viewportOrigin;
+@synthesize viewportScale;
 
 - (id)init {
     self = [super init];
     if (self) {
         _drawLock = dispatch_semaphore_create(1);
+        self.viewportScale = 1.0f;
+        self.viewportOrigin = CGPointMake(0, 0);
     }
     return self;
 }
@@ -320,6 +321,7 @@ static void cs_channel_destroy(SpiceSession *s, SpiceChannel *channel, gpointer 
     } else {
         _visibleArea = visible;
     }
+    self.displaySize = _visibleArea.size;
     [self rebuildTexture];
     [self rebuildVertices];
 }
@@ -375,6 +377,10 @@ static void cs_channel_destroy(SpiceSession *s, SpiceChannel *channel, gpointer 
                     bytesPerRow:_canvasStride];
     }
     dispatch_semaphore_signal(_drawLock);
+}
+
+- (BOOL)visible {
+    return self.ready;
 }
 
 @end

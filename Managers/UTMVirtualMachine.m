@@ -45,7 +45,9 @@ NSString *const kUTMBundleExtension = @"utm";
 
 - (void)setDelegate:(id<UTMVirtualMachineDelegate>)delegate {
     _delegate = delegate;
-    _delegate.vmRendering = self.primaryRendering;
+    _delegate.vmDisplay = self.primaryDisplay;
+    _delegate.vmInput = self.primaryInput;
+    _delegate.vmConfiguration = self.configuration;
 }
 
 + (BOOL)URLisVirtualMachine:(NSURL *)url {
@@ -188,8 +190,9 @@ NSString *const kUTMBundleExtension = @"utm";
     _spice_connection.glibMainContext = _spice.glibMainContext;
     self.delegate.vmMessage = nil;
     self.delegate.vmScreenshot = nil;
-    self.delegate.vmRendering = nil;
-    _primaryRendering = nil;
+    self.delegate.vmDisplay = nil;
+    self.delegate.vmInput = nil;
+    _primaryDisplay = nil;
     
     [self changeState:kVMStarting];
     [_spice spiceSetDebug:YES];
@@ -264,8 +267,9 @@ NSString *const kUTMBundleExtension = @"utm";
 - (void)spiceDisplayCreated:(CSConnection *)connection display:(CSDisplayMetal *)display input:(CSInput *)input {
     NSAssert(connection == _spice_connection, @"Unknown connection");
     if (display.channelID == 0 && display.monitorID == 0) {
-        self.delegate.vmRendering = display;
-        _primaryRendering = display;
+        self.delegate.vmDisplay = display;
+        self.delegate.vmInput = input;
+        _primaryDisplay = display;
         _primaryInput = input;
         [self changeState:kVMStarted];
     }

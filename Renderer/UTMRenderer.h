@@ -14,9 +14,8 @@ NS_ASSUME_NONNULL_BEGIN
 // Our platform independent renderer class
 @interface UTMRenderer : NSObject<MTKViewDelegate>
 
-@property (nonatomic, weak, nullable) id<UTMRenderSource> source;
-@property (nonatomic, assign) CGPoint viewportOrigin;
-@property (nonatomic, assign) CGFloat viewportScale;
+@property (nonatomic, weak, nullable) id<UTMRenderSource> sourceScreen;
+@property (nonatomic, weak, nullable) id<UTMRenderSource> sourceCursor;
 
 - (nonnull instancetype)initWithMetalKitView:(nonnull MTKView *)mtkView;
 
