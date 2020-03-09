@@ -41,7 +41,7 @@
         [self pushArgv:@"-machine"];
         [self pushArgv:@"virt"];
         [self pushArgv:@"-device"];
-        [self pushArgv:@"virtio-gpu-pci"];
+        [self pushArgv:@"VGA"];
     }
     else {
         [self pushArgv:@"-vga"];
