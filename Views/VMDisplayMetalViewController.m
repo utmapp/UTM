@@ -356,7 +356,7 @@ static CGFloat CGPointToPixel(CGFloat point) {
     translated.y = CGPointToPixel(translated.y);
     translated = [self clipCursorToDisplay:translated];
     if (!self.vmInput.serverModeCursor) {
-        [self.vmInput sendMouseMotion:SEND_BUTTON_NONE point:translated];
+        [self.vmInput sendMouseMotion:(_mouseDown ? SEND_BUTTON_LEFT : SEND_BUTTON_NONE) point:translated];
     } else {
         NSLog(@"Warning: ignored mouse set (%f, %f) while mouse is in server mode", translated.x, translated.y);
     }
@@ -367,7 +367,7 @@ static CGFloat CGPointToPixel(CGFloat point) {
     translation.x = CGPointToPixel(translation.x) / self.vmDisplay.viewportScale;
     translation.y = CGPointToPixel(translation.y) / self.vmDisplay.viewportScale;
     if (self.vmInput.serverModeCursor) {
-        [self.vmInput sendMouseMotion:SEND_BUTTON_NONE point:translation];
+        [self.vmInput sendMouseMotion:(_mouseDown ? SEND_BUTTON_LEFT : SEND_BUTTON_NONE) point:translation];
     } else {
         NSLog(@"Warning: ignored mouse motion (%f, %f) while mouse is in client mode", translation.x, translation.y);
     }
