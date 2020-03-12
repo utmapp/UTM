@@ -40,6 +40,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, nullable, copy) NSNumber *systemCPUCount;
 @property (nonatomic, nullable, copy) NSString *systemTarget;
 @property (nonatomic, nullable, copy) NSString *systemBootDevice;
+@property (nonatomic, nullable, copy) NSNumber *systemJitCacheSize;
+@property (nonatomic, assign) BOOL systemForceMulticore;
 
 @property (nonatomic, assign) BOOL displayConsoleOnly;
 @property (nonatomic, assign) BOOL displayFixedResolution;

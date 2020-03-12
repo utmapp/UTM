@@ -30,6 +30,8 @@ const NSString *const kUTMConfigMemoryKey = @"Memory";
 const NSString *const kUTMConfigCPUCountKey = @"CPUCount";
 const NSString *const kUTMConfigTargetKey = @"Target";
 const NSString *const kUTMConfigBootDeviceKey = @"BootDevice";
+const NSString *const kUTMConfigJitCacheSizeKey = @"JITCacheSize";
+const NSString *const kUTMConfigForceMulticoreKey = @"ForceMulticore";
 const NSString *const kUTMConfigAddArgsKey = @"AddArgs";
 
 const NSString *const kUTMConfigConsoleOnlyKey = @"ConsoleOnly";
@@ -238,6 +240,8 @@ const NSString *const kUTMConfigCdromKey = @"Cdrom";
         self.systemMemory = @512;
         self.systemCPUCount = @2;
         self.systemBootDevice = @"CD/DVD";
+        self.systemJitCacheSize = @0;
+        self.systemForceMulticore = NO;
         self.displayFixedResolutionWidth = @800;
         self.displayFixedResolutionHeight = @600;
         self.displayFixedResolution = NO;
@@ -306,6 +310,22 @@ const NSString *const kUTMConfigCdromKey = @"Cdrom";
 
 - (void)setDisplayConsoleOnly:(BOOL)displayConsoleOnly {
     _rootDict[kUTMConfigDisplayKey][kUTMConfigConsoleOnlyKey] = [NSNumber numberWithBool:displayConsoleOnly];
+}
+
+- (NSNumber *)systemJitCacheSize {
+    return _rootDict[kUTMConfigSystemKey][kUTMConfigJitCacheSizeKey];
+}
+
+- (void)setSystemJitCacheSize:(NSNumber *)systemJitCacheSize {
+    _rootDict[kUTMConfigSystemKey][kUTMConfigJitCacheSizeKey] = systemJitCacheSize;
+}
+
+- (BOOL)systemForceMulticore {
+    return [_rootDict[kUTMConfigSystemKey][kUTMConfigForceMulticoreKey] boolValue];
+}
+
+- (void)setSystemForceMulticore:(BOOL)systemForceMulticore {
+    _rootDict[kUTMConfigSystemKey][kUTMConfigForceMulticoreKey] = [NSNumber numberWithBool:systemForceMulticore];
 }
 
 #pragma mark - Additional arguments array handling
