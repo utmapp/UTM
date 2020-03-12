@@ -181,6 +181,7 @@ NSString *const kUTMBundleExtension = @"utm";
     if (!_spice_connection) {
         _spice_connection = [[CSConnection alloc] initWithHost:@"127.0.0.1" port:@"5930"];
         _spice_connection.delegate = self;
+        _spice_connection.audioEnabled = _configuration.soundEnabled;
     }
     if (!_qemu_system || !_spice || !_spice_connection) {
         [self errorTriggered:NSLocalizedString(@"Internal error starting VM.", @"UTMVirtualMachine")];

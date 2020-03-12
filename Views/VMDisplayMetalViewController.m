@@ -34,6 +34,7 @@
 @implementation VMDisplayMetalViewController {
     UTMRenderer *_renderer;
     CGPoint _lastTwoPanOrigin;
+    BOOL _noMoreMemoryAlert;
     BOOL _mouseDown;
     
     // cursor handling
@@ -154,6 +155,8 @@
     [self.mtkView addGestureRecognizer:_twoTap];
     [self.mtkView addGestureRecognizer:_longPress];
     [self.mtkView addGestureRecognizer:_pinch];
+    
+    _noMoreMemoryAlert = NO;
     
     // Feedback generator for clicks
     self.clickFeedbackGenerator = [[UISelectionFeedbackGenerator alloc] init];
@@ -603,9 +606,25 @@ static CGFloat CGPointToPixel(CGFloat point) {
 
 #pragma mark - Memory warning
 
+
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
-    [self showAlert:NSLocalizedString(@"Running low on memory! UTM might soon be killed by iOS. You can prevent this by decreasing the amount of memory and/or JIT cache assigned to this VM", @"Low memory warning") completion:nil];
+    if (_noMoreMemoryAlert) {
+        return;
+    }
+    
+    NSString *msg = NSLocalizedString(@"Running low on memory! UTM might soon be killed by iOS. You can prevent this by decreasing the amount of memory and/or JIT cache assigned to this VM", @"Low memory warning");
+    
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"" message:msg preferredStyle:UIAlertControllerStyleAlert];
+       UIAlertAction *okay = [UIAlertAction actionWithTitle:NSLocalizedString(@"OK", @"OK button") style:UIAlertActionStyleDefault handler:nil];
+    [alert addAction:okay];
+    [alert addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"No more alert", @"OK button") style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        self->_noMoreMemoryAlert = YES;
+    }]];
+        
+       dispatch_async(dispatch_get_main_queue(), ^{
+           [self presentViewController:alert animated:YES completion:nil];
+       });
 }
 
 @end
