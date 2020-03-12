@@ -207,6 +207,18 @@ const NSString *const kUTMConfigCdromKey = @"Cdrom";
     return [self supportedDriveInterfaces][0];
 }
 
+#pragma mark - Migration
+
+- (void)migrateDictionaryIfNecessary {
+    // Migrates QEMU arguments from a single string to the first object in an array.
+    if ([_rootDict[kUTMConfigSystemKey][kUTMConfigAddArgsKey] isKindOfClass:[NSString class]]) {
+        NSString *currentArgs = _rootDict[kUTMConfigSystemKey][kUTMConfigAddArgsKey];
+        
+        _rootDict[kUTMConfigSystemKey][kUTMConfigAddArgsKey] = [[NSMutableArray alloc] init];
+        _rootDict[kUTMConfigSystemKey][kUTMConfigAddArgsKey][0] = currentArgs;
+    }
+}
+
 #pragma mark - Initialization
 
 - (id)initDefaults:(NSString *)name {
@@ -214,6 +226,7 @@ const NSString *const kUTMConfigCdromKey = @"Cdrom";
     if (self) {
         _rootDict = [[NSMutableDictionary alloc] initWithCapacity:8];
         _rootDict[kUTMConfigSystemKey] = [[NSMutableDictionary alloc] init];
+        _rootDict[kUTMConfigSystemKey][kUTMConfigAddArgsKey] = [[NSMutableArray alloc] init];
         _rootDict[kUTMConfigDisplayKey] = [[NSMutableDictionary alloc] init];
         _rootDict[kUTMConfigInputKey] = [[NSMutableDictionary alloc] init];
         _rootDict[kUTMConfigNetworkingKey] = [[NSMutableDictionary alloc] init];
@@ -243,11 +256,13 @@ const NSString *const kUTMConfigCdromKey = @"Cdrom";
         _rootDict = dictionary;
         self.name = name;
         self.existingPath = path;
+        
+        [self migrateDictionaryIfNecessary];
     }
     return self;
 }
 
-#pragma mark - Properties
+#pragma mark - System Properties
 
 - (void)setSystemArchitecture:(NSString *)systemArchitecture {
     _rootDict[kUTMConfigSystemKey][kUTMConfigArchitectureKey] = systemArchitecture;
@@ -289,17 +304,46 @@ const NSString *const kUTMConfigCdromKey = @"Cdrom";
     return _rootDict[kUTMConfigSystemKey][kUTMConfigBootDeviceKey];
 }
 
-- (void)setSystemAddArgs:(NSString *)systemAddArgs {
-    _rootDict[kUTMConfigSystemKey][kUTMConfigAddArgsKey] = systemAddArgs;
-}
-
-- (NSString *)systemAddArgs {
-    return _rootDict[kUTMConfigSystemKey][kUTMConfigAddArgsKey];
-}
-
 - (void)setDisplayConsoleOnly:(BOOL)displayConsoleOnly {
     _rootDict[kUTMConfigDisplayKey][kUTMConfigConsoleOnlyKey] = [NSNumber numberWithBool:displayConsoleOnly];
 }
+
+#pragma mark - Additional arguments array handling
+
+- (NSUInteger)countArguments {
+    return [_rootDict[kUTMConfigSystemKey][kUTMConfigAddArgsKey] count];
+}
+
+- (NSUInteger)newArgument:(NSString *)argument {
+    NSUInteger index = [self countArguments];
+    _rootDict[kUTMConfigSystemKey][kUTMConfigAddArgsKey][index] = argument;
+    
+    return index;
+}
+
+- (nullable NSString *)argumentForIndex:(NSUInteger)index {
+    return _rootDict[kUTMConfigSystemKey][kUTMConfigAddArgsKey][index];
+}
+
+- (void)updateArgumentAtIndex:(NSUInteger)index withValue:(NSString*)argument {
+    _rootDict[kUTMConfigSystemKey][kUTMConfigAddArgsKey][index] = argument;
+}
+
+- (void)moveArgumentIndex:(NSUInteger)index to:(NSUInteger)newIndex {
+    NSString *arg = _rootDict[kUTMConfigSystemKey][kUTMConfigAddArgsKey][index];
+    [_rootDict[kUTMConfigSystemKey][kUTMConfigAddArgsKey] removeObjectAtIndex:index];
+    [_rootDict[kUTMConfigSystemKey][kUTMConfigAddArgsKey] insertObject:arg atIndex:newIndex];
+}
+
+- (void)removeArgumentAtIndex:(NSUInteger)index {
+    [_rootDict[kUTMConfigSystemKey][kUTMConfigAddArgsKey] removeObjectAtIndex:index];
+}
+
+- (NSArray *)systemArguments {
+    return _rootDict[kUTMConfigSystemKey][kUTMConfigAddArgsKey];
+}
+
+#pragma mark - Other properties
 
 - (BOOL)displayConsoleOnly {
     return [_rootDict[kUTMConfigDisplayKey][kUTMConfigConsoleOnlyKey] boolValue];

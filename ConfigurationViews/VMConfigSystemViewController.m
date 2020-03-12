@@ -35,7 +35,6 @@
     self.architectureLabel.text = self.configuration.systemArchitecture;
     self.bootLabel.text = self.configuration.systemBootDevice;
     self.systemLabel.text = self.configuration.systemTarget;
-    self.additionalArgsField.text = self.configuration.systemAddArgs;
     self.memorySize = self.configuration.systemMemory;
     self.cpuCount = self.configuration.systemCPUCount;
 }
@@ -187,11 +186,6 @@
     } else {
         // TODO: error handler
     }
-}
-
-- (IBAction)additionalArgsFieldEdited:(UITextField *)sender {
-    NSAssert(sender == self.additionalArgsField, @"Invalid sender");
-    self.configuration.systemAddArgs = sender.text;
 }
 
 @end

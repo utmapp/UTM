@@ -41,14 +41,11 @@ NS_ASSUME_NONNULL_BEGIN
 @property (weak, nonatomic) IBOutlet UITableViewCell *systemPickerCell;
 @property (weak, nonatomic) IBOutlet UIPickerView *systemPicker;
 @property (nonatomic, assign) BOOL systemPickerActive;
-@property (weak, nonatomic) IBOutlet UITextField *additionalArgsField;
 
 @property (nonatomic) NSNumber *memorySize;
 @property (nonatomic) NSNumber *cpuCount;
-
 - (IBAction)memorySizeFieldEdited:(UITextField *)sender;
 - (IBAction)cpuCountFieldEdited:(UITextField *)sender;
-- (IBAction)additionalArgsFieldEdited:(UITextField *)sender;
 
 @end
 
