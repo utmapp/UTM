@@ -37,6 +37,8 @@
     [self pushArgv:@"tcp:localhost:4444,server,nowait"];
     [self pushArgv:@"-smp"];
     [self pushArgv:[NSString stringWithFormat:@"cpus=%@,sockets=1", self.configuration.systemCPUCount]];
+    [self pushArgv:@"-machine"];
+    [self pushArgv:self.configuration.systemTarget];
     if (self.configuration.systemForceMulticore) {
         [self pushArgv:@"-accel"];
         [self pushArgv:@"tcg,thread=multi"];
@@ -46,8 +48,7 @@
         [self pushArgv:[self.configuration.systemJitCacheSize stringValue]];
     }
     if ([self.configuration.systemArchitecture isEqualToString:@"aarch64"]) {
-        [self pushArgv:@"-machine"];
-        [self pushArgv:@"virt"];
+        // TODO: remove this hack
         [self pushArgv:@"-device"];
         [self pushArgv:@"virtio-gpu-pci"];
     }
