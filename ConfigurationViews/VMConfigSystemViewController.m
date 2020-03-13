@@ -24,6 +24,7 @@ const NSUInteger kMBinBytes = 1024 * 1024;
 const NSUInteger kMinCodeGenBufferSizeMB = 1;
 const NSUInteger kMaxCodeGenBufferSizeMB = 2048;
 const NSUInteger kBaseUsageBytes = 128 * kMBinBytes;
+const float kMemoryWarningThreshold = 0.8;
 
 @interface VMConfigSystemViewController ()
 
@@ -201,9 +202,12 @@ const NSUInteger kBaseUsageBytes = 128 * kMBinBytes;
     if (memorySize.intValue > 0) {
         self.configuration.systemMemory = memorySize;
     } else {
-        // TODO: error handler
+        [self showAlert:NSLocalizedString(@"Invalid memory size.", @"VMConfigSystemViewController") completion:nil];
     }
     [self updateEstimatedRam];
+    if (self.estimatedRam > kMemoryWarningThreshold * self.totalRam) {
+        [self showAlert:NSLocalizedString(@"The total memory usage is close to your device's limit. iOS will kill the VM if it consumes too much memory.", @"VMConfigSystemViewController") completion:nil];
+    }
 }
 
 - (void)cpuCountFieldEdited:(UITextField *)sender {
@@ -212,22 +216,26 @@ const NSUInteger kBaseUsageBytes = 128 * kMBinBytes;
     if (num.intValue > 0) {
         self.configuration.systemCPUCount = num;
     } else {
-        // TODO: error handler
+        [self showAlert:NSLocalizedString(@"Invalid core count.", @"VMConfigSystemViewController") completion:nil];
     }
 }
 
 - (IBAction)jitCacheSizeFieldEdited:(UITextField *)sender {
     NSAssert(sender == self.jitCacheSizeField, @"Invalid sender");
-    NSUInteger jit = [self.jitCacheSize unsignedIntegerValue];
-    if (jit < kMinCodeGenBufferSizeMB) {
+    NSInteger jit = [self.jitCacheSize integerValue];
+    if (jit == 0) { // default value
+        self.configuration.systemJitCacheSize = self.jitCacheSize;
+    } else if (jit < kMinCodeGenBufferSizeMB) {
         [self showAlert:NSLocalizedString(@"JIT cache size too small.", @"VMConfigSystemViewController") completion:nil];
-        self.jitCacheSize = @0;
     } else if (jit > kMaxCodeGenBufferSizeMB) {
         [self showAlert:NSLocalizedString(@"JIT cache size cannot be larger than 2GB.", @"VMConfigSystemViewController") completion:nil];
-        self.jitCacheSize = @0;
+    } else {
+        self.configuration.systemJitCacheSize = self.jitCacheSize;
     }
-    self.configuration.systemJitCacheSize = self.jitCacheSize;
     [self updateEstimatedRam];
+    if (self.estimatedRam > kMemoryWarningThreshold * self.totalRam) {
+        [self showAlert:NSLocalizedString(@"The total memory usage is close to your device's limit. iOS will kill the VM if it consumes too much memory.", @"VMConfigSystemViewController") completion:nil];
+    }
 }
 
 - (IBAction)forceMulticoreSwitchChanged:(UISwitch *)sender {
