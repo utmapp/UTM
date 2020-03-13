@@ -37,6 +37,14 @@
     [self pushArgv:@"tcp:localhost:4444,server,nowait"];
     [self pushArgv:@"-smp"];
     [self pushArgv:[NSString stringWithFormat:@"cpus=%@,sockets=1", self.configuration.systemCPUCount]];
+    if (self.configuration.systemForceMulticore) {
+        [self pushArgv:@"-accel"];
+        [self pushArgv:@"tcg,thread=multi"];
+    }
+    if ([self.configuration.systemJitCacheSize integerValue] > 0) {
+        [self pushArgv:@"-tb-size"];
+        [self pushArgv:[self.configuration.systemJitCacheSize stringValue]];
+    }
     if ([self.configuration.systemArchitecture isEqualToString:@"aarch64"]) {
         [self pushArgv:@"-machine"];
         [self pushArgv:@"virt"];
