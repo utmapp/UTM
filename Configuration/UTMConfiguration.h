@@ -27,6 +27,8 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSArray<NSString *>*)supportedBootDevicesPretty;
 + (NSArray<NSString *>*)supportedBootDevices;
 + (NSArray<NSString *>*)supportedTargetsForArchitecture:(NSString *)architecture;
++ (NSArray<NSString *>*)supportedTargetsForArchitecturePretty:(NSString *)architecture;
++ (NSInteger)defaultTargetIndexForArchitecture:(NSString *)architecture;
 + (NSArray<NSString *>*)supportedResolutions;
 + (NSArray<NSString *>*)supportedDriveInterfaces;
 + (NSString *)diskImagesDirectory;
@@ -64,7 +66,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, assign) BOOL sharingClipboardEnabled;
 
-- (void)migrateDictionaryIfNecessary;
+- (void)migrateConfigurationIfNecessary;
 - (id)initDefaults:(NSString *)name;
 - (id)initWithDictionary:(NSMutableDictionary *)dictionary name:(NSString *)name path:(NSURL *)path;
 

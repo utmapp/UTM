@@ -86,7 +86,7 @@ const float kMemoryWarningThreshold = 0.8;
 - (void)setSystemPickerActive:(BOOL)systemPickerActive {
     _systemPickerActive = systemPickerActive;
     if (systemPickerActive) {
-        NSUInteger index = [[UTMConfiguration supportedTargetsForArchitecture:@"FIXME: arch here"] indexOfObject:self.systemLabel.text];
+        NSUInteger index = [[UTMConfiguration supportedTargetsForArchitecture:self.configuration.systemArchitecture] indexOfObject:self.systemLabel.text];
         if (index != NSNotFound) {
             [self.systemPicker selectRow:index inComponent:0 animated:NO];
         }
@@ -157,7 +157,7 @@ const float kMemoryWarningThreshold = 0.8;
     } else if (pickerView == self.bootPicker) {
         return [UTMConfiguration supportedBootDevicesPretty].count;
     } else if (pickerView == self.systemPicker) {
-        return [UTMConfiguration supportedTargetsForArchitecture:@"FIXME: arch here"].count;
+        return [UTMConfiguration supportedTargetsForArchitecture:self.configuration.systemArchitecture].count;
     } else {
         NSAssert(0, @"Invalid picker");
     }
@@ -171,7 +171,7 @@ const float kMemoryWarningThreshold = 0.8;
     } else if (pickerView == self.bootPicker) {
         return [UTMConfiguration supportedBootDevicesPretty][row];
     } else if (pickerView == self.systemPicker) {
-        return [UTMConfiguration supportedTargetsForArchitecture:@"FIXME: arch here"][row];
+        return [UTMConfiguration supportedTargetsForArchitecturePretty:self.configuration.systemArchitecture][row];
     } else {
         NSAssert(0, @"Invalid picker");
     }
@@ -181,14 +181,22 @@ const float kMemoryWarningThreshold = 0.8;
 - (void)pickerView:(UIPickerView *)pickerView didSelectRow:(NSInteger)row inComponent:(NSInteger)component {
     NSAssert(component == 0, @"Invalid component");
     if (pickerView == self.architecturePicker) {
-        self.architectureLabel.text = [UTMConfiguration supportedArchitecturesPretty][row];
+        NSString *prev = self.configuration.systemArchitecture;
+        self.architectureLabel.text = [UTMConfiguration supportedArchitectures][row];
         self.configuration.systemArchitecture = [UTMConfiguration supportedArchitectures][row];
+        // refresh system picker with default target
+        if (![prev isEqualToString:self.configuration.systemArchitecture]) {
+            NSInteger index = [UTMConfiguration defaultTargetIndexForArchitecture:self.configuration.systemArchitecture];
+            [self.systemPicker reloadAllComponents];
+            [self.systemPicker selectRow:index inComponent:0 animated:YES];
+            [self pickerView:self.systemPicker didSelectRow:index inComponent:0];
+        }
     } else if (pickerView == self.bootPicker) {
-        self.bootLabel.text = [UTMConfiguration supportedBootDevicesPretty][row];
+        self.bootLabel.text = [UTMConfiguration supportedBootDevices][row];
         self.configuration.systemBootDevice = self.bootLabel.text;
     } else if (pickerView == self.systemPicker) {
-        self.systemLabel.text = [UTMConfiguration supportedTargetsForArchitecture:@"FIXME: arch here"][row];
-        self.configuration.systemTarget = self.systemLabel.text;
+        self.systemLabel.text = [UTMConfiguration supportedTargetsForArchitecture:self.configuration.systemArchitecture][row];
+        self.configuration.systemTarget = [UTMConfiguration supportedTargetsForArchitecture:self.configuration.systemArchitecture][row];
     } else {
         NSAssert(0, @"Invalid picker");
     }
