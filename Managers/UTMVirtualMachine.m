@@ -76,16 +76,8 @@ NSString *const kUTMBundleExtension = @"utm";
     if (self) {
         self.parentPath = url.URLByDeletingLastPathComponent;
         NSString *name = [UTMVirtualMachine virtualMachineName:url];
-        NSError *err;
-        NSData *data = [NSData dataWithContentsOfURL:[url URLByAppendingPathComponent:kUTMBundleConfigFilename]];
-        id plist = [NSPropertyListSerialization propertyListWithData:data options:NSPropertyListMutableContainersAndLeaves format:nil error:&err];
-        if (err) {
-            NSLog(@"Error reading %@: %@\n", url, err.localizedDescription);
-            self = nil;
-            return self;
-        }
-        if (![plist isKindOfClass:[NSMutableDictionary class]]) {
-            NSLog(@"Wrong data format %@!\n", url);
+        NSMutableDictionary *plist = [self loadPlist:[url URLByAppendingPathComponent:kUTMBundleConfigFilename] withError:nil];
+        if (!plist) {
             self = nil;
             return self;
         }
@@ -129,16 +121,9 @@ NSString *const kUTMBundleExtension = @"utm";
         }
         self.configuration.existingPath = url;
     }
-    // serialize config.plist
-    NSData *data = [NSPropertyListSerialization dataWithPropertyList:self.configuration.dictRepresentation format:NSPropertyListXMLFormat_v1_0 options:0 error:&_err];
-    if (_err && err) {
-        *err = _err;
-        return NO;
-    }
-    // write config.plist
-    [data writeToURL:[url URLByAppendingPathComponent:kUTMBundleConfigFilename] options:NSDataWritingAtomic error:&_err];
-    if (_err && err) {
-        *err = _err;
+    if (![self savePlist:[url URLByAppendingPathComponent:kUTMBundleConfigFilename]
+                    dict:self.configuration.dictRepresentation
+               withError:err]) {
         return NO;
     }
     // create disk images directory
@@ -302,6 +287,43 @@ NSString *const kUTMBundleExtension = @"utm";
     if (!_is_stopping) {
         [self quitVM];
     }
+}
+
+#pragma mark - Plist Handling
+
+- (NSMutableDictionary *)loadPlist:(NSURL *)path withError:(NSError **)err {
+    NSData *data = [NSData dataWithContentsOfURL:path];
+    if (!data) {
+        if (err) {
+            *err = [NSError errorWithDomain:kUTMErrorDomain code:-1 userInfo:@{NSLocalizedDescriptionKey: NSLocalizedString(@"Failed to load plist", @"UTMVirtualMachine")}];
+        }
+        return nil;
+    }
+    id plist = [NSPropertyListSerialization propertyListWithData:data options:NSPropertyListMutableContainersAndLeaves format:nil error:err];
+    if (err) {
+        return nil;
+    }
+    if (![plist isKindOfClass:[NSMutableDictionary class]]) {
+        return nil;
+    }
+    return plist;
+}
+
+- (BOOL)savePlist:(NSURL *)path dict:(NSDictionary *)dict withError:(NSError **)err {
+    NSError *_err;
+    // serialize plist
+    NSData *data = [NSPropertyListSerialization dataWithPropertyList:dict format:NSPropertyListXMLFormat_v1_0 options:0 error:&_err];
+    if (_err && err) {
+        *err = _err;
+        return NO;
+    }
+    // write plist
+    [data writeToURL:path options:NSDataWritingAtomic error:&_err];
+    if (_err && err) {
+        *err = _err;
+        return NO;
+    }
+    return YES;
 }
 
 @end
