@@ -46,6 +46,8 @@
 @synthesize vmDisplay;
 @synthesize vmInput;
 @synthesize vmConfiguration;
+@synthesize toolbarVisible;
+@synthesize keyboardVisible;
 
 - (void)viewDidLoad {
     [super viewDidLoad];

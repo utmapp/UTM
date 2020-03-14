@@ -43,6 +43,8 @@ typedef NS_ENUM(NSUInteger, UTMVMState) {
 @property (nonatomic, weak) CSDisplayMetal *vmDisplay;
 @property (nonatomic, weak) CSInput *vmInput;
 @property (nonatomic, weak) UTMConfiguration *vmConfiguration;
+@property (nonatomic, assign) BOOL toolbarVisible;
+@property (nonatomic, assign) BOOL keyboardVisible;
 
 - (void)virtualMachine:(UTMVirtualMachine *)vm transitionToState:(UTMVMState)state;
 
