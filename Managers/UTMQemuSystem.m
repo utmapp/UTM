@@ -68,7 +68,7 @@
     [self pushArgv:[self.configuration.systemMemory stringValue]];
     if (self.configuration.soundEnabled) {
         [self pushArgv:@"-soundhw"];
-        [self pushArgv:@"all"];
+        [self pushArgv:@"ac97"];
     }
     [self pushArgv:@"-name"];
     [self pushArgv:self.configuration.name];
