@@ -161,6 +161,9 @@
     // Feedback generator for clicks
     self.clickFeedbackGenerator = [[UISelectionFeedbackGenerator alloc] init];
     self.resizeFeedbackGenerator = [[UIImpactFeedbackGenerator alloc] init];
+    
+    [self addObserver:self forKeyPath:@"vmDisplay.viewportScale" options:0 context:nil];
+    [self addObserver:self forKeyPath:@"vmDisplay.displaySize" options:0 context:nil];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -169,8 +172,6 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillChangeFrame:) name:UIKeyboardWillChangeFrameNotification object:nil];
-    [self addObserver:self forKeyPath:@"vmDisplay.viewportScale" options:0 context:nil];
-    [self addObserver:self forKeyPath:@"vmDisplay.displaySize" options:0 context:nil];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -179,8 +180,6 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillShowNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillHideNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillChangeFrameNotification object:nil];
-    [self removeObserver:self forKeyPath:@"vmDisplay.viewportScale"];
-    [self removeObserver:self forKeyPath:@"vmDisplay.displaySize"];
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context {
