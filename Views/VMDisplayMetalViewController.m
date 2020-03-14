@@ -55,6 +55,10 @@
     UITapGestureRecognizer *_twoTap;
     UILongPressGestureRecognizer *_longPress;
     UIPinchGestureRecognizer *_pinch;
+    
+    // visibility
+    BOOL _toolbarVisible;
+    BOOL _keyboardVisible;
 }
 
 @synthesize vmScreenshot;
@@ -161,6 +165,12 @@
     // Feedback generator for clicks
     self.clickFeedbackGenerator = [[UISelectionFeedbackGenerator alloc] init];
     self.resizeFeedbackGenerator = [[UIImpactFeedbackGenerator alloc] init];
+    
+    // view state and observers
+    _toolbarVisible = YES;
+    _keyboardVisible = NO;
+    [self addObserver:self forKeyPath:@"vmDisplay.viewportScale" options:0 context:nil];
+    [self addObserver:self forKeyPath:@"vmDisplay.displaySize" options:0 context:nil];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -169,8 +179,6 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillChangeFrame:) name:UIKeyboardWillChangeFrameNotification object:nil];
-    [self addObserver:self forKeyPath:@"vmDisplay.viewportScale" options:0 context:nil];
-    [self addObserver:self forKeyPath:@"vmDisplay.displaySize" options:0 context:nil];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -179,8 +187,6 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillShowNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillHideNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillChangeFrameNotification object:nil];
-    [self removeObserver:self forKeyPath:@"vmDisplay.viewportScale"];
-    [self removeObserver:self forKeyPath:@"vmDisplay.displaySize"];
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context {
@@ -414,20 +420,20 @@ static CGFloat CGPointToPixel(CGFloat point) {
 
 - (IBAction)gestureSwipeUp:(UISwipeGestureRecognizer *)sender {
     if (sender.state == UIGestureRecognizerStateEnded) {
-        if (!self.toolbarAccessoryView.hidden) {
-            [self hideToolbar];
-        } else if (!self.keyboardView.isFirstResponder) {
-            [self.keyboardView becomeFirstResponder];
+        if (self.toolbarVisible) {
+            self.toolbarVisible = NO;
+        } else if (!self.keyboardVisible) {
+            self.keyboardVisible = YES;
         }
     }
 }
 
 - (IBAction)gestureSwipeDown:(UISwipeGestureRecognizer *)sender {
     if (sender.state == UIGestureRecognizerStateEnded) {
-        if (self.keyboardView.isFirstResponder) {
-            [self.keyboardView resignFirstResponder];
-        } else if (self.toolbarAccessoryView.hidden) {
-            [self showToolbar];
+        if (self.keyboardVisible) {
+            self.keyboardVisible = NO;
+        } else if (!self.toolbarVisible) {
+            self.toolbarVisible = YES;
         }
     }
 }
@@ -515,6 +521,32 @@ static CGFloat CGPointToPixel(CGFloat point) {
     } completion:nil];
 }
 
+- (BOOL)toolbarVisible {
+    return _toolbarVisible;
+}
+
+- (void)setToolbarVisible:(BOOL)toolbarVisible {
+    if (toolbarVisible) {
+        [self showToolbar];
+    } else {
+        [self hideToolbar];
+    }
+    _toolbarVisible = toolbarVisible;
+}
+
+- (BOOL)keyboardVisible {
+    return _keyboardVisible;
+}
+
+- (void)setKeyboardVisible:(BOOL)keyboardVisible {
+    if (keyboardVisible) {
+        [self.keyboardView becomeFirstResponder];
+    } else {
+        [self.keyboardView resignFirstResponder];
+    }
+    _keyboardVisible = keyboardVisible;
+}
+
 - (void)setLastDisplayChangeResize:(BOOL)lastDisplayChangeResize {
     _lastDisplayChangeResize = lastDisplayChangeResize;
     if (lastDisplayChangeResize) {
@@ -563,15 +595,11 @@ static CGFloat CGPointToPixel(CGFloat point) {
 }
 
 - (IBAction)showKeyboardButton:(UIButton *)sender {
-    if (self.keyboardView.isFirstResponder) {
-        [self.keyboardView resignFirstResponder];
-    } else {
-        [self.keyboardView becomeFirstResponder];
-    }
+    self.keyboardVisible = !self.keyboardVisible;
 }
 
 - (IBAction)hideToolbarButton:(UIButton *)sender {
-    [self hideToolbar];
+    self.toolbarVisible = NO;
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     if (![defaults boolForKey:@"HasShownHideToolbarAlert"]) {
         [self showAlert:NSLocalizedString(@"Hint: To show the toolbar again, use a three-finger swipe down on the screen.", @"Shown once when hiding toolbar.") completion:^(UIAlertAction *action){

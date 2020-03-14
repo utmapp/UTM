@@ -16,6 +16,7 @@
 
 #import "UTMVirtualMachine.h"
 #import "UTMConfiguration.h"
+#import "UTMViewState.h"
 #import "UTMQemuImg.h"
 #import "UTMQemuManager.h"
 #import "UTMQemuSystem.h"
@@ -27,8 +28,11 @@ const int64_t kStopTimeout = (int64_t)30*1000000000;
 NSString *const kUTMErrorDomain = @"com.osy86.utm";
 NSString *const kUTMBundleConfigFilename = @"config.plist";
 NSString *const kUTMBundleExtension = @"utm";
+NSString *const kUTMBundleViewFilename = @"view.plist";
 
 @interface UTMVirtualMachine ()
+
+@property (nonatomic) UTMViewState *viewState;
 
 - (NSURL *)packageURLForName:(NSString *)name;
 
@@ -48,6 +52,7 @@ NSString *const kUTMBundleExtension = @"utm";
     _delegate.vmDisplay = self.primaryDisplay;
     _delegate.vmInput = self.primaryInput;
     _delegate.vmConfiguration = self.configuration;
+    [self loadViewState];
 }
 
 + (BOOL)URLisVirtualMachine:(NSURL *)url {
@@ -76,20 +81,18 @@ NSString *const kUTMBundleExtension = @"utm";
     if (self) {
         self.parentPath = url.URLByDeletingLastPathComponent;
         NSString *name = [UTMVirtualMachine virtualMachineName:url];
-        NSError *err;
-        NSData *data = [NSData dataWithContentsOfURL:[url URLByAppendingPathComponent:kUTMBundleConfigFilename]];
-        id plist = [NSPropertyListSerialization propertyListWithData:data options:NSPropertyListMutableContainersAndLeaves format:nil error:&err];
-        if (err) {
-            NSLog(@"Error reading %@: %@\n", url, err.localizedDescription);
-            self = nil;
-            return self;
-        }
-        if (![plist isKindOfClass:[NSMutableDictionary class]]) {
-            NSLog(@"Wrong data format %@!\n", url);
+        NSMutableDictionary *plist = [self loadPlist:[url URLByAppendingPathComponent:kUTMBundleConfigFilename] withError:nil];
+        if (!plist) {
             self = nil;
             return self;
         }
         _configuration = [[UTMConfiguration alloc] initWithDictionary:plist name:name path:url];
+        plist = [self loadPlist:[url URLByAppendingPathComponent:kUTMBundleViewFilename] withError:nil];
+        if (plist) {
+            self.viewState = [[UTMViewState alloc] initWithDictionary:plist];
+        } else {
+            self.viewState = [[UTMViewState alloc] initDefaults];
+        }
     }
     return self;
 }
@@ -99,6 +102,7 @@ NSString *const kUTMBundleExtension = @"utm";
     if (self) {
         self.parentPath = dstUrl;
         _configuration = [[UTMConfiguration alloc] initDefaults:name];
+        self.viewState = [[UTMViewState alloc] initDefaults];
     }
     return self;
 }
@@ -129,16 +133,9 @@ NSString *const kUTMBundleExtension = @"utm";
         }
         self.configuration.existingPath = url;
     }
-    // serialize config.plist
-    NSData *data = [NSPropertyListSerialization dataWithPropertyList:self.configuration.dictRepresentation format:NSPropertyListXMLFormat_v1_0 options:0 error:&_err];
-    if (_err && err) {
-        *err = _err;
-        return NO;
-    }
-    // write config.plist
-    [data writeToURL:[url URLByAppendingPathComponent:kUTMBundleConfigFilename] options:NSDataWritingAtomic error:&_err];
-    if (_err && err) {
-        *err = _err;
+    if (![self savePlist:[url URLByAppendingPathComponent:kUTMBundleConfigFilename]
+                    dict:self.configuration.dictRepresentation
+               withError:err]) {
         return NO;
     }
     // create disk images directory
@@ -225,6 +222,7 @@ NSString *const kUTMBundleExtension = @"utm";
     } else {
         _is_stopping = YES;
     }
+    [self saveViewState];
     [self changeState:kVMStopping];
     
     [_qemu vmQuitWithCompletion:nil];
@@ -247,6 +245,11 @@ NSString *const kUTMBundleExtension = @"utm";
     _qemu_system = nil;
     _is_stopping = NO;
     [self changeState:kVMStopped];
+    // save view settings
+    NSURL *url = [self packageURLForName:self.configuration.name];
+    [self savePlist:[url URLByAppendingPathComponent:kUTMBundleViewFilename]
+               dict:self.viewState.dictRepresentation
+          withError:nil];
 }
 
 #pragma mark - Spice connection delegate
@@ -302,6 +305,60 @@ NSString *const kUTMBundleExtension = @"utm";
     if (!_is_stopping) {
         [self quitVM];
     }
+}
+
+#pragma mark - Plist Handling
+
+- (NSMutableDictionary *)loadPlist:(NSURL *)path withError:(NSError **)err {
+    NSData *data = [NSData dataWithContentsOfURL:path];
+    if (!data) {
+        if (err) {
+            *err = [NSError errorWithDomain:kUTMErrorDomain code:-1 userInfo:@{NSLocalizedDescriptionKey: NSLocalizedString(@"Failed to load plist", @"UTMVirtualMachine")}];
+        }
+        return nil;
+    }
+    id plist = [NSPropertyListSerialization propertyListWithData:data options:NSPropertyListMutableContainersAndLeaves format:nil error:err];
+    if (err) {
+        return nil;
+    }
+    if (![plist isKindOfClass:[NSMutableDictionary class]]) {
+        return nil;
+    }
+    return plist;
+}
+
+- (BOOL)savePlist:(NSURL *)path dict:(NSDictionary *)dict withError:(NSError **)err {
+    NSError *_err;
+    // serialize plist
+    NSData *data = [NSPropertyListSerialization dataWithPropertyList:dict format:NSPropertyListXMLFormat_v1_0 options:0 error:&_err];
+    if (_err && err) {
+        *err = _err;
+        return NO;
+    }
+    // write plist
+    [data writeToURL:path options:NSDataWritingAtomic error:&_err];
+    if (_err && err) {
+        *err = _err;
+        return NO;
+    }
+    return YES;
+}
+
+#pragma mark - View State
+
+- (void)saveViewState {
+    self.viewState.displayOriginX = self.primaryDisplay.viewportOrigin.x;
+    self.viewState.displayOriginY = self.primaryDisplay.viewportOrigin.y;
+    self.viewState.displayScale = self.primaryDisplay.viewportScale;
+    self.viewState.showToolbar = self.delegate.toolbarVisible;
+    self.viewState.showKeyboard = self.delegate.keyboardVisible;
+}
+
+- (void)loadViewState {
+    self.primaryDisplay.viewportOrigin = CGPointMake(self.viewState.displayOriginX, self.viewState.displayOriginY);
+    self.primaryDisplay.viewportScale = self.viewState.displayScale;
+    self.delegate.toolbarVisible = self.viewState.showToolbar;
+    self.delegate.keyboardVisible = self.viewState.showKeyboard;
 }
 
 @end
