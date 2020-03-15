@@ -71,4 +71,8 @@
     });
 }
 
+- (void)showUnimplementedAlert {
+    [self showAlert:NSLocalizedString(@"This page is currently not implemented yet. None of these options work.", @"VMConfigViewController") completion:nil];
+}
+
 @end
