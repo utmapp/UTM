@@ -17,19 +17,20 @@
 #import <UIKit/UIKit.h>
 #import <WebKit/WebKit.h>
 #import "UTMVirtualMachine.h"
+#import "UTMVirtualMachineDelegate.h"
 #import "UTMTerminalIO.h"
 #import "UTMTerminal.h"
 #import "UTMTerminalDelegate.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface VMTerminalViewController : UIViewController <WKScriptMessageHandler, UTMTerminalDelegate, UIGestureRecognizerDelegate>
+@interface VMTerminalViewController : UIViewController <UTMTerminalDelegate, UTMVirtualMachineDelegate, WKScriptMessageHandler, UIGestureRecognizerDelegate>
 
 @property (weak, nonatomic) IBOutlet WKWebView *webView;
 @property (weak, nonatomic) IBOutlet UIView *toolbarAccessoryView;
 @property (weak, nonatomic) IBOutlet UIInputView *inputAccessoryView;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *webViewTopConstraint;
-@property (nonatomic, weak, nullable) UTMTerminal* terminal;
+@property (nonatomic, weak) UTMTerminal* terminal;
 @property (nonatomic, strong, nullable) UTMVirtualMachine* vm;
 
 - (void)changeVM:(UTMVirtualMachine *)vm;

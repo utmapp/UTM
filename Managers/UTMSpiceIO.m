@@ -23,6 +23,7 @@ const int kMaxConnectionTries = 10; // qemu needs to start spice server first
 @implementation UTMSpiceIO {
     CSConnection *_spice_connection;
     CSMain *_spice;
+    void (^_connectionBlock)(BOOL, NSError*);
 }
 
 - (id)initWithConfiguration:(UTMConfiguration *)configuration {
@@ -53,11 +54,16 @@ const int kMaxConnectionTries = 10; // qemu needs to start spice server first
     _spice_connection.glibMainContext = _spice.glibMainContext;
     [_spice spiceSetDebug:YES];
     _primaryDisplay = nil;
+    _primaryInput = nil;
+    _delegate.vmDisplay = nil;
+    _delegate.vmInput = nil;
 }
 
 - (BOOL)isSpiceInitialized {
     return _spice != nil && _spice_connection != nil;
 }
+
+#pragma mark - UTMInputOutput
 
 - (BOOL)startWithError:(NSError **)err {
     [self initializeSpiceIfNeeded];
@@ -69,7 +75,7 @@ const int kMaxConnectionTries = 10; // qemu needs to start spice server first
     return YES;
 }
 
-- (BOOL)connectWithError:(NSError **)err {
+- (void)connectWithCompletion: (void(^)(BOOL, NSError*)) block {
     int tries = kMaxConnectionTries;
     do {
         [NSThread sleepForTimeInterval:0.1f];
@@ -78,11 +84,11 @@ const int kMaxConnectionTries = 10; // qemu needs to start spice server first
         }
     } while (tries-- > 0);
     if (tries == 0) {
-        // error
-        return NO;
+        //TODO: error
+        block(NO, nil);
+    } else {
+        _connectionBlock = block;
     }
-    
-    return YES;
 }
 
 - (void)disconnect {
@@ -92,6 +98,8 @@ const int kMaxConnectionTries = 10; // qemu needs to start spice server first
     [_spice spiceStop];
     _spice = nil;
 }
+
+#pragma mark - CSConnectionDelegate
 
 - (void)spiceConnected:(CSConnection *)connection {
     NSAssert(connection == _spice_connection, @"Unknown connection");
@@ -104,15 +112,23 @@ const int kMaxConnectionTries = 10; // qemu needs to start spice server first
 - (void)spiceError:(CSConnection *)connection err:(NSString *)msg {
     NSAssert(connection == _spice_connection, @"Unknown connection");
     //[self errorTriggered:msg];
+    if (_connectionBlock) {
+        _connectionBlock(NO, nil);
+        _connectionBlock = nil;
+    }
 }
 
 - (void)spiceDisplayCreated:(CSConnection *)connection display:(CSDisplayMetal *)display input:(CSInput *)input {
     NSAssert(connection == _spice_connection, @"Unknown connection");
     if (display.channelID == 0 && display.monitorID == 0) {
-        self.delegate.vmDisplay = display;
-        self.delegate.vmInput = input;
         _primaryDisplay = display;
         _primaryInput = input;
+        _delegate.vmDisplay = display;
+        _delegate.vmInput = input;
+        if (_connectionBlock) {
+            _connectionBlock(YES, nil);
+            _connectionBlock = nil;
+        }
     }
 }
 

@@ -28,6 +28,10 @@ NSString *const kVMSendInputHandler = @"UTMSendInput";
     UISwipeGestureRecognizer *_swipeDown;
 }
 
+@synthesize vmScreenshot;
+@synthesize vmMessage;
+@synthesize vmConfiguration;
+
 - (BOOL)prefersStatusBarHidden {
     return _prefersStatusBarHidden;
 }
@@ -54,9 +58,6 @@ NSString *const kVMSendInputHandler = @"UTMSendInput";
     NSURL* resourceURL = [[NSBundle mainBundle] resourceURL];
     NSURL* indexFile = [resourceURL URLByAppendingPathComponent: @"terminal.html"];
     [_webView loadFileURL: indexFile allowingReadAccessToURL: resourceURL];
-    
-    // terminal setup
-    [_terminal setDelegate: self];
 }
 
 - (void)viewDidLayoutSubviews {
@@ -66,8 +67,17 @@ NSString *const kVMSendInputHandler = @"UTMSendInput";
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear: animated];
+    [self.navigationController setNavigationBarHidden:YES animated:animated];
+
+    // terminal setup
+    [_terminal setDelegate: self];
 }
-s
+
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+    [self.navigationController setNavigationBarHidden:NO animated:animated];
+}
+
 - (void)changeVM:(UTMVirtualMachine *)vm {
     NSAssert([[vm ioService] isKindOfClass: [UTMTerminalIO class]], @"VM ioService must be UTMTerminalIO, but is: %@!", NSStringFromClass([[vm ioService] class]));
     UTMTerminalIO* io = (UTMTerminalIO*) [vm ioService];
@@ -134,6 +144,32 @@ s
             NSLog(@"JS evaluation failed: %@", [error localizedDescription]);
         }
     }];
+}
+
+#pragma mark - UTMVirtualMachineDelegate
+
+- (void)virtualMachine:(UTMVirtualMachine *)vm transitionToState:(UTMVMState)state {
+    switch (state) {
+        case kVMError: {
+            NSString *msg = self.vmMessage ? self.vmMessage : NSLocalizedString(@"An internal error has occured.", @"UTMQemuManager");
+            [self showAlert:msg completion:^(UIAlertAction *action){
+                [self performSegueWithIdentifier:@"returnToList" sender:self];
+            }];
+            break;
+        }
+        case kVMStopping:
+        case kVMStopped:
+        case kVMPausing:
+        case kVMPaused: {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self performSegueWithIdentifier:@"returnToList" sender:self];
+            });
+            break;
+        }
+        default: {
+            break; // TODO: Implement
+        }
+    }
 }
 
 #pragma mark - Toolbar IBActions

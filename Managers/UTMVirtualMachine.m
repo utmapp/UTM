@@ -182,7 +182,7 @@ NSString *const kUTMBundleExtension = @"utm";
     [self changeState:kVMStarting];
     
     BOOL ioStatus = [_ioService startWithError: nil];
-    if (ioStatus) {
+    if (!ioStatus) {
         [self errorTriggered:NSLocalizedString(@"Internal error starting main loop.", @"UTMVirtualMachine")];
         return;
     }
@@ -192,10 +192,14 @@ NSString *const kUTMBundleExtension = @"utm";
         }
         dispatch_semaphore_signal(self->_qemu_exit_sema);
     }];
-    BOOL connectionStatus = [_ioService connectWithError:nil];
-    if (!connectionStatus) {
-        [self errorTriggered:NSLocalizedString(@"Failed to connect to display server.", @"UTMVirtualMachine")];
-    }
+    
+    [_ioService connectWithCompletion:^(BOOL success, NSError * _Nullable error) {
+        if (!success) {
+            [self errorTriggered:NSLocalizedString(@"Failed to connect to display server.", @"UTMVirtualMachine")];
+        } else {
+            [self changeState:kVMStarted];
+        }
+    }];
     [self->_qemu connect];
 }
 
@@ -234,7 +238,7 @@ NSString *const kUTMBundleExtension = @"utm";
 }
 
 - (id<UTMInputOutput>)inputOutputService {
-    if ([_configuration displayConsoleOnly]) {
+    if ([self supportedDisplayType] == UTMDisplayTypeConsole) {
         return [[UTMTerminalIO alloc] initWithConfiguration: [_configuration copy]];
     } else {
         return [[UTMSpiceIO alloc] initWithConfiguration: [_configuration copy]];

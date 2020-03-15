@@ -28,14 +28,16 @@
     return self;
 }
 
+#pragma mark - UTMInputOutput
+
 - (BOOL)startWithError:(NSError *__autoreleasing  _Nullable * _Nullable)err {
     // tell terminal to start listening to pipes
     return [_terminal connectWithError: err];
 }
 
-- (BOOL)connectWithError:(NSError *__autoreleasing  _Nullable * _Nullable)err {
+- (void)connectWithCompletion: (void(^)(BOOL, NSError*)) block {
     // there's no connection to be made, so just return YES
-    return YES;
+    block(YES, nil);
 }
 
 - (void)disconnect {

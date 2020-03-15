@@ -20,8 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @protocol UTMInputOutput <NSObject>
 - (BOOL)startWithError:(NSError **)err;
-- (BOOL)connectWithError:(NSError **)err;
-//- (void)connectUsingBlock: (void(^)(BOOL, NSError*)) block;
+- (void)connectWithCompletion: (void(^)(BOOL, NSError* _Nullable)) block;
 - (void)disconnect;
 @end
 

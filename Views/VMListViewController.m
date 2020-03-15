@@ -231,11 +231,10 @@
         [metalView changeVM:self.activeVM];
         self.activeVM.delegate = metalView;
     } else if ([[segue identifier] isEqualToString:@"startVMConsole"]) {
-        NSLog(@"Hereeeeee");
         NSAssert([segue.destinationViewController isKindOfClass:[VMTerminalViewController class]], @"Destination not a terminal view");
         VMTerminalViewController *terminalView = (VMTerminalViewController *)segue.destinationViewController;
         [terminalView changeVM:self.activeVM];
-        //self.activeVM.delegate = terminalView;
+        self.activeVM.delegate = terminalView;
     }
 }
 
@@ -319,7 +318,7 @@
             }
             case kVMStarted:
             case kVMResumed: {
-                if (vm.configuration.displayConsoleOnly) {
+                if ([vm supportedDisplayType] == UTMDisplayTypeConsole) {
                     [self performSegueWithIdentifier:@"startVMConsole" sender:self];
                 } else {
                     [self performSegueWithIdentifier:@"startVM" sender:self];
@@ -404,7 +403,6 @@
     self.activeCell = cell;
     self.activeVM.delegate = self;
     [self.activeVM startVM];
-    [self virtualMachine:self.activeVM transitionToState:self.activeVM.state];
 }
 
 - (IBAction)startVMFromButton:(UIButton *)sender {
