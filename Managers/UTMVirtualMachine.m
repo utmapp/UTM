@@ -46,8 +46,10 @@ NSString *const kUTMBundleViewFilename = @"view.plist";
     CSMain *_spice;
     dispatch_semaphore_t _will_quit_sema;
     dispatch_semaphore_t _qemu_exit_sema;
-    BOOL _is_stopping;
+    BOOL _is_busy;
 }
+
+@synthesize busy = _is_busy;
 
 - (void)setDelegate:(id<UTMVirtualMachineDelegate>)delegate {
     _delegate = delegate;
@@ -111,8 +113,10 @@ NSString *const kUTMBundleViewFilename = @"view.plist";
 }
 
 - (void)changeState:(UTMVMState)state {
-    _state = state;
-    [self.delegate virtualMachine:self transitionToState:state];
+    @synchronized (self) {
+        _state = state;
+        [self.delegate virtualMachine:self transitionToState:state];
+    }
 }
 
 - (NSURL *)packageURLForName:(NSString *)name {
@@ -167,8 +171,12 @@ NSString *const kUTMBundleViewFilename = @"view.plist";
 }
 
 - (void)startVM {
-    if (self.state != kVMStopped) {
-        return; // already started
+    @synchronized (self) {
+        if (self.busy || self.state != kVMStopped) {
+            return; // already started
+        } else {
+            _is_busy = YES;
+        }
     }
     // start logging
     if (self.configuration.debugLogEnabled) {
@@ -190,6 +198,7 @@ NSString *const kUTMBundleViewFilename = @"view.plist";
     }
     if (!_qemu_system || !_spice || !_spice_connection) {
         [self errorTriggered:NSLocalizedString(@"Internal error starting VM.", @"UTMVirtualMachine")];
+        _is_busy = NO;
         return;
     }
     _spice_connection.glibMainContext = _spice.glibMainContext;
@@ -205,6 +214,7 @@ NSString *const kUTMBundleViewFilename = @"view.plist";
     }
     if (![_spice spiceStart]) {
         [self errorTriggered:NSLocalizedString(@"Internal error starting main loop.", @"UTMVirtualMachine")];
+        _is_busy = NO;
         return;
     }
     [_qemu_system startWithCompletion:^(BOOL success, NSString *msg){
@@ -224,13 +234,16 @@ NSString *const kUTMBundleViewFilename = @"view.plist";
         [self errorTriggered:NSLocalizedString(@"Failed to connect to display server.", @"UTMVirtualMachine")];
     }
     [self->_qemu connect];
+    _is_busy = NO;
 }
 
 - (void)quitVM {
-    if (_is_stopping || self.state != kVMStarted) {
-        return; // already stopping
-    } else {
-        _is_stopping = YES;
+    @synchronized (self) {
+        if (self.busy || self.state != kVMStarted) {
+            return; // already stopping
+        } else {
+            _is_busy = YES;
+        }
     }
     [self saveViewState];
     [self changeState:kVMStopping];
@@ -253,7 +266,6 @@ NSString *const kUTMBundleViewFilename = @"view.plist";
         // TODO: force shutdown
     }
     _qemu_system = nil;
-    _is_stopping = NO;
     [self changeState:kVMStopped];
     // save view settings
     NSURL *url = [self packageURLForName:self.configuration.name];
@@ -262,6 +274,7 @@ NSString *const kUTMBundleViewFilename = @"view.plist";
           withError:nil];
     // stop logging
     [self.logging endLog];
+    _is_busy = NO;
 }
 
 #pragma mark - Spice connection delegate
@@ -314,7 +327,7 @@ NSString *const kUTMBundleViewFilename = @"view.plist";
 
 - (void)qemuWillQuit:(UTMQemuManager *)manager guest:(BOOL)guest reason:(ShutdownCause)reason {
     dispatch_semaphore_signal(_will_quit_sema);
-    if (!_is_stopping) {
+    if (!_is_busy) {
         [self quitVM];
     }
 }
