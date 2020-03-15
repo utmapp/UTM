@@ -44,7 +44,7 @@ const NSString *const kUTMViewStateSuspendedKey = @"Suspended";
 }
 
 - (void)setDisplayScale:(double)displayScale {
-    _rootDict[kUTMViewStateDisplayScaleKey] = [NSNumber numberWithDouble:displayScale];
+    _rootDict[kUTMViewStateDisplayScaleKey] = @(displayScale);
 }
 
 - (double)displayOriginX {
@@ -52,7 +52,7 @@ const NSString *const kUTMViewStateSuspendedKey = @"Suspended";
 }
 
 - (void)setDisplayOriginX:(double)displayOriginX {
-    _rootDict[kUTMViewStateDisplayOriginXKey] = [NSNumber numberWithDouble:displayOriginX];
+    _rootDict[kUTMViewStateDisplayOriginXKey] = @(displayOriginX);
 }
 
 - (double)displayOriginY {
@@ -60,7 +60,7 @@ const NSString *const kUTMViewStateSuspendedKey = @"Suspended";
 }
 
 - (void)setDisplayOriginY:(double)displayOriginY {
-    _rootDict[kUTMViewStateDisplayOriginYKey] = [NSNumber numberWithDouble:displayOriginY];
+    _rootDict[kUTMViewStateDisplayOriginYKey] = @(displayOriginY);
 }
 
 - (BOOL)showToolbar {
@@ -68,7 +68,7 @@ const NSString *const kUTMViewStateSuspendedKey = @"Suspended";
 }
 
 - (void)setShowToolbar:(BOOL)showToolbar {
-    _rootDict[kUTMViewStateShowToolbarKey] = [NSNumber numberWithBool:showToolbar];
+    _rootDict[kUTMViewStateShowToolbarKey] = @(showToolbar);
 }
 
 - (BOOL)showKeyboard {
@@ -76,7 +76,7 @@ const NSString *const kUTMViewStateSuspendedKey = @"Suspended";
 }
 
 - (void)setShowKeyboard:(BOOL)showKeyboard {
-    _rootDict[kUTMViewStateShowKeyboardKey] = [NSNumber numberWithBool:showKeyboard];
+    _rootDict[kUTMViewStateShowKeyboardKey] = @(showKeyboard);
 }
 
 - (BOOL)suspended {
@@ -84,7 +84,7 @@ const NSString *const kUTMViewStateSuspendedKey = @"Suspended";
 }
 
 - (void)setSuspended:(BOOL)suspended {
-    _rootDict[kUTMViewStateSuspendedKey] = [NSNumber numberWithBool:suspended];
+    _rootDict[kUTMViewStateSuspendedKey] = @(suspended);
 }
 
 #pragma mark - Init
