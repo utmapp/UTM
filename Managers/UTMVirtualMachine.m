@@ -95,7 +95,7 @@ NSString *const kSuspendSnapshotName = @"suspend";
             return self;
         }
         _configuration = [[UTMConfiguration alloc] initWithDictionary:plist name:name path:url];
-        [self loadViewState:url];
+        [self loadViewState];
         [self loadScreenshot];
     }
     return self;
@@ -477,7 +477,8 @@ NSString *const kSuspendSnapshotName = @"suspend";
     self.delegate.keyboardVisible = self.viewState.showKeyboard;
 }
 
-- (void)loadViewState:(NSURL *)url {
+- (void)loadViewState {
+    NSURL *url = [self packageURLForName:self.configuration.name];
     NSMutableDictionary *plist = [self loadPlist:[url URLByAppendingPathComponent:kUTMBundleViewFilename] withError:nil];
     if (plist) {
         self.viewState = [[UTMViewState alloc] initWithDictionary:plist];
