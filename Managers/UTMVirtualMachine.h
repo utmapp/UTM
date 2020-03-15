@@ -24,11 +24,16 @@
 @class UTMConfiguration;
 @class UTMQemuManager;
 
+typedef NS_ENUM(NSInteger, UTMDisplayType) {
+    UTMDisplayTypeFullGraphic,
+    UTMDisplayTypeConsole
+};
+
 NS_ASSUME_NONNULL_BEGIN
 
 @interface UTMVirtualMachine : NSObject<UTMQemuManagerDelegate>
 
-@property (nonatomic, strong, nonnull) id<UTMInputOutput> ioService;
+@property (nonatomic, readonly, nullable) id<UTMInputOutput> ioService;
 @property (nonatomic, weak, nullable) id<UTMVirtualMachineDelegate> delegate;
 @property (nonatomic, strong) NSURL *parentPath;
 @property (nonatomic, strong, readonly) UTMConfiguration *configuration;
@@ -46,6 +51,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)startVM;
 - (void)quitVM;
+
+- (UTMDisplayType)supportedDisplayType;
 
 @end
 

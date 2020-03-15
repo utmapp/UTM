@@ -33,6 +33,12 @@ const int kMaxConnectionTries = 10; // qemu needs to start spice server first
     return self;
 }
 
+- (void)setDelegate:(id<UTMSpiceIODelegate>)delegate {
+    _delegate = delegate;
+    _delegate.vmDisplay = self.primaryDisplay;
+    _delegate.vmInput = self.primaryInput;
+}
+
 - (void)initializeSpiceIfNeeded {
     if (!_spice) {
         _spice = [[CSMain alloc] init];
@@ -103,8 +109,8 @@ const int kMaxConnectionTries = 10; // qemu needs to start spice server first
 - (void)spiceDisplayCreated:(CSConnection *)connection display:(CSDisplayMetal *)display input:(CSInput *)input {
     NSAssert(connection == _spice_connection, @"Unknown connection");
     if (display.channelID == 0 && display.monitorID == 0) {
-//        self.delegate.vmDisplay = display;
-//        self.delegate.vmInput = input;
+        self.delegate.vmDisplay = display;
+        self.delegate.vmInput = input;
         _primaryDisplay = display;
         _primaryInput = input;
     }

@@ -1613,4 +1613,11 @@ const NSString *const kUTMConfigCdromKey = @"Cdrom";
     return ioFile;
 }
 
+#pragma mark - NSCopying
+
+- (id)copyWithZone:(NSZone *)zone {
+    NSMutableDictionary* dictRepresentation = [[self dictRepresentation] mutableCopy];
+    return [[UTMConfiguration alloc] initWithDictionary:dictRepresentation name:_name path:_existingPath];
+}
+
 @end

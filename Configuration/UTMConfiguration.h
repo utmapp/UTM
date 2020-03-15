@@ -18,7 +18,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface UTMConfiguration : NSObject
+@interface UTMConfiguration : NSObject<NSCopying>
 
 @property (nonatomic, weak, readonly) NSDictionary *dictRepresentation;
 

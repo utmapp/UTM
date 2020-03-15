@@ -16,9 +16,10 @@
 
 #import <UIKit/UIKit.h>
 #import <WebKit/WebKit.h>
+#import "UTMVirtualMachine.h"
+#import "UTMTerminalIO.h"
 #import "UTMTerminal.h"
 #import "UTMTerminalDelegate.h"
-#import "UTMVirtualMachine.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -28,9 +29,10 @@ NS_ASSUME_NONNULL_BEGIN
 @property (weak, nonatomic) IBOutlet UIView *toolbarAccessoryView;
 @property (weak, nonatomic) IBOutlet UIInputView *inputAccessoryView;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *webViewTopConstraint;
-@property (nonatomic, strong, nullable) UTMTerminal* terminal;
-@property (nonatomic, strong) UTMVirtualMachine* vm;
+@property (nonatomic, weak, nullable) UTMTerminal* terminal;
+@property (nonatomic, strong, nullable) UTMVirtualMachine* vm;
 
+- (void)changeVM:(UTMVirtualMachine *)vm;
 - (IBAction)resumePressed:(UIButton *)sender;
 - (IBAction)powerPressed:(UIButton *)sender;
 - (IBAction)showKeyboardPressed:(UIButton *)sender;

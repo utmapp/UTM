@@ -16,6 +16,7 @@
 
 #import <UIKit/UIKit.h>
 #import "UTMVirtualMachineDelegate.h"
+#import "UTMSpiceIODelegate.h"
 #import "CSInput.h"
 
 @class UTMVirtualMachine;
@@ -24,7 +25,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface VMDisplayMetalViewController : UIViewController<UTMVirtualMachineDelegate, UIGestureRecognizerDelegate> {
+@interface VMDisplayMetalViewController : UIViewController<UTMVirtualMachineDelegate, UTMSpiceIODelegate, UIGestureRecognizerDelegate> {
     NSMutableArray<UIKeyCommand *> *_keyCommands;
 }
 

@@ -26,10 +26,12 @@
 #import "UTMConfiguration.h"
 #import "VMCursor.h"
 #import "CSDisplayMetal.h"
+#import "UTMSpiceIO.h"
 
 @interface VMDisplayMetalViewController ()
 
 @property (nonatomic, strong) UTMVirtualMachine *vm;
+@property (nonatomic, weak) UTMSpiceIO* spiceIO;
 
 @end
 
@@ -61,9 +63,9 @@
 
 @synthesize vmScreenshot;
 @synthesize vmMessage;
+@synthesize vmConfiguration;
 @synthesize vmDisplay;
 @synthesize vmInput;
-@synthesize vmConfiguration;
 
 - (BOOL)prefersStatusBarHidden {
     return _prefersStatusBarHidden;
@@ -224,7 +226,11 @@
 }
 
 - (void)changeVM:(UTMVirtualMachine *)vm {
+    NSAssert([[vm ioService] isKindOfClass: [UTMSpiceIO class]], @"VM ioService must be UTMSpiceIO, but is: %@!", NSStringFromClass([[vm ioService] class]));
+    UTMSpiceIO* spiceIO = (UTMSpiceIO*) [vm ioService];
     self.vm = vm;
+    self.spiceIO = spiceIO;
+    self.spiceIO.delegate = self;
 }
 
 - (void)sendExtendedKey:(SendKeyType)type code:(int)code {

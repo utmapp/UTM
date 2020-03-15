@@ -19,19 +19,14 @@
 #import "UTMQemuImg.h"
 #import "UTMQemuManager.h"
 #import "UTMQemuSystem.h"
-#import "CocoaSpice.h"
+#import "UTMTerminalIO.h"
+#import "UTMSpiceIO.h"
 
 const int64_t kStopTimeout = (int64_t)30*1000000000;
 
 NSString *const kUTMErrorDomain = @"com.osy86.utm";
 NSString *const kUTMBundleConfigFilename = @"config.plist";
 NSString *const kUTMBundleExtension = @"utm";
-
-@interface UTMVirtualMachine ()
-
-- (NSURL *)packageURLForName:(NSString *)name;
-
-@end
 
 @implementation UTMVirtualMachine {
     UTMQemuSystem *_qemu_system;
@@ -42,8 +37,6 @@ NSString *const kUTMBundleExtension = @"utm";
 
 - (void)setDelegate:(id<UTMVirtualMachineDelegate>)delegate {
     _delegate = delegate;
-//    _delegate.vmDisplay = self.primaryDisplay;
-//    _delegate.vmInput = self.primaryInput;
     _delegate.vmConfiguration = self.configuration;
 }
 
@@ -167,6 +160,7 @@ NSString *const kUTMBundleExtension = @"utm";
     if (self.state != kVMStopped) {
         return; // already started
     }
+    
     if (!_qemu_system) {
         _qemu_system = [[UTMQemuSystem alloc] initWithConfiguration:self.configuration imgPath:[self packageURLForName:self.configuration.name]];
         _qemu = [[UTMQemuManager alloc] init];
@@ -178,10 +172,12 @@ NSString *const kUTMBundleExtension = @"utm";
         return;
     }
     
+    if (!_ioService) {
+        _ioService = [self inputOutputService];
+    }
+    
     self.delegate.vmMessage = nil;
     self.delegate.vmScreenshot = nil;
-    self.delegate.vmDisplay = nil;
-    self.delegate.vmInput = nil;
     
     [self changeState:kVMStarting];
     
@@ -219,6 +215,7 @@ NSString *const kUTMBundleExtension = @"utm";
     _qemu.delegate = nil;
     _qemu = nil;
     [_ioService disconnect];
+    _ioService = nil;
     
     if (dispatch_semaphore_wait(_qemu_exit_sema, dispatch_time(DISPATCH_TIME_NOW, kStopTimeout)) != 0) {
         // TODO: force shutdown
@@ -226,6 +223,22 @@ NSString *const kUTMBundleExtension = @"utm";
     _qemu_system = nil;
     _is_stopping = NO;
     [self changeState:kVMStopped];
+}
+
+- (UTMDisplayType)supportedDisplayType {
+    if ([_configuration displayConsoleOnly]) {
+        return UTMDisplayTypeConsole;
+    } else {
+        return UTMDisplayTypeFullGraphic;
+    }
+}
+
+- (id<UTMInputOutput>)inputOutputService {
+    if ([_configuration displayConsoleOnly]) {
+        return [[UTMTerminalIO alloc] initWithConfiguration: [_configuration copy]];
+    } else {
+        return [[UTMSpiceIO alloc] initWithConfiguration: [_configuration copy]];
+    }
 }
 
 #pragma mark - Qemu manager delegate

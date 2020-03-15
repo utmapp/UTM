@@ -46,18 +46,7 @@ NSString *const kVMSendInputHandler = @"UTMSendInput";
     // UI setup
     [self.navigationController setNavigationBarHidden:YES animated: YES];
     [self setUpGestures];
-    // terminal setup
-    NSURL* terminalIOURL = [[_vm configuration] terminalInputOutputURL];
-    _terminal = [[UTMTerminal alloc] initWithURL: terminalIOURL];
-    [_terminal setDelegate: self];
-    NSError* error;
-    [_terminal connectWithError: &error];
-    if (error != nil) {
-        NSLog(@"Unable to connect with terminal!: %@", error.localizedDescription);
-        return;
-    }
     
-    [_vm startVM];
     // webview setup
     [[[_webView configuration] userContentController] addScriptMessageHandler: self name: kVMSendInputHandler];
     
@@ -65,6 +54,9 @@ NSString *const kVMSendInputHandler = @"UTMSendInput";
     NSURL* resourceURL = [[NSBundle mainBundle] resourceURL];
     NSURL* indexFile = [resourceURL URLByAppendingPathComponent: @"terminal.html"];
     [_webView loadFileURL: indexFile allowingReadAccessToURL: resourceURL];
+    
+    // terminal setup
+    [_terminal setDelegate: self];
 }
 
 - (void)viewDidLayoutSubviews {
@@ -74,6 +66,13 @@ NSString *const kVMSendInputHandler = @"UTMSendInput";
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear: animated];
+}
+s
+- (void)changeVM:(UTMVirtualMachine *)vm {
+    NSAssert([[vm ioService] isKindOfClass: [UTMTerminalIO class]], @"VM ioService must be UTMTerminalIO, but is: %@!", NSStringFromClass([[vm ioService] class]));
+    UTMTerminalIO* io = (UTMTerminalIO*) [vm ioService];
+    self.vm = vm;
+    self.terminal = io.terminal;
 }
 
 #pragma mark - Gestures

@@ -29,10 +29,12 @@
 }
 
 - (BOOL)startWithError:(NSError *__autoreleasing  _Nullable * _Nullable)err {
+    // tell terminal to start listening to pipes
     return [_terminal connectWithError: err];
 }
 
 - (BOOL)connectWithError:(NSError *__autoreleasing  _Nullable * _Nullable)err {
+    // there's no connection to be made, so just return YES
     return YES;
 }
 

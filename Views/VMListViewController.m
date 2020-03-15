@@ -21,7 +21,7 @@
 #import "UTMVirtualMachine.h"
 #import "VMDisplayMetalViewController.h"
 #import "VMTerminalViewController.h"
-#import "CSDisplayMetal.h"
+//#import "CSDisplayMetal.h"
 
 @interface VMListViewController ()
 
@@ -44,8 +44,6 @@
 
 @synthesize vmMessage;
 @synthesize vmScreenshot;
-@synthesize vmDisplay;
-@synthesize vmInput;
 @synthesize vmConfiguration;
 
 - (void)viewDidLoad {
@@ -236,7 +234,8 @@
         NSLog(@"Hereeeeee");
         NSAssert([segue.destinationViewController isKindOfClass:[VMTerminalViewController class]], @"Destination not a terminal view");
         VMTerminalViewController *terminalView = (VMTerminalViewController *)segue.destinationViewController;
-        terminalView.vm = self.activeVM;
+        [terminalView changeVM:self.activeVM];
+        //self.activeVM.delegate = terminalView;
     }
 }
 
@@ -260,7 +259,7 @@
     NSString *name = [UTMVirtualMachine virtualMachineName:self.vmList[indexPath.row]];
     [cell setName:name];
     if ([self.activeVM.configuration.name isEqualToString:name]) {
-        [cell changeState:self.activeVM.state image:self.activeVM.primaryDisplay.screenshot];
+        [cell changeState:self.activeVM.state image:nil];//self.activeVM.primaryDisplay.screenshot];
     } else {
         [cell changeState:kVMStopped image:nil];
     }
@@ -403,9 +402,9 @@
     }
     self.activeVM = [self cachedVMForCell:cell];
     self.activeCell = cell;
-    //self.activeVM.delegate = self;
-    //[self.activeVM startVM];
-    [self virtualMachine:self.activeVM transitionToState:kVMStarted];
+    self.activeVM.delegate = self;
+    [self.activeVM startVM];
+    [self virtualMachine:self.activeVM transitionToState:self.activeVM.state];
 }
 
 - (IBAction)startVMFromButton:(UIButton *)sender {

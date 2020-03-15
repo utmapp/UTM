@@ -835,6 +835,7 @@
 		E2D64BC8241DB24B0034E0C6 /* UTMSpiceIO.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UTMSpiceIO.m; sourceTree = "<group>"; };
 		E2D64BCA241DB62A0034E0C6 /* UTMTerminalIO.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UTMTerminalIO.h; sourceTree = "<group>"; };
 		E2D64BCB241DB62A0034E0C6 /* UTMTerminalIO.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UTMTerminalIO.m; sourceTree = "<group>"; };
+		E2D64BE0241EAEBE0034E0C6 /* UTMSpiceIODelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UTMSpiceIODelegate.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1384,6 +1385,7 @@
 				E2D64BC6241DB2260034E0C6 /* UTMInputOutput.h */,
 				E2D64BC7241DB24B0034E0C6 /* UTMSpiceIO.h */,
 				E2D64BC8241DB24B0034E0C6 /* UTMSpiceIO.m */,
+				E2D64BE0241EAEBE0034E0C6 /* UTMSpiceIODelegate.h */,
 				E2D64BCA241DB62A0034E0C6 /* UTMTerminalIO.h */,
 				E2D64BCB241DB62A0034E0C6 /* UTMTerminalIO.m */,
 			);

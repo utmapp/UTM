@@ -15,24 +15,16 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "UTMInputOutput.h"
-#import "CSConnectionDelegate.h"
-#import "UTMSpiceIODelegate.h"
 
-@class UTMConfiguration;
 @class CSDisplayMetal;
 @class CSInput;
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface UTMSpiceIO : NSObject<UTMInputOutput, CSConnectionDelegate>
+@protocol UTMSpiceIODelegate<NSObject>
 
-@property (nonatomic, readonly, nonnull) UTMConfiguration* configuration;
-@property (nonatomic, readonly, nullable) CSDisplayMetal *primaryDisplay;
-@property (nonatomic, readonly, nullable) CSInput *primaryInput;
-@property (nonatomic, weak, nullable) id<UTMSpiceIODelegate> delegate;
-
-- (id)initWithConfiguration: (UTMConfiguration*) configuration;
+@property (nonatomic, weak) CSDisplayMetal *vmDisplay;
+@property (nonatomic, weak) CSInput *vmInput;
 
 @end
 
