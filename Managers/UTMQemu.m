@@ -15,6 +15,7 @@
 //
 
 #import "UTMQemu.h"
+#import "UTMLogging.h"
 #import <dlfcn.h>
 #import <pthread.h>
 
@@ -88,7 +89,7 @@ void *start_qemu(void *args) {
                 NSString *err = [NSString stringWithUTF8String:dlerror()];
                 completion(NO, err);
             } else if (status == (void *)kQemuExitErrorStatus) {
-                completion(NO, NSLocalizedString(@"QEMU exited from an error.", @"qemu pthread fail"));
+                completion(NO, [NSString stringWithFormat:NSLocalizedString(@"QEMU exited from an error: %@", @"qemu pthread fail"), [[UTMLogging sharedInstance] lastErrorLine]]);
             } else {
                 completion(YES, nil);
             }
