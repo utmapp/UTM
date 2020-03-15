@@ -56,7 +56,7 @@ NSString *const kUTMBundleViewFilename = @"view.plist";
     _delegate.vmDisplay = self.primaryDisplay;
     _delegate.vmInput = self.primaryInput;
     _delegate.vmConfiguration = self.configuration;
-    [self loadViewState];
+    [self restoreViewState];
 }
 
 + (BOOL)URLisVirtualMachine:(NSURL *)url {
@@ -92,12 +92,7 @@ NSString *const kUTMBundleViewFilename = @"view.plist";
             return self;
         }
         _configuration = [[UTMConfiguration alloc] initWithDictionary:plist name:name path:url];
-        plist = [self loadPlist:[url URLByAppendingPathComponent:kUTMBundleViewFilename] withError:nil];
-        if (plist) {
-            self.viewState = [[UTMViewState alloc] initWithDictionary:plist];
-        } else {
-            self.viewState = [[UTMViewState alloc] initDefaults];
-        }
+        [self loadViewState:url];
     }
     return self;
 }
@@ -245,7 +240,7 @@ NSString *const kUTMBundleViewFilename = @"view.plist";
             _is_busy = YES;
         }
     }
-    [self saveViewState];
+    [self syncViewState];
     [self changeState:kVMStopping];
     
     [_qemu vmQuitWithCompletion:nil];
@@ -270,10 +265,7 @@ NSString *const kUTMBundleViewFilename = @"view.plist";
     _qemu_system = nil;
     [self changeState:kVMStopped];
     // save view settings
-    NSURL *url = [self packageURLForName:self.configuration.name];
-    [self savePlist:[url URLByAppendingPathComponent:kUTMBundleViewFilename]
-               dict:self.viewState.dictRepresentation
-          withError:nil];
+    [self saveViewState];
     // stop logging
     [self.logging endLog];
     _is_busy = NO;
@@ -306,6 +298,7 @@ NSString *const kUTMBundleViewFilename = @"view.plist";
         _primaryDisplay = display;
         _primaryInput = input;
         [self changeState:kVMStarted];
+        [self restoreViewState];
     }
 }
 
@@ -378,7 +371,7 @@ NSString *const kUTMBundleViewFilename = @"view.plist";
 
 #pragma mark - View State
 
-- (void)saveViewState {
+- (void)syncViewState {
     self.viewState.displayOriginX = self.primaryDisplay.viewportOrigin.x;
     self.viewState.displayOriginY = self.primaryDisplay.viewportOrigin.y;
     self.viewState.displayScale = self.primaryDisplay.viewportScale;
@@ -386,11 +379,27 @@ NSString *const kUTMBundleViewFilename = @"view.plist";
     self.viewState.showKeyboard = self.delegate.keyboardVisible;
 }
 
-- (void)loadViewState {
+- (void)restoreViewState {
     self.primaryDisplay.viewportOrigin = CGPointMake(self.viewState.displayOriginX, self.viewState.displayOriginY);
     self.primaryDisplay.viewportScale = self.viewState.displayScale;
     self.delegate.toolbarVisible = self.viewState.showToolbar;
     self.delegate.keyboardVisible = self.viewState.showKeyboard;
+}
+
+- (void)loadViewState:(NSURL *)url {
+    NSMutableDictionary *plist = [self loadPlist:[url URLByAppendingPathComponent:kUTMBundleViewFilename] withError:nil];
+    if (plist) {
+        self.viewState = [[UTMViewState alloc] initWithDictionary:plist];
+    } else {
+        self.viewState = [[UTMViewState alloc] initDefaults];
+    }
+}
+
+- (void)saveViewState {
+    NSURL *url = [self packageURLForName:self.configuration.name];
+    [self savePlist:[url URLByAppendingPathComponent:kUTMBundleViewFilename]
+               dict:self.viewState.dictRepresentation
+          withError:nil];
 }
 
 @end
