@@ -20,6 +20,7 @@
 #import "UTMQemuImg.h"
 #import "UTMQemuManager.h"
 #import "UTMQemuSystem.h"
+#import "UTMLogging.h"
 #import "CocoaSpice.h"
 
 const int kMaxConnectionTries = 10; // qemu needs to start spice server first
@@ -33,6 +34,7 @@ NSString *const kUTMBundleViewFilename = @"view.plist";
 @interface UTMVirtualMachine ()
 
 @property (nonatomic) UTMViewState *viewState;
+@property (nonatomic, weak) UTMLogging *logging;
 
 - (NSURL *)packageURLForName:(NSString *)name;
 
@@ -72,6 +74,7 @@ NSString *const kUTMBundleViewFilename = @"view.plist";
     if (self) {
         _will_quit_sema = dispatch_semaphore_create(0);
         _qemu_exit_sema = dispatch_semaphore_create(0);
+        self.logging = [UTMLogging sharedInstance];
     }
     return self;
 }
@@ -167,6 +170,11 @@ NSString *const kUTMBundleViewFilename = @"view.plist";
     if (self.state != kVMStopped) {
         return; // already started
     }
+    // start logging
+    if (self.configuration.debugLogEnabled) {
+        NSURL *url = [self packageURLForName:self.configuration.name];
+        [self.logging logToFile:[url URLByAppendingPathComponent:[UTMConfiguration debugLogName]]];
+    }
     if (!_qemu_system) {
         _qemu_system = [[UTMQemuSystem alloc] initWithConfiguration:self.configuration imgPath:[self packageURLForName:self.configuration.name]];
         _qemu = [[UTMQemuManager alloc] init];
@@ -192,7 +200,9 @@ NSString *const kUTMBundleViewFilename = @"view.plist";
     _primaryDisplay = nil;
     
     [self changeState:kVMStarting];
-    [_spice spiceSetDebug:YES];
+    if (self.configuration.debugLogEnabled) {
+        [_spice spiceSetDebug:YES]; // only if debug logging
+    }
     if (![_spice spiceStart]) {
         [self errorTriggered:NSLocalizedString(@"Internal error starting main loop.", @"UTMVirtualMachine")];
         return;
@@ -250,6 +260,8 @@ NSString *const kUTMBundleViewFilename = @"view.plist";
     [self savePlist:[url URLByAppendingPathComponent:kUTMBundleViewFilename]
                dict:self.viewState.dictRepresentation
           withError:nil];
+    // stop logging
+    [self.logging endLog];
 }
 
 #pragma mark - Spice connection delegate

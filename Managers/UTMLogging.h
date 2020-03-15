@@ -1,5 +1,5 @@
 //
-// Copyright © 2019 osy. All rights reserved.
+// Copyright © 2020 osy. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,22 +14,18 @@
 // limitations under the License.
 //
 
-#import <UIKit/UIKit.h>
-#import "VMConfigViewController.h"
+#import <Foundation/Foundation.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface VMConfigExistingViewController : VMConfigViewController
+@interface UTMLogging : NSObject
 
-@property (weak, nonatomic) IBOutlet UITextField *nameField;
-@property (nonatomic, assign) BOOL nameReadOnly;
-@property (weak, nonatomic) IBOutlet UITableViewCell *exportLogCell;
-@property (weak, nonatomic) IBOutlet UISwitch *debugLogSwitch;
+@property (nonatomic) NSString *lastErrorLine;
 
-- (IBAction)screenTapped:(UITapGestureRecognizer *)sender;
-- (IBAction)nameFieldEdited:(UITextField *)sender;
-- (IBAction)cancelPressed:(id)sender;
-- (IBAction)debugLogSwitchChanged:(UISwitch *)sender;
++ (UTMLogging *)sharedInstance;
+
+- (void)logToFile:(NSURL *)path;
+- (void)endLog;
 
 @end
 
