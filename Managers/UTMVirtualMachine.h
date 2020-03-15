@@ -29,6 +29,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface UTMVirtualMachine : NSObject<CSConnectionDelegate, UTMQemuManagerDelegate>
 
+@property (nonatomic, readonly) NSURL *path;
 @property (nonatomic, readonly, nullable) CSDisplayMetal *primaryDisplay;
 @property (nonatomic, readonly, nullable) CSInput *primaryInput;
 @property (nonatomic, weak, nullable) id<UTMVirtualMachineDelegate> delegate;

@@ -38,8 +38,6 @@ NSString *const kSuspendSnapshotName = @"suspend";
 @property (nonatomic) UTMViewState *viewState;
 @property (nonatomic, weak) UTMLogging *logging;
 
-- (NSURL *)packageURLForName:(NSString *)name;
-
 @end
 
 @implementation UTMVirtualMachine {
@@ -52,6 +50,7 @@ NSString *const kSuspendSnapshotName = @"suspend";
     UIImage *_screenshot;
 }
 
+@synthesize path = _path;
 @synthesize busy = _is_busy;
 
 - (void)setDelegate:(id<UTMVirtualMachineDelegate>)delegate {
@@ -87,10 +86,12 @@ NSString *const kSuspendSnapshotName = @"suspend";
 - (id)initWithURL:(NSURL *)url {
     self = [self init];
     if (self) {
+        _path = url;
         self.parentPath = url.URLByDeletingLastPathComponent;
         NSString *name = [UTMVirtualMachine virtualMachineName:url];
         NSMutableDictionary *plist = [self loadPlist:[url URLByAppendingPathComponent:kUTMBundleConfigFilename] withError:nil];
         if (!plist) {
+            NSLog(@"Failed to parse config for %@", url);
             self = nil;
             return self;
         }
@@ -138,6 +139,7 @@ NSString *const kSuspendSnapshotName = @"suspend";
             return NO;
         }
         self.configuration.existingPath = url;
+        _path = url;
     }
     if (![self savePlist:[url URLByAppendingPathComponent:kUTMBundleConfigFilename]
                     dict:self.configuration.dictRepresentation
@@ -179,11 +181,10 @@ NSString *const kSuspendSnapshotName = @"suspend";
     }
     // start logging
     if (self.configuration.debugLogEnabled) {
-        NSURL *url = [self packageURLForName:self.configuration.name];
-        [self.logging logToFile:[url URLByAppendingPathComponent:[UTMConfiguration debugLogName]]];
+        [self.logging logToFile:[self.path URLByAppendingPathComponent:[UTMConfiguration debugLogName]]];
     }
     if (!_qemu_system) {
-        _qemu_system = [[UTMQemuSystem alloc] initWithConfiguration:self.configuration imgPath:[self packageURLForName:self.configuration.name]];
+        _qemu_system = [[UTMQemuSystem alloc] initWithConfiguration:self.configuration imgPath:self.path];
         _qemu = [[UTMQemuManager alloc] init];
         _qemu.delegate = self;
     }
@@ -478,8 +479,7 @@ NSString *const kSuspendSnapshotName = @"suspend";
 }
 
 - (void)loadViewState {
-    NSURL *url = [self packageURLForName:self.configuration.name];
-    NSMutableDictionary *plist = [self loadPlist:[url URLByAppendingPathComponent:kUTMBundleViewFilename] withError:nil];
+    NSMutableDictionary *plist = [self loadPlist:[self.path URLByAppendingPathComponent:kUTMBundleViewFilename] withError:nil];
     if (plist) {
         self.viewState = [[UTMViewState alloc] initWithDictionary:plist];
     } else {
@@ -488,8 +488,7 @@ NSString *const kSuspendSnapshotName = @"suspend";
 }
 
 - (void)saveViewState {
-    NSURL *url = [self packageURLForName:self.configuration.name];
-    [self savePlist:[url URLByAppendingPathComponent:kUTMBundleViewFilename]
+    [self savePlist:[self.path URLByAppendingPathComponent:kUTMBundleViewFilename]
                dict:self.viewState.dictRepresentation
           withError:nil];
 }
@@ -499,20 +498,20 @@ NSString *const kSuspendSnapshotName = @"suspend";
 @synthesize screenshot = _screenshot;
 
 - (void)loadScreenshot {
-    NSURL *url = [[self packageURLForName:self.configuration.name] URLByAppendingPathComponent:kUTMBundleScreenshotFilename];
+    NSURL *url = [self.path URLByAppendingPathComponent:kUTMBundleScreenshotFilename];
     _screenshot = [UIImage imageWithContentsOfFile:url.path];
 }
 
 - (void)saveScreenshot {
     _screenshot = self.primaryDisplay.screenshot;
-    NSURL *url = [[self packageURLForName:self.configuration.name] URLByAppendingPathComponent:kUTMBundleScreenshotFilename];
+    NSURL *url = [self.path URLByAppendingPathComponent:kUTMBundleScreenshotFilename];
     if (_screenshot) {
         [UIImagePNGRepresentation(_screenshot) writeToURL:url atomically:NO];
     }
 }
 
 - (void)deleteScreenshot {
-    NSURL *url = [[self packageURLForName:self.configuration.name] URLByAppendingPathComponent:kUTMBundleScreenshotFilename];
+    NSURL *url = [self.path URLByAppendingPathComponent:kUTMBundleScreenshotFilename];
     [[NSFileManager defaultManager] removeItemAtURL:url error:nil];
 }
 
