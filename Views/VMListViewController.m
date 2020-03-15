@@ -42,7 +42,6 @@
 @implementation VMListViewController
 
 @synthesize vmMessage;
-@synthesize vmScreenshot;
 @synthesize vmDisplay;
 @synthesize vmInput;
 @synthesize vmConfiguration;
@@ -307,7 +306,7 @@
 
 - (void)virtualMachine:(UTMVirtualMachine *)vm transitionToState:(UTMVMState)state {
     dispatch_async(dispatch_get_main_queue(), ^{
-        [self.activeCell changeState:state image:self.vmScreenshot];
+        [self.activeCell changeState:state image:vm.screenshot];
         switch (state) {
             case kVMError: {
                 NSString *msg = self.vmMessage ? self.vmMessage : NSLocalizedString(@"An internal error has occured.", @"Alert message");

@@ -37,6 +37,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign, readonly) UTMVMState state;
 @property (nonatomic, readonly, nullable) UTMQemuManager *qemu;
 @property (nonatomic, readonly) BOOL busy;
+@property (nonatomic, readonly) UIImage *screenshot;
 
 + (BOOL)URLisVirtualMachine:(NSURL *)url;
 + (NSString *)virtualMachineName:(NSURL *)url;

@@ -64,7 +64,6 @@
     BOOL _isRunning;
 }
 
-@synthesize vmScreenshot;
 @synthesize vmMessage;
 @synthesize vmDisplay;
 @synthesize vmInput;

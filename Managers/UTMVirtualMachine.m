@@ -30,6 +30,7 @@ NSString *const kUTMErrorDomain = @"com.osy86.utm";
 NSString *const kUTMBundleConfigFilename = @"config.plist";
 NSString *const kUTMBundleExtension = @"utm";
 NSString *const kUTMBundleViewFilename = @"view.plist";
+NSString *const kUTMBundleScreenshotFilename = @"screenshot.png";
 NSString *const kSuspendSnapshotName = @"suspend";
 
 @interface UTMVirtualMachine ()
@@ -48,6 +49,7 @@ NSString *const kSuspendSnapshotName = @"suspend";
     dispatch_semaphore_t _will_quit_sema;
     dispatch_semaphore_t _qemu_exit_sema;
     BOOL _is_busy;
+    UIImage *_screenshot;
 }
 
 @synthesize busy = _is_busy;
@@ -94,6 +96,7 @@ NSString *const kSuspendSnapshotName = @"suspend";
         }
         _configuration = [[UTMConfiguration alloc] initWithDictionary:plist name:name path:url];
         [self loadViewState:url];
+        [self loadScreenshot];
     }
     return self;
 }
@@ -199,7 +202,6 @@ NSString *const kSuspendSnapshotName = @"suspend";
     }
     _spice_connection.glibMainContext = _spice.glibMainContext;
     self.delegate.vmMessage = nil;
-    self.delegate.vmScreenshot = nil;
     self.delegate.vmDisplay = nil;
     self.delegate.vmInput = nil;
     _primaryDisplay = nil;
@@ -285,6 +287,7 @@ NSString *const kSuspendSnapshotName = @"suspend";
     }
     [self syncViewState];
     [self changeState:kVMPausing];
+    [self saveScreenshot];
     __block BOOL success = YES;
     dispatch_semaphore_t suspend_sema = dispatch_semaphore_create(0);
     [_qemu vmStopWithCompletion:^(NSError * err) {
@@ -488,6 +491,28 @@ NSString *const kSuspendSnapshotName = @"suspend";
     [self savePlist:[url URLByAppendingPathComponent:kUTMBundleViewFilename]
                dict:self.viewState.dictRepresentation
           withError:nil];
+}
+
+#pragma mark - Screenshot
+
+@synthesize screenshot = _screenshot;
+
+- (void)loadScreenshot {
+    NSURL *url = [[self packageURLForName:self.configuration.name] URLByAppendingPathComponent:kUTMBundleScreenshotFilename];
+    _screenshot = [UIImage imageWithContentsOfFile:url.path];
+}
+
+- (void)saveScreenshot {
+    _screenshot = self.primaryDisplay.screenshot;
+    NSURL *url = [[self packageURLForName:self.configuration.name] URLByAppendingPathComponent:kUTMBundleScreenshotFilename];
+    if (_screenshot) {
+        [UIImagePNGRepresentation(_screenshot) writeToURL:url atomically:NO];
+    }
+}
+
+- (void)deleteScreenshot {
+    NSURL *url = [[self packageURLForName:self.configuration.name] URLByAppendingPathComponent:kUTMBundleScreenshotFilename];
+    [[NSFileManager defaultManager] removeItemAtURL:url error:nil];
 }
 
 @end
