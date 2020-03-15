@@ -366,6 +366,56 @@
                                     </tableViewCell>
                                 </cells>
                             </tableViewSection>
+                            <tableViewSection headerTitle="Debug" id="WkA-K4-U3C">
+                                <cells>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" id="95g-B6-lma">
+                                        <rect key="frame" x="0.0" y="563.33333206176758" width="375" height="44"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="95g-B6-lma" id="Mbl-1d-257">
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Debug Log" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="o5n-nQ-vae">
+                                                    <rect key="frame" x="16" y="11.666666666666664" width="84" height="21"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                                <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="BSZ-1U-IA5">
+                                                    <rect key="frame" x="310" y="6.6666666666666679" width="51" height="31.000000000000004"/>
+                                                    <connections>
+                                                        <action selector="debugLogSwitchChanged:" destination="wwu-oM-NlF" eventType="valueChanged" id="vci-rn-Fx0"/>
+                                                    </connections>
+                                                </switch>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstItem="BSZ-1U-IA5" firstAttribute="centerY" secondItem="Mbl-1d-257" secondAttribute="centerY" id="3Nw-9L-kgX"/>
+                                                <constraint firstItem="o5n-nQ-vae" firstAttribute="centerY" secondItem="Mbl-1d-257" secondAttribute="centerY" id="7xh-TW-SSQ"/>
+                                                <constraint firstItem="BSZ-1U-IA5" firstAttribute="trailing" secondItem="Mbl-1d-257" secondAttribute="trailingMargin" id="E9f-DA-Gt1"/>
+                                                <constraint firstItem="BSZ-1U-IA5" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="o5n-nQ-vae" secondAttribute="trailing" constant="8" symbolic="YES" id="TeJ-GB-wAe"/>
+                                                <constraint firstItem="o5n-nQ-vae" firstAttribute="leading" secondItem="Mbl-1d-257" secondAttribute="leadingMargin" id="h5h-km-yrr"/>
+                                            </constraints>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" textLabel="vU7-wd-ipe" style="IBUITableViewCellStyleDefault" id="cHJ-DX-PQX">
+                                        <rect key="frame" x="0.0" y="607.33333206176758" width="375" height="44"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="cHJ-DX-PQX" id="Nt2-U5-3Tm">
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="Export Log..." textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="vU7-wd-ipe">
+                                                    <rect key="frame" x="16" y="0.0" width="343" height="44"/>
+                                                    <autoresizingMask key="autoresizingMask"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                            </subviews>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
+                                </cells>
+                            </tableViewSection>
                         </sections>
                         <connections>
                             <outlet property="dataSource" destination="wwu-oM-NlF" id="uEK-Q2-Gvh"/>
@@ -388,6 +438,8 @@
                         </connections>
                     </navigationItem>
                     <connections>
+                        <outlet property="debugLogSwitch" destination="BSZ-1U-IA5" id="9Ng-Uj-8Ka"/>
+                        <outlet property="exportLogCell" destination="cHJ-DX-PQX" id="644-og-r2w"/>
                         <outlet property="nameField" destination="2Kh-jJ-awN" id="rec-m9-Zvs"/>
                     </connections>
                 </tableViewController>
@@ -2242,7 +2294,7 @@
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="DZc-Sg-gjO" userLabel="First Responder" sceneMemberID="firstResponder"/>
-                <view contentMode="scaleToFill" ambiguous="YES" id="H7m-pq-dCg" customClass="UIInputView">
+                <view contentMode="scaleToFill" id="H7m-pq-dCg" customClass="UIInputView">
                     <rect key="frame" x="0.0" y="0.0" width="1000" height="68"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     <subviews>
@@ -2356,8 +2408,8 @@
                                 <action selector="keyboardPastePressed:" destination="ckC-eO-gxn" eventType="touchUpInside" id="hAG-23-YnR"/>
                             </connections>
                         </button>
-                        <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" ambiguous="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2BY-mt-E6G">
-                            <rect key="frame" x="160" y="0.0" width="756" height="0.0"/>
+                        <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2BY-mt-E6G">
+                            <rect key="frame" x="160" y="0.0" width="756" height="68"/>
                             <subviews>
                                 <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="p57-ic-h8k">
                                     <rect key="frame" x="0.0" y="48" width="714" height="36"/>
@@ -3047,7 +3099,7 @@
     <inferredMetricsTieBreakers>
         <segue reference="0fe-13-GUd"/>
         <segue reference="M4J-mO-49e"/>
-        <segue reference="QMb-O0-K4I"/>
+        <segue reference="eOg-7f-ZC7"/>
         <segue reference="Ch9-qF-y79"/>
     </inferredMetricsTieBreakers>
 </document>

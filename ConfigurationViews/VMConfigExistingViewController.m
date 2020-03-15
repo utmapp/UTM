@@ -42,6 +42,7 @@
 - (void)refreshViewFromConfiguration {
     [super refreshViewFromConfiguration];
     self.nameField.text = self.configuration.name;
+    self.debugLogSwitch.on = self.configuration.debugLogEnabled;
 }
 
 - (void)setNameReadOnly:(BOOL)nameReadOnly {
@@ -103,6 +104,31 @@
 }
 */
 
+#pragma mark - Cell Selection
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    if ([tableView cellForRowAtIndexPath:indexPath] == self.exportLogCell) {
+        [tableView deselectRowAtIndexPath:indexPath animated:YES];
+        [self exportLog];
+    }
+}
+
+- (void)exportLog {
+    NSURL *path;
+    if (self.configuration.existingPath) {
+        path = [self.configuration.existingPath URLByAppendingPathComponent:[UTMConfiguration debugLogName]];
+    }
+    if (![[NSFileManager defaultManager] fileExistsAtPath:path.path]) {
+        [self showAlert:NSLocalizedString(@"No debug log found!", @"VMConfigExistingViewController") completion:nil];
+    } else {
+        NSURL *temp = [NSURL fileURLWithPathComponents:@[NSTemporaryDirectory(), [UTMConfiguration debugLogName]]];
+        if ([[NSFileManager defaultManager] copyItemAtURL:path toURL:temp error:nil]) {
+            UIActivityViewController *activityViewController = [[UIActivityViewController alloc] initWithActivityItems:@[temp] applicationActivities:nil];
+            [self presentViewController:activityViewController animated:YES completion:nil];
+        }
+    }
+}
+
 #pragma mark - Event handlers
 
 - (IBAction)screenTapped:(UITapGestureRecognizer *)sender {
@@ -119,6 +145,10 @@
 
 - (IBAction)cancelPressed:(id)sender {
     [self dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (IBAction)debugLogSwitchChanged:(UISwitch *)sender {
+    self.configuration.debugLogEnabled = sender.on;
 }
 
 @end
