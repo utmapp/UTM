@@ -2174,7 +2174,7 @@
                                                                     <segue destination="HWN-B0-AD0" kind="unwind" unwindAction="unwindToMainFromVM:" id="wuY-gV-w1x"/>
                                                                 </connections>
                                                             </button>
-                                                            <button opaque="NO" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="bjd-4T-OVm">
+                                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="bjd-4T-OVm">
                                                                 <rect key="frame" x="38" y="0.0" width="30" height="30"/>
                                                                 <accessibility key="accessibilityConfiguration" label="Pause"/>
                                                                 <constraints>
@@ -2184,7 +2184,7 @@
                                                                 <inset key="imageEdgeInsets" minX="4" minY="4" maxX="4" maxY="4"/>
                                                                 <state key="normal" image="Toolbar Pause"/>
                                                                 <connections>
-                                                                    <action selector="touchResumePressed:" destination="ckC-eO-gxn" eventType="touchUpInside" id="DYI-VN-mcQ"/>
+                                                                    <action selector="touchPausePressed:" destination="ckC-eO-gxn" eventType="touchUpInside" id="DYI-VN-mcQ"/>
                                                                 </connections>
                                                             </button>
                                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0Wo-4E-exJ">

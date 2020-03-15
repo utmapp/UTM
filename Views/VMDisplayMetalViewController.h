@@ -60,7 +60,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (IBAction)gestureSwipeDown:(UISwipeGestureRecognizer *)sender;
 - (IBAction)gestureSwipeScroll:(UISwipeGestureRecognizer *)sender;
 - (IBAction)changeDisplayZoom:(UIButton *)sender;
-- (IBAction)touchResumePressed:(UIButton *)sender;
+- (IBAction)touchPausePressed:(UIButton *)sender;
 - (IBAction)powerPressed:(UIButton *)sender;
 - (IBAction)showKeyboardButton:(UIButton *)sender;
 - (IBAction)hideToolbarButton:(UIButton *)sender;
