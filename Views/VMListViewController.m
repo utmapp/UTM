@@ -27,15 +27,11 @@
 @property (nonatomic, readonly) NSURL *documentsPath;
 @property (nonatomic, strong) UTMVirtualMachine *activeVM;
 @property (nonatomic, strong) UTMVirtualMachine *modifyingVM;
-@property (nonatomic, strong) NSArray<NSURL *> *vmList;
+@property (nonatomic, strong) NSArray<UTMVirtualMachine *> *vmList;
 @property (nonatomic, nullable, strong) UIAlertController *alert;
 @property (nonatomic, strong) dispatch_semaphore_t viewVisibleSema;
 @property (nonatomic, strong) dispatch_queue_t viewVisibleQueue;
 @property (nonatomic, weak) VMListViewCell *activeCell;
-
-- (NSArray<NSURL *> *)fetchVirtualMachines;
-- (void)workStartedWhenVisible:(NSString *)message;
-- (void)workCompletedWhenVisible:(NSString *)message;
 
 @end
 
@@ -106,15 +102,18 @@
     });
 }
 
-- (NSArray<NSURL *> *)fetchVirtualMachines {
+- (NSArray<UTMVirtualMachine *> *)fetchVirtualMachines {
     NSArray<NSURL *> *files = [[NSFileManager defaultManager] contentsOfDirectoryAtURL:self.documentsPath includingPropertiesForKeys:@[NSURLIsDirectoryKey] options:NSDirectoryEnumerationSkipsHiddenFiles error:nil];
-    NSMutableArray<NSURL *> *vmFiles = [[NSMutableArray alloc] initWithCapacity:files.count];
+    NSMutableArray<UTMVirtualMachine *> *vms = [[NSMutableArray alloc] initWithCapacity:files.count];
     for (NSURL *file in files) {
         if ([UTMVirtualMachine URLisVirtualMachine:file]) {
-            [vmFiles addObject:file];
+            UTMVirtualMachine *vm = [[UTMVirtualMachine alloc] initWithURL:file];
+            if (vm) {
+                [vms addObject:vm];
+            }
         }
     }
-    return vmFiles;
+    return vms;
 }
 
 - (NSString *)createNewDefaultName {
@@ -199,13 +198,13 @@
     NSIndexPath *index = [self.collectionView indexPathForCell:cell];
     NSAssert(index, @"Cannot find index for selected VM");
     NSAssert(index.section == 0, @"Invalid section");
-    NSString *name = [UTMVirtualMachine virtualMachineName:self.vmList[index.row]];
+    NSString *name = self.vmList[index.row].configuration.name;
     if ([self.activeVM.configuration.name isEqualToString:name]) {
         return self.activeVM;
     } else if ([self.modifyingVM.configuration.name isEqualToString:name]) {
         return self.modifyingVM;
     } else {
-        return [[UTMVirtualMachine alloc] initWithURL:self.vmList[index.row]];
+        return self.vmList[index.row];
     }
 }
 
@@ -252,7 +251,7 @@
     VMListViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"vmListCell" forIndexPath:indexPath];
     
     // Configure the cell
-    NSString *name = [UTMVirtualMachine virtualMachineName:self.vmList[indexPath.row]];
+    NSString *name = self.vmList[indexPath.row].configuration.name;
     [cell setName:name];
     if ([self.activeVM.configuration.name isEqualToString:name]) {
         [cell changeState:self.activeVM.state image:self.activeVM.primaryDisplay.screenshot];
@@ -265,7 +264,7 @@
 
 - (nonnull NSArray<UIDragItem *> *)collectionView:(nonnull UICollectionView *)collectionView itemsForBeginningDragSession:(nonnull id<UIDragSession>)session atIndexPath:(nonnull NSIndexPath *)indexPath {
     NSAssert(indexPath.section == 0, @"Invalid section");
-    NSItemProvider *provider = [[NSItemProvider alloc] initWithContentsOfURL:self.vmList[indexPath.row]];
+    NSItemProvider *provider = [[NSItemProvider alloc] initWithContentsOfURL:self.vmList[indexPath.row].path];
     UIDragItem *drag = [[UIDragItem alloc] initWithItemProvider:provider];
     return @[drag];
 }
@@ -284,7 +283,7 @@
 
 - (void)collectionView:(UICollectionView *)collectionView performAction:(SEL)action forItemAtIndexPath:(NSIndexPath *)indexPath withSender:(id)sender {
     NSAssert(indexPath.section == 0, @"Invalid section");
-    NSURL *source = self.vmList[indexPath.row];
+    NSURL *source = self.vmList[indexPath.row].path;
     if (action == NSSelectorFromString(@"deleteAction:")) {
         [self deleteVM:source];
     } else if (action == NSSelectorFromString(@"cloneAction:")) {
