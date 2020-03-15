@@ -251,6 +251,7 @@ NSString *const kUTMBundleViewFilename = @"view.plist";
     [_qemu vmQuitWithCompletion:nil];
     if (dispatch_semaphore_wait(_will_quit_sema, dispatch_time(DISPATCH_TIME_NOW, kStopTimeout)) != 0) {
         // TODO: force shutdown
+        NSLog(@"Stop operation timeout");
     }
     [_qemu disconnect];
     _qemu.delegate = nil;
@@ -264,6 +265,7 @@ NSString *const kUTMBundleViewFilename = @"view.plist";
     
     if (dispatch_semaphore_wait(_qemu_exit_sema, dispatch_time(DISPATCH_TIME_NOW, kStopTimeout)) != 0) {
         // TODO: force shutdown
+        NSLog(@"Exit operation timeout");
     }
     _qemu_system = nil;
     [self changeState:kVMStopped];
@@ -280,19 +282,23 @@ NSString *const kUTMBundleViewFilename = @"view.plist";
 #pragma mark - Spice connection delegate
 
 - (void)spiceConnected:(CSConnection *)connection {
+    NSLog(@"spiceConnected");
     NSAssert(connection == _spice_connection, @"Unknown connection");
 }
 
 - (void)spiceDisconnected:(CSConnection *)connection {
+    NSLog(@"spiceDisconnected");
     NSAssert(connection == _spice_connection, @"Unknown connection");
 }
 
 - (void)spiceError:(CSConnection *)connection err:(NSString *)msg {
+    NSLog(@"spiceError");
     NSAssert(connection == _spice_connection, @"Unknown connection");
     [self errorTriggered:msg];
 }
 
 - (void)spiceDisplayCreated:(CSConnection *)connection display:(CSDisplayMetal *)display input:(CSInput *)input {
+    NSLog(@"spiceDisplayCreated");
     NSAssert(connection == _spice_connection, @"Unknown connection");
     if (display.channelID == 0 && display.monitorID == 0) {
         self.delegate.vmDisplay = display;
@@ -306,26 +312,27 @@ NSString *const kUTMBundleViewFilename = @"view.plist";
 #pragma mark - Qemu manager delegate
 
 - (void)qemuHasWakeup:(UTMQemuManager *)manager {
-    
+    NSLog(@"qemuHasWakeup");
 }
 
 - (void)qemuHasResumed:(UTMQemuManager *)manager {
-    
+    NSLog(@"qemuHasResumed");
 }
 
 - (void)qemuHasStopped:(UTMQemuManager *)manager {
-    
+    NSLog(@"qemuHasStopped");
 }
 
 - (void)qemuHasReset:(UTMQemuManager *)manager guest:(BOOL)guest reason:(ShutdownCause)reason {
-    
+    NSLog(@"qemuHasReset, reason = %s", ShutdownCause_str(reason));
 }
 
 - (void)qemuHasSuspended:(UTMQemuManager *)manager {
-    
+    NSLog(@"qemuHasSuspended");
 }
 
 - (void)qemuWillQuit:(UTMQemuManager *)manager guest:(BOOL)guest reason:(ShutdownCause)reason {
+    NSLog(@"qemuWillQuit, reason = %s", ShutdownCause_str(reason));
     dispatch_semaphore_signal(_will_quit_sema);
     if (!_is_busy) {
         [self quitVM];
