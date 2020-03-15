@@ -53,10 +53,19 @@ void *start_qemu(void *args) {
     _argv = nil;
 }
 
+- (void)printArgv {
+    NSString *args = @"";
+    for (NSString *arg in _argv) {
+        args = [args stringByAppendingFormat:@" %@", arg];
+    }
+    NSLog(@"Running: %@", args);
+}
+
 - (void)startDylib:(nonnull NSString *)dylib main:(nonnull NSString *)main completion:(void(^)(BOOL,NSString *))completion {
     void *dlctx;
     __block pthread_t qemu_thread;
     
+    NSLog(@"Loading %@", dylib);
     dlctx = dlopen([dylib UTF8String], RTLD_LOCAL);
     if (dlctx == NULL) {
         NSString *err = [NSString stringWithUTF8String:dlerror()];
@@ -78,6 +87,7 @@ void *start_qemu(void *args) {
         completion(NO, NSLocalizedString(@"Internal error has occurred.", @"qemu pthread fail"));
         return;
     }
+    [self printArgv];
     pthread_create(&qemu_thread, NULL, &start_qemu, (__bridge_retained void *)self);
     dispatch_async(dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0), ^{
         void *status;
