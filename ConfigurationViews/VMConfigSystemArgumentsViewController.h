@@ -1,5 +1,5 @@
 //
-// Copyright © 2019 osy. All rights reserved.
+// Copyright © 2020 osy. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,21 +14,20 @@
 // limitations under the License.
 //
 
-#import <Foundation/Foundation.h>
-@import MetalKit;
+#import <UIKit/UIKit.h>
+#import "UTMConfigurationDelegate.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@protocol UTMRenderSource <NSObject>
+@interface VMConfigSystemArgumentsViewController : UITableViewController<UTMConfigurationDelegate>
 
-@property (nonatomic, readonly) BOOL visible;
-@property (nonatomic, assign) CGPoint viewportOrigin;
-@property (nonatomic, assign) CGFloat viewportScale;
-@property (nonatomic, readonly) dispatch_semaphore_t drawLock;
-@property (nonatomic, nullable, strong) id<MTLDevice> device;
-@property (nonatomic, nullable, readonly) id<MTLTexture> texture;
-@property (nonatomic, readonly) NSUInteger numVertices;
-@property (nonatomic, nullable, readonly) id<MTLBuffer> vertices;
+@property (weak, nonatomic) IBOutlet UIBarButtonItem *addButtonItem;
+@property (strong, nonatomic) IBOutlet UITableView *argTableView;
+
+@end
+
+@interface VMConfigSystemArgumentsTextCell : UITableViewCell<UTMConfigurationDelegate>
+@property (weak, nonatomic) IBOutlet UITextField *argTextItem;
 
 @end
 

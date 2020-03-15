@@ -26,13 +26,16 @@ typedef struct
     //   pass that interpolated value to the fragment shader for each fragment in that triangle;
     float2 textureCoordinate;
 
+    // If no, then we fake an alpha value
+    bool hasAlpha;
 } RasterizerData;
 
 // Vertex Function
 vertex RasterizerData
 vertexShader(uint vertexID [[ vertex_id ]],
              constant UTMVertex *vertexArray [[ buffer(UTMVertexInputIndexVertices) ]],
-             constant vector_uint2 *viewportSizePointer  [[ buffer(UTMVertexInputIndexViewportSize) ]])
+             constant vector_uint2 *viewportSizePointer  [[ buffer(UTMVertexInputIndexViewportSize) ]],
+             constant bool *hasAlpha [[ buffer(UTMVertexInputIndexHasAlpha) ]])
 
 {
 
@@ -68,6 +71,9 @@ vertexShader(uint vertexID [[ vertex_id ]],
     //   triangle.
     out.textureCoordinate = vertexArray[vertexID].textureCoordinate;
     
+    // All fragments have alpha or not
+    out.hasAlpha = *hasAlpha;
+
     return out;
 }
 
@@ -80,7 +86,12 @@ samplingShader(RasterizerData in [[stage_in]],
                                       min_filter::linear);
 
     // Sample the texture to obtain a color
-    const half4 colorSample = colorTexture.sample(textureSampler, in.textureCoordinate);
+    half4 colorSample = colorTexture.sample(textureSampler, in.textureCoordinate);
+
+    // fake alpha
+    if (!in.hasAlpha) {
+        colorSample.a = 0xff;
+    }
 
     // We return the color of the texture inverted
     return float4(colorSample);

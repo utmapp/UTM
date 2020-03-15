@@ -21,6 +21,7 @@
 #import "UTMVirtualMachine.h"
 #import "VMDisplayMetalViewController.h"
 #import "VMTerminalViewController.h"
+#import "CSDisplayMetal.h"
 
 @interface VMListViewController ()
 
@@ -43,7 +44,9 @@
 
 @synthesize vmMessage;
 @synthesize vmScreenshot;
-@synthesize vmRendering;
+@synthesize vmDisplay;
+@synthesize vmInput;
+@synthesize vmConfiguration;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -257,7 +260,7 @@
     NSString *name = [UTMVirtualMachine virtualMachineName:self.vmList[indexPath.row]];
     [cell setName:name];
     if ([self.activeVM.configuration.name isEqualToString:name]) {
-        [cell changeState:self.activeVM.state image:self.activeVM.primaryRendering.screenshot];
+        [cell changeState:self.activeVM.state image:self.activeVM.primaryDisplay.screenshot];
     } else {
         [cell changeState:kVMStopped image:nil];
     }

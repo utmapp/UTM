@@ -41,14 +41,23 @@ NS_ASSUME_NONNULL_BEGIN
 @property (weak, nonatomic) IBOutlet UITableViewCell *systemPickerCell;
 @property (weak, nonatomic) IBOutlet UIPickerView *systemPicker;
 @property (nonatomic, assign) BOOL systemPickerActive;
-@property (weak, nonatomic) IBOutlet UITextField *additionalArgsField;
+
+@property (weak, nonatomic) IBOutlet UITextField *jitCacheSizeField;
+@property (weak, nonatomic) IBOutlet UISwitch *forceMulticoreSwitch;
+
+@property (weak, nonatomic) IBOutlet UILabel *totalRamLabel;
+@property (weak, nonatomic) IBOutlet UILabel *estimatedRamLabel;
+@property (weak, nonatomic) IBOutlet UILabel *cpuCoresLabel;
 
 @property (nonatomic) NSNumber *memorySize;
+@property (nonatomic) NSNumber *jitCacheSize;
+@property (nonatomic, readonly) NSUInteger totalRam;
+@property (nonatomic, readonly) NSUInteger estimatedRam;
 @property (nonatomic) NSNumber *cpuCount;
-
 - (IBAction)memorySizeFieldEdited:(UITextField *)sender;
 - (IBAction)cpuCountFieldEdited:(UITextField *)sender;
-- (IBAction)additionalArgsFieldEdited:(UITextField *)sender;
+- (IBAction)jitCacheSizeFieldEdited:(UITextField *)sender;
+- (IBAction)forceMulticoreSwitchChanged:(UISwitch *)sender;
 
 @end
 

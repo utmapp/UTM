@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		423BCE66240F6A80001989AC /* VMConfigSystemArgumentsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 423BCE65240F6A80001989AC /* VMConfigSystemArgumentsViewController.m */; };
+		521F3EF92414F73800130500 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 521F3EFB2414F73800130500 /* Localizable.strings */; };
 		CE23C16123FCEC0A001177D6 /* qapi-commands-run-state.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C07E23FCEBFF001177D6 /* qapi-commands-run-state.c */; };
 		CE23C16223FCEC0A001177D6 /* qapi-visit-tpm.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C07F23FCEBFF001177D6 /* qapi-visit-tpm.c */; };
 		CE23C16323FCEC0A001177D6 /* qapi-commands-rocker.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C08123FCEBFF001177D6 /* qapi-commands-rocker.c */; };
@@ -303,6 +305,8 @@
 		E28394BB240C219F006742E2 /* terminal.js in Resources */ = {isa = PBXBuildFile; fileRef = E28394B9240C219F006742E2 /* terminal.js */; };
 		E28394BE240C22F1006742E2 /* hterm_all.js in Resources */ = {isa = PBXBuildFile; fileRef = E28394BD240C22F1006742E2 /* hterm_all.js */; };
 		E28394C1240C268A006742E2 /* VMTerminalViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = E28394C0240C268A006742E2 /* VMTerminalViewController.m */; };
+		E2D64BC9241DB24B0034E0C6 /* UTMSpiceIO.m in Sources */ = {isa = PBXBuildFile; fileRef = E2D64BC8241DB24B0034E0C6 /* UTMSpiceIO.m */; };
+		E2D64BCC241DB62A0034E0C6 /* UTMTerminalIO.m in Sources */ = {isa = PBXBuildFile; fileRef = E2D64BCB241DB62A0034E0C6 /* UTMTerminalIO.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -387,7 +391,10 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		7D75C517240427170098CF2F /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Main.strings"; sourceTree = "<group>"; };
+		423BCE65240F6A80001989AC /* VMConfigSystemArgumentsViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VMConfigSystemArgumentsViewController.m; sourceTree = "<group>"; };
+		423BCE67240F6A8A001989AC /* VMConfigSystemArgumentsViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VMConfigSystemArgumentsViewController.h; sourceTree = "<group>"; };
+		521F3EFA2414F73800130500 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
+		525535A1241B8A52003C80FC /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Main.strings"; sourceTree = "<group>"; };
 		CE23C07B23FCEBFF001177D6 /* qapi-visit-error.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-visit-error.h"; path = "sysroot-$(PLATFORM_PREFERRED_ARCH)/qapi/qapi-visit-error.h"; sourceTree = SOURCE_ROOT; };
 		CE23C07C23FCEBFF001177D6 /* qapi-events-machine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-events-machine.h"; path = "sysroot-$(PLATFORM_PREFERRED_ARCH)/qapi/qapi-events-machine.h"; sourceTree = SOURCE_ROOT; };
 		CE23C07D23FCEBFF001177D6 /* qapi-commands-block-core.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-commands-block-core.h"; path = "sysroot-$(PLATFORM_PREFERRED_ARCH)/qapi/qapi-commands-block-core.h"; sourceTree = SOURCE_ROOT; };
@@ -823,6 +830,11 @@
 		E28394BD240C22F1006742E2 /* hterm_all.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = hterm_all.js; path = libapps/hterm/dist/js/hterm_all.js; sourceTree = "<group>"; };
 		E28394BF240C268A006742E2 /* VMTerminalViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VMTerminalViewController.h; sourceTree = "<group>"; };
 		E28394C0240C268A006742E2 /* VMTerminalViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VMTerminalViewController.m; sourceTree = "<group>"; };
+		E2D64BC6241DB2260034E0C6 /* UTMInputOutput.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UTMInputOutput.h; sourceTree = "<group>"; };
+		E2D64BC7241DB24B0034E0C6 /* UTMSpiceIO.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UTMSpiceIO.h; sourceTree = "<group>"; };
+		E2D64BC8241DB24B0034E0C6 /* UTMSpiceIO.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UTMSpiceIO.m; sourceTree = "<group>"; };
+		E2D64BCA241DB62A0034E0C6 /* UTMTerminalIO.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UTMTerminalIO.h; sourceTree = "<group>"; };
+		E2D64BCB241DB62A0034E0C6 /* UTMTerminalIO.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UTMTerminalIO.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1298,6 +1310,7 @@
 		CE550BCB225947990063E575 /* UTM */ = {
 			isa = PBXGroup;
 			children = (
+				521F3EFB2414F73800130500 /* Localizable.strings */,
 				CE550BCC225947990063E575 /* AppDelegate.h */,
 				CE550BCD225947990063E575 /* AppDelegate.m */,
 				CE550BD2225947990063E575 /* Main.storyboard */,
@@ -1341,6 +1354,8 @@
 				CE74C284225D88ED004E4FF1 /* VMConfigSoundViewController.m */,
 				CE74C277225D88EC004E4FF1 /* VMConfigSystemViewController.h */,
 				CE74C285225D88ED004E4FF1 /* VMConfigSystemViewController.m */,
+				423BCE67240F6A8A001989AC /* VMConfigSystemArgumentsViewController.h */,
+				423BCE65240F6A80001989AC /* VMConfigSystemArgumentsViewController.m */,
 			);
 			path = ConfigurationViews;
 			sourceTree = "<group>";
@@ -1366,6 +1381,11 @@
 				E28394B5240C20E1006742E2 /* UTMTerminal.h */,
 				E28394B3240C20E0006742E2 /* UTMTerminal.m */,
 				E28394B4240C20E1006742E2 /* UTMTerminalDelegate.h */,
+				E2D64BC6241DB2260034E0C6 /* UTMInputOutput.h */,
+				E2D64BC7241DB24B0034E0C6 /* UTMSpiceIO.h */,
+				E2D64BC8241DB24B0034E0C6 /* UTMSpiceIO.m */,
+				E2D64BCA241DB62A0034E0C6 /* UTMTerminalIO.h */,
+				E2D64BCB241DB62A0034E0C6 /* UTMTerminalIO.m */,
 			);
 			path = Managers;
 			sourceTree = "<group>";
@@ -1510,6 +1530,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				E28394BB240C219F006742E2 /* terminal.js in Resources */,
+				521F3EF92414F73800130500 /* Localizable.strings in Resources */,
 				CE9D18F82265410E00355E14 /* qemu in Resources */,
 				CE550BD92259479D0063E575 /* LaunchScreen.storyboard in Resources */,
 				CE550BD62259479D0063E575 /* Assets.xcassets in Resources */,
@@ -1601,6 +1622,7 @@
 				CE23C18423FCEC0A001177D6 /* qapi-types-common.c in Sources */,
 				CE5E4958225C5A4400148CEF /* VMConfigExistingViewController.m in Sources */,
 				CE23C1BF23FCEC0A001177D6 /* qapi-types-transaction.c in Sources */,
+				E2D64BC9241DB24B0034E0C6 /* UTMSpiceIO.m in Sources */,
 				CE23C1C523FCEC0A001177D6 /* qapi-events-machine-target.c in Sources */,
 				CE23C1BA23FCEC0A001177D6 /* qapi-types-misc.c in Sources */,
 				CE550BE422596E790063E575 /* VMListViewCell.m in Sources */,
@@ -1611,6 +1633,7 @@
 				CE74C28A225D88ED004E4FF1 /* VMConfigPrintingViewController.m in Sources */,
 				CE23C19C23FCEC0A001177D6 /* qapi-visit-run-state.c in Sources */,
 				CE23C18223FCEC0A001177D6 /* qapi-commands-tpm.c in Sources */,
+				423BCE66240F6A80001989AC /* VMConfigSystemArgumentsViewController.m in Sources */,
 				CE23C1A423FCEC0A001177D6 /* qapi-visit-common.c in Sources */,
 				CE23C16823FCEC0A001177D6 /* qapi-events-trace.c in Sources */,
 				CE23C17123FCEC0A001177D6 /* qapi-events-qdev.c in Sources */,
@@ -1677,6 +1700,7 @@
 				CE23C18923FCEC0A001177D6 /* qapi-commands.c in Sources */,
 				CE23C17023FCEC0A001177D6 /* qapi-commands-audio.c in Sources */,
 				CE23C18C23FCEC0A001177D6 /* qapi-events-common.c in Sources */,
+				E2D64BCC241DB62A0034E0C6 /* UTMTerminalIO.m in Sources */,
 				CE23C1B423FCEC0A001177D6 /* qapi-events-crypto.c in Sources */,
 				CED33AE62267CAB500FF1977 /* VMDisplayMetalViewController.m in Sources */,
 				CE31C245225E555600A965DD /* UTMConfiguration.m in Sources */,
@@ -1716,11 +1740,20 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXVariantGroup section */
+		521F3EFB2414F73800130500 /* Localizable.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				521F3EFA2414F73800130500 /* zh-Hans */,
+			);
+			name = Localizable.strings;
+			sourceTree = "<group>";
+			usesTabs = 0;
+		};
 		CE550BD2225947990063E575 /* Main.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
 				CE550BD3225947990063E575 /* Base */,
-				7D75C517240427170098CF2F /* zh-Hans */,
+				525535A1241B8A52003C80FC /* zh-Hans */,
 			);
 			name = Main.storyboard;
 			sourceTree = "<group>";

@@ -1,5 +1,5 @@
 //
-// Copyright © 2019 osy. All rights reserved.
+// Copyright © 2020 osy. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,21 +15,13 @@
 //
 
 #import <Foundation/Foundation.h>
-@import MetalKit;
 
 NS_ASSUME_NONNULL_BEGIN
 
-@protocol UTMRenderSource <NSObject>
-
-@property (nonatomic, readonly) BOOL visible;
-@property (nonatomic, assign) CGPoint viewportOrigin;
-@property (nonatomic, assign) CGFloat viewportScale;
-@property (nonatomic, readonly) dispatch_semaphore_t drawLock;
-@property (nonatomic, nullable, strong) id<MTLDevice> device;
-@property (nonatomic, nullable, readonly) id<MTLTexture> texture;
-@property (nonatomic, readonly) NSUInteger numVertices;
-@property (nonatomic, nullable, readonly) id<MTLBuffer> vertices;
-
+@protocol UTMInputOutput <NSObject>
+- (BOOL)startWithError:(NSError **)err;
+- (BOOL)connectWithError:(NSError **)err;
+- (void)disconnect;
 @end
 
 NS_ASSUME_NONNULL_END

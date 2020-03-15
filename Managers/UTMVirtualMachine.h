@@ -19,17 +19,16 @@
 #import "CSConnectionDelegate.h"
 #import "UTMRenderSource.h"
 #import "UTMQemuManagerDelegate.h"
+#import "UTMInputOutput.h"
 
 @class UTMConfiguration;
 @class UTMQemuManager;
-@class CSInput;
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface UTMVirtualMachine : NSObject<CSConnectionDelegate, UTMQemuManagerDelegate>
+@interface UTMVirtualMachine : NSObject<UTMQemuManagerDelegate>
 
-@property (nonatomic, readonly, nullable) id<UTMRenderSource> primaryRendering;
-@property (nonatomic, readonly, nullable) CSInput *primaryInput;
+@property (nonatomic, strong, nonnull) id<UTMInputOutput> ioService;
 @property (nonatomic, weak, nullable) id<UTMVirtualMachineDelegate> delegate;
 @property (nonatomic, strong) NSURL *parentPath;
 @property (nonatomic, strong, readonly) UTMConfiguration *configuration;

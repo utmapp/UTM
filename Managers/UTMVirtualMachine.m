@@ -21,7 +21,6 @@
 #import "UTMQemuSystem.h"
 #import "CocoaSpice.h"
 
-const int kMaxConnectionTries = 10; // qemu needs to start spice server first
 const int64_t kStopTimeout = (int64_t)30*1000000000;
 
 NSString *const kUTMErrorDomain = @"com.osy86.utm";
@@ -36,8 +35,6 @@ NSString *const kUTMBundleExtension = @"utm";
 
 @implementation UTMVirtualMachine {
     UTMQemuSystem *_qemu_system;
-    CSConnection *_spice_connection;
-    CSMain *_spice;
     dispatch_semaphore_t _will_quit_sema;
     dispatch_semaphore_t _qemu_exit_sema;
     BOOL _is_stopping;
@@ -45,7 +42,9 @@ NSString *const kUTMBundleExtension = @"utm";
 
 - (void)setDelegate:(id<UTMVirtualMachineDelegate>)delegate {
     _delegate = delegate;
-    _delegate.vmRendering = self.primaryRendering;
+//    _delegate.vmDisplay = self.primaryDisplay;
+//    _delegate.vmInput = self.primaryInput;
+    _delegate.vmConfiguration = self.configuration;
 }
 
 + (BOOL)URLisVirtualMachine:(NSURL *)url {
@@ -173,26 +172,21 @@ NSString *const kUTMBundleExtension = @"utm";
         _qemu = [[UTMQemuManager alloc] init];
         _qemu.delegate = self;
     }
-    if (!_spice) {
-        _spice = [[CSMain alloc] init];
-    }
-    if (!_spice_connection) {
-        _spice_connection = [[CSConnection alloc] initWithHost:@"127.0.0.1" port:@"5930"];
-        _spice_connection.delegate = self;
-    }
-    if (!_qemu_system || !_spice || !_spice_connection) {
+
+    if (!_qemu_system) {
         [self errorTriggered:NSLocalizedString(@"Internal error starting VM.", @"UTMVirtualMachine")];
         return;
     }
-    _spice_connection.glibMainContext = _spice.glibMainContext;
+    
     self.delegate.vmMessage = nil;
     self.delegate.vmScreenshot = nil;
-    self.delegate.vmRendering = nil;
-    _primaryRendering = nil;
+    self.delegate.vmDisplay = nil;
+    self.delegate.vmInput = nil;
     
     [self changeState:kVMStarting];
-    [_spice spiceSetDebug:YES];
-    if (![_spice spiceStart]) {
+    
+    BOOL ioStatus = [_ioService startWithError: nil];
+    if (ioStatus) {
         [self errorTriggered:NSLocalizedString(@"Internal error starting main loop.", @"UTMVirtualMachine")];
         return;
     }
@@ -202,14 +196,8 @@ NSString *const kUTMBundleExtension = @"utm";
         }
         dispatch_semaphore_signal(self->_qemu_exit_sema);
     }];
-    int tries = kMaxConnectionTries;
-    do {
-        [NSThread sleepForTimeInterval:0.1f];
-        if ([_spice_connection connect]) {
-            break;
-        }
-    } while (tries-- > 0);
-    if (tries == 0) {
+    BOOL connectionStatus = [_ioService connectWithError:nil];
+    if (!connectionStatus) {
         [self errorTriggered:NSLocalizedString(@"Failed to connect to display server.", @"UTMVirtualMachine")];
     }
     [self->_qemu connect];
@@ -230,12 +218,7 @@ NSString *const kUTMBundleExtension = @"utm";
     [_qemu disconnect];
     _qemu.delegate = nil;
     _qemu = nil;
-    
-    [_spice_connection disconnect];
-    _spice_connection.delegate = nil;
-    _spice_connection = nil;
-    [_spice spiceStop];
-    _spice = nil;
+    [_ioService disconnect];
     
     if (dispatch_semaphore_wait(_qemu_exit_sema, dispatch_time(DISPATCH_TIME_NOW, kStopTimeout)) != 0) {
         // TODO: force shutdown
@@ -243,31 +226,6 @@ NSString *const kUTMBundleExtension = @"utm";
     _qemu_system = nil;
     _is_stopping = NO;
     [self changeState:kVMStopped];
-}
-
-#pragma mark - Spice connection delegate
-
-- (void)spiceConnected:(CSConnection *)connection {
-    NSAssert(connection == _spice_connection, @"Unknown connection");
-}
-
-- (void)spiceDisconnected:(CSConnection *)connection {
-    NSAssert(connection == _spice_connection, @"Unknown connection");
-}
-
-- (void)spiceError:(CSConnection *)connection err:(NSString *)msg {
-    NSAssert(connection == _spice_connection, @"Unknown connection");
-    [self errorTriggered:msg];
-}
-
-- (void)spiceDisplayCreated:(CSConnection *)connection display:(CSDisplayMetal *)display input:(CSInput *)input {
-    NSAssert(connection == _spice_connection, @"Unknown connection");
-    if (display.channelID == 0 && display.monitorID == 0) {
-        self.delegate.vmRendering = display;
-        _primaryRendering = display;
-        _primaryInput = input;
-        [self changeState:kVMStarted];
-    }
 }
 
 #pragma mark - Qemu manager delegate
