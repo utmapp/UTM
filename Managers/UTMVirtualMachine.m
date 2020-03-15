@@ -30,6 +30,7 @@ NSString *const kUTMErrorDomain = @"com.osy86.utm";
 NSString *const kUTMBundleConfigFilename = @"config.plist";
 NSString *const kUTMBundleExtension = @"utm";
 NSString *const kUTMBundleViewFilename = @"view.plist";
+NSString *const kSuspendSnapshotName = @"suspend";
 
 @interface UTMVirtualMachine ()
 
@@ -212,6 +213,9 @@ NSString *const kUTMBundleViewFilename = @"view.plist";
         _is_busy = NO;
         return;
     }
+    if (self.viewState.suspended) {
+        _qemu_system.snapshot = kSuspendSnapshotName;
+    }
     [_qemu_system startWithCompletion:^(BOOL success, NSString *msg){
         if (!success) {
             [self errorTriggered:msg];
@@ -268,6 +272,90 @@ NSString *const kUTMBundleViewFilename = @"view.plist";
     [self saveViewState];
     // stop logging
     [self.logging endLog];
+    _is_busy = NO;
+}
+
+- (void)pauseVMWithSnapshot:(BOOL)snapshot {
+    @synchronized (self) {
+        if (self.busy || self.state != kVMStarted) {
+            return; // already stopping
+        } else {
+            _is_busy = YES;
+        }
+    }
+    [self syncViewState];
+    [self changeState:kVMPausing];
+    __block BOOL success = YES;
+    dispatch_semaphore_t suspend_sema = dispatch_semaphore_create(0);
+    [_qemu vmStopWithCompletion:^(NSError * err) {
+        NSLog(@"stop callback: err? %@", err);
+        if (err) {
+            NSLog(@"error: %@", err);
+            success = NO;
+        }
+        dispatch_semaphore_signal(suspend_sema);
+    }];
+    if (dispatch_semaphore_wait(suspend_sema, dispatch_time(DISPATCH_TIME_NOW, kStopTimeout)) != 0) {
+        NSLog(@"Stop operation timeout");
+        success = NO;
+    }
+    if (success && snapshot) {
+        [_qemu vmSuspendWithCompletion:^(NSString *result, NSError *err) {
+            NSLog(@"suspend callback: %@", result);
+            if (err) {
+                NSLog(@"error: %@", err);
+                success = NO;
+            }
+            dispatch_semaphore_signal(suspend_sema);
+        } snapshotName:kSuspendSnapshotName];
+        if (dispatch_semaphore_wait(suspend_sema, dispatch_time(DISPATCH_TIME_NOW, kStopTimeout)) != 0) {
+            NSLog(@"Suspend operation timeout");
+            success = NO;
+        } else {
+            NSLog(@"Suspend completed");
+        }
+        self.viewState.suspended = YES;
+        [self saveViewState];
+    }
+    if (success) {
+        [self changeState:kVMPaused];
+    } else {
+        [self changeState:kVMError];
+    }
+    _is_busy = NO;
+}
+
+- (void)resumeVM {
+    @synchronized (self) {
+        if (self.busy || self.state != kVMPaused) {
+            return;
+        } else {
+            _is_busy = YES;
+        }
+    }
+    [self changeState:kVMResuming];
+    __block BOOL success = YES;
+    dispatch_semaphore_t resume_sema = dispatch_semaphore_create(0);
+    [_qemu vmResumeWithCompletion:^(NSError *err) {
+        NSLog(@"resume callback: err? %@", err);
+        if (err) {
+            NSLog(@"error: %@", err);
+            success = NO;
+        }
+        dispatch_semaphore_signal(resume_sema);
+    }];
+    if (dispatch_semaphore_wait(resume_sema, dispatch_time(DISPATCH_TIME_NOW, kStopTimeout)) != 0) {
+        NSLog(@"Resume operation timeout");
+        success = NO;
+    }
+    if (success) {
+        [self changeState:kVMStarted];
+        [self restoreViewState];
+    } else {
+        [self changeState:kVMError];
+    }
+    self.viewState.suspended = NO;
+    [self saveViewState];
     _is_busy = NO;
 }
 

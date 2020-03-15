@@ -27,6 +27,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) double displayOriginY;
 @property (nonatomic, assign) BOOL showToolbar;
 @property (nonatomic, assign) BOOL showKeyboard;
+@property (nonatomic, assign) BOOL suspended;
 
 - (id)initDefaults;
 - (id)initWithDictionary:(NSMutableDictionary *)dictionary;

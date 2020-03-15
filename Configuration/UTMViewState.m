@@ -21,6 +21,7 @@ const NSString *const kUTMViewStateDisplayOriginXKey = @"DisplayOriginX";
 const NSString *const kUTMViewStateDisplayOriginYKey = @"DisplayOriginY";
 const NSString *const kUTMViewStateShowToolbarKey = @"ShowToolbar";
 const NSString *const kUTMViewStateShowKeyboardKey = @"ShowKeyboard";
+const NSString *const kUTMViewStateSuspendedKey = @"Suspended";
 
 @interface UTMViewState ()
 
@@ -76,6 +77,14 @@ const NSString *const kUTMViewStateShowKeyboardKey = @"ShowKeyboard";
 
 - (void)setShowKeyboard:(BOOL)showKeyboard {
     _rootDict[kUTMViewStateShowKeyboardKey] = [NSNumber numberWithBool:showKeyboard];
+}
+
+- (BOOL)suspended {
+    return [_rootDict[kUTMViewStateSuspendedKey] boolValue];
+}
+
+- (void)setSuspended:(BOOL)suspended {
+    _rootDict[kUTMViewStateSuspendedKey] = [NSNumber numberWithBool:suspended];
 }
 
 #pragma mark - Init
