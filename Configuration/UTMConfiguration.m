@@ -24,6 +24,7 @@ const NSString *const kUTMConfigPrintingKey = @"Printing";
 const NSString *const kUTMConfigSoundKey = @"Sound";
 const NSString *const kUTMConfigSharingKey = @"Sharing";
 const NSString *const kUTMConfigDrivesKey = @"Drives";
+const NSString *const kUTMConfigDebugKey = @"Debug";
 
 const NSString *const kUTMConfigArchitectureKey = @"Architecture";
 const NSString *const kUTMConfigMemoryKey = @"Memory";
@@ -58,6 +59,8 @@ const NSString *const kUTMConfigChipboardSharingKey = @"ClipboardSharing";
 const NSString *const kUTMConfigImagePathKey = @"ImagePath";
 const NSString *const kUTMConfigInterfaceTypeKey = @"InterfaceType";
 const NSString *const kUTMConfigCdromKey = @"Cdrom";
+
+const NSString *const kUTMConfigDebugLogKey = @"DebugLog";
 
 @interface UTMConfiguration ()
 
@@ -1271,6 +1274,10 @@ const NSString *const kUTMConfigCdromKey = @"Cdrom";
     return [self supportedDriveInterfaces][0];
 }
 
++ (NSString *)debugLogName {
+    return @"debug.log";
+}
+
 #pragma mark - Migration
 
 - (void)migrateConfigurationIfNecessary {
@@ -1285,6 +1292,10 @@ const NSString *const kUTMConfigCdromKey = @"Cdrom";
     if ([_rootDict[kUTMConfigSystemKey][kUTMConfigTargetKey] length] == 0) {
         NSInteger index = [UTMConfiguration defaultTargetIndexForArchitecture:self.systemArchitecture];
         _rootDict[kUTMConfigSystemKey][kUTMConfigTargetKey] = [UTMConfiguration supportedTargetsForArchitecture:self.systemArchitecture][index];
+    }
+    // Add Debug dict if not exists
+    if (!_rootDict[kUTMConfigDebugKey]) {
+        _rootDict[kUTMConfigDebugKey] = [NSMutableDictionary dictionary];
     }
 }
 
@@ -1303,6 +1314,7 @@ const NSString *const kUTMConfigCdromKey = @"Cdrom";
         _rootDict[kUTMConfigSoundKey] = [[NSMutableDictionary alloc] init];
         _rootDict[kUTMConfigSharingKey] = [[NSMutableDictionary alloc] init];
         _rootDict[kUTMConfigDrivesKey] = [[NSMutableArray alloc] init];
+        _rootDict[kUTMConfigDebugKey] = [[NSMutableDictionary alloc] init];
         self.systemArchitecture = @"x86_64";
         self.systemMemory = @512;
         self.systemCPUCount = @1;
@@ -1317,6 +1329,7 @@ const NSString *const kUTMConfigCdromKey = @"Cdrom";
         self.soundEnabled = YES;
         self.sharingClipboardEnabled = YES;
         self.existingPath = nil;
+        self.debugLogEnabled = NO;
     }
     return self;
 }
@@ -1393,6 +1406,14 @@ const NSString *const kUTMConfigCdromKey = @"Cdrom";
 
 - (void)setSystemForceMulticore:(BOOL)systemForceMulticore {
     _rootDict[kUTMConfigSystemKey][kUTMConfigForceMulticoreKey] = [NSNumber numberWithBool:systemForceMulticore];
+}
+
+- (BOOL)debugLogEnabled {
+    return [_rootDict[kUTMConfigDebugKey][kUTMConfigDebugLogKey] boolValue];
+}
+
+- (void)setDebugLogEnabled:(BOOL)debugLogEnabled {
+    _rootDict[kUTMConfigDebugKey][kUTMConfigDebugLogKey] = [NSNumber numberWithBool:debugLogEnabled];
 }
 
 #pragma mark - Additional arguments array handling

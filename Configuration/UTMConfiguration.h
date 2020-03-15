@@ -33,6 +33,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSArray<NSString *>*)supportedDriveInterfaces;
 + (NSString *)diskImagesDirectory;
 + (NSString *)defaultDriveInterface;
++ (NSString *)debugLogName;
 
 @property (nonatomic, nullable, copy) NSString *name;
 @property (nonatomic, nullable, copy) NSURL *existingPath;
@@ -65,6 +66,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) BOOL soundEnabled;
 
 @property (nonatomic, assign) BOOL sharingClipboardEnabled;
+
+@property (nonatomic, assign) BOOL debugLogEnabled;
 
 - (void)migrateConfigurationIfNecessary;
 - (id)initDefaults:(NSString *)name;
