@@ -699,12 +699,21 @@ static CGFloat CGPointToPixel(CGFloat point) {
 - (void)handleEnteredBackground:(NSNotification *)notification {
     NSLog(@"Entering background");
     if (self.vm.state == kVMStarted) {
-        [self.vm saveVM];
+        NSLog(@"Saving snapshot");
+        dispatch_async(dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0), ^{
+            [self.vm saveVM];
+        });
     }
 }
 
 - (void)handleEnteredForeground:(NSNotification *)notification {
     NSLog(@"Entering foreground!");
+    if (self.vm.state == kVMStarted) {
+        NSLog(@"Deleting snapshot");
+        dispatch_async(dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0), ^{
+            [self.vm deleteSaveVM];
+        });
+    }
 }
 
 - (void)didReceiveMemoryWarning {

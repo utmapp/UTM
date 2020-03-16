@@ -36,6 +36,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)vmResumeWithCompletion:(void (^ _Nullable)(NSError * _Nullable))completion;
 - (void)vmQuitWithCompletion:(void (^ _Nullable)(NSError * _Nullable))completion;
 - (void)vmSaveWithCompletion:(void (^ _Nullable)(NSString * _Nullable, NSError * _Nullable))completion snapshotName:(NSString *)name;
+- (void)vmDeleteSaveWithCompletion:(void (^)(NSString * _Nullable, NSError * _Nullable))completion snapshotName:(NSString *)name;
 
 @end
 

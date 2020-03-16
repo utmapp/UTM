@@ -54,6 +54,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)resetVM;
 - (void)pauseVM;
 - (void)saveVM;
+- (void)deleteSaveVM;
 - (void)resumeVM;
 
 @end

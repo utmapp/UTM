@@ -262,6 +262,11 @@ void qmp_rpc_call(CFDictionaryRef args, CFDictionaryRef *ret, Error **err, void 
     [self vmHmpCommand:cmd completion:completion];
 }
 
+- (void)vmDeleteSaveWithCompletion:(void (^)(NSString * _Nullable, NSError * _Nullable))completion snapshotName:(NSString *)name {
+    NSString *cmd = [NSString stringWithFormat:@"delvm %@", name];
+    [self vmHmpCommand:cmd completion:completion];
+}
+
 @end
 
 qapi_enum_handler_registry qapi_enum_handler_registry_data = {

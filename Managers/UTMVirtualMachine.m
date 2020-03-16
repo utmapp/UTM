@@ -308,7 +308,9 @@ NSString *const kSuspendSnapshotName = @"suspend";
     }
     [self syncViewState];
     [self changeState:kVMStopping];
-    self.viewState.suspended = NO;
+    if (self.viewState.suspended) {
+        [self deleteSaveVM];
+    }
     [self saveViewState];
     __block BOOL success = YES;
     dispatch_semaphore_t reset_sema = dispatch_semaphore_create(0);
@@ -394,6 +396,27 @@ NSString *const kSuspendSnapshotName = @"suspend";
     _is_busy = NO;
 }
 
+- (void)deleteSaveVM {
+    __block BOOL success = YES;
+    dispatch_semaphore_t save_sema = dispatch_semaphore_create(0);
+    [_qemu vmDeleteSaveWithCompletion:^(NSString *result, NSError *err) {
+        NSLog(@"delete save callback: %@", result);
+        if (err) {
+            NSLog(@"error: %@", err);
+            success = NO;
+        }
+        dispatch_semaphore_signal(save_sema);
+    } snapshotName:kSuspendSnapshotName];
+    if (dispatch_semaphore_wait(save_sema, dispatch_time(DISPATCH_TIME_NOW, kStopTimeout)) != 0) {
+        NSLog(@"Delete save operation timeout");
+        success = NO;
+    } else {
+        NSLog(@"Delete save completed");
+    }
+    self.viewState.suspended = NO;
+    [self saveViewState];
+}
+
 - (void)resumeVM {
     @synchronized (self) {
         if (self.busy || self.state != kVMPaused) {
@@ -423,8 +446,9 @@ NSString *const kSuspendSnapshotName = @"suspend";
     } else {
         [self changeState:kVMError];
     }
-    self.viewState.suspended = NO;
-    [self saveViewState];
+    if (self.viewState.suspended) {
+        [self deleteSaveVM];
+    }
     _is_busy = NO;
 }
 
@@ -460,7 +484,9 @@ NSString *const kSuspendSnapshotName = @"suspend";
         // update state
         [self changeState:kVMStarted];
         [self restoreViewState];
-        self.viewState.suspended = NO;
+        if (self.viewState.suspended) {
+            [self deleteSaveVM];
+        }
     }
 }
 
