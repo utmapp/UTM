@@ -105,6 +105,9 @@ Implementation of renderer class which performs Metal setup and per frame render
 /// Called whenever the view needs to render a frame
 - (void)drawInMTKView:(nonnull MTKView *)view
 {
+    if (view.hidden) {
+        return;
+    }
 
     // Create a new command buffer for each render pass to the current drawable
     id<MTLCommandBuffer> commandBuffer = [_commandQueue commandBuffer];
