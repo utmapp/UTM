@@ -19,6 +19,8 @@
 const NSString *const kUTMViewStateDisplayScaleKey = @"DisplayScale";
 const NSString *const kUTMViewStateDisplayOriginXKey = @"DisplayOriginX";
 const NSString *const kUTMViewStateDisplayOriginYKey = @"DisplayOriginY";
+const NSString *const kUTMViewStateDisplaySizeWidthKey = @"DisplaySizeWidth";
+const NSString *const kUTMViewStateDisplaySizeHeightKey = @"DisplaySizeHeight";
 const NSString *const kUTMViewStateShowToolbarKey = @"ShowToolbar";
 const NSString *const kUTMViewStateShowKeyboardKey = @"ShowKeyboard";
 const NSString *const kUTMViewStateSuspendedKey = @"Suspended";
@@ -63,6 +65,22 @@ const NSString *const kUTMViewStateSuspendedKey = @"Suspended";
     _rootDict[kUTMViewStateDisplayOriginYKey] = @(displayOriginY);
 }
 
+- (double)displaySizeWidth {
+    return [_rootDict[kUTMViewStateDisplaySizeWidthKey] doubleValue];
+}
+
+- (void)setDisplaySizeWidth:(double)displaySizeWidth {
+    _rootDict[kUTMViewStateDisplaySizeWidthKey] = @(displaySizeWidth);
+}
+
+- (double)displaySizeHeight {
+    return [_rootDict[kUTMViewStateDisplaySizeHeightKey] doubleValue];
+}
+
+- (void)setDisplaySizeHeight:(double)displaySizeHeight {
+    _rootDict[kUTMViewStateDisplaySizeHeightKey] = @(displaySizeHeight);
+}
+
 - (BOOL)showToolbar {
     return [_rootDict[kUTMViewStateShowToolbarKey] boolValue];
 }
@@ -96,6 +114,8 @@ const NSString *const kUTMViewStateSuspendedKey = @"Suspended";
         self.displayScale = 1.0;
         self.displayOriginX = 0;
         self.displayOriginY = 0;
+        self.displaySizeWidth = 0;
+        self.displaySizeHeight = 0;
         self.showKeyboard = NO;
         self.showToolbar = YES;
     }

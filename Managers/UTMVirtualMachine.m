@@ -199,9 +199,6 @@ NSString *const kSuspendSnapshotName = @"suspend";
     if (self.configuration.debugLogEnabled) {
         [self.logging logToFile:[self.path URLByAppendingPathComponent:[UTMConfiguration debugLogName]]];
     }
-    // register observers
-    [self addObserver:self forKeyPath:@"primaryDisplay.viewportScale" options:0 context:nil];
-    [self addObserver:self forKeyPath:@"primaryDisplay.displaySize" options:0 context:nil];
     if (!_qemu_system) {
         _qemu_system = [[UTMQemuSystem alloc] initWithConfiguration:self.configuration imgPath:self.path];
         _qemu = [[UTMQemuManager alloc] init];
@@ -411,6 +408,10 @@ NSString *const kSuspendSnapshotName = @"suspend";
         self.delegate.vmInput = input;
         _primaryDisplay = display;
         _primaryInput = input;
+        // register observers
+        [self addObserver:self forKeyPath:@"primaryDisplay.viewportScale" options:0 context:nil];
+        [self addObserver:self forKeyPath:@"primaryDisplay.displaySize" options:0 context:nil];
+        // update state
         [self changeState:kVMStarted];
         [self restoreViewState];
     }
@@ -488,6 +489,8 @@ NSString *const kSuspendSnapshotName = @"suspend";
 - (void)syncViewState {
     self.viewState.displayOriginX = self.primaryDisplay.viewportOrigin.x;
     self.viewState.displayOriginY = self.primaryDisplay.viewportOrigin.y;
+    self.viewState.displaySizeWidth = self.primaryDisplay.displaySize.width;
+    self.viewState.displaySizeHeight = self.primaryDisplay.displaySize.height;
     self.viewState.displayScale = self.primaryDisplay.viewportScale;
     self.viewState.showToolbar = self.delegate.toolbarVisible;
     self.viewState.showKeyboard = self.delegate.keyboardVisible;
@@ -496,6 +499,7 @@ NSString *const kSuspendSnapshotName = @"suspend";
 - (void)restoreViewState {
     dispatch_async(dispatch_get_main_queue(), ^{
         self.primaryDisplay.viewportOrigin = CGPointMake(self.viewState.displayOriginX, self.viewState.displayOriginY);
+        self.primaryDisplay.displaySize = CGSizeMake(self.viewState.displaySizeWidth, self.viewState.displaySizeHeight);
         self.primaryDisplay.viewportScale = self.viewState.displayScale;
         self.delegate.toolbarVisible = self.viewState.showToolbar;
         self.delegate.keyboardVisible = self.viewState.showKeyboard;
