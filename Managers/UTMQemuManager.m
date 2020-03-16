@@ -257,7 +257,7 @@ void qmp_rpc_call(CFDictionaryRef args, CFDictionaryRef *ret, Error **err, void 
     [self vmPowerAction:qmp_quit completion:completion];
 }
 
-- (void)vmSuspendWithCompletion:(void (^)(NSString * _Nullable, NSError * _Nullable))completion snapshotName:(NSString *)name {
+- (void)vmSaveWithCompletion:(void (^)(NSString * _Nullable, NSError * _Nullable))completion snapshotName:(NSString *)name {
     NSString *cmd = [NSString stringWithFormat:@"savevm %@", name];
     [self vmHmpCommand:cmd completion:completion];
 }

@@ -332,7 +332,7 @@ NSString *const kSuspendSnapshotName = @"suspend";
     _is_busy = NO;
 }
 
-- (void)pauseVMWithSnapshot:(BOOL)snapshot {
+- (void)pauseVM {
     @synchronized (self) {
         if (self.busy || self.state != kVMStarted) {
             return; // already stopping
@@ -357,29 +357,40 @@ NSString *const kSuspendSnapshotName = @"suspend";
         NSLog(@"Stop operation timeout");
         success = NO;
     }
-    if (success && snapshot) {
-        [_qemu vmSuspendWithCompletion:^(NSString *result, NSError *err) {
-            NSLog(@"suspend callback: %@", result);
-            if (err) {
-                NSLog(@"error: %@", err);
-                success = NO;
-            }
-            dispatch_semaphore_signal(suspend_sema);
-        } snapshotName:kSuspendSnapshotName];
-        if (dispatch_semaphore_wait(suspend_sema, dispatch_time(DISPATCH_TIME_NOW, kStopTimeout)) != 0) {
-            NSLog(@"Suspend operation timeout");
-            success = NO;
-        } else {
-            NSLog(@"Suspend completed");
-        }
-        self.viewState.suspended = YES;
-        [self saveViewState];
-    }
     if (success) {
         [self changeState:kVMPaused];
     } else {
         [self changeState:kVMError];
     }
+    _is_busy = NO;
+}
+
+- (void)saveVM {
+    @synchronized (self) {
+        if (self.busy || (self.state != kVMPaused && self.state != kVMStarted)) {
+            return;
+        } else {
+            _is_busy = YES;
+        }
+    }
+    __block BOOL success = YES;
+    dispatch_semaphore_t save_sema = dispatch_semaphore_create(0);
+    [_qemu vmSaveWithCompletion:^(NSString *result, NSError *err) {
+        NSLog(@"save callback: %@", result);
+        if (err) {
+            NSLog(@"error: %@", err);
+            success = NO;
+        }
+        dispatch_semaphore_signal(save_sema);
+    } snapshotName:kSuspendSnapshotName];
+    if (dispatch_semaphore_wait(save_sema, dispatch_time(DISPATCH_TIME_NOW, kStopTimeout)) != 0) {
+        NSLog(@"Save operation timeout");
+        success = NO;
+    } else {
+        NSLog(@"Save completed");
+    }
+    self.viewState.suspended = YES;
+    [self saveViewState];
     _is_busy = NO;
 }
 

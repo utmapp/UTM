@@ -174,6 +174,8 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillChangeFrame:) name:UIKeyboardWillChangeFrameNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleEnteredBackground:) name:UIApplicationDidEnterBackgroundNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleEnteredForeground:) name:UIApplicationWillEnterForegroundNotification object:nil];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -182,6 +184,8 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillShowNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillHideNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillChangeFrameNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationDidEnterBackgroundNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationWillEnterForegroundNotification object:nil];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -603,7 +607,8 @@ static CGFloat CGPointToPixel(CGFloat point) {
 - (IBAction)pauseResumePressed:(UIButton *)sender {
     dispatch_async(dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0), ^{
         if (self.vm.state == kVMStarted) {
-            [self.vm pauseVMWithSnapshot:YES];
+            [self.vm pauseVM];
+            [self.vm saveVM];
         } else if (self.vm.state == kVMPaused) {
             [self.vm resumeVM];
         }
@@ -689,8 +694,18 @@ static CGFloat CGPointToPixel(CGFloat point) {
     });
 }
 
-#pragma mark - Memory warning
+#pragma mark - Notification Handling
 
+- (void)handleEnteredBackground:(NSNotification *)notification {
+    NSLog(@"Entering background");
+    if (self.vm.state == kVMStarted) {
+        [self.vm saveVM];
+    }
+}
+
+- (void)handleEnteredForeground:(NSNotification *)notification {
+    NSLog(@"Entering foreground!");
+}
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
