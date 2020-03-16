@@ -298,6 +298,40 @@ NSString *const kSuspendSnapshotName = @"suspend";
     _is_busy = NO;
 }
 
+- (void)resetVM {
+    @synchronized (self) {
+        if (self.busy || (self.state != kVMStarted && self.state != kVMPaused)) {
+            return; // already stopping
+        } else {
+            _is_busy = YES;
+        }
+    }
+    [self syncViewState];
+    [self changeState:kVMStopping];
+    self.viewState.suspended = NO;
+    [self saveViewState];
+    __block BOOL success = YES;
+    dispatch_semaphore_t reset_sema = dispatch_semaphore_create(0);
+    [_qemu vmResetWithCompletion:^(NSError *err) {
+        NSLog(@"reset callback: err? %@", err);
+        if (err) {
+            NSLog(@"error: %@", err);
+            success = NO;
+        }
+        dispatch_semaphore_signal(reset_sema);
+    }];
+    if (dispatch_semaphore_wait(reset_sema, dispatch_time(DISPATCH_TIME_NOW, kStopTimeout)) != 0) {
+        NSLog(@"Reset operation timeout");
+        success = NO;
+    }
+    if (success) {
+        [self changeState:kVMStarted];
+    } else {
+        [self changeState:kVMError];
+    }
+    _is_busy = NO;
+}
+
 - (void)pauseVMWithSnapshot:(BOOL)snapshot {
     @synchronized (self) {
         if (self.busy || self.state != kVMStarted) {

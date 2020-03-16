@@ -51,6 +51,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)startVM;
 - (void)quitVM;
+- (void)resetVM;
 - (void)pauseVMWithSnapshot:(BOOL)snapshot;
 - (void)resumeVM;
 

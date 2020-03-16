@@ -217,6 +217,7 @@
             [self.placeholderIndicator stopAnimating];
             self.toolbarVisible = YES; // always show toolbar when paused
             self.pauseResumeButton.enabled = YES;
+            self.restartButton.enabled = YES;
             [self.pauseResumeButton setImage:[UIImage imageNamed:@"Toolbar Start"] forState:UIControlStateNormal];
             [self.powerExitButton setImage:[UIImage imageNamed:@"Toolbar Exit"] forState:UIControlStateNormal];
             break;
@@ -227,6 +228,7 @@
         case kVMResuming: {
             self.resumeBigButton.hidden = YES;
             self.pauseResumeButton.enabled = NO;
+            self.restartButton.enabled = NO;
             self.placeholderView.hidden = NO;
             [self.placeholderIndicator startAnimating];
             [self.powerExitButton setImage:[UIImage imageNamed:@"Toolbar Exit"] forState:UIControlStateNormal];
@@ -241,6 +243,7 @@
             } completion:nil];
             [self.placeholderIndicator stopAnimating];
             self.pauseResumeButton.enabled = YES;
+            self.restartButton.enabled = YES;
             [self.pauseResumeButton setImage:[UIImage imageNamed:@"Toolbar Pause"] forState:UIControlStateNormal];
             [self.powerExitButton setImage:[UIImage imageNamed:@"Toolbar Power"] forState:UIControlStateNormal];
             self->_renderer.sourceScreen = self.vmDisplay;
@@ -631,6 +634,15 @@ static CGFloat CGPointToPixel(CGFloat point) {
 }
 
 - (IBAction)restartPressed:(UIButton *)sender {
+    UIAlertAction *yes = [UIAlertAction actionWithTitle:NSLocalizedString(@"Yes", @"VMDisplayMetalViewController") style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action){
+        dispatch_async(dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0), ^{
+            [self.vm resetVM];
+        });
+    }];
+    UIAlertAction *no = [UIAlertAction actionWithTitle:NSLocalizedString(@"No", @"VMDisplayMetalViewController") style:UIAlertActionStyleCancel handler:nil];
+    [self showAlert:NSLocalizedString(@"Are you sure you want to reset this VM? Any unsaved changes will be lost.", @"VMDisplayMetalViewController")
+            actions:@[yes, no]
+         completion:nil];
 }
 
 - (IBAction)showKeyboardButton:(UIButton *)sender {
