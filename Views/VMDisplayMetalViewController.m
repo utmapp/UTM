@@ -57,9 +57,6 @@
     // visibility
     BOOL _toolbarVisible;
     BOOL _keyboardVisible;
-    
-    // running
-    BOOL _isRunning;
 }
 
 @synthesize vmMessage;
@@ -194,56 +191,54 @@
     }
 }
 
-- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context {
-    // make sure the CSDisplay properties are synced with the CSInput
-    if ([keyPath isEqualToString:@"vmDisplay.viewportScale"]) {
-        self.vmInput.viewportScale = self.vmDisplay.viewportScale;
-    } else if ([keyPath isEqualToString:@"vmDisplay.displaySize"]) {
-        self.vmInput.displaySize = self.vmDisplay.displaySize;
-    }
-}
-
 - (void)virtualMachine:(UTMVirtualMachine *)vm transitionToState:(UTMVMState)state {
-    dispatch_async(dispatch_get_main_queue(), ^{
     switch (state) {
         case kVMError: {
+            [self.placeholderIndicator stopAnimating];
             NSString *msg = self.vmMessage ? self.vmMessage : NSLocalizedString(@"An internal error has occured.", @"UTMQemuManager");
             [self showAlert:msg completion:^(UIAlertAction *action){
-                //[self performSegueWithIdentifier:@"returnToList" sender:self];
+                //TODO: exit on error
             }];
             break;
         }
-        case kVMPausing:
-        case kVMStopping: {
-            self.pauseResumeButton.enabled = NO;
-            break;
-        }
+        case kVMStopped:
         case kVMPaused:
-        case kVMStopped: {
+        case kVMSuspended: {
+            [UIView transitionWithView:self.view duration:0.5 options:UIViewAnimationOptionTransitionCrossDissolve animations:^{
+                self.mtkView.hidden = YES;
+                self.placeholderView.hidden = NO;
+                self.placeholderImageView.hidden = NO;
+                self.placeholderImageView.image = self.vm.screenshot;
+            } completion:nil];
+            [self.placeholderIndicator stopAnimating];
             self.toolbarVisible = YES; // always show toolbar when paused
             self.pauseResumeButton.enabled = YES;
             [self.pauseResumeButton setImage:[UIImage imageNamed:@"Toolbar Start"] forState:UIControlStateNormal];
-            self->_isRunning = NO;
-            /*
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [self performSegueWithIdentifier:@"returnToList" sender:self];
-            });
-             */
+            break;
+        }
+        case kVMPausing:
+        case kVMStopping:
+        case kVMStarting:
+        case kVMResuming: {
+            self.pauseResumeButton.enabled = NO;
+            self.placeholderView.hidden = NO;
+            [self.placeholderIndicator startAnimating];
             break;
         }
         case kVMStarted: {
+            [UIView transitionWithView:self.view duration:0.5 options:UIViewAnimationOptionTransitionCrossDissolve animations:^{
+                self.mtkView.hidden = NO;
+                self.placeholderView.hidden = YES;
+                self.placeholderImageView.hidden = YES;
+            } completion:nil];
+            [self.placeholderIndicator stopAnimating];
             self.pauseResumeButton.enabled = YES;
             [self.pauseResumeButton setImage:[UIImage imageNamed:@"Toolbar Pause"] forState:UIControlStateNormal];
             self->_renderer.sourceScreen = self.vmDisplay;
             self->_renderer.sourceCursor = self.vmInput;
-            self->_isRunning = YES;
             break;
         }
-        default: {
-            break; // TODO: Implement
-        }
     }
-    });
 }
 
 - (void)sendExtendedKey:(SendKeyType)type code:(int)code {
@@ -435,24 +430,20 @@ static CGFloat CGPointToPixel(CGFloat point) {
 
 - (IBAction)gestureSwipeUp:(UISwipeGestureRecognizer *)sender {
     if (sender.state == UIGestureRecognizerStateEnded) {
-        if (_isRunning) {
-            if (self.toolbarVisible) {
-                self.toolbarVisible = NO;
-            } else if (!self.keyboardVisible) {
-                self.keyboardVisible = YES;
-            }
+        if (self.toolbarVisible) {
+            self.toolbarVisible = NO;
+        } else if (!self.keyboardVisible) {
+            self.keyboardVisible = YES;
         }
     }
 }
 
 - (IBAction)gestureSwipeDown:(UISwipeGestureRecognizer *)sender {
     if (sender.state == UIGestureRecognizerStateEnded) {
-        if (_isRunning) {
-            if (self.keyboardVisible) {
-                self.keyboardVisible = NO;
-            } else if (!self.toolbarVisible) {
-                self.toolbarVisible = YES;
-            }
+        if (self.keyboardVisible) {
+            self.keyboardVisible = NO;
+        } else if (!self.toolbarVisible) {
+            self.toolbarVisible = YES;
         }
     }
 }
@@ -598,7 +589,7 @@ static CGFloat CGPointToPixel(CGFloat point) {
 }
 
 - (IBAction)touchPausePressed:(UIButton *)sender {
-    if (_isRunning) {
+    if (self.vm.state == kVMStarted) {
         dispatch_async(dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0), ^{
             [self.vm pauseVMWithSnapshot:YES];
         });

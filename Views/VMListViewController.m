@@ -221,7 +221,7 @@
         UTMVirtualMachine *vm = [self vmForCell:cell];
         metalView.vm = vm;
         vm.delegate = metalView;
-        [cell changeState:kVMStarting image:nil];
+        [metalView virtualMachine:vm transitionToState:vm.state];
     }
 }
 

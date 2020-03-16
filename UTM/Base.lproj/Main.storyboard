@@ -2090,6 +2090,49 @@
                             <mtkView contentMode="scaleToFill" colorPixelFormat="BGRA8Unorm" depthStencilPixelFormat="Depth32Float" translatesAutoresizingMaskIntoConstraints="NO" id="ZK0-vH-7ok">
                                 <rect key="frame" x="0.0" y="0.0" width="375" height="812"/>
                             </mtkView>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" insetsLayoutMarginsFromSafeArea="NO" translatesAutoresizingMaskIntoConstraints="NO" id="b33-3Y-vG8">
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="812"/>
+                                <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            </imageView>
+                            <visualEffectView opaque="NO" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" translatesAutoresizingMaskIntoConstraints="NO" id="QXw-Nd-3bE">
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="812"/>
+                                <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="Ebe-6D-2qI">
+                                    <rect key="frame" x="0.0" y="0.0" width="375" height="812"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                    <subviews>
+                                        <visualEffectView opaque="NO" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" translatesAutoresizingMaskIntoConstraints="NO" id="0wd-zl-ieP">
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="812"/>
+                                            <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="A3d-s9-zrW">
+                                                <rect key="frame" x="0.0" y="0.0" width="375" height="812"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                <subviews>
+                                                    <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="large" translatesAutoresizingMaskIntoConstraints="NO" id="prg-P9-xkh">
+                                                        <rect key="frame" x="162.66666666666666" y="381" width="50" height="50"/>
+                                                        <constraints>
+                                                            <constraint firstAttribute="width" constant="50" id="7MI-BV-iFm"/>
+                                                            <constraint firstAttribute="height" constant="50" id="M4a-NF-QgF"/>
+                                                        </constraints>
+                                                    </activityIndicatorView>
+                                                </subviews>
+                                                <constraints>
+                                                    <constraint firstItem="prg-P9-xkh" firstAttribute="centerY" secondItem="A3d-s9-zrW" secondAttribute="centerY" id="b6c-dX-zl9"/>
+                                                    <constraint firstItem="prg-P9-xkh" firstAttribute="centerX" secondItem="A3d-s9-zrW" secondAttribute="centerX" id="upC-11-jBn"/>
+                                                </constraints>
+                                            </view>
+                                            <vibrancyEffect>
+                                                <blurEffect style="regular"/>
+                                            </vibrancyEffect>
+                                        </visualEffectView>
+                                    </subviews>
+                                    <constraints>
+                                        <constraint firstItem="0wd-zl-ieP" firstAttribute="top" secondItem="Ebe-6D-2qI" secondAttribute="top" id="7gp-6m-C0G"/>
+                                        <constraint firstAttribute="bottom" secondItem="0wd-zl-ieP" secondAttribute="bottom" id="Cm0-jd-SlC"/>
+                                        <constraint firstAttribute="trailing" secondItem="0wd-zl-ieP" secondAttribute="trailing" id="Eyd-AM-ONi"/>
+                                        <constraint firstItem="0wd-zl-ieP" firstAttribute="leading" secondItem="Ebe-6D-2qI" secondAttribute="leading" id="ek3-bx-slP"/>
+                                    </constraints>
+                                </view>
+                                <blurEffect style="regular"/>
+                            </visualEffectView>
                             <visualEffectView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="VFv-zJ-H5K" userLabel="Toolbar Accessory View">
                                 <rect key="frame" x="0.0" y="0.0" width="375" height="89"/>
                                 <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="9yD-Nn-OmR">
@@ -2237,14 +2280,22 @@
                         </subviews>
                         <gestureRecognizers/>
                         <constraints>
+                            <constraint firstItem="QXw-Nd-3bE" firstAttribute="top" secondItem="WSe-Ri-b4c" secondAttribute="top" id="06w-zK-C3r"/>
+                            <constraint firstAttribute="trailing" secondItem="QXw-Nd-3bE" secondAttribute="trailing" id="15c-LX-G5M"/>
                             <constraint firstItem="VFv-zJ-H5K" firstAttribute="top" secondItem="WSe-Ri-b4c" secondAttribute="top" id="3Ee-g7-mwo"/>
+                            <constraint firstItem="b33-3Y-vG8" firstAttribute="top" secondItem="ZK0-vH-7ok" secondAttribute="top" id="7L7-hI-PBg"/>
+                            <constraint firstItem="QXw-Nd-3bE" firstAttribute="leading" secondItem="WSe-Ri-b4c" secondAttribute="leading" id="Bjb-TA-u6w"/>
+                            <constraint firstItem="b33-3Y-vG8" firstAttribute="leading" secondItem="ZK0-vH-7ok" secondAttribute="leading" id="Btq-f0-3I0"/>
+                            <constraint firstItem="ZK0-vH-7ok" firstAttribute="bottom" secondItem="b33-3Y-vG8" secondAttribute="bottom" id="Ede-00-OJf"/>
                             <constraint firstItem="0Mf-V7-Aot" firstAttribute="leading" secondItem="Bio-ez-YeW" secondAttribute="leading" id="L0U-9R-jjD"/>
                             <constraint firstAttribute="bottom" secondItem="ZK0-vH-7ok" secondAttribute="bottom" id="cgW-vJ-VjV"/>
                             <constraint firstAttribute="trailing" secondItem="ZK0-vH-7ok" secondAttribute="trailing" id="dMk-GY-XOa"/>
+                            <constraint firstItem="b33-3Y-vG8" firstAttribute="trailing" secondItem="ZK0-vH-7ok" secondAttribute="trailing" id="elg-ge-jb0"/>
                             <constraint firstItem="ZK0-vH-7ok" firstAttribute="top" secondItem="WSe-Ri-b4c" secondAttribute="top" id="fbF-cf-IeV"/>
                             <constraint firstItem="VFv-zJ-H5K" firstAttribute="leading" secondItem="Bio-ez-YeW" secondAttribute="leading" priority="750" id="ha4-D3-bRt"/>
                             <constraint firstItem="VFv-zJ-H5K" firstAttribute="trailing" secondItem="Bio-ez-YeW" secondAttribute="trailing" priority="750" id="j1r-dg-ACo"/>
                             <constraint firstItem="0Mf-V7-Aot" firstAttribute="top" secondItem="Bio-ez-YeW" secondAttribute="top" id="ntS-ba-sAF"/>
+                            <constraint firstAttribute="bottom" secondItem="QXw-Nd-3bE" secondAttribute="bottom" id="oAF-AJ-UnJ"/>
                             <constraint firstItem="VFv-zJ-H5K" firstAttribute="centerX" secondItem="WSe-Ri-b4c" secondAttribute="centerX" id="okU-XJ-CrC"/>
                             <constraint firstItem="VFv-zJ-H5K" firstAttribute="bottom" secondItem="Bio-ez-YeW" secondAttribute="top" constant="45" id="vEm-qT-m5h"/>
                             <constraint firstItem="ZK0-vH-7ok" firstAttribute="leading" secondItem="WSe-Ri-b4c" secondAttribute="leading" id="ws8-g9-a5x"/>
@@ -2259,6 +2310,9 @@
                         <outlet property="keyboardView" destination="0Mf-V7-Aot" id="MgM-9f-E25"/>
                         <outlet property="mtkView" destination="ZK0-vH-7ok" id="x0C-ao-tuC"/>
                         <outlet property="pauseResumeButton" destination="bjd-4T-OVm" id="uJK-aZ-KnO"/>
+                        <outlet property="placeholderImageView" destination="b33-3Y-vG8" id="sSB-Md-PV3"/>
+                        <outlet property="placeholderIndicator" destination="prg-P9-xkh" id="DMs-xJ-Ea7"/>
+                        <outlet property="placeholderView" destination="QXw-Nd-3bE" id="drX-VQ-NFA"/>
                         <outlet property="toolbarAccessoryView" destination="VFv-zJ-H5K" id="hkm-Wv-Reu"/>
                         <outlet property="zoomButton" destination="m9f-Az-rlH" id="mfe-Ou-UL7"/>
                         <outletCollection property="customKeyButtons" destination="1LD-5d-0Ee" id="joR-H1-pbq"/>

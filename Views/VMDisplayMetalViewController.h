@@ -39,6 +39,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) BOOL lastDisplayChangeResize;
 @property (weak, nonatomic) IBOutlet UIButton *pauseResumeButton;
 @property (weak, nonatomic) IBOutlet UIButton *zoomButton;
+@property (weak, nonatomic) IBOutlet UIVisualEffectView *placeholderView;
+@property (weak, nonatomic) IBOutlet UIImageView *placeholderImageView;
+@property (weak, nonatomic) IBOutlet UIActivityIndicatorView *placeholderIndicator;
 @property (strong, nonatomic) IBOutletCollection(VMKeyboardButton) NSArray *customKeyButtons;
 @property (strong, nonatomic) IBOutletCollection(VMKeyboardButton) NSArray *customKeyModifierButtons;
 @property (nonatomic, readonly) BOOL serverModeCursor;

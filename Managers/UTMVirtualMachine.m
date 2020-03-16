@@ -129,7 +129,9 @@ NSString *const kSuspendSnapshotName = @"suspend";
 - (void)changeState:(UTMVMState)state {
     @synchronized (self) {
         _state = state;
-        [self.delegate virtualMachine:self transitionToState:state];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.delegate virtualMachine:self transitionToState:state];
+        });
     }
 }
 
