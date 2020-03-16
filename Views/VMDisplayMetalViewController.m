@@ -193,6 +193,10 @@
 }
 
 - (void)virtualMachine:(UTMVirtualMachine *)vm transitionToState:(UTMVMState)state {
+    static BOOL hasStartedOnce = NO;
+    if (hasStartedOnce && state == kVMStopped) {
+        exit(0);
+    }
     switch (state) {
         case kVMError: {
             [self.placeholderIndicator stopAnimating];
@@ -218,7 +222,7 @@
             [self.placeholderIndicator stopAnimating];
             self.toolbarVisible = YES; // always show toolbar when paused
             self.pauseResumeButton.enabled = YES;
-            self.restartButton.enabled = YES;
+            self.restartButton.enabled = NO;
             [self.pauseResumeButton setImage:[UIImage imageNamed:@"Toolbar Start"] forState:UIControlStateNormal];
             [self.powerExitButton setImage:[UIImage imageNamed:@"Toolbar Exit"] forState:UIControlStateNormal];
             break;
@@ -236,6 +240,7 @@
             break;
         }
         case kVMStarted: {
+            hasStartedOnce = YES; // auto-quit after VM ends
             [UIView transitionWithView:self.view duration:0.5 options:UIViewAnimationOptionTransitionCrossDissolve animations:^{
                 self.mtkView.hidden = NO;
                 self.placeholderView.hidden = YES;
