@@ -341,4 +341,8 @@
     });
 }
 
+- (IBAction)exitUTM:(UIBarButtonItem *)sender {
+    exit(0);
+}
+
 @end
