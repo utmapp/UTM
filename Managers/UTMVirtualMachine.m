@@ -182,6 +182,7 @@ NSString *const kSuspendSnapshotName = @"suspend";
 }
 
 - (void)errorTriggered:(nullable NSString *)msg {
+    self.viewState.suspended = NO;
     [self quitVM];
     self.delegate.vmMessage = msg;
     [self changeState:kVMError];
@@ -414,6 +415,7 @@ NSString *const kSuspendSnapshotName = @"suspend";
         // update state
         [self changeState:kVMStarted];
         [self restoreViewState];
+        self.viewState.suspended = NO;
     }
 }
 
