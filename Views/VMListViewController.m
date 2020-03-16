@@ -341,12 +341,4 @@
     });
 }
 
-- (IBAction)exitUTM:(UIBarButtonItem *)sender {
-    UIAlertAction *yes = [UIAlertAction actionWithTitle:NSLocalizedString(@"Yes", @"Yes button") style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action){
-        exit(0);
-    }];
-    UIAlertAction *no = [UIAlertAction actionWithTitle:NSLocalizedString(@"No", @"No button") style:UIAlertActionStyleCancel handler:nil];
-    [self showAlert:NSLocalizedString(@"Are you sure you want to exit UTM? Any running VM will be killed.", @"Exit confirmation") actions:@[yes, no] completion:nil];
-}
-
 @end

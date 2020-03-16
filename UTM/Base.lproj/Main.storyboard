@@ -141,11 +141,6 @@
                         </connections>
                     </collectionView>
                     <navigationItem key="navigationItem" title="Virtual Machines" id="y7c-vs-jlM">
-                        <barButtonItem key="leftBarButtonItem" systemItem="stop" id="Jnw-zM-dyF">
-                            <connections>
-                                <action selector="exitUTM:" destination="krH-Hz-4fz" id="wcV-cc-N6y"/>
-                            </connections>
-                        </barButtonItem>
                         <barButtonItem key="rightBarButtonItem" systemItem="add" id="e5k-lL-Xj6">
                             <connections>
                                 <segue destination="2Ff-Ox-yNa" kind="popoverPresentation" identifier="newVM" popoverAnchorBarButtonItem="e5k-lL-Xj6" id="uhI-Ry-wJ8">
