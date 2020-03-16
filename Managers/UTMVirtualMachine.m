@@ -188,10 +188,10 @@ NSString *const kSuspendSnapshotName = @"suspend";
     [self changeState:kVMError];
 }
 
-- (void)startVM {
+- (BOOL)startVM {
     @synchronized (self) {
         if (self.busy || (self.state != kVMStopped && self.state != kVMSuspended)) {
-            return; // already started
+            return NO; // already started
         } else {
             _is_busy = YES;
         }
@@ -216,7 +216,7 @@ NSString *const kSuspendSnapshotName = @"suspend";
     if (!_qemu_system || !_spice || !_spice_connection) {
         [self errorTriggered:NSLocalizedString(@"Internal error starting VM.", @"UTMVirtualMachine")];
         _is_busy = NO;
-        return;
+        return NO;
     }
     _spice_connection.glibMainContext = _spice.glibMainContext;
     self.delegate.vmMessage = nil;
@@ -231,7 +231,7 @@ NSString *const kSuspendSnapshotName = @"suspend";
     if (![_spice spiceStart]) {
         [self errorTriggered:NSLocalizedString(@"Internal error starting main loop.", @"UTMVirtualMachine")];
         _is_busy = NO;
-        return;
+        return NO;
     }
     if (self.viewState.suspended) {
         _qemu_system.snapshot = kSuspendSnapshotName;
@@ -254,12 +254,13 @@ NSString *const kSuspendSnapshotName = @"suspend";
     }
     [self->_qemu connect];
     _is_busy = NO;
+    return YES;
 }
 
-- (void)quitVM {
+- (BOOL)quitVM {
     @synchronized (self) {
         if (self.busy || self.state != kVMStarted) {
-            return; // already stopping
+            return NO; // already stopping
         } else {
             _is_busy = YES;
         }
@@ -296,12 +297,13 @@ NSString *const kSuspendSnapshotName = @"suspend";
     // stop logging
     [self.logging endLog];
     _is_busy = NO;
+    return YES;
 }
 
-- (void)resetVM {
+- (BOOL)resetVM {
     @synchronized (self) {
         if (self.busy || (self.state != kVMStarted && self.state != kVMPaused)) {
-            return; // already stopping
+            return NO; // already stopping
         } else {
             _is_busy = YES;
         }
@@ -332,12 +334,13 @@ NSString *const kSuspendSnapshotName = @"suspend";
         [self changeState:kVMError];
     }
     _is_busy = NO;
+    return success;
 }
 
-- (void)pauseVM {
+- (BOOL)pauseVM {
     @synchronized (self) {
         if (self.busy || self.state != kVMStarted) {
-            return; // already stopping
+            return NO; // already stopping
         } else {
             _is_busy = YES;
         }
@@ -365,12 +368,13 @@ NSString *const kSuspendSnapshotName = @"suspend";
         [self changeState:kVMError];
     }
     _is_busy = NO;
+    return success;
 }
 
-- (void)saveVM {
+- (BOOL)saveVM {
     @synchronized (self) {
         if (self.busy || (self.state != kVMPaused && self.state != kVMStarted)) {
-            return;
+            return NO;
         } else {
             _is_busy = YES;
         }
@@ -394,9 +398,10 @@ NSString *const kSuspendSnapshotName = @"suspend";
     self.viewState.suspended = YES;
     [self saveViewState];
     _is_busy = NO;
+    return success;
 }
 
-- (void)deleteSaveVM {
+- (BOOL)deleteSaveVM {
     __block BOOL success = YES;
     dispatch_semaphore_t save_sema = dispatch_semaphore_create(0);
     [_qemu vmDeleteSaveWithCompletion:^(NSString *result, NSError *err) {
@@ -415,12 +420,13 @@ NSString *const kSuspendSnapshotName = @"suspend";
     }
     self.viewState.suspended = NO;
     [self saveViewState];
+    return success;
 }
 
-- (void)resumeVM {
+- (BOOL)resumeVM {
     @synchronized (self) {
         if (self.busy || self.state != kVMPaused) {
-            return;
+            return NO;
         } else {
             _is_busy = YES;
         }
@@ -450,6 +456,7 @@ NSString *const kSuspendSnapshotName = @"suspend";
         [self deleteSaveVM];
     }
     _is_busy = NO;
+    return success;
 }
 
 #pragma mark - Spice connection delegate

@@ -49,13 +49,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)saveUTMWithError:(NSError * _Nullable *)err;
 
-- (void)startVM;
-- (void)quitVM;
-- (void)resetVM;
-- (void)pauseVM;
-- (void)saveVM;
-- (void)deleteSaveVM;
-- (void)resumeVM;
+- (BOOL)startVM;
+- (BOOL)quitVM;
+- (BOOL)resetVM;
+- (BOOL)pauseVM;
+- (BOOL)saveVM;
+- (BOOL)deleteSaveVM;
+- (BOOL)resumeVM;
 
 @end
 
