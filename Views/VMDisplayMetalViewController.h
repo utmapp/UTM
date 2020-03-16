@@ -42,6 +42,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (weak, nonatomic) IBOutlet UIVisualEffectView *placeholderView;
 @property (weak, nonatomic) IBOutlet UIImageView *placeholderImageView;
 @property (weak, nonatomic) IBOutlet UIActivityIndicatorView *placeholderIndicator;
+@property (weak, nonatomic) IBOutlet UIButton *resumeBigButton;
 @property (strong, nonatomic) IBOutletCollection(VMKeyboardButton) NSArray *customKeyButtons;
 @property (strong, nonatomic) IBOutletCollection(VMKeyboardButton) NSArray *customKeyModifierButtons;
 @property (nonatomic, readonly) BOOL serverModeCursor;
@@ -63,7 +64,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (IBAction)gestureSwipeDown:(UISwipeGestureRecognizer *)sender;
 - (IBAction)gestureSwipeScroll:(UISwipeGestureRecognizer *)sender;
 - (IBAction)changeDisplayZoom:(UIButton *)sender;
-- (IBAction)touchPausePressed:(UIButton *)sender;
+- (IBAction)pauseResumePressed:(UIButton *)sender;
 - (IBAction)powerPressed:(UIButton *)sender;
 - (IBAction)showKeyboardButton:(UIButton *)sender;
 - (IBAction)hideToolbarButton:(UIButton *)sender;

@@ -2113,10 +2113,19 @@
                                                             <constraint firstAttribute="height" constant="50" id="M4a-NF-QgF"/>
                                                         </constraints>
                                                     </activityIndicatorView>
+                                                    <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="a0a-Yw-GZc">
+                                                        <rect key="frame" x="162.66666666666666" y="381" width="50" height="50"/>
+                                                        <state key="normal" image="Resume Icon"/>
+                                                        <connections>
+                                                            <action selector="pauseResumePressed:" destination="ckC-eO-gxn" eventType="touchUpInside" id="aBe-YG-OKu"/>
+                                                        </connections>
+                                                    </button>
                                                 </subviews>
                                                 <constraints>
                                                     <constraint firstItem="prg-P9-xkh" firstAttribute="centerY" secondItem="A3d-s9-zrW" secondAttribute="centerY" id="b6c-dX-zl9"/>
+                                                    <constraint firstItem="a0a-Yw-GZc" firstAttribute="centerX" secondItem="A3d-s9-zrW" secondAttribute="centerX" id="rXf-dQ-raE"/>
                                                     <constraint firstItem="prg-P9-xkh" firstAttribute="centerX" secondItem="A3d-s9-zrW" secondAttribute="centerX" id="upC-11-jBn"/>
+                                                    <constraint firstItem="a0a-Yw-GZc" firstAttribute="centerY" secondItem="A3d-s9-zrW" secondAttribute="centerY" id="xGH-KD-Vj1"/>
                                                 </constraints>
                                             </view>
                                             <vibrancyEffect>
@@ -2221,7 +2230,7 @@
                                                                 <inset key="imageEdgeInsets" minX="4" minY="4" maxX="4" maxY="4"/>
                                                                 <state key="normal" image="Toolbar Pause"/>
                                                                 <connections>
-                                                                    <action selector="touchPausePressed:" destination="ckC-eO-gxn" eventType="touchUpInside" id="DYI-VN-mcQ"/>
+                                                                    <action selector="pauseResumePressed:" destination="ckC-eO-gxn" eventType="touchUpInside" id="DYI-VN-mcQ"/>
                                                                 </connections>
                                                             </button>
                                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0Wo-4E-exJ">
@@ -2313,6 +2322,7 @@
                         <outlet property="placeholderImageView" destination="b33-3Y-vG8" id="sSB-Md-PV3"/>
                         <outlet property="placeholderIndicator" destination="prg-P9-xkh" id="DMs-xJ-Ea7"/>
                         <outlet property="placeholderView" destination="QXw-Nd-3bE" id="drX-VQ-NFA"/>
+                        <outlet property="resumeBigButton" destination="a0a-Yw-GZc" id="XrF-Zk-zmY"/>
                         <outlet property="toolbarAccessoryView" destination="VFv-zJ-H5K" id="hkm-Wv-Reu"/>
                         <outlet property="zoomButton" destination="m9f-Az-rlH" id="mfe-Ou-UL7"/>
                         <outletCollection property="customKeyButtons" destination="1LD-5d-0Ee" id="joR-H1-pbq"/>
@@ -3135,6 +3145,7 @@
         <image name="Keyboard Hide" width="30" height="30"/>
         <image name="Keyboard Paste" width="30" height="30"/>
         <image name="Play Icon" width="50" height="50"/>
+        <image name="Resume Icon" width="50" height="50"/>
         <image name="Toolbar Hide" width="30" height="30"/>
         <image name="Toolbar Keyboard" width="30" height="30"/>
         <image name="Toolbar Left" width="30" height="30"/>

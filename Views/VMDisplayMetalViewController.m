@@ -195,6 +195,7 @@
     switch (state) {
         case kVMError: {
             [self.placeholderIndicator stopAnimating];
+            self.resumeBigButton.hidden = YES;
             NSString *msg = self.vmMessage ? self.vmMessage : NSLocalizedString(@"An internal error has occured.", @"UTMQemuManager");
             [self showAlert:msg completion:^(UIAlertAction *action){
                 //TODO: exit on error
@@ -209,6 +210,9 @@
                 self.placeholderView.hidden = NO;
                 self.placeholderImageView.hidden = NO;
                 self.placeholderImageView.image = self.vm.screenshot;
+                if (state == kVMPaused) {
+                    self.resumeBigButton.hidden = NO;
+                }
             } completion:nil];
             [self.placeholderIndicator stopAnimating];
             self.toolbarVisible = YES; // always show toolbar when paused
@@ -220,6 +224,7 @@
         case kVMStopping:
         case kVMStarting:
         case kVMResuming: {
+            self.resumeBigButton.hidden = YES;
             self.pauseResumeButton.enabled = NO;
             self.placeholderView.hidden = NO;
             [self.placeholderIndicator startAnimating];
@@ -230,6 +235,7 @@
                 self.mtkView.hidden = NO;
                 self.placeholderView.hidden = YES;
                 self.placeholderImageView.hidden = YES;
+                self.resumeBigButton.hidden = YES;
             } completion:nil];
             [self.placeholderIndicator stopAnimating];
             self.pauseResumeButton.enabled = YES;
@@ -588,16 +594,14 @@ static CGFloat CGPointToPixel(CGFloat point) {
     self.lastDisplayChangeResize = !self.lastDisplayChangeResize;
 }
 
-- (IBAction)touchPausePressed:(UIButton *)sender {
-    if (self.vm.state == kVMStarted) {
-        dispatch_async(dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0), ^{
+- (IBAction)pauseResumePressed:(UIButton *)sender {
+    dispatch_async(dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0), ^{
+        if (self.vm.state == kVMStarted) {
             [self.vm pauseVMWithSnapshot:YES];
-        });
-    } else {
-        dispatch_async(dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0), ^{
+        } else if (self.vm.state == kVMPaused) {
             [self.vm resumeVM];
-        });
-    }
+        }
+    });
 }
 
 - (IBAction)powerPressed:(UIButton *)sender {
