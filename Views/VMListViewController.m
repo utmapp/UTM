@@ -25,24 +25,15 @@
 @interface VMListViewController ()
 
 @property (nonatomic, readonly) NSURL *documentsPath;
-@property (nonatomic, strong) UTMVirtualMachine *activeVM;
 @property (nonatomic, strong) UTMVirtualMachine *modifyingVM;
 @property (nonatomic, strong) NSArray<UTMVirtualMachine *> *vmList;
 @property (nonatomic, nullable, strong) UIAlertController *alert;
 @property (nonatomic, strong) dispatch_semaphore_t viewVisibleSema;
 @property (nonatomic, strong) dispatch_queue_t viewVisibleQueue;
-@property (nonatomic, weak) VMListViewCell *activeCell;
 
 @end
 
 @implementation VMListViewController
-
-@synthesize vmMessage;
-@synthesize vmDisplay;
-@synthesize vmInput;
-@synthesize vmConfiguration;
-@synthesize toolbarVisible;
-@synthesize keyboardVisible;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -194,18 +185,11 @@
 
 #pragma mark - Navigation
 
-- (nonnull UTMVirtualMachine *)cachedVMForCell:(id)cell {
+- (nonnull UTMVirtualMachine *)vmForCell:(id)cell {
     NSIndexPath *index = [self.collectionView indexPathForCell:cell];
     NSAssert(index, @"Cannot find index for selected VM");
     NSAssert(index.section == 0, @"Invalid section");
-    NSString *name = self.vmList[index.row].configuration.name;
-    if ([self.activeVM.configuration.name isEqualToString:name]) {
-        return self.activeVM;
-    } else if ([self.modifyingVM.configuration.name isEqualToString:name]) {
-        return self.modifyingVM;
-    } else {
-        return self.vmList[index.row];
-    }
+    return self.vmList[index.row];
 }
 
 // In a storyboard-based application, you will often want to do a little preparation before navigation
@@ -217,20 +201,27 @@
         id<UTMConfigurationDelegate> controller = (id<UTMConfigurationDelegate>)navController.topViewController;
         NSAssert([sender isKindOfClass:[UIButton class]], @"Sender is not a UIButton");
         id cell = ((UIButton *)sender).superview.superview;
-        self.modifyingVM = [self cachedVMForCell:cell];
+        self.modifyingVM = [self vmForCell:cell];
         controller.configuration = self.modifyingVM.configuration;
     } else if ([segue.identifier isEqualToString:@"newVM"]) {
         NSAssert([segue.destinationViewController isKindOfClass:[UINavigationController class]], @"Destination not a navigation view");
         UINavigationController *navController = (UINavigationController *)segue.destinationViewController;
         NSAssert([navController.topViewController conformsToProtocol:@protocol(UTMConfigurationDelegate)], @"Invalid segue destination");
         id<UTMConfigurationDelegate> controller = (id<UTMConfigurationDelegate>)navController.topViewController;
-        self.modifyingVM = [[UTMVirtualMachine alloc] initDefaults:[self createNewDefaultName] withDestinationURL:self.documentsPath];
-        controller.configuration = self.modifyingVM.configuration;
-    } else if ([segue.identifier isEqualToString:@"startVM"]) {
+        controller.configuration = [[UTMConfiguration alloc] initDefaults:[self createNewDefaultName]];
+    } else if ([segue.identifier hasPrefix:@"startVM"]) {
         NSAssert([segue.destinationViewController isKindOfClass:[VMDisplayMetalViewController class]], @"Destination not a metal view");
+        id cell;
+        if ([segue.identifier isEqualToString:@"startVMFromButton"]) {
+            cell = ((UIButton *)sender).superview.superview.superview.superview.superview.superview;
+        } else if ([segue.identifier isEqualToString:@"startVMFromScreen"]) {
+            cell = ((UIButton *)sender).superview.superview;
+        }
         VMDisplayMetalViewController *metalView = (VMDisplayMetalViewController *)segue.destinationViewController;
-        [metalView changeVM:self.activeVM];
-        self.activeVM.delegate = metalView;
+        UTMVirtualMachine *vm = [self vmForCell:cell];
+        metalView.vm = vm;
+        vm.delegate = metalView;
+        [cell changeState:kVMStarting image:nil];
     }
 }
 
@@ -251,13 +242,9 @@
     VMListViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"vmListCell" forIndexPath:indexPath];
     
     // Configure the cell
-    NSString *name = self.vmList[indexPath.row].configuration.name;
-    [cell setName:name];
-    if ([self.activeVM.configuration.name isEqualToString:name]) {
-        [cell changeState:self.activeVM.state image:self.activeVM.primaryDisplay.screenshot];
-    } else {
-        [cell changeState:kVMStopped image:nil];
-    }
+    UTMVirtualMachine *vm = self.vmList[indexPath.row];
+    cell.nameLabel.text = self.vmList[indexPath.row].configuration.name;
+    [cell changeState:vm.state image:vm.screenshot];
     
     return cell;
 }
@@ -301,29 +288,6 @@
 }
 */
 
-#pragma mark - VM delegate
-
-- (void)virtualMachine:(UTMVirtualMachine *)vm transitionToState:(UTMVMState)state {
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self.activeCell changeState:state image:vm.screenshot];
-        switch (state) {
-            case kVMError: {
-                NSString *msg = self.vmMessage ? self.vmMessage : NSLocalizedString(@"An internal error has occured.", @"Alert message");
-                [self showAlert:msg actions:nil completion:nil];
-                break;
-            }
-            case kVMStarted:
-            case kVMResumed: {
-                [self performSegueWithIdentifier:@"startVM" sender:self];
-                break;
-            }
-            default: {
-                break;
-            }
-        }
-    });
-}
-
 #pragma mark - Work status indicator
 
 - (void)workStartedWhenVisible:(NSString *)message {
@@ -366,44 +330,15 @@
     dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), ^{
         NSError *err;
         [self workStartedWhenVisible:[NSString stringWithFormat:NSLocalizedString(@"Saving %@...", @"Save VM overlay"), source.configuration.name]];
-        if (source.configuration == self.modifyingVM.configuration) {
-            [self.modifyingVM saveUTMWithError:&err];
-            self.modifyingVM = nil; // must do this BEFORE work complete, or user might press another button
-            [self workCompletedWhenVisible:err.localizedDescription];
+        UTMVirtualMachine *vm;
+        if (self.modifyingVM.configuration == source.configuration) {
+            vm = self.modifyingVM;
         } else {
-            NSLog(@"Trying to save configuration for a VM that is not being edited!\n");
-            [self workCompletedWhenVisible:NSLocalizedString(@"An internal error has occured!", @"Alert message")];
+            vm = [[UTMVirtualMachine alloc] initWithConfiguration:source.configuration withDestinationURL:self.documentsPath];
         }
+        [vm saveUTMWithError:&err];
+        [self workCompletedWhenVisible:err.localizedDescription];
     });
-}
-
-- (IBAction)unwindToMainFromVM:(UIStoryboardSegue*)sender {
-    self.activeVM.delegate = self;
-}
-
-- (void)startVM:(id)cell {
-    NSAssert([cell isKindOfClass:[VMListViewCell class]], @"Invalid cell class");
-    // TODO: Fix the need for this
-    if (self.activeVM != nil) {
-        UTMVirtualMachine *newActive = [self cachedVMForCell:cell];
-        if (self.activeVM != newActive) {
-            [self showAlert:NSLocalizedString(@"Launching another VM is not implemented. Please close UTM with the top left button and re-launch it.", nil) actions:nil completion:nil];
-            return;
-        }
-    }
-    self.activeVM = [self cachedVMForCell:cell];
-    self.activeCell = cell;
-    self.activeVM.delegate = self;
-    [self.activeVM startVM];
-    [self virtualMachine:self.activeVM transitionToState:self.activeVM.state];
-}
-
-- (IBAction)startVMFromButton:(UIButton *)sender {
-    [self startVM:sender.superview.superview.superview.superview.superview.superview];
-}
-
-- (IBAction)startVMFromScreen:(UIButton *)sender {
-    [self startVM:sender.superview.superview];
 }
 
 - (IBAction)exitUTM:(UIBarButtonItem *)sender {

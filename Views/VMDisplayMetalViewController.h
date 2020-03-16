@@ -28,6 +28,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSMutableArray<UIKeyCommand *> *_keyCommands;
 }
 
+@property (nonatomic, strong) UTMVirtualMachine *vm;
 @property (nonatomic, readwrite) BOOL prefersStatusBarHidden;
 @property (weak, nonatomic) IBOutlet MTKView *mtkView;
 @property (weak, nonatomic) IBOutlet VMKeyboardView *keyboardView;
@@ -43,7 +44,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) BOOL serverModeCursor;
 @property (nonatomic, readonly) BOOL touchscreen;
 
-- (void)changeVM:(UTMVirtualMachine *)vm;
 - (void)sendExtendedKey:(SendKeyType)type code:(int)code;
 
 - (CGPoint)clipCursorToDisplay:(CGPoint)pos;

@@ -39,7 +39,7 @@
                                                 <constraint firstAttribute="width" constant="150" id="psZ-ev-pT6"/>
                                             </constraints>
                                             <connections>
-                                                <action selector="startVMFromScreen:" destination="krH-Hz-4fz" eventType="touchUpInside" id="rgh-fC-4kx"/>
+                                                <segue destination="ckC-eO-gxn" kind="show" identifier="startVMFromScreenshot" id="Fgt-US-6Ez"/>
                                             </connections>
                                         </button>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Name" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="VQv-L6-Wpd">
@@ -71,7 +71,7 @@
                                                                     </accessibility>
                                                                     <state key="normal" image="Play Icon"/>
                                                                     <connections>
-                                                                        <action selector="startVMFromButton:" destination="krH-Hz-4fz" eventType="touchUpInside" id="X2m-Qa-jMY"/>
+                                                                        <segue destination="ckC-eO-gxn" kind="show" identifier="startVMFromButton" id="bbf-vu-JjK"/>
                                                                     </connections>
                                                                 </button>
                                                             </subviews>
@@ -154,9 +154,6 @@
                             </connections>
                         </barButtonItem>
                     </navigationItem>
-                    <connections>
-                        <segue destination="ckC-eO-gxn" kind="show" identifier="startVM" id="psC-T5-Ggl"/>
-                    </connections>
                 </collectionViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="gzw-ao-My7" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
@@ -2170,9 +2167,6 @@
                                                                 </constraints>
                                                                 <inset key="imageEdgeInsets" minX="4" minY="4" maxX="4" maxY="4"/>
                                                                 <state key="normal" image="Toolbar Left"/>
-                                                                <connections>
-                                                                    <segue destination="HWN-B0-AD0" kind="unwind" unwindAction="unwindToMainFromVM:" id="wuY-gV-w1x"/>
-                                                                </connections>
                                                             </button>
                                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="bjd-4T-OVm">
                                                                 <rect key="frame" x="38" y="0.0" width="30" height="30"/>
@@ -2257,6 +2251,7 @@
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="Bio-ez-YeW"/>
                     </view>
+                    <navigationItem key="navigationItem" id="LmE-bm-XiG"/>
                     <nil key="simulatedTopBarMetrics"/>
                     <nil key="simulatedBottomBarMetrics"/>
                     <connections>
@@ -2290,7 +2285,6 @@
                         <outletCollection property="customKeyButtons" destination="sOo-ak-Mlv" id="iSO-r1-jnw"/>
                         <outletCollection property="customKeyButtons" destination="nG1-Lj-efg" id="2Wf-1T-f8O"/>
                         <outletCollection property="customKeyButtons" destination="6Oy-qX-zoY" id="Ymz-BD-Wpu"/>
-                        <segue destination="HWN-B0-AD0" kind="unwind" identifier="returnToList" unwindAction="unwindToMainFromVM:" id="dX7-Ni-UhX"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="DZc-Sg-gjO" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -2759,7 +2753,6 @@
                         </userDefinedRuntimeAttribute>
                     </userDefinedRuntimeAttributes>
                 </view>
-                <exit id="HWN-B0-AD0" userLabel="Exit" sceneMemberID="exit"/>
             </objects>
             <point key="canvasLocation" x="1830" y="-624"/>
         </scene>
@@ -3097,6 +3090,7 @@
         <image name="Toolbar Settings" width="30" height="30"/>
     </resources>
     <inferredMetricsTieBreakers>
+        <segue reference="Fgt-US-6Ez"/>
         <segue reference="0fe-13-GUd"/>
         <segue reference="M4J-mO-49e"/>
         <segue reference="eOg-7f-ZC7"/>

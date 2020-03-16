@@ -98,15 +98,20 @@ NSString *const kSuspendSnapshotName = @"suspend";
         _configuration = [[UTMConfiguration alloc] initWithDictionary:plist name:name path:url];
         [self loadViewState];
         [self loadScreenshot];
+        if (self.viewState.suspended) {
+            _state = kVMSuspended;
+        } else {
+            _state = kVMStopped;
+        }
     }
     return self;
 }
 
-- (id)initDefaults:(NSString *)name withDestinationURL:(NSURL *)dstUrl {
+- (id)initWithConfiguration:(UTMConfiguration *)configuration withDestinationURL:(NSURL *)dstUrl {
     self = [self init];
     if (self) {
         self.parentPath = dstUrl;
-        _configuration = [[UTMConfiguration alloc] initDefaults:name];
+        _configuration = configuration;
         self.viewState = [[UTMViewState alloc] initDefaults];
     }
     return self;
@@ -173,7 +178,7 @@ NSString *const kSuspendSnapshotName = @"suspend";
 
 - (void)startVM {
     @synchronized (self) {
-        if (self.busy || self.state != kVMStopped) {
+        if (self.busy || (self.state != kVMStopped && self.state != kVMSuspended)) {
             return; // already started
         } else {
             _is_busy = YES;
@@ -472,10 +477,12 @@ NSString *const kSuspendSnapshotName = @"suspend";
 }
 
 - (void)restoreViewState {
-    self.primaryDisplay.viewportOrigin = CGPointMake(self.viewState.displayOriginX, self.viewState.displayOriginY);
-    self.primaryDisplay.viewportScale = self.viewState.displayScale;
-    self.delegate.toolbarVisible = self.viewState.showToolbar;
-    self.delegate.keyboardVisible = self.viewState.showKeyboard;
+    dispatch_async(dispatch_get_main_queue(), ^{
+        self.primaryDisplay.viewportOrigin = CGPointMake(self.viewState.displayOriginX, self.viewState.displayOriginY);
+        self.primaryDisplay.viewportScale = self.viewState.displayScale;
+        self.delegate.toolbarVisible = self.viewState.showToolbar;
+        self.delegate.keyboardVisible = self.viewState.showKeyboard;
+    });
 }
 
 - (void)loadViewState {

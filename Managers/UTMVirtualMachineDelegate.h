@@ -26,13 +26,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 typedef NS_ENUM(NSUInteger, UTMVMState) {
     kVMStopped,
+    kVMSuspended,
     kVMError,
     kVMStarting,
     kVMStarted,
     kVMPausing,
     kVMPaused,
     kVMResuming,
-    kVMResumed,
     kVMStopping
 };
 

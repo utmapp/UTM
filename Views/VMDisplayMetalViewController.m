@@ -27,8 +27,6 @@
 
 @interface VMDisplayMetalViewController ()
 
-@property (nonatomic, strong) UTMVirtualMachine *vm;
-
 @end
 
 @implementation VMDisplayMetalViewController {
@@ -191,9 +189,6 @@
     // Feedback generator for clicks
     self.clickFeedbackGenerator = [[UISelectionFeedbackGenerator alloc] init];
     self.resizeFeedbackGenerator = [[UIImpactFeedbackGenerator alloc] init];
-    
-    // TODO: remove this hack
-    _isRunning = YES;
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -212,6 +207,13 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillChangeFrameNotification object:nil];
 }
 
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    if (self.vm.state == kVMStopped || self.vm.state == kVMSuspended) {
+        [self.vm startVM];
+    }
+}
+
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context {
     // make sure the CSDisplay properties are synced with the CSInput
     if ([keyPath isEqualToString:@"vmDisplay.viewportScale"]) {
@@ -227,7 +229,7 @@
         case kVMError: {
             NSString *msg = self.vmMessage ? self.vmMessage : NSLocalizedString(@"An internal error has occured.", @"UTMQemuManager");
             [self showAlert:msg completion:^(UIAlertAction *action){
-                [self performSegueWithIdentifier:@"returnToList" sender:self];
+                //[self performSegueWithIdentifier:@"returnToList" sender:self];
             }];
             break;
         }
@@ -262,10 +264,6 @@
         }
     }
     });
-}
-
-- (void)changeVM:(UTMVirtualMachine *)vm {
-    self.vm = vm;
 }
 
 - (void)sendExtendedKey:(SendKeyType)type code:(int)code {

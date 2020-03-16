@@ -45,7 +45,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSURL *)virtualMachinePath:(NSString *)name inParentURL:(NSURL *)parent;
 
 - (id)initWithURL:(NSURL *)url;
-- (id)initDefaults:(NSString *)name withDestinationURL:(NSURL *)dstUrl;
+- (id)initWithConfiguration:(UTMConfiguration *)configuration withDestinationURL:(NSURL *)dstUrl;
 
 - (BOOL)saveUTMWithError:(NSError * _Nullable *)err;
 
