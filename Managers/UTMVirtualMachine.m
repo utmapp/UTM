@@ -117,6 +117,15 @@ NSString *const kSuspendSnapshotName = @"suspend";
     return self;
 }
 
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context {
+    // make sure the CSDisplay properties are synced with the CSInput
+    if ([keyPath isEqualToString:@"primaryDisplay.viewportScale"]) {
+        self.primaryInput.viewportScale = self.primaryDisplay.viewportScale;
+    } else if ([keyPath isEqualToString:@"primaryDisplay.displaySize"]) {
+        self.primaryInput.displaySize = self.primaryDisplay.displaySize;
+    }
+}
+
 - (void)changeState:(UTMVMState)state {
     @synchronized (self) {
         _state = state;
@@ -188,6 +197,9 @@ NSString *const kSuspendSnapshotName = @"suspend";
     if (self.configuration.debugLogEnabled) {
         [self.logging logToFile:[self.path URLByAppendingPathComponent:[UTMConfiguration debugLogName]]];
     }
+    // register observers
+    [self addObserver:self forKeyPath:@"primaryDisplay.viewportScale" options:0 context:nil];
+    [self addObserver:self forKeyPath:@"primaryDisplay.displaySize" options:0 context:nil];
     if (!_qemu_system) {
         _qemu_system = [[UTMQemuSystem alloc] initWithConfiguration:self.configuration imgPath:self.path];
         _qemu = [[UTMQemuManager alloc] init];
@@ -278,6 +290,9 @@ NSString *const kSuspendSnapshotName = @"suspend";
     [self changeState:kVMStopped];
     // save view settings
     [self saveViewState];
+    // deregister observers
+    [self addObserver:self forKeyPath:@"primaryDisplay.viewportScale" options:0 context:nil];
+    [self addObserver:self forKeyPath:@"primaryDisplay.displaySize" options:0 context:nil];
     // stop logging
     [self.logging endLog];
     _is_busy = NO;

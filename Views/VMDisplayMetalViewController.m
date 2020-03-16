@@ -67,30 +67,6 @@
 @synthesize vmInput;
 @synthesize vmConfiguration;
 
-- (id)init {
-    self = [super init];
-    if (self) {
-        // view state and observers
-        _toolbarVisible = YES;
-        _keyboardVisible = NO;
-        [self addObserver:self forKeyPath:@"vmDisplay.viewportScale" options:0 context:nil];
-        [self addObserver:self forKeyPath:@"vmDisplay.displaySize" options:0 context:nil];
-    }
-    return self;
-}
-
-- (id)initWithCoder:(NSCoder *)coder {
-    self = [super initWithCoder:coder];
-    if (self) {
-        // view state and observers
-        _toolbarVisible = YES;
-        _keyboardVisible = NO;
-        [self addObserver:self forKeyPath:@"vmDisplay.viewportScale" options:0 context:nil];
-        [self addObserver:self forKeyPath:@"vmDisplay.displaySize" options:0 context:nil];
-    }
-    return self;
-}
-
 - (BOOL)prefersStatusBarHidden {
     return _prefersStatusBarHidden;
 }
@@ -189,6 +165,10 @@
     // Feedback generator for clicks
     self.clickFeedbackGenerator = [[UISelectionFeedbackGenerator alloc] init];
     self.resizeFeedbackGenerator = [[UIImpactFeedbackGenerator alloc] init];
+
+    // view state and observers
+    _toolbarVisible = YES;
+    _keyboardVisible = NO;
 }
 
 - (void)viewWillAppear:(BOOL)animated {
