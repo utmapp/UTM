@@ -702,8 +702,16 @@ static CGFloat CGPointToPixel(CGFloat point) {
     NSLog(@"Entering background");
     if (self.vm.state == kVMStarted) {
         NSLog(@"Saving snapshot");
-        dispatch_async(dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0), ^{
+        __block UIBackgroundTaskIdentifier task = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
+            NSLog(@"Background task end");
+            [[UIApplication sharedApplication] endBackgroundTask:task];
+            task = UIBackgroundTaskInvalid;
+        }];
+        dispatch_async(dispatch_get_global_queue(QOS_CLASS_DEFAULT, 0), ^{
             [self.vm saveVM];
+            NSLog(@"Save snapshot complete");
+            [[UIApplication sharedApplication] endBackgroundTask:task];
+            task = UIBackgroundTaskInvalid;
         });
     }
 }
