@@ -196,9 +196,9 @@
         case kVMError: {
             [self.placeholderIndicator stopAnimating];
             self.resumeBigButton.hidden = YES;
-            NSString *msg = self.vmMessage ? self.vmMessage : NSLocalizedString(@"An internal error has occured.", @"UTMQemuManager");
-            [self showAlert:msg completion:^(UIAlertAction *action){
-                //TODO: exit on error
+            NSString *msg = self.vmMessage ? self.vmMessage : NSLocalizedString(@"An internal error has occured. UTM will terminate.", @"VMDisplayMetalViewController");
+            [self showAlert:msg actions:nil completion:^(UIAlertAction *action){
+                exit(0);
             }];
             break;
         }
@@ -218,6 +218,7 @@
             self.toolbarVisible = YES; // always show toolbar when paused
             self.pauseResumeButton.enabled = YES;
             [self.pauseResumeButton setImage:[UIImage imageNamed:@"Toolbar Start"] forState:UIControlStateNormal];
+            [self.powerExitButton setImage:[UIImage imageNamed:@"Toolbar Exit"] forState:UIControlStateNormal];
             break;
         }
         case kVMPausing:
@@ -228,6 +229,7 @@
             self.pauseResumeButton.enabled = NO;
             self.placeholderView.hidden = NO;
             [self.placeholderIndicator startAnimating];
+            [self.powerExitButton setImage:[UIImage imageNamed:@"Toolbar Exit"] forState:UIControlStateNormal];
             break;
         }
         case kVMStarted: {
@@ -240,6 +242,7 @@
             [self.placeholderIndicator stopAnimating];
             self.pauseResumeButton.enabled = YES;
             [self.pauseResumeButton setImage:[UIImage imageNamed:@"Toolbar Pause"] forState:UIControlStateNormal];
+            [self.powerExitButton setImage:[UIImage imageNamed:@"Toolbar Power"] forState:UIControlStateNormal];
             self->_renderer.sourceScreen = self.vmDisplay;
             self->_renderer.sourceCursor = self.vmInput;
             break;
@@ -605,16 +608,29 @@ static CGFloat CGPointToPixel(CGFloat point) {
 }
 
 - (IBAction)powerPressed:(UIButton *)sender {
-    UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil message:NSLocalizedString(@"Are you sure you want to stop this VM?", @"VMDisplayMetalViewController") preferredStyle:UIAlertControllerStyleAlert];
-    UIAlertAction *yes = [UIAlertAction actionWithTitle:NSLocalizedString(@"Yes", @"VMDisplayMetalViewController") style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action){
-        dispatch_async(dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0), ^{
-            [self.vm quitVM];
-        });
-    }];
-    UIAlertAction *no = [UIAlertAction actionWithTitle:NSLocalizedString(@"No", @"VMDisplayMetalViewController") style:UIAlertActionStyleCancel handler:nil];
-    [alert addAction:yes];
-    [alert addAction:no];
-    [self presentViewController:alert animated:YES completion:nil];
+    if (self.vm.state == kVMStarted) {
+        UIAlertAction *yes = [UIAlertAction actionWithTitle:NSLocalizedString(@"Yes", @"VMDisplayMetalViewController") style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action){
+            dispatch_async(dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0), ^{
+                [self.vm quitVM];
+                exit(0);
+            });
+        }];
+        UIAlertAction *no = [UIAlertAction actionWithTitle:NSLocalizedString(@"No", @"VMDisplayMetalViewController") style:UIAlertActionStyleCancel handler:nil];
+        [self showAlert:NSLocalizedString(@"Are you sure you want to stop this VM and exit? Any unsaved changes will be lost.", @"VMDisplayMetalViewController")
+                actions:@[yes, no]
+             completion:nil];
+    } else {
+        UIAlertAction *yes = [UIAlertAction actionWithTitle:NSLocalizedString(@"Yes", @"VMDisplayMetalViewController") style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action){
+            exit(0);
+        }];
+        UIAlertAction *no = [UIAlertAction actionWithTitle:NSLocalizedString(@"No", @"VMDisplayMetalViewController") style:UIAlertActionStyleCancel handler:nil];
+        [self showAlert:NSLocalizedString(@"Are you sure you want to exit UTM?.", @"VMDisplayMetalViewController")
+                actions:@[yes, no]
+             completion:nil];
+    }
+}
+
+- (IBAction)restartPressed:(UIButton *)sender {
 }
 
 - (IBAction)showKeyboardButton:(UIButton *)sender {
@@ -625,7 +641,7 @@ static CGFloat CGPointToPixel(CGFloat point) {
     self.toolbarVisible = NO;
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     if (![defaults boolForKey:@"HasShownHideToolbarAlert"]) {
-        [self showAlert:NSLocalizedString(@"Hint: To show the toolbar again, use a three-finger swipe down on the screen.", @"Shown once when hiding toolbar.") completion:^(UIAlertAction *action){
+        [self showAlert:NSLocalizedString(@"Hint: To show the toolbar again, use a three-finger swipe down on the screen.", @"VMDisplayMetalViewController") actions:nil completion:^(UIAlertAction *action){
             [defaults setBool:YES forKey:@"HasShownHideToolbarAlert"];
         }];
     }
@@ -644,12 +660,18 @@ static CGFloat CGPointToPixel(CGFloat point) {
     }
 }
 
-#pragma mark - Messages
+#pragma mark - Alerts
 
-- (void)showAlert:(NSString *)msg completion:(nullable void (^)(UIAlertAction *action))completion {
+- (void)showAlert:(NSString *)msg actions:(nullable NSArray<UIAlertAction *> *)actions completion:(nullable void (^)(UIAlertAction *action))completion {
     UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"" message:msg preferredStyle:UIAlertControllerStyleAlert];
-    UIAlertAction *okay = [UIAlertAction actionWithTitle:NSLocalizedString(@"OK", @"OK button") style:UIAlertActionStyleDefault handler:completion];
-    [alert addAction:okay];
+    if (!actions) {
+        UIAlertAction *okay = [UIAlertAction actionWithTitle:NSLocalizedString(@"OK", @"VMDisplayMetalViewController") style:UIAlertActionStyleDefault handler:completion];
+        [alert addAction:okay];
+    } else {
+        for (UIAlertAction *action in actions) {
+            [alert addAction:action];
+        }
+    }
     dispatch_async(dispatch_get_main_queue(), ^{
         [self presentViewController:alert animated:YES completion:nil];
     });

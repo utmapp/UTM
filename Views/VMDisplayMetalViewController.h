@@ -37,7 +37,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (strong, nonatomic) UISelectionFeedbackGenerator *clickFeedbackGenerator;
 @property (strong, nonatomic) UIImpactFeedbackGenerator *resizeFeedbackGenerator;
 @property (nonatomic, assign) BOOL lastDisplayChangeResize;
+@property (weak, nonatomic) IBOutlet UIButton *powerExitButton;
 @property (weak, nonatomic) IBOutlet UIButton *pauseResumeButton;
+@property (weak, nonatomic) IBOutlet UIButton *restartButton;
 @property (weak, nonatomic) IBOutlet UIButton *zoomButton;
 @property (weak, nonatomic) IBOutlet UIVisualEffectView *placeholderView;
 @property (weak, nonatomic) IBOutlet UIImageView *placeholderImageView;
@@ -66,6 +68,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (IBAction)changeDisplayZoom:(UIButton *)sender;
 - (IBAction)pauseResumePressed:(UIButton *)sender;
 - (IBAction)powerPressed:(UIButton *)sender;
+- (IBAction)restartPressed:(UIButton *)sender;
 - (IBAction)showKeyboardButton:(UIButton *)sender;
 - (IBAction)hideToolbarButton:(UIButton *)sender;
 

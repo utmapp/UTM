@@ -2210,15 +2210,18 @@
                                                     <stackView opaque="NO" contentMode="scaleToFill" spacing="16" translatesAutoresizingMaskIntoConstraints="NO" id="nJG-8W-K7c">
                                                         <rect key="frame" x="16" y="51" width="106" height="30"/>
                                                         <subviews>
-                                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="HpT-OM-Xpa">
+                                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0Wo-4E-exJ">
                                                                 <rect key="frame" x="0.0" y="0.0" width="30" height="30"/>
-                                                                <accessibility key="accessibilityConfiguration" label="Back"/>
+                                                                <accessibility key="accessibilityConfiguration" label="Power"/>
                                                                 <constraints>
-                                                                    <constraint firstAttribute="height" constant="30" id="K5G-Gx-hvf"/>
-                                                                    <constraint firstAttribute="width" constant="30" id="kuS-FT-KuL"/>
+                                                                    <constraint firstAttribute="width" constant="30" id="5Wz-bh-zCb"/>
+                                                                    <constraint firstAttribute="height" constant="30" id="mR0-xw-gEw"/>
                                                                 </constraints>
-                                                                <inset key="imageEdgeInsets" minX="4" minY="4" maxX="4" maxY="4"/>
-                                                                <state key="normal" image="Toolbar Left"/>
+                                                                <inset key="imageEdgeInsets" minX="2" minY="2" maxX="2" maxY="2"/>
+                                                                <state key="normal" image="Toolbar Power"/>
+                                                                <connections>
+                                                                    <action selector="powerPressed:" destination="ckC-eO-gxn" eventType="touchUpInside" id="89w-f5-kg9"/>
+                                                                </connections>
                                                             </button>
                                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="bjd-4T-OVm">
                                                                 <rect key="frame" x="38" y="0.0" width="30" height="30"/>
@@ -2233,17 +2236,17 @@
                                                                     <action selector="pauseResumePressed:" destination="ckC-eO-gxn" eventType="touchUpInside" id="DYI-VN-mcQ"/>
                                                                 </connections>
                                                             </button>
-                                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0Wo-4E-exJ">
+                                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="HpT-OM-Xpa">
                                                                 <rect key="frame" x="76" y="0.0" width="30" height="30"/>
-                                                                <accessibility key="accessibilityConfiguration" label="Power"/>
+                                                                <accessibility key="accessibilityConfiguration" label="Back"/>
                                                                 <constraints>
-                                                                    <constraint firstAttribute="width" constant="30" id="5Wz-bh-zCb"/>
-                                                                    <constraint firstAttribute="height" constant="30" id="mR0-xw-gEw"/>
+                                                                    <constraint firstAttribute="height" constant="30" id="K5G-Gx-hvf"/>
+                                                                    <constraint firstAttribute="width" constant="30" id="kuS-FT-KuL"/>
                                                                 </constraints>
-                                                                <inset key="imageEdgeInsets" minX="2" minY="2" maxX="2" maxY="2"/>
-                                                                <state key="normal" image="Toolbar Power"/>
+                                                                <inset key="imageEdgeInsets" minX="4" minY="4" maxX="4" maxY="4"/>
+                                                                <state key="normal" image="Toolbar Restart"/>
                                                                 <connections>
-                                                                    <action selector="powerPressed:" destination="ckC-eO-gxn" eventType="touchUpInside" id="89w-f5-kg9"/>
+                                                                    <action selector="restartPressed:" destination="ckC-eO-gxn" eventType="touchUpInside" id="KQX-T5-P6V"/>
                                                                 </connections>
                                                             </button>
                                                         </subviews>
@@ -2322,9 +2325,10 @@
                         <outlet property="placeholderImageView" destination="b33-3Y-vG8" id="sSB-Md-PV3"/>
                         <outlet property="placeholderIndicator" destination="prg-P9-xkh" id="DMs-xJ-Ea7"/>
                         <outlet property="placeholderView" destination="QXw-Nd-3bE" id="drX-VQ-NFA"/>
+                        <outlet property="powerExitButton" destination="0Wo-4E-exJ" id="xhX-Ug-j0Z"/>
+                        <outlet property="restartButton" destination="HpT-OM-Xpa" id="RX8-aw-JPR"/>
                         <outlet property="resumeBigButton" destination="a0a-Yw-GZc" id="XrF-Zk-zmY"/>
                         <outlet property="toolbarAccessoryView" destination="VFv-zJ-H5K" id="hkm-Wv-Reu"/>
-                        <outlet property="zoomButton" destination="m9f-Az-rlH" id="mfe-Ou-UL7"/>
                         <outletCollection property="customKeyButtons" destination="1LD-5d-0Ee" id="joR-H1-pbq"/>
                         <outletCollection property="customKeyModifierButtons" destination="1LD-5d-0Ee" id="34X-PW-2yT"/>
                         <outletCollection property="customKeyButtons" destination="PvO-bn-C3P" id="l2b-Em-80E"/>
@@ -3148,10 +3152,10 @@
         <image name="Resume Icon" width="50" height="50"/>
         <image name="Toolbar Hide" width="30" height="30"/>
         <image name="Toolbar Keyboard" width="30" height="30"/>
-        <image name="Toolbar Left" width="30" height="30"/>
         <image name="Toolbar Maximize" width="30" height="30"/>
         <image name="Toolbar Pause" width="30" height="30"/>
         <image name="Toolbar Power" width="30" height="30"/>
+        <image name="Toolbar Restart" width="30" height="30"/>
         <image name="Toolbar Settings" width="30" height="30"/>
     </resources>
     <inferredMetricsTieBreakers>
