@@ -397,6 +397,7 @@ NSString *const kSuspendSnapshotName = @"suspend";
     }
     self.viewState.suspended = YES;
     [self saveViewState];
+    [self saveScreenshot];
     _is_busy = NO;
     return success;
 }
