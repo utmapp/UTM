@@ -27,14 +27,11 @@
 
 @interface VMDisplayMetalViewController ()
 
-@property (nonatomic, strong) UTMVirtualMachine *vm;
-
 @end
 
 @implementation VMDisplayMetalViewController {
     UTMRenderer *_renderer;
     CGPoint _lastTwoPanOrigin;
-    BOOL _noMoreMemoryAlert;
     BOOL _mouseDown;
     
     // cursor handling
@@ -61,35 +58,10 @@
     BOOL _keyboardVisible;
 }
 
-@synthesize vmScreenshot;
 @synthesize vmMessage;
 @synthesize vmDisplay;
 @synthesize vmInput;
 @synthesize vmConfiguration;
-
-- (id)init {
-    self = [super init];
-    if (self) {
-        // view state and observers
-        _toolbarVisible = YES;
-        _keyboardVisible = NO;
-        [self addObserver:self forKeyPath:@"vmDisplay.viewportScale" options:0 context:nil];
-        [self addObserver:self forKeyPath:@"vmDisplay.displaySize" options:0 context:nil];
-    }
-    return self;
-}
-
-- (id)initWithCoder:(NSCoder *)coder {
-    self = [super initWithCoder:coder];
-    if (self) {
-        // view state and observers
-        _toolbarVisible = YES;
-        _keyboardVisible = NO;
-        [self addObserver:self forKeyPath:@"vmDisplay.viewportScale" options:0 context:nil];
-        [self addObserver:self forKeyPath:@"vmDisplay.displaySize" options:0 context:nil];
-    }
-    return self;
-}
 
 - (BOOL)prefersStatusBarHidden {
     return _prefersStatusBarHidden;
@@ -184,11 +156,13 @@
     [self.mtkView addGestureRecognizer:_longPress];
     [self.mtkView addGestureRecognizer:_pinch];
     
-    _noMoreMemoryAlert = NO;
-    
     // Feedback generator for clicks
     self.clickFeedbackGenerator = [[UISelectionFeedbackGenerator alloc] init];
     self.resizeFeedbackGenerator = [[UIImpactFeedbackGenerator alloc] init];
+
+    // view state and observers
+    _toolbarVisible = YES;
+    _keyboardVisible = NO;
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -197,6 +171,8 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillChangeFrame:) name:UIKeyboardWillChangeFrameNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleEnteredBackground:) name:UIApplicationDidEnterBackgroundNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleEnteredForeground:) name:UIApplicationWillEnterForegroundNotification object:nil];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -205,48 +181,82 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillShowNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillHideNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillChangeFrameNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationDidEnterBackgroundNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationWillEnterForegroundNotification object:nil];
 }
 
-- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context {
-    // make sure the CSDisplay properties are synced with the CSInput
-    if ([keyPath isEqualToString:@"vmDisplay.viewportScale"]) {
-        self.vmInput.viewportScale = self.vmDisplay.viewportScale;
-    } else if ([keyPath isEqualToString:@"vmDisplay.displaySize"]) {
-        self.vmInput.displaySize = self.vmDisplay.displaySize;
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    if (self.vm.state == kVMStopped || self.vm.state == kVMSuspended) {
+        [self.vm startVM];
     }
 }
 
 - (void)virtualMachine:(UTMVirtualMachine *)vm transitionToState:(UTMVMState)state {
+    static BOOL hasStartedOnce = NO;
+    if (hasStartedOnce && state == kVMStopped) {
+        exit(0);
+    }
     switch (state) {
         case kVMError: {
-            NSString *msg = self.vmMessage ? self.vmMessage : NSLocalizedString(@"An internal error has occured.", @"UTMQemuManager");
-            [self showAlert:msg completion:^(UIAlertAction *action){
-                [self performSegueWithIdentifier:@"returnToList" sender:self];
+            [self.placeholderIndicator stopAnimating];
+            self.resumeBigButton.hidden = YES;
+            NSString *msg = self.vmMessage ? self.vmMessage : NSLocalizedString(@"An internal error has occured. UTM will terminate.", @"VMDisplayMetalViewController");
+            [self showAlert:msg actions:nil completion:^(UIAlertAction *action){
+                exit(0);
             }];
             break;
         }
-        case kVMStopping:
         case kVMStopped:
+        case kVMPaused:
+        case kVMSuspended: {
+            [UIView transitionWithView:self.view duration:0.5 options:UIViewAnimationOptionTransitionCrossDissolve animations:^{
+                self.mtkView.hidden = YES;
+                self.placeholderView.hidden = NO;
+                self.placeholderImageView.hidden = NO;
+                self.placeholderImageView.image = self.vm.screenshot;
+                if (state == kVMPaused) {
+                    self.resumeBigButton.hidden = NO;
+                }
+            } completion:nil];
+            [self.placeholderIndicator stopAnimating];
+            self.toolbarVisible = YES; // always show toolbar when paused
+            self.pauseResumeButton.enabled = YES;
+            self.restartButton.enabled = NO;
+            [self.pauseResumeButton setImage:[UIImage imageNamed:@"Toolbar Start"] forState:UIControlStateNormal];
+            [self.powerExitButton setImage:[UIImage imageNamed:@"Toolbar Exit"] forState:UIControlStateNormal];
+            break;
+        }
         case kVMPausing:
-        case kVMPaused: {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [self performSegueWithIdentifier:@"returnToList" sender:self];
-            });
+        case kVMStopping:
+        case kVMStarting:
+        case kVMResuming: {
+            self.resumeBigButton.hidden = YES;
+            self.pauseResumeButton.enabled = NO;
+            self.restartButton.enabled = NO;
+            self.placeholderView.hidden = NO;
+            [self.placeholderIndicator startAnimating];
+            [self.powerExitButton setImage:[UIImage imageNamed:@"Toolbar Exit"] forState:UIControlStateNormal];
             break;
         }
         case kVMStarted: {
-            _renderer.sourceScreen = self.vmDisplay;
-            _renderer.sourceCursor = self.vmInput;
+            hasStartedOnce = YES; // auto-quit after VM ends
+            [UIView transitionWithView:self.view duration:0.5 options:UIViewAnimationOptionTransitionCrossDissolve animations:^{
+                self.mtkView.hidden = NO;
+                self.placeholderView.hidden = YES;
+                self.placeholderImageView.hidden = YES;
+                self.resumeBigButton.hidden = YES;
+            } completion:nil];
+            [self.placeholderIndicator stopAnimating];
+            self.pauseResumeButton.enabled = YES;
+            self.restartButton.enabled = YES;
+            [self.pauseResumeButton setImage:[UIImage imageNamed:@"Toolbar Pause"] forState:UIControlStateNormal];
+            [self.powerExitButton setImage:[UIImage imageNamed:@"Toolbar Power"] forState:UIControlStateNormal];
+            self->_renderer.sourceScreen = self.vmDisplay;
+            self->_renderer.sourceCursor = self.vmInput;
             break;
         }
-        default: {
-            break; // TODO: Implement
-        }
     }
-}
-
-- (void)changeVM:(UTMVirtualMachine *)vm {
-    self.vm = vm;
 }
 
 - (void)sendExtendedKey:(SendKeyType)type code:(int)code {
@@ -596,20 +606,50 @@ static CGFloat CGPointToPixel(CGFloat point) {
     self.lastDisplayChangeResize = !self.lastDisplayChangeResize;
 }
 
-- (IBAction)touchResumePressed:(UIButton *)sender {
+- (IBAction)pauseResumePressed:(UIButton *)sender {
+    dispatch_async(dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0), ^{
+        if (self.vm.state == kVMStarted) {
+            [self.vm pauseVM];
+            [self.vm saveVM];
+        } else if (self.vm.state == kVMPaused) {
+            [self.vm resumeVM];
+        }
+    });
 }
 
 - (IBAction)powerPressed:(UIButton *)sender {
-    UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil message:NSLocalizedString(@"Are you sure you want to stop this VM?", @"VMDisplayMetalViewController") preferredStyle:UIAlertControllerStyleAlert];
+    if (self.vm.state == kVMStarted) {
+        UIAlertAction *yes = [UIAlertAction actionWithTitle:NSLocalizedString(@"Yes", @"VMDisplayMetalViewController") style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action){
+            dispatch_async(dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0), ^{
+                [self.vm quitVM];
+                exit(0);
+            });
+        }];
+        UIAlertAction *no = [UIAlertAction actionWithTitle:NSLocalizedString(@"No", @"VMDisplayMetalViewController") style:UIAlertActionStyleCancel handler:nil];
+        [self showAlert:NSLocalizedString(@"Are you sure you want to stop this VM and exit? Any unsaved changes will be lost.", @"VMDisplayMetalViewController")
+                actions:@[yes, no]
+             completion:nil];
+    } else {
+        UIAlertAction *yes = [UIAlertAction actionWithTitle:NSLocalizedString(@"Yes", @"VMDisplayMetalViewController") style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action){
+            exit(0);
+        }];
+        UIAlertAction *no = [UIAlertAction actionWithTitle:NSLocalizedString(@"No", @"VMDisplayMetalViewController") style:UIAlertActionStyleCancel handler:nil];
+        [self showAlert:NSLocalizedString(@"Are you sure you want to exit UTM?.", @"VMDisplayMetalViewController")
+                actions:@[yes, no]
+             completion:nil];
+    }
+}
+
+- (IBAction)restartPressed:(UIButton *)sender {
     UIAlertAction *yes = [UIAlertAction actionWithTitle:NSLocalizedString(@"Yes", @"VMDisplayMetalViewController") style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action){
         dispatch_async(dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0), ^{
-            [self.vm quitVM];
+            [self.vm resetVM];
         });
     }];
     UIAlertAction *no = [UIAlertAction actionWithTitle:NSLocalizedString(@"No", @"VMDisplayMetalViewController") style:UIAlertActionStyleCancel handler:nil];
-    [alert addAction:yes];
-    [alert addAction:no];
-    [self presentViewController:alert animated:YES completion:nil];
+    [self showAlert:NSLocalizedString(@"Are you sure you want to reset this VM? Any unsaved changes will be lost.", @"VMDisplayMetalViewController")
+            actions:@[yes, no]
+         completion:nil];
 }
 
 - (IBAction)showKeyboardButton:(UIButton *)sender {
@@ -620,7 +660,7 @@ static CGFloat CGPointToPixel(CGFloat point) {
     self.toolbarVisible = NO;
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     if (![defaults boolForKey:@"HasShownHideToolbarAlert"]) {
-        [self showAlert:NSLocalizedString(@"Hint: To show the toolbar again, use a three-finger swipe down on the screen.", @"Shown once when hiding toolbar.") completion:^(UIAlertAction *action){
+        [self showAlert:NSLocalizedString(@"Hint: To show the toolbar again, use a three-finger swipe down on the screen.", @"VMDisplayMetalViewController") actions:nil completion:^(UIAlertAction *action){
             [defaults setBool:YES forKey:@"HasShownHideToolbarAlert"];
         }];
     }
@@ -639,38 +679,69 @@ static CGFloat CGPointToPixel(CGFloat point) {
     }
 }
 
-#pragma mark - Messages
+#pragma mark - Alerts
 
-- (void)showAlert:(NSString *)msg completion:(nullable void (^)(UIAlertAction *action))completion {
+- (void)showAlert:(NSString *)msg actions:(nullable NSArray<UIAlertAction *> *)actions completion:(nullable void (^)(UIAlertAction *action))completion {
     UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"" message:msg preferredStyle:UIAlertControllerStyleAlert];
-    UIAlertAction *okay = [UIAlertAction actionWithTitle:NSLocalizedString(@"OK", @"OK button") style:UIAlertActionStyleDefault handler:completion];
-    [alert addAction:okay];
+    if (!actions) {
+        UIAlertAction *okay = [UIAlertAction actionWithTitle:NSLocalizedString(@"OK", @"VMDisplayMetalViewController") style:UIAlertActionStyleDefault handler:completion];
+        [alert addAction:okay];
+    } else {
+        for (UIAlertAction *action in actions) {
+            [alert addAction:action];
+        }
+    }
     dispatch_async(dispatch_get_main_queue(), ^{
         [self presentViewController:alert animated:YES completion:nil];
     });
 }
 
-#pragma mark - Memory warning
+#pragma mark - Notification Handling
 
+- (void)handleEnteredBackground:(NSNotification *)notification {
+    NSLog(@"Entering background");
+    if (self.vm.state == kVMStarted) {
+        NSLog(@"Saving snapshot");
+        __block UIBackgroundTaskIdentifier task = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
+            NSLog(@"Background task end");
+            [[UIApplication sharedApplication] endBackgroundTask:task];
+            task = UIBackgroundTaskInvalid;
+        }];
+        dispatch_async(dispatch_get_global_queue(QOS_CLASS_DEFAULT, 0), ^{
+            [self.vm saveVM];
+            NSLog(@"Save snapshot complete");
+            [[UIApplication sharedApplication] endBackgroundTask:task];
+            task = UIBackgroundTaskInvalid;
+        });
+    }
+}
+
+- (void)handleEnteredForeground:(NSNotification *)notification {
+    NSLog(@"Entering foreground!");
+    if (self.vm.state == kVMStarted) {
+        NSLog(@"Deleting snapshot");
+        dispatch_async(dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0), ^{
+            [self.vm deleteSaveVM];
+        });
+    }
+}
 
 - (void)didReceiveMemoryWarning {
+    static BOOL memoryAlertOnce = NO;
+    
     [super didReceiveMemoryWarning];
-    if (_noMoreMemoryAlert) {
-        return;
+    
+    NSLog(@"Saving VM state on low memory warning.");
+    dispatch_async(dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0), ^{
+        [self.vm saveVM];
+    });
+    
+    if (!memoryAlertOnce) {
+        memoryAlertOnce = YES;
+        [self showAlert:NSLocalizedString(@"Running low on memory! UTM might soon be killed by iOS. You can prevent this by decreasing the amount of memory and/or JIT cache assigned to this VM", @"VMDisplayMetalViewController")
+                actions:nil
+             completion:nil];
     }
-    
-    NSString *msg = NSLocalizedString(@"Running low on memory! UTM might soon be killed by iOS. You can prevent this by decreasing the amount of memory and/or JIT cache assigned to this VM", @"Low memory warning");
-    
-    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"" message:msg preferredStyle:UIAlertControllerStyleAlert];
-       UIAlertAction *okay = [UIAlertAction actionWithTitle:NSLocalizedString(@"OK", @"OK button") style:UIAlertActionStyleDefault handler:nil];
-    [alert addAction:okay];
-    [alert addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"No more alert", @"OK button") style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-        self->_noMoreMemoryAlert = YES;
-    }]];
-        
-       dispatch_async(dispatch_get_main_queue(), ^{
-           [self presentViewController:alert animated:YES completion:nil];
-       });
 }
 
 @end

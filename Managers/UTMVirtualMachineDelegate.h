@@ -26,19 +26,18 @@ NS_ASSUME_NONNULL_BEGIN
 
 typedef NS_ENUM(NSUInteger, UTMVMState) {
     kVMStopped,
+    kVMSuspended,
     kVMError,
     kVMStarting,
     kVMStarted,
     kVMPausing,
     kVMPaused,
     kVMResuming,
-    kVMResumed,
     kVMStopping
 };
 
 @protocol UTMVirtualMachineDelegate <NSObject>
 
-@property (nonatomic, nullable, strong) UIImage *vmScreenshot;
 @property (nonatomic, nullable, copy) NSString *vmMessage;
 @property (nonatomic, weak) CSDisplayMetal *vmDisplay;
 @property (nonatomic, weak) CSInput *vmInput;

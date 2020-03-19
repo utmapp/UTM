@@ -463,6 +463,7 @@ static int cs_button_to_spice(SendButtonType button)
         NSLog(@"MTL device not ready for cursor draw");
         return;
     }
+    dispatch_semaphore_wait(_drawLock, DISPATCH_TIME_FOREVER);
     MTLTextureDescriptor *textureDescriptor = [[MTLTextureDescriptor alloc] init];
     // don't worry that that components are reversed, we fix it in shaders
     textureDescriptor.pixelFormat = MTLPixelFormatBGRA8Unorm;
@@ -492,14 +493,17 @@ static int cs_button_to_spice(SendButtonType button)
     _numVertices = sizeof(quadVertices) / sizeof(UTMVertex);
     _cursorSize = size;
     _hasCursor = YES;
+    dispatch_semaphore_signal(_drawLock);
 }
 
 - (void)destroyTexture {
+    dispatch_semaphore_wait(_drawLock, DISPATCH_TIME_FOREVER);
     _numVertices = 0;
     _vertices = nil;
     _texture = nil;
     _cursorSize = CGSizeZero;
     _hasCursor = NO;
+    dispatch_semaphore_signal(_drawLock);
 }
 
 - (void)drawCursor:(const void *)buffer {

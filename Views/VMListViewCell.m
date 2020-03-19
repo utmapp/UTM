@@ -38,13 +38,13 @@
             [[self playButton] setImage:nil forState:UIControlStateNormal];
             break;
         }
-        case kVMStarted:
-        case kVMResumed: {
+        case kVMStarted: {
             [[self screenBlurEffect] setHidden:YES];
             [[self statusIndicator] stopAnimating];
             [[self playButton] setImage:nil forState:UIControlStateNormal];
             break;
         }
+        case kVMSuspended:
         case kVMPaused: {
             [[self statusIndicator] stopAnimating];
             [[self screenBlurEffect] setHidden:NO];
@@ -52,10 +52,6 @@
             break;
         }
     }
-}
-
-- (void)setName:(NSString *)name {
-    [[self nameLabel] setText:name];
 }
 
 #pragma mark - Context Menu Actions
