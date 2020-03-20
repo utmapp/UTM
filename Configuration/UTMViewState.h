@@ -25,8 +25,11 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) double displayScale;
 @property (nonatomic, assign) double displayOriginX;
 @property (nonatomic, assign) double displayOriginY;
+@property (nonatomic, assign) double displaySizeWidth;
+@property (nonatomic, assign) double displaySizeHeight;
 @property (nonatomic, assign) BOOL showToolbar;
 @property (nonatomic, assign) BOOL showKeyboard;
+@property (nonatomic, assign) BOOL suspended;
 
 - (id)initDefaults;
 - (id)initWithDictionary:(NSMutableDictionary *)dictionary;

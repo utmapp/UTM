@@ -108,6 +108,10 @@
         }
         [self pushArgv:netstr];
     }
+    if (self.snapshot) {
+        [self pushArgv:@"-loadvm"];
+        [self pushArgv:self.snapshot];
+    }
     
     if (self.configuration.systemArguments.count != 0) {
         NSArray *addArgs = self.configuration.systemArguments;

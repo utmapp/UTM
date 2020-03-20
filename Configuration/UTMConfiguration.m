@@ -1389,7 +1389,7 @@ const NSString *const kUTMConfigDebugLogKey = @"DebugLog";
 }
 
 - (void)setDisplayConsoleOnly:(BOOL)displayConsoleOnly {
-    _rootDict[kUTMConfigDisplayKey][kUTMConfigConsoleOnlyKey] = [NSNumber numberWithBool:displayConsoleOnly];
+    _rootDict[kUTMConfigDisplayKey][kUTMConfigConsoleOnlyKey] = @(displayConsoleOnly);
 }
 
 - (NSNumber *)systemJitCacheSize {
@@ -1405,7 +1405,7 @@ const NSString *const kUTMConfigDebugLogKey = @"DebugLog";
 }
 
 - (void)setSystemForceMulticore:(BOOL)systemForceMulticore {
-    _rootDict[kUTMConfigSystemKey][kUTMConfigForceMulticoreKey] = [NSNumber numberWithBool:systemForceMulticore];
+    _rootDict[kUTMConfigSystemKey][kUTMConfigForceMulticoreKey] = @(systemForceMulticore);
 }
 
 - (BOOL)debugLogEnabled {
@@ -1413,7 +1413,7 @@ const NSString *const kUTMConfigDebugLogKey = @"DebugLog";
 }
 
 - (void)setDebugLogEnabled:(BOOL)debugLogEnabled {
-    _rootDict[kUTMConfigDebugKey][kUTMConfigDebugLogKey] = [NSNumber numberWithBool:debugLogEnabled];
+    _rootDict[kUTMConfigDebugKey][kUTMConfigDebugLogKey] = @(debugLogEnabled);
 }
 
 #pragma mark - Additional arguments array handling
@@ -1458,7 +1458,7 @@ const NSString *const kUTMConfigDebugLogKey = @"DebugLog";
 }
 
 - (void)setDisplayFixedResolution:(BOOL)displayFixedResolution {
-    _rootDict[kUTMConfigDisplayKey][kUTMConfigFixedResolutionKey] = [NSNumber numberWithBool:displayFixedResolution];
+    _rootDict[kUTMConfigDisplayKey][kUTMConfigFixedResolutionKey] = @(displayFixedResolution);
 }
 
 - (BOOL)displayFixedResolution {
@@ -1482,7 +1482,7 @@ const NSString *const kUTMConfigDebugLogKey = @"DebugLog";
 }
 
 - (void)setDisplayZoomScale:(BOOL)displayZoomScale {
-    _rootDict[kUTMConfigDisplayKey][kUTMConfigZoomScaleKey] = [NSNumber numberWithBool:displayZoomScale];
+    _rootDict[kUTMConfigDisplayKey][kUTMConfigZoomScaleKey] = @(displayZoomScale);
 }
 
 - (BOOL)displayZoomScale {
@@ -1490,7 +1490,7 @@ const NSString *const kUTMConfigDebugLogKey = @"DebugLog";
 }
 
 - (void)setDisplayZoomLetterBox:(BOOL)displayZoomLetterBox {
-    _rootDict[kUTMConfigDisplayKey][kUTMConfigZoomLetterboxKey] = [NSNumber numberWithBool:displayZoomLetterBox];
+    _rootDict[kUTMConfigDisplayKey][kUTMConfigZoomLetterboxKey] = @(displayZoomLetterBox);
 }
 
 - (BOOL)displayZoomLetterBox {
@@ -1498,7 +1498,7 @@ const NSString *const kUTMConfigDebugLogKey = @"DebugLog";
 }
 
 - (void)setInputTouchscreenMode:(BOOL)inputTouchscreenMode {
-    _rootDict[kUTMConfigInputKey][kUTMConfigTouchscreenModeKey] = [NSNumber numberWithBool:inputTouchscreenMode];
+    _rootDict[kUTMConfigInputKey][kUTMConfigTouchscreenModeKey] = @(inputTouchscreenMode);
 }
 
 - (BOOL)inputTouchscreenMode {
@@ -1506,7 +1506,7 @@ const NSString *const kUTMConfigDebugLogKey = @"DebugLog";
 }
 
 - (void)setInputDirect:(BOOL)inputDirect {
-    _rootDict[kUTMConfigInputKey][kUTMConfigDirectInputKey] = [NSNumber numberWithBool:inputDirect];
+    _rootDict[kUTMConfigInputKey][kUTMConfigDirectInputKey] = @(inputDirect);
 }
 
 - (BOOL)inputDirect {
@@ -1514,7 +1514,7 @@ const NSString *const kUTMConfigDebugLogKey = @"DebugLog";
 }
 
 - (void)setNetworkEnabled:(BOOL)networkEnabled {
-    _rootDict[kUTMConfigNetworkingKey][kUTMConfigNetworkEnabledKey] = [NSNumber numberWithBool:networkEnabled];
+    _rootDict[kUTMConfigNetworkingKey][kUTMConfigNetworkEnabledKey] = @(networkEnabled);
 }
 
 - (BOOL)networkEnabled {
@@ -1522,7 +1522,7 @@ const NSString *const kUTMConfigDebugLogKey = @"DebugLog";
 }
 
 - (void)setNetworkLocalhostOnly:(BOOL)networkLocalhostOnly {
-    _rootDict[kUTMConfigNetworkingKey][kUTMConfigLocalhostOnlyKey] = [NSNumber numberWithBool:networkLocalhostOnly];
+    _rootDict[kUTMConfigNetworkingKey][kUTMConfigLocalhostOnlyKey] = @(networkLocalhostOnly);
 }
 
 - (BOOL)networkLocalhostOnly {
@@ -1546,7 +1546,7 @@ const NSString *const kUTMConfigDebugLogKey = @"DebugLog";
 }
 
 - (void)setPrintEnabled:(BOOL)printEnabled {
-    _rootDict[kUTMConfigPrintingKey][kUTMConfigPrintEnabledKey] = [NSNumber numberWithBool:printEnabled];
+    _rootDict[kUTMConfigPrintingKey][kUTMConfigPrintEnabledKey] = @(printEnabled);
 }
 
 - (BOOL)printEnabled {
@@ -1554,7 +1554,7 @@ const NSString *const kUTMConfigDebugLogKey = @"DebugLog";
 }
 
 - (void)setSoundEnabled:(BOOL)soundEnabled {
-    _rootDict[kUTMConfigSoundKey][kUTMConfigSoundEnabledKey] = [NSNumber numberWithBool:soundEnabled];
+    _rootDict[kUTMConfigSoundKey][kUTMConfigSoundEnabledKey] = @(soundEnabled);
 }
 
 - (BOOL)soundEnabled {
@@ -1562,7 +1562,7 @@ const NSString *const kUTMConfigDebugLogKey = @"DebugLog";
 }
 
 - (void)setSharingClipboardEnabled:(BOOL)sharingClipboardEnabled {
-    _rootDict[kUTMConfigSharingKey][kUTMConfigChipboardSharingKey] = [NSNumber numberWithBool:sharingClipboardEnabled];
+    _rootDict[kUTMConfigSharingKey][kUTMConfigChipboardSharingKey] = @(sharingClipboardEnabled);
 }
 
 - (BOOL)sharingClipboardEnabled {
@@ -1586,7 +1586,7 @@ const NSString *const kUTMConfigDebugLogKey = @"DebugLog";
     NSMutableDictionary *drive = [[NSMutableDictionary alloc] initWithDictionary:@{
                                                                                    kUTMConfigImagePathKey: name,
                                                                                    kUTMConfigInterfaceTypeKey: interface,
-                                                                                   kUTMConfigCdromKey: [NSNumber numberWithBool:isCdrom]
+                                                                                   kUTMConfigCdromKey: @(isCdrom)
                                                                                    }];
     [_rootDict[kUTMConfigDrivesKey] addObject:drive];
     return index;
@@ -1613,7 +1613,7 @@ const NSString *const kUTMConfigDebugLogKey = @"DebugLog";
 }
 
 - (void)setDriveIsCdrom:(BOOL)isCdrom forIndex:(NSUInteger)index {
-    _rootDict[kUTMConfigDrivesKey][index][kUTMConfigCdromKey] = [NSNumber numberWithBool:isCdrom];
+    _rootDict[kUTMConfigDrivesKey][index][kUTMConfigCdromKey] = @(isCdrom);
 }
 
 - (void)moveDriveIndex:(NSUInteger)index to:(NSUInteger)newIndex {

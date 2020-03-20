@@ -28,6 +28,7 @@
 }
 
 - (void)keyboardWillHide:(NSNotification *)notification {
+    self.keyboardVisible = NO;
 }
 
 - (void)keyboardWillChangeFrame:(NSNotification *)notification {

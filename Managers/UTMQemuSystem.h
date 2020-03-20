@@ -24,6 +24,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, strong) UTMConfiguration *configuration;
 @property (nonatomic, copy) NSURL *imgPath;
+@property (nonatomic, nullable) NSString *snapshot;
 
 - (id)initWithConfiguration:(UTMConfiguration *)configuration imgPath:(NSURL *)imgPath;
 - (void)startWithCompletion:(void(^)(BOOL, NSString *))completion;
