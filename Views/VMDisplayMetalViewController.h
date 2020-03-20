@@ -19,6 +19,7 @@
 #import "CSInput.h"
 
 @class UTMVirtualMachine;
+@class VMCursor;
 @class VMKeyboardView;
 @class VMKeyboardButton;
 
@@ -26,6 +27,28 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface VMDisplayMetalViewController : UIViewController<UTMVirtualMachineDelegate, UIGestureRecognizerDelegate> {
     NSMutableArray<UIKeyCommand *> *_keyCommands;
+    
+    // cursor handling
+    CGPoint _lastTwoPanOrigin;
+    BOOL _mouseDown;
+    UIDynamicAnimator *_animator;
+    VMCursor *_cursor;
+    
+    // Gestures
+    UISwipeGestureRecognizer *_swipeUp;
+    UISwipeGestureRecognizer *_swipeDown;
+    UISwipeGestureRecognizer *_swipeScrollUp;
+    UISwipeGestureRecognizer *_swipeScrollDown;
+    UIPanGestureRecognizer *_pan;
+    UIPanGestureRecognizer *_twoPan;
+    UITapGestureRecognizer *_tap;
+    UITapGestureRecognizer *_twoTap;
+    UILongPressGestureRecognizer *_longPress;
+    UIPinchGestureRecognizer *_pinch;
+    
+    // Feedback generators
+    UISelectionFeedbackGenerator *_clickFeedbackGenerator;
+    UIImpactFeedbackGenerator *_resizeFeedbackGenerator;
 }
 
 @property (nonatomic, strong) UTMVirtualMachine *vm;
@@ -34,8 +57,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (weak, nonatomic) IBOutlet VMKeyboardView *keyboardView;
 @property (strong, nonatomic) IBOutlet UIInputView *inputAccessoryView;
 @property (strong, nonatomic) IBOutlet UIView *toolbarAccessoryView;
-@property (strong, nonatomic) UISelectionFeedbackGenerator *clickFeedbackGenerator;
-@property (strong, nonatomic) UIImpactFeedbackGenerator *resizeFeedbackGenerator;
 @property (nonatomic, assign) BOOL lastDisplayChangeResize;
 @property (weak, nonatomic) IBOutlet UIButton *powerExitButton;
 @property (weak, nonatomic) IBOutlet UIButton *pauseResumeButton;
@@ -52,19 +73,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)sendExtendedKey:(SendKeyType)type code:(int)code;
 
-- (CGPoint)clipCursorToDisplay:(CGPoint)pos;
-- (CGPoint)moveMouseAbsolute:(CGPoint)location;
-- (CGPoint)moveMouseRelative:(CGPoint)translation;
-
-- (IBAction)gesturePan:(UIPanGestureRecognizer *)sender;
-- (IBAction)gestureTwoPan:(UIPanGestureRecognizer *)sender;
-- (IBAction)gestureTap:(UITapGestureRecognizer *)sender;
-- (IBAction)gestureTwoTap:(UITapGestureRecognizer *)sender;
-- (IBAction)gestureLongPress:(UILongPressGestureRecognizer *)sender;
-- (IBAction)gesturePinch:(UIPinchGestureRecognizer *)sender;
-- (IBAction)gestureSwipeUp:(UISwipeGestureRecognizer *)sender;
-- (IBAction)gestureSwipeDown:(UISwipeGestureRecognizer *)sender;
-- (IBAction)gestureSwipeScroll:(UISwipeGestureRecognizer *)sender;
 - (IBAction)changeDisplayZoom:(UIButton *)sender;
 - (IBAction)pauseResumePressed:(UIButton *)sender;
 - (IBAction)powerPressed:(UIButton *)sender;
