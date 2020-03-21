@@ -187,7 +187,7 @@ static CGFloat CGPointToPixel(CGFloat point) {
 
 #pragma mark - Gestures
 
-- (IBAction)gesturePan:(UIPanGestureRecognizer *)sender {
+- (void)moveMouse:(UIPanGestureRecognizer *)sender {
     CGPoint location = [sender locationInView:sender.view];
     CGPoint velocity = [sender velocityInView:sender.view];
     if (sender.state == UIGestureRecognizerStateBegan) {
@@ -205,7 +205,11 @@ static CGFloat CGPointToPixel(CGFloat point) {
     }
 }
 
-- (IBAction)gestureTwoPan:(UIPanGestureRecognizer *)sender {
+- (IBAction)gesturePan:(UIPanGestureRecognizer *)sender {
+    [self moveMouse:sender];
+}
+
+- (void)moveScreen:(UIPanGestureRecognizer *)sender {
     if (sender.state == UIGestureRecognizerStateBegan) {
         _lastTwoPanOrigin = self.vmDisplay.viewportOrigin;
     }
@@ -218,6 +222,20 @@ static CGFloat CGPointToPixel(CGFloat point) {
     }
     if (sender.state == UIGestureRecognizerStateEnded) {
         // TODO: decelerate
+    }
+}
+
+- (IBAction)gestureTwoPan:(UIPanGestureRecognizer *)sender {
+    switch (self.twoFingerPanType) {
+        case VMGestureTypeMoveScreen:
+            [self moveScreen:sender];
+            break;
+        case VMGestureTypeDragCursor:
+            [self dragCursor:sender];
+            [self moveMouse:sender];
+            break;
+        default:
+            break;
     }
 }
 
@@ -245,36 +263,43 @@ static CGFloat CGPointToPixel(CGFloat point) {
     return translation;
 }
 
-- (IBAction)gestureTap:(UITapGestureRecognizer *)sender {
-    if (sender.state == UIGestureRecognizerStateEnded) {
-        CGPoint translated = CGPointZero;
-        if (self.touchscreen) {
-            _cursor.center = [sender locationInView:sender.view];
-        }
-        [self.vmInput sendMouseButton:SEND_BUTTON_LEFT pressed:YES point:translated];
-        [self.vmInput sendMouseButton:SEND_BUTTON_LEFT pressed:NO point:translated];
-        [_clickFeedbackGenerator selectionChanged];
+- (void)mouseClick:(SendButtonType)button location:(CGPoint)location {
+    if (self.touchscreen) {
+        _cursor.center = location;
     }
+    [self.vmInput sendMouseButton:button pressed:YES point:CGPointZero];
+    [self.vmInput sendMouseButton:button pressed:NO point:CGPointZero];
+    [_clickFeedbackGenerator selectionChanged];
 }
 
-- (IBAction)gestureTwoTap:(UITapGestureRecognizer *)sender {
-    if (sender.state == UIGestureRecognizerStateEnded) {
-        CGPoint translated = CGPointZero;
-        if (self.touchscreen) {
-            _cursor.center = [sender locationInView:sender.view];
-        }
-        [self.vmInput sendMouseButton:SEND_BUTTON_RIGHT pressed:YES point:translated];
-        [self.vmInput sendMouseButton:SEND_BUTTON_RIGHT pressed:NO point:translated];
-        [_clickFeedbackGenerator selectionChanged];
-    }
-}
-
-- (IBAction)gestureLongPress:(UILongPressGestureRecognizer *)sender {
+- (void)dragCursor:(UIGestureRecognizer *)sender {
     if (sender.state == UIGestureRecognizerStateBegan) {
         [_clickFeedbackGenerator selectionChanged];
         _mouseDown = YES;
     } else if (sender.state == UIGestureRecognizerStateEnded) {
         _mouseDown = NO;
+    }
+}
+
+- (IBAction)gestureTap:(UITapGestureRecognizer *)sender {
+    if (sender.state == UIGestureRecognizerStateEnded) {
+        [self mouseClick:SEND_BUTTON_LEFT location:[sender locationInView:sender.view]];
+    }
+}
+
+- (IBAction)gestureTwoTap:(UITapGestureRecognizer *)sender {
+    if (sender.state == UIGestureRecognizerStateEnded &&
+        self.twoFingerTapType == VMGestureTypeRightClick) {
+        [self mouseClick:SEND_BUTTON_RIGHT location:[sender locationInView:sender.view]];
+    }
+}
+
+- (IBAction)gestureLongPress:(UILongPressGestureRecognizer *)sender {
+    if (sender.state == UIGestureRecognizerStateEnded &&
+        self.longPressType == VMGestureTypeRightClick) {
+        [self mouseClick:SEND_BUTTON_RIGHT location:[sender locationInView:sender.view]];
+    } else if (self.longPressType == VMGestureTypeDragCursor) {
+        [self dragCursor:sender];
     }
 }
 
@@ -304,7 +329,8 @@ static CGFloat CGPointToPixel(CGFloat point) {
 }
 
 - (IBAction)gestureSwipeScroll:(UISwipeGestureRecognizer *)sender {
-    if (sender.state == UIGestureRecognizerStateEnded) {
+    if (sender.state == UIGestureRecognizerStateEnded &&
+        self.twoFingerScrollType == VMGestureTypeMouseWheel) {
         if (sender == _swipeScrollUp) {
             [self.vmInput sendMouseScroll:SEND_SCROLL_UP button:SEND_BUTTON_NONE dy:0];
         } else if (sender == _swipeScrollDown) {
