@@ -43,6 +43,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (IBAction)gesturePan:(UIPanGestureRecognizer *)sender;
 - (IBAction)gestureTwoPan:(UIPanGestureRecognizer *)sender;
+- (IBAction)gestureThreePan:(UIPanGestureRecognizer *)sender;
 - (IBAction)gestureTap:(UITapGestureRecognizer *)sender;
 - (IBAction)gestureTwoTap:(UITapGestureRecognizer *)sender;
 - (IBAction)gestureLongPress:(UILongPressGestureRecognizer *)sender;

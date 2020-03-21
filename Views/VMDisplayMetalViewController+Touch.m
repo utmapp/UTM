@@ -51,6 +51,10 @@
     _twoPan.minimumNumberOfTouches = 2;
     _twoPan.maximumNumberOfTouches = 2;
     _twoPan.delegate = self;
+    _threePan = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(gestureThreePan:)];
+    _threePan.minimumNumberOfTouches = 3;
+    _threePan.maximumNumberOfTouches = 3;
+    _threePan.delegate = self;
     _tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(gestureTap:)];
     _tap.delegate = self;
     _twoTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(gestureTwoTap:)];
@@ -66,6 +70,7 @@
     [self.mtkView addGestureRecognizer:_swipeScrollDown];
     [self.mtkView addGestureRecognizer:_pan];
     [self.mtkView addGestureRecognizer:_twoPan];
+    [self.mtkView addGestureRecognizer:_threePan];
     [self.mtkView addGestureRecognizer:_tap];
     [self.mtkView addGestureRecognizer:_twoTap];
     [self.mtkView addGestureRecognizer:_longPress];
@@ -239,6 +244,20 @@ static CGFloat CGPointToPixel(CGFloat point) {
     }
 }
 
+- (IBAction)gestureThreePan:(UIPanGestureRecognizer *)sender {
+    switch (self.threeFingerPanType) {
+        case VMGestureTypeMoveScreen:
+            [self moveScreen:sender];
+            break;
+        case VMGestureTypeDragCursor:
+            [self dragCursor:sender];
+            [self moveMouse:sender];
+            break;
+        default:
+            break;
+    }
+}
+
 - (CGPoint)moveMouseAbsolute:(CGPoint)location {
     CGPoint translated = location;
     translated.x = CGPointToPixel(translated.x);
@@ -381,12 +400,22 @@ static CGFloat CGPointToPixel(CGFloat point) {
     if (gestureRecognizer == _pan && otherGestureRecognizer == _swipeDown) {
         return YES;
     }
+    if (gestureRecognizer == _threePan && otherGestureRecognizer == _swipeUp) {
+        return YES;
+    }
+    if (gestureRecognizer == _threePan && otherGestureRecognizer == _swipeDown) {
+        return YES;
+    }
     return NO;
 }
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
     if (gestureRecognizer == _twoPan && otherGestureRecognizer == _pinch) {
-        return YES;
+        if (self.twoFingerPanType == VMGestureTypeMoveScreen) {
+            return YES;
+        } else {
+            return NO;
+        }
     } else if (gestureRecognizer == _pan && otherGestureRecognizer == _longPress) {
         return YES;
     } else {

@@ -41,6 +41,7 @@ NS_ASSUME_NONNULL_BEGIN
     UISwipeGestureRecognizer *_swipeScrollDown;
     UIPanGestureRecognizer *_pan;
     UIPanGestureRecognizer *_twoPan;
+    UIPanGestureRecognizer *_threePan;
     UITapGestureRecognizer *_tap;
     UITapGestureRecognizer *_twoTap;
     UILongPressGestureRecognizer *_longPress;
