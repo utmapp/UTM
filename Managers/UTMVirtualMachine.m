@@ -379,6 +379,8 @@ NSString *const kSuspendSnapshotName = @"suspend";
             _is_busy = YES;
         }
     }
+    UTMVMState state = self.state;
+    [self changeState:kVMPausing];
     __block BOOL success = YES;
     dispatch_semaphore_t save_sema = dispatch_semaphore_create(0);
     [_qemu vmSaveWithCompletion:^(NSString *result, NSError *err) {
@@ -398,6 +400,7 @@ NSString *const kSuspendSnapshotName = @"suspend";
     self.viewState.suspended = YES;
     [self saveViewState];
     [self saveScreenshot];
+    [self changeState:state];
     _is_busy = NO;
     return success;
 }
