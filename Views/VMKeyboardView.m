@@ -389,10 +389,14 @@ static int indexForExtChar(const ext_key_mapping_t *table, size_t table_len, cha
 }
 
 - (void)insertText:(nonnull NSString *)text {
-    [text enumerateSubstringsInRange:NSMakeRange(0, text.length) options:NSStringEnumerationByComposedCharacterSequences usingBlock:^(NSString * _Nullable substring, NSRange substringRange, NSRange enclosingRange, BOOL * _Nonnull stop) {
-        const char *seq = [substring UTF8String];
-        [self insertUTF8Sequence:seq];
-    }];
+    dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), ^{
+        [text enumerateSubstringsInRange:NSMakeRange(0, text.length) options:NSStringEnumerationByComposedCharacterSequences usingBlock:^(NSString * _Nullable substring, NSRange substringRange, NSRange enclosingRange, BOOL * _Nonnull stop) {
+            const char *seq = [substring UTF8String];
+            [self insertUTF8Sequence:seq];
+            // we need to pause a bit or the keypress will be too fast!
+            [NSThread sleepForTimeInterval:0.001f];
+        }];
+    });
 }
 
 - (void)insertUTF8Sequence:(const char *)ctext {
