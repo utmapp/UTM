@@ -287,7 +287,9 @@ static CGFloat CGPointToPixel(CGFloat point) {
         _cursor.center = location;
     }
     [self.vmInput sendMouseButton:button pressed:YES point:CGPointZero];
-    [self.vmInput sendMouseButton:button pressed:NO point:CGPointZero];
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC*0.1), dispatch_get_main_queue(), ^{
+        [self.vmInput sendMouseButton:button pressed:NO point:CGPointZero];
+    });
     [_clickFeedbackGenerator selectionChanged];
 }
 
@@ -295,8 +297,10 @@ static CGFloat CGPointToPixel(CGFloat point) {
     if (sender.state == UIGestureRecognizerStateBegan) {
         [_clickFeedbackGenerator selectionChanged];
         _mouseDown = YES;
+        [self.vmInput sendMouseButton:SEND_BUTTON_LEFT pressed:YES point:CGPointZero];
     } else if (sender.state == UIGestureRecognizerStateEnded) {
         _mouseDown = NO;
+        [self.vmInput sendMouseButton:SEND_BUTTON_LEFT pressed:NO point:CGPointZero];
     }
 }
 
