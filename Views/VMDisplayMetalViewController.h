@@ -41,6 +41,7 @@ NS_ASSUME_NONNULL_BEGIN
     UISwipeGestureRecognizer *_swipeScrollDown;
     UIPanGestureRecognizer *_pan;
     UIPanGestureRecognizer *_twoPan;
+    UIPanGestureRecognizer *_threePan;
     UITapGestureRecognizer *_tap;
     UITapGestureRecognizer *_twoTap;
     UILongPressGestureRecognizer *_longPress;
@@ -70,8 +71,12 @@ NS_ASSUME_NONNULL_BEGIN
 @property (strong, nonatomic) IBOutletCollection(VMKeyboardButton) NSArray *customKeyModifierButtons;
 @property (nonatomic, readonly) BOOL serverModeCursor;
 @property (nonatomic, readonly) BOOL touchscreen;
+@property (nonatomic, readonly) BOOL autosaveBackground;
+@property (nonatomic, readonly) BOOL autosaveLowMemory;
 
 - (void)sendExtendedKey:(SendKeyType)type code:(int)code;
+- (BOOL)boolForSetting:(NSString *)key;
+- (NSInteger)integerForSetting:(NSString *)key;
 
 - (IBAction)changeDisplayZoom:(UIButton *)sender;
 - (IBAction)pauseResumePressed:(UIButton *)sender;

@@ -47,12 +47,8 @@
         [self pushArgv:@"-tb-size"];
         [self pushArgv:[self.configuration.systemJitCacheSize stringValue]];
     }
-    if ([self.configuration.systemArchitecture isEqualToString:@"aarch64"]) {
-        // TODO: remove this hack
-        [self pushArgv:@"-device"];
-        [self pushArgv:@"virtio-gpu-pci"];
-    }
-    else {
+    if ([self.configuration.systemArchitecture isEqualToString:@"x86_64"] ||
+        [self.configuration.systemArchitecture isEqualToString:@"i386"]) {
         [self pushArgv:@"-vga"];
         [self pushArgv:@"qxl"];
     }

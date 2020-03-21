@@ -296,6 +296,7 @@
 		CECC76532273A7D50059B955 /* qapi-util.c in Sources */ = {isa = PBXBuildFile; fileRef = CECC764E2273A7D50059B955 /* qapi-util.c */; };
 		CECC76542273A7D50059B955 /* qapi-visit-core.c in Sources */ = {isa = PBXBuildFile; fileRef = CECC764F2273A7D50059B955 /* qapi-visit-core.c */; };
 		CECC76552273A7D50059B955 /* cf-output-visitor.c in Sources */ = {isa = PBXBuildFile; fileRef = CECC76502273A7D50059B955 /* cf-output-visitor.c */; };
+		CECC7A032425770300D4B1FD /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = CECC7A022425770300D4B1FD /* Settings.bundle */; };
 		CED33AE02267892200FF1977 /* UTMQemuSystem.m in Sources */ = {isa = PBXBuildFile; fileRef = CED33ADF2267892200FF1977 /* UTMQemuSystem.m */; };
 		CED33AE32267893D00FF1977 /* UTMQemuImg.m in Sources */ = {isa = PBXBuildFile; fileRef = CED33AE22267893D00FF1977 /* UTMQemuImg.m */; };
 		CED33AE62267CAB500FF1977 /* VMDisplayMetalViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CED33AE52267CAB500FF1977 /* VMDisplayMetalViewController.m */; };
@@ -809,6 +810,7 @@
 		CECC764F2273A7D50059B955 /* qapi-visit-core.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "qapi-visit-core.c"; sourceTree = "<group>"; };
 		CECC76502273A7D50059B955 /* cf-output-visitor.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "cf-output-visitor.c"; sourceTree = "<group>"; };
 		CECC76562273A88F0059B955 /* qemu-compat.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "qemu-compat.h"; sourceTree = "<group>"; };
+		CECC7A022425770300D4B1FD /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
 		CED33ADE2267892200FF1977 /* UTMQemuSystem.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UTMQemuSystem.h; sourceTree = "<group>"; };
 		CED33ADF2267892200FF1977 /* UTMQemuSystem.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UTMQemuSystem.m; sourceTree = "<group>"; };
 		CED33AE12267893D00FF1977 /* UTMQemuImg.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UTMQemuImg.h; sourceTree = "<group>"; };
@@ -1306,6 +1308,7 @@
 				CE550BD72259479D0063E575 /* LaunchScreen.storyboard */,
 				CE550BDA2259479D0063E575 /* Info.plist */,
 				CE550BDB2259479D0063E575 /* main.m */,
+				CECC7A022425770300D4B1FD /* Settings.bundle */,
 			);
 			path = UTM;
 			sourceTree = "<group>";
@@ -1501,6 +1504,7 @@
 				CE9D18F82265410E00355E14 /* qemu in Resources */,
 				CE550BD92259479D0063E575 /* LaunchScreen.storyboard in Resources */,
 				CE550BD62259479D0063E575 /* Assets.xcassets in Resources */,
+				CECC7A032425770300D4B1FD /* Settings.bundle in Resources */,
 				CE550BD4225947990063E575 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
