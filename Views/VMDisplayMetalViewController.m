@@ -69,6 +69,14 @@
     return self.vmConfiguration.inputTouchscreenMode;
 }
 
+- (BOOL)autosaveBackground {
+    return [self boolForSetting:@"AutosaveBackground"];
+}
+
+- (BOOL)autosaveLowMemory {
+    return [self boolForSetting:@"AutosaveLowMemory"];
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     
@@ -381,7 +389,7 @@
 
 - (void)handleEnteredBackground:(NSNotification *)notification {
     NSLog(@"Entering background");
-    if ([[NSUserDefaults standardUserDefaults] boolForKey:@"AutosaveBackground"] && self.vm.state == kVMStarted) {
+    if (self.autosaveBackground && self.vm.state == kVMStarted) {
         NSLog(@"Saving snapshot");
         __block UIBackgroundTaskIdentifier task = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
             NSLog(@"Background task end");
@@ -413,7 +421,7 @@
     
     [super didReceiveMemoryWarning];
     
-    if ([[NSUserDefaults standardUserDefaults] boolForKey:@"AutosaveLowMemory"]) {
+    if (self.autosaveLowMemory) {
         NSLog(@"Saving VM state on low memory warning.");
         dispatch_async(dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0), ^{
             [self.vm saveVM];

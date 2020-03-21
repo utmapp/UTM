@@ -70,6 +70,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (strong, nonatomic) IBOutletCollection(VMKeyboardButton) NSArray *customKeyModifierButtons;
 @property (nonatomic, readonly) BOOL serverModeCursor;
 @property (nonatomic, readonly) BOOL touchscreen;
+@property (nonatomic, readonly) BOOL autosaveBackground;
+@property (nonatomic, readonly) BOOL autosaveLowMemory;
 
 - (void)sendExtendedKey:(SendKeyType)type code:(int)code;
 - (BOOL)boolForSetting:(NSString *)key;
