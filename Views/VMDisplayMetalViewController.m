@@ -38,6 +38,9 @@
     // visibility
     BOOL _toolbarVisible;
     BOOL _keyboardVisible;
+    
+    // save state
+    BOOL _hasAutoSave;
 }
 
 @synthesize vmMessage;
@@ -64,6 +67,14 @@
 
 - (BOOL)touchscreen {
     return self.vmConfiguration.inputTouchscreenMode;
+}
+
+- (BOOL)autosaveBackground {
+    return [self boolForSetting:@"AutosaveBackground"];
+}
+
+- (BOOL)autosaveLowMemory {
+    return [self boolForSetting:@"AutosaveLowMemory"];
 }
 
 - (void)viewDidLoad {
@@ -190,6 +201,8 @@
     }
 }
 
+#pragma mark - Helper Functions
+
 - (void)sendExtendedKey:(SendKeyType)type code:(int)code {
     uint32_t x = __builtin_bswap32(code);
     while ((x & 0xFF) == 0) {
@@ -199,6 +212,14 @@
         [self.vmInput sendKey:type code:(x & 0xFF)];
         x = x >> 8;
     }
+}
+
+- (BOOL)boolForSetting:(NSString *)key {
+    return [[NSUserDefaults standardUserDefaults] boolForKey:key];
+}
+
+- (NSInteger)integerForSetting:(NSString *)key {
+    return [[NSUserDefaults standardUserDefaults] integerForKey:key];
 }
 
 #pragma mark - Toolbar actions
@@ -368,7 +389,7 @@
 
 - (void)handleEnteredBackground:(NSNotification *)notification {
     NSLog(@"Entering background");
-    if (self.vm.state == kVMStarted) {
+    if (self.autosaveBackground && self.vm.state == kVMStarted) {
         NSLog(@"Saving snapshot");
         __block UIBackgroundTaskIdentifier task = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
             NSLog(@"Background task end");
@@ -377,6 +398,7 @@
         }];
         dispatch_async(dispatch_get_global_queue(QOS_CLASS_DEFAULT, 0), ^{
             [self.vm saveVM];
+            self->_hasAutoSave = YES;
             NSLog(@"Save snapshot complete");
             [[UIApplication sharedApplication] endBackgroundTask:task];
             task = UIBackgroundTaskInvalid;
@@ -386,7 +408,7 @@
 
 - (void)handleEnteredForeground:(NSNotification *)notification {
     NSLog(@"Entering foreground!");
-    if (self.vm.state == kVMStarted) {
+    if (_hasAutoSave && self.vm.state == kVMStarted) {
         NSLog(@"Deleting snapshot");
         dispatch_async(dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0), ^{
             [self.vm deleteSaveVM];
@@ -399,10 +421,12 @@
     
     [super didReceiveMemoryWarning];
     
-    NSLog(@"Saving VM state on low memory warning.");
-    dispatch_async(dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0), ^{
-        [self.vm saveVM];
-    });
+    if (self.autosaveLowMemory) {
+        NSLog(@"Saving VM state on low memory warning.");
+        dispatch_async(dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0), ^{
+            [self.vm saveVM];
+        });
+    }
     
     if (!memoryAlertOnce) {
         memoryAlertOnce = YES;

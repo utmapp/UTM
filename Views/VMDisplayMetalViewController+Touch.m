@@ -51,6 +51,10 @@
     _twoPan.minimumNumberOfTouches = 2;
     _twoPan.maximumNumberOfTouches = 2;
     _twoPan.delegate = self;
+    _threePan = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(gestureThreePan:)];
+    _threePan.minimumNumberOfTouches = 3;
+    _threePan.maximumNumberOfTouches = 3;
+    _threePan.delegate = self;
     _tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(gestureTap:)];
     _tap.delegate = self;
     _twoTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(gestureTwoTap:)];
@@ -66,6 +70,7 @@
     [self.mtkView addGestureRecognizer:_swipeScrollDown];
     [self.mtkView addGestureRecognizer:_pan];
     [self.mtkView addGestureRecognizer:_twoPan];
+    [self.mtkView addGestureRecognizer:_threePan];
     [self.mtkView addGestureRecognizer:_tap];
     [self.mtkView addGestureRecognizer:_twoTap];
     [self.mtkView addGestureRecognizer:_longPress];
@@ -74,6 +79,37 @@
     // Feedback generator for clicks
     _clickFeedbackGenerator = [[UISelectionFeedbackGenerator alloc] init];
     _resizeFeedbackGenerator = [[UIImpactFeedbackGenerator alloc] init];
+}
+
+#pragma mark - Properties from settings
+
+- (VMGestureType)gestureTypeForSetting:(NSString *)key {
+    NSInteger integer = [self integerForSetting:key];
+    if (integer < VMGestureTypeNone || integer >= VMGestureTypeMax) {
+        return VMGestureTypeNone;
+    } else {
+        return (VMGestureType)integer;
+    }
+}
+
+- (VMGestureType)longPressType {
+    return [self gestureTypeForSetting:@"GestureLongPress"];
+}
+
+- (VMGestureType)twoFingerTapType {
+    return [self gestureTypeForSetting:@"GestureTwoTap"];
+}
+
+- (VMGestureType)twoFingerPanType {
+    return [self gestureTypeForSetting:@"GestureTwoPan"];
+}
+
+- (VMGestureType)twoFingerScrollType {
+    return [self gestureTypeForSetting:@"GestureTwoScroll"];
+}
+
+- (VMGestureType)threeFingerPanType {
+    return [self gestureTypeForSetting:@"GestureThreePan"];
 }
 
 #pragma mark - Converting view points to VM display points
@@ -156,7 +192,7 @@ static CGFloat CGPointToPixel(CGFloat point) {
 
 #pragma mark - Gestures
 
-- (IBAction)gesturePan:(UIPanGestureRecognizer *)sender {
+- (void)moveMouse:(UIPanGestureRecognizer *)sender {
     CGPoint location = [sender locationInView:sender.view];
     CGPoint velocity = [sender velocityInView:sender.view];
     if (sender.state == UIGestureRecognizerStateBegan) {
@@ -174,7 +210,11 @@ static CGFloat CGPointToPixel(CGFloat point) {
     }
 }
 
-- (IBAction)gestureTwoPan:(UIPanGestureRecognizer *)sender {
+- (IBAction)gesturePan:(UIPanGestureRecognizer *)sender {
+    [self moveMouse:sender];
+}
+
+- (void)moveScreen:(UIPanGestureRecognizer *)sender {
     if (sender.state == UIGestureRecognizerStateBegan) {
         _lastTwoPanOrigin = self.vmDisplay.viewportOrigin;
     }
@@ -187,6 +227,34 @@ static CGFloat CGPointToPixel(CGFloat point) {
     }
     if (sender.state == UIGestureRecognizerStateEnded) {
         // TODO: decelerate
+    }
+}
+
+- (IBAction)gestureTwoPan:(UIPanGestureRecognizer *)sender {
+    switch (self.twoFingerPanType) {
+        case VMGestureTypeMoveScreen:
+            [self moveScreen:sender];
+            break;
+        case VMGestureTypeDragCursor:
+            [self dragCursor:sender];
+            [self moveMouse:sender];
+            break;
+        default:
+            break;
+    }
+}
+
+- (IBAction)gestureThreePan:(UIPanGestureRecognizer *)sender {
+    switch (self.threeFingerPanType) {
+        case VMGestureTypeMoveScreen:
+            [self moveScreen:sender];
+            break;
+        case VMGestureTypeDragCursor:
+            [self dragCursor:sender];
+            [self moveMouse:sender];
+            break;
+        default:
+            break;
     }
 }
 
@@ -214,36 +282,47 @@ static CGFloat CGPointToPixel(CGFloat point) {
     return translation;
 }
 
+- (void)mouseClick:(SendButtonType)button location:(CGPoint)location {
+    if (self.touchscreen) {
+        _cursor.center = location;
+    }
+    [self.vmInput sendMouseButton:button pressed:YES point:CGPointZero];
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC*0.1), dispatch_get_main_queue(), ^{
+        [self.vmInput sendMouseButton:button pressed:NO point:CGPointZero];
+    });
+    [_clickFeedbackGenerator selectionChanged];
+}
+
+- (void)dragCursor:(UIGestureRecognizer *)sender {
+    if (sender.state == UIGestureRecognizerStateBegan) {
+        [_clickFeedbackGenerator selectionChanged];
+        _mouseDown = YES;
+        [self.vmInput sendMouseButton:SEND_BUTTON_LEFT pressed:YES point:CGPointZero];
+    } else if (sender.state == UIGestureRecognizerStateEnded) {
+        _mouseDown = NO;
+        [self.vmInput sendMouseButton:SEND_BUTTON_LEFT pressed:NO point:CGPointZero];
+    }
+}
+
 - (IBAction)gestureTap:(UITapGestureRecognizer *)sender {
     if (sender.state == UIGestureRecognizerStateEnded) {
-        CGPoint translated = CGPointZero;
-        if (self.touchscreen) {
-            _cursor.center = [sender locationInView:sender.view];
-        }
-        [self.vmInput sendMouseButton:SEND_BUTTON_LEFT pressed:YES point:translated];
-        [self.vmInput sendMouseButton:SEND_BUTTON_LEFT pressed:NO point:translated];
-        [_clickFeedbackGenerator selectionChanged];
+        [self mouseClick:SEND_BUTTON_LEFT location:[sender locationInView:sender.view]];
     }
 }
 
 - (IBAction)gestureTwoTap:(UITapGestureRecognizer *)sender {
-    if (sender.state == UIGestureRecognizerStateEnded) {
-        CGPoint translated = CGPointZero;
-        if (self.touchscreen) {
-            _cursor.center = [sender locationInView:sender.view];
-        }
-        [self.vmInput sendMouseButton:SEND_BUTTON_RIGHT pressed:YES point:translated];
-        [self.vmInput sendMouseButton:SEND_BUTTON_RIGHT pressed:NO point:translated];
-        [_clickFeedbackGenerator selectionChanged];
+    if (sender.state == UIGestureRecognizerStateEnded &&
+        self.twoFingerTapType == VMGestureTypeRightClick) {
+        [self mouseClick:SEND_BUTTON_RIGHT location:[sender locationInView:sender.view]];
     }
 }
 
 - (IBAction)gestureLongPress:(UILongPressGestureRecognizer *)sender {
-    if (sender.state == UIGestureRecognizerStateBegan) {
-        [_clickFeedbackGenerator selectionChanged];
-        _mouseDown = YES;
-    } else if (sender.state == UIGestureRecognizerStateEnded) {
-        _mouseDown = NO;
+    if (sender.state == UIGestureRecognizerStateEnded &&
+        self.longPressType == VMGestureTypeRightClick) {
+        [self mouseClick:SEND_BUTTON_RIGHT location:[sender locationInView:sender.view]];
+    } else if (self.longPressType == VMGestureTypeDragCursor) {
+        [self dragCursor:sender];
     }
 }
 
@@ -273,7 +352,8 @@ static CGFloat CGPointToPixel(CGFloat point) {
 }
 
 - (IBAction)gestureSwipeScroll:(UISwipeGestureRecognizer *)sender {
-    if (sender.state == UIGestureRecognizerStateEnded) {
+    if (sender.state == UIGestureRecognizerStateEnded &&
+        self.twoFingerScrollType == VMGestureTypeMouseWheel) {
         if (sender == _swipeScrollUp) {
             [self.vmInput sendMouseScroll:SEND_SCROLL_UP button:SEND_BUTTON_NONE dy:0];
         } else if (sender == _swipeScrollDown) {
@@ -324,12 +404,22 @@ static CGFloat CGPointToPixel(CGFloat point) {
     if (gestureRecognizer == _pan && otherGestureRecognizer == _swipeDown) {
         return YES;
     }
+    if (gestureRecognizer == _threePan && otherGestureRecognizer == _swipeUp) {
+        return YES;
+    }
+    if (gestureRecognizer == _threePan && otherGestureRecognizer == _swipeDown) {
+        return YES;
+    }
     return NO;
 }
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
     if (gestureRecognizer == _twoPan && otherGestureRecognizer == _pinch) {
-        return YES;
+        if (self.twoFingerPanType == VMGestureTypeMoveScreen) {
+            return YES;
+        } else {
+            return NO;
+        }
     } else if (gestureRecognizer == _pan && otherGestureRecognizer == _longPress) {
         return YES;
     } else {
