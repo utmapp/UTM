@@ -76,6 +76,37 @@
     _resizeFeedbackGenerator = [[UIImpactFeedbackGenerator alloc] init];
 }
 
+#pragma mark - Properties from settings
+
+- (VMGestureType)gestureTypeForSetting:(NSString *)key {
+    NSInteger integer = [self integerForSetting:key];
+    if (integer < VMGestureTypeNone || integer >= VMGestureTypeMax) {
+        return VMGestureTypeNone;
+    } else {
+        return (VMGestureType)integer;
+    }
+}
+
+- (VMGestureType)longPressType {
+    return [self gestureTypeForSetting:@"GestureLongPress"];
+}
+
+- (VMGestureType)twoFingerTapType {
+    return [self gestureTypeForSetting:@"GestureTwoTap"];
+}
+
+- (VMGestureType)twoFingerPanType {
+    return [self gestureTypeForSetting:@"GestureTwoPan"];
+}
+
+- (VMGestureType)twoFingerScrollType {
+    return [self gestureTypeForSetting:@"GestureTwoScroll"];
+}
+
+- (VMGestureType)threeFingerPanType {
+    return [self gestureTypeForSetting:@"GestureThreePan"];
+}
+
 #pragma mark - Converting view points to VM display points
 
 static CGRect CGRectClipToBounds(CGRect rect1, CGRect rect2) {

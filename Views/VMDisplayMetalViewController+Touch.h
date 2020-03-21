@@ -16,9 +16,24 @@
 
 #import "VMDisplayMetalViewController.h"
 
+typedef NS_ENUM(NSInteger, VMGestureType) {
+    VMGestureTypeNone,
+    VMGestureTypeDragCursor,
+    VMGestureTypeRightClick,
+    VMGestureTypeMoveScreen,
+    VMGestureTypeMouseWheel,
+    VMGestureTypeMax
+};
+
 NS_ASSUME_NONNULL_BEGIN
 
 @interface VMDisplayMetalViewController (Gestures)
+
+@property (nonatomic, readonly) VMGestureType longPressType;
+@property (nonatomic, readonly) VMGestureType twoFingerTapType;
+@property (nonatomic, readonly) VMGestureType twoFingerPanType;
+@property (nonatomic, readonly) VMGestureType twoFingerScrollType;
+@property (nonatomic, readonly) VMGestureType threeFingerPanType;
 
 - (void)initTouch;
 

@@ -193,6 +193,8 @@
     }
 }
 
+#pragma mark - Helper Functions
+
 - (void)sendExtendedKey:(SendKeyType)type code:(int)code {
     uint32_t x = __builtin_bswap32(code);
     while ((x & 0xFF) == 0) {
@@ -202,6 +204,14 @@
         [self.vmInput sendKey:type code:(x & 0xFF)];
         x = x >> 8;
     }
+}
+
+- (BOOL)boolForSetting:(NSString *)key {
+    return [[NSUserDefaults standardUserDefaults] boolForKey:key];
+}
+
+- (NSInteger)integerForSetting:(NSString *)key {
+    return [[NSUserDefaults standardUserDefaults] integerForKey:key];
 }
 
 #pragma mark - Toolbar actions
