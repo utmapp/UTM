@@ -214,6 +214,10 @@
     }
 }
 
+- (void)onDelay:(float)delay action:(void (^)(void))block {
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC*0.1), dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), block);
+}
+
 - (BOOL)boolForSetting:(NSString *)key {
     return [[NSUserDefaults standardUserDefaults] boolForKey:key];
 }
