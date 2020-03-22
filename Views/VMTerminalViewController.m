@@ -17,12 +17,14 @@
 #import "VMTerminalViewController.h"
 #import "UTMConfiguration.h"
 #import "UIViewController+Extensions.h"
+#import "WKWebView+Focus.h"
 
 NSString *const kVMSendInputHandler = @"UTMSendInput";
 
 @implementation VMTerminalViewController {
     // status bar
     BOOL _prefersStatusBarHidden;
+    BOOL _isKeyboardActive;
     // gestures
     UISwipeGestureRecognizer *_swipeUp;
     UISwipeGestureRecognizer *_swipeDown;
@@ -190,17 +192,23 @@ NSString *const kVMSendInputHandler = @"UTMSendInput";
     [self presentViewController:alert animated:YES completion:nil];
 }
 
-- (IBAction)showKeyboardPressed:(UIButton *)sender {
-    // FIXME: element.focus() from JS doesn't work in WKWebView, needs some workaround
-    // set focus on some element in JS
-    NSString* jsString = @"focusTerminal()";
-    [_webView evaluateJavaScript: jsString completionHandler:^(id _Nullable _, NSError * _Nullable error) {
-        if (error == nil) {
-            NSLog(@"Successfuly focused terminal element");
-        } else {
-            NSLog(@"Error while focusing terminal element");
-        }
-    }];
+- (IBAction)showKeyboardPressed:(UIButton *)sender {    
+    if (_isKeyboardActive) {
+        [_webView endEditing:YES];
+        _isKeyboardActive = NO;
+    } else {
+        [_webView toggleKeyboardDisplayRequiresUserAction:NO];
+        NSString* jsString = @"focusTerminal()";
+        [_webView evaluateJavaScript: jsString completionHandler:^(id _Nullable _, NSError * _Nullable error) {
+            if (error == nil) {
+                NSLog(@"Successfuly focused terminal element");
+            } else {
+                NSLog(@"Error while focusing terminal element");
+            }
+            [self->_webView toggleKeyboardDisplayRequiresUserAction:YES];
+        }];
+        _isKeyboardActive = YES;
+    }
 }
 
 - (IBAction)hideToolbarPressed:(UIButton *)sender {

@@ -12,11 +12,10 @@ function writeData(data) {
 }
 
 function focusTerminal() {
-    // doesn't work. Looks like it needs some kind of workaround
 //    const term = window.term;
 //    term.scrollPort_.focus()
-//    var element = document.getElementById("terminal");
-//    element.focus();
+    var element = document.getElementById("terminal");
+    element.focus();
 }
 
 function terminalSetup() {
