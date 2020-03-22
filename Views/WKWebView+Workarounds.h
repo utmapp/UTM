@@ -21,6 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface WKWebView (FocusWorkaround)
 
 - (void)toggleKeyboardDisplayRequiresUserAction:(BOOL)value;
+- (void)setCustomInputAccessoryView: (UIView* _Nullable) view;
 
 @end
 

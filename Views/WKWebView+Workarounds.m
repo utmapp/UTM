@@ -14,12 +14,15 @@
 // limitations under the License.
 //
 
-#import "WKWebView+Focus.h"
+#import "WKWebView+Workarounds.h"
 #import <objc/runtime.h>
 
 static char elementDidFocusImpKey;
+static char inputAccessoryViewKey;
 
 @implementation WKWebView (FocusWorkaround)
+
+#pragma mark - Element focus workaround
 
 - (IMP)elementDidFocusOriginalImplementation {
     NSValue* value = objc_getAssociatedObject(self, &elementDidFocusImpKey);
@@ -128,6 +131,75 @@ static char elementDidFocusImpKey;
         
         return original;
     }
+}
+
+#pragma mark - Input accessory view workaround
+
+/**
+    Sets input accessory view as associated objects and does method swizzling on WKContentView
+ */
+- (void)setCustomInputAccessoryView:(UIView *)view {
+    objc_setAssociatedObject(self, &inputAccessoryViewKey, view, OBJC_ASSOCIATION_RETAIN);
+    
+    // find WKContentView in webview subviews
+    UIView* targetView;
+    for (UIView* view in self.scrollView.subviews) {
+        if ([NSStringFromClass([view class]) hasPrefix: @"WKContent"]) {
+            targetView = view;
+            NSLog(@"View class: %@", NSStringFromClass([targetView class]));
+            break;
+        }
+    }
+    
+    NSAssert(targetView != nil, @"WKContentView not found!");
+    [self plugInInputAccessoryView:targetView];
+}
+
+/**
+    Although WebKit allows to subclass WKWebView to provide custom input accessory, it works only on iOS 13+.
+    To keep compatibility, workaround is needed, swaping implementation of WKContentView using objc runtime.
+ */
+- (void)plugInInputAccessoryView:(UIView*)contentView {
+    // check if swizzwling was already done
+    if ([NSStringFromClass([contentView class]) hasSuffix: @"VMKeyboardView"]) {
+        return;
+    }
+    
+    NSString* customClassName = [NSString stringWithFormat:@"%@_VMKeyboardView", NSStringFromClass([contentView class])];
+    Class customClass = NSClassFromString(customClassName);
+    if (customClass == nil) {
+        // create WKContentView subclass
+        Class targetClass = [contentView class];
+        customClass = objc_allocateClassPair(targetClass, [customClassName UTF8String], 0);
+
+        if (customClass != nil) {
+            objc_registerClassPair(customClass);
+        }
+    }
+    
+    NSAssert(customClass != nil, @"Custom WKContentView class was not created");
+    // add custom implemenation from this VC
+    Method customInputAccessoryViewGetter = class_getInstanceMethod([self class], @selector(customInputAccessoryView));
+    class_addMethod(customClass,
+                    @selector(inputAccessoryView),
+                    method_getImplementation(customInputAccessoryViewGetter),
+                    method_getTypeEncoding(customInputAccessoryViewGetter));
+    // swap class of original view
+    object_setClass(contentView, customClass);
+}
+
+/**
+    This is called from WKContentView, so to access associated object, we need to move up
+    through hierarchy to find parent WKWebView
+ */
+- (UIView * _Nullable)customInputAccessoryView {
+    UIView * _Nullable currentView = self;
+    while (currentView != nil && ![[currentView class] isEqual: [WKWebView class]]) {
+        currentView = currentView.superview;
+    }
+    
+    NSAssert(currentView != nil, @"WKWebView not found in view hierarchy!");
+    return (UIView *) objc_getAssociatedObject(currentView, &inputAccessoryViewKey);
 }
 
 @end

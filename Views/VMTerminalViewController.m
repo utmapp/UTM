@@ -17,7 +17,7 @@
 #import "VMTerminalViewController.h"
 #import "UTMConfiguration.h"
 #import "UIViewController+Extensions.h"
-#import "WKWebView+Focus.h"
+#import "WKWebView+Workarounds.h"
 
 NSString *const kVMSendInputHandler = @"UTMSendInput";
 
@@ -52,8 +52,9 @@ NSString *const kVMSendInputHandler = @"UTMSendInput";
     // UI setup
     [self.navigationController setNavigationBarHidden:YES animated: YES];
     [self setUpGestures];
-    
+    NSLog(@"Input accessory : %d", _inputAccessoryView == nil);
     // webview setup
+    [_webView setCustomInputAccessoryView: _inputAccessoryView];
     [[[_webView configuration] userContentController] addScriptMessageHandler: self name: kVMSendInputHandler];
     
     // load terminal.html
