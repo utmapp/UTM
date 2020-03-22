@@ -19,6 +19,7 @@
 #import "UIViewController+Extensions.h"
 #import "WKWebView+Workarounds.h"
 #import "VMKeyboardView.h"
+#import <CoreGraphics/CoreGraphics.h>
 
 NSString *const kVMSendInputHandler = @"UTMSendInput";
 
@@ -90,6 +91,37 @@ NSString *const kVMSendInputHandler = @"UTMSendInput";
 }
 
 #pragma mark - Input accessory view
+
+- (IBAction)customKeyTouchDown:(VMKeyboardButton *)sender {
+    if (!sender.toggleable) {
+        NSString* jsString = [NSString stringWithFormat: @"programmaticKeyDown(%d);", [sender scanCode]];
+        [_webView evaluateJavaScript: jsString completionHandler:^(id _Nullable sth, NSError * _Nullable error) {
+            NSLog(@"Key down error: %d", error != nil);
+        }];
+    }
+}
+
+- (IBAction)customKeyTouchUp:(VMKeyboardButton *)sender {
+    if (sender.toggleable) {
+        sender.toggled = !sender.toggled;
+    }
+    
+    if (sender.toggleable && sender.toggled) {
+        
+    } else {
+        NSString* jsString = [NSString stringWithFormat: @"programmaticKeyUp(%d);", [sender scanCode]];
+        [_webView evaluateJavaScript: jsString completionHandler:^(id _Nullable sth, NSError * _Nullable error) {
+            NSLog(@"Key up error: %d", error != nil);
+        }];
+    }
+}
+
+- (IBAction)keyboardPastePressed:(UIButton *)sender {
+}
+
+- (IBAction)keyboardDonePressed:(UIButton *)sender {
+    [self showKeyboardPressed: sender];
+}
 
 - (void)traitCollectionDidChange:(UITraitCollection *)previousTraitCollection {
     [super traitCollectionDidChange:previousTraitCollection];

@@ -21,6 +21,7 @@
 #import "UTMTerminalIO.h"
 #import "UTMTerminal.h"
 #import "UTMTerminalDelegate.h"
+#import "VMKeyboardButton.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -38,6 +39,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (IBAction)powerPressed:(UIButton *)sender;
 - (IBAction)showKeyboardPressed:(UIButton *)sender;
 - (IBAction)hideToolbarPressed:(UIButton *)sender;
+
+- (IBAction)customKeyTouchDown:(VMKeyboardButton *)sender;
+- (IBAction)customKeyTouchUp:(VMKeyboardButton *)sender;
+- (IBAction)keyboardPastePressed:(UIButton *)sender;
+- (IBAction)keyboardDonePressed:(UIButton *)sender;
 
 @end
 

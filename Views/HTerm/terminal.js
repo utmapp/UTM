@@ -1,4 +1,10 @@
 hterm.defaultStorage = new lib.Storage.Memory();
+var modifierTable = {
+    altKey: false,
+    ctrlKey: false,
+    metaKey: false,
+    shiftKey: false
+};
 
 function sendInputMessage(str) {
     const handler = window.webkit.messageHandlers.UTMSendInput;
@@ -16,6 +22,47 @@ function focusTerminal() {
 //    term.scrollPort_.focus()
     var element = document.getElementById("terminal");
     element.focus();
+}
+
+function modifierDown(keyName) {
+    modifierTable[keyName] = true;
+}
+
+function modifierUp(keyName) {
+    modifierTable[keyName] = false;
+}
+
+function programmaticKeyDown(keyCode) {
+    var eventData = {
+        keyCode: keyCode,
+        altKey: modifierTable.altKey,
+        ctrlKey: modifierTable.ctrlKey,
+        metaKey: modifierTable.metaKey,
+        shiftKey: modifierTable.shiftKey
+    };
+    var keyDownEvent = new KeyboardEvent("keydown", eventData);
+    const term = window.term;
+    term.keyboard.onKeyDown_(keyDownEvent);
+}
+
+function programmaticKeyUp(keyCode) {
+    var eventData = {
+        keyCode: keyCode,
+        altKey: modifierTable.altKey,
+        ctrlKey: modifierTable.ctrlKey,
+        metaKey: modifierTable.metaKey,
+        shiftKey: modifierTable.shiftKey
+    };
+    var keyUpEvent = new KeyboardEvent("keyup", eventData);
+    const term = window.term;
+    term.keyboard.onKeyUp_(keyDownEvent);
+}
+
+function captureKeydownHandler(event) {
+    if (!event.wasSanitized) {
+        
+        event.stopPropagation();
+    }
 }
 
 function terminalSetup() {
@@ -54,5 +101,6 @@ function terminalSetup() {
 };
 
 window.onload = function() {
+    //window.addEventListener("keydown", captureKeydownHandler, true)
     lib.init(terminalSetup);
 };
