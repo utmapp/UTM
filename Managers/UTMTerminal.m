@@ -136,6 +136,14 @@ dispatch_io_t createInputIO(NSURL* url, dispatch_queue_t queue) {
     if (_outputObservationSource != nil) {
         dispatch_source_cancel(_outputObservationSource);
     }
+    
+    if (_outPipeFd != -1) {
+        close(_outPipeFd);
+    }
+    
+    if (_inputPipeIO != nil) {
+        dispatch_io_close(_inputPipeIO, DISPATCH_IO_STOP);
+    }
 }
 
 - (BOOL)isConnected {
