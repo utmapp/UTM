@@ -18,6 +18,7 @@
 #import "UTMConfiguration.h"
 #import "UIViewController+Extensions.h"
 #import "WKWebView+Workarounds.h"
+#import "VMKeyboardView.h"
 
 NSString *const kVMSendInputHandler = @"UTMSendInput";
 
@@ -86,6 +87,31 @@ NSString *const kVMSendInputHandler = @"UTMSendInput";
     UTMTerminalIO* io = (UTMTerminalIO*) [vm ioService];
     self.vm = vm;
     self.terminal = io.terminal;
+}
+
+#pragma mark - Input accessory view
+
+- (void)traitCollectionDidChange:(UITraitCollection *)previousTraitCollection {
+    [super traitCollectionDidChange:previousTraitCollection];
+    [self updateAccessoryViewHeight];
+    NSLog(@"Trait collection did change");
+}
+
+- (void)updateAccessoryViewHeight {
+    CGRect currentFrame = self.inputAccessoryView.frame;
+    CGFloat height;
+    if (self.traitCollection.horizontalSizeClass == UIUserInterfaceSizeClassRegular && self.traitCollection.verticalSizeClass == UIUserInterfaceSizeClassRegular) {
+        // we want large keys
+        height = kLargeAccessoryViewHeight;
+    } else {
+        height = kSmallAccessoryViewHeight;
+    }
+
+    if (height != currentFrame.size.height) {
+        currentFrame.size.height = height;
+        self.inputAccessoryView.frame = currentFrame;
+        [self reloadInputViews];
+    }
 }
 
 #pragma mark - Gestures

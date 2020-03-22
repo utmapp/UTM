@@ -2889,7 +2889,7 @@
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="zcN-pa-RPf" userLabel="First Responder" sceneMemberID="firstResponder"/>
-                <view contentMode="scaleToFill" ambiguous="YES" id="nlm-55-ehd" customClass="UIInputView">
+                <view contentMode="scaleToFill" id="nlm-55-ehd" customClass="UIInputView">
                     <rect key="frame" x="0.0" y="0.0" width="1000" height="68"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     <subviews>
@@ -3003,7 +3003,7 @@
                                 <action selector="keyboardPastePressed:" destination="ckC-eO-gxn" eventType="touchUpInside" id="ZlZ-Fw-mVo"/>
                             </connections>
                         </button>
-                        <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" ambiguous="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" translatesAutoresizingMaskIntoConstraints="NO" id="PMk-v2-aZ5">
+                        <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" translatesAutoresizingMaskIntoConstraints="NO" id="PMk-v2-aZ5">
                             <rect key="frame" x="160" y="0.0" width="756" height="68"/>
                             <subviews>
                                 <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="Ncv-Dw-Yuj">
