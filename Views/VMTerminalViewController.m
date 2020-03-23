@@ -122,6 +122,11 @@ NSString* const kVMDebugHandler = @"UTMDebug";
 }
 
 - (IBAction)keyboardPastePressed:(UIButton *)sender {
+    UIPasteboard* pasteboard = [UIPasteboard generalPasteboard];
+    NSString* string = pasteboard.string;
+    if (string != nil) {
+        [_terminal sendInput: string];
+    }
 }
 
 - (IBAction)keyboardDonePressed:(UIButton *)sender {
@@ -220,9 +225,7 @@ NSString* const kVMDebugHandler = @"UTMDebug";
     //NSLog(@"Array: %@", dataString);
     NSString* jsString = [NSString stringWithFormat: @"writeData(new Uint8Array(%@));", dataString];
     [_webView evaluateJavaScript: jsString completionHandler:^(id _Nullable _, NSError * _Nullable error) {
-        if (error == nil) {
-            NSLog(@"JS evaluation success");
-        } else {
+        if (error != nil) {
             NSLog(@"JS evaluation failed: %@", [error localizedDescription]);
         }
     }];
@@ -280,9 +283,7 @@ NSString* const kVMDebugHandler = @"UTMDebug";
         [_webView toggleKeyboardDisplayRequiresUserAction:NO];
         NSString* jsString = @"focusTerminal()";
         [_webView evaluateJavaScript: jsString completionHandler:^(id _Nullable _, NSError * _Nullable error) {
-            if (error == nil) {
-                NSLog(@"Successfuly focused terminal element");
-            } else {
+            if (error != nil) {
                 NSLog(@"Error while focusing terminal element");
             }
             [self->_webView toggleKeyboardDisplayRequiresUserAction:YES];
