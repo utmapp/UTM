@@ -22,6 +22,7 @@
 #import <CoreGraphics/CoreGraphics.h>
 
 NSString *const kVMSendInputHandler = @"UTMSendInput";
+NSString* const kVMDebugHandler = @"UTMDebug";
 
 @implementation VMTerminalViewController {
     // status bar
@@ -58,6 +59,7 @@ NSString *const kVMSendInputHandler = @"UTMSendInput";
     // webview setup
     [_webView setCustomInputAccessoryView: _inputAccessoryView];
     [[[_webView configuration] userContentController] addScriptMessageHandler: self name: kVMSendInputHandler];
+    [[[_webView configuration] userContentController] addScriptMessageHandler: self name: kVMDebugHandler];
     
     // load terminal.html
     NSURL* resourceURL = [[NSBundle mainBundle] resourceURL];
@@ -95,9 +97,7 @@ NSString *const kVMSendInputHandler = @"UTMSendInput";
 - (IBAction)customKeyTouchDown:(VMKeyboardButton *)sender {
     if (!sender.toggleable) {
         NSString* jsString = [NSString stringWithFormat: @"programmaticKeyDown(%d);", [sender scanCode]];
-        [_webView evaluateJavaScript: jsString completionHandler:^(id _Nullable sth, NSError * _Nullable error) {
-            NSLog(@"Key down error: %d", error != nil);
-        }];
+        [_webView evaluateJavaScript:jsString completionHandler:nil];
     }
 }
 
@@ -106,13 +106,18 @@ NSString *const kVMSendInputHandler = @"UTMSendInput";
         sender.toggled = !sender.toggled;
     }
     
-    if (sender.toggleable && sender.toggled) {
+    if (sender.toggleable) {
+        NSString* jsKey = [self jsModifierForScanCode: sender.scanCode];
+        if (jsKey == nil) {
+            return;
+        }
         
+        NSString* jsTemplate = sender.toggled ? @"modifierDown(\"%@\");" : @"modifierUp(\"%@\");";
+        NSString* jsString = [NSString stringWithFormat: jsTemplate, jsKey];
+        [_webView evaluateJavaScript:jsString completionHandler: nil];
     } else {
         NSString* jsString = [NSString stringWithFormat: @"programmaticKeyUp(%d);", [sender scanCode]];
-        [_webView evaluateJavaScript: jsString completionHandler:^(id _Nullable sth, NSError * _Nullable error) {
-            NSLog(@"Key up error: %d", error != nil);
-        }];
+        [_webView evaluateJavaScript:jsString completionHandler:nil];
     }
 }
 
@@ -121,6 +126,20 @@ NSString *const kVMSendInputHandler = @"UTMSendInput";
 
 - (IBAction)keyboardDonePressed:(UIButton *)sender {
     [self showKeyboardPressed: sender];
+}
+
+- (NSString* _Nullable)jsModifierForScanCode: (int) scanCode {
+    if (scanCode == 29) {
+        return @"ctrlKey";
+    } else if (scanCode == 56) {
+        return @"altKey";
+    } else if (scanCode == 57435) {
+        return @"metaKey";
+    } else if (scanCode == 42) {
+        return @"shiftKey";
+    } else {
+        return nil;
+    }
 }
 
 - (void)traitCollectionDidChange:(UITraitCollection *)previousTraitCollection {
@@ -184,6 +203,8 @@ NSString *const kVMSendInputHandler = @"UTMSendInput";
     if ([[message name] isEqualToString: kVMSendInputHandler]) {
         NSLog(@"Received input from HTerm: %@", (NSString*) message.body);
         [_terminal sendInput: (NSString*) message.body];
+    } else if ([[message name] isEqualToString: kVMDebugHandler]) {
+        NSLog(@"Debug message from HTerm: %@", (NSString*) message.body);
     }
 }
 
