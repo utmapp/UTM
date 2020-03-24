@@ -53,14 +53,14 @@ dispatch_io_t createInputIO(NSURL* url, dispatch_queue_t queue) {
         if (![self configurePipesUsingURL: url]) {
             NSLog(@"Terminal configutation failed!");
             [self cleanup];
-            self = nil;
+            return nil;
         }
         // setup non-blocking io for writing
         self->_inputPipeIO = createInputIO(_inPipeURL, _inputQueue);
         if (self->_inputPipeIO == nil) {
             NSLog(@"Terminal configutation failed!");
             [self cleanup];
-            self = nil;
+            return nil;
         }
     }
     return self;
@@ -144,6 +144,7 @@ dispatch_io_t createInputIO(NSURL* url, dispatch_queue_t queue) {
     if (_inputPipeIO != nil) {
         dispatch_io_close(_inputPipeIO, DISPATCH_IO_STOP);
     }
+    NSLog(@"Successfuly disconnected!");
 }
 
 - (BOOL)isConnected {
@@ -214,6 +215,7 @@ dispatch_io_t createInputIO(NSURL* url, dispatch_queue_t queue) {
     if (_outPipeURL != nil) {
         [fm removeItemAtURL: _outPipeURL error: nil];
     }
+    NSLog(@"Cleanup completed!");
 }
 
 #pragma mark - Custom errors

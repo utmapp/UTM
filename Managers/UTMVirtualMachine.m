@@ -200,6 +200,8 @@ NSString *const kUTMBundleExtension = @"utm";
             [self changeState:kVMStarted];
         }
     }];
+    
+    [NSThread sleepForTimeInterval:0.1f];
     [self->_qemu connect];
 }
 
