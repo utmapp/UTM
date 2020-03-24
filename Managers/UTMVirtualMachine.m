@@ -183,6 +183,7 @@ NSString *const kSuspendSnapshotName = @"suspend";
 
 - (void)errorTriggered:(nullable NSString *)msg {
     self.viewState.suspended = NO;
+    [self saveViewState];
     [self quitVM];
     self.delegate.vmMessage = msg;
     [self changeState:kVMError];
@@ -396,10 +397,10 @@ NSString *const kSuspendSnapshotName = @"suspend";
         success = NO;
     } else {
         NSLog(@"Save completed");
+        self.viewState.suspended = YES;
+        [self saveViewState];
+        [self saveScreenshot];
     }
-    self.viewState.suspended = YES;
-    [self saveViewState];
-    [self saveScreenshot];
     [self changeState:state];
     _is_busy = NO;
     return success;
