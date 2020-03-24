@@ -385,6 +385,7 @@ static int indexForExtChar(const ext_key_mapping_t *table, size_t table_len, cha
 
 - (void)deleteBackward {
     [self.delegate keyboardView:self didPressKeyDown:0x0E];
+    [NSThread sleepForTimeInterval:0.05f];
     [self.delegate keyboardView:self didPressKeyUp:0x0E];
 }
 
@@ -466,6 +467,7 @@ static int indexForExtChar(const ext_key_mapping_t *table, size_t table_len, cha
                 [self.delegate keyboardView:self didPressKeyDown:special];
             }
             [self.delegate keyboardView:self didPressKeyDown:prekey];
+            [NSThread sleepForTimeInterval:0.05f];
             [self.delegate keyboardView:self didPressKeyUp:prekey];
             if (prekey_special) {
                 [self.delegate keyboardView:self didPressKeyUp:special];
@@ -477,6 +479,7 @@ static int indexForExtChar(const ext_key_mapping_t *table, size_t table_len, cha
         }
         
         [self.delegate keyboardView:self didPressKeyDown:keycode];
+        [NSThread sleepForTimeInterval:0.05f];
         [self.delegate keyboardView:self didPressKeyUp:keycode];
         
         if (special) {

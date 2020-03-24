@@ -48,10 +48,8 @@
 }
 
 - (void)keyboardView:(nonnull VMKeyboardView *)keyboardView didPressKeyUp:(int)scancode {
-    [self onDelay:0.05f action:^{
-        [self sendExtendedKey:SEND_KEY_RELEASE code:scancode];
-        [self resetModifierToggles];
-    }];
+    [self sendExtendedKey:SEND_KEY_RELEASE code:scancode];
+    [self resetModifierToggles];
 }
 
 - (IBAction)keyboardDonePressed:(UIButton *)sender {
