@@ -25,11 +25,29 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    self.soundCardPickerView.delegate = self;
+    self.soundCardPickerView.dataSource = self;
+}
+
+
+- (void)viewWillAppear:(BOOL)animated {
+    [self.soundCardPickerView selectRow: self.configuration.soundCardDeviceId.integerValue inComponent:0 animated:NO];
+    [self.soundCardPickerView reloadComponent:0];
 }
 
 - (void)refreshViewFromConfiguration {
     [super refreshViewFromConfiguration];
     self.soundEnabledSwitch.on = self.configuration.soundEnabled;
+    [self pickerCell:self.soundCardPickerViewTableViewCell setActive:self.configuration.soundEnabled];
+     
+    
+}
+
+#pragma mark - Picker helpers
+
+- (void)pickerCell:(nonnull UITableViewCell *)pickerCell setActive:(BOOL)active {
+    [self cell:pickerCell setHidden:!active];
+    [self reloadDataAnimated:self.doneLoadingConfiguration];
 }
 
 #pragma mark - Event handlers
@@ -37,6 +55,25 @@
 - (IBAction)soundEnabledSwitchChanged:(UISwitch *)sender {
     NSAssert(sender == self.soundEnabledSwitch, @"Invalid sender");
     self.configuration.soundEnabled = sender.on;
+    [self pickerCell:self.soundCardPickerViewTableViewCell setActive:sender.on];
+    
+}
+
+
+- (NSInteger)numberOfComponentsInPickerView:(nonnull UIPickerView *)pickerView {
+    return 1;
+}
+
+- (NSInteger)pickerView:(nonnull UIPickerView *)pickerView numberOfRowsInComponent:(NSInteger)component {
+    return [UTMConfiguration supportedSoundCardDevices].count;
+}
+
+- (NSString *)pickerView:(UIPickerView *)pickerView titleForRow:(NSInteger)row forComponent:(NSInteger)component {
+    return [UTMConfiguration supportedSoundCardDevices][row];
+}
+
+- (void)pickerView:(UIPickerView *)pickerView didSelectRow:(NSInteger)row inComponent:(NSInteger)component {
+    self.configuration.soundCardDeviceId = [NSNumber numberWithLong:row];
 }
 
 @end

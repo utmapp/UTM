@@ -53,6 +53,7 @@ const NSString *const kUTMConfigDHCPStartKey = @"DHCPStart";
 const NSString *const kUTMConfigPrintEnabledKey = @"PrintEnabled";
 
 const NSString *const kUTMConfigSoundEnabledKey = @"SoundEnabled";
+const NSString *const kUTMConfigSoundCardDeviceKey = @"SoundCardDevice";
 
 const NSString *const kUTMConfigChipboardSharingKey = @"ClipboardSharing";
 
@@ -113,6 +114,18 @@ const NSString *const kUTMConfigDebugLogKey = @"DebugLog";
              @"x86_64",
              @"Xtensa",
              @"Xtensa (Big Endian)"
+             ];
+}
+
++ (NSArray<NSString *>*)supportedSoundCardDevices {
+     return @[
+             @"ac97",
+             @"hda",
+             @"es1370",
+             @"sb16",
+             @"cs4231a",
+             @"adlib",
+             @"gus"
              ];
 }
 
@@ -1327,6 +1340,7 @@ const NSString *const kUTMConfigDebugLogKey = @"DebugLog";
         self.networkEnabled = YES;
         self.printEnabled = YES;
         self.soundEnabled = YES;
+        self.soundCardDeviceId = @0;
         self.sharingClipboardEnabled = YES;
         self.existingPath = nil;
         self.debugLogEnabled = NO;
@@ -1559,6 +1573,14 @@ const NSString *const kUTMConfigDebugLogKey = @"DebugLog";
 
 - (BOOL)soundEnabled {
     return [_rootDict[kUTMConfigSoundKey][kUTMConfigSoundEnabledKey] boolValue];
+}
+
+- (void)setSoundCardDeviceId:(NSNumber *)soundCardDeviceId {
+    _rootDict[kUTMConfigSoundKey][kUTMConfigSoundCardDeviceKey] = soundCardDeviceId;
+}
+
+- (NSNumber *) soundCardDeviceId {
+    return _rootDict[kUTMConfigSoundKey][kUTMConfigSoundCardDeviceKey];
 }
 
 - (void)setSharingClipboardEnabled:(BOOL)sharingClipboardEnabled {

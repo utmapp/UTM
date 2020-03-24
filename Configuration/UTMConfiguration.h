@@ -26,6 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSArray<NSString *>*)supportedArchitectures;
 + (NSArray<NSString *>*)supportedBootDevicesPretty;
 + (NSArray<NSString *>*)supportedBootDevices;
++ (NSArray<NSString *>*)supportedSoundCardDevices;
 + (NSArray<NSString *>*)supportedTargetsForArchitecture:(NSString *)architecture;
 + (NSArray<NSString *>*)supportedTargetsForArchitecturePretty:(NSString *)architecture;
 + (NSInteger)defaultTargetIndexForArchitecture:(NSString *)architecture;
@@ -64,6 +65,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) BOOL printEnabled;
 
 @property (nonatomic, assign) BOOL soundEnabled;
+@property (nonatomic, nullable, copy) NSNumber *soundCardDeviceId;
 
 @property (nonatomic, assign) BOOL sharingClipboardEnabled;
 

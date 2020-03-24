@@ -2356,7 +2356,7 @@
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="DZc-Sg-gjO" userLabel="First Responder" sceneMemberID="firstResponder"/>
-                <view contentMode="scaleToFill" id="H7m-pq-dCg" customClass="UIInputView">
+                <view contentMode="scaleToFill" ambiguous="YES" id="H7m-pq-dCg" customClass="UIInputView">
                     <rect key="frame" x="0.0" y="0.0" width="1000" height="68"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     <subviews>
@@ -2470,7 +2470,7 @@
                                 <action selector="keyboardPastePressed:" destination="ckC-eO-gxn" eventType="touchUpInside" id="hAG-23-YnR"/>
                             </connections>
                         </button>
-                        <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2BY-mt-E6G">
+                        <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" ambiguous="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2BY-mt-E6G">
                             <rect key="frame" x="160" y="0.0" width="756" height="68"/>
                             <subviews>
                                 <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="p57-ic-h8k">
@@ -2882,6 +2882,25 @@
                                             </constraints>
                                         </tableViewCellContentView>
                                     </tableViewCell>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" rowHeight="169" id="clU-3f-ovR">
+                                        <rect key="frame" x="0.0" y="99.333332061767578" width="375" height="169"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="clU-3f-ovR" id="vGP-Ua-FjP">
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="169"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <pickerView contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Sgt-1G-xIj">
+                                                    <rect key="frame" x="16" y="11" width="343" height="138"/>
+                                                </pickerView>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstItem="Sgt-1G-xIj" firstAttribute="top" secondItem="vGP-Ua-FjP" secondAttribute="topMargin" id="5vV-Wd-PuD"/>
+                                                <constraint firstItem="Sgt-1G-xIj" firstAttribute="leading" secondItem="vGP-Ua-FjP" secondAttribute="leadingMargin" id="ccZ-nh-RZV"/>
+                                                <constraint firstAttribute="trailingMargin" secondItem="Sgt-1G-xIj" secondAttribute="trailing" id="p9G-6b-447"/>
+                                                <constraint firstAttribute="bottom" secondItem="Sgt-1G-xIj" secondAttribute="bottom" constant="20" symbolic="YES" id="wbD-jV-ziS"/>
+                                            </constraints>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
                                 </cells>
                             </tableViewSection>
                         </sections>
@@ -2892,12 +2911,14 @@
                     </tableView>
                     <navigationItem key="navigationItem" title="Sound" id="MGj-2L-8uR"/>
                     <connections>
+                        <outlet property="soundCardPickerView" destination="Sgt-1G-xIj" id="3dh-Ap-rRg"/>
+                        <outlet property="soundCardPickerViewTableViewCell" destination="clU-3f-ovR" id="kcE-Ah-KLl"/>
                         <outlet property="soundEnabledSwitch" destination="ZtR-9f-f7S" id="8SC-LV-A0r"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="nmu-6O-cOT" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="6343" y="548"/>
+            <point key="canvasLocation" x="6341.6000000000004" y="546.79802955665025"/>
         </scene>
         <!--Sharing-->
         <scene sceneID="KwH-8W-rLT">

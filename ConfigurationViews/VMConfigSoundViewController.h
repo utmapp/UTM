@@ -19,8 +19,10 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface VMConfigSoundViewController : VMConfigViewController
+@interface VMConfigSoundViewController : VMConfigViewController<UIPickerViewDelegate, UIPickerViewDataSource>
 
+@property (weak, nonatomic) IBOutlet UIPickerView *soundCardPickerView;
+@property (weak, nonatomic) IBOutlet UITableViewCell *soundCardPickerViewTableViewCell;
 @property (weak, nonatomic) IBOutlet UISwitch *soundEnabledSwitch;
 
 - (IBAction)soundEnabledSwitchChanged:(UISwitch *)sender;

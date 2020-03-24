@@ -64,7 +64,7 @@
     [self pushArgv:[self.configuration.systemMemory stringValue]];
     if (self.configuration.soundEnabled) {
         [self pushArgv:@"-soundhw"];
-        [self pushArgv:@"ac97"];
+        [self pushArgv:[UTMConfiguration supportedSoundCardDevices][self.configuration.soundCardDeviceId.integerValue]];
     }
     [self pushArgv:@"-name"];
     [self pushArgv:self.configuration.name];
