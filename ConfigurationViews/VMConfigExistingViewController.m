@@ -43,6 +43,7 @@
     [super refreshViewFromConfiguration];
     self.nameField.text = self.configuration.name;
     self.debugLogSwitch.on = self.configuration.debugLogEnabled;
+    self.saveButton.enabled = self.configuration.name && ![self.configuration.name isEqualToString:@""];
 }
 
 - (void)setNameReadOnly:(BOOL)nameReadOnly {
@@ -143,10 +144,11 @@
     }
 }
 
-- (IBAction)nameFieldEdited:(UITextField *)sender {
+- (IBAction)nameFieldChanged:(UITextField *)sender {
     NSAssert(sender == self.nameField, @"Invalid sender");
     // TODO: input validation
     configuration.name = sender.text;
+    self.saveButton.enabled = ![sender.text isEqualToString:@""];
 }
 
 - (IBAction)cancelPressed:(id)sender {

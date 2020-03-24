@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="15705" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="cR9-D8-uOs">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="16095" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="cR9-D8-uOs">
     <device id="retina5_9" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15706"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="16084.1"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -179,12 +179,12 @@
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Name" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="2Kh-jJ-awN">
-                                                    <rect key="frame" x="16" y="11.666666666666664" width="343" height="21"/>
+                                                    <rect key="frame" x="16" y="11" width="343" height="22"/>
                                                     <gestureRecognizers/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" returnKeyType="done" enablesReturnKeyAutomatically="YES" smartDashesType="no" smartInsertDeleteType="no" smartQuotesType="no"/>
                                                     <connections>
-                                                        <action selector="nameFieldEdited:" destination="wwu-oM-NlF" eventType="editingDidEnd" id="NLa-0h-ihw"/>
+                                                        <action selector="nameFieldChanged:" destination="wwu-oM-NlF" eventType="editingChanged" id="2g2-v9-F4m"/>
                                                         <outlet property="delegate" destination="wwu-oM-NlF" id="qOT-JA-rbc"/>
                                                     </connections>
                                                 </textField>
@@ -425,19 +425,17 @@
                                 <action selector="cancelPressed:" destination="wwu-oM-NlF" id="38P-XZ-ukw"/>
                             </connections>
                         </barButtonItem>
-                        <barButtonItem key="rightBarButtonItem" systemItem="done" id="CIG-Ca-qeI">
+                        <barButtonItem key="rightBarButtonItem" systemItem="save" id="CIG-Ca-qeI">
                             <connections>
                                 <segue destination="02X-bv-TXV" kind="unwind" unwindAction="unwindToMainFromConfiguration:" id="2rX-Um-tE1"/>
                             </connections>
                         </barButtonItem>
-                        <connections>
-                            <outlet property="rightBarButtonItem" destination="CIG-Ca-qeI" id="XnF-Ud-34j"/>
-                        </connections>
                     </navigationItem>
                     <connections>
                         <outlet property="debugLogSwitch" destination="BSZ-1U-IA5" id="9Ng-Uj-8Ka"/>
                         <outlet property="exportLogCell" destination="cHJ-DX-PQX" id="644-og-r2w"/>
                         <outlet property="nameField" destination="2Kh-jJ-awN" id="rec-m9-Zvs"/>
+                        <outlet property="saveButton" destination="CIG-Ca-qeI" id="vi5-3n-TPx"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="yqY-fN-Wux" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -816,7 +814,7 @@
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="right" contentVerticalAlignment="center" placeholder="512" textAlignment="right" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="OwS-jd-mte">
-                                                    <rect key="frame" x="165" y="11.666666666666664" width="160" height="21"/>
+                                                    <rect key="frame" x="165" y="11" width="160" height="22"/>
                                                     <constraints>
                                                         <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="160" id="ucu-F4-pNg"/>
                                                     </constraints>
@@ -860,7 +858,7 @@
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="2" textAlignment="right" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="I4t-8W-Nev">
-                                                    <rect key="frame" x="199" y="11.666666666666664" width="160" height="21"/>
+                                                    <rect key="frame" x="199" y="11" width="160" height="22"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <textInputTraits key="textInputTraits" keyboardType="numberPad" returnKeyType="done" enablesReturnKeyAutomatically="YES"/>
                                                     <connections>
@@ -1272,7 +1270,7 @@
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="10.0.2.0/24" textAlignment="right" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="q6m-Ld-1jH">
-                                                    <rect key="frame" x="178" y="11.666666666666664" width="181" height="21"/>
+                                                    <rect key="frame" x="178" y="11" width="181" height="22"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <textInputTraits key="textInputTraits" keyboardType="numbersAndPunctuation" returnKeyType="done" enablesReturnKeyAutomatically="YES"/>
                                                     <connections>
@@ -1304,7 +1302,7 @@
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="10.0.2.0.15" textAlignment="right" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="sym-7m-1rq">
-                                                    <rect key="frame" x="202" y="11.666666666666664" width="157" height="21"/>
+                                                    <rect key="frame" x="202" y="11" width="157" height="22"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <textInputTraits key="textInputTraits" keyboardType="decimalPad" returnKeyType="done" enablesReturnKeyAutomatically="YES"/>
                                                     <connections>
@@ -1382,11 +1380,11 @@
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Name" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="0TR-HU-09X">
-                                                    <rect key="frame" x="16" y="11.666666666666664" width="343" height="21"/>
+                                                    <rect key="frame" x="16" y="11" width="343" height="22"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" returnKeyType="done" enablesReturnKeyAutomatically="YES" smartDashesType="no" smartInsertDeleteType="no" smartQuotesType="no"/>
                                                     <connections>
-                                                        <action selector="nameFieldEdited:" destination="kXN-s4-nI5" eventType="editingDidEnd" id="toJ-Wc-WWS"/>
+                                                        <action selector="nameFieldChanged:" destination="kXN-s4-nI5" eventType="editingChanged" id="hAg-Dz-Ju2"/>
                                                         <outlet property="delegate" destination="kXN-s4-nI5" id="p5U-UO-88O"/>
                                                     </connections>
                                                 </textField>
@@ -1463,7 +1461,7 @@
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="right" contentVerticalAlignment="center" placeholder="512" textAlignment="right" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="S2s-iX-Lul">
-                                                    <rect key="frame" x="165" y="11.666666666666664" width="160" height="21"/>
+                                                    <rect key="frame" x="165" y="11" width="160" height="22"/>
                                                     <constraints>
                                                         <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="160" id="o84-0K-Csk"/>
                                                     </constraints>
@@ -1507,7 +1505,7 @@
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="2" textAlignment="right" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="VBD-VX-Usg">
-                                                    <rect key="frame" x="199" y="11.666666666666664" width="160" height="21"/>
+                                                    <rect key="frame" x="199" y="11" width="160" height="22"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <textInputTraits key="textInputTraits" keyboardType="numberPad" returnKeyType="done" enablesReturnKeyAutomatically="YES"/>
                                                     <connections>
@@ -1653,6 +1651,7 @@
                         <outlet property="cpuCountField" destination="VBD-VX-Usg" id="qYL-RD-lGz"/>
                         <outlet property="memorySizeField" destination="S2s-iX-Lul" id="ezQ-w3-PtG"/>
                         <outlet property="nameField" destination="0TR-HU-09X" id="zWp-xu-yF7"/>
+                        <outlet property="saveButton" destination="8d3-Up-KUL" id="Gv6-OH-EJ6"/>
                         <segue destination="wwu-oM-NlF" kind="show" identifier="createVMToConfiguration" id="Ch9-qF-y79"/>
                         <segue destination="7o9-KZ-PyF" kind="unwind" identifier="createVMDone" unwindAction="unwindToMainFromConfiguration:" id="STr-lU-oz5"/>
                     </connections>
@@ -1937,7 +1936,7 @@
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="hda.img" textAlignment="right" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Dx6-pD-sU3">
-                                                    <rect key="frame" x="158" y="11.666666666666664" width="201" height="21"/>
+                                                    <rect key="frame" x="158" y="11" width="201" height="22"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" keyboardType="alphabet" returnKeyType="done" enablesReturnKeyAutomatically="YES" smartDashesType="no" smartInsertDeleteType="no" smartQuotesType="no"/>
                                                     <connections>
@@ -1974,7 +1973,7 @@
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="1024" textAlignment="right" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="nKg-bw-usb">
-                                                    <rect key="frame" x="286.66666666666669" y="11.666666666666664" width="38.333333333333314" height="21"/>
+                                                    <rect key="frame" x="286.66666666666669" y="11" width="38.333333333333314" height="22"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <textInputTraits key="textInputTraits" keyboardType="numberPad" returnKeyType="done" enablesReturnKeyAutomatically="YES"/>
                                                     <connections>
@@ -3099,7 +3098,7 @@
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="QEMU Args" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="upL-Oh-a3A">
-                                            <rect key="frame" x="16" y="13.333333333333336" width="343" height="17"/>
+                                            <rect key="frame" x="16" y="12.666666666666666" width="343" height="18.666666666666671"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                             <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" returnKeyType="done" smartDashesType="no" smartInsertDeleteType="no" smartQuotesType="no"/>
                                             <connections>
@@ -3145,6 +3144,13 @@
             <point key="canvasLocation" x="7922.65625" y="1246.875"/>
         </scene>
     </scenes>
+    <inferredMetricsTieBreakers>
+        <segue reference="Fgt-US-6Ez"/>
+        <segue reference="0fe-13-GUd"/>
+        <segue reference="M4J-mO-49e"/>
+        <segue reference="eOg-7f-ZC7"/>
+        <segue reference="Ch9-qF-y79"/>
+    </inferredMetricsTieBreakers>
     <resources>
         <image name="Keyboard Hide" width="30" height="30"/>
         <image name="Keyboard Paste" width="30" height="30"/>
@@ -3158,11 +3164,4 @@
         <image name="Toolbar Restart" width="30" height="30"/>
         <image name="Toolbar Settings" width="30" height="30"/>
     </resources>
-    <inferredMetricsTieBreakers>
-        <segue reference="Fgt-US-6Ez"/>
-        <segue reference="0fe-13-GUd"/>
-        <segue reference="M4J-mO-49e"/>
-        <segue reference="eOg-7f-ZC7"/>
-        <segue reference="Ch9-qF-y79"/>
-    </inferredMetricsTieBreakers>
 </document>
