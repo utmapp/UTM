@@ -23,6 +23,7 @@
 
 extern NSString *const kUTMErrorDomain;
 const int64_t kRPCTimeout = (int64_t)10*1000000000;
+const int64_t kRetryWait = (int64_t)1*1000000000;
 
 static void utm_shutdown_handler(bool guest, ShutdownCause reason, void *ctx) {
     UTMQemuManager *self = (__bridge UTMQemuManager *)ctx;
@@ -163,9 +164,23 @@ void qmp_rpc_call(CFDictionaryRef args, CFDictionaryRef *ret, Error **err, void 
     [_jsonStream disconnect];
 }
 
+- (void)jsonStream:(UTMJSONStream *)stream connected:(BOOL)readStream {
+    NSLog(@"QMP connection successful! (readStream:%d)", readStream);
+    self.retries = 0; // connection was successful
+}
+
 - (void)jsonStream:(UTMJSONStream *)stream seenError:(NSError *)error {
+    NSLog(@"QMP stream error seen: %@", error);
     if (_rpc_finish) {
         _rpc_finish(nil, error);
+    }
+    [self disconnect];
+    if (self.retries > 0) {
+        self.retries--;
+        NSLog(@"QMP connection failed, retries left: %d", self.retries);
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, kRetryWait), dispatch_get_main_queue(), ^{
+            [self->_jsonStream connect];
+        });
     }
 }
 

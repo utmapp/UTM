@@ -253,6 +253,7 @@ NSString *const kSuspendSnapshotName = @"suspend";
     if (tries == 0) {
         [self errorTriggered:NSLocalizedString(@"Failed to connect to display server.", @"UTMVirtualMachine")];
     }
+    self->_qemu.retries = kMaxConnectionTries;
     [self->_qemu connect];
     _is_busy = NO;
     return YES;
