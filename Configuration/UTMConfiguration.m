@@ -1580,9 +1580,6 @@ const NSString *const kUTMConfigDebugLogKey = @"DebugLog";
 }
 
 - (NSString *) soundCard {
-    if (!_rootDict[kUTMConfigSoundKey][kUTMConfigSoundCardDeviceKey]) {
-        return @"ac97";
-    }
     return _rootDict[kUTMConfigSoundKey][kUTMConfigSoundCardDeviceKey];
 }
 
