@@ -1310,6 +1310,10 @@ const NSString *const kUTMConfigDebugLogKey = @"DebugLog";
     if (!_rootDict[kUTMConfigDebugKey]) {
         _rootDict[kUTMConfigDebugKey] = [NSMutableDictionary dictionary];
     }
+    
+    if (!_rootDict[kUTMConfigSoundKey][kUTMConfigSoundCardDeviceKey]) {
+        _rootDict[kUTMConfigSoundKey][kUTMConfigSoundCardDeviceKey] = [UTMConfiguration supportedSoundCardDevices][0];
+    }
 }
 
 #pragma mark - Initialization
