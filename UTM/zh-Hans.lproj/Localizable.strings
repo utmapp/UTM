@@ -53,3 +53,4 @@
 "The total memory usage is close to your device's limit. iOS will kill the VM if it consumes too much memory." = "此内存设置接近您设备可用内存的极限。消耗过大内存的虚拟机会被iOS强制终止。";
 "QEMU exited from an error: %@" = "QEMU遇到错误退出: %@";
 "This page is currently not implemented yet. None of these options work." = "此页功能还未完成开发。这些选项都不会生效。";
+"Are you sure you want to exit UTM?." = "您确定要退出UTM吗？";
