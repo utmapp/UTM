@@ -22,8 +22,8 @@
 #import "error.h"
 
 extern NSString *const kUTMErrorDomain;
-const int64_t kRPCTimeout = (int64_t)10*1000000000;
-const int64_t kRetryWait = (int64_t)1*1000000000;
+const int64_t kRPCTimeout = (int64_t)10*NSEC_PER_SEC;
+const int64_t kRetryWait = (int64_t)1*NSEC_PER_SEC;
 
 static void utm_shutdown_handler(bool guest, ShutdownCause reason, void *ctx) {
     UTMQemuManager *self = (__bridge UTMQemuManager *)ctx;
