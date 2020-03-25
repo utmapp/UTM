@@ -23,10 +23,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (weak, nonatomic) IBOutlet UITextField *nameField;
 @property (nonatomic, assign) BOOL nameReadOnly;
+@property (weak, nonatomic) IBOutlet UITableViewCell *exportLogCell;
+@property (weak, nonatomic) IBOutlet UISwitch *debugLogSwitch;
+@property (weak, nonatomic) IBOutlet UIBarButtonItem *saveButton;
 
 - (IBAction)screenTapped:(UITapGestureRecognizer *)sender;
-- (IBAction)nameFieldEdited:(UITextField *)sender;
+- (IBAction)nameFieldChanged:(UITextField *)sender;
 - (IBAction)cancelPressed:(id)sender;
+- (IBAction)debugLogSwitchChanged:(UISwitch *)sender;
 
 @end
 

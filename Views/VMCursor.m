@@ -15,7 +15,7 @@
 //
 
 #import "VMCursor.h"
-#import "VMDisplayMetalViewController.h"
+#import "VMDisplayMetalViewController+Touch.h"
 
 @implementation VMCursor {
     CGPoint _start;

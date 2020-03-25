@@ -16,6 +16,7 @@
 
 #import "UTMTerminalIO.h"
 #import "UTMConfiguration.h"
+#import <UIKit/UIKit.h>
 
 @implementation UTMTerminalIO
 
@@ -42,6 +43,37 @@
 
 - (void)disconnect {
     [_terminal disconnect];
+}
+
+- (UIImage *)screenshot {
+    // MAIN THREAD ONLY
+//    NSMutableParagraphStyle* paragraphStyle = [[NSMutableParagraphStyle defaultParagraphStyle] mutableCopy];
+//    paragraphStyle.alignment = NSTextAlignmentCenter;
+//    UIFont* font = [UIFont systemFontOfSize: 18.0];
+//    NSDictionary* strAttributes = @{
+//        NSFontAttributeName: font,
+//        NSForegroundColorAttributeName: [UIColor whiteColor],
+//        NSParagraphStyleAttributeName: paragraphStyle
+//    };
+//
+//    CGSize size = CGSizeMake(150.0f, 100.0f);
+//    UIGraphicsBeginImageContextWithOptions(size, NO, 0);
+//    CGContextRef context = UIGraphicsGetCurrentContext();
+//    CGFloat color[] = {0, 0, 0};
+//    CGContextSetFillColor(context, color);
+//    CGContextFillRect(context, CGRectMake(0.0f, 0.0f, size.width, size.height));
+//    NSString* text = @"Serial console";
+//    CGFloat yOffset = (size.height - font.pointSize) / 2.0f;
+//    [text drawInRect:CGRectMake(0.0, yOffset, size.width, [font pointSize]) withAttributes:strAttributes];
+//    UIImage* result = UIGraphicsGetImageFromCurrentImageContext();
+//    UIGraphicsEndImageContext();
+//
+//    return result;
+    return nil;
+}
+
+- (void)setDebugMode:(BOOL)debugMode {
+    NSLog(@"%@ does not support debug mode.", NSStringFromClass([self class]));
 }
 
 @end

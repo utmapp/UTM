@@ -47,12 +47,8 @@
         [self pushArgv:@"-tb-size"];
         [self pushArgv:[self.configuration.systemJitCacheSize stringValue]];
     }
-    if ([self.configuration.systemArchitecture isEqualToString:@"aarch64"]) {
-        // TODO: remove this hack
-        [self pushArgv:@"-device"];
-        [self pushArgv:@"virtio-gpu-pci"];
-    }
-    else {
+    if ([self.configuration.systemArchitecture isEqualToString:@"x86_64"] ||
+        [self.configuration.systemArchitecture isEqualToString:@"i386"]) {
         [self pushArgv:@"-vga"];
         [self pushArgv:@"qxl"];
     }
@@ -68,7 +64,7 @@
     [self pushArgv:[self.configuration.systemMemory stringValue]];
     if (self.configuration.soundEnabled) {
         [self pushArgv:@"-soundhw"];
-        [self pushArgv:@"all"];
+        [self pushArgv:@"ac97"];
     }
     [self pushArgv:@"-name"];
     [self pushArgv:self.configuration.name];
@@ -112,6 +108,10 @@
             [netstr appendString:@"restrict=on"];
         }
         [self pushArgv:netstr];
+    }
+    if (self.snapshot) {
+        [self pushArgv:@"-loadvm"];
+        [self pushArgv:self.snapshot];
     }
     
     if (self.configuration.systemArguments.count != 0) {

@@ -19,7 +19,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface UIViewController (ShowAlert)
-- (void)showAlert:(NSString *)msg completion:(nullable void (^)(UIAlertAction *action))completion;
+- (void)showAlert:(NSString *)msg actions:(nullable NSArray<UIAlertAction *> *)actions completion:(nullable void (^)(UIAlertAction *action))completion;
 @end
 
 NS_ASSUME_NONNULL_END

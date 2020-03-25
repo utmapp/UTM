@@ -99,7 +99,7 @@ const float kMemoryWarningThreshold = 0.8;
 }
 
 - (NSNumber *)memorySize {
-    return [NSNumber numberWithLong:[self.memorySizeField.text integerValue]];
+    return @([self.memorySizeField.text integerValue]);
 }
 
 - (void)setJitCacheSize:(NSNumber *)jitCacheSize {
@@ -107,7 +107,7 @@ const float kMemoryWarningThreshold = 0.8;
 }
 
 - (NSNumber *)jitCacheSize {
-    return [NSNumber numberWithLong:[self.jitCacheSizeField.text integerValue]];
+    return @([self.jitCacheSizeField.text integerValue]);
 }
 
 - (void)setCpuCount:(NSNumber *)cpuCount {
@@ -115,7 +115,7 @@ const float kMemoryWarningThreshold = 0.8;
 }
 
 - (NSNumber *)cpuCount {
-    return [NSNumber numberWithLong:[self.cpuCountField.text integerValue]];
+    return @([self.cpuCountField.text integerValue]);
 }
 
 #pragma mark - Table delegate

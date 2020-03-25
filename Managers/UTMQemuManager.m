@@ -22,7 +22,8 @@
 #import "error.h"
 
 extern NSString *const kUTMErrorDomain;
-const int64_t kRPCTimeout = (int64_t)10*1000000000;
+const int64_t kRPCTimeout = (int64_t)10*NSEC_PER_SEC;
+const int64_t kRetryWait = (int64_t)1*NSEC_PER_SEC;
 
 static void utm_shutdown_handler(bool guest, ShutdownCause reason, void *ctx) {
     UTMQemuManager *self = (__bridge UTMQemuManager *)ctx;
@@ -163,9 +164,23 @@ void qmp_rpc_call(CFDictionaryRef args, CFDictionaryRef *ret, Error **err, void 
     [_jsonStream disconnect];
 }
 
+- (void)jsonStream:(UTMJSONStream *)stream connected:(BOOL)readStream {
+    NSLog(@"QMP connection successful! (readStream:%d)", readStream);
+    self.retries = 0; // connection was successful
+}
+
 - (void)jsonStream:(UTMJSONStream *)stream seenError:(NSError *)error {
+    NSLog(@"QMP stream error seen: %@", error);
     if (_rpc_finish) {
         _rpc_finish(nil, error);
+    }
+    [self disconnect];
+    if (self.retries > 0) {
+        self.retries--;
+        NSLog(@"QMP connection failed, retries left: %d", self.retries);
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, kRetryWait), dispatch_get_main_queue(), ^{
+            [self->_jsonStream connect];
+        });
     }
 }
 
@@ -216,6 +231,27 @@ void qmp_rpc_call(CFDictionaryRef args, CFDictionaryRef *ret, Error **err, void 
     });
 }
 
+- (void)vmHmpCommand:(NSString *)cmd completion:(void (^)(NSString * _Nullable, NSError * _Nullable))completion {
+    dispatch_async(dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0), ^{
+        Error *qerr = NULL;
+        NSError *err;
+        NSString *result;
+        char *res;
+        res = qmp_human_monitor_command([cmd cStringUsingEncoding:NSASCIIStringEncoding], false, 0, &qerr, (__bridge void *)self);
+        if (res) {
+            result = [NSString stringWithCString:res encoding:NSASCIIStringEncoding];
+            g_free(res);
+        }
+        if (qerr) {
+            err = [self errorForQerror:qerr];
+            error_free(qerr);
+        }
+        if (completion) {
+            completion(result, err);
+        }
+    });
+}
+
 - (void)vmPowerDownWithCompletion:(void (^ _Nullable)(NSError * _Nullable))completion {
     [self vmPowerAction:qmp_system_powerdown completion:completion];
 }
@@ -228,8 +264,22 @@ void qmp_rpc_call(CFDictionaryRef args, CFDictionaryRef *ret, Error **err, void 
     [self vmPowerAction:qmp_stop completion:completion];
 }
 
+- (void)vmResumeWithCompletion:(void (^ _Nullable)(NSError * _Nullable))completion {
+    [self vmPowerAction:qmp_cont completion:completion];
+}
+
 - (void)vmQuitWithCompletion:(void (^ _Nullable)(NSError * _Nullable))completion {
     [self vmPowerAction:qmp_quit completion:completion];
+}
+
+- (void)vmSaveWithCompletion:(void (^)(NSString * _Nullable, NSError * _Nullable))completion snapshotName:(NSString *)name {
+    NSString *cmd = [NSString stringWithFormat:@"savevm %@", name];
+    [self vmHmpCommand:cmd completion:completion];
+}
+
+- (void)vmDeleteSaveWithCompletion:(void (^)(NSString * _Nullable, NSError * _Nullable))completion snapshotName:(NSString *)name {
+    NSString *cmd = [NSString stringWithFormat:@"delvm %@", name];
+    [self vmHmpCommand:cmd completion:completion];
 }
 
 @end

@@ -234,7 +234,7 @@ static void cs_channel_destroy(SpiceSession *s, SpiceChannel *channel, gpointer 
     dispatch_semaphore_wait(_drawLock, DISPATCH_TIME_FOREVER); // TODO: separate read lock so we don't block texture copy
     if (_canvasData) { // may be destroyed at this point
         CGDataProviderRef dataProviderRef = CGDataProviderCreateWithData(NULL, _canvasData, _canvasStride * _canvasArea.size.height, nil);
-        img = CGImageCreate(_canvasArea.size.width, _canvasArea.size.height, 8, 32, _canvasStride, colorSpaceRef, kCGBitmapByteOrder32Little | kCGImageAlphaPremultipliedFirst, dataProviderRef, NULL, NO, kCGRenderingIntentDefault);
+        img = CGImageCreate(_canvasArea.size.width, _canvasArea.size.height, 8, 32, _canvasStride, colorSpaceRef, kCGBitmapByteOrder32Little | kCGImageAlphaNoneSkipFirst, dataProviderRef, NULL, NO, kCGRenderingIntentDefault);
         CGDataProviderRelease(dataProviderRef);
     } else {
         img = NULL;
@@ -335,7 +335,9 @@ static void cs_channel_destroy(SpiceSession *s, SpiceChannel *channel, gpointer 
     textureDescriptor.pixelFormat = (_canvasFormat == SPICE_SURFACE_FMT_32_xRGB) ? MTLPixelFormatBGRA8Unorm : MTLPixelFormatBGR5A1Unorm;
     textureDescriptor.width = _visibleArea.size.width;
     textureDescriptor.height = _visibleArea.size.height;
+    dispatch_semaphore_wait(_drawLock, DISPATCH_TIME_FOREVER);
     _texture = [_device newTextureWithDescriptor:textureDescriptor];
+    dispatch_semaphore_signal(_drawLock);
     [self drawRegion:_visibleArea];
 }
 
@@ -353,6 +355,7 @@ static void cs_channel_destroy(SpiceSession *s, SpiceChannel *channel, gpointer 
         { {  _visibleArea.size.width/2,  -_visibleArea.size.height/2 },  { 1.f, 1.f } },
     };
     
+    dispatch_semaphore_wait(_drawLock, DISPATCH_TIME_FOREVER);
     // Create our vertex buffer, and initialize it with our quadVertices array
     _vertices = [_device newBufferWithBytes:quadVertices
                                      length:sizeof(quadVertices)
@@ -360,6 +363,7 @@ static void cs_channel_destroy(SpiceSession *s, SpiceChannel *channel, gpointer 
 
     // Calculate the number of vertices by dividing the byte length by the size of each vertex
     _numVertices = sizeof(quadVertices) / sizeof(UTMVertex);
+    dispatch_semaphore_signal(_drawLock);
 }
 
 - (void)drawRegion:(CGRect)rect {

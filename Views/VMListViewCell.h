@@ -28,7 +28,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (weak, nonatomic) IBOutlet UIActivityIndicatorView *statusIndicator;
 
 - (void)changeState:(UTMVMState)state image:(nullable UIImage *)image;
-- (void)setName:(NSString *)name;
 
 @end
 

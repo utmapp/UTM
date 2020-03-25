@@ -34,23 +34,31 @@ NS_ASSUME_NONNULL_BEGIN
 @interface UTMVirtualMachine : NSObject<UTMQemuManagerDelegate>
 
 @property (nonatomic, readonly, nullable) id<UTMInputOutput> ioService;
+@property (nonatomic, readonly) NSURL *path;
 @property (nonatomic, weak, nullable) id<UTMVirtualMachineDelegate> delegate;
 @property (nonatomic, strong) NSURL *parentPath;
 @property (nonatomic, strong, readonly) UTMConfiguration *configuration;
 @property (nonatomic, assign, readonly) UTMVMState state;
 @property (nonatomic, readonly, nullable) UTMQemuManager *qemu;
+@property (nonatomic, readonly) BOOL busy;
+@property (nonatomic, readonly) UIImage *screenshot;
 
 + (BOOL)URLisVirtualMachine:(NSURL *)url;
 + (NSString *)virtualMachineName:(NSURL *)url;
 + (NSURL *)virtualMachinePath:(NSString *)name inParentURL:(NSURL *)parent;
 
 - (id)initWithURL:(NSURL *)url;
-- (id)initDefaults:(NSString *)name withDestinationURL:(NSURL *)dstUrl;
+- (id)initWithConfiguration:(UTMConfiguration *)configuration withDestinationURL:(NSURL *)dstUrl;
 
 - (BOOL)saveUTMWithError:(NSError * _Nullable *)err;
 
-- (void)startVM;
-- (void)quitVM;
+- (BOOL)startVM;
+- (BOOL)quitVM;
+- (BOOL)resetVM;
+- (BOOL)pauseVM;
+- (BOOL)saveVM;
+- (BOOL)deleteSaveVM;
+- (BOOL)resumeVM;
 
 - (UTMDisplayType)supportedDisplayType;
 

@@ -63,6 +63,15 @@ const int kMaxConnectionTries = 10; // qemu needs to start spice server first
     return _spice != nil && _spice_connection != nil;
 }
 
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context {
+    // make sure the CSDisplay properties are synced with the CSInput
+    if ([keyPath isEqualToString:@"primaryDisplay.viewportScale"]) {
+        self.primaryInput.viewportScale = self.primaryDisplay.viewportScale;
+    } else if ([keyPath isEqualToString:@"primaryDisplay.displaySize"]) {
+        self.primaryInput.displaySize = self.primaryDisplay.displaySize;
+    }
+}
+
 #pragma mark - UTMInputOutput
 
 - (BOOL)startWithError:(NSError **)err {
@@ -92,11 +101,21 @@ const int kMaxConnectionTries = 10; // qemu needs to start spice server first
 }
 
 - (void)disconnect {
+    [self removeObserver:self forKeyPath:@"primaryDisplay.viewportScale"];
+    [self removeObserver:self forKeyPath:@"primaryDisplay.displaySize"];
     [_spice_connection disconnect];
     _spice_connection.delegate = nil;
     _spice_connection = nil;
     [_spice spiceStop];
     _spice = nil;
+}
+
+- (UIImage*)screenshot {
+    return [self.primaryDisplay screenshot];
+}
+
+- (void)setDebugMode:(BOOL)debugMode {
+    [_spice spiceSetDebug: debugMode];
 }
 
 #pragma mark - CSConnectionDelegate
@@ -125,6 +144,8 @@ const int kMaxConnectionTries = 10; // qemu needs to start spice server first
         _primaryInput = input;
         _delegate.vmDisplay = display;
         _delegate.vmInput = input;
+        [self addObserver:self forKeyPath:@"primaryDisplay.viewportScale" options:0 context:nil];
+        [self addObserver:self forKeyPath:@"primaryDisplay.displaySize" options:0 context:nil];
         if (_connectionBlock) {
             _connectionBlock(YES, nil);
             _connectionBlock = nil;

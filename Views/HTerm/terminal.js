@@ -143,17 +143,6 @@ function terminalSetup() {
             sendInputMessage(str);
         }
        
-        function printPrompt() {
-          io.print(
-            '\x1b[38:2:51:105:232mh' +
-            '\x1b[38:2:213:15:37mt' +
-            '\x1b[38:2:238:178:17me' +
-            '\x1b[38:2:51:105:232mr' +
-            '\x1b[38:2:0:153:37mm' +
-            '\x1b[38:2:213:15:37m>' +
-            '\x1b[0m ');
-        }
-        printPrompt();
         this.setCursorVisible(true);
     }
     term.decorate(document.querySelector("#terminal"));

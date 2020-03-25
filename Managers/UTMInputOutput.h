@@ -16,12 +16,17 @@
 
 #import <Foundation/Foundation.h>
 
+@class UIImage;
+
 NS_ASSUME_NONNULL_BEGIN
 
 @protocol UTMInputOutput <NSObject>
+
 - (BOOL)startWithError:(NSError **)err;
 - (void)connectWithCompletion: (void(^)(BOOL, NSError* _Nullable)) block;
 - (void)disconnect;
+- (void)setDebugMode: (BOOL)debugMode;
+- (UIImage* _Nullable)screenshot;
 @end
 
 NS_ASSUME_NONNULL_END

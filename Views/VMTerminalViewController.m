@@ -28,14 +28,15 @@ NSString* const kVMDebugHandler = @"UTMDebug";
     // status bar
     BOOL _prefersStatusBarHidden;
     BOOL _isKeyboardActive;
+    BOOL _toolbarVisible;
     // gestures
     UISwipeGestureRecognizer *_swipeUp;
     UISwipeGestureRecognizer *_swipeDown;
 }
 
-@synthesize vmScreenshot;
 @synthesize vmMessage;
 @synthesize vmConfiguration;
+@synthesize keyboardVisible;
 
 - (BOOL)prefersStatusBarHidden {
     return _prefersStatusBarHidden;
@@ -76,20 +77,18 @@ NSString* const kVMDebugHandler = @"UTMDebug";
     [super viewWillAppear: animated];
     [self.navigationController setNavigationBarHidden:YES animated:animated];
 
-    // terminal setup
-    [_terminal setDelegate: self];
+    if (self.vm.state == kVMStopped || self.vm.state == kVMSuspended) {
+        [self.vm startVM];
+        NSAssert([[self.vm ioService] isKindOfClass: [UTMTerminalIO class]], @"VM ioService must be UTMTerminalIO, but is: %@!", NSStringFromClass([[self.vm ioService] class]));
+        UTMTerminalIO* io = (UTMTerminalIO*) [self.vm ioService];
+        self.terminal = io.terminal;
+        [self.terminal setDelegate: self];
+    }
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
     [self.navigationController setNavigationBarHidden:NO animated:animated];
-}
-
-- (void)changeVM:(UTMVirtualMachine *)vm {
-    NSAssert([[vm ioService] isKindOfClass: [UTMTerminalIO class]], @"VM ioService must be UTMTerminalIO, but is: %@!", NSStringFromClass([[vm ioService] class]));
-    UTMTerminalIO* io = (UTMTerminalIO*) [vm ioService];
-    self.vm = vm;
-    self.terminal = io.terminal;
 }
 
 #pragma mark - Input accessory view
@@ -234,60 +233,92 @@ NSString* const kVMDebugHandler = @"UTMDebug";
 #pragma mark - UTMVirtualMachineDelegate
 
 - (void)virtualMachine:(UTMVirtualMachine *)vm transitionToState:(UTMVMState)state {
+    static BOOL hasStartedOnce = NO;
+    if (hasStartedOnce && state == kVMStopped) {
+        exit(0);
+    }
+    
     switch (state) {
         case kVMError: {
             NSString *msg = self.vmMessage ? self.vmMessage : NSLocalizedString(@"An internal error has occured.", @"UTMQemuManager");
-            [self showAlert:msg completion:^(UIAlertAction *action){
-                [self performSegueWithIdentifier:@"returnToList" sender:self];
+            [self showAlert:msg actions:nil completion:^(UIAlertAction * _Nonnull action) {
+                exit(0);
             }];
             break;
         }
-        case kVMStopping:
         case kVMStopped:
-        case kVMPausing:
-        case kVMPaused: {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [self performSegueWithIdentifier:@"returnToList" sender:self];
-            });
+        case kVMPaused:
+        case kVMSuspended: {
+            self.toolbarVisible = YES;
+            self.pauseResumeButton.enabled = YES;
+            [self.pauseResumeButton setImage:[UIImage imageNamed:@"Toolbar Start"] forState:UIControlStateNormal];
+            [self.powerExitButton setImage:[UIImage imageNamed:@"Toolbar Exit"] forState:UIControlStateNormal];
             break;
         }
-        default: {
-            break; // TODO: Implement
+        case kVMPausing:
+        case kVMStopping:
+        case kVMStarting:
+        case kVMResuming: {
+            self.pauseResumeButton.enabled = NO;
+            self.webView.userInteractionEnabled = NO;
+            self.keyboardButton.enabled = NO;
+            [self.powerExitButton setImage:[UIImage imageNamed:@"Toolbar Exit"] forState:UIControlStateNormal];
+            break;
+        }
+        case kVMStarted: {
+            hasStartedOnce = YES; // auto-quit after VM ends
+            self.pauseResumeButton.enabled = YES;
+            self.keyboardButton.enabled = YES;
+            self.webView.userInteractionEnabled = YES;
+            [self.pauseResumeButton setImage:[UIImage imageNamed:@"Toolbar Pause"] forState:UIControlStateNormal];
+            [self.powerExitButton setImage:[UIImage imageNamed:@"Toolbar Power"] forState:UIControlStateNormal];
+            break;
         }
     }
 }
 
 #pragma mark - Toolbar IBActions
 
-- (IBAction)resumePressed:(UIButton *)sender {
+- (IBAction)pauseResumePressed:(UIButton *)sender {
+    dispatch_async(dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0), ^{
+        if (self.vm.state == kVMStarted) {
+            [self.vm pauseVM];
+            [self.vm saveVM];
+        } else if (self.vm.state == kVMPaused) {
+            [self.vm resumeVM];
+        }
+    });
 }
 
 - (IBAction)powerPressed:(UIButton *)sender {
-    UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil message:NSLocalizedString(@"Are you sure you want to stop this VM?", @"VMDisplayMetalViewController") preferredStyle:UIAlertControllerStyleAlert];
-    UIAlertAction *yes = [UIAlertAction actionWithTitle:NSLocalizedString(@"Yes", @"VMDisplayMetalViewController") style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action){
-        dispatch_async(dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0), ^{
-            [self.vm quitVM];
-        });
-    }];
-    UIAlertAction *no = [UIAlertAction actionWithTitle:NSLocalizedString(@"No", @"VMDisplayMetalViewController") style:UIAlertActionStyleCancel handler:nil];
-    [alert addAction:yes];
-    [alert addAction:no];
-    [self presentViewController:alert animated:YES completion:nil];
+    if (self.vm.state == kVMStarted) {
+        UIAlertAction *yes = [UIAlertAction actionWithTitle:NSLocalizedString(@"Yes", @"VMTerminalViewController") style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action){
+            dispatch_async(dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0), ^{
+                [self.vm quitVM];
+                exit(0);
+            });
+        }];
+        UIAlertAction *no = [UIAlertAction actionWithTitle:NSLocalizedString(@"No", @"VMTerminalViewController") style:UIAlertActionStyleCancel handler:nil];
+        [self showAlert:NSLocalizedString(@"Are you sure you want to stop this VM and exit? Any unsaved changes will be lost.", @"VMDisplayMetalViewController")
+                actions:@[yes, no]
+             completion:nil];
+    } else {
+        UIAlertAction *yes = [UIAlertAction actionWithTitle:NSLocalizedString(@"Yes", @"VMTerminalViewController") style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action){
+            exit(0);
+        }];
+        UIAlertAction *no = [UIAlertAction actionWithTitle:NSLocalizedString(@"No", @"VMTerminalViewController") style:UIAlertActionStyleCancel handler:nil];
+        [self showAlert:NSLocalizedString(@"Are you sure you want to exit UTM?.", @"VMTerminalViewController")
+                actions:@[yes, no]
+             completion:nil];
+    }
 }
 
 - (IBAction)showKeyboardPressed:(UIButton *)sender {    
     if (_isKeyboardActive) {
-        [_webView endEditing:YES];
+        [self hideKeyboard];
         _isKeyboardActive = NO;
     } else {
-        [_webView toggleKeyboardDisplayRequiresUserAction:NO];
-        NSString* jsString = @"focusTerminal()";
-        [_webView evaluateJavaScript: jsString completionHandler:^(id _Nullable _, NSError * _Nullable error) {
-            if (error != nil) {
-                NSLog(@"Error while focusing terminal element");
-            }
-            [self->_webView toggleKeyboardDisplayRequiresUserAction:YES];
-        }];
+        [self showKeyboard];
         _isKeyboardActive = YES;
     }
 }
@@ -296,13 +327,40 @@ NSString* const kVMDebugHandler = @"UTMDebug";
     [self hideToolbar];
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     if (![defaults boolForKey:@"HasShownHideToolbarAlert"]) {
-        [self showAlert:NSLocalizedString(@"Hint: To show the toolbar again, use a three-finger swipe down on the screen.", @"Shown once when hiding toolbar.") completion:^(UIAlertAction *action){
+        NSString* msg = NSLocalizedString(@"Hint: To show the toolbar again, use a three-finger swipe down on the screen.", @"Shown once when hiding toolbar.");
+        [self showAlert:msg actions:nil completion:^(UIAlertAction *action){
             [defaults setBool:YES forKey:@"HasShownHideToolbarAlert"];
         }];
     }
 }
 
 #pragma mark - Toolbar actions
+
+- (BOOL)keyboardVisible {
+    return _isKeyboardActive;
+}
+
+- (void)setKeyboardVisible:(BOOL)keyboardVisible {
+    if (keyboardVisible) {
+        [self showKeyboard];
+    } else {
+        [self hideKeyboard];
+    }
+    _isKeyboardActive = keyboardVisible;
+}
+
+- (BOOL)toolbarVisible {
+    return _toolbarVisible;
+}
+
+- (void)setToolbarVisible:(BOOL)toolbarVisible {
+    if (toolbarVisible) {
+        [self showToolbar];
+    } else {
+        [self hideToolbar];
+    }
+    _toolbarVisible = toolbarVisible;
+}
 
 - (void)hideToolbar {
     [UIView transitionWithView:self.view duration:0.3 options:UIViewAnimationOptionTransitionCrossDissolve animations:^{
@@ -318,6 +376,21 @@ NSString* const kVMDebugHandler = @"UTMDebug";
         self.prefersStatusBarHidden = NO;
     } completion:nil];
     [self updateWebViewScrollOffset:NO];
+}
+
+- (void)hideKeyboard {
+    [_webView endEditing:YES];
+}
+
+- (void)showKeyboard {
+    [_webView toggleKeyboardDisplayRequiresUserAction:NO];
+    NSString* jsString = @"focusTerminal()";
+    [_webView evaluateJavaScript: jsString completionHandler:^(id _Nullable _, NSError * _Nullable error) {
+        if (error != nil) {
+            NSLog(@"Error while focusing terminal element");
+        }
+        [self->_webView toggleKeyboardDisplayRequiresUserAction:YES];
+    }];
 }
 
 - (void)updateWebViewScrollOffset: (BOOL) toolbarHidden {

@@ -31,11 +31,14 @@ NS_ASSUME_NONNULL_BEGIN
 @property (weak, nonatomic) IBOutlet UIView *toolbarAccessoryView;
 @property (weak, nonatomic) IBOutlet UIInputView *inputAccessoryView;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *webViewTopConstraint;
+@property (weak, nonatomic) IBOutlet UIButton *powerExitButton;
+@property (weak, nonatomic) IBOutlet UIButton *pauseResumeButton;
+@property (weak, nonatomic) IBOutlet UIButton *keyboardButton;
+@property (nonatomic) BOOL toolbarVisible;
 @property (nonatomic, weak) UTMTerminal* terminal;
 @property (nonatomic, strong, nullable) UTMVirtualMachine* vm;
 
-- (void)changeVM:(UTMVirtualMachine *)vm;
-- (IBAction)resumePressed:(UIButton *)sender;
+- (IBAction)pauseResumePressed:(UIButton *)sender;
 - (IBAction)powerPressed:(UIButton *)sender;
 - (IBAction)showKeyboardPressed:(UIButton *)sender;
 - (IBAction)hideToolbarPressed:(UIButton *)sender;

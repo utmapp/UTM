@@ -25,6 +25,8 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    // FIXME: remove this warning
+    [self showUnimplementedAlert];
 }
 
 - (void)refreshViewFromConfiguration {

@@ -24,6 +24,7 @@ const NSString *const kUTMConfigPrintingKey = @"Printing";
 const NSString *const kUTMConfigSoundKey = @"Sound";
 const NSString *const kUTMConfigSharingKey = @"Sharing";
 const NSString *const kUTMConfigDrivesKey = @"Drives";
+const NSString *const kUTMConfigDebugKey = @"Debug";
 
 const NSString *const kUTMConfigArchitectureKey = @"Architecture";
 const NSString *const kUTMConfigMemoryKey = @"Memory";
@@ -58,6 +59,8 @@ const NSString *const kUTMConfigChipboardSharingKey = @"ClipboardSharing";
 const NSString *const kUTMConfigImagePathKey = @"ImagePath";
 const NSString *const kUTMConfigInterfaceTypeKey = @"InterfaceType";
 const NSString *const kUTMConfigCdromKey = @"Cdrom";
+
+const NSString *const kUTMConfigDebugLogKey = @"DebugLog";
 
 @interface UTMConfiguration ()
 
@@ -1271,6 +1274,10 @@ const NSString *const kUTMConfigCdromKey = @"Cdrom";
     return [self supportedDriveInterfaces][0];
 }
 
++ (NSString *)debugLogName {
+    return @"debug.log";
+}
+
 #pragma mark - Migration
 
 - (void)migrateConfigurationIfNecessary {
@@ -1285,6 +1292,10 @@ const NSString *const kUTMConfigCdromKey = @"Cdrom";
     if ([_rootDict[kUTMConfigSystemKey][kUTMConfigTargetKey] length] == 0) {
         NSInteger index = [UTMConfiguration defaultTargetIndexForArchitecture:self.systemArchitecture];
         _rootDict[kUTMConfigSystemKey][kUTMConfigTargetKey] = [UTMConfiguration supportedTargetsForArchitecture:self.systemArchitecture][index];
+    }
+    // Add Debug dict if not exists
+    if (!_rootDict[kUTMConfigDebugKey]) {
+        _rootDict[kUTMConfigDebugKey] = [NSMutableDictionary dictionary];
     }
 }
 
@@ -1303,6 +1314,7 @@ const NSString *const kUTMConfigCdromKey = @"Cdrom";
         _rootDict[kUTMConfigSoundKey] = [[NSMutableDictionary alloc] init];
         _rootDict[kUTMConfigSharingKey] = [[NSMutableDictionary alloc] init];
         _rootDict[kUTMConfigDrivesKey] = [[NSMutableArray alloc] init];
+        _rootDict[kUTMConfigDebugKey] = [[NSMutableDictionary alloc] init];
         self.systemArchitecture = @"x86_64";
         self.systemMemory = @512;
         self.systemCPUCount = @1;
@@ -1318,6 +1330,7 @@ const NSString *const kUTMConfigCdromKey = @"Cdrom";
         self.sharingClipboardEnabled = YES;
         self.name = name;
         self.existingPath = nil;
+        self.debugLogEnabled = NO;
     }
     return self;
 }
@@ -1377,7 +1390,7 @@ const NSString *const kUTMConfigCdromKey = @"Cdrom";
 }
 
 - (void)setDisplayConsoleOnly:(BOOL)displayConsoleOnly {
-    _rootDict[kUTMConfigDisplayKey][kUTMConfigConsoleOnlyKey] = [NSNumber numberWithBool:displayConsoleOnly];
+    _rootDict[kUTMConfigDisplayKey][kUTMConfigConsoleOnlyKey] = @(displayConsoleOnly);
 }
 
 - (NSNumber *)systemJitCacheSize {
@@ -1393,7 +1406,15 @@ const NSString *const kUTMConfigCdromKey = @"Cdrom";
 }
 
 - (void)setSystemForceMulticore:(BOOL)systemForceMulticore {
-    _rootDict[kUTMConfigSystemKey][kUTMConfigForceMulticoreKey] = [NSNumber numberWithBool:systemForceMulticore];
+    _rootDict[kUTMConfigSystemKey][kUTMConfigForceMulticoreKey] = @(systemForceMulticore);
+}
+
+- (BOOL)debugLogEnabled {
+    return [_rootDict[kUTMConfigDebugKey][kUTMConfigDebugLogKey] boolValue];
+}
+
+- (void)setDebugLogEnabled:(BOOL)debugLogEnabled {
+    _rootDict[kUTMConfigDebugKey][kUTMConfigDebugLogKey] = @(debugLogEnabled);
 }
 
 #pragma mark - Additional arguments array handling
@@ -1438,7 +1459,7 @@ const NSString *const kUTMConfigCdromKey = @"Cdrom";
 }
 
 - (void)setDisplayFixedResolution:(BOOL)displayFixedResolution {
-    _rootDict[kUTMConfigDisplayKey][kUTMConfigFixedResolutionKey] = [NSNumber numberWithBool:displayFixedResolution];
+    _rootDict[kUTMConfigDisplayKey][kUTMConfigFixedResolutionKey] = @(displayFixedResolution);
 }
 
 - (BOOL)displayFixedResolution {
@@ -1462,7 +1483,7 @@ const NSString *const kUTMConfigCdromKey = @"Cdrom";
 }
 
 - (void)setDisplayZoomScale:(BOOL)displayZoomScale {
-    _rootDict[kUTMConfigDisplayKey][kUTMConfigZoomScaleKey] = [NSNumber numberWithBool:displayZoomScale];
+    _rootDict[kUTMConfigDisplayKey][kUTMConfigZoomScaleKey] = @(displayZoomScale);
 }
 
 - (BOOL)displayZoomScale {
@@ -1470,7 +1491,7 @@ const NSString *const kUTMConfigCdromKey = @"Cdrom";
 }
 
 - (void)setDisplayZoomLetterBox:(BOOL)displayZoomLetterBox {
-    _rootDict[kUTMConfigDisplayKey][kUTMConfigZoomLetterboxKey] = [NSNumber numberWithBool:displayZoomLetterBox];
+    _rootDict[kUTMConfigDisplayKey][kUTMConfigZoomLetterboxKey] = @(displayZoomLetterBox);
 }
 
 - (BOOL)displayZoomLetterBox {
@@ -1478,7 +1499,7 @@ const NSString *const kUTMConfigCdromKey = @"Cdrom";
 }
 
 - (void)setInputTouchscreenMode:(BOOL)inputTouchscreenMode {
-    _rootDict[kUTMConfigInputKey][kUTMConfigTouchscreenModeKey] = [NSNumber numberWithBool:inputTouchscreenMode];
+    _rootDict[kUTMConfigInputKey][kUTMConfigTouchscreenModeKey] = @(inputTouchscreenMode);
 }
 
 - (BOOL)inputTouchscreenMode {
@@ -1486,7 +1507,7 @@ const NSString *const kUTMConfigCdromKey = @"Cdrom";
 }
 
 - (void)setInputDirect:(BOOL)inputDirect {
-    _rootDict[kUTMConfigInputKey][kUTMConfigDirectInputKey] = [NSNumber numberWithBool:inputDirect];
+    _rootDict[kUTMConfigInputKey][kUTMConfigDirectInputKey] = @(inputDirect);
 }
 
 - (BOOL)inputDirect {
@@ -1494,7 +1515,7 @@ const NSString *const kUTMConfigCdromKey = @"Cdrom";
 }
 
 - (void)setNetworkEnabled:(BOOL)networkEnabled {
-    _rootDict[kUTMConfigNetworkingKey][kUTMConfigNetworkEnabledKey] = [NSNumber numberWithBool:networkEnabled];
+    _rootDict[kUTMConfigNetworkingKey][kUTMConfigNetworkEnabledKey] = @(networkEnabled);
 }
 
 - (BOOL)networkEnabled {
@@ -1502,7 +1523,7 @@ const NSString *const kUTMConfigCdromKey = @"Cdrom";
 }
 
 - (void)setNetworkLocalhostOnly:(BOOL)networkLocalhostOnly {
-    _rootDict[kUTMConfigNetworkingKey][kUTMConfigLocalhostOnlyKey] = [NSNumber numberWithBool:networkLocalhostOnly];
+    _rootDict[kUTMConfigNetworkingKey][kUTMConfigLocalhostOnlyKey] = @(networkLocalhostOnly);
 }
 
 - (BOOL)networkLocalhostOnly {
@@ -1526,7 +1547,7 @@ const NSString *const kUTMConfigCdromKey = @"Cdrom";
 }
 
 - (void)setPrintEnabled:(BOOL)printEnabled {
-    _rootDict[kUTMConfigPrintingKey][kUTMConfigPrintEnabledKey] = [NSNumber numberWithBool:printEnabled];
+    _rootDict[kUTMConfigPrintingKey][kUTMConfigPrintEnabledKey] = @(printEnabled);
 }
 
 - (BOOL)printEnabled {
@@ -1534,7 +1555,7 @@ const NSString *const kUTMConfigCdromKey = @"Cdrom";
 }
 
 - (void)setSoundEnabled:(BOOL)soundEnabled {
-    _rootDict[kUTMConfigSoundKey][kUTMConfigSoundEnabledKey] = [NSNumber numberWithBool:soundEnabled];
+    _rootDict[kUTMConfigSoundKey][kUTMConfigSoundEnabledKey] = @(soundEnabled);
 }
 
 - (BOOL)soundEnabled {
@@ -1542,7 +1563,7 @@ const NSString *const kUTMConfigCdromKey = @"Cdrom";
 }
 
 - (void)setSharingClipboardEnabled:(BOOL)sharingClipboardEnabled {
-    _rootDict[kUTMConfigSharingKey][kUTMConfigChipboardSharingKey] = [NSNumber numberWithBool:sharingClipboardEnabled];
+    _rootDict[kUTMConfigSharingKey][kUTMConfigChipboardSharingKey] = @(sharingClipboardEnabled);
 }
 
 - (BOOL)sharingClipboardEnabled {
@@ -1566,7 +1587,7 @@ const NSString *const kUTMConfigCdromKey = @"Cdrom";
     NSMutableDictionary *drive = [[NSMutableDictionary alloc] initWithDictionary:@{
                                                                                    kUTMConfigImagePathKey: name,
                                                                                    kUTMConfigInterfaceTypeKey: interface,
-                                                                                   kUTMConfigCdromKey: [NSNumber numberWithBool:isCdrom]
+                                                                                   kUTMConfigCdromKey: @(isCdrom)
                                                                                    }];
     [_rootDict[kUTMConfigDrivesKey] addObject:drive];
     return index;
@@ -1593,7 +1614,7 @@ const NSString *const kUTMConfigCdromKey = @"Cdrom";
 }
 
 - (void)setDriveIsCdrom:(BOOL)isCdrom forIndex:(NSUInteger)index {
-    _rootDict[kUTMConfigDrivesKey][index][kUTMConfigCdromKey] = [NSNumber numberWithBool:isCdrom];
+    _rootDict[kUTMConfigDrivesKey][index][kUTMConfigCdromKey] = @(isCdrom);
 }
 
 - (void)moveDriveIndex:(NSUInteger)index to:(NSUInteger)newIndex {
