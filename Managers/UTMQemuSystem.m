@@ -52,6 +52,22 @@
         [self pushArgv:@"-vga"];
         [self pushArgv:@"qxl"];
     }
+    if ([self.configuration.systemArchitecture isEqualToString:@"aarch64"]) {
+        [self pushArgv:@"-bios"];
+        [self pushArgv:[[NSBundle mainBundle] URLForResource:@"qemu/QEMU_EFI" withExtension:@"fd"].path];
+        [self pushArgv:@"-cpu"];
+        [self pushArgv:@"cortex-a72"];
+        [self pushArgv:@"-device"];
+        [self pushArgv:@"VGA"];
+        [self pushArgv:@"-device"];
+        [self pushArgv:@"nec-usb-xhci"];
+        [self pushArgv:@"-device"];
+        [self pushArgv:@"usb-kbd"];
+        [self pushArgv:@"-device"];
+        [self pushArgv:@"usb-tablet"];
+        [self pushArgv:@"-device"];
+        [self pushArgv:@"usb-mouse"];
+    }
     if (![self.configuration.systemBootDevice isEqualToString:@"hdd"]) {
         [self pushArgv:@"-boot"];
         if ([self.configuration.systemBootDevice isEqualToString:@"floppy"]) {
@@ -77,8 +93,15 @@
         } else {
             fullPathURL = [[self.imgPath URLByAppendingPathComponent:[UTMConfiguration diskImagesDirectory]] URLByAppendingPathComponent:[self.configuration driveImagePathForIndex:i]];
         }
-        [self pushArgv:@"-drive"];
-        [self pushArgv:[NSString stringWithFormat:@"file=%@,if=%@,media=%@", fullPathURL.path, [self.configuration driveInterfaceTypeForIndex:i], [self.configuration driveIsCdromForIndex:i] ? @"cdrom" : @"disk"]];
+        if([self.configuration.systemArchitecture isEqualToString:@"aarch64"]){
+            [self pushArgv:@"-device"];
+            [self pushArgv:[NSString stringWithFormat:@"virtio-blk,drive=arm%lu",(unsigned long)i]];
+            [self pushArgv:@"-drive"];
+            [self pushArgv:[NSString stringWithFormat:@"file=%@,if=%@,media=%@,id=arm%lu", fullPathURL.path, [self.configuration driveInterfaceTypeForIndex:i], [self.configuration driveIsCdromForIndex:i] ? @"cdrom" : @"disk",(unsigned long)i]];
+        } else{
+            [self pushArgv:@"-drive"];
+            [self pushArgv:[NSString stringWithFormat:@"file=%@,if=%@,media=%@", fullPathURL.path, [self.configuration driveInterfaceTypeForIndex:i], [self.configuration driveIsCdromForIndex:i] ? @"cdrom" : @"disk"]];
+        }
     }
     if (self.configuration.displayConsoleOnly) {
         [self pushArgv:@"-display"];
