@@ -18,6 +18,10 @@ UTM is a full featured virtual machine host for iOS. In short, it allows you to 
 * Create, manage, run VMs directly from your device
 * No jailbreak required!
 
+## Install
+
+If you just want to use UTM, this is not the right place! Visit https://getutm.app/install/ for directions.
+
 ## Building
 
 Make sure you have cloned with submodules `git submodule update --init --recursive`.
