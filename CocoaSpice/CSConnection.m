@@ -146,6 +146,7 @@ static void cs_channel_new(SpiceSession *s, SpiceChannel *channel, gpointer data
         SPICE_DEBUG("new audio channel");
         if (self.audioEnabled) {
             self->_audio = spice_audio_get(s, self.glibMainContext);
+            spice_channel_connect(channel);
         } else {
             SPICE_DEBUG("audio disabled");
         }

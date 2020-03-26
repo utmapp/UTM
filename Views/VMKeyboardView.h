@@ -23,6 +23,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, weak) IBOutlet id<VMKeyboardViewDelegate> delegate;
 @property (nonatomic, readwrite, strong) IBOutlet UIView *inputAccessoryView;
+@property (nonatomic, assign) BOOL softKeyboardVisible;
 
 @end
 

@@ -204,6 +204,11 @@ enum ParserState {
             [self disconnect];
             break;
         }
+        case NSStreamEventOpenCompleted: {
+            NSLog(@"Connected to stream");
+            [self.delegate jsonStream:self connected:(aStream == _inputStream)];
+            break;
+        }
         default: {
             break;
         }

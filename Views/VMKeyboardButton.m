@@ -20,6 +20,8 @@
 
 #import "VMKeyboardButton.h"
 
+extern UIAccessibilityTraits UIAccessibilityTraitToggle;
+
 @implementation VMKeyboardButton
 
 - (void)setup {
@@ -29,7 +31,7 @@
     self.layer.shadowRadius = 0;
     self.backgroundColor = self.defaultColor;
     if (@available(iOS 13.0, *)) {
-        if (UITraitCollection.currentTraitCollection.userInterfaceStyle == UIUserInterfaceStyleDark) {
+        if (self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark) {
             self.keyAppearance = UIKeyboardAppearanceDark;
         } else {
             self.keyAppearance = UIKeyboardAppearanceLight;
@@ -38,11 +40,25 @@
         self.keyAppearance = UIKeyboardAppearanceLight;
     }
     self.accessibilityTraits |= UIAccessibilityTraitKeyboardKey;
+    if (self.toggleable) {
+        self.accessibilityTraits |= 0x20000000000000;
+    }
 }
 
 - (void)awakeFromNib {
     [super awakeFromNib];
     [self setup];
+}
+
+- (void)traitCollectionDidChange:(UITraitCollection *)previousTraitCollection {
+    [super traitCollectionDidChange:previousTraitCollection];
+    if (@available(iOS 13.0, *)) {
+        if (self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark) {
+            self.keyAppearance = UIKeyboardAppearanceDark;
+        } else {
+            self.keyAppearance = UIKeyboardAppearanceLight;
+        }
+    }
 }
 
 - (UIColor *)primaryColor {
@@ -77,10 +93,11 @@
         } completion:nil];
     }
     if (self.keyAppearance == UIKeyboardAppearanceLight) {
-        [self setTitleColor:UIColor.blackColor forState:UIControlStateNormal];
+        self.tintColor = UIColor.blackColor;
     } else {
-        [self setTitleColor:UIColor.whiteColor forState:UIControlStateNormal];
+        self.tintColor = UIColor.whiteColor;
     }
+    [self setTitleColor:self.tintColor forState:UIControlStateNormal];
 }
 
 - (void)setHighlighted:(BOOL)highlighted {
@@ -96,6 +113,13 @@
 - (void)setKeyAppearance:(UIKeyboardAppearance)keyAppearance {
     _keyAppearance = keyAppearance;
     [self chooseBackground];
+}
+
+- (NSString *)accessibilityValue {
+    if (self.toggleable) {
+        return self.selected ? @"1" : @"0";
+    }
+    return nil;
 }
 
 - (void)prepareForInterfaceBuilder {

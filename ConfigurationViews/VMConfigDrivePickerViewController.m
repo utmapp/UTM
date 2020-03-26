@@ -144,7 +144,7 @@
 #pragma mark - Operations
 
 - (void)showAlert:(NSString *)msg completion:(nullable void (^)(UIAlertAction *action))completion {
-    UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil message:msg preferredStyle:UIAlertControllerStyleAlert];
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"" message:msg preferredStyle:UIAlertControllerStyleAlert];
     UIAlertAction *okay = [UIAlertAction actionWithTitle:NSLocalizedString(@"OK", @"OK button") style:UIAlertActionStyleDefault handler:completion];
     [alert addAction:okay];
     dispatch_async(dispatch_get_main_queue(), ^{
@@ -186,7 +186,7 @@
 - (IBAction)addButton:(UIBarButtonItem *)sender {
     UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil message:NSLocalizedString(@"Would you like to import an existing disk image or create a new one?", @"VMConfigDrivePickerViewController") preferredStyle:UIAlertControllerStyleActionSheet];
     UIAlertAction *import = [UIAlertAction actionWithTitle:NSLocalizedString(@"Import", @"Import button") style:UIAlertActionStyleDefault handler:^(UIAlertAction *action){
-        UIDocumentPickerViewController *picker = [[UIDocumentPickerViewController alloc] initWithDocumentTypes:@[@"public.data"] inMode:UIDocumentPickerModeImport];
+        UIDocumentPickerViewController *picker = [[UIDocumentPickerViewController alloc] initWithDocumentTypes:@[@"public.item"] inMode:UIDocumentPickerModeImport];
         picker.delegate = self;
         picker.modalPresentationStyle = UIModalPresentationFormSheet;
         [self presentViewController:picker animated:YES completion:nil];

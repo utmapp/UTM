@@ -36,14 +36,19 @@
     [self pushArgv:@"-qmp"];
     [self pushArgv:@"tcp:localhost:4444,server,nowait"];
     [self pushArgv:@"-smp"];
-    [self pushArgv:[NSString stringWithFormat:@"cpus=%@", self.configuration.systemCPUCount]];
-    if ([self.configuration.systemArchitecture isEqualToString:@"aarch64"]) {
-        [self pushArgv:@"-machine"];
-        [self pushArgv:@"virt"];
-        [self pushArgv:@"-device"];
-        [self pushArgv:@"virtio-gpu-pci"];
+    [self pushArgv:[NSString stringWithFormat:@"cpus=%@,sockets=1", self.configuration.systemCPUCount]];
+    [self pushArgv:@"-machine"];
+    [self pushArgv:self.configuration.systemTarget];
+    if (self.configuration.systemForceMulticore) {
+        [self pushArgv:@"-accel"];
+        [self pushArgv:@"tcg,thread=multi"];
     }
-    else {
+    if ([self.configuration.systemJitCacheSize integerValue] > 0) {
+        [self pushArgv:@"-tb-size"];
+        [self pushArgv:[self.configuration.systemJitCacheSize stringValue]];
+    }
+    if ([self.configuration.systemArchitecture isEqualToString:@"x86_64"] ||
+        [self.configuration.systemArchitecture isEqualToString:@"i386"]) {
         [self pushArgv:@"-vga"];
         [self pushArgv:@"qxl"];
     }
@@ -59,7 +64,7 @@
     [self pushArgv:[self.configuration.systemMemory stringValue]];
     if (self.configuration.soundEnabled) {
         [self pushArgv:@"-soundhw"];
-        [self pushArgv:@"hda"];
+        [self pushArgv:@"ac97"];
     }
     [self pushArgv:@"-name"];
     [self pushArgv:self.configuration.name];
@@ -98,6 +103,34 @@
             [netstr appendString:@"restrict=on"];
         }
         [self pushArgv:netstr];
+    }
+    if (self.snapshot) {
+        [self pushArgv:@"-loadvm"];
+        [self pushArgv:self.snapshot];
+    }
+    
+    if (self.configuration.systemArguments.count != 0) {
+        NSArray *addArgs = self.configuration.systemArguments;
+        // Splits all spaces into their own, except when between quotes.
+        NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"(\"[^\"]+\"|\\+|\\S+)" options:0 error:nil];
+        
+        for (NSString *arg in addArgs) {
+            // No need to operate on empty arguments.
+            if (arg.length == 0) {
+                continue;
+            }
+            
+            NSArray *splitArgsArray = [regex matchesInString:arg
+                                              options:0
+                                                range:NSMakeRange(0, [arg length])];
+            
+            
+            for (NSTextCheckingResult *match in splitArgsArray) {
+                NSRange matchRange = [match rangeAtIndex:1];
+                NSString *argFragment = [arg substringWithRange:matchRange];
+                [self pushArgv:argFragment];
+            }
+        }
     }
 }
 

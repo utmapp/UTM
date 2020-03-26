@@ -33,6 +33,7 @@
     [super refreshViewFromConfiguration];
     self.advancedConfiguration = NO;
     self.nameField.text = self.configuration.name;
+    self.saveButton.enabled = self.configuration.name && ![self.configuration.name isEqualToString:@""];
 }
 
 #pragma mark - Properties
@@ -82,10 +83,11 @@
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
-- (IBAction)nameFieldEdited:(UITextField *)sender {
+- (IBAction)nameFieldChanged:(UITextField *)sender {
     NSAssert(sender == self.nameField, @"Invalid sender");
     // TODO: validate input
     self.configuration.name = sender.text;
+    self.saveButton.enabled = ![sender.text isEqualToString:@""];
 }
 
 @end

@@ -16,21 +16,27 @@
 
 #import "UTMVirtualMachine.h"
 #import "UTMConfiguration.h"
+#import "UTMViewState.h"
 #import "UTMQemuImg.h"
 #import "UTMQemuManager.h"
 #import "UTMQemuSystem.h"
+#import "UTMLogging.h"
 #import "CocoaSpice.h"
 
 const int kMaxConnectionTries = 10; // qemu needs to start spice server first
-const int64_t kStopTimeout = (int64_t)30*1000000000;
+const int64_t kStopTimeout = (int64_t)30*NSEC_PER_SEC;
 
 NSString *const kUTMErrorDomain = @"com.osy86.utm";
 NSString *const kUTMBundleConfigFilename = @"config.plist";
 NSString *const kUTMBundleExtension = @"utm";
+NSString *const kUTMBundleViewFilename = @"view.plist";
+NSString *const kUTMBundleScreenshotFilename = @"screenshot.png";
+NSString *const kSuspendSnapshotName = @"suspend";
 
 @interface UTMVirtualMachine ()
 
-- (NSURL *)packageURLForName:(NSString *)name;
+@property (nonatomic) UTMViewState *viewState;
+@property (nonatomic, weak) UTMLogging *logging;
 
 @end
 
@@ -40,12 +46,19 @@ NSString *const kUTMBundleExtension = @"utm";
     CSMain *_spice;
     dispatch_semaphore_t _will_quit_sema;
     dispatch_semaphore_t _qemu_exit_sema;
-    BOOL _is_stopping;
+    BOOL _is_busy;
+    UIImage *_screenshot;
 }
+
+@synthesize path = _path;
+@synthesize busy = _is_busy;
 
 - (void)setDelegate:(id<UTMVirtualMachineDelegate>)delegate {
     _delegate = delegate;
-    _delegate.vmRendering = self.primaryRendering;
+    _delegate.vmDisplay = self.primaryDisplay;
+    _delegate.vmInput = self.primaryInput;
+    _delegate.vmConfiguration = self.configuration;
+    [self restoreViewState];
 }
 
 + (BOOL)URLisVirtualMachine:(NSURL *)url {
@@ -65,6 +78,7 @@ NSString *const kUTMBundleExtension = @"utm";
     if (self) {
         _will_quit_sema = dispatch_semaphore_create(0);
         _qemu_exit_sema = dispatch_semaphore_create(0);
+        self.logging = [UTMLogging sharedInstance];
     }
     return self;
 }
@@ -72,38 +86,53 @@ NSString *const kUTMBundleExtension = @"utm";
 - (id)initWithURL:(NSURL *)url {
     self = [self init];
     if (self) {
+        _path = url;
         self.parentPath = url.URLByDeletingLastPathComponent;
         NSString *name = [UTMVirtualMachine virtualMachineName:url];
-        NSError *err;
-        NSData *data = [NSData dataWithContentsOfURL:[url URLByAppendingPathComponent:kUTMBundleConfigFilename]];
-        id plist = [NSPropertyListSerialization propertyListWithData:data options:NSPropertyListMutableContainersAndLeaves format:nil error:&err];
-        if (err) {
-            NSLog(@"Error reading %@: %@\n", url, err.localizedDescription);
-            self = nil;
-            return self;
-        }
-        if (![plist isKindOfClass:[NSMutableDictionary class]]) {
-            NSLog(@"Wrong data format %@!\n", url);
+        NSMutableDictionary *plist = [self loadPlist:[url URLByAppendingPathComponent:kUTMBundleConfigFilename] withError:nil];
+        if (!plist) {
+            NSLog(@"Failed to parse config for %@", url);
             self = nil;
             return self;
         }
         _configuration = [[UTMConfiguration alloc] initWithDictionary:plist name:name path:url];
+        [self loadViewState];
+        [self loadScreenshot];
+        if (self.viewState.suspended) {
+            _state = kVMSuspended;
+        } else {
+            _state = kVMStopped;
+        }
     }
     return self;
 }
 
-- (id)initDefaults:(NSString *)name withDestinationURL:(NSURL *)dstUrl {
+- (id)initWithConfiguration:(UTMConfiguration *)configuration withDestinationURL:(NSURL *)dstUrl {
     self = [self init];
     if (self) {
         self.parentPath = dstUrl;
-        _configuration = [[UTMConfiguration alloc] initDefaults:name];
+        _configuration = configuration;
+        self.viewState = [[UTMViewState alloc] initDefaults];
     }
     return self;
 }
 
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context {
+    // make sure the CSDisplay properties are synced with the CSInput
+    if ([keyPath isEqualToString:@"primaryDisplay.viewportScale"]) {
+        self.primaryInput.viewportScale = self.primaryDisplay.viewportScale;
+    } else if ([keyPath isEqualToString:@"primaryDisplay.displaySize"]) {
+        self.primaryInput.displaySize = self.primaryDisplay.displaySize;
+    }
+}
+
 - (void)changeState:(UTMVMState)state {
-    _state = state;
-    [self.delegate virtualMachine:self transitionToState:state];
+    @synchronized (self) {
+        _state = state;
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.delegate virtualMachine:self transitionToState:state];
+        });
+    }
 }
 
 - (NSURL *)packageURLForName:(NSString *)name {
@@ -126,17 +155,11 @@ NSString *const kUTMBundleExtension = @"utm";
             return NO;
         }
         self.configuration.existingPath = url;
+        _path = url;
     }
-    // serialize config.plist
-    NSData *data = [NSPropertyListSerialization dataWithPropertyList:self.configuration.dictRepresentation format:NSPropertyListXMLFormat_v1_0 options:0 error:&_err];
-    if (_err && err) {
-        *err = _err;
-        return NO;
-    }
-    // write config.plist
-    [data writeToURL:[url URLByAppendingPathComponent:kUTMBundleConfigFilename] options:NSDataWritingAtomic error:&_err];
-    if (_err && err) {
-        *err = _err;
+    if (![self savePlist:[url URLByAppendingPathComponent:kUTMBundleConfigFilename]
+                    dict:self.configuration.dictRepresentation
+               withError:err]) {
         return NO;
     }
     // create disk images directory
@@ -159,17 +182,27 @@ NSString *const kUTMBundleExtension = @"utm";
 }
 
 - (void)errorTriggered:(nullable NSString *)msg {
+    self.viewState.suspended = NO;
+    [self saveViewState];
     [self quitVM];
     self.delegate.vmMessage = msg;
     [self changeState:kVMError];
 }
 
-- (void)startVM {
-    if (self.state != kVMStopped) {
-        return; // already started
+- (BOOL)startVM {
+    @synchronized (self) {
+        if (self.busy || (self.state != kVMStopped && self.state != kVMSuspended)) {
+            return NO; // already started
+        } else {
+            _is_busy = YES;
+        }
+    }
+    // start logging
+    if (self.configuration.debugLogEnabled) {
+        [self.logging logToFile:[self.path URLByAppendingPathComponent:[UTMConfiguration debugLogName]]];
     }
     if (!_qemu_system) {
-        _qemu_system = [[UTMQemuSystem alloc] initWithConfiguration:self.configuration imgPath:[self packageURLForName:self.configuration.name]];
+        _qemu_system = [[UTMQemuSystem alloc] initWithConfiguration:self.configuration imgPath:self.path];
         _qemu = [[UTMQemuManager alloc] init];
         _qemu.delegate = self;
     }
@@ -179,22 +212,30 @@ NSString *const kUTMBundleExtension = @"utm";
     if (!_spice_connection) {
         _spice_connection = [[CSConnection alloc] initWithHost:@"127.0.0.1" port:@"5930"];
         _spice_connection.delegate = self;
+        _spice_connection.audioEnabled = _configuration.soundEnabled;
     }
     if (!_qemu_system || !_spice || !_spice_connection) {
         [self errorTriggered:NSLocalizedString(@"Internal error starting VM.", @"UTMVirtualMachine")];
-        return;
+        _is_busy = NO;
+        return NO;
     }
     _spice_connection.glibMainContext = _spice.glibMainContext;
     self.delegate.vmMessage = nil;
-    self.delegate.vmScreenshot = nil;
-    self.delegate.vmRendering = nil;
-    _primaryRendering = nil;
+    self.delegate.vmDisplay = nil;
+    self.delegate.vmInput = nil;
+    _primaryDisplay = nil;
     
     [self changeState:kVMStarting];
-    [_spice spiceSetDebug:YES];
+    if (self.configuration.debugLogEnabled) {
+        [_spice spiceSetDebug:YES]; // only if debug logging
+    }
     if (![_spice spiceStart]) {
         [self errorTriggered:NSLocalizedString(@"Internal error starting main loop.", @"UTMVirtualMachine")];
-        return;
+        _is_busy = NO;
+        return NO;
+    }
+    if (self.viewState.suspended) {
+        _qemu_system.snapshot = kSuspendSnapshotName;
     }
     [_qemu_system startWithCompletion:^(BOOL success, NSString *msg){
         if (!success) {
@@ -212,20 +253,27 @@ NSString *const kUTMBundleExtension = @"utm";
     if (tries == 0) {
         [self errorTriggered:NSLocalizedString(@"Failed to connect to display server.", @"UTMVirtualMachine")];
     }
+    self->_qemu.retries = kMaxConnectionTries;
     [self->_qemu connect];
+    _is_busy = NO;
+    return YES;
 }
 
-- (void)quitVM {
-    if (_is_stopping || self.state != kVMStarted) {
-        return; // already stopping
-    } else {
-        _is_stopping = YES;
+- (BOOL)quitVM {
+    @synchronized (self) {
+        if (self.busy || self.state != kVMStarted) {
+            return NO; // already stopping
+        } else {
+            _is_busy = YES;
+        }
     }
+    [self syncViewState];
     [self changeState:kVMStopping];
     
     [_qemu vmQuitWithCompletion:nil];
     if (dispatch_semaphore_wait(_will_quit_sema, dispatch_time(DISPATCH_TIME_NOW, kStopTimeout)) != 0) {
         // TODO: force shutdown
+        NSLog(@"Stop operation timeout");
     }
     [_qemu disconnect];
     _qemu.delegate = nil;
@@ -239,64 +287,346 @@ NSString *const kUTMBundleExtension = @"utm";
     
     if (dispatch_semaphore_wait(_qemu_exit_sema, dispatch_time(DISPATCH_TIME_NOW, kStopTimeout)) != 0) {
         // TODO: force shutdown
+        NSLog(@"Exit operation timeout");
     }
     _qemu_system = nil;
-    _is_stopping = NO;
     [self changeState:kVMStopped];
+    // save view settings
+    [self saveViewState];
+    // deregister observers
+    [self addObserver:self forKeyPath:@"primaryDisplay.viewportScale" options:0 context:nil];
+    [self addObserver:self forKeyPath:@"primaryDisplay.displaySize" options:0 context:nil];
+    // stop logging
+    [self.logging endLog];
+    _is_busy = NO;
+    return YES;
+}
+
+- (BOOL)resetVM {
+    @synchronized (self) {
+        if (self.busy || (self.state != kVMStarted && self.state != kVMPaused)) {
+            return NO; // already stopping
+        } else {
+            _is_busy = YES;
+        }
+    }
+    [self syncViewState];
+    [self changeState:kVMStopping];
+    if (self.viewState.suspended) {
+        [self deleteSaveVM];
+    }
+    [self saveViewState];
+    __block BOOL success = YES;
+    dispatch_semaphore_t reset_sema = dispatch_semaphore_create(0);
+    [_qemu vmResetWithCompletion:^(NSError *err) {
+        NSLog(@"reset callback: err? %@", err);
+        if (err) {
+            NSLog(@"error: %@", err);
+            success = NO;
+        }
+        dispatch_semaphore_signal(reset_sema);
+    }];
+    if (dispatch_semaphore_wait(reset_sema, dispatch_time(DISPATCH_TIME_NOW, kStopTimeout)) != 0) {
+        NSLog(@"Reset operation timeout");
+        success = NO;
+    }
+    if (success) {
+        [self changeState:kVMStarted];
+    } else {
+        [self changeState:kVMError];
+    }
+    _is_busy = NO;
+    return success;
+}
+
+- (BOOL)pauseVM {
+    @synchronized (self) {
+        if (self.busy || self.state != kVMStarted) {
+            return NO; // already stopping
+        } else {
+            _is_busy = YES;
+        }
+    }
+    [self syncViewState];
+    [self changeState:kVMPausing];
+    [self saveScreenshot];
+    __block BOOL success = YES;
+    dispatch_semaphore_t suspend_sema = dispatch_semaphore_create(0);
+    [_qemu vmStopWithCompletion:^(NSError * err) {
+        NSLog(@"stop callback: err? %@", err);
+        if (err) {
+            NSLog(@"error: %@", err);
+            success = NO;
+        }
+        dispatch_semaphore_signal(suspend_sema);
+    }];
+    if (dispatch_semaphore_wait(suspend_sema, dispatch_time(DISPATCH_TIME_NOW, kStopTimeout)) != 0) {
+        NSLog(@"Stop operation timeout");
+        success = NO;
+    }
+    if (success) {
+        [self changeState:kVMPaused];
+    } else {
+        [self changeState:kVMError];
+    }
+    _is_busy = NO;
+    return success;
+}
+
+- (BOOL)saveVM {
+    @synchronized (self) {
+        if (self.busy || (self.state != kVMPaused && self.state != kVMStarted)) {
+            return NO;
+        } else {
+            _is_busy = YES;
+        }
+    }
+    UTMVMState state = self.state;
+    [self changeState:kVMPausing];
+    __block BOOL success = YES;
+    dispatch_semaphore_t save_sema = dispatch_semaphore_create(0);
+    [_qemu vmSaveWithCompletion:^(NSString *result, NSError *err) {
+        NSLog(@"save callback: %@", result);
+        if (err) {
+            NSLog(@"error: %@", err);
+            success = NO;
+        }
+        dispatch_semaphore_signal(save_sema);
+    } snapshotName:kSuspendSnapshotName];
+    if (dispatch_semaphore_wait(save_sema, dispatch_time(DISPATCH_TIME_NOW, kStopTimeout)) != 0) {
+        NSLog(@"Save operation timeout");
+        success = NO;
+    } else {
+        NSLog(@"Save completed");
+        self.viewState.suspended = YES;
+        [self saveViewState];
+        [self saveScreenshot];
+    }
+    [self changeState:state];
+    _is_busy = NO;
+    return success;
+}
+
+- (BOOL)deleteSaveVM {
+    __block BOOL success = YES;
+    dispatch_semaphore_t save_sema = dispatch_semaphore_create(0);
+    [_qemu vmDeleteSaveWithCompletion:^(NSString *result, NSError *err) {
+        NSLog(@"delete save callback: %@", result);
+        if (err) {
+            NSLog(@"error: %@", err);
+            success = NO;
+        }
+        dispatch_semaphore_signal(save_sema);
+    } snapshotName:kSuspendSnapshotName];
+    if (dispatch_semaphore_wait(save_sema, dispatch_time(DISPATCH_TIME_NOW, kStopTimeout)) != 0) {
+        NSLog(@"Delete save operation timeout");
+        success = NO;
+    } else {
+        NSLog(@"Delete save completed");
+    }
+    self.viewState.suspended = NO;
+    [self saveViewState];
+    return success;
+}
+
+- (BOOL)resumeVM {
+    @synchronized (self) {
+        if (self.busy || self.state != kVMPaused) {
+            return NO;
+        } else {
+            _is_busy = YES;
+        }
+    }
+    [self changeState:kVMResuming];
+    __block BOOL success = YES;
+    dispatch_semaphore_t resume_sema = dispatch_semaphore_create(0);
+    [_qemu vmResumeWithCompletion:^(NSError *err) {
+        NSLog(@"resume callback: err? %@", err);
+        if (err) {
+            NSLog(@"error: %@", err);
+            success = NO;
+        }
+        dispatch_semaphore_signal(resume_sema);
+    }];
+    if (dispatch_semaphore_wait(resume_sema, dispatch_time(DISPATCH_TIME_NOW, kStopTimeout)) != 0) {
+        NSLog(@"Resume operation timeout");
+        success = NO;
+    }
+    if (success) {
+        [self changeState:kVMStarted];
+        [self restoreViewState];
+    } else {
+        [self changeState:kVMError];
+    }
+    if (self.viewState.suspended) {
+        [self deleteSaveVM];
+    }
+    _is_busy = NO;
+    return success;
 }
 
 #pragma mark - Spice connection delegate
 
 - (void)spiceConnected:(CSConnection *)connection {
+    NSLog(@"spiceConnected");
     NSAssert(connection == _spice_connection, @"Unknown connection");
 }
 
 - (void)spiceDisconnected:(CSConnection *)connection {
+    NSLog(@"spiceDisconnected");
     NSAssert(connection == _spice_connection, @"Unknown connection");
 }
 
 - (void)spiceError:(CSConnection *)connection err:(NSString *)msg {
+    NSLog(@"spiceError");
     NSAssert(connection == _spice_connection, @"Unknown connection");
     [self errorTriggered:msg];
 }
 
 - (void)spiceDisplayCreated:(CSConnection *)connection display:(CSDisplayMetal *)display input:(CSInput *)input {
+    NSLog(@"spiceDisplayCreated");
     NSAssert(connection == _spice_connection, @"Unknown connection");
     if (display.channelID == 0 && display.monitorID == 0) {
-        self.delegate.vmRendering = display;
-        _primaryRendering = display;
+        self.delegate.vmDisplay = display;
+        self.delegate.vmInput = input;
+        _primaryDisplay = display;
         _primaryInput = input;
+        // register observers
+        [self addObserver:self forKeyPath:@"primaryDisplay.viewportScale" options:0 context:nil];
+        [self addObserver:self forKeyPath:@"primaryDisplay.displaySize" options:0 context:nil];
+        // update state
         [self changeState:kVMStarted];
+        [self restoreViewState];
+        if (self.viewState.suspended) {
+            [self deleteSaveVM];
+        }
     }
 }
 
 #pragma mark - Qemu manager delegate
 
 - (void)qemuHasWakeup:(UTMQemuManager *)manager {
-    
+    NSLog(@"qemuHasWakeup");
 }
 
 - (void)qemuHasResumed:(UTMQemuManager *)manager {
-    
+    NSLog(@"qemuHasResumed");
 }
 
 - (void)qemuHasStopped:(UTMQemuManager *)manager {
-    
+    NSLog(@"qemuHasStopped");
 }
 
 - (void)qemuHasReset:(UTMQemuManager *)manager guest:(BOOL)guest reason:(ShutdownCause)reason {
-    
+    NSLog(@"qemuHasReset, reason = %s", ShutdownCause_str(reason));
 }
 
 - (void)qemuHasSuspended:(UTMQemuManager *)manager {
-    
+    NSLog(@"qemuHasSuspended");
 }
 
 - (void)qemuWillQuit:(UTMQemuManager *)manager guest:(BOOL)guest reason:(ShutdownCause)reason {
+    NSLog(@"qemuWillQuit, reason = %s", ShutdownCause_str(reason));
     dispatch_semaphore_signal(_will_quit_sema);
-    if (!_is_stopping) {
+    if (!_is_busy) {
         [self quitVM];
     }
+}
+
+#pragma mark - Plist Handling
+
+- (NSMutableDictionary *)loadPlist:(NSURL *)path withError:(NSError **)err {
+    NSData *data = [NSData dataWithContentsOfURL:path];
+    if (!data) {
+        if (err) {
+            *err = [NSError errorWithDomain:kUTMErrorDomain code:-1 userInfo:@{NSLocalizedDescriptionKey: NSLocalizedString(@"Failed to load plist", @"UTMVirtualMachine")}];
+        }
+        return nil;
+    }
+    id plist = [NSPropertyListSerialization propertyListWithData:data options:NSPropertyListMutableContainersAndLeaves format:nil error:err];
+    if (err) {
+        return nil;
+    }
+    if (![plist isKindOfClass:[NSMutableDictionary class]]) {
+        return nil;
+    }
+    return plist;
+}
+
+- (BOOL)savePlist:(NSURL *)path dict:(NSDictionary *)dict withError:(NSError **)err {
+    NSError *_err;
+    // serialize plist
+    NSData *data = [NSPropertyListSerialization dataWithPropertyList:dict format:NSPropertyListXMLFormat_v1_0 options:0 error:&_err];
+    if (_err && err) {
+        *err = _err;
+        return NO;
+    }
+    // write plist
+    [data writeToURL:path options:NSDataWritingAtomic error:&_err];
+    if (_err && err) {
+        *err = _err;
+        return NO;
+    }
+    return YES;
+}
+
+#pragma mark - View State
+
+- (void)syncViewState {
+    self.viewState.displayOriginX = self.primaryDisplay.viewportOrigin.x;
+    self.viewState.displayOriginY = self.primaryDisplay.viewportOrigin.y;
+    self.viewState.displaySizeWidth = self.primaryDisplay.displaySize.width;
+    self.viewState.displaySizeHeight = self.primaryDisplay.displaySize.height;
+    self.viewState.displayScale = self.primaryDisplay.viewportScale;
+    self.viewState.showToolbar = self.delegate.toolbarVisible;
+    self.viewState.showKeyboard = self.delegate.keyboardVisible;
+}
+
+- (void)restoreViewState {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        self.primaryDisplay.viewportOrigin = CGPointMake(self.viewState.displayOriginX, self.viewState.displayOriginY);
+        self.primaryDisplay.displaySize = CGSizeMake(self.viewState.displaySizeWidth, self.viewState.displaySizeHeight);
+        self.primaryDisplay.viewportScale = self.viewState.displayScale;
+        self.delegate.toolbarVisible = self.viewState.showToolbar;
+        self.delegate.keyboardVisible = self.viewState.showKeyboard;
+    });
+}
+
+- (void)loadViewState {
+    NSMutableDictionary *plist = [self loadPlist:[self.path URLByAppendingPathComponent:kUTMBundleViewFilename] withError:nil];
+    if (plist) {
+        self.viewState = [[UTMViewState alloc] initWithDictionary:plist];
+    } else {
+        self.viewState = [[UTMViewState alloc] initDefaults];
+    }
+}
+
+- (void)saveViewState {
+    [self savePlist:[self.path URLByAppendingPathComponent:kUTMBundleViewFilename]
+               dict:self.viewState.dictRepresentation
+          withError:nil];
+}
+
+#pragma mark - Screenshot
+
+@synthesize screenshot = _screenshot;
+
+- (void)loadScreenshot {
+    NSURL *url = [self.path URLByAppendingPathComponent:kUTMBundleScreenshotFilename];
+    _screenshot = [UIImage imageWithContentsOfFile:url.path];
+}
+
+- (void)saveScreenshot {
+    _screenshot = self.primaryDisplay.screenshot;
+    NSURL *url = [self.path URLByAppendingPathComponent:kUTMBundleScreenshotFilename];
+    if (_screenshot) {
+        [UIImagePNGRepresentation(_screenshot) writeToURL:url atomically:NO];
+    }
+}
+
+- (void)deleteScreenshot {
+    NSURL *url = [self.path URLByAppendingPathComponent:kUTMBundleScreenshotFilename];
+    [[NSFileManager defaultManager] removeItemAtURL:url error:nil];
 }
 
 @end

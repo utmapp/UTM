@@ -24,7 +24,7 @@ jobs:
         id: cache-sysroot
         uses: actions/cache@v1
         with:
-          path: sysroot
+          path: sysroot-${{ matrix.arch }}
           key: ${{ matrix.arch }}-${{ hashFiles('scripts/build_dependencies.sh') }}-${{ hashFiles('patches/**') }}
       - name: Setup Path
         shell: bash
@@ -40,7 +40,7 @@ jobs:
       - name: Compress Sysroot
         run: |
           mkdir sysroot_tar
-          tar cf sysroot_tar/sysroot.tgz sysroot
+          tar cf sysroot_tar/sysroot.tgz sysroot-${{ matrix.arch }}
       - name: Upload Sysroot
         uses: actions/upload-artifact@v1
         with:

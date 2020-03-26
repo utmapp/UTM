@@ -19,12 +19,10 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface VMListViewController : UICollectionViewController<UICollectionViewDragDelegate, UICollectionViewDropDelegate, UTMVirtualMachineDelegate>
+@interface VMListViewController : UICollectionViewController<UICollectionViewDragDelegate, UICollectionViewDropDelegate>
 
 - (IBAction)unwindToMainFromConfiguration:(UIStoryboardSegue*)sender;
-- (IBAction)unwindToMainFromVM:(UIStoryboardSegue*)sender;
-- (IBAction)startVMFromButton:(UIButton *)sender;
-- (IBAction)startVMFromScreen:(UIButton *)sender;
+- (IBAction)exitUTM:(UIBarButtonItem *)sender;
 
 @end
 

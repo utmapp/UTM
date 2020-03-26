@@ -38,13 +38,13 @@
             [[self playButton] setImage:nil forState:UIControlStateNormal];
             break;
         }
-        case kVMStarted:
-        case kVMResumed: {
+        case kVMStarted: {
             [[self screenBlurEffect] setHidden:YES];
             [[self statusIndicator] stopAnimating];
             [[self playButton] setImage:nil forState:UIControlStateNormal];
             break;
         }
+        case kVMSuspended:
         case kVMPaused: {
             [[self statusIndicator] stopAnimating];
             [[self screenBlurEffect] setHidden:NO];
@@ -54,8 +54,32 @@
     }
 }
 
-- (void)setName:(NSString *)name {
-    [[self nameLabel] setText:name];
+#pragma mark - Context Menu Actions
+
+- (void)sendAction:(id)sender action:(SEL)action {
+    // find my collection view
+    UIView* v = self;
+    do {
+        v = v.superview;
+    } while (![v isKindOfClass:[UICollectionView class]]);
+    UICollectionView* cv = (UICollectionView*) v;
+    // ask it what index path we are
+    NSIndexPath* ip = [cv indexPathForCell:self];
+    // talk to its delegate
+    if (cv.delegate &&
+        [cv.delegate respondsToSelector:
+         @selector(collectionView:performAction:forItemAtIndexPath:withSender:)]) {
+        [cv.delegate collectionView:cv performAction:action
+                 forItemAtIndexPath:ip withSender:sender];
+    }
+}
+
+- (void)deleteAction:(id)sender {
+    [self sendAction:sender action:_cmd];
+}
+
+- (void)cloneAction:(id)sender {
+    [self sendAction:sender action:_cmd];
 }
 
 @end

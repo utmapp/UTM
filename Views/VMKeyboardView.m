@@ -167,7 +167,12 @@ const key_mapping_t pc104_es[] = {
     {'`', 0x0, 0x0, 0x0, 0x1a},
     {'<', 0x0, 0x0, 0x0, 0x56},
     {'>', 0x0, 0x0, 0x36, 0x56},
+    {'\r', 0x0, 0x0, 0x0, 0x1c},
     {'\n', 0x0, 0x0, 0x0, 0x1c},
+    {'\'', 0x0, 0x0, 0x0, 0x28},
+    {'"', 0x0, 0x0, 0x36, 0x28},
+    {'\t', 0x0, 0x0, 0x0, 0x0F},
+    {'\b', 0x0, 0x0, 0x0, 0x0E},
 };
 
 const ext_key_mapping_t pc104_us_ext[] = {
@@ -253,10 +258,17 @@ const key_mapping_t pc104_us[] = {
     {'`', 0x0, 0x0, 0x0, 0x29},
     {'<', 0x0, 0x0, 0x36, 0x33},
     {'>', 0x0, 0x0, 0x36, 0x34},
+    {'\r', 0x0, 0x0, 0x0, 0x1c},
     {'\n', 0x0, 0x0, 0x0, 0x1c},
     {'\'', 0x0, 0x0, 0x0, 0x28},
     {'"', 0x0, 0x0, 0x36, 0x28},
+    {'\t', 0x0, 0x0, 0x0, 0x0F},
+    {'\b', 0x0, 0x0, 0x0, 0x0E},
 };
+
+const int kLargeAccessoryViewHeight = 68;
+const int kSmallAccessoryViewHeight = 45;
+const int kSafeAreaHeight = 25;
 
 static int indexForChar(const key_mapping_t *table, size_t table_len, char tc) {
     int i;
@@ -294,7 +306,33 @@ static int indexForExtChar(const ext_key_mapping_t *table, size_t table_len, cha
     size_t _ext_map_len;
 }
 
-@synthesize delegate;
+- (UIKeyboardType)keyboardType {
+    return UIKeyboardTypeASCIICapable;
+}
+
+- (UITextAutocapitalizationType)autocapitalizationType {
+    return UITextAutocapitalizationTypeNone;
+}
+
+- (UITextAutocorrectionType)autocorrectionType {
+    return UITextAutocorrectionTypeNo;
+}
+
+- (UITextSpellCheckingType)spellCheckingType {
+    return UITextSpellCheckingTypeNo;
+}
+
+- (UITextSmartQuotesType)smartQuotesType {
+    return UITextSmartQuotesTypeNo;
+}
+
+- (UITextSmartDashesType)smartDashesType {
+    return UITextSmartDashesTypeNo;
+}
+
+- (UITextSmartInsertDeleteType)smartInsertDeleteType {
+    return UITextSmartInsertDeleteTypeNo;
+}
 
 - (void)configureTables {
     NSString *language = [[NSLocale preferredLanguages] objectAtIndex:0];
@@ -312,14 +350,33 @@ static int indexForExtChar(const ext_key_mapping_t *table, size_t table_len, cha
     }
 }
 
-- (id)initWithFrame:(CGRect)frame {
-    self = [super initWithFrame:frame];
-    if (self) {
-        [self setAutocapitalizationType:UITextAutocapitalizationTypeNone];
-        [self setAutocorrectionType:UITextAutocorrectionTypeNo];
-        [self setKeyboardType:UIKeyboardTypeASCIICapable];
+- (void)setSoftKeyboardVisible:(BOOL)softKeyboardVisible {
+    _softKeyboardVisible = softKeyboardVisible;
+    [self updateAccessoryViewHeight];
+}
+
+- (void)traitCollectionDidChange:(UITraitCollection *)previousTraitCollection {
+    [super traitCollectionDidChange:previousTraitCollection];
+    [self updateAccessoryViewHeight];
+}
+
+- (void)updateAccessoryViewHeight {
+    CGRect currentFrame = self.inputAccessoryView.frame;
+    CGFloat height;
+    if (self.traitCollection.horizontalSizeClass == UIUserInterfaceSizeClassRegular && self.traitCollection.verticalSizeClass == UIUserInterfaceSizeClassRegular) {
+        // we want large keys
+        height = kLargeAccessoryViewHeight;
+    } else {
+        height = kSmallAccessoryViewHeight;
     }
-    return self;
+    if (self.softKeyboardVisible) {
+        height += kSafeAreaHeight;
+    }
+    if (height != currentFrame.size.height) {
+        currentFrame.size.height = height;
+        self.inputAccessoryView.frame = currentFrame;
+        [self reloadInputViews];
+    }
 }
 
 - (BOOL)hasText {
@@ -328,12 +385,22 @@ static int indexForExtChar(const ext_key_mapping_t *table, size_t table_len, cha
 
 - (void)deleteBackward {
     [self.delegate keyboardView:self didPressKeyDown:0x0E];
+    [NSThread sleepForTimeInterval:0.05f];
     [self.delegate keyboardView:self didPressKeyUp:0x0E];
 }
 
 - (void)insertText:(nonnull NSString *)text {
-    NSLog(@"insertText: %@, length=%lu", text, (unsigned long)text.length);
-    const char *ctext = [text UTF8String];
+    dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), ^{
+        [text enumerateSubstringsInRange:NSMakeRange(0, text.length) options:NSStringEnumerationByComposedCharacterSequences usingBlock:^(NSString * _Nullable substring, NSRange substringRange, NSRange enclosingRange, BOOL * _Nonnull stop) {
+            const char *seq = [substring UTF8String];
+            [self insertUTF8Sequence:seq];
+            // we need to pause a bit or the keypress will be too fast!
+            [NSThread sleepForTimeInterval:0.001f];
+        }];
+    });
+}
+
+- (void)insertUTF8Sequence:(const char *)ctext {
     unsigned long ctext_len = strlen(ctext);
     NSLog(@"ctext length=%lu\n", ctext_len);
     unsigned char tc = ctext[0];
@@ -400,6 +467,7 @@ static int indexForExtChar(const ext_key_mapping_t *table, size_t table_len, cha
                 [self.delegate keyboardView:self didPressKeyDown:special];
             }
             [self.delegate keyboardView:self didPressKeyDown:prekey];
+            [NSThread sleepForTimeInterval:0.05f];
             [self.delegate keyboardView:self didPressKeyUp:prekey];
             if (prekey_special) {
                 [self.delegate keyboardView:self didPressKeyUp:special];
@@ -411,6 +479,7 @@ static int indexForExtChar(const ext_key_mapping_t *table, size_t table_len, cha
         }
         
         [self.delegate keyboardView:self didPressKeyDown:keycode];
+        [NSThread sleepForTimeInterval:0.05f];
         [self.delegate keyboardView:self didPressKeyUp:keycode];
         
         if (special) {
@@ -421,18 +490,6 @@ static int indexForExtChar(const ext_key_mapping_t *table, size_t table_len, cha
 
 - (BOOL)canBecomeFirstResponder {
     return YES;
-}
-
-- (UITextSmartDashesType)smartDashesType {
-    return UITextSmartDashesTypeNo;
-}
-
-- (UITextSmartQuotesType)smartQuotesType {
-    return UITextSmartQuotesTypeNo;
-}
-
-- (UITextSmartInsertDeleteType)smartInsertDeleteType {
-    return UITextSmartInsertDeleteTypeNo;
 }
 
 @end

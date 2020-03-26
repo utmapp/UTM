@@ -42,6 +42,8 @@
 - (void)refreshViewFromConfiguration {
     [super refreshViewFromConfiguration];
     self.nameField.text = self.configuration.name;
+    self.debugLogSwitch.on = self.configuration.debugLogEnabled;
+    self.saveButton.enabled = self.configuration.name && ![self.configuration.name isEqualToString:@""];
 }
 
 - (void)setNameReadOnly:(BOOL)nameReadOnly {
@@ -103,6 +105,37 @@
 }
 */
 
+#pragma mark - Cell Selection
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    if ([tableView cellForRowAtIndexPath:indexPath] == self.exportLogCell) {
+        [tableView deselectRowAtIndexPath:indexPath animated:YES];
+        [self exportLog];
+    }
+}
+
+- (void)exportLog {
+    NSURL *path;
+    if (self.configuration.existingPath) {
+        path = [self.configuration.existingPath URLByAppendingPathComponent:[UTMConfiguration debugLogName]];
+    }
+    if (![[NSFileManager defaultManager] fileExistsAtPath:path.path]) {
+        [self showAlert:NSLocalizedString(@"No debug log found!", @"VMConfigExistingViewController") completion:nil];
+    } else {
+        NSError *err;
+        NSURL *temp = [NSURL fileURLWithPathComponents:@[NSTemporaryDirectory(), [UTMConfiguration debugLogName]]];
+        [[NSFileManager defaultManager] removeItemAtURL:temp error:nil];
+        if ([[NSFileManager defaultManager] copyItemAtURL:path toURL:temp error:&err]) {
+            UIActivityViewController *activityViewController = [[UIActivityViewController alloc] initWithActivityItems:@[temp] applicationActivities:nil];
+            activityViewController.popoverPresentationController.sourceView = self.exportLogCell;
+            activityViewController.popoverPresentationController.sourceRect = self.exportLogCell.bounds;
+            [self presentViewController:activityViewController animated:YES completion:nil];
+        } else {
+            [self showAlert:err.localizedDescription completion:nil];
+        }
+    }
+}
+
 #pragma mark - Event handlers
 
 - (IBAction)screenTapped:(UITapGestureRecognizer *)sender {
@@ -111,14 +144,19 @@
     }
 }
 
-- (IBAction)nameFieldEdited:(UITextField *)sender {
+- (IBAction)nameFieldChanged:(UITextField *)sender {
     NSAssert(sender == self.nameField, @"Invalid sender");
     // TODO: input validation
     configuration.name = sender.text;
+    self.saveButton.enabled = ![sender.text isEqualToString:@""];
 }
 
 - (IBAction)cancelPressed:(id)sender {
     [self dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (IBAction)debugLogSwitchChanged:(UISwitch *)sender {
+    self.configuration.debugLogEnabled = sender.on;
 }
 
 @end

@@ -60,4 +60,19 @@
     }
 }
 
+#pragma mark - Showing Alerts
+
+- (void)showAlert:(NSString *)msg completion:(nullable void (^)(UIAlertAction *action))completion {
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"" message:msg preferredStyle:UIAlertControllerStyleAlert];
+    UIAlertAction *okay = [UIAlertAction actionWithTitle:NSLocalizedString(@"OK", @"OK button") style:UIAlertActionStyleDefault handler:completion];
+    [alert addAction:okay];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self presentViewController:alert animated:YES completion:nil];
+    });
+}
+
+- (void)showUnimplementedAlert {
+    [self showAlert:NSLocalizedString(@"This page is currently not implemented yet. None of these options work.", @"VMConfigViewController") completion:nil];
+}
+
 @end

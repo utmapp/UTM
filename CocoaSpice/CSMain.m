@@ -50,7 +50,7 @@ static void logHandler(const gchar *log_domain, GLogLevelFlags log_level,
     now = g_date_time_new_now_local();
     dateTimeStr = g_date_time_format(now, "%Y-%m-%d %T");
     
-    fprintf(stderr, "%s,%03d %s %s-%s\n", dateTimeStr,
+    fprintf(stdout, "%s,%03d %s %s-%s\n", dateTimeStr,
             g_date_time_get_microsecond(now) / 1000, levelStr,
             log_domain, message);
     

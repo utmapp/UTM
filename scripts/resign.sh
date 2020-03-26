@@ -60,7 +60,7 @@ if [ $# -eq 2 ]; then
 	ldid -S${FAKEENT} "$OUTPUT/Payload/UTM.app/UTM"
 	cd "$OUTPUT"
 	zip -r "UTM.ipa" "Payload" -x "._*" -x ".DS_Store" -x "__MACOSX"
-	rm -r "$OUTPUT/Payload"
+	rm -r "Payload"
 else
 	xcodebuild -exportArchive -exportOptionsPlist "$OPTIONS" -archivePath "$INPUT" -exportPath "$OUTPUT"
 fi

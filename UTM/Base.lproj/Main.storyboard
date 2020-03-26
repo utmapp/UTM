@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="15705" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="cR9-D8-uOs">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="16095" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="cR9-D8-uOs">
     <device id="retina5_9" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15706"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="16084.1"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -39,7 +39,7 @@
                                                 <constraint firstAttribute="width" constant="150" id="psZ-ev-pT6"/>
                                             </constraints>
                                             <connections>
-                                                <action selector="startVMFromScreen:" destination="krH-Hz-4fz" eventType="touchUpInside" id="rgh-fC-4kx"/>
+                                                <segue destination="ckC-eO-gxn" kind="show" identifier="startVMFromScreenshot" id="Fgt-US-6Ez"/>
                                             </connections>
                                         </button>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Name" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="VQv-L6-Wpd">
@@ -71,7 +71,7 @@
                                                                     </accessibility>
                                                                     <state key="normal" image="Play Icon"/>
                                                                     <connections>
-                                                                        <action selector="startVMFromButton:" destination="krH-Hz-4fz" eventType="touchUpInside" id="X2m-Qa-jMY"/>
+                                                                        <segue destination="ckC-eO-gxn" kind="show" identifier="startVMFromButton" id="bbf-vu-JjK"/>
                                                                     </connections>
                                                                 </button>
                                                             </subviews>
@@ -101,7 +101,7 @@
                                             <blurEffect style="light"/>
                                         </visualEffectView>
                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="detailDisclosure" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="LpV-bC-fzU">
-                                            <rect key="frame" x="121.66666666666667" y="112.33333333333333" width="24.333333333333329" height="23.666666666666671"/>
+                                            <rect key="frame" x="121" y="112" width="25" height="24"/>
                                             <connections>
                                                 <segue destination="fxo-tK-lAq" kind="presentation" identifier="editVMConfig" modalPresentationStyle="formSheet" id="3tV-yy-VRS"/>
                                             </connections>
@@ -141,6 +141,11 @@
                         </connections>
                     </collectionView>
                     <navigationItem key="navigationItem" title="Virtual Machines" id="y7c-vs-jlM">
+                        <barButtonItem key="leftBarButtonItem" systemItem="stop" id="Jnw-zM-dyF">
+                            <connections>
+                                <action selector="exitUTM:" destination="krH-Hz-4fz" id="wcV-cc-N6y"/>
+                            </connections>
+                        </barButtonItem>
                         <barButtonItem key="rightBarButtonItem" systemItem="add" id="e5k-lL-Xj6">
                             <connections>
                                 <segue destination="2Ff-Ox-yNa" kind="popoverPresentation" identifier="newVM" popoverAnchorBarButtonItem="e5k-lL-Xj6" id="uhI-Ry-wJ8">
@@ -148,13 +153,7 @@
                                 </segue>
                             </connections>
                         </barButtonItem>
-                        <connections>
-                            <outlet property="rightBarButtonItem" destination="e5k-lL-Xj6" id="87b-9t-bNR"/>
-                        </connections>
                     </navigationItem>
-                    <connections>
-                        <segue destination="ckC-eO-gxn" kind="show" identifier="startVM" id="psC-T5-Ggl"/>
-                    </connections>
                 </collectionViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="gzw-ao-My7" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
@@ -180,12 +179,12 @@
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Name" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="2Kh-jJ-awN">
-                                                    <rect key="frame" x="16" y="11.666666666666664" width="343" height="21"/>
+                                                    <rect key="frame" x="16" y="11" width="343" height="22"/>
                                                     <gestureRecognizers/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" returnKeyType="done" enablesReturnKeyAutomatically="YES" smartDashesType="no" smartInsertDeleteType="no" smartQuotesType="no"/>
                                                     <connections>
-                                                        <action selector="nameFieldEdited:" destination="wwu-oM-NlF" eventType="editingDidEnd" id="NLa-0h-ihw"/>
+                                                        <action selector="nameFieldChanged:" destination="wwu-oM-NlF" eventType="editingChanged" id="2g2-v9-F4m"/>
                                                         <outlet property="delegate" destination="wwu-oM-NlF" id="qOT-JA-rbc"/>
                                                     </connections>
                                                 </textField>
@@ -364,6 +363,56 @@
                                     </tableViewCell>
                                 </cells>
                             </tableViewSection>
+                            <tableViewSection headerTitle="Debug" id="WkA-K4-U3C">
+                                <cells>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" id="95g-B6-lma">
+                                        <rect key="frame" x="0.0" y="563.33333206176758" width="375" height="44"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="95g-B6-lma" id="Mbl-1d-257">
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Debug Log" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="o5n-nQ-vae">
+                                                    <rect key="frame" x="16" y="11.666666666666664" width="84" height="21"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                                <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="BSZ-1U-IA5">
+                                                    <rect key="frame" x="310" y="6.6666666666666679" width="51" height="31.000000000000004"/>
+                                                    <connections>
+                                                        <action selector="debugLogSwitchChanged:" destination="wwu-oM-NlF" eventType="valueChanged" id="vci-rn-Fx0"/>
+                                                    </connections>
+                                                </switch>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstItem="BSZ-1U-IA5" firstAttribute="centerY" secondItem="Mbl-1d-257" secondAttribute="centerY" id="3Nw-9L-kgX"/>
+                                                <constraint firstItem="o5n-nQ-vae" firstAttribute="centerY" secondItem="Mbl-1d-257" secondAttribute="centerY" id="7xh-TW-SSQ"/>
+                                                <constraint firstItem="BSZ-1U-IA5" firstAttribute="trailing" secondItem="Mbl-1d-257" secondAttribute="trailingMargin" id="E9f-DA-Gt1"/>
+                                                <constraint firstItem="BSZ-1U-IA5" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="o5n-nQ-vae" secondAttribute="trailing" constant="8" symbolic="YES" id="TeJ-GB-wAe"/>
+                                                <constraint firstItem="o5n-nQ-vae" firstAttribute="leading" secondItem="Mbl-1d-257" secondAttribute="leadingMargin" id="h5h-km-yrr"/>
+                                            </constraints>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" textLabel="vU7-wd-ipe" style="IBUITableViewCellStyleDefault" id="cHJ-DX-PQX">
+                                        <rect key="frame" x="0.0" y="607.33333206176758" width="375" height="44"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="cHJ-DX-PQX" id="Nt2-U5-3Tm">
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="Export Log..." textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="vU7-wd-ipe">
+                                                    <rect key="frame" x="16" y="0.0" width="343" height="44"/>
+                                                    <autoresizingMask key="autoresizingMask"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                            </subviews>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
+                                </cells>
+                            </tableViewSection>
                         </sections>
                         <connections>
                             <outlet property="dataSource" destination="wwu-oM-NlF" id="uEK-Q2-Gvh"/>
@@ -376,17 +425,17 @@
                                 <action selector="cancelPressed:" destination="wwu-oM-NlF" id="38P-XZ-ukw"/>
                             </connections>
                         </barButtonItem>
-                        <barButtonItem key="rightBarButtonItem" systemItem="done" id="CIG-Ca-qeI">
+                        <barButtonItem key="rightBarButtonItem" systemItem="save" id="CIG-Ca-qeI">
                             <connections>
                                 <segue destination="02X-bv-TXV" kind="unwind" unwindAction="unwindToMainFromConfiguration:" id="2rX-Um-tE1"/>
                             </connections>
                         </barButtonItem>
-                        <connections>
-                            <outlet property="rightBarButtonItem" destination="CIG-Ca-qeI" id="XnF-Ud-34j"/>
-                        </connections>
                     </navigationItem>
                     <connections>
+                        <outlet property="debugLogSwitch" destination="BSZ-1U-IA5" id="9Ng-Uj-8Ka"/>
+                        <outlet property="exportLogCell" destination="cHJ-DX-PQX" id="644-og-r2w"/>
                         <outlet property="nameField" destination="2Kh-jJ-awN" id="rec-m9-Zvs"/>
+                        <outlet property="saveButton" destination="CIG-Ca-qeI" id="vi5-3n-TPx"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="yqY-fN-Wux" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -634,7 +683,7 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="5CK-HG-MYg" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="4782" y="1247"/>
+            <point key="canvasLocation" x="4789" y="547"/>
         </scene>
         <!--Printing-->
         <scene sceneID="k41-e0-ebL">
@@ -691,7 +740,7 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="cRl-5N-Vd6" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="5569" y="1247"/>
+            <point key="canvasLocation" x="4789" y="1247"/>
         </scene>
         <!--System-->
         <scene sceneID="HAX-p4-GLH">
@@ -759,13 +808,13 @@
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" horizontalCompressionResistancePriority="751" text="MB" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="qMH-Bx-PsC">
-                                                    <rect key="frame" x="333.66666666666669" y="11.999999999999998" width="25.333333333333314" height="20.333333333333329"/>
+                                                    <rect key="frame" x="333.66666666666669" y="12" width="25.333333333333314" height="20"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="right" contentVerticalAlignment="center" placeholder="512" textAlignment="right" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="OwS-jd-mte">
-                                                    <rect key="frame" x="165" y="11.666666666666664" width="160" height="21"/>
+                                                    <rect key="frame" x="165" y="11" width="160" height="22"/>
                                                     <constraints>
                                                         <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="160" id="ucu-F4-pNg"/>
                                                     </constraints>
@@ -777,7 +826,7 @@
                                                     </connections>
                                                 </textField>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" horizontalCompressionResistancePriority="751" text="Memory" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="SvG-PI-7bh">
-                                                    <rect key="frame" x="16" y="11.999999999999998" width="63" height="20.333333333333329"/>
+                                                    <rect key="frame" x="16" y="12" width="63" height="20"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
@@ -809,7 +858,7 @@
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="2" textAlignment="right" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="I4t-8W-Nev">
-                                                    <rect key="frame" x="199" y="11.666666666666664" width="160" height="21"/>
+                                                    <rect key="frame" x="199" y="11" width="160" height="22"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <textInputTraits key="textInputTraits" keyboardType="numberPad" returnKeyType="done" enablesReturnKeyAutomatically="YES"/>
                                                     <connections>
@@ -927,31 +976,176 @@
                                     </tableViewCell>
                                 </cells>
                             </tableViewSection>
-                            <tableViewSection headerTitle="Additional qemu arguments" id="vTy-bl-QrM">
+                            <tableViewSection headerTitle="QEMU" id="MGc-rW-PLa" userLabel="QEMU">
+                                <string key="footerTitle">Default JIT Cache size is 1/4 of the allocated Memory size. This is in addition to the host memory! Force Multicore will allow multi-CPU emulation even if the memory model is not supported by QEMU (x86 on ARM for example). This could result in incorrect emulation. If disabled and CPU Count is &gt; 1 then all cores will be emulated by a single core causing reduced performance.</string>
                                 <cells>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="none" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" id="2lD-9C-lUf">
-                                        <rect key="frame" x="0.0" y="787.33333206176758" width="375" height="44"/>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" id="x2H-Pp-00Q">
+                                        <rect key="frame" x="0.0" y="794.66666412353516" width="375" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
-                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="2lD-9C-lUf" id="b9d-4I-3HK">
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="x2H-Pp-00Q" id="xh7-eC-4cn">
                                             <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="eAV-yI-ZCT">
-                                                    <rect key="frame" x="8" y="11" width="359" height="22"/>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" horizontalCompressionResistancePriority="751" misplaced="YES" text="MB" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="qlZ-rS-wks">
+                                                    <rect key="frame" x="333.66666666666663" y="12" width="25.333333333333332" height="20"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                    <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" keyboardType="alphabet" returnKeyType="done" enablesReturnKeyAutomatically="YES" smartDashesType="no" smartInsertDeleteType="no" smartQuotesType="no"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                                <textField opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="right" contentVerticalAlignment="center" placeholder="Default" textAlignment="right" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Jk5-aT-3ap">
+                                                    <rect key="frame" x="164.66666666666666" y="11.666666666666666" width="160" height="21"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="160" id="yE2-Zt-2Pt"/>
+                                                    </constraints>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <textInputTraits key="textInputTraits" keyboardType="numberPad" returnKeyType="done" enablesReturnKeyAutomatically="YES"/>
                                                     <connections>
-                                                        <action selector="additionalArgsFieldEdited:" destination="1m7-hR-fRt" eventType="editingDidEnd" id="kwo-h9-oeJ"/>
-                                                        <outlet property="delegate" destination="1m7-hR-fRt" id="C7Q-Ag-Bsu"/>
+                                                        <action selector="jitCacheSizeFieldEdited:" destination="1m7-hR-fRt" eventType="editingDidEnd" id="x1U-jX-F4u"/>
+                                                        <outlet property="delegate" destination="1m7-hR-fRt" id="uU2-IC-YGs"/>
                                                     </connections>
                                                 </textField>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" horizontalCompressionResistancePriority="751" misplaced="YES" text="JIT Cache" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="led-8Q-nNh">
+                                                    <rect key="frame" x="16" y="12" width="77" height="21"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
                                             </subviews>
                                             <constraints>
-                                                <constraint firstItem="eAV-yI-ZCT" firstAttribute="leading" secondItem="b9d-4I-3HK" secondAttribute="leadingMargin" id="MHm-34-Yqb"/>
-                                                <constraint firstItem="eAV-yI-ZCT" firstAttribute="trailing" secondItem="b9d-4I-3HK" secondAttribute="trailingMargin" id="dPJ-Yk-bHE"/>
-                                                <constraint firstItem="eAV-yI-ZCT" firstAttribute="top" secondItem="b9d-4I-3HK" secondAttribute="topMargin" id="gJy-KM-PoW"/>
-                                                <constraint firstAttribute="bottomMargin" secondItem="eAV-yI-ZCT" secondAttribute="bottom" id="hh8-ty-DgG"/>
+                                                <constraint firstItem="led-8Q-nNh" firstAttribute="leading" secondItem="xh7-eC-4cn" secondAttribute="leadingMargin" id="3x3-ZW-JJ1"/>
+                                                <constraint firstItem="qlZ-rS-wks" firstAttribute="centerY" secondItem="xh7-eC-4cn" secondAttribute="centerY" id="6c2-NF-nbv"/>
+                                                <constraint firstItem="qlZ-rS-wks" firstAttribute="leading" secondItem="Jk5-aT-3ap" secondAttribute="trailing" constant="8.6699999999999999" id="84K-Vr-0mm"/>
+                                                <constraint firstItem="qlZ-rS-wks" firstAttribute="trailing" secondItem="xh7-eC-4cn" secondAttribute="trailingMargin" id="Bgb-Kh-J73"/>
+                                                <constraint firstItem="qlZ-rS-wks" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="Jk5-aT-3ap" secondAttribute="trailing" constant="8" symbolic="YES" id="OK7-lj-WK6"/>
+                                                <constraint firstItem="led-8Q-nNh" firstAttribute="centerY" secondItem="xh7-eC-4cn" secondAttribute="centerY" id="iQq-0z-Od6"/>
+                                                <constraint firstItem="Jk5-aT-3ap" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="led-8Q-nNh" secondAttribute="trailing" constant="8" symbolic="YES" id="poi-Ox-XXM"/>
+                                                <constraint firstItem="Jk5-aT-3ap" firstAttribute="centerY" secondItem="xh7-eC-4cn" secondAttribute="centerY" id="qzi-8k-Vc2"/>
                                             </constraints>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" id="d7S-pA-SpH">
+                                        <rect key="frame" x="0.0" y="838.66666412353516" width="375" height="44"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="d7S-pA-SpH" id="YQ0-86-iYS">
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Force Multicore" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="raQ-Dg-ejh">
+                                                    <rect key="frame" x="16" y="12" width="119.33333333333333" height="21"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                                <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="3mT-2Z-4g5">
+                                                    <rect key="frame" x="310" y="6.6666666666666661" width="51" height="31"/>
+                                                    <connections>
+                                                        <action selector="forceMulticoreSwitchChanged:" destination="1m7-hR-fRt" eventType="valueChanged" id="or0-qf-ROU"/>
+                                                    </connections>
+                                                </switch>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstItem="3mT-2Z-4g5" firstAttribute="trailing" secondItem="YQ0-86-iYS" secondAttribute="trailingMargin" id="1qB-ZH-NJg"/>
+                                                <constraint firstItem="raQ-Dg-ejh" firstAttribute="leading" secondItem="YQ0-86-iYS" secondAttribute="leadingMargin" id="4cD-Sg-Npb"/>
+                                                <constraint firstItem="raQ-Dg-ejh" firstAttribute="centerY" secondItem="YQ0-86-iYS" secondAttribute="centerY" id="5AK-qH-bhF"/>
+                                                <constraint firstItem="3mT-2Z-4g5" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="raQ-Dg-ejh" secondAttribute="trailing" constant="8" symbolic="YES" id="HvY-jD-nlJ"/>
+                                                <constraint firstItem="3mT-2Z-4g5" firstAttribute="centerY" secondItem="YQ0-86-iYS" secondAttribute="centerY" id="bAD-QC-5aF"/>
+                                            </constraints>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="default" accessoryType="disclosureIndicator" hidesAccessoryWhenEditing="NO" indentationWidth="10" textLabel="wvt-Dh-tQm" style="IBUITableViewCellStyleDefault" id="3GZ-KE-lYn">
+                                        <rect key="frame" x="0.0" y="882.66666412353516" width="375" height="44"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="3GZ-KE-lYn" id="Fhg-K2-bx0">
+                                            <rect key="frame" x="0.0" y="0.0" width="348" height="44"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="Additional QEMU Arguments" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="wvt-Dh-tQm">
+                                                    <rect key="frame" x="16" y="0.0" width="324" height="44"/>
+                                                    <autoresizingMask key="autoresizingMask"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                            </subviews>
+                                        </tableViewCellContentView>
+                                        <connections>
+                                            <segue destination="90J-Vp-RTj" kind="show" id="d4b-r9-ZIb"/>
+                                        </connections>
+                                    </tableViewCell>
+                                </cells>
+                            </tableViewSection>
+                            <tableViewSection headerTitle="Host Information" footerTitle="If you attempt to allocate more resources than what is on your device, the VM may not boot and your device may become unstable." id="wbc-1J-nlk">
+                                <cells>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" textLabel="ETs-n1-aUr" detailTextLabel="a8s-7M-new" style="IBUITableViewCellStyleValue1" id="Fat-AQ-T1D">
+                                        <rect key="frame" x="0.0" y="1113.9999961853027" width="375" height="44"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="Fat-AQ-T1D" id="sBC-2s-wlQ">
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="Total RAM" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="ETs-n1-aUr">
+                                                    <rect key="frame" x="16" y="11.999999999999998" width="78" height="20.333333333333332"/>
+                                                    <autoresizingMask key="autoresizingMask"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="0 MB" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="a8s-7M-new">
+                                                    <rect key="frame" x="319" y="11.999999999999998" width="40" height="20.333333333333332"/>
+                                                    <autoresizingMask key="autoresizingMask"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                            </subviews>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" textLabel="2bR-IG-wMf" detailTextLabel="r7Y-tO-ugj" style="IBUITableViewCellStyleValue1" id="OSf-gK-nCy">
+                                        <rect key="frame" x="0.0" y="1157.9999961853027" width="375" height="44"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="OSf-gK-nCy" id="wKP-wg-BrK">
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="Estimated Usage" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="2bR-IG-wMf">
+                                                    <rect key="frame" x="16" y="11.999999999999998" width="129.66666666666666" height="20.333333333333332"/>
+                                                    <autoresizingMask key="autoresizingMask"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="0 MB" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="r7Y-tO-ugj">
+                                                    <rect key="frame" x="319" y="11.999999999999998" width="40" height="20.333333333333332"/>
+                                                    <autoresizingMask key="autoresizingMask"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                            </subviews>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" textLabel="dHW-er-x98" detailTextLabel="uy0-gI-CBW" style="IBUITableViewCellStyleValue1" id="6bm-l5-AXI">
+                                        <rect key="frame" x="0.0" y="1201.9999961853027" width="375" height="44"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="6bm-l5-AXI" id="o7A-Wi-kyw">
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="CPU Cores" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="dHW-er-x98">
+                                                    <rect key="frame" x="16" y="11.999999999999998" width="84" height="20.333333333333332"/>
+                                                    <autoresizingMask key="autoresizingMask"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="0" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="uy0-gI-CBW">
+                                                    <rect key="frame" x="348.66666666666669" y="11.999999999999998" width="10.333333333333334" height="20.333333333333332"/>
+                                                    <autoresizingMask key="autoresizingMask"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                            </subviews>
                                         </tableViewCellContentView>
                                     </tableViewCell>
                                 </cells>
@@ -964,7 +1158,6 @@
                     </tableView>
                     <navigationItem key="navigationItem" title="System" id="CRh-Zb-s8B"/>
                     <connections>
-                        <outlet property="additionalArgsField" destination="eAV-yI-ZCT" id="mdu-Ya-5Fw"/>
                         <outlet property="architectureCell" destination="oTc-93-cjJ" id="kZI-ga-SnU"/>
                         <outlet property="architectureLabel" destination="9fH-Qw-nVS" id="aet-o8-TaA"/>
                         <outlet property="architecturePicker" destination="VIt-Zi-7kt" id="cja-CO-VUd"/>
@@ -973,17 +1166,22 @@
                         <outlet property="bootLabel" destination="bwc-uM-EKo" id="ddu-by-fcp"/>
                         <outlet property="bootPicker" destination="nc8-Yn-Bd2" id="h6D-7u-DtY"/>
                         <outlet property="bootPickerCell" destination="2tm-9Y-Ypg" id="gi8-k5-r3C"/>
+                        <outlet property="cpuCoresLabel" destination="uy0-gI-CBW" id="MRt-Oi-8BQ"/>
                         <outlet property="cpuCountField" destination="I4t-8W-Nev" id="XTi-Gw-iLj"/>
+                        <outlet property="estimatedRamLabel" destination="r7Y-tO-ugj" id="yI1-gb-js4"/>
+                        <outlet property="forceMulticoreSwitch" destination="3mT-2Z-4g5" id="Y9X-aJ-DAz"/>
+                        <outlet property="jitCacheSizeField" destination="Jk5-aT-3ap" id="HpP-oE-XOO"/>
                         <outlet property="memorySizeField" destination="OwS-jd-mte" id="0bp-KF-B1J"/>
                         <outlet property="systemCell" destination="m8p-hi-s01" id="lyZ-i1-vP2"/>
                         <outlet property="systemLabel" destination="KYQ-B4-Cf3" id="lje-t2-AHE"/>
                         <outlet property="systemPicker" destination="iB1-OW-p4N" id="fHz-Ut-ogt"/>
                         <outlet property="systemPickerCell" destination="kbU-h1-FsP" id="xyg-cL-eov"/>
+                        <outlet property="totalRamLabel" destination="a8s-7M-new" id="i76-uz-87s"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Pka-eP-b1w" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="4782" y="549"/>
+            <point key="canvasLocation" x="7102" y="1247"/>
         </scene>
         <!--Networking-->
         <scene sceneID="HjV-mS-zLm">
@@ -1072,7 +1270,7 @@
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="10.0.2.0/24" textAlignment="right" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="q6m-Ld-1jH">
-                                                    <rect key="frame" x="178" y="11.666666666666664" width="181" height="21"/>
+                                                    <rect key="frame" x="178" y="11" width="181" height="22"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <textInputTraits key="textInputTraits" keyboardType="numbersAndPunctuation" returnKeyType="done" enablesReturnKeyAutomatically="YES"/>
                                                     <connections>
@@ -1104,7 +1302,7 @@
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="10.0.2.0.15" textAlignment="right" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="sym-7m-1rq">
-                                                    <rect key="frame" x="202" y="11.666666666666664" width="157" height="21"/>
+                                                    <rect key="frame" x="202" y="11" width="157" height="22"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <textInputTraits key="textInputTraits" keyboardType="decimalPad" returnKeyType="done" enablesReturnKeyAutomatically="YES"/>
                                                     <connections>
@@ -1182,11 +1380,11 @@
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Name" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="0TR-HU-09X">
-                                                    <rect key="frame" x="16" y="11.666666666666664" width="343" height="21"/>
+                                                    <rect key="frame" x="16" y="11" width="343" height="22"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" returnKeyType="done" enablesReturnKeyAutomatically="YES" smartDashesType="no" smartInsertDeleteType="no" smartQuotesType="no"/>
                                                     <connections>
-                                                        <action selector="nameFieldEdited:" destination="kXN-s4-nI5" eventType="editingDidEnd" id="toJ-Wc-WWS"/>
+                                                        <action selector="nameFieldChanged:" destination="kXN-s4-nI5" eventType="editingChanged" id="hAg-Dz-Ju2"/>
                                                         <outlet property="delegate" destination="kXN-s4-nI5" id="p5U-UO-88O"/>
                                                     </connections>
                                                 </textField>
@@ -1257,13 +1455,13 @@
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" horizontalCompressionResistancePriority="751" text="MB" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="MAs-NR-G0n">
-                                                    <rect key="frame" x="333.66666666666669" y="11.999999999999998" width="25.333333333333314" height="20.333333333333329"/>
+                                                    <rect key="frame" x="333.66666666666669" y="12" width="25.333333333333314" height="20"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="right" contentVerticalAlignment="center" placeholder="512" textAlignment="right" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="S2s-iX-Lul">
-                                                    <rect key="frame" x="165" y="11.666666666666664" width="160" height="21"/>
+                                                    <rect key="frame" x="165" y="11" width="160" height="22"/>
                                                     <constraints>
                                                         <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="160" id="o84-0K-Csk"/>
                                                     </constraints>
@@ -1275,7 +1473,7 @@
                                                     </connections>
                                                 </textField>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" horizontalCompressionResistancePriority="751" text="Memory" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="HRc-mq-43y">
-                                                    <rect key="frame" x="16" y="11.999999999999998" width="63" height="20.333333333333329"/>
+                                                    <rect key="frame" x="16" y="12" width="63" height="20"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
@@ -1307,7 +1505,7 @@
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="2" textAlignment="right" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="VBD-VX-Usg">
-                                                    <rect key="frame" x="199" y="11.666666666666664" width="160" height="21"/>
+                                                    <rect key="frame" x="199" y="11" width="160" height="22"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <textInputTraits key="textInputTraits" keyboardType="numberPad" returnKeyType="done" enablesReturnKeyAutomatically="YES"/>
                                                     <connections>
@@ -1453,6 +1651,7 @@
                         <outlet property="cpuCountField" destination="VBD-VX-Usg" id="qYL-RD-lGz"/>
                         <outlet property="memorySizeField" destination="S2s-iX-Lul" id="ezQ-w3-PtG"/>
                         <outlet property="nameField" destination="0TR-HU-09X" id="zWp-xu-yF7"/>
+                        <outlet property="saveButton" destination="8d3-Up-KUL" id="Gv6-OH-EJ6"/>
                         <segue destination="wwu-oM-NlF" kind="show" identifier="createVMToConfiguration" id="Ch9-qF-y79"/>
                         <segue destination="7o9-KZ-PyF" kind="unwind" identifier="createVMDone" unwindAction="unwindToMainFromConfiguration:" id="STr-lU-oz5"/>
                     </connections>
@@ -1737,7 +1936,7 @@
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="hda.img" textAlignment="right" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Dx6-pD-sU3">
-                                                    <rect key="frame" x="158" y="11.666666666666664" width="201" height="21"/>
+                                                    <rect key="frame" x="158" y="11" width="201" height="22"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" keyboardType="alphabet" returnKeyType="done" enablesReturnKeyAutomatically="YES" smartDashesType="no" smartInsertDeleteType="no" smartQuotesType="no"/>
                                                     <connections>
@@ -1774,7 +1973,7 @@
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="1024" textAlignment="right" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="nKg-bw-usb">
-                                                    <rect key="frame" x="286.66666666666669" y="11.666666666666664" width="38.333333333333314" height="21"/>
+                                                    <rect key="frame" x="286.66666666666669" y="11" width="38.333333333333314" height="22"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <textInputTraits key="textInputTraits" keyboardType="numberPad" returnKeyType="done" enablesReturnKeyAutomatically="YES"/>
                                                     <connections>
@@ -1890,6 +2089,58 @@
                             <mtkView contentMode="scaleToFill" colorPixelFormat="BGRA8Unorm" depthStencilPixelFormat="Depth32Float" translatesAutoresizingMaskIntoConstraints="NO" id="ZK0-vH-7ok">
                                 <rect key="frame" x="0.0" y="0.0" width="375" height="812"/>
                             </mtkView>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" insetsLayoutMarginsFromSafeArea="NO" translatesAutoresizingMaskIntoConstraints="NO" id="b33-3Y-vG8">
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="812"/>
+                                <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            </imageView>
+                            <visualEffectView opaque="NO" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" translatesAutoresizingMaskIntoConstraints="NO" id="QXw-Nd-3bE">
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="812"/>
+                                <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="Ebe-6D-2qI">
+                                    <rect key="frame" x="0.0" y="0.0" width="375" height="812"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                    <subviews>
+                                        <visualEffectView opaque="NO" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" translatesAutoresizingMaskIntoConstraints="NO" id="0wd-zl-ieP">
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="812"/>
+                                            <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="A3d-s9-zrW">
+                                                <rect key="frame" x="0.0" y="0.0" width="375" height="812"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                <subviews>
+                                                    <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="large" translatesAutoresizingMaskIntoConstraints="NO" id="prg-P9-xkh">
+                                                        <rect key="frame" x="162.66666666666666" y="381" width="50" height="50"/>
+                                                        <constraints>
+                                                            <constraint firstAttribute="width" constant="50" id="7MI-BV-iFm"/>
+                                                            <constraint firstAttribute="height" constant="50" id="M4a-NF-QgF"/>
+                                                        </constraints>
+                                                    </activityIndicatorView>
+                                                    <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="a0a-Yw-GZc">
+                                                        <rect key="frame" x="162.66666666666666" y="381" width="50" height="50"/>
+                                                        <state key="normal" image="Resume Icon"/>
+                                                        <connections>
+                                                            <action selector="pauseResumePressed:" destination="ckC-eO-gxn" eventType="touchUpInside" id="aBe-YG-OKu"/>
+                                                        </connections>
+                                                    </button>
+                                                </subviews>
+                                                <constraints>
+                                                    <constraint firstItem="prg-P9-xkh" firstAttribute="centerY" secondItem="A3d-s9-zrW" secondAttribute="centerY" id="b6c-dX-zl9"/>
+                                                    <constraint firstItem="a0a-Yw-GZc" firstAttribute="centerX" secondItem="A3d-s9-zrW" secondAttribute="centerX" id="rXf-dQ-raE"/>
+                                                    <constraint firstItem="prg-P9-xkh" firstAttribute="centerX" secondItem="A3d-s9-zrW" secondAttribute="centerX" id="upC-11-jBn"/>
+                                                    <constraint firstItem="a0a-Yw-GZc" firstAttribute="centerY" secondItem="A3d-s9-zrW" secondAttribute="centerY" id="xGH-KD-Vj1"/>
+                                                </constraints>
+                                            </view>
+                                            <vibrancyEffect>
+                                                <blurEffect style="regular"/>
+                                            </vibrancyEffect>
+                                        </visualEffectView>
+                                    </subviews>
+                                    <constraints>
+                                        <constraint firstItem="0wd-zl-ieP" firstAttribute="top" secondItem="Ebe-6D-2qI" secondAttribute="top" id="7gp-6m-C0G"/>
+                                        <constraint firstAttribute="bottom" secondItem="0wd-zl-ieP" secondAttribute="bottom" id="Cm0-jd-SlC"/>
+                                        <constraint firstAttribute="trailing" secondItem="0wd-zl-ieP" secondAttribute="trailing" id="Eyd-AM-ONi"/>
+                                        <constraint firstItem="0wd-zl-ieP" firstAttribute="leading" secondItem="Ebe-6D-2qI" secondAttribute="leading" id="ek3-bx-slP"/>
+                                    </constraints>
+                                </view>
+                                <blurEffect style="regular"/>
+                            </visualEffectView>
                             <visualEffectView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="VFv-zJ-H5K" userLabel="Toolbar Accessory View">
                                 <rect key="frame" x="0.0" y="0.0" width="375" height="89"/>
                                 <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="9yD-Nn-OmR">
@@ -1902,106 +2153,111 @@
                                                 <rect key="frame" x="0.0" y="0.0" width="375" height="89"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
-                                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="M5V-xj-Rzw">
-                                                        <rect key="frame" x="329" y="51" width="30" height="30"/>
-                                                        <constraints>
-                                                            <constraint firstAttribute="height" constant="30" id="AU1-ZK-V5s"/>
-                                                            <constraint firstAttribute="width" constant="30" id="bvT-hD-DfR"/>
-                                                        </constraints>
-                                                        <state key="normal" image="Toolbar Hide"/>
-                                                        <connections>
-                                                            <action selector="hideToolbarButton:" destination="ckC-eO-gxn" eventType="touchUpInside" id="sbT-co-Dk1"/>
-                                                        </connections>
-                                                    </button>
-                                                    <button opaque="NO" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ESi-T5-nUB">
-                                                        <rect key="frame" x="291" y="51" width="30" height="30"/>
-                                                        <constraints>
-                                                            <constraint firstAttribute="width" constant="30" id="OvE-ls-mRd"/>
-                                                            <constraint firstAttribute="height" constant="30" id="a7h-Be-9Pf"/>
-                                                        </constraints>
-                                                        <state key="normal" image="Toolbar Settings"/>
-                                                    </button>
-                                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Grb-jH-Oxk">
-                                                        <rect key="frame" x="253" y="51" width="30" height="30"/>
-                                                        <constraints>
-                                                            <constraint firstAttribute="width" constant="30" id="Vbt-yx-YKe"/>
-                                                            <constraint firstAttribute="height" constant="30" id="aaW-cl-mMY"/>
-                                                        </constraints>
-                                                        <state key="normal" image="Toolbar Keyboard"/>
-                                                        <connections>
-                                                            <action selector="showKeyboardButton:" destination="ckC-eO-gxn" eventType="touchUpInside" id="Zd4-8I-vO3"/>
-                                                        </connections>
-                                                    </button>
-                                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="HpT-OM-Xpa">
-                                                        <rect key="frame" x="16" y="51" width="30" height="30"/>
-                                                        <constraints>
-                                                            <constraint firstAttribute="height" constant="30" id="K5G-Gx-hvf"/>
-                                                            <constraint firstAttribute="width" constant="30" id="kuS-FT-KuL"/>
-                                                        </constraints>
-                                                        <state key="normal" image="Toolbar Left"/>
-                                                        <connections>
-                                                            <segue destination="HWN-B0-AD0" kind="unwind" unwindAction="unwindToMainFromVM:" id="wuY-gV-w1x"/>
-                                                        </connections>
-                                                    </button>
-                                                    <button opaque="NO" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="bjd-4T-OVm">
-                                                        <rect key="frame" x="54" y="51" width="30" height="30"/>
-                                                        <constraints>
-                                                            <constraint firstAttribute="height" constant="30" id="nYs-LT-jdK"/>
-                                                            <constraint firstAttribute="width" constant="30" id="y8T-Ka-0dx"/>
-                                                        </constraints>
-                                                        <state key="normal" image="Toolbar Pause"/>
-                                                        <connections>
-                                                            <action selector="touchResumePressed:" destination="ckC-eO-gxn" eventType="touchUpInside" id="DYI-VN-mcQ"/>
-                                                        </connections>
-                                                    </button>
-                                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0Wo-4E-exJ">
-                                                        <rect key="frame" x="92" y="51" width="30" height="30"/>
-                                                        <constraints>
-                                                            <constraint firstAttribute="width" constant="30" id="5Wz-bh-zCb"/>
-                                                            <constraint firstAttribute="height" constant="30" id="mR0-xw-gEw"/>
-                                                        </constraints>
-                                                        <state key="normal" image="Toolbar Power"/>
-                                                        <connections>
-                                                            <action selector="powerPressed:" destination="ckC-eO-gxn" eventType="touchUpInside" id="89w-f5-kg9"/>
-                                                        </connections>
-                                                    </button>
-                                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="m9f-Az-rlH">
-                                                        <rect key="frame" x="215" y="51" width="30" height="30"/>
-                                                        <constraints>
-                                                            <constraint firstAttribute="height" constant="30" id="LWY-pA-fh8"/>
-                                                            <constraint firstAttribute="width" constant="30" id="Z1u-wJ-bug"/>
-                                                        </constraints>
-                                                        <state key="normal" image="Toolbar Maximize"/>
-                                                        <connections>
-                                                            <action selector="changeDisplayZoom:" destination="ckC-eO-gxn" eventType="touchUpInside" id="Q0W-5s-X8Y"/>
-                                                        </connections>
-                                                    </button>
+                                                    <stackView opaque="NO" contentMode="scaleToFill" spacing="16" translatesAutoresizingMaskIntoConstraints="NO" id="Z0A-c7-3p0">
+                                                        <rect key="frame" x="215" y="51" width="144" height="30"/>
+                                                        <subviews>
+                                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="m9f-Az-rlH">
+                                                                <rect key="frame" x="0.0" y="0.0" width="30" height="30"/>
+                                                                <accessibility key="accessibilityConfiguration" label="Zoom"/>
+                                                                <constraints>
+                                                                    <constraint firstAttribute="height" constant="30" id="LWY-pA-fh8"/>
+                                                                    <constraint firstAttribute="width" constant="30" id="Z1u-wJ-bug"/>
+                                                                </constraints>
+                                                                <inset key="imageEdgeInsets" minX="2" minY="2" maxX="2" maxY="2"/>
+                                                                <state key="normal" image="Toolbar Maximize"/>
+                                                                <connections>
+                                                                    <action selector="changeDisplayZoom:" destination="ckC-eO-gxn" eventType="touchUpInside" id="Q0W-5s-X8Y"/>
+                                                                </connections>
+                                                            </button>
+                                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Grb-jH-Oxk">
+                                                                <rect key="frame" x="38" y="0.0" width="30" height="30"/>
+                                                                <accessibility key="accessibilityConfiguration" label="Keyboard"/>
+                                                                <constraints>
+                                                                    <constraint firstAttribute="width" constant="30" id="Vbt-yx-YKe"/>
+                                                                    <constraint firstAttribute="height" constant="30" id="aaW-cl-mMY"/>
+                                                                </constraints>
+                                                                <state key="normal" image="Toolbar Keyboard"/>
+                                                                <connections>
+                                                                    <action selector="showKeyboardButton:" destination="ckC-eO-gxn" eventType="touchUpInside" id="Zd4-8I-vO3"/>
+                                                                </connections>
+                                                            </button>
+                                                            <button opaque="NO" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ESi-T5-nUB">
+                                                                <rect key="frame" x="76" y="0.0" width="30" height="30"/>
+                                                                <accessibility key="accessibilityConfiguration" label="Settings"/>
+                                                                <constraints>
+                                                                    <constraint firstAttribute="width" constant="30" id="OvE-ls-mRd"/>
+                                                                    <constraint firstAttribute="height" constant="30" id="a7h-Be-9Pf"/>
+                                                                </constraints>
+                                                                <state key="normal" image="Toolbar Settings"/>
+                                                            </button>
+                                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="M5V-xj-Rzw">
+                                                                <rect key="frame" x="114" y="0.0" width="30" height="30"/>
+                                                                <accessibility key="accessibilityConfiguration" label="Hide Toolbar"/>
+                                                                <constraints>
+                                                                    <constraint firstAttribute="height" constant="30" id="AU1-ZK-V5s"/>
+                                                                    <constraint firstAttribute="width" constant="30" id="bvT-hD-DfR"/>
+                                                                </constraints>
+                                                                <state key="normal" image="Toolbar Hide"/>
+                                                                <connections>
+                                                                    <action selector="hideToolbarButton:" destination="ckC-eO-gxn" eventType="touchUpInside" id="sbT-co-Dk1"/>
+                                                                </connections>
+                                                            </button>
+                                                        </subviews>
+                                                        <variation key="widthClass=compact" spacing="8"/>
+                                                        <variation key="heightClass=compact-widthClass=regular" spacing="8"/>
+                                                    </stackView>
+                                                    <stackView opaque="NO" contentMode="scaleToFill" spacing="16" translatesAutoresizingMaskIntoConstraints="NO" id="nJG-8W-K7c">
+                                                        <rect key="frame" x="16" y="51" width="106" height="30"/>
+                                                        <subviews>
+                                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0Wo-4E-exJ">
+                                                                <rect key="frame" x="0.0" y="0.0" width="30" height="30"/>
+                                                                <accessibility key="accessibilityConfiguration" label="Power"/>
+                                                                <constraints>
+                                                                    <constraint firstAttribute="width" constant="30" id="5Wz-bh-zCb"/>
+                                                                    <constraint firstAttribute="height" constant="30" id="mR0-xw-gEw"/>
+                                                                </constraints>
+                                                                <inset key="imageEdgeInsets" minX="2" minY="2" maxX="2" maxY="2"/>
+                                                                <state key="normal" image="Toolbar Power"/>
+                                                                <connections>
+                                                                    <action selector="powerPressed:" destination="ckC-eO-gxn" eventType="touchUpInside" id="89w-f5-kg9"/>
+                                                                </connections>
+                                                            </button>
+                                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="bjd-4T-OVm">
+                                                                <rect key="frame" x="38" y="0.0" width="30" height="30"/>
+                                                                <accessibility key="accessibilityConfiguration" label="Pause"/>
+                                                                <constraints>
+                                                                    <constraint firstAttribute="height" constant="30" id="nYs-LT-jdK"/>
+                                                                    <constraint firstAttribute="width" constant="30" id="y8T-Ka-0dx"/>
+                                                                </constraints>
+                                                                <inset key="imageEdgeInsets" minX="4" minY="4" maxX="4" maxY="4"/>
+                                                                <state key="normal" image="Toolbar Pause"/>
+                                                                <connections>
+                                                                    <action selector="pauseResumePressed:" destination="ckC-eO-gxn" eventType="touchUpInside" id="DYI-VN-mcQ"/>
+                                                                </connections>
+                                                            </button>
+                                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="HpT-OM-Xpa">
+                                                                <rect key="frame" x="76" y="0.0" width="30" height="30"/>
+                                                                <accessibility key="accessibilityConfiguration" label="Back"/>
+                                                                <constraints>
+                                                                    <constraint firstAttribute="height" constant="30" id="K5G-Gx-hvf"/>
+                                                                    <constraint firstAttribute="width" constant="30" id="kuS-FT-KuL"/>
+                                                                </constraints>
+                                                                <inset key="imageEdgeInsets" minX="4" minY="4" maxX="4" maxY="4"/>
+                                                                <state key="normal" image="Toolbar Restart"/>
+                                                                <connections>
+                                                                    <action selector="restartPressed:" destination="ckC-eO-gxn" eventType="touchUpInside" id="KQX-T5-P6V"/>
+                                                                </connections>
+                                                            </button>
+                                                        </subviews>
+                                                        <variation key="widthClass=compact" spacing="8"/>
+                                                        <variation key="heightClass=compact-widthClass=regular" spacing="8"/>
+                                                    </stackView>
                                                 </subviews>
                                                 <constraints>
-                                                    <constraint firstItem="Grb-jH-Oxk" firstAttribute="bottom" secondItem="TyK-03-3ux" secondAttribute="bottomMargin" id="1ts-kO-D4R"/>
-                                                    <constraint firstItem="m9f-Az-rlH" firstAttribute="bottom" secondItem="TyK-03-3ux" secondAttribute="bottomMargin" id="6S4-1i-7sd"/>
-                                                    <constraint firstItem="M5V-xj-Rzw" firstAttribute="bottom" secondItem="TyK-03-3ux" secondAttribute="bottomMargin" id="6bD-NB-R1b"/>
-                                                    <constraint firstItem="ESi-T5-nUB" firstAttribute="leading" secondItem="Grb-jH-Oxk" secondAttribute="trailing" constant="16" id="EOJ-SE-PNZ">
-                                                        <variation key="widthClass=compact" constant="8"/>
-                                                    </constraint>
-                                                    <constraint firstItem="HpT-OM-Xpa" firstAttribute="bottom" secondItem="TyK-03-3ux" secondAttribute="bottomMargin" id="FGJ-dW-zxy"/>
-                                                    <constraint firstItem="HpT-OM-Xpa" firstAttribute="leading" secondItem="TyK-03-3ux" secondAttribute="leadingMargin" constant="8" id="XeW-xf-FnY"/>
-                                                    <constraint firstItem="Grb-jH-Oxk" firstAttribute="leading" secondItem="m9f-Az-rlH" secondAttribute="trailing" constant="16" id="dnr-DV-JdS">
-                                                        <variation key="widthClass=compact" constant="8"/>
-                                                    </constraint>
-                                                    <constraint firstItem="bjd-4T-OVm" firstAttribute="leading" secondItem="HpT-OM-Xpa" secondAttribute="trailing" constant="16" id="g17-C2-hBo">
-                                                        <variation key="widthClass=compact" constant="8"/>
-                                                    </constraint>
-                                                    <constraint firstItem="ESi-T5-nUB" firstAttribute="bottom" secondItem="TyK-03-3ux" secondAttribute="bottomMargin" id="giX-hu-XvO"/>
-                                                    <constraint firstAttribute="trailingMargin" secondItem="M5V-xj-Rzw" secondAttribute="trailing" constant="8" id="jWB-yF-IkZ"/>
-                                                    <constraint firstItem="0Wo-4E-exJ" firstAttribute="leading" secondItem="bjd-4T-OVm" secondAttribute="trailing" constant="16" id="lXW-z0-Irt">
-                                                        <variation key="widthClass=compact" constant="8"/>
-                                                    </constraint>
-                                                    <constraint firstItem="bjd-4T-OVm" firstAttribute="bottom" secondItem="TyK-03-3ux" secondAttribute="bottomMargin" id="ueA-2J-e2a"/>
-                                                    <constraint firstItem="0Wo-4E-exJ" firstAttribute="bottom" secondItem="TyK-03-3ux" secondAttribute="bottomMargin" id="xOs-1g-QK8"/>
-                                                    <constraint firstItem="M5V-xj-Rzw" firstAttribute="leading" secondItem="ESi-T5-nUB" secondAttribute="trailing" constant="16" id="xw3-6m-jj9">
-                                                        <variation key="widthClass=compact" constant="8"/>
-                                                    </constraint>
+                                                    <constraint firstAttribute="bottomMargin" secondItem="nJG-8W-K7c" secondAttribute="bottom" id="5yG-Ua-WaS"/>
+                                                    <constraint firstAttribute="trailing" secondItem="Z0A-c7-3p0" secondAttribute="trailing" constant="16" id="ZUs-rP-Zgf"/>
+                                                    <constraint firstItem="nJG-8W-K7c" firstAttribute="leading" secondItem="TyK-03-3ux" secondAttribute="leading" constant="16" id="dqq-bq-QYs"/>
+                                                    <constraint firstAttribute="bottomMargin" secondItem="Z0A-c7-3p0" secondAttribute="bottom" id="hrJ-sa-oHR"/>
                                                 </constraints>
                                             </view>
                                             <vibrancyEffect>
@@ -2035,20 +2291,29 @@
                         </subviews>
                         <gestureRecognizers/>
                         <constraints>
+                            <constraint firstItem="QXw-Nd-3bE" firstAttribute="top" secondItem="WSe-Ri-b4c" secondAttribute="top" id="06w-zK-C3r"/>
+                            <constraint firstAttribute="trailing" secondItem="QXw-Nd-3bE" secondAttribute="trailing" id="15c-LX-G5M"/>
                             <constraint firstItem="VFv-zJ-H5K" firstAttribute="top" secondItem="WSe-Ri-b4c" secondAttribute="top" id="3Ee-g7-mwo"/>
+                            <constraint firstItem="b33-3Y-vG8" firstAttribute="top" secondItem="ZK0-vH-7ok" secondAttribute="top" id="7L7-hI-PBg"/>
+                            <constraint firstItem="QXw-Nd-3bE" firstAttribute="leading" secondItem="WSe-Ri-b4c" secondAttribute="leading" id="Bjb-TA-u6w"/>
+                            <constraint firstItem="b33-3Y-vG8" firstAttribute="leading" secondItem="ZK0-vH-7ok" secondAttribute="leading" id="Btq-f0-3I0"/>
+                            <constraint firstItem="ZK0-vH-7ok" firstAttribute="bottom" secondItem="b33-3Y-vG8" secondAttribute="bottom" id="Ede-00-OJf"/>
                             <constraint firstItem="0Mf-V7-Aot" firstAttribute="leading" secondItem="Bio-ez-YeW" secondAttribute="leading" id="L0U-9R-jjD"/>
                             <constraint firstAttribute="bottom" secondItem="ZK0-vH-7ok" secondAttribute="bottom" id="cgW-vJ-VjV"/>
                             <constraint firstAttribute="trailing" secondItem="ZK0-vH-7ok" secondAttribute="trailing" id="dMk-GY-XOa"/>
+                            <constraint firstItem="b33-3Y-vG8" firstAttribute="trailing" secondItem="ZK0-vH-7ok" secondAttribute="trailing" id="elg-ge-jb0"/>
                             <constraint firstItem="ZK0-vH-7ok" firstAttribute="top" secondItem="WSe-Ri-b4c" secondAttribute="top" id="fbF-cf-IeV"/>
                             <constraint firstItem="VFv-zJ-H5K" firstAttribute="leading" secondItem="Bio-ez-YeW" secondAttribute="leading" priority="750" id="ha4-D3-bRt"/>
                             <constraint firstItem="VFv-zJ-H5K" firstAttribute="trailing" secondItem="Bio-ez-YeW" secondAttribute="trailing" priority="750" id="j1r-dg-ACo"/>
                             <constraint firstItem="0Mf-V7-Aot" firstAttribute="top" secondItem="Bio-ez-YeW" secondAttribute="top" id="ntS-ba-sAF"/>
+                            <constraint firstAttribute="bottom" secondItem="QXw-Nd-3bE" secondAttribute="bottom" id="oAF-AJ-UnJ"/>
                             <constraint firstItem="VFv-zJ-H5K" firstAttribute="centerX" secondItem="WSe-Ri-b4c" secondAttribute="centerX" id="okU-XJ-CrC"/>
                             <constraint firstItem="VFv-zJ-H5K" firstAttribute="bottom" secondItem="Bio-ez-YeW" secondAttribute="top" constant="45" id="vEm-qT-m5h"/>
                             <constraint firstItem="ZK0-vH-7ok" firstAttribute="leading" secondItem="WSe-Ri-b4c" secondAttribute="leading" id="ws8-g9-a5x"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="Bio-ez-YeW"/>
                     </view>
+                    <navigationItem key="navigationItem" id="LmE-bm-XiG"/>
                     <nil key="simulatedTopBarMetrics"/>
                     <nil key="simulatedBottomBarMetrics"/>
                     <connections>
@@ -2056,10 +2321,18 @@
                         <outlet property="keyboardView" destination="0Mf-V7-Aot" id="MgM-9f-E25"/>
                         <outlet property="mtkView" destination="ZK0-vH-7ok" id="x0C-ao-tuC"/>
                         <outlet property="pauseResumeButton" destination="bjd-4T-OVm" id="uJK-aZ-KnO"/>
+                        <outlet property="placeholderImageView" destination="b33-3Y-vG8" id="sSB-Md-PV3"/>
+                        <outlet property="placeholderIndicator" destination="prg-P9-xkh" id="DMs-xJ-Ea7"/>
+                        <outlet property="placeholderView" destination="QXw-Nd-3bE" id="drX-VQ-NFA"/>
+                        <outlet property="powerExitButton" destination="0Wo-4E-exJ" id="xhX-Ug-j0Z"/>
+                        <outlet property="restartButton" destination="HpT-OM-Xpa" id="RX8-aw-JPR"/>
+                        <outlet property="resumeBigButton" destination="a0a-Yw-GZc" id="XrF-Zk-zmY"/>
                         <outlet property="toolbarAccessoryView" destination="VFv-zJ-H5K" id="hkm-Wv-Reu"/>
-                        <outlet property="zoomButton" destination="m9f-Az-rlH" id="mfe-Ou-UL7"/>
                         <outletCollection property="customKeyButtons" destination="1LD-5d-0Ee" id="joR-H1-pbq"/>
+                        <outletCollection property="customKeyModifierButtons" destination="1LD-5d-0Ee" id="34X-PW-2yT"/>
                         <outletCollection property="customKeyButtons" destination="PvO-bn-C3P" id="l2b-Em-80E"/>
+                        <outletCollection property="customKeyModifierButtons" destination="PvO-bn-C3P" id="yh1-PD-IYs"/>
+                        <outletCollection property="customKeyModifierButtons" destination="XWu-4O-XGa" id="Nar-e6-iS9"/>
                         <outletCollection property="customKeyButtons" destination="XWu-4O-XGa" id="9v8-t4-Mta"/>
                         <outletCollection property="customKeyButtons" destination="BXG-l7-BeY" id="rfH-da-6LK"/>
                         <outletCollection property="customKeyButtons" destination="yDQ-hh-V1x" id="2bx-g5-vDn"/>
@@ -2079,96 +2352,132 @@
                         <outletCollection property="customKeyButtons" destination="sOo-ak-Mlv" id="iSO-r1-jnw"/>
                         <outletCollection property="customKeyButtons" destination="nG1-Lj-efg" id="2Wf-1T-f8O"/>
                         <outletCollection property="customKeyButtons" destination="6Oy-qX-zoY" id="Ymz-BD-Wpu"/>
-                        <outletCollection property="customKeyModifierButtons" destination="1LD-5d-0Ee" id="34X-PW-2yT"/>
-                        <outletCollection property="customKeyModifierButtons" destination="PvO-bn-C3P" id="yh1-PD-IYs"/>
-                        <outletCollection property="customKeyModifierButtons" destination="XWu-4O-XGa" id="Nar-e6-iS9"/>
-                        <segue destination="HWN-B0-AD0" kind="unwind" identifier="returnToList" unwindAction="unwindToMainFromVM:" id="dX7-Ni-UhX"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="DZc-Sg-gjO" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <view contentMode="scaleToFill" id="H7m-pq-dCg" customClass="UIInputView">
-                    <rect key="frame" x="0.0" y="0.0" width="1000" height="45"/>
+                    <rect key="frame" x="0.0" y="0.0" width="1000" height="68"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     <subviews>
+                        <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="EQJ-rh-CTl">
+                            <rect key="frame" x="8" y="48" width="144" height="36"/>
+                            <subviews>
+                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="1LD-5d-0Ee" customClass="VMKeyboardButton">
+                                    <rect key="frame" x="0.0" y="0.0" width="30" height="36"/>
+                                    <accessibility key="accessibilityConfiguration" label="Control"/>
+                                    <constraints>
+                                        <constraint firstAttribute="width" constant="30" id="AeY-H4-9v6">
+                                            <variation key="heightClass=regular-widthClass=regular" constant="60"/>
+                                        </constraint>
+                                    </constraints>
+                                    <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                    <state key="normal" title="⌃">
+                                        <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
+                                    </state>
+                                    <userDefinedRuntimeAttributes>
+                                        <userDefinedRuntimeAttribute type="number" keyPath="scanCode">
+                                            <integer key="value" value="29"/>
+                                        </userDefinedRuntimeAttribute>
+                                        <userDefinedRuntimeAttribute type="boolean" keyPath="toggleable" value="YES"/>
+                                        <userDefinedRuntimeAttribute type="boolean" keyPath="secondary" value="YES"/>
+                                    </userDefinedRuntimeAttributes>
+                                    <connections>
+                                        <action selector="customKeyTouchDown:" destination="ckC-eO-gxn" eventType="touchDown" id="H6H-5n-KuT"/>
+                                        <action selector="customKeyTouchUp:" destination="ckC-eO-gxn" eventType="touchUpInside" id="2n4-FQ-ekc"/>
+                                    </connections>
+                                </button>
+                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="PvO-bn-C3P" customClass="VMKeyboardButton">
+                                    <rect key="frame" x="38" y="0.0" width="30" height="36"/>
+                                    <accessibility key="accessibilityConfiguration" label="Option"/>
+                                    <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                    <state key="normal" title="⌥">
+                                        <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
+                                    </state>
+                                    <userDefinedRuntimeAttributes>
+                                        <userDefinedRuntimeAttribute type="boolean" keyPath="toggleable" value="YES"/>
+                                        <userDefinedRuntimeAttribute type="number" keyPath="scanCode">
+                                            <integer key="value" value="56"/>
+                                        </userDefinedRuntimeAttribute>
+                                        <userDefinedRuntimeAttribute type="boolean" keyPath="secondary" value="YES"/>
+                                    </userDefinedRuntimeAttributes>
+                                    <connections>
+                                        <action selector="customKeyTouchDown:" destination="ckC-eO-gxn" eventType="touchDown" id="XZz-yr-0JT"/>
+                                        <action selector="customKeyTouchUp:" destination="ckC-eO-gxn" eventType="touchUpInside" id="ODh-e1-CjW"/>
+                                    </connections>
+                                </button>
+                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="S2Y-JX-D2o" customClass="VMKeyboardButton">
+                                    <rect key="frame" x="76" y="0.0" width="30" height="36"/>
+                                    <accessibility key="accessibilityConfiguration" label="Command"/>
+                                    <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                    <state key="normal" title="⌘">
+                                        <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
+                                    </state>
+                                    <userDefinedRuntimeAttributes>
+                                        <userDefinedRuntimeAttribute type="boolean" keyPath="toggleable" value="YES"/>
+                                        <userDefinedRuntimeAttribute type="number" keyPath="scanCode">
+                                            <integer key="value" value="57435"/>
+                                        </userDefinedRuntimeAttribute>
+                                        <userDefinedRuntimeAttribute type="boolean" keyPath="secondary" value="YES"/>
+                                    </userDefinedRuntimeAttributes>
+                                    <connections>
+                                        <action selector="customKeyTouchDown:" destination="ckC-eO-gxn" eventType="touchDown" id="1dB-kI-bOj"/>
+                                        <action selector="customKeyTouchUp:" destination="ckC-eO-gxn" eventType="touchUpInside" id="kYC-el-WOv"/>
+                                    </connections>
+                                </button>
+                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="XWu-4O-XGa" customClass="VMKeyboardButton">
+                                    <rect key="frame" x="114" y="0.0" width="30" height="36"/>
+                                    <accessibility key="accessibilityConfiguration" label="Shift"/>
+                                    <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                    <state key="normal" title="⇧">
+                                        <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
+                                    </state>
+                                    <userDefinedRuntimeAttributes>
+                                        <userDefinedRuntimeAttribute type="number" keyPath="scanCode">
+                                            <integer key="value" value="42"/>
+                                        </userDefinedRuntimeAttribute>
+                                        <userDefinedRuntimeAttribute type="boolean" keyPath="toggleable" value="YES"/>
+                                        <userDefinedRuntimeAttribute type="boolean" keyPath="secondary" value="YES"/>
+                                    </userDefinedRuntimeAttributes>
+                                    <connections>
+                                        <action selector="customKeyTouchDown:" destination="ckC-eO-gxn" eventType="touchDown" id="ZDb-2Q-Guv"/>
+                                        <action selector="customKeyTouchUp:" destination="ckC-eO-gxn" eventType="touchUpInside" id="OvT-vH-AHg"/>
+                                    </connections>
+                                </button>
+                            </subviews>
+                        </stackView>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="F32-dg-1Zk">
-                            <rect key="frame" x="954" y="7.6666666666666679" width="30" height="30.000000000000004"/>
+                            <rect key="frame" x="962" y="51" width="30" height="30"/>
+                            <accessibility key="accessibilityConfiguration" label="Hide Keyboard"/>
+                            <constraints>
+                                <constraint firstAttribute="height" constant="30" id="CFx-gn-WDj"/>
+                                <constraint firstAttribute="width" constant="30" id="d1v-S7-XkH"/>
+                            </constraints>
                             <state key="normal" image="Keyboard Hide"/>
                             <connections>
                                 <action selector="keyboardDonePressed:" destination="ckC-eO-gxn" eventType="touchUpInside" id="Gwz-Os-LSp"/>
                             </connections>
                         </button>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="bHg-KE-i2P">
-                            <rect key="frame" x="916" y="7.6666666666666679" width="30" height="30.000000000000004"/>
-                            <state key="normal" image="Keyboard Paste"/>
-                        </button>
-                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="1LD-5d-0Ee" customClass="VMKeyboardButton">
-                            <rect key="frame" x="16" y="2.6666666666666679" width="30" height="40"/>
+                            <rect key="frame" x="924" y="51" width="30" height="30"/>
+                            <accessibility key="accessibilityConfiguration" label="Paste"/>
                             <constraints>
-                                <constraint firstAttribute="height" constant="40" id="tMu-Wu-Fyk"/>
+                                <constraint firstAttribute="width" constant="30" id="V44-c9-PFU"/>
+                                <constraint firstAttribute="height" constant="30" id="tY2-rA-3Vo"/>
                             </constraints>
-                            <fontDescription key="fontDescription" type="system" pointSize="20"/>
-                            <state key="normal" title="⌃">
-                                <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
-                            </state>
-                            <userDefinedRuntimeAttributes>
-                                <userDefinedRuntimeAttribute type="number" keyPath="scanCode">
-                                    <integer key="value" value="29"/>
-                                </userDefinedRuntimeAttribute>
-                                <userDefinedRuntimeAttribute type="boolean" keyPath="toggleable" value="YES"/>
-                                <userDefinedRuntimeAttribute type="boolean" keyPath="secondary" value="YES"/>
-                            </userDefinedRuntimeAttributes>
+                            <state key="normal" image="Keyboard Paste"/>
                             <connections>
-                                <action selector="customKeyTouchDown:" destination="ckC-eO-gxn" eventType="touchDown" id="H6H-5n-KuT"/>
-                                <action selector="customKeyTouchUp:" destination="ckC-eO-gxn" eventType="touchUpInside" id="2n4-FQ-ekc"/>
+                                <action selector="keyboardPastePressed:" destination="ckC-eO-gxn" eventType="touchUpInside" id="hAG-23-YnR"/>
                             </connections>
                         </button>
-                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="PvO-bn-C3P" customClass="VMKeyboardButton">
-                            <rect key="frame" x="54" y="2.6666666666666679" width="30" height="40"/>
-                            <fontDescription key="fontDescription" type="system" pointSize="20"/>
-                            <state key="normal" title="⌥">
-                                <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
-                            </state>
-                            <userDefinedRuntimeAttributes>
-                                <userDefinedRuntimeAttribute type="boolean" keyPath="toggleable" value="YES"/>
-                                <userDefinedRuntimeAttribute type="number" keyPath="scanCode">
-                                    <integer key="value" value="56"/>
-                                </userDefinedRuntimeAttribute>
-                                <userDefinedRuntimeAttribute type="boolean" keyPath="secondary" value="YES"/>
-                            </userDefinedRuntimeAttributes>
-                            <connections>
-                                <action selector="customKeyTouchDown:" destination="ckC-eO-gxn" eventType="touchDown" id="XZz-yr-0JT"/>
-                                <action selector="customKeyTouchUp:" destination="ckC-eO-gxn" eventType="touchUpInside" id="ODh-e1-CjW"/>
-                            </connections>
-                        </button>
-                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="XWu-4O-XGa" customClass="VMKeyboardButton">
-                            <rect key="frame" x="92" y="2.6666666666666679" width="30" height="40"/>
-                            <fontDescription key="fontDescription" type="system" pointSize="20"/>
-                            <state key="normal" title="⌘">
-                                <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
-                            </state>
-                            <userDefinedRuntimeAttributes>
-                                <userDefinedRuntimeAttribute type="number" keyPath="scanCode">
-                                    <integer key="value" value="57435"/>
-                                </userDefinedRuntimeAttribute>
-                                <userDefinedRuntimeAttribute type="boolean" keyPath="toggleable" value="YES"/>
-                                <userDefinedRuntimeAttribute type="boolean" keyPath="secondary" value="YES"/>
-                            </userDefinedRuntimeAttributes>
-                            <connections>
-                                <action selector="customKeyTouchDown:" destination="ckC-eO-gxn" eventType="touchDown" id="ZDb-2Q-Guv"/>
-                                <action selector="customKeyTouchUp:" destination="ckC-eO-gxn" eventType="touchUpInside" id="OvT-vH-AHg"/>
-                            </connections>
-                        </button>
-                        <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" ambiguous="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2BY-mt-E6G">
-                            <rect key="frame" x="130" y="0.0" width="778" height="45"/>
+                        <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2BY-mt-E6G">
+                            <rect key="frame" x="160" y="0.0" width="756" height="68"/>
                             <subviews>
-                                <view contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ABA-n5-7v4">
-                                    <rect key="frame" x="0.0" y="2.6666666666666679" width="697" height="40"/>
+                                <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="p57-ic-h8k">
+                                    <rect key="frame" x="0.0" y="48" width="714" height="36"/>
                                     <subviews>
                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="BXG-l7-BeY" customClass="VMKeyboardButton">
-                                            <rect key="frame" x="0.0" y="2.6666666666666679" width="30" height="40"/>
-                                            <constraints>
-                                                <constraint firstAttribute="height" constant="40" id="rj8-90-AYn"/>
-                                            </constraints>
+                                            <rect key="frame" x="0.0" y="0.0" width="30" height="36"/>
+                                            <accessibility key="accessibilityConfiguration" label="Tab"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="20"/>
                                             <state key="normal" title="⇥">
                                                 <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
@@ -2184,10 +2493,8 @@
                                             </connections>
                                         </button>
                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="yDQ-hh-V1x" customClass="VMKeyboardButton">
-                                            <rect key="frame" x="38" y="2.6666666666666679" width="30" height="40"/>
-                                            <constraints>
-                                                <constraint firstAttribute="height" constant="40" id="rbj-wP-Bcc"/>
-                                            </constraints>
+                                            <rect key="frame" x="38" y="0.0" width="30" height="36"/>
+                                            <accessibility key="accessibilityConfiguration" label="Escape"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="20"/>
                                             <state key="normal" title="⎋">
                                                 <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
@@ -2202,239 +2509,9 @@
                                                 <action selector="customKeyTouchUp:" destination="ckC-eO-gxn" eventType="touchUpInside" id="uWM-vi-QHO"/>
                                             </connections>
                                         </button>
-                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="wPb-ec-tXw" customClass="VMKeyboardButton">
-                                            <rect key="frame" x="76" y="2.6666666666666679" width="30" height="40"/>
-                                            <constraints>
-                                                <constraint firstAttribute="height" constant="40" id="afK-W2-ZsH"/>
-                                            </constraints>
-                                            <fontDescription key="fontDescription" type="system" pointSize="20"/>
-                                            <state key="normal" title="F1">
-                                                <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
-                                            </state>
-                                            <userDefinedRuntimeAttributes>
-                                                <userDefinedRuntimeAttribute type="number" keyPath="scanCode">
-                                                    <integer key="value" value="59"/>
-                                                </userDefinedRuntimeAttribute>
-                                            </userDefinedRuntimeAttributes>
-                                            <connections>
-                                                <action selector="customKeyTouchDown:" destination="ckC-eO-gxn" eventType="touchDown" id="BTD-TH-rwd"/>
-                                                <action selector="customKeyTouchUp:" destination="ckC-eO-gxn" eventType="touchUpInside" id="cS6-jN-Yoq"/>
-                                            </connections>
-                                        </button>
-                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="m3u-Hy-WNb" customClass="VMKeyboardButton">
-                                            <rect key="frame" x="114" y="2.6666666666666679" width="30" height="40"/>
-                                            <constraints>
-                                                <constraint firstAttribute="height" constant="40" id="dQO-4c-ITP"/>
-                                            </constraints>
-                                            <fontDescription key="fontDescription" type="system" pointSize="20"/>
-                                            <state key="normal" title="F2">
-                                                <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
-                                            </state>
-                                            <userDefinedRuntimeAttributes>
-                                                <userDefinedRuntimeAttribute type="number" keyPath="scanCode">
-                                                    <integer key="value" value="60"/>
-                                                </userDefinedRuntimeAttribute>
-                                            </userDefinedRuntimeAttributes>
-                                            <connections>
-                                                <action selector="customKeyTouchDown:" destination="ckC-eO-gxn" eventType="touchDown" id="xpT-uf-V87"/>
-                                                <action selector="customKeyTouchUp:" destination="ckC-eO-gxn" eventType="touchUpInside" id="lPb-Xm-Wh4"/>
-                                            </connections>
-                                        </button>
-                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="4XD-uH-MNJ" customClass="VMKeyboardButton">
-                                            <rect key="frame" x="152" y="2.6666666666666679" width="30" height="40"/>
-                                            <constraints>
-                                                <constraint firstAttribute="height" constant="40" id="k1L-ec-ZH1"/>
-                                            </constraints>
-                                            <fontDescription key="fontDescription" type="system" pointSize="20"/>
-                                            <state key="normal" title="F3">
-                                                <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
-                                            </state>
-                                            <userDefinedRuntimeAttributes>
-                                                <userDefinedRuntimeAttribute type="number" keyPath="scanCode">
-                                                    <integer key="value" value="61"/>
-                                                </userDefinedRuntimeAttribute>
-                                            </userDefinedRuntimeAttributes>
-                                            <connections>
-                                                <action selector="customKeyTouchDown:" destination="ckC-eO-gxn" eventType="touchDown" id="zdm-TN-cao"/>
-                                                <action selector="customKeyTouchUp:" destination="ckC-eO-gxn" eventType="touchUpInside" id="gnn-Zk-cMS"/>
-                                            </connections>
-                                        </button>
-                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="876-Dc-Xg3" customClass="VMKeyboardButton">
-                                            <rect key="frame" x="190" y="2.6666666666666679" width="30" height="40"/>
-                                            <constraints>
-                                                <constraint firstAttribute="height" constant="40" id="a1R-WF-bFZ"/>
-                                            </constraints>
-                                            <fontDescription key="fontDescription" type="system" pointSize="20"/>
-                                            <state key="normal" title="F4">
-                                                <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
-                                            </state>
-                                            <userDefinedRuntimeAttributes>
-                                                <userDefinedRuntimeAttribute type="number" keyPath="scanCode">
-                                                    <integer key="value" value="62"/>
-                                                </userDefinedRuntimeAttribute>
-                                            </userDefinedRuntimeAttributes>
-                                            <connections>
-                                                <action selector="customKeyTouchDown:" destination="ckC-eO-gxn" eventType="touchDown" id="OVK-xa-4NE"/>
-                                                <action selector="customKeyTouchUp:" destination="ckC-eO-gxn" eventType="touchUpInside" id="lWW-E8-xwL"/>
-                                            </connections>
-                                        </button>
-                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ZrI-oI-jIY" customClass="VMKeyboardButton">
-                                            <rect key="frame" x="228" y="2.6666666666666679" width="30" height="40"/>
-                                            <constraints>
-                                                <constraint firstAttribute="height" constant="40" id="QtO-ZW-OP8"/>
-                                            </constraints>
-                                            <fontDescription key="fontDescription" type="system" pointSize="20"/>
-                                            <state key="normal" title="F5">
-                                                <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
-                                            </state>
-                                            <userDefinedRuntimeAttributes>
-                                                <userDefinedRuntimeAttribute type="number" keyPath="scanCode">
-                                                    <integer key="value" value="63"/>
-                                                </userDefinedRuntimeAttribute>
-                                            </userDefinedRuntimeAttributes>
-                                            <connections>
-                                                <action selector="customKeyTouchDown:" destination="ckC-eO-gxn" eventType="touchDown" id="CuL-1t-i71"/>
-                                                <action selector="customKeyTouchUp:" destination="ckC-eO-gxn" eventType="touchUpInside" id="V9E-h3-8hC"/>
-                                            </connections>
-                                        </button>
-                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="wMD-ug-3bW" customClass="VMKeyboardButton">
-                                            <rect key="frame" x="266" y="2.6666666666666679" width="30" height="40"/>
-                                            <constraints>
-                                                <constraint firstAttribute="height" constant="40" id="Lb0-zU-mzB"/>
-                                            </constraints>
-                                            <fontDescription key="fontDescription" type="system" pointSize="20"/>
-                                            <state key="normal" title="F6">
-                                                <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
-                                            </state>
-                                            <userDefinedRuntimeAttributes>
-                                                <userDefinedRuntimeAttribute type="number" keyPath="scanCode">
-                                                    <integer key="value" value="64"/>
-                                                </userDefinedRuntimeAttribute>
-                                            </userDefinedRuntimeAttributes>
-                                            <connections>
-                                                <action selector="customKeyTouchDown:" destination="ckC-eO-gxn" eventType="touchDown" id="yyz-2z-gYO"/>
-                                                <action selector="customKeyTouchUp:" destination="ckC-eO-gxn" eventType="touchUpInside" id="BPp-22-Fwb"/>
-                                            </connections>
-                                        </button>
-                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="yuk-bm-ipJ" customClass="VMKeyboardButton">
-                                            <rect key="frame" x="304" y="2.6666666666666679" width="30" height="40"/>
-                                            <constraints>
-                                                <constraint firstAttribute="height" constant="40" id="Lns-vu-cm9"/>
-                                            </constraints>
-                                            <fontDescription key="fontDescription" type="system" pointSize="20"/>
-                                            <state key="normal" title="F7">
-                                                <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
-                                            </state>
-                                            <userDefinedRuntimeAttributes>
-                                                <userDefinedRuntimeAttribute type="number" keyPath="scanCode">
-                                                    <integer key="value" value="65"/>
-                                                </userDefinedRuntimeAttribute>
-                                            </userDefinedRuntimeAttributes>
-                                            <connections>
-                                                <action selector="customKeyTouchDown:" destination="ckC-eO-gxn" eventType="touchDown" id="X7L-xM-OlQ"/>
-                                                <action selector="customKeyTouchUp:" destination="ckC-eO-gxn" eventType="touchUpInside" id="eiP-q3-7Ft"/>
-                                            </connections>
-                                        </button>
-                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="2Ed-0S-kjc" customClass="VMKeyboardButton">
-                                            <rect key="frame" x="342" y="2.6666666666666679" width="30" height="40"/>
-                                            <constraints>
-                                                <constraint firstAttribute="height" constant="40" id="Skb-rn-myb"/>
-                                            </constraints>
-                                            <fontDescription key="fontDescription" type="system" pointSize="20"/>
-                                            <state key="normal" title="F8">
-                                                <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
-                                            </state>
-                                            <userDefinedRuntimeAttributes>
-                                                <userDefinedRuntimeAttribute type="number" keyPath="scanCode">
-                                                    <integer key="value" value="66"/>
-                                                </userDefinedRuntimeAttribute>
-                                            </userDefinedRuntimeAttributes>
-                                            <connections>
-                                                <action selector="customKeyTouchDown:" destination="ckC-eO-gxn" eventType="touchDown" id="YmA-mm-7om"/>
-                                                <action selector="customKeyTouchUp:" destination="ckC-eO-gxn" eventType="touchUpInside" id="OAy-r4-DlN"/>
-                                            </connections>
-                                        </button>
-                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="n2Z-fx-LHS" customClass="VMKeyboardButton">
-                                            <rect key="frame" x="380" y="2.6666666666666679" width="30" height="40"/>
-                                            <constraints>
-                                                <constraint firstAttribute="height" constant="40" id="53r-9g-tGr"/>
-                                            </constraints>
-                                            <fontDescription key="fontDescription" type="system" pointSize="20"/>
-                                            <state key="normal" title="F9">
-                                                <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
-                                            </state>
-                                            <userDefinedRuntimeAttributes>
-                                                <userDefinedRuntimeAttribute type="number" keyPath="scanCode">
-                                                    <integer key="value" value="67"/>
-                                                </userDefinedRuntimeAttribute>
-                                            </userDefinedRuntimeAttributes>
-                                            <connections>
-                                                <action selector="customKeyTouchDown:" destination="ckC-eO-gxn" eventType="touchDown" id="Lg4-4T-LBN"/>
-                                                <action selector="customKeyTouchUp:" destination="ckC-eO-gxn" eventType="touchUpInside" id="4pQ-4l-Z9o"/>
-                                            </connections>
-                                        </button>
-                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8zW-rN-u2M" customClass="VMKeyboardButton">
-                                            <rect key="frame" x="418" y="2.6666666666666679" width="33" height="40"/>
-                                            <constraints>
-                                                <constraint firstAttribute="height" constant="40" id="tGw-lp-M14"/>
-                                            </constraints>
-                                            <fontDescription key="fontDescription" type="system" pointSize="20"/>
-                                            <state key="normal" title="F10">
-                                                <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
-                                            </state>
-                                            <userDefinedRuntimeAttributes>
-                                                <userDefinedRuntimeAttribute type="number" keyPath="scanCode">
-                                                    <integer key="value" value="68"/>
-                                                </userDefinedRuntimeAttribute>
-                                            </userDefinedRuntimeAttributes>
-                                            <connections>
-                                                <action selector="customKeyTouchDown:" destination="ckC-eO-gxn" eventType="touchDown" id="6bE-k1-xif"/>
-                                                <action selector="customKeyTouchUp:" destination="ckC-eO-gxn" eventType="touchUpInside" id="srN-mM-uwW"/>
-                                            </connections>
-                                        </button>
-                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="7Jq-kj-K2V" customClass="VMKeyboardButton">
-                                            <rect key="frame" x="459" y="2.6666666666666679" width="30" height="40"/>
-                                            <constraints>
-                                                <constraint firstAttribute="height" constant="40" id="rFV-iR-zvw"/>
-                                            </constraints>
-                                            <fontDescription key="fontDescription" type="system" pointSize="20"/>
-                                            <state key="normal" title="F11">
-                                                <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
-                                            </state>
-                                            <userDefinedRuntimeAttributes>
-                                                <userDefinedRuntimeAttribute type="number" keyPath="scanCode">
-                                                    <integer key="value" value="87"/>
-                                                </userDefinedRuntimeAttribute>
-                                            </userDefinedRuntimeAttributes>
-                                            <connections>
-                                                <action selector="customKeyTouchDown:" destination="ckC-eO-gxn" eventType="touchDown" id="f2H-U4-C0o"/>
-                                                <action selector="customKeyTouchUp:" destination="ckC-eO-gxn" eventType="touchUpInside" id="7eb-z1-H0U"/>
-                                            </connections>
-                                        </button>
-                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="EIz-R9-Ca8" customClass="VMKeyboardButton">
-                                            <rect key="frame" x="497" y="2.6666666666666679" width="32" height="40"/>
-                                            <constraints>
-                                                <constraint firstAttribute="height" constant="40" id="Ee3-ag-4VF"/>
-                                            </constraints>
-                                            <fontDescription key="fontDescription" type="system" pointSize="20"/>
-                                            <state key="normal" title="F12">
-                                                <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
-                                            </state>
-                                            <userDefinedRuntimeAttributes>
-                                                <userDefinedRuntimeAttribute type="number" keyPath="scanCode">
-                                                    <integer key="value" value="88"/>
-                                                </userDefinedRuntimeAttribute>
-                                            </userDefinedRuntimeAttributes>
-                                            <connections>
-                                                <action selector="customKeyTouchDown:" destination="ckC-eO-gxn" eventType="touchDown" id="G08-tw-Sco"/>
-                                                <action selector="customKeyTouchUp:" destination="ckC-eO-gxn" eventType="touchUpInside" id="it8-A9-4IN"/>
-                                            </connections>
-                                        </button>
                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="cMr-vl-R93" customClass="VMKeyboardButton">
-                                            <rect key="frame" x="537" y="2.6666666666666679" width="30" height="40"/>
-                                            <constraints>
-                                                <constraint firstAttribute="height" constant="40" id="7M5-c3-vDS"/>
-                                            </constraints>
+                                            <rect key="frame" x="76" y="0.0" width="30" height="36"/>
+                                            <accessibility key="accessibilityConfiguration" label="Up"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="20"/>
                                             <state key="normal" title="↑">
                                                 <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
@@ -2450,10 +2527,8 @@
                                             </connections>
                                         </button>
                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="sOo-ak-Mlv" customClass="VMKeyboardButton">
-                                            <rect key="frame" x="575" y="2.6666666666666679" width="30" height="40"/>
-                                            <constraints>
-                                                <constraint firstAttribute="height" constant="40" id="hKT-0R-ESI"/>
-                                            </constraints>
+                                            <rect key="frame" x="114" y="0.0" width="30" height="36"/>
+                                            <accessibility key="accessibilityConfiguration" label="Down"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="20"/>
                                             <state key="normal" title="↓">
                                                 <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
@@ -2469,10 +2544,8 @@
                                             </connections>
                                         </button>
                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="nG1-Lj-efg" customClass="VMKeyboardButton">
-                                            <rect key="frame" x="613" y="2.6666666666666679" width="30" height="40"/>
-                                            <constraints>
-                                                <constraint firstAttribute="height" constant="40" id="h1i-Wu-gDe"/>
-                                            </constraints>
+                                            <rect key="frame" x="152" y="0.0" width="30" height="36"/>
+                                            <accessibility key="accessibilityConfiguration" label="Left"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="20"/>
                                             <state key="normal" title="←">
                                                 <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
@@ -2488,10 +2561,8 @@
                                             </connections>
                                         </button>
                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="6Oy-qX-zoY" customClass="VMKeyboardButton">
-                                            <rect key="frame" x="651" y="2.6666666666666679" width="30" height="40"/>
-                                            <constraints>
-                                                <constraint firstAttribute="height" constant="40" id="JPS-VM-OVo"/>
-                                            </constraints>
+                                            <rect key="frame" x="190" y="0.0" width="30" height="36"/>
+                                            <accessibility key="accessibilityConfiguration" label="Right"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="20"/>
                                             <state key="normal" title="→">
                                                 <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
@@ -2506,76 +2577,249 @@
                                                 <action selector="customKeyTouchUp:" destination="ckC-eO-gxn" eventType="touchUpInside" id="mzC-oX-FtA"/>
                                             </connections>
                                         </button>
+                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Xlj-Hd-dHd" customClass="VMKeyboardButton">
+                                            <rect key="frame" x="228" y="0.0" width="30" height="36"/>
+                                            <accessibility key="accessibilityConfiguration" label="Right"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                            <state key="normal" title="Del">
+                                                <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
+                                            </state>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="number" keyPath="scanCode">
+                                                    <integer key="value" value="57427"/>
+                                                </userDefinedRuntimeAttribute>
+                                            </userDefinedRuntimeAttributes>
+                                            <connections>
+                                                <action selector="customKeyTouchDown:" destination="ckC-eO-gxn" eventType="touchDown" id="SYv-aP-qrD"/>
+                                                <action selector="customKeyTouchUp:" destination="ckC-eO-gxn" eventType="touchUpInside" id="5xr-gK-INf"/>
+                                            </connections>
+                                        </button>
+                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="wPb-ec-tXw" customClass="VMKeyboardButton">
+                                            <rect key="frame" x="266" y="0.0" width="30" height="36"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                            <state key="normal" title="F1">
+                                                <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
+                                            </state>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="number" keyPath="scanCode">
+                                                    <integer key="value" value="59"/>
+                                                </userDefinedRuntimeAttribute>
+                                            </userDefinedRuntimeAttributes>
+                                            <connections>
+                                                <action selector="customKeyTouchDown:" destination="ckC-eO-gxn" eventType="touchDown" id="BTD-TH-rwd"/>
+                                                <action selector="customKeyTouchUp:" destination="ckC-eO-gxn" eventType="touchUpInside" id="cS6-jN-Yoq"/>
+                                            </connections>
+                                        </button>
+                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="m3u-Hy-WNb" customClass="VMKeyboardButton">
+                                            <rect key="frame" x="304" y="0.0" width="30" height="36"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                            <state key="normal" title="F2">
+                                                <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
+                                            </state>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="number" keyPath="scanCode">
+                                                    <integer key="value" value="60"/>
+                                                </userDefinedRuntimeAttribute>
+                                            </userDefinedRuntimeAttributes>
+                                            <connections>
+                                                <action selector="customKeyTouchDown:" destination="ckC-eO-gxn" eventType="touchDown" id="xpT-uf-V87"/>
+                                                <action selector="customKeyTouchUp:" destination="ckC-eO-gxn" eventType="touchUpInside" id="lPb-Xm-Wh4"/>
+                                            </connections>
+                                        </button>
+                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="4XD-uH-MNJ" customClass="VMKeyboardButton">
+                                            <rect key="frame" x="342" y="0.0" width="30" height="36"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                            <state key="normal" title="F3">
+                                                <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
+                                            </state>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="number" keyPath="scanCode">
+                                                    <integer key="value" value="61"/>
+                                                </userDefinedRuntimeAttribute>
+                                            </userDefinedRuntimeAttributes>
+                                            <connections>
+                                                <action selector="customKeyTouchDown:" destination="ckC-eO-gxn" eventType="touchDown" id="zdm-TN-cao"/>
+                                                <action selector="customKeyTouchUp:" destination="ckC-eO-gxn" eventType="touchUpInside" id="gnn-Zk-cMS"/>
+                                            </connections>
+                                        </button>
+                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="876-Dc-Xg3" customClass="VMKeyboardButton">
+                                            <rect key="frame" x="380" y="0.0" width="30" height="36"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                            <state key="normal" title="F4">
+                                                <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
+                                            </state>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="number" keyPath="scanCode">
+                                                    <integer key="value" value="62"/>
+                                                </userDefinedRuntimeAttribute>
+                                            </userDefinedRuntimeAttributes>
+                                            <connections>
+                                                <action selector="customKeyTouchDown:" destination="ckC-eO-gxn" eventType="touchDown" id="OVK-xa-4NE"/>
+                                                <action selector="customKeyTouchUp:" destination="ckC-eO-gxn" eventType="touchUpInside" id="lWW-E8-xwL"/>
+                                            </connections>
+                                        </button>
+                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ZrI-oI-jIY" customClass="VMKeyboardButton">
+                                            <rect key="frame" x="418" y="0.0" width="30" height="36"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                            <state key="normal" title="F5">
+                                                <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
+                                            </state>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="number" keyPath="scanCode">
+                                                    <integer key="value" value="63"/>
+                                                </userDefinedRuntimeAttribute>
+                                            </userDefinedRuntimeAttributes>
+                                            <connections>
+                                                <action selector="customKeyTouchDown:" destination="ckC-eO-gxn" eventType="touchDown" id="CuL-1t-i71"/>
+                                                <action selector="customKeyTouchUp:" destination="ckC-eO-gxn" eventType="touchUpInside" id="V9E-h3-8hC"/>
+                                            </connections>
+                                        </button>
+                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="wMD-ug-3bW" customClass="VMKeyboardButton">
+                                            <rect key="frame" x="456" y="0.0" width="30" height="36"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                            <state key="normal" title="F6">
+                                                <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
+                                            </state>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="number" keyPath="scanCode">
+                                                    <integer key="value" value="64"/>
+                                                </userDefinedRuntimeAttribute>
+                                            </userDefinedRuntimeAttributes>
+                                            <connections>
+                                                <action selector="customKeyTouchDown:" destination="ckC-eO-gxn" eventType="touchDown" id="yyz-2z-gYO"/>
+                                                <action selector="customKeyTouchUp:" destination="ckC-eO-gxn" eventType="touchUpInside" id="BPp-22-Fwb"/>
+                                            </connections>
+                                        </button>
+                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="yuk-bm-ipJ" customClass="VMKeyboardButton">
+                                            <rect key="frame" x="494" y="0.0" width="30" height="36"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                            <state key="normal" title="F7">
+                                                <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
+                                            </state>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="number" keyPath="scanCode">
+                                                    <integer key="value" value="65"/>
+                                                </userDefinedRuntimeAttribute>
+                                            </userDefinedRuntimeAttributes>
+                                            <connections>
+                                                <action selector="customKeyTouchDown:" destination="ckC-eO-gxn" eventType="touchDown" id="X7L-xM-OlQ"/>
+                                                <action selector="customKeyTouchUp:" destination="ckC-eO-gxn" eventType="touchUpInside" id="eiP-q3-7Ft"/>
+                                            </connections>
+                                        </button>
+                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="2Ed-0S-kjc" customClass="VMKeyboardButton">
+                                            <rect key="frame" x="532" y="0.0" width="30" height="36"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                            <state key="normal" title="F8">
+                                                <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
+                                            </state>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="number" keyPath="scanCode">
+                                                    <integer key="value" value="66"/>
+                                                </userDefinedRuntimeAttribute>
+                                            </userDefinedRuntimeAttributes>
+                                            <connections>
+                                                <action selector="customKeyTouchDown:" destination="ckC-eO-gxn" eventType="touchDown" id="YmA-mm-7om"/>
+                                                <action selector="customKeyTouchUp:" destination="ckC-eO-gxn" eventType="touchUpInside" id="OAy-r4-DlN"/>
+                                            </connections>
+                                        </button>
+                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="n2Z-fx-LHS" customClass="VMKeyboardButton">
+                                            <rect key="frame" x="570" y="0.0" width="30" height="36"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                            <state key="normal" title="F9">
+                                                <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
+                                            </state>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="number" keyPath="scanCode">
+                                                    <integer key="value" value="67"/>
+                                                </userDefinedRuntimeAttribute>
+                                            </userDefinedRuntimeAttributes>
+                                            <connections>
+                                                <action selector="customKeyTouchDown:" destination="ckC-eO-gxn" eventType="touchDown" id="Lg4-4T-LBN"/>
+                                                <action selector="customKeyTouchUp:" destination="ckC-eO-gxn" eventType="touchUpInside" id="4pQ-4l-Z9o"/>
+                                            </connections>
+                                        </button>
+                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8zW-rN-u2M" customClass="VMKeyboardButton">
+                                            <rect key="frame" x="608" y="0.0" width="30" height="36"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="18"/>
+                                            <state key="normal" title="F10">
+                                                <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
+                                            </state>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="number" keyPath="scanCode">
+                                                    <integer key="value" value="68"/>
+                                                </userDefinedRuntimeAttribute>
+                                            </userDefinedRuntimeAttributes>
+                                            <connections>
+                                                <action selector="customKeyTouchDown:" destination="ckC-eO-gxn" eventType="touchDown" id="6bE-k1-xif"/>
+                                                <action selector="customKeyTouchUp:" destination="ckC-eO-gxn" eventType="touchUpInside" id="srN-mM-uwW"/>
+                                            </connections>
+                                        </button>
+                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="7Jq-kj-K2V" customClass="VMKeyboardButton">
+                                            <rect key="frame" x="646" y="0.0" width="30" height="36"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="18"/>
+                                            <state key="normal" title="F11">
+                                                <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
+                                            </state>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="number" keyPath="scanCode">
+                                                    <integer key="value" value="87"/>
+                                                </userDefinedRuntimeAttribute>
+                                            </userDefinedRuntimeAttributes>
+                                            <connections>
+                                                <action selector="customKeyTouchDown:" destination="ckC-eO-gxn" eventType="touchDown" id="f2H-U4-C0o"/>
+                                                <action selector="customKeyTouchUp:" destination="ckC-eO-gxn" eventType="touchUpInside" id="7eb-z1-H0U"/>
+                                            </connections>
+                                        </button>
+                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="EIz-R9-Ca8" customClass="VMKeyboardButton">
+                                            <rect key="frame" x="684" y="0.0" width="30" height="36"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="18"/>
+                                            <state key="normal" title="F12">
+                                                <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
+                                            </state>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="number" keyPath="scanCode">
+                                                    <integer key="value" value="88"/>
+                                                </userDefinedRuntimeAttribute>
+                                            </userDefinedRuntimeAttributes>
+                                            <connections>
+                                                <action selector="customKeyTouchDown:" destination="ckC-eO-gxn" eventType="touchDown" id="G08-tw-Sco"/>
+                                                <action selector="customKeyTouchUp:" destination="ckC-eO-gxn" eventType="touchUpInside" id="it8-A9-4IN"/>
+                                            </connections>
+                                        </button>
                                     </subviews>
-                                    <constraints>
-                                        <constraint firstItem="yDQ-hh-V1x" firstAttribute="leading" secondItem="BXG-l7-BeY" secondAttribute="trailing" constant="8" id="0yc-zt-eh7"/>
-                                        <constraint firstItem="nG1-Lj-efg" firstAttribute="centerY" secondItem="ABA-n5-7v4" secondAttribute="centerY" id="50c-6x-38E"/>
-                                        <constraint firstItem="sOo-ak-Mlv" firstAttribute="centerY" secondItem="ABA-n5-7v4" secondAttribute="centerY" id="7XS-kW-0fV"/>
-                                        <constraint firstItem="2Ed-0S-kjc" firstAttribute="centerY" secondItem="ABA-n5-7v4" secondAttribute="centerY" id="Atn-9y-CMH"/>
-                                        <constraint firstItem="wPb-ec-tXw" firstAttribute="leading" secondItem="yDQ-hh-V1x" secondAttribute="trailing" constant="8" id="B1P-2H-lc5"/>
-                                        <constraint firstItem="8zW-rN-u2M" firstAttribute="leading" secondItem="n2Z-fx-LHS" secondAttribute="trailing" constant="8" id="B7D-cl-jWA"/>
-                                        <constraint firstItem="4XD-uH-MNJ" firstAttribute="leading" secondItem="m3u-Hy-WNb" secondAttribute="trailing" constant="8" id="BAE-Ap-Vrr"/>
-                                        <constraint firstItem="m3u-Hy-WNb" firstAttribute="centerY" secondItem="ABA-n5-7v4" secondAttribute="centerY" id="D34-Y2-SSr"/>
-                                        <constraint firstItem="n2Z-fx-LHS" firstAttribute="leading" secondItem="2Ed-0S-kjc" secondAttribute="trailing" constant="8" id="Fos-fa-dcZ"/>
-                                        <constraint firstItem="876-Dc-Xg3" firstAttribute="centerY" secondItem="ABA-n5-7v4" secondAttribute="centerY" id="GIv-nV-68r"/>
-                                        <constraint firstAttribute="trailingMargin" secondItem="6Oy-qX-zoY" secondAttribute="trailing" constant="8" id="Ha3-52-3ye"/>
-                                        <constraint firstItem="876-Dc-Xg3" firstAttribute="leading" secondItem="4XD-uH-MNJ" secondAttribute="trailing" constant="8" id="IS9-M4-jql"/>
-                                        <constraint firstItem="8zW-rN-u2M" firstAttribute="centerY" secondItem="ABA-n5-7v4" secondAttribute="centerY" id="Ifg-Ll-rRF"/>
-                                        <constraint firstItem="yuk-bm-ipJ" firstAttribute="centerY" secondItem="ABA-n5-7v4" secondAttribute="centerY" id="LzW-Kb-P9D"/>
-                                        <constraint firstItem="BXG-l7-BeY" firstAttribute="centerY" secondItem="ABA-n5-7v4" secondAttribute="centerY" id="M5e-Nh-NLH"/>
-                                        <constraint firstItem="ZrI-oI-jIY" firstAttribute="centerY" secondItem="ABA-n5-7v4" secondAttribute="centerY" id="N6h-Wl-eIy"/>
-                                        <constraint firstItem="ZrI-oI-jIY" firstAttribute="leading" secondItem="876-Dc-Xg3" secondAttribute="trailing" constant="8" id="N8K-oJ-tga"/>
-                                        <constraint firstItem="4XD-uH-MNJ" firstAttribute="centerY" secondItem="ABA-n5-7v4" secondAttribute="centerY" id="OyT-br-1tM"/>
-                                        <constraint firstItem="2Ed-0S-kjc" firstAttribute="leading" secondItem="yuk-bm-ipJ" secondAttribute="trailing" constant="8" id="Pxs-VS-WaD"/>
-                                        <constraint firstItem="wMD-ug-3bW" firstAttribute="centerY" secondItem="ABA-n5-7v4" secondAttribute="centerY" id="SlV-HO-zKM"/>
-                                        <constraint firstItem="wMD-ug-3bW" firstAttribute="leading" secondItem="ZrI-oI-jIY" secondAttribute="trailing" constant="8" id="VUB-ZC-c4d"/>
-                                        <constraint firstItem="BXG-l7-BeY" firstAttribute="leading" secondItem="ABA-n5-7v4" secondAttribute="leading" id="WWr-LW-HWg"/>
-                                        <constraint firstItem="wPb-ec-tXw" firstAttribute="centerY" secondItem="ABA-n5-7v4" secondAttribute="centerY" id="ZVz-OU-tDN"/>
-                                        <constraint firstItem="EIz-R9-Ca8" firstAttribute="centerY" secondItem="ABA-n5-7v4" secondAttribute="centerY" id="aMb-Qe-00L"/>
-                                        <constraint firstItem="EIz-R9-Ca8" firstAttribute="leading" secondItem="7Jq-kj-K2V" secondAttribute="trailing" constant="8" id="eUz-em-J4j"/>
-                                        <constraint firstItem="nG1-Lj-efg" firstAttribute="leading" secondItem="sOo-ak-Mlv" secondAttribute="trailing" constant="8" id="eXw-oJ-SV8"/>
-                                        <constraint firstItem="7Jq-kj-K2V" firstAttribute="leading" secondItem="8zW-rN-u2M" secondAttribute="trailing" constant="8" id="hXH-X8-a3t"/>
-                                        <constraint firstItem="6Oy-qX-zoY" firstAttribute="leading" secondItem="nG1-Lj-efg" secondAttribute="trailing" constant="8" id="lje-On-ngW"/>
-                                        <constraint firstItem="n2Z-fx-LHS" firstAttribute="centerY" secondItem="ABA-n5-7v4" secondAttribute="centerY" id="nH4-Y2-Jv5"/>
-                                        <constraint firstItem="sOo-ak-Mlv" firstAttribute="leading" secondItem="cMr-vl-R93" secondAttribute="trailing" constant="8" id="oi2-Rc-NAV"/>
-                                        <constraint firstItem="7Jq-kj-K2V" firstAttribute="centerY" secondItem="ABA-n5-7v4" secondAttribute="centerY" id="rH6-15-jA4"/>
-                                        <constraint firstItem="6Oy-qX-zoY" firstAttribute="centerY" secondItem="ABA-n5-7v4" secondAttribute="centerY" id="rPE-Hk-mYc"/>
-                                        <constraint firstItem="cMr-vl-R93" firstAttribute="centerY" secondItem="ABA-n5-7v4" secondAttribute="centerY" id="sRD-Bw-waS"/>
-                                        <constraint firstItem="cMr-vl-R93" firstAttribute="leading" secondItem="EIz-R9-Ca8" secondAttribute="trailing" constant="8" id="tZc-vE-Cjq"/>
-                                        <constraint firstItem="m3u-Hy-WNb" firstAttribute="leading" secondItem="wPb-ec-tXw" secondAttribute="trailing" constant="8" id="uCL-pb-GHY"/>
-                                        <constraint firstItem="yDQ-hh-V1x" firstAttribute="centerY" secondItem="ABA-n5-7v4" secondAttribute="centerY" id="und-9b-lQd"/>
-                                        <constraint firstItem="yuk-bm-ipJ" firstAttribute="leading" secondItem="wMD-ug-3bW" secondAttribute="trailing" constant="8" id="vsi-bH-yKp"/>
-                                    </constraints>
-                                </view>
+                                </stackView>
                             </subviews>
                             <constraints>
-                                <constraint firstItem="ABA-n5-7v4" firstAttribute="height" secondItem="2BY-mt-E6G" secondAttribute="height" id="5O8-jY-TWK"/>
-                                <constraint firstAttribute="trailing" secondItem="ABA-n5-7v4" secondAttribute="trailing" id="STF-Qa-9AV"/>
-                                <constraint firstItem="ABA-n5-7v4" firstAttribute="leading" secondItem="2BY-mt-E6G" secondAttribute="leading" id="qsd-Qy-0LD"/>
+                                <constraint firstItem="p57-ic-h8k" firstAttribute="top" secondItem="2BY-mt-E6G" secondAttribute="top" priority="250" id="RUv-vM-xQO"/>
+                                <constraint firstItem="p57-ic-h8k" firstAttribute="trailing" secondItem="2BY-mt-E6G" secondAttribute="trailing" id="fsI-O5-eOh"/>
+                                <constraint firstItem="p57-ic-h8k" firstAttribute="bottom" secondItem="2BY-mt-E6G" secondAttribute="bottom" priority="250" id="uBg-eL-Swv"/>
+                                <constraint firstItem="p57-ic-h8k" firstAttribute="leading" secondItem="2BY-mt-E6G" secondAttribute="leading" id="wun-GQ-Bzt"/>
                             </constraints>
                         </scrollView>
                     </subviews>
                     <constraints>
-                        <constraint firstItem="PvO-bn-C3P" firstAttribute="height" secondItem="1LD-5d-0Ee" secondAttribute="height" id="6A4-kW-OUJ"/>
-                        <constraint firstItem="PvO-bn-C3P" firstAttribute="leading" secondItem="1LD-5d-0Ee" secondAttribute="trailing" constant="8" id="9Ev-PW-G2U"/>
-                        <constraint firstItem="2BY-mt-E6G" firstAttribute="top" secondItem="H7m-pq-dCg" secondAttribute="top" id="Dnt-LP-1vA"/>
+                        <constraint firstItem="p57-ic-h8k" firstAttribute="bottom" secondItem="EQJ-rh-CTl" secondAttribute="bottom" id="1Xb-PR-MG0"/>
+                        <constraint firstItem="BXG-l7-BeY" firstAttribute="width" secondItem="1LD-5d-0Ee" secondAttribute="width" id="5r8-PR-vl0"/>
                         <constraint firstItem="F32-dg-1Zk" firstAttribute="leading" secondItem="bHg-KE-i2P" secondAttribute="trailing" constant="8" id="Fk5-1S-zYF"/>
-                        <constraint firstItem="bHg-KE-i2P" firstAttribute="centerY" secondItem="H7m-pq-dCg" secondAttribute="centerY" id="HxF-vi-OHW"/>
-                        <constraint firstItem="XWu-4O-XGa" firstAttribute="height" secondItem="PvO-bn-C3P" secondAttribute="height" id="Pfs-5l-gXH"/>
-                        <constraint firstItem="PvO-bn-C3P" firstAttribute="centerY" secondItem="H7m-pq-dCg" secondAttribute="centerY" id="Vat-3y-LUJ"/>
-                        <constraint firstItem="XWu-4O-XGa" firstAttribute="leading" secondItem="PvO-bn-C3P" secondAttribute="trailing" constant="8" id="XQn-y7-wzH"/>
-                        <constraint firstItem="1LD-5d-0Ee" firstAttribute="leading" secondItem="M5c-nM-HyU" secondAttribute="leading" constant="16" id="a0J-Ca-tBj"/>
-                        <constraint firstItem="2BY-mt-E6G" firstAttribute="leading" secondItem="XWu-4O-XGa" secondAttribute="trailing" constant="8" id="aN7-kB-3Ey"/>
-                        <constraint firstItem="M5c-nM-HyU" firstAttribute="trailing" secondItem="F32-dg-1Zk" secondAttribute="trailing" constant="16" id="bYG-2J-8fy"/>
-                        <constraint firstItem="F32-dg-1Zk" firstAttribute="centerY" secondItem="H7m-pq-dCg" secondAttribute="centerY" id="m8W-A2-4ck"/>
-                        <constraint firstItem="XWu-4O-XGa" firstAttribute="centerY" secondItem="H7m-pq-dCg" secondAttribute="centerY" id="mIs-YS-zGd"/>
-                        <constraint firstAttribute="bottom" secondItem="2BY-mt-E6G" secondAttribute="bottom" id="rbq-Ax-Dy3"/>
+                        <constraint firstItem="EQJ-rh-CTl" firstAttribute="top" secondItem="M5c-nM-HyU" secondAttribute="top" constant="4" id="GMi-Eh-PWZ"/>
+                        <constraint firstItem="EQJ-rh-CTl" firstAttribute="leading" secondItem="M5c-nM-HyU" secondAttribute="leading" constant="8" id="Wl9-QD-yFA"/>
+                        <constraint firstItem="F32-dg-1Zk" firstAttribute="trailing" secondItem="H7m-pq-dCg" secondAttribute="trailing" constant="-8" id="bYG-2J-8fy"/>
+                        <constraint firstItem="bHg-KE-i2P" firstAttribute="centerY" secondItem="1LD-5d-0Ee" secondAttribute="centerY" id="bml-ze-DLb"/>
+                        <constraint firstItem="p57-ic-h8k" firstAttribute="top" secondItem="EQJ-rh-CTl" secondAttribute="top" id="cXf-Jd-rs5"/>
+                        <constraint firstItem="EQJ-rh-CTl" firstAttribute="bottom" secondItem="M5c-nM-HyU" secondAttribute="bottom" constant="-4" id="gqh-mK-Wt5"/>
+                        <constraint firstItem="F32-dg-1Zk" firstAttribute="centerY" secondItem="1LD-5d-0Ee" secondAttribute="centerY" id="pv2-48-GJQ"/>
+                        <constraint firstItem="2BY-mt-E6G" firstAttribute="leading" secondItem="EQJ-rh-CTl" secondAttribute="trailing" constant="8" id="r7r-Tu-8px"/>
+                        <constraint firstItem="2BY-mt-E6G" firstAttribute="bottom" secondItem="H7m-pq-dCg" secondAttribute="bottom" id="rbq-Ax-Dy3"/>
+                        <constraint firstItem="2BY-mt-E6G" firstAttribute="top" secondItem="H7m-pq-dCg" secondAttribute="top" id="uDn-at-SeU"/>
                         <constraint firstItem="bHg-KE-i2P" firstAttribute="leading" secondItem="2BY-mt-E6G" secondAttribute="trailing" constant="8" id="x6k-dL-6qs"/>
-                        <constraint firstItem="1LD-5d-0Ee" firstAttribute="centerY" secondItem="H7m-pq-dCg" secondAttribute="centerY" id="zxj-zy-vb1"/>
                     </constraints>
                     <viewLayoutGuide key="safeArea" id="M5c-nM-HyU"/>
+                    <userDefinedRuntimeAttributes>
+                        <userDefinedRuntimeAttribute type="number" keyPath="autoresizingMask">
+                            <integer key="value" value="16"/>
+                        </userDefinedRuntimeAttribute>
+                    </userDefinedRuntimeAttributes>
                 </view>
-                <exit id="HWN-B0-AD0" userLabel="Exit" sceneMemberID="exit"/>
             </objects>
             <point key="canvasLocation" x="1830" y="-624"/>
         </scene>
@@ -2730,7 +2974,7 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="aec-Ui-ggd" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="6342" y="1247"/>
+            <point key="canvasLocation" x="5569" y="1247"/>
         </scene>
         <!--Input-->
         <scene sceneID="puh-VJ-3sO">
@@ -2835,25 +3079,89 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="fxK-8x-htX" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="7103" y="1247"/>
+            <point key="canvasLocation" x="6343" y="1247"/>
+        </scene>
+        <!--Additional QEMU Arguments-->
+        <scene sceneID="wS1-0Y-UiQ">
+            <objects>
+                <tableViewController id="90J-Vp-RTj" userLabel="Additional QEMU Arguments" customClass="VMConfigSystemArgumentsViewController" sceneMemberID="viewController">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="18" sectionFooterHeight="18" id="e6v-mL-FH9">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="758"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
+                        <prototypes>
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="none" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="argumentCell" id="lie-mw-zqD" customClass="VMConfigSystemArgumentsTextCell">
+                                <rect key="frame" x="0.0" y="55.333332061767578" width="375" height="43.666667938232422"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="lie-mw-zqD" id="lNr-hu-oMV">
+                                    <rect key="frame" x="0.0" y="0.0" width="375" height="43.666667938232422"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <subviews>
+                                        <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="QEMU Args" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="upL-Oh-a3A">
+                                            <rect key="frame" x="16" y="12.666666666666666" width="343" height="18.666666666666671"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                            <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" returnKeyType="done" smartDashesType="no" smartInsertDeleteType="no" smartQuotesType="no"/>
+                                            <connections>
+                                                <action selector="editingDidEnd:" destination="lie-mw-zqD" eventType="editingDidEnd" id="GwW-M0-bKM"/>
+                                                <action selector="touchWasCancelled:" destination="lie-mw-zqD" eventType="touchCancel" id="7nn-iT-9g1"/>
+                                                <action selector="valueWasChanged:" destination="lie-mw-zqD" eventType="editingDidEnd" id="dto-Gl-FPS"/>
+                                                <outlet property="delegate" destination="e6v-mL-FH9" id="86C-Id-1mL"/>
+                                            </connections>
+                                        </textField>
+                                    </subviews>
+                                    <constraints>
+                                        <constraint firstItem="upL-Oh-a3A" firstAttribute="leading" secondItem="lNr-hu-oMV" secondAttribute="leading" constant="16" id="Z3u-kZ-erp"/>
+                                        <constraint firstItem="upL-Oh-a3A" firstAttribute="centerY" secondItem="lNr-hu-oMV" secondAttribute="centerY" id="aj5-aW-g4S"/>
+                                        <constraint firstAttribute="trailing" secondItem="upL-Oh-a3A" secondAttribute="trailing" constant="16" id="kdL-BT-Gi5"/>
+                                    </constraints>
+                                </tableViewCellContentView>
+                                <connections>
+                                    <outlet property="argTextItem" destination="upL-Oh-a3A" id="a0A-Ee-MG0"/>
+                                </connections>
+                            </tableViewCell>
+                        </prototypes>
+                        <connections>
+                            <outlet property="dataSource" destination="90J-Vp-RTj" id="Ejq-vt-rd9"/>
+                            <outlet property="delegate" destination="90J-Vp-RTj" id="BVI-Xg-brF"/>
+                        </connections>
+                    </tableView>
+                    <navigationItem key="navigationItem" title="Additional QEMU Arguments" id="Vsj-CY-Ew5">
+                        <barButtonItem key="rightBarButtonItem" systemItem="add" id="nFI-03-aNY">
+                            <connections>
+                                <action selector="addButton:" destination="90J-Vp-RTj" id="rCi-9p-9Aj"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
+                    <connections>
+                        <outlet property="addButtonItem" destination="nFI-03-aNY" id="lDI-Ab-T6C"/>
+                        <outlet property="argTableView" destination="e6v-mL-FH9" id="EC7-8b-Xen"/>
+                        <segue destination="P88-cm-4Gl" kind="unwind" identifier="returnToDetailSegue" unwindAction="unwindToDriveDetailFromDrivePicker:" id="xKL-Za-lY4"/>
+                    </connections>
+                </tableViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="CNG-hO-b7A" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <exit id="P88-cm-4Gl" userLabel="Exit" sceneMemberID="exit"/>
+            </objects>
+            <point key="canvasLocation" x="7922.65625" y="1246.875"/>
         </scene>
     </scenes>
+    <inferredMetricsTieBreakers>
+        <segue reference="Fgt-US-6Ez"/>
+        <segue reference="0fe-13-GUd"/>
+        <segue reference="M4J-mO-49e"/>
+        <segue reference="eOg-7f-ZC7"/>
+        <segue reference="Ch9-qF-y79"/>
+    </inferredMetricsTieBreakers>
     <resources>
         <image name="Keyboard Hide" width="30" height="30"/>
         <image name="Keyboard Paste" width="30" height="30"/>
         <image name="Play Icon" width="50" height="50"/>
+        <image name="Resume Icon" width="50" height="50"/>
         <image name="Toolbar Hide" width="30" height="30"/>
         <image name="Toolbar Keyboard" width="30" height="30"/>
-        <image name="Toolbar Left" width="30" height="30"/>
         <image name="Toolbar Maximize" width="30" height="30"/>
         <image name="Toolbar Pause" width="30" height="30"/>
         <image name="Toolbar Power" width="30" height="30"/>
+        <image name="Toolbar Restart" width="30" height="30"/>
         <image name="Toolbar Settings" width="30" height="30"/>
     </resources>
-    <inferredMetricsTieBreakers>
-        <segue reference="0fe-13-GUd"/>
-        <segue reference="M4J-mO-49e"/>
-        <segue reference="QMb-O0-K4I"/>
-        <segue reference="Ch9-qF-y79"/>
-    </inferredMetricsTieBreakers>
 </document>

@@ -18,11 +18,6 @@ set -e
 # Include URL list
 source "$(dirname $0)/sources"
 
-# Directories
-BUILD_DIR="build"
-PATCHES_DIR="patches"
-SYSROOT_DIR="sysroot"
-
 # Printing coloured lines
 GREEN='\033[0;32m'
 RED='\033[0;31m'
@@ -37,10 +32,6 @@ NCPU=$(sysctl -n hw.ncpu)
 command -v realpath >/dev/null 2>&1 || realpath() {
     [[ $1 = /* ]] && echo "$1" || echo "$PWD/${1#./}"
 }
-
-[ -d "$SYSROOT_DIR" ] || mkdir -p "$SYSROOT_DIR"
-PREFIX="$(realpath "$SYSROOT_DIR")"
-BASEDIR="$(dirname "$(realpath $0)")"
 
 usage () {
     echo "Usage: [VARIABLE...] $(basename $0) [-a architecture] [-d] [-r] [-q]"
@@ -345,6 +336,15 @@ if [ -z "$SDK" ]; then
         ;;
     esac
 fi
+
+# Setup directories
+BUILD_DIR="build-$ARCH"
+PATCHES_DIR="patches"
+SYSROOT_DIR="sysroot-$ARCH"
+
+[ -d "$SYSROOT_DIR" ] || mkdir -p "$SYSROOT_DIR"
+PREFIX="$(realpath "$SYSROOT_DIR")"
+BASEDIR="$(dirname "$(realpath $0)")"
 
 # Export supplied SDKVERSION or use system default
 if [ ! -z "$SDKVERSION" ]; then

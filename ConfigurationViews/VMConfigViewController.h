@@ -25,6 +25,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) BOOL doneLoadingConfiguration;
 
 - (void)pickerCell:(nonnull UITableViewCell *)pickerCell setActive:(BOOL)active;
+- (void)showAlert:(NSString *)msg completion:(nullable void (^)(UIAlertAction *action))completion;
+- (void)showUnimplementedAlert;
 
 @end
 
