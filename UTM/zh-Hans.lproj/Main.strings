@@ -514,3 +514,13 @@
 
 /* Class = "UILabel"; text = "Architecture"; ObjectID = "ziF-JQ-bTj"; */
 "ziF-JQ-bTj.text" = "架构";
+
+/* Class = "UILabel"; text = "Debug Log"; ObjectID = "o5n-nQ-vae"; */
+"o5n-nQ-vae.text" = "记录日志";
+
+/* Class = "UILabel"; text = "Export Log..."; ObjectID = "vU7-wd-ipe"; */
+"vU7-wd-ipe.text" = "导出日志";
+
+/* Class = "UITableViewSection"; headerTitle = "DEBUG"; ObjectID = "WkA-K4-U3C"; */
+"WkA-K4-U3C.headerTitle" = "调试选项";
+

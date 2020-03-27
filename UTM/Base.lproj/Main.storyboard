@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="16095" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="cR9-D8-uOs">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="16096" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="cR9-D8-uOs">
     <device id="retina5_9" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="16084.1"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="16086"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -184,7 +184,7 @@
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" returnKeyType="done" enablesReturnKeyAutomatically="YES" smartDashesType="no" smartInsertDeleteType="no" smartQuotesType="no"/>
                                                     <connections>
-                                                        <action selector="nameFieldChanged:" destination="wwu-oM-NlF" eventType="editingChanged" id="2g2-v9-F4m"/>
+                                                        <action selector="nameFieldEdited:" destination="wwu-oM-NlF" eventType="editingDidEnd" id="NLa-0h-ihw"/>
                                                         <outlet property="delegate" destination="wwu-oM-NlF" id="qOT-JA-rbc"/>
                                                     </connections>
                                                 </textField>
@@ -425,17 +425,19 @@
                                 <action selector="cancelPressed:" destination="wwu-oM-NlF" id="38P-XZ-ukw"/>
                             </connections>
                         </barButtonItem>
-                        <barButtonItem key="rightBarButtonItem" systemItem="save" id="CIG-Ca-qeI">
+                        <barButtonItem key="rightBarButtonItem" systemItem="done" id="CIG-Ca-qeI">
                             <connections>
                                 <segue destination="02X-bv-TXV" kind="unwind" unwindAction="unwindToMainFromConfiguration:" id="2rX-Um-tE1"/>
                             </connections>
                         </barButtonItem>
+                        <connections>
+                            <outlet property="rightBarButtonItem" destination="CIG-Ca-qeI" id="XnF-Ud-34j"/>
+                        </connections>
                     </navigationItem>
                     <connections>
                         <outlet property="debugLogSwitch" destination="BSZ-1U-IA5" id="9Ng-Uj-8Ka"/>
                         <outlet property="exportLogCell" destination="cHJ-DX-PQX" id="644-og-r2w"/>
                         <outlet property="nameField" destination="2Kh-jJ-awN" id="rec-m9-Zvs"/>
-                        <outlet property="saveButton" destination="CIG-Ca-qeI" id="vi5-3n-TPx"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="yqY-fN-Wux" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -1384,7 +1386,7 @@
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" returnKeyType="done" enablesReturnKeyAutomatically="YES" smartDashesType="no" smartInsertDeleteType="no" smartQuotesType="no"/>
                                                     <connections>
-                                                        <action selector="nameFieldChanged:" destination="kXN-s4-nI5" eventType="editingChanged" id="hAg-Dz-Ju2"/>
+                                                        <action selector="nameFieldChanged:" destination="kXN-s4-nI5" eventType="editingChanged" id="Ev7-9k-YAg"/>
                                                         <outlet property="delegate" destination="kXN-s4-nI5" id="p5U-UO-88O"/>
                                                     </connections>
                                                 </textField>
@@ -1651,7 +1653,6 @@
                         <outlet property="cpuCountField" destination="VBD-VX-Usg" id="qYL-RD-lGz"/>
                         <outlet property="memorySizeField" destination="S2s-iX-Lul" id="ezQ-w3-PtG"/>
                         <outlet property="nameField" destination="0TR-HU-09X" id="zWp-xu-yF7"/>
-                        <outlet property="saveButton" destination="8d3-Up-KUL" id="Gv6-OH-EJ6"/>
                         <segue destination="wwu-oM-NlF" kind="show" identifier="createVMToConfiguration" id="Ch9-qF-y79"/>
                         <segue destination="7o9-KZ-PyF" kind="unwind" identifier="createVMDone" unwindAction="unwindToMainFromConfiguration:" id="STr-lU-oz5"/>
                     </connections>
@@ -2355,7 +2356,7 @@
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="DZc-Sg-gjO" userLabel="First Responder" sceneMemberID="firstResponder"/>
-                <view contentMode="scaleToFill" id="H7m-pq-dCg" customClass="UIInputView">
+                <view contentMode="scaleToFill" ambiguous="YES" id="H7m-pq-dCg" customClass="UIInputView">
                     <rect key="frame" x="0.0" y="0.0" width="1000" height="68"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     <subviews>
@@ -2469,7 +2470,7 @@
                                 <action selector="keyboardPastePressed:" destination="ckC-eO-gxn" eventType="touchUpInside" id="hAG-23-YnR"/>
                             </connections>
                         </button>
-                        <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2BY-mt-E6G">
+                        <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" ambiguous="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2BY-mt-E6G">
                             <rect key="frame" x="160" y="0.0" width="756" height="68"/>
                             <subviews>
                                 <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="p57-ic-h8k">
@@ -2881,6 +2882,25 @@
                                             </constraints>
                                         </tableViewCellContentView>
                                     </tableViewCell>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" rowHeight="169" id="clU-3f-ovR">
+                                        <rect key="frame" x="0.0" y="99.333332061767578" width="375" height="169"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="clU-3f-ovR" id="vGP-Ua-FjP">
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="169"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <pickerView contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Sgt-1G-xIj">
+                                                    <rect key="frame" x="16" y="11" width="343" height="138"/>
+                                                </pickerView>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstItem="Sgt-1G-xIj" firstAttribute="top" secondItem="vGP-Ua-FjP" secondAttribute="topMargin" id="5vV-Wd-PuD"/>
+                                                <constraint firstItem="Sgt-1G-xIj" firstAttribute="leading" secondItem="vGP-Ua-FjP" secondAttribute="leadingMargin" id="ccZ-nh-RZV"/>
+                                                <constraint firstAttribute="trailingMargin" secondItem="Sgt-1G-xIj" secondAttribute="trailing" id="p9G-6b-447"/>
+                                                <constraint firstAttribute="bottom" secondItem="Sgt-1G-xIj" secondAttribute="bottom" constant="20" symbolic="YES" id="wbD-jV-ziS"/>
+                                            </constraints>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
                                 </cells>
                             </tableViewSection>
                         </sections>
@@ -2891,12 +2911,14 @@
                     </tableView>
                     <navigationItem key="navigationItem" title="Sound" id="MGj-2L-8uR"/>
                     <connections>
+                        <outlet property="soundCardPickerView" destination="Sgt-1G-xIj" id="3dh-Ap-rRg"/>
+                        <outlet property="soundCardPickerViewTableViewCell" destination="clU-3f-ovR" id="kcE-Ah-KLl"/>
                         <outlet property="soundEnabledSwitch" destination="ZtR-9f-f7S" id="8SC-LV-A0r"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="nmu-6O-cOT" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="6343" y="548"/>
+            <point key="canvasLocation" x="6341.6000000000004" y="546.79802955665025"/>
         </scene>
         <!--Sharing-->
         <scene sceneID="KwH-8W-rLT">
@@ -3148,7 +3170,7 @@
         <segue reference="Fgt-US-6Ez"/>
         <segue reference="0fe-13-GUd"/>
         <segue reference="M4J-mO-49e"/>
-        <segue reference="eOg-7f-ZC7"/>
+        <segue reference="QMb-O0-K4I"/>
         <segue reference="Ch9-qF-y79"/>
     </inferredMetricsTieBreakers>
     <resources>
