@@ -24,6 +24,10 @@ NS_ASSUME_NONNULL_BEGIN
 @property (weak, nonatomic) IBOutlet UIPickerView *soundCardPickerView;
 @property (weak, nonatomic) IBOutlet UITableViewCell *soundCardPickerViewTableViewCell;
 @property (weak, nonatomic) IBOutlet UISwitch *soundEnabledSwitch;
+@property (weak, nonatomic) IBOutlet UITableViewCell *soundHardwareCell;
+@property (weak, nonatomic) IBOutlet UILabel *soundHardwareLabel;
+@property (nonatomic, assign) BOOL soundEnabled;
+@property (nonatomic, assign) BOOL soundHardwarePickerActive;
 
 - (IBAction)soundEnabledSwitchChanged:(UISwitch *)sender;
 

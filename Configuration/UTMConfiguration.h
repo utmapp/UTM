@@ -27,6 +27,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSArray<NSString *>*)supportedBootDevicesPretty;
 + (NSArray<NSString *>*)supportedBootDevices;
 + (NSArray<NSString *>*)supportedSoundCardDevices;
++ (NSArray<NSString *>*)supportedSoundCardDevicesPretty;
 + (NSArray<NSString *>*)supportedTargetsForArchitecture:(NSString *)architecture;
 + (NSArray<NSString *>*)supportedTargetsForArchitecturePretty:(NSString *)architecture;
 + (NSInteger)defaultTargetIndexForArchitecture:(NSString *)architecture;

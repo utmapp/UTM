@@ -125,7 +125,21 @@ const NSString *const kUTMConfigDebugLogKey = @"DebugLog";
              @"sb16",
              @"cs4231a",
              @"adlib",
-             @"gus"
+             @"gus",
+             @"pcspk"
+             ];
+}
+
++ (NSArray<NSString *>*)supportedSoundCardDevicesPretty {
+     return @[
+             @"Intel 82801AA AC97 Audio",
+             @"Intel HD Audio",
+             @"ENSONIQ AudioPCI ES1370",
+             @"Creative Sound Blaster 16",
+             @"CS4231A",
+             @"Yamaha YM3812 (OPL2)",
+             @"Gravis Ultrasound GF1",
+             @"PC speaker"
              ];
 }
 
@@ -1583,7 +1597,7 @@ const NSString *const kUTMConfigDebugLogKey = @"DebugLog";
     _rootDict[kUTMConfigSoundKey][kUTMConfigSoundCardDeviceKey] = soundCard;
 }
 
-- (NSString *) soundCard {
+- (NSString *)soundCard {
     return _rootDict[kUTMConfigSoundKey][kUTMConfigSoundCardDeviceKey];
 }
 
