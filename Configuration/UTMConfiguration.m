@@ -58,6 +58,7 @@ const NSString *const kUTMConfigSoundCardDeviceKey = @"SoundCard";
 const NSString *const kUTMConfigChipboardSharingKey = @"ClipboardSharing";
 
 const NSString *const kUTMConfigImagePathKey = @"ImagePath";
+const NSString *const kUTMConfigImageTypeKey = @"ImageType";
 const NSString *const kUTMConfigInterfaceTypeKey = @"InterfaceType";
 const NSString *const kUTMConfigCdromKey = @"Cdrom";
 
@@ -192,6 +193,28 @@ const NSString *const kUTMConfigDebugLogKey = @"DebugLog";
              @"hdd",
              @"cd",
              @"floppy"
+             ];
+}
+
++ (NSArray<NSString *>*)supportedImageTypesPretty {
+    return @[
+             NSLocalizedString(@"Disk Image", "UTMConfiguration"),
+             NSLocalizedString(@"CD/DVD Image", "UTMConfiguration"),
+             NSLocalizedString(@"BIOS", "UTMConfiguration"),
+             NSLocalizedString(@"Linux Kernel", "UTMConfiguration"),
+             NSLocalizedString(@"Linux RAM Disk", "UTMConfiguration"),
+             NSLocalizedString(@"Linux Device Tree Binary", "UTMConfiguration")
+             ];
+}
+
++ (NSArray<NSString *>*)supportedImageTypes {
+    return @[
+             @"disk",
+             @"cd",
+             @"bios",
+             @"kernel",
+             @"initrd",
+             @"dtb"
              ];
 }
 
@@ -1328,6 +1351,17 @@ const NSString *const kUTMConfigDebugLogKey = @"DebugLog";
     if (!_rootDict[kUTMConfigSoundKey][kUTMConfigSoundCardDeviceKey]) {
         _rootDict[kUTMConfigSoundKey][kUTMConfigSoundCardDeviceKey] = [UTMConfiguration supportedSoundCardDevices][0];
     }
+    // Migrate Cdrom => ImageType
+    [_rootDict[kUTMConfigDrivesKey] enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        if (!obj[kUTMConfigImageTypeKey]) {
+            if (obj[kUTMConfigCdromKey]) {
+                [self setDriveImageType:UTMDiskImageTypeCD forIndex:idx];
+            } else {
+                [self setDriveImageType:UTMDiskImageTypeDisk forIndex:idx];
+            }
+            [obj removeObjectForKey:kUTMConfigCdromKey];
+        }
+    }];
 }
 
 #pragma mark - Initialization
@@ -1621,12 +1655,13 @@ const NSString *const kUTMConfigDebugLogKey = @"DebugLog";
     return [_rootDict[kUTMConfigDrivesKey] count];
 }
 
-- (NSUInteger)newDrive:(NSString *)name interface:(NSString *)interface isCdrom:(BOOL)isCdrom {
+- (NSUInteger)newDrive:(NSString *)name type:(UTMDiskImageType)type interface:(NSString *)interface {
     NSUInteger index = [self countDrives];
+    NSString *strType = [UTMConfiguration supportedImageTypes][type];
     NSMutableDictionary *drive = [[NSMutableDictionary alloc] initWithDictionary:@{
                                                                                    kUTMConfigImagePathKey: name,
-                                                                                   kUTMConfigInterfaceTypeKey: interface,
-                                                                                   kUTMConfigCdromKey: @(isCdrom)
+                                                                                   kUTMConfigImageTypeKey: strType,
+                                                                                   kUTMConfigInterfaceTypeKey: interface
                                                                                    }];
     [_rootDict[kUTMConfigDrivesKey] addObject:drive];
     return index;
@@ -1648,12 +1683,19 @@ const NSString *const kUTMConfigDebugLogKey = @"DebugLog";
     _rootDict[kUTMConfigDrivesKey][index][kUTMConfigInterfaceTypeKey] = interfaceType;
 }
 
-- (BOOL)driveIsCdromForIndex:(NSUInteger)index {
-    return [_rootDict[kUTMConfigDrivesKey][index][kUTMConfigCdromKey] boolValue];
+- (UTMDiskImageType)driveImageTypeForIndex:(NSUInteger)index {
+    NSString *strType = _rootDict[kUTMConfigDrivesKey][index][kUTMConfigImageTypeKey];
+    NSUInteger type = [[UTMConfiguration supportedImageTypes] indexOfObject:strType];
+    if (type == NSNotFound || type >= UTMDiskImageTypeMax) {
+        return UTMDiskImageTypeDisk;
+    } else {
+        return (UTMDiskImageType)type;
+    }
 }
 
-- (void)setDriveIsCdrom:(BOOL)isCdrom forIndex:(NSUInteger)index {
-    _rootDict[kUTMConfigDrivesKey][index][kUTMConfigCdromKey] = @(isCdrom);
+- (void)setDriveImageType:(UTMDiskImageType)type forIndex:(NSUInteger)index {
+    NSString *strType = [UTMConfiguration supportedImageTypes][type];
+    _rootDict[kUTMConfigDrivesKey][index][kUTMConfigImageTypeKey] = strType;
 }
 
 - (void)moveDriveIndex:(NSUInteger)index to:(NSUInteger)newIndex {

@@ -47,6 +47,53 @@
     }
 }
 
+- (void)argsForDrives {
+    for (NSUInteger i = 0; i < self.configuration.countDrives; i++) {
+        NSString *path = [self.configuration driveImagePathForIndex:i];
+        UTMDiskImageType type = [self.configuration driveImageTypeForIndex:i];
+        NSURL *fullPathURL;
+        
+        if ([path characterAtIndex:0] == '/') {
+            fullPathURL = [NSURL fileURLWithPath:path isDirectory:NO];
+        } else {
+            fullPathURL = [[self.imgPath URLByAppendingPathComponent:[UTMConfiguration diskImagesDirectory]] URLByAppendingPathComponent:[self.configuration driveImagePathForIndex:i]];
+        }
+        
+        switch (type) {
+            case UTMDiskImageTypeDisk:
+            case UTMDiskImageTypeCD: {
+                [self pushArgv:@"-drive"];
+                [self pushArgv:[NSString stringWithFormat:@"file=%@,if=%@,media=%@,id=drive%lu", fullPathURL.path, [self.configuration driveInterfaceTypeForIndex:i], type == UTMDiskImageTypeCD ? @"cdrom" : @"disk", i]];
+                break;
+            }
+            case UTMDiskImageTypeBIOS: {
+                [self pushArgv:@"-bios"];
+                [self pushArgv:fullPathURL.path];
+                break;
+            }
+            case UTMDiskImageTypeKernel: {
+                [self pushArgv:@"-bios"];
+                [self pushArgv:fullPathURL.path];
+                break;
+            }
+            case UTMDiskImageTypeInitrd: {
+                [self pushArgv:@"-initrd"];
+                [self pushArgv:fullPathURL.path];
+                break;
+            }
+            case UTMDiskImageTypeDTB: {
+                [self pushArgv:@"-dtb"];
+                [self pushArgv:fullPathURL.path];
+                break;
+            }
+            default: {
+                NSLog(@"WARNING: unknown image type %lu, ignoring image %@", type, fullPathURL);
+                break;
+            }
+        }
+    }
+}
+
 - (void)argsFromConfiguration {
     [self clearArgv];
     [self pushArgv:@"qemu"];
@@ -84,18 +131,7 @@
     }
     [self pushArgv:@"-name"];
     [self pushArgv:self.configuration.name];
-    for (NSUInteger i = 0; i < self.configuration.countDrives; i++) {
-        NSString *path = [self.configuration driveImagePathForIndex:i];
-        NSURL *fullPathURL;
-        
-        if ([path characterAtIndex:0] == '/') {
-            fullPathURL = [NSURL fileURLWithPath:path isDirectory:NO];
-        } else {
-            fullPathURL = [[self.imgPath URLByAppendingPathComponent:[UTMConfiguration diskImagesDirectory]] URLByAppendingPathComponent:[self.configuration driveImagePathForIndex:i]];
-        }
-        [self pushArgv:@"-drive"];
-        [self pushArgv:[NSString stringWithFormat:@"file=%@,if=%@,media=%@", fullPathURL.path, [self.configuration driveInterfaceTypeForIndex:i], [self.configuration driveIsCdromForIndex:i] ? @"cdrom" : @"disk"]];
-    }
+    [self argsForDrives];
     if (self.configuration.displayConsoleOnly) {
         [self pushArgv:@"-display"];
         [self pushArgv:@"curses"];

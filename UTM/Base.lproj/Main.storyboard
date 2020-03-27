@@ -228,7 +228,7 @@
                                             <rect key="frame" x="0.0" y="0.0" width="348" height="44"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="Drives" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="1FD-SU-TVn">
+                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="Drives/Images" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="1FD-SU-TVn">
                                                     <rect key="frame" x="16" y="0.0" width="324" height="44"/>
                                                     <autoresizingMask key="autoresizingMask"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
@@ -1536,7 +1536,7 @@
                                             <rect key="frame" x="0.0" y="0.0" width="348" height="44"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="Setup Drives" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="AP0-ME-jBc">
+                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="Setup Drives/Images" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="AP0-ME-jBc">
                                                     <rect key="frame" x="16" y="0.0" width="324" height="44"/>
                                                     <autoresizingMask key="autoresizingMask"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
@@ -1662,7 +1662,7 @@
             </objects>
             <point key="canvasLocation" x="3822" y="-174"/>
         </scene>
-        <!--Drives-->
+        <!--Drives/Images-->
         <scene sceneID="frg-Du-mUP">
             <objects>
                 <tableViewController id="Mbd-uC-JXQ" customClass="VMConfigDrivesViewController" sceneMemberID="viewController">
@@ -1704,7 +1704,7 @@
                             <outlet property="delegate" destination="Mbd-uC-JXQ" id="4EE-UV-fK0"/>
                         </connections>
                     </tableView>
-                    <navigationItem key="navigationItem" title="Drives" id="aCz-nM-j4Z">
+                    <navigationItem key="navigationItem" title="Drives/Images" id="aCz-nM-j4Z">
                         <barButtonItem key="rightBarButtonItem" systemItem="add" id="qA2-R7-Odo">
                             <connections>
                                 <segue destination="LEE-I0-SfL" kind="show" identifier="newDrive" id="6UF-TT-taS"/>
@@ -1719,7 +1719,7 @@
             </objects>
             <point key="canvasLocation" x="7102" y="-174"/>
         </scene>
-        <!--New Drive-->
+        <!--New Drive/Image-->
         <scene sceneID="icA-s0-dTz">
             <objects>
                 <tableViewController id="LEE-I0-SfL" customClass="VMConfigDriveDetailViewController" sceneMemberID="viewController">
@@ -1759,40 +1759,57 @@
                                     </tableViewCell>
                                 </cells>
                             </tableViewSection>
-                            <tableViewSection headerTitle="Type" id="S3p-5d-Mq8">
+                            <tableViewSection headerTitle="Location" id="eeY-js-xSc">
                                 <cells>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" id="hYN-7w-tk5">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" textLabel="xoO-as-9Kn" detailTextLabel="Ffd-jl-gNs" style="IBUITableViewCellStyleValue1" id="fSV-PP-Loi">
                                         <rect key="frame" x="0.0" y="155.33333206176758" width="375" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
-                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="hYN-7w-tk5" id="MTf-if-aHq">
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="fSV-PP-Loi" id="Fih-eK-Ft9">
                                             <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="rQW-wG-USc">
-                                                    <rect key="frame" x="310" y="6.6666666666666679" width="51" height="31.000000000000004"/>
-                                                    <connections>
-                                                        <action selector="isCdromSwitchChanged:" destination="LEE-I0-SfL" eventType="valueChanged" id="7QO-iL-8iC"/>
-                                                    </connections>
-                                                </switch>
-                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="CD/DVD Drive" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="qVo-Pu-Z7E">
-                                                    <rect key="frame" x="16" y="11.666666666666664" width="107" height="21"/>
+                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="Image Type" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="xoO-as-9Kn">
+                                                    <rect key="frame" x="16" y="11.999999999999998" width="89" height="20.333333333333332"/>
+                                                    <autoresizingMask key="autoresizingMask"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="Disk" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="Ffd-jl-gNs">
+                                                    <rect key="frame" x="325.66666666666669" y="11.999999999999998" width="33.333333333333336" height="20.333333333333332"/>
+                                                    <autoresizingMask key="autoresizingMask"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                             </subviews>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" rowHeight="150" id="YgW-mV-1ua">
+                                        <rect key="frame" x="0.0" y="199.33333206176758" width="375" height="150"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="YgW-mV-1ua" id="Ku1-DF-BT1">
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="150"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <pickerView contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="1y9-u8-J3t">
+                                                    <rect key="frame" x="0.0" y="0.0" width="375" height="150"/>
+                                                    <connections>
+                                                        <outlet property="dataSource" destination="LEE-I0-SfL" id="49Y-0X-fOv"/>
+                                                        <outlet property="delegate" destination="LEE-I0-SfL" id="Dox-xC-nTt"/>
+                                                    </connections>
+                                                </pickerView>
+                                            </subviews>
                                             <constraints>
-                                                <constraint firstItem="qVo-Pu-Z7E" firstAttribute="centerY" secondItem="MTf-if-aHq" secondAttribute="centerY" id="741-Wd-a8m"/>
-                                                <constraint firstItem="qVo-Pu-Z7E" firstAttribute="leading" secondItem="MTf-if-aHq" secondAttribute="leadingMargin" id="EZm-3v-FzD"/>
-                                                <constraint firstItem="qVo-Pu-Z7E" firstAttribute="leading" secondItem="MTf-if-aHq" secondAttribute="leadingMargin" id="I6u-sq-aLF"/>
-                                                <constraint firstItem="rQW-wG-USc" firstAttribute="trailing" secondItem="MTf-if-aHq" secondAttribute="trailingMargin" id="K7n-k0-GOa"/>
-                                                <constraint firstItem="rQW-wG-USc" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="qVo-Pu-Z7E" secondAttribute="trailing" constant="8" symbolic="YES" id="NBe-RU-Sck"/>
-                                                <constraint firstItem="rQW-wG-USc" firstAttribute="centerY" secondItem="MTf-if-aHq" secondAttribute="centerY" id="SPQ-As-Hkv"/>
+                                                <constraint firstAttribute="bottom" secondItem="1y9-u8-J3t" secondAttribute="bottom" id="1pj-AA-fXb"/>
+                                                <constraint firstAttribute="trailing" secondItem="1y9-u8-J3t" secondAttribute="trailing" id="BsZ-4w-TX7"/>
+                                                <constraint firstItem="1y9-u8-J3t" firstAttribute="top" secondItem="Ku1-DF-BT1" secondAttribute="top" id="bM1-ih-zw5"/>
+                                                <constraint firstItem="1y9-u8-J3t" firstAttribute="leading" secondItem="Ku1-DF-BT1" secondAttribute="leading" id="yeO-K4-Wjl"/>
                                             </constraints>
                                         </tableViewCellContentView>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" textLabel="EGI-JP-qwU" detailTextLabel="rbw-FB-I5Q" style="IBUITableViewCellStyleValue1" id="17E-cW-AVf">
-                                        <rect key="frame" x="0.0" y="199.33333206176758" width="375" height="44"/>
+                                        <rect key="frame" x="0.0" y="349.33333206176758" width="375" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="17E-cW-AVf" id="gtn-y6-uIO">
                                             <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
@@ -1816,7 +1833,7 @@
                                         </tableViewCellContentView>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" rowHeight="150" id="zfI-4u-KMR">
-                                        <rect key="frame" x="0.0" y="243.33333206176758" width="375" height="150"/>
+                                        <rect key="frame" x="0.0" y="393.33333206176758" width="375" height="150"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="zfI-4u-KMR" id="pIS-w8-SdC">
                                             <rect key="frame" x="0.0" y="0.0" width="375" height="150"/>
@@ -1846,22 +1863,24 @@
                             <outlet property="delegate" destination="LEE-I0-SfL" id="WME-fa-dbI"/>
                         </connections>
                     </tableView>
-                    <navigationItem key="navigationItem" title="New Drive" id="XLc-iy-COp"/>
+                    <navigationItem key="navigationItem" title="New Drive/Image" id="XLc-iy-COp"/>
                     <connections>
                         <outlet property="driveLocationCell" destination="17E-cW-AVf" id="eCz-uS-37D"/>
                         <outlet property="driveLocationLabel" destination="rbw-FB-I5Q" id="FOM-nv-VVg"/>
                         <outlet property="driveLocationPicker" destination="3H8-Sz-6cX" id="P6x-pX-NHo"/>
                         <outlet property="driveLocationPickerCell" destination="zfI-4u-KMR" id="ii9-3e-csO"/>
                         <outlet property="existingPathLabel" destination="iuP-Eh-P68" id="dti-2P-X2T"/>
-                        <outlet property="isCdromSwitch" destination="rQW-wG-USc" id="rFi-W4-S4A"/>
-                        <outletCollection property="existingImageCells" destination="VTl-xi-ink" id="cit-e9-wJe"/>
+                        <outlet property="imageTypeCell" destination="fSV-PP-Loi" id="4ma-iT-EYU"/>
+                        <outlet property="imageTypeLabel" destination="Ffd-jl-gNs" id="vZD-KN-8gx"/>
+                        <outlet property="imageTypePicker" destination="1y9-u8-J3t" id="BdV-O6-g13"/>
+                        <outlet property="imageTypePickerCell" destination="YgW-mV-1ua" id="Jjv-Im-GRa"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="739-VZ-bsH" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="7102" y="548"/>
         </scene>
-        <!--Select Disk-->
+        <!--Select Image-->
         <scene sceneID="FMg-xw-jFk">
             <objects>
                 <tableViewController id="yxX-vB-sfR" customClass="VMConfigDrivePickerViewController" sceneMemberID="viewController">
@@ -1893,7 +1912,7 @@
                             <outlet property="delegate" destination="yxX-vB-sfR" id="hOW-yK-do3"/>
                         </connections>
                     </tableView>
-                    <navigationItem key="navigationItem" title="Select Disk" id="340-Mu-Hwt">
+                    <navigationItem key="navigationItem" title="Select Image" id="340-Mu-Hwt">
                         <barButtonItem key="rightBarButtonItem" systemItem="add" id="wRh-dq-epo">
                             <connections>
                                 <action selector="addButton:" destination="yxX-vB-sfR" id="VTk-Cg-rsg"/>
@@ -3200,7 +3219,7 @@
         <segue reference="Fgt-US-6Ez"/>
         <segue reference="0fe-13-GUd"/>
         <segue reference="M4J-mO-49e"/>
-        <segue reference="QMb-O0-K4I"/>
+        <segue reference="eOg-7f-ZC7"/>
         <segue reference="Ch9-qF-y79"/>
     </inferredMetricsTieBreakers>
     <resources>
