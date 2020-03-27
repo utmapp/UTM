@@ -90,7 +90,7 @@
                 break;
             }
             case UTMDiskImageTypeKernel: {
-                [self pushArgv:@"-bios"];
+                [self pushArgv:@"-kernel"];
                 [self pushArgv:fullPathURL.path];
                 break;
             }
