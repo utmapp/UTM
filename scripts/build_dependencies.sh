@@ -412,7 +412,7 @@ fi
 fixup_all
 remove_shared_gst_plugins # another hack...
 generate_qapi $QEMU_SRC
-cd "$SYSROOT_DIR/share/qemu/" #get efi firmware for aarch64
-curl -L -O $QEMU_AARCH64_EFI
+curl -L -O $QEMU_AARCH64_EFI #get efi firmware for aarch64
+cp "QEMU_EFI.fd" "$SYSROOT_DIR/share/qemu/"
 echo "${GREEN}All done!${NC}"
 touch "$BUILD_DIR/BUILD_SUCCESS"
