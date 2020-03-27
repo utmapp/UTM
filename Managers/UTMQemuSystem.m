@@ -119,6 +119,9 @@
             [netstr appendString:@"restrict=on"];
         }
         [self pushArgv:netstr];
+    } else {
+        [self pushArgv:@"-nic"];
+        [self pushArgv:@"none"];
     }
     if (self.snapshot) {
         [self pushArgv:@"-loadvm"];
