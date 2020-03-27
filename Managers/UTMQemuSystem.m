@@ -177,6 +177,10 @@
         [self pushArgv:@"-nic"];
         [self pushArgv:@"none"];
     }
+    if (self.configuration.inputTouchscreenMode) {
+        [self pushArgv:@"-device"];
+        [self pushArgv:@"usb-tablet"];
+    }
     if (self.snapshot) {
         [self pushArgv:@"-loadvm"];
         [self pushArgv:self.snapshot];
