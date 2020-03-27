@@ -36,6 +36,17 @@
     }
 }
 
+- (void)targetSpecificConfiguration {
+    if ([self.configuration.systemArchitecture isEqualToString:@"aarch64"] ||
+        [self.configuration.systemArchitecture isEqualToString:@"arm"]) {
+        if ([self.configuration.systemTarget hasPrefix:@"virt"]) {
+            // this is required for virt devices
+            [self pushArgv:@"-device"];
+            [self pushArgv:@"virtio-gpu-pci"];
+        }
+    }
+}
+
 - (void)argsFromConfiguration {
     [self clearArgv];
     [self pushArgv:@"qemu"];
@@ -56,6 +67,7 @@
         [self pushArgv:[self.configuration.systemJitCacheSize stringValue]];
     }
     [self architectureSpecificConfiguration];
+    [self targetSpecificConfiguration];
     if (![self.configuration.systemBootDevice isEqualToString:@"hdd"]) {
         [self pushArgv:@"-boot"];
         if ([self.configuration.systemBootDevice isEqualToString:@"floppy"]) {
