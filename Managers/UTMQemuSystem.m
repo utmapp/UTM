@@ -37,12 +37,30 @@
 }
 
 - (void)targetSpecificConfiguration {
-    if ([self.configuration.systemArchitecture isEqualToString:@"aarch64"] ||
-        [self.configuration.systemArchitecture isEqualToString:@"arm"]) {
-        if ([self.configuration.systemTarget hasPrefix:@"virt"]) {
-            // this is required for virt devices
+    if ([self.configuration.systemTarget hasPrefix:@"virt"]) {
+        if ([self.configuration.systemArchitecture isEqualToString:@"aarch64"]) {
+            [self pushArgv:@"-cpu"];
+            [self pushArgv:@"cortex-a72"];
+        }
+        // this is required for virt devices
+        [self pushArgv:@"-device"];
+        [self pushArgv:@"virtio-gpu-pci"];
+        [self pushArgv:@"-device"];
+        [self pushArgv:@"usb-ehci"];
+        [self pushArgv:@"-device"];
+        [self pushArgv:@"usb-kbd"];
+        if (!self.configuration.inputTouchscreenMode) {
+            // virt requires USB mouse
+            // if we're in touchscreen mode, we already added usb-tablet
             [self pushArgv:@"-device"];
-            [self pushArgv:@"virtio-gpu-pci"];
+            [self pushArgv:@"usb-mouse"];
+        }
+        for (NSUInteger i = 0; i < self.configuration.countDrives; i++) {
+            UTMDiskImageType type = [self.configuration driveImageTypeForIndex:i];
+            if (type == UTMDiskImageTypeDisk || type == UTMDiskImageTypeCD) {
+                [self pushArgv:@"-device"];
+                [self pushArgv:[NSString stringWithFormat:@"virtio-blk,drive=drive%lu", i]];
+            }
         }
     }
 }
