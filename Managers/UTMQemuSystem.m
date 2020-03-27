@@ -28,6 +28,14 @@
     return self;
 }
 
+- (void)architectureSpecificConfiguration {
+    if ([self.configuration.systemArchitecture isEqualToString:@"x86_64"] ||
+        [self.configuration.systemArchitecture isEqualToString:@"i386"]) {
+        [self pushArgv:@"-vga"];
+        [self pushArgv:@"qxl"];
+    }
+}
+
 - (void)argsFromConfiguration {
     [self clearArgv];
     [self pushArgv:@"qemu"];
@@ -47,11 +55,7 @@
         [self pushArgv:@"-tb-size"];
         [self pushArgv:[self.configuration.systemJitCacheSize stringValue]];
     }
-    if ([self.configuration.systemArchitecture isEqualToString:@"x86_64"] ||
-        [self.configuration.systemArchitecture isEqualToString:@"i386"]) {
-        [self pushArgv:@"-vga"];
-        [self pushArgv:@"qxl"];
-    }
+    [self architectureSpecificConfiguration];
     if (![self.configuration.systemBootDevice isEqualToString:@"hdd"]) {
         [self pushArgv:@"-boot"];
         if ([self.configuration.systemBootDevice isEqualToString:@"floppy"]) {
