@@ -120,7 +120,7 @@
 "Dx6-pD-sU3.placeholder" = "hda.img";
 
 /* Class = "UILabel"; text = "Location"; ObjectID = "EGI-JP-qwU"; */
-"EGI-JP-qwU.text" = "类型";
+"EGI-JP-qwU.text" = "接口类型";
 
 /* Class = "UIButton"; normalTitle = "F12"; ObjectID = "EIz-R9-Ca8"; */
 "EIz-R9-Ca8.normalTitle" = "F12";
@@ -523,4 +523,7 @@
 
 /* Class = "UITableViewSection"; headerTitle = "DEBUG"; ObjectID = "WkA-K4-U3C"; */
 "WkA-K4-U3C.headerTitle" = "调试选项";
+
+/* Class = "UILabel"; text = "Image Type"; ObjectID = "xoO-as-9Kn"; */
+"xoO-as-9Kn.text" = "镜像类型";
 
