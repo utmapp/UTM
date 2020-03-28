@@ -2148,7 +2148,7 @@
                                                 </constraints>
                                             </view>
                                             <vibrancyEffect>
-                                                <blurEffect style="regular"/>
+                                                <blurEffect style="dark"/>
                                             </vibrancyEffect>
                                         </visualEffectView>
                                     </subviews>
@@ -2159,7 +2159,7 @@
                                         <constraint firstItem="0wd-zl-ieP" firstAttribute="leading" secondItem="Ebe-6D-2qI" secondAttribute="leading" id="ek3-bx-slP"/>
                                     </constraints>
                                 </view>
-                                <blurEffect style="regular"/>
+                                <blurEffect style="dark"/>
                             </visualEffectView>
                             <visualEffectView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="VFv-zJ-H5K" userLabel="Toolbar Accessory View">
                                 <rect key="frame" x="0.0" y="0.0" width="375" height="89"/>
@@ -2281,7 +2281,7 @@
                                                 </constraints>
                                             </view>
                                             <vibrancyEffect>
-                                                <blurEffect style="light"/>
+                                                <blurEffect style="dark"/>
                                             </vibrancyEffect>
                                         </visualEffectView>
                                     </subviews>
