@@ -1354,7 +1354,7 @@ const NSString *const kUTMConfigDebugLogKey = @"DebugLog";
     // Migrate Cdrom => ImageType
     [_rootDict[kUTMConfigDrivesKey] enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         if (!obj[kUTMConfigImageTypeKey]) {
-            if (obj[kUTMConfigCdromKey]) {
+            if ([obj[kUTMConfigCdromKey] boolValue]) {
                 [self setDriveImageType:UTMDiskImageTypeCD forIndex:idx];
             } else {
                 [self setDriveImageType:UTMDiskImageTypeDisk forIndex:idx];
