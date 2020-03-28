@@ -17,6 +17,7 @@
 #import "VMDisplayMetalViewController.h"
 #import "VMDisplayMetalViewController+Keyboard.h"
 #import "VMDisplayMetalViewController+Touch.h"
+#import "VMDisplayMetalViewController+Pointer.h"
 #import "UTMRenderer.h"
 #import "UTMVirtualMachine.h"
 #import "VMKeyboardView.h"
@@ -101,6 +102,13 @@
     self.mtkView.delegate = _renderer;
     
     [self initTouch];
+    // Pointing device support on iPadOS 13.4 GM or later
+    if (@available(iOS 13.4, *)) {
+        // Betas of iPadOS 13.4 did not include this API, that's why I check if the class exists
+        if (NSClassFromString(@"UIPointerInteraction") != nil) {
+            [self initPointerInteraction];
+        }
+    }
 
     // view state and observers
     _toolbarVisible = YES;
