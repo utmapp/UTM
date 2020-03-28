@@ -184,7 +184,7 @@
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" returnKeyType="done" enablesReturnKeyAutomatically="YES" smartDashesType="no" smartInsertDeleteType="no" smartQuotesType="no"/>
                                                     <connections>
-                                                        <action selector="nameFieldEdited:" destination="wwu-oM-NlF" eventType="editingDidEnd" id="NLa-0h-ihw"/>
+                                                        <action selector="nameFieldChanged:" destination="wwu-oM-NlF" eventType="editingDidEnd" id="Md1-BR-pTg"/>
                                                         <outlet property="delegate" destination="wwu-oM-NlF" id="qOT-JA-rbc"/>
                                                     </connections>
                                                 </textField>
