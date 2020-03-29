@@ -65,10 +65,6 @@
     return self.vmInput.serverModeCursor;
 }
 
-- (BOOL)touchscreen {
-    return self.vmConfiguration.inputTouchscreenMode;
-}
-
 - (BOOL)autosaveBackground {
     return [self boolForSetting:@"AutosaveBackground"];
 }

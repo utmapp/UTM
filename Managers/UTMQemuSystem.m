@@ -176,7 +176,7 @@
         [self pushArgv:@"none"];
     }
     // usb input if not legacy
-    if (1) { // TODO: implement legacy mode
+    if (!self.configuration.inputLegacy) {
         [self pushArgv:@"-device"];
         [self pushArgv:@"usb-ehci"];
         [self pushArgv:@"-device"];

@@ -3056,74 +3056,50 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
                         <sections>
-                            <tableViewSection headerTitle="Pointer Style" id="rAz-Ds-zCc">
-                                <string key="footerTitle">Touchscreen: press anywhere on the screen to click there. Trackpad: move cursor by swipping on the screen and click with a tap. Right click with a two finger tap.</string>
+                            <tableViewSection headerTitle="Legacy" footerTitle="PS/2 has higher compatibility with older operating systems but does not support custom cursor settings." id="Rtj-zp-arL">
                                 <cells>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" accessoryType="checkmark" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" textLabel="8i0-5U-XCb" style="IBUITableViewCellStyleDefault" id="Ocd-JM-JrU">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" id="jGi-2f-nXK">
                                         <rect key="frame" x="0.0" y="55.333332061767578" width="375" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
-                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="Ocd-JM-JrU" id="ZTn-UL-DZN">
-                                            <rect key="frame" x="0.0" y="0.0" width="335" height="44"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="jGi-2f-nXK" id="Rzs-fC-bfc">
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="Touchscreen" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="8i0-5U-XCb">
-                                                    <rect key="frame" x="16" y="0.0" width="311" height="44"/>
-                                                    <autoresizingMask key="autoresizingMask"/>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Legacy (PS/2) Mode" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="d5G-2Y-589">
+                                                    <rect key="frame" x="16" y="11.666666666666664" width="156" height="21"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
+                                                <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="1iw-Js-hQc">
+                                                    <rect key="frame" x="310" y="6.6666666666666679" width="51" height="31.000000000000004"/>
+                                                    <connections>
+                                                        <action selector="legacyModeChanged:" destination="5Cr-yW-csz" eventType="valueChanged" id="nHv-pq-sZL"/>
+                                                    </connections>
+                                                </switch>
                                             </subviews>
-                                        </tableViewCellContentView>
-                                    </tableViewCell>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" accessoryType="checkmark" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" textLabel="jU3-rH-M1U" style="IBUITableViewCellStyleDefault" id="s7O-e0-wWW">
-                                        <rect key="frame" x="0.0" y="99.333332061767578" width="375" height="44"/>
-                                        <autoresizingMask key="autoresizingMask"/>
-                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="s7O-e0-wWW" id="ls3-l4-B5O">
-                                            <rect key="frame" x="0.0" y="0.0" width="335" height="44"/>
-                                            <autoresizingMask key="autoresizingMask"/>
-                                            <subviews>
-                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="Trackpad" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="jU3-rH-M1U">
-                                                    <rect key="frame" x="16" y="0.0" width="311" height="44"/>
-                                                    <autoresizingMask key="autoresizingMask"/>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                    <nil key="textColor"/>
-                                                    <nil key="highlightedColor"/>
-                                                </label>
-                                            </subviews>
+                                            <constraints>
+                                                <constraint firstItem="1iw-Js-hQc" firstAttribute="centerY" secondItem="Rzs-fC-bfc" secondAttribute="centerY" id="79q-jd-pGf"/>
+                                                <constraint firstItem="d5G-2Y-589" firstAttribute="leading" secondItem="Rzs-fC-bfc" secondAttribute="leadingMargin" id="AUz-k1-4cM"/>
+                                                <constraint firstItem="1iw-Js-hQc" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="d5G-2Y-589" secondAttribute="trailing" constant="8" symbolic="YES" id="EV2-Ox-hYN"/>
+                                                <constraint firstItem="d5G-2Y-589" firstAttribute="centerY" secondItem="Rzs-fC-bfc" secondAttribute="centerY" id="KpG-QZ-cnC"/>
+                                                <constraint firstItem="1iw-Js-hQc" firstAttribute="trailing" secondItem="Rzs-fC-bfc" secondAttribute="trailingMargin" id="uoc-XG-nJN"/>
+                                            </constraints>
                                         </tableViewCellContentView>
                                     </tableViewCell>
                                 </cells>
                             </tableViewSection>
-                            <tableViewSection headerTitle="Input Receiver" id="hjJ-kU-VR1">
-                                <string key="footerTitle">Direct: input sent to emulator directly. Can appear to be out of sync with display. Server: input sent to display server. Can have more latency but appear more responsive.</string>
+                            <tableViewSection headerTitle="Additional Options" id="hjJ-kU-VR1">
                                 <cells>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" accessoryType="checkmark" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" textLabel="PYT-mF-w3w" style="IBUITableViewCellStyleDefault" id="Wy9-zW-xLY">
-                                        <rect key="frame" x="0.0" y="250.66666412353516" width="375" height="44"/>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" accessoryType="disclosureIndicator" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" textLabel="PYT-mF-w3w" style="IBUITableViewCellStyleDefault" id="Wy9-zW-xLY">
+                                        <rect key="frame" x="0.0" y="183.33333206176758" width="375" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="Wy9-zW-xLY" id="yUN-HI-j3r">
-                                            <rect key="frame" x="0.0" y="0.0" width="335" height="44"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="348" height="44"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="Direct" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="PYT-mF-w3w">
-                                                    <rect key="frame" x="16" y="0.0" width="311" height="44"/>
-                                                    <autoresizingMask key="autoresizingMask"/>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                    <nil key="textColor"/>
-                                                    <nil key="highlightedColor"/>
-                                                </label>
-                                            </subviews>
-                                        </tableViewCellContentView>
-                                    </tableViewCell>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" accessoryType="checkmark" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" textLabel="W6T-YK-tv3" style="IBUITableViewCellStyleDefault" id="UgT-7q-52X">
-                                        <rect key="frame" x="0.0" y="294.66666412353516" width="375" height="44"/>
-                                        <autoresizingMask key="autoresizingMask"/>
-                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="UgT-7q-52X" id="a8b-6i-Pok">
-                                            <rect key="frame" x="0.0" y="0.0" width="335" height="44"/>
-                                            <autoresizingMask key="autoresizingMask"/>
-                                            <subviews>
-                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="Server" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="W6T-YK-tv3">
-                                                    <rect key="frame" x="16" y="0.0" width="311" height="44"/>
+                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="Gesture and Cursor Settings" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="PYT-mF-w3w">
+                                                    <rect key="frame" x="16" y="0.0" width="324" height="44"/>
                                                     <autoresizingMask key="autoresizingMask"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <nil key="textColor"/>
@@ -3142,10 +3118,8 @@
                     </tableView>
                     <navigationItem key="navigationItem" title="Input" id="Etn-MD-71X"/>
                     <connections>
-                        <outlet property="inputReceiverDirectCell" destination="Wy9-zW-xLY" id="QmO-gS-6Go"/>
-                        <outlet property="inputReceiverServerCell" destination="UgT-7q-52X" id="WpY-JN-dUy"/>
-                        <outlet property="pointerStyleTouchscreenCell" destination="Ocd-JM-JrU" id="06b-cc-Qkd"/>
-                        <outlet property="pointerStyleTrackpadCell" destination="s7O-e0-wWW" id="BKa-fv-kS9"/>
+                        <outlet property="legacyModeSwitch" destination="1iw-Js-hQc" id="Ne2-1k-jk3"/>
+                        <outlet property="openSettingsCell" destination="Wy9-zW-xLY" id="QmO-gS-6Go"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="fxK-8x-htX" userLabel="First Responder" sceneMemberID="firstResponder"/>

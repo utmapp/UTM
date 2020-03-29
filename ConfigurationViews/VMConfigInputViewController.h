@@ -21,13 +21,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface VMConfigInputViewController : VMConfigViewController
 
-@property (weak, nonatomic) IBOutlet UITableViewCell *pointerStyleTouchscreenCell;
-@property (weak, nonatomic) IBOutlet UITableViewCell *pointerStyleTrackpadCell;
-@property (weak, nonatomic) IBOutlet UITableViewCell *inputReceiverDirectCell;
-@property (weak, nonatomic) IBOutlet UITableViewCell *inputReceiverServerCell;
+@property (weak, nonatomic) IBOutlet UITableViewCell *openSettingsCell;
+@property (weak, nonatomic) IBOutlet UISwitch *legacyModeSwitch;
 
-@property (nonatomic, assign) BOOL inputTouchscreenMode;
-@property (nonatomic, assign) BOOL inputDirect;
+- (IBAction)legacyModeChanged:(UISwitch *)sender;
 
 @end
 
