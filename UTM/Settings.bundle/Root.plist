@@ -50,7 +50,7 @@
 			<key>Titles</key>
 			<array>
 				<string>Disabled</string>
-				<string>Drag Cursor</string>
+				<string>Click &amp; Hold</string>
 				<string>Right Click</string>
 			</array>
 			<key>Values</key>
@@ -93,7 +93,7 @@
 			<array>
 				<string>Disabled</string>
 				<string>Move Screen</string>
-				<string>Drag Cursor</string>
+				<string>Click &amp; Hold</string>
 			</array>
 			<key>Values</key>
 			<array>
@@ -135,7 +135,7 @@
 			<array>
 				<string>Disabled</string>
 				<string>Move Screen</string>
-				<string>Drag Cursor</string>
+				<string>Click &amp; Hold</string>
 			</array>
 			<key>Values</key>
 			<array>
