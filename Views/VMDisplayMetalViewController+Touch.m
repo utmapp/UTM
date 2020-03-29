@@ -448,4 +448,39 @@ static CGFloat CGPointToPixel(CGFloat point) {
     }
 }
 
+#pragma mark - Touch type
+
+- (VMMouseType)touchTypeToMouseType:(UITouchType)type {
+    switch (type) {
+        case UITouchTypeDirect: {
+            return self.touchMouseType;
+        }
+        case UITouchTypePencil: {
+            return self.pencilMouseType;
+        }
+        case UITouchTypeIndirect:
+        default: { // covers UITouchTypeIndirectPointer
+            return self.indirectMouseType;
+        }
+    }
+}
+
+- (void)switchMouseType:(VMMouseType)type {
+    BOOL shouldHideCursor = (type == VMMouseTypeAbsoluteHideCursor);
+    BOOL shouldUseServerMouse = (type == VMMouseTypeRelative);
+    self.vmInput.inhibitCursor = shouldHideCursor;
+    if (shouldUseServerMouse != self.vmInput.serverModeCursor) {
+        NSLog(@"Switching mouse mode to server:%d for type:%ld", shouldUseServerMouse, type);
+        [self.vmInput requestMouseMode:shouldUseServerMouse];
+    }
+}
+
+- (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
+    for (UITouch *touch in touches) {
+        VMMouseType type = [self touchTypeToMouseType:touch.type];
+        [self switchMouseType:type];
+    }
+    [super touchesBegan:touches withEvent:event];
+}
+
 @end
