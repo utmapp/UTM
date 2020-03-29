@@ -112,6 +112,27 @@
     return [self gestureTypeForSetting:@"GestureThreePan"];
 }
 
+- (VMMouseType)mouseTypeForSetting:(NSString *)key {
+    NSInteger integer = [self integerForSetting:key];
+    if (integer < VMGestureTypeNone || integer >= VMGestureTypeMax) {
+        return VMMouseTypeRelative;
+    } else {
+        return (VMMouseType)integer;
+    }
+}
+
+- (VMMouseType)touchMouseType {
+    return [self mouseTypeForSetting:@"MouseTouchType"];
+}
+
+- (VMMouseType)pencilMouseType {
+    return [self mouseTypeForSetting:@"MousePencilType"];
+}
+
+- (VMMouseType)indirectMouseType {
+    return [self mouseTypeForSetting:@"MouseIndirectType"];
+}
+
 #pragma mark - Converting view points to VM display points
 
 static CGRect CGRectClipToBounds(CGRect rect1, CGRect rect2) {
