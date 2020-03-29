@@ -521,7 +521,7 @@ static int cs_button_to_spice(SendButtonType button)
 }
 
 - (BOOL)visible {
-    return self.hasCursor && !_cursorHidden;
+    return !self.inhibitCursor && self.hasCursor && !_cursorHidden;
 }
 
 - (CGPoint)viewportOrigin {

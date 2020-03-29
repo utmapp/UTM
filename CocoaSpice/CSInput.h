@@ -50,6 +50,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) BOOL disableInputs;
 @property (nonatomic, readonly) CGSize cursorSize;
 @property (nonatomic, assign) CGSize displaySize;
+@property (nonatomic, assign) BOOL inhibitCursor;
 
 - (void)sendKey:(SendKeyType)type code:(int)scancode;
 - (void)sendPause:(SendKeyType)type;
