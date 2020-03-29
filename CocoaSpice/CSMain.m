@@ -100,7 +100,7 @@ void *spice_main_loop(void *args) {
 
 - (void)spiceSetDebug:(BOOL)enabled {
     spice_util_set_debug(enabled);
-    g_log_set_default_handler(logHandler, NULL);
+    g_log_set_handler(NULL, G_LOG_LEVEL_MASK, logHandler, NULL);
 }
 
 - (BOOL)spiceStart {
