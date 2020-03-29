@@ -48,13 +48,11 @@
         [self pushArgv:@"-device"];
         [self pushArgv:@"usb-ehci"];
         [self pushArgv:@"-device"];
+        [self pushArgv:@"usb-mouse"];
+        [self pushArgv:@"-device"];
+        [self pushArgv:@"usb-mouse"];
+        [self pushArgv:@"-device"];
         [self pushArgv:@"usb-kbd"];
-        if (!self.configuration.inputTouchscreenMode) {
-            // virt requires USB mouse
-            // if we're in touchscreen mode, we already added usb-tablet
-            [self pushArgv:@"-device"];
-            [self pushArgv:@"usb-mouse"];
-        }
         for (NSUInteger i = 0; i < self.configuration.countDrives; i++) {
             UTMDiskImageType type = [self.configuration driveImageTypeForIndex:i];
             if (type == UTMDiskImageTypeDisk || type == UTMDiskImageTypeCD) {
@@ -177,9 +175,14 @@
         [self pushArgv:@"-nic"];
         [self pushArgv:@"none"];
     }
-    if (self.configuration.inputTouchscreenMode) {
+    // usb input if not legacy
+    if (1) { // TODO: implement legacy mode
+        [self pushArgv:@"-device"];
+        [self pushArgv:@"usb-ehci"];
         [self pushArgv:@"-device"];
         [self pushArgv:@"usb-tablet"];
+        [self pushArgv:@"-device"];
+        [self pushArgv:@"usb-mouse"];
     }
     if (self.snapshot) {
         [self pushArgv:@"-loadvm"];

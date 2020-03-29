@@ -283,7 +283,7 @@ static CGFloat CGPointToPixel(CGFloat point) {
 }
 
 - (void)mouseClick:(SendButtonType)button location:(CGPoint)location {
-    if (self.touchscreen) {
+    if (!self.serverModeCursor) {
         _cursor.center = location;
     }
     [self.vmInput sendMouseButton:button pressed:YES point:CGPointZero];
