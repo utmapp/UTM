@@ -228,6 +228,10 @@
 
 #pragma mark - Toolbar actions
 
+- (UIStatusBarStyle)preferredStatusBarStyle {
+    return UIStatusBarStyleLightContent;
+}
+
 - (void)hideToolbar {
     [UIView transitionWithView:self.view duration:0.3 options:UIViewAnimationOptionTransitionCrossDissolve animations:^{
         self.toolbarAccessoryView.hidden = YES;

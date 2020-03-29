@@ -64,7 +64,7 @@
                                                                     <rect key="frame" x="65" y="40" width="20" height="20"/>
                                                                     <color key="color" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                                 </activityIndicatorView>
-                                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="byz-Gf-XHC">
+                                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" pointerInteraction="YES" translatesAutoresizingMaskIntoConstraints="NO" id="byz-Gf-XHC">
                                                                     <rect key="frame" x="0.0" y="0.0" width="150" height="100"/>
                                                                     <accessibility key="accessibilityConfiguration" hint="Start" label="Start">
                                                                         <accessibilityTraits key="traits" button="YES"/>
@@ -100,7 +100,7 @@
                                             </view>
                                             <blurEffect style="light"/>
                                         </visualEffectView>
-                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="detailDisclosure" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="LpV-bC-fzU">
+                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="detailDisclosure" lineBreakMode="middleTruncation" pointerInteraction="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LpV-bC-fzU">
                                             <rect key="frame" x="121" y="112" width="25" height="24"/>
                                             <connections>
                                                 <segue destination="fxo-tK-lAq" kind="presentation" identifier="editVMConfig" modalPresentationStyle="formSheet" id="3tV-yy-VRS"/>
@@ -2132,7 +2132,7 @@
                                                             <constraint firstAttribute="height" constant="50" id="M4a-NF-QgF"/>
                                                         </constraints>
                                                     </activityIndicatorView>
-                                                    <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="a0a-Yw-GZc">
+                                                    <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" pointerInteraction="YES" translatesAutoresizingMaskIntoConstraints="NO" id="a0a-Yw-GZc">
                                                         <rect key="frame" x="162.66666666666666" y="381" width="50" height="50"/>
                                                         <state key="normal" image="Resume Icon"/>
                                                         <connections>
@@ -2148,7 +2148,7 @@
                                                 </constraints>
                                             </view>
                                             <vibrancyEffect>
-                                                <blurEffect style="regular"/>
+                                                <blurEffect style="dark"/>
                                             </vibrancyEffect>
                                         </visualEffectView>
                                     </subviews>
@@ -2159,7 +2159,7 @@
                                         <constraint firstItem="0wd-zl-ieP" firstAttribute="leading" secondItem="Ebe-6D-2qI" secondAttribute="leading" id="ek3-bx-slP"/>
                                     </constraints>
                                 </view>
-                                <blurEffect style="regular"/>
+                                <blurEffect style="dark"/>
                             </visualEffectView>
                             <visualEffectView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="VFv-zJ-H5K" userLabel="Toolbar Accessory View">
                                 <rect key="frame" x="0.0" y="0.0" width="375" height="89"/>
@@ -2176,7 +2176,7 @@
                                                     <stackView opaque="NO" contentMode="scaleToFill" spacing="16" translatesAutoresizingMaskIntoConstraints="NO" id="Z0A-c7-3p0">
                                                         <rect key="frame" x="215" y="51" width="144" height="30"/>
                                                         <subviews>
-                                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="m9f-Az-rlH">
+                                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" pointerInteraction="YES" translatesAutoresizingMaskIntoConstraints="NO" id="m9f-Az-rlH">
                                                                 <rect key="frame" x="0.0" y="0.0" width="30" height="30"/>
                                                                 <accessibility key="accessibilityConfiguration" label="Zoom"/>
                                                                 <constraints>
@@ -2189,7 +2189,7 @@
                                                                     <action selector="changeDisplayZoom:" destination="ckC-eO-gxn" eventType="touchUpInside" id="Q0W-5s-X8Y"/>
                                                                 </connections>
                                                             </button>
-                                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Grb-jH-Oxk">
+                                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" pointerInteraction="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Grb-jH-Oxk">
                                                                 <rect key="frame" x="38" y="0.0" width="30" height="30"/>
                                                                 <accessibility key="accessibilityConfiguration" label="Keyboard"/>
                                                                 <constraints>
@@ -2201,7 +2201,7 @@
                                                                     <action selector="showKeyboardButton:" destination="ckC-eO-gxn" eventType="touchUpInside" id="Zd4-8I-vO3"/>
                                                                 </connections>
                                                             </button>
-                                                            <button opaque="NO" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ESi-T5-nUB">
+                                                            <button opaque="NO" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" pointerInteraction="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ESi-T5-nUB">
                                                                 <rect key="frame" x="76" y="0.0" width="30" height="30"/>
                                                                 <accessibility key="accessibilityConfiguration" label="Settings"/>
                                                                 <constraints>
@@ -2210,7 +2210,7 @@
                                                                 </constraints>
                                                                 <state key="normal" image="Toolbar Settings"/>
                                                             </button>
-                                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="M5V-xj-Rzw">
+                                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" pointerInteraction="YES" translatesAutoresizingMaskIntoConstraints="NO" id="M5V-xj-Rzw">
                                                                 <rect key="frame" x="114" y="0.0" width="30" height="30"/>
                                                                 <accessibility key="accessibilityConfiguration" label="Hide Toolbar"/>
                                                                 <constraints>
@@ -2229,7 +2229,7 @@
                                                     <stackView opaque="NO" contentMode="scaleToFill" spacing="16" translatesAutoresizingMaskIntoConstraints="NO" id="nJG-8W-K7c">
                                                         <rect key="frame" x="16" y="51" width="106" height="30"/>
                                                         <subviews>
-                                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0Wo-4E-exJ">
+                                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" pointerInteraction="YES" translatesAutoresizingMaskIntoConstraints="NO" id="0Wo-4E-exJ">
                                                                 <rect key="frame" x="0.0" y="0.0" width="30" height="30"/>
                                                                 <accessibility key="accessibilityConfiguration" label="Power"/>
                                                                 <constraints>
@@ -2242,7 +2242,7 @@
                                                                     <action selector="powerPressed:" destination="ckC-eO-gxn" eventType="touchUpInside" id="89w-f5-kg9"/>
                                                                 </connections>
                                                             </button>
-                                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="bjd-4T-OVm">
+                                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" pointerInteraction="YES" translatesAutoresizingMaskIntoConstraints="NO" id="bjd-4T-OVm">
                                                                 <rect key="frame" x="38" y="0.0" width="30" height="30"/>
                                                                 <accessibility key="accessibilityConfiguration" label="Pause"/>
                                                                 <constraints>
@@ -2255,7 +2255,7 @@
                                                                     <action selector="pauseResumePressed:" destination="ckC-eO-gxn" eventType="touchUpInside" id="DYI-VN-mcQ"/>
                                                                 </connections>
                                                             </button>
-                                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="HpT-OM-Xpa">
+                                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" pointerInteraction="YES" translatesAutoresizingMaskIntoConstraints="NO" id="HpT-OM-Xpa">
                                                                 <rect key="frame" x="76" y="0.0" width="30" height="30"/>
                                                                 <accessibility key="accessibilityConfiguration" label="Back"/>
                                                                 <constraints>
@@ -2281,7 +2281,7 @@
                                                 </constraints>
                                             </view>
                                             <vibrancyEffect>
-                                                <blurEffect style="light"/>
+                                                <blurEffect style="dark"/>
                                             </vibrancyEffect>
                                         </visualEffectView>
                                     </subviews>
