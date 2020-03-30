@@ -217,7 +217,7 @@ static CGFloat CGPointToPixel(CGFloat point) {
 
 #pragma mark - Gestures
 
-- (void)moveMouse:(UIPanGestureRecognizer *)sender {
+- (void)moveMouseWithInertia:(UIPanGestureRecognizer *)sender {
     CGPoint location = [sender locationInView:sender.view];
     CGPoint velocity = [sender velocityInView:sender.view];
     if (sender.state == UIGestureRecognizerStateBegan) {
@@ -237,7 +237,7 @@ static CGFloat CGPointToPixel(CGFloat point) {
 
 - (IBAction)gesturePan:(UIPanGestureRecognizer *)sender {
     if (self.serverModeCursor) {  // otherwise we handle in touchesMoved
-        [self moveMouse:sender];
+        [self moveMouseWithInertia:sender];
     }
 }
 
@@ -264,7 +264,7 @@ static CGFloat CGPointToPixel(CGFloat point) {
             break;
         case VMGestureTypeDragCursor:
             [self dragCursor:sender.state];
-            [self moveMouse:sender];
+            [self moveMouseWithInertia:sender];
             break;
         default:
             break;
@@ -278,7 +278,7 @@ static CGFloat CGPointToPixel(CGFloat point) {
             break;
         case VMGestureTypeDragCursor:
             [self dragCursor:sender.state];
-            [self moveMouse:sender];
+            [self moveMouseWithInertia:sender];
             break;
         default:
             break;
