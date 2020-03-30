@@ -50,8 +50,6 @@
         [self pushArgv:@"-device"];
         [self pushArgv:@"usb-mouse"];
         [self pushArgv:@"-device"];
-        [self pushArgv:@"usb-mouse"];
-        [self pushArgv:@"-device"];
         [self pushArgv:@"usb-kbd"];
         for (NSUInteger i = 0; i < self.configuration.countDrives; i++) {
             UTMDiskImageType type = [self.configuration driveImageTypeForIndex:i];
@@ -181,8 +179,6 @@
         [self pushArgv:@"usb-ehci"];
         [self pushArgv:@"-device"];
         [self pushArgv:@"usb-tablet"];
-        [self pushArgv:@"-device"];
-        [self pushArgv:@"usb-mouse"];
     }
     if (self.snapshot) {
         [self pushArgv:@"-loadvm"];
