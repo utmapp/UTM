@@ -236,7 +236,7 @@ static CGFloat CGPointToPixel(CGFloat point) {
 }
 
 - (IBAction)gesturePan:(UIPanGestureRecognizer *)sender {
-    if (self.serverModeCursor) {
+    if (self.serverModeCursor) {  // otherwise we handle in touchesMoved
         [self moveMouse:sender];
     }
 }
@@ -335,7 +335,7 @@ static CGFloat CGPointToPixel(CGFloat point) {
 
 - (IBAction)gestureTap:(UITapGestureRecognizer *)sender {
     if (sender.state == UIGestureRecognizerStateEnded &&
-        self.serverModeCursor) {
+        self.serverModeCursor) { // otherwise we handle in touchesBegan
         [self mouseClick:SEND_BUTTON_LEFT location:[sender locationInView:sender.view]];
     }
 }
@@ -486,6 +486,8 @@ static CGFloat CGPointToPixel(CGFloat point) {
     return NO;
 }
 
+#pragma mark - Touch event handling
+
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
     if (!self.vmConfiguration.inputLegacy) {
         for (UITouch *touch in [event touchesForView:self.mtkView]) {
@@ -505,6 +507,7 @@ static CGFloat CGPointToPixel(CGFloat point) {
 }
 
 - (void)touchesMoved:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
+    // move cursor in client mode, in server mode we handle in gesturePan
     if (!self.vmConfiguration.inputLegacy && !self.vmInput.serverModeCursor) {
         for (UITouch *touch in [event touchesForView:self.mtkView]) {
             [_cursor updateMovement:[touch locationInView:self.mtkView]];
@@ -515,14 +518,16 @@ static CGFloat CGPointToPixel(CGFloat point) {
 }
 
 - (void)touchesCancelled:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
-    if (!self.vmConfiguration.inputLegacy && !self.vmInput.serverModeCursor) { // finish click for client mode
+    // release click in client mode, in server mode we handle in gesturePan
+    if (!self.vmConfiguration.inputLegacy && !self.vmInput.serverModeCursor) {
         [self dragCursor:UIGestureRecognizerStateEnded];
     }
     [super touchesCancelled:touches withEvent:event];
 }
 
 - (void)touchesEnded:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
-    if (!self.vmConfiguration.inputLegacy && !self.vmInput.serverModeCursor) { // finish click for client mode
+    // release click in client mode, in server mode we handle in gesturePan
+    if (!self.vmConfiguration.inputLegacy && !self.vmInput.serverModeCursor) {
         [self dragCursor:UIGestureRecognizerStateEnded];
     }
     [super touchesEnded:touches withEvent:event];
