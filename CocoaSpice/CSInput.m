@@ -21,6 +21,17 @@
 #import <spice/protocol.h>
 #import "UTMShaderTypes.h"
 
+@interface CSInput ()
+
+@property (nonatomic, readwrite, nullable) SpiceSession *session;
+@property (nonatomic, readwrite, assign) NSInteger channelID;
+@property (nonatomic, readwrite, assign) NSInteger monitorID;
+@property (nonatomic, readwrite, assign) BOOL serverModeCursor;
+@property (nonatomic, readwrite, assign) BOOL hasCursor;
+@property (nonatomic, readwrite) CGSize cursorSize;
+
+@end
+
 @implementation CSInput {
     SpiceMainChannel        *_main;
     SpiceCursorChannel      *_cursor;
@@ -37,7 +48,6 @@
     id<MTLBuffer>           _vertices;
     NSUInteger              _numVertices;
     dispatch_semaphore_t    _drawLock;
-    CGSize                  _cursorSize;
     BOOL                    _cursorHidden;
 }
 
@@ -51,7 +61,7 @@ static void cs_update_mouse_mode(SpiceChannel *channel, gpointer data)
     g_object_get(channel, "mouse-mode", &mouse_mode, NULL);
     DISPLAY_DEBUG(self, "mouse mode %u", mouse_mode);
     
-    self->_serverModeCursor = (mouse_mode == SPICE_MOUSE_MODE_SERVER);
+    self.serverModeCursor = (mouse_mode == SPICE_MOUSE_MODE_SERVER);
     
     if (self.serverModeCursor) {
         self->_mouse_guest.x = -1;
@@ -83,7 +93,7 @@ static void cs_cursor_set(SpiceCursorChannel *channel,
     
     CGPoint hotspot = CGPointMake(cursor_shape->hot_spot_x, cursor_shape->hot_spot_y);
     CGSize newSize = CGSizeMake(cursor_shape->width, cursor_shape->height);
-    if (!CGSizeEqualToSize(newSize, self->_cursorSize)) {
+    if (!CGSizeEqualToSize(newSize, self.cursorSize)) {
         [self rebuildTexture:newSize center:hotspot];
     }
     [self drawCursor:cursor_shape->data];
@@ -141,7 +151,7 @@ static void cs_channel_new(SpiceSession *s, SpiceChannel *channel, gpointer data
     
     if (SPICE_IS_CURSOR_CHANNEL(channel)) {
         gpointer cursor_shape;
-        if (chid != self->_channelID)
+        if (chid != self.channelID)
             return;
         self->_cursor = SPICE_CURSOR_CHANNEL(channel);
         g_signal_connect(channel, "notify::cursor",
@@ -186,7 +196,7 @@ static void cs_channel_destroy(SpiceSession *s, SpiceChannel *channel, gpointer 
     }
     
     if (SPICE_IS_CURSOR_CHANNEL(channel)) {
-        if (chid != self->_channelID)
+        if (chid != self.channelID)
             return;
         self->_cursor = NULL;
         g_signal_handlers_disconnect_by_func(channel, G_CALLBACK(cs_cursor_set), GLIB_OBJC_RELEASE(self));
@@ -411,9 +421,9 @@ static int cs_button_to_spice(SendButtonType button)
         GList *list;
         GList *it;
         
-        _channelID = channelID;
-        _monitorID = monitorID;
-        _session = session;
+        self.channelID = channelID;
+        self.monitorID = monitorID;
+        self.session = session;
         g_object_ref(session);
         
         NSLog(@"%s:%d", __FUNCTION__, __LINE__);
@@ -440,15 +450,14 @@ static int cs_button_to_spice(SendButtonType button)
         cs_channel_destroy(self.session, SPICE_CHANNEL(_main), (__bridge void *)self);
     }
     NSLog(@"%s:%d", __FUNCTION__, __LINE__);
-    g_signal_handlers_disconnect_by_func(_session, G_CALLBACK(cs_channel_new), GLIB_OBJC_RELEASE(self));
-    g_signal_handlers_disconnect_by_func(_session, G_CALLBACK(cs_channel_destroy), GLIB_OBJC_RELEASE(self));
-    g_object_unref(_session);
-    _session = NULL;
+    g_signal_handlers_disconnect_by_func(self.session, G_CALLBACK(cs_channel_new), GLIB_OBJC_RELEASE(self));
+    g_signal_handlers_disconnect_by_func(self.session, G_CALLBACK(cs_channel_destroy), GLIB_OBJC_RELEASE(self));
+    g_object_unref(self.session);
+    self.session = NULL;
 }
 
 #pragma mark - Drawing Cursor
 
-@synthesize cursorSize = _cursorSize;
 @synthesize device = _device;
 @synthesize drawLock = _drawLock;
 @synthesize texture = _texture;
@@ -491,8 +500,8 @@ static int cs_button_to_spice(SendButtonType button)
 
     // Calculate the number of vertices by dividing the byte length by the size of each vertex
     _numVertices = sizeof(quadVertices) / sizeof(UTMVertex);
-    _cursorSize = size;
-    _hasCursor = YES;
+    self.cursorSize = size;
+    self.hasCursor = YES;
     dispatch_semaphore_signal(_drawLock);
 }
 
@@ -501,8 +510,8 @@ static int cs_button_to_spice(SendButtonType button)
     _numVertices = 0;
     _vertices = nil;
     _texture = nil;
-    _cursorSize = CGSizeZero;
-    _hasCursor = NO;
+    self.cursorSize = CGSizeZero;
+    self.hasCursor = NO;
     dispatch_semaphore_signal(_drawLock);
 }
 
@@ -510,13 +519,13 @@ static int cs_button_to_spice(SendButtonType button)
     const NSInteger pixelSize = 4;
     MTLRegion region = {
         { 0, 0 }, // MTLOrigin
-        { _cursorSize.width, _cursorSize.height, 1} // MTLSize
+        { self.cursorSize.width, self.cursorSize.height, 1} // MTLSize
     };
     dispatch_semaphore_wait(_drawLock, DISPATCH_TIME_FOREVER);
     [_texture replaceRegion:region
                 mipmapLevel:0
                   withBytes:buffer
-                bytesPerRow:_cursorSize.width*pixelSize];
+                bytesPerRow:self.cursorSize.width*pixelSize];
     dispatch_semaphore_signal(_drawLock);
 }
 

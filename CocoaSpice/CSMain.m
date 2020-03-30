@@ -20,6 +20,12 @@
 #import <pthread.h>
 #import "gst_ios_init.h"
 
+@interface CSMain ()
+
+@property (nonatomic, readwrite) BOOL running;
+
+@end
+
 @implementation CSMain {
     GMainContext *_main_context;
     GMainLoop *_main_loop;
@@ -108,7 +114,7 @@ void *spice_main_loop(void *args) {
         if (pthread_create(&_spice_thread, NULL, &spice_main_loop, (__bridge_retained void *)self) != 0) {
             return NO;
         }
-        _running = YES;
+        self.running = YES;
     }
     return YES;
 }
@@ -118,7 +124,7 @@ void *spice_main_loop(void *args) {
         void *status;
         g_main_loop_quit(_main_loop);
         pthread_join(_spice_thread, &status);
-        _running = NO;
+        self.running = NO;
     }
 }
 
