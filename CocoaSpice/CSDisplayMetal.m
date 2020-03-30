@@ -27,6 +27,14 @@
                 (int)display.monitorID, \
                 ## __VA_ARGS__)
 
+@interface CSDisplayMetal ()
+
+@property (nonatomic, readwrite, nullable) SpiceSession *session;
+@property (nonatomic, readwrite, assign) NSInteger channelID;
+@property (nonatomic, readwrite, assign) NSInteger monitorID;
+
+@end
+
 @implementation CSDisplayMetal {
     SpiceDisplayChannel     *_display;
     
@@ -275,9 +283,9 @@ static void cs_channel_destroy(SpiceSession *s, SpiceChannel *channel, gpointer 
         GList *list;
         GList *it;
         
-        _channelID = channelID;
-        _monitorID = monitorID;
-        _session = session;
+        self.channelID = channelID;
+        self.monitorID = monitorID;
+        self.session = session;
         _sigsconnected = NO;
         g_object_ref(session);
         
@@ -306,10 +314,10 @@ static void cs_channel_destroy(SpiceSession *s, SpiceChannel *channel, gpointer 
         cs_channel_destroy(self.session, SPICE_CHANNEL(_display), (__bridge void *)self);
     }
     NSLog(@"%s:%d", __FUNCTION__, __LINE__);
-    g_signal_handlers_disconnect_by_func(_session, G_CALLBACK(cs_channel_new), GLIB_OBJC_RELEASE(self));
-    g_signal_handlers_disconnect_by_func(_session, G_CALLBACK(cs_channel_destroy), GLIB_OBJC_RELEASE(self));
-    g_object_unref(_session);
-    _session = NULL;
+    g_signal_handlers_disconnect_by_func(self.session, G_CALLBACK(cs_channel_new), GLIB_OBJC_RELEASE(self));
+    g_signal_handlers_disconnect_by_func(self.session, G_CALLBACK(cs_channel_destroy), GLIB_OBJC_RELEASE(self));
+    g_object_unref(self.session);
+    self.session = NULL;
 }
 
 - (void)updateVisibleAreaWithRect:(CGRect)rect {

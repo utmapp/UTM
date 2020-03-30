@@ -48,6 +48,8 @@ NSString *const kSuspendSnapshotName = @"suspend";
     dispatch_semaphore_t _qemu_exit_sema;
     BOOL _is_busy;
     UIImage *_screenshot;
+    int64_t _relative_input_index;
+    int64_t _absolute_input_index;
 }
 
 @synthesize path = _path;
@@ -79,6 +81,8 @@ NSString *const kSuspendSnapshotName = @"suspend";
         _will_quit_sema = dispatch_semaphore_create(0);
         _qemu_exit_sema = dispatch_semaphore_create(0);
         self.logging = [UTMLogging sharedInstance];
+        _relative_input_index = -1;
+        _absolute_input_index = -1;
     }
     return self;
 }
@@ -627,6 +631,33 @@ NSString *const kSuspendSnapshotName = @"suspend";
 - (void)deleteScreenshot {
     NSURL *url = [self.path URLByAppendingPathComponent:kUTMBundleScreenshotFilename];
     [[NSFileManager defaultManager] removeItemAtURL:url error:nil];
+}
+
+#pragma mark - Input device switching
+
+- (void)requestInputTablet:(BOOL)tablet {
+    int64_t *p_index = tablet ? &_absolute_input_index : &_relative_input_index;
+    id completion = ^(NSString *res, NSError *err) {
+        if (err) {
+            NSLog(@"input select returned error: %@", err);
+        } else {
+            [self.primaryInput requestMouseMode:!tablet];
+        }
+    };
+    if (*p_index < 0) {
+        [_qemu mouseIndexForAbsolute:tablet withCompletion:^(int64_t index, NSError *err) {
+            if (err) {
+                NSLog(@"error finding index: %@", err);
+            } else {
+                NSLog(@"found index:%lld absolute:%d", index, tablet);
+                *p_index = index;
+                [self->_qemu mouseSelect:*p_index withCompletion:completion];
+            }
+        }];
+    } else {
+        NSLog(@"selecting input device %lld", *p_index);
+        [_qemu mouseSelect:*p_index withCompletion:completion];
+    }
 }
 
 @end

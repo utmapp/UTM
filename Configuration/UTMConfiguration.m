@@ -44,6 +44,7 @@ const NSString *const kUTMConfigZoomLetterboxKey = @"ZoomLetterbox";
 
 const NSString *const kUTMConfigTouchscreenModeKey = @"TouchscreenMode";
 const NSString *const kUTMConfigDirectInputKey = @"DirectInput";
+const NSString *const kUTMConfigInputLegacyKey = @"InputLegacy";
 
 const NSString *const kUTMConfigNetworkEnabledKey = @"NetworkEnabled";
 const NSString *const kUTMConfigLocalhostOnlyKey = @"LocalhostOnly";
@@ -1362,6 +1363,12 @@ const NSString *const kUTMConfigDebugLogKey = @"DebugLog";
             [obj removeObjectForKey:kUTMConfigCdromKey];
         }
     }];
+    // Migrate input settings
+    [_rootDict[kUTMConfigInputKey] removeObjectForKey:kUTMConfigTouchscreenModeKey];
+    [_rootDict[kUTMConfigInputKey] removeObjectForKey:kUTMConfigDirectInputKey];
+    if (!_rootDict[kUTMConfigInputKey][kUTMConfigInputLegacyKey]) {
+        self.inputLegacy = NO;
+    }
 }
 
 #pragma mark - Initialization
@@ -1563,20 +1570,12 @@ const NSString *const kUTMConfigDebugLogKey = @"DebugLog";
     return [_rootDict[kUTMConfigDisplayKey][kUTMConfigZoomLetterboxKey] boolValue];
 }
 
-- (void)setInputTouchscreenMode:(BOOL)inputTouchscreenMode {
-    _rootDict[kUTMConfigInputKey][kUTMConfigTouchscreenModeKey] = @(inputTouchscreenMode);
+- (void)setInputLegacy:(BOOL)inputDirect {
+    _rootDict[kUTMConfigInputKey][kUTMConfigInputLegacyKey] = @(inputDirect);
 }
 
-- (BOOL)inputTouchscreenMode {
-    return [_rootDict[kUTMConfigInputKey][kUTMConfigTouchscreenModeKey] boolValue];
-}
-
-- (void)setInputDirect:(BOOL)inputDirect {
-    _rootDict[kUTMConfigInputKey][kUTMConfigDirectInputKey] = @(inputDirect);
-}
-
-- (BOOL)inputDirect {
-    return [_rootDict[kUTMConfigInputKey][kUTMConfigDirectInputKey] boolValue];
+- (BOOL)inputLegacy {
+    return [_rootDict[kUTMConfigInputKey][kUTMConfigInputLegacyKey] boolValue];
 }
 
 - (void)setNetworkEnabled:(BOOL)networkEnabled {

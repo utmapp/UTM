@@ -282,6 +282,36 @@ void qmp_rpc_call(CFDictionaryRef args, CFDictionaryRef *ret, Error **err, void 
     [self vmHmpCommand:cmd completion:completion];
 }
 
+- (void)mouseIndexForAbsolute:(BOOL)absolute withCompletion:(void (^)(int64_t, NSError * _Nullable))completion {
+    dispatch_async(dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0), ^{
+        MouseInfoList *info = NULL;
+        Error *qerr = NULL;
+        int64_t index = -1;
+        NSError *err;
+        info = qmp_query_mice(&qerr, (__bridge void *)self);
+        if (qerr) {
+            err = [self errorForQerror:qerr];
+            error_free(qerr);
+        }
+        if (info) {
+            for (MouseInfoList *list = info; list->next; list = list->next) {
+                if (list->value->absolute == absolute) {
+                    index = list->value->index;
+                }
+            }
+            qapi_free_MouseInfoList(info);
+        }
+        if (completion) {
+            completion(index, err);
+        }
+    });
+}
+
+- (void)mouseSelect:(int64_t)index withCompletion:(void (^)(NSString * _Nullable, NSError * _Nullable))completion {
+    NSString *cmd = [NSString stringWithFormat:@"mouse_set %lld", index];
+    [self vmHmpCommand:cmd completion:completion];
+}
+
 @end
 
 qapi_enum_handler_registry qapi_enum_handler_registry_data = {

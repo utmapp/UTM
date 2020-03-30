@@ -67,8 +67,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) BOOL displayZoomScale;
 @property (nonatomic, assign) BOOL displayZoomLetterBox;
 
-@property (nonatomic, assign) BOOL inputTouchscreenMode;
-@property (nonatomic, assign) BOOL inputDirect;
+@property (nonatomic, assign) BOOL inputLegacy;
 
 @property (nonatomic, assign) BOOL networkEnabled;
 @property (nonatomic, assign) BOOL networkLocalhostOnly;

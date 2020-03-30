@@ -25,6 +25,12 @@ typedef NS_ENUM(NSInteger, VMGestureType) {
     VMGestureTypeMax
 };
 
+typedef NS_ENUM(NSInteger, VMMouseType) {
+    VMMouseTypeRelative,
+    VMMouseTypeAbsolute,
+    VMMouseTypeAbsoluteHideCursor
+};
+
 NS_ASSUME_NONNULL_BEGIN
 
 @interface VMDisplayMetalViewController (Gestures)
@@ -34,6 +40,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) VMGestureType twoFingerPanType;
 @property (nonatomic, readonly) VMGestureType twoFingerScrollType;
 @property (nonatomic, readonly) VMGestureType threeFingerPanType;
+@property (nonatomic, readonly) VMMouseType touchMouseType;
+@property (nonatomic, readonly) VMMouseType pencilMouseType;
+@property (nonatomic, readonly) VMMouseType indirectMouseType;
 
 - (void)initTouch;
 

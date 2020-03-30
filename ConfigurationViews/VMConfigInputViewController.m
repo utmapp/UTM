@@ -23,63 +23,26 @@
 
 @implementation VMConfigInputViewController
 
-- (void)viewDidLoad {
-    [super viewDidLoad];
-    // FIXME: remove this warning
-    [self showUnimplementedAlert];
-}
-
 - (void)refreshViewFromConfiguration {
     [super refreshViewFromConfiguration];
-    self.inputTouchscreenMode = self.configuration.inputTouchscreenMode;
-    self.inputDirect = self.configuration.inputDirect;
-}
-
-#pragma mark - Properties
-
-- (void)setInputTouchscreenMode:(BOOL)inputTouchscreenMode {
-    _inputTouchscreenMode = inputTouchscreenMode;
-    self.configuration.inputTouchscreenMode = inputTouchscreenMode;
-    if (inputTouchscreenMode) {
-        [self.pointerStyleTouchscreenCell setAccessoryType:UITableViewCellAccessoryCheckmark];
-        [self.pointerStyleTrackpadCell setAccessoryType:UITableViewCellAccessoryNone];
-        [self.pointerStyleTouchscreenCell setSelected:NO animated:YES];
-    } else {
-        [self.pointerStyleTouchscreenCell setAccessoryType:UITableViewCellAccessoryNone];
-        [self.pointerStyleTrackpadCell setAccessoryType:UITableViewCellAccessoryCheckmark];
-        [self.pointerStyleTrackpadCell setSelected:NO animated:YES];
-    }
-}
-
-- (void)setInputDirect:(BOOL)inputDirect {
-    _inputDirect = inputDirect;
-    self.configuration.inputDirect = inputDirect;
-    if (inputDirect) {
-        [self.inputReceiverDirectCell setAccessoryType:UITableViewCellAccessoryCheckmark];
-        [self.inputReceiverServerCell setAccessoryType:UITableViewCellAccessoryNone];
-        [self.inputReceiverDirectCell setSelected:NO animated:YES];
-    } else {
-        [self.inputReceiverDirectCell setAccessoryType:UITableViewCellAccessoryNone];
-        [self.inputReceiverServerCell setAccessoryType:UITableViewCellAccessoryCheckmark];
-        [self.inputReceiverServerCell setSelected:NO animated:YES];
-    }
+    self.legacyModeSwitch.on = self.configuration.inputLegacy;
 }
 
 #pragma mark - Table delegate
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    if ([tableView cellForRowAtIndexPath:indexPath] == self.pointerStyleTouchscreenCell) {
-        self.inputTouchscreenMode = YES;
+    if ([tableView cellForRowAtIndexPath:indexPath] == self.openSettingsCell) {
+        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:UIApplicationOpenSettingsURLString]
+                                           options:@{}
+                                 completionHandler:nil];
+        [tableView deselectRowAtIndexPath:indexPath animated:YES];
     }
-    if ([tableView cellForRowAtIndexPath:indexPath] == self.pointerStyleTrackpadCell) {
-        self.inputTouchscreenMode = NO;
-    }
-    if ([tableView cellForRowAtIndexPath:indexPath] == self.inputReceiverDirectCell) {
-        self.inputDirect = YES;
-    }
-    if ([tableView cellForRowAtIndexPath:indexPath] == self.inputReceiverServerCell) {
-        self.inputDirect = NO;
-    }
+}
+
+#pragma mark - Event handlers
+
+- (IBAction)legacyModeChanged:(UISwitch *)sender {
+    self.configuration.inputLegacy = sender.on;
 }
 
 @end
