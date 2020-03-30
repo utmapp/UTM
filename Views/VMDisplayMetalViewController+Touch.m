@@ -473,23 +473,25 @@ static CGFloat CGPointToPixel(CGFloat point) {
     }
 }
 
-- (void)switchMouseType:(VMMouseType)type {
+- (BOOL)switchMouseType:(VMMouseType)type {
     BOOL shouldHideCursor = (type == VMMouseTypeAbsoluteHideCursor);
     BOOL shouldUseServerMouse = (type == VMMouseTypeRelative);
     self.vmInput.inhibitCursor = shouldHideCursor;
     if (shouldUseServerMouse != self.vmInput.serverModeCursor) {
         NSLog(@"Switching mouse mode to server:%d for type:%ld", shouldUseServerMouse, type);
         [self.vm requestInputTablet:!shouldUseServerMouse];
-        [self dragCursor:UIGestureRecognizerStateEnded]; // reset mouse down
+        return YES;
     }
+    return NO;
 }
 
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
     if (!self.vmConfiguration.inputLegacy) {
         for (UITouch *touch in [event touchesForView:self.mtkView]) {
             VMMouseType type = [self touchTypeToMouseType:touch.type];
-            [self switchMouseType:type];
-            if (!self.vmInput.serverModeCursor) { // start click for client mode
+            if ([self switchMouseType:type]) {
+                [self dragCursor:UIGestureRecognizerStateEnded]; // reset drag
+            } else if (!self.vmInput.serverModeCursor) { // start click for client mode
                 CGPoint pos = [touch locationInView:self.mtkView];
                 [_cursor startMovement:pos];
                 [_cursor updateMovement:pos];
