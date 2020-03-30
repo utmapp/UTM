@@ -18,6 +18,7 @@
 #import "VMDisplayMetalViewController+Touch.h"
 #import "VMCursor.h"
 #import "CSDisplayMetal.h"
+#import "UTMConfiguration.h"
 #import "UTMVirtualMachine.h"
 
 @implementation VMDisplayMetalViewController (Gestures)
@@ -48,6 +49,7 @@
     _pan.minimumNumberOfTouches = 1;
     _pan.maximumNumberOfTouches = 1;
     _pan.delegate = self;
+    _pan.cancelsTouchesInView = NO;
     _twoPan = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(gestureTwoPan:)];
     _twoPan.minimumNumberOfTouches = 2;
     _twoPan.maximumNumberOfTouches = 2;
@@ -58,6 +60,7 @@
     _threePan.delegate = self;
     _tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(gestureTap:)];
     _tap.delegate = self;
+    _tap.cancelsTouchesInView = NO;
     _twoTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(gestureTwoTap:)];
     _twoTap.numberOfTouchesRequired = 2;
     _twoTap.delegate = self;
@@ -233,7 +236,9 @@ static CGFloat CGPointToPixel(CGFloat point) {
 }
 
 - (IBAction)gesturePan:(UIPanGestureRecognizer *)sender {
-    [self moveMouse:sender];
+    if (self.serverModeCursor) {
+        [self moveMouse:sender];
+    }
 }
 
 - (void)moveScreen:(UIPanGestureRecognizer *)sender {
@@ -258,7 +263,7 @@ static CGFloat CGPointToPixel(CGFloat point) {
             [self moveScreen:sender];
             break;
         case VMGestureTypeDragCursor:
-            [self dragCursor:sender];
+            [self dragCursor:sender.state];
             [self moveMouse:sender];
             break;
         default:
@@ -272,7 +277,7 @@ static CGFloat CGPointToPixel(CGFloat point) {
             [self moveScreen:sender];
             break;
         case VMGestureTypeDragCursor:
-            [self dragCursor:sender];
+            [self dragCursor:sender.state];
             [self moveMouse:sender];
             break;
         default:
@@ -310,24 +315,26 @@ static CGFloat CGPointToPixel(CGFloat point) {
     }
     [self.vmInput sendMouseButton:button pressed:YES point:CGPointZero];
     [self onDelay:0.05f action:^{
+        self->_mouseDown = NO;
         [self.vmInput sendMouseButton:button pressed:NO point:CGPointZero];
     }];
     [_clickFeedbackGenerator selectionChanged];
 }
 
-- (void)dragCursor:(UIGestureRecognizer *)sender {
-    if (sender.state == UIGestureRecognizerStateBegan) {
+- (void)dragCursor:(UIGestureRecognizerState)state {
+    if (state == UIGestureRecognizerStateBegan) {
         [_clickFeedbackGenerator selectionChanged];
         _mouseDown = YES;
         [self.vmInput sendMouseButton:SEND_BUTTON_LEFT pressed:YES point:CGPointZero];
-    } else if (sender.state == UIGestureRecognizerStateEnded) {
+    } else if (state == UIGestureRecognizerStateEnded) {
         _mouseDown = NO;
         [self.vmInput sendMouseButton:SEND_BUTTON_LEFT pressed:NO point:CGPointZero];
     }
 }
 
 - (IBAction)gestureTap:(UITapGestureRecognizer *)sender {
-    if (sender.state == UIGestureRecognizerStateEnded) {
+    if (sender.state == UIGestureRecognizerStateEnded &&
+        self.serverModeCursor) {
         [self mouseClick:SEND_BUTTON_LEFT location:[sender locationInView:sender.view]];
     }
 }
@@ -344,7 +351,7 @@ static CGFloat CGPointToPixel(CGFloat point) {
         self.longPressType == VMGestureTypeRightClick) {
         [self mouseClick:SEND_BUTTON_RIGHT location:[sender locationInView:sender.view]];
     } else if (self.longPressType == VMGestureTypeDragCursor) {
-        [self dragCursor:sender];
+        [self dragCursor:sender.state];
     }
 }
 
@@ -473,15 +480,49 @@ static CGFloat CGPointToPixel(CGFloat point) {
     if (shouldUseServerMouse != self.vmInput.serverModeCursor) {
         NSLog(@"Switching mouse mode to server:%d for type:%ld", shouldUseServerMouse, type);
         [self.vm requestInputTablet:!shouldUseServerMouse];
+        [self dragCursor:UIGestureRecognizerStateEnded]; // reset mouse down
     }
 }
 
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
-    for (UITouch *touch in touches) {
-        VMMouseType type = [self touchTypeToMouseType:touch.type];
-        [self switchMouseType:type];
+    if (!self.vmConfiguration.inputLegacy) {
+        for (UITouch *touch in [event touchesForView:self.mtkView]) {
+            VMMouseType type = [self touchTypeToMouseType:touch.type];
+            [self switchMouseType:type];
+            if (!self.vmInput.serverModeCursor) { // start click for client mode
+                CGPoint pos = [touch locationInView:self.mtkView];
+                [_cursor startMovement:pos];
+                [_cursor updateMovement:pos];
+                [self dragCursor:UIGestureRecognizerStateBegan];
+            }
+            break; // handle a single touch only
+        }
     }
     [super touchesBegan:touches withEvent:event];
+}
+
+- (void)touchesMoved:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
+    if (!self.vmConfiguration.inputLegacy && !self.vmInput.serverModeCursor) {
+        for (UITouch *touch in [event touchesForView:self.mtkView]) {
+            [_cursor updateMovement:[touch locationInView:self.mtkView]];
+            break; // handle single touch
+        }
+    }
+    [super touchesMoved:touches withEvent:event];
+}
+
+- (void)touchesCancelled:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
+    if (!self.vmConfiguration.inputLegacy && !self.vmInput.serverModeCursor) { // finish click for client mode
+        [self dragCursor:UIGestureRecognizerStateEnded];
+    }
+    [super touchesCancelled:touches withEvent:event];
+}
+
+- (void)touchesEnded:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
+    if (!self.vmConfiguration.inputLegacy && !self.vmInput.serverModeCursor) { // finish click for client mode
+        [self dragCursor:UIGestureRecognizerStateEnded];
+    }
+    [super touchesEnded:touches withEvent:event];
 }
 
 @end
