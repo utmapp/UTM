@@ -60,6 +60,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)sendMouseScroll:(SendScrollType)type button:(SendButtonType)button dy:(CGFloat)dy;
 - (void)sendMouseButton:(SendButtonType)button pressed:(BOOL)pressed point:(CGPoint)point;
 - (void)requestMouseMode:(BOOL)server;
+- (void)forceCursorPosition:(CGPoint)pos;
 
 - (id)initWithSession:(nonnull SpiceSession *)session channelID:(NSInteger)channelID monitorID:(NSInteger)monitorID;
 

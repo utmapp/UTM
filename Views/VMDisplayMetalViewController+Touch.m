@@ -292,6 +292,7 @@ static CGFloat CGPointToPixel(CGFloat point) {
     translated = [self clipCursorToDisplay:translated];
     if (!self.vmInput.serverModeCursor) {
         [self.vmInput sendMouseMotion:(_mouseDown ? SEND_BUTTON_LEFT : SEND_BUTTON_NONE) point:translated];
+        [self.vmInput forceCursorPosition:translated]; // required to show cursor on screen
     } else {
         NSLog(@"Warning: ignored mouse set (%f, %f) while mouse is in server mode", translated.x, translated.y);
     }

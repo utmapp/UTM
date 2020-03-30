@@ -403,6 +403,10 @@ static int cs_button_to_spice(SendButtonType button)
     }
 }
 
+- (void)forceCursorPosition:(CGPoint)pos {
+    _mouse_guest = pos;
+}
+
 #pragma mark - Initializers
 
 - (id)init {
