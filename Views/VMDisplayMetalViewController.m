@@ -17,6 +17,7 @@
 #import "VMDisplayMetalViewController.h"
 #import "VMDisplayMetalViewController+Keyboard.h"
 #import "VMDisplayMetalViewController+Touch.h"
+#import "VMDisplayMetalViewController+Gamepad.h"
 #import "UTMRenderer.h"
 #import "UTMVirtualMachine.h"
 #import "VMKeyboardView.h"
@@ -24,7 +25,6 @@
 #import "VMConfigExistingViewController.h"
 #import "UTMConfiguration.h"
 #import "CSDisplayMetal.h"
-
 @interface VMDisplayMetalViewController ()
 
 @end
@@ -97,6 +97,7 @@
     self.mtkView.delegate = _renderer;
     
     [self initTouch];
+    [self initGamepad];
 
     // view state and observers
     _toolbarVisible = YES;
@@ -199,7 +200,13 @@
 
 #pragma mark - Helper Functions
 
+- (int) keyValueToScancode: (NSString *) keyValue {
+    
+    return -1;
+}
+
 - (void)sendExtendedKey:(SendKeyType)type code:(int)code {
+    NSLog(@"keycode: %d", code);
     uint32_t x = __builtin_bswap32(code);
     while ((x & 0xFF) == 0) {
         x = x >> 8;
