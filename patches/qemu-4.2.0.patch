@@ -5149,3 +5149,193 @@ diff -Naur a/libucontext/test_libucontext.c b/libucontext/test_libucontext.c
 +	swapcontext(&ctx[0], &ctx[2]);
 +	return 0;
 +}
+From 5ac17660a76e321c37e6dca2e3c04d9d7d2b7ff4 Mon Sep 17 00:00:00 2001
+From: osy <osy86@users.noreply.github.com>
+Date: Tue, 31 Mar 2020 15:59:19 -0700
+Subject: [PATCH] Add DNS resolving for iOS
+
+iOS does not support reading /etc/resolv.conf so we have to use libresolv
+Also modified build script to support building on Darwin systems.
+---
+ meson.build |  10 +++++-
+ src/slirp.c | 101 ++++++++++++++++++++++++++++++++++++++++++++++++++--
+ 2 files changed, 108 insertions(+), 3 deletions(-)
+
+diff --git a/meson.build b/meson.build
+index 94578dc..f47594f 100644
+--- a/slirp/meson.build
++++ b/slirp/meson.build
+@@ -50,6 +50,10 @@ if host_system == 'windows'
+     cc.find_library('ws2_32'),
+     cc.find_library('iphlpapi')
+   ]
++elif host_system == 'darwin'
++  platform_deps += [
++    cc.find_library('resolv')
++  ]
+ endif
+ 
+ cargs = [
+@@ -91,7 +95,11 @@ sources = [
+ ]
+ 
+ mapfile = 'src/libslirp.map'
+-vflag = '-Wl,--version-script,@0@/@1@'.format(meson.current_source_dir(), mapfile)
++vflag = []
++vflag_test = '-Wl,--version-script,@0@/@1@'.format(meson.current_source_dir(), mapfile)
++if cc.has_link_argument(vflag_test)
++  vflag += vflag_test
++endif
+ 
+ configure_file(
+   input : 'src/libslirp-version.h.in',
+diff --git a/src/slirp.c b/src/slirp.c
+index b0194cb..eb57116 100644
+--- a/slirp/src/slirp.c
++++ b/slirp/src/slirp.c
+@@ -59,7 +59,7 @@ static unsigned dns6_addr_time;
+ /* for the aging of certain requests like DNS */
+ #define TIMEOUT_DEFAULT 1000 /* milliseconds */
+ 
+-#ifdef _WIN32
++#if defined(_WIN32)
+ 
+ int get_dns_addr(struct in_addr *pdns_addr)
+ {
+@@ -116,7 +116,104 @@ static void winsock_cleanup(void)
+     WSACleanup();
+ }
+ 
+-#else
++#elif defined(__APPLE__)
++
++#include <resolv.h>
++
++static int get_dns_addr_cached(void *pdns_addr, void *cached_addr,
++                               socklen_t addrlen, unsigned *cached_time)
++{
++    struct stat old_stat;
++    if (curtime - *cached_time < TIMEOUT_DEFAULT) {
++        memcpy(pdns_addr, cached_addr, addrlen);
++        return 0;
++    }
++    return 1;
++}
++
++static int get_dns_addr_libresolv(int af, void *pdns_addr, void *cached_addr,
++                                  socklen_t addrlen, uint32_t *scope_id,
++                                  unsigned *cached_time)
++{
++    char buff[512];
++    struct __res_state state;
++    union res_sockaddr_union servers[NI_MAXSERV];
++    int count;
++    int found;
++
++    if (res_ninit(&state) != 0) {
++        return -1;
++    }
++
++    count = res_getservers(&state, servers, NI_MAXSERV);
++    found = 0;
++    DEBUG_MISC("IP address of your DNS(s):");
++    for (int i = 0; i < count; i++) {
++        if (af == servers[i].sin.sin_family) {
++            found++;
++        }
++
++        // we use the first found entry
++        if (found == 1) {
++            memcpy(pdns_addr, &servers[i].sin.sin_addr, addrlen);
++            memcpy(cached_addr, &servers[i].sin.sin_addr, addrlen);
++            if (scope_id) {
++                *scope_id = 0;
++            }
++            *cached_time = curtime;
++        }
++
++        if (found > 3) {
++            DEBUG_MISC("  (more)");
++            break;
++        } else if (slirp_debug & DBG_MISC) {
++            char s[INET6_ADDRSTRLEN];
++            const char *res = inet_ntop(servers[i].sin.sin_family,
++                                        &servers[i].sin.sin_addr,
++                                        s,
++                                        sizeof(s));
++            if (!res) {
++                res = "  (string conversion error)";
++            }
++            DEBUG_MISC("  %s", res);
++        }
++    }
++
++    res_nclose(&state);
++    if (!found)
++        return -1;
++    return 0;
++}
++
++int get_dns_addr(struct in_addr *pdns_addr)
++{
++    if (dns_addr.s_addr != 0) {
++        int ret;
++        ret = get_dns_addr_cached(pdns_addr, &dns_addr, sizeof(dns_addr),
++                                  &dns_addr_time);
++        if (ret <= 0) {
++            return ret;
++        }
++    }
++    return get_dns_addr_libresolv(AF_INET, pdns_addr, &dns_addr,
++                                  sizeof(dns_addr), NULL, &dns_addr_time);
++}
++
++int get_dns6_addr(struct in6_addr *pdns6_addr, uint32_t *scope_id)
++{
++    if (!in6_zero(&dns6_addr)) {
++        int ret;
++        ret = get_dns_addr_cached(pdns6_addr, &dns6_addr, sizeof(dns6_addr),
++                                  &dns6_addr_time);
++        if (ret <= 0) {
++            return ret;
++        }
++    }
++    return get_dns_addr_libresolv(AF_INET6, pdns6_addr, &dns6_addr,
++                                  sizeof(dns6_addr), scope_id, &dns6_addr_time);
++}
++
++#else // !defined(_WIN32) && !defined(__APPLE__)
+ 
+ static int get_dns_addr_cached(void *pdns_addr, void *cached_addr,
+                                socklen_t addrlen, struct stat *cached_stat,
+-- 
+2.24.1 (Apple Git-126)
+
+From 1ac84e4f8d5f1463a7ea49ddf5c4536d3299fa9e Mon Sep 17 00:00:00 2001
+From: osy <osy86@users.noreply.github.com>
+Date: Tue, 31 Mar 2020 16:20:24 -0700
+Subject: [PATCH] build: add libresolv dependency for Darwin
+
+We cannot access /etc/resolv.conf on iOS so libslirp is modified to use
+libresolv instead. Since we link to it statically we need to add the
+LDFLAGS to qemu.
+---
+ configure | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/configure b/configure
+index 1492c3b288..7497b5b1c5 100755
+--- a/configure
++++ b/configure
+@@ -892,7 +892,7 @@ iOS)
+   host_device_support="no"
+   audio_drv_list=""
+   audio_possible_drivers=""
+-  LDFLAGS="-framework CoreFoundation $LDFLAGS"
++  LDFLAGS="-framework CoreFoundation -lresolv $LDFLAGS"
+   # Disable attempts to use ObjectiveC features in os/object.h since they
+   # won't work when we're compiling with gcc as a C compiler.
+   QEMU_CFLAGS="-DOS_OBJECT_USE_OBJC=0 $QEMU_CFLAGS"
+-- 
+2.24.1 (Apple Git-126)
+
