@@ -200,13 +200,7 @@
 
 #pragma mark - Helper Functions
 
-- (int) keyValueToScancode: (NSString *) keyValue {
-    
-    return -1;
-}
-
 - (void)sendExtendedKey:(SendKeyType)type code:(int)code {
-    NSLog(@"keycode: %d", code);
     uint32_t x = __builtin_bswap32(code);
     while ((x & 0xFF) == 0) {
         x = x >> 8;

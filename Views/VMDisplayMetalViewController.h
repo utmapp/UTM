@@ -64,7 +64,6 @@ NS_ASSUME_NONNULL_BEGIN
     BOOL _buttonYPressed;
     BOOL _leftShoulderPressed;
     BOOL _rightShoulderPressed;
-    NSDictionary *_SCANCODE_DICT;
     // Feedback generators
     UISelectionFeedbackGenerator *_clickFeedbackGenerator;
     UIImpactFeedbackGenerator *_resizeFeedbackGenerator;

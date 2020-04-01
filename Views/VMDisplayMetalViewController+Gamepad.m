@@ -16,6 +16,7 @@
 
 #import "VMDisplayMetalViewController+Gamepad.h"
 #import "CSDisplayMetal.h"
+#import "UTMConfiguration.h"
 
 @implementation VMDisplayMetalViewController(Gamepad)
 
@@ -29,90 +30,6 @@
     for (GCController *controller in [GCController controllers]) {
         [self setupController:controller];
     }
-    _SCANCODE_DICT = @{
-        @"Ctrl":@29,
-        @"Command/Windows":@57435,
-        @"Option/Alt":@56,
-        @"Shift":@42,
-        @"Tab":@15,
-        @"Space":@57,
-        @"Enter":@28,
-        @"Backspace":@14,
-        @"Esc":@1,
-        @"Caps":@-1,
-        @"`":@-1,
-        @"1":@2,
-        @"2":@3,
-        @"3":@4,
-        @"4":@5,
-        @"5":@6,
-        @"6":@7,
-        @"7":@8,
-        @"8":@9,
-        @"9":@10,
-        @"0":@11,
-        @"-":@12,
-        @"=":@13,
-        @"[":@26,
-        @"]":@27,
-        @";":@39,
-        @"'":@40,
-        @"\\":@43,
-        @",":@51,
-        @".":@52,
-        @"/":@53,
-        @"Ins":@-1,
-        @"Home":@-1,
-        @"PgUp":@-1,
-        @"PgDn":@-1,
-        @"Del":@-1,
-        @"End":@-1,
-        @"Up":@57416,
-        @"Left":@57419,
-        @"Down":@57424,
-        @"Right":@57421,
-        @"A":@30,
-        @"B":@48,
-        @"C":@46,
-        @"D":@32,
-        @"E":@18,
-        @"F":@33,
-        @"G":@34,
-        @"H":@35,
-        @"I":@23,
-        @"J":@36,
-        @"K":@37,
-        @"L":@38,
-        @"M":@50,
-        @"N":@49,
-        @"O":@24,
-        @"P":@25,
-        @"Q":@16,
-        @"R":@19,
-        @"S":@31,
-        @"T":@20,
-        @"U":@22,
-        @"V":@47,
-        @"W":@17,
-        @"X":@45,
-        @"Y":@21,
-        @"Z":@44,
-        @"F1":@59,
-        @"F2":@60,
-        @"F3":@61,
-        @"F4":@62,
-        @"F5":@63,
-        @"F6":@64,
-        @"F7":@65,
-        @"F8":@66,
-        @"F9":@67,
-        @"F10":@68,
-        @"F11":@87,
-        @"F12":@88
-    };
-//    NSNumber *num = [_SCANCODE_DICT objectForKey:@"1"];
-//    NSLog(@"test2: dict 1 is: %d", [num intValue]);
-    
 }
 
 - (NSInteger) integerForKeySetting: (NSString *)key {
@@ -145,6 +62,7 @@
     GCExtendedGamepad *profile = _controller.extendedGamepad;
     profile.valueChangedHandler = ^(GCExtendedGamepad *gamepad, GCControllerElement *element)
     {
+        VMDisplayMetalViewController *wkself = weakSelf;
         NSString *message = @"";
         
         // left trigger
@@ -159,68 +77,78 @@
         
         // left shoulder button
         if (gamepad.leftShoulder == element) {
-            if (gamepad.leftShoulder.isPressed != self->_leftShoulderPressed) {
-                [weakSelf keyboardAndMouseSender:@"leftShoulder" withKeyStatus:gamepad.leftShoulder.isPressed];
-                self->_leftShoulderPressed = gamepad.leftShoulder.isPressed;
+            if (gamepad.leftShoulder.isPressed != wkself->_leftShoulderPressed) {
+                [wkself keyboardAndMouseSender:@"leftShoulder" withKeyStatus:gamepad.leftShoulder.isPressed];
+                wkself->_leftShoulderPressed = gamepad.leftShoulder.isPressed;
+                return;
             }
         }
         
         // right shoulder button
         if (gamepad.rightShoulder == element) {
-            if (gamepad.rightShoulder.isPressed != self->_rightShoulderPressed) {
-                [weakSelf keyboardAndMouseSender:@"rightShoulder" withKeyStatus:gamepad.rightShoulder.isPressed];
-                self->_rightShoulderPressed = gamepad.rightShoulder.isPressed;
+            if (gamepad.rightShoulder.isPressed != wkself->_rightShoulderPressed) {
+                [wkself keyboardAndMouseSender:@"rightShoulder" withKeyStatus:gamepad.rightShoulder.isPressed];
+                wkself->_rightShoulderPressed = gamepad.rightShoulder.isPressed;
+                return;
             }
         }
         
         // A button
         if (gamepad.buttonA == element) {
-            if (gamepad.buttonA.isPressed != self->_buttonAPressed) {
-                [weakSelf keyboardAndMouseSender:@"buttonA" withKeyStatus:gamepad.buttonA.isPressed];
-                self->_buttonAPressed = gamepad.buttonA.isPressed;
+            if (gamepad.buttonA.isPressed != wkself->_buttonAPressed) {
+                [wkself keyboardAndMouseSender:@"buttonA" withKeyStatus:gamepad.buttonA.isPressed];
+                wkself->_buttonAPressed = gamepad.buttonA.isPressed;
+                return;
             }
         }
         
         // B button
         if (gamepad.buttonB == element) {
-            if (gamepad.buttonB.isPressed != self->_buttonBPressed) {
-                [weakSelf keyboardAndMouseSender:@"buttonB" withKeyStatus:gamepad.buttonB.isPressed];
-                self->_buttonBPressed = gamepad.buttonB.isPressed;
+            if (gamepad.buttonB.isPressed != wkself->_buttonBPressed) {
+                [wkself keyboardAndMouseSender:@"buttonB" withKeyStatus:gamepad.buttonB.isPressed];
+                wkself->_buttonBPressed = gamepad.buttonB.isPressed;
+                return;
             }
         }
         
         // X button
         if (gamepad.buttonX == element) {
-            if (gamepad.buttonX.isPressed != self->_buttonXPressed) {
-                [weakSelf keyboardAndMouseSender:@"buttonX" withKeyStatus:gamepad.buttonX.isPressed];
-                self->_buttonXPressed = gamepad.buttonX.isPressed;
+            if (gamepad.buttonX.isPressed != wkself->_buttonXPressed) {
+                [wkself keyboardAndMouseSender:@"buttonX" withKeyStatus:gamepad.buttonX.isPressed];
+                wkself->_buttonXPressed = gamepad.buttonX.isPressed;
+                return;
             }
         }
         // Y button
         if (gamepad.buttonY == element) {
-            if (gamepad.buttonY.isPressed != self->_buttonYPressed) {
-                [weakSelf keyboardAndMouseSender:@"buttonY" withKeyStatus:gamepad.buttonY.isPressed];
-                self->_buttonYPressed = gamepad.buttonY.isPressed;
+            if (gamepad.buttonY.isPressed != wkself->_buttonYPressed) {
+                [wkself keyboardAndMouseSender:@"buttonY" withKeyStatus:gamepad.buttonY.isPressed];
+                wkself->_buttonYPressed = gamepad.buttonY.isPressed;
+                return;
             }
         }
         
         // d-pad
         if (gamepad.dpad == element) {
-            if (gamepad.dpad.up.isPressed != self->_dpadUpPressed) {
-                [weakSelf keyboardAndMouseSender:@"dpad_up" withKeyStatus:gamepad.dpad.up.isPressed];
-                self->_dpadUpPressed = gamepad.dpad.up.isPressed;
+            if (gamepad.dpad.up.isPressed != wkself->_dpadUpPressed) {
+                [wkself keyboardAndMouseSender:@"dpad_up" withKeyStatus:gamepad.dpad.up.isPressed];
+                wkself->_dpadUpPressed = gamepad.dpad.up.isPressed;
+                return;
             }
-            if (gamepad.dpad.left.isPressed != self->_dpadLeftPressed) {
-                [weakSelf keyboardAndMouseSender:@"dpad_left" withKeyStatus:gamepad.dpad.left.isPressed];
-                self->_dpadLeftPressed = gamepad.dpad.left.isPressed;
+            if (gamepad.dpad.left.isPressed != wkself->_dpadLeftPressed) {
+                [wkself keyboardAndMouseSender:@"dpad_left" withKeyStatus:gamepad.dpad.left.isPressed];
+                wkself->_dpadLeftPressed = gamepad.dpad.left.isPressed;
+                return;
             }
-            if (gamepad.dpad.down.isPressed != self->_dpadDownPressed) {
-                [weakSelf keyboardAndMouseSender:@"dpad_down" withKeyStatus:gamepad.dpad.down.isPressed];
-                self->_dpadDownPressed = gamepad.dpad.down.isPressed;
+            if (gamepad.dpad.down.isPressed != wkself->_dpadDownPressed) {
+                [wkself keyboardAndMouseSender:@"dpad_down" withKeyStatus:gamepad.dpad.down.isPressed];
+                wkself->_dpadDownPressed = gamepad.dpad.down.isPressed;
+                return;
             }
-            if (gamepad.dpad.right.isPressed != self->_dpadRightPressed) {
-                [weakSelf keyboardAndMouseSender:@"dpad_right" withKeyStatus:gamepad.dpad.right.isPressed];
-                self->_dpadRightPressed = gamepad.dpad.right.isPressed;
+            if (gamepad.dpad.right.isPressed != wkself->_dpadRightPressed) {
+                [wkself keyboardAndMouseSender:@"dpad_right" withKeyStatus:gamepad.dpad.right.isPressed];
+                wkself->_dpadRightPressed = gamepad.dpad.right.isPressed;
+                return;
             }
         }
         
@@ -231,8 +159,8 @@
         
         // right stick
         if (gamepad.rightThumbstick == element) {
-            NSInteger speed = [weakSelf integerForSetting:@"rightThumbstickSpeed"];
-            self->_cursorDirection = CGPointMake(gamepad.rightThumbstick.xAxis.value * speed, -gamepad.rightThumbstick.yAxis.value * speed);
+            NSInteger speed = [wkself integerForSetting:@"rightThumbstickSpeed"];
+            wkself->_cursorDirection = CGPointMake(gamepad.rightThumbstick.xAxis.value * speed, -gamepad.rightThumbstick.yAxis.value * speed);
         }
     };
     
@@ -243,7 +171,6 @@
     if (!_mouseMovementTimer) {
         _mouseMovementTimer = [NSTimer scheduledTimerWithTimeInterval:0.01 target:self selector:@selector(cursorMovementThread) userInfo:nil repeats:YES];
     }
-    
 }
 
 - (void) keyboardAndMouseSender: (NSString *) identifier withKeyStatus: (BOOL) isPressed{
@@ -262,12 +189,12 @@
         return;
     }
       
-    NSNumber *code = _SCANCODE_DICT[value];
+    NSNumber *code = [UTMConfiguration gamePadToScancodeMap][value];
     int scancode = [code intValue];
     if (scancode < 0) {
         return;
     }
-    [self sendExtendedKey:isPressed code:scancode];
+    [self sendExtendedKey:isPressed ? SEND_KEY_PRESS : SEND_KEY_RELEASE code:scancode];
 }
 
 #pragma mark - Gamepad opperations
