@@ -21,16 +21,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface VMConfigNetworkingViewController : VMConfigViewController
 
-@property (weak, nonatomic) IBOutlet UISwitch *networkingEnabledSwitch;
-@property (weak, nonatomic) IBOutlet UISwitch *localAccessOnlySwitch;
-@property (weak, nonatomic) IBOutlet UITextField *networkAddressField;
-@property (weak, nonatomic) IBOutlet UITextField *dhcpStartField;
-
-- (IBAction)networkingEnabledSwitchChanged:(UISwitch *)sender;
-- (IBAction)localAccessOnlySwitchChanged:(UISwitch *)sender;
-- (IBAction)networkAddressFieldEdited:(UITextField *)sender;
-- (IBAction)dhcpStartFieldEdited:(UITextField *)sender;
-
 @end
 
 NS_ASSUME_NONNULL_END

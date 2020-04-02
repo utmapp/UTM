@@ -1198,54 +1198,126 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
                         <sections>
-                            <tableViewSection headerTitle="Hardware" id="qCe-97-Cma">
+                            <tableViewSection headerTitle="Hardware" id="6vN-fV-5rF">
                                 <cells>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" id="f3B-Ca-xOy">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" id="7zR-Jj-kfd">
                                         <rect key="frame" x="0.0" y="55.333332061767578" width="375" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
-                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="f3B-Ca-xOy" id="pCJ-hP-4sO">
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="7zR-Jj-kfd" id="Xux-DL-Djw">
                                             <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Enabled" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="qHe-ss-OZw">
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Enabled" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Llu-cx-Osx">
                                                     <rect key="frame" x="16" y="11.666666666666664" width="62" height="21"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
-                                                <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="TBl-Mf-rp9">
+                                                <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Irx-cj-gHJ" customClass="VMConfigSwitch">
                                                     <rect key="frame" x="310" y="6.6666666666666679" width="51" height="31.000000000000004"/>
+                                                    <userDefinedRuntimeAttributes>
+                                                        <userDefinedRuntimeAttribute type="string" keyPath="configurationPath" value="networkEnabled"/>
+                                                    </userDefinedRuntimeAttributes>
                                                     <connections>
-                                                        <action selector="networkingEnabledSwitchChanged:" destination="5KN-1q-y5w" eventType="valueChanged" id="b3q-tg-oxE"/>
+                                                        <action selector="configSwitchChanged:" destination="5KN-1q-y5w" eventType="valueChanged" id="QLs-jM-vOj"/>
                                                     </connections>
                                                 </switch>
                                             </subviews>
                                             <constraints>
-                                                <constraint firstItem="TBl-Mf-rp9" firstAttribute="trailing" secondItem="pCJ-hP-4sO" secondAttribute="trailingMargin" id="9yv-eJ-Q5T"/>
-                                                <constraint firstItem="TBl-Mf-rp9" firstAttribute="centerY" secondItem="pCJ-hP-4sO" secondAttribute="centerY" id="IPg-ZM-OeW"/>
-                                                <constraint firstItem="TBl-Mf-rp9" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="qHe-ss-OZw" secondAttribute="trailing" constant="8" symbolic="YES" id="Knl-mz-pdL"/>
-                                                <constraint firstItem="qHe-ss-OZw" firstAttribute="leading" secondItem="pCJ-hP-4sO" secondAttribute="leadingMargin" id="agn-6f-waO"/>
-                                                <constraint firstItem="qHe-ss-OZw" firstAttribute="centerY" secondItem="pCJ-hP-4sO" secondAttribute="centerY" id="tBl-LZ-FWg"/>
+                                                <constraint firstItem="Llu-cx-Osx" firstAttribute="leading" secondItem="Xux-DL-Djw" secondAttribute="leadingMargin" id="CYt-Wk-HBn"/>
+                                                <constraint firstItem="Irx-cj-gHJ" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="Llu-cx-Osx" secondAttribute="trailing" constant="8" symbolic="YES" id="F7N-oe-HjV"/>
+                                                <constraint firstItem="Irx-cj-gHJ" firstAttribute="trailing" secondItem="Xux-DL-Djw" secondAttribute="trailingMargin" id="P2U-Z0-Wpt"/>
+                                                <constraint firstItem="Irx-cj-gHJ" firstAttribute="centerY" secondItem="Xux-DL-Djw" secondAttribute="centerY" id="bN7-0X-g0z"/>
+                                                <constraint firstItem="Llu-cx-Osx" firstAttribute="centerY" secondItem="Xux-DL-Djw" secondAttribute="centerY" id="uNO-zg-tIb"/>
                                             </constraints>
                                         </tableViewCellContentView>
                                     </tableViewCell>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" id="L7E-R4-cxI">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" textLabel="KRc-3d-cbz" detailTextLabel="exK-JR-7gh" style="IBUITableViewCellStyleValue1" id="RNX-hO-eWb" customClass="VMConfigTogglePickerCell">
                                         <rect key="frame" x="0.0" y="99.333332061767578" width="375" height="44"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="RNX-hO-eWb" id="bgv-Ms-Dbj">
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="Network Card" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="KRc-3d-cbz">
+                                                    <rect key="frame" x="16.000000000000007" y="11.999999999999998" width="105.66666666666667" height="20.333333333333332"/>
+                                                    <autoresizingMask key="autoresizingMask"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="rtl8139" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="exK-JR-7gh" customClass="VMConfigLabel">
+                                                    <rect key="frame" x="304" y="11.999999999999998" width="55" height="20.333333333333332"/>
+                                                    <autoresizingMask key="autoresizingMask"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                    <userDefinedRuntimeAttributes>
+                                                        <userDefinedRuntimeAttribute type="string" keyPath="configurationPath" value="networkCard"/>
+                                                    </userDefinedRuntimeAttributes>
+                                                </label>
+                                            </subviews>
+                                        </tableViewCellContentView>
+                                        <userDefinedRuntimeAttributes>
+                                            <userDefinedRuntimeAttribute type="boolean" keyPath="cellsVisible" value="NO"/>
+                                        </userDefinedRuntimeAttributes>
+                                        <connections>
+                                            <outlet property="label" destination="exK-JR-7gh" id="axM-6V-Lf2"/>
+                                            <outlet property="picker" destination="6DD-Mq-ovy" id="aHT-bM-5UH"/>
+                                            <outletCollection property="toggleVisibleCells" destination="MGi-yx-LqF" id="dcU-0J-OOa"/>
+                                        </connections>
+                                    </tableViewCell>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" rowHeight="169" id="MGi-yx-LqF">
+                                        <rect key="frame" x="0.0" y="143.33333206176758" width="375" height="169"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="MGi-yx-LqF" id="Pki-4n-yjx">
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="169"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <pickerView contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="6DD-Mq-ovy" customClass="VMConfigPickerView">
+                                                    <rect key="frame" x="16" y="11" width="343" height="138"/>
+                                                    <userDefinedRuntimeAttributes>
+                                                        <userDefinedRuntimeAttribute type="string" keyPath="supportedOptionsPath" value="networkCards"/>
+                                                    </userDefinedRuntimeAttributes>
+                                                    <connections>
+                                                        <outlet property="dataSource" destination="5KN-1q-y5w" id="nZP-7O-LUF"/>
+                                                        <outlet property="delegate" destination="5KN-1q-y5w" id="cVe-BA-97a"/>
+                                                        <outlet property="selectedOptionLabel" destination="exK-JR-7gh" id="gVT-xm-m0s"/>
+                                                    </connections>
+                                                </pickerView>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstAttribute="bottom" secondItem="6DD-Mq-ovy" secondAttribute="bottom" constant="20" symbolic="YES" id="Bba-6I-GnI"/>
+                                                <constraint firstItem="6DD-Mq-ovy" firstAttribute="leading" secondItem="Pki-4n-yjx" secondAttribute="leadingMargin" id="HIO-sl-zwh"/>
+                                                <constraint firstAttribute="trailingMargin" secondItem="6DD-Mq-ovy" secondAttribute="trailing" id="WuX-RP-5AG"/>
+                                                <constraint firstItem="6DD-Mq-ovy" firstAttribute="top" secondItem="Pki-4n-yjx" secondAttribute="topMargin" id="l85-zQ-0tV"/>
+                                            </constraints>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
+                                </cells>
+                            </tableViewSection>
+                            <tableViewSection headerTitle="Advanced Configuration" footerTitle="Most people do not need to touch these settings." id="mTW-BC-BPZ">
+                                <cells>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" id="L7E-R4-cxI">
+                                        <rect key="frame" x="0.0" y="375.66666412353516" width="375" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="L7E-R4-cxI" id="4pc-7p-05F">
                                             <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Local Access Only" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="iS1-Ur-HFa">
-                                                    <rect key="frame" x="16" y="11.666666666666664" width="140" height="21"/>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Isolate Guest" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="iS1-Ur-HFa">
+                                                    <rect key="frame" x="16" y="11.666666666666664" width="100" height="21"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
-                                                <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="CkD-IW-UX0">
+                                                <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="CkD-IW-UX0" customClass="VMConfigSwitch">
                                                     <rect key="frame" x="310" y="6.6666666666666679" width="51" height="31.000000000000004"/>
+                                                    <userDefinedRuntimeAttributes>
+                                                        <userDefinedRuntimeAttribute type="string" keyPath="configurationPath" value="networkIsolate"/>
+                                                    </userDefinedRuntimeAttributes>
                                                     <connections>
-                                                        <action selector="localAccessOnlySwitchChanged:" destination="5KN-1q-y5w" eventType="valueChanged" id="cOW-qq-gCh"/>
+                                                        <action selector="configSwitchChanged:" destination="5KN-1q-y5w" eventType="valueChanged" id="GDg-rF-gqB"/>
                                                     </connections>
                                                 </switch>
                                             </subviews>
@@ -1258,30 +1330,30 @@
                                             </constraints>
                                         </tableViewCellContentView>
                                     </tableViewCell>
-                                </cells>
-                            </tableViewSection>
-                            <tableViewSection headerTitle="IP Configuration" id="mTW-BC-BPZ">
-                                <cells>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" id="8mF-uj-oTE">
-                                        <rect key="frame" x="0.0" y="199.33333206176758" width="375" height="44"/>
+                                        <rect key="frame" x="0.0" y="419.66666412353516" width="375" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="8mF-uj-oTE" id="24L-rr-lhp">
                                             <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Network" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fOG-3K-1lH">
-                                                    <rect key="frame" x="16" y="11.666666666666664" width="65" height="21"/>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Guest Network" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fOG-3K-1lH">
+                                                    <rect key="frame" x="16" y="11.666666666666664" width="115" height="21"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
-                                                <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="10.0.2.0/24" textAlignment="right" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="q6m-Ld-1jH">
-                                                    <rect key="frame" x="178" y="11.666666666666664" width="181" height="21"/>
+                                                <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="10.0.2.0/24" textAlignment="right" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="q6m-Ld-1jH" customClass="VMConfigTextField">
+                                                    <rect key="frame" x="228" y="11" width="131" height="22"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <textInputTraits key="textInputTraits" keyboardType="numbersAndPunctuation" returnKeyType="done" enablesReturnKeyAutomatically="YES"/>
+                                                    <userDefinedRuntimeAttributes>
+                                                        <userDefinedRuntimeAttribute type="string" keyPath="configurationPath" value="networkAddress"/>
+                                                    </userDefinedRuntimeAttributes>
                                                     <connections>
-                                                        <action selector="networkAddressFieldEdited:" destination="5KN-1q-y5w" eventType="editingDidEnd" id="S6d-37-7Rd"/>
-                                                        <outlet property="delegate" destination="5KN-1q-y5w" id="SG4-5b-NcV"/>
+                                                        <action selector="configTextEditChanged:" destination="5KN-1q-y5w" eventType="editingChanged" id="lIG-Od-ne9"/>
+                                                        <action selector="configTextFieldEditEnd:" destination="5KN-1q-y5w" eventType="editingDidEnd" id="gfJ-nH-Bi1"/>
+                                                        <outlet property="delegate" destination="5KN-1q-y5w" id="bEB-kC-VxO"/>
                                                     </connections>
                                                 </textField>
                                             </subviews>
@@ -1294,8 +1366,116 @@
                                             </constraints>
                                         </tableViewCellContentView>
                                     </tableViewCell>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" id="lDm-SM-Ltj">
+                                        <rect key="frame" x="0.0" y="463.66666412353516" width="375" height="44"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="lDm-SM-Ltj" id="ezc-tZ-x04">
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Guest Network (IPv6)" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="eAi-sh-x9d">
+                                                    <rect key="frame" x="16" y="11.666666666666664" width="165" height="21"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                                <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="fec0::/64" textAlignment="right" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="UuB-XR-fJS" customClass="VMConfigTextField">
+                                                    <rect key="frame" x="278" y="11" width="81" height="22"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <textInputTraits key="textInputTraits" keyboardType="numbersAndPunctuation" returnKeyType="done" enablesReturnKeyAutomatically="YES"/>
+                                                    <userDefinedRuntimeAttributes>
+                                                        <userDefinedRuntimeAttribute type="string" keyPath="configurationPath" value="networkAddressIPv6"/>
+                                                    </userDefinedRuntimeAttributes>
+                                                    <connections>
+                                                        <action selector="configTextEditChanged:" destination="5KN-1q-y5w" eventType="editingChanged" id="leh-mW-3yK"/>
+                                                        <action selector="configTextFieldEditEnd:" destination="5KN-1q-y5w" eventType="editingDidEnd" id="7Ia-J0-cII"/>
+                                                        <outlet property="delegate" destination="5KN-1q-y5w" id="zNt-uB-bDO"/>
+                                                    </connections>
+                                                </textField>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstItem="eAi-sh-x9d" firstAttribute="leading" secondItem="ezc-tZ-x04" secondAttribute="leadingMargin" id="Eh9-k8-xSd"/>
+                                                <constraint firstItem="UuB-XR-fJS" firstAttribute="trailing" secondItem="ezc-tZ-x04" secondAttribute="trailingMargin" id="dUj-VM-qn8"/>
+                                                <constraint firstItem="UuB-XR-fJS" firstAttribute="leading" relation="lessThanOrEqual" secondItem="eAi-sh-x9d" secondAttribute="trailing" constant="97" id="eXQ-a6-4Ua"/>
+                                                <constraint firstItem="eAi-sh-x9d" firstAttribute="centerY" secondItem="ezc-tZ-x04" secondAttribute="centerY" id="rma-b6-oFo"/>
+                                                <constraint firstItem="UuB-XR-fJS" firstAttribute="centerY" secondItem="eAi-sh-x9d" secondAttribute="centerY" id="uLh-RE-EIa"/>
+                                            </constraints>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" id="JdS-U6-k3Z">
+                                        <rect key="frame" x="0.0" y="507.66666412353516" width="375" height="44"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="JdS-U6-k3Z" id="5ow-Dt-V5k">
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Host Address" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="5pM-Tk-uIx">
+                                                    <rect key="frame" x="16" y="11.666666666666664" width="104" height="21"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                                <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="10.0.2.2" textAlignment="right" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="RTg-tj-6ja" customClass="VMConfigTextField">
+                                                    <rect key="frame" x="217" y="11" width="142" height="22"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <textInputTraits key="textInputTraits" keyboardType="decimalPad" returnKeyType="done" enablesReturnKeyAutomatically="YES"/>
+                                                    <userDefinedRuntimeAttributes>
+                                                        <userDefinedRuntimeAttribute type="string" keyPath="configurationPath" value="networkHost"/>
+                                                    </userDefinedRuntimeAttributes>
+                                                    <connections>
+                                                        <action selector="configTextEditChanged:" destination="5KN-1q-y5w" eventType="editingChanged" id="aM2-CI-UHe"/>
+                                                        <action selector="configTextFieldEditEnd:" destination="5KN-1q-y5w" eventType="editingDidEnd" id="Tr4-9D-bfA"/>
+                                                        <outlet property="delegate" destination="5KN-1q-y5w" id="kyf-UW-oMu"/>
+                                                    </connections>
+                                                </textField>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstItem="RTg-tj-6ja" firstAttribute="trailing" secondItem="5ow-Dt-V5k" secondAttribute="trailingMargin" id="DTC-mv-OjM"/>
+                                                <constraint firstItem="5pM-Tk-uIx" firstAttribute="leading" secondItem="5ow-Dt-V5k" secondAttribute="leadingMargin" id="Io3-4G-lV5"/>
+                                                <constraint firstItem="RTg-tj-6ja" firstAttribute="centerY" secondItem="5pM-Tk-uIx" secondAttribute="centerY" id="JWK-OJ-fAS"/>
+                                                <constraint firstItem="5pM-Tk-uIx" firstAttribute="centerY" secondItem="5ow-Dt-V5k" secondAttribute="centerY" id="RCo-ag-ahJ"/>
+                                                <constraint firstItem="RTg-tj-6ja" firstAttribute="leading" relation="lessThanOrEqual" secondItem="5pM-Tk-uIx" secondAttribute="trailing" constant="97" id="jJF-nR-ryv"/>
+                                            </constraints>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" id="224-F9-2xC">
+                                        <rect key="frame" x="0.0" y="551.66666412353516" width="375" height="44"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="224-F9-2xC" id="Dhw-nI-p3T">
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Host Address (IPv6)" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="j8H-o8-7gQ">
+                                                    <rect key="frame" x="16" y="11.666666666666664" width="154" height="21"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                                <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="fec0::2" textAlignment="right" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="V2H-Ti-2Wa" customClass="VMConfigTextField">
+                                                    <rect key="frame" x="267" y="11" width="92" height="22"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <textInputTraits key="textInputTraits" keyboardType="numbersAndPunctuation" returnKeyType="done" enablesReturnKeyAutomatically="YES"/>
+                                                    <userDefinedRuntimeAttributes>
+                                                        <userDefinedRuntimeAttribute type="string" keyPath="configurationPath" value="networkHostIPv6"/>
+                                                    </userDefinedRuntimeAttributes>
+                                                    <connections>
+                                                        <action selector="configTextEditChanged:" destination="5KN-1q-y5w" eventType="editingChanged" id="S93-ya-D1R"/>
+                                                        <action selector="configTextFieldEditEnd:" destination="5KN-1q-y5w" eventType="editingDidEnd" id="8Wg-kx-vMh"/>
+                                                        <outlet property="delegate" destination="5KN-1q-y5w" id="pLb-NG-1BN"/>
+                                                    </connections>
+                                                </textField>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstItem="j8H-o8-7gQ" firstAttribute="leading" secondItem="Dhw-nI-p3T" secondAttribute="leadingMargin" id="3w4-dG-BQg"/>
+                                                <constraint firstItem="V2H-Ti-2Wa" firstAttribute="leading" relation="lessThanOrEqual" secondItem="j8H-o8-7gQ" secondAttribute="trailing" constant="97" id="HZs-26-Eva"/>
+                                                <constraint firstItem="V2H-Ti-2Wa" firstAttribute="centerY" secondItem="j8H-o8-7gQ" secondAttribute="centerY" id="I6f-wp-8DI"/>
+                                                <constraint firstItem="j8H-o8-7gQ" firstAttribute="centerY" secondItem="Dhw-nI-p3T" secondAttribute="centerY" id="d6J-hG-atf"/>
+                                                <constraint firstItem="V2H-Ti-2Wa" firstAttribute="trailing" secondItem="Dhw-nI-p3T" secondAttribute="trailingMargin" id="uIM-Zt-oqS"/>
+                                            </constraints>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" id="aMG-yM-TGa">
-                                        <rect key="frame" x="0.0" y="243.33333206176758" width="375" height="44"/>
+                                        <rect key="frame" x="0.0" y="595.66666412353516" width="375" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="aMG-yM-TGa" id="0gE-Fg-XZu">
                                             <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
@@ -1307,13 +1487,17 @@
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
-                                                <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="10.0.2.0.15" textAlignment="right" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="sym-7m-1rq">
-                                                    <rect key="frame" x="202" y="11.666666666666664" width="157" height="21"/>
+                                                <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="10.0.2.0.15" textAlignment="right" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="sym-7m-1rq" customClass="VMConfigTextField">
+                                                    <rect key="frame" x="202" y="11" width="157" height="22"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <textInputTraits key="textInputTraits" keyboardType="decimalPad" returnKeyType="done" enablesReturnKeyAutomatically="YES"/>
+                                                    <userDefinedRuntimeAttributes>
+                                                        <userDefinedRuntimeAttribute type="string" keyPath="configurationPath" value="networkDhcpStart"/>
+                                                    </userDefinedRuntimeAttributes>
                                                     <connections>
-                                                        <action selector="dhcpStartFieldEdited:" destination="5KN-1q-y5w" eventType="editingDidEnd" id="vO5-kh-bgR"/>
-                                                        <outlet property="delegate" destination="5KN-1q-y5w" id="Hwc-bw-TCN"/>
+                                                        <action selector="configTextEditChanged:" destination="5KN-1q-y5w" eventType="editingChanged" id="QbM-ce-m11"/>
+                                                        <action selector="configTextFieldEditEnd:" destination="5KN-1q-y5w" eventType="editingDidEnd" id="r2g-ZI-DaR"/>
+                                                        <outlet property="delegate" destination="5KN-1q-y5w" id="OGP-Mm-knD"/>
                                                     </connections>
                                                 </textField>
                                             </subviews>
@@ -1323,6 +1507,186 @@
                                                 <constraint firstItem="sym-7m-1rq" firstAttribute="trailing" secondItem="0gE-Fg-XZu" secondAttribute="trailingMargin" id="dPr-y9-71b"/>
                                                 <constraint firstItem="5O8-6K-mxz" firstAttribute="centerY" secondItem="0gE-Fg-XZu" secondAttribute="centerY" id="m70-yR-Olh"/>
                                                 <constraint firstItem="sym-7m-1rq" firstAttribute="leading" relation="lessThanOrEqual" secondItem="5O8-6K-mxz" secondAttribute="trailing" constant="97" id="wBT-vz-Pum"/>
+                                            </constraints>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" id="Fm2-g9-IgQ">
+                                        <rect key="frame" x="0.0" y="639.66666412353516" width="375" height="44"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="Fm2-g9-IgQ" id="fNJ-fz-y5v">
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="DHCP Hostname" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="6jT-hy-98r">
+                                                    <rect key="frame" x="16" y="11.666666666666664" width="130" height="21"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                                <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" textAlignment="right" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="P4d-SA-TBM" customClass="VMConfigTextField">
+                                                    <rect key="frame" x="243" y="11" width="116" height="22"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <textInputTraits key="textInputTraits" keyboardType="URL" returnKeyType="done" enablesReturnKeyAutomatically="YES"/>
+                                                    <userDefinedRuntimeAttributes>
+                                                        <userDefinedRuntimeAttribute type="string" keyPath="configurationPath" value="networkDhcpHost"/>
+                                                    </userDefinedRuntimeAttributes>
+                                                    <connections>
+                                                        <action selector="configTextEditChanged:" destination="5KN-1q-y5w" eventType="editingChanged" id="ehQ-je-MMv"/>
+                                                        <action selector="configTextFieldEditEnd:" destination="5KN-1q-y5w" eventType="editingDidEnd" id="bax-TE-vzo"/>
+                                                        <outlet property="delegate" destination="5KN-1q-y5w" id="bFd-dN-OUJ"/>
+                                                    </connections>
+                                                </textField>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstItem="P4d-SA-TBM" firstAttribute="trailing" secondItem="fNJ-fz-y5v" secondAttribute="trailingMargin" id="7Pj-ZQ-Bcv"/>
+                                                <constraint firstItem="P4d-SA-TBM" firstAttribute="centerY" secondItem="6jT-hy-98r" secondAttribute="centerY" id="GmK-PZ-wXe"/>
+                                                <constraint firstItem="6jT-hy-98r" firstAttribute="centerY" secondItem="fNJ-fz-y5v" secondAttribute="centerY" id="NFK-kv-Obs"/>
+                                                <constraint firstItem="P4d-SA-TBM" firstAttribute="leading" relation="lessThanOrEqual" secondItem="6jT-hy-98r" secondAttribute="trailing" constant="97" id="Ne1-cm-AlK"/>
+                                                <constraint firstItem="6jT-hy-98r" firstAttribute="leading" secondItem="fNJ-fz-y5v" secondAttribute="leadingMargin" id="iRA-5w-dor"/>
+                                            </constraints>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" id="9YB-rv-ALL">
+                                        <rect key="frame" x="0.0" y="683.66666412353516" width="375" height="44"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="9YB-rv-ALL" id="7jM-dw-T8o">
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="DHCP Domain Name" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="qiy-Bt-O9l">
+                                                    <rect key="frame" x="16" y="11.666666666666664" width="159" height="21"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                                <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" textAlignment="right" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="xJP-ue-qdA" customClass="VMConfigTextField">
+                                                    <rect key="frame" x="272" y="11" width="87" height="22"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <textInputTraits key="textInputTraits" keyboardType="URL" returnKeyType="done" enablesReturnKeyAutomatically="YES"/>
+                                                    <userDefinedRuntimeAttributes>
+                                                        <userDefinedRuntimeAttribute type="string" keyPath="configurationPath" value="networkDhcpDomain"/>
+                                                    </userDefinedRuntimeAttributes>
+                                                    <connections>
+                                                        <action selector="configTextEditChanged:" destination="5KN-1q-y5w" eventType="editingChanged" id="7w1-jX-rGB"/>
+                                                        <action selector="configTextFieldEditEnd:" destination="5KN-1q-y5w" eventType="editingDidEnd" id="qZ6-4Q-o6a"/>
+                                                        <outlet property="delegate" destination="5KN-1q-y5w" id="neu-Hp-Dw7"/>
+                                                    </connections>
+                                                </textField>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstItem="xJP-ue-qdA" firstAttribute="trailing" secondItem="7jM-dw-T8o" secondAttribute="trailingMargin" id="1kZ-Eu-fjB"/>
+                                                <constraint firstItem="qiy-Bt-O9l" firstAttribute="centerY" secondItem="7jM-dw-T8o" secondAttribute="centerY" id="8JR-RQ-dWf"/>
+                                                <constraint firstItem="xJP-ue-qdA" firstAttribute="centerY" secondItem="qiy-Bt-O9l" secondAttribute="centerY" id="bvk-Qc-dZg"/>
+                                                <constraint firstItem="qiy-Bt-O9l" firstAttribute="leading" secondItem="7jM-dw-T8o" secondAttribute="leadingMargin" id="si2-SO-Seo"/>
+                                                <constraint firstItem="xJP-ue-qdA" firstAttribute="leading" relation="lessThanOrEqual" secondItem="qiy-Bt-O9l" secondAttribute="trailing" constant="97" id="tEk-92-EeK"/>
+                                            </constraints>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" id="xXF-hc-jmD">
+                                        <rect key="frame" x="0.0" y="727.66666412353516" width="375" height="44"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="xXF-hc-jmD" id="0JF-Vv-xax">
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="DNS Server" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="YED-iz-j6H">
+                                                    <rect key="frame" x="16" y="12" width="103" height="21"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                                <textField opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="10.0.2.0.15" textAlignment="right" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="4dt-SP-XL1" customClass="VMConfigTextField">
+                                                    <rect key="frame" x="247" y="11" width="112" height="22"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <textInputTraits key="textInputTraits" keyboardType="decimalPad" returnKeyType="done" enablesReturnKeyAutomatically="YES"/>
+                                                    <userDefinedRuntimeAttributes>
+                                                        <userDefinedRuntimeAttribute type="string" keyPath="configurationPath" value="networkDnsServer"/>
+                                                    </userDefinedRuntimeAttributes>
+                                                    <connections>
+                                                        <action selector="configTextEditChanged:" destination="5KN-1q-y5w" eventType="editingChanged" id="kqT-0R-Si9"/>
+                                                        <action selector="configTextFieldEditEnd:" destination="5KN-1q-y5w" eventType="editingDidEnd" id="tXw-zh-17i"/>
+                                                        <outlet property="delegate" destination="5KN-1q-y5w" id="HId-ZM-ViQ"/>
+                                                    </connections>
+                                                </textField>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstItem="4dt-SP-XL1" firstAttribute="trailing" secondItem="0JF-Vv-xax" secondAttribute="trailingMargin" id="6gE-aE-ZsQ"/>
+                                                <constraint firstItem="YED-iz-j6H" firstAttribute="leading" secondItem="0JF-Vv-xax" secondAttribute="leadingMargin" id="gmk-B1-t5N"/>
+                                                <constraint firstItem="YED-iz-j6H" firstAttribute="centerY" secondItem="0JF-Vv-xax" secondAttribute="centerY" id="na7-bq-70u"/>
+                                                <constraint firstItem="4dt-SP-XL1" firstAttribute="leading" relation="lessThanOrEqual" secondItem="YED-iz-j6H" secondAttribute="trailing" constant="128" id="xET-Io-ItN"/>
+                                                <constraint firstItem="4dt-SP-XL1" firstAttribute="centerY" secondItem="YED-iz-j6H" secondAttribute="centerY" id="yct-ji-fT4"/>
+                                            </constraints>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" id="9xD-K5-Mpp">
+                                        <rect key="frame" x="0.0" y="771.66666412353516" width="375" height="44"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="9xD-K5-Mpp" id="RCi-XK-Rhh">
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="DNS Server (IPv6)" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="PaI-t4-MPm">
+                                                    <rect key="frame" x="16" y="11.666666666666666" width="140" height="21"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                                <textField opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="fec0::3" textAlignment="right" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="5AX-Tr-D6a" customClass="VMConfigTextField">
+                                                    <rect key="frame" x="245" y="11" width="114" height="22"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <textInputTraits key="textInputTraits" keyboardType="numbersAndPunctuation" returnKeyType="done" enablesReturnKeyAutomatically="YES"/>
+                                                    <userDefinedRuntimeAttributes>
+                                                        <userDefinedRuntimeAttribute type="string" keyPath="configurationPath" value="networkDnsServerIPv6"/>
+                                                    </userDefinedRuntimeAttributes>
+                                                    <connections>
+                                                        <action selector="configTextEditChanged:" destination="5KN-1q-y5w" eventType="editingChanged" id="Wuf-8u-hjQ"/>
+                                                        <action selector="configTextFieldEditEnd:" destination="5KN-1q-y5w" eventType="editingDidEnd" id="YkW-6G-h8r"/>
+                                                        <outlet property="delegate" destination="5KN-1q-y5w" id="mqt-tr-5aU"/>
+                                                    </connections>
+                                                </textField>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstItem="PaI-t4-MPm" firstAttribute="leading" secondItem="RCi-XK-Rhh" secondAttribute="leadingMargin" id="Ne6-e1-NXa"/>
+                                                <constraint firstItem="5AX-Tr-D6a" firstAttribute="leading" relation="lessThanOrEqual" secondItem="PaI-t4-MPm" secondAttribute="trailing" constant="97" id="RDC-dP-s8a"/>
+                                                <constraint firstItem="5AX-Tr-D6a" firstAttribute="centerY" secondItem="PaI-t4-MPm" secondAttribute="centerY" id="awz-nM-Mdp"/>
+                                                <constraint firstItem="5AX-Tr-D6a" firstAttribute="trailing" secondItem="RCi-XK-Rhh" secondAttribute="trailingMargin" id="dG2-kS-wsa"/>
+                                                <constraint firstItem="PaI-t4-MPm" firstAttribute="centerY" secondItem="RCi-XK-Rhh" secondAttribute="centerY" id="u2I-u2-RiU"/>
+                                            </constraints>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" id="5Zt-oz-qoO">
+                                        <rect key="frame" x="0.0" y="815.66666412353516" width="375" height="44"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="5Zt-oz-qoO" id="PQe-ZP-vpM">
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="DNS Search Domains" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="jDl-dl-Cu8">
+                                                    <rect key="frame" x="16" y="11.666666666666666" width="164" height="21"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                                <textField opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" textAlignment="right" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="bl0-gn-e5n" customClass="VMConfigTextField">
+                                                    <rect key="frame" x="269" y="11" width="90" height="22"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <textInputTraits key="textInputTraits" keyboardType="URL" returnKeyType="done" enablesReturnKeyAutomatically="YES"/>
+                                                    <userDefinedRuntimeAttributes>
+                                                        <userDefinedRuntimeAttribute type="string" keyPath="configurationPath" value="networkDnsSearch"/>
+                                                    </userDefinedRuntimeAttributes>
+                                                    <connections>
+                                                        <action selector="configTextEditChanged:" destination="5KN-1q-y5w" eventType="editingChanged" id="wj3-xW-m9v"/>
+                                                        <action selector="configTextFieldEditEnd:" destination="5KN-1q-y5w" eventType="editingDidEnd" id="NLg-w1-KN1"/>
+                                                        <outlet property="delegate" destination="5KN-1q-y5w" id="Itx-hZ-FIe"/>
+                                                    </connections>
+                                                </textField>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstItem="bl0-gn-e5n" firstAttribute="trailing" secondItem="PQe-ZP-vpM" secondAttribute="trailingMargin" id="g7m-iI-spe"/>
+                                                <constraint firstItem="bl0-gn-e5n" firstAttribute="leading" relation="lessThanOrEqual" secondItem="jDl-dl-Cu8" secondAttribute="trailing" constant="97" id="gD3-RE-7VY"/>
+                                                <constraint firstItem="jDl-dl-Cu8" firstAttribute="centerY" secondItem="PQe-ZP-vpM" secondAttribute="centerY" id="kn8-g7-7qX"/>
+                                                <constraint firstItem="bl0-gn-e5n" firstAttribute="centerY" secondItem="jDl-dl-Cu8" secondAttribute="centerY" id="uk1-hs-WuZ"/>
+                                                <constraint firstItem="jDl-dl-Cu8" firstAttribute="leading" secondItem="PQe-ZP-vpM" secondAttribute="leadingMargin" id="ztm-AR-K8S"/>
                                             </constraints>
                                         </tableViewCellContentView>
                                     </tableViewCell>
@@ -1336,15 +1700,25 @@
                     </tableView>
                     <navigationItem key="navigationItem" title="Networking" id="bJQ-Qv-ceR"/>
                     <connections>
-                        <outlet property="dhcpStartField" destination="sym-7m-1rq" id="hBT-zk-PGi"/>
-                        <outlet property="localAccessOnlySwitch" destination="CkD-IW-UX0" id="SYw-zC-V8c"/>
-                        <outlet property="networkAddressField" destination="q6m-Ld-1jH" id="EEp-qk-io7"/>
-                        <outlet property="networkingEnabledSwitch" destination="TBl-Mf-rp9" id="Q2P-4v-vpm"/>
+                        <outletCollection property="configControls" destination="Irx-cj-gHJ" id="rMu-68-mQg"/>
+                        <outletCollection property="configControls" destination="CkD-IW-UX0" id="3jG-jN-TdZ"/>
+                        <outletCollection property="configControls" destination="q6m-Ld-1jH" id="nWk-ao-vzk"/>
+                        <outletCollection property="configControls" destination="UuB-XR-fJS" id="mTN-fe-Aaf"/>
+                        <outletCollection property="configControls" destination="RTg-tj-6ja" id="yx8-NI-3AG"/>
+                        <outletCollection property="configControls" destination="V2H-Ti-2Wa" id="9E1-LV-Pr0"/>
+                        <outletCollection property="configControls" destination="sym-7m-1rq" id="4fy-Zp-Ove"/>
+                        <outletCollection property="configControls" destination="P4d-SA-TBM" id="jmK-j3-iBI"/>
+                        <outletCollection property="configControls" destination="xJP-ue-qdA" id="gPa-hu-VqB"/>
+                        <outletCollection property="configControls" destination="4dt-SP-XL1" id="Knl-UL-2Mg"/>
+                        <outletCollection property="configControls" destination="5AX-Tr-D6a" id="r7q-b9-tl7"/>
+                        <outletCollection property="configControls" destination="bl0-gn-e5n" id="jZz-4m-J6E"/>
+                        <outletCollection property="configControls" destination="exK-JR-7gh" id="A2Q-KU-A6u"/>
+                        <outletCollection property="configPickerToggles" destination="RNX-hO-eWb" id="kiG-1k-Siv"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="irb-Tt-Gor" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="5569" y="548"/>
+            <point key="canvasLocation" x="5568.8000000000002" y="546.79802955665025"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="90q-rj-k6R">
@@ -2380,7 +2754,7 @@
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="DZc-Sg-gjO" userLabel="First Responder" sceneMemberID="firstResponder"/>
-                <view contentMode="scaleToFill" id="H7m-pq-dCg" customClass="UIInputView">
+                <view contentMode="scaleToFill" ambiguous="YES" id="H7m-pq-dCg" customClass="UIInputView">
                     <rect key="frame" x="0.0" y="0.0" width="1000" height="68"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     <subviews>
@@ -2494,7 +2868,7 @@
                                 <action selector="keyboardPastePressed:" destination="ckC-eO-gxn" eventType="touchUpInside" id="hAG-23-YnR"/>
                             </connections>
                         </button>
-                        <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2BY-mt-E6G">
+                        <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" ambiguous="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2BY-mt-E6G">
                             <rect key="frame" x="160" y="0.0" width="756" height="68"/>
                             <subviews>
                                 <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="p57-ic-h8k">

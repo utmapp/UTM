@@ -71,9 +71,18 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) BOOL inputLegacy;
 
 @property (nonatomic, assign) BOOL networkEnabled;
-@property (nonatomic, assign) BOOL networkLocalhostOnly;
-@property (nonatomic, nullable, copy) NSString *networkIPSubnet;
-@property (nonatomic, nullable, copy) NSString *networkDHCPStart;
+@property (nonatomic, assign) BOOL networkIsolate;
+@property (nonatomic, nullable, copy) NSString *networkCard;
+@property (nonatomic, nullable, copy) NSString *networkAddress;
+@property (nonatomic, nullable, copy) NSString *networkAddressIPv6;
+@property (nonatomic, nullable, copy) NSString *networkHost;
+@property (nonatomic, nullable, copy) NSString *networkHostIPv6;
+@property (nonatomic, nullable, copy) NSString *networkDhcpStart;
+@property (nonatomic, nullable, copy) NSString *networkDhcpHost;
+@property (nonatomic, nullable, copy) NSString *networkDhcpDomain;
+@property (nonatomic, nullable, copy) NSString *networkDnsServer;
+@property (nonatomic, nullable, copy) NSString *networkDnsServerIPv6;
+@property (nonatomic, nullable, copy) NSString *networkDnsSearch;
 
 @property (nonatomic, assign) BOOL printEnabled;
 

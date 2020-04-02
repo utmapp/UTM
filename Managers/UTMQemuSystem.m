@@ -164,13 +164,13 @@
         [self pushArgv:@"rtl8139,netdev=net0"];
         [self pushArgv:@"-netdev"];
         NSMutableString *netstr = [NSMutableString stringWithString:@"user,id=net0"];
-        if (self.configuration.networkIPSubnet) {
-            [netstr appendFormat:@",net=%@", self.configuration.networkIPSubnet];
+        if (self.configuration.networkAddress.length > 0) {
+            [netstr appendFormat:@",net=%@", self.configuration.networkAddress];
         }
-        if (self.configuration.networkDHCPStart) {
-            [netstr appendFormat:@",dhcpstart=%@", self.configuration.networkDHCPStart];
+        if (self.configuration.networkDhcpStart.length > 0) {
+            [netstr appendFormat:@",dhcpstart=%@", self.configuration.networkDhcpStart];
         }
-        if (self.configuration.networkLocalhostOnly) {
+        if (self.configuration.networkIsolate) {
             [netstr appendString:@"restrict=on"];
         }
         [self pushArgv:netstr];
