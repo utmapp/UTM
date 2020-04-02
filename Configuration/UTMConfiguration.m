@@ -1401,6 +1401,7 @@ const NSString *const kUTMConfigDebugLogKey = @"DebugLog";
         self.soundEnabled = YES;
         self.soundCard = @"ac97";
         self.sharingClipboardEnabled = YES;
+        self.name = name;
         self.existingPath = nil;
         self.debugLogEnabled = NO;
     }
@@ -1705,6 +1706,20 @@ const NSString *const kUTMConfigDebugLogKey = @"DebugLog";
 
 - (void)removeDriveAtIndex:(NSUInteger)index {
     [_rootDict[kUTMConfigDrivesKey] removeObjectAtIndex:index];
+}
+
+- (NSURL*)terminalInputOutputURL {
+    NSURL* tmpDir = [[NSFileManager defaultManager] temporaryDirectory];
+    NSString* ioFileName = [NSString stringWithFormat: @"%@.terminal", self.name];
+    NSURL* ioFile = [tmpDir URLByAppendingPathComponent: ioFileName];
+    return ioFile;
+}
+
+#pragma mark - NSCopying
+
+- (id)copyWithZone:(NSZone *)zone {
+    NSMutableDictionary* dictRepresentation = [[self dictRepresentation] mutableCopy];
+    return [[UTMConfiguration alloc] initWithDictionary:dictRepresentation name:_name path:_existingPath];
 }
 
 @end

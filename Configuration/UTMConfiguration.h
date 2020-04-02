@@ -28,7 +28,7 @@ typedef NS_ENUM(NSUInteger, UTMDiskImageType) {
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface UTMConfiguration : NSObject
+@interface UTMConfiguration : NSObject<NSCopying>
 
 @property (nonatomic, weak, readonly) NSDictionary *dictRepresentation;
 
@@ -49,7 +49,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSString *)defaultDriveInterface;
 + (NSString *)debugLogName;
 
-@property (nonatomic, nullable, copy) NSString *name;
+@property (nonatomic, copy) NSString *name;
 @property (nonatomic, nullable, copy) NSURL *existingPath;
 
 @property (nonatomic, nullable, copy) NSString *systemArchitecture;
@@ -105,6 +105,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setDriveImageType:(UTMDiskImageType)type forIndex:(NSUInteger)index;
 - (void)moveDriveIndex:(NSUInteger)index to:(NSUInteger)newIndex;
 - (void)removeDriveAtIndex:(NSUInteger)index;
+- (NSURL*)terminalInputOutputURL;
 
 @end
 

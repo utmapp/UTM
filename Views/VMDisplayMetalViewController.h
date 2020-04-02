@@ -16,8 +16,10 @@
 
 #import <UIKit/UIKit.h>
 #import "UTMVirtualMachineDelegate.h"
+#import "UTMSpiceIODelegate.h"
 #import "CSInput.h"
 
+@class UTMSpiceIO;
 @class UTMVirtualMachine;
 @class VMCursor;
 @class VMKeyboardView;
@@ -25,7 +27,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface VMDisplayMetalViewController : UIViewController<UTMVirtualMachineDelegate, UIGestureRecognizerDelegate> {
+@interface VMDisplayMetalViewController : UIViewController<UTMVirtualMachineDelegate, UTMSpiceIODelegate, UIGestureRecognizerDelegate> {
     NSMutableArray<UIKeyCommand *> *_keyCommands;
     
     // cursor handling
@@ -53,6 +55,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 @property (nonatomic, strong) UTMVirtualMachine *vm;
+@property (nonatomic, readonly, weak) UTMSpiceIO *spiceIO;
 @property (nonatomic, readwrite) BOOL prefersStatusBarHidden;
 @property (weak, nonatomic) IBOutlet MTKView *mtkView;
 @property (weak, nonatomic) IBOutlet VMKeyboardView *keyboardView;

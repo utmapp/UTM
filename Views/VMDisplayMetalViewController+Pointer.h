@@ -1,5 +1,5 @@
 //
-// Copyright © 2019 osy. All rights reserved.
+// Copyright © 2020 osy. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,20 +14,17 @@
 // limitations under the License.
 //
 
-#import <UIKit/UIKit.h>
-#import "VMKeyboardViewDelegate.h"
-
-extern const int kLargeAccessoryViewHeight;
-extern const int kSmallAccessoryViewHeight;
-extern const int kSafeAreaHeight;
+#import "UIKit/UIKit.h"
+#import "VMDisplayMetalViewController.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface VMKeyboardView : UIView <UITextInputTraits, UIKeyInput>
+NS_AVAILABLE_IOS(13.4)
+@interface VMDisplayMetalViewController (Pointer) <UIPointerInteractionDelegate>
 
-@property (nonatomic, weak) IBOutlet id<VMKeyboardViewDelegate> delegate;
-@property (nonatomic, readwrite, strong) IBOutlet UIView *inputAccessoryView;
-@property (nonatomic, assign) BOOL softKeyboardVisible;
+@property (nonatomic, readonly) BOOL hasTouchpadPointer;
+
+-(void)initPointerInteraction;
 
 @end
 

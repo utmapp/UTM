@@ -39,7 +39,7 @@
                                                 <constraint firstAttribute="width" constant="150" id="psZ-ev-pT6"/>
                                             </constraints>
                                             <connections>
-                                                <segue destination="ckC-eO-gxn" kind="show" identifier="startVMFromScreenshot" id="Fgt-US-6Ez"/>
+                                                <action selector="startVmFromScreen:" destination="krH-Hz-4fz" eventType="touchUpInside" id="EZW-ZZ-KWd"/>
                                             </connections>
                                         </button>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Name" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="VQv-L6-Wpd">
@@ -71,7 +71,7 @@
                                                                     </accessibility>
                                                                     <state key="normal" image="Play Icon"/>
                                                                     <connections>
-                                                                        <segue destination="ckC-eO-gxn" kind="show" identifier="startVMFromButton" id="bbf-vu-JjK"/>
+                                                                        <action selector="startVmFromButton:" destination="krH-Hz-4fz" eventType="touchUpInside" id="e74-d2-S7s"/>
                                                                     </connections>
                                                                 </button>
                                                             </subviews>
@@ -154,6 +154,10 @@
                             </connections>
                         </barButtonItem>
                     </navigationItem>
+                    <connections>
+                        <segue destination="ckC-eO-gxn" kind="show" identifier="startVM" id="wqK-gX-voO"/>
+                        <segue destination="Nen-bt-V44" kind="show" identifier="startVMConsole" id="Dv8-bI-JCh"/>
+                    </connections>
                 </collectionViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="gzw-ao-My7" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
@@ -179,7 +183,7 @@
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Name" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="2Kh-jJ-awN">
-                                                    <rect key="frame" x="16" y="11" width="343" height="22"/>
+                                                    <rect key="frame" x="16" y="11.666666666666664" width="343" height="21"/>
                                                     <gestureRecognizers/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" returnKeyType="done" enablesReturnKeyAutomatically="YES" smartDashesType="no" smartInsertDeleteType="no" smartQuotesType="no"/>
@@ -816,7 +820,7 @@
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="right" contentVerticalAlignment="center" placeholder="512" textAlignment="right" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="OwS-jd-mte">
-                                                    <rect key="frame" x="165" y="11" width="160" height="22"/>
+                                                    <rect key="frame" x="165" y="11.666666666666664" width="160" height="21"/>
                                                     <constraints>
                                                         <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="160" id="ucu-F4-pNg"/>
                                                     </constraints>
@@ -860,7 +864,7 @@
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="2" textAlignment="right" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="I4t-8W-Nev">
-                                                    <rect key="frame" x="199" y="11" width="160" height="22"/>
+                                                    <rect key="frame" x="199" y="11.666666666666664" width="160" height="21"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <textInputTraits key="textInputTraits" keyboardType="numberPad" returnKeyType="done" enablesReturnKeyAutomatically="YES"/>
                                                     <connections>
@@ -1272,7 +1276,7 @@
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="10.0.2.0/24" textAlignment="right" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="q6m-Ld-1jH">
-                                                    <rect key="frame" x="178" y="11" width="181" height="22"/>
+                                                    <rect key="frame" x="178" y="11.666666666666664" width="181" height="21"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <textInputTraits key="textInputTraits" keyboardType="numbersAndPunctuation" returnKeyType="done" enablesReturnKeyAutomatically="YES"/>
                                                     <connections>
@@ -1304,7 +1308,7 @@
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="10.0.2.0.15" textAlignment="right" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="sym-7m-1rq">
-                                                    <rect key="frame" x="202" y="11" width="157" height="22"/>
+                                                    <rect key="frame" x="202" y="11.666666666666664" width="157" height="21"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <textInputTraits key="textInputTraits" keyboardType="decimalPad" returnKeyType="done" enablesReturnKeyAutomatically="YES"/>
                                                     <connections>
@@ -1382,7 +1386,7 @@
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Name" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="0TR-HU-09X">
-                                                    <rect key="frame" x="16" y="11" width="343" height="22"/>
+                                                    <rect key="frame" x="16" y="11.666666666666664" width="343" height="21"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" returnKeyType="done" enablesReturnKeyAutomatically="YES" smartDashesType="no" smartInsertDeleteType="no" smartQuotesType="no"/>
                                                     <connections>
@@ -1463,7 +1467,7 @@
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="right" contentVerticalAlignment="center" placeholder="512" textAlignment="right" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="S2s-iX-Lul">
-                                                    <rect key="frame" x="165" y="11" width="160" height="22"/>
+                                                    <rect key="frame" x="165" y="11.666666666666664" width="160" height="21"/>
                                                     <constraints>
                                                         <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="160" id="o84-0K-Csk"/>
                                                     </constraints>
@@ -1507,7 +1511,7 @@
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="2" textAlignment="right" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="VBD-VX-Usg">
-                                                    <rect key="frame" x="199" y="11" width="160" height="22"/>
+                                                    <rect key="frame" x="199" y="11.666666666666664" width="160" height="21"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <textInputTraits key="textInputTraits" keyboardType="numberPad" returnKeyType="done" enablesReturnKeyAutomatically="YES"/>
                                                     <connections>
@@ -1956,7 +1960,7 @@
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="hda.img" textAlignment="right" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Dx6-pD-sU3">
-                                                    <rect key="frame" x="158" y="11" width="201" height="22"/>
+                                                    <rect key="frame" x="158" y="11.666666666666664" width="201" height="21"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" keyboardType="alphabet" returnKeyType="done" enablesReturnKeyAutomatically="YES" smartDashesType="no" smartInsertDeleteType="no" smartQuotesType="no"/>
                                                     <connections>
@@ -1993,7 +1997,7 @@
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="1024" textAlignment="right" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="nKg-bw-usb">
-                                                    <rect key="frame" x="286.66666666666669" y="11" width="38.333333333333314" height="22"/>
+                                                    <rect key="frame" x="286.66666666666669" y="11.666666666666664" width="38.333333333333314" height="21"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <textInputTraits key="textInputTraits" keyboardType="numberPad" returnKeyType="done" enablesReturnKeyAutomatically="YES"/>
                                                     <connections>
@@ -2348,6 +2352,7 @@
                         <outlet property="restartButton" destination="HpT-OM-Xpa" id="RX8-aw-JPR"/>
                         <outlet property="resumeBigButton" destination="a0a-Yw-GZc" id="XrF-Zk-zmY"/>
                         <outlet property="toolbarAccessoryView" destination="VFv-zJ-H5K" id="hkm-Wv-Reu"/>
+                        <outlet property="zoomButton" destination="m9f-Az-rlH" id="TjH-mW-nfs"/>
                         <outletCollection property="customKeyButtons" destination="1LD-5d-0Ee" id="joR-H1-pbq"/>
                         <outletCollection property="customKeyModifierButtons" destination="1LD-5d-0Ee" id="34X-PW-2yT"/>
                         <outletCollection property="customKeyButtons" destination="PvO-bn-C3P" id="l2b-Em-80E"/>
@@ -2841,7 +2846,641 @@
                     </userDefinedRuntimeAttributes>
                 </view>
             </objects>
-            <point key="canvasLocation" x="1830" y="-624"/>
+            <point key="canvasLocation" x="1829" y="-804"/>
+        </scene>
+        <!--Display HTerm-->
+        <scene sceneID="JNh-Pq-IaO">
+            <objects>
+                <viewController storyboardIdentifier="xcxgddf" modalTransitionStyle="flipHorizontal" hidesBottomBarWhenPushed="YES" id="Nen-bt-V44" userLabel="Display HTerm" customClass="VMTerminalViewController" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="ekG-nW-ktk">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="812"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <subviews>
+                            <wkWebView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="es2-y2-iG9">
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="812"/>
+                                <wkWebViewConfiguration key="configuration">
+                                    <audiovisualMediaTypes key="mediaTypesRequiringUserActionForPlayback" none="YES"/>
+                                    <wkPreferences key="preferences"/>
+                                </wkWebViewConfiguration>
+                            </wkWebView>
+                            <visualEffectView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="pSV-Kz-9ar" userLabel="Toolbar Accessory View">
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="89"/>
+                                <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="kdf-xB-pU1">
+                                    <rect key="frame" x="0.0" y="0.0" width="375" height="89"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                    <subviews>
+                                        <visualEffectView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="6Zm-be-ZSb">
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="89"/>
+                                            <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="Ylq-Eq-BeV">
+                                                <rect key="frame" x="0.0" y="0.0" width="375" height="89"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                <subviews>
+                                                    <stackView opaque="NO" contentMode="scaleToFill" spacing="16" translatesAutoresizingMaskIntoConstraints="NO" id="yP3-BT-kx0">
+                                                        <rect key="frame" x="253" y="51" width="106" height="30"/>
+                                                        <subviews>
+                                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gFL-3M-wsD">
+                                                                <rect key="frame" x="0.0" y="0.0" width="30" height="30"/>
+                                                                <accessibility key="accessibilityConfiguration" label="Keyboard"/>
+                                                                <constraints>
+                                                                    <constraint firstAttribute="height" constant="30" id="2m7-r6-Zh2"/>
+                                                                    <constraint firstAttribute="width" constant="30" id="xoB-Jj-CuA"/>
+                                                                </constraints>
+                                                                <state key="normal" image="Toolbar Keyboard"/>
+                                                                <connections>
+                                                                    <action selector="showKeyboardPressed:" destination="Nen-bt-V44" eventType="touchUpInside" id="cY3-W0-WJ8"/>
+                                                                </connections>
+                                                            </button>
+                                                            <button opaque="NO" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="SXa-j7-wWI">
+                                                                <rect key="frame" x="38" y="0.0" width="30" height="30"/>
+                                                                <accessibility key="accessibilityConfiguration" label="Settings"/>
+                                                                <constraints>
+                                                                    <constraint firstAttribute="height" constant="30" id="6EI-rP-9gR"/>
+                                                                    <constraint firstAttribute="width" constant="30" id="USW-AV-Gmz"/>
+                                                                </constraints>
+                                                                <state key="normal" image="Toolbar Settings"/>
+                                                            </button>
+                                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="7Jt-gO-ZMS">
+                                                                <rect key="frame" x="76" y="0.0" width="30" height="30"/>
+                                                                <accessibility key="accessibilityConfiguration" label="Hide Toolbar"/>
+                                                                <constraints>
+                                                                    <constraint firstAttribute="height" constant="30" id="AlM-aI-0fY"/>
+                                                                    <constraint firstAttribute="width" constant="30" id="qOp-ma-FK9"/>
+                                                                </constraints>
+                                                                <state key="normal" image="Toolbar Hide"/>
+                                                                <connections>
+                                                                    <action selector="hideToolbarPressed:" destination="Nen-bt-V44" eventType="touchUpInside" id="AVh-bS-KfB"/>
+                                                                </connections>
+                                                            </button>
+                                                        </subviews>
+                                                        <variation key="widthClass=compact" spacing="8"/>
+                                                        <variation key="heightClass=compact-widthClass=regular" spacing="8"/>
+                                                    </stackView>
+                                                    <stackView opaque="NO" contentMode="scaleToFill" spacing="16" translatesAutoresizingMaskIntoConstraints="NO" id="bG0-b9-QzE">
+                                                        <rect key="frame" x="16" y="51" width="68" height="30"/>
+                                                        <subviews>
+                                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="cIe-Bu-ydq">
+                                                                <rect key="frame" x="0.0" y="0.0" width="30" height="30"/>
+                                                                <accessibility key="accessibilityConfiguration" label="Power"/>
+                                                                <constraints>
+                                                                    <constraint firstAttribute="height" constant="30" id="pUr-gF-0iU"/>
+                                                                    <constraint firstAttribute="width" constant="30" id="woM-7O-Mm0"/>
+                                                                </constraints>
+                                                                <inset key="imageEdgeInsets" minX="2" minY="2" maxX="2" maxY="2"/>
+                                                                <state key="normal" image="Toolbar Power"/>
+                                                                <connections>
+                                                                    <action selector="powerPressed:" destination="Nen-bt-V44" eventType="touchUpInside" id="1d8-sJ-acs"/>
+                                                                </connections>
+                                                            </button>
+                                                            <button opaque="NO" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="y8S-ia-RVP">
+                                                                <rect key="frame" x="38" y="0.0" width="30" height="30"/>
+                                                                <accessibility key="accessibilityConfiguration" label="Pause"/>
+                                                                <constraints>
+                                                                    <constraint firstAttribute="height" constant="30" id="G2f-0R-W9H"/>
+                                                                    <constraint firstAttribute="width" constant="30" id="g42-gl-UlC"/>
+                                                                </constraints>
+                                                                <inset key="imageEdgeInsets" minX="4" minY="4" maxX="4" maxY="4"/>
+                                                                <state key="normal" image="Toolbar Pause"/>
+                                                                <connections>
+                                                                    <action selector="pauseResumePressed:" destination="Nen-bt-V44" eventType="touchUpInside" id="PEQ-mM-zgL"/>
+                                                                </connections>
+                                                            </button>
+                                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" pointerInteraction="YES" translatesAutoresizingMaskIntoConstraints="NO" id="66l-sd-SYg">
+                                                                <rect key="frame" x="76" y="0.0" width="30" height="30"/>
+                                                                <accessibility key="accessibilityConfiguration" label="Back"/>
+                                                                <constraints>
+                                                                    <constraint firstAttribute="width" constant="30" id="0zF-yu-IUF"/>
+                                                                    <constraint firstAttribute="height" constant="30" id="3NT-aS-kyS"/>
+                                                                </constraints>
+                                                                <inset key="imageEdgeInsets" minX="4" minY="4" maxX="4" maxY="4"/>
+                                                                <state key="normal" image="Toolbar Restart"/>
+                                                                <connections>
+                                                                    <action selector="restartPressed:" destination="ckC-eO-gxn" eventType="touchUpInside" id="1hG-dE-mGS"/>
+                                                                    <action selector="restartPressed:" destination="Nen-bt-V44" eventType="touchUpInside" id="KnE-MJ-b15"/>
+                                                                </connections>
+                                                            </button>
+                                                        </subviews>
+                                                        <variation key="widthClass=compact" spacing="8"/>
+                                                        <variation key="heightClass=compact-widthClass=regular" spacing="8"/>
+                                                    </stackView>
+                                                </subviews>
+                                                <constraints>
+                                                    <constraint firstAttribute="bottomMargin" secondItem="yP3-BT-kx0" secondAttribute="bottom" id="4xx-55-9JH"/>
+                                                    <constraint firstItem="bG0-b9-QzE" firstAttribute="leading" secondItem="Ylq-Eq-BeV" secondAttribute="leading" constant="16" id="Or6-wU-NzR"/>
+                                                    <constraint firstAttribute="trailing" secondItem="yP3-BT-kx0" secondAttribute="trailing" constant="16" id="d0D-98-9bA"/>
+                                                    <constraint firstAttribute="bottomMargin" secondItem="bG0-b9-QzE" secondAttribute="bottom" id="rKq-fJ-Tow"/>
+                                                </constraints>
+                                            </view>
+                                            <vibrancyEffect>
+                                                <blurEffect style="dark"/>
+                                            </vibrancyEffect>
+                                        </visualEffectView>
+                                    </subviews>
+                                    <constraints>
+                                        <constraint firstAttribute="trailing" secondItem="6Zm-be-ZSb" secondAttribute="trailing" id="8dE-ja-KwC"/>
+                                        <constraint firstAttribute="bottom" secondItem="6Zm-be-ZSb" secondAttribute="bottom" id="IYE-Nf-lLu"/>
+                                        <constraint firstItem="6Zm-be-ZSb" firstAttribute="leading" secondItem="kdf-xB-pU1" secondAttribute="leading" id="pWY-7T-Qpu"/>
+                                        <constraint firstItem="6Zm-be-ZSb" firstAttribute="top" secondItem="kdf-xB-pU1" secondAttribute="top" id="vhT-pR-dF7"/>
+                                    </constraints>
+                                </view>
+                                <constraints>
+                                    <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="45" id="KVc-Tk-aap"/>
+                                    <constraint firstAttribute="width" constant="300" id="qhw-Mc-SlO"/>
+                                </constraints>
+                                <blurEffect style="light"/>
+                                <variation key="default">
+                                    <mask key="constraints">
+                                        <exclude reference="qhw-Mc-SlO"/>
+                                    </mask>
+                                </variation>
+                                <variation key="heightClass=compact">
+                                    <mask key="constraints">
+                                        <include reference="qhw-Mc-SlO"/>
+                                    </mask>
+                                </variation>
+                            </visualEffectView>
+                        </subviews>
+                        <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <gestureRecognizers/>
+                        <constraints>
+                            <constraint firstAttribute="bottom" secondItem="es2-y2-iG9" secondAttribute="bottom" id="67M-kH-iti"/>
+                            <constraint firstItem="pSV-Kz-9ar" firstAttribute="centerX" secondItem="ekG-nW-ktk" secondAttribute="centerX" id="6kG-GW-4gC"/>
+                            <constraint firstItem="es2-y2-iG9" firstAttribute="top" secondItem="ekG-nW-ktk" secondAttribute="top" id="DBM-c7-TWA"/>
+                            <constraint firstItem="pSV-Kz-9ar" firstAttribute="top" secondItem="ekG-nW-ktk" secondAttribute="top" id="Huv-dt-ljk"/>
+                            <constraint firstItem="pSV-Kz-9ar" firstAttribute="trailing" secondItem="Z6B-oG-xjm" secondAttribute="trailing" priority="750" id="IyQ-YH-EbO"/>
+                            <constraint firstItem="Z6B-oG-xjm" firstAttribute="trailing" secondItem="es2-y2-iG9" secondAttribute="trailing" id="Rgr-yh-aWa"/>
+                            <constraint firstItem="es2-y2-iG9" firstAttribute="leading" secondItem="Z6B-oG-xjm" secondAttribute="leading" id="W6q-bj-Pj3"/>
+                            <constraint firstItem="pSV-Kz-9ar" firstAttribute="leading" secondItem="Z6B-oG-xjm" secondAttribute="leading" priority="750" id="ZuH-NC-IG6"/>
+                            <constraint firstItem="pSV-Kz-9ar" firstAttribute="bottom" secondItem="Z6B-oG-xjm" secondAttribute="top" constant="45" id="d6T-yX-6qp"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="Z6B-oG-xjm"/>
+                    </view>
+                    <navigationItem key="navigationItem" id="eS3-Hq-J7j"/>
+                    <nil key="simulatedTopBarMetrics"/>
+                    <nil key="simulatedBottomBarMetrics"/>
+                    <connections>
+                        <outlet property="inputAccessoryView" destination="nlm-55-ehd" id="Xtb-Py-ujz"/>
+                        <outlet property="keyboardButton" destination="gFL-3M-wsD" id="YaF-Yd-qbE"/>
+                        <outlet property="pauseResumeButton" destination="y8S-ia-RVP" id="imW-2C-ePi"/>
+                        <outlet property="powerExitButton" destination="cIe-Bu-ydq" id="QWf-E2-FZq"/>
+                        <outlet property="restartButton" destination="66l-sd-SYg" id="uEx-gJ-it9"/>
+                        <outlet property="toolbarAccessoryView" destination="pSV-Kz-9ar" id="vbn-YO-bu9"/>
+                        <outlet property="webView" destination="es2-y2-iG9" id="wHw-8b-MlA"/>
+                        <outlet property="webViewTopConstraint" destination="DBM-c7-TWA" id="Dcr-BI-QDS"/>
+                        <segue destination="dnX-hr-5QR" kind="unwind" identifier="returnToList" unwindAction="unwindToMainFromVM:" id="Xix-wh-kcI"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="zcN-pa-RPf" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <view contentMode="scaleToFill" ambiguous="YES" id="nlm-55-ehd" customClass="UIInputView">
+                    <rect key="frame" x="0.0" y="0.0" width="1000" height="68"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                    <subviews>
+                        <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="45Q-7n-hdx">
+                            <rect key="frame" x="8" y="48" width="144" height="36"/>
+                            <subviews>
+                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="CD9-F2-enx" customClass="VMKeyboardButton">
+                                    <rect key="frame" x="0.0" y="0.0" width="30" height="36"/>
+                                    <accessibility key="accessibilityConfiguration" label="Control"/>
+                                    <constraints>
+                                        <constraint firstAttribute="width" constant="30" id="Ozv-cE-qa8">
+                                            <variation key="heightClass=regular-widthClass=regular" constant="60"/>
+                                        </constraint>
+                                    </constraints>
+                                    <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                    <state key="normal" title="⌃">
+                                        <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
+                                    </state>
+                                    <userDefinedRuntimeAttributes>
+                                        <userDefinedRuntimeAttribute type="number" keyPath="scanCode">
+                                            <integer key="value" value="29"/>
+                                        </userDefinedRuntimeAttribute>
+                                        <userDefinedRuntimeAttribute type="boolean" keyPath="toggleable" value="YES"/>
+                                        <userDefinedRuntimeAttribute type="boolean" keyPath="secondary" value="YES"/>
+                                    </userDefinedRuntimeAttributes>
+                                    <connections>
+                                        <action selector="customKeyTouchDown:" destination="Nen-bt-V44" eventType="touchDown" id="kUD-QN-lbI"/>
+                                        <action selector="customKeyTouchUp:" destination="Nen-bt-V44" eventType="touchUpInside" id="7s8-uY-YqD"/>
+                                    </connections>
+                                </button>
+                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="4na-ok-8Cd" customClass="VMKeyboardButton">
+                                    <rect key="frame" x="38" y="0.0" width="30" height="36"/>
+                                    <accessibility key="accessibilityConfiguration" label="Option"/>
+                                    <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                    <state key="normal" title="⌥">
+                                        <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
+                                    </state>
+                                    <userDefinedRuntimeAttributes>
+                                        <userDefinedRuntimeAttribute type="boolean" keyPath="toggleable" value="YES"/>
+                                        <userDefinedRuntimeAttribute type="number" keyPath="scanCode">
+                                            <integer key="value" value="56"/>
+                                        </userDefinedRuntimeAttribute>
+                                        <userDefinedRuntimeAttribute type="boolean" keyPath="secondary" value="YES"/>
+                                    </userDefinedRuntimeAttributes>
+                                    <connections>
+                                        <action selector="customKeyTouchDown:" destination="Nen-bt-V44" eventType="touchDown" id="gH4-5F-TLb"/>
+                                        <action selector="customKeyTouchUp:" destination="Nen-bt-V44" eventType="touchUpInside" id="czs-qk-sZn"/>
+                                    </connections>
+                                </button>
+                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="vHu-rs-6YB" customClass="VMKeyboardButton">
+                                    <rect key="frame" x="76" y="0.0" width="30" height="36"/>
+                                    <accessibility key="accessibilityConfiguration" label="Command"/>
+                                    <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                    <state key="normal" title="⌘">
+                                        <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
+                                    </state>
+                                    <userDefinedRuntimeAttributes>
+                                        <userDefinedRuntimeAttribute type="boolean" keyPath="toggleable" value="YES"/>
+                                        <userDefinedRuntimeAttribute type="number" keyPath="scanCode">
+                                            <integer key="value" value="57435"/>
+                                        </userDefinedRuntimeAttribute>
+                                        <userDefinedRuntimeAttribute type="boolean" keyPath="secondary" value="YES"/>
+                                    </userDefinedRuntimeAttributes>
+                                    <connections>
+                                        <action selector="customKeyTouchDown:" destination="Nen-bt-V44" eventType="touchDown" id="jwR-eq-McA"/>
+                                        <action selector="customKeyTouchUp:" destination="Nen-bt-V44" eventType="touchUpInside" id="FoK-QD-B1m"/>
+                                    </connections>
+                                </button>
+                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Mve-Z7-sYh" customClass="VMKeyboardButton">
+                                    <rect key="frame" x="114" y="0.0" width="30" height="36"/>
+                                    <accessibility key="accessibilityConfiguration" label="Shift"/>
+                                    <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                    <state key="normal" title="⇧">
+                                        <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
+                                    </state>
+                                    <userDefinedRuntimeAttributes>
+                                        <userDefinedRuntimeAttribute type="number" keyPath="scanCode">
+                                            <integer key="value" value="42"/>
+                                        </userDefinedRuntimeAttribute>
+                                        <userDefinedRuntimeAttribute type="boolean" keyPath="toggleable" value="YES"/>
+                                        <userDefinedRuntimeAttribute type="boolean" keyPath="secondary" value="YES"/>
+                                    </userDefinedRuntimeAttributes>
+                                    <connections>
+                                        <action selector="customKeyTouchDown:" destination="Nen-bt-V44" eventType="touchDown" id="I4t-pW-pvx"/>
+                                        <action selector="customKeyTouchUp:" destination="Nen-bt-V44" eventType="touchUpInside" id="thv-gy-ANF"/>
+                                    </connections>
+                                </button>
+                            </subviews>
+                        </stackView>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gg5-wf-geE">
+                            <rect key="frame" x="962" y="51" width="30" height="30"/>
+                            <accessibility key="accessibilityConfiguration" label="Hide Keyboard"/>
+                            <constraints>
+                                <constraint firstAttribute="width" constant="30" id="Awd-Id-SeT"/>
+                                <constraint firstAttribute="height" constant="30" id="DUs-87-wwU"/>
+                            </constraints>
+                            <state key="normal" image="Keyboard Hide"/>
+                            <connections>
+                                <action selector="keyboardDonePressed:" destination="Nen-bt-V44" eventType="touchUpInside" id="hAe-D0-7gf"/>
+                            </connections>
+                        </button>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="BHE-3Q-Idn">
+                            <rect key="frame" x="924" y="51" width="30" height="30"/>
+                            <accessibility key="accessibilityConfiguration" label="Paste"/>
+                            <constraints>
+                                <constraint firstAttribute="height" constant="30" id="gJm-0h-fmm"/>
+                                <constraint firstAttribute="width" constant="30" id="odL-nX-gey"/>
+                            </constraints>
+                            <state key="normal" image="Keyboard Paste"/>
+                            <connections>
+                                <action selector="keyboardPastePressed:" destination="Nen-bt-V44" eventType="touchUpInside" id="bHW-Oi-XcZ"/>
+                            </connections>
+                        </button>
+                        <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" ambiguous="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" translatesAutoresizingMaskIntoConstraints="NO" id="PMk-v2-aZ5">
+                            <rect key="frame" x="160" y="0.0" width="756" height="68"/>
+                            <subviews>
+                                <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="Ncv-Dw-Yuj">
+                                    <rect key="frame" x="0.0" y="48" width="676" height="36"/>
+                                    <subviews>
+                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="2ZO-a2-sUC" customClass="VMKeyboardButton">
+                                            <rect key="frame" x="0.0" y="0.0" width="30" height="36"/>
+                                            <accessibility key="accessibilityConfiguration" label="Tab"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                            <state key="normal" title="⇥">
+                                                <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
+                                            </state>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="number" keyPath="scanCode">
+                                                    <integer key="value" value="9"/>
+                                                </userDefinedRuntimeAttribute>
+                                            </userDefinedRuntimeAttributes>
+                                            <connections>
+                                                <action selector="customKeyTouchDown:" destination="Nen-bt-V44" eventType="touchDown" id="8E7-3v-SUk"/>
+                                                <action selector="customKeyTouchUp:" destination="Nen-bt-V44" eventType="touchUpInside" id="SLR-tk-OW9"/>
+                                            </connections>
+                                        </button>
+                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="bm5-gz-jEq" customClass="VMKeyboardButton">
+                                            <rect key="frame" x="38" y="0.0" width="30" height="36"/>
+                                            <accessibility key="accessibilityConfiguration" label="Escape"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                            <state key="normal" title="⎋">
+                                                <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
+                                            </state>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="number" keyPath="scanCode">
+                                                    <integer key="value" value="27"/>
+                                                </userDefinedRuntimeAttribute>
+                                            </userDefinedRuntimeAttributes>
+                                            <connections>
+                                                <action selector="customKeyTouchDown:" destination="Nen-bt-V44" eventType="touchDown" id="dtw-bg-Oms"/>
+                                                <action selector="customKeyTouchUp:" destination="Nen-bt-V44" eventType="touchUpInside" id="QUu-UE-j9d"/>
+                                            </connections>
+                                        </button>
+                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="KFP-Sm-mgY" customClass="VMKeyboardButton">
+                                            <rect key="frame" x="76" y="0.0" width="30" height="36"/>
+                                            <accessibility key="accessibilityConfiguration" label="Up"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                            <state key="normal" title="↑">
+                                                <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
+                                            </state>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="number" keyPath="scanCode">
+                                                    <integer key="value" value="38"/>
+                                                </userDefinedRuntimeAttribute>
+                                            </userDefinedRuntimeAttributes>
+                                            <connections>
+                                                <action selector="customKeyTouchDown:" destination="Nen-bt-V44" eventType="touchDown" id="9Fv-uG-khd"/>
+                                                <action selector="customKeyTouchUp:" destination="Nen-bt-V44" eventType="touchUpInside" id="dXG-mq-Wuh"/>
+                                            </connections>
+                                        </button>
+                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Mlc-LV-fB3" customClass="VMKeyboardButton">
+                                            <rect key="frame" x="114" y="0.0" width="30" height="36"/>
+                                            <accessibility key="accessibilityConfiguration" label="Down"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                            <state key="normal" title="↓">
+                                                <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
+                                            </state>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="number" keyPath="scanCode">
+                                                    <integer key="value" value="40"/>
+                                                </userDefinedRuntimeAttribute>
+                                            </userDefinedRuntimeAttributes>
+                                            <connections>
+                                                <action selector="customKeyTouchDown:" destination="Nen-bt-V44" eventType="touchDown" id="ih5-t2-9df"/>
+                                                <action selector="customKeyTouchUp:" destination="Nen-bt-V44" eventType="touchUpInside" id="U8g-Fx-8Pd"/>
+                                            </connections>
+                                        </button>
+                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="hsy-9u-HE4" customClass="VMKeyboardButton">
+                                            <rect key="frame" x="152" y="0.0" width="30" height="36"/>
+                                            <accessibility key="accessibilityConfiguration" label="Left"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                            <state key="normal" title="←">
+                                                <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
+                                            </state>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="number" keyPath="scanCode">
+                                                    <integer key="value" value="37"/>
+                                                </userDefinedRuntimeAttribute>
+                                            </userDefinedRuntimeAttributes>
+                                            <connections>
+                                                <action selector="customKeyTouchDown:" destination="Nen-bt-V44" eventType="touchDown" id="oRP-gu-Sn7"/>
+                                                <action selector="customKeyTouchUp:" destination="Nen-bt-V44" eventType="touchUpInside" id="pZm-0d-iep"/>
+                                            </connections>
+                                        </button>
+                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="AzE-th-fm2" customClass="VMKeyboardButton">
+                                            <rect key="frame" x="190" y="0.0" width="30" height="36"/>
+                                            <accessibility key="accessibilityConfiguration" label="Right"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                            <state key="normal" title="→">
+                                                <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
+                                            </state>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="number" keyPath="scanCode">
+                                                    <integer key="value" value="39"/>
+                                                </userDefinedRuntimeAttribute>
+                                            </userDefinedRuntimeAttributes>
+                                            <connections>
+                                                <action selector="customKeyTouchDown:" destination="Nen-bt-V44" eventType="touchDown" id="1tJ-yw-c5n"/>
+                                                <action selector="customKeyTouchUp:" destination="Nen-bt-V44" eventType="touchUpInside" id="ezk-H0-7RI"/>
+                                            </connections>
+                                        </button>
+                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="jns-cz-B5p" customClass="VMKeyboardButton">
+                                            <rect key="frame" x="228" y="0.0" width="30" height="36"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                            <state key="normal" title="F1">
+                                                <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
+                                            </state>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="number" keyPath="scanCode">
+                                                    <integer key="value" value="112"/>
+                                                </userDefinedRuntimeAttribute>
+                                            </userDefinedRuntimeAttributes>
+                                            <connections>
+                                                <action selector="customKeyTouchDown:" destination="Nen-bt-V44" eventType="touchDown" id="ZUo-sW-4Fn"/>
+                                                <action selector="customKeyTouchUp:" destination="Nen-bt-V44" eventType="touchUpInside" id="XeD-kz-0Ml"/>
+                                            </connections>
+                                        </button>
+                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="osv-Zl-j31" customClass="VMKeyboardButton">
+                                            <rect key="frame" x="266" y="0.0" width="30" height="36"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                            <state key="normal" title="F2">
+                                                <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
+                                            </state>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="number" keyPath="scanCode">
+                                                    <integer key="value" value="113"/>
+                                                </userDefinedRuntimeAttribute>
+                                            </userDefinedRuntimeAttributes>
+                                            <connections>
+                                                <action selector="customKeyTouchDown:" destination="Nen-bt-V44" eventType="touchDown" id="0LZ-Zs-uFP"/>
+                                                <action selector="customKeyTouchUp:" destination="Nen-bt-V44" eventType="touchUpInside" id="TUL-bZ-V6f"/>
+                                            </connections>
+                                        </button>
+                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="b8d-ff-mGG" customClass="VMKeyboardButton">
+                                            <rect key="frame" x="304" y="0.0" width="30" height="36"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                            <state key="normal" title="F3">
+                                                <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
+                                            </state>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="number" keyPath="scanCode">
+                                                    <integer key="value" value="114"/>
+                                                </userDefinedRuntimeAttribute>
+                                            </userDefinedRuntimeAttributes>
+                                            <connections>
+                                                <action selector="customKeyTouchDown:" destination="Nen-bt-V44" eventType="touchDown" id="Hd2-Vr-6ru"/>
+                                                <action selector="customKeyTouchUp:" destination="Nen-bt-V44" eventType="touchUpInside" id="VRh-1J-3e4"/>
+                                            </connections>
+                                        </button>
+                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="4uP-8K-t6B" customClass="VMKeyboardButton">
+                                            <rect key="frame" x="342" y="0.0" width="30" height="36"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                            <state key="normal" title="F4">
+                                                <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
+                                            </state>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="number" keyPath="scanCode">
+                                                    <integer key="value" value="115"/>
+                                                </userDefinedRuntimeAttribute>
+                                            </userDefinedRuntimeAttributes>
+                                            <connections>
+                                                <action selector="customKeyTouchDown:" destination="Nen-bt-V44" eventType="touchDown" id="UBr-ZO-bF8"/>
+                                                <action selector="customKeyTouchUp:" destination="Nen-bt-V44" eventType="touchUpInside" id="BI6-J3-BJA"/>
+                                            </connections>
+                                        </button>
+                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gBY-N4-RH3" customClass="VMKeyboardButton">
+                                            <rect key="frame" x="380" y="0.0" width="30" height="36"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                            <state key="normal" title="F5">
+                                                <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
+                                            </state>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="number" keyPath="scanCode">
+                                                    <integer key="value" value="116"/>
+                                                </userDefinedRuntimeAttribute>
+                                            </userDefinedRuntimeAttributes>
+                                            <connections>
+                                                <action selector="customKeyTouchDown:" destination="Nen-bt-V44" eventType="touchDown" id="GaF-pa-epZ"/>
+                                                <action selector="customKeyTouchUp:" destination="Nen-bt-V44" eventType="touchUpInside" id="tUo-O2-L8D"/>
+                                            </connections>
+                                        </button>
+                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="T8V-zk-Aee" customClass="VMKeyboardButton">
+                                            <rect key="frame" x="418" y="0.0" width="30" height="36"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                            <state key="normal" title="F6">
+                                                <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
+                                            </state>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="number" keyPath="scanCode">
+                                                    <integer key="value" value="117"/>
+                                                </userDefinedRuntimeAttribute>
+                                            </userDefinedRuntimeAttributes>
+                                            <connections>
+                                                <action selector="customKeyTouchDown:" destination="Nen-bt-V44" eventType="touchDown" id="RNp-mR-KLc"/>
+                                                <action selector="customKeyTouchUp:" destination="Nen-bt-V44" eventType="touchUpInside" id="E6t-cC-mZT"/>
+                                            </connections>
+                                        </button>
+                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Jff-Sr-i5W" customClass="VMKeyboardButton">
+                                            <rect key="frame" x="456" y="0.0" width="30" height="36"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                            <state key="normal" title="F7">
+                                                <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
+                                            </state>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="number" keyPath="scanCode">
+                                                    <integer key="value" value="118"/>
+                                                </userDefinedRuntimeAttribute>
+                                            </userDefinedRuntimeAttributes>
+                                            <connections>
+                                                <action selector="customKeyTouchDown:" destination="Nen-bt-V44" eventType="touchDown" id="Nol-qC-dH6"/>
+                                                <action selector="customKeyTouchUp:" destination="Nen-bt-V44" eventType="touchUpInside" id="8iP-R5-hHJ"/>
+                                            </connections>
+                                        </button>
+                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="jR0-1K-ZcV" customClass="VMKeyboardButton">
+                                            <rect key="frame" x="494" y="0.0" width="30" height="36"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                            <state key="normal" title="F8">
+                                                <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
+                                            </state>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="number" keyPath="scanCode">
+                                                    <integer key="value" value="119"/>
+                                                </userDefinedRuntimeAttribute>
+                                            </userDefinedRuntimeAttributes>
+                                            <connections>
+                                                <action selector="customKeyTouchDown:" destination="Nen-bt-V44" eventType="touchDown" id="wca-nV-7NS"/>
+                                                <action selector="customKeyTouchUp:" destination="Nen-bt-V44" eventType="touchUpInside" id="FTV-mK-7m0"/>
+                                            </connections>
+                                        </button>
+                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Rw0-t7-Yde" customClass="VMKeyboardButton">
+                                            <rect key="frame" x="532" y="0.0" width="30" height="36"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                            <state key="normal" title="F9">
+                                                <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
+                                            </state>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="number" keyPath="scanCode">
+                                                    <integer key="value" value="120"/>
+                                                </userDefinedRuntimeAttribute>
+                                            </userDefinedRuntimeAttributes>
+                                            <connections>
+                                                <action selector="customKeyTouchDown:" destination="Nen-bt-V44" eventType="touchDown" id="KXJ-yH-Jmr"/>
+                                                <action selector="customKeyTouchUp:" destination="Nen-bt-V44" eventType="touchUpInside" id="9af-4c-qzJ"/>
+                                            </connections>
+                                        </button>
+                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="lQ7-hT-htU" customClass="VMKeyboardButton">
+                                            <rect key="frame" x="570" y="0.0" width="30" height="36"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="18"/>
+                                            <state key="normal" title="F10">
+                                                <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
+                                            </state>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="number" keyPath="scanCode">
+                                                    <integer key="value" value="121"/>
+                                                </userDefinedRuntimeAttribute>
+                                            </userDefinedRuntimeAttributes>
+                                            <connections>
+                                                <action selector="customKeyTouchDown:" destination="Nen-bt-V44" eventType="touchDown" id="T14-CA-OnJ"/>
+                                                <action selector="customKeyTouchUp:" destination="Nen-bt-V44" eventType="touchUpInside" id="6N1-8e-nrw"/>
+                                            </connections>
+                                        </button>
+                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="xrX-dR-MSg" customClass="VMKeyboardButton">
+                                            <rect key="frame" x="608" y="0.0" width="30" height="36"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="18"/>
+                                            <state key="normal" title="F11">
+                                                <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
+                                            </state>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="number" keyPath="scanCode">
+                                                    <integer key="value" value="122"/>
+                                                </userDefinedRuntimeAttribute>
+                                            </userDefinedRuntimeAttributes>
+                                            <connections>
+                                                <action selector="customKeyTouchDown:" destination="Nen-bt-V44" eventType="touchDown" id="OHK-Ci-p8U"/>
+                                                <action selector="customKeyTouchUp:" destination="Nen-bt-V44" eventType="touchUpInside" id="rTF-sU-pQ4"/>
+                                            </connections>
+                                        </button>
+                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="HxD-Tv-m48" customClass="VMKeyboardButton">
+                                            <rect key="frame" x="646" y="0.0" width="30" height="36"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="18"/>
+                                            <state key="normal" title="F12">
+                                                <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
+                                            </state>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="number" keyPath="scanCode">
+                                                    <integer key="value" value="123"/>
+                                                </userDefinedRuntimeAttribute>
+                                            </userDefinedRuntimeAttributes>
+                                            <connections>
+                                                <action selector="customKeyTouchDown:" destination="Nen-bt-V44" eventType="touchDown" id="3G9-0N-SFB"/>
+                                                <action selector="customKeyTouchUp:" destination="Nen-bt-V44" eventType="touchUpInside" id="KwS-AS-I1D"/>
+                                            </connections>
+                                        </button>
+                                    </subviews>
+                                </stackView>
+                            </subviews>
+                            <constraints>
+                                <constraint firstItem="Ncv-Dw-Yuj" firstAttribute="bottom" secondItem="PMk-v2-aZ5" secondAttribute="bottom" priority="250" id="DoR-rd-hvp"/>
+                                <constraint firstItem="Ncv-Dw-Yuj" firstAttribute="trailing" secondItem="PMk-v2-aZ5" secondAttribute="trailing" id="Wsi-TV-iEc"/>
+                                <constraint firstItem="Ncv-Dw-Yuj" firstAttribute="top" secondItem="PMk-v2-aZ5" secondAttribute="top" priority="250" id="qLa-cb-jkZ"/>
+                                <constraint firstItem="Ncv-Dw-Yuj" firstAttribute="leading" secondItem="PMk-v2-aZ5" secondAttribute="leading" id="waZ-AY-ooF"/>
+                            </constraints>
+                        </scrollView>
+                    </subviews>
+                    <constraints>
+                        <constraint firstItem="45Q-7n-hdx" firstAttribute="bottom" secondItem="SB8-wU-a1A" secondAttribute="bottom" constant="-4" id="5rd-HG-rz1"/>
+                        <constraint firstItem="45Q-7n-hdx" firstAttribute="top" secondItem="SB8-wU-a1A" secondAttribute="top" constant="4" id="CyS-2N-o9v"/>
+                        <constraint firstItem="gg5-wf-geE" firstAttribute="centerY" secondItem="CD9-F2-enx" secondAttribute="centerY" id="Jjt-VH-SmK"/>
+                        <constraint firstItem="PMk-v2-aZ5" firstAttribute="leading" secondItem="45Q-7n-hdx" secondAttribute="trailing" constant="8" id="LEE-Fi-Glv"/>
+                        <constraint firstItem="2ZO-a2-sUC" firstAttribute="width" secondItem="CD9-F2-enx" secondAttribute="width" id="PJ2-Id-OF0"/>
+                        <constraint firstItem="gg5-wf-geE" firstAttribute="leading" secondItem="BHE-3Q-Idn" secondAttribute="trailing" constant="8" id="VMx-Wj-PLJ"/>
+                        <constraint firstItem="BHE-3Q-Idn" firstAttribute="leading" secondItem="PMk-v2-aZ5" secondAttribute="trailing" constant="8" id="dYF-R1-CNi"/>
+                        <constraint firstItem="45Q-7n-hdx" firstAttribute="leading" secondItem="SB8-wU-a1A" secondAttribute="leading" constant="8" id="fWa-MK-XYc"/>
+                        <constraint firstItem="PMk-v2-aZ5" firstAttribute="bottom" secondItem="nlm-55-ehd" secondAttribute="bottom" id="fw0-xi-LZd"/>
+                        <constraint firstItem="BHE-3Q-Idn" firstAttribute="centerY" secondItem="CD9-F2-enx" secondAttribute="centerY" id="jjh-se-6Dk"/>
+                        <constraint firstItem="Ncv-Dw-Yuj" firstAttribute="bottom" secondItem="45Q-7n-hdx" secondAttribute="bottom" id="lQf-39-uxl"/>
+                        <constraint firstItem="Ncv-Dw-Yuj" firstAttribute="top" secondItem="45Q-7n-hdx" secondAttribute="top" id="m6l-dO-nXV"/>
+                        <constraint firstItem="gg5-wf-geE" firstAttribute="trailing" secondItem="nlm-55-ehd" secondAttribute="trailing" constant="-8" id="mT5-wP-mbF"/>
+                        <constraint firstItem="PMk-v2-aZ5" firstAttribute="top" secondItem="nlm-55-ehd" secondAttribute="top" id="uAU-He-e9k"/>
+                    </constraints>
+                    <viewLayoutGuide key="safeArea" id="SB8-wU-a1A"/>
+                    <userDefinedRuntimeAttributes>
+                        <userDefinedRuntimeAttribute type="number" keyPath="autoresizingMask">
+                            <integer key="value" value="16"/>
+                        </userDefinedRuntimeAttribute>
+                    </userDefinedRuntimeAttributes>
+                </view>
+                <exit id="dnX-hr-5QR" userLabel="Exit" sceneMemberID="exit"/>
+            </objects>
+            <point key="canvasLocation" x="887" y="-804"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="2bS-UE-pwf">
@@ -3143,7 +3782,7 @@
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="QEMU Args" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="upL-Oh-a3A">
-                                            <rect key="frame" x="16" y="12.666666666666666" width="343" height="18.666666666666671"/>
+                                            <rect key="frame" x="16" y="13.333333333333336" width="343" height="17"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                             <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" returnKeyType="done" smartDashesType="no" smartInsertDeleteType="no" smartQuotesType="no"/>
                                             <connections>
@@ -3189,13 +3828,6 @@
             <point key="canvasLocation" x="7922.65625" y="1246.875"/>
         </scene>
     </scenes>
-    <inferredMetricsTieBreakers>
-        <segue reference="Fgt-US-6Ez"/>
-        <segue reference="0fe-13-GUd"/>
-        <segue reference="M4J-mO-49e"/>
-        <segue reference="eOg-7f-ZC7"/>
-        <segue reference="Ch9-qF-y79"/>
-    </inferredMetricsTieBreakers>
     <resources>
         <image name="Keyboard Hide" width="30" height="30"/>
         <image name="Keyboard Paste" width="30" height="30"/>
@@ -3209,4 +3841,10 @@
         <image name="Toolbar Restart" width="30" height="30"/>
         <image name="Toolbar Settings" width="30" height="30"/>
     </resources>
+    <inferredMetricsTieBreakers>
+        <segue reference="0fe-13-GUd"/>
+        <segue reference="M4J-mO-49e"/>
+        <segue reference="eOg-7f-ZC7"/>
+        <segue reference="Ch9-qF-y79"/>
+    </inferredMetricsTieBreakers>
 </document>
