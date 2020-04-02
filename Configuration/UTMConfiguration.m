@@ -83,6 +83,10 @@ const NSString *const kUTMConfigDebugLogKey = @"DebugLog";
 
 #pragma mark - Constant supported values
 
++ (NSArray<NSString *>*)supportedOptions:(NSString *)key pretty:(BOOL)pretty {
+    return @[];
+}
+
 + (NSArray<NSString *>*)supportedArchitecturesPretty {
     return @[
              @"Alpha",

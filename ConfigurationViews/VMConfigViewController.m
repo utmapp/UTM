@@ -15,6 +15,15 @@
 //
 
 #import "VMConfigViewController.h"
+#import "VMConfigControl.h"
+#import "VMConfigLabel.h"
+#import "VMConfigPickerView.h"
+#import "VMConfigSwitch.h"
+#import "VMConfigTextField.h"
+#import "VMConfigTogglePickerCell.h"
+#import "UTMConfiguration.h"
+
+void *kVMConfigViewControllerContext = &kVMConfigViewControllerContext;
 
 @interface VMConfigViewController ()
 
@@ -73,6 +82,115 @@
 
 - (void)showUnimplementedAlert {
     [self showAlert:NSLocalizedString(@"This page is currently not implemented yet. None of these options work.", @"VMConfigViewController") completion:nil];
+}
+
+#pragma mark - Configuration observers
+
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    for (id<VMConfigControl> control in self.configControls) {
+        NSAssert([control conformsToProtocol:@protocol(VMConfigControl)], @"Invalid configControls");
+        NSAssert(control.configurationPath, @"nil configurationPath for %@", control);
+        [self.configuration addObserver:self
+                             forKeyPath:control.configurationPath
+                                options:NSKeyValueObservingOptionNew|NSKeyValueObservingOptionOld|NSKeyValueObservingOptionInitial
+                                context:kVMConfigViewControllerContext];
+    }
+    // hide pickers
+    for (VMConfigTogglePickerCell *cell in self.configPickerToggles) {
+        if (!cell.cellsVisible) {
+            [self cells:cell.toggleVisibleCells setHidden:YES];
+            [self reloadDataAnimated:NO];
+        }
+    }
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+    for (id<VMConfigControl> control in self.configControls) {
+        NSAssert([control conformsToProtocol:@protocol(VMConfigControl)], @"Invalid configControls");
+        NSAssert(control.configurationPath, @"nil configurationPath for %@", control);
+        [self.configuration removeObserver:self
+                                forKeyPath:control.configurationPath
+                                   context:kVMConfigViewControllerContext];
+    }
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context {
+    if (context == kVMConfigViewControllerContext) {
+        for (id<VMConfigControl> control in self.configControls) {
+            if ([control.configurationPath isEqualToString:keyPath]) {
+                id value = change[NSKeyValueChangeNewKey];
+                if (value != change[NSKeyValueChangeOldKey]) {
+                    NSLog(@"seen configuration change %@ = %@", keyPath, value);
+                    [control valueChanged:value];
+                }
+            }
+        }
+    }
+}
+
+#pragma mark - Picker view
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
+    if ([cell isKindOfClass:[VMConfigTogglePickerCell class]]) {
+        VMConfigTogglePickerCell *vmCell = (VMConfigTogglePickerCell *)cell;
+        [tableView deselectRowAtIndexPath:indexPath animated:YES];
+        if (!vmCell.cellsVisible) {
+            NSUInteger index = [[UTMConfiguration supportedOptions:vmCell.picker.supportedOptionsPath pretty:NO] indexOfObject:vmCell.label.text];
+            if (index != NSNotFound) {
+                [vmCell.picker selectRow:index inComponent:0 animated:NO];
+            }
+        }
+        [self cells:vmCell.toggleVisibleCells setHidden:vmCell.cellsVisible];
+        [self reloadDataAnimated:YES];
+        vmCell.cellsVisible = !vmCell.cellsVisible;
+    }
+}
+
+- (NSInteger)numberOfComponentsInPickerView:(nonnull UIPickerView *)pickerView {
+    NSAssert([pickerView isMemberOfClass:[VMConfigPickerView class]], @"Invalid picker");
+    return 1;
+}
+
+- (NSInteger)pickerView:(nonnull UIPickerView *)pickerView numberOfRowsInComponent:(NSInteger)component {
+    NSAssert(component == 0, @"Invalid component");
+    NSAssert([pickerView isMemberOfClass:[VMConfigPickerView class]], @"Invalid picker");
+    VMConfigPickerView *vmPicker = (VMConfigPickerView *)pickerView;
+    return [UTMConfiguration supportedOptions:vmPicker.supportedOptionsPath pretty:NO].count;
+}
+
+- (NSString *)pickerView:(UIPickerView *)pickerView titleForRow:(NSInteger)row forComponent:(NSInteger)component {
+    NSAssert(component == 0, @"Invalid component");
+    NSAssert([pickerView isMemberOfClass:[VMConfigPickerView class]], @"Invalid picker");
+    VMConfigPickerView *vmPicker = (VMConfigPickerView *)pickerView;
+    return [UTMConfiguration supportedOptions:vmPicker.supportedOptionsPath pretty:YES][row];
+}
+
+- (void)pickerView:(UIPickerView *)pickerView didSelectRow:(NSInteger)row inComponent:(NSInteger)component {
+    NSAssert(component == 0, @"Invalid component");
+    NSAssert([pickerView isMemberOfClass:[VMConfigPickerView class]], @"Invalid picker");
+    VMConfigPickerView *vmPicker = (VMConfigPickerView *)pickerView;
+    NSString *selected = [UTMConfiguration supportedOptions:vmPicker.supportedOptionsPath pretty:NO][row];
+    [self.configuration setValue:selected forKey:vmPicker.selectedOptionLabel.configurationPath];
+    vmPicker.selectedOptionLabel.text = selected;
+}
+
+#pragma mark - Event handler for controls
+
+- (IBAction)configTextEditChanged:(VMConfigTextField *)sender {
+}
+
+- (IBAction)configTextFieldEditEnd:(VMConfigTextField *)sender {
+    // validate input in super-class
+    NSLog(@"config edited for text %@", sender.configurationPath);
+    [self.configuration setValue:sender.text forKey:sender.configurationPath];
+}
+
+- (IBAction)configSwitchChanged:(VMConfigSwitch *)sender {
+    NSLog(@"config changed for switch %@", sender.configurationPath);
+    [self.configuration setValue:@(sender.on) forKey:sender.configurationPath];
 }
 
 @end

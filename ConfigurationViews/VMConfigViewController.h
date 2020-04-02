@@ -18,15 +18,26 @@
 #import "StaticDataTableViewController.h"
 #import "UTMConfigurationDelegate.h"
 
+@class VMConfigTextField;
+@class VMConfigSwitch;
+@class VMConfigTogglePickerCell;
+
 NS_ASSUME_NONNULL_BEGIN
 
-@interface VMConfigViewController : StaticDataTableViewController<UTMConfigurationDelegate, UITextFieldDelegate>
+@interface VMConfigViewController : StaticDataTableViewController<UTMConfigurationDelegate, UITextFieldDelegate, UIPickerViewDelegate, UIPickerViewDataSource>
 
 @property (nonatomic, assign) BOOL doneLoadingConfiguration;
+@property (nonatomic, strong) IBOutletCollection(UIView) NSArray *configControls;
+@property (nonatomic, strong) IBOutletCollection(VMConfigTogglePickerCell) NSArray *configPickerToggles;
 
 - (void)pickerCell:(nonnull UITableViewCell *)pickerCell setActive:(BOOL)active;
 - (void)showAlert:(NSString *)msg completion:(nullable void (^)(UIAlertAction *action))completion;
 - (void)showUnimplementedAlert;
+
+- (IBAction)configTextEditChanged:(VMConfigTextField *)sender;
+- (IBAction)configTextFieldEditEnd:(VMConfigTextField *)sender;
+- (IBAction)configSwitchChanged:(VMConfigSwitch *)sender;
+
 
 @end
 

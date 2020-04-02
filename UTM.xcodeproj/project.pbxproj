@@ -292,6 +292,11 @@
 		CE9D19782265425A00355E14 /* libgstvideotestsrc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CE9D19642265425A00355E14 /* libgstvideotestsrc.a */; };
 		CE9D19792265425A00355E14 /* libgstosxaudio.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CE9D19652265425A00355E14 /* libgstosxaudio.a */; };
 		CE9D197C226542FE00355E14 /* UTMQemu.m in Sources */ = {isa = PBXBuildFile; fileRef = CE9D197B226542FE00355E14 /* UTMQemu.m */; };
+		CEBCAF4E243525DB00C2B423 /* VMConfigTextField.m in Sources */ = {isa = PBXBuildFile; fileRef = CEBCAF4D243525DB00C2B423 /* VMConfigTextField.m */; };
+		CEBCAF5424353B3700C2B423 /* VMConfigSwitch.m in Sources */ = {isa = PBXBuildFile; fileRef = CEBCAF5324353B3700C2B423 /* VMConfigSwitch.m */; };
+		CEBCAF5724353B9F00C2B423 /* VMConfigPickerView.m in Sources */ = {isa = PBXBuildFile; fileRef = CEBCAF5624353B9F00C2B423 /* VMConfigPickerView.m */; };
+		CEBCAF5A2435468600C2B423 /* VMConfigTogglePickerCell.m in Sources */ = {isa = PBXBuildFile; fileRef = CEBCAF592435468600C2B423 /* VMConfigTogglePickerCell.m */; };
+		CEBCAF5D2435613200C2B423 /* VMConfigLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = CEBCAF5C2435613200C2B423 /* VMConfigLabel.m */; };
 		CEC4B4E423F122460086B562 /* MetalKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE66450C2269313200B0849A /* MetalKit.framework */; };
 		CECC76512273A7D50059B955 /* cf-input-visitor.c in Sources */ = {isa = PBXBuildFile; fileRef = CECC764C2273A7D50059B955 /* cf-input-visitor.c */; };
 		CECC76522273A7D50059B955 /* qapi-dealloc-visitor.c in Sources */ = {isa = PBXBuildFile; fileRef = CECC764D2273A7D50059B955 /* qapi-dealloc-visitor.c */; };
@@ -819,6 +824,17 @@
 		CE9D19652265425A00355E14 /* libgstosxaudio.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libgstosxaudio.a; path = "sysroot-$(PLATFORM_PREFERRED_ARCH)/lib/gstreamer-1.0/libgstosxaudio.a"; sourceTree = "<group>"; };
 		CE9D197A226542FE00355E14 /* UTMQemu.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UTMQemu.h; sourceTree = "<group>"; };
 		CE9D197B226542FE00355E14 /* UTMQemu.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UTMQemu.m; sourceTree = "<group>"; };
+		CEBCAF4C243525DB00C2B423 /* VMConfigTextField.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VMConfigTextField.h; sourceTree = "<group>"; };
+		CEBCAF4D243525DB00C2B423 /* VMConfigTextField.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VMConfigTextField.m; sourceTree = "<group>"; };
+		CEBCAF502435298D00C2B423 /* VMConfigControl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VMConfigControl.h; sourceTree = "<group>"; };
+		CEBCAF5224353B3700C2B423 /* VMConfigSwitch.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VMConfigSwitch.h; sourceTree = "<group>"; };
+		CEBCAF5324353B3700C2B423 /* VMConfigSwitch.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VMConfigSwitch.m; sourceTree = "<group>"; };
+		CEBCAF5524353B9F00C2B423 /* VMConfigPickerView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VMConfigPickerView.h; sourceTree = "<group>"; };
+		CEBCAF5624353B9F00C2B423 /* VMConfigPickerView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VMConfigPickerView.m; sourceTree = "<group>"; };
+		CEBCAF582435468600C2B423 /* VMConfigTogglePickerCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VMConfigTogglePickerCell.h; sourceTree = "<group>"; };
+		CEBCAF592435468600C2B423 /* VMConfigTogglePickerCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VMConfigTogglePickerCell.m; sourceTree = "<group>"; };
+		CEBCAF5B2435613200C2B423 /* VMConfigLabel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VMConfigLabel.h; sourceTree = "<group>"; };
+		CEBCAF5C2435613200C2B423 /* VMConfigLabel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VMConfigLabel.m; sourceTree = "<group>"; };
 		CECC764C2273A7D50059B955 /* cf-input-visitor.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "cf-input-visitor.c"; sourceTree = "<group>"; };
 		CECC764D2273A7D50059B955 /* qapi-dealloc-visitor.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "qapi-dealloc-visitor.c"; sourceTree = "<group>"; };
 		CECC764E2273A7D50059B955 /* qapi-util.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "qapi-util.c"; sourceTree = "<group>"; };
@@ -1349,6 +1365,7 @@
 		CE5E4954225C593C00148CEF /* ConfigurationViews */ = {
 			isa = PBXGroup;
 			children = (
+				CEBCAF4F2435293C00C2B423 /* Controls */,
 				CEDC1DEF2260EE34008D9A6D /* StaticDataTableViewController */,
 				CE31C249225EA37400A965DD /* VMConfigViewController.h */,
 				CE31C24A225EA37400A965DD /* VMConfigViewController.m */,
@@ -1448,6 +1465,24 @@
 				E2B0F9D12426E5510065DFBE /* WKWebView+Workarounds.m */,
 			);
 			path = Views;
+			sourceTree = "<group>";
+		};
+		CEBCAF4F2435293C00C2B423 /* Controls */ = {
+			isa = PBXGroup;
+			children = (
+				CEBCAF502435298D00C2B423 /* VMConfigControl.h */,
+				CEBCAF5B2435613200C2B423 /* VMConfigLabel.h */,
+				CEBCAF5C2435613200C2B423 /* VMConfigLabel.m */,
+				CEBCAF5524353B9F00C2B423 /* VMConfigPickerView.h */,
+				CEBCAF5624353B9F00C2B423 /* VMConfigPickerView.m */,
+				CEBCAF5224353B3700C2B423 /* VMConfigSwitch.h */,
+				CEBCAF5324353B3700C2B423 /* VMConfigSwitch.m */,
+				CEBCAF4C243525DB00C2B423 /* VMConfigTextField.h */,
+				CEBCAF4D243525DB00C2B423 /* VMConfigTextField.m */,
+				CEBCAF582435468600C2B423 /* VMConfigTogglePickerCell.h */,
+				CEBCAF592435468600C2B423 /* VMConfigTogglePickerCell.m */,
+			);
+			path = Controls;
 			sourceTree = "<group>";
 		};
 		CECC76492273A7AE0059B955 /* qapi */ = {
@@ -1607,6 +1642,7 @@
 				83FBDD57242FA92300D2C5D7 /* VMDisplayMetalViewController+Pointer.h in Sources */,
 				CE23C1CA23FCEC0A001177D6 /* qapi-types-rocker.c in Sources */,
 				CE550BD1225947990063E575 /* VMListViewController.m in Sources */,
+				CEBCAF5A2435468600C2B423 /* VMConfigTogglePickerCell.m in Sources */,
 				CE23C17723FCEC0A001177D6 /* qapi-commands-crypto.c in Sources */,
 				CE23C1B923FCEC0A001177D6 /* qapi-events-char.c in Sources */,
 				CE31C24D225EA4A200A965DD /* VMConfigCreateViewController.m in Sources */,
@@ -1667,11 +1703,13 @@
 				CE550BE422596E790063E575 /* VMListViewCell.m in Sources */,
 				CE23C1CD23FCEC0A001177D6 /* qapi-commands-qom.c in Sources */,
 				CE23C19D23FCEC0A001177D6 /* qapi-visit-rocker.c in Sources */,
+				CEBCAF5424353B3700C2B423 /* VMConfigSwitch.m in Sources */,
 				CE23C16923FCEC0A001177D6 /* qapi-visit-net.c in Sources */,
 				CE23C1A323FCEC0A001177D6 /* qapi-events-net.c in Sources */,
 				CE74C28A225D88ED004E4FF1 /* VMConfigPrintingViewController.m in Sources */,
 				CE23C19C23FCEC0A001177D6 /* qapi-visit-run-state.c in Sources */,
 				CE23C18223FCEC0A001177D6 /* qapi-commands-tpm.c in Sources */,
+				CEBCAF5D2435613200C2B423 /* VMConfigLabel.m in Sources */,
 				423BCE66240F6A80001989AC /* VMConfigSystemArgumentsViewController.m in Sources */,
 				CE23C1A423FCEC0A001177D6 /* qapi-visit-common.c in Sources */,
 				CE23C16823FCEC0A001177D6 /* qapi-events-trace.c in Sources */,
@@ -1720,6 +1758,7 @@
 				CE23C1B723FCEC0A001177D6 /* qapi-types-dump.c in Sources */,
 				CE23C1CC23FCEC0A001177D6 /* qapi-types-machine-target.c in Sources */,
 				CE23C1B223FCEC0A001177D6 /* qapi-events-block.c in Sources */,
+				CEBCAF4E243525DB00C2B423 /* VMConfigTextField.m in Sources */,
 				CE23C16E23FCEC0A001177D6 /* qapi-types-block-core.c in Sources */,
 				CE31C24B225EA37400A965DD /* VMConfigViewController.m in Sources */,
 				CE23C17623FCEC0A001177D6 /* qapi-events-transaction.c in Sources */,
@@ -1745,6 +1784,7 @@
 				CED33AE62267CAB500FF1977 /* VMDisplayMetalViewController.m in Sources */,
 				CE31C245225E555600A965DD /* UTMConfiguration.m in Sources */,
 				CE23C1CB23FCEC0A001177D6 /* qapi-commands-misc.c in Sources */,
+				CEBCAF5724353B9F00C2B423 /* VMConfigPickerView.m in Sources */,
 				CE23C1A123FCEC0A001177D6 /* qapi-events-run-state.c in Sources */,
 				CE23C17323FCEC0A001177D6 /* qapi-visit-transaction.c in Sources */,
 				CE23C16423FCEC0A001177D6 /* qapi-commands-ui.c in Sources */,

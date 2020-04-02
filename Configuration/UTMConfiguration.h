@@ -32,6 +32,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, weak, readonly) NSDictionary *dictRepresentation;
 
++ (NSArray<NSString *>*)supportedOptions:(NSString *)key pretty:(BOOL)pretty;
 + (NSArray<NSString *>*)supportedArchitecturesPretty;
 + (NSArray<NSString *>*)supportedArchitectures;
 + (NSArray<NSString *>*)supportedBootDevicesPretty;
