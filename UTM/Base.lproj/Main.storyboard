@@ -2352,6 +2352,7 @@
                         <outlet property="restartButton" destination="HpT-OM-Xpa" id="RX8-aw-JPR"/>
                         <outlet property="resumeBigButton" destination="a0a-Yw-GZc" id="XrF-Zk-zmY"/>
                         <outlet property="toolbarAccessoryView" destination="VFv-zJ-H5K" id="hkm-Wv-Reu"/>
+                        <outlet property="zoomButton" destination="m9f-Az-rlH" id="TjH-mW-nfs"/>
                         <outletCollection property="customKeyButtons" destination="1LD-5d-0Ee" id="joR-H1-pbq"/>
                         <outletCollection property="customKeyModifierButtons" destination="1LD-5d-0Ee" id="34X-PW-2yT"/>
                         <outletCollection property="customKeyButtons" destination="PvO-bn-C3P" id="l2b-Em-80E"/>
