@@ -1,0 +1,525 @@
+
+/* Class = "UITextField"; placeholder = "Name"; ObjectID = "0TR-HU-09X"; */
+"0TR-HU-09X.placeholder" = "이름";
+
+/* Class = "UIButton"; accessibilityLabel = "Power"; ObjectID = "0Wo-4E-exJ"; */
+"0Wo-4E-exJ.accessibilityLabel" = "Power";
+
+/* Class = "UILabel"; text = "Drives/Images"; ObjectID = "1FD-SU-TVn"; */
+"1FD-SU-TVn.text" = "디스크이미지 목록";
+
+/* Class = "UIButton"; accessibilityLabel = "Control"; ObjectID = "1LD-5d-0Ee"; */
+"1LD-5d-0Ee.accessibilityLabel" = "Control";
+
+/* Class = "UIButton"; normalTitle = "⌃"; ObjectID = "1LD-5d-0Ee"; */
+"1LD-5d-0Ee.normalTitle" = "⌃";
+
+/* Class = "UIButton"; normalTitle = "F8"; ObjectID = "2Ed-0S-kjc"; */
+"2Ed-0S-kjc.normalTitle" = "F8";
+
+/* Class = "UITextField"; placeholder = "Name"; ObjectID = "2Kh-jJ-awN"; */
+"2Kh-jJ-awN.placeholder" = "이름";
+
+/* Class = "UITableViewSection"; headerTitle = "Zoom"; ObjectID = "2ao-Lx-lcQ"; */
+"2ao-Lx-lcQ.headerTitle" = "확대";
+
+/* Class = "UILabel"; text = "Estimated Usage"; ObjectID = "2bR-IG-wMf"; */
+"2bR-IG-wMf.text" = "사용 가능한 RAM";
+
+/* Class = "UILabel"; text = "Size"; ObjectID = "2r8-dE-rzF"; */
+"2r8-dE-rzF.text" = "크기";
+
+/* Class = "UINavigationItem"; title = "Select Image"; ObjectID = "340-Mu-Hwt"; */
+"340-Mu-Hwt.title" = "이미지 선택";
+
+/* Class = "UILabel"; text = "Subtitle"; ObjectID = "3G1-cS-MAp"; */
+"3G1-cS-MAp.text" = "Subtitle";
+
+/* Class = "UILabel"; text = "Full Graphics"; ObjectID = "3Jg-sa-a1s"; */
+"3Jg-sa-a1s.text" = "그래픽 인터페이스";
+
+/* Class = "UILabel"; text = "Max Resolution"; ObjectID = "3p4-7o-dMd"; */
+"3p4-7o-dMd.text" = "최대 해상도";
+
+/* Class = "UIButton"; normalTitle = "F3"; ObjectID = "4XD-uH-MNJ"; */
+"4XD-uH-MNJ.normalTitle" = "F3";
+
+/* Class = "UILabel"; text = "DHCP Start"; ObjectID = "5O8-6K-mxz"; */
+"5O8-6K-mxz.text" = "DHCP 할당 시작잠";
+
+/* Class = "UIButton"; accessibilityLabel = "Right"; ObjectID = "6Oy-qX-zoY"; */
+"6Oy-qX-zoY.accessibilityLabel" = "Right";
+
+/* Class = "UIButton"; normalTitle = "→"; ObjectID = "6Oy-qX-zoY"; */
+"6Oy-qX-zoY.normalTitle" = "→";
+
+/* Class = "UITableViewSection"; headerTitle = "Console"; ObjectID = "6zB-bx-Y94"; */
+"6zB-bx-Y94.headerTitle" = "콘솔";
+
+/* Class = "UILabel"; text = "Open Configuration after Creation"; ObjectID = "7DJ-Cp-oMO"; */
+"7DJ-Cp-oMO.text" = "VM 생성 후 구성요소 편집 창 열기";
+
+/* Class = "UIButton"; normalTitle = "F11"; ObjectID = "7Jq-kj-K2V"; */
+"7Jq-kj-K2V.normalTitle" = "F11";
+
+/* Class = "UINavigationItem"; title = "Disk Image"; ObjectID = "7id-FA-bJg"; */
+"7id-FA-bJg.title" = "디스크이미지";
+
+/* Class = "UITableViewSection"; headerTitle = "System"; ObjectID = "7nd-62-tFA"; */
+"7nd-62-tFA.headerTitle" = "시스템";
+
+/* Class = "UIButton"; normalTitle = "F4"; ObjectID = "876-Dc-Xg3"; */
+"876-Dc-Xg3.normalTitle" = "F4";
+
+/* Class = "UILabel"; text = "Font (placeholder)"; ObjectID = "8ah-qD-hzy"; */
+"8ah-qD-hzy.text" = "Font (placeholder)";
+
+/* Class = "UIButton"; normalTitle = "F10"; ObjectID = "8zW-rN-u2M"; */
+"8zW-rN-u2M.normalTitle" = "F10";
+
+/* Class = "UILabel"; text = "Architecture"; ObjectID = "9Nu-pG-ywd"; */
+"9Nu-pG-ywd.text" = "아키텍쳐";
+
+/* Class = "UILabel"; text = "Detail"; ObjectID = "9fH-Qw-nVS"; */
+"9fH-Qw-nVS.text" = "세부사항";
+
+/* Class = "UILabel"; text = "Setup Drives/Images"; ObjectID = "AP0-ME-jBc"; */
+"AP0-ME-jBc.text" = "디스크이미지 목록";
+
+/* Class = "UIButton"; accessibilityLabel = "Tab"; ObjectID = "BXG-l7-BeY"; */
+"BXG-l7-BeY.accessibilityLabel" = "Tab";
+
+/* Class = "UIButton"; normalTitle = "⇥"; ObjectID = "BXG-l7-BeY"; */
+"BXG-l7-BeY.normalTitle" = "⇥";
+
+/* Class = "UITableViewSection"; headerTitle = "Name"; ObjectID = "BlT-6O-Tm8"; */
+"BlT-6O-Tm8.headerTitle" = "이름";
+
+/* Class = "UILabel"; text = "Path"; ObjectID = "CDM-d1-Xuf"; */
+"CDM-d1-Xuf.text" = "이미지 선택";
+
+/* Class = "UINavigationItem"; title = "System"; ObjectID = "CRh-Zb-s8B"; */
+"CRh-Zb-s8B.title" = "시스템";
+
+/* Class = "UITableViewSection"; headerTitle = "Hardware"; ObjectID = "CeH-xF-3fF"; */
+"CeH-xF-3fF.headerTitle" = "하드웨어";
+
+/* Class = "UITableViewSection"; headerTitle = "Resolution"; ObjectID = "DBb-DO-7RN"; */
+"DBb-DO-7RN.headerTitle" = "해상도";
+
+/* Class = "UILabel"; text = "Sound Card"; ObjectID = "DN6-Iz-3mv"; */
+"DN6-Iz-3mv.text" = "사운드 카드";
+
+/* Class = "UILabel"; text = "Scale to Fit"; ObjectID = "DSd-aZ-Qka"; */
+"DSd-aZ-Qka.text" = "화면 맞춤";
+
+/* Class = "UILabel"; text = "Add new..."; ObjectID = "DvR-Gm-qGA"; */
+"DvR-Gm-qGA.text" = "새로 추가...";
+
+/* Class = "UITextField"; placeholder = "hda.img"; ObjectID = "Dx6-pD-sU3"; */
+"Dx6-pD-sU3.placeholder" = "c.img";
+
+/* Class = "UILabel"; text = "Location"; ObjectID = "EGI-JP-qwU"; */
+"EGI-JP-qwU.text" = "인터페이스";
+
+/* Class = "UIButton"; normalTitle = "F12"; ObjectID = "EIz-R9-Ca8"; */
+"EIz-R9-Ca8.normalTitle" = "F12";
+
+/* Class = "UIButton"; accessibilityLabel = "Settings"; ObjectID = "ESi-T5-nUB"; */
+"ESi-T5-nUB.accessibilityLabel" = "Settings";
+
+/* Class = "UILabel"; text = "Total RAM"; ObjectID = "ETs-n1-aUr"; */
+"ETs-n1-aUr.text" = "총 RAM";
+
+/* Class = "UINavigationItem"; title = "Input"; ObjectID = "Etn-MD-71X"; */
+"Etn-MD-71X.title" = "입력";
+
+/* Class = "UIButton"; accessibilityLabel = "Hide Keyboard"; ObjectID = "F32-dg-1Zk"; */
+"F32-dg-1Zk.accessibilityLabel" = "Hide Keyboard";
+
+/* Class = "UITableViewSection"; headerTitle = "Advanced"; ObjectID = "F7q-42-AmC"; */
+"F7q-42-AmC.headerTitle" = "세부사항";
+
+/* Class = "UILabel"; text = "Title"; ObjectID = "FFD-Jl-stc"; */
+"FFD-Jl-stc.text" = "제목";
+
+/* Class = "UILabel"; text = "Disk"; ObjectID = "Ffd-jl-gNs"; */
+"Ffd-jl-gNs.text" = "디스크";
+
+/* Class = "UITableViewSection"; headerTitle = "Clipboard Sharing"; ObjectID = "Fjo-PM-Pc6"; */
+"Fjo-PM-Pc6.headerTitle" = "클립보드 공유";
+
+/* Class = "UIButton"; accessibilityLabel = "Keyboard"; ObjectID = "Grb-jH-Oxk"; */
+"Grb-jH-Oxk.accessibilityLabel" = "Keyboard";
+
+/* Class = "UILabel"; text = "Input"; ObjectID = "GvK-o6-9qU"; */
+"GvK-o6-9qU.text" = "입력";
+
+/* Class = "UILabel"; text = "Memory"; ObjectID = "HRc-mq-43y"; */
+"HRc-mq-43y.text" = "메모리";
+
+/* Class = "UILabel"; text = "CPU Count"; ObjectID = "HlJ-Fd-TPS"; */
+"HlJ-Fd-TPS.text" = "CPU 코어 개수";
+
+/* Class = "UIButton"; accessibilityLabel = "Back"; ObjectID = "HpT-OM-Xpa"; */
+"HpT-OM-Xpa.accessibilityLabel" = "Back";
+
+/* Class = "UITextField"; placeholder = "2"; ObjectID = "I4t-8W-Nev"; */
+"I4t-8W-Nev.placeholder" = "2";
+
+/* Class = "UITextField"; placeholder = "Default"; ObjectID = "Jk5-aT-3ap"; */
+"Jk5-aT-3ap.placeholder" = "기본값";
+
+/* Class = "UILabel"; text = "ac97"; ObjectID = "Jp2-wl-rfZ"; */
+"Jp2-wl-rfZ.text" = "ac97";
+
+/* Class = "UILabel"; text = "Detail"; ObjectID = "KYQ-B4-Cf3"; */
+"KYQ-B4-Cf3.text" = "세부사항";
+
+/* Class = "UILabel"; text = "Fixed"; ObjectID = "LCF-nv-jEK"; */
+"LCF-nv-jEK.text" = "고정";
+
+/* Class = "UIButton"; accessibilityLabel = "Hide Toolbar"; ObjectID = "M5V-xj-Rzw"; */
+"M5V-xj-Rzw.accessibilityLabel" = "Hide Toolbar";
+
+/* Class = "UILabel"; text = "MB"; ObjectID = "MAs-NR-G0n"; */
+"MAs-NR-G0n.text" = "MB";
+
+/* Class = "UITableViewSection"; footerTitle = "Default JIT Cache size is 1/4 of the allocated Memory size. This is in addition to the host memory! Force Multicore will allow multi-CPU emulation even if the memory model is not supported by QEMU (x86 on ARM for example). This could result in incorrect emulation. If disabled and CPU Count is > 1 then all cores will be emulated by a single core causing reduced performance."; ObjectID = "MGc-rW-PLa"; */
+"MGc-rW-PLa.footerTitle" = "기본적으로 JIT Cache는 할당한 메모리의 1/4을 추가로 요구합니다. 멀티코어를 강제로 활성화하면 QEMU에서 지원하지 않는(ARM에서 x86 구동과 같이) 에뮬레이션도 멀티코어를 쓰게 되고, 이는 부정확한 결과를 초래할 수 있습니다. 이 옵션을 비활성화하고 CPU 코어 개수가 두 개 이상일 시 모두 싱글코어로 에뮬레이션되고 이는 성능하락을 초래할 수 있습니다.";
+
+/* Class = "UITableViewSection"; headerTitle = "QEMU"; ObjectID = "MGc-rW-PLa"; */
+"MGc-rW-PLa.headerTitle" = "QEMU";
+
+/* Class = "UINavigationItem"; title = "Sound"; ObjectID = "MGj-2L-8uR"; */
+"MGj-2L-8uR.title" = "사운드";
+
+/* Class = "UINavigationItem"; title = "Create VM"; ObjectID = "My3-qO-OLf"; */
+"My3-qO-OLf.title" = "새 VM 생성";
+
+/* Class = "UITableViewSection"; headerTitle = "Hardware"; ObjectID = "NCJ-Al-5BI"; */
+"NCJ-Al-5BI.headerTitle" = "설정";
+
+/* Class = "UILabel"; text = "Expanding"; ObjectID = "Nom-x9-xrU"; */
+"Nom-x9-xrU.text" = "사용한 만큼만 공간 차지";
+
+/* Class = "UINavigationItem"; title = "Sharing"; ObjectID = "ONw-62-0F5"; */
+"ONw-62-0F5.title" = "공유";
+
+/* Class = "UITextField"; placeholder = "512"; ObjectID = "OwS-jd-mte"; */
+"OwS-jd-mte.placeholder" = "512";
+
+/* Class = "UILabel"; text = "Gesture and Cursor Settings"; ObjectID = "PYT-mF-w3w"; */
+"PYT-mF-w3w.text" = "제스쳐와 커서 설정";
+
+/* Class = "UIButton"; accessibilityLabel = "Option"; ObjectID = "PvO-bn-C3P"; */
+"PvO-bn-C3P.accessibilityLabel" = "Option";
+
+/* Class = "UIButton"; normalTitle = "⌥"; ObjectID = "PvO-bn-C3P"; */
+"PvO-bn-C3P.normalTitle" = "⌥";
+
+/* Class = "UITableViewSection"; headerTitle = "Hardware"; ObjectID = "Roy-Wv-Hrq"; */
+"Roy-Wv-Hrq.headerTitle" = "하드웨어";
+
+/* Class = "UITableViewSection"; footerTitle = "PS/2 has higher compatibility with older operating systems but does not support custom cursor settings."; ObjectID = "Rtj-zp-arL"; */
+"Rtj-zp-arL.footerTitle" = "PS/2는 오래된 운영체제와 호환성이 더 좋지만 커스텀 커서 설정을 지원하지 않습니다.";
+
+/* Class = "UITableViewSection"; headerTitle = "Legacy"; ObjectID = "Rtj-zp-arL"; */
+"Rtj-zp-arL.headerTitle" = "레거시";
+
+/* Class = "UIButton"; accessibilityLabel = "Command"; ObjectID = "S2Y-JX-D2o"; */
+"S2Y-JX-D2o.accessibilityLabel" = "Command";
+
+/* Class = "UIButton"; normalTitle = "⌘"; ObjectID = "S2Y-JX-D2o"; */
+"S2Y-JX-D2o.normalTitle" = "⌘";
+
+/* Class = "UITextField"; placeholder = "512"; ObjectID = "S2s-iX-Lul"; */
+"S2s-iX-Lul.placeholder" = "512";
+
+/* Class = "UITableViewSection"; headerTitle = "Image"; ObjectID = "SCF-Z9-xBk"; */
+"SCF-Z9-xBk.headerTitle" = "디스크이미지";
+
+/* Class = "UILabel"; text = "Memory"; ObjectID = "SvG-PI-7bh"; */
+"SvG-PI-7bh.text" = "메모리";
+
+/* Class = "UILabel"; text = "Title"; ObjectID = "SwZ-ol-btE"; */
+"SwZ-ol-btE.text" = "제목";
+
+/* Class = "UINavigationItem"; title = "Configuration"; ObjectID = "TeT-9a-let"; */
+"TeT-9a-let.title" = "구성요소";
+
+/* Class = "UITextField"; placeholder = "2"; ObjectID = "VBD-VX-Usg"; */
+"VBD-VX-Usg.placeholder" = "2";
+
+/* Class = "UILabel"; text = "Name"; ObjectID = "VQv-L6-Wpd"; */
+"VQv-L6-Wpd.text" = "이름";
+
+/* Class = "UINavigationItem"; title = "Additional QEMU Arguments"; ObjectID = "Vsj-CY-Ew5"; */
+"Vsj-CY-Ew5.title" = "추가 QEMU 구문";
+
+/* Class = "UITableViewSection"; headerTitle = "Debug"; ObjectID = "WkA-K4-U3C"; */
+"WkA-K4-U3C.headerTitle" = "디버그";
+
+/* Class = "UINavigationItem"; title = "New Drive/Image"; ObjectID = "XLc-iy-COp"; */
+"XLc-iy-COp.title" = "새 디스크이미지 생성";
+
+/* Class = "UILabel"; text = "Networking"; ObjectID = "XSI-kB-djk"; */
+"XSI-kB-djk.text" = "네트워킹";
+
+/* Class = "UIButton"; accessibilityLabel = "Shift"; ObjectID = "XWu-4O-XGa"; */
+"XWu-4O-XGa.accessibilityLabel" = "Shift";
+
+/* Class = "UIButton"; normalTitle = "⇧"; ObjectID = "XWu-4O-XGa"; */
+"XWu-4O-XGa.normalTitle" = "⇧";
+
+/* Class = "UILabel"; text = "System"; ObjectID = "XhT-dg-bb9"; */
+"XhT-dg-bb9.text" = "시스템";
+
+/* Class = "UIButton"; accessibilityLabel = "Right"; ObjectID = "Xlj-Hd-dHd"; */
+"Xlj-Hd-dHd.accessibilityLabel" = "Right";
+
+/* Class = "UIButton"; normalTitle = "Del"; ObjectID = "Xlj-Hd-dHd"; */
+"Xlj-Hd-dHd.normalTitle" = "Del";
+
+/* Class = "UILabel"; text = "CPU Count"; ObjectID = "XtU-FE-Mry"; */
+"XtU-FE-Mry.text" = "CPU 코어 개수";
+
+/* Class = "UILabel"; text = "Try booting first from"; ObjectID = "Yzl-hW-dz8"; */
+"Yzl-hW-dz8.text" = "첫 번째로 부팅할 항목";
+
+/* Class = "UIButton"; normalTitle = "F5"; ObjectID = "ZrI-oI-jIY"; */
+"ZrI-oI-jIY.normalTitle" = "F5";
+
+/* Class = "UILabel"; text = "Name"; ObjectID = "a1E-lK-5Yg"; */
+"a1E-lK-5Yg.text" = "이름";
+
+/* Class = "UILabel"; text = "0 MB"; ObjectID = "a8s-7M-new"; */
+"a8s-7M-new.text" = "0 MB";
+
+/* Class = "UINavigationItem"; title = "Drives/Images"; ObjectID = "aCz-nM-j4Z"; */
+"aCz-nM-j4Z.title" = "디스크이미지 목록";
+
+/* Class = "UILabel"; text = "Enabled"; ObjectID = "aHx-sa-LGi"; */
+"aHx-sa-LGi.text" = "활성화";
+
+/* Class = "UINavigationItem"; title = "Printing"; ObjectID = "acH-xK-xn6"; */
+"acH-xK-xn6.title" = "프린터";
+
+/* Class = "UITableViewSection"; headerTitle = "Boot"; ObjectID = "aje-ee-mJi"; */
+"aje-ee-mJi.headerTitle" = "부팅";
+
+/* Class = "UIButton"; accessibilityLabel = "Paste"; ObjectID = "bHg-KE-i2P"; */
+"bHg-KE-i2P.accessibilityLabel" = "Paste";
+
+/* Class = "UINavigationItem"; title = "Networking"; ObjectID = "bJQ-Qv-ceR"; */
+"bJQ-Qv-ceR.title" = "네트워킹";
+
+/* Class = "UIButton"; accessibilityLabel = "Pause"; ObjectID = "bjd-4T-OVm"; */
+"bjd-4T-OVm.accessibilityLabel" = "Pause";
+
+/* Class = "UILabel"; text = "Disk Drive"; ObjectID = "bwc-uM-EKo"; */
+"bwc-uM-EKo.text" = "디스크 드라이브";
+
+/* Class = "UIButton"; accessibilityHint = "Start"; ObjectID = "byz-Gf-XHC"; */
+"byz-Gf-XHC.accessibilityHint" = "Start";
+
+/* Class = "UIButton"; accessibilityLabel = "Start"; ObjectID = "byz-Gf-XHC"; */
+"byz-Gf-XHC.accessibilityLabel" = "Start";
+
+/* Class = "UIButton"; accessibilityLabel = "Up"; ObjectID = "cMr-vl-R93"; */
+"cMr-vl-R93.accessibilityLabel" = "Up";
+
+/* Class = "UIButton"; normalTitle = "↑"; ObjectID = "cMr-vl-R93"; */
+"cMr-vl-R93.normalTitle" = "↑";
+
+/* Class = "UILabel"; text = "Legacy (PS/2) Mode"; ObjectID = "d5G-2Y-589"; */
+"d5G-2Y-589.text" = "레거시 (PS/2) 모드";
+
+/* Class = "UILabel"; text = "CPU Cores"; ObjectID = "dHW-er-x98"; */
+"dHW-er-x98.text" = "CPU 코어";
+
+/* Class = "UILabel"; text = "Detail"; ObjectID = "dhz-mO-gca"; */
+"dhz-mO-gca.text" = "세부사항";
+
+/* Class = "UITableViewSection"; headerTitle = "Shared Directories"; ObjectID = "dpu-6y-nD0"; */
+"dpu-6y-nD0.headerTitle" = "공유 폴더";
+
+/* Class = "UITableViewSection"; headerTitle = "Location"; ObjectID = "eeY-js-xSc"; */
+"eeY-js-xSc.headerTitle" = "세부사항";
+
+/* Class = "UILabel"; text = "Enabled"; ObjectID = "fDF-an-yxM"; */
+"fDF-an-yxM.text" = "활성화";
+
+/* Class = "UILabel"; text = "Network"; ObjectID = "fOG-3K-1lH"; */
+"fOG-3K-1lH.text" = "네트워크";
+
+/* Class = "UILabel"; text = "Display"; ObjectID = "fZG-YK-q4O"; */
+"fZG-YK-q4O.text" = "디스플레이";
+
+/* Class = "UILabel"; text = "Enabled"; ObjectID = "gTm-35-vCi"; */
+"gTm-35-vCi.text" = "활성화";
+
+/* Class = "UILabel"; text = "Printing"; ObjectID = "gXb-Fk-IyH"; */
+"gXb-Fk-IyH.text" = "프린터";
+
+/* Class = "UILabel"; text = "Disk Drive"; ObjectID = "gaX-u8-yz8"; */
+"gaX-u8-yz8.text" = "디스크 드라이브";
+
+/* Class = "UITableViewSection"; headerTitle = "Additional Options"; ObjectID = "hjJ-kU-VR1"; */
+"hjJ-kU-VR1.headerTitle" = "추가 옵션";
+
+/* Class = "UILabel"; text = "Local Access Only"; ObjectID = "iS1-Ur-HFa"; */
+"iS1-Ur-HFa.text" = "Local Access Only";
+
+/* Class = "UILabel"; text = "Select..."; ObjectID = "iuP-Eh-P68"; */
+"iuP-Eh-P68.text" = "찾아보기...";
+
+/* Class = "UILabel"; text = "Sharing"; ObjectID = "jv0-6r-NAJ"; */
+"jv0-6r-NAJ.text" = "공유";
+
+/* Class = "UITableViewSection"; headerTitle = "Name"; ObjectID = "kxc-0J-xgO"; */
+"kxc-0J-xgO.headerTitle" = "이름";
+
+/* Class = "UILabel"; text = "JIT Cache"; ObjectID = "led-8Q-nNh"; */
+"led-8Q-nNh.text" = "JIT Cache";
+
+/* Class = "UIButton"; normalTitle = "F2"; ObjectID = "m3u-Hy-WNb"; */
+"m3u-Hy-WNb.normalTitle" = "F2";
+
+/* Class = "UIButton"; accessibilityLabel = "Zoom"; ObjectID = "m9f-Az-rlH"; */
+"m9f-Az-rlH.accessibilityLabel" = "Zoom";
+
+/* Class = "UITableViewSection"; headerTitle = "IP Configuration"; ObjectID = "mTW-BC-BPZ"; */
+"mTW-BC-BPZ.headerTitle" = "IP 구성";
+
+/* Class = "UIButton"; normalTitle = "F9"; ObjectID = "n2Z-fx-LHS"; */
+"n2Z-fx-LHS.normalTitle" = "F9";
+
+/* Class = "UIButton"; accessibilityLabel = "Left"; ObjectID = "nG1-Lj-efg"; */
+"nG1-Lj-efg.accessibilityLabel" = "Left";
+
+/* Class = "UIButton"; normalTitle = "←"; ObjectID = "nG1-Lj-efg"; */
+"nG1-Lj-efg.normalTitle" = "←";
+
+/* Class = "UILabel"; text = "Console Mode"; ObjectID = "nGh-ET-2qO"; */
+"nGh-ET-2qO.text" = "콘솔 인터페이스";
+
+/* Class = "UITextField"; placeholder = "1024"; ObjectID = "nKg-bw-usb"; */
+"nKg-bw-usb.placeholder" = "1024";
+
+/* Class = "UITableViewSection"; headerTitle = "Basic"; ObjectID = "npu-cv-8wY"; */
+"npu-cv-8wY.headerTitle" = "기본사항";
+
+/* Class = "UILabel"; text = "Debug Log"; ObjectID = "o5n-nQ-vae"; */
+"o5n-nQ-vae.text" = "로그 활성화";
+
+/* Class = "UILabel"; text = "Letterbox Mode"; ObjectID = "olW-DK-r4a"; */
+"olW-DK-r4a.text" = "레터박스 모드";
+
+/* Class = "UIButton"; accessibilityHint = "Return"; ObjectID = "q44-A5-QUO"; */
+"q44-A5-QUO.accessibilityHint" = "Return";
+
+/* Class = "UIButton"; accessibilityLabel = "Return"; ObjectID = "q44-A5-QUO"; */
+"q44-A5-QUO.accessibilityLabel" = "Return";
+
+/* Class = "UITextField"; placeholder = "10.0.2.0/24"; ObjectID = "q6m-Ld-1jH"; */
+"q6m-Ld-1jH.placeholder" = "10.0.2.0/24";
+
+/* Class = "UITableViewSection"; headerTitle = "Hardware"; ObjectID = "qCe-97-Cma"; */
+"qCe-97-Cma.headerTitle" = "하드웨어";
+
+/* Class = "UILabel"; text = "Enabled"; ObjectID = "qHe-ss-OZw"; */
+"qHe-ss-OZw.text" = "활성화";
+
+/* Class = "UILabel"; text = "MB"; ObjectID = "qMH-Bx-PsC"; */
+"qMH-Bx-PsC.text" = "MB";
+
+/* Class = "UILabel"; text = "MB"; ObjectID = "qlZ-rS-wks"; */
+"qlZ-rS-wks.text" = "MB";
+
+/* Class = "UILabel"; text = "0 MB"; ObjectID = "r7Y-tO-ugj"; */
+"r7Y-tO-ugj.text" = "0 MB";
+
+/* Class = "UILabel"; text = "Force Multicore"; ObjectID = "raQ-Dg-ejh"; */
+"raQ-Dg-ejh.text" = "멀티코어 강제 활성화";
+
+/* Class = "UILabel"; text = "hda1"; ObjectID = "rbw-FB-I5Q"; */
+"rbw-FB-I5Q.text" = "hda1";
+
+/* Class = "UILabel"; text = "System"; ObjectID = "riB-R9-dTb"; */
+"riB-R9-dTb.text" = "시스템";
+
+/* Class = "UIButton"; accessibilityLabel = "Down"; ObjectID = "sOo-ak-Mlv"; */
+"sOo-ak-Mlv.accessibilityLabel" = "Down";
+
+/* Class = "UIButton"; normalTitle = "↓"; ObjectID = "sOo-ak-Mlv"; */
+"sOo-ak-Mlv.normalTitle" = "↓";
+
+/* Class = "UITableViewSection"; headerTitle = "Hardware"; ObjectID = "spp-Cv-g7X"; */
+"spp-Cv-g7X.headerTitle" = "하드웨어";
+
+/* Class = "UITextField"; placeholder = "10.0.2.0.15"; ObjectID = "sym-7m-1rq"; */
+"sym-7m-1rq.placeholder" = "10.0.2.0.15";
+
+/* Class = "UILabel"; text = "MB"; ObjectID = "u4W-r9-V11"; */
+"u4W-r9-V11.text" = "MB";
+
+/* Class = "UITextField"; placeholder = "QEMU Args"; ObjectID = "upL-Oh-a3A"; */
+"upL-Oh-a3A.placeholder" = "QEMU 구문";
+
+/* Class = "UILabel"; text = "0"; ObjectID = "uy0-gI-CBW"; */
+"uy0-gI-CBW.text" = "0";
+
+/* Class = "UILabel"; text = "Export Log..."; ObjectID = "vU7-wd-ipe"; */
+"vU7-wd-ipe.text" = "로그 내보내기...";
+
+/* Class = "UITableViewSection"; headerTitle = "Drives"; ObjectID = "wDi-gr-I7A"; */
+"wDi-gr-I7A.headerTitle" = "드라이브";
+
+/* Class = "UIButton"; normalTitle = "F6"; ObjectID = "wMD-ug-3bW"; */
+"wMD-ug-3bW.normalTitle" = "F6";
+
+/* Class = "UIButton"; normalTitle = "F1"; ObjectID = "wPb-ec-tXw"; */
+"wPb-ec-tXw.normalTitle" = "F1";
+
+/* Class = "UITableViewSection"; footerTitle = "If you attempt to allocate more resources than what is on your device, the VM may not boot and your device may become unstable."; ObjectID = "wbc-1J-nlk"; */
+"wbc-1J-nlk.footerTitle" = "최대치보다 더 많은 자원을 할당하면 VM 부팅이 불가할 수 있고 기기가 불안정해질 수 있습니다.";
+
+/* Class = "UITableViewSection"; headerTitle = "Host Information"; ObjectID = "wbc-1J-nlk"; */
+"wbc-1J-nlk.headerTitle" = "기기 정보";
+
+/* Class = "UILabel"; text = "Sound"; ObjectID = "wis-6w-tHz"; */
+"wis-6w-tHz.text" = "사운드";
+
+/* Class = "UITableViewSection"; headerTitle = "Type"; ObjectID = "wjd-8h-Xoa"; */
+"wjd-8h-Xoa.headerTitle" = "인터페이스";
+
+/* Class = "UILabel"; text = "Try booting first from"; ObjectID = "wrM-Ql-L8D"; */
+"wrM-Ql-L8D.text" = "첫 번째로 부팅할 항목";
+
+/* Class = "UILabel"; text = "Additional QEMU Arguments"; ObjectID = "wvt-Dh-tQm"; */
+"wvt-Dh-tQm.text" = "추가 QEMU 구문";
+
+/* Class = "UILabel"; text = "1024x768"; ObjectID = "xVE-hN-Dcf"; */
+"xVE-hN-Dcf.text" = "1024x768";
+
+/* Class = "UILabel"; text = "Image Type"; ObjectID = "xoO-as-9Kn"; */
+"xoO-as-9Kn.text" = "종류";
+
+/* Class = "UINavigationItem"; title = "Display"; ObjectID = "xuY-6V-eU1"; */
+"xuY-6V-eU1.title" = "디스플레이";
+
+/* Class = "UINavigationItem"; title = "Virtual Machines"; ObjectID = "y7c-vs-jlM"; */
+"y7c-vs-jlM.title" = "가상머신 목록";
+
+/* Class = "UIButton"; accessibilityLabel = "Escape"; ObjectID = "yDQ-hh-V1x"; */
+"yDQ-hh-V1x.accessibilityLabel" = "Escape";
+
+/* Class = "UIButton"; normalTitle = "⎋"; ObjectID = "yDQ-hh-V1x"; */
+"yDQ-hh-V1x.normalTitle" = "⎋";
+
+/* Class = "UIButton"; normalTitle = "F7"; ObjectID = "yuk-bm-ipJ"; */
+"yuk-bm-ipJ.normalTitle" = "F7";
+
+/* Class = "UILabel"; text = "Architecture"; ObjectID = "ziF-JQ-bTj"; */
+"ziF-JQ-bTj.text" = "아키텍쳐";

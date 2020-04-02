@@ -391,6 +391,8 @@
 		423BCE67240F6A8A001989AC /* VMConfigSystemArgumentsViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VMConfigSystemArgumentsViewController.h; sourceTree = "<group>"; };
 		521F3EFA2414F73800130500 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		525535A1241B8A52003C80FC /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Main.strings"; sourceTree = "<group>"; };
+		C8958B6C243634DA002D86B4 /* ko */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ko; path = ko.lproj/Main.strings; sourceTree = "<group>"; };
+		C8958B6D243634DA002D86B4 /* ko */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ko; path = ko.lproj/Localizable.strings; sourceTree = "<group>"; };
 		CE056CA4242454100004B68A /* VMDisplayMetalViewController+Touch.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "VMDisplayMetalViewController+Touch.h"; sourceTree = "<group>"; };
 		CE056CA5242454100004B68A /* VMDisplayMetalViewController+Touch.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "VMDisplayMetalViewController+Touch.m"; sourceTree = "<group>"; };
 		CE23C07B23FCEBFF001177D6 /* qapi-visit-error.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-visit-error.h"; path = "sysroot-$(PLATFORM_PREFERRED_ARCH)/qapi/qapi-visit-error.h"; sourceTree = SOURCE_ROOT; };
@@ -1484,6 +1486,7 @@
 				en,
 				Base,
 				"zh-Hans",
+				ko,
 			);
 			mainGroup = CE550BC0225947990063E575;
 			productRefGroup = CE550BCA225947990063E575 /* Products */;
@@ -1689,6 +1692,7 @@
 			isa = PBXVariantGroup;
 			children = (
 				521F3EFA2414F73800130500 /* zh-Hans */,
+				C8958B6D243634DA002D86B4 /* ko */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";
@@ -1699,6 +1703,7 @@
 			children = (
 				CE550BD3225947990063E575 /* Base */,
 				525535A1241B8A52003C80FC /* zh-Hans */,
+				C8958B6C243634DA002D86B4 /* ko */,
 			);
 			name = Main.storyboard;
 			sourceTree = "<group>";
