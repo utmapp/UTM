@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		423BCE66240F6A80001989AC /* VMConfigSystemArgumentsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 423BCE65240F6A80001989AC /* VMConfigSystemArgumentsViewController.m */; };
 		521F3EF92414F73800130500 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 521F3EFB2414F73800130500 /* Localizable.strings */; };
+		83FBDD56242FA7BC00D2C5D7 /* VMDisplayMetalViewController+Pointer.m in Sources */ = {isa = PBXBuildFile; fileRef = 83FBDD55242FA7BC00D2C5D7 /* VMDisplayMetalViewController+Pointer.m */; };
+		83FBDD57242FA92300D2C5D7 /* VMDisplayMetalViewController+Pointer.h in Sources */ = {isa = PBXBuildFile; fileRef = 83FBDD53242FA71900D2C5D7 /* VMDisplayMetalViewController+Pointer.h */; };
 		CE056CA6242454100004B68A /* VMDisplayMetalViewController+Touch.m in Sources */ = {isa = PBXBuildFile; fileRef = CE056CA5242454100004B68A /* VMDisplayMetalViewController+Touch.m */; };
 		CE23C16123FCEC0A001177D6 /* qapi-commands-run-state.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C07E23FCEBFF001177D6 /* qapi-commands-run-state.c */; };
 		CE23C16223FCEC0A001177D6 /* qapi-visit-tpm.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C07F23FCEBFF001177D6 /* qapi-visit-tpm.c */; };
@@ -400,6 +402,8 @@
 		423BCE67240F6A8A001989AC /* VMConfigSystemArgumentsViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VMConfigSystemArgumentsViewController.h; sourceTree = "<group>"; };
 		521F3EFA2414F73800130500 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		525535A1241B8A52003C80FC /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Main.strings"; sourceTree = "<group>"; };
+		83FBDD53242FA71900D2C5D7 /* VMDisplayMetalViewController+Pointer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "VMDisplayMetalViewController+Pointer.h"; sourceTree = "<group>"; };
+		83FBDD55242FA7BC00D2C5D7 /* VMDisplayMetalViewController+Pointer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "VMDisplayMetalViewController+Pointer.m"; sourceTree = "<group>"; };
 		CE056CA4242454100004B68A /* VMDisplayMetalViewController+Touch.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "VMDisplayMetalViewController+Touch.h"; sourceTree = "<group>"; };
 		CE056CA5242454100004B68A /* VMDisplayMetalViewController+Touch.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "VMDisplayMetalViewController+Touch.m"; sourceTree = "<group>"; };
 		CE23C07B23FCEBFF001177D6 /* qapi-visit-error.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-visit-error.h"; path = "sysroot-$(PLATFORM_PREFERRED_ARCH)/qapi/qapi-visit-error.h"; sourceTree = SOURCE_ROOT; };
@@ -1423,6 +1427,8 @@
 				CED33AE52267CAB500FF1977 /* VMDisplayMetalViewController.m */,
 				CE3ADD65240EFBCA002D6A5F /* VMDisplayMetalViewController+Keyboard.h */,
 				CE3ADD66240EFBCA002D6A5F /* VMDisplayMetalViewController+Keyboard.m */,
+				83FBDD53242FA71900D2C5D7 /* VMDisplayMetalViewController+Pointer.h */,
+				83FBDD55242FA7BC00D2C5D7 /* VMDisplayMetalViewController+Pointer.m */,
 				CE056CA4242454100004B68A /* VMDisplayMetalViewController+Touch.h */,
 				CE056CA5242454100004B68A /* VMDisplayMetalViewController+Touch.m */,
 				CEEB66442284B942002737B2 /* VMKeyboardButton.h */,
@@ -1595,6 +1601,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				83FBDD57242FA92300D2C5D7 /* VMDisplayMetalViewController+Pointer.h in Sources */,
 				CE23C1CA23FCEC0A001177D6 /* qapi-types-rocker.c in Sources */,
 				CE550BD1225947990063E575 /* VMListViewController.m in Sources */,
 				CE23C17723FCEC0A001177D6 /* qapi-commands-crypto.c in Sources */,
@@ -1746,6 +1753,7 @@
 				CE23C16B23FCEC0A001177D6 /* qapi-dispatch-events.c in Sources */,
 				CE23C17E23FCEC0A001177D6 /* qapi-visit-authz.c in Sources */,
 				CED33AE02267892200FF1977 /* UTMQemuSystem.m in Sources */,
+				83FBDD56242FA7BC00D2C5D7 /* VMDisplayMetalViewController+Pointer.m in Sources */,
 				CE23C16123FCEC0A001177D6 /* qapi-commands-run-state.c in Sources */,
 				CE74C28D225D88ED004E4FF1 /* VMConfigInputViewController.m in Sources */,
 				CE23C1D323FCEC0A001177D6 /* qapi-types-misc-target.c in Sources */,
@@ -1948,8 +1956,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = "";
+				CODE_SIGN_STYLE = Manual;
+				DEVELOPMENT_TEAM = 66PD8Z2LBR;
 				ENABLE_BITCODE = NO;
 				HEADER_SEARCH_PATHS = (
 					"$(PROJECT_DIR)/sysroot-$(PLATFORM_PREFERRED_ARCH)/include",
@@ -1971,6 +1979,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.osy86.UTM;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "00008027-001264ac2622002e";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
