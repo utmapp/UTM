@@ -19,19 +19,22 @@
 #import "CSConnectionDelegate.h"
 #import "UTMRenderSource.h"
 #import "UTMQemuManagerDelegate.h"
+#import "UTMInputOutput.h"
 
 @class UTMConfiguration;
 @class UTMQemuManager;
-@class CSDisplayMetal;
-@class CSInput;
+
+typedef NS_ENUM(NSInteger, UTMDisplayType) {
+    UTMDisplayTypeFullGraphic,
+    UTMDisplayTypeConsole
+};
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface UTMVirtualMachine : NSObject<CSConnectionDelegate, UTMQemuManagerDelegate>
+@interface UTMVirtualMachine : NSObject<UTMQemuManagerDelegate>
 
+@property (nonatomic, readonly, nullable) id<UTMInputOutput> ioService;
 @property (nonatomic, readonly) NSURL *path;
-@property (nonatomic, readonly, nullable) CSDisplayMetal *primaryDisplay;
-@property (nonatomic, readonly, nullable) CSInput *primaryInput;
 @property (nonatomic, weak, nullable) id<UTMVirtualMachineDelegate> delegate;
 @property (nonatomic, strong) NSURL *parentPath;
 @property (nonatomic, strong, readonly) UTMConfiguration *configuration;
@@ -57,7 +60,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)deleteSaveVM;
 - (BOOL)resumeVM;
 
-- (void)requestInputTablet:(BOOL)tablet;
+- (UTMDisplayType)supportedDisplayType;
+- (void)requestInputTablet:(BOOL)tablet completion:(void (^)(NSString * _Nullable, NSError * _Nullable))completion;
 
 @end
 

@@ -1,5 +1,5 @@
 //
-// Copyright © 2019 osy. All rights reserved.
+// Copyright © 2020 osy. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,36 +14,25 @@
 // limitations under the License.
 //
 
-#import <UIKit/UIKit.h>
-#import "UTMRenderSource.h"
+#import <Foundation/Foundation.h>
+#import "UTMInputOutput.h"
+#import "CSConnectionDelegate.h"
+#import "UTMSpiceIODelegate.h"
 
-@class UTMVirtualMachine;
 @class UTMConfiguration;
 @class CSDisplayMetal;
 @class CSInput;
 
 NS_ASSUME_NONNULL_BEGIN
 
-typedef NS_ENUM(NSUInteger, UTMVMState) {
-    kVMStopped,
-    kVMSuspended,
-    kVMError,
-    kVMStarting,
-    kVMStarted,
-    kVMPausing,
-    kVMPaused,
-    kVMResuming,
-    kVMStopping
-};
+@interface UTMSpiceIO : NSObject<UTMInputOutput, CSConnectionDelegate>
 
-@protocol UTMVirtualMachineDelegate <NSObject>
+@property (nonatomic, readonly, nonnull) UTMConfiguration* configuration;
+@property (nonatomic, readonly, nullable) CSDisplayMetal *primaryDisplay;
+@property (nonatomic, readonly, nullable) CSInput *primaryInput;
+@property (nonatomic, weak, nullable) id<UTMSpiceIODelegate> delegate;
 
-@property (nonatomic, nullable, copy) NSString *vmMessage;
-@property (nonatomic, weak) UTMConfiguration *vmConfiguration;
-@property (nonatomic, assign) BOOL toolbarVisible;
-@property (nonatomic, assign) BOOL keyboardVisible;
-
-- (void)virtualMachine:(UTMVirtualMachine *)vm transitionToState:(UTMVMState)state;
+- (id)initWithConfiguration: (UTMConfiguration*) configuration;
 
 @end
 

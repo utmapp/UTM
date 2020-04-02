@@ -20,10 +20,11 @@
 #import "UTMQemuImg.h"
 #import "UTMQemuManager.h"
 #import "UTMQemuSystem.h"
+#import "UTMTerminalIO.h"
+#import "UTMSpiceIO.h"
 #import "UTMLogging.h"
-#import "CocoaSpice.h"
 
-const int kMaxConnectionTries = 10; // qemu needs to start spice server first
+const int kQMPMaxConnectionTries = 10; // qemu needs to start spice server first
 const int64_t kStopTimeout = (int64_t)30*NSEC_PER_SEC;
 
 NSString *const kUTMErrorDomain = @"com.osy86.utm";
@@ -32,6 +33,7 @@ NSString *const kUTMBundleExtension = @"utm";
 NSString *const kUTMBundleViewFilename = @"view.plist";
 NSString *const kUTMBundleScreenshotFilename = @"screenshot.png";
 NSString *const kSuspendSnapshotName = @"suspend";
+
 
 @interface UTMVirtualMachine ()
 
@@ -42,8 +44,6 @@ NSString *const kSuspendSnapshotName = @"suspend";
 
 @implementation UTMVirtualMachine {
     UTMQemuSystem *_qemu_system;
-    CSConnection *_spice_connection;
-    CSMain *_spice;
     dispatch_semaphore_t _will_quit_sema;
     dispatch_semaphore_t _qemu_exit_sema;
     BOOL _is_busy;
@@ -57,8 +57,6 @@ NSString *const kSuspendSnapshotName = @"suspend";
 
 - (void)setDelegate:(id<UTMVirtualMachineDelegate>)delegate {
     _delegate = delegate;
-    _delegate.vmDisplay = self.primaryDisplay;
-    _delegate.vmInput = self.primaryInput;
     _delegate.vmConfiguration = self.configuration;
     [self restoreViewState];
 }
@@ -81,8 +79,6 @@ NSString *const kSuspendSnapshotName = @"suspend";
         _will_quit_sema = dispatch_semaphore_create(0);
         _qemu_exit_sema = dispatch_semaphore_create(0);
         self.logging = [UTMLogging sharedInstance];
-        _relative_input_index = -1;
-        _absolute_input_index = -1;
     }
     return self;
 }
@@ -119,15 +115,6 @@ NSString *const kSuspendSnapshotName = @"suspend";
         self.viewState = [[UTMViewState alloc] initDefaults];
     }
     return self;
-}
-
-- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context {
-    // make sure the CSDisplay properties are synced with the CSInput
-    if ([keyPath isEqualToString:@"primaryDisplay.viewportScale"]) {
-        self.primaryInput.viewportScale = self.primaryDisplay.viewportScale;
-    } else if ([keyPath isEqualToString:@"primaryDisplay.displaySize"]) {
-        self.primaryInput.displaySize = self.primaryDisplay.displaySize;
-    }
 }
 
 - (void)changeState:(UTMVMState)state {
@@ -205,35 +192,31 @@ NSString *const kSuspendSnapshotName = @"suspend";
     if (self.configuration.debugLogEnabled) {
         [self.logging logToFile:[self.path URLByAppendingPathComponent:[UTMConfiguration debugLogName]]];
     }
+    
     if (!_qemu_system) {
         _qemu_system = [[UTMQemuSystem alloc] initWithConfiguration:self.configuration imgPath:self.path];
         _qemu = [[UTMQemuManager alloc] init];
         _qemu.delegate = self;
     }
-    if (!_spice) {
-        _spice = [[CSMain alloc] init];
-    }
-    if (!_spice_connection) {
-        _spice_connection = [[CSConnection alloc] initWithHost:@"127.0.0.1" port:@"5930"];
-        _spice_connection.delegate = self;
-        _spice_connection.audioEnabled = _configuration.soundEnabled;
-    }
-    if (!_qemu_system || !_spice || !_spice_connection) {
+
+    if (!_qemu_system) {
         [self errorTriggered:NSLocalizedString(@"Internal error starting VM.", @"UTMVirtualMachine")];
         _is_busy = NO;
         return NO;
     }
-    _spice_connection.glibMainContext = _spice.glibMainContext;
-    self.delegate.vmMessage = nil;
-    self.delegate.vmDisplay = nil;
-    self.delegate.vmInput = nil;
-    _primaryDisplay = nil;
     
+    if (!_ioService) {
+        _ioService = [self inputOutputService];
+    }
+    
+    self.delegate.vmMessage = nil;
     [self changeState:kVMStarting];
     if (self.configuration.debugLogEnabled) {
-        [_spice spiceSetDebug:YES]; // only if debug logging
+        [_ioService setDebugMode:YES];
     }
-    if (![_spice spiceStart]) {
+    
+    BOOL ioStatus = [_ioService startWithError: nil];
+    if (!ioStatus) {
         [self errorTriggered:NSLocalizedString(@"Internal error starting main loop.", @"UTMVirtualMachine")];
         _is_busy = NO;
         return NO;
@@ -247,17 +230,15 @@ NSString *const kSuspendSnapshotName = @"suspend";
         }
         dispatch_semaphore_signal(self->_qemu_exit_sema);
     }];
-    int tries = kMaxConnectionTries;
-    do {
-        [NSThread sleepForTimeInterval:0.1f];
-        if ([_spice_connection connect]) {
-            break;
+    
+    [_ioService connectWithCompletion:^(BOOL success, NSError * _Nullable error) {
+        if (!success) {
+            [self errorTriggered:NSLocalizedString(@"Failed to connect to display server.", @"UTMVirtualMachine")];
+        } else {
+            [self changeState:kVMStarted];
         }
-    } while (tries-- > 0);
-    if (tries == 0) {
-        [self errorTriggered:NSLocalizedString(@"Failed to connect to display server.", @"UTMVirtualMachine")];
-    }
-    self->_qemu.retries = kMaxConnectionTries;
+    }];
+    self->_qemu.retries = kQMPMaxConnectionTries;
     [self->_qemu connect];
     _is_busy = NO;
     return YES;
@@ -282,12 +263,8 @@ NSString *const kSuspendSnapshotName = @"suspend";
     [_qemu disconnect];
     _qemu.delegate = nil;
     _qemu = nil;
-    
-    [_spice_connection disconnect];
-    _spice_connection.delegate = nil;
-    _spice_connection = nil;
-    [_spice spiceStop];
-    _spice = nil;
+    [_ioService disconnect];
+    _ioService = nil;
     
     if (dispatch_semaphore_wait(_qemu_exit_sema, dispatch_time(DISPATCH_TIME_NOW, kStopTimeout)) != 0) {
         // TODO: force shutdown
@@ -297,9 +274,6 @@ NSString *const kSuspendSnapshotName = @"suspend";
     [self changeState:kVMStopped];
     // save view settings
     [self saveViewState];
-    // deregister observers
-    [self addObserver:self forKeyPath:@"primaryDisplay.viewportScale" options:0 context:nil];
-    [self addObserver:self forKeyPath:@"primaryDisplay.displaySize" options:0 context:nil];
     // stop logging
     [self.logging endLog];
     _is_busy = NO;
@@ -469,41 +443,19 @@ NSString *const kSuspendSnapshotName = @"suspend";
     return success;
 }
 
-#pragma mark - Spice connection delegate
-
-- (void)spiceConnected:(CSConnection *)connection {
-    NSLog(@"spiceConnected");
-    NSAssert(connection == _spice_connection, @"Unknown connection");
+- (UTMDisplayType)supportedDisplayType {
+    if ([_configuration displayConsoleOnly]) {
+        return UTMDisplayTypeConsole;
+    } else {
+        return UTMDisplayTypeFullGraphic;
+    }
 }
 
-- (void)spiceDisconnected:(CSConnection *)connection {
-    NSLog(@"spiceDisconnected");
-    NSAssert(connection == _spice_connection, @"Unknown connection");
-}
-
-- (void)spiceError:(CSConnection *)connection err:(NSString *)msg {
-    NSLog(@"spiceError");
-    NSAssert(connection == _spice_connection, @"Unknown connection");
-    [self errorTriggered:msg];
-}
-
-- (void)spiceDisplayCreated:(CSConnection *)connection display:(CSDisplayMetal *)display input:(CSInput *)input {
-    NSLog(@"spiceDisplayCreated");
-    NSAssert(connection == _spice_connection, @"Unknown connection");
-    if (display.channelID == 0 && display.monitorID == 0) {
-        self.delegate.vmDisplay = display;
-        self.delegate.vmInput = input;
-        _primaryDisplay = display;
-        _primaryInput = input;
-        // register observers
-        [self addObserver:self forKeyPath:@"primaryDisplay.viewportScale" options:0 context:nil];
-        [self addObserver:self forKeyPath:@"primaryDisplay.displaySize" options:0 context:nil];
-        // update state
-        [self changeState:kVMStarted];
-        [self restoreViewState];
-        if (self.viewState.suspended) {
-            [self deleteSaveVM];
-        }
+- (id<UTMInputOutput>)inputOutputService {
+    if ([self supportedDisplayType] == UTMDisplayTypeConsole) {
+        return [[UTMTerminalIO alloc] initWithConfiguration: [_configuration copy]];
+    } else {
+        return [[UTMSpiceIO alloc] initWithConfiguration: [_configuration copy]];
     }
 }
 
@@ -577,20 +529,14 @@ NSString *const kSuspendSnapshotName = @"suspend";
 #pragma mark - View State
 
 - (void)syncViewState {
-    self.viewState.displayOriginX = self.primaryDisplay.viewportOrigin.x;
-    self.viewState.displayOriginY = self.primaryDisplay.viewportOrigin.y;
-    self.viewState.displaySizeWidth = self.primaryDisplay.displaySize.width;
-    self.viewState.displaySizeHeight = self.primaryDisplay.displaySize.height;
-    self.viewState.displayScale = self.primaryDisplay.viewportScale;
+    [self.ioService syncViewState:self.viewState];
     self.viewState.showToolbar = self.delegate.toolbarVisible;
     self.viewState.showKeyboard = self.delegate.keyboardVisible;
 }
 
 - (void)restoreViewState {
     dispatch_async(dispatch_get_main_queue(), ^{
-        self.primaryDisplay.viewportOrigin = CGPointMake(self.viewState.displayOriginX, self.viewState.displayOriginY);
-        self.primaryDisplay.displaySize = CGSizeMake(self.viewState.displaySizeWidth, self.viewState.displaySizeHeight);
-        self.primaryDisplay.viewportScale = self.viewState.displayScale;
+        [self.ioService restoreViewState:self.viewState];
         self.delegate.toolbarVisible = self.viewState.showToolbar;
         self.delegate.keyboardVisible = self.viewState.showKeyboard;
     });
@@ -621,7 +567,7 @@ NSString *const kSuspendSnapshotName = @"suspend";
 }
 
 - (void)saveScreenshot {
-    _screenshot = self.primaryDisplay.screenshot;
+    _screenshot = [self.ioService screenshot];
     NSURL *url = [self.path URLByAppendingPathComponent:kUTMBundleScreenshotFilename];
     if (_screenshot) {
         [UIImagePNGRepresentation(_screenshot) writeToURL:url atomically:NO];
@@ -635,15 +581,8 @@ NSString *const kSuspendSnapshotName = @"suspend";
 
 #pragma mark - Input device switching
 
-- (void)requestInputTablet:(BOOL)tablet {
+- (void)requestInputTablet:(BOOL)tablet completion:(void (^)(NSString * _Nullable, NSError * _Nullable))completion {
     int64_t *p_index = tablet ? &_absolute_input_index : &_relative_input_index;
-    id completion = ^(NSString *res, NSError *err) {
-        if (err) {
-            NSLog(@"input select returned error: %@", err);
-        } else {
-            [self.primaryInput requestMouseMode:!tablet];
-        }
-    };
     if (*p_index < 0) {
         [_qemu mouseIndexForAbsolute:tablet withCompletion:^(int64_t index, NSError *err) {
             if (err) {

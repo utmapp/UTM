@@ -19,6 +19,7 @@
 #import "VMCursor.h"
 #import "CSDisplayMetal.h"
 #import "UTMConfiguration.h"
+#import "UTMSpiceIO.h"
 #import "UTMVirtualMachine.h"
 
 @implementation VMDisplayMetalViewController (Gestures)
@@ -480,7 +481,13 @@ static CGFloat CGPointToPixel(CGFloat point) {
     self.vmInput.inhibitCursor = shouldHideCursor;
     if (shouldUseServerMouse != self.vmInput.serverModeCursor) {
         NSLog(@"Switching mouse mode to server:%d for type:%ld", shouldUseServerMouse, type);
-        [self.vm requestInputTablet:!shouldUseServerMouse];
+        [self.vm requestInputTablet:!shouldUseServerMouse completion:^(NSString *res, NSError *err) {
+            if (err) {
+                NSLog(@"input select returned error: %@", err);
+            } else {
+                [self.spiceIO.primaryInput requestMouseMode:shouldUseServerMouse];
+            }
+        }];
         return YES;
     }
     return NO;

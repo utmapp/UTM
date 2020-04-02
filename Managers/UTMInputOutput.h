@@ -1,5 +1,5 @@
 //
-// Copyright © 2019 osy. All rights reserved.
+// Copyright © 2020 osy. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,20 +14,22 @@
 // limitations under the License.
 //
 
-#import <UIKit/UIKit.h>
-#import "VMKeyboardViewDelegate.h"
+#import <Foundation/Foundation.h>
 
-extern const int kLargeAccessoryViewHeight;
-extern const int kSmallAccessoryViewHeight;
-extern const int kSafeAreaHeight;
+@class UIImage;
+@class UTMViewState;
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface VMKeyboardView : UIView <UITextInputTraits, UIKeyInput>
+@protocol UTMInputOutput <NSObject>
 
-@property (nonatomic, weak) IBOutlet id<VMKeyboardViewDelegate> delegate;
-@property (nonatomic, readwrite, strong) IBOutlet UIView *inputAccessoryView;
-@property (nonatomic, assign) BOOL softKeyboardVisible;
+- (BOOL)startWithError:(NSError **)err;
+- (void)connectWithCompletion: (void(^)(BOOL, NSError* _Nullable)) block;
+- (void)disconnect;
+- (void)setDebugMode: (BOOL)debugMode;
+- (UIImage* _Nullable)screenshot;
+- (void)syncViewState:(UTMViewState *)viewState;
+- (void)restoreViewState:(UTMViewState *)viewState;
 
 @end
 

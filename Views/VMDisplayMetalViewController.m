@@ -22,10 +22,15 @@
 #import "VMKeyboardView.h"
 #import "UTMQemuManager.h"
 #import "VMConfigExistingViewController.h"
+#import "VMKeyboardButton.h"
+#import "UIViewController+Extensions.h"
 #import "UTMConfiguration.h"
 #import "CSDisplayMetal.h"
+#import "UTMSpiceIO.h"
 
 @interface VMDisplayMetalViewController ()
+
+@property (nonatomic, readwrite, weak) UTMSpiceIO *spiceIO;
 
 @end
 
@@ -44,9 +49,9 @@
 }
 
 @synthesize vmMessage;
+@synthesize vmConfiguration;
 @synthesize vmDisplay;
 @synthesize vmInput;
-@synthesize vmConfiguration;
 
 - (BOOL)prefersStatusBarHidden {
     return _prefersStatusBarHidden;
@@ -127,6 +132,10 @@
     [super viewDidAppear:animated];
     if (self.vm.state == kVMStopped || self.vm.state == kVMSuspended) {
         [self.vm startVM];
+        NSAssert([[self.vm ioService] isKindOfClass: [UTMSpiceIO class]], @"VM ioService must be UTMSpiceIO, but is: %@!", NSStringFromClass([[self.vm ioService] class]));
+        UTMSpiceIO* spiceIO = (UTMSpiceIO*) [self.vm ioService];
+        self.spiceIO = spiceIO;
+        self.spiceIO.delegate = self;
     }
 }
 
@@ -370,23 +379,6 @@
         controller.configuration = self.vmConfiguration;
         controller.nameReadOnly = YES;
     }
-}
-
-#pragma mark - Alerts
-
-- (void)showAlert:(NSString *)msg actions:(nullable NSArray<UIAlertAction *> *)actions completion:(nullable void (^)(UIAlertAction *action))completion {
-    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"" message:msg preferredStyle:UIAlertControllerStyleAlert];
-    if (!actions) {
-        UIAlertAction *okay = [UIAlertAction actionWithTitle:NSLocalizedString(@"OK", @"VMDisplayMetalViewController") style:UIAlertActionStyleDefault handler:completion];
-        [alert addAction:okay];
-    } else {
-        for (UIAlertAction *action in actions) {
-            [alert addAction:action];
-        }
-    }
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self presentViewController:alert animated:YES completion:nil];
-    });
 }
 
 #pragma mark - Notification Handling

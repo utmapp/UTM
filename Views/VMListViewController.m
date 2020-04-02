@@ -20,7 +20,7 @@
 #import "UTMConfiguration.h"
 #import "UTMVirtualMachine.h"
 #import "VMDisplayMetalViewController.h"
-#import "CSDisplayMetal.h"
+#import "VMTerminalViewController.h"
 
 @interface VMListViewController ()
 
@@ -209,19 +209,19 @@
         NSAssert([navController.topViewController conformsToProtocol:@protocol(UTMConfigurationDelegate)], @"Invalid segue destination");
         id<UTMConfigurationDelegate> controller = (id<UTMConfigurationDelegate>)navController.topViewController;
         controller.configuration = [[UTMConfiguration alloc] initDefaults:[self createNewDefaultName]];
-    } else if ([segue.identifier hasPrefix:@"startVM"]) {
+    } else if ([segue.identifier isEqualToString:@"startVM"]) {
         NSAssert([segue.destinationViewController isKindOfClass:[VMDisplayMetalViewController class]], @"Destination not a metal view");
-        id cell;
-        if ([segue.identifier isEqualToString:@"startVMFromButton"]) {
-            cell = ((UIButton *)sender).superview.superview.superview.superview.superview.superview;
-        } else if ([segue.identifier isEqualToString:@"startVMFromScreen"]) {
-            cell = ((UIButton *)sender).superview.superview;
-        }
         VMDisplayMetalViewController *metalView = (VMDisplayMetalViewController *)segue.destinationViewController;
-        UTMVirtualMachine *vm = [self vmForCell:cell];
+        UTMVirtualMachine *vm = (UTMVirtualMachine*) sender;
         metalView.vm = vm;
         vm.delegate = metalView;
         [metalView virtualMachine:vm transitionToState:vm.state];
+    } else if ([[segue identifier] isEqualToString:@"startVMConsole"]) {
+        NSAssert([segue.destinationViewController isKindOfClass:[VMTerminalViewController class]], @"Destination not a terminal view");
+        VMTerminalViewController *terminalView = (VMTerminalViewController *)segue.destinationViewController;
+        UTMVirtualMachine *vm = (UTMVirtualMachine*) sender;
+        terminalView.vm = vm;
+        vm.delegate = terminalView;
     }
 }
 
@@ -339,6 +339,26 @@
         [vm saveUTMWithError:&err];
         [self workCompletedWhenVisible:err.localizedDescription];
     });
+}
+
+- (IBAction)startVmFromButton:(UIButton *)sender {
+    UICollectionViewCell* cell = (UICollectionViewCell*) sender.superview.superview.superview.superview.superview.superview;
+    UTMVirtualMachine* vm = [self vmForCell: cell];
+    if (vm.supportedDisplayType == UTMDisplayTypeFullGraphic) {
+        [self performSegueWithIdentifier:@"startVM" sender:vm];
+    } else if (vm.supportedDisplayType == UTMDisplayTypeConsole) {
+        [self performSegueWithIdentifier: @"startVMConsole" sender:vm];
+    }
+}
+
+- (IBAction)startVmFromScreen:(UIButton *)sender {
+    UICollectionViewCell* cell = (UICollectionViewCell*) sender.superview.superview;
+    UTMVirtualMachine* vm = [self vmForCell: cell];
+    if (vm.supportedDisplayType == UTMDisplayTypeFullGraphic) {
+        [self performSegueWithIdentifier:@"startVM" sender:vm];
+    } else if (vm.supportedDisplayType == UTMDisplayTypeConsole) {
+        [self performSegueWithIdentifier: @"startVMConsole" sender:vm];
+    }
 }
 
 - (IBAction)exitUTM:(UIBarButtonItem *)sender {
