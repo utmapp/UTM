@@ -28,6 +28,86 @@
     return self;
 }
 
+- (void)architectureSpecificConfiguration {
+    if ([self.configuration.systemArchitecture isEqualToString:@"x86_64"] ||
+        [self.configuration.systemArchitecture isEqualToString:@"i386"]) {
+        [self pushArgv:@"-vga"];
+        [self pushArgv:@"qxl"];
+    }
+}
+
+- (void)targetSpecificConfiguration {
+    if ([self.configuration.systemTarget hasPrefix:@"virt"]) {
+        if ([self.configuration.systemArchitecture isEqualToString:@"aarch64"]) {
+            [self pushArgv:@"-cpu"];
+            [self pushArgv:@"cortex-a72"];
+        }
+        // this is required for virt devices
+        [self pushArgv:@"-device"];
+        [self pushArgv:@"virtio-gpu-pci"];
+        [self pushArgv:@"-device"];
+        [self pushArgv:@"usb-ehci"];
+        [self pushArgv:@"-device"];
+        [self pushArgv:@"usb-mouse"];
+        [self pushArgv:@"-device"];
+        [self pushArgv:@"usb-kbd"];
+        for (NSUInteger i = 0; i < self.configuration.countDrives; i++) {
+            UTMDiskImageType type = [self.configuration driveImageTypeForIndex:i];
+            if (type == UTMDiskImageTypeDisk || type == UTMDiskImageTypeCD) {
+                [self pushArgv:@"-device"];
+                [self pushArgv:[NSString stringWithFormat:@"virtio-blk,drive=drive%lu", i]];
+            }
+        }
+    }
+}
+
+- (void)argsForDrives {
+    for (NSUInteger i = 0; i < self.configuration.countDrives; i++) {
+        NSString *path = [self.configuration driveImagePathForIndex:i];
+        UTMDiskImageType type = [self.configuration driveImageTypeForIndex:i];
+        NSURL *fullPathURL;
+        
+        if ([path characterAtIndex:0] == '/') {
+            fullPathURL = [NSURL fileURLWithPath:path isDirectory:NO];
+        } else {
+            fullPathURL = [[self.imgPath URLByAppendingPathComponent:[UTMConfiguration diskImagesDirectory]] URLByAppendingPathComponent:[self.configuration driveImagePathForIndex:i]];
+        }
+        
+        switch (type) {
+            case UTMDiskImageTypeDisk:
+            case UTMDiskImageTypeCD: {
+                [self pushArgv:@"-drive"];
+                [self pushArgv:[NSString stringWithFormat:@"file=%@,if=%@,media=%@,id=drive%lu", fullPathURL.path, [self.configuration driveInterfaceTypeForIndex:i], type == UTMDiskImageTypeCD ? @"cdrom" : @"disk", i]];
+                break;
+            }
+            case UTMDiskImageTypeBIOS: {
+                [self pushArgv:@"-bios"];
+                [self pushArgv:fullPathURL.path];
+                break;
+            }
+            case UTMDiskImageTypeKernel: {
+                [self pushArgv:@"-kernel"];
+                [self pushArgv:fullPathURL.path];
+                break;
+            }
+            case UTMDiskImageTypeInitrd: {
+                [self pushArgv:@"-initrd"];
+                [self pushArgv:fullPathURL.path];
+                break;
+            }
+            case UTMDiskImageTypeDTB: {
+                [self pushArgv:@"-dtb"];
+                [self pushArgv:fullPathURL.path];
+                break;
+            }
+            default: {
+                NSLog(@"WARNING: unknown image type %lu, ignoring image %@", type, fullPathURL);
+                break;
+            }
+        }
+    }
+}
+
 - (void)argsFromConfiguration {
     [self clearArgv];
     [self pushArgv:@"qemu"];
@@ -47,11 +127,8 @@
         [self pushArgv:@"-tb-size"];
         [self pushArgv:[self.configuration.systemJitCacheSize stringValue]];
     }
-    if ([self.configuration.systemArchitecture isEqualToString:@"x86_64"] ||
-        [self.configuration.systemArchitecture isEqualToString:@"i386"]) {
-        [self pushArgv:@"-vga"];
-        [self pushArgv:@"qxl"];
-    }
+    [self architectureSpecificConfiguration];
+    [self targetSpecificConfiguration];
     if (![self.configuration.systemBootDevice isEqualToString:@"hdd"]) {
         [self pushArgv:@"-boot"];
         if ([self.configuration.systemBootDevice isEqualToString:@"floppy"]) {
@@ -64,22 +141,11 @@
     [self pushArgv:[self.configuration.systemMemory stringValue]];
     if (self.configuration.soundEnabled) {
         [self pushArgv:@"-soundhw"];
-        [self pushArgv:@"ac97"];
+        [self pushArgv:self.configuration.soundCard];
     }
     [self pushArgv:@"-name"];
     [self pushArgv:self.configuration.name];
-    for (NSUInteger i = 0; i < self.configuration.countDrives; i++) {
-        NSString *path = [self.configuration driveImagePathForIndex:i];
-        NSURL *fullPathURL;
-        
-        if ([path characterAtIndex:0] == '/') {
-            fullPathURL = [NSURL fileURLWithPath:path isDirectory:NO];
-        } else {
-            fullPathURL = [[self.imgPath URLByAppendingPathComponent:[UTMConfiguration diskImagesDirectory]] URLByAppendingPathComponent:[self.configuration driveImagePathForIndex:i]];
-        }
-        [self pushArgv:@"-drive"];
-        [self pushArgv:[NSString stringWithFormat:@"file=%@,if=%@,media=%@", fullPathURL.path, [self.configuration driveInterfaceTypeForIndex:i], [self.configuration driveIsCdromForIndex:i] ? @"cdrom" : @"disk"]];
-    }
+    [self argsForDrives];
     if (self.configuration.displayConsoleOnly) {
         [self pushArgv:@"-nographic"];
         // terminal character device
@@ -108,6 +174,16 @@
             [netstr appendString:@"restrict=on"];
         }
         [self pushArgv:netstr];
+    } else {
+        [self pushArgv:@"-nic"];
+        [self pushArgv:@"none"];
+    }
+    // usb input if not legacy
+    if (!self.configuration.inputLegacy) {
+        [self pushArgv:@"-device"];
+        [self pushArgv:@"usb-ehci"];
+        [self pushArgv:@"-device"];
+        [self pushArgv:@"usb-tablet"];
     }
     if (self.snapshot) {
         [self pushArgv:@"-loadvm"];

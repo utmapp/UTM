@@ -15,6 +15,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "UTMConfiguration.h"
 #import "VMConfigViewController.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -22,18 +23,26 @@ NS_ASSUME_NONNULL_BEGIN
 @interface VMConfigDriveDetailViewController : VMConfigViewController<UIPickerViewDelegate, UIPickerViewDataSource>
 
 @property (weak, nonatomic) IBOutlet UILabel *existingPathLabel;
+
+// image type
+@property (weak, nonatomic) IBOutlet UILabel *imageTypeLabel;
+@property (weak, nonatomic) IBOutlet UITableViewCell *imageTypePickerCell;
+@property (weak, nonatomic) IBOutlet UIPickerView *imageTypePicker;
+@property (weak, nonatomic) IBOutlet UITableViewCell *imageTypeCell;
+@property (nonatomic, assign) BOOL imageTypePickerActive;
+@property (nonatomic, assign) UTMDiskImageType imageType;
+
+// drive location
 @property (weak, nonatomic) IBOutlet UILabel *driveLocationLabel;
 @property (weak, nonatomic) IBOutlet UITableViewCell *driveLocationPickerCell;
 @property (weak, nonatomic) IBOutlet UIPickerView *driveLocationPicker;
 @property (weak, nonatomic) IBOutlet UITableViewCell *driveLocationCell;
 @property (nonatomic, assign) BOOL driveLocationPickerActive;
-@property (strong, nonatomic) IBOutletCollection(UITableViewCell) NSArray *existingImageCells;
+@property (nonatomic, nullable, strong) NSString *driveInterfaceType;
+
 @property (weak, nonatomic) IBOutlet UISwitch *isCdromSwitch;
 @property (nonatomic, assign) NSUInteger driveIndex;
-@property (nonatomic, nullable, strong) NSString *driveInterfaceType;
 @property (nonatomic, assign) BOOL valid;
-
-- (IBAction)isCdromSwitchChanged:(UISwitch *)sender;
 
 @end
 

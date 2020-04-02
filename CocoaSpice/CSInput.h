@@ -50,6 +50,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) BOOL disableInputs;
 @property (nonatomic, readonly) CGSize cursorSize;
 @property (nonatomic, assign) CGSize displaySize;
+@property (nonatomic, assign) BOOL inhibitCursor;
 
 - (void)sendKey:(SendKeyType)type code:(int)scancode;
 - (void)sendPause:(SendKeyType)type;
@@ -59,6 +60,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)sendMouseScroll:(SendScrollType)type button:(SendButtonType)button dy:(CGFloat)dy;
 - (void)sendMouseButton:(SendButtonType)button pressed:(BOOL)pressed point:(CGPoint)point;
 - (void)requestMouseMode:(BOOL)server;
+- (void)forceCursorPosition:(CGPoint)pos;
 
 - (id)initWithSession:(nonnull SpiceSession *)session channelID:(NSInteger)channelID monitorID:(NSInteger)monitorID;
 

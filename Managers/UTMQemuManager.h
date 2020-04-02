@@ -39,6 +39,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)vmSaveWithCompletion:(void (^ _Nullable)(NSString * _Nullable, NSError * _Nullable))completion snapshotName:(NSString *)name;
 - (void)vmDeleteSaveWithCompletion:(void (^)(NSString * _Nullable, NSError * _Nullable))completion snapshotName:(NSString *)name;
 
+- (void)mouseIndexForAbsolute:(BOOL)absolute withCompletion:(void (^)(int64_t, NSError * _Nullable))completion;
+- (void)mouseSelect:(int64_t)index withCompletion:(void (^)(NSString * _Nullable, NSError * _Nullable))completion;
+
 @end
 
 NS_ASSUME_NONNULL_END

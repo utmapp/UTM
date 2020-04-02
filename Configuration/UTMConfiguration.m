@@ -44,6 +44,7 @@ const NSString *const kUTMConfigZoomLetterboxKey = @"ZoomLetterbox";
 
 const NSString *const kUTMConfigTouchscreenModeKey = @"TouchscreenMode";
 const NSString *const kUTMConfigDirectInputKey = @"DirectInput";
+const NSString *const kUTMConfigInputLegacyKey = @"InputLegacy";
 
 const NSString *const kUTMConfigNetworkEnabledKey = @"NetworkEnabled";
 const NSString *const kUTMConfigLocalhostOnlyKey = @"LocalhostOnly";
@@ -53,10 +54,12 @@ const NSString *const kUTMConfigDHCPStartKey = @"DHCPStart";
 const NSString *const kUTMConfigPrintEnabledKey = @"PrintEnabled";
 
 const NSString *const kUTMConfigSoundEnabledKey = @"SoundEnabled";
+const NSString *const kUTMConfigSoundCardDeviceKey = @"SoundCard";
 
 const NSString *const kUTMConfigChipboardSharingKey = @"ClipboardSharing";
 
 const NSString *const kUTMConfigImagePathKey = @"ImagePath";
+const NSString *const kUTMConfigImageTypeKey = @"ImageType";
 const NSString *const kUTMConfigInterfaceTypeKey = @"InterfaceType";
 const NSString *const kUTMConfigCdromKey = @"Cdrom";
 
@@ -116,6 +119,32 @@ const NSString *const kUTMConfigDebugLogKey = @"DebugLog";
              ];
 }
 
++ (NSArray<NSString *>*)supportedSoundCardDevices {
+     return @[
+             @"ac97",
+             @"hda",
+             @"es1370",
+             @"sb16",
+             @"cs4231a",
+             @"adlib",
+             @"gus",
+             @"pcspk"
+             ];
+}
+
++ (NSArray<NSString *>*)supportedSoundCardDevicesPretty {
+     return @[
+             @"Intel 82801AA AC97 Audio",
+             @"Intel HD Audio",
+             @"ENSONIQ AudioPCI ES1370",
+             @"Creative Sound Blaster 16",
+             @"CS4231A",
+             @"Yamaha YM3812 (OPL2)",
+             @"Gravis Ultrasound GF1",
+             @"PC speaker"
+             ];
+}
+
 + (NSArray<NSString *>*)supportedArchitectures {
     return @[
              @"alpha",
@@ -165,6 +194,28 @@ const NSString *const kUTMConfigDebugLogKey = @"DebugLog";
              @"hdd",
              @"cd",
              @"floppy"
+             ];
+}
+
++ (NSArray<NSString *>*)supportedImageTypesPretty {
+    return @[
+             NSLocalizedString(@"Disk Image", "UTMConfiguration"),
+             NSLocalizedString(@"CD/DVD Image", "UTMConfiguration"),
+             NSLocalizedString(@"BIOS", "UTMConfiguration"),
+             NSLocalizedString(@"Linux Kernel", "UTMConfiguration"),
+             NSLocalizedString(@"Linux RAM Disk", "UTMConfiguration"),
+             NSLocalizedString(@"Linux Device Tree Binary", "UTMConfiguration")
+             ];
+}
+
++ (NSArray<NSString *>*)supportedImageTypes {
+    return @[
+             @"disk",
+             @"cd",
+             @"bios",
+             @"kernel",
+             @"initrd",
+             @"dtb"
              ];
 }
 
@@ -1297,6 +1348,27 @@ const NSString *const kUTMConfigDebugLogKey = @"DebugLog";
     if (!_rootDict[kUTMConfigDebugKey]) {
         _rootDict[kUTMConfigDebugKey] = [NSMutableDictionary dictionary];
     }
+    
+    if (!_rootDict[kUTMConfigSoundKey][kUTMConfigSoundCardDeviceKey]) {
+        _rootDict[kUTMConfigSoundKey][kUTMConfigSoundCardDeviceKey] = [UTMConfiguration supportedSoundCardDevices][0];
+    }
+    // Migrate Cdrom => ImageType
+    [_rootDict[kUTMConfigDrivesKey] enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        if (!obj[kUTMConfigImageTypeKey]) {
+            if ([obj[kUTMConfigCdromKey] boolValue]) {
+                [self setDriveImageType:UTMDiskImageTypeCD forIndex:idx];
+            } else {
+                [self setDriveImageType:UTMDiskImageTypeDisk forIndex:idx];
+            }
+            [obj removeObjectForKey:kUTMConfigCdromKey];
+        }
+    }];
+    // Migrate input settings
+    [_rootDict[kUTMConfigInputKey] removeObjectForKey:kUTMConfigTouchscreenModeKey];
+    [_rootDict[kUTMConfigInputKey] removeObjectForKey:kUTMConfigDirectInputKey];
+    if (!_rootDict[kUTMConfigInputKey][kUTMConfigInputLegacyKey]) {
+        self.inputLegacy = NO;
+    }
 }
 
 #pragma mark - Initialization
@@ -1327,6 +1399,7 @@ const NSString *const kUTMConfigDebugLogKey = @"DebugLog";
         self.networkEnabled = YES;
         self.printEnabled = YES;
         self.soundEnabled = YES;
+        self.soundCard = @"ac97";
         self.sharingClipboardEnabled = YES;
         self.name = name;
         self.existingPath = nil;
@@ -1498,20 +1571,12 @@ const NSString *const kUTMConfigDebugLogKey = @"DebugLog";
     return [_rootDict[kUTMConfigDisplayKey][kUTMConfigZoomLetterboxKey] boolValue];
 }
 
-- (void)setInputTouchscreenMode:(BOOL)inputTouchscreenMode {
-    _rootDict[kUTMConfigInputKey][kUTMConfigTouchscreenModeKey] = @(inputTouchscreenMode);
+- (void)setInputLegacy:(BOOL)inputDirect {
+    _rootDict[kUTMConfigInputKey][kUTMConfigInputLegacyKey] = @(inputDirect);
 }
 
-- (BOOL)inputTouchscreenMode {
-    return [_rootDict[kUTMConfigInputKey][kUTMConfigTouchscreenModeKey] boolValue];
-}
-
-- (void)setInputDirect:(BOOL)inputDirect {
-    _rootDict[kUTMConfigInputKey][kUTMConfigDirectInputKey] = @(inputDirect);
-}
-
-- (BOOL)inputDirect {
-    return [_rootDict[kUTMConfigInputKey][kUTMConfigDirectInputKey] boolValue];
+- (BOOL)inputLegacy {
+    return [_rootDict[kUTMConfigInputKey][kUTMConfigInputLegacyKey] boolValue];
 }
 
 - (void)setNetworkEnabled:(BOOL)networkEnabled {
@@ -1562,6 +1627,14 @@ const NSString *const kUTMConfigDebugLogKey = @"DebugLog";
     return [_rootDict[kUTMConfigSoundKey][kUTMConfigSoundEnabledKey] boolValue];
 }
 
+- (void)setSoundCard:(NSString *)soundCard {
+    _rootDict[kUTMConfigSoundKey][kUTMConfigSoundCardDeviceKey] = soundCard;
+}
+
+- (NSString *)soundCard {
+    return _rootDict[kUTMConfigSoundKey][kUTMConfigSoundCardDeviceKey];
+}
+
 - (void)setSharingClipboardEnabled:(BOOL)sharingClipboardEnabled {
     _rootDict[kUTMConfigSharingKey][kUTMConfigChipboardSharingKey] = @(sharingClipboardEnabled);
 }
@@ -1582,12 +1655,13 @@ const NSString *const kUTMConfigDebugLogKey = @"DebugLog";
     return [_rootDict[kUTMConfigDrivesKey] count];
 }
 
-- (NSUInteger)newDrive:(NSString *)name interface:(NSString *)interface isCdrom:(BOOL)isCdrom {
+- (NSUInteger)newDrive:(NSString *)name type:(UTMDiskImageType)type interface:(NSString *)interface {
     NSUInteger index = [self countDrives];
+    NSString *strType = [UTMConfiguration supportedImageTypes][type];
     NSMutableDictionary *drive = [[NSMutableDictionary alloc] initWithDictionary:@{
                                                                                    kUTMConfigImagePathKey: name,
-                                                                                   kUTMConfigInterfaceTypeKey: interface,
-                                                                                   kUTMConfigCdromKey: @(isCdrom)
+                                                                                   kUTMConfigImageTypeKey: strType,
+                                                                                   kUTMConfigInterfaceTypeKey: interface
                                                                                    }];
     [_rootDict[kUTMConfigDrivesKey] addObject:drive];
     return index;
@@ -1609,12 +1683,19 @@ const NSString *const kUTMConfigDebugLogKey = @"DebugLog";
     _rootDict[kUTMConfigDrivesKey][index][kUTMConfigInterfaceTypeKey] = interfaceType;
 }
 
-- (BOOL)driveIsCdromForIndex:(NSUInteger)index {
-    return [_rootDict[kUTMConfigDrivesKey][index][kUTMConfigCdromKey] boolValue];
+- (UTMDiskImageType)driveImageTypeForIndex:(NSUInteger)index {
+    NSString *strType = _rootDict[kUTMConfigDrivesKey][index][kUTMConfigImageTypeKey];
+    NSUInteger type = [[UTMConfiguration supportedImageTypes] indexOfObject:strType];
+    if (type == NSNotFound || type >= UTMDiskImageTypeMax) {
+        return UTMDiskImageTypeDisk;
+    } else {
+        return (UTMDiskImageType)type;
+    }
 }
 
-- (void)setDriveIsCdrom:(BOOL)isCdrom forIndex:(NSUInteger)index {
-    _rootDict[kUTMConfigDrivesKey][index][kUTMConfigCdromKey] = @(isCdrom);
+- (void)setDriveImageType:(UTMDiskImageType)type forIndex:(NSUInteger)index {
+    NSString *strType = [UTMConfiguration supportedImageTypes][type];
+    _rootDict[kUTMConfigDrivesKey][index][kUTMConfigImageTypeKey] = strType;
 }
 
 - (void)moveDriveIndex:(NSUInteger)index to:(NSUInteger)newIndex {

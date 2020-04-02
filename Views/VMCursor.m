@@ -66,14 +66,14 @@
 
 - (void)startMovement:(CGPoint)startPoint {
     _start = startPoint;
-    if (_controller.touchscreen) {
+    if (!_controller.serverModeCursor) {
         _lastCenter = startPoint;
         _center = startPoint;
     }
 }
 
 - (void)updateMovement:(CGPoint)point {
-    if (!_controller.touchscreen) {
+    if (_controller.serverModeCursor) {
         // translate point to relative to last center
         CGPoint adj = CGPointMake(point.x - _start.x, point.y - _start.y);
         _start = point;

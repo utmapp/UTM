@@ -57,7 +57,10 @@
     NSAssert(cell, @"Invalid cell");
     
     cell.textLabel.text = [self.configuration driveImagePathForIndex:indexPath.row];
-    cell.detailTextLabel.text = [self.configuration driveInterfaceTypeForIndex:indexPath.row];
+    UTMDiskImageType type = [self.configuration driveImageTypeForIndex:indexPath.row];
+    NSString *typeStr = [UTMConfiguration supportedImageTypesPretty][type];
+    NSString *interface = [self.configuration driveInterfaceTypeForIndex:indexPath.row];
+    cell.detailTextLabel.text = [NSString stringWithFormat:@"%@ - %@", typeStr, interface];
     
     return cell;
 }

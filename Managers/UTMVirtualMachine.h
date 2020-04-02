@@ -61,6 +61,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)resumeVM;
 
 - (UTMDisplayType)supportedDisplayType;
+- (void)requestInputTablet:(BOOL)tablet;
 
 @end
 

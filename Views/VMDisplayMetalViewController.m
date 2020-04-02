@@ -70,10 +70,6 @@
     return self.vmInput.serverModeCursor;
 }
 
-- (BOOL)touchscreen {
-    return self.vmConfiguration.inputTouchscreenMode;
-}
-
 - (BOOL)autosaveBackground {
     return [self boolForSetting:@"AutosaveBackground"];
 }
@@ -236,6 +232,10 @@
 }
 
 #pragma mark - Toolbar actions
+
+- (UIStatusBarStyle)preferredStatusBarStyle {
+    return UIStatusBarStyleLightContent;
+}
 
 - (void)hideToolbar {
     [UIView transitionWithView:self.view duration:0.3 options:UIViewAnimationOptionTransitionCrossDissolve animations:^{

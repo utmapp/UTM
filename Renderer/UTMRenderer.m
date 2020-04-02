@@ -102,6 +102,39 @@ Implementation of renderer class which performs Metal setup and per frame render
     _viewportSize.y = size.height;
 }
 
+/// Create a translation+scale matrix
+static matrix_float4x4 matrix_scale_translate(CGFloat scale, CGPoint translate)
+{
+    matrix_float4x4 m = {
+        .columns[0] = {
+            scale,
+            0,
+            0,
+            0
+        },
+        .columns[1] = {
+            0,
+            scale,
+            0,
+            0
+        },
+        .columns[2] = {
+            0,
+            0,
+            1,
+            0
+        },
+        .columns[3] = {
+            translate.x,
+            -translate.y, // y flipped
+            0,
+            1
+        }
+        
+    };
+    return m;
+}
+
 /// Called whenever the view needs to render a frame
 - (void)drawInMTKView:(nonnull MTKView *)view
 {
@@ -133,18 +166,9 @@ Implementation of renderer class which performs Metal setup and per frame render
             dispatch_semaphore_wait(screenLock, DISPATCH_TIME_FOREVER);
             
             // Render the screen first
-            // Set the region of the drawable to which we'll draw.
-            CGSize scaled = CGSizeMake(_viewportSize.x * self.sourceScreen.viewportScale,
-                                       _viewportSize.y * self.sourceScreen.viewportScale);
-            MTLViewport viewport = {
-                self.sourceScreen.viewportOrigin.x + -scaled.width /2 + _viewportSize.x/2,
-                self.sourceScreen.viewportOrigin.y + -scaled.height/2 + _viewportSize.y/2,
-                scaled.width,
-                scaled.height,
-                -1.0,
-                1.0
-            };
-            [renderEncoder setViewport:viewport];
+            
+            matrix_float4x4 transform = matrix_scale_translate(self.sourceScreen.viewportScale,
+                                                               self.sourceScreen.viewportOrigin);
 
             [renderEncoder setRenderPipelineState:_pipelineState];
 
@@ -155,6 +179,10 @@ Implementation of renderer class which performs Metal setup and per frame render
             [renderEncoder setVertexBytes:&_viewportSize
                                    length:sizeof(_viewportSize)
                                   atIndex:UTMVertexInputIndexViewportSize];
+
+            [renderEncoder setVertexBytes:&transform
+                                   length:sizeof(transform)
+                                  atIndex:UTMVertexInputIndexTransform];
 
             [renderEncoder setVertexBytes:&hasAlpha
                                    length:sizeof(hasAlpha)
@@ -179,23 +207,20 @@ Implementation of renderer class which performs Metal setup and per frame render
             dispatch_semaphore_wait(cursorLock, DISPATCH_TIME_FOREVER);
 
             // Next render the cursor
-            CGSize scaled = CGSizeMake(_viewportSize.x * self.sourceCursor.viewportScale,
-                                       _viewportSize.y * self.sourceCursor.viewportScale);
-            MTLViewport cursorViewport = {
-                self.sourceCursor.viewportOrigin.x + self.sourceScreen.viewportOrigin.x + -scaled.width /2 + _viewportSize.x/2,
-                self.sourceCursor.viewportOrigin.y + self.sourceScreen.viewportOrigin.y + -scaled.height/2 + _viewportSize.y/2,
-                scaled.width,
-                scaled.height,
-                -1.0,
-                1.0
-            };
-            [renderEncoder setViewport:cursorViewport];
+            matrix_float4x4 transform = matrix_scale_translate(self.sourceScreen.viewportScale,
+                                                               CGPointMake(self.sourceScreen.viewportOrigin.x +
+                                                                           self.sourceCursor.viewportOrigin.x,
+                                                                           self.sourceScreen.viewportOrigin.y +
+                                                                           self.sourceCursor.viewportOrigin.y));
             [renderEncoder setVertexBuffer:self.sourceCursor.vertices
                                     offset:0
                                   atIndex:UTMVertexInputIndexVertices];
             [renderEncoder setVertexBytes:&_viewportSize
                                    length:sizeof(_viewportSize)
                                   atIndex:UTMVertexInputIndexViewportSize];
+            [renderEncoder setVertexBytes:&transform
+                                 length:sizeof(transform)
+                                atIndex:UTMVertexInputIndexTransform];
             [renderEncoder setVertexBytes:&hasAlpha
                                  length:sizeof(hasAlpha)
                                 atIndex:UTMVertexInputIndexHasAlpha];

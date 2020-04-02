@@ -16,6 +16,16 @@
 
 #import <Foundation/Foundation.h>
 
+typedef NS_ENUM(NSUInteger, UTMDiskImageType) {
+    UTMDiskImageTypeDisk,
+    UTMDiskImageTypeCD,
+    UTMDiskImageTypeBIOS,
+    UTMDiskImageTypeKernel,
+    UTMDiskImageTypeInitrd,
+    UTMDiskImageTypeDTB,
+    UTMDiskImageTypeMax
+};
+
 NS_ASSUME_NONNULL_BEGIN
 
 @interface UTMConfiguration : NSObject<NSCopying>
@@ -26,6 +36,10 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSArray<NSString *>*)supportedArchitectures;
 + (NSArray<NSString *>*)supportedBootDevicesPretty;
 + (NSArray<NSString *>*)supportedBootDevices;
++ (NSArray<NSString *>*)supportedImageTypesPretty;
++ (NSArray<NSString *>*)supportedImageTypes;
++ (NSArray<NSString *>*)supportedSoundCardDevices;
++ (NSArray<NSString *>*)supportedSoundCardDevicesPretty;
 + (NSArray<NSString *>*)supportedTargetsForArchitecture:(NSString *)architecture;
 + (NSArray<NSString *>*)supportedTargetsForArchitecturePretty:(NSString *)architecture;
 + (NSInteger)defaultTargetIndexForArchitecture:(NSString *)architecture;
@@ -53,8 +67,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) BOOL displayZoomScale;
 @property (nonatomic, assign) BOOL displayZoomLetterBox;
 
-@property (nonatomic, assign) BOOL inputTouchscreenMode;
-@property (nonatomic, assign) BOOL inputDirect;
+@property (nonatomic, assign) BOOL inputLegacy;
 
 @property (nonatomic, assign) BOOL networkEnabled;
 @property (nonatomic, assign) BOOL networkLocalhostOnly;
@@ -64,6 +77,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) BOOL printEnabled;
 
 @property (nonatomic, assign) BOOL soundEnabled;
+@property (nonatomic, nullable, copy) NSString *soundCard;
 
 @property (nonatomic, assign) BOOL sharingClipboardEnabled;
 
@@ -82,13 +96,13 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSArray *)systemArguments;
 
 - (NSUInteger)countDrives;
-- (NSUInteger)newDrive:(NSString *)name interface:(NSString *)interface isCdrom:(BOOL)isCdrom;
+- (NSUInteger)newDrive:(NSString *)name type:(UTMDiskImageType)type interface:(NSString *)interface;
 - (nullable NSString *)driveImagePathForIndex:(NSUInteger)index;
 - (void)setImagePath:(NSString *)path forIndex:(NSUInteger)index;
 - (nullable NSString *)driveInterfaceTypeForIndex:(NSUInteger)index;
 - (void)setDriveInterfaceType:(NSString *)interfaceType forIndex:(NSUInteger)index;
-- (BOOL)driveIsCdromForIndex:(NSUInteger)index;
-- (void)setDriveIsCdrom:(BOOL)isCdrom forIndex:(NSUInteger)index;
+- (UTMDiskImageType)driveImageTypeForIndex:(NSUInteger)index;
+- (void)setDriveImageType:(UTMDiskImageType)type forIndex:(NSUInteger)index;
 - (void)moveDriveIndex:(NSUInteger)index to:(NSUInteger)newIndex;
 - (void)removeDriveAtIndex:(NSUInteger)index;
 - (NSURL*)terminalInputOutputURL;
