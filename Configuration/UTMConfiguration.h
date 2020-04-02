@@ -48,7 +48,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSString *)diskImagesDirectory;
 + (NSString *)defaultDriveInterface;
 + (NSString *)debugLogName;
-+ (NSDictionary *) gamePadToScancodeMap;
++ (NSDictionary *) stringToScancodeMap;
 
 @property (nonatomic, nullable, copy) NSString *name;
 @property (nonatomic, nullable, copy) NSURL *existingPath;

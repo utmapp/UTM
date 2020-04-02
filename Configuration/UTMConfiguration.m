@@ -1329,7 +1329,7 @@ const NSString *const kUTMConfigDebugLogKey = @"DebugLog";
     return @"debug.log";
 }
 
-+ (NSDictionary *) gamePadToScancodeMap {
++ (NSDictionary *) stringToScancodeMap {
     return  @{
            @"Ctrl":@29,
            @"Command/Windows":@57435,
@@ -1340,8 +1340,8 @@ const NSString *const kUTMConfigDebugLogKey = @"DebugLog";
            @"Enter":@28,
            @"Backspace":@14,
            @"Esc":@1,
-           @"Caps":@-1,
-           @"`":@-1,
+           @"Caps":@58,
+           @"`":@41,
            @"1":@2,
            @"2":@3,
            @"3":@4,
@@ -1362,12 +1362,12 @@ const NSString *const kUTMConfigDebugLogKey = @"DebugLog";
            @",":@51,
            @".":@52,
            @"/":@53,
-           @"Ins":@-1,
-           @"Home":@-1,
-           @"PgUp":@-1,
-           @"PgDn":@-1,
-           @"Del":@-1,
-           @"End":@-1,
+           @"Ins":@57426,
+           @"Home":@57415,
+           @"PgUp":@57417,
+           @"PgDn":@57425,
+           @"Del":@57427,
+           @"End":@57423,
            @"Up":@57416,
            @"Left":@57419,
            @"Down":@57424,

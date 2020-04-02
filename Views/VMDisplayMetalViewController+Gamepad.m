@@ -18,6 +18,7 @@
 #import "CSDisplayMetal.h"
 #import "UTMConfiguration.h"
 
+
 @implementation VMDisplayMetalViewController(Gamepad)
 
 
@@ -63,16 +64,24 @@
     profile.valueChangedHandler = ^(GCExtendedGamepad *gamepad, GCControllerElement *element)
     {
         VMDisplayMetalViewController *wkself = weakSelf;
-        NSString *message = @"";
         
         // left trigger
-        if (gamepad.leftTrigger == element && gamepad.leftTrigger.isPressed) {
-            message = @"Left Trigger";
+        if (gamepad.leftTrigger == element) {
+            //            gamepad.leftTrigger.isPressed
+            if (gamepad.leftTrigger.isPressed != wkself->_leftTriggerPressed) {
+                [wkself keyboardAndMouseSender:@"leftTrigger" withKeyStatus:gamepad.leftTrigger.isPressed];
+                wkself->_leftTriggerPressed = gamepad.leftTrigger.isPressed;
+                return;
+            }
         }
         
         // right trigger
-        if (gamepad.rightTrigger == element && gamepad.rightTrigger.isPressed) {
-            message = @"Right Trigger";
+        if (gamepad.rightTrigger == element) {
+            if (gamepad.rightTrigger.isPressed != wkself->_rightTriggerPressed) {
+                [wkself keyboardAndMouseSender:@"rightTrigger" withKeyStatus:gamepad.rightTrigger.isPressed];
+                wkself->_rightTriggerPressed = gamepad.rightTrigger.isPressed;
+                return;
+            }
         }
         
         // left shoulder button
@@ -154,7 +163,8 @@
         
         // left stick
         if (gamepad.leftThumbstick == element) {
-            
+            //            NSLog(@"xValue: %f, yValue: %f", gamepad.leftThumbstick.xAxis.value, gamepad.leftThumbstick.yAxis.value);
+            wkself->_scrollingDirection = CGPointMake(gamepad.leftThumbstick.xAxis.value, -gamepad.leftThumbstick.yAxis.value);
         }
         
         // right stick
@@ -162,10 +172,16 @@
             NSInteger speed = [wkself integerForSetting:@"rightThumbstickSpeed"];
             wkself->_cursorDirection = CGPointMake(gamepad.rightThumbstick.xAxis.value * speed, -gamepad.rightThumbstick.yAxis.value * speed);
         }
+        
+        if (@available(iOS 13.0, *)) {
+            if (gamepad.buttonMenu == element) {
+                [wkself keyboardAndMouseSender:@"buttonMenu" withKeyStatus:gamepad.buttonMenu.isPressed];
+                wkself->_buttonMenuPressed = gamepad.buttonMenu.isPressed;
+            }
+        }
     };
     
     _controller.controllerPausedHandler = ^(GCController *controller){
-        NSLog(@"GP message: Paused");
     };
     
     if (!_mouseMovementTimer) {
@@ -188,8 +204,13 @@
         [self.vmInput sendMouseButton:SEND_BUTTON_RIGHT pressed:self -> _rightMouseButtonDown point:CGPointZero];
         return;
     }
-      
-    NSNumber *code = [UTMConfiguration gamePadToScancodeMap][value];
+    if ([value isEqualToString:@"Mouse Middle Button"]) {
+        self -> _middleMouseButtonDown = isPressed;
+        [self.vmInput sendMouseButton:SEND_BUTTON_MIDDLE pressed:self -> _middleMouseButtonDown point:CGPointZero];
+        return;
+    }
+    
+    NSNumber *code = [UTMConfiguration stringToScancodeMap][value];
     int scancode = [code intValue];
     if (scancode < 0) {
         return;
@@ -200,10 +221,22 @@
 #pragma mark - Gamepad opperations
 
 - (void) cursorMovementThread {
-    if (self->_cursorDirection.x == 0 && self->_cursorDirection.y == 0) {
-        return;
+    
+    SendButtonType button = SEND_BUTTON_NONE;
+    if (self->_leftMouseButtonDown) {
+        button = SEND_BUTTON_LEFT;
+    } else if (self -> _rightMouseButtonDown) {
+        button = SEND_BUTTON_RIGHT;
+    } else if (self -> _middleMouseButtonDown) {
+        button = SEND_BUTTON_MIDDLE;
     }
-    [self.vmInput sendMouseMotion:self->_leftMouseButtonDown point:self->_cursorDirection];
+    if (self->_cursorDirection.x != 0 || self->_cursorDirection.y != 0) {
+        [self.vmInput sendMouseMotion:button point:self->_cursorDirection];
+    }
+    if (self->_scrollingDirection.y != 0) {
+        [self.vmInput sendMouseScroll:SEND_SCROLL_SMOOTH button:button dy:self->_scrollingDirection.y];
+    }
+    
 }
 
 #pragma mark - Map for keycode

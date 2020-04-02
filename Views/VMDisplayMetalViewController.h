@@ -51,9 +51,13 @@ NS_ASSUME_NONNULL_BEGIN
     //Gamepad
     GCController *_controller;
     CGPoint _cursorDirection;
+    CGPoint _scrollingDirection;
     NSTimer *_mouseMovementTimer;
     BOOL _leftMouseButtonDown;
     BOOL _rightMouseButtonDown;
+    BOOL _middleMouseButtonDown;
+    BOOL _buttonMenuPressed;
+    BOOL _optionButtonPressed;
     BOOL _dpadUpPressed;
     BOOL _dpadDownPressed;
     BOOL _dpadLeftPressed;
@@ -64,6 +68,8 @@ NS_ASSUME_NONNULL_BEGIN
     BOOL _buttonYPressed;
     BOOL _leftShoulderPressed;
     BOOL _rightShoulderPressed;
+    BOOL _leftTriggerPressed;
+    BOOL _rightTriggerPressed;
     // Feedback generators
     UISelectionFeedbackGenerator *_clickFeedbackGenerator;
     UIImpactFeedbackGenerator *_resizeFeedbackGenerator;
