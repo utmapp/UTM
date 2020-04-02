@@ -78,6 +78,8 @@ NSString *const kSuspendSnapshotName = @"suspend";
     if (self) {
         _will_quit_sema = dispatch_semaphore_create(0);
         _qemu_exit_sema = dispatch_semaphore_create(0);
+        _relative_input_index = -1;
+        _absolute_input_index = -1;
         self.logging = [UTMLogging sharedInstance];
     }
     return self;
