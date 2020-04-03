@@ -18,6 +18,7 @@
 #import "UTMVirtualMachineDelegate.h"
 #import "UTMSpiceIODelegate.h"
 #import "CSInput.h"
+@import GameController;
 
 @class UTMSpiceIO;
 @class UTMVirtualMachine;
@@ -49,6 +50,28 @@ NS_ASSUME_NONNULL_BEGIN
     UILongPressGestureRecognizer *_longPress;
     UIPinchGestureRecognizer *_pinch;
     
+    //Gamepad
+    GCController *_controller;
+    CGPoint _cursorDirection;
+    CGPoint _scrollingDirection;
+    NSTimer *_mouseMovementTimer;
+    BOOL _leftMouseButtonDown;
+    BOOL _rightMouseButtonDown;
+    BOOL _middleMouseButtonDown;
+    BOOL _buttonMenuPressed;
+    BOOL _optionButtonPressed;
+    BOOL _dpadUpPressed;
+    BOOL _dpadDownPressed;
+    BOOL _dpadLeftPressed;
+    BOOL _dpadRightPressed;
+    BOOL _buttonAPressed;
+    BOOL _buttonBPressed;
+    BOOL _buttonXPressed;
+    BOOL _buttonYPressed;
+    BOOL _leftShoulderPressed;
+    BOOL _rightShoulderPressed;
+    BOOL _leftTriggerPressed;
+    BOOL _rightTriggerPressed;
     // Feedback generators
     UISelectionFeedbackGenerator *_clickFeedbackGenerator;
     UIImpactFeedbackGenerator *_resizeFeedbackGenerator;

@@ -1,56 +1,178 @@
-/* 
-  Localizable.strings
-  UTM
+/* VMConfigDriveCreateViewController */
+"A file already exists for this name, if you proceed, it will be replaced." = "此名称的文件已存在，如果继续，它将被替换。";
 
-  Created by John on 2020/3/8.
-  Copyright © 2020 osy. All rights reserved.
-*/
+/* VMDisplayMetalViewController */
+"An internal error has occured. UTM will terminate." = "发生内部错误。 UTM即将退出。";
 
-// Operation
-
-"OK" = "好";
-"Yes" = "是的";
-"No" = "不";
-"Delete" = "删除";
-"Cancel" = "取消";
-"Import" = "导入";
-"Create" = "创建";
-"Delete" = "删除";
-"Clone" = "复制";
-"No more alert" = "不要再弹了";
-//Label
-"Name" = "名字";
-// Device
-"Hard Disk" = "硬盘";
-"CD/DVD" = "CD/DVD";
-"Floppy" = "软盘";
-// Message
-"Disk creation failed." = "磁盘镜像创建失败";
-"A file already exists for this name, if you proceed, it; will be replaced." = "此名称的文件已存在，如果继续，它将被替换。";
-"Invalid size" = "无效大小";
-"Invalid name" = "无效名称";
-"Creating disk..." = "磁盘创建中...";
-"Cannot create directory for disk image." = "无法在路径中创建磁盘镜像";
-"Error renaming file" = "重命名失败";
-"Are you sure you want to permanently delete this disk image?" = "您确定要永久删除该磁盘镜像吗？";
-"Would you like to import an existing disk image or create a new one?" = "您是想导入一个磁盘镜像还是创建新的空白磁盘镜像？";
-"Error parsing JSON." = "解析JSON时出错";
-"Internal error has occurred." = "发生内部错误";
-"QEMU exited from an error." = "虚拟机发生错误意外退出";
-"Running qemu-img more than once is unimplemented. Restart the app to create another disk." = "同时运行多个虚拟机的功能还未完成，请点左上角X重新启动UTM后再试。";
-"Are you sure you want to stop this VM and exit? Any unsaved changes will be lost." = "您确定要强制关闭虚拟机吗？所有未保存的更改都会丢失。";
-"Hint: To show the toolbar again, use a three-finger swipe down on the screen." = "提示：要再次显示工具栏，请使用三指在屏幕上向下滑动。";
-"Running low on memory! UTM might soon be killed by iOS. You can prevent this by decreasing the amount of memory and/or JIT cache assigned to this VM" = "内存不足！ UTM可能很快会被iOS强制终止 您可以通过减少分配给该虚拟机的内存或JIT缓存来防止这种情况。";
-"Welcome to UTM! Due to a bug in iOS, if you force kill this app, the system will be unstable and you cannot launch UTM again until you reboot. The recommended way to terminate this app is the button on the top left." = "欢迎使用UTM！由于iOS中的一个Bug，如果您强制关闭UTM，系统将变得不稳定，并且您必须重新启动您的设备才能再次使用UTM建议点击左上方的按钮来退出UTM。";
-"New VM name" = "输入新的虚拟机的名字";
-"Saving %@..." = "正在保存 %@...";
-"Deleting %@..." = "正在删除 %@...";
+/* Delete confirmation */
 "Are you sure you want to delete this VM? Any drives associated will also be deleted." = "您确定要删除此虚拟机吗？所有关联的磁盘/光盘镜像也将被删除。";
-"An internal error has occured." = "发生了一个内部的错误";
-"Saving %@..." = "%@保存中...";
-"Launching another VM is not implemented. Please close UTM with the top left button and re-launch it." = "关闭虚拟机后再次运行虚拟机还未开发完成，请点左上角X重新启动UTM后再试。";
-"Are you sure you want to exit UTM? Any running VM will be killed." = "您确定要退出UTM吗？任何正在运行的虚拟机都将被强制关闭。";
-"The total memory usage is close to your device's limit. iOS will kill the VM if it consumes too much memory." = "此内存设置接近您设备可用内存的极限。消耗过大内存的虚拟机会被iOS强制终止。";
-"QEMU exited from an error: %@" = "QEMU遇到错误退出: %@";
-"This page is currently not implemented yet. None of these options work." = "此页功能还未完成开发。这些选项都不会生效。";
+
+/* VMDisplayMetalViewController */
 "Are you sure you want to exit UTM?." = "您确定要退出UTM吗？";
+
+/* VMConfigDrivePickerViewController */
+"Are you sure you want to permanently delete this disk image?" = "您确定要永久删除该磁盘镜像吗？";
+
+/* VMDisplayMetalViewController */
+"Are you sure you want to reset this VM? Any unsaved changes will be lost." = "您确定要重置此虚拟机吗？ 任何未保存的更改将丢失。";
+
+/* VMDisplayMetalViewController */
+"Are you sure you want to stop this VM and exit? Any unsaved changes will be lost." = "您确定要强制关闭虚拟机吗？所有未保存的更改都会丢失。";
+
+/* UTMConfiguration */
+"BIOS" = "BIOS";
+
+/* Cancel button */
+"Cancel" = "取消";
+
+/* VMConfigDriveCreateViewController */
+"Cannot create directory for disk image." = "无法在路径中创建磁盘镜像";
+
+/* Configuration boot device */
+"CD/DVD" = "CD/DVD";
+
+/* UTMConfiguration */
+"CD/DVD Image" = "CD/DVD镜像";
+
+/* Clone context menu */
+"Clone" = "复制";
+
+/* Create button */
+"Create" = "创建";
+
+/* VMConfigDriveCreateViewController */
+"Creating disk..." = "磁盘创建中...";
+
+/* Delete button
+   Delete context menu */
+"Delete" = "删除";
+
+/* VMConfigDrivesViewController */
+"Delete Data" = "删除数据";
+
+/* Delete VM overlay */
+"Deleting %@..." = "正在删除 %@...";
+
+/* VMConfigDriveCreateViewController */
+"Disk creation failed." = "磁盘镜像创建失败";
+
+/* UTMConfiguration */
+"Disk Image" = "磁盘镜像";
+
+/* VMConfigDrivesViewController */
+"Do you want to also delete the disk image data? If yes, the data will be lost. Otherwise, you can create a new drive with the existing data." = "您是否还要删除磁盘映像数据？ 如果是，数据将丢失。 否则，您可以使用现有数据创建新驱动器。";
+
+/* UTMJSONStream */
+"Error parsing JSON." = "解析JSON时出错";
+
+/* VMConfigDriveCreateViewController */
+"Error renaming file" = "重命名失败";
+
+/* UTMVirtualMachine */
+"Failed to connect to display server." = "连接显示服务器失败。";
+
+/* UTMVirtualMachine */
+"Failed to load plist" = "无法加载plist";
+
+/* Configuration boot device */
+"Floppy" = "软盘";
+
+/* Configuration boot device */
+"Hard Disk" = "硬盘";
+
+/* VMDisplayMetalViewController */
+"Hint: To show the toolbar again, use a three-finger swipe down on the screen." = "提示：要再次显示工具栏，请使用三指在屏幕上向下滑动。";
+
+/* Import button */
+"Import" = "导入";
+
+/* qemu pthread fail */
+"Internal error has occurred." = "发生内部错误";
+
+/* UTMVirtualMachine */
+"Internal error starting main loop." = "发生内部错误(starting main loop)";
+
+/* UTMVirtualMachine */
+"Internal error starting VM." = "启动虚拟机时发生内部错误。";
+
+/* VMConfigSystemViewController */
+"Invalid core count." = "无效核心数量。";
+
+/* VMConfigSystemViewController */
+"Invalid memory size." = "无效内存大小。";
+
+/* VMConfigDriveCreateViewController */
+"Invalid name" = "无效名称";
+
+/* VMConfigDriveCreateViewController */
+"Invalid size" = "无效大小";
+
+/* VMConfigSystemViewController */
+"JIT cache size cannot be larger than 2GB." = "JIT缓存大小不能大于2GB。";
+
+/* VMConfigSystemViewController */
+"JIT cache size too small." = "JIT缓存大小太小。";
+
+/* UTMConfiguration */
+"Linux Device Tree Binary" = "Linux设备树二进制文件";
+
+/* UTMConfiguration */
+"Linux Kernel" = "Linux内核";
+
+/* UTMConfiguration */
+"Linux RAM Disk" = "Linux RAM磁盘";
+
+/* UTMQemuManager */
+"Manager being deallocated, killing pending RPC." = "Manager being deallocated, killing pending RPC.";
+
+/* Clone VM name prompt title */
+"Name" = "名字";
+
+/* Clone VM name prompt message */
+"New VM name" = "输入新的虚拟机的名字";
+
+/* No button
+   VMDisplayMetalViewController */
+"No" = "不";
+
+/* UTMQemuManager */
+"No connection for RPC." = "No connection for RPC.";
+
+/* VMConfigExistingViewController */
+"No debug log found!" = "找不到调试日志！";
+
+/* OK button
+   VMDisplayMetalViewController */
+"OK" = "好";
+
+/* qemu pthread fail */
+"QEMU exited from an error: %@" = "QEMU遇到错误退出: %@";
+
+/* VMDisplayMetalViewController */
+"Running low on memory! UTM might soon be killed by iOS. You can prevent this by decreasing the amount of memory and/or JIT cache assigned to this VM" = "内存不足！ UTM可能很快会被iOS强制终止 您可以通过减少分配给该虚拟机的内存或JIT缓存来防止这种情况。";
+
+/* No comment provided by engineer. */
+"Running qemu-img more than once is unimplemented. Restart the app to create another disk." = "同时运行多个虚拟机的功能还未完成，请点左上角X重新启动UTM后再试。";
+
+/* Save VM overlay */
+"Saving %@..." = "%@保存中...";
+
+/* VMConfigSystemViewController */
+"The total memory usage is close to your device's limit. iOS will kill the VM if it consumes too much memory." = "此内存设置接近您设备可用内存的极限。消耗过大内存的虚拟机会被iOS强制终止。";
+
+/* VMConfigViewController */
+"This page is currently not implemented yet. None of these options work." = "此页功能还未完成开发。这些选项都不会生效。";
+
+/* UTMQemuManager */
+"Timed out waiting for RPC." = "等待RPC超时。";
+
+/* Startup message */
+"Welcome to UTM! Due to a bug in iOS, if you force kill this app, the system will be unstable and you cannot launch UTM again until you reboot. The recommended way to terminate this app is the button on the top left." = "欢迎使用UTM！由于iOS中的一个Bug，如果您强制关闭UTM，系统将变得不稳定，并且您必须重新启动您的设备才能再次使用UTM建议点击左上方的按钮来退出UTM。";
+
+/* VMConfigDrivePickerViewController */
+"Would you like to import an existing disk image or create a new one?" = "您是想导入一个磁盘镜像还是创建新的空白磁盘镜像？";
+
+/* VMDisplayMetalViewController
+   Yes button */
+"Yes" = "是的";
+
