@@ -1,5 +1,8 @@
 /* (No Comment) */
-"Apple Pencil Input" = "Apple Pencil";
+"Disabled" = "禁用";
+
+/* (No Comment) */
+"Apple Pencil Input" = "Apple Pencil输入";
 
 /* (No Comment) */
 "Auto save on background" = "后台运行时自动保存";
@@ -9,6 +12,9 @@
 
 /* (No Comment) */
 "Background" = "后台";
+
+/* (No Comment) */
+"Autosave" = "自动保存";
 
 /* (No Comment) */
 "Click & Hold" = "单击并按住";
@@ -30,6 +36,9 @@
 
 /* (No Comment) */
 "Follow cursor" = "跟随光标";
+
+/* (No Comment) */
+"Game Controller" = "游戏控制器";
 
 /* (No Comment) */
 "Gestures" = "手势";
@@ -56,7 +65,7 @@
 "Right Click" = "右键单击";
 
 /* (No Comment) */
-"Tablet mode (always show cursor)" = "平板模式(显示光标）";
+"Tablet mode (always show cursor)" = "平板模式(显示光标)";
 
 /* (No Comment) */
 "Tablet mode (try hiding cursor)" = "平板模式(隐藏光标)";
@@ -65,7 +74,7 @@
 "Three Finger Pan" = "三指拖动";
 
 /* (No Comment) */
-"Touch Input" = "触屏";
+"Touch Input" = "触屏输入";
 
 /* (No Comment) */
 "Touch mode (always show cursor)" = "触屏模式(显示光标)";
@@ -74,7 +83,7 @@
 "Touch mode (try hiding cursor)" = "触屏模式(隐藏光标)";
 
 /* (No Comment) */
-"Touchpad/Mouse Input" = "触控板/鼠标";
+"Touchpad/Mouse Input" = "触控板/鼠标输入";
 
 /* (No Comment) */
 "Two Finger Pan" = "双指拖动";
@@ -85,3 +94,53 @@
 /* (No Comment) */
 "Two Finger Tap" = "双指轻点";
 
+/* (No Comment) */
+"Gamepad" = "手柄";
+
+/* (No Comment) */
+"D-UP" = "方向键上";
+
+/* (No Comment) */
+"D-LEFT" = "方向键左";
+
+/* (No Comment) */
+"D-DOWN" = "方向键下";
+
+/* (No Comment) */
+"D-RIGHT" = "方向键右";
+
+/* (No Comment) */
+"Mouse Left Button" = "鼠标左键";
+
+/* (No Comment) */
+"Mouse Right Button" = "鼠标右键";
+
+/* (No Comment) */
+"Mouse Middle Button" = "鼠标中键";
+
+/* (No Comment) */
+"Space" = "空格";
+
+/* (No Comment) */
+"Enter" = "回车";
+
+/* (No Comment) */
+"Backspace" = "退格";
+
+/* (No Comment) */
+"Caps" = "大写锁定";
+
+/* (No Comment) */
+"Up" = "方向键 上";
+
+/* (No Comment) */
+"Left" = "方向键 左";
+
+/* (No Comment) */
+"Down" = "方向键 下";
+
+/* (No Comment) */
+"Right" = "方向键 右";
+
+/* (No Comment) */
+"Gamepad - Cursor Speed" = "手柄 - 光标速度";
