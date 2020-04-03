@@ -84,6 +84,7 @@ jobs:
           brew install ldid
       - name: Fakesign IPA
         run: |
+          find UTM-arm64/UTM.xcarchive -type f \( -path '*/UTM.app/UTM' -or -path '*/UTM.app/Frameworks/*.dylib' \) -exec chmod +x \{\} \;
           ./scripts/resign.sh UTM-arm64/UTM.xcarchive .
       - name: Upload Release Asset
         uses: actions/upload-release-asset@v1.0.1
