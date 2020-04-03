@@ -250,6 +250,9 @@
 		CE4AA14C2264004F002E4A54 /* CSConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = CE4AA14B2264004F002E4A54 /* CSConnection.m */; };
 		CE4AA1502265B15B002E4A54 /* libqemu-img.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE4AA14E2265B152002E4A54 /* libqemu-img.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CE54252E2436E48D00E520F7 /* UTMConfigurationPortForward.m in Sources */ = {isa = PBXBuildFile; fileRef = CE54252D2436E48D00E520F7 /* UTMConfigurationPortForward.m */; };
+		CE5425312437C09C00E520F7 /* UTMConfiguration+Drives.m in Sources */ = {isa = PBXBuildFile; fileRef = CE5425302437C09C00E520F7 /* UTMConfiguration+Drives.m */; };
+		CE5425342437C22A00E520F7 /* UTMConfiguration+System.m in Sources */ = {isa = PBXBuildFile; fileRef = CE5425332437C22A00E520F7 /* UTMConfiguration+System.m */; };
+		CE5425372437DDE900E520F7 /* UTMConfiguration+Constants.m in Sources */ = {isa = PBXBuildFile; fileRef = CE5425362437DDE900E520F7 /* UTMConfiguration+Constants.m */; };
 		CE550BCE225947990063E575 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CE550BCD225947990063E575 /* AppDelegate.m */; };
 		CE550BD1225947990063E575 /* VMListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CE550BD0225947990063E575 /* VMListViewController.m */; };
 		CE550BD4225947990063E575 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CE550BD2225947990063E575 /* Main.storyboard */; };
@@ -763,6 +766,12 @@
 		CE4AA14E2265B152002E4A54 /* libqemu-img.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libqemu-img.dylib"; path = "sysroot-$(PLATFORM_PREFERRED_ARCH)/lib/libqemu-img.dylib"; sourceTree = "<group>"; };
 		CE54252C2436E48D00E520F7 /* UTMConfigurationPortForward.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UTMConfigurationPortForward.h; sourceTree = "<group>"; };
 		CE54252D2436E48D00E520F7 /* UTMConfigurationPortForward.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UTMConfigurationPortForward.m; sourceTree = "<group>"; };
+		CE54252F2437C09C00E520F7 /* UTMConfiguration+Drives.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UTMConfiguration+Drives.h"; sourceTree = "<group>"; };
+		CE5425302437C09C00E520F7 /* UTMConfiguration+Drives.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UTMConfiguration+Drives.m"; sourceTree = "<group>"; };
+		CE5425322437C22A00E520F7 /* UTMConfiguration+System.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UTMConfiguration+System.h"; sourceTree = "<group>"; };
+		CE5425332437C22A00E520F7 /* UTMConfiguration+System.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UTMConfiguration+System.m"; sourceTree = "<group>"; };
+		CE5425352437DDE900E520F7 /* UTMConfiguration+Constants.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UTMConfiguration+Constants.h"; sourceTree = "<group>"; };
+		CE5425362437DDE900E520F7 /* UTMConfiguration+Constants.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UTMConfiguration+Constants.m"; sourceTree = "<group>"; };
 		CE550BC9225947990063E575 /* UTM.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = UTM.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CE550BCC225947990063E575 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		CE550BCD225947990063E575 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -1066,8 +1075,14 @@
 			children = (
 				CE31C243225E553500A965DD /* UTMConfiguration.h */,
 				CE31C244225E555600A965DD /* UTMConfiguration.m */,
+				CE5425352437DDE900E520F7 /* UTMConfiguration+Constants.h */,
+				CE5425362437DDE900E520F7 /* UTMConfiguration+Constants.m */,
+				CE54252F2437C09C00E520F7 /* UTMConfiguration+Drives.h */,
+				CE5425302437C09C00E520F7 /* UTMConfiguration+Drives.m */,
 				CEA02A972436C7A30087E45F /* UTMConfiguration+Networking.h */,
 				CEA02A982436C7A30087E45F /* UTMConfiguration+Networking.m */,
+				CE5425322437C22A00E520F7 /* UTMConfiguration+System.h */,
+				CE5425332437C22A00E520F7 /* UTMConfiguration+System.m */,
 				CE54252C2436E48D00E520F7 /* UTMConfigurationPortForward.h */,
 				CE54252D2436E48D00E520F7 /* UTMConfigurationPortForward.m */,
 				CE31C246225E9FED00A965DD /* UTMConfigurationDelegate.h */,
@@ -1670,6 +1685,7 @@
 				CE23C19623FCEC0A001177D6 /* qapi-visit-trace.c in Sources */,
 				CE23C1D023FCEC0A001177D6 /* qapi-events-rocker.c in Sources */,
 				CE23C19523FCEC0A001177D6 /* qapi-visit-qom.c in Sources */,
+				CE5425342437C22A00E520F7 /* UTMConfiguration+System.m in Sources */,
 				CE23C1BD23FCEC0A001177D6 /* qapi-types-job.c in Sources */,
 				CE9D197C226542FE00355E14 /* UTMQemu.m in Sources */,
 				CE23C1AB23FCEC0A001177D6 /* qapi-visit-machine.c in Sources */,
@@ -1704,6 +1720,7 @@
 				CE6EDCDF241C4A6800A719DC /* UTMViewState.m in Sources */,
 				CE2C67DB227F769300AEF1D0 /* VMConfigDriveCreateViewController.m in Sources */,
 				CE26FC25226EBC5A0090BE9B /* CSMain.m in Sources */,
+				CE5425372437DDE900E520F7 /* UTMConfiguration+Constants.m in Sources */,
 				CE056CA6242454100004B68A /* VMDisplayMetalViewController+Touch.m in Sources */,
 				CE23C19223FCEC0A001177D6 /* qapi-visit-block-core.c in Sources */,
 				CECC76532273A7D50059B955 /* qapi-util.c in Sources */,
@@ -1732,6 +1749,7 @@
 				CE23C17123FCEC0A001177D6 /* qapi-events-qdev.c in Sources */,
 				CE23C18A23FCEC0A001177D6 /* qapi-events-dump.c in Sources */,
 				CE23C18F23FCEC0A001177D6 /* qapi-types-tpm.c in Sources */,
+				CE5425312437C09C00E520F7 /* UTMConfiguration+Drives.m in Sources */,
 				CE23C19823FCEC0A001177D6 /* qapi-visit-char.c in Sources */,
 				CE23C1AF23FCEC0A001177D6 /* qapi-types-error.c in Sources */,
 				CE23C17223FCEC0A001177D6 /* qapi-commands-authz.c in Sources */,

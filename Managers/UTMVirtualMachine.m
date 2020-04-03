@@ -16,6 +16,7 @@
 
 #import "UTMVirtualMachine.h"
 #import "UTMConfiguration.h"
+#import "UTMConfiguration+Constants.h"
 #import "UTMViewState.h"
 #import "UTMQemuImg.h"
 #import "UTMQemuManager.h"

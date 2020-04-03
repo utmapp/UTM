@@ -16,6 +16,7 @@
 
 #import "VMConfigSoundViewController.h"
 #import "UTMConfiguration.h"
+#import "UTMConfiguration+Constants.h"
 
 @interface VMConfigSoundViewController ()
 

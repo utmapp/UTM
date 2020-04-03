@@ -17,7 +17,7 @@
 #import "UTMConfiguration+Networking.h"
 #import "UTMConfigurationPortForward.h"
 
-static const NSString *const kUTMConfigNetworkingKey = @"Networking";
+extern const NSString *const kUTMConfigNetworkingKey;
 
 static const NSString *const kUTMConfigNetworkEnabledKey = @"NetworkEnabled";
 static const NSString *const kUTMConfigNetworkIsolateGuestKey = @"IsolateGuest";

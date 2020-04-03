@@ -17,6 +17,7 @@
 #import "VMConfigDrivesViewController.h"
 #import "VMConfigDriveDetailViewController.h"
 #import "UTMConfiguration.h"
+#import "UTMConfiguration+Constants.h"
 
 @interface VMConfigDrivesViewController ()
 

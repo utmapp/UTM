@@ -16,6 +16,7 @@
 
 #import "VMConfigDisplayViewController.h"
 #import "UTMConfiguration.h"
+#import "UTMConfiguration+Constants.h"
 
 @interface VMConfigDisplayViewController ()
 

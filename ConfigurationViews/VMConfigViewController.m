@@ -22,6 +22,7 @@
 #import "VMConfigTextField.h"
 #import "VMConfigTogglePickerCell.h"
 #import "UTMConfiguration.h"
+#import "UTMConfiguration+Constants.h"
 
 void *kVMConfigViewControllerContext = &kVMConfigViewControllerContext;
 
