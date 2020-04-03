@@ -34,6 +34,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)showAlert:(NSString *)msg completion:(nullable void (^)(UIAlertAction *action))completion;
 - (void)showUnimplementedAlert;
 
+- (void)hidePickersAnimated:(BOOL)animated;
+
 - (IBAction)configTextEditChanged:(VMConfigTextField *)sender;
 - (IBAction)configTextFieldEditEnd:(VMConfigTextField *)sender;
 - (IBAction)configSwitchChanged:(VMConfigSwitch *)sender;

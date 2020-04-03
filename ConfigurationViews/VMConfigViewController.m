@@ -98,10 +98,7 @@ void *kVMConfigViewControllerContext = &kVMConfigViewControllerContext;
     }
     // hide pickers
     for (VMConfigTogglePickerCell *cell in self.configPickerToggles) {
-        if (!cell.cellsVisible) {
-            [self cells:cell.toggleVisibleCells setHidden:YES];
-            [self reloadDataAnimated:NO];
-        }
+        [self pickerCell:cell showPicker:NO animated:NO];
     }
 }
 
@@ -132,20 +129,24 @@ void *kVMConfigViewControllerContext = &kVMConfigViewControllerContext;
 
 #pragma mark - Picker view
 
+- (void)pickerCell:(VMConfigTogglePickerCell *)cell showPicker:(BOOL)visible animated:(BOOL)animated {
+    if (visible) {
+        NSUInteger index = [[UTMConfiguration supportedOptions:cell.picker.supportedOptionsPath pretty:NO] indexOfObject:cell.label.text];
+        if (index != NSNotFound) {
+            [cell.picker selectRow:index inComponent:0 animated:NO];
+        }
+    }
+    [self cells:cell.toggleVisibleCells setHidden:!visible];
+    [self reloadDataAnimated:animated];
+    cell.cellsVisible = visible;
+}
+
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
     if ([cell isKindOfClass:[VMConfigTogglePickerCell class]]) {
         VMConfigTogglePickerCell *vmCell = (VMConfigTogglePickerCell *)cell;
         [tableView deselectRowAtIndexPath:indexPath animated:YES];
-        if (!vmCell.cellsVisible) {
-            NSUInteger index = [[UTMConfiguration supportedOptions:vmCell.picker.supportedOptionsPath pretty:NO] indexOfObject:vmCell.label.text];
-            if (index != NSNotFound) {
-                [vmCell.picker selectRow:index inComponent:0 animated:NO];
-            }
-        }
-        [self cells:vmCell.toggleVisibleCells setHidden:vmCell.cellsVisible];
-        [self reloadDataAnimated:YES];
-        vmCell.cellsVisible = !vmCell.cellsVisible;
+        [self pickerCell:vmCell showPicker:!vmCell.cellsVisible animated:YES];
     }
 }
 
@@ -175,6 +176,12 @@ void *kVMConfigViewControllerContext = &kVMConfigViewControllerContext;
     NSString *selected = [UTMConfiguration supportedOptions:vmPicker.supportedOptionsPath pretty:NO][row];
     [self.configuration setValue:selected forKey:vmPicker.selectedOptionLabel.configurationPath];
     vmPicker.selectedOptionLabel.text = selected;
+}
+
+- (void)hidePickersAnimated:(BOOL)animated {
+    for (VMConfigTogglePickerCell *cell in self.configPickerToggles) {
+        [self pickerCell:cell showPicker:NO animated:animated];
+    }
 }
 
 #pragma mark - Event handler for controls
