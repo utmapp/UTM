@@ -95,5 +95,7 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>VM needs access to microphone.</string>
 </dict>
 </plist>
