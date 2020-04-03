@@ -22,6 +22,22 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface UTMConfiguration (Networking)
 
+@property (nonatomic, assign) BOOL networkEnabled;
+@property (nonatomic, assign) BOOL networkIsolate;
+@property (nonatomic, nullable, copy) NSString *networkCard;
+@property (nonatomic, nullable, copy) NSString *networkAddress;
+@property (nonatomic, nullable, copy) NSString *networkAddressIPv6;
+@property (nonatomic, nullable, copy) NSString *networkHost;
+@property (nonatomic, nullable, copy) NSString *networkHostIPv6;
+@property (nonatomic, nullable, copy) NSString *networkDhcpStart;
+@property (nonatomic, nullable, copy) NSString *networkDhcpHost;
+@property (nonatomic, nullable, copy) NSString *networkDhcpDomain;
+@property (nonatomic, nullable, copy) NSString *networkDnsServer;
+@property (nonatomic, nullable, copy) NSString *networkDnsServerIPv6;
+@property (nonatomic, nullable, copy) NSString *networkDnsSearch;
+
+- (void)migrateNetworkConfigurationIfNecessary;
+
 - (NSUInteger)countPortForwards;
 - (NSUInteger)newPortForward:(UTMConfigurationPortForward *)argument;
 - (nullable UTMConfigurationPortForward *)portForwardForIndex:(NSUInteger)index;

@@ -16,6 +16,7 @@
 
 #import "UTMQemuSystem.h"
 #import "UTMConfiguration.h"
+#import "UTMConfiguration+Networking.h"
 
 @implementation UTMQemuSystem
 

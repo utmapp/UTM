@@ -15,6 +15,7 @@
 //
 
 #import "UTMConfiguration.h"
+#import "UTMConfiguration+Networking.h"
 
 const NSString *const kUTMConfigSystemKey = @"System";
 const NSString *const kUTMConfigDisplayKey = @"Display";
@@ -45,20 +46,6 @@ const NSString *const kUTMConfigZoomLetterboxKey = @"ZoomLetterbox";
 const NSString *const kUTMConfigTouchscreenModeKey = @"TouchscreenMode";
 const NSString *const kUTMConfigDirectInputKey = @"DirectInput";
 const NSString *const kUTMConfigInputLegacyKey = @"InputLegacy";
-
-const NSString *const kUTMConfigNetworkEnabledKey = @"NetworkEnabled";
-const NSString *const kUTMConfigNetworkIsolateGuestKey = @"IsolateGuest";
-const NSString *const kUTMConfigNetworkCardKey = @"NetworkCard";
-const NSString *const kUTMConfigNetworkIPSubnetKey = @"IPSubnet";
-const NSString *const kUTMConfigNetworkIPv6SubnetKey = @"IPv6Subnet";
-const NSString *const kUTMConfigNetworkIPHostKey = @"IPHost";
-const NSString *const kUTMConfigNetworkIPv6HostKey = @"IPv6Host";
-const NSString *const kUTMConfigNetworkDHCPStartKey = @"DHCPStart";
-const NSString *const kUTMConfigNetworkDHCPHostKey = @"DHCPHost";
-const NSString *const kUTMConfigNetworkDHCPDomainKey = @"DHCPDomain";
-const NSString *const kUTMConfigNetworkIPDNSKey = @"IPDNS";
-const NSString *const kUTMConfigNetworkIPv6DNSKey = @"IPv6DNS";
-const NSString *const kUTMConfigNetworkDNSSearchKey = @"DNSSearch";
 
 const NSString *const kUTMConfigPrintEnabledKey = @"PrintEnabled";
 
@@ -1456,9 +1443,7 @@ const NSString *const kUTMConfigDebugLogKey = @"DebugLog";
         self.inputLegacy = NO;
     }
     // Migrate network settings
-    if (!_rootDict[kUTMConfigNetworkingKey][kUTMConfigNetworkCardKey]) {
-        self.networkCard = @"rtl8139";
-    }
+    [self migrateNetworkConfigurationIfNecessary];
 }
 
 #pragma mark - Initialization
@@ -1667,110 +1652,6 @@ const NSString *const kUTMConfigDebugLogKey = @"DebugLog";
 
 - (BOOL)inputLegacy {
     return [_rootDict[kUTMConfigInputKey][kUTMConfigInputLegacyKey] boolValue];
-}
-
-- (void)setNetworkEnabled:(BOOL)networkEnabled {
-    _rootDict[kUTMConfigNetworkingKey][kUTMConfigNetworkEnabledKey] = @(networkEnabled);
-}
-
-- (BOOL)networkEnabled {
-    return [_rootDict[kUTMConfigNetworkingKey][kUTMConfigNetworkEnabledKey] boolValue];
-}
-
-- (void)setNetworkIsolate:(BOOL)networkLocalhostOnly {
-    _rootDict[kUTMConfigNetworkingKey][kUTMConfigNetworkIsolateGuestKey] = @(networkLocalhostOnly);
-}
-
-- (BOOL)networkIsolate {
-    return [_rootDict[kUTMConfigNetworkingKey][kUTMConfigNetworkIsolateGuestKey] boolValue];
-}
-
-- (void)setNetworkCard:(NSString *)networkCard {
-    _rootDict[kUTMConfigNetworkingKey][kUTMConfigNetworkCardKey] = networkCard;
-}
-
-- (NSString *)networkCard {
-    return _rootDict[kUTMConfigNetworkingKey][kUTMConfigNetworkCardKey];
-}
-
-- (void)setNetworkAddress:(NSString *)networkAddress {
-    _rootDict[kUTMConfigNetworkingKey][kUTMConfigNetworkIPSubnetKey] = networkAddress;
-}
-
-- (NSString *)networkAddress {
-    return _rootDict[kUTMConfigNetworkingKey][kUTMConfigNetworkIPSubnetKey];
-}
-
-- (void)setNetworkAddressIPv6:(NSString *)networkAddressIPv6 {
-    _rootDict[kUTMConfigNetworkingKey][kUTMConfigNetworkIPv6SubnetKey] = networkAddressIPv6;
-}
-
-- (NSString *)networkAddressIPv6 {
-    return _rootDict[kUTMConfigNetworkingKey][kUTMConfigNetworkIPv6SubnetKey];
-}
-
-- (void)setNetworkHost:(NSString *)networkHost {
-    _rootDict[kUTMConfigNetworkingKey][kUTMConfigNetworkIPHostKey] = networkHost;
-}
-
-- (NSString *)networkHost {
-    return _rootDict[kUTMConfigNetworkingKey][kUTMConfigNetworkIPHostKey];
-}
-
-- (void)setNetworkHostIPv6:(NSString *)networkHostIPv6 {
-    _rootDict[kUTMConfigNetworkingKey][kUTMConfigNetworkIPv6HostKey] = networkHostIPv6;
-}
-
-- (NSString *)networkHostIPv6 {
-    return _rootDict[kUTMConfigNetworkingKey][kUTMConfigNetworkIPv6HostKey];
-}
-
-- (void)setNetworkDhcpStart:(NSString *)networkDHCPStart {
-    _rootDict[kUTMConfigNetworkingKey][kUTMConfigNetworkDHCPStartKey] = networkDHCPStart;
-}
-
-- (NSString *)networkDhcpStart {
-    return _rootDict[kUTMConfigNetworkingKey][kUTMConfigNetworkDHCPStartKey];
-}
-
-- (void)setNetworkDhcpHost:(NSString *)networkDhcpHost {
-    _rootDict[kUTMConfigNetworkingKey][kUTMConfigNetworkDHCPHostKey] = networkDhcpHost;
-}
-
-- (NSString *)networkDhcpHost {
-    return _rootDict[kUTMConfigNetworkingKey][kUTMConfigNetworkDHCPHostKey];
-}
-
-- (void)setNetworkDhcpDomain:(NSString *)networkDhcpDomain {
-    _rootDict[kUTMConfigNetworkingKey][kUTMConfigNetworkDHCPDomainKey] = networkDhcpDomain;
-}
-
-- (NSString *)networkDhcpDomain {
-    return _rootDict[kUTMConfigNetworkingKey][kUTMConfigNetworkDHCPDomainKey];
-}
-
-- (void)setNetworkDnsServer:(NSString *)networkDnsServer {
-    _rootDict[kUTMConfigNetworkingKey][kUTMConfigNetworkIPDNSKey] = networkDnsServer;
-}
-
-- (NSString *)networkDnsServer {
-    return _rootDict[kUTMConfigNetworkingKey][kUTMConfigNetworkIPDNSKey];
-}
-
-- (void)setNetworkDnsServerIPv6:(NSString *)networkDnsServerIPv6 {
-    _rootDict[kUTMConfigNetworkingKey][kUTMConfigNetworkIPv6DNSKey] = networkDnsServerIPv6;
-}
-
-- (NSString *)networkDnsServerIPv6 {
-    return _rootDict[kUTMConfigNetworkingKey][kUTMConfigNetworkIPv6DNSKey];
-}
-
-- (void)setNetworkDnsSearch:(NSString *)networkDnsSearch {
-    _rootDict[kUTMConfigNetworkingKey][kUTMConfigNetworkDNSSearchKey] = networkDnsSearch;
-}
-
-- (NSString *)networkDnsSearch {
-    return _rootDict[kUTMConfigNetworkingKey][kUTMConfigNetworkDNSSearchKey];
 }
 
 - (void)setPrintEnabled:(BOOL)printEnabled {
