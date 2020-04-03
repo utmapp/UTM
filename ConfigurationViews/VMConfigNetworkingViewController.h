@@ -21,6 +21,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface VMConfigNetworkingViewController : VMConfigViewController
 
+@property (weak, nonatomic) IBOutlet UISwitch *networkEnabledSwitch;
+@property (strong, nonatomic) IBOutletCollection(UITableViewCell) NSArray *networkEnabledCells;
+
 @end
 
 NS_ASSUME_NONNULL_END

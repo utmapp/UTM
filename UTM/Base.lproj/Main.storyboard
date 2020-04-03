@@ -1700,6 +1700,7 @@
                     </tableView>
                     <navigationItem key="navigationItem" title="Networking" id="bJQ-Qv-ceR"/>
                     <connections>
+                        <outlet property="networkEnabledSwitch" destination="Irx-cj-gHJ" id="icG-CB-Jzr"/>
                         <outletCollection property="configControls" destination="Irx-cj-gHJ" id="rMu-68-mQg"/>
                         <outletCollection property="configControls" destination="CkD-IW-UX0" id="3jG-jN-TdZ"/>
                         <outletCollection property="configControls" destination="q6m-Ld-1jH" id="nWk-ao-vzk"/>
@@ -1714,6 +1715,18 @@
                         <outletCollection property="configControls" destination="bl0-gn-e5n" id="jZz-4m-J6E"/>
                         <outletCollection property="configControls" destination="exK-JR-7gh" id="A2Q-KU-A6u"/>
                         <outletCollection property="configPickerToggles" destination="RNX-hO-eWb" id="kiG-1k-Siv"/>
+                        <outletCollection property="networkEnabledCells" destination="RNX-hO-eWb" id="hNG-Eq-o58"/>
+                        <outletCollection property="networkEnabledCells" destination="L7E-R4-cxI" id="yRS-HU-Bah"/>
+                        <outletCollection property="networkEnabledCells" destination="8mF-uj-oTE" id="XaY-tf-f4m"/>
+                        <outletCollection property="networkEnabledCells" destination="lDm-SM-Ltj" id="Cry-if-TpE"/>
+                        <outletCollection property="networkEnabledCells" destination="JdS-U6-k3Z" id="Vv8-HZ-Srt"/>
+                        <outletCollection property="networkEnabledCells" destination="224-F9-2xC" id="osf-W3-V10"/>
+                        <outletCollection property="networkEnabledCells" destination="aMG-yM-TGa" id="4KH-LC-dGH"/>
+                        <outletCollection property="networkEnabledCells" destination="Fm2-g9-IgQ" id="Fc5-NW-iWI"/>
+                        <outletCollection property="networkEnabledCells" destination="9YB-rv-ALL" id="8sw-wE-fY8"/>
+                        <outletCollection property="networkEnabledCells" destination="xXF-hc-jmD" id="ngB-q2-dUC"/>
+                        <outletCollection property="networkEnabledCells" destination="9xD-K5-Mpp" id="TVX-1w-e0p"/>
+                        <outletCollection property="networkEnabledCells" destination="5Zt-oz-qoO" id="i0e-aJ-EJ0"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="irb-Tt-Gor" userLabel="First Responder" sceneMemberID="firstResponder"/>

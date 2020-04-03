@@ -15,6 +15,7 @@
 //
 
 #import "VMConfigNetworkingViewController.h"
+#import "VMConfigSwitch.h"
 
 @interface VMConfigNetworkingViewController ()
 
@@ -22,9 +23,29 @@
 
 @implementation VMConfigNetworkingViewController
 
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    [self showNetworkOptions:self.networkEnabledSwitch.on animated:NO];
+}
+
+- (void)showNetworkOptions:(BOOL)visible animated:(BOOL)animated {
+    if (!visible) {
+        [self hidePickersAnimated:animated];
+    }
+    [self cells:self.networkEnabledCells setHidden:!visible];
+    [self reloadDataAnimated:animated];
+}
+
 - (IBAction)configTextFieldEditEnd:(VMConfigTextField *)sender {
     // TODO: validate user input
     [super configTextFieldEditEnd:sender];
+}
+
+- (IBAction)configSwitchChanged:(VMConfigSwitch *)sender {
+    if (sender == self.networkEnabledSwitch) {
+        [self showNetworkOptions:sender.on animated:YES];
+    }
+    [super configSwitchChanged:sender];
 }
 
 @end
