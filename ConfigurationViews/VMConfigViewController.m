@@ -151,27 +151,27 @@ void *kVMConfigViewControllerContext = &kVMConfigViewControllerContext;
 }
 
 - (NSInteger)numberOfComponentsInPickerView:(nonnull UIPickerView *)pickerView {
-    NSAssert([pickerView isMemberOfClass:[VMConfigPickerView class]], @"Invalid picker");
+    NSAssert([pickerView isKindOfClass:[VMConfigPickerView class]], @"Invalid picker");
     return 1;
 }
 
 - (NSInteger)pickerView:(nonnull UIPickerView *)pickerView numberOfRowsInComponent:(NSInteger)component {
     NSAssert(component == 0, @"Invalid component");
-    NSAssert([pickerView isMemberOfClass:[VMConfigPickerView class]], @"Invalid picker");
+    NSAssert([pickerView isKindOfClass:[VMConfigPickerView class]], @"Invalid picker");
     VMConfigPickerView *vmPicker = (VMConfigPickerView *)pickerView;
     return [UTMConfiguration supportedOptions:vmPicker.supportedOptionsPath pretty:NO].count;
 }
 
 - (NSString *)pickerView:(UIPickerView *)pickerView titleForRow:(NSInteger)row forComponent:(NSInteger)component {
     NSAssert(component == 0, @"Invalid component");
-    NSAssert([pickerView isMemberOfClass:[VMConfigPickerView class]], @"Invalid picker");
+    NSAssert([pickerView isKindOfClass:[VMConfigPickerView class]], @"Invalid picker");
     VMConfigPickerView *vmPicker = (VMConfigPickerView *)pickerView;
     return [UTMConfiguration supportedOptions:vmPicker.supportedOptionsPath pretty:YES][row];
 }
 
 - (void)pickerView:(UIPickerView *)pickerView didSelectRow:(NSInteger)row inComponent:(NSInteger)component {
     NSAssert(component == 0, @"Invalid component");
-    NSAssert([pickerView isMemberOfClass:[VMConfigPickerView class]], @"Invalid picker");
+    NSAssert([pickerView isKindOfClass:[VMConfigPickerView class]], @"Invalid picker");
     VMConfigPickerView *vmPicker = (VMConfigPickerView *)pickerView;
     NSString *selected = [UTMConfiguration supportedOptions:vmPicker.supportedOptionsPath pretty:NO][row];
     [self.configuration setValue:selected forKey:vmPicker.selectedOptionLabel.configurationPath];
