@@ -16,6 +16,11 @@
 
 #import "UTMQemuSystem.h"
 #import "UTMConfiguration.h"
+#import "UTMConfiguration+Constants.h"
+#import "UTMConfiguration+Drives.h"
+#import "UTMConfiguration+Networking.h"
+#import "UTMConfiguration+System.h"
+#import "UTMConfigurationPortForward.h"
 
 @implementation UTMQemuSystem
 
@@ -108,6 +113,56 @@
     }
 }
 
+- (void)argsForNetwork {
+    if (self.configuration.networkEnabled) {
+        [self pushArgv:@"-device"];
+        [self pushArgv:[NSString stringWithFormat:@"%@,netdev=net0", self.configuration.networkCard]];
+        [self pushArgv:@"-netdev"];
+        NSMutableString *netstr = [NSMutableString stringWithString:@"user,id=net0"];
+        if (self.configuration.networkAddress.length > 0) {
+            [netstr appendFormat:@",net=%@", self.configuration.networkAddress];
+        }
+        if (self.configuration.networkHost.length > 0) {
+            [netstr appendFormat:@",host=%@", self.configuration.networkHost];
+        }
+        if (self.configuration.networkAddressIPv6.length > 0) {
+            [netstr appendFormat:@",ipv6-net=%@", self.configuration.networkAddressIPv6];
+        }
+        if (self.configuration.networkHostIPv6.length > 0) {
+            [netstr appendFormat:@",ipv6-host=%@", self.configuration.networkHostIPv6];
+        }
+        if (self.configuration.networkIsolate) {
+            [netstr appendString:@"restrict=on"];
+        }
+        if (self.configuration.networkHost.length > 0) {
+            [netstr appendFormat:@",hostname=%@", self.configuration.networkHost];
+        }
+        if (self.configuration.networkDhcpStart.length > 0) {
+            [netstr appendFormat:@",dhcpstart=%@", self.configuration.networkDhcpStart];
+        }
+        if (self.configuration.networkDnsServer.length > 0) {
+            [netstr appendFormat:@",dns=%@", self.configuration.networkDnsServer];
+        }
+        if (self.configuration.networkDnsServerIPv6.length > 0) {
+            [netstr appendFormat:@",ipv6-dns=%@", self.configuration.networkDnsServerIPv6];
+        }
+        if (self.configuration.networkDnsSearch.length > 0) {
+            [netstr appendFormat:@",dnssearch=%@", self.configuration.networkDnsSearch];
+        }
+        if (self.configuration.networkDhcpDomain.length > 0) {
+            [netstr appendFormat:@",domainname=%@", self.configuration.networkDhcpDomain];
+        }
+        for (NSUInteger i = 0; i < [self.configuration countPortForwards]; i++) {
+            UTMConfigurationPortForward *portForward = [self.configuration portForwardForIndex:i];
+            [netstr appendFormat:@",hostfwd=%@:%@:%ld-%@:%ld", portForward.protocol, portForward.hostAddress, portForward.hostPort, portForward.guestAddress, portForward.guestPort];
+        }
+        [self pushArgv:netstr];
+    } else {
+        [self pushArgv:@"-nic"];
+        [self pushArgv:@"none"];
+    }
+}
+
 - (void)argsFromConfiguration {
     [self clearArgv];
     [self pushArgv:@"qemu"];
@@ -159,25 +214,7 @@
         [self pushArgv:@"port=5930,addr=127.0.0.1,disable-ticketing,image-compression=off,playback-compression=off,streaming-video=off"];
 
     }
-    if (self.configuration.networkEnabled) {
-        [self pushArgv:@"-device"];
-        [self pushArgv:@"rtl8139,netdev=net0"];
-        [self pushArgv:@"-netdev"];
-        NSMutableString *netstr = [NSMutableString stringWithString:@"user,id=net0"];
-        if (self.configuration.networkIPSubnet) {
-            [netstr appendFormat:@",net=%@", self.configuration.networkIPSubnet];
-        }
-        if (self.configuration.networkDHCPStart) {
-            [netstr appendFormat:@",dhcpstart=%@", self.configuration.networkDHCPStart];
-        }
-        if (self.configuration.networkLocalhostOnly) {
-            [netstr appendString:@"restrict=on"];
-        }
-        [self pushArgv:netstr];
-    } else {
-        [self pushArgv:@"-nic"];
-        [self pushArgv:@"none"];
-    }
+    [self argsForNetwork];
     // usb input if not legacy
     if (!self.configuration.inputLegacy) {
         [self pushArgv:@"-device"];

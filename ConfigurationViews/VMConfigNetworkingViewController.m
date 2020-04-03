@@ -15,7 +15,7 @@
 //
 
 #import "VMConfigNetworkingViewController.h"
-#import "UTMConfiguration.h"
+#import "VMConfigSwitch.h"
 
 @interface VMConfigNetworkingViewController ()
 
@@ -23,38 +23,29 @@
 
 @implementation VMConfigNetworkingViewController
 
-- (void)viewDidLoad {
-    [super viewDidLoad];
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    [self showNetworkOptions:self.networkEnabledSwitch.on animated:NO];
 }
 
-- (void)refreshViewFromConfiguration {
-    [super refreshViewFromConfiguration];
-    self.networkingEnabledSwitch.on = self.configuration.networkEnabled;
-    self.localAccessOnlySwitch.on = self.configuration.networkLocalhostOnly;
-    self.networkAddressField.text = self.configuration.networkIPSubnet;
-    self.dhcpStartField.text = self.configuration.networkDHCPStart;
+- (void)showNetworkOptions:(BOOL)visible animated:(BOOL)animated {
+    if (!visible) {
+        [self hidePickersAnimated:animated];
+    }
+    [self cells:self.networkEnabledCells setHidden:!visible];
+    [self reloadDataAnimated:animated];
 }
 
-#pragma mark - Event handlers
-
-- (IBAction)networkingEnabledSwitchChanged:(UISwitch *)sender {
-    NSAssert(sender == self.networkingEnabledSwitch, @"Invalid sender");
-    self.configuration.networkEnabled = sender.on;
+- (IBAction)configTextFieldEditEnd:(VMConfigTextField *)sender {
+    // TODO: validate user input
+    [super configTextFieldEditEnd:sender];
 }
 
-- (IBAction)localAccessOnlySwitchChanged:(UISwitch *)sender {
-    NSAssert(sender == self.localAccessOnlySwitch, @"Invalid sender");
-    self.configuration.networkLocalhostOnly = sender.on;
-}
-
-- (IBAction)networkAddressFieldEdited:(UITextField *)sender {
-    NSAssert(sender == self.networkAddressField, @"Invalid sender");
-    self.configuration.networkIPSubnet = sender.text; // TODO: input validation
-}
-
-- (IBAction)dhcpStartFieldEdited:(UITextField *)sender {
-    NSAssert(sender == self.dhcpStartField, @"Invalid sender");
-    self.configuration.networkDHCPStart = sender.text; // TODO: input validation
+- (IBAction)configSwitchChanged:(VMConfigSwitch *)sender {
+    if (sender == self.networkEnabledSwitch) {
+        [self showNetworkOptions:sender.on animated:YES];
+    }
+    [super configSwitchChanged:sender];
 }
 
 @end

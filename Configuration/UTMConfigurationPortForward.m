@@ -1,5 +1,5 @@
 //
-// Copyright © 2019 osy. All rights reserved.
+// Copyright © 2020 osy. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,16 +14,8 @@
 // limitations under the License.
 //
 
-#import <UIKit/UIKit.h>
-#import "VMConfigViewController.h"
+#import "UTMConfigurationPortForward.h"
 
-NS_ASSUME_NONNULL_BEGIN
-
-@interface VMConfigNetworkingViewController : VMConfigViewController
-
-@property (weak, nonatomic) IBOutlet UISwitch *networkEnabledSwitch;
-@property (strong, nonatomic) IBOutletCollection(UITableViewCell) NSArray *networkEnabledCells;
+@implementation UTMConfigurationPortForward
 
 @end
-
-NS_ASSUME_NONNULL_END

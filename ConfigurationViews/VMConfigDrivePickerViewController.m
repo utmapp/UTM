@@ -16,6 +16,7 @@
 
 #import "VMConfigDrivePickerViewController.h"
 #import "UTMConfiguration.h"
+#import "UTMConfiguration+Constants.h"
 #import "VMConfigDriveCreateViewController.h"
 
 @interface VMConfigDrivePickerViewController ()

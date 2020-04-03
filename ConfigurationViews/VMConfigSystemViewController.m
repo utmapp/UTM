@@ -18,7 +18,8 @@
 #import <mach/mach_host.h>
 #import <sys/sysctl.h>
 #import "VMConfigSystemViewController.h"
-#import "UTMConfiguration.h"
+#import "UTMConfiguration+Constants.h"
+#import "UTMConfiguration+System.h"
 
 const NSUInteger kMBinBytes = 1024 * 1024;
 const NSUInteger kMinCodeGenBufferSizeMB = 1;
