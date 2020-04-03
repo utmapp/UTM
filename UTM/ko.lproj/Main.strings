@@ -45,7 +45,7 @@
 "4XD-uH-MNJ.normalTitle" = "F3";
 
 /* Class = "UILabel"; text = "DHCP Start"; ObjectID = "5O8-6K-mxz"; */
-"5O8-6K-mxz.text" = "DHCP 할당 시작잠";
+"5O8-6K-mxz.text" = "DHCP 할당 시작점";
 
 /* Class = "UIButton"; accessibilityLabel = "Right"; ObjectID = "6Oy-qX-zoY"; */
 "6Oy-qX-zoY.accessibilityLabel" = "Right";
@@ -186,7 +186,7 @@
 "MAs-NR-G0n.text" = "MB";
 
 /* Class = "UITableViewSection"; footerTitle = "Default JIT Cache size is 1/4 of the allocated Memory size. This is in addition to the host memory! Force Multicore will allow multi-CPU emulation even if the memory model is not supported by QEMU (x86 on ARM for example). This could result in incorrect emulation. If disabled and CPU Count is > 1 then all cores will be emulated by a single core causing reduced performance."; ObjectID = "MGc-rW-PLa"; */
-"MGc-rW-PLa.footerTitle" = "기본적으로 JIT Cache는 할당한 메모리의 1/4을 추가로 요구합니다. 멀티코어를 강제로 활성화하면 QEMU에서 지원하지 않는(ARM에서 x86 구동과 같이) 에뮬레이션도 멀티코어를 쓰게 되고, 이는 부정확한 결과를 초래할 수 있습니다. 이 옵션을 비활성화하고 CPU 코어 개수가 두 개 이상일 시 모두 싱글코어로 에뮬레이션되고 이는 성능하락을 초래할 수 있습니다.";
+"MGc-rW-PLa.footerTitle" = "JIT Cache는 기본값으로 할당한 메모리의 1/4를 추가로 요구합니다.\n현재 QEMU는 멀티코어를 지원하지 않아, 멀티코어 강제 활성화는 잘못된 결과를 초래할 수 있습니다. CPU 코어 개수를 두 개 이상으로 설정하고 이 옵션을 비활성화 한 경우, 모두 싱글코어에서 에뮬레이션되어 성능 하락을 초래할 수 있습니다.";
 
 /* Class = "UITableViewSection"; headerTitle = "QEMU"; ObjectID = "MGc-rW-PLa"; */
 "MGc-rW-PLa.headerTitle" = "QEMU";
@@ -351,7 +351,7 @@
 "fDF-an-yxM.text" = "활성화";
 
 /* Class = "UILabel"; text = "Network"; ObjectID = "fOG-3K-1lH"; */
-"fOG-3K-1lH.text" = "네트워크";
+"fOG-3K-1lH.text" = "네트워크 대역";
 
 /* Class = "UILabel"; text = "Display"; ObjectID = "fZG-YK-q4O"; */
 "fZG-YK-q4O.text" = "디스플레이";

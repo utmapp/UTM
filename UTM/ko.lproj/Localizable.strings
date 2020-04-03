@@ -41,7 +41,7 @@
 "Are you sure you want to stop this VM and exit? Any unsaved changes will be lost." = "VM을 종료하시겠습니까?\n저장하지 않은 변경사항은 삭제됩니다.";
 "Hint: To show the toolbar again, use a three-finger swipe down on the screen." = "힌트: 도구모음을 다시 보려면, 세 손가락으로 화면을 쓸어내리세요.";
 "Running low on memory! UTM might soon be killed by iOS. You can prevent this by decreasing the amount of memory and/or JIT cache assigned to this VM" = "메모리가 부족합니다! UTM은 곧 iOS에 의해 종료될 것입니다. 메모리의 값을 줄이거나, VM에 할당한 JIT Cache의 값을 줄여 이 문제를 해결할 수 있습니다.";
-"Welcome to UTM! Due to a bug in iOS, if you force kill this app, the system will be unstable and you cannot launch UTM again until you reboot. The recommended way to terminate this app is the button on the top left." = "UTM에 오신 것을 환영합니다! iOS의 버그로 인해, 앱을 강제종료하면 재부팅을 하기 전까지 UTM을 다시 실행할 수 없습니다. 따라서 좌측 상단의 버튼을 이용하여 종료해주시기 바랍니다.";
+"Welcome to UTM! Due to a bug in iOS, if you force kill this app, the system will be unstable and you cannot launch UTM again until you reboot. The recommended way to terminate this app is the button on the top left." = "UTM에 오신 것을 환영합니다! iOS의 버그로 인해, 앱을 강제종료하면 재부팅을 하기 전까지 UTM을 실행할 수 없습니다. 따라서 좌측 상단의 버튼을 이용하여 종료해주시기 바랍니다.";
 "New VM name" = "새 VM 이름";
 "Saving %@..." = "%@ 저장중...";
 "Deleting %@..." = "%@를 삭제하는 중...";
