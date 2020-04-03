@@ -76,19 +76,15 @@ const NSString *const kUTMConfigDebugLogKey = @"DebugLog";
 
 @interface UTMConfiguration ()
 
+@property (nonatomic, readonly) NSMutableDictionary *rootDict;
+
 @end
 
 @implementation UTMConfiguration {
     NSMutableDictionary *_rootDict;
-    NSMutableDictionary *_systemDict;
-    NSMutableDictionary *_displayDict;
-    NSMutableDictionary *_inputDict;
-    NSMutableDictionary *_networkingDict;
-    NSMutableDictionary *_printingDict;
-    NSMutableDictionary *_soundDict;
-    NSMutableDictionary *_sharingDict;
-    NSMutableArray<NSMutableDictionary *> *_drivesDicts;
 }
+
+@synthesize rootDict = _rootDict;
 
 #pragma mark - Constant supported values
 
