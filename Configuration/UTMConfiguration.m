@@ -115,6 +115,7 @@ const NSString *const kUTMConfigDebugLogKey = @"DebugLog";
         self.printEnabled = YES;
         self.soundEnabled = YES;
         self.soundCard = @"ac97";
+        self.networkCard = @"rtl8139";
         self.sharingClipboardEnabled = YES;
         self.name = name;
         self.existingPath = nil;
