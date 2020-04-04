@@ -24,6 +24,12 @@
 NSString *const kVMSendInputHandler = @"UTMSendInput";
 NSString* const kVMDebugHandler = @"UTMDebug";
 
+@interface VMTerminalViewController ()
+
+@property (nonatomic, readonly) BOOL largeScreen;
+
+@end
+
 @implementation VMTerminalViewController {
     // status bar
     BOOL _prefersStatusBarHidden;
@@ -37,6 +43,10 @@ NSString* const kVMDebugHandler = @"UTMDebug";
 @synthesize vmMessage;
 @synthesize vmConfiguration;
 @synthesize keyboardVisible;
+
+- (BOOL)largeScreen {
+    return self.traitCollection.horizontalSizeClass == UIUserInterfaceSizeClassRegular && self.traitCollection.verticalSizeClass == UIUserInterfaceSizeClassRegular;
+}
 
 - (BOOL)prefersStatusBarHidden {
     return _prefersStatusBarHidden;
@@ -66,6 +76,10 @@ NSString* const kVMDebugHandler = @"UTMDebug";
     NSURL* resourceURL = [[NSBundle mainBundle] resourceURL];
     NSURL* indexFile = [resourceURL URLByAppendingPathComponent: @"terminal.html"];
     [_webView loadFileURL: indexFile allowingReadAccessToURL: resourceURL];
+    
+    if (self.largeScreen) {
+        self.prefersStatusBarHidden = YES;
+    }
 }
 
 - (void)viewDidLayoutSubviews {
@@ -388,7 +402,9 @@ NSString* const kVMDebugHandler = @"UTMDebug";
 - (void)showToolbar {
     [UIView transitionWithView:self.view duration:0.3 options:UIViewAnimationOptionTransitionCrossDissolve animations:^{
         self.toolbarAccessoryView.hidden = NO;
-        self.prefersStatusBarHidden = NO;
+        if (!self.largeScreen) {
+            self.prefersStatusBarHidden = NO;
+        }
     } completion:nil];
     [self updateWebViewScrollOffset:NO];
 }

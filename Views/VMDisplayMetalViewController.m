@@ -32,6 +32,7 @@
 @interface VMDisplayMetalViewController ()
 
 @property (nonatomic, readwrite, weak) UTMSpiceIO *spiceIO;
+@property (nonatomic, readonly) BOOL largeScreen;
 
 @end
 
@@ -53,6 +54,10 @@
 @synthesize vmConfiguration;
 @synthesize vmDisplay;
 @synthesize vmInput;
+
+- (BOOL)largeScreen {
+    return self.traitCollection.horizontalSizeClass == UIUserInterfaceSizeClassRegular && self.traitCollection.verticalSizeClass == UIUserInterfaceSizeClassRegular;
+}
 
 - (BOOL)prefersStatusBarHidden {
     return _prefersStatusBarHidden;
@@ -114,6 +119,10 @@
     // view state and observers
     _toolbarVisible = YES;
     _keyboardVisible = NO;
+    
+    if (self.largeScreen) {
+        self.prefersStatusBarHidden = YES;
+    }
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -255,7 +264,9 @@
 - (void)showToolbar {
     [UIView transitionWithView:self.view duration:0.3 options:UIViewAnimationOptionTransitionCrossDissolve animations:^{
         self.toolbarAccessoryView.hidden = NO;
-        self.prefersStatusBarHidden = NO;
+        if (!self.largeScreen) {
+            self.prefersStatusBarHidden = NO;
+        }
     } completion:nil];
 }
 

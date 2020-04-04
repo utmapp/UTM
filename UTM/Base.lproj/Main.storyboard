@@ -2639,7 +2639,7 @@
                                                 <rect key="frame" x="0.0" y="0.0" width="375" height="89"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
-                                                    <stackView opaque="NO" contentMode="scaleToFill" spacing="16" translatesAutoresizingMaskIntoConstraints="NO" id="Z0A-c7-3p0">
+                                                    <stackView opaque="NO" contentMode="scaleToFill" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="Z0A-c7-3p0">
                                                         <rect key="frame" x="215" y="51" width="144" height="30"/>
                                                         <subviews>
                                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" pointerInteraction="YES" translatesAutoresizingMaskIntoConstraints="NO" id="m9f-Az-rlH">
@@ -2689,10 +2689,8 @@
                                                                 </connections>
                                                             </button>
                                                         </subviews>
-                                                        <variation key="widthClass=compact" spacing="8"/>
-                                                        <variation key="heightClass=compact-widthClass=regular" spacing="8"/>
                                                     </stackView>
-                                                    <stackView opaque="NO" contentMode="scaleToFill" spacing="16" translatesAutoresizingMaskIntoConstraints="NO" id="nJG-8W-K7c">
+                                                    <stackView opaque="NO" contentMode="scaleToFill" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="nJG-8W-K7c">
                                                         <rect key="frame" x="16" y="51" width="106" height="30"/>
                                                         <subviews>
                                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" pointerInteraction="YES" translatesAutoresizingMaskIntoConstraints="NO" id="0Wo-4E-exJ">
@@ -2735,8 +2733,6 @@
                                                                 </connections>
                                                             </button>
                                                         </subviews>
-                                                        <variation key="widthClass=compact" spacing="8"/>
-                                                        <variation key="heightClass=compact-widthClass=regular" spacing="8"/>
                                                     </stackView>
                                                 </subviews>
                                                 <constraints>
@@ -2763,14 +2759,9 @@
                                     <constraint firstAttribute="width" constant="300" id="nIh-6e-A5U"/>
                                 </constraints>
                                 <blurEffect style="light"/>
-                                <variation key="default">
+                                <variation key="heightClass=regular-widthClass=compact">
                                     <mask key="constraints">
                                         <exclude reference="nIh-6e-A5U"/>
-                                    </mask>
-                                </variation>
-                                <variation key="heightClass=compact">
-                                    <mask key="constraints">
-                                        <include reference="nIh-6e-A5U"/>
                                     </mask>
                                 </variation>
                             </visualEffectView>
@@ -3337,7 +3328,7 @@
                                                 <rect key="frame" x="0.0" y="0.0" width="375" height="89"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
-                                                    <stackView opaque="NO" contentMode="scaleToFill" spacing="16" translatesAutoresizingMaskIntoConstraints="NO" id="yP3-BT-kx0">
+                                                    <stackView opaque="NO" contentMode="scaleToFill" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="yP3-BT-kx0">
                                                         <rect key="frame" x="253" y="51" width="106" height="30"/>
                                                         <subviews>
                                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gFL-3M-wsD">
@@ -3374,10 +3365,8 @@
                                                                 </connections>
                                                             </button>
                                                         </subviews>
-                                                        <variation key="widthClass=compact" spacing="8"/>
-                                                        <variation key="heightClass=compact-widthClass=regular" spacing="8"/>
                                                     </stackView>
-                                                    <stackView opaque="NO" contentMode="scaleToFill" spacing="16" translatesAutoresizingMaskIntoConstraints="NO" id="bG0-b9-QzE">
+                                                    <stackView opaque="NO" contentMode="scaleToFill" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="bG0-b9-QzE">
                                                         <rect key="frame" x="16" y="51" width="106" height="30"/>
                                                         <subviews>
                                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="cIe-Bu-ydq">
@@ -3421,8 +3410,6 @@
                                                                 </connections>
                                                             </button>
                                                         </subviews>
-                                                        <variation key="widthClass=compact" spacing="8"/>
-                                                        <variation key="heightClass=compact-widthClass=regular" spacing="8"/>
                                                     </stackView>
                                                 </subviews>
                                                 <constraints>
@@ -3449,14 +3436,9 @@
                                     <constraint firstAttribute="width" constant="300" id="qhw-Mc-SlO"/>
                                 </constraints>
                                 <blurEffect style="light"/>
-                                <variation key="default">
+                                <variation key="heightClass=regular-widthClass=compact">
                                     <mask key="constraints">
                                         <exclude reference="qhw-Mc-SlO"/>
-                                    </mask>
-                                </variation>
-                                <variation key="heightClass=compact">
-                                    <mask key="constraints">
-                                        <include reference="qhw-Mc-SlO"/>
                                     </mask>
                                 </variation>
                             </visualEffectView>
