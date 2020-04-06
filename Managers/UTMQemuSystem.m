@@ -163,6 +163,13 @@
     }
 }
 
+- (NSString *)machineProperties {
+    if ([self.configuration.systemTarget hasPrefix:@"pc"] || [self.configuration.systemTarget hasPrefix:@"q35"]) {
+        return @"vmport=off";
+    }
+    return @"";
+}
+
 - (void)argsFromConfiguration {
     [self clearArgv];
     [self pushArgv:@"qemu"];
@@ -173,7 +180,7 @@
     [self pushArgv:@"-smp"];
     [self pushArgv:[NSString stringWithFormat:@"cpus=%@,sockets=1", self.configuration.systemCPUCount]];
     [self pushArgv:@"-machine"];
-    [self pushArgv:[NSString stringWithFormat:@"%@,vmport=off", self.configuration.systemTarget]];
+    [self pushArgv:[NSString stringWithFormat:@"%@,%@", self.configuration.systemTarget, [self machineProperties]]];
     if (self.configuration.systemForceMulticore) {
         [self pushArgv:@"-accel"];
         [self pushArgv:@"tcg,thread=multi"];
