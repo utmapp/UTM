@@ -173,7 +173,7 @@
     [self pushArgv:@"-smp"];
     [self pushArgv:[NSString stringWithFormat:@"cpus=%@,sockets=1", self.configuration.systemCPUCount]];
     [self pushArgv:@"-machine"];
-    [self pushArgv:self.configuration.systemTarget];
+    [self pushArgv:[NSString stringWithFormat:@"%@,vmport=off", self.configuration.systemTarget]];
     if (self.configuration.systemForceMulticore) {
         [self pushArgv:@"-accel"];
         [self pushArgv:@"tcg,thread=multi"];
