@@ -4061,7 +4061,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
                         <sections>
-                            <tableViewSection headerTitle="Clipboard Sharing" id="Fjo-PM-Pc6">
+                            <tableViewSection headerTitle="Clipboard Sharing" footerTitle="Requires SPICE guest agent tools to be installed." id="Fjo-PM-Pc6">
                                 <cells>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" id="Op0-ty-SlQ">
                                         <rect key="frame" x="0.0" y="55.333332061767578" width="375" height="44"/>
@@ -4076,10 +4076,13 @@
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
-                                                <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="d0M-jH-bn7">
+                                                <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="d0M-jH-bn7" customClass="VMConfigSwitch">
                                                     <rect key="frame" x="310" y="6.6666666666666679" width="51" height="31.000000000000004"/>
+                                                    <userDefinedRuntimeAttributes>
+                                                        <userDefinedRuntimeAttribute type="string" keyPath="configurationPath" value="sharingClipboardEnabled"/>
+                                                    </userDefinedRuntimeAttributes>
                                                     <connections>
-                                                        <action selector="clipboardSharingEnabledSwitchChanged:" destination="LLP-fa-BIK" eventType="valueChanged" id="h2h-UQ-8ba"/>
+                                                        <action selector="configSwitchChanged:" destination="LLP-fa-BIK" eventType="valueChanged" id="IJO-6M-i9l"/>
                                                     </connections>
                                                 </switch>
                                             </subviews>
@@ -4097,13 +4100,13 @@
                             <tableViewSection headerTitle="Shared Directories" id="dpu-6y-nD0">
                                 <cells>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" accessoryType="disclosureIndicator" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" textLabel="DvR-Gm-qGA" style="IBUITableViewCellStyleDefault" id="nmW-d9-PT5">
-                                        <rect key="frame" x="0.0" y="155.33333206176758" width="375" height="44"/>
+                                        <rect key="frame" x="0.0" y="167.33333206176758" width="375" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="nmW-d9-PT5" id="ddR-Mm-4Vn">
                                             <rect key="frame" x="0.0" y="0.0" width="348" height="44"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="Add new..." textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="DvR-Gm-qGA">
+                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="Unimplemented" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="DvR-Gm-qGA">
                                                     <rect key="frame" x="16" y="0.0" width="324" height="44"/>
                                                     <autoresizingMask key="autoresizingMask"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
@@ -4123,7 +4126,7 @@
                     </tableView>
                     <navigationItem key="navigationItem" title="Sharing" id="ONw-62-0F5"/>
                     <connections>
-                        <outlet property="clipboardSharingEnabledSwitch" destination="d0M-jH-bn7" id="lNE-qG-5cl"/>
+                        <outletCollection property="configControls" destination="d0M-jH-bn7" id="bvJ-ga-FKu"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="aec-Ui-ggd" userLabel="First Responder" sceneMemberID="firstResponder"/>
