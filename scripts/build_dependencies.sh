@@ -108,6 +108,9 @@ download_all () {
     download $GST_SRC
     download $GST_BASE_SRC
     download $GST_GOOD_SRC
+    download $XML2_SRC
+    download $SOUP_SRC
+    download $PHODAV_SRC
     download $SPICE_CLIENT_SRC
     download $QEMU_SRC
 }
@@ -225,6 +228,9 @@ build_spice_client () {
     build $GST_SRC --enable-static --enable-static-plugins --disable-registry
     build $GST_BASE_SRC --enable-static --disable-fatal-warnings
     build $GST_GOOD_SRC --enable-static
+    build $XML2_SRC --enable-shared=no --without-python
+    build $SOUP_SRC --without-gnome --without-krb5-config --enable-shared=no
+    build $PHODAV_SRC
     build $SPICE_CLIENT_SRC --with-gtk=no
 }
 

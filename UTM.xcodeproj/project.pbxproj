@@ -12,6 +12,8 @@
 		83FBDD56242FA7BC00D2C5D7 /* VMDisplayMetalViewController+Pointer.m in Sources */ = {isa = PBXBuildFile; fileRef = 83FBDD55242FA7BC00D2C5D7 /* VMDisplayMetalViewController+Pointer.m */; };
 		83FBDD57242FA92300D2C5D7 /* VMDisplayMetalViewController+Pointer.h in Sources */ = {isa = PBXBuildFile; fileRef = 83FBDD53242FA71900D2C5D7 /* VMDisplayMetalViewController+Pointer.h */; };
 		CE056CA6242454100004B68A /* VMDisplayMetalViewController+Touch.m in Sources */ = {isa = PBXBuildFile; fileRef = CE056CA5242454100004B68A /* VMDisplayMetalViewController+Touch.m */; };
+		CE059DC1243BD67200338317 /* libphodav-2.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE059DC0243BD67100338317 /* libphodav-2.0.0.dylib */; };
+		CE059DC2243BD67200338317 /* libphodav-2.0.0.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE059DC0243BD67100338317 /* libphodav-2.0.0.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CE23C16123FCEC0A001177D6 /* qapi-commands-run-state.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C07E23FCEBFF001177D6 /* qapi-commands-run-state.c */; };
 		CE23C16223FCEC0A001177D6 /* qapi-visit-tpm.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C07F23FCEBFF001177D6 /* qapi-visit-tpm.c */; };
 		CE23C16323FCEC0A001177D6 /* qapi-commands-rocker.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C08123FCEBFF001177D6 /* qapi-commands-rocker.c */; };
@@ -358,6 +360,7 @@
 				CE2D647122653C8400FC7E63 /* libgstrtp-1.0.0.dylib in Embed Libraries */,
 				CE2D647022653C8400FC7E63 /* libgstriff-1.0.0.dylib in Embed Libraries */,
 				CE2D648F22653C8600FC7E63 /* libqemu-system-ppc.dylib in Embed Libraries */,
+				CE059DC2243BD67200338317 /* libphodav-2.0.0.dylib in Embed Libraries */,
 				CE2D647622653C8400FC7E63 /* libgthread-2.0.0.dylib in Embed Libraries */,
 				CE2D647E22653C8500FC7E63 /* libqemu-system-aarch64.dylib in Embed Libraries */,
 				CE2D648822653C8500FC7E63 /* libqemu-system-mips.dylib in Embed Libraries */,
@@ -420,6 +423,7 @@
 		C8958B6D243634DA002D86B4 /* ko */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ko; path = ko.lproj/Localizable.strings; sourceTree = "<group>"; };
 		CE056CA4242454100004B68A /* VMDisplayMetalViewController+Touch.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "VMDisplayMetalViewController+Touch.h"; sourceTree = "<group>"; };
 		CE056CA5242454100004B68A /* VMDisplayMetalViewController+Touch.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "VMDisplayMetalViewController+Touch.m"; sourceTree = "<group>"; };
+		CE059DC0243BD67100338317 /* libphodav-2.0.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libphodav-2.0.0.dylib"; path = "sysroot-$(PLATFORM_PREFERRED_ARCH)/lib/libphodav-2.0.0.dylib"; sourceTree = "<group>"; };
 		CE23C07B23FCEBFF001177D6 /* qapi-visit-error.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-visit-error.h"; path = "sysroot-$(PLATFORM_PREFERRED_ARCH)/qapi/qapi-visit-error.h"; sourceTree = SOURCE_ROOT; };
 		CE23C07C23FCEBFF001177D6 /* qapi-events-machine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-events-machine.h"; path = "sysroot-$(PLATFORM_PREFERRED_ARCH)/qapi/qapi-events-machine.h"; sourceTree = SOURCE_ROOT; };
 		CE23C07D23FCEBFF001177D6 /* qapi-commands-block-core.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-commands-block-core.h"; path = "sysroot-$(PLATFORM_PREFERRED_ARCH)/qapi/qapi-commands-block-core.h"; sourceTree = SOURCE_ROOT; };
@@ -935,6 +939,7 @@
 				CE2D642622653C7600FC7E63 /* libffi.6.dylib in Frameworks */,
 				CE2D642822653C7600FC7E63 /* libgstnet-1.0.0.dylib in Frameworks */,
 				CE2D642B22653C7600FC7E63 /* libgstbase-1.0.0.dylib in Frameworks */,
+				CE059DC1243BD67200338317 /* libphodav-2.0.0.dylib in Frameworks */,
 				CE2D643122653C7600FC7E63 /* libgstcontroller-1.0.0.dylib in Frameworks */,
 				CE2D643222653C7600FC7E63 /* libgstaudio-1.0.0.dylib in Frameworks */,
 				CE2D643422653C7600FC7E63 /* libgpg-error.0.dylib in Frameworks */,
@@ -980,6 +985,7 @@
 		CE2D63D622653C7300FC7E63 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				CE059DC0243BD67100338317 /* libphodav-2.0.0.dylib */,
 				CE66450C2269313200B0849A /* MetalKit.framework */,
 				CE9D195D2265425900355E14 /* libgstadder.a */,
 				CE9D19612265425900355E14 /* libgstapp.a */,

@@ -1,0 +1,107 @@
+diff -ruN a/Makefile.in b/Makefile.in
+--- a/Makefile.in	2018-10-08 05:56:21.000000000 -0700
++++ b/Makefile.in	2020-04-06 14:11:06.000000000 -0700
+@@ -452,7 +452,7 @@
+ top_builddir = @top_builddir@
+ top_srcdir = @top_srcdir@
+ ACLOCAL_AMFLAGS = -I m4 ${ACLOCAL_FLAGS}
+-SUBDIRS = libsoup po tests examples docs 
++SUBDIRS = libsoup
+ EXTRA_DIST = \
+ 	libsoup-2.4.pc.in		\
+ 	libsoup-gnome-2.4.pc.in		\
+diff -ruN a/configure b/configure
+--- a/configure	2018-10-08 05:56:21.000000000 -0700
++++ b/configure	2020-04-06 14:12:07.000000000 -0700
+@@ -12970,7 +12970,7 @@
+ 
+   fi
+ 
+-
++if false; then # disable dependency checks
+ 
+ pkg_failed=no
+ { $as_echo "$as_me:${as_lineno-$LINENO}: checking for XML" >&5
+@@ -13251,8 +13251,7 @@
+ 
+ fi
+ 
+-
+-
++fi
+ 
+ { $as_echo "$as_me:${as_lineno-$LINENO}: checking for Win32" >&5
+ $as_echo_n "checking for Win32... " >&6; }
+@@ -13304,7 +13303,7 @@
+ $as_echo "$USE_NLS" >&6; }
+ 
+ 
+-
++if false; then # disable intltool check
+ 
+ case "$am__api_version" in
+     1.01234)
+@@ -13828,7 +13827,7 @@
+ # Substitute ALL_LINGUAS so we can use it in po/Makefile
+ 
+ 
+-
++fi
+ 
+ 
+ GETTEXT_PACKAGE=libsoup
+diff -ruN a/libsoup/Makefile.in b/libsoup/Makefile.in
+--- a/libsoup/Makefile.in	2018-10-08 05:56:22.000000000 -0700
++++ b/libsoup/Makefile.in	2020-04-06 14:07:04.000000000 -0700
+@@ -175,9 +175,6 @@
+ 	libsoup_2_4_la-soup-content-sniffer-stream.lo \
+ 	libsoup_2_4_la-soup-converter-wrapper.lo \
+ 	libsoup_2_4_la-soup-cookie.lo \
+-	libsoup_2_4_la-soup-cookie-jar.lo \
+-	libsoup_2_4_la-soup-cookie-jar-db.lo \
+-	libsoup_2_4_la-soup-cookie-jar-text.lo \
+ 	libsoup_2_4_la-soup-date.lo \
+ 	libsoup_2_4_la-soup-directory-input-stream.lo \
+ 	libsoup_2_4_la-soup-enum-types.lo \
+@@ -211,13 +208,11 @@
+ 	libsoup_2_4_la-soup-session-sync.lo \
+ 	libsoup_2_4_la-soup-socket.lo \
+ 	libsoup_2_4_la-soup-socket-properties.lo \
+-	libsoup_2_4_la-soup-status.lo libsoup_2_4_la-soup-tld.lo \
++	libsoup_2_4_la-soup-status.lo \
+ 	libsoup_2_4_la-soup-uri.lo libsoup_2_4_la-soup-value-utils.lo \
+ 	libsoup_2_4_la-soup-version.lo \
+ 	libsoup_2_4_la-soup-websocket.lo \
+-	libsoup_2_4_la-soup-websocket-connection.lo \
+-	libsoup_2_4_la-soup-xmlrpc.lo \
+-	libsoup_2_4_la-soup-xmlrpc-old.lo
++	libsoup_2_4_la-soup-websocket-connection.lo
+ libsoup_2_4_la_OBJECTS = $(am_libsoup_2_4_la_OBJECTS)
+ AM_V_lt = $(am__v_lt_@AM_V@)
+ am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
+@@ -733,9 +728,6 @@
+ 	soup-converter-wrapper.h	\
+ 	soup-converter-wrapper.c	\
+ 	soup-cookie.c			\
+-	soup-cookie-jar.c		\
+-	soup-cookie-jar-db.c		\
+-	soup-cookie-jar-text.c		\
+ 	soup-date.c			\
+ 	soup-directory-input-stream.h	\
+ 	soup-directory-input-stream.c	\
+@@ -786,14 +778,11 @@
+ 	soup-socket-private.h		\
+ 	soup-socket-properties.c	\
+ 	soup-status.c			\
+-	soup-tld.c			\
+ 	soup-uri.c			\
+ 	soup-value-utils.c		\
+ 	soup-version.c			\
+ 	soup-websocket.c		\
+-	soup-websocket-connection.c	\
+-	soup-xmlrpc.c			\
+-	soup-xmlrpc-old.c
++	soup-websocket-connection.c
+ 
+ @BUILD_LIBSOUP_GNOME_TRUE@libsoupgnomeincludedir = $(includedir)/libsoup-gnome-2.4/libsoup
+ @BUILD_LIBSOUP_GNOME_TRUE@libsoupgnomeinclude_HEADERS = \
