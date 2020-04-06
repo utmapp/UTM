@@ -1,5 +1,5 @@
 //
-// Copyright © 2019 osy. All rights reserved.
+// Copyright © 2020 osy. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,22 +14,19 @@
 // limitations under the License.
 //
 
-#ifndef CocoaSpice_h
-#define CocoaSpice_h
+#import <Foundation/Foundation.h>
 
-#include "CSConnection.h"
-#include "CSDisplayMetal.h"
-#include "CSInput.h"
-#include "CSMain.h"
-#include "CSSession.h"
+typedef struct _SpiceSession SpiceSession;
 
-#define GLIB_OBJC_RETAIN(x) (__bridge_retained void *)(x)
-#define GLIB_OBJC_RELEASE(x) (__bridge void *)(__bridge_transfer NSObject *)(__bridge void *)(x)
+NS_ASSUME_NONNULL_BEGIN
 
-#define DISPLAY_DEBUG(display, fmt, ...) \
-    SPICE_DEBUG("%d:%d " fmt, \
-        (int)display.channelID, \
-        (int)display.monitorID, \
-        ## __VA_ARGS__)
+@interface CSSession : NSObject
 
-#endif /* CocoaSpice_h */
+@property (nonatomic, readonly, nullable) SpiceSession *session;
+@property (nonatomic) BOOL shareClipboard;
+
+- (id)initWithSession:(nonnull SpiceSession *)session;
+
+@end
+
+NS_ASSUME_NONNULL_END

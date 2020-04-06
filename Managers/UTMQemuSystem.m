@@ -227,6 +227,15 @@
         [self pushArgv:self.snapshot];
     }
     
+    if (self.configuration.sharingClipboardEnabled) {
+        [self pushArgv:@"-device"];
+        [self pushArgv:@"virtio-serial"];
+        [self pushArgv:@"-device"];
+        [self pushArgv:@"virtserialport,chardev=vdagent,name=com.redhat.spice.0"];
+        [self pushArgv:@"-chardev"];
+        [self pushArgv:@"spicevmc,id=vdagent,debug=0,name=vdagent"];
+    }
+    
     if (self.configuration.systemArguments.count != 0) {
         NSArray *addArgs = self.configuration.systemArguments;
         // Splits all spaces into their own, except when between quotes.

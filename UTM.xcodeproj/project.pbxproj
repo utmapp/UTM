@@ -253,6 +253,7 @@
 		CE5425312437C09C00E520F7 /* UTMConfiguration+Drives.m in Sources */ = {isa = PBXBuildFile; fileRef = CE5425302437C09C00E520F7 /* UTMConfiguration+Drives.m */; };
 		CE5425342437C22A00E520F7 /* UTMConfiguration+System.m in Sources */ = {isa = PBXBuildFile; fileRef = CE5425332437C22A00E520F7 /* UTMConfiguration+System.m */; };
 		CE5425372437DDE900E520F7 /* UTMConfiguration+Constants.m in Sources */ = {isa = PBXBuildFile; fileRef = CE5425362437DDE900E520F7 /* UTMConfiguration+Constants.m */; };
+		CE54253A2439334400E520F7 /* CSSession.m in Sources */ = {isa = PBXBuildFile; fileRef = CE5425392439334400E520F7 /* CSSession.m */; };
 		CE550BCE225947990063E575 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CE550BCD225947990063E575 /* AppDelegate.m */; };
 		CE550BD1225947990063E575 /* VMListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CE550BD0225947990063E575 /* VMListViewController.m */; };
 		CE550BD4225947990063E575 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CE550BD2225947990063E575 /* Main.storyboard */; };
@@ -772,6 +773,8 @@
 		CE5425332437C22A00E520F7 /* UTMConfiguration+System.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UTMConfiguration+System.m"; sourceTree = "<group>"; };
 		CE5425352437DDE900E520F7 /* UTMConfiguration+Constants.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UTMConfiguration+Constants.h"; sourceTree = "<group>"; };
 		CE5425362437DDE900E520F7 /* UTMConfiguration+Constants.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UTMConfiguration+Constants.m"; sourceTree = "<group>"; };
+		CE5425382439334400E520F7 /* CSSession.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CSSession.h; sourceTree = "<group>"; };
+		CE5425392439334400E520F7 /* CSSession.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CSSession.m; sourceTree = "<group>"; };
 		CE550BC9225947990063E575 /* UTM.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = UTM.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CE550BCC225947990063E575 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		CE550BCD225947990063E575 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -1342,6 +1345,8 @@
 				CE664510226935F000B0849A /* CSInput.m */,
 				CE26FC23226EBC5A0090BE9B /* CSMain.h */,
 				CE26FC24226EBC5A0090BE9B /* CSMain.m */,
+				CE5425382439334400E520F7 /* CSSession.h */,
+				CE5425392439334400E520F7 /* CSSession.m */,
 			);
 			path = CocoaSpice;
 			sourceTree = "<group>";
@@ -1689,6 +1694,7 @@
 				CE23C1BD23FCEC0A001177D6 /* qapi-types-job.c in Sources */,
 				CE9D197C226542FE00355E14 /* UTMQemu.m in Sources */,
 				CE23C1AB23FCEC0A001177D6 /* qapi-visit-machine.c in Sources */,
+				CE54253A2439334400E520F7 /* CSSession.m in Sources */,
 				CE23C18E23FCEC0A001177D6 /* qapi-commands-machine-target.c in Sources */,
 				CE54252E2436E48D00E520F7 /* UTMConfigurationPortForward.m in Sources */,
 				CE23C1C723FCEC0A001177D6 /* qapi-events.c in Sources */,

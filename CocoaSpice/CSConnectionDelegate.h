@@ -19,6 +19,7 @@
 @class CSConnection;
 @class CSDisplayMetal;
 @class CSInput;
+@class CSSession;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -28,6 +29,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)spiceDisconnected:(CSConnection *)connection;
 - (void)spiceError:(CSConnection *)connection err:(nullable NSString *)msg;
 - (void)spiceDisplayCreated:(CSConnection *)connection display:(CSDisplayMetal *)display input:(CSInput *)input;
+- (void)spiceSessionCreated:(CSConnection *)connection session:(CSSession *)session;
 
 @end
 

@@ -18,12 +18,19 @@
 #import <glib.h>
 #import <spice-client.h>
 
+@interface CSConnection ()
+
+@property (nonatomic, readwrite) CSSession *session;
+
+@end
+
 @implementation CSConnection {
     SpiceSession     *_session;
     SpiceMainChannel *_main;
     SpiceAudio       *_audio;
     NSMutableArray<NSMutableArray<CSDisplayMetal *> *> *_monitors;
     NSMutableArray<NSMutableArray<CSInput *> *> *_inputs;
+    CSSession        *_csSession;
 }
 
 static void cs_main_channel_event(SpiceChannel *channel, SpiceChannelEvent event,
@@ -195,6 +202,8 @@ static void cs_connection_destroy(SpiceSession *session,
     return _inputs;
 }
 
+@synthesize session = _csSession;
+
 - (void)setHost:(NSString *)host {
     g_object_set(_session, "host", [host UTF8String], NULL);
 }
@@ -264,11 +273,14 @@ static void cs_connection_destroy(SpiceSession *session,
 }
 
 - (BOOL)connect {
+    self.session = [[CSSession alloc] initWithSession:_session];
+    [self.delegate spiceSessionCreated:self session:self.session];
     return spice_session_connect(_session);
 }
 
 - (void)disconnect {
     spice_session_disconnect(_session);
+    self.session = NULL;
 }
 
 @end

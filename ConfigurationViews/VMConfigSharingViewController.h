@@ -21,10 +21,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface VMConfigSharingViewController : VMConfigViewController
 
-@property (weak, nonatomic) IBOutlet UISwitch *clipboardSharingEnabledSwitch;
-
-- (IBAction)clipboardSharingEnabledSwitchChanged:(UISwitch *)sender;
-
 @end
 
 NS_ASSUME_NONNULL_END
