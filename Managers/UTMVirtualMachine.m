@@ -239,6 +239,10 @@ NSString *const kSuspendSnapshotName = @"suspend";
             [self errorTriggered:NSLocalizedString(@"Failed to connect to display server.", @"UTMVirtualMachine")];
         } else {
             [self changeState:kVMStarted];
+            [self restoreViewState];
+            if (self.viewState.suspended) {
+                [self deleteSaveVM];
+            }
         }
     }];
     self->_qemu.retries = kQMPMaxConnectionTries;
@@ -255,8 +259,11 @@ NSString *const kSuspendSnapshotName = @"suspend";
             _is_busy = YES;
         }
     }
+    self.viewState.suspended = NO;
     [self syncViewState];
     [self changeState:kVMStopping];
+    // save view settings early to win exit race
+    [self saveViewState];
     
     [_qemu vmQuitWithCompletion:nil];
     if (dispatch_semaphore_wait(_will_quit_sema, dispatch_time(DISPATCH_TIME_NOW, kStopTimeout)) != 0) {
@@ -275,8 +282,6 @@ NSString *const kSuspendSnapshotName = @"suspend";
     }
     _qemu_system = nil;
     [self changeState:kVMStopped];
-    // save view settings
-    [self saveViewState];
     // stop logging
     [self.logging endLog];
     _is_busy = NO;
