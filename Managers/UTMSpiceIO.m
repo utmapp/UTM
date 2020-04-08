@@ -171,7 +171,7 @@ const int kMaxConnectionTries = 10; // qemu needs to start spice server first
 }
 
 - (void)spiceSessionCreated:(CSConnection *)connection session:(CSSession *)session {
-    session.shareClipboard = self.configuration.sharingClipboardEnabled;
+    session.shareClipboard = self.configuration.shareClipboardEnabled;
     [self startSharingDirectory:session];
 }
 

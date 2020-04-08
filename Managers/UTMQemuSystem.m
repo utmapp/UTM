@@ -165,12 +165,12 @@
 }
 
 - (void)argsForSharing {
-    if (self.configuration.sharingClipboardEnabled || self.configuration.shareDirectoryEnabled) {
+    if (self.configuration.shareClipboardEnabled || self.configuration.shareDirectoryEnabled) {
         [self pushArgv:@"-device"];
         [self pushArgv:@"virtio-serial"];
     }
     
-    if (self.configuration.sharingClipboardEnabled) {
+    if (self.configuration.shareClipboardEnabled) {
         [self pushArgv:@"-device"];
         [self pushArgv:@"virtserialport,chardev=vdagent,name=com.redhat.spice.0"];
         [self pushArgv:@"-chardev"];

@@ -18,6 +18,7 @@
 
 extern const NSString *const kUTMConfigSharingKey;
 
+const NSString *const kUTMConfigChipboardSharingKey = @"ClipboardSharing";
 const NSString *const kUTMConfigDirectorySharingKey = @"DirectorySharing";
 const NSString *const kUTMConfigDirectoryReadOnlyKey = @"DirectoryReadOnly";
 const NSString *const kUTMConfigDirectoryNameKey = @"DirectoryName";
@@ -32,6 +33,14 @@ const NSString *const kUTMConfigDirectoryBookmarkKey = @"DirectoryBookmark";
 @implementation UTMConfiguration (Sharing)
 
 #pragma mark - Sharing settings
+
+- (BOOL)shareClipboardEnabled {
+    return [self.rootDict[kUTMConfigSharingKey][kUTMConfigChipboardSharingKey] boolValue];
+}
+
+- (void)setShareClipboardEnabled:(BOOL)sharingClipboardEnabled {
+    self.rootDict[kUTMConfigSharingKey][kUTMConfigChipboardSharingKey] = @(sharingClipboardEnabled);
+}
 
 - (BOOL)shareDirectoryEnabled {
     return [self.rootDict[kUTMConfigSharingKey][kUTMConfigDirectorySharingKey] boolValue];

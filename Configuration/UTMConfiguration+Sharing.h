@@ -20,6 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface UTMConfiguration (Sharing)
 
+@property (nonatomic, assign) BOOL shareClipboardEnabled;
 @property (nonatomic, assign) BOOL shareDirectoryEnabled;
 @property (nonatomic, assign) BOOL shareDirectoryReadOnly;
 @property (nonatomic, nullable, copy) NSString *shareDirectoryName;

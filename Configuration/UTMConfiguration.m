@@ -18,6 +18,7 @@
 #import "UTMConfiguration+Constants.h"
 #import "UTMConfiguration+Drives.h"
 #import "UTMConfiguration+Networking.h"
+#import "UTMConfiguration+Sharing.h"
 #import "UTMConfiguration+System.h"
 
 const NSString *const kUTMConfigSystemKey = @"System";
@@ -45,8 +46,6 @@ const NSString *const kUTMConfigPrintEnabledKey = @"PrintEnabled";
 
 const NSString *const kUTMConfigSoundEnabledKey = @"SoundEnabled";
 const NSString *const kUTMConfigSoundCardDeviceKey = @"SoundCard";
-
-const NSString *const kUTMConfigChipboardSharingKey = @"ClipboardSharing";
 
 const NSString *const kUTMConfigDebugLogKey = @"DebugLog";
 
@@ -116,7 +115,7 @@ const NSString *const kUTMConfigDebugLogKey = @"DebugLog";
         self.soundEnabled = YES;
         self.soundCard = @"ac97";
         self.networkCard = @"rtl8139";
-        self.sharingClipboardEnabled = YES;
+        self.shareClipboardEnabled = YES;
         self.name = name;
         self.existingPath = nil;
         self.debugLogEnabled = NO;
@@ -216,14 +215,6 @@ const NSString *const kUTMConfigDebugLogKey = @"DebugLog";
 
 - (NSString *)soundCard {
     return _rootDict[kUTMConfigSoundKey][kUTMConfigSoundCardDeviceKey];
-}
-
-- (void)setSharingClipboardEnabled:(BOOL)sharingClipboardEnabled {
-    _rootDict[kUTMConfigSharingKey][kUTMConfigChipboardSharingKey] = @(sharingClipboardEnabled);
-}
-
-- (BOOL)sharingClipboardEnabled {
-    return [_rootDict[kUTMConfigSharingKey][kUTMConfigChipboardSharingKey] boolValue];
 }
 
 - (BOOL)debugLogEnabled {
