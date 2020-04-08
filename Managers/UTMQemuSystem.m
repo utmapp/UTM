@@ -39,6 +39,10 @@
         [self.configuration.systemArchitecture isEqualToString:@"i386"]) {
         [self pushArgv:@"-vga"];
         [self pushArgv:@"qxl"];
+        [self pushArgv:@"-global"];
+        [self pushArgv:@"PIIX4_PM.disable_s3=1"]; // applies for pc-i440fx-* types
+        [self pushArgv:@"-global"];
+        [self pushArgv:@"ICH9-LPC.disable_s3=1"]; // applies for pc-q35-* types
     }
 }
 
