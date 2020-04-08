@@ -4079,7 +4079,7 @@
                                                 <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="d0M-jH-bn7" customClass="VMConfigSwitch">
                                                     <rect key="frame" x="310" y="6.6666666666666679" width="51" height="31.000000000000004"/>
                                                     <userDefinedRuntimeAttributes>
-                                                        <userDefinedRuntimeAttribute type="string" keyPath="configurationPath" value="sharingClipboardEnabled"/>
+                                                        <userDefinedRuntimeAttribute type="string" keyPath="configurationPath" value="shareClipboardEnabled"/>
                                                     </userDefinedRuntimeAttributes>
                                                     <connections>
                                                         <action selector="configSwitchChanged:" destination="LLP-fa-BIK" eventType="valueChanged" id="IJO-6M-i9l"/>

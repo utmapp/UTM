@@ -38,8 +38,8 @@ const NSString *const kUTMConfigDirectoryBookmarkKey = @"DirectoryBookmark";
     return [self.rootDict[kUTMConfigSharingKey][kUTMConfigChipboardSharingKey] boolValue];
 }
 
-- (void)setShareClipboardEnabled:(BOOL)sharingClipboardEnabled {
-    self.rootDict[kUTMConfigSharingKey][kUTMConfigChipboardSharingKey] = @(sharingClipboardEnabled);
+- (void)setShareClipboardEnabled:(BOOL)shareClipboardEnabled {
+    self.rootDict[kUTMConfigSharingKey][kUTMConfigChipboardSharingKey] = @(shareClipboardEnabled);
 }
 
 - (BOOL)shareDirectoryEnabled {
