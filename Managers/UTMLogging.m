@@ -205,6 +205,16 @@ void *utm_logging_thread_stderr(void *arg) {
     [self endLog];
     _stream = [NSOutputStream outputStreamWithURL:path append:NO];
     [_stream open];
+    __weak typeof(self) weakSelf = self;
+    atexit_b(^{
+        typeof(self) _self = weakSelf;
+        if (_self) {
+            NSStreamStatus status = _self->_stream.streamStatus;
+            if (status == NSStreamStatusOpen || status == NSStreamStatusWriting) {
+                [_self->_stream close];
+            }
+        }
+    });
 }
 
 - (void)endLog {
