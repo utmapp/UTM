@@ -144,6 +144,7 @@
                                                  handler:^(UIAlertAction * _Nonnull action) {
         [self createPortForwardFormTCP:NO];
     }]];
+    newForward.popoverPresentationController.barButtonItem = sender;
     [self presentViewController:newForward animated:YES completion:nil];
 }
 
