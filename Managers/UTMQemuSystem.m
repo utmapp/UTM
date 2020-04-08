@@ -189,6 +189,9 @@
     if ([self.configuration.systemTarget hasPrefix:@"pc"] || [self.configuration.systemTarget hasPrefix:@"q35"]) {
         return @"vmport=off";
     }
+    if ([self.configuration.systemTarget isEqualToString:@"mac99"]) {
+        return @"via=pmu";
+    }
     return @"";
 }
 
