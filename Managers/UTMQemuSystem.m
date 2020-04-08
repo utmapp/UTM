@@ -19,6 +19,7 @@
 #import "UTMConfiguration+Constants.h"
 #import "UTMConfiguration+Drives.h"
 #import "UTMConfiguration+Networking.h"
+#import "UTMConfiguration+Sharing.h"
 #import "UTMConfiguration+System.h"
 #import "UTMConfigurationPortForward.h"
 
@@ -163,6 +164,27 @@
     }
 }
 
+- (void)argsForSharing {
+    if (self.configuration.sharingClipboardEnabled || self.configuration.shareDirectoryEnabled) {
+        [self pushArgv:@"-device"];
+        [self pushArgv:@"virtio-serial"];
+    }
+    
+    if (self.configuration.sharingClipboardEnabled) {
+        [self pushArgv:@"-device"];
+        [self pushArgv:@"virtserialport,chardev=vdagent,name=com.redhat.spice.0"];
+        [self pushArgv:@"-chardev"];
+        [self pushArgv:@"spicevmc,id=vdagent,debug=0,name=vdagent"];
+    }
+    
+    if (self.configuration.shareDirectoryEnabled) {
+        [self pushArgv:@"-device"];
+        [self pushArgv:@"virtserialport,chardev=charchannel1,id=channel1,name=org.spice-space.webdav.0"];
+        [self pushArgv:@"-chardev"];
+        [self pushArgv:@"spiceport,name=org.spice-space.webdav.0,id=charchannel1"];
+    }
+}
+
 - (NSString *)machineProperties {
     if ([self.configuration.systemTarget hasPrefix:@"pc"] || [self.configuration.systemTarget hasPrefix:@"q35"]) {
         return @"vmport=off";
@@ -234,14 +256,7 @@
         [self pushArgv:self.snapshot];
     }
     
-    if (self.configuration.sharingClipboardEnabled) {
-        [self pushArgv:@"-device"];
-        [self pushArgv:@"virtio-serial"];
-        [self pushArgv:@"-device"];
-        [self pushArgv:@"virtserialport,chardev=vdagent,name=com.redhat.spice.0"];
-        [self pushArgv:@"-chardev"];
-        [self pushArgv:@"spicevmc,id=vdagent,debug=0,name=vdagent"];
-    }
+    [self argsForSharing];
     
     if (self.configuration.systemArguments.count != 0) {
         NSArray *addArgs = self.configuration.systemArguments;

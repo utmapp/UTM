@@ -158,6 +158,11 @@ static void cs_channel_new(SpiceSession *s, SpiceChannel *channel, gpointer data
             SPICE_DEBUG("audio disabled");
         }
     }
+
+    if (SPICE_IS_PORT_CHANNEL(channel)) {
+        SPICE_DEBUG("new port channel");
+        spice_channel_connect(channel);
+    }
 }
 
 static void cs_channel_destroy(SpiceSession *s, SpiceChannel *channel, gpointer data)
@@ -279,6 +284,7 @@ static void cs_connection_destroy(SpiceSession *session,
 }
 
 - (void)disconnect {
+    [self.delegate spiceSessionEnded:self session:self.session];
     spice_session_disconnect(_session);
     self.session = NULL;
 }
