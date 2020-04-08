@@ -4070,8 +4070,8 @@
                                             <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Enabled" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gTm-35-vCi">
-                                                    <rect key="frame" x="16" y="11.666666666666664" width="62" height="21"/>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Enable Clipboard Sharing" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gTm-35-vCi">
+                                                    <rect key="frame" x="16" y="11.666666666666664" width="193" height="21"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
@@ -4079,7 +4079,7 @@
                                                 <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="d0M-jH-bn7" customClass="VMConfigSwitch">
                                                     <rect key="frame" x="310" y="6.6666666666666679" width="51" height="31.000000000000004"/>
                                                     <userDefinedRuntimeAttributes>
-                                                        <userDefinedRuntimeAttribute type="string" keyPath="configurationPath" value="sharingClipboardEnabled"/>
+                                                        <userDefinedRuntimeAttribute type="string" keyPath="configurationPath" value="shareClipboardEnabled"/>
                                                     </userDefinedRuntimeAttributes>
                                                     <connections>
                                                         <action selector="configSwitchChanged:" destination="LLP-fa-BIK" eventType="valueChanged" id="IJO-6M-i9l"/>
@@ -4097,21 +4097,95 @@
                                     </tableViewCell>
                                 </cells>
                             </tableViewSection>
-                            <tableViewSection headerTitle="Shared Directories" id="dpu-6y-nD0">
+                            <tableViewSection headerTitle="Shared Directory" footerTitle="Requires SPICE WebDAV service to be installed." id="dpu-6y-nD0">
                                 <cells>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" accessoryType="disclosureIndicator" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" textLabel="DvR-Gm-qGA" style="IBUITableViewCellStyleDefault" id="nmW-d9-PT5">
-                                        <rect key="frame" x="0.0" y="167.33333206176758" width="375" height="44"/>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" id="CqU-7d-cwc">
+                                        <rect key="frame" x="0.0" y="174.66666412353516" width="375" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
-                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="nmW-d9-PT5" id="ddR-Mm-4Vn">
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="CqU-7d-cwc" id="rRp-Aq-7n2">
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Enable Directory Sharing" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="5Ae-Pr-d2U">
+                                                    <rect key="frame" x="16" y="11.666666666666664" width="190" height="21"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                                <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="izf-2j-NwA" customClass="VMConfigSwitch">
+                                                    <rect key="frame" x="310" y="6.6666666666666679" width="51" height="31.000000000000004"/>
+                                                    <userDefinedRuntimeAttributes>
+                                                        <userDefinedRuntimeAttribute type="string" keyPath="configurationPath" value="shareDirectoryEnabled"/>
+                                                    </userDefinedRuntimeAttributes>
+                                                    <connections>
+                                                        <action selector="configSwitchChanged:" destination="LLP-fa-BIK" eventType="valueChanged" id="elZ-2f-QYL"/>
+                                                    </connections>
+                                                </switch>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstItem="izf-2j-NwA" firstAttribute="trailing" secondItem="rRp-Aq-7n2" secondAttribute="trailingMargin" id="3YG-e3-UUA"/>
+                                                <constraint firstItem="5Ae-Pr-d2U" firstAttribute="centerY" secondItem="rRp-Aq-7n2" secondAttribute="centerY" id="R9w-zH-nQm"/>
+                                                <constraint firstItem="5Ae-Pr-d2U" firstAttribute="leading" secondItem="rRp-Aq-7n2" secondAttribute="leadingMargin" id="uIO-7E-UKw"/>
+                                                <constraint firstItem="izf-2j-NwA" firstAttribute="centerY" secondItem="rRp-Aq-7n2" secondAttribute="centerY" id="wIs-P3-ch1"/>
+                                                <constraint firstItem="izf-2j-NwA" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="5Ae-Pr-d2U" secondAttribute="trailing" constant="8" symbolic="YES" id="yw4-zF-8gv"/>
+                                            </constraints>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" id="0WD-Ot-zpb">
+                                        <rect key="frame" x="0.0" y="218.66666412353516" width="375" height="44"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="0WD-Ot-zpb" id="98i-LB-kLT">
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Read Only" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ujd-Ae-CRP">
+                                                    <rect key="frame" x="16" y="11.666666666666664" width="79" height="21"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                                <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="BlC-lX-1S5" customClass="VMConfigSwitch">
+                                                    <rect key="frame" x="310" y="6.6666666666666679" width="51" height="31.000000000000004"/>
+                                                    <userDefinedRuntimeAttributes>
+                                                        <userDefinedRuntimeAttribute type="string" keyPath="configurationPath" value="shareDirectoryReadOnly"/>
+                                                    </userDefinedRuntimeAttributes>
+                                                    <connections>
+                                                        <action selector="configSwitchChanged:" destination="LLP-fa-BIK" eventType="valueChanged" id="lDq-Kd-ABK"/>
+                                                    </connections>
+                                                </switch>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstItem="BlC-lX-1S5" firstAttribute="centerY" secondItem="98i-LB-kLT" secondAttribute="centerY" id="97M-XZ-1Xj"/>
+                                                <constraint firstItem="ujd-Ae-CRP" firstAttribute="centerY" secondItem="98i-LB-kLT" secondAttribute="centerY" id="XLd-Oo-usP"/>
+                                                <constraint firstItem="ujd-Ae-CRP" firstAttribute="leading" secondItem="98i-LB-kLT" secondAttribute="leadingMargin" id="Y8z-eu-T0e"/>
+                                                <constraint firstItem="BlC-lX-1S5" firstAttribute="trailing" secondItem="98i-LB-kLT" secondAttribute="trailingMargin" id="ZbS-Qx-Bd2"/>
+                                                <constraint firstItem="BlC-lX-1S5" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="ujd-Ae-CRP" secondAttribute="trailing" constant="8" symbolic="YES" id="q89-8Y-Qvg"/>
+                                            </constraints>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="default" accessoryType="disclosureIndicator" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" textLabel="3i2-h0-zr5" detailTextLabel="qtH-iq-gnv" style="IBUITableViewCellStyleValue1" id="MIw-CI-GRx">
+                                        <rect key="frame" x="0.0" y="262.66666412353516" width="375" height="44"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="MIw-CI-GRx" id="d0w-dU-cXj">
                                             <rect key="frame" x="0.0" y="0.0" width="348" height="44"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="Unimplemented" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="DvR-Gm-qGA">
-                                                    <rect key="frame" x="16" y="0.0" width="324" height="44"/>
+                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="Path" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="3i2-h0-zr5">
+                                                    <rect key="frame" x="15.999999999999996" y="11.999999999999998" width="34.666666666666664" height="20.333333333333332"/>
                                                     <autoresizingMask key="autoresizingMask"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
+                                                </label>
+                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="Select..." textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="qtH-iq-gnv" customClass="VMConfigLabel">
+                                                    <rect key="frame" x="277.66666666666669" y="11.999999999999998" width="62.333333333333336" height="20.333333333333332"/>
+                                                    <autoresizingMask key="autoresizingMask"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                    <userDefinedRuntimeAttributes>
+                                                        <userDefinedRuntimeAttribute type="string" keyPath="configurationPath" value="shareDirectoryName"/>
+                                                    </userDefinedRuntimeAttributes>
                                                 </label>
                                             </subviews>
                                         </tableViewCellContentView>
@@ -4126,7 +4200,15 @@
                     </tableView>
                     <navigationItem key="navigationItem" title="Sharing" id="ONw-62-0F5"/>
                     <connections>
+                        <outlet property="selectDirectoryCell" destination="MIw-CI-GRx" id="H8I-2H-ul1"/>
+                        <outlet property="shareDirectoryEnabledSwitch" destination="izf-2j-NwA" id="hMn-qN-31W"/>
+                        <outlet property="shareDirectoryNameLabel" destination="qtH-iq-gnv" id="9sO-xX-C3p"/>
                         <outletCollection property="configControls" destination="d0M-jH-bn7" id="bvJ-ga-FKu"/>
+                        <outletCollection property="configControls" destination="izf-2j-NwA" id="HhF-ZY-fBq"/>
+                        <outletCollection property="configControls" destination="BlC-lX-1S5" id="UWf-b0-HjQ"/>
+                        <outletCollection property="configControls" destination="qtH-iq-gnv" id="lhI-OT-GIJ"/>
+                        <outletCollection property="directorySharingCells" destination="0WD-Ot-zpb" id="Cj0-Fs-Xdf"/>
+                        <outletCollection property="directorySharingCells" destination="MIw-CI-GRx" id="NRi-Ea-Zqo"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="aec-Ui-ggd" userLabel="First Responder" sceneMemberID="firstResponder"/>

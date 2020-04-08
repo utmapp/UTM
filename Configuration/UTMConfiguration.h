@@ -39,8 +39,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) BOOL soundEnabled;
 @property (nonatomic, nullable, copy) NSString *soundCard;
 
-@property (nonatomic, assign) BOOL sharingClipboardEnabled;
-
 @property (nonatomic, assign) BOOL debugLogEnabled;
 
 - (void)migrateConfigurationIfNecessary;

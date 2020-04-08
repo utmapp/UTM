@@ -30,6 +30,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)spiceError:(CSConnection *)connection err:(nullable NSString *)msg;
 - (void)spiceDisplayCreated:(CSConnection *)connection display:(CSDisplayMetal *)display input:(CSInput *)input;
 - (void)spiceSessionCreated:(CSConnection *)connection session:(CSSession *)session;
+- (void)spiceSessionEnded:(CSConnection *)connection session:(CSSession *)session;
 
 @end
 

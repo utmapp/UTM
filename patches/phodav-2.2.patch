@@ -1,0 +1,41 @@
+diff -ruN a/Makefile.in b/Makefile.in
+--- a/Makefile.in	2017-02-16 08:57:28.000000000 -0800
++++ b/Makefile.in	2020-04-06 14:21:57.000000000 -0700
+@@ -528,7 +528,7 @@
+ makeflags_0 = --no-print-directory -s
+ makeflags_1 = 
+ AM_MAKEFLAGS = $(makeflags_$(V))
+-SUBDIRS = . po spice libphodav doc
++SUBDIRS = . spice libphodav
+ lib_LTLIBRARIES = libphodav-2.0.la
+ AM_CPPFLAGS = \
+ 	-DLOCALEDIR=\""$(localedir)"\"		\
+@@ -568,7 +568,6 @@
+ 
+ libphodav_2_0_la_LDFLAGS = \
+ 	-version-info 0:0:0				\
+-	-Wl,--version-script=${srcdir}/libphodav.syms	\
+ 	-no-undefined					\
+ 	$(NULL)
+ 
+diff -ruN a/configure b/configure
+--- a/configure	2017-02-16 08:57:27.000000000 -0800
++++ b/configure	2020-04-06 14:22:02.000000000 -0700
+@@ -13446,7 +13446,7 @@
+ $as_echo "$USE_NLS" >&6; }
+ 
+ 
+-
++if false; then # disable intltool check
+ 
+ case "$am__api_version" in
+     1.01234)
+@@ -13970,7 +13970,7 @@
+ # Substitute ALL_LINGUAS so we can use it in po/Makefile
+ 
+ 
+-
++fi
+ 
+ 
+ 

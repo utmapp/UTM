@@ -14,19 +14,17 @@
 // limitations under the License.
 //
 
-#import <Foundation/Foundation.h>
-
-typedef struct _SpiceSession SpiceSession;
+#import "UTMConfiguration.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface CSSession : NSObject
+@interface UTMConfiguration (Sharing)
 
-@property (nonatomic, readonly, nullable) SpiceSession *session;
-@property (nonatomic) BOOL shareClipboard;
-
-- (id)initWithSession:(nonnull SpiceSession *)session;
-- (void)setSharedDirectory:(NSString *)path readOnly:(BOOL)readOnly;
+@property (nonatomic, assign) BOOL shareClipboardEnabled;
+@property (nonatomic, assign) BOOL shareDirectoryEnabled;
+@property (nonatomic, assign) BOOL shareDirectoryReadOnly;
+@property (nonatomic, nullable, copy) NSString *shareDirectoryName;
+@property (nonatomic, nullable, copy) NSData *shareDirectoryBookmark;
 
 @end
 

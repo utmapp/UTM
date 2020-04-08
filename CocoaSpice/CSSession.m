@@ -414,4 +414,11 @@ static void cs_channel_destroy(SpiceSession *session, SpiceChannel *channel,
     return text;
 }
 
+#pragma mark - Shared Directory
+
+- (void)setSharedDirectory:(NSString *)path readOnly:(BOOL)readOnly {
+    g_object_set(_session, "shared-dir", [path cStringUsingEncoding:NSUTF8StringEncoding], NULL);
+    g_object_set(_session, "share-dir-ro", readOnly, NULL);
+}
+
 @end
