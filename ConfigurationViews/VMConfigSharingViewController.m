@@ -16,11 +16,37 @@
 
 #import "VMConfigSharingViewController.h"
 #import "UTMConfiguration.h"
+#import "UTMConfiguration+Sharing.h"
+#import "VMConfigSwitch.h"
 
 @interface VMConfigSharingViewController ()
 
 @end
 
 @implementation VMConfigSharingViewController
+
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    [self showShareDirectoryOptions:self.shareDirectoryEnabledSwitch.on animated:NO];
+}
+
+- (void)showShareDirectoryOptions:(BOOL)visible animated:(BOOL)animated {
+    [self cells:self.directorySharingCells setHidden:!visible];
+    if (self.configuration.shareDirectoryName.length == 0) {
+        self.shareDirectoryNameLabel.text = NSLocalizedString(@"Browse...", @"VMConfigSharingViewController");
+    }
+    [self reloadDataAnimated:animated];
+}
+
+- (IBAction)configSwitchChanged:(VMConfigSwitch *)sender {
+    if (sender == self.shareDirectoryEnabledSwitch) {
+        [self showShareDirectoryOptions:sender.on animated:YES];
+        if (!sender.on) {
+            self.configuration.shareDirectoryName = @"";
+            self.configuration.shareDirectoryBookmark = [NSData data];
+        }
+    }
+    [super configSwitchChanged:sender];
+}
 
 @end

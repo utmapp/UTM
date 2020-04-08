@@ -1,5 +1,5 @@
 //
-// Copyright © 2019 osy. All rights reserved.
+// Copyright © 2020 osy. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,17 +14,16 @@
 // limitations under the License.
 //
 
-#import <UIKit/UIKit.h>
-#import "VMConfigViewController.h"
+#import "UTMConfiguration.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface VMConfigSharingViewController : VMConfigViewController<UIDocumentPickerDelegate>
+@interface UTMConfiguration (Sharing)
 
-@property (weak, nonatomic) IBOutlet UISwitch *shareDirectoryEnabledSwitch;
-@property (weak, nonatomic) IBOutlet UILabel *shareDirectoryNameLabel;
-@property (weak, nonatomic) IBOutlet UITableViewCell *selectDirectoryCell;
-@property (strong, nonatomic) IBOutletCollection(UITableViewCell) NSArray *directorySharingCells;
+@property (nonatomic, assign) BOOL shareDirectoryEnabled;
+@property (nonatomic, assign) BOOL shareDirectoryReadOnly;
+@property (nonatomic, nullable, copy) NSString *shareDirectoryName;
+@property (nonatomic, nullable, copy) NSData *shareDirectoryBookmark;
 
 @end
 
