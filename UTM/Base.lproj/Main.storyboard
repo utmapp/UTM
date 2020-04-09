@@ -3968,10 +3968,13 @@
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
-                                                <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ZtR-9f-f7S">
+                                                <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ZtR-9f-f7S" customClass="VMConfigSwitch">
                                                     <rect key="frame" x="310" y="6.6666666666666679" width="51" height="31.000000000000004"/>
+                                                    <userDefinedRuntimeAttributes>
+                                                        <userDefinedRuntimeAttribute type="string" keyPath="configurationPath" value="soundEnabled"/>
+                                                    </userDefinedRuntimeAttributes>
                                                     <connections>
-                                                        <action selector="soundEnabledSwitchChanged:" destination="wCA-Kf-QNP" eventType="valueChanged" id="41a-rx-B2T"/>
+                                                        <action selector="configSwitchChanged:" destination="wCA-Kf-QNP" eventType="valueChanged" id="zgL-zX-aYb"/>
                                                     </connections>
                                                 </switch>
                                             </subviews>
@@ -3984,7 +3987,7 @@
                                             </constraints>
                                         </tableViewCellContentView>
                                     </tableViewCell>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" textLabel="DN6-Iz-3mv" detailTextLabel="Jp2-wl-rfZ" style="IBUITableViewCellStyleValue1" id="Xfi-1W-OVk">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" textLabel="DN6-Iz-3mv" detailTextLabel="Jp2-wl-rfZ" style="IBUITableViewCellStyleValue1" id="Xfi-1W-OVk" customClass="VMConfigTogglePickerCell">
                                         <rect key="frame" x="0.0" y="99.333332061767578" width="375" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="Xfi-1W-OVk" id="2tq-5K-Nf6">
@@ -3998,15 +4001,23 @@
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
-                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="ac97" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="Jp2-wl-rfZ">
+                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="ac97" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="Jp2-wl-rfZ" customClass="VMConfigLabel">
                                                     <rect key="frame" x="321.33333333333331" y="11.999999999999998" width="37.666666666666664" height="20.333333333333332"/>
                                                     <autoresizingMask key="autoresizingMask"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
+                                                    <userDefinedRuntimeAttributes>
+                                                        <userDefinedRuntimeAttribute type="string" keyPath="configurationPath" value="soundCard"/>
+                                                    </userDefinedRuntimeAttributes>
                                                 </label>
                                             </subviews>
                                         </tableViewCellContentView>
+                                        <connections>
+                                            <outlet property="label" destination="Jp2-wl-rfZ" id="IdU-ce-OCu"/>
+                                            <outlet property="picker" destination="Sgt-1G-xIj" id="xbd-m9-YbS"/>
+                                            <outletCollection property="toggleVisibleCells" destination="clU-3f-ovR" id="LB8-aa-ULc"/>
+                                        </connections>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" rowHeight="169" id="clU-3f-ovR">
                                         <rect key="frame" x="0.0" y="143.33333206176758" width="375" height="169"/>
@@ -4015,11 +4026,15 @@
                                             <rect key="frame" x="0.0" y="0.0" width="375" height="169"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <pickerView contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Sgt-1G-xIj">
+                                                <pickerView contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Sgt-1G-xIj" customClass="VMConfigPickerView">
                                                     <rect key="frame" x="16" y="11" width="343" height="138"/>
+                                                    <userDefinedRuntimeAttributes>
+                                                        <userDefinedRuntimeAttribute type="string" keyPath="supportedOptionsPath" value="soundCards"/>
+                                                    </userDefinedRuntimeAttributes>
                                                     <connections>
                                                         <outlet property="dataSource" destination="wCA-Kf-QNP" id="PWA-EU-i9m"/>
                                                         <outlet property="delegate" destination="wCA-Kf-QNP" id="2ZX-n7-ynj"/>
+                                                        <outlet property="selectedOptionLabel" destination="Jp2-wl-rfZ" id="9ok-Kw-gy5"/>
                                                     </connections>
                                                 </pickerView>
                                             </subviews>
@@ -4041,11 +4056,11 @@
                     </tableView>
                     <navigationItem key="navigationItem" title="Sound" id="MGj-2L-8uR"/>
                     <connections>
-                        <outlet property="soundCardPickerView" destination="Sgt-1G-xIj" id="3dh-Ap-rRg"/>
-                        <outlet property="soundCardPickerViewTableViewCell" destination="clU-3f-ovR" id="kcE-Ah-KLl"/>
                         <outlet property="soundEnabledSwitch" destination="ZtR-9f-f7S" id="8SC-LV-A0r"/>
-                        <outlet property="soundHardwareCell" destination="Xfi-1W-OVk" id="mgl-6B-hLS"/>
-                        <outlet property="soundHardwareLabel" destination="Jp2-wl-rfZ" id="zo9-Me-eW8"/>
+                        <outletCollection property="configControls" destination="ZtR-9f-f7S" id="dcj-ZC-HWK"/>
+                        <outletCollection property="configControls" destination="Jp2-wl-rfZ" id="j5K-n1-hNx"/>
+                        <outletCollection property="configPickerToggles" destination="Xfi-1W-OVk" id="CZC-cT-hnt"/>
+                        <outletCollection property="soundEnabledCells" destination="Xfi-1W-OVk" id="Kud-cQ-er6"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="nmu-6O-cOT" userLabel="First Responder" sceneMemberID="firstResponder"/>

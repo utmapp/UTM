@@ -27,6 +27,12 @@
         } else {
             return [self supportedNetworkCards];
         }
+    } else if ([key isEqualToString:@"soundCards"]) {
+        if (pretty) {
+            return [self supportedSoundCardDevicesPretty];
+        } else {
+            return [self supportedSoundCardDevices];
+        }
     }
     return @[];
 }
