@@ -20,6 +20,7 @@
 #import "WKWebView+Workarounds.h"
 #import "VMKeyboardView.h"
 #import <CoreGraphics/CoreGraphics.h>
+#import "UTMLocationManager.h"
 
 NSString *const kVMSendInputHandler = @"UTMSendInput";
 NSString* const kVMDebugHandler = @"UTMDebug";
@@ -59,6 +60,10 @@ NSString* const kVMDebugHandler = @"UTMDebug";
 
 - (BOOL)prefersHomeIndicatorAutoHidden {
     return YES; // always hide home indicator
+}
+
+- (BOOL)runInBackground {
+    return [self boolForSetting:@"RunInBackground"];
 }
 
 - (void)viewDidLoad {
@@ -103,6 +108,14 @@ NSString* const kVMDebugHandler = @"UTMDebug";
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
     [self.navigationController setNavigationBarHidden:NO animated:animated];
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    if (self.runInBackground) {
+        NSLog(@"Start location tracking to enable running in background");
+        [[UTMLocationManager sharedInstance] startUpdatingLocation];
+    }
 }
 
 #pragma mark - Input accessory view

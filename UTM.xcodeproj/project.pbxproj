@@ -15,6 +15,7 @@
 		CE059DC1243BD67200338317 /* libphodav-2.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE059DC0243BD67100338317 /* libphodav-2.0.0.dylib */; };
 		CE059DC2243BD67200338317 /* libphodav-2.0.0.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE059DC0243BD67100338317 /* libphodav-2.0.0.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CE059DC5243BFA3200338317 /* UTMConfiguration+Sharing.m in Sources */ = {isa = PBXBuildFile; fileRef = CE059DC4243BFA3200338317 /* UTMConfiguration+Sharing.m */; };
+		CE059DC8243E9E3400338317 /* UTMLocationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = CE059DC7243E9E3400338317 /* UTMLocationManager.m */; };
 		CE23C16123FCEC0A001177D6 /* qapi-commands-run-state.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C07E23FCEBFF001177D6 /* qapi-commands-run-state.c */; };
 		CE23C16223FCEC0A001177D6 /* qapi-visit-tpm.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C07F23FCEBFF001177D6 /* qapi-visit-tpm.c */; };
 		CE23C16323FCEC0A001177D6 /* qapi-commands-rocker.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C08123FCEBFF001177D6 /* qapi-commands-rocker.c */; };
@@ -427,6 +428,8 @@
 		CE059DC0243BD67100338317 /* libphodav-2.0.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libphodav-2.0.0.dylib"; path = "sysroot-$(PLATFORM_PREFERRED_ARCH)/lib/libphodav-2.0.0.dylib"; sourceTree = "<group>"; };
 		CE059DC3243BFA3200338317 /* UTMConfiguration+Sharing.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UTMConfiguration+Sharing.h"; sourceTree = "<group>"; };
 		CE059DC4243BFA3200338317 /* UTMConfiguration+Sharing.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UTMConfiguration+Sharing.m"; sourceTree = "<group>"; };
+		CE059DC6243E9E3400338317 /* UTMLocationManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UTMLocationManager.h; sourceTree = "<group>"; };
+		CE059DC7243E9E3400338317 /* UTMLocationManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UTMLocationManager.m; sourceTree = "<group>"; };
 		CE23C07B23FCEBFF001177D6 /* qapi-visit-error.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-visit-error.h"; path = "sysroot-$(PLATFORM_PREFERRED_ARCH)/qapi/qapi-visit-error.h"; sourceTree = SOURCE_ROOT; };
 		CE23C07C23FCEBFF001177D6 /* qapi-events-machine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-events-machine.h"; path = "sysroot-$(PLATFORM_PREFERRED_ARCH)/qapi/qapi-events-machine.h"; sourceTree = SOURCE_ROOT; };
 		CE23C07D23FCEBFF001177D6 /* qapi-commands-block-core.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-commands-block-core.h"; path = "sysroot-$(PLATFORM_PREFERRED_ARCH)/qapi/qapi-commands-block-core.h"; sourceTree = SOURCE_ROOT; };
@@ -1476,6 +1479,8 @@
 				E2D64BE0241EAEBE0034E0C6 /* UTMSpiceIODelegate.h */,
 				E2D64BCA241DB62A0034E0C6 /* UTMTerminalIO.h */,
 				E2D64BCB241DB62A0034E0C6 /* UTMTerminalIO.m */,
+				CE059DC6243E9E3400338317 /* UTMLocationManager.h */,
+				CE059DC7243E9E3400338317 /* UTMLocationManager.m */,
 			);
 			path = Managers;
 			sourceTree = "<group>";
@@ -1809,6 +1814,7 @@
 				CE23C1A223FCEC0A001177D6 /* qapi-types-ui.c in Sources */,
 				CE23C1B723FCEC0A001177D6 /* qapi-types-dump.c in Sources */,
 				CE23C1CC23FCEC0A001177D6 /* qapi-types-machine-target.c in Sources */,
+				CE059DC8243E9E3400338317 /* UTMLocationManager.m in Sources */,
 				CE23C1B223FCEC0A001177D6 /* qapi-events-block.c in Sources */,
 				CEBCAF4E243525DB00C2B423 /* VMConfigTextField.m in Sources */,
 				CE23C16E23FCEC0A001177D6 /* qapi-types-block-core.c in Sources */,

@@ -28,6 +28,7 @@
 #import "UTMConfiguration.h"
 #import "CSDisplayMetal.h"
 #import "UTMSpiceIO.h"
+#import "UTMLocationManager.h"
 
 @interface VMDisplayMetalViewController ()
 
@@ -82,6 +83,10 @@
 
 - (BOOL)autosaveLowMemory {
     return [self boolForSetting:@"AutosaveLowMemory"];
+}
+
+- (BOOL)runInBackground {
+    return [self boolForSetting:@"RunInBackground"];
 }
 
 - (void)viewDidLoad {
@@ -147,6 +152,10 @@
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
+    if (self.runInBackground) {
+        NSLog(@"Start location tracking to enable running in background");
+        [[UTMLocationManager sharedInstance] startUpdatingLocation];
+    }
     if (self.vm.state == kVMStopped || self.vm.state == kVMSuspended) {
         [self.vm startVM];
         NSAssert([[self.vm ioService] isKindOfClass: [UTMSpiceIO class]], @"VM ioService must be UTMSpiceIO, but is: %@!", NSStringFromClass([[self.vm ioService] class]));

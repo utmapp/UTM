@@ -75,6 +75,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) BOOL serverModeCursor;
 @property (nonatomic, readonly) BOOL autosaveBackground;
 @property (nonatomic, readonly) BOOL autosaveLowMemory;
+@property (nonatomic, readonly) BOOL runInBackground;
 
 - (void)sendExtendedKey:(SendKeyType)type code:(int)code;
 
