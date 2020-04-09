@@ -33,6 +33,18 @@
         } else {
             return [self supportedSoundCardDevices];
         }
+    } else if ([key isEqualToString:@"architectures"]) {
+        if (pretty) {
+            return [self supportedArchitecturesPretty];
+        } else {
+            return [self supportedArchitectures];
+        }
+    } else if ([key isEqualToString:@"bootDevices"]) {
+        if (pretty) {
+            return [self supportedBootDevicesPretty];
+        } else {
+            return [self supportedBootDevices];
+        }
     }
     return @[];
 }

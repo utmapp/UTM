@@ -20,6 +20,9 @@
 #import "VMConfigSystemViewController.h"
 #import "UTMConfiguration+Constants.h"
 #import "UTMConfiguration+System.h"
+#import "VMConfigPickerView.h"
+#import "VMConfigTextField.h"
+#import "VMConfigTogglePickerCell.h"
 
 const NSUInteger kMBinBytes = 1024 * 1024;
 const NSUInteger kMinCodeGenBufferSizeMB = 1;
@@ -43,18 +46,11 @@ const float kMemoryWarningThreshold = 0.8;
     [self updateEstimatedRam];
 }
 
-- (void)refreshViewFromConfiguration {
-    [super refreshViewFromConfiguration];
-    self.architecturePickerActive = NO;
-    self.bootPickerActive = NO;
-    self.systemPickerActive = NO;
-    self.architectureLabel.text = self.configuration.systemArchitecture;
-    self.bootLabel.text = self.configuration.systemBootDevice;
-    self.systemLabel.text = self.configuration.systemTarget;
-    self.memorySize = self.configuration.systemMemory;
-    self.cpuCount = self.configuration.systemCPUCount;
-    self.jitCacheSize = self.configuration.systemJitCacheSize;
-    self.forceMulticoreSwitch.on = self.configuration.systemForceMulticore;
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    if (self.configuration.systemJitCacheSize.integerValue == 0) {
+        self.jitCacheSizeField.text = @"";
+    }
 }
 
 #pragma mark - Properties
@@ -62,154 +58,67 @@ const float kMemoryWarningThreshold = 0.8;
 @synthesize totalRam = _totalRam;
 @synthesize estimatedRam = _estimatedRam;
 
-- (void)setArchitecturePickerActive:(BOOL)architecturePickerActive {
-    _architecturePickerActive = architecturePickerActive;
-    if (architecturePickerActive) {
-        NSUInteger index = [[UTMConfiguration supportedArchitectures] indexOfObject:self.architectureLabel.text];
-        if (index != NSNotFound) {
-            [self.architecturePicker selectRow:index inComponent:0 animated:NO];
-        }
-    }
-    [self pickerCell:self.architecturePickerCell setActive:architecturePickerActive];
-}
-
-- (void)setBootPickerActive:(BOOL)bootPickerActive {
-    _bootPickerActive = bootPickerActive;
-    if (bootPickerActive) {
-        NSUInteger index = [[UTMConfiguration supportedBootDevices] indexOfObject:self.bootLabel.text];
-        if (index != NSNotFound) {
-            [self.bootPicker selectRow:index inComponent:0 animated:NO];
-        }
-    }
-    [self pickerCell:self.bootPickerCell setActive:bootPickerActive];
-}
-
-- (void)setSystemPickerActive:(BOOL)systemPickerActive {
-    _systemPickerActive = systemPickerActive;
-    if (systemPickerActive) {
-        NSUInteger index = [[UTMConfiguration supportedTargetsForArchitecture:self.configuration.systemArchitecture] indexOfObject:self.systemLabel.text];
-        if (index != NSNotFound) {
-            [self.systemPicker selectRow:index inComponent:0 animated:NO];
-        }
-    }
-    [self pickerCell:self.systemPickerCell setActive:systemPickerActive];
-}
-
-- (void)setMemorySize:(NSNumber *)memorySize {
-    self.memorySizeField.text = [memorySize stringValue];
-}
-
-- (NSNumber *)memorySize {
-    return @([self.memorySizeField.text integerValue]);
-}
-
-- (void)setJitCacheSize:(NSNumber *)jitCacheSize {
-    self.jitCacheSizeField.text = [jitCacheSize integerValue] > 0 ? [jitCacheSize stringValue] : @"";
-}
-
-- (NSNumber *)jitCacheSize {
-    return @([self.jitCacheSizeField.text integerValue]);
-}
-
-- (void)setCpuCount:(NSNumber *)cpuCount {
-    self.cpuCountField.text = [cpuCount stringValue];
-}
-
-- (NSNumber *)cpuCount {
-    return @([self.cpuCountField.text integerValue]);
-}
-
-#pragma mark - Table delegate
-
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    if ([tableView cellForRowAtIndexPath:indexPath] == self.architectureCell) {
-        self.architecturePickerActive = !self.architecturePickerActive;
-        [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    }
-    if ([tableView cellForRowAtIndexPath:indexPath] == self.bootCell) {
-        self.bootPickerActive = !self.bootPickerActive;
-        [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    }
-    if ([tableView cellForRowAtIndexPath:indexPath] == self.systemCell) {
-        self.systemPickerActive = !self.systemPickerActive;
-        [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    }
-}
-
-- (NSInteger)numberOfComponentsInPickerView:(nonnull UIPickerView *)pickerView {
-    if (pickerView == self.architecturePicker) {
-        return 1;
-    } else if (pickerView == self.bootPicker) {
-        return 1;
-    } else if (pickerView == self.systemPicker) {
-        return 1;
-    } else {
-        NSAssert(0, @"Invalid picker");
-    }
-    return 0;
-}
-
 #pragma mark - Picker delegate
+
+- (void)pickerCell:(VMConfigTogglePickerCell *)cell showPicker:(BOOL)visible animated:(BOOL)animated {
+    if (visible && cell.picker == self.targetPicker) {
+        NSUInteger index = [[UTMConfiguration supportedTargetsForArchitecture:self.configuration.systemArchitecture] indexOfObject:cell.detailTextLabel.text];
+        if (index != NSNotFound) {
+            [cell.picker selectRow:index inComponent:0 animated:NO];
+        }
+    }
+    [super pickerCell:cell showPicker:visible animated:animated];
+}
 
 - (NSInteger)pickerView:(nonnull UIPickerView *)pickerView numberOfRowsInComponent:(NSInteger)component {
     NSAssert(component == 0, @"Invalid component");
-    if (pickerView == self.architecturePicker) {
-        return [UTMConfiguration supportedArchitecturesPretty].count;
-    } else if (pickerView == self.bootPicker) {
-        return [UTMConfiguration supportedBootDevicesPretty].count;
-    } else if (pickerView == self.systemPicker) {
+    if (pickerView == self.targetPicker) {
         return [UTMConfiguration supportedTargetsForArchitecture:self.configuration.systemArchitecture].count;
     } else {
-        NSAssert(0, @"Invalid picker");
+        return [super pickerView:pickerView numberOfRowsInComponent:component];
     }
-    return 0;
 }
 
 - (NSString *)pickerView:(UIPickerView *)pickerView titleForRow:(NSInteger)row forComponent:(NSInteger)component {
     NSAssert(component == 0, @"Invalid component");
-    if (pickerView == self.architecturePicker) {
-        return [UTMConfiguration supportedArchitecturesPretty][row];
-    } else if (pickerView == self.bootPicker) {
-        return [UTMConfiguration supportedBootDevicesPretty][row];
-    } else if (pickerView == self.systemPicker) {
+    if (pickerView == self.targetPicker) {
         return [UTMConfiguration supportedTargetsForArchitecturePretty:self.configuration.systemArchitecture][row];
     } else {
-        NSAssert(0, @"Invalid picker");
+        return [super pickerView:pickerView titleForRow:row forComponent:component];
     }
-    return nil;
 }
 
 - (void)pickerView:(UIPickerView *)pickerView didSelectRow:(NSInteger)row inComponent:(NSInteger)component {
     NSAssert(component == 0, @"Invalid component");
     if (pickerView == self.architecturePicker) {
         NSString *prev = self.configuration.systemArchitecture;
-        self.architectureLabel.text = [UTMConfiguration supportedArchitectures][row];
-        self.configuration.systemArchitecture = [UTMConfiguration supportedArchitectures][row];
+        [super pickerView:pickerView didSelectRow:row inComponent:component];
         // refresh system picker with default target
         if (![prev isEqualToString:self.configuration.systemArchitecture]) {
             NSInteger index = [UTMConfiguration defaultTargetIndexForArchitecture:self.configuration.systemArchitecture];
-            [self.systemPicker reloadAllComponents];
-            [self.systemPicker selectRow:index inComponent:0 animated:YES];
-            [self pickerView:self.systemPicker didSelectRow:index inComponent:0];
+            [self.targetPicker reloadAllComponents];
+            [self.targetPicker selectRow:index inComponent:0 animated:YES];
+            [self pickerView:self.targetPicker didSelectRow:index inComponent:0];
         }
-    } else if (pickerView == self.bootPicker) {
-        self.bootLabel.text = [UTMConfiguration supportedBootDevices][row];
-        self.configuration.systemBootDevice = self.bootLabel.text;
-    } else if (pickerView == self.systemPicker) {
-        self.systemLabel.text = [UTMConfiguration supportedTargetsForArchitecture:self.configuration.systemArchitecture][row];
-        self.configuration.systemTarget = [UTMConfiguration supportedTargetsForArchitecture:self.configuration.systemArchitecture][row];
+    } else if (pickerView == self.targetPicker) {
+        NSAssert([pickerView isKindOfClass:[VMConfigPickerView class]], @"Invalid picker");
+        VMConfigPickerView *vmPicker = (VMConfigPickerView *)pickerView;
+        NSString *selected = [UTMConfiguration supportedTargetsForArchitecture:self.configuration.systemArchitecture][row];
+        [self.configuration setValue:selected forKey:vmPicker.selectedOptionCell.configurationPath];
+        vmPicker.selectedOptionCell.detailTextLabel.text = selected;
     } else {
-        NSAssert(0, @"Invalid picker");
+        [super pickerView:pickerView didSelectRow:row inComponent:component];
     }
 }
 
-#pragma mark - Event handlers
+#pragma mark - Validate input
 
-- (void)memorySizeFieldEdited:(UITextField *)sender {
+- (BOOL)memorySizeFieldValid:(UITextField *)sender {
+    BOOL valid = NO;
     NSAssert(sender == self.memorySizeField, @"Invalid sender");
-    NSNumber *memorySize = self.memorySize;
-    if (memorySize.intValue > 0) {
-        self.configuration.systemMemory = memorySize;
+    self.memorySize = sender.text.integerValue;
+    if (self.memorySize > 0) {
+        valid = YES;
     } else {
         [self showAlert:NSLocalizedString(@"Invalid memory size.", @"VMConfigSystemViewController") completion:nil];
     }
@@ -217,39 +126,57 @@ const float kMemoryWarningThreshold = 0.8;
     if (self.estimatedRam > kMemoryWarningThreshold * self.totalRam) {
         [self showAlert:NSLocalizedString(@"The total memory usage is close to your device's limit. iOS will kill the VM if it consumes too much memory.", @"VMConfigSystemViewController") completion:nil];
     }
+    return valid;
 }
 
-- (void)cpuCountFieldEdited:(UITextField *)sender {
+- (BOOL)cpuCountFieldValid:(UITextField *)sender {
+    BOOL valid = NO;
     NSAssert(sender == self.cpuCountField, @"Invalid sender");
-    NSNumber *num = self.cpuCount;
-    if (num.intValue > 0) {
-        self.configuration.systemCPUCount = num;
+    self.cpuCount = sender.text.integerValue;
+    if (self.cpuCount > 0) {
+        valid = YES;
     } else {
         [self showAlert:NSLocalizedString(@"Invalid core count.", @"VMConfigSystemViewController") completion:nil];
     }
+    return valid;
 }
 
-- (IBAction)jitCacheSizeFieldEdited:(UITextField *)sender {
+- (BOOL)jitCacheSizeFieldValid:(UITextField *)sender {
+    BOOL valid = NO;
     NSAssert(sender == self.jitCacheSizeField, @"Invalid sender");
-    NSInteger jit = [self.jitCacheSize integerValue];
-    if (jit == 0) { // default value
-        self.configuration.systemJitCacheSize = self.jitCacheSize;
-    } else if (jit < kMinCodeGenBufferSizeMB) {
+    self.jitCacheSize = sender.text.integerValue;
+    if (self.jitCacheSize == 0) { // default value
+        valid = YES;
+    } else if (self.jitCacheSize < kMinCodeGenBufferSizeMB) {
         [self showAlert:NSLocalizedString(@"JIT cache size too small.", @"VMConfigSystemViewController") completion:nil];
-    } else if (jit > kMaxCodeGenBufferSizeMB) {
+    } else if (self.jitCacheSize > kMaxCodeGenBufferSizeMB) {
         [self showAlert:NSLocalizedString(@"JIT cache size cannot be larger than 2GB.", @"VMConfigSystemViewController") completion:nil];
     } else {
-        self.configuration.systemJitCacheSize = self.jitCacheSize;
+        valid = YES;
     }
     [self updateEstimatedRam];
     if (self.estimatedRam > kMemoryWarningThreshold * self.totalRam) {
         [self showAlert:NSLocalizedString(@"The total memory usage is close to your device's limit. iOS will kill the VM if it consumes too much memory.", @"VMConfigSystemViewController") completion:nil];
     }
+    return valid;
 }
 
-- (IBAction)forceMulticoreSwitchChanged:(UISwitch *)sender {
-    NSAssert(sender == self.forceMulticoreSwitch, @"Invalid sender");
-    self.configuration.systemForceMulticore = sender.on;
+- (IBAction)configTextFieldEditEnd:(VMConfigTextField *)sender {
+    if (sender == self.memorySizeField) {
+        if ([self memorySizeFieldValid:sender]) {
+            [super configTextFieldEditEnd:sender];
+        }
+    } else if (sender == self.cpuCountField) {
+        if ([self cpuCountFieldValid:sender]) {
+            [super configTextFieldEditEnd:sender];
+        }
+    } else if (sender == self.jitCacheSizeField) {
+        if ([self jitCacheSizeFieldValid:sender]) {
+            [super configTextFieldEditEnd:sender];
+        }
+    } else {
+        [super configTextFieldEditEnd:sender];
+    }
 }
 
 #pragma mark - Update host information
@@ -290,8 +217,8 @@ const float kMemoryWarningThreshold = 0.8;
 }
 
 - (void)updateEstimatedRam {
-    NSUInteger guestRam = [self.memorySize unsignedIntegerValue] * kMBinBytes;
-    NSUInteger jitSize = [self.jitCacheSize unsignedIntegerValue] * kMBinBytes;
+    NSUInteger guestRam = self.memorySize * kMBinBytes;
+    NSUInteger jitSize = self.jitCacheSize * kMBinBytes;
     if (jitSize == 0) { // default size
         jitSize = guestRam / 4;
     }

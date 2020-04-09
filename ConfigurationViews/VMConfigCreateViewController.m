@@ -16,6 +16,7 @@
 
 #import "VMConfigCreateViewController.h"
 #import "UTMConfiguration.h"
+#import "VMConfigTextField.h"
 
 @interface VMConfigCreateViewController ()
 
@@ -25,15 +26,10 @@
     BOOL _advancedConfiguration;
 }
 
-- (void)viewDidLoad {
-    [super viewDidLoad];
-}
-
-- (void)refreshViewFromConfiguration {
-    [super refreshViewFromConfiguration];
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
     self.advancedConfiguration = NO;
-    self.nameField.text = self.configuration.name;
-    self.saveButton.enabled = self.configuration.name && ![self.configuration.name isEqualToString:@""];
+    self.saveButton.enabled = self.configuration.name.length > 0;
 }
 
 #pragma mark - Properties
@@ -54,17 +50,11 @@
 #pragma mark - Table delegate
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    if ([tableView cellForRowAtIndexPath:indexPath] == self.architectureCell) {
-        self.architecturePickerActive = !self.architecturePickerActive;
-        [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    }
-    if ([tableView cellForRowAtIndexPath:indexPath] == self.bootCell) {
-        self.bootPickerActive = !self.bootPickerActive;
-        [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    }
     if ([tableView cellForRowAtIndexPath:indexPath] == self.advancedConfigurationCell) {
         self.advancedConfiguration = !self.advancedConfiguration;
         [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    } else {
+        [super tableView:tableView didSelectRowAtIndexPath:indexPath];
     }
 }
 
@@ -83,11 +73,13 @@
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
-- (IBAction)nameFieldChanged:(UITextField *)sender {
-    NSAssert(sender == self.nameField, @"Invalid sender");
-    // TODO: validate input
-    self.configuration.name = sender.text;
-    self.saveButton.enabled = ![sender.text isEqualToString:@""];
+- (IBAction)configTextEditChanged:(VMConfigTextField *)sender {
+    [super configTextEditChanged:sender];
+    if (sender == self.nameField) {
+        // TODO: input validation
+        self.saveButton.enabled = sender.text.length > 0;
+        self.configuration.name = sender.text;
+    }
 }
 
 @end
