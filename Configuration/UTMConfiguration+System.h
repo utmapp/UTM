@@ -27,6 +27,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, nullable, copy) NSString *systemBootDevice;
 @property (nonatomic, nullable, copy) NSNumber *systemJitCacheSize;
 @property (nonatomic, assign) BOOL systemForceMulticore;
+@property (nonatomic, nullable, copy) NSString *systemUUID;
 
 - (void)migrateSystemConfigurationIfNecessary;
 

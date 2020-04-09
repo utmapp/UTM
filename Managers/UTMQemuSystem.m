@@ -265,6 +265,11 @@
     
     [self argsForSharing];
     
+    if (self.configuration.systemUUID.length > 0) {
+        [self pushArgv:@"-uuid"];
+        [self pushArgv:self.configuration.systemUUID];
+    }
+    
     if (self.configuration.systemArguments.count != 0) {
         NSArray *addArgs = self.configuration.systemArguments;
         // Splits all spaces into their own, except when between quotes.

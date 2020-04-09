@@ -107,6 +107,7 @@ const NSString *const kUTMConfigDebugLogKey = @"DebugLog";
         self.systemBootDevice = @"CD/DVD";
         self.systemJitCacheSize = @0;
         self.systemForceMulticore = NO;
+        self.systemUUID = [[NSUUID UUID] UUIDString];
         self.displayFixedResolutionWidth = @800;
         self.displayFixedResolutionHeight = @600;
         self.displayFixedResolution = NO;
