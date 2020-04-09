@@ -20,7 +20,7 @@
 
 - (void)valueChanged:(id)value {
     if (value == nil || value == [NSNull null]) {
-        value = @"";
+        value = @" ";
     }
     self.detailTextLabel.text = value;
 }
