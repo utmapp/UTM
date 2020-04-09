@@ -16,7 +16,6 @@
 
 #import "VMConfigViewController.h"
 #import "VMConfigControl.h"
-#import "VMConfigLabel.h"
 #import "VMConfigPickerView.h"
 #import "VMConfigSwitch.h"
 #import "VMConfigTextField.h"
@@ -132,7 +131,7 @@ void *kVMConfigViewControllerContext = &kVMConfigViewControllerContext;
 
 - (void)pickerCell:(VMConfigTogglePickerCell *)cell showPicker:(BOOL)visible animated:(BOOL)animated {
     if (visible) {
-        NSUInteger index = [[UTMConfiguration supportedOptions:cell.picker.supportedOptionsPath pretty:NO] indexOfObject:cell.label.text];
+        NSUInteger index = [[UTMConfiguration supportedOptions:cell.picker.supportedOptionsPath pretty:NO] indexOfObject:cell.detailTextLabel.text];
         if (index != NSNotFound) {
             [cell.picker selectRow:index inComponent:0 animated:NO];
         }
@@ -175,8 +174,8 @@ void *kVMConfigViewControllerContext = &kVMConfigViewControllerContext;
     NSAssert([pickerView isKindOfClass:[VMConfigPickerView class]], @"Invalid picker");
     VMConfigPickerView *vmPicker = (VMConfigPickerView *)pickerView;
     NSString *selected = [UTMConfiguration supportedOptions:vmPicker.supportedOptionsPath pretty:NO][row];
-    [self.configuration setValue:selected forKey:vmPicker.selectedOptionLabel.configurationPath];
-    vmPicker.selectedOptionLabel.text = selected;
+    [self.configuration setValue:selected forKey:vmPicker.selectedOptionCell.configurationPath];
+    vmPicker.selectedOptionCell.detailTextLabel.text = selected;
 }
 
 - (void)hidePickersAnimated:(BOOL)animated {

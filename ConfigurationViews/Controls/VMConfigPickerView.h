@@ -17,14 +17,14 @@
 #import <UIKit/UIKit.h>
 #import "VMConfigControl.h"
 
-@class VMConfigLabel;
+@class VMConfigCell;
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface VMConfigPickerView : UIPickerView
 
 @property (nonatomic) IBInspectable NSString *supportedOptionsPath;
-@property (nonatomic, weak) IBOutlet VMConfigLabel *selectedOptionLabel;
+@property (nonatomic, weak) IBOutlet VMConfigCell *selectedOptionCell;
 
 @end
 

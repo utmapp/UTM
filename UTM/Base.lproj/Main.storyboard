@@ -1300,23 +1300,20 @@
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
-                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="rtl8139" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="exK-JR-7gh" customClass="VMConfigLabel">
+                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="rtl8139" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="exK-JR-7gh">
                                                     <rect key="frame" x="304" y="11.999999999999998" width="55" height="20.333333333333332"/>
                                                     <autoresizingMask key="autoresizingMask"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
-                                                    <userDefinedRuntimeAttributes>
-                                                        <userDefinedRuntimeAttribute type="string" keyPath="configurationPath" value="networkCard"/>
-                                                    </userDefinedRuntimeAttributes>
                                                 </label>
                                             </subviews>
                                         </tableViewCellContentView>
                                         <userDefinedRuntimeAttributes>
                                             <userDefinedRuntimeAttribute type="boolean" keyPath="cellsVisible" value="NO"/>
+                                            <userDefinedRuntimeAttribute type="string" keyPath="configurationPath" value="networkCard"/>
                                         </userDefinedRuntimeAttributes>
                                         <connections>
-                                            <outlet property="label" destination="exK-JR-7gh" id="axM-6V-Lf2"/>
                                             <outlet property="picker" destination="6DD-Mq-ovy" id="aHT-bM-5UH"/>
                                             <outletCollection property="toggleVisibleCells" destination="MGi-yx-LqF" id="dcU-0J-OOa"/>
                                         </connections>
@@ -1336,7 +1333,7 @@
                                                     <connections>
                                                         <outlet property="dataSource" destination="5KN-1q-y5w" id="nZP-7O-LUF"/>
                                                         <outlet property="delegate" destination="5KN-1q-y5w" id="cVe-BA-97a"/>
-                                                        <outlet property="selectedOptionLabel" destination="exK-JR-7gh" id="gVT-xm-m0s"/>
+                                                        <outlet property="selectedOptionCell" destination="RNX-hO-eWb" id="hoZ-cU-Ds1"/>
                                                     </connections>
                                                 </pickerView>
                                             </subviews>
@@ -1787,7 +1784,6 @@
                         <outletCollection property="configControls" destination="4dt-SP-XL1" id="Knl-UL-2Mg"/>
                         <outletCollection property="configControls" destination="5AX-Tr-D6a" id="r7q-b9-tl7"/>
                         <outletCollection property="configControls" destination="bl0-gn-e5n" id="jZz-4m-J6E"/>
-                        <outletCollection property="configControls" destination="exK-JR-7gh" id="A2Q-KU-A6u"/>
                         <outletCollection property="configPickerToggles" destination="RNX-hO-eWb" id="kiG-1k-Siv"/>
                         <outletCollection property="networkEnabledCells" destination="RNX-hO-eWb" id="hNG-Eq-o58"/>
                         <outletCollection property="networkEnabledCells" destination="L7E-R4-cxI" id="yRS-HU-Bah"/>
@@ -1802,6 +1798,7 @@
                         <outletCollection property="networkEnabledCells" destination="9xD-K5-Mpp" id="TVX-1w-e0p"/>
                         <outletCollection property="networkEnabledCells" destination="5Zt-oz-qoO" id="i0e-aJ-EJ0"/>
                         <outletCollection property="networkEnabledCells" destination="hVl-Hg-Tph" id="4ib-G0-SU3"/>
+                        <outletCollection property="configControls" destination="RNX-hO-eWb" id="nov-2e-gmW"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="irb-Tt-Gor" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -4001,20 +3998,19 @@
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
-                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="ac97" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="Jp2-wl-rfZ" customClass="VMConfigLabel">
+                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="ac97" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="Jp2-wl-rfZ">
                                                     <rect key="frame" x="321.33333333333331" y="11.999999999999998" width="37.666666666666664" height="20.333333333333332"/>
                                                     <autoresizingMask key="autoresizingMask"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
-                                                    <userDefinedRuntimeAttributes>
-                                                        <userDefinedRuntimeAttribute type="string" keyPath="configurationPath" value="soundCard"/>
-                                                    </userDefinedRuntimeAttributes>
                                                 </label>
                                             </subviews>
                                         </tableViewCellContentView>
+                                        <userDefinedRuntimeAttributes>
+                                            <userDefinedRuntimeAttribute type="string" keyPath="configurationPath" value="soundCard"/>
+                                        </userDefinedRuntimeAttributes>
                                         <connections>
-                                            <outlet property="label" destination="Jp2-wl-rfZ" id="IdU-ce-OCu"/>
                                             <outlet property="picker" destination="Sgt-1G-xIj" id="xbd-m9-YbS"/>
                                             <outletCollection property="toggleVisibleCells" destination="clU-3f-ovR" id="LB8-aa-ULc"/>
                                         </connections>
@@ -4034,7 +4030,7 @@
                                                     <connections>
                                                         <outlet property="dataSource" destination="wCA-Kf-QNP" id="PWA-EU-i9m"/>
                                                         <outlet property="delegate" destination="wCA-Kf-QNP" id="2ZX-n7-ynj"/>
-                                                        <outlet property="selectedOptionLabel" destination="Jp2-wl-rfZ" id="9ok-Kw-gy5"/>
+                                                        <outlet property="selectedOptionCell" destination="Xfi-1W-OVk" id="wNj-uk-mqy"/>
                                                     </connections>
                                                 </pickerView>
                                             </subviews>
@@ -4058,9 +4054,9 @@
                     <connections>
                         <outlet property="soundEnabledSwitch" destination="ZtR-9f-f7S" id="8SC-LV-A0r"/>
                         <outletCollection property="configControls" destination="ZtR-9f-f7S" id="dcj-ZC-HWK"/>
-                        <outletCollection property="configControls" destination="Jp2-wl-rfZ" id="j5K-n1-hNx"/>
                         <outletCollection property="configPickerToggles" destination="Xfi-1W-OVk" id="CZC-cT-hnt"/>
                         <outletCollection property="soundEnabledCells" destination="Xfi-1W-OVk" id="Kud-cQ-er6"/>
+                        <outletCollection property="configControls" destination="Xfi-1W-OVk" id="1iY-Dj-dtN"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="nmu-6O-cOT" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -4178,7 +4174,7 @@
                                             </constraints>
                                         </tableViewCellContentView>
                                     </tableViewCell>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="default" accessoryType="disclosureIndicator" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" textLabel="3i2-h0-zr5" detailTextLabel="qtH-iq-gnv" style="IBUITableViewCellStyleValue1" id="MIw-CI-GRx">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="default" accessoryType="disclosureIndicator" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" textLabel="3i2-h0-zr5" detailTextLabel="qtH-iq-gnv" style="IBUITableViewCellStyleValue1" id="MIw-CI-GRx" customClass="VMConfigCell">
                                         <rect key="frame" x="0.0" y="262.66666412353516" width="375" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="MIw-CI-GRx" id="d0w-dU-cXj">
@@ -4192,18 +4188,18 @@
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
-                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="Select..." textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="qtH-iq-gnv" customClass="VMConfigLabel">
+                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="Select..." textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="qtH-iq-gnv">
                                                     <rect key="frame" x="277.66666666666669" y="11.999999999999998" width="62.333333333333336" height="20.333333333333332"/>
                                                     <autoresizingMask key="autoresizingMask"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
-                                                    <userDefinedRuntimeAttributes>
-                                                        <userDefinedRuntimeAttribute type="string" keyPath="configurationPath" value="shareDirectoryName"/>
-                                                    </userDefinedRuntimeAttributes>
                                                 </label>
                                             </subviews>
                                         </tableViewCellContentView>
+                                        <userDefinedRuntimeAttributes>
+                                            <userDefinedRuntimeAttribute type="string" keyPath="configurationPath" value="shareDirectoryName"/>
+                                        </userDefinedRuntimeAttributes>
                                     </tableViewCell>
                                 </cells>
                             </tableViewSection>
@@ -4217,13 +4213,12 @@
                     <connections>
                         <outlet property="selectDirectoryCell" destination="MIw-CI-GRx" id="H8I-2H-ul1"/>
                         <outlet property="shareDirectoryEnabledSwitch" destination="izf-2j-NwA" id="hMn-qN-31W"/>
-                        <outlet property="shareDirectoryNameLabel" destination="qtH-iq-gnv" id="9sO-xX-C3p"/>
                         <outletCollection property="configControls" destination="d0M-jH-bn7" id="bvJ-ga-FKu"/>
                         <outletCollection property="configControls" destination="izf-2j-NwA" id="HhF-ZY-fBq"/>
                         <outletCollection property="configControls" destination="BlC-lX-1S5" id="UWf-b0-HjQ"/>
-                        <outletCollection property="configControls" destination="qtH-iq-gnv" id="lhI-OT-GIJ"/>
                         <outletCollection property="directorySharingCells" destination="0WD-Ot-zpb" id="Cj0-Fs-Xdf"/>
                         <outletCollection property="directorySharingCells" destination="MIw-CI-GRx" id="NRi-Ea-Zqo"/>
+                        <outletCollection property="configControls" destination="MIw-CI-GRx" id="GJQ-VY-yXn"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="aec-Ui-ggd" userLabel="First Responder" sceneMemberID="firstResponder"/>

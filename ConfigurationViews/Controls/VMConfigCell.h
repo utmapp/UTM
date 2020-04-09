@@ -19,7 +19,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface VMConfigLabel : UILabel<VMConfigControl>
+@interface VMConfigCell : UITableViewCell<VMConfigControl>
 
 @property (nonatomic) IBInspectable NSString *configurationPath;
 

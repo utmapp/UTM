@@ -22,7 +22,6 @@ NS_ASSUME_NONNULL_BEGIN
 @interface VMConfigSharingViewController : VMConfigViewController<UIDocumentPickerDelegate>
 
 @property (weak, nonatomic) IBOutlet UISwitch *shareDirectoryEnabledSwitch;
-@property (weak, nonatomic) IBOutlet UILabel *shareDirectoryNameLabel;
 @property (weak, nonatomic) IBOutlet UITableViewCell *selectDirectoryCell;
 @property (strong, nonatomic) IBOutletCollection(UITableViewCell) NSArray *directorySharingCells;
 
