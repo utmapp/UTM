@@ -21,7 +21,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-IB_DESIGNABLE
 @interface VMConfigTogglePickerCell : VMConfigCell
 
 @property (nonatomic, strong) IBOutletCollection(UITableViewCell) NSArray *toggleVisibleCells;

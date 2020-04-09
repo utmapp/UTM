@@ -19,7 +19,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-IB_DESIGNABLE
 @interface VMConfigTextField : UITextField<VMConfigControl>
 
 @property (nonatomic) IBInspectable NSString *configurationPath;
