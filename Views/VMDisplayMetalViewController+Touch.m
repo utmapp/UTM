@@ -14,6 +14,7 @@
 // limitations under the License.
 //
 
+#import "UIViewController+Extensions.h"
 #import "VMDisplayMetalViewController.h"
 #import "VMDisplayMetalViewController+Touch.h"
 #import "VMCursor.h"

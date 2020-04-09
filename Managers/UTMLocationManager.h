@@ -14,16 +14,14 @@
 // limitations under the License.
 //
 
-#import <UIKit/UIKit.h>
+#import <Foundation/Foundation.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface UIViewController (Extensions)
+@interface UTMLocationManager : NSObject
 
-- (void)onDelay:(float)delay action:(void (^)(void))block;
-- (BOOL)boolForSetting:(NSString *)key;
-- (NSInteger)integerForSetting:(NSString *)key;
-- (void)showAlert:(NSString *)msg actions:(nullable NSArray<UIAlertAction *> *)actions completion:(nullable void (^)(UIAlertAction *action))completion;
++ (instancetype)sharedInstance;
+- (void)startUpdatingLocation;
 
 @end
 

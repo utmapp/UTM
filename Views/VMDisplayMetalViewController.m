@@ -28,6 +28,7 @@
 #import "UTMConfiguration.h"
 #import "CSDisplayMetal.h"
 #import "UTMSpiceIO.h"
+#import "UTMLocationManager.h"
 
 @interface VMDisplayMetalViewController ()
 
@@ -82,6 +83,10 @@
 
 - (BOOL)autosaveLowMemory {
     return [self boolForSetting:@"AutosaveLowMemory"];
+}
+
+- (BOOL)runInBackground {
+    return [self boolForSetting:@"RunInBackground"];
 }
 
 - (void)viewDidLoad {
@@ -147,6 +152,10 @@
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
+    if (self.runInBackground) {
+        NSLog(@"Start location tracking to enable running in background");
+        [[UTMLocationManager sharedInstance] startUpdatingLocation];
+    }
     if (self.vm.state == kVMStopped || self.vm.state == kVMSuspended) {
         [self.vm startVM];
         NSAssert([[self.vm ioService] isKindOfClass: [UTMSpiceIO class]], @"VM ioService must be UTMSpiceIO, but is: %@!", NSStringFromClass([[self.vm ioService] class]));
@@ -234,18 +243,6 @@
         [self.vmInput sendKey:type code:(x & 0xFF)];
         x = x >> 8;
     }
-}
-
-- (void)onDelay:(float)delay action:(void (^)(void))block {
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC*0.1), dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), block);
-}
-
-- (BOOL)boolForSetting:(NSString *)key {
-    return [[NSUserDefaults standardUserDefaults] boolForKey:key];
-}
-
-- (NSInteger)integerForSetting:(NSString *)key {
-    return [[NSUserDefaults standardUserDefaults] integerForKey:key];
 }
 
 #pragma mark - Toolbar actions
