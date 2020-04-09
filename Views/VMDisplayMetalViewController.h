@@ -77,9 +77,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) BOOL autosaveLowMemory;
 
 - (void)sendExtendedKey:(SendKeyType)type code:(int)code;
-- (void)onDelay:(float)delay action:(void (^)(void))block;
-- (BOOL)boolForSetting:(NSString *)key;
-- (NSInteger)integerForSetting:(NSString *)key;
 
 - (IBAction)changeDisplayZoom:(UIButton *)sender;
 - (IBAction)pauseResumePressed:(UIButton *)sender;

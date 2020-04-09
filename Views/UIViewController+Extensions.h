@@ -18,8 +18,13 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface UIViewController (ShowAlert)
+@interface UIViewController (Extensions)
+
+- (void)onDelay:(float)delay action:(void (^)(void))block;
+- (BOOL)boolForSetting:(NSString *)key;
+- (NSInteger)integerForSetting:(NSString *)key;
 - (void)showAlert:(NSString *)msg actions:(nullable NSArray<UIAlertAction *> *)actions completion:(nullable void (^)(UIAlertAction *action))completion;
+
 @end
 
 NS_ASSUME_NONNULL_END
