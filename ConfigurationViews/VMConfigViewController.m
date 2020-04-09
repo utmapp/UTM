@@ -192,7 +192,11 @@ void *kVMConfigViewControllerContext = &kVMConfigViewControllerContext;
 - (IBAction)configTextFieldEditEnd:(VMConfigTextField *)sender {
     // validate input in super-class
     NSLog(@"config edited for text %@", sender.configurationPath);
-    [self.configuration setValue:sender.text forKey:sender.configurationPath];
+    if (sender.isNumber) {
+        [self.configuration setValue:@([sender.text integerValue]) forKey:sender.configurationPath];
+    } else {
+        [self.configuration setValue:sender.text forKey:sender.configurationPath];
+    }
 }
 
 - (IBAction)configSwitchChanged:(VMConfigSwitch *)sender {

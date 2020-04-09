@@ -22,6 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface VMConfigTextField : UITextField<VMConfigControl>
 
 @property (nonatomic) IBInspectable NSString *configurationPath;
+@property (nonatomic) IBInspectable BOOL isNumber;
 
 @end
 
