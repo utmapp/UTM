@@ -34,6 +34,9 @@
 /* Class = "UILabel"; text = "Subtitle"; ObjectID = "3G1-cS-MAp"; */
 "3G1-cS-MAp.text" = "标题";
 
+/* Class = "UILabel"; text = "Path"; ObjectID = "3i2-h0-zr5"; */
+"3i2-h0-zr5.text" = "路径选择";
+
 /* Class = "UILabel"; text = "Full Graphics"; ObjectID = "3Jg-sa-a1s"; */
 "3Jg-sa-a1s.text" = "图形界面";
 
@@ -42,6 +45,9 @@
 
 /* Class = "UIButton"; normalTitle = "F3"; ObjectID = "4XD-uH-MNJ"; */
 "4XD-uH-MNJ.normalTitle" = "F3";
+
+/* Class = "UILabel"; text = "Enable Directory Sharing"; ObjectID = "5Ae-Pr-d2U"; */
+"5Ae-Pr-d2U.text" = "开启共享目录";
 
 /* Class = "UILabel"; text = "DHCP Start"; ObjectID = "5O8-6K-mxz"; */
 "5O8-6K-mxz.text" = "DHCP开始地址";
