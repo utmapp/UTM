@@ -2282,7 +2282,7 @@
                             </tableViewSection>
                             <tableViewSection headerTitle="Location" id="eeY-js-xSc">
                                 <cells>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" textLabel="xoO-as-9Kn" detailTextLabel="Ffd-jl-gNs" style="IBUITableViewCellStyleValue1" id="fSV-PP-Loi">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" textLabel="xoO-as-9Kn" detailTextLabel="Ffd-jl-gNs" style="IBUITableViewCellStyleValue1" id="fSV-PP-Loi" customClass="VMConfigTogglePickerCell">
                                         <rect key="frame" x="0.0" y="155.33333206176758" width="375" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="fSV-PP-Loi" id="Fih-eK-Ft9">
@@ -2305,6 +2305,10 @@
                                                 </label>
                                             </subviews>
                                         </tableViewCellContentView>
+                                        <connections>
+                                            <outlet property="picker" destination="1y9-u8-J3t" id="tWh-rJ-iNa"/>
+                                            <outletCollection property="toggleVisibleCells" destination="YgW-mV-1ua" id="tRW-2t-e8h"/>
+                                        </connections>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" rowHeight="150" id="YgW-mV-1ua">
                                         <rect key="frame" x="0.0" y="199.33333206176758" width="375" height="150"/>
@@ -2313,11 +2317,15 @@
                                             <rect key="frame" x="0.0" y="0.0" width="375" height="150"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <pickerView contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="1y9-u8-J3t">
+                                                <pickerView contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="1y9-u8-J3t" customClass="VMConfigPickerView">
                                                     <rect key="frame" x="0.0" y="0.0" width="375" height="150"/>
+                                                    <userDefinedRuntimeAttributes>
+                                                        <userDefinedRuntimeAttribute type="string" keyPath="supportedOptionsPath" value="imageTypes"/>
+                                                    </userDefinedRuntimeAttributes>
                                                     <connections>
                                                         <outlet property="dataSource" destination="LEE-I0-SfL" id="49Y-0X-fOv"/>
                                                         <outlet property="delegate" destination="LEE-I0-SfL" id="Dox-xC-nTt"/>
+                                                        <outlet property="selectedOptionCell" destination="fSV-PP-Loi" id="Tel-IN-BXz"/>
                                                     </connections>
                                                 </pickerView>
                                             </subviews>
@@ -2329,7 +2337,7 @@
                                             </constraints>
                                         </tableViewCellContentView>
                                     </tableViewCell>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" textLabel="EGI-JP-qwU" detailTextLabel="rbw-FB-I5Q" style="IBUITableViewCellStyleValue1" id="17E-cW-AVf">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" textLabel="EGI-JP-qwU" detailTextLabel="rbw-FB-I5Q" style="IBUITableViewCellStyleValue1" id="17E-cW-AVf" customClass="VMConfigTogglePickerCell">
                                         <rect key="frame" x="0.0" y="349.33333206176758" width="375" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="17E-cW-AVf" id="gtn-y6-uIO">
@@ -2352,6 +2360,10 @@
                                                 </label>
                                             </subviews>
                                         </tableViewCellContentView>
+                                        <connections>
+                                            <outlet property="picker" destination="3H8-Sz-6cX" id="RVS-hh-wCI"/>
+                                            <outletCollection property="toggleVisibleCells" destination="zfI-4u-KMR" id="gJ8-Jl-Ja6"/>
+                                        </connections>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" rowHeight="150" id="zfI-4u-KMR">
                                         <rect key="frame" x="0.0" y="393.33333206176758" width="375" height="150"/>
@@ -2360,11 +2372,15 @@
                                             <rect key="frame" x="0.0" y="0.0" width="375" height="150"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <pickerView contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="3H8-Sz-6cX">
+                                                <pickerView contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="3H8-Sz-6cX" customClass="VMConfigPickerView">
                                                     <rect key="frame" x="0.0" y="0.0" width="375" height="150"/>
+                                                    <userDefinedRuntimeAttributes>
+                                                        <userDefinedRuntimeAttribute type="string" keyPath="supportedOptionsPath" value="driveInterfaces"/>
+                                                    </userDefinedRuntimeAttributes>
                                                     <connections>
                                                         <outlet property="dataSource" destination="LEE-I0-SfL" id="mOl-8M-Ehr"/>
                                                         <outlet property="delegate" destination="LEE-I0-SfL" id="DWR-dN-hDX"/>
+                                                        <outlet property="selectedOptionCell" destination="17E-cW-AVf" id="VWz-3Y-JE8"/>
                                                     </connections>
                                                 </pickerView>
                                             </subviews>
@@ -2386,15 +2402,12 @@
                     </tableView>
                     <navigationItem key="navigationItem" title="New Drive/Image" id="XLc-iy-COp"/>
                     <connections>
-                        <outlet property="driveLocationCell" destination="17E-cW-AVf" id="eCz-uS-37D"/>
-                        <outlet property="driveLocationLabel" destination="rbw-FB-I5Q" id="FOM-nv-VVg"/>
-                        <outlet property="driveLocationPicker" destination="3H8-Sz-6cX" id="P6x-pX-NHo"/>
-                        <outlet property="driveLocationPickerCell" destination="zfI-4u-KMR" id="ii9-3e-csO"/>
+                        <outlet property="driveLocationPickerCell" destination="17E-cW-AVf" id="uv2-Kl-Jsk"/>
                         <outlet property="existingPathLabel" destination="iuP-Eh-P68" id="dti-2P-X2T"/>
-                        <outlet property="imageTypeCell" destination="fSV-PP-Loi" id="4ma-iT-EYU"/>
-                        <outlet property="imageTypeLabel" destination="Ffd-jl-gNs" id="vZD-KN-8gx"/>
-                        <outlet property="imageTypePicker" destination="1y9-u8-J3t" id="BdV-O6-g13"/>
-                        <outlet property="imageTypePickerCell" destination="YgW-mV-1ua" id="Jjv-Im-GRa"/>
+                        <outlet property="imageTypePickerCell" destination="fSV-PP-Loi" id="Di5-B2-RUu"/>
+                        <outletCollection property="driveTypeCells" destination="17E-cW-AVf" id="nMw-2a-KNp"/>
+                        <outletCollection property="configPickerToggles" destination="fSV-PP-Loi" id="3E2-1I-WMX"/>
+                        <outletCollection property="configPickerToggles" destination="17E-cW-AVf" id="lTh-HA-ubb"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="739-VZ-bsH" userLabel="First Responder" sceneMemberID="firstResponder"/>

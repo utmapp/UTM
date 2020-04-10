@@ -18,6 +18,8 @@
 #import "UTMConfiguration.h"
 #import "UTMConfiguration+Constants.h"
 #import "VMConfigDrivePickerViewController.h"
+#import "VMConfigPickerView.h"
+#import "VMConfigTogglePickerCell.h"
 
 @interface VMConfigDriveDetailViewController ()
 
@@ -31,13 +33,6 @@
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-    [self refreshViewFromConfiguration];
-}
-
-- (void)refreshViewFromConfiguration {
-    [super refreshViewFromConfiguration];
-    self.imageTypePickerActive = NO;
-    self.driveLocationPickerActive = NO;
     if (self.valid) {
         self.existingPathLabel.text = [self.configuration driveImagePathForIndex:self.driveIndex];
         self.imageType = [self.configuration driveImageTypeForIndex:self.driveIndex];
@@ -46,14 +41,23 @@
         self.imageType = UTMDiskImageTypeDisk;
         self.driveInterfaceType = [UTMConfiguration defaultDriveInterface];
     }
+    if (self.imageType == UTMDiskImageTypeDisk || self.imageType == UTMDiskImageTypeCD) {
+        [self showDriveTypeOptions:YES animated:NO];
+    } else {
+        [self showDriveTypeOptions:NO animated:NO];
+    }
+    [self hidePickersAnimated:NO];
+}
+
+- (void)showDriveTypeOptions:(BOOL)visible animated:(BOOL)animated {
+    if (!visible) {
+        [self pickerCell:self.driveLocationPickerCell showPicker:NO animated:YES];
+    }
+    [self cells:self.driveTypeCells setHidden:!visible];
+    [self reloadDataAnimated:YES];
 }
 
 #pragma mark - Properties
-
-- (void)setImageTypePickerActive:(BOOL)imageTypePickerActive  {
-    _imageTypePickerActive = imageTypePickerActive;
-    [self pickerCell:self.imageTypePickerCell setActive:imageTypePickerActive];
-}
 
 - (void)setImageType:(UTMDiskImageType)imageType {
     NSAssert(imageType < UTMDiskImageTypeMax, @"Invalid image type %lu", imageType);
@@ -61,18 +65,7 @@
     if (self.valid) {
         [self.configuration setDriveImageType:imageType forIndex:self.driveIndex];
     }
-    self.imageTypeLabel.text = [UTMConfiguration supportedImageTypes][imageType];
-    if (imageType == UTMDiskImageTypeDisk || imageType == UTMDiskImageTypeCD) {
-        [self pickerCell:self.driveLocationCell setActive:YES];
-    } else {
-        [self pickerCell:self.driveLocationCell setActive:NO];
-        self.driveLocationPickerActive = NO;
-    }
-}
-
-- (void)setDriveLocationPickerActive:(BOOL)driveLocationPickerActive {
-    _driveLocationPickerActive = driveLocationPickerActive;
-    [self pickerCell:self.driveLocationPickerCell setActive:driveLocationPickerActive];
+    self.imageTypePickerCell.detailTextLabel.text = [UTMConfiguration supportedImageTypes][imageType];
 }
 
 - (void)setDriveInterfaceType:(NSString *)driveInterfaceType {
@@ -80,64 +73,30 @@
     if (self.valid) {
         [self.configuration setDriveInterfaceType:driveInterfaceType forIndex:self.driveIndex];
     }
-    self.driveLocationLabel.text = driveInterfaceType;
-}
-
-#pragma mark - Table delegate
-
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    if ([tableView cellForRowAtIndexPath:indexPath] == self.driveLocationCell) {
-        self.driveLocationPickerActive = !self.driveLocationPickerActive;
-        [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    } else if ([tableView cellForRowAtIndexPath:indexPath] == self.imageTypeCell) {
-        self.imageTypePickerActive = !self.imageTypePickerActive;
-        [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    }
+    self.driveLocationPickerCell.detailTextLabel.text = driveInterfaceType.length > 0 ? driveInterfaceType : @" ";
 }
 
 #pragma mark - Picker delegate
 
-- (NSInteger)numberOfComponentsInPickerView:(nonnull UIPickerView *)pickerView {
-    if (pickerView == self.driveLocationPicker) {
-        return 1;
-    } else if (pickerView == self.imageTypePicker) {
-        return 1;
+- (void)imageTypeChanged {
+    if (self.imageType == UTMDiskImageTypeDisk || self.imageType == UTMDiskImageTypeCD) {
+        if (self.driveInterfaceType.length == 0) {
+            self.driveInterfaceType = [UTMConfiguration defaultDriveInterface];
+        }
+        [self showDriveTypeOptions:YES animated:NO];
     } else {
-        NSAssert(0, @"Invalid picker");
+        self.driveInterfaceType = @"";
+        [self showDriveTypeOptions:NO animated:NO];
     }
-    return 0;
-}
-
-- (NSInteger)pickerView:(nonnull UIPickerView *)pickerView numberOfRowsInComponent:(NSInteger)component {
-    NSAssert(component == 0, @"Invalid component");
-    if (pickerView == self.driveLocationPicker) {
-        return [UTMConfiguration supportedDriveInterfaces].count;
-    } else if (pickerView == self.imageTypePicker) {
-        return [UTMConfiguration supportedImageTypes].count;
-    } else {
-        NSAssert(0, @"Invalid picker");
-    }
-    return 0;
-}
-
-- (NSString *)pickerView:(UIPickerView *)pickerView titleForRow:(NSInteger)row forComponent:(NSInteger)component {
-    NSAssert(component == 0, @"Invalid component");
-    if (pickerView == self.driveLocationPicker) {
-        return [UTMConfiguration supportedDriveInterfaces][row];
-    } else if (pickerView == self.imageTypePicker) {
-        return [UTMConfiguration supportedImageTypesPretty][row];
-    } else {
-        NSAssert(0, @"Invalid picker");
-    }
-    return nil;
 }
 
 - (void)pickerView:(UIPickerView *)pickerView didSelectRow:(NSInteger)row inComponent:(NSInteger)component {
     NSAssert(component == 0, @"Invalid component");
-    if (pickerView == self.driveLocationPicker) {
+    if (pickerView == self.driveLocationPickerCell.picker) {
         self.driveInterfaceType = [UTMConfiguration supportedDriveInterfaces][row];
-    } else if (pickerView == self.imageTypePicker) {
+    } else if (pickerView == self.imageTypePickerCell.picker) {
         self.imageType = row;
+        [self imageTypeChanged];
     } else {
         NSAssert(0, @"Invalid picker");
     }

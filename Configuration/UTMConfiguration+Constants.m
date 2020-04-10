@@ -45,6 +45,14 @@
         } else {
             return [self supportedBootDevices];
         }
+    } else if ([key isEqualToString:@"imageTypes"]) {
+        if (pretty) {
+            return [self supportedImageTypesPretty];
+        } else {
+            return [self supportedImageTypes];
+        }
+    } else if ([key isEqualToString:@"driveInterfaces"]) {
+        return [self supportedDriveInterfaces];
     }
     return @[];
 }
