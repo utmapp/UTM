@@ -4320,10 +4320,13 @@
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
-                                                <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="1iw-Js-hQc">
+                                                <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="1iw-Js-hQc" customClass="VMConfigSwitch">
                                                     <rect key="frame" x="310" y="6.6666666666666679" width="51" height="31.000000000000004"/>
+                                                    <userDefinedRuntimeAttributes>
+                                                        <userDefinedRuntimeAttribute type="string" keyPath="configurationPath" value="inputLegacy"/>
+                                                    </userDefinedRuntimeAttributes>
                                                     <connections>
-                                                        <action selector="legacyModeChanged:" destination="5Cr-yW-csz" eventType="valueChanged" id="nHv-pq-sZL"/>
+                                                        <action selector="configSwitchChanged:" destination="5Cr-yW-csz" eventType="valueChanged" id="wnF-Xb-8sz"/>
                                                     </connections>
                                                 </switch>
                                             </subviews>
@@ -4367,8 +4370,8 @@
                     </tableView>
                     <navigationItem key="navigationItem" title="Input" id="Etn-MD-71X"/>
                     <connections>
-                        <outlet property="legacyModeSwitch" destination="1iw-Js-hQc" id="Ne2-1k-jk3"/>
                         <outlet property="openSettingsCell" destination="Wy9-zW-xLY" id="QmO-gS-6Go"/>
+                        <outletCollection property="configControls" destination="1iw-Js-hQc" id="LHY-2H-OCh"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="fxK-8x-htX" userLabel="First Responder" sceneMemberID="firstResponder"/>
