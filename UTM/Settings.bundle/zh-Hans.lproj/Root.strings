@@ -1,0 +1,87 @@
+/* (No Comment) */
+"Apple Pencil Input" = "Apple Pencil";
+
+/* (No Comment) */
+"Auto save on background" = "后台运行时自动保存";
+
+/* (No Comment) */
+"Auto save on low memory" = "内存不足时自动保存";
+
+/* (No Comment) */
+"Background" = "后台";
+
+/* (No Comment) */
+"Click & Hold" = "单击并按住";
+
+/* (No Comment) */
+"Continue running VM in the background" = "后台运行时保持虚拟机运行";
+
+/* (No Comment) */
+"Cursor" = "光标";
+
+/* (No Comment) */
+"Drag cursor" = "拖动光标";
+
+/* (No Comment) */
+"Enabled" = "启用";
+
+/* (No Comment) */
+"Disabled" = "禁用";
+
+/* (No Comment) */
+"Follow cursor" = "跟随光标";
+
+/* (No Comment) */
+"Gestures" = "手势";
+
+/* A single strings file, whose title is specified in your preferences schema. The strings files provide the localized content to display to the user for each of your preferences. */
+"Group" = "组";
+
+/* (No Comment) */
+"Long Press" = "长按";
+
+/* (No Comment) */
+"Mouse Wheel" = "鼠标滚轮";
+
+/* (No Comment) */
+"Move Screen" = "移动显示屏";
+
+/* (No Comment) */
+"Name" = "名称";
+
+/* (No Comment) */
+"none given" = "未指定";
+
+/* (No Comment) */
+"Right Click" = "右键单击";
+
+/* (No Comment) */
+"Tablet mode (always show cursor)" = "平板模式(显示光标）";
+
+/* (No Comment) */
+"Tablet mode (try hiding cursor)" = "平板模式(隐藏光标)";
+
+/* (No Comment) */
+"Three Finger Pan" = "三指拖动";
+
+/* (No Comment) */
+"Touch Input" = "触屏";
+
+/* (No Comment) */
+"Touch mode (always show cursor)" = "触屏模式(显示光标)";
+
+/* (No Comment) */
+"Touch mode (try hiding cursor)" = "触屏模式(隐藏光标)";
+
+/* (No Comment) */
+"Touchpad/Mouse Input" = "触控板/鼠标";
+
+/* (No Comment) */
+"Two Finger Pan" = "双指拖动";
+
+/* (No Comment) */
+"Two Finger Scroll" = "双指滚动";
+
+/* (No Comment) */
+"Two Finger Tap" = "双指轻点";
+
