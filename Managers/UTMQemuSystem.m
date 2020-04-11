@@ -272,6 +272,10 @@
         [self pushArgv:self.configuration.systemUUID];
     }
     
+    // fix windows time issues
+    [self pushArgv:@"-rtc"];
+    [self pushArgv:@"base=localtime"];
+    
     if (self.configuration.systemArguments.count != 0) {
         NSArray *addArgs = self.configuration.systemArguments;
         // Splits all spaces into their own, except when between quotes.
