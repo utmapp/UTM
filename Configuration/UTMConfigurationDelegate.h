@@ -26,8 +26,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic) UTMConfiguration *configuration;
 
-- (void)refreshViewFromConfiguration;
-
 @end
 
 NS_ASSUME_NONNULL_END

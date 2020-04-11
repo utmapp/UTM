@@ -31,6 +31,11 @@
     self.navigationItem.rightBarButtonItems = @[ self.addButtonItem, self.editButtonItem ];
 }
 
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    [self refreshViewFromConfiguration];
+}
+
 - (void)refreshViewFromConfiguration {
     [self.tableView reloadData];
 }

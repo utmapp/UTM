@@ -126,11 +126,6 @@
 @implementation VMConfigSystemArgumentsTextCell
 @synthesize configuration;
 
-- (void)refreshViewFromConfiguration {
-    // The table would update before we could do anything.
-    return;
-}
-
 - (IBAction)editingDidEnd:(UITextField *)sender {
     [self.configuration updateArgumentAtIndex:sender.tag withValue:sender.text];
     [self.argTextItem endEditing:true];
