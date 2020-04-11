@@ -19,7 +19,11 @@
 @implementation VMConfigSwitch
 
 - (void)valueChanged:(id)value {
-    self.on = [value boolValue];
+    if (value == nil || value == [NSNull null]) {
+        self.on = NO;
+    } else {
+        self.on = [value boolValue];
+    }
 }
 
 @end
