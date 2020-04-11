@@ -25,8 +25,6 @@
 
 @implementation VMConfigExistingViewController
 
-@synthesize configuration;
-
 - (void)viewDidLoad {
     [super viewDidLoad];
     

@@ -25,8 +25,6 @@
 
 @implementation VMConfigDisplayViewController
 
-@synthesize configuration;
-
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     _consoleOnly = self.configuration.displayConsoleOnly;
