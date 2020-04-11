@@ -17,6 +17,7 @@
 #import <mach/mach.h>
 #import <mach/mach_host.h>
 #import <sys/sysctl.h>
+#import "UIViewController+Extensions.h"
 #import "VMConfigSystemViewController.h"
 #import "UTMConfiguration+Constants.h"
 #import "UTMConfiguration+System.h"
@@ -120,11 +121,11 @@ const float kMemoryWarningThreshold = 0.8;
     if (self.memorySize > 0) {
         valid = YES;
     } else {
-        [self showAlert:NSLocalizedString(@"Invalid memory size.", @"VMConfigSystemViewController") completion:nil];
+        [self showAlert:NSLocalizedString(@"Invalid memory size.", @"VMConfigSystemViewController") actions:nil completion:nil];
     }
     [self updateEstimatedRam];
     if (self.estimatedRam > kMemoryWarningThreshold * self.totalRam) {
-        [self showAlert:NSLocalizedString(@"The total memory usage is close to your device's limit. iOS will kill the VM if it consumes too much memory.", @"VMConfigSystemViewController") completion:nil];
+        [self showAlert:NSLocalizedString(@"The total memory usage is close to your device's limit. iOS will kill the VM if it consumes too much memory.", @"VMConfigSystemViewController") actions:nil completion:nil];
     }
     return valid;
 }
@@ -136,7 +137,7 @@ const float kMemoryWarningThreshold = 0.8;
     if (self.cpuCount > 0) {
         valid = YES;
     } else {
-        [self showAlert:NSLocalizedString(@"Invalid core count.", @"VMConfigSystemViewController") completion:nil];
+        [self showAlert:NSLocalizedString(@"Invalid core count.", @"VMConfigSystemViewController") actions:nil completion:nil];
     }
     return valid;
 }
@@ -148,15 +149,15 @@ const float kMemoryWarningThreshold = 0.8;
     if (self.jitCacheSize == 0) { // default value
         valid = YES;
     } else if (self.jitCacheSize < kMinCodeGenBufferSizeMB) {
-        [self showAlert:NSLocalizedString(@"JIT cache size too small.", @"VMConfigSystemViewController") completion:nil];
+        [self showAlert:NSLocalizedString(@"JIT cache size too small.", @"VMConfigSystemViewController") actions:nil completion:nil];
     } else if (self.jitCacheSize > kMaxCodeGenBufferSizeMB) {
-        [self showAlert:NSLocalizedString(@"JIT cache size cannot be larger than 2GB.", @"VMConfigSystemViewController") completion:nil];
+        [self showAlert:NSLocalizedString(@"JIT cache size cannot be larger than 2GB.", @"VMConfigSystemViewController") actions:nil completion:nil];
     } else {
         valid = YES;
     }
     [self updateEstimatedRam];
     if (self.estimatedRam > kMemoryWarningThreshold * self.totalRam) {
-        [self showAlert:NSLocalizedString(@"The total memory usage is close to your device's limit. iOS will kill the VM if it consumes too much memory.", @"VMConfigSystemViewController") completion:nil];
+        [self showAlert:NSLocalizedString(@"The total memory usage is close to your device's limit. iOS will kill the VM if it consumes too much memory.", @"VMConfigSystemViewController") actions:nil completion:nil];
     }
     return valid;
 }

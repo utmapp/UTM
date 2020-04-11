@@ -15,6 +15,7 @@
 //
 
 #import <MobileCoreServices/MobileCoreServices.h>
+#import "UIViewController+Extensions.h"
 #import "VMConfigSharingViewController.h"
 #import "UTMConfiguration.h"
 #import "UTMConfiguration+Sharing.h"
@@ -83,7 +84,7 @@
                                                   error:&err];
     if (!bookmark) {
         NSLog(@"bookmark invalid: %@", err);
-        [self showAlert:NSLocalizedString(@"Shared path is no longer valid. Please re-choose.", @"VMConfigSharingViewController") completion:nil];
+        [self showAlert:NSLocalizedString(@"Shared path is no longer valid. Please re-choose.", @"VMConfigSharingViewController") actions:nil completion:nil];
         self.configuration.shareDirectoryBookmark = [NSData data];
         self.configuration.shareDirectoryName = @"";
     } else if (stale) {
@@ -96,7 +97,7 @@
             [bookmark stopAccessingSecurityScopedResource];
             if (!data) {
                 NSLog(@"cannot recreate bookmark: %@", err);
-                [self showAlert:NSLocalizedString(@"Shared path has moved. Please re-choose.", @"VMConfigSharingViewController") completion:nil];
+                [self showAlert:NSLocalizedString(@"Shared path has moved. Please re-choose.", @"VMConfigSharingViewController") actions:nil completion:nil];
                 self.configuration.shareDirectoryBookmark = [NSData data];
                 self.configuration.shareDirectoryName = @"";
             } else {
@@ -115,7 +116,7 @@
                                       relativeToURL:nil
                                               error:&err];
     if (!bookmark) {
-        [self showAlert:err.localizedDescription completion:nil];
+        [self showAlert:err.localizedDescription actions:nil completion:nil];
     } else {
         NSLog(@"Saving bookmark for %@", url);
         self.configuration.shareDirectoryBookmark = bookmark;

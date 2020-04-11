@@ -40,19 +40,6 @@ void *kVMConfigViewControllerContext = &kVMConfigViewControllerContext;
     self.insertTableViewRowAnimation = UITableViewRowAnimationMiddle;
     self.deleteTableViewRowAnimation = UITableViewRowAnimationMiddle;
     self.reloadTableViewRowAnimation = UITableViewRowAnimationMiddle;
-    [self refreshViewFromConfiguration];
-    self.doneLoadingConfiguration = YES;
-}
-
-- (void)refreshViewFromConfiguration {
-    NSAssert(self.configuration, @"Configuration is nil!");
-}
-
-#pragma mark - Picker helpers
-
-- (void)pickerCell:(nonnull UITableViewCell *)pickerCell setActive:(BOOL)active {
-    [self cell:pickerCell setHidden:!active];
-    [self reloadDataAnimated:self.doneLoadingConfiguration];
 }
 
 #pragma mark - Text field helpers
@@ -68,21 +55,6 @@ void *kVMConfigViewControllerContext = &kVMConfigViewControllerContext;
         id<UTMConfigurationDelegate> dst = (id<UTMConfigurationDelegate>)segue.destinationViewController;
         dst.configuration = self.configuration;
     }
-}
-
-#pragma mark - Showing Alerts
-
-- (void)showAlert:(NSString *)msg completion:(nullable void (^)(UIAlertAction *action))completion {
-    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"" message:msg preferredStyle:UIAlertControllerStyleAlert];
-    UIAlertAction *okay = [UIAlertAction actionWithTitle:NSLocalizedString(@"OK", @"OK button") style:UIAlertActionStyleDefault handler:completion];
-    [alert addAction:okay];
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self presentViewController:alert animated:YES completion:nil];
-    });
-}
-
-- (void)showUnimplementedAlert {
-    [self showAlert:NSLocalizedString(@"This page is currently not implemented yet. None of these options work.", @"VMConfigViewController") completion:nil];
 }
 
 #pragma mark - Configuration observers

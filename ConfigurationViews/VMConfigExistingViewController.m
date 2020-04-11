@@ -15,6 +15,7 @@
 //
 
 #import "VMConfigExistingViewController.h"
+#import "UIViewController+Extensions.h"
 #import "UTMConfiguration.h"
 #import "UTMConfiguration+Constants.h"
 #import "VMConfigTextField.h"
@@ -60,7 +61,7 @@
         path = [self.configuration.existingPath URLByAppendingPathComponent:[UTMConfiguration debugLogName]];
     }
     if (![[NSFileManager defaultManager] fileExistsAtPath:path.path]) {
-        [self showAlert:NSLocalizedString(@"No debug log found!", @"VMConfigExistingViewController") completion:nil];
+        [self showAlert:NSLocalizedString(@"No debug log found!", @"VMConfigExistingViewController") actions:nil completion:nil];
     } else {
         NSError *err;
         NSURL *temp = [NSURL fileURLWithPathComponents:@[NSTemporaryDirectory(), [UTMConfiguration debugLogName]]];
@@ -71,7 +72,7 @@
             activityViewController.popoverPresentationController.sourceRect = self.exportLogCell.bounds;
             [self presentViewController:activityViewController animated:YES completion:nil];
         } else {
-            [self showAlert:err.localizedDescription completion:nil];
+            [self showAlert:err.localizedDescription actions:nil completion:nil];
         }
     }
 }
