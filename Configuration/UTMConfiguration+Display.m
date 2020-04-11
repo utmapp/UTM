@@ -90,13 +90,11 @@ const NSString *const kUTMConfigConsoleBlinkKey = @"ConsoleBlink";
     return self.rootDict[kUTMConfigDisplayKey][kUTMConfigDisplayUpscalerKey];
 }
 
-- (UTMScalerType)displayUpscalerValue {
-    if ([self.displayUpscaler isEqualToString:@"bicubic"]) {
-        return UTMScalerTypeBicubic;
-    } else if ([self.displayUpscaler isEqualToString:@"nearest"]) {
-        return UTMScalerTypeNearest;
+- (MTLSamplerMinMagFilter)displayUpscalerValue {
+    if ([self.displayUpscaler isEqualToString:@"nearest"]) {
+        return MTLSamplerMinMagFilterNearest;
     } else {
-        return UTMScalerTypeLinear;
+        return MTLSamplerMinMagFilterLinear;
     }
 }
 
@@ -108,13 +106,11 @@ const NSString *const kUTMConfigConsoleBlinkKey = @"ConsoleBlink";
     return self.rootDict[kUTMConfigDisplayKey][kUTMConfigDisplayDownscalerKey];
 }
 
-- (UTMScalerType)displayDownscalerValue {
-    if ([self.displayDownscaler isEqualToString:@"bicubic"]) {
-        return UTMScalerTypeBicubic;
-    } else if ([self.displayDownscaler isEqualToString:@"nearest"]) {
-        return UTMScalerTypeNearest;
+- (MTLSamplerMinMagFilter)displayDownscalerValue {
+    if ([self.displayDownscaler isEqualToString:@"nearest"]) {
+        return MTLSamplerMinMagFilterNearest;
     } else {
-        return UTMScalerTypeLinear;
+        return MTLSamplerMinMagFilterLinear;
     }
 }
 

@@ -1375,7 +1375,6 @@
 + (NSArray<NSString *>*)supportedScalersPretty {
     return @[
         NSLocalizedString(@"Linear", "UTMConfiguration"),
-        NSLocalizedString(@"Bicubic", "UTMConfiguration"),
         NSLocalizedString(@"Nearest Neighbor", "UTMConfiguration"),
     ];
 }
@@ -1383,7 +1382,6 @@
 + (NSArray<NSString *>*)supportedScalers {
     return @[
         @"linear",
-        @"bicubic",
         @"nearest",
     ];
 }

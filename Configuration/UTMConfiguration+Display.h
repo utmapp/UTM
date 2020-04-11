@@ -15,13 +15,7 @@
 //
 
 #import "UTMConfiguration.h"
-
-typedef NS_ENUM(NSUInteger, UTMScalerType) {
-    UTMScalerTypeLinear,
-    UTMScalerTypeBicubic,
-    UTMScalerTypeNearest,
-    UTMScalerTypeMax
-};
+@import Metal;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -31,9 +25,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) BOOL displayFitScreen;
 @property (nonatomic, assign) BOOL displayRetina;
 @property (nonatomic, nullable, copy) NSString *displayUpscaler;
-@property (nonatomic, readonly) UTMScalerType displayUpscalerValue;
+@property (nonatomic, readonly) MTLSamplerMinMagFilter displayUpscalerValue;
 @property (nonatomic, nullable, copy) NSString *displayDownscaler;
-@property (nonatomic, readonly) UTMScalerType displayDownscalerValue;
+@property (nonatomic, readonly) MTLSamplerMinMagFilter displayDownscalerValue;
 @property (nonatomic, nullable, copy) NSString *consoleTheme;
 @property (nonatomic, nullable, copy) NSString *consoleFont;
 @property (nonatomic, nullable, copy) NSNumber *consoleFontSize;
