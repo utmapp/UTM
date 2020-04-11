@@ -19,6 +19,7 @@
 #import "UTMConfigurationDelegate.h"
 
 @class VMConfigTextField;
+@class VMConfigStepper;
 @class VMConfigSwitch;
 @class VMConfigTogglePickerCell;
 
@@ -40,6 +41,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (IBAction)configTextEditChanged:(VMConfigTextField *)sender;
 - (IBAction)configTextFieldEditEnd:(VMConfigTextField *)sender;
 - (IBAction)configSwitchChanged:(VMConfigSwitch *)sender;
+- (IBAction)configStepperChanged:(VMConfigStepper *)sender;
 
 
 @end

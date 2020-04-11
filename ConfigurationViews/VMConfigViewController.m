@@ -17,6 +17,7 @@
 #import "VMConfigViewController.h"
 #import "VMConfigControl.h"
 #import "VMConfigPickerView.h"
+#import "VMConfigStepper.h"
 #import "VMConfigSwitch.h"
 #import "VMConfigTextField.h"
 #import "VMConfigTogglePickerCell.h"
@@ -202,6 +203,11 @@ void *kVMConfigViewControllerContext = &kVMConfigViewControllerContext;
 - (IBAction)configSwitchChanged:(VMConfigSwitch *)sender {
     NSLog(@"config changed for switch %@", sender.configurationPath);
     [self.configuration setValue:@(sender.on) forKey:sender.configurationPath];
+}
+
+- (IBAction)configStepperChanged:(VMConfigStepper *)sender {
+    NSLog(@"config changed for stepper %@", sender.configurationPath);
+    [self.configuration setValue:@(sender.value) forKey:sender.configurationPath];
 }
 
 @end
