@@ -26,6 +26,7 @@
 #import "VMKeyboardButton.h"
 #import "UIViewController+Extensions.h"
 #import "UTMConfiguration.h"
+#import "UTMConfiguration+Display.h"
 #import "CSDisplayMetal.h"
 #import "UTMSpiceIO.h"
 #import "UTMLocationManager.h"
@@ -109,6 +110,9 @@
     [_renderer mtkView:self.mtkView drawableSizeWillChange:self.mtkView.drawableSize];
     _renderer.sourceScreen = self.vmDisplay;
     _renderer.sourceCursor = self.vmInput;
+    
+    [_renderer changeUpscaler:self.vmConfiguration.displayUpscalerValue
+                   downscaler:self.vmConfiguration.displayDownscalerValue];
     
     self.mtkView.delegate = _renderer;
     

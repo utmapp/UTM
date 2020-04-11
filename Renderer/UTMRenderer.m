@@ -28,6 +28,9 @@ Implementation of renderer class which performs Metal setup and per frame render
 
     // The current size of our view so we can use this in our render pipeline
     vector_uint2 _viewportSize;
+    
+    // Sampler object
+    id<MTLSamplerState> _sampler;
 }
 
 - (void)setSourceScreen:(id<UTMRenderSource>)source {
@@ -88,9 +91,21 @@ Implementation of renderer class which performs Metal setup and per frame render
 
         // Create the command queue
         _commandQueue = [_device newCommandQueue];
+        
+        // Sampler
+        [self changeUpscaler:MTLSamplerMinMagFilterLinear downscaler:MTLSamplerMinMagFilterLinear];
     }
 
     return self;
+}
+
+/// Scalers from VM settings
+- (void)changeUpscaler:(MTLSamplerMinMagFilter)upscaler downscaler:(MTLSamplerMinMagFilter)downscaler {
+    MTLSamplerDescriptor *samplerDescriptor = [MTLSamplerDescriptor new];
+    samplerDescriptor.minFilter = downscaler;
+    samplerDescriptor.magFilter = upscaler;
+     
+    _sampler = [_device newSamplerStateWithDescriptor:samplerDescriptor];
 }
 
 /// Called whenever view changes orientation or is resized
@@ -193,6 +208,9 @@ static matrix_float4x4 matrix_scale_translate(CGFloat scale, CGPoint translate)
             //   texture attribute qualifier also uses UTMTextureIndexBaseColor for its index
             [renderEncoder setFragmentTexture:self.sourceScreen.texture
                                       atIndex:UTMTextureIndexBaseColor];
+            
+            [renderEncoder setFragmentSamplerState:_sampler
+                                           atIndex:UTMSamplerIndexTexture];
 
             // Draw the vertices of our triangles
             [renderEncoder drawPrimitives:MTLPrimitiveTypeTriangle
@@ -226,6 +244,8 @@ static matrix_float4x4 matrix_scale_translate(CGFloat scale, CGPoint translate)
                                 atIndex:UTMVertexInputIndexHasAlpha];
             [renderEncoder setFragmentTexture:self.sourceCursor.texture
                                       atIndex:UTMTextureIndexBaseColor];
+            [renderEncoder setFragmentSamplerState:_sampler
+                                           atIndex:UTMSamplerIndexTexture];
             [renderEncoder drawPrimitives:MTLPrimitiveTypeTriangle
                               vertexStart:0
                               vertexCount:self.sourceCursor.numVertices];

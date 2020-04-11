@@ -18,6 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, weak, nullable) id<UTMRenderSource> sourceCursor;
 
 - (nonnull instancetype)initWithMetalKitView:(nonnull MTKView *)mtkView;
+- (void)changeUpscaler:(MTLSamplerMinMagFilter)upscaler downscaler:(MTLSamplerMinMagFilter)downscaler;
 
 @end
 
