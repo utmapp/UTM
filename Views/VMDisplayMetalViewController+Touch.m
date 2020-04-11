@@ -20,6 +20,7 @@
 #import "VMCursor.h"
 #import "CSDisplayMetal.h"
 #import "UTMConfiguration.h"
+#import "UTMConfiguration+Miscellaneous.h"
 #import "UTMSpiceIO.h"
 #import "UTMVirtualMachine.h"
 

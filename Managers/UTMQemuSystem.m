@@ -19,6 +19,7 @@
 #import "UTMConfiguration+Constants.h"
 #import "UTMConfiguration+Display.h"
 #import "UTMConfiguration+Drives.h"
+#import "UTMConfiguration+Miscellaneous.h"
 #import "UTMConfiguration+Networking.h"
 #import "UTMConfiguration+Sharing.h"
 #import "UTMConfiguration+System.h"

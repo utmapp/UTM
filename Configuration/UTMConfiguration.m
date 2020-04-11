@@ -18,6 +18,7 @@
 #import "UTMConfiguration+Constants.h"
 #import "UTMConfiguration+Display.h"
 #import "UTMConfiguration+Drives.h"
+#import "UTMConfiguration+Miscellaneous.h"
 #import "UTMConfiguration+Networking.h"
 #import "UTMConfiguration+Sharing.h"
 #import "UTMConfiguration+System.h"
@@ -31,17 +32,6 @@ const NSString *const kUTMConfigSoundKey = @"Sound";
 const NSString *const kUTMConfigSharingKey = @"Sharing";
 const NSString *const kUTMConfigDrivesKey = @"Drives";
 const NSString *const kUTMConfigDebugKey = @"Debug";
-
-const NSString *const kUTMConfigTouchscreenModeKey = @"TouchscreenMode";
-const NSString *const kUTMConfigDirectInputKey = @"DirectInput";
-const NSString *const kUTMConfigInputLegacyKey = @"InputLegacy";
-
-const NSString *const kUTMConfigPrintEnabledKey = @"PrintEnabled";
-
-const NSString *const kUTMConfigSoundEnabledKey = @"SoundEnabled";
-const NSString *const kUTMConfigSoundCardDeviceKey = @"SoundCard";
-
-const NSString *const kUTMConfigDebugLogKey = @"DebugLog";
 
 @interface UTMConfiguration ()
 
@@ -60,21 +50,7 @@ const NSString *const kUTMConfigDebugLogKey = @"DebugLog";
 #pragma mark - Migration
 
 - (void)migrateConfigurationIfNecessary {
-    // Add Debug dict if not exists
-    if (!_rootDict[kUTMConfigDebugKey]) {
-        _rootDict[kUTMConfigDebugKey] = [NSMutableDictionary dictionary];
-    }
-    
-    if (!_rootDict[kUTMConfigSoundKey][kUTMConfigSoundCardDeviceKey]) {
-        _rootDict[kUTMConfigSoundKey][kUTMConfigSoundCardDeviceKey] = [UTMConfiguration supportedSoundCardDevices][0];
-    }
-    // Migrate input settings
-    [_rootDict[kUTMConfigInputKey] removeObjectForKey:kUTMConfigTouchscreenModeKey];
-    [_rootDict[kUTMConfigInputKey] removeObjectForKey:kUTMConfigDirectInputKey];
-    if (!_rootDict[kUTMConfigInputKey][kUTMConfigInputLegacyKey]) {
-        self.inputLegacy = NO;
-    }
-    // Migrate other settings
+    [self migrateMiscellaneousConfigurationIfNecessary];
     [self migrateDriveConfigurationIfNecessary];
     [self migrateNetworkConfigurationIfNecessary];
     [self migrateSystemConfigurationIfNecessary];
@@ -109,7 +85,6 @@ const NSString *const kUTMConfigDebugLogKey = @"DebugLog";
         self.consoleFont = @"Menlo";
         self.consoleTheme = @"Default";
         self.networkEnabled = YES;
-        self.printEnabled = YES;
         self.soundEnabled = YES;
         self.soundCard = @"ac97";
         self.networkCard = @"rtl8139";
@@ -131,48 +106,6 @@ const NSString *const kUTMConfigDebugLogKey = @"DebugLog";
         [self migrateConfigurationIfNecessary];
     }
     return self;
-}
-
-#pragma mark - Other properties
-
-- (void)setInputLegacy:(BOOL)inputDirect {
-    _rootDict[kUTMConfigInputKey][kUTMConfigInputLegacyKey] = @(inputDirect);
-}
-
-- (BOOL)inputLegacy {
-    return [_rootDict[kUTMConfigInputKey][kUTMConfigInputLegacyKey] boolValue];
-}
-
-- (void)setPrintEnabled:(BOOL)printEnabled {
-    _rootDict[kUTMConfigPrintingKey][kUTMConfigPrintEnabledKey] = @(printEnabled);
-}
-
-- (BOOL)printEnabled {
-    return [_rootDict[kUTMConfigPrintingKey][kUTMConfigPrintEnabledKey] boolValue];
-}
-
-- (void)setSoundEnabled:(BOOL)soundEnabled {
-    _rootDict[kUTMConfigSoundKey][kUTMConfigSoundEnabledKey] = @(soundEnabled);
-}
-
-- (BOOL)soundEnabled {
-    return [_rootDict[kUTMConfigSoundKey][kUTMConfigSoundEnabledKey] boolValue];
-}
-
-- (void)setSoundCard:(NSString *)soundCard {
-    _rootDict[kUTMConfigSoundKey][kUTMConfigSoundCardDeviceKey] = soundCard;
-}
-
-- (NSString *)soundCard {
-    return _rootDict[kUTMConfigSoundKey][kUTMConfigSoundCardDeviceKey];
-}
-
-- (BOOL)debugLogEnabled {
-    return [self.rootDict[kUTMConfigDebugKey][kUTMConfigDebugLogKey] boolValue];
-}
-
-- (void)setDebugLogEnabled:(BOOL)debugLogEnabled {
-    self.rootDict[kUTMConfigDebugKey][kUTMConfigDebugLogKey] = @(debugLogEnabled);
 }
 
 #pragma mark - Dictionary representation

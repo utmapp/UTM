@@ -16,6 +16,7 @@
 
 #import "UTMSpiceIO.h"
 #import "UTMConfiguration.h"
+#import "UTMConfiguration+Miscellaneous.h"
 #import "UTMConfiguration+Sharing.h"
 #import "UTMViewState.h"
 #import "CocoaSpice.h"

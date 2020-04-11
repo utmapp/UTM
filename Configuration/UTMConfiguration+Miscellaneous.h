@@ -1,5 +1,5 @@
 //
-// Copyright © 2019 osy. All rights reserved.
+// Copyright © 2020 osy. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,22 +14,18 @@
 // limitations under the License.
 //
 
-#import <Foundation/Foundation.h>
+#import "UTMConfiguration.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface UTMConfiguration : NSObject<NSCopying>
+@interface UTMConfiguration (Miscellaneous)
 
-@property (nonatomic, weak, readonly) NSDictionary *dictRepresentation;
+@property (nonatomic, assign) BOOL inputLegacy;
+@property (nonatomic, assign) BOOL soundEnabled;
+@property (nonatomic, nullable, copy) NSString *soundCard;
+@property (nonatomic, assign) BOOL debugLogEnabled;
 
-@property (nonatomic, copy) NSString *name;
-@property (nonatomic, nullable, copy) NSURL *existingPath;
-
-- (void)migrateConfigurationIfNecessary;
-- (id)initDefaults:(NSString *)name;
-- (id)initWithDictionary:(NSMutableDictionary *)dictionary name:(NSString *)name path:(NSURL *)path;
-
-- (NSURL*)terminalInputOutputURL;
+- (void)migrateMiscellaneousConfigurationIfNecessary;
 
 @end
 
