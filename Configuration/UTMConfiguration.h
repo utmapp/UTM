@@ -25,13 +25,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy) NSString *name;
 @property (nonatomic, nullable, copy) NSURL *existingPath;
 
-@property (nonatomic, assign) BOOL displayConsoleOnly;
-@property (nonatomic, assign) BOOL displayFixedResolution;
-@property (nonatomic, nullable, copy) NSNumber *displayFixedResolutionWidth;
-@property (nonatomic, nullable, copy) NSNumber *displayFixedResolutionHeight;
-@property (nonatomic, assign) BOOL displayZoomScale;
-@property (nonatomic, assign) BOOL displayZoomLetterBox;
-
 @property (nonatomic, assign) BOOL inputLegacy;
 
 @property (nonatomic, assign) BOOL printEnabled;

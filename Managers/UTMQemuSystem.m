@@ -17,6 +17,7 @@
 #import "UTMQemuSystem.h"
 #import "UTMConfiguration.h"
 #import "UTMConfiguration+Constants.h"
+#import "UTMConfiguration+Display.h"
 #import "UTMConfiguration+Drives.h"
 #import "UTMConfiguration+Networking.h"
 #import "UTMConfiguration+Sharing.h"

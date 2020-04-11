@@ -16,6 +16,7 @@
 
 #import "UTMConfiguration.h"
 #import "UTMConfiguration+Constants.h"
+#import "UTMConfiguration+Display.h"
 #import "UTMConfiguration+Drives.h"
 #import "UTMConfiguration+Networking.h"
 #import "UTMConfiguration+Sharing.h"
@@ -30,13 +31,6 @@ const NSString *const kUTMConfigSoundKey = @"Sound";
 const NSString *const kUTMConfigSharingKey = @"Sharing";
 const NSString *const kUTMConfigDrivesKey = @"Drives";
 const NSString *const kUTMConfigDebugKey = @"Debug";
-
-const NSString *const kUTMConfigConsoleOnlyKey = @"ConsoleOnly";
-const NSString *const kUTMConfigFixedResolutionKey = @"FixedResolution";
-const NSString *const kUTMConfigFixedResolutionWidthKey = @"FixedResolutionWidth";
-const NSString *const kUTMConfigFixedResolutionHeightKey = @"FixedResolutionHeight";
-const NSString *const kUTMConfigZoomScaleKey = @"ZoomScale";
-const NSString *const kUTMConfigZoomLetterboxKey = @"ZoomLetterbox";
 
 const NSString *const kUTMConfigTouchscreenModeKey = @"TouchscreenMode";
 const NSString *const kUTMConfigDirectInputKey = @"DirectInput";
@@ -84,6 +78,7 @@ const NSString *const kUTMConfigDebugLogKey = @"DebugLog";
     [self migrateDriveConfigurationIfNecessary];
     [self migrateNetworkConfigurationIfNecessary];
     [self migrateSystemConfigurationIfNecessary];
+    [self migrateDisplayConfigurationIfNecessary];
 }
 
 #pragma mark - Initialization
@@ -109,9 +104,10 @@ const NSString *const kUTMConfigDebugLogKey = @"DebugLog";
         self.systemJitCacheSize = @0;
         self.systemForceMulticore = NO;
         self.systemUUID = [[NSUUID UUID] UUIDString];
-        self.displayFixedResolutionWidth = @800;
-        self.displayFixedResolutionHeight = @600;
-        self.displayFixedResolution = NO;
+        self.displayUpscaler = @"linear";
+        self.displayDownscaler = @"linear";
+        self.consoleFont = @"Menlo";
+        self.consoleTheme = @"Default";
         self.networkEnabled = YES;
         self.printEnabled = YES;
         self.soundEnabled = YES;
@@ -138,54 +134,6 @@ const NSString *const kUTMConfigDebugLogKey = @"DebugLog";
 }
 
 #pragma mark - Other properties
-
-- (void)setDisplayConsoleOnly:(BOOL)displayConsoleOnly {
-    self.rootDict[kUTMConfigDisplayKey][kUTMConfigConsoleOnlyKey] = @(displayConsoleOnly);
-}
-
-- (BOOL)displayConsoleOnly {
-    return [_rootDict[kUTMConfigDisplayKey][kUTMConfigConsoleOnlyKey] boolValue];
-}
-
-- (void)setDisplayFixedResolution:(BOOL)displayFixedResolution {
-    _rootDict[kUTMConfigDisplayKey][kUTMConfigFixedResolutionKey] = @(displayFixedResolution);
-}
-
-- (BOOL)displayFixedResolution {
-    return [_rootDict[kUTMConfigDisplayKey][kUTMConfigFixedResolutionKey] boolValue];
-}
-
-- (void)setDisplayFixedResolutionWidth:(NSNumber *)displayFixedResolutionWidth {
-    _rootDict[kUTMConfigDisplayKey][kUTMConfigFixedResolutionWidthKey] = displayFixedResolutionWidth;
-}
-
-- (NSNumber *)displayFixedResolutionWidth {
-    return _rootDict[kUTMConfigDisplayKey][kUTMConfigFixedResolutionWidthKey];
-}
-
-- (void)setDisplayFixedResolutionHeight:(NSNumber *)displayFixedResolutionHeight {
-    _rootDict[kUTMConfigDisplayKey][kUTMConfigFixedResolutionHeightKey] = displayFixedResolutionHeight;
-}
-
-- (NSNumber *)displayFixedResolutionHeight {
-    return _rootDict[kUTMConfigDisplayKey][kUTMConfigFixedResolutionHeightKey];
-}
-
-- (void)setDisplayZoomScale:(BOOL)displayZoomScale {
-    _rootDict[kUTMConfigDisplayKey][kUTMConfigZoomScaleKey] = @(displayZoomScale);
-}
-
-- (BOOL)displayZoomScale {
-    return [_rootDict[kUTMConfigDisplayKey][kUTMConfigZoomScaleKey] boolValue];
-}
-
-- (void)setDisplayZoomLetterBox:(BOOL)displayZoomLetterBox {
-    _rootDict[kUTMConfigDisplayKey][kUTMConfigZoomLetterboxKey] = @(displayZoomLetterBox);
-}
-
-- (BOOL)displayZoomLetterBox {
-    return [_rootDict[kUTMConfigDisplayKey][kUTMConfigZoomLetterboxKey] boolValue];
-}
 
 - (void)setInputLegacy:(BOOL)inputDirect {
     _rootDict[kUTMConfigInputKey][kUTMConfigInputLegacyKey] = @(inputDirect);

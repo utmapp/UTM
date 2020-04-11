@@ -17,6 +17,7 @@
 #import "VMConfigDisplayViewController.h"
 #import "UTMConfiguration.h"
 #import "UTMConfiguration+Constants.h"
+#import "UTMConfiguration+Display.h"
 
 @interface VMConfigDisplayViewController ()
 
@@ -26,64 +27,44 @@
 
 @synthesize configuration;
 
-- (void)viewDidLoad {
-    [super viewDidLoad];
-    // FIXME: remove this warning
-    [self showUnimplementedAlert];
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    _consoleOnly = self.configuration.displayConsoleOnly;
+    [self showConsoleOptions:_consoleOnly animated:NO];
+    NSInteger fontSize = self.configuration.consoleFontSize.integerValue;
+    self.fontSizeLabel.text = [NSString stringWithFormat:@"%ld", fontSize];
+    [self refreshFontLabel];
 }
 
-- (void)refreshViewFromConfiguration {
-    [super refreshViewFromConfiguration];
-    self.consoleOnly = self.configuration.displayConsoleOnly;
-    self.maxResolutionPickerActive = NO;
-    self.maxResolutionLabel.text = self.maxResolution;
-    self.resolutionFixedSwitch.on = self.configuration.displayFixedResolution;
-    self.zoomScaleFitSwitch.on = self.configuration.displayZoomScale;
-    self.zoomLetterboxSwitch.on = self.configuration.displayZoomLetterBox;
+- (void)showConsoleOptions:(BOOL)consoleOnly animated:(BOOL)animated {
+    if (consoleOnly) {
+        [self cells:self.fullDisplayCells setHidden:YES];
+        [self cells:self.consoleDisplayCells setHidden:NO];
+        [self.graphicsTypeFullCell setAccessoryType:UITableViewCellAccessoryNone];
+        [self.graphicsTypeConsoleCell setAccessoryType:UITableViewCellAccessoryCheckmark];
+    } else {
+        [self cells:self.consoleDisplayCells setHidden:YES];
+        [self cells:self.fullDisplayCells setHidden:NO];
+        [self.graphicsTypeFullCell setAccessoryType:UITableViewCellAccessoryCheckmark];
+        [self.graphicsTypeConsoleCell setAccessoryType:UITableViewCellAccessoryNone];
+    }
+    [self hidePickersAnimated:animated];
+}
+
+- (void)refreshFontLabel {
+    CGFloat size = self.fontPickerToggleCell.detailTextLabel.font.pointSize;
+    self.fontPickerToggleCell.detailTextLabel.font = [UIFont fontWithName:self.configuration.consoleFont size:size];
 }
 
 #pragma mark - Properties
 
-- (void)setMaxResolutionPickerActive:(BOOL)maxResolutionPickerActive {
-    _maxResolutionPickerActive = maxResolutionPickerActive;
-    if (maxResolutionPickerActive) {
-        NSUInteger index = [[UTMConfiguration supportedResolutions] indexOfObject:self.maxResolution];
-        if (index != NSNotFound) {
-            [self.maxResolutionPicker selectRow:index inComponent:0 animated:NO];
-        }
-    }
-    [self pickerCell:self.maxResolutionPickerCell setActive:maxResolutionPickerActive];
-}
-
 - (void)setConsoleOnly:(BOOL)consoleOnly {
+    if (_consoleOnly == consoleOnly) {
+        return;
+    }
     _consoleOnly = consoleOnly;
     self.configuration.displayConsoleOnly = consoleOnly;
-    if (consoleOnly) {
-        [self cells:self.displayTypeCells setHidden:YES];
-        [self reloadDataAnimated:self.doneLoadingConfiguration];
-        [self cells:self.consoleTypeCells setHidden:NO];
-        [self reloadDataAnimated:self.doneLoadingConfiguration];
-        [self.graphicsTypeFullCell setAccessoryType:UITableViewCellAccessoryNone];
-        [self.graphicsTypeConsoleCell setAccessoryType:UITableViewCellAccessoryCheckmark];
-    } else {
-        [self cells:self.consoleTypeCells setHidden:YES];
-        [self reloadDataAnimated:self.doneLoadingConfiguration];
-        [self cells:self.displayTypeCellsWithoutPicker setHidden:NO];
-        [self reloadDataAnimated:self.doneLoadingConfiguration];
-        _maxResolutionPickerActive = NO; // reset picker
-        [self.graphicsTypeFullCell setAccessoryType:UITableViewCellAccessoryCheckmark];
-        [self.graphicsTypeConsoleCell setAccessoryType:UITableViewCellAccessoryNone];
-    }
-}
-
-- (void)setMaxResolution:(NSString *)maxResolution {
-    NSArray<NSString *> *parts = [maxResolution componentsSeparatedByString:@"x"];
-    self.configuration.displayFixedResolutionWidth = @([parts[0] integerValue]);
-    self.configuration.displayFixedResolutionHeight = @([parts[1] integerValue]);
-}
-
-- (NSString *)maxResolution {
-    return [NSString stringWithFormat:@"%@x%@", self.configuration.displayFixedResolutionWidth, self.configuration.displayFixedResolutionHeight];
+    [self showConsoleOptions:consoleOnly animated:YES];
 }
 
 #pragma mark - Table delegate
@@ -92,73 +73,28 @@
     if ([tableView cellForRowAtIndexPath:indexPath] == self.graphicsTypeFullCell) {
         self.consoleOnly = NO;
         [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    }
-    if ([tableView cellForRowAtIndexPath:indexPath] == self.graphicsTypeConsoleCell) {
+    } else if ([tableView cellForRowAtIndexPath:indexPath] == self.graphicsTypeConsoleCell) {
         self.consoleOnly = YES;
         [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    }
-    if ([tableView cellForRowAtIndexPath:indexPath] == self.maxResolutionCell) {
-        self.maxResolutionPickerActive = !self.maxResolutionPickerActive;
-        [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    } else {
+        [super tableView:tableView didSelectRowAtIndexPath:indexPath];
     }
 }
 
 #pragma mark - Picker delegate
 
-- (NSInteger)numberOfComponentsInPickerView:(nonnull UIPickerView *)pickerView {
-    if (pickerView == self.maxResolutionPicker) {
-        return 1;
-    } else {
-        NSAssert(0, @"Invalid picker");
-    }
-    return 0;
-}
-
-- (NSInteger)pickerView:(nonnull UIPickerView *)pickerView numberOfRowsInComponent:(NSInteger)component {
-    NSAssert(component == 0, @"Invalid component");
-    if (pickerView == self.maxResolutionPicker) {
-        return [UTMConfiguration supportedResolutions].count;
-    } else {
-        NSAssert(0, @"Invalid picker");
-    }
-    return 0;
-}
-
-- (NSString *)pickerView:(UIPickerView *)pickerView titleForRow:(NSInteger)row forComponent:(NSInteger)component {
-    NSAssert(component == 0, @"Invalid component");
-    if (pickerView == self.maxResolutionPicker) {
-        return [UTMConfiguration supportedResolutions][row];
-    } else {
-        NSAssert(0, @"Invalid picker");
-    }
-    return nil;
-}
-
 - (void)pickerView:(UIPickerView *)pickerView didSelectRow:(NSInteger)row inComponent:(NSInteger)component {
-    NSAssert(component == 0, @"Invalid component");
-    if (pickerView == self.maxResolutionPicker) {
-        self.maxResolutionLabel.text = [UTMConfiguration supportedResolutions][row];
-        self.maxResolution = self.maxResolutionLabel.text;
-    } else {
-        NSAssert(0, @"Invalid picker");
+    [super pickerView:pickerView didSelectRow:row inComponent:component];
+    if (pickerView == self.fontPicker) {
+        [self refreshFontLabel];
     }
 }
 
 #pragma mark - Event handlers
 
-- (IBAction)resolutionFixedSwitchChanged:(UISwitch *)sender {
-    NSAssert(sender == self.resolutionFixedSwitch, @"Invalid sender");
-    self.configuration.displayFixedResolution = sender.on;
-}
-
-- (IBAction)zoomScaleFitSwitchChanged:(UISwitch *)sender {
-    NSAssert(sender == self.zoomScaleFitSwitch, @"Invalid sender");
-    self.configuration.displayZoomScale = sender.on;
-}
-
-- (IBAction)zoomLetterboxSwitchChanged:(UISwitch *)sender {
-    NSAssert(sender == self.zoomLetterboxSwitch, @"Invalid sender");
-    self.configuration.displayZoomLetterBox = sender.on;
+- (IBAction)fontSizeStepperChanged:(UIStepper *)sender {
+    NSAssert(sender == self.fontSizeStepper, @"Invalid sender");
+    self.fontSizeLabel.text = [NSString stringWithFormat:@"%d", (int)sender.value];
 }
 
 @end

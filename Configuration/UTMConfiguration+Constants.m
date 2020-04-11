@@ -14,6 +14,7 @@
 // limitations under the License.
 //
 
+#import <UIKit/UIKit.h>
 #import "UTMConfiguration+Constants.h"
 
 @implementation UTMConfiguration (Constants)
@@ -53,6 +54,16 @@
         }
     } else if ([key isEqualToString:@"driveInterfaces"]) {
         return [self supportedDriveInterfaces];
+    } else if ([key isEqualToString:@"scalers"]) {
+        if (pretty) {
+            return [self supportedScalersPretty];
+        } else {
+            return [self supportedScalers];
+        }
+    } else if ([key isEqualToString:@"consoleThemes"]) {
+        return [self supportedConsoleThemes];
+    } else if ([key isEqualToString:@"consoleFonts"]) {
+        return [self supportedConsoleFonts];
     }
     return @[];
 }
@@ -1359,6 +1370,42 @@
              @"virtio",
              @"none"
              ];
+}
+
++ (NSArray<NSString *>*)supportedScalersPretty {
+    return @[
+        NSLocalizedString(@"Linear", "UTMConfiguration"),
+        NSLocalizedString(@"Bicubic", "UTMConfiguration"),
+        NSLocalizedString(@"Nearest Neighbor", "UTMConfiguration"),
+    ];
+}
+
++ (NSArray<NSString *>*)supportedScalers {
+    return @[
+        @"linear",
+        @"bicubic",
+        @"nearest",
+    ];
+}
+
++ (NSArray<NSString *>*)supportedConsoleThemes {
+    return @[
+        @"Default"
+    ];
+}
+
++ (NSArray<NSString *>*)supportedConsoleFonts {
+    static NSMutableArray<NSString *> *families;
+    if (!families) {
+        families = [NSMutableArray new];
+        for (NSString *family in UIFont.familyNames) {
+            UIFont *font = [UIFont fontWithName:family size:1];
+            if (font.fontDescriptor.symbolicTraits & UIFontDescriptorTraitMonoSpace) {
+                [families addObject:family];
+            }
+        }
+    }
+    return families;
 }
 
 + (NSString *)diskImagesDirectory {

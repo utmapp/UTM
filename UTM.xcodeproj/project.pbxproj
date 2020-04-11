@@ -319,6 +319,7 @@
 		CED33AE32267893D00FF1977 /* UTMQemuImg.m in Sources */ = {isa = PBXBuildFile; fileRef = CED33AE22267893D00FF1977 /* UTMQemuImg.m */; };
 		CED33AE62267CAB500FF1977 /* VMDisplayMetalViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CED33AE52267CAB500FF1977 /* VMDisplayMetalViewController.m */; };
 		CEDC1DF22260EE4B008D9A6D /* StaticDataTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CEDC1DF12260EE4B008D9A6D /* StaticDataTableViewController.m */; };
+		CEE0420C244117040001680F /* UTMConfiguration+Display.m in Sources */ = {isa = PBXBuildFile; fileRef = CEE0420B244117040001680F /* UTMConfiguration+Display.m */; };
 		CEE0420F24412C520001680F /* VMConfigStepper.m in Sources */ = {isa = PBXBuildFile; fileRef = CEE0420E24412C520001680F /* VMConfigStepper.m */; };
 		CEEB66462284B942002737B2 /* VMKeyboardButton.m in Sources */ = {isa = PBXBuildFile; fileRef = CEEB66452284B942002737B2 /* VMKeyboardButton.m */; };
 		CEFE75DB228933DE0050ABCC /* gst_ios_init.m in Sources */ = {isa = PBXBuildFile; fileRef = CEFE75D9228933DE0050ABCC /* gst_ios_init.m */; };
@@ -882,6 +883,8 @@
 		CED33AE52267CAB500FF1977 /* VMDisplayMetalViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VMDisplayMetalViewController.m; sourceTree = "<group>"; };
 		CEDC1DF02260EE4B008D9A6D /* StaticDataTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StaticDataTableViewController.h; sourceTree = "<group>"; };
 		CEDC1DF12260EE4B008D9A6D /* StaticDataTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StaticDataTableViewController.m; sourceTree = "<group>"; };
+		CEE0420A244117040001680F /* UTMConfiguration+Display.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UTMConfiguration+Display.h"; sourceTree = "<group>"; };
+		CEE0420B244117040001680F /* UTMConfiguration+Display.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UTMConfiguration+Display.m"; sourceTree = "<group>"; };
 		CEE0420D24412C520001680F /* VMConfigStepper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VMConfigStepper.h; sourceTree = "<group>"; };
 		CEE0420E24412C520001680F /* VMConfigStepper.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VMConfigStepper.m; sourceTree = "<group>"; };
 		CEEB66442284B942002737B2 /* VMKeyboardButton.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VMKeyboardButton.h; sourceTree = "<group>"; };
@@ -1095,6 +1098,8 @@
 				CE31C244225E555600A965DD /* UTMConfiguration.m */,
 				CE5425352437DDE900E520F7 /* UTMConfiguration+Constants.h */,
 				CE5425362437DDE900E520F7 /* UTMConfiguration+Constants.m */,
+				CEE0420A244117040001680F /* UTMConfiguration+Display.h */,
+				CEE0420B244117040001680F /* UTMConfiguration+Display.m */,
 				CE54252F2437C09C00E520F7 /* UTMConfiguration+Drives.h */,
 				CE5425302437C09C00E520F7 /* UTMConfiguration+Drives.m */,
 				CEA02A972436C7A30087E45F /* UTMConfiguration+Networking.h */,
@@ -1749,6 +1754,7 @@
 				CE26FC25226EBC5A0090BE9B /* CSMain.m in Sources */,
 				CE5425372437DDE900E520F7 /* UTMConfiguration+Constants.m in Sources */,
 				CE056CA6242454100004B68A /* VMDisplayMetalViewController+Touch.m in Sources */,
+				CEE0420C244117040001680F /* UTMConfiguration+Display.m in Sources */,
 				CE23C19223FCEC0A001177D6 /* qapi-visit-block-core.c in Sources */,
 				CECC76532273A7D50059B955 /* qapi-util.c in Sources */,
 				CE23C1CE23FCEC0A001177D6 /* qapi-commands-job.c in Sources */,
