@@ -15,18 +15,16 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "VMConfigCell.h"
 
-@class VMConfigLabel;
 @class VMConfigPickerView;
 
 NS_ASSUME_NONNULL_BEGIN
 
-IB_DESIGNABLE
-@interface VMConfigTogglePickerCell : UITableViewCell
+@interface VMConfigTogglePickerCell : VMConfigCell
 
 @property (nonatomic, strong) IBOutletCollection(UITableViewCell) NSArray *toggleVisibleCells;
 @property (nonatomic, weak) IBOutlet VMConfigPickerView *picker;
-@property (nonatomic, weak) IBOutlet VMConfigLabel *label;
 @property (nonatomic) IBInspectable BOOL cellsVisible;
 
 @end

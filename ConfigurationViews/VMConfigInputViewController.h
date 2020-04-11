@@ -22,9 +22,6 @@ NS_ASSUME_NONNULL_BEGIN
 @interface VMConfigInputViewController : VMConfigViewController
 
 @property (weak, nonatomic) IBOutlet UITableViewCell *openSettingsCell;
-@property (weak, nonatomic) IBOutlet UISwitch *legacyModeSwitch;
-
-- (IBAction)legacyModeChanged:(UISwitch *)sender;
 
 @end
 

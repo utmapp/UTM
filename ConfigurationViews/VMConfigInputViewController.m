@@ -23,11 +23,6 @@
 
 @implementation VMConfigInputViewController
 
-- (void)refreshViewFromConfiguration {
-    [super refreshViewFromConfiguration];
-    self.legacyModeSwitch.on = self.configuration.inputLegacy;
-}
-
 #pragma mark - Table delegate
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -36,13 +31,9 @@
                                            options:@{}
                                  completionHandler:nil];
         [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    } else {
+        [super tableView:tableView didSelectRowAtIndexPath:indexPath];
     }
-}
-
-#pragma mark - Event handlers
-
-- (IBAction)legacyModeChanged:(UISwitch *)sender {
-    self.configuration.inputLegacy = sender.on;
 }
 
 @end

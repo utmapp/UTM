@@ -18,29 +18,23 @@
 #import "UTMConfiguration+Drives.h"
 #import "VMConfigViewController.h"
 
+@class VMConfigTogglePickerCell;
+
 NS_ASSUME_NONNULL_BEGIN
 
-@interface VMConfigDriveDetailViewController : VMConfigViewController<UIPickerViewDelegate, UIPickerViewDataSource>
+@interface VMConfigDriveDetailViewController : VMConfigViewController
 
 @property (weak, nonatomic) IBOutlet UILabel *existingPathLabel;
 
 // image type
-@property (weak, nonatomic) IBOutlet UILabel *imageTypeLabel;
-@property (weak, nonatomic) IBOutlet UITableViewCell *imageTypePickerCell;
-@property (weak, nonatomic) IBOutlet UIPickerView *imageTypePicker;
-@property (weak, nonatomic) IBOutlet UITableViewCell *imageTypeCell;
-@property (nonatomic, assign) BOOL imageTypePickerActive;
+@property (weak, nonatomic) IBOutlet VMConfigTogglePickerCell *imageTypePickerCell;
 @property (nonatomic, assign) UTMDiskImageType imageType;
+@property (strong, nonatomic) IBOutletCollection(UITableViewCell) NSArray *driveTypeCells;
 
 // drive location
-@property (weak, nonatomic) IBOutlet UILabel *driveLocationLabel;
-@property (weak, nonatomic) IBOutlet UITableViewCell *driveLocationPickerCell;
-@property (weak, nonatomic) IBOutlet UIPickerView *driveLocationPicker;
-@property (weak, nonatomic) IBOutlet UITableViewCell *driveLocationCell;
-@property (nonatomic, assign) BOOL driveLocationPickerActive;
+@property (weak, nonatomic) IBOutlet VMConfigTogglePickerCell *driveLocationPickerCell;
 @property (nonatomic, nullable, strong) NSString *driveInterfaceType;
 
-@property (weak, nonatomic) IBOutlet UISwitch *isCdromSwitch;
 @property (nonatomic, assign) NSUInteger driveIndex;
 @property (nonatomic, assign) BOOL valid;
 

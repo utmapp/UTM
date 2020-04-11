@@ -15,6 +15,7 @@
 //
 
 #import "UTMConfiguration.h"
+#import "UTMConfiguration+Miscellaneous.h"
 #import "VMDisplayMetalViewController.h"
 #import "VMDisplayMetalViewController+Touch.h"
 #import "VMDisplayMetalViewController+Pointer.h"

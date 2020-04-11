@@ -19,45 +19,26 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface VMConfigSystemViewController : VMConfigViewController<UIPickerViewDelegate, UIPickerViewDataSource>
-
-@property (weak, nonatomic) IBOutlet UITableViewCell *architectureCell;
-@property (weak, nonatomic) IBOutlet UILabel *architectureLabel;
-@property (weak, nonatomic) IBOutlet UITableViewCell *architecturePickerCell;
-@property (weak, nonatomic) IBOutlet UIPickerView *architecturePicker;
-@property (nonatomic, assign) BOOL architecturePickerActive;
+@interface VMConfigSystemViewController : VMConfigViewController
 
 @property (weak, nonatomic) IBOutlet UITextField *memorySizeField;
 @property (weak, nonatomic) IBOutlet UITextField *cpuCountField;
-
-@property (weak, nonatomic) IBOutlet UITableViewCell *bootCell;
-@property (weak, nonatomic) IBOutlet UILabel *bootLabel;
-@property (weak, nonatomic) IBOutlet UITableViewCell *bootPickerCell;
-@property (weak, nonatomic) IBOutlet UIPickerView *bootPicker;
-@property (nonatomic, assign) BOOL bootPickerActive;
-
-@property (weak, nonatomic) IBOutlet UITableViewCell *systemCell;
-@property (weak, nonatomic) IBOutlet UILabel *systemLabel;
-@property (weak, nonatomic) IBOutlet UITableViewCell *systemPickerCell;
-@property (weak, nonatomic) IBOutlet UIPickerView *systemPicker;
-@property (nonatomic, assign) BOOL systemPickerActive;
-
 @property (weak, nonatomic) IBOutlet UITextField *jitCacheSizeField;
-@property (weak, nonatomic) IBOutlet UISwitch *forceMulticoreSwitch;
-
 @property (weak, nonatomic) IBOutlet UILabel *totalRamLabel;
 @property (weak, nonatomic) IBOutlet UILabel *estimatedRamLabel;
 @property (weak, nonatomic) IBOutlet UILabel *cpuCoresLabel;
+@property (weak, nonatomic) IBOutlet UIPickerView *architecturePicker;
+@property (weak, nonatomic) IBOutlet UIPickerView *targetPicker;
 
-@property (nonatomic) NSNumber *memorySize;
-@property (nonatomic) NSNumber *jitCacheSize;
+@property (nonatomic) NSInteger memorySize;
+@property (nonatomic) NSInteger jitCacheSize;
 @property (nonatomic, readonly) NSUInteger totalRam;
 @property (nonatomic, readonly) NSUInteger estimatedRam;
-@property (nonatomic) NSNumber *cpuCount;
-- (IBAction)memorySizeFieldEdited:(UITextField *)sender;
-- (IBAction)cpuCountFieldEdited:(UITextField *)sender;
-- (IBAction)jitCacheSizeFieldEdited:(UITextField *)sender;
-- (IBAction)forceMulticoreSwitchChanged:(UISwitch *)sender;
+@property (nonatomic) NSInteger cpuCount;
+
+- (BOOL)memorySizeFieldValid:(UITextField *)sender;
+- (BOOL)cpuCountFieldValid:(UITextField *)sender;
+- (BOOL)jitCacheSizeFieldValid:(UITextField *)sender;
 
 @end
 

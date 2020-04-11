@@ -14,15 +14,15 @@
 // limitations under the License.
 //
 
-#import "VMConfigLabel.h"
+#import "VMConfigCell.h"
 
-@implementation VMConfigLabel
+@implementation VMConfigCell
 
 - (void)valueChanged:(id)value {
     if (value == nil || value == [NSNull null]) {
-        value = @"";
+        value = @" ";
     }
-    self.text = value;
+    self.detailTextLabel.text = value;
 }
 
 @end

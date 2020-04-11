@@ -14,6 +14,7 @@
 // limitations under the License.
 //
 
+#import <UIKit/UIKit.h>
 #import "UTMConfiguration+Constants.h"
 
 @implementation UTMConfiguration (Constants)
@@ -27,6 +28,42 @@
         } else {
             return [self supportedNetworkCards];
         }
+    } else if ([key isEqualToString:@"soundCards"]) {
+        if (pretty) {
+            return [self supportedSoundCardDevicesPretty];
+        } else {
+            return [self supportedSoundCardDevices];
+        }
+    } else if ([key isEqualToString:@"architectures"]) {
+        if (pretty) {
+            return [self supportedArchitecturesPretty];
+        } else {
+            return [self supportedArchitectures];
+        }
+    } else if ([key isEqualToString:@"bootDevices"]) {
+        if (pretty) {
+            return [self supportedBootDevicesPretty];
+        } else {
+            return [self supportedBootDevices];
+        }
+    } else if ([key isEqualToString:@"imageTypes"]) {
+        if (pretty) {
+            return [self supportedImageTypesPretty];
+        } else {
+            return [self supportedImageTypes];
+        }
+    } else if ([key isEqualToString:@"driveInterfaces"]) {
+        return [self supportedDriveInterfaces];
+    } else if ([key isEqualToString:@"scalers"]) {
+        if (pretty) {
+            return [self supportedScalersPretty];
+        } else {
+            return [self supportedScalers];
+        }
+    } else if ([key isEqualToString:@"consoleThemes"]) {
+        return [self supportedConsoleThemes];
+    } else if ([key isEqualToString:@"consoleFonts"]) {
+        return [self supportedConsoleFonts];
     }
     return @[];
 }
@@ -1333,6 +1370,42 @@
              @"virtio",
              @"none"
              ];
+}
+
++ (NSArray<NSString *>*)supportedScalersPretty {
+    return @[
+        NSLocalizedString(@"Linear", "UTMConfiguration"),
+        NSLocalizedString(@"Bicubic", "UTMConfiguration"),
+        NSLocalizedString(@"Nearest Neighbor", "UTMConfiguration"),
+    ];
+}
+
++ (NSArray<NSString *>*)supportedScalers {
+    return @[
+        @"linear",
+        @"bicubic",
+        @"nearest",
+    ];
+}
+
++ (NSArray<NSString *>*)supportedConsoleThemes {
+    return @[
+        @"Default"
+    ];
+}
+
++ (NSArray<NSString *>*)supportedConsoleFonts {
+    static NSMutableArray<NSString *> *families;
+    if (!families) {
+        families = [NSMutableArray new];
+        for (NSString *family in UIFont.familyNames) {
+            UIFont *font = [UIFont fontWithName:family size:1];
+            if (font.fontDescriptor.symbolicTraits & UIFontDescriptorTraitMonoSpace) {
+                [families addObject:family];
+            }
+        }
+    }
+    return families;
 }
 
 + (NSString *)diskImagesDirectory {

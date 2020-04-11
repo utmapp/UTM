@@ -16,7 +16,9 @@
 
 #import "UTMConfiguration.h"
 #import "UTMConfiguration+Constants.h"
+#import "UTMConfiguration+Display.h"
 #import "UTMConfiguration+Drives.h"
+#import "UTMConfiguration+Miscellaneous.h"
 #import "UTMConfiguration+Networking.h"
 #import "UTMConfiguration+Sharing.h"
 #import "UTMConfiguration+System.h"
@@ -30,24 +32,6 @@ const NSString *const kUTMConfigSoundKey = @"Sound";
 const NSString *const kUTMConfigSharingKey = @"Sharing";
 const NSString *const kUTMConfigDrivesKey = @"Drives";
 const NSString *const kUTMConfigDebugKey = @"Debug";
-
-const NSString *const kUTMConfigConsoleOnlyKey = @"ConsoleOnly";
-const NSString *const kUTMConfigFixedResolutionKey = @"FixedResolution";
-const NSString *const kUTMConfigFixedResolutionWidthKey = @"FixedResolutionWidth";
-const NSString *const kUTMConfigFixedResolutionHeightKey = @"FixedResolutionHeight";
-const NSString *const kUTMConfigZoomScaleKey = @"ZoomScale";
-const NSString *const kUTMConfigZoomLetterboxKey = @"ZoomLetterbox";
-
-const NSString *const kUTMConfigTouchscreenModeKey = @"TouchscreenMode";
-const NSString *const kUTMConfigDirectInputKey = @"DirectInput";
-const NSString *const kUTMConfigInputLegacyKey = @"InputLegacy";
-
-const NSString *const kUTMConfigPrintEnabledKey = @"PrintEnabled";
-
-const NSString *const kUTMConfigSoundEnabledKey = @"SoundEnabled";
-const NSString *const kUTMConfigSoundCardDeviceKey = @"SoundCard";
-
-const NSString *const kUTMConfigDebugLogKey = @"DebugLog";
 
 @interface UTMConfiguration ()
 
@@ -66,24 +50,11 @@ const NSString *const kUTMConfigDebugLogKey = @"DebugLog";
 #pragma mark - Migration
 
 - (void)migrateConfigurationIfNecessary {
-    // Add Debug dict if not exists
-    if (!_rootDict[kUTMConfigDebugKey]) {
-        _rootDict[kUTMConfigDebugKey] = [NSMutableDictionary dictionary];
-    }
-    
-    if (!_rootDict[kUTMConfigSoundKey][kUTMConfigSoundCardDeviceKey]) {
-        _rootDict[kUTMConfigSoundKey][kUTMConfigSoundCardDeviceKey] = [UTMConfiguration supportedSoundCardDevices][0];
-    }
-    // Migrate input settings
-    [_rootDict[kUTMConfigInputKey] removeObjectForKey:kUTMConfigTouchscreenModeKey];
-    [_rootDict[kUTMConfigInputKey] removeObjectForKey:kUTMConfigDirectInputKey];
-    if (!_rootDict[kUTMConfigInputKey][kUTMConfigInputLegacyKey]) {
-        self.inputLegacy = NO;
-    }
-    // Migrate other settings
+    [self migrateMiscellaneousConfigurationIfNecessary];
     [self migrateDriveConfigurationIfNecessary];
     [self migrateNetworkConfigurationIfNecessary];
     [self migrateSystemConfigurationIfNecessary];
+    [self migrateDisplayConfigurationIfNecessary];
 }
 
 #pragma mark - Initialization
@@ -102,17 +73,18 @@ const NSString *const kUTMConfigDebugLogKey = @"DebugLog";
         _rootDict[kUTMConfigDrivesKey] = [[NSMutableArray alloc] init];
         _rootDict[kUTMConfigDebugKey] = [[NSMutableDictionary alloc] init];
         self.systemArchitecture = @"x86_64";
+        self.systemTarget = @"pc";
         self.systemMemory = @512;
         self.systemCPUCount = @1;
-        self.systemBootDevice = @"CD/DVD";
+        self.systemBootDevice = @"cd";
         self.systemJitCacheSize = @0;
         self.systemForceMulticore = NO;
         self.systemUUID = [[NSUUID UUID] UUIDString];
-        self.displayFixedResolutionWidth = @800;
-        self.displayFixedResolutionHeight = @600;
-        self.displayFixedResolution = NO;
+        self.displayUpscaler = @"linear";
+        self.displayDownscaler = @"linear";
+        self.consoleFont = @"Menlo";
+        self.consoleTheme = @"Default";
         self.networkEnabled = YES;
-        self.printEnabled = YES;
         self.soundEnabled = YES;
         self.soundCard = @"ac97";
         self.networkCard = @"rtl8139";
@@ -134,96 +106,6 @@ const NSString *const kUTMConfigDebugLogKey = @"DebugLog";
         [self migrateConfigurationIfNecessary];
     }
     return self;
-}
-
-#pragma mark - Other properties
-
-- (void)setDisplayConsoleOnly:(BOOL)displayConsoleOnly {
-    self.rootDict[kUTMConfigDisplayKey][kUTMConfigConsoleOnlyKey] = @(displayConsoleOnly);
-}
-
-- (BOOL)displayConsoleOnly {
-    return [_rootDict[kUTMConfigDisplayKey][kUTMConfigConsoleOnlyKey] boolValue];
-}
-
-- (void)setDisplayFixedResolution:(BOOL)displayFixedResolution {
-    _rootDict[kUTMConfigDisplayKey][kUTMConfigFixedResolutionKey] = @(displayFixedResolution);
-}
-
-- (BOOL)displayFixedResolution {
-    return [_rootDict[kUTMConfigDisplayKey][kUTMConfigFixedResolutionKey] boolValue];
-}
-
-- (void)setDisplayFixedResolutionWidth:(NSNumber *)displayFixedResolutionWidth {
-    _rootDict[kUTMConfigDisplayKey][kUTMConfigFixedResolutionWidthKey] = displayFixedResolutionWidth;
-}
-
-- (NSNumber *)displayFixedResolutionWidth {
-    return _rootDict[kUTMConfigDisplayKey][kUTMConfigFixedResolutionWidthKey];
-}
-
-- (void)setDisplayFixedResolutionHeight:(NSNumber *)displayFixedResolutionHeight {
-    _rootDict[kUTMConfigDisplayKey][kUTMConfigFixedResolutionHeightKey] = displayFixedResolutionHeight;
-}
-
-- (NSNumber *)displayFixedResolutionHeight {
-    return _rootDict[kUTMConfigDisplayKey][kUTMConfigFixedResolutionHeightKey];
-}
-
-- (void)setDisplayZoomScale:(BOOL)displayZoomScale {
-    _rootDict[kUTMConfigDisplayKey][kUTMConfigZoomScaleKey] = @(displayZoomScale);
-}
-
-- (BOOL)displayZoomScale {
-    return [_rootDict[kUTMConfigDisplayKey][kUTMConfigZoomScaleKey] boolValue];
-}
-
-- (void)setDisplayZoomLetterBox:(BOOL)displayZoomLetterBox {
-    _rootDict[kUTMConfigDisplayKey][kUTMConfigZoomLetterboxKey] = @(displayZoomLetterBox);
-}
-
-- (BOOL)displayZoomLetterBox {
-    return [_rootDict[kUTMConfigDisplayKey][kUTMConfigZoomLetterboxKey] boolValue];
-}
-
-- (void)setInputLegacy:(BOOL)inputDirect {
-    _rootDict[kUTMConfigInputKey][kUTMConfigInputLegacyKey] = @(inputDirect);
-}
-
-- (BOOL)inputLegacy {
-    return [_rootDict[kUTMConfigInputKey][kUTMConfigInputLegacyKey] boolValue];
-}
-
-- (void)setPrintEnabled:(BOOL)printEnabled {
-    _rootDict[kUTMConfigPrintingKey][kUTMConfigPrintEnabledKey] = @(printEnabled);
-}
-
-- (BOOL)printEnabled {
-    return [_rootDict[kUTMConfigPrintingKey][kUTMConfigPrintEnabledKey] boolValue];
-}
-
-- (void)setSoundEnabled:(BOOL)soundEnabled {
-    _rootDict[kUTMConfigSoundKey][kUTMConfigSoundEnabledKey] = @(soundEnabled);
-}
-
-- (BOOL)soundEnabled {
-    return [_rootDict[kUTMConfigSoundKey][kUTMConfigSoundEnabledKey] boolValue];
-}
-
-- (void)setSoundCard:(NSString *)soundCard {
-    _rootDict[kUTMConfigSoundKey][kUTMConfigSoundCardDeviceKey] = soundCard;
-}
-
-- (NSString *)soundCard {
-    return _rootDict[kUTMConfigSoundKey][kUTMConfigSoundCardDeviceKey];
-}
-
-- (BOOL)debugLogEnabled {
-    return [self.rootDict[kUTMConfigDebugKey][kUTMConfigDebugLogKey] boolValue];
-}
-
-- (void)setDebugLogEnabled:(BOOL)debugLogEnabled {
-    self.rootDict[kUTMConfigDebugKey][kUTMConfigDebugLogKey] = @(debugLogEnabled);
 }
 
 #pragma mark - Dictionary representation

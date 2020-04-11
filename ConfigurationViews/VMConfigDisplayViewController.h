@@ -21,26 +21,20 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface VMConfigDisplayViewController : VMConfigViewController<UIPickerViewDelegate, UIPickerViewDataSource>
 
+@property (strong, nonatomic) IBOutletCollection(UITableViewCell) NSArray *fullDisplayCells;
+@property (strong, nonatomic) IBOutletCollection(UITableViewCell) NSArray *consoleDisplayCells;
+
 @property (weak, nonatomic) IBOutlet UITableViewCell *graphicsTypeFullCell;
 @property (weak, nonatomic) IBOutlet UITableViewCell *graphicsTypeConsoleCell;
-@property (weak, nonatomic) IBOutlet UISwitch *resolutionFixedSwitch;
-@property (weak, nonatomic) IBOutlet UITableViewCell *maxResolutionCell;
-@property (weak, nonatomic) IBOutlet UILabel *maxResolutionLabel;
-@property (weak, nonatomic) IBOutlet UITableViewCell *maxResolutionPickerCell;
-@property (weak, nonatomic) IBOutlet UIPickerView *maxResolutionPicker;
-@property (nonatomic, assign) BOOL maxResolutionPickerActive;
-@property (weak, nonatomic) IBOutlet UISwitch *zoomScaleFitSwitch;
-@property (weak, nonatomic) IBOutlet UISwitch *zoomLetterboxSwitch;
-@property (strong, nonatomic) IBOutletCollection(UITableViewCell) NSArray *displayTypeCells;
-@property (strong, nonatomic) IBOutletCollection(UITableViewCell) NSArray *displayTypeCellsWithoutPicker;
-@property (strong, nonatomic) IBOutletCollection(UITableViewCell) NSArray *consoleTypeCells;
+@property (weak, nonatomic) IBOutlet UITableViewCell *fontPickerToggleCell;
+@property (weak, nonatomic) IBOutlet UIPickerView *fontPicker;
+@property (weak, nonatomic) IBOutlet UIStepper *fontSizeStepper;
+@property (weak, nonatomic) IBOutlet UILabel *fontSizeLabel;
 
 @property (nonatomic, assign) BOOL consoleOnly;
-@property (nonatomic, nullable, strong) NSString *maxResolution;
 
-- (IBAction)resolutionFixedSwitchChanged:(UISwitch *)sender;
-- (IBAction)zoomScaleFitSwitchChanged:(UISwitch *)sender;
-- (IBAction)zoomLetterboxSwitchChanged:(UISwitch *)sender;
+
+- (IBAction)fontSizeStepperChanged:(UIStepper *)sender;
 
 @end
 

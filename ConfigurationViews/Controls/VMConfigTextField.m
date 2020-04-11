@@ -22,7 +22,11 @@
     if (value == nil || value == [NSNull null]) {
         value = @"";
     }
-    self.text = value;
+    if (self.isNumber) {
+        self.text = [value stringValue];
+    } else {
+        self.text = value;
+    }
 }
 
 @end

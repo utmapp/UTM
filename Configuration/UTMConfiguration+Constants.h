@@ -34,6 +34,10 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSInteger)defaultTargetIndexForArchitecture:(NSString *)architecture;
 + (NSArray<NSString *>*)supportedResolutions;
 + (NSArray<NSString *>*)supportedDriveInterfaces;
++ (NSArray<NSString *>*)supportedScalersPretty;
++ (NSArray<NSString *>*)supportedScalers;
++ (NSArray<NSString *>*)supportedConsoleThemes;
++ (NSArray<NSString *>*)supportedConsoleFonts;
 + (NSString *)diskImagesDirectory;
 + (NSString *)defaultDriveInterface;
 + (NSString *)debugLogName;

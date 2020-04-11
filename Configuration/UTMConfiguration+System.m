@@ -52,6 +52,13 @@ static const NSString *const kUTMConfigSystemUUIDKey = @"SystemUUID";
         NSInteger index = [UTMConfiguration defaultTargetIndexForArchitecture:self.systemArchitecture];
         self.rootDict[kUTMConfigSystemKey][kUTMConfigTargetKey] = [UTMConfiguration supportedTargetsForArchitecture:self.systemArchitecture][index];
     }
+    // Fix issue with boot order
+    NSArray<NSString *> *bootPretty = [UTMConfiguration supportedBootDevicesPretty];
+    if ([bootPretty containsObject:self.systemBootDevice]) {
+        NSUInteger index = [bootPretty indexOfObject:self.systemBootDevice];
+        NSLog(@"Fixing wrong BootDevice entry '%@', index %lu", self.systemBootDevice, index);
+        self.systemBootDevice = [UTMConfiguration supportedBootDevices][index];
+    }
 }
 
 #pragma mark - System Properties

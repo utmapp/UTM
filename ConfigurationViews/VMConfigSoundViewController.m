@@ -16,7 +16,7 @@
 
 #import "VMConfigSoundViewController.h"
 #import "UTMConfiguration.h"
-#import "UTMConfiguration+Constants.h"
+#import "VMConfigSwitch.h"
 
 @interface VMConfigSoundViewController ()
 
@@ -24,79 +24,24 @@
 
 @implementation VMConfigSoundViewController
 
-- (void)refreshViewFromConfiguration {
-    [super refreshViewFromConfiguration];
-    self.soundEnabled = self.configuration.soundEnabled;
-    self.soundEnabledSwitch.on = self.soundEnabled;
-    self.soundHardwareLabel.text = self.configuration.soundCard;
-    self.soundHardwarePickerActive = NO;
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    [self showSoundOptions:self.soundEnabledSwitch.on animated:NO];
 }
 
-#pragma mark - Properties
-
-- (void)setSoundEnabled:(BOOL)soundEnabled {
-    _soundEnabled = soundEnabled;
-    self.configuration.soundEnabled = soundEnabled;
-    if (!soundEnabled && self.soundHardwarePickerActive) {
-        self.soundHardwarePickerActive = NO;
+- (void)showSoundOptions:(BOOL)visible animated:(BOOL)animated {
+    if (!visible) {
+        [self hidePickersAnimated:animated];
     }
-    [self pickerCell:self.soundHardwareCell setActive:soundEnabled];
+    [self cells:self.soundEnabledCells setHidden:!visible];
+    [self reloadDataAnimated:animated];
 }
 
-- (void)setSoundHardwarePickerActive:(BOOL)soundHardwarePickerActive {
-    _soundHardwarePickerActive = soundHardwarePickerActive;
-    if (soundHardwarePickerActive) {
-        NSUInteger index = [[UTMConfiguration supportedSoundCardDevices] indexOfObject:self.configuration.soundCard];
-        if (index != NSNotFound) {
-            [self.soundCardPickerView selectRow:index inComponent:0 animated:NO];
-        }
+- (IBAction)configSwitchChanged:(VMConfigSwitch *)sender {
+    if (sender == self.soundEnabledSwitch) {
+        [self showSoundOptions:sender.on animated:YES];
     }
-    [self pickerCell:self.soundCardPickerViewTableViewCell setActive:soundHardwarePickerActive];
-}
-
-#pragma mark - View delegates
-
-- (void)pickerCell:(nonnull UITableViewCell *)pickerCell setActive:(BOOL)active {
-    [self cell:pickerCell setHidden:!active];
-    [self reloadDataAnimated:self.doneLoadingConfiguration];
-}
-
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    if ([tableView cellForRowAtIndexPath:indexPath] == self.soundHardwareCell) {
-        self.soundHardwarePickerActive = !self.soundHardwarePickerActive;
-        [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    }
-}
-
-- (NSInteger)numberOfComponentsInPickerView:(nonnull UIPickerView *)pickerView {
-    NSAssert(pickerView == self.soundCardPickerView, @"Invalid picker");
-    return 1;
-}
-
-- (NSInteger)pickerView:(nonnull UIPickerView *)pickerView numberOfRowsInComponent:(NSInteger)component {
-    NSAssert(component == 0, @"Invalid component");
-    NSAssert(pickerView == self.soundCardPickerView, @"Invalid picker");
-    return [UTMConfiguration supportedSoundCardDevices].count;
-}
-
-- (NSString *)pickerView:(UIPickerView *)pickerView titleForRow:(NSInteger)row forComponent:(NSInteger)component {
-    NSAssert(component == 0, @"Invalid component");
-    NSAssert(pickerView == self.soundCardPickerView, @"Invalid picker");
-    return [UTMConfiguration supportedSoundCardDevicesPretty][row];
-}
-
-- (void)pickerView:(UIPickerView *)pickerView didSelectRow:(NSInteger)row inComponent:(NSInteger)component {
-    NSAssert(component == 0, @"Invalid component");
-    NSAssert(pickerView == self.soundCardPickerView, @"Invalid picker");
-    self.configuration.soundCard = [UTMConfiguration supportedSoundCardDevices][row];
-    self.soundHardwareLabel.text = self.configuration.soundCard;
-}
-
-#pragma mark - Event handlers
-
-- (IBAction)soundEnabledSwitchChanged:(UISwitch *)sender {
-    NSAssert(sender == self.soundEnabledSwitch, @"Invalid sender");
-    self.soundEnabled = sender.on;
+    [super configSwitchChanged:sender];
 }
 
 @end

@@ -16,8 +16,8 @@
 
 #import "VMConfigViewController.h"
 #import "VMConfigControl.h"
-#import "VMConfigLabel.h"
 #import "VMConfigPickerView.h"
+#import "VMConfigStepper.h"
 #import "VMConfigSwitch.h"
 #import "VMConfigTextField.h"
 #import "VMConfigTogglePickerCell.h"
@@ -40,19 +40,6 @@ void *kVMConfigViewControllerContext = &kVMConfigViewControllerContext;
     self.insertTableViewRowAnimation = UITableViewRowAnimationMiddle;
     self.deleteTableViewRowAnimation = UITableViewRowAnimationMiddle;
     self.reloadTableViewRowAnimation = UITableViewRowAnimationMiddle;
-    [self refreshViewFromConfiguration];
-    self.doneLoadingConfiguration = YES;
-}
-
-- (void)refreshViewFromConfiguration {
-    NSAssert(self.configuration, @"Configuration is nil!");
-}
-
-#pragma mark - Picker helpers
-
-- (void)pickerCell:(nonnull UITableViewCell *)pickerCell setActive:(BOOL)active {
-    [self cell:pickerCell setHidden:!active];
-    [self reloadDataAnimated:self.doneLoadingConfiguration];
 }
 
 #pragma mark - Text field helpers
@@ -68,21 +55,6 @@ void *kVMConfigViewControllerContext = &kVMConfigViewControllerContext;
         id<UTMConfigurationDelegate> dst = (id<UTMConfigurationDelegate>)segue.destinationViewController;
         dst.configuration = self.configuration;
     }
-}
-
-#pragma mark - Showing Alerts
-
-- (void)showAlert:(NSString *)msg completion:(nullable void (^)(UIAlertAction *action))completion {
-    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"" message:msg preferredStyle:UIAlertControllerStyleAlert];
-    UIAlertAction *okay = [UIAlertAction actionWithTitle:NSLocalizedString(@"OK", @"OK button") style:UIAlertActionStyleDefault handler:completion];
-    [alert addAction:okay];
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self presentViewController:alert animated:YES completion:nil];
-    });
-}
-
-- (void)showUnimplementedAlert {
-    [self showAlert:NSLocalizedString(@"This page is currently not implemented yet. None of these options work.", @"VMConfigViewController") completion:nil];
 }
 
 #pragma mark - Configuration observers
@@ -132,7 +104,7 @@ void *kVMConfigViewControllerContext = &kVMConfigViewControllerContext;
 
 - (void)pickerCell:(VMConfigTogglePickerCell *)cell showPicker:(BOOL)visible animated:(BOOL)animated {
     if (visible) {
-        NSUInteger index = [[UTMConfiguration supportedOptions:cell.picker.supportedOptionsPath pretty:NO] indexOfObject:cell.label.text];
+        NSUInteger index = [[UTMConfiguration supportedOptions:cell.picker.supportedOptionsPath pretty:NO] indexOfObject:cell.detailTextLabel.text];
         if (index != NSNotFound) {
             [cell.picker selectRow:index inComponent:0 animated:NO];
         }
@@ -175,8 +147,8 @@ void *kVMConfigViewControllerContext = &kVMConfigViewControllerContext;
     NSAssert([pickerView isKindOfClass:[VMConfigPickerView class]], @"Invalid picker");
     VMConfigPickerView *vmPicker = (VMConfigPickerView *)pickerView;
     NSString *selected = [UTMConfiguration supportedOptions:vmPicker.supportedOptionsPath pretty:NO][row];
-    [self.configuration setValue:selected forKey:vmPicker.selectedOptionLabel.configurationPath];
-    vmPicker.selectedOptionLabel.text = selected;
+    [self.configuration setValue:selected forKey:vmPicker.selectedOptionCell.configurationPath];
+    vmPicker.selectedOptionCell.detailTextLabel.text = selected;
 }
 
 - (void)hidePickersAnimated:(BOOL)animated {
@@ -193,12 +165,21 @@ void *kVMConfigViewControllerContext = &kVMConfigViewControllerContext;
 - (IBAction)configTextFieldEditEnd:(VMConfigTextField *)sender {
     // validate input in super-class
     NSLog(@"config edited for text %@", sender.configurationPath);
-    [self.configuration setValue:sender.text forKey:sender.configurationPath];
+    if (sender.isNumber) {
+        [self.configuration setValue:@([sender.text integerValue]) forKey:sender.configurationPath];
+    } else {
+        [self.configuration setValue:sender.text forKey:sender.configurationPath];
+    }
 }
 
 - (IBAction)configSwitchChanged:(VMConfigSwitch *)sender {
     NSLog(@"config changed for switch %@", sender.configurationPath);
     [self.configuration setValue:@(sender.on) forKey:sender.configurationPath];
+}
+
+- (IBAction)configStepperChanged:(VMConfigStepper *)sender {
+    NSLog(@"config changed for stepper %@", sender.configurationPath);
+    [self.configuration setValue:@(sender.value) forKey:sender.configurationPath];
 }
 
 @end

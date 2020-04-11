@@ -28,7 +28,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (IBAction)savePressed:(UIBarButtonItem *)sender;
 - (IBAction)cancelPressed:(UIBarButtonItem *)sender;
-- (IBAction)nameFieldChanged:(UITextField *)sender;
 
 @end
 
