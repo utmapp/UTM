@@ -29,6 +29,7 @@ const NSUInteger kMBinBytes = 1024 * 1024;
 const NSUInteger kMinCodeGenBufferSizeMB = 1;
 const NSUInteger kMaxCodeGenBufferSizeMB = 2048;
 const NSUInteger kBaseUsageBytes = 128 * kMBinBytes;
+const float kMemoryAlertThreshold = 0.5;
 const float kMemoryWarningThreshold = 0.8;
 
 @interface VMConfigSystemViewController ()
@@ -114,6 +115,14 @@ const float kMemoryWarningThreshold = 0.8;
 
 #pragma mark - Validate input
 
+- (void)verifyRam {
+    if (self.estimatedRam > kMemoryWarningThreshold * self.totalRam) {
+        [self showAlert:NSLocalizedString(@"Warning: iOS will kill apps that use more than 80% of the device's total memory.", @"VMConfigSystemViewController") actions:nil completion:nil];
+    } else if (self.estimatedRam > kMemoryAlertThreshold * self.totalRam) {
+        [self showAlert:NSLocalizedString(@"The total memory usage is close to your device's limit. iOS will kill the VM if it consumes too much memory.", @"VMConfigSystemViewController") actions:nil completion:nil];
+    }
+}
+
 - (BOOL)memorySizeFieldValid:(UITextField *)sender {
     BOOL valid = NO;
     NSAssert(sender == self.memorySizeField, @"Invalid sender");
@@ -124,9 +133,7 @@ const float kMemoryWarningThreshold = 0.8;
         [self showAlert:NSLocalizedString(@"Invalid memory size.", @"VMConfigSystemViewController") actions:nil completion:nil];
     }
     [self updateEstimatedRam];
-    if (self.estimatedRam > kMemoryWarningThreshold * self.totalRam) {
-        [self showAlert:NSLocalizedString(@"The total memory usage is close to your device's limit. iOS will kill the VM if it consumes too much memory.", @"VMConfigSystemViewController") actions:nil completion:nil];
-    }
+    [self verifyRam];
     return valid;
 }
 
@@ -156,9 +163,7 @@ const float kMemoryWarningThreshold = 0.8;
         valid = YES;
     }
     [self updateEstimatedRam];
-    if (self.estimatedRam > kMemoryWarningThreshold * self.totalRam) {
-        [self showAlert:NSLocalizedString(@"The total memory usage is close to your device's limit. iOS will kill the VM if it consumes too much memory.", @"VMConfigSystemViewController") actions:nil completion:nil];
-    }
+    [self verifyRam];
     return valid;
 }
 
