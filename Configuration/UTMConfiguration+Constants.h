@@ -41,7 +41,6 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSString *)diskImagesDirectory;
 + (NSString *)defaultDriveInterface;
 + (NSString *)debugLogName;
-+ (NSDictionary *) stringToScancodeMap;
 
 @end
 

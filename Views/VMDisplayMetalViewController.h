@@ -26,27 +26,6 @@
 @class VMKeyboardButton;
 @class GCController;
 
-typedef NS_ENUM(NSUInteger, UTMGCButton) {
-    UTMGCButtonMouseLeft,
-    UTMGCButtonMouseRight,
-    UTMGCButtonMouseMiddle,
-    UTMGCButtonMenu,
-    UTMGCButtonOption,
-    UTMGCButtonDpadUp,
-    UTMGCButtonDpadDown,
-    UTMGCButtonDpadLeft,
-    UTMGCButtonDpadRight,
-    UTMGCButtonA,
-    UTMGCButtonB,
-    UTMGCButtonX,
-    UTMGCButtonY,
-    UTMGCButtonShoulderLeft,
-    UTMGCButtonShoulderRight,
-    UTMGCButtonTriggerLeft,
-    UTMGCButtonTriggerRight,
-    UTMGCButtonMax
-};
-
 NS_ASSUME_NONNULL_BEGIN
 
 @interface VMDisplayMetalViewController : UIViewController<UTMVirtualMachineDelegate, UTMSpiceIODelegate, UIGestureRecognizerDelegate> {
@@ -73,10 +52,8 @@ NS_ASSUME_NONNULL_BEGIN
     
     //Gamepad
     GCController *_controller;
-    CGPoint _cursorDirection;
-    CGPoint _scrollingDirection;
-    NSTimer *_mouseMovementTimer;
-    BOOL _buttonPressed[UTMGCButtonMax];
+    BOOL _mouseRightDown;
+    BOOL _mouseMiddleDown;
     
     // Feedback generators
     UISelectionFeedbackGenerator *_clickFeedbackGenerator;
