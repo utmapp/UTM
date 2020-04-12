@@ -142,6 +142,7 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillChangeFrame:) name:UIKeyboardWillChangeFrameNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleEnteredBackground:) name:UIApplicationDidEnterBackgroundNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleEnteredForeground:) name:UIApplicationWillEnterForegroundNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(orientationDidChange:) name:UIDeviceOrientationDidChangeNotification object:nil];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -152,6 +153,7 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillChangeFrameNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationDidEnterBackgroundNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationWillEnterForegroundNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIDeviceOrientationDidChangeNotification object:nil];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -231,6 +233,7 @@
             [self.powerExitButton setImage:[UIImage imageNamed:@"Toolbar Power"] forState:UIControlStateNormal];
             self->_renderer.sourceScreen = self.vmDisplay;
             self->_renderer.sourceCursor = self.vmInput;
+            [self orientationDidChange:nil];
             break;
         }
     }
@@ -449,6 +452,17 @@
         [self showAlert:NSLocalizedString(@"Running low on memory! UTM might soon be killed by iOS. You can prevent this by decreasing the amount of memory and/or JIT cache assigned to this VM", @"VMDisplayMetalViewController")
                 actions:nil
              completion:nil];
+    }
+}
+
+- (void)orientationDidChange:(NSNotification *)notification {
+    NSLog(@"orientation changed");
+    if (self.vmConfiguration.displayFitScreen) {
+        CGRect bounds = [UIScreen mainScreen].bounds;
+        if (self.vmConfiguration.displayRetina) {
+            bounds = [UIScreen mainScreen].nativeBounds;
+        }
+        [self.vmDisplay requestResolution:bounds];
     }
 }
 
