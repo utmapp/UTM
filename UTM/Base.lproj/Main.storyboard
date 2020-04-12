@@ -3217,7 +3217,7 @@
                                             </state>
                                             <userDefinedRuntimeAttributes>
                                                 <userDefinedRuntimeAttribute type="number" keyPath="scanCode">
-                                                    <integer key="value" value="57416"/>
+                                                    <integer key="value" value="200"/>
                                                 </userDefinedRuntimeAttribute>
                                             </userDefinedRuntimeAttributes>
                                             <connections>
@@ -3234,7 +3234,7 @@
                                             </state>
                                             <userDefinedRuntimeAttributes>
                                                 <userDefinedRuntimeAttribute type="number" keyPath="scanCode">
-                                                    <integer key="value" value="57424"/>
+                                                    <integer key="value" value="208"/>
                                                 </userDefinedRuntimeAttribute>
                                             </userDefinedRuntimeAttributes>
                                             <connections>
@@ -3251,7 +3251,7 @@
                                             </state>
                                             <userDefinedRuntimeAttributes>
                                                 <userDefinedRuntimeAttribute type="number" keyPath="scanCode">
-                                                    <integer key="value" value="57419"/>
+                                                    <integer key="value" value="203"/>
                                                 </userDefinedRuntimeAttribute>
                                             </userDefinedRuntimeAttributes>
                                             <connections>
@@ -3268,7 +3268,7 @@
                                             </state>
                                             <userDefinedRuntimeAttributes>
                                                 <userDefinedRuntimeAttribute type="number" keyPath="scanCode">
-                                                    <integer key="value" value="57421"/>
+                                                    <integer key="value" value="205"/>
                                                 </userDefinedRuntimeAttribute>
                                             </userDefinedRuntimeAttributes>
                                             <connections>

@@ -125,13 +125,13 @@ static NSString *kAllKeys = @"`1234567890-=qwertyuiop[]\\asdfghjkl;'zxcvbnm,./ \
     if ([key isEqualToString:UIKeyInputEscape])
         scancode = 0x01;
     else if ([key isEqualToString:UIKeyInputUpArrow])
-        scancode = 0xE048;
+        scancode = 0xC8;
     else if ([key isEqualToString:UIKeyInputDownArrow])
-        scancode = 0xE050;
+        scancode = 0xD0;
     else if ([key isEqualToString:UIKeyInputLeftArrow])
-        scancode = 0xE04B;
+        scancode = 0xCB;
     else if ([key isEqualToString:UIKeyInputRightArrow])
-        scancode = 0xE04D;
+        scancode = 0xCD;
     if (scancode != 0) {
         [self sendExtendedKey:SEND_KEY_PRESS code:scancode];
     } else {
