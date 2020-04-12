@@ -45,8 +45,6 @@ const NSString *const kUTMConfigDebugKey = @"Debug";
 
 @synthesize rootDict = _rootDict;
 
-
-
 #pragma mark - Migration
 
 - (void)migrateConfigurationIfNecessary {

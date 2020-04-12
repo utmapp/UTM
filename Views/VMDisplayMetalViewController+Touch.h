@@ -15,6 +15,7 @@
 //
 
 #import "VMDisplayMetalViewController.h"
+#import "CSInput.h"
 
 typedef NS_ENUM(NSInteger, VMGestureType) {
     VMGestureTypeNone,
@@ -35,6 +36,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface VMDisplayMetalViewController (Gestures)
 
+@property (nonatomic, readonly) SendButtonType mouseButtonDown;
 @property (nonatomic, readonly) VMGestureType longPressType;
 @property (nonatomic, readonly) VMGestureType twoFingerTapType;
 @property (nonatomic, readonly) VMGestureType twoFingerPanType;

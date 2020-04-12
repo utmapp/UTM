@@ -24,6 +24,7 @@
 @class VMCursor;
 @class VMKeyboardView;
 @class VMKeyboardButton;
+@class GCController;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -32,7 +33,9 @@ NS_ASSUME_NONNULL_BEGIN
     
     // cursor handling
     CGPoint _lastTwoPanOrigin;
-    BOOL _mouseDown;
+    BOOL _mouseLeftDown;
+    BOOL _mouseRightDown;
+    BOOL _mouseMiddleDown;
     UIDynamicAnimator *_animator;
     VMCursor *_cursor;
     
@@ -48,6 +51,9 @@ NS_ASSUME_NONNULL_BEGIN
     UITapGestureRecognizer *_twoTap;
     UILongPressGestureRecognizer *_longPress;
     UIPinchGestureRecognizer *_pinch;
+    
+    //Gamepad
+    GCController *_controller;
     
     // Feedback generators
     UISelectionFeedbackGenerator *_clickFeedbackGenerator;
