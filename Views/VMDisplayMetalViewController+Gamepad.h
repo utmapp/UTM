@@ -15,14 +15,11 @@
 //
 
 #import "VMDisplayMetalViewController.h"
-#import "CSInput.h"
 @import GameController;
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface VMDisplayMetalViewController (Gamepad)
-
-@property (nonatomic, readonly) SendButtonType mouseButtonDown;
 
 - (void)initGamepad;
 

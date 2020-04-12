@@ -88,6 +88,22 @@
     _resizeFeedbackGenerator = [[UIImpactFeedbackGenerator alloc] init];
 }
 
+#pragma mark - Properties from instance
+
+- (SendButtonType)mouseButtonDown {
+    SendButtonType button = SEND_BUTTON_NONE;
+    if (_mouseLeftDown) {
+        button |= SEND_BUTTON_LEFT;
+    }
+    if (_mouseRightDown) {
+        button |= SEND_BUTTON_RIGHT;
+    }
+    if (_mouseMiddleDown) {
+        button |= SEND_BUTTON_MIDDLE;
+    }
+    return button;
+}
+
 #pragma mark - Properties from settings
 
 - (VMGestureType)gestureTypeForSetting:(NSString *)key {
@@ -294,7 +310,7 @@ static CGFloat CGPointToPixel(CGFloat point) {
     translated.y = CGPointToPixel(translated.y);
     translated = [self clipCursorToDisplay:translated];
     if (!self.vmInput.serverModeCursor) {
-        [self.vmInput sendMouseMotion:(_mouseDown ? SEND_BUTTON_LEFT : SEND_BUTTON_NONE) point:translated];
+        [self.vmInput sendMouseMotion:self.mouseButtonDown point:translated];
         [self.vmInput forceCursorPosition:translated]; // required to show cursor on screen
     } else {
         NSLog(@"Warning: ignored mouse set (%f, %f) while mouse is in server mode", translated.x, translated.y);
@@ -306,7 +322,7 @@ static CGFloat CGPointToPixel(CGFloat point) {
     translation.x = CGPointToPixel(translation.x) / self.vmDisplay.viewportScale;
     translation.y = CGPointToPixel(translation.y) / self.vmDisplay.viewportScale;
     if (self.vmInput.serverModeCursor) {
-        [self.vmInput sendMouseMotion:(_mouseDown ? SEND_BUTTON_LEFT : SEND_BUTTON_NONE) point:translation];
+        [self.vmInput sendMouseMotion:self.mouseButtonDown point:translation];
     } else {
         NSLog(@"Warning: ignored mouse motion (%f, %f) while mouse is in client mode", translation.x, translation.y);
     }
@@ -319,7 +335,7 @@ static CGFloat CGPointToPixel(CGFloat point) {
     }
     [self.vmInput sendMouseButton:button pressed:YES point:CGPointZero];
     [self onDelay:0.05f action:^{
-        self->_mouseDown = NO;
+        self->_mouseLeftDown = NO;
         [self.vmInput sendMouseButton:button pressed:NO point:CGPointZero];
     }];
     [_clickFeedbackGenerator selectionChanged];
@@ -328,10 +344,10 @@ static CGFloat CGPointToPixel(CGFloat point) {
 - (void)dragCursor:(UIGestureRecognizerState)state {
     if (state == UIGestureRecognizerStateBegan) {
         [_clickFeedbackGenerator selectionChanged];
-        _mouseDown = YES;
+        _mouseLeftDown = YES;
         [self.vmInput sendMouseButton:SEND_BUTTON_LEFT pressed:YES point:CGPointZero];
     } else if (state == UIGestureRecognizerStateEnded) {
-        _mouseDown = NO;
+        _mouseLeftDown = NO;
         [self.vmInput sendMouseButton:SEND_BUTTON_LEFT pressed:NO point:CGPointZero];
     }
 }
@@ -388,9 +404,9 @@ static CGFloat CGPointToPixel(CGFloat point) {
     if (sender.state == UIGestureRecognizerStateEnded &&
         self.twoFingerScrollType == VMGestureTypeMouseWheel) {
         if (sender == _swipeScrollUp) {
-            [self.vmInput sendMouseScroll:SEND_SCROLL_UP button:SEND_BUTTON_NONE dy:0];
+            [self.vmInput sendMouseScroll:SEND_SCROLL_UP button:self.mouseButtonDown dy:0];
         } else if (sender == _swipeScrollDown) {
-            [self.vmInput sendMouseScroll:SEND_SCROLL_DOWN button:SEND_BUTTON_NONE dy:0];
+            [self.vmInput sendMouseScroll:SEND_SCROLL_DOWN button:self.mouseButtonDown dy:0];
         } else {
             NSAssert(0, @"Invalid call to gestureSwipeScroll");
         }

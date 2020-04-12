@@ -17,6 +17,7 @@
 #import "UIViewController+Extensions.h"
 #import "VMCursor.h"
 #import "VMDisplayMetalViewController+Gamepad.h"
+#import "VMDisplayMetalViewController+Touch.h"
 #import "CSDisplayMetal.h"
 #import "UTMConfiguration.h"
 #import "UTMConfiguration+Constants.h"
@@ -30,20 +31,6 @@
     for (GCController *controller in [GCController controllers]) {
         [self setupController:controller];
     }
-}
-
-- (SendButtonType)mouseButtonDown {
-    SendButtonType button = SEND_BUTTON_NONE;
-    if (_mouseDown) {
-        button |= SEND_BUTTON_RIGHT;
-    }
-    if (_mouseRightDown) {
-        button |= SEND_BUTTON_LEFT;
-    }
-    if (_mouseMiddleDown) {
-        button |= SEND_BUTTON_MIDDLE;
-    }
-    return button;
 }
 
 #pragma mark - Gamepad connection
@@ -142,7 +129,7 @@
             break;
         case -1:
             [self.vmInput sendMouseButton:SEND_BUTTON_LEFT pressed:isPressed point:CGPointZero];
-            _mouseDown = isPressed;
+            _mouseLeftDown = isPressed;
             break;
         case -3:
             [self.vmInput sendMouseButton:SEND_BUTTON_RIGHT pressed:isPressed point:CGPointZero];

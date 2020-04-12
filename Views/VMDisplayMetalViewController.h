@@ -33,7 +33,9 @@ NS_ASSUME_NONNULL_BEGIN
     
     // cursor handling
     CGPoint _lastTwoPanOrigin;
-    BOOL _mouseDown;
+    BOOL _mouseLeftDown;
+    BOOL _mouseRightDown;
+    BOOL _mouseMiddleDown;
     UIDynamicAnimator *_animator;
     VMCursor *_cursor;
     
@@ -52,8 +54,6 @@ NS_ASSUME_NONNULL_BEGIN
     
     //Gamepad
     GCController *_controller;
-    BOOL _mouseRightDown;
-    BOOL _mouseMiddleDown;
     
     // Feedback generators
     UISelectionFeedbackGenerator *_clickFeedbackGenerator;
