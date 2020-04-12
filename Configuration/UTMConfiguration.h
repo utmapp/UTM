@@ -22,8 +22,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, weak, readonly) NSDictionary *dictRepresentation;
 
-+ (NSDictionary *) stringToScancodeMap;
-
 @property (nonatomic, copy) NSString *name;
 @property (nonatomic, nullable, copy) NSURL *existingPath;
 

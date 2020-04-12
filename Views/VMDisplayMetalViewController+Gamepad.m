@@ -14,9 +14,11 @@
 // limitations under the License.
 //
 
+#import "UIViewController+Extensions.h"
 #import "VMDisplayMetalViewController+Gamepad.h"
 #import "CSDisplayMetal.h"
 #import "UTMConfiguration.h"
+#import "UTMConfiguration+Constants.h"
 
 
 @implementation VMDisplayMetalViewController(Gamepad)
