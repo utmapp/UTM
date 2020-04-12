@@ -161,6 +161,17 @@ function terminalSetup() {
     window.term = term;
 };
 
+function changeFont(fontFamily, fontSize) {
+    const term = new hterm.Terminal();
+    term.getPrefs().set('font-family', fontFamily);
+    term.getPrefs().set('font-size', fontSize);
+}
+
+function setCursorBlink(blink) {
+    const term = new hterm.Terminal();
+    term.getPrefs().set('cursor-blink', blink);
+}
+
 window.onload = function() {
     lib.init(terminalSetup);
 };
