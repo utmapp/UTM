@@ -37,6 +37,7 @@
 
 @implementation CSDisplayMetal {
     SpiceDisplayChannel     *_display;
+    SpiceMainChannel        *_main;
     
     BOOL                    _sigsconnected;
     
@@ -195,6 +196,11 @@ static void cs_channel_new(SpiceSession *s, SpiceChannel *channel, gpointer data
         spice_channel_connect(channel);
         return;
     }
+    
+    if (SPICE_IS_MAIN_CHANNEL(channel)) {
+        self->_main = SPICE_MAIN_CHANNEL(channel);
+        return;
+    }
 }
 
 static void cs_channel_destroy(SpiceSession *s, SpiceChannel *channel, gpointer data) {
@@ -296,7 +302,7 @@ static void cs_channel_destroy(SpiceSession *s, SpiceChannel *channel, gpointer 
                          G_CALLBACK(cs_channel_destroy), GLIB_OBJC_RETAIN(self));
         list = spice_session_get_channels(session);
         for (it = g_list_first(list); it != NULL; it = g_list_next(it)) {
-            if (SPICE_IS_DISPLAY_CHANNEL(it->data)) {
+            if (SPICE_IS_DISPLAY_CHANNEL(it->data) || SPICE_IS_MAIN_CHANNEL(it->data)) {
                 cs_channel_new(session, it->data, (__bridge void *)self);
             }
         }
@@ -393,6 +399,22 @@ static void cs_channel_destroy(SpiceSession *s, SpiceChannel *channel, gpointer 
 
 - (BOOL)visible {
     return self.ready;
+}
+
+- (void)requestResolution:(CGRect)bounds {
+    if (!_main) {
+        NSLog(@"ignoring change resolution because main channel not found");
+        return;
+    }
+    spice_main_channel_update_display_enabled(_main, (int)self.monitorID, TRUE, FALSE);
+    spice_main_channel_update_display(_main,
+                                      (int)self.monitorID,
+                                      bounds.origin.x,
+                                      bounds.origin.y,
+                                      bounds.size.width,
+                                      bounds.size.height,
+                                      TRUE);
+    spice_main_channel_send_monitor_config(_main);
 }
 
 @end
