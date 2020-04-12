@@ -18,13 +18,34 @@
 #import "UTMVirtualMachineDelegate.h"
 #import "UTMSpiceIODelegate.h"
 #import "CSInput.h"
-@import GameController;
 
 @class UTMSpiceIO;
 @class UTMVirtualMachine;
 @class VMCursor;
 @class VMKeyboardView;
 @class VMKeyboardButton;
+@class GCController;
+
+typedef NS_ENUM(NSUInteger, UTMGCButton) {
+    UTMGCButtonMouseLeft,
+    UTMGCButtonMouseRight,
+    UTMGCButtonMouseMiddle,
+    UTMGCButtonMenu,
+    UTMGCButtonOption,
+    UTMGCButtonDpadUp,
+    UTMGCButtonDpadDown,
+    UTMGCButtonDpadLeft,
+    UTMGCButtonDpadRight,
+    UTMGCButtonA,
+    UTMGCButtonB,
+    UTMGCButtonX,
+    UTMGCButtonY,
+    UTMGCButtonShoulderLeft,
+    UTMGCButtonShoulderRight,
+    UTMGCButtonTriggerLeft,
+    UTMGCButtonTriggerRight,
+    UTMGCButtonMax
+};
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -55,23 +76,8 @@ NS_ASSUME_NONNULL_BEGIN
     CGPoint _cursorDirection;
     CGPoint _scrollingDirection;
     NSTimer *_mouseMovementTimer;
-    BOOL _leftMouseButtonDown;
-    BOOL _rightMouseButtonDown;
-    BOOL _middleMouseButtonDown;
-    BOOL _buttonMenuPressed;
-    BOOL _optionButtonPressed;
-    BOOL _dpadUpPressed;
-    BOOL _dpadDownPressed;
-    BOOL _dpadLeftPressed;
-    BOOL _dpadRightPressed;
-    BOOL _buttonAPressed;
-    BOOL _buttonBPressed;
-    BOOL _buttonXPressed;
-    BOOL _buttonYPressed;
-    BOOL _leftShoulderPressed;
-    BOOL _rightShoulderPressed;
-    BOOL _leftTriggerPressed;
-    BOOL _rightTriggerPressed;
+    BOOL _buttonPressed[UTMGCButtonMax];
+    
     // Feedback generators
     UISelectionFeedbackGenerator *_clickFeedbackGenerator;
     UIImpactFeedbackGenerator *_resizeFeedbackGenerator;

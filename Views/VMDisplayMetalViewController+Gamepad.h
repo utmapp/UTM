@@ -15,12 +15,11 @@
 //
 
 #import "VMDisplayMetalViewController.h"
-#import "VMCursor.h"
-#import "CSInput.h"
+@import GameController;
+
 NS_ASSUME_NONNULL_BEGIN
 
 @interface VMDisplayMetalViewController (Gamepad)
-
 
 - (void)initGamepad;
 
