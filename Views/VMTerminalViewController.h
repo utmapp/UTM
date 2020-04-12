@@ -25,7 +25,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface VMTerminalViewController : UIViewController <UTMTerminalDelegate, UTMVirtualMachineDelegate, WKScriptMessageHandler, UIGestureRecognizerDelegate>
+@interface VMTerminalViewController : UIViewController <UTMTerminalDelegate, UTMVirtualMachineDelegate, WKScriptMessageHandler, UIGestureRecognizerDelegate, WKNavigationDelegate>
 
 @property (weak, nonatomic) IBOutlet WKWebView *webView;
 @property (weak, nonatomic) IBOutlet UIView *toolbarAccessoryView;

@@ -16,6 +16,7 @@
 
 #import "VMTerminalViewController.h"
 #import "UTMConfiguration.h"
+#import "UTMConfiguration+Display.h"
 #import "UIViewController+Extensions.h"
 #import "WKWebView+Workarounds.h"
 #import "VMKeyboardView.h"
@@ -81,6 +82,7 @@ NSString* const kVMDebugHandler = @"UTMDebug";
     NSURL* resourceURL = [[NSBundle mainBundle] resourceURL];
     NSURL* indexFile = [resourceURL URLByAppendingPathComponent: @"terminal.html"];
     [_webView loadFileURL: indexFile allowingReadAccessToURL: resourceURL];
+    _webView.navigationDelegate = self;
     
     if (self.largeScreen) {
         self.prefersStatusBarHidden = YES;
@@ -116,6 +118,19 @@ NSString* const kVMDebugHandler = @"UTMDebug";
         NSLog(@"Start location tracking to enable running in background");
         [[UTMLocationManager sharedInstance] startUpdatingLocation];
     }
+}
+
+- (void)webView:(WKWebView *)webView didFinishNavigation:(WKNavigation *)navigation {
+    [self updateSettings];
+}
+
+- (void)updateSettings {
+    [_webView evaluateJavaScript:[NSString stringWithFormat:@"changeFont('%@', %ld);", self.vmConfiguration.consoleFont, self.vmConfiguration.consoleFontSize.integerValue] completionHandler:^(id _Nullable _, NSError * _Nullable error) {
+        NSLog(@"changeFont error: %@", error);
+    }];
+    [_webView evaluateJavaScript:[NSString stringWithFormat:@"setCursorBlink(%@);", self.vmConfiguration.consoleCursorBlink ? @"true" : @"false"] completionHandler:^(id _Nullable _, NSError * _Nullable error) {
+        NSLog(@"setCursorBlink error: %@", error);
+    }];
 }
 
 #pragma mark - Input accessory view
