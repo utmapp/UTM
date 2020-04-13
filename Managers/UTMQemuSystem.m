@@ -295,6 +295,9 @@
             for (NSTextCheckingResult *match in splitArgsArray) {
                 NSRange matchRange = [match rangeAtIndex:1];
                 NSString *argFragment = [arg substringWithRange:matchRange];
+                if ([argFragment hasPrefix:@"\""] && [argFragment hasSuffix:@"\""]) {
+                    argFragment = [argFragment substringWithRange:NSMakeRange(1, argFragment.length-2)];
+                }
                 [self pushArgv:argFragment];
             }
         }
