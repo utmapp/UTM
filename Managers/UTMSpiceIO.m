@@ -202,19 +202,19 @@ const int kMaxConnectionTries = 10; // qemu needs to start spice server first
         if (stale) {
             NSLog(@"bookmark stale, should get new bookmark!");
         }
-        if ([shareURL startAccessingSecurityScopedResource]) {
+        //if ([shareURL startAccessingSecurityScopedResource]) {
             _sharedDirectory = shareURL;
             NSLog(@"setting share directory to %@", shareURL.path);
             [session setSharedDirectory:shareURL.path readOnly:self.configuration.shareDirectoryReadOnly];
-        } else {
-            NSLog(@"failed to access security scope for shared directory, was access revoked?");
-        }
+        //} else {
+        //    NSLog(@"failed to access security scope for shared directory, was access revoked?");
+        //}
     }
 }
 
 - (void)endSharingDirectory:(CSSession *)session {
     if (_sharedDirectory) {
-        [_sharedDirectory stopAccessingSecurityScopedResource];
+        //[_sharedDirectory stopAccessingSecurityScopedResource];
         _sharedDirectory = nil;
         NSLog(@"ended share directory sharing");
     }

@@ -20,8 +20,11 @@
 #import "UTMConfiguration.h"
 #import "UTMConfiguration+Sharing.h"
 #import "VMConfigSwitch.h"
+#import "VMConfigDirectoryPickerViewController.h"
 
 @interface VMConfigSharingViewController ()
+
+@property (nonatomic) NSURL *shareDirectory;
 
 @end
 
@@ -37,10 +40,12 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
+    /* // TODO: re-enable directory picker
     if (cell == self.selectDirectoryCell) {
         [self selectDirectory];
         [tableView deselectRowAtIndexPath:indexPath animated:YES];
     }
+     */
     [super tableView:tableView didSelectRowAtIndexPath:indexPath];
 }
 
@@ -105,11 +110,10 @@
             }
         }
     }
+    self.shareDirectory = bookmark;
 }
 
-- (void)documentPicker:(UIDocumentPickerViewController *)controller didPickDocumentsAtURLs:(NSArray<NSURL *> *)urls {
-    NSAssert(urls.count == 1, @"Invalid picker result");
-    NSURL *url = urls[0];
+- (void)selectURL:(NSURL *)url {
     NSError *err;
     NSData *bookmark = [url bookmarkDataWithOptions:NSURLBookmarkCreationMinimalBookmark
                      includingResourceValuesForKeys:nil
@@ -122,10 +126,33 @@
         self.configuration.shareDirectoryBookmark = bookmark;
         self.configuration.shareDirectoryName = url.lastPathComponent;
     }
+    self.shareDirectory = url;
+}
+
+
+- (void)documentPicker:(UIDocumentPickerViewController *)controller didPickDocumentsAtURLs:(NSArray<NSURL *> *)urls {
+    NSAssert(urls.count == 1, @"Invalid picker result");
+    [self selectURL:urls[0]];
 }
 
 - (void)documentPickerWasCancelled:(UIDocumentPickerViewController *)controller {
     
+}
+
+#pragma mark - Directory picker (sandboxed)
+
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
+    if ([segue.identifier isEqualToString:@"selectDirectorySegue"]) {
+        NSAssert([segue.destinationViewController isKindOfClass:[VMConfigDirectoryPickerViewController class]], @"Invalid segue destination");
+        VMConfigDirectoryPickerViewController *destination = (VMConfigDirectoryPickerViewController *)segue.destinationViewController;
+        destination.selectedDirectory = self.shareDirectory;
+    }
+}
+
+- (IBAction)unwindToShareViewFromDirectoryPicker:(UIStoryboardSegue*)sender {
+    NSAssert([sender.sourceViewController isKindOfClass:[VMConfigDirectoryPickerViewController class]], @"Invalid segue destination");
+    VMConfigDirectoryPickerViewController *source = (VMConfigDirectoryPickerViewController *)sender.sourceViewController;
+    [self selectURL:source.selectedDirectory];
 }
 
 @end

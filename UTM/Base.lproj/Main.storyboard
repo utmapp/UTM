@@ -799,7 +799,7 @@
                                         <rect key="frame" x="0.0" y="1164.6666641235352" width="375" height="43.5"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="j6I-2Z-fbN" id="c2f-Os-4HK">
-                                            <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="43.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="Font Size" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="KSo-te-FQs">
@@ -3054,7 +3054,7 @@
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="DZc-Sg-gjO" userLabel="First Responder" sceneMemberID="firstResponder"/>
-                <view contentMode="scaleToFill" ambiguous="YES" id="H7m-pq-dCg" customClass="UIInputView">
+                <view contentMode="scaleToFill" id="H7m-pq-dCg" customClass="UIInputView">
                     <rect key="frame" x="0.0" y="0.0" width="1000" height="68"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     <subviews>
@@ -3168,7 +3168,7 @@
                                 <action selector="keyboardPastePressed:" destination="ckC-eO-gxn" eventType="touchUpInside" id="hAG-23-YnR"/>
                             </connections>
                         </button>
-                        <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" ambiguous="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2BY-mt-E6G">
+                        <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2BY-mt-E6G">
                             <rect key="frame" x="160" y="0.0" width="756" height="68"/>
                             <subviews>
                                 <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="p57-ic-h8k">
@@ -4287,6 +4287,55 @@
             </objects>
             <point key="canvasLocation" x="6341.6000000000004" y="546.79802955665025"/>
         </scene>
+        <!--Select Directory-->
+        <scene sceneID="MOw-GW-coI">
+            <objects>
+                <tableViewController id="Yz5-FX-4h4" customClass="VMConfigDirectoryPickerViewController" sceneMemberID="viewController">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" id="Rur-Lp-sBN">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="758"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                        <prototypes>
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="directoryItemCell" textLabel="4Xf-3m-yzE" style="IBUITableViewCellStyleDefault" id="RXk-jd-65o">
+                                <rect key="frame" x="0.0" y="28" width="375" height="43.666667938232422"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="RXk-jd-65o" id="62B-6J-VDY">
+                                    <rect key="frame" x="0.0" y="0.0" width="375" height="43.666667938232422"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <subviews>
+                                        <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="Title" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="4Xf-3m-yzE">
+                                            <rect key="frame" x="16" y="0.0" width="343" height="43.666667938232422"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                            <nil key="textColor"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                    </subviews>
+                                </tableViewCellContentView>
+                            </tableViewCell>
+                        </prototypes>
+                        <connections>
+                            <outlet property="dataSource" destination="Yz5-FX-4h4" id="11N-gR-tLy"/>
+                            <outlet property="delegate" destination="Yz5-FX-4h4" id="w1X-l0-gTb"/>
+                        </connections>
+                    </tableView>
+                    <navigationItem key="navigationItem" title="Select Directory" id="teU-fb-PrK">
+                        <barButtonItem key="rightBarButtonItem" systemItem="add" id="6uo-OY-vRi">
+                            <connections>
+                                <action selector="addButton:" destination="Yz5-FX-4h4" id="ylY-JP-Sjn"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
+                    <connections>
+                        <outlet property="addButtonItem" destination="6uo-OY-vRi" id="QFF-zw-b91"/>
+                        <segue destination="u6z-BN-Yej" kind="unwind" identifier="returnToShareSegue" unwindAction="unwindToShareViewFromDirectoryPicker:" id="m0k-WV-sLR"/>
+                    </connections>
+                </tableViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="WOo-PO-GpD" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+                <exit id="u6z-BN-Yej" userLabel="Exit" sceneMemberID="exit"/>
+            </objects>
+            <point key="canvasLocation" x="4788" y="1247"/>
+        </scene>
         <!--Sharing-->
         <scene sceneID="KwH-8W-rLT">
             <objects>
@@ -4424,6 +4473,9 @@
                                         <userDefinedRuntimeAttributes>
                                             <userDefinedRuntimeAttribute type="string" keyPath="configurationPath" value="shareDirectoryName"/>
                                         </userDefinedRuntimeAttributes>
+                                        <connections>
+                                            <segue destination="Yz5-FX-4h4" kind="show" identifier="selectDirectorySegue" id="hME-r1-7df"/>
+                                        </connections>
                                     </tableViewCell>
                                 </cells>
                             </tableViewSection>
