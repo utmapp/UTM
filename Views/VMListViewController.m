@@ -97,7 +97,9 @@
     NSArray<NSURL *> *files = [[NSFileManager defaultManager] contentsOfDirectoryAtURL:self.documentsPath includingPropertiesForKeys:@[NSURLIsDirectoryKey] options:NSDirectoryEnumerationSkipsHiddenFiles error:nil];
     NSMutableArray<UTMVirtualMachine *> *vms = [[NSMutableArray alloc] initWithCapacity:files.count];
     for (NSURL *file in files) {
-        if ([UTMVirtualMachine URLisVirtualMachine:file]) {
+        NSNumber *isDir;
+        [file getResourceValue:&isDir forKey:NSURLIsDirectoryKey error:nil];
+        if ([isDir boolValue] && [UTMVirtualMachine URLisVirtualMachine:file]) {
             UTMVirtualMachine *vm = [[UTMVirtualMachine alloc] initWithURL:file];
             if (vm) {
                 [vms addObject:vm];
