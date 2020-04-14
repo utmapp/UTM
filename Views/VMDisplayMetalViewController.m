@@ -244,14 +244,12 @@
 #pragma mark - Helper Functions
 
 - (void)sendExtendedKey:(SendKeyType)type code:(int)code {
-    uint32_t x = __builtin_bswap32(code);
-    while ((x & 0xFF) == 0) {
-        x = x >> 8;
+    if ((code & 0xFF00) == 0xE000) {
+        code = 0x100 | (code & 0xFF);
+    } else if (code >= 0x100) {
+        NSLog(@"warning: ignored invalid keycode 0x%x", code);
     }
-    while (x) {
-        [self.vmInput sendKey:type code:(x & 0xFF)];
-        x = x >> 8;
-    }
+    [self.vmInput sendKey:type code:code];
 }
 
 #pragma mark - Toolbar actions
