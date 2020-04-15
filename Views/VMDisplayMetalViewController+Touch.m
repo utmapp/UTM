@@ -63,12 +63,15 @@
     _threePan.delegate = self;
     _tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(gestureTap:)];
     _tap.delegate = self;
+    _tap.allowedTouchTypes = @[ @(UITouchTypeDirect) ];
     _tap.cancelsTouchesInView = NO;
     _twoTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(gestureTwoTap:)];
     _twoTap.numberOfTouchesRequired = 2;
     _twoTap.delegate = self;
+    _twoTap.allowedTouchTypes = @[ @(UITouchTypeDirect) ];
     _longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(gestureLongPress:)];
     _longPress.delegate = self;
+    _longPress.allowedTouchTypes = @[ @(UITouchTypeDirect) ];
     _pinch = [[UIPinchGestureRecognizer alloc] initWithTarget:self action:@selector(gesturePinch:)];
     _pinch.delegate = self;
     [self.mtkView addGestureRecognizer:_swipeUp];
