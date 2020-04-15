@@ -57,12 +57,6 @@
         // this is required for virt devices
         [self pushArgv:@"-device"];
         [self pushArgv:@"virtio-gpu-pci"];
-        [self pushArgv:@"-device"];
-        [self pushArgv:@"usb-ehci"];
-        [self pushArgv:@"-device"];
-        [self pushArgv:@"usb-mouse"];
-        [self pushArgv:@"-device"];
-        [self pushArgv:@"usb-kbd"];
         for (NSUInteger i = 0; i < self.configuration.countDrives; i++) {
             UTMDiskImageType type = [self.configuration driveImageTypeForIndex:i];
             if (type == UTMDiskImageTypeDisk || type == UTMDiskImageTypeCD) {
@@ -259,6 +253,10 @@
         [self pushArgv:@"usb-ehci"];
         [self pushArgv:@"-device"];
         [self pushArgv:@"usb-tablet"];
+        [self pushArgv:@"-device"];
+        [self pushArgv:@"usb-mouse"];
+        [self pushArgv:@"-device"];
+        [self pushArgv:@"usb-kbd"];
     }
     if (self.snapshot) {
         [self pushArgv:@"-loadvm"];
