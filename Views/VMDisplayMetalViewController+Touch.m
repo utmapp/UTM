@@ -285,7 +285,7 @@ static CGFloat CGPointToPixel(CGFloat point) {
             [self moveScreen:sender];
             break;
         case VMGestureTypeDragCursor:
-            [self dragCursor:sender.state];
+            [self dragCursor:sender.state primary:YES secondary:NO];
             [self moveMouseWithInertia:sender];
             break;
         default:
@@ -299,7 +299,7 @@ static CGFloat CGPointToPixel(CGFloat point) {
             [self moveScreen:sender];
             break;
         case VMGestureTypeDragCursor:
-            [self dragCursor:sender.state];
+            [self dragCursor:sender.state primary:YES secondary:NO];
             [self moveMouseWithInertia:sender];
             break;
         default:
@@ -339,19 +339,27 @@ static CGFloat CGPointToPixel(CGFloat point) {
     [self.vmInput sendMouseButton:button pressed:YES point:CGPointZero];
     [self onDelay:0.05f action:^{
         self->_mouseLeftDown = NO;
+        self->_mouseRightDown = NO;
+        self->_mouseMiddleDown = NO;
         [self.vmInput sendMouseButton:button pressed:NO point:CGPointZero];
     }];
     [_clickFeedbackGenerator selectionChanged];
 }
 
-- (void)dragCursor:(UIGestureRecognizerState)state {
+- (void)dragCursor:(UIGestureRecognizerState)state primary:(BOOL)primary secondary:(BOOL)secondary {
     if (state == UIGestureRecognizerStateBegan) {
         [_clickFeedbackGenerator selectionChanged];
-        _mouseLeftDown = YES;
-        [self.vmInput sendMouseButton:SEND_BUTTON_LEFT pressed:YES point:CGPointZero];
+        if (primary) {
+            _mouseLeftDown = YES;
+        }
+        if (secondary) {
+            _mouseRightDown = YES;
+        }
+        [self.vmInput sendMouseButton:self.mouseButtonDown pressed:YES point:CGPointZero];
     } else if (state == UIGestureRecognizerStateEnded) {
         _mouseLeftDown = NO;
-        [self.vmInput sendMouseButton:SEND_BUTTON_LEFT pressed:NO point:CGPointZero];
+        _mouseRightDown = NO;
+        [self.vmInput sendMouseButton:self.mouseButtonDown pressed:NO point:CGPointZero];
     }
 }
 
@@ -374,7 +382,7 @@ static CGFloat CGPointToPixel(CGFloat point) {
         self.longPressType == VMGestureTypeRightClick) {
         [self mouseClick:SEND_BUTTON_RIGHT location:[sender locationInView:sender.view]];
     } else if (self.longPressType == VMGestureTypeDragCursor) {
-        [self dragCursor:sender.state];
+        [self dragCursor:sender.state primary:YES secondary:NO];
     }
 }
 
@@ -535,12 +543,20 @@ static CGFloat CGPointToPixel(CGFloat point) {
         for (UITouch *touch in [event touchesForView:self.mtkView]) {
             VMMouseType type = [self touchTypeToMouseType:touch.type];
             if ([self switchMouseType:type]) {
-                [self dragCursor:UIGestureRecognizerStateEnded]; // reset drag
+                [self dragCursor:UIGestureRecognizerStateEnded primary:YES secondary:YES]; // reset drag
             } else if (!self.vmInput.serverModeCursor) { // start click for client mode
+                BOOL primary = YES;
+                BOOL secondary = NO;
                 CGPoint pos = [touch locationInView:self.mtkView];
+                if (@available(iOS 13.4, *)) {
+                    if (touch.type == UITouchTypeIndirectPointer) {
+                        primary = (event.buttonMask & UIEventButtonMaskPrimary) != 0;
+                        secondary = (event.buttonMask & UIEventButtonMaskSecondary) != 0;
+                    }
+                }
                 [_cursor startMovement:pos];
                 [_cursor updateMovement:pos];
-                [self dragCursor:UIGestureRecognizerStateBegan];
+                [self dragCursor:UIGestureRecognizerStateBegan primary:primary secondary:secondary];
             }
             break; // handle a single touch only
         }
@@ -562,7 +578,7 @@ static CGFloat CGPointToPixel(CGFloat point) {
 - (void)touchesCancelled:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
     // release click in client mode, in server mode we handle in gesturePan
     if (!self.vmConfiguration.inputLegacy && !self.vmInput.serverModeCursor) {
-        [self dragCursor:UIGestureRecognizerStateEnded];
+        [self dragCursor:UIGestureRecognizerStateEnded primary:YES secondary:YES];
     }
     [super touchesCancelled:touches withEvent:event];
 }
@@ -570,7 +586,7 @@ static CGFloat CGPointToPixel(CGFloat point) {
 - (void)touchesEnded:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
     // release click in client mode, in server mode we handle in gesturePan
     if (!self.vmConfiguration.inputLegacy && !self.vmInput.serverModeCursor) {
-        [self dragCursor:UIGestureRecognizerStateEnded];
+        [self dragCursor:UIGestureRecognizerStateEnded primary:YES secondary:YES];
     }
     [super touchesEnded:touches withEvent:event];
 }
