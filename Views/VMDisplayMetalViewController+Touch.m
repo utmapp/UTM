@@ -416,6 +416,8 @@ static CGFloat CGPointToPixel(CGFloat point) {
     }
 }
 
+#pragma mark - UIGestureRecognizerDelegate
+
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRequireFailureOfGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
     if (gestureRecognizer == _twoPan && otherGestureRecognizer == _swipeUp) {
         return YES;
@@ -476,6 +478,15 @@ static CGFloat CGPointToPixel(CGFloat point) {
         return YES;
     } else {
         return NO;
+    }
+}
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveEvent:(UIEvent *)event API_AVAILABLE(ios(13.4)) {
+    if (event.type == UIEventTypeTransform) {
+        NSLog(@"ignoring UIEventTypeTransform");
+        return NO;
+    } else {
+        return YES;
     }
 }
 

@@ -34,7 +34,7 @@ typedef NS_ENUM(NSInteger, VMMouseType) {
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface VMDisplayMetalViewController (Gestures)
+@interface VMDisplayMetalViewController (Gestures) <UIGestureRecognizerDelegate>
 
 @property (nonatomic, readonly) SendButtonType mouseButtonDown;
 @property (nonatomic, readonly) VMGestureType longPressType;

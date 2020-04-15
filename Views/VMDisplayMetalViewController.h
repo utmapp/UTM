@@ -28,7 +28,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface VMDisplayMetalViewController : UIViewController<UTMVirtualMachineDelegate, UTMSpiceIODelegate, UIGestureRecognizerDelegate> {
+@interface VMDisplayMetalViewController : UIViewController<UTMVirtualMachineDelegate, UTMSpiceIODelegate> {
     NSMutableArray<UIKeyCommand *> *_keyCommands;
     
     // cursor handling
