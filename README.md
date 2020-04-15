@@ -28,7 +28,7 @@ Make sure you have cloned with submodules `git submodule update --init --recursi
 
 ### Easy
 
-The recommended way to obtain the dependencies is to use the built artifacts from [Github Actions][1]. Look for the latest build and download the Sysroot artifact from either the arm64 build (for iOS) or x86_64 build (for iOS Simulator). Then unzip the artifact to the root directory of UTM. You can then open `UTM.xcodeproj`, select your signing certificate, and then run UTM from Xcode.
+The recommended way to obtain the dependencies is to use the built artifacts from [Github Actions][5]. Look for the latest release build and download the Sysroot artifact from either the arm64 build (for iOS) or x86_64 build (for iOS Simulator). Then unzip the artifact to the root directory of UTM. You can then open `UTM.xcodeproj`, select your signing certificate, and then run UTM from Xcode.
 
 ### Advanced
 
@@ -82,3 +82,4 @@ UTM is distributed under the permissive Apache 2.0 license. However, it uses sev
   [2]: https://dantheman827.github.io/ios-app-signer/
   [3]: https://github.com/utmapp/UTM/releases
   [4]: screen.png
+  [5]: https://github.com/utmapp/UTM/actions?query=workflow%3ABuild+event%3Arelease+is%3Asuccess
