@@ -16,6 +16,7 @@
 
 #import "UIViewController+Extensions.h"
 #import "VMCursor.h"
+#import "VMMouseWheel.h"
 #import "VMDisplayMetalViewController+Gamepad.h"
 #import "VMDisplayMetalViewController+Touch.h"
 #import "CSDisplayMetal.h"
@@ -31,6 +32,7 @@
     for (GCController *controller in [GCController controllers]) {
         [self setupController:controller];
     }
+    _mouseWheel = [[VMMouseWheel alloc] initWithVMViewController:self];
 }
 
 #pragma mark - Gamepad connection
@@ -104,8 +106,14 @@
     
     gamepad.leftThumbstick.valueChangedHandler = ^(GCControllerDirectionPad * _Nonnull dpad, float xValue, float yValue) {
         VMDisplayMetalViewController *s = _self;
-        
-       
+        [s ->_animator removeAllBehaviors];
+        CGPoint velocity = CGPointMake(xValue , yValue);
+        if (yValue != 0) {
+            UIDynamicItemBehavior *behavior = [[UIDynamicItemBehavior alloc] initWithItems:@[s -> _mouseWheel ]];
+            [behavior addLinearVelocity:velocity forItem:s ->_mouseWheel];
+            behavior.resistance = 0;
+            [s ->_animator addBehavior:behavior];
+        }
     };
     
     gamepad.rightThumbstick.valueChangedHandler = ^(GCControllerDirectionPad * _Nonnull dpad, float xValue, float yValue) {

@@ -18,6 +18,7 @@
 #import "UTMVirtualMachineDelegate.h"
 #import "UTMSpiceIODelegate.h"
 #import "CSInput.h"
+#import "VMMouseWheel.h"
 
 @class UTMSpiceIO;
 @class UTMVirtualMachine;
@@ -38,6 +39,8 @@ NS_ASSUME_NONNULL_BEGIN
     BOOL _mouseMiddleDown;
     UIDynamicAnimator *_animator;
     VMCursor *_cursor;
+    VMMouseWheel *_mouseWheel;
+    
     
     // Gestures
     UISwipeGestureRecognizer *_swipeUp;

@@ -10,6 +10,7 @@
 		423BCE66240F6A80001989AC /* VMConfigSystemArgumentsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 423BCE65240F6A80001989AC /* VMConfigSystemArgumentsViewController.m */; };
 		521F3EF92414F73800130500 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 521F3EFB2414F73800130500 /* Localizable.strings */; };
 		52459A332440C84E006A58D0 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 52459A312440C84E006A58D0 /* InfoPlist.strings */; };
+		52861D932446F668005F2146 /* VMMouseWheel.m in Sources */ = {isa = PBXBuildFile; fileRef = 52861D922446F668005F2146 /* VMMouseWheel.m */; };
 		5286EC902437488E007E6CBC /* VMDisplayMetalViewController+Gamepad.m in Sources */ = {isa = PBXBuildFile; fileRef = 5286EC8F2437488E007E6CBC /* VMDisplayMetalViewController+Gamepad.m */; };
 		5286EC92243748AC007E6CBC /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 5286EC91243748AC007E6CBC /* Settings.bundle */; };
 		5286EC95243748C3007E6CBC /* VMDisplayMetalViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5286EC94243748C3007E6CBC /* VMDisplayMetalViewController.m */; };
@@ -425,6 +426,8 @@
 		521F3EFA2414F73800130500 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		52459A322440C84E006A58D0 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
 		525535A1241B8A52003C80FC /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Main.strings"; sourceTree = "<group>"; };
+		52861D912446F668005F2146 /* VMMouseWheel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VMMouseWheel.h; sourceTree = "<group>"; };
+		52861D922446F668005F2146 /* VMMouseWheel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VMMouseWheel.m; sourceTree = "<group>"; };
 		5286EC8E2437488E007E6CBC /* VMDisplayMetalViewController+Gamepad.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "VMDisplayMetalViewController+Gamepad.h"; sourceTree = "<group>"; };
 		5286EC8F2437488E007E6CBC /* VMDisplayMetalViewController+Gamepad.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "VMDisplayMetalViewController+Gamepad.m"; sourceTree = "<group>"; };
 		5286EC91243748AC007E6CBC /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
@@ -1512,6 +1515,8 @@
 				E28394C0240C268A006742E2 /* VMTerminalViewController.m */,
 				CE3ADD682411C661002D6A5F /* VMCursor.h */,
 				CE3ADD692411C661002D6A5F /* VMCursor.m */,
+				52861D912446F668005F2146 /* VMMouseWheel.h */,
+				52861D922446F668005F2146 /* VMMouseWheel.m */,
 				5286EC93243748C3007E6CBC /* VMDisplayMetalViewController.h */,
 				5286EC94243748C3007E6CBC /* VMDisplayMetalViewController.m */,
 				CE3ADD65240EFBCA002D6A5F /* VMDisplayMetalViewController+Keyboard.h */,
@@ -1818,6 +1823,7 @@
 				CE23C1CF23FCEC0A001177D6 /* qapi-types-machine.c in Sources */,
 				CE23C1AA23FCEC0A001177D6 /* qapi-commands-transaction.c in Sources */,
 				CE5F165C2261395000F3D56B /* UTMVirtualMachine.m in Sources */,
+				52861D932446F668005F2146 /* VMMouseWheel.m in Sources */,
 				CE23C17523FCEC0A001177D6 /* qapi-events-qom.c in Sources */,
 				CE23C16F23FCEC0A001177D6 /* qapi-commands-migration.c in Sources */,
 				CE23C1C823FCEC0A001177D6 /* qapi-visit-misc-target.c in Sources */,
