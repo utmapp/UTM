@@ -46,8 +46,6 @@
     // a controller was disconnected
     GCController *controller = (GCController *)notification.object;
     NSLog(@"Controller disconnected: %@", controller.vendorName);
-    [_gamepadMouseTimer invalidate];
-    _gamepadMouseTimer = nil;
 }
 
 - (void)setupController:(GCController *)controller {
@@ -106,13 +104,25 @@
     
     gamepad.leftThumbstick.valueChangedHandler = ^(GCControllerDirectionPad * _Nonnull dpad, float xValue, float yValue) {
         VMDisplayMetalViewController *s = _self;
-        s -> _gamepadleftStickY = yValue;
+        
+       
     };
     
     gamepad.rightThumbstick.valueChangedHandler = ^(GCControllerDirectionPad * _Nonnull dpad, float xValue, float yValue) {
         VMDisplayMetalViewController *s = _self;
-        s -> _gamepadRightStickX = xValue;
-        s -> _gamepadRightStickY = yValue;
+        [s ->_animator removeAllBehaviors];
+        NSInteger speed = [self integerForSetting:@"GCThumbstickRightSpeed"];
+        CGPoint center = s -> _cursor.center;
+        CGPoint velocity = CGPointMake(xValue * speed , -yValue * speed);
+        if (xValue !=0 || yValue != 0) {
+            [s ->_cursor startMovement:center];
+            UIDynamicItemBehavior *behavior = [[UIDynamicItemBehavior alloc] initWithItems:@[s -> _cursor ]];
+            [behavior addLinearVelocity:velocity forItem:s ->_cursor];
+            behavior.resistance = 0;
+            [s ->_animator addBehavior:behavior];
+        } else {
+           [s -> _cursor updateMovement:center];
+        }
     };
     
     if (@available(iOS 13.0, *)) {
@@ -121,23 +131,9 @@
         };
     }
     
-    if (!_gamepadMouseTimer) {
-        _gamepadMouseTimer = [NSTimer scheduledTimerWithTimeInterval:0.016 target:self selector:@selector(mouseThread) userInfo:nil repeats:YES];
-    }
     
 }
 
-- (void)mouseThread {
-    if (_gamepadRightStickY != 0 || _gamepadRightStickX != 0) {
-        CGPoint center = _cursor.center;
-        NSInteger speed = [self integerForSetting:@"GCThumbstickRightSpeed"];
-        [_cursor startMovement:center];
-        [_cursor updateMovement:CGPointMake(center.x + _gamepadRightStickX * speed, center.y - _gamepadRightStickY * speed)];
-    }
-    if (_gamepadleftStickY != 0) {
-        [self.vmInput sendMouseScroll:_gamepadleftStickY > 0 ? SEND_SCROLL_UP : SEND_SCROLL_DOWN button: self.mouseButtonDown dy:0];
-    }
-}
 
 - (void)gamepadButton:(NSString *)identifier pressed:(BOOL)isPressed {
     NSInteger value = [self integerForSetting:identifier];

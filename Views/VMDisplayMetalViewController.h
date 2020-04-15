@@ -54,11 +54,6 @@ NS_ASSUME_NONNULL_BEGIN
     
     //Gamepad
     GCController *_controller;
-    NSTimer *_gamepadMouseTimer;
-    float _gamepadLeftStickX;
-    float _gamepadleftStickY;
-    float _gamepadRightStickX;
-    float _gamepadRightStickY;
     
     
     // Feedback generators
