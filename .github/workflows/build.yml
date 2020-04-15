@@ -50,10 +50,12 @@ jobs:
           rm -f /usr/local/lib/pkgconfig/*.pc
           ./scripts/build_dependencies.sh -a ${{ matrix.arch }}
       - name: Compress Sysroot
+        if: steps.cache-sysroot.outputs.cache-hit != 'true'
         run: |
           mkdir sysroot_tar
           tar cf sysroot_tar/sysroot.tgz sysroot-${{ matrix.arch }}
       - name: Upload Sysroot
+        if: steps.cache-sysroot.outputs.cache-hit != 'true'
         uses: actions/upload-artifact@v1
         with:
           name: Sysroot-${{ matrix.arch }}

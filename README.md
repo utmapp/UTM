@@ -78,7 +78,7 @@ Apple does not permit any apps that have interpreted or generated code therefore
 
 UTM is distributed under the permissive Apache 2.0 license. However, it uses several (L)GPL components. Most are dynamically linked but the gstreamer plugins are statically linked and parts of the code are taken from qemu. Please be aware of this if you intend on redistributing this application.
 
-  [1]: https://github.com/utmapp/UTM/actions?query=workflow%3ABuild
+  [1]: https://github.com/utmapp/UTM/actions?query=event%3Arelease+workflow%3ABuild
   [2]: https://dantheman827.github.io/ios-app-signer/
   [3]: https://github.com/utmapp/UTM/releases
   [4]: screen.png
