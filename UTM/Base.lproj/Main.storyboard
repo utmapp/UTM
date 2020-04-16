@@ -4546,10 +4546,46 @@
                                     </tableViewCell>
                                 </cells>
                             </tableViewSection>
+                            <tableViewSection headerTitle="Mouse Wheel" id="lFm-mY-36G">
+                                <cells>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" id="tND-IK-E7g">
+                                        <rect key="frame" x="0.0" y="183.33333206176758" width="375" height="44"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="tND-IK-E7g" id="1ON-M8-uV3">
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Invert Mouse Scroll" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="AFA-AV-g09">
+                                                    <rect key="frame" x="16" y="11.666666666666664" width="147" height="21"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                                <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="F5H-kA-h1O" customClass="VMConfigSwitch">
+                                                    <rect key="frame" x="310" y="6.6666666666666679" width="51" height="31.000000000000004"/>
+                                                    <userDefinedRuntimeAttributes>
+                                                        <userDefinedRuntimeAttribute type="string" keyPath="configurationPath" value="inputScrollInvert"/>
+                                                    </userDefinedRuntimeAttributes>
+                                                    <connections>
+                                                        <action selector="configSwitchChanged:" destination="5Cr-yW-csz" eventType="valueChanged" id="mW5-nI-Nf9"/>
+                                                    </connections>
+                                                </switch>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstItem="F5H-kA-h1O" firstAttribute="trailing" secondItem="1ON-M8-uV3" secondAttribute="trailingMargin" id="LZh-Qh-zLI"/>
+                                                <constraint firstItem="F5H-kA-h1O" firstAttribute="centerY" secondItem="1ON-M8-uV3" secondAttribute="centerY" id="Ogw-98-yR4"/>
+                                                <constraint firstItem="AFA-AV-g09" firstAttribute="centerY" secondItem="1ON-M8-uV3" secondAttribute="centerY" id="TyK-9a-jQd"/>
+                                                <constraint firstItem="AFA-AV-g09" firstAttribute="leading" secondItem="1ON-M8-uV3" secondAttribute="leadingMargin" id="qkY-Ds-G8s"/>
+                                                <constraint firstItem="F5H-kA-h1O" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="AFA-AV-g09" secondAttribute="trailing" constant="8" symbolic="YES" id="vZH-fk-sf6"/>
+                                            </constraints>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
+                                </cells>
+                            </tableViewSection>
                             <tableViewSection headerTitle="Additional Options" id="hjJ-kU-VR1">
                                 <cells>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" accessoryType="disclosureIndicator" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" textLabel="PYT-mF-w3w" style="IBUITableViewCellStyleDefault" id="Wy9-zW-xLY">
-                                        <rect key="frame" x="0.0" y="183.33333206176758" width="375" height="44"/>
+                                        <rect key="frame" x="0.0" y="283.33333206176758" width="375" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="Wy9-zW-xLY" id="yUN-HI-j3r">
                                             <rect key="frame" x="0.0" y="0.0" width="348" height="44"/>
@@ -4577,6 +4613,7 @@
                     <connections>
                         <outlet property="openSettingsCell" destination="Wy9-zW-xLY" id="QmO-gS-6Go"/>
                         <outletCollection property="configControls" destination="1iw-Js-hQc" id="LHY-2H-OCh"/>
+                        <outletCollection property="configControls" destination="F5H-kA-h1O" id="TLX-6i-pEH"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="fxK-8x-htX" userLabel="First Responder" sceneMemberID="firstResponder"/>
