@@ -18,11 +18,14 @@
 #import "VMDisplayMetalViewController.h"
 #import "VMDisplayMetalViewController+Touch.h"
 #import "VMCursor.h"
+#import "VMScroll.h"
 #import "CSDisplayMetal.h"
 #import "UTMConfiguration.h"
 #import "UTMConfiguration+Miscellaneous.h"
 #import "UTMSpiceIO.h"
 #import "UTMVirtualMachine.h"
+
+const CGFloat kScrollSpeedReduction = 100.0f;
 
 @implementation VMDisplayMetalViewController (Gestures)
 
@@ -30,6 +33,7 @@
     // mouse cursor
     _animator = [[UIDynamicAnimator alloc] initWithReferenceView:self.view];
     _cursor = [[VMCursor alloc] initWithVMViewController:self];
+    _scroll = [[VMScroll alloc] initWithVMViewController:self];
     
     // Set up gesture recognizers because Storyboards is BROKEN and doing it there crashes!
     _swipeUp = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(gestureSwipeUp:)];
@@ -257,6 +261,24 @@ static CGFloat CGPointToPixel(CGFloat point) {
     }
 }
 
+- (void)scrollWithInertia:(UIPanGestureRecognizer *)sender {
+    CGPoint location = [sender locationInView:sender.view];
+    CGPoint velocity = [sender velocityInView:sender.view];
+    if (sender.state == UIGestureRecognizerStateBegan) {
+        [_scroll startMovement:location];
+        [_animator removeAllBehaviors];
+    }
+    if (sender.state != UIGestureRecognizerStateCancelled) {
+        [_scroll updateMovement:location];
+    }
+    if (sender.state == UIGestureRecognizerStateEnded) {
+        UIDynamicItemBehavior *behavior = [[UIDynamicItemBehavior alloc] initWithItems:@[ _scroll ]];
+        [behavior addLinearVelocity:velocity forItem:_scroll];
+        behavior.resistance = 10;
+        [_animator addBehavior:behavior];
+    }
+}
+
 - (IBAction)gesturePan:(UIPanGestureRecognizer *)sender {
     if (self.serverModeCursor) {  // otherwise we handle in touchesMoved
         [self moveMouseWithInertia:sender];
@@ -329,6 +351,15 @@ static CGFloat CGPointToPixel(CGFloat point) {
     } else {
         NSLog(@"Warning: ignored mouse motion (%f, %f) while mouse is in client mode", translation.x, translation.y);
     }
+    return translation;
+}
+
+- (CGPoint)moveMouseScroll:(CGPoint)translation {
+    translation.y = CGPointToPixel(translation.y) / kScrollSpeedReduction;
+    if (0) {
+        translation.y = -translation.y;
+    }
+    [self.vmInput sendMouseScroll:SEND_SCROLL_SMOOTH button:self.mouseButtonDown dy:translation.y];
     return translation;
 }
 

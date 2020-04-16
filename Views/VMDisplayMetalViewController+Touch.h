@@ -51,6 +51,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (CGPoint)clipCursorToDisplay:(CGPoint)pos;
 - (CGPoint)moveMouseAbsolute:(CGPoint)location;
 - (CGPoint)moveMouseRelative:(CGPoint)translation;
+- (CGPoint)moveMouseScroll:(CGPoint)translation;
+- (void)scrollWithInertia:(UIPanGestureRecognizer *)sender;
 
 - (IBAction)gesturePan:(UIPanGestureRecognizer *)sender;
 - (IBAction)gestureTwoPan:(UIPanGestureRecognizer *)sender;

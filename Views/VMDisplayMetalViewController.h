@@ -22,6 +22,7 @@
 @class UTMSpiceIO;
 @class UTMVirtualMachine;
 @class VMCursor;
+@class VMScroll;
 @class VMKeyboardView;
 @class VMKeyboardButton;
 @class GCController;
@@ -38,6 +39,7 @@ NS_ASSUME_NONNULL_BEGIN
     BOOL _mouseMiddleDown;
     UIDynamicAnimator *_animator;
     VMCursor *_cursor;
+    VMScroll *_scroll;
     
     // Gestures
     UISwipeGestureRecognizer *_swipeUp;
