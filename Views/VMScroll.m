@@ -22,6 +22,7 @@
     CGPoint _lastCenter;
     CGPoint _center;
     __weak VMDisplayMetalViewController *_controller;
+    UIDynamicAnimator *_animator;
 }
 
 @synthesize bounds;
@@ -31,6 +32,7 @@
 - (id)init {
     if (self = [super init]) {
         self.bounds = CGRectMake(0, 0, 1, 1);
+        _animator = [[UIDynamicAnimator alloc] init];
     }
     return self;
 }
@@ -55,6 +57,7 @@
 
 - (void)startMovement:(CGPoint)startPoint {
     _start = startPoint;
+    [_animator removeAllBehaviors];
 }
 
 - (void)updateMovement:(CGPoint)point {
@@ -62,6 +65,13 @@
     CGPoint adj = CGPointMake(point.x - _start.x, point.y - _start.y);
     _start = point;
     self.center = CGPointMake(self.center.x + adj.x, self.center.y + adj.y);
+}
+
+- (void)endMovementWithVelocity:(CGPoint)velocity resistance:(CGFloat)resistance {
+    UIDynamicItemBehavior *behavior = [[UIDynamicItemBehavior alloc] initWithItems:@[ self ]];
+    [behavior addLinearVelocity:velocity forItem:self];
+    behavior.resistance = resistance;
+    [_animator addBehavior:behavior];
 }
 
 @end

@@ -26,12 +26,13 @@
 #import "UTMVirtualMachine.h"
 
 const CGFloat kScrollSpeedReduction = 100.0f;
+const CGFloat kCursorResistance = 50.0f;
+const CGFloat kScrollResistance = 10.0f;
 
 @implementation VMDisplayMetalViewController (Gestures)
 
 - (void)initTouch {
     // mouse cursor
-    _animator = [[UIDynamicAnimator alloc] initWithReferenceView:self.view];
     _cursor = [[VMCursor alloc] initWithVMViewController:self];
     _scroll = [[VMScroll alloc] initWithVMViewController:self];
     
@@ -248,16 +249,12 @@ static CGFloat CGPointToPixel(CGFloat point) {
     CGPoint velocity = [sender velocityInView:sender.view];
     if (sender.state == UIGestureRecognizerStateBegan) {
         [_cursor startMovement:location];
-        [_animator removeAllBehaviors];
     }
     if (sender.state != UIGestureRecognizerStateCancelled) {
         [_cursor updateMovement:location];
     }
     if (sender.state == UIGestureRecognizerStateEnded) {
-        UIDynamicItemBehavior *behavior = [[UIDynamicItemBehavior alloc] initWithItems:@[ _cursor ]];
-        [behavior addLinearVelocity:velocity forItem:_cursor];
-        behavior.resistance = 50;
-        [_animator addBehavior:behavior];
+        [_cursor endMovementWithVelocity:velocity resistance:kCursorResistance];
     }
 }
 
@@ -266,16 +263,12 @@ static CGFloat CGPointToPixel(CGFloat point) {
     CGPoint velocity = [sender velocityInView:sender.view];
     if (sender.state == UIGestureRecognizerStateBegan) {
         [_scroll startMovement:location];
-        [_animator removeAllBehaviors];
     }
     if (sender.state != UIGestureRecognizerStateCancelled) {
         [_scroll updateMovement:location];
     }
     if (sender.state == UIGestureRecognizerStateEnded) {
-        UIDynamicItemBehavior *behavior = [[UIDynamicItemBehavior alloc] initWithItems:@[ _scroll ]];
-        [behavior addLinearVelocity:velocity forItem:_scroll];
-        behavior.resistance = 10;
-        [_animator addBehavior:behavior];
+        [_scroll endMovementWithVelocity:velocity resistance:kScrollResistance];
     }
 }
 

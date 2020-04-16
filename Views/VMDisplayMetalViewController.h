@@ -37,7 +37,6 @@ NS_ASSUME_NONNULL_BEGIN
     BOOL _mouseLeftDown;
     BOOL _mouseRightDown;
     BOOL _mouseMiddleDown;
-    UIDynamicAnimator *_animator;
     VMCursor *_cursor;
     VMScroll *_scroll;
     

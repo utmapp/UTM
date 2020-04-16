@@ -27,6 +27,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (id)initWithVMViewController:(VMDisplayMetalViewController *)controller;
 - (void)startMovement:(CGPoint)startPoint;
 - (void)updateMovement:(CGPoint)point;
+- (void)endMovementWithVelocity:(CGPoint)velocity resistance:(CGFloat)resistance;
 
 @end
 
