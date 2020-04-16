@@ -303,6 +303,9 @@ static CGFloat CGPointToPixel(CGFloat point) {
             [self dragCursor:sender.state primary:YES secondary:NO];
             [self moveMouseWithInertia:sender];
             break;
+        case VMGestureTypeMouseWheel:
+            [self scrollWithInertia:sender];
+            break;
         default:
             break;
     }
@@ -316,6 +319,9 @@ static CGFloat CGPointToPixel(CGFloat point) {
         case VMGestureTypeDragCursor:
             [self dragCursor:sender.state primary:YES secondary:NO];
             [self moveMouseWithInertia:sender];
+            break;
+        case VMGestureTypeMouseWheel:
+            [self scrollWithInertia:sender];
             break;
         default:
             break;
@@ -460,12 +466,6 @@ static CGFloat CGPointToPixel(CGFloat point) {
     if (gestureRecognizer == _twoPan && otherGestureRecognizer == _swipeDown) {
         return YES;
     }
-    if (gestureRecognizer == _twoPan && otherGestureRecognizer == _swipeScrollUp) {
-        return YES;
-    }
-    if (gestureRecognizer == _twoPan && otherGestureRecognizer == _swipeScrollDown) {
-        return YES;
-    }
     if (gestureRecognizer == _twoTap && otherGestureRecognizer == _swipeDown) {
         return YES;
     }
@@ -499,6 +499,15 @@ static CGFloat CGPointToPixel(CGFloat point) {
     if (gestureRecognizer == _threePan && otherGestureRecognizer == _swipeDown) {
         return YES;
     }
+    // only if we do not disable two finger swipe
+    if (self.twoFingerScrollType != VMGestureTypeNone) {
+        if (gestureRecognizer == _twoPan && otherGestureRecognizer == _swipeScrollUp) {
+            return YES;
+        }
+        if (gestureRecognizer == _twoPan && otherGestureRecognizer == _swipeScrollDown) {
+            return YES;
+        }
+    }
     return NO;
 }
 
@@ -511,6 +520,15 @@ static CGFloat CGPointToPixel(CGFloat point) {
         }
     } else if (gestureRecognizer == _pan && otherGestureRecognizer == _longPress) {
         return YES;
+    } else if (self.twoFingerScrollType == VMGestureTypeNone && otherGestureRecognizer == _twoPan) {
+        // if two finger swipe is disabled, we can also recognize two finger pans
+        if (gestureRecognizer == _swipeScrollUp) {
+            return YES;
+        } else if (gestureRecognizer == _swipeScrollDown) {
+            return YES;
+        } else {
+            return NO;
+        }
     } else {
         return NO;
     }

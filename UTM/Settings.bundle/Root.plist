@@ -104,19 +104,21 @@
 				<string>Disabled</string>
 				<string>Move Screen</string>
 				<string>Click &amp; Hold</string>
+				<string>Mouse Wheel</string>
 			</array>
 			<key>Values</key>
 			<array>
 				<integer>0</integer>
 				<integer>3</integer>
 				<integer>1</integer>
+				<integer>4</integer>
 			</array>
 		</dict>
 		<dict>
 			<key>Type</key>
 			<string>PSMultiValueSpecifier</string>
 			<key>Title</key>
-			<string>Two Finger Scroll</string>
+			<string>Two Finger Swipe</string>
 			<key>Key</key>
 			<string>GestureTwoScroll</string>
 			<key>DefaultValue</key>
@@ -124,7 +126,7 @@
 			<key>Titles</key>
 			<array>
 				<string>Disabled</string>
-				<string>Mouse Wheel</string>
+				<string>Mouse Wheel (per swipe)</string>
 			</array>
 			<key>Values</key>
 			<array>
@@ -146,12 +148,14 @@
 				<string>Disabled</string>
 				<string>Move Screen</string>
 				<string>Click &amp; Hold</string>
+				<string>Mouse Wheel</string>
 			</array>
 			<key>Values</key>
 			<array>
 				<integer>0</integer>
 				<integer>3</integer>
 				<integer>1</integer>
+				<integer>4</integer>
 			</array>
 		</dict>
 		<dict>
