@@ -356,7 +356,7 @@ static CGFloat CGPointToPixel(CGFloat point) {
 
 - (CGPoint)moveMouseScroll:(CGPoint)translation {
     translation.y = CGPointToPixel(translation.y) / kScrollSpeedReduction;
-    if (0) {
+    if (self.vmConfiguration.inputScrollInvert) {
         translation.y = -translation.y;
     }
     [self.vmInput sendMouseScroll:SEND_SCROLL_SMOOTH button:self.mouseButtonDown dy:translation.y];
