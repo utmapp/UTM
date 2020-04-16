@@ -22,6 +22,7 @@
 		CE059DC8243E9E3400338317 /* UTMLocationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = CE059DC7243E9E3400338317 /* UTMLocationManager.m */; };
 		CE059DCB243FBA3C00338317 /* VMConfigCell.m in Sources */ = {isa = PBXBuildFile; fileRef = CE059DCA243FBA3C00338317 /* VMConfigCell.m */; };
 		CE20FAE52444FC6E0059AE11 /* VMConfigDirectoryPickerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CE20FAE42444FC6E0059AE11 /* VMConfigDirectoryPickerViewController.m */; };
+		CE20FAE82448D2BE0059AE11 /* VMScroll.m in Sources */ = {isa = PBXBuildFile; fileRef = CE20FAE72448D2BE0059AE11 /* VMScroll.m */; };
 		CE23C16123FCEC0A001177D6 /* qapi-commands-run-state.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C07E23FCEBFF001177D6 /* qapi-commands-run-state.c */; };
 		CE23C16223FCEC0A001177D6 /* qapi-visit-tpm.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C07F23FCEBFF001177D6 /* qapi-visit-tpm.c */; };
 		CE23C16323FCEC0A001177D6 /* qapi-commands-rocker.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C08123FCEBFF001177D6 /* qapi-commands-rocker.c */; };
@@ -445,6 +446,8 @@
 		CE059DCA243FBA3C00338317 /* VMConfigCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VMConfigCell.m; sourceTree = "<group>"; };
 		CE20FAE32444FC6E0059AE11 /* VMConfigDirectoryPickerViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VMConfigDirectoryPickerViewController.h; sourceTree = "<group>"; };
 		CE20FAE42444FC6E0059AE11 /* VMConfigDirectoryPickerViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VMConfigDirectoryPickerViewController.m; sourceTree = "<group>"; };
+		CE20FAE62448D2BE0059AE11 /* VMScroll.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VMScroll.h; sourceTree = "<group>"; };
+		CE20FAE72448D2BE0059AE11 /* VMScroll.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VMScroll.m; sourceTree = "<group>"; };
 		CE23C07B23FCEBFF001177D6 /* qapi-visit-error.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-visit-error.h"; path = "sysroot-$(PLATFORM_PREFERRED_ARCH)/qapi/qapi-visit-error.h"; sourceTree = SOURCE_ROOT; };
 		CE23C07C23FCEBFF001177D6 /* qapi-events-machine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-events-machine.h"; path = "sysroot-$(PLATFORM_PREFERRED_ARCH)/qapi/qapi-events-machine.h"; sourceTree = SOURCE_ROOT; };
 		CE23C07D23FCEBFF001177D6 /* qapi-commands-block-core.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-commands-block-core.h"; path = "sysroot-$(PLATFORM_PREFERRED_ARCH)/qapi/qapi-commands-block-core.h"; sourceTree = SOURCE_ROOT; };
@@ -1512,6 +1515,8 @@
 				E28394C0240C268A006742E2 /* VMTerminalViewController.m */,
 				CE3ADD682411C661002D6A5F /* VMCursor.h */,
 				CE3ADD692411C661002D6A5F /* VMCursor.m */,
+				CE20FAE62448D2BE0059AE11 /* VMScroll.h */,
+				CE20FAE72448D2BE0059AE11 /* VMScroll.m */,
 				5286EC93243748C3007E6CBC /* VMDisplayMetalViewController.h */,
 				5286EC94243748C3007E6CBC /* VMDisplayMetalViewController.m */,
 				CE3ADD65240EFBCA002D6A5F /* VMDisplayMetalViewController+Keyboard.h */,
@@ -1895,6 +1900,7 @@
 				CE36B1552275061B004A1435 /* error.c in Sources */,
 				CECC76552273A7D50059B955 /* cf-output-visitor.c in Sources */,
 				CE23C1B023FCEC0A001177D6 /* qapi-types-audio.c in Sources */,
+				CE20FAE82448D2BE0059AE11 /* VMScroll.m in Sources */,
 				E28394B6240C20E1006742E2 /* UTMTerminal.m in Sources */,
 				CED33AE32267893D00FF1977 /* UTMQemuImg.m in Sources */,
 				CE23C1B623FCEC0A001177D6 /* qapi-types-char.c in Sources */,

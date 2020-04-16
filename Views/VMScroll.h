@@ -20,7 +20,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface VMCursor : NSObject <UIDynamicItem>
+@interface VMScroll : NSObject <UIDynamicItem>
 
 @property (nonatomic, readwrite) CGRect bounds;
 

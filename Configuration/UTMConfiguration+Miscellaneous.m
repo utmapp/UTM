@@ -24,6 +24,7 @@ extern const NSString *const kUTMConfigDebugKey;
 const NSString *const kUTMConfigTouchscreenModeKey = @"TouchscreenMode";
 const NSString *const kUTMConfigDirectInputKey = @"DirectInput";
 const NSString *const kUTMConfigInputLegacyKey = @"InputLegacy";
+const NSString *const kUTMConfigInputInvertScrollKey = @"InputInvertScroll";
 
 const NSString *const kUTMConfigSoundEnabledKey = @"SoundEnabled";
 const NSString *const kUTMConfigSoundCardDeviceKey = @"SoundCard";
@@ -65,6 +66,14 @@ const NSString *const kUTMConfigDebugLogKey = @"DebugLog";
 
 - (BOOL)inputLegacy {
     return [self.rootDict[kUTMConfigInputKey][kUTMConfigInputLegacyKey] boolValue];
+}
+
+- (void)setInputScrollInvert:(BOOL)inputScrollInvert {
+    self.rootDict[kUTMConfigInputKey][kUTMConfigInputInvertScrollKey] = @(inputScrollInvert);
+}
+
+- (BOOL)inputScrollInvert {
+    return [self.rootDict[kUTMConfigInputKey][kUTMConfigInputInvertScrollKey] boolValue];
 }
 
 - (void)setSoundEnabled:(BOOL)soundEnabled {

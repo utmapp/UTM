@@ -28,6 +28,14 @@ NS_AVAILABLE_IOS(13.4)
 // Add pointer interaction to VM view
 -(void)initPointerInteraction {
     [self.mtkView addInteraction:[[UIPointerInteraction alloc] initWithDelegate:self]];
+    
+    if (@available(iOS 13.4, *)) {
+        UIPanGestureRecognizer *scroll = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(gestureScroll:)];
+        scroll.allowedScrollTypesMask = UIScrollTypeMaskAll;
+        scroll.minimumNumberOfTouches = 0;
+        scroll.maximumNumberOfTouches = 0;
+        [self.mtkView addGestureRecognizer:scroll];
+    }
 }
 
 - (BOOL)hasTouchpadPointer {
@@ -85,6 +93,12 @@ static CGFloat CGPointToPixel(CGFloat point) {
     } else {
         return nil;
     }
+}
+
+#pragma mark - Scroll Gesture
+
+- (IBAction)gestureScroll:(UIPanGestureRecognizer *)sender API_AVAILABLE(ios(13.4)) {
+    [self scrollWithInertia:sender];
 }
 
 @end

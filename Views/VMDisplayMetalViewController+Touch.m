@@ -18,18 +18,23 @@
 #import "VMDisplayMetalViewController.h"
 #import "VMDisplayMetalViewController+Touch.h"
 #import "VMCursor.h"
+#import "VMScroll.h"
 #import "CSDisplayMetal.h"
 #import "UTMConfiguration.h"
 #import "UTMConfiguration+Miscellaneous.h"
 #import "UTMSpiceIO.h"
 #import "UTMVirtualMachine.h"
 
+const CGFloat kScrollSpeedReduction = 100.0f;
+const CGFloat kCursorResistance = 50.0f;
+const CGFloat kScrollResistance = 10.0f;
+
 @implementation VMDisplayMetalViewController (Gestures)
 
 - (void)initTouch {
     // mouse cursor
-    _animator = [[UIDynamicAnimator alloc] initWithReferenceView:self.view];
     _cursor = [[VMCursor alloc] initWithVMViewController:self];
+    _scroll = [[VMScroll alloc] initWithVMViewController:self];
     
     // Set up gesture recognizers because Storyboards is BROKEN and doing it there crashes!
     _swipeUp = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(gestureSwipeUp:)];
@@ -63,12 +68,15 @@
     _threePan.delegate = self;
     _tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(gestureTap:)];
     _tap.delegate = self;
+    _tap.allowedTouchTypes = @[ @(UITouchTypeDirect) ];
     _tap.cancelsTouchesInView = NO;
     _twoTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(gestureTwoTap:)];
     _twoTap.numberOfTouchesRequired = 2;
     _twoTap.delegate = self;
+    _twoTap.allowedTouchTypes = @[ @(UITouchTypeDirect) ];
     _longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(gestureLongPress:)];
     _longPress.delegate = self;
+    _longPress.allowedTouchTypes = @[ @(UITouchTypeDirect) ];
     _pinch = [[UIPinchGestureRecognizer alloc] initWithTarget:self action:@selector(gesturePinch:)];
     _pinch.delegate = self;
     [self.mtkView addGestureRecognizer:_swipeUp];
@@ -241,16 +249,26 @@ static CGFloat CGPointToPixel(CGFloat point) {
     CGPoint velocity = [sender velocityInView:sender.view];
     if (sender.state == UIGestureRecognizerStateBegan) {
         [_cursor startMovement:location];
-        [_animator removeAllBehaviors];
     }
     if (sender.state != UIGestureRecognizerStateCancelled) {
         [_cursor updateMovement:location];
     }
     if (sender.state == UIGestureRecognizerStateEnded) {
-        UIDynamicItemBehavior *behavior = [[UIDynamicItemBehavior alloc] initWithItems:@[ _cursor ]];
-        [behavior addLinearVelocity:velocity forItem:_cursor];
-        behavior.resistance = 50;
-        [_animator addBehavior:behavior];
+        [_cursor endMovementWithVelocity:velocity resistance:kCursorResistance];
+    }
+}
+
+- (void)scrollWithInertia:(UIPanGestureRecognizer *)sender {
+    CGPoint location = [sender locationInView:sender.view];
+    CGPoint velocity = [sender velocityInView:sender.view];
+    if (sender.state == UIGestureRecognizerStateBegan) {
+        [_scroll startMovement:location];
+    }
+    if (sender.state != UIGestureRecognizerStateCancelled) {
+        [_scroll updateMovement:location];
+    }
+    if (sender.state == UIGestureRecognizerStateEnded) {
+        [_scroll endMovementWithVelocity:velocity resistance:kScrollResistance];
     }
 }
 
@@ -282,8 +300,11 @@ static CGFloat CGPointToPixel(CGFloat point) {
             [self moveScreen:sender];
             break;
         case VMGestureTypeDragCursor:
-            [self dragCursor:sender.state];
+            [self dragCursor:sender.state primary:YES secondary:NO middle:NO];
             [self moveMouseWithInertia:sender];
+            break;
+        case VMGestureTypeMouseWheel:
+            [self scrollWithInertia:sender];
             break;
         default:
             break;
@@ -296,8 +317,11 @@ static CGFloat CGPointToPixel(CGFloat point) {
             [self moveScreen:sender];
             break;
         case VMGestureTypeDragCursor:
-            [self dragCursor:sender.state];
+            [self dragCursor:sender.state primary:YES secondary:NO middle:NO];
             [self moveMouseWithInertia:sender];
+            break;
+        case VMGestureTypeMouseWheel:
+            [self scrollWithInertia:sender];
             break;
         default:
             break;
@@ -329,6 +353,15 @@ static CGFloat CGPointToPixel(CGFloat point) {
     return translation;
 }
 
+- (CGPoint)moveMouseScroll:(CGPoint)translation {
+    translation.y = CGPointToPixel(translation.y) / kScrollSpeedReduction;
+    if (self.vmConfiguration.inputScrollInvert) {
+        translation.y = -translation.y;
+    }
+    [self.vmInput sendMouseScroll:SEND_SCROLL_SMOOTH button:self.mouseButtonDown dy:translation.y];
+    return translation;
+}
+
 - (void)mouseClick:(SendButtonType)button location:(CGPoint)location {
     if (!self.serverModeCursor) {
         _cursor.center = location;
@@ -336,19 +369,31 @@ static CGFloat CGPointToPixel(CGFloat point) {
     [self.vmInput sendMouseButton:button pressed:YES point:CGPointZero];
     [self onDelay:0.05f action:^{
         self->_mouseLeftDown = NO;
+        self->_mouseRightDown = NO;
+        self->_mouseMiddleDown = NO;
         [self.vmInput sendMouseButton:button pressed:NO point:CGPointZero];
     }];
     [_clickFeedbackGenerator selectionChanged];
 }
 
-- (void)dragCursor:(UIGestureRecognizerState)state {
+- (void)dragCursor:(UIGestureRecognizerState)state primary:(BOOL)primary secondary:(BOOL)secondary middle:(BOOL)middle {
     if (state == UIGestureRecognizerStateBegan) {
         [_clickFeedbackGenerator selectionChanged];
-        _mouseLeftDown = YES;
-        [self.vmInput sendMouseButton:SEND_BUTTON_LEFT pressed:YES point:CGPointZero];
+        if (primary) {
+            _mouseLeftDown = YES;
+        }
+        if (secondary) {
+            _mouseRightDown = YES;
+        }
+        if (middle) {
+            _mouseMiddleDown = YES;
+        }
+        [self.vmInput sendMouseButton:self.mouseButtonDown pressed:YES point:CGPointZero];
     } else if (state == UIGestureRecognizerStateEnded) {
         _mouseLeftDown = NO;
-        [self.vmInput sendMouseButton:SEND_BUTTON_LEFT pressed:NO point:CGPointZero];
+        _mouseRightDown = NO;
+        _mouseMiddleDown = NO;
+        [self.vmInput sendMouseButton:self.mouseButtonDown pressed:NO point:CGPointZero];
     }
 }
 
@@ -371,7 +416,7 @@ static CGFloat CGPointToPixel(CGFloat point) {
         self.longPressType == VMGestureTypeRightClick) {
         [self mouseClick:SEND_BUTTON_RIGHT location:[sender locationInView:sender.view]];
     } else if (self.longPressType == VMGestureTypeDragCursor) {
-        [self dragCursor:sender.state];
+        [self dragCursor:sender.state primary:YES secondary:NO middle:NO];
     }
 }
 
@@ -416,17 +461,13 @@ static CGFloat CGPointToPixel(CGFloat point) {
     }
 }
 
+#pragma mark - UIGestureRecognizerDelegate
+
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRequireFailureOfGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
     if (gestureRecognizer == _twoPan && otherGestureRecognizer == _swipeUp) {
         return YES;
     }
     if (gestureRecognizer == _twoPan && otherGestureRecognizer == _swipeDown) {
-        return YES;
-    }
-    if (gestureRecognizer == _twoPan && otherGestureRecognizer == _swipeScrollUp) {
-        return YES;
-    }
-    if (gestureRecognizer == _twoPan && otherGestureRecognizer == _swipeScrollDown) {
         return YES;
     }
     if (gestureRecognizer == _twoTap && otherGestureRecognizer == _swipeDown) {
@@ -462,6 +503,15 @@ static CGFloat CGPointToPixel(CGFloat point) {
     if (gestureRecognizer == _threePan && otherGestureRecognizer == _swipeDown) {
         return YES;
     }
+    // only if we do not disable two finger swipe
+    if (self.twoFingerScrollType != VMGestureTypeNone) {
+        if (gestureRecognizer == _twoPan && otherGestureRecognizer == _swipeScrollUp) {
+            return YES;
+        }
+        if (gestureRecognizer == _twoPan && otherGestureRecognizer == _swipeScrollDown) {
+            return YES;
+        }
+    }
     return NO;
 }
 
@@ -474,8 +524,26 @@ static CGFloat CGPointToPixel(CGFloat point) {
         }
     } else if (gestureRecognizer == _pan && otherGestureRecognizer == _longPress) {
         return YES;
+    } else if (self.twoFingerScrollType == VMGestureTypeNone && otherGestureRecognizer == _twoPan) {
+        // if two finger swipe is disabled, we can also recognize two finger pans
+        if (gestureRecognizer == _swipeScrollUp) {
+            return YES;
+        } else if (gestureRecognizer == _swipeScrollDown) {
+            return YES;
+        } else {
+            return NO;
+        }
     } else {
         return NO;
+    }
+}
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveEvent:(UIEvent *)event API_AVAILABLE(ios(13.4)) {
+    if (event.type == UIEventTypeTransform) {
+        NSLog(@"ignoring UIEventTypeTransform");
+        return NO;
+    } else {
+        return YES;
     }
 }
 
@@ -521,12 +589,22 @@ static CGFloat CGPointToPixel(CGFloat point) {
         for (UITouch *touch in [event touchesForView:self.mtkView]) {
             VMMouseType type = [self touchTypeToMouseType:touch.type];
             if ([self switchMouseType:type]) {
-                [self dragCursor:UIGestureRecognizerStateEnded]; // reset drag
+                [self dragCursor:UIGestureRecognizerStateEnded primary:YES secondary:YES middle:YES]; // reset drag
             } else if (!self.vmInput.serverModeCursor) { // start click for client mode
+                BOOL primary = YES;
+                BOOL secondary = NO;
+                BOOL middle = NO;
                 CGPoint pos = [touch locationInView:self.mtkView];
+                if (@available(iOS 13.4, *)) {
+                    if (touch.type == UITouchTypeIndirectPointer) {
+                        primary = (event.buttonMask & UIEventButtonMaskPrimary) != 0;
+                        secondary = (event.buttonMask & UIEventButtonMaskSecondary) != 0;
+                        middle = (event.buttonMask & 0x4) != 0; // undocumented mask
+                    }
+                }
                 [_cursor startMovement:pos];
                 [_cursor updateMovement:pos];
-                [self dragCursor:UIGestureRecognizerStateBegan];
+                [self dragCursor:UIGestureRecognizerStateBegan primary:primary secondary:secondary middle:middle];
             }
             break; // handle a single touch only
         }
@@ -548,7 +626,7 @@ static CGFloat CGPointToPixel(CGFloat point) {
 - (void)touchesCancelled:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
     // release click in client mode, in server mode we handle in gesturePan
     if (!self.vmConfiguration.inputLegacy && !self.vmInput.serverModeCursor) {
-        [self dragCursor:UIGestureRecognizerStateEnded];
+        [self dragCursor:UIGestureRecognizerStateEnded primary:YES secondary:YES middle:YES];
     }
     [super touchesCancelled:touches withEvent:event];
 }
@@ -556,7 +634,7 @@ static CGFloat CGPointToPixel(CGFloat point) {
 - (void)touchesEnded:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
     // release click in client mode, in server mode we handle in gesturePan
     if (!self.vmConfiguration.inputLegacy && !self.vmInput.serverModeCursor) {
-        [self dragCursor:UIGestureRecognizerStateEnded];
+        [self dragCursor:UIGestureRecognizerStateEnded primary:YES secondary:YES middle:YES];
     }
     [super touchesEnded:touches withEvent:event];
 }

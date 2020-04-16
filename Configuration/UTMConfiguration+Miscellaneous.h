@@ -21,6 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface UTMConfiguration (Miscellaneous)
 
 @property (nonatomic, assign) BOOL inputLegacy;
+@property (nonatomic, assign) BOOL inputScrollInvert;
 @property (nonatomic, assign) BOOL soundEnabled;
 @property (nonatomic, nullable, copy) NSString *soundCard;
 @property (nonatomic, assign) BOOL debugLogEnabled;

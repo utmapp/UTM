@@ -14,10 +14,10 @@
 // limitations under the License.
 //
 
-#import "VMCursor.h"
+#import "VMScroll.h"
 #import "VMDisplayMetalViewController+Touch.h"
 
-@implementation VMCursor {
+@implementation VMScroll {
     CGPoint _start;
     CGPoint _lastCenter;
     CGPoint _center;
@@ -44,45 +44,27 @@
     return self;
 }
 
-- (CGRect)bounds {
-    CGRect bounds = CGRectZero;
-    bounds.size.width = MAX(1, _controller.vmInput.cursorSize.width);
-    bounds.size.height = MAX(1, _controller.vmInput.cursorSize.height);
-    return bounds;
-}
-
 - (CGPoint)center {
     return _center;
 }
 
 - (void)setCenter:(CGPoint)center {
-    if (_controller.serverModeCursor) {
-        CGPoint diff = CGPointMake(center.x - _lastCenter.x, center.y - _lastCenter.y);
-        [_controller moveMouseRelative:diff];
-    } else {
-        [_controller moveMouseAbsolute:center];
-    }
+    CGPoint diff = CGPointMake(center.x - _lastCenter.x, center.y - _lastCenter.y);
+    [_controller moveMouseScroll:diff];
     _lastCenter = _center;
     _center = center;
 }
 
 - (void)startMovement:(CGPoint)startPoint {
     _start = startPoint;
-    if (!_controller.serverModeCursor) {
-        _lastCenter = startPoint;
-        _center = startPoint;
-    }
     [_animator removeAllBehaviors];
 }
 
 - (void)updateMovement:(CGPoint)point {
-    if (_controller.serverModeCursor) {
-        // translate point to relative to last center
-        CGPoint adj = CGPointMake(point.x - _start.x, point.y - _start.y);
-        _start = point;
-        point = CGPointMake(self.center.x + adj.x, self.center.y + adj.y);
-    }
-    self.center = point;
+    // translate point to relative to last center
+    CGPoint adj = CGPointMake(point.x - _start.x, point.y - _start.y);
+    _start = point;
+    self.center = CGPointMake(self.center.x + adj.x, self.center.y + adj.y);
 }
 
 - (void)endMovementWithVelocity:(CGPoint)velocity resistance:(CGFloat)resistance {
