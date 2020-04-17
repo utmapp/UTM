@@ -16,11 +16,14 @@
 
 #import "UIViewController+Extensions.h"
 #import "VMCursor.h"
+#import "VMScroll.h"
 #import "VMDisplayMetalViewController+Gamepad.h"
 #import "VMDisplayMetalViewController+Touch.h"
 #import "CSDisplayMetal.h"
 #import "UTMConfiguration.h"
 #import "UTMConfiguration+Constants.h"
+
+const CGFloat kThumbstickSpeedMultiplier = 1000; // in points per second
 
 @implementation VMDisplayMetalViewController(Gamepad)
 
@@ -38,7 +41,7 @@
 - (void)controllerWasConnected:(NSNotification *)notification {
     // a controller was connected
     GCController *controller = (GCController *)notification.object;
-    NSLog(@"Controller disconnected: %@", controller.vendorName);
+    NSLog(@"Controller connected: %@", controller.vendorName);
     [self setupController:controller];
 }
 
@@ -103,15 +106,22 @@
     };
     
     gamepad.leftThumbstick.valueChangedHandler = ^(GCControllerDirectionPad * _Nonnull dpad, float xValue, float yValue) {
-        [_self.vmInput sendMouseScroll:yValue > 0 ? SEND_SCROLL_UP : SEND_SCROLL_DOWN button:_self.mouseButtonDown dy:0];
+        VMDisplayMetalViewController *s = _self;
+        CGPoint velocity = CGPointMake(xValue * kThumbstickSpeedMultiplier, -yValue * kThumbstickSpeedMultiplier);
+        [s->_scroll startMovement:CGPointZero];
+        [s->_scroll updateMovement:CGPointMake(xValue, yValue)];
+        [s->_scroll endMovementWithVelocity:velocity resistance:0];
     };
     
     gamepad.rightThumbstick.valueChangedHandler = ^(GCControllerDirectionPad * _Nonnull dpad, float xValue, float yValue) {
         NSInteger speed = [_self integerForSetting:@"GCThumbstickRightSpeed"];
         VMDisplayMetalViewController *s = _self;
         CGPoint center = s->_cursor.center;
+        CGPoint start = CGPointMake(xValue * speed, -yValue * speed);
+        CGPoint velocity = CGPointMake(xValue * kThumbstickSpeedMultiplier, -yValue * kThumbstickSpeedMultiplier);
         [s->_cursor startMovement:center];
-        [s->_cursor updateMovement:CGPointMake(center.x + xValue * speed, center.y - yValue * speed)];
+        [s->_cursor updateMovement:CGPointMake(center.x + start.x, center.y + start.y)];
+        [s->_cursor endMovementWithVelocity:velocity resistance:0];
     };
     
     if (@available(iOS 13.0, *)) {
