@@ -56,7 +56,11 @@ void *start_qemu(void *args) {
 - (void)printArgv {
     NSString *args = @"";
     for (NSString *arg in _argv) {
-        args = [args stringByAppendingFormat:@" %@", arg];
+        if ([arg containsString:@" "]) {
+            args = [args stringByAppendingFormat:@" \"%@\"", arg];
+        } else {
+            args = [args stringByAppendingFormat:@" %@", arg];
+        }
     }
     NSLog(@"Running: %@", args);
 }
