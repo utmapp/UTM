@@ -458,11 +458,18 @@
 - (void)orientationDidChange:(NSNotification *)notification {
     NSLog(@"orientation changed");
     if (self.vmConfiguration.displayFitScreen) {
-        CGRect bounds = [UIScreen mainScreen].bounds;
-        if (self.vmConfiguration.displayRetina) {
-            bounds = [UIScreen mainScreen].nativeBounds;
-        }
-        [self.vmDisplay requestResolution:bounds];
+        // Bug? on iPad, it seems like [UIScreen mainScreen].bounds does not update when this notification
+        // is received. so we race it by waiting 0.1s before getting the new resolution. This does not
+        // happen on iPhone.
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            CGRect bounds = [UIScreen mainScreen].bounds;
+            if (self.vmConfiguration.displayRetina) {
+                CGFloat scale = [UIScreen mainScreen].scale;
+                CGAffineTransform transform = CGAffineTransformMakeScale(scale, scale);
+                bounds = CGRectApplyAffineTransform(bounds, transform);
+            }
+            [self.vmDisplay requestResolution:bounds];
+        });
     }
 }
 
