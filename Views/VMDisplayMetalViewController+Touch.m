@@ -17,6 +17,7 @@
 #import "UIViewController+Extensions.h"
 #import "VMDisplayMetalViewController.h"
 #import "VMDisplayMetalViewController+Touch.h"
+#import "VMDisplayMetalViewController+Pencil.h"
 #import "VMCursor.h"
 #import "VMScroll.h"
 #import "CSDisplayMetal.h"
@@ -595,12 +596,19 @@ static CGFloat CGPointToPixel(CGFloat point) {
                 BOOL secondary = NO;
                 BOOL middle = NO;
                 CGPoint pos = [touch locationInView:self.mtkView];
+                // iOS 13.4+ Pointing device support
                 if (@available(iOS 13.4, *)) {
                     if (touch.type == UITouchTypeIndirectPointer) {
                         primary = (event.buttonMask & UIEventButtonMaskPrimary) != 0;
                         secondary = (event.buttonMask & UIEventButtonMaskSecondary) != 0;
                         middle = (event.buttonMask & 0x4) != 0; // undocumented mask
                     }
+                }
+                // Apple Pencil 2 right click mode
+                if (@available(iOS 12.1, *)) {
+                    primary = !pencilForceRightClickOnce;
+                    secondary = pencilForceRightClickOnce;
+                    pencilForceRightClickOnce = false;
                 }
                 [_cursor startMovement:pos];
                 [_cursor updateMovement:pos];
