@@ -77,6 +77,7 @@ const CGFloat kScrollResistance = 10.0f;
     _longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(gestureLongPress:)];
     _longPress.delegate = self;
     _longPress.allowedTouchTypes = @[ @(UITouchTypeDirect) ];
+    _longPress.minimumPressDuration = [self floateForSetting:@"GestureLongPressDuration"];
     _pinch = [[UIPinchGestureRecognizer alloc] initWithTarget:self action:@selector(gesturePinch:)];
     _pinch.delegate = self;
     [self.mtkView addGestureRecognizer:_swipeUp];
@@ -90,10 +91,18 @@ const CGFloat kScrollResistance = 10.0f;
     [self.mtkView addGestureRecognizer:_twoTap];
     [self.mtkView addGestureRecognizer:_longPress];
     [self.mtkView addGestureRecognizer:_pinch];
-    
+    [[NSUserDefaults standardUserDefaults] addObserver:self forKeyPath:@"GestureLongPressDuration" options:NSKeyValueObservingOptionNew context:nil];
     // Feedback generator for clicks
     _clickFeedbackGenerator = [[UISelectionFeedbackGenerator alloc] init];
     _resizeFeedbackGenerator = [[UIImpactFeedbackGenerator alloc] init];
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+    if ([keyPath isEqualToString:@"GestureLongPressDuration"]) {
+        _longPress.minimumPressDuration = [self floateForSetting:@"GestureLongPressDuration"];
+//        NSLog(@"minimum Press Duration set to %f", _longPress.minimumPressDuration);
+    }
 }
 
 #pragma mark - Properties from instance

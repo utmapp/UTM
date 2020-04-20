@@ -156,6 +156,7 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationDidEnterBackgroundNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationWillEnterForegroundNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIDeviceOrientationDidChangeNotification object:nil];
+    [[NSUserDefaults standardUserDefaults] removeObserver:self forKeyPath:@"GestureLongPressDuration"];
 }
 
 - (void)viewDidAppear:(BOOL)animated {

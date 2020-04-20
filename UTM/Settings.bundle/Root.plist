@@ -2618,6 +2618,24 @@
 			<key>MaximumValue</key>
 			<integer>100</integer>
 		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+			<key>Title</key>
+			<string>Gesture - LongPress Duration (0.1s~1.0s)</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSSliderSpecifier</string>
+			<key>Key</key>
+			<string>GestureLongPressDuration</string>
+			<key>DefaultValue</key>
+			<real>0.5</real>
+			<key>MinimumValue</key>
+			<real>0.1</real>
+			<key>MaximumValue</key>
+			<integer>1</integer>
+		</dict>
 	</array>
 </dict>
 </plist>

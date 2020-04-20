@@ -30,6 +30,10 @@
     return [[NSUserDefaults standardUserDefaults] integerForKey:key];
 }
 
+- (float) floateForSetting:(NSString *)key {
+    return [[NSUserDefaults standardUserDefaults] floatForKey:key];
+}
+
 - (void)showAlert:(NSString *)msg actions:(nullable NSArray<UIAlertAction *> *)actions completion:(nullable void (^)(UIAlertAction *action))completion {
     UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"" message:msg preferredStyle:UIAlertControllerStyleAlert];
     if (!actions) {
