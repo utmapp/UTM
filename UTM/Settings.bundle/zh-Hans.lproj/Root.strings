@@ -147,3 +147,6 @@
 
 /* (No Comment) */
 "Gamepad - Cursor Speed" = "手柄 - 光标速度";
+
+/* (No Comment) */
+"Gesture - LongPress Duration (0.1s~1.0s)" = "手势 - 长按触发时长(0.1s~1.0s)";
