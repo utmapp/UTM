@@ -172,7 +172,7 @@
     [self presentViewController:alert animated:YES completion:nil];
 }
 
-- (void)shareVM:(NSURL *)url {
+- (void)shareVM:(NSURL *)url rect: (CGRect)rect {
     NSArray *objectsToShare = @[url];
 
     UIActivityViewController *controller = [[UIActivityViewController alloc] initWithActivityItems:objectsToShare applicationActivities:nil];
@@ -187,6 +187,9 @@
                                        UIActivityTypePostToVimeo, UIActivityTypePostToTencentWeibo];
     controller.excludedActivityTypes = excludedActivities;
 
+    [controller.popoverPresentationController setSourceView: self.view];
+    [controller.popoverPresentationController setSourceRect: rect];
+    
     // Present the controller
     [self presentViewController:controller animated:YES completion:nil];
 }
@@ -299,7 +302,10 @@
     } else if (action == NSSelectorFromString(@"cloneAction:")) {
         [self cloneVM:source];
     } else if (action == NSSelectorFromString(@"shareAction:")) {
-        [self shareVM:source];
+        UICollectionViewLayoutAttributes * theAttributes = [collectionView layoutAttributesForItemAtIndexPath:indexPath];
+
+        CGRect cellFrameInSuperview = [collectionView convertRect:theAttributes.frame toView:[collectionView superview]];
+        [self shareVM:source rect:cellFrameInSuperview];
     }
 }
 
