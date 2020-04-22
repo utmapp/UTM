@@ -49,7 +49,9 @@
                                                         action:NSSelectorFromString(@"deleteAction:")];
     UIMenuItem *duplicateItem = [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"Clone", @"Clone context menu")
                                                            action:NSSelectorFromString(@"cloneAction:")];
-    [[UIMenuController sharedMenuController] setMenuItems:@[deleteItem, duplicateItem]];
+    UIMenuItem *shareItem = [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"Share", @"Share context menu")
+                                                       action:NSSelectorFromString(@"shareAction:")];
+    [[UIMenuController sharedMenuController] setMenuItems:@[deleteItem, duplicateItem, shareItem]];
     
     self.viewVisibleSema = dispatch_semaphore_create(0);
     self.viewVisibleQueue = dispatch_queue_create("View Visible Queue", DISPATCH_QUEUE_SERIAL);
@@ -170,6 +172,25 @@
     [self presentViewController:alert animated:YES completion:nil];
 }
 
+- (void)shareVM:(NSURL *)url {
+    NSArray *objectsToShare = @[url];
+
+    UIActivityViewController *controller = [[UIActivityViewController alloc] initWithActivityItems:objectsToShare applicationActivities:nil];
+
+    // Exclude all activities except AirDrop.
+    NSArray *excludedActivities = @[UIActivityTypePostToTwitter, UIActivityTypePostToFacebook,
+                                       UIActivityTypePostToWeibo,
+                                       UIActivityTypeMessage, UIActivityTypeMail,
+                                       UIActivityTypePrint, UIActivityTypeCopyToPasteboard,
+                                       UIActivityTypeAssignToContact, UIActivityTypeSaveToCameraRoll,
+                                       UIActivityTypeAddToReadingList, UIActivityTypePostToFlickr,
+                                       UIActivityTypePostToVimeo, UIActivityTypePostToTencentWeibo];
+    controller.excludedActivityTypes = excludedActivities;
+
+    // Present the controller
+    [self presentViewController:controller animated:YES completion:nil];
+}
+
 - (void)deleteVM:(NSURL *)url {
     NSString *name = [UTMVirtualMachine virtualMachineName:url];
     UIAlertAction *yes = [UIAlertAction actionWithTitle:NSLocalizedString(@"Yes", @"Yes button") style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action){
@@ -259,7 +280,7 @@
 }
 
 - (BOOL)collectionView:(UICollectionView *)collectionView canPerformAction:(SEL)action forItemAtIndexPath:(NSIndexPath *)indexPath withSender:(id)sender {
-    if (action == NSSelectorFromString(@"deleteAction:") || action == NSSelectorFromString(@"cloneAction:")) {
+    if (action == NSSelectorFromString(@"deleteAction:") || action == NSSelectorFromString(@"cloneAction:")  || action == NSSelectorFromString(@"shareAction:")) {
         return YES;
     } else {
         return NO;
@@ -277,6 +298,8 @@
         [self deleteVM:source];
     } else if (action == NSSelectorFromString(@"cloneAction:")) {
         [self cloneVM:source];
+    } else if (action == NSSelectorFromString(@"shareAction:")) {
+        [self shareVM:source];
     }
 }
 
