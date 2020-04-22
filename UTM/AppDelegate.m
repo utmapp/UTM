@@ -15,6 +15,7 @@
 //
 
 #import "AppDelegate.h"
+#import "VMListViewController.h"
 
 @interface AppDelegate ()
 
@@ -35,6 +36,19 @@
 - (void)applicationWillTerminate:(UIApplication *)application {
     // You can't fire me, I quit!
     exit(0);
+}
+
+- (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options {
+
+    UINavigationController *navigationController = (UINavigationController *)self.window.rootViewController;
+    UIViewController * topVC = navigationController.viewControllers[0];
+
+    if ( [topVC isKindOfClass:([VMListViewController class])] ) {
+         [((VMListViewController *)topVC) copyExternalVM:url];
+    }
+
+    return YES;
+    //VMListViewController *vmViewController = (VMListViewController *) [[UIApplication sharedApplication] keyWindow].rootViewController;
 }
 
 #pragma - mark NSUserDefaults

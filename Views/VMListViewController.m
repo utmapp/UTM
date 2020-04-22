@@ -150,6 +150,18 @@
     }
 }
 
+- (void)copyExternalVM:(NSURL *)url {
+    NSString *name = [UTMVirtualMachine virtualMachineName:url];
+    NSURL *newPath = [UTMVirtualMachine virtualMachinePath:name inParentURL:self.documentsPath];
+    dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), ^{
+        NSError *err = nil;
+        [self workStartedWhenVisible:[NSString stringWithFormat:NSLocalizedString(@"Saving %@...", @"Save VM overlay"), name]];
+        [[NSFileManager defaultManager] copyItemAtURL:url toURL:newPath error:&err];
+        [self workCompletedWhenVisible:err.localizedDescription];
+        [self reloadData];
+    });
+}
+
 - (void)cloneVM:(NSURL *)url {
     UIAlertController *alert = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Name", @"Clone VM name prompt title")
                                                                    message:NSLocalizedString(@"New VM name", @"Clone VM name prompt message")

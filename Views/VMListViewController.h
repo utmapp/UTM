@@ -24,6 +24,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (IBAction)unwindToMainFromConfiguration:(UIStoryboardSegue*)sender;
 - (IBAction)exitUTM:(UIBarButtonItem *)sender;
 
+-(void)copyExternalVM:(NSURL *)url;
+
 @end
 
 NS_ASSUME_NONNULL_END
