@@ -48,7 +48,6 @@
     }
 
     return YES;
-    //VMListViewController *vmViewController = (VMListViewController *) [[UIApplication sharedApplication] keyWindow].rootViewController;
 }
 
 #pragma - mark NSUserDefaults
