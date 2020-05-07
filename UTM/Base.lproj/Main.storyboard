@@ -2918,7 +2918,6 @@
                                                                 <inset key="imageEdgeInsets" minX="4" minY="4" maxX="4" maxY="4"/>
                                                                 <state key="normal" image="Toolbar Restart"/>
                                                                 <connections>
-                                                                    <action selector="restartPressed:" destination="ckC-eO-gxn" eventType="touchUpInside" id="1hG-dE-mGS"/>
                                                                     <action selector="restartPressed:" destination="Nen-bt-V44" eventType="touchUpInside" id="KnE-MJ-b15"/>
                                                                 </connections>
                                                             </button>

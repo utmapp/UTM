@@ -315,6 +315,7 @@
 		CEBCAF5424353B3700C2B423 /* VMConfigSwitch.m in Sources */ = {isa = PBXBuildFile; fileRef = CEBCAF5324353B3700C2B423 /* VMConfigSwitch.m */; };
 		CEBCAF5724353B9F00C2B423 /* VMConfigPickerView.m in Sources */ = {isa = PBXBuildFile; fileRef = CEBCAF5624353B9F00C2B423 /* VMConfigPickerView.m */; };
 		CEBCAF5A2435468600C2B423 /* VMConfigTogglePickerCell.m in Sources */ = {isa = PBXBuildFile; fileRef = CEBCAF592435468600C2B423 /* VMConfigTogglePickerCell.m */; };
+		CEC05DF62463E3D300DA82B2 /* VMDisplayView.m in Sources */ = {isa = PBXBuildFile; fileRef = CEC05DF52463E3D300DA82B2 /* VMDisplayView.m */; };
 		CEC4B4E423F122460086B562 /* MetalKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE66450C2269313200B0849A /* MetalKit.framework */; };
 		CECC76512273A7D50059B955 /* cf-input-visitor.c in Sources */ = {isa = PBXBuildFile; fileRef = CECC764C2273A7D50059B955 /* cf-input-visitor.c */; };
 		CECC76522273A7D50059B955 /* qapi-dealloc-visitor.c in Sources */ = {isa = PBXBuildFile; fileRef = CECC764D2273A7D50059B955 /* qapi-dealloc-visitor.c */; };
@@ -885,6 +886,8 @@
 		CEBCAF5624353B9F00C2B423 /* VMConfigPickerView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VMConfigPickerView.m; sourceTree = "<group>"; };
 		CEBCAF582435468600C2B423 /* VMConfigTogglePickerCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VMConfigTogglePickerCell.h; sourceTree = "<group>"; };
 		CEBCAF592435468600C2B423 /* VMConfigTogglePickerCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VMConfigTogglePickerCell.m; sourceTree = "<group>"; };
+		CEC05DF42463E3D300DA82B2 /* VMDisplayView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VMDisplayView.h; sourceTree = "<group>"; };
+		CEC05DF52463E3D300DA82B2 /* VMDisplayView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VMDisplayView.m; sourceTree = "<group>"; };
 		CECC764C2273A7D50059B955 /* cf-input-visitor.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "cf-input-visitor.c"; sourceTree = "<group>"; };
 		CECC764D2273A7D50059B955 /* qapi-dealloc-visitor.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "qapi-dealloc-visitor.c"; sourceTree = "<group>"; };
 		CECC764E2273A7D50059B955 /* qapi-util.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "qapi-util.c"; sourceTree = "<group>"; };
@@ -1522,6 +1525,8 @@
 				CE3ADD692411C661002D6A5F /* VMCursor.m */,
 				CE20FAE62448D2BE0059AE11 /* VMScroll.h */,
 				CE20FAE72448D2BE0059AE11 /* VMScroll.m */,
+				CEC05DF42463E3D300DA82B2 /* VMDisplayView.h */,
+				CEC05DF52463E3D300DA82B2 /* VMDisplayView.m */,
 				CE72B4A92463532B00716A11 /* VMDisplayView.xib */,
 				CE72B4AB2463579D00716A11 /* VMDisplayViewController.h */,
 				CE72B4AC2463579D00716A11 /* VMDisplayViewController.m */,
@@ -1854,6 +1859,7 @@
 				CEA02A992436C7A30087E45F /* UTMConfiguration+Networking.m in Sources */,
 				CE23C1A223FCEC0A001177D6 /* qapi-types-ui.c in Sources */,
 				CE23C1B723FCEC0A001177D6 /* qapi-types-dump.c in Sources */,
+				CEC05DF62463E3D300DA82B2 /* VMDisplayView.m in Sources */,
 				CE23C1CC23FCEC0A001177D6 /* qapi-types-machine-target.c in Sources */,
 				CE059DC8243E9E3400338317 /* UTMLocationManager.m in Sources */,
 				CE23C1B223FCEC0A001177D6 /* qapi-events-block.c in Sources */,

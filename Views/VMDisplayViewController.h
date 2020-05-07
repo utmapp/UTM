@@ -28,8 +28,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSMutableArray<UIKeyCommand *> *_keyCommands;
 }
 
-@property (weak, nonatomic) IBOutlet UIView *mainView;
-@property (weak, nonatomic) IBOutlet UIView *contentView;
+@property (weak, nonatomic) IBOutlet UIView *displayView;
 @property (strong, nonatomic) IBOutlet UIInputView *inputAccessoryView;
 @property (weak, nonatomic) IBOutlet VMKeyboardView *keyboardView;
 @property (weak, nonatomic) IBOutlet UIView *toolbarAccessoryView;

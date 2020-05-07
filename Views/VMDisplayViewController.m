@@ -40,54 +40,15 @@
 
 #pragma mark - NIB Loading
 
-- (void)loadMainViewFromNib {
+- (void)loadDisplayViewFromNib {
     UINib *nib = [UINib nibWithNibName:@"VMDisplayView" bundle:nil];
     NSArray *arr = [nib instantiateWithOwner:self options:nil];
     NSAssert(arr != nil, @"Failed to load VMDisplayView nib");
-    NSAssert(self.mainView != nil, @"Failed to load main view from VMDisplayView nib");
+    NSAssert(self.displayView != nil, @"Failed to load main view from VMDisplayView nib");
     NSAssert(self.inputAccessoryView != nil, @"Failed to load input view from VMDisplayView nib");
-    [self moveSubviewsTo:self.contentView];
-    self.view = self.mainView;
-}
-
-- (void)moveSubviewsTo:(UIView *)destView {
-    NSArray<UIView *> *subviews = self.view.subviews;
-    for (UIView *subview in subviews) {
-        NSArray<NSLayoutConstraint *> *constraints = self.view.constraints;
-        [subview removeFromSuperview];
-        [destView addSubview:subview];
-        [self moveConstraints:constraints subview:subview to:destView];
-    }
-}
-
-- (void)moveConstraints:(NSArray<NSLayoutConstraint *> *)constraints subview:(UIView *)subview to:(UIView *)destView {
-    for (NSLayoutConstraint *constraint in constraints) {
-        if (constraint.firstItem == subview && constraint.secondItem == self.view) {
-            NSLayoutConstraint *newConstraint = [NSLayoutConstraint constraintWithItem:constraint.firstItem
-                                                                             attribute:constraint.firstAttribute
-                                                                             relatedBy:constraint.relation
-                                                                                toItem:destView
-                                                                             attribute:constraint.secondAttribute
-                                                                            multiplier:constraint.multiplier
-                                                                              constant:constraint.constant];
-            newConstraint.active = constraint.active;
-            newConstraint.priority = constraint.priority;
-            newConstraint.shouldBeArchived = constraint.shouldBeArchived;
-            [destView addConstraint:newConstraint];
-        } else if (constraint.firstItem == self.view && constraint.secondItem == subview) {
-            NSLayoutConstraint *newConstraint = [NSLayoutConstraint constraintWithItem:destView
-                                                                             attribute:constraint.firstAttribute
-                                                                             relatedBy:constraint.relation
-                                                                                toItem:constraint.secondItem
-                                                                             attribute:constraint.secondAttribute
-                                                                            multiplier:constraint.multiplier
-                                                                              constant:constraint.constant];
-            newConstraint.active = constraint.active;
-            newConstraint.priority = constraint.priority;
-            newConstraint.shouldBeArchived = constraint.shouldBeArchived;
-            [destView addConstraint:newConstraint];
-        }
-    }
+    self.displayView.frame = self.view.bounds;
+    self.displayView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
+    [self.view addSubview:self.displayView];
 }
 
 #pragma mark - Properties
@@ -126,14 +87,9 @@
 
 #pragma mark - View handling
 
-- (void)prepareForInterfaceBuilder {
-    [super prepareForInterfaceBuilder];
-    [self loadMainViewFromNib];
-}
-
 - (void)viewDidLoad {
     [super viewDidLoad];
-    [self loadMainViewFromNib];
+    [self loadDisplayViewFromNib];
 
     // view state and observers
     _toolbarVisible = YES;
