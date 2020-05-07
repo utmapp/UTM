@@ -2781,6 +2781,10 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="812"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" insetsLayoutMarginsFromSafeArea="NO" translatesAutoresizingMaskIntoConstraints="NO" id="0hJ-Yg-GiD">
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="812"/>
+                                <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            </imageView>
                             <mtkView hidden="YES" contentMode="scaleToFill" colorPixelFormat="BGRA8Unorm" depthStencilPixelFormat="Depth32Float" translatesAutoresizingMaskIntoConstraints="NO" id="KKr-0P-aKo">
                                 <rect key="frame" x="0.0" y="0.0" width="375" height="812"/>
                             </mtkView>
@@ -2788,8 +2792,12 @@
                         <gestureRecognizers/>
                         <constraints>
                             <constraint firstItem="KKr-0P-aKo" firstAttribute="leading" secondItem="WSe-Ri-b4c" secondAttribute="leading" id="Bqu-jT-CF6"/>
+                            <constraint firstItem="0hJ-Yg-GiD" firstAttribute="top" secondItem="WSe-Ri-b4c" secondAttribute="top" id="QmB-Xv-Hvh"/>
                             <constraint firstAttribute="trailing" secondItem="KKr-0P-aKo" secondAttribute="trailing" id="ScP-ME-vZt"/>
                             <constraint firstAttribute="bottom" secondItem="KKr-0P-aKo" secondAttribute="bottom" id="dTN-D9-qsV"/>
+                            <constraint firstItem="0hJ-Yg-GiD" firstAttribute="leading" secondItem="WSe-Ri-b4c" secondAttribute="leading" id="eih-ug-rUy"/>
+                            <constraint firstAttribute="trailing" secondItem="0hJ-Yg-GiD" secondAttribute="trailing" id="fdi-M6-WV9"/>
+                            <constraint firstAttribute="bottom" secondItem="0hJ-Yg-GiD" secondAttribute="bottom" id="qcC-bx-d6d"/>
                             <constraint firstItem="KKr-0P-aKo" firstAttribute="top" secondItem="WSe-Ri-b4c" secondAttribute="top" id="qtD-kP-TTw"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="Bio-ez-YeW"/>
@@ -2799,6 +2807,7 @@
                     <nil key="simulatedBottomBarMetrics"/>
                     <connections>
                         <outlet property="mtkView" destination="KKr-0P-aKo" id="k6G-gw-8tO"/>
+                        <outlet property="placeholderImageView" destination="0hJ-Yg-GiD" id="Vxn-5r-RDV"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="DZc-Sg-gjO" userLabel="First Responder" sceneMemberID="firstResponder"/>

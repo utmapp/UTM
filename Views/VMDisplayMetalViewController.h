@@ -59,6 +59,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 @property (weak, nonatomic) IBOutlet MTKView *mtkView;
+@property (weak, nonatomic) IBOutlet UIImageView *placeholderImageView;
 
 @property (nonatomic, readonly, weak) UTMSpiceIO *spiceIO;
 @property (nonatomic, assign) BOOL lastDisplayChangeResize;

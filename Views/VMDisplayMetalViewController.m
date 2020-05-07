@@ -111,10 +111,15 @@
             [UIView transitionWithView:self.view duration:0.5 options:UIViewAnimationOptionTransitionCrossDissolve animations:^{
                 self.placeholderImageView.hidden = NO;
                 self.placeholderImageView.image = self.vm.screenshot;
+                self.mtkView.hidden = YES;
             } completion:nil];
             break;
         }
         case kVMStarted: {
+            [UIView transitionWithView:self.view duration:0.5 options:UIViewAnimationOptionTransitionCrossDissolve animations:^{
+                self.placeholderImageView.hidden = YES;
+                self.mtkView.hidden = NO;
+            } completion:nil];
             self->_renderer.sourceScreen = self.vmDisplay;
             self->_renderer.sourceCursor = self.vmInput;
             [self orientationDidChange:nil];

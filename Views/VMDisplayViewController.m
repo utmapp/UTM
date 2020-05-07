@@ -191,7 +191,6 @@
         case kVMPaused:
         case kVMSuspended: {
             [UIView transitionWithView:self.view duration:0.5 options:UIViewAnimationOptionTransitionCrossDissolve animations:^{
-                self.contentView.hidden = YES;
                 self.placeholderView.hidden = NO;
                 if (state == kVMPaused) {
                     self.resumeBigButton.hidden = NO;
@@ -220,9 +219,7 @@
         case kVMStarted: {
             hasStartedOnce = YES; // auto-quit after VM ends
             [UIView transitionWithView:self.view duration:0.5 options:UIViewAnimationOptionTransitionCrossDissolve animations:^{
-                self.contentView.hidden = NO;
                 self.placeholderView.hidden = YES;
-                self.placeholderImageView.hidden = YES;
                 self.resumeBigButton.hidden = YES;
             } completion:nil];
             [self.placeholderIndicator stopAnimating];

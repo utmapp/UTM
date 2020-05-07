@@ -24,12 +24,12 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-IB_DESIGNABLE @interface VMDisplayViewController : UIViewController<UTMVirtualMachineDelegate> {
+@interface VMDisplayViewController : UIViewController<UTMVirtualMachineDelegate> {
     NSMutableArray<UIKeyCommand *> *_keyCommands;
 }
 
-@property (weak, nonatomic) IBOutlet UIView *contentView;
 @property (weak, nonatomic) IBOutlet UIView *mainView;
+@property (weak, nonatomic) IBOutlet UIView *contentView;
 @property (strong, nonatomic) IBOutlet UIInputView *inputAccessoryView;
 @property (weak, nonatomic) IBOutlet VMKeyboardView *keyboardView;
 @property (weak, nonatomic) IBOutlet UIView *toolbarAccessoryView;
@@ -38,7 +38,6 @@ IB_DESIGNABLE @interface VMDisplayViewController : UIViewController<UTMVirtualMa
 @property (weak, nonatomic) IBOutlet UIButton *restartButton;
 @property (weak, nonatomic) IBOutlet UIButton *zoomButton;
 @property (weak, nonatomic) IBOutlet UIVisualEffectView *placeholderView;
-@property (weak, nonatomic) IBOutlet UIImageView *placeholderImageView;
 @property (weak, nonatomic) IBOutlet UIActivityIndicatorView *placeholderIndicator;
 @property (weak, nonatomic) IBOutlet UIButton *resumeBigButton;
 @property (strong, nonatomic) IBOutletCollection(VMKeyboardButton) NSArray *customKeyButtons;
