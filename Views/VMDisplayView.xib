@@ -267,6 +267,10 @@
                                 <userDefinedRuntimeAttribute type="boolean" keyPath="toggleable" value="YES"/>
                                 <userDefinedRuntimeAttribute type="boolean" keyPath="secondary" value="YES"/>
                             </userDefinedRuntimeAttributes>
+                            <connections>
+                                <action selector="customKeyTouchDown:" destination="-1" eventType="touchDown" id="kZh-EX-yrR"/>
+                                <action selector="customKeyTouchUp:" destination="-1" eventType="touchUpInside" id="sDx-v5-1xG"/>
+                            </connections>
                         </button>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="jxu-AQ-u8c" customClass="VMKeyboardButton">
                             <rect key="frame" x="38" y="0.0" width="30" height="36"/>
@@ -282,6 +286,10 @@
                                 </userDefinedRuntimeAttribute>
                                 <userDefinedRuntimeAttribute type="boolean" keyPath="secondary" value="YES"/>
                             </userDefinedRuntimeAttributes>
+                            <connections>
+                                <action selector="customKeyTouchDown:" destination="-1" eventType="touchDown" id="IID-VO-9YW"/>
+                                <action selector="customKeyTouchUp:" destination="-1" eventType="touchUpInside" id="92n-oK-GvH"/>
+                            </connections>
                         </button>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Pjh-3m-tFX" customClass="VMKeyboardButton">
                             <rect key="frame" x="76" y="0.0" width="30" height="36"/>
@@ -297,6 +305,10 @@
                                 </userDefinedRuntimeAttribute>
                                 <userDefinedRuntimeAttribute type="boolean" keyPath="secondary" value="YES"/>
                             </userDefinedRuntimeAttributes>
+                            <connections>
+                                <action selector="customKeyTouchDown:" destination="-1" eventType="touchDown" id="JWo-h7-tNm"/>
+                                <action selector="customKeyTouchUp:" destination="-1" eventType="touchUpInside" id="BfK-b4-qFn"/>
+                            </connections>
                         </button>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="QPo-cD-UlK" customClass="VMKeyboardButton">
                             <rect key="frame" x="114" y="0.0" width="30" height="36"/>
@@ -312,6 +324,10 @@
                                 <userDefinedRuntimeAttribute type="boolean" keyPath="toggleable" value="YES"/>
                                 <userDefinedRuntimeAttribute type="boolean" keyPath="secondary" value="YES"/>
                             </userDefinedRuntimeAttributes>
+                            <connections>
+                                <action selector="customKeyTouchDown:" destination="-1" eventType="touchDown" id="0uV-JF-jsR"/>
+                                <action selector="customKeyTouchUp:" destination="-1" eventType="touchUpInside" id="VAF-sI-mcU"/>
+                            </connections>
                         </button>
                     </subviews>
                 </stackView>
@@ -323,6 +339,9 @@
                         <constraint firstAttribute="width" constant="30" id="IWZ-Ay-NdL"/>
                     </constraints>
                     <state key="normal" image="Keyboard Hide"/>
+                    <connections>
+                        <action selector="keyboardDonePressed:" destination="-1" eventType="touchUpInside" id="3bA-fg-pia"/>
+                    </connections>
                 </button>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="740-aI-39P">
                     <rect key="frame" x="924" y="51" width="30" height="30"/>
@@ -332,6 +351,9 @@
                         <constraint firstAttribute="width" constant="30" id="e9r-lL-Yoi"/>
                     </constraints>
                     <state key="normal" image="Keyboard Paste"/>
+                    <connections>
+                        <action selector="keyboardPastePressed:" destination="-1" eventType="touchUpInside" id="E5V-L9-rxg"/>
+                    </connections>
                 </button>
                 <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" translatesAutoresizingMaskIntoConstraints="NO" id="RiC-BP-EoA">
                     <rect key="frame" x="160" y="0.0" width="756" height="68"/>
@@ -351,6 +373,10 @@
                                             <integer key="value" value="15"/>
                                         </userDefinedRuntimeAttribute>
                                     </userDefinedRuntimeAttributes>
+                                    <connections>
+                                        <action selector="customKeyTouchDown:" destination="-1" eventType="touchDown" id="sHC-4i-utA"/>
+                                        <action selector="customKeyTouchUp:" destination="-1" eventType="touchUpInside" id="VIi-XL-ejJ"/>
+                                    </connections>
                                 </button>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="n12-9R-99C" customClass="VMKeyboardButton">
                                     <rect key="frame" x="38" y="0.0" width="30" height="36"/>
@@ -364,6 +390,10 @@
                                             <integer key="value" value="1"/>
                                         </userDefinedRuntimeAttribute>
                                     </userDefinedRuntimeAttributes>
+                                    <connections>
+                                        <action selector="customKeyTouchDown:" destination="-1" eventType="touchDown" id="KIE-Y5-XY5"/>
+                                        <action selector="customKeyTouchUp:" destination="-1" eventType="touchUpInside" id="b0Y-8k-cZ4"/>
+                                    </connections>
                                 </button>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="BUL-js-yMh" customClass="VMKeyboardButton">
                                     <rect key="frame" x="76" y="0.0" width="30" height="36"/>
@@ -377,6 +407,10 @@
                                             <integer key="value" value="57416"/>
                                         </userDefinedRuntimeAttribute>
                                     </userDefinedRuntimeAttributes>
+                                    <connections>
+                                        <action selector="customKeyTouchDown:" destination="-1" eventType="touchDown" id="nco-mO-ZqR"/>
+                                        <action selector="customKeyTouchUp:" destination="-1" eventType="touchUpInside" id="BDL-If-g5M"/>
+                                    </connections>
                                 </button>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="RCo-l7-gvf" customClass="VMKeyboardButton">
                                     <rect key="frame" x="114" y="0.0" width="30" height="36"/>
@@ -390,6 +424,10 @@
                                             <integer key="value" value="57424"/>
                                         </userDefinedRuntimeAttribute>
                                     </userDefinedRuntimeAttributes>
+                                    <connections>
+                                        <action selector="customKeyTouchDown:" destination="-1" eventType="touchDown" id="JFZ-nZ-cvD"/>
+                                        <action selector="customKeyTouchUp:" destination="-1" eventType="touchUpInside" id="6jD-2t-gBT"/>
+                                    </connections>
                                 </button>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="EVa-2J-CRA" customClass="VMKeyboardButton">
                                     <rect key="frame" x="152" y="0.0" width="30" height="36"/>
@@ -403,6 +441,10 @@
                                             <integer key="value" value="57419"/>
                                         </userDefinedRuntimeAttribute>
                                     </userDefinedRuntimeAttributes>
+                                    <connections>
+                                        <action selector="customKeyTouchDown:" destination="-1" eventType="touchDown" id="KlA-Gj-i0c"/>
+                                        <action selector="customKeyTouchUp:" destination="-1" eventType="touchUpInside" id="DH5-NT-lCK"/>
+                                    </connections>
                                 </button>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8Lh-4D-Fz6" customClass="VMKeyboardButton">
                                     <rect key="frame" x="190" y="0.0" width="30" height="36"/>
@@ -416,6 +458,10 @@
                                             <integer key="value" value="57421"/>
                                         </userDefinedRuntimeAttribute>
                                     </userDefinedRuntimeAttributes>
+                                    <connections>
+                                        <action selector="customKeyTouchDown:" destination="-1" eventType="touchDown" id="Nyx-N4-ffe"/>
+                                        <action selector="customKeyTouchUp:" destination="-1" eventType="touchUpInside" id="k6V-YJ-wY7"/>
+                                    </connections>
                                 </button>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="AY8-eJ-bAP" customClass="VMKeyboardButton">
                                     <rect key="frame" x="228" y="0.0" width="30" height="36"/>
@@ -429,6 +475,10 @@
                                             <integer key="value" value="57427"/>
                                         </userDefinedRuntimeAttribute>
                                     </userDefinedRuntimeAttributes>
+                                    <connections>
+                                        <action selector="customKeyTouchDown:" destination="-1" eventType="touchDown" id="g8J-aB-21l"/>
+                                        <action selector="customKeyTouchUp:" destination="-1" eventType="touchUpInside" id="9CE-QJ-1bt"/>
+                                    </connections>
                                 </button>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="PWe-Va-Qi1" customClass="VMKeyboardButton">
                                     <rect key="frame" x="266" y="0.0" width="30" height="36"/>
@@ -441,6 +491,10 @@
                                             <integer key="value" value="59"/>
                                         </userDefinedRuntimeAttribute>
                                     </userDefinedRuntimeAttributes>
+                                    <connections>
+                                        <action selector="customKeyTouchDown:" destination="-1" eventType="touchDown" id="gw0-gA-bdM"/>
+                                        <action selector="customKeyTouchUp:" destination="-1" eventType="touchUpInside" id="7lF-xb-GMb"/>
+                                    </connections>
                                 </button>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="kd1-fj-kXM" customClass="VMKeyboardButton">
                                     <rect key="frame" x="304" y="0.0" width="30" height="36"/>
@@ -453,6 +507,10 @@
                                             <integer key="value" value="60"/>
                                         </userDefinedRuntimeAttribute>
                                     </userDefinedRuntimeAttributes>
+                                    <connections>
+                                        <action selector="customKeyTouchDown:" destination="-1" eventType="touchDown" id="aTv-0D-8Wr"/>
+                                        <action selector="customKeyTouchUp:" destination="-1" eventType="touchUpInside" id="nPU-6d-K87"/>
+                                    </connections>
                                 </button>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gUX-ez-mbt" customClass="VMKeyboardButton">
                                     <rect key="frame" x="342" y="0.0" width="30" height="36"/>
@@ -465,6 +523,10 @@
                                             <integer key="value" value="61"/>
                                         </userDefinedRuntimeAttribute>
                                     </userDefinedRuntimeAttributes>
+                                    <connections>
+                                        <action selector="customKeyTouchDown:" destination="-1" eventType="touchDown" id="iid-9n-LJt"/>
+                                        <action selector="customKeyTouchUp:" destination="-1" eventType="touchUpInside" id="Nwc-62-jMC"/>
+                                    </connections>
                                 </button>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="c7C-CG-EBg" customClass="VMKeyboardButton">
                                     <rect key="frame" x="380" y="0.0" width="30" height="36"/>
@@ -477,6 +539,10 @@
                                             <integer key="value" value="62"/>
                                         </userDefinedRuntimeAttribute>
                                     </userDefinedRuntimeAttributes>
+                                    <connections>
+                                        <action selector="customKeyTouchDown:" destination="-1" eventType="touchDown" id="zE8-Pt-nMb"/>
+                                        <action selector="customKeyTouchUp:" destination="-1" eventType="touchUpInside" id="xyr-hL-vuG"/>
+                                    </connections>
                                 </button>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="DxX-zu-urb" customClass="VMKeyboardButton">
                                     <rect key="frame" x="418" y="0.0" width="30" height="36"/>
@@ -489,6 +555,10 @@
                                             <integer key="value" value="63"/>
                                         </userDefinedRuntimeAttribute>
                                     </userDefinedRuntimeAttributes>
+                                    <connections>
+                                        <action selector="customKeyTouchDown:" destination="-1" eventType="touchDown" id="tUw-1x-HL9"/>
+                                        <action selector="customKeyTouchUp:" destination="-1" eventType="touchUpInside" id="EhF-im-5bu"/>
+                                    </connections>
                                 </button>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Rb5-vO-sIx" customClass="VMKeyboardButton">
                                     <rect key="frame" x="456" y="0.0" width="30" height="36"/>
@@ -501,6 +571,10 @@
                                             <integer key="value" value="64"/>
                                         </userDefinedRuntimeAttribute>
                                     </userDefinedRuntimeAttributes>
+                                    <connections>
+                                        <action selector="customKeyTouchDown:" destination="-1" eventType="touchDown" id="eEz-I9-j0c"/>
+                                        <action selector="customKeyTouchUp:" destination="-1" eventType="touchUpInside" id="eMm-vb-aJk"/>
+                                    </connections>
                                 </button>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3yi-Pr-1ih" customClass="VMKeyboardButton">
                                     <rect key="frame" x="494" y="0.0" width="30" height="36"/>
@@ -513,6 +587,10 @@
                                             <integer key="value" value="65"/>
                                         </userDefinedRuntimeAttribute>
                                     </userDefinedRuntimeAttributes>
+                                    <connections>
+                                        <action selector="customKeyTouchDown:" destination="-1" eventType="touchDown" id="LPR-YJ-C18"/>
+                                        <action selector="customKeyTouchUp:" destination="-1" eventType="touchUpInside" id="AwD-yz-4LO"/>
+                                    </connections>
                                 </button>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="LlV-Ae-CrL" customClass="VMKeyboardButton">
                                     <rect key="frame" x="532" y="0.0" width="30" height="36"/>
@@ -525,6 +603,10 @@
                                             <integer key="value" value="66"/>
                                         </userDefinedRuntimeAttribute>
                                     </userDefinedRuntimeAttributes>
+                                    <connections>
+                                        <action selector="customKeyTouchDown:" destination="-1" eventType="touchDown" id="cAT-sO-hiG"/>
+                                        <action selector="customKeyTouchUp:" destination="-1" eventType="touchUpInside" id="JDA-XA-pNL"/>
+                                    </connections>
                                 </button>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="UNT-ei-lIn" customClass="VMKeyboardButton">
                                     <rect key="frame" x="570" y="0.0" width="30" height="36"/>
@@ -537,6 +619,10 @@
                                             <integer key="value" value="67"/>
                                         </userDefinedRuntimeAttribute>
                                     </userDefinedRuntimeAttributes>
+                                    <connections>
+                                        <action selector="customKeyTouchDown:" destination="-1" eventType="touchDown" id="i5c-aL-kwZ"/>
+                                        <action selector="customKeyTouchUp:" destination="-1" eventType="touchUpInside" id="gTP-4I-o2a"/>
+                                    </connections>
                                 </button>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="AhH-ij-IF8" customClass="VMKeyboardButton">
                                     <rect key="frame" x="608" y="0.0" width="30" height="36"/>
@@ -549,6 +635,10 @@
                                             <integer key="value" value="68"/>
                                         </userDefinedRuntimeAttribute>
                                     </userDefinedRuntimeAttributes>
+                                    <connections>
+                                        <action selector="customKeyTouchDown:" destination="-1" eventType="touchDown" id="jeD-qW-d46"/>
+                                        <action selector="customKeyTouchUp:" destination="-1" eventType="touchUpInside" id="iFo-WM-Y2S"/>
+                                    </connections>
                                 </button>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="rfk-su-cFq" customClass="VMKeyboardButton">
                                     <rect key="frame" x="646" y="0.0" width="30" height="36"/>
@@ -561,6 +651,10 @@
                                             <integer key="value" value="87"/>
                                         </userDefinedRuntimeAttribute>
                                     </userDefinedRuntimeAttributes>
+                                    <connections>
+                                        <action selector="customKeyTouchDown:" destination="-1" eventType="touchDown" id="G5A-fy-Z8c"/>
+                                        <action selector="customKeyTouchUp:" destination="-1" eventType="touchUpInside" id="ByI-de-wgu"/>
+                                    </connections>
                                 </button>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="EDi-KP-KwO" customClass="VMKeyboardButton">
                                     <rect key="frame" x="684" y="0.0" width="30" height="36"/>
@@ -573,6 +667,10 @@
                                             <integer key="value" value="88"/>
                                         </userDefinedRuntimeAttribute>
                                     </userDefinedRuntimeAttributes>
+                                    <connections>
+                                        <action selector="customKeyTouchDown:" destination="-1" eventType="touchDown" id="nHG-ei-cyg"/>
+                                        <action selector="customKeyTouchUp:" destination="-1" eventType="touchUpInside" id="Qmz-lJ-hja"/>
+                                    </connections>
                                 </button>
                             </subviews>
                         </stackView>
