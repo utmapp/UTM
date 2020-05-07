@@ -277,6 +277,8 @@
 		CE664511226935F000B0849A /* CSInput.m in Sources */ = {isa = PBXBuildFile; fileRef = CE664510226935F000B0849A /* CSInput.m */; };
 		CE6EDCDF241C4A6800A719DC /* UTMViewState.m in Sources */ = {isa = PBXBuildFile; fileRef = CE6EDCDE241C4A6800A719DC /* UTMViewState.m */; };
 		CE6EDCE2241DA0E900A719DC /* UTMLogging.m in Sources */ = {isa = PBXBuildFile; fileRef = CE6EDCE1241DA0E900A719DC /* UTMLogging.m */; };
+		CE72B4AA2463532B00716A11 /* VMDisplayView.xib in Resources */ = {isa = PBXBuildFile; fileRef = CE72B4A92463532B00716A11 /* VMDisplayView.xib */; };
+		CE72B4AD2463579D00716A11 /* VMDisplayViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CE72B4AC2463579D00716A11 /* VMDisplayViewController.m */; };
 		CE74C288225D88ED004E4FF1 /* VMConfigNetworkingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CE74C276225D88EC004E4FF1 /* VMConfigNetworkingViewController.m */; };
 		CE74C28B225D88ED004E4FF1 /* VMConfigDisplayViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CE74C27D225D88EC004E4FF1 /* VMConfigDisplayViewController.m */; };
 		CE74C28C225D88ED004E4FF1 /* VMConfigDriveDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CE74C27E225D88EC004E4FF1 /* VMConfigDriveDetailViewController.m */; };
@@ -826,6 +828,9 @@
 		CE6EDCDE241C4A6800A719DC /* UTMViewState.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UTMViewState.m; sourceTree = "<group>"; };
 		CE6EDCE0241DA0E900A719DC /* UTMLogging.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UTMLogging.h; sourceTree = "<group>"; };
 		CE6EDCE1241DA0E900A719DC /* UTMLogging.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UTMLogging.m; sourceTree = "<group>"; };
+		CE72B4A92463532B00716A11 /* VMDisplayView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = VMDisplayView.xib; sourceTree = "<group>"; };
+		CE72B4AB2463579D00716A11 /* VMDisplayViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VMDisplayViewController.h; sourceTree = "<group>"; };
+		CE72B4AC2463579D00716A11 /* VMDisplayViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VMDisplayViewController.m; sourceTree = "<group>"; };
 		CE74C276225D88EC004E4FF1 /* VMConfigNetworkingViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VMConfigNetworkingViewController.m; sourceTree = "<group>"; };
 		CE74C277225D88EC004E4FF1 /* VMConfigSystemViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VMConfigSystemViewController.h; sourceTree = "<group>"; };
 		CE74C27B225D88EC004E4FF1 /* VMConfigCreateViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VMConfigCreateViewController.h; sourceTree = "<group>"; };
@@ -1517,6 +1522,9 @@
 				CE3ADD692411C661002D6A5F /* VMCursor.m */,
 				CE20FAE62448D2BE0059AE11 /* VMScroll.h */,
 				CE20FAE72448D2BE0059AE11 /* VMScroll.m */,
+				CE72B4A92463532B00716A11 /* VMDisplayView.xib */,
+				CE72B4AB2463579D00716A11 /* VMDisplayViewController.h */,
+				CE72B4AC2463579D00716A11 /* VMDisplayViewController.m */,
 				5286EC93243748C3007E6CBC /* VMDisplayMetalViewController.h */,
 				5286EC94243748C3007E6CBC /* VMDisplayMetalViewController.m */,
 				CE3ADD65240EFBCA002D6A5F /* VMDisplayMetalViewController+Keyboard.h */,
@@ -1680,6 +1688,7 @@
 				E28394BB240C219F006742E2 /* terminal.js in Resources */,
 				521F3EF92414F73800130500 /* Localizable.strings in Resources */,
 				CE9D18F82265410E00355E14 /* qemu in Resources */,
+				CE72B4AA2463532B00716A11 /* VMDisplayView.xib in Resources */,
 				CE550BD92259479D0063E575 /* LaunchScreen.storyboard in Resources */,
 				CE550BD62259479D0063E575 /* Assets.xcassets in Resources */,
 				E28394BA240C219F006742E2 /* terminal.html in Resources */,
@@ -1876,6 +1885,7 @@
 				CE23C1CB23FCEC0A001177D6 /* qapi-commands-misc.c in Sources */,
 				CEBCAF5724353B9F00C2B423 /* VMConfigPickerView.m in Sources */,
 				CE23C1A123FCEC0A001177D6 /* qapi-events-run-state.c in Sources */,
+				CE72B4AD2463579D00716A11 /* VMDisplayViewController.m in Sources */,
 				CE23C17323FCEC0A001177D6 /* qapi-visit-transaction.c in Sources */,
 				CE059DC5243BFA3200338317 /* UTMConfiguration+Sharing.m in Sources */,
 				CE23C16423FCEC0A001177D6 /* qapi-commands-ui.c in Sources */,
