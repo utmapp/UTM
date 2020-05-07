@@ -10,7 +10,7 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="VMDisplayViewController">
             <connections>
-                <outlet property="controlView" destination="Yko-Iw-PiZ" id="mwm-Xg-1a2"/>
+                <outlet property="contentView" destination="5vj-iZ-ldU" id="Yhd-Pd-WVd"/>
                 <outlet property="inputAccessoryView" destination="qdd-t1-YV9" id="bFg-sV-ulc"/>
                 <outlet property="keyboardView" destination="K6v-4f-PQp" id="4aa-Fa-QFD"/>
                 <outlet property="mainView" destination="NOe-rz-jvy" id="T3M-rd-GYB"/>
@@ -33,18 +33,19 @@
             <autoresizingMask key="autoresizingMask"/>
             <subviews>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="K6v-4f-PQp" customClass="VMKeyboardView">
-                    <rect key="frame" x="0.0" y="44" width="0.0" height="0.0"/>
                     <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <constraints>
                         <constraint firstAttribute="width" id="DKp-GL-ykM"/>
                         <constraint firstAttribute="height" id="W8N-xi-VWB"/>
                     </constraints>
                 </view>
-                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Yko-Iw-PiZ">
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="5vj-iZ-ldU">
                     <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                    <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                 </view>
-                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" insetsLayoutMarginsFromSafeArea="NO" translatesAutoresizingMaskIntoConstraints="NO" id="zAZ-hZ-ba0">
+                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" insetsLayoutMarginsFromSafeArea="NO" translatesAutoresizingMaskIntoConstraints="NO" id="zAZ-hZ-ba0">
                     <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                 </imageView>
                 <visualEffectView opaque="NO" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" translatesAutoresizingMaskIntoConstraints="NO" id="PK2-6H-Mm0">
@@ -233,24 +234,20 @@
             </subviews>
             <gestureRecognizers/>
             <constraints>
-                <constraint firstItem="K6v-4f-PQp" firstAttribute="top" secondItem="oBd-R5-iCm" secondAttribute="top" id="3It-MB-ePF"/>
-                <constraint firstItem="K6v-4f-PQp" firstAttribute="leading" secondItem="oBd-R5-iCm" secondAttribute="leading" id="4ZP-iS-CNq"/>
+                <constraint firstItem="K6v-4f-PQp" firstAttribute="top" secondItem="NOe-rz-jvy" secondAttribute="top" id="3It-MB-ePF"/>
+                <constraint firstItem="5vj-iZ-ldU" firstAttribute="leading" secondItem="NOe-rz-jvy" secondAttribute="leading" id="3Qr-fB-iVa"/>
+                <constraint firstItem="K6v-4f-PQp" firstAttribute="leading" secondItem="NOe-rz-jvy" secondAttribute="leading" id="4ZP-iS-CNq"/>
                 <constraint firstItem="PK2-6H-Mm0" firstAttribute="top" secondItem="NOe-rz-jvy" secondAttribute="top" id="5rg-Am-2Cw"/>
                 <constraint firstAttribute="trailing" secondItem="PK2-6H-Mm0" secondAttribute="trailing" id="66H-Mh-dzf"/>
                 <constraint firstItem="FjS-ZA-duw" firstAttribute="leading" secondItem="oBd-R5-iCm" secondAttribute="leading" priority="750" id="CWW-pG-AhJ"/>
-                <constraint firstItem="Yko-Iw-PiZ" firstAttribute="bottom" secondItem="zAZ-hZ-ba0" secondAttribute="bottom" id="CfV-AC-WAz"/>
-                <constraint firstAttribute="trailing" secondItem="Yko-Iw-PiZ" secondAttribute="trailing" id="D5Z-N7-vb5"/>
                 <constraint firstItem="PK2-6H-Mm0" firstAttribute="leading" secondItem="NOe-rz-jvy" secondAttribute="leading" id="EGq-A5-jiU"/>
                 <constraint firstItem="FjS-ZA-duw" firstAttribute="trailing" secondItem="oBd-R5-iCm" secondAttribute="trailing" priority="750" id="Guz-ka-uBP"/>
-                <constraint firstItem="Yko-Iw-PiZ" firstAttribute="top" secondItem="NOe-rz-jvy" secondAttribute="top" id="K2Q-Uk-yHb"/>
-                <constraint firstItem="zAZ-hZ-ba0" firstAttribute="top" secondItem="Yko-Iw-PiZ" secondAttribute="top" id="UQf-sc-sF0"/>
+                <constraint firstItem="5vj-iZ-ldU" firstAttribute="top" secondItem="NOe-rz-jvy" secondAttribute="top" id="R10-l6-dkE"/>
                 <constraint firstItem="FjS-ZA-duw" firstAttribute="bottom" secondItem="oBd-R5-iCm" secondAttribute="top" constant="45" id="XeS-Xt-9u7"/>
-                <constraint firstItem="Yko-Iw-PiZ" firstAttribute="leading" secondItem="NOe-rz-jvy" secondAttribute="leading" id="YFm-eG-QSA"/>
-                <constraint firstItem="zAZ-hZ-ba0" firstAttribute="trailing" secondItem="Yko-Iw-PiZ" secondAttribute="trailing" id="YZP-V4-PX7"/>
                 <constraint firstAttribute="bottom" secondItem="PK2-6H-Mm0" secondAttribute="bottom" id="Z3s-eZ-Auc"/>
-                <constraint firstAttribute="bottom" secondItem="Yko-Iw-PiZ" secondAttribute="bottom" id="g2W-zh-XpX"/>
                 <constraint firstItem="FjS-ZA-duw" firstAttribute="centerX" secondItem="NOe-rz-jvy" secondAttribute="centerX" id="mto-cK-93P"/>
-                <constraint firstItem="zAZ-hZ-ba0" firstAttribute="leading" secondItem="Yko-Iw-PiZ" secondAttribute="leading" id="qNh-24-4Xt"/>
+                <constraint firstAttribute="trailing" secondItem="5vj-iZ-ldU" secondAttribute="trailing" id="sjq-JA-1vK"/>
+                <constraint firstAttribute="bottom" secondItem="5vj-iZ-ldU" secondAttribute="bottom" id="tNe-9P-NgU"/>
                 <constraint firstItem="FjS-ZA-duw" firstAttribute="top" secondItem="NOe-rz-jvy" secondAttribute="top" id="vRZ-KD-PIG"/>
             </constraints>
             <viewLayoutGuide key="safeArea" id="oBd-R5-iCm"/>

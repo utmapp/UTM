@@ -15,12 +15,12 @@
 //
 
 #import "UIViewController+Extensions.h"
-#import "VMDisplayMetalViewController+Keyboard.h"
+#import "VMDisplayViewController+Keyboard.h"
 #import "UTMVirtualMachine.h"
 #import "VMKeyboardView.h"
 #import "VMKeyboardButton.h"
 
-@implementation VMDisplayMetalViewController (Keyboard)
+@implementation VMDisplayViewController (Keyboard)
 
 #pragma mark - Software Keyboard
 

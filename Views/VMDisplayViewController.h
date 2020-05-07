@@ -15,15 +15,20 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "CSInput.h"
+#import "UTMVirtualMachineDelegate.h"
 
+@class UTMVirtualMachine;
 @class VMKeyboardButton;
 @class VMKeyboardView;
 
 NS_ASSUME_NONNULL_BEGIN
 
-IB_DESIGNABLE @interface VMDisplayViewController : UIViewController
+IB_DESIGNABLE @interface VMDisplayViewController : UIViewController<UTMVirtualMachineDelegate> {
+    NSMutableArray<UIKeyCommand *> *_keyCommands;
+}
 
-@property (strong, nonatomic) IBOutlet UIView *controlView;
+@property (weak, nonatomic) IBOutlet UIView *contentView;
 @property (weak, nonatomic) IBOutlet UIView *mainView;
 @property (strong, nonatomic) IBOutlet UIInputView *inputAccessoryView;
 @property (weak, nonatomic) IBOutlet VMKeyboardView *keyboardView;
@@ -38,6 +43,14 @@ IB_DESIGNABLE @interface VMDisplayViewController : UIViewController
 @property (weak, nonatomic) IBOutlet UIButton *resumeBigButton;
 @property (strong, nonatomic) IBOutletCollection(VMKeyboardButton) NSArray *customKeyButtons;
 @property (strong, nonatomic) IBOutletCollection(VMKeyboardButton) NSArray *customKeyModifierButtons;
+
+@property (nonatomic, readwrite) BOOL prefersStatusBarHidden;
+@property (nonatomic, readonly) BOOL autosaveBackground;
+@property (nonatomic, readonly) BOOL autosaveLowMemory;
+@property (nonatomic, readonly) BOOL runInBackground;
+@property (nonatomic, strong) UTMVirtualMachine *vm;
+
+- (void)sendExtendedKey:(SendKeyType)type code:(int)code;
 
 - (IBAction)changeDisplayZoom:(UIButton *)sender;
 - (IBAction)pauseResumePressed:(UIButton *)sender;

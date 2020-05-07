@@ -254,7 +254,7 @@
 		CE36B1552275061B004A1435 /* error.c in Sources */ = {isa = PBXBuildFile; fileRef = CE36B1542275061B004A1435 /* error.c */; };
 		CE36B26A22763F28004A1435 /* UTMJSONStream.m in Sources */ = {isa = PBXBuildFile; fileRef = CE36B26922763F28004A1435 /* UTMJSONStream.m */; };
 		CE36B281227668D1004A1435 /* UTMQemuManager.m in Sources */ = {isa = PBXBuildFile; fileRef = CE36B280227668D1004A1435 /* UTMQemuManager.m */; };
-		CE3ADD67240EFBCA002D6A5F /* VMDisplayMetalViewController+Keyboard.m in Sources */ = {isa = PBXBuildFile; fileRef = CE3ADD66240EFBCA002D6A5F /* VMDisplayMetalViewController+Keyboard.m */; };
+		CE3ADD67240EFBCA002D6A5F /* VMDisplayViewController+Keyboard.m in Sources */ = {isa = PBXBuildFile; fileRef = CE3ADD66240EFBCA002D6A5F /* VMDisplayViewController+Keyboard.m */; };
 		CE3ADD6A2411C661002D6A5F /* VMCursor.m in Sources */ = {isa = PBXBuildFile; fileRef = CE3ADD692411C661002D6A5F /* VMCursor.m */; };
 		CE4507D2226A5BE200A28D22 /* VMKeyboardView.m in Sources */ = {isa = PBXBuildFile; fileRef = CE4507D1226A5BE200A28D22 /* VMKeyboardView.m */; };
 		CE4AA1492263B24F002E4A54 /* CSDisplayMetal.m in Sources */ = {isa = PBXBuildFile; fileRef = CE4AA1482263B24F002E4A54 /* CSDisplayMetal.m */; };
@@ -782,8 +782,8 @@
 		CE36B27E227665B7004A1435 /* UTMJSONStreamDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UTMJSONStreamDelegate.h; sourceTree = "<group>"; };
 		CE36B27F227668D1004A1435 /* UTMQemuManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UTMQemuManager.h; sourceTree = "<group>"; };
 		CE36B280227668D1004A1435 /* UTMQemuManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UTMQemuManager.m; sourceTree = "<group>"; };
-		CE3ADD65240EFBCA002D6A5F /* VMDisplayMetalViewController+Keyboard.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "VMDisplayMetalViewController+Keyboard.h"; sourceTree = "<group>"; };
-		CE3ADD66240EFBCA002D6A5F /* VMDisplayMetalViewController+Keyboard.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "VMDisplayMetalViewController+Keyboard.m"; sourceTree = "<group>"; };
+		CE3ADD65240EFBCA002D6A5F /* VMDisplayViewController+Keyboard.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "VMDisplayViewController+Keyboard.h"; sourceTree = "<group>"; };
+		CE3ADD66240EFBCA002D6A5F /* VMDisplayViewController+Keyboard.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "VMDisplayViewController+Keyboard.m"; sourceTree = "<group>"; };
 		CE3ADD682411C661002D6A5F /* VMCursor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VMCursor.h; sourceTree = "<group>"; };
 		CE3ADD692411C661002D6A5F /* VMCursor.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VMCursor.m; sourceTree = "<group>"; };
 		CE4507D0226A5BE200A28D22 /* VMKeyboardView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VMKeyboardView.h; sourceTree = "<group>"; };
@@ -1525,10 +1525,10 @@
 				CE72B4A92463532B00716A11 /* VMDisplayView.xib */,
 				CE72B4AB2463579D00716A11 /* VMDisplayViewController.h */,
 				CE72B4AC2463579D00716A11 /* VMDisplayViewController.m */,
+				CE3ADD65240EFBCA002D6A5F /* VMDisplayViewController+Keyboard.h */,
+				CE3ADD66240EFBCA002D6A5F /* VMDisplayViewController+Keyboard.m */,
 				5286EC93243748C3007E6CBC /* VMDisplayMetalViewController.h */,
 				5286EC94243748C3007E6CBC /* VMDisplayMetalViewController.m */,
-				CE3ADD65240EFBCA002D6A5F /* VMDisplayMetalViewController+Keyboard.h */,
-				CE3ADD66240EFBCA002D6A5F /* VMDisplayMetalViewController+Keyboard.m */,
 				83FBDD53242FA71900D2C5D7 /* VMDisplayMetalViewController+Pointer.h */,
 				83FBDD55242FA7BC00D2C5D7 /* VMDisplayMetalViewController+Pointer.m */,
 				CE056CA4242454100004B68A /* VMDisplayMetalViewController+Touch.h */,
@@ -1872,7 +1872,7 @@
 				CE23C1C223FCEC0A001177D6 /* qapi-types-qom.c in Sources */,
 				CE23C19F23FCEC0A001177D6 /* qapi-commands-rdma.c in Sources */,
 				CE74C28C225D88ED004E4FF1 /* VMConfigDriveDetailViewController.m in Sources */,
-				CE3ADD67240EFBCA002D6A5F /* VMDisplayMetalViewController+Keyboard.m in Sources */,
+				CE3ADD67240EFBCA002D6A5F /* VMDisplayViewController+Keyboard.m in Sources */,
 				CE23C18B23FCEC0A001177D6 /* qapi-builtin-types.c in Sources */,
 				CE23C19923FCEC0A001177D6 /* qapi-events-migration.c in Sources */,
 				CE23C18923FCEC0A001177D6 /* qapi-commands.c in Sources */,

@@ -14,12 +14,12 @@
 // limitations under the License.
 //
 
-#import "VMDisplayMetalViewController.h"
+#import "VMDisplayViewController.h"
 #import "VMKeyboardViewDelegate.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface VMDisplayMetalViewController (Keyboard) <VMKeyboardViewDelegate>
+@interface VMDisplayViewController (Keyboard) <VMKeyboardViewDelegate>
 
 @property (nonatomic, readonly) NSArray<UIKeyCommand *> *keyCommands;
 
