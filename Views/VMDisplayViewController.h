@@ -20,7 +20,6 @@
 
 @class UTMVirtualMachine;
 @class VMKeyboardButton;
-@class VMKeyboardView;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -30,7 +29,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (weak, nonatomic) IBOutlet UIView *displayView;
 @property (strong, nonatomic) IBOutlet UIInputView *inputAccessoryView;
-@property (weak, nonatomic) IBOutlet VMKeyboardView *keyboardView;
 @property (weak, nonatomic) IBOutlet UIView *toolbarAccessoryView;
 @property (weak, nonatomic) IBOutlet UIButton *powerExitButton;
 @property (weak, nonatomic) IBOutlet UIButton *pauseResumeButton;
@@ -48,8 +46,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) BOOL autosaveLowMemory;
 @property (nonatomic, readonly) BOOL runInBackground;
 @property (nonatomic, strong) UTMVirtualMachine *vm;
-
-- (void)sendExtendedKey:(SendKeyType)type code:(int)code;
 
 - (IBAction)changeDisplayZoom:(UIButton *)sender;
 - (IBAction)pauseResumePressed:(UIButton *)sender;

@@ -15,9 +15,11 @@
 //
 
 #import "VMDisplayMetalViewController.h"
+#import "VMDisplayMetalViewController+Keyboard.h"
 #import "VMDisplayMetalViewController+Touch.h"
 #import "VMDisplayMetalViewController+Pointer.h"
 #import "VMDisplayMetalViewController+Gamepad.h"
+#import "VMKeyboardView.h"
 #import "UTMRenderer.h"
 #import "UTMVirtualMachine.h"
 #import "UTMQemuManager.h"
@@ -34,10 +36,12 @@
 
 @implementation VMDisplayMetalViewController {
     UTMRenderer *_renderer;
+    BOOL _keyboardVisible;
 }
 
 @synthesize vmDisplay;
 @synthesize vmInput;
+@synthesize keyboardVisible = _keyboardVisible;
 
 - (BOOL)serverModeCursor {
     return self.vmInput.serverModeCursor;
@@ -45,6 +49,9 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
+    // set up software keyboard
+    self.keyboardView.inputAccessoryView = self.inputAccessoryView;
     
     // Set the view to use the default device
     self.mtkView.device = MTLCreateSystemDefaultDevice();
@@ -131,6 +138,15 @@
 }
 
 #pragma mark - Key handling
+
+- (void)setKeyboardVisible:(BOOL)keyboardVisible {
+    if (keyboardVisible) {
+        [self.keyboardView becomeFirstResponder];
+    } else {
+        [self.keyboardView resignFirstResponder];
+    }
+    _keyboardVisible = keyboardVisible;
+}
 
 - (void)sendExtendedKey:(SendKeyType)type code:(int)code {
     if ((code & 0xFF00) == 0xE000) {

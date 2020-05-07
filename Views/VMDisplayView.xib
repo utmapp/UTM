@@ -12,7 +12,6 @@
             <connections>
                 <outlet property="displayView" destination="NOe-rz-jvy" id="T3M-rd-GYB"/>
                 <outlet property="inputAccessoryView" destination="qdd-t1-YV9" id="bFg-sV-ulc"/>
-                <outlet property="keyboardView" destination="K6v-4f-PQp" id="4aa-Fa-QFD"/>
                 <outlet property="pauseResumeButton" destination="f3q-Wp-4H1" id="iCI-1b-o7B"/>
                 <outlet property="placeholderIndicator" destination="18B-yK-cUi" id="ACc-pi-9qK"/>
                 <outlet property="placeholderView" destination="PK2-6H-Mm0" id="TaA-3O-Opc"/>
@@ -30,16 +29,6 @@
             <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
             <autoresizingMask key="autoresizingMask"/>
             <subviews>
-                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="K6v-4f-PQp" customClass="VMKeyboardView">
-                    <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                    <constraints>
-                        <constraint firstAttribute="width" id="DKp-GL-ykM"/>
-                        <constraint firstAttribute="height" id="W8N-xi-VWB"/>
-                    </constraints>
-                    <connections>
-                        <outlet property="inputAccessoryView" destination="qdd-t1-YV9" id="eal-9V-KJh"/>
-                    </connections>
-                </view>
                 <visualEffectView opaque="NO" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" translatesAutoresizingMaskIntoConstraints="NO" id="PK2-6H-Mm0">
                     <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                     <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="3zv-lo-2BB">
@@ -226,8 +215,6 @@
             </subviews>
             <gestureRecognizers/>
             <constraints>
-                <constraint firstItem="K6v-4f-PQp" firstAttribute="top" secondItem="NOe-rz-jvy" secondAttribute="top" id="3It-MB-ePF"/>
-                <constraint firstItem="K6v-4f-PQp" firstAttribute="leading" secondItem="NOe-rz-jvy" secondAttribute="leading" id="4ZP-iS-CNq"/>
                 <constraint firstItem="PK2-6H-Mm0" firstAttribute="top" secondItem="NOe-rz-jvy" secondAttribute="top" id="5rg-Am-2Cw"/>
                 <constraint firstAttribute="trailing" secondItem="PK2-6H-Mm0" secondAttribute="trailing" id="66H-Mh-dzf"/>
                 <constraint firstItem="FjS-ZA-duw" firstAttribute="leading" secondItem="oBd-R5-iCm" secondAttribute="leading" priority="750" id="CWW-pG-AhJ"/>

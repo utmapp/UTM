@@ -15,12 +15,10 @@
 //
 
 #import "VMDisplayViewController.h"
-#import "VMDisplayViewController+Keyboard.h"
 #import "UIViewController+Extensions.h"
 #import "UTMLocationManager.h"
 #import "UTMVirtualMachine.h"
 #import "VMConfigExistingViewController.h"
-#import "VMKeyboardView.h"
 
 @interface VMDisplayViewController ()
 
@@ -29,10 +27,6 @@
 @implementation VMDisplayViewController {
     // status bar
     BOOL _prefersStatusBarHidden;
-    
-    // visibility
-    BOOL _toolbarVisible;
-    BOOL _keyboardVisible;
     
     // save state
     BOOL _hasAutoSave;
@@ -55,6 +49,8 @@
 
 @synthesize vmConfiguration;
 @synthesize vmMessage;
+@synthesize keyboardVisible = _keyboardVisible;
+@synthesize toolbarVisible = _toolbarVisible;
 
 - (BOOL)largeScreen {
     return self.traitCollection.horizontalSizeClass == UIUserInterfaceSizeClassRegular && self.traitCollection.verticalSizeClass == UIUserInterfaceSizeClassRegular;
@@ -93,7 +89,6 @@
 
     // view state and observers
     _toolbarVisible = YES;
-    _keyboardVisible = NO;
     
     if (self.largeScreen) {
         self.prefersStatusBarHidden = YES;
@@ -215,10 +210,6 @@
     } completion:nil];
 }
 
-- (BOOL)toolbarVisible {
-    return _toolbarVisible;
-}
-
 - (void)setToolbarVisible:(BOOL)toolbarVisible {
     if (toolbarVisible) {
         [self showToolbar];
@@ -226,19 +217,6 @@
         [self hideToolbar];
     }
     _toolbarVisible = toolbarVisible;
-}
-
-- (BOOL)keyboardVisible {
-    return _keyboardVisible;
-}
-
-- (void)setKeyboardVisible:(BOOL)keyboardVisible {
-    if (keyboardVisible) {
-        [self.keyboardView becomeFirstResponder];
-    } else {
-        [self.keyboardView resignFirstResponder];
-    }
-    _keyboardVisible = keyboardVisible;
 }
 
 - (IBAction)changeDisplayZoom:(UIButton *)sender {

@@ -34,6 +34,8 @@ NSString* const kVMDebugHandler = @"UTMDebug";
     UISwipeGestureRecognizer *_swipeDown;
 }
 
+@synthesize keyboardVisible = _keyboardVisible;
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     // UI setup
@@ -42,17 +44,13 @@ NSString* const kVMDebugHandler = @"UTMDebug";
     [_webView setCustomInputAccessoryView: self.inputAccessoryView];
     [[[_webView configuration] userContentController] addScriptMessageHandler: self name: kVMSendInputHandler];
     [[[_webView configuration] userContentController] addScriptMessageHandler: self name: kVMDebugHandler];
+    [_webView becomeFirstResponder];
     
     // load terminal.html
     NSURL* resourceURL = [[NSBundle mainBundle] resourceURL];
     NSURL* indexFile = [resourceURL URLByAppendingPathComponent: @"terminal.html"];
     [_webView loadFileURL: indexFile allowingReadAccessToURL: resourceURL];
     _webView.navigationDelegate = self;
-}
-
-- (void)viewDidLayoutSubviews {
-    [super viewDidLayoutSubviews];
-    [self updateWebViewScrollOffset: [self.toolbarAccessoryView isHidden]];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -106,7 +104,9 @@ NSString* const kVMDebugHandler = @"UTMDebug";
         NSString* jsTemplate = type == SEND_KEY_PRESS ? @"programmaticKeyDown(%d);" : @"programmaticKeyUp(%d);";
         jsString = [NSString stringWithFormat: jsTemplate, code];
     }
-    [_webView evaluateJavaScript:jsString completionHandler:nil];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self->_webView evaluateJavaScript:jsString completionHandler:nil];
+    });
 }
 
 - (void)traitCollectionDidChange:(UITraitCollection *)previousTraitCollection {
@@ -130,6 +130,30 @@ NSString* const kVMDebugHandler = @"UTMDebug";
         self.inputAccessoryView.frame = currentFrame;
         [self reloadInputViews];
     }
+}
+
+- (void)setKeyboardVisible:(BOOL)keyboardVisible {
+    if (keyboardVisible) {
+        [self showKeyboard];
+    } else {
+        [self hideKeyboard];
+    }
+    _keyboardVisible = keyboardVisible;
+}
+
+- (void)hideKeyboard {
+    [_webView endEditing:YES];
+}
+
+- (void)showKeyboard {
+    [_webView toggleKeyboardDisplayRequiresUserAction:NO];
+    NSString* jsString = @"focusTerminal()";
+    [_webView evaluateJavaScript: jsString completionHandler:^(id _Nullable _, NSError * _Nullable error) {
+        if (error != nil) {
+            NSLog(@"Error while focusing terminal element");
+        }
+        [self->_webView toggleKeyboardDisplayRequiresUserAction:YES];
+    }];
 }
 
 #pragma mark - Gestures
@@ -219,17 +243,6 @@ NSString* const kVMDebugHandler = @"UTMDebug";
             break;
         }
     }
-}
-
-- (void)updateWebViewScrollOffset: (BOOL) toolbarHidden {
-    CGFloat offset = 0.0;
-    if (!toolbarHidden) {
-        offset = self.toolbarAccessoryView.bounds.size.height;
-    }
-    [UIView animateWithDuration:0.3 animations:^{
-        [self.webViewTopConstraint setConstant: offset];
-        [self.webView layoutIfNeeded];
-    }];
 }
 
 @end
