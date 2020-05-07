@@ -29,7 +29,6 @@
 @interface VMDisplayMetalViewController ()
 
 @property (nonatomic, readwrite, weak) UTMSpiceIO *spiceIO;
-@property (nonatomic, readonly) BOOL largeScreen;
 
 @end
 

@@ -20,7 +20,7 @@
 #import "UTMConfiguration.h"
 #import "UTMVirtualMachine.h"
 #import "VMDisplayMetalViewController.h"
-#import "VMTerminalViewController.h"
+#import "VMDisplayTerminalViewController.h"
 
 @interface VMListViewController ()
 
@@ -219,8 +219,8 @@
         vm.delegate = metalView;
         [metalView virtualMachine:vm transitionToState:vm.state];
     } else if ([[segue identifier] isEqualToString:@"startVMConsole"]) {
-        NSAssert([segue.destinationViewController isKindOfClass:[VMTerminalViewController class]], @"Destination not a terminal view");
-        VMTerminalViewController *terminalView = (VMTerminalViewController *)segue.destinationViewController;
+        NSAssert([segue.destinationViewController isKindOfClass:[VMDisplayTerminalViewController class]], @"Destination not a terminal view");
+        VMDisplayTerminalViewController *terminalView = (VMDisplayTerminalViewController *)segue.destinationViewController;
         UTMVirtualMachine *vm = (UTMVirtualMachine*) sender;
         terminalView.vm = vm;
         vm.delegate = terminalView;
