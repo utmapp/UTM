@@ -316,6 +316,7 @@
 		CEBCAF5724353B9F00C2B423 /* VMConfigPickerView.m in Sources */ = {isa = PBXBuildFile; fileRef = CEBCAF5624353B9F00C2B423 /* VMConfigPickerView.m */; };
 		CEBCAF5A2435468600C2B423 /* VMConfigTogglePickerCell.m in Sources */ = {isa = PBXBuildFile; fileRef = CEBCAF592435468600C2B423 /* VMConfigTogglePickerCell.m */; };
 		CEC05DF62463E3D300DA82B2 /* VMDisplayView.m in Sources */ = {isa = PBXBuildFile; fileRef = CEC05DF52463E3D300DA82B2 /* VMDisplayView.m */; };
+		CEC05DF92464B93900DA82B2 /* VMDisplayTerminalViewController+Keyboard.m in Sources */ = {isa = PBXBuildFile; fileRef = CEC05DF82464B93900DA82B2 /* VMDisplayTerminalViewController+Keyboard.m */; };
 		CEC4B4E423F122460086B562 /* MetalKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE66450C2269313200B0849A /* MetalKit.framework */; };
 		CECC76512273A7D50059B955 /* cf-input-visitor.c in Sources */ = {isa = PBXBuildFile; fileRef = CECC764C2273A7D50059B955 /* cf-input-visitor.c */; };
 		CECC76522273A7D50059B955 /* qapi-dealloc-visitor.c in Sources */ = {isa = PBXBuildFile; fileRef = CECC764D2273A7D50059B955 /* qapi-dealloc-visitor.c */; };
@@ -888,6 +889,9 @@
 		CEBCAF592435468600C2B423 /* VMConfigTogglePickerCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VMConfigTogglePickerCell.m; sourceTree = "<group>"; };
 		CEC05DF42463E3D300DA82B2 /* VMDisplayView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VMDisplayView.h; sourceTree = "<group>"; };
 		CEC05DF52463E3D300DA82B2 /* VMDisplayView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VMDisplayView.m; sourceTree = "<group>"; };
+		CEC05DF72464B93900DA82B2 /* VMDisplayTerminalViewController+Keyboard.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "VMDisplayTerminalViewController+Keyboard.h"; sourceTree = "<group>"; };
+		CEC05DF82464B93900DA82B2 /* VMDisplayTerminalViewController+Keyboard.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "VMDisplayTerminalViewController+Keyboard.m"; sourceTree = "<group>"; };
+		CEC05DFA2464BA0200DA82B2 /* VMDisplayViewSoftKeyboard.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VMDisplayViewSoftKeyboard.h; sourceTree = "<group>"; };
 		CECC764C2273A7D50059B955 /* cf-input-visitor.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "cf-input-visitor.c"; sourceTree = "<group>"; };
 		CECC764D2273A7D50059B955 /* qapi-dealloc-visitor.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "qapi-dealloc-visitor.c"; sourceTree = "<group>"; };
 		CECC764E2273A7D50059B955 /* qapi-util.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "qapi-util.c"; sourceTree = "<group>"; };
@@ -1528,6 +1532,7 @@
 				CE72B4A92463532B00716A11 /* VMDisplayView.xib */,
 				CE72B4AB2463579D00716A11 /* VMDisplayViewController.h */,
 				CE72B4AC2463579D00716A11 /* VMDisplayViewController.m */,
+				CEC05DFA2464BA0200DA82B2 /* VMDisplayViewSoftKeyboard.h */,
 				5286EC93243748C3007E6CBC /* VMDisplayMetalViewController.h */,
 				5286EC94243748C3007E6CBC /* VMDisplayMetalViewController.m */,
 				CE3ADD65240EFBCA002D6A5F /* VMDisplayMetalViewController+Keyboard.h */,
@@ -1540,6 +1545,8 @@
 				5286EC8F2437488E007E6CBC /* VMDisplayMetalViewController+Gamepad.m */,
 				E28394BF240C268A006742E2 /* VMDisplayTerminalViewController.h */,
 				E28394C0240C268A006742E2 /* VMDisplayTerminalViewController.m */,
+				CEC05DF72464B93900DA82B2 /* VMDisplayTerminalViewController+Keyboard.h */,
+				CEC05DF82464B93900DA82B2 /* VMDisplayTerminalViewController+Keyboard.m */,
 				CEEB66442284B942002737B2 /* VMKeyboardButton.h */,
 				CEEB66452284B942002737B2 /* VMKeyboardButton.m */,
 				CE4507D0226A5BE200A28D22 /* VMKeyboardView.h */,
@@ -1819,6 +1826,7 @@
 				CE23C19823FCEC0A001177D6 /* qapi-visit-char.c in Sources */,
 				CE23C1AF23FCEC0A001177D6 /* qapi-types-error.c in Sources */,
 				CE23C17223FCEC0A001177D6 /* qapi-commands-authz.c in Sources */,
+				CEC05DF92464B93900DA82B2 /* VMDisplayTerminalViewController+Keyboard.m in Sources */,
 				E2151A59241451120008E6AC /* UIViewController+Extensions.m in Sources */,
 				CE23C17C23FCEC0A001177D6 /* qapi-types.c in Sources */,
 				CE23C17823FCEC0A001177D6 /* qapi-events-sockets.c in Sources */,

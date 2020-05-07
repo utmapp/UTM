@@ -14,15 +14,12 @@
 // limitations under the License.
 //
 
-#import "VMDisplayMetalViewController.h"
+#import "VMDisplayTerminalViewController.h"
 #import "VMDisplayViewSoftKeyboard.h"
-#import "VMKeyboardViewDelegate.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface VMDisplayMetalViewController (Keyboard) <VMDisplayViewSoftKeyboard, VMKeyboardViewDelegate>
-
-@property (nonatomic, readonly) NSArray<UIKeyCommand *> *keyCommands;
+@interface VMDisplayTerminalViewController (Keyboard) <VMDisplayViewSoftKeyboard>
 
 - (IBAction)keyboardDonePressed:(UIButton *)sender;
 - (IBAction)keyboardPastePressed:(UIButton *)sender;
@@ -32,6 +29,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)keyboardWillShow:(NSNotification *)notification;
 - (void)keyboardWillHide:(NSNotification *)notification;
 - (void)keyboardWillChangeFrame:(NSNotification *)notification;
+
+- (void)resetModifierToggles;
 
 @end
 

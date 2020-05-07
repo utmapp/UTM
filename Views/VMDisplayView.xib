@@ -21,7 +21,9 @@
                 <outlet property="toolbarAccessoryView" destination="FjS-ZA-duw" id="D8Q-Zf-eVY"/>
                 <outlet property="zoomButton" destination="aZW-jv-ozW" id="q9y-bK-xbD"/>
                 <outletCollection property="customKeyModifierButtons" destination="jxu-AQ-u8c" id="4En-WD-DQc"/>
-                <outletCollection property="customKeyButtons" destination="rfk-su-cFq" id="fhr-Es-Hcb"/>
+                <outletCollection property="customKeyModifierButtons" destination="bCv-uH-SSy" id="iDi-by-YwA"/>
+                <outletCollection property="customKeyModifierButtons" destination="Pjh-3m-tFX" id="pAf-wV-qLE"/>
+                <outletCollection property="customKeyModifierButtons" destination="QPo-cD-UlK" id="mIz-8k-XhR"/>
             </connections>
         </placeholder>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>

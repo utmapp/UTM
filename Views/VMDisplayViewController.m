@@ -19,6 +19,7 @@
 #import "UTMLocationManager.h"
 #import "UTMVirtualMachine.h"
 #import "VMConfigExistingViewController.h"
+#import "VMDisplayViewSoftKeyboard.h"
 
 @interface VMDisplayViewController ()
 

@@ -15,7 +15,7 @@
 //
 
 #import "VMDisplayTerminalViewController.h"
-#import "VMKeyboardView.h"
+#import "VMDisplayTerminalViewController+Keyboard.h"
 #import "UTMConfiguration.h"
 #import "UTMConfiguration+Display.h"
 #import "UIViewController+Extensions.h"
@@ -44,7 +44,6 @@ NSString* const kVMDebugHandler = @"UTMDebug";
     [_webView setCustomInputAccessoryView: self.inputAccessoryView];
     [[[_webView configuration] userContentController] addScriptMessageHandler: self name: kVMSendInputHandler];
     [[[_webView configuration] userContentController] addScriptMessageHandler: self name: kVMDebugHandler];
-    [_webView becomeFirstResponder];
     
     // load terminal.html
     NSURL* resourceURL = [[NSBundle mainBundle] resourceURL];
@@ -79,58 +78,6 @@ NSString* const kVMDebugHandler = @"UTMDebug";
 }
 
 #pragma mark - Keyboard
-
-- (NSString* _Nullable)jsModifierForScanCode: (int) scanCode {
-    if (scanCode == 29) {
-        return @"ctrlKey";
-    } else if (scanCode == 56) {
-        return @"altKey";
-    } else if (scanCode == 57435) {
-        return @"metaKey";
-    } else if (scanCode == 42) {
-        return @"shiftKey";
-    } else {
-        return nil;
-    }
-}
-
-- (void)sendExtendedKey:(SendKeyType)type code:(int)code {
-    NSString* jsString;
-    NSString* jsKey = [self jsModifierForScanCode: code];
-    if (jsKey) {
-        NSString* jsTemplate = type == SEND_KEY_PRESS ? @"modifierDown(\"%@\");" : @"modifierUp(\"%@\");";
-        jsString = [NSString stringWithFormat: jsTemplate, jsKey];
-    } else {
-        NSString* jsTemplate = type == SEND_KEY_PRESS ? @"programmaticKeyDown(%d);" : @"programmaticKeyUp(%d);";
-        jsString = [NSString stringWithFormat: jsTemplate, code];
-    }
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self->_webView evaluateJavaScript:jsString completionHandler:nil];
-    });
-}
-
-- (void)traitCollectionDidChange:(UITraitCollection *)previousTraitCollection {
-    [super traitCollectionDidChange:previousTraitCollection];
-    [self updateAccessoryViewHeight];
-    NSLog(@"Trait collection did change");
-}
-
-- (void)updateAccessoryViewHeight {
-    CGRect currentFrame = self.inputAccessoryView.frame;
-    CGFloat height;
-    if (self.largeScreen) {
-        // we want large keys
-        height = kLargeAccessoryViewHeight;
-    } else {
-        height = kSmallAccessoryViewHeight;
-    }
-
-    if (height != currentFrame.size.height) {
-        currentFrame.size.height = height;
-        self.inputAccessoryView.frame = currentFrame;
-        [self reloadInputViews];
-    }
-}
 
 - (void)setKeyboardVisible:(BOOL)keyboardVisible {
     if (keyboardVisible) {
@@ -199,6 +146,7 @@ NSString* const kVMDebugHandler = @"UTMDebug";
     if ([[message name] isEqualToString: kVMSendInputHandler]) {
         NSLog(@"Received input from HTerm: %@", (NSString*) message.body);
         [_terminal sendInput: (NSString*) message.body];
+        [self resetModifierToggles];
     } else if ([[message name] isEqualToString: kVMDebugHandler]) {
         NSLog(@"Debug message from HTerm: %@", (NSString*) message.body);
     }
