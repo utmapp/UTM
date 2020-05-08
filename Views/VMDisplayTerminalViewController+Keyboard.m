@@ -173,4 +173,15 @@ static int ps2CodeToJs(int ps2Code) {
     }
 }
 
+#pragma mark - Trigger keyboard with hardware key press
+
+- (void)pressesBegan:(NSSet<UIPress *> *)presses withEvent:(UIPressesEvent *)event {
+    if (@available(iOS 13.4, *)) {
+        if (presses.count > 0 && !self.keyboardVisible) {
+            self.keyboardVisible = YES;
+        }
+    }
+    [super pressesBegan:presses withEvent:event];
+}
+
 @end
