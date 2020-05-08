@@ -67,6 +67,7 @@ NSString* const kVMDebugHandler = @"UTMDebug";
 
 - (void)webView:(WKWebView *)webView didFinishNavigation:(WKNavigation *)navigation {
     [self updateSettings];
+    self.keyboardVisible = self.keyboardVisible; // hack to make sure keyboard is shown if it has to be
 }
 
 - (void)updateSettings {
