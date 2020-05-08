@@ -119,10 +119,10 @@ function eventDataUsingModifierTable(sourceEvent) {
         key: sourceEvent.key,
         repeat: sourceEvent.repeat,
         isComposing: sourceEvent.isComposing,
-        altKey: modifierTable.altKey,
-        ctrlKey: modifierTable.ctrlKey,
-        metaKey: modifierTable.metaKey,
-        shiftKey: modifierTable.shiftKey
+        altKey: sourceEvent.altKey || modifierTable.altKey,
+        ctrlKey: sourceEvent.ctrlKey || modifierTable.ctrlKey,
+        metaKey: sourceEvent.metaKey || modifierTable.metaKey,
+        shiftKey: sourceEvent.shiftKey || modifierTable.shiftKey
     };
 }
 
