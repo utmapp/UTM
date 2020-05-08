@@ -53,6 +53,9 @@
                                         <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" pointerInteraction="YES" translatesAutoresizingMaskIntoConstraints="NO" id="q8Q-UP-yRo">
                                             <rect key="frame" x="182" y="423" width="50" height="50"/>
                                             <state key="normal" image="Resume Icon"/>
+                                            <connections>
+                                                <action selector="pauseResumePressed:" destination="-1" eventType="touchUpInside" id="PZC-MN-K1m"/>
+                                            </connections>
                                         </button>
                                     </subviews>
                                     <constraints>
