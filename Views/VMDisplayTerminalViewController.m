@@ -40,6 +40,7 @@ NSString* const kVMDebugHandler = @"UTMDebug";
     [super viewDidLoad];
     // UI setup
     [self setUpGestures];
+    self.zoomButton.hidden = YES;
     // webview setup
     [_webView setCustomInputAccessoryView: self.inputAccessoryView];
     [[[_webView configuration] userContentController] addScriptMessageHandler: self name: kVMSendInputHandler];
