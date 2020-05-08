@@ -67,7 +67,10 @@ NSString* const kVMDebugHandler = @"UTMDebug";
 
 - (void)webView:(WKWebView *)webView didFinishNavigation:(WKNavigation *)navigation {
     [self updateSettings];
-    self.keyboardVisible = self.keyboardVisible; // hack to make sure keyboard is shown if it has to be
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        // hack to make sure keyboard is shown
+        self.keyboardVisible = self.keyboardVisible;
+    });
 }
 
 - (void)updateSettings {
@@ -99,7 +102,7 @@ NSString* const kVMDebugHandler = @"UTMDebug";
     NSString* jsString = @"focusTerminal()";
     [_webView evaluateJavaScript: jsString completionHandler:^(id _Nullable _, NSError * _Nullable error) {
         if (error != nil) {
-            NSLog(@"Error while focusing terminal element");
+            NSLog(@"Error while focusing terminal element: %@", error);
         }
         [self->_webView toggleKeyboardDisplayRequiresUserAction:YES];
     }];
