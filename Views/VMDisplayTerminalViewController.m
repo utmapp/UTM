@@ -23,6 +23,7 @@
 
 NSString *const kVMSendInputHandler = @"UTMSendInput";
 NSString* const kVMDebugHandler = @"UTMDebug";
+NSString* const kVMSendGestureHandler = @"UTMSendGesture";
 
 @interface VMDisplayTerminalViewController ()
 
@@ -39,12 +40,12 @@ NSString* const kVMDebugHandler = @"UTMDebug";
 - (void)viewDidLoad {
     [super viewDidLoad];
     // UI setup
-    [self setUpGestures];
     self.zoomButton.hidden = YES;
     // webview setup
     [_webView setCustomInputAccessoryView: self.inputAccessoryView];
     [[[_webView configuration] userContentController] addScriptMessageHandler: self name: kVMSendInputHandler];
     [[[_webView configuration] userContentController] addScriptMessageHandler: self name: kVMDebugHandler];
+    [[[_webView configuration] userContentController] addScriptMessageHandler: self name: kVMSendGestureHandler];
     
     // load terminal.html
     NSURL* resourceURL = [[NSBundle mainBundle] resourceURL];
@@ -110,39 +111,20 @@ NSString* const kVMDebugHandler = @"UTMDebug";
 
 #pragma mark - Gestures
 
-- (void)setUpGestures {
-    _swipeUp = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(gestureSwipe:)];
-    _swipeUp.numberOfTouchesRequired = 3;
-    _swipeUp.direction = UISwipeGestureRecognizerDirectionUp;
-    _swipeUp.delegate = self;
-    _swipeDown = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(gestureSwipe:)];
-    _swipeDown.numberOfTouchesRequired = 3;
-    _swipeDown.direction = UISwipeGestureRecognizerDirectionDown;
-    _swipeDown.delegate = self;
-    [_webView addGestureRecognizer: _swipeUp];
-    [_webView addGestureRecognizer: _swipeDown];
-}
-
-- (void)gestureSwipe: (UISwipeGestureRecognizer*) sender {
-    if (sender.state == UIGestureRecognizerStateEnded) {
-        if (sender.direction == UISwipeGestureRecognizerDirectionUp) {
-            if (self.toolbarVisible) {
-                self.toolbarVisible = NO;
-            } else if (!self.keyboardVisible) {
-                self.keyboardVisible = YES;
-            }
-        } else if (sender.direction == UISwipeGestureRecognizerDirectionDown) {
-            if (self.keyboardVisible) {
-                self.keyboardVisible = NO;
-            } else if (!self.toolbarVisible) {
-                self.toolbarVisible = YES;
-            }
+- (void)handleGestureFromJs:(NSString *)gesture {
+    if ([gesture isEqualToString:@"threeSwipeUp"]) {
+        if (self.toolbarVisible) {
+            self.toolbarVisible = NO;
+        } else if (!self.keyboardVisible) {
+            self.keyboardVisible = YES;
+        }
+    } else if ([gesture isEqualToString:@"threeSwipeDown"]) {
+        if (self.keyboardVisible) {
+            self.keyboardVisible = NO;
+        } else if (!self.toolbarVisible) {
+            self.toolbarVisible = YES;
         }
     }
-}
-
-- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
-    return YES;
 }
 
 #pragma mark - WKScriptMessageHandler
@@ -154,6 +136,9 @@ NSString* const kVMDebugHandler = @"UTMDebug";
         [self resetModifierToggles];
     } else if ([[message name] isEqualToString: kVMDebugHandler]) {
         NSLog(@"Debug message from HTerm: %@", (NSString*) message.body);
+    } else if ([[message name] isEqualToString: kVMSendGestureHandler]) {
+        NSLog(@"Gesture message from HTerm: %@", (NSString*) message.body);
+        [self handleGestureFromJs:message.body];
     }
 }
 
