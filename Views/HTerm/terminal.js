@@ -10,6 +10,11 @@ function sendGesture(str) {
     handler.postMessage(str);
 }
 
+function sendTerminalSize(columns, rows) {
+    const handler = window.webkit.messageHandlers.UTMSendTerminalSize;
+    handler.postMessage([columns, rows]);
+}
+
 function writeData(data) {
     const term = window.term;
     const str = String.fromCharCode.apply(null, data);
@@ -175,6 +180,10 @@ function terminalSetup() {
         io.sendString = function (str) {
             sendInputMessage(str);
         }
+        
+        io.onTerminalResize = function (columns, rows) {
+            sendTerminalSize(columns, rows);
+        };
        
         this.setCursorVisible(true);
     }

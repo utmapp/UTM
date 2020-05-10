@@ -21,9 +21,12 @@
 #import "UIViewController+Extensions.h"
 #import "WKWebView+Workarounds.h"
 
+NSString *const kVMDefaultResizeCmd = @"stty cols $COLS rows $ROWS\\n";
+
 NSString *const kVMSendInputHandler = @"UTMSendInput";
 NSString* const kVMDebugHandler = @"UTMDebug";
 NSString* const kVMSendGestureHandler = @"UTMSendGesture";
+NSString* const kVMSendTerminalSizeHandler = @"UTMSendTerminalSize";
 
 @interface VMDisplayTerminalViewController ()
 
@@ -39,13 +42,12 @@ NSString* const kVMSendGestureHandler = @"UTMSendGesture";
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    // UI setup
-    self.zoomButton.hidden = YES;
     // webview setup
     [_webView setCustomInputAccessoryView: self.inputAccessoryView];
     [[[_webView configuration] userContentController] addScriptMessageHandler: self name: kVMSendInputHandler];
     [[[_webView configuration] userContentController] addScriptMessageHandler: self name: kVMDebugHandler];
     [[[_webView configuration] userContentController] addScriptMessageHandler: self name: kVMSendGestureHandler];
+    [[[_webView configuration] userContentController] addScriptMessageHandler: self name: kVMSendTerminalSizeHandler];
     
     // load terminal.html
     NSURL* resourceURL = [[NSBundle mainBundle] resourceURL];
@@ -109,6 +111,19 @@ NSString* const kVMSendGestureHandler = @"UTMSendGesture";
     }];
 }
 
+#pragma mark - Resize console
+
+- (void)changeDisplayZoom:(UIButton *)sender {
+    NSString *cmd = self.vmConfiguration.consoleResizeCommand;
+    if (cmd.length == 0) {
+        cmd = kVMDefaultResizeCmd;
+    }
+    cmd = [cmd stringByReplacingOccurrencesOfString:@"$COLS" withString:[self.columns stringValue]];
+    cmd = [cmd stringByReplacingOccurrencesOfString:@"$ROWS" withString:[self.rows stringValue]];
+    cmd = [cmd stringByReplacingOccurrencesOfString:@"\\n" withString:@"\n"];
+    [_terminal sendInput:cmd];
+}
+
 #pragma mark - Gestures
 
 - (void)handleGestureFromJs:(NSString *)gesture {
@@ -139,6 +154,10 @@ NSString* const kVMSendGestureHandler = @"UTMSendGesture";
     } else if ([[message name] isEqualToString: kVMSendGestureHandler]) {
         NSLog(@"Gesture message from HTerm: %@", (NSString*) message.body);
         [self handleGestureFromJs:message.body];
+    } else if ([[message name] isEqualToString: kVMSendTerminalSizeHandler]) {
+        NSLog(@"Terminal resize: %@", message.body);
+        self.columns = message.body[0];
+        self.rows = message.body[1];
     }
 }
 

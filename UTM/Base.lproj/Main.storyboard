@@ -870,6 +870,38 @@
                                     </tableViewCell>
                                 </cells>
                             </tableViewSection>
+                            <tableViewSection headerTitle="Resize Console Command" footerTitle="Command to send when resizing the console. Placeholder $COLS is the number of columns and $ROWS is the number of rows." id="LTq-Mi-VuJ">
+                                <cells>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="none" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" id="ZpG-tB-Ozc" userLabel="Table View Cell" customClass="VMConfigSystemArgumentsTextCell">
+                                        <rect key="frame" x="0.0" y="1315.4999961853027" width="375" height="43.666667938232422"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="ZpG-tB-Ozc" id="yY6-Cf-ELp">
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="43.666667938232422"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="stty cols $COLS rows $ROWS\n" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="aIM-IA-HSe" customClass="VMConfigTextField">
+                                                    <rect key="frame" x="16" y="12.666666666666666" width="343" height="18.666666666666671"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                    <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" returnKeyType="done" smartDashesType="no" smartInsertDeleteType="no" smartQuotesType="no"/>
+                                                    <userDefinedRuntimeAttributes>
+                                                        <userDefinedRuntimeAttribute type="string" keyPath="configurationPath" value="consoleResizeCommand"/>
+                                                    </userDefinedRuntimeAttributes>
+                                                    <connections>
+                                                        <action selector="configTextEditChanged:" destination="fRW-Bh-0Dk" eventType="editingChanged" id="aro-J8-VkC"/>
+                                                        <action selector="configTextFieldEditEnd:" destination="fRW-Bh-0Dk" eventType="editingDidEnd" id="ezS-s4-66R"/>
+                                                        <outlet property="delegate" destination="fRW-Bh-0Dk" id="xwT-uJ-xWd"/>
+                                                    </connections>
+                                                </textField>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstAttribute="trailing" secondItem="aIM-IA-HSe" secondAttribute="trailing" constant="16" id="PiQ-Zt-24n"/>
+                                                <constraint firstItem="aIM-IA-HSe" firstAttribute="centerY" secondItem="yY6-Cf-ELp" secondAttribute="centerY" id="eGG-xR-UWv"/>
+                                                <constraint firstItem="aIM-IA-HSe" firstAttribute="leading" secondItem="yY6-Cf-ELp" secondAttribute="leading" constant="16" id="s7K-A5-KCP"/>
+                                            </constraints>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
+                                </cells>
+                            </tableViewSection>
                         </sections>
                         <connections>
                             <outlet property="dataSource" destination="fRW-Bh-0Dk" id="vIK-qQ-HiN"/>
@@ -904,6 +936,8 @@
                         <outletCollection property="consoleDisplayCells" destination="j6I-2Z-fbN" id="elh-1E-1Hn"/>
                         <outletCollection property="consoleDisplayCells" destination="3Eq-de-dMZ" id="Lry-6n-O4w"/>
                         <outletCollection property="configControls" destination="eBG-y2-ZJj" id="mA1-MF-Sj8"/>
+                        <outletCollection property="configControls" destination="aIM-IA-HSe" id="3IX-ra-JN0"/>
+                        <outletCollection property="consoleDisplayCells" destination="ZpG-tB-Ozc" id="Kra-m1-c1P"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="5CK-HG-MYg" userLabel="First Responder" sceneMemberID="firstResponder"/>
