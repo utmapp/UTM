@@ -165,8 +165,6 @@ function detectGestures(e) {
 
 function terminalSetup() {
     const term = new hterm.Terminal();
-    // theme
-    term.getPrefs().set('background-color', 'transparent');
     
     term.onTerminalReady = function() {
         const io = this.io.push();
