@@ -43,6 +43,15 @@ NSString* const kVMSendTerminalSizeHandler = @"UTMSendTerminalSize";
 - (void)viewDidLoad {
     [super viewDidLoad];
     // webview setup
+    UIBarButtonItem *item = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"Disable this bar in Settings -> General -> Keyboards -> Shortcuts", @"VMDisplayTerminalViewController")
+                                                             style:UIBarButtonItemStylePlain
+                                                            target:nil
+                                                            action:nil];
+    UIBarButtonItemGroup *group = [[UIBarButtonItemGroup alloc] initWithBarButtonItems:@[ item ]
+                                                                    representativeItem:nil];
+    
+    _webView.inputAssistantItem.leadingBarButtonGroups = @[ group ];
+    _webView.inputAssistantItem.trailingBarButtonGroups = @[];
     [_webView setCustomInputAccessoryView: self.inputAccessoryView];
     [[[_webView configuration] userContentController] addScriptMessageHandler: self name: kVMSendInputHandler];
     [[[_webView configuration] userContentController] addScriptMessageHandler: self name: kVMDebugHandler];
