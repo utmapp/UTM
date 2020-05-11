@@ -21,8 +21,12 @@
 #import "UIViewController+Extensions.h"
 #import "WKWebView+Workarounds.h"
 
+NSString *const kVMDefaultResizeCmd = @"stty cols $COLS rows $ROWS\\n";
+
 NSString *const kVMSendInputHandler = @"UTMSendInput";
 NSString* const kVMDebugHandler = @"UTMDebug";
+NSString* const kVMSendGestureHandler = @"UTMSendGesture";
+NSString* const kVMSendTerminalSizeHandler = @"UTMSendTerminalSize";
 
 @interface VMDisplayTerminalViewController ()
 
@@ -38,13 +42,21 @@ NSString* const kVMDebugHandler = @"UTMDebug";
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    // UI setup
-    [self setUpGestures];
-    self.zoomButton.hidden = YES;
     // webview setup
+    UIBarButtonItem *item = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"Disable this bar in Settings -> General -> Keyboards -> Shortcuts", @"VMDisplayTerminalViewController")
+                                                             style:UIBarButtonItemStylePlain
+                                                            target:nil
+                                                            action:nil];
+    UIBarButtonItemGroup *group = [[UIBarButtonItemGroup alloc] initWithBarButtonItems:@[ item ]
+                                                                    representativeItem:nil];
+    
+    _webView.inputAssistantItem.leadingBarButtonGroups = @[ group ];
+    _webView.inputAssistantItem.trailingBarButtonGroups = @[];
     [_webView setCustomInputAccessoryView: self.inputAccessoryView];
     [[[_webView configuration] userContentController] addScriptMessageHandler: self name: kVMSendInputHandler];
     [[[_webView configuration] userContentController] addScriptMessageHandler: self name: kVMDebugHandler];
+    [[[_webView configuration] userContentController] addScriptMessageHandler: self name: kVMSendGestureHandler];
+    [[[_webView configuration] userContentController] addScriptMessageHandler: self name: kVMSendTerminalSizeHandler];
     
     // load terminal.html
     NSURL* resourceURL = [[NSBundle mainBundle] resourceURL];
@@ -108,41 +120,35 @@ NSString* const kVMDebugHandler = @"UTMDebug";
     }];
 }
 
+#pragma mark - Resize console
+
+- (void)changeDisplayZoom:(UIButton *)sender {
+    NSString *cmd = self.vmConfiguration.consoleResizeCommand;
+    if (cmd.length == 0) {
+        cmd = kVMDefaultResizeCmd;
+    }
+    cmd = [cmd stringByReplacingOccurrencesOfString:@"$COLS" withString:[self.columns stringValue]];
+    cmd = [cmd stringByReplacingOccurrencesOfString:@"$ROWS" withString:[self.rows stringValue]];
+    cmd = [cmd stringByReplacingOccurrencesOfString:@"\\n" withString:@"\n"];
+    [_terminal sendInput:cmd];
+}
+
 #pragma mark - Gestures
 
-- (void)setUpGestures {
-    _swipeUp = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(gestureSwipe:)];
-    _swipeUp.numberOfTouchesRequired = 3;
-    _swipeUp.direction = UISwipeGestureRecognizerDirectionUp;
-    _swipeUp.delegate = self;
-    _swipeDown = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(gestureSwipe:)];
-    _swipeDown.numberOfTouchesRequired = 3;
-    _swipeDown.direction = UISwipeGestureRecognizerDirectionDown;
-    _swipeDown.delegate = self;
-    [_webView addGestureRecognizer: _swipeUp];
-    [_webView addGestureRecognizer: _swipeDown];
-}
-
-- (void)gestureSwipe: (UISwipeGestureRecognizer*) sender {
-    if (sender.state == UIGestureRecognizerStateEnded) {
-        if (sender.direction == UISwipeGestureRecognizerDirectionUp) {
-            if (self.toolbarVisible) {
-                self.toolbarVisible = NO;
-            } else if (!self.keyboardVisible) {
-                self.keyboardVisible = YES;
-            }
-        } else if (sender.direction == UISwipeGestureRecognizerDirectionDown) {
-            if (self.keyboardVisible) {
-                self.keyboardVisible = NO;
-            } else if (!self.toolbarVisible) {
-                self.toolbarVisible = YES;
-            }
+- (void)handleGestureFromJs:(NSString *)gesture {
+    if ([gesture isEqualToString:@"threeSwipeUp"]) {
+        if (self.toolbarVisible) {
+            self.toolbarVisible = NO;
+        } else if (!self.keyboardVisible) {
+            self.keyboardVisible = YES;
+        }
+    } else if ([gesture isEqualToString:@"threeSwipeDown"]) {
+        if (self.keyboardVisible) {
+            self.keyboardVisible = NO;
+        } else if (!self.toolbarVisible) {
+            self.toolbarVisible = YES;
         }
     }
-}
-
-- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
-    return YES;
 }
 
 #pragma mark - WKScriptMessageHandler
@@ -154,6 +160,13 @@ NSString* const kVMDebugHandler = @"UTMDebug";
         [self resetModifierToggles];
     } else if ([[message name] isEqualToString: kVMDebugHandler]) {
         NSLog(@"Debug message from HTerm: %@", (NSString*) message.body);
+    } else if ([[message name] isEqualToString: kVMSendGestureHandler]) {
+        NSLog(@"Gesture message from HTerm: %@", (NSString*) message.body);
+        [self handleGestureFromJs:message.body];
+    } else if ([[message name] isEqualToString: kVMSendTerminalSizeHandler]) {
+        NSLog(@"Terminal resize: %@", message.body);
+        self.columns = message.body[0];
+        self.rows = message.body[1];
     }
 }
 

@@ -30,6 +30,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *webViewTopConstraint;
 @property (nonatomic, weak) UTMTerminal* terminal;
 
+@property (nonatomic) NSNumber *columns;
+@property (nonatomic) NSNumber *rows;
+
 @end
 
 NS_ASSUME_NONNULL_END

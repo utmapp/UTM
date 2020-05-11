@@ -27,6 +27,7 @@ const NSString *const kUTMConfigConsoleThemeKey = @"ConsoleTheme";
 const NSString *const kUTMConfigConsoleFontKey = @"ConsoleFont";
 const NSString *const kUTMConfigConsoleFontSizeKey = @"ConsoleFontSize";
 const NSString *const kUTMConfigConsoleBlinkKey = @"ConsoleBlink";
+const NSString *const kUTMConfigConsoleResizeCommandKey = @"ConsoleResizeCommand";
 
 @interface UTMConfiguration ()
 
@@ -144,6 +145,14 @@ const NSString *const kUTMConfigConsoleBlinkKey = @"ConsoleBlink";
 
 - (BOOL)consoleCursorBlink {
     return [self.rootDict[kUTMConfigDisplayKey][kUTMConfigConsoleBlinkKey] boolValue];
+}
+
+- (void)setConsoleResizeCommand:(NSString *)consoleResizeCommand {
+    self.rootDict[kUTMConfigDisplayKey][kUTMConfigConsoleResizeCommandKey] = consoleResizeCommand;
+}
+
+- (NSString *)consoleResizeCommand {
+    return self.rootDict[kUTMConfigDisplayKey][kUTMConfigConsoleResizeCommandKey];
 }
 
 @end

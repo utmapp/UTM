@@ -5,6 +5,16 @@ function sendInputMessage(str) {
     handler.postMessage(str);
 }
 
+function sendGesture(str) {
+    const handler = window.webkit.messageHandlers.UTMSendGesture;
+    handler.postMessage(str);
+}
+
+function sendTerminalSize(columns, rows) {
+    const handler = window.webkit.messageHandlers.UTMSendTerminalSize;
+    handler.postMessage([columns, rows]);
+}
+
 function writeData(data) {
     const term = window.term;
     const str = String.fromCharCode.apply(null, data);
@@ -126,12 +136,40 @@ function eventDataUsingModifierTable(sourceEvent) {
     };
 }
 
+function detectGestures(e) {
+    switch (e.type) {
+        case 'touchstart':
+            if (e.touches.length == 3) {
+                this.startThreeTouchLocation = e.touches[0].screenY;
+                e.preventDefault();
+            }
+            break;
+        case 'touchmove':
+            if (e.touches.length == 3) {
+                this.lastThreeTouchLocation = e.touches[0].screenY;
+                e.preventDefault();
+            }
+            break;
+        case 'touchcancel':
+        case 'touchend':
+            if (this.startThreeTouchLocation) {
+                if (this.lastThreeTouchLocation > this.startThreeTouchLocation) {
+                    sendGesture('threeSwipeDown');
+                } else {
+                    sendGesture('threeSwipeUp');
+                }
+                e.preventDefault();
+            }
+            this.startThreeTouchLocation = 0;
+            this.lastThreeTouchLocation = 0;
+            break;
+    }
+}
+
 // Setup
 
 function terminalSetup() {
     const term = new hterm.Terminal();
-    // theme
-    term.getPrefs().set('background-color', 'transparent');
     
     term.onTerminalReady = function() {
         const io = this.io.push();
@@ -142,6 +180,10 @@ function terminalSetup() {
         io.sendString = function (str) {
             sendInputMessage(str);
         }
+        
+        io.onTerminalResize = function (columns, rows) {
+            sendTerminalSize(columns, rows);
+        };
        
         this.setCursorVisible(true);
     }
@@ -158,6 +200,10 @@ function terminalSetup() {
     keyboardElement.addEventListener('keydown', captureKeydownHandler);
     keyboardElement.addEventListener('keyup', captureKeyupHandler);
     keyboardElement.addEventListener('keypress', captureKeypressHandler);
+    // handle touch gestures
+    hterm.ScrollPort.prototype.onTouch = function(e) {
+        detectGestures(e);
+    }
     window.term = term;
 };
 
