@@ -378,6 +378,9 @@ NSString *const kSuspendSnapshotName = @"suspend";
         if (err) {
             NSLog(@"error: %@", err);
             success = NO;
+        } else if ([result localizedCaseInsensitiveContainsString:@"Error"]) {
+            NSLog(@"save result: %@", result);
+            success = NO; // error message
         }
         dispatch_semaphore_signal(save_sema);
     } snapshotName:kSuspendSnapshotName];
@@ -403,6 +406,9 @@ NSString *const kSuspendSnapshotName = @"suspend";
         if (err) {
             NSLog(@"error: %@", err);
             success = NO;
+        } else if ([result localizedCaseInsensitiveContainsString:@"Error"]) {
+            NSLog(@"save result: %@", result);
+            success = NO; // error message
         }
         dispatch_semaphore_signal(save_sema);
     } snapshotName:kSuspendSnapshotName];

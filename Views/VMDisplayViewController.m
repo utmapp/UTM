@@ -228,7 +228,11 @@
     dispatch_async(dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0), ^{
         if (self.vm.state == kVMStarted) {
             [self.vm pauseVM];
-            [self.vm saveVM];
+            if (![self.vm saveVM]) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [self showAlert:NSLocalizedString(@"Failed to save VM state. Do you have at least one read-write drive attached that supports snapshots?", @"VMDisplayViewController") actions:nil completion:nil];
+                });
+            }
         } else if (self.vm.state == kVMPaused) {
             [self.vm resumeVM];
         }
