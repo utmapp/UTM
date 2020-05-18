@@ -387,7 +387,7 @@ NSString *const kSuspendSnapshotName = @"suspend";
     if (dispatch_semaphore_wait(save_sema, dispatch_time(DISPATCH_TIME_NOW, kStopTimeout)) != 0) {
         NSLog(@"Save operation timeout");
         success = NO;
-    } else {
+    } else if (success) {
         NSLog(@"Save completed");
         self.viewState.suspended = YES;
         [self saveViewState];
