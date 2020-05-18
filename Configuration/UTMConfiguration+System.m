@@ -16,6 +16,7 @@
 
 #import "UTMConfiguration+Constants.h"
 #import "UTMConfiguration+System.h"
+#import "UTMLogging.h"
 
 extern const NSString *const kUTMConfigSystemKey;
 
@@ -56,7 +57,7 @@ static const NSString *const kUTMConfigSystemUUIDKey = @"SystemUUID";
     NSArray<NSString *> *bootPretty = [UTMConfiguration supportedBootDevicesPretty];
     if ([bootPretty containsObject:self.systemBootDevice]) {
         NSUInteger index = [bootPretty indexOfObject:self.systemBootDevice];
-        NSLog(@"Fixing wrong BootDevice entry '%@', index %lu", self.systemBootDevice, index);
+        UTMLog(@"Fixing wrong BootDevice entry '%@', index %lu", self.systemBootDevice, index);
         self.systemBootDevice = [UTMConfiguration supportedBootDevices][index];
     }
 }

@@ -15,6 +15,7 @@
 //
 
 #import "UTMQemuImg.h"
+#import "UTMLogging.h"
 #import <dlfcn.h>
 #import <pthread.h>
 
@@ -55,7 +56,7 @@
             break;
         }
         default: {
-            NSLog(@"Operation %lu not implemented!", self.op);
+            UTMLog(@"Operation %lu not implemented!", self.op);
             break;
         }
     }

@@ -18,6 +18,7 @@
 #import "VMDisplayTerminalViewController+Keyboard.h"
 #import "UTMConfiguration.h"
 #import "UTMConfiguration+Display.h"
+#import "UTMLogging.h"
 #import "UIViewController+Extensions.h"
 #import "WKWebView+Workarounds.h"
 
@@ -87,10 +88,10 @@ NSString* const kVMSendTerminalSizeHandler = @"UTMSendTerminalSize";
 
 - (void)updateSettings {
     [_webView evaluateJavaScript:[NSString stringWithFormat:@"changeFont('%@', %ld);", self.vmConfiguration.consoleFont, self.vmConfiguration.consoleFontSize.integerValue] completionHandler:^(id _Nullable _, NSError * _Nullable error) {
-        NSLog(@"changeFont error: %@", error);
+        UTMLog(@"changeFont error: %@", error);
     }];
     [_webView evaluateJavaScript:[NSString stringWithFormat:@"setCursorBlink(%@);", self.vmConfiguration.consoleCursorBlink ? @"true" : @"false"] completionHandler:^(id _Nullable _, NSError * _Nullable error) {
-        NSLog(@"setCursorBlink error: %@", error);
+        UTMLog(@"setCursorBlink error: %@", error);
     }];
 }
 
@@ -114,7 +115,7 @@ NSString* const kVMSendTerminalSizeHandler = @"UTMSendTerminalSize";
     NSString* jsString = @"focusTerminal()";
     [_webView evaluateJavaScript: jsString completionHandler:^(id _Nullable _, NSError * _Nullable error) {
         if (error != nil) {
-            NSLog(@"Error while focusing terminal element: %@", error);
+            UTMLog(@"Error while focusing terminal element: %@", error);
         }
         [self->_webView toggleKeyboardDisplayRequiresUserAction:YES];
     }];
@@ -155,16 +156,16 @@ NSString* const kVMSendTerminalSizeHandler = @"UTMSendTerminalSize";
 
 - (void)userContentController:(WKUserContentController *)userContentController didReceiveScriptMessage:(WKScriptMessage *)message {
     if ([[message name] isEqualToString: kVMSendInputHandler]) {
-        NSLog(@"Received input from HTerm: %@", (NSString*) message.body);
+        UTMLog(@"Received input from HTerm: %@", (NSString*) message.body);
         [_terminal sendInput: (NSString*) message.body];
         [self resetModifierToggles];
     } else if ([[message name] isEqualToString: kVMDebugHandler]) {
-        NSLog(@"Debug message from HTerm: %@", (NSString*) message.body);
+        UTMLog(@"Debug message from HTerm: %@", (NSString*) message.body);
     } else if ([[message name] isEqualToString: kVMSendGestureHandler]) {
-        NSLog(@"Gesture message from HTerm: %@", (NSString*) message.body);
+        UTMLog(@"Gesture message from HTerm: %@", (NSString*) message.body);
         [self handleGestureFromJs:message.body];
     } else if ([[message name] isEqualToString: kVMSendTerminalSizeHandler]) {
-        NSLog(@"Terminal resize: %@", message.body);
+        UTMLog(@"Terminal resize: %@", message.body);
         self.columns = message.body[0];
         self.rows = message.body[1];
     }
@@ -179,11 +180,11 @@ NSString* const kVMSendTerminalSizeHandler = @"UTMSendTerminalSize";
         [dataString appendFormat: @"%u,", buf[i]];
     }
     [dataString appendString:@"]"];
-    //NSLog(@"Array: %@", dataString);
+    //UTMLog(@"Array: %@", dataString);
     NSString* jsString = [NSString stringWithFormat: @"writeData(new Uint8Array(%@));", dataString];
     [_webView evaluateJavaScript: jsString completionHandler:^(id _Nullable _, NSError * _Nullable error) {
         if (error != nil) {
-            NSLog(@"JS evaluation failed: %@", [error localizedDescription]);
+            UTMLog(@"JS evaluation failed: %@", [error localizedDescription]);
         }
     }];
 }

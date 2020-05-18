@@ -15,6 +15,7 @@
 //
 
 #import "UTMJSONStream.h"
+#import "UTMLogging.h"
 
 extern NSString *const kUTMErrorDomain;
 const int kMaxBufferSize = 1024;
@@ -108,7 +109,7 @@ enum ParserState {
                         if (self->_state == PARSER_NOT_IN_STRING) {
                             self->_open_curly_count--;
                             if (self->_open_curly_count < 0) {
-                                NSLog(@"Saw too many close curly!");
+                                UTMLog(@"Saw too many close curly!");
                                 self->_state = PARSER_INVALID;
                                 NSError *err = [NSError errorWithDomain:kUTMErrorDomain code:-1 userInfo:@{NSLocalizedDescriptionKey: NSLocalizedString(@"Error parsing JSON.", "UTMJSONStream")}];
                                 [self.delegate jsonStream:self seenError:err];
@@ -120,7 +121,7 @@ enum ParserState {
                         if (self->_state == PARSER_IN_STRING) {
                             self->_state = PARSER_IN_STRING_ESCAPE;
                         } else {
-                            NSLog(@"Saw escape in invalid context");
+                            UTMLog(@"Saw escape in invalid context");
                             self->_state = PARSER_INVALID;
                             NSError *err = [NSError errorWithDomain:kUTMErrorDomain code:-1 userInfo:@{NSLocalizedDescriptionKey: NSLocalizedString(@"Error parsing JSON.", "UTMJSONStream")}];
                             [self.delegate jsonStream:self seenError:err];
@@ -139,7 +140,7 @@ enum ParserState {
                         // force reset parser
                         if (str[i] == (char)0xFF ||
                             (str[i] >= '\0' && str[i] < ' ' && str[i] != '\t' && str[i] != '\r' && str[i] != '\n')) {
-                            NSLog(@"Resetting parser...");
+                            UTMLog(@"Resetting parser...");
                             self->_state = PARSER_NOT_IN_STRING;
                             self->_open_curly_count = 0;
                         }
@@ -171,7 +172,7 @@ enum ParserState {
         return;
     }
     NSAssert([json isKindOfClass:[NSDictionary class]], @"JSON data not dictionary");
-    NSLog(@"Debug JSON recieved <- %@", json);
+    UTMLog(@"Debug JSON recieved <- %@", json);
     dispatch_async(dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0), ^{
         [self.delegate jsonStream:self receivedDictionary:(NSDictionary *)json];
     });
@@ -197,7 +198,7 @@ enum ParserState {
             break;
         }
         case NSStreamEventErrorOccurred: {
-            NSLog(@"Stream error %@", [aStream streamError]);
+            UTMLog(@"Stream error %@", [aStream streamError]);
             [self.delegate jsonStream:self seenError:[aStream streamError]];
         }
         case NSStreamEventEndEncountered: {
@@ -205,7 +206,7 @@ enum ParserState {
             break;
         }
         case NSStreamEventOpenCompleted: {
-            NSLog(@"Connected to stream");
+            UTMLog(@"Connected to stream");
             [self.delegate jsonStream:self connected:(aStream == _inputStream)];
             break;
         }
@@ -221,11 +222,11 @@ enum ParserState {
         if (!_outputStream || _outputStream.streamStatus != NSStreamStatusOpen) {
             return NO;
         }
-        NSLog(@"Debug JSON send -> %@", dict);
+        UTMLog(@"Debug JSON send -> %@", dict);
         [NSJSONSerialization writeJSONObject:dict toStream:_outputStream options:0 error:&err];
     }
     if (err) {
-        NSLog(@"Error sending dict: %@", err);
+        UTMLog(@"Error sending dict: %@", err);
         return NO;
     } else {
         return YES;

@@ -306,7 +306,7 @@ static void cs_channel_destroy(SpiceSession *session, SpiceChannel *channel,
         self.session = session;
         g_object_ref(session);
         
-        NSLog(@"%s:%d", __FUNCTION__, __LINE__);
+        UTMLog(@"%s:%d", __FUNCTION__, __LINE__);
         g_signal_connect(session, "channel-new",
                          G_CALLBACK(cs_channel_new), GLIB_OBJC_RETAIN(self));
         g_signal_connect(session, "channel-destroy",
@@ -321,7 +321,7 @@ static void cs_channel_destroy(SpiceSession *session, SpiceChannel *channel,
 }
 
 - (void)dealloc {
-    NSLog(@"%s:%d", __FUNCTION__, __LINE__);
+    UTMLog(@"%s:%d", __FUNCTION__, __LINE__);
     g_signal_handlers_disconnect_by_func(self.session, G_CALLBACK(cs_channel_new), GLIB_OBJC_RELEASE(self));
     g_signal_handlers_disconnect_by_func(self.session, G_CALLBACK(cs_channel_destroy), GLIB_OBJC_RELEASE(self));
     g_object_unref(self.session);
@@ -343,12 +343,12 @@ static void cs_channel_destroy(SpiceSession *session, SpiceChannel *channel,
 #pragma mark - Notification handler
 
 - (void)pasteboardDidChange:(NSNotification *)notification {
-    NSLog(@"seen UIPasteboardChangedNotification");
+    UTMLog(@"seen UIPasteboardChangedNotification");
     if (!self.shareClipboard || self.sessionReadOnly) {
         return;
     }
     if ([UIPasteboard generalPasteboard].changeCount <= _pasteboardChanges) {
-        NSLog(@"ignoring excess pasteboard change");
+        UTMLog(@"ignoring excess pasteboard change");
         return;
     } else {
         _pasteboardChanges = [UIPasteboard generalPasteboard].changeCount;
@@ -366,7 +366,7 @@ static void cs_channel_destroy(SpiceSession *session, SpiceChannel *channel,
     } else if ([[UIPasteboard generalPasteboard] hasStrings]) {
         type = VD_AGENT_CLIPBOARD_UTF8_TEXT;
     } else {
-        NSLog(@"pasteboard with unrecognized type");
+        UTMLog(@"pasteboard with unrecognized type");
     }
     if (spice_main_channel_agent_test_capability(self->_main, VD_AGENT_CAP_CLIPBOARD_BY_DEMAND)) {
         spice_main_channel_clipboard_selection_grab(self->_main, VD_AGENT_CLIPBOARD_SELECTION_CLIPBOARD, &type, 1);
@@ -374,7 +374,7 @@ static void cs_channel_destroy(SpiceSession *session, SpiceChannel *channel,
 }
 
 - (void)pasteboardDidRemove:(NSNotification *)notification {
-    NSLog(@"seen UIPasteboardRemovedNotification");
+    UTMLog(@"seen UIPasteboardRemovedNotification");
     if (!self.shareClipboard || self.sessionReadOnly) {
         return;
     }

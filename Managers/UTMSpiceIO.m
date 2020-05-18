@@ -18,6 +18,7 @@
 #import "UTMConfiguration.h"
 #import "UTMConfiguration+Miscellaneous.h"
 #import "UTMConfiguration+Sharing.h"
+#import "UTMLogging.h"
 #import "UTMViewState.h"
 #import "CocoaSpice.h"
 
@@ -187,7 +188,7 @@ const int kMaxConnectionTries = 10; // qemu needs to start spice server first
         [self endSharingDirectory:session];
     }
     if (self.configuration.shareDirectoryEnabled) {
-        NSLog(@"enabling shared directory");
+        UTMLog(@"enabling shared directory");
         BOOL stale;
         NSError *err;
         NSURL *shareURL = [NSURL URLByResolvingBookmarkData:self.configuration.shareDirectoryBookmark
@@ -196,18 +197,18 @@ const int kMaxConnectionTries = 10; // qemu needs to start spice server first
                                         bookmarkDataIsStale:&stale
                                                       error:&err];
         if (!shareURL) {
-            NSLog(@"error getting bookmark: %@", err);
+            UTMLog(@"error getting bookmark: %@", err);
             return;
         }
         if (stale) {
-            NSLog(@"bookmark stale, should get new bookmark!");
+            UTMLog(@"bookmark stale, should get new bookmark!");
         }
         //if ([shareURL startAccessingSecurityScopedResource]) {
             _sharedDirectory = shareURL;
-            NSLog(@"setting share directory to %@", shareURL.path);
+            UTMLog(@"setting share directory to %@", shareURL.path);
             [session setSharedDirectory:shareURL.path readOnly:self.configuration.shareDirectoryReadOnly];
         //} else {
-        //    NSLog(@"failed to access security scope for shared directory, was access revoked?");
+        //    UTMLog(@"failed to access security scope for shared directory, was access revoked?");
         //}
     }
 }
@@ -216,7 +217,7 @@ const int kMaxConnectionTries = 10; // qemu needs to start spice server first
     if (_sharedDirectory) {
         //[_sharedDirectory stopAccessingSecurityScopedResource];
         _sharedDirectory = nil;
-        NSLog(@"ended share directory sharing");
+        UTMLog(@"ended share directory sharing");
     }
 }
 

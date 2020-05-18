@@ -37,6 +37,7 @@
  */
 
 #import "VMKeyboardView.h"
+#import "UTMLogging.h"
 #import "ctype.h"
 
 typedef struct {
@@ -402,7 +403,7 @@ static int indexForExtChar(const ext_key_mapping_t *table, size_t table_len, cha
 
 - (void)insertUTF8Sequence:(const char *)ctext {
     unsigned long ctext_len = strlen(ctext);
-    NSLog(@"ctext length=%lu\n", ctext_len);
+    UTMLog(@"ctext length=%lu\n", ctext_len);
     unsigned char tc = ctext[0];
     
     int keycode = 0;
@@ -425,7 +426,7 @@ static int indexForExtChar(const ext_key_mapping_t *table, size_t table_len, cha
     
     switch (ctext_len) {
         case 1:
-            NSLog(@"char=%d\n", tc);
+            UTMLog(@"char=%d\n", tc);
             index = indexForChar(_map, _map_len, tc);
             if (index != -1) {
                 keycode = _map[index].key;
@@ -433,8 +434,8 @@ static int indexForExtChar(const ext_key_mapping_t *table, size_t table_len, cha
             }
             break;
         case 2:
-            NSLog(@"char=%d\n", tc);
-            NSLog(@"ext1=%d\n", (unsigned char) ctext[1]);
+            UTMLog(@"char=%d\n", tc);
+            UTMLog(@"ext1=%d\n", (unsigned char) ctext[1]);
             index = indexForExtChar(_ext_map, _ext_map_len, tc, ctext[1], 0);
             if (index != -1) {
                 keycode = _ext_map[index].key;
@@ -444,9 +445,9 @@ static int indexForExtChar(const ext_key_mapping_t *table, size_t table_len, cha
             }
             break;
         case 3:
-            NSLog(@"char=%d\n", tc);
-            NSLog(@"ext1=%d\n", (unsigned char) ctext[1]);
-            NSLog(@"ext2=%d\n", (unsigned char) ctext[2]);
+            UTMLog(@"char=%d\n", tc);
+            UTMLog(@"ext1=%d\n", (unsigned char) ctext[1]);
+            UTMLog(@"ext2=%d\n", (unsigned char) ctext[2]);
             index = indexForExtChar(_ext_map, _ext_map_len, tc, ctext[1], ctext[2]);
             if (index != -1) {
                 keycode = _ext_map[index].key;

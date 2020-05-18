@@ -173,7 +173,7 @@ static void cs_channel_new(SpiceSession *s, SpiceChannel *channel, gpointer data
         }
         self->_display = SPICE_DISPLAY_CHANNEL(channel);
         NSCAssert(!self->_sigsconnected, @"Signals already connected!");
-        NSLog(@"%s:%d", __FUNCTION__, __LINE__);
+        UTMLog(@"%s:%d", __FUNCTION__, __LINE__);
         g_signal_connect(channel, "display-primary-create",
                          G_CALLBACK(cs_primary_create), GLIB_OBJC_RETAIN(self));
         g_signal_connect(channel, "display-primary-destroy",
@@ -217,7 +217,7 @@ static void cs_channel_destroy(SpiceSession *s, SpiceChannel *channel, gpointer 
         cs_primary_destroy(self->_display, (__bridge void *)self);
         self->_display = NULL;
         NSCAssert(self->_sigsconnected, @"Signals not connected!");
-        NSLog(@"%s:%d", __FUNCTION__, __LINE__);
+        UTMLog(@"%s:%d", __FUNCTION__, __LINE__);
         g_signal_handlers_disconnect_by_func(channel, G_CALLBACK(cs_primary_create), GLIB_OBJC_RELEASE(self));
         g_signal_handlers_disconnect_by_func(channel, G_CALLBACK(cs_primary_destroy), GLIB_OBJC_RELEASE(self));
         g_signal_handlers_disconnect_by_func(channel, G_CALLBACK(cs_invalidate), GLIB_OBJC_RELEASE(self));
@@ -295,7 +295,7 @@ static void cs_channel_destroy(SpiceSession *s, SpiceChannel *channel, gpointer 
         _sigsconnected = NO;
         g_object_ref(session);
         
-        NSLog(@"%s:%d", __FUNCTION__, __LINE__);
+        UTMLog(@"%s:%d", __FUNCTION__, __LINE__);
         g_signal_connect(session, "channel-new",
                          G_CALLBACK(cs_channel_new), GLIB_OBJC_RETAIN(self));
         g_signal_connect(session, "channel-destroy",
@@ -319,7 +319,7 @@ static void cs_channel_destroy(SpiceSession *s, SpiceChannel *channel, gpointer 
     if (_display) {
         cs_channel_destroy(self.session, SPICE_CHANNEL(_display), (__bridge void *)self);
     }
-    NSLog(@"%s:%d", __FUNCTION__, __LINE__);
+    UTMLog(@"%s:%d", __FUNCTION__, __LINE__);
     g_signal_handlers_disconnect_by_func(self.session, G_CALLBACK(cs_channel_new), GLIB_OBJC_RELEASE(self));
     g_signal_handlers_disconnect_by_func(self.session, G_CALLBACK(cs_channel_destroy), GLIB_OBJC_RELEASE(self));
     g_object_unref(self.session);
@@ -403,7 +403,7 @@ static void cs_channel_destroy(SpiceSession *s, SpiceChannel *channel, gpointer 
 
 - (void)requestResolution:(CGRect)bounds {
     if (!_main) {
-        NSLog(@"ignoring change resolution because main channel not found");
+        UTMLog(@"ignoring change resolution because main channel not found");
         return;
     }
     spice_main_channel_update_display_enabled(_main, (int)self.monitorID, TRUE, FALSE);

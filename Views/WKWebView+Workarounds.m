@@ -146,7 +146,6 @@ static char inputAccessoryViewKey;
     for (UIView* view in self.scrollView.subviews) {
         if ([NSStringFromClass([view class]) hasPrefix: @"WKContent"]) {
             targetView = view;
-            NSLog(@"View class: %@", NSStringFromClass([targetView class]));
             break;
         }
     }

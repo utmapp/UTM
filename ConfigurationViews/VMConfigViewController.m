@@ -23,6 +23,7 @@
 #import "VMConfigTogglePickerCell.h"
 #import "UTMConfiguration.h"
 #import "UTMConfiguration+Constants.h"
+#import "UTMLogging.h"
 
 void *kVMConfigViewControllerContext = &kVMConfigViewControllerContext;
 
@@ -92,7 +93,7 @@ void *kVMConfigViewControllerContext = &kVMConfigViewControllerContext;
             if ([control.configurationPath isEqualToString:keyPath]) {
                 id value = change[NSKeyValueChangeNewKey];
                 if (value != change[NSKeyValueChangeOldKey]) {
-                    NSLog(@"seen configuration change %@ = %@", keyPath, value);
+                    UTMLog(@"seen configuration change %@ = %@", keyPath, value);
                     [control valueChanged:value];
                 }
             }
@@ -164,7 +165,7 @@ void *kVMConfigViewControllerContext = &kVMConfigViewControllerContext;
 
 - (IBAction)configTextFieldEditEnd:(VMConfigTextField *)sender {
     // validate input in super-class
-    NSLog(@"config edited for text %@", sender.configurationPath);
+    UTMLog(@"config edited for text %@", sender.configurationPath);
     if (sender.isNumber) {
         [self.configuration setValue:@([sender.text integerValue]) forKey:sender.configurationPath];
     } else {
@@ -173,12 +174,12 @@ void *kVMConfigViewControllerContext = &kVMConfigViewControllerContext;
 }
 
 - (IBAction)configSwitchChanged:(VMConfigSwitch *)sender {
-    NSLog(@"config changed for switch %@", sender.configurationPath);
+    UTMLog(@"config changed for switch %@", sender.configurationPath);
     [self.configuration setValue:@(sender.on) forKey:sender.configurationPath];
 }
 
 - (IBAction)configStepperChanged:(VMConfigStepper *)sender {
-    NSLog(@"config changed for stepper %@", sender.configurationPath);
+    UTMLog(@"config changed for stepper %@", sender.configurationPath);
     [self.configuration setValue:@(sender.value) forKey:sender.configurationPath];
 }
 

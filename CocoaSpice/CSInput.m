@@ -430,7 +430,7 @@ static int cs_button_to_spice(SendButtonType button)
         self.session = session;
         g_object_ref(session);
         
-        NSLog(@"%s:%d", __FUNCTION__, __LINE__);
+        UTMLog(@"%s:%d", __FUNCTION__, __LINE__);
         g_signal_connect(session, "channel-new",
                          G_CALLBACK(cs_channel_new), GLIB_OBJC_RETAIN(self));
         g_signal_connect(session, "channel-destroy",
@@ -453,7 +453,7 @@ static int cs_button_to_spice(SendButtonType button)
     if (_main) {
         cs_channel_destroy(self.session, SPICE_CHANNEL(_main), (__bridge void *)self);
     }
-    NSLog(@"%s:%d", __FUNCTION__, __LINE__);
+    UTMLog(@"%s:%d", __FUNCTION__, __LINE__);
     g_signal_handlers_disconnect_by_func(self.session, G_CALLBACK(cs_channel_new), GLIB_OBJC_RELEASE(self));
     g_signal_handlers_disconnect_by_func(self.session, G_CALLBACK(cs_channel_destroy), GLIB_OBJC_RELEASE(self));
     g_object_unref(self.session);
@@ -473,7 +473,7 @@ static int cs_button_to_spice(SendButtonType button)
 - (void)rebuildTexture:(CGSize)size center:(CGPoint)hotspot {
     // hotspot is the offset in buffer for the center of the pointer
     if (!_device) {
-        NSLog(@"MTL device not ready for cursor draw");
+        UTMLog(@"MTL device not ready for cursor draw");
         return;
     }
     dispatch_semaphore_wait(_drawLock, DISPATCH_TIME_FOREVER);

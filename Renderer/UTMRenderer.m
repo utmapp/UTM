@@ -9,6 +9,7 @@ Implementation of renderer class which performs Metal setup and per frame render
 @import MetalKit;
 
 #import "UTMRenderer.h"
+#import "UTMLogging.h"
 
 // Header shared between C code here, which executes Metal API commands, and .metal files, which
 //   uses these types as inputs to the shaders
@@ -86,7 +87,7 @@ Implementation of renderer class which performs Metal setup and per frame render
             //  If the Metal API validation is enabled, we can find out more information about what
             //  went wrong.  (Metal API validation is enabled by default when a debug build is run
             //  from Xcode)
-            NSLog(@"Failed to created pipeline state, error %@", error);
+            UTMLog(@"Failed to created pipeline state, error %@", error);
         }
 
         // Create the command queue

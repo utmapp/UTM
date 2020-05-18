@@ -62,14 +62,14 @@ void *start_qemu(void *args) {
             args = [args stringByAppendingFormat:@" %@", arg];
         }
     }
-    NSLog(@"Running: %@", args);
+    UTMLog(@"Running: %@", args);
 }
 
 - (void)startDylib:(nonnull NSString *)dylib main:(nonnull NSString *)main completion:(void(^)(BOOL,NSString *))completion {
     void *dlctx;
     __block pthread_t qemu_thread;
     
-    NSLog(@"Loading %@", dylib);
+    UTMLog(@"Loading %@", dylib);
     dlctx = dlopen([dylib UTF8String], RTLD_LOCAL);
     if (dlctx == NULL) {
         NSString *err = [NSString stringWithUTF8String:dlerror()];

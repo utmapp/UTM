@@ -14,6 +14,7 @@
 // limitations under the License.
 //
 
+#import "UTMLogging.h"
 #import "VMDisplayTerminalViewController+Keyboard.h"
 #import "VMKeyboardButton.h"
 #import "VMKeyboardView.h"
@@ -151,7 +152,7 @@ static int ps2CodeToJs(int ps2Code) {
 - (void)traitCollectionDidChange:(UITraitCollection *)previousTraitCollection {
     [super traitCollectionDidChange:previousTraitCollection];
     [self updateAccessoryViewHeight];
-    NSLog(@"Trait collection did change");
+    UTMLog(@"Trait collection did change");
 }
 
 - (void)updateAccessoryViewHeight {

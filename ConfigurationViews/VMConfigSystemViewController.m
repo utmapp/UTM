@@ -21,6 +21,7 @@
 #import "VMConfigSystemViewController.h"
 #import "UTMConfiguration+Constants.h"
 #import "UTMConfiguration+System.h"
+#import "UTMLogging.h"
 #import "VMConfigPickerView.h"
 #import "VMConfigTextField.h"
 #import "VMConfigTogglePickerCell.h"
@@ -199,7 +200,7 @@ const float kMemoryWarningThreshold = 0.8;
     vm_statistics_data_t vm_stat;
 
     if (host_statistics(host_port, HOST_VM_INFO, (host_info_t)&vm_stat, &host_size) != KERN_SUCCESS) {
-        NSLog(@"Failed to fetch vm statistics");
+        UTMLog(@"Failed to fetch vm statistics");
     }
 
     /* Stats in bytes */

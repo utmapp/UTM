@@ -18,6 +18,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+void UTMLog(NSString *format, ...) NS_FORMAT_FUNCTION(1,2) NS_NO_TAIL_CALL;
+
 @interface UTMLogging : NSObject
 
 @property (nonatomic) NSString *lastErrorLine;
@@ -26,6 +28,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)logToFile:(NSURL *)path;
 - (void)endLog;
+- (void)writeLine:(NSString *)line;
 
 @end
 

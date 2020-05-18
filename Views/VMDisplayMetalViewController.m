@@ -25,6 +25,7 @@
 #import "UTMQemuManager.h"
 #import "UTMConfiguration.h"
 #import "UTMConfiguration+Display.h"
+#import "UTMLogging.h"
 #import "CSDisplayMetal.h"
 #import "UTMSpiceIO.h"
 
@@ -56,13 +57,13 @@
     // Set the view to use the default device
     self.mtkView.device = MTLCreateSystemDefaultDevice();
     if (!self.mtkView.device) {
-        NSLog(@"Metal is not supported on this device");
+        UTMLog(@"Metal is not supported on this device");
         return;
     }
     
     _renderer = [[UTMRenderer alloc] initWithMetalKitView:self.mtkView];
     if (!_renderer) {
-        NSLog(@"Renderer failed initialization");
+        UTMLog(@"Renderer failed initialization");
         return;
     }
     
@@ -152,7 +153,7 @@
     if ((code & 0xFF00) == 0xE000) {
         code = 0x100 | (code & 0xFF);
     } else if (code >= 0x100) {
-        NSLog(@"warning: ignored invalid keycode 0x%x", code);
+        UTMLog(@"warning: ignored invalid keycode 0x%x", code);
     }
     [self.vmInput sendKey:type code:code];
 }
@@ -193,7 +194,7 @@
 #pragma mark - Notifications
 
 - (void)orientationDidChange:(NSNotification *)notification {
-    NSLog(@"orientation changed");
+    UTMLog(@"orientation changed");
     if (self.vmConfiguration.displayFitScreen) {
         // Bug? on iPad, it seems like [UIScreen mainScreen].bounds does not update when this notification
         // is received. so we race it by waiting 0.1s before getting the new resolution. This does not

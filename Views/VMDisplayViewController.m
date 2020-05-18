@@ -17,6 +17,7 @@
 #import "VMDisplayViewController.h"
 #import "UIViewController+Extensions.h"
 #import "UTMLocationManager.h"
+#import "UTMLogging.h"
 #import "UTMVirtualMachine.h"
 #import "VMConfigExistingViewController.h"
 #import "VMDisplayViewSoftKeyboard.h"
@@ -119,7 +120,7 @@
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     if (self.runInBackground) {
-        NSLog(@"Start location tracking to enable running in background");
+        UTMLog(@"Start location tracking to enable running in background");
         [[UTMLocationManager sharedInstance] startUpdatingLocation];
     }
 }
@@ -304,18 +305,18 @@
 #pragma mark - Notification Handling
 
 - (void)handleEnteredBackground:(NSNotification *)notification {
-    NSLog(@"Entering background");
+    UTMLog(@"Entering background");
     if (self.autosaveBackground && self.vm.state == kVMStarted) {
-        NSLog(@"Saving snapshot");
+        UTMLog(@"Saving snapshot");
         __block UIBackgroundTaskIdentifier task = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
-            NSLog(@"Background task end");
+            UTMLog(@"Background task end");
             [[UIApplication sharedApplication] endBackgroundTask:task];
             task = UIBackgroundTaskInvalid;
         }];
         dispatch_async(dispatch_get_global_queue(QOS_CLASS_DEFAULT, 0), ^{
             [self.vm saveVM];
             self->_hasAutoSave = YES;
-            NSLog(@"Save snapshot complete");
+            UTMLog(@"Save snapshot complete");
             [[UIApplication sharedApplication] endBackgroundTask:task];
             task = UIBackgroundTaskInvalid;
         });
@@ -323,9 +324,9 @@
 }
 
 - (void)handleEnteredForeground:(NSNotification *)notification {
-    NSLog(@"Entering foreground!");
+    UTMLog(@"Entering foreground!");
     if (_hasAutoSave && self.vm.state == kVMStarted) {
-        NSLog(@"Deleting snapshot");
+        UTMLog(@"Deleting snapshot");
         dispatch_async(dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0), ^{
             [self.vm deleteSaveVM];
         });
@@ -338,7 +339,7 @@
     [super didReceiveMemoryWarning];
     
     if (self.autosaveLowMemory) {
-        NSLog(@"Saving VM state on low memory warning.");
+        UTMLog(@"Saving VM state on low memory warning.");
         dispatch_async(dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0), ^{
             [self.vm saveVM];
         });

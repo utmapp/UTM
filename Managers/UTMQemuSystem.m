@@ -24,6 +24,7 @@
 #import "UTMConfiguration+Sharing.h"
 #import "UTMConfiguration+System.h"
 #import "UTMConfigurationPortForward.h"
+#import "UTMLogging.h"
 
 @implementation UTMQemuSystem
 
@@ -100,7 +101,7 @@
                 break;
             }
             default: {
-                NSLog(@"WARNING: unknown image type %lu, ignoring image %@", type, fullPathURL);
+                UTMLog(@"WARNING: unknown image type %lu, ignoring image %@", type, fullPathURL);
                 break;
             }
         }

@@ -23,6 +23,7 @@
 #import "UTMConfiguration.h"
 #import "UTMConfiguration+Miscellaneous.h"
 #import "UTMSpiceIO.h"
+#import "UTMLogging.h"
 #import "UTMVirtualMachine.h"
 
 const CGFloat kScrollSpeedReduction = 100.0f;
@@ -337,7 +338,7 @@ static CGFloat CGPointToPixel(CGFloat point) {
         [self.vmInput sendMouseMotion:self.mouseButtonDown point:translated];
         [self.vmInput forceCursorPosition:translated]; // required to show cursor on screen
     } else {
-        NSLog(@"Warning: ignored mouse set (%f, %f) while mouse is in server mode", translated.x, translated.y);
+        UTMLog(@"Warning: ignored mouse set (%f, %f) while mouse is in server mode", translated.x, translated.y);
     }
     return translated;
 }
@@ -348,7 +349,7 @@ static CGFloat CGPointToPixel(CGFloat point) {
     if (self.vmInput.serverModeCursor) {
         [self.vmInput sendMouseMotion:self.mouseButtonDown point:translation];
     } else {
-        NSLog(@"Warning: ignored mouse motion (%f, %f) while mouse is in client mode", translation.x, translation.y);
+        UTMLog(@"Warning: ignored mouse motion (%f, %f) while mouse is in client mode", translation.x, translation.y);
     }
     return translation;
 }
@@ -540,7 +541,7 @@ static CGFloat CGPointToPixel(CGFloat point) {
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveEvent:(UIEvent *)event API_AVAILABLE(ios(13.4)) {
     if (event.type == UIEventTypeTransform) {
-        NSLog(@"ignoring UIEventTypeTransform");
+        UTMLog(@"ignoring UIEventTypeTransform");
         return NO;
     } else {
         return YES;
@@ -569,10 +570,10 @@ static CGFloat CGPointToPixel(CGFloat point) {
     BOOL shouldUseServerMouse = (type == VMMouseTypeRelative);
     self.vmInput.inhibitCursor = shouldHideCursor;
     if (shouldUseServerMouse != self.vmInput.serverModeCursor) {
-        NSLog(@"Switching mouse mode to server:%d for type:%ld", shouldUseServerMouse, type);
+        UTMLog(@"Switching mouse mode to server:%d for type:%ld", shouldUseServerMouse, type);
         [self.vm requestInputTablet:!shouldUseServerMouse completion:^(NSString *res, NSError *err) {
             if (err) {
-                NSLog(@"input select returned error: %@", err);
+                UTMLog(@"input select returned error: %@", err);
             } else {
                 [self.spiceIO.primaryInput requestMouseMode:shouldUseServerMouse];
             }
