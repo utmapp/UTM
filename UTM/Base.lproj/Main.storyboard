@@ -2821,6 +2821,9 @@
                                     <constraint firstAttribute="height" id="3fI-TZ-b3P"/>
                                     <constraint firstAttribute="width" id="rgl-QS-cbc"/>
                                 </constraints>
+                                <connections>
+                                    <outlet property="delegate" destination="ckC-eO-gxn" id="SRr-dC-eHy"/>
+                                </connections>
                             </view>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" insetsLayoutMarginsFromSafeArea="NO" translatesAutoresizingMaskIntoConstraints="NO" id="0hJ-Yg-GiD">
                                 <rect key="frame" x="0.0" y="0.0" width="375" height="812"/>
