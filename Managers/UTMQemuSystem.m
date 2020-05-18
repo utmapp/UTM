@@ -57,13 +57,6 @@
         // this is required for virt devices
         [self pushArgv:@"-device"];
         [self pushArgv:@"virtio-gpu-pci"];
-        for (NSUInteger i = 0; i < self.configuration.countDrives; i++) {
-            UTMDiskImageType type = [self.configuration driveImageTypeForIndex:i];
-            if (type == UTMDiskImageTypeDisk || type == UTMDiskImageTypeCD) {
-                [self pushArgv:@"-device"];
-                [self pushArgv:[NSString stringWithFormat:@"virtio-blk,drive=drive%lu", i]];
-            }
-        }
     }
 }
 
