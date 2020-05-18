@@ -25,6 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) BOOL nameReadOnly;
 @property (weak, nonatomic) IBOutlet UITableViewCell *exportLogCell;
 @property (weak, nonatomic) IBOutlet UIBarButtonItem *saveButton;
+@property (weak, nonatomic) IBOutlet UITableViewCell *versionCell;
 
 - (IBAction)cancelPressed:(id)sender;
 

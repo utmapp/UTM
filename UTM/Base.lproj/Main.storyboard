@@ -402,6 +402,30 @@
                                             </subviews>
                                         </tableViewCellContentView>
                                     </tableViewCell>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" textLabel="dbT-d1-LCq" detailTextLabel="x96-L4-Oag" style="IBUITableViewCellStyleValue1" id="JxV-W0-pbH">
+                                        <rect key="frame" x="0.0" y="607.33333206176758" width="375" height="44"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="JxV-W0-pbH" id="r9A-TM-Ubv">
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="Version" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="dbT-d1-LCq">
+                                                    <rect key="frame" x="16" y="11.999999999999998" width="57" height="20.333333333333332"/>
+                                                    <autoresizingMask key="autoresizingMask"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="0.0" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="x96-L4-Oag">
+                                                    <rect key="frame" x="335" y="11.999999999999998" width="24" height="20.333333333333332"/>
+                                                    <autoresizingMask key="autoresizingMask"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                            </subviews>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
                                 </cells>
                             </tableViewSection>
                         </sections>
@@ -429,6 +453,7 @@
                         <outlet property="exportLogCell" destination="cHJ-DX-PQX" id="644-og-r2w"/>
                         <outlet property="nameField" destination="2Kh-jJ-awN" id="rec-m9-Zvs"/>
                         <outlet property="saveButton" destination="CIG-Ca-qeI" id="bRO-O2-eko"/>
+                        <outlet property="versionCell" destination="JxV-W0-pbH" id="t4i-1V-VJ2"/>
                         <outletCollection property="configControls" destination="2Kh-jJ-awN" id="xvz-oC-qZO"/>
                         <outletCollection property="configControls" destination="BSZ-1U-IA5" id="saN-tj-i7R"/>
                     </connections>
