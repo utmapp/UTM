@@ -2493,6 +2493,7 @@
                                 </cells>
                             </tableViewSection>
                             <tableViewSection headerTitle="Location" id="eeY-js-xSc">
+                                <string key="footerTitle">Hint: for PC system emulation, the most common location is 'ide' and for Virt system emulation, the most common location is 'virtio'. For ISOs, set the image type to 'cd'.</string>
                                 <cells>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" textLabel="xoO-as-9Kn" detailTextLabel="Ffd-jl-gNs" style="IBUITableViewCellStyleValue1" id="fSV-PP-Loi" customClass="VMConfigTogglePickerCell">
                                         <rect key="frame" x="0.0" y="155.33333206176758" width="375" height="44"/>
