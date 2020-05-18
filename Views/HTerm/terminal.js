@@ -120,8 +120,12 @@ function captureKeypressHandler(event) {
 }
 
 function eventDataUsingModifierTable(sourceEvent) {
+    var keyCode = sourceEvent.keyCode;
+    if (sourceEvent.key.toLowerCase() == 'c' && sourceEvent.keyCode == 13) {
+        keyCode = 67; // Issue #327, iOS WebKit translates Ctrl+C incorrectly
+    }
     return {
-        keyCode: sourceEvent.keyCode,
+        keyCode: keyCode,
         charCode: sourceEvent.charCode,
         location: sourceEvent.location,
         which: sourceEvent.which,
