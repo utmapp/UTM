@@ -664,6 +664,159 @@
                                         <action selector="customKeyTouchUp:" destination="-1" eventType="touchUpInside" id="Qmz-lJ-hja"/>
                                     </connections>
                                 </button>
+                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="FDV-W6-qlO" customClass="VMKeyboardButton">
+                                    <rect key="frame" x="722" y="0.0" width="30" height="36"/>
+                                    <accessibility key="accessibilityConfiguration" label="Caps Lock"/>
+                                    <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                                    <state key="normal" title="Caps">
+                                        <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
+                                    </state>
+                                    <userDefinedRuntimeAttributes>
+                                        <userDefinedRuntimeAttribute type="number" keyPath="scanCode">
+                                            <integer key="value" value="58"/>
+                                        </userDefinedRuntimeAttribute>
+                                    </userDefinedRuntimeAttributes>
+                                    <connections>
+                                        <action selector="customKeyTouchDown:" destination="-1" eventType="touchDown" id="eOi-i7-jXJ"/>
+                                        <action selector="customKeyTouchUp:" destination="-1" eventType="touchUpInside" id="mhX-Vy-NAn"/>
+                                    </connections>
+                                </button>
+                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="sF1-tj-hUG" customClass="VMKeyboardButton">
+                                    <rect key="frame" x="760" y="0.0" width="30" height="36"/>
+                                    <accessibility key="accessibilityConfiguration" label="Scroll Lock"/>
+                                    <fontDescription key="fontDescription" type="system" pointSize="10"/>
+                                    <state key="normal" title="Scroll">
+                                        <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
+                                    </state>
+                                    <userDefinedRuntimeAttributes>
+                                        <userDefinedRuntimeAttribute type="number" keyPath="scanCode">
+                                            <integer key="value" value="70"/>
+                                        </userDefinedRuntimeAttribute>
+                                    </userDefinedRuntimeAttributes>
+                                    <connections>
+                                        <action selector="customKeyTouchDown:" destination="-1" eventType="touchDown" id="cf4-7H-Xng"/>
+                                        <action selector="customKeyTouchUp:" destination="-1" eventType="touchUpInside" id="ajh-Wx-937"/>
+                                    </connections>
+                                </button>
+                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="BUk-Vf-yE5" customClass="VMKeyboardButton">
+                                    <rect key="frame" x="798" y="0.0" width="30" height="36"/>
+                                    <accessibility key="accessibilityConfiguration" label="Num Lock"/>
+                                    <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                                    <state key="normal" title="Num">
+                                        <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
+                                    </state>
+                                    <userDefinedRuntimeAttributes>
+                                        <userDefinedRuntimeAttribute type="number" keyPath="scanCode">
+                                            <integer key="value" value="69"/>
+                                        </userDefinedRuntimeAttribute>
+                                    </userDefinedRuntimeAttributes>
+                                    <connections>
+                                        <action selector="customKeyTouchDown:" destination="-1" eventType="touchDown" id="QOe-yo-8g4"/>
+                                        <action selector="customKeyTouchUp:" destination="-1" eventType="touchUpInside" id="qKk-di-Fsv"/>
+                                    </connections>
+                                </button>
+                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="wordWrap" translatesAutoresizingMaskIntoConstraints="NO" id="Pes-KN-KzU" customClass="VMKeyboardButton">
+                                    <rect key="frame" x="836" y="0.0" width="30" height="36"/>
+                                    <accessibility key="accessibilityConfiguration" label="Print Screen"/>
+                                    <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                                    <state key="normal" title="Pr Scr">
+                                        <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
+                                    </state>
+                                    <userDefinedRuntimeAttributes>
+                                        <userDefinedRuntimeAttribute type="number" keyPath="scanCode">
+                                            <integer key="value" value="57399"/>
+                                        </userDefinedRuntimeAttribute>
+                                    </userDefinedRuntimeAttributes>
+                                    <connections>
+                                        <action selector="customKeyTouchDown:" destination="-1" eventType="touchDown" id="Wwa-EO-mtt"/>
+                                        <action selector="customKeyTouchUp:" destination="-1" eventType="touchUpInside" id="x0q-3K-Hqg"/>
+                                    </connections>
+                                </button>
+                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="kO0-HZ-5w2" customClass="VMKeyboardButton">
+                                    <rect key="frame" x="874" y="0.0" width="30" height="36"/>
+                                    <accessibility key="accessibilityConfiguration" label="Insert"/>
+                                    <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                                    <state key="normal" title="Ins">
+                                        <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
+                                    </state>
+                                    <userDefinedRuntimeAttributes>
+                                        <userDefinedRuntimeAttribute type="number" keyPath="scanCode">
+                                            <integer key="value" value="57426"/>
+                                        </userDefinedRuntimeAttribute>
+                                    </userDefinedRuntimeAttributes>
+                                    <connections>
+                                        <action selector="customKeyTouchDown:" destination="-1" eventType="touchDown" id="wAc-O6-tw1"/>
+                                        <action selector="customKeyTouchUp:" destination="-1" eventType="touchUpInside" id="We9-oD-Eo5"/>
+                                    </connections>
+                                </button>
+                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="LU6-kH-vN3" customClass="VMKeyboardButton">
+                                    <rect key="frame" x="912" y="0.0" width="30" height="36"/>
+                                    <accessibility key="accessibilityConfiguration" label="Home"/>
+                                    <fontDescription key="fontDescription" type="system" pointSize="10"/>
+                                    <state key="normal" title="Home">
+                                        <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
+                                    </state>
+                                    <userDefinedRuntimeAttributes>
+                                        <userDefinedRuntimeAttribute type="number" keyPath="scanCode">
+                                            <integer key="value" value="57415"/>
+                                        </userDefinedRuntimeAttribute>
+                                    </userDefinedRuntimeAttributes>
+                                    <connections>
+                                        <action selector="customKeyTouchDown:" destination="-1" eventType="touchDown" id="lMY-g3-Dle"/>
+                                        <action selector="customKeyTouchUp:" destination="-1" eventType="touchUpInside" id="chC-eS-3WG"/>
+                                    </connections>
+                                </button>
+                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="TOV-fV-TTa" customClass="VMKeyboardButton">
+                                    <rect key="frame" x="950" y="0.0" width="30" height="36"/>
+                                    <accessibility key="accessibilityConfiguration" label="End"/>
+                                    <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                                    <state key="normal" title="End">
+                                        <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
+                                    </state>
+                                    <userDefinedRuntimeAttributes>
+                                        <userDefinedRuntimeAttribute type="number" keyPath="scanCode">
+                                            <integer key="value" value="57423"/>
+                                        </userDefinedRuntimeAttribute>
+                                    </userDefinedRuntimeAttributes>
+                                    <connections>
+                                        <action selector="customKeyTouchDown:" destination="-1" eventType="touchDown" id="07m-lA-eGT"/>
+                                        <action selector="customKeyTouchUp:" destination="-1" eventType="touchUpInside" id="6Py-Ze-bYn"/>
+                                    </connections>
+                                </button>
+                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="wordWrap" translatesAutoresizingMaskIntoConstraints="NO" id="pX1-7o-dbU" customClass="VMKeyboardButton">
+                                    <rect key="frame" x="988" y="0.0" width="30" height="36"/>
+                                    <accessibility key="accessibilityConfiguration" label="Page Up"/>
+                                    <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                                    <state key="normal" title="Pg Up">
+                                        <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
+                                    </state>
+                                    <userDefinedRuntimeAttributes>
+                                        <userDefinedRuntimeAttribute type="number" keyPath="scanCode">
+                                            <integer key="value" value="57417"/>
+                                        </userDefinedRuntimeAttribute>
+                                    </userDefinedRuntimeAttributes>
+                                    <connections>
+                                        <action selector="customKeyTouchDown:" destination="-1" eventType="touchDown" id="G7S-wZ-AUx"/>
+                                        <action selector="customKeyTouchUp:" destination="-1" eventType="touchUpInside" id="2PA-U7-WqC"/>
+                                    </connections>
+                                </button>
+                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="wordWrap" translatesAutoresizingMaskIntoConstraints="NO" id="h4q-XF-UMn" customClass="VMKeyboardButton">
+                                    <rect key="frame" x="1026" y="0.0" width="30" height="36"/>
+                                    <accessibility key="accessibilityConfiguration" label="Page Down"/>
+                                    <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                                    <state key="normal" title="Pg Dn">
+                                        <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
+                                    </state>
+                                    <userDefinedRuntimeAttributes>
+                                        <userDefinedRuntimeAttribute type="number" keyPath="scanCode">
+                                            <integer key="value" value="57425"/>
+                                        </userDefinedRuntimeAttribute>
+                                    </userDefinedRuntimeAttributes>
+                                    <connections>
+                                        <action selector="customKeyTouchDown:" destination="-1" eventType="touchDown" id="Uxx-IF-ZOr"/>
+                                        <action selector="customKeyTouchUp:" destination="-1" eventType="touchUpInside" id="aqP-Y3-6aS"/>
+                                    </connections>
+                                </button>
                             </subviews>
                         </stackView>
                     </subviews>
