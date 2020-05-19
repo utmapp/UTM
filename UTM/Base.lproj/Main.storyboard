@@ -1330,6 +1330,42 @@
                                             </constraints>
                                         </tableViewCellContentView>
                                     </tableViewCell>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" id="Qwm-a0-TCd">
+                                        <rect key="frame" x="0.0" y="910.66666412353516" width="375" height="44"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="Qwm-a0-TCd" id="igP-CB-1ew">
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Machine Properties" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="zoj-Ic-dyX">
+                                                    <rect key="frame" x="16" y="11.666666666666666" width="149" height="21"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                                <textField opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" textAlignment="right" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="SSZ-yD-SbY" customClass="VMConfigTextField">
+                                                    <rect key="frame" x="199" y="11" width="160" height="22"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <textInputTraits key="textInputTraits" keyboardType="alphabet" returnKeyType="done" enablesReturnKeyAutomatically="YES"/>
+                                                    <userDefinedRuntimeAttributes>
+                                                        <userDefinedRuntimeAttribute type="string" keyPath="configurationPath" value="systemMachineProperties"/>
+                                                    </userDefinedRuntimeAttributes>
+                                                    <connections>
+                                                        <action selector="configTextEditChanged:" destination="1m7-hR-fRt" eventType="editingChanged" id="dUG-Xn-pK0"/>
+                                                        <action selector="configTextFieldEditEnd:" destination="1m7-hR-fRt" eventType="editingDidEnd" id="y5c-US-iWx"/>
+                                                        <outlet property="delegate" destination="1m7-hR-fRt" id="B2m-Mw-8ze"/>
+                                                    </connections>
+                                                </textField>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstItem="zoj-Ic-dyX" firstAttribute="centerY" secondItem="igP-CB-1ew" secondAttribute="centerY" id="QLT-Yq-MUL"/>
+                                                <constraint firstItem="SSZ-yD-SbY" firstAttribute="trailing" secondItem="igP-CB-1ew" secondAttribute="trailingMargin" id="e6f-nv-FLb"/>
+                                                <constraint firstItem="SSZ-yD-SbY" firstAttribute="centerY" secondItem="zoj-Ic-dyX" secondAttribute="centerY" id="f4A-jX-PfL"/>
+                                                <constraint firstItem="SSZ-yD-SbY" firstAttribute="leading" relation="lessThanOrEqual" secondItem="zoj-Ic-dyX" secondAttribute="trailing" constant="97" id="qER-AN-zvJ"/>
+                                                <constraint firstItem="zoj-Ic-dyX" firstAttribute="leading" secondItem="igP-CB-1ew" secondAttribute="leadingMargin" id="yty-YP-3Pr"/>
+                                            </constraints>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="default" accessoryType="disclosureIndicator" hidesAccessoryWhenEditing="NO" indentationWidth="10" textLabel="wvt-Dh-tQm" style="IBUITableViewCellStyleDefault" id="3GZ-KE-lYn">
                                         <rect key="frame" x="0.0" y="882.66666412353516" width="375" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
@@ -1454,6 +1490,7 @@
                         <outletCollection property="configControls" destination="aN0-e6-gWq" id="2Og-Jn-zOL"/>
                         <outletCollection property="configControls" destination="Jk5-aT-3ap" id="fBr-0W-BOt"/>
                         <outletCollection property="configControls" destination="3mT-2Z-4g5" id="6bf-dd-ctm"/>
+                        <outletCollection property="configControls" destination="SSZ-yD-SbY" id="K9h-ue-yMT"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Pka-eP-b1w" userLabel="First Responder" sceneMemberID="firstResponder"/>

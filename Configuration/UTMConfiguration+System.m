@@ -29,6 +29,7 @@ static const NSString *const kUTMConfigJitCacheSizeKey = @"JITCacheSize";
 static const NSString *const kUTMConfigForceMulticoreKey = @"ForceMulticore";
 static const NSString *const kUTMConfigAddArgsKey = @"AddArgs";
 static const NSString *const kUTMConfigSystemUUIDKey = @"SystemUUID";
+static const NSString *const kUTMConfigMachinePropertiesKey = @"MachineProperties";
 
 @interface UTMConfiguration ()
 
@@ -126,6 +127,14 @@ static const NSString *const kUTMConfigSystemUUIDKey = @"SystemUUID";
 
 - (void)setSystemUUID:(NSString *)systemUUID {
     self.rootDict[kUTMConfigSystemKey][kUTMConfigSystemUUIDKey] = systemUUID;
+}
+
+- (NSString *)systemMachineProperties {
+    return self.rootDict[kUTMConfigSystemKey][kUTMConfigMachinePropertiesKey];
+}
+
+- (void)setSystemMachineProperties:(NSString *)systemMachineProperties {
+    self.rootDict[kUTMConfigSystemKey][kUTMConfigMachinePropertiesKey] = systemMachineProperties;
 }
 
 #pragma mark - Additional arguments array handling
