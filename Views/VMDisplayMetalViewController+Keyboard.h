@@ -15,12 +15,11 @@
 //
 
 #import "VMDisplayMetalViewController.h"
-#import "VMDisplayViewSoftKeyboard.h"
 #import "VMKeyboardViewDelegate.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface VMDisplayMetalViewController (Keyboard) <VMDisplayViewSoftKeyboard, VMKeyboardViewDelegate>
+@interface VMDisplayMetalViewController (Keyboard) <VMKeyboardViewDelegate>
 
 @property (nonatomic, readonly) NSArray<UIKeyCommand *> *keyCommands;
 
@@ -28,10 +27,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (IBAction)keyboardPastePressed:(UIButton *)sender;
 - (IBAction)customKeyTouchDown:(VMKeyboardButton *)sender;
 - (IBAction)customKeyTouchUp:(VMKeyboardButton *)sender;
-
-- (void)keyboardWillShow:(NSNotification *)notification;
-- (void)keyboardWillHide:(NSNotification *)notification;
-- (void)keyboardWillChangeFrame:(NSNotification *)notification;
 
 @end
 

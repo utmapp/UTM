@@ -18,6 +18,7 @@
 #import "VMDisplayTerminalViewController+Keyboard.h"
 #import "VMKeyboardButton.h"
 #import "VMKeyboardView.h"
+#import "WKWebView+Workarounds.h"
 
 @implementation VMDisplayTerminalViewController (Keyboard)
 
@@ -122,19 +123,6 @@ static int ps2CodeToJs(int ps2Code) {
     }
 }
 
-- (void)keyboardWillShow:(NSNotification *)notification {
-    [self updateAccessoryViewHeight];
-    self.keyboardVisible = YES;
-}
-
-- (void)keyboardWillHide:(NSNotification *)notification {
-    self.keyboardVisible = NO;
-}
-
-- (void)keyboardWillChangeFrame:(NSNotification *)notification {
-    [self updateAccessoryViewHeight];
-}
-
 - (NSString* _Nullable)jsModifierForScanCode: (int) scanCode {
     if (scanCode == 29) {
         return @"ctrlKey";
@@ -151,11 +139,15 @@ static int ps2CodeToJs(int ps2Code) {
 
 - (void)traitCollectionDidChange:(UITraitCollection *)previousTraitCollection {
     [super traitCollectionDidChange:previousTraitCollection];
-    [self updateAccessoryViewHeight];
+    [self updateKeyboardAccessoryFrame];
     UTMLog(@"Trait collection did change");
 }
 
-- (void)updateAccessoryViewHeight {
+- (BOOL)inputViewIsFirstResponder {
+    return [self.webView findContentView].isFirstResponder;
+}
+
+- (void)updateKeyboardAccessoryFrame {
     CGRect currentFrame = self.inputAccessoryView.frame;
     CGFloat height;
     if (self.largeScreen) {
@@ -170,7 +162,7 @@ static int ps2CodeToJs(int ps2Code) {
     if (height != currentFrame.size.height) {
         currentFrame.size.height = height;
         self.inputAccessoryView.frame = currentFrame;
-        [self reloadInputViews];
+        [[self.webView findContentView] reloadInputViews];
     }
 }
 

@@ -46,6 +46,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) BOOL runInBackground;
 @property (nonatomic, strong) UTMVirtualMachine *vm;
 
+- (BOOL)inputViewIsFirstResponder;
+- (void)updateKeyboardAccessoryFrame;
+
 - (IBAction)changeDisplayZoom:(UIButton *)sender;
 - (IBAction)pauseResumePressed:(UIButton *)sender;
 - (IBAction)powerPressed:(UIButton *)sender;

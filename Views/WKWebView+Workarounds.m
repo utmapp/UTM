@@ -135,12 +135,7 @@ static char inputAccessoryViewKey;
 
 #pragma mark - Input accessory view workaround
 
-/**
-    Sets input accessory view as associated objects and does method swizzling on WKContentView
- */
-- (void)setCustomInputAccessoryView:(UIView *)view {
-    objc_setAssociatedObject(self, &inputAccessoryViewKey, view, OBJC_ASSOCIATION_RETAIN);
-    
+- (UIView *)findContentView {
     // find WKContentView in webview subviews
     UIView* targetView;
     for (UIView* view in self.scrollView.subviews) {
@@ -149,6 +144,16 @@ static char inputAccessoryViewKey;
             break;
         }
     }
+    return targetView;
+}
+
+/**
+    Sets input accessory view as associated objects and does method swizzling on WKContentView
+ */
+- (void)setCustomInputAccessoryView:(UIView *)view {
+    objc_setAssociatedObject(self, &inputAccessoryViewKey, view, OBJC_ASSOCIATION_RETAIN);
+    
+    UIView* targetView = [self findContentView];
     
     NSAssert(targetView != nil, @"WKContentView not found!");
     [self plugInInputAccessoryView:targetView];

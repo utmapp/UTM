@@ -39,8 +39,6 @@ NSString* const kVMSendTerminalSizeHandler = @"UTMSendTerminalSize";
     UISwipeGestureRecognizer *_swipeDown;
 }
 
-@synthesize keyboardVisible = _keyboardVisible;
-
 - (void)viewDidLoad {
     [super viewDidLoad];
     // webview setup
@@ -103,7 +101,7 @@ NSString* const kVMSendTerminalSizeHandler = @"UTMSendTerminalSize";
     } else {
         [self hideKeyboard];
     }
-    _keyboardVisible = keyboardVisible;
+    [super setKeyboardVisible:keyboardVisible];
 }
 
 - (void)hideKeyboard {

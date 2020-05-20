@@ -37,12 +37,10 @@
 
 @implementation VMDisplayMetalViewController {
     UTMRenderer *_renderer;
-    BOOL _keyboardVisible;
 }
 
 @synthesize vmDisplay;
 @synthesize vmInput;
-@synthesize keyboardVisible = _keyboardVisible;
 
 - (BOOL)serverModeCursor {
     return self.vmInput.serverModeCursor;
@@ -146,7 +144,7 @@
     } else {
         [self.keyboardView resignFirstResponder];
     }
-    _keyboardVisible = keyboardVisible;
+    [super setKeyboardVisible:keyboardVisible];
 }
 
 - (void)sendExtendedKey:(SendKeyType)type code:(int)code {

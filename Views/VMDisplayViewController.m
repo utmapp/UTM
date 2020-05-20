@@ -20,7 +20,6 @@
 #import "UTMLogging.h"
 #import "UTMVirtualMachine.h"
 #import "VMConfigExistingViewController.h"
-#import "VMDisplayViewSoftKeyboard.h"
 
 @interface VMDisplayViewController ()
 
@@ -100,9 +99,9 @@
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     [self.navigationController setNavigationBarHidden:YES animated:animated];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillChangeFrame:) name:UIKeyboardWillChangeFrameNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardDidShow:) name:UIKeyboardDidShowNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardDidHide:) name:UIKeyboardDidHideNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardDidChangeFrame:) name:UIKeyboardDidChangeFrameNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleEnteredBackground:) name:UIApplicationDidEnterBackgroundNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleEnteredForeground:) name:UIApplicationWillEnterForegroundNotification object:nil];
 }
@@ -110,9 +109,9 @@
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
     [self.navigationController setNavigationBarHidden:NO animated:animated];
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillShowNotification object:nil];
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillHideNotification object:nil];
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillChangeFrameNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardDidShowNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardDidHideNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardDidChangeFrameNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationDidEnterBackgroundNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationWillEnterForegroundNotification object:nil];
 }
@@ -185,9 +184,11 @@
     }
 }
 
-#pragma mark - Key handling
+- (BOOL)inputViewIsFirstResponder {
+    return NO;
+}
 
-- (void)sendExtendedKey:(SendKeyType)type code:(int)code {
+- (void)updateKeyboardAccessoryFrame {
 }
 
 #pragma mark - Toolbar actions
@@ -351,6 +352,18 @@
                 actions:nil
              completion:nil];
     }
+}
+
+- (void)keyboardDidShow:(NSNotification *)notification {
+    _keyboardVisible = YES;
+}
+
+- (void)keyboardDidHide:(NSNotification *)notification {
+    _keyboardVisible = [self inputViewIsFirstResponder]; // workaround for notification when hw keyboard connected
+}
+
+- (void)keyboardDidChangeFrame:(NSNotification *)notification {
+    [self updateKeyboardAccessoryFrame];
 }
 
 @end

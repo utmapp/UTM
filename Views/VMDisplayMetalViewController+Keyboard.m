@@ -25,16 +25,8 @@
 
 #pragma mark - Software Keyboard
 
-- (void)keyboardWillShow:(NSNotification *)notification {
-    [self updateKeyboardAccessoryFrame];
-}
-
-- (void)keyboardWillHide:(NSNotification *)notification {
-    self.keyboardVisible = NO;
-}
-
-- (void)keyboardWillChangeFrame:(NSNotification *)notification {
-    [self updateKeyboardAccessoryFrame];
+- (BOOL)inputViewIsFirstResponder {
+    return self.keyboardView.isFirstResponder;
 }
 
 - (void)updateKeyboardAccessoryFrame {
