@@ -219,7 +219,7 @@ enum ParserState {
 - (BOOL)sendDictionary:(NSDictionary *)dict {
     NSError *err;
     @synchronized (self) {
-        if (!_outputStream || _outputStream.streamStatus != NSStreamStatusOpen) {
+        if (!_outputStream || (_outputStream.streamStatus != NSStreamStatusOpen && _outputStream.streamStatus != NSStreamStatusWriting)) {
             return NO;
         }
         UTMLog(@"Debug JSON send -> %@", dict);
