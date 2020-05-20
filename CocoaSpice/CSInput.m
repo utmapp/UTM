@@ -29,6 +29,7 @@
 @property (nonatomic, readwrite, assign) BOOL serverModeCursor;
 @property (nonatomic, readwrite, assign) BOOL hasCursor;
 @property (nonatomic, readwrite) CGSize cursorSize;
+@property (nonatomic, readwrite) CGPoint cursorHotspot;
 
 @end
 
@@ -93,7 +94,7 @@ static void cs_cursor_set(SpiceCursorChannel *channel,
     
     CGPoint hotspot = CGPointMake(cursor_shape->hot_spot_x, cursor_shape->hot_spot_y);
     CGSize newSize = CGSizeMake(cursor_shape->width, cursor_shape->height);
-    if (!CGSizeEqualToSize(newSize, self.cursorSize)) {
+    if (!CGSizeEqualToSize(newSize, self.cursorSize) || !CGPointEqualToPoint(hotspot, self.cursorHotspot)) {
         [self rebuildTexture:newSize center:hotspot];
     }
     [self drawCursor:cursor_shape->data];
@@ -505,6 +506,7 @@ static int cs_button_to_spice(SendButtonType button)
     // Calculate the number of vertices by dividing the byte length by the size of each vertex
     _numVertices = sizeof(quadVertices) / sizeof(UTMVertex);
     self.cursorSize = size;
+    self.cursorHotspot = hotspot;
     self.hasCursor = YES;
     dispatch_semaphore_signal(_drawLock);
 }
@@ -515,6 +517,7 @@ static int cs_button_to_spice(SendButtonType button)
     _vertices = nil;
     _texture = nil;
     self.cursorSize = CGSizeZero;
+    self.cursorHotspot = CGPointZero;
     self.hasCursor = NO;
     dispatch_semaphore_signal(_drawLock);
 }
