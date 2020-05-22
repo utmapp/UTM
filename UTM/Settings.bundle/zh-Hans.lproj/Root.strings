@@ -1,7 +1,4 @@
 /* (No Comment) */
-"Disabled" = "禁用";
-
-/* (No Comment) */
 "Apple Pencil Input" = "Apple Pencil输入";
 
 /* (No Comment) */
@@ -14,7 +11,10 @@
 "Background" = "后台";
 
 /* (No Comment) */
-"Autosave" = "自动保存";
+"Backspace" = "退格";
+
+/* (No Comment) */
+"Caps" = "大写锁定";
 
 /* (No Comment) */
 "Click & Hold" = "单击并按住";
@@ -26,19 +26,40 @@
 "Cursor" = "光标";
 
 /* (No Comment) */
+"D-DOWN" = "方向键下";
+
+/* (No Comment) */
+"D-LEFT" = "方向键左";
+
+/* (No Comment) */
+"D-RIGHT" = "方向键右";
+
+/* (No Comment) */
+"D-UP" = "方向键上";
+
+/* (No Comment) */
+"Disabled" = "禁用";
+
+/* (No Comment) */
+"Down" = "方向键下";
+
+/* (No Comment) */
 "Drag cursor" = "拖动光标";
 
 /* (No Comment) */
 "Enabled" = "启用";
 
 /* (No Comment) */
-"Disabled" = "禁用";
+"Enter" = "回车";
 
 /* (No Comment) */
 "Follow cursor" = "跟随光标";
 
 /* (No Comment) */
-"Game Controller" = "游戏控制器";
+"Gamepad" = "手柄";
+
+/* (No Comment) */
+"Gamepad - Cursor Speed" = "手柄 - 光标速度";
 
 /* (No Comment) */
 "Gestures" = "手势";
@@ -47,10 +68,28 @@
 "Group" = "组";
 
 /* (No Comment) */
+"Left" = "方向键左";
+
+/* (No Comment) */
 "Long Press" = "长按";
 
 /* (No Comment) */
+"Menu" = "菜单";
+
+/* (No Comment) */
+"Mouse Left Button" = "鼠标左键";
+
+/* (No Comment) */
+"Mouse Middle Button" = "鼠标中键";
+
+/* (No Comment) */
+"Mouse Right Button" = "鼠标右键";
+
+/* (No Comment) */
 "Mouse Wheel" = "鼠标滚轮";
+
+/* (No Comment) */
+"Mouse Wheel (per swipe)" = "鼠标滚轮";
 
 /* (No Comment) */
 "Move Screen" = "移动显示屏";
@@ -62,7 +101,13 @@
 "none given" = "未指定";
 
 /* (No Comment) */
+"Right" = "方向键右";
+
+/* (No Comment) */
 "Right Click" = "右键单击";
+
+/* (No Comment) */
+"Space" = "空格";
 
 /* (No Comment) */
 "Tablet mode (always show cursor)" = "平板模式(显示光标)";
@@ -92,58 +137,11 @@
 "Two Finger Scroll" = "双指滚动";
 
 /* (No Comment) */
+"Two Finger Swipe" = "双指轻扫";
+
+/* (No Comment) */
 "Two Finger Tap" = "双指轻点";
 
 /* (No Comment) */
-"Menu" = "菜单键";
+"Up" = "方向键上";
 
-/* (No Comment) */
-"Gamepad" = "手柄";
-
-/* (No Comment) */
-"D-UP" = "方向键上";
-
-/* (No Comment) */
-"D-LEFT" = "方向键左";
-
-/* (No Comment) */
-"D-DOWN" = "方向键下";
-
-/* (No Comment) */
-"D-RIGHT" = "方向键右";
-
-/* (No Comment) */
-"Mouse Left Button" = "鼠标左键";
-
-/* (No Comment) */
-"Mouse Right Button" = "鼠标右键";
-
-/* (No Comment) */
-"Mouse Middle Button" = "鼠标中键";
-
-/* (No Comment) */
-"Space" = "空格";
-
-/* (No Comment) */
-"Enter" = "回车";
-
-/* (No Comment) */
-"Backspace" = "退格";
-
-/* (No Comment) */
-"Caps" = "大写锁定";
-
-/* (No Comment) */
-"Up" = "方向键 上";
-
-/* (No Comment) */
-"Left" = "方向键 左";
-
-/* (No Comment) */
-"Down" = "方向键 下";
-
-/* (No Comment) */
-"Right" = "方向键 右";
-
-/* (No Comment) */
-"Gamepad - Cursor Speed" = "手柄 - 光标速度";
