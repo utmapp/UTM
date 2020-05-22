@@ -1,29 +1,20 @@
 /* Class = "UITextField"; placeholder = "Name"; ObjectID = "0TR-HU-09X"; */
 "0TR-HU-09X.placeholder" = "名称";
 
-/* Class = "UIButton"; accessibilityLabel = "Power"; ObjectID = "0Wo-4E-exJ"; */
-"0Wo-4E-exJ.accessibilityLabel" = "关机按钮";
-
 /* Class = "UILabel"; text = "Drives/Images"; ObjectID = "1FD-SU-TVn"; */
 "1FD-SU-TVn.text" = "驱动器";
-
-/* Class = "UIButton"; accessibilityLabel = "Control"; ObjectID = "1LD-5d-0Ee"; */
-"1LD-5d-0Ee.accessibilityLabel" = "Control";
-
-/* Class = "UIButton"; normalTitle = "⌃"; ObjectID = "1LD-5d-0Ee"; */
-"1LD-5d-0Ee.normalTitle" = "⌃";
 
 /* Class = "UINavigationItem"; title = "Port Forwarding"; ObjectID = "1MT-lr-GTk"; */
 "1MT-lr-GTk.title" = "端口转发";
 
-/* Class = "UITableViewSection"; headerTitle = "Zoom"; ObjectID = "2ao-Lx-lcQ"; */
+/* Class = "UITableViewSection"; footerTitle = "Requires SPICE guest agent tools to be installed. Retina Mode is recommended only if the guest OS supports HiDPI."; ObjectID = "2ao-Lx-lcQ"; */
+"2ao-Lx-lcQ.footerTitle" = "需要安装SPICE虚拟机工具。仅当虚拟机安装的操作系统支持HiDPI时，才建议使用视网膜模式。";
+
+/* Class = "UITableViewSection"; headerTitle = "Resolution"; ObjectID = "2ao-Lx-lcQ"; */
 "2ao-Lx-lcQ.headerTitle" = "缩放";
 
 /* Class = "UILabel"; text = "Estimated Usage"; ObjectID = "2bR-IG-wMf"; */
 "2bR-IG-wMf.text" = "预计使用";
-
-/* Class = "UIButton"; normalTitle = "F8"; ObjectID = "2Ed-0S-kjc"; */
-"2Ed-0S-kjc.normalTitle" = "F8";
 
 /* Class = "UITextField"; placeholder = "Name"; ObjectID = "2Kh-jJ-awN"; */
 "2Kh-jJ-awN.placeholder" = "名称";
@@ -40,11 +31,11 @@
 /* Class = "UILabel"; text = "Full Graphics"; ObjectID = "3Jg-sa-a1s"; */
 "3Jg-sa-a1s.text" = "图形界面";
 
-/* Class = "UILabel"; text = "Max Resolution"; ObjectID = "3p4-7o-dMd"; */
-"3p4-7o-dMd.text" = "最大分辨率";
+/* Class = "UILabel"; text = "Theme"; ObjectID = "4tC-xd-0a7"; */
+"4tC-xd-0a7.text" = "主题";
 
-/* Class = "UIButton"; normalTitle = "F3"; ObjectID = "4XD-uH-MNJ"; */
-"4XD-uH-MNJ.normalTitle" = "F3";
+/* Class = "UILabel"; text = "Title"; ObjectID = "4Xf-3m-yzE"; */
+"4Xf-3m-yzE.text" = "标题";
 
 /* Class = "UILabel"; text = "Enable Directory Sharing"; ObjectID = "5Ae-Pr-d2U"; */
 "5Ae-Pr-d2U.text" = "开启共享目录";
@@ -58,17 +49,14 @@
 /* Class = "UILabel"; text = "DHCP Hostname"; ObjectID = "6jT-hy-98r"; */
 "6jT-hy-98r.text" = "DHCP主机名";
 
-/* Class = "UIButton"; accessibilityLabel = "Right"; ObjectID = "6Oy-qX-zoY"; */
-"6Oy-qX-zoY.accessibilityLabel" = "右箭头";
-
-/* Class = "UIButton"; normalTitle = "→"; ObjectID = "6Oy-qX-zoY"; */
-"6Oy-qX-zoY.normalTitle" = "→";
-
 /* Class = "UITableViewSection"; headerTitle = "Hardware"; ObjectID = "6vN-fV-5rF"; */
 "6vN-fV-5rF.headerTitle" = "硬件";
 
 /* Class = "UITableViewSection"; headerTitle = "Console"; ObjectID = "6zB-bx-Y94"; */
 "6zB-bx-Y94.headerTitle" = "终端";
+
+/* Class = "UILabel"; text = "Detail"; ObjectID = "7CX-Cp-RMc"; */
+"7CX-Cp-RMc.text" = "详情";
 
 /* Class = "UILabel"; text = "Open Configuration after Creation"; ObjectID = "7DJ-Cp-oMO"; */
 "7DJ-Cp-oMO.text" = "创建后打开设置";
@@ -76,32 +64,17 @@
 /* Class = "UINavigationItem"; title = "Disk Image"; ObjectID = "7id-FA-bJg"; */
 "7id-FA-bJg.title" = "镜像";
 
-/* Class = "UIButton"; normalTitle = "F11"; ObjectID = "7Jq-kj-K2V"; */
-"7Jq-kj-K2V.normalTitle" = "F11";
-
-/* Class = "UIButton"; accessibilityLabel = "Hide Toolbar"; ObjectID = "7Jt-gO-ZMS"; */
-"7Jt-gO-ZMS.accessibilityLabel" = "隐藏工具栏";
-
 /* Class = "UITableViewSection"; headerTitle = "System"; ObjectID = "7nd-62-tFA"; */
-"7nd-62-tFA.headerTitle" = "系统";
-
-/* Class = "UILabel"; text = "Font (placeholder)"; ObjectID = "8ah-qD-hzy"; */
-"8ah-qD-hzy.text" = "字体";
-
-/* Class = "UIButton"; normalTitle = "F10"; ObjectID = "8zW-rN-u2M"; */
-"8zW-rN-u2M.normalTitle" = "F10";
+"7nd-62-tFA.headerTitle" = "CPU和内存";
 
 /* Class = "UILabel"; text = "Detail"; ObjectID = "9fH-Qw-nVS"; */
 "9fH-Qw-nVS.text" = "详情";
 
 /* Class = "UILabel"; text = "Architecture"; ObjectID = "9Nu-pG-ywd"; */
-"9Nu-pG-ywd.text" = "系统架构";
+"9Nu-pG-ywd.text" = "架构";
 
 /* Class = "UINavigationItem"; title = "Select Image"; ObjectID = "340-Mu-Hwt"; */
 "340-Mu-Hwt.title" = "选择镜像";
-
-/* Class = "UIButton"; normalTitle = "F4"; ObjectID = "876-Dc-Xg3"; */
-"876-Dc-Xg3.normalTitle" = "F4";
 
 /* Class = "UILabel"; text = "Name"; ObjectID = "a1E-lK-5Yg"; */
 "a1E-lK-5Yg.text" = "Name";
@@ -109,11 +82,11 @@
 /* Class = "UILabel"; text = "0 MB"; ObjectID = "a8s-7M-new"; */
 "a8s-7M-new.text" = "0 MB";
 
-/* Class = "UINavigationItem"; title = "Printing"; ObjectID = "acH-xK-xn6"; */
-"acH-xK-xn6.title" = "打印";
-
 /* Class = "UINavigationItem"; title = "Drives/Images"; ObjectID = "aCz-nM-j4Z"; */
 "aCz-nM-j4Z.title" = "驱动器";
+
+/* Class = "UILabel"; text = "Invert Mouse Scroll"; ObjectID = "AFA-AV-g09"; */
+"AFA-AV-g09.text" = "反转鼠标滚轮方向";
 
 /* Class = "UILabel"; text = "Enabled"; ObjectID = "aHx-sa-LGi"; */
 "aHx-sa-LGi.text" = "开启";
@@ -124,15 +97,6 @@
 /* Class = "UILabel"; text = "Setup Drives/Images"; ObjectID = "AP0-ME-jBc"; */
 "AP0-ME-jBc.text" = "加载镜像";
 
-/* Class = "UIButton"; accessibilityLabel = "Paste"; ObjectID = "BHE-3Q-Idn"; */
-"BHE-3Q-Idn.accessibilityLabel" = "粘贴";
-
-/* Class = "UIButton"; accessibilityLabel = "Paste"; ObjectID = "bHg-KE-i2P"; */
-"bHg-KE-i2P.accessibilityLabel" = "粘贴";
-
-/* Class = "UIButton"; accessibilityLabel = "Pause"; ObjectID = "bjd-4T-OVm"; */
-"bjd-4T-OVm.accessibilityLabel" = "暂停";
-
 /* Class = "UINavigationItem"; title = "Networking"; ObjectID = "bJQ-Qv-ceR"; */
 "bJQ-Qv-ceR.title" = "网络";
 
@@ -141,12 +105,6 @@
 
 /* Class = "UILabel"; text = "Disk Drive"; ObjectID = "bwc-uM-EKo"; */
 "bwc-uM-EKo.text" = "硬盘";
-
-/* Class = "UIButton"; accessibilityLabel = "Tab"; ObjectID = "BXG-l7-BeY"; */
-"BXG-l7-BeY.accessibilityLabel" = "Tab";
-
-/* Class = "UIButton"; normalTitle = "⇥"; ObjectID = "BXG-l7-BeY"; */
-"BXG-l7-BeY.normalTitle" = "⇥";
 
 /* Class = "UIButton"; accessibilityHint = "Start"; ObjectID = "byz-Gf-XHC"; */
 "byz-Gf-XHC.accessibilityHint" = "开始";
@@ -160,20 +118,17 @@
 /* Class = "UITableViewSection"; headerTitle = "Hardware"; ObjectID = "CeH-xF-3fF"; */
 "CeH-xF-3fF.headerTitle" = "硬件";
 
-/* Class = "UIButton"; accessibilityLabel = "Up"; ObjectID = "cMr-vl-R93"; */
-"cMr-vl-R93.accessibilityLabel" = "Up";
-
-/* Class = "UIButton"; normalTitle = "↑"; ObjectID = "cMr-vl-R93"; */
-"cMr-vl-R93.normalTitle" = "↑";
-
 /* Class = "UINavigationItem"; title = "System"; ObjectID = "CRh-Zb-s8B"; */
-"CRh-Zb-s8B.title" = "系统";
+"CRh-Zb-s8B.title" = "CPU和内存";
+
+/* Class = "UILabel"; text = "Upscaling"; ObjectID = "cU3-TI-v0c"; */
+"cU3-TI-v0c.text" = "";
 
 /* Class = "UILabel"; text = "Legacy (PS/2) Mode"; ObjectID = "d5G-2Y-589"; */
 "d5G-2Y-589.text" = "传统(PS/2)模式";
 
-/* Class = "UITableViewSection"; headerTitle = "Resolution"; ObjectID = "DBb-DO-7RN"; */
-"DBb-DO-7RN.headerTitle" = "分辨率";
+/* Class = "UILabel"; text = "Version"; ObjectID = "dbT-d1-LCq"; */
+"dbT-d1-LCq.text" = "版本";
 
 /* Class = "UILabel"; text = "CPU Cores"; ObjectID = "dHW-er-x98"; */
 "dHW-er-x98.text" = "CPU核心数";
@@ -190,7 +145,7 @@
 /* Class = "UITableViewSection"; headerTitle = "Shared Directory"; ObjectID = "dpu-6y-nD0"; */
 "dpu-6y-nD0.headerTitle" = "共享目录";
 
-/* Class = "UILabel"; text = "Scale to Fit"; ObjectID = "DSd-aZ-Qka"; */
+/* Class = "UILabel"; text = "Fit to Screen"; ObjectID = "DSd-aZ-Qka"; */
 "DSd-aZ-Qka.text" = "缩放至适合";
 
 /* Class = "UITextField"; placeholder = "hda.img"; ObjectID = "Dx6-pD-sU3"; */
@@ -199,17 +154,14 @@
 /* Class = "UILabel"; text = "Guest Network (IPv6)"; ObjectID = "eAi-sh-x9d"; */
 "eAi-sh-x9d.text" = "虚拟机网络(IPv6)";
 
+/* Class = "UITableViewSection"; footerTitle = "Hint: for PC system emulation, the most common location is 'ide' and for Virt system emulation, the most common location is 'virtio'. For ISOs, set the image type to 'cd'."; ObjectID = "eeY-js-xSc"; */
+"eeY-js-xSc.footerTitle" = "提示：对于PC系统，一般情况下接口类型选择“ ide”，对于Virt系统，一般情况下接口类型选择“ virtio”。对于iso，将应将镜像类型设置为“CD/DVD镜像”。";
+
 /* Class = "UITableViewSection"; headerTitle = "Location"; ObjectID = "eeY-js-xSc"; */
 "eeY-js-xSc.headerTitle" = "驱动器信息";
 
 /* Class = "UILabel"; text = "Location"; ObjectID = "EGI-JP-qwU"; */
 "EGI-JP-qwU.text" = "接口类型";
-
-/* Class = "UIButton"; normalTitle = "F12"; ObjectID = "EIz-R9-Ca8"; */
-"EIz-R9-Ca8.normalTitle" = "F12";
-
-/* Class = "UIButton"; accessibilityLabel = "Settings"; ObjectID = "ESi-T5-nUB"; */
-"ESi-T5-nUB.accessibilityLabel" = "设置";
 
 /* Class = "UINavigationItem"; title = "Input"; ObjectID = "Etn-MD-71X"; */
 "Etn-MD-71X.title" = "输入";
@@ -219,12 +171,6 @@
 
 /* Class = "UITableViewSection"; headerTitle = "Advanced"; ObjectID = "F7q-42-AmC"; */
 "F7q-42-AmC.headerTitle" = "高级选项";
-
-/* Class = "UIButton"; accessibilityLabel = "Hide Keyboard"; ObjectID = "F32-dg-1Zk"; */
-"F32-dg-1Zk.accessibilityLabel" = "隐藏键盘";
-
-/* Class = "UILabel"; text = "Enabled"; ObjectID = "fDF-an-yxM"; */
-"fDF-an-yxM.text" = "开启";
 
 /* Class = "UILabel"; text = "Disk"; ObjectID = "Ffd-jl-gNs"; */
 "Ffd-jl-gNs.text" = "磁盘";
@@ -241,14 +187,14 @@
 /* Class = "UILabel"; text = "Guest Network"; ObjectID = "fOG-3K-1lH"; */
 "fOG-3K-1lH.text" = "网络";
 
+/* Class = "UITableViewSection"; headerTitle = "Scaling"; ObjectID = "FuI-Z5-HPj"; */
+"FuI-Z5-HPj.headerTitle" = "缩放";
+
 /* Class = "UILabel"; text = "Display"; ObjectID = "fZG-YK-q4O"; */
 "fZG-YK-q4O.text" = "显示";
 
-/* Class = "UILabel"; text = "Disk Drive"; ObjectID = "gaX-u8-yz8"; */
-"gaX-u8-yz8.text" = "硬盘";
-
-/* Class = "UIButton"; accessibilityLabel = "Keyboard"; ObjectID = "Grb-jH-Oxk"; */
-"Grb-jH-Oxk.accessibilityLabel" = "键盘";
+/* Class = "UILabel"; text = "Subtitle"; ObjectID = "gTk-zy-Ibj"; */
+"gTk-zy-Ibj.text" = "子标题";
 
 /* Class = "UILabel"; text = "Enable Clipboard Sharing"; ObjectID = "gTm-35-vCi"; */
 "gTm-35-vCi.text" = "开启";
@@ -256,23 +202,17 @@
 /* Class = "UILabel"; text = "Input"; ObjectID = "GvK-o6-9qU"; */
 "GvK-o6-9qU.text" = "输入";
 
-/* Class = "UILabel"; text = "Printing"; ObjectID = "gXb-Fk-IyH"; */
-"gXb-Fk-IyH.text" = "打印";
-
 /* Class = "UITableViewSection"; headerTitle = "Additional Options"; ObjectID = "hjJ-kU-VR1"; */
-"hjJ-kU-VR1.headerTitle" = "输入接收方式";
-
-/* Class = "UILabel"; text = "CPU Count"; ObjectID = "HlJ-Fd-TPS"; */
-"HlJ-Fd-TPS.text" = "CPU核心数";
-
-/* Class = "UIButton"; accessibilityLabel = "Back"; ObjectID = "HpT-OM-Xpa"; */
-"HpT-OM-Xpa.accessibilityLabel" = "返回主页";
+"hjJ-kU-VR1.headerTitle" = "更多设置";
 
 /* Class = "UILabel"; text = "Memory"; ObjectID = "HRc-mq-43y"; */
 "HRc-mq-43y.text" = "内存";
 
-/* Class = "UITextField"; placeholder = "2"; ObjectID = "I4t-8W-Nev"; */
+/* Class = "UITextField"; placeholder = "1"; ObjectID = "I4t-8W-Nev"; */
 "I4t-8W-Nev.placeholder" = "2";
+
+/* Class = "UILabel"; text = "Default"; ObjectID = "Ijr-H4-Hee"; */
+"Ijr-H4-Hee.text" = "默认";
 
 /* Class = "UILabel"; text = "Isolate Guest"; ObjectID = "iS1-Ur-HFa"; */
 "iS1-Ur-HFa.text" = "仅本地访问";
@@ -292,8 +232,14 @@
 /* Class = "UILabel"; text = "Sharing"; ObjectID = "jv0-6r-NAJ"; */
 "jv0-6r-NAJ.text" = "共享";
 
+/* Class = "UILabel"; text = "Default"; ObjectID = "KFq-K6-6KS"; */
+"KFq-K6-6KS.text" = "默认";
+
 /* Class = "UILabel"; text = "Network Card"; ObjectID = "KRc-3d-cbz"; */
 "KRc-3d-cbz.text" = "网卡";
+
+/* Class = "UILabel"; text = "Font Size"; ObjectID = "KSo-te-FQs"; */
+"KSo-te-FQs.text" = "字体大小";
 
 /* Class = "UITableViewSection"; headerTitle = "Name"; ObjectID = "kxc-0J-xgO"; */
 "kxc-0J-xgO.headerTitle" = "名称";
@@ -301,29 +247,32 @@
 /* Class = "UILabel"; text = "Detail"; ObjectID = "KYQ-B4-Cf3"; */
 "KYQ-B4-Cf3.text" = "详情";
 
-/* Class = "UILabel"; text = "Fixed"; ObjectID = "LCF-nv-jEK"; */
-"LCF-nv-jEK.text" = "固定";
+/* Class = "UILabel"; text = "Default"; ObjectID = "l4L-0j-IXJ"; */
+"l4L-0j-IXJ.text" = "默认";
 
 /* Class = "UILabel"; text = "JIT Cache"; ObjectID = "led-8Q-nNh"; */
 "led-8Q-nNh.text" = "JIT缓存";
 
+/* Class = "UITableViewSection"; headerTitle = "Mouse Wheel"; ObjectID = "lFm-mY-36G"; */
+"lFm-mY-36G.headerTitle" = "鼠标滚轮";
+
 /* Class = "UILabel"; text = "Enabled"; ObjectID = "Llu-cx-Osx"; */
 "Llu-cx-Osx.text" = "启用";
 
-/* Class = "UIButton"; normalTitle = "F2"; ObjectID = "m3u-Hy-WNb"; */
-"m3u-Hy-WNb.normalTitle" = "F2";
+/* Class = "UITableViewSection"; footerTitle = "Command to send when resizing the console. Placeholder $COLS is the number of columns and $ROWS is the number of rows."; ObjectID = "LTq-Mi-VuJ"; */
+"LTq-Mi-VuJ.footerTitle" = "调整控制台大小时发送的命令。 $COLS是列数，$ROWS是行数。";
 
-/* Class = "UIButton"; accessibilityLabel = "Hide Toolbar"; ObjectID = "M5V-xj-Rzw"; */
-"M5V-xj-Rzw.accessibilityLabel" = "隐藏工具栏";
+/* Class = "UITableViewSection"; headerTitle = "Resize Console Command"; ObjectID = "LTq-Mi-VuJ"; */
+"LTq-Mi-VuJ.headerTitle" = "调整控制台命令的大小";
 
-/* Class = "UIButton"; accessibilityLabel = "Zoom"; ObjectID = "m9f-Az-rlH"; */
-"m9f-Az-rlH.accessibilityLabel" = "缩放";
+/* Class = "UILabel"; text = "Title"; ObjectID = "lws-wx-k0R"; */
+"lws-wx-k0R.text" = "标题";
 
 /* Class = "UILabel"; text = "MB"; ObjectID = "MAs-NR-G0n"; */
 "MAs-NR-G0n.text" = "MB";
 
-/* Class = "UITableViewSection"; footerTitle = "Default JIT Cache size is 1/4 of the allocated Memory size. This is in addition to the host memory! Force Multicore will allow multi-CPU emulation even if the memory model is not supported by QEMU (x86 on ARM for example). This could result in incorrect emulation. If disabled and CPU Count is > 1 then all cores will be emulated by a single core causing reduced performance."; ObjectID = "MGc-rW-PLa"; */
-"MGc-rW-PLa.footerTitle" = "默认的JIT缓存大小是分配给虚拟机内存大小的1/4。 这是运行虚拟机额外消耗的内存！即使内存模型是QEMU不支持的(例如在ARM上模拟X86)，通过打开强制多核开关，也可强制QEMU使用设备的多个CPU核心，可能会导致错误。 如果关闭此开关并且 CPU核心数 > 1，则虚拟机的多核将由单核模拟而来，导致性能降低。";
+/* Class = "UITableViewSection"; footerTitle = "Default JIT Cache size is 1/4 of the allocated Memory size. This is in addition to the host memory! Force Multicore will allow multi-CPU emulation even if the memory model is not supported by QEMU (x86 on ARM for example). This could result in incorrect emulation."; ObjectID = "MGc-rW-PLa"; */
+"MGc-rW-PLa.footerTitle" = "默认的JIT缓存大小是分配给虚拟机内存大小的1/4。 这是运行虚拟机额外消耗的内存！即使内存模型是QEMU不支持的(例如在ARM上模拟X86)，通过打开强制多核开关，也可强制QEMU使用设备的多个CPU核心，可能会导致错误。机器特性说明：大多数情况不需要修改。 目前仅用于Mac99虚拟机。适用于某些旧版本的MacOS需要设置via = pmu-adb的情况。";
 
 /* Class = "UITableViewSection"; headerTitle = "QEMU"; ObjectID = "MGc-rW-PLa"; */
 "MGc-rW-PLa.headerTitle" = "QEMU";
@@ -340,17 +289,8 @@
 /* Class = "UINavigationItem"; title = "Create VM"; ObjectID = "My3-qO-OLf"; */
 "My3-qO-OLf.title" = "创建虚拟机";
 
-/* Class = "UIButton"; normalTitle = "F9"; ObjectID = "n2Z-fx-LHS"; */
-"n2Z-fx-LHS.normalTitle" = "F9";
-
 /* Class = "UITableViewSection"; headerTitle = "Hardware"; ObjectID = "NCJ-Al-5BI"; */
 "NCJ-Al-5BI.headerTitle" = "硬件";
-
-/* Class = "UIButton"; accessibilityLabel = "Left"; ObjectID = "nG1-Lj-efg"; */
-"nG1-Lj-efg.accessibilityLabel" = "左箭头";
-
-/* Class = "UIButton"; normalTitle = "←"; ObjectID = "nG1-Lj-efg"; */
-"nG1-Lj-efg.normalTitle" = "←";
 
 /* Class = "UILabel"; text = "Console Mode"; ObjectID = "nGh-ET-2qO"; */
 "nGh-ET-2qO.text" = "终端模式";
@@ -367,8 +307,8 @@
 /* Class = "UILabel"; text = "Debug Log"; ObjectID = "o5n-nQ-vae"; */
 "o5n-nQ-vae.text" = "记录日志";
 
-/* Class = "UILabel"; text = "Letterbox Mode"; ObjectID = "olW-DK-r4a"; */
-"olW-DK-r4a.text" = "黑边";
+/* Class = "UILabel"; text = "Retina Mode"; ObjectID = "olW-DK-r4a"; */
+"olW-DK-r4a.text" = "视网膜模式";
 
 /* Class = "UINavigationItem"; title = "Sharing"; ObjectID = "ONw-62-0F5"; */
 "ONw-62-0F5.title" = "分享";
@@ -379,14 +319,8 @@
 /* Class = "UILabel"; text = "DNS Server (IPv6)"; ObjectID = "PaI-t4-MPm"; */
 "PaI-t4-MPm.text" = "DNS 服务器(IPv6)";
 
-/* Class = "UIButton"; accessibilityLabel = "Option"; ObjectID = "PvO-bn-C3P"; */
-"PvO-bn-C3P.accessibilityLabel" = "Option";
-
-/* Class = "UIButton"; normalTitle = "⌥"; ObjectID = "PvO-bn-C3P"; */
-"PvO-bn-C3P.normalTitle" = "⌥";
-
 /* Class = "UILabel"; text = "Gesture and Cursor Settings"; ObjectID = "PYT-mF-w3w"; */
-"PYT-mF-w3w.text" = "直接";
+"PYT-mF-w3w.text" = "手势与光标选项";
 
 /* Class = "UITextField"; placeholder = "10.0.2.0/24"; ObjectID = "q6m-Ld-1jH"; */
 "q6m-Ld-1jH.placeholder" = "10.0.2.0/24";
@@ -419,10 +353,7 @@
 "rbw-FB-I5Q.text" = "hda1";
 
 /* Class = "UILabel"; text = "System"; ObjectID = "riB-R9-dTb"; */
-"riB-R9-dTb.text" = "系统";
-
-/* Class = "UITableViewSection"; headerTitle = "Hardware"; ObjectID = "Roy-Wv-Hrq"; */
-"Roy-Wv-Hrq.headerTitle" = "硬件";
+"riB-R9-dTb.text" = "CPU和内存";
 
 /* Class = "UITableViewSection"; footerTitle = "PS/2 has higher compatibility with older operating systems but does not support custom cursor settings."; ObjectID = "Rtj-zp-arL"; */
 "Rtj-zp-arL.footerTitle" = "PS / 2与较旧的操作系统具有更高的兼容性，但不支持自定义光标设置。";
@@ -433,20 +364,11 @@
 /* Class = "UITextField"; placeholder = "512"; ObjectID = "S2s-iX-Lul"; */
 "S2s-iX-Lul.placeholder" = "512";
 
-/* Class = "UIButton"; accessibilityLabel = "Command"; ObjectID = "S2Y-JX-D2o"; */
-"S2Y-JX-D2o.accessibilityLabel" = "Command";
-
-/* Class = "UIButton"; normalTitle = "⌘"; ObjectID = "S2Y-JX-D2o"; */
-"S2Y-JX-D2o.normalTitle" = "⌘";
-
 /* Class = "UITableViewSection"; headerTitle = "Image"; ObjectID = "SCF-Z9-xBk"; */
 "SCF-Z9-xBk.headerTitle" = "镜像";
 
-/* Class = "UIButton"; accessibilityLabel = "Down"; ObjectID = "sOo-ak-Mlv"; */
-"sOo-ak-Mlv.accessibilityLabel" = "下箭头";
-
-/* Class = "UIButton"; normalTitle = "↓"; ObjectID = "sOo-ak-Mlv"; */
-"sOo-ak-Mlv.normalTitle" = "↓";
+/* Class = "UITableViewSection"; footerTitle = "For most non-ARM targets, all CPUs will be emulated by a single CPU by default."; ObjectID = "spp-Cv-g7X"; */
+"spp-Cv-g7X.footerTitle" = "对于大多数非ARM架构的系统，默认情况下多CPU将由单个CPU模拟。当您设置内存过大时，可能会导致虚拟机无法启动。";
 
 /* Class = "UITableViewSection"; headerTitle = "Hardware"; ObjectID = "spp-Cv-g7X"; */
 "spp-Cv-g7X.headerTitle" = "硬件";
@@ -457,14 +379,17 @@
 /* Class = "UILabel"; text = "Title"; ObjectID = "SwZ-ol-btE"; */
 "SwZ-ol-btE.text" = "标题";
 
-/* Class = "UIButton"; accessibilityLabel = "Settings"; ObjectID = "SXa-j7-wWI"; */
-"SXa-j7-wWI.accessibilityLabel" = "设置";
-
 /* Class = "UITextField"; placeholder = "10.0.2.0.15"; ObjectID = "sym-7m-1rq"; */
 "sym-7m-1rq.placeholder" = "10.0.2.0.15";
 
 /* Class = "UINavigationItem"; title = "Configuration"; ObjectID = "TeT-9a-let"; */
 "TeT-9a-let.title" = "配置";
+
+/* Class = "UINavigationItem"; title = "Select Directory"; ObjectID = "teU-fb-PrK"; */
+"teU-fb-PrK.title" = "选择路径";
+
+/* Class = "UILabel"; text = "Font"; ObjectID = "TL7-f0-qSl"; */
+"TL7-f0-qSl.text" = "字体";
 
 /* Class = "UILabel"; text = "MB"; ObjectID = "u4W-r9-V11"; */
 "u4W-r9-V11.text" = "MB";
@@ -481,8 +406,8 @@
 /* Class = "UILabel"; text = "0"; ObjectID = "uy0-gI-CBW"; */
 "uy0-gI-CBW.text" = "0";
 
-/* Class = "UITextField"; placeholder = "2"; ObjectID = "VBD-VX-Usg"; */
-"VBD-VX-Usg.placeholder" = "2";
+/* Class = "UILabel"; text = "Default"; ObjectID = "vJY-9c-oS6"; */
+"vJY-9c-oS6.text" = "默认";
 
 /* Class = "UILabel"; text = "Name"; ObjectID = "VQv-L6-Wpd"; */
 "VQv-L6-Wpd.text" = "名称";
@@ -511,29 +436,17 @@
 /* Class = "UITableViewSection"; headerTitle = "Debug"; ObjectID = "WkA-K4-U3C"; */
 "WkA-K4-U3C.headerTitle" = "调试选项";
 
-/* Class = "UIButton"; normalTitle = "F6"; ObjectID = "wMD-ug-3bW"; */
-"wMD-ug-3bW.normalTitle" = "F6";
-
-/* Class = "UIButton"; normalTitle = "F1"; ObjectID = "wPb-ec-tXw"; */
-"wPb-ec-tXw.normalTitle" = "F1";
-
-/* Class = "UILabel"; text = "Try booting first from"; ObjectID = "wrM-Ql-L8D"; */
-"wrM-Ql-L8D.text" = "启动首先尝试从";
-
 /* Class = "UILabel"; text = "Additional QEMU Arguments"; ObjectID = "wvt-Dh-tQm"; */
 "wvt-Dh-tQm.text" = "其他QEMU参数";
 
 /* Class = "UILabel"; text = "System"; ObjectID = "XhT-dg-bb9"; */
-"XhT-dg-bb9.text" = "系统";
+"XhT-dg-bb9.text" = "CPU";
 
 /* Class = "UINavigationItem"; title = "New Drive/Image"; ObjectID = "XLc-iy-COp"; */
 "XLc-iy-COp.title" = "新驱动器";
 
-/* Class = "UIButton"; accessibilityLabel = "Right"; ObjectID = "Xlj-Hd-dHd"; */
-"Xlj-Hd-dHd.accessibilityLabel" = "Right";
-
-/* Class = "UIButton"; normalTitle = "Del"; ObjectID = "Xlj-Hd-dHd"; */
-"Xlj-Hd-dHd.normalTitle" = "删除键";
+/* Class = "UILabel"; text = "System"; ObjectID = "xMH-IE-l4T"; */
+"xMH-IE-l4T.text" = "CPU";
 
 /* Class = "UILabel"; text = "Image Type"; ObjectID = "xoO-as-9Kn"; */
 "xoO-as-9Kn.text" = "镜像类型";
@@ -547,32 +460,11 @@
 /* Class = "UINavigationItem"; title = "Display"; ObjectID = "xuY-6V-eU1"; */
 "xuY-6V-eU1.title" = "显示";
 
-/* Class = "UILabel"; text = "1024x768"; ObjectID = "xVE-hN-Dcf"; */
-"xVE-hN-Dcf.text" = "1024x768";
-
-/* Class = "UIButton"; accessibilityLabel = "Shift"; ObjectID = "XWu-4O-XGa"; */
-"XWu-4O-XGa.accessibilityLabel" = "Shift";
-
-/* Class = "UIButton"; normalTitle = "⇧"; ObjectID = "XWu-4O-XGa"; */
-"XWu-4O-XGa.normalTitle" = "⇧";
-
 /* Class = "UINavigationItem"; title = "Virtual Machines"; ObjectID = "y7c-vs-jlM"; */
 "y7c-vs-jlM.title" = "虚拟机";
 
-/* Class = "UIButton"; accessibilityLabel = "Pause"; ObjectID = "y8S-ia-RVP"; */
-"y8S-ia-RVP.accessibilityLabel" = "暂停";
-
-/* Class = "UIButton"; accessibilityLabel = "Escape"; ObjectID = "yDQ-hh-V1x"; */
-"yDQ-hh-V1x.accessibilityLabel" = "ESC";
-
-/* Class = "UIButton"; normalTitle = "⎋"; ObjectID = "yDQ-hh-V1x"; */
-"yDQ-hh-V1x.normalTitle" = "⎋";
-
 /* Class = "UILabel"; text = "DNS Server"; ObjectID = "YED-iz-j6H"; */
 "YED-iz-j6H.text" = "DNS 服务器";
-
-/* Class = "UIButton"; normalTitle = "F7"; ObjectID = "yuk-bm-ipJ"; */
-"yuk-bm-ipJ.normalTitle" = "F7";
 
 /* Class = "UILabel"; text = "Try booting first from"; ObjectID = "Yzl-hW-dz8"; */
 "Yzl-hW-dz8.text" = "启动首先尝试从";
@@ -580,6 +472,9 @@
 /* Class = "UILabel"; text = "Architecture"; ObjectID = "ziF-JQ-bTj"; */
 "ziF-JQ-bTj.text" = "架构";
 
-/* Class = "UIButton"; normalTitle = "F5"; ObjectID = "ZrI-oI-jIY"; */
-"ZrI-oI-jIY.normalTitle" = "F5";
+/* Class = "UILabel"; text = "Machine Properties"; ObjectID = "zoj-Ic-dyX"; */
+"zoj-Ic-dyX.text" = "机器特性";
+
+/* Class = "UILabel"; text = "Blinking Cursor"; ObjectID = "ZPx-JZ-dIr"; */
+"ZPx-JZ-dIr.text" = "光标闪烁";
 
