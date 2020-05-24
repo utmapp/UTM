@@ -153,6 +153,9 @@
 /* Clone VM name prompt title */
 "Name" = "名字";
 
+/* UTMConfiguration */
+"Nearest Neighbor" = "近邻取样";
+
 /* VMConfigPortForwardingViewController */
 "New port forward" = "新建端口转发";
 
