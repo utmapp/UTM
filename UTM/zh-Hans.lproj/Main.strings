@@ -122,7 +122,7 @@
 "CRh-Zb-s8B.title" = "CPU和内存";
 
 /* Class = "UILabel"; text = "Upscaling"; ObjectID = "cU3-TI-v0c"; */
-"cU3-TI-v0c.text" = "";
+"cU3-TI-v0c.text" = "升尺度(Upscaling)";
 
 /* Class = "UILabel"; text = "Legacy (PS/2) Mode"; ObjectID = "d5G-2Y-589"; */
 "d5G-2Y-589.text" = "传统(PS/2)模式";
@@ -192,6 +192,9 @@
 
 /* Class = "UILabel"; text = "Display"; ObjectID = "fZG-YK-q4O"; */
 "fZG-YK-q4O.text" = "显示";
+
+/* Class = "UILabel"; text = "Downscaling"; ObjectID = "g1h-Bh-yRJ"; */
+"g1h-Bh-yRJ.text" = "降尺度(Downscaling)";
 
 /* Class = "UILabel"; text = "Subtitle"; ObjectID = "gTk-zy-Ibj"; */
 "gTk-zy-Ibj.text" = "子标题";
