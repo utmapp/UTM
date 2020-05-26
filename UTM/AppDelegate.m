@@ -16,6 +16,8 @@
 
 #import "AppDelegate.h"
 
+const NSNotificationName UTMImportNotification = @"UTMImportNotification";
+
 @interface AppDelegate ()
 
 @end
@@ -35,6 +37,17 @@
 - (void)applicationWillTerminate:(UIApplication *)application {
     // You can't fire me, I quit!
     exit(0);
+}
+
+- (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options {
+    if ([options[UIApplicationOpenURLOptionsOpenInPlaceKey] boolValue]) {
+        NSLog(@"Refusing to open %@ in place", url);
+        return NO;
+    } else {
+        self.openURL = url;
+        [[NSNotificationCenter defaultCenter] postNotificationName:UTMImportNotification object:self];
+        return YES;
+    }
 }
 
 #pragma - mark NSUserDefaults

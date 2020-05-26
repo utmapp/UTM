@@ -15,6 +15,7 @@
 //
 
 #import "VMListViewController.h"
+#import "AppDelegate.h"
 #import "VMListViewCell.h"
 #import "UTMConfigurationDelegate.h"
 #import "UTMConfiguration.h"
@@ -60,6 +61,7 @@
 
 - (void)viewDidDisappear:(BOOL)animated {
     [super viewDidDisappear:animated];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UTMImportNotification object:nil];
     dispatch_async(self.viewVisibleQueue, ^{
         dispatch_semaphore_wait(self.viewVisibleSema, DISPATCH_TIME_FOREVER);
     });
@@ -73,6 +75,9 @@
     dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INTERACTIVE, 0), ^{
         [self reloadData];
     });
+    
+    // Notifications
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(importUTM:) name:UTMImportNotification object:nil];
     
     // show any message
     [self showStartupMessage];
@@ -365,6 +370,27 @@
 
 - (IBAction)exitUTM:(UIBarButtonItem *)sender {
     exit(0);
+}
+
+#pragma mark - Notifications
+
+- (void)importUTM:(NSNotification *)notification {
+    NSURL *url = [notification.object openURL];
+    NSString *file = url.lastPathComponent;
+    NSURL *dest = [self.documentsPath URLByAppendingPathComponent:file isDirectory:YES];
+    if (file.length == 0) {
+        [self showAlert:NSLocalizedString(@"Invalid UTM not imported.", @"VMListViewController") actions:nil completion:nil];
+    } else if ([[NSFileManager defaultManager] fileExistsAtPath:dest.path]) {
+        [self showAlert:NSLocalizedString(@"A VM already exists with this name.", @"VMListViewController") actions:nil completion:nil];
+    } else {
+        dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), ^{
+            NSError *err = nil;
+            [self workStartedWhenVisible:[NSString stringWithFormat:NSLocalizedString(@"Importing %@...", @"Save VM overlay"), file]];
+            [[NSFileManager defaultManager] copyItemAtURL:url toURL:dest error:&err];
+            [self workCompletedWhenVisible:err.localizedDescription];
+            [self reloadData];
+        });
+    }
 }
 
 @end

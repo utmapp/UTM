@@ -15,6 +15,7 @@
 //
 
 #import "VMDisplayViewController.h"
+#import "AppDelegate.h"
 #import "UIViewController+Extensions.h"
 #import "UTMLocationManager.h"
 #import "UTMLogging.h"
@@ -104,6 +105,7 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardDidChangeFrame:) name:UIKeyboardDidChangeFrameNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleEnteredBackground:) name:UIApplicationDidEnterBackgroundNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleEnteredForeground:) name:UIApplicationWillEnterForegroundNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(importUTM:) name:UTMImportNotification object:nil];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -114,6 +116,7 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardDidChangeFrameNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationDidEnterBackgroundNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationWillEnterForegroundNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UTMImportNotification object:nil];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -364,6 +367,10 @@
 
 - (void)keyboardDidChangeFrame:(NSNotification *)notification {
     [self updateKeyboardAccessoryFrame];
+}
+
+- (void)importUTM:(NSNotification *)notification {
+    [self showAlert:NSLocalizedString(@"You must terminate the running VM before you can import a new VM.", @"VMDisplayViewController") actions:nil completion:nil];
 }
 
 @end
