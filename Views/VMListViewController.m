@@ -366,5 +366,8 @@
 - (IBAction)exitUTM:(UIBarButtonItem *)sender {
     exit(0);
 }
+- (IBAction)refreshVMs:(UIBarButtonItem *)sender {
+    [self reloadData];
+}
 
 @end
