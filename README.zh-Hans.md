@@ -1,4 +1,4 @@
-# UTM(Chinese)
+# UTM
 [![Build](https://github.com/utmapp/UTM/workflows/Build/badge.svg?branch=master&event=push)][1]
 
 > 发明一台可以用来计算任何可计算序列的机器是完全有可能的。
