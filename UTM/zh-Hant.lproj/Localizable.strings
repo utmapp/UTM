@@ -157,11 +157,10 @@
 "Nearest Neighbor" = "近鄰取樣";
 
 /* VMConfigPortForwardingViewController */
-"New port forward" = "新建埠轉發
-";
+"New port forward" = "新建埠轉發";
 
 /* Clone VM name prompt message */
-"New VM name" = "輸入新的虛擬機器的名字;
+"New VM name" = "輸入新的虛擬機器的名字";
 
 /* No button
    VMDisplayViewController */
