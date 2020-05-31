@@ -261,6 +261,7 @@
                             </userDefinedRuntimeAttributes>
                             <connections>
                                 <action selector="customKeyTouchDown:" destination="-1" eventType="touchDown" id="kZh-EX-yrR"/>
+                                <action selector="customKeyTouchUp:" destination="-1" eventType="touchUpOutside" id="HCs-SW-Fd6"/>
                                 <action selector="customKeyTouchUp:" destination="-1" eventType="touchUpInside" id="sDx-v5-1xG"/>
                             </connections>
                         </button>
@@ -281,6 +282,7 @@
                             <connections>
                                 <action selector="customKeyTouchDown:" destination="-1" eventType="touchDown" id="IID-VO-9YW"/>
                                 <action selector="customKeyTouchUp:" destination="-1" eventType="touchUpInside" id="92n-oK-GvH"/>
+                                <action selector="customKeyTouchUp:" destination="-1" eventType="touchUpOutside" id="aSN-JS-h15"/>
                             </connections>
                         </button>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Pjh-3m-tFX" customClass="VMKeyboardButton">
@@ -300,6 +302,7 @@
                             <connections>
                                 <action selector="customKeyTouchDown:" destination="-1" eventType="touchDown" id="JWo-h7-tNm"/>
                                 <action selector="customKeyTouchUp:" destination="-1" eventType="touchUpInside" id="BfK-b4-qFn"/>
+                                <action selector="customKeyTouchUp:" destination="-1" eventType="touchUpOutside" id="rmh-E5-Uei"/>
                             </connections>
                         </button>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="QPo-cD-UlK" customClass="VMKeyboardButton">
@@ -318,6 +321,7 @@
                             </userDefinedRuntimeAttributes>
                             <connections>
                                 <action selector="customKeyTouchDown:" destination="-1" eventType="touchDown" id="0uV-JF-jsR"/>
+                                <action selector="customKeyTouchUp:" destination="-1" eventType="touchUpOutside" id="EmL-of-usD"/>
                                 <action selector="customKeyTouchUp:" destination="-1" eventType="touchUpInside" id="VAF-sI-mcU"/>
                             </connections>
                         </button>
@@ -367,6 +371,7 @@
                                     </userDefinedRuntimeAttributes>
                                     <connections>
                                         <action selector="customKeyTouchDown:" destination="-1" eventType="touchDown" id="sHC-4i-utA"/>
+                                        <action selector="customKeyTouchUp:" destination="-1" eventType="touchUpOutside" id="Sbg-Nu-Wzj"/>
                                         <action selector="customKeyTouchUp:" destination="-1" eventType="touchUpInside" id="VIi-XL-ejJ"/>
                                     </connections>
                                 </button>
@@ -385,6 +390,7 @@
                                     <connections>
                                         <action selector="customKeyTouchDown:" destination="-1" eventType="touchDown" id="KIE-Y5-XY5"/>
                                         <action selector="customKeyTouchUp:" destination="-1" eventType="touchUpInside" id="b0Y-8k-cZ4"/>
+                                        <action selector="customKeyTouchUp:" destination="-1" eventType="touchUpOutside" id="ja5-KQ-Fex"/>
                                     </connections>
                                 </button>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="BUL-js-yMh" customClass="VMKeyboardButton">
@@ -401,6 +407,7 @@
                                     </userDefinedRuntimeAttributes>
                                     <connections>
                                         <action selector="customKeyTouchDown:" destination="-1" eventType="touchDown" id="nco-mO-ZqR"/>
+                                        <action selector="customKeyTouchUp:" destination="-1" eventType="touchUpOutside" id="0jr-NF-mpl"/>
                                         <action selector="customKeyTouchUp:" destination="-1" eventType="touchUpInside" id="BDL-If-g5M"/>
                                     </connections>
                                 </button>
@@ -419,6 +426,7 @@
                                     <connections>
                                         <action selector="customKeyTouchDown:" destination="-1" eventType="touchDown" id="JFZ-nZ-cvD"/>
                                         <action selector="customKeyTouchUp:" destination="-1" eventType="touchUpInside" id="6jD-2t-gBT"/>
+                                        <action selector="customKeyTouchUp:" destination="-1" eventType="touchUpOutside" id="mA6-7B-k4C"/>
                                     </connections>
                                 </button>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="EVa-2J-CRA" customClass="VMKeyboardButton">
@@ -435,6 +443,7 @@
                                     </userDefinedRuntimeAttributes>
                                     <connections>
                                         <action selector="customKeyTouchDown:" destination="-1" eventType="touchDown" id="KlA-Gj-i0c"/>
+                                        <action selector="customKeyTouchUp:" destination="-1" eventType="touchUpOutside" id="1Ip-MQ-ock"/>
                                         <action selector="customKeyTouchUp:" destination="-1" eventType="touchUpInside" id="DH5-NT-lCK"/>
                                     </connections>
                                 </button>
@@ -452,6 +461,7 @@
                                     </userDefinedRuntimeAttributes>
                                     <connections>
                                         <action selector="customKeyTouchDown:" destination="-1" eventType="touchDown" id="Nyx-N4-ffe"/>
+                                        <action selector="customKeyTouchUp:" destination="-1" eventType="touchUpOutside" id="TUe-aY-MZu"/>
                                         <action selector="customKeyTouchUp:" destination="-1" eventType="touchUpInside" id="k6V-YJ-wY7"/>
                                     </connections>
                                 </button>
@@ -470,6 +480,7 @@
                                     <connections>
                                         <action selector="customKeyTouchDown:" destination="-1" eventType="touchDown" id="g8J-aB-21l"/>
                                         <action selector="customKeyTouchUp:" destination="-1" eventType="touchUpInside" id="9CE-QJ-1bt"/>
+                                        <action selector="customKeyTouchUp:" destination="-1" eventType="touchUpOutside" id="LKx-9C-Gjh"/>
                                     </connections>
                                 </button>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="PWe-Va-Qi1" customClass="VMKeyboardButton">
@@ -485,6 +496,7 @@
                                     </userDefinedRuntimeAttributes>
                                     <connections>
                                         <action selector="customKeyTouchDown:" destination="-1" eventType="touchDown" id="gw0-gA-bdM"/>
+                                        <action selector="customKeyTouchUp:" destination="-1" eventType="touchUpOutside" id="0Uu-3O-IOV"/>
                                         <action selector="customKeyTouchUp:" destination="-1" eventType="touchUpInside" id="7lF-xb-GMb"/>
                                     </connections>
                                 </button>
@@ -501,6 +513,7 @@
                                     </userDefinedRuntimeAttributes>
                                     <connections>
                                         <action selector="customKeyTouchDown:" destination="-1" eventType="touchDown" id="aTv-0D-8Wr"/>
+                                        <action selector="customKeyTouchUp:" destination="-1" eventType="touchUpOutside" id="mBP-eG-z2G"/>
                                         <action selector="customKeyTouchUp:" destination="-1" eventType="touchUpInside" id="nPU-6d-K87"/>
                                     </connections>
                                 </button>
@@ -518,6 +531,7 @@
                                     <connections>
                                         <action selector="customKeyTouchDown:" destination="-1" eventType="touchDown" id="iid-9n-LJt"/>
                                         <action selector="customKeyTouchUp:" destination="-1" eventType="touchUpInside" id="Nwc-62-jMC"/>
+                                        <action selector="customKeyTouchUp:" destination="-1" eventType="touchUpOutside" id="lOH-CV-2o0"/>
                                     </connections>
                                 </button>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="c7C-CG-EBg" customClass="VMKeyboardButton">
@@ -533,6 +547,7 @@
                                     </userDefinedRuntimeAttributes>
                                     <connections>
                                         <action selector="customKeyTouchDown:" destination="-1" eventType="touchDown" id="zE8-Pt-nMb"/>
+                                        <action selector="customKeyTouchUp:" destination="-1" eventType="touchUpOutside" id="4Si-DN-X7w"/>
                                         <action selector="customKeyTouchUp:" destination="-1" eventType="touchUpInside" id="xyr-hL-vuG"/>
                                     </connections>
                                 </button>
@@ -550,6 +565,7 @@
                                     <connections>
                                         <action selector="customKeyTouchDown:" destination="-1" eventType="touchDown" id="tUw-1x-HL9"/>
                                         <action selector="customKeyTouchUp:" destination="-1" eventType="touchUpInside" id="EhF-im-5bu"/>
+                                        <action selector="customKeyTouchUp:" destination="-1" eventType="touchUpOutside" id="IR9-4W-cs5"/>
                                     </connections>
                                 </button>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Rb5-vO-sIx" customClass="VMKeyboardButton">
@@ -565,6 +581,7 @@
                                     </userDefinedRuntimeAttributes>
                                     <connections>
                                         <action selector="customKeyTouchDown:" destination="-1" eventType="touchDown" id="eEz-I9-j0c"/>
+                                        <action selector="customKeyTouchUp:" destination="-1" eventType="touchUpOutside" id="7vQ-9A-gpK"/>
                                         <action selector="customKeyTouchUp:" destination="-1" eventType="touchUpInside" id="eMm-vb-aJk"/>
                                     </connections>
                                 </button>
@@ -581,6 +598,7 @@
                                     </userDefinedRuntimeAttributes>
                                     <connections>
                                         <action selector="customKeyTouchDown:" destination="-1" eventType="touchDown" id="LPR-YJ-C18"/>
+                                        <action selector="customKeyTouchUp:" destination="-1" eventType="touchUpOutside" id="A42-86-1IE"/>
                                         <action selector="customKeyTouchUp:" destination="-1" eventType="touchUpInside" id="AwD-yz-4LO"/>
                                     </connections>
                                 </button>
@@ -597,6 +615,7 @@
                                     </userDefinedRuntimeAttributes>
                                     <connections>
                                         <action selector="customKeyTouchDown:" destination="-1" eventType="touchDown" id="cAT-sO-hiG"/>
+                                        <action selector="customKeyTouchUp:" destination="-1" eventType="touchUpOutside" id="GfN-rS-5sW"/>
                                         <action selector="customKeyTouchUp:" destination="-1" eventType="touchUpInside" id="JDA-XA-pNL"/>
                                     </connections>
                                 </button>
@@ -614,6 +633,7 @@
                                     <connections>
                                         <action selector="customKeyTouchDown:" destination="-1" eventType="touchDown" id="i5c-aL-kwZ"/>
                                         <action selector="customKeyTouchUp:" destination="-1" eventType="touchUpInside" id="gTP-4I-o2a"/>
+                                        <action selector="customKeyTouchUp:" destination="-1" eventType="touchUpOutside" id="mif-IX-5mY"/>
                                     </connections>
                                 </button>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="AhH-ij-IF8" customClass="VMKeyboardButton">
@@ -629,6 +649,7 @@
                                     </userDefinedRuntimeAttributes>
                                     <connections>
                                         <action selector="customKeyTouchDown:" destination="-1" eventType="touchDown" id="jeD-qW-d46"/>
+                                        <action selector="customKeyTouchUp:" destination="-1" eventType="touchUpOutside" id="1Qb-RU-gEe"/>
                                         <action selector="customKeyTouchUp:" destination="-1" eventType="touchUpInside" id="iFo-WM-Y2S"/>
                                     </connections>
                                 </button>
@@ -646,6 +667,7 @@
                                     <connections>
                                         <action selector="customKeyTouchDown:" destination="-1" eventType="touchDown" id="G5A-fy-Z8c"/>
                                         <action selector="customKeyTouchUp:" destination="-1" eventType="touchUpInside" id="ByI-de-wgu"/>
+                                        <action selector="customKeyTouchUp:" destination="-1" eventType="touchUpOutside" id="fj9-t0-TJb"/>
                                     </connections>
                                 </button>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="EDi-KP-KwO" customClass="VMKeyboardButton">
@@ -662,6 +684,7 @@
                                     <connections>
                                         <action selector="customKeyTouchDown:" destination="-1" eventType="touchDown" id="nHG-ei-cyg"/>
                                         <action selector="customKeyTouchUp:" destination="-1" eventType="touchUpInside" id="Qmz-lJ-hja"/>
+                                        <action selector="customKeyTouchUp:" destination="-1" eventType="touchUpOutside" id="lW9-d8-bm5"/>
                                     </connections>
                                 </button>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="FDV-W6-qlO" customClass="VMKeyboardButton">
@@ -678,6 +701,7 @@
                                     </userDefinedRuntimeAttributes>
                                     <connections>
                                         <action selector="customKeyTouchDown:" destination="-1" eventType="touchDown" id="eOi-i7-jXJ"/>
+                                        <action selector="customKeyTouchUp:" destination="-1" eventType="touchUpOutside" id="bhB-iu-62r"/>
                                         <action selector="customKeyTouchUp:" destination="-1" eventType="touchUpInside" id="mhX-Vy-NAn"/>
                                     </connections>
                                 </button>
@@ -696,6 +720,7 @@
                                     <connections>
                                         <action selector="customKeyTouchDown:" destination="-1" eventType="touchDown" id="cf4-7H-Xng"/>
                                         <action selector="customKeyTouchUp:" destination="-1" eventType="touchUpInside" id="ajh-Wx-937"/>
+                                        <action selector="customKeyTouchUp:" destination="-1" eventType="touchUpOutside" id="axV-kc-ebX"/>
                                     </connections>
                                 </button>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="BUk-Vf-yE5" customClass="VMKeyboardButton">
@@ -712,6 +737,7 @@
                                     </userDefinedRuntimeAttributes>
                                     <connections>
                                         <action selector="customKeyTouchDown:" destination="-1" eventType="touchDown" id="QOe-yo-8g4"/>
+                                        <action selector="customKeyTouchUp:" destination="-1" eventType="touchUpOutside" id="a9k-ic-md3"/>
                                         <action selector="customKeyTouchUp:" destination="-1" eventType="touchUpInside" id="qKk-di-Fsv"/>
                                     </connections>
                                 </button>
@@ -730,6 +756,7 @@
                                     <connections>
                                         <action selector="customKeyTouchDown:" destination="-1" eventType="touchDown" id="Wwa-EO-mtt"/>
                                         <action selector="customKeyTouchUp:" destination="-1" eventType="touchUpInside" id="x0q-3K-Hqg"/>
+                                        <action selector="customKeyTouchUp:" destination="-1" eventType="touchUpOutside" id="xBt-c1-p9W"/>
                                     </connections>
                                 </button>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="kO0-HZ-5w2" customClass="VMKeyboardButton">
@@ -746,6 +773,7 @@
                                     </userDefinedRuntimeAttributes>
                                     <connections>
                                         <action selector="customKeyTouchDown:" destination="-1" eventType="touchDown" id="wAc-O6-tw1"/>
+                                        <action selector="customKeyTouchUp:" destination="-1" eventType="touchUpOutside" id="QJF-sF-2kE"/>
                                         <action selector="customKeyTouchUp:" destination="-1" eventType="touchUpInside" id="We9-oD-Eo5"/>
                                     </connections>
                                 </button>
@@ -763,6 +791,7 @@
                                     </userDefinedRuntimeAttributes>
                                     <connections>
                                         <action selector="customKeyTouchDown:" destination="-1" eventType="touchDown" id="lMY-g3-Dle"/>
+                                        <action selector="customKeyTouchUp:" destination="-1" eventType="touchUpOutside" id="Dub-Zh-QoW"/>
                                         <action selector="customKeyTouchUp:" destination="-1" eventType="touchUpInside" id="chC-eS-3WG"/>
                                     </connections>
                                 </button>
@@ -781,6 +810,7 @@
                                     <connections>
                                         <action selector="customKeyTouchDown:" destination="-1" eventType="touchDown" id="07m-lA-eGT"/>
                                         <action selector="customKeyTouchUp:" destination="-1" eventType="touchUpInside" id="6Py-Ze-bYn"/>
+                                        <action selector="customKeyTouchUp:" destination="-1" eventType="touchUpOutside" id="cgm-Pg-CCJ"/>
                                     </connections>
                                 </button>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="wordWrap" translatesAutoresizingMaskIntoConstraints="NO" id="pX1-7o-dbU" customClass="VMKeyboardButton">
@@ -798,6 +828,7 @@
                                     <connections>
                                         <action selector="customKeyTouchDown:" destination="-1" eventType="touchDown" id="G7S-wZ-AUx"/>
                                         <action selector="customKeyTouchUp:" destination="-1" eventType="touchUpInside" id="2PA-U7-WqC"/>
+                                        <action selector="customKeyTouchUp:" destination="-1" eventType="touchUpOutside" id="hhE-t0-m2S"/>
                                     </connections>
                                 </button>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="wordWrap" translatesAutoresizingMaskIntoConstraints="NO" id="h4q-XF-UMn" customClass="VMKeyboardButton">
@@ -815,6 +846,7 @@
                                     <connections>
                                         <action selector="customKeyTouchDown:" destination="-1" eventType="touchDown" id="Uxx-IF-ZOr"/>
                                         <action selector="customKeyTouchUp:" destination="-1" eventType="touchUpInside" id="aqP-Y3-6aS"/>
+                                        <action selector="customKeyTouchUp:" destination="-1" eventType="touchUpOutside" id="rXF-HL-IOf"/>
                                     </connections>
                                 </button>
                             </subviews>
