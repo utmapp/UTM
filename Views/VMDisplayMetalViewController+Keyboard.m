@@ -149,6 +149,7 @@ static NSString *kAllKeys = @"`1234567890-=qwertyuiop[]\\asdfghjkl;'zxcvbnm,./ \
         if (command.modifierFlags & UIKeyModifierCommand) {
             [self sendExtendedKey:SEND_KEY_RELEASE code:0xE05B];
         }
+        [self resetModifierToggles];
     }];
 }
 
@@ -316,6 +317,7 @@ static int API_AVAILABLE(ios(13.4)) hidToPs2(UIKeyboardHIDUsage hidCode) {
                 [self sendExtendedKey:SEND_KEY_RELEASE code:code];
                 didHandleEvent = YES;
             }
+            [self resetModifierToggles];
         }
     }
     if (!didHandleEvent) {
