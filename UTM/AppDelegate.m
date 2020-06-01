@@ -40,14 +40,9 @@ const NSNotificationName UTMImportNotification = @"UTMImportNotification";
 }
 
 - (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options {
-    if ([options[UIApplicationOpenURLOptionsOpenInPlaceKey] boolValue]) {
-        NSLog(@"Refusing to open %@ in place", url);
-        return NO;
-    } else {
-        self.openURL = url;
-        [[NSNotificationCenter defaultCenter] postNotificationName:UTMImportNotification object:self];
-        return YES;
-    }
+    self.openURL = url;
+    [[NSNotificationCenter defaultCenter] postNotificationName:UTMImportNotification object:self];
+    return YES;
 }
 
 #pragma - mark NSUserDefaults

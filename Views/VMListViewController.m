@@ -329,6 +329,14 @@
     });
 }
 
+- (void)startVm:(UTMVirtualMachine *)vm {
+    if (vm.supportedDisplayType == UTMDisplayTypeFullGraphic) {
+        [self performSegueWithIdentifier:@"startVM" sender:vm];
+    } else if (vm.supportedDisplayType == UTMDisplayTypeConsole) {
+        [self performSegueWithIdentifier: @"startVMConsole" sender:vm];
+    }
+}
+
 #pragma mark - Actions
 
 - (IBAction)unwindToMainFromConfiguration:(UIStoryboardSegue*)sender {
@@ -351,21 +359,13 @@
 - (IBAction)startVmFromButton:(UIButton *)sender {
     UICollectionViewCell* cell = (UICollectionViewCell*) sender.superview.superview.superview.superview.superview.superview;
     UTMVirtualMachine* vm = [self vmForCell: cell];
-    if (vm.supportedDisplayType == UTMDisplayTypeFullGraphic) {
-        [self performSegueWithIdentifier:@"startVM" sender:vm];
-    } else if (vm.supportedDisplayType == UTMDisplayTypeConsole) {
-        [self performSegueWithIdentifier: @"startVMConsole" sender:vm];
-    }
+    [self startVm:vm];
 }
 
 - (IBAction)startVmFromScreen:(UIButton *)sender {
     UICollectionViewCell* cell = (UICollectionViewCell*) sender.superview.superview;
     UTMVirtualMachine* vm = [self vmForCell: cell];
-    if (vm.supportedDisplayType == UTMDisplayTypeFullGraphic) {
-        [self performSegueWithIdentifier:@"startVM" sender:vm];
-    } else if (vm.supportedDisplayType == UTMDisplayTypeConsole) {
-        [self performSegueWithIdentifier: @"startVMConsole" sender:vm];
-    }
+    [self startVm:vm];
 }
 
 - (IBAction)exitUTM:(UIBarButtonItem *)sender {
@@ -380,13 +380,28 @@
     NSURL *dest = [self.documentsPath URLByAppendingPathComponent:file isDirectory:YES];
     if (file.length == 0) {
         [self showAlert:NSLocalizedString(@"Invalid UTM not imported.", @"VMListViewController") actions:nil completion:nil];
+    } else if ([[dest URLByResolvingSymlinksInPath] isEqual:[url URLByResolvingSymlinksInPath]]) {
+        UTMVirtualMachine *found;
+        for (UTMVirtualMachine *vm in self.vmList) {
+            if ([vm.path.lastPathComponent isEqualToString:file]) {
+                found = vm;
+                break;
+            }
+        }
+        if (!found) {
+            [self showAlert:NSLocalizedString(@"Cannot find VM.", @"VMListViewController") actions:nil completion:nil];
+        } else {
+            [self startVm:found];
+        }
     } else if ([[NSFileManager defaultManager] fileExistsAtPath:dest.path]) {
         [self showAlert:NSLocalizedString(@"A VM already exists with this name.", @"VMListViewController") actions:nil completion:nil];
     } else {
         dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), ^{
             NSError *err = nil;
             [self workStartedWhenVisible:[NSString stringWithFormat:NSLocalizedString(@"Importing %@...", @"Save VM overlay"), file]];
+            [url startAccessingSecurityScopedResource];
             [[NSFileManager defaultManager] copyItemAtURL:url toURL:dest error:&err];
+            [url stopAccessingSecurityScopedResource];
             [self workCompletedWhenVisible:err.localizedDescription];
             [self reloadData];
         });
