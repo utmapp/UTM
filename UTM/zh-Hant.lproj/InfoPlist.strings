@@ -1,0 +1,14 @@
+/* Privacy - Location Always and When In Use Usage Description */
+"NSLocationAlwaysAndWhenInUseUsageDescription" = "由於iOS的機制，後臺保持虛擬機器運行需要借助定位服務。您的位置資訊不會被發送。";
+
+/* Privacy - Location Always Usage Description */
+"NSLocationAlwaysUsageDescription" = "由於iOS的機制，後臺保持虛擬機器運行需要借助定位服務。您的位置資訊不會被發送。";
+
+/* Privacy - Location When In Use Usage Description */
+"NSLocationWhenInUseUsageDescription" = "由於iOS的機制，後臺保持虛擬機器運行需要借助定位服務。您的位置資訊不會被發送。";
+
+/* Privacy - Microphone Usage Description */
+"NSMicrophoneUsageDescription" = "虛擬機器需要您的同意才能使用麥克風。";
+
+/* (No Comment) */
+"UTM virtual machine" = "";
