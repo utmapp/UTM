@@ -86,16 +86,6 @@
     }
 }
 
-- (void)viewWillAppear:(BOOL)animated {
-    [super viewWillAppear:animated];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(orientationDidChange:) name:UIDeviceOrientationDidChangeNotification object:nil];
-}
-
-- (void)viewWillDisappear:(BOOL)animated {
-    [super viewWillDisappear:animated];
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIDeviceOrientationDidChangeNotification object:nil];
-}
-
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     if (self.vm.state == kVMStopped || self.vm.state == kVMSuspended) {
@@ -105,6 +95,11 @@
         self.spiceIO = spiceIO;
         self.spiceIO.delegate = self;
     }
+}
+
+- (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator {
+    [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
+    [self displayResize:size];
 }
 
 - (void)virtualMachine:(UTMVirtualMachine *)vm transitionToState:(UTMVMState)state {
@@ -127,7 +122,7 @@
             } completion:nil];
             self->_renderer.sourceScreen = self.vmDisplay;
             self->_renderer.sourceCursor = self.vmInput;
-            [self orientationDidChange:nil];
+            [self displayResize:self.view.bounds.size];
             break;
         }
         default: {
@@ -189,24 +184,17 @@
     self.lastDisplayChangeResize = !self.lastDisplayChangeResize;
 }
 
-#pragma mark - Notifications
+#pragma mark - Resizing
 
-- (void)orientationDidChange:(NSNotification *)notification {
-    UTMLog(@"orientation changed");
-    if (self.vmConfiguration.displayFitScreen) {
-        // Bug? on iPad, it seems like [UIScreen mainScreen].bounds does not update when this notification
-        // is received. so we race it by waiting 0.1s before getting the new resolution. This does not
-        // happen on iPhone.
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            CGRect bounds = [UIScreen mainScreen].bounds;
-            if (self.vmConfiguration.displayRetina) {
-                CGFloat scale = [UIScreen mainScreen].scale;
-                CGAffineTransform transform = CGAffineTransformMakeScale(scale, scale);
-                bounds = CGRectApplyAffineTransform(bounds, transform);
-            }
-            [self.vmDisplay requestResolution:bounds];
-        });
+- (void)displayResize:(CGSize)size {
+    UTMLog(@"resizing to (%f, %f)", size.width, size.height);
+    CGRect bounds = CGRectMake(0, 0, size.width, size.height);
+    if (self.vmConfiguration.displayRetina) {
+        CGFloat scale = [UIScreen mainScreen].scale;
+        CGAffineTransform transform = CGAffineTransformMakeScale(scale, scale);
+        bounds = CGRectApplyAffineTransform(bounds, transform);
     }
+    [self.vmDisplay requestResolution:bounds];
 }
 
 @end
