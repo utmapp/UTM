@@ -28,7 +28,7 @@ UTM是一个功能齐全的iOS虚拟机主机。简而言之，它允许你在iP
 
 ### 简单的
 
-获取依赖项的推荐方法是使用[Github操作生成的构件][5].查找最新的版本构建并从arm64构建(用于iOS)或x86_64构建(用于iOS模拟器)下载Sysroot工件。然后将Sysroot解压到UTM的根目录.然后就可以打开`UTM.xcodeproj`,选择您的签名证书，然后从Xcode运行并编译安装UTM。
+获取依赖项的推荐方法是使用[Github操作生成的构件][5].查找最新的版本构建并从arm64构建(用于iOS)或x86_64构建(用于Mac上的iOS模拟器)下载Sysroot工件。然后将Sysroot解压到UTM的根目录.然后就可以打开`UTM.xcodeproj`,选择您的签名证书，然后从Xcode运行并编译安装UTM。
 
 ### 高级的
 
@@ -56,7 +56,7 @@ UTM是一个功能齐全的iOS虚拟机主机。简而言之，它允许你在iP
 
 ### 签名开发
 
-如果你想要签署一个xcarchive，例如从[Github Actions][1] 编译构建，你可以使用以下命令:
+如果你想要签署一个xcarchive，例如从[Github Actions][1]中编译构建，你可以使用以下命令:
 
 ```
 ./scripts/resign.sh UTM.xcarchive outputPath PROFILE_NAME TEAM_ID
@@ -69,6 +69,11 @@ UTM是一个功能齐全的iOS虚拟机主机。简而言之，它允许你在iP
 ```
 ./scripts/resign.sh UTM.xcarchive outputPath
 ```
+## UTM使用注意事项
+
+1. ISO镜像要开启CD/DVD选项
+2. 虚拟硬盘文件不要开CD/DVD选项
+3. 启动app时白屏需要重启iOS设备
 
 ## 为什么UTM不在AppStore中?
 
@@ -84,22 +89,3 @@ UTM是在Apache 2.0许可下发布的。但是，它使用几个(L)GPL组件。�
 [4]: screen.png
 [5]: https://github.com/utmapp/UTM/actions?query=workflow%3ABuild+event%3Arelease+is%3Asuccess
 
-# 附件：qemu介绍及其优点
-
-## qemu介绍
-
-QEMU是一套由Fabrice Bellard所编写的模拟处理器的自由软件。它与Bochs，PearPC近似，但其具有某些后两者所不具备的特性，如高速度及跨平台的特性。经由kqemu这个开源的加速器，QEMU能模拟至接近真实电脑的速度。QEMU有两种主要运作模倾：
-
-User mode模拟模式，亦即是使用者模式。QEMU 能启动那些为不同中央处理器编译的Linux程序。而Wine及 Dosemu是其主要目标。
-System mode模拟模式，亦即是系统模式。QEMU能模拟整个电脑系统，包括中央处理器及其他周边设备。它使得为系统源代码进行测试及除错工作变得容易。其亦能用来在一部主机上虚拟数部不同虚拟电脑。
-QEMU的主体部份是在LGPL下发布的，而其系统模式模拟与kqemu加速器则是在GPL下发布。使用kqemu可使QEMU能模拟至接近实机速度，但其在虚拟的操作系统是Microsoft Windows 98或以下的情况下是无用的。
-
-## qemu优点：
-
-* 可以模拟 IA-32 (x86)个人电脑，AMD64个人电脑， MIPS R4000, 升阳的 SPARC sun3 与 PowerPC (PReP 及 Power Macintosh)架构
-* 支持其他架构，不论在主机或虚拟系统上(请参看QEMU主页以获取完整的清单)
-* 增加了模拟速度，某些程式甚至可以实时运行
-* 可以在其他平台上运行Linux的程式
-* 可以储存及还原运行状态(如运行中的程式)
-* 可以虚拟网卡
-* 可模拟多CPU
