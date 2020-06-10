@@ -20,6 +20,7 @@
 #import "UTMConfigurationDelegate.h"
 #import "UTMConfiguration.h"
 #import "UTMVirtualMachine.h"
+#import "UIViewController+Extensions.h"
 #import "VMDisplayMetalViewController.h"
 #import "VMDisplayTerminalViewController.h"
 
@@ -129,25 +130,23 @@
     return [[NSProcessInfo processInfo] globallyUniqueString];
 }
 
-- (void)showAlert:(NSString *)msg actions:(nullable NSArray<UIAlertAction *> *)actions completion:(nullable void (^)(void))completion {
-    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"" message:msg preferredStyle:UIAlertControllerStyleAlert];
-    if (!actions) {
-        UIAlertAction *okay = [UIAlertAction actionWithTitle:NSLocalizedString(@"OK", @"OK button") style:UIAlertActionStyleDefault handler:nil];
-        [alert addAction:okay];
-    } else {
-        for (UIAlertAction *action in actions) {
-            [alert addAction:action];
-        }
-    }
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self presentViewController:alert animated:YES completion:completion];
+- (void)showAlertSerialized:(NSString *)msg actions:(nullable NSArray<UIAlertAction *> *)actions completion:(nullable void (^)(void))completion {
+    dispatch_async(self.viewVisibleQueue, ^{
+        dispatch_semaphore_t waitUntilCompletion = dispatch_semaphore_create(0);
+        [self showAlert:msg actions:actions completion:^(UIAlertAction *action) {
+            dispatch_semaphore_signal(waitUntilCompletion);
+            if (completion) {
+                completion();
+            }
+        }];
+        dispatch_semaphore_wait(waitUntilCompletion, DISPATCH_TIME_FOREVER);
     });
 }
 
 - (void)showStartupMessage {
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     if (![defaults boolForKey:@"HasShownStartupAlert"]) {
-        [self showAlert:NSLocalizedString(@"Welcome to UTM! Due to a bug in iOS, if you force kill this app, the system will be unstable and you cannot launch UTM again until you reboot. The recommended way to terminate this app is the button on the top left.", @"Startup message") actions:nil completion:^{
+        [self showAlertSerialized:NSLocalizedString(@"Welcome to UTM! Due to a bug in iOS, if you force kill this app, the system will be unstable and you cannot launch UTM again until you reboot. The recommended way to terminate this app is the button on the top left.", @"Startup message") actions:nil completion:^{
             [defaults setBool:YES forKey:@"HasShownStartupAlert"];
         }];
     }
@@ -187,7 +186,7 @@
         });
     }];
     UIAlertAction *no = [UIAlertAction actionWithTitle:NSLocalizedString(@"No", @"No button") style:UIAlertActionStyleCancel handler:nil];
-    [self showAlert:NSLocalizedString(@"Are you sure you want to delete this VM? Any drives associated will also be deleted.", @"Delete confirmation") actions:@[yes, no] completion:nil];
+    [self showAlertSerialized:NSLocalizedString(@"Are you sure you want to delete this VM? Any drives associated will also be deleted.", @"Delete confirmation") actions:@[yes, no] completion:nil];
 }
 
 #pragma mark - Navigation
@@ -321,10 +320,11 @@
         self.vmList = [self fetchVirtualMachines];
         dispatch_sync(dispatch_get_main_queue(), ^{
             [self.collectionView reloadData];
-            [self.alert dismissViewControllerAnimated:YES completion:nil];
-            if (message) {
-                [self showAlert:message actions:nil completion:nil];
-            }
+            [self.alert dismissViewControllerAnimated:YES completion:^{
+                if (message) {
+                    [self showAlertSerialized:message actions:nil completion:nil];
+                }
+            }];
         });
     });
 }
@@ -379,7 +379,7 @@
     NSString *file = url.lastPathComponent;
     NSURL *dest = [self.documentsPath URLByAppendingPathComponent:file isDirectory:YES];
     if (file.length == 0) {
-        [self showAlert:NSLocalizedString(@"Invalid UTM not imported.", @"VMListViewController") actions:nil completion:nil];
+        [self showAlertSerialized:NSLocalizedString(@"Invalid UTM not imported.", @"VMListViewController") actions:nil completion:nil];
     } else if ([[dest URLByResolvingSymlinksInPath] isEqual:[url URLByResolvingSymlinksInPath]]) {
         UTMVirtualMachine *found;
         for (UTMVirtualMachine *vm in self.vmList) {
@@ -389,12 +389,12 @@
             }
         }
         if (!found) {
-            [self showAlert:NSLocalizedString(@"Cannot find VM.", @"VMListViewController") actions:nil completion:nil];
+            [self showAlertSerialized:NSLocalizedString(@"Cannot find VM.", @"VMListViewController") actions:nil completion:nil];
         } else {
             [self startVm:found];
         }
     } else if ([[NSFileManager defaultManager] fileExistsAtPath:dest.path]) {
-        [self showAlert:NSLocalizedString(@"A VM already exists with this name.", @"VMListViewController") actions:nil completion:nil];
+        [self showAlertSerialized:NSLocalizedString(@"A VM already exists with this name.", @"VMListViewController") actions:nil completion:nil];
     } else {
         dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), ^{
             NSError *err = nil;
