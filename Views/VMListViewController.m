@@ -137,15 +137,24 @@
     return [[NSProcessInfo processInfo] globallyUniqueString];
 }
 
-- (void)showAlertSerialized:(NSString *)msg actions:(nullable NSArray<UIAlertAction *> *)actions completion:(nullable void (^)(void))completion {
+- (void)showAlertSerialized:(NSString *)msg isQuestion:(BOOL)isQuestion completion:(nullable void (^)(void))completion {
     dispatch_async(self.viewVisibleQueue, ^{
         dispatch_semaphore_t waitUntilCompletion = dispatch_semaphore_create(0);
-        [self showAlert:msg actions:actions completion:^(UIAlertAction *action) {
+        void (^handler)(UIAlertAction *action) = ^(UIAlertAction *action){
             dispatch_semaphore_signal(waitUntilCompletion);
             if (completion) {
                 completion();
             }
-        }];
+        };
+        dispatch_sync(dispatch_get_main_queue(), ^{
+            if (isQuestion) {
+                UIAlertAction *yes = [UIAlertAction actionWithTitle:NSLocalizedString(@"Yes", @"VMListViewController") style:UIAlertActionStyleDestructive handler:handler];
+                UIAlertAction *no = [UIAlertAction actionWithTitle:NSLocalizedString(@"No", @"VMListViewController") style:UIAlertActionStyleCancel handler:nil];
+                [self showAlert:msg actions:@[yes, no] completion:nil];
+            } else {
+                [self showAlert:msg actions:nil completion:handler];
+            }
+        });
         dispatch_semaphore_wait(waitUntilCompletion, DISPATCH_TIME_FOREVER);
     });
 }
@@ -153,7 +162,7 @@
 - (void)showStartupMessage {
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     if (![defaults boolForKey:@"HasShownStartupAlert"]) {
-        [self showAlertSerialized:NSLocalizedString(@"Welcome to UTM! Due to a bug in iOS, if you force kill this app, the system will be unstable and you cannot launch UTM again until you reboot. The recommended way to terminate this app is the button on the top left.", @"Startup message") actions:nil completion:^{
+        [self showAlertSerialized:NSLocalizedString(@"Welcome to UTM! Due to a bug in iOS, if you force kill this app, the system will be unstable and you cannot launch UTM again until you reboot. The recommended way to terminate this app is the button on the top left.", @"Startup message") isQuestion:NO completion:^{
             [defaults setBool:YES forKey:@"HasShownStartupAlert"];
         }];
     }
@@ -183,17 +192,13 @@
 
 - (void)deleteVM:(NSURL *)url {
     NSString *name = [UTMVirtualMachine virtualMachineName:url];
-    UIAlertAction *yes = [UIAlertAction actionWithTitle:NSLocalizedString(@"Yes", @"Yes button") style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action){
-        dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), ^{
-            NSError *err = nil;
-            [self workStartedWhenVisible:[NSString stringWithFormat:NSLocalizedString(@"Deleting %@...", @"Delete VM overlay"), name]];
-            [[NSFileManager defaultManager] removeItemAtURL:url error:&err];
-            [self workCompletedWhenVisible:err.localizedDescription];
-            [self reloadData];
-        });
+    [self showAlertSerialized:NSLocalizedString(@"Are you sure you want to delete this VM? Any drives associated will also be deleted.", @"Delete confirmation") isQuestion:YES completion:^{
+        NSError *err = nil;
+        [self workStartedWhenVisible:[NSString stringWithFormat:NSLocalizedString(@"Deleting %@...", @"Delete VM overlay"), name]];
+        [[NSFileManager defaultManager] removeItemAtURL:url error:&err];
+        [self workCompletedWhenVisible:err.localizedDescription];
+        [self reloadData];
     }];
-    UIAlertAction *no = [UIAlertAction actionWithTitle:NSLocalizedString(@"No", @"No button") style:UIAlertActionStyleCancel handler:nil];
-    [self showAlertSerialized:NSLocalizedString(@"Are you sure you want to delete this VM? Any drives associated will also be deleted.", @"Delete confirmation") actions:@[yes, no] completion:nil];
 }
 
 #pragma mark - Navigation
@@ -329,7 +334,7 @@
             [self.collectionView reloadData];
             [self.alert dismissViewControllerAnimated:YES completion:^{
                 if (message) {
-                    [self showAlertSerialized:message actions:nil completion:nil];
+                    [self showAlertSerialized:message isQuestion:NO completion:nil];
                 }
             }];
         });
@@ -388,7 +393,7 @@
     NSString *file = url.lastPathComponent;
     NSURL *dest = [self.documentsPath URLByAppendingPathComponent:file isDirectory:YES];
     if (file.length == 0) {
-        [self showAlertSerialized:NSLocalizedString(@"Invalid UTM not imported.", @"VMListViewController") actions:nil completion:nil];
+        [self showAlertSerialized:NSLocalizedString(@"Invalid UTM not imported.", @"VMListViewController") isQuestion:NO completion:nil];
     } else if ([[dest URLByResolvingSymlinksInPath] isEqual:[url URLByResolvingSymlinksInPath]]) {
         UTMVirtualMachine *found;
         for (UTMVirtualMachine *vm in self.vmList) {
@@ -398,14 +403,14 @@
             }
         }
         if (!found) {
-            [self showAlertSerialized:NSLocalizedString(@"Cannot find VM.", @"VMListViewController") actions:nil completion:nil];
+            [self showAlertSerialized:NSLocalizedString(@"Cannot find VM.", @"VMListViewController") isQuestion:NO completion:nil];
         } else {
             dispatch_async(dispatch_get_main_queue(), ^{
                 [self startVm:found];
             });
         }
     } else if ([[NSFileManager defaultManager] fileExistsAtPath:dest.path]) {
-        [self showAlertSerialized:NSLocalizedString(@"A VM already exists with this name.", @"VMListViewController") actions:nil completion:nil];
+        [self showAlertSerialized:NSLocalizedString(@"A VM already exists with this name.", @"VMListViewController") isQuestion:NO completion:nil];
     } else if ([[fileBasePath URLByResolvingSymlinksInPath] isEqual:[[self.documentsPath URLByAppendingPathComponent:@"Inbox" isDirectory:YES] URLByResolvingSymlinksInPath]]) {
         dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), ^{
             NSError *err = nil;
