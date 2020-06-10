@@ -384,6 +384,7 @@
 - (void)importUTM:(NSNotification *)notification {
     NSURL *url = [notification.object openURL];
     [notification.object setOpenURL:nil];
+    NSURL *fileBasePath = [url URLByDeletingLastPathComponent];
     NSString *file = url.lastPathComponent;
     NSURL *dest = [self.documentsPath URLByAppendingPathComponent:file isDirectory:YES];
     if (file.length == 0) {
@@ -405,6 +406,14 @@
         }
     } else if ([[NSFileManager defaultManager] fileExistsAtPath:dest.path]) {
         [self showAlertSerialized:NSLocalizedString(@"A VM already exists with this name.", @"VMListViewController") actions:nil completion:nil];
+    } else if ([[fileBasePath URLByResolvingSymlinksInPath] isEqual:[[self.documentsPath URLByAppendingPathComponent:@"Inbox" isDirectory:YES] URLByResolvingSymlinksInPath]]) {
+        dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), ^{
+            NSError *err = nil;
+            [self workStartedWhenVisible:[NSString stringWithFormat:NSLocalizedString(@"Moving %@...", @"Save VM overlay"), file]];
+            [[NSFileManager defaultManager] moveItemAtURL:url toURL:dest error:&err];
+            [self workCompletedWhenVisible:err.localizedDescription];
+            [self reloadData];
+        });
     } else {
         dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), ^{
             NSError *err = nil;
