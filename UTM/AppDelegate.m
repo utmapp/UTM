@@ -30,6 +30,9 @@ const NSNotificationName UTMImportNotification = @"UTMImportNotification";
     // trigger "allow network usage" popup in some regions
     [[NSURLSession.sharedSession dataTaskWithURL:[NSURL URLWithString:@"http://captive.apple.com"]] resume];
     [self registerDefaultsFromSettingsBundle];
+    if (launchOptions[UIApplicationLaunchOptionsURLKey]) {
+        self.openURL = launchOptions[UIApplicationLaunchOptionsURLKey];
+    }
     return YES;
 }
 

@@ -72,13 +72,20 @@
     [super viewDidAppear:animated];
     dispatch_semaphore_signal(self.viewVisibleSema);
     
+    // Notifications
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(importUTM:) name:UTMImportNotification object:nil];
+    AppDelegate *delegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+    NSURL *openURL = delegate.openURL;
+    
     // refresh list
     dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INTERACTIVE, 0), ^{
         [self reloadData];
+        
+        // Did we startup with an URL?
+        if (openURL) {
+            [[NSNotificationCenter defaultCenter] postNotificationName:UTMImportNotification object:delegate];
+        }
     });
-    
-    // Notifications
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(importUTM:) name:UTMImportNotification object:nil];
     
     // show any message
     [self showStartupMessage];
@@ -376,6 +383,7 @@
 
 - (void)importUTM:(NSNotification *)notification {
     NSURL *url = [notification.object openURL];
+    [notification.object setOpenURL:nil];
     NSString *file = url.lastPathComponent;
     NSURL *dest = [self.documentsPath URLByAppendingPathComponent:file isDirectory:YES];
     if (file.length == 0) {
@@ -391,7 +399,9 @@
         if (!found) {
             [self showAlertSerialized:NSLocalizedString(@"Cannot find VM.", @"VMListViewController") actions:nil completion:nil];
         } else {
-            [self startVm:found];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self startVm:found];
+            });
         }
     } else if ([[NSFileManager defaultManager] fileExistsAtPath:dest.path]) {
         [self showAlertSerialized:NSLocalizedString(@"A VM already exists with this name.", @"VMListViewController") actions:nil completion:nil];
