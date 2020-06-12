@@ -205,6 +205,11 @@
         self.toolbarAccessoryView.hidden = YES;
         self.prefersStatusBarHidden = YES;
     } completion:nil];
+    if (![self boolForSetting:@"HasShownHideToolbarAlert"]) {
+        [self showAlert:NSLocalizedString(@"Hint: To show the toolbar again, use a three-finger swipe down on the screen.", @"VMDisplayViewController") actions:nil completion:^(UIAlertAction *action){
+            [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"HasShownHideToolbarAlert"];
+        }];
+    }
 }
 
 - (void)showToolbar {
@@ -285,12 +290,6 @@
 
 - (IBAction)hideToolbarButton:(UIButton *)sender {
     self.toolbarVisible = NO;
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    if (![defaults boolForKey:@"HasShownHideToolbarAlert"]) {
-        [self showAlert:NSLocalizedString(@"Hint: To show the toolbar again, use a three-finger swipe down on the screen.", @"VMDisplayViewController") actions:nil completion:^(UIAlertAction *action){
-            [defaults setBool:YES forKey:@"HasShownHideToolbarAlert"];
-        }];
-    }
 }
 
 #pragma mark - Segues
