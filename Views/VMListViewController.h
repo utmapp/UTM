@@ -23,6 +23,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (IBAction)unwindToMainFromConfiguration:(UIStoryboardSegue*)sender;
 - (IBAction)exitUTM:(UIBarButtonItem *)sender;
+- (IBAction)showHelp:(UIBarButtonItem *)sender;
 
 @end
 

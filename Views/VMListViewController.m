@@ -24,6 +24,8 @@
 #import "VMDisplayMetalViewController.h"
 #import "VMDisplayTerminalViewController.h"
 
+@import SafariServices;
+
 @interface VMListViewController ()
 
 @property (nonatomic, readonly) NSURL *documentsPath;
@@ -382,6 +384,11 @@
 
 - (IBAction)exitUTM:(UIBarButtonItem *)sender {
     exit(0);
+}
+
+- (IBAction)showHelp:(UIBarButtonItem *)sender {
+    SFSafariViewController *controller = [[SFSafariViewController alloc] initWithURL:[NSURL URLWithString:@"https://getutm.app/guide/"]];
+    [self presentViewController:controller animated:YES completion:nil];
 }
 
 #pragma mark - Notifications
