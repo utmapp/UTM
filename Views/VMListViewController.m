@@ -55,6 +55,11 @@
                                                            action:NSSelectorFromString(@"cloneAction:")];
     [[UIMenuController sharedMenuController] setMenuItems:@[deleteItem, duplicateItem]];
     
+    // Set up refresh
+    UIRefreshControl *refresh = [UIRefreshControl new];
+    [refresh addTarget:self action:@selector(refreshWithSender:) forControlEvents:UIControlEventValueChanged];
+    self.collectionView.refreshControl = refresh;
+    
     self.viewVisibleSema = dispatch_semaphore_create(0);
     self.viewVisibleQueue = dispatch_queue_create("View Visible Queue", DISPATCH_QUEUE_SERIAL);
     dispatch_async(self.viewVisibleQueue, ^{
@@ -389,6 +394,13 @@
 - (IBAction)showHelp:(UIBarButtonItem *)sender {
     SFSafariViewController *controller = [[SFSafariViewController alloc] initWithURL:[NSURL URLWithString:@"https://getutm.app/guide/"]];
     [self presentViewController:controller animated:YES completion:nil];
+}
+
+- (void)refreshWithSender:(UIRefreshControl *)sender {
+    [self reloadData];
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        [sender endRefreshing];
+    });
 }
 
 #pragma mark - Notifications
