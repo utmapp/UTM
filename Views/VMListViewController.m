@@ -319,12 +319,25 @@
     dispatch_async(self.viewVisibleQueue, ^{
         dispatch_semaphore_t waitUntilCompletion = dispatch_semaphore_create(0);
         dispatch_sync(dispatch_get_main_queue(), ^{
-            UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil message:message preferredStyle:UIAlertControllerStyleAlert];
-            UIActivityIndicatorView *spinner = [[UIActivityIndicatorView alloc] initWithFrame:CGRectMake(10, 5, 50, 50)];
+            UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil message:[message stringByAppendingString:@"\n\n"] preferredStyle:UIAlertControllerStyleAlert];
+            UIActivityIndicatorView *spinner = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+            if (@available(iOS 13.0, *)) {
+                spinner.color = [UIColor labelColor];
+            }
             spinner.hidesWhenStopped = YES;
-            spinner.activityIndicatorViewStyle = UIActivityIndicatorViewStyleGray;
-            [spinner startAnimating];
+            spinner.translatesAutoresizingMaskIntoConstraints = NO;
             [alert.view addSubview:spinner];
+            
+            NSDictionary * views = @{
+                @"alert": alert.view,
+                @"spinner": spinner
+            };
+            NSArray *constraintsVertical = [NSLayoutConstraint constraintsWithVisualFormat:@"V:[spinner]-(20)-|" options:0 metrics:nil views:views];
+            NSArray *constraintsHorizontal = [NSLayoutConstraint constraintsWithVisualFormat:@"H:|[spinner]|" options:0 metrics:nil views:views];
+            NSArray *constraints = [constraintsVertical arrayByAddingObjectsFromArray:constraintsHorizontal];
+            [alert.view addConstraints:constraints];
+            [spinner setUserInteractionEnabled:NO];
+            [spinner startAnimating];
             self.alert = alert;
             [self presentViewController:alert animated:YES completion:^{
                 dispatch_semaphore_signal(waitUntilCompletion);
