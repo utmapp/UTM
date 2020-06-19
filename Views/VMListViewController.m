@@ -150,7 +150,7 @@
         void (^handler)(UIAlertAction *action) = ^(UIAlertAction *action){
             dispatch_semaphore_signal(waitUntilCompletion);
             if (completion) {
-                completion();
+                dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), completion);
             }
         };
         dispatch_sync(dispatch_get_main_queue(), ^{
