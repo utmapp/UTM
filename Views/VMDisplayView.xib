@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="16096" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="16097" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
@@ -49,8 +49,9 @@
                                                 <constraint firstAttribute="width" constant="50" id="bb9-iz-6cD"/>
                                                 <constraint firstAttribute="height" constant="50" id="psn-10-jFZ"/>
                                             </constraints>
+                                            <color key="color" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         </activityIndicatorView>
-                                        <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" pointerInteraction="YES" translatesAutoresizingMaskIntoConstraints="NO" id="q8Q-UP-yRo">
+                                        <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" pointerInteraction="YES" translatesAutoresizingMaskIntoConstraints="NO" id="q8Q-UP-yRo">
                                             <rect key="frame" x="182" y="423" width="50" height="50"/>
                                             <state key="normal" image="Resume Icon"/>
                                             <connections>
@@ -94,7 +95,7 @@
                                         <stackView opaque="NO" contentMode="scaleToFill" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="3GX-CD-ScP">
                                             <rect key="frame" x="254" y="51" width="144" height="30"/>
                                             <subviews>
-                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" pointerInteraction="YES" translatesAutoresizingMaskIntoConstraints="NO" id="aZW-jv-ozW">
+                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" pointerInteraction="YES" translatesAutoresizingMaskIntoConstraints="NO" id="aZW-jv-ozW">
                                                     <rect key="frame" x="0.0" y="0.0" width="30" height="30"/>
                                                     <accessibility key="accessibilityConfiguration" label="Zoom"/>
                                                     <constraints>
@@ -107,7 +108,7 @@
                                                         <action selector="changeDisplayZoom:" destination="-1" eventType="touchUpInside" id="7gK-dR-Iwb"/>
                                                     </connections>
                                                 </button>
-                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" pointerInteraction="YES" translatesAutoresizingMaskIntoConstraints="NO" id="wJL-Zb-gv1">
+                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" pointerInteraction="YES" translatesAutoresizingMaskIntoConstraints="NO" id="wJL-Zb-gv1">
                                                     <rect key="frame" x="38" y="0.0" width="30" height="30"/>
                                                     <accessibility key="accessibilityConfiguration" label="Keyboard"/>
                                                     <constraints>
@@ -119,7 +120,7 @@
                                                         <action selector="showKeyboardButton:" destination="-1" eventType="touchUpInside" id="ClZ-xo-syD"/>
                                                     </connections>
                                                 </button>
-                                                <button opaque="NO" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" pointerInteraction="YES" translatesAutoresizingMaskIntoConstraints="NO" id="pvl-sJ-gEX">
+                                                <button opaque="NO" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" pointerInteraction="YES" translatesAutoresizingMaskIntoConstraints="NO" id="pvl-sJ-gEX">
                                                     <rect key="frame" x="76" y="0.0" width="30" height="30"/>
                                                     <accessibility key="accessibilityConfiguration" label="Settings"/>
                                                     <constraints>
@@ -128,7 +129,7 @@
                                                     </constraints>
                                                     <state key="normal" image="Toolbar Settings"/>
                                                 </button>
-                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" pointerInteraction="YES" translatesAutoresizingMaskIntoConstraints="NO" id="8HW-IX-DYi">
+                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" pointerInteraction="YES" translatesAutoresizingMaskIntoConstraints="NO" id="8HW-IX-DYi">
                                                     <rect key="frame" x="114" y="0.0" width="30" height="30"/>
                                                     <accessibility key="accessibilityConfiguration" label="Hide Toolbar"/>
                                                     <constraints>
@@ -145,7 +146,7 @@
                                         <stackView opaque="NO" contentMode="scaleToFill" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="wuU-55-lVv">
                                             <rect key="frame" x="16" y="51" width="106" height="30"/>
                                             <subviews>
-                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" pointerInteraction="YES" translatesAutoresizingMaskIntoConstraints="NO" id="eU8-Ps-vxM">
+                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" pointerInteraction="YES" translatesAutoresizingMaskIntoConstraints="NO" id="eU8-Ps-vxM">
                                                     <rect key="frame" x="0.0" y="0.0" width="30" height="30"/>
                                                     <accessibility key="accessibilityConfiguration" label="Power"/>
                                                     <constraints>
@@ -158,7 +159,7 @@
                                                         <action selector="powerPressed:" destination="-1" eventType="touchUpInside" id="SHS-vV-uc3"/>
                                                     </connections>
                                                 </button>
-                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" pointerInteraction="YES" translatesAutoresizingMaskIntoConstraints="NO" id="f3q-Wp-4H1">
+                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" pointerInteraction="YES" translatesAutoresizingMaskIntoConstraints="NO" id="f3q-Wp-4H1">
                                                     <rect key="frame" x="38" y="0.0" width="30" height="30"/>
                                                     <accessibility key="accessibilityConfiguration" label="Pause"/>
                                                     <constraints>
@@ -171,7 +172,7 @@
                                                         <action selector="pauseResumePressed:" destination="-1" eventType="touchUpInside" id="iIs-eB-HUv"/>
                                                     </connections>
                                                 </button>
-                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" pointerInteraction="YES" translatesAutoresizingMaskIntoConstraints="NO" id="xt5-Fw-Nb9">
+                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" pointerInteraction="YES" translatesAutoresizingMaskIntoConstraints="NO" id="xt5-Fw-Nb9">
                                                     <rect key="frame" x="76" y="0.0" width="30" height="30"/>
                                                     <accessibility key="accessibilityConfiguration" label="Back"/>
                                                     <constraints>
@@ -218,6 +219,7 @@
                     </variation>
                 </visualEffectView>
             </subviews>
+            <color key="tintColor" cocoaTouchSystemColor="lightTextColor"/>
             <gestureRecognizers/>
             <constraints>
                 <constraint firstItem="PK2-6H-Mm0" firstAttribute="top" secondItem="NOe-rz-jvy" secondAttribute="top" id="5rg-Am-2Cw"/>
@@ -327,7 +329,7 @@
                         </button>
                     </subviews>
                 </stackView>
-                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="rtU-Yt-FhT">
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="rtU-Yt-FhT">
                     <rect key="frame" x="962" y="51" width="30" height="30"/>
                     <accessibility key="accessibilityConfiguration" label="Hide Keyboard"/>
                     <constraints>
@@ -339,7 +341,7 @@
                         <action selector="keyboardDonePressed:" destination="-1" eventType="touchUpInside" id="3bA-fg-pia"/>
                     </connections>
                 </button>
-                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="740-aI-39P">
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="740-aI-39P">
                     <rect key="frame" x="924" y="51" width="30" height="30"/>
                     <accessibility key="accessibilityConfiguration" label="Paste"/>
                     <constraints>
@@ -860,6 +862,7 @@
                     </constraints>
                 </scrollView>
             </subviews>
+            <color key="tintColor" systemColor="secondaryLabelColor" red="0.23529411759999999" green="0.23529411759999999" blue="0.26274509800000001" alpha="0.59999999999999998" colorSpace="custom" customColorSpace="sRGB"/>
             <constraints>
                 <constraint firstItem="740-aI-39P" firstAttribute="centerY" secondItem="bCv-uH-SSy" secondAttribute="centerY" id="1HA-0l-R1Y"/>
                 <constraint firstItem="N5L-oQ-JTY" firstAttribute="top" secondItem="5qW-HU-Ng6" secondAttribute="top" id="4Py-NS-clx"/>
