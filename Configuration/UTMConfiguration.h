@@ -26,8 +26,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, nullable, copy) NSURL *existingPath;
 
 - (void)migrateConfigurationIfNecessary;
-- (id)initDefaults:(NSString *)name;
-- (id)initWithDictionary:(NSMutableDictionary *)dictionary name:(NSString *)name path:(NSURL *)path;
+- (instancetype)init NS_UNAVAILABLE;
+- (instancetype)initDefaults:(NSString *)name NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(name:));
+- (instancetype)initWithDictionary:(NSMutableDictionary *)dictionary name:(NSString *)name path:(NSURL *)path NS_DESIGNATED_INITIALIZER;
 
 - (NSURL*)terminalInputOutputURL;
 

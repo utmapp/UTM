@@ -15,6 +15,7 @@
 //
 
 #import "UTMConfiguration+Display.h"
+#import "UTM-Swift.h"
 
 extern const NSString *const kUTMConfigDisplayKey;
 
@@ -60,6 +61,7 @@ const NSString *const kUTMConfigConsoleResizeCommandKey = @"ConsoleResizeCommand
 #pragma mark - Display settings
 
 - (void)setDisplayConsoleOnly:(BOOL)displayConsoleOnly {
+    [self propertyWillChange];
     self.rootDict[kUTMConfigDisplayKey][kUTMConfigConsoleOnlyKey] = @(displayConsoleOnly);
 }
 
@@ -68,6 +70,7 @@ const NSString *const kUTMConfigConsoleResizeCommandKey = @"ConsoleResizeCommand
 }
 
 - (void)setDisplayFitScreen:(BOOL)displayFitScreen {
+    [self propertyWillChange];
     self.rootDict[kUTMConfigDisplayKey][kUTMConfigDisplayFitScreenKey] = @(displayFitScreen);
 }
 
@@ -76,6 +79,7 @@ const NSString *const kUTMConfigConsoleResizeCommandKey = @"ConsoleResizeCommand
 }
 
 - (void)setDisplayRetina:(BOOL)displayRetina {
+    [self propertyWillChange];
     self.rootDict[kUTMConfigDisplayKey][kUTMConfigDisplayRetinaKey] = @(displayRetina);
 }
 
@@ -84,6 +88,7 @@ const NSString *const kUTMConfigConsoleResizeCommandKey = @"ConsoleResizeCommand
 }
 
 - (void)setDisplayUpscaler:(NSString *)displayUpscaler {
+    [self propertyWillChange];
     self.rootDict[kUTMConfigDisplayKey][kUTMConfigDisplayUpscalerKey] = displayUpscaler;
 }
 
@@ -100,6 +105,7 @@ const NSString *const kUTMConfigConsoleResizeCommandKey = @"ConsoleResizeCommand
 }
 
 - (void)setDisplayDownscaler:(NSString *)displayDownscaler {
+    [self propertyWillChange];
     self.rootDict[kUTMConfigDisplayKey][kUTMConfigDisplayDownscalerKey] = displayDownscaler;
 }
 
@@ -116,6 +122,7 @@ const NSString *const kUTMConfigConsoleResizeCommandKey = @"ConsoleResizeCommand
 }
 
 - (void)setConsoleTheme:(NSString *)consoleTheme {
+    [self propertyWillChange];
     self.rootDict[kUTMConfigDisplayKey][kUTMConfigConsoleThemeKey] = consoleTheme;
 }
 
@@ -124,6 +131,7 @@ const NSString *const kUTMConfigConsoleResizeCommandKey = @"ConsoleResizeCommand
 }
 
 - (void)setConsoleFont:(NSString *)consoleFont {
+    [self propertyWillChange];
     self.rootDict[kUTMConfigDisplayKey][kUTMConfigConsoleFontKey] = consoleFont;
 }
 
@@ -132,6 +140,7 @@ const NSString *const kUTMConfigConsoleResizeCommandKey = @"ConsoleResizeCommand
 }
 
 - (void)setConsoleFontSize:(NSNumber *)consoleFontSize {
+    [self propertyWillChange];
     self.rootDict[kUTMConfigDisplayKey][kUTMConfigConsoleFontSizeKey] = consoleFontSize;
 }
 
@@ -140,6 +149,7 @@ const NSString *const kUTMConfigConsoleResizeCommandKey = @"ConsoleResizeCommand
 }
 
 - (void)setConsoleCursorBlink:(BOOL)consoleCursorBlink {
+    [self propertyWillChange];
     self.rootDict[kUTMConfigDisplayKey][kUTMConfigConsoleBlinkKey] = @(consoleCursorBlink);
 }
 
@@ -148,6 +158,7 @@ const NSString *const kUTMConfigConsoleResizeCommandKey = @"ConsoleResizeCommand
 }
 
 - (void)setConsoleResizeCommand:(NSString *)consoleResizeCommand {
+    [self propertyWillChange];
     self.rootDict[kUTMConfigDisplayKey][kUTMConfigConsoleResizeCommandKey] = consoleResizeCommand;
 }
 

@@ -22,7 +22,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface UTMQemu : NSObject
 
-- (void)pushArgv:(NSString *)arg;
+@property (nonatomic) NSArray<NSString *> *argv;
+
+- (instancetype)init NS_DESIGNATED_INITIALIZER;
+- (void)pushArgv:(nullable NSString *)arg;
 - (void)clearArgv;
 - (void)startDylib:(nonnull NSString *)dylib main:(nonnull NSString *)main completion:(void(^)(BOOL,NSString *))completion;
 

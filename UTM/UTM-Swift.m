@@ -14,34 +14,22 @@
 // limitations under the License.
 //
 
-#import "UTMConfigurationPortForward.h"
 #import "UTM-Swift.h"
 
-@implementation UTMConfigurationPortForward
+// This is only used in legacy builds with do not have Swift!
 
-- (void)setProtocol:(NSString *)protocol {
-    [self propertyWillChange];
-    _protocol = protocol;
+@implementation UTMConfiguration (NoSwift)
+
+- (void)propertyWillChange {
+    
 }
 
-- (void)setHostAddress:(NSString *)hostAddress {
-    [self propertyWillChange];
-    _hostAddress = hostAddress;
-}
+@end
 
-- (void)setHostPort:(NSInteger)hostPort {
-    [self propertyWillChange];
-    _hostPort = hostPort;
-}
+@implementation UTMConfigurationPortForward (NoSwift)
 
-- (void)setGuestAddress:(NSString *)guestAddress {
-    [self propertyWillChange];
-    _guestAddress = guestAddress;
-}
-
-- (void)setGuestPort:(NSInteger)guestPort {
-    [self propertyWillChange];
-    _guestPort = guestPort;
+- (void)propertyWillChange {
+    
 }
 
 @end

@@ -14,7 +14,10 @@
 // limitations under the License.
 //
 
+#import <TargetConditionals.h>
+#if !TARGET_OS_OSX
 #import <UIKit/UIKit.h>
+#endif
 #import "UTMConfiguration+Constants.h"
 
 @implementation UTMConfiguration (Constants)
@@ -1394,6 +1397,7 @@
     ];
 }
 
+#if !TARGET_OS_OSX
 + (NSArray<NSString *>*)supportedConsoleFonts {
     static NSMutableArray<NSString *> *families;
     if (!families) {
@@ -1407,6 +1411,11 @@
     }
     return families;
 }
+#else
++ (NSArray<NSString *>*)supportedConsoleFonts {
+    return @[];
+}
+#endif
 
 + (NSString *)diskImagesDirectory {
     return @"Images";
