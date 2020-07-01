@@ -16,7 +16,7 @@
 
 #import "UTMConfiguration.h"
 
-typedef NS_ENUM(NSUInteger, UTMDiskImageType) {
+typedef NS_ENUM(NSInteger, UTMDiskImageType) {
     UTMDiskImageTypeDisk,
     UTMDiskImageTypeCD,
     UTMDiskImageTypeBIOS,
@@ -30,18 +30,19 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface UTMConfiguration (Drives)
 
+@property (nonatomic, readonly) NSInteger countDrives;
+
 - (void)migrateDriveConfigurationIfNecessary;
 
-- (NSUInteger)countDrives;
-- (NSUInteger)newDrive:(NSString *)name type:(UTMDiskImageType)type interface:(NSString *)interface;
-- (nullable NSString *)driveImagePathForIndex:(NSUInteger)index;
-- (void)setImagePath:(NSString *)path forIndex:(NSUInteger)index;
-- (nullable NSString *)driveInterfaceTypeForIndex:(NSUInteger)index;
-- (void)setDriveInterfaceType:(NSString *)interfaceType forIndex:(NSUInteger)index;
-- (UTMDiskImageType)driveImageTypeForIndex:(NSUInteger)index;
-- (void)setDriveImageType:(UTMDiskImageType)type forIndex:(NSUInteger)index;
-- (void)moveDriveIndex:(NSUInteger)index to:(NSUInteger)newIndex;
-- (void)removeDriveAtIndex:(NSUInteger)index;
+- (NSInteger)newDrive:(NSString *)name type:(UTMDiskImageType)type interface:(NSString *)interface;
+- (nullable NSString *)driveImagePathForIndex:(NSInteger)index;
+- (void)setImagePath:(NSString *)path forIndex:(NSInteger)index;
+- (nullable NSString *)driveInterfaceTypeForIndex:(NSInteger)index;
+- (void)setDriveInterfaceType:(NSString *)interfaceType forIndex:(NSInteger)index;
+- (UTMDiskImageType)driveImageTypeForIndex:(NSInteger)index;
+- (void)setDriveImageType:(UTMDiskImageType)type forIndex:(NSInteger)index;
+- (void)moveDriveIndex:(NSInteger)index to:(NSInteger)newIndex;
+- (void)removeDriveAtIndex:(NSInteger)index;
 
 @end
 

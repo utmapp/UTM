@@ -16,6 +16,7 @@
 
 #import "UTMConfiguration+Constants.h"
 #import "UTMConfiguration+Miscellaneous.h"
+#import "UTM-Swift.h"
 
 extern const NSString *const kUTMConfigInputKey;
 extern const NSString *const kUTMConfigSoundKey;
@@ -61,6 +62,7 @@ const NSString *const kUTMConfigDebugLogKey = @"DebugLog";
 #pragma mark - Other properties
 
 - (void)setInputLegacy:(BOOL)inputDirect {
+    [self propertyWillChange];
     self.rootDict[kUTMConfigInputKey][kUTMConfigInputLegacyKey] = @(inputDirect);
 }
 
@@ -69,6 +71,7 @@ const NSString *const kUTMConfigDebugLogKey = @"DebugLog";
 }
 
 - (void)setInputScrollInvert:(BOOL)inputScrollInvert {
+    [self propertyWillChange];
     self.rootDict[kUTMConfigInputKey][kUTMConfigInputInvertScrollKey] = @(inputScrollInvert);
 }
 
@@ -77,6 +80,7 @@ const NSString *const kUTMConfigDebugLogKey = @"DebugLog";
 }
 
 - (void)setSoundEnabled:(BOOL)soundEnabled {
+    [self propertyWillChange];
     self.rootDict[kUTMConfigSoundKey][kUTMConfigSoundEnabledKey] = @(soundEnabled);
 }
 
@@ -85,6 +89,7 @@ const NSString *const kUTMConfigDebugLogKey = @"DebugLog";
 }
 
 - (void)setSoundCard:(NSString *)soundCard {
+    [self propertyWillChange];
     self.rootDict[kUTMConfigSoundKey][kUTMConfigSoundCardDeviceKey] = soundCard;
 }
 
@@ -97,6 +102,7 @@ const NSString *const kUTMConfigDebugLogKey = @"DebugLog";
 }
 
 - (void)setDebugLogEnabled:(BOOL)debugLogEnabled {
+    [self propertyWillChange];
     self.rootDict[kUTMConfigDebugKey][kUTMConfigDebugLogKey] = @(debugLogEnabled);
 }
 

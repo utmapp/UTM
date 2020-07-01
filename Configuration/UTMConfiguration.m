@@ -22,6 +22,7 @@
 #import "UTMConfiguration+Networking.h"
 #import "UTMConfiguration+Sharing.h"
 #import "UTMConfiguration+System.h"
+#import "UTM-Swift.h"
 
 const NSString *const kUTMConfigSystemKey = @"System";
 const NSString *const kUTMConfigDisplayKey = @"Display";
@@ -58,7 +59,7 @@ const NSString *const kUTMConfigDebugKey = @"Debug";
 #pragma mark - Initialization
 
 - (id)initDefaults:(NSString *)name {
-    self = [self init];
+    self = [super init];
     if (self) {
         _rootDict = [[NSMutableDictionary alloc] initWithCapacity:8];
         _rootDict[kUTMConfigSystemKey] = [[NSMutableDictionary alloc] init];
@@ -81,6 +82,7 @@ const NSString *const kUTMConfigDebugKey = @"Debug";
         self.displayUpscaler = @"linear";
         self.displayDownscaler = @"linear";
         self.consoleFont = @"Menlo";
+        self.consoleFontSize = @12;
         self.consoleTheme = @"Default";
         self.networkEnabled = YES;
         self.soundEnabled = YES;
@@ -95,7 +97,7 @@ const NSString *const kUTMConfigDebugKey = @"Debug";
 }
 
 - (id)initWithDictionary:(NSMutableDictionary *)dictionary name:(NSString *)name path:(NSURL *)path {
-    self = [self init];
+    self = [super init];
     if (self) {
         _rootDict = dictionary;
         self.name = name;
@@ -124,6 +126,18 @@ const NSString *const kUTMConfigDebugKey = @"Debug";
 - (id)copyWithZone:(NSZone *)zone {
     NSMutableDictionary* dictRepresentation = [[self dictRepresentation] mutableCopy];
     return [[UTMConfiguration alloc] initWithDictionary:dictRepresentation name:_name path:_existingPath];
+}
+
+#pragma mark - Settings
+
+- (void)setName:(NSString *)name {
+    [self propertyWillChange];
+    _name = name;
+}
+
+- (void)setExistingPath:(NSURL *)existingPath {
+    [self propertyWillChange];
+    _existingPath = existingPath;
 }
 
 @end

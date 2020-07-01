@@ -26,7 +26,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy) NSURL *imgPath;
 @property (nonatomic, nullable) NSString *snapshot;
 
-- (id)initWithConfiguration:(UTMConfiguration *)configuration imgPath:(NSURL *)imgPath;
+- (instancetype)init NS_UNAVAILABLE;
+- (instancetype)initWithConfiguration:(UTMConfiguration *)configuration imgPath:(NSURL *)imgPath NS_DESIGNATED_INITIALIZER;
 - (void)startWithCompletion:(void(^)(BOOL, NSString *))completion;
 
 @end

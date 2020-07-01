@@ -15,6 +15,7 @@
 //
 
 #import "UTMConfiguration+Sharing.h"
+#import "UTM-Swift.h"
 
 extern const NSString *const kUTMConfigSharingKey;
 
@@ -39,6 +40,7 @@ const NSString *const kUTMConfigDirectoryBookmarkKey = @"DirectoryBookmark";
 }
 
 - (void)setShareClipboardEnabled:(BOOL)shareClipboardEnabled {
+    [self propertyWillChange];
     self.rootDict[kUTMConfigSharingKey][kUTMConfigChipboardSharingKey] = @(shareClipboardEnabled);
 }
 
@@ -47,6 +49,7 @@ const NSString *const kUTMConfigDirectoryBookmarkKey = @"DirectoryBookmark";
 }
 
 - (void)setShareDirectoryEnabled:(BOOL)shareDirectoryEnabled {
+    [self propertyWillChange];
     self.rootDict[kUTMConfigSharingKey][kUTMConfigDirectorySharingKey] = @(shareDirectoryEnabled);
 }
 
@@ -55,6 +58,7 @@ const NSString *const kUTMConfigDirectoryBookmarkKey = @"DirectoryBookmark";
 }
 
 - (void)setShareDirectoryReadOnly:(BOOL)shareDirectoryReadOnly {
+    [self propertyWillChange];
     self.rootDict[kUTMConfigSharingKey][kUTMConfigDirectoryReadOnlyKey] = @(shareDirectoryReadOnly);
 }
 
@@ -63,6 +67,7 @@ const NSString *const kUTMConfigDirectoryBookmarkKey = @"DirectoryBookmark";
 }
 
 - (void)setShareDirectoryName:(NSString *)shareDirectoryName {
+    [self propertyWillChange];
     self.rootDict[kUTMConfigSharingKey][kUTMConfigDirectoryNameKey] = shareDirectoryName;
 }
 
@@ -71,6 +76,7 @@ const NSString *const kUTMConfigDirectoryBookmarkKey = @"DirectoryBookmark";
 }
 
 - (void)setShareDirectoryBookmark:(NSData *)shareDirectoryBookmark {
+    [self propertyWillChange];
     self.rootDict[kUTMConfigSharingKey][kUTMConfigDirectoryBookmarkKey] = shareDirectoryBookmark;
 }
 

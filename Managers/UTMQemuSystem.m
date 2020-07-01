@@ -28,8 +28,13 @@
 
 @implementation UTMQemuSystem
 
-- (id)initWithConfiguration:(UTMConfiguration *)configuration imgPath:(nonnull NSURL *)imgPath {
-    self = [self init];
+- (NSArray<NSString *> *)argv {
+    [self argsFromConfiguration:NO];
+    return [super argv];
+}
+
+- (instancetype)initWithConfiguration:(UTMConfiguration *)configuration imgPath:(nonnull NSURL *)imgPath {
+    self = [super init];
     if (self) {
         self.configuration = configuration;
         self.imgPath = imgPath;
@@ -193,7 +198,7 @@
     return @"";
 }
 
-- (void)argsFromConfiguration {
+- (void)argsFromConfiguration:(BOOL)withUserArgs {
     [self clearArgv];
     [self pushArgv:@"qemu"];
     [self pushArgv:@"-L"];
@@ -272,7 +277,7 @@
     [self pushArgv:@"-rtc"];
     [self pushArgv:@"base=localtime"];
     
-    if (self.configuration.systemArguments.count != 0) {
+    if (withUserArgs && self.configuration.systemArguments.count != 0) {
         NSArray *addArgs = self.configuration.systemArguments;
         // Splits all spaces into their own, except when between quotes.
         NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"(\"[^\"]+\"|\\+|\\S+)" options:0 error:nil];
@@ -302,7 +307,7 @@
 
 - (void)startWithCompletion:(void (^)(BOOL, NSString * _Nonnull))completion {
     NSString *dylib = [NSString stringWithFormat:@"libqemu-system-%@.dylib", self.configuration.systemArchitecture];
-    [self argsFromConfiguration];
+    [self argsFromConfiguration:YES];
     [self startDylib:dylib main:@"qemu_main" completion:completion];
 }
 

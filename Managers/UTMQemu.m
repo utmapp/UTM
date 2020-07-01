@@ -27,6 +27,8 @@
     int _fatal;
 }
 
+@synthesize argv = _argv;
+
 void *start_qemu(void *args) {
     UTMQemu *self = (__bridge_transfer UTMQemu *)args;
     
@@ -43,15 +45,20 @@ void *start_qemu(void *args) {
     return NULL;
 }
 
-- (void)pushArgv:(NSString *)arg {
-    if (!_argv) {
+- (instancetype)init {
+    if (self = [super init]) {
         _argv = [NSMutableArray<NSString *> array];
     }
+    return self;
+}
+
+- (void)pushArgv:(nullable NSString *)arg {
+    NSAssert(arg, @"Cannot push null argument!");
     [_argv addObject:arg];
 }
 
 - (void)clearArgv {
-    _argv = nil;
+    [_argv removeAllObjects];
 }
 
 - (void)printArgv {
