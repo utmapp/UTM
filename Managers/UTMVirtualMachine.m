@@ -26,6 +26,7 @@
 #import "UTMTerminalIO.h"
 #import "UTMSpiceIO.h"
 #import "UTMLogging.h"
+#import "UTMScreenshot.h"
 
 const int kQMPMaxConnectionTries = 10; // qemu needs to start spice server first
 const int64_t kStopTimeout = (int64_t)30*NSEC_PER_SEC;
@@ -50,7 +51,7 @@ NSString *const kSuspendSnapshotName = @"suspend";
     dispatch_semaphore_t _will_quit_sema;
     dispatch_semaphore_t _qemu_exit_sema;
     BOOL _is_busy;
-    UIImage *_screenshot;
+    UTMScreenshot *_screenshot;
     int64_t _relative_input_index;
     int64_t _absolute_input_index;
 }
@@ -579,14 +580,14 @@ NSString *const kSuspendSnapshotName = @"suspend";
 
 - (void)loadScreenshot {
     NSURL *url = [self.path URLByAppendingPathComponent:kUTMBundleScreenshotFilename];
-    _screenshot = [UIImage imageWithContentsOfFile:url.path];
+    _screenshot = [[UTMScreenshot alloc] initWithContentsOfURL:url];
 }
 
 - (void)saveScreenshot {
     _screenshot = [self.ioService screenshot];
     NSURL *url = [self.path URLByAppendingPathComponent:kUTMBundleScreenshotFilename];
     if (_screenshot) {
-        [UIImagePNGRepresentation(_screenshot) writeToURL:url atomically:NO];
+        [_screenshot writeToURL:url atomically:NO];
     }
 }
 

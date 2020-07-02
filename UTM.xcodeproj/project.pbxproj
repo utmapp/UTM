@@ -22,6 +22,316 @@
 		CE059DCB243FBA3C00338317 /* VMConfigCell.m in Sources */ = {isa = PBXBuildFile; fileRef = CE059DCA243FBA3C00338317 /* VMConfigCell.m */; };
 		CE0B6CEC24AD532500FE012D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CE550BD52259479D0063E575 /* Assets.xcassets */; };
 		CE0B6CED24AD532A00FE012D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CE550BD52259479D0063E575 /* Assets.xcassets */; };
+		CE0B6CEE24AD566A00FE012D /* CSConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = CE4AA14B2264004F002E4A54 /* CSConnection.m */; };
+		CE0B6CEF24AD566D00FE012D /* CSDisplayMetal.m in Sources */ = {isa = PBXBuildFile; fileRef = CE4AA1482263B24F002E4A54 /* CSDisplayMetal.m */; };
+		CE0B6CF024AD567100FE012D /* CSInput.m in Sources */ = {isa = PBXBuildFile; fileRef = CE664510226935F000B0849A /* CSInput.m */; };
+		CE0B6CF124AD567300FE012D /* CSMain.m in Sources */ = {isa = PBXBuildFile; fileRef = CE26FC24226EBC5A0090BE9B /* CSMain.m */; };
+		CE0B6CF324AD568400FE012D /* UTMConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = CE31C244225E555600A965DD /* UTMConfiguration.m */; };
+		CE0B6CF424AD568400FE012D /* UTMConfiguration+Constants.m in Sources */ = {isa = PBXBuildFile; fileRef = CE5425362437DDE900E520F7 /* UTMConfiguration+Constants.m */; };
+		CE0B6CF524AD568400FE012D /* UTMConfiguration+Miscellaneous.m in Sources */ = {isa = PBXBuildFile; fileRef = CEE0421124418F2E0001680F /* UTMConfiguration+Miscellaneous.m */; };
+		CE0B6CF624AD568400FE012D /* UTMConfiguration+Drives.m in Sources */ = {isa = PBXBuildFile; fileRef = CE5425302437C09C00E520F7 /* UTMConfiguration+Drives.m */; };
+		CE0B6CF724AD568400FE012D /* UTMConfiguration+Display.m in Sources */ = {isa = PBXBuildFile; fileRef = CEE0420B244117040001680F /* UTMConfiguration+Display.m */; };
+		CE0B6CF824AD568400FE012D /* UTMViewState.m in Sources */ = {isa = PBXBuildFile; fileRef = CE6EDCDE241C4A6800A719DC /* UTMViewState.m */; };
+		CE0B6CF924AD568400FE012D /* UTMConfiguration+Sharing.m in Sources */ = {isa = PBXBuildFile; fileRef = CE059DC4243BFA3200338317 /* UTMConfiguration+Sharing.m */; };
+		CE0B6CFA24AD568400FE012D /* UTMConfiguration+System.m in Sources */ = {isa = PBXBuildFile; fileRef = CE5425332437C22A00E520F7 /* UTMConfiguration+System.m */; };
+		CE0B6CFB24AD568400FE012D /* UTMConfiguration+Networking.m in Sources */ = {isa = PBXBuildFile; fileRef = CEA02A982436C7A30087E45F /* UTMConfiguration+Networking.m */; };
+		CE0B6CFC24AD568400FE012D /* UTMConfigurationPortForward.m in Sources */ = {isa = PBXBuildFile; fileRef = CE54252D2436E48D00E520F7 /* UTMConfigurationPortForward.m */; };
+		CE0B6CFD24AD569A00FE012D /* gst_ios_init.m in Sources */ = {isa = PBXBuildFile; fileRef = CEFE75D9228933DE0050ABCC /* gst_ios_init.m */; };
+		CE0B6CFE24AD56AE00FE012D /* UTMLogging.m in Sources */ = {isa = PBXBuildFile; fileRef = CE6EDCE1241DA0E900A719DC /* UTMLogging.m */; };
+		CE0B6CFF24AD56AE00FE012D /* UTMQemuSystem.m in Sources */ = {isa = PBXBuildFile; fileRef = CED33ADF2267892200FF1977 /* UTMQemuSystem.m */; };
+		CE0B6D0024AD56AE00FE012D /* UTMVirtualMachine.m in Sources */ = {isa = PBXBuildFile; fileRef = CE5F165B2261395000F3D56B /* UTMVirtualMachine.m */; };
+		CE0B6D0124AD56AE00FE012D /* UTMJSONStream.m in Sources */ = {isa = PBXBuildFile; fileRef = CE36B26922763F28004A1435 /* UTMJSONStream.m */; };
+		CE0B6D0224AD56AE00FE012D /* UTMQemu.m in Sources */ = {isa = PBXBuildFile; fileRef = CE9D197B226542FE00355E14 /* UTMQemu.m */; };
+		CE0B6D0324AD56AE00FE012D /* UTMTerminal.m in Sources */ = {isa = PBXBuildFile; fileRef = E28394B3240C20E0006742E2 /* UTMTerminal.m */; };
+		CE0B6D0424AD56AE00FE012D /* UTMSpiceIO.m in Sources */ = {isa = PBXBuildFile; fileRef = E2D64BC8241DB24B0034E0C6 /* UTMSpiceIO.m */; };
+		CE0B6D0524AD56AE00FE012D /* UTMQemuImg.m in Sources */ = {isa = PBXBuildFile; fileRef = CED33AE22267893D00FF1977 /* UTMQemuImg.m */; };
+		CE0B6D0624AD56AE00FE012D /* UTMTerminalIO.m in Sources */ = {isa = PBXBuildFile; fileRef = E2D64BCB241DB62A0034E0C6 /* UTMTerminalIO.m */; };
+		CE0B6D0724AD56AE00FE012D /* UTMQemuManager.m in Sources */ = {isa = PBXBuildFile; fileRef = CE36B280227668D1004A1435 /* UTMQemuManager.m */; };
+		CE0B6D0824AD56C300FE012D /* qapi-visit-core.c in Sources */ = {isa = PBXBuildFile; fileRef = CECC764F2273A7D50059B955 /* qapi-visit-core.c */; };
+		CE0B6D0924AD56C300FE012D /* cf-output-visitor.c in Sources */ = {isa = PBXBuildFile; fileRef = CECC76502273A7D50059B955 /* cf-output-visitor.c */; };
+		CE0B6D0A24AD56C300FE012D /* cf-input-visitor.c in Sources */ = {isa = PBXBuildFile; fileRef = CECC764C2273A7D50059B955 /* cf-input-visitor.c */; };
+		CE0B6D0B24AD56C300FE012D /* qapi-dealloc-visitor.c in Sources */ = {isa = PBXBuildFile; fileRef = CECC764D2273A7D50059B955 /* qapi-dealloc-visitor.c */; };
+		CE0B6D0C24AD56C300FE012D /* error.c in Sources */ = {isa = PBXBuildFile; fileRef = CE36B1542275061B004A1435 /* error.c */; };
+		CE0B6D0D24AD56C300FE012D /* qapi-util.c in Sources */ = {isa = PBXBuildFile; fileRef = CECC764E2273A7D50059B955 /* qapi-util.c */; };
+		CE0B6D0E24AD56E500FE012D /* UTMShaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = CE2D63D02265154700FC7E63 /* UTMShaders.metal */; };
+		CE0B6D0F24AD56E500FE012D /* UTMRenderer.m in Sources */ = {isa = PBXBuildFile; fileRef = CE2D63CF2265154700FC7E63 /* UTMRenderer.m */; };
+		CE0B6D1024AD57C400FE012D /* qapi-builtin-types.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C0D523FCEC03001177D6 /* qapi-builtin-types.c */; };
+		CE0B6D1124AD57C700FE012D /* qapi-builtin-visit.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C09623FCEC00001177D6 /* qapi-builtin-visit.c */; };
+		CE0B6D1224AD57CB00FE012D /* qapi-commands-audio.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C09D23FCEC00001177D6 /* qapi-commands-audio.c */; };
+		CE0B6D1324AD57FC00FE012D /* qapi-commands-qom.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C15523FCEC0A001177D6 /* qapi-commands-qom.c */; };
+		CE0B6D1424AD57FC00FE012D /* qapi-events-common.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C0D723FCEC03001177D6 /* qapi-events-common.c */; };
+		CE0B6D1524AD57FC00FE012D /* qapi-commands-misc-target.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C13C23FCEC08001177D6 /* qapi-commands-misc-target.c */; };
+		CE0B6D1624AD57FC00FE012D /* qapi-commands-block.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C0E723FCEC04001177D6 /* qapi-commands-block.c */; };
+		CE0B6D1724AD57FC00FE012D /* qapi-commands-misc.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C15123FCEC09001177D6 /* qapi-commands-misc.c */; };
+		CE0B6D1824AD57FC00FE012D /* qapi-events-audio.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C13E23FCEC08001177D6 /* qapi-events-audio.c */; };
+		CE0B6D1924AD57FC00FE012D /* qapi-events-crypto.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C11D23FCEC07001177D6 /* qapi-events-crypto.c */; };
+		CE0B6D1A24AD57FC00FE012D /* qapi-commands-qdev.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C11F23FCEC07001177D6 /* qapi-commands-qdev.c */; };
+		CE0B6D1B24AD57FC00FE012D /* qapi-commands-block-core.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C0DF23FCEC04001177D6 /* qapi-commands-block-core.c */; };
+		CE0B6D1C24AD57FC00FE012D /* qapi-commands-char.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C08623FCEBFF001177D6 /* qapi-commands-char.c */; };
+		CE0B6D1D24AD57FC00FE012D /* qapi-commands-net.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C08F23FCEC00001177D6 /* qapi-commands-net.c */; };
+		CE0B6D1E24AD57FC00FE012D /* qapi-commands-trace.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C11023FCEC06001177D6 /* qapi-commands-trace.c */; };
+		CE0B6D1F24AD57FC00FE012D /* qapi-events-dump.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C0D323FCEC03001177D6 /* qapi-events-dump.c */; };
+		CE0B6D2024AD57FC00FE012D /* qapi-commands-dump.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C0DD23FCEC03001177D6 /* qapi-commands-dump.c */; };
+		CE0B6D2124AD57FC00FE012D /* qapi-commands-error.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C0FC23FCEC05001177D6 /* qapi-commands-error.c */; };
+		CE0B6D2224AD57FC00FE012D /* qapi-commands-introspect.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C10523FCEC05001177D6 /* qapi-commands-introspect.c */; };
+		CE0B6D2324AD57FC00FE012D /* qapi-commands-crypto.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C0AE23FCEC01001177D6 /* qapi-commands-crypto.c */; };
+		CE0B6D2424AD57FC00FE012D /* qapi-commands-rocker.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C08123FCEBFF001177D6 /* qapi-commands-rocker.c */; };
+		CE0B6D2524AD57FC00FE012D /* qapi-commands-sockets.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C0BD23FCEC02001177D6 /* qapi-commands-sockets.c */; };
+		CE0B6D2624AD57FC00FE012D /* qapi-commands-run-state.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C07E23FCEBFF001177D6 /* qapi-commands-run-state.c */; };
+		CE0B6D2724AD57FC00FE012D /* qapi-commands-tpm.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C0BF23FCEC02001177D6 /* qapi-commands-tpm.c */; };
+		CE0B6D2824AD57FC00FE012D /* qapi-dispatch-events.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C09223FCEC00001177D6 /* qapi-dispatch-events.c */; };
+		CE0B6D2924AD57FC00FE012D /* qapi-commands-machine-target.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C0DB23FCEC03001177D6 /* qapi-commands-machine-target.c */; };
+		CE0B6D2A24AD57FC00FE012D /* qapi-commands.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C0D223FCEC03001177D6 /* qapi-commands.c */; };
+		CE0B6D2B24AD57FC00FE012D /* qapi-events-error.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C0F023FCEC04001177D6 /* qapi-events-error.c */; };
+		CE0B6D2C24AD57FC00FE012D /* qapi-commands-ui.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C08223FCEBFF001177D6 /* qapi-commands-ui.c */; };
+		CE0B6D2D24AD57FC00FE012D /* qapi-commands-machine.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C13223FCEC08001177D6 /* qapi-commands-machine.c */; };
+		CE0B6D2E24AD57FC00FE012D /* qapi-commands-migration.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C09B23FCEC00001177D6 /* qapi-commands-migration.c */; };
+		CE0B6D2F24AD57FC00FE012D /* qapi-events-char.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C12723FCEC07001177D6 /* qapi-events-char.c */; };
+		CE0B6D3024AD57FC00FE012D /* qapi-commands-transaction.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C10B23FCEC06001177D6 /* qapi-commands-transaction.c */; };
+		CE0B6D3124AD57FC00FE012D /* qapi-events-job.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C14523FCEC09001177D6 /* qapi-events-job.c */; };
+		CE0B6D3224AD57FC00FE012D /* qapi-events-introspect.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C0B423FCEC01001177D6 /* qapi-events-introspect.c */; };
+		CE0B6D3324AD57FC00FE012D /* qapi-events-block.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C11623FCEC06001177D6 /* qapi-events-block.c */; };
+		CE0B6D3424AD57FC00FE012D /* qapi-commands-rdma.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C0FB23FCEC05001177D6 /* qapi-commands-rdma.c */; };
+		CE0B6D3524AD57FC00FE012D /* qapi-events-authz.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C0CC23FCEC03001177D6 /* qapi-events-authz.c */; };
+		CE0B6D3624AD57FC00FE012D /* qapi-commands-common.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C10823FCEC06001177D6 /* qapi-commands-common.c */; };
+		CE0B6D3724AD57FD00FE012D /* qapi-events-block-core.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C0EF23FCEC04001177D6 /* qapi-events-block-core.c */; };
+		CE0B6D3824AD57FD00FE012D /* qapi-commands-authz.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C0A423FCEC01001177D6 /* qapi-commands-authz.c */; };
+		CE0B6D3924AD57FD00FE012D /* qapi-commands-job.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C15723FCEC0A001177D6 /* qapi-commands-job.c */; };
+		CE0B6D3A24AD584C00FE012D /* qapi-types-qom.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C13823FCEC08001177D6 /* qapi-types-qom.c */; };
+		CE0B6D3B24AD584C00FE012D /* qapi-events-machine.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C0B923FCEC02001177D6 /* qapi-events-machine.c */; };
+		CE0B6D3C24AD584C00FE012D /* qapi-events-run-state.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C0FD23FCEC05001177D6 /* qapi-events-run-state.c */; };
+		CE0B6D3D24AD584C00FE012D /* qapi-visit-block-core.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C0E023FCEC04001177D6 /* qapi-visit-block-core.c */; };
+		CE0B6D3E24AD584C00FE012D /* qapi-visit-crypto.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C0C223FCEC02001177D6 /* qapi-visit-crypto.c */; };
+		CE0B6D3F24AD584C00FE012D /* qapi-visit-qom.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C0E423FCEC04001177D6 /* qapi-visit-qom.c */; };
+		CE0B6D4024AD584C00FE012D /* qapi-types-rocker.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C14D23FCEC09001177D6 /* qapi-types-rocker.c */; };
+		CE0B6D4124AD584C00FE012D /* qapi-visit-transaction.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C0A623FCEC01001177D6 /* qapi-visit-transaction.c */; };
+		CE0B6D4224AD584C00FE012D /* qapi-types-dump.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C12123FCEC07001177D6 /* qapi-types-dump.c */; };
+		CE0B6D4324AD584C00FE012D /* qapi-types.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C0B623FCEC02001177D6 /* qapi-types.c */; };
+		CE0B6D4424AD584C00FE012D /* qapi-visit-block.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C0A723FCEC01001177D6 /* qapi-visit-block.c */; };
+		CE0B6D4524AD584C00FE012D /* qapi-types-run-state.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C08523FCEBFF001177D6 /* qapi-types-run-state.c */; };
+		CE0B6D4624AD584C00FE012D /* qapi-events-rdma.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C12923FCEC07001177D6 /* qapi-events-rdma.c */; };
+		CE0B6D4724AD584C00FE012D /* qapi-visit-net.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C08A23FCEC00001177D6 /* qapi-visit-net.c */; };
+		CE0B6D4824AD584C00FE012D /* qapi-visit-audio.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C0BE23FCEC02001177D6 /* qapi-visit-audio.c */; };
+		CE0B6D4924AD584C00FE012D /* qapi-types-trace.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C11523FCEC06001177D6 /* qapi-types-trace.c */; };
+		CE0B6D4A24AD584C00FE012D /* qapi-types-error.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C11223FCEC06001177D6 /* qapi-types-error.c */; };
+		CE0B6D4B24AD584C00FE012D /* qapi-visit-rocker.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C0F723FCEC05001177D6 /* qapi-visit-rocker.c */; };
+		CE0B6D4C24AD584C00FE012D /* qapi-types-misc.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C12823FCEC07001177D6 /* qapi-types-misc.c */; };
+		CE0B6D4D24AD584C00FE012D /* qapi-types-block.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C08723FCEBFF001177D6 /* qapi-types-block.c */; };
+		CE0B6D4E24AD584C00FE012D /* qapi-types-tpm.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C0DC23FCEC03001177D6 /* qapi-types-tpm.c */; };
+		CE0B6D4F24AD584C00FE012D /* qapi-visit-qdev.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C10923FCEC06001177D6 /* qapi-visit-qdev.c */; };
+		CE0B6D5024AD584C00FE012D /* qapi-events-rocker.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C15923FCEC0A001177D6 /* qapi-events-rocker.c */; };
+		CE0B6D5124AD584C00FE012D /* qapi-visit-migration.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C0CE23FCEC03001177D6 /* qapi-visit-migration.c */; };
+		CE0B6D5224AD584C00FE012D /* qapi-visit-sockets.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C10623FCEC05001177D6 /* qapi-visit-sockets.c */; };
+		CE0B6D5324AD584C00FE012D /* qapi-types-transaction.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C13423FCEC08001177D6 /* qapi-types-transaction.c */; };
+		CE0B6D5424AD584C00FE012D /* qapi-visit-trace.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C0E523FCEC04001177D6 /* qapi-visit-trace.c */; };
+		CE0B6D5524AD584C00FE012D /* qapi-types-common.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C0C623FCEC02001177D6 /* qapi-types-common.c */; };
+		CE0B6D5624AD584C00FE012D /* qapi-types-machine-target.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C15223FCEC09001177D6 /* qapi-types-machine-target.c */; };
+		CE0B6D5724AD584C00FE012D /* qapi-types-net.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C0B523FCEC02001177D6 /* qapi-types-net.c */; };
+		CE0B6D5824AD584C00FE012D /* qapi-types-qdev.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C15B23FCEC0A001177D6 /* qapi-types-qdev.c */; };
+		CE0B6D5924AD584C00FE012D /* qapi-visit-run-state.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C0F523FCEC05001177D6 /* qapi-visit-run-state.c */; };
+		CE0B6D5A24AD584C00FE012D /* qapi-events-trace.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C08923FCEBFF001177D6 /* qapi-events-trace.c */; };
+		CE0B6D5B24AD584D00FE012D /* qapi-visit-misc-target.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C14223FCEC09001177D6 /* qapi-visit-misc-target.c */; };
+		CE0B6D5C24AD584D00FE012D /* qapi-events-net.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C10123FCEC05001177D6 /* qapi-events-net.c */; };
+		CE0B6D5D24AD584D00FE012D /* qapi-visit.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C13523FCEC08001177D6 /* qapi-visit.c */; };
+		CE0B6D5E24AD584D00FE012D /* qapi-visit-authz.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C0B823FCEC02001177D6 /* qapi-visit-authz.c */; };
+		CE0B6D5F24AD584D00FE012D /* qapi-types-char.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C12023FCEC07001177D6 /* qapi-types-char.c */; };
+		CE0B6D6024AD584D00FE012D /* qapi-types-sockets.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C10E23FCEC06001177D6 /* qapi-types-sockets.c */; };
+		CE0B6D6124AD584D00FE012D /* qapi-types-authz.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C0DA23FCEC03001177D6 /* qapi-types-authz.c */; };
+		CE0B6D6224AD584D00FE012D /* qapi-types-misc-target.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C16023FCEC0A001177D6 /* qapi-types-misc-target.c */; };
+		CE0B6D6324AD584D00FE012D /* qapi-events-qdev.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C09E23FCEC00001177D6 /* qapi-events-qdev.c */; };
+		CE0B6D6424AD584D00FE012D /* qapi-visit-error.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C15D23FCEC0A001177D6 /* qapi-visit-error.c */; };
+		CE0B6D6524AD584D00FE012D /* qapi-visit-job.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C09523FCEC00001177D6 /* qapi-visit-job.c */; };
+		CE0B6D6624AD584D00FE012D /* qapi-visit-machine-target.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C11123FCEC06001177D6 /* qapi-visit-machine-target.c */; };
+		CE0B6D6724AD584D00FE012D /* qapi-types-ui.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C10023FCEC05001177D6 /* qapi-types-ui.c */; };
+		CE0B6D6824AD584D00FE012D /* qapi-visit-machine.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C10D23FCEC06001177D6 /* qapi-visit-machine.c */; };
+		CE0B6D6924AD584D00FE012D /* qapi-events-tpm.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C13923FCEC08001177D6 /* qapi-events-tpm.c */; };
+		CE0B6D6A24AD584D00FE012D /* qapi-types-migration.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C0CB23FCEC02001177D6 /* qapi-types-migration.c */; };
+		CE0B6D6B24AD584D00FE012D /* qapi-types-rdma.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C13023FCEC08001177D6 /* qapi-types-rdma.c */; };
+		CE0B6D6C24AD584D00FE012D /* qapi-visit-common.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C10223FCEC05001177D6 /* qapi-visit-common.c */; };
+		CE0B6D6D24AD584D00FE012D /* qapi-visit-tpm.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C07F23FCEBFF001177D6 /* qapi-visit-tpm.c */; };
+		CE0B6D6E24AD584D00FE012D /* qapi-types-audio.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C11423FCEC06001177D6 /* qapi-types-audio.c */; };
+		CE0B6D6F24AD584D00FE012D /* qapi-events-transaction.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C0AC23FCEC01001177D6 /* qapi-events-transaction.c */; };
+		CE0B6D7024AD584D00FE012D /* qapi-types-job.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C13123FCEC08001177D6 /* qapi-types-job.c */; };
+		CE0B6D7124AD584D00FE012D /* qapi-types-introspect.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C0F923FCEC05001177D6 /* qapi-types-introspect.c */; };
+		CE0B6D7224AD584D00FE012D /* qapi-types-crypto.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C0E323FCEC04001177D6 /* qapi-types-crypto.c */; };
+		CE0B6D7324AD584D00FE012D /* qapi-events-migration.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C0EE23FCEC04001177D6 /* qapi-events-migration.c */; };
+		CE0B6D7424AD584D00FE012D /* qapi-visit-misc.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C10423FCEC05001177D6 /* qapi-visit-misc.c */; };
+		CE0B6D7524AD584D00FE012D /* qapi-visit-ui.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C0B723FCEC02001177D6 /* qapi-visit-ui.c */; };
+		CE0B6D7624AD584D00FE012D /* qapi-types-machine.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C15823FCEC0A001177D6 /* qapi-types-machine.c */; };
+		CE0B6D7724AD584D00FE012D /* qapi-events-misc-target.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C0C723FCEC02001177D6 /* qapi-events-misc-target.c */; };
+		CE0B6D7824AD584D00FE012D /* qapi-visit-introspect.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C0E223FCEC04001177D6 /* qapi-visit-introspect.c */; };
+		CE0B6D7924AD584D00FE012D /* qapi-visit-rdma.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C13623FCEC08001177D6 /* qapi-visit-rdma.c */; };
+		CE0B6D7A24AD584D00FE012D /* qapi-events-machine-target.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C13D23FCEC08001177D6 /* qapi-events-machine-target.c */; };
+		CE0B6D7B24AD584D00FE012D /* qapi-visit-dump.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C0B323FCEC01001177D6 /* qapi-visit-dump.c */; };
+		CE0B6D7C24AD584D00FE012D /* qapi-visit-char.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C0E923FCEC04001177D6 /* qapi-visit-char.c */; };
+		CE0B6D7D24AD584D00FE012D /* qapi-events-ui.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C12623FCEC07001177D6 /* qapi-events-ui.c */; };
+		CE0B6D7E24AD584D00FE012D /* qapi-events-misc.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C11B23FCEC07001177D6 /* qapi-events-misc.c */; };
+		CE0B6D7F24AD584D00FE012D /* qapi-events-qom.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C0A823FCEC01001177D6 /* qapi-events-qom.c */; };
+		CE0B6D8024AD584D00FE012D /* qapi-events-sockets.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C0AF23FCEC01001177D6 /* qapi-events-sockets.c */; };
+		CE0B6D8124AD584D00FE012D /* qapi-events.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C14023FCEC09001177D6 /* qapi-events.c */; };
+		CE0B6D8224AD584D00FE012D /* qapi-types-block-core.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C09923FCEC00001177D6 /* qapi-types-block-core.c */; };
+		CE0B6D8524AD5ADE00FE012D /* UTMScreenshot.m in Sources */ = {isa = PBXBuildFile; fileRef = CE0B6D8424AD5ADE00FE012D /* UTMScreenshot.m */; };
+		CE0B6D8624AD5ADE00FE012D /* UTMScreenshot.m in Sources */ = {isa = PBXBuildFile; fileRef = CE0B6D8424AD5ADE00FE012D /* UTMScreenshot.m */; };
+		CE0B6D8724AD5ADE00FE012D /* UTMScreenshot.m in Sources */ = {isa = PBXBuildFile; fileRef = CE0B6D8424AD5ADE00FE012D /* UTMScreenshot.m */; };
+		CE0B6D8B24AD658000FE012D /* CSSessionMac.m in Sources */ = {isa = PBXBuildFile; fileRef = CE0B6D8A24AD658000FE012D /* CSSessionMac.m */; };
+		CE0B6EB924AD677200FE012D /* libgthread-2.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63DC22653C7300FC7E63 /* libgthread-2.0.0.dylib */; };
+		CE0B6EBA24AD677200FE012D /* libgio-2.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63F822653C7400FC7E63 /* libgio-2.0.0.dylib */; };
+		CE0B6EBB24AD677200FE012D /* libgstgio.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CE9D19622265425A00355E14 /* libgstgio.a */; };
+		CE0B6EBC24AD677200FE012D /* libgstpbutils-1.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D640E22653C7500FC7E63 /* libgstpbutils-1.0.0.dylib */; };
+		CE0B6EBD24AD677200FE012D /* libqemu-system-i386.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63D722653C7300FC7E63 /* libqemu-system-i386.dylib */; };
+		CE0B6EBE24AD677200FE012D /* libqemu-system-m68k.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63EB22653C7400FC7E63 /* libqemu-system-m68k.dylib */; };
+		CE0B6EBF24AD677200FE012D /* libqemu-system-microblaze.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63E422653C7400FC7E63 /* libqemu-system-microblaze.dylib */; };
+		CE0B6EC024AD677200FE012D /* libqemu-system-nios2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63DF22653C7400FC7E63 /* libqemu-system-nios2.dylib */; };
+		CE0B6EC124AD677200FE012D /* libqemu-system-aarch64.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63FD22653C7500FC7E63 /* libqemu-system-aarch64.dylib */; };
+		CE0B6EC224AD677200FE012D /* libgstvideorate.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CE9D19592265425900355E14 /* libgstvideorate.a */; };
+		CE0B6EC324AD677200FE012D /* libqemu-system-alpha.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D641322653C7500FC7E63 /* libqemu-system-alpha.dylib */; };
+		CE0B6EC424AD677200FE012D /* libqemu-system-lm32.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63E922653C7400FC7E63 /* libqemu-system-lm32.dylib */; };
+		CE0B6EC524AD677200FE012D /* libqemu-system-sh4eb.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63E122653C7400FC7E63 /* libqemu-system-sh4eb.dylib */; };
+		CE0B6EC624AD677200FE012D /* libgstfft-1.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D640922653C7500FC7E63 /* libgstfft-1.0.0.dylib */; };
+		CE0B6EC724AD677200FE012D /* libqemu-system-sparc.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D640D22653C7500FC7E63 /* libqemu-system-sparc.dylib */; };
+		CE0B6EC824AD677200FE012D /* libgcrypt.20.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63F322653C7400FC7E63 /* libgcrypt.20.dylib */; };
+		CE0B6EC924AD677200FE012D /* libgstvideo-1.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63F922653C7400FC7E63 /* libgstvideo-1.0.0.dylib */; };
+		CE0B6ECA24AD677200FE012D /* libqemu-system-microblazeel.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63F022653C7400FC7E63 /* libqemu-system-microblazeel.dylib */; };
+		CE0B6ECB24AD677200FE012D /* libgstcheck-1.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D641422653C7500FC7E63 /* libgstcheck-1.0.0.dylib */; };
+		CE0B6ECC24AD677200FE012D /* libgstriff-1.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63DE22653C7400FC7E63 /* libgstriff-1.0.0.dylib */; };
+		CE0B6ECD24AD677200FE012D /* libgsttag-1.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63F622653C7400FC7E63 /* libgsttag-1.0.0.dylib */; };
+		CE0B6ECE24AD677200FE012D /* libgstopengl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CE9D195E2265425900355E14 /* libgstopengl.a */; };
+		CE0B6ECF24AD677200FE012D /* libgstrtp-1.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63DD22653C7400FC7E63 /* libgstrtp-1.0.0.dylib */; };
+		CE0B6ED024AD677200FE012D /* libopus.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D640322653C7500FC7E63 /* libopus.0.dylib */; };
+		CE0B6ED124AD677200FE012D /* libphodav-2.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE059DC0243BD67100338317 /* libphodav-2.0.0.dylib */; };
+		CE0B6ED224AD677200FE012D /* libqemu-system-hppa.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63F222653C7400FC7E63 /* libqemu-system-hppa.dylib */; };
+		CE0B6ED324AD677200FE012D /* libgstvideoconvert.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CE9D19542265425900355E14 /* libgstvideoconvert.a */; };
+		CE0B6ED424AD677200FE012D /* libqemu-system-tricore.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63EC22653C7400FC7E63 /* libqemu-system-tricore.dylib */; };
+		CE0B6ED524AD677200FE012D /* libqemu-system-or1k.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D640B22653C7500FC7E63 /* libqemu-system-or1k.dylib */; };
+		CE0B6ED624AD677200FE012D /* libqemu-system-xtensa.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63ED22653C7400FC7E63 /* libqemu-system-xtensa.dylib */; };
+		CE0B6ED724AD677200FE012D /* libgstaudio-1.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63EF22653C7400FC7E63 /* libgstaudio-1.0.0.dylib */; };
+		CE0B6ED824AD677200FE012D /* libjpeg.62.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63D922653C7300FC7E63 /* libjpeg.62.dylib */; };
+		CE0B6ED924AD677200FE012D /* libqemu-img.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE4AA14E2265B152002E4A54 /* libqemu-img.dylib */; };
+		CE0B6EDA24AD677200FE012D /* libssl.1.1.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D641722653C7500FC7E63 /* libssl.1.1.dylib */; };
+		CE0B6EDB24AD677200FE012D /* libqemu-system-unicore32.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63F722653C7400FC7E63 /* libqemu-system-unicore32.dylib */; };
+		CE0B6EDC24AD677200FE012D /* libgstapp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CE9D19612265425900355E14 /* libgstapp.a */; };
+		CE0B6EDD24AD677200FE012D /* libqemu-system-cris.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63E622653C7400FC7E63 /* libqemu-system-cris.dylib */; };
+		CE0B6EDE24AD677200FE012D /* libqemu-system-riscv32.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63FA22653C7400FC7E63 /* libqemu-system-riscv32.dylib */; };
+		CE0B6EDF24AD677200FE012D /* libqemu-system-sh4.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D640222653C7500FC7E63 /* libqemu-system-sh4.dylib */; };
+		CE0B6EE024AD677200FE012D /* libgstosxaudio.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CE9D19652265425A00355E14 /* libgstosxaudio.a */; };
+		CE0B6EE124AD677200FE012D /* libgstrtsp-1.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D640122653C7500FC7E63 /* libgstrtsp-1.0.0.dylib */; };
+		CE0B6EE224AD677200FE012D /* libgstnet-1.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63E522653C7400FC7E63 /* libgstnet-1.0.0.dylib */; };
+		CE0B6EE324AD677200FE012D /* libgobject-2.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63F522653C7400FC7E63 /* libgobject-2.0.0.dylib */; };
+		CE0B6EE424AD677200FE012D /* libgmodule-2.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63D822653C7300FC7E63 /* libgmodule-2.0.0.dylib */; };
+		CE0B6EE524AD677200FE012D /* libgstbase-1.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63E822653C7400FC7E63 /* libgstbase-1.0.0.dylib */; };
+		CE0B6EE624AD677200FE012D /* libgstaudiorate.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CE9D195F2265425900355E14 /* libgstaudiorate.a */; };
+		CE0B6EE724AD677200FE012D /* libgstvideotestsrc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CE9D19642265425A00355E14 /* libgstvideotestsrc.a */; };
+		CE0B6EE824AD677200FE012D /* libintl.8.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63DA22653C7300FC7E63 /* libintl.8.dylib */; };
+		CE0B6EE924AD677200FE012D /* libqemu-system-arm.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D640722653C7500FC7E63 /* libqemu-system-arm.dylib */; };
+		CE0B6EEA24AD677200FE012D /* libgstcoreelements.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CE9D19582265425900355E14 /* libgstcoreelements.a */; };
+		CE0B6EEB24AD677200FE012D /* libcrypto.1.1.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D640A22653C7500FC7E63 /* libcrypto.1.1.dylib */; };
+		CE0B6EEC24AD677200FE012D /* libgstautodetect.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CE9D19522265425900355E14 /* libgstautodetect.a */; };
+		CE0B6EED24AD677200FE012D /* libiconv.2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D641522653C7500FC7E63 /* libiconv.2.dylib */; };
+		CE0B6EEE24AD677200FE012D /* libqemu-system-x86_64.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D640022653C7500FC7E63 /* libqemu-system-x86_64.dylib */; };
+		CE0B6EEF24AD677200FE012D /* libglib-2.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D640422653C7500FC7E63 /* libglib-2.0.0.dylib */; };
+		CE0B6EF024AD677200FE012D /* libgstcontroller-1.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63EE22653C7400FC7E63 /* libgstcontroller-1.0.0.dylib */; };
+		CE0B6EF124AD677200FE012D /* libgstplayback.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CE9D195C2265425900355E14 /* libgstplayback.a */; };
+		CE0B6EF224AD677200FE012D /* libgstallocators-1.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D641122653C7500FC7E63 /* libgstallocators-1.0.0.dylib */; };
+		CE0B6EF324AD677200FE012D /* libgstvideofilter.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CE9D19602265425900355E14 /* libgstvideofilter.a */; };
+		CE0B6EF424AD677200FE012D /* libjson-glib-1.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63E222653C7400FC7E63 /* libjson-glib-1.0.0.dylib */; };
+		CE0B6EF524AD677200FE012D /* libqemu-system-mips.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63FF22653C7500FC7E63 /* libqemu-system-mips.dylib */; };
+		CE0B6EF624AD677200FE012D /* libqemu-system-ppc64.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D640C22653C7500FC7E63 /* libqemu-system-ppc64.dylib */; };
+		CE0B6EF724AD677200FE012D /* libspice-server.1.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D641822653C7500FC7E63 /* libspice-server.1.dylib */; };
+		CE0B6EF824AD677200FE012D /* libgstsdp-1.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D641622653C7500FC7E63 /* libgstsdp-1.0.0.dylib */; };
+		CE0B6EF924AD677200FE012D /* libgstaudioresample.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CE9D195B2265425900355E14 /* libgstaudioresample.a */; };
+		CE0B6EFA24AD677200FE012D /* libgstapp-1.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63DB22653C7300FC7E63 /* libgstapp-1.0.0.dylib */; };
+		CE0B6EFB24AD677200FE012D /* libqemu-system-mips64.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63F422653C7400FC7E63 /* libqemu-system-mips64.dylib */; };
+		CE0B6EFC24AD677200FE012D /* libgstaudiotestsrc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CE9D19532265425900355E14 /* libgstaudiotestsrc.a */; };
+		CE0B6EFD24AD677200FE012D /* libqemu-system-moxie.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63EA22653C7400FC7E63 /* libqemu-system-moxie.dylib */; };
+		CE0B6EFE24AD677200FE012D /* libqemu-system-xtensaeb.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D641222653C7500FC7E63 /* libqemu-system-xtensaeb.dylib */; };
+		CE0B6EFF24AD677200FE012D /* libgstgl-1.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D641022653C7500FC7E63 /* libgstgl-1.0.0.dylib */; };
+		CE0B6F0024AD677200FE012D /* libqemu-system-mipsel.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D640622653C7500FC7E63 /* libqemu-system-mipsel.dylib */; };
+		CE0B6F0124AD677200FE012D /* libgsttypefindfunctions.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CE9D19632265425A00355E14 /* libgsttypefindfunctions.a */; };
+		CE0B6F0224AD677200FE012D /* libgstjpeg.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CE9D195A2265425900355E14 /* libgstjpeg.a */; };
+		CE0B6F0324AD677200FE012D /* libgstvideoscale.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CE9D19562265425900355E14 /* libgstvideoscale.a */; };
+		CE0B6F0424AD677200FE012D /* libpixman-1.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D641922653C7600FC7E63 /* libpixman-1.0.dylib */; };
+		CE0B6F0524AD677200FE012D /* libqemu-system-ppc.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63E722653C7400FC7E63 /* libqemu-system-ppc.dylib */; };
+		CE0B6F0624AD677200FE012D /* libgpg-error.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63F122653C7400FC7E63 /* libgpg-error.0.dylib */; };
+		CE0B6F0724AD677200FE012D /* libgstvolume.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CE9D19572265425900355E14 /* libgstvolume.a */; };
+		CE0B6F0824AD677200FE012D /* libqemu-system-riscv64.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63FB22653C7500FC7E63 /* libqemu-system-riscv64.dylib */; };
+		CE0B6F0924AD677200FE012D /* libqemu-system-s390x.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63FC22653C7500FC7E63 /* libqemu-system-s390x.dylib */; };
+		CE0B6F0A24AD677200FE012D /* libspice-client-glib-2.0.8.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63FE22653C7500FC7E63 /* libspice-client-glib-2.0.8.dylib */; };
+		CE0B6F0B24AD677200FE012D /* libffi.6.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63E322653C7400FC7E63 /* libffi.6.dylib */; };
+		CE0B6F0C24AD677200FE012D /* libgstreamer-1.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63E022653C7400FC7E63 /* libgstreamer-1.0.0.dylib */; };
+		CE0B6F0D24AD677200FE012D /* libgstadder.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CE9D195D2265425900355E14 /* libgstadder.a */; };
+		CE0B6F0E24AD677200FE012D /* libgstaudioconvert.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CE9D19552265425900355E14 /* libgstaudioconvert.a */; };
+		CE0B6F0F24AD677200FE012D /* libpng16.16.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D640522653C7500FC7E63 /* libpng16.16.dylib */; };
+		CE0B6F1024AD677200FE012D /* libqemu-system-mips64el.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D640822653C7500FC7E63 /* libqemu-system-mips64el.dylib */; };
+		CE0B6F1124AD677200FE012D /* libqemu-system-sparc64.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D640F22653C7500FC7E63 /* libqemu-system-sparc64.dylib */; };
+		CE0B6F1224AD678800FE012D /* libcrypto.1.1.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D640A22653C7500FC7E63 /* libcrypto.1.1.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE0B6F1324AD678900FE012D /* libffi.6.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63E322653C7400FC7E63 /* libffi.6.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE0B6F1424AD678B00FE012D /* libgcrypt.20.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63F322653C7400FC7E63 /* libgcrypt.20.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE0B6F1524AD678D00FE012D /* libgio-2.0.0.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63F822653C7400FC7E63 /* libgio-2.0.0.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE0B6F1624AD678E00FE012D /* libglib-2.0.0.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D640422653C7500FC7E63 /* libglib-2.0.0.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE0B6F1724AD679000FE012D /* libgmodule-2.0.0.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63D822653C7300FC7E63 /* libgmodule-2.0.0.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE0B6F1824AD679100FE012D /* libgobject-2.0.0.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63F522653C7400FC7E63 /* libgobject-2.0.0.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE0B6F1924AD679300FE012D /* libgpg-error.0.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63F122653C7400FC7E63 /* libgpg-error.0.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE0B6F1A24AD679500FE012D /* libgstallocators-1.0.0.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D641122653C7500FC7E63 /* libgstallocators-1.0.0.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE0B6F1B24AD679700FE012D /* libgstapp-1.0.0.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63DB22653C7300FC7E63 /* libgstapp-1.0.0.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE0B6F1C24AD679800FE012D /* libgstaudio-1.0.0.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63EF22653C7400FC7E63 /* libgstaudio-1.0.0.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE0B6F1D24AD679B00FE012D /* libgstbase-1.0.0.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63E822653C7400FC7E63 /* libgstbase-1.0.0.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE0B6F1E24AD679C00FE012D /* libgstcheck-1.0.0.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D641422653C7500FC7E63 /* libgstcheck-1.0.0.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE0B6F1F24AD679E00FE012D /* libgstcontroller-1.0.0.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63EE22653C7400FC7E63 /* libgstcontroller-1.0.0.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE0B6F2024AD679F00FE012D /* libgstfft-1.0.0.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D640922653C7500FC7E63 /* libgstfft-1.0.0.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE0B6F2124AD67A100FE012D /* libgstgl-1.0.0.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D641022653C7500FC7E63 /* libgstgl-1.0.0.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE0B6F2224AD67A200FE012D /* libgstnet-1.0.0.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63E522653C7400FC7E63 /* libgstnet-1.0.0.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE0B6F2324AD67A400FE012D /* libgstpbutils-1.0.0.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D640E22653C7500FC7E63 /* libgstpbutils-1.0.0.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE0B6F2424AD67A600FE012D /* libgstreamer-1.0.0.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63E022653C7400FC7E63 /* libgstreamer-1.0.0.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE0B6F2524AD67A700FE012D /* libgstriff-1.0.0.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63DE22653C7400FC7E63 /* libgstriff-1.0.0.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE0B6F2624AD67A900FE012D /* libgstrtp-1.0.0.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63DD22653C7400FC7E63 /* libgstrtp-1.0.0.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE0B6F2724AD67AA00FE012D /* libgstrtsp-1.0.0.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D640122653C7500FC7E63 /* libgstrtsp-1.0.0.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE0B6F2824AD67AC00FE012D /* libgstsdp-1.0.0.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D641622653C7500FC7E63 /* libgstsdp-1.0.0.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE0B6F2924AD67AD00FE012D /* libgsttag-1.0.0.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63F622653C7400FC7E63 /* libgsttag-1.0.0.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE0B6F2A24AD67AF00FE012D /* libgstvideo-1.0.0.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63F922653C7400FC7E63 /* libgstvideo-1.0.0.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE0B6F2B24AD67B700FE012D /* libgthread-2.0.0.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63DC22653C7300FC7E63 /* libgthread-2.0.0.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE0B6F2C24AD67B800FE012D /* libiconv.2.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D641522653C7500FC7E63 /* libiconv.2.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE0B6F2D24AD67BA00FE012D /* libintl.8.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63DA22653C7300FC7E63 /* libintl.8.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE0B6F2E24AD67BB00FE012D /* libjpeg.62.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63D922653C7300FC7E63 /* libjpeg.62.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE0B6F2F24AD67BE00FE012D /* libjson-glib-1.0.0.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63E222653C7400FC7E63 /* libjson-glib-1.0.0.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE0B6F3024AD67C000FE012D /* libopus.0.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D640322653C7500FC7E63 /* libopus.0.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE0B6F3124AD67C100FE012D /* libphodav-2.0.0.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE059DC0243BD67100338317 /* libphodav-2.0.0.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE0B6F3224AD67C300FE012D /* libpixman-1.0.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D641922653C7600FC7E63 /* libpixman-1.0.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE0B6F3324AD67C400FE012D /* libpng16.16.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D640522653C7500FC7E63 /* libpng16.16.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE0B6F3424AD67C600FE012D /* libqemu-img.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE4AA14E2265B152002E4A54 /* libqemu-img.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE0B6F3524AD67C700FE012D /* libqemu-system-aarch64.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63FD22653C7500FC7E63 /* libqemu-system-aarch64.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE0B6F3624AD67C800FE012D /* libqemu-system-alpha.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D641322653C7500FC7E63 /* libqemu-system-alpha.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE0B6F3724AD67CA00FE012D /* libqemu-system-arm.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D640722653C7500FC7E63 /* libqemu-system-arm.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE0B6F3824AD67CD00FE012D /* libqemu-system-cris.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63E622653C7400FC7E63 /* libqemu-system-cris.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE0B6F3924AD67CF00FE012D /* libqemu-system-hppa.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63F222653C7400FC7E63 /* libqemu-system-hppa.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE0B6F3A24AD67D000FE012D /* libqemu-system-i386.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63D722653C7300FC7E63 /* libqemu-system-i386.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE0B6F3B24AD67D200FE012D /* libqemu-system-lm32.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63E922653C7400FC7E63 /* libqemu-system-lm32.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE0B6F3C24AD67D300FE012D /* libqemu-system-m68k.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63EB22653C7400FC7E63 /* libqemu-system-m68k.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE0B6F3D24AD67D500FE012D /* libqemu-system-microblaze.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63E422653C7400FC7E63 /* libqemu-system-microblaze.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE0B6F3E24AD67D800FE012D /* libqemu-system-microblazeel.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63F022653C7400FC7E63 /* libqemu-system-microblazeel.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE0B6F3F24AD67DA00FE012D /* libqemu-system-mips.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63FF22653C7500FC7E63 /* libqemu-system-mips.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE0B6F4024AD67DB00FE012D /* libqemu-system-mips64.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63F422653C7400FC7E63 /* libqemu-system-mips64.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE0B6F4124AD67DD00FE012D /* libqemu-system-mips64el.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D640822653C7500FC7E63 /* libqemu-system-mips64el.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE0B6F4224AD67DE00FE012D /* libqemu-system-mipsel.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D640622653C7500FC7E63 /* libqemu-system-mipsel.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE0B6F4324AD67E000FE012D /* libqemu-system-moxie.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63EA22653C7400FC7E63 /* libqemu-system-moxie.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE0B6F4424AD67E100FE012D /* libqemu-system-nios2.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63DF22653C7400FC7E63 /* libqemu-system-nios2.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE0B6F4524AD67E200FE012D /* libqemu-system-or1k.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D640B22653C7500FC7E63 /* libqemu-system-or1k.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE0B6F4624AD67E400FE012D /* libqemu-system-ppc.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63E722653C7400FC7E63 /* libqemu-system-ppc.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE0B6F4724AD67E500FE012D /* libqemu-system-ppc64.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D640C22653C7500FC7E63 /* libqemu-system-ppc64.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE0B6F4824AD67E700FE012D /* libqemu-system-riscv32.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63FA22653C7400FC7E63 /* libqemu-system-riscv32.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE0B6F4924AD67E900FE012D /* libqemu-system-riscv64.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63FB22653C7500FC7E63 /* libqemu-system-riscv64.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE0B6F4A24AD67EB00FE012D /* libqemu-system-s390x.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63FC22653C7500FC7E63 /* libqemu-system-s390x.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE0B6F4B24AD67EC00FE012D /* libqemu-system-sh4.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D640222653C7500FC7E63 /* libqemu-system-sh4.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE0B6F4C24AD67EE00FE012D /* libqemu-system-sh4eb.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63E122653C7400FC7E63 /* libqemu-system-sh4eb.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE0B6F4D24AD67EF00FE012D /* libqemu-system-sparc.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D640D22653C7500FC7E63 /* libqemu-system-sparc.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE0B6F4E24AD67F100FE012D /* libqemu-system-sparc64.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D640F22653C7500FC7E63 /* libqemu-system-sparc64.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE0B6F4F24AD67F200FE012D /* libqemu-system-tricore.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63EC22653C7400FC7E63 /* libqemu-system-tricore.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE0B6F5024AD67F400FE012D /* libqemu-system-unicore32.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63F722653C7400FC7E63 /* libqemu-system-unicore32.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE0B6F5124AD67F600FE012D /* libqemu-system-x86_64.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D640022653C7500FC7E63 /* libqemu-system-x86_64.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE0B6F5224AD67F700FE012D /* libqemu-system-xtensa.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63ED22653C7400FC7E63 /* libqemu-system-xtensa.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE0B6F5324AD67F900FE012D /* libqemu-system-xtensaeb.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D641222653C7500FC7E63 /* libqemu-system-xtensaeb.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE0B6F5424AD67FA00FE012D /* libspice-client-glib-2.0.8.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63FE22653C7500FC7E63 /* libspice-client-glib-2.0.8.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE0B6F5524AD67FC00FE012D /* libspice-server.1.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D641822653C7500FC7E63 /* libspice-server.1.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE0B6F5624AD67FD00FE012D /* libssl.1.1.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D641722653C7500FC7E63 /* libssl.1.1.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CE20FAE52444FC6E0059AE11 /* VMConfigDirectoryPickerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CE20FAE42444FC6E0059AE11 /* VMConfigDirectoryPickerViewController.m */; };
 		CE20FAE82448D2BE0059AE11 /* VMScroll.m in Sources */ = {isa = PBXBuildFile; fileRef = CE20FAE72448D2BE0059AE11 /* VMScroll.m */; };
 		CE23C16123FCEC0A001177D6 /* qapi-commands-run-state.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C07E23FCEBFF001177D6 /* qapi-commands-run-state.c */; };
@@ -715,6 +1025,85 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		CE0B6E6D24AD66CE00FE012D /* Embed Libraries */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				CE0B6F1924AD679300FE012D /* libgpg-error.0.dylib in Embed Libraries */,
+				CE0B6F5224AD67F700FE012D /* libqemu-system-xtensa.dylib in Embed Libraries */,
+				CE0B6F4A24AD67EB00FE012D /* libqemu-system-s390x.dylib in Embed Libraries */,
+				CE0B6F4124AD67DD00FE012D /* libqemu-system-mips64el.dylib in Embed Libraries */,
+				CE0B6F3B24AD67D200FE012D /* libqemu-system-lm32.dylib in Embed Libraries */,
+				CE0B6F1F24AD679E00FE012D /* libgstcontroller-1.0.0.dylib in Embed Libraries */,
+				CE0B6F3924AD67CF00FE012D /* libqemu-system-hppa.dylib in Embed Libraries */,
+				CE0B6F4924AD67E900FE012D /* libqemu-system-riscv64.dylib in Embed Libraries */,
+				CE0B6F1A24AD679500FE012D /* libgstallocators-1.0.0.dylib in Embed Libraries */,
+				CE0B6F1D24AD679B00FE012D /* libgstbase-1.0.0.dylib in Embed Libraries */,
+				CE0B6F3A24AD67D000FE012D /* libqemu-system-i386.dylib in Embed Libraries */,
+				CE0B6F3E24AD67D800FE012D /* libqemu-system-microblazeel.dylib in Embed Libraries */,
+				CE0B6F1324AD678900FE012D /* libffi.6.dylib in Embed Libraries */,
+				CE0B6F4F24AD67F200FE012D /* libqemu-system-tricore.dylib in Embed Libraries */,
+				CE0B6F1524AD678D00FE012D /* libgio-2.0.0.dylib in Embed Libraries */,
+				CE0B6F2224AD67A200FE012D /* libgstnet-1.0.0.dylib in Embed Libraries */,
+				CE0B6F3424AD67C600FE012D /* libqemu-img.dylib in Embed Libraries */,
+				CE0B6F4224AD67DE00FE012D /* libqemu-system-mipsel.dylib in Embed Libraries */,
+				CE0B6F5424AD67FA00FE012D /* libspice-client-glib-2.0.8.dylib in Embed Libraries */,
+				CE0B6F1224AD678800FE012D /* libcrypto.1.1.dylib in Embed Libraries */,
+				CE0B6F4B24AD67EC00FE012D /* libqemu-system-sh4.dylib in Embed Libraries */,
+				CE0B6F3824AD67CD00FE012D /* libqemu-system-cris.dylib in Embed Libraries */,
+				CE0B6F5324AD67F900FE012D /* libqemu-system-xtensaeb.dylib in Embed Libraries */,
+				CE0B6F4024AD67DB00FE012D /* libqemu-system-mips64.dylib in Embed Libraries */,
+				CE0B6F1B24AD679700FE012D /* libgstapp-1.0.0.dylib in Embed Libraries */,
+				CE0B6F4624AD67E400FE012D /* libqemu-system-ppc.dylib in Embed Libraries */,
+				CE0B6F3224AD67C300FE012D /* libpixman-1.0.dylib in Embed Libraries */,
+				CE0B6F2124AD67A100FE012D /* libgstgl-1.0.0.dylib in Embed Libraries */,
+				CE0B6F2924AD67AD00FE012D /* libgsttag-1.0.0.dylib in Embed Libraries */,
+				CE0B6F3124AD67C100FE012D /* libphodav-2.0.0.dylib in Embed Libraries */,
+				CE0B6F4524AD67E200FE012D /* libqemu-system-or1k.dylib in Embed Libraries */,
+				CE0B6F3724AD67CA00FE012D /* libqemu-system-arm.dylib in Embed Libraries */,
+				CE0B6F2624AD67A900FE012D /* libgstrtp-1.0.0.dylib in Embed Libraries */,
+				CE0B6F4324AD67E000FE012D /* libqemu-system-moxie.dylib in Embed Libraries */,
+				CE0B6F3C24AD67D300FE012D /* libqemu-system-m68k.dylib in Embed Libraries */,
+				CE0B6F2524AD67A700FE012D /* libgstriff-1.0.0.dylib in Embed Libraries */,
+				CE0B6F2B24AD67B700FE012D /* libgthread-2.0.0.dylib in Embed Libraries */,
+				CE0B6F3524AD67C700FE012D /* libqemu-system-aarch64.dylib in Embed Libraries */,
+				CE0B6F1824AD679100FE012D /* libgobject-2.0.0.dylib in Embed Libraries */,
+				CE0B6F1724AD679000FE012D /* libgmodule-2.0.0.dylib in Embed Libraries */,
+				CE0B6F1624AD678E00FE012D /* libglib-2.0.0.dylib in Embed Libraries */,
+				CE0B6F3324AD67C400FE012D /* libpng16.16.dylib in Embed Libraries */,
+				CE0B6F2D24AD67BA00FE012D /* libintl.8.dylib in Embed Libraries */,
+				CE0B6F2424AD67A600FE012D /* libgstreamer-1.0.0.dylib in Embed Libraries */,
+				CE0B6F2A24AD67AF00FE012D /* libgstvideo-1.0.0.dylib in Embed Libraries */,
+				CE0B6F2F24AD67BE00FE012D /* libjson-glib-1.0.0.dylib in Embed Libraries */,
+				CE0B6F4724AD67E500FE012D /* libqemu-system-ppc64.dylib in Embed Libraries */,
+				CE0B6F4D24AD67EF00FE012D /* libqemu-system-sparc.dylib in Embed Libraries */,
+				CE0B6F2E24AD67BB00FE012D /* libjpeg.62.dylib in Embed Libraries */,
+				CE0B6F3024AD67C000FE012D /* libopus.0.dylib in Embed Libraries */,
+				CE0B6F2824AD67AC00FE012D /* libgstsdp-1.0.0.dylib in Embed Libraries */,
+				CE0B6F5524AD67FC00FE012D /* libspice-server.1.dylib in Embed Libraries */,
+				CE0B6F1C24AD679800FE012D /* libgstaudio-1.0.0.dylib in Embed Libraries */,
+				CE0B6F1E24AD679C00FE012D /* libgstcheck-1.0.0.dylib in Embed Libraries */,
+				CE0B6F2C24AD67B800FE012D /* libiconv.2.dylib in Embed Libraries */,
+				CE0B6F4824AD67E700FE012D /* libqemu-system-riscv32.dylib in Embed Libraries */,
+				CE0B6F2724AD67AA00FE012D /* libgstrtsp-1.0.0.dylib in Embed Libraries */,
+				CE0B6F3D24AD67D500FE012D /* libqemu-system-microblaze.dylib in Embed Libraries */,
+				CE0B6F4E24AD67F100FE012D /* libqemu-system-sparc64.dylib in Embed Libraries */,
+				CE0B6F5624AD67FD00FE012D /* libssl.1.1.dylib in Embed Libraries */,
+				CE0B6F1424AD678B00FE012D /* libgcrypt.20.dylib in Embed Libraries */,
+				CE0B6F3F24AD67DA00FE012D /* libqemu-system-mips.dylib in Embed Libraries */,
+				CE0B6F2024AD679F00FE012D /* libgstfft-1.0.0.dylib in Embed Libraries */,
+				CE0B6F5124AD67F600FE012D /* libqemu-system-x86_64.dylib in Embed Libraries */,
+				CE0B6F2324AD67A400FE012D /* libgstpbutils-1.0.0.dylib in Embed Libraries */,
+				CE0B6F4424AD67E100FE012D /* libqemu-system-nios2.dylib in Embed Libraries */,
+				CE0B6F3624AD67C800FE012D /* libqemu-system-alpha.dylib in Embed Libraries */,
+				CE0B6F4C24AD67EE00FE012D /* libqemu-system-sh4eb.dylib in Embed Libraries */,
+				CE0B6F5024AD67F400FE012D /* libqemu-system-unicore32.dylib in Embed Libraries */,
+			);
+			name = "Embed Libraries";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		CE2D64A022653C8700FC7E63 /* Embed Libraries */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -902,6 +1291,9 @@
 		CE059DC7243E9E3400338317 /* UTMLocationManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UTMLocationManager.m; sourceTree = "<group>"; };
 		CE059DC9243FBA3C00338317 /* VMConfigCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VMConfigCell.h; sourceTree = "<group>"; };
 		CE059DCA243FBA3C00338317 /* VMConfigCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VMConfigCell.m; sourceTree = "<group>"; };
+		CE0B6D8324AD5ADE00FE012D /* UTMScreenshot.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UTMScreenshot.h; sourceTree = "<group>"; };
+		CE0B6D8424AD5ADE00FE012D /* UTMScreenshot.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UTMScreenshot.m; sourceTree = "<group>"; };
+		CE0B6D8A24AD658000FE012D /* CSSessionMac.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CSSessionMac.m; sourceTree = "<group>"; };
 		CE20FAE32444FC6E0059AE11 /* VMConfigDirectoryPickerViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VMConfigDirectoryPickerViewController.h; sourceTree = "<group>"; };
 		CE20FAE42444FC6E0059AE11 /* VMConfigDirectoryPickerViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VMConfigDirectoryPickerViewController.m; sourceTree = "<group>"; };
 		CE20FAE62448D2BE0059AE11 /* VMScroll.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VMScroll.h; sourceTree = "<group>"; };
@@ -1492,6 +1884,95 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CE0B6EE924AD677200FE012D /* libqemu-system-arm.dylib in Frameworks */,
+				CE0B6F0E24AD677200FE012D /* libgstaudioconvert.a in Frameworks */,
+				CE0B6EF024AD677200FE012D /* libgstcontroller-1.0.0.dylib in Frameworks */,
+				CE0B6EE024AD677200FE012D /* libgstosxaudio.a in Frameworks */,
+				CE0B6F0D24AD677200FE012D /* libgstadder.a in Frameworks */,
+				CE0B6ED424AD677200FE012D /* libqemu-system-tricore.dylib in Frameworks */,
+				CE0B6ED924AD677200FE012D /* libqemu-img.dylib in Frameworks */,
+				CE0B6EF224AD677200FE012D /* libgstallocators-1.0.0.dylib in Frameworks */,
+				CE0B6EB924AD677200FE012D /* libgthread-2.0.0.dylib in Frameworks */,
+				CE0B6F1024AD677200FE012D /* libqemu-system-mips64el.dylib in Frameworks */,
+				CE0B6EF624AD677200FE012D /* libqemu-system-ppc64.dylib in Frameworks */,
+				CE0B6EBC24AD677200FE012D /* libgstpbutils-1.0.0.dylib in Frameworks */,
+				CE0B6ED324AD677200FE012D /* libgstvideoconvert.a in Frameworks */,
+				CE0B6F0124AD677200FE012D /* libgsttypefindfunctions.a in Frameworks */,
+				CE0B6EE124AD677200FE012D /* libgstrtsp-1.0.0.dylib in Frameworks */,
+				CE0B6EEC24AD677200FE012D /* libgstautodetect.a in Frameworks */,
+				CE0B6ED724AD677200FE012D /* libgstaudio-1.0.0.dylib in Frameworks */,
+				CE0B6EFA24AD677200FE012D /* libgstapp-1.0.0.dylib in Frameworks */,
+				CE0B6ED824AD677200FE012D /* libjpeg.62.dylib in Frameworks */,
+				CE0B6EBD24AD677200FE012D /* libqemu-system-i386.dylib in Frameworks */,
+				CE0B6EDD24AD677200FE012D /* libqemu-system-cris.dylib in Frameworks */,
+				CE0B6EBA24AD677200FE012D /* libgio-2.0.0.dylib in Frameworks */,
+				CE0B6EED24AD677200FE012D /* libiconv.2.dylib in Frameworks */,
+				CE0B6EE324AD677200FE012D /* libgobject-2.0.0.dylib in Frameworks */,
+				CE0B6EF724AD677200FE012D /* libspice-server.1.dylib in Frameworks */,
+				CE0B6F1124AD677200FE012D /* libqemu-system-sparc64.dylib in Frameworks */,
+				CE0B6EF124AD677200FE012D /* libgstplayback.a in Frameworks */,
+				CE0B6EC824AD677200FE012D /* libgcrypt.20.dylib in Frameworks */,
+				CE0B6EF424AD677200FE012D /* libjson-glib-1.0.0.dylib in Frameworks */,
+				CE0B6F0524AD677200FE012D /* libqemu-system-ppc.dylib in Frameworks */,
+				CE0B6ED124AD677200FE012D /* libphodav-2.0.0.dylib in Frameworks */,
+				CE0B6EFE24AD677200FE012D /* libqemu-system-xtensaeb.dylib in Frameworks */,
+				CE0B6EC524AD677200FE012D /* libqemu-system-sh4eb.dylib in Frameworks */,
+				CE0B6F0824AD677200FE012D /* libqemu-system-riscv64.dylib in Frameworks */,
+				CE0B6ECB24AD677200FE012D /* libgstcheck-1.0.0.dylib in Frameworks */,
+				CE0B6EC324AD677200FE012D /* libqemu-system-alpha.dylib in Frameworks */,
+				CE0B6ED524AD677200FE012D /* libqemu-system-or1k.dylib in Frameworks */,
+				CE0B6F0724AD677200FE012D /* libgstvolume.a in Frameworks */,
+				CE0B6EE424AD677200FE012D /* libgmodule-2.0.0.dylib in Frameworks */,
+				CE0B6EE524AD677200FE012D /* libgstbase-1.0.0.dylib in Frameworks */,
+				CE0B6F0A24AD677200FE012D /* libspice-client-glib-2.0.8.dylib in Frameworks */,
+				CE0B6EE824AD677200FE012D /* libintl.8.dylib in Frameworks */,
+				CE0B6EBF24AD677200FE012D /* libqemu-system-microblaze.dylib in Frameworks */,
+				CE0B6F0624AD677200FE012D /* libgpg-error.0.dylib in Frameworks */,
+				CE0B6EC024AD677200FE012D /* libqemu-system-nios2.dylib in Frameworks */,
+				CE0B6EDA24AD677200FE012D /* libssl.1.1.dylib in Frameworks */,
+				CE0B6EEF24AD677200FE012D /* libglib-2.0.0.dylib in Frameworks */,
+				CE0B6ECF24AD677200FE012D /* libgstrtp-1.0.0.dylib in Frameworks */,
+				CE0B6ECC24AD677200FE012D /* libgstriff-1.0.0.dylib in Frameworks */,
+				CE0B6EDC24AD677200FE012D /* libgstapp.a in Frameworks */,
+				CE0B6F0324AD677200FE012D /* libgstvideoscale.a in Frameworks */,
+				CE0B6EDB24AD677200FE012D /* libqemu-system-unicore32.dylib in Frameworks */,
+				CE0B6ED624AD677200FE012D /* libqemu-system-xtensa.dylib in Frameworks */,
+				CE0B6EDE24AD677200FE012D /* libqemu-system-riscv32.dylib in Frameworks */,
+				CE0B6EC424AD677200FE012D /* libqemu-system-lm32.dylib in Frameworks */,
+				CE0B6F0B24AD677200FE012D /* libffi.6.dylib in Frameworks */,
+				CE0B6EF524AD677200FE012D /* libqemu-system-mips.dylib in Frameworks */,
+				CE0B6EC924AD677200FE012D /* libgstvideo-1.0.0.dylib in Frameworks */,
+				CE0B6EFD24AD677200FE012D /* libqemu-system-moxie.dylib in Frameworks */,
+				CE0B6EF324AD677200FE012D /* libgstvideofilter.a in Frameworks */,
+				CE0B6EFF24AD677200FE012D /* libgstgl-1.0.0.dylib in Frameworks */,
+				CE0B6F0924AD677200FE012D /* libqemu-system-s390x.dylib in Frameworks */,
+				CE0B6F0F24AD677200FE012D /* libpng16.16.dylib in Frameworks */,
+				CE0B6ECD24AD677200FE012D /* libgsttag-1.0.0.dylib in Frameworks */,
+				CE0B6EF924AD677200FE012D /* libgstaudioresample.a in Frameworks */,
+				CE0B6EE724AD677200FE012D /* libgstvideotestsrc.a in Frameworks */,
+				CE0B6EBB24AD677200FE012D /* libgstgio.a in Frameworks */,
+				CE0B6F0024AD677200FE012D /* libqemu-system-mipsel.dylib in Frameworks */,
+				CE0B6EE224AD677200FE012D /* libgstnet-1.0.0.dylib in Frameworks */,
+				CE0B6EEB24AD677200FE012D /* libcrypto.1.1.dylib in Frameworks */,
+				CE0B6EC624AD677200FE012D /* libgstfft-1.0.0.dylib in Frameworks */,
+				CE0B6EEE24AD677200FE012D /* libqemu-system-x86_64.dylib in Frameworks */,
+				CE0B6ED224AD677200FE012D /* libqemu-system-hppa.dylib in Frameworks */,
+				CE0B6EE624AD677200FE012D /* libgstaudiorate.a in Frameworks */,
+				CE0B6EBE24AD677200FE012D /* libqemu-system-m68k.dylib in Frameworks */,
+				CE0B6EDF24AD677200FE012D /* libqemu-system-sh4.dylib in Frameworks */,
+				CE0B6EC224AD677200FE012D /* libgstvideorate.a in Frameworks */,
+				CE0B6F0424AD677200FE012D /* libpixman-1.0.dylib in Frameworks */,
+				CE0B6F0C24AD677200FE012D /* libgstreamer-1.0.0.dylib in Frameworks */,
+				CE0B6F0224AD677200FE012D /* libgstjpeg.a in Frameworks */,
+				CE0B6EC724AD677200FE012D /* libqemu-system-sparc.dylib in Frameworks */,
+				CE0B6ECA24AD677200FE012D /* libqemu-system-microblazeel.dylib in Frameworks */,
+				CE0B6EFB24AD677200FE012D /* libqemu-system-mips64.dylib in Frameworks */,
+				CE0B6EFC24AD677200FE012D /* libgstaudiotestsrc.a in Frameworks */,
+				CE0B6ED024AD677200FE012D /* libopus.0.dylib in Frameworks */,
+				CE0B6EC124AD677200FE012D /* libqemu-system-aarch64.dylib in Frameworks */,
+				CE0B6EF824AD677200FE012D /* libgstsdp-1.0.0.dylib in Frameworks */,
+				CE0B6EEA24AD677200FE012D /* libgstcoreelements.a in Frameworks */,
+				CE0B6ECE24AD677200FE012D /* libgstopengl.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2006,6 +2487,7 @@
 				CE26FC24226EBC5A0090BE9B /* CSMain.m */,
 				CE5425382439334400E520F7 /* CSSession.h */,
 				CE5425392439334400E520F7 /* CSSession.m */,
+				CE0B6D8A24AD658000FE012D /* CSSessionMac.m */,
 			);
 			path = CocoaSpice;
 			sourceTree = "<group>";
@@ -2132,6 +2614,8 @@
 				E2D64BCB241DB62A0034E0C6 /* UTMTerminalIO.m */,
 				CE059DC6243E9E3400338317 /* UTMLocationManager.h */,
 				CE059DC7243E9E3400338317 /* UTMLocationManager.m */,
+				CE0B6D8324AD5ADE00FE012D /* UTMScreenshot.h */,
+				CE0B6D8424AD5ADE00FE012D /* UTMScreenshot.m */,
 			);
 			path = Managers;
 			sourceTree = "<group>";
@@ -2281,6 +2765,7 @@
 				CE2D951824AD48BE0059923A /* Sources */,
 				CE2D951924AD48BE0059923A /* Frameworks */,
 				CE2D951A24AD48BE0059923A /* Resources */,
+				CE0B6E6D24AD66CE00FE012D /* Embed Libraries */,
 			);
 			buildRules = (
 			);
@@ -2598,6 +3083,7 @@
 				CE2D92F324AD46670059923A /* qapi-commands-introspect.c in Sources */,
 				CE2D92F424AD46670059923A /* qapi-types-sockets.c in Sources */,
 				CE2D92F524AD46670059923A /* VMDisplayTerminalViewController.m in Sources */,
+				CE0B6D8624AD5ADE00FE012D /* UTMScreenshot.m in Sources */,
 				CE2D92F624AD46670059923A /* qapi-events-block-core.c in Sources */,
 				CE2D92F724AD46670059923A /* UTMQemuManager.m in Sources */,
 				CE2D92F824AD46670059923A /* qapi-types-crypto.c in Sources */,
@@ -2664,27 +3150,177 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CE0B6D0024AD56AE00FE012D /* UTMVirtualMachine.m in Sources */,
+				CE0B6D0E24AD56E500FE012D /* UTMShaders.metal in Sources */,
+				CE0B6D3924AD57FD00FE012D /* qapi-commands-job.c in Sources */,
+				CE0B6D0524AD56AE00FE012D /* UTMQemuImg.m in Sources */,
+				CE0B6D3724AD57FD00FE012D /* qapi-events-block-core.c in Sources */,
+				CE0B6D5E24AD584D00FE012D /* qapi-visit-authz.c in Sources */,
+				CE0B6D4624AD584C00FE012D /* qapi-events-rdma.c in Sources */,
+				CE0B6D0624AD56AE00FE012D /* UTMTerminalIO.m in Sources */,
+				CE0B6D4424AD584C00FE012D /* qapi-visit-block.c in Sources */,
+				CE0B6D4C24AD584C00FE012D /* qapi-types-misc.c in Sources */,
+				CE0B6D1B24AD57FC00FE012D /* qapi-commands-block-core.c in Sources */,
+				CE0B6D3B24AD584C00FE012D /* qapi-events-machine.c in Sources */,
+				CE0B6D1F24AD57FC00FE012D /* qapi-events-dump.c in Sources */,
+				CE0B6D7B24AD584D00FE012D /* qapi-visit-dump.c in Sources */,
+				CE0B6D5824AD584C00FE012D /* qapi-types-qdev.c in Sources */,
+				CE0B6D2F24AD57FC00FE012D /* qapi-events-char.c in Sources */,
+				CE0B6D6A24AD584D00FE012D /* qapi-types-migration.c in Sources */,
+				CE0B6D6E24AD584D00FE012D /* qapi-types-audio.c in Sources */,
+				CE0B6D2B24AD57FC00FE012D /* qapi-events-error.c in Sources */,
 				CE2D957224AD4F990059923A /* UTMExtensions.swift in Sources */,
+				CE0B6D6524AD584D00FE012D /* qapi-visit-job.c in Sources */,
+				CE0B6D6B24AD584D00FE012D /* qapi-types-rdma.c in Sources */,
+				CE0B6D3324AD57FC00FE012D /* qapi-events-block.c in Sources */,
+				CE0B6D4D24AD584C00FE012D /* qapi-types-block.c in Sources */,
+				CE0B6CF124AD567300FE012D /* CSMain.m in Sources */,
+				CE0B6CEE24AD566A00FE012D /* CSConnection.m in Sources */,
+				CE0B6CFF24AD56AE00FE012D /* UTMQemuSystem.m in Sources */,
+				CE0B6D8024AD584D00FE012D /* qapi-events-sockets.c in Sources */,
+				CE0B6D6224AD584D00FE012D /* qapi-types-misc-target.c in Sources */,
+				CE0B6D7A24AD584D00FE012D /* qapi-events-machine-target.c in Sources */,
+				CE0B6D2C24AD57FC00FE012D /* qapi-commands-ui.c in Sources */,
+				CE0B6D2324AD57FC00FE012D /* qapi-commands-crypto.c in Sources */,
+				CE0B6CFA24AD568400FE012D /* UTMConfiguration+System.m in Sources */,
+				CE0B6D7E24AD584D00FE012D /* qapi-events-misc.c in Sources */,
+				CE0B6D4124AD584C00FE012D /* qapi-visit-transaction.c in Sources */,
+				CE0B6D0B24AD56C300FE012D /* qapi-dealloc-visitor.c in Sources */,
+				CE0B6D5424AD584C00FE012D /* qapi-visit-trace.c in Sources */,
+				CE0B6D7C24AD584D00FE012D /* qapi-visit-char.c in Sources */,
+				CE0B6CF024AD567100FE012D /* CSInput.m in Sources */,
 				CE2D955824AD4F980059923A /* VMConfigDisplayView.swift in Sources */,
+				CE0B6D5724AD584C00FE012D /* qapi-types-net.c in Sources */,
+				CE0B6D0124AD56AE00FE012D /* UTMJSONStream.m in Sources */,
+				CE0B6D1924AD57FC00FE012D /* qapi-events-crypto.c in Sources */,
+				CE0B6D0A24AD56C300FE012D /* cf-input-visitor.c in Sources */,
 				CE2D957424AD4F990059923A /* VMConfigSharingView.swift in Sources */,
+				CE0B6D4E24AD584C00FE012D /* qapi-types-tpm.c in Sources */,
+				CE0B6D7524AD584D00FE012D /* qapi-visit-ui.c in Sources */,
+				CE0B6D1824AD57FC00FE012D /* qapi-events-audio.c in Sources */,
+				CE0B6D7224AD584D00FE012D /* qapi-types-crypto.c in Sources */,
+				CE0B6D8124AD584D00FE012D /* qapi-events.c in Sources */,
+				CE0B6D5524AD584C00FE012D /* qapi-types-common.c in Sources */,
+				CE0B6D6324AD584D00FE012D /* qapi-events-qdev.c in Sources */,
+				CE0B6D4F24AD584C00FE012D /* qapi-visit-qdev.c in Sources */,
+				CE0B6D4024AD584C00FE012D /* qapi-types-rocker.c in Sources */,
+				CE0B6CEF24AD566D00FE012D /* CSDisplayMetal.m in Sources */,
+				CE0B6D6724AD584D00FE012D /* qapi-types-ui.c in Sources */,
+				CE0B6D6824AD584D00FE012D /* qapi-visit-machine.c in Sources */,
+				CE0B6D4A24AD584C00FE012D /* qapi-types-error.c in Sources */,
+				CE0B6D2124AD57FC00FE012D /* qapi-commands-error.c in Sources */,
 				CE2D956A24AD4F990059923A /* VMPlaceholderView.swift in Sources */,
+				CE0B6D5924AD584C00FE012D /* qapi-visit-run-state.c in Sources */,
+				CE0B6CF424AD568400FE012D /* UTMConfiguration+Constants.m in Sources */,
+				CE0B6D0924AD56C300FE012D /* cf-output-visitor.c in Sources */,
+				CE0B6D2A24AD57FC00FE012D /* qapi-commands.c in Sources */,
+				CE0B6CF924AD568400FE012D /* UTMConfiguration+Sharing.m in Sources */,
+				CE0B6D3A24AD584C00FE012D /* qapi-types-qom.c in Sources */,
 				CE2D955E24AD4F990059923A /* VMConfigSoundView.swift in Sources */,
+				CE0B6D4824AD584C00FE012D /* qapi-visit-audio.c in Sources */,
+				CE0B6D3124AD57FC00FE012D /* qapi-events-job.c in Sources */,
+				CE0B6D2224AD57FC00FE012D /* qapi-commands-introspect.c in Sources */,
+				CE0B6D3024AD57FC00FE012D /* qapi-commands-transaction.c in Sources */,
+				CE0B6D1024AD57C400FE012D /* qapi-builtin-types.c in Sources */,
+				CE0B6D2624AD57FC00FE012D /* qapi-commands-run-state.c in Sources */,
 				CE2D957624AD4F990059923A /* VMConfigInputView.swift in Sources */,
+				CE0B6D2724AD57FC00FE012D /* qapi-commands-tpm.c in Sources */,
 				CE2D958E24AD4F990059923A /* UTMApp.swift in Sources */,
+				CE0B6D3C24AD584C00FE012D /* qapi-events-run-state.c in Sources */,
+				CE0B6CF324AD568400FE012D /* UTMConfiguration.m in Sources */,
+				CE0B6D3D24AD584C00FE012D /* qapi-visit-block-core.c in Sources */,
+				CE0B6D5C24AD584D00FE012D /* qapi-events-net.c in Sources */,
+				CE0B6D0324AD56AE00FE012D /* UTMTerminal.m in Sources */,
+				CE0B6CFC24AD568400FE012D /* UTMConfigurationPortForward.m in Sources */,
+				CE0B6D7924AD584D00FE012D /* qapi-visit-rdma.c in Sources */,
+				CE0B6D4B24AD584C00FE012D /* qapi-visit-rocker.c in Sources */,
+				CE0B6D5F24AD584D00FE012D /* qapi-types-char.c in Sources */,
+				CE0B6D1324AD57FC00FE012D /* qapi-commands-qom.c in Sources */,
+				CE0B6D2424AD57FC00FE012D /* qapi-commands-rocker.c in Sources */,
+				CE0B6D7D24AD584D00FE012D /* qapi-events-ui.c in Sources */,
+				CE0B6D5624AD584C00FE012D /* qapi-types-machine-target.c in Sources */,
+				CE0B6D0424AD56AE00FE012D /* UTMSpiceIO.m in Sources */,
+				CE0B6D6124AD584D00FE012D /* qapi-types-authz.c in Sources */,
+				CE0B6D6D24AD584D00FE012D /* qapi-visit-tpm.c in Sources */,
+				CE0B6D0224AD56AE00FE012D /* UTMQemu.m in Sources */,
+				CE0B6D4924AD584C00FE012D /* qapi-types-trace.c in Sources */,
+				CE0B6D7724AD584D00FE012D /* qapi-events-misc-target.c in Sources */,
 				CE2D956024AD4F990059923A /* VMDetailsView.swift in Sources */,
+				CE0B6CF524AD568400FE012D /* UTMConfiguration+Miscellaneous.m in Sources */,
+				CE0B6CFB24AD568400FE012D /* UTMConfiguration+Networking.m in Sources */,
 				CE2D958424AD4F990059923A /* VMConfigNetworkView.swift in Sources */,
+				CE0B6D3424AD57FC00FE012D /* qapi-commands-rdma.c in Sources */,
+				CE0B6D6924AD584D00FE012D /* qapi-events-tpm.c in Sources */,
 				CE2D957824AD4F990059923A /* VMConfigStringPicker.swift in Sources */,
+				CE0B6D8B24AD658000FE012D /* CSSessionMac.m in Sources */,
+				CE0B6D3224AD57FC00FE012D /* qapi-events-introspect.c in Sources */,
+				CE0B6CF624AD568400FE012D /* UTMConfiguration+Drives.m in Sources */,
+				CE0B6D4324AD584C00FE012D /* qapi-types.c in Sources */,
+				CE0B6D0824AD56C300FE012D /* qapi-visit-core.c in Sources */,
+				CE0B6D2024AD57FC00FE012D /* qapi-commands-dump.c in Sources */,
+				CE0B6D5224AD584C00FE012D /* qapi-visit-sockets.c in Sources */,
+				CE0B6D7F24AD584D00FE012D /* qapi-events-qom.c in Sources */,
 				CE2D956C24AD4F990059923A /* VMCardView.swift in Sources */,
+				CE0B6D7124AD584D00FE012D /* qapi-types-introspect.c in Sources */,
+				CE0B6D0D24AD56C300FE012D /* qapi-util.c in Sources */,
 				CE2D955C24AD4F980059923A /* VMConfigQEMUView.swift in Sources */,
 				CE2D953324AD4F040059923A /* UTMConfigurationExtension.swift in Sources */,
+				CE0B6D7024AD584D00FE012D /* qapi-types-job.c in Sources */,
+				CE0B6D1224AD57CB00FE012D /* qapi-commands-audio.c in Sources */,
+				CE0B6D1E24AD57FC00FE012D /* qapi-commands-trace.c in Sources */,
+				CE0B6D1C24AD57FC00FE012D /* qapi-commands-char.c in Sources */,
+				CE0B6D6424AD584D00FE012D /* qapi-visit-error.c in Sources */,
+				CE0B6D5A24AD584C00FE012D /* qapi-events-trace.c in Sources */,
 				CE2D958624AD4F990059923A /* VMConfigDrivesView.swift in Sources */,
+				CE0B6CFD24AD569A00FE012D /* gst_ios_init.m in Sources */,
+				CE0B6CF724AD568400FE012D /* UTMConfiguration+Display.m in Sources */,
+				CE0B6D6F24AD584D00FE012D /* qapi-events-transaction.c in Sources */,
+				CE0B6D0F24AD56E500FE012D /* UTMRenderer.m in Sources */,
+				CE0B6D2524AD57FC00FE012D /* qapi-commands-sockets.c in Sources */,
 				CE2D956624AD4F990059923A /* ContentView.swift in Sources */,
+				CE0B6D1624AD57FC00FE012D /* qapi-commands-block.c in Sources */,
+				CE0B6D4724AD584C00FE012D /* qapi-visit-net.c in Sources */,
+				CE0B6D7624AD584D00FE012D /* qapi-types-machine.c in Sources */,
+				CE0B6D3824AD57FD00FE012D /* qapi-commands-authz.c in Sources */,
+				CE0B6D4524AD584C00FE012D /* qapi-types-run-state.c in Sources */,
+				CE0B6D5B24AD584D00FE012D /* qapi-visit-misc-target.c in Sources */,
+				CE0B6D0C24AD56C300FE012D /* error.c in Sources */,
 				CE2D955A24AD4F980059923A /* VMToolbar.swift in Sources */,
+				CE0B6D2D24AD57FC00FE012D /* qapi-commands-machine.c in Sources */,
+				CE0B6D2824AD57FC00FE012D /* qapi-dispatch-events.c in Sources */,
+				CE0B6D6624AD584D00FE012D /* qapi-visit-machine-target.c in Sources */,
 				CE2D957024AD4F990059923A /* VMRemovableDrivesView.swift in Sources */,
+				CE0B6D1D24AD57FC00FE012D /* qapi-commands-net.c in Sources */,
+				CE0B6CFE24AD56AE00FE012D /* UTMLogging.m in Sources */,
+				CE0B6D4224AD584C00FE012D /* qapi-types-dump.c in Sources */,
+				CE0B6D1424AD57FC00FE012D /* qapi-events-common.c in Sources */,
+				CE0B6D7824AD584D00FE012D /* qapi-visit-introspect.c in Sources */,
+				CE0B6D6024AD584D00FE012D /* qapi-types-sockets.c in Sources */,
+				CE0B6CF824AD568400FE012D /* UTMViewState.m in Sources */,
+				CE0B6D1524AD57FC00FE012D /* qapi-commands-misc-target.c in Sources */,
 				CE2D956224AD4F990059923A /* VMSettingsView.swift in Sources */,
+				CE0B6D8224AD584D00FE012D /* qapi-types-block-core.c in Sources */,
+				CE0B6D8724AD5ADE00FE012D /* UTMScreenshot.m in Sources */,
+				CE0B6D1124AD57C700FE012D /* qapi-builtin-visit.c in Sources */,
+				CE0B6D3F24AD584C00FE012D /* qapi-visit-qom.c in Sources */,
 				CE2D958A24AD4F990059923A /* VMConfigSystemView.swift in Sources */,
+				CE0B6D3524AD57FC00FE012D /* qapi-events-authz.c in Sources */,
 				CE2D956424AD4F990059923A /* VMConfigNetworkPortForwardView.swift in Sources */,
+				CE0B6D0724AD56AE00FE012D /* UTMQemuManager.m in Sources */,
+				CE0B6D3E24AD584C00FE012D /* qapi-visit-crypto.c in Sources */,
+				CE0B6D6C24AD584D00FE012D /* qapi-visit-common.c in Sources */,
+				CE0B6D5124AD584C00FE012D /* qapi-visit-migration.c in Sources */,
+				CE0B6D5D24AD584D00FE012D /* qapi-visit.c in Sources */,
+				CE0B6D1724AD57FC00FE012D /* qapi-commands-misc.c in Sources */,
+				CE0B6D2924AD57FC00FE012D /* qapi-commands-machine-target.c in Sources */,
+				CE0B6D7324AD584D00FE012D /* qapi-events-migration.c in Sources */,
+				CE0B6D1A24AD57FC00FE012D /* qapi-commands-qdev.c in Sources */,
 				CE2D958824AD4F990059923A /* VMConfigPortForwardForm.swift in Sources */,
+				CE0B6D5024AD584C00FE012D /* qapi-events-rocker.c in Sources */,
+				CE0B6D2E24AD57FC00FE012D /* qapi-commands-migration.c in Sources */,
+				CE0B6D5324AD584C00FE012D /* qapi-types-transaction.c in Sources */,
+				CE0B6D7424AD584D00FE012D /* qapi-visit-misc.c in Sources */,
+				CE0B6D3624AD57FC00FE012D /* qapi-commands-common.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2695,6 +3331,7 @@
 				83FBDD57242FA92300D2C5D7 /* VMDisplayMetalViewController+Pointer.h in Sources */,
 				CE23C1CA23FCEC0A001177D6 /* qapi-types-rocker.c in Sources */,
 				CE550BD1225947990063E575 /* VMListViewController.m in Sources */,
+				CE0B6D8524AD5ADE00FE012D /* UTMScreenshot.m in Sources */,
 				CEBCAF5A2435468600C2B423 /* VMConfigTogglePickerCell.m in Sources */,
 				CE23C17723FCEC0A001177D6 /* qapi-commands-crypto.c in Sources */,
 				CE23C1B923FCEC0A001177D6 /* qapi-events-char.c in Sources */,
@@ -3012,14 +3649,28 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
-				CODE_SIGN_ENTITLEMENTS = macOS/macOS.entitlements;
+				CODE_SIGN_ENTITLEMENTS = Platform/macOS/macOS.entitlements;
+				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				ENABLE_PREVIEWS = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(PROJECT_DIR)/sysroot-$(PLATFORM_PREFERRED_ARCH)/include",
+					"$(PROJECT_DIR)/sysroot-$(PLATFORM_PREFERRED_ARCH)/include/gstreamer-1.0",
+					"$(PROJECT_DIR)/sysroot-$(PLATFORM_PREFERRED_ARCH)/include/glib-2.0",
+					"$(PROJECT_DIR)/sysroot-$(PLATFORM_PREFERRED_ARCH)/lib/glib-2.0/include",
+					"$(PROJECT_DIR)/sysroot-$(PLATFORM_PREFERRED_ARCH)/include/spice-client-glib-2.0",
+					"$(PROJECT_DIR)/sysroot-$(PLATFORM_PREFERRED_ARCH)/include/spice-1",
+				);
 				INFOPLIST_FILE = Platform/macOS/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(PROJECT_DIR)/sysroot-$(PLATFORM_PREFERRED_ARCH)/lib",
+					"$(PROJECT_DIR)/sysroot-$(PLATFORM_PREFERRED_ARCH)/lib/gstreamer-1.0",
+					"$(PROJECT_DIR)/sysroot-x86_64/lib",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.16;
 				MARKETING_VERSION = 2.0;
@@ -3040,14 +3691,28 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
-				CODE_SIGN_ENTITLEMENTS = macOS/macOS.entitlements;
+				CODE_SIGN_ENTITLEMENTS = Platform/macOS/macOS.entitlements;
+				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				ENABLE_PREVIEWS = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(PROJECT_DIR)/sysroot-$(PLATFORM_PREFERRED_ARCH)/include",
+					"$(PROJECT_DIR)/sysroot-$(PLATFORM_PREFERRED_ARCH)/include/gstreamer-1.0",
+					"$(PROJECT_DIR)/sysroot-$(PLATFORM_PREFERRED_ARCH)/include/glib-2.0",
+					"$(PROJECT_DIR)/sysroot-$(PLATFORM_PREFERRED_ARCH)/lib/glib-2.0/include",
+					"$(PROJECT_DIR)/sysroot-$(PLATFORM_PREFERRED_ARCH)/include/spice-client-glib-2.0",
+					"$(PROJECT_DIR)/sysroot-$(PLATFORM_PREFERRED_ARCH)/include/spice-1",
+				);
 				INFOPLIST_FILE = Platform/macOS/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(PROJECT_DIR)/sysroot-$(PLATFORM_PREFERRED_ARCH)/lib",
+					"$(PROJECT_DIR)/sysroot-$(PLATFORM_PREFERRED_ARCH)/lib/gstreamer-1.0",
+					"$(PROJECT_DIR)/sysroot-x86_64/lib",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.16;
 				MARKETING_VERSION = 2.0;

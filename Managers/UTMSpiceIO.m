@@ -115,7 +115,7 @@ const int kMaxConnectionTries = 10; // qemu needs to start spice server first
     _spice = nil;
 }
 
-- (UIImage*)screenshot {
+- (UTMScreenshot *)screenshot {
     return [self.primaryDisplay screenshot];
 }
 

@@ -14,22 +14,32 @@
 // limitations under the License.
 //
 
-#import <Foundation/Foundation.h>
-
-@class UTMScreenshot;
-@class UTMViewState;
+#if TARGET_OS_IPHONE
+#include <UIKit/UIKit.h>
+#else
+#include <AppKit/AppKit.h>
+#endif
 
 NS_ASSUME_NONNULL_BEGIN
 
-@protocol UTMInputOutput <NSObject>
+@interface UTMScreenshot : NSObject
 
-- (BOOL)startWithError:(NSError **)err;
-- (void)connectWithCompletion: (void(^)(BOOL, NSError* _Nullable)) block;
-- (void)disconnect;
-- (void)setDebugMode: (BOOL)debugMode;
-- (UTMScreenshot* _Nullable)screenshot;
-- (void)syncViewState:(UTMViewState *)viewState;
-- (void)restoreViewState:(UTMViewState *)viewState;
+@property (class, nonatomic, readonly) UTMScreenshot *none;
+
+#if TARGET_OS_IPHONE
+@property (nonatomic, readonly, nullable) UIImage *image;
+#else
+@property (nonatomic, readonly, nullable) NSImage *image;
+#endif
+
+- (instancetype)init NS_DESIGNATED_INITIALIZER;
+#if TARGET_OS_IPHONE
+- (instancetype)initWithImage:(UIImage *)image;
+#else
+- (instancetype)initWithImage:(NSImage *)image;
+#endif
+- (instancetype)initWithContentsOfURL:(NSURL *)url;
+- (void)writeToURL:(NSURL *)url atomically:(BOOL)atomically;
 
 @end
 

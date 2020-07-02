@@ -14,9 +14,9 @@
 // limitations under the License.
 //
 
+#import "UTMScreenshot.h"
 #import "UTMShaderTypes.h"
 #import "CocoaSpice.h"
-#import <UIKit/UIKit.h>
 #import <glib.h>
 #import <spice-client.h>
 #import <spice/protocol.h>
@@ -241,7 +241,7 @@ static void cs_channel_destroy(SpiceSession *s, SpiceChannel *channel, gpointer 
     return _device;
 }
 
-- (UIImage *)screenshot {
+- (UTMScreenshot *)screenshot {
     CGImageRef img;
     CGColorSpaceRef colorSpaceRef = CGColorSpaceCreateDeviceRGB();
     
@@ -258,11 +258,15 @@ static void cs_channel_destroy(SpiceSession *s, SpiceChannel *channel, gpointer 
     CGColorSpaceRelease(colorSpaceRef);
     
     if (img) {
+#if TARGET_OS_IPHONE
         UIImage *uiimg = [UIImage imageWithCGImage:img];
+#else
+        NSImage *uiimg = [[NSImage alloc] initWithCGImage:img size:NSZeroSize];
+#endif
         CGImageRelease(img);
-        return uiimg;
+        return [[UTMScreenshot alloc] initWithImage:uiimg];
     } else {
-        return nil;
+        return UTMScreenshot.none;
     }
 }
 
@@ -346,7 +350,7 @@ static void cs_channel_destroy(SpiceSession *s, SpiceChannel *channel, gpointer 
     }
     MTLTextureDescriptor *textureDescriptor = [[MTLTextureDescriptor alloc] init];
     // don't worry that that components are reversed, we fix it in shaders
-    textureDescriptor.pixelFormat = (_canvasFormat == SPICE_SURFACE_FMT_32_xRGB) ? MTLPixelFormatBGRA8Unorm : MTLPixelFormatBGR5A1Unorm;
+    textureDescriptor.pixelFormat = (_canvasFormat == SPICE_SURFACE_FMT_32_xRGB) ? MTLPixelFormatBGRA8Unorm : (MTLPixelFormat)43;// FIXME: MTLPixelFormatBGR5A1Unorm is supposed to be available.
     textureDescriptor.width = _visibleArea.size.width;
     textureDescriptor.height = _visibleArea.size.height;
     dispatch_semaphore_wait(_drawLock, DISPATCH_TIME_FOREVER);

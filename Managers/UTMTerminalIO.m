@@ -17,7 +17,6 @@
 #import "UTMLogging.h"
 #import "UTMTerminalIO.h"
 #import "UTMConfiguration.h"
-#import <UIKit/UIKit.h>
 
 @implementation UTMTerminalIO
 
@@ -46,7 +45,7 @@
     [_terminal disconnect];
 }
 
-- (UIImage *)screenshot {
+- (UTMScreenshot *)screenshot {
     // MAIN THREAD ONLY
 //    NSMutableParagraphStyle* paragraphStyle = [[NSMutableParagraphStyle defaultParagraphStyle] mutableCopy];
 //    paragraphStyle.alignment = NSTextAlignmentCenter;
