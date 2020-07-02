@@ -18,6 +18,8 @@
 #import "UTMRenderSource.h"
 @import CoreGraphics;
 
+@class UTMScreenshot;
+
 typedef struct _SpiceSession SpiceSession;
 
 NS_ASSUME_NONNULL_BEGIN
@@ -29,7 +31,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly, assign) NSInteger channelID;
 @property (nonatomic, readonly, assign) NSInteger monitorID;
 @property (nonatomic, assign) CGSize displaySize;
-@property (nonatomic, readonly, nullable) UIImage *screenshot;
+@property (nonatomic, readonly) UTMScreenshot *screenshot;
 
 - (id)initWithSession:(nonnull SpiceSession *)session channelID:(NSInteger)channelID monitorID:(NSInteger)monitorID;
 - (id)initWithSession:(nonnull SpiceSession *)session channelID:(NSInteger)channelID;
