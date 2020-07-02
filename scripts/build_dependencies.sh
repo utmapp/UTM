@@ -108,7 +108,6 @@ download_all () {
     download $OPUS_SRC
     download $SPICE_PROTOCOL_SRC
     download $SPICE_SERVER_SRC
-    download $NCURSES_SRC
     download $JSON_GLIB_SRC
     download $GST_SRC
     download $GST_BASE_SRC
@@ -196,7 +195,6 @@ build_qemu_dependencies () {
     build $OPUS_SRC
     build $SPICE_PROTOCOL_SRC
     build $SPICE_SERVER_SRC
-    build $NCURSES_SRC --without-debug --enable-overwrite --enable-widec --with-ospeed=int16_t --without-progs --without-tack --without-tests
 }
 
 build_qemu () {
