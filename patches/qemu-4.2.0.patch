@@ -5339,3 +5339,30 @@ index 1492c3b288..7497b5b1c5 100755
 -- 
 2.24.1 (Apple Git-126)
 
+From 210cdec6b981f82b48c2bc0f2154830576da7945 Mon Sep 17 00:00:00 2001
+From: osy <osy86@users.noreply.github.com>
+Date: Wed, 1 Jul 2020 22:39:02 -0700
+Subject: [PATCH] build: use -dynamiclib instead of -bundle for OSX
+
+For building QEMU as a shared lib, it must be loaded as a dylib. This breaks
+compatibility with OSX < 10.4.
+---
+ configure | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/configure b/configure
+index 7497b5b1c5..97cea5b663 100755
+--- a/configure
++++ b/configure
+@@ -861,7 +861,7 @@ Darwin)
+   hax="yes"
+   hvf="yes"
+   DSOSUF=".dylib"
+-  LDFLAGS_SHARED="-bundle -undefined dynamic_lookup"
++  LDFLAGS_SHARED="-dynamiclib -undefined dynamic_lookup"
+   if [ "$cpu" = "x86_64" ] ; then
+     QEMU_CFLAGS="-arch x86_64 $QEMU_CFLAGS"
+     LDFLAGS="-arch x86_64 $LDFLAGS"
+-- 
+2.24.3 (Apple Git-128)
+

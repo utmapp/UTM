@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - 'master'
+      - 'dev'
     tags-ignore:
       - '**'
     paths-ignore:
@@ -19,25 +20,35 @@ jobs:
     strategy:
       matrix:
         arch: [arm64, x86_64]
+        platform: [ios, macos]
+        target: [legacy, latest]
+        exclude:
+          - platform: macos
+            target: legacy
+          - platform: macos
+            arch: arm64 # not ready yet!
     steps:
       - name: Checkout
         uses: actions/checkout@v1
         with:
           submodules: recursive
-      - name: Setup Xcode Path
+#      - name: Setup Xcode Path
+#        shell: bash
+#        run: |
+#          if [ ! -d "${{ secrets.XCODE_PATH }}" ]; then
+#            echo "WARNING: invalid XCODE_PATH specified in Github Secrets, using default Xcode version"
+#          else
+#            sudo xcode-select -switch "${{ secrets.XCODE_PATH }}"
+#          fi
+      - name: Setup Xcode Beta Path
         shell: bash
-        run: |
-          if [ ! -d "${{ secrets.XCODE_PATH }}" ]; then
-            echo "WARNING: invalid XCODE_PATH specified in Github Secrets, using default Xcode version"
-          else
-            sudo xcode-select -switch "${{ secrets.XCODE_PATH }}"
-          fi
+        run: sudo xcode-select -switch /Applications/Xcode_12_beta.app
       - name: Cache Sysroot
         id: cache-sysroot
         uses: actions/cache@v1
         with:
-          path: sysroot-${{ matrix.arch }}
-          key: ${{ matrix.arch }}-${{ hashFiles('scripts/build_dependencies.sh') }}-${{ hashFiles('patches/**') }}
+          path: sysroot-${{ matrix.platform }}-${{ matrix.arch }}
+          key: ${{ matrix.platform }}-${{ matrix.arch }}-${{ hashFiles('scripts/build_dependencies.sh') }}-${{ hashFiles('patches/**') }}
       - name: Setup Path
         shell: bash
         run: |
@@ -48,30 +59,24 @@ jobs:
         run: |
           brew install bison pkg-config nasm
           rm -f /usr/local/lib/pkgconfig/*.pc
-          ./scripts/build_dependencies.sh -a ${{ matrix.arch }}
+          ./scripts/build_dependencies.sh -p ${{ matrix.platform }} -a ${{ matrix.arch }}
       - name: Compress Sysroot
         if: steps.cache-sysroot.outputs.cache-hit != 'true'
         run: |
           mkdir sysroot_tar
-          tar cf sysroot_tar/sysroot.tgz sysroot-${{ matrix.arch }}
+          tar cf sysroot_tar/sysroot.tgz sysroot*
       - name: Upload Sysroot
         if: steps.cache-sysroot.outputs.cache-hit != 'true'
         uses: actions/upload-artifact@v1
         with:
-          name: Sysroot-${{ matrix.arch }}
+          name: Sysroot-${{ matrix.platform }}-${{ matrix.arch }}
           path: sysroot_tar
-      - name: Build UTM (Simulator)
-        if: matrix.arch == 'x86_64'
-        run: |
-          xcodebuild archive -archivePath build-utm/UTM -scheme UTM -sdk iphonesimulator -configuration Release
-      - name: Build UTM (iOS)
-        if: matrix.arch == 'arm64'
-        run: |
-          xcodebuild archive -archivePath build-utm/UTM -scheme UTM -sdk iphoneos -configuration Release CODE_SIGNING_ALLOWED=NO
+      - name: Build UTM
+        run: ./scripts/build_utm.sh -p ${{ matrix.platform }} -a ${{ matrix.arch }} -t ${{ matrix.target }} -o build-utm/UTM
       - name: Upload UTM
         uses: actions/upload-artifact@v1
         with:
-          name: UTM-${{ matrix.arch }}
+          name: UTM-${{ matrix.platform }}-${{ matrix.arch }}-${{ matrix.target }}
           path: build-utm
   package:
     name: Package
@@ -84,7 +89,7 @@ jobs:
       - name: Download Artifact
         uses: actions/download-artifact@v1
         with:
-          name: UTM-arm64
+          name: UTM-ios-arm64-legacy
       - name: Install ldid
         run: |
           brew install ldid

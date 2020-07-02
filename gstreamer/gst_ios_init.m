@@ -138,7 +138,7 @@ GST_PLUGIN_STATIC_DECLARE(osxaudio);
 //GST_PLUGIN_STATIC_DECLARE(shm);
 #endif
 #if defined(GST_IOS_PLUGIN_OPENGL) || defined(GST_IOS_PLUGINS_SYS)
-GST_PLUGIN_STATIC_DECLARE(opengl);
+//GST_PLUGIN_STATIC_DECLARE(opengl);
 #endif
 #if defined(GST_IOS_PLUGIN_LIBVISUAL) || defined(GST_IOS_PLUGINS_VIS)
 GST_PLUGIN_STATIC_DECLARE(libvisual);
@@ -644,7 +644,7 @@ gst_ios_init (void)
 //    GST_PLUGIN_STATIC_REGISTER(shm);
 #endif
 #if defined(GST_IOS_PLUGIN_OPENGL) || defined(GST_IOS_PLUGINS_SYS)
-    GST_PLUGIN_STATIC_REGISTER(opengl);
+//    GST_PLUGIN_STATIC_REGISTER(opengl);
 #endif
 #if defined(GST_IOS_PLUGIN_LIBVISUAL) || defined(GST_IOS_PLUGINS_VIS)
     GST_PLUGIN_STATIC_REGISTER(libvisual);
