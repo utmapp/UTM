@@ -14,6 +14,7 @@
 // limitations under the License.
 //
 
+#import "TargetConditionals.h"
 #import "UTMScreenshot.h"
 #import "UTMShaderTypes.h"
 #import "CocoaSpice.h"

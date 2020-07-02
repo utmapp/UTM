@@ -14,6 +14,7 @@
 // limitations under the License.
 //
 
+#import "TargetConditionals.h"
 #import "UTMScreenshot.h"
 
 @implementation UTMScreenshot
@@ -41,7 +42,7 @@
 
 - (instancetype)initWithContentsOfURL:(NSURL *)url {
     if (self = [self init]) {
-        _image = [[UIImage alloc] initWithContentsOfURL:url];
+        _image = [[UIImage alloc] initWithContentsOfFile:url.path];
         if (_image == nil) {
             self = nil;
         }
@@ -50,7 +51,7 @@
 }
 
 - (void)writeToURL:(NSURL *)url atomically:(BOOL)atomically {
-    [UIImagePNGRepresentation(_screenshot) writeToURL:url atomically:atomically];
+    [UIImagePNGRepresentation(_image) writeToURL:url atomically:atomically];
 }
 #else
 - (instancetype)initWithImage:(NSImage *)image {

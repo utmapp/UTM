@@ -23,10 +23,15 @@ GREEN='\033[0;32m'
 RED='\033[0;31m'
 NC='\033[0m'
 
+# Knobs
+IOS_SDKMINVER="9.0"
+MAC_SDKMINVER="10.11"
+
 # Build environment
+PLATFORM=
 CHOST=
 SDK=
-SDKMINVER="9.0"
+SDKMINVER=
 NCPU=$(sysctl -n hw.ncpu)
 
 command -v realpath >/dev/null 2>&1 || realpath() {
@@ -34,8 +39,9 @@ command -v realpath >/dev/null 2>&1 || realpath() {
 }
 
 usage () {
-    echo "Usage: [VARIABLE...] $(basename $0) [-a architecture] [-d] [-r] [-q]"
+    echo "Usage: [VARIABLE...] $(basename $0) [-p platform] [-a architecture] [-d] [-r] [-q]"
     echo ""
+    echo "  -p platform      Target platform. Default ios. [ios|macos]"
     echo "  -a architecture  Target architecture. Default arm64. [armv7|armv7s|arm64|i386|x86_64]"
     echo "  -d, --download   Force re-download of source even if already downloaded."
     echo "  -r, --rebuild    Build only. Do not download, patch, configure."
@@ -44,7 +50,6 @@ usage () {
     echo "  VARIABLEs are:"
     echo "    SDKVERSION     Target a specific SDK version."
     echo "    CHOST          Configure host, set if not deducable by ARCH."
-    echo "    SDK            SDK target, set if not deducable by ARCH. [iphoneos|iphonesimulator]"
     echo ""
     echo "    CFLAGS CPPFLAGS CXXFLAGS LDFLAGS PKG_CONFIG_PATH"
     echo ""
@@ -209,7 +214,7 @@ build_qemu () {
     CFLAGS=
     CXXFLAGS=
     LDFLAGS=
-    build $QEMU_SRC --enable-shared-lib
+    build $QEMU_SRC --enable-shared-lib --with-coroutine=libucontext
     CFLAGS="$QEMU_CFLAGS"
     CXXFLAGS="$QEMU_CXXFLAGS"
     LDFLAGS="$QEMU_LDFLAGS"
@@ -226,10 +231,10 @@ steal_libucontext () {
 build_spice_client () {
     build $JSON_GLIB_SRC
     build $GST_SRC --enable-static --enable-static-plugins --disable-registry
-    build $GST_BASE_SRC --enable-static --disable-fatal-warnings
-    build $GST_GOOD_SRC --enable-static
+    build $GST_BASE_SRC --enable-static --disable-fatal-warnings --disable-cocoa
+    build $GST_GOOD_SRC --enable-static --disable-osx_video
     build $XML2_SRC --enable-shared=no --without-python
-    build $SOUP_SRC --without-gnome --without-krb5-config --enable-shared=no
+    build $SOUP_SRC --without-gnome --without-krb5-config --enable-shared=no --disable-tls-check
     build $PHODAV_SRC
     build $SPICE_CLIENT_SRC --with-gtk=no
 }
@@ -240,13 +245,21 @@ fixup () {
     OLDIFS=$IFS
     IFS=$'\n'
     echo "${GREEN}Fixing up $FILE...${NC}"
-    install_name_tool -id "@executable_path/Frameworks/$(basename "$FILE")" "$FILE"
+    newname="@executable_path/Frameworks/$(basename "$FILE")"
+    if [ "x$PLATFORM" == "xmacos" ]; then
+        newname="@executable_path/../Frameworks/$(basename "$FILE")"
+    fi
+    install_name_tool -id "$newname" "$FILE"
     for f in $LIST
     do
         base=$(basename "$f")
         dir=$(dirname "$f")
         if [ "$dir" == "$PREFIX/lib" ]; then
-            install_name_tool -change "$f" "@executable_path/Frameworks/$base" "$FILE"
+            newname="@executable_path/Frameworks/$base"
+            if [ "x$PLATFORM" == "xmacos" ]; then
+                newname="@executable_path/../Frameworks/$base"
+            fi
+            install_name_tool -change "$f" "$newname" "$FILE"
         fi
     done
     IFS=$OLDIFS
@@ -282,6 +295,7 @@ ARCH=
 REBUILD=
 QEMU_ONLY=
 REDOWNLOAD=
+PLATFORM_FAMILY_NAME=
 while [ "x$1" != "x" ]; do
     case $1 in
     -a )
@@ -297,6 +311,10 @@ while [ "x$1" != "x" ]; do
     -q | --qemu )
         QEMU_ONLY=y
         ;;
+    -p )
+        PLATFORM=$2
+        shift
+        ;;
     * )
         usage
         ;;
@@ -308,6 +326,10 @@ if [ "x$ARCH" == "x" ]; then
     ARCH=arm64
 fi
 export ARCH
+
+if [ "x$PLATFORM" == "x" ]; then
+    PLATFORM=ios
+fi
 
 # Export supplied CHOST or deduce by ARCH
 if [ -z "$CHOST" ]; then
@@ -328,25 +350,41 @@ if [ -z "$CHOST" ]; then
 fi
 export CHOST
 
-# Export supplied SDK or deduce by ARCH
-if [ -z "$SDK" ]; then
+case $PLATFORM in
+ios )
+    if [ -z "$SDKMINVER" ]; then
+        SDKMINVER="$IOS_SDKMINVER"
+        CFLAGS_MINVER="-miphoneos-version-min=$SDKMINVER"
+    fi
     case $ARCH in
-    armv7 | armv7s | arm64 )
+    arm* )
         SDK=iphoneos
         ;;
     i386 | x86_64 )
         SDK=iphonesimulator
         ;;
-    * )
-        usage
-        ;;
     esac
-fi
+    PLATFORM_FAMILY_NAME="iOS"
+    ;;
+macos )
+    if [ -z "$SDKMINVER" ]; then
+        SDKMINVER="$MAC_SDKMINVER"
+        CFLAGS_MINVER="-mmacos-version-min=$SDKMINVER"
+    fi
+    SDK=macosx
+    PLATFORM_FAMILY_NAME="macOS"
+    ;;
+* )
+    usage
+    ;;
+esac
+export SDK
+export SDKMINVER
 
 # Setup directories
-BUILD_DIR="build-$ARCH"
+BUILD_DIR="build-$PLATFORM_FAMILY_NAME-$ARCH"
 PATCHES_DIR="patches"
-SYSROOT_DIR="sysroot-$ARCH"
+SYSROOT_DIR="sysroot-$PLATFORM_FAMILY_NAME-$ARCH"
 
 [ -d "$SYSROOT_DIR" ] || mkdir -p "$SYSROOT_DIR"
 PREFIX="$(realpath "$SYSROOT_DIR")"
@@ -377,8 +415,8 @@ export LD
 export PREFIX
 
 # Flags
-CFLAGS="$CFLAGS -arch $ARCH -isysroot $SDKROOT -I$PREFIX/include -miphoneos-version-min=$SDKMINVER"
-CPPFLAGS="$CPPFLAGS -arch $ARCH -isysroot $SDKROOT -I$PREFIX/include -miphoneos-version-min=$SDKMINVER"
+CFLAGS="$CFLAGS -arch $ARCH -isysroot $SDKROOT -I$PREFIX/include $CFLAGS_MINVER"
+CPPFLAGS="$CPPFLAGS -arch $ARCH -isysroot $SDKROOT -I$PREFIX/include $CFLAGS_MINVER"
 CXXFLAGS="$CXXFLAGS -arch $ARCH -isysroot $SDKROOT -I$PREFIX/include"
 LDFLAGS="$LDFLAGS -arch $ARCH -isysroot $SDKROOT -L$PREFIX/lib"
 MAKEFLAGS="-j$NCPU"
