@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -14,6 +14,10 @@
 		5286EC95243748C3007E6CBC /* VMDisplayMetalViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5286EC94243748C3007E6CBC /* VMDisplayMetalViewController.m */; };
 		83FBDD56242FA7BC00D2C5D7 /* VMDisplayMetalViewController+Pointer.m in Sources */ = {isa = PBXBuildFile; fileRef = 83FBDD55242FA7BC00D2C5D7 /* VMDisplayMetalViewController+Pointer.m */; };
 		83FBDD57242FA92300D2C5D7 /* VMDisplayMetalViewController+Pointer.h in Sources */ = {isa = PBXBuildFile; fileRef = 83FBDD53242FA71900D2C5D7 /* VMDisplayMetalViewController+Pointer.h */; };
+		CE020BA724AEDEF000B44AB6 /* Logging in Frameworks */ = {isa = PBXBuildFile; productRef = CE020BA624AEDEF000B44AB6 /* Logging */; };
+		CE020BA924AEDF3000B44AB6 /* Logging in Frameworks */ = {isa = PBXBuildFile; productRef = CE020BA824AEDF3000B44AB6 /* Logging */; };
+		CE020BAB24AEE00000B44AB6 /* UTMLoggingSwift.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE020BAA24AEE00000B44AB6 /* UTMLoggingSwift.swift */; };
+		CE020BAC24AEE00000B44AB6 /* UTMLoggingSwift.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE020BAA24AEE00000B44AB6 /* UTMLoggingSwift.swift */; };
 		CE056CA6242454100004B68A /* VMDisplayMetalViewController+Touch.m in Sources */ = {isa = PBXBuildFile; fileRef = CE056CA5242454100004B68A /* VMDisplayMetalViewController+Touch.m */; };
 		CE059DC1243BD67200338317 /* libphodav-2.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE059DC0243BD67100338317 /* libphodav-2.0.0.dylib */; };
 		CE059DC2243BD67200338317 /* libphodav-2.0.0.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE059DC0243BD67100338317 /* libphodav-2.0.0.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
@@ -1838,6 +1842,7 @@
 				CE2D934C24AD46670059923A /* libffi.6.dylib in Frameworks */,
 				CE2D934D24AD46670059923A /* libgstnet-1.0.0.dylib in Frameworks */,
 				CE2D934E24AD46670059923A /* libgstbase-1.0.0.dylib in Frameworks */,
+				CE020BA724AEDEF000B44AB6 /* Logging in Frameworks */,
 				CE2D934F24AD46670059923A /* libphodav-2.0.0.dylib in Frameworks */,
 				CE2D935024AD46670059923A /* libgstcontroller-1.0.0.dylib in Frameworks */,
 				CE2D935124AD46670059923A /* libgstaudio-1.0.0.dylib in Frameworks */,
@@ -1931,6 +1936,7 @@
 				CE0B6EF324AD677200FE012D /* libgstvideofilter.a in Frameworks */,
 				CE0B6F0924AD677200FE012D /* libqemu-system-s390x.dylib in Frameworks */,
 				CE0B6F0F24AD677200FE012D /* libpng16.16.dylib in Frameworks */,
+				CE020BA924AEDF3000B44AB6 /* Logging in Frameworks */,
 				CE0B6ECD24AD677200FE012D /* libgsttag-1.0.0.dylib in Frameworks */,
 				CE0B6EF924AD677200FE012D /* libgstaudioresample.a in Frameworks */,
 				CE0B6EE724AD677200FE012D /* libgstvideotestsrc.a in Frameworks */,
@@ -2155,6 +2161,7 @@
 				CE2D953824AD4F980059923A /* VMToolbar.swift */,
 				CE2D955524AD4F980059923A /* UTMApp.swift */,
 				CE2D954624AD4F980059923A /* UTMExtensions.swift */,
+				CE020BAA24AEE00000B44AB6 /* UTMLoggingSwift.swift */,
 				CE2D955624AD4F980059923A /* Swift-Bridging-Header.h */,
 			);
 			path = Platform;
@@ -2733,6 +2740,9 @@
 			dependencies = (
 			);
 			name = iOS;
+			packageProductDependencies = (
+				CE020BA624AEDEF000B44AB6 /* Logging */,
+			);
 			productName = UTM;
 			productReference = CE2D93BE24AD46670059923A /* UTM.app */;
 			productType = "com.apple.product-type.application";
@@ -2752,6 +2762,9 @@
 			dependencies = (
 			);
 			name = macOS;
+			packageProductDependencies = (
+				CE020BA824AEDF3000B44AB6 /* Logging */,
+			);
 			productName = UTM;
 			productReference = CE2D951C24AD48BE0059923A /* UTM.app */;
 			productType = "com.apple.product-type.application";
@@ -2809,6 +2822,9 @@
 				"zh-Hant",
 			);
 			mainGroup = CE550BC0225947990063E575;
+			packageReferences = (
+				CE020BA524AEDEF000B44AB6 /* XCRemoteSwiftPackageReference "swift-log" */,
+			);
 			productRefGroup = CE550BCA225947990063E575 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -2985,6 +3001,7 @@
 				CE2D929A24AD46670059923A /* qapi-commands-sockets.c in Sources */,
 				CE2D929B24AD46670059923A /* VMConfigDrivePickerViewController.m in Sources */,
 				CE2D929C24AD46670059923A /* UTMViewState.m in Sources */,
+				CE020BAB24AEE00000B44AB6 /* UTMLoggingSwift.swift in Sources */,
 				CE2D958D24AD4F990059923A /* UTMApp.swift in Sources */,
 				CE2D929D24AD46670059923A /* VMConfigDriveCreateViewController.m in Sources */,
 				CE2D929E24AD46670059923A /* CSMain.m in Sources */,
@@ -3187,6 +3204,7 @@
 				CE0B6D4124AD584C00FE012D /* qapi-visit-transaction.c in Sources */,
 				CE0B6D0B24AD56C300FE012D /* qapi-dealloc-visitor.c in Sources */,
 				CE0B6D5424AD584C00FE012D /* qapi-visit-trace.c in Sources */,
+				CE020BAC24AEE00000B44AB6 /* UTMLoggingSwift.swift in Sources */,
 				CE0B6D7C24AD584D00FE012D /* qapi-visit-char.c in Sources */,
 				CE0B6CF024AD567100FE012D /* CSInput.m in Sources */,
 				CE2D955824AD4F980059923A /* VMConfigDisplayView.swift in Sources */,
@@ -3938,6 +3956,30 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		CE020BA524AEDEF000B44AB6 /* XCRemoteSwiftPackageReference "swift-log" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/apple/swift-log";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.2.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		CE020BA624AEDEF000B44AB6 /* Logging */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = CE020BA524AEDEF000B44AB6 /* XCRemoteSwiftPackageReference "swift-log" */;
+			productName = Logging;
+		};
+		CE020BA824AEDF3000B44AB6 /* Logging */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = CE020BA524AEDEF000B44AB6 /* XCRemoteSwiftPackageReference "swift-log" */;
+			productName = Logging;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = CE550BC1225947990063E575 /* Project object */;
 }

@@ -25,3 +25,5 @@
 #include "UTMConfigurationPortForward.h"
 #include "UTMQemu.h"
 #include "UTMQemuSystem.h"
+#include "UTMLogging.h"
+#include "UTMVirtualMachine.h"

@@ -15,12 +15,24 @@
 //
 
 import SwiftUI
+import Logging
+
+let logger = Logger(label: "com.osy86.UTM")
 
 @main
 struct UTMApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
+        }
+    }
+    
+    init() {
+        LoggingSystem.bootstrap { label in
+            return MultiplexLogHandler([
+                UTMLoggingSwift(label: label),
+                StreamLogHandler.standardOutput(label: label)
+            ])
         }
     }
 }
