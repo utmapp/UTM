@@ -27,6 +27,7 @@
 #import "UTMSpiceIO.h"
 #import "UTMLogging.h"
 #import "UTMScreenshot.h"
+#import "qapi-events.h"
 
 const int kQMPMaxConnectionTries = 10; // qemu needs to start spice server first
 const int64_t kStopTimeout = (int64_t)30*NSEC_PER_SEC;
