@@ -15,7 +15,8 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "qapi-events.h"
+
+typedef enum ShutdownCause ShutdownCause;
 
 NS_ASSUME_NONNULL_BEGIN
 
