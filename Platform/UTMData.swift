@@ -67,7 +67,7 @@ class UTMData: ObservableObject {
             try vm.saveUTM()
         } catch {
             DispatchQueue.main.async {
-                self.objectWillChange.send()
+                self.objectWillChange.send() // reload old Configuration in Views
             }
             throw error
         }
