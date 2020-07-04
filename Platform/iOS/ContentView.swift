@@ -18,21 +18,47 @@ import SwiftUI
 
 struct ContentView: View {
     @State private var editMode = false
-    @State private var isSettingsPresented = false
-    @State private var examples = ["Windows", "Ubuntu", "Generic"]
+    @StateObject private var data = UTMData()
+    @State private var newPopupPresented = false
+    @State private var newVMScratchPresented = false
     
     var body: some View {
         NavigationView {
-            List(examples, id: \.self) { example in
+            List(data.virtualMachines, id: \.self) { vm in
                 NavigationLink(
-                    destination: VMDetailsView(config: UTMConfiguration(name: example), screenshot: UIImage(named: "\(example)-Screen")),
+                    destination: VMDetailsView(config: vm.configuration, screenshot: vm.screenshot.image),
                     label: {
-                        VMCardView(title: { Text(example) }, editAction: {}, runAction: {}, logo: .constant(UIImage(named: example)) )
+                        //FIXME: update title name/logo when saving configuration
+                        VMCardView(title: { Text(vm.configuration.name) }, editAction: {}, runAction: {}, logo: .constant(nil) )
                     })
             }.listStyle(SidebarListStyle())
             .navigationTitle("UTM")
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button(action: { newPopupPresented.toggle() }, label: {
+                        Label("New VM", systemImage: "plus").labelStyle(IconOnlyLabelStyle())
+                    })
+                    .actionSheet(isPresented: $newPopupPresented) {
+                        let sheet = ActionSheet(title: Text("New VM"),
+                                                message: Text("Would you like to pick a template?"),
+                                                buttons: [
+                                                    .default(Text("Template"), action: newVMFromTemplate),
+                                                    .default(Text("Advanced"), action: { newVMScratchPresented.toggle() })
+                                                ])
+                        return sheet
+                    }
+                }
+            }
+            .sheet(isPresented: $newVMScratchPresented) {
+                NavigationView {
+                    VMSettingsView(config: UTMConfiguration(name: data.newDefaultName()))
+                }
+            }
             VMPlaceholderView()
-        }
+        }.environmentObject(data)
+    }
+    
+    private func newVMFromTemplate() {
     }
 }
 

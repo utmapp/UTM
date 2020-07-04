@@ -44,12 +44,13 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) BOOL busy;
 @property (nonatomic, readonly) UTMScreenshot *screenshot;
 
-+ (BOOL)URLisVirtualMachine:(NSURL *)url;
++ (BOOL)URLisVirtualMachine:(NSURL *)url NS_SWIFT_NAME(isVirtualMachine(url:));
 + (NSString *)virtualMachineName:(NSURL *)url;
 + (NSURL *)virtualMachinePath:(NSString *)name inParentURL:(NSURL *)parent;
 
-- (id)initWithURL:(NSURL *)url;
-- (id)initWithConfiguration:(UTMConfiguration *)configuration withDestinationURL:(NSURL *)dstUrl;
+- (instancetype)init NS_DESIGNATED_INITIALIZER;
+- (nullable instancetype)initWithURL:(NSURL *)url;
+- (instancetype)initWithConfiguration:(UTMConfiguration *)configuration withDestinationURL:(NSURL *)dstUrl;
 
 - (BOOL)saveUTMWithError:(NSError * _Nullable *)err;
 
