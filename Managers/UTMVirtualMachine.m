@@ -78,7 +78,7 @@ NSString *const kSuspendSnapshotName = @"suspend";
     return [[parent URLByAppendingPathComponent:name] URLByAppendingPathExtension:kUTMBundleExtension];
 }
 
-- (id)init {
+- (instancetype)init {
     self = [super init];
     if (self) {
         _will_quit_sema = dispatch_semaphore_create(0);
@@ -90,7 +90,7 @@ NSString *const kSuspendSnapshotName = @"suspend";
     return self;
 }
 
-- (id)initWithURL:(NSURL *)url {
+- (nullable instancetype)initWithURL:(NSURL *)url {
     self = [self init];
     if (self) {
         _path = url;
@@ -114,7 +114,7 @@ NSString *const kSuspendSnapshotName = @"suspend";
     return self;
 }
 
-- (id)initWithConfiguration:(UTMConfiguration *)configuration withDestinationURL:(NSURL *)dstUrl {
+- (instancetype)initWithConfiguration:(UTMConfiguration *)configuration withDestinationURL:(NSURL *)dstUrl {
     self = [self init];
     if (self) {
         self.parentPath = dstUrl;

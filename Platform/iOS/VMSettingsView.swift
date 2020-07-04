@@ -18,6 +18,10 @@ import SwiftUI
 
 struct VMSettingsView: View {
     @ObservedObject var config: UTMConfiguration
+    @State private var busy: Bool = false
+    @State private var errorAlert: ErrorAlert = ErrorAlert.none()
+    
+    @EnvironmentObject private var data: UTMData
     @Environment(\.presentationMode) private var presentationMode: Binding<PresentationMode>
     
     var body: some View {
@@ -76,11 +80,39 @@ struct VMSettingsView: View {
         }, label: {
             Text("Cancel")
         }), trailing: Button(action: {
-            //FIXME: save
-            presentationMode.wrappedValue.dismiss()
+            DispatchQueue.global(qos: .userInitiated).async {
+                do {
+                    try data.saveConfiguration(config: config)
+                    presentationMode.wrappedValue.dismiss()
+                } catch {
+                    logger.error("\(error)")
+                    errorAlert = ErrorAlert(message: error.localizedDescription, title: "Error Saving")
+                }
+            }
         }, label: {
             Text("Save")
         }))
+        .alert(isPresented: $errorAlert.presented) {
+            Alert(title: Text(errorAlert.title ?? "Error"), message: Text(errorAlert.message ?? "An error has occurred."), dismissButton: .default(Text("OK"), action: {
+                presentationMode.wrappedValue.dismiss()
+            }))
+        }
+    }
+}
+
+struct ErrorAlert {
+    let message: String?
+    let title: String?
+    var presented: Bool
+    
+    init(message: String?, title: String? = nil, presented: Bool = true) {
+        self.message = message
+        self.title = title
+        self.presented = presented
+    }
+    
+    static func none() -> ErrorAlert {
+        return ErrorAlert(message: nil, presented: false)
     }
 }
 

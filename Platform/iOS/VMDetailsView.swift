@@ -20,6 +20,8 @@ struct VMDetailsView: View {
     @ObservedObject var config: UTMConfiguration
     @State private var settingsPresented: Bool = false
     var screenshot: UIImage? = nil
+    @EnvironmentObject private var data: UTMData
+    @Environment(\.presentationMode) private var presentationMode: Binding<PresentationMode>
     
     var body: some View {
         VStack {
@@ -37,7 +39,7 @@ struct VMDetailsView: View {
         }.sheet(isPresented: $settingsPresented) {
             NavigationView {
                 VMSettingsView(config: config)
-            }
+            }.environmentObject(data)
         }
     }
 }

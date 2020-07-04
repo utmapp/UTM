@@ -18,13 +18,13 @@ import Combine
 
 @objc extension UTMConfiguration: ObservableObject {
     func propertyWillChange() -> Void {
-        self.objectWillChange.send()
+        DispatchQueue.main.async { self.objectWillChange.send() }
     }
 }
 
 @objc extension UTMConfigurationPortForward: ObservableObject {
     func propertyWillChange() -> Void {
-        self.objectWillChange.send()
+        DispatchQueue.main.async { self.objectWillChange.send() }
     }
 }
 

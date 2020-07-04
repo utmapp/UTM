@@ -27,3 +27,4 @@
 #include "UTMQemuSystem.h"
 #include "UTMLogging.h"
 #include "UTMVirtualMachine.h"
+#include "UTMScreenshot.h"
