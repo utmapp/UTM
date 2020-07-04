@@ -20,6 +20,8 @@
 		CE020BA924AEDF3000B44AB6 /* Logging in Frameworks */ = {isa = PBXBuildFile; productRef = CE020BA824AEDF3000B44AB6 /* Logging */; };
 		CE020BAB24AEE00000B44AB6 /* UTMLoggingSwift.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE020BAA24AEE00000B44AB6 /* UTMLoggingSwift.swift */; };
 		CE020BAC24AEE00000B44AB6 /* UTMLoggingSwift.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE020BAA24AEE00000B44AB6 /* UTMLoggingSwift.swift */; };
+		CE020BB224B1463B00B44AB6 /* SwiftUIX in Frameworks */ = {isa = PBXBuildFile; productRef = CE020BB124B1463B00B44AB6 /* SwiftUIX */; };
+		CE020BB424B1466100B44AB6 /* SwiftUIX in Frameworks */ = {isa = PBXBuildFile; productRef = CE020BB324B1466100B44AB6 /* SwiftUIX */; };
 		CE056CA6242454100004B68A /* VMDisplayMetalViewController+Touch.m in Sources */ = {isa = PBXBuildFile; fileRef = CE056CA5242454100004B68A /* VMDisplayMetalViewController+Touch.m */; };
 		CE059DC1243BD67200338317 /* libphodav-2.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE059DC0243BD67100338317 /* libphodav-2.0.0.dylib */; };
 		CE059DC2243BD67200338317 /* libphodav-2.0.0.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE059DC0243BD67100338317 /* libphodav-2.0.0.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
@@ -1815,6 +1817,7 @@
 				CE2D932C24AD46670059923A /* libgstautodetect.a in Frameworks */,
 				CE2D932D24AD46670059923A /* libgstaudiotestsrc.a in Frameworks */,
 				CE2D932E24AD46670059923A /* libgstvideoconvert.a in Frameworks */,
+				CE020BB224B1463B00B44AB6 /* SwiftUIX in Frameworks */,
 				CE2D932F24AD46670059923A /* libgstaudioconvert.a in Frameworks */,
 				CE2D933024AD46670059923A /* libgstvideoscale.a in Frameworks */,
 				CE2D933124AD46670059923A /* MetalKit.framework in Frameworks */,
@@ -1920,6 +1923,7 @@
 				CE0B6EE524AD677200FE012D /* libgstbase-1.0.0.dylib in Frameworks */,
 				CE0B6F0A24AD677200FE012D /* libspice-client-glib-2.0.8.dylib in Frameworks */,
 				CE0B6EE824AD677200FE012D /* libintl.8.dylib in Frameworks */,
+				CE020BB424B1466100B44AB6 /* SwiftUIX in Frameworks */,
 				CE0B6EBF24AD677200FE012D /* libqemu-system-microblaze.dylib in Frameworks */,
 				CE0B6F0624AD677200FE012D /* libgpg-error.0.dylib in Frameworks */,
 				CE0B6EC024AD677200FE012D /* libqemu-system-nios2.dylib in Frameworks */,
@@ -2747,6 +2751,7 @@
 			name = iOS;
 			packageProductDependencies = (
 				CE020BA624AEDEF000B44AB6 /* Logging */,
+				CE020BB124B1463B00B44AB6 /* SwiftUIX */,
 			);
 			productName = UTM;
 			productReference = CE2D93BE24AD46670059923A /* UTM.app */;
@@ -2769,6 +2774,7 @@
 			name = macOS;
 			packageProductDependencies = (
 				CE020BA824AEDF3000B44AB6 /* Logging */,
+				CE020BB324B1466100B44AB6 /* SwiftUIX */,
 			);
 			productName = UTM;
 			productReference = CE2D951C24AD48BE0059923A /* UTM.app */;
@@ -2829,6 +2835,7 @@
 			mainGroup = CE550BC0225947990063E575;
 			packageReferences = (
 				CE020BA524AEDEF000B44AB6 /* XCRemoteSwiftPackageReference "swift-log" */,
+				CE020BB024B1463B00B44AB6 /* XCRemoteSwiftPackageReference "SwiftUIX" */,
 			);
 			productRefGroup = CE550BCA225947990063E575 /* Products */;
 			projectDirPath = "";
@@ -3973,6 +3980,14 @@
 				minimumVersion = 1.2.0;
 			};
 		};
+		CE020BB024B1463B00B44AB6 /* XCRemoteSwiftPackageReference "SwiftUIX" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SwiftUIX/SwiftUIX";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -3985,6 +4000,16 @@
 			isa = XCSwiftPackageProductDependency;
 			package = CE020BA524AEDEF000B44AB6 /* XCRemoteSwiftPackageReference "swift-log" */;
 			productName = Logging;
+		};
+		CE020BB124B1463B00B44AB6 /* SwiftUIX */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = CE020BB024B1463B00B44AB6 /* XCRemoteSwiftPackageReference "SwiftUIX" */;
+			productName = SwiftUIX;
+		};
+		CE020BB324B1466100B44AB6 /* SwiftUIX */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = CE020BB024B1463B00B44AB6 /* XCRemoteSwiftPackageReference "SwiftUIX" */;
+			productName = SwiftUIX;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

@@ -15,6 +15,7 @@
 //
 
 import SwiftUI
+import SwiftUIX
 
 struct VMSettingsView: View {
     @ObservedObject var config: UTMConfiguration
@@ -72,29 +73,35 @@ struct VMSettingsView: View {
                     label: {
                         Text("Sharing")
                     })
-            }
+            }.disabled(busy)
         }
         .navigationTitle("Settings")
         .navigationBarItems(leading: Button(action: {
             presentationMode.wrappedValue.dismiss()
         }, label: {
             Text("Cancel")
-        }), trailing: Button(action: {
-            DispatchQueue.global(qos: .userInitiated).async {
-                do {
-                    try data.saveConfiguration(config: config)
-                    presentationMode.wrappedValue.dismiss()
-                } catch {
-                    logger.error("\(error)")
-                    errorAlert = ErrorAlert(message: error.localizedDescription, title: "Error Saving")
+        }), trailing: HStack {
+            ActivityIndicator().hidden(!busy)
+            Button(action: {
+                busy = true
+                DispatchQueue.global(qos: .userInitiated).async {
+                    do {
+                        try data.saveConfiguration(config: config)
+                        presentationMode.wrappedValue.dismiss()
+                        busy = false
+                    } catch {
+                        logger.error("\(error)")
+                        errorAlert = ErrorAlert(message: error.localizedDescription, title: "Error Saving")
+                    }
                 }
-            }
-        }, label: {
-            Text("Save")
-        }))
+            }, label: {
+                Text("Save")
+            })
+        })
         .alert(isPresented: $errorAlert.presented) {
             Alert(title: Text(errorAlert.title ?? "Error"), message: Text(errorAlert.message ?? "An error has occurred."), dismissButton: .default(Text("OK"), action: {
                 presentationMode.wrappedValue.dismiss()
+                busy = false
             }))
         }
     }
