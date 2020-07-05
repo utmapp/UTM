@@ -24,28 +24,20 @@ struct ContentView: View {
     
     var body: some View {
         NavigationView {
-            List(data.virtualMachines) { vm in
-                NavigationLink(
-                    destination: VMDetailsView(vm: vm),
-                    tag: vm,
-                    selection: $data.selectedVM,
-                    label: { VMCardView(vm: vm) })
+            List {
+                ForEach(data.virtualMachines) { vm in
+                    NavigationLink(
+                        destination: VMDetailsView(vm: vm),
+                        tag: vm,
+                        selection: $data.selectedVM,
+                        label: { VMCardView(vm: vm) })
+                }.onMove(perform: data.move)
+                .onDelete(perform: data.remove)
             }.listStyle(SidebarListStyle())
             .navigationTitle("UTM")
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button(action: { newPopupPresented.toggle() }, label: {
-                        Label("New VM", systemImage: "plus").labelStyle(IconOnlyLabelStyle())
-                    })
-                    .actionSheet(isPresented: $newPopupPresented) {
-                        let sheet = ActionSheet(title: Text("New VM"),
-                                                message: Text("Would you like to pick a template?"),
-                                                buttons: [
-                                                    .default(Text("Template"), action: newVMFromTemplate),
-                                                    .default(Text("Advanced"), action: { newVMScratchPresented.toggle() })
-                                                ])
-                        return sheet
-                    }
+                    toolbarTrailing
                 }
             }
             .sheet(isPresented: $newVMScratchPresented) {
@@ -59,6 +51,24 @@ struct ContentView: View {
         }.environmentObject(data)
         .onAppear {
             data.refresh()
+        }
+    }
+    
+    private var toolbarTrailing: some View {
+        HStack {
+            EditButton()
+            Button(action: { newPopupPresented.toggle() }, label: {
+                Label("New VM", systemImage: "plus").labelStyle(IconOnlyLabelStyle())
+            })
+            .actionSheet(isPresented: $newPopupPresented) {
+                let sheet = ActionSheet(title: Text("New VM"),
+                                        message: Text("Would you like to pick a template?"),
+                                        buttons: [
+                                            .default(Text("Template"), action: newVMFromTemplate),
+                                            .default(Text("Advanced"), action: { newVMScratchPresented.toggle() })
+                                        ])
+                return sheet
+            }
         }
     }
     

@@ -19,15 +19,35 @@ import Foundation
 class UTMData: ObservableObject {
     
     @Published var selectedVM: UTMVirtualMachine?
-    @Published var virtualMachines: [UTMVirtualMachine]
+    @Published private(set) var virtualMachines: [UTMVirtualMachine] {
+        didSet {
+            let defaults = UserDefaults.standard
+            var paths = [String]()
+            virtualMachines.forEach({ vm in
+                if let path = vm.path {
+                    paths.append(path.lastPathComponent)
+                }
+            })
+            defaults.set(paths, forKey: "VMList")
+        }
+    }
     
     var documentsURL: URL {
         FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
     }
     
     init() {
-        self.selectedVM = nil
+        let defaults = UserDefaults.standard
         self.virtualMachines = []
+        if let files = defaults.array(forKey: "VMList") as? [String] {
+            for file in files {
+                let url = documentsURL.appendingPathComponent(file, isDirectory: true)
+                if let vm = UTMVirtualMachine(url: url) {
+                    self.virtualMachines.append(vm)
+                }
+            }
+        }
+        self.selectedVM = nil
     }
     
     func refresh() {
@@ -92,6 +112,18 @@ class UTMData: ObservableObject {
         let vm = UTMVirtualMachine(configuration: config, withDestinationURL: documentsURL)
         try save(vm: vm)
         refreshConfiguration(for: vm)
+    }
+    
+    func move(fromOffsets: IndexSet, toOffset: Int) {
+        DispatchQueue.main.async {
+            self.virtualMachines.move(fromOffsets: fromOffsets, toOffset: toOffset)
+        }
+    }
+    
+    func remove(atOffsets: IndexSet) {
+        DispatchQueue.main.async {
+            self.virtualMachines.remove(atOffsets: atOffsets)
+        }
     }
     
     private func refreshConfiguration(for vm: UTMVirtualMachine) {
