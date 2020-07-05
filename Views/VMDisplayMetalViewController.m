@@ -28,6 +28,7 @@
 #import "UTMLogging.h"
 #import "CSDisplayMetal.h"
 #import "UTMSpiceIO.h"
+#import "UTMScreenshot.h"
 
 @interface VMDisplayMetalViewController ()
 
@@ -110,7 +111,7 @@
         case kVMSuspended: {
             [UIView transitionWithView:self.view duration:0.5 options:UIViewAnimationOptionTransitionCrossDissolve animations:^{
                 self.placeholderImageView.hidden = NO;
-                self.placeholderImageView.image = self.vm.screenshot;
+                self.placeholderImageView.image = self.vm.screenshot.image;
                 self.mtkView.hidden = YES;
             } completion:nil];
             break;
