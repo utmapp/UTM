@@ -20,6 +20,7 @@ struct ContentView: View {
     @State private var examples = ["Windows", "Ubuntu", "Generic"]
     @State private var editMode = false
     @State private var selected: String? = nil
+    @StateObject private var data = UTMData()
     
     var body: some View {
         NavigationView {
@@ -34,8 +35,8 @@ struct ContentView: View {
                 selected = newSelected
             }
 
-            List(examples, id: \.self, selection: selection) { example in
-                VMCardView(title: { Text(example) }, editAction: { editMode.toggle() }, runAction: {}, logo: .constant(NSImage(named: example)) )
+            List(data.virtualMachines, selection: selection) { vm in
+                VMCardView(vm: vm)
             }.listStyle(SidebarListStyle())
             .frame(minWidth: 250, idealWidth: 350)
             if selected == nil {
@@ -43,8 +44,12 @@ struct ContentView: View {
             } else {
                 VMDetailsView(config: UTMConfiguration(name: selected!), editMode: $editMode, screenshot: NSImage(named: "\(selected!)-Screen"))
             }
-        }.navigationTitle("UTM")
+        }.environmentObject(data)
+        .navigationTitle("UTM")
         .navigationSubtitle(selected ?? "")
+        .onAppear {
+            data.refresh()
+        }
         .toolbar {
             /* //FIXME: unhide sidebar if hidden
             ToolbarItem(placement: .navigation) {

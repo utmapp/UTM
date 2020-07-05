@@ -19,10 +19,10 @@ import SwiftUIX
 
 struct VMSettingsView: View {
     @ObservedObject var config: UTMConfiguration
+    var save: (UTMConfiguration) throws -> Void
     @State private var busy: Bool = false
     @State private var errorAlert: ErrorAlert = ErrorAlert.none()
     
-    @EnvironmentObject private var data: UTMData
     @Environment(\.presentationMode) private var presentationMode: Binding<PresentationMode>
     
     var body: some View {
@@ -86,7 +86,7 @@ struct VMSettingsView: View {
                 busy = true
                 DispatchQueue.global(qos: .userInitiated).async {
                     do {
-                        try data.saveConfiguration(config: config)
+                        try save(config)
                         presentationMode.wrappedValue.dismiss()
                         busy = false
                     } catch {
@@ -127,6 +127,6 @@ struct VMSettingsView_Previews: PreviewProvider {
     @State static private var config = UTMConfiguration(name: "Test")
     
     static var previews: some View {
-        VMSettingsView(config: config)
+        VMSettingsView(config: config) { _ in }
     }
 }

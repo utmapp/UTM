@@ -16,23 +16,19 @@
 
 import SwiftUI
 
-struct VMCardView<Title>: View where Title: View {
-    var title: () -> Title
-    var editAction: () -> Void
-    var runAction: () -> Void
-    #if os(macOS)
-    @Binding var logo: NSImage?
-    #else // iOS
-    @Binding var logo: UIImage?
-    #endif
+struct VMCardView: View {
+    var vm: UTMVirtualMachine
+    @EnvironmentObject private var data: UTMData
     
     var body: some View {
         HStack() {
-            Logo(logo: $logo)
-            title()
+            Logo(logo: nil) //FIXME: add logo support
+            Text(vm.configuration.name)
                 .font(.title)
             Spacer()
-            Button(action: runAction) {
+            Button {
+                data.selectedVM = vm
+            } label: {
                 Label("Run", systemImage: "play.fill")
                     .font(.largeTitle)
                     .foregroundColor(.accentColor)
@@ -42,29 +38,33 @@ struct VMCardView<Title>: View where Title: View {
         }
         .buttonStyle(PlainButtonStyle())
         .contextMenu {
-            Button(action: editAction) {
+            Button {
+                data.selectedVM = vm
+            } label: {
                 Label("Edit", systemImage: "slider.horizontal.3")
             }
             Button {
-                
+                data.selectedVM = vm
             } label: {
                 Label("Change Logo", systemImage: "photo")
             }
-            Button(action: runAction) {
+            Button {
+                data.selectedVM = vm
+            } label: {
                 Label("Run", systemImage: "play.fill")
             }
             Button {
-                
+                data.selectedVM = vm
             } label: {
                 Label("Reset", systemImage: "arrow.counterclockwise")
             }
             Button {
-                
+                data.selectedVM = vm
             } label: {
                 Label("Clone", systemImage: "doc.on.doc")
             }
             Button {
-                
+                data.selectedVM = vm
             } label: {
                 Label("Delete", systemImage: "trash")
                     .foregroundColor(.red)
@@ -75,7 +75,7 @@ struct VMCardView<Title>: View where Title: View {
 
 #if os(macOS)
 struct Logo: View {
-    @Binding var logo: NSImage?
+    var logo: NSImage?
     
     var body: some View {
         Group {
@@ -92,7 +92,7 @@ struct Logo: View {
 }
 #else // iOS
 struct Logo: View {
-    @Binding var logo: UIImage?
+    var logo: UIImage?
     
     var body: some View {
         Group {
@@ -120,6 +120,6 @@ extension Logo {
 
 struct VMCardView_Previews: PreviewProvider {
     static var previews: some View {
-        VMCardView(title: { Text("Virtual Machine") }, editAction: {}, runAction: {}, logo: .constant(nil))
+        VMCardView(vm: UTMVirtualMachine(configuration: UTMConfiguration(name: "Test"), withDestinationURL: URL(fileURLWithPath: "/")))
     }
 }

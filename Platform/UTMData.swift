@@ -18,18 +18,30 @@ import Foundation
 
 class UTMData: ObservableObject {
     
-    @Published var currentVM: UTMVirtualMachine? = nil
+    @Published var selectedVM: UTMVirtualMachine?
+    @Published var virtualMachines: [UTMVirtualMachine]
     
     var documentsURL: URL {
         FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
     }
     
-    var virtualMachines: [UTMVirtualMachine] {
+    init() {
+        self.selectedVM = nil
+        self.virtualMachines = []
+    }
+    
+    func refresh() {
         let fileManager = FileManager.default
-        var list = [UTMVirtualMachine]()
+        // remove stale vm
+        var list = virtualMachines.filter { (vm: UTMVirtualMachine) in vm.path != nil && fileManager.fileExists(atPath: vm.path!.path) }
         do {
             let files = try fileManager.contentsOfDirectory(at: documentsURL, includingPropertiesForKeys: [.isDirectoryKey], options: .skipsHiddenFiles)
-            for file in files {
+            let newFiles = files.filter { newFile in
+                !virtualMachines.contains { existingVM in
+                    existingVM.path == newFile
+                }
+            }
+            for file in newFiles {
                 guard try file.resourceValues(forKeys: [.isDirectoryKey]).isDirectory ?? false else {
                     continue
                 }
@@ -38,7 +50,7 @@ class UTMData: ObservableObject {
                 }
                 let vm = UTMVirtualMachine(url: file)
                 if vm != nil {
-                    list.append(vm!)
+                    list.insert(vm!, at: 0)
                 } else {
                     logger.error("Failed to create object for \(file)")
                 }
@@ -46,7 +58,12 @@ class UTMData: ObservableObject {
         } catch {
             logger.error("\(error.localizedDescription)")
         }
-        return list
+        if virtualMachines != list {
+            DispatchQueue.main.async {
+                self.objectWillChange.send()
+                self.virtualMachines = list
+            }
+        }
     }
     
     func newDefaultName() -> String {
@@ -61,15 +78,42 @@ class UTMData: ObservableObject {
         return ProcessInfo.processInfo.globallyUniqueString
     }
     
-    func saveConfiguration(config: UTMConfiguration) throws {
-        let vm = UTMVirtualMachine(configuration: config, withDestinationURL: documentsURL)
+    func save(vm: UTMVirtualMachine) throws {
         do {
             try vm.saveUTM()
         } catch {
-            DispatchQueue.main.async {
-                self.objectWillChange.send() // reload old Configuration in Views
-            }
+            // refresh the VM object as it is now stale
+            refreshConfiguration(for: vm)
             throw error
+        }
+    }
+    
+    func create(config: UTMConfiguration) throws {
+        let vm = UTMVirtualMachine(configuration: config, withDestinationURL: documentsURL)
+        try save(vm: vm)
+        refreshConfiguration(for: vm)
+    }
+    
+    private func refreshConfiguration(for vm: UTMVirtualMachine) {
+        guard let path = vm.path else {
+            logger.error("Attempting to refresh unsaved VM \(vm.configuration.name)")
+            return
+        }
+        guard let newVM = UTMVirtualMachine(url: path) else {
+            logger.debug("Cannot create new object for \(path.path)")
+            return
+        }
+        DispatchQueue.main.async {
+            self.objectWillChange.send()
+            if let index = self.virtualMachines.firstIndex(of: vm) {
+                self.virtualMachines.remove(at: index)
+                self.virtualMachines.insert(newVM, at: index)
+            } else {
+                self.virtualMachines.insert(newVM, at: 0)
+            }
+            if self.selectedVM == vm {
+                self.selectedVM = newVM
+            }
         }
     }
 }

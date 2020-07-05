@@ -17,29 +17,30 @@
 import SwiftUI
 
 struct VMDetailsView: View {
-    @ObservedObject var config: UTMConfiguration
+    var vm: UTMVirtualMachine
     @State private var settingsPresented: Bool = false
-    var screenshot: UIImage? = nil
     @EnvironmentObject private var data: UTMData
     @Environment(\.presentationMode) private var presentationMode: Binding<PresentationMode>
     
     var body: some View {
         VStack {
-            Screenshot(image: screenshot)
+            Screenshot(image: vm.screenshot.image)
             Form {
                 List {
-                    VMRemovableDrivesView(config: config)
+                    VMRemovableDrivesView(config: vm.configuration)
                 }
             }
-        }.navigationTitle(config.name)
+        }.navigationTitle(vm.configuration.name)
         .toolbar {
             VMToolbar {
                 settingsPresented.toggle()
             }
         }.sheet(isPresented: $settingsPresented) {
             NavigationView {
-                VMSettingsView(config: config)
-            }.environmentObject(data)
+                VMSettingsView(config: vm.configuration) { _ in
+                    try data.save(vm: vm)
+                }
+            }
         }
     }
 }
@@ -68,7 +69,7 @@ struct VMDetailsView_Previews: PreviewProvider {
     @State static private var config = UTMConfiguration(name: "Test")
     
     static var previews: some View {
-        VMDetailsView(config: config)
+        VMDetailsView(vm: UTMVirtualMachine(configuration: config, withDestinationURL: URL(fileURLWithPath: "")))
         .onAppear {
             config.shareDirectoryEnabled = true
             config.newDrive("", type: .disk, interface: "ide")
