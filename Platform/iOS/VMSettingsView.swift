@@ -36,42 +36,42 @@ struct VMSettingsView: View {
                 NavigationLink(
                     destination: VMConfigSystemView(config: config).navigationTitle("System"),
                     label: {
-                        Text("System")
+                        Label("System", systemImage: "cpu")
                     })
                 NavigationLink(
                     destination: VMConfigQEMUView(config: config).navigationTitle("QEMU"),
                     label: {
-                        Text("QEMU")
+                        Label("QEMU", systemImage: "q.circle")
                     })
                 NavigationLink(
                     destination: VMConfigDrivesView(config: config).navigationTitle("Drives"),
                     label: {
-                        Text("Drives")
+                        Label("Drives", systemImage: "internaldrive")
                     })
                 NavigationLink(
                     destination: VMConfigDisplayView(config: config).navigationTitle("Display"),
                     label: {
-                        Text("Display")
+                        Label("Display", systemImage: "rectangle.on.rectangle")
                     })
                 NavigationLink(
                     destination: VMConfigInputView(config: config).navigationTitle("Input"),
                     label: {
-                        Text("Input")
+                        Label("Input", systemImage: "keyboard")
                     })
                 NavigationLink(
                     destination: VMConfigNetworkView(config: config).navigationTitle("Network"),
                     label: {
-                        Text("Network")
+                        Label("Network", systemImage: "network")
                     })
                 NavigationLink(
                     destination: VMConfigSoundView(config: config).navigationTitle("Sound"),
                     label: {
-                        Text("Sound")
+                        Label("Sound", systemImage: "speaker.wave.2")
                     })
                 NavigationLink(
                     destination: VMConfigSharingView(config: config).navigationTitle("Sharing"),
                     label: {
-                        Text("Sharing")
+                        Label("Sharing", systemImage: "person.crop.circle.fill")
                     })
             }.disabled(busy)
         }
