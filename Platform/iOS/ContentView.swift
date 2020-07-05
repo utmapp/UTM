@@ -24,13 +24,12 @@ struct ContentView: View {
     
     var body: some View {
         NavigationView {
-            List(data.virtualMachines, id: \.self) { vm in
+            List(data.virtualMachines) { vm in
                 NavigationLink(
-                    destination: VMDetailsView(config: vm.configuration, screenshot: vm.screenshot.image),
-                    label: {
-                        //FIXME: update title name/logo when saving configuration
-                        VMCardView(title: { Text(vm.configuration.name) }, editAction: {}, runAction: {}, logo: .constant(nil) )
-                    })
+                    destination: VMDetailsView(vm: vm),
+                    tag: vm,
+                    selection: $data.selectedVM,
+                    label: { VMCardView(vm: vm) })
             }.listStyle(SidebarListStyle())
             .navigationTitle("UTM")
             .toolbar {
@@ -51,11 +50,16 @@ struct ContentView: View {
             }
             .sheet(isPresented: $newVMScratchPresented) {
                 NavigationView {
-                    VMSettingsView(config: UTMConfiguration(name: data.newDefaultName()))
+                    VMSettingsView(config: UTMConfiguration(name: data.newDefaultName())) { config in
+                        try data.create(config: config)
+                    }
                 }
             }
             VMPlaceholderView()
         }.environmentObject(data)
+        .onAppear {
+            data.refresh()
+        }
     }
     
     private func newVMFromTemplate() {

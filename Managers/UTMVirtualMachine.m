@@ -153,7 +153,6 @@ NSString *const kSuspendSnapshotName = @"suspend";
             return NO;
         }
         self.configuration.existingPath = url;
-        _path = url;
     }
     if (![self savePlist:[url URLByAppendingPathComponent:kUTMBundleConfigFilename]
                     dict:self.configuration.dictRepresentation
@@ -176,6 +175,7 @@ NSString *const kSuspendSnapshotName = @"suspend";
             return NO;
         }
     }
+    _path = url;
     return YES;
 }
 
