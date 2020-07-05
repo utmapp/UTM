@@ -23,6 +23,7 @@
 #import "UIViewController+Extensions.h"
 #import "VMDisplayMetalViewController.h"
 #import "VMDisplayTerminalViewController.h"
+#import "UTMScreenshot.h"
 
 @import SafariServices;
 
@@ -269,7 +270,7 @@
     // Configure the cell
     UTMVirtualMachine *vm = self.vmList[indexPath.row];
     cell.nameLabel.text = self.vmList[indexPath.row].configuration.name;
-    [cell changeState:vm.state image:vm.screenshot];
+    [cell changeState:vm.state image:vm.screenshot.image];
     
     return cell;
 }
