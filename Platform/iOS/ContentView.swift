@@ -18,7 +18,7 @@ import SwiftUI
 
 struct ContentView: View {
     @State private var editMode = false
-    @StateObject private var data = UTMData()
+    @EnvironmentObject private var data: UTMData
     @State private var newPopupPresented = false
     @State private var newVMScratchPresented = false
     
@@ -43,15 +43,16 @@ struct ContentView: View {
             .sheet(isPresented: $newVMScratchPresented) {
                 NavigationView {
                     VMSettingsView(config: UTMConfiguration(name: data.newDefaultName())) { config in
-                        try data.create(config: config)
+                        data.busyWork() { try data.create(config: config) }
                     }
                 }
             }
             VMPlaceholderView()
-        }.environmentObject(data)
+        }.disabled(data.busy)
         .onAppear {
             data.refresh()
         }
+        .overlay(BusyOverlay())
     }
     
     private var toolbarTrailing: some View {

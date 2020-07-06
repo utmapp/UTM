@@ -15,13 +15,10 @@
 //
 
 import SwiftUI
-import SwiftUIX
 
 struct VMSettingsView: View {
     @ObservedObject var config: UTMConfiguration
-    var save: (UTMConfiguration) throws -> Void
-    @State private var busy: Bool = false
-    @State private var errorAlert: ErrorAlert = ErrorAlert.none()
+    var save: (UTMConfiguration) -> Void
     
     @Environment(\.presentationMode) private var presentationMode: Binding<PresentationMode>
     
@@ -73,7 +70,7 @@ struct VMSettingsView: View {
                     label: {
                         Label("Sharing", systemImage: "person.crop.circle.fill")
                     })
-            }.disabled(busy)
+            }
         }
         .navigationTitle("Settings")
         .navigationBarItems(leading: Button(action: {
@@ -81,45 +78,13 @@ struct VMSettingsView: View {
         }, label: {
             Text("Cancel")
         }), trailing: HStack {
-            ActivityIndicator().hidden(!busy)
             Button(action: {
-                busy = true
-                DispatchQueue.global(qos: .userInitiated).async {
-                    do {
-                        try save(config)
-                        presentationMode.wrappedValue.dismiss()
-                        busy = false
-                    } catch {
-                        logger.error("\(error)")
-                        errorAlert = ErrorAlert(message: error.localizedDescription, title: "Error Saving")
-                    }
-                }
+                save(config)
+                presentationMode.wrappedValue.dismiss()
             }, label: {
                 Text("Save")
             })
         })
-        .alert(isPresented: $errorAlert.presented) {
-            Alert(title: Text(errorAlert.title ?? "Error"), message: Text(errorAlert.message ?? "An error has occurred."), dismissButton: .default(Text("OK"), action: {
-                presentationMode.wrappedValue.dismiss()
-                busy = false
-            }))
-        }
-    }
-}
-
-struct ErrorAlert {
-    let message: String?
-    let title: String?
-    var presented: Bool
-    
-    init(message: String?, title: String? = nil, presented: Bool = true) {
-        self.message = message
-        self.title = title
-        self.presented = presented
-    }
-    
-    static func none() -> ErrorAlert {
-        return ErrorAlert(message: nil, presented: false)
     }
 }
 

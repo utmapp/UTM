@@ -21,9 +21,11 @@ let logger = Logger(label: "com.osy86.UTM")
 
 @main
 struct UTMApp: App {
+    @StateObject var data = UTMData()
+    
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            ContentView().environmentObject(data)
         }
     }
     

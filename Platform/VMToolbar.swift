@@ -39,9 +39,9 @@ struct VMToolbar: View {
             Button {
                 
             } label: {
-                Label("Reset", systemImage: "arrow.counterclockwise")
+                Label("Share", systemImage: "square.and.arrow.up")
                     .labelStyle(IconOnlyLabelStyle())
-            }.help("Reset selected VM")
+            }.help("Share selected VM")
             Spacer()
             Button {
                 

@@ -16,8 +16,31 @@
 
 import Foundation
 
+enum Actions {
+    case none
+    case run
+    case edit
+    case clone
+    case delete
+    case share
+}
+
+struct AlertMessage: Identifiable {
+    var message: String
+    public var id: String {
+        message
+    }
+    
+    init(_ message: String) {
+        self.message = message
+    }
+}
+
 class UTMData: ObservableObject {
     
+    @Published var requestedAction: Actions
+    @Published var alertMessage: AlertMessage?
+    @Published var busy: Bool
     @Published var selectedVM: UTMVirtualMachine?
     @Published private(set) var virtualMachines: [UTMVirtualMachine] {
         didSet {
@@ -38,6 +61,8 @@ class UTMData: ObservableObject {
     
     init() {
         let defaults = UserDefaults.standard
+        self.requestedAction = .none
+        self.busy = false
         self.virtualMachines = []
         if let files = defaults.array(forKey: "VMList") as? [String] {
             for file in files {
@@ -80,7 +105,7 @@ class UTMData: ObservableObject {
         }
         if virtualMachines != list {
             DispatchQueue.main.async {
-                self.objectWillChange.send()
+                //self.objectWillChange.send()
                 self.virtualMachines = list
             }
         }
@@ -136,7 +161,7 @@ class UTMData: ObservableObject {
             return
         }
         DispatchQueue.main.async {
-            self.objectWillChange.send()
+            //self.objectWillChange.send()
             if let index = self.virtualMachines.firstIndex(of: vm) {
                 self.virtualMachines.remove(at: index)
                 self.virtualMachines.insert(newVM, at: index)
@@ -145,6 +170,27 @@ class UTMData: ObservableObject {
             }
             if self.selectedVM == vm {
                 self.selectedVM = newVM
+            }
+        }
+    }
+    
+    func busyWork(_ work: @escaping () throws -> Void) {
+        DispatchQueue.main.async {
+            self.busy = true
+        }
+        DispatchQueue.global(qos: .userInitiated).async {
+            defer {
+                DispatchQueue.main.async {
+                    self.busy = false
+                }
+            }
+            do {
+                try work()
+            } catch {
+                logger.error("\(error)")
+                DispatchQueue.main.async {
+                    self.alertMessage = AlertMessage(error.localizedDescription)
+                }
             }
         }
     }

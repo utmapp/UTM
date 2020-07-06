@@ -20,8 +20,6 @@
 		CE020BA924AEDF3000B44AB6 /* Logging in Frameworks */ = {isa = PBXBuildFile; productRef = CE020BA824AEDF3000B44AB6 /* Logging */; };
 		CE020BAB24AEE00000B44AB6 /* UTMLoggingSwift.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE020BAA24AEE00000B44AB6 /* UTMLoggingSwift.swift */; };
 		CE020BAC24AEE00000B44AB6 /* UTMLoggingSwift.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE020BAA24AEE00000B44AB6 /* UTMLoggingSwift.swift */; };
-		CE020BB224B1463B00B44AB6 /* SwiftUIX in Frameworks */ = {isa = PBXBuildFile; productRef = CE020BB124B1463B00B44AB6 /* SwiftUIX */; };
-		CE020BB424B1466100B44AB6 /* SwiftUIX in Frameworks */ = {isa = PBXBuildFile; productRef = CE020BB324B1466100B44AB6 /* SwiftUIX */; };
 		CE020BB624B14F8400B44AB6 /* UTMVirtualMachineExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE020BB524B14F8400B44AB6 /* UTMVirtualMachineExtension.swift */; };
 		CE020BB724B14F8400B44AB6 /* UTMVirtualMachineExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE020BB524B14F8400B44AB6 /* UTMVirtualMachineExtension.swift */; };
 		CE056CA6242454100004B68A /* VMDisplayMetalViewController+Touch.m in Sources */ = {isa = PBXBuildFile; fileRef = CE056CA5242454100004B68A /* VMDisplayMetalViewController+Touch.m */; };
@@ -972,6 +970,7 @@
 		CE74C28F225D88ED004E4FF1 /* VMConfigSoundViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CE74C284225D88ED004E4FF1 /* VMConfigSoundViewController.m */; };
 		CE74C290225D88ED004E4FF1 /* VMConfigSystemViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CE74C285225D88ED004E4FF1 /* VMConfigSystemViewController.m */; };
 		CE7BED4C225FBB8600A1E1B6 /* VMConfigDrivesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CE7BED4B225FBB8600A1E1B6 /* VMConfigDrivesViewController.m */; };
+		CE7D972C24B2B17D0080CB69 /* BusyOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE7D972B24B2B17D0080CB69 /* BusyOverlay.swift */; };
 		CE9D18F82265410E00355E14 /* qemu in Resources */ = {isa = PBXBuildFile; fileRef = CE9D18F72265410E00355E14 /* qemu */; };
 		CE9D19662265425A00355E14 /* libgstautodetect.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CE9D19522265425900355E14 /* libgstautodetect.a */; };
 		CE9D19672265425A00355E14 /* libgstaudiotestsrc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CE9D19532265425900355E14 /* libgstaudiotestsrc.a */; };
@@ -1730,6 +1729,7 @@
 		CE74C287225D88ED004E4FF1 /* VMConfigDriveDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VMConfigDriveDetailViewController.h; sourceTree = "<group>"; };
 		CE7BED4A225FBB8600A1E1B6 /* VMConfigDrivesViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VMConfigDrivesViewController.h; sourceTree = "<group>"; };
 		CE7BED4B225FBB8600A1E1B6 /* VMConfigDrivesViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VMConfigDrivesViewController.m; sourceTree = "<group>"; };
+		CE7D972B24B2B17D0080CB69 /* BusyOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BusyOverlay.swift; sourceTree = "<group>"; };
 		CE8E6620227E5DF2003B9903 /* UTMQemuManagerDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UTMQemuManagerDelegate.h; sourceTree = "<group>"; };
 		CE9D18F72265410E00355E14 /* qemu */ = {isa = PBXFileReference; lastKnownFileType = folder; name = qemu; path = "sysroot-$(PLATFORM_FAMILY_NAME)-$(PLATFORM_PREFERRED_ARCH)/share/qemu"; sourceTree = "<group>"; };
 		CE9D19522265425900355E14 /* libgstautodetect.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libgstautodetect.a; path = "sysroot-$(PLATFORM_FAMILY_NAME)-$(PLATFORM_PREFERRED_ARCH)/lib/gstreamer-1.0/libgstautodetect.a"; sourceTree = "<group>"; };
@@ -1820,7 +1820,6 @@
 				CE2D932C24AD46670059923A /* libgstautodetect.a in Frameworks */,
 				CE2D932D24AD46670059923A /* libgstaudiotestsrc.a in Frameworks */,
 				CE2D932E24AD46670059923A /* libgstvideoconvert.a in Frameworks */,
-				CE020BB224B1463B00B44AB6 /* SwiftUIX in Frameworks */,
 				CE2D932F24AD46670059923A /* libgstaudioconvert.a in Frameworks */,
 				CE2D933024AD46670059923A /* libgstvideoscale.a in Frameworks */,
 				CE2D933124AD46670059923A /* MetalKit.framework in Frameworks */,
@@ -1926,7 +1925,6 @@
 				CE0B6EE524AD677200FE012D /* libgstbase-1.0.0.dylib in Frameworks */,
 				CE0B6F0A24AD677200FE012D /* libspice-client-glib-2.0.8.dylib in Frameworks */,
 				CE0B6EE824AD677200FE012D /* libintl.8.dylib in Frameworks */,
-				CE020BB424B1466100B44AB6 /* SwiftUIX in Frameworks */,
 				CE0B6EBF24AD677200FE012D /* libqemu-system-microblaze.dylib in Frameworks */,
 				CE0B6F0624AD677200FE012D /* libgpg-error.0.dylib in Frameworks */,
 				CE0B6EC024AD677200FE012D /* libqemu-system-nios2.dylib in Frameworks */,
@@ -2195,6 +2193,7 @@
 		CE2D954A24AD4F980059923A /* iOS */ = {
 			isa = PBXGroup;
 			children = (
+				CE7D972B24B2B17D0080CB69 /* BusyOverlay.swift */,
 				CE2D954E24AD4F980059923A /* ContentView.swift */,
 				CE2D954D24AD4F980059923A /* VMConfigNetworkPortForwardView.swift */,
 				CE2D954B24AD4F980059923A /* VMDetailsView.swift */,
@@ -2755,7 +2754,6 @@
 			name = iOS;
 			packageProductDependencies = (
 				CE020BA624AEDEF000B44AB6 /* Logging */,
-				CE020BB124B1463B00B44AB6 /* SwiftUIX */,
 			);
 			productName = UTM;
 			productReference = CE2D93BE24AD46670059923A /* UTM.app */;
@@ -2778,7 +2776,6 @@
 			name = macOS;
 			packageProductDependencies = (
 				CE020BA824AEDF3000B44AB6 /* Logging */,
-				CE020BB324B1466100B44AB6 /* SwiftUIX */,
 			);
 			productName = UTM;
 			productReference = CE2D951C24AD48BE0059923A /* UTM.app */;
@@ -2839,7 +2836,6 @@
 			mainGroup = CE550BC0225947990063E575;
 			packageReferences = (
 				CE020BA524AEDEF000B44AB6 /* XCRemoteSwiftPackageReference "swift-log" */,
-				CE020BB024B1463B00B44AB6 /* XCRemoteSwiftPackageReference "SwiftUIX" */,
 			);
 			productRefGroup = CE550BCA225947990063E575 /* Products */;
 			projectDirPath = "";
@@ -2994,6 +2990,7 @@
 				CE2D928624AD46670059923A /* qapi-visit-misc.c in Sources */,
 				CE2D928724AD46670059923A /* VMConfigSharingViewController.m in Sources */,
 				CE2D928824AD46670059923A /* qapi-commands-block.c in Sources */,
+				CE7D972C24B2B17D0080CB69 /* BusyOverlay.swift in Sources */,
 				CE2D928924AD46670059923A /* qapi-visit-machine-target.c in Sources */,
 				CE2D928A24AD46670059923A /* qapi-visit-qdev.c in Sources */,
 				CE2D955724AD4F980059923A /* VMConfigDisplayView.swift in Sources */,
@@ -3986,14 +3983,6 @@
 				minimumVersion = 1.2.0;
 			};
 		};
-		CE020BB024B1463B00B44AB6 /* XCRemoteSwiftPackageReference "SwiftUIX" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/SwiftUIX/SwiftUIX";
-			requirement = {
-				branch = master;
-				kind = branch;
-			};
-		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -4006,16 +3995,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = CE020BA524AEDEF000B44AB6 /* XCRemoteSwiftPackageReference "swift-log" */;
 			productName = Logging;
-		};
-		CE020BB124B1463B00B44AB6 /* SwiftUIX */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = CE020BB024B1463B00B44AB6 /* XCRemoteSwiftPackageReference "SwiftUIX" */;
-			productName = SwiftUIX;
-		};
-		CE020BB324B1466100B44AB6 /* SwiftUIX */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = CE020BB024B1463B00B44AB6 /* XCRemoteSwiftPackageReference "SwiftUIX" */;
-			productName = SwiftUIX;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

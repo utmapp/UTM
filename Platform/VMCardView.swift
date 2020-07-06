@@ -56,13 +56,14 @@ struct VMCardView: View {
             Button {
                 data.selectedVM = vm
             } label: {
-                Label("Reset", systemImage: "arrow.counterclockwise")
+                Label("Share", systemImage: "square.and.arrow.up")
             }
             Button {
                 data.selectedVM = vm
             } label: {
                 Label("Clone", systemImage: "doc.on.doc")
             }
+            Divider()
             Button {
                 data.selectedVM = vm
             } label: {
