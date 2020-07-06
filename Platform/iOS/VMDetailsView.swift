@@ -38,7 +38,7 @@ struct VMDetailsView: View {
         }.sheet(isPresented: $settingsPresented) {
             NavigationView {
                 VMSettingsView(config: vm.configuration) { _ in
-                    try data.save(vm: vm)
+                    data.busyWork() { try data.save(vm: vm) }
                 }
             }
         }
