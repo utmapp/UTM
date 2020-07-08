@@ -18,6 +18,7 @@ import SwiftUI
 
 struct VMToolbar: View {
     var editAction: () -> Void = {}
+    @EnvironmentObject private var data: UTMData
     
     var body: some View {
         HStack {
@@ -44,7 +45,7 @@ struct VMToolbar: View {
             }.help("Share selected VM")
             Spacer()
             Button {
-                
+                data.run(vm: data.selectedVM!)
             } label: {
                 Label("Run", systemImage: "play.fill")
                     .labelStyle(IconOnlyLabelStyle())

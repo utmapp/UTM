@@ -994,6 +994,8 @@
 		CE9D197C226542FE00355E14 /* UTMQemu.m in Sources */ = {isa = PBXBuildFile; fileRef = CE9D197B226542FE00355E14 /* UTMQemu.m */; };
 		CEA02A962436C6480087E45F /* VMConfigPortForwardingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CEA02A952436C6480087E45F /* VMConfigPortForwardingViewController.m */; };
 		CEA02A992436C7A30087E45F /* UTMConfiguration+Networking.m in Sources */ = {isa = PBXBuildFile; fileRef = CEA02A982436C7A30087E45F /* UTMConfiguration+Networking.m */; };
+		CEBBF1A524B56A2900C15049 /* UTMDataExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEBBF1A424B56A2900C15049 /* UTMDataExtension.swift */; };
+		CEBBF1A724B5730F00C15049 /* UTMDataExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEBBF1A624B5730F00C15049 /* UTMDataExtension.swift */; };
 		CEBCAF4E243525DB00C2B423 /* VMConfigTextField.m in Sources */ = {isa = PBXBuildFile; fileRef = CEBCAF4D243525DB00C2B423 /* VMConfigTextField.m */; };
 		CEBCAF5424353B3700C2B423 /* VMConfigSwitch.m in Sources */ = {isa = PBXBuildFile; fileRef = CEBCAF5324353B3700C2B423 /* VMConfigSwitch.m */; };
 		CEBCAF5724353B9F00C2B423 /* VMConfigPickerView.m in Sources */ = {isa = PBXBuildFile; fileRef = CEBCAF5624353B9F00C2B423 /* VMConfigPickerView.m */; };
@@ -1757,6 +1759,8 @@
 		CEA02A952436C6480087E45F /* VMConfigPortForwardingViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = VMConfigPortForwardingViewController.m; path = ConfigurationViews/VMConfigPortForwardingViewController.m; sourceTree = SOURCE_ROOT; };
 		CEA02A972436C7A30087E45F /* UTMConfiguration+Networking.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UTMConfiguration+Networking.h"; sourceTree = "<group>"; };
 		CEA02A982436C7A30087E45F /* UTMConfiguration+Networking.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UTMConfiguration+Networking.m"; sourceTree = "<group>"; };
+		CEBBF1A424B56A2900C15049 /* UTMDataExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMDataExtension.swift; sourceTree = "<group>"; };
+		CEBBF1A624B5730F00C15049 /* UTMDataExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMDataExtension.swift; sourceTree = "<group>"; };
 		CEBCAF4C243525DB00C2B423 /* VMConfigTextField.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VMConfigTextField.h; sourceTree = "<group>"; };
 		CEBCAF4D243525DB00C2B423 /* VMConfigTextField.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VMConfigTextField.m; sourceTree = "<group>"; };
 		CEBCAF502435298D00C2B423 /* VMConfigControl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VMConfigControl.h; sourceTree = "<group>"; };
@@ -2181,6 +2185,7 @@
 			isa = PBXGroup;
 			children = (
 				CE2D954024AD4F980059923A /* ContentView.swift */,
+				CEBBF1A624B5730F00C15049 /* UTMDataExtension.swift */,
 				CE2D953E24AD4F980059923A /* VMConfigNetworkPortForwardView.swift */,
 				CE2D953C24AD4F980059923A /* VMDetailsView.swift */,
 				CE2D953D24AD4F980059923A /* VMSettingsView.swift */,
@@ -2195,6 +2200,7 @@
 			children = (
 				CE7D972B24B2B17D0080CB69 /* BusyOverlay.swift */,
 				CE2D954E24AD4F980059923A /* ContentView.swift */,
+				CEBBF1A424B56A2900C15049 /* UTMDataExtension.swift */,
 				CE2D954D24AD4F980059923A /* VMConfigNetworkPortForwardView.swift */,
 				CE2D954B24AD4F980059923A /* VMDetailsView.swift */,
 				CE2D954C24AD4F980059923A /* VMSettingsView.swift */,
@@ -2998,6 +3004,7 @@
 				CE2D928C24AD46670059923A /* qapi-visit-rdma.c in Sources */,
 				CE2D928D24AD46670059923A /* qapi-types-trace.c in Sources */,
 				CE2D928E24AD46670059923A /* UTMConfiguration+Miscellaneous.m in Sources */,
+				CEBBF1A524B56A2900C15049 /* UTMDataExtension.swift in Sources */,
 				CE2D928F24AD46670059923A /* qapi-types-migration.c in Sources */,
 				CE2D929024AD46670059923A /* qapi-types-net.c in Sources */,
 				CE2D929124AD46670059923A /* qapi-types-rdma.c in Sources */,
@@ -3338,6 +3345,7 @@
 				CE0B6D1124AD57C700FE012D /* qapi-builtin-visit.c in Sources */,
 				CE0B6D3F24AD584C00FE012D /* qapi-visit-qom.c in Sources */,
 				CE2D958A24AD4F990059923A /* VMConfigSystemView.swift in Sources */,
+				CEBBF1A724B5730F00C15049 /* UTMDataExtension.swift in Sources */,
 				CE0B6D3524AD57FC00FE012D /* qapi-events-authz.c in Sources */,
 				CE2D956424AD4F990059923A /* VMConfigNetworkPortForwardView.swift in Sources */,
 				CE0B6D0724AD56AE00FE012D /* UTMQemuManager.m in Sources */,
