@@ -14,6 +14,7 @@
 // limitations under the License.
 //
 
+#include "TargetConditionals.h"
 #include "UTMConfiguration.h"
 #include "UTMConfiguration+Constants.h"
 #include "UTMConfiguration+Display.h"
@@ -28,8 +29,10 @@
 #include "UTMLogging.h"
 #include "UTMVirtualMachine.h"
 #include "UTMScreenshot.h"
+#if TARGET_OS_IPHONE
 #include "VMDisplayViewController.h"
 #include "VMDisplayMetalViewController.h"
 #include "VMDisplayMetalViewController+Keyboard.h"
 #include "VMDisplayTerminalViewController.h"
 #include "VMKeyboardView.h"
+#endif
