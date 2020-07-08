@@ -28,3 +28,8 @@
 #include "UTMLogging.h"
 #include "UTMVirtualMachine.h"
 #include "UTMScreenshot.h"
+#include "VMDisplayViewController.h"
+#include "VMDisplayMetalViewController.h"
+#include "VMDisplayMetalViewController+Keyboard.h"
+#include "VMDisplayTerminalViewController.h"
+#include "VMKeyboardView.h"

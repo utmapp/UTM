@@ -27,7 +27,7 @@ struct VMCardView: View {
                 .font(.title)
             Spacer()
             Button {
-                data.selectedVM = vm
+                data.run(vm: vm)
             } label: {
                 Label("Run", systemImage: "play.fill")
                     .font(.largeTitle)
