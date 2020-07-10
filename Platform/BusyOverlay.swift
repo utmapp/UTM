@@ -37,6 +37,19 @@ struct BusyOverlay: View {
     }
 }
 
+#if os(macOS)
+struct BigWhiteSpinner: NSViewRepresentable {
+    func makeNSView(context: Context) -> NSProgressIndicator {
+        let view = NSProgressIndicator()
+        view.style = .spinning
+        view.startAnimation(self)
+        return view
+    }
+    
+    func updateNSView(_ nsView: NSProgressIndicator, context: Context) {
+    }
+}
+#else // iOS
 struct BigWhiteSpinner: UIViewRepresentable {
     func makeUIView(context: Context) -> UIActivityIndicatorView {
         let view = UIActivityIndicatorView(style: .large)
@@ -48,6 +61,7 @@ struct BigWhiteSpinner: UIViewRepresentable {
     func updateUIView(_ uiView: UIActivityIndicatorView, context: Context) {
     }
 }
+#endif
 
 struct BusyOverlay_Previews: PreviewProvider {
     static var previews: some View {
