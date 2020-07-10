@@ -17,6 +17,50 @@
 import Combine
 
 @objc extension UTMConfiguration: ObservableObject {
+    private static let gibInMib = 1024
+    
+    var systemTargetPretty: String {
+        guard let arch = self.systemArchitecture else {
+            return ""
+        }
+        guard let target = self.systemTarget else {
+            return ""
+        }
+        guard let targets = UTMConfiguration.supportedTargets(forArchitecture: arch) else {
+            return ""
+        }
+        guard let prettyTargets = UTMConfiguration.supportedTargets(forArchitecturePretty: arch) else {
+            return ""
+        }
+        guard let index = targets.firstIndex(of: target) else {
+            return ""
+        }
+        return prettyTargets[index]
+    }
+    
+    var systemArchitecturePretty: String {
+        let archs = UTMConfiguration.supportedArchitectures()
+        let prettyArchs = UTMConfiguration.supportedArchitecturesPretty()
+        guard let arch = self.systemArchitecture else {
+            return ""
+        }
+        guard let index = archs.firstIndex(of: arch) else {
+            return ""
+        }
+        return prettyArchs[index]
+    }
+    
+    var systemMemoryPretty: String {
+        guard let memory = self.systemMemory else {
+            return NSLocalizedString("Unknown", comment: "UTMConfigurationExtension")
+        }
+        if memory.intValue > UTMConfiguration.gibInMib {
+            return String(format: "%.1f GB", memory.floatValue / Float(UTMConfiguration.gibInMib))
+        } else {
+            return String(format: "%d MB", memory.intValue)
+        }
+    }
+    
     func propertyWillChange() -> Void {
         DispatchQueue.main.async { self.objectWillChange.send() }
     }
