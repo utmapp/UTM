@@ -34,41 +34,49 @@ struct VMSettingsView: View {
                     destination: VMConfigSystemView(config: config).navigationTitle("System"),
                     label: {
                         Label("System", systemImage: "cpu")
+                            .labelStyle(RoundRectIconLabelStyle())
                     })
                 NavigationLink(
                     destination: VMConfigQEMUView(config: config).navigationTitle("QEMU"),
                     label: {
-                        Label("QEMU", systemImage: "q.circle")
+                        Label("QEMU", systemImage: "shippingbox")
+                            .labelStyle(RoundRectIconLabelStyle())
                     })
                 NavigationLink(
                     destination: VMConfigDrivesView(config: config).navigationTitle("Drives"),
                     label: {
                         Label("Drives", systemImage: "internaldrive")
+                            .labelStyle(RoundRectIconLabelStyle())
                     })
                 NavigationLink(
                     destination: VMConfigDisplayView(config: config).navigationTitle("Display"),
                     label: {
                         Label("Display", systemImage: "rectangle.on.rectangle")
+                            .labelStyle(RoundRectIconLabelStyle(color: .green))
                     })
                 NavigationLink(
                     destination: VMConfigInputView(config: config).navigationTitle("Input"),
                     label: {
                         Label("Input", systemImage: "keyboard")
+                            .labelStyle(RoundRectIconLabelStyle(color: .green))
                     })
                 NavigationLink(
                     destination: VMConfigNetworkView(config: config).navigationTitle("Network"),
                     label: {
                         Label("Network", systemImage: "network")
+                            .labelStyle(RoundRectIconLabelStyle(color: .green))
                     })
                 NavigationLink(
                     destination: VMConfigSoundView(config: config).navigationTitle("Sound"),
                     label: {
                         Label("Sound", systemImage: "speaker.wave.2")
+                            .labelStyle(RoundRectIconLabelStyle(color: .green))
                     })
                 NavigationLink(
                     destination: VMConfigSharingView(config: config).navigationTitle("Sharing"),
                     label: {
                         Label("Sharing", systemImage: "person.crop.circle.fill")
+                            .labelStyle(RoundRectIconLabelStyle(color: .yellow))
                     })
             }
         }
@@ -85,6 +93,21 @@ struct VMSettingsView: View {
                 Text("Save")
             })
         })
+    }
+}
+
+struct RoundRectIconLabelStyle: LabelStyle {
+    var color: Color = .blue
+    
+    func makeBody(configuration: Configuration) -> some View {
+        Label(
+            title: { configuration.title },
+            icon: {
+                RoundedRectangle(cornerRadius: 10.0, style: .circular)
+                    .frame(width: 32, height: 32)
+                    .foregroundColor(color)
+                    .overlay(configuration.icon.foregroundColor(.white))
+            })
     }
 }
 
