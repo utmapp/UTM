@@ -21,21 +21,25 @@ struct VMCardView: View {
     @EnvironmentObject private var data: UTMData
     
     var body: some View {
-        HStack() {
+        HStack {
             Logo(logo: nil) //FIXME: add logo support
-            Text(vm.configuration.name)
-                .font(.title)
+            VStack(alignment: .leading) {
+                Text(vm.configuration.name)
+                    .font(.headline)
+                Text(prettyTargetName())
+                    .font(.subheadline)
+            }.lineLimit(1)
+            .truncationMode(.tail)
             Spacer()
             Button {
                 data.run(vm: vm)
             } label: {
-                Label("Run", systemImage: "play.fill")
+                Label("Run", systemImage: "play.circle")
                     .font(.largeTitle)
                     .foregroundColor(.accentColor)
                     .labelStyle(IconOnlyLabelStyle())
             }
-            .padding()
-        }
+        }.padding([.top, .bottom], 10)
         .buttonStyle(PlainButtonStyle())
         .contextMenu {
             Button {
@@ -72,6 +76,25 @@ struct VMCardView: View {
             }
         }
     }
+    
+    private func prettyTargetName() -> String {
+        guard let arch = vm.configuration.systemArchitecture else {
+            return ""
+        }
+        guard let target = vm.configuration.systemTarget else {
+            return ""
+        }
+        guard let targets = UTMConfiguration.supportedTargets(forArchitecture: arch) else {
+            return ""
+        }
+        guard let prettyTargets = UTMConfiguration.supportedTargets(forArchitecturePretty: arch) else {
+            return ""
+        }
+        guard let index = targets.firstIndex(of: target) else {
+            return ""
+        }
+        return prettyTargets[index]
+    }
 }
 
 #if os(macOS)
@@ -84,7 +107,7 @@ struct Logo: View {
                 Image(nsImage: logo!)
                     .resizable()
                     .frame(width: 30.0, height: 30.0)
-                    .padding()
+                    .aspectRatio(contentMode: .fit)
             } else {
                 defaultLogo
             }
@@ -101,7 +124,7 @@ struct Logo: View {
                 Image(uiImage: logo!)
                     .resizable()
                     .frame(width: 30.0, height: 30.0)
-                    .padding()
+                    .aspectRatio(contentMode: .fit)
             } else {
                 defaultLogo
             }
@@ -115,7 +138,6 @@ extension Logo {
         Image(systemName: "desktopcomputer")
             .resizable()
             .frame(width: 30.0, height: 30.0)
-            .padding()
     }
 }
 

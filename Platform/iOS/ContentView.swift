@@ -36,8 +36,11 @@ struct ContentView: View {
             }.listStyle(SidebarListStyle())
             .navigationTitle("UTM")
             .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    newButton
+                }
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    toolbarTrailing
+                    EditButton()
                 }
             }
             .sheet(isPresented: $newVMScratchPresented) {
@@ -55,21 +58,18 @@ struct ContentView: View {
         .overlay(BusyOverlay())
     }
     
-    private var toolbarTrailing: some View {
-        HStack {
-            EditButton()
-            Button(action: { newPopupPresented.toggle() }, label: {
-                Label("New VM", systemImage: "plus").labelStyle(IconOnlyLabelStyle())
-            })
-            .actionSheet(isPresented: $newPopupPresented) {
-                let sheet = ActionSheet(title: Text("New VM"),
-                                        message: Text("Would you like to pick a template?"),
-                                        buttons: [
-                                            .default(Text("Template"), action: newVMFromTemplate),
-                                            .default(Text("Advanced"), action: { newVMScratchPresented.toggle() })
-                                        ])
-                return sheet
-            }
+    private var newButton: some View {
+        Button(action: { newPopupPresented.toggle() }, label: {
+            Label("New VM", systemImage: "plus").labelStyle(IconOnlyLabelStyle())
+        })
+        .actionSheet(isPresented: $newPopupPresented) {
+            let sheet = ActionSheet(title: Text("New VM"),
+                                    message: Text("Would you like to pick a template?"),
+                                    buttons: [
+                                        .default(Text("Template"), action: newVMFromTemplate),
+                                        .default(Text("Advanced"), action: { newVMScratchPresented.toggle() })
+                                    ])
+            return sheet
         }
     }
     
