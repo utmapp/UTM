@@ -21,11 +21,6 @@ struct VMRemovableDrivesView: View {
     
     var body: some View {
         Group {
-            HStack {
-                Label("VM Total Size", systemImage: "internaldrive")
-                Spacer()
-                Text("12.6 GB") //FIXME: Replace with real size
-            }
             if config.shareDirectoryEnabled {
                 HStack {
                     Label("Shared Directory", systemImage: "externaldrive.badge.person.crop")

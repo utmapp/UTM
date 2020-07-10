@@ -26,7 +26,7 @@ struct VMCardView: View {
             VStack(alignment: .leading) {
                 Text(vm.configuration.name)
                     .font(.headline)
-                Text(prettyTargetName())
+                Text(vm.configuration.systemTargetPretty)
                     .font(.subheadline)
             }.lineLimit(1)
             .truncationMode(.tail)
@@ -75,25 +75,6 @@ struct VMCardView: View {
                     .foregroundColor(.red)
             }
         }
-    }
-    
-    private func prettyTargetName() -> String {
-        guard let arch = vm.configuration.systemArchitecture else {
-            return ""
-        }
-        guard let target = vm.configuration.systemTarget else {
-            return ""
-        }
-        guard let targets = UTMConfiguration.supportedTargets(forArchitecture: arch) else {
-            return ""
-        }
-        guard let prettyTargets = UTMConfiguration.supportedTargets(forArchitecturePretty: arch) else {
-            return ""
-        }
-        guard let index = targets.firstIndex(of: target) else {
-            return ""
-        }
-        return prettyTargets[index]
     }
 }
 

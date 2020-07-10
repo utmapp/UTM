@@ -21,19 +21,38 @@ struct VMDetailsView: View {
     @State private var settingsPresented: Bool = false
     @EnvironmentObject private var data: UTMData
     @Environment(\.presentationMode) private var presentationMode: Binding<PresentationMode>
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass: UserInterfaceSizeClass?
     
     var body: some View {
-        VStack {
-            Screenshot(image: vm.screenshot.image)
-            Form {
-                List {
-                    VMRemovableDrivesView(config: vm.configuration)
+        ScrollView {
+            Screenshot(vm: vm)
+            if horizontalSizeClass == .regular {
+                HStack(alignment: .top) {
+                    Details(config: vm.configuration)
+                        .padding()
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    Text("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.") // FIXME: implement this
+                        .font(.body)
+                        .padding()
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
+                VMRemovableDrivesView(config: vm.configuration)
+                    .padding([.leading, .trailing])
+            } else {
+                VStack {
+                    Details(config: vm.configuration)
+                    Text("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.")
+                        .font(.body)
+                    VMRemovableDrivesView(config: vm.configuration)
+                }.padding([.leading, .trailing])
             }
-        }.navigationTitle(vm.configuration.name)
+        }.labelStyle(DetailsLabelStyle())
+        .navigationTitle(vm.configuration.name)
         .toolbar {
-            VMToolbar {
-                settingsPresented.toggle()
+            ToolbarItem(placement: toolbarPlacement) {
+                VMToolbar {
+                    settingsPresented.toggle()
+                }
             }
         }.sheet(isPresented: $settingsPresented) {
             NavigationView {
@@ -43,25 +62,86 @@ struct VMDetailsView: View {
             }
         }
     }
+    
+    var toolbarPlacement: ToolbarItemPlacement {
+        horizontalSizeClass == .regular ? .navigationBarTrailing : .bottomBar
+    }
 }
 
 struct Screenshot: View {
-    var image: UIImage?
+    var vm: UTMVirtualMachine
+    @EnvironmentObject private var data: UTMData
     
     var body: some View {
-        Group {
-            if image == nil {
-                Image(systemName: "desktopcomputer")
+        ZStack {
+            if vm.screenshot.image != nil {
+                #if os(macOS)
+                Image(nsImage: vm.screenshot.image!)
                     .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .frame(maxWidth: 400, maxHeight: 400)
-            } else {
-                Image(uiImage: image!)
+                #else
+                Image(uiImage: vm.screenshot.image!)
                     .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .frame(maxWidth: 400, maxHeight: 400)
+                #endif
             }
-        }
+            Rectangle()
+                .fill(Color(red: 230/255, green: 229/255, blue: 235/255))
+                .blendMode(.hardLight)
+            Button(action: { data.run(vm: vm) }, label: {
+                Label("Run", systemImage: "play.circle.fill")
+                    .labelStyle(IconOnlyLabelStyle())
+                    .font(Font.system(size: 96))
+                    .foregroundColor(Color(red: 137/255, green: 137/255, blue: 141/255))
+            })
+        }.aspectRatio(CGSize(width: 16, height: 9), contentMode: .fill)
+    }
+}
+
+struct Details: View {
+    @ObservedObject var config: UTMConfiguration
+    
+    var body: some View {
+        VStack {
+            HStack {
+                Label("Architecture", systemImage: "cpu")
+                Spacer()
+                Text(config.systemArchitecturePretty)
+                    .foregroundColor(.secondary)
+            }
+            HStack {
+                Label("Machine", systemImage: "desktopcomputer")
+                Spacer()
+                Text(config.systemTargetPretty)
+                    .foregroundColor(.secondary)
+            }
+            HStack {
+                Label("Memory", systemImage: "memorychip")
+                Spacer()
+                Text(config.systemMemoryPretty)
+                    .foregroundColor(.secondary)
+            }
+            HStack {
+                Label("Size", systemImage: "internaldrive")
+                Spacer()
+                Text("12 GB") // TODO: get actual size
+                    .foregroundColor(.secondary)
+            }
+        }.lineLimit(1)
+        .truncationMode(.tail)
+    }
+}
+
+struct DetailsLabelStyle: LabelStyle {
+    var color: Color = .accentColor
+    
+    func makeBody(configuration: Configuration) -> some View {
+        Label(
+            title: { configuration.title.font(.headline) },
+            icon: {
+                Rectangle() // FIXME: SwiftUI bug misaligns icon
+                    .frame(width: 32, height: 32)
+                    .foregroundColor(.clear)
+                    .overlay(configuration.icon.foregroundColor(color))
+            })
     }
 }
 

@@ -28,33 +28,38 @@ struct VMToolbar: View {
                 Label("Delete", systemImage: "trash")
                     .foregroundColor(.red)
                     .labelStyle(IconOnlyLabelStyle())
-            }.help("Delete selected VM")
+            }.padding(10)
+            .help("Delete selected VM")
             Spacer()
             Button {
                 
             } label: {
                 Label("Clone", systemImage: "doc.on.doc")
                     .labelStyle(IconOnlyLabelStyle())
-            }.help("Clone selected VM")
+            }.padding(10)
+            .help("Clone selected VM")
             Spacer()
             Button {
                 
             } label: {
                 Label("Share", systemImage: "square.and.arrow.up")
                     .labelStyle(IconOnlyLabelStyle())
-            }.help("Share selected VM")
+            }.padding(10)
+            .help("Share selected VM")
             Spacer()
             Button {
                 data.run(vm: data.selectedVM!)
             } label: {
                 Label("Run", systemImage: "play.fill")
                     .labelStyle(IconOnlyLabelStyle())
-            }.help("Run selected VM")
+            }.padding(10)
+            .help("Run selected VM")
             Spacer()
             Button(action: editAction) {
                 Label("Edit", systemImage: "slider.horizontal.3")
                     .labelStyle(IconOnlyLabelStyle())
-            }.help("Edit selected VM")
+            }.padding(10)
+            .help("Edit selected VM")
         }
     }
 }
