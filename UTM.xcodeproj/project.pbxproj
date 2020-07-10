@@ -899,7 +899,6 @@
 		CE2D955C24AD4F980059923A /* VMConfigQEMUView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE2D953924AD4F980059923A /* VMConfigQEMUView.swift */; };
 		CE2D955D24AD4F990059923A /* VMConfigSoundView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE2D953A24AD4F980059923A /* VMConfigSoundView.swift */; };
 		CE2D955E24AD4F990059923A /* VMConfigSoundView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE2D953A24AD4F980059923A /* VMConfigSoundView.swift */; };
-		CE2D956024AD4F990059923A /* VMDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE2D953C24AD4F980059923A /* VMDetailsView.swift */; };
 		CE2D956224AD4F990059923A /* VMSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE2D953D24AD4F980059923A /* VMSettingsView.swift */; };
 		CE2D956424AD4F990059923A /* VMConfigNetworkPortForwardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE2D953E24AD4F980059923A /* VMConfigNetworkPortForwardView.swift */; };
 		CE2D956624AD4F990059923A /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE2D954024AD4F980059923A /* ContentView.swift */; };
@@ -971,6 +970,7 @@
 		CE74C290225D88ED004E4FF1 /* VMConfigSystemViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CE74C285225D88ED004E4FF1 /* VMConfigSystemViewController.m */; };
 		CE7BED4C225FBB8600A1E1B6 /* VMConfigDrivesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CE7BED4B225FBB8600A1E1B6 /* VMConfigDrivesViewController.m */; };
 		CE7D972C24B2B17D0080CB69 /* BusyOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE7D972B24B2B17D0080CB69 /* BusyOverlay.swift */; };
+		CE93758924B930270074066F /* BusyOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE7D972B24B2B17D0080CB69 /* BusyOverlay.swift */; };
 		CE9D18F82265410E00355E14 /* qemu in Resources */ = {isa = PBXBuildFile; fileRef = CE9D18F72265410E00355E14 /* qemu */; };
 		CE9D19662265425A00355E14 /* libgstautodetect.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CE9D19522265425900355E14 /* libgstautodetect.a */; };
 		CE9D19672265425A00355E14 /* libgstaudiotestsrc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CE9D19532265425900355E14 /* libgstaudiotestsrc.a */; };
@@ -996,6 +996,7 @@
 		CEA02A992436C7A30087E45F /* UTMConfiguration+Networking.m in Sources */ = {isa = PBXBuildFile; fileRef = CEA02A982436C7A30087E45F /* UTMConfiguration+Networking.m */; };
 		CEBBF1A524B56A2900C15049 /* UTMDataExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEBBF1A424B56A2900C15049 /* UTMDataExtension.swift */; };
 		CEBBF1A724B5730F00C15049 /* UTMDataExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEBBF1A624B5730F00C15049 /* UTMDataExtension.swift */; };
+		CEBBF1A824B921F000C15049 /* VMDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE2D954B24AD4F980059923A /* VMDetailsView.swift */; };
 		CEBCAF4E243525DB00C2B423 /* VMConfigTextField.m in Sources */ = {isa = PBXBuildFile; fileRef = CEBCAF4D243525DB00C2B423 /* VMConfigTextField.m */; };
 		CEBCAF5424353B3700C2B423 /* VMConfigSwitch.m in Sources */ = {isa = PBXBuildFile; fileRef = CEBCAF5324353B3700C2B423 /* VMConfigSwitch.m */; };
 		CEBCAF5724353B9F00C2B423 /* VMConfigPickerView.m in Sources */ = {isa = PBXBuildFile; fileRef = CEBCAF5624353B9F00C2B423 /* VMConfigPickerView.m */; };
@@ -2158,6 +2159,7 @@
 			children = (
 				CE2D954A24AD4F980059923A /* iOS */,
 				CE2D953B24AD4F980059923A /* macOS */,
+				CE7D972B24B2B17D0080CB69 /* BusyOverlay.swift */,
 				CE2D954324AD4F980059923A /* VMCardView.swift */,
 				CE2D953724AD4F980059923A /* VMConfigDisplayView.swift */,
 				CE2D955124AD4F980059923A /* VMConfigDrivesView.swift */,
@@ -2169,6 +2171,7 @@
 				CE2D953A24AD4F980059923A /* VMConfigSoundView.swift */,
 				CE2D954924AD4F980059923A /* VMConfigStringPicker.swift */,
 				CE2D955324AD4F980059923A /* VMConfigSystemView.swift */,
+				CE2D954B24AD4F980059923A /* VMDetailsView.swift */,
 				CE2D954224AD4F980059923A /* VMPlaceholderView.swift */,
 				CE2D954524AD4F980059923A /* VMRemovableDrivesView.swift */,
 				CE2D953824AD4F980059923A /* VMToolbar.swift */,
@@ -2198,11 +2201,9 @@
 		CE2D954A24AD4F980059923A /* iOS */ = {
 			isa = PBXGroup;
 			children = (
-				CE7D972B24B2B17D0080CB69 /* BusyOverlay.swift */,
 				CE2D954E24AD4F980059923A /* ContentView.swift */,
 				CEBBF1A424B56A2900C15049 /* UTMDataExtension.swift */,
 				CE2D954D24AD4F980059923A /* VMConfigNetworkPortForwardView.swift */,
-				CE2D954B24AD4F980059923A /* VMDetailsView.swift */,
 				CE2D954C24AD4F980059923A /* VMSettingsView.swift */,
 				CE2D954F24AD4F980059923A /* Info.plist */,
 			);
@@ -3223,6 +3224,7 @@
 				CE0B6D2C24AD57FC00FE012D /* qapi-commands-ui.c in Sources */,
 				CE0B6D2324AD57FC00FE012D /* qapi-commands-crypto.c in Sources */,
 				CE0B6CFA24AD568400FE012D /* UTMConfiguration+System.m in Sources */,
+				CEBBF1A824B921F000C15049 /* VMDetailsView.swift in Sources */,
 				CE0B6D7E24AD584D00FE012D /* qapi-events-misc.c in Sources */,
 				CE0B6D4124AD584C00FE012D /* qapi-visit-transaction.c in Sources */,
 				CE0B6D0B24AD56C300FE012D /* qapi-dealloc-visitor.c in Sources */,
@@ -3277,6 +3279,7 @@
 				CE0B6D4B24AD584C00FE012D /* qapi-visit-rocker.c in Sources */,
 				CE0B6D5F24AD584D00FE012D /* qapi-types-char.c in Sources */,
 				CE0B6D1324AD57FC00FE012D /* qapi-commands-qom.c in Sources */,
+				CE93758924B930270074066F /* BusyOverlay.swift in Sources */,
 				CE0B6D2424AD57FC00FE012D /* qapi-commands-rocker.c in Sources */,
 				CE0B6D7D24AD584D00FE012D /* qapi-events-ui.c in Sources */,
 				CE0B6D5624AD584C00FE012D /* qapi-types-machine-target.c in Sources */,
@@ -3286,7 +3289,6 @@
 				CE0B6D0224AD56AE00FE012D /* UTMQemu.m in Sources */,
 				CE0B6D4924AD584C00FE012D /* qapi-types-trace.c in Sources */,
 				CE0B6D7724AD584D00FE012D /* qapi-events-misc-target.c in Sources */,
-				CE2D956024AD4F990059923A /* VMDetailsView.swift in Sources */,
 				CE0B6CF524AD568400FE012D /* UTMConfiguration+Miscellaneous.m in Sources */,
 				CE0B6CFB24AD568400FE012D /* UTMConfiguration+Networking.m in Sources */,
 				CE2D958424AD4F990059923A /* VMConfigNetworkView.swift in Sources */,

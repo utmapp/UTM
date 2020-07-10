@@ -17,66 +17,51 @@
 import SwiftUI
 
 struct ContentView: View {
-    @State private var examples = ["Windows", "Ubuntu", "Generic"]
     @State private var editMode = false
-    @State private var selected: String? = nil
     @StateObject private var data = UTMData()
+    @State private var newPopupPresented = false
     
     var body: some View {
         NavigationView {
-            let selection = Binding<Set<String>> {
-                selected != nil ? [selected!] : []
-            } set: {
-                let newSelected = $0.first
-                if selected != newSelected {
-                    editMode = false
-                    //FIXME: prompt user to discard changes
+            List {
+                ForEach(data.virtualMachines) { vm in
+                    NavigationLink(
+                        destination: VMDetailsView(vm: vm),
+                        tag: vm,
+                        selection: $data.selectedVM,
+                        label: { VMCardView(vm: vm) })
+                }.onMove(perform: data.move)
+                .onDelete(perform: data.remove)
+            }.frame(minWidth: 250, idealWidth: 350)
+            .listStyle(SidebarListStyle())
+            .navigationTitle("UTM")
+            .navigationSubtitle(data.selectedVM?.configuration.name ?? "")
+            .toolbar {
+                ToolbarItem(placement: .navigation) {
+                    newButton
                 }
-                selected = newSelected
             }
-
-            List(data.virtualMachines, selection: selection) { vm in
-                VMCardView(vm: vm)
-            }.listStyle(SidebarListStyle())
-            .frame(minWidth: 250, idealWidth: 350)
-            if selected == nil {
-                VMPlaceholderView()
-            } else {
-                VMDetailsView(config: UTMConfiguration(name: selected!), editMode: $editMode, screenshot: NSImage(named: "\(selected!)-Screen"))
-            }
+            VMPlaceholderView()
         }.environmentObject(data)
-        .navigationTitle("UTM")
-        .navigationSubtitle(selected ?? "")
+        .frame(minWidth: 800, idealWidth: 1200, minHeight: 600, idealHeight: 800)
+        .disabled(data.busy)
         .onAppear {
             data.refresh()
         }
-        .toolbar {
-            /* //FIXME: unhide sidebar if hidden
-            ToolbarItem(placement: .navigation) {
-                Button {
-                    
-                } label: {
-                    Label("Hide/Show", systemImage: "sidebar.left")
-                }.help("Hide or show the navigator")
-            }
-            */
-            ToolbarItem {
-                if selected != nil {
-                    VMToolbar {
-                        editMode.toggle()
-                    }
-                } else {
-                    EmptyView()
-                }
-            }
-            ToolbarItem(placement: .primaryAction) {
-                Button {
-                    
-                } label: {
-                    Label("New", systemImage: "square.and.pencil")
-                }.help("New VM")
-            }
-        }.frame(minWidth: 800, idealWidth: 1200, minHeight: 600, idealHeight: 800)
+        .overlay(BusyOverlay())
+    }
+    
+    private var newButton: some View {
+        Button(action: { newPopupPresented.toggle() }, label: {
+            Label("New VM", systemImage: "plus").labelStyle(IconOnlyLabelStyle())
+        })
+        .help("New VM")
+        .popover(isPresented: $newPopupPresented, arrowEdge: .bottom) {
+            Text("Hi")
+        }
+    }
+    
+    private func newVMFromTemplate() {
     }
 }
 

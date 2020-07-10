@@ -18,15 +18,28 @@ import SwiftUI
 
 struct VMDetailsView: View {
     var vm: UTMVirtualMachine
-    @State private var settingsPresented: Bool = false
+    @State private var settingsSheetPresented: Bool = false
     @EnvironmentObject private var data: UTMData
     @Environment(\.presentationMode) private var presentationMode: Binding<PresentationMode>
+    #if !os(macOS)
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass: UserInterfaceSizeClass?
+    
+    private var regularScreenSizeClass: Bool {
+        horizontalSizeClass == .regular
+    }
+    
+    private var toolbarPlacement: ToolbarItemPlacement {
+        regularScreenSizeClass ? .navigationBarTrailing : .bottomBar
+    }
+    #else
+    private let regularScreenSizeClass: Bool = true
+    private let toolbarPlacement: ToolbarItemPlacement = .automatic
+    #endif
     
     var body: some View {
         ScrollView {
             Screenshot(vm: vm)
-            if horizontalSizeClass == .regular {
+            if regularScreenSizeClass {
                 HStack(alignment: .top) {
                     Details(config: vm.configuration)
                         .padding()
@@ -37,34 +50,32 @@ struct VMDetailsView: View {
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
                 VMRemovableDrivesView(config: vm.configuration)
-                    .padding([.leading, .trailing])
+                    .padding([.leading, .trailing, .bottom])
             } else {
                 VStack {
                     Details(config: vm.configuration)
                     Text("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.")
                         .font(.body)
                     VMRemovableDrivesView(config: vm.configuration)
-                }.padding([.leading, .trailing])
+                }.padding([.leading, .trailing, .bottom])
             }
         }.labelStyle(DetailsLabelStyle())
         .navigationTitle(vm.configuration.name)
         .toolbar {
             ToolbarItem(placement: toolbarPlacement) {
                 VMToolbar {
-                    settingsPresented.toggle()
+                    settingsSheetPresented.toggle()
                 }
             }
-        }.sheet(isPresented: $settingsPresented) {
+        }.sheet(isPresented: $settingsSheetPresented) {
+            #if !os(macOS) // sheet only for iOS
             NavigationView {
                 VMSettingsView(config: vm.configuration) { _ in
                     data.busyWork() { try data.save(vm: vm) }
                 }
             }
+            #endif
         }
-    }
-    
-    var toolbarPlacement: ToolbarItemPlacement {
-        horizontalSizeClass == .regular ? .navigationBarTrailing : .bottomBar
     }
 }
 
@@ -74,13 +85,17 @@ struct Screenshot: View {
     
     var body: some View {
         ZStack {
+            Rectangle()
+                .fill(Color.black)
             if vm.screenshot.image != nil {
                 #if os(macOS)
                 Image(nsImage: vm.screenshot.image!)
                     .resizable()
+                    .aspectRatio(contentMode: .fit)
                 #else
                 Image(uiImage: vm.screenshot.image!)
                     .resizable()
+                    .aspectRatio(contentMode: .fit)
                 #endif
             }
             Rectangle()
@@ -91,7 +106,7 @@ struct Screenshot: View {
                     .labelStyle(IconOnlyLabelStyle())
                     .font(Font.system(size: 96))
                     .foregroundColor(Color.black)
-            })
+            }).buttonStyle(PlainButtonStyle())
         }.aspectRatio(CGSize(width: 16, height: 9), contentMode: .fill)
     }
 }

@@ -20,6 +20,12 @@ struct VMToolbar: View {
     var editAction: () -> Void = {}
     @EnvironmentObject private var data: UTMData
     
+    #if os(macOS)
+    let paddingAmount: CGFloat = 0
+    #else
+    let paddingAmount: CGFloat = 10
+    #endif
+    
     var body: some View {
         HStack {
             Button {
@@ -28,7 +34,7 @@ struct VMToolbar: View {
                 Label("Delete", systemImage: "trash")
                     .foregroundColor(.red)
                     .labelStyle(IconOnlyLabelStyle())
-            }.padding(10)
+            }.padding(paddingAmount)
             .help("Delete selected VM")
             Spacer()
             Button {
@@ -36,7 +42,7 @@ struct VMToolbar: View {
             } label: {
                 Label("Clone", systemImage: "doc.on.doc")
                     .labelStyle(IconOnlyLabelStyle())
-            }.padding(10)
+            }.padding(paddingAmount)
             .help("Clone selected VM")
             Spacer()
             Button {
@@ -44,7 +50,7 @@ struct VMToolbar: View {
             } label: {
                 Label("Share", systemImage: "square.and.arrow.up")
                     .labelStyle(IconOnlyLabelStyle())
-            }.padding(10)
+            }.padding(paddingAmount)
             .help("Share selected VM")
             Spacer()
             Button {
@@ -52,13 +58,13 @@ struct VMToolbar: View {
             } label: {
                 Label("Run", systemImage: "play.fill")
                     .labelStyle(IconOnlyLabelStyle())
-            }.padding(10)
+            }.padding(paddingAmount)
             .help("Run selected VM")
             Spacer()
             Button(action: editAction) {
                 Label("Edit", systemImage: "slider.horizontal.3")
                     .labelStyle(IconOnlyLabelStyle())
-            }.padding(10)
+            }.padding(paddingAmount)
             .help("Edit selected VM")
         }
     }
