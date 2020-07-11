@@ -1621,7 +1621,6 @@
 		CE2D953824AD4F980059923A /* VMToolbar.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VMToolbar.swift; sourceTree = "<group>"; };
 		CE2D953924AD4F980059923A /* VMConfigQEMUView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VMConfigQEMUView.swift; sourceTree = "<group>"; };
 		CE2D953A24AD4F980059923A /* VMConfigSoundView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VMConfigSoundView.swift; sourceTree = "<group>"; };
-		CE2D953C24AD4F980059923A /* VMDetailsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VMDetailsView.swift; sourceTree = "<group>"; };
 		CE2D953D24AD4F980059923A /* VMSettingsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VMSettingsView.swift; sourceTree = "<group>"; };
 		CE2D953E24AD4F980059923A /* VMConfigNetworkPortForwardView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VMConfigNetworkPortForwardView.swift; sourceTree = "<group>"; };
 		CE2D953F24AD4F980059923A /* macOS.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.entitlements; path = macOS.entitlements; sourceTree = "<group>"; };
@@ -2190,7 +2189,6 @@
 				CE2D954024AD4F980059923A /* ContentView.swift */,
 				CEBBF1A624B5730F00C15049 /* UTMDataExtension.swift */,
 				CE2D953E24AD4F980059923A /* VMConfigNetworkPortForwardView.swift */,
-				CE2D953C24AD4F980059923A /* VMDetailsView.swift */,
 				CE2D953D24AD4F980059923A /* VMSettingsView.swift */,
 				CE2D954124AD4F980059923A /* Info.plist */,
 				CE2D953F24AD4F980059923A /* macOS.entitlements */,
