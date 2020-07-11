@@ -22,8 +22,10 @@ struct VMToolbar: View {
     
     #if os(macOS)
     let paddingAmount: CGFloat = 0
+    let destructiveButtonColor: Color = .primary
     #else
     let paddingAmount: CGFloat = 10
+    let destructiveButtonColor: Color = .red
     #endif
     
     var body: some View {
@@ -32,7 +34,7 @@ struct VMToolbar: View {
                 
             } label: {
                 Label("Delete", systemImage: "trash")
-                    .foregroundColor(.red)
+                    .foregroundColor(destructiveButtonColor)
                     .labelStyle(IconOnlyLabelStyle())
             }.padding(paddingAmount)
             .help("Delete selected VM")

@@ -20,6 +20,12 @@ struct VMCardView: View {
     var vm: UTMVirtualMachine
     @EnvironmentObject private var data: UTMData
     
+    #if os(macOS)
+    let buttonColor: Color = .black
+    #else
+    let buttonColor: Color = .accentColor
+    #endif
+    
     var body: some View {
         HStack {
             Logo(logo: nil) //FIXME: add logo support
@@ -36,7 +42,7 @@ struct VMCardView: View {
             } label: {
                 Label("Run", systemImage: "play.circle")
                     .font(.largeTitle)
-                    .foregroundColor(.accentColor)
+                    .foregroundColor(buttonColor)
                     .labelStyle(IconOnlyLabelStyle())
             }
         }.padding([.top, .bottom], 10)
@@ -90,7 +96,10 @@ struct Logo: View {
                     .frame(width: 30.0, height: 30.0)
                     .aspectRatio(contentMode: .fit)
             } else {
-                defaultLogo
+                Image(systemName: "desktopcomputer")
+                    .resizable()
+                    .frame(width: 30.0, height: 30.0)
+                    .foregroundColor(.accentColor)
             }
         }
     }
@@ -107,20 +116,14 @@ struct Logo: View {
                     .frame(width: 30.0, height: 30.0)
                     .aspectRatio(contentMode: .fit)
             } else {
-                defaultLogo
+                Image(systemName: "desktopcomputer")
+                    .resizable()
+                    .frame(width: 30.0, height: 30.0)
             }
         }
     }
 }
 #endif
-
-extension Logo {
-    var defaultLogo: some View {
-        Image(systemName: "desktopcomputer")
-            .resizable()
-            .frame(width: 30.0, height: 30.0)
-    }
-}
 
 struct VMCardView_Previews: PreviewProvider {
     static var previews: some View {
