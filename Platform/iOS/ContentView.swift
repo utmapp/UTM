@@ -15,6 +15,7 @@
 //
 
 import SwiftUI
+import IQKeyboardManagerSwift
 
 struct ContentView: View {
     @State private var editMode = false
@@ -54,6 +55,7 @@ struct ContentView: View {
         }.disabled(data.busy)
         .onAppear {
             data.refresh()
+            IQKeyboardManager.shared.enable = true
         }
         .overlay(BusyOverlay())
     }
