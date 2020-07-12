@@ -18,53 +18,72 @@ import SwiftUI
 
 struct VMSettingsView: View {
     @ObservedObject var config: UTMConfiguration
-    @Binding var editMode: Bool
+    var save: (UTMConfiguration) -> Void
     
     var body: some View {
-        TabView {
-            PreferencePane(label: { Text("System") }) {
-                VMConfigSystemView(config: config).disabled(!editMode)
+        ToolbarTabView {
+            PreferencePane(label: "System", systemImage: "cpu", save: { save(config) }) {
+                VMConfigSystemView(config: config)
             }
-            PreferencePane(label: { Text("QEMU") }) {
-                VMConfigQEMUView(config: config).disabled(!editMode)
+            PreferencePane(label: "QEMU", systemImage: "shippingbox", save: { save(config) }) {
+                VMConfigQEMUView(config: config)
             }
-            PreferencePane(label: { Text("Drives") }) {
-                VMConfigDrivesView(config: config).disabled(!editMode)
+            PreferencePane(label: "Drives", systemImage: "internaldrive", save: { save(config) }) {
+                VMConfigDrivesView(config: config)
             }
-            PreferencePane(label: { Text("Display") }) {
-                VMConfigDisplayView(config: config).disabled(!editMode)
+            PreferencePane(label: "Display", systemImage: "rectangle.on.rectangle", save: { save(config) }) {
+                VMConfigDisplayView(config: config)
             }
-            PreferencePane(label: { Text("Input") }) {
-                VMConfigInputView(config: config).disabled(!editMode)
+            PreferencePane(label: "Input", systemImage: "keyboard", save: { save(config) }) {
+                VMConfigInputView(config: config)
             }
-            PreferencePane(label: { Text("Network") }) {
-                VMConfigNetworkView(config: config).disabled(!editMode)
+            PreferencePane(label: "Network", systemImage: "network", save: { save(config) }) {
+                VMConfigNetworkView(config: config)
             }
-            PreferencePane(label: { Text("Sound") }) {
-                VMConfigSoundView(config: config).disabled(!editMode)
+            PreferencePane(label: "Sound", systemImage: "speaker.wave.2", save: { save(config) }) {
+                VMConfigSoundView(config: config)
             }
-            PreferencePane(label: { Text("Sharing") }) {
-                VMConfigSharingView(config: config).disabled(!editMode)
+            PreferencePane(label: "Sharing", systemImage: "person.crop.circle.fill", save: { save(config) }) {
+                VMConfigSharingView(config: config)
             }
-        }
+        }.frame(minWidth: 800, minHeight: 400)
     }
 }
 
-struct PreferencePane<Label, Content>: View where Label: View, Content: View {
-    var label: () -> Label
-    var content: () -> Content
+struct PreferencePane<Content: View>: View {
+    let label: LocalizedStringKey
+    let systemImage: String
+    let save: () -> Void
+    let content: Content
+    
+    @Environment(\.presentationMode) private var presentationMode: Binding<PresentationMode>
+    
+    init(label: LocalizedStringKey, systemImage: String, save: @escaping () -> Void, content: () -> Content) {
+        self.label = label
+        self.systemImage = systemImage
+        self.save = save
+        self.content = content()
+    }
     
     var body: some View {
         VStack {
             ScrollView {
-                content()
-                .padding()
-                Spacer()
+                content.padding()
             }
-        }
-        .tabItem {
-            label()
-        }
+            Divider()
+            HStack {
+                Spacer()
+                Button(action: { presentationMode.wrappedValue.dismiss() }) {
+                    Text("Cancel")
+                }
+                Button(action: {
+                    save()
+                    presentationMode.wrappedValue.dismiss()
+                }) {
+                    Text("Save")
+                }
+            }.padding([.bottom, .trailing])
+        }.toolbarTabItem(label, systemImage: systemImage)
     }
 }
 
@@ -72,6 +91,8 @@ struct VMSettingsView_Previews: PreviewProvider {
     @State static private var config = UTMConfiguration(name: "Test")
     
     static var previews: some View {
-        VMSettingsView(config: config, editMode: .constant(true))
+        VMSettingsView(config: config) { _ in
+            
+        }
     }
 }

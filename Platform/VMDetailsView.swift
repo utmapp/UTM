@@ -68,13 +68,9 @@ struct VMDetailsView: View {
                 }
             }
         }.sheet(isPresented: $settingsSheetPresented) {
-            #if !os(macOS) // sheet only for iOS
-            NavigationView {
-                VMSettingsView(config: vm.configuration) { _ in
-                    data.busyWork() { try data.save(vm: vm) }
-                }
+            VMSettingsView(config: vm.configuration) { _ in
+                data.busyWork() { try data.save(vm: vm) }
             }
-            #endif
         }
     }
 }
