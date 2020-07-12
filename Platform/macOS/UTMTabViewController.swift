@@ -14,23 +14,15 @@
 // limitations under the License.
 //
 
-import SwiftUI
+import Foundation
 
-public struct ToolbarTabViewController: NSViewControllerRepresentable {
-    let tabViewItems: [NSTabViewItem]
-    
-    public init(tabViewItems: [NSTabViewItem]) {
-        self.tabViewItems = tabViewItems
-    }
-    
-    public func makeNSViewController(context: Context) -> UTMTabViewController {
-        let tab = UTMTabViewController()
-        tab.tabStyle = .toolbar
-        tab.tabViewItems = tabViewItems
-        return tab
-    }
-    
-    public func updateNSViewController(_ controller: UTMTabViewController, context: Context) {
-        
+public class UTMTabViewController: NSTabViewController {
+    // FIXME: really dumb hack to get around lazy loading the labels
+    public override func viewDidAppear() {
+        super.viewDidAppear()
+        for i in self.tabViewItems.indices {
+            self.selectedTabViewItemIndex = i
+        }
+        self.selectedTabViewItemIndex = 0
     }
 }
