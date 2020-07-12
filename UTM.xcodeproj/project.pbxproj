@@ -975,6 +975,7 @@
 		CE93759224BA775C0074066F /* ToolbarTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE93759124BA775C0074066F /* ToolbarTabView.swift */; };
 		CE93759324BAAEE40074066F /* qemu in Resources */ = {isa = PBXBuildFile; fileRef = CE9D18F72265410E00355E14 /* qemu */; };
 		CE93759624BB7EA00074066F /* UTMTabViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE93759524BB7E9F0074066F /* UTMTabViewController.swift */; };
+		CE93759924BB821F0074066F /* IQKeyboardManagerSwift in Frameworks */ = {isa = PBXBuildFile; productRef = CE93759824BB821F0074066F /* IQKeyboardManagerSwift */; };
 		CE9D18F82265410E00355E14 /* qemu in Resources */ = {isa = PBXBuildFile; fileRef = CE9D18F72265410E00355E14 /* qemu */; };
 		CE9D19662265425A00355E14 /* libgstautodetect.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CE9D19522265425900355E14 /* libgstautodetect.a */; };
 		CE9D19672265425A00355E14 /* libgstaudiotestsrc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CE9D19532265425900355E14 /* libgstaudiotestsrc.a */; };
@@ -1833,6 +1834,7 @@
 				CE2D932E24AD46670059923A /* libgstvideoconvert.a in Frameworks */,
 				CE2D932F24AD46670059923A /* libgstaudioconvert.a in Frameworks */,
 				CE2D933024AD46670059923A /* libgstvideoscale.a in Frameworks */,
+				CE93759924BB821F0074066F /* IQKeyboardManagerSwift in Frameworks */,
 				CE2D933124AD46670059923A /* MetalKit.framework in Frameworks */,
 				CE2D933224AD46670059923A /* libgstvolume.a in Frameworks */,
 				CE2D933324AD46670059923A /* libgstcoreelements.a in Frameworks */,
@@ -2769,6 +2771,7 @@
 			name = iOS;
 			packageProductDependencies = (
 				CE020BA624AEDEF000B44AB6 /* Logging */,
+				CE93759824BB821F0074066F /* IQKeyboardManagerSwift */,
 			);
 			productName = UTM;
 			productReference = CE2D93BE24AD46670059923A /* UTM.app */;
@@ -2851,6 +2854,7 @@
 			mainGroup = CE550BC0225947990063E575;
 			packageReferences = (
 				CE020BA524AEDEF000B44AB6 /* XCRemoteSwiftPackageReference "swift-log" */,
+				CE93759724BB821F0074066F /* XCRemoteSwiftPackageReference "IQKeyboardManager" */,
 			);
 			productRefGroup = CE550BCA225947990063E575 /* Products */;
 			projectDirPath = "";
@@ -4005,6 +4009,14 @@
 				minimumVersion = 1.2.0;
 			};
 		};
+		CE93759724BB821F0074066F /* XCRemoteSwiftPackageReference "IQKeyboardManager" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/hackiftekhar/IQKeyboardManager.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 6.5.5;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -4017,6 +4029,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = CE020BA524AEDEF000B44AB6 /* XCRemoteSwiftPackageReference "swift-log" */;
 			productName = Logging;
+		};
+		CE93759824BB821F0074066F /* IQKeyboardManagerSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = CE93759724BB821F0074066F /* XCRemoteSwiftPackageReference "IQKeyboardManager" */;
+			productName = IQKeyboardManagerSwift;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
