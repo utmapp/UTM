@@ -36,6 +36,23 @@ extension Optional where Wrapped == String {
     }
 }
 
+extension LocalizedStringKey {
+    var localizedString: String {
+        let mirror = Mirror(reflecting: self)
+        var key: String? = nil
+        for property in mirror.children {
+            if property.label == "key" {
+                key = property.value as? String
+            }
+        }
+        guard let goodKey = key else {
+            logger.error("Failed to get localization key")
+            return ""
+        }
+        return NSLocalizedString(goodKey, comment: "LocalizedStringKey")
+    }
+}
+
 #if !os(macOS)
 extension UIView {
     /// Adds constraints to this `UIView` instances `superview` object to make sure this always has the same size as the superview.

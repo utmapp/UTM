@@ -23,76 +23,78 @@ struct VMSettingsView: View {
     @Environment(\.presentationMode) private var presentationMode: Binding<PresentationMode>
     
     var body: some View {
-        Form {
-            List {
-                HStack {
-                    Text("Name")
-                    TextField("Name", text: $config.name)
-                        .multilineTextAlignment(.trailing)
+        NavigationView {
+            Form {
+                List {
+                    HStack {
+                        Text("Name")
+                        TextField("Name", text: $config.name)
+                            .multilineTextAlignment(.trailing)
+                    }
+                    NavigationLink(
+                        destination: VMConfigSystemView(config: config).navigationTitle("System"),
+                        label: {
+                            Label("System", systemImage: "cpu")
+                                .labelStyle(RoundRectIconLabelStyle())
+                        })
+                    NavigationLink(
+                        destination: VMConfigQEMUView(config: config).navigationTitle("QEMU"),
+                        label: {
+                            Label("QEMU", systemImage: "shippingbox")
+                                .labelStyle(RoundRectIconLabelStyle())
+                        })
+                    NavigationLink(
+                        destination: VMConfigDrivesView(config: config).navigationTitle("Drives"),
+                        label: {
+                            Label("Drives", systemImage: "internaldrive")
+                                .labelStyle(RoundRectIconLabelStyle())
+                        })
+                    NavigationLink(
+                        destination: VMConfigDisplayView(config: config).navigationTitle("Display"),
+                        label: {
+                            Label("Display", systemImage: "rectangle.on.rectangle")
+                                .labelStyle(RoundRectIconLabelStyle(color: .green))
+                        })
+                    NavigationLink(
+                        destination: VMConfigInputView(config: config).navigationTitle("Input"),
+                        label: {
+                            Label("Input", systemImage: "keyboard")
+                                .labelStyle(RoundRectIconLabelStyle(color: .green))
+                        })
+                    NavigationLink(
+                        destination: VMConfigNetworkView(config: config).navigationTitle("Network"),
+                        label: {
+                            Label("Network", systemImage: "network")
+                                .labelStyle(RoundRectIconLabelStyle(color: .green))
+                        })
+                    NavigationLink(
+                        destination: VMConfigSoundView(config: config).navigationTitle("Sound"),
+                        label: {
+                            Label("Sound", systemImage: "speaker.wave.2")
+                                .labelStyle(RoundRectIconLabelStyle(color: .green))
+                        })
+                    NavigationLink(
+                        destination: VMConfigSharingView(config: config).navigationTitle("Sharing"),
+                        label: {
+                            Label("Sharing", systemImage: "person.crop.circle.fill")
+                                .labelStyle(RoundRectIconLabelStyle(color: .yellow))
+                        })
                 }
-                NavigationLink(
-                    destination: VMConfigSystemView(config: config).navigationTitle("System"),
-                    label: {
-                        Label("System", systemImage: "cpu")
-                            .labelStyle(RoundRectIconLabelStyle())
-                    })
-                NavigationLink(
-                    destination: VMConfigQEMUView(config: config).navigationTitle("QEMU"),
-                    label: {
-                        Label("QEMU", systemImage: "shippingbox")
-                            .labelStyle(RoundRectIconLabelStyle())
-                    })
-                NavigationLink(
-                    destination: VMConfigDrivesView(config: config).navigationTitle("Drives"),
-                    label: {
-                        Label("Drives", systemImage: "internaldrive")
-                            .labelStyle(RoundRectIconLabelStyle())
-                    })
-                NavigationLink(
-                    destination: VMConfigDisplayView(config: config).navigationTitle("Display"),
-                    label: {
-                        Label("Display", systemImage: "rectangle.on.rectangle")
-                            .labelStyle(RoundRectIconLabelStyle(color: .green))
-                    })
-                NavigationLink(
-                    destination: VMConfigInputView(config: config).navigationTitle("Input"),
-                    label: {
-                        Label("Input", systemImage: "keyboard")
-                            .labelStyle(RoundRectIconLabelStyle(color: .green))
-                    })
-                NavigationLink(
-                    destination: VMConfigNetworkView(config: config).navigationTitle("Network"),
-                    label: {
-                        Label("Network", systemImage: "network")
-                            .labelStyle(RoundRectIconLabelStyle(color: .green))
-                    })
-                NavigationLink(
-                    destination: VMConfigSoundView(config: config).navigationTitle("Sound"),
-                    label: {
-                        Label("Sound", systemImage: "speaker.wave.2")
-                            .labelStyle(RoundRectIconLabelStyle(color: .green))
-                    })
-                NavigationLink(
-                    destination: VMConfigSharingView(config: config).navigationTitle("Sharing"),
-                    label: {
-                        Label("Sharing", systemImage: "person.crop.circle.fill")
-                            .labelStyle(RoundRectIconLabelStyle(color: .yellow))
-                    })
             }
-        }
-        .navigationTitle("Settings")
-        .navigationBarItems(leading: Button(action: {
-            presentationMode.wrappedValue.dismiss()
-        }, label: {
-            Text("Cancel")
-        }), trailing: HStack {
-            Button(action: {
-                save(config)
+            .navigationTitle("Settings")
+            .navigationBarItems(leading: Button(action: {
                 presentationMode.wrappedValue.dismiss()
             }, label: {
-                Text("Save")
+                Text("Cancel")
+            }), trailing: HStack {
+                Button(action: {
+                    save(config)
+                    presentationMode.wrappedValue.dismiss()
+                }, label: {
+                    Text("Save")
+                })
             })
-        })
+        }
     }
 }
 

@@ -971,6 +971,9 @@
 		CE7BED4C225FBB8600A1E1B6 /* VMConfigDrivesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CE7BED4B225FBB8600A1E1B6 /* VMConfigDrivesViewController.m */; };
 		CE7D972C24B2B17D0080CB69 /* BusyOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE7D972B24B2B17D0080CB69 /* BusyOverlay.swift */; };
 		CE93758924B930270074066F /* BusyOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE7D972B24B2B17D0080CB69 /* BusyOverlay.swift */; };
+		CE93759024BA74510074066F /* ToolbarTabViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE93758F24BA74510074066F /* ToolbarTabViewController.swift */; };
+		CE93759224BA775C0074066F /* ToolbarTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE93759124BA775C0074066F /* ToolbarTabView.swift */; };
+		CE93759324BAAEE40074066F /* qemu in Resources */ = {isa = PBXBuildFile; fileRef = CE9D18F72265410E00355E14 /* qemu */; };
 		CE9D18F82265410E00355E14 /* qemu in Resources */ = {isa = PBXBuildFile; fileRef = CE9D18F72265410E00355E14 /* qemu */; };
 		CE9D19662265425A00355E14 /* libgstautodetect.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CE9D19522265425900355E14 /* libgstautodetect.a */; };
 		CE9D19672265425A00355E14 /* libgstaudiotestsrc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CE9D19532265425900355E14 /* libgstaudiotestsrc.a */; };
@@ -1733,6 +1736,8 @@
 		CE7BED4B225FBB8600A1E1B6 /* VMConfigDrivesViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VMConfigDrivesViewController.m; sourceTree = "<group>"; };
 		CE7D972B24B2B17D0080CB69 /* BusyOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BusyOverlay.swift; sourceTree = "<group>"; };
 		CE8E6620227E5DF2003B9903 /* UTMQemuManagerDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UTMQemuManagerDelegate.h; sourceTree = "<group>"; };
+		CE93758F24BA74510074066F /* ToolbarTabViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToolbarTabViewController.swift; sourceTree = "<group>"; };
+		CE93759124BA775C0074066F /* ToolbarTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToolbarTabView.swift; sourceTree = "<group>"; };
 		CE9D18F72265410E00355E14 /* qemu */ = {isa = PBXFileReference; lastKnownFileType = folder; name = qemu; path = "sysroot-$(PLATFORM_FAMILY_NAME)-$(PLATFORM_PREFERRED_ARCH)/share/qemu"; sourceTree = "<group>"; };
 		CE9D19522265425900355E14 /* libgstautodetect.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libgstautodetect.a; path = "sysroot-$(PLATFORM_FAMILY_NAME)-$(PLATFORM_PREFERRED_ARCH)/lib/gstreamer-1.0/libgstautodetect.a"; sourceTree = "<group>"; };
 		CE9D19532265425900355E14 /* libgstaudiotestsrc.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libgstaudiotestsrc.a; path = "sysroot-$(PLATFORM_FAMILY_NAME)-$(PLATFORM_PREFERRED_ARCH)/lib/gstreamer-1.0/libgstaudiotestsrc.a"; sourceTree = "<group>"; };
@@ -2187,6 +2192,8 @@
 			isa = PBXGroup;
 			children = (
 				CE2D954024AD4F980059923A /* ContentView.swift */,
+				CE93759124BA775C0074066F /* ToolbarTabView.swift */,
+				CE93758F24BA74510074066F /* ToolbarTabViewController.swift */,
 				CEBBF1A624B5730F00C15049 /* UTMDataExtension.swift */,
 				CE2D953E24AD4F980059923A /* VMConfigNetworkPortForwardView.swift */,
 				CE2D953D24AD4F980059923A /* VMSettingsView.swift */,
@@ -2874,6 +2881,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				CE0B6CEC24AD532500FE012D /* Assets.xcassets in Resources */,
+				CE93759324BAAEE40074066F /* qemu in Resources */,
 				CE2D959024AD50D50059923A /* Localizable.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -3271,6 +3279,7 @@
 				CE0B6CF324AD568400FE012D /* UTMConfiguration.m in Sources */,
 				CE0B6D3D24AD584C00FE012D /* qapi-visit-block-core.c in Sources */,
 				CE0B6D5C24AD584D00FE012D /* qapi-events-net.c in Sources */,
+				CE93759024BA74510074066F /* ToolbarTabViewController.swift in Sources */,
 				CE0B6D0324AD56AE00FE012D /* UTMTerminal.m in Sources */,
 				CE0B6CFC24AD568400FE012D /* UTMConfigurationPortForward.m in Sources */,
 				CE0B6D7924AD584D00FE012D /* qapi-visit-rdma.c in Sources */,
@@ -3342,6 +3351,7 @@
 				CE2D956224AD4F990059923A /* VMSettingsView.swift in Sources */,
 				CE0B6D8224AD584D00FE012D /* qapi-types-block-core.c in Sources */,
 				CE0B6D8724AD5ADE00FE012D /* UTMScreenshot.m in Sources */,
+				CE93759224BA775C0074066F /* ToolbarTabView.swift in Sources */,
 				CE0B6D1124AD57C700FE012D /* qapi-builtin-visit.c in Sources */,
 				CE0B6D3F24AD584C00FE012D /* qapi-visit-qom.c in Sources */,
 				CE2D958A24AD4F990059923A /* VMConfigSystemView.swift in Sources */,
