@@ -53,6 +53,16 @@ extension LocalizedStringKey {
     }
 }
 
+extension String: Error {
+    
+}
+
+extension IndexSet: Identifiable {
+    public var id: Int {
+        self.hashValue
+    }
+}
+
 #if !os(macOS)
 extension UIView {
     /// Adds constraints to this `UIView` instances `superview` object to make sure this always has the same size as the superview.

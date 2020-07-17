@@ -30,6 +30,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface UTMConfiguration (Drives)
 
+@property (nonatomic, readonly) NSURL *imagesPath;
 @property (nonatomic, readonly) NSInteger countDrives;
 
 - (void)migrateDriveConfigurationIfNecessary;

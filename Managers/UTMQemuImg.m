@@ -34,13 +34,13 @@
                 [self pushArgv:[NSString stringWithFormat:@"encrypt.format=aes,encrypt.key-secret=%@", self.password]];
             }
             [self pushArgv:self.outputPath.path];
-            [self pushArgv:[NSString stringWithFormat:@"%luM", self.sizeMiB]];
+            [self pushArgv:[NSString stringWithFormat:@"%ldM", self.sizeMiB]];
             break;
         }
         case kUTMQemuImgResize: {
             [self pushArgv:@"resize"];
             [self pushArgv:self.outputPath.path];
-            [self pushArgv:[NSString stringWithFormat:@"%luM", self.sizeMiB]];
+            [self pushArgv:[NSString stringWithFormat:@"%ldM", self.sizeMiB]];
             break;
         }
         case kUTMQemuImgConvert: {
