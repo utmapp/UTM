@@ -21,6 +21,8 @@ import SwiftUI
 struct VMConfigDrivesView: View {
     @ObservedObject var config: UTMConfiguration
     @State private var modal: DriveConfigModal? = nil
+    @State private var attemptDelete: IndexSet?
+    @EnvironmentObject private var data: UTMData
     
     var body: some View {
         Group {
@@ -46,7 +48,9 @@ struct VMConfigDrivesView: View {
                                         }
                                     }
                                 })
-                        }.onDelete(perform: deleteDrives)
+                        }.onDelete { offsets in
+                            attemptDelete = offsets
+                        }
                         .onMove(perform: moveDrives)
                     }
                 }
@@ -66,11 +70,18 @@ struct VMConfigDrivesView: View {
             }
         )
         .modifier(NewDriveModifier(config: config, modal: $modal))
+        .actionSheet(item: $attemptDelete) { offsets in
+            ActionSheet(title: Text("Confirm Delete"), message: Text("Are you sure you want to permanently delete this disk image?"), buttons: [.cancel(), .destructive(Text("Delete")) {
+                deleteDrives(offsets: offsets)
+            }])
+        }
     }
     
     private func deleteDrives(offsets: IndexSet) {
-        for offset in offsets {
-            config.removeDrive(at: offset)
+        data.busyWork {
+            for offset in offsets {
+                try data.removeDrive(at: offset, forConfig: config)
+            }
         }
     }
     
@@ -93,6 +104,7 @@ enum DriveConfigModal: Identifiable {
 private struct NewDriveModifier: ViewModifier {
     @ObservedObject var config: UTMConfiguration
     @Binding var modal: DriveConfigModal?
+    @EnvironmentObject private var data: UTMData
     
     func body(content: Content) -> some View {
         content.sheet(item: $modal) { select in

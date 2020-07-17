@@ -25,6 +25,7 @@
 #include "UTMConfiguration+System.h"
 #include "UTMConfigurationPortForward.h"
 #include "UTMQemu.h"
+#include "UTMQemuImg.h"
 #include "UTMQemuSystem.h"
 #include "UTMLogging.h"
 #include "UTMVirtualMachine.h"

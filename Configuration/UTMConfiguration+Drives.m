@@ -33,6 +33,16 @@ static const NSString *const kUTMConfigCdromKey = @"Cdrom";
 
 @implementation UTMConfiguration (Drives)
 
+#pragma mark - Images Path
+
+- (NSURL *)imagesPath {
+    if (self.existingPath) {
+        return [self.existingPath URLByAppendingPathComponent:[UTMConfiguration diskImagesDirectory] isDirectory:YES];
+    } else {
+        return [[NSFileManager defaultManager].temporaryDirectory URLByAppendingPathComponent:[UTMConfiguration diskImagesDirectory] isDirectory:YES];
+    }
+}
+
 #pragma mark - Migration
 
 - (void)migrateDriveConfigurationIfNecessary {

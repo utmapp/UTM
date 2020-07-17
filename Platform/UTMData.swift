@@ -151,6 +151,65 @@ class UTMData: ObservableObject {
         }
     }
     
+    func importDrive(_ drive: URL, forConfig: UTMConfiguration) throws {
+        let fileManager = FileManager.default
+        let name = drive.lastPathComponent
+        let imagesPath = forConfig.imagesPath
+        let dstPath = imagesPath.appendingPathComponent(name)
+        if !fileManager.fileExists(atPath: imagesPath.path) {
+            try fileManager.createDirectory(at: imagesPath, withIntermediateDirectories: false, attributes: nil)
+        }
+        try fileManager.moveItem(at: drive, to: dstPath)
+        DispatchQueue.main.async {
+            forConfig.newDrive(name, type: .CD, interface: UTMConfiguration.defaultDriveInterface())
+        }
+    }
+    
+    func createDrive(size: Int, type: UTMDiskImageType, interface: String, forConfig: UTMConfiguration) throws {
+        let fileManager = FileManager.default
+        let name = UUID().uuidString
+        let imagesPath = forConfig.imagesPath
+        let dstPath = imagesPath.appendingPathComponent(name)
+        if !fileManager.fileExists(atPath: imagesPath.path) {
+            try fileManager.createDirectory(at: imagesPath, withIntermediateDirectories: false, attributes: nil)
+        }
+        
+        // create drive
+        // TODO: implement custom qcow2 creation
+        let sema = DispatchSemaphore(value: 0)
+        let imgCreate = UTMQemuImg()
+        var success = false
+        var msg = ""
+        imgCreate.op = .create
+        imgCreate.outputPath = dstPath
+        imgCreate.sizeMiB = size
+        imgCreate.compressed = true
+        imgCreate.start { (_success, _msg) in
+            success = _success
+            msg = _msg
+            sema.signal()
+        }
+        sema.wait()
+        if !success {
+            throw msg
+        }
+        
+        DispatchQueue.main.async {
+            forConfig.newDrive(name, type: type, interface: interface)
+        }
+    }
+    
+    func removeDrive(at: Int, forConfig: UTMConfiguration) throws {
+        let fileManager = FileManager.default
+        let path = forConfig.driveImagePath(for: at)!
+        
+        try fileManager.removeItem(atPath: path)
+        
+        DispatchQueue.main.async {
+            forConfig.removeDrive(at: at)
+        }
+    }
+    
     private func refreshConfiguration(for vm: UTMVirtualMachine) {
         guard let path = vm.path else {
             logger.error("Attempting to refresh unsaved VM \(vm.configuration.name)")

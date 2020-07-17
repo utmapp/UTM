@@ -28,7 +28,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) NSURL *imagesPath;
 @property (nonatomic, nullable, strong) NSURL *existingPath;
 @property (nonatomic, strong) NSURL *changePath;
-@property (nonatomic, readonly) NSUInteger size;
+@property (nonatomic, readonly) NSInteger size;
 @property (nonatomic, readonly) BOOL imageExpanding;
 @property (nonatomic, assign) BOOL shownExistingWarning;
 
