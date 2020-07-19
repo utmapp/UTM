@@ -47,6 +47,7 @@ struct VMSettingsView: View {
                 VMConfigSharingView(config: config)
             }
         }.frame(minWidth: 800, minHeight: 400)
+        .overlay(BusyOverlay())
     }
 }
 

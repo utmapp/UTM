@@ -18,6 +18,9 @@ import SwiftUI
 
 struct VMConfigDrivesView: View {
     @ObservedObject var config: UTMConfiguration
+    @State private var newDrivePopover: Bool = false
+    @StateObject private var newDrive: VMDriveImage = VMDriveImage()
+    @EnvironmentObject private var data: UTMData
     
     var body: some View {
         VStack {
@@ -26,9 +29,20 @@ struct VMConfigDrivesView: View {
                 Button(action: importDrive, label: {
                     Label("Import Drive", systemImage: "square.and.arrow.down").labelStyle(TitleOnlyLabelStyle())
                 })
-                Button(action: addNewDrive, label: {
+                Button(action: { newDrivePopover.toggle() }, label: {
                     Label("New Drive", systemImage: "plus").labelStyle(TitleOnlyLabelStyle())
                 })
+                .popover(isPresented: $newDrivePopover, arrowEdge: .bottom) {
+                    VStack {
+                        VMConfigDriveDetailsView(driveImage: newDrive, newDrive: true, locked: false)
+                        HStack {
+                            Spacer()
+                            Button(action: { addNewDrive(newDrive) }, label: {
+                                Text("Create")
+                            })
+                        }
+                    }.padding()
+                }
             }
             if config.countDrives == 0 {
                 Text("No drives added.").font(.headline)
@@ -48,11 +62,22 @@ struct VMConfigDrivesView: View {
     }
     
     private func importDrive() {
-        
+        let panel = NSOpenPanel()
+        panel.message = NSLocalizedString("Import Disk Image", comment: "VMConfigDrivesView")
+        panel.beginSheetModal(for: NSApplication.shared.keyWindow!) { response in
+            if response == NSApplication.ModalResponse.OK, let fileUrl = panel.url {
+                data.busyWork {
+                    try data.importDrive(fileUrl, forConfig: config, copy: true)
+                }
+            }
+        }
     }
     
-    private func addNewDrive() {
-        
+    private func addNewDrive(_ newDrive: VMDriveImage) {
+        newDrivePopover = false // hide popover
+        data.busyWork {
+            try data.createDrive(newDrive, forConfig: config)
+        }
     }
 }
 
@@ -63,7 +88,7 @@ struct DriveCard: View {
     var body: some View {
         GroupBox {
             VStack {
-                VMConfigDriveDetailsView(config: config, index: index)
+                VMConfigDriveDetailsView(driveImage: VMDriveImage(config: config, index: index), locked: true)
                 HStack {
                     Button(action: deleteDrive, label: {
                         Label("Delete", systemImage: "trash").labelStyle(IconOnlyLabelStyle()).foregroundColor(.red)
