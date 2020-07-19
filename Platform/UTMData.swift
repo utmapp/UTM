@@ -151,7 +151,7 @@ class UTMData: ObservableObject {
         }
     }
     
-    func importDrive(_ drive: URL, forConfig: UTMConfiguration) throws {
+    func importDrive(_ drive: URL, forConfig: UTMConfiguration, copy: Bool = false) throws {
         let fileManager = FileManager.default
         let name = drive.lastPathComponent
         let imagesPath = forConfig.imagesPath
@@ -159,7 +159,11 @@ class UTMData: ObservableObject {
         if !fileManager.fileExists(atPath: imagesPath.path) {
             try fileManager.createDirectory(at: imagesPath, withIntermediateDirectories: false, attributes: nil)
         }
-        try fileManager.moveItem(at: drive, to: dstPath)
+        if copy {
+            try fileManager.copyItem(at: drive, to: dstPath)
+        } else {
+            try fileManager.moveItem(at: drive, to: dstPath)
+        }
         DispatchQueue.main.async {
             forConfig.newDrive(name, type: .CD, interface: UTMConfiguration.defaultDriveInterface())
         }
