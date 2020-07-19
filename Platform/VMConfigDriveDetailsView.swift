@@ -17,51 +17,50 @@
 import SwiftUI
 
 struct VMConfigDriveDetailsView: View {
-    @ObservedObject var config: UTMConfiguration
-    @State var index: Int
-    @State private var removable = false //FIXME: implement this
+    @ObservedObject var driveImage: VMDriveImage
+    var newDrive: Bool = false
+    var locked: Bool = false
     
     var body: some View {
-        let fileName = config.driveImagePath(for: index) ?? ""
-        let imageType = config.driveImageType(for: index)
-        let imageTypeObserver = Binding<String?> {
-            config.driveImageType(for: index).description
-        } set: {
-            config.setDrive(UTMDiskImageType.enumFromString($0), for: index)
-        }
-        let interfaceTypeObserver = Binding<String?> {
-            config.driveInterfaceType(for: index)
-        } set: {
-            config.setDriveInterfaceType($0 ?? UTMConfiguration.defaultDriveInterface(), for: index)
-        }
-        return Form {
-            Toggle(isOn: $removable, label: {
+        Form {
+            Toggle(isOn: $driveImage.removable.animation(), label: {
                 Text("Removable")
-            }).disabled(true)
-            if !removable {
-                Text(fileName)
+            }).disabled(locked)
+            if !driveImage.removable {
+                if locked {
+                    HStack {
+                        Text("Name")
+                        Spacer()
+                        Text(driveImage.name ?? "")
+                            .lineLimit(1)
+                            .multilineTextAlignment(.trailing)
+                    }
+                } else {
+                    HStack {
+                        Text("Size")
+                        Spacer()
+                        TextField("Size", value: $driveImage.size, formatter: NumberFormatter(), onCommit: validateSize)
+                            .multilineTextAlignment(.trailing)
+                        Text("MB")
+                    }
+                }
             }
-            VMConfigStringPicker(selection: imageTypeObserver, label: Text("Image Type"), rawValues: UTMConfiguration.supportedImageTypes(), displayValues: UTMConfiguration.supportedImageTypesPretty())
-            if imageType == .disk || imageType == .CD {
-                VMConfigStringPicker(selection: interfaceTypeObserver, label: Text("Interface"), rawValues: UTMConfiguration.supportedDriveInterfaces(), displayValues: UTMConfiguration.supportedDriveInterfaces())
+            VMConfigStringPicker(selection: $driveImage.imageTypeString, label: Text("Image Type"), rawValues: UTMConfiguration.supportedImageTypes(), displayValues: UTMConfiguration.supportedImageTypesPretty())
+            if driveImage.imageType == .disk || driveImage.imageType == .CD {
+                VMConfigStringPicker(selection: $driveImage.interface, label: Text("Interface"), rawValues: UTMConfiguration.supportedDriveInterfaces(), displayValues: UTMConfiguration.supportedDriveInterfaces())
             }
         }
+    }
+    
+    private func validateSize() {
+        // TODO: implement this
     }
 }
 
 struct VMConfigDriveDetailsView_Previews: PreviewProvider {
-    @ObservedObject static private var config = UTMConfiguration(name: "Test")
+    @ObservedObject static private var driveImage = VMDriveImage()
     
     static var previews: some View {
-        Group {
-            if config.countDrives > 0 {
-                VMConfigDriveDetailsView(config: config, index: 0)
-            }
-        }.onAppear {
-            if config.countDrives == 0 {
-                config.newDrive("test.img", type: .disk, interface: "ide")
-                config.newDrive("bios.bin", type: .BIOS, interface: UTMConfiguration.defaultDriveInterface())
-            }
-        }
+        VMConfigDriveDetailsView(driveImage: driveImage)
     }
 }

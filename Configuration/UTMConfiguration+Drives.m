@@ -23,6 +23,7 @@ extern const NSString *const kUTMConfigDrivesKey;
 static const NSString *const kUTMConfigImagePathKey = @"ImagePath";
 static const NSString *const kUTMConfigImageTypeKey = @"ImageType";
 static const NSString *const kUTMConfigInterfaceTypeKey = @"InterfaceType";
+static const NSString *const kUTMConfigRemovableKey = @"Removable";
 static const NSString *const kUTMConfigCdromKey = @"Cdrom";
 
 @interface UTMConfiguration ()
@@ -78,6 +79,19 @@ static const NSString *const kUTMConfigCdromKey = @"Cdrom";
     return index;
 }
 
+- (NSInteger)newRemovableDrive:(UTMDiskImageType)type interface:(NSString *)interface {
+    NSInteger index = [self countDrives];
+    NSString *strType = [UTMConfiguration supportedImageTypes][type];
+    NSMutableDictionary *drive = [[NSMutableDictionary alloc] initWithDictionary:@{
+                                                                                   kUTMConfigRemovableKey: @(YES),
+                                                                                   kUTMConfigImageTypeKey: strType,
+                                                                                   kUTMConfigInterfaceTypeKey: interface
+                                                                                   }];
+    [self propertyWillChange];
+    [self.rootDict[kUTMConfigDrivesKey] addObject:drive];
+    return index;
+}
+
 - (nullable NSString *)driveImagePathForIndex:(NSInteger)index {
     return self.rootDict[kUTMConfigDrivesKey][index][kUTMConfigImagePathKey];
 }
@@ -110,6 +124,14 @@ static const NSString *const kUTMConfigCdromKey = @"Cdrom";
     NSString *strType = [UTMConfiguration supportedImageTypes][type];
     [self propertyWillChange];
     self.rootDict[kUTMConfigDrivesKey][index][kUTMConfigImageTypeKey] = strType;
+}
+
+- (BOOL)driveRemovableForIndex:(NSInteger)index {
+    return [self.rootDict[kUTMConfigDrivesKey][index][kUTMConfigRemovableKey] boolValue];
+}
+
+- (void)setDriveRemovable:(BOOL)isRemovable forIndex:(NSInteger)index {
+    self.rootDict[kUTMConfigDrivesKey][index][kUTMConfigRemovableKey] = @(isRemovable);
 }
 
 - (void)moveDriveIndex:(NSInteger)index to:(NSInteger)newIndex {

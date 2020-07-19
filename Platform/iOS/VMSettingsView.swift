@@ -20,6 +20,7 @@ struct VMSettingsView: View {
     @ObservedObject var config: UTMConfiguration
     var save: (UTMConfiguration) -> Void
     
+    @EnvironmentObject private var data: UTMData
     @Environment(\.presentationMode) private var presentationMode: Binding<PresentationMode>
     
     var body: some View {

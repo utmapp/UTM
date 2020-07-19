@@ -70,7 +70,7 @@ struct VMDetailsView: View {
         }.sheet(isPresented: $settingsSheetPresented) {
             VMSettingsView(config: vm.configuration) { _ in
                 data.busyWork() { try data.save(vm: vm) }
-            }
+            }.environmentObject(data)
         }
     }
 }

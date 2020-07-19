@@ -165,37 +165,44 @@ class UTMData: ObservableObject {
         }
     }
     
-    func createDrive(size: Int, type: UTMDiskImageType, interface: String, forConfig: UTMConfiguration) throws {
-        let fileManager = FileManager.default
-        let name = UUID().uuidString
-        let imagesPath = forConfig.imagesPath
-        let dstPath = imagesPath.appendingPathComponent(name)
-        if !fileManager.fileExists(atPath: imagesPath.path) {
-            try fileManager.createDirectory(at: imagesPath, withIntermediateDirectories: false, attributes: nil)
-        }
-        
-        // create drive
-        // TODO: implement custom qcow2 creation
-        let sema = DispatchSemaphore(value: 0)
-        let imgCreate = UTMQemuImg()
-        var success = false
-        var msg = ""
-        imgCreate.op = .create
-        imgCreate.outputPath = dstPath
-        imgCreate.sizeMiB = size
-        imgCreate.compressed = true
-        imgCreate.start { (_success, _msg) in
-            success = _success
-            msg = _msg
-            sema.signal()
-        }
-        sema.wait()
-        if !success {
-            throw msg
+    func createDrive(_ drive: VMDriveImage, forConfig: UTMConfiguration) throws {
+        if !drive.removable {
+            guard let name = drive.name else {
+                throw NSLocalizedString("Drive name is nil.", comment: "UTMData")
+            }
+            guard drive.size > 0 else {
+                throw NSLocalizedString("Invalid drive size.", comment: "UTMData")
+            }
+            let fileManager = FileManager.default
+            let imagesPath = forConfig.imagesPath
+            let dstPath = imagesPath.appendingPathComponent(name)
+            if !fileManager.fileExists(atPath: imagesPath.path) {
+                try fileManager.createDirectory(at: imagesPath, withIntermediateDirectories: false, attributes: nil)
+            }
+            
+            // create drive
+            // TODO: implement custom qcow2 creation
+            let sema = DispatchSemaphore(value: 0)
+            let imgCreate = UTMQemuImg()
+            var success = false
+            var msg = ""
+            imgCreate.op = .create
+            imgCreate.outputPath = dstPath
+            imgCreate.sizeMiB = drive.size
+            imgCreate.compressed = true
+            imgCreate.start { (_success, _msg) in
+                success = _success
+                msg = _msg
+                sema.signal()
+            }
+            sema.wait()
+            if !success {
+                throw msg
+            }
         }
         
         DispatchQueue.main.async {
-            forConfig.newDrive(name, type: type, interface: interface)
+            drive.create(config: forConfig)
         }
     }
     

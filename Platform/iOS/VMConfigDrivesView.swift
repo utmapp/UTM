@@ -36,9 +36,10 @@ struct VMConfigDrivesView: View {
                             let imageType = config.driveImageType(for: index)
                             let interfaceType = config.driveInterfaceType(for: index) ?? ""
                             NavigationLink(
-                                destination: VMConfigDriveDetailsView(config: config, index: index).navigationTitle("Drive"), label: {
+                                destination: VMConfigDriveDetailsView(driveImage: VMDriveImage(config: config, index: index), locked: true), label: {
                                     VStack(alignment: .leading) {
                                         Text(fileName)
+                                            .lineLimit(1)
                                         HStack {
                                             Text(imageType.description).font(.caption)
                                             if imageType == .disk || imageType == .CD {
@@ -58,12 +59,10 @@ struct VMConfigDrivesView: View {
         }
         .navigationBarItems(trailing:
             HStack {
-                EditButton()
-                Divider()
+                EditButton().padding(.trailing, 10)
                 Button(action: { modal = .importFile }, label: {
                     Label("Import Drive", systemImage: "square.and.arrow.down").labelStyle(IconOnlyLabelStyle())
-                })
-                Divider()
+                }).padding(.trailing, 10)
                 Button(action: { modal = .newFile }, label: {
                     Label("New Drive", systemImage: "plus").labelStyle(IconOnlyLabelStyle())
                 })
@@ -122,14 +121,14 @@ private struct NewDriveModifier: ViewModifier {
     }
     
     private func importFile(forURL: URL) {
-        // TODO: import file
+        data.busyWork {
+            try data.importDrive(forURL, forConfig: config)
+        }
     }
     
-    private func newFile(sizeMb: Int) {
-        withAnimation {
-            //FIXME: implement this
-            config.newDrive("test.img", type: .disk, interface: "ide")
-            config.newDrive("bios.bin", type: .BIOS, interface: UTMConfiguration.defaultDriveInterface())
+    private func newFile(driveImage: VMDriveImage) {
+        data.busyWork {
+            try data.createDrive(driveImage, forConfig: config)
         }
     }
 }
@@ -137,40 +136,23 @@ private struct NewDriveModifier: ViewModifier {
 // MARK: - Create Drive
 
 private struct CreateDrive: View {
-    let onDismiss: (Int) -> Void
-    @State private var size: Int = 10240
+    let onDismiss: (VMDriveImage) -> Void
+    @StateObject private var driveImage = VMDriveImage()
     @Environment(\.presentationMode) private var presentationMode: Binding<PresentationMode>
     
-    init(onDismiss: @escaping (Int) -> Void) {
+    init(onDismiss: @escaping (VMDriveImage) -> Void) {
         self.onDismiss = onDismiss
     }
     
     var body: some View {
-        VStack {
-            Form {
-                HStack {
-                    Text("Size")
-                    Spacer()
-                    TextField("Size", value: $size, formatter: NumberFormatter(), onCommit: validateSize)
-                        .multilineTextAlignment(.trailing)
-                        .keyboardType(.numberPad)
-                    Text("MB")
-                }
-                HStack {
-                    Button(action: cancel, label: {
-                        Text("Cancel")
-                    })
-                    Spacer()
-                    Button(action: done, label: {
-                        Text("Done")
-                    })
-                }
-            }
+        NavigationView {
+            VMConfigDriveDetailsView(driveImage: driveImage, newDrive: true, locked: false)
+                .navigationBarItems(leading: Button(action: cancel, label: {
+                    Text("Cancel")
+                }), trailing: Button(action: done, label: {
+                    Text("Done")
+                }))
         }
-    }
-    
-    private func validateSize() {
-        
     }
     
     private func cancel() {
@@ -179,7 +161,7 @@ private struct CreateDrive: View {
     
     private func done() {
         presentationMode.wrappedValue.dismiss()
-        onDismiss(size)
+        onDismiss(driveImage)
     }
 }
 
