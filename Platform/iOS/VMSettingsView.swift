@@ -95,8 +95,8 @@ struct VMSettingsView: View {
                     Text("Save")
                 })
             })
-            .overlay(BusyOverlay())
-        }
+        }.disabled(data.busy)
+        .overlay(BusyOverlay())
     }
 }
 
