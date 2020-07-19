@@ -53,8 +53,8 @@ extension LocalizedStringKey {
     }
 }
 
-extension String: Error {
-    
+extension String: LocalizedError {
+    public var errorDescription: String? { return self }
 }
 
 extension IndexSet: Identifiable {
