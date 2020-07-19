@@ -48,7 +48,7 @@ struct ContentView: View {
                 NavigationView {
                     VMSettingsView(config: UTMConfiguration(name: data.newDefaultName())) { config in
                         data.busyWork() { try data.create(config: config) }
-                    }
+                    }.environmentObject(data)
                 }
             }
             VMPlaceholderView()
