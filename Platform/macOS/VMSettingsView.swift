@@ -20,30 +20,32 @@ struct VMSettingsView: View {
     @ObservedObject var config: UTMConfiguration
     var save: (UTMConfiguration) -> Void
     
+    @Environment(\.presentationMode) private var presentationMode: Binding<PresentationMode>
+    
     var body: some View {
         ToolbarTabView {
-            PreferencePane(label: "System", systemImage: "cpu", save: { save(config) }) {
+            PreferencePane(label: "System", systemImage: "cpu", cancel: { presentationMode.wrappedValue.dismiss() }, save: { save(config) }) {
                 VMConfigSystemView(config: config)
             }
-            PreferencePane(label: "QEMU", systemImage: "shippingbox", save: { save(config) }) {
+            PreferencePane(label: "QEMU", systemImage: "shippingbox", cancel: { presentationMode.wrappedValue.dismiss() }, save: { save(config) }) {
                 VMConfigQEMUView(config: config)
             }
-            PreferencePane(label: "Drives", systemImage: "internaldrive", save: { save(config) }) {
+            PreferencePane(label: "Drives", systemImage: "internaldrive", cancel: { presentationMode.wrappedValue.dismiss() }, save: { save(config) }) {
                 VMConfigDrivesView(config: config)
             }
-            PreferencePane(label: "Display", systemImage: "rectangle.on.rectangle", save: { save(config) }) {
+            PreferencePane(label: "Display", systemImage: "rectangle.on.rectangle", cancel: { presentationMode.wrappedValue.dismiss() }, save: { save(config) }) {
                 VMConfigDisplayView(config: config)
             }
-            PreferencePane(label: "Input", systemImage: "keyboard", save: { save(config) }) {
+            PreferencePane(label: "Input", systemImage: "keyboard", cancel: { presentationMode.wrappedValue.dismiss() }, save: { save(config) }) {
                 VMConfigInputView(config: config)
             }
-            PreferencePane(label: "Network", systemImage: "network", save: { save(config) }) {
+            PreferencePane(label: "Network", systemImage: "network", cancel: { presentationMode.wrappedValue.dismiss() }, save: { save(config) }) {
                 VMConfigNetworkView(config: config)
             }
-            PreferencePane(label: "Sound", systemImage: "speaker.wave.2", save: { save(config) }) {
+            PreferencePane(label: "Sound", systemImage: "speaker.wave.2", cancel: { presentationMode.wrappedValue.dismiss() }, save: { save(config) }) {
                 VMConfigSoundView(config: config)
             }
-            PreferencePane(label: "Sharing", systemImage: "person.crop.circle.fill", save: { save(config) }) {
+            PreferencePane(label: "Sharing", systemImage: "person.crop.circle.fill", cancel: { presentationMode.wrappedValue.dismiss() }, save: { save(config) }) {
                 VMConfigSharingView(config: config)
             }
         }.frame(minWidth: 800, minHeight: 400)
@@ -54,14 +56,14 @@ struct VMSettingsView: View {
 struct PreferencePane<Content: View>: View {
     let label: LocalizedStringKey
     let systemImage: String
+    let cancel: () -> Void // HACK: NSHostingView doesn't get presentationMode
     let save: () -> Void
     let content: Content
     
-    @Environment(\.presentationMode) private var presentationMode: Binding<PresentationMode>
-    
-    init(label: LocalizedStringKey, systemImage: String, save: @escaping () -> Void, content: () -> Content) {
+    init(label: LocalizedStringKey, systemImage: String, cancel: @escaping () -> Void, save: @escaping () -> Void, content: () -> Content) {
         self.label = label
         self.systemImage = systemImage
+        self.cancel = cancel
         self.save = save
         self.content = content()
     }
@@ -74,12 +76,12 @@ struct PreferencePane<Content: View>: View {
             Divider()
             HStack {
                 Spacer()
-                Button(action: { presentationMode.wrappedValue.dismiss() }) {
+                Button(action: cancel) {
                     Text("Cancel")
                 }
                 Button(action: {
                     save()
-                    presentationMode.wrappedValue.dismiss()
+                    cancel()
                 }) {
                     Text("Save")
                 }
