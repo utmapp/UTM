@@ -25,7 +25,7 @@ struct VMConfigNetworkPortForwardView: View {
                 ForEach(0..<config.countPortForwards, id: \.self) { index in
                     let configPort = config.portForward(for: index)!
                     NavigationLink(
-                        destination: PortForwardEdit(config: config, configPort: configPort, index: index),
+                        destination: PortForwardEdit(config: config, index: index),
                         label: {
                             VStack(alignment: .leading) {
                                 Text("\(configPort.guestAddress ?? ""):\(String(configPort.guestPort)) ➡️ \(configPort.hostAddress ?? ""):\(String(configPort.hostPort))")
@@ -34,7 +34,7 @@ struct VMConfigNetworkPortForwardView: View {
                         })
                 }.onDelete(perform: deletePortForwards)
                 NavigationLink(
-                    destination: PortForwardEdit(config: config, configPort: UTMConfigurationPortForward(), index: config.countPortForwards),
+                    destination: PortForwardEdit(config: config),
                     label: {
                         Text("New")
                 })
@@ -50,15 +50,27 @@ struct VMConfigNetworkPortForwardView: View {
 }
 
 struct PortForwardEdit: View {
-    @ObservedObject var config: UTMConfiguration
-    @StateObject var configPort: UTMConfigurationPortForward
-    @State var index: Int
+    @StateObject private var configPort: UTMConfigurationPortForward
+    private let save: () -> Void
     @Environment(\.presentationMode) private var presentationMode: Binding<PresentationMode>
+    
+    init(config: UTMConfiguration, index: Int? = nil) {
+        var configPort: UTMConfigurationPortForward
+        if let i = index {
+            configPort = config.portForward(for: i)!
+        } else {
+            configPort = UTMConfigurationPortForward()
+        }
+        self._configPort = StateObject<UTMConfigurationPortForward>(wrappedValue: configPort)
+        save = {
+            config.updatePortForward(at: index ?? config.countPortForwards, withValue: configPort)
+        }
+    }
     
     var body: some View {
         Form {
             List {
-                VMConfigPortForwardForm(configPort: configPort, index: index).multilineTextAlignment(.trailing)
+                VMConfigPortForwardForm(configPort: configPort).multilineTextAlignment(.trailing)
             }
         }.navigationBarItems(trailing:
             Button(action: savePortForward, label: {
@@ -68,14 +80,13 @@ struct PortForwardEdit: View {
     }
     
     private func savePortForward() {
-        config.updatePortForward(at: index, withValue: configPort)
+        save()
         self.presentationMode.wrappedValue.dismiss()
     }
 }
 
 struct VMConfigNetworkPortForwardView_Previews: PreviewProvider {
     @State static private var config = UTMConfiguration(name: "Test")
-    @State static private var configPort = UTMConfigurationPortForward()
     static var previews: some View {
         Group {
             Form {
@@ -97,7 +108,7 @@ struct VMConfigNetworkPortForwardView_Previews: PreviewProvider {
                     config.newPortForward(newConfigPort)
                 }
             }
-            PortForwardEdit(config: config, configPort: configPort, index: 0)
+            PortForwardEdit(config: config, index: 0)
         }
     }
 }

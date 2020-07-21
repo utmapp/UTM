@@ -29,7 +29,7 @@ struct VMConfigNetworkPortForwardView: View {
                 Button(action: { editingNewPort = true }, label: {
                     Text("New")
                 }).popover(isPresented: $editingNewPort, arrowEdge: .bottom) {
-                    PortForwardEdit(config: config, configPort: UTMConfigurationPortForward(), index: config.countPortForwards).padding()
+                    PortForwardEdit(config: config).padding()
                         .frame(width: 250)
                 }
             }, footer: EmptyView().padding(.bottom)) {
@@ -50,7 +50,7 @@ struct VMConfigNetworkPortForwardView: View {
                         Text("\(configPort.guestAddress ?? ""):\(String(configPort.guestPort)) ➡️ \(configPort.hostAddress ?? ""):\(String(configPort.hostPort)) (\(configPort.protocol ?? ""))")
                     }).buttonStyle(PlainButtonStyle())
                     .popover(isPresented: editingNewPortBinding, arrowEdge: .bottom) {
-                        PortForwardEdit(config: config, configPort: configPort, index: index).padding()
+                        PortForwardEdit(config: config, index: index).padding()
                             .frame(width: 250)
                     }
                 }
@@ -60,14 +60,26 @@ struct VMConfigNetworkPortForwardView: View {
 }
 
 struct PortForwardEdit: View {
-    @ObservedObject var config: UTMConfiguration
-    @StateObject var configPort: UTMConfigurationPortForward
-    @State var index: Int
+    @StateObject private var configPort: UTMConfigurationPortForward
+    private let save: () -> Void
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
+    
+    init(config: UTMConfiguration, index: Int? = nil) {
+        var configPort: UTMConfigurationPortForward
+        if let i = index {
+            configPort = config.portForward(for: i)!
+        } else {
+            configPort = UTMConfigurationPortForward()
+        }
+        self._configPort = StateObject<UTMConfigurationPortForward>(wrappedValue: configPort)
+        save = {
+            config.updatePortForward(at: index ?? config.countPortForwards, withValue: configPort)
+        }
+    }
     
     var body: some View {
         VStack {
-            VMConfigPortForwardForm(configPort: configPort, index: index).multilineTextAlignment(.trailing)
+            VMConfigPortForwardForm(configPort: configPort).multilineTextAlignment(.trailing)
             HStack {
                 Spacer()
                 Button(action: savePortForward, label: {
@@ -78,7 +90,7 @@ struct PortForwardEdit: View {
     }
     
     private func savePortForward() {
-        config.updatePortForward(at: index, withValue: configPort)
+        save()
         self.presentationMode.wrappedValue.dismiss()
     }
 }

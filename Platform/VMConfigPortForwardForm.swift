@@ -18,7 +18,6 @@ import SwiftUI
 
 struct VMConfigPortForwardForm: View {
     @ObservedObject var configPort: UTMConfigurationPortForward
-    @State var index: Int
     
     var body: some View {
         Group {
@@ -59,7 +58,7 @@ struct VMConfigPortForwardForm_Previews: PreviewProvider {
     
     static var previews: some View {
         VStack {
-            VMConfigPortForwardForm(configPort: configPort, index: 0)
+            VMConfigPortForwardForm(configPort: configPort)
         }.onAppear {
             if config.countPortForwards == 0 {
                 let newConfigPort = UTMConfigurationPortForward()
