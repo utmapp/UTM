@@ -34,7 +34,7 @@ struct VMConfigDrivesView: View {
                 })
                 .popover(isPresented: $newDrivePopover, arrowEdge: .bottom) {
                     VStack {
-                        VMConfigDriveDetailsView(driveImage: newDrive, newDrive: true, locked: false)
+                        VMConfigDriveCreateView(driveImage: newDrive)
                         HStack {
                             Spacer()
                             Button(action: { addNewDrive(newDrive) }, label: {
@@ -88,7 +88,7 @@ struct DriveCard: View {
     var body: some View {
         GroupBox {
             VStack {
-                VMConfigDriveDetailsView(driveImage: VMDriveImage(config: config, index: index), locked: true)
+                VMConfigDriveDetailsView(config: config, index: index)
                 HStack {
                     Button(action: deleteDrive, label: {
                         Label("Delete", systemImage: "trash").labelStyle(IconOnlyLabelStyle()).foregroundColor(.red)

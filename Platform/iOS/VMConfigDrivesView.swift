@@ -36,7 +36,7 @@ struct VMConfigDrivesView: View {
                             let imageType = config.driveImageType(for: index)
                             let interfaceType = config.driveInterfaceType(for: index) ?? ""
                             NavigationLink(
-                                destination: VMConfigDriveDetailsView(driveImage: VMDriveImage(config: config, index: index), locked: true), label: {
+                                destination: VMConfigDriveDetailsView(config: config, index: index), label: {
                                     VStack(alignment: .leading) {
                                         Text(fileName)
                                             .lineLimit(1)
@@ -146,7 +146,7 @@ private struct CreateDrive: View {
     
     var body: some View {
         NavigationView {
-            VMConfigDriveDetailsView(driveImage: driveImage, newDrive: true, locked: false)
+            VMConfigDriveCreateView(driveImage: driveImage)
                 .navigationBarItems(leading: Button(action: cancel, label: {
                     Text("Cancel")
                 }), trailing: Button(action: done, label: {

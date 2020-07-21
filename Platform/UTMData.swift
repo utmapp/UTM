@@ -146,6 +146,7 @@ class UTMData: ObservableObject {
     }
     
     func remove(atOffsets: IndexSet) {
+        // TODO: implement delete
         DispatchQueue.main.async {
             self.virtualMachines.remove(atOffsets: atOffsets)
         }
@@ -214,7 +215,9 @@ class UTMData: ObservableObject {
         let fileManager = FileManager.default
         let path = forConfig.driveImagePath(for: at)!
         
-        try fileManager.removeItem(atPath: path)
+        if fileManager.fileExists(atPath: path) {
+            try fileManager.removeItem(atPath: path)
+        }
         
         DispatchQueue.main.async {
             forConfig.removeDrive(at: at)
