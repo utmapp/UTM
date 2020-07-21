@@ -17,50 +17,64 @@
 import SwiftUI
 
 struct VMConfigDriveDetailsView: View {
-    @ObservedObject var driveImage: VMDriveImage
-    var newDrive: Bool = false
-    var locked: Bool = false
+    @Binding private var removable: Bool
+    @Binding private var name: String?
+    @Binding private var imageTypeString: String?
+    @Binding private var interface: String?
     
-    var body: some View {
-        Form {
-            Toggle(isOn: $driveImage.removable.animation(), label: {
-                Text("Removable")
-            }).disabled(locked)
-            if !driveImage.removable {
-                if locked {
-                    HStack {
-                        Text("Name")
-                        Spacer()
-                        Text(driveImage.name ?? "")
-                            .lineLimit(1)
-                            .multilineTextAlignment(.trailing)
-                    }
-                } else {
-                    HStack {
-                        Text("Size")
-                        Spacer()
-                        TextField("Size", value: $driveImage.size, formatter: NumberFormatter(), onCommit: validateSize)
-                            .multilineTextAlignment(.trailing)
-                        Text("MB")
-                    }
-                }
+    var imageType: UTMDiskImageType {
+        get {
+            UTMDiskImageType.enumFromString(imageTypeString)
+        }
+        
+        set {
+            imageTypeString = newValue.description
+        }
+    }
+    
+    init(config: UTMConfiguration, index: Int) {
+        self._removable = Binding<Bool> {
+            return config.driveRemovable(for: index)
+        } set: {
+            config.setDriveRemovable($0, for: index)
+        }
+        self._name = Binding<String?> {
+            return config.driveImagePath(for: index)
+        } set: {
+            if let name = $0 {
+                config.setImagePath(name, for: index)
             }
-            VMConfigStringPicker(selection: $driveImage.imageTypeString, label: Text("Image Type"), rawValues: UTMConfiguration.supportedImageTypes(), displayValues: UTMConfiguration.supportedImageTypesPretty())
-            if driveImage.imageType == .disk || driveImage.imageType == .CD {
-                VMConfigStringPicker(selection: $driveImage.interface, label: Text("Interface"), rawValues: UTMConfiguration.supportedDriveInterfaces(), displayValues: UTMConfiguration.supportedDriveInterfaces())
+        }
+        self._imageTypeString = Binding<String?> {
+            return config.driveImageType(for: index).description
+        } set: {
+            config.setDrive(UTMDiskImageType.enumFromString($0), for: index)
+        }
+        self._interface = Binding<String?> {
+            return config.driveInterfaceType(for: index)
+        } set: {
+            if let interface = $0 {
+                config.setDriveInterfaceType(interface, for: index)
             }
         }
     }
     
-    private func validateSize() {
-        // TODO: implement this
-    }
-}
-
-struct VMConfigDriveDetailsView_Previews: PreviewProvider {
-    @ObservedObject static private var driveImage = VMDriveImage()
-    
-    static var previews: some View {
-        VMConfigDriveDetailsView(driveImage: driveImage)
+    var body: some View {
+        Form {
+            Toggle(isOn: $removable.animation(), label: {
+                Text("Removable")
+            }).disabled(true)
+            HStack {
+                Text("Name")
+                Spacer()
+                Text(name ?? "")
+                    .lineLimit(1)
+                    .multilineTextAlignment(.trailing)
+            }
+            VMConfigStringPicker(selection: $imageTypeString, label: Text("Image Type"), rawValues: UTMConfiguration.supportedImageTypes(), displayValues: UTMConfiguration.supportedImageTypesPretty())
+            if imageType == .disk || imageType == .CD {
+                VMConfigStringPicker(selection: $interface, label: Text("Interface"), rawValues: UTMConfiguration.supportedDriveInterfaces(), displayValues: UTMConfiguration.supportedDriveInterfaces())
+            }
+        }
     }
 }
