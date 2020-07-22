@@ -93,7 +93,11 @@ static const NSString *const kUTMConfigCdromKey = @"Cdrom";
 }
 
 - (nullable NSString *)driveImagePathForIndex:(NSInteger)index {
-    return self.rootDict[kUTMConfigDrivesKey][index][kUTMConfigImagePathKey];
+    if (index >= self.countDrives) {
+        return nil;
+    } else {
+        return self.rootDict[kUTMConfigDrivesKey][index][kUTMConfigImagePathKey];
+    }
 }
 
 - (void)setImagePath:(NSString *)path forIndex:(NSInteger)index {
@@ -102,7 +106,11 @@ static const NSString *const kUTMConfigCdromKey = @"Cdrom";
 }
 
 - (nullable NSString *)driveInterfaceTypeForIndex:(NSInteger)index {
-    return self.rootDict[kUTMConfigDrivesKey][index][kUTMConfigInterfaceTypeKey];
+    if (index >= self.countDrives) {
+        return nil;
+    } else {
+        return self.rootDict[kUTMConfigDrivesKey][index][kUTMConfigInterfaceTypeKey];
+    }
 }
 
 - (void)setDriveInterfaceType:(NSString *)interfaceType forIndex:(NSInteger)index {
@@ -111,6 +119,9 @@ static const NSString *const kUTMConfigCdromKey = @"Cdrom";
 }
 
 - (UTMDiskImageType)driveImageTypeForIndex:(NSInteger)index {
+    if (index >= self.countDrives) {
+        return UTMDiskImageTypeDisk;
+    }
     NSString *strType = self.rootDict[kUTMConfigDrivesKey][index][kUTMConfigImageTypeKey];
     NSInteger type = [[UTMConfiguration supportedImageTypes] indexOfObject:strType];
     if (type == NSNotFound || type >= UTMDiskImageTypeMax) {
@@ -127,7 +138,11 @@ static const NSString *const kUTMConfigCdromKey = @"Cdrom";
 }
 
 - (BOOL)driveRemovableForIndex:(NSInteger)index {
-    return [self.rootDict[kUTMConfigDrivesKey][index][kUTMConfigRemovableKey] boolValue];
+    if (index >= self.countDrives) {
+        return NO;
+    } else {
+        return [self.rootDict[kUTMConfigDrivesKey][index][kUTMConfigRemovableKey] boolValue];
+    }
 }
 
 - (void)setDriveRemovable:(BOOL)isRemovable forIndex:(NSInteger)index {
