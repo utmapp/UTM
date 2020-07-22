@@ -21,6 +21,7 @@ struct VMConfigDrivesView: View {
     @State private var newDrivePopover: Bool = false
     @StateObject private var newDrive: VMDriveImage = VMDriveImage()
     @EnvironmentObject private var data: UTMData
+    @Environment(\.importFiles) private var importFiles: ImportFilesAction
     
     var body: some View {
         VStack {
@@ -62,12 +63,16 @@ struct VMConfigDrivesView: View {
     }
     
     private func importDrive() {
-        let panel = NSOpenPanel()
-        panel.message = NSLocalizedString("Import Disk Image", comment: "VMConfigDrivesView")
-        panel.beginSheetModal(for: NSApplication.shared.keyWindow!) { response in
-            if response == NSApplication.ModalResponse.OK, let fileUrl = panel.url {
-                data.busyWork {
-                    try data.importDrive(fileUrl, forConfig: config, copy: true)
+        importFiles(singleOfType: [.item]) { ret in
+            data.busyWork {
+                switch ret {
+                case .success(let url):
+                    try data.importDrive(url, forConfig: config)
+                    break
+                case .failure(let err):
+                    throw err
+                case .none:
+                    break
                 }
             }
         }
