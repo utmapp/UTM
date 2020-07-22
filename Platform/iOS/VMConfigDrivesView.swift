@@ -20,9 +20,10 @@ import SwiftUI
 
 struct VMConfigDrivesView: View {
     @ObservedObject var config: UTMConfiguration
-    @State private var modal: DriveConfigModal? = nil
+    @State private var createDriveVisible: Bool = false
     @State private var attemptDelete: IndexSet?
     @EnvironmentObject private var data: UTMData
+    @Environment(\.importFiles) private var importFiles: ImportFilesAction
     
     var body: some View {
         Group {
@@ -60,19 +61,43 @@ struct VMConfigDrivesView: View {
         .navigationBarItems(trailing:
             HStack {
                 EditButton().padding(.trailing, 10)
-                Button(action: { modal = .importFile }, label: {
+                Button(action: importDrive, label: {
                     Label("Import Drive", systemImage: "square.and.arrow.down").labelStyle(IconOnlyLabelStyle())
                 }).padding(.trailing, 10)
-                Button(action: { modal = .newFile }, label: {
+                Button(action: { createDriveVisible.toggle() }, label: {
                     Label("New Drive", systemImage: "plus").labelStyle(IconOnlyLabelStyle())
                 })
             }
         )
-        .modifier(NewDriveModifier(config: config, modal: $modal))
+        .sheet(isPresented: $createDriveVisible) {
+            CreateDrive(onDismiss: newDrive)
+        }
         .actionSheet(item: $attemptDelete) { offsets in
             ActionSheet(title: Text("Confirm Delete"), message: Text("Are you sure you want to permanently delete this disk image?"), buttons: [.cancel(), .destructive(Text("Delete")) {
                 deleteDrives(offsets: offsets)
             }])
+        }
+    }
+    
+    private func importDrive() {
+        importFiles(singleOfType: [.item]) { ret in
+            data.busyWork {
+                switch ret {
+                case .success(let url):
+                    try data.importDrive(url, forConfig: config)
+                    break
+                case .failure(let err):
+                    throw err
+                case .none:
+                    break
+                }
+            }
+        }
+    }
+    
+    private func newDrive(driveImage: VMDriveImage) {
+        data.busyWork {
+            try data.createDrive(driveImage, forConfig: config)
         }
     }
     
@@ -87,48 +112,6 @@ struct VMConfigDrivesView: View {
     private func moveDrives(source: IndexSet, destination: Int) {
         for offset in source {
             config.moveDrive(offset, to: destination)
-        }
-    }
-}
-
-// MARK: - New Drive
-
-enum DriveConfigModal: Identifiable {
-    var id: DriveConfigModal { self }
-    
-    case newFile
-    case importFile
-}
-
-private struct NewDriveModifier: ViewModifier {
-    @ObservedObject var config: UTMConfiguration
-    @Binding var modal: DriveConfigModal?
-    @EnvironmentObject private var data: UTMData
-    
-    func body(content: Content) -> some View {
-        content.sheet(item: $modal) { select in
-            switch select {
-            case .importFile:
-                FilePicker(forOpeningContentTypes: [.item], asCopy: true) { urls in
-                    if !urls.isEmpty {
-                        importFile(forURL: urls.first!)
-                    }
-                }
-            case .newFile:
-                CreateDrive(onDismiss: newFile)
-            }
-        }
-    }
-    
-    private func importFile(forURL: URL) {
-        data.busyWork {
-            try data.importDrive(forURL, forConfig: config)
-        }
-    }
-    
-    private func newFile(driveImage: VMDriveImage) {
-        data.busyWork {
-            try data.createDrive(driveImage, forConfig: config)
         }
     }
 }
