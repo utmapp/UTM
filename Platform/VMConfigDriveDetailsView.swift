@@ -17,6 +17,7 @@
 import SwiftUI
 
 struct VMConfigDriveDetailsView: View {
+    @ObservedObject private var config: UTMConfiguration
     @Binding private var removable: Bool
     @Binding private var name: String?
     @Binding private var imageTypeString: String?
@@ -33,6 +34,7 @@ struct VMConfigDriveDetailsView: View {
     }
     
     init(config: UTMConfiguration, index: Int) {
+        self.config = config // for observing updates
         self._removable = Binding<Bool> {
             return config.driveRemovable(for: index)
         } set: {

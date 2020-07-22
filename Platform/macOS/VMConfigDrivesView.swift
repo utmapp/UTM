@@ -87,8 +87,9 @@ struct VMConfigDrivesView: View {
 }
 
 struct DriveCard: View {
-    @ObservedObject var config: UTMConfiguration
-    @State var index: Int
+    let config: UTMConfiguration
+    let index: Int
+    @EnvironmentObject private var data: UTMData
     
     var body: some View {
         GroupBox {
@@ -115,7 +116,9 @@ struct DriveCard: View {
     }
     
     func deleteDrive() {
-        
+        data.busyWork {
+            try data.removeDrive(at: index, forConfig: config)
+        }
     }
     
     func moveDriveUp() {
