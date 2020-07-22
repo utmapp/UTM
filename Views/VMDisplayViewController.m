@@ -296,12 +296,14 @@
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
     if ([segue.identifier isEqualToString:@"editVMConfig"]){
+#if 0 // deprecated, will remove in future
         NSAssert([segue.destinationViewController isKindOfClass:[UINavigationController class]], @"Destination not a navigation view");
         UINavigationController *navController = (UINavigationController *)segue.destinationViewController;
         NSAssert([navController.topViewController isKindOfClass:[VMConfigExistingViewController class]], @"Invalid segue destination");
         VMConfigExistingViewController *controller = (VMConfigExistingViewController *)navController.topViewController;
         controller.configuration = self.vmConfiguration;
         controller.nameReadOnly = YES;
+#endif
     }
 }
 
