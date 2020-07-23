@@ -29,6 +29,7 @@ struct VMConfigInfoView: View {
     @ObservedObject var config: UTMConfiguration
     @State private var imageSelectVisible: Bool = false
     @State private var iconStyle: IconStyle = .generic
+    @Environment(\.importFiles) private var importFiles: ImportFilesAction
     
     var body: some View {
         VStack {
@@ -69,16 +70,23 @@ struct VMConfigInfoView: View {
                     
                     switch iconStyle {
                     case .custom:
+                        #if os(macOS)
+                        Button(action: imageCustomSelect, label: {
+                            IconPreview(url: config.existingCustomIconURL)
+                        }).buttonStyle(PlainButtonStyle())
+                        #else
                         Button(action: { imageSelectVisible.toggle() }, label: {
                             IconPreview(url: config.existingCustomIconURL)
                         }).popover(isPresented: $imageSelectVisible, arrowEdge: .bottom) {
                             ImagePicker(onImageSelected: imageCustomSelected)
                         }.buttonStyle(PlainButtonStyle())
+                        #endif
                     case .operatingSystem:
                         Button(action: { imageSelectVisible.toggle() }, label: {
                             IconPreview(url: config.existingIconURL)
                         }).popover(isPresented: $imageSelectVisible, arrowEdge: .bottom) {
                             IconSelect(onIconSelected: imageSelected)
+                                .frame(width: 400, height: 400)
                         }.buttonStyle(PlainButtonStyle())
                     default:
                         EmptyView()
@@ -97,6 +105,21 @@ struct VMConfigInfoView: View {
     private func validateName() {
         
     }
+    
+    #if os(macOS)
+    private func imageCustomSelect() {
+        importFiles(singleOfType: [.image]) { result in
+            switch result {
+            case .success(let url):
+                imageCustomSelected(url: url)
+            case .failure:
+                break
+            case .none:
+                break
+            }
+        }
+    }
+    #endif
     
     private func imageCustomSelected(url: URL?) {
         if let imageURL = url {
@@ -117,10 +140,16 @@ struct VMConfigInfoView: View {
 private struct IconPreview: View {
     let url: URL?
     
+    #if os(macOS)
+    typealias PlatformImage = NSImage
+    #else
+    typealias PlatformImage = UIImage
+    #endif
+    
     var body: some View {
         HStack {
             Spacer()
-            Logo(logo: UIImage(contentsOfURL: url))
+            Logo(logo: PlatformImage(contentsOfURL: url))
                 .padding()
             Spacer()
         }
@@ -135,12 +164,18 @@ private struct IconSelect: View {
         return paths.map({ URL(fileURLWithPath: $0) })
     }
     
+    #if os(macOS)
+    typealias PlatformImage = NSImage
+    #else
+    typealias PlatformImage = UIImage
+    #endif
+    
     var body: some View {
         ScrollView {
             LazyVGrid(columns: gridLayout, spacing: 30) {
                 ForEach(icons, id: \.self) { icon in
                     Button(action: { onIconSelected(icon) }, label: {
-                        Logo(logo: UIImage(contentsOfURL: icon))
+                        Logo(logo: PlatformImage(contentsOfURL: icon))
                     }).buttonStyle(PlainButtonStyle())
                 }
             }.padding([.top, .bottom])
