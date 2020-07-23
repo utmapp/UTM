@@ -33,6 +33,7 @@ const NSString *const kUTMConfigSoundKey = @"Sound";
 const NSString *const kUTMConfigSharingKey = @"Sharing";
 const NSString *const kUTMConfigDrivesKey = @"Drives";
 const NSString *const kUTMConfigDebugKey = @"Debug";
+const NSString *const kUTMConfigInfoKey = @"Info";
 
 @interface UTMConfiguration ()
 
@@ -71,13 +72,12 @@ const NSString *const kUTMConfigDebugKey = @"Debug";
         _rootDict[kUTMConfigSharingKey] = [[NSMutableDictionary alloc] init];
         _rootDict[kUTMConfigDrivesKey] = [[NSMutableArray alloc] init];
         _rootDict[kUTMConfigDebugKey] = [[NSMutableDictionary alloc] init];
+        _rootDict[kUTMConfigInfoKey] = [[NSMutableDictionary alloc] init];
         self.systemArchitecture = @"x86_64";
         self.systemTarget = @"pc";
         self.systemMemory = @512;
         self.systemCPUCount = @1;
         self.systemBootDevice = @"cd";
-        self.systemJitCacheSize = @0;
-        self.systemForceMulticore = NO;
         self.systemUUID = [[NSUUID UUID] UUIDString];
         self.displayUpscaler = @"linear";
         self.displayDownscaler = @"linear";
@@ -90,8 +90,6 @@ const NSString *const kUTMConfigDebugKey = @"Debug";
         self.networkCard = @"rtl8139";
         self.shareClipboardEnabled = YES;
         self.name = name;
-        self.existingPath = nil;
-        self.debugLogEnabled = NO;
     }
     return self;
 }
@@ -138,6 +136,11 @@ const NSString *const kUTMConfigDebugKey = @"Debug";
 - (void)setExistingPath:(NSURL *)existingPath {
     [self propertyWillChange];
     _existingPath = existingPath;
+}
+
+- (void)setSelectedCustomIconPath:(NSURL *)selectedCustomIconPath {
+    [self propertyWillChange];
+    _selectedCustomIconPath = selectedCustomIconPath;
 }
 
 @end

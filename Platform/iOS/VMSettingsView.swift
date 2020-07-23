@@ -27,11 +27,12 @@ struct VMSettingsView: View {
         NavigationView {
             Form {
                 List {
-                    HStack {
-                        Text("Name")
-                        TextField("Name", text: $config.name)
-                            .multilineTextAlignment(.trailing)
-                    }
+                    NavigationLink(
+                        destination: VMConfigInfoView(config: config).navigationTitle("Information"),
+                        label: {
+                            Label("Information", systemImage: "info.circle")
+                                .labelStyle(RoundRectIconLabelStyle())
+                        })
                     NavigationLink(
                         destination: VMConfigSystemView(config: config).navigationTitle("System"),
                         label: {
