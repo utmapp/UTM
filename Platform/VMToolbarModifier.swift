@@ -25,7 +25,7 @@ struct VMToolbarModifier: ViewModifier {
     #if os(macOS)
     let destructiveButtonColor: Color = .primary
     let buttonPlacement: ToolbarItemPlacement = .automatic
-    let padding: Int = 0
+    let padding: CGFloat = 0
     #else
     let destructiveButtonColor: Color = .red
     var buttonPlacement: ToolbarItemPlacement {
