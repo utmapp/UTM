@@ -61,6 +61,30 @@ import Combine
         }
     }
     
+    var existingCustomIconURL: URL? {
+        if let current = self.selectedCustomIconPath {
+            return current // if we just selected a path
+        }
+        guard let parent = self.existingPath else {
+            return nil
+        }
+        guard let icon = self.icon else {
+            return nil
+        }
+        return parent.appendingPathComponent(icon) // from saved config
+    }
+    
+    var existingIconURL: URL? {
+        guard let icon = self.icon else {
+            return nil
+        }
+        if let path = Bundle.main.path(forResource: icon, ofType: "png", inDirectory: "Icons") {
+            return URL(fileURLWithPath: path)
+        } else {
+            return nil
+        }
+    }
+    
     func propertyWillChange() -> Void {
         DispatchQueue.main.async { self.objectWillChange.send() }
     }

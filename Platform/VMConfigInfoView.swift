@@ -30,30 +30,6 @@ struct VMConfigInfoView: View {
     @State private var imageSelectVisible: Bool = false
     @State private var iconStyle: IconStyle = .generic
     
-    private var existingCustomImage: URL? {
-        if let current = config.selectedCustomIconPath {
-            return current // if we just selected a path
-        }
-        guard let parent = config.existingPath else {
-            return nil
-        }
-        guard let icon = config.icon else {
-            return nil
-        }
-        return parent.appendingPathComponent(icon) // from saved config
-    }
-    
-    private var existingImage: URL? {
-        guard let icon = config.icon else {
-            return nil
-        }
-        if let path = Bundle.main.path(forResource: icon, ofType: "png", inDirectory: "Icons") {
-            return URL(fileURLWithPath: path)
-        } else {
-            return nil
-        }
-    }
-    
     var body: some View {
         VStack {
             Form {
@@ -94,13 +70,13 @@ struct VMConfigInfoView: View {
                     switch iconStyle {
                     case .custom:
                         Button(action: { imageSelectVisible.toggle() }, label: {
-                            IconPreview(url: existingCustomImage)
+                            IconPreview(url: config.existingCustomIconURL)
                         }).popover(isPresented: $imageSelectVisible, arrowEdge: .bottom) {
                             ImagePicker(onImageSelected: imageCustomSelected)
                         }.buttonStyle(PlainButtonStyle())
                     case .operatingSystem:
                         Button(action: { imageSelectVisible.toggle() }, label: {
-                            IconPreview(url: existingImage)
+                            IconPreview(url: config.existingIconURL)
                         }).popover(isPresented: $imageSelectVisible, arrowEdge: .bottom) {
                             IconSelect(onIconSelected: imageSelected)
                         }.buttonStyle(PlainButtonStyle())
@@ -112,7 +88,7 @@ struct VMConfigInfoView: View {
         }.onAppear {
             if config.iconCustom {
                 iconStyle = .custom
-            } else if existingImage != nil {
+            } else if config.existingIconURL != nil {
                 iconStyle = .operatingSystem
             }
         }
