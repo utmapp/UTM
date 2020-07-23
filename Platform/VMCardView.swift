@@ -22,13 +22,19 @@ struct VMCardView: View {
     
     #if os(macOS)
     let buttonColor: Color = .black
+    typealias PlatformImage = NSImage
     #else
     let buttonColor: Color = .accentColor
+    typealias PlatformImage = UIImage
     #endif
     
     var body: some View {
         HStack {
-            Logo(logo: nil) //FIXME: add logo support
+            if vm.configuration.iconCustom {
+                Logo(logo: PlatformImage(contentsOfURL: vm.configuration.existingCustomIconURL))
+            } else {
+                Logo(logo: PlatformImage(contentsOfURL: vm.configuration.existingIconURL))
+            }
             VStack(alignment: .leading) {
                 Text(vm.configuration.name)
                     .font(.headline)
@@ -86,7 +92,7 @@ struct VMCardView: View {
 
 #if os(macOS)
 struct Logo: View {
-    var logo: NSImage?
+    let logo: NSImage?
     
     var body: some View {
         Group {
@@ -106,7 +112,7 @@ struct Logo: View {
 }
 #else // iOS
 struct Logo: View {
-    var logo: UIImage?
+    let logo: UIImage?
     
     var body: some View {
         Group {
