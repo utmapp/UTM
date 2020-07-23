@@ -45,11 +45,9 @@ struct ContentView: View {
                 }
             }
             .sheet(isPresented: $newVMScratchPresented) {
-                NavigationView {
-                    VMSettingsView(config: UTMConfiguration(name: data.newDefaultName())) { config in
-                        data.busyWork() { try data.create(config: config) }
-                    }.environmentObject(data)
-                }
+                VMSettingsView(config: UTMConfiguration(name: data.newDefaultName())) { config in
+                    data.busyWork() { try data.create(config: config) }
+                }.environmentObject(data)
             }
             VMPlaceholderView()
         }.disabled(data.busy)

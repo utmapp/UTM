@@ -27,18 +27,13 @@ struct VMDetailsView: View {
     private var regularScreenSizeClass: Bool {
         horizontalSizeClass == .regular
     }
-    
-    private var toolbarPlacement: ToolbarItemPlacement {
-        regularScreenSizeClass ? .navigationBarTrailing : .bottomBar
-    }
     #else
     private let regularScreenSizeClass: Bool = true
-    private let toolbarPlacement: ToolbarItemPlacement = .automatic
     #endif
     
     var body: some View {
         ScrollView {
-            Screenshot(vm: vm)
+            Screenshot(vm: vm, large: regularScreenSizeClass)
             if regularScreenSizeClass {
                 HStack(alignment: .top) {
                     Details(config: vm.configuration)
@@ -61,13 +56,10 @@ struct VMDetailsView: View {
             }
         }.labelStyle(DetailsLabelStyle())
         .navigationTitle(vm.configuration.name)
-        .toolbar {
-            ToolbarItem(placement: toolbarPlacement) {
-                VMToolbar {
-                    settingsSheetPresented.toggle()
-                }
-            }
-        }.sheet(isPresented: $settingsSheetPresented) {
+        .modifier(VMToolbarModifier(bottom: !regularScreenSizeClass) {
+            settingsSheetPresented.toggle()
+        })
+        .sheet(isPresented: $settingsSheetPresented) {
             VMSettingsView(config: vm.configuration) { _ in
                 data.busyWork() { try data.save(vm: vm) }
             }.environmentObject(data)
@@ -76,7 +68,8 @@ struct VMDetailsView: View {
 }
 
 struct Screenshot: View {
-    var vm: UTMVirtualMachine
+    let vm: UTMVirtualMachine
+    let large: Bool
     @EnvironmentObject private var data: UTMData
     
     var body: some View {
@@ -103,7 +96,7 @@ struct Screenshot: View {
                     .font(Font.system(size: 96))
                     .foregroundColor(Color.black)
             }).buttonStyle(PlainButtonStyle())
-        }.aspectRatio(CGSize(width: 16, height: 9), contentMode: .fill)
+        }.aspectRatio(CGSize(width: 16, height: 9), contentMode: large ? .fill : .fit)
     }
 }
 
@@ -148,10 +141,12 @@ struct DetailsLabelStyle: LabelStyle {
         Label(
             title: { configuration.title.font(.headline) },
             icon: {
-                Rectangle() // FIXME: SwiftUI bug misaligns icon
-                    .frame(width: 32, height: 32)
-                    .foregroundColor(.clear)
-                    .overlay(configuration.icon.foregroundColor(color))
+                ZStack(alignment: .center) {
+                    Rectangle()
+                        .frame(width: 32, height: 32)
+                        .foregroundColor(.clear)
+                    configuration.icon.foregroundColor(color)
+                }
             })
     }
 }
