@@ -34,23 +34,26 @@ struct VMDetailsView: View {
     var body: some View {
         ScrollView {
             Screenshot(vm: vm, large: regularScreenSizeClass)
-            if regularScreenSizeClass {
+            let notes = vm.configuration.notes ?? ""
+            if regularScreenSizeClass && !notes.isEmpty {
                 HStack(alignment: .top) {
                     Details(config: vm.configuration)
                         .padding()
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    Text("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.") // FIXME: implement this
+                        .frame(maxWidth: .infinity)
+                    Text(notes)
                         .font(.body)
                         .padding()
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        .frame(maxWidth: .infinity)
                 }
                 VMRemovableDrivesView(config: vm.configuration)
                     .padding([.leading, .trailing, .bottom])
             } else {
                 VStack {
                     Details(config: vm.configuration)
-                    Text("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.")
-                        .font(.body)
+                    if !notes.isEmpty {
+                        Text(notes)
+                            .font(.body)
+                    }
                     VMRemovableDrivesView(config: vm.configuration)
                 }.padding([.leading, .trailing, .bottom])
             }
