@@ -113,4 +113,14 @@ extension View {
         return self
     }
 }
+
+extension NSImage {
+    convenience init?(contentsOfURL: URL?) {
+        if let url = contentsOfURL {
+            self.init(contentsOf: url)
+        } else {
+            return nil
+        }
+    }
+}
 #endif

@@ -24,6 +24,9 @@ struct VMSettingsView: View {
     
     var body: some View {
         ToolbarTabView {
+            PreferencePane(label: "Information", systemImage: "info.circle", cancel: { presentationMode.wrappedValue.dismiss() }, save: { save(config) }) {
+                VMConfigInfoView(config: config)
+            }
             PreferencePane(label: "System", systemImage: "cpu", cancel: { presentationMode.wrappedValue.dismiss() }, save: { save(config) }) {
                 VMConfigSystemView(config: config)
             }
