@@ -138,22 +138,38 @@ NSString *const kSuspendSnapshotName = @"suspend";
 }
 
 - (BOOL)saveUTMWithError:(NSError * _Nullable *)err {
+    NSFileManager *fileManager = [NSFileManager defaultManager];
     NSURL *url = [self packageURLForName:self.configuration.name];
     __block NSError *_err;
     if (!self.configuration.existingPath) { // new package
-        [[NSFileManager defaultManager] createDirectoryAtURL:url withIntermediateDirectories:YES attributes:nil error:&_err];
-        if (_err && err) {
-            *err = _err;
-            return NO;
+        if (![fileManager createDirectoryAtURL:url withIntermediateDirectories:YES attributes:nil error:&_err]) {
+            goto error;
         }
     } else if (![self.configuration.existingPath.URLByStandardizingPath isEqual:url.URLByStandardizingPath]) { // rename if needed
-        [[NSFileManager defaultManager] moveItemAtURL:self.configuration.existingPath toURL:url error:&_err];
-        if (_err && err) {
-            *err = _err;
-            return NO;
+        if (![fileManager moveItemAtURL:self.configuration.existingPath toURL:url error:&_err]) {
+            goto error;
         }
         self.configuration.existingPath = url;
     }
+    // save icon
+    if (self.configuration.iconCustom && self.configuration.selectedCustomIconPath) {
+        NSURL *oldIconPath = [url URLByAppendingPathComponent:self.configuration.icon];
+        NSString *newIcon = self.configuration.selectedCustomIconPath.lastPathComponent;
+        NSURL *newIconPath = [url URLByAppendingPathComponent:newIcon];
+        
+        // delete old icon
+        if ([fileManager fileExistsAtPath:oldIconPath.path]) {
+            [fileManager removeItemAtURL:oldIconPath error:&_err]; // ignore error
+        }
+        // copy new icon
+        if (![fileManager copyItemAtURL:self.configuration.selectedCustomIconPath toURL:newIconPath error:&_err]) {
+            goto error;
+        }
+        // commit icon
+        self.configuration.icon = newIcon;
+        self.configuration.selectedCustomIconPath = nil;
+    }
+    // save config
     if (![self savePlist:[url URLByAppendingPathComponent:kUTMBundleConfigFilename]
                     dict:self.configuration.dictRepresentation
                withError:err]) {
@@ -162,21 +178,26 @@ NSString *const kSuspendSnapshotName = @"suspend";
     // create disk images directory
     if (!self.configuration.existingPath) {
         NSURL *dstPath = [url URLByAppendingPathComponent:[UTMConfiguration diskImagesDirectory] isDirectory:YES];
-        NSURL *tmpPath = [[NSFileManager defaultManager].temporaryDirectory URLByAppendingPathComponent:[UTMConfiguration diskImagesDirectory] isDirectory:YES];
+        NSURL *tmpPath = [fileManager.temporaryDirectory URLByAppendingPathComponent:[UTMConfiguration diskImagesDirectory] isDirectory:YES];
         
         // create images directory
-        if ([[NSFileManager defaultManager] fileExistsAtPath:tmpPath.path]) {
-            [[NSFileManager defaultManager] moveItemAtURL:tmpPath toURL:dstPath error:&_err];
+        if ([fileManager fileExistsAtPath:tmpPath.path]) {
+            if (![fileManager moveItemAtURL:tmpPath toURL:dstPath error:&_err]) {
+                goto error;
+            }
         } else {
-            [[NSFileManager defaultManager] createDirectoryAtURL:dstPath withIntermediateDirectories:NO attributes:nil error:&_err];
-        }
-        if (_err && err) {
-            *err = _err;
-            return NO;
+            if (![fileManager createDirectoryAtURL:dstPath withIntermediateDirectories:NO attributes:nil error:&_err]) {
+                goto error;
+            }
         }
     }
     _path = url;
     return YES;
+error:
+    if (err) {
+        *err = _err;
+    }
+    return NO;
 }
 
 - (void)errorTriggered:(nullable NSString *)msg {
