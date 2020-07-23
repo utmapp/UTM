@@ -84,6 +84,7 @@ struct VMSettingsView: View {
                 }
             }
             .navigationTitle("Settings")
+            .navigationViewStyle(StackNavigationViewStyle())
             .navigationBarItems(leading: Button(action: {
                 presentationMode.wrappedValue.dismiss()
             }, label: {
@@ -108,10 +109,12 @@ struct RoundRectIconLabelStyle: LabelStyle {
         Label(
             title: { configuration.title },
             icon: {
-                RoundedRectangle(cornerRadius: 10.0, style: .circular)
-                    .frame(width: 32, height: 32)
-                    .foregroundColor(color)
-                    .overlay(configuration.icon.foregroundColor(.white))
+                ZStack(alignment: .center) {
+                    RoundedRectangle(cornerRadius: 10.0, style: .circular)
+                        .frame(width: 32, height: 32)
+                        .foregroundColor(color)
+                    configuration.icon.foregroundColor(.white)
+                }
             })
     }
 }
