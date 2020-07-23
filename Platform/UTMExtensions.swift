@@ -81,6 +81,16 @@ extension UIView {
 
     }
 }
+
+extension UIImage {
+    convenience init?(contentsOfURL: URL?) {
+        if let url = contentsOfURL {
+            self.init(contentsOfFile: url.path)
+        } else {
+            return nil
+        }
+    }
+}
 #endif
 
 #if os(macOS)

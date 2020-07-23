@@ -24,6 +24,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, copy) NSString *name;
 @property (nonatomic, nullable, copy) NSURL *existingPath;
+@property (nonatomic, nullable, copy) NSURL *selectedCustomIconPath;
 
 - (void)migrateConfigurationIfNecessary;
 - (instancetype)init NS_UNAVAILABLE;

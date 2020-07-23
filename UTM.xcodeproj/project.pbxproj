@@ -914,6 +914,8 @@
 		CE3ADD67240EFBCA002D6A5F /* VMDisplayMetalViewController+Keyboard.m in Sources */ = {isa = PBXBuildFile; fileRef = CE3ADD66240EFBCA002D6A5F /* VMDisplayMetalViewController+Keyboard.m */; };
 		CE3ADD6A2411C661002D6A5F /* VMCursor.m in Sources */ = {isa = PBXBuildFile; fileRef = CE3ADD692411C661002D6A5F /* VMCursor.m */; };
 		CE4507D2226A5BE200A28D22 /* VMKeyboardView.m in Sources */ = {isa = PBXBuildFile; fileRef = CE4507D1226A5BE200A28D22 /* VMKeyboardView.m */; };
+		CE4698F924C8FBD9008C1BD6 /* Icons in Resources */ = {isa = PBXBuildFile; fileRef = CE4698F824C8FBD9008C1BD6 /* Icons */; };
+		CE4698FA24C8FBD9008C1BD6 /* Icons in Resources */ = {isa = PBXBuildFile; fileRef = CE4698F824C8FBD9008C1BD6 /* Icons */; };
 		CE4AA1492263B24F002E4A54 /* CSDisplayMetal.m in Sources */ = {isa = PBXBuildFile; fileRef = CE4AA1482263B24F002E4A54 /* CSDisplayMetal.m */; };
 		CE4AA14C2264004F002E4A54 /* CSConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = CE4AA14B2264004F002E4A54 /* CSConnection.m */; };
 		CE4AA1502265B15B002E4A54 /* libqemu-img.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE4AA14E2265B152002E4A54 /* libqemu-img.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
@@ -995,6 +997,9 @@
 		CED33AE32267893D00FF1977 /* UTMQemuImg.m in Sources */ = {isa = PBXBuildFile; fileRef = CED33AE22267893D00FF1977 /* UTMQemuImg.m */; };
 		CED814E924C79F070042F0F1 /* VMConfigDriveCreateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CED814E824C79F070042F0F1 /* VMConfigDriveCreateView.swift */; };
 		CED814EA24C79F070042F0F1 /* VMConfigDriveCreateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CED814E824C79F070042F0F1 /* VMConfigDriveCreateView.swift */; };
+		CED814EC24C7C2850042F0F1 /* VMConfigInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CED814EB24C7C2850042F0F1 /* VMConfigInfoView.swift */; };
+		CED814ED24C7C2850042F0F1 /* VMConfigInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CED814EB24C7C2850042F0F1 /* VMConfigInfoView.swift */; };
+		CED814EF24C7EB760042F0F1 /* ImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = CED814EE24C7EB760042F0F1 /* ImagePicker.swift */; };
 		CEDC1DF22260EE4B008D9A6D /* StaticDataTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CEDC1DF12260EE4B008D9A6D /* StaticDataTableViewController.m */; };
 		CEE0420C244117040001680F /* UTMConfiguration+Display.m in Sources */ = {isa = PBXBuildFile; fileRef = CEE0420B244117040001680F /* UTMConfiguration+Display.m */; };
 		CEE0420F24412C520001680F /* VMConfigStepper.m in Sources */ = {isa = PBXBuildFile; fileRef = CEE0420E24412C520001680F /* VMConfigStepper.m */; };
@@ -1658,6 +1663,7 @@
 		CE4507D0226A5BE200A28D22 /* VMKeyboardView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VMKeyboardView.h; sourceTree = "<group>"; };
 		CE4507D1226A5BE200A28D22 /* VMKeyboardView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VMKeyboardView.m; sourceTree = "<group>"; };
 		CE4507D3226A5C9900A28D22 /* VMKeyboardViewDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VMKeyboardViewDelegate.h; sourceTree = "<group>"; };
+		CE4698F824C8FBD9008C1BD6 /* Icons */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Icons; path = UTM/Icons; sourceTree = "<group>"; };
 		CE4AA1472263B24F002E4A54 /* CSDisplayMetal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CSDisplayMetal.h; sourceTree = "<group>"; };
 		CE4AA1482263B24F002E4A54 /* CSDisplayMetal.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CSDisplayMetal.m; sourceTree = "<group>"; };
 		CE4AA14A2264004F002E4A54 /* CSConnection.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CSConnection.h; sourceTree = "<group>"; };
@@ -1776,6 +1782,8 @@
 		CED33AE12267893D00FF1977 /* UTMQemuImg.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UTMQemuImg.h; sourceTree = "<group>"; };
 		CED33AE22267893D00FF1977 /* UTMQemuImg.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UTMQemuImg.m; sourceTree = "<group>"; };
 		CED814E824C79F070042F0F1 /* VMConfigDriveCreateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMConfigDriveCreateView.swift; sourceTree = "<group>"; };
+		CED814EB24C7C2850042F0F1 /* VMConfigInfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMConfigInfoView.swift; sourceTree = "<group>"; };
+		CED814EE24C7EB760042F0F1 /* ImagePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePicker.swift; sourceTree = "<group>"; };
 		CEDC1DF02260EE4B008D9A6D /* StaticDataTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StaticDataTableViewController.h; sourceTree = "<group>"; };
 		CEDC1DF12260EE4B008D9A6D /* StaticDataTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StaticDataTableViewController.m; sourceTree = "<group>"; };
 		CEE0420A244117040001680F /* UTMConfiguration+Display.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UTMConfiguration+Display.h"; sourceTree = "<group>"; };
@@ -2157,6 +2165,7 @@
 				CE2D953724AD4F980059923A /* VMConfigDisplayView.swift */,
 				CED814E824C79F070042F0F1 /* VMConfigDriveCreateView.swift */,
 				CE9375A024BBDDD10074066F /* VMConfigDriveDetailsView.swift */,
+				CED814EB24C7C2850042F0F1 /* VMConfigInfoView.swift */,
 				CE2D954824AD4F980059923A /* VMConfigInputView.swift */,
 				CE2D955024AD4F980059923A /* VMConfigNetworkView.swift */,
 				CE2D955224AD4F980059923A /* VMConfigPortForwardForm.swift */,
@@ -2200,6 +2209,7 @@
 			isa = PBXGroup;
 			children = (
 				CE2D954E24AD4F980059923A /* ContentView.swift */,
+				CED814EE24C7EB760042F0F1 /* ImagePicker.swift */,
 				CEBBF1A424B56A2900C15049 /* UTMDataExtension.swift */,
 				CE2D955124AD4F980059923A /* VMConfigDrivesView.swift */,
 				CE2D954D24AD4F980059923A /* VMConfigNetworkPortForwardView.swift */,
@@ -2510,6 +2520,7 @@
 				CE7BED4D22600F5000A1E1B6 /* Views */,
 				CE550BCB225947990063E575 /* UTM */,
 				CE9D18F72265410E00355E14 /* qemu */,
+				CE4698F824C8FBD9008C1BD6 /* Icons */,
 				CE550BCA225947990063E575 /* Products */,
 				CE2D63D622653C7300FC7E63 /* Frameworks */,
 			);
@@ -2861,6 +2872,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CE4698F924C8FBD9008C1BD6 /* Icons in Resources */,
 				CE2D936A24AD46670059923A /* terminal.js in Resources */,
 				CE2D936B24AD46670059923A /* Localizable.strings in Resources */,
 				CE2D936C24AD46670059923A /* qemu in Resources */,
@@ -2877,6 +2889,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				CE0B6CEC24AD532500FE012D /* Assets.xcassets in Resources */,
+				CE4698FA24C8FBD9008C1BD6 /* Icons in Resources */,
 				CE93759324BAAEE40074066F /* qemu in Resources */,
 				CE2D959024AD50D50059923A /* Localizable.strings in Resources */,
 			);
@@ -3006,6 +3019,7 @@
 				CE2D928F24AD46670059923A /* qapi-types-migration.c in Sources */,
 				CE2D929024AD46670059923A /* qapi-types-net.c in Sources */,
 				CE2D929124AD46670059923A /* qapi-types-rdma.c in Sources */,
+				CED814EF24C7EB760042F0F1 /* ImagePicker.swift in Sources */,
 				CE2D929224AD46670059923A /* qapi-commands-rocker.c in Sources */,
 				CE2D929324AD46670059923A /* gst_ios_init.m in Sources */,
 				CE2D958924AD4F990059923A /* VMConfigSystemView.swift in Sources */,
@@ -3315,6 +3329,7 @@
 				CE0B6D5B24AD584D00FE012D /* qapi-visit-misc-target.c in Sources */,
 				CE0B6D0C24AD56C300FE012D /* error.c in Sources */,
 				CE2D955A24AD4F980059923A /* VMToolbar.swift in Sources */,
+				CED814ED24C7C2850042F0F1 /* VMConfigInfoView.swift in Sources */,
 				CE0B6D2D24AD57FC00FE012D /* qapi-commands-machine.c in Sources */,
 				CE0B6D2824AD57FC00FE012D /* qapi-dispatch-events.c in Sources */,
 				CE0B6D6624AD584D00FE012D /* qapi-visit-machine-target.c in Sources */,

@@ -21,6 +21,7 @@
 extern const NSString *const kUTMConfigInputKey;
 extern const NSString *const kUTMConfigSoundKey;
 extern const NSString *const kUTMConfigDebugKey;
+extern const NSString *const kUTMConfigInfoKey;
 
 const NSString *const kUTMConfigTouchscreenModeKey = @"TouchscreenMode";
 const NSString *const kUTMConfigDirectInputKey = @"DirectInput";
@@ -31,6 +32,10 @@ const NSString *const kUTMConfigSoundEnabledKey = @"SoundEnabled";
 const NSString *const kUTMConfigSoundCardDeviceKey = @"SoundCard";
 
 const NSString *const kUTMConfigDebugLogKey = @"DebugLog";
+
+const NSString *const kUTMConfigIconKey = @"Icon";
+const NSString *const kUTMConfigIconCustomKey = @"IconCustom";
+const NSString *const kUTMConfigNotesKey = @"Notes";
 
 @interface UTMConfiguration ()
 
@@ -43,9 +48,12 @@ const NSString *const kUTMConfigDebugLogKey = @"DebugLog";
 #pragma mark - Migration
 
 - (void)migrateMiscellaneousConfigurationIfNecessary {
-    // Add Debug dict if not exists
+    // Add categories that may not have existed before
     if (!self.rootDict[kUTMConfigDebugKey]) {
         self.rootDict[kUTMConfigDebugKey] = [NSMutableDictionary dictionary];
+    }
+    if (!self.rootDict[kUTMConfigInfoKey]) {
+        self.rootDict[kUTMConfigInfoKey] = [NSMutableDictionary dictionary];
     }
     
     if (!self.rootDict[kUTMConfigSoundKey][kUTMConfigSoundCardDeviceKey]) {
@@ -104,6 +112,33 @@ const NSString *const kUTMConfigDebugLogKey = @"DebugLog";
 - (void)setDebugLogEnabled:(BOOL)debugLogEnabled {
     [self propertyWillChange];
     self.rootDict[kUTMConfigDebugKey][kUTMConfigDebugLogKey] = @(debugLogEnabled);
+}
+
+- (void)setIcon:(NSString *)icon {
+    [self propertyWillChange];
+    self.rootDict[kUTMConfigInfoKey][kUTMConfigIconKey] = icon;
+}
+
+- (nullable NSString *)icon {
+    return self.rootDict[kUTMConfigInfoKey][kUTMConfigIconKey];
+}
+
+- (void)setIconCustom:(BOOL)iconCustom {
+    [self propertyWillChange];
+    self.rootDict[kUTMConfigInfoKey][kUTMConfigIconCustomKey] = @(iconCustom);
+}
+
+- (BOOL)iconCustom {
+    return [self.rootDict[kUTMConfigInfoKey][kUTMConfigIconCustomKey] boolValue];
+}
+
+- (void)setNotes:(NSString *)notes {
+    [self propertyWillChange];
+    self.rootDict[kUTMConfigInfoKey][kUTMConfigNotesKey] = notes;
+}
+
+- (nullable NSString *)notes {
+    return self.rootDict[kUTMConfigInfoKey][kUTMConfigNotesKey];
 }
 
 @end
