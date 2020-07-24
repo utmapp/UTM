@@ -45,7 +45,7 @@ struct ContentView: View {
                 }
             }
             .sheet(isPresented: $newVMScratchPresented) {
-                VMSettingsView(config: UTMConfiguration(name: data.newDefaultName())) { config in
+                VMSettingsView(config: UTMConfiguration(name: data.newDefaultVMName())) { config in
                     data.busyWork() { try data.create(config: config) }
                 }.environmentObject(data)
             }

@@ -17,7 +17,6 @@
 class VMDriveImage: ObservableObject {
     @Published var size: Int = 10240
     @Published var removable: Bool = false
-    @Published var name: String? = UUID().uuidString // TODO: make more user friendly
     @Published var imageTypeString: String? = UTMDiskImageType.disk.description
     @Published var interface: String? = UTMConfiguration.defaultDriveInterface()
     
@@ -28,15 +27,6 @@ class VMDriveImage: ObservableObject {
         
         set {
             imageTypeString = newValue.description
-        }
-    }
-    
-    func create(config: UTMConfiguration) {
-        let interface = self.interface ?? UTMConfiguration.defaultDriveInterface()
-        if removable {
-            config.newRemovableDrive(imageType, interface: interface)
-        } else {
-            config.newDrive(name ?? "", type: imageType, interface: interface)
         }
     }
 }

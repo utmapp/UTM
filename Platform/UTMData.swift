@@ -111,8 +111,8 @@ class UTMData: ObservableObject {
         }
     }
     
-    func newDefaultName() -> String {
-        let nameForId = { (i: Int) in "Virtual Machine \(i)" }
+    func newDefaultVMName(base: String = "Virtual Machine") -> String {
+        let nameForId = { (i: Int) in i <= 1 ? base : "\(base) \(i)" }
         for i in 1..<1000 {
             let name = nameForId(i)
             let file = UTMVirtualMachine.virtualMachinePath(name, inParentURL: documentsURL)
@@ -121,6 +121,18 @@ class UTMData: ObservableObject {
             }
         }
         return ProcessInfo.processInfo.globallyUniqueString
+    }
+    
+    func newDefaultDriveName(type: UTMDiskImageType, forConfig: UTMConfiguration) -> String {
+        let nameForId = { (i: Int) in "\(type.description)-\(i).qcow2" }
+        for i in 0..<1000 {
+            let name = nameForId(i)
+            let file = forConfig.imagesPath.appendingPathComponent(name)
+            if !FileManager.default.fileExists(atPath: file.path) {
+                return name
+            }
+        }
+        return UUID().uuidString
     }
     
     func save(vm: UTMVirtualMachine) throws {
@@ -171,13 +183,12 @@ class UTMData: ObservableObject {
     }
     
     func createDrive(_ drive: VMDriveImage, forConfig: UTMConfiguration) throws {
+        var name: String = ""
         if !drive.removable {
-            guard let name = drive.name else {
-                throw NSLocalizedString("Drive name is nil.", comment: "UTMData")
-            }
             guard drive.size > 0 else {
                 throw NSLocalizedString("Invalid drive size.", comment: "UTMData")
             }
+            name = newDefaultDriveName(type: drive.imageType, forConfig: forConfig)
             let fileManager = FileManager.default
             let imagesPath = forConfig.imagesPath
             let dstPath = imagesPath.appendingPathComponent(name)
@@ -207,7 +218,12 @@ class UTMData: ObservableObject {
         }
         
         DispatchQueue.main.async {
-            drive.create(config: forConfig)
+            let interface = drive.interface ?? UTMConfiguration.defaultDriveInterface()
+            if drive.removable {
+                forConfig.newRemovableDrive(drive.imageType, interface: interface)
+            } else {
+                forConfig.newDrive(name, type: drive.imageType, interface: interface)
+            }
         }
     }
     
