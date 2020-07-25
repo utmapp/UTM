@@ -63,6 +63,18 @@ extension IndexSet: Identifiable {
     }
 }
 
+extension Array {
+    subscript(indicies: IndexSet) -> [Element] {
+        get {
+            var slice = [Element]()
+            for i in indicies {
+                slice.append(self[i])
+            }
+            return slice
+        }
+    }
+}
+
 #if !os(macOS)
 extension UIView {
     /// Adds constraints to this `UIView` instances `superview` object to make sure this always has the same size as the superview.

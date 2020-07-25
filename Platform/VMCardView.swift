@@ -17,7 +17,7 @@
 import SwiftUI
 
 struct VMCardView: View {
-    var vm: UTMVirtualMachine
+    let vm: UTMVirtualMachine
     @EnvironmentObject private var data: UTMData
     
     #if os(macOS)
@@ -56,32 +56,39 @@ struct VMCardView: View {
         .contextMenu {
             Button {
                 data.selectedVM = vm
+                // TODO: implement
             } label: {
                 Label("Edit", systemImage: "slider.horizontal.3")
             }
             Button {
                 data.selectedVM = vm
+                // TODO: implement
             } label: {
                 Label("Change Logo", systemImage: "photo")
             }
             Button {
-                data.selectedVM = vm
+                data.run(vm: vm)
             } label: {
                 Label("Run", systemImage: "play.fill")
             }
             Button {
                 data.selectedVM = vm
+                // TODO: implement
             } label: {
                 Label("Share", systemImage: "square.and.arrow.up")
             }
             Button {
-                data.selectedVM = vm
+                data.busyWork {
+                    try data.clone(vm: vm)
+                }
             } label: {
                 Label("Clone", systemImage: "doc.on.doc")
             }
             Divider()
             Button {
-                data.selectedVM = vm
+                data.busyWork {
+                    try data.delete(vm: vm)
+                }
             } label: {
                 Label("Delete", systemImage: "trash")
                     .foregroundColor(.red)
