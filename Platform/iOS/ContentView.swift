@@ -33,7 +33,7 @@ struct ContentView: View {
                         selection: $data.selectedVM,
                         label: { VMCardView(vm: vm) })
                 }.onMove(perform: data.move)
-                .onDelete(perform: data.remove)
+                .onDelete(perform: delete)
             }.listStyle(SidebarListStyle())
             .navigationTitle("UTM")
             .toolbar {
@@ -74,6 +74,15 @@ struct ContentView: View {
     }
     
     private func newVMFromTemplate() {
+    }
+    
+    private func delete(indexSet: IndexSet) {
+        let selected = data.virtualMachines[indexSet]
+        for vm in selected {
+            data.busyWork {
+                try data.delete(vm: vm)
+            }
+        }
     }
 }
 

@@ -148,7 +148,9 @@ class UTMData: ObservableObject {
     func create(config: UTMConfiguration) throws {
         let vm = UTMVirtualMachine(configuration: config, withDestinationURL: documentsURL)
         try save(vm: vm)
-        refreshConfiguration(for: vm)
+        DispatchQueue.main.async {
+            self.virtualMachines.append(vm)
+        }
     }
     
     func move(fromOffsets: IndexSet, toOffset: Int) {
@@ -157,10 +159,33 @@ class UTMData: ObservableObject {
         }
     }
     
-    func remove(atOffsets: IndexSet) {
-        // TODO: implement delete
+    func delete(vm: UTMVirtualMachine) throws {
+        let fileManager = FileManager.default
+        
+        try fileManager.removeItem(at: vm.path!)
+        
         DispatchQueue.main.async {
-            self.virtualMachines.remove(atOffsets: atOffsets)
+            if let index = self.virtualMachines.firstIndex(of: vm) {
+                self.virtualMachines.remove(at: index)
+            }
+            if vm == self.selectedVM {
+                self.selectedVM = nil
+            }
+        }
+    }
+    
+    func clone(vm: UTMVirtualMachine) throws {
+        let fileManager = FileManager.default
+        let newName = newDefaultVMName(base: vm.configuration.name)
+        let newPath = UTMVirtualMachine.virtualMachinePath(newName, inParentURL: documentsURL)
+        
+        try fileManager.copyItem(at: vm.path!, to: newPath)
+        guard let newVM = UTMVirtualMachine(url: newPath) else {
+            throw NSLocalizedString("Failed to clone VM.", comment: "UTMData")
+        }
+        
+        DispatchQueue.main.async {
+            self.virtualMachines.append(newVM)
         }
     }
     

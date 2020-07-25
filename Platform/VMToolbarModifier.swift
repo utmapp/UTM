@@ -18,9 +18,11 @@ import SwiftUI
 
 // Lots of dirty hacks to work around SwiftUI bugs introduced in Beta 2
 struct VMToolbarModifier: ViewModifier {
+    let vm: UTMVirtualMachine
     let bottom: Bool
     let editAction: () -> Void
     @EnvironmentObject private var data: UTMData
+    @Environment(\.presentationMode) private var presentationMode: Binding<PresentationMode>
     
     #if os(macOS)
     let destructiveButtonColor: Color = .primary
@@ -55,7 +57,11 @@ struct VMToolbarModifier: ViewModifier {
         content.toolbar {
             ToolbarItem(placement: buttonPlacement) {
                 Button {
-                    
+                    data.busyWork {
+                        try data.delete(vm: vm)
+                    }
+                    data.selectedVM = nil
+                    presentationMode.wrappedValue.dismiss()
                 } label: {
                     Label("Delete", systemImage: "trash")
                         .foregroundColor(destructiveButtonColor)
@@ -70,7 +76,11 @@ struct VMToolbarModifier: ViewModifier {
             #endif
             ToolbarItem(placement: buttonPlacement) {
                 Button {
-                    
+                    data.busyWork {
+                        try data.clone(vm: vm)
+                    }
+                    data.selectedVM = nil
+                    presentationMode.wrappedValue.dismiss()
                 } label: {
                     Label("Clone", systemImage: "doc.on.doc")
                         .labelStyle(IconOnlyLabelStyle())

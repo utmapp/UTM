@@ -59,7 +59,7 @@ struct VMDetailsView: View {
             }
         }.labelStyle(DetailsLabelStyle())
         .navigationTitle(vm.configuration.name)
-        .modifier(VMToolbarModifier(bottom: !regularScreenSizeClass) {
+        .modifier(VMToolbarModifier(vm: vm, bottom: !regularScreenSizeClass) {
             settingsSheetPresented.toggle()
         })
         .sheet(isPresented: $settingsSheetPresented) {
