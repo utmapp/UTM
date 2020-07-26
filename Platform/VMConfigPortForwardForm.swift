@@ -58,7 +58,11 @@ struct VMConfigPortForwardForm_Previews: PreviewProvider {
     
     static var previews: some View {
         VStack {
-            VMConfigPortForwardForm(configPort: configPort)
+            VStack {
+                Form {
+                    VMConfigPortForwardForm(configPort: configPort)
+                }
+            }
         }.onAppear {
             if config.countPortForwards == 0 {
                 let newConfigPort = UTMConfigurationPortForward()
