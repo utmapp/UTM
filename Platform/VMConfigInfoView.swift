@@ -103,7 +103,7 @@ struct VMConfigInfoView: View {
     }
     
     private func validateName() {
-        
+        // TODO: some sort of name validation
     }
     
     #if os(macOS)
