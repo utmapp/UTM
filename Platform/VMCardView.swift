@@ -19,6 +19,7 @@ import SwiftUI
 struct VMCardView: View {
     let vm: UTMVirtualMachine
     @EnvironmentObject private var data: UTMData
+    @State private var showSharePopup = false
     
     #if os(macOS)
     let buttonColor: Color = .black
@@ -65,7 +66,7 @@ struct VMCardView: View {
                 Label("Run", systemImage: "play.fill")
             }
             Button {
-                data.share(vm: vm)
+                showSharePopup.toggle()
             } label: {
                 Label("Share", systemImage: "square.and.arrow.up")
             }
@@ -86,6 +87,9 @@ struct VMCardView: View {
                     .foregroundColor(.red)
             }
         }
+        .modifier(VMShareFileModifier(isPresented: $showSharePopup) {
+            [vm.path!]
+        })
     }
 }
 

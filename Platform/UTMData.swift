@@ -16,15 +16,6 @@
 
 import Foundation
 
-enum Actions: Int, Identifiable {
-    case edit
-    case share
-    
-    var id: Int {
-        self.rawValue
-    }
-}
-
 struct AlertMessage: Identifiable {
     var message: String
     public var id: String {
@@ -38,7 +29,7 @@ struct AlertMessage: Identifiable {
 
 class UTMData: ObservableObject {
     
-    @Published var requestedAction: Actions?
+    @Published var showSettingsModal: Bool
     @Published var alertMessage: AlertMessage?
     @Published var busy: Bool
     @Published var selectedVM: UTMVirtualMachine?
@@ -61,7 +52,7 @@ class UTMData: ObservableObject {
     
     init() {
         let defaults = UserDefaults.standard
-        self.requestedAction = nil
+        self.showSettingsModal = false
         self.busy = false
         self.virtualMachines = []
         if let files = defaults.array(forKey: "VMList") as? [String] {
@@ -196,20 +187,7 @@ class UTMData: ObservableObject {
     func edit(vm: UTMVirtualMachine) {
         DispatchQueue.main.async {
             self.selectedVM = vm
-            self.requestedAction = .edit
-        }
-    }
-    
-    func share(vm: UTMVirtualMachine) {
-        DispatchQueue.main.async {
-            self.selectedVM = vm
-            self.requestedAction = .share
-        }
-    }
-    
-    func select(vm: UTMVirtualMachine) {
-        DispatchQueue.main.async {
-            self.selectedVM = vm
+            self.showSettingsModal = true
         }
     }
     

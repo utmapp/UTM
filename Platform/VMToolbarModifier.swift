@@ -20,6 +20,7 @@ import SwiftUI
 struct VMToolbarModifier: ViewModifier {
     let vm: UTMVirtualMachine
     let bottom: Bool
+    @State private var showSharePopup = false
     @EnvironmentObject private var data: UTMData
     @Environment(\.presentationMode) private var presentationMode: Binding<PresentationMode>
     
@@ -93,12 +94,15 @@ struct VMToolbarModifier: ViewModifier {
             #endif
             ToolbarItem(placement: buttonPlacement) {
                 Button {
-                    data.share(vm: vm)
+                    showSharePopup.toggle()
                 } label: {
                     Label("Share", systemImage: "square.and.arrow.up")
                         .labelStyle(IconOnlyLabelStyle())
                 }.help("Share selected VM")
                 .padding(.leading, padding)
+                .modifier(VMShareFileModifier(isPresented: $showSharePopup) {
+                    [vm.path!]
+                })
             }
             #if !os(macOS)
             ToolbarItem(placement: spacerPlacement) {
