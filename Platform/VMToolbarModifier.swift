@@ -20,7 +20,6 @@ import SwiftUI
 struct VMToolbarModifier: ViewModifier {
     let vm: UTMVirtualMachine
     let bottom: Bool
-    let editAction: () -> Void
     @EnvironmentObject private var data: UTMData
     @Environment(\.presentationMode) private var presentationMode: Binding<PresentationMode>
     
@@ -94,7 +93,7 @@ struct VMToolbarModifier: ViewModifier {
             #endif
             ToolbarItem(placement: buttonPlacement) {
                 Button {
-                    
+                    data.share(vm: vm)
                 } label: {
                     Label("Share", systemImage: "square.and.arrow.up")
                         .labelStyle(IconOnlyLabelStyle())
@@ -121,7 +120,9 @@ struct VMToolbarModifier: ViewModifier {
             }
             #endif
             ToolbarItem(placement: buttonPlacement) {
-                Button(action: editAction) {
+                Button {
+                    data.edit(vm: vm)
+                } label: {
                     Label("Edit", systemImage: "slider.horizontal.3")
                         .labelStyle(IconOnlyLabelStyle())
                 }.help("Edit selected VM")

@@ -55,16 +55,9 @@ struct VMCardView: View {
         .buttonStyle(PlainButtonStyle())
         .contextMenu {
             Button {
-                data.selectedVM = vm
-                // TODO: implement
+                data.edit(vm: vm)
             } label: {
                 Label("Edit", systemImage: "slider.horizontal.3")
-            }
-            Button {
-                data.selectedVM = vm
-                // TODO: implement
-            } label: {
-                Label("Change Logo", systemImage: "photo")
             }
             Button {
                 data.run(vm: vm)
@@ -72,8 +65,7 @@ struct VMCardView: View {
                 Label("Run", systemImage: "play.fill")
             }
             Button {
-                data.selectedVM = vm
-                // TODO: implement
+                data.share(vm: vm)
             } label: {
                 Label("Share", systemImage: "square.and.arrow.up")
             }

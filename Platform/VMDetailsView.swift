@@ -18,7 +18,6 @@ import SwiftUI
 
 struct VMDetailsView: View {
     var vm: UTMVirtualMachine
-    @State private var settingsSheetPresented: Bool = false
     @EnvironmentObject private var data: UTMData
     @Environment(\.presentationMode) private var presentationMode: Binding<PresentationMode>
     #if !os(macOS)
@@ -59,13 +58,16 @@ struct VMDetailsView: View {
             }
         }.labelStyle(DetailsLabelStyle())
         .navigationTitle(vm.configuration.name)
-        .modifier(VMToolbarModifier(vm: vm, bottom: !regularScreenSizeClass) {
-            settingsSheetPresented.toggle()
-        })
-        .sheet(isPresented: $settingsSheetPresented) {
-            VMSettingsView(config: vm.configuration) { _ in
-                data.busyWork() { try data.save(vm: vm) }
-            }.environmentObject(data)
+        .modifier(VMToolbarModifier(vm: vm, bottom: !regularScreenSizeClass))
+        .sheet(item: $data.requestedAction) { action in
+            switch action {
+            case .edit:
+                VMSettingsView(config: vm.configuration) { _ in
+                    data.busyWork() { try data.save(vm: vm) }
+                }.environmentObject(data)
+            case .share:
+                EmptyView()
+            }
         }
     }
 }
