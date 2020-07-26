@@ -16,13 +16,13 @@
 
 import Foundation
 
-enum Actions {
-    case none
-    case run
+enum Actions: Int, Identifiable {
     case edit
-    case clone
-    case delete
     case share
+    
+    var id: Int {
+        self.rawValue
+    }
 }
 
 struct AlertMessage: Identifiable {
@@ -38,7 +38,7 @@ struct AlertMessage: Identifiable {
 
 class UTMData: ObservableObject {
     
-    @Published var requestedAction: Actions
+    @Published var requestedAction: Actions?
     @Published var alertMessage: AlertMessage?
     @Published var busy: Bool
     @Published var selectedVM: UTMVirtualMachine?
@@ -61,7 +61,7 @@ class UTMData: ObservableObject {
     
     init() {
         let defaults = UserDefaults.standard
-        self.requestedAction = .none
+        self.requestedAction = nil
         self.busy = false
         self.virtualMachines = []
         if let files = defaults.array(forKey: "VMList") as? [String] {
@@ -111,6 +111,8 @@ class UTMData: ObservableObject {
         }
     }
     
+    // MARK: - New name
+    
     func newDefaultVMName(base: String = "Virtual Machine") -> String {
         let nameForId = { (i: Int) in i <= 1 ? base : "\(base) \(i)" }
         for i in 1..<1000 {
@@ -134,6 +136,8 @@ class UTMData: ObservableObject {
         }
         return UUID().uuidString
     }
+    
+    // MARK: - VM functions
     
     func save(vm: UTMVirtualMachine) throws {
         do {
@@ -188,6 +192,28 @@ class UTMData: ObservableObject {
             self.virtualMachines.append(newVM)
         }
     }
+    
+    func edit(vm: UTMVirtualMachine) {
+        DispatchQueue.main.async {
+            self.selectedVM = vm
+            self.requestedAction = .edit
+        }
+    }
+    
+    func share(vm: UTMVirtualMachine) {
+        DispatchQueue.main.async {
+            self.selectedVM = vm
+            self.requestedAction = .share
+        }
+    }
+    
+    func select(vm: UTMVirtualMachine) {
+        DispatchQueue.main.async {
+            self.selectedVM = vm
+        }
+    }
+    
+    // MARK: - Disk drive functions
     
     func importDrive(_ drive: URL, forConfig: UTMConfiguration, copy: Bool = false) throws {
         let fileManager = FileManager.default
@@ -264,6 +290,8 @@ class UTMData: ObservableObject {
             forConfig.removeDrive(at: at)
         }
     }
+    
+    // MARK: - Helper functions
     
     private func refreshConfiguration(for vm: UTMVirtualMachine) {
         guard let path = vm.path else {
