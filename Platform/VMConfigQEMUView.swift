@@ -20,6 +20,16 @@ struct VMConfigQEMUView: View {
     @ObservedObject var config: UTMConfiguration
     @State private var customArgsOnly: Bool = false //FIXME: implement this
     @State private var newArg: String = ""
+    @State private var showExportLog: Bool = false
+    @EnvironmentObject private var data: UTMData
+    
+    private var logExists: Bool {
+        guard let path = config.existingPath else {
+            return false
+        }
+        let logPath = path.appendingPathComponent(UTMConfiguration.debugLogName())
+        return FileManager.default.fileExists(atPath: logPath.path)
+    }
     
     var body: some View {
         VStack {
@@ -28,7 +38,10 @@ struct VMConfigQEMUView: View {
                     Toggle(isOn: $config.debugLogEnabled, label: {
                         Text("Debug Logging")
                     })
-                    Button("Export Debug Log", action: exportDebugLog)
+                    Button("Export Debug Log") {
+                        showExportLog.toggle()
+                    }.modifier(VMShareFileModifier(isPresented: $showExportLog, files: exportDebugLog))
+                    .disabled(!logExists)
                 }
                 Section(header: Text("QEMU Arguments")) {
                     Toggle(isOn: $customArgsOnly, label: {
@@ -58,8 +71,12 @@ struct VMConfigQEMUView: View {
         }
     }
     
-    private func exportDebugLog() {
-        //FIXME: implement
+    private func exportDebugLog() -> [URL] {
+        if let result = try? data.exportDebugLog(forConfig: config) {
+            return result
+        } else {
+            return [] // TODO: implement error handling
+        }
     }
     
     private func deleteArg(offsets: IndexSet) {

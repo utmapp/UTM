@@ -46,8 +46,16 @@ class UTMData: ObservableObject {
         }
     }
     
+    var fileManager: FileManager {
+        FileManager.default
+    }
+    
     var documentsURL: URL {
-        FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+        fileManager.urls(for: .documentDirectory, in: .userDomainMask)[0]
+    }
+    
+    var tempURL: URL {
+        fileManager.urls(for: .documentDirectory, in: .userDomainMask)[0]
     }
     
     init() {
@@ -67,7 +75,6 @@ class UTMData: ObservableObject {
     }
     
     func refresh() {
-        let fileManager = FileManager.default
         // remove stale vm
         var list = virtualMachines.filter { (vm: UTMVirtualMachine) in vm.path != nil && fileManager.fileExists(atPath: vm.path!.path) }
         do {
@@ -109,7 +116,7 @@ class UTMData: ObservableObject {
         for i in 1..<1000 {
             let name = nameForId(i)
             let file = UTMVirtualMachine.virtualMachinePath(name, inParentURL: documentsURL)
-            if !FileManager.default.fileExists(atPath: file.path) {
+            if !fileManager.fileExists(atPath: file.path) {
                 return name
             }
         }
@@ -121,7 +128,7 @@ class UTMData: ObservableObject {
         for i in 0..<1000 {
             let name = nameForId(i)
             let file = forConfig.imagesPath.appendingPathComponent(name)
-            if !FileManager.default.fileExists(atPath: file.path) {
+            if !fileManager.fileExists(atPath: file.path) {
                 return name
             }
         }
@@ -155,8 +162,6 @@ class UTMData: ObservableObject {
     }
     
     func delete(vm: UTMVirtualMachine) throws {
-        let fileManager = FileManager.default
-        
         try fileManager.removeItem(at: vm.path!)
         
         DispatchQueue.main.async {
@@ -170,7 +175,6 @@ class UTMData: ObservableObject {
     }
     
     func clone(vm: UTMVirtualMachine) throws {
-        let fileManager = FileManager.default
         let newName = newDefaultVMName(base: vm.configuration.name)
         let newPath = UTMVirtualMachine.virtualMachinePath(newName, inParentURL: documentsURL)
         
@@ -191,10 +195,26 @@ class UTMData: ObservableObject {
         }
     }
     
+    // MARK: - Export debug log
+    
+    func exportDebugLog(forConfig: UTMConfiguration) throws -> [URL] {
+        guard let path = forConfig.existingPath else {
+            throw NSLocalizedString("No log found!", comment: "UTMData")
+        }
+        let srcLogPath = path.appendingPathComponent(UTMConfiguration.debugLogName())
+        let dstLogPath = tempURL.appendingPathComponent(UTMConfiguration.debugLogName())
+        
+        if fileManager.fileExists(atPath: dstLogPath.path) {
+            try fileManager.removeItem(at: dstLogPath)
+        }
+        try fileManager.copyItem(at: srcLogPath, to: dstLogPath)
+        
+        return [dstLogPath]
+    }
+    
     // MARK: - Disk drive functions
     
     func importDrive(_ drive: URL, forConfig: UTMConfiguration, copy: Bool = false) throws {
-        let fileManager = FileManager.default
         let name = drive.lastPathComponent
         let imagesPath = forConfig.imagesPath
         let dstPath = imagesPath.appendingPathComponent(name)
@@ -218,7 +238,6 @@ class UTMData: ObservableObject {
                 throw NSLocalizedString("Invalid drive size.", comment: "UTMData")
             }
             name = newDefaultDriveName(type: drive.imageType, forConfig: forConfig)
-            let fileManager = FileManager.default
             let imagesPath = forConfig.imagesPath
             let dstPath = imagesPath.appendingPathComponent(name)
             if !fileManager.fileExists(atPath: imagesPath.path) {
@@ -257,7 +276,6 @@ class UTMData: ObservableObject {
     }
     
     func removeDrive(at: Int, forConfig: UTMConfiguration) throws {
-        let fileManager = FileManager.default
         let path = forConfig.driveImagePath(for: at)!
         
         if fileManager.fileExists(atPath: path) {
