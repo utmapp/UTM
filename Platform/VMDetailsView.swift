@@ -59,15 +59,10 @@ struct VMDetailsView: View {
         }.labelStyle(DetailsLabelStyle())
         .navigationTitle(vm.configuration.name)
         .modifier(VMToolbarModifier(vm: vm, bottom: !regularScreenSizeClass))
-        .sheet(item: $data.requestedAction) { action in
-            switch action {
-            case .edit:
-                VMSettingsView(config: vm.configuration) { _ in
-                    data.busyWork() { try data.save(vm: vm) }
-                }.environmentObject(data)
-            case .share:
-                EmptyView()
-            }
+        .sheet(isPresented: $data.showSettingsModal) {
+            VMSettingsView(config: vm.configuration) { _ in
+                data.busyWork() { try data.save(vm: vm) }
+            }.environmentObject(data)
         }
     }
 }
