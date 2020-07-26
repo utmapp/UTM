@@ -57,6 +57,10 @@ extension String: LocalizedError {
     public var errorDescription: String? { return self }
 }
 
+extension String: Identifiable {
+    public var id: String { return self }
+}
+
 extension IndexSet: Identifiable {
     public var id: Int {
         self.hashValue

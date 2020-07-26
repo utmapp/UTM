@@ -18,10 +18,19 @@ import SwiftUI
 
 struct VMConfigSystemView: View {
     let validMemoryValues = [32, 64, 128, 256, 512, 768, 1024, 1536, 2048, 3072, 4096, 6144, 8192, 10240, 12288, 14336, 16384, 32768]
+    let bytesInMib: UInt64 = 1024 * 1024
+    let minMemoryMib = 32
+    let baseUsageMib = 128
+    #if os(macOS)
+    let warningThreshold = 0.9
+    #else
+    let warningThreshold = 0.4
+    #endif
     
     @ObservedObject var config: UTMConfiguration
     @State private var memorySizeIndex: Float = 0
     @State private var showAdvanced: Bool = false
+    @State private var warningMessage: String? = nil
     
     var body: some View {
         VStack {
@@ -49,7 +58,11 @@ struct VMConfigSystemView: View {
                     VMConfigStringPicker(selection: archObserver, label: Text("Architecture"), rawValues: UTMConfiguration.supportedArchitectures(), displayValues: UTMConfiguration.supportedArchitecturesPretty())
                     VMConfigStringPicker(selection: $config.systemTarget, label: Text("System"), rawValues: UTMConfiguration.supportedTargets(forArchitecture: config.systemArchitecture) ?? [], displayValues: UTMConfiguration.supportedTargets(forArchitecturePretty: config.systemArchitecture) ?? [])
                     HStack {
-                        Slider(value: memorySizeIndexObserver, in: 0...Float(validMemoryValues.count-1), step: 1) {
+                        Slider(value: memorySizeIndexObserver, in: 0...Float(validMemoryValues.count-1), step: 1) { start in
+                            if !start {
+                                validateMemorySize()
+                            }
+                        } label: {
                             Text("Memory")
                         }
                         TextField("Size", value: $config.systemMemory, formatter: NumberFormatter(), onCommit: validateMemorySize)
@@ -89,6 +102,8 @@ struct VMConfigSystemView: View {
                     }
                 }
             }
+        }.alert(item: $warningMessage) { warning in
+            Alert(title: Text(warning))
         }
     }
     
@@ -113,11 +128,28 @@ struct VMConfigSystemView: View {
     }
     
     func validateMemorySize() {
-        //FIXME: implement
+        guard let memorySizeMib = config.systemMemory?.intValue, memorySizeMib >= minMemoryMib else {
+            config.systemMemory = NSNumber(value: minMemoryMib)
+            return
+        }
+        guard let jitSizeMib = config.systemJitCacheSize?.intValue, jitSizeMib >= 0 else {
+            config.systemJitCacheSize = NSNumber(value: 0)
+            return
+        }
+        let totalDeviceMemory = ProcessInfo.processInfo.physicalMemory
+        let actualJitSizeMib = jitSizeMib == 0 ? memorySizeMib / 4 : jitSizeMib
+        let estMemoryUsage = UInt64(memorySizeMib + 2*actualJitSizeMib + baseUsageMib) * bytesInMib
+        if Double(estMemoryUsage) > Double(totalDeviceMemory) * warningThreshold {
+            let format = NSLocalizedString("Allocating too much memory will crash the VM. Your device has %llu MB of memory and the estimated usage is %llu MB.", comment: "VMConfigSystemView")
+            warningMessage = String(format: format, totalDeviceMemory / bytesInMib, estMemoryUsage / bytesInMib)
+        }
     }
     
     func validateCpuCount() {
-        //FIXME: implement
+        guard let cpuCount = config.systemCPUCount?.intValue, cpuCount > 0 else {
+            config.systemCPUCount = NSNumber(value: 1)
+            return
+        }
     }
 }
 

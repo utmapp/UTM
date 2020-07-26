@@ -17,6 +17,8 @@
 import SwiftUI
 
 struct VMConfigDriveCreateView: View {
+    let minSizeMib = 1
+    
     @ObservedObject var driveImage: VMDriveImage
     
     var body: some View {
@@ -41,7 +43,9 @@ struct VMConfigDriveCreateView: View {
     }
     
     private func validateSize() {
-        // TODO: implement this
+        if driveImage.size < minSizeMib {
+            driveImage.size = minSizeMib
+        }
     }
 }
 
