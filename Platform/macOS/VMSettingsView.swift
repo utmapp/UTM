@@ -20,6 +20,7 @@ struct VMSettingsView: View {
     @ObservedObject var config: UTMConfiguration
     var save: (UTMConfiguration) -> Void
     
+    @EnvironmentObject private var data: UTMData
     @Environment(\.presentationMode) private var presentationMode: Binding<PresentationMode>
     
     var body: some View {
@@ -32,9 +33,11 @@ struct VMSettingsView: View {
             }
             PreferencePane(label: "QEMU", systemImage: "shippingbox", cancel: { presentationMode.wrappedValue.dismiss() }, save: { save(config) }) {
                 VMConfigQEMUView(config: config)
+                    .environmentObject(data)
             }
             PreferencePane(label: "Drives", systemImage: "internaldrive", cancel: { presentationMode.wrappedValue.dismiss() }, save: { save(config) }) {
                 VMConfigDrivesView(config: config)
+                    .environmentObject(data)
             }
             PreferencePane(label: "Display", systemImage: "rectangle.on.rectangle", cancel: { presentationMode.wrappedValue.dismiss() }, save: { save(config) }) {
                 VMConfigDisplayView(config: config)
