@@ -55,7 +55,7 @@ class UTMData: ObservableObject {
     }
     
     var tempURL: URL {
-        fileManager.urls(for: .documentDirectory, in: .userDomainMask)[0]
+        fileManager.temporaryDirectory
     }
     
     init() {

@@ -29,6 +29,7 @@ struct VMConfigInfoView: View {
     @ObservedObject var config: UTMConfiguration
     @State private var imageSelectVisible: Bool = false
     @State private var iconStyle: IconStyle = .generic
+    @State private var warningMessage: String? = nil
     @Environment(\.importFiles) private var importFiles: ImportFilesAction
     
     var body: some View {
@@ -55,6 +56,7 @@ struct VMConfigInfoView: View {
 
                 Section(header: Text("Name"), footer: EmptyView().padding(.bottom)) {
                     TextField("Name", text: $config.name, onCommit: validateName)
+                        .keyboardType(.asciiCapable)
                 }
                 Section(header: Text("Notes"), footer: EmptyView().padding(.bottom)) {
                     TextEditor(text: $config.notes.bound)
@@ -99,11 +101,24 @@ struct VMConfigInfoView: View {
             } else if config.existingIconURL != nil {
                 iconStyle = .operatingSystem
             }
+        }.alert(item: $warningMessage) { warning in
+            Alert(title: Text(warning))
         }
     }
     
     private func validateName() {
-        // TODO: some sort of name validation
+        let fileManager = FileManager.default
+        let tempPath = fileManager.temporaryDirectory
+        let fakeFile = tempPath.appendingPathComponent(config.name)
+        if fileManager.createFile(atPath: fakeFile.path, contents: nil, attributes: nil) {
+            do {
+                try fileManager.removeItem(at: fakeFile)
+            } catch {
+                warningMessage = NSLocalizedString("Failed to check name.", comment: "VMConfigInfoView")
+            }
+        } else {
+            warningMessage = NSLocalizedString("Name is an invalid filename.", comment: "VMConfigInfoView")
+        }
     }
     
     #if os(macOS)
