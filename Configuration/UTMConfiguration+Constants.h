@@ -21,19 +21,10 @@ NS_ASSUME_NONNULL_BEGIN
 @interface UTMConfiguration (Constants)
 
 + (NSArray<NSString *>*)supportedOptions:(NSString *)key pretty:(BOOL)pretty;
-+ (NSArray<NSString *>*)supportedArchitecturesPretty;
-+ (NSArray<NSString *>*)supportedArchitectures;
 + (NSArray<NSString *>*)supportedBootDevicesPretty;
 + (NSArray<NSString *>*)supportedBootDevices;
 + (NSArray<NSString *>*)supportedImageTypesPretty;
 + (NSArray<NSString *>*)supportedImageTypes;
-+ (NSArray<NSString *>*)supportedSoundCardDevices;
-+ (NSArray<NSString *>*)supportedSoundCardDevicesPretty;
-+ (NSArray<NSString *>*)supportedNetworkCards;
-+ (NSArray<NSString *>*)supportedNetworkCardsPretty;
-+ (nullable NSArray<NSString *>*)supportedTargetsForArchitecture:(nullable NSString *)architecture;
-+ (nullable NSArray<NSString *>*)supportedTargetsForArchitecturePretty:(nullable NSString *)architecture;
-+ (NSInteger)defaultTargetIndexForArchitecture:(nullable NSString *)architecture;
 + (NSArray<NSString *>*)supportedResolutions;
 + (NSArray<NSString *>*)supportedDriveInterfaces;
 + (NSArray<NSString *>*)supportedScalersPretty;
@@ -43,6 +34,20 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSString *)diskImagesDirectory;
 + (NSString *)defaultDriveInterface;
 + (NSString *)debugLogName;
+
+@end
+
+@interface UTMConfiguration (ConstantsGenerated)
+
++ (NSArray<NSString *>*)supportedArchitectures;
++ (NSArray<NSString *>*)supportedArchitecturesPretty;
++ (nullable NSArray<NSString *>*)supportedTargetsForArchitecture:(nullable NSString *)architecture;
++ (nullable NSArray<NSString *>*)supportedTargetsForArchitecturePretty:(nullable NSString *)architecture;
++ (NSInteger)defaultTargetIndexForArchitecture:(nullable NSString *)architecture;
++ (NSArray<NSString *>*)supportedNetworkCards;
++ (NSArray<NSString *>*)supportedNetworkCardsPretty;
++ (NSArray<NSString *>*)supportedSoundCardDevices;
++ (NSArray<NSString *>*)supportedSoundCardDevicesPretty;
 
 @end
 
