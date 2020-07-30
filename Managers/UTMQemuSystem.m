@@ -25,8 +25,35 @@
 #import "UTMConfiguration+System.h"
 #import "UTMConfigurationPortForward.h"
 #import "UTMLogging.h"
+#import <dlfcn.h>
 
-@implementation UTMQemuSystem
+@implementation UTMQemuSystem {
+    int (*_qemu_init)(int, const char *[], const char *[]);
+    void (*_qemu_main_loop)(void);
+    void (*_qemu_cleanup)(void);
+}
+
+static void *start_qemu(void *args) {
+    UTMQemuSystem *self = (__bridge_transfer UTMQemuSystem *)args;
+    
+    NSCAssert(self->_qemu_init != NULL, @"Started thread with invalid function.");
+    NSCAssert(self->_qemu_main_loop != NULL, @"Started thread with invalid function.");
+    NSCAssert(self->_qemu_cleanup != NULL, @"Started thread with invalid function.");
+    NSCAssert(self.argv, @"Started thread with invalid argv.");
+    
+    int argc = (int)self.argv.count;
+    const char *argv[argc];
+    for (int i = 0; i < self.argv.count; i++) {
+        argv[i] = [self.argv[i] UTF8String];
+    }
+    const char *envp[] = { NULL };
+    self->_qemu_init(argc, argv, envp);
+    self->_qemu_main_loop();
+    self->_qemu_cleanup();
+    self.status = 0;
+    dispatch_semaphore_signal(self.done);
+    return NULL;
+}
 
 - (NSArray<NSString *> *)argv {
     [self argsFromConfiguration:NO];
@@ -305,10 +332,17 @@
     }
 }
 
+- (BOOL)didLoadDylib:(void *)handle {
+    _qemu_init = dlsym(handle, "qemu_init");
+    _qemu_main_loop = dlsym(handle, "qemu_main_loop");
+    _qemu_cleanup = dlsym(handle, "qemu_cleanup");
+    return (_qemu_init != NULL) && (_qemu_main_loop != NULL) && (_qemu_cleanup != NULL);
+}
+
 - (void)startWithCompletion:(void (^)(BOOL, NSString * _Nonnull))completion {
     NSString *dylib = [NSString stringWithFormat:@"libqemu-system-%@.dylib", self.configuration.systemArchitecture];
     [self argsFromConfiguration:YES];
-    [self startDylib:dylib main:@"qemu_main" completion:completion];
+    [self startDylib:dylib entry:start_qemu completion:completion];
 }
 
 @end

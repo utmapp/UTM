@@ -17,9 +17,26 @@
 #import "UTMQemuImg.h"
 #import "UTMLogging.h"
 #import <dlfcn.h>
-#import <pthread.h>
 
-@implementation UTMQemuImg
+@implementation UTMQemuImg {
+    int (*_main)(int, const char *[]);
+}
+
+static void *start_qemu_img(void *args) {
+    UTMQemuImg *self = (__bridge_transfer UTMQemuImg *)args;
+    
+    NSCAssert(self->_main != NULL, @"Started thread with invalid function.");
+    NSCAssert(self.argv, @"Started thread with invalid argv.");
+    
+    int argc = (int)self.argv.count;
+    const char *argv[argc];
+    for (int i = 0; i < self.argv.count; i++) {
+        argv[i] = [self.argv[i] UTF8String];
+    }
+    self.status = self->_main(argc, argv);
+    dispatch_semaphore_signal(self.done);
+    return NULL;
+}
 
 - (void)buildArgv {
     [self clearArgv];
@@ -62,6 +79,11 @@
     }
 }
 
+- (BOOL)didLoadDylib:(void *)handle {
+    _main = dlsym(handle, "qemu_img_main");
+    return (_main != NULL);
+}
+
 - (void)startWithCompletion:(void(^)(BOOL, NSString *))completion {
     // FIXME: get rid of this
     static BOOL once = NO;
@@ -70,7 +92,7 @@
         return;
     }
     [self buildArgv];
-    [self startDylib:@"libqemu-img.dylib" main:@"qemu_img_main" completion:completion];
+    [self startDylib:@"libqemu-img.dylib" entry:start_qemu_img completion:completion];
     once = YES;
 }
 
