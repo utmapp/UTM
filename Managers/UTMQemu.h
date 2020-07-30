@@ -16,6 +16,8 @@
 
 #import <Foundation/Foundation.h>
 
+typedef void * _Nullable (* _Nonnull UTMQemuThreadEntry)(void * _Nullable args);
+
 @class UTMConfiguration;
 
 NS_ASSUME_NONNULL_BEGIN
@@ -23,11 +25,15 @@ NS_ASSUME_NONNULL_BEGIN
 @interface UTMQemu : NSObject
 
 @property (nonatomic) NSArray<NSString *> *argv;
+@property (nonatomic) dispatch_semaphore_t done;
+@property (nonatomic) NSInteger status;
+@property (nonatomic) NSInteger fatal;
 
 - (instancetype)init NS_DESIGNATED_INITIALIZER;
 - (void)pushArgv:(nullable NSString *)arg;
 - (void)clearArgv;
-- (void)startDylib:(nonnull NSString *)dylib main:(nonnull NSString *)main completion:(void(^)(BOOL,NSString *))completion;
+- (BOOL)didLoadDylib:(nonnull void *)handle;
+- (void)startDylib:(nonnull NSString *)dylib entry:(UTMQemuThreadEntry)entry completion:(void(^)(BOOL,NSString *))completion;
 
 @end
 

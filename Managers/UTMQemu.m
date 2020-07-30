@@ -20,30 +20,10 @@
 #import <pthread.h>
 
 @implementation UTMQemu {
-    int (*_main)(int, const char *[]);
     NSMutableArray<NSString *> *_argv;
-    dispatch_semaphore_t _qemu_done;
-    int _status;
-    int _fatal;
 }
 
 @synthesize argv = _argv;
-
-void *start_qemu(void *args) {
-    UTMQemu *self = (__bridge_transfer UTMQemu *)args;
-    
-    NSCAssert(self->_main != NULL, @"Started thread with invalid function.");
-    NSCAssert(self->_argv, @"Started thread with invalid argv.");
-    
-    int argc = (int)self->_argv.count;
-    const char *argv[argc];
-    for (int i = 0; i < self->_argv.count; i++) {
-        argv[i] = [self->_argv[i] UTF8String];
-    }
-    self->_status = self->_main(argc, argv);
-    dispatch_semaphore_signal(self->_qemu_done);
-    return NULL;
-}
 
 - (instancetype)init {
     if (self = [super init]) {
@@ -73,13 +53,17 @@ void *start_qemu(void *args) {
     UTMLog(@"Running: %@", args);
 }
 
-- (void)startDylib:(nonnull NSString *)dylib main:(nonnull NSString *)main completion:(void(^)(BOOL,NSString *))completion {
+- (BOOL)didLoadDylib:(void *)handle {
+    return YES;
+}
+
+- (void)startDylib:(nonnull NSString *)dylib entry:(UTMQemuThreadEntry)entry completion:(void(^)(BOOL,NSString *))completion {
     void *dlctx;
     __block pthread_t qemu_thread;
     __weak typeof(self) wself = self;
     
-    _status = _fatal = 0;
-    _qemu_done = dispatch_semaphore_create(0);
+    self.status = self.fatal = 0;
+    self.done = dispatch_semaphore_create(0);
     UTMLog(@"Loading %@", dylib);
     dlctx = dlopen([dylib UTF8String], RTLD_LOCAL);
     if (dlctx == NULL) {
@@ -87,8 +71,7 @@ void *start_qemu(void *args) {
         completion(NO, err);
         return;
     }
-    _main = dlsym(dlctx, [main UTF8String]);
-    if (_main == NULL) {
+    if (![self didLoadDylib:dlctx]) {
         NSString *err = [NSString stringWithUTF8String:dlerror()];
         dlclose(dlctx);
         completion(NO, err);
@@ -99,7 +82,7 @@ void *start_qemu(void *args) {
             __strong typeof(self) sself = wself;
             if (sself) {
                 sself->_fatal = 1;
-                dispatch_semaphore_signal(sself->_qemu_done);
+                dispatch_semaphore_signal(sself->_done);
             }
             pthread_exit(NULL);
         }
@@ -108,16 +91,16 @@ void *start_qemu(void *args) {
         return;
     }
     [self printArgv];
-    pthread_create(&qemu_thread, NULL, &start_qemu, (__bridge_retained void *)self);
+    pthread_create(&qemu_thread, NULL, entry, (__bridge_retained void *)self);
     dispatch_async(dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0), ^{
-        if (dispatch_semaphore_wait(self->_qemu_done, DISPATCH_TIME_FOREVER)) {
+        if (dispatch_semaphore_wait(self.done, DISPATCH_TIME_FOREVER)) {
             dlclose(dlctx);
             completion(NO, NSLocalizedString(@"Internal error has occurred.", @"UTMQemu"));
         } else {
             if (dlclose(dlctx) < 0) {
                 NSString *err = [NSString stringWithUTF8String:dlerror()];
                 completion(NO, err);
-            } else if (self->_fatal || self->_status) {
+            } else if (self.fatal || self.status) {
                 completion(NO, [NSString stringWithFormat:NSLocalizedString(@"QEMU exited from an error: %@", @"UTMQemu"), [[UTMLogging sharedInstance] lastErrorLine]]);
             } else {
                 completion(YES, nil);
