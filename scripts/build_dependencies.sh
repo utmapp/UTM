@@ -285,7 +285,7 @@ generate_qapi () {
     APIS="$DIR/qapi/qapi-schema.json"
 
     echo "${GREEN}Generating qapi sources from ${APIS}...${NC}"
-    python "$BASEDIR/qapi-gen.py" -b -o "$SYSROOT_DIR/qapi" "$APIS"
+    python3 "$BASEDIR/qapi-gen.py" -b -o "$SYSROOT_DIR/qapi" "$APIS"
 }
 
 # parse args

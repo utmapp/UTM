@@ -1,7 +1,7 @@
-From feb826622404551de3947cd0eb60ffb5d66a6c0e Mon Sep 17 00:00:00 2001
+From 3367ead4b248198ad3b55f42e6b212d2263fb3fb Mon Sep 17 00:00:00 2001
 From: osy <osy86@users.noreply.github.com>
 Date: Wed, 24 Apr 2019 20:16:48 -0700
-Subject: [PATCH 1/4] build: Add support for iOS host
+Subject: [PATCH 1/7] build: Add support for iOS host
 
 Fix build errors with clang
 Block driver modified to handle iOS
@@ -21,7 +21,7 @@ Support iOS icache flushing
  9 files changed, 104 insertions(+), 23 deletions(-)
 
 diff --git a/block.c b/block.c
-index 473eb6eeaa..4d10453a1c 100644
+index d9ac0e07eb..1bf0c813a1 100644
 --- a/block.c
 +++ b/block.c
 @@ -52,7 +52,7 @@
@@ -34,10 +34,10 @@ index 473eb6eeaa..4d10453a1c 100644
  #endif
  #endif
 diff --git a/block/file-posix.c b/block/file-posix.c
-index 1b805bd938..98e34f12e8 100644
+index 9a00d4190a..c8c13ab218 100644
 --- a/block/file-posix.c
 +++ b/block/file-posix.c
-@@ -40,7 +40,7 @@
+@@ -41,7 +41,7 @@
  #include "scsi/pr-manager.h"
  #include "scsi/constants.h"
  
@@ -46,7 +46,7 @@ index 1b805bd938..98e34f12e8 100644
  #include <paths.h>
  #include <sys/param.h>
  #include <IOKit/IOKitLib.h>
-@@ -177,7 +177,16 @@ typedef struct BDRVRawReopenState {
+@@ -181,7 +181,16 @@ typedef struct BDRVRawReopenState {
      bool check_cache_dropped;
  } BDRVRawReopenState;
  
@@ -64,7 +64,7 @@ index 1b805bd938..98e34f12e8 100644
  static int64_t raw_getlength(BlockDriverState *bs);
  
  typedef struct RawPosixAIOData {
-@@ -248,6 +257,12 @@ static int raw_normalize_devicepath(const char **filename, Error **errp)
+@@ -252,6 +261,12 @@ static int raw_normalize_devicepath(const char **filename, Error **errp)
  }
  #endif
  
@@ -77,7 +77,7 @@ index 1b805bd938..98e34f12e8 100644
  /*
   * Get logical block size via ioctl. On success store it in @sector_size_p.
   */
-@@ -280,6 +295,7 @@ static int probe_logical_blocksize(int fd, unsigned int *sector_size_p)
+@@ -284,6 +299,7 @@ static int probe_logical_blocksize(int fd, unsigned int *sector_size_p)
  
      return success ? 0 : -errno;
  }
@@ -85,7 +85,7 @@ index 1b805bd938..98e34f12e8 100644
  
  /**
   * Get physical block size of @fd.
-@@ -2169,7 +2185,7 @@ again:
+@@ -2309,7 +2325,7 @@ again:
          }
          if (size == 0)
  #endif
@@ -94,7 +94,7 @@ index 1b805bd938..98e34f12e8 100644
          {
              uint64_t sectors = 0;
              uint32_t sector_size = 0;
-@@ -3045,6 +3061,8 @@ BlockDriver bdrv_file = {
+@@ -3251,6 +3267,8 @@ BlockDriver bdrv_file = {
  /***********************************************/
  /* host device */
  
@@ -103,7 +103,7 @@ index 1b805bd938..98e34f12e8 100644
  #if defined(__APPLE__) && defined(__MACH__)
  static kern_return_t GetBSDPath(io_iterator_t mediaIterator, char *bsdPath,
                                  CFIndex maxPathSize, int flags);
-@@ -3381,16 +3399,6 @@ hdev_co_ioctl(BlockDriverState *bs, unsigned long int req, void *buf)
+@@ -3543,16 +3561,6 @@ hdev_co_ioctl(BlockDriverState *bs, unsigned long int req, void *buf)
  }
  #endif /* linux */
  
@@ -120,7 +120,7 @@ index 1b805bd938..98e34f12e8 100644
  static coroutine_fn int
  hdev_co_pdiscard(BlockDriverState *bs, int64_t offset, int bytes)
  {
-@@ -3778,6 +3786,8 @@ static BlockDriver bdrv_host_cdrom = {
+@@ -3876,6 +3884,8 @@ static BlockDriver bdrv_host_cdrom = {
  };
  #endif /* __FreeBSD__ */
  
@@ -129,7 +129,7 @@ index 1b805bd938..98e34f12e8 100644
  static void bdrv_file_init(void)
  {
      /*
-@@ -3785,6 +3795,7 @@ static void bdrv_file_init(void)
+@@ -3883,6 +3893,7 @@ static void bdrv_file_init(void)
       * registered last will get probed first.
       */
      bdrv_register(&bdrv_file);
@@ -137,7 +137,7 @@ index 1b805bd938..98e34f12e8 100644
      bdrv_register(&bdrv_host_device);
  #ifdef __linux__
      bdrv_register(&bdrv_host_cdrom);
-@@ -3792,6 +3803,7 @@ static void bdrv_file_init(void)
+@@ -3890,6 +3901,7 @@ static void bdrv_file_init(void)
  #if defined(__FreeBSD__) || defined(__FreeBSD_kernel__)
      bdrv_register(&bdrv_host_cdrom);
  #endif
@@ -146,18 +146,18 @@ index 1b805bd938..98e34f12e8 100644
  
  block_init(bdrv_file_init);
 diff --git a/configure b/configure
-index 6099be1d84..2221ba58d2 100755
+index 2acc4d1465..a77ac80a03 100755
 --- a/configure
 +++ b/configure
-@@ -504,6 +504,7 @@ debug_mutex="no"
- libpmem=""
- default_devices="yes"
- plugins="no"
+@@ -519,6 +519,7 @@ fuzzing="no"
+ rng_none="no"
+ secret_keyring=""
+ libdaxctl=""
 +host_device_support="yes"
  
  supported_cpu="no"
  supported_os="no"
-@@ -619,6 +620,19 @@ EOF
+@@ -635,6 +636,19 @@ EOF
    compile_object
  }
  
@@ -177,7 +177,7 @@ index 6099be1d84..2221ba58d2 100755
  check_include() {
  cat > $TMPC <<EOF
  #include <$1>
-@@ -652,7 +666,11 @@ elif check_define __DragonFly__ ; then
+@@ -677,7 +691,11 @@ elif check_define __DragonFly__ ; then
  elif check_define __NetBSD__; then
    targetos='NetBSD'
  elif check_define __APPLE__; then
@@ -190,7 +190,7 @@ index 6099be1d84..2221ba58d2 100755
  else
    # This is a fatal error, but don't report it yet, because we
    # might be going to just print the --help text, or it might
-@@ -857,6 +875,27 @@ Darwin)
+@@ -883,6 +901,27 @@ Darwin)
    HOST_VARIANT_DIR="darwin"
    supported_os="yes"
  ;;
@@ -203,12 +203,12 @@ index 6099be1d84..2221ba58d2 100755
 +  LDFLAGS_SHARED="-bundle -undefined dynamic_lookup"
 +  if [ "$cpu" = "x86_64" ] ; then
 +    QEMU_CFLAGS="-arch x86_64 $QEMU_CFLAGS"
-+    LDFLAGS="-arch x86_64 $LDFLAGS"
++    QEMU_LDFLAGS="-arch x86_64 $QEMU_LDFLAGS"
 +  fi
 +  host_device_support="no"
 +  audio_drv_list=""
 +  audio_possible_drivers=""
-+  LDFLAGS="-framework CoreFoundation $LDFLAGS"
++  QEMU_LDFLAGS="-framework CoreFoundation $QEMU_LDFLAGS"
 +  # Disable attempts to use ObjectiveC features in os/object.h since they
 +  # won't work when we're compiling with gcc as a C compiler.
 +  QEMU_CFLAGS="-DOS_OBJECT_USE_OBJC=0 $QEMU_CFLAGS"
@@ -218,15 +218,15 @@ index 6099be1d84..2221ba58d2 100755
  SunOS)
    solaris="yes"
    make="${MAKE-gmake}"
-@@ -6599,6 +6638,7 @@ echo "libpmem support   $libpmem"
- echo "libudev           $libudev"
- echo "default devices   $default_devices"
- echo "plugin support    $plugins"
+@@ -7019,6 +7058,7 @@ echo "fuzzing support   $fuzzing"
+ echo "gdb               $gdb_bin"
+ echo "rng-none          $rng_none"
+ echo "Linux keyring     $secret_keyring"
 +echo "host device support  $host_device_support"
  
  if test "$supported_cpu" = "no"; then
      echo
-@@ -6675,6 +6715,9 @@ if test "$default_devices" = "yes" ; then
+@@ -7089,6 +7129,9 @@ if test "$default_devices" = "yes" ; then
  else
    echo "CONFIG_MINIKCONF_MODE=--allnoconfig" >> $config_host_mak
  fi
@@ -236,7 +236,7 @@ index 6099be1d84..2221ba58d2 100755
  if test "$debug_tcg" = "yes" ; then
    echo "CONFIG_DEBUG_TCG=y" >> $config_host_mak
  fi
-@@ -6724,6 +6767,10 @@ if test "$darwin" = "yes" ; then
+@@ -7138,6 +7181,10 @@ if test "$darwin" = "yes" ; then
    echo "CONFIG_DARWIN=y" >> $config_host_mak
  fi
  
@@ -248,7 +248,7 @@ index 6099be1d84..2221ba58d2 100755
    echo "CONFIG_SOLARIS=y" >> $config_host_mak
  fi
 diff --git a/net/slirp.c b/net/slirp.c
-index c4334ee876..5afb136d16 100644
+index 77042e6df7..8413042c09 100644
 --- a/net/slirp.c
 +++ b/net/slirp.c
 @@ -27,7 +27,7 @@
@@ -305,7 +305,7 @@ index c4334ee876..5afb136d16 100644
      if (smb_export) {
          if (slirp_smb(s, smb_export, smbsrv, errp) < 0) {
              goto error;
-@@ -805,7 +805,7 @@ void hmp_hostfwd_add(Monitor *mon, const QDict *qdict)
+@@ -785,7 +785,7 @@ void hmp_hostfwd_add(Monitor *mon, const QDict *qdict)
  
  }
  
@@ -314,7 +314,7 @@ index c4334ee876..5afb136d16 100644
  
  /* automatic user mode samba server configuration */
  static void slirp_smb_cleanup(SlirpState *s)
-@@ -920,7 +920,7 @@ static int slirp_smb(SlirpState* s, const char *exported_dir,
+@@ -900,7 +900,7 @@ static int slirp_smb(SlirpState* s, const char *exported_dir,
      return 0;
  }
  
@@ -324,10 +324,10 @@ index c4334ee876..5afb136d16 100644
  static int guestfwd_can_read(void *opaque)
  {
 diff --git a/qga/commands-posix.c b/qga/commands-posix.c
-index 1c1a165dae..41e871fa86 100644
+index 1a62a3a70d..0d721f4b57 100644
 --- a/qga/commands-posix.c
 +++ b/qga/commands-posix.c
-@@ -33,6 +33,12 @@
+@@ -34,6 +34,12 @@
  
  #ifndef CONFIG_HAS_ENVIRON
  #ifdef __APPLE__
@@ -341,10 +341,10 @@ index 1c1a165dae..41e871fa86 100644
  #define environ (*_NSGetEnviron())
  #else
 diff --git a/target/arm/arm-semi.c b/target/arm/arm-semi.c
-index 6f7b6d801b..9e27f9254c 100644
+index 8718fd0194..f2618e583f 100644
 --- a/target/arm/arm-semi.c
 +++ b/target/arm/arm-semi.c
-@@ -882,6 +882,7 @@ target_ulong do_arm_semihosting(CPUARMState *env)
+@@ -891,6 +891,7 @@ target_ulong do_arm_semihosting(CPUARMState *env)
          return clock() / (CLOCKS_PER_SEC / 100);
      case TARGET_SYS_TIME:
          return set_swi_errno(env, time(NULL));
@@ -352,7 +352,7 @@ index 6f7b6d801b..9e27f9254c 100644
      case TARGET_SYS_SYSTEM:
          GET_ARG(0);
          GET_ARG(1);
-@@ -898,6 +899,7 @@ target_ulong do_arm_semihosting(CPUARMState *env)
+@@ -907,6 +908,7 @@ target_ulong do_arm_semihosting(CPUARMState *env)
              unlock_user(s, arg0, 0);
              return ret;
          }
@@ -401,10 +401,10 @@ index d7a80dd303..bfbaa00bb6 100644
          qemu_log_mask(LOG_GUEST_ERROR, "nios2-semihosting: unsupported "
                        "semihosting syscall %d\n", nr);
 diff --git a/tcg/aarch64/tcg-target.h b/tcg/aarch64/tcg-target.h
-index ca214f6909..80d3b42b19 100644
+index 9bc2a5ecbe..298e2d306c 100644
 --- a/tcg/aarch64/tcg-target.h
 +++ b/tcg/aarch64/tcg-target.h
-@@ -146,9 +146,19 @@ typedef enum {
+@@ -149,9 +149,19 @@ typedef enum {
  #define TCG_TARGET_DEFAULT_MO (0)
  #define TCG_TARGET_HAS_MEMORY_BSWAP     1
  
@@ -425,28 +425,29 @@ index ca214f6909..80d3b42b19 100644
  
  void tb_target_set_jmp_target(uintptr_t, uintptr_t, uintptr_t);
 -- 
-2.21.1 (Apple Git-122.3)
+2.24.3 (Apple Git-128)
 
-From 1474e37eaeaca216f00f1d3be72718571fc5f777 Mon Sep 17 00:00:00 2001
+From e49082cfbeb7d7d644ab3451c2bc9cbd7ed25986 Mon Sep 17 00:00:00 2001
 From: osy <osy86@users.noreply.github.com>
 Date: Wed, 27 Mar 2019 14:47:00 -0700
-Subject: [PATCH 2/4] build: Added support for building QEMU as a shared
+Subject: [PATCH 2/7] build: Added support for building QEMU as a shared
  library
 
+For building QEMU as a shared lib, it must be loaded as a dylib. This breaks
+compatibility with OSX < 10.4.
 ---
  Makefile        | 21 +++++++++++++++++++++
  Makefile.target | 24 +++++++++++++++++++++++-
- configure       | 18 +++++++++++++++++-
+ configure       | 28 ++++++++++++++++++++++++----
  qemu-img.c      |  5 +++++
  rules.mak       |  6 ++++++
- vl.c            |  2 +-
- 6 files changed, 73 insertions(+), 3 deletions(-)
+ 5 files changed, 79 insertions(+), 5 deletions(-)
 
 diff --git a/Makefile b/Makefile
-index b437a346d7..1c19d6b29e 100644
+index c2120d8d48..e1e42f3a68 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -558,6 +558,16 @@ Makefile: $(version-obj-y)
+@@ -592,6 +592,16 @@ Makefile: $(version-obj-y)
  libqemuutil.a: $(util-obj-y) $(trace-obj-y) $(stub-obj-y)
  libvhost-user.a: $(libvhost-user-obj-y) $(util-obj-y) $(stub-obj-y)
  
@@ -463,19 +464,19 @@ index b437a346d7..1c19d6b29e 100644
  ######################################################################
  
  COMMON_LDADDS = libqemuutil.a
-@@ -565,6 +575,11 @@ COMMON_LDADDS = libqemuutil.a
+@@ -599,6 +609,11 @@ COMMON_LDADDS = libqemuutil.a
  qemu-img.o: qemu-img-cmds.h
  
  qemu-img$(EXESUF): qemu-img.o $(authz-obj-y) $(block-obj-y) $(crypto-obj-y) $(io-obj-y) $(qom-obj-y) $(COMMON_LDADDS)
 +
-+$(QEMU_IMG_SHARED_LIBRARY): LDFLAGS += $(LDFLAGS_SHARED)
++$(QEMU_IMG_SHARED_LIBRARY): QEMU_LDFLAGS += $(LDFLAGS_SHARED)
 +$(QEMU_IMG_SHARED_LIBRARY): qemu-img.o $(authz-obj-y) $(block-obj-y) $(crypto-obj-y) $(io-obj-y) $(qom-obj-y) $(COMMON_LDADDS)
 +	$(call LINK, $(filter-out %.mak, $^))
 +
  qemu-nbd$(EXESUF): qemu-nbd.o $(authz-obj-y) $(block-obj-y) $(crypto-obj-y) $(io-obj-y) $(qom-obj-y) $(COMMON_LDADDS)
  qemu-io$(EXESUF): qemu-io.o $(authz-obj-y) $(block-obj-y) $(crypto-obj-y) $(io-obj-y) $(qom-obj-y) $(COMMON_LDADDS)
- 
-@@ -712,6 +727,7 @@ clean: recurse-clean
+ qemu-storage-daemon$(EXESUF): qemu-storage-daemon.o $(authz-obj-y) $(block-obj-y) $(crypto-obj-y) $(chardev-obj-y) $(io-obj-y) $(qom-obj-y) $(storage-daemon-obj-y) $(COMMON_LDADDS)
+@@ -764,6 +779,7 @@ clean: recurse-clean
  		-exec rm {} +
  	rm -f $(edk2-decompressed)
  	rm -f $(filter-out %.tlb,$(TOOLS)) $(HELPERS-y) TAGS cscope.* *.pod *~ */*~
@@ -483,7 +484,7 @@ index b437a346d7..1c19d6b29e 100644
  	rm -f fsdev/*.pod scsi/*.pod
  	rm -f qemu-img-cmds.h
  	rm -f ui/shader/*-vert.h ui/shader/*-frag.h
-@@ -873,6 +889,11 @@ install: all $(if $(BUILD_DOCS),install-doc) \
+@@ -930,6 +946,11 @@ install: all $(if $(BUILD_DOCS),install-doc) \
  ifneq ($(TOOLS),)
  	$(call install-prog,$(TOOLS),$(DESTDIR)$(bindir))
  endif
@@ -496,7 +497,7 @@ index b437a346d7..1c19d6b29e 100644
  	$(INSTALL_DIR) "$(DESTDIR)$(qemu_moddir)"
  	for s in $(modules-m:.mo=$(DSOSUF)); do \
 diff --git a/Makefile.target b/Makefile.target
-index 24d79d26eb..ee0bedb82d 100644
+index ffa2657269..3397225653 100644
 --- a/Makefile.target
 +++ b/Makefile.target
 @@ -37,6 +37,14 @@ endif
@@ -526,18 +527,18 @@ index 24d79d26eb..ee0bedb82d 100644
  
  # Dummy command so that make thinks it has done something
  	@true
-@@ -211,6 +223,10 @@ ifdef CONFIG_DARWIN
+@@ -222,6 +234,10 @@ ifdef CONFIG_DARWIN
  	$(call quiet-command,SetFile -a C $@,"SETFILE","$(TARGET_DIR)$@")
  endif
  
-+$(QEMU_SHARED_LIBRARY): LDFLAGS += $(LDFLAGS_SHARED)
++$(QEMU_SHARED_LIBRARY): QEMU_LDFLAGS += $(LDFLAGS_SHARED)
 +$(QEMU_SHARED_LIBRARY): $(all-obj-y) $(COMMON_LDADDS)
 +	$(call LINK, $(filter-out %.mak, $^))
 +
  gdbstub-xml.c: $(TARGET_XML_FILES) $(SRC_PATH)/scripts/feature_to_c.sh
  	$(call quiet-command,rm -f $@ && $(SHELL) $(SRC_PATH)/scripts/feature_to_c.sh $@ $(TARGET_XML_FILES),"GEN","$(TARGET_DIR)$@")
  
-@@ -221,7 +237,7 @@ hmp-commands-info.h: $(SRC_PATH)/hmp-commands-info.hx $(SRC_PATH)/scripts/hxtool
+@@ -232,7 +248,7 @@ hmp-commands-info.h: $(SRC_PATH)/hmp-commands-info.hx $(SRC_PATH)/scripts/hxtool
  	$(call quiet-command,sh $(SRC_PATH)/scripts/hxtool -h < $< > $@,"GEN","$(TARGET_DIR)$@")
  
  clean: clean-target
@@ -546,7 +547,7 @@ index 24d79d26eb..ee0bedb82d 100644
  	rm -f $(shell find . -name '*.[od]')
  	rm -f hmp-commands.h gdbstub-xml.c
  	rm -f trace/generated-helpers.c trace/generated-helpers.c-timestamp
-@@ -230,9 +246,15 @@ ifdef CONFIG_TRACE_SYSTEMTAP
+@@ -257,9 +273,15 @@ $(QEMU_PROG_FUZZ): config-devices.mak $(all-obj-y) $(COMMON_LDADDS) $(fuzz-obj-y
  endif
  
  install: all
@@ -563,26 +564,39 @@ index 24d79d26eb..ee0bedb82d 100644
  	$(INSTALL_DIR) "$(DESTDIR)$(qemu_datadir)/../systemtap/tapset"
  	$(INSTALL_DATA) $(QEMU_PROG).stp-installed "$(DESTDIR)$(qemu_datadir)/../systemtap/tapset/$(QEMU_PROG).stp"
 diff --git a/configure b/configure
-index 2221ba58d2..ae62e4ea61 100755
+index a77ac80a03..ba0fe82a01 100755
 --- a/configure
 +++ b/configure
-@@ -505,6 +505,7 @@ libpmem=""
- default_devices="yes"
- plugins="no"
+@@ -520,6 +520,7 @@ rng_none="no"
+ secret_keyring=""
+ libdaxctl=""
  host_device_support="yes"
 +shared_lib="no"
  
  supported_cpu="no"
  supported_os="no"
-@@ -859,6 +860,7 @@ Darwin)
+@@ -885,7 +886,8 @@ Darwin)
    darwin="yes"
    hax="yes"
    hvf="yes"
+-  LDFLAGS_SHARED="-bundle -undefined dynamic_lookup"
 +  DSOSUF=".dylib"
-   LDFLAGS_SHARED="-bundle -undefined dynamic_lookup"
++  LDFLAGS_SHARED="-dynamiclib -undefined dynamic_lookup"
    if [ "$cpu" = "x86_64" ] ; then
      QEMU_CFLAGS="-arch x86_64 $QEMU_CFLAGS"
-@@ -881,7 +883,8 @@ iOS)
+     QEMU_LDFLAGS="-arch x86_64 $QEMU_LDFLAGS"
+@@ -893,8 +895,8 @@ Darwin)
+   cocoa="yes"
+   audio_drv_list="coreaudio try-sdl"
+   audio_possible_drivers="coreaudio sdl"
+-  QEMU_LDFLAGS="-framework CoreFoundation -framework IOKit $QEMU_LDFLAGS"
+-  libs_softmmu="-F/System/Library/Frameworks -framework Cocoa -framework IOKit $libs_softmmu"
++  QEMU_LDFLAGS="-framework CoreFoundation -framework IOKit -lresolv $QEMU_LDFLAGS"
++  libs_softmmu="-F/System/Library/Frameworks -framework IOKit $libs_softmmu"
+   # Disable attempts to use ObjectiveC features in os/object.h since they
+   # won't work when we're compiling with gcc as a C compiler.
+   QEMU_CFLAGS="-DOS_OBJECT_USE_OBJC=0 $QEMU_CFLAGS"
+@@ -907,7 +909,8 @@ iOS)
    ios="yes"
    hax="yes"
    hvf="yes"
@@ -591,14 +605,17 @@ index 2221ba58d2..ae62e4ea61 100755
 +  LDFLAGS_SHARED="-dynamiclib"
    if [ "$cpu" = "x86_64" ] ; then
      QEMU_CFLAGS="-arch x86_64 $QEMU_CFLAGS"
-     LDFLAGS="-arch x86_64 $LDFLAGS"
-@@ -1578,6 +1581,14 @@ for opt do
+     QEMU_LDFLAGS="-arch x86_64 $QEMU_LDFLAGS"
+@@ -1679,6 +1682,17 @@ for opt do
    ;;
-   --disable-plugins) plugins="no"
+   --disable-libdaxctl) libdaxctl=no
    ;;
 +  --enable-shared-lib)
 +      shared_lib=yes
 +      want_tools=no
++      cocoa=no
++      gtk=no
++      sdl=no
 +      QEMU_CFLAGS="$QEMU_CFLAGS -fPIC"
 +      DSOSUF="-module$DSOSUF" # fix for make 2.81 not building target order correctly
 +  ;;
@@ -607,23 +624,31 @@ index 2221ba58d2..ae62e4ea61 100755
    *)
        echo "ERROR: unknown option $opt"
        echo "Try '$0 --help' for more information"
-@@ -1761,6 +1772,7 @@ Advanced options (experts only):
-                            track the maximum stack usage of stacks created by qemu_alloc_stack
-   --enable-plugins
+@@ -1871,6 +1885,7 @@ Advanced options (experts only):
                             enable plugins via shared library loading
+   --disable-containers     don't use containers for cross-building
+   --gdb=GDB-path           gdb to use for gdbstub tests [$gdb_bin]
 +  --enable-shared-lib      build QEMU as a shared library instead of an application
  
  Optional features, enabled with --enable-FEATURE and
  disabled with --disable-FEATURE, default is enabled if available:
-@@ -6639,6 +6651,7 @@ echo "libudev           $libudev"
- echo "default devices   $default_devices"
- echo "plugin support    $plugins"
+@@ -2404,6 +2419,7 @@ if test "$cocoa" = "yes"; then
+     if test "$gtk" = "yes"; then
+         error_exit "Cocoa and GTK UIs cannot both be enabled at once"
+     fi
++    libs_softmmu="$libs_softmmu -framework Cocoa"
+     gtk=no
+     sdl=no
+ fi
+@@ -7059,6 +7075,7 @@ echo "gdb               $gdb_bin"
+ echo "rng-none          $rng_none"
+ echo "Linux keyring     $secret_keyring"
  echo "host device support  $host_device_support"
 +echo "build shared lib  $shared_lib"
  
  if test "$supported_cpu" = "no"; then
      echo
-@@ -6718,6 +6731,9 @@ fi
+@@ -7132,6 +7149,9 @@ fi
  if test "$host_device_support" = "yes" ; then
    echo "CONFIG_HOST_DEVICE=y" >> $config_host_mak
  fi
@@ -634,10 +659,10 @@ index 2221ba58d2..ae62e4ea61 100755
    echo "CONFIG_DEBUG_TCG=y" >> $config_host_mak
  fi
 diff --git a/qemu-img.c b/qemu-img.c
-index 95a24b9762..6500d273dd 100644
+index 5308773811..8788e5dde0 100644
 --- a/qemu-img.c
 +++ b/qemu-img.c
-@@ -49,6 +49,11 @@
+@@ -50,6 +50,11 @@
  #include "crypto/init.h"
  #include "trace/control.h"
  
@@ -650,7 +675,7 @@ index 95a24b9762..6500d273dd 100644
                            "\n" QEMU_COPYRIGHT "\n"
  
 diff --git a/rules.mak b/rules.mak
-index 967295dd2b..9e9672f804 100644
+index 694865b63e..906b2e134c 100644
 --- a/rules.mak
 +++ b/rules.mak
 @@ -154,6 +154,12 @@ define install-prog
@@ -666,53 +691,40 @@ index 967295dd2b..9e9672f804 100644
  # find-in-path
  # Usage: $(call find-in-path, prog)
  # Looks in the PATH if the argument contains no slash, else only considers one
-diff --git a/vl.c b/vl.c
-index 6a65a64bfd..3e14194825 100644
---- a/vl.c
-+++ b/vl.c
-@@ -49,7 +49,7 @@ int main(int argc, char **argv)
- #endif
- #endif /* CONFIG_SDL */
- 
--#ifdef CONFIG_COCOA
-+#if defined(CONFIG_COCOA) || defined(CONFIG_SHARED_LIB)
- #undef main
- #define main qemu_main
- #endif /* CONFIG_COCOA */
 -- 
-2.21.1 (Apple Git-122.3)
+2.24.3 (Apple Git-128)
 
-From 4e91fc77d5f7f0dc3a3e0dbaa08018f2a1ce9b2d Mon Sep 17 00:00:00 2001
+From 9e0a7e9c70518d6eaf75669a0ce2164b8992ab64 Mon Sep 17 00:00:00 2001
 From: osy <osy86@users.noreply.github.com>
 Date: Fri, 29 Mar 2019 15:41:07 -0700
-Subject: [PATCH 3/4] coroutine: add libucontext as external library
+Subject: [PATCH 3/7] coroutine: add libucontext as external library
 
 iOS does not support ucontext natively for aarch64 and the sigaltstack is also unsupported (even worse, it fails silently, see: https://openradar.appspot.com/13002712 )
 ---
  .gitmodules               |  3 +++
- Makefile                  | 11 +++++++++++
+ Makefile                  | 10 ++++++++++
  configure                 | 27 +++++++++++++++++++++++++--
  libucontext               |  1 +
  util/coroutine-ucontext.c |  9 +++++++++
- 5 files changed, 49 insertions(+), 2 deletions(-)
+ 5 files changed, 48 insertions(+), 2 deletions(-)
  create mode 160000 libucontext
 
 diff --git a/.gitmodules b/.gitmodules
-index 19792c9a11..5127b48928 100644
+index 9c0501a4d4..4d140cda28 100644
 --- a/.gitmodules
 +++ b/.gitmodules
-@@ -61,3 +61,6 @@
+@@ -58,3 +58,6 @@
  [submodule "roms/qboot"]
  	path = roms/qboot
  	url = https://github.com/bonzini/qboot
 +[submodule "libucontext"]
 +	path = libucontext
-+	url = https://github.com/halts/libucontext.git
++	url = https://github.com/utmapp/libucontext.git
 diff --git a/Makefile b/Makefile
-index 1c19d6b29e..b2554d8847 100644
+index e1e42f3a68..7a97e32e97 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -513,6 +513,9 @@ CAP_CFLAGS += -DCAPSTONE_HAS_ARM64
+@@ -550,6 +550,9 @@ CAP_CFLAGS += -DCAPSTONE_HAS_ARM64
  CAP_CFLAGS += -DCAPSTONE_HAS_POWERPC
  CAP_CFLAGS += -DCAPSTONE_HAS_X86
  
@@ -722,31 +734,25 @@ index 1c19d6b29e..b2554d8847 100644
  .PHONY: capstone/all
  capstone/all: .git-submodule-status
  	$(call quiet-command,$(MAKE) -C $(SRC_PATH)/capstone CAPSTONE_SHARED=no BUILDDIR="$(BUILD_DIR)/capstone" CC="$(CC)" AR="$(AR)" LD="$(LD)" RANLIB="$(RANLIB)" CFLAGS="$(CAP_CFLAGS)" $(SUBDIR_MAKEFLAGS) $(BUILD_DIR)/capstone/$(LIBCAPSTONE))
-@@ -525,11 +528,19 @@ slirp/all: .git-submodule-status
+@@ -562,6 +565,13 @@ slirp/all: .git-submodule-status
  		CC="$(CC)" AR="$(AR)" 	LD="$(LD)" RANLIB="$(RANLIB)"	\
- 		CFLAGS="$(QEMU_CFLAGS) $(CFLAGS)" LDFLAGS="$(LDFLAGS)")
+ 		CFLAGS="$(QEMU_CFLAGS) $(CFLAGS)" LDFLAGS="$(QEMU_LDFLAGS)")
  
 +.PHONY: libucontext/all
 +libucontext/all: .git-submodule-status
 +	$(call quiet-command,$(MAKE) -C $(SRC_PATH)/libucontext \
 +		ARCH="$(ARCH)" BUILD_DIR="$(BUILD_DIR)/libucontext" \
 +		CC="$(CC)" AR="$(AR)" LD="$(LD)" RANLIB="$(RANLIB)" \
-+		CFLAGS="$(LIBUCONTEXT_CFLAGS)")
++		CFLAGS="$(LIBUCONTEXT_CFLAGS)" LDFLAGS="$(QEMU_LDFLAGS)")
 +
- # Compatibility gunk to keep make working across the rename of targets
- # for recursion, to be removed some time after 4.1.
- subdir-dtc: dtc/all
- subdir-capstone: capstone/all
- subdir-slirp: slirp/all
-+subdir-libucontext: libucontext/all
- 
  $(filter %/all, $(TARGET_DIRS_RULES)): libqemuutil.a $(common-obj-y) \
- 	$(qom-obj-y) $(crypto-user-obj-$(CONFIG_USER_ONLY))
+ 	$(qom-obj-y)
+ 
 diff --git a/configure b/configure
-index ae62e4ea61..64d85ba851 100755
+index ba0fe82a01..3564a946a6 100755
 --- a/configure
 +++ b/configure
-@@ -1759,7 +1759,7 @@ Advanced options (experts only):
+@@ -1870,7 +1870,7 @@ Advanced options (experts only):
    --oss-lib                path to OSS library
    --cpu=CPU                Build for host CPU [$cpu]
    --with-coroutine=BACKEND coroutine backend. Supported options:
@@ -755,7 +761,7 @@ index ae62e4ea61..64d85ba851 100755
    --enable-gcov            enable test coverage analysis with gcov
    --gcov=GCOV              use specified gcov [$gcov_tool]
    --disable-blobs          disable installing provided firmware blobs
-@@ -5341,6 +5341,8 @@ if test "$coroutine" = ""; then
+@@ -5670,6 +5670,8 @@ if test "$coroutine" = ""; then
      coroutine=win32
    elif test "$ucontext_works" = "yes"; then
      coroutine=ucontext
@@ -764,7 +770,7 @@ index ae62e4ea61..64d85ba851 100755
    else
      coroutine=sigaltstack
    fi
-@@ -5364,12 +5366,29 @@ else
+@@ -5693,12 +5695,29 @@ else
        error_exit "only the 'windows' coroutine backend is valid for Windows"
      fi
      ;;
@@ -794,7 +800,7 @@ index ae62e4ea61..64d85ba851 100755
  if test "$coroutine_pool" = ""; then
    coroutine_pool=yes
  fi
-@@ -7246,7 +7265,7 @@ if test "$rbd" = "yes" ; then
+@@ -7705,7 +7724,7 @@ if test "$rbd" = "yes" ; then
    echo "RBD_LIBS=$rbd_libs" >> $config_host_mak
  fi
  
@@ -803,19 +809,19 @@ index ae62e4ea61..64d85ba851 100755
  if test "$coroutine_pool" = "yes" ; then
    echo "CONFIG_COROUTINE_POOL=1" >> $config_host_mak
  else
-@@ -8040,6 +8059,10 @@ fi
+@@ -8567,6 +8586,10 @@ fi
  if [ "$capstone" = "git" -o "$capstone" = "internal" ]; then
    echo "config-host.h: capstone/all" >> $config_host_mak
  fi
 +if [ "$coroutine" = "libucontext" ]; then
-+  echo "config-host.h: subdir-libucontext" >> $config_host_mak
++  echo "config-host.h: libucontext/all" >> $config_host_mak
 +  echo "CONFIG_LIBUCONTEXT=y" >> $config_host_mak
 +fi
  if test -n "$LIBCAPSTONE"; then
    echo "LIBCAPSTONE=$LIBCAPSTONE" >> $config_host_mak
  fi
 diff --git a/util/coroutine-ucontext.c b/util/coroutine-ucontext.c
-index bd593e61bc..86347ad78f 100644
+index 904b375192..1e1dd43512 100644
 --- a/util/coroutine-ucontext.c
 +++ b/util/coroutine-ucontext.c
 @@ -23,7 +23,16 @@
@@ -836,12 +842,12 @@ index bd593e61bc..86347ad78f 100644
  
  #ifdef CONFIG_VALGRIND_H
 -- 
-2.21.1 (Apple Git-122.3)
+2.24.3 (Apple Git-128)
 
-From ccde4851e1bebdd83e22155b2545bc1510db0257 Mon Sep 17 00:00:00 2001
+From 1055a07c4f90ed26d6d98432f6de81195592d347 Mon Sep 17 00:00:00 2001
 From: osy <osy86@users.noreply.github.com>
 Date: Sun, 23 Feb 2020 22:13:35 -0800
-Subject: [PATCH 4/4] tcg: implement bulletproof JIT
+Subject: [PATCH 4/7] tcg: implement bulletproof JIT
 
 On iOS, we cannot allocate RWX pages without special entitlements. As a
 workaround, we can a RX region and then mirror map it to a separate RX
@@ -862,10 +868,11 @@ provide implementations for non iOS platforms (ARM/x86).
  configure                    |  1 +
  docs/devel/ios.rst           | 40 +++++++++++++++++++
  include/exec/exec-all.h      |  7 ++++
+ include/tcg/tcg.h            | 18 +++++++--
  tcg/aarch64/tcg-target.h     | 13 +++++-
  tcg/aarch64/tcg-target.inc.c | 48 +++++++++++++---------
  tcg/arm/tcg-target.h         |  9 ++++-
- tcg/arm/tcg-target.inc.c     | 35 +++++++++-------
+ tcg/arm/tcg-target.inc.c     | 33 +++++++++-------
  tcg/i386/tcg-target.h        | 24 ++++++++++-
  tcg/i386/tcg-target.inc.c    | 28 ++++++-------
  tcg/mips/tcg-target.h        |  8 +++-
@@ -881,17 +888,16 @@ provide implementations for non iOS platforms (ARM/x86).
  tcg/tcg-ldst.inc.c           |  2 +-
  tcg/tcg-pool.inc.c           |  9 +++--
  tcg/tcg.c                    | 60 ++++++++++++++++++----------
- tcg/tcg.h                    | 18 +++++++--
  tcg/tci/tcg-target.h         | 13 +++++-
  tcg/tci/tcg-target.inc.c     |  8 ++--
- 27 files changed, 479 insertions(+), 184 deletions(-)
+ 27 files changed, 478 insertions(+), 183 deletions(-)
  create mode 100644 docs/devel/ios.rst
 
 diff --git a/accel/tcg/cpu-exec.c b/accel/tcg/cpu-exec.c
-index c01f59c743..a1fef809ee 100644
+index 66d38f9d85..39173ffed6 100644
 --- a/accel/tcg/cpu-exec.c
 +++ b/accel/tcg/cpu-exec.c
-@@ -347,7 +347,12 @@ void tb_set_jmp_target(TranslationBlock *tb, int n, uintptr_t addr)
+@@ -348,7 +348,12 @@ void tb_set_jmp_target(TranslationBlock *tb, int n, uintptr_t addr)
      if (TCG_TARGET_HAS_direct_jump) {
          uintptr_t offset = tb->jmp_target_arg[n];
          uintptr_t tc_ptr = (uintptr_t)tb->tc.ptr;
@@ -906,10 +912,10 @@ index c01f59c743..a1fef809ee 100644
          tb->jmp_target_arg[n] = addr;
      }
 diff --git a/accel/tcg/translate-all.c b/accel/tcg/translate-all.c
-index 9f48da9472..7301ace32a 100644
+index 2d83013633..039c66698e 100644
 --- a/accel/tcg/translate-all.c
 +++ b/accel/tcg/translate-all.c
-@@ -58,6 +58,22 @@
+@@ -59,6 +59,22 @@
  #include "sysemu/cpus.h"
  #include "sysemu/tcg.h"
  
@@ -932,7 +938,7 @@ index 9f48da9472..7301ace32a 100644
  /* #define DEBUG_TB_INVALIDATE */
  /* #define DEBUG_TB_FLUSH */
  /* make various TB consistency checks */
-@@ -295,10 +311,12 @@ static target_long decode_sleb128(uint8_t **pp)
+@@ -301,10 +317,12 @@ static target_long decode_sleb128(uint8_t **pp)
  
  static int encode_search(TranslationBlock *tb, uint8_t *block)
  {
@@ -947,7 +953,7 @@ index 9f48da9472..7301ace32a 100644
      for (i = 0, n = tb->icount; i < n; ++i) {
          target_ulong prev;
  
-@@ -322,7 +340,7 @@ static int encode_search(TranslationBlock *tb, uint8_t *block)
+@@ -328,7 +346,7 @@ static int encode_search(TranslationBlock *tb, uint8_t *block)
          }
      }
  
@@ -956,7 +962,7 @@ index 9f48da9472..7301ace32a 100644
  }
  
  /* The cpu state corresponding to 'searched_pc' is restored.
-@@ -1030,7 +1048,11 @@ static inline void *alloc_code_gen_buffer(void)
+@@ -1066,7 +1084,11 @@ static inline void *alloc_code_gen_buffer(void)
  #else
  static inline void *alloc_code_gen_buffer(void)
  {
@@ -966,9 +972,9 @@ index 9f48da9472..7301ace32a 100644
      int prot = PROT_WRITE | PROT_READ | PROT_EXEC;
 +#endif
      int flags = MAP_PRIVATE | MAP_ANONYMOUS;
-     uintptr_t start = 0;
      size_t size = tcg_ctx->code_gen_buffer_size;
-@@ -1108,6 +1130,39 @@ static inline void *alloc_code_gen_buffer(void)
+     void *buf;
+@@ -1117,6 +1139,39 @@ static inline void *alloc_code_gen_buffer(void)
  }
  #endif /* USE_STATIC_CODE_GEN_BUFFER, WIN32, POSIX */
  
@@ -1008,7 +1014,7 @@ index 9f48da9472..7301ace32a 100644
  static inline void code_gen_alloc(size_t tb_size)
  {
      tcg_ctx->code_gen_buffer_size = size_code_gen_buffer(tb_size);
-@@ -1116,6 +1171,19 @@ static inline void code_gen_alloc(size_t tb_size)
+@@ -1125,6 +1180,19 @@ static inline void code_gen_alloc(size_t tb_size)
          fprintf(stderr, "Could not allocate dynamic translator buffer\n");
          exit(1);
      }
@@ -1028,7 +1034,7 @@ index 9f48da9472..7301ace32a 100644
  }
  
  static bool tb_cmp(const void *ap, const void *bp)
-@@ -1711,6 +1779,9 @@ TranslationBlock *tb_gen_code(CPUState *cpu,
+@@ -1720,6 +1788,9 @@ TranslationBlock *tb_gen_code(CPUState *cpu,
          cpu_loop_exit(cpu);
      }
  
@@ -1039,10 +1045,10 @@ index 9f48da9472..7301ace32a 100644
      tb->tc.ptr = gen_code_buf;
      tb->pc = pc;
 diff --git a/configure b/configure
-index 64d85ba851..1492c3b288 100755
+index 3564a946a6..0ab4633fbd 100755
 --- a/configure
 +++ b/configure
-@@ -6804,6 +6804,7 @@ fi
+@@ -7222,6 +7222,7 @@ fi
  
  if test "$ios" = "yes" ; then
    echo "CONFIG_IOS=y" >> $config_host_mak
@@ -1097,10 +1103,10 @@ index 0000000000..b0fda060ab
 +
 +.. _bulletproof JIT: https://www.blackhat.com/docs/us-16/materials/us-16-Krstic.pdf
 diff --git a/include/exec/exec-all.h b/include/exec/exec-all.h
-index d85e610e85..c115b78cd8 100644
+index 3cf88272df..8d3a52fb81 100644
 --- a/include/exec/exec-all.h
 +++ b/include/exec/exec-all.h
-@@ -430,6 +430,13 @@ struct TranslationBlock {
+@@ -483,6 +483,13 @@ struct TranslationBlock {
      uintptr_t jmp_list_head;
      uintptr_t jmp_list_next[2];
      uintptr_t jmp_dest[2];
@@ -1114,11 +1120,75 @@ index d85e610e85..c115b78cd8 100644
  };
  
  extern bool parallel_cpus;
+diff --git a/include/tcg/tcg.h b/include/tcg/tcg.h
+index e63450a893..cda957d729 100644
+--- a/include/tcg/tcg.h
++++ b/include/tcg/tcg.h
+@@ -261,7 +261,7 @@ struct TCGLabel {
+     unsigned refs : 16;
+     union {
+         uintptr_t value;
+-        tcg_insn_unit *value_ptr;
++        const tcg_insn_unit *value_ptr;
+     } u;
+     QSIMPLEQ_HEAD(, TCGRelocation) relocs;
+     QSIMPLEQ_ENTRY(TCGLabel) next;
+@@ -593,7 +593,7 @@ struct TCGContext {
+     int nb_ops;
+ 
+     /* goto_tb support */
+-    tcg_insn_unit *code_buf;
++    const tcg_insn_unit *code_buf;
+     uint16_t *tb_jmp_reset_offset; /* tb->jmp_reset_offset */
+     uintptr_t *tb_jmp_insn_offset; /* tb->jmp_target_arg if direct_jump */
+     uintptr_t *tb_jmp_target_addr; /* tb->jmp_target_arg if !direct_jump */
+@@ -627,6 +627,9 @@ struct TCGContext {
+     size_t code_gen_buffer_size;
+     void *code_gen_ptr;
+     void *data_gen_ptr;
++#if defined(CONFIG_IOS_JIT)
++    ptrdiff_t code_rw_mirror_diff;
++#endif
+ 
+     /* Threshold to flush the translated code buffer.  */
+     void *code_gen_highwater;
+@@ -677,6 +680,13 @@ struct TCGContext {
+     target_ulong gen_insn_data[TCG_MAX_INSNS][TARGET_INSN_START_WORDS];
+ };
+ 
++#if defined(CONFIG_IOS_JIT)
++# define TCG_CODE_PTR_RW(s, code_ptr) \
++    (tcg_insn_unit *)((uintptr_t)(code_ptr) + (s)->code_rw_mirror_diff)
++#else
++# define TCG_CODE_PTR_RW(s, code_ptr) (code_ptr)
++#endif
++
+ extern TCGContext tcg_init_ctx;
+ extern __thread TCGContext *tcg_ctx;
+ extern TCGv_env cpu_env;
+@@ -1090,7 +1100,7 @@ static inline TCGLabel *arg_label(TCGArg i)
+  * correct result.
+  */
+ 
+-static inline ptrdiff_t tcg_ptr_byte_diff(void *a, void *b)
++static inline ptrdiff_t tcg_ptr_byte_diff(const void *a, const void *b)
+ {
+     return a - b;
+ }
+@@ -1104,7 +1114,7 @@ static inline ptrdiff_t tcg_ptr_byte_diff(void *a, void *b)
+  * to the destination address.
+  */
+ 
+-static inline ptrdiff_t tcg_pcrel_diff(TCGContext *s, void *target)
++static inline ptrdiff_t tcg_pcrel_diff(TCGContext *s, const void *target)
+ {
+     return tcg_ptr_byte_diff(target, s->code_ptr);
+ }
 diff --git a/tcg/aarch64/tcg-target.h b/tcg/aarch64/tcg-target.h
-index 80d3b42b19..9bf041eac5 100644
+index 298e2d306c..a12f66197c 100644
 --- a/tcg/aarch64/tcg-target.h
 +++ b/tcg/aarch64/tcg-target.h
-@@ -148,6 +148,7 @@ typedef enum {
+@@ -151,6 +151,7 @@ typedef enum {
  
  #ifdef __APPLE__
  void sys_icache_invalidate(void *start, size_t len);
@@ -1126,7 +1196,7 @@ index 80d3b42b19..9bf041eac5 100644
  #endif
  
  static inline void flush_icache_range(uintptr_t start, uintptr_t stop)
-@@ -161,7 +162,17 @@ static inline void flush_icache_range(uintptr_t start, uintptr_t stop)
+@@ -164,7 +165,17 @@ static inline void flush_icache_range(uintptr_t start, uintptr_t stop)
  #endif
  }
  
@@ -1146,7 +1216,7 @@ index 80d3b42b19..9bf041eac5 100644
  #ifdef CONFIG_SOFTMMU
  #define TCG_TARGET_NEED_LDST_LABELS
 diff --git a/tcg/aarch64/tcg-target.inc.c b/tcg/aarch64/tcg-target.inc.c
-index 3f921015d3..725f7f4d4d 100644
+index 760b0e742d..fac05f6317 100644
 --- a/tcg/aarch64/tcg-target.inc.c
 +++ b/tcg/aarch64/tcg-target.inc.c
 @@ -78,38 +78,44 @@ static const int tcg_target_call_oarg_regs[1] = {
@@ -1201,7 +1271,7 @@ index 3f921015d3..725f7f4d4d 100644
      default:
          g_assert_not_reached();
      }
-@@ -1308,14 +1314,14 @@ static void tcg_out_cmp(TCGContext *s, TCGType ext, TCGReg a,
+@@ -1309,14 +1315,14 @@ static void tcg_out_cmp(TCGContext *s, TCGType ext, TCGReg a,
      }
  }
  
@@ -1218,7 +1288,7 @@ index 3f921015d3..725f7f4d4d 100644
  {
      ptrdiff_t offset = target - s->code_ptr;
      if (offset == sextract64(offset, 0, 26)) {
-@@ -1331,7 +1337,7 @@ static inline void tcg_out_callr(TCGContext *s, TCGReg reg)
+@@ -1332,7 +1338,7 @@ static inline void tcg_out_callr(TCGContext *s, TCGReg reg)
      tcg_out_insn(s, 3207, BLR, reg);
  }
  
@@ -1227,7 +1297,7 @@ index 3f921015d3..725f7f4d4d 100644
  {
      ptrdiff_t offset = target - s->code_ptr;
      if (offset == sextract64(offset, 0, 26)) {
-@@ -1343,7 +1349,7 @@ static inline void tcg_out_call(TCGContext *s, tcg_insn_unit *target)
+@@ -1344,7 +1350,7 @@ static inline void tcg_out_call(TCGContext *s, tcg_insn_unit *target)
  }
  
  void tb_target_set_jmp_target(uintptr_t tc_ptr, uintptr_t jmp_addr,
@@ -1236,7 +1306,7 @@ index 3f921015d3..725f7f4d4d 100644
  {
      tcg_insn_unit i1, i2;
      TCGType rt = TCG_TYPE_I64;
-@@ -1364,7 +1370,10 @@ void tb_target_set_jmp_target(uintptr_t tc_ptr, uintptr_t jmp_addr,
+@@ -1365,7 +1371,10 @@ void tb_target_set_jmp_target(uintptr_t tc_ptr, uintptr_t jmp_addr,
          i2 = I3401_ADDI | rt << 31 | (addr & 0xfff) << 10 | rd << 5 | rd;
      }
      pair = (uint64_t)i2 << 32 | i1;
@@ -1248,7 +1318,7 @@ index 3f921015d3..725f7f4d4d 100644
      flush_icache_range(jmp_addr, jmp_addr + 8);
  }
  
-@@ -1570,7 +1579,7 @@ static void * const qemu_st_helpers[16] = {
+@@ -1571,7 +1580,7 @@ static void * const qemu_st_helpers[16] = {
      [MO_BEQ]  = helper_be_stq_mmu,
  };
  
@@ -1257,7 +1327,7 @@ index 3f921015d3..725f7f4d4d 100644
  {
      ptrdiff_t offset = tcg_pcrel_diff(s, target);
      tcg_debug_assert(offset == sextract64(offset, 0, 21));
-@@ -1583,7 +1592,7 @@ static bool tcg_out_qemu_ld_slow_path(TCGContext *s, TCGLabelQemuLdst *lb)
+@@ -1584,7 +1593,7 @@ static bool tcg_out_qemu_ld_slow_path(TCGContext *s, TCGLabelQemuLdst *lb)
      MemOp opc = get_memop(oi);
      MemOp size = opc & MO_SIZE;
  
@@ -1266,7 +1336,7 @@ index 3f921015d3..725f7f4d4d 100644
          return false;
      }
  
-@@ -1608,7 +1617,7 @@ static bool tcg_out_qemu_st_slow_path(TCGContext *s, TCGLabelQemuLdst *lb)
+@@ -1609,7 +1618,7 @@ static bool tcg_out_qemu_st_slow_path(TCGContext *s, TCGLabelQemuLdst *lb)
      MemOp opc = get_memop(oi);
      MemOp size = opc & MO_SIZE;
  
@@ -1275,7 +1345,7 @@ index 3f921015d3..725f7f4d4d 100644
          return false;
      }
  
-@@ -1624,7 +1633,8 @@ static bool tcg_out_qemu_st_slow_path(TCGContext *s, TCGLabelQemuLdst *lb)
+@@ -1625,7 +1634,8 @@ static bool tcg_out_qemu_st_slow_path(TCGContext *s, TCGLabelQemuLdst *lb)
  
  static void add_qemu_ldst_label(TCGContext *s, bool is_ld, TCGMemOpIdx oi,
                                  TCGType ext, TCGReg data_reg, TCGReg addr_reg,
@@ -1285,7 +1355,7 @@ index 3f921015d3..725f7f4d4d 100644
  {
      TCGLabelQemuLdst *label = new_ldst_label(s);
  
-@@ -1851,7 +1861,7 @@ static void tcg_out_qemu_st(TCGContext *s, TCGReg data_reg, TCGReg addr_reg,
+@@ -1852,7 +1862,7 @@ static void tcg_out_qemu_st(TCGContext *s, TCGReg data_reg, TCGReg addr_reg,
  #endif /* CONFIG_SOFTMMU */
  }
  
@@ -1294,7 +1364,7 @@ index 3f921015d3..725f7f4d4d 100644
  
  static void tcg_out_op(TCGContext *s, TCGOpcode opc,
                         const TCGArg args[TCG_MAX_OP_ARGS],
-@@ -2870,11 +2880,11 @@ static void tcg_target_qemu_prologue(TCGContext *s)
+@@ -2919,11 +2929,11 @@ static void tcg_target_qemu_prologue(TCGContext *s)
      tcg_out_insn(s, 3207, RET, TCG_REG_LR);
  }
  
@@ -1330,7 +1400,7 @@ index 17e771374d..d8d7e7e239 100644
  #ifdef CONFIG_SOFTMMU
  #define TCG_TARGET_NEED_LDST_LABELS
 diff --git a/tcg/arm/tcg-target.inc.c b/tcg/arm/tcg-target.inc.c
-index 94d80d79d1..4a6202b96f 100644
+index 6aa7757aac..8547aaca1e 100644
 --- a/tcg/arm/tcg-target.inc.c
 +++ b/tcg/arm/tcg-target.inc.c
 @@ -187,17 +187,22 @@ static const uint8_t tcg_cond_to_arm_cond[] = {
@@ -1430,16 +1500,7 @@ index 94d80d79d1..4a6202b96f 100644
          return false;
      }
  
-@@ -1745,7 +1750,7 @@ static void tcg_out_qemu_st(TCGContext *s, const TCGArg *args, bool is64)
- #endif
- }
- 
--static tcg_insn_unit *tb_ret_addr;
-+static const tcg_insn_unit *tb_ret_addr;
- 
- static inline void tcg_out_op(TCGContext *s, TCGOpcode opc,
-                 const TCGArg *args, const int *const_args)
-@@ -2264,11 +2269,11 @@ static inline void tcg_out_movi(TCGContext *s, TCGType type,
+@@ -2258,11 +2263,11 @@ static inline void tcg_out_movi(TCGContext *s, TCGType type,
      tcg_out_movi32(s, COND_AL, ret, arg);
  }
  
@@ -1454,10 +1515,10 @@ index 94d80d79d1..4a6202b96f 100644
  }
  
 diff --git a/tcg/i386/tcg-target.h b/tcg/i386/tcg-target.h
-index 928e8b87bb..14fa486d4a 100644
+index 99ac1e3958..11860c64c8 100644
 --- a/tcg/i386/tcg-target.h
 +++ b/tcg/i386/tcg-target.h
-@@ -204,16 +204,36 @@ extern bool have_avx2;
+@@ -207,16 +207,36 @@ extern bool have_avx2;
  #define TCG_TARGET_extract_i64_valid(ofs, len) \
      (((ofs) == 8 && (len) == 8) || ((ofs) + (len)) == 32)
  
@@ -1497,7 +1558,7 @@ index 928e8b87bb..14fa486d4a 100644
  
  /* This defines the natural memory order supported by this
 diff --git a/tcg/i386/tcg-target.inc.c b/tcg/i386/tcg-target.inc.c
-index 9d8ed974e0..ab3b3458dd 100644
+index ae0228238b..b4d04d638e 100644
 --- a/tcg/i386/tcg-target.inc.c
 +++ b/tcg/i386/tcg-target.inc.c
 @@ -165,9 +165,9 @@ static bool have_lzcnt;
@@ -1586,7 +1647,7 @@ index 9d8ed974e0..ab3b3458dd 100644
      }
  
      if (TCG_TARGET_REG_BITS == 32) {
-@@ -3762,9 +3762,9 @@ static void tcg_target_qemu_prologue(TCGContext *s)
+@@ -3853,9 +3853,9 @@ static void tcg_target_qemu_prologue(TCGContext *s)
      tcg_out_opc(s, OPC_RET, 0, 0, 0);
  }
  
@@ -1618,7 +1679,7 @@ index c6b091d849..80dcba5358 100644
  #ifdef CONFIG_SOFTMMU
  #define TCG_TARGET_NEED_LDST_LABELS
 diff --git a/tcg/mips/tcg-target.inc.c b/tcg/mips/tcg-target.inc.c
-index 5442167045..56992ad94f 100644
+index 4d32ebc1df..7ff31bb5ca 100644
 --- a/tcg/mips/tcg-target.inc.c
 +++ b/tcg/mips/tcg-target.inc.c
 @@ -139,12 +139,13 @@ static const TCGReg tcg_target_call_oarg_regs[2] = {
@@ -1795,10 +1856,10 @@ index 5442167045..56992ad94f 100644
  }
  
 diff --git a/tcg/ppc/tcg-target.h b/tcg/ppc/tcg-target.h
-index 4fa21f0e71..cdce0e4f59 100644
+index be5b2901c3..d548eae5bb 100644
 --- a/tcg/ppc/tcg-target.h
 +++ b/tcg/ppc/tcg-target.h
-@@ -172,7 +172,13 @@ extern bool have_vsx;
+@@ -175,7 +175,13 @@ extern bool have_vsx;
  #define TCG_TARGET_HAS_cmpsel_vec       0
  
  void flush_icache_range(uintptr_t start, uintptr_t stop);
@@ -1814,7 +1875,7 @@ index 4fa21f0e71..cdce0e4f59 100644
  #define TCG_TARGET_DEFAULT_MO (0)
  #define TCG_TARGET_HAS_MEMORY_BSWAP     1
 diff --git a/tcg/ppc/tcg-target.inc.c b/tcg/ppc/tcg-target.inc.c
-index d308d69aba..c971ad4854 100644
+index c8d1e765d9..8de9d124b9 100644
 --- a/tcg/ppc/tcg-target.inc.c
 +++ b/tcg/ppc/tcg-target.inc.c
 @@ -62,7 +62,7 @@
@@ -2003,7 +2064,7 @@ index 032439d806..d42b361991 100644
  #define TCG_TARGET_DEFAULT_MO (0)
  
 diff --git a/tcg/riscv/tcg-target.inc.c b/tcg/riscv/tcg-target.inc.c
-index 7018509693..a087b93155 100644
+index 3c11ab8b7a..e35fa78cf0 100644
 --- a/tcg/riscv/tcg-target.inc.c
 +++ b/tcg/riscv/tcg-target.inc.c
 @@ -415,11 +415,11 @@ static void tcg_out_opc_jump(TCGContext *s, RISCVInsn opc,
@@ -2090,20 +2151,19 @@ index 7018509693..a087b93155 100644
          } else {
              /* Invert the condition */
              insn = insn ^ (1 << 12);
-@@ -501,10 +507,10 @@ static bool patch_reloc(tcg_insn_unit *code_ptr, int type,
+@@ -501,9 +507,9 @@ static bool patch_reloc(tcg_insn_unit *code_ptr, int type,
          }
          break;
      case R_RISCV_JAL:
 -        return reloc_jimm20(code_ptr, (tcg_insn_unit *)value);
 +        return reloc_jimm20(s, code_ptr, (tcg_insn_unit *)value);
-         break;
      case R_RISCV_CALL:
 -        return reloc_call(code_ptr, (tcg_insn_unit *)value);
 +        return reloc_call(s, code_ptr, (tcg_insn_unit *)value);
-         break;
      default:
          tcg_abort();
-@@ -561,7 +567,7 @@ static void tcg_out_movi(TCGContext *s, TCGType type, TCGReg rd,
+     }
+@@ -559,7 +565,7 @@ static void tcg_out_movi(TCGContext *s, TCGType type, TCGReg rd,
      if (tmp == (int32_t)tmp) {
          tcg_out_opc_upper(s, OPC_AUIPC, rd, 0);
          tcg_out_opc_imm(s, OPC_ADDI, rd, rd, 0);
@@ -2112,7 +2172,7 @@ index 7018509693..a087b93155 100644
          tcg_debug_assert(ret == true);
          return;
      }
-@@ -858,14 +864,14 @@ static void tcg_out_setcond2(TCGContext *s, TCGCond cond, TCGReg ret,
+@@ -856,14 +862,14 @@ static void tcg_out_setcond2(TCGContext *s, TCGCond cond, TCGReg ret,
      g_assert_not_reached();
  }
  
@@ -2129,7 +2189,7 @@ index 7018509693..a087b93155 100644
  {
      TCGReg link = tail ? TCG_REG_ZERO : TCG_REG_RA;
      ptrdiff_t offset = tcg_pcrel_diff(s, arg);
-@@ -879,7 +885,7 @@ static void tcg_out_call_int(TCGContext *s, tcg_insn_unit *arg, bool tail)
+@@ -877,7 +883,7 @@ static void tcg_out_call_int(TCGContext *s, tcg_insn_unit *arg, bool tail)
          /* long jump: -2147483646 to 2147483648 */
          tcg_out_opc_upper(s, OPC_AUIPC, TCG_REG_TMP0, 0);
          tcg_out_opc_imm(s, OPC_JALR, link, TCG_REG_TMP0, 0);
@@ -2138,7 +2198,7 @@ index 7018509693..a087b93155 100644
          tcg_debug_assert(ret == true);
      } else if (TCG_TARGET_REG_BITS == 64) {
          /* far jump: 64-bit */
-@@ -892,7 +898,7 @@ static void tcg_out_call_int(TCGContext *s, tcg_insn_unit *arg, bool tail)
+@@ -890,7 +896,7 @@ static void tcg_out_call_int(TCGContext *s, tcg_insn_unit *arg, bool tail)
      }
  }
  
@@ -2147,7 +2207,7 @@ index 7018509693..a087b93155 100644
  {
      tcg_out_call_int(s, arg, false);
  }
-@@ -1026,7 +1032,8 @@ static void add_qemu_ldst_label(TCGContext *s, int is_ld, TCGMemOpIdx oi,
+@@ -1024,7 +1030,8 @@ static void add_qemu_ldst_label(TCGContext *s, int is_ld, TCGMemOpIdx oi,
                                  TCGType ext,
                                  TCGReg datalo, TCGReg datahi,
                                  TCGReg addrlo, TCGReg addrhi,
@@ -2157,7 +2217,7 @@ index 7018509693..a087b93155 100644
  {
      TCGLabelQemuLdst *label = new_ldst_label(s);
  
-@@ -1056,7 +1063,7 @@ static bool tcg_out_qemu_ld_slow_path(TCGContext *s, TCGLabelQemuLdst *l)
+@@ -1054,7 +1061,7 @@ static bool tcg_out_qemu_ld_slow_path(TCGContext *s, TCGLabelQemuLdst *l)
      }
  
      /* resolve label address */
@@ -2166,7 +2226,7 @@ index 7018509693..a087b93155 100644
                       (intptr_t) s->code_ptr, 0)) {
          return false;
      }
-@@ -1091,7 +1098,7 @@ static bool tcg_out_qemu_st_slow_path(TCGContext *s, TCGLabelQemuLdst *l)
+@@ -1089,7 +1096,7 @@ static bool tcg_out_qemu_st_slow_path(TCGContext *s, TCGLabelQemuLdst *l)
      }
  
      /* resolve label address */
@@ -2175,7 +2235,7 @@ index 7018509693..a087b93155 100644
                       (intptr_t) s->code_ptr, 0)) {
          return false;
      }
-@@ -1278,7 +1285,7 @@ static void tcg_out_qemu_st(TCGContext *s, const TCGArg *args, bool is_64)
+@@ -1276,7 +1283,7 @@ static void tcg_out_qemu_st(TCGContext *s, const TCGArg *args, bool is_64)
  #endif
  }
  
@@ -2215,7 +2275,7 @@ index 07accabbd1..6fe4496e20 100644
  
  #ifdef CONFIG_SOFTMMU
 diff --git a/tcg/s390/tcg-target.inc.c b/tcg/s390/tcg-target.inc.c
-index 8aaa4cebe8..9755369b78 100644
+index b07e9ff7d6..d6cb5c05c5 100644
 --- a/tcg/s390/tcg-target.inc.c
 +++ b/tcg/s390/tcg-target.inc.c
 @@ -363,10 +363,10 @@ static void * const qemu_st_helpers[16] = {
@@ -2334,7 +2394,7 @@ index 633841ebf2..d102e13692 100644
  #define TCG_TARGET_NEED_POOL_LABELS
  
 diff --git a/tcg/sparc/tcg-target.inc.c b/tcg/sparc/tcg-target.inc.c
-index d7986cda5c..ec9c7bbea8 100644
+index 65fddb310d..49adf6cf82 100644
 --- a/tcg/sparc/tcg-target.inc.c
 +++ b/tcg/sparc/tcg-target.inc.c
 @@ -291,14 +291,14 @@ static inline int check_fit_i32(int32_t val, unsigned int bits)
@@ -2495,7 +2555,7 @@ index 4eaa84b631..2c23162d74 100644
          }
      }
 diff --git a/tcg/tcg.c b/tcg/tcg.c
-index 5475d49ed1..5a4073266a 100644
+index 1362bc6101..ab0e7a4ae6 100644
 --- a/tcg/tcg.c
 +++ b/tcg/tcg.c
 @@ -70,7 +70,7 @@
@@ -2638,7 +2698,7 @@ index 5475d49ed1..5a4073266a 100644
                  return false;
              }
          }
-@@ -1034,7 +1042,7 @@ TranslationBlock *tcg_tb_alloc(TCGContext *s)
+@@ -1043,7 +1051,7 @@ TranslationBlock *tcg_tb_alloc(TCGContext *s)
      }
      atomic_set(&s->code_gen_ptr, next);
      s->data_gen_ptr = NULL;
@@ -2647,7 +2707,7 @@ index 5475d49ed1..5a4073266a 100644
  }
  
  void tcg_prologue_init(TCGContext *s)
-@@ -1071,6 +1079,10 @@ void tcg_prologue_init(TCGContext *s)
+@@ -1080,6 +1088,10 @@ void tcg_prologue_init(TCGContext *s)
  #endif
  
      buf1 = s->code_ptr;
@@ -2658,7 +2718,7 @@ index 5475d49ed1..5a4073266a 100644
      flush_icache_range((uintptr_t)buf0, (uintptr_t)buf1);
  
      /* Deduct the prologue from the buffer.  */
-@@ -4221,6 +4233,12 @@ int tcg_gen_code(TCGContext *s, TranslationBlock *tb)
+@@ -4279,6 +4291,12 @@ int tcg_gen_code(TCGContext *s, TranslationBlock *tb)
          return -2;
      }
  
@@ -2671,70 +2731,6 @@ index 5475d49ed1..5a4073266a 100644
      /* flush instruction cache */
      flush_icache_range((uintptr_t)s->code_buf, (uintptr_t)s->code_ptr);
  
-diff --git a/tcg/tcg.h b/tcg/tcg.h
-index 92ca10dffc..a9e5b9ed22 100644
---- a/tcg/tcg.h
-+++ b/tcg/tcg.h
-@@ -258,7 +258,7 @@ struct TCGLabel {
-     unsigned refs : 16;
-     union {
-         uintptr_t value;
--        tcg_insn_unit *value_ptr;
-+        const tcg_insn_unit *value_ptr;
-     } u;
-     QSIMPLEQ_HEAD(, TCGRelocation) relocs;
-     QSIMPLEQ_ENTRY(TCGLabel) next;
-@@ -590,7 +590,7 @@ struct TCGContext {
-     int nb_ops;
- 
-     /* goto_tb support */
--    tcg_insn_unit *code_buf;
-+    const tcg_insn_unit *code_buf;
-     uint16_t *tb_jmp_reset_offset; /* tb->jmp_reset_offset */
-     uintptr_t *tb_jmp_insn_offset; /* tb->jmp_target_arg if direct_jump */
-     uintptr_t *tb_jmp_target_addr; /* tb->jmp_target_arg if !direct_jump */
-@@ -624,6 +624,9 @@ struct TCGContext {
-     size_t code_gen_buffer_size;
-     void *code_gen_ptr;
-     void *data_gen_ptr;
-+#if defined(CONFIG_IOS_JIT)
-+    ptrdiff_t code_rw_mirror_diff;
-+#endif
- 
-     /* Threshold to flush the translated code buffer.  */
-     void *code_gen_highwater;
-@@ -674,6 +677,13 @@ struct TCGContext {
-     target_ulong gen_insn_data[TCG_MAX_INSNS][TARGET_INSN_START_WORDS];
- };
- 
-+#if defined(CONFIG_IOS_JIT)
-+# define TCG_CODE_PTR_RW(s, code_ptr) \
-+    (tcg_insn_unit *)((uintptr_t)(code_ptr) + (s)->code_rw_mirror_diff)
-+#else
-+# define TCG_CODE_PTR_RW(s, code_ptr) (code_ptr)
-+#endif
-+
- extern TCGContext tcg_init_ctx;
- extern __thread TCGContext *tcg_ctx;
- extern TCGv_env cpu_env;
-@@ -1086,7 +1096,7 @@ static inline TCGLabel *arg_label(TCGArg i)
-  * correct result.
-  */
- 
--static inline ptrdiff_t tcg_ptr_byte_diff(void *a, void *b)
-+static inline ptrdiff_t tcg_ptr_byte_diff(const void *a, const void *b)
- {
-     return a - b;
- }
-@@ -1100,7 +1110,7 @@ static inline ptrdiff_t tcg_ptr_byte_diff(void *a, void *b)
-  * to the destination address.
-  */
- 
--static inline ptrdiff_t tcg_pcrel_diff(TCGContext *s, void *target)
-+static inline ptrdiff_t tcg_pcrel_diff(TCGContext *s, const void *target)
- {
-     return tcg_ptr_byte_diff(target, s->code_ptr);
- }
 diff --git a/tcg/tci/tcg-target.h b/tcg/tci/tcg-target.h
 index 8b90ab71cb..e6bf09d12c 100644
 --- a/tcg/tci/tcg-target.h
@@ -2805,7 +2801,433 @@ index 992d50cb1e..baacafa983 100644
      uint8_t *old_code_ptr = s->code_ptr;
      tcg_out_op_t(s, INDEX_op_call);
 -- 
-2.21.1 (Apple Git-122.3)
+2.24.3 (Apple Git-128)
+
+From 01b8aa7d1bf3c1a8b4ce9286760ee3457458be68 Mon Sep 17 00:00:00 2001
+From: osy <osy86@users.noreply.github.com>
+Date: Tue, 31 Mar 2020 16:20:24 -0700
+Subject: [PATCH 5/7] slirp: update for iOS resolv fix
+
+We cannot access /etc/resolv.conf on iOS so libslirp is modified to use
+libresolv instead. Since we link to it statically we need to add the
+LDFLAGS to qemu.
+---
+ .gitmodules | 2 +-
+ configure   | 2 +-
+ slirp       | 2 +-
+ 3 files changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/.gitmodules b/.gitmodules
+index 4d140cda28..f8fc8f416a 100644
+--- a/.gitmodules
++++ b/.gitmodules
+@@ -51,7 +51,7 @@
+ 	url = https://git.qemu.org/git/edk2.git
+ [submodule "slirp"]
+ 	path = slirp
+-	url = https://git.qemu.org/git/libslirp.git
++	url = https://github.com/utmapp/libslirp.git
+ [submodule "roms/opensbi"]
+ 	path = roms/opensbi
+ 	url = 	https://git.qemu.org/git/opensbi.git
+diff --git a/configure b/configure
+index 0ab4633fbd..09faa69a54 100755
+--- a/configure
++++ b/configure
+@@ -918,7 +918,7 @@ iOS)
+   host_device_support="no"
+   audio_drv_list=""
+   audio_possible_drivers=""
+-  QEMU_LDFLAGS="-framework CoreFoundation $QEMU_LDFLAGS"
++  QEMU_LDFLAGS="-framework CoreFoundation -lresolv $QEMU_LDFLAGS"
+   # Disable attempts to use ObjectiveC features in os/object.h since they
+   # won't work when we're compiling with gcc as a C compiler.
+   QEMU_CFLAGS="-DOS_OBJECT_USE_OBJC=0 $QEMU_CFLAGS"
+-- 
+2.24.3 (Apple Git-128)
+
+From 560396ac40fd343f8b0fb481780509371173e567 Mon Sep 17 00:00:00 2001
+From: osy <osy86@users.noreply.github.com>
+Date: Wed, 29 Jul 2020 14:14:47 -0700
+Subject: [PATCH 6/7] tcg: mirror mapping RWX pages for iOS optional
+
+This allows jailbroken devices with entitlements to switch the option off.
+---
+ accel/tcg/tcg-all.c       | 44 ++++++++++++++++++++++++++++++-
+ accel/tcg/translate-all.c | 54 +++++++++++++++++++++++++--------------
+ bsd-user/main.c           |  2 +-
+ include/sysemu/tcg.h      |  2 +-
+ linux-user/main.c         |  2 +-
+ qemu-options.hx           | 12 +++++++++
+ 6 files changed, 93 insertions(+), 23 deletions(-)
+
+diff --git a/accel/tcg/tcg-all.c b/accel/tcg/tcg-all.c
+index eace2c113b..83d8fe43e0 100644
+--- a/accel/tcg/tcg-all.c
++++ b/accel/tcg/tcg-all.c
+@@ -41,6 +41,7 @@ typedef struct TCGState {
+ 
+     bool mttcg_enabled;
+     unsigned long tb_size;
++    bool mirror_rwx;
+ } TCGState;
+ 
+ #define TYPE_TCG_ACCEL ACCEL_CLASS_NAME("tcg")
+@@ -115,18 +116,36 @@ static bool default_mttcg_enabled(void)
+     }
+ }
+ 
++static bool default_mirror_rwx(void)
++{
++#ifdef CONFIG_IOS_JIT // only applicable for iOS
++    void *test = mmap(NULL, qemu_real_host_page_size,
++                      PROT_WRITE | PROT_READ | PROT_EXEC,
++                      MAP_PRIVATE | MAP_ANONYMOUS | MAP_JIT, -1, 0);
++    if (test == NULL) {
++        return true;
++    } else {
++        munmap(test, qemu_real_host_page_size);
++        return false;
++    }
++#else
++    return false;
++#endif
++}
++
+ static void tcg_accel_instance_init(Object *obj)
+ {
+     TCGState *s = TCG_STATE(obj);
+ 
+     s->mttcg_enabled = default_mttcg_enabled();
++    s->mirror_rwx = default_mirror_rwx();
+ }
+ 
+ static int tcg_init(MachineState *ms)
+ {
+     TCGState *s = TCG_STATE(current_accel());
+ 
+-    tcg_exec_init(s->tb_size * 1024 * 1024);
++    tcg_exec_init(s->tb_size * 1024 * 1024, s->mirror_rwx);
+     cpu_interrupt_handler = tcg_handle_interrupt;
+     mttcg_enabled = s->mttcg_enabled;
+     return 0;
+@@ -191,6 +210,22 @@ static void tcg_set_tb_size(Object *obj, Visitor *v,
+     s->tb_size = value;
+ }
+ 
++#ifdef CONFIG_IOS_JIT
++static bool tcg_get_mirror_rwx(Object *obj, Error **errp)
++{
++    TCGState *s = TCG_STATE(obj);
++
++    return s->mirror_rwx;
++}
++
++static void tcg_set_mirror_rwx(Object *obj, bool value, Error **errp)
++{
++    TCGState *s = TCG_STATE(obj);
++
++    s->mirror_rwx = value;
++}
++#endif
++
+ static void tcg_accel_class_init(ObjectClass *oc, void *data)
+ {
+     AccelClass *ac = ACCEL_CLASS(oc);
+@@ -208,6 +243,13 @@ static void tcg_accel_class_init(ObjectClass *oc, void *data)
+     object_class_property_set_description(oc, "tb-size",
+         "TCG translation block cache size");
+ 
++#ifdef CONFIG_IOS_JIT
++    object_class_property_add_bool(oc, "mirror-rwx",
++        tcg_get_mirror_rwx, tcg_set_mirror_rwx);
++    object_class_property_set_description(oc, "mirror-rwx",
++        "mirror map executable pages for TCG on iOS");
++#endif
++
+ }
+ 
+ static const TypeInfo tcg_accel_type = {
+diff --git a/accel/tcg/translate-all.c b/accel/tcg/translate-all.c
+index 039c66698e..3cf6017e2b 100644
+--- a/accel/tcg/translate-all.c
++++ b/accel/tcg/translate-all.c
+@@ -1041,12 +1041,15 @@ static inline void *split_cross_256mb(void *buf1, size_t size1)
+ static uint8_t static_code_gen_buffer[DEFAULT_CODE_GEN_BUFFER_SIZE]
+     __attribute__((aligned(CODE_GEN_ALIGN)));
+ 
+-static inline void *alloc_code_gen_buffer(void)
++static inline void *alloc_code_gen_buffer(bool no_rwx_pages)
+ {
+     void *buf = static_code_gen_buffer;
+     void *end = static_code_gen_buffer + sizeof(static_code_gen_buffer);
+     size_t size;
+ 
++    /* not applicable */
++    assert(!no_rwx_pages);
++
+     /* page-align the beginning and end of the buffer */
+     buf = QEMU_ALIGN_PTR_UP(buf, qemu_real_host_page_size);
+     end = QEMU_ALIGN_PTR_DOWN(end, qemu_real_host_page_size);
+@@ -1075,24 +1078,32 @@ static inline void *alloc_code_gen_buffer(void)
+     return buf;
+ }
+ #elif defined(_WIN32)
+-static inline void *alloc_code_gen_buffer(void)
++static inline void *alloc_code_gen_buffer(bool no_rwx_pages)
+ {
+     size_t size = tcg_ctx->code_gen_buffer_size;
++    assert(!no_rwx_pages); // not applicable
+     return VirtualAlloc(NULL, size, MEM_RESERVE | MEM_COMMIT,
+                         PAGE_EXECUTE_READWRITE);
+ }
+ #else
+-static inline void *alloc_code_gen_buffer(void)
++static inline void *alloc_code_gen_buffer(bool no_rwx_pages)
+ {
+-#if defined(CONFIG_IOS_JIT)
+     int prot = PROT_READ | PROT_EXEC;
+-#else
+-    int prot = PROT_WRITE | PROT_READ | PROT_EXEC;
+-#endif
+     int flags = MAP_PRIVATE | MAP_ANONYMOUS;
+     size_t size = tcg_ctx->code_gen_buffer_size;
+     void *buf;
+ 
++#if defined(CONFIG_DARWIN) // both iOS and macOS (Apple Silicon) applicable
++    if (!no_rwx_pages) {
++        prot |= PROT_WRITE;
++        flags |= MAP_JIT;
++    }
++#else
++    /* not applicable */
++    assert(!no_rwx_pages);
++    prot |= PROT_WRITE;
++#endif
++
+     buf = mmap(NULL, size, prot, flags, -1, 0);
+     if (buf == MAP_FAILED) {
+         return NULL;
+@@ -1172,10 +1183,10 @@ static inline void *alloc_jit_rw_mirror(void *base, size_t size)
+ }
+ #endif /* CONFIG_IOS_JIT */
+ 
+-static inline void code_gen_alloc(size_t tb_size)
++static inline void code_gen_alloc(size_t tb_size, bool mirror_rwx)
+ {
+     tcg_ctx->code_gen_buffer_size = size_code_gen_buffer(tb_size);
+-    tcg_ctx->code_gen_buffer = alloc_code_gen_buffer();
++    tcg_ctx->code_gen_buffer = alloc_code_gen_buffer(mirror_rwx);
+     if (tcg_ctx->code_gen_buffer == NULL) {
+         fprintf(stderr, "Could not allocate dynamic translator buffer\n");
+         exit(1);
+@@ -1183,13 +1194,18 @@ static inline void code_gen_alloc(size_t tb_size)
+ #if defined(CONFIG_IOS_JIT)
+     void *mirror;
+ 
+-    /* For iOS JIT we need a mirror mapping for code execution */
+-    mirror = alloc_jit_rw_mirror(tcg_ctx->code_gen_buffer,
+-                                 tcg_ctx->code_gen_buffer_size
+-                                );
+-    if (mirror == NULL) {
+-        fprintf(stderr, "Could not remap code buffer mirror\n");
+-        exit(1);
++    if (mirror_rwx) {
++        /* For iOS JIT we need a mirror mapping for code execution */
++        mirror = alloc_jit_rw_mirror(tcg_ctx->code_gen_buffer,
++                                     tcg_ctx->code_gen_buffer_size
++                                    );
++        if (mirror == NULL) {
++            fprintf(stderr, "Could not remap code buffer mirror\n");
++            exit(1);
++        }
++    } else {
++        /* If we have JIT entitlements */
++        mirror = tcg_ctx->code_gen_buffer;
+     }
+     tcg_ctx->code_rw_mirror_diff = mirror - tcg_ctx->code_gen_buffer;
+ #endif /* CONFIG_IOS_JIT */
+@@ -1218,14 +1234,14 @@ static void tb_htable_init(void)
+ 
+ /* Must be called before using the QEMU cpus. 'tb_size' is the size
+    (in bytes) allocated to the translation buffer. Zero means default
+-   size. */
+-void tcg_exec_init(unsigned long tb_size)
++   size. mirror_rwx only applicable on iOS. */
++void tcg_exec_init(unsigned long tb_size, bool mirror_rwx)
+ {
+     tcg_allowed = true;
+     cpu_gen_init();
+     page_init();
+     tb_htable_init();
+-    code_gen_alloc(tb_size);
++    code_gen_alloc(tb_size, mirror_rwx);
+ #if defined(CONFIG_SOFTMMU)
+     /* There's no guest base to take into account, so go ahead and
+        initialize the prologue now.  */
+diff --git a/bsd-user/main.c b/bsd-user/main.c
+index ac40d79bfa..ffd4888a26 100644
+--- a/bsd-user/main.c
++++ b/bsd-user/main.c
+@@ -910,7 +910,7 @@ int main(int argc, char **argv)
+     }
+ 
+     /* init tcg before creating CPUs and to get qemu_host_page_size */
+-    tcg_exec_init(0);
++    tcg_exec_init(0, false);
+ 
+     cpu_type = parse_cpu_option(cpu_model);
+     cpu = cpu_create(cpu_type);
+diff --git a/include/sysemu/tcg.h b/include/sysemu/tcg.h
+index d9d3ca8559..569f90b11d 100644
+--- a/include/sysemu/tcg.h
++++ b/include/sysemu/tcg.h
+@@ -8,7 +8,7 @@
+ #ifndef SYSEMU_TCG_H
+ #define SYSEMU_TCG_H
+ 
+-void tcg_exec_init(unsigned long tb_size);
++void tcg_exec_init(unsigned long tb_size, bool mirror_rwx);
+ #ifdef CONFIG_TCG
+ extern bool tcg_allowed;
+ #define tcg_enabled() (tcg_allowed)
+diff --git a/linux-user/main.c b/linux-user/main.c
+index 75c9785157..3856b2611d 100644
+--- a/linux-user/main.c
++++ b/linux-user/main.c
+@@ -705,7 +705,7 @@ int main(int argc, char **argv, char **envp)
+     cpu_type = parse_cpu_option(cpu_model);
+ 
+     /* init tcg before creating CPUs and to get qemu_host_page_size */
+-    tcg_exec_init(0);
++    tcg_exec_init(0, false);
+ 
+     cpu = cpu_create(cpu_type);
+     env = cpu->env_ptr;
+diff --git a/qemu-options.hx b/qemu-options.hx
+index 708583b4ce..a5b56f9963 100644
+--- a/qemu-options.hx
++++ b/qemu-options.hx
+@@ -123,6 +123,9 @@ DEF("accel", HAS_ARG, QEMU_OPTION_accel,
+     "                igd-passthru=on|off (enable Xen integrated Intel graphics passthrough, default=off)\n"
+     "                kernel-irqchip=on|off|split controls accelerated irqchip support (default=on)\n"
+     "                kvm-shadow-mem=size of KVM shadow MMU in bytes\n"
++#ifdef CONFIG_IOS_JIT
++    "                mirror-rwx=on|off (mirror map executable pages for TCG on iOS)\n"
++#endif
+     "                tb-size=n (TCG translation block cache size)\n"
+     "                thread=single|multi (enable multi-threaded TCG)\n", QEMU_ARCH_ALL)
+ SRST
+@@ -148,6 +151,15 @@ SRST
+     ``kvm-shadow-mem=size``
+         Defines the size of the KVM shadow MMU.
+ 
++#ifdef CONFIG_IOS_JIT
++
++    ``mirror-rwx=on|off``
++        Only applicable to TCG running on iOS hosts. When enabled, TB code
++        is written to a mirror mapped address separate from the address that is
++        executed. By default, this is enabled if running on Darwin and mmap
++        fails to allocate PROT_WRITE | PROT_READ | PROT_EXEC.
++#endif
++
+     ``tb-size=n``
+         Controls the size (in MiB) of the TCG translation block cache.
+ 
+-- 
+2.24.3 (Apple Git-128)
+
+From 1e346c68ae562e189abaad172f9ed62ac11fe725 Mon Sep 17 00:00:00 2001
+From: osy <osy86@users.noreply.github.com>
+Date: Wed, 29 Jul 2020 14:15:54 -0700
+Subject: [PATCH 7/7] tcg: support JIT on Apple Silicon
+
+https://developer.apple.com/documentation/apple_silicon/porting_just-in-time_compilers_to_apple_silicon
+---
+ accel/tcg/cpu-exec.c | 22 ++++++++++++++++++++++
+ configure            | 19 +++++++++++++++++++
+ 2 files changed, 41 insertions(+)
+
+diff --git a/accel/tcg/cpu-exec.c b/accel/tcg/cpu-exec.c
+index 39173ffed6..5295ec7d4d 100644
+--- a/accel/tcg/cpu-exec.c
++++ b/accel/tcg/cpu-exec.c
+@@ -137,6 +137,26 @@ static void init_delay_params(SyncClocks *sc, const CPUState *cpu)
+ }
+ #endif /* CONFIG USER ONLY */
+ 
++#if defined(HAVE_PTHREAD_JIT_PROTECT)
++static void tb_pre_exec(void)
++{
++    if (__builtin_available(macOS 11, iOS 14, watchOS 7, tvOS 14, *)) {
++        pthread_jit_write_protect_np(true);
++        // sys_icache_invalidate should already be called!
++    }
++}
++
++static void tb_post_exec(void)
++{
++    if (__builtin_available(macOS 11, iOS 14, watchOS 7, tvOS 14, *)) {
++        pthread_jit_write_protect_np(false);
++    }
++}
++#else // not needed on non-Darwin platforms
++static void tb_pre_exec(void) {}
++static void tb_post_exec(void) {}
++#endif
++
+ /* Execute a TB, and fix up the CPU state afterwards if necessary */
+ static inline tcg_target_ulong cpu_tb_exec(CPUState *cpu, TranslationBlock *itb)
+ {
+@@ -169,7 +189,9 @@ static inline tcg_target_ulong cpu_tb_exec(CPUState *cpu, TranslationBlock *itb)
+     }
+ #endif /* DEBUG_DISAS */
+ 
++    tb_pre_exec();
+     ret = tcg_qemu_tb_exec(env, tb_ptr);
++    tb_post_exec();
+     cpu->can_do_io = 1;
+     last_tb = (TranslationBlock *)(ret & ~TB_EXIT_MASK);
+     tb_exit = ret & TB_EXIT_MASK;
+diff --git a/configure b/configure
+index 09faa69a54..44d1f3644d 100755
+--- a/configure
++++ b/configure
+@@ -6588,6 +6588,21 @@ EOF
+     fi
+ fi
+ 
++##########################################
++# check for Apple Silicon JIT function
++
++if [ "$darwin" = "yes" ] ; then
++  cat > $TMPC << EOF
++#include <pthread.h>
++int main() { pthread_jit_write_protect_np(0); return 0; }
++EOF
++  if ! compile_prog ""; then
++    have_pthread_jit_protect='no'
++  else
++    have_pthread_jit_protect='yes'
++  fi
++fi
++
+ 
+ ##########################################
+ # End of CC checks
+@@ -8021,6 +8036,10 @@ if test "$secret_keyring" = "yes" ; then
+   fi
+ fi
+ 
++if test "$have_pthread_jit_protect" = "yes" ; then
++  echo "HAVE_PTHREAD_JIT_PROTECT=y" >> $config_host_mak
++fi
++
+ if test "$tcg_interpreter" = "yes"; then
+   QEMU_INCLUDES="-iquote \$(SRC_PATH)/tcg/tci $QEMU_INCLUDES"
+ elif test "$ARCH" = "sparc64" ; then
+-- 
+2.24.3 (Apple Git-128)
 
 diff -Naur a/libucontext/LICENSE b/libucontext/LICENSE
 --- a/libucontext/LICENSE	1969-12-31 16:00:00.000000000 -0800
@@ -5310,59 +5732,4 @@ index b0194cb..eb57116 100644
                                 socklen_t addrlen, struct stat *cached_stat,
 -- 
 2.24.1 (Apple Git-126)
-
-From 1ac84e4f8d5f1463a7ea49ddf5c4536d3299fa9e Mon Sep 17 00:00:00 2001
-From: osy <osy86@users.noreply.github.com>
-Date: Tue, 31 Mar 2020 16:20:24 -0700
-Subject: [PATCH] build: add libresolv dependency for Darwin
-
-We cannot access /etc/resolv.conf on iOS so libslirp is modified to use
-libresolv instead. Since we link to it statically we need to add the
-LDFLAGS to qemu.
----
- configure | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/configure b/configure
-index 1492c3b288..7497b5b1c5 100755
---- a/configure
-+++ b/configure
-@@ -892,7 +892,7 @@ iOS)
-   host_device_support="no"
-   audio_drv_list=""
-   audio_possible_drivers=""
--  LDFLAGS="-framework CoreFoundation $LDFLAGS"
-+  LDFLAGS="-framework CoreFoundation -lresolv $LDFLAGS"
-   # Disable attempts to use ObjectiveC features in os/object.h since they
-   # won't work when we're compiling with gcc as a C compiler.
-   QEMU_CFLAGS="-DOS_OBJECT_USE_OBJC=0 $QEMU_CFLAGS"
--- 
-2.24.1 (Apple Git-126)
-
-From 210cdec6b981f82b48c2bc0f2154830576da7945 Mon Sep 17 00:00:00 2001
-From: osy <osy86@users.noreply.github.com>
-Date: Wed, 1 Jul 2020 22:39:02 -0700
-Subject: [PATCH] build: use -dynamiclib instead of -bundle for OSX
-
-For building QEMU as a shared lib, it must be loaded as a dylib. This breaks
-compatibility with OSX < 10.4.
----
- configure | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/configure b/configure
-index 7497b5b1c5..97cea5b663 100755
---- a/configure
-+++ b/configure
-@@ -861,7 +861,7 @@ Darwin)
-   hax="yes"
-   hvf="yes"
-   DSOSUF=".dylib"
--  LDFLAGS_SHARED="-bundle -undefined dynamic_lookup"
-+  LDFLAGS_SHARED="-dynamiclib -undefined dynamic_lookup"
-   if [ "$cpu" = "x86_64" ] ; then
-     QEMU_CFLAGS="-arch x86_64 $QEMU_CFLAGS"
-     LDFLAGS="-arch x86_64 $LDFLAGS"
--- 
-2.24.3 (Apple Git-128)
 

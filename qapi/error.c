@@ -15,6 +15,8 @@
 #include "qemu-compat.h"
 #include "error.h"
 
+#define error_printf(...) fprintf(stderr, __VA_ARGS__)
+
 struct Error
 {
     char *msg;
@@ -32,7 +34,10 @@ static void error_handle_fatal(Error **errp, Error *err)
     if (errp == &error_abort) {
         fprintf(stderr, "Unexpected error in %s() at %s:%d:\n",
                 err->func, err->src, err->line);
-        error_report_err(err);
+        error_report("%s", error_get_pretty(err));
+        if (err->hint) {
+            error_printf("%s", err->hint->str);
+        }
         abort();
     }
     if (errp == &error_fatal) {
@@ -101,10 +106,6 @@ void error_setg_errno_internal(Error **errp,
     va_list ap;
     int saved_errno = errno;
 
-    if (errp == NULL) {
-        return;
-    }
-
     va_start(ap, fmt);
     error_setv(errp, src, line, func, ERROR_CLASS_GENERIC_ERROR, fmt, ap,
                os_errno != 0 ? strerror(os_errno) : NULL);
@@ -121,7 +122,7 @@ void error_setg_file_open_internal(Error **errp,
                               "Could not open '%s'", filename);
 }
 
-void error_vprepend(Error **errp, const char *fmt, va_list ap)
+void error_vprepend(Error *const *errp, const char *fmt, va_list ap)
 {
     GString *newmsg;
 
@@ -136,7 +137,7 @@ void error_vprepend(Error **errp, const char *fmt, va_list ap)
     (*errp)->msg = g_string_free(newmsg, 0);
 }
 
-void error_prepend(Error **errp, const char *fmt, ...)
+void error_prepend(Error *const *errp, const char *fmt, ...)
 {
     va_list ap;
 
@@ -145,7 +146,7 @@ void error_prepend(Error **errp, const char *fmt, ...)
     va_end(ap);
 }
 
-void error_append_hint(Error **errp, const char *fmt, ...)
+void error_append_hint(Error *const *errp, const char *fmt, ...)
 {
     va_list ap;
     int saved_errno = errno;
@@ -225,7 +226,7 @@ void error_report_err(Error *err)
 {
     error_report("%s", error_get_pretty(err));
     if (err->hint) {
-        error_printf_unless_qmp("%s", err->hint->str);
+        error_printf("%s", err->hint->str);
     }
     error_free(err);
 }
@@ -234,7 +235,7 @@ void warn_report_err(Error *err)
 {
     warn_report("%s", error_get_pretty(err));
     if (err->hint) {
-        error_printf_unless_qmp("%s", err->hint->str);
+        error_printf("%s", err->hint->str);
     }
     error_free(err);
 }

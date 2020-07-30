@@ -13,7 +13,7 @@ import copy
 import sys
 
 
-class QAPISchemaPragma(object):
+class QAPISchemaPragma:
     def __init__(self):
         # Are documentation comments required?
         self.doc_required = False
@@ -23,7 +23,7 @@ class QAPISchemaPragma(object):
         self.name_case_whitelist = []
 
 
-class QAPISourceInfo(object):
+class QAPISourceInfo:
     def __init__(self, fname, line, parent):
         self.fname = fname
         self.line = line

@@ -142,7 +142,26 @@ struct {                                                                \
                 (elm)->field.le_next->field.le_prev =                   \
                     (elm)->field.le_prev;                               \
         *(elm)->field.le_prev = (elm)->field.le_next;                   \
+        (elm)->field.le_next = NULL;                                    \
+        (elm)->field.le_prev = NULL;                                    \
 } while (/*CONSTCOND*/0)
+
+/*
+ * Like QLIST_REMOVE() but safe to call when elm is not in a list
+ */
+#define QLIST_SAFE_REMOVE(elm, field) do {                              \
+        if ((elm)->field.le_prev != NULL) {                             \
+                if ((elm)->field.le_next != NULL)                       \
+                        (elm)->field.le_next->field.le_prev =           \
+                            (elm)->field.le_prev;                       \
+                *(elm)->field.le_prev = (elm)->field.le_next;           \
+                (elm)->field.le_next = NULL;                            \
+                (elm)->field.le_prev = NULL;                            \
+        }                                                               \
+} while (/*CONSTCOND*/0)
+
+/* Is elm in a list? */
+#define QLIST_IS_INSERTED(elm, field) ((elm)->field.le_prev != NULL)
 
 #define QLIST_FOREACH(var, head, field)                                 \
         for ((var) = ((head)->lh_first);                                \
@@ -208,12 +227,27 @@ struct {                                                                \
 } while (/*CONSTCOND*/0)
 
 #define QSLIST_REMOVE_HEAD(head, field) do {                             \
-        (head)->slh_first = (head)->slh_first->field.sle_next;          \
+        typeof((head)->slh_first) elm = (head)->slh_first;               \
+        (head)->slh_first = elm->field.sle_next;                         \
+        elm->field.sle_next = NULL;                                      \
 } while (/*CONSTCOND*/0)
 
-#define QSLIST_REMOVE_AFTER(slistelm, field) do {                        \
-        (slistelm)->field.sle_next =                                    \
-            QSLIST_NEXT(QSLIST_NEXT((slistelm), field), field);           \
+#define QSLIST_REMOVE_AFTER(slistelm, field) do {                       \
+        typeof(slistelm) next = (slistelm)->field.sle_next;             \
+        (slistelm)->field.sle_next = next->field.sle_next;              \
+        next->field.sle_next = NULL;                                    \
+} while (/*CONSTCOND*/0)
+
+#define QSLIST_REMOVE(head, elm, type, field) do {                      \
+    if ((head)->slh_first == (elm)) {                                   \
+        QSLIST_REMOVE_HEAD((head), field);                              \
+    } else {                                                            \
+        struct type *curelm = (head)->slh_first;                        \
+        while (curelm->field.sle_next != (elm))                         \
+            curelm = curelm->field.sle_next;                            \
+        curelm->field.sle_next = curelm->field.sle_next->field.sle_next; \
+        (elm)->field.sle_next = NULL;                                   \
+    }                                                                   \
 } while (/*CONSTCOND*/0)
 
 #define QSLIST_FOREACH(var, head, field)                                 \
@@ -276,8 +310,10 @@ struct {                                                                \
 } while (/*CONSTCOND*/0)
 
 #define QSIMPLEQ_REMOVE_HEAD(head, field) do {                          \
-    if (((head)->sqh_first = (head)->sqh_first->field.sqe_next) == NULL)\
+    typeof((head)->sqh_first) elm = (head)->sqh_first;                  \
+    if (((head)->sqh_first = elm->field.sqe_next) == NULL)              \
         (head)->sqh_last = &(head)->sqh_first;                          \
+    elm->field.sqe_next = NULL;                                         \
 } while (/*CONSTCOND*/0)
 
 #define QSIMPLEQ_SPLIT_AFTER(head, elm, field, removed) do {            \
@@ -301,6 +337,7 @@ struct {                                                                \
         if ((curelm->field.sqe_next =                                   \
             curelm->field.sqe_next->field.sqe_next) == NULL)            \
                 (head)->sqh_last = &(curelm)->field.sqe_next;           \
+        (elm)->field.sqe_next = NULL;                                   \
     }                                                                   \
 } while (/*CONSTCOND*/0)
 
@@ -418,7 +455,19 @@ union {                                                                 \
             (head)->tqh_circ.tql_prev = (elm)->field.tqe_circ.tql_prev; \
         (elm)->field.tqe_circ.tql_prev->tql_next = (elm)->field.tqe_next; \
         (elm)->field.tqe_circ.tql_prev = NULL;                          \
+        (elm)->field.tqe_circ.tql_next = NULL;                          \
+        (elm)->field.tqe_next = NULL;                                   \
 } while (/*CONSTCOND*/0)
+
+/* remove @left, @right and all elements in between from @head */
+#define QTAILQ_REMOVE_SEVERAL(head, left, right, field) do {            \
+        if (((right)->field.tqe_next) != NULL)                          \
+            (right)->field.tqe_next->field.tqe_circ.tql_prev =          \
+                (left)->field.tqe_circ.tql_prev;                        \
+        else                                                            \
+            (head)->tqh_circ.tql_prev = (left)->field.tqe_circ.tql_prev; \
+        (left)->field.tqe_circ.tql_prev->tql_next = (right)->field.tqe_next; \
+    } while (/*CONSTCOND*/0)
 
 #define QTAILQ_FOREACH(var, head, field)                                \
         for ((var) = ((head)->tqh_first);                               \
@@ -490,5 +539,37 @@ union {                                                                 \
         QTAILQ_RAW_TQH_CIRC(head)->tql_prev->tql_next = (elm);                  \
         QTAILQ_RAW_TQH_CIRC(head)->tql_prev = QTAILQ_RAW_TQE_CIRC(elm, entry);  \
 } while (/*CONSTCOND*/0)
+
+#define QLIST_RAW_FIRST(head)                                                  \
+        field_at_offset(head, 0, void *)
+
+#define QLIST_RAW_NEXT(elm, entry)                                             \
+        field_at_offset(elm, entry, void *)
+
+#define QLIST_RAW_PREVIOUS(elm, entry)                                         \
+        field_at_offset(elm, entry + sizeof(void *), void *)
+
+#define QLIST_RAW_FOREACH(elm, head, entry)                                    \
+        for ((elm) = *QLIST_RAW_FIRST(head);                                   \
+             (elm);                                                            \
+             (elm) = *QLIST_RAW_NEXT(elm, entry))
+
+#define QLIST_RAW_INSERT_AFTER(head, prev, elem, entry) do {                   \
+        *QLIST_RAW_NEXT(prev, entry) = elem;                                   \
+        *QLIST_RAW_PREVIOUS(elem, entry) = QLIST_RAW_NEXT(prev, entry);        \
+        *QLIST_RAW_NEXT(elem, entry) = NULL;                                   \
+} while (0)
+
+#define QLIST_RAW_INSERT_HEAD(head, elm, entry) do {                           \
+        void *first = *QLIST_RAW_FIRST(head);                                  \
+        *QLIST_RAW_FIRST(head) = elm;                                          \
+        *QLIST_RAW_PREVIOUS(elm, entry) = QLIST_RAW_FIRST(head);               \
+        if (first) {                                                           \
+            *QLIST_RAW_NEXT(elm, entry) = first;                               \
+            *QLIST_RAW_PREVIOUS(first, entry) = QLIST_RAW_NEXT(elm, entry);    \
+        } else {                                                               \
+            *QLIST_RAW_NEXT(elm, entry) = NULL;                                \
+        }                                                                      \
+} while (0)
 
 #endif /* QEMU_SYS_QUEUE_H */

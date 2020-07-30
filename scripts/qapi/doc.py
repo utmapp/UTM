@@ -4,7 +4,6 @@
 # See the COPYING file in the top-level directory.
 """This script produces the documentation of a qapi schema in texinfo format"""
 
-from __future__ import print_function
 import re
 from qapi.gen import QAPIGenDoc, QAPISchemaVisitor
 
@@ -244,34 +243,34 @@ class QAPISchemaGenDocVisitor(QAPISchemaVisitor):
     def write(self, output_dir):
         self._gen.write(output_dir)
 
-    def visit_enum_type(self, name, info, ifcond, members, prefix):
+    def visit_enum_type(self, name, info, ifcond, features, members, prefix):
         doc = self.cur_doc
         self._gen.add(texi_type('Enum', doc, ifcond,
                                 texi_members(doc, 'Values',
                                              member_func=texi_enum_value)))
 
-    def visit_object_type(self, name, info, ifcond, base, members, variants,
-                          features):
+    def visit_object_type(self, name, info, ifcond, features,
+                          base, members, variants):
         doc = self.cur_doc
         if base and base.is_implicit():
             base = None
         self._gen.add(texi_type('Object', doc, ifcond,
                                 texi_members(doc, 'Members', base, variants)))
 
-    def visit_alternate_type(self, name, info, ifcond, variants):
+    def visit_alternate_type(self, name, info, ifcond, features, variants):
         doc = self.cur_doc
         self._gen.add(texi_type('Alternate', doc, ifcond,
                                 texi_members(doc, 'Members')))
 
-    def visit_command(self, name, info, ifcond, arg_type, ret_type, gen,
-                      success_response, boxed, allow_oob, allow_preconfig,
-                      features):
+    def visit_command(self, name, info, ifcond, features,
+                      arg_type, ret_type, gen, success_response, boxed,
+                      allow_oob, allow_preconfig):
         doc = self.cur_doc
         self._gen.add(texi_msg('Command', doc, ifcond,
                                texi_arguments(doc,
                                               arg_type if boxed else None)))
 
-    def visit_event(self, name, info, ifcond, arg_type, boxed):
+    def visit_event(self, name, info, ifcond, features, arg_type, boxed):
         doc = self.cur_doc
         self._gen.add(texi_msg('Event', doc, ifcond,
                                texi_arguments(doc,
