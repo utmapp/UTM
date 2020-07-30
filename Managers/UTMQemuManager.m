@@ -135,7 +135,9 @@ void qmp_rpc_call(CFDictionaryRef args, CFDictionaryRef *ret, Error **err, void 
     }
     dict = nil;
     if (nserr) {
-        error_setg(err, "%s", [nserr.localizedDescription cStringUsingEncoding:NSUTF8StringEncoding]);
+        if (err) {
+            error_setg(err, "%s", [nserr.localizedDescription cStringUsingEncoding:NSUTF8StringEncoding]);
+        }
         UTMLog(@"RPC: %@", nserr);
     }
     dispatch_semaphore_signal(self->_cmd_lock);
@@ -207,7 +209,7 @@ void qmp_rpc_call(CFDictionaryRef args, CFDictionaryRef *ret, Error **err, void 
             *stop = YES;
         } else if ([key isEqualToString:@"QMP"]) {
             UTMLog(@"Got QMP handshake: %@", dict);
-            qmp_qmp_capabilities(false, NULL, NULL, (__bridge void *)self);
+            [self qmpEnterCommandMode];
             *stop = YES;
         }
     }];
@@ -215,6 +217,13 @@ void qmp_rpc_call(CFDictionaryRef args, CFDictionaryRef *ret, Error **err, void 
 
 - (NSError *)errorForQerror:(Error *)qerr {
     return [NSError errorWithDomain:kUTMErrorDomain code:-1 userInfo:@{NSLocalizedDescriptionKey: [NSString stringWithCString:error_get_pretty(qerr) encoding:NSASCIIStringEncoding]}];
+}
+
+- (void)qmpEnterCommandMode {
+    NSDictionary *cmd = @{
+        @"execute": @"qmp_capabilities"
+    };
+    qmp_rpc_call((__bridge CFDictionaryRef)cmd, NULL, NULL, (__bridge void *)self);
 }
 
 - (void)vmPowerAction:(void (*)(Error **, void *))func completion:(void (^ _Nullable)(NSError * _Nullable))completion {
