@@ -240,7 +240,7 @@ typedef struct GenericList {
 /* This struct is layout-compatible with all Alternate types
  * created by the QAPI generator. */
 typedef struct GenericAlternate {
-    QType type;
+    CFTypeID type;
     char padding[];
 } GenericAlternate;
 
@@ -656,7 +656,7 @@ bool visit_type_number(Visitor *v, const char *name, double *obj,
  * E.g. the visitor returned by qobject_input_visitor_new_keyval()
  * can't create numbers or booleans, only strings.
  */
-bool visit_type_any(Visitor *v, const char *name, CFTypeRef **obj, Error **errp);
+bool visit_type_any(Visitor *v, const char *name, CFTypeRef *obj, Error **errp);
 
 /*
  * Visit a JSON null value.
@@ -672,7 +672,7 @@ bool visit_type_any(Visitor *v, const char *name, CFTypeRef **obj, Error **errp)
  *
  * Return true on success, false on failure.
  */
-bool visit_type_null(Visitor *v, const char *name, CFNullRef **obj,
+bool visit_type_null(Visitor *v, const char *name, CFNullRef *obj,
                      Error **errp);
 
 #endif

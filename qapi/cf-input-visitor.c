@@ -211,7 +211,7 @@ static void cf_input_push(CFObjectInputVisitor *qiv,
 }
 
 
-static void cf_input_check_struct(Visitor *v, Error **errp)
+static bool cf_input_check_struct(Visitor *v, Error **errp)
 {
     CFObjectInputVisitor *qiv = to_qiv(v);
     StackObject *tos = QSLIST_FIRST(&qiv->stack);
@@ -224,7 +224,10 @@ static void cf_input_check_struct(Visitor *v, Error **errp)
     if (g_hash_table_iter_next(&iter, (void **)&key, NULL)) {
         error_setg(errp, "Parameter '%s' is unexpected",
                    full_name(qiv, key));
+        return false;
     }
+    
+    return true;
 }
 
 static void cf_input_stack_object_free(StackObject *tos)
@@ -246,7 +249,7 @@ static void cf_input_pop(Visitor *v, void **obj)
     cf_input_stack_object_free(tos);
 }
 
-static void cf_input_start_struct(Visitor *v, const char *name, void **obj,
+static bool cf_input_start_struct(Visitor *v, const char *name, void **obj,
                                        size_t size, Error **errp)
 {
     CFObjectInputVisitor *qiv = to_qiv(v);
@@ -258,7 +261,7 @@ static void cf_input_start_struct(Visitor *v, const char *name, void **obj,
     if (CFGetTypeID(cfobj) != CFDictionaryGetTypeID()) {
         error_setg(errp, QERR_INVALID_PARAMETER_TYPE,
                    full_name(qiv, name), "object");
-        return;
+        return false;
     }
 
     cf_input_push(qiv, name, cfobj, obj);
@@ -266,6 +269,8 @@ static void cf_input_start_struct(Visitor *v, const char *name, void **obj,
     if (obj) {
         *obj = g_malloc0(size);
     }
+    
+    return true;
 }
 
 static void cf_input_end_struct(Visitor *v, void **obj)
@@ -278,7 +283,7 @@ static void cf_input_end_struct(Visitor *v, void **obj)
 }
 
 
-static void cf_input_start_list(Visitor *v, const char *name,
+static bool cf_input_start_list(Visitor *v, const char *name,
                                      GenericList **list, size_t size,
                                      Error **errp)
 {
@@ -289,18 +294,20 @@ static void cf_input_start_list(Visitor *v, const char *name,
         *list = NULL;
     }
     if (!cfobj) {
-        return;
+        return false;
     }
     if (CFGetTypeID(cfobj) != CFArrayGetTypeID()) {
         error_setg(errp, QERR_INVALID_PARAMETER_TYPE,
                    full_name(qiv, name), "array");
-        return;
+        return false;
     }
 
     cf_input_push(qiv, name, cfobj, list);
     if (list) {
         *list = g_malloc0(size);
     }
+    
+    return true;
 }
 
 static GenericList *cf_input_next_list(Visitor *v, GenericList *tail,
@@ -318,7 +325,7 @@ static GenericList *cf_input_next_list(Visitor *v, GenericList *tail,
     return tail->next;
 }
 
-static void cf_input_check_list(Visitor *v, Error **errp)
+static bool cf_input_check_list(Visitor *v, Error **errp)
 {
     CFObjectInputVisitor *qiv = to_qiv(v);
     StackObject *tos = QSLIST_FIRST(&qiv->stack);
@@ -328,7 +335,10 @@ static void cf_input_check_list(Visitor *v, Error **errp)
     if (tos->index != tos->count) {
         error_setg(errp, "Only %u list elements expected in %s",
                    (unsigned)tos->index + 1, full_name_nth(qiv, NULL, 1));
+        return false;
     }
+    
+    return true;
 }
 
 static void cf_input_end_list(Visitor *v, void **obj)
@@ -340,7 +350,7 @@ static void cf_input_end_list(Visitor *v, void **obj)
     cf_input_pop(v, obj);
 }
 
-static void cf_input_start_alternate(Visitor *v, const char *name,
+static bool cf_input_start_alternate(Visitor *v, const char *name,
                                           GenericAlternate **obj, size_t size,
                                           Error **errp)
 {
@@ -349,13 +359,15 @@ static void cf_input_start_alternate(Visitor *v, const char *name,
 
     if (!cfobj) {
         *obj = NULL;
-        return;
+        return false;
     }
     *obj = g_malloc0(size);
     (*obj)->type = CFGetTypeID(cfobj);
+    
+    return true;
 }
 
-static void cf_input_type_int64(Visitor *v, const char *name, int64_t *obj,
+static bool cf_input_type_int64(Visitor *v, const char *name, int64_t *obj,
                                      Error **errp)
 {
     CFObjectInputVisitor *qiv = to_qiv(v);
@@ -363,17 +375,20 @@ static void cf_input_type_int64(Visitor *v, const char *name, int64_t *obj,
     CFNumberRef cfnum;
 
     if (!cfobj) {
-        return;
+        return false;
     }
     cfnum = (CFNumberRef)cfobj;
     if (CFGetTypeID(cfobj) != CFNumberGetTypeID() || 
         !CFNumberGetValue(cfnum, kCFNumberSInt64Type, obj)) {
         error_setg(errp, QERR_INVALID_PARAMETER_TYPE,
                    full_name(qiv, name), "integer");
+        return false;
     }
+    
+    return true;
 }
 
-static void cf_input_type_uint64(Visitor *v, const char *name,
+static bool cf_input_type_uint64(Visitor *v, const char *name,
                                       uint64_t *obj, Error **errp)
 {
     CFObjectInputVisitor *qiv = to_qiv(v);
@@ -382,7 +397,7 @@ static void cf_input_type_uint64(Visitor *v, const char *name,
     int64_t val;
 
     if (!cfobj) {
-        return;
+        return false;
     }
     cfnum = (CFNumberRef)cfobj;
     if (CFGetTypeID(cfobj) != CFNumberGetTypeID()) {
@@ -391,17 +406,19 @@ static void cf_input_type_uint64(Visitor *v, const char *name,
 
     if (CFNumberGetValue(cfnum, kCFNumberSInt64Type, &val)) {
         *obj = val;
-        return;
+        return false;
     }
 
     // FIXME: CFNumber doesn't work with uint64_t!
 
+    return true;
 err:
     error_setg(errp, QERR_INVALID_PARAMETER_VALUE,
                full_name(qiv, name), "uint64");
+    return false;
 }
 
-static void cf_input_type_bool(Visitor *v, const char *name, bool *obj,
+static bool cf_input_type_bool(Visitor *v, const char *name, bool *obj,
                                     Error **errp)
 {
     CFObjectInputVisitor *qiv = to_qiv(v);
@@ -409,19 +426,21 @@ static void cf_input_type_bool(Visitor *v, const char *name, bool *obj,
     CFBooleanRef cfbool;
 
     if (!cfobj) {
-        return;
+        return false;
     }
     cfbool = (CFBooleanRef)cfobj;
     if (CFGetTypeID(cfobj) != CFBooleanGetTypeID()) {
         error_setg(errp, QERR_INVALID_PARAMETER_TYPE,
                    full_name(qiv, name), "boolean");
-        return;
+        return false;
     }
 
     *obj = CFBooleanGetValue(cfbool);
+    
+    return true;
 }
 
-static void cf_input_type_str(Visitor *v, const char *name, char **obj,
+static bool cf_input_type_str(Visitor *v, const char *name, char **obj,
                                    Error **errp)
 {
     CFObjectInputVisitor *qiv = to_qiv(v);
@@ -431,13 +450,13 @@ static void cf_input_type_str(Visitor *v, const char *name, char **obj,
 
     *obj = NULL;
     if (!cfobj) {
-        return;
+        return false;
     }
     cfstr = (CFStringRef)cfobj;
     if (CFGetTypeID(cfobj) != CFStringGetTypeID()) {
         error_setg(errp, QERR_INVALID_PARAMETER_TYPE,
                    full_name(qiv, name), "string");
-        return;
+        return false;
     }
         
     str = CFStringGetCStringPtr(cfstr, CFStringGetFastestEncoding(cfstr));
@@ -449,15 +468,17 @@ static void cf_input_type_str(Visitor *v, const char *name, char **obj,
             error_setg(errp, QERR_INVALID_PARAMETER_TYPE,
                        full_name(qiv, name), "string");
             g_free(buffer);
+            return false;
         } else {
             *obj = buffer;
         }
     } else {
         *obj = g_strdup(str);
     }
+    return true;
 }
 
-static void cf_input_type_number(Visitor *v, const char *name, double *obj,
+static bool cf_input_type_number(Visitor *v, const char *name, double *obj,
                                       Error **errp)
 {
     CFObjectInputVisitor *qiv = to_qiv(v);
@@ -465,19 +486,20 @@ static void cf_input_type_number(Visitor *v, const char *name, double *obj,
     CFNumberRef cfnum;
 
     if (!cfobj) {
-        return;
+        return false;
     }
     cfnum = (CFNumberRef)cfobj;
     if (CFGetTypeID(cfobj) != CFNumberGetTypeID() || !CFNumberIsFloatType(cfnum)) {
         error_setg(errp, QERR_INVALID_PARAMETER_TYPE,
                    full_name(qiv, name), "number");
-        return;
+        return false;
     }
 
     CFNumberGetValue(cfnum, kCFNumberDoubleType, obj);
+    return true;
 }
 
-static void cf_input_type_any(Visitor *v, const char *name, CFTypeRef *obj,
+static bool cf_input_type_any(Visitor *v, const char *name, CFTypeRef *obj,
                                    Error **errp)
 {
     CFObjectInputVisitor *qiv = to_qiv(v);
@@ -485,13 +507,14 @@ static void cf_input_type_any(Visitor *v, const char *name, CFTypeRef *obj,
 
     *obj = NULL;
     if (!cfobj) {
-        return;
+        return false;
     }
 
     *obj = CFRetain(cfobj);
+    return true;
 }
 
-static void cf_input_type_null(Visitor *v, const char *name,
+static bool cf_input_type_null(Visitor *v, const char *name,
                                     CFNullRef *obj, Error **errp)
 {
     CFObjectInputVisitor *qiv = to_qiv(v);
@@ -499,15 +522,16 @@ static void cf_input_type_null(Visitor *v, const char *name,
 
     *obj = NULL;
     if (!cfobj) {
-        return;
+        return false;
     }
 
     if (CFGetTypeID(cfobj) != CFNullGetTypeID()) {
         error_setg(errp, QERR_INVALID_PARAMETER_TYPE,
                    full_name(qiv, name), "null");
-        return;
+        return false;
     }
     *obj = kCFNull;
+    return true;
 }
 
 static void cf_input_optional(Visitor *v, const char *name, bool *present)
