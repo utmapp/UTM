@@ -102,11 +102,11 @@ struct Visitor
                         Error **errp);
 
     /* Must be set to visit arbitrary QTypes */
-    bool (*type_any)(Visitor *v, const char *name, CFTypeRef **obj,
+    bool (*type_any)(Visitor *v, const char *name, CFTypeRef *obj,
                      Error **errp);
 
     /* Must be set to visit explicit null values.  */
-    bool (*type_null)(Visitor *v, const char *name, CFNullRef **obj,
+    bool (*type_null)(Visitor *v, const char *name, CFNullRef *obj,
                       Error **errp);
 
     /* Must be set for input visitors to visit structs, optional otherwise.

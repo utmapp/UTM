@@ -94,7 +94,7 @@ static bool qapi_dealloc_type_number(Visitor *v, const char *name, double *obj,
 }
 
 static bool qapi_dealloc_type_anything(Visitor *v, const char *name,
-                                       CFTypeRef **obj, Error **errp)
+                                       CFTypeRef *obj, Error **errp)
 {
     if (obj) {
         CFRelease(*obj);
@@ -103,7 +103,7 @@ static bool qapi_dealloc_type_anything(Visitor *v, const char *name,
 }
 
 static bool qapi_dealloc_type_null(Visitor *v, const char *name,
-                                   CFNullRef **obj, Error **errp)
+                                   CFNullRef *obj, Error **errp)
 {
     return true;
 }

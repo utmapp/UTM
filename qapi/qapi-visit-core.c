@@ -330,7 +330,7 @@ bool visit_type_number(Visitor *v, const char *name, double *obj,
     return v->type_number(v, name, obj, errp);
 }
 
-bool visit_type_any(Visitor *v, const char *name, CFTypeRef **obj, Error **errp)
+bool visit_type_any(Visitor *v, const char *name, CFTypeRef *obj, Error **errp)
 {
     bool ok;
 
@@ -344,7 +344,7 @@ bool visit_type_any(Visitor *v, const char *name, CFTypeRef **obj, Error **errp)
     return ok;
 }
 
-bool visit_type_null(Visitor *v, const char *name, CFNullRef **obj,
+bool visit_type_null(Visitor *v, const char *name, CFNullRef *obj,
                      Error **errp)
 {
     trace_visit_type_null(v, name, obj);

@@ -100,7 +100,7 @@ static void cf_output_add_obj(CFObjectOutputVisitor *qov, const char *name,
     }
 }
 
-static void cf_output_start_struct(Visitor *v, const char *name,
+static bool cf_output_start_struct(Visitor *v, const char *name,
                                         void **obj, size_t unused, Error **errp)
 {
     CFObjectOutputVisitor *qov = to_qov(v);
@@ -108,6 +108,7 @@ static void cf_output_start_struct(Visitor *v, const char *name,
 
     cf_output_add(qov, name, dict);
     cf_output_push(qov, dict, obj);
+    return true;
 }
 
 static void cf_output_end_struct(Visitor *v, void **obj)
@@ -117,7 +118,7 @@ static void cf_output_end_struct(Visitor *v, void **obj)
     assert(CFGetTypeID(value) == CFDictionaryGetTypeID());
 }
 
-static void cf_output_start_list(Visitor *v, const char *name,
+static bool cf_output_start_list(Visitor *v, const char *name,
                                       GenericList **listp, size_t size,
                                       Error **errp)
 {
@@ -126,6 +127,7 @@ static void cf_output_start_list(Visitor *v, const char *name,
 
     cf_output_add(qov, name, list);
     cf_output_push(qov, list, listp);
+    return true;
 }
 
 static GenericList *cf_output_next_list(Visitor *v, GenericList *tail,
@@ -141,29 +143,32 @@ static void cf_output_end_list(Visitor *v, void **obj)
     assert(CFGetTypeID(value) == CFArrayGetTypeID());
 }
 
-static void cf_output_type_int64(Visitor *v, const char *name,
+static bool cf_output_type_int64(Visitor *v, const char *name,
                                       int64_t *obj, Error **errp)
 {
     CFObjectOutputVisitor *qov = to_qov(v);
     cf_output_add(qov, name, CFNumberCreate(kCFAllocatorDefault, kCFNumberSInt64Type, obj));
+    return true;
 }
 
-static void cf_output_type_uint64(Visitor *v, const char *name,
+static bool cf_output_type_uint64(Visitor *v, const char *name,
                                        uint64_t *obj, Error **errp)
 {
     CFObjectOutputVisitor *qov = to_qov(v);
     // FIXME: CFNumber does not support uint64_t
     cf_output_add(qov, name, CFNumberCreate(kCFAllocatorDefault, kCFNumberSInt64Type, obj));
+    return true;
 }
 
-static void cf_output_type_bool(Visitor *v, const char *name, bool *obj,
+static bool cf_output_type_bool(Visitor *v, const char *name, bool *obj,
                                      Error **errp)
 {
     CFObjectOutputVisitor *qov = to_qov(v);
     cf_output_add(qov, name, *obj ? kCFBooleanTrue : kCFBooleanFalse);
+    return true;
 }
 
-static void cf_output_type_str(Visitor *v, const char *name, char **obj,
+static bool cf_output_type_str(Visitor *v, const char *name, char **obj,
                                     Error **errp)
 {
     CFObjectOutputVisitor *qov = to_qov(v);
@@ -172,28 +177,32 @@ static void cf_output_type_str(Visitor *v, const char *name, char **obj,
     } else {
         cf_output_add(qov, name, CFStringCreateWithCString(kCFAllocatorDefault, "", kCFStringEncodingUTF8));
     }
+    return true;
 }
 
-static void cf_output_type_number(Visitor *v, const char *name,
+static bool cf_output_type_number(Visitor *v, const char *name,
                                        double *obj, Error **errp)
 {
     CFObjectOutputVisitor *qov = to_qov(v);
     cf_output_add(qov, name, CFNumberCreate(kCFAllocatorDefault, kCFNumberDoubleType, obj));
+    return true;
 }
 
-static void cf_output_type_any(Visitor *v, const char *name,
+static bool cf_output_type_any(Visitor *v, const char *name,
                                     CFTypeRef *obj, Error **errp)
 {
     CFObjectOutputVisitor *qov = to_qov(v);
 
     cf_output_add_obj(qov, name, CFRetain(*obj));
+    return true;
 }
 
-static void cf_output_type_null(Visitor *v, const char *name,
+static bool cf_output_type_null(Visitor *v, const char *name,
                                      CFNullRef *obj, Error **errp)
 {
     CFObjectOutputVisitor *qov = to_qov(v);
     cf_output_add(qov, name, kCFNull);
+    return true;
 }
 
 /* Finish building, and return the root object.
