@@ -35,9 +35,9 @@ class QAPIParseError(QAPIError):
                 col = (col + 7) % 8 + 1
             else:
                 col += 1
-        QAPIError.__init__(self, parser.info, col, msg)
+        super().__init__(parser.info, col, msg)
 
 
 class QAPISemError(QAPIError):
     def __init__(self, info, msg):
-        QAPIError.__init__(self, info, None, msg)
+        super().__init__(info, None, msg)

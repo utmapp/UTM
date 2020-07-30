@@ -179,9 +179,9 @@ extern qapi_enum_handler_registry qapi_enum_handler_registry_data;
 class QAPISchemaGenEventVisitor(QAPISchemaModularCVisitor):
 
     def __init__(self, prefix):
-        QAPISchemaModularCVisitor.__init__(
-            self, prefix, 'qapi-events',
-            ' * Schema-defined QAPI/QMP events', __doc__)
+        super().__init__(
+            prefix, 'qapi-events',
+            ' * Schema-defined QAPI/QMP events', None, __doc__)
         self._event_enum_name = c_name(prefix + 'QAPIEvent', protect=False)
         self._event_registry = []
         self._event_enum_members = []
@@ -231,7 +231,7 @@ class QAPISchemaGenEventVisitor(QAPISchemaModularCVisitor):
                                       self._event_enum_name,
                                       self._event_registry))
 
-    def visit_event(self, name, info, ifcond, arg_type, boxed):
+    def visit_event(self, name, info, ifcond, features, arg_type, boxed):
         with ifcontext(ifcond, self._genh, self._genc):
             self._genh.add(gen_event_dispatch_decl(name, arg_type, boxed))
             self._genc.add(gen_event_dispatch(name, arg_type, boxed,

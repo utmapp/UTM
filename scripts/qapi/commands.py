@@ -170,9 +170,9 @@ out:
 class QAPISchemaGenCommandVisitor(QAPISchemaModularCVisitor):
 
     def __init__(self, prefix):
-        QAPISchemaModularCVisitor.__init__(
-            self, prefix, 'qapi-commands',
-            ' * Schema-defined QAPI/QMP commands', __doc__)
+        super().__init__(
+            prefix, 'qapi-commands',
+            ' * Schema-defined QAPI/QMP commands', None, __doc__)
         self._visited_ret_types = {}
 
     def _begin_user_module(self, name):
@@ -197,9 +197,9 @@ class QAPISchemaGenCommandVisitor(QAPISchemaModularCVisitor):
 ''',
                              types=types))
 
-    def visit_command(self, name, info, ifcond, arg_type, ret_type, gen,
-                      success_response, boxed, allow_oob, allow_preconfig,
-                      features):
+    def visit_command(self, name, info, ifcond, features,
+                      arg_type, ret_type, gen, success_response, boxed,
+                      allow_oob, allow_preconfig):
         if not gen:
             return
         # FIXME: If T is a user-defined type, the user is responsible
