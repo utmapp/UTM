@@ -18,5 +18,16 @@ import Foundation
 
 extension UTMData {
     func run(vm: UTMVirtualMachine) {
+        if vm.configuration.displayConsoleOnly {
+            // TODO: console mode
+        } else {
+            self.windowController = VMDisplayMetalWindowController(vm: vm)
+        }
+        if let windowController = self.windowController {
+            windowController.showWindow(nil)
+            windowController.window!.makeMain()
+        } else {
+            logger.critical("Failed to create window controller.")
+        }
     }
 }

@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="17140" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaDFRPlugin" version="17007"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="17140"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+        <capability name="the Touch Bar" minToolsVersion="8.1" minSystemVersion="10.12.2" requiredIntegratedClassName="NSTouchBar"/>
+    </dependencies>
+    <objects>
+        <customObject id="-2" userLabel="File's Owner" customClass="VMDisplayWindowController" customModule="UTM" customModuleProvider="target">
+            <connections>
+                <outlet property="activityIndicator" destination="Ulx-Td-rrm" id="urA-l7-PXl"/>
+                <outlet property="displayView" destination="M5X-Is-pc9" id="U6s-s4-48i"/>
+                <outlet property="drivesToolbarItem" destination="lS2-Wk-mC1" id="y2e-UF-oV2"/>
+                <outlet property="networkToolbarItem" destination="kg0-bi-l7Y" id="AcL-KO-RGA"/>
+                <outlet property="overlayView" destination="nKs-QY-EOf" id="sD4-fu-HIL"/>
+                <outlet property="restartToolbarItem" destination="Xkb-X7-tAj" id="q9h-za-RSv"/>
+                <outlet property="screenshotView" destination="UUd-qY-POz" id="nMM-Nr-mQo"/>
+                <outlet property="startPauseToolbarItem" destination="tr9-Of-dCt" id="AWe-iB-3iJ"/>
+                <outlet property="stopToolbarItem" destination="trX-3Y-KE4" id="kfa-uG-soJ"/>
+                <outlet property="touchBar" destination="MdV-I1-RxZ" id="rFp-7N-UJC"/>
+                <outlet property="window" destination="QvC-M9-y7g" id="vHh-hj-7eR"/>
+            </connections>
+        </customObject>
+        <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
+        <customObject id="-3" userLabel="Application" customClass="NSObject"/>
+        <window title="UTM" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" releasedWhenClosed="NO" animationBehavior="default" toolbarStyle="compact" id="QvC-M9-y7g">
+            <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
+            <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
+            <rect key="contentRect" x="196" y="240" width="800" height="600"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="2560" height="1415"/>
+            <view key="contentView" wantsLayer="YES" id="EiT-Mj-1SZ">
+                <rect key="frame" x="0.0" y="0.0" width="800" height="600"/>
+                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                <subviews>
+                    <customView translatesAutoresizingMaskIntoConstraints="NO" id="M5X-Is-pc9" userLabel="Display View">
+                        <rect key="frame" x="0.0" y="0.0" width="800" height="600"/>
+                    </customView>
+                    <imageView hidden="YES" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="UUd-qY-POz">
+                        <rect key="frame" x="0.0" y="0.0" width="800" height="600"/>
+                        <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" id="wtI-uz-Xfv"/>
+                    </imageView>
+                    <visualEffectView blendingMode="withinWindow" material="dark" state="active" translatesAutoresizingMaskIntoConstraints="NO" id="nKs-QY-EOf">
+                        <rect key="frame" x="0.0" y="0.0" width="800" height="600"/>
+                        <subviews>
+                            <progressIndicator wantsLayer="YES" maxValue="100" displayedWhenStopped="NO" indeterminate="YES" style="spinning" translatesAutoresizingMaskIntoConstraints="NO" id="Ulx-Td-rrm">
+                                <rect key="frame" x="384" y="284" width="32" height="32"/>
+                            </progressIndicator>
+                            <button translatesAutoresizingMaskIntoConstraints="NO" id="ZTi-Hs-ge6" userLabel="Play Button">
+                                <rect key="frame" x="300" y="197" width="200" height="206"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="200" id="dy7-LO-AqQ"/>
+                                    <constraint firstAttribute="width" constant="200" id="jeW-Sr-S47"/>
+                                </constraints>
+                                <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="play.circle.fill" catalog="system" imagePosition="only" alignment="center" imageScaling="proportionallyUpOrDown" inset="2" id="mPs-BZ-Bc0">
+                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                </buttonCell>
+                                <connections>
+                                    <action selector="startPauseButtonPressed:" target="-2" id="Tst-4i-SvJ"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <constraints>
+                            <constraint firstItem="ZTi-Hs-ge6" firstAttribute="centerY" secondItem="nKs-QY-EOf" secondAttribute="centerY" id="IQD-Gu-RoD"/>
+                            <constraint firstItem="ZTi-Hs-ge6" firstAttribute="centerX" secondItem="nKs-QY-EOf" secondAttribute="centerX" id="dQa-7h-o1f"/>
+                            <constraint firstItem="Ulx-Td-rrm" firstAttribute="centerX" secondItem="nKs-QY-EOf" secondAttribute="centerX" id="gKZ-pW-k71"/>
+                            <constraint firstItem="Ulx-Td-rrm" firstAttribute="centerY" secondItem="nKs-QY-EOf" secondAttribute="centerY" id="sku-gV-yOs"/>
+                        </constraints>
+                    </visualEffectView>
+                </subviews>
+                <constraints>
+                    <constraint firstAttribute="trailing" secondItem="UUd-qY-POz" secondAttribute="trailing" id="23G-UX-Paa"/>
+                    <constraint firstItem="M5X-Is-pc9" firstAttribute="leading" secondItem="EiT-Mj-1SZ" secondAttribute="leading" id="2d1-fZ-cfK"/>
+                    <constraint firstAttribute="trailing" secondItem="nKs-QY-EOf" secondAttribute="trailing" id="2un-XF-OQy"/>
+                    <constraint firstAttribute="bottom" secondItem="M5X-Is-pc9" secondAttribute="bottom" id="4Rf-pI-yFF"/>
+                    <constraint firstItem="M5X-Is-pc9" firstAttribute="top" secondItem="EiT-Mj-1SZ" secondAttribute="top" id="Hhc-Ww-1Ji"/>
+                    <constraint firstAttribute="bottom" secondItem="UUd-qY-POz" secondAttribute="bottom" id="MX4-MB-35G"/>
+                    <constraint firstItem="nKs-QY-EOf" firstAttribute="leading" secondItem="EiT-Mj-1SZ" secondAttribute="leading" id="QRs-fV-dQs"/>
+                    <constraint firstItem="UUd-qY-POz" firstAttribute="leading" secondItem="EiT-Mj-1SZ" secondAttribute="leading" id="RKo-Ug-7Tq"/>
+                    <constraint firstItem="UUd-qY-POz" firstAttribute="top" secondItem="EiT-Mj-1SZ" secondAttribute="top" id="VXe-DB-vtS"/>
+                    <constraint firstAttribute="bottom" secondItem="nKs-QY-EOf" secondAttribute="bottom" id="aoT-cN-NSa"/>
+                    <constraint firstItem="nKs-QY-EOf" firstAttribute="top" secondItem="EiT-Mj-1SZ" secondAttribute="top" id="g12-G5-A0E"/>
+                    <constraint firstAttribute="trailing" secondItem="M5X-Is-pc9" secondAttribute="trailing" id="rDl-9L-qh7"/>
+                </constraints>
+            </view>
+            <toolbar key="toolbar" implicitIdentifier="204ED9EE-2DF0-4A0C-99E3-CD0CC398420A" showsBaselineSeparator="NO" displayMode="iconOnly" sizeMode="regular" id="qD6-Hj-nyo">
+                <allowedToolbarItems>
+                    <toolbarItem implicitItemIdentifier="A8A37634-9B9F-4A43-9B13-DAFE41350517" label="Stop" paletteLabel="Stop" tag="-1" image="power" catalog="system" sizingBehavior="auto" navigational="YES" id="trX-3Y-KE4">
+                        <connections>
+                            <action selector="stopButtonPressed:" target="-2" id="q04-QD-yhU"/>
+                        </connections>
+                    </toolbarItem>
+                    <toolbarItem implicitItemIdentifier="EE1E8AF7-330A-4F6F-8782-EA73207CD2F1" label="Start" paletteLabel="Start/Pause" tag="-1" image="play.fill" catalog="system" sizingBehavior="auto" navigational="YES" id="tr9-Of-dCt">
+                        <connections>
+                            <action selector="startPauseButtonPressed:" target="-2" id="zkk-Au-OAW"/>
+                        </connections>
+                    </toolbarItem>
+                    <toolbarItem implicitItemIdentifier="9628499A-2C8E-45E7-9C01-7B1A1A5B0BC0" label="" paletteLabel="Restart" tag="-1" image="restart" catalog="system" sizingBehavior="auto" navigational="YES" id="Xkb-X7-tAj">
+                        <connections>
+                            <action selector="restartButtonPressed:" target="-2" id="V9f-rL-gsD"/>
+                        </connections>
+                    </toolbarItem>
+                    <toolbarItem implicitItemIdentifier="CEB7A25C-DB71-4C99-B9E1-AE25F2042D60" label="Drives" paletteLabel="Drives" tag="-1" image="opticaldiscdrive" catalog="system" sizingBehavior="auto" id="lS2-Wk-mC1">
+                        <connections>
+                            <action selector="drivesButtonPressed:" target="-2" id="sjQ-Rd-kno"/>
+                        </connections>
+                    </toolbarItem>
+                    <toolbarItem implicitItemIdentifier="1724F188-37BF-4D60-A017-85E866F4E2C8" label="Network" paletteLabel="Network" tag="-1" image="network" catalog="system" sizingBehavior="auto" id="kg0-bi-l7Y">
+                        <connections>
+                            <action selector="networkButtonPressed:" target="-2" id="BP5-z4-U0V"/>
+                        </connections>
+                    </toolbarItem>
+                </allowedToolbarItems>
+                <defaultToolbarItems>
+                    <toolbarItem reference="trX-3Y-KE4"/>
+                    <toolbarItem reference="tr9-Of-dCt"/>
+                    <toolbarItem reference="Xkb-X7-tAj"/>
+                    <toolbarItem reference="lS2-Wk-mC1"/>
+                    <toolbarItem reference="kg0-bi-l7Y"/>
+                </defaultToolbarItems>
+            </toolbar>
+            <connections>
+                <outlet property="delegate" destination="-2" id="aEv-cq-eif"/>
+            </connections>
+            <point key="canvasLocation" x="-200" y="314"/>
+        </window>
+        <touchBar id="MdV-I1-RxZ">
+            <point key="canvasLocation" x="-199" y="-165"/>
+        </touchBar>
+    </objects>
+    <resources>
+        <image name="network" catalog="system" width="15" height="15"/>
+        <image name="opticaldiscdrive" catalog="system" width="18" height="13"/>
+        <image name="play.circle.fill" catalog="system" width="15" height="15"/>
+        <image name="play.fill" catalog="system" width="12" height="13"/>
+        <image name="power" catalog="system" width="15" height="16"/>
+        <image name="restart" catalog="system" width="12" height="13"/>
+    </resources>
+</document>
