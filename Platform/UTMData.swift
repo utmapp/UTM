@@ -46,6 +46,10 @@ class UTMData: ObservableObject {
         }
     }
     
+    #if os(macOS)
+    var windowController: NSWindowController? = nil
+    #endif
+    
     var fileManager: FileManager {
         FileManager.default
     }

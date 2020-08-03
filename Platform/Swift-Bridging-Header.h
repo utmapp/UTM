@@ -29,7 +29,10 @@
 #include "UTMQemuSystem.h"
 #include "UTMLogging.h"
 #include "UTMVirtualMachine.h"
+#include "UTMRenderer.h"
 #include "UTMScreenshot.h"
+#include "UTMSpiceIO.h"
+#include "CocoaSpice.h"
 #if TARGET_OS_IPHONE
 #include "VMDisplayViewController.h"
 #include "VMDisplayMetalViewController.h"
