@@ -18,6 +18,7 @@
 #import "UTMScreenshot.h"
 #import "UTMShaderTypes.h"
 #import "CocoaSpice.h"
+#import "UTMLogging.h"
 #import <glib.h>
 #import <spice-client.h>
 #import <spice/protocol.h>
