@@ -15,6 +15,7 @@
 //
 
 #import "CSMain.h"
+#import "UTMLogging.h"
 #import <glib.h>
 #import <spice-client.h>
 #import <pthread.h>

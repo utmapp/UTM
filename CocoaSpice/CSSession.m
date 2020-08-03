@@ -16,6 +16,7 @@
 
 #import "CSSession.h"
 #import "CocoaSpice.h"
+#import "UTMLogging.h"
 #import <MobileCoreServices/MobileCoreServices.h>
 #import <UIKit/UIKit.h>
 #import <glib.h>
