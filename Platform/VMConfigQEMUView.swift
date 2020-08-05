@@ -47,7 +47,7 @@ struct VMConfigQEMUView: View {
                     Toggle(isOn: $customArgsOnly, label: {
                         Text("Advanced: Bypass configuration and manually specify arguments")
                     })
-                    let qemuSystem = UTMQemuSystem(configuration: config, imgPath: URL(fileURLWithPath: "/path/to/Images"))
+                    let qemuSystem = UTMQemuSystemConfiguration(configuration: config, imgPath: URL(fileURLWithPath: "/path/to/Images"))
                     let fixedArgs = qemuSystem.argv
                     #if os(macOS)
                     VStack {

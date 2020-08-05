@@ -15,6 +15,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "QEMUHelperProtocol.h"
 
 typedef void * _Nullable (* _Nonnull UTMQemuThreadEntry)(void * _Nullable args);
 
@@ -28,12 +29,17 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) dispatch_semaphore_t done;
 @property (nonatomic) NSInteger status;
 @property (nonatomic) NSInteger fatal;
+@property (nonatomic) UTMQemuThreadEntry entry;
+@property (nonatomic) QEMUHelperType type;
 
-- (instancetype)init NS_DESIGNATED_INITIALIZER;
+- (instancetype)init;
+- (instancetype)initWithArgv:(NSArray<NSString *> *)argv NS_DESIGNATED_INITIALIZER;
+- (BOOL)setupXpc;
 - (void)pushArgv:(nullable NSString *)arg;
 - (void)clearArgv;
-- (BOOL)didLoadDylib:(nonnull void *)handle;
-- (void)startDylib:(nonnull NSString *)dylib entry:(UTMQemuThreadEntry)entry completion:(void(^)(BOOL,NSString *))completion;
+- (void)startDylib:(nonnull NSString *)dylib completion:(void(^)(BOOL,NSString *))completion;
+- (void)ping:(void (^)(BOOL))onResponse;
+- (void)accessDataWithBookmark:(NSData *)bookmark;
 
 @end
 

@@ -258,6 +258,9 @@ class UTMData: ObservableObject {
             imgCreate.outputPath = dstPath
             imgCreate.sizeMiB = drive.size
             imgCreate.compressed = true
+            #if os(macOS)
+            imgCreate.setupXpc()
+            #endif
             imgCreate.start { (_success, _msg) in
                 success = _success
                 msg = _msg

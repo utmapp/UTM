@@ -38,6 +38,14 @@ static void *start_qemu_img(void *args) {
     return NULL;
 }
 
+- (instancetype)initWithArgv:(NSArray<NSString *> *)argv {
+    if (self = [super initWithArgv:argv]) {
+        self.entry = start_qemu_img;
+        self.type = QEMUHelperTypeImg;
+    }
+    return self;
+}
+
 - (void)buildArgv {
     [self clearArgv];
     [self pushArgv:@"qemu-img"];
@@ -92,7 +100,7 @@ static void *start_qemu_img(void *args) {
         return;
     }
     [self buildArgv];
-    [self startDylib:@"libqemu-img.dylib" entry:start_qemu_img completion:completion];
+    [self startDylib:@"libqemu-img.dylib" completion:completion];
     once = YES;
 }
 

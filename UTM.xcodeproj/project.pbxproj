@@ -22,6 +22,121 @@
 		CE020BAC24AEE00000B44AB6 /* UTMLoggingSwift.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE020BAA24AEE00000B44AB6 /* UTMLoggingSwift.swift */; };
 		CE020BB624B14F8400B44AB6 /* UTMVirtualMachineExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE020BB524B14F8400B44AB6 /* UTMVirtualMachineExtension.swift */; };
 		CE020BB724B14F8400B44AB6 /* UTMVirtualMachineExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE020BB524B14F8400B44AB6 /* UTMVirtualMachineExtension.swift */; };
+		CE03D04B24D90AB300F76B84 /* UTMQemuImg.m in Sources */ = {isa = PBXBuildFile; fileRef = CED33AE22267893D00FF1977 /* UTMQemuImg.m */; };
+		CE03D04C24D90AB300F76B84 /* UTMQemuSystem.m in Sources */ = {isa = PBXBuildFile; fileRef = CED33ADF2267892200FF1977 /* UTMQemuSystem.m */; };
+		CE03D04D24D90AB300F76B84 /* UTMQemu.m in Sources */ = {isa = PBXBuildFile; fileRef = CE9D197B226542FE00355E14 /* UTMQemu.m */; };
+		CE03D04E24D90AC400F76B84 /* UTMLogging.m in Sources */ = {isa = PBXBuildFile; fileRef = CE6EDCE1241DA0E900A719DC /* UTMLogging.m */; };
+		CE03D05124D90B4E00F76B84 /* UTMQemuSystemConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = CE03D05024D90B4E00F76B84 /* UTMQemuSystemConfiguration.m */; };
+		CE03D05224D90B4E00F76B84 /* UTMQemuSystemConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = CE03D05024D90B4E00F76B84 /* UTMQemuSystemConfiguration.m */; };
+		CE03D05324D90B4E00F76B84 /* UTMQemuSystemConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = CE03D05024D90B4E00F76B84 /* UTMQemuSystemConfiguration.m */; };
+		CE03D05524D90ECD00F76B84 /* libqemu-system-sh4.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D640222653C7500FC7E63 /* libqemu-system-sh4.dylib */; };
+		CE03D05624D90ECD00F76B84 /* libqemu-system-m68k.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63EB22653C7400FC7E63 /* libqemu-system-m68k.dylib */; };
+		CE03D05724D90ECD00F76B84 /* libspice-server.1.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D641822653C7500FC7E63 /* libspice-server.1.dylib */; };
+		CE03D05824D90ECD00F76B84 /* libqemu-system-alpha.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D641322653C7500FC7E63 /* libqemu-system-alpha.dylib */; };
+		CE03D05924D90ECD00F76B84 /* libqemu-system-microblazeel.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63F022653C7400FC7E63 /* libqemu-system-microblazeel.dylib */; };
+		CE03D05A24D90ECD00F76B84 /* libqemu-system-mips64el.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D640822653C7500FC7E63 /* libqemu-system-mips64el.dylib */; };
+		CE03D05B24D90ECD00F76B84 /* libqemu-system-or1k.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D640B22653C7500FC7E63 /* libqemu-system-or1k.dylib */; };
+		CE03D05C24D90ECD00F76B84 /* libintl.8.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63DA22653C7300FC7E63 /* libintl.8.dylib */; };
+		CE03D05D24D90ECD00F76B84 /* libqemu-system-moxie.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63EA22653C7400FC7E63 /* libqemu-system-moxie.dylib */; };
+		CE03D05E24D90ECD00F76B84 /* libqemu-system-aarch64.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63FD22653C7500FC7E63 /* libqemu-system-aarch64.dylib */; };
+		CE03D05F24D90ECD00F76B84 /* libiconv.2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D641522653C7500FC7E63 /* libiconv.2.dylib */; };
+		CE03D06024D90ECD00F76B84 /* libqemu-system-sparc64.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D640F22653C7500FC7E63 /* libqemu-system-sparc64.dylib */; };
+		CE03D06124D90ECD00F76B84 /* libqemu-system-nios2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63DF22653C7400FC7E63 /* libqemu-system-nios2.dylib */; };
+		CE03D06224D90ECD00F76B84 /* libqemu-system-lm32.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63E922653C7400FC7E63 /* libqemu-system-lm32.dylib */; };
+		CE03D06324D90ECD00F76B84 /* libqemu-system-xtensa.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63ED22653C7400FC7E63 /* libqemu-system-xtensa.dylib */; };
+		CE03D06424D90ECD00F76B84 /* libqemu-system-i386.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63D722653C7300FC7E63 /* libqemu-system-i386.dylib */; };
+		CE03D06524D90ECD00F76B84 /* libqemu-img.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE4AA14E2265B152002E4A54 /* libqemu-img.dylib */; };
+		CE03D06624D90ECD00F76B84 /* libgio-2.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63F822653C7400FC7E63 /* libgio-2.0.0.dylib */; };
+		CE03D06724D90ECD00F76B84 /* libjpeg.62.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63D922653C7300FC7E63 /* libjpeg.62.dylib */; };
+		CE03D06824D90ECD00F76B84 /* libqemu-system-riscv32.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63FA22653C7400FC7E63 /* libqemu-system-riscv32.dylib */; };
+		CE03D06924D90ECD00F76B84 /* libqemu-system-xtensaeb.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D641222653C7500FC7E63 /* libqemu-system-xtensaeb.dylib */; };
+		CE03D06A24D90ECD00F76B84 /* libqemu-system-s390x.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63FC22653C7500FC7E63 /* libqemu-system-s390x.dylib */; };
+		CE03D06B24D90ECD00F76B84 /* libqemu-system-mips64.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63F422653C7400FC7E63 /* libqemu-system-mips64.dylib */; };
+		CE03D06C24D90ECD00F76B84 /* libglib-2.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D640422653C7500FC7E63 /* libglib-2.0.0.dylib */; };
+		CE03D06D24D90ECD00F76B84 /* libopus.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D640322653C7500FC7E63 /* libopus.0.dylib */; };
+		CE03D06E24D90ECD00F76B84 /* libssl.1.1.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D641722653C7500FC7E63 /* libssl.1.1.dylib */; };
+		CE03D06F24D90ECD00F76B84 /* libqemu-system-mipsel.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D640622653C7500FC7E63 /* libqemu-system-mipsel.dylib */; };
+		CE03D07024D90ECD00F76B84 /* libqemu-system-microblaze.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63E422653C7400FC7E63 /* libqemu-system-microblaze.dylib */; };
+		CE03D07124D90ECD00F76B84 /* libqemu-system-mips.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63FF22653C7500FC7E63 /* libqemu-system-mips.dylib */; };
+		CE03D07224D90ECD00F76B84 /* libpixman-1.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D641922653C7600FC7E63 /* libpixman-1.0.dylib */; };
+		CE03D07324D90ECD00F76B84 /* libgpg-error.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63F122653C7400FC7E63 /* libgpg-error.0.dylib */; };
+		CE03D07424D90ECD00F76B84 /* libcrypto.1.1.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D640A22653C7500FC7E63 /* libcrypto.1.1.dylib */; };
+		CE03D07524D90ECD00F76B84 /* libqemu-system-arm.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D640722653C7500FC7E63 /* libqemu-system-arm.dylib */; };
+		CE03D07624D90ECD00F76B84 /* libqemu-system-unicore32.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63F722653C7400FC7E63 /* libqemu-system-unicore32.dylib */; };
+		CE03D07724D90ECD00F76B84 /* libffi.6.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63E322653C7400FC7E63 /* libffi.6.dylib */; };
+		CE03D07824D90ECD00F76B84 /* libqemu-system-x86_64.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D640022653C7500FC7E63 /* libqemu-system-x86_64.dylib */; };
+		CE03D07924D90ECD00F76B84 /* libgobject-2.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63F522653C7400FC7E63 /* libgobject-2.0.0.dylib */; };
+		CE03D07A24D90ECD00F76B84 /* libqemu-system-hppa.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63F222653C7400FC7E63 /* libqemu-system-hppa.dylib */; };
+		CE03D07B24D90ECD00F76B84 /* libgmodule-2.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63D822653C7300FC7E63 /* libgmodule-2.0.0.dylib */; };
+		CE03D07C24D90ECD00F76B84 /* libgcrypt.20.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63F322653C7400FC7E63 /* libgcrypt.20.dylib */; };
+		CE03D07D24D90ECD00F76B84 /* libpng16.16.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D640522653C7500FC7E63 /* libpng16.16.dylib */; };
+		CE03D07E24D90ECD00F76B84 /* libqemu-system-riscv64.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63FB22653C7500FC7E63 /* libqemu-system-riscv64.dylib */; };
+		CE03D07F24D90ECD00F76B84 /* libqemu-system-ppc64.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D640C22653C7500FC7E63 /* libqemu-system-ppc64.dylib */; };
+		CE03D08024D90ECD00F76B84 /* libgthread-2.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63DC22653C7300FC7E63 /* libgthread-2.0.0.dylib */; };
+		CE03D08124D90ECD00F76B84 /* libqemu-system-cris.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63E622653C7400FC7E63 /* libqemu-system-cris.dylib */; };
+		CE03D08224D90ECD00F76B84 /* libqemu-system-ppc.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63E722653C7400FC7E63 /* libqemu-system-ppc.dylib */; };
+		CE03D08324D90ECD00F76B84 /* libqemu-system-sh4eb.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63E122653C7400FC7E63 /* libqemu-system-sh4eb.dylib */; };
+		CE03D08424D90ECD00F76B84 /* libqemu-system-sparc.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D640D22653C7500FC7E63 /* libqemu-system-sparc.dylib */; };
+		CE03D08524D90ECD00F76B84 /* libqemu-system-tricore.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63EC22653C7400FC7E63 /* libqemu-system-tricore.dylib */; };
+		CE03D08624D90F0700F76B84 /* libgmodule-2.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63D822653C7300FC7E63 /* libgmodule-2.0.0.dylib */; };
+		CE03D08724D90F0700F76B84 /* libgobject-2.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63F522653C7400FC7E63 /* libgobject-2.0.0.dylib */; };
+		CE03D08824D90F0700F76B84 /* libgio-2.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63F822653C7400FC7E63 /* libgio-2.0.0.dylib */; };
+		CE03D08924D90F0700F76B84 /* libglib-2.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D640422653C7500FC7E63 /* libglib-2.0.0.dylib */; };
+		CE03D08A24D90F2900F76B84 /* libintl.8.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63DA22653C7300FC7E63 /* libintl.8.dylib */; };
+		CE03D08B24D90F2900F76B84 /* libjpeg.62.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63D922653C7300FC7E63 /* libjpeg.62.dylib */; };
+		CE03D08C24D9123E00F76B84 /* libgio-2.0.0.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63F822653C7400FC7E63 /* libgio-2.0.0.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE03D08D24D9123F00F76B84 /* libglib-2.0.0.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D640422653C7500FC7E63 /* libglib-2.0.0.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE03D08E24D9124100F76B84 /* libgmodule-2.0.0.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63D822653C7300FC7E63 /* libgmodule-2.0.0.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE03D08F24D9124200F76B84 /* libgobject-2.0.0.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63F522653C7400FC7E63 /* libgobject-2.0.0.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE03D09024D9124800F76B84 /* libintl.8.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63DA22653C7300FC7E63 /* libintl.8.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE03D09124D9124900F76B84 /* libjpeg.62.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63D922653C7300FC7E63 /* libjpeg.62.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE03D09524D9127100F76B84 /* libgcrypt.20.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63F322653C7400FC7E63 /* libgcrypt.20.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE03D09D24D912B100F76B84 /* libqemu-system-aarch64.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63FD22653C7500FC7E63 /* libqemu-system-aarch64.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE03D0A224D912D400F76B84 /* libpng16.16.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D640522653C7500FC7E63 /* libpng16.16.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE03D0A324D912D600F76B84 /* libqemu-img.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE4AA14E2265B152002E4A54 /* libqemu-img.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE03D0A524D912E300F76B84 /* libspice-server.1.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D641822653C7500FC7E63 /* libspice-server.1.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE03D0A624D912E500F76B84 /* libqemu-system-xtensaeb.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D641222653C7500FC7E63 /* libqemu-system-xtensaeb.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE03D0A724D912E600F76B84 /* libqemu-system-xtensa.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63ED22653C7400FC7E63 /* libqemu-system-xtensa.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE03D0A824D912E700F76B84 /* libqemu-system-x86_64.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D640022653C7500FC7E63 /* libqemu-system-x86_64.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE03D0A924D912E900F76B84 /* libqemu-system-unicore32.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63F722653C7400FC7E63 /* libqemu-system-unicore32.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE03D0AA24D912EA00F76B84 /* libqemu-system-tricore.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63EC22653C7400FC7E63 /* libqemu-system-tricore.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE03D0AB24D912EB00F76B84 /* libqemu-system-sparc64.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D640F22653C7500FC7E63 /* libqemu-system-sparc64.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE03D0AC24D912EE00F76B84 /* libqemu-system-sparc.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D640D22653C7500FC7E63 /* libqemu-system-sparc.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE03D0AD24D912FF00F76B84 /* libqemu-system-sh4eb.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63E122653C7400FC7E63 /* libqemu-system-sh4eb.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE03D0AE24D9130000F76B84 /* libqemu-system-sh4.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D640222653C7500FC7E63 /* libqemu-system-sh4.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE03D0AF24D9130200F76B84 /* libqemu-system-s390x.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63FC22653C7500FC7E63 /* libqemu-system-s390x.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE03D0B024D9130300F76B84 /* libqemu-system-riscv64.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63FB22653C7500FC7E63 /* libqemu-system-riscv64.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE03D0B124D9130400F76B84 /* libqemu-system-riscv32.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63FA22653C7400FC7E63 /* libqemu-system-riscv32.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE03D0B224D9130500F76B84 /* libqemu-system-ppc64.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D640C22653C7500FC7E63 /* libqemu-system-ppc64.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE03D0B324D9130700F76B84 /* libqemu-system-ppc.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63E722653C7400FC7E63 /* libqemu-system-ppc.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE03D0B424D9130800F76B84 /* libqemu-system-or1k.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D640B22653C7500FC7E63 /* libqemu-system-or1k.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE03D0B524D9130A00F76B84 /* libqemu-system-nios2.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63DF22653C7400FC7E63 /* libqemu-system-nios2.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE03D0B624D9130C00F76B84 /* libqemu-system-moxie.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63EA22653C7400FC7E63 /* libqemu-system-moxie.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE03D0B724D9130F00F76B84 /* libqemu-system-mipsel.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D640622653C7500FC7E63 /* libqemu-system-mipsel.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE03D0B824D9131200F76B84 /* libqemu-system-mips64el.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D640822653C7500FC7E63 /* libqemu-system-mips64el.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE03D0B924D9131300F76B84 /* libqemu-system-mips64.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63F422653C7400FC7E63 /* libqemu-system-mips64.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE03D0BA24D9131500F76B84 /* libqemu-system-mips.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63FF22653C7500FC7E63 /* libqemu-system-mips.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE03D0BB24D9131600F76B84 /* libqemu-system-microblazeel.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63F022653C7400FC7E63 /* libqemu-system-microblazeel.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE03D0BC24D9131800F76B84 /* libqemu-system-microblaze.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63E422653C7400FC7E63 /* libqemu-system-microblaze.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE03D0BD24D9131900F76B84 /* libqemu-system-m68k.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63EB22653C7400FC7E63 /* libqemu-system-m68k.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE03D0BE24D9131B00F76B84 /* libqemu-system-lm32.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63E922653C7400FC7E63 /* libqemu-system-lm32.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE03D0BF24D9131C00F76B84 /* libqemu-system-i386.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63D722653C7300FC7E63 /* libqemu-system-i386.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE03D0C024D9131E00F76B84 /* libqemu-system-hppa.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63F222653C7400FC7E63 /* libqemu-system-hppa.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE03D0C124D9132000F76B84 /* libqemu-system-cris.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63E622653C7400FC7E63 /* libqemu-system-cris.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE03D0C224D9132100F76B84 /* libqemu-system-arm.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D640722653C7500FC7E63 /* libqemu-system-arm.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE03D0C324D9132500F76B84 /* libqemu-system-alpha.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D641322653C7500FC7E63 /* libqemu-system-alpha.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE03D0C424D913AA00F76B84 /* libffi.6.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63E322653C7400FC7E63 /* libffi.6.dylib */; };
+		CE03D0C524D913AF00F76B84 /* libffi.6.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63E322653C7400FC7E63 /* libffi.6.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE03D0C624D913C600F76B84 /* libopus.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D640322653C7500FC7E63 /* libopus.0.dylib */; };
+		CE03D0C724D913E600F76B84 /* libopus.0.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D640322653C7500FC7E63 /* libopus.0.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE03D0C824D913FD00F76B84 /* libpixman-1.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D641922653C7600FC7E63 /* libpixman-1.0.dylib */; };
+		CE03D0C924D9140A00F76B84 /* libpixman-1.0.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D641922653C7600FC7E63 /* libpixman-1.0.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE03D0CA24D9142000F76B84 /* libssl.1.1.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D641722653C7500FC7E63 /* libssl.1.1.dylib */; };
+		CE03D0CB24D9142500F76B84 /* libssl.1.1.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D641722653C7500FC7E63 /* libssl.1.1.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE03D0CC24D9144100F76B84 /* libcrypto.1.1.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D640A22653C7500FC7E63 /* libcrypto.1.1.dylib */; };
+		CE03D0CD24D9144500F76B84 /* libcrypto.1.1.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D640A22653C7500FC7E63 /* libcrypto.1.1.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE03D0CE24D9A30100F76B84 /* libiconv.2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D641522653C7500FC7E63 /* libiconv.2.dylib */; };
+		CE03D0CF24D9A33000F76B84 /* libiconv.2.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D641522653C7500FC7E63 /* libiconv.2.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CE056CA6242454100004B68A /* VMDisplayMetalViewController+Touch.m in Sources */ = {isa = PBXBuildFile; fileRef = CE056CA5242454100004B68A /* VMDisplayMetalViewController+Touch.m */; };
 		CE059DC1243BD67200338317 /* libphodav-2.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE059DC0243BD67100338317 /* libphodav-2.0.0.dylib */; };
 		CE059DC2243BD67200338317 /* libphodav-2.0.0.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE059DC0243BD67100338317 /* libphodav-2.0.0.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
@@ -182,101 +297,44 @@
 		CE0B6D8624AD5ADE00FE012D /* UTMScreenshot.m in Sources */ = {isa = PBXBuildFile; fileRef = CE0B6D8424AD5ADE00FE012D /* UTMScreenshot.m */; };
 		CE0B6D8724AD5ADE00FE012D /* UTMScreenshot.m in Sources */ = {isa = PBXBuildFile; fileRef = CE0B6D8424AD5ADE00FE012D /* UTMScreenshot.m */; };
 		CE0B6D8B24AD658000FE012D /* CSSessionMac.m in Sources */ = {isa = PBXBuildFile; fileRef = CE0B6D8A24AD658000FE012D /* CSSessionMac.m */; };
-		CE0B6EB924AD677200FE012D /* libgthread-2.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63DC22653C7300FC7E63 /* libgthread-2.0.0.dylib */; };
-		CE0B6EBA24AD677200FE012D /* libgio-2.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63F822653C7400FC7E63 /* libgio-2.0.0.dylib */; };
 		CE0B6EBB24AD677200FE012D /* libgstgio.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CE9D19622265425A00355E14 /* libgstgio.a */; };
 		CE0B6EBC24AD677200FE012D /* libgstpbutils-1.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D640E22653C7500FC7E63 /* libgstpbutils-1.0.0.dylib */; };
-		CE0B6EBD24AD677200FE012D /* libqemu-system-i386.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63D722653C7300FC7E63 /* libqemu-system-i386.dylib */; };
-		CE0B6EBE24AD677200FE012D /* libqemu-system-m68k.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63EB22653C7400FC7E63 /* libqemu-system-m68k.dylib */; };
-		CE0B6EBF24AD677200FE012D /* libqemu-system-microblaze.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63E422653C7400FC7E63 /* libqemu-system-microblaze.dylib */; };
-		CE0B6EC024AD677200FE012D /* libqemu-system-nios2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63DF22653C7400FC7E63 /* libqemu-system-nios2.dylib */; };
-		CE0B6EC124AD677200FE012D /* libqemu-system-aarch64.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63FD22653C7500FC7E63 /* libqemu-system-aarch64.dylib */; };
 		CE0B6EC224AD677200FE012D /* libgstvideorate.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CE9D19592265425900355E14 /* libgstvideorate.a */; };
-		CE0B6EC324AD677200FE012D /* libqemu-system-alpha.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D641322653C7500FC7E63 /* libqemu-system-alpha.dylib */; };
-		CE0B6EC424AD677200FE012D /* libqemu-system-lm32.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63E922653C7400FC7E63 /* libqemu-system-lm32.dylib */; };
-		CE0B6EC524AD677200FE012D /* libqemu-system-sh4eb.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63E122653C7400FC7E63 /* libqemu-system-sh4eb.dylib */; };
 		CE0B6EC624AD677200FE012D /* libgstfft-1.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D640922653C7500FC7E63 /* libgstfft-1.0.0.dylib */; };
-		CE0B6EC724AD677200FE012D /* libqemu-system-sparc.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D640D22653C7500FC7E63 /* libqemu-system-sparc.dylib */; };
-		CE0B6EC824AD677200FE012D /* libgcrypt.20.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63F322653C7400FC7E63 /* libgcrypt.20.dylib */; };
 		CE0B6EC924AD677200FE012D /* libgstvideo-1.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63F922653C7400FC7E63 /* libgstvideo-1.0.0.dylib */; };
-		CE0B6ECA24AD677200FE012D /* libqemu-system-microblazeel.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63F022653C7400FC7E63 /* libqemu-system-microblazeel.dylib */; };
 		CE0B6ECB24AD677200FE012D /* libgstcheck-1.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D641422653C7500FC7E63 /* libgstcheck-1.0.0.dylib */; };
 		CE0B6ECC24AD677200FE012D /* libgstriff-1.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63DE22653C7400FC7E63 /* libgstriff-1.0.0.dylib */; };
 		CE0B6ECD24AD677200FE012D /* libgsttag-1.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63F622653C7400FC7E63 /* libgsttag-1.0.0.dylib */; };
 		CE0B6ECF24AD677200FE012D /* libgstrtp-1.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63DD22653C7400FC7E63 /* libgstrtp-1.0.0.dylib */; };
-		CE0B6ED024AD677200FE012D /* libopus.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D640322653C7500FC7E63 /* libopus.0.dylib */; };
 		CE0B6ED124AD677200FE012D /* libphodav-2.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE059DC0243BD67100338317 /* libphodav-2.0.0.dylib */; };
-		CE0B6ED224AD677200FE012D /* libqemu-system-hppa.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63F222653C7400FC7E63 /* libqemu-system-hppa.dylib */; };
 		CE0B6ED324AD677200FE012D /* libgstvideoconvert.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CE9D19542265425900355E14 /* libgstvideoconvert.a */; };
-		CE0B6ED424AD677200FE012D /* libqemu-system-tricore.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63EC22653C7400FC7E63 /* libqemu-system-tricore.dylib */; };
-		CE0B6ED524AD677200FE012D /* libqemu-system-or1k.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D640B22653C7500FC7E63 /* libqemu-system-or1k.dylib */; };
-		CE0B6ED624AD677200FE012D /* libqemu-system-xtensa.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63ED22653C7400FC7E63 /* libqemu-system-xtensa.dylib */; };
 		CE0B6ED724AD677200FE012D /* libgstaudio-1.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63EF22653C7400FC7E63 /* libgstaudio-1.0.0.dylib */; };
-		CE0B6ED824AD677200FE012D /* libjpeg.62.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63D922653C7300FC7E63 /* libjpeg.62.dylib */; };
-		CE0B6ED924AD677200FE012D /* libqemu-img.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE4AA14E2265B152002E4A54 /* libqemu-img.dylib */; };
-		CE0B6EDA24AD677200FE012D /* libssl.1.1.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D641722653C7500FC7E63 /* libssl.1.1.dylib */; };
-		CE0B6EDB24AD677200FE012D /* libqemu-system-unicore32.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63F722653C7400FC7E63 /* libqemu-system-unicore32.dylib */; };
 		CE0B6EDC24AD677200FE012D /* libgstapp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CE9D19612265425900355E14 /* libgstapp.a */; };
-		CE0B6EDD24AD677200FE012D /* libqemu-system-cris.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63E622653C7400FC7E63 /* libqemu-system-cris.dylib */; };
-		CE0B6EDE24AD677200FE012D /* libqemu-system-riscv32.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63FA22653C7400FC7E63 /* libqemu-system-riscv32.dylib */; };
-		CE0B6EDF24AD677200FE012D /* libqemu-system-sh4.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D640222653C7500FC7E63 /* libqemu-system-sh4.dylib */; };
 		CE0B6EE024AD677200FE012D /* libgstosxaudio.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CE9D19652265425A00355E14 /* libgstosxaudio.a */; };
 		CE0B6EE124AD677200FE012D /* libgstrtsp-1.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D640122653C7500FC7E63 /* libgstrtsp-1.0.0.dylib */; };
 		CE0B6EE224AD677200FE012D /* libgstnet-1.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63E522653C7400FC7E63 /* libgstnet-1.0.0.dylib */; };
-		CE0B6EE324AD677200FE012D /* libgobject-2.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63F522653C7400FC7E63 /* libgobject-2.0.0.dylib */; };
-		CE0B6EE424AD677200FE012D /* libgmodule-2.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63D822653C7300FC7E63 /* libgmodule-2.0.0.dylib */; };
 		CE0B6EE524AD677200FE012D /* libgstbase-1.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63E822653C7400FC7E63 /* libgstbase-1.0.0.dylib */; };
 		CE0B6EE624AD677200FE012D /* libgstaudiorate.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CE9D195F2265425900355E14 /* libgstaudiorate.a */; };
 		CE0B6EE724AD677200FE012D /* libgstvideotestsrc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CE9D19642265425A00355E14 /* libgstvideotestsrc.a */; };
-		CE0B6EE824AD677200FE012D /* libintl.8.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63DA22653C7300FC7E63 /* libintl.8.dylib */; };
-		CE0B6EE924AD677200FE012D /* libqemu-system-arm.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D640722653C7500FC7E63 /* libqemu-system-arm.dylib */; };
 		CE0B6EEA24AD677200FE012D /* libgstcoreelements.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CE9D19582265425900355E14 /* libgstcoreelements.a */; };
-		CE0B6EEB24AD677200FE012D /* libcrypto.1.1.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D640A22653C7500FC7E63 /* libcrypto.1.1.dylib */; };
 		CE0B6EEC24AD677200FE012D /* libgstautodetect.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CE9D19522265425900355E14 /* libgstautodetect.a */; };
-		CE0B6EED24AD677200FE012D /* libiconv.2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D641522653C7500FC7E63 /* libiconv.2.dylib */; };
-		CE0B6EEE24AD677200FE012D /* libqemu-system-x86_64.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D640022653C7500FC7E63 /* libqemu-system-x86_64.dylib */; };
-		CE0B6EEF24AD677200FE012D /* libglib-2.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D640422653C7500FC7E63 /* libglib-2.0.0.dylib */; };
 		CE0B6EF024AD677200FE012D /* libgstcontroller-1.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63EE22653C7400FC7E63 /* libgstcontroller-1.0.0.dylib */; };
 		CE0B6EF124AD677200FE012D /* libgstplayback.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CE9D195C2265425900355E14 /* libgstplayback.a */; };
 		CE0B6EF224AD677200FE012D /* libgstallocators-1.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D641122653C7500FC7E63 /* libgstallocators-1.0.0.dylib */; };
 		CE0B6EF324AD677200FE012D /* libgstvideofilter.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CE9D19602265425900355E14 /* libgstvideofilter.a */; };
 		CE0B6EF424AD677200FE012D /* libjson-glib-1.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63E222653C7400FC7E63 /* libjson-glib-1.0.0.dylib */; };
-		CE0B6EF524AD677200FE012D /* libqemu-system-mips.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63FF22653C7500FC7E63 /* libqemu-system-mips.dylib */; };
-		CE0B6EF624AD677200FE012D /* libqemu-system-ppc64.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D640C22653C7500FC7E63 /* libqemu-system-ppc64.dylib */; };
-		CE0B6EF724AD677200FE012D /* libspice-server.1.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D641822653C7500FC7E63 /* libspice-server.1.dylib */; };
 		CE0B6EF824AD677200FE012D /* libgstsdp-1.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D641622653C7500FC7E63 /* libgstsdp-1.0.0.dylib */; };
 		CE0B6EF924AD677200FE012D /* libgstaudioresample.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CE9D195B2265425900355E14 /* libgstaudioresample.a */; };
 		CE0B6EFA24AD677200FE012D /* libgstapp-1.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63DB22653C7300FC7E63 /* libgstapp-1.0.0.dylib */; };
-		CE0B6EFB24AD677200FE012D /* libqemu-system-mips64.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63F422653C7400FC7E63 /* libqemu-system-mips64.dylib */; };
 		CE0B6EFC24AD677200FE012D /* libgstaudiotestsrc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CE9D19532265425900355E14 /* libgstaudiotestsrc.a */; };
-		CE0B6EFD24AD677200FE012D /* libqemu-system-moxie.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63EA22653C7400FC7E63 /* libqemu-system-moxie.dylib */; };
-		CE0B6EFE24AD677200FE012D /* libqemu-system-xtensaeb.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D641222653C7500FC7E63 /* libqemu-system-xtensaeb.dylib */; };
-		CE0B6F0024AD677200FE012D /* libqemu-system-mipsel.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D640622653C7500FC7E63 /* libqemu-system-mipsel.dylib */; };
 		CE0B6F0124AD677200FE012D /* libgsttypefindfunctions.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CE9D19632265425A00355E14 /* libgsttypefindfunctions.a */; };
 		CE0B6F0224AD677200FE012D /* libgstjpeg.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CE9D195A2265425900355E14 /* libgstjpeg.a */; };
 		CE0B6F0324AD677200FE012D /* libgstvideoscale.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CE9D19562265425900355E14 /* libgstvideoscale.a */; };
-		CE0B6F0424AD677200FE012D /* libpixman-1.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D641922653C7600FC7E63 /* libpixman-1.0.dylib */; };
-		CE0B6F0524AD677200FE012D /* libqemu-system-ppc.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63E722653C7400FC7E63 /* libqemu-system-ppc.dylib */; };
-		CE0B6F0624AD677200FE012D /* libgpg-error.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63F122653C7400FC7E63 /* libgpg-error.0.dylib */; };
 		CE0B6F0724AD677200FE012D /* libgstvolume.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CE9D19572265425900355E14 /* libgstvolume.a */; };
-		CE0B6F0824AD677200FE012D /* libqemu-system-riscv64.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63FB22653C7500FC7E63 /* libqemu-system-riscv64.dylib */; };
-		CE0B6F0924AD677200FE012D /* libqemu-system-s390x.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63FC22653C7500FC7E63 /* libqemu-system-s390x.dylib */; };
 		CE0B6F0A24AD677200FE012D /* libspice-client-glib-2.0.8.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63FE22653C7500FC7E63 /* libspice-client-glib-2.0.8.dylib */; };
-		CE0B6F0B24AD677200FE012D /* libffi.6.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63E322653C7400FC7E63 /* libffi.6.dylib */; };
 		CE0B6F0C24AD677200FE012D /* libgstreamer-1.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63E022653C7400FC7E63 /* libgstreamer-1.0.0.dylib */; };
 		CE0B6F0D24AD677200FE012D /* libgstadder.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CE9D195D2265425900355E14 /* libgstadder.a */; };
 		CE0B6F0E24AD677200FE012D /* libgstaudioconvert.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CE9D19552265425900355E14 /* libgstaudioconvert.a */; };
-		CE0B6F0F24AD677200FE012D /* libpng16.16.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D640522653C7500FC7E63 /* libpng16.16.dylib */; };
-		CE0B6F1024AD677200FE012D /* libqemu-system-mips64el.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D640822653C7500FC7E63 /* libqemu-system-mips64el.dylib */; };
-		CE0B6F1124AD677200FE012D /* libqemu-system-sparc64.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D640F22653C7500FC7E63 /* libqemu-system-sparc64.dylib */; };
-		CE0B6F1224AD678800FE012D /* libcrypto.1.1.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D640A22653C7500FC7E63 /* libcrypto.1.1.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CE0B6F1324AD678900FE012D /* libffi.6.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63E322653C7400FC7E63 /* libffi.6.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CE0B6F1424AD678B00FE012D /* libgcrypt.20.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63F322653C7400FC7E63 /* libgcrypt.20.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CE0B6F1524AD678D00FE012D /* libgio-2.0.0.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63F822653C7400FC7E63 /* libgio-2.0.0.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CE0B6F1624AD678E00FE012D /* libglib-2.0.0.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D640422653C7500FC7E63 /* libglib-2.0.0.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CE0B6F1724AD679000FE012D /* libgmodule-2.0.0.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63D822653C7300FC7E63 /* libgmodule-2.0.0.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CE0B6F1824AD679100FE012D /* libgobject-2.0.0.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63F522653C7400FC7E63 /* libgobject-2.0.0.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CE0B6F1924AD679300FE012D /* libgpg-error.0.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63F122653C7400FC7E63 /* libgpg-error.0.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CE0B6F1A24AD679500FE012D /* libgstallocators-1.0.0.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D641122653C7500FC7E63 /* libgstallocators-1.0.0.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CE0B6F1B24AD679700FE012D /* libgstapp-1.0.0.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63DB22653C7300FC7E63 /* libgstapp-1.0.0.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CE0B6F1C24AD679800FE012D /* libgstaudio-1.0.0.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63EF22653C7400FC7E63 /* libgstaudio-1.0.0.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
@@ -293,50 +351,9 @@
 		CE0B6F2824AD67AC00FE012D /* libgstsdp-1.0.0.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D641622653C7500FC7E63 /* libgstsdp-1.0.0.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CE0B6F2924AD67AD00FE012D /* libgsttag-1.0.0.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63F622653C7400FC7E63 /* libgsttag-1.0.0.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CE0B6F2A24AD67AF00FE012D /* libgstvideo-1.0.0.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63F922653C7400FC7E63 /* libgstvideo-1.0.0.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CE0B6F2B24AD67B700FE012D /* libgthread-2.0.0.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63DC22653C7300FC7E63 /* libgthread-2.0.0.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CE0B6F2C24AD67B800FE012D /* libiconv.2.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D641522653C7500FC7E63 /* libiconv.2.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CE0B6F2D24AD67BA00FE012D /* libintl.8.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63DA22653C7300FC7E63 /* libintl.8.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CE0B6F2E24AD67BB00FE012D /* libjpeg.62.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63D922653C7300FC7E63 /* libjpeg.62.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CE0B6F2F24AD67BE00FE012D /* libjson-glib-1.0.0.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63E222653C7400FC7E63 /* libjson-glib-1.0.0.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CE0B6F3024AD67C000FE012D /* libopus.0.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D640322653C7500FC7E63 /* libopus.0.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CE0B6F3124AD67C100FE012D /* libphodav-2.0.0.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE059DC0243BD67100338317 /* libphodav-2.0.0.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CE0B6F3224AD67C300FE012D /* libpixman-1.0.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D641922653C7600FC7E63 /* libpixman-1.0.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CE0B6F3324AD67C400FE012D /* libpng16.16.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D640522653C7500FC7E63 /* libpng16.16.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CE0B6F3424AD67C600FE012D /* libqemu-img.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE4AA14E2265B152002E4A54 /* libqemu-img.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CE0B6F3524AD67C700FE012D /* libqemu-system-aarch64.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63FD22653C7500FC7E63 /* libqemu-system-aarch64.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CE0B6F3624AD67C800FE012D /* libqemu-system-alpha.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D641322653C7500FC7E63 /* libqemu-system-alpha.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CE0B6F3724AD67CA00FE012D /* libqemu-system-arm.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D640722653C7500FC7E63 /* libqemu-system-arm.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CE0B6F3824AD67CD00FE012D /* libqemu-system-cris.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63E622653C7400FC7E63 /* libqemu-system-cris.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CE0B6F3924AD67CF00FE012D /* libqemu-system-hppa.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63F222653C7400FC7E63 /* libqemu-system-hppa.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CE0B6F3A24AD67D000FE012D /* libqemu-system-i386.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63D722653C7300FC7E63 /* libqemu-system-i386.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CE0B6F3B24AD67D200FE012D /* libqemu-system-lm32.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63E922653C7400FC7E63 /* libqemu-system-lm32.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CE0B6F3C24AD67D300FE012D /* libqemu-system-m68k.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63EB22653C7400FC7E63 /* libqemu-system-m68k.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CE0B6F3D24AD67D500FE012D /* libqemu-system-microblaze.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63E422653C7400FC7E63 /* libqemu-system-microblaze.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CE0B6F3E24AD67D800FE012D /* libqemu-system-microblazeel.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63F022653C7400FC7E63 /* libqemu-system-microblazeel.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CE0B6F3F24AD67DA00FE012D /* libqemu-system-mips.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63FF22653C7500FC7E63 /* libqemu-system-mips.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CE0B6F4024AD67DB00FE012D /* libqemu-system-mips64.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63F422653C7400FC7E63 /* libqemu-system-mips64.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CE0B6F4124AD67DD00FE012D /* libqemu-system-mips64el.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D640822653C7500FC7E63 /* libqemu-system-mips64el.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CE0B6F4224AD67DE00FE012D /* libqemu-system-mipsel.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D640622653C7500FC7E63 /* libqemu-system-mipsel.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CE0B6F4324AD67E000FE012D /* libqemu-system-moxie.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63EA22653C7400FC7E63 /* libqemu-system-moxie.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CE0B6F4424AD67E100FE012D /* libqemu-system-nios2.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63DF22653C7400FC7E63 /* libqemu-system-nios2.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CE0B6F4524AD67E200FE012D /* libqemu-system-or1k.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D640B22653C7500FC7E63 /* libqemu-system-or1k.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CE0B6F4624AD67E400FE012D /* libqemu-system-ppc.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63E722653C7400FC7E63 /* libqemu-system-ppc.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CE0B6F4724AD67E500FE012D /* libqemu-system-ppc64.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D640C22653C7500FC7E63 /* libqemu-system-ppc64.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CE0B6F4824AD67E700FE012D /* libqemu-system-riscv32.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63FA22653C7400FC7E63 /* libqemu-system-riscv32.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CE0B6F4924AD67E900FE012D /* libqemu-system-riscv64.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63FB22653C7500FC7E63 /* libqemu-system-riscv64.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CE0B6F4A24AD67EB00FE012D /* libqemu-system-s390x.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63FC22653C7500FC7E63 /* libqemu-system-s390x.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CE0B6F4B24AD67EC00FE012D /* libqemu-system-sh4.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D640222653C7500FC7E63 /* libqemu-system-sh4.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CE0B6F4C24AD67EE00FE012D /* libqemu-system-sh4eb.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63E122653C7400FC7E63 /* libqemu-system-sh4eb.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CE0B6F4D24AD67EF00FE012D /* libqemu-system-sparc.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D640D22653C7500FC7E63 /* libqemu-system-sparc.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CE0B6F4E24AD67F100FE012D /* libqemu-system-sparc64.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D640F22653C7500FC7E63 /* libqemu-system-sparc64.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CE0B6F4F24AD67F200FE012D /* libqemu-system-tricore.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63EC22653C7400FC7E63 /* libqemu-system-tricore.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CE0B6F5024AD67F400FE012D /* libqemu-system-unicore32.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63F722653C7400FC7E63 /* libqemu-system-unicore32.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CE0B6F5124AD67F600FE012D /* libqemu-system-x86_64.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D640022653C7500FC7E63 /* libqemu-system-x86_64.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CE0B6F5224AD67F700FE012D /* libqemu-system-xtensa.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63ED22653C7400FC7E63 /* libqemu-system-xtensa.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CE0B6F5324AD67F900FE012D /* libqemu-system-xtensaeb.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D641222653C7500FC7E63 /* libqemu-system-xtensaeb.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CE0B6F5424AD67FA00FE012D /* libspice-client-glib-2.0.8.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63FE22653C7500FC7E63 /* libspice-client-glib-2.0.8.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CE0B6F5524AD67FC00FE012D /* libspice-server.1.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D641822653C7500FC7E63 /* libspice-server.1.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CE0B6F5624AD67FD00FE012D /* libssl.1.1.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D641722653C7500FC7E63 /* libssl.1.1.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CE0B6F5924AE52CC00FE012D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CE550BD52259479D0063E575 /* Assets.xcassets */; };
 		CE0FE12824D3B08B0086CEF0 /* VMDisplayWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = CE0FE12724D3B08B0086CEF0 /* VMDisplayWindow.xib */; };
 		CE20FAE52444FC6E0059AE11 /* VMConfigDirectoryPickerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CE20FAE42444FC6E0059AE11 /* VMConfigDirectoryPickerViewController.m */; };
@@ -995,6 +1012,9 @@
 		CEBCAF5724353B9F00C2B423 /* VMConfigPickerView.m in Sources */ = {isa = PBXBuildFile; fileRef = CEBCAF5624353B9F00C2B423 /* VMConfigPickerView.m */; };
 		CEBCAF5A2435468600C2B423 /* VMConfigTogglePickerCell.m in Sources */ = {isa = PBXBuildFile; fileRef = CEBCAF592435468600C2B423 /* VMConfigTogglePickerCell.m */; };
 		CEBDA1D524D69DB20010B5EC /* VMDisplayMetalWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEBDA1D424D69DB20010B5EC /* VMDisplayMetalWindowController.swift */; };
+		CEBDA1DF24D8BDDB0010B5EC /* QEMUHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = CEBDA1DE24D8BDDB0010B5EC /* QEMUHelper.m */; };
+		CEBDA1E124D8BDDB0010B5EC /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = CEBDA1E024D8BDDB0010B5EC /* main.m */; };
+		CEBDA1E524D8BDDB0010B5EC /* QEMUHelper.xpc in Embed XPC Services */ = {isa = PBXBuildFile; fileRef = CEBDA1DA24D8BDDA0010B5EC /* QEMUHelper.xpc */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		CEC05DF62463E3D300DA82B2 /* VMDisplayView.m in Sources */ = {isa = PBXBuildFile; fileRef = CEC05DF52463E3D300DA82B2 /* VMDisplayView.m */; };
 		CEC05DF92464B93900DA82B2 /* VMDisplayTerminalViewController+Keyboard.m in Sources */ = {isa = PBXBuildFile; fileRef = CEC05DF82464B93900DA82B2 /* VMDisplayTerminalViewController+Keyboard.m */; };
 		CEC4B4E423F122460086B562 /* MetalKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE66450C2269313200B0849A /* MetalKit.framework */; };
@@ -1029,81 +1049,99 @@
 		E2D64BCC241DB62A0034E0C6 /* UTMTerminalIO.m in Sources */ = {isa = PBXBuildFile; fileRef = E2D64BCB241DB62A0034E0C6 /* UTMTerminalIO.m */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		CEBDA1E324D8BDDB0010B5EC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = CE550BC1225947990063E575 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = CEBDA1D924D8BDDA0010B5EC;
+			remoteInfo = QEMUHelper;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXCopyFilesBuildPhase section */
+		CE03D09324D9126E00F76B84 /* Embed Libraries */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				CE03D0B624D9130C00F76B84 /* libqemu-system-moxie.dylib in Embed Libraries */,
+				CE03D0A524D912E300F76B84 /* libspice-server.1.dylib in Embed Libraries */,
+				CE03D0BA24D9131500F76B84 /* libqemu-system-mips.dylib in Embed Libraries */,
+				CE03D0B124D9130400F76B84 /* libqemu-system-riscv32.dylib in Embed Libraries */,
+				CE03D0C024D9131E00F76B84 /* libqemu-system-hppa.dylib in Embed Libraries */,
+				CE03D0C224D9132100F76B84 /* libqemu-system-arm.dylib in Embed Libraries */,
+				CE03D0AA24D912EA00F76B84 /* libqemu-system-tricore.dylib in Embed Libraries */,
+				CE03D0BC24D9131800F76B84 /* libqemu-system-microblaze.dylib in Embed Libraries */,
+				CE03D0A324D912D600F76B84 /* libqemu-img.dylib in Embed Libraries */,
+				CE03D0AF24D9130200F76B84 /* libqemu-system-s390x.dylib in Embed Libraries */,
+				CE03D0BF24D9131C00F76B84 /* libqemu-system-i386.dylib in Embed Libraries */,
+				CE03D0AD24D912FF00F76B84 /* libqemu-system-sh4eb.dylib in Embed Libraries */,
+				CE03D0B824D9131200F76B84 /* libqemu-system-mips64el.dylib in Embed Libraries */,
+				CE03D0BD24D9131900F76B84 /* libqemu-system-m68k.dylib in Embed Libraries */,
+				CE03D0AE24D9130000F76B84 /* libqemu-system-sh4.dylib in Embed Libraries */,
+				CE03D0B424D9130800F76B84 /* libqemu-system-or1k.dylib in Embed Libraries */,
+				CE03D0A724D912E600F76B84 /* libqemu-system-xtensa.dylib in Embed Libraries */,
+				CE03D0BB24D9131600F76B84 /* libqemu-system-microblazeel.dylib in Embed Libraries */,
+				CE03D0AB24D912EB00F76B84 /* libqemu-system-sparc64.dylib in Embed Libraries */,
+				CE03D0A824D912E700F76B84 /* libqemu-system-x86_64.dylib in Embed Libraries */,
+				CE03D0A224D912D400F76B84 /* libpng16.16.dylib in Embed Libraries */,
+				CE03D0B224D9130500F76B84 /* libqemu-system-ppc64.dylib in Embed Libraries */,
+				CE03D0B924D9131300F76B84 /* libqemu-system-mips64.dylib in Embed Libraries */,
+				CE03D0A924D912E900F76B84 /* libqemu-system-unicore32.dylib in Embed Libraries */,
+				CE03D0B524D9130A00F76B84 /* libqemu-system-nios2.dylib in Embed Libraries */,
+				CE03D0B324D9130700F76B84 /* libqemu-system-ppc.dylib in Embed Libraries */,
+				CE03D0A624D912E500F76B84 /* libqemu-system-xtensaeb.dylib in Embed Libraries */,
+				CE03D09524D9127100F76B84 /* libgcrypt.20.dylib in Embed Libraries */,
+				CE03D09D24D912B100F76B84 /* libqemu-system-aarch64.dylib in Embed Libraries */,
+				CE03D0BE24D9131B00F76B84 /* libqemu-system-lm32.dylib in Embed Libraries */,
+				CE03D0B724D9130F00F76B84 /* libqemu-system-mipsel.dylib in Embed Libraries */,
+				CE03D0AC24D912EE00F76B84 /* libqemu-system-sparc.dylib in Embed Libraries */,
+				CE03D0C324D9132500F76B84 /* libqemu-system-alpha.dylib in Embed Libraries */,
+				CE03D0B024D9130300F76B84 /* libqemu-system-riscv64.dylib in Embed Libraries */,
+				CE03D0C124D9132000F76B84 /* libqemu-system-cris.dylib in Embed Libraries */,
+			);
+			name = "Embed Libraries";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		CE0B6E6D24AD66CE00FE012D /* Embed Libraries */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				CE0B6F1924AD679300FE012D /* libgpg-error.0.dylib in Embed Libraries */,
-				CE0B6F5224AD67F700FE012D /* libqemu-system-xtensa.dylib in Embed Libraries */,
-				CE0B6F4A24AD67EB00FE012D /* libqemu-system-s390x.dylib in Embed Libraries */,
-				CE0B6F4124AD67DD00FE012D /* libqemu-system-mips64el.dylib in Embed Libraries */,
-				CE0B6F3B24AD67D200FE012D /* libqemu-system-lm32.dylib in Embed Libraries */,
 				CE0B6F1F24AD679E00FE012D /* libgstcontroller-1.0.0.dylib in Embed Libraries */,
-				CE0B6F3924AD67CF00FE012D /* libqemu-system-hppa.dylib in Embed Libraries */,
-				CE0B6F4924AD67E900FE012D /* libqemu-system-riscv64.dylib in Embed Libraries */,
 				CE0B6F1A24AD679500FE012D /* libgstallocators-1.0.0.dylib in Embed Libraries */,
+				CE03D08F24D9124200F76B84 /* libgobject-2.0.0.dylib in Embed Libraries */,
 				CE0B6F1D24AD679B00FE012D /* libgstbase-1.0.0.dylib in Embed Libraries */,
-				CE0B6F3A24AD67D000FE012D /* libqemu-system-i386.dylib in Embed Libraries */,
-				CE0B6F3E24AD67D800FE012D /* libqemu-system-microblazeel.dylib in Embed Libraries */,
-				CE0B6F1324AD678900FE012D /* libffi.6.dylib in Embed Libraries */,
-				CE0B6F4F24AD67F200FE012D /* libqemu-system-tricore.dylib in Embed Libraries */,
-				CE0B6F1524AD678D00FE012D /* libgio-2.0.0.dylib in Embed Libraries */,
 				CE0B6F2224AD67A200FE012D /* libgstnet-1.0.0.dylib in Embed Libraries */,
-				CE0B6F3424AD67C600FE012D /* libqemu-img.dylib in Embed Libraries */,
-				CE0B6F4224AD67DE00FE012D /* libqemu-system-mipsel.dylib in Embed Libraries */,
+				CE03D09124D9124900F76B84 /* libjpeg.62.dylib in Embed Libraries */,
 				CE0B6F5424AD67FA00FE012D /* libspice-client-glib-2.0.8.dylib in Embed Libraries */,
-				CE0B6F1224AD678800FE012D /* libcrypto.1.1.dylib in Embed Libraries */,
-				CE0B6F4B24AD67EC00FE012D /* libqemu-system-sh4.dylib in Embed Libraries */,
-				CE0B6F3824AD67CD00FE012D /* libqemu-system-cris.dylib in Embed Libraries */,
-				CE0B6F5324AD67F900FE012D /* libqemu-system-xtensaeb.dylib in Embed Libraries */,
-				CE0B6F4024AD67DB00FE012D /* libqemu-system-mips64.dylib in Embed Libraries */,
 				CE0B6F1B24AD679700FE012D /* libgstapp-1.0.0.dylib in Embed Libraries */,
-				CE0B6F4624AD67E400FE012D /* libqemu-system-ppc.dylib in Embed Libraries */,
-				CE0B6F3224AD67C300FE012D /* libpixman-1.0.dylib in Embed Libraries */,
 				CE0B6F2924AD67AD00FE012D /* libgsttag-1.0.0.dylib in Embed Libraries */,
 				CE0B6F3124AD67C100FE012D /* libphodav-2.0.0.dylib in Embed Libraries */,
-				CE0B6F4524AD67E200FE012D /* libqemu-system-or1k.dylib in Embed Libraries */,
-				CE0B6F3724AD67CA00FE012D /* libqemu-system-arm.dylib in Embed Libraries */,
 				CE0B6F2624AD67A900FE012D /* libgstrtp-1.0.0.dylib in Embed Libraries */,
-				CE0B6F4324AD67E000FE012D /* libqemu-system-moxie.dylib in Embed Libraries */,
-				CE0B6F3C24AD67D300FE012D /* libqemu-system-m68k.dylib in Embed Libraries */,
 				CE0B6F2524AD67A700FE012D /* libgstriff-1.0.0.dylib in Embed Libraries */,
-				CE0B6F2B24AD67B700FE012D /* libgthread-2.0.0.dylib in Embed Libraries */,
-				CE0B6F3524AD67C700FE012D /* libqemu-system-aarch64.dylib in Embed Libraries */,
-				CE0B6F1824AD679100FE012D /* libgobject-2.0.0.dylib in Embed Libraries */,
-				CE0B6F1724AD679000FE012D /* libgmodule-2.0.0.dylib in Embed Libraries */,
-				CE0B6F1624AD678E00FE012D /* libglib-2.0.0.dylib in Embed Libraries */,
-				CE0B6F3324AD67C400FE012D /* libpng16.16.dylib in Embed Libraries */,
-				CE0B6F2D24AD67BA00FE012D /* libintl.8.dylib in Embed Libraries */,
 				CE0B6F2424AD67A600FE012D /* libgstreamer-1.0.0.dylib in Embed Libraries */,
 				CE0B6F2A24AD67AF00FE012D /* libgstvideo-1.0.0.dylib in Embed Libraries */,
 				CE0B6F2F24AD67BE00FE012D /* libjson-glib-1.0.0.dylib in Embed Libraries */,
-				CE0B6F4724AD67E500FE012D /* libqemu-system-ppc64.dylib in Embed Libraries */,
-				CE0B6F4D24AD67EF00FE012D /* libqemu-system-sparc.dylib in Embed Libraries */,
-				CE0B6F2E24AD67BB00FE012D /* libjpeg.62.dylib in Embed Libraries */,
-				CE0B6F3024AD67C000FE012D /* libopus.0.dylib in Embed Libraries */,
+				CE03D0C724D913E600F76B84 /* libopus.0.dylib in Embed Libraries */,
+				CE03D08C24D9123E00F76B84 /* libgio-2.0.0.dylib in Embed Libraries */,
 				CE0B6F2824AD67AC00FE012D /* libgstsdp-1.0.0.dylib in Embed Libraries */,
-				CE0B6F5524AD67FC00FE012D /* libspice-server.1.dylib in Embed Libraries */,
 				CE0B6F1C24AD679800FE012D /* libgstaudio-1.0.0.dylib in Embed Libraries */,
 				CE0B6F1E24AD679C00FE012D /* libgstcheck-1.0.0.dylib in Embed Libraries */,
-				CE0B6F2C24AD67B800FE012D /* libiconv.2.dylib in Embed Libraries */,
-				CE0B6F4824AD67E700FE012D /* libqemu-system-riscv32.dylib in Embed Libraries */,
+				CE03D08D24D9123F00F76B84 /* libglib-2.0.0.dylib in Embed Libraries */,
 				CE0B6F2724AD67AA00FE012D /* libgstrtsp-1.0.0.dylib in Embed Libraries */,
-				CE0B6F3D24AD67D500FE012D /* libqemu-system-microblaze.dylib in Embed Libraries */,
-				CE0B6F4E24AD67F100FE012D /* libqemu-system-sparc64.dylib in Embed Libraries */,
-				CE0B6F5624AD67FD00FE012D /* libssl.1.1.dylib in Embed Libraries */,
-				CE0B6F1424AD678B00FE012D /* libgcrypt.20.dylib in Embed Libraries */,
-				CE0B6F3F24AD67DA00FE012D /* libqemu-system-mips.dylib in Embed Libraries */,
+				CE03D0CB24D9142500F76B84 /* libssl.1.1.dylib in Embed Libraries */,
+				CE03D0CF24D9A33000F76B84 /* libiconv.2.dylib in Embed Libraries */,
+				CE03D0CD24D9144500F76B84 /* libcrypto.1.1.dylib in Embed Libraries */,
+				CE03D08E24D9124100F76B84 /* libgmodule-2.0.0.dylib in Embed Libraries */,
+				CE03D0C524D913AF00F76B84 /* libffi.6.dylib in Embed Libraries */,
+				CE03D09024D9124800F76B84 /* libintl.8.dylib in Embed Libraries */,
+				CE03D0C924D9140A00F76B84 /* libpixman-1.0.dylib in Embed Libraries */,
 				CE0B6F2024AD679F00FE012D /* libgstfft-1.0.0.dylib in Embed Libraries */,
-				CE0B6F5124AD67F600FE012D /* libqemu-system-x86_64.dylib in Embed Libraries */,
 				CE0B6F2324AD67A400FE012D /* libgstpbutils-1.0.0.dylib in Embed Libraries */,
-				CE0B6F4424AD67E100FE012D /* libqemu-system-nios2.dylib in Embed Libraries */,
-				CE0B6F3624AD67C800FE012D /* libqemu-system-alpha.dylib in Embed Libraries */,
-				CE0B6F4C24AD67EE00FE012D /* libqemu-system-sh4eb.dylib in Embed Libraries */,
-				CE0B6F5024AD67F400FE012D /* libqemu-system-unicore32.dylib in Embed Libraries */,
 			);
 			name = "Embed Libraries";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1264,6 +1302,17 @@
 			name = "Embed Libraries";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		CEBDA1E924D8BDDB0010B5EC /* Embed XPC Services */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "$(CONTENTS_FOLDER_PATH)/XPCServices";
+			dstSubfolderSpec = 16;
+			files = (
+				CEBDA1E524D8BDDB0010B5EC /* QEMUHelper.xpc in Embed XPC Services */,
+			);
+			name = "Embed XPC Services";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
@@ -1287,6 +1336,9 @@
 		CE020BA224AEDC7C00B44AB6 /* UTMData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMData.swift; sourceTree = "<group>"; };
 		CE020BAA24AEE00000B44AB6 /* UTMLoggingSwift.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMLoggingSwift.swift; sourceTree = "<group>"; };
 		CE020BB524B14F8400B44AB6 /* UTMVirtualMachineExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMVirtualMachineExtension.swift; sourceTree = "<group>"; };
+		CE03D05024D90B4E00F76B84 /* UTMQemuSystemConfiguration.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UTMQemuSystemConfiguration.m; sourceTree = "<group>"; };
+		CE03D05424D90BE000F76B84 /* UTMQemuSystemConfiguration.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UTMQemuSystemConfiguration.h; sourceTree = "<group>"; };
+		CE03D0D024D9A62B00F76B84 /* QEMUHelper.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = QEMUHelper.entitlements; sourceTree = "<group>"; };
 		CE056CA4242454100004B68A /* VMDisplayMetalViewController+Touch.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "VMDisplayMetalViewController+Touch.h"; sourceTree = "<group>"; };
 		CE056CA5242454100004B68A /* VMDisplayMetalViewController+Touch.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "VMDisplayMetalViewController+Touch.m"; sourceTree = "<group>"; };
 		CE059DC0243BD67100338317 /* libphodav-2.0.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libphodav-2.0.0.dylib"; path = "sysroot-$(PLATFORM_FAMILY_NAME)-$(PLATFORM_PREFERRED_ARCH)/lib/libphodav-2.0.0.dylib"; sourceTree = "<group>"; };
@@ -1784,6 +1836,12 @@
 		CEBCAF582435468600C2B423 /* VMConfigTogglePickerCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VMConfigTogglePickerCell.h; sourceTree = "<group>"; };
 		CEBCAF592435468600C2B423 /* VMConfigTogglePickerCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VMConfigTogglePickerCell.m; sourceTree = "<group>"; };
 		CEBDA1D424D69DB20010B5EC /* VMDisplayMetalWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMDisplayMetalWindowController.swift; sourceTree = "<group>"; };
+		CEBDA1DA24D8BDDA0010B5EC /* QEMUHelper.xpc */ = {isa = PBXFileReference; explicitFileType = "wrapper.xpc-service"; includeInIndex = 0; path = QEMUHelper.xpc; sourceTree = BUILT_PRODUCTS_DIR; };
+		CEBDA1DC24D8BDDA0010B5EC /* QEMUHelperProtocol.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = QEMUHelperProtocol.h; sourceTree = "<group>"; };
+		CEBDA1DD24D8BDDB0010B5EC /* QEMUHelper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = QEMUHelper.h; sourceTree = "<group>"; };
+		CEBDA1DE24D8BDDB0010B5EC /* QEMUHelper.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = QEMUHelper.m; sourceTree = "<group>"; };
+		CEBDA1E024D8BDDB0010B5EC /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		CEBDA1E224D8BDDB0010B5EC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		CEC05DF42463E3D300DA82B2 /* VMDisplayView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VMDisplayView.h; sourceTree = "<group>"; };
 		CEC05DF52463E3D300DA82B2 /* VMDisplayView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VMDisplayView.m; sourceTree = "<group>"; };
 		CEC05DF72464B93900DA82B2 /* VMDisplayTerminalViewController+Keyboard.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "VMDisplayTerminalViewController+Keyboard.h"; sourceTree = "<group>"; };
@@ -1906,92 +1964,55 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CE0B6EE924AD677200FE012D /* libqemu-system-arm.dylib in Frameworks */,
 				CE0B6F0E24AD677200FE012D /* libgstaudioconvert.a in Frameworks */,
 				CE0B6EF024AD677200FE012D /* libgstcontroller-1.0.0.dylib in Frameworks */,
 				CE0B6EE024AD677200FE012D /* libgstosxaudio.a in Frameworks */,
 				CE0B6F0D24AD677200FE012D /* libgstadder.a in Frameworks */,
-				CE0B6ED424AD677200FE012D /* libqemu-system-tricore.dylib in Frameworks */,
-				CE0B6ED924AD677200FE012D /* libqemu-img.dylib in Frameworks */,
 				CE0B6EF224AD677200FE012D /* libgstallocators-1.0.0.dylib in Frameworks */,
-				CE0B6EB924AD677200FE012D /* libgthread-2.0.0.dylib in Frameworks */,
-				CE0B6F1024AD677200FE012D /* libqemu-system-mips64el.dylib in Frameworks */,
-				CE0B6EF624AD677200FE012D /* libqemu-system-ppc64.dylib in Frameworks */,
+				CE03D08B24D90F2900F76B84 /* libjpeg.62.dylib in Frameworks */,
 				CE0B6EBC24AD677200FE012D /* libgstpbutils-1.0.0.dylib in Frameworks */,
 				CE0B6ED324AD677200FE012D /* libgstvideoconvert.a in Frameworks */,
 				CE0B6F0124AD677200FE012D /* libgsttypefindfunctions.a in Frameworks */,
 				CE0B6EE124AD677200FE012D /* libgstrtsp-1.0.0.dylib in Frameworks */,
+				CE03D08824D90F0700F76B84 /* libgio-2.0.0.dylib in Frameworks */,
 				CE0B6EEC24AD677200FE012D /* libgstautodetect.a in Frameworks */,
+				CE03D0C424D913AA00F76B84 /* libffi.6.dylib in Frameworks */,
+				CE03D0CC24D9144100F76B84 /* libcrypto.1.1.dylib in Frameworks */,
 				CE0B6ED724AD677200FE012D /* libgstaudio-1.0.0.dylib in Frameworks */,
 				CE0B6EFA24AD677200FE012D /* libgstapp-1.0.0.dylib in Frameworks */,
-				CE0B6ED824AD677200FE012D /* libjpeg.62.dylib in Frameworks */,
-				CE0B6EBD24AD677200FE012D /* libqemu-system-i386.dylib in Frameworks */,
-				CE0B6EDD24AD677200FE012D /* libqemu-system-cris.dylib in Frameworks */,
-				CE0B6EBA24AD677200FE012D /* libgio-2.0.0.dylib in Frameworks */,
-				CE0B6EED24AD677200FE012D /* libiconv.2.dylib in Frameworks */,
-				CE0B6EE324AD677200FE012D /* libgobject-2.0.0.dylib in Frameworks */,
-				CE0B6EF724AD677200FE012D /* libspice-server.1.dylib in Frameworks */,
-				CE0B6F1124AD677200FE012D /* libqemu-system-sparc64.dylib in Frameworks */,
+				CE03D0CE24D9A30100F76B84 /* libiconv.2.dylib in Frameworks */,
 				CE0B6EF124AD677200FE012D /* libgstplayback.a in Frameworks */,
-				CE0B6EC824AD677200FE012D /* libgcrypt.20.dylib in Frameworks */,
 				CE0B6EF424AD677200FE012D /* libjson-glib-1.0.0.dylib in Frameworks */,
-				CE0B6F0524AD677200FE012D /* libqemu-system-ppc.dylib in Frameworks */,
 				CE0B6ED124AD677200FE012D /* libphodav-2.0.0.dylib in Frameworks */,
-				CE0B6EFE24AD677200FE012D /* libqemu-system-xtensaeb.dylib in Frameworks */,
-				CE0B6EC524AD677200FE012D /* libqemu-system-sh4eb.dylib in Frameworks */,
-				CE0B6F0824AD677200FE012D /* libqemu-system-riscv64.dylib in Frameworks */,
 				CE0B6ECB24AD677200FE012D /* libgstcheck-1.0.0.dylib in Frameworks */,
-				CE0B6EC324AD677200FE012D /* libqemu-system-alpha.dylib in Frameworks */,
-				CE0B6ED524AD677200FE012D /* libqemu-system-or1k.dylib in Frameworks */,
 				CE0B6F0724AD677200FE012D /* libgstvolume.a in Frameworks */,
-				CE0B6EE424AD677200FE012D /* libgmodule-2.0.0.dylib in Frameworks */,
+				CE03D0C624D913C600F76B84 /* libopus.0.dylib in Frameworks */,
+				CE03D0C824D913FD00F76B84 /* libpixman-1.0.dylib in Frameworks */,
 				CE0B6EE524AD677200FE012D /* libgstbase-1.0.0.dylib in Frameworks */,
+				CE03D08724D90F0700F76B84 /* libgobject-2.0.0.dylib in Frameworks */,
 				CE0B6F0A24AD677200FE012D /* libspice-client-glib-2.0.8.dylib in Frameworks */,
-				CE0B6EE824AD677200FE012D /* libintl.8.dylib in Frameworks */,
-				CE0B6EBF24AD677200FE012D /* libqemu-system-microblaze.dylib in Frameworks */,
-				CE0B6F0624AD677200FE012D /* libgpg-error.0.dylib in Frameworks */,
-				CE0B6EC024AD677200FE012D /* libqemu-system-nios2.dylib in Frameworks */,
-				CE0B6EDA24AD677200FE012D /* libssl.1.1.dylib in Frameworks */,
-				CE0B6EEF24AD677200FE012D /* libglib-2.0.0.dylib in Frameworks */,
 				CE0B6ECF24AD677200FE012D /* libgstrtp-1.0.0.dylib in Frameworks */,
 				CE0B6ECC24AD677200FE012D /* libgstriff-1.0.0.dylib in Frameworks */,
 				CE0B6EDC24AD677200FE012D /* libgstapp.a in Frameworks */,
 				CE0B6F0324AD677200FE012D /* libgstvideoscale.a in Frameworks */,
-				CE0B6EDB24AD677200FE012D /* libqemu-system-unicore32.dylib in Frameworks */,
-				CE0B6ED624AD677200FE012D /* libqemu-system-xtensa.dylib in Frameworks */,
-				CE0B6EDE24AD677200FE012D /* libqemu-system-riscv32.dylib in Frameworks */,
-				CE0B6EC424AD677200FE012D /* libqemu-system-lm32.dylib in Frameworks */,
-				CE0B6F0B24AD677200FE012D /* libffi.6.dylib in Frameworks */,
-				CE0B6EF524AD677200FE012D /* libqemu-system-mips.dylib in Frameworks */,
 				CE0B6EC924AD677200FE012D /* libgstvideo-1.0.0.dylib in Frameworks */,
-				CE0B6EFD24AD677200FE012D /* libqemu-system-moxie.dylib in Frameworks */,
 				CE0B6EF324AD677200FE012D /* libgstvideofilter.a in Frameworks */,
-				CE0B6F0924AD677200FE012D /* libqemu-system-s390x.dylib in Frameworks */,
-				CE0B6F0F24AD677200FE012D /* libpng16.16.dylib in Frameworks */,
 				CE020BA924AEDF3000B44AB6 /* Logging in Frameworks */,
 				CE0B6ECD24AD677200FE012D /* libgsttag-1.0.0.dylib in Frameworks */,
+				CE03D08A24D90F2900F76B84 /* libintl.8.dylib in Frameworks */,
 				CE0B6EF924AD677200FE012D /* libgstaudioresample.a in Frameworks */,
 				CE0B6EE724AD677200FE012D /* libgstvideotestsrc.a in Frameworks */,
 				CE0B6EBB24AD677200FE012D /* libgstgio.a in Frameworks */,
-				CE0B6F0024AD677200FE012D /* libqemu-system-mipsel.dylib in Frameworks */,
 				CE0B6EE224AD677200FE012D /* libgstnet-1.0.0.dylib in Frameworks */,
-				CE0B6EEB24AD677200FE012D /* libcrypto.1.1.dylib in Frameworks */,
+				CE03D08624D90F0700F76B84 /* libgmodule-2.0.0.dylib in Frameworks */,
+				CE03D0CA24D9142000F76B84 /* libssl.1.1.dylib in Frameworks */,
 				CE0B6EC624AD677200FE012D /* libgstfft-1.0.0.dylib in Frameworks */,
-				CE0B6EEE24AD677200FE012D /* libqemu-system-x86_64.dylib in Frameworks */,
-				CE0B6ED224AD677200FE012D /* libqemu-system-hppa.dylib in Frameworks */,
 				CE0B6EE624AD677200FE012D /* libgstaudiorate.a in Frameworks */,
-				CE0B6EBE24AD677200FE012D /* libqemu-system-m68k.dylib in Frameworks */,
-				CE0B6EDF24AD677200FE012D /* libqemu-system-sh4.dylib in Frameworks */,
+				CE03D08924D90F0700F76B84 /* libglib-2.0.0.dylib in Frameworks */,
 				CE0B6EC224AD677200FE012D /* libgstvideorate.a in Frameworks */,
-				CE0B6F0424AD677200FE012D /* libpixman-1.0.dylib in Frameworks */,
 				CE0B6F0C24AD677200FE012D /* libgstreamer-1.0.0.dylib in Frameworks */,
 				CE0B6F0224AD677200FE012D /* libgstjpeg.a in Frameworks */,
-				CE0B6EC724AD677200FE012D /* libqemu-system-sparc.dylib in Frameworks */,
-				CE0B6ECA24AD677200FE012D /* libqemu-system-microblazeel.dylib in Frameworks */,
-				CE0B6EFB24AD677200FE012D /* libqemu-system-mips64.dylib in Frameworks */,
 				CE0B6EFC24AD677200FE012D /* libgstaudiotestsrc.a in Frameworks */,
-				CE0B6ED024AD677200FE012D /* libopus.0.dylib in Frameworks */,
-				CE0B6EC124AD677200FE012D /* libqemu-system-aarch64.dylib in Frameworks */,
 				CE0B6EF824AD677200FE012D /* libgstsdp-1.0.0.dylib in Frameworks */,
 				CE0B6EEA24AD677200FE012D /* libgstcoreelements.a in Frameworks */,
 			);
@@ -2059,6 +2080,62 @@
 				CE2D645A22653C7600FC7E63 /* libssl.1.1.dylib in Frameworks */,
 				CE2D645B22653C7600FC7E63 /* libspice-server.1.dylib in Frameworks */,
 				CE2D645C22653C7600FC7E63 /* libpixman-1.0.dylib in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		CEBDA1D724D8BDDA0010B5EC /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CE03D05D24D90ECD00F76B84 /* libqemu-system-moxie.dylib in Frameworks */,
+				CE03D06324D90ECD00F76B84 /* libqemu-system-xtensa.dylib in Frameworks */,
+				CE03D06224D90ECD00F76B84 /* libqemu-system-lm32.dylib in Frameworks */,
+				CE03D06624D90ECD00F76B84 /* libgio-2.0.0.dylib in Frameworks */,
+				CE03D06424D90ECD00F76B84 /* libqemu-system-i386.dylib in Frameworks */,
+				CE03D07E24D90ECD00F76B84 /* libqemu-system-riscv64.dylib in Frameworks */,
+				CE03D07324D90ECD00F76B84 /* libgpg-error.0.dylib in Frameworks */,
+				CE03D07824D90ECD00F76B84 /* libqemu-system-x86_64.dylib in Frameworks */,
+				CE03D06C24D90ECD00F76B84 /* libglib-2.0.0.dylib in Frameworks */,
+				CE03D07724D90ECD00F76B84 /* libffi.6.dylib in Frameworks */,
+				CE03D05E24D90ECD00F76B84 /* libqemu-system-aarch64.dylib in Frameworks */,
+				CE03D06D24D90ECD00F76B84 /* libopus.0.dylib in Frameworks */,
+				CE03D07924D90ECD00F76B84 /* libgobject-2.0.0.dylib in Frameworks */,
+				CE03D07C24D90ECD00F76B84 /* libgcrypt.20.dylib in Frameworks */,
+				CE03D07B24D90ECD00F76B84 /* libgmodule-2.0.0.dylib in Frameworks */,
+				CE03D06524D90ECD00F76B84 /* libqemu-img.dylib in Frameworks */,
+				CE03D06724D90ECD00F76B84 /* libjpeg.62.dylib in Frameworks */,
+				CE03D07424D90ECD00F76B84 /* libcrypto.1.1.dylib in Frameworks */,
+				CE03D08124D90ECD00F76B84 /* libqemu-system-cris.dylib in Frameworks */,
+				CE03D08424D90ECD00F76B84 /* libqemu-system-sparc.dylib in Frameworks */,
+				CE03D06124D90ECD00F76B84 /* libqemu-system-nios2.dylib in Frameworks */,
+				CE03D07024D90ECD00F76B84 /* libqemu-system-microblaze.dylib in Frameworks */,
+				CE03D05824D90ECD00F76B84 /* libqemu-system-alpha.dylib in Frameworks */,
+				CE03D06024D90ECD00F76B84 /* libqemu-system-sparc64.dylib in Frameworks */,
+				CE03D08224D90ECD00F76B84 /* libqemu-system-ppc.dylib in Frameworks */,
+				CE03D05B24D90ECD00F76B84 /* libqemu-system-or1k.dylib in Frameworks */,
+				CE03D05A24D90ECD00F76B84 /* libqemu-system-mips64el.dylib in Frameworks */,
+				CE03D07624D90ECD00F76B84 /* libqemu-system-unicore32.dylib in Frameworks */,
+				CE03D08524D90ECD00F76B84 /* libqemu-system-tricore.dylib in Frameworks */,
+				CE03D06A24D90ECD00F76B84 /* libqemu-system-s390x.dylib in Frameworks */,
+				CE03D07124D90ECD00F76B84 /* libqemu-system-mips.dylib in Frameworks */,
+				CE03D06B24D90ECD00F76B84 /* libqemu-system-mips64.dylib in Frameworks */,
+				CE03D07D24D90ECD00F76B84 /* libpng16.16.dylib in Frameworks */,
+				CE03D06E24D90ECD00F76B84 /* libssl.1.1.dylib in Frameworks */,
+				CE03D05524D90ECD00F76B84 /* libqemu-system-sh4.dylib in Frameworks */,
+				CE03D05924D90ECD00F76B84 /* libqemu-system-microblazeel.dylib in Frameworks */,
+				CE03D07F24D90ECD00F76B84 /* libqemu-system-ppc64.dylib in Frameworks */,
+				CE03D08024D90ECD00F76B84 /* libgthread-2.0.0.dylib in Frameworks */,
+				CE03D07A24D90ECD00F76B84 /* libqemu-system-hppa.dylib in Frameworks */,
+				CE03D05C24D90ECD00F76B84 /* libintl.8.dylib in Frameworks */,
+				CE03D06824D90ECD00F76B84 /* libqemu-system-riscv32.dylib in Frameworks */,
+				CE03D05F24D90ECD00F76B84 /* libiconv.2.dylib in Frameworks */,
+				CE03D06924D90ECD00F76B84 /* libqemu-system-xtensaeb.dylib in Frameworks */,
+				CE03D05724D90ECD00F76B84 /* libspice-server.1.dylib in Frameworks */,
+				CE03D07224D90ECD00F76B84 /* libpixman-1.0.dylib in Frameworks */,
+				CE03D08324D90ECD00F76B84 /* libqemu-system-sh4eb.dylib in Frameworks */,
+				CE03D05624D90ECD00F76B84 /* libqemu-system-m68k.dylib in Frameworks */,
+				CE03D06F24D90ECD00F76B84 /* libqemu-system-mipsel.dylib in Frameworks */,
+				CE03D07524D90ECD00F76B84 /* libqemu-system-arm.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2543,6 +2620,7 @@
 				CE2D63CE2265150F00FC7E63 /* Renderer */,
 				CE7BED4D22600F5000A1E1B6 /* Views */,
 				CE550BCB225947990063E575 /* UTM */,
+				CEBDA1DB24D8BDDA0010B5EC /* QEMUHelper */,
 				CE9D18F72265410E00355E14 /* qemu */,
 				CE4698F824C8FBD9008C1BD6 /* Icons */,
 				CE550BCA225947990063E575 /* Products */,
@@ -2557,6 +2635,7 @@
 				CE550BC9225947990063E575 /* UTM.app */,
 				CE2D93BE24AD46670059923A /* UTM.app */,
 				CE2D951C24AD48BE0059923A /* UTM.app */,
+				CEBDA1DA24D8BDDA0010B5EC /* QEMUHelper.xpc */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -2638,6 +2717,8 @@
 				CE8E6620227E5DF2003B9903 /* UTMQemuManagerDelegate.h */,
 				CED33ADE2267892200FF1977 /* UTMQemuSystem.h */,
 				CED33ADF2267892200FF1977 /* UTMQemuSystem.m */,
+				CE03D05424D90BE000F76B84 /* UTMQemuSystemConfiguration.h */,
+				CE03D05024D90B4E00F76B84 /* UTMQemuSystemConfiguration.m */,
 				CE2B89352262B2F600C6D9D8 /* UTMVirtualMachineDelegate.h */,
 				CE2B89332262A21E00C6D9D8 /* UTMVirtualMachine.h */,
 				CE5F165B2261395000F3D56B /* UTMVirtualMachine.m */,
@@ -2721,6 +2802,19 @@
 				CEBCAF592435468600C2B423 /* VMConfigTogglePickerCell.m */,
 			);
 			path = Controls;
+			sourceTree = "<group>";
+		};
+		CEBDA1DB24D8BDDA0010B5EC /* QEMUHelper */ = {
+			isa = PBXGroup;
+			children = (
+				CE03D0D024D9A62B00F76B84 /* QEMUHelper.entitlements */,
+				CEBDA1DC24D8BDDA0010B5EC /* QEMUHelperProtocol.h */,
+				CEBDA1DD24D8BDDB0010B5EC /* QEMUHelper.h */,
+				CEBDA1DE24D8BDDB0010B5EC /* QEMUHelper.m */,
+				CEBDA1E024D8BDDB0010B5EC /* main.m */,
+				CEBDA1E224D8BDDB0010B5EC /* Info.plist */,
+			);
+			path = QEMUHelper;
 			sourceTree = "<group>";
 		};
 		CECC76492273A7AE0059B955 /* qapi */ = {
@@ -2810,10 +2904,12 @@
 				CE0B6F5A24AE552F00FE012D /* ShellScript */,
 				CE2D951A24AD48BE0059923A /* Resources */,
 				CE0B6E6D24AD66CE00FE012D /* Embed Libraries */,
+				CEBDA1E924D8BDDB0010B5EC /* Embed XPC Services */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				CEBDA1E424D8BDDB0010B5EC /* PBXTargetDependency */,
 			);
 			name = macOS;
 			packageProductDependencies = (
@@ -2842,6 +2938,24 @@
 			productReference = CE550BC9225947990063E575 /* UTM.app */;
 			productType = "com.apple.product-type.application";
 		};
+		CEBDA1D924D8BDDA0010B5EC /* QEMUHelper */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = CEBDA1E624D8BDDB0010B5EC /* Build configuration list for PBXNativeTarget "QEMUHelper" */;
+			buildPhases = (
+				CEBDA1D624D8BDDA0010B5EC /* Sources */,
+				CEBDA1D724D8BDDA0010B5EC /* Frameworks */,
+				CEBDA1D824D8BDDA0010B5EC /* Resources */,
+				CE03D09324D9126E00F76B84 /* Embed Libraries */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = QEMUHelper;
+			productName = QEMUHelper;
+			productReference = CEBDA1DA24D8BDDA0010B5EC /* QEMUHelper.xpc */;
+			productType = "com.apple.product-type.xpc-service";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -2861,6 +2975,9 @@
 					};
 					CE550BC8225947990063E575 = {
 						CreatedOnToolsVersion = 10.2;
+					};
+					CEBDA1D924D8BDDA0010B5EC = {
+						CreatedOnToolsVersion = 12.0;
 					};
 				};
 			};
@@ -2887,6 +3004,7 @@
 				CE550BC8225947990063E575 /* Legacy */,
 				CE2D926824AD46670059923A /* iOS */,
 				CE2D951B24AD48BE0059923A /* macOS */,
+				CEBDA1D924D8BDDA0010B5EC /* QEMUHelper */,
 			);
 		};
 /* End PBXProject section */
@@ -2934,6 +3052,13 @@
 				CE550BD4225947990063E575 /* Main.storyboard in Resources */,
 				5286EC92243748AC007E6CBC /* Settings.bundle in Resources */,
 				E28394BE240C22F1006742E2 /* hterm_all.js in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		CEBDA1D824D8BDDA0010B5EC /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3126,6 +3251,7 @@
 				CE9375A124BBDDD10074066F /* VMConfigDriveDetailsView.swift in Sources */,
 				CE2D92DB24AD46670059923A /* CSDisplayMetal.m in Sources */,
 				CE2D92DD24AD46670059923A /* qapi-events-tpm.c in Sources */,
+				CE03D05224D90B4E00F76B84 /* UTMQemuSystemConfiguration.m in Sources */,
 				CE2D92DE24AD46670059923A /* qapi-events-job.c in Sources */,
 				CE2D953224AD4F040059923A /* UTMConfigurationExtension.swift in Sources */,
 				CE2D92DF24AD46670059923A /* qapi-dealloc-visitor.c in Sources */,
@@ -3258,6 +3384,7 @@
 				CE9375A224BBDDD10074066F /* VMConfigDriveDetailsView.swift in Sources */,
 				CE2D955824AD4F980059923A /* VMConfigDisplayView.swift in Sources */,
 				CE0B6D5724AD584C00FE012D /* qapi-types-net.c in Sources */,
+				CE03D05324D90B4E00F76B84 /* UTMQemuSystemConfiguration.m in Sources */,
 				CE8813DC24D1290600532628 /* UTMConfiguration+ConstantsGenerated.m in Sources */,
 				CE0B6D0124AD56AE00FE012D /* UTMJSONStream.m in Sources */,
 				CE0B6D1924AD57FC00FE012D /* qapi-events-crypto.c in Sources */,
@@ -3529,6 +3656,7 @@
 				CE23C1C923FCEC0A001177D6 /* qapi-events-job.c in Sources */,
 				CECC76522273A7D50059B955 /* qapi-dealloc-visitor.c in Sources */,
 				CE23C16C23FCEC0A001177D6 /* qapi-visit-job.c in Sources */,
+				CE03D05124D90B4E00F76B84 /* UTMQemuSystemConfiguration.m in Sources */,
 				CE550BCE225947990063E575 /* AppDelegate.m in Sources */,
 				CE664511226935F000B0849A /* CSInput.m in Sources */,
 				CE74C290225D88ED004E4FF1 /* VMConfigSystemViewController.m in Sources */,
@@ -3607,7 +3735,28 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		CEBDA1D624D8BDDA0010B5EC /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CE03D04D24D90AB300F76B84 /* UTMQemu.m in Sources */,
+				CEBDA1E124D8BDDB0010B5EC /* main.m in Sources */,
+				CE03D04E24D90AC400F76B84 /* UTMLogging.m in Sources */,
+				CE03D04C24D90AB300F76B84 /* UTMQemuSystem.m in Sources */,
+				CE03D04B24D90AB300F76B84 /* UTMQemuImg.m in Sources */,
+				CEBDA1DF24D8BDDB0010B5EC /* QEMUHelper.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		CEBDA1E424D8BDDB0010B5EC /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = CEBDA1D924D8BDDA0010B5EC /* QEMUHelper */;
+			targetProxy = CEBDA1E324D8BDDB0010B5EC /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
 		521F3EFB2414F73800130500 /* Localizable.strings */ = {
@@ -3752,7 +3901,7 @@
 					"$(PROJECT_DIR)/sysroot-$(PLATFORM_FAMILY_NAME)-$(PLATFORM_PREFERRED_ARCH)/lib",
 					"$(PROJECT_DIR)/sysroot-$(PLATFORM_FAMILY_NAME)-$(PLATFORM_PREFERRED_ARCH)/lib/gstreamer-1.0",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.16;
+				MACOSX_DEPLOYMENT_TARGET = 11.0;
 				MARKETING_VERSION = 2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.osy86.UTM;
 				PRODUCT_NAME = "$(PROJECT_NAME)";
@@ -3793,7 +3942,7 @@
 					"$(PROJECT_DIR)/sysroot-$(PLATFORM_FAMILY_NAME)-$(PLATFORM_PREFERRED_ARCH)/lib",
 					"$(PROJECT_DIR)/sysroot-$(PLATFORM_FAMILY_NAME)-$(PLATFORM_PREFERRED_ARCH)/lib/gstreamer-1.0",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.16;
+				MACOSX_DEPLOYMENT_TARGET = 11.0;
 				MARKETING_VERSION = 2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.osy86.UTM;
 				PRODUCT_NAME = "$(PROJECT_NAME)";
@@ -3977,6 +4126,60 @@
 			};
 			name = Release;
 		};
+		CEBDA1E724D8BDDB0010B5EC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CODE_SIGN_ENTITLEMENTS = QEMUHelper/QEMUHelper.entitlements;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = QEMUHelper/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(LD_RUNPATH_SEARCH_PATHS_$(IS_MACCATALYST)_$(_BOOL_$(SKIP_INSTALL)))",
+					"@executable_path/../Frameworks",
+					"@executable_path/../../../../Frameworks",
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/sysroot-$(PLATFORM_FAMILY_NAME)-$(PLATFORM_PREFERRED_ARCH)/lib",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 11.0;
+				MARKETING_VERSION = 2.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.osy86.QEMUHelper;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SKIP_INSTALL = YES;
+			};
+			name = Debug;
+		};
+		CEBDA1E824D8BDDB0010B5EC /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CODE_SIGN_ENTITLEMENTS = QEMUHelper/QEMUHelper.entitlements;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = QEMUHelper/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(LD_RUNPATH_SEARCH_PATHS_$(IS_MACCATALYST)_$(_BOOL_$(SKIP_INSTALL)))",
+					"@executable_path/../Frameworks",
+					"@executable_path/../../../../Frameworks",
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/sysroot-$(PLATFORM_FAMILY_NAME)-$(PLATFORM_PREFERRED_ARCH)/lib",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 11.0;
+				MARKETING_VERSION = 2.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.osy86.QEMUHelper;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SKIP_INSTALL = YES;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -4012,6 +4215,15 @@
 			buildConfigurations = (
 				CE550BE02259479D0063E575 /* Debug */,
 				CE550BE12259479D0063E575 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		CEBDA1E624D8BDDB0010B5EC /* Build configuration list for PBXNativeTarget "QEMUHelper" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				CEBDA1E724D8BDDB0010B5EC /* Debug */,
+				CEBDA1E824D8BDDB0010B5EC /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
