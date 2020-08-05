@@ -20,6 +20,7 @@ class VMDisplayWindowController: NSWindowController {
     @IBOutlet weak var screenshotView: NSImageView!
     @IBOutlet weak var overlayView: NSVisualEffectView!
     @IBOutlet weak var activityIndicator: NSProgressIndicator!
+    @IBOutlet weak var startButton: NSButton!
     
     @IBOutlet weak var stopToolbarItem: NSToolbarItem!
     @IBOutlet weak var startPauseToolbarItem: NSToolbarItem!
@@ -83,10 +84,12 @@ class VMDisplayWindowController: NSWindowController {
             activityIndicator.startAnimation(self)
             startPauseToolbarItem.isEnabled = false
             stopToolbarItem.isEnabled = false
+            startButton.isHidden = true
         } else {
             activityIndicator.stopAnimation(self)
             startPauseToolbarItem.isEnabled = true
             stopToolbarItem.isEnabled = true
+            startButton.isHidden = false
         }
     }
     

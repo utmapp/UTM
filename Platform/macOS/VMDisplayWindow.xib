@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="17140" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
     <dependencies>
+        <deployment identifier="macosx"/>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaDFRPlugin" version="17007"/>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="17140"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -16,6 +17,7 @@
                 <outlet property="overlayView" destination="nKs-QY-EOf" id="sD4-fu-HIL"/>
                 <outlet property="restartToolbarItem" destination="Xkb-X7-tAj" id="q9h-za-RSv"/>
                 <outlet property="screenshotView" destination="UUd-qY-POz" id="nMM-Nr-mQo"/>
+                <outlet property="startButton" destination="ZTi-Hs-ge6" id="FLE-Yi-azI"/>
                 <outlet property="startPauseToolbarItem" destination="tr9-Of-dCt" id="AWe-iB-3iJ"/>
                 <outlet property="stopToolbarItem" destination="trX-3Y-KE4" id="kfa-uG-soJ"/>
                 <outlet property="touchBar" destination="MdV-I1-RxZ" id="rFp-7N-UJC"/>
