@@ -85,6 +85,7 @@
 - (void)startDylibThread:(nonnull NSString *)dylib completion:(void(^)(BOOL,NSString *))completion {
     void *dlctx;
     __block pthread_t qemu_thread;
+    pthread_attr_t qosAttribute;
     __weak typeof(self) wself = self;
     
     NSAssert(self.entry != NULL, @"entry is NULL!");
@@ -117,7 +118,9 @@
         return;
     }
     [self printArgv];
-    pthread_create(&qemu_thread, NULL, self.entry, (__bridge_retained void *)self);
+    pthread_attr_init(&qosAttribute);
+    pthread_attr_set_qos_class_np(&qosAttribute, QOS_CLASS_USER_INTERACTIVE, 0);
+    pthread_create(&qemu_thread, &qosAttribute, self.entry, (__bridge_retained void *)self);
     dispatch_async(dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0), ^{
         if (dispatch_semaphore_wait(self.done, DISPATCH_TIME_FOREVER)) {
             dlclose(dlctx);
