@@ -1,5 +1,5 @@
 //
-// Copyright © 2019 osy. All rights reserved.
+// Copyright © 2020 osy. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,15 +14,19 @@
 // limitations under the License.
 //
 
-#import "UTMQemu.h"
-
-@class UTMConfiguration;
+#import "UTMQemuSystem.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface UTMQemuSystem : UTMQemu
+@interface UTMQemuSystemConfiguration : UTMQemuSystem
+
+@property (nonatomic) UTMConfiguration *configuration;
+@property (nonatomic) NSURL *imgPath;
+@property (nonatomic, nullable) NSString *snapshot;
 
 - (instancetype)init NS_UNAVAILABLE;
+- (instancetype)initWithConfiguration:(UTMConfiguration *)configuration imgPath:(NSURL *)imgPath;
+- (void)startWithCompletion:(void(^)(BOOL, NSString *))completion;
 
 @end
 

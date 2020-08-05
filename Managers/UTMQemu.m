@@ -21,15 +21,40 @@
 
 @implementation UTMQemu {
     NSMutableArray<NSString *> *_argv;
+    NSMutableArray<NSURL *> *_urls;
+    NSXPCConnection *_connection;
 }
 
 @synthesize argv = _argv;
 
 - (instancetype)init {
+    return [self initWithArgv:[NSArray<NSString *> array]];
+}
+
+- (instancetype)initWithArgv:(NSArray<NSString *> *)argv {
     if (self = [super init]) {
-        _argv = [NSMutableArray<NSString *> array];
+        _argv = [argv mutableCopy];
+        _urls = [NSMutableArray<NSURL *> array];
     }
     return self;
+}
+
+- (void)dealloc {
+    if (_connection) {
+        [_connection invalidate];
+    }
+    for (NSURL *url in _urls) {
+        [url stopAccessingSecurityScopedResource];
+    }
+}
+
+- (BOOL)setupXpc {
+#if !TARGET_OS_IPHONE // only supported on macOS
+    _connection = [[NSXPCConnection alloc] initWithServiceName:@"com.osy86.QEMUHelper"];
+    _connection.remoteObjectInterface = [NSXPCInterface interfaceWithProtocol:@protocol(QEMUHelperProtocol)];
+    [_connection resume];
+#endif
+    return _connection != nil;
 }
 
 - (void)pushArgv:(nullable NSString *)arg {
@@ -57,11 +82,12 @@
     return YES;
 }
 
-- (void)startDylib:(nonnull NSString *)dylib entry:(UTMQemuThreadEntry)entry completion:(void(^)(BOOL,NSString *))completion {
+- (void)startDylibThread:(nonnull NSString *)dylib completion:(void(^)(BOOL,NSString *))completion {
     void *dlctx;
     __block pthread_t qemu_thread;
     __weak typeof(self) wself = self;
     
+    NSAssert(self.entry != NULL, @"entry is NULL!");
     self.status = self.fatal = 0;
     self.done = dispatch_semaphore_create(0);
     UTMLog(@"Loading %@", dylib);
@@ -91,7 +117,7 @@
         return;
     }
     [self printArgv];
-    pthread_create(&qemu_thread, NULL, entry, (__bridge_retained void *)self);
+    pthread_create(&qemu_thread, NULL, self.entry, (__bridge_retained void *)self);
     dispatch_async(dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0), ^{
         if (dispatch_semaphore_wait(self.done, DISPATCH_TIME_FOREVER)) {
             dlclose(dlctx);
@@ -107,6 +133,50 @@
             }
         }
     });
+}
+
+- (void)startDylib:(nonnull NSString *)dylib completion:(void(^)(BOOL,NSString *))completion {
+    if (_connection) {
+        [[_connection remoteObjectProxyWithErrorHandler:^(NSError * _Nonnull error) {
+            completion(NO, error.localizedDescription);
+        }] startDylib:dylib type:self.type argv:self.argv completion:completion];
+    } else {
+        [self startDylibThread:dylib completion:completion];
+    }
+}
+
+- (void)ping:(void (^)(BOOL))onResponse {
+    if (_connection) {
+        [[_connection remoteObjectProxyWithErrorHandler:^(NSError * _Nonnull error) {
+            onResponse(NO);
+        }] ping:onResponse];
+    } else {
+        onResponse(YES);
+    }
+}
+
+- (void)accessDataWithBookmarkThread:(NSData *)bookmark {
+    BOOL stale;
+    NSError *err;
+    NSURL *url = [NSURL URLByResolvingBookmarkData:bookmark
+                                           options:0
+                                     relativeToURL:nil
+                               bookmarkDataIsStale:&stale
+                                             error:&err];
+    if (err) {
+        UTMLog(@"Failed to access bookmark data.");
+        return;
+    }
+    [_urls addObject:url];
+    [url startAccessingSecurityScopedResource];
+}
+
+- (void)accessDataWithBookmark:(NSData *)bookmark {
+    if (_connection) {
+        [[_connection remoteObjectProxy] accessDataWithBookmark:bookmark];
+    } else {
+        [self accessDataWithBookmarkThread:bookmark];
+    }
 }
 
 @end

@@ -14,6 +14,7 @@
 // limitations under the License.
 //
 
+#import <TargetConditionals.h>
 #import "UTMVirtualMachine.h"
 #import "UTMConfiguration.h"
 #import "UTMConfiguration+Constants.h"
@@ -22,7 +23,7 @@
 #import "UTMViewState.h"
 #import "UTMQemuImg.h"
 #import "UTMQemuManager.h"
-#import "UTMQemuSystem.h"
+#import "UTMQemuSystemConfiguration.h"
 #import "UTMTerminalIO.h"
 #import "UTMSpiceIO.h"
 #import "UTMLogging.h"
@@ -48,7 +49,7 @@ NSString *const kSuspendSnapshotName = @"suspend";
 @end
 
 @implementation UTMVirtualMachine {
-    UTMQemuSystem *_qemu_system;
+    UTMQemuSystemConfiguration *_qemu_system;
     dispatch_semaphore_t _will_quit_sema;
     dispatch_semaphore_t _qemu_exit_sema;
     BOOL _is_busy;
@@ -222,7 +223,10 @@ error:
     }
     
     if (!_qemu_system) {
-        _qemu_system = [[UTMQemuSystem alloc] initWithConfiguration:self.configuration imgPath:self.path];
+        _qemu_system = [[UTMQemuSystemConfiguration alloc] initWithConfiguration:self.configuration imgPath:self.path];
+#if !TARGET_OS_IPHONE
+        [_qemu_system setupXpc];
+#endif
         _qemu = [[UTMQemuManager alloc] init];
         _qemu.delegate = self;
     }
@@ -259,19 +263,25 @@ error:
         dispatch_semaphore_signal(self->_qemu_exit_sema);
     }];
     
-    [_ioService connectWithCompletion:^(BOOL success, NSError * _Nullable error) {
-        if (!success) {
-            [self errorTriggered:NSLocalizedString(@"Failed to connect to display server.", @"UTMVirtualMachine")];
+    [_qemu_system ping:^(BOOL pong) {
+        if (!pong) {
+            [self errorTriggered:NSLocalizedString(@"Timed out waiting for QEMU to launch.", @"UTMVirtualMachine")];
         } else {
-            [self changeState:kVMStarted];
-            [self restoreViewState];
-            if (self.viewState.suspended) {
-                [self deleteSaveVM];
-            }
+            [self->_ioService connectWithCompletion:^(BOOL success, NSError * _Nullable error) {
+                if (!success) {
+                    [self errorTriggered:NSLocalizedString(@"Failed to connect to display server.", @"UTMVirtualMachine")];
+                } else {
+                    [self changeState:kVMStarted];
+                    [self restoreViewState];
+                    if (self.viewState.suspended) {
+                        [self deleteSaveVM];
+                    }
+                }
+            }];
+            self->_qemu.retries = kQMPMaxConnectionTries;
+            [self->_qemu connect];
         }
     }];
-    self->_qemu.retries = kQMPMaxConnectionTries;
-    [self->_qemu connect];
     _is_busy = NO;
     return YES;
 }

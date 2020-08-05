@@ -1,5 +1,5 @@
 //
-// Copyright © 2019 osy. All rights reserved.
+// Copyright © 2020 osy. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,16 +14,23 @@
 // limitations under the License.
 //
 
-#import "UTMQemu.h"
+#import <Foundation/Foundation.h>
 
-@class UTMConfiguration;
+typedef NS_ENUM(NSInteger, QEMUHelperType) {
+    QEMUHelperTypeImg,
+    QEMUHelperTypeSystem,
+    QEMUHelperTypeMax
+};
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface UTMQemuSystem : UTMQemu
+// The protocol that this service will vend as its API. This header file will also need to be visible to the process hosting the service.
+@protocol QEMUHelperProtocol
 
-- (instancetype)init NS_UNAVAILABLE;
-
+- (void)accessDataWithBookmark:(NSData *)bookmark;
+- (void)ping:(void (^)(BOOL))onResponse;
+- (void)startDylib:(NSString *)dylib type:(QEMUHelperType)type argv:(NSArray<NSString *> *)argv completion:(void(^)(BOOL,NSString *))completion;
+    
 @end
 
 NS_ASSUME_NONNULL_END

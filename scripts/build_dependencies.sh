@@ -245,7 +245,7 @@ fixup () {
     echo "${GREEN}Fixing up $FILE...${NC}"
     newname="@executable_path/Frameworks/$(basename "$FILE")"
     if [ "x$PLATFORM" == "xmacos" ]; then
-        newname="@executable_path/../Frameworks/$(basename "$FILE")"
+        newname="@rpath/$(basename "$FILE")"
     fi
     install_name_tool -id "$newname" "$FILE"
     for f in $LIST
@@ -255,7 +255,7 @@ fixup () {
         if [ "$dir" == "$PREFIX/lib" ]; then
             newname="@executable_path/Frameworks/$base"
             if [ "x$PLATFORM" == "xmacos" ]; then
-                newname="@executable_path/../Frameworks/$base"
+                newname="@rpath/$base"
             fi
             install_name_tool -change "$f" "$newname" "$FILE"
         fi
