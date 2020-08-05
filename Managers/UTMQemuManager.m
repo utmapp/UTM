@@ -226,11 +226,14 @@ void qmp_rpc_call(CFDictionaryRef args, CFDictionaryRef *ret, Error **err, void 
     qmp_rpc_call((__bridge CFDictionaryRef)cmd, NULL, NULL, (__bridge void *)self);
 }
 
-- (void)vmPowerAction:(void (*)(Error **, void *))func completion:(void (^ _Nullable)(NSError * _Nullable))completion {
+- (void)vmPowerCommand:(NSString *)command completion:(void (^ _Nullable)(NSError * _Nullable))completion {
     dispatch_async(dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0), ^{
         Error *qerr = NULL;
         NSError *err;
-        func(&qerr, (__bridge void *)self);
+        NSDictionary *cmd = @{
+            @"execute": command
+        };
+        qmp_rpc_call((__bridge CFDictionaryRef)cmd, NULL, &qerr, (__bridge void *)self);
         if (qerr) {
             err = [self errorForQerror:qerr];
             error_free(qerr);
@@ -263,23 +266,23 @@ void qmp_rpc_call(CFDictionaryRef args, CFDictionaryRef *ret, Error **err, void 
 }
 
 - (void)vmPowerDownWithCompletion:(void (^ _Nullable)(NSError * _Nullable))completion {
-    [self vmPowerAction:qmp_system_powerdown completion:completion];
+    [self vmPowerCommand:@"system_powerdown" completion:completion];
 }
 
 - (void)vmResetWithCompletion:(void (^ _Nullable)(NSError * _Nullable))completion {
-    [self vmPowerAction:qmp_system_reset completion:completion];
+    [self vmPowerCommand:@"system_reset" completion:completion];
 }
 
 - (void)vmStopWithCompletion:(void (^ _Nullable)(NSError * _Nullable))completion {
-    [self vmPowerAction:qmp_stop completion:completion];
+    [self vmPowerCommand:@"stop" completion:completion];
 }
 
 - (void)vmResumeWithCompletion:(void (^ _Nullable)(NSError * _Nullable))completion {
-    [self vmPowerAction:qmp_cont completion:completion];
+    [self vmPowerCommand:@"cont" completion:completion];
 }
 
 - (void)vmQuitWithCompletion:(void (^ _Nullable)(NSError * _Nullable))completion {
-    [self vmPowerAction:qmp_quit completion:completion];
+    [self vmPowerCommand:@"quit" completion:completion];
 }
 
 - (void)vmSaveWithCompletion:(void (^)(NSString * _Nullable, NSError * _Nullable))completion snapshotName:(NSString *)name {
