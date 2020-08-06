@@ -18,8 +18,10 @@ class VMDisplayMetalWindowController: VMDisplayWindowController, UTMSpiceIODeleg
     var metalView: MTKView!
     var renderer: UTMRenderer?
     
-    var vmDisplay: CSDisplayMetal?
-    var vmInput: CSInput?
+    @objc dynamic var vmDisplay: CSDisplayMetal?
+    @objc dynamic var vmInput: CSInput?
+    
+    private var displaySizeObserver: NSKeyValueObservation?
     
     override func windowDidLoad() {
         super.windowDidLoad()
@@ -62,6 +64,10 @@ class VMDisplayMetalWindowController: VMDisplayWindowController, UTMSpiceIODeleg
         screenshotView.isHidden = true
         renderer!.sourceScreen = vmDisplay
         renderer!.sourceCursor = vmInput
+        displaySizeObserver = observe(\.vmDisplay!.displaySize, options: [.initial, .new]) { (_, change) in
+            guard let size = change.newValue else { return }
+            self.displaySizeDidChange(size: size)
+        }
         super.enterLive()
     }
     
@@ -72,5 +78,33 @@ class VMDisplayMetalWindowController: VMDisplayWindowController, UTMSpiceIODeleg
             screenshotView.isHidden = false
         }
         super.enterSuspended(isBusy: busy)
+    }
+    
+    // MARK: - Screen management
+    
+    func displaySizeDidChange(size: CGSize) {
+        if size == .zero {
+            logger.debug("Ignoring zero size display")
+            return
+        }
+        DispatchQueue.main.async {
+            guard let window = self.window else { return }
+            guard let vmDisplay = self.vmDisplay else { return }
+            let currentScreenScale = window.screen?.backingScaleFactor ?? 1.0
+            let scaledSize = CGSize(width: size.width / currentScreenScale, height: size.height / currentScreenScale)
+            let contentRect = CGRect(x: window.frame.origin.x, y: 0, width: scaledSize.width * vmDisplay.viewportScale, height: scaledSize.height * vmDisplay.viewportScale)
+            var windowRect = window.frameRect(forContentRect: contentRect)
+            windowRect.origin.y = window.frame.origin.y + window.frame.height - windowRect.height
+            window.contentMinSize = scaledSize
+            window.contentAspectRatio = size
+            window.setFrame(windowRect, display: false, animate: true)
+        }
+    }
+    
+    func windowDidChangeScreen(_ notification: Notification) {
+        logger.debug("screen changed")
+        if let vmDisplay = self.vmDisplay {
+            displaySizeDidChange(size: vmDisplay.displaySize)
+        }
     }
 }
