@@ -58,11 +58,6 @@
             break;
     }
     
-    [_qemu startDylib:dylib completion:^(BOOL success, NSString *msg) {
-        completion(success, msg);
-        self->_qemu = nil;
-    }];
-    
     // pass in any bookmarks in queue
     if (_bookmarks.count > 0) {
         for (NSData *bookmark in _bookmarks) {
@@ -70,6 +65,11 @@
         }
         [_bookmarks removeAllObjects];
     }
+    
+    [_qemu startDylib:dylib completion:^(BOOL success, NSString *msg) {
+        completion(success, msg);
+        self->_qemu = nil;
+    }];
 }
 
 @end
