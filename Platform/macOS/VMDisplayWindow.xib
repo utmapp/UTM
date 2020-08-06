@@ -38,7 +38,7 @@
                     <customView translatesAutoresizingMaskIntoConstraints="NO" id="M5X-Is-pc9" userLabel="Display View">
                         <rect key="frame" x="0.0" y="0.0" width="800" height="600"/>
                     </customView>
-                    <imageView hidden="YES" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="UUd-qY-POz">
+                    <imageView hidden="YES" horizontalHuggingPriority="251" verticalHuggingPriority="251" horizontalCompressionResistancePriority="250" verticalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="UUd-qY-POz">
                         <rect key="frame" x="0.0" y="0.0" width="800" height="600"/>
                         <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" id="wtI-uz-Xfv"/>
                     </imageView>
