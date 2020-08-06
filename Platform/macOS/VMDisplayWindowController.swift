@@ -120,26 +120,18 @@ extension VMDisplayWindowController: NSToolbarItemValidation {
 
 // MARK: - VM Delegate
 
-var vmHasStartedOnce = false
-
 extension VMDisplayWindowController: UTMVirtualMachineDelegate {
     func virtualMachine(_ vm: UTMVirtualMachine, transitionTo state: UTMVMState) {
-        if vmHasStartedOnce && state == .vmStopped {
-            exit(0)
-        }
         switch state {
         case .vmError:
             let message = vmMessage ?? NSLocalizedString("An internal error has occured. UTM will terminate.", comment: "VMDisplayWindowController")
-            showErrorAlert(message) { _ in
-                exit(0)
-            }
+            showErrorAlert(message)
         case .vmStopped, .vmPaused, .vmSuspended:
             enterSuspended(isBusy: false)
         case .vmPausing, .vmStopping, .vmStarting, .vmResuming:
             enterSuspended(isBusy: true)
         case .vmStarted:
             enterLive()
-            vmHasStartedOnce = true
         @unknown default:
             break
         }
