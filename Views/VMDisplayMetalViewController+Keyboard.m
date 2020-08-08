@@ -38,11 +38,11 @@
 }
 
 - (void)keyboardView:(nonnull VMKeyboardView *)keyboardView didPressKeyDown:(int)scancode {
-    [self sendExtendedKey:SEND_KEY_PRESS code:scancode];
+    [self sendExtendedKey:kCSInputKeyPress code:scancode];
 }
 
 - (void)keyboardView:(nonnull VMKeyboardView *)keyboardView didPressKeyUp:(int)scancode {
-    [self sendExtendedKey:SEND_KEY_RELEASE code:scancode];
+    [self sendExtendedKey:kCSInputKeyRelease code:scancode];
     [self resetModifierToggles];
 }
 
@@ -64,7 +64,7 @@
 - (void)resetModifierToggles {
     for (VMKeyboardButton *button in self.customKeyModifierButtons) {
         if (button.toggled) {
-            [self sendExtendedKey:SEND_KEY_RELEASE code:button.scanCode];
+            [self sendExtendedKey:kCSInputKeyRelease code:button.scanCode];
             dispatch_async(dispatch_get_main_queue(), ^{
                 button.toggled = NO;
             });
@@ -74,7 +74,7 @@
 
 - (IBAction)customKeyTouchDown:(VMKeyboardButton *)sender {
     if (!sender.toggleable) {
-        [self sendExtendedKey:SEND_KEY_PRESS code:sender.scanCode];
+        [self sendExtendedKey:kCSInputKeyPress code:sender.scanCode];
     }
 }
 
@@ -85,10 +85,10 @@
         [self resetModifierToggles];
     }
     if (sender.toggleable && sender.toggled) {
-        [self sendExtendedKey:SEND_KEY_PRESS code:sender.scanCode];
+        [self sendExtendedKey:kCSInputKeyPress code:sender.scanCode];
     } else {
         [self onDelay:0.05f action:^{
-            [self sendExtendedKey:SEND_KEY_RELEASE code:sender.scanCode];
+            [self sendExtendedKey:kCSInputKeyRelease code:sender.scanCode];
         }];
     }
 }
@@ -101,19 +101,19 @@ static NSString *kAllKeys = @"`1234567890-=qwertyuiop[]\\asdfghjkl;'zxcvbnm,./ \
     NSString *key = command.input;
     int scancode = 0;
     if (command.modifierFlags & UIKeyModifierAlphaShift) {
-        [self sendExtendedKey:SEND_KEY_PRESS code:0x3A];
+        [self sendExtendedKey:kCSInputKeyPress code:0x3A];
     }
     if (command.modifierFlags & UIKeyModifierShift) {
-        [self sendExtendedKey:SEND_KEY_PRESS code:0x2A];
+        [self sendExtendedKey:kCSInputKeyPress code:0x2A];
     }
     if (command.modifierFlags & UIKeyModifierControl) {
-        [self sendExtendedKey:SEND_KEY_PRESS code:0x1D];
+        [self sendExtendedKey:kCSInputKeyPress code:0x1D];
     }
     if (command.modifierFlags & UIKeyModifierAlternate) {
-        [self sendExtendedKey:SEND_KEY_PRESS code:0x38];
+        [self sendExtendedKey:kCSInputKeyPress code:0x38];
     }
     if (command.modifierFlags & UIKeyModifierCommand) {
-        [self sendExtendedKey:SEND_KEY_PRESS code:0xE05B];
+        [self sendExtendedKey:kCSInputKeyPress code:0xE05B];
     }
     if ([key isEqualToString:UIKeyInputEscape])
         scancode = 0x01;
@@ -126,28 +126,28 @@ static NSString *kAllKeys = @"`1234567890-=qwertyuiop[]\\asdfghjkl;'zxcvbnm,./ \
     else if ([key isEqualToString:UIKeyInputRightArrow])
         scancode = 0xE04D;
     if (scancode != 0) {
-        [self sendExtendedKey:SEND_KEY_PRESS code:scancode];
+        [self sendExtendedKey:kCSInputKeyPress code:scancode];
     } else {
         [self.keyboardView insertText:key];
     }
     [self onDelay:0.05f action:^{
         if (scancode != 0) {
-            [self sendExtendedKey:SEND_KEY_RELEASE code:scancode];
+            [self sendExtendedKey:kCSInputKeyRelease code:scancode];
         }
         if (command.modifierFlags & UIKeyModifierAlphaShift) {
-            [self sendExtendedKey:SEND_KEY_RELEASE code:0x3A];
+            [self sendExtendedKey:kCSInputKeyRelease code:0x3A];
         }
         if (command.modifierFlags & UIKeyModifierShift) {
-            [self sendExtendedKey:SEND_KEY_RELEASE code:0x2A];
+            [self sendExtendedKey:kCSInputKeyRelease code:0x2A];
         }
         if (command.modifierFlags & UIKeyModifierControl) {
-            [self sendExtendedKey:SEND_KEY_RELEASE code:0x1D];
+            [self sendExtendedKey:kCSInputKeyRelease code:0x1D];
         }
         if (command.modifierFlags & UIKeyModifierAlternate) {
-            [self sendExtendedKey:SEND_KEY_RELEASE code:0x38];
+            [self sendExtendedKey:kCSInputKeyRelease code:0x38];
         }
         if (command.modifierFlags & UIKeyModifierCommand) {
-            [self sendExtendedKey:SEND_KEY_RELEASE code:0xE05B];
+            [self sendExtendedKey:kCSInputKeyRelease code:0xE05B];
         }
         [self resetModifierToggles];
     }];
@@ -298,7 +298,7 @@ static int API_AVAILABLE(ios(13.4)) hidToPs2(UIKeyboardHIDUsage hidCode) {
         if (@available(iOS 13.4, *)) {
             int code = hidToPs2(press.key.keyCode);
             if (code) {
-                [self sendExtendedKey:SEND_KEY_PRESS code:code];
+                [self sendExtendedKey:kCSInputKeyPress code:code];
                 didHandleEvent = YES;
             }
         }
@@ -314,7 +314,7 @@ static int API_AVAILABLE(ios(13.4)) hidToPs2(UIKeyboardHIDUsage hidCode) {
         if (@available(iOS 13.4, *)) {
             int code = hidToPs2(press.key.keyCode);
             if (code) {
-                [self sendExtendedKey:SEND_KEY_RELEASE code:code];
+                [self sendExtendedKey:kCSInputKeyRelease code:code];
                 didHandleEvent = YES;
             }
             [self resetModifierToggles];

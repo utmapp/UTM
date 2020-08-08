@@ -66,7 +66,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) BOOL lastDisplayChangeResize;
 @property (nonatomic, readonly) BOOL serverModeCursor;
 
-- (void)sendExtendedKey:(SendKeyType)type code:(int)code;
+- (void)sendExtendedKey:(CSInputKey)type code:(int)code;
 
 @end
 
