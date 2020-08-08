@@ -106,6 +106,8 @@
 		CE03D0CD24D9144500F76B84 /* libcrypto.1.1.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D640A22653C7500FC7E63 /* libcrypto.1.1.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CE03D0CE24D9A30100F76B84 /* libiconv.2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D641522653C7500FC7E63 /* libiconv.2.dylib */; };
 		CE03D0CF24D9A33000F76B84 /* libiconv.2.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D641522653C7500FC7E63 /* libiconv.2.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE03D0D224DCF4B600F76B84 /* VMMetalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE03D0D124DCF4B600F76B84 /* VMMetalView.swift */; };
+		CE03D0D424DCF6DD00F76B84 /* VMMetalViewInputDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE03D0D324DCF6DD00F76B84 /* VMMetalViewInputDelegate.swift */; };
 		CE056CA6242454100004B68A /* VMDisplayMetalViewController+Touch.m in Sources */ = {isa = PBXBuildFile; fileRef = CE056CA5242454100004B68A /* VMDisplayMetalViewController+Touch.m */; };
 		CE059DC1243BD67200338317 /* libphodav-2.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE059DC0243BD67100338317 /* libphodav-2.0.0.dylib */; };
 		CE059DC2243BD67200338317 /* libphodav-2.0.0.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE059DC0243BD67100338317 /* libphodav-2.0.0.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
@@ -1308,6 +1310,8 @@
 		CE03D05024D90B4E00F76B84 /* UTMQemuSystemConfiguration.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UTMQemuSystemConfiguration.m; sourceTree = "<group>"; };
 		CE03D05424D90BE000F76B84 /* UTMQemuSystemConfiguration.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UTMQemuSystemConfiguration.h; sourceTree = "<group>"; };
 		CE03D0D024D9A62B00F76B84 /* QEMUHelper.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = QEMUHelper.entitlements; sourceTree = "<group>"; };
+		CE03D0D124DCF4B600F76B84 /* VMMetalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMMetalView.swift; sourceTree = "<group>"; };
+		CE03D0D324DCF6DD00F76B84 /* VMMetalViewInputDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMMetalViewInputDelegate.swift; sourceTree = "<group>"; };
 		CE056CA4242454100004B68A /* VMDisplayMetalViewController+Touch.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "VMDisplayMetalViewController+Touch.h"; sourceTree = "<group>"; };
 		CE056CA5242454100004B68A /* VMDisplayMetalViewController+Touch.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "VMDisplayMetalViewController+Touch.m"; sourceTree = "<group>"; };
 		CE059DC0243BD67100338317 /* libphodav-2.0.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libphodav-2.0.0.dylib"; path = "sysroot-$(PLATFORM_FAMILY_NAME)-$(PLATFORM_PREFERRED_ARCH)/lib/libphodav-2.0.0.dylib"; sourceTree = "<group>"; };
@@ -2238,6 +2242,8 @@
 				CE0FE12724D3B08B0086CEF0 /* VMDisplayWindow.xib */,
 				CE612AC524D3B50700FA6300 /* VMDisplayWindowController.swift */,
 				CEBDA1D424D69DB20010B5EC /* VMDisplayMetalWindowController.swift */,
+				CE03D0D124DCF4B600F76B84 /* VMMetalView.swift */,
+				CE03D0D324DCF6DD00F76B84 /* VMMetalViewInputDelegate.swift */,
 			);
 			path = macOS;
 			sourceTree = "<group>";
@@ -3302,6 +3308,7 @@
 				CE0B6D6B24AD584D00FE012D /* qapi-types-rdma.c in Sources */,
 				CE0B6D3324AD57FC00FE012D /* qapi-events-block.c in Sources */,
 				CE0B6D4D24AD584C00FE012D /* qapi-types-block.c in Sources */,
+				CE03D0D224DCF4B600F76B84 /* VMMetalView.swift in Sources */,
 				CE0B6CF124AD567300FE012D /* CSMain.m in Sources */,
 				CE0B6CEE24AD566A00FE012D /* CSConnection.m in Sources */,
 				CE0B6CFF24AD56AE00FE012D /* UTMQemuSystem.m in Sources */,
@@ -3379,6 +3386,7 @@
 				CE0B6D5624AD584C00FE012D /* qapi-types-machine-target.c in Sources */,
 				CE93759624BB7EA00074066F /* UTMTabViewController.swift in Sources */,
 				CE0B6D0424AD56AE00FE012D /* UTMSpiceIO.m in Sources */,
+				CE03D0D424DCF6DD00F76B84 /* VMMetalViewInputDelegate.swift in Sources */,
 				CE0B6D6124AD584D00FE012D /* qapi-types-authz.c in Sources */,
 				CE0B6D6D24AD584D00FE012D /* qapi-visit-tpm.c in Sources */,
 				CE0B6D0224AD56AE00FE012D /* UTMQemu.m in Sources */,

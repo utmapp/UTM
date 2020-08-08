@@ -20,22 +20,22 @@
 
 typedef struct _SpiceSession SpiceSession;
 
-typedef NS_ENUM(NSUInteger, SendKeyType) {
-    SEND_KEY_PRESS,
-    SEND_KEY_RELEASE
+typedef NS_ENUM(NSInteger, CSInputKey) {
+    kCSInputKeyPress,
+    kCSInputKeyRelease
 };
 
-typedef NS_ENUM(NSUInteger, SendButtonType) {
-    SEND_BUTTON_NONE = 0,
-    SEND_BUTTON_LEFT = 1,
-    SEND_BUTTON_MIDDLE = 2,
-    SEND_BUTTON_RIGHT = 4
+typedef NS_OPTIONS(NSUInteger, CSInputButton) {
+    kCSInputButtonNone = 0,
+    kCSInputButtonLeft = (1 << 0),
+    kCSInputButtonMiddle = (1 << 1),
+    kCSInputButtonRight = (1 << 2)
 };
 
-typedef NS_ENUM(NSUInteger, SendScrollType) {
-    SEND_SCROLL_UP,
-    SEND_SCROLL_DOWN,
-    SEND_SCROLL_SMOOTH
+typedef NS_ENUM(NSInteger, CSInputScroll) {
+    kCSInputScrollUp,
+    kCSInputScrollDown,
+    kCSInputScrollSmooth
 };
 
 NS_ASSUME_NONNULL_BEGIN
@@ -52,13 +52,13 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) CGSize displaySize;
 @property (nonatomic, assign) BOOL inhibitCursor;
 
-- (void)sendKey:(SendKeyType)type code:(int)scancode;
-- (void)sendPause:(SendKeyType)type;
+- (void)sendKey:(CSInputKey)type code:(int)scancode;
+- (void)sendPause:(CSInputKey)type;
 - (void)releaseKeys;
 
-- (void)sendMouseMotion:(SendButtonType)button point:(CGPoint)point;
-- (void)sendMouseScroll:(SendScrollType)type button:(SendButtonType)button dy:(CGFloat)dy;
-- (void)sendMouseButton:(SendButtonType)button pressed:(BOOL)pressed point:(CGPoint)point;
+- (void)sendMouseMotion:(CSInputButton)button point:(CGPoint)point;
+- (void)sendMouseScroll:(CSInputScroll)type button:(CSInputButton)button dy:(CGFloat)dy;
+- (void)sendMouseButton:(CSInputButton)button pressed:(BOOL)pressed point:(CGPoint)point;
 - (void)requestMouseMode:(BOOL)server;
 - (void)forceCursorPosition:(CGPoint)pos;
 

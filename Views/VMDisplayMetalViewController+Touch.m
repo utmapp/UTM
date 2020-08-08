@@ -99,16 +99,16 @@ const CGFloat kScrollResistance = 10.0f;
 
 #pragma mark - Properties from instance
 
-- (SendButtonType)mouseButtonDown {
-    SendButtonType button = SEND_BUTTON_NONE;
+- (CSInputButton)mouseButtonDown {
+    CSInputButton button = kCSInputButtonNone;
     if (_mouseLeftDown) {
-        button |= SEND_BUTTON_LEFT;
+        button |= kCSInputButtonLeft;
     }
     if (_mouseRightDown) {
-        button |= SEND_BUTTON_RIGHT;
+        button |= kCSInputButtonRight;
     }
     if (_mouseMiddleDown) {
-        button |= SEND_BUTTON_MIDDLE;
+        button |= kCSInputButtonMiddle;
     }
     return button;
 }
@@ -359,11 +359,11 @@ static CGFloat CGPointToPixel(CGFloat point) {
     if (self.vmConfiguration.inputScrollInvert) {
         translation.y = -translation.y;
     }
-    [self.vmInput sendMouseScroll:SEND_SCROLL_SMOOTH button:self.mouseButtonDown dy:translation.y];
+    [self.vmInput sendMouseScroll:kCSInputScrollSmooth button:self.mouseButtonDown dy:translation.y];
     return translation;
 }
 
-- (void)mouseClick:(SendButtonType)button location:(CGPoint)location {
+- (void)mouseClick:(CSInputButton)button location:(CGPoint)location {
     if (!self.serverModeCursor) {
         _cursor.center = location;
     }
@@ -401,21 +401,21 @@ static CGFloat CGPointToPixel(CGFloat point) {
 - (IBAction)gestureTap:(UITapGestureRecognizer *)sender {
     if (sender.state == UIGestureRecognizerStateEnded &&
         self.serverModeCursor) { // otherwise we handle in touchesBegan
-        [self mouseClick:SEND_BUTTON_LEFT location:[sender locationInView:sender.view]];
+        [self mouseClick:kCSInputButtonLeft location:[sender locationInView:sender.view]];
     }
 }
 
 - (IBAction)gestureTwoTap:(UITapGestureRecognizer *)sender {
     if (sender.state == UIGestureRecognizerStateEnded &&
         self.twoFingerTapType == VMGestureTypeRightClick) {
-        [self mouseClick:SEND_BUTTON_RIGHT location:[sender locationInView:sender.view]];
+        [self mouseClick:kCSInputButtonRight location:[sender locationInView:sender.view]];
     }
 }
 
 - (IBAction)gestureLongPress:(UILongPressGestureRecognizer *)sender {
     if (sender.state == UIGestureRecognizerStateEnded &&
         self.longPressType == VMGestureTypeRightClick) {
-        [self mouseClick:SEND_BUTTON_RIGHT location:[sender locationInView:sender.view]];
+        [self mouseClick:kCSInputButtonRight location:[sender locationInView:sender.view]];
     } else if (self.longPressType == VMGestureTypeDragCursor) {
         [self dragCursor:sender.state primary:YES secondary:NO middle:NO];
     }
@@ -453,9 +453,9 @@ static CGFloat CGPointToPixel(CGFloat point) {
     if (sender.state == UIGestureRecognizerStateEnded &&
         self.twoFingerScrollType == VMGestureTypeMouseWheel) {
         if (sender == _swipeScrollUp) {
-            [self.vmInput sendMouseScroll:SEND_SCROLL_UP button:self.mouseButtonDown dy:0];
+            [self.vmInput sendMouseScroll:kCSInputScrollUp button:self.mouseButtonDown dy:0];
         } else if (sender == _swipeScrollDown) {
-            [self.vmInput sendMouseScroll:SEND_SCROLL_DOWN button:self.mouseButtonDown dy:0];
+            [self.vmInput sendMouseScroll:kCSInputScrollDown button:self.mouseButtonDown dy:0];
         } else {
             NSAssert(0, @"Invalid call to gestureSwipeScroll");
         }

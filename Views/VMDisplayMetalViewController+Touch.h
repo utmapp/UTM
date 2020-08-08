@@ -36,7 +36,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface VMDisplayMetalViewController (Gestures) <UIGestureRecognizerDelegate>
 
-@property (nonatomic, readonly) SendButtonType mouseButtonDown;
+@property (nonatomic, readonly) CSInputButton mouseButtonDown;
 @property (nonatomic, readonly) VMGestureType longPressType;
 @property (nonatomic, readonly) VMGestureType twoFingerTapType;
 @property (nonatomic, readonly) VMGestureType twoFingerPanType;

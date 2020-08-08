@@ -143,7 +143,7 @@
     [super setKeyboardVisible:keyboardVisible];
 }
 
-- (void)sendExtendedKey:(SendKeyType)type code:(int)code {
+- (void)sendExtendedKey:(CSInputKey)type code:(int)code {
     if ((code & 0xFF00) == 0xE000) {
         code = 0x100 | (code & 0xFF);
     } else if (code >= 0x100) {

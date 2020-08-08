@@ -218,13 +218,13 @@ static void cs_channel_destroy(SpiceSession *s, SpiceChannel *channel, gpointer 
 
 #pragma mark - Key handling
 
-- (void)sendPause:(SendKeyType)type {
+- (void)sendPause:(CSInputKey)type {
     /* Send proper scancodes. This will send same scancodes
      * as hardware.
      * The 0x21d is a sort of Third-Ctrl while
      * 0x45 is the NumLock.
      */
-    if (type == SEND_KEY_PRESS) {
+    if (type == kCSInputKeyPress) {
         spice_inputs_channel_key_press(_inputs, 0x21d);
         spice_inputs_channel_key_press(_inputs, 0x45);
     } else {
@@ -233,7 +233,7 @@ static void cs_channel_destroy(SpiceSession *s, SpiceChannel *channel, gpointer 
     }
 }
 
-- (void)sendKey:(SendKeyType)type code:(int)scancode {
+- (void)sendKey:(CSInputKey)type code:(int)scancode {
     uint32_t i, b, m;
     
     g_return_if_fail(scancode != 0);
@@ -250,13 +250,13 @@ static void cs_channel_destroy(SpiceSession *s, SpiceChannel *channel, gpointer 
     g_return_if_fail(i < SPICE_N_ELEMENTS(self->_key_state));
     
     switch (type) {
-        case SEND_KEY_PRESS:
+        case kCSInputKeyPress:
             spice_inputs_channel_key_press(self->_inputs, scancode);
             
             self->_key_state[i] |= m;
             break;
             
-        case SEND_KEY_RELEASE:
+        case kCSInputKeyRelease:
             if (!(self->_key_state[i] & m))
                 break;
             
@@ -282,7 +282,7 @@ static void cs_channel_destroy(SpiceSession *s, SpiceChannel *channel, gpointer 
         for (b = 0; b < 32; b++) {
             unsigned int scancode = i * 32 + b;
             if (scancode != 0) {
-                [self sendKey:SEND_KEY_RELEASE code:scancode];
+                [self sendKey:kCSInputKeyRelease code:scancode];
             }
         }
     }
@@ -290,33 +290,33 @@ static void cs_channel_destroy(SpiceSession *s, SpiceChannel *channel, gpointer 
 
 #pragma mark - Mouse handling
 
-static int cs_button_mask_to_spice(SendButtonType button)
+static int cs_button_mask_to_spice(CSInputButton button)
 {
     int spice = 0;
     
-    if (button & SEND_BUTTON_LEFT)
+    if (button & kCSInputButtonLeft)
         spice |= SPICE_MOUSE_BUTTON_MASK_LEFT;
-    if (button & SEND_BUTTON_MIDDLE)
+    if (button & kCSInputButtonMiddle)
         spice |= SPICE_MOUSE_BUTTON_MASK_MIDDLE;
-    if (button & SEND_BUTTON_RIGHT)
+    if (button & kCSInputButtonRight)
         spice |= SPICE_MOUSE_BUTTON_MASK_RIGHT;
     return spice;
 }
 
-static int cs_button_to_spice(SendButtonType button)
+static int cs_button_to_spice(CSInputButton button)
 {
     int spice = 0;
     
-    if (button & SEND_BUTTON_LEFT)
+    if (button & kCSInputButtonLeft)
         spice |= SPICE_MOUSE_BUTTON_LEFT;
-    if (button & SEND_BUTTON_MIDDLE)
+    if (button & kCSInputButtonMiddle)
         spice |= SPICE_MOUSE_BUTTON_MIDDLE;
-    if (button & SEND_BUTTON_RIGHT)
+    if (button & kCSInputButtonRight)
         spice |= SPICE_MOUSE_BUTTON_RIGHT;
     return spice;
 }
 
-- (void)sendMouseMotion:(SendButtonType)button point:(CGPoint)point {
+- (void)sendMouseMotion:(CSInputButton)button point:(CGPoint)point {
     if (!self->_inputs)
         return;
     if (self.disableInputs)
@@ -331,7 +331,7 @@ static int cs_button_to_spice(SendButtonType button)
     }
 }
 
-- (void)sendMouseScroll:(SendScrollType)type button:(SendButtonType)button dy:(CGFloat)dy {
+- (void)sendMouseScroll:(CSInputScroll)type button:(CSInputButton)button dy:(CGFloat)dy {
     gint button_state = cs_button_mask_to_spice(button);
     
     DISPLAY_DEBUG(self, "%s", __FUNCTION__);
@@ -342,15 +342,15 @@ static int cs_button_to_spice(SendButtonType button)
         return;
     
     switch (type) {
-        case SEND_SCROLL_UP:
+        case kCSInputScrollUp:
             spice_inputs_channel_button_press(self->_inputs, SPICE_MOUSE_BUTTON_UP, button_state);
             spice_inputs_channel_button_release(self->_inputs, SPICE_MOUSE_BUTTON_UP, button_state);
             break;
-        case SEND_SCROLL_DOWN:
+        case kCSInputScrollDown:
             spice_inputs_channel_button_press(self->_inputs, SPICE_MOUSE_BUTTON_DOWN, button_state);
             spice_inputs_channel_button_release(self->_inputs, SPICE_MOUSE_BUTTON_DOWN, button_state);
             break;
-        case SEND_SCROLL_SMOOTH:
+        case kCSInputScrollSmooth:
             self->_scroll_delta_y += dy;
             while (ABS(self->_scroll_delta_y) >= 1) {
                 if (self->_scroll_delta_y < 0) {
@@ -369,7 +369,7 @@ static int cs_button_to_spice(SendButtonType button)
     }
 }
 
-- (void)sendMouseButton:(SendButtonType)button pressed:(BOOL)pressed point:(CGPoint)point {
+- (void)sendMouseButton:(CSInputButton)button pressed:(BOOL)pressed point:(CGPoint)point {
     DISPLAY_DEBUG(self, "%s %s: button %u", __FUNCTION__,
                   pressed ? "press" : "release",
                   (unsigned int)button);
