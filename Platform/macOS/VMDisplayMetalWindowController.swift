@@ -21,6 +21,8 @@ class VMDisplayMetalWindowController: VMDisplayWindowController, UTMSpiceIODeleg
     @objc dynamic var vmDisplay: CSDisplayMetal?
     @objc dynamic var vmInput: CSInput?
     
+    var isScalable: Bool = false
+    
     private var displaySizeObserver: NSKeyValueObservation?
     private var displaySize: CGSize = .zero
     
@@ -117,6 +119,7 @@ extension VMDisplayMetalWindowController {
     }
     
     func windowWillResize(_ sender: NSWindow, to frameSize: NSSize) -> NSSize {
+        guard isScalable else { return frameSize }
         guard displaySize != .zero else { return frameSize }
         guard let window = self.window else { return frameSize }
         guard let vmDisplay = self.vmDisplay else { return frameSize }
