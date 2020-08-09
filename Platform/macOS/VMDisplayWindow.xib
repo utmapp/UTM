@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="17140" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="17147" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
     <dependencies>
-        <deployment identifier="macosx"/>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaDFRPlugin" version="17007"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="17140"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="17147"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
         <capability name="the Touch Bar" minToolsVersion="8.1" minSystemVersion="10.12.2" requiredIntegratedClassName="NSTouchBar"/>
     </dependencies>
@@ -35,14 +34,25 @@
                 <rect key="frame" x="0.0" y="0.0" width="800" height="600"/>
                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                 <subviews>
-                    <customView translatesAutoresizingMaskIntoConstraints="NO" id="M5X-Is-pc9" userLabel="Display View">
+                    <visualEffectView blendingMode="behindWindow" material="underWindowBackground" state="followsWindowActiveState" translatesAutoresizingMaskIntoConstraints="NO" id="8hx-jB-ZbR" userLabel="Window Background">
                         <rect key="frame" x="0.0" y="0.0" width="800" height="600"/>
-                    </customView>
+                        <subviews>
+                            <customView translatesAutoresizingMaskIntoConstraints="NO" id="M5X-Is-pc9" userLabel="Display View">
+                                <rect key="frame" x="0.0" y="0.0" width="800" height="600"/>
+                            </customView>
+                        </subviews>
+                        <constraints>
+                            <constraint firstAttribute="trailing" secondItem="M5X-Is-pc9" secondAttribute="trailing" id="BBZ-Ue-n2B"/>
+                            <constraint firstAttribute="bottom" secondItem="M5X-Is-pc9" secondAttribute="bottom" id="DmX-Jm-io1"/>
+                            <constraint firstItem="M5X-Is-pc9" firstAttribute="top" secondItem="8hx-jB-ZbR" secondAttribute="top" id="QRM-gJ-2Zg"/>
+                            <constraint firstItem="M5X-Is-pc9" firstAttribute="leading" secondItem="8hx-jB-ZbR" secondAttribute="leading" id="rWd-DG-2JB"/>
+                        </constraints>
+                    </visualEffectView>
                     <imageView hidden="YES" horizontalHuggingPriority="251" verticalHuggingPriority="251" horizontalCompressionResistancePriority="250" verticalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="UUd-qY-POz">
                         <rect key="frame" x="0.0" y="0.0" width="800" height="600"/>
                         <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" id="wtI-uz-Xfv"/>
                     </imageView>
-                    <visualEffectView blendingMode="withinWindow" material="dark" state="active" translatesAutoresizingMaskIntoConstraints="NO" id="nKs-QY-EOf">
+                    <visualEffectView blendingMode="withinWindow" material="dark" state="active" translatesAutoresizingMaskIntoConstraints="NO" id="nKs-QY-EOf" userLabel="Inactive Background">
                         <rect key="frame" x="0.0" y="0.0" width="800" height="600"/>
                         <subviews>
                             <progressIndicator wantsLayer="YES" maxValue="100" displayedWhenStopped="NO" indeterminate="YES" style="spinning" translatesAutoresizingMaskIntoConstraints="NO" id="Ulx-Td-rrm">
@@ -73,17 +83,17 @@
                 </subviews>
                 <constraints>
                     <constraint firstAttribute="trailing" secondItem="UUd-qY-POz" secondAttribute="trailing" id="23G-UX-Paa"/>
-                    <constraint firstItem="M5X-Is-pc9" firstAttribute="leading" secondItem="EiT-Mj-1SZ" secondAttribute="leading" id="2d1-fZ-cfK"/>
                     <constraint firstAttribute="trailing" secondItem="nKs-QY-EOf" secondAttribute="trailing" id="2un-XF-OQy"/>
-                    <constraint firstAttribute="bottom" secondItem="M5X-Is-pc9" secondAttribute="bottom" id="4Rf-pI-yFF"/>
-                    <constraint firstItem="M5X-Is-pc9" firstAttribute="top" secondItem="EiT-Mj-1SZ" secondAttribute="top" id="Hhc-Ww-1Ji"/>
+                    <constraint firstAttribute="trailing" secondItem="8hx-jB-ZbR" secondAttribute="trailing" id="HAQ-CZ-ehr"/>
                     <constraint firstAttribute="bottom" secondItem="UUd-qY-POz" secondAttribute="bottom" id="MX4-MB-35G"/>
+                    <constraint firstItem="8hx-jB-ZbR" firstAttribute="top" secondItem="EiT-Mj-1SZ" secondAttribute="top" id="OYd-EE-Y2a"/>
                     <constraint firstItem="nKs-QY-EOf" firstAttribute="leading" secondItem="EiT-Mj-1SZ" secondAttribute="leading" id="QRs-fV-dQs"/>
                     <constraint firstItem="UUd-qY-POz" firstAttribute="leading" secondItem="EiT-Mj-1SZ" secondAttribute="leading" id="RKo-Ug-7Tq"/>
+                    <constraint firstAttribute="bottom" secondItem="8hx-jB-ZbR" secondAttribute="bottom" id="SU8-eI-KUF"/>
                     <constraint firstItem="UUd-qY-POz" firstAttribute="top" secondItem="EiT-Mj-1SZ" secondAttribute="top" id="VXe-DB-vtS"/>
                     <constraint firstAttribute="bottom" secondItem="nKs-QY-EOf" secondAttribute="bottom" id="aoT-cN-NSa"/>
                     <constraint firstItem="nKs-QY-EOf" firstAttribute="top" secondItem="EiT-Mj-1SZ" secondAttribute="top" id="g12-G5-A0E"/>
-                    <constraint firstAttribute="trailing" secondItem="M5X-Is-pc9" secondAttribute="trailing" id="rDl-9L-qh7"/>
+                    <constraint firstItem="8hx-jB-ZbR" firstAttribute="leading" secondItem="EiT-Mj-1SZ" secondAttribute="leading" id="vj6-D4-URe"/>
                 </constraints>
             </view>
             <toolbar key="toolbar" implicitIdentifier="204ED9EE-2DF0-4A0C-99E3-CD0CC398420A" showsBaselineSeparator="NO" displayMode="iconOnly" sizeMode="regular" id="qD6-Hj-nyo">
