@@ -22,6 +22,7 @@ class VMDisplayMetalWindowController: VMDisplayWindowController, UTMSpiceIODeleg
     @objc dynamic var vmInput: CSInput?
     
     private var displaySizeObserver: NSKeyValueObservation?
+    private var displaySize: CGSize = .zero
     
     override func windowDidLoad() {
         super.windowDidLoad()
@@ -82,15 +83,17 @@ class VMDisplayMetalWindowController: VMDisplayWindowController, UTMSpiceIODeleg
         metalView.resignFirstResponder()
         super.enterSuspended(isBusy: busy)
     }
+}
     
-    // MARK: - Screen management
-    
+// MARK: - Screen management
+extension VMDisplayMetalWindowController {
     func displaySizeDidChange(size: CGSize) {
         if size == .zero {
             logger.debug("Ignoring zero size display")
             return
         }
         logger.debug("resizing to: (\(size.width), \(size.height))")
+        displaySize = size
         DispatchQueue.main.async {
             guard let window = self.window else { return }
             guard let vmDisplay = self.vmDisplay else { return }
@@ -111,6 +114,23 @@ class VMDisplayMetalWindowController: VMDisplayWindowController, UTMSpiceIODeleg
         if let vmDisplay = self.vmDisplay {
             displaySizeDidChange(size: vmDisplay.displaySize)
         }
+    }
+    
+    func windowWillResize(_ sender: NSWindow, to frameSize: NSSize) -> NSSize {
+        guard displaySize != .zero else { return frameSize }
+        guard let window = self.window else { return frameSize }
+        guard let vmDisplay = self.vmDisplay else { return frameSize }
+        let currentScreenScale = window.screen?.backingScaleFactor ?? 1.0
+        let targetContentSize = window.contentRect(forFrameRect: CGRect(origin: .zero, size: frameSize)).size
+        let targetScaleX = targetContentSize.width * currentScreenScale / displaySize.width
+        let targetScaleY = targetContentSize.height * currentScreenScale / displaySize.height
+        let targetScale = min(targetScaleX, targetScaleY)
+        let scaledSize = CGSize(width: displaySize.width * targetScale / currentScreenScale, height: displaySize.height * targetScale / currentScreenScale)
+        let targetFrameSize = window.frameRect(forContentRect: CGRect(origin: .zero, size: scaledSize)).size
+        vmDisplay.viewportScale = targetScale
+        logger.debug("changed scale \(targetScale)")
+        self.metalView.setFrameSize(scaledSize)
+        return targetFrameSize
     }
 }
 
