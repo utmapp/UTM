@@ -102,7 +102,7 @@ class VMDisplayMetalWindowController: VMDisplayWindowController, UTMSpiceIODeleg
             window.contentMinSize = scaledSize
             window.contentAspectRatio = size
             window.setFrame(windowRect, display: false, animate: true)
-            self.metalView.setFrameSize(scaledSize)
+            self.metalView.setFrameSize(contentRect.size)
         }
     }
     
