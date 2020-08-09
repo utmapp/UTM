@@ -140,21 +140,21 @@ private let macVkToScancode = [
 
 class VMMetalView: MTKView {
     weak var inputDelegate: VMMetalViewInputDelegate?
+    var wholeTrackingArea: NSTrackingArea?
     
     override var acceptsFirstResponder: Bool {
         true
     }
     
-    required init(coder: NSCoder) {
-        super.init(coder: coder)
-        let trackingArea = NSTrackingArea(rect: .zero, options: [.mouseMoved, .mouseEnteredAndExited, .activeWhenFirstResponder, .inVisibleRect], owner: self, userInfo: nil)
+    override func updateTrackingAreas() {
+        logger.debug("update tracking area")
+        let trackingArea = NSTrackingArea(rect: CGRect(origin: .zero, size: frame.size), options: [.mouseMoved, .mouseEnteredAndExited, .activeWhenFirstResponder], owner: self, userInfo: nil)
+        if let oldTrackingArea = wholeTrackingArea {
+            removeTrackingArea(oldTrackingArea)
+        }
+        wholeTrackingArea = trackingArea
         addTrackingArea(trackingArea)
-    }
-    
-    override init(frame frameRect: CGRect, device: MTLDevice?) {
-        super.init(frame: frameRect, device: device)
-        let trackingArea = NSTrackingArea(rect: frameRect, options: [.mouseMoved, .mouseEnteredAndExited, .activeWhenFirstResponder, .inVisibleRect], owner: self, userInfo: nil)
-        addTrackingArea(trackingArea)
+        super.updateTrackingAreas()
     }
     
     override func mouseEntered(with event: NSEvent) {
