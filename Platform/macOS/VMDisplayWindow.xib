@@ -11,14 +11,14 @@
             <connections>
                 <outlet property="activityIndicator" destination="Ulx-Td-rrm" id="urA-l7-PXl"/>
                 <outlet property="displayView" destination="M5X-Is-pc9" id="U6s-s4-48i"/>
-                <outlet property="drivesToolbarItem" destination="lS2-Wk-mC1" id="y2e-UF-oV2"/>
-                <outlet property="networkToolbarItem" destination="kg0-bi-l7Y" id="AcL-KO-RGA"/>
+                <outlet property="drivesToolbarItem" destination="bKL-Th-FFw" id="3SQ-Qt-5jn"/>
+                <outlet property="networkToolbarItem" destination="7EC-GE-fIl" id="fz7-Lc-ch7"/>
                 <outlet property="overlayView" destination="nKs-QY-EOf" id="sD4-fu-HIL"/>
-                <outlet property="restartToolbarItem" destination="Xkb-X7-tAj" id="q9h-za-RSv"/>
+                <outlet property="restartToolbarItem" destination="G7P-HJ-bcy" id="R8T-hV-Gr6"/>
                 <outlet property="screenshotView" destination="UUd-qY-POz" id="nMM-Nr-mQo"/>
                 <outlet property="startButton" destination="ZTi-Hs-ge6" id="FLE-Yi-azI"/>
-                <outlet property="startPauseToolbarItem" destination="tr9-Of-dCt" id="AWe-iB-3iJ"/>
-                <outlet property="stopToolbarItem" destination="trX-3Y-KE4" id="kfa-uG-soJ"/>
+                <outlet property="startPauseToolbarItem" destination="kT2-2U-cYm" id="AwM-e3-ge3"/>
+                <outlet property="stopToolbarItem" destination="Bkx-Ph-j0D" id="yqL-pR-3gr"/>
                 <outlet property="touchBar" destination="MdV-I1-RxZ" id="rFp-7N-UJC"/>
                 <outlet property="window" destination="QvC-M9-y7g" id="vHh-hj-7eR"/>
             </connections>
@@ -98,38 +98,83 @@
             </view>
             <toolbar key="toolbar" implicitIdentifier="204ED9EE-2DF0-4A0C-99E3-CD0CC398420A" showsBaselineSeparator="NO" displayMode="iconOnly" sizeMode="regular" id="qD6-Hj-nyo">
                 <allowedToolbarItems>
-                    <toolbarItem implicitItemIdentifier="A8A37634-9B9F-4A43-9B13-DAFE41350517" label="Stop" paletteLabel="Stop" tag="-1" image="power" catalog="system" sizingBehavior="auto" navigational="YES" id="trX-3Y-KE4">
-                        <connections>
-                            <action selector="stopButtonPressed:" target="-2" id="q04-QD-yhU"/>
-                        </connections>
+                    <toolbarItem implicitItemIdentifier="9683821E-BFE9-43BA-9AB9-54F930376FD0" label="Stop" paletteLabel="Stop" image="power" catalog="system" sizingBehavior="auto" navigational="YES" id="Bkx-Ph-j0D">
+                        <nil key="toolTip"/>
+                        <button key="view" verticalHuggingPriority="750" id="FNq-Q0-aIF">
+                            <rect key="frame" x="0.0" y="14" width="84" height="26"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                            <buttonCell key="cell" type="roundTextured" bezelStyle="texturedRounded" image="power" catalog="system" imagePosition="only" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="CFB-He-ag2">
+                                <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                                <font key="font" metaFont="system"/>
+                            </buttonCell>
+                            <connections>
+                                <action selector="stopButtonPressed:" target="-2" id="ddB-eA-l4t"/>
+                            </connections>
+                        </button>
                     </toolbarItem>
-                    <toolbarItem implicitItemIdentifier="EE1E8AF7-330A-4F6F-8782-EA73207CD2F1" label="Start" paletteLabel="Start/Pause" tag="-1" image="play.fill" catalog="system" sizingBehavior="auto" navigational="YES" id="tr9-Of-dCt">
-                        <connections>
-                            <action selector="startPauseButtonPressed:" target="-2" id="zkk-Au-OAW"/>
-                        </connections>
+                    <toolbarItem implicitItemIdentifier="49A5F942-A936-49D2-B6AA-AAA5F726396B" label="Start/Pause" paletteLabel="Start/Pause" image="play.fill" catalog="system" sizingBehavior="auto" navigational="YES" id="kT2-2U-cYm">
+                        <nil key="toolTip"/>
+                        <button key="view" verticalHuggingPriority="750" id="0gP-t0-ORQ">
+                            <rect key="frame" x="0.0" y="14" width="84" height="26"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                            <buttonCell key="cell" type="roundTextured" bezelStyle="texturedRounded" image="play.fill" catalog="system" imagePosition="only" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="sRx-SF-jCQ">
+                                <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                                <font key="font" metaFont="system"/>
+                            </buttonCell>
+                            <connections>
+                                <action selector="startPauseButtonPressed:" target="-2" id="geF-sv-ch1"/>
+                            </connections>
+                        </button>
                     </toolbarItem>
-                    <toolbarItem implicitItemIdentifier="9628499A-2C8E-45E7-9C01-7B1A1A5B0BC0" label="" paletteLabel="Restart" tag="-1" image="restart" catalog="system" sizingBehavior="auto" navigational="YES" id="Xkb-X7-tAj">
-                        <connections>
-                            <action selector="restartButtonPressed:" target="-2" id="V9f-rL-gsD"/>
-                        </connections>
+                    <toolbarItem implicitItemIdentifier="FAFCA770-EA16-4713-BAB0-6FAC76767F48" label="Restart" paletteLabel="Restart" image="restart" catalog="system" sizingBehavior="auto" navigational="YES" id="G7P-HJ-bcy">
+                        <nil key="toolTip"/>
+                        <button key="view" verticalHuggingPriority="750" id="ES2-tt-K1A">
+                            <rect key="frame" x="0.0" y="14" width="84" height="26"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                            <buttonCell key="cell" type="roundTextured" bezelStyle="texturedRounded" image="restart" catalog="system" imagePosition="only" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="LA8-B0-6E9">
+                                <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                                <font key="font" metaFont="system"/>
+                            </buttonCell>
+                            <connections>
+                                <action selector="restartButtonPressed:" target="-2" id="FF2-ag-6zC"/>
+                            </connections>
+                        </button>
                     </toolbarItem>
-                    <toolbarItem implicitItemIdentifier="CEB7A25C-DB71-4C99-B9E1-AE25F2042D60" label="Drives" paletteLabel="Drives" tag="-1" image="opticaldiscdrive" catalog="system" sizingBehavior="auto" id="lS2-Wk-mC1">
-                        <connections>
-                            <action selector="drivesButtonPressed:" target="-2" id="sjQ-Rd-kno"/>
-                        </connections>
+                    <toolbarItem implicitItemIdentifier="E26256BC-2B5F-409C-98FF-96C436660BD7" label="Drives" paletteLabel="Drives" image="opticaldisc" catalog="system" sizingBehavior="auto" id="bKL-Th-FFw">
+                        <nil key="toolTip"/>
+                        <button key="view" verticalHuggingPriority="750" id="O9E-id-HIO">
+                            <rect key="frame" x="0.0" y="14" width="84" height="26"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                            <buttonCell key="cell" type="roundTextured" bezelStyle="texturedRounded" image="opticaldisc" catalog="system" imagePosition="only" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="6ry-MQ-PA2">
+                                <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                                <font key="font" metaFont="system"/>
+                            </buttonCell>
+                            <connections>
+                                <action selector="drivesButtonPressed:" target="-2" id="siw-JM-gRH"/>
+                            </connections>
+                        </button>
                     </toolbarItem>
-                    <toolbarItem implicitItemIdentifier="1724F188-37BF-4D60-A017-85E866F4E2C8" label="Network" paletteLabel="Network" tag="-1" image="network" catalog="system" sizingBehavior="auto" id="kg0-bi-l7Y">
-                        <connections>
-                            <action selector="networkButtonPressed:" target="-2" id="BP5-z4-U0V"/>
-                        </connections>
+                    <toolbarItem implicitItemIdentifier="BC7277DA-3080-4525-B162-1DFD21A5B7B1" label="Network" paletteLabel="Network" image="network" catalog="system" sizingBehavior="auto" id="7EC-GE-fIl">
+                        <nil key="toolTip"/>
+                        <button key="view" verticalHuggingPriority="750" id="l7R-sT-uoV">
+                            <rect key="frame" x="0.0" y="14" width="84" height="26"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                            <buttonCell key="cell" type="roundTextured" bezelStyle="texturedRounded" image="network" catalog="system" imagePosition="only" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="s1r-QI-ktp">
+                                <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                                <font key="font" metaFont="system"/>
+                            </buttonCell>
+                            <connections>
+                                <action selector="networkButtonPressed:" target="-2" id="HjG-xe-k07"/>
+                            </connections>
+                        </button>
                     </toolbarItem>
                 </allowedToolbarItems>
                 <defaultToolbarItems>
-                    <toolbarItem reference="trX-3Y-KE4"/>
-                    <toolbarItem reference="tr9-Of-dCt"/>
-                    <toolbarItem reference="Xkb-X7-tAj"/>
-                    <toolbarItem reference="lS2-Wk-mC1"/>
-                    <toolbarItem reference="kg0-bi-l7Y"/>
+                    <toolbarItem reference="Bkx-Ph-j0D"/>
+                    <toolbarItem reference="kT2-2U-cYm"/>
+                    <toolbarItem reference="G7P-HJ-bcy"/>
+                    <toolbarItem reference="bKL-Th-FFw"/>
+                    <toolbarItem reference="7EC-GE-fIl"/>
                 </defaultToolbarItems>
             </toolbar>
             <connections>
@@ -143,7 +188,7 @@
     </objects>
     <resources>
         <image name="network" catalog="system" width="15" height="15"/>
-        <image name="opticaldiscdrive" catalog="system" width="18" height="13"/>
+        <image name="opticaldisc" catalog="system" width="15" height="15"/>
         <image name="play.circle.fill" catalog="system" width="15" height="15"/>
         <image name="play.fill" catalog="system" width="12" height="13"/>
         <image name="power" catalog="system" width="15" height="16"/>
