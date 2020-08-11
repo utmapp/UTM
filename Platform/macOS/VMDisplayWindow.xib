@@ -58,7 +58,7 @@
                             <progressIndicator wantsLayer="YES" maxValue="100" displayedWhenStopped="NO" indeterminate="YES" style="spinning" translatesAutoresizingMaskIntoConstraints="NO" id="Ulx-Td-rrm">
                                 <rect key="frame" x="384" y="284" width="32" height="32"/>
                             </progressIndicator>
-                            <button translatesAutoresizingMaskIntoConstraints="NO" id="ZTi-Hs-ge6" userLabel="Play Button">
+                            <button toolTip="Starts/resumes the VM" translatesAutoresizingMaskIntoConstraints="NO" id="ZTi-Hs-ge6" userLabel="Play Button">
                                 <rect key="frame" x="300" y="197" width="200" height="206"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="200" id="dy7-LO-AqQ"/>
@@ -98,8 +98,7 @@
             </view>
             <toolbar key="toolbar" implicitIdentifier="204ED9EE-2DF0-4A0C-99E3-CD0CC398420A" showsBaselineSeparator="NO" displayMode="iconOnly" sizeMode="regular" id="qD6-Hj-nyo">
                 <allowedToolbarItems>
-                    <toolbarItem implicitItemIdentifier="9683821E-BFE9-43BA-9AB9-54F930376FD0" label="Stop" paletteLabel="Stop" image="power" catalog="system" sizingBehavior="auto" navigational="YES" id="Bkx-Ph-j0D">
-                        <nil key="toolTip"/>
+                    <toolbarItem implicitItemIdentifier="9683821E-BFE9-43BA-9AB9-54F930376FD0" label="Stop" paletteLabel="Stop" toolTip="Shuts down and stops the VM" image="power" catalog="system" sizingBehavior="auto" navigational="YES" id="Bkx-Ph-j0D">
                         <button key="view" verticalHuggingPriority="750" id="FNq-Q0-aIF">
                             <rect key="frame" x="0.0" y="14" width="84" height="26"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
@@ -112,8 +111,7 @@
                             </connections>
                         </button>
                     </toolbarItem>
-                    <toolbarItem implicitItemIdentifier="49A5F942-A936-49D2-B6AA-AAA5F726396B" label="Start/Pause" paletteLabel="Start/Pause" image="play.fill" catalog="system" sizingBehavior="auto" navigational="YES" id="kT2-2U-cYm">
-                        <nil key="toolTip"/>
+                    <toolbarItem implicitItemIdentifier="49A5F942-A936-49D2-B6AA-AAA5F726396B" label="Start/Pause" paletteLabel="Start/Pause" toolTip="Start/pause the VM" image="play.fill" catalog="system" sizingBehavior="auto" navigational="YES" id="kT2-2U-cYm">
                         <button key="view" verticalHuggingPriority="750" id="0gP-t0-ORQ">
                             <rect key="frame" x="0.0" y="14" width="84" height="26"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
@@ -126,8 +124,7 @@
                             </connections>
                         </button>
                     </toolbarItem>
-                    <toolbarItem implicitItemIdentifier="FAFCA770-EA16-4713-BAB0-6FAC76767F48" label="Restart" paletteLabel="Restart" image="restart" catalog="system" sizingBehavior="auto" navigational="YES" id="G7P-HJ-bcy">
-                        <nil key="toolTip"/>
+                    <toolbarItem implicitItemIdentifier="FAFCA770-EA16-4713-BAB0-6FAC76767F48" label="Restart" paletteLabel="Restart" toolTip="Restarts the VM" image="restart" catalog="system" sizingBehavior="auto" navigational="YES" id="G7P-HJ-bcy">
                         <button key="view" verticalHuggingPriority="750" id="ES2-tt-K1A">
                             <rect key="frame" x="0.0" y="14" width="84" height="26"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
@@ -140,8 +137,7 @@
                             </connections>
                         </button>
                     </toolbarItem>
-                    <toolbarItem implicitItemIdentifier="E26256BC-2B5F-409C-98FF-96C436660BD7" label="Drives" paletteLabel="Drives" image="opticaldisc" catalog="system" sizingBehavior="auto" id="bKL-Th-FFw">
-                        <nil key="toolTip"/>
+                    <toolbarItem implicitItemIdentifier="E26256BC-2B5F-409C-98FF-96C436660BD7" label="Drives" paletteLabel="Drives" toolTip="Drive image options" image="opticaldisc" catalog="system" sizingBehavior="auto" id="bKL-Th-FFw">
                         <button key="view" verticalHuggingPriority="750" id="O9E-id-HIO">
                             <rect key="frame" x="0.0" y="14" width="84" height="26"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
@@ -154,8 +150,7 @@
                             </connections>
                         </button>
                     </toolbarItem>
-                    <toolbarItem implicitItemIdentifier="BC7277DA-3080-4525-B162-1DFD21A5B7B1" label="Network" paletteLabel="Network" image="network" catalog="system" sizingBehavior="auto" id="7EC-GE-fIl">
-                        <nil key="toolTip"/>
+                    <toolbarItem implicitItemIdentifier="BC7277DA-3080-4525-B162-1DFD21A5B7B1" label="Network" paletteLabel="Network" toolTip="Network options" image="network" catalog="system" sizingBehavior="auto" id="7EC-GE-fIl">
                         <button key="view" verticalHuggingPriority="750" id="l7R-sT-uoV">
                             <rect key="frame" x="0.0" y="14" width="84" height="26"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
