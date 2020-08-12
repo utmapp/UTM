@@ -142,15 +142,12 @@ class VMMetalView: MTKView {
     weak var inputDelegate: VMMetalViewInputDelegate?
     var wholeTrackingArea: NSTrackingArea?
     
-    override var acceptsFirstResponder: Bool {
-        true
-    }
-    
     override func updateTrackingAreas() {
         logger.debug("update tracking area")
-        let trackingArea = NSTrackingArea(rect: CGRect(origin: .zero, size: frame.size), options: [.mouseMoved, .mouseEnteredAndExited, .activeWhenFirstResponder], owner: self, userInfo: nil)
+        let trackingArea = NSTrackingArea(rect: CGRect(origin: .zero, size: frame.size), options: [.mouseMoved, .mouseEnteredAndExited, .activeInKeyWindow], owner: self, userInfo: nil)
         if let oldTrackingArea = wholeTrackingArea {
             removeTrackingArea(oldTrackingArea)
+            NSCursor.unhide()
         }
         wholeTrackingArea = trackingArea
         addTrackingArea(trackingArea)
@@ -158,10 +155,12 @@ class VMMetalView: MTKView {
     }
     
     override func mouseEntered(with event: NSEvent) {
+        logger.debug("mouse entered")
         NSCursor.hide()
     }
     
     override func mouseExited(with event: NSEvent) {
+        logger.debug("mouse exited")
         NSCursor.unhide()
     }
     
