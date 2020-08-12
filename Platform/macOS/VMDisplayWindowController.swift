@@ -25,6 +25,7 @@ class VMDisplayWindowController: NSWindowController {
     @IBOutlet weak var stopToolbarItem: NSToolbarItem!
     @IBOutlet weak var startPauseToolbarItem: NSToolbarItem!
     @IBOutlet weak var restartToolbarItem: NSToolbarItem!
+    @IBOutlet weak var captureMouseToolbarItem: NSToolbarItem!
     @IBOutlet weak var drivesToolbarItem: NSToolbarItem!
     @IBOutlet weak var networkToolbarItem: NSToolbarItem!
     
@@ -33,6 +34,8 @@ class VMDisplayWindowController: NSWindowController {
     var vmConfiguration: UTMConfiguration?
     var toolbarVisible: Bool = false // ignored
     var keyboardVisible: Bool = false // ignored
+    
+    var isMouseCaptued: Bool = false
     
     override var windowNibName: NSNib.Name? {
         "VMDisplayWindow"
@@ -55,6 +58,10 @@ class VMDisplayWindowController: NSWindowController {
     }
     
     @IBAction func restartButtonPressed(_ sender: Any) {
+    }
+    
+    @IBAction func captureMouseButtonPressed(_ sender: Any) {
+        isMouseCaptued.toggle()
     }
     
     @IBAction func drivesButtonPressed(_ sender: Any) {
