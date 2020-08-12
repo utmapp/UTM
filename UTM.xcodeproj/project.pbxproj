@@ -1006,6 +1006,7 @@
 		CEE0420F24412C520001680F /* VMConfigStepper.m in Sources */ = {isa = PBXBuildFile; fileRef = CEE0420E24412C520001680F /* VMConfigStepper.m */; };
 		CEE0421224418F2E0001680F /* UTMConfiguration+Miscellaneous.m in Sources */ = {isa = PBXBuildFile; fileRef = CEE0421124418F2E0001680F /* UTMConfiguration+Miscellaneous.m */; };
 		CEEB66462284B942002737B2 /* VMKeyboardButton.m in Sources */ = {isa = PBXBuildFile; fileRef = CEEB66452284B942002737B2 /* VMKeyboardButton.m */; };
+		CEEC811B24E48EC700ACB0B3 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEEC811A24E48EC600ACB0B3 /* SettingsView.swift */; };
 		CEFC6CDD24C25697003F6962 /* VMDriveImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEFC6CDC24C25697003F6962 /* VMDriveImage.swift */; };
 		CEFC6CDE24C25697003F6962 /* VMDriveImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEFC6CDC24C25697003F6962 /* VMDriveImage.swift */; };
 		CEFE75DB228933DE0050ABCC /* gst_ios_init.m in Sources */ = {isa = PBXBuildFile; fileRef = CEFE75D9228933DE0050ABCC /* gst_ios_init.m */; };
@@ -1842,6 +1843,7 @@
 		CEE0421124418F2E0001680F /* UTMConfiguration+Miscellaneous.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UTMConfiguration+Miscellaneous.m"; sourceTree = "<group>"; };
 		CEEB66442284B942002737B2 /* VMKeyboardButton.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VMKeyboardButton.h; sourceTree = "<group>"; };
 		CEEB66452284B942002737B2 /* VMKeyboardButton.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VMKeyboardButton.m; sourceTree = "<group>"; };
+		CEEC811A24E48EC600ACB0B3 /* SettingsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		CEFC6CDC24C25697003F6962 /* VMDriveImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMDriveImage.swift; sourceTree = "<group>"; };
 		CEFE75D9228933DE0050ABCC /* gst_ios_init.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = gst_ios_init.m; sourceTree = "<group>"; };
 		CEFE75DA228933DE0050ABCC /* gst_ios_init.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = gst_ios_init.h; sourceTree = "<group>"; };
@@ -2229,6 +2231,7 @@
 			isa = PBXGroup;
 			children = (
 				CE2D954024AD4F980059923A /* ContentView.swift */,
+				CEEC811A24E48EC600ACB0B3 /* SettingsView.swift */,
 				CE8813D724CD2A8B00532628 /* SharingServicePicker.swift */,
 				CE93759124BA775C0074066F /* ToolbarTabView.swift */,
 				CE93758F24BA74510074066F /* ToolbarTabViewController.swift */,
@@ -3436,6 +3439,7 @@
 				CED814ED24C7C2850042F0F1 /* VMConfigInfoView.swift in Sources */,
 				CE0B6D2D24AD57FC00FE012D /* qapi-commands-machine.c in Sources */,
 				CE0B6D2824AD57FC00FE012D /* qapi-dispatch-events.c in Sources */,
+				CEEC811B24E48EC700ACB0B3 /* SettingsView.swift in Sources */,
 				CE0B6D6624AD584D00FE012D /* qapi-visit-machine-target.c in Sources */,
 				CE2D957024AD4F990059923A /* VMRemovableDrivesView.swift in Sources */,
 				CE0B6D1D24AD57FC00FE012D /* qapi-commands-net.c in Sources */,

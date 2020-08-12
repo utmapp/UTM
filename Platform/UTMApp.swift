@@ -27,6 +27,11 @@ struct UTMApp: App {
         WindowGroup {
             ContentView().environmentObject(data)
         }
+        #if os(macOS)
+        Settings {
+            SettingsView()
+        }
+        #endif
     }
     
     init() {
