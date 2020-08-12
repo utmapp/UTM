@@ -30,22 +30,18 @@ class VMDisplayMetalWindowController: VMDisplayWindowController, UTMSpiceIODeleg
             }
         }
     }
-    var isScalable: Bool = false
     
     private var displaySizeObserver: NSKeyValueObservation?
     private var displaySize: CGSize = .zero
     
-    private var shouldShowCursorCaptureAlert: Bool {
-        get {
-            let defaults = UserDefaults.standard
-            return !defaults.bool(forKey: "NoCursorCaptureAlert")
-        }
-        
-        set {
-            let defaults = UserDefaults.standard
-            return defaults.set(!newValue, forKey: "NoCursorCaptureAlert")
-        }
-    }
+    // MARK: - User preferences
+    
+    @Setting("NoCursorCaptureAlert") private var isCursorCaptureAlertShown: Bool = false
+    @Setting("AlwaysNativeResolution") private var isAlwaysNativeResolution: Bool = false
+    @Setting("DisplayFixed") private var isDisplayFixed: Bool = false
+    private var settingObservations = [NSKeyValueObservation]()
+    
+    // MARK: - Init
     
     override func windowDidLoad() {
         super.windowDidLoad()
@@ -68,6 +64,13 @@ class VMDisplayMetalWindowController: VMDisplayWindowController, UTMSpiceIODeleg
         renderer.changeUpscaler(vmConfiguration?.displayUpscalerValue ?? .linear, downscaler: vmConfiguration?.displayDownscalerValue ?? .linear)
         metalView.delegate = renderer
         metalView.inputDelegate = self
+        
+        settingObservations.append(UserDefaults.standard.observe(\.AlwaysNativeResolution, options: .new) { (defaults, change) in
+            self.displaySizeDidChange(size: self.displaySize)
+        })
+        settingObservations.append(UserDefaults.standard.observe(\.DisplayFixed, options: .new) { (defaults, change) in
+            self.displaySizeDidChange(size: self.displaySize)
+        })
         
         if vm.state == .vmStopped || vm.state == .vmSuspended {
             enterSuspended(isBusy: false)
@@ -119,8 +122,16 @@ extension VMDisplayMetalWindowController {
             guard let window = self.window else { return }
             guard let vmDisplay = self.vmDisplay else { return }
             let currentScreenScale = window.screen?.backingScaleFactor ?? 1.0
-            let scaledSize = CGSize(width: size.width / currentScreenScale, height: size.height / currentScreenScale)
-            let contentRect = CGRect(x: window.frame.origin.x, y: 0, width: scaledSize.width * vmDisplay.viewportScale, height: scaledSize.height * vmDisplay.viewportScale)
+            let nativeScale = self.isAlwaysNativeResolution ? 1.0 : currentScreenScale
+            // change optional scale if needed
+            if self.isDisplayFixed || (!self.isAlwaysNativeResolution && vmDisplay.viewportScale < currentScreenScale) {
+                vmDisplay.viewportScale = nativeScale
+            }
+            let scaledSize = CGSize(width: size.width * nativeScale / currentScreenScale, height: size.height * nativeScale / currentScreenScale)
+            let contentRect = CGRect(x: window.frame.origin.x,
+                                     y: 0,
+                                     width: scaledSize.width * vmDisplay.viewportScale / nativeScale,
+                                     height: scaledSize.height * vmDisplay.viewportScale / nativeScale)
             var windowRect = window.frameRect(forContentRect: contentRect)
             windowRect.origin.y = window.frame.origin.y + window.frame.height - windowRect.height
             window.contentMinSize = scaledSize
@@ -138,7 +149,7 @@ extension VMDisplayMetalWindowController {
     }
     
     func windowWillResize(_ sender: NSWindow, to frameSize: NSSize) -> NSSize {
-        guard isScalable else { return frameSize }
+        guard !isDisplayFixed else { return frameSize }
         guard displaySize != .zero else { return frameSize }
         guard let window = self.window else { return frameSize }
         guard let vmDisplay = self.vmDisplay else { return frameSize }
@@ -163,14 +174,14 @@ extension VMDisplayMetalWindowController: VMMetalViewInputDelegate {
             self.vmInput?.requestMouseMode(false)
             self.metalView?.captureMouse()
         }
-        if shouldShowCursorCaptureAlert {
+        if isCursorCaptureAlertShown {
             let alert = NSAlert()
             alert.messageText = NSLocalizedString("Captured mouse", comment: "VMDisplayMetalWindowController")
             alert.informativeText = NSLocalizedString("To release the mouse cursor, press ⌃+⌥ (Ctrl+Opt or Ctrl+Alt) at the same time.", comment: "VMDisplayMetalWindowController")
             alert.showsSuppressionButton = true
             alert.beginSheetModal(for: window!) { _ in
                 if alert.suppressionButton?.state ?? .off == .on {
-                    self.shouldShowCursorCaptureAlert = false
+                    self.isCursorCaptureAlertShown = false
                 }
                 DispatchQueue.main.async(execute: action)
             }
