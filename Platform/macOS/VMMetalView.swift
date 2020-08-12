@@ -140,7 +140,9 @@ private let macVkToScancode = [
 
 class VMMetalView: MTKView {
     weak var inputDelegate: VMMetalViewInputDelegate?
-    var wholeTrackingArea: NSTrackingArea?
+    private var wholeTrackingArea: NSTrackingArea?
+    private var lastModifiers = NSEvent.ModifierFlags()
+    private var isMouseCaptured = false
     
     override func updateTrackingAreas() {
         logger.debug("update tracking area")
@@ -195,12 +197,81 @@ class VMMetalView: MTKView {
         inputDelegate?.keyDown(keyCode: macVkToScancode[Int(event.keyCode)] ?? 0)
     }
     
+    override func flagsChanged(with event: NSEvent) {
+        let modifiers = event.modifierFlags
+        logger.debug("modifers: \(modifiers)")
+        if modifiers.isSuperset(of: [.option, .control]) {
+            logger.debug("release cursor")
+            releaseMouse()
+        }
+        sendModifiers(lastModifiers.subtracting(modifiers), press: false)
+        sendModifiers(modifiers.subtracting(lastModifiers), press: true)
+        lastModifiers = modifiers
+    }
+    
+    private func sendModifiers(_ modifier: NSEvent.ModifierFlags, press: Bool) {
+        if modifier.contains(.capsLock) {
+            if press {
+                inputDelegate?.keyDown(keyCode: macVkToScancode[kVK_CapsLock]!)
+            } else {
+                inputDelegate?.keyUp(keyCode: macVkToScancode[kVK_CapsLock]!)
+            }
+        }
+        if modifier.contains(.command) {
+            if press {
+                inputDelegate?.keyDown(keyCode: macVkToScancode[kVK_Command]!)
+            } else {
+                inputDelegate?.keyUp(keyCode: macVkToScancode[kVK_Command]!)
+            }
+        }
+        if modifier.contains(.control) {
+            if press {
+                inputDelegate?.keyDown(keyCode: macVkToScancode[kVK_Control]!)
+            } else {
+                inputDelegate?.keyUp(keyCode: macVkToScancode[kVK_Control]!)
+            }
+        }
+        if modifier.contains(.function) {
+            if press {
+                inputDelegate?.keyDown(keyCode: macVkToScancode[kVK_Function]!)
+            } else {
+                inputDelegate?.keyUp(keyCode: macVkToScancode[kVK_Function]!)
+            }
+        }
+        if modifier.contains(.help) {
+            if press {
+                inputDelegate?.keyDown(keyCode: macVkToScancode[kVK_Help]!)
+            } else {
+                inputDelegate?.keyUp(keyCode: macVkToScancode[kVK_Help]!)
+            }
+        }
+        if modifier.contains(.option) {
+            if press {
+                inputDelegate?.keyDown(keyCode: macVkToScancode[kVK_Option]!)
+            } else {
+                inputDelegate?.keyUp(keyCode: macVkToScancode[kVK_Option]!)
+            }
+        }
+        if modifier.contains(.shift) {
+            if press {
+                inputDelegate?.keyDown(keyCode: macVkToScancode[kVK_Shift]!)
+            } else {
+                inputDelegate?.keyUp(keyCode: macVkToScancode[kVK_Shift]!)
+            }
+        }
+    }
+    
     override func mouseMoved(with event: NSEvent) {
         logger.debug("mouse moved: \(event.deltaX), \(event.deltaY)")
-        let location = event.locationInWindow
-        let converted = convert(location, from: nil)
-        inputDelegate?.mouseMove(absolutePoint: converted,
-                                 button: NSEvent.pressedMouseButtons.inputButtons())
+        if isMouseCaptured {
+            inputDelegate?.mouseMove(relativePoint: CGPoint(x: event.deltaX, y: event.deltaY),
+                                     button: NSEvent.pressedMouseButtons.inputButtons())
+        } else {
+            let location = event.locationInWindow
+            let converted = convert(location, from: nil)
+            inputDelegate?.mouseMove(absolutePoint: converted,
+                                     button: NSEvent.pressedMouseButtons.inputButtons())
+        }
     }
     
     override func scrollWheel(with event: NSEvent) {
@@ -208,6 +279,31 @@ class VMMetalView: MTKView {
         logger.debug("scroll: \(event.scrollingDeltaY)")
         inputDelegate?.mouseScroll(dy: event.scrollingDeltaY,
                                    button: NSEvent.pressedMouseButtons.inputButtons())
+    }
+}
+
+extension VMMetalView {
+    private var screenCenter: CGPoint? {
+        guard let window = self.window else { return nil }
+        guard let screen = window.screen else { return nil }
+        let centerView = CGPoint(x: frame.size.width / 2, y: frame.size.height / 2)
+        let centerWindow = convert(centerView, to: nil)
+        var centerScreen = window.convertPoint(toScreen: centerWindow)
+        let screenHeight = screen.frame.height
+        centerScreen.y = screenHeight - centerScreen.y
+        logger.debug("screen \(centerScreen.x), \(centerScreen.y)")
+        return centerScreen
+    }
+    
+    func captureMouse() {
+        CGAssociateMouseAndMouseCursorPosition(0)
+        CGWarpMouseCursorPosition(screenCenter ?? .zero)
+        isMouseCaptured = true
+    }
+    
+    func releaseMouse() {
+        CGAssociateMouseAndMouseCursorPosition(1)
+        isMouseCaptured = false
     }
 }
 

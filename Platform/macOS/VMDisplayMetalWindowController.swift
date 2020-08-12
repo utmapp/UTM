@@ -21,10 +21,31 @@ class VMDisplayMetalWindowController: VMDisplayWindowController, UTMSpiceIODeleg
     @objc dynamic var vmDisplay: CSDisplayMetal?
     @objc dynamic var vmInput: CSInput?
     
+    override var isMouseCaptued: Bool {
+        didSet {
+            if isMouseCaptued {
+                captureMouse()
+            } else {
+                releaseMouse()
+            }
+        }
+    }
     var isScalable: Bool = false
     
     private var displaySizeObserver: NSKeyValueObservation?
     private var displaySize: CGSize = .zero
+    
+    private var shouldShowCursorCaptureAlert: Bool {
+        get {
+            let defaults = UserDefaults.standard
+            return !defaults.bool(forKey: "NoCursorCaptureAlert")
+        }
+        
+        set {
+            let defaults = UserDefaults.standard
+            return defaults.set(!newValue, forKey: "NoCursorCaptureAlert")
+        }
+    }
     
     override func windowDidLoad() {
         super.windowDidLoad()
@@ -137,6 +158,32 @@ extension VMDisplayMetalWindowController {
 
 // MARK: - Input events
 extension VMDisplayMetalWindowController: VMMetalViewInputDelegate {
+    private func captureMouse() {
+        let action = { () -> Void in
+            self.vmInput?.requestMouseMode(false)
+            self.metalView?.captureMouse()
+        }
+        if shouldShowCursorCaptureAlert {
+            let alert = NSAlert()
+            alert.messageText = NSLocalizedString("Captured mouse", comment: "VMDisplayMetalWindowController")
+            alert.informativeText = NSLocalizedString("To release the mouse cursor, press ⌃+⌥ (Ctrl+Opt or Ctrl+Alt) at the same time.", comment: "VMDisplayMetalWindowController")
+            alert.showsSuppressionButton = true
+            alert.beginSheetModal(for: window!) { _ in
+                if alert.suppressionButton?.state ?? .off == .on {
+                    self.shouldShowCursorCaptureAlert = false
+                }
+                DispatchQueue.main.async(execute: action)
+            }
+        } else {
+            action()
+        }
+    }
+    
+    private func releaseMouse() {
+        vmInput?.requestMouseMode(true)
+        metalView?.releaseMouse()
+    }
+    
     func mouseMove(absolutePoint: CGPoint, button: CSInputButton) {
         guard let window = self.window else { return }
         let currentScreenScale = window.screen?.backingScaleFactor ?? 1.0
@@ -149,6 +196,8 @@ extension VMDisplayMetalWindowController: VMMetalViewInputDelegate {
     }
     
     func mouseMove(relativePoint: CGPoint, button: CSInputButton) {
+        let translated = CGPoint(x: relativePoint.x, y: -relativePoint.y)
+        vmInput?.sendMouseMotion(button, point: translated)
     }
     
     func mouseDown(button: CSInputButton) {

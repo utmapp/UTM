@@ -10,6 +10,7 @@
         <customObject id="-2" userLabel="File's Owner" customClass="VMDisplayWindowController" customModule="UTM" customModuleProvider="target">
             <connections>
                 <outlet property="activityIndicator" destination="Ulx-Td-rrm" id="urA-l7-PXl"/>
+                <outlet property="captureMouseToolbarItem" destination="FN7-zs-mWC" id="qzI-Kk-0D1"/>
                 <outlet property="displayView" destination="M5X-Is-pc9" id="U6s-s4-48i"/>
                 <outlet property="drivesToolbarItem" destination="bKL-Th-FFw" id="3SQ-Qt-5jn"/>
                 <outlet property="networkToolbarItem" destination="7EC-GE-fIl" id="fz7-Lc-ch7"/>
@@ -137,6 +138,19 @@
                             </connections>
                         </button>
                     </toolbarItem>
+                    <toolbarItem implicitItemIdentifier="E86439F7-239E-4570-B1FE-FFF2B4BA3F10" label="Capture Mouse" paletteLabel="Capture Mouse" toolTip="Capture mouse cursor (⌃+⌥ to release)" image="cursorarrow.rays" catalog="system" sizingBehavior="auto" id="FN7-zs-mWC">
+                        <button key="view" verticalHuggingPriority="750" id="Ge3-wo-FzQ">
+                            <rect key="frame" x="2" y="14" width="84" height="26"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                            <buttonCell key="cell" type="roundTextured" bezelStyle="texturedRounded" image="cursorarrow.rays" catalog="system" imagePosition="only" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="EYc-Sr-2L8">
+                                <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                                <font key="font" metaFont="system"/>
+                            </buttonCell>
+                            <connections>
+                                <action selector="captureMouseButtonPressed:" target="-2" id="St6-3b-MhN"/>
+                            </connections>
+                        </button>
+                    </toolbarItem>
                     <toolbarItem implicitItemIdentifier="E26256BC-2B5F-409C-98FF-96C436660BD7" label="Drives" paletteLabel="Drives" toolTip="Drive image options" image="opticaldisc" catalog="system" sizingBehavior="auto" id="bKL-Th-FFw">
                         <button key="view" verticalHuggingPriority="750" id="O9E-id-HIO">
                             <rect key="frame" x="0.0" y="14" width="84" height="26"/>
@@ -168,6 +182,7 @@
                     <toolbarItem reference="Bkx-Ph-j0D"/>
                     <toolbarItem reference="kT2-2U-cYm"/>
                     <toolbarItem reference="G7P-HJ-bcy"/>
+                    <toolbarItem reference="FN7-zs-mWC"/>
                     <toolbarItem reference="bKL-Th-FFw"/>
                     <toolbarItem reference="7EC-GE-fIl"/>
                 </defaultToolbarItems>
@@ -182,6 +197,7 @@
         </touchBar>
     </objects>
     <resources>
+        <image name="cursorarrow.rays" catalog="system" width="16" height="16"/>
         <image name="network" catalog="system" width="15" height="15"/>
         <image name="opticaldisc" catalog="system" width="15" height="15"/>
         <image name="play.circle.fill" catalog="system" width="15" height="15"/>
