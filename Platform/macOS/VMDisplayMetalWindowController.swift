@@ -72,7 +72,6 @@ class VMDisplayMetalWindowController: VMDisplayWindowController, UTMSpiceIODeleg
             guard let size = change.newValue else { return }
             self.displaySizeDidChange(size: size)
         }
-        metalView.becomeFirstResponder()
         super.enterLive()
     }
     
@@ -82,7 +81,6 @@ class VMDisplayMetalWindowController: VMDisplayWindowController, UTMSpiceIODeleg
             screenshotView.image = vm.screenshot.image
             screenshotView.isHidden = false
         }
-        metalView.resignFirstResponder()
         super.enterSuspended(isBusy: busy)
     }
 }
