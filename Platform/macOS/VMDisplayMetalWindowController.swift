@@ -165,6 +165,18 @@ extension VMDisplayMetalWindowController {
         self.metalView.setFrameSize(scaledSize)
         return targetFrameSize
     }
+    
+    func windowDidBecomeKey(_ notification: Notification) {
+        if let metalView = self.metalView {
+            metalView.becomeFirstResponder()
+        }
+    }
+    
+    func windowDidResignKey(_ notification: Notification) {
+        if let metalView = self.metalView {
+            metalView.resignFirstResponder()
+        }
+    }
 }
 
 // MARK: - Input events

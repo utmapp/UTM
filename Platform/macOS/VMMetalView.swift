@@ -144,9 +144,11 @@ class VMMetalView: MTKView {
     private var lastModifiers = NSEvent.ModifierFlags()
     private var isMouseCaptured = false
     
+    override var acceptsFirstResponder: Bool { true }
+    
     override func updateTrackingAreas() {
         logger.debug("update tracking area")
-        let trackingArea = NSTrackingArea(rect: CGRect(origin: .zero, size: frame.size), options: [.mouseMoved, .mouseEnteredAndExited, .activeInKeyWindow], owner: self, userInfo: nil)
+        let trackingArea = NSTrackingArea(rect: CGRect(origin: .zero, size: frame.size), options: [.mouseMoved, .mouseEnteredAndExited, .activeWhenFirstResponder], owner: self, userInfo: nil)
         if let oldTrackingArea = wholeTrackingArea {
             removeTrackingArea(oldTrackingArea)
             NSCursor.unhide()
@@ -194,7 +196,7 @@ class VMMetalView: MTKView {
     
     override func keyUp(with event: NSEvent) {
         logger.debug("key up: \(event.keyCode)")
-        inputDelegate?.keyDown(keyCode: macVkToScancode[Int(event.keyCode)] ?? 0)
+        inputDelegate?.keyUp(keyCode: macVkToScancode[Int(event.keyCode)] ?? 0)
     }
     
     override func flagsChanged(with event: NSEvent) {
