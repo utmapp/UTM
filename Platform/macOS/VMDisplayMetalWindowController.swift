@@ -127,14 +127,14 @@ extension VMDisplayMetalWindowController {
             if self.isDisplayFixed || (!self.isAlwaysNativeResolution && vmDisplay.viewportScale < currentScreenScale) {
                 vmDisplay.viewportScale = nativeScale
             }
-            let scaledSize = CGSize(width: size.width * nativeScale / currentScreenScale, height: size.height * nativeScale / currentScreenScale)
+            let minScaledSize = CGSize(width: size.width * nativeScale / currentScreenScale, height: size.height * nativeScale / currentScreenScale)
             let contentRect = CGRect(x: window.frame.origin.x,
                                      y: 0,
-                                     width: scaledSize.width * vmDisplay.viewportScale / nativeScale,
-                                     height: scaledSize.height * vmDisplay.viewportScale / nativeScale)
+                                     width: size.width * vmDisplay.viewportScale / currentScreenScale,
+                                     height: size.height * vmDisplay.viewportScale / currentScreenScale)
             var windowRect = window.frameRect(forContentRect: contentRect)
             windowRect.origin.y = window.frame.origin.y + window.frame.height - windowRect.height
-            window.contentMinSize = scaledSize
+            window.contentMinSize = minScaledSize
             window.contentAspectRatio = size
             window.setFrame(windowRect, display: false, animate: true)
             self.metalView.setFrameSize(contentRect.size)
