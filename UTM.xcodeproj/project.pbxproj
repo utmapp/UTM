@@ -1325,6 +1325,8 @@
 		CE0B6D8324AD5ADE00FE012D /* UTMScreenshot.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UTMScreenshot.h; sourceTree = "<group>"; };
 		CE0B6D8424AD5ADE00FE012D /* UTMScreenshot.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UTMScreenshot.m; sourceTree = "<group>"; };
 		CE0B6D8A24AD658000FE012D /* CSSessionMac.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CSSessionMac.m; sourceTree = "<group>"; };
+		CE0E828D24E4D4CE003EA9FE /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = Base; path = Base.lproj/Localizable.strings; sourceTree = "<group>"; };
+		CE0E829424E4D509003EA9FE /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = Base; path = Base.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		CE0FE12724D3B08B0086CEF0 /* VMDisplayWindow.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = VMDisplayWindow.xib; sourceTree = "<group>"; };
 		CE20FAE32444FC6E0059AE11 /* VMConfigDirectoryPickerViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VMConfigDirectoryPickerViewController.h; sourceTree = "<group>"; };
 		CE20FAE42444FC6E0059AE11 /* VMConfigDirectoryPickerViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VMConfigDirectoryPickerViewController.m; sourceTree = "<group>"; };
@@ -3715,6 +3717,7 @@
 				521F3EFA2414F73800130500 /* zh-Hans */,
 				C8958B6D243634DA002D86B4 /* ko */,
 				52873FD9247F5B1B0063E4C8 /* zh-Hant */,
+				CE0E828D24E4D4CE003EA9FE /* Base */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";
@@ -3725,6 +3728,7 @@
 			children = (
 				52459A322440C84E006A58D0 /* zh-Hans */,
 				52873FDA247F5B1B0063E4C8 /* zh-Hant */,
+				CE0E829424E4D509003EA9FE /* Base */,
 			);
 			name = InfoPlist.strings;
 			sourceTree = "<group>";
