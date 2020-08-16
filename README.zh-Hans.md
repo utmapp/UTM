@@ -7,7 +7,7 @@
 
 UTM是一个功能齐全的iOS虚拟机主机。简而言之，它允许你在iPhone和iPad上运行Windows、Android、Ubuntu等操作系统。更多信息请访问https://getutm.app/
 
-![在iPhone上运行UTM的截图][https://kyun.ltyuanfang.cn/tc/2020/08/16/b71e7b3b8d695.png]
+![在iPhone上运行UTM的截图](https://kyun.ltyuanfang.cn/tc/2020/08/16/b71e7b3b8d695.png)
 
 ## 特性
 
