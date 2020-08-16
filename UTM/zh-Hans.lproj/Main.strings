@@ -260,7 +260,7 @@
 "lFm-mY-36G.headerTitle" = "鼠标滚轮";
 
 /* Class = "UILabel"; text = "Enabled"; ObjectID = "Llu-cx-Osx"; */
-"Llu-cx-Osx.text" = "启用";
+"Llu-cx-Osx.text" = "开启";
 
 /* Class = "UITableViewSection"; footerTitle = "Command to send when resizing the console. Placeholder $COLS is the number of columns and $ROWS is the number of rows."; ObjectID = "LTq-Mi-VuJ"; */
 "LTq-Mi-VuJ.footerTitle" = "调整控制台大小时发送的命令。 $COLS是列数，$ROWS是行数。";
@@ -275,7 +275,7 @@
 "MAs-NR-G0n.text" = "MB";
 
 /* Class = "UITableViewSection"; footerTitle = "Default JIT Cache size is 1/4 of the allocated Memory size. This is in addition to the host memory! Force Multicore will allow multi-CPU emulation even if the memory model is not supported by QEMU (x86 on ARM for example). This could result in incorrect emulation."; ObjectID = "MGc-rW-PLa"; */
-"MGc-rW-PLa.footerTitle" = "默认的JIT缓存大小是分配给虚拟机内存大小的1/4。 这是运行虚拟机额外消耗的内存！即使内存模型是QEMU不支持的(例如在ARM上模拟X86)，通过打开强制多核开关，也可强制QEMU使用设备的多个CPU核心，可能会导致错误。机器特性说明：大多数情况不需要修改。 目前仅用于Mac99虚拟机。适用于某些旧版本的MacOS需要设置via = pmu-adb的情况。";
+"MGc-rW-PLa.footerTitle" = "默认的JIT缓存大小是分配给虚拟机内存大小的1/4。 这是运行虚拟机额外需要消耗的内存！即使内存模型是QEMU不支持的(例如在ARM上模拟X86)，通过打开强制多核开关，也可强制QEMU使用设备的多个CPU核心，但可能会导致错误。机器特性说明：大多数情况不需要修改。 目前仅用于Mac99虚拟机。适用于某些旧版本的MacOS需要设置via = pmu-adb的情况。";
 
 /* Class = "UITableViewSection"; headerTitle = "QEMU"; ObjectID = "MGc-rW-PLa"; */
 "MGc-rW-PLa.headerTitle" = "QEMU";
@@ -344,7 +344,7 @@
 "qMH-Bx-PsC.text" = "MB";
 
 /* Class = "UILabel"; text = "Select..."; ObjectID = "qtH-iq-gnv"; */
-"qtH-iq-gnv.text" = "选择";
+"qtH-iq-gnv.text" = "选取";
 
 /* Class = "UILabel"; text = "0 MB"; ObjectID = "r7Y-tO-ugj"; */
 "r7Y-tO-ugj.text" = "0 MB";
@@ -356,7 +356,7 @@
 "rbw-FB-I5Q.text" = "hda1";
 
 /* Class = "UILabel"; text = "System"; ObjectID = "riB-R9-dTb"; */
-"riB-R9-dTb.text" = "CPU和内存";
+"riB-R9-dTb.text" = "系统";
 
 /* Class = "UITableViewSection"; footerTitle = "PS/2 has higher compatibility with older operating systems but does not support custom cursor settings."; ObjectID = "Rtj-zp-arL"; */
 "Rtj-zp-arL.footerTitle" = "PS / 2与较旧的操作系统具有更高的兼容性，但不支持自定义光标设置。";
