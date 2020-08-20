@@ -50,7 +50,7 @@ UTM是一个功能齐全的iOS虚拟机主机。简而言之，它允许你在iP
 
 ### 签名版本
 
-`ipa`[签名][3]是假的签名。如果你是越狱，你不应该签名它，您可以直接使用Filza进行安装。
+`ipa`[签名][3]是伪签名。如果你是越狱，你不应该签名它，您可以直接使用Filza进行安装。
 如果您想要为库存设备签署发行版，有多种方法。推荐使用[iOS应用签名者][2]。注意，许多“云”签名服务(如AppCake)都存在一些已知的问题，而且它们与UTM不兼容。如果在试图启动VM虚拟机时发生崩溃（如闪退），那么您的签名证书是无效的。
 在技术细节上，有两种签名证书:“开发”和“发布”。UTM需要“开发”，而“开发”具有“获得任务许可”的权利。
 
@@ -86,6 +86,6 @@ UTM是在Apache 2.0许可下发布的。但是，它使用几个(L)GPL组件。�
 [1]: https://github.com/utmapp/UTM/actions?query=event%3Arelease+workflow%3ABuild
 [2]: https://dantheman827.github.io/ios-app-signer/
 [3]: https://github.com/utmapp/UTM/releases
-[4]: screen.png
+[4]: https://mmbiz.qpic.cn/sz_mmbiz_png/NyO92NpYSRx8avdRhic0nAqEaIfr6H0T9y08XMic0UWCAZQabYFo7ugwpJGQqp875HorDIPwf9kzOyhmB0icmEnUQ/0?wx_fmt=png
 [5]: https://github.com/utmapp/UTM/actions?query=workflow%3ABuild+event%3Arelease+is%3Asuccess
 
