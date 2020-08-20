@@ -209,7 +209,7 @@ build_qemu () {
     CFLAGS=
     CXXFLAGS=
     LDFLAGS=
-    build $QEMU_SRC --enable-shared-lib
+    build $QEMU_SRC --enable-shared-lib --disable-tcg-interpreter
     CFLAGS="$QEMU_CFLAGS"
     CXXFLAGS="$QEMU_CXXFLAGS"
     LDFLAGS="$QEMU_LDFLAGS"
