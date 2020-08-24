@@ -6,7 +6,6 @@ usage () {
     echo ""
     echo "  -p platform      Target platform. Default ios. [ios|macos]"
     echo "  -a architecture  Target architecture. Default arm64. [armv7|armv7s|arm64|i386|x86_64]"
-    echo "  -t targetversion Target version. Default 'latest'. [legacy|latest]"
     echo "  -o output        Output archive path. Default is current directory."
     echo ""
     exit 1
@@ -14,7 +13,6 @@ usage () {
 
 ARCH=arm64
 PLATFORM=ios
-TARGET=latest
 OUTPUT=$PWD
 SDK=
 SCHEME=
@@ -29,10 +27,6 @@ while [ "x$1" != "x" ]; do
         PLATFORM=$2
         shift
         ;;
-    -t )
-        TARGET=$2
-        shift
-        ;;
     -o )
         OUTPUT=$2
         shift
@@ -44,22 +38,12 @@ while [ "x$1" != "x" ]; do
     shift
 done
 
-case $TARGET in
-legacy )
-    SCHEME="Legacy"
+case $PLATFORM in
+ios )
+    SCHEME="iOS"
     ;;
-latest )
-    case $PLATFORM in
-    ios )
-        SCHEME="iOS"
-        ;;
-    macos )
-        SCHEME="macOS"
-        ;;
-    * )
-        usage
-        ;;
-    esac
+macos )
+    SCHEME="macOS"
     ;;
 * )
     usage
