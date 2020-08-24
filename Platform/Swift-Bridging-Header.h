@@ -28,6 +28,7 @@
 #include "UTMQemuImg.h"
 #include "UTMQemuSystem.h"
 #include "UTMQemuSystemConfiguration.h"
+#include "UTMJailbreak.h"
 #include "UTMLogging.h"
 #include "UTMVirtualMachine.h"
 #include "UTMRenderer.h"
