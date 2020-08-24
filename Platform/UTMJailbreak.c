@@ -20,6 +20,7 @@
 #include <stdio.h>
 #include <sys/mman.h>
 #include <sys/sysctl.h>
+#include <TargetConditionals.h>
 #include <unistd.h>
 #include "UTMJailbreak.h"
 
@@ -55,6 +56,9 @@ static bool am_i_being_debugged() {
 
 
 bool jb_has_jit_entitlement(void) {
+#if TARGET_OS_SIMULATOR
+    return false; // simulator allows MAP_JIT so we pretend it doesn't for testing
+#else
     void *addr = mmap(NULL, PAGE_SIZE, PROT_READ | PROT_WRITE | PROT_EXEC, MAP_ANON | MAP_PRIVATE | MAP_JIT, -1, 0);
     if (addr != NULL) {
         munmap(addr, PAGE_SIZE);
@@ -62,6 +66,7 @@ bool jb_has_jit_entitlement(void) {
     } else {
         return false;
     }
+#endif
 }
 
 bool jb_has_ptrace_hack(void) {
