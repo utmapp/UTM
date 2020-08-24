@@ -16,6 +16,7 @@
 
 import SwiftUI
 
+@available(iOS 14, macOS 11, *)
 struct BusyOverlay: View {
     @EnvironmentObject private var data: UTMData
     
@@ -38,6 +39,7 @@ struct BusyOverlay: View {
 }
 
 #if os(macOS)
+@available(macOS 11, *)
 struct BigWhiteSpinner: NSViewRepresentable {
     func makeNSView(context: Context) -> NSProgressIndicator {
         let view = NSProgressIndicator()
@@ -50,6 +52,7 @@ struct BigWhiteSpinner: NSViewRepresentable {
     }
 }
 #else // iOS
+@available(iOS 14, *)
 struct BigWhiteSpinner: UIViewRepresentable {
     func makeUIView(context: Context) -> UIActivityIndicatorView {
         let view = UIActivityIndicatorView(style: .large)
@@ -63,6 +66,7 @@ struct BigWhiteSpinner: UIViewRepresentable {
 }
 #endif
 
+@available(iOS 14, macOS 11, *)
 struct BusyOverlay_Previews: PreviewProvider {
     static var previews: some View {
         BusyOverlay()

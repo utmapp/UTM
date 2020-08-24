@@ -16,6 +16,7 @@
 
 import SwiftUI
 
+@available(iOS 14, *)
 struct VMSettingsView: View {
     @ObservedObject var config: UTMConfiguration
     var save: (UTMConfiguration) -> Void
@@ -102,6 +103,7 @@ struct VMSettingsView: View {
     }
 }
 
+@available(iOS 14, *)
 struct RoundRectIconLabelStyle: LabelStyle {
     var color: Color = .blue
     
@@ -119,6 +121,7 @@ struct RoundRectIconLabelStyle: LabelStyle {
     }
 }
 
+@available(iOS 14, *)
 struct VMSettingsView_Previews: PreviewProvider {
     @State static private var config = UTMConfiguration(name: "Test")
     

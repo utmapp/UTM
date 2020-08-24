@@ -16,6 +16,7 @@
 
 import SwiftUI
 
+@available(iOS 14, macOS 11, *)
 struct VMRemovableDrivesView: View {
     @ObservedObject var config: UTMConfiguration
     
@@ -72,6 +73,7 @@ struct VMRemovableDrivesView: View {
     }
 }
 
+@available(iOS 14, macOS 11, *)
 struct VMRemovableDrivesView_Previews: PreviewProvider {
     @ObservedObject static private var config = UTMConfiguration(name: "Test")
     

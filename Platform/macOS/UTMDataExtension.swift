@@ -16,6 +16,7 @@
 
 import Foundation
 
+@available(macOS 11, *)
 extension UTMData {
     func run(vm: UTMVirtualMachine) {
         if vm.configuration.displayConsoleOnly {

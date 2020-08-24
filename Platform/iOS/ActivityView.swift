@@ -16,6 +16,7 @@
 
 import SwiftUI
 
+@available(iOS 14, *)
 struct ActivityView: UIViewControllerRepresentable {
     let activityItems: [Any]
     
@@ -28,6 +29,7 @@ struct ActivityView: UIViewControllerRepresentable {
     }
 }
 
+@available(iOS 14, *)
 struct ActivityView_Previews: PreviewProvider {
     static var previews: some View {
         ActivityView(activityItems: [])

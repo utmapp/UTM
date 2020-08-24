@@ -16,6 +16,7 @@
 
 import SwiftUI
 
+@available(macOS 11, *)
 struct SettingsView: View {
     @AppStorage("AlwaysNativeResolution") var isAlwaysNativeResolution = false
     @AppStorage("DisplayFixed") var isVMDisplayFixed = false
@@ -40,6 +41,7 @@ extension UserDefaults {
     @objc dynamic var DisplayFixed: Bool { false }
 }
 
+@available(macOS 11, *)
 struct SettingsView_Previews: PreviewProvider {
     static var previews: some View {
         SettingsView()

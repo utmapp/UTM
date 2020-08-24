@@ -36,6 +36,7 @@ extension Optional where Wrapped == String {
     }
 }
 
+@available(iOS 14, macOS 11, *)
 extension LocalizedStringKey {
     var localizedString: String {
         let mirror = Mirror(reflecting: self)

@@ -16,6 +16,7 @@
 
 import Foundation
 
+@available(iOS 14, *)
 extension UTMData {
     private func createDisplay(vm: UTMVirtualMachine) -> VMDisplayViewController {
         if vm.configuration.displayConsoleOnly {

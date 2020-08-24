@@ -16,6 +16,7 @@
 
 import SwiftUI
 
+@available(iOS 14, *)
 struct VMConfigNetworkPortForwardView: View {
     @ObservedObject var config: UTMConfiguration
     
@@ -49,6 +50,7 @@ struct VMConfigNetworkPortForwardView: View {
     }
 }
 
+@available(iOS 14, *)
 struct PortForwardEdit: View {
     @StateObject private var configPort: UTMConfigurationPortForward
     private let save: () -> Void
@@ -85,6 +87,7 @@ struct PortForwardEdit: View {
     }
 }
 
+@available(iOS 14, *)
 struct VMConfigNetworkPortForwardView_Previews: PreviewProvider {
     @State static private var config = UTMConfiguration(name: "Test")
     static var previews: some View {

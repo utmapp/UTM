@@ -16,6 +16,7 @@
 
 import SwiftUI
 
+@available(macOS 11, *)
 struct ContentView: View {
     @State private var editMode = false
     @StateObject private var data = UTMData()
@@ -74,6 +75,7 @@ struct ContentView: View {
     }
 }
 
+@available(macOS 11, *)
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         ContentView()

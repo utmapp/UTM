@@ -15,11 +15,8 @@
 //
 
 import SwiftUI
-import Logging
 
-let logger = Logger(label: "com.osy86.UTM")
-
-@main
+@available(iOS 14, macOS 11, *)
 struct UTMApp: App {
     @StateObject var data = UTMData()
     
@@ -32,14 +29,5 @@ struct UTMApp: App {
             SettingsView()
         }
         #endif
-    }
-    
-    init() {
-        LoggingSystem.bootstrap { label in
-            return MultiplexLogHandler([
-                UTMLoggingSwift(label: label),
-                StreamLogHandler.standardOutput(label: label)
-            ])
-        }
     }
 }

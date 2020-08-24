@@ -69,6 +69,8 @@
 	<true/>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<true/>
+	<key>UIMainStoryboardFile</key>
+	<string>Main</string>
 	<key>UTExportedTypeDeclarations</key>
 	<array>
 		<dict>

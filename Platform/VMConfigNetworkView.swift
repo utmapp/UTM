@@ -16,6 +16,7 @@
 
 import SwiftUI
 
+@available(iOS 14, macOS 11, *)
 struct VMConfigNetworkView: View {
     @ObservedObject var config: UTMConfiguration
     @State private var showAdvanced: Bool = false
@@ -52,6 +53,7 @@ struct VMConfigNetworkView: View {
     }
 }
 
+@available(iOS 14, macOS 11, *)
 struct IPConfigurationSection: View {
     @ObservedObject var config: UTMConfiguration
     
@@ -126,6 +128,7 @@ struct IPConfigurationSection: View {
     }
 }
 
+@available(iOS 14, macOS 11, *)
 struct VMConfigNetworkingView_Previews: PreviewProvider {
     @State static private var config = UTMConfiguration(name: "Test")
     

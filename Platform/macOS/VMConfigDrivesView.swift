@@ -16,6 +16,7 @@
 
 import SwiftUI
 
+@available(macOS 11, *)
 struct VMConfigDrivesView: View {
     @ObservedObject var config: UTMConfiguration
     @State private var newDrivePopover: Bool = false
@@ -86,6 +87,7 @@ struct VMConfigDrivesView: View {
     }
 }
 
+@available(macOS 11, *)
 struct DriveCard: View {
     let config: UTMConfiguration
     let index: Int
@@ -134,6 +136,7 @@ struct DriveCard: View {
     }
 }
 
+@available(macOS 11, *)
 struct VMConfigDrivesView_Previews: PreviewProvider {
     @ObservedObject static private var config = UTMConfiguration(name: "Test")
     

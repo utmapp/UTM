@@ -17,6 +17,7 @@
 import SwiftUI
 import IQKeyboardManagerSwift
 
+@available(iOS 14, *)
 struct ContentView: View {
     @State private var editMode = false
     @EnvironmentObject private var data: UTMData
@@ -86,6 +87,7 @@ struct ContentView: View {
     }
 }
 
+@available(iOS 14, *)
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         ContentView()
