@@ -16,6 +16,7 @@
 
 import Foundation
 
+@available(macOS 11, *)
 public class UTMTabViewController: NSTabViewController {
     // FIXME: really dumb hack to get around lazy loading the labels
     public override func viewDidAppear() {

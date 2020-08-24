@@ -16,6 +16,7 @@
 
 import SwiftUI
 
+@available(iOS 14, macOS 11, *)
 struct VMDetailsView: View {
     var vm: UTMVirtualMachine
     @EnvironmentObject private var data: UTMData
@@ -67,6 +68,7 @@ struct VMDetailsView: View {
     }
 }
 
+@available(iOS 14, macOS 11, *)
 struct Screenshot: View {
     let vm: UTMVirtualMachine
     let large: Bool
@@ -100,6 +102,7 @@ struct Screenshot: View {
     }
 }
 
+@available(iOS 14, macOS 11, *)
 struct Details: View {
     @ObservedObject var config: UTMConfiguration
     
@@ -134,6 +137,7 @@ struct Details: View {
     }
 }
 
+@available(iOS 14, macOS 11, *)
 struct DetailsLabelStyle: LabelStyle {
     var color: Color = .accentColor
     
@@ -151,6 +155,7 @@ struct DetailsLabelStyle: LabelStyle {
     }
 }
 
+@available(iOS 14, macOS 11, *)
 struct VMDetailsView_Previews: PreviewProvider {
     @State static private var config = UTMConfiguration(name: "Test")
     

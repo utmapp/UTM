@@ -35,6 +35,7 @@
 #include "UTMSpiceIO.h"
 #include "CocoaSpice.h"
 #if TARGET_OS_IPHONE
+#include "AppDelegate.h"
 #include "VMDisplayViewController.h"
 #include "VMDisplayMetalViewController.h"
 #include "VMDisplayMetalViewController+Keyboard.h"

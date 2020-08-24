@@ -16,6 +16,7 @@
 
 import SwiftUI
 
+@available(iOS 14, macOS 11, *)
 struct VMConfigSharingView: View {
     @ObservedObject var config: UTMConfiguration
     
@@ -42,6 +43,7 @@ struct VMConfigSharingView: View {
     }
 }
 
+@available(iOS 14, macOS 11, *)
 struct VMConfigSharingView_Previews: PreviewProvider {
     @State static private var config = UTMConfiguration(name: "Test")
     

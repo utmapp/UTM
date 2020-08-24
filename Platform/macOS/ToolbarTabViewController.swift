@@ -16,6 +16,7 @@
 
 import SwiftUI
 
+@available(macOS 11, *)
 public struct ToolbarTabViewController: NSViewControllerRepresentable {
     let tabViewItems: [NSTabViewItem]
     

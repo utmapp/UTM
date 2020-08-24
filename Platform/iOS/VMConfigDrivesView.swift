@@ -18,6 +18,7 @@ import SwiftUI
 
 // MARK: - Drives list
 
+@available(iOS 14, *)
 struct VMConfigDrivesView: View {
     @ObservedObject var config: UTMConfiguration
     @State private var createDriveVisible: Bool = false
@@ -118,6 +119,7 @@ struct VMConfigDrivesView: View {
 
 // MARK: - Create Drive
 
+@available(iOS 14, *)
 private struct CreateDrive: View {
     let onDismiss: (VMDriveImage) -> Void
     @StateObject private var driveImage = VMDriveImage()
@@ -150,6 +152,7 @@ private struct CreateDrive: View {
 
 // MARK: - Preview
 
+@available(iOS 14, *)
 struct VMConfigDrivesView_Previews: PreviewProvider {
     @ObservedObject static private var config = UTMConfiguration(name: "Test")
     

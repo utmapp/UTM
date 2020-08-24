@@ -16,6 +16,7 @@
 
 import SwiftUI
 
+@available(iOS 14, macOS 11, *)
 struct VMPlaceholderView: View {
     var body: some View {
         VStack {
@@ -35,6 +36,7 @@ struct VMPlaceholderView: View {
     }
 }
 
+@available(iOS 14, macOS 11, *)
 struct VMPlaceholderView_Previews: PreviewProvider {
     static var previews: some View {
         VMPlaceholderView()

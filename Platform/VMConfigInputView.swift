@@ -16,6 +16,7 @@
 
 import SwiftUI
 
+@available(iOS 14, macOS 11, *)
 struct VMConfigInputView: View {
     @ObservedObject var config: UTMConfiguration
     
@@ -41,12 +42,14 @@ struct VMConfigInputView: View {
 }
 
 #if os(macOS)
+@available(macOS 11, *)
 struct GestureSettingsSection: View {
     var body: some View {
         EmptyView()
     }
 }
 #else
+@available(iOS 14, *)
 struct GestureSettingsSection: View {
     var body: some View {
         Section(header: Text("Additional Settings"), footer: EmptyView().padding(.bottom)) {
@@ -60,6 +63,7 @@ struct GestureSettingsSection: View {
 }
 #endif
 
+@available(iOS 14, macOS 11, *)
 struct VMConfigInputView_Previews: PreviewProvider {
     @ObservedObject static private var config = UTMConfiguration(name: "Test")
     

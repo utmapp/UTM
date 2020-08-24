@@ -16,6 +16,7 @@
 
 import SwiftUI
 
+@available(macOS 11, *)
 struct VMSettingsView: View {
     @ObservedObject var config: UTMConfiguration
     var save: (UTMConfiguration) -> Void
@@ -59,6 +60,7 @@ struct VMSettingsView: View {
     }
 }
 
+@available(macOS 11, *)
 struct PreferencePane<Content: View>: View {
     let label: LocalizedStringKey
     let systemImage: String
@@ -96,6 +98,7 @@ struct PreferencePane<Content: View>: View {
     }
 }
 
+@available(macOS 11, *)
 struct VMSettingsView_Previews: PreviewProvider {
     @State static private var config = UTMConfiguration(name: "Test")
     

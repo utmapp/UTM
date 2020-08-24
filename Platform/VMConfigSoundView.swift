@@ -16,6 +16,7 @@
 
 import SwiftUI
 
+@available(iOS 14, macOS 11, *)
 struct VMConfigSoundView: View {
     @ObservedObject var config: UTMConfiguration
     
@@ -35,6 +36,7 @@ struct VMConfigSoundView: View {
     }
 }
 
+@available(iOS 14, macOS 11, *)
 struct VMConfigSoundView_Previews: PreviewProvider {
     @State static private var config = UTMConfiguration(name: "Test")
     

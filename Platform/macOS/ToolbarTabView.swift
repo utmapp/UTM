@@ -18,6 +18,7 @@ import SwiftUI
 
 // MARK: - View
 
+@available(macOS 11, *)
 public struct ToolbarTabView: View {
     let tabs: [AnyView]
 
@@ -97,6 +98,7 @@ public struct ToolbarTabView: View {
 
 // MARK: - Tab Item Preference
 
+@available(macOS 11, *)
 private struct ToolbarTabItemPreference : Equatable {
     let label: LocalizedStringKey
     let nsImage: NSImage?
@@ -125,6 +127,7 @@ private struct ToolbarTabItemPreferenceKey: PreferenceKey {
 
 // MARK: - Toolbar item modifier
 
+@available(macOS 11, *)
 extension View {
     func toolbarTabItem(_ label: LocalizedStringKey, nsImage: NSImage? = nil, tooltip: LocalizedStringKey? = nil) -> some View {
         self.preference(key: ToolbarTabItemPreferenceKey.self, value: ToolbarTabItemPreference(label: label, nsImage: nsImage, tooltip: tooltip))
@@ -137,6 +140,7 @@ extension View {
 
 // MARK: - Preview
 
+@available(macOS 11, *)
 struct ToolbarTabView_Previews: PreviewProvider {
     static var previews: some View {
         ToolbarTabView {

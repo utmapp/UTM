@@ -16,6 +16,7 @@
 
 import Foundation
 
+@available(iOS 14, macOS 11, *)
 struct AlertMessage: Identifiable {
     var message: String
     public var id: String {
@@ -27,6 +28,7 @@ struct AlertMessage: Identifiable {
     }
 }
 
+@available(iOS 14, macOS 11, *)
 class UTMData: ObservableObject {
     
     @Published var showSettingsModal: Bool

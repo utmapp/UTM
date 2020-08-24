@@ -17,6 +17,7 @@
 import SwiftUI
 
 // https://stackoverflow.com/a/60955909/13914748
+@available(macOS 11, *)
 struct SharingsPicker: NSViewRepresentable {
     @Binding var isPresented: Bool
     var sharingItems: [Any] = []

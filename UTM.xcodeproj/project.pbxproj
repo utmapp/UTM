@@ -975,6 +975,8 @@
 		CE9D197C226542FE00355E14 /* UTMQemu.m in Sources */ = {isa = PBXBuildFile; fileRef = CE9D197B226542FE00355E14 /* UTMQemu.m */; };
 		CEA02A962436C6480087E45F /* VMConfigPortForwardingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CEA02A952436C6480087E45F /* VMConfigPortForwardingViewController.m */; };
 		CEA02A992436C7A30087E45F /* UTMConfiguration+Networking.m in Sources */ = {isa = PBXBuildFile; fileRef = CEA02A982436C7A30087E45F /* UTMConfiguration+Networking.m */; };
+		CEB63A7624F4654400CAF323 /* Main.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEB63A7524F4654400CAF323 /* Main.swift */; };
+		CEB63A7724F4654400CAF323 /* Main.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEB63A7524F4654400CAF323 /* Main.swift */; };
 		CEBBF1A524B56A2900C15049 /* UTMDataExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEBBF1A424B56A2900C15049 /* UTMDataExtension.swift */; };
 		CEBBF1A724B5730F00C15049 /* UTMDataExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEBBF1A624B5730F00C15049 /* UTMDataExtension.swift */; };
 		CEBBF1A824B921F000C15049 /* VMDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE2D954B24AD4F980059923A /* VMDetailsView.swift */; };
@@ -1800,6 +1802,7 @@
 		CEA02A952436C6480087E45F /* VMConfigPortForwardingViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = VMConfigPortForwardingViewController.m; path = ConfigurationViews/VMConfigPortForwardingViewController.m; sourceTree = SOURCE_ROOT; };
 		CEA02A972436C7A30087E45F /* UTMConfiguration+Networking.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UTMConfiguration+Networking.h"; sourceTree = "<group>"; };
 		CEA02A982436C7A30087E45F /* UTMConfiguration+Networking.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UTMConfiguration+Networking.m"; sourceTree = "<group>"; };
+		CEB63A7524F4654400CAF323 /* Main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Main.swift; sourceTree = "<group>"; };
 		CEBBF1A424B56A2900C15049 /* UTMDataExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMDataExtension.swift; sourceTree = "<group>"; };
 		CEBBF1A624B5730F00C15049 /* UTMDataExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMDataExtension.swift; sourceTree = "<group>"; };
 		CEBCAF4C243525DB00C2B423 /* VMConfigTextField.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VMConfigTextField.h; sourceTree = "<group>"; };
@@ -2201,6 +2204,7 @@
 				CE2D954A24AD4F980059923A /* iOS */,
 				CE2D953B24AD4F980059923A /* macOS */,
 				CE7D972B24B2B17D0080CB69 /* BusyOverlay.swift */,
+				CEB63A7524F4654400CAF323 /* Main.swift */,
 				CE2D954324AD4F980059923A /* VMCardView.swift */,
 				CE2D953724AD4F980059923A /* VMConfigDisplayView.swift */,
 				CED814E824C79F070042F0F1 /* VMConfigDriveCreateView.swift */,
@@ -3247,6 +3251,7 @@
 				CE2D957924AD4F990059923A /* VMDetailsView.swift in Sources */,
 				CE2D930524AD46670059923A /* VMDisplayMetalViewController.m in Sources */,
 				CE2D930624AD46670059923A /* qapi-commands-misc.c in Sources */,
+				CEB63A7624F4654400CAF323 /* Main.swift in Sources */,
 				CE2D930824AD46670059923A /* qapi-events-run-state.c in Sources */,
 				CE2D930924AD46670059923A /* VMDisplayViewController.m in Sources */,
 				CE2D930A24AD46670059923A /* qapi-visit-transaction.c in Sources */,
@@ -3288,6 +3293,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CEB63A7724F4654400CAF323 /* Main.swift in Sources */,
 				CE0B6D0024AD56AE00FE012D /* UTMVirtualMachine.m in Sources */,
 				CE0B6D0E24AD56E500FE012D /* UTMShaders.metal in Sources */,
 				CE0B6D3924AD57FD00FE012D /* qapi-commands-job.c in Sources */,
@@ -3772,7 +3778,7 @@
 					"$(PROJECT_DIR)/sysroot-$(PLATFORM_FAMILY_NAME)-$(PLATFORM_PREFERRED_ARCH)/include/spice-1",
 				);
 				INFOPLIST_FILE = Platform/iOS/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -3808,7 +3814,7 @@
 					"$(PROJECT_DIR)/sysroot-$(PLATFORM_FAMILY_NAME)-$(PLATFORM_PREFERRED_ARCH)/include/spice-1",
 				);
 				INFOPLIST_FILE = Platform/iOS/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

@@ -16,6 +16,7 @@
 
 import SwiftUI
 
+@available(iOS 14, macOS 11, *)
 struct VMConfigDriveDetailsView: View {
     @ObservedObject private var config: UTMConfiguration
     @Binding private var removable: Bool
