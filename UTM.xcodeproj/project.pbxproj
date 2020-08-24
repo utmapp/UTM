@@ -1263,8 +1263,6 @@
 		CE2D641922653C7600FC7E63 /* libpixman-1.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libpixman-1.0.dylib"; path = "sysroot-$(PLATFORM_FAMILY_NAME)-$(PLATFORM_PREFERRED_ARCH)/lib/libpixman-1.0.dylib"; sourceTree = "<group>"; };
 		CE2D93BE24AD46670059923A /* UTM.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = UTM.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CE2D951C24AD48BE0059923A /* UTM.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = UTM.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		CE2D952C24AD4A800059923A /* UTM-Swift.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UTM-Swift.h"; sourceTree = "<group>"; };
-		CE2D952D24AD4C400059923A /* UTM-Swift.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UTM-Swift.m"; sourceTree = "<group>"; };
 		CE2D953124AD4F040059923A /* UTMConfigurationExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UTMConfigurationExtension.swift; sourceTree = "<group>"; };
 		CE2D953724AD4F980059923A /* VMConfigDisplayView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VMConfigDisplayView.swift; sourceTree = "<group>"; };
 		CE2D953824AD4F980059923A /* VMToolbarModifier.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VMToolbarModifier.swift; sourceTree = "<group>"; };
@@ -1345,7 +1343,6 @@
 		CE550BD3225947990063E575 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		CE550BD52259479D0063E575 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		CE550BD82259479D0063E575 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
-		CE550BDA2259479D0063E575 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		CE550BE222596E790063E575 /* VMListViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VMListViewCell.h; sourceTree = "<group>"; };
 		CE550BE322596E790063E575 /* VMListViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VMListViewCell.m; sourceTree = "<group>"; };
 		CE5E4956225C5A4400148CEF /* VMConfigExistingViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VMConfigExistingViewController.h; sourceTree = "<group>"; };
@@ -2121,7 +2118,6 @@
 				CE2D953624AD4F980059923A /* Platform */,
 				CECC76492273A7AE0059B955 /* qapi */,
 				CE2D63CE2265150F00FC7E63 /* Renderer */,
-				CE550BCB225947990063E575 /* UTM */,
 				CEBDA1DB24D8BDDA0010B5EC /* QEMUHelper */,
 				CE9D18F72265410E00355E14 /* qemu */,
 				CE4698F824C8FBD9008C1BD6 /* Icons */,
@@ -2139,16 +2135,6 @@
 				CEBDA1DA24D8BDDA0010B5EC /* QEMUHelper.xpc */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		CE550BCB225947990063E575 /* UTM */ = {
-			isa = PBXGroup;
-			children = (
-				CE550BDA2259479D0063E575 /* Info.plist */,
-				CE2D952C24AD4A800059923A /* UTM-Swift.h */,
-				CE2D952D24AD4C400059923A /* UTM-Swift.m */,
-			);
-			path = UTM;
 			sourceTree = "<group>";
 		};
 		CE5E4954225C593C00148CEF /* Legacy */ = {
