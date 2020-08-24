@@ -979,6 +979,32 @@
 		CEB63A7724F4654400CAF323 /* Main.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEB63A7524F4654400CAF323 /* Main.swift */; };
 		CEB63A7A24F469E300CAF323 /* UTMJailbreak.c in Sources */ = {isa = PBXBuildFile; fileRef = CEB63A7924F469E300CAF323 /* UTMJailbreak.c */; };
 		CEB63A7B24F469E300CAF323 /* UTMJailbreak.c in Sources */ = {isa = PBXBuildFile; fileRef = CEB63A7924F469E300CAF323 /* UTMJailbreak.c */; };
+		CEB63A7C24F46E5700CAF323 /* VMConfigStepper.m in Sources */ = {isa = PBXBuildFile; fileRef = CEE0420E24412C520001680F /* VMConfigStepper.m */; };
+		CEB63A7D24F46E5700CAF323 /* VMConfigSwitch.m in Sources */ = {isa = PBXBuildFile; fileRef = CEBCAF5324353B3700C2B423 /* VMConfigSwitch.m */; };
+		CEB63A7E24F46E5700CAF323 /* VMConfigTogglePickerCell.m in Sources */ = {isa = PBXBuildFile; fileRef = CEBCAF592435468600C2B423 /* VMConfigTogglePickerCell.m */; };
+		CEB63A7F24F46E5700CAF323 /* VMConfigCell.m in Sources */ = {isa = PBXBuildFile; fileRef = CE059DCA243FBA3C00338317 /* VMConfigCell.m */; };
+		CEB63A8024F46E5700CAF323 /* VMConfigPickerView.m in Sources */ = {isa = PBXBuildFile; fileRef = CEBCAF5624353B9F00C2B423 /* VMConfigPickerView.m */; };
+		CEB63A8124F46E5700CAF323 /* VMConfigTextField.m in Sources */ = {isa = PBXBuildFile; fileRef = CEBCAF4D243525DB00C2B423 /* VMConfigTextField.m */; };
+		CEB63A8224F46E5D00CAF323 /* StaticDataTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CEDC1DF12260EE4B008D9A6D /* StaticDataTableViewController.m */; };
+		CEB63A8324F46E6E00CAF323 /* VMConfigDirectoryPickerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CE20FAE42444FC6E0059AE11 /* VMConfigDirectoryPickerViewController.m */; };
+		CEB63A8424F46E6E00CAF323 /* VMConfigDisplayViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CE74C27D225D88EC004E4FF1 /* VMConfigDisplayViewController.m */; };
+		CEB63A8524F46E6E00CAF323 /* VMConfigSystemArgumentsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 423BCE65240F6A80001989AC /* VMConfigSystemArgumentsViewController.m */; };
+		CEB63A8624F46E6E00CAF323 /* VMConfigSystemViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CE74C285225D88ED004E4FF1 /* VMConfigSystemViewController.m */; };
+		CEB63A8724F46E6E00CAF323 /* VMConfigDrivesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CE7BED4B225FBB8600A1E1B6 /* VMConfigDrivesViewController.m */; };
+		CEB63A8824F46E6E00CAF323 /* VMConfigSharingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CE74C280225D88EC004E4FF1 /* VMConfigSharingViewController.m */; };
+		CEB63A8924F46E6E00CAF323 /* VMConfigNetworkingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CE74C276225D88EC004E4FF1 /* VMConfigNetworkingViewController.m */; };
+		CEB63A8A24F46E6E00CAF323 /* VMConfigCreateViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CE31C24C225EA4A200A965DD /* VMConfigCreateViewController.m */; };
+		CEB63A8B24F46E6E00CAF323 /* VMConfigSoundViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CE74C284225D88ED004E4FF1 /* VMConfigSoundViewController.m */; };
+		CEB63A8C24F46E6E00CAF323 /* VMConfigDriveCreateViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CE2C67DA227F769300AEF1D0 /* VMConfigDriveCreateViewController.m */; };
+		CEB63A8D24F46E6E00CAF323 /* VMConfigDrivePickerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CE2C67D7227F6F1200AEF1D0 /* VMConfigDrivePickerViewController.m */; };
+		CEB63A8E24F46E6E00CAF323 /* VMConfigViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CE31C24A225EA37400A965DD /* VMConfigViewController.m */; };
+		CEB63A8F24F46E6E00CAF323 /* VMConfigExistingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CE5E4957225C5A4400148CEF /* VMConfigExistingViewController.m */; };
+		CEB63A9024F46E6E00CAF323 /* VMConfigPortForwardingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CEA02A952436C6480087E45F /* VMConfigPortForwardingViewController.m */; };
+		CEB63A9124F46E6E00CAF323 /* VMConfigDriveDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CE74C27E225D88EC004E4FF1 /* VMConfigDriveDetailViewController.m */; };
+		CEB63A9224F46E6E00CAF323 /* VMConfigInputViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CE74C27F225D88EC004E4FF1 /* VMConfigInputViewController.m */; };
+		CEB63A9324F4722900CAF323 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CE550BD2225947990063E575 /* Main.storyboard */; };
+		CEB63A9424F4747900CAF323 /* VMListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CE550BD0225947990063E575 /* VMListViewController.m */; };
+		CEB63A9524F4747900CAF323 /* VMListViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = CE550BE322596E790063E575 /* VMListViewCell.m */; };
 		CEBBF1A524B56A2900C15049 /* UTMDataExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEBBF1A424B56A2900C15049 /* UTMDataExtension.swift */; };
 		CEBBF1A724B5730F00C15049 /* UTMDataExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEBBF1A624B5730F00C15049 /* UTMDataExtension.swift */; };
 		CEBBF1A824B921F000C15049 /* VMDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE2D954B24AD4F980059923A /* VMDetailsView.swift */; };
@@ -2974,6 +3000,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				CE4698F924C8FBD9008C1BD6 /* Icons in Resources */,
+				CEB63A9324F4722900CAF323 /* Main.storyboard in Resources */,
 				CE2D936A24AD46670059923A /* terminal.js in Resources */,
 				CE2D936B24AD46670059923A /* Localizable.strings in Resources */,
 				CE2D936C24AD46670059923A /* qemu in Resources */,
@@ -3095,16 +3122,20 @@
 				CE2D926F24AD46670059923A /* qapi-events-char.c in Sources */,
 				CE2D927124AD46670059923A /* qapi-events-error.c in Sources */,
 				CE2D927224AD46670059923A /* qapi-visit-block.c in Sources */,
+				CEB63A8224F46E5D00CAF323 /* StaticDataTableViewController.m in Sources */,
 				CE2D927324AD46670059923A /* qapi-events-misc.c in Sources */,
+				CEB63A8524F46E6E00CAF323 /* VMConfigSystemArgumentsViewController.m in Sources */,
 				CE2D927424AD46670059923A /* WKWebView+Workarounds.m in Sources */,
 				CE2D927524AD46670059923A /* qapi-visit-crypto.c in Sources */,
 				CE2D927624AD46670059923A /* qapi-visit-tpm.c in Sources */,
 				CE2D957F24AD4F990059923A /* ContentView.swift in Sources */,
 				CE2D927724AD46670059923A /* qapi-visit-trace.c in Sources */,
 				CE2D927824AD46670059923A /* qapi-events-rocker.c in Sources */,
+				CEB63A8B24F46E6E00CAF323 /* VMConfigSoundViewController.m in Sources */,
 				CE2D927924AD46670059923A /* qapi-visit-qom.c in Sources */,
 				CE2D927A24AD46670059923A /* UTMConfiguration+System.m in Sources */,
 				CE2D927B24AD46670059923A /* qapi-types-job.c in Sources */,
+				CEB63A8924F46E6E00CAF323 /* VMConfigNetworkingViewController.m in Sources */,
 				CE2D927C24AD46670059923A /* UTMQemu.m in Sources */,
 				CE2D927D24AD46670059923A /* qapi-visit-machine.c in Sources */,
 				CE2D927E24AD46670059923A /* CSSession.m in Sources */,
@@ -3115,6 +3146,7 @@
 				CE2D928324AD46670059923A /* qapi-events-audio.c in Sources */,
 				CE2D928524AD46670059923A /* qapi-events-ui.c in Sources */,
 				CE2D928624AD46670059923A /* qapi-visit-misc.c in Sources */,
+				CEB63A8424F46E6E00CAF323 /* VMConfigDisplayViewController.m in Sources */,
 				CE2D928824AD46670059923A /* qapi-commands-block.c in Sources */,
 				CE7D972C24B2B17D0080CB69 /* BusyOverlay.swift in Sources */,
 				CE2D928924AD46670059923A /* qapi-visit-machine-target.c in Sources */,
@@ -3150,6 +3182,7 @@
 				CE2D92A124AD46670059923A /* UTMConfiguration+Display.m in Sources */,
 				CE020BB624B14F8400B44AB6 /* UTMVirtualMachineExtension.swift in Sources */,
 				CE2D92A224AD46670059923A /* qapi-visit-block-core.c in Sources */,
+				CEB63A7E24F46E5700CAF323 /* VMConfigTogglePickerCell.m in Sources */,
 				CED814EC24C7C2850042F0F1 /* VMConfigInfoView.swift in Sources */,
 				CE2D92A324AD46670059923A /* qapi-util.c in Sources */,
 				CE2D92A424AD46670059923A /* qapi-commands-job.c in Sources */,
@@ -3157,6 +3190,8 @@
 				CE2D92A624AD46670059923A /* qapi-commands-net.c in Sources */,
 				CE2D92A724AD46670059923A /* qapi-types-common.c in Sources */,
 				CE2D92A924AD46670059923A /* qapi-types-transaction.c in Sources */,
+				CEB63A8E24F46E6E00CAF323 /* VMConfigViewController.m in Sources */,
+				CEB63A9224F46E6E00CAF323 /* VMConfigInputViewController.m in Sources */,
 				CE2D92AA24AD46670059923A /* UTMSpiceIO.m in Sources */,
 				CE2D92AB24AD46670059923A /* qapi-events-machine-target.c in Sources */,
 				CE2D92AC24AD46670059923A /* qapi-types-misc.c in Sources */,
@@ -3165,6 +3200,7 @@
 				CE2D92AF24AD46670059923A /* qapi-visit-rocker.c in Sources */,
 				CE2D92B224AD46670059923A /* qapi-visit-net.c in Sources */,
 				CEFC6CDD24C25697003F6962 /* VMDriveImage.swift in Sources */,
+				CEB63A8324F46E6E00CAF323 /* VMConfigDirectoryPickerViewController.m in Sources */,
 				CE8813DB24D1290600532628 /* UTMConfiguration+ConstantsGenerated.m in Sources */,
 				CE2D92B324AD46670059923A /* qapi-events-net.c in Sources */,
 				CE2D92B424AD46670059923A /* qapi-visit-run-state.c in Sources */,
@@ -3173,6 +3209,7 @@
 				CE2D92B724AD46670059923A /* qapi-visit-common.c in Sources */,
 				CE2D92B824AD46670059923A /* qapi-events-trace.c in Sources */,
 				CE2D92B924AD46670059923A /* qapi-events-qdev.c in Sources */,
+				CEB63A9424F4747900CAF323 /* VMListViewController.m in Sources */,
 				CE2D92BA24AD46670059923A /* qapi-events-dump.c in Sources */,
 				CE2D92BB24AD46670059923A /* qapi-types-tpm.c in Sources */,
 				CE2D92BC24AD46670059923A /* UTMConfiguration+Drives.m in Sources */,
@@ -3181,7 +3218,9 @@
 				CE2D92BF24AD46670059923A /* qapi-commands-authz.c in Sources */,
 				CE2D92C024AD46670059923A /* VMDisplayTerminalViewController+Keyboard.m in Sources */,
 				CE2D92C124AD46670059923A /* UIViewController+Extensions.m in Sources */,
+				CEB63A9124F46E6E00CAF323 /* VMConfigDriveDetailViewController.m in Sources */,
 				CE2D92C224AD46670059923A /* qapi-types.c in Sources */,
+				CEB63A8F24F46E6E00CAF323 /* VMConfigExistingViewController.m in Sources */,
 				CE2D92C324AD46670059923A /* qapi-events-sockets.c in Sources */,
 				CE2D92C424AD46670059923A /* qapi-visit-sockets.c in Sources */,
 				CE2D92C524AD46670059923A /* qapi-events-misc-target.c in Sources */,
@@ -3204,6 +3243,7 @@
 				CE2D92D624AD46670059923A /* qapi-visit-ui.c in Sources */,
 				CE2D92D724AD46670059923A /* UTMLogging.m in Sources */,
 				CE2D92D824AD46670059923A /* qapi-commands-trace.c in Sources */,
+				CEB63A8D24F46E6E00CAF323 /* VMConfigDrivePickerViewController.m in Sources */,
 				CE2D955924AD4F980059923A /* VMToolbarModifier.swift in Sources */,
 				CE2D92D924AD46670059923A /* qapi-visit.c in Sources */,
 				CE2D92DA24AD46670059923A /* VMCursor.m in Sources */,
@@ -3211,6 +3251,7 @@
 				CE2D92DB24AD46670059923A /* CSDisplayMetal.m in Sources */,
 				CE2D92DD24AD46670059923A /* qapi-events-tpm.c in Sources */,
 				CE03D05224D90B4E00F76B84 /* UTMQemuSystemConfiguration.m in Sources */,
+				CEB63A9024F46E6E00CAF323 /* VMConfigPortForwardingViewController.m in Sources */,
 				CE2D92DE24AD46670059923A /* qapi-events-job.c in Sources */,
 				CE2D953224AD4F040059923A /* UTMConfigurationExtension.swift in Sources */,
 				CE2D92DF24AD46670059923A /* qapi-dealloc-visitor.c in Sources */,
@@ -3219,6 +3260,7 @@
 				CE2D92E224AD46670059923A /* CSInput.m in Sources */,
 				CE2D92E424AD46670059923A /* qapi-types-block.c in Sources */,
 				CE2D92E524AD46670059923A /* qapi-events-machine.c in Sources */,
+				CEB63A8C24F46E6E00CAF323 /* VMConfigDriveCreateViewController.m in Sources */,
 				CE2D92E624AD46670059923A /* UTMConfiguration+Networking.m in Sources */,
 				CE2D92E724AD46670059923A /* qapi-types-ui.c in Sources */,
 				CE2D92E824AD46670059923A /* qapi-types-dump.c in Sources */,
@@ -3238,17 +3280,25 @@
 				CE2D92F524AD46670059923A /* VMDisplayTerminalViewController.m in Sources */,
 				CE0B6D8624AD5ADE00FE012D /* UTMScreenshot.m in Sources */,
 				CE2D92F624AD46670059923A /* qapi-events-block-core.c in Sources */,
+				CEB63A7A24F469E300CAF323 /* UTMJailbreak.c in Sources */,
 				CE2D92F724AD46670059923A /* UTMQemuManager.m in Sources */,
+				CEB63A8024F46E5700CAF323 /* VMConfigPickerView.m in Sources */,
+				CEB63A7C24F46E5700CAF323 /* VMConfigStepper.m in Sources */,
 				CE2D92F824AD46670059923A /* qapi-types-crypto.c in Sources */,
 				CE2D92F924AD46670059923A /* qapi-types-qom.c in Sources */,
+				CEB63A7F24F46E5700CAF323 /* VMConfigCell.m in Sources */,
+				CEB63A8824F46E6E00CAF323 /* VMConfigSharingViewController.m in Sources */,
 				CE2D92FA24AD46670059923A /* qapi-commands-rdma.c in Sources */,
 				CE2D92FC24AD46670059923A /* VMDisplayMetalViewController+Keyboard.m in Sources */,
 				CE2D92FD24AD46670059923A /* qapi-builtin-types.c in Sources */,
 				CE2D957124AD4F990059923A /* UTMExtensions.swift in Sources */,
+				CEB63A8724F46E6E00CAF323 /* VMConfigDrivesViewController.m in Sources */,
 				CE020BA324AEDC7C00B44AB6 /* UTMData.swift in Sources */,
 				CE2D92FE24AD46670059923A /* qapi-events-migration.c in Sources */,
 				CE2D92FF24AD46670059923A /* qapi-commands.c in Sources */,
 				CE2D930024AD46670059923A /* qapi-commands-audio.c in Sources */,
+				CEB63A8124F46E5700CAF323 /* VMConfigTextField.m in Sources */,
+				CEB63A9524F4747900CAF323 /* VMListViewCell.m in Sources */,
 				CE2D930124AD46670059923A /* qapi-events-common.c in Sources */,
 				CE2D930224AD46670059923A /* UTMTerminalIO.m in Sources */,
 				CE2D955D24AD4F990059923A /* VMConfigSoundView.swift in Sources */,
@@ -3268,6 +3318,7 @@
 				CE2D930E24AD46670059923A /* qapi-commands-block-core.c in Sources */,
 				CE2D930F24AD46670059923A /* qapi-types-authz.c in Sources */,
 				CE2D931024AD46670059923A /* qapi-types-qdev.c in Sources */,
+				CEB63A8624F46E6E00CAF323 /* VMConfigSystemViewController.m in Sources */,
 				CE8813D324CD230300532628 /* ActivityView.swift in Sources */,
 				CE2D931224AD46670059923A /* qapi-dispatch-events.c in Sources */,
 				CE2D931324AD46670059923A /* qapi-visit-authz.c in Sources */,
@@ -3283,10 +3334,12 @@
 				CE2D931F24AD46670059923A /* error.c in Sources */,
 				CE2D932024AD46670059923A /* cf-output-visitor.c in Sources */,
 				CE2D932124AD46670059923A /* qapi-types-audio.c in Sources */,
+				CEB63A8A24F46E6E00CAF323 /* VMConfigCreateViewController.m in Sources */,
 				CE2D932224AD46670059923A /* VMScroll.m in Sources */,
 				CE2D957D24AD4F990059923A /* VMConfigNetworkPortForwardView.swift in Sources */,
 				CE2D932324AD46670059923A /* UTMTerminal.m in Sources */,
 				CE2D932424AD46670059923A /* UTMQemuImg.m in Sources */,
+				CEB63A7D24F46E5700CAF323 /* VMConfigSwitch.m in Sources */,
 				CE2D932524AD46670059923A /* qapi-types-char.c in Sources */,
 				CE2D932724AD46670059923A /* CSConnection.m in Sources */,
 				CE2D932824AD46670059923A /* qapi-visit-audio.c in Sources */,
