@@ -21,10 +21,7 @@ jobs:
       matrix:
         arch: [arm64, x86_64]
         platform: [ios, macos]
-        target: [legacy, latest]
         exclude:
-          - platform: macos
-            target: legacy
           - platform: macos
             arch: arm64 # not ready yet!
     steps:
@@ -72,11 +69,11 @@ jobs:
           name: Sysroot-${{ matrix.platform }}-${{ matrix.arch }}
           path: sysroot_tar
       - name: Build UTM
-        run: ./scripts/build_utm.sh -p ${{ matrix.platform }} -a ${{ matrix.arch }} -t ${{ matrix.target }} -o build-utm/UTM
+        run: ./scripts/build_utm.sh -p ${{ matrix.platform }} -a ${{ matrix.arch }} -o build-utm/UTM
       - name: Upload UTM
         uses: actions/upload-artifact@v1
         with:
-          name: UTM-${{ matrix.platform }}-${{ matrix.arch }}-${{ matrix.target }}
+          name: UTM-${{ matrix.platform }}-${{ matrix.arch }}
           path: build-utm
   package:
     name: Package
@@ -89,7 +86,7 @@ jobs:
       - name: Download Artifact
         uses: actions/download-artifact@v1
         with:
-          name: UTM-ios-arm64-legacy
+          name: UTM-ios-arm64
       - name: Install ldid
         run: |
           brew install ldid
