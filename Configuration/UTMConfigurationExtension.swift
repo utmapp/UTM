@@ -16,7 +16,6 @@
 
 import Combine
 
-@available(iOS 14, macOS 11, *)
 @objc extension UTMConfiguration: ObservableObject {
     private static let gibInMib = 1024
     
@@ -87,14 +86,17 @@ import Combine
     }
     
     func propertyWillChange() -> Void {
-        DispatchQueue.main.async { self.objectWillChange.send() }
+        if #available(iOS 13, macOS 11, *) {
+            DispatchQueue.main.async { self.objectWillChange.send() }
+        }
     }
 }
 
-@available(iOS 14, macOS 11, *)
 @objc extension UTMConfigurationPortForward: ObservableObject {
     func propertyWillChange() -> Void {
-        DispatchQueue.main.async { self.objectWillChange.send() }
+        if #available(iOS 13, macOS 11, *) {
+            DispatchQueue.main.async { self.objectWillChange.send() }
+        }
     }
 }
 
