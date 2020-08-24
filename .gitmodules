@@ -1,6 +1,6 @@
 [submodule "ConfigurationViews/StaticDataTableViewController"]
-	path = ConfigurationViews/StaticDataTableViewController
+	path = Platform/iOS/Legacy/StaticDataTableViewController
 	url = https://github.com/peterpaulis/StaticDataTableViewController.git
-[submodule "Views/HTerm/libapps"]
-	path = Views/HTerm/libapps
+[submodule "Platform/Shared/HTerm/libapps"]
+	path = Platform/Shared/HTerm/libapps
 	url = https://chromium.googlesource.com/apps/libapps

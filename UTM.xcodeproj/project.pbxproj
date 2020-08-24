@@ -930,7 +930,7 @@
 		CE03D05024D90B4E00F76B84 /* UTMQemuSystemConfiguration.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UTMQemuSystemConfiguration.m; sourceTree = "<group>"; };
 		CE03D05424D90BE000F76B84 /* UTMQemuSystemConfiguration.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UTMQemuSystemConfiguration.h; sourceTree = "<group>"; };
 		CE03D0D024D9A62B00F76B84 /* QEMUHelper.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = QEMUHelper.entitlements; sourceTree = "<group>"; };
-		CE03D0D124DCF4B600F76B84 /* VMMetalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMMetalView.swift; sourceTree = "<group>"; };
+		CE03D0D124DCF4B600F76B84 /* VMMetalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = VMMetalView.swift; path = "../New Group/VMMetalView.swift"; sourceTree = "<group>"; };
 		CE03D0D324DCF6DD00F76B84 /* VMMetalViewInputDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMMetalViewInputDelegate.swift; sourceTree = "<group>"; };
 		CE056CA4242454100004B68A /* VMDisplayMetalViewController+Touch.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "VMDisplayMetalViewController+Touch.h"; sourceTree = "<group>"; };
 		CE056CA5242454100004B68A /* VMDisplayMetalViewController+Touch.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "VMDisplayMetalViewController+Touch.m"; sourceTree = "<group>"; };
@@ -1321,7 +1321,7 @@
 		CE4507D0226A5BE200A28D22 /* VMKeyboardView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VMKeyboardView.h; sourceTree = "<group>"; };
 		CE4507D1226A5BE200A28D22 /* VMKeyboardView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VMKeyboardView.m; sourceTree = "<group>"; };
 		CE4507D3226A5C9900A28D22 /* VMKeyboardViewDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VMKeyboardViewDelegate.h; sourceTree = "<group>"; };
-		CE4698F824C8FBD9008C1BD6 /* Icons */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Icons; path = UTM/Icons; sourceTree = "<group>"; };
+		CE4698F824C8FBD9008C1BD6 /* Icons */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Icons; sourceTree = "<group>"; };
 		CE4AA1472263B24F002E4A54 /* CSDisplayMetal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CSDisplayMetal.h; sourceTree = "<group>"; };
 		CE4AA1482263B24F002E4A54 /* CSDisplayMetal.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CSDisplayMetal.m; sourceTree = "<group>"; };
 		CE4AA14A2264004F002E4A54 /* CSConnection.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CSConnection.h; sourceTree = "<group>"; };
@@ -1351,7 +1351,7 @@
 		CE5E4956225C5A4400148CEF /* VMConfigExistingViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VMConfigExistingViewController.h; sourceTree = "<group>"; };
 		CE5E4957225C5A4400148CEF /* VMConfigExistingViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VMConfigExistingViewController.m; sourceTree = "<group>"; };
 		CE5F165B2261395000F3D56B /* UTMVirtualMachine.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UTMVirtualMachine.m; sourceTree = "<group>"; };
-		CE612AC524D3B50700FA6300 /* VMDisplayWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMDisplayWindowController.swift; sourceTree = "<group>"; };
+		CE612AC524D3B50700FA6300 /* VMDisplayWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = VMDisplayWindowController.swift; path = "../New Group/VMDisplayWindowController.swift"; sourceTree = "<group>"; };
 		CE66450C2269313200B0849A /* MetalKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MetalKit.framework; path = System/Library/Frameworks/MetalKit.framework; sourceTree = SDKROOT; };
 		CE66450E2269355F00B0849A /* CocoaSpice.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CocoaSpice.h; sourceTree = "<group>"; };
 		CE66450F226935F000B0849A /* CSInput.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CSInput.h; sourceTree = "<group>"; };
@@ -1413,8 +1413,8 @@
 		CE9D19652265425A00355E14 /* libgstosxaudio.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libgstosxaudio.a; path = "sysroot-$(PLATFORM_FAMILY_NAME)-$(PLATFORM_PREFERRED_ARCH)/lib/gstreamer-1.0/libgstosxaudio.a"; sourceTree = "<group>"; };
 		CE9D197A226542FE00355E14 /* UTMQemu.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UTMQemu.h; sourceTree = "<group>"; };
 		CE9D197B226542FE00355E14 /* UTMQemu.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UTMQemu.m; sourceTree = "<group>"; };
-		CEA02A942436C6480087E45F /* VMConfigPortForwardingViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = VMConfigPortForwardingViewController.h; path = ConfigurationViews/VMConfigPortForwardingViewController.h; sourceTree = SOURCE_ROOT; };
-		CEA02A952436C6480087E45F /* VMConfigPortForwardingViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = VMConfigPortForwardingViewController.m; path = ConfigurationViews/VMConfigPortForwardingViewController.m; sourceTree = SOURCE_ROOT; };
+		CEA02A942436C6480087E45F /* VMConfigPortForwardingViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = VMConfigPortForwardingViewController.h; path = Platform/iOS/Legacy/VMConfigPortForwardingViewController.h; sourceTree = SOURCE_ROOT; };
+		CEA02A952436C6480087E45F /* VMConfigPortForwardingViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = VMConfigPortForwardingViewController.m; path = Platform/iOS/Legacy/VMConfigPortForwardingViewController.m; sourceTree = SOURCE_ROOT; };
 		CEA02A972436C7A30087E45F /* UTMConfiguration+Networking.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UTMConfiguration+Networking.h"; sourceTree = "<group>"; };
 		CEA02A982436C7A30087E45F /* UTMConfiguration+Networking.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UTMConfiguration+Networking.m"; sourceTree = "<group>"; };
 		CEB63A7524F4654400CAF323 /* Main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Main.swift; sourceTree = "<group>"; };
@@ -1643,6 +1643,18 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		CE1BD9FA24F4825C0022A468 /* Display */ = {
+			isa = PBXGroup;
+			children = (
+				CE0FE12724D3B08B0086CEF0 /* VMDisplayWindow.xib */,
+				CE612AC524D3B50700FA6300 /* VMDisplayWindowController.swift */,
+				CEBDA1D424D69DB20010B5EC /* VMDisplayMetalWindowController.swift */,
+				CE03D0D124DCF4B600F76B84 /* VMMetalView.swift */,
+				CE03D0D324DCF6DD00F76B84 /* VMMetalViewInputDelegate.swift */,
+			);
+			path = Display;
+			sourceTree = "<group>";
+		};
 		CE2D63CE2265150F00FC7E63 /* Renderer */ = {
 			isa = PBXGroup;
 			children = (
@@ -1755,27 +1767,8 @@
 			children = (
 				CE2D954A24AD4F980059923A /* iOS */,
 				CE2D953B24AD4F980059923A /* macOS */,
-				CE7D972B24B2B17D0080CB69 /* BusyOverlay.swift */,
+				CEB63A9624F47C1200CAF323 /* Shared */,
 				CEB63A7524F4654400CAF323 /* Main.swift */,
-				CE2D954324AD4F980059923A /* VMCardView.swift */,
-				CE2D953724AD4F980059923A /* VMConfigDisplayView.swift */,
-				CED814E824C79F070042F0F1 /* VMConfigDriveCreateView.swift */,
-				CE9375A024BBDDD10074066F /* VMConfigDriveDetailsView.swift */,
-				CED814EB24C7C2850042F0F1 /* VMConfigInfoView.swift */,
-				CE2D954824AD4F980059923A /* VMConfigInputView.swift */,
-				CE2D955024AD4F980059923A /* VMConfigNetworkView.swift */,
-				CE2D955224AD4F980059923A /* VMConfigPortForwardForm.swift */,
-				CE2D953924AD4F980059923A /* VMConfigQEMUView.swift */,
-				CE2D954724AD4F980059923A /* VMConfigSharingView.swift */,
-				CE2D953A24AD4F980059923A /* VMConfigSoundView.swift */,
-				CE2D954924AD4F980059923A /* VMConfigStringPicker.swift */,
-				CE2D955324AD4F980059923A /* VMConfigSystemView.swift */,
-				CE2D954B24AD4F980059923A /* VMDetailsView.swift */,
-				CEFC6CDC24C25697003F6962 /* VMDriveImage.swift */,
-				CE2D954224AD4F980059923A /* VMPlaceholderView.swift */,
-				CE2D954524AD4F980059923A /* VMRemovableDrivesView.swift */,
-				CE8813D424CD265700532628 /* VMShareFileModifier.swift */,
-				CE2D953824AD4F980059923A /* VMToolbarModifier.swift */,
 				CE2D955524AD4F980059923A /* UTMApp.swift */,
 				CE020BA224AEDC7C00B44AB6 /* UTMData.swift */,
 				CE2D954624AD4F980059923A /* UTMExtensions.swift */,
@@ -1783,6 +1776,9 @@
 				CEB63A7824F468BA00CAF323 /* UTMJailbreak.h */,
 				CE020BAA24AEE00000B44AB6 /* UTMLoggingSwift.swift */,
 				CE2D955624AD4F980059923A /* Swift-Bridging-Header.h */,
+				CE550BD52259479D0063E575 /* Assets.xcassets */,
+				521F3EFB2414F73800130500 /* Localizable.strings */,
+				52459A312440C84E006A58D0 /* InfoPlist.strings */,
 			);
 			path = Platform;
 			sourceTree = "<group>";
@@ -1790,6 +1786,7 @@
 		CE2D953B24AD4F980059923A /* macOS */ = {
 			isa = PBXGroup;
 			children = (
+				CE1BD9FA24F4825C0022A468 /* Display */,
 				CE2D954024AD4F980059923A /* ContentView.swift */,
 				CEEC811A24E48EC600ACB0B3 /* SettingsView.swift */,
 				CE8813D724CD2A8B00532628 /* SharingServicePicker.swift */,
@@ -1802,11 +1799,6 @@
 				CE2D953D24AD4F980059923A /* VMSettingsView.swift */,
 				CE2D954124AD4F980059923A /* Info.plist */,
 				CE2D953F24AD4F980059923A /* macOS.entitlements */,
-				CE0FE12724D3B08B0086CEF0 /* VMDisplayWindow.xib */,
-				CE612AC524D3B50700FA6300 /* VMDisplayWindowController.swift */,
-				CEBDA1D424D69DB20010B5EC /* VMDisplayMetalWindowController.swift */,
-				CE03D0D124DCF4B600F76B84 /* VMMetalView.swift */,
-				CE03D0D324DCF6DD00F76B84 /* VMMetalViewInputDelegate.swift */,
 			);
 			path = macOS;
 			sourceTree = "<group>";
@@ -1814,6 +1806,10 @@
 		CE2D954A24AD4F980059923A /* iOS */ = {
 			isa = PBXGroup;
 			children = (
+				CE5E4954225C593C00148CEF /* Legacy */,
+				CE7BED4D22600F5000A1E1B6 /* Display */,
+				CE550BCC225947990063E575 /* AppDelegate.h */,
+				CE550BCD225947990063E575 /* AppDelegate.m */,
 				CE8813D224CD230300532628 /* ActivityView.swift */,
 				CE2D954E24AD4F980059923A /* ContentView.swift */,
 				CED814EE24C7EB760042F0F1 /* ImagePicker.swift */,
@@ -1822,6 +1818,7 @@
 				CE2D954D24AD4F980059923A /* VMConfigNetworkPortForwardView.swift */,
 				CE2D954C24AD4F980059923A /* VMSettingsView.swift */,
 				CE2D954F24AD4F980059923A /* Info.plist */,
+				5286EC91243748AC007E6CBC /* Settings.bundle */,
 			);
 			path = iOS;
 			sourceTree = "<group>";
@@ -2119,13 +2116,11 @@
 				CE258ACC22715F8300E5A333 /* README.md */,
 				CE4AA1462262FB58002E4A54 /* CocoaSpice */,
 				CE31C242225E543A00A965DD /* Configuration */,
-				CE5E4954225C593C00148CEF /* ConfigurationViews */,
 				CEFE75D8228933870050ABCC /* gstreamer */,
 				CE5F1659226138AB00F3D56B /* Managers */,
 				CE2D953624AD4F980059923A /* Platform */,
 				CECC76492273A7AE0059B955 /* qapi */,
 				CE2D63CE2265150F00FC7E63 /* Renderer */,
-				CE7BED4D22600F5000A1E1B6 /* Views */,
 				CE550BCB225947990063E575 /* UTM */,
 				CEBDA1DB24D8BDDA0010B5EC /* QEMUHelper */,
 				CE9D18F72265410E00355E14 /* qemu */,
@@ -2149,26 +2144,20 @@
 		CE550BCB225947990063E575 /* UTM */ = {
 			isa = PBXGroup;
 			children = (
-				521F3EFB2414F73800130500 /* Localizable.strings */,
-				CE550BCC225947990063E575 /* AppDelegate.h */,
-				CE550BCD225947990063E575 /* AppDelegate.m */,
-				CE550BD2225947990063E575 /* Main.storyboard */,
-				CE550BD52259479D0063E575 /* Assets.xcassets */,
-				CE550BD72259479D0063E575 /* LaunchScreen.storyboard */,
 				CE550BDA2259479D0063E575 /* Info.plist */,
-				52459A312440C84E006A58D0 /* InfoPlist.strings */,
-				5286EC91243748AC007E6CBC /* Settings.bundle */,
 				CE2D952C24AD4A800059923A /* UTM-Swift.h */,
 				CE2D952D24AD4C400059923A /* UTM-Swift.m */,
 			);
 			path = UTM;
 			sourceTree = "<group>";
 		};
-		CE5E4954225C593C00148CEF /* ConfigurationViews */ = {
+		CE5E4954225C593C00148CEF /* Legacy */ = {
 			isa = PBXGroup;
 			children = (
 				CEBCAF4F2435293C00C2B423 /* Controls */,
 				CEDC1DEF2260EE34008D9A6D /* StaticDataTableViewController */,
+				CE550BD72259479D0063E575 /* LaunchScreen.storyboard */,
+				CE550BD2225947990063E575 /* Main.storyboard */,
 				CE31C249225EA37400A965DD /* VMConfigViewController.h */,
 				CE31C24A225EA37400A965DD /* VMConfigViewController.m */,
 				CE74C27B225D88EC004E4FF1 /* VMConfigCreateViewController.h */,
@@ -2201,8 +2190,12 @@
 				CE74C285225D88ED004E4FF1 /* VMConfigSystemViewController.m */,
 				423BCE67240F6A8A001989AC /* VMConfigSystemArgumentsViewController.h */,
 				423BCE65240F6A80001989AC /* VMConfigSystemArgumentsViewController.m */,
+				CE550BCF225947990063E575 /* VMListViewController.h */,
+				CE550BD0225947990063E575 /* VMListViewController.m */,
+				CE550BE222596E790063E575 /* VMListViewCell.h */,
+				CE550BE322596E790063E575 /* VMListViewCell.m */,
 			);
-			path = ConfigurationViews;
+			path = Legacy;
 			sourceTree = "<group>";
 		};
 		CE5F1659226138AB00F3D56B /* Managers */ = {
@@ -2245,10 +2238,9 @@
 			path = Managers;
 			sourceTree = "<group>";
 		};
-		CE7BED4D22600F5000A1E1B6 /* Views */ = {
+		CE7BED4D22600F5000A1E1B6 /* Display */ = {
 			isa = PBXGroup;
 			children = (
-				E28394B7240C2191006742E2 /* HTerm */,
 				CE3ADD682411C661002D6A5F /* VMCursor.h */,
 				CE3ADD692411C661002D6A5F /* VMCursor.m */,
 				CE20FAE62448D2BE0059AE11 /* VMScroll.h */,
@@ -2277,16 +2269,40 @@
 				CE4507D0226A5BE200A28D22 /* VMKeyboardView.h */,
 				CE4507D1226A5BE200A28D22 /* VMKeyboardView.m */,
 				CE4507D3226A5C9900A28D22 /* VMKeyboardViewDelegate.h */,
-				CE550BCF225947990063E575 /* VMListViewController.h */,
-				CE550BD0225947990063E575 /* VMListViewController.m */,
-				CE550BE222596E790063E575 /* VMListViewCell.h */,
-				CE550BE322596E790063E575 /* VMListViewCell.m */,
 				E2151A57241451120008E6AC /* UIViewController+Extensions.h */,
 				E2151A58241451120008E6AC /* UIViewController+Extensions.m */,
 				E2B0F9D02426E5510065DFBE /* WKWebView+Workarounds.h */,
 				E2B0F9D12426E5510065DFBE /* WKWebView+Workarounds.m */,
 			);
-			path = Views;
+			path = Display;
+			sourceTree = "<group>";
+		};
+		CEB63A9624F47C1200CAF323 /* Shared */ = {
+			isa = PBXGroup;
+			children = (
+				E28394B7240C2191006742E2 /* HTerm */,
+				CE7D972B24B2B17D0080CB69 /* BusyOverlay.swift */,
+				CE2D954324AD4F980059923A /* VMCardView.swift */,
+				CE2D953724AD4F980059923A /* VMConfigDisplayView.swift */,
+				CED814E824C79F070042F0F1 /* VMConfigDriveCreateView.swift */,
+				CE9375A024BBDDD10074066F /* VMConfigDriveDetailsView.swift */,
+				CED814EB24C7C2850042F0F1 /* VMConfigInfoView.swift */,
+				CE2D954824AD4F980059923A /* VMConfigInputView.swift */,
+				CE2D955024AD4F980059923A /* VMConfigNetworkView.swift */,
+				CE2D955224AD4F980059923A /* VMConfigPortForwardForm.swift */,
+				CE2D953924AD4F980059923A /* VMConfigQEMUView.swift */,
+				CE2D954724AD4F980059923A /* VMConfigSharingView.swift */,
+				CE2D953A24AD4F980059923A /* VMConfigSoundView.swift */,
+				CE2D954924AD4F980059923A /* VMConfigStringPicker.swift */,
+				CE2D955324AD4F980059923A /* VMConfigSystemView.swift */,
+				CE2D954B24AD4F980059923A /* VMDetailsView.swift */,
+				CEFC6CDC24C25697003F6962 /* VMDriveImage.swift */,
+				CE2D954224AD4F980059923A /* VMPlaceholderView.swift */,
+				CE2D954524AD4F980059923A /* VMRemovableDrivesView.swift */,
+				CE8813D424CD265700532628 /* VMShareFileModifier.swift */,
+				CE2D953824AD4F980059923A /* VMToolbarModifier.swift */,
+			);
+			path = Shared;
 			sourceTree = "<group>";
 		};
 		CEBCAF4F2435293C00C2B423 /* Controls */ = {
@@ -2548,7 +2564,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Views/HTerm/libapps/hterm/bin/mkdist\"\n";
+			shellScript = "\"${SRCROOT}/Platform/Shared/HTerm/libapps/hterm/bin/mkdist\"\n";
 		};
 		CE2D936824AD46670059923A /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -2567,7 +2583,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Views/HTerm/libapps/hterm/bin/mkdist\"\n";
+			shellScript = "\"${SRCROOT}/Platform/Shared/HTerm/libapps/hterm/bin/mkdist\"\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
