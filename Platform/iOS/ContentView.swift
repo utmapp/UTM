@@ -23,6 +23,7 @@ struct ContentView: View {
     @EnvironmentObject private var data: UTMData
     @State private var newPopupPresented = false
     @State private var newVMScratchPresented = false
+    @State private var jitAlertPresented = false
     
     var body: some View {
         NavigationView {
@@ -55,8 +56,14 @@ struct ContentView: View {
         .onAppear {
             data.refresh()
             IQKeyboardManager.shared.enable = true
+            if !Main.jitAvailable {
+                jitAlertPresented.toggle()
+            }
         }
         .overlay(BusyOverlay())
+        .alert(isPresented: $jitAlertPresented, content: {
+            Alert(title: Text("Your version of iOS does not support running VMs while unmodified. You must either run UTM while jailbroken or with a remote debugger attached."))
+        })
     }
     
     private var newButton: some View {

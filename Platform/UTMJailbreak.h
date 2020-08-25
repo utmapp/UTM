@@ -21,6 +21,6 @@
 
 bool jb_has_jit_entitlement(void);
 bool jb_has_ptrace_hack(void);
-void jb_enable_ptrace_hack(void);
+bool jb_enable_ptrace_hack(void);
 
 #endif /* UTMJailbreak_h */
