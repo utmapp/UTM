@@ -52,12 +52,37 @@ class VMDisplayWindowController: NSWindowController {
     }
     
     @IBAction func stopButtonPressed(_ sender: Any) {
+        showConfirmAlert(NSLocalizedString("This may corrupt the VM and any unsaved changes will be lost. To quit safely, shut down from the guest.", comment: "VMDisplayWindowController")) {
+            DispatchQueue.global(qos: .background).async {
+                self.vm.quitVM()
+            }
+        }
     }
     
     @IBAction func startPauseButtonPressed(_ sender: Any) {
+        if vm.state == .vmStarted {
+            DispatchQueue.global(qos: .background).async {
+                self.vm.pauseVM()
+                guard self.vm.saveVM() else {
+                    DispatchQueue.main.async {
+                        self.showErrorAlert(NSLocalizedString("Failed to save VM state. Do you have at least one read-write drive attached that supports snapshots?", comment: "VMDisplayWindowController"))
+                    }
+                    return
+                }
+            }
+        } else if vm.state == .vmPaused {
+            DispatchQueue.global(qos: .background).async {
+                self.vm.resumeVM()
+            }
+        }
     }
     
     @IBAction func restartButtonPressed(_ sender: Any) {
+        showConfirmAlert(NSLocalizedString("This will reset the VM and any unsaved state will be lost.", comment: "VMDisplayWindowController")) {
+            DispatchQueue.global(qos: .background).async {
+                self.vm.resetVM()
+            }
+        }
     }
     
     @IBAction func captureMouseButtonPressed(_ sender: Any) {
@@ -108,6 +133,20 @@ class VMDisplayWindowController: NSWindowController {
         alert.messageText = NSLocalizedString("Error", comment: "VMDisplayWindowController")
         alert.informativeText = message
         alert.beginSheetModal(for: window!, completionHandler: handler)
+    }
+    
+    func showConfirmAlert(_ message: String, confirmHandler handler: (() -> Void)? = nil) {
+        let alert = NSAlert()
+        alert.alertStyle = .informational
+        alert.messageText = NSLocalizedString("Confirmation", comment: "VMDisplayWindowController")
+        alert.informativeText = message
+        alert.addButton(withTitle: NSLocalizedString("OK", comment: "VMDisplayWindowController"))
+        alert.addButton(withTitle: NSLocalizedString("Cancel", comment: "VMDisplayWindowController"))
+        alert.beginSheetModal(for: window!) { response in
+            if response == .alertFirstButtonReturn {
+                handler?()
+            }
+        }
     }
 }
 
