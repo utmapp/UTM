@@ -58,7 +58,7 @@
 
 - (void)targetSpecificConfiguration {
     if ([self.configuration.systemTarget hasPrefix:@"virt"]) {
-        if ([self.configuration.systemArchitecture isEqualToString:@"aarch64"]) {
+        if (![self useHypervisor] && [self.configuration.systemArchitecture isEqualToString:@"aarch64"]) {
             [self pushArgv:@"-cpu"];
             [self pushArgv:@"cortex-a72"];
         }
@@ -251,6 +251,8 @@
     if ([self useHypervisor]) {
         [self pushArgv:@"-accel"];
         [self pushArgv:@"hvf"];
+        [self pushArgv:@"-cpu"];
+        [self pushArgv:@"host"];
     }
     [self pushArgv:@"-accel"];
     [self pushArgv:[self tcgAccelProperties]];
