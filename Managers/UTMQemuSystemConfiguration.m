@@ -14,6 +14,7 @@
 // limitations under the License.
 //
 
+#import <TargetConditionals.h>
 #import "UTMQemuSystemConfiguration.h"
 #import "UTMConfiguration.h"
 #import "UTMConfiguration+Constants.h"
@@ -189,7 +190,7 @@
     }
 }
 
-- (NSString *)acceleratorProperties {
+- (NSString *)tcgAccelProperties {
     NSString *accel = @"tcg";
     
     if (self.configuration.systemForceMulticore) {
@@ -200,14 +201,21 @@
     }
     
     // Avoid alias mapping if we support dynamic codesigning
-    if (@available(iOS 14, macOS 11, *)) {
+#if TARGET_OS_IPHONE
+    if (@available(iOS 14, *)) {
         // only iOS 14 supports the pthread JIT calls
         if (jb_has_jit_entitlement()) {
             accel = [accel stringByAppendingString:@",mirror-rwx=off"];
         }
     }
+#endif
     
     return accel;
+}
+
+- (BOOL)useHypervisor {
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    return [defaults boolForKey:@"UseHypervisor"];
 }
 
 - (NSString *)machineProperties {
@@ -240,8 +248,12 @@
     [self pushArgv:[NSString stringWithFormat:@"cpus=%@,sockets=1", self.configuration.systemCPUCount]];
     [self pushArgv:@"-machine"];
     [self pushArgv:[NSString stringWithFormat:@"%@,%@", self.configuration.systemTarget, [self machineProperties]]];
+    if ([self useHypervisor]) {
+        [self pushArgv:@"-accel"];
+        [self pushArgv:@"hvf"];
+    }
     [self pushArgv:@"-accel"];
-    [self pushArgv:[self acceleratorProperties]];
+    [self pushArgv:[self tcgAccelProperties]];
     [self architectureSpecificConfiguration];
     [self targetSpecificConfiguration];
     if (![self.configuration.systemBootDevice isEqualToString:@"hdd"]) {
