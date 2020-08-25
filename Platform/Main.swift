@@ -20,19 +20,23 @@ let logger = Logger(label: "com.osy86.UTM")
 
 @main
 class Main {
+    static var jitAvailable = true
+    
     static func main() {
         setupLogging()
         // check if we have jailbreak
-        #if !NO_PLATFORM_HACKS
         if jb_has_jit_entitlement() {
             logger.info("JIT: found dynamic codesign entitlement")
         } else if jb_has_ptrace_hack() {
             logger.info("JIT: ptrace() hack supported, attempting to enable")
-            jb_enable_ptrace_hack()
+            if !jb_enable_ptrace_hack() {
+                logger.info("JIT: ptrace() hack failed")
+                jitAvailable = false
+            }
         } else {
             logger.info("JIT: not supported")
+            jitAvailable = false
         }
-        #endif
         if #available(iOS 14, macOS 11, *) {
             UTMApp.main()
         } else {

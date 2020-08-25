@@ -24,6 +24,7 @@
 #import "VMDisplayMetalViewController.h"
 #import "VMDisplayTerminalViewController.h"
 #import "UTMScreenshot.h"
+#import "UTMJailbreak.h"
 
 @import SafariServices;
 
@@ -95,8 +96,9 @@
         }
     });
     
-    // show any message
-    [self showStartupMessage];
+    if (jb_has_ptrace_hack()) {
+        [self showStartupMessage];
+    }
 }
 
 #pragma mark - Properties

@@ -24,6 +24,7 @@
 #import "UTMConfiguration+Sharing.h"
 #import "UTMConfiguration+System.h"
 #import "UTMConfigurationPortForward.h"
+#import "UTMJailbreak.h"
 #import "UTMLogging.h"
 
 @implementation UTMQemuSystemConfiguration
@@ -188,6 +189,27 @@
     }
 }
 
+- (NSString *)acceleratorProperties {
+    NSString *accel = @"tcg";
+    
+    if (self.configuration.systemForceMulticore) {
+        accel = [accel stringByAppendingString:@",thread=multi"];
+    }
+    if ([self.configuration.systemJitCacheSize integerValue] > 0) {
+        accel = [accel stringByAppendingFormat:@",tb-size=%@", [self.configuration.systemJitCacheSize stringValue]];
+    }
+    
+    // Avoid alias mapping if we support dynamic codesigning
+    if (@available(iOS 14, macOS 11, *)) {
+        // only iOS 14 supports the pthread JIT calls
+        if (jb_has_jit_entitlement()) {
+            accel = [accel stringByAppendingString:@",mirror-rwx=off"];
+        }
+    }
+    
+    return accel;
+}
+
 - (NSString *)machineProperties {
     if (self.configuration.systemMachineProperties.length > 0) {
         return self.configuration.systemMachineProperties; // use specified properties
@@ -218,14 +240,8 @@
     [self pushArgv:[NSString stringWithFormat:@"cpus=%@,sockets=1", self.configuration.systemCPUCount]];
     [self pushArgv:@"-machine"];
     [self pushArgv:[NSString stringWithFormat:@"%@,%@", self.configuration.systemTarget, [self machineProperties]]];
-    if (self.configuration.systemForceMulticore) {
-        [self pushArgv:@"-accel"];
-        [self pushArgv:@"tcg,thread=multi"];
-    }
-    if ([self.configuration.systemJitCacheSize integerValue] > 0) {
-        [self pushArgv:@"-tb-size"];
-        [self pushArgv:[self.configuration.systemJitCacheSize stringValue]];
-    }
+    [self pushArgv:@"-accel"];
+    [self pushArgv:[self acceleratorProperties]];
     [self architectureSpecificConfiguration];
     [self targetSpecificConfiguration];
     if (![self.configuration.systemBootDevice isEqualToString:@"hdd"]) {

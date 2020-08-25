@@ -56,9 +56,6 @@ static bool am_i_being_debugged() {
 
 
 bool jb_has_jit_entitlement(void) {
-#if TARGET_OS_SIMULATOR
-    return false; // simulator allows MAP_JIT so we pretend it doesn't for testing
-#else
     void *addr = mmap(NULL, PAGE_SIZE, PROT_READ | PROT_WRITE | PROT_EXEC, MAP_ANON | MAP_PRIVATE | MAP_JIT, -1, 0);
     if (addr != NULL) {
         munmap(addr, PAGE_SIZE);
@@ -66,19 +63,25 @@ bool jb_has_jit_entitlement(void) {
     } else {
         return false;
     }
-#endif
 }
 
 bool jb_has_ptrace_hack(void) {
+#if defined(NO_PTRACE_HACK)
+    return false;
+#else
     int res = ptrace(-1, -1, NULL, 0);
     if (res < 0 && errno == EINVAL) {
         return true;
     } else {
         return false;
     }
+#endif
 }
 
-void jb_enable_ptrace_hack(void) {
+bool jb_enable_ptrace_hack(void) {
+#if defined(NO_PTRACE_HACK)
+    return false;
+#else
     bool debugged = am_i_being_debugged();
     
     // Thanks to this comment: https://news.ycombinator.com/item?id=18431524
@@ -86,7 +89,9 @@ void jb_enable_ptrace_hack(void) {
     // dynamic-codesigning entitlement) by tricking the process into thinking
     // that Xcode is debugging it. We abuse the fact that JIT is needed to
     // debug the process.
-    ptrace(PT_TRACE_ME, 0, NULL, 0);
+    if (ptrace(PT_TRACE_ME, 0, NULL, 0) < 0) {
+        return false;
+    }
     
     // ptracing ourselves confuses the kernel and will cause bad things to
     // happen to the system (hangs…) if an exception or signal occurs. Setup
@@ -110,4 +115,7 @@ void jb_enable_ptrace_hack(void) {
         pthread_t thread;
         pthread_create(&thread, NULL, exception_handler, (void *)&port);
     }
+    
+    return true;
+#endif
 }
