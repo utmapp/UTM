@@ -20,9 +20,8 @@
 
 - (void)valueChanged:(id)value {
     if (value == nil || value == [NSNull null]) {
-        value = @"";
-    }
-    if (self.isNumber) {
+        self.text = @"";
+    } else if (self.isNumber) {
         self.text = [value stringValue];
     } else {
         self.text = value;
