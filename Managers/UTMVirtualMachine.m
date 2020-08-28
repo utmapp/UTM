@@ -538,6 +538,13 @@ error:
     }
 }
 
+- (void)qemuError:(UTMQemuManager *)manager error:(NSString *)error {
+    UTMLog(@"qemuError: %@", error);
+    dispatch_async(dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0), ^{
+        [self errorTriggered:error];
+    });
+}
+
 #pragma mark - Plist Handling
 
 - (NSMutableDictionary *)loadPlist:(NSURL *)path withError:(NSError **)err {
