@@ -69,15 +69,20 @@ static void utm_watchdog_handler(WatchdogAction action, void *ctx) {
 }
 
 static void utm_guest_panicked_handler(GuestPanicAction action, bool has_info, GuestPanicInformation *info, void *ctx) {
-    
+    UTMQemuManager *self = (__bridge UTMQemuManager *)ctx;
+    [self.delegate qemuError:self error:NSLocalizedString(@"Guest panic", @"UTMQemuManager")];
 }
 
 static void utm_block_image_corrupted_handler(const char *device, bool has_node_name, const char *node_name, const char *msg, bool has_offset, int64_t offset, bool has_size, int64_t size, bool fatal, void *ctx) {
-    
+    UTMQemuManager *self = (__bridge UTMQemuManager *)ctx;
+    if (fatal) {
+        [self.delegate qemuError:self error:[NSString stringWithFormat:@"%s, %s: %s", device, node_name, msg]];
+    }
 }
 
 static void utm_block_io_error_handler(const char *device, bool has_node_name, const char *node_name, IoOperationType operation, BlockErrorAction action, bool has_nospace, bool nospace, const char *reason, void *ctx) {
-    
+    UTMQemuManager *self = (__bridge UTMQemuManager *)ctx;
+    [self.delegate qemuError:self error:[NSString stringWithFormat:@"%s, %s: %s", device, node_name, reason]];
 }
 
 static void utm_spice_connected_handler(SpiceBasicInfo *server, SpiceBasicInfo *client, void *ctx) {
