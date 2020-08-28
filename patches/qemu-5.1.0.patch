@@ -1,4 +1,4 @@
-From 3367ead4b248198ad3b55f42e6b212d2263fb3fb Mon Sep 17 00:00:00 2001
+From a9bafced71aa14b4734559543e491658358adb85 Mon Sep 17 00:00:00 2001
 From: osy <osy86@users.noreply.github.com>
 Date: Wed, 24 Apr 2019 20:16:48 -0700
 Subject: [PATCH 1/7] build: Add support for iOS host
@@ -427,7 +427,7 @@ index 9bc2a5ecbe..298e2d306c 100644
 -- 
 2.24.3 (Apple Git-128)
 
-From e49082cfbeb7d7d644ab3451c2bc9cbd7ed25986 Mon Sep 17 00:00:00 2001
+From bd3929e6b39a6d60bbdc72f5d86fc415a196dac7 Mon Sep 17 00:00:00 2001
 From: osy <osy86@users.noreply.github.com>
 Date: Wed, 27 Mar 2019 14:47:00 -0700
 Subject: [PATCH 2/7] build: Added support for building QEMU as a shared
@@ -444,7 +444,7 @@ compatibility with OSX < 10.4.
  5 files changed, 79 insertions(+), 5 deletions(-)
 
 diff --git a/Makefile b/Makefile
-index c2120d8d48..e1e42f3a68 100644
+index 13dd708c4a..c537a933fa 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -592,6 +592,16 @@ Makefile: $(version-obj-y)
@@ -694,7 +694,7 @@ index 694865b63e..906b2e134c 100644
 -- 
 2.24.3 (Apple Git-128)
 
-From 9e0a7e9c70518d6eaf75669a0ce2164b8992ab64 Mon Sep 17 00:00:00 2001
+From 7b72c6b9c7c88f9c4c3cfa6357ea5762fabb8a1b Mon Sep 17 00:00:00 2001
 From: osy <osy86@users.noreply.github.com>
 Date: Fri, 29 Mar 2019 15:41:07 -0700
 Subject: [PATCH 3/7] coroutine: add libucontext as external library
@@ -721,7 +721,7 @@ index 9c0501a4d4..4d140cda28 100644
 +	path = libucontext
 +	url = https://github.com/utmapp/libucontext.git
 diff --git a/Makefile b/Makefile
-index e1e42f3a68..7a97e32e97 100644
+index c537a933fa..a49ee7d406 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -550,6 +550,9 @@ CAP_CFLAGS += -DCAPSTONE_HAS_ARM64
@@ -844,7 +844,7 @@ index 904b375192..1e1dd43512 100644
 -- 
 2.24.3 (Apple Git-128)
 
-From 1055a07c4f90ed26d6d98432f6de81195592d347 Mon Sep 17 00:00:00 2001
+From 75a3837dfbe4fae47b38bbbff4ec16a12926034c Mon Sep 17 00:00:00 2001
 From: osy <osy86@users.noreply.github.com>
 Date: Sun, 23 Feb 2020 22:13:35 -0800
 Subject: [PATCH 4/7] tcg: implement bulletproof JIT
@@ -2803,7 +2803,7 @@ index 992d50cb1e..baacafa983 100644
 -- 
 2.24.3 (Apple Git-128)
 
-From 01b8aa7d1bf3c1a8b4ce9286760ee3457458be68 Mon Sep 17 00:00:00 2001
+From fc9a7b1fa7104ff5d5a047de892c2d39690af90f Mon Sep 17 00:00:00 2001
 From: osy <osy86@users.noreply.github.com>
 Date: Tue, 31 Mar 2020 16:20:24 -0700
 Subject: [PATCH 5/7] slirp: update for iOS resolv fix
@@ -2846,7 +2846,7 @@ index 0ab4633fbd..09faa69a54 100755
 -- 
 2.24.3 (Apple Git-128)
 
-From 560396ac40fd343f8b0fb481780509371173e567 Mon Sep 17 00:00:00 2001
+From 71a38e02dd85a22e73355cdc2047ba34fde05064 Mon Sep 17 00:00:00 2001
 From: osy <osy86@users.noreply.github.com>
 Date: Wed, 29 Jul 2020 14:14:47 -0700
 Subject: [PATCH 6/7] tcg: mirror mapping RWX pages for iOS optional
@@ -3137,7 +3137,7 @@ index 708583b4ce..a5b56f9963 100644
 -- 
 2.24.3 (Apple Git-128)
 
-From 1e346c68ae562e189abaad172f9ed62ac11fe725 Mon Sep 17 00:00:00 2001
+From 3665d6d7e26ca01e02ca6b9a5ae361c9bb24e123 Mon Sep 17 00:00:00 2001
 From: osy <osy86@users.noreply.github.com>
 Date: Wed, 29 Jul 2020 14:15:54 -0700
 Subject: [PATCH 7/7] tcg: support JIT on Apple Silicon
