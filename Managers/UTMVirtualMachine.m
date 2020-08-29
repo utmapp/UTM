@@ -43,6 +43,8 @@ NSString *const kSuspendSnapshotName = @"suspend";
 
 @interface UTMVirtualMachine ()
 
+@property (nonatomic, readonly) UTMQemuManager *qemu;
+@property (nonatomic, readonly) UTMQemu *system;
 @property (nonatomic) UTMViewState *viewState;
 @property (nonatomic, weak) UTMLogging *logging;
 
@@ -60,6 +62,7 @@ NSString *const kSuspendSnapshotName = @"suspend";
 
 @synthesize path = _path;
 @synthesize busy = _is_busy;
+@synthesize system = _qemu_system;
 
 - (void)setDelegate:(id<UTMVirtualMachineDelegate>)delegate {
     _delegate = delegate;
