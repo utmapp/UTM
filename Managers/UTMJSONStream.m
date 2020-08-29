@@ -30,17 +30,21 @@ enum ParserState {
 @implementation UTMJSONStream {
     NSMutableData *_data;
     NSInputStream *_inputStream;
+    dispatch_queue_t _inputQueue;
     NSOutputStream *_outputStream;
+    dispatch_queue_t _outputQueue;
     NSUInteger _parsedBytes;
     enum ParserState _state;
     int _open_curly_count;
 }
 
 - (id)initHost:(NSString *)host port:(UInt32)port {
-    self = [self init];
+    self = [super init];
     if (self) {
         self.host = host;
         self.port = port;
+        _inputQueue = dispatch_queue_create("com.osy86.UTM.JSONStreamInput", NULL);
+        _outputQueue = dispatch_queue_create("com.osy86.UTM.JSONStreamOutput", NULL);
     }
     return self;
 }
@@ -62,10 +66,10 @@ enum ParserState {
         _parsedBytes = 0;
         _open_curly_count = -1;
         [_inputStream setDelegate:self];
-        [_inputStream scheduleInRunLoop:[NSRunLoop mainRunLoop] forMode:NSDefaultRunLoopMode];
+        CFReadStreamSetDispatchQueue((__bridge CFReadStreamRef)_inputStream, _inputQueue);
         [_inputStream open];
         [_outputStream setDelegate:self];
-        [_outputStream scheduleInRunLoop:[NSRunLoop mainRunLoop] forMode:NSDefaultRunLoopMode];
+        CFWriteStreamSetDispatchQueue((__bridge CFWriteStreamRef)_outputStream, _outputQueue);
         [_outputStream open];
     }
 }
