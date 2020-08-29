@@ -40,7 +40,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) NSURL *parentPath;
 @property (nonatomic, strong, readonly) UTMConfiguration *configuration;
 @property (nonatomic, assign, readonly) UTMVMState state;
-@property (nonatomic, readonly, nullable) UTMQemuManager *qemu;
 @property (nonatomic, readonly) BOOL busy;
 @property (nonatomic, readonly) UTMScreenshot *screenshot;
 

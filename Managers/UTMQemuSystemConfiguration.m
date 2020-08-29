@@ -72,43 +72,59 @@
     for (NSUInteger i = 0; i < self.configuration.countDrives; i++) {
         NSString *path = [self.configuration driveImagePathForIndex:i];
         UTMDiskImageType type = [self.configuration driveImageTypeForIndex:i];
+        BOOL hasImage = ![self.configuration driveRemovableForIndex:i] && path;
         NSURL *fullPathURL;
         
-        if ([path characterAtIndex:0] == '/') {
-            fullPathURL = [NSURL fileURLWithPath:path isDirectory:NO];
-        } else {
-            fullPathURL = [[self.imgPath URLByAppendingPathComponent:[UTMConfiguration diskImagesDirectory]] URLByAppendingPathComponent:[self.configuration driveImagePathForIndex:i]];
+        if (hasImage) {
+            if ([path characterAtIndex:0] == '/') {
+                fullPathURL = [NSURL fileURLWithPath:path isDirectory:NO];
+            } else {
+                fullPathURL = [[self.imgPath URLByAppendingPathComponent:[UTMConfiguration diskImagesDirectory]] URLByAppendingPathComponent:[self.configuration driveImagePathForIndex:i]];
+            }
+            [self accessDataWithBookmark:[fullPathURL bookmarkDataWithOptions:0
+                                               includingResourceValuesForKeys:nil
+                                                                relativeToURL:nil
+                                                                        error:nil]];
         }
-        [self accessDataWithBookmark:[fullPathURL bookmarkDataWithOptions:0
-                                           includingResourceValuesForKeys:nil
-                                                            relativeToURL:nil
-                                                                    error:nil]];
         
         switch (type) {
             case UTMDiskImageTypeDisk:
             case UTMDiskImageTypeCD: {
+                NSString *drive;
                 [self pushArgv:@"-drive"];
-                [self pushArgv:[NSString stringWithFormat:@"file=%@,if=%@,media=%@,id=drive%lu", fullPathURL.path, [self.configuration driveInterfaceTypeForIndex:i], type == UTMDiskImageTypeCD ? @"cdrom" : @"disk", i]];
+                drive = [NSString stringWithFormat:@"if=%@,media=%@,id=drive%lu", [self.configuration driveInterfaceTypeForIndex:i], type == UTMDiskImageTypeCD ? @"cdrom" : @"disk", i];
+                if (hasImage) {
+                    drive = [NSString stringWithFormat:@"%@,file=%@", drive, fullPathURL.path];
+                }
+                [self pushArgv:drive];
                 break;
             }
             case UTMDiskImageTypeBIOS: {
-                [self pushArgv:@"-bios"];
-                [self pushArgv:fullPathURL.path];
+                if (!hasImage) {
+                    [self pushArgv:@"-bios"];
+                    [self pushArgv:fullPathURL.path];
+                }
                 break;
             }
             case UTMDiskImageTypeKernel: {
-                [self pushArgv:@"-kernel"];
-                [self pushArgv:fullPathURL.path];
+                if (!hasImage) {
+                    [self pushArgv:@"-kernel"];
+                    [self pushArgv:fullPathURL.path];
+                }
                 break;
             }
             case UTMDiskImageTypeInitrd: {
-                [self pushArgv:@"-initrd"];
-                [self pushArgv:fullPathURL.path];
+                if (!hasImage) {
+                    [self pushArgv:@"-initrd"];
+                    [self pushArgv:fullPathURL.path];
+                }
                 break;
             }
             case UTMDiskImageTypeDTB: {
-                [self pushArgv:@"-dtb"];
-                [self pushArgv:fullPathURL.path];
+                if (!hasImage) {
+                    [self pushArgv:@"-dtb"];
+                    [self pushArgv:fullPathURL.path];
+                }
                 break;
             }
             default: {

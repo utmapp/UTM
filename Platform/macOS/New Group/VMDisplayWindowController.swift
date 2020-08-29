@@ -89,9 +89,6 @@ class VMDisplayWindowController: NSWindowController {
         isMouseCaptued.toggle()
     }
     
-    @IBAction func drivesButtonPressed(_ sender: Any) {
-    }
-    
     @IBAction func networkButtonPressed(_ sender: Any) {
     }
     
@@ -181,5 +178,114 @@ extension VMDisplayWindowController: UTMVirtualMachineDelegate {
         @unknown default:
             break
         }
+    }
+}
+
+// MARK: - Removable drives
+
+@objc extension VMDisplayWindowController {
+    @IBAction func drivesButtonPressed(_ sender: Any) {
+        let menu = NSMenu()
+        menu.autoenablesItems = false
+        let item = NSMenuItem()
+        item.title = NSLocalizedString("Querying drives status...", comment: "VMDisplayWindowController")
+        item.isEnabled = false
+        menu.addItem(item)
+        DispatchQueue.global(qos: .userInitiated).async {
+            let drives = self.vm.drives
+            DispatchQueue.main.async {
+                self.updateDrivesMenu(menu, drives: drives)
+            }
+        }
+        if let event = NSApplication.shared.currentEvent {
+            NSMenu.popUpContextMenu(menu, with: event, for: sender as! NSView)
+        }
+    }
+    
+    func updateDrivesMenu(_ menu: NSMenu, drives: [UTMDrive]) {
+        menu.removeAllItems()
+        if drives.count == 0 {
+            let item = NSMenuItem()
+            item.title = NSLocalizedString("No drives connected.", comment: "VMDisplayWindowController")
+            item.isEnabled = false
+            menu.addItem(item)
+        }
+        for drive in drives {
+            let item = NSMenuItem()
+            item.title = drive.label
+            if drive.status == .fixed {
+                item.isEnabled = false
+            } else {
+                let submenu = NSMenu()
+                submenu.autoenablesItems = false
+                let eject = NSMenuItem(title: NSLocalizedString("Eject", comment: "VMDisplayWindowController"),
+                                       action: #selector(ejectDrive),
+                                       keyEquivalent: "")
+                eject.target = self
+                eject.tag = drive.index
+                eject.isEnabled = drive.status != .ejected
+                submenu.addItem(eject)
+                let change = NSMenuItem(title: NSLocalizedString("Change", comment: "VMDisplayWindowController"),
+                                        action: #selector(changeDriveImage),
+                                        keyEquivalent: "")
+                change.target = self
+                change.tag = drive.index
+                change.isEnabled = true
+                submenu.addItem(change)
+                item.submenu = submenu
+            }
+            menu.addItem(item)
+        }
+        menu.update()
+    }
+    
+    func ejectDrive(sender: AnyObject) {
+        guard let menu = sender as? NSMenuItem else {
+            logger.error("wrong sender for ejectDrive")
+            return
+        }
+        let drive = vm.drives[menu.tag]
+        DispatchQueue.global(qos: .background).async {
+            do {
+                try self.vm.ejectDrive(drive, force: false)
+            } catch {
+                DispatchQueue.main.async {
+                    self.showErrorAlert(error.localizedDescription)
+                }
+            }
+        }
+    }
+    
+    func openDriveImage(forDrive drive: UTMDrive) {
+        let openPanel = NSOpenPanel()
+        openPanel.title = NSLocalizedString("Select Drive Image", comment: "VMDisplayWindowController")
+        openPanel.allowedContentTypes = [.data]
+        openPanel.beginSheetModal(for: window!) { response in
+            guard response == .OK else {
+                return
+            }
+            guard let url = openPanel.url else {
+                logger.debug("no file selected")
+                return
+            }
+            DispatchQueue.global(qos: .background).async {
+                do {
+                    try self.vm.changeMedium(for: drive, url: url)
+                } catch {
+                    DispatchQueue.main.async {
+                        self.showErrorAlert(error.localizedDescription)
+                    }
+                }
+            }
+        }
+    }
+    
+    func changeDriveImage(sender: AnyObject) {
+        guard let menu = sender as? NSMenuItem else {
+            logger.error("wrong sender for ejectDrive")
+            return
+        }
+        let drive = vm.drives[menu.tag]
+        openDriveImage(forDrive: drive)
     }
 }
