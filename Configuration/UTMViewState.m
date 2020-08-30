@@ -15,6 +15,7 @@
 //
 
 #import "UTMViewState.h"
+#import "UTM-Swift.h"
 
 const NSString *const kUTMViewStateDisplayScaleKey = @"DisplayScale";
 const NSString *const kUTMViewStateDisplayOriginXKey = @"DisplayOriginX";
@@ -49,6 +50,7 @@ const NSString *const kUTMViewStateRemovableDrivesKey = @"RemovableDrives";
 }
 
 - (void)setDisplayScale:(double)displayScale {
+    [self propertyWillChange];
     _rootDict[kUTMViewStateDisplayScaleKey] = @(displayScale);
 }
 
@@ -57,6 +59,7 @@ const NSString *const kUTMViewStateRemovableDrivesKey = @"RemovableDrives";
 }
 
 - (void)setDisplayOriginX:(double)displayOriginX {
+    [self propertyWillChange];
     _rootDict[kUTMViewStateDisplayOriginXKey] = @(displayOriginX);
 }
 
@@ -65,6 +68,7 @@ const NSString *const kUTMViewStateRemovableDrivesKey = @"RemovableDrives";
 }
 
 - (void)setDisplayOriginY:(double)displayOriginY {
+    [self propertyWillChange];
     _rootDict[kUTMViewStateDisplayOriginYKey] = @(displayOriginY);
 }
 
@@ -73,6 +77,7 @@ const NSString *const kUTMViewStateRemovableDrivesKey = @"RemovableDrives";
 }
 
 - (void)setDisplaySizeWidth:(double)displaySizeWidth {
+    [self propertyWillChange];
     _rootDict[kUTMViewStateDisplaySizeWidthKey] = @(displaySizeWidth);
 }
 
@@ -81,6 +86,7 @@ const NSString *const kUTMViewStateRemovableDrivesKey = @"RemovableDrives";
 }
 
 - (void)setDisplaySizeHeight:(double)displaySizeHeight {
+    [self propertyWillChange];
     _rootDict[kUTMViewStateDisplaySizeHeightKey] = @(displaySizeHeight);
 }
 
@@ -89,6 +95,7 @@ const NSString *const kUTMViewStateRemovableDrivesKey = @"RemovableDrives";
 }
 
 - (void)setShowToolbar:(BOOL)showToolbar {
+    [self propertyWillChange];
     _rootDict[kUTMViewStateShowToolbarKey] = @(showToolbar);
 }
 
@@ -97,6 +104,7 @@ const NSString *const kUTMViewStateRemovableDrivesKey = @"RemovableDrives";
 }
 
 - (void)setShowKeyboard:(BOOL)showKeyboard {
+    [self propertyWillChange];
     _rootDict[kUTMViewStateShowKeyboardKey] = @(showKeyboard);
 }
 
@@ -105,6 +113,7 @@ const NSString *const kUTMViewStateRemovableDrivesKey = @"RemovableDrives";
 }
 
 - (void)setSuspended:(BOOL)suspended {
+    [self propertyWillChange];
     _rootDict[kUTMViewStateSuspendedKey] = @(suspended);
 }
 
@@ -113,6 +122,7 @@ const NSString *const kUTMViewStateRemovableDrivesKey = @"RemovableDrives";
 }
 
 - (void)setSharedDirectory:(NSData *)sharedDirectory {
+    [self propertyWillChange];
     if (sharedDirectory) {
         _rootDict[kUTMViewStateSharedDirectoryKey] = sharedDirectory;
     } else {
@@ -123,10 +133,12 @@ const NSString *const kUTMViewStateRemovableDrivesKey = @"RemovableDrives";
 #pragma mark - Removable drives
 
 - (void)setBookmark:(NSData *)bookmark forRemovableDrive:(NSString *)drive {
+    [self propertyWillChange];
     _removableDrives[drive] = bookmark;
 }
 
 - (void)removeBookmarkForRemovableDrive:(NSString *)drive {
+    [self propertyWillChange];
     [_removableDrives removeObjectForKey:drive];
 }
 
