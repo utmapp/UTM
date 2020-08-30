@@ -37,8 +37,6 @@ static const NSURLBookmarkResolutionOptions kBookmarkResolutionOptions = NSURLBo
 @property (nonatomic, readonly, nullable) id<UTMInputOutput> ioService;
 @property (nonatomic) UTMViewState *viewState;
 
-- (void)saveViewState;
-
 @end
 
 @implementation UTMVirtualMachine (Sharing)
@@ -56,7 +54,6 @@ static const NSURLBookmarkResolutionOptions kBookmarkResolutionOptions = NSURLBo
         return NO;
     } else {
         self.viewState.sharedDirectory = bookmark;
-        [self saveViewState];
         return YES;
     }
 }
@@ -78,7 +75,6 @@ static const NSURLBookmarkResolutionOptions kBookmarkResolutionOptions = NSURLBo
 
 - (void)clearSharedDirectory {
     self.viewState.sharedDirectory = nil;
-    [self saveViewState];
 }
 
 - (BOOL)startSharedDirectoryWithError:(NSError * _Nullable __autoreleasing *)error {
