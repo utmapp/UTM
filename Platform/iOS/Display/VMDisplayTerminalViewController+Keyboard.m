@@ -14,6 +14,7 @@
 // limitations under the License.
 //
 
+#import "UTMVirtualMachine+Terminal.h"
 #import "UTMLogging.h"
 #import "VMDisplayTerminalViewController+Keyboard.h"
 #import "VMKeyboardButton.h"
@@ -82,7 +83,7 @@ static int ps2CodeToJs(int ps2Code) {
     UIPasteboard* pasteboard = [UIPasteboard generalPasteboard];
     NSString* string = pasteboard.string;
     if (string != nil) {
-        [self.terminal sendInput: string];
+        [self.vm sendInput: string];
     }
 }
 

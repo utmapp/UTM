@@ -14,21 +14,21 @@
 // limitations under the License.
 //
 
-#import <UIKit/UIKit.h>
-#import <WebKit/WebKit.h>
-#import "UTMTerminalDelegate.h"
-#import "VMDisplayViewController.h"
+#import "UTMVirtualMachine+Terminal.h"
+#import "UTMTerminalIO.h"
 
-NS_ASSUME_NONNULL_BEGIN
+@interface UTMVirtualMachine ()
 
-@interface VMDisplayTerminalViewController : VMDisplayViewController<UTMTerminalDelegate, WKScriptMessageHandler, UIGestureRecognizerDelegate, WKNavigationDelegate>
-
-@property (weak, nonatomic) IBOutlet WKWebView *webView;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *webViewTopConstraint;
-
-@property (nonatomic) NSNumber *columns;
-@property (nonatomic) NSNumber *rows;
+@property (nonatomic, readonly, nullable) id<UTMInputOutput> ioService;
 
 @end
 
-NS_ASSUME_NONNULL_END
+@implementation UTMVirtualMachine (Terminal)
+
+- (void)sendInput:(NSString *)inputStr {
+    NSAssert([self.ioService isKindOfClass:[UTMTerminalIO class]], @"Invalid ioService type '%@' should be UTMTerminalIO", NSStringFromClass([self.ioService class]));
+    UTMTerminal *terminal = ((UTMTerminalIO *)self.ioService).terminal;
+    [terminal sendInput:inputStr];
+}
+
+@end

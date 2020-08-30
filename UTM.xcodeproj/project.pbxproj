@@ -720,6 +720,8 @@
 		CEF83EBF24F9C3BF00557D15 /* UTMVirtualMachine+Drives.m in Sources */ = {isa = PBXBuildFile; fileRef = CEF83EBD24F9C3BF00557D15 /* UTMVirtualMachine+Drives.m */; };
 		CEF83EC224F9C9E100557D15 /* UTMDrive.m in Sources */ = {isa = PBXBuildFile; fileRef = CEF83EC124F9C9E100557D15 /* UTMDrive.m */; };
 		CEF83EC324F9C9E100557D15 /* UTMDrive.m in Sources */ = {isa = PBXBuildFile; fileRef = CEF83EC124F9C9E100557D15 /* UTMDrive.m */; };
+		CEF83ECC24FB382B00557D15 /* UTMVirtualMachine+Terminal.m in Sources */ = {isa = PBXBuildFile; fileRef = CEF83ECB24FB382B00557D15 /* UTMVirtualMachine+Terminal.m */; };
+		CEF83ECD24FB382B00557D15 /* UTMVirtualMachine+Terminal.m in Sources */ = {isa = PBXBuildFile; fileRef = CEF83ECB24FB382B00557D15 /* UTMVirtualMachine+Terminal.m */; };
 		CEFC6CDD24C25697003F6962 /* VMDriveImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEFC6CDC24C25697003F6962 /* VMDriveImage.swift */; };
 		CEFC6CDE24C25697003F6962 /* VMDriveImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEFC6CDC24C25697003F6962 /* VMDriveImage.swift */; };
 /* End PBXBuildFile section */
@@ -1475,6 +1477,8 @@
 		CEF83EBD24F9C3BF00557D15 /* UTMVirtualMachine+Drives.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UTMVirtualMachine+Drives.m"; sourceTree = "<group>"; };
 		CEF83EC024F9C9E100557D15 /* UTMDrive.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UTMDrive.h; sourceTree = "<group>"; };
 		CEF83EC124F9C9E100557D15 /* UTMDrive.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UTMDrive.m; sourceTree = "<group>"; };
+		CEF83ECA24FB382B00557D15 /* UTMVirtualMachine+Terminal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UTMVirtualMachine+Terminal.h"; sourceTree = "<group>"; };
+		CEF83ECB24FB382B00557D15 /* UTMVirtualMachine+Terminal.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UTMVirtualMachine+Terminal.m"; sourceTree = "<group>"; };
 		CEFC6CDC24C25697003F6962 /* VMDriveImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMDriveImage.swift; sourceTree = "<group>"; };
 		CEFE75D9228933DE0050ABCC /* gst_ios_init.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = gst_ios_init.m; sourceTree = "<group>"; };
 		CEFE75DA228933DE0050ABCC /* gst_ios_init.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = gst_ios_init.h; sourceTree = "<group>"; };
@@ -2224,6 +2228,8 @@
 				CE5F165B2261395000F3D56B /* UTMVirtualMachine.m */,
 				CEF83EBC24F9C3BF00557D15 /* UTMVirtualMachine+Drives.h */,
 				CEF83EBD24F9C3BF00557D15 /* UTMVirtualMachine+Drives.m */,
+				CEF83ECA24FB382B00557D15 /* UTMVirtualMachine+Terminal.h */,
+				CEF83ECB24FB382B00557D15 /* UTMVirtualMachine+Terminal.m */,
 				E28394B5240C20E1006742E2 /* UTMTerminal.h */,
 				E28394B3240C20E0006742E2 /* UTMTerminal.m */,
 				E28394B4240C20E1006742E2 /* UTMTerminalDelegate.h */,
@@ -2672,6 +2678,7 @@
 				CE2D92A724AD46670059923A /* qapi-types-common.c in Sources */,
 				CE2D92A924AD46670059923A /* qapi-types-transaction.c in Sources */,
 				CEB63A8E24F46E6E00CAF323 /* VMConfigViewController.m in Sources */,
+				CEF83ECC24FB382B00557D15 /* UTMVirtualMachine+Terminal.m in Sources */,
 				CEB63A9224F46E6E00CAF323 /* VMConfigInputViewController.m in Sources */,
 				CE2D92AA24AD46670059923A /* UTMSpiceIO.m in Sources */,
 				CE2D92AB24AD46670059923A /* qapi-events-machine-target.c in Sources */,
@@ -2881,6 +2888,7 @@
 				CE0B6D5424AD584C00FE012D /* qapi-visit-trace.c in Sources */,
 				CE020BAC24AEE00000B44AB6 /* UTMLoggingSwift.swift in Sources */,
 				CE0B6D7C24AD584D00FE012D /* qapi-visit-char.c in Sources */,
+				CEF83ECD24FB382B00557D15 /* UTMVirtualMachine+Terminal.m in Sources */,
 				CE0B6CF024AD567100FE012D /* CSInput.m in Sources */,
 				CE9375A224BBDDD10074066F /* VMConfigDriveDetailsView.swift in Sources */,
 				CE2D955824AD4F980059923A /* VMConfigDisplayView.swift in Sources */,

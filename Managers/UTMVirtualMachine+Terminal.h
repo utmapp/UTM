@@ -14,20 +14,13 @@
 // limitations under the License.
 //
 
-#import <UIKit/UIKit.h>
-#import <WebKit/WebKit.h>
-#import "UTMTerminalDelegate.h"
-#import "VMDisplayViewController.h"
+#import "UTMVirtualMachine.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface VMDisplayTerminalViewController : VMDisplayViewController<UTMTerminalDelegate, WKScriptMessageHandler, UIGestureRecognizerDelegate, WKNavigationDelegate>
+@interface UTMVirtualMachine (Terminal)
 
-@property (weak, nonatomic) IBOutlet WKWebView *webView;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *webViewTopConstraint;
-
-@property (nonatomic) NSNumber *columns;
-@property (nonatomic) NSNumber *rows;
+- (void)sendInput:(NSString*)inputStr;
 
 @end
 

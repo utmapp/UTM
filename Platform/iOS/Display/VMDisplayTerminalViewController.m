@@ -19,6 +19,8 @@
 #import "UTMConfiguration.h"
 #import "UTMConfiguration+Display.h"
 #import "UTMLogging.h"
+#import "UTMVirtualMachine.h"
+#import "UTMVirtualMachine+Terminal.h"
 #import "UIViewController+Extensions.h"
 #import "WKWebView+Workarounds.h"
 
@@ -69,10 +71,7 @@ NSString* const kVMSendTerminalSizeHandler = @"UTMSendTerminalSize";
 
     if (self.vm.state == kVMStopped || self.vm.state == kVMSuspended) {
         [self.vm startVM];
-        NSAssert([[self.vm ioService] isKindOfClass: [UTMTerminalIO class]], @"VM ioService must be UTMTerminalIO, but is: %@!", NSStringFromClass([[self.vm ioService] class]));
-        UTMTerminalIO* io = (UTMTerminalIO*) [self.vm ioService];
-        self.terminal = io.terminal;
-        [self.terminal setDelegate: self];
+        self.vm.ioDelegate = self;
     }
 }
 
@@ -129,7 +128,7 @@ NSString* const kVMSendTerminalSizeHandler = @"UTMSendTerminalSize";
     cmd = [cmd stringByReplacingOccurrencesOfString:@"$COLS" withString:[self.columns stringValue]];
     cmd = [cmd stringByReplacingOccurrencesOfString:@"$ROWS" withString:[self.rows stringValue]];
     cmd = [cmd stringByReplacingOccurrencesOfString:@"\\n" withString:@"\n"];
-    [_terminal sendInput:cmd];
+    [self.vm sendInput:cmd];
 }
 
 #pragma mark - Gestures
@@ -155,7 +154,7 @@ NSString* const kVMSendTerminalSizeHandler = @"UTMSendTerminalSize";
 - (void)userContentController:(WKUserContentController *)userContentController didReceiveScriptMessage:(WKScriptMessage *)message {
     if ([[message name] isEqualToString: kVMSendInputHandler]) {
         UTMLog(@"Received input from HTerm: %@", (NSString*) message.body);
-        [_terminal sendInput: (NSString*) message.body];
+        [self.vm sendInput: (NSString*) message.body];
         [self resetModifierToggles];
     } else if ([[message name] isEqualToString: kVMDebugHandler]) {
         UTMLog(@"Debug message from HTerm: %@", (NSString*) message.body);

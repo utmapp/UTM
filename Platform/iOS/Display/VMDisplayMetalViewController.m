@@ -27,14 +27,7 @@
 #import "UTMConfiguration+Display.h"
 #import "UTMLogging.h"
 #import "CSDisplayMetal.h"
-#import "UTMSpiceIO.h"
 #import "UTMScreenshot.h"
-
-@interface VMDisplayMetalViewController ()
-
-@property (nonatomic, readwrite, weak) UTMSpiceIO *spiceIO;
-
-@end
 
 @implementation VMDisplayMetalViewController {
     UTMRenderer *_renderer;
@@ -91,10 +84,7 @@
     [super viewDidAppear:animated];
     if (self.vm.state == kVMStopped || self.vm.state == kVMSuspended) {
         [self.vm startVM];
-        NSAssert([[self.vm ioService] isKindOfClass: [UTMSpiceIO class]], @"VM ioService must be UTMSpiceIO, but is: %@!", NSStringFromClass([[self.vm ioService] class]));
-        UTMSpiceIO* spiceIO = (UTMSpiceIO*) [self.vm ioService];
-        self.spiceIO = spiceIO;
-        self.spiceIO.delegate = self;
+        self.vm.ioDelegate = self;
     }
 }
 

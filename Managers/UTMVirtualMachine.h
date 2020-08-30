@@ -34,9 +34,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface UTMVirtualMachine : NSObject<UTMQemuManagerDelegate>
 
-@property (nonatomic, readonly, nullable) id<UTMInputOutput> ioService;
 @property (nonatomic, readonly, nullable) NSURL *path;
 @property (nonatomic, weak, nullable) id<UTMVirtualMachineDelegate> delegate;
+@property (nonatomic, weak, nullable) id ioDelegate;
 @property (nonatomic, strong) NSURL *parentPath;
 @property (nonatomic, strong, readonly) UTMConfiguration *configuration;
 @property (nonatomic, assign, readonly) UTMVMState state;
