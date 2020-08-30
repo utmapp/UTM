@@ -16,6 +16,7 @@
 
 #import <TargetConditionals.h>
 #import "UTMVirtualMachine.h"
+#import "UTMVirtualMachine+Sharing.h"
 #import "UTMConfiguration.h"
 #import "UTMConfiguration+Constants.h"
 #import "UTMConfiguration+Display.h"
@@ -264,6 +265,7 @@ error:
     if (!_ioService) {
         _ioService = [self inputOutputService];
     }
+    [self legacyEnableSharedDirectory];
     
     self.delegate.vmMessage = nil;
     [self changeState:kVMStarting];

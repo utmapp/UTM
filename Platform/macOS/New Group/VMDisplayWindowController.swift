@@ -27,7 +27,7 @@ class VMDisplayWindowController: NSWindowController {
     @IBOutlet weak var restartToolbarItem: NSToolbarItem!
     @IBOutlet weak var captureMouseToolbarItem: NSToolbarItem!
     @IBOutlet weak var drivesToolbarItem: NSToolbarItem!
-    @IBOutlet weak var networkToolbarItem: NSToolbarItem!
+    @IBOutlet weak var sharedFolderToolbarItem: NSToolbarItem!
     
     var vm: UTMVirtualMachine!
     var vmMessage: String?
@@ -89,9 +89,6 @@ class VMDisplayWindowController: NSWindowController {
         isMouseCaptued.toggle()
     }
     
-    @IBAction func networkButtonPressed(_ sender: Any) {
-    }
-    
     // MARK: - UI states
     
     func enterLive() {
@@ -102,6 +99,9 @@ class VMDisplayWindowController: NSWindowController {
         startPauseToolbarItem.label = pauseDescription
         startPauseToolbarItem.isEnabled = true
         stopToolbarItem.isEnabled = true
+        captureMouseToolbarItem.isEnabled = true
+        drivesToolbarItem.isEnabled = vmConfiguration?.countDrives ?? 0 > 0
+        sharedFolderToolbarItem.isEnabled = vm.hasShareDirectoryEnabled
     }
     
     func enterSuspended(isBusy busy: Bool) {
@@ -120,6 +120,9 @@ class VMDisplayWindowController: NSWindowController {
             stopToolbarItem.isEnabled = true
             startButton.isHidden = false
         }
+        captureMouseToolbarItem.isEnabled = false
+        drivesToolbarItem.isEnabled = false
+        sharedFolderToolbarItem.isEnabled = false
     }
     
     // MARK: - Alert
@@ -287,5 +290,34 @@ extension VMDisplayWindowController: UTMVirtualMachineDelegate {
         }
         let drive = vm.drives[menu.tag]
         openDriveImage(forDrive: drive)
+    }
+}
+
+// MARK: - Shared folders
+
+extension VMDisplayWindowController {
+    @IBAction func sharedFolderButtonPressed(_ sender: Any) {
+        let openPanel = NSOpenPanel()
+        openPanel.title = NSLocalizedString("Select Shared Folder", comment: "VMDisplayWindowController")
+        openPanel.canChooseDirectories = true
+        openPanel.canChooseFiles = false
+        openPanel.beginSheetModal(for: window!) { response in
+            guard response == .OK else {
+                return
+            }
+            guard let url = openPanel.url else {
+                logger.debug("no directory selected")
+                return
+            }
+            DispatchQueue.global(qos: .background).async {
+                do {
+                    try self.vm.changeSharedDirectory(url)
+                } catch {
+                    DispatchQueue.main.async {
+                        self.showErrorAlert(error.localizedDescription)
+                    }
+                }
+            }
+        }
     }
 }
