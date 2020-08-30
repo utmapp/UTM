@@ -24,11 +24,17 @@
 
 const int kMaxConnectionTries = 10; // qemu needs to start spice server first
 
+@interface UTMSpiceIO ()
+
+@property (nonatomic, nullable) CSConnection *spiceConnection;
+@property (nonatomic, nullable) CSMain *spice;
+@property (nonatomic, nullable) CSSession *session;
+@property (nonatomic, nullable, copy) NSURL *sharedDirectory;
+
+@end
+
 @implementation UTMSpiceIO {
-    CSConnection *_spice_connection;
-    CSMain *_spice;
     void (^_connectionBlock)(BOOL, NSError*);
-    NSURL *_sharedDirectory;
 }
 
 - (id)initWithConfiguration:(UTMConfiguration *)configuration {
@@ -46,18 +52,18 @@ const int kMaxConnectionTries = 10; // qemu needs to start spice server first
 }
 
 - (void)initializeSpiceIfNeeded {
-    if (!_spice) {
-        _spice = [[CSMain alloc] init];
+    if (!self.spice) {
+        self.spice = [[CSMain alloc] init];
     }
     
-    if (!_spice_connection) {
-        _spice_connection = [[CSConnection alloc] initWithHost:@"127.0.0.1" port:@"5930"];
-        _spice_connection.delegate = self;
-        _spice_connection.audioEnabled = _configuration.soundEnabled;
+    if (!self.spiceConnection) {
+        self.spiceConnection = [[CSConnection alloc] initWithHost:@"127.0.0.1" port:@"5930"];
+        self.spiceConnection.delegate = self;
+        self.spiceConnection.audioEnabled = _configuration.soundEnabled;
     }
     
-    _spice_connection.glibMainContext = _spice.glibMainContext;
-    [_spice spiceSetDebug:YES];
+    self.spiceConnection.glibMainContext = self.spice.glibMainContext;
+    [self.spice spiceSetDebug:YES];
     _primaryDisplay = nil;
     _primaryInput = nil;
     _delegate.vmDisplay = nil;
@@ -65,7 +71,7 @@ const int kMaxConnectionTries = 10; // qemu needs to start spice server first
 }
 
 - (BOOL)isSpiceInitialized {
-    return _spice != nil && _spice_connection != nil;
+    return self.spice != nil && self.spiceConnection != nil;
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context {
@@ -81,7 +87,7 @@ const int kMaxConnectionTries = 10; // qemu needs to start spice server first
 
 - (BOOL)startWithError:(NSError **)err {
     [self initializeSpiceIfNeeded];
-    if (![_spice spiceStart]) {
+    if (![self.spice spiceStart]) {
         // error
         return NO;
     }
@@ -93,7 +99,7 @@ const int kMaxConnectionTries = 10; // qemu needs to start spice server first
     int tries = kMaxConnectionTries;
     do {
         [NSThread sleepForTimeInterval:0.1f];
-        if ([_spice_connection connect]) {
+        if ([self.spiceConnection connect]) {
             break;
         }
     } while (tries-- > 0);
@@ -108,11 +114,11 @@ const int kMaxConnectionTries = 10; // qemu needs to start spice server first
 - (void)disconnect {
     [self removeObserver:self forKeyPath:@"primaryDisplay.viewportScale"];
     [self removeObserver:self forKeyPath:@"primaryDisplay.displaySize"];
-    [_spice_connection disconnect];
-    _spice_connection.delegate = nil;
-    _spice_connection = nil;
-    [_spice spiceStop];
-    _spice = nil;
+    [self.spiceConnection disconnect];
+    self.spiceConnection.delegate = nil;
+    self.spiceConnection = nil;
+    [self.spice spiceStop];
+    self.spice = nil;
 }
 
 - (UTMScreenshot *)screenshot {
@@ -120,7 +126,7 @@ const int kMaxConnectionTries = 10; // qemu needs to start spice server first
 }
 
 - (void)setDebugMode:(BOOL)debugMode {
-    [_spice spiceSetDebug: debugMode];
+    [self.spice spiceSetDebug: debugMode];
 }
 
 - (void)syncViewState:(UTMViewState *)viewState {
@@ -140,15 +146,15 @@ const int kMaxConnectionTries = 10; // qemu needs to start spice server first
 #pragma mark - CSConnectionDelegate
 
 - (void)spiceConnected:(CSConnection *)connection {
-    NSAssert(connection == _spice_connection, @"Unknown connection");
+    NSAssert(connection == self.spiceConnection, @"Unknown connection");
 }
 
 - (void)spiceDisconnected:(CSConnection *)connection {
-    NSAssert(connection == _spice_connection, @"Unknown connection");
+    NSAssert(connection == self.spiceConnection, @"Unknown connection");
 }
 
 - (void)spiceError:(CSConnection *)connection err:(NSString *)msg {
-    NSAssert(connection == _spice_connection, @"Unknown connection");
+    NSAssert(connection == self.spiceConnection, @"Unknown connection");
     //[self errorTriggered:msg];
     if (_connectionBlock) {
         _connectionBlock(NO, nil);
@@ -157,7 +163,7 @@ const int kMaxConnectionTries = 10; // qemu needs to start spice server first
 }
 
 - (void)spiceDisplayCreated:(CSConnection *)connection display:(CSDisplayMetal *)display input:(CSInput *)input {
-    NSAssert(connection == _spice_connection, @"Unknown connection");
+    NSAssert(connection == self.spiceConnection, @"Unknown connection");
     if (display.channelID == 0 && display.monitorID == 0) {
         _primaryDisplay = display;
         _primaryInput = input;
@@ -173,50 +179,42 @@ const int kMaxConnectionTries = 10; // qemu needs to start spice server first
 }
 
 - (void)spiceSessionCreated:(CSConnection *)connection session:(CSSession *)session {
+    self.session = session;
     session.shareClipboard = self.configuration.shareClipboardEnabled;
-    [self startSharingDirectory:session];
+    if (self.configuration.shareDirectoryEnabled) {
+        [self startSharingDirectory];
+    } else {
+        UTMLog(@"shared directory disabled");
+    }
 }
 
 - (void)spiceSessionEnded:(CSConnection *)connection session:(CSSession *)session {
-    [self endSharingDirectory:session];
+    [self endSharingDirectory];
+    self.session = nil;
 }
 
 #pragma mark - Shared Directory
 
-- (void)startSharingDirectory:(CSSession *)session {
-    if (_sharedDirectory) {
-        [self endSharingDirectory:session];
+- (void)changeSharedDirectory:(NSURL *)url {
+    if (self.sharedDirectory) {
+        [self endSharingDirectory];
     }
-    if (self.configuration.shareDirectoryEnabled) {
-        UTMLog(@"enabling shared directory");
-        BOOL stale;
-        NSError *err;
-        NSURL *shareURL = [NSURL URLByResolvingBookmarkData:self.configuration.shareDirectoryBookmark
-                                                    options:0
-                                              relativeToURL:nil
-                                        bookmarkDataIsStale:&stale
-                                                      error:&err];
-        if (!shareURL) {
-            UTMLog(@"error getting bookmark: %@", err);
-            return;
-        }
-        if (stale) {
-            UTMLog(@"bookmark stale, should get new bookmark!");
-        }
-        //if ([shareURL startAccessingSecurityScopedResource]) {
-            _sharedDirectory = shareURL;
-            UTMLog(@"setting share directory to %@", shareURL.path);
-            [session setSharedDirectory:shareURL.path readOnly:self.configuration.shareDirectoryReadOnly];
-        //} else {
-        //    UTMLog(@"failed to access security scope for shared directory, was access revoked?");
-        //}
+    self.sharedDirectory = url;
+    if (self.session) {
+        [self startSharingDirectory];
     }
 }
 
-- (void)endSharingDirectory:(CSSession *)session {
-    if (_sharedDirectory) {
-        //[_sharedDirectory stopAccessingSecurityScopedResource];
-        _sharedDirectory = nil;
+- (void)startSharingDirectory {
+    if (self.sharedDirectory) {
+        UTMLog(@"setting share directory to %@", self.sharedDirectory.path);
+        [self.session setSharedDirectory:self.sharedDirectory.path readOnly:self.configuration.shareDirectoryReadOnly];
+    }
+}
+
+- (void)endSharingDirectory {
+    if (self.sharedDirectory) {
+        self.sharedDirectory = nil;
         UTMLog(@"ended share directory sharing");
     }
 }
