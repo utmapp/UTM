@@ -33,6 +33,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, weak, nullable) id<UTMSpiceIODelegate> delegate;
 
 - (id)initWithConfiguration: (UTMConfiguration*) configuration;
+- (void)changeSharedDirectory:(NSURL *)url;
 
 @end
 
