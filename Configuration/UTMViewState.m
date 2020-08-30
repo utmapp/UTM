@@ -25,6 +25,7 @@ const NSString *const kUTMViewStateShowToolbarKey = @"ShowToolbar";
 const NSString *const kUTMViewStateShowKeyboardKey = @"ShowKeyboard";
 const NSString *const kUTMViewStateSuspendedKey = @"Suspended";
 const NSString *const kUTMViewStateSharedDirectoryKey = @"SharedDirectory";
+const NSString *const kUTMViewStateRemovableDrivesKey = @"RemovableDrives";
 
 @interface UTMViewState ()
 
@@ -34,6 +35,7 @@ const NSString *const kUTMViewStateSharedDirectoryKey = @"SharedDirectory";
 
 @implementation UTMViewState {
     NSMutableDictionary *_rootDict;
+    NSMutableDictionary<NSString *, NSData *> *_removableDrives;
 }
 
 #pragma mark - Properties
@@ -118,12 +120,28 @@ const NSString *const kUTMViewStateSharedDirectoryKey = @"SharedDirectory";
     }
 }
 
+#pragma mark - Removable drives
+
+- (void)setBookmark:(NSData *)bookmark forRemovableDrive:(NSString *)drive {
+    _removableDrives[drive] = bookmark;
+}
+
+- (void)removeBookmarkForRemovableDrive:(NSString *)drive {
+    [_removableDrives removeObjectForKey:drive];
+}
+
+- (nullable NSData *)bookmarkForRemovableDrive:(NSString *)drive {
+    return _removableDrives[drive];
+}
+
 #pragma mark - Init
 
 - (id)initDefaults {
     self = [super init];
     if (self) {
         _rootDict = [NSMutableDictionary dictionary];
+        _removableDrives = [NSMutableDictionary dictionary];
+        _rootDict[kUTMViewStateRemovableDrivesKey] = _removableDrives;
         self.displayScale = 1.0;
         self.displayOriginX = 0;
         self.displayOriginY = 0;
@@ -139,6 +157,11 @@ const NSString *const kUTMViewStateSharedDirectoryKey = @"SharedDirectory";
     self = [super init];
     if (self) {
         _rootDict = dictionary;
+        _removableDrives = dictionary[kUTMViewStateRemovableDrivesKey];
+        if (!_removableDrives) {
+            _removableDrives = [NSMutableDictionary dictionary];
+            _rootDict[kUTMViewStateRemovableDrivesKey] = _removableDrives;
+        }
     }
     return self;
 }

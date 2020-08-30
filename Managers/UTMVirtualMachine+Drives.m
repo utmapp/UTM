@@ -15,6 +15,8 @@
 //
 
 #import "UTMVirtualMachine+Drives.h"
+#import "UTMLogging.h"
+#import "UTMViewState.h"
 #import "UTMDrive.h"
 #import "UTMQemu.h"
 #import "UTMQemuManager+BlockDevices.h"
@@ -23,6 +25,9 @@
 
 @property (nonatomic, readonly) UTMQemuManager *qemu;
 @property (nonatomic, readonly) UTMQemu *system;
+@property (nonatomic) UTMViewState *viewState;
+
+- (void)saveViewState;
 
 @end
 
@@ -60,6 +65,13 @@
 }
 
 - (BOOL)changeMediumForDrive:(UTMDrive *)drive url:(NSURL *)url error:(NSError * _Nullable __autoreleasing *)error {
+    if (![self saveBookmarkForDrive:drive url:url error:error]) {
+        return NO;
+    }
+    if (!self.qemu.isConnected) {
+        return YES; // not ready yet
+    }
+    
     NSData *bookmark = [url bookmarkDataWithOptions:0
                      includingResourceValuesForKeys:nil
                                       relativeToURL:nil
@@ -68,7 +80,58 @@
         return NO;
     }
     [self.system accessDataWithBookmark:bookmark];
-    return [self.qemu changeMediumForDrive:drive.name path:url.path error:error];
+    if (![self.qemu changeMediumForDrive:drive.name path:url.path error:error]) {
+        return NO;
+    }
+    return [self saveBookmarkForDrive:drive url:url error:error];
+}
+
+- (BOOL)saveBookmarkForDrive:(UTMDrive *)drive url:(nullable NSURL *)url error:(NSError * _Nullable __autoreleasing *)error {
+    NSData *bookmark = [url bookmarkDataWithOptions:NSURLBookmarkCreationWithSecurityScope
+                     includingResourceValuesForKeys:nil
+                                      relativeToURL:nil
+                                              error:error];
+    if (bookmark) {
+        [self.viewState setBookmark:bookmark forRemovableDrive:drive.name];
+    } else {
+        [self.viewState removeBookmarkForRemovableDrive:drive.name];
+    }
+    [self saveViewState];
+    return (bookmark != nil);
+}
+
+- (void)restoreRemovableDrivesFromBookmarks {
+    NSArray<UTMDrive *> *drives = self.drives;
+    for (UTMDrive *drive in drives) {
+        NSData *bookmark = [self.viewState bookmarkForRemovableDrive:drive.name];
+        if (bookmark) {
+            UTMLog(@"found bookmark for %@", drive.name);
+            if (drive.status == UTMDriveStatusFixed) {
+                UTMLog(@"%@ is no longer removable, removing bookmark", drive.name);
+                [self saveBookmarkForDrive:drive url:nil error:nil];
+                continue;
+            }
+            BOOL stale;
+            NSURL *url = [NSURL URLByResolvingBookmarkData:bookmark
+                                                   options:NSURLBookmarkResolutionWithSecurityScope
+                                             relativeToURL:nil
+                                       bookmarkDataIsStale:&stale
+                                                     error:nil];
+            if (!url) {
+                UTMLog(@"failed to resolve bookmark for %@", drive.name);
+                continue;
+            }
+            if (stale) {
+                UTMLog(@"bookmark is stale, attempting to re-create");
+                if (![self saveBookmarkForDrive:drive url:url error:nil]) {
+                    UTMLog(@"bookmark re-creation failed");
+                }
+            }
+            if (![self changeMediumForDrive:drive url:url error:nil]) {
+                UTMLog(@"failed to change %@ image to %@", drive.name, url);
+            }
+        }
+    }
 }
 
 @end

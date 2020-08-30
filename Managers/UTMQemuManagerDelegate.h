@@ -31,6 +31,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)qemuHasWakeup:(UTMQemuManager *)manager;
 - (void)qemuWillQuit:(UTMQemuManager *)manager guest:(BOOL)guest reason:(ShutdownCause)reason;
 - (void)qemuError:(UTMQemuManager *)manager error:(NSString *)error;
+- (void)qemuQmpDidConnect:(UTMQemuManager *)manager;
 
 @end
 

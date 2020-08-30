@@ -109,6 +109,12 @@ static void utm_migration_pass_handler(int64_t pass, void *ctx) {
     
 }
 
+@interface UTMQemuManager ()
+
+@property (nonatomic, readwrite) BOOL isConnected;
+
+@end
+
 @implementation UTMQemuManager {
     UTMJSONStream *_jsonStream;
     void (^_rpc_finish)(NSDictionary *, NSError *);
@@ -169,6 +175,7 @@ void qmp_rpc_call(CFDictionaryRef args, CFDictionaryRef *ret, Error **err, void 
 }
 
 - (void)disconnect {
+    self.isConnected = NO;
     [_jsonStream disconnect];
 }
 
@@ -214,7 +221,7 @@ void qmp_rpc_call(CFDictionaryRef args, CFDictionaryRef *ret, Error **err, void 
             *stop = YES;
         } else if ([key isEqualToString:@"QMP"]) {
             UTMLog(@"Got QMP handshake: %@", dict);
-            [self qmpEnterCommandMode];
+            [self qmpEnterCommandModeWithError:nil]; // TODO: handle error
             *stop = YES;
         }
     }];
@@ -224,11 +231,32 @@ void qmp_rpc_call(CFDictionaryRef args, CFDictionaryRef *ret, Error **err, void 
     return [NSError errorWithDomain:kUTMErrorDomain code:-1 userInfo:@{NSLocalizedDescriptionKey: [NSString stringWithCString:error_get_pretty(qerr) encoding:NSASCIIStringEncoding]}];
 }
 
-- (void)qmpEnterCommandMode {
+- (BOOL)qmpEnterCommandModeWithError:(NSError * _Nullable __autoreleasing *)error {
     NSDictionary *cmd = @{
         @"execute": @"qmp_capabilities"
     };
-    qmp_rpc_call((__bridge CFDictionaryRef)cmd, NULL, NULL, (__bridge void *)self);
+    Error *qerr = NULL;
+    qmp_rpc_call((__bridge CFDictionaryRef)cmd, NULL, &qerr, (__bridge void *)self);
+    if (qerr != NULL) {
+        if (error) {
+            *error = [self errorForQerror:qerr];
+            error_free(qerr);
+        }
+        return NO;
+    } else {
+        self.isConnected = YES;
+        [self.delegate qemuQmpDidConnect:self];
+        qmp_cont(&qerr, (__bridge void *)self);
+        if (qerr != NULL) {
+            if (error) {
+                *error = [self errorForQerror:qerr];
+                error_free(qerr);
+            }
+            self.isConnected = NO;
+            return NO;
+        }
+        return YES;
+    }
 }
 
 - (void)vmPowerCommand:(NSString *)command completion:(void (^ _Nullable)(NSError * _Nullable))completion {
