@@ -128,11 +128,12 @@ void qmp_rpc_call(CFDictionaryRef args, CFDictionaryRef *ret, Error **err, void 
     __block NSError *nserr;
     dispatch_semaphore_wait(self->_cmd_lock, DISPATCH_TIME_FOREVER);
     self->_rpc_finish = ^(NSDictionary *ret_dict, NSError *ret_err){
+        dispatch_semaphore_t rpc_sema_copy = rpc_sema;
         NSCAssert(ret_dict || ret_err, @"Both dict and err are null");
         nserr = ret_err;
         dict = ret_dict;
-        dispatch_semaphore_signal(rpc_sema);
         self->_rpc_finish = nil;
+        dispatch_semaphore_signal(rpc_sema_copy); // copy to avoid race condition
     };
     if (![self.jsonStream sendDictionary:(__bridge NSDictionary *)args]) {
         self->_rpc_finish(nil, [NSError errorWithDomain:kUTMErrorDomain code:-1 userInfo:@{NSLocalizedDescriptionKey: NSLocalizedString(@"No connection for RPC.", "UTMQemuManager")}]);
