@@ -33,6 +33,7 @@
 #include "UTMLogging.h"
 #include "UTMVirtualMachine.h"
 #include "UTMVirtualMachine+Drives.h"
+#include "UTMVirtualMachine+Sharing.h"
 #include "UTMRenderer.h"
 #include "UTMScreenshot.h"
 #include "UTMSpiceIO.h"
