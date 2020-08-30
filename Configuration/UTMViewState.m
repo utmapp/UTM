@@ -148,7 +148,7 @@ const NSString *const kUTMViewStateRemovableDrivesKey = @"RemovableDrives";
 
 #pragma mark - Init
 
-- (id)initDefaults {
+- (instancetype)initDefaults {
     self = [super init];
     if (self) {
         _rootDict = [NSMutableDictionary dictionary];
@@ -165,7 +165,7 @@ const NSString *const kUTMViewStateRemovableDrivesKey = @"RemovableDrives";
     return self;
 }
 
-- (id)initWithDictionary:(NSMutableDictionary *)dictionary {
+- (instancetype)initWithDictionary:(NSMutableDictionary *)dictionary {
     self = [super init];
     if (self) {
         _rootDict = dictionary;

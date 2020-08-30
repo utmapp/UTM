@@ -32,8 +32,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) BOOL suspended;
 @property (nonatomic, copy, nullable) NSData *sharedDirectory;
 
-- (id)initDefaults NS_DESIGNATED_INITIALIZER;
-- (id)initWithDictionary:(NSMutableDictionary *)dictionary NS_DESIGNATED_INITIALIZER;
+- (instancetype)init NS_UNAVAILABLE;
+- (instancetype)initDefaults NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithDictionary:(NSMutableDictionary *)dictionary NS_DESIGNATED_INITIALIZER;
 
 - (void)setBookmark:(NSData *)bookmark forRemovableDrive:(NSString *)drive;
 - (void)removeBookmarkForRemovableDrive:(NSString *)drive;
