@@ -25,7 +25,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) UInt32 port;
 @property (nonatomic, weak) id<UTMJSONStreamDelegate> delegate;
 
-- (id)initHost:(NSString *)host port:(UInt32)port NS_DESIGNATED_INITIALIZER;
+- (instancetype)init NS_UNAVAILABLE;
+- (instancetype)initHost:(NSString *)host port:(UInt32)port NS_DESIGNATED_INITIALIZER;
 - (void)connect;
 - (void)disconnect;
 - (BOOL)sendDictionary:(NSDictionary *)dict;

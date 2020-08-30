@@ -37,7 +37,7 @@ enum ParserState {
     int _open_curly_count;
 }
 
-- (id)initHost:(NSString *)host port:(UInt32)port {
+- (instancetype)initHost:(NSString *)host port:(UInt32)port {
     self = [super init];
     if (self) {
         self.host = host;

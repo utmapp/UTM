@@ -59,7 +59,7 @@ const NSString *const kUTMConfigInfoKey = @"Info";
 
 #pragma mark - Initialization
 
-- (id)initDefaults:(NSString *)name {
+- (instancetype)initDefaults:(NSString *)name {
     self = [super init];
     if (self) {
         _rootDict = [[NSMutableDictionary alloc] initWithCapacity:8];
@@ -94,7 +94,7 @@ const NSString *const kUTMConfigInfoKey = @"Info";
     return self;
 }
 
-- (id)initWithDictionary:(NSMutableDictionary *)dictionary name:(NSString *)name path:(NSURL *)path {
+- (instancetype)initWithDictionary:(NSMutableDictionary *)dictionary name:(NSString *)name path:(NSURL *)path {
     self = [super init];
     if (self) {
         _rootDict = dictionary;
