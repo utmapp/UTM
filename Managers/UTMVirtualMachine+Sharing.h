@@ -23,7 +23,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) BOOL hasShareDirectoryEnabled;
 
 - (BOOL)changeSharedDirectory:(NSURL *)url error:(NSError * _Nullable *)error;
-- (void)legacyEnableSharedDirectory;
+- (void)clearSharedDirectory;
+- (BOOL)startSharedDirectoryWithError:(NSError * _Nullable __autoreleasing *)error;
 
 @end
 

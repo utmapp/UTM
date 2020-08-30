@@ -24,6 +24,7 @@ const NSString *const kUTMViewStateDisplaySizeHeightKey = @"DisplaySizeHeight";
 const NSString *const kUTMViewStateShowToolbarKey = @"ShowToolbar";
 const NSString *const kUTMViewStateShowKeyboardKey = @"ShowKeyboard";
 const NSString *const kUTMViewStateSuspendedKey = @"Suspended";
+const NSString *const kUTMViewStateSharedDirectoryKey = @"SharedDirectory";
 
 @interface UTMViewState ()
 
@@ -105,10 +106,22 @@ const NSString *const kUTMViewStateSuspendedKey = @"Suspended";
     _rootDict[kUTMViewStateSuspendedKey] = @(suspended);
 }
 
+- (NSData *)sharedDirectory {
+    return _rootDict[kUTMViewStateSharedDirectoryKey];
+}
+
+- (void)setSharedDirectory:(NSData *)sharedDirectory {
+    if (sharedDirectory) {
+        _rootDict[kUTMViewStateSharedDirectoryKey] = sharedDirectory;
+    } else {
+        [_rootDict removeObjectForKey:kUTMViewStateSharedDirectoryKey];
+    }
+}
+
 #pragma mark - Init
 
 - (id)initDefaults {
-    self = [self init];
+    self = [super init];
     if (self) {
         _rootDict = [NSMutableDictionary dictionary];
         self.displayScale = 1.0;
@@ -123,7 +136,7 @@ const NSString *const kUTMViewStateSuspendedKey = @"Suspended";
 }
 
 - (id)initWithDictionary:(NSMutableDictionary *)dictionary {
-    self = [self init];
+    self = [super init];
     if (self) {
         _rootDict = dictionary;
     }

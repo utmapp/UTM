@@ -265,7 +265,10 @@ error:
     if (!_ioService) {
         _ioService = [self inputOutputService];
     }
-    [self legacyEnableSharedDirectory];
+    NSError *err;
+    if (![self startSharedDirectoryWithError:&err]) {
+        UTMLog(@"Ignoring error trying to start shared directory: %@", err);
+    }
     
     self.delegate.vmMessage = nil;
     [self changeState:kVMStarting];

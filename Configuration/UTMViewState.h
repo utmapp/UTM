@@ -30,9 +30,10 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) BOOL showToolbar;
 @property (nonatomic, assign) BOOL showKeyboard;
 @property (nonatomic, assign) BOOL suspended;
+@property (nonatomic, copy, nullable) NSData *sharedDirectory;
 
-- (id)initDefaults;
-- (id)initWithDictionary:(NSMutableDictionary *)dictionary;
+- (id)initDefaults NS_DESIGNATED_INITIALIZER;
+- (id)initWithDictionary:(NSMutableDictionary *)dictionary NS_DESIGNATED_INITIALIZER;
 
 @end
 
