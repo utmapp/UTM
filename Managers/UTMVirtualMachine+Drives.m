@@ -36,8 +36,6 @@ static const NSURLBookmarkResolutionOptions kBookmarkResolutionOptions = NSURLBo
 @property (nonatomic, readonly) UTMQemu *system;
 @property (nonatomic) UTMViewState *viewState;
 
-- (void)saveViewState;
-
 @end
 
 @implementation UTMVirtualMachine (Drives)
@@ -105,7 +103,6 @@ static const NSURLBookmarkResolutionOptions kBookmarkResolutionOptions = NSURLBo
     } else {
         [self.viewState removeBookmarkForRemovableDrive:drive.name];
     }
-    [self saveViewState];
     return (bookmark != nil);
 }
 
