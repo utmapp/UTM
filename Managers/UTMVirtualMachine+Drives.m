@@ -14,12 +14,21 @@
 // limitations under the License.
 //
 
+#import <TargetConditionals.h>
 #import "UTMVirtualMachine+Drives.h"
 #import "UTMLogging.h"
 #import "UTMViewState.h"
 #import "UTMDrive.h"
 #import "UTMQemu.h"
 #import "UTMQemuManager+BlockDevices.h"
+
+#if TARGET_OS_IPHONE
+static const NSURLBookmarkCreationOptions kBookmarkCreationOptions = 0;
+static const NSURLBookmarkResolutionOptions kBookmarkResolutionOptions = 0;
+#else
+static const NSURLBookmarkCreationOptions kBookmarkCreationOptions = NSURLBookmarkCreationWithSecurityScope;
+static const NSURLBookmarkResolutionOptions kBookmarkResolutionOptions = NSURLBookmarkResolutionWithSecurityScope;
+#endif
 
 @interface UTMVirtualMachine ()
 
@@ -87,7 +96,7 @@
 }
 
 - (BOOL)saveBookmarkForDrive:(UTMDrive *)drive url:(nullable NSURL *)url error:(NSError * _Nullable __autoreleasing *)error {
-    NSData *bookmark = [url bookmarkDataWithOptions:NSURLBookmarkCreationWithSecurityScope
+    NSData *bookmark = [url bookmarkDataWithOptions:kBookmarkCreationOptions
                      includingResourceValuesForKeys:nil
                                       relativeToURL:nil
                                               error:error];
@@ -113,7 +122,7 @@
             }
             BOOL stale;
             NSURL *url = [NSURL URLByResolvingBookmarkData:bookmark
-                                                   options:NSURLBookmarkResolutionWithSecurityScope
+                                                   options:kBookmarkResolutionOptions
                                              relativeToURL:nil
                                        bookmarkDataIsStale:&stale
                                                      error:nil];

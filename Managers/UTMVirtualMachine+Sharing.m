@@ -14,6 +14,7 @@
 // limitations under the License.
 //
 
+#import <TargetConditionals.h>
 #import "UTMVirtualMachine+Sharing.h"
 #import "UTMConfiguration+Display.h"
 #import "UTMConfiguration+Sharing.h"
@@ -22,6 +23,14 @@
 #import "UTMViewState.h"
 
 extern NSString *const kUTMErrorDomain;
+
+#if TARGET_OS_IPHONE
+static const NSURLBookmarkCreationOptions kBookmarkCreationOptions = 0;
+static const NSURLBookmarkResolutionOptions kBookmarkResolutionOptions = 0;
+#else
+static const NSURLBookmarkCreationOptions kBookmarkCreationOptions = NSURLBookmarkCreationWithSecurityScope;
+static const NSURLBookmarkResolutionOptions kBookmarkResolutionOptions = NSURLBookmarkResolutionWithSecurityScope;
+#endif
 
 @interface UTMVirtualMachine ()
 
@@ -39,7 +48,7 @@ extern NSString *const kUTMErrorDomain;
 }
 
 - (BOOL)saveSharedDirectory:(NSURL *)url error:(NSError * _Nullable __autoreleasing *)error {
-    NSData *bookmark = [url bookmarkDataWithOptions:NSURLBookmarkCreationWithSecurityScope
+    NSData *bookmark = [url bookmarkDataWithOptions:kBookmarkCreationOptions
                      includingResourceValuesForKeys:nil
                                       relativeToURL:nil
                                               error:error];
@@ -94,7 +103,7 @@ extern NSString *const kUTMErrorDomain;
     if (bookmark) {
         BOOL stale;
         NSURL *shareURL = [NSURL URLByResolvingBookmarkData:bookmark
-                                                    options:NSURLBookmarkResolutionWithSecurityScope
+                                                    options:kBookmarkResolutionOptions
                                               relativeToURL:nil
                                         bookmarkDataIsStale:&stale
                                                       error:error];
