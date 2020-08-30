@@ -78,13 +78,7 @@ class VMDisplayMetalWindowController: VMDisplayWindowController, UTMSpiceIODeleg
         } else {
             enterLive()
         }
-        
-        guard let spiceIO = vm.ioService as? UTMSpiceIO else {
-            showErrorAlert(NSLocalizedString("Internal error.", comment: "VMDisplayMetalWindowController"))
-            logger.critical("VM ioService must be UTMSpiceIO, but is: \(String(describing: vm.ioService))")
-            return
-        }
-        spiceIO.delegate = self
+        vm.ioDelegate = self
     }
     
     override func enterLive() {

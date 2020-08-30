@@ -47,6 +47,7 @@ NSString *const kSuspendSnapshotName = @"suspend";
 @property (nonatomic, readonly) UTMQemu *system;
 @property (nonatomic) UTMViewState *viewState;
 @property (nonatomic, weak) UTMLogging *logging;
+@property (nonatomic, readonly, nullable) id<UTMInputOutput> ioService;
 
 @end
 
@@ -68,6 +69,26 @@ NSString *const kSuspendSnapshotName = @"suspend";
     _delegate = delegate;
     _delegate.vmConfiguration = self.configuration;
     [self restoreViewState];
+}
+
+- (id)ioDelegate {
+    if ([self.ioService isKindOfClass:[UTMSpiceIO class]]) {
+        return ((UTMSpiceIO *)self.ioService).delegate;
+    } else if ([self.ioService isKindOfClass:[UTMTerminalIO class]]) {
+        return ((UTMTerminalIO *)self.ioService).terminal.delegate;
+    } else {
+        return nil;
+    }
+}
+
+- (void)setIoDelegate:(id)ioDelegate {
+    if ([self.ioService isKindOfClass:[UTMSpiceIO class]]) {
+        ((UTMSpiceIO *)self.ioService).delegate = ioDelegate;
+    } else if ([self.ioService isKindOfClass:[UTMTerminalIO class]]) {
+        ((UTMTerminalIO *)self.ioService).terminal.delegate = ioDelegate;
+    } else {
+        NSAssert(0, @"ioService class is invalid: %@", NSStringFromClass([self.ioService class]));
+    }
 }
 
 + (BOOL)URLisVirtualMachine:(NSURL *)url {
