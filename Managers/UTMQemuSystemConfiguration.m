@@ -258,6 +258,7 @@
                                                         relativeToURL:nil
                                                                 error:nil]];
     [self pushArgv:resourceURL.path];
+    [self pushArgv:@"-S"]; // startup stopped
     [self pushArgv:@"-qmp"];
     [self pushArgv:@"tcp:localhost:4444,server,nowait"];
     [self pushArgv:@"-smp"];

@@ -16,6 +16,7 @@
 
 #import <TargetConditionals.h>
 #import "UTMVirtualMachine.h"
+#import "UTMVirtualMachine+Drives.h"
 #import "UTMVirtualMachine+Sharing.h"
 #import "UTMConfiguration.h"
 #import "UTMConfiguration+Constants.h"
@@ -572,6 +573,12 @@ error:
     dispatch_async(dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0), ^{
         [self errorTriggered:error];
     });
+}
+
+// this is called right before we execute qmp_cont so we can setup additional option
+- (void)qemuQmpDidConnect:(UTMQemuManager *)manager {
+    UTMLog(@"qemuQmpDidConnect");
+    [self restoreRemovableDrivesFromBookmarks];
 }
 
 #pragma mark - Plist Handling
