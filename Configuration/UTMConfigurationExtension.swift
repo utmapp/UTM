@@ -100,6 +100,14 @@ import Combine
     }
 }
 
+@objc extension UTMViewState: ObservableObject {
+    func propertyWillChange() -> Void {
+        if #available(iOS 13, macOS 11, *) {
+            DispatchQueue.main.async { self.objectWillChange.send() }
+        }
+    }
+}
+
 extension UTMDiskImageType: CustomStringConvertible {
     public var description: String {
         let index = rawValue

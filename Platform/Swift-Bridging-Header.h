@@ -31,6 +31,7 @@
 #include "UTMQemuSystemConfiguration.h"
 #include "UTMJailbreak.h"
 #include "UTMLogging.h"
+#include "UTMViewState.h"
 #include "UTMVirtualMachine.h"
 #include "UTMVirtualMachine+Drives.h"
 #include "UTMVirtualMachine+Sharing.h"
