@@ -27,3 +27,9 @@ extension UTMVirtualMachine: Identifiable {
         }
     }
 }
+
+extension UTMDrive: Identifiable {
+    public var id: Int {
+        self.index
+    }
+}
