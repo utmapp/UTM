@@ -18,6 +18,15 @@
 #import "UTMLogging.h"
 #import <dlfcn.h>
 #import <pthread.h>
+#import <TargetConditionals.h>
+
+#if TARGET_OS_IPHONE
+static const NSURLBookmarkCreationOptions kBookmarkCreationOptions = 0;
+static const NSURLBookmarkResolutionOptions kBookmarkResolutionOptions = 0;
+#else
+static const NSURLBookmarkCreationOptions kBookmarkCreationOptions = NSURLBookmarkCreationWithSecurityScope;
+static const NSURLBookmarkResolutionOptions kBookmarkResolutionOptions = NSURLBookmarkResolutionWithSecurityScope;
+#endif
 
 @implementation UTMQemu {
     NSMutableArray<NSString *> *_argv;
@@ -158,27 +167,51 @@
     }
 }
 
-- (void)accessDataWithBookmarkThread:(NSData *)bookmark {
-    BOOL stale;
+- (void)accessDataWithBookmarkThread:(NSData *)bookmark securityScoped:(BOOL)securityScoped completion:(void(^)(BOOL, NSData * _Nullable, NSString * _Nullable))completion  {
+    BOOL stale = NO;
     NSError *err;
     NSURL *url = [NSURL URLByResolvingBookmarkData:bookmark
-                                           options:0
+                                           options:(securityScoped ? kBookmarkResolutionOptions : 0)
                                      relativeToURL:nil
                                bookmarkDataIsStale:&stale
                                              error:&err];
-    if (err) {
+    if (!url) {
         UTMLog(@"Failed to access bookmark data.");
+        completion(NO, nil, nil);
         return;
     }
-    [_urls addObject:url];
-    [url startAccessingSecurityScopedResource];
+    if (stale || !securityScoped) {
+        bookmark = [url bookmarkDataWithOptions:kBookmarkCreationOptions
+                 includingResourceValuesForKeys:nil
+                                  relativeToURL:nil
+                                          error:&err];
+        if (!bookmark) {
+            UTMLog(@"Failed to create new bookmark!");
+            completion(NO, bookmark, url.path);
+            return;
+        }
+    }
+    if ([url startAccessingSecurityScopedResource]) {
+        [_urls addObject:url];
+    } else {
+        UTMLog(@"Failed to access security scoped resource for: %@", url);
+    }
+    completion(YES, bookmark, url.path);
 }
 
 - (void)accessDataWithBookmark:(NSData *)bookmark {
+    [self accessDataWithBookmark:bookmark securityScoped:NO completion:^(BOOL success, NSData *bookmark, NSString *path) {
+        if (!success) {
+            UTMLog(@"Access bookmark failed for: %@", path);
+        }
+    }];
+}
+
+- (void)accessDataWithBookmark:(NSData *)bookmark securityScoped:(BOOL)securityScoped completion:(void(^)(BOOL, NSData * _Nullable, NSString * _Nullable))completion {
     if (_connection) {
-        [[_connection remoteObjectProxy] accessDataWithBookmark:bookmark];
+        [[_connection remoteObjectProxy] accessDataWithBookmark:bookmark securityScoped:securityScoped completion:completion];
     } else {
-        [self accessDataWithBookmarkThread:bookmark];
+        [self accessDataWithBookmarkThread:bookmark securityScoped:securityScoped completion:completion];
     }
 }
 

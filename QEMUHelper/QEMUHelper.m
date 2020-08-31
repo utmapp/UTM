@@ -33,11 +33,34 @@
     return self;
 }
 
-- (void)accessDataWithBookmark:(NSData *)bookmark {
+- (void)accessDataWithBookmark:(NSData *)bookmark securityScoped:(BOOL)securityScoped completion:(void(^)(BOOL, NSData * _Nullable, NSString * _Nullable))completion {
+    BOOL stale = false;
+    NSURL *url = [NSURL URLByResolvingBookmarkData:bookmark
+                                           options:(securityScoped ? NSURLBookmarkResolutionWithSecurityScope : 0)
+                                     relativeToURL:nil
+                               bookmarkDataIsStale:&stale
+                                             error:nil];
+    if (!url) {
+        UTMLog(@"Failed to resolve bookmark!");
+        completion(NO, nil, nil);
+        return;
+    }
+    if (stale || !securityScoped) {
+        bookmark = [url bookmarkDataWithOptions:NSURLBookmarkCreationWithSecurityScope
+                 includingResourceValuesForKeys:nil
+                                  relativeToURL:nil
+                                          error:nil];
+        if (!bookmark) {
+            UTMLog(@"Failed to create new bookmark!");
+            completion(NO, bookmark, url.path);
+            return;
+        }
+    }
     if (_qemu == nil) {
         [_bookmarks addObject:bookmark];
+        completion(YES, bookmark, url.path);
     } else {
-        [_qemu accessDataWithBookmark:bookmark];
+        [_qemu accessDataWithBookmark:bookmark securityScoped:YES completion:completion];
     }
 }
 
@@ -61,7 +84,11 @@
     // pass in any bookmarks in queue
     if (_bookmarks.count > 0) {
         for (NSData *bookmark in _bookmarks) {
-            [_qemu accessDataWithBookmark:bookmark];
+            [_qemu accessDataWithBookmark:bookmark securityScoped:YES completion:^(BOOL success, NSData *bookmark, NSString *path) {
+                if (!success) {
+                    UTMLog(@"Access bookmark failed for: %@", path);
+                }
+            }];
         }
         [_bookmarks removeAllObjects];
     }

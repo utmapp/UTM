@@ -40,6 +40,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)startDylib:(nonnull NSString *)dylib completion:(void(^)(BOOL,NSString *))completion;
 - (void)ping:(void (^)(BOOL))onResponse;
 - (void)accessDataWithBookmark:(NSData *)bookmark;
+- (void)accessDataWithBookmark:(NSData *)bookmark securityScoped:(BOOL)securityScoped completion:(void(^)(BOOL, NSData * _Nullable, NSString * _Nullable))completion;
 
 @end
 
