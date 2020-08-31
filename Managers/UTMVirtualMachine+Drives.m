@@ -58,6 +58,8 @@ static const NSURLBookmarkResolutionOptions kBookmarkResolutionOptions = NSURLBo
             } else {
                 drive.status = UTMDriveStatusEjected;
             }
+        } else if ([self.configuration driveRemovableForIndex:i]) { // qemu not started yet
+            drive.status = UTMDriveStatusEjected;
         } else {
             drive.status = UTMDriveStatusFixed;
             drive.path = [self.configuration driveImagePathForIndex:i];
@@ -68,6 +70,12 @@ static const NSURLBookmarkResolutionOptions kBookmarkResolutionOptions = NSURLBo
 }
 
 - (BOOL)ejectDrive:(UTMDrive *)drive force:(BOOL)force error:(NSError * _Nullable __autoreleasing *)error {
+    if (![self saveBookmarkForDrive:drive url:nil error:error]) {
+        return NO;
+    }
+    if (!self.qemu.isConnected) {
+        return YES; // not ready yet
+    }
     return [self.qemu ejectDrive:drive.name force:force error:error];
 }
 
