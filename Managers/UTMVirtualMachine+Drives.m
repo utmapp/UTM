@@ -77,7 +77,7 @@ extern NSString *const kUTMErrorDomain;
     if (!bookmark) {
         return NO;
     }
-    [self.viewState setBookmark:bookmark forRemovableDrive:drive.name persistent:NO];
+    [self.viewState setBookmark:bookmark path:url.path forRemovableDrive:drive.name persistent:NO];
     if (!self.qemu.isConnected) {
         return YES; // not ready yet
     } else {
@@ -92,7 +92,7 @@ extern NSString *const kUTMErrorDomain;
                          securityScoped:persistent
                              completion:^(BOOL success, NSData *newBookmark, NSString *path) {
         if (success) {
-            [self.viewState setBookmark:newBookmark forRemovableDrive:drive.name persistent:YES];
+            [self.viewState setBookmark:newBookmark path:path forRemovableDrive:drive.name persistent:YES];
             [self.qemu changeMediumForDrive:drive.name path:path error:error];
         } else {
             if (error) {

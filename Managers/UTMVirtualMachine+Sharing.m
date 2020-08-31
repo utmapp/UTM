@@ -63,6 +63,7 @@ static const NSURLBookmarkResolutionOptions kBookmarkResolutionOptions = NSURLBo
         return NO;
     } else {
         self.viewState.sharedDirectory = bookmark;
+        self.viewState.sharedDirectoryPath = url.path;
         return YES;
     }
 }
@@ -82,6 +83,7 @@ static const NSURLBookmarkResolutionOptions kBookmarkResolutionOptions = NSURLBo
 
 - (void)clearSharedDirectory {
     self.viewState.sharedDirectory = nil;
+    self.viewState.sharedDirectoryPath = nil;
 }
 
 - (BOOL)startSharedDirectoryWithError:(NSError * _Nullable __autoreleasing *)error {
