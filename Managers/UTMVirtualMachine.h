@@ -39,6 +39,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, weak, nullable) id ioDelegate;
 @property (nonatomic, strong) NSURL *parentPath;
 @property (nonatomic, strong, readonly) UTMConfiguration *configuration;
+@property (nonatomic, readonly) UTMViewState *viewState;
 @property (nonatomic, assign, readonly) UTMVMState state;
 @property (nonatomic, readonly) BOOL busy;
 @property (nonatomic, readonly) UTMScreenshot *screenshot;
