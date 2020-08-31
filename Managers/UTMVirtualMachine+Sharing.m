@@ -35,7 +35,6 @@ static const NSURLBookmarkResolutionOptions kBookmarkResolutionOptions = NSURLBo
 @interface UTMVirtualMachine ()
 
 @property (nonatomic, readonly, nullable) id<UTMInputOutput> ioService;
-@property (nonatomic) UTMViewState *viewState;
 
 @end
 

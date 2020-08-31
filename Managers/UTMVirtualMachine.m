@@ -47,7 +47,7 @@ NSString *const kSuspendSnapshotName = @"suspend";
 
 @property (nonatomic, readonly) UTMQemuManager *qemu;
 @property (nonatomic, readonly) UTMQemu *system;
-@property (nonatomic) UTMViewState *viewState;
+@property (nonatomic, readwrite) UTMViewState *viewState;
 @property (nonatomic, weak) UTMLogging *logging;
 @property (nonatomic, readonly, nullable) id<UTMInputOutput> ioService;
 

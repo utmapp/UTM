@@ -34,7 +34,6 @@ static const NSURLBookmarkResolutionOptions kBookmarkResolutionOptions = NSURLBo
 
 @property (nonatomic, readonly) UTMQemuManager *qemu;
 @property (nonatomic, readonly) UTMQemu *system;
-@property (nonatomic) UTMViewState *viewState;
 
 @end
 
