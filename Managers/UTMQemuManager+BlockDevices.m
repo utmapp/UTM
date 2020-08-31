@@ -28,6 +28,9 @@
 @implementation UTMQemuManager (BlockDevices)
 
 - (NSDictionary<NSString *, NSString *> *)removableDrives {
+    if (!self.isConnected) {
+        return nil;
+    }
     BlockInfoList *block = NULL;
     Error *qerr = NULL;
     block = qmp_query_block(&qerr, (__bridge void *)self);
