@@ -45,7 +45,7 @@ struct VMDetailsView: View {
                         .padding()
                         .frame(maxWidth: .infinity)
                 }
-                VMRemovableDrivesView(config: vm.configuration)
+                VMRemovableDrivesView(vm: vm)
                     .padding([.leading, .trailing, .bottom])
             } else {
                 VStack {
@@ -54,7 +54,7 @@ struct VMDetailsView: View {
                         Text(notes)
                             .font(.body)
                     }
-                    VMRemovableDrivesView(config: vm.configuration)
+                    VMRemovableDrivesView(vm: vm)
                 }.padding([.leading, .trailing, .bottom])
             }
         }.labelStyle(DetailsLabelStyle())

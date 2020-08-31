@@ -18,7 +18,17 @@ import SwiftUI
 
 @available(iOS 14, macOS 11, *)
 struct VMRemovableDrivesView: View {
-    @ObservedObject var config: UTMConfiguration
+    var vm: UTMVirtualMachine
+    @EnvironmentObject private var data: UTMData
+    @ObservedObject private var config: UTMConfiguration
+    @ObservedObject private var sessionConfig: UTMViewState
+    @Environment(\.importFiles) private var importFiles: ImportFilesAction
+    
+    init(vm: UTMVirtualMachine) {
+        self.vm = vm
+        self.config = vm.configuration
+        self.sessionConfig = vm.viewState
+    }
     
     var body: some View {
         Group {
@@ -26,7 +36,7 @@ struct VMRemovableDrivesView: View {
                 HStack {
                     Label("Shared Directory", systemImage: "externaldrive.badge.person.crop")
                     Spacer()
-                    Text("/path/to/share").truncationMode(.head)
+                    Text(resolveBookmark(sessionConfig.sharedDirectory)).truncationMode(.head)
                     Button(action: clearShareDirectory, label: {
                         Text("Clear")
                     })
@@ -35,19 +45,16 @@ struct VMRemovableDrivesView: View {
                     })
                 }
             }
-            ForEach(0..<config.countDrives, id: \.self) { index in
-                let fileName = config.driveImagePath(for: index) ?? ""
-                let imageType = config.driveImageType(for: index)
-                let interface = config.driveInterfaceType(for: index) ?? ""
-                if fileName == "" && (imageType == .CD || imageType == .disk) { // FIXME: new boolean setting
+            ForEach(vm.drives) { drive in
+                if drive.status != .fixed {
                     HStack {
-                        Label("Interface: \(interface)", systemImage: imageType == .CD ? "opticaldiscdrive" : "externaldrive")
+                        Label("Interface: \(drive.interface ?? "")", systemImage: drive.imageType == .CD ? "opticaldiscdrive" : "externaldrive")
                         Spacer()
-                        Text("/path/to/share").truncationMode(.head)
-                        Button(action: { clearRemovableImage(index: index) }, label: {
+                        Text(resolveBookmark(sessionConfig.bookmark(forRemovableDrive: drive.name ?? ""))).truncationMode(.head)
+                        Button(action: { clearRemovableImage(forDrive: drive) }, label: {
                             Text("Clear")
                         })
-                        Button(action: { selectRemovableImage(index: index) }, label: {
+                        Button(action: { selectRemovableImage(forDrive: drive) }, label: {
                             Text("Browse")
                         })
                     }
@@ -57,30 +64,77 @@ struct VMRemovableDrivesView: View {
     }
     
     private func selectShareDirectory() {
-        // FIXME: implement
+        importFiles(singleOfType: [.folder]) { ret in
+            data.busyWork {
+                switch ret {
+                case .success(let url):
+                    try vm.changeSharedDirectory(url)
+                    break
+                case .failure(let err):
+                    throw err
+                case .none:
+                    break
+                }
+            }
+        }
     }
     
     private func clearShareDirectory() {
-        // FIXME: implement
+        vm.clearSharedDirectory()
     }
     
-    private func selectRemovableImage(index: Int) {
-        // FIXME: implement
+    private func selectRemovableImage(forDrive drive: UTMDrive) {
+        importFiles(singleOfType: [.data]) { ret in
+            data.busyWork {
+                switch ret {
+                case .success(let url):
+                    try vm.changeMedium(for: drive, url: url)
+                    break
+                case .failure(let err):
+                    throw err
+                case .none:
+                    break
+                }
+            }
+        }
     }
     
-    private func clearRemovableImage(index: Int) {
-        // FIXME: implement
+    private func clearRemovableImage(forDrive drive: UTMDrive) {
+        data.busyWork {
+            try vm.ejectDrive(drive, force: true)
+        }
+    }
+    
+    private func resolveBookmark(_ bookmark: Data?) -> String {
+        #if os(macOS)
+        let resolveOption: URL.BookmarkResolutionOptions = .withSecurityScope
+        #else
+        let resolveOption: URL.BookmarkResolutionOptions = []
+        #endif
+        guard let bookmarkData = bookmark else {
+            return NSLocalizedString("(none)", comment: "VMRemovableDrivesView")
+        }
+        var stale: Bool = false
+        guard let url = try? URL(resolvingBookmarkData: bookmarkData,
+                                 options: resolveOption,
+                                 relativeTo: nil,
+                                 bookmarkDataIsStale: &stale) else {
+            return NSLocalizedString("(error)", comment: "VMRemovableDrivesView")
+        }
+        if stale {
+            logger.warning("bookmark for '\(url.path)' is stale!")
+        }
+        return url.lastPathComponent
     }
 }
 
 @available(iOS 14, macOS 11, *)
 struct VMRemovableDrivesView_Previews: PreviewProvider {
-    @ObservedObject static private var config = UTMConfiguration(name: "Test")
+    @State static private var config = UTMConfiguration(name: "Test")
     
     static var previews: some View {
-        VStack {
-            VMRemovableDrivesView(config: config)
-        }.onAppear {
+        VMRemovableDrivesView(vm: UTMVirtualMachine(configuration: config, withDestinationURL: URL(fileURLWithPath: "")))
+        .onAppear {
             config.shareDirectoryEnabled = true
             config.newDrive("", type: .disk, interface: "ide")
             config.newDrive("", type: .disk, interface: "sata")

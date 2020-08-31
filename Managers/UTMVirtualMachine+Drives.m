@@ -85,7 +85,13 @@ static const NSURLBookmarkResolutionOptions kBookmarkResolutionOptions = NSURLBo
     if (!self.qemu.isConnected) {
         return YES; // not ready yet
     }
-    
+    if (![self changeMediumForDriveInternal:drive url:url error:error]) {
+        return NO;
+    }
+    return [self saveBookmarkForDrive:drive url:url error:error];
+}
+
+- (BOOL)changeMediumForDriveInternal:(UTMDrive *)drive url:(NSURL *)url error:(NSError * _Nullable __autoreleasing *)error {
     NSData *bookmark = [url bookmarkDataWithOptions:0
                      includingResourceValuesForKeys:nil
                                       relativeToURL:nil
@@ -94,10 +100,7 @@ static const NSURLBookmarkResolutionOptions kBookmarkResolutionOptions = NSURLBo
         return NO;
     }
     [self.system accessDataWithBookmark:bookmark];
-    if (![self.qemu changeMediumForDrive:drive.name path:url.path error:error]) {
-        return NO;
-    }
-    return [self saveBookmarkForDrive:drive url:url error:error];
+    return [self.qemu changeMediumForDrive:drive.name path:url.path error:error];
 }
 
 - (BOOL)saveBookmarkForDrive:(UTMDrive *)drive url:(nullable NSURL *)url error:(NSError * _Nullable __autoreleasing *)error {
@@ -140,7 +143,7 @@ static const NSURLBookmarkResolutionOptions kBookmarkResolutionOptions = NSURLBo
                     UTMLog(@"bookmark re-creation failed");
                 }
             }
-            if (![self changeMediumForDrive:drive url:url error:nil]) {
+            if (![self changeMediumForDriveInternal:drive url:url error:nil]) {
                 UTMLog(@"failed to change %@ image to %@", drive.name, url);
             }
         }

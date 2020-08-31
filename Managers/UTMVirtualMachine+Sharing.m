@@ -40,6 +40,16 @@ static const NSURLBookmarkResolutionOptions kBookmarkResolutionOptions = NSURLBo
 
 @implementation UTMVirtualMachine (Sharing)
 
+- (UTMSpiceIO *)spiceIoWithError:(NSError * _Nullable __autoreleasing *)error {
+    if (![self.ioService isKindOfClass:[UTMSpiceIO class]]) {
+        if (error) {
+            *error = [NSError errorWithDomain:kUTMErrorDomain code:-1 userInfo:@{NSLocalizedDescriptionKey: NSLocalizedString(@"VM frontend does not support shared directories.", "UTMVirtualMachine+Sharing")}];
+        }
+        return nil;
+    }
+    return (UTMSpiceIO *)self.ioService;
+}
+
 - (BOOL)hasShareDirectoryEnabled {
     return self.configuration.shareDirectoryEnabled && !self.configuration.displayConsoleOnly;
 }
@@ -61,13 +71,11 @@ static const NSURLBookmarkResolutionOptions kBookmarkResolutionOptions = NSURLBo
     if (!self.ioService) {
         // if we haven't started the VM yet, save the URL for when the VM starts
         return [self saveSharedDirectory:url error:error];
-    } else if (![self.ioService isKindOfClass:[UTMSpiceIO class]]) {
-        if (error) {
-            *error = [NSError errorWithDomain:kUTMErrorDomain code:-1 userInfo:@{NSLocalizedDescriptionKey: NSLocalizedString(@"VM frontend does not support shared directories.", "UTMVirtualMachine+Sharing")}];
-        }
+    }
+    UTMSpiceIO *spiceIO = [self spiceIoWithError:error];
+    if (!spiceIO) {
         return NO;
     }
-    UTMSpiceIO *spiceIO = (UTMSpiceIO *)self.ioService;
     [spiceIO changeSharedDirectory:url];
     return [self saveSharedDirectory:url error:error];
 }
@@ -86,6 +94,10 @@ static const NSURLBookmarkResolutionOptions kBookmarkResolutionOptions = NSURLBo
     if (!self.configuration.shareDirectoryEnabled) {
         return YES;
     }
+    UTMSpiceIO *spiceIO = [self spiceIoWithError:error];
+    if (!spiceIO) {
+        return NO;
+    }
     
     NSData *bookmark = nil;
     if (self.viewState.sharedDirectory) {
@@ -103,7 +115,11 @@ static const NSURLBookmarkResolutionOptions kBookmarkResolutionOptions = NSURLBo
                                         bookmarkDataIsStale:&stale
                                                       error:error];
         if (shareURL) {
-            [self changeSharedDirectory:shareURL error:nil];
+            [spiceIO changeSharedDirectory:shareURL];
+            if (stale) {
+                UTMLog(@"stale bookmark, attempting to recreate");
+                return [self saveSharedDirectory:shareURL error:error];
+            }
         } else {
             return NO;
         }

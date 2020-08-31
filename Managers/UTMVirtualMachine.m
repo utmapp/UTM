@@ -266,10 +266,6 @@ error:
     if (!_ioService) {
         _ioService = [self inputOutputService];
     }
-    NSError *err;
-    if (![self startSharedDirectoryWithError:&err]) {
-        UTMLog(@"Ignoring error trying to start shared directory: %@", err);
-    }
     
     self.delegate.vmMessage = nil;
     [self changeState:kVMStarting];
@@ -578,6 +574,10 @@ error:
 // this is called right before we execute qmp_cont so we can setup additional option
 - (void)qemuQmpDidConnect:(UTMQemuManager *)manager {
     UTMLog(@"qemuQmpDidConnect");
+    NSError *err;
+    if (!self.configuration.displayConsoleOnly && ![self startSharedDirectoryWithError:&err]) {
+        UTMLog(@"Ignoring error trying to start shared directory: %@", err);
+    }
     [self restoreRemovableDrivesFromBookmarks];
 }
 
