@@ -36,7 +36,7 @@ struct VMRemovableDrivesView: View {
                 HStack {
                     Label("Shared Directory", systemImage: "externaldrive.badge.person.crop")
                     Spacer()
-                    Text(resolveBookmark(sessionConfig.sharedDirectory)).truncationMode(.head)
+                    Text(sessionConfig.sharedDirectoryPath ?? "").truncationMode(.head)
                     Button(action: clearShareDirectory, label: {
                         Text("Clear")
                     })
@@ -47,10 +47,11 @@ struct VMRemovableDrivesView: View {
             }
             ForEach(vm.drives) { drive in
                 if drive.status != .fixed {
+                    let path = sessionConfig.path(forRemovableDrive: drive.name ?? "") ?? ""
                     HStack {
                         Label("Interface: \(drive.interface ?? "")", systemImage: drive.imageType == .CD ? "opticaldiscdrive" : "externaldrive")
                         Spacer()
-                        Text(resolveBookmark(sessionConfig.bookmark(forRemovableDrive: drive.name ?? ""))).truncationMode(.head)
+                        Text(path).truncationMode(.head)
                         Button(action: { clearRemovableImage(forDrive: drive) }, label: {
                             Text("Clear")
                         })
@@ -103,28 +104,6 @@ struct VMRemovableDrivesView: View {
         data.busyWork {
             try vm.ejectDrive(drive, force: true)
         }
-    }
-    
-    private func resolveBookmark(_ bookmark: Data?) -> String {
-        #if os(macOS)
-        let resolveOption: URL.BookmarkResolutionOptions = .withSecurityScope
-        #else
-        let resolveOption: URL.BookmarkResolutionOptions = []
-        #endif
-        guard let bookmarkData = bookmark else {
-            return NSLocalizedString("(none)", comment: "VMRemovableDrivesView")
-        }
-        var stale: Bool = false
-        guard let url = try? URL(resolvingBookmarkData: bookmarkData,
-                                 options: resolveOption,
-                                 relativeTo: nil,
-                                 bookmarkDataIsStale: &stale) else {
-            return NSLocalizedString("(error)", comment: "VMRemovableDrivesView")
-        }
-        if stale {
-            logger.warning("bookmark for '\(url.path)' is stale!")
-        }
-        return url.lastPathComponent
     }
 }
 

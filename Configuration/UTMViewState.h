@@ -31,15 +31,16 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) BOOL showKeyboard;
 @property (nonatomic, assign) BOOL suspended;
 @property (nonatomic, copy, nullable) NSData *sharedDirectory;
+@property (nonatomic, copy, nullable) NSString *sharedDirectoryPath;
 
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initDefaults NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithDictionary:(NSMutableDictionary *)dictionary NS_DESIGNATED_INITIALIZER;
 
-- (void)setBookmark:(NSData *)bookmark forRemovableDrive:(NSString *)drive persistent:(BOOL)persistent;
+- (void)setBookmark:(NSData *)bookmark path:(NSString *)path forRemovableDrive:(NSString *)drive persistent:(BOOL)persistent;
 - (void)removeBookmarkForRemovableDrive:(NSString *)drive;
-- (nullable NSData *)bookmarkForRemovableDrive:(NSString *)drive;
 - (nullable NSData *)bookmarkForRemovableDrive:(NSString *)drive persistent:(out BOOL *)persistent;
+- (nullable NSString *)pathForRemovableDrive:(NSString *)drive;
 
 @end
 
