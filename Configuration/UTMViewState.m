@@ -37,6 +37,7 @@ const NSString *const kUTMViewStateRemovableDrivesKey = @"RemovableDrives";
 @implementation UTMViewState {
     NSMutableDictionary *_rootDict;
     NSMutableDictionary<NSString *, NSData *> *_removableDrives;
+    NSMutableDictionary<NSString *, NSData *> *_removableDrivesTemp;
 }
 
 #pragma mark - Properties
@@ -132,18 +133,36 @@ const NSString *const kUTMViewStateRemovableDrivesKey = @"RemovableDrives";
 
 #pragma mark - Removable drives
 
-- (void)setBookmark:(NSData *)bookmark forRemovableDrive:(NSString *)drive {
+- (void)setBookmark:(NSData *)bookmark forRemovableDrive:(NSString *)drive persistent:(BOOL)persistent {
     [self propertyWillChange];
-    _removableDrives[drive] = bookmark;
+    if (persistent) {
+        _removableDrives[drive] = bookmark;
+        [_removableDrivesTemp removeObjectForKey:drive];
+    } else {
+        _removableDrivesTemp[drive] = bookmark;
+    }
 }
 
 - (void)removeBookmarkForRemovableDrive:(NSString *)drive {
     [self propertyWillChange];
     [_removableDrives removeObjectForKey:drive];
+    [_removableDrivesTemp removeObjectForKey:drive];
 }
 
-- (nullable NSData *)bookmarkForRemovableDrive:(NSString *)drive {
-    return _removableDrives[drive];
+- (NSData *)bookmarkForRemovableDrive:(NSString *)drive {
+    BOOL persistent;
+    return [self bookmarkForRemovableDrive:drive persistent:&persistent];
+}
+
+- (nullable NSData *)bookmarkForRemovableDrive:(NSString *)drive persistent:(out BOOL *)persistent {
+    NSData *temp = _removableDrivesTemp[drive];
+    if (temp) {
+        *persistent = NO;
+        return temp;
+    } else {
+        *persistent = YES;
+        return _removableDrives[drive];
+    }
 }
 
 #pragma mark - Init
@@ -153,6 +172,7 @@ const NSString *const kUTMViewStateRemovableDrivesKey = @"RemovableDrives";
     if (self) {
         _rootDict = [NSMutableDictionary dictionary];
         _removableDrives = [NSMutableDictionary dictionary];
+        _removableDrivesTemp = [NSMutableDictionary dictionary];
         _rootDict[kUTMViewStateRemovableDrivesKey] = _removableDrives;
         self.displayScale = 1.0;
         self.displayOriginX = 0;
@@ -170,6 +190,7 @@ const NSString *const kUTMViewStateRemovableDrivesKey = @"RemovableDrives";
     if (self) {
         _rootDict = dictionary;
         _removableDrives = dictionary[kUTMViewStateRemovableDrivesKey];
+        _removableDrivesTemp = [NSMutableDictionary dictionary];
         if (!_removableDrives) {
             _removableDrives = [NSMutableDictionary dictionary];
             _rootDict[kUTMViewStateRemovableDrivesKey] = _removableDrives;

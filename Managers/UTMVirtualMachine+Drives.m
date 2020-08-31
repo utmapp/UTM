@@ -14,7 +14,6 @@
 // limitations under the License.
 //
 
-#import <TargetConditionals.h>
 #import "UTMVirtualMachine+Drives.h"
 #import "UTMLogging.h"
 #import "UTMViewState.h"
@@ -22,13 +21,7 @@
 #import "UTMQemu.h"
 #import "UTMQemuManager+BlockDevices.h"
 
-#if TARGET_OS_IPHONE
-static const NSURLBookmarkCreationOptions kBookmarkCreationOptions = 0;
-static const NSURLBookmarkResolutionOptions kBookmarkResolutionOptions = 0;
-#else
-static const NSURLBookmarkCreationOptions kBookmarkCreationOptions = NSURLBookmarkCreationWithSecurityScope;
-static const NSURLBookmarkResolutionOptions kBookmarkResolutionOptions = NSURLBookmarkResolutionWithSecurityScope;
-#endif
+extern NSString *const kUTMErrorDomain;
 
 @interface UTMVirtualMachine ()
 
@@ -69,9 +62,7 @@ static const NSURLBookmarkResolutionOptions kBookmarkResolutionOptions = NSURLBo
 }
 
 - (BOOL)ejectDrive:(UTMDrive *)drive force:(BOOL)force error:(NSError * _Nullable __autoreleasing *)error {
-    if (![self saveBookmarkForDrive:drive url:nil error:error]) {
-        return NO;
-    }
+    [self.viewState removeBookmarkForRemovableDrive:drive.name];
     if (!self.qemu.isConnected) {
         return YES; // not ready yet
     }
@@ -79,19 +70,6 @@ static const NSURLBookmarkResolutionOptions kBookmarkResolutionOptions = NSURLBo
 }
 
 - (BOOL)changeMediumForDrive:(UTMDrive *)drive url:(NSURL *)url error:(NSError * _Nullable __autoreleasing *)error {
-    if (![self saveBookmarkForDrive:drive url:url error:error]) {
-        return NO;
-    }
-    if (!self.qemu.isConnected) {
-        return YES; // not ready yet
-    }
-    if (![self changeMediumForDriveInternal:drive url:url error:error]) {
-        return NO;
-    }
-    return [self saveBookmarkForDrive:drive url:url error:error];
-}
-
-- (BOOL)changeMediumForDriveInternal:(UTMDrive *)drive url:(NSURL *)url error:(NSError * _Nullable __autoreleasing *)error {
     NSData *bookmark = [url bookmarkDataWithOptions:0
                      includingResourceValuesForKeys:nil
                                       relativeToURL:nil
@@ -99,52 +77,50 @@ static const NSURLBookmarkResolutionOptions kBookmarkResolutionOptions = NSURLBo
     if (!bookmark) {
         return NO;
     }
-    [self.system accessDataWithBookmark:bookmark];
-    return [self.qemu changeMediumForDrive:drive.name path:url.path error:error];
+    [self.viewState setBookmark:bookmark forRemovableDrive:drive.name persistent:NO];
+    if (!self.qemu.isConnected) {
+        return YES; // not ready yet
+    } else {
+        return [self changeMediumForDriveInternal:drive bookmark:bookmark persistent:NO error:error];
+    }
 }
 
-- (BOOL)saveBookmarkForDrive:(UTMDrive *)drive url:(nullable NSURL *)url error:(NSError * _Nullable __autoreleasing *)error {
-    NSData *bookmark = [url bookmarkDataWithOptions:kBookmarkCreationOptions
-                     includingResourceValuesForKeys:nil
-                                      relativeToURL:nil
-                                              error:error];
-    if (bookmark) {
-        [self.viewState setBookmark:bookmark forRemovableDrive:drive.name];
-    } else {
-        [self.viewState removeBookmarkForRemovableDrive:drive.name];
-    }
-    return (bookmark != nil);
+- (BOOL)changeMediumForDriveInternal:(UTMDrive *)drive bookmark:(NSData *)bookmark persistent:(BOOL)persistent error:(NSError * _Nullable __autoreleasing *)error {
+    __block BOOL ret = NO;
+    dispatch_semaphore_t sema = dispatch_semaphore_create(0);
+    [self.system accessDataWithBookmark:bookmark
+                         securityScoped:persistent
+                             completion:^(BOOL success, NSData *newBookmark, NSString *path) {
+        if (success) {
+            [self.viewState setBookmark:newBookmark forRemovableDrive:drive.name persistent:YES];
+            [self.qemu changeMediumForDrive:drive.name path:path error:error];
+        } else {
+            if (error) {
+                *error = [NSError errorWithDomain:kUTMErrorDomain code:-1 userInfo:@{NSLocalizedDescriptionKey: NSLocalizedString(@"Failed to access drive image path.", "UTMVirtualMachine+Drives")}];
+            }
+        }
+        ret = success;
+        dispatch_semaphore_signal(sema);
+    }];
+    dispatch_semaphore_wait(sema, DISPATCH_TIME_FOREVER);
+    return ret;
 }
 
 - (void)restoreRemovableDrivesFromBookmarks {
     NSArray<UTMDrive *> *drives = self.drives;
     for (UTMDrive *drive in drives) {
-        NSData *bookmark = [self.viewState bookmarkForRemovableDrive:drive.name];
+        BOOL persistent = NO;
+        NSData *bookmark = [self.viewState bookmarkForRemovableDrive:drive.name persistent:&persistent];
         if (bookmark) {
+            NSString *path = nil;
             UTMLog(@"found bookmark for %@", drive.name);
             if (drive.status == UTMDriveStatusFixed) {
                 UTMLog(@"%@ is no longer removable, removing bookmark", drive.name);
-                [self saveBookmarkForDrive:drive url:nil error:nil];
+                [self.viewState removeBookmarkForRemovableDrive:drive.name];
                 continue;
             }
-            BOOL stale;
-            NSURL *url = [NSURL URLByResolvingBookmarkData:bookmark
-                                                   options:kBookmarkResolutionOptions
-                                             relativeToURL:nil
-                                       bookmarkDataIsStale:&stale
-                                                     error:nil];
-            if (!url) {
-                UTMLog(@"failed to resolve bookmark for %@", drive.name);
-                continue;
-            }
-            if (stale) {
-                UTMLog(@"bookmark is stale, attempting to re-create");
-                if (![self saveBookmarkForDrive:drive url:url error:nil]) {
-                    UTMLog(@"bookmark re-creation failed");
-                }
-            }
-            if (![self changeMediumForDriveInternal:drive url:url error:nil]) {
-                UTMLog(@"failed to change %@ image to %@", drive.name, url);
+            if (![self changeMediumForDriveInternal:drive bookmark:bookmark persistent:persistent error:nil]) {
+                UTMLog(@"failed to change %@ image to %@", drive.name, path);
             }
         }
     }
