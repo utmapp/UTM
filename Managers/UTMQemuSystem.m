@@ -24,6 +24,7 @@
 #import "UTMConfiguration+Sharing.h"
 #import "UTMConfiguration+System.h"
 #import "UTMConfigurationPortForward.h"
+#import "UTMLogging.h"
 
 @implementation UTMQemuSystem
 
@@ -57,13 +58,6 @@
         // this is required for virt devices
         [self pushArgv:@"-device"];
         [self pushArgv:@"virtio-gpu-pci"];
-        for (NSUInteger i = 0; i < self.configuration.countDrives; i++) {
-            UTMDiskImageType type = [self.configuration driveImageTypeForIndex:i];
-            if (type == UTMDiskImageTypeDisk || type == UTMDiskImageTypeCD) {
-                [self pushArgv:@"-device"];
-                [self pushArgv:[NSString stringWithFormat:@"virtio-blk,drive=drive%lu", i]];
-            }
-        }
     }
 }
 
@@ -107,7 +101,7 @@
                 break;
             }
             default: {
-                NSLog(@"WARNING: unknown image type %lu, ignoring image %@", type, fullPathURL);
+                UTMLog(@"WARNING: unknown image type %lu, ignoring image %@", type, fullPathURL);
                 break;
             }
         }
@@ -186,6 +180,10 @@
 }
 
 - (NSString *)machineProperties {
+    if (self.configuration.systemMachineProperties.length > 0) {
+        return self.configuration.systemMachineProperties; // use specified properties
+    }
+    // otherwise use default properties for each machine
     if ([self.configuration.systemTarget hasPrefix:@"pc"] || [self.configuration.systemTarget hasPrefix:@"q35"]) {
         return @"vmport=off";
     }

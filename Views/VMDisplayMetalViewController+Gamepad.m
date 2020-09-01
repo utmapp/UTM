@@ -22,6 +22,7 @@
 #import "CSDisplayMetal.h"
 #import "UTMConfiguration.h"
 #import "UTMConfiguration+Constants.h"
+#import "UTMLogging.h"
 
 const CGFloat kThumbstickSpeedMultiplier = 1000; // in points per second
 
@@ -41,21 +42,21 @@ const CGFloat kThumbstickSpeedMultiplier = 1000; // in points per second
 - (void)controllerWasConnected:(NSNotification *)notification {
     // a controller was connected
     GCController *controller = (GCController *)notification.object;
-    NSLog(@"Controller connected: %@", controller.vendorName);
+    UTMLog(@"Controller connected: %@", controller.vendorName);
     [self setupController:controller];
 }
 
 - (void)controllerWasDisconnected:(NSNotification *)notification {
     // a controller was disconnected
     GCController *controller = (GCController *)notification.object;
-    NSLog(@"Controller disconnected: %@", controller.vendorName);
+    UTMLog(@"Controller disconnected: %@", controller.vendorName);
 }
 
 - (void)setupController:(GCController *)controller {
     GCExtendedGamepad *gamepad = controller.extendedGamepad;
     __weak typeof(self) _self = self;
     _controller = controller;
-    NSLog(@"active controller switched to: %@", controller.vendorName);
+    UTMLog(@"active controller switched to: %@", controller.vendorName);
     
     gamepad.leftTrigger.pressedChangedHandler = ^(GCControllerButtonInput * _Nonnull button, float value, BOOL pressed) {
         [_self gamepadButton:@"GCButtonTriggerLeft" pressed:pressed];
@@ -133,7 +134,7 @@ const CGFloat kThumbstickSpeedMultiplier = 1000; // in points per second
 
 - (void)gamepadButton:(NSString *)identifier pressed:(BOOL)isPressed {
     NSInteger value = [self integerForSetting:identifier];
-    NSLog(@"GC button %@ (%ld) pressed:%d", identifier, value, isPressed);
+    UTMLog(@"GC button %@ (%ld) pressed:%d", identifier, value, isPressed);
     switch (value) {
         case 0:
             break;

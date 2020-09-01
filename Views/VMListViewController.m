@@ -15,12 +15,16 @@
 //
 
 #import "VMListViewController.h"
+#import "AppDelegate.h"
 #import "VMListViewCell.h"
 #import "UTMConfigurationDelegate.h"
 #import "UTMConfiguration.h"
 #import "UTMVirtualMachine.h"
+#import "UIViewController+Extensions.h"
 #import "VMDisplayMetalViewController.h"
-#import "VMTerminalViewController.h"
+#import "VMDisplayTerminalViewController.h"
+
+@import SafariServices;
 
 @interface VMListViewController ()
 
@@ -51,6 +55,11 @@
                                                            action:NSSelectorFromString(@"cloneAction:")];
     [[UIMenuController sharedMenuController] setMenuItems:@[deleteItem, duplicateItem]];
     
+    // Set up refresh
+    UIRefreshControl *refresh = [UIRefreshControl new];
+    [refresh addTarget:self action:@selector(refreshWithSender:) forControlEvents:UIControlEventValueChanged];
+    self.collectionView.refreshControl = refresh;
+    
     self.viewVisibleSema = dispatch_semaphore_create(0);
     self.viewVisibleQueue = dispatch_queue_create("View Visible Queue", DISPATCH_QUEUE_SERIAL);
     dispatch_async(self.viewVisibleQueue, ^{
@@ -60,6 +69,7 @@
 
 - (void)viewDidDisappear:(BOOL)animated {
     [super viewDidDisappear:animated];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UTMImportNotification object:nil];
     dispatch_async(self.viewVisibleQueue, ^{
         dispatch_semaphore_wait(self.viewVisibleSema, DISPATCH_TIME_FOREVER);
     });
@@ -69,9 +79,19 @@
     [super viewDidAppear:animated];
     dispatch_semaphore_signal(self.viewVisibleSema);
     
+    // Notifications
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(importUTM:) name:UTMImportNotification object:nil];
+    AppDelegate *delegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+    NSURL *openURL = delegate.openURL;
+    
     // refresh list
     dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INTERACTIVE, 0), ^{
         [self reloadData];
+        
+        // Did we startup with an URL?
+        if (openURL) {
+            [[NSNotificationCenter defaultCenter] postNotificationName:UTMImportNotification object:delegate];
+        }
     });
     
     // show any message
@@ -124,25 +144,32 @@
     return [[NSProcessInfo processInfo] globallyUniqueString];
 }
 
-- (void)showAlert:(NSString *)msg actions:(nullable NSArray<UIAlertAction *> *)actions completion:(nullable void (^)(void))completion {
-    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"" message:msg preferredStyle:UIAlertControllerStyleAlert];
-    if (!actions) {
-        UIAlertAction *okay = [UIAlertAction actionWithTitle:NSLocalizedString(@"OK", @"OK button") style:UIAlertActionStyleDefault handler:nil];
-        [alert addAction:okay];
-    } else {
-        for (UIAlertAction *action in actions) {
-            [alert addAction:action];
-        }
-    }
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self presentViewController:alert animated:YES completion:completion];
+- (void)showAlertSerialized:(NSString *)msg isQuestion:(BOOL)isQuestion completion:(nullable void (^)(void))completion {
+    dispatch_async(self.viewVisibleQueue, ^{
+        dispatch_semaphore_t waitUntilCompletion = dispatch_semaphore_create(0);
+        void (^handler)(UIAlertAction *action) = ^(UIAlertAction *action){
+            dispatch_semaphore_signal(waitUntilCompletion);
+            if (completion) {
+                dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), completion);
+            }
+        };
+        dispatch_sync(dispatch_get_main_queue(), ^{
+            if (isQuestion) {
+                UIAlertAction *yes = [UIAlertAction actionWithTitle:NSLocalizedString(@"Yes", @"VMListViewController") style:UIAlertActionStyleDestructive handler:handler];
+                UIAlertAction *no = [UIAlertAction actionWithTitle:NSLocalizedString(@"No", @"VMListViewController") style:UIAlertActionStyleCancel handler:nil];
+                [self showAlert:msg actions:@[yes, no] completion:nil];
+            } else {
+                [self showAlert:msg actions:nil completion:handler];
+            }
+        });
+        dispatch_semaphore_wait(waitUntilCompletion, DISPATCH_TIME_FOREVER);
     });
 }
 
 - (void)showStartupMessage {
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     if (![defaults boolForKey:@"HasShownStartupAlert"]) {
-        [self showAlert:NSLocalizedString(@"Welcome to UTM! Due to a bug in iOS, if you force kill this app, the system will be unstable and you cannot launch UTM again until you reboot. The recommended way to terminate this app is the button on the top left.", @"Startup message") actions:nil completion:^{
+        [self showAlertSerialized:NSLocalizedString(@"Welcome to UTM! Due to a bug in iOS, if you force kill this app, the system will be unstable and you cannot launch UTM again until you reboot. The recommended way to terminate this app is the button on the top left.", @"Startup message") isQuestion:NO completion:^{
             [defaults setBool:YES forKey:@"HasShownStartupAlert"];
         }];
     }
@@ -172,17 +199,13 @@
 
 - (void)deleteVM:(NSURL *)url {
     NSString *name = [UTMVirtualMachine virtualMachineName:url];
-    UIAlertAction *yes = [UIAlertAction actionWithTitle:NSLocalizedString(@"Yes", @"Yes button") style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action){
-        dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), ^{
-            NSError *err = nil;
-            [self workStartedWhenVisible:[NSString stringWithFormat:NSLocalizedString(@"Deleting %@...", @"Delete VM overlay"), name]];
-            [[NSFileManager defaultManager] removeItemAtURL:url error:&err];
-            [self workCompletedWhenVisible:err.localizedDescription];
-            [self reloadData];
-        });
+    [self showAlertSerialized:NSLocalizedString(@"Are you sure you want to delete this VM? Any drives associated will also be deleted.", @"Delete confirmation") isQuestion:YES completion:^{
+        NSError *err = nil;
+        [self workStartedWhenVisible:[NSString stringWithFormat:NSLocalizedString(@"Deleting %@...", @"Delete VM overlay"), name]];
+        [[NSFileManager defaultManager] removeItemAtURL:url error:&err];
+        [self workCompletedWhenVisible:err.localizedDescription];
+        [self reloadData];
     }];
-    UIAlertAction *no = [UIAlertAction actionWithTitle:NSLocalizedString(@"No", @"No button") style:UIAlertActionStyleCancel handler:nil];
-    [self showAlert:NSLocalizedString(@"Are you sure you want to delete this VM? Any drives associated will also be deleted.", @"Delete confirmation") actions:@[yes, no] completion:nil];
 }
 
 #pragma mark - Navigation
@@ -219,8 +242,8 @@
         vm.delegate = metalView;
         [metalView virtualMachine:vm transitionToState:vm.state];
     } else if ([[segue identifier] isEqualToString:@"startVMConsole"]) {
-        NSAssert([segue.destinationViewController isKindOfClass:[VMTerminalViewController class]], @"Destination not a terminal view");
-        VMTerminalViewController *terminalView = (VMTerminalViewController *)segue.destinationViewController;
+        NSAssert([segue.destinationViewController isKindOfClass:[VMDisplayTerminalViewController class]], @"Destination not a terminal view");
+        VMDisplayTerminalViewController *terminalView = (VMDisplayTerminalViewController *)segue.destinationViewController;
         UTMVirtualMachine *vm = (UTMVirtualMachine*) sender;
         terminalView.vm = vm;
         vm.delegate = terminalView;
@@ -296,12 +319,25 @@
     dispatch_async(self.viewVisibleQueue, ^{
         dispatch_semaphore_t waitUntilCompletion = dispatch_semaphore_create(0);
         dispatch_sync(dispatch_get_main_queue(), ^{
-            UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil message:message preferredStyle:UIAlertControllerStyleAlert];
-            UIActivityIndicatorView *spinner = [[UIActivityIndicatorView alloc] initWithFrame:CGRectMake(10, 5, 50, 50)];
+            UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil message:[message stringByAppendingString:@"\n\n"] preferredStyle:UIAlertControllerStyleAlert];
+            UIActivityIndicatorView *spinner = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+            if (@available(iOS 13.0, *)) {
+                spinner.color = [UIColor labelColor];
+            }
             spinner.hidesWhenStopped = YES;
-            spinner.activityIndicatorViewStyle = UIActivityIndicatorViewStyleGray;
-            [spinner startAnimating];
+            spinner.translatesAutoresizingMaskIntoConstraints = NO;
             [alert.view addSubview:spinner];
+            
+            NSDictionary * views = @{
+                @"alert": alert.view,
+                @"spinner": spinner
+            };
+            NSArray *constraintsVertical = [NSLayoutConstraint constraintsWithVisualFormat:@"V:[spinner]-(20)-|" options:0 metrics:nil views:views];
+            NSArray *constraintsHorizontal = [NSLayoutConstraint constraintsWithVisualFormat:@"H:|[spinner]|" options:0 metrics:nil views:views];
+            NSArray *constraints = [constraintsVertical arrayByAddingObjectsFromArray:constraintsHorizontal];
+            [alert.view addConstraints:constraints];
+            [spinner setUserInteractionEnabled:NO];
+            [spinner startAnimating];
             self.alert = alert;
             [self presentViewController:alert animated:YES completion:^{
                 dispatch_semaphore_signal(waitUntilCompletion);
@@ -316,12 +352,21 @@
         self.vmList = [self fetchVirtualMachines];
         dispatch_sync(dispatch_get_main_queue(), ^{
             [self.collectionView reloadData];
-            [self.alert dismissViewControllerAnimated:YES completion:nil];
-            if (message) {
-                [self showAlert:message actions:nil completion:nil];
-            }
+            [self.alert dismissViewControllerAnimated:YES completion:^{
+                if (message) {
+                    [self showAlertSerialized:message isQuestion:NO completion:nil];
+                }
+            }];
         });
     });
+}
+
+- (void)startVm:(UTMVirtualMachine *)vm {
+    if (vm.supportedDisplayType == UTMDisplayTypeFullGraphic) {
+        [self performSegueWithIdentifier:@"startVM" sender:vm];
+    } else if (vm.supportedDisplayType == UTMDisplayTypeConsole) {
+        [self performSegueWithIdentifier: @"startVMConsole" sender:vm];
+    }
 }
 
 #pragma mark - Actions
@@ -346,25 +391,77 @@
 - (IBAction)startVmFromButton:(UIButton *)sender {
     UICollectionViewCell* cell = (UICollectionViewCell*) sender.superview.superview.superview.superview.superview.superview;
     UTMVirtualMachine* vm = [self vmForCell: cell];
-    if (vm.supportedDisplayType == UTMDisplayTypeFullGraphic) {
-        [self performSegueWithIdentifier:@"startVM" sender:vm];
-    } else if (vm.supportedDisplayType == UTMDisplayTypeConsole) {
-        [self performSegueWithIdentifier: @"startVMConsole" sender:vm];
-    }
+    [self startVm:vm];
 }
 
 - (IBAction)startVmFromScreen:(UIButton *)sender {
     UICollectionViewCell* cell = (UICollectionViewCell*) sender.superview.superview;
     UTMVirtualMachine* vm = [self vmForCell: cell];
-    if (vm.supportedDisplayType == UTMDisplayTypeFullGraphic) {
-        [self performSegueWithIdentifier:@"startVM" sender:vm];
-    } else if (vm.supportedDisplayType == UTMDisplayTypeConsole) {
-        [self performSegueWithIdentifier: @"startVMConsole" sender:vm];
-    }
+    [self startVm:vm];
 }
 
 - (IBAction)exitUTM:(UIBarButtonItem *)sender {
     exit(0);
+}
+
+- (IBAction)showHelp:(UIBarButtonItem *)sender {
+    SFSafariViewController *controller = [[SFSafariViewController alloc] initWithURL:[NSURL URLWithString:@"https://getutm.app/guide/"]];
+    [self presentViewController:controller animated:YES completion:nil];
+}
+
+- (void)refreshWithSender:(UIRefreshControl *)sender {
+    [self reloadData];
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        [sender endRefreshing];
+    });
+}
+
+#pragma mark - Notifications
+
+- (void)importUTM:(NSNotification *)notification {
+    NSURL *url = [notification.object openURL];
+    [notification.object setOpenURL:nil];
+    NSURL *fileBasePath = [url URLByDeletingLastPathComponent];
+    NSString *file = url.lastPathComponent;
+    NSURL *dest = [self.documentsPath URLByAppendingPathComponent:file isDirectory:YES];
+    if (file.length == 0) {
+        [self showAlertSerialized:NSLocalizedString(@"Invalid UTM not imported.", @"VMListViewController") isQuestion:NO completion:nil];
+    } else if ([[dest URLByResolvingSymlinksInPath] isEqual:[url URLByResolvingSymlinksInPath]]) {
+        UTMVirtualMachine *found;
+        for (UTMVirtualMachine *vm in self.vmList) {
+            if ([vm.path.lastPathComponent isEqualToString:file]) {
+                found = vm;
+                break;
+            }
+        }
+        if (!found) {
+            [self showAlertSerialized:NSLocalizedString(@"Cannot find VM.", @"VMListViewController") isQuestion:NO completion:nil];
+        } else {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self startVm:found];
+            });
+        }
+    } else if ([[NSFileManager defaultManager] fileExistsAtPath:dest.path]) {
+        [self showAlertSerialized:NSLocalizedString(@"A VM already exists with this name.", @"VMListViewController") isQuestion:NO completion:nil];
+    } else if ([[fileBasePath URLByResolvingSymlinksInPath] isEqual:[[self.documentsPath URLByAppendingPathComponent:@"Inbox" isDirectory:YES] URLByResolvingSymlinksInPath]]) {
+        dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), ^{
+            NSError *err = nil;
+            [self workStartedWhenVisible:[NSString stringWithFormat:NSLocalizedString(@"Moving %@...", @"Save VM overlay"), file]];
+            [[NSFileManager defaultManager] moveItemAtURL:url toURL:dest error:&err];
+            [self workCompletedWhenVisible:err.localizedDescription];
+            [self reloadData];
+        });
+    } else {
+        dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), ^{
+            NSError *err = nil;
+            [self workStartedWhenVisible:[NSString stringWithFormat:NSLocalizedString(@"Importing %@...", @"Save VM overlay"), file]];
+            [url startAccessingSecurityScopedResource];
+            [[NSFileManager defaultManager] copyItemAtURL:url toURL:dest error:&err];
+            [url stopAccessingSecurityScopedResource];
+            [self workCompletedWhenVisible:err.localizedDescription];
+            [self reloadData];
+        });
+    }
 }
 
 @end

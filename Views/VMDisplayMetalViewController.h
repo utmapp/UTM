@@ -15,9 +15,8 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "UTMVirtualMachineDelegate.h"
+#import "VMDisplayViewController.h"
 #import "UTMSpiceIODelegate.h"
-#import "CSInput.h"
 
 @class UTMSpiceIO;
 @class UTMVirtualMachine;
@@ -29,9 +28,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface VMDisplayMetalViewController : UIViewController<UTMVirtualMachineDelegate, UTMSpiceIODelegate> {
-    NSMutableArray<UIKeyCommand *> *_keyCommands;
-    
+@interface VMDisplayMetalViewController : VMDisplayViewController<UTMSpiceIODelegate> {
     // cursor handling
     CGPoint _lastTwoPanOrigin;
     BOOL _mouseLeftDown;
@@ -62,37 +59,15 @@ NS_ASSUME_NONNULL_BEGIN
     UIImpactFeedbackGenerator *_resizeFeedbackGenerator;
 }
 
-@property (nonatomic, strong) UTMVirtualMachine *vm;
-@property (nonatomic, readonly, weak) UTMSpiceIO *spiceIO;
-@property (nonatomic, readwrite) BOOL prefersStatusBarHidden;
 @property (weak, nonatomic) IBOutlet MTKView *mtkView;
-@property (weak, nonatomic) IBOutlet VMKeyboardView *keyboardView;
-@property (strong, nonatomic) IBOutlet UIInputView *inputAccessoryView;
-@property (strong, nonatomic) IBOutlet UIView *toolbarAccessoryView;
-@property (nonatomic, assign) BOOL lastDisplayChangeResize;
-@property (weak, nonatomic) IBOutlet UIButton *powerExitButton;
-@property (weak, nonatomic) IBOutlet UIButton *pauseResumeButton;
-@property (weak, nonatomic) IBOutlet UIButton *restartButton;
-@property (weak, nonatomic) IBOutlet UIButton *zoomButton;
-@property (weak, nonatomic) IBOutlet UIVisualEffectView *placeholderView;
 @property (weak, nonatomic) IBOutlet UIImageView *placeholderImageView;
-@property (weak, nonatomic) IBOutlet UIActivityIndicatorView *placeholderIndicator;
-@property (weak, nonatomic) IBOutlet UIButton *resumeBigButton;
-@property (strong, nonatomic) IBOutletCollection(VMKeyboardButton) NSArray *customKeyButtons;
-@property (strong, nonatomic) IBOutletCollection(VMKeyboardButton) NSArray *customKeyModifierButtons;
+@property (weak, nonatomic) IBOutlet VMKeyboardView *keyboardView;
+
+@property (nonatomic, readonly, weak) UTMSpiceIO *spiceIO;
+@property (nonatomic, assign) BOOL lastDisplayChangeResize;
 @property (nonatomic, readonly) BOOL serverModeCursor;
-@property (nonatomic, readonly) BOOL autosaveBackground;
-@property (nonatomic, readonly) BOOL autosaveLowMemory;
-@property (nonatomic, readonly) BOOL runInBackground;
 
 - (void)sendExtendedKey:(SendKeyType)type code:(int)code;
-
-- (IBAction)changeDisplayZoom:(UIButton *)sender;
-- (IBAction)pauseResumePressed:(UIButton *)sender;
-- (IBAction)powerPressed:(UIButton *)sender;
-- (IBAction)restartPressed:(UIButton *)sender;
-- (IBAction)showKeyboardButton:(UIButton *)sender;
-- (IBAction)hideToolbarButton:(UIButton *)sender;
 
 @end
 

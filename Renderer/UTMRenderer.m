@@ -9,6 +9,7 @@ Implementation of renderer class which performs Metal setup and per frame render
 @import MetalKit;
 
 #import "UTMRenderer.h"
+#import "UTMLogging.h"
 
 // Header shared between C code here, which executes Metal API commands, and .metal files, which
 //   uses these types as inputs to the shaders
@@ -86,7 +87,7 @@ Implementation of renderer class which performs Metal setup and per frame render
             //  If the Metal API validation is enabled, we can find out more information about what
             //  went wrong.  (Metal API validation is enabled by default when a debug build is run
             //  from Xcode)
-            NSLog(@"Failed to created pipeline state, error %@", error);
+            UTMLog(@"Failed to created pipeline state, error %@", error);
         }
 
         // Create the command queue
@@ -166,6 +167,7 @@ static matrix_float4x4 matrix_scale_translate(CGFloat scale, CGPoint translate)
 
     if(renderPassDescriptor != nil)
     {
+        BOOL screenDrawn = NO;
         __weak dispatch_semaphore_t screenLock = nil;
         __weak dispatch_semaphore_t cursorLock = nil;
 
@@ -174,81 +176,87 @@ static matrix_float4x4 matrix_scale_translate(CGFloat scale, CGPoint translate)
         [commandBuffer renderCommandEncoderWithDescriptor:renderPassDescriptor];
         renderEncoder.label = @"MyRenderEncoder";
         
-        if (self.sourceScreen && self.sourceScreen.visible) {
+        if (self.sourceScreen) {
             // Lock screen updates
             bool hasAlpha = NO;
             screenLock = self.sourceScreen.drawLock;
             dispatch_semaphore_wait(screenLock, DISPATCH_TIME_FOREVER);
             
-            // Render the screen first
-            
-            matrix_float4x4 transform = matrix_scale_translate(self.sourceScreen.viewportScale,
-                                                               self.sourceScreen.viewportOrigin);
+            if (self.sourceScreen.visible) {
+                // Render the screen first
+                
+                matrix_float4x4 transform = matrix_scale_translate(self.sourceScreen.viewportScale,
+                                                                   self.sourceScreen.viewportOrigin);
 
-            [renderEncoder setRenderPipelineState:_pipelineState];
+                [renderEncoder setRenderPipelineState:_pipelineState];
 
-            [renderEncoder setVertexBuffer:self.sourceScreen.vertices
-                                    offset:0
-                                  atIndex:UTMVertexInputIndexVertices];
+                [renderEncoder setVertexBuffer:self.sourceScreen.vertices
+                                        offset:0
+                                      atIndex:UTMVertexInputIndexVertices];
 
-            [renderEncoder setVertexBytes:&_viewportSize
-                                   length:sizeof(_viewportSize)
-                                  atIndex:UTMVertexInputIndexViewportSize];
+                [renderEncoder setVertexBytes:&_viewportSize
+                                       length:sizeof(_viewportSize)
+                                      atIndex:UTMVertexInputIndexViewportSize];
 
-            [renderEncoder setVertexBytes:&transform
-                                   length:sizeof(transform)
-                                  atIndex:UTMVertexInputIndexTransform];
+                [renderEncoder setVertexBytes:&transform
+                                       length:sizeof(transform)
+                                      atIndex:UTMVertexInputIndexTransform];
 
-            [renderEncoder setVertexBytes:&hasAlpha
-                                   length:sizeof(hasAlpha)
-                                  atIndex:UTMVertexInputIndexHasAlpha];
+                [renderEncoder setVertexBytes:&hasAlpha
+                                       length:sizeof(hasAlpha)
+                                      atIndex:UTMVertexInputIndexHasAlpha];
 
-            // Set the texture object.  The UTMTextureIndexBaseColor enum value corresponds
-            ///  to the 'colorMap' argument in our 'samplingShader' function because its
-            //   texture attribute qualifier also uses UTMTextureIndexBaseColor for its index
-            [renderEncoder setFragmentTexture:self.sourceScreen.texture
-                                      atIndex:UTMTextureIndexBaseColor];
-            
-            [renderEncoder setFragmentSamplerState:_sampler
-                                           atIndex:UTMSamplerIndexTexture];
+                // Set the texture object.  The UTMTextureIndexBaseColor enum value corresponds
+                ///  to the 'colorMap' argument in our 'samplingShader' function because its
+                //   texture attribute qualifier also uses UTMTextureIndexBaseColor for its index
+                [renderEncoder setFragmentTexture:self.sourceScreen.texture
+                                          atIndex:UTMTextureIndexBaseColor];
+                
+                [renderEncoder setFragmentSamplerState:_sampler
+                                               atIndex:UTMSamplerIndexTexture];
 
-            // Draw the vertices of our triangles
-            [renderEncoder drawPrimitives:MTLPrimitiveTypeTriangle
-                              vertexStart:0
-                              vertexCount:self.sourceScreen.numVertices];
+                // Draw the vertices of our triangles
+                [renderEncoder drawPrimitives:MTLPrimitiveTypeTriangle
+                                  vertexStart:0
+                                  vertexCount:self.sourceScreen.numVertices];
+                
+                screenDrawn = YES;
+            }
         }
 
-        if (self.sourceCursor && self.sourceCursor.visible) {
+        if (screenDrawn && self.sourceCursor) {
             // Lock cursor updates
             bool hasAlpha = YES;
             cursorLock = self.sourceCursor.drawLock;
             dispatch_semaphore_wait(cursorLock, DISPATCH_TIME_FOREVER);
-
-            // Next render the cursor
-            matrix_float4x4 transform = matrix_scale_translate(self.sourceScreen.viewportScale,
-                                                               CGPointMake(self.sourceScreen.viewportOrigin.x +
-                                                                           self.sourceCursor.viewportOrigin.x,
-                                                                           self.sourceScreen.viewportOrigin.y +
-                                                                           self.sourceCursor.viewportOrigin.y));
-            [renderEncoder setVertexBuffer:self.sourceCursor.vertices
-                                    offset:0
-                                  atIndex:UTMVertexInputIndexVertices];
-            [renderEncoder setVertexBytes:&_viewportSize
-                                   length:sizeof(_viewportSize)
-                                  atIndex:UTMVertexInputIndexViewportSize];
-            [renderEncoder setVertexBytes:&transform
-                                 length:sizeof(transform)
-                                atIndex:UTMVertexInputIndexTransform];
-            [renderEncoder setVertexBytes:&hasAlpha
-                                 length:sizeof(hasAlpha)
-                                atIndex:UTMVertexInputIndexHasAlpha];
-            [renderEncoder setFragmentTexture:self.sourceCursor.texture
-                                      atIndex:UTMTextureIndexBaseColor];
-            [renderEncoder setFragmentSamplerState:_sampler
-                                           atIndex:UTMSamplerIndexTexture];
-            [renderEncoder drawPrimitives:MTLPrimitiveTypeTriangle
-                              vertexStart:0
-                              vertexCount:self.sourceCursor.numVertices];
+            
+            if (self.sourceCursor.visible) {
+                // Next render the cursor
+                matrix_float4x4 transform = matrix_scale_translate(self.sourceScreen.viewportScale,
+                                                                   CGPointMake(self.sourceScreen.viewportOrigin.x +
+                                                                               self.sourceCursor.viewportOrigin.x,
+                                                                               self.sourceScreen.viewportOrigin.y +
+                                                                               self.sourceCursor.viewportOrigin.y));
+                [renderEncoder setVertexBuffer:self.sourceCursor.vertices
+                                        offset:0
+                                      atIndex:UTMVertexInputIndexVertices];
+                [renderEncoder setVertexBytes:&_viewportSize
+                                       length:sizeof(_viewportSize)
+                                      atIndex:UTMVertexInputIndexViewportSize];
+                [renderEncoder setVertexBytes:&transform
+                                     length:sizeof(transform)
+                                    atIndex:UTMVertexInputIndexTransform];
+                [renderEncoder setVertexBytes:&hasAlpha
+                                     length:sizeof(hasAlpha)
+                                    atIndex:UTMVertexInputIndexHasAlpha];
+                [renderEncoder setFragmentTexture:self.sourceCursor.texture
+                                          atIndex:UTMTextureIndexBaseColor];
+                [renderEncoder setFragmentSamplerState:_sampler
+                                               atIndex:UTMSamplerIndexTexture];
+                [renderEncoder drawPrimitives:MTLPrimitiveTypeTriangle
+                                  vertexStart:0
+                                  vertexCount:self.sourceCursor.numVertices];
+            }
         }
 
         [renderEncoder endEncoding];

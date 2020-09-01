@@ -15,6 +15,7 @@
 //
 
 #import "UTMLocationManager.h"
+#import "UTMLogging.h"
 @import CoreLocation;
 
 @interface UTMLocationManager () <CLLocationManagerDelegate>
@@ -43,14 +44,14 @@
 
 - (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations {
     CLLocation *mostRecentLocation = locations.lastObject;
-    NSLog(@"Current location: %@ %@", @(mostRecentLocation.coordinate.latitude), @(mostRecentLocation.coordinate.longitude));
+    UTMLog(@"Current location: %@ %@", @(mostRecentLocation.coordinate.latitude), @(mostRecentLocation.coordinate.longitude));
 }
 
 - (void)startUpdatingLocation {
     CLAuthorizationStatus status = [CLLocationManager authorizationStatus];
 
     if (status == kCLAuthorizationStatusDenied) {
-        NSLog(@"Location services are disabled in settings.");
+        UTMLog(@"Location services are disabled in settings.");
     } else {
         [self.locationManager requestAlwaysAuthorization];
         self.locationManager.allowsBackgroundLocationUpdates = YES;

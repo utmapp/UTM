@@ -16,6 +16,7 @@
 
 #import "UTMQemuManager.h"
 #import "UTMJSONStream.h"
+#import "UTMLogging.h"
 #import "qapi-commands.h"
 #import "qapi-dispatch-events.h"
 #import "qapi-events.h"
@@ -135,7 +136,7 @@ void qmp_rpc_call(CFDictionaryRef args, CFDictionaryRef *ret, Error **err, void 
     dict = nil;
     if (nserr) {
         error_setg(err, "%s", [nserr.localizedDescription cStringUsingEncoding:NSUTF8StringEncoding]);
-        NSLog(@"RPC: %@", nserr);
+        UTMLog(@"RPC: %@", nserr);
     }
     dispatch_semaphore_signal(self->_cmd_lock);
 }
@@ -165,19 +166,19 @@ void qmp_rpc_call(CFDictionaryRef args, CFDictionaryRef *ret, Error **err, void 
 }
 
 - (void)jsonStream:(UTMJSONStream *)stream connected:(BOOL)readStream {
-    NSLog(@"QMP connection successful! (readStream:%d)", readStream);
+    UTMLog(@"QMP connection successful! (readStream:%d)", readStream);
     self.retries = 0; // connection was successful
 }
 
 - (void)jsonStream:(UTMJSONStream *)stream seenError:(NSError *)error {
-    NSLog(@"QMP stream error seen: %@", error);
+    UTMLog(@"QMP stream error seen: %@", error);
     if (_rpc_finish) {
         _rpc_finish(nil, error);
     }
     [self disconnect];
     if (self.retries > 0) {
         self.retries--;
-        NSLog(@"QMP connection failed, retries left: %d", self.retries);
+        UTMLog(@"QMP connection failed, retries left: %d", self.retries);
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, kRetryWait), dispatch_get_main_queue(), ^{
             [self->_jsonStream connect];
         });
@@ -190,14 +191,14 @@ void qmp_rpc_call(CFDictionaryRef args, CFDictionaryRef *ret, Error **err, void 
             if (self->_rpc_finish) {
                 self->_rpc_finish(dict, nil);
             } else {
-                NSLog(@"Got unexpected 'return' response: %@", dict);
+                UTMLog(@"Got unexpected 'return' response: %@", dict);
             }
             *stop = YES;
         } else if ([key isEqualToString:@"error"]) {
             if (self->_rpc_finish) {
                 self->_rpc_finish(nil, [NSError errorWithDomain:kUTMErrorDomain code:-1 userInfo:@{NSLocalizedDescriptionKey: dict[@"error"][@"desc"]}]);
             } else {
-                NSLog(@"Got unexpected 'error' response: %@", dict);
+                UTMLog(@"Got unexpected 'error' response: %@", dict);
             }
             *stop = YES;
         } else if ([key isEqualToString:@"event"]) {
@@ -205,7 +206,7 @@ void qmp_rpc_call(CFDictionaryRef args, CFDictionaryRef *ret, Error **err, void 
             qapi_event_dispatch(event, (__bridge CFTypeRef)dict, (__bridge void *)self);
             *stop = YES;
         } else if ([key isEqualToString:@"QMP"]) {
-            NSLog(@"Got QMP handshake: %@", dict);
+            UTMLog(@"Got QMP handshake: %@", dict);
             qmp_qmp_capabilities(false, NULL, NULL, (__bridge void *)self);
             *stop = YES;
         }

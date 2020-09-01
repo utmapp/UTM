@@ -136,14 +136,14 @@ static void cs_channel_new(SpiceSession *s, SpiceChannel *channel, gpointer data
         SPICE_DEBUG("new main channel");
         g_assert(!self->_main); // should only be 1 main channel
         self->_main = SPICE_MAIN_CHANNEL(channel);
-        NSLog(@"%s:%d", __FUNCTION__, __LINE__);
+        UTMLog(@"%s:%d", __FUNCTION__, __LINE__);
         g_signal_connect(channel, "channel-event",
                          G_CALLBACK(cs_main_channel_event), GLIB_OBJC_RETAIN(self));
     }
     
     if (SPICE_IS_DISPLAY_CHANNEL(channel)) {
         SPICE_DEBUG("new display channel (#%d)", chid);
-        NSLog(@"%s:%d", __FUNCTION__, __LINE__);
+        UTMLog(@"%s:%d", __FUNCTION__, __LINE__);
         g_signal_connect(channel, "notify::monitors",
                          G_CALLBACK(cs_display_monitors), GLIB_OBJC_RETAIN(self));
         spice_channel_connect(channel);
@@ -172,14 +172,14 @@ static void cs_channel_destroy(SpiceSession *s, SpiceChannel *channel, gpointer 
     
     g_object_get(channel, "channel-id", &chid, NULL);
     if (SPICE_IS_MAIN_CHANNEL(channel)) {
-        NSLog(@"%s:%d", __FUNCTION__, __LINE__);
+        UTMLog(@"%s:%d", __FUNCTION__, __LINE__);
         SPICE_DEBUG("zap main channel");
         self->_main = NULL;
         g_signal_handlers_disconnect_by_func(channel, G_CALLBACK(cs_main_channel_event), GLIB_OBJC_RELEASE(self));
     }
     
     if (SPICE_IS_DISPLAY_CHANNEL(channel)) {
-        NSLog(@"%s:%d", __FUNCTION__, __LINE__);
+        UTMLog(@"%s:%d", __FUNCTION__, __LINE__);
         SPICE_DEBUG("zap display channel (#%d)", chid);
         g_signal_handlers_disconnect_by_func(channel, G_CALLBACK(cs_display_monitors), GLIB_OBJC_RELEASE(self));
         [self->_monitors[chid] removeAllObjects];
@@ -247,7 +247,7 @@ static void cs_connection_destroy(SpiceSession *session,
     self = [super init];
     if (self) {
         _session = spice_session_new();
-        NSLog(@"%s:%d", __FUNCTION__, __LINE__);
+        UTMLog(@"%s:%d", __FUNCTION__, __LINE__);
         g_signal_connect(_session, "channel-new",
                          G_CALLBACK(cs_channel_new), GLIB_OBJC_RETAIN(self));
         g_signal_connect(_session, "channel-destroy",
@@ -259,7 +259,7 @@ static void cs_connection_destroy(SpiceSession *session,
 }
 
 - (void)dealloc {
-    NSLog(@"%s:%d", __FUNCTION__, __LINE__);
+    UTMLog(@"%s:%d", __FUNCTION__, __LINE__);
     g_signal_handlers_disconnect_by_func(_session, G_CALLBACK(cs_channel_new), GLIB_OBJC_RELEASE(self));
     g_signal_handlers_disconnect_by_func(_session, G_CALLBACK(cs_channel_destroy), GLIB_OBJC_RELEASE(self));
     g_signal_handlers_disconnect_by_func(_session, G_CALLBACK(cs_connection_destroy), GLIB_OBJC_RELEASE(self));

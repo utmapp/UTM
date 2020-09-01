@@ -28,10 +28,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (IBAction)customKeyTouchDown:(VMKeyboardButton *)sender;
 - (IBAction)customKeyTouchUp:(VMKeyboardButton *)sender;
 
-- (void)keyboardWillShow:(NSNotification *)notification;
-- (void)keyboardWillHide:(NSNotification *)notification;
-- (void)keyboardWillChangeFrame:(NSNotification *)notification;
-
 @end
 
 NS_ASSUME_NONNULL_END

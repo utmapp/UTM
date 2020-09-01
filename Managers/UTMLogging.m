@@ -22,6 +22,15 @@
 static const int kLogBufferSize = 4096;
 static UTMLogging *gLoggingInstance;
 
+void UTMLog(NSString *format, ...) {
+    va_list args;
+    va_start(args, format);
+    NSString *line = [[NSString alloc] initWithFormat:[format stringByAppendingString:@"\n"] arguments:args];
+    [[UTMLogging sharedInstance] writeLine:line];
+    va_end(args);
+    NSLog(@"%@", line);
+}
+
 @interface UTMLogging ()
 
 - (void)didRecieveNewLine:(NSString *)line onDescriptor:(int)fd;
@@ -84,7 +93,7 @@ void *utm_logging_thread_stderr(void *arg) {
     self = [super init];
     if (self) {
         if (gLoggingInstance != nil) {
-            NSLog(@"Trying to init more than one instance of UTMLogging!");
+            UTMLog(@"Trying to init more than one instance of UTMLogging!");
             return nil;
         }
         int success = 0;
@@ -160,7 +169,7 @@ void *utm_logging_thread_stderr(void *arg) {
         _real_stdout = -1;
     }
     if (_real_stderr != -1) {
-        dup2(_real_stderr, STDOUT_FILENO);
+        dup2(_real_stderr, STDERR_FILENO);
         close(_real_stderr);
         _real_stderr = -1;
     }
@@ -198,7 +207,7 @@ void *utm_logging_thread_stderr(void *arg) {
     } else {
         NSAssert(0, @"Invalid descriptor %d", fd);
     }
-    [_stream write:(void *)[line cStringUsingEncoding:NSASCIIStringEncoding] maxLength:line.length];
+    [self writeLine:line];
 }
 
 - (void)logToFile:(NSURL *)path {
@@ -220,6 +229,10 @@ void *utm_logging_thread_stderr(void *arg) {
 - (void)endLog {
     [_stream close];
     _stream = nil;
+}
+
+- (void)writeLine:(NSString *)line {
+    [_stream write:(void *)[line cStringUsingEncoding:NSASCIIStringEncoding] maxLength:line.length];
 }
 
 @end

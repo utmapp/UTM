@@ -16,6 +16,7 @@
 
 #import "UIViewController+Extensions.h"
 #import "VMDisplayMetalViewController+Keyboard.h"
+#import "UTMLogging.h"
 #import "UTMVirtualMachine.h"
 #import "VMKeyboardView.h"
 #import "VMKeyboardButton.h"
@@ -24,16 +25,8 @@
 
 #pragma mark - Software Keyboard
 
-- (void)keyboardWillShow:(NSNotification *)notification {
-    [self updateKeyboardAccessoryFrame];
-}
-
-- (void)keyboardWillHide:(NSNotification *)notification {
-    self.keyboardVisible = NO;
-}
-
-- (void)keyboardWillChangeFrame:(NSNotification *)notification {
-    [self updateKeyboardAccessoryFrame];
+- (BOOL)inputViewIsFirstResponder {
+    return self.keyboardView.isFirstResponder;
 }
 
 - (void)updateKeyboardAccessoryFrame {
@@ -61,10 +54,10 @@
     UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
     NSString *string = pasteboard.string;
     if (string) {
-        NSLog(@"Pasting: %@", string);
+        UTMLog(@"Pasting: %@", string);
         [self.keyboardView insertText:string];
     } else {
-        NSLog(@"No string to paste.");
+        UTMLog(@"No string to paste.");
     }
 }
 
@@ -156,6 +149,7 @@ static NSString *kAllKeys = @"`1234567890-=qwertyuiop[]\\asdfghjkl;'zxcvbnm,./ \
         if (command.modifierFlags & UIKeyModifierCommand) {
             [self sendExtendedKey:SEND_KEY_RELEASE code:0xE05B];
         }
+        [self resetModifierToggles];
     }];
 }
 
@@ -323,6 +317,7 @@ static int API_AVAILABLE(ios(13.4)) hidToPs2(UIKeyboardHIDUsage hidCode) {
                 [self sendExtendedKey:SEND_KEY_RELEASE code:code];
                 didHandleEvent = YES;
             }
+            [self resetModifierToggles];
         }
     }
     if (!didHandleEvent) {

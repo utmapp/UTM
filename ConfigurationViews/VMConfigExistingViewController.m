@@ -22,6 +22,8 @@
 
 @interface VMConfigExistingViewController ()
 
+@property (nonatomic, weak, readonly) NSString *version;
+
 @end
 
 @implementation VMConfigExistingViewController
@@ -37,11 +39,19 @@
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     self.saveButton.enabled = self.configuration.name.length > 0;
+    self.versionCell.detailTextLabel.text = self.version;
 }
 
 - (void)setNameReadOnly:(BOOL)nameReadOnly {
     self.nameField.enabled = !nameReadOnly;
     _nameReadOnly = nameReadOnly;
+}
+
+#pragma mark - Properties
+
+- (NSString *)version {
+    NSDictionary* infoDict = [[NSBundle mainBundle] infoDictionary];
+    return [infoDict objectForKey:@"CFBundleShortVersionString"];
 }
 
 #pragma mark - Cell Selection

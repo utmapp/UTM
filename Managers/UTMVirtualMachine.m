@@ -96,7 +96,7 @@ NSString *const kSuspendSnapshotName = @"suspend";
         NSString *name = [UTMVirtualMachine virtualMachineName:url];
         NSMutableDictionary *plist = [self loadPlist:[url URLByAppendingPathComponent:kUTMBundleConfigFilename] withError:nil];
         if (!plist) {
-            NSLog(@"Failed to parse config for %@", url);
+            UTMLog(@"Failed to parse config for %@", url);
             self = nil;
             return self;
         }
@@ -270,7 +270,7 @@ NSString *const kSuspendSnapshotName = @"suspend";
     [_qemu vmQuitWithCompletion:nil];
     if (dispatch_semaphore_wait(_will_quit_sema, dispatch_time(DISPATCH_TIME_NOW, kStopTimeout)) != 0) {
         // TODO: force shutdown
-        NSLog(@"Stop operation timeout");
+        UTMLog(@"Stop operation timeout");
     }
     [_qemu disconnect];
     _qemu.delegate = nil;
@@ -280,7 +280,7 @@ NSString *const kSuspendSnapshotName = @"suspend";
     
     if (dispatch_semaphore_wait(_qemu_exit_sema, dispatch_time(DISPATCH_TIME_NOW, kStopTimeout)) != 0) {
         // TODO: force shutdown
-        NSLog(@"Exit operation timeout");
+        UTMLog(@"Exit operation timeout");
     }
     _qemu_system = nil;
     [self changeState:kVMStopped];
@@ -307,15 +307,15 @@ NSString *const kSuspendSnapshotName = @"suspend";
     __block BOOL success = YES;
     dispatch_semaphore_t reset_sema = dispatch_semaphore_create(0);
     [_qemu vmResetWithCompletion:^(NSError *err) {
-        NSLog(@"reset callback: err? %@", err);
+        UTMLog(@"reset callback: err? %@", err);
         if (err) {
-            NSLog(@"error: %@", err);
+            UTMLog(@"error: %@", err);
             success = NO;
         }
         dispatch_semaphore_signal(reset_sema);
     }];
     if (dispatch_semaphore_wait(reset_sema, dispatch_time(DISPATCH_TIME_NOW, kStopTimeout)) != 0) {
-        NSLog(@"Reset operation timeout");
+        UTMLog(@"Reset operation timeout");
         success = NO;
     }
     if (success) {
@@ -341,15 +341,15 @@ NSString *const kSuspendSnapshotName = @"suspend";
     __block BOOL success = YES;
     dispatch_semaphore_t suspend_sema = dispatch_semaphore_create(0);
     [_qemu vmStopWithCompletion:^(NSError * err) {
-        NSLog(@"stop callback: err? %@", err);
+        UTMLog(@"stop callback: err? %@", err);
         if (err) {
-            NSLog(@"error: %@", err);
+            UTMLog(@"error: %@", err);
             success = NO;
         }
         dispatch_semaphore_signal(suspend_sema);
     }];
     if (dispatch_semaphore_wait(suspend_sema, dispatch_time(DISPATCH_TIME_NOW, kStopTimeout)) != 0) {
-        NSLog(@"Stop operation timeout");
+        UTMLog(@"Stop operation timeout");
         success = NO;
     }
     if (success) {
@@ -374,18 +374,21 @@ NSString *const kSuspendSnapshotName = @"suspend";
     __block BOOL success = YES;
     dispatch_semaphore_t save_sema = dispatch_semaphore_create(0);
     [_qemu vmSaveWithCompletion:^(NSString *result, NSError *err) {
-        NSLog(@"save callback: %@", result);
+        UTMLog(@"save callback: %@", result);
         if (err) {
-            NSLog(@"error: %@", err);
+            UTMLog(@"error: %@", err);
             success = NO;
+        } else if ([result localizedCaseInsensitiveContainsString:@"Error"]) {
+            UTMLog(@"save result: %@", result);
+            success = NO; // error message
         }
         dispatch_semaphore_signal(save_sema);
     } snapshotName:kSuspendSnapshotName];
     if (dispatch_semaphore_wait(save_sema, dispatch_time(DISPATCH_TIME_NOW, kStopTimeout)) != 0) {
-        NSLog(@"Save operation timeout");
+        UTMLog(@"Save operation timeout");
         success = NO;
-    } else {
-        NSLog(@"Save completed");
+    } else if (success) {
+        UTMLog(@"Save completed");
         self.viewState.suspended = YES;
         [self saveViewState];
         [self saveScreenshot];
@@ -399,18 +402,21 @@ NSString *const kSuspendSnapshotName = @"suspend";
     __block BOOL success = YES;
     dispatch_semaphore_t save_sema = dispatch_semaphore_create(0);
     [_qemu vmDeleteSaveWithCompletion:^(NSString *result, NSError *err) {
-        NSLog(@"delete save callback: %@", result);
+        UTMLog(@"delete save callback: %@", result);
         if (err) {
-            NSLog(@"error: %@", err);
+            UTMLog(@"error: %@", err);
             success = NO;
+        } else if ([result localizedCaseInsensitiveContainsString:@"Error"]) {
+            UTMLog(@"save result: %@", result);
+            success = NO; // error message
         }
         dispatch_semaphore_signal(save_sema);
     } snapshotName:kSuspendSnapshotName];
     if (dispatch_semaphore_wait(save_sema, dispatch_time(DISPATCH_TIME_NOW, kStopTimeout)) != 0) {
-        NSLog(@"Delete save operation timeout");
+        UTMLog(@"Delete save operation timeout");
         success = NO;
     } else {
-        NSLog(@"Delete save completed");
+        UTMLog(@"Delete save completed");
     }
     self.viewState.suspended = NO;
     [self saveViewState];
@@ -429,15 +435,15 @@ NSString *const kSuspendSnapshotName = @"suspend";
     __block BOOL success = YES;
     dispatch_semaphore_t resume_sema = dispatch_semaphore_create(0);
     [_qemu vmResumeWithCompletion:^(NSError *err) {
-        NSLog(@"resume callback: err? %@", err);
+        UTMLog(@"resume callback: err? %@", err);
         if (err) {
-            NSLog(@"error: %@", err);
+            UTMLog(@"error: %@", err);
             success = NO;
         }
         dispatch_semaphore_signal(resume_sema);
     }];
     if (dispatch_semaphore_wait(resume_sema, dispatch_time(DISPATCH_TIME_NOW, kStopTimeout)) != 0) {
-        NSLog(@"Resume operation timeout");
+        UTMLog(@"Resume operation timeout");
         success = NO;
     }
     if (success) {
@@ -472,27 +478,27 @@ NSString *const kSuspendSnapshotName = @"suspend";
 #pragma mark - Qemu manager delegate
 
 - (void)qemuHasWakeup:(UTMQemuManager *)manager {
-    NSLog(@"qemuHasWakeup");
+    UTMLog(@"qemuHasWakeup");
 }
 
 - (void)qemuHasResumed:(UTMQemuManager *)manager {
-    NSLog(@"qemuHasResumed");
+    UTMLog(@"qemuHasResumed");
 }
 
 - (void)qemuHasStopped:(UTMQemuManager *)manager {
-    NSLog(@"qemuHasStopped");
+    UTMLog(@"qemuHasStopped");
 }
 
 - (void)qemuHasReset:(UTMQemuManager *)manager guest:(BOOL)guest reason:(ShutdownCause)reason {
-    NSLog(@"qemuHasReset, reason = %s", ShutdownCause_str(reason));
+    UTMLog(@"qemuHasReset, reason = %s", ShutdownCause_str(reason));
 }
 
 - (void)qemuHasSuspended:(UTMQemuManager *)manager {
-    NSLog(@"qemuHasSuspended");
+    UTMLog(@"qemuHasSuspended");
 }
 
 - (void)qemuWillQuit:(UTMQemuManager *)manager guest:(BOOL)guest reason:(ShutdownCause)reason {
-    NSLog(@"qemuWillQuit, reason = %s", ShutdownCause_str(reason));
+    UTMLog(@"qemuWillQuit, reason = %s", ShutdownCause_str(reason));
     dispatch_semaphore_signal(_will_quit_sema);
     if (!_is_busy) {
         [self quitVM];
@@ -596,15 +602,15 @@ NSString *const kSuspendSnapshotName = @"suspend";
     if (*p_index < 0) {
         [_qemu mouseIndexForAbsolute:tablet withCompletion:^(int64_t index, NSError *err) {
             if (err) {
-                NSLog(@"error finding index: %@", err);
+                UTMLog(@"error finding index: %@", err);
             } else {
-                NSLog(@"found index:%lld absolute:%d", index, tablet);
+                UTMLog(@"found index:%lld absolute:%d", index, tablet);
                 *p_index = index;
                 [self->_qemu mouseSelect:*p_index withCompletion:completion];
             }
         }];
     } else {
-        NSLog(@"selecting input device %lld", *p_index);
+        UTMLog(@"selecting input device %lld", *p_index);
         [_qemu mouseSelect:*p_index withCompletion:completion];
     }
 }

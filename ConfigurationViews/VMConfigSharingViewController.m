@@ -19,6 +19,7 @@
 #import "VMConfigSharingViewController.h"
 #import "UTMConfiguration.h"
 #import "UTMConfiguration+Sharing.h"
+#import "UTMLogging.h"
 #import "VMConfigSwitch.h"
 #import "VMConfigDirectoryPickerViewController.h"
 
@@ -88,12 +89,12 @@
                                     bookmarkDataIsStale:&stale
                                                   error:&err];
     if (!bookmark) {
-        NSLog(@"bookmark invalid: %@", err);
+        UTMLog(@"bookmark invalid: %@", err);
         [self showAlert:NSLocalizedString(@"Shared path is no longer valid. Please re-choose.", @"VMConfigSharingViewController") actions:nil completion:nil];
         self.configuration.shareDirectoryBookmark = [NSData data];
         self.configuration.shareDirectoryName = @"";
     } else if (stale) {
-        NSLog(@"bookmark stale");
+        UTMLog(@"bookmark stale");
         if ([bookmark startAccessingSecurityScopedResource]) {
             data = [bookmark bookmarkDataWithOptions:NSURLBookmarkCreationMinimalBookmark
                       includingResourceValuesForKeys:nil
@@ -101,7 +102,7 @@
                                                error:&err];
             [bookmark stopAccessingSecurityScopedResource];
             if (!data) {
-                NSLog(@"cannot recreate bookmark: %@", err);
+                UTMLog(@"cannot recreate bookmark: %@", err);
                 [self showAlert:NSLocalizedString(@"Shared path has moved. Please re-choose.", @"VMConfigSharingViewController") actions:nil completion:nil];
                 self.configuration.shareDirectoryBookmark = [NSData data];
                 self.configuration.shareDirectoryName = @"";
@@ -122,7 +123,7 @@
     if (!bookmark) {
         [self showAlert:err.localizedDescription actions:nil completion:nil];
     } else {
-        NSLog(@"Saving bookmark for %@", url);
+        UTMLog(@"Saving bookmark for %@", url);
         self.configuration.shareDirectoryBookmark = bookmark;
         self.configuration.shareDirectoryName = url.lastPathComponent;
     }

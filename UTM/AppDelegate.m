@@ -16,6 +16,8 @@
 
 #import "AppDelegate.h"
 
+const NSNotificationName UTMImportNotification = @"UTMImportNotification";
+
 @interface AppDelegate ()
 
 @end
@@ -28,6 +30,9 @@
     // trigger "allow network usage" popup in some regions
     [[NSURLSession.sharedSession dataTaskWithURL:[NSURL URLWithString:@"http://captive.apple.com"]] resume];
     [self registerDefaultsFromSettingsBundle];
+    if (launchOptions[UIApplicationLaunchOptionsURLKey]) {
+        self.openURL = launchOptions[UIApplicationLaunchOptionsURLKey];
+    }
     return YES;
 }
 
@@ -35,6 +40,12 @@
 - (void)applicationWillTerminate:(UIApplication *)application {
     // You can't fire me, I quit!
     exit(0);
+}
+
+- (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options {
+    self.openURL = url;
+    [[NSNotificationCenter defaultCenter] postNotificationName:UTMImportNotification object:self];
+    return YES;
 }
 
 #pragma - mark NSUserDefaults

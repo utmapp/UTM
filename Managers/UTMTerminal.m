@@ -6,6 +6,7 @@
 //  Copyright © 2020 Kacper Raczy. All rights reserved.
 //
 
+#import "UTMLogging.h"
 #import "UTMTerminal.h"
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -22,7 +23,7 @@ dispatch_io_t createInputIO(NSURL* url, dispatch_queue_t queue) {
             0,
             queue,
             ^(int error) {
-            NSLog(@"Input dispatch_io is being closed");
+            UTMLog(@"Input dispatch_io is being closed");
         });
     
     return io;
@@ -51,14 +52,14 @@ dispatch_io_t createInputIO(NSURL* url, dispatch_queue_t queue) {
         
         self->_outPipeFd = -1;
         if (![self configurePipesUsingURL: url]) {
-            NSLog(@"Terminal configutation failed!");
+            UTMLog(@"Terminal configutation failed!");
             [self cleanup];
             return nil;
         }
         // setup non-blocking io for writing
         self->_inputPipeIO = createInputIO(_inPipeURL, _inputQueue);
         if (self->_inputPipeIO == nil) {
-            NSLog(@"Terminal configutation failed!");
+            UTMLog(@"Terminal configutation failed!");
             [self cleanup];
             return nil;
         }
@@ -79,21 +80,21 @@ dispatch_io_t createInputIO(NSURL* url, dispatch_queue_t queue) {
     // create named pipes usign mkfifos
     const char* outPipeCPath = [[outPipeURL path] cStringUsingEncoding: NSUTF8StringEncoding];
     if (access(outPipeCPath, F_OK) != -1 && remove(outPipeCPath) != 0) {
-        NSLog(@"Failed to remove existing out pipe");
+        UTMLog(@"Failed to remove existing out pipe");
         return NO;
     }
     if (mkfifo(outPipeCPath, 0666) != 0) {
-        NSLog(@"Failed to create output pipe using mkfifo!");
+        UTMLog(@"Failed to create output pipe using mkfifo!");
         return NO;
     }
     
     const char* inPipeCPath = [[inPipeURL path] cStringUsingEncoding: NSUTF8StringEncoding];
     if (access(inPipeCPath, F_OK) != -1 && remove(inPipeCPath) != 0) {
-        NSLog(@"Failed to remove existing in pipe");
+        UTMLog(@"Failed to remove existing in pipe");
         return NO;
     }
     if (mkfifo(inPipeCPath, 0666) != 0) {
-        NSLog(@"Failed to create input pipe using mkfifo!");
+        UTMLog(@"Failed to create input pipe using mkfifo!");
         return NO;
     }
     
@@ -144,7 +145,7 @@ dispatch_io_t createInputIO(NSURL* url, dispatch_queue_t queue) {
     if (_inputPipeIO != nil) {
         dispatch_io_close(_inputPipeIO, DISPATCH_IO_STOP);
     }
-    NSLog(@"Successfuly disconnected!");
+    UTMLog(@"Successfuly disconnected!");
 }
 
 - (BOOL)isConnected {
@@ -166,7 +167,7 @@ dispatch_io_t createInputIO(NSURL* url, dispatch_queue_t queue) {
         }
     });
     dispatch_source_set_cancel_handler(source, ^{
-        NSLog(@"Source got cancelled");
+        UTMLog(@"Source got cancelled");
     });
     dispatch_resume(source);
     
@@ -190,7 +191,7 @@ dispatch_io_t createInputIO(NSURL* url, dispatch_queue_t queue) {
     NSUInteger length = [inputStr lengthOfBytesUsingEncoding: NSUTF8StringEncoding];
     dispatch_data_t messageData = dispatch_data_create(bytes, length, _inputQueue, DISPATCH_DATA_DESTRUCTOR_DEFAULT);
     dispatch_io_write(_inputPipeIO, 0, messageData, _inputQueue, ^(bool done, dispatch_data_t  _Nullable data, int error) {
-        NSLog(@"Input write done: %d with error: %d", done, error);
+        UTMLog(@"Input write done: %d with error: %d", done, error);
     });
 }
 
@@ -215,7 +216,7 @@ dispatch_io_t createInputIO(NSURL* url, dispatch_queue_t queue) {
     if (_outPipeURL != nil) {
         [fm removeItemAtURL: _outPipeURL error: nil];
     }
-    NSLog(@"Cleanup completed!");
+    UTMLog(@"Cleanup completed!");
 }
 
 #pragma mark - Custom errors

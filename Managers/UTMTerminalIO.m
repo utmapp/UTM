@@ -14,6 +14,7 @@
 // limitations under the License.
 //
 
+#import "UTMLogging.h"
 #import "UTMTerminalIO.h"
 #import "UTMConfiguration.h"
 #import <UIKit/UIKit.h>
@@ -73,7 +74,7 @@
 }
 
 - (void)setDebugMode:(BOOL)debugMode {
-    NSLog(@"%@ does not support debug mode.", NSStringFromClass([self class]));
+    UTMLog(@"%@ does not support debug mode.", NSStringFromClass([self class]));
 }
 
 - (void)syncViewState:(UTMViewState *)viewState {
