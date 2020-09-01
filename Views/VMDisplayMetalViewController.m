@@ -89,14 +89,6 @@
     if (@available(iOS 12.1, *)) {
         [self initPencilInteraction];
     }
-
-    // view state and observers
-    _toolbarVisible = YES;
-    _keyboardVisible = NO;
-    
-    if (self.largeScreen) {
-        self.prefersStatusBarHidden = YES;
-    }
 }
 
 - (void)viewDidAppear:(BOOL)animated {
