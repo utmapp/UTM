@@ -35,6 +35,8 @@
     if (self) {
         self.configuration = configuration;
         self.imgPath = imgPath;
+        self.qmpPort = 4444;
+        self.spicePort = 5930;
     }
     return self;
 }
@@ -260,7 +262,7 @@
     [self pushArgv:resourceURL.path];
     [self pushArgv:@"-S"]; // startup stopped
     [self pushArgv:@"-qmp"];
-    [self pushArgv:@"tcp:localhost:4444,server,nowait"];
+    [self pushArgv:[NSString stringWithFormat:@"tcp:localhost:%lu,server,nowait", self.qmpPort]];
     [self pushArgv:@"-smp"];
     [self pushArgv:[NSString stringWithFormat:@"cpus=%@,sockets=1", self.configuration.systemCPUCount]];
     [self pushArgv:@"-machine"];
@@ -302,7 +304,7 @@
         [self pushArgv: @"chardev:term0"];
     } else {
         [self pushArgv:@"-spice"];
-        [self pushArgv:@"port=5930,addr=127.0.0.1,disable-ticketing,image-compression=off,playback-compression=off,streaming-video=off"];
+        [self pushArgv:[NSString stringWithFormat:@"port=%lu,addr=127.0.0.1,disable-ticketing,image-compression=off,playback-compression=off,streaming-video=off", self.spicePort]];
 
     }
     [self argsForNetwork];

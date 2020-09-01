@@ -32,7 +32,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly, nullable) CSInput *primaryInput;
 @property (nonatomic, weak, nullable) id<UTMSpiceIODelegate> delegate;
 
-- (id)initWithConfiguration: (UTMConfiguration*) configuration;
+- (instancetype)init NS_UNAVAILABLE;
+- (instancetype)initWithConfiguration: (UTMConfiguration*) configuration port:(NSInteger)port NS_DESIGNATED_INITIALIZER;
 - (void)changeSharedDirectory:(NSURL *)url;
 
 @end

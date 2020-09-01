@@ -22,11 +22,11 @@ NS_ASSUME_NONNULL_BEGIN
 @interface UTMJSONStream : NSObject<NSStreamDelegate>
 
 @property (nonatomic, strong) NSString *host;
-@property (nonatomic, assign) UInt32 port;
+@property (nonatomic, assign) NSInteger port;
 @property (nonatomic, weak) id<UTMJSONStreamDelegate> delegate;
 
 - (instancetype)init NS_UNAVAILABLE;
-- (instancetype)initHost:(NSString *)host port:(UInt32)port NS_DESIGNATED_INITIALIZER;
+- (instancetype)initHost:(NSString *)host port:(NSInteger)port NS_DESIGNATED_INITIALIZER;
 - (void)connect;
 - (void)disconnect;
 - (BOOL)sendDictionary:(NSDictionary *)dict;

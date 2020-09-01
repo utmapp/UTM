@@ -37,7 +37,7 @@ enum ParserState {
     int _open_curly_count;
 }
 
-- (instancetype)initHost:(NSString *)host port:(UInt32)port {
+- (instancetype)initHost:(NSString *)host port:(NSInteger)port {
     self = [super init];
     if (self) {
         self.host = host;
@@ -56,7 +56,7 @@ enum ParserState {
 - (void)connect {
     CFReadStreamRef readStream;
     CFWriteStreamRef writeStream;
-    CFStreamCreatePairWithSocketToHost(kCFAllocatorDefault, (__bridge CFStringRef)self.host, self.port, &readStream, &writeStream);
+    CFStreamCreatePairWithSocketToHost(kCFAllocatorDefault, (__bridge CFStringRef)self.host, (UInt32)self.port, &readStream, &writeStream);
     @synchronized (self) {
         _inputStream = CFBridgingRelease(readStream);
         _outputStream = CFBridgingRelease(writeStream);

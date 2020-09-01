@@ -14,21 +14,17 @@
 // limitations under the License.
 //
 
-#import "UTMQemuSystem.h"
+#import <Foundation/Foundation.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface UTMQemuSystemConfiguration : UTMQemuSystem
+@interface UTMPortAllocator : NSObject
 
-@property (nonatomic) UTMConfiguration *configuration;
-@property (nonatomic) NSURL *imgPath;
-@property (nonatomic, nullable) NSString *snapshot;
-@property (nonatomic) NSInteger qmpPort;
-@property (nonatomic) NSInteger spicePort;
++ (UTMPortAllocator *)sharedInstance;
 
 - (instancetype)init NS_UNAVAILABLE;
-- (instancetype)initWithConfiguration:(UTMConfiguration *)configuration imgPath:(NSURL *)imgPath;
-- (void)startWithCompletion:(void(^)(BOOL, NSString *))completion;
+- (NSInteger)allocatePort;
+- (void)freePort:(NSInteger)port;
 
 @end
 

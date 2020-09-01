@@ -30,6 +30,7 @@
 #import "UTMSpiceIO.h"
 #import "UTMLogging.h"
 #import "UTMScreenshot.h"
+#import "UTMPortAllocator.h"
 #import "qapi-events.h"
 
 const int kQMPMaxConnectionTries = 10; // qemu needs to start spice server first
@@ -253,7 +254,9 @@ error:
 #if !TARGET_OS_IPHONE
         [_qemu_system setupXpc];
 #endif
-        _qemu = [[UTMQemuManager alloc] init];
+        _qemu_system.qmpPort = [[UTMPortAllocator sharedInstance] allocatePort];
+        _qemu_system.spicePort = [[UTMPortAllocator sharedInstance] allocatePort];
+        _qemu = [[UTMQemuManager alloc] initWithPort:_qemu_system.qmpPort];
         _qemu.delegate = self;
     }
 
@@ -264,7 +267,7 @@ error:
     }
     
     if (!_ioService) {
-        _ioService = [self inputOutputService];
+        _ioService = [self inputOutputServiceWithPort:_qemu_system.spicePort];
     }
     
     self.delegate.vmMessage = nil;
@@ -341,6 +344,8 @@ error:
         // TODO: force shutdown
         UTMLog(@"Exit operation timeout");
     }
+    [[UTMPortAllocator sharedInstance] freePort:_qemu_system.qmpPort];
+    [[UTMPortAllocator sharedInstance] freePort:_qemu_system.spicePort];
     _qemu_system = nil;
     [self changeState:kVMStopped];
     // stop logging
@@ -526,11 +531,11 @@ error:
     }
 }
 
-- (id<UTMInputOutput>)inputOutputService {
+- (id<UTMInputOutput>)inputOutputServiceWithPort:(NSInteger)port {
     if ([self supportedDisplayType] == UTMDisplayTypeConsole) {
-        return [[UTMTerminalIO alloc] initWithConfiguration: [_configuration copy]];
+        return [[UTMTerminalIO alloc] initWithConfiguration:[_configuration copy]];
     } else {
-        return [[UTMSpiceIO alloc] initWithConfiguration: [_configuration copy]];
+        return [[UTMSpiceIO alloc] initWithConfiguration:[_configuration copy] port:port];
     }
 }
 
