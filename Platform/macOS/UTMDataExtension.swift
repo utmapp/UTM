@@ -19,14 +19,22 @@ import Foundation
 @available(macOS 11, *)
 extension UTMData {
     func run(vm: UTMVirtualMachine) {
-        if vm.configuration.displayConsoleOnly {
-            // TODO: console mode
-        } else {
-            self.windowController = VMDisplayMetalWindowController(vm: vm)
+        var window: VMDisplayWindowController? = vmWindows[vm]
+        if window == nil {
+            let close = { (notification: Notification) -> Void in
+                self.vmWindows.removeValue(forKey: vm)
+                window = nil
+            }
+            if vm.configuration.displayConsoleOnly {
+                // TODO: console mode
+            } else {
+                window = VMDisplayMetalWindowController(vm: vm, onClose: close)
+            }
         }
-        if let windowController = self.windowController {
-            windowController.showWindow(nil)
-            windowController.window!.makeMain()
+        if let unwrappedWindow = window {
+            vmWindows[vm] = unwrappedWindow
+            unwrappedWindow.showWindow(nil)
+            unwrappedWindow.window!.makeMain()
         } else {
             logger.critical("Failed to create window controller.")
         }
