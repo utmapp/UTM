@@ -79,17 +79,19 @@ static BOOL isPortAvailable(NSInteger port) {
 }
 
 - (NSInteger)allocatePortInternal {
-    for (NSInteger x = 0; x < self.usedBitmap.count; x++) {
-        UInt64 bitmap = [self.usedBitmap[x] unsignedLongLongValue];
-        NSInteger y = firstZeroBit(bitmap);
-        if (y >= 0) {
-            self.usedBitmap[x] = @(bitmap | (1 << y));
-            return kStartingPort + 64*x + y;
+    @synchronized (self.usedBitmap) {
+        for (NSInteger x = 0; x < self.usedBitmap.count; x++) {
+            UInt64 bitmap = [self.usedBitmap[x] unsignedLongLongValue];
+            NSInteger y = firstZeroBit(bitmap);
+            if (y >= 0) {
+                self.usedBitmap[x] = @(bitmap | (1 << y));
+                return kStartingPort + 64*x + y;
+            }
         }
+        NSInteger x = self.usedBitmap.count;
+        [self.usedBitmap addObject:@(1)];
+        return kStartingPort + 64*x;
     }
-    NSInteger x = self.usedBitmap.count;
-    [self.usedBitmap addObject:@(1)];
-    return kStartingPort + 64*x;
 }
 
 - (NSInteger)allocatePort {
@@ -113,16 +115,18 @@ static BOOL isPortAvailable(NSInteger port) {
     }
     NSInteger x = bit / 64;
     NSInteger y = bit % 64;
-    if (x >= self.usedBitmap.count) {
-        UTMLog(@"Port %lu exceeds bitmap length", port);
-        return;
+    @synchronized (self.usedBitmap) {
+        if (x >= self.usedBitmap.count) {
+            UTMLog(@"Port %lu exceeds bitmap length", port);
+            return;
+        }
+        UInt64 bitmap = [self.usedBitmap[x] unsignedLongLongValue];
+        if ((bitmap & (1 << y)) == 0) {
+            UTMLog(@"Trying to free port %lu twice!", port);
+            return;
+        }
+        self.usedBitmap[x] = @(bitmap & ~(1 << y));
     }
-    UInt64 bitmap = [self.usedBitmap[x] unsignedLongLongValue];
-    if ((bitmap & (1 << y)) == 0) {
-        UTMLog(@"Trying to free port %lu twice!", port);
-        return;
-    }
-    self.usedBitmap[x] = @(bitmap & ~(1 << y));
 }
 
 @end
