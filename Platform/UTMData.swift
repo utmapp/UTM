@@ -49,7 +49,7 @@ class UTMData: ObservableObject {
     }
     
     #if os(macOS)
-    var windowController: NSWindowController? = nil
+    var vmWindows: [UTMVirtualMachine: VMDisplayWindowController] = [:]
     #endif
     
     var fileManager: FileManager {

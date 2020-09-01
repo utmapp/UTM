@@ -30,6 +30,7 @@ class VMDisplayWindowController: NSWindowController {
     @IBOutlet weak var sharedFolderToolbarItem: NSToolbarItem!
     
     var vm: UTMVirtualMachine!
+    var onClose: ((Notification) -> Void)?
     var vmMessage: String?
     var vmConfiguration: UTMConfiguration?
     var toolbarVisible: Bool = false // ignored
@@ -45,9 +46,10 @@ class VMDisplayWindowController: NSWindowController {
         self
     }
     
-    convenience init(vm: UTMVirtualMachine) {
+    convenience init(vm: UTMVirtualMachine, onClose: ((Notification) -> Void)?) {
         self.init(window: nil)
         self.vm = vm
+        self.onClose = onClose
         vm.delegate = self
     }
     
@@ -154,6 +156,10 @@ extension VMDisplayWindowController: NSWindowDelegate {
     func window(_ window: NSWindow, willUseFullScreenPresentationOptions proposedOptions: NSApplication.PresentationOptions = []) -> NSApplication.PresentationOptions {
         return [.autoHideToolbar, .autoHideMenuBar, .fullScreen]
     }
+    
+    func windowWillClose(_ notification: Notification) {
+        onClose?(notification)
+    }
 }
 
 // MARK: - Toolbar
@@ -170,7 +176,7 @@ extension VMDisplayWindowController: UTMVirtualMachineDelegate {
     func virtualMachine(_ vm: UTMVirtualMachine, transitionTo state: UTMVMState) {
         switch state {
         case .vmError:
-            let message = vmMessage ?? NSLocalizedString("An internal error has occured. UTM will terminate.", comment: "VMDisplayWindowController")
+            let message = vmMessage ?? NSLocalizedString("An internal error has occured.", comment: "VMDisplayWindowController")
             showErrorAlert(message)
         case .vmStopped, .vmPaused, .vmSuspended:
             enterSuspended(isBusy: false)
