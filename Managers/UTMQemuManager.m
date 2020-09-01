@@ -155,10 +155,10 @@ void qmp_rpc_call(CFDictionaryRef args, CFDictionaryRef *ret, Error **err, void 
     dispatch_semaphore_signal(self->_cmd_lock);
 }
 
-- (id)init {
+- (instancetype)initWithPort:(NSInteger)port {
     self = [super init];
     if (self) {
-        _jsonStream = [[UTMJSONStream alloc] initHost:@"127.0.0.1" port:4444];
+        _jsonStream = [[UTMJSONStream alloc] initHost:@"127.0.0.1" port:port];
         _jsonStream.delegate = self;
         _cmd_lock = dispatch_semaphore_create(1);
     }

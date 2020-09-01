@@ -30,6 +30,7 @@ const int kMaxConnectionTries = 10; // qemu needs to start spice server first
 @property (nonatomic, nullable) CSMain *spice;
 @property (nonatomic, nullable) CSSession *session;
 @property (nonatomic, nullable, copy) NSURL *sharedDirectory;
+@property (nonatomic) NSInteger port;
 
 @end
 
@@ -37,9 +38,10 @@ const int kMaxConnectionTries = 10; // qemu needs to start spice server first
     void (^_connectionBlock)(BOOL, NSError*);
 }
 
-- (id)initWithConfiguration:(UTMConfiguration *)configuration {
+- (instancetype)initWithConfiguration:(UTMConfiguration *)configuration port:(NSInteger)port {
     if (self = [super init]) {
         _configuration = configuration;
+        _port = port;
     }
     
     return self;
@@ -57,7 +59,7 @@ const int kMaxConnectionTries = 10; // qemu needs to start spice server first
     }
     
     if (!self.spiceConnection) {
-        self.spiceConnection = [[CSConnection alloc] initWithHost:@"127.0.0.1" port:@"5930"];
+        self.spiceConnection = [[CSConnection alloc] initWithHost:@"127.0.0.1" port:[NSString stringWithFormat:@"%lu", self.port]];
         self.spiceConnection.delegate = self;
         self.spiceConnection.audioEnabled = _configuration.soundEnabled;
     }

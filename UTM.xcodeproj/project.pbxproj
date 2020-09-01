@@ -724,6 +724,8 @@
 		CEF83EC824FB1B9300557D15 /* UTMVirtualMachine+Sharing.m in Sources */ = {isa = PBXBuildFile; fileRef = CEF83EC624FB1B9300557D15 /* UTMVirtualMachine+Sharing.m */; };
 		CEF83ECC24FB382B00557D15 /* UTMVirtualMachine+Terminal.m in Sources */ = {isa = PBXBuildFile; fileRef = CEF83ECB24FB382B00557D15 /* UTMVirtualMachine+Terminal.m */; };
 		CEF83ECD24FB382B00557D15 /* UTMVirtualMachine+Terminal.m in Sources */ = {isa = PBXBuildFile; fileRef = CEF83ECB24FB382B00557D15 /* UTMVirtualMachine+Terminal.m */; };
+		CEF83ED324FDEA9400557D15 /* UTMPortAllocator.m in Sources */ = {isa = PBXBuildFile; fileRef = CEF83ED224FDEA9400557D15 /* UTMPortAllocator.m */; };
+		CEF83ED424FDEA9400557D15 /* UTMPortAllocator.m in Sources */ = {isa = PBXBuildFile; fileRef = CEF83ED224FDEA9400557D15 /* UTMPortAllocator.m */; };
 		CEFC6CDD24C25697003F6962 /* VMDriveImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEFC6CDC24C25697003F6962 /* VMDriveImage.swift */; };
 		CEFC6CDE24C25697003F6962 /* VMDriveImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEFC6CDC24C25697003F6962 /* VMDriveImage.swift */; };
 /* End PBXBuildFile section */
@@ -1483,6 +1485,8 @@
 		CEF83EC924FB1BB200557D15 /* UTMVirtualMachine+Sharing.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UTMVirtualMachine+Sharing.h"; sourceTree = "<group>"; };
 		CEF83ECA24FB382B00557D15 /* UTMVirtualMachine+Terminal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UTMVirtualMachine+Terminal.h"; sourceTree = "<group>"; };
 		CEF83ECB24FB382B00557D15 /* UTMVirtualMachine+Terminal.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UTMVirtualMachine+Terminal.m"; sourceTree = "<group>"; };
+		CEF83ED124FDEA9400557D15 /* UTMPortAllocator.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UTMPortAllocator.h; sourceTree = "<group>"; };
+		CEF83ED224FDEA9400557D15 /* UTMPortAllocator.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UTMPortAllocator.m; sourceTree = "<group>"; };
 		CEFC6CDC24C25697003F6962 /* VMDriveImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMDriveImage.swift; sourceTree = "<group>"; };
 		CEFE75D9228933DE0050ABCC /* gst_ios_init.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = gst_ios_init.m; sourceTree = "<group>"; };
 		CEFE75DA228933DE0050ABCC /* gst_ios_init.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = gst_ios_init.h; sourceTree = "<group>"; };
@@ -2214,6 +2218,8 @@
 				CE36B27E227665B7004A1435 /* UTMJSONStreamDelegate.h */,
 				CE6EDCE0241DA0E900A719DC /* UTMLogging.h */,
 				CE6EDCE1241DA0E900A719DC /* UTMLogging.m */,
+				CEF83ED124FDEA9400557D15 /* UTMPortAllocator.h */,
+				CEF83ED224FDEA9400557D15 /* UTMPortAllocator.m */,
 				CE9D197A226542FE00355E14 /* UTMQemu.h */,
 				CE9D197B226542FE00355E14 /* UTMQemu.m */,
 				CED33AE12267893D00FF1977 /* UTMQemuImg.h */,
@@ -2629,6 +2635,7 @@
 				CE2D927A24AD46670059923A /* UTMConfiguration+System.m in Sources */,
 				CE2D927B24AD46670059923A /* qapi-types-job.c in Sources */,
 				CEB63A8924F46E6E00CAF323 /* VMConfigNetworkingViewController.m in Sources */,
+				CEF83ED324FDEA9400557D15 /* UTMPortAllocator.m in Sources */,
 				CE2D927C24AD46670059923A /* UTMQemu.m in Sources */,
 				CE2D927D24AD46670059923A /* qapi-visit-machine.c in Sources */,
 				CE2D927E24AD46670059923A /* CSSession.m in Sources */,
@@ -2955,6 +2962,7 @@
 				CEF83EC824FB1B9300557D15 /* UTMVirtualMachine+Sharing.m in Sources */,
 				CE93758924B930270074066F /* BusyOverlay.swift in Sources */,
 				CE0B6D2424AD57FC00FE012D /* qapi-commands-rocker.c in Sources */,
+				CEF83ED424FDEA9400557D15 /* UTMPortAllocator.m in Sources */,
 				CE0B6D7D24AD584D00FE012D /* qapi-events-ui.c in Sources */,
 				CE0B6D5624AD584C00FE012D /* qapi-types-machine-target.c in Sources */,
 				CE93759624BB7EA00074066F /* UTMTabViewController.swift in Sources */,
