@@ -253,7 +253,6 @@
 - (void)argsFromConfiguration:(BOOL)withUserArgs {
     NSURL *resourceURL = [[NSBundle mainBundle] URLForResource:@"qemu" withExtension:nil];
     [self clearArgv];
-    [self pushArgv:@"qemu"];
     [self pushArgv:@"-L"];
     [self accessDataWithBookmark:[resourceURL bookmarkDataWithOptions:0
                                        includingResourceValuesForKeys:nil
@@ -364,9 +363,9 @@
 }
 
 - (void)startWithCompletion:(void (^)(BOOL, NSString * _Nonnull))completion {
-    NSString *dylib = [NSString stringWithFormat:@"libqemu-system-%@.dylib", self.configuration.systemArchitecture];
+    NSString *name = [NSString stringWithFormat:@"qemu-system-%@", self.configuration.systemArchitecture];
     [self argsFromConfiguration:YES];
-    [self startDylib:dylib completion:completion];
+    [self start:name completion:completion];
 }
 
 @end

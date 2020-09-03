@@ -28,10 +28,11 @@ static void *start_qemu_img(void *args) {
     NSCAssert(self->_main != NULL, @"Started thread with invalid function.");
     NSCAssert(self.argv, @"Started thread with invalid argv.");
     
-    int argc = (int)self.argv.count;
+    int argc = (int)self.argv.count + 1;
     const char *argv[argc];
+    argv[0] = "qemu-img";
     for (int i = 0; i < self.argv.count; i++) {
-        argv[i] = [self.argv[i] UTF8String];
+        argv[i+1] = [self.argv[i] UTF8String];
     }
     self.status = self->_main(argc, argv);
     dispatch_semaphore_signal(self.done);
@@ -41,14 +42,12 @@ static void *start_qemu_img(void *args) {
 - (instancetype)initWithArgv:(NSArray<NSString *> *)argv {
     if (self = [super initWithArgv:argv]) {
         self.entry = start_qemu_img;
-        self.type = QEMUHelperTypeImg;
     }
     return self;
 }
 
 - (void)buildArgv {
     [self clearArgv];
-    [self pushArgv:@"qemu-img"];
     switch (self.op) {
         case kUTMQemuImgCreate: {
             [self pushArgv:@"create"];
@@ -100,7 +99,7 @@ static void *start_qemu_img(void *args) {
         return;
     }
     [self buildArgv];
-    [self startDylib:@"libqemu-img.dylib" completion:completion];
+    [self start:@"qemu-img" completion:completion];
     once = YES;
 }
 

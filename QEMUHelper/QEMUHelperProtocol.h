@@ -16,20 +16,14 @@
 
 #import <Foundation/Foundation.h>
 
-typedef NS_ENUM(NSInteger, QEMUHelperType) {
-    QEMUHelperTypeImg,
-    QEMUHelperTypeSystem,
-    QEMUHelperTypeMax
-};
-
 NS_ASSUME_NONNULL_BEGIN
 
 // The protocol that this service will vend as its API. This header file will also need to be visible to the process hosting the service.
 @protocol QEMUHelperProtocol
 
 - (void)accessDataWithBookmark:(NSData *)bookmark securityScoped:(BOOL)securityScoped completion:(void(^)(BOOL, NSData * _Nullable, NSString * _Nullable))completion;
-- (void)ping:(void (^)(BOOL))onResponse;
-- (void)startDylib:(NSString *)dylib type:(QEMUHelperType)type argv:(NSArray<NSString *> *)argv completion:(void(^)(BOOL,NSString *))completion;
+- (void)startQemu:(NSString *)binName libraryBookmark:(NSData *)libBookmark argv:(NSArray<NSString *> *)argv onStarted:(void(^)(NSString * _Nullable))onStarted;
+- (void)registerExitHandlerForIdentifier:(NSString *)identifier handler:(void(^)(BOOL,NSString *))handler;
     
 @end
 
