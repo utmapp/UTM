@@ -33,10 +33,11 @@ static void *start_qemu(void *args) {
     NSCAssert(self->_qemu_cleanup != NULL, @"Started thread with invalid function.");
     NSCAssert(qemuArgv, @"Started thread with invalid argv.");
     
-    int argc = (int)qemuArgv.count;
+    int argc = (int)qemuArgv.count + 1;
     const char *argv[argc];
+    argv[0] = "qemu-system";
     for (int i = 0; i < qemuArgv.count; i++) {
-        argv[i] = [qemuArgv[i] UTF8String];
+        argv[i+1] = [qemuArgv[i] UTF8String];
     }
     const char *envp[] = { NULL };
     self->_qemu_init(argc, argv, envp);
@@ -50,7 +51,6 @@ static void *start_qemu(void *args) {
 - (instancetype)initWithArgv:(NSArray<NSString *> *)argv {
     if (self = [super initWithArgv:argv]) {
         self.entry = start_qemu;
-        self.type = QEMUHelperTypeSystem;
     }
     return self;
 }

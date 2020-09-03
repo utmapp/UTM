@@ -212,7 +212,7 @@ build_qemu () {
     CFLAGS=
     CXXFLAGS=
     LDFLAGS=
-    build $QEMU_SRC --enable-shared-lib --with-coroutine=libucontext
+    build $QEMU_SRC $1 --with-coroutine=libucontext
     CFLAGS="$QEMU_CFLAGS"
     CXXFLAGS="$QEMU_CXXFLAGS"
     LDFLAGS="$QEMU_LDFLAGS"
@@ -239,34 +239,43 @@ build_spice_client () {
 
 fixup () {
     FILE=$1
+    BASE=$(basename "$FILE")
+    BASEFILENAME=${BASE%.*}
+    BASEFILEEXT=${BASE:${#BASEFILENAME}}
+    NEWFILENAME="$BASEFILENAME.utm$BASEFILEEXT"
+    if [ -z "$BASEFILEEXT" ]; then
+        NEWFILENAME="$BASE"
+    fi
     LIST=$(otool -L "$FILE" | tail -n +3 | cut -d ' ' -f 1 | awk '{$1=$1};1')
     OLDIFS=$IFS
     IFS=$'\n'
     echo "${GREEN}Fixing up $FILE...${NC}"
-    newname="@executable_path/Frameworks/$(basename "$FILE")"
-    if [ "x$PLATFORM" == "xmacos" ]; then
-        newname="@rpath/$(basename "$FILE")"
-    fi
+    newname="@rpath/$NEWFILENAME"
     install_name_tool -id "$newname" "$FILE"
     for f in $LIST
     do
         base=$(basename "$f")
+        basefilename=${base%.*}
+        basefileext=${base:${#basefilename}}
         dir=$(dirname "$f")
         if [ "$dir" == "$PREFIX/lib" ]; then
-            newname="@executable_path/Frameworks/$base"
-            if [ "x$PLATFORM" == "xmacos" ]; then
-                newname="@rpath/$base"
-            fi
+            newname="@rpath/$basefilename.utm$basefileext"
             install_name_tool -change "$f" "$newname" "$FILE"
         fi
     done
+    mv "$FILE" "$(dirname "$FILE")/$NEWFILENAME"
     IFS=$OLDIFS
 }
 
 fixup_all () {
-    FILES=$(find "$SYSROOT_DIR/lib" -type f -name "*.dylib")
     OLDIFS=$IFS
     IFS=$'\n'
+    FILES=$(find "$SYSROOT_DIR/lib" -type f -name "*.dylib")
+    for f in $FILES
+    do
+        fixup $f
+    done
+    FILES=$(find "$SYSROOT_DIR/bin" -type f -name "qemu-*")
     for f in $FILES
     do
         fixup $f
@@ -363,6 +372,7 @@ ios )
         ;;
     esac
     PLATFORM_FAMILY_NAME="iOS"
+    QEMU_PLATFORM_BUILD_FLAGS="--enable-shared-lib"
     ;;
 macos )
     if [ -z "$SDKMINVER" ]; then
@@ -371,6 +381,7 @@ macos )
     fi
     SDK=macosx
     PLATFORM_FAMILY_NAME="macOS"
+    QEMU_PLATFORM_BUILD_FLAGS=""
     ;;
 * )
     usage
@@ -446,7 +457,7 @@ if [ -z "$QEMU_ONLY" ]; then
     rm -f "$BUILD_DIR/BUILD_SUCCESS"
     build_qemu_dependencies
 fi
-build_qemu
+build_qemu $QEMU_PLATFORM_BUILD_FLAGS
 if [ -z "$QEMU_ONLY" ]; then
     steal_libucontext # should be a better way...
     build_spice_client

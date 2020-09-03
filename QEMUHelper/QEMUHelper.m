@@ -15,33 +15,42 @@
 //
 
 #import "QEMUHelper.h"
-#import "UTMQemu.h"
-#import "UTMQemuImg.h"
-#import "UTMQemuSystem.h"
-#import "UTMLogging.h"
 #import <stdio.h>
 
-@implementation QEMUHelper {
-    UTMQemu *_qemu;
-    NSMutableArray<NSData *> *_bookmarks;
-}
+@interface QEMUHelper ()
+
+@property NSMutableArray<NSURL *> *urls;
+@property NSMutableDictionary<NSString *, NSTask *> *processes;
+@property NSMutableDictionary<NSString *, void(^)(BOOL, NSString *)> *exitHandlers;
+
+@end
+
+@implementation QEMUHelper
 
 - (instancetype)init {
     if (self = [super init]) {
-        _bookmarks = [NSMutableArray<NSData *> array];
+        self.urls = [NSMutableArray array];
+        self.processes = [NSMutableDictionary dictionary];
     }
     return self;
 }
 
-- (void)accessDataWithBookmark:(NSData *)bookmark securityScoped:(BOOL)securityScoped completion:(void(^)(BOOL, NSData * _Nullable, NSString * _Nullable))completion {
-    BOOL stale = false;
+- (void)dealloc {
+    for (NSURL *url in self.urls) {
+        [url stopAccessingSecurityScopedResource];
+    }
+}
+
+- (void)accessDataWithBookmark:(NSData *)bookmark securityScoped:(BOOL)securityScoped completion:(void(^)(BOOL, NSData * _Nullable, NSString * _Nullable))completion  {
+    BOOL stale = NO;
+    NSError *err;
     NSURL *url = [NSURL URLByResolvingBookmarkData:bookmark
                                            options:(securityScoped ? NSURLBookmarkResolutionWithSecurityScope : 0)
                                      relativeToURL:nil
                                bookmarkDataIsStale:&stale
-                                             error:nil];
+                                             error:&err];
     if (!url) {
-        UTMLog(@"Failed to resolve bookmark!");
+        NSLog(@"Failed to access bookmark data.");
         completion(NO, nil, nil);
         return;
     }
@@ -49,54 +58,106 @@
         bookmark = [url bookmarkDataWithOptions:NSURLBookmarkCreationWithSecurityScope
                  includingResourceValuesForKeys:nil
                                   relativeToURL:nil
-                                          error:nil];
+                                          error:&err];
         if (!bookmark) {
-            UTMLog(@"Failed to create new bookmark!");
+            NSLog(@"Failed to create new bookmark!");
             completion(NO, bookmark, url.path);
             return;
         }
     }
-    if (_qemu == nil) {
-        [_bookmarks addObject:bookmark];
-        completion(YES, bookmark, url.path);
+    if ([url startAccessingSecurityScopedResource]) {
+        [self.urls addObject:url];
     } else {
-        [_qemu accessDataWithBookmark:bookmark securityScoped:YES completion:completion];
+        NSLog(@"Failed to access security scoped resource for: %@", url);
     }
+    completion(YES, bookmark, url.path);
 }
 
-- (void)ping:(void (^)(BOOL))onResponse {
-    onResponse(_qemu != nil);
-}
-
-- (void)startDylib:(NSString *)dylib type:(QEMUHelperType)type argv:(NSArray<NSString *> *)argv completion:(void(^)(BOOL,NSString *))completion {
-    switch (type) {
-        case QEMUHelperTypeImg:
-            _qemu = [[UTMQemuImg alloc] initWithArgv:argv];
-            break;
-        case QEMUHelperTypeSystem:
-            _qemu = [[UTMQemuSystem alloc] initWithArgv:argv];
-            break;
-        default:
-            NSAssert(0, @"Invalid helper type.");
-            break;
+- (void)startQemu:(NSString *)binName libraryBookmark:(NSData *)libBookmark  argv:(NSArray<NSString *> *)argv onStarted:(void(^)(NSString * _Nullable))onStarted {
+    NSURL *qemuURL = [[NSBundle mainBundle] URLForAuxiliaryExecutable:binName];
+    if (!qemuURL || ![[NSFileManager defaultManager] fileExistsAtPath:qemuURL.path]) {
+        NSLog(@"Cannot find executable for %@", binName);
+        onStarted(nil);
+        return;
     }
     
-    // pass in any bookmarks in queue
-    if (_bookmarks.count > 0) {
-        for (NSData *bookmark in _bookmarks) {
-            [_qemu accessDataWithBookmark:bookmark securityScoped:YES completion:^(BOOL success, NSData *bookmark, NSString *path) {
-                if (!success) {
-                    UTMLog(@"Access bookmark failed for: %@", path);
-                }
-            }];
+    NSError *err;
+    NSURL *libraryPath = [NSURL URLByResolvingBookmarkData:libBookmark
+                                                   options:0
+                                             relativeToURL:nil
+                                       bookmarkDataIsStale:nil
+                                                     error:&err];
+    if (!libraryPath || ![[NSFileManager defaultManager] fileExistsAtPath:libraryPath.path]) {
+        NSLog(@"Cannot resolve library path: %@", err);
+        onStarted(nil);
+        return;
+    }
+    
+    NSTask *task = [NSTask new];
+    NSString *identifier = [self storeProcess:task];
+    task.executableURL = qemuURL;
+    task.arguments = argv;
+    task.environment = @{@"DYLD_LIBRARY_PATH": libraryPath.path};
+    task.qualityOfService = NSQualityOfServiceUserInitiated;
+    task.terminationHandler = ^(NSTask *task) {
+        [self exitProcessForIdentifier:identifier];
+    };
+    if (![task launchAndReturnError:&err]) {
+        NSLog(@"Error starting QEMU: %@", err);
+        [self exitProcessForIdentifier:identifier];
+        onStarted(nil);
+    } else {
+        onStarted(identifier);
+    }
+}
+
+- (void)registerExitHandlerForIdentifier:(NSString *)identifier handler:(void(^)(BOOL,NSString *))handler {
+    if (![self storeExitHandlerForIdentifier:identifier handler:handler]) {
+        handler(NO, NSLocalizedString(@"QEMU already exited.", @"QEMUHelper"));
+    }
+}
+
+#pragma mark - Helpers
+
+- (NSString *)storeProcess:(NSTask *)process {
+    @synchronized (self.processes) {
+        NSString *identifier = [NSUUID UUID].UUIDString;
+        self.processes[identifier] = process;
+        return identifier;
+    }
+}
+
+- (BOOL)storeExitHandlerForIdentifier:(NSString *)identifier handler:(void(^)(BOOL,NSString *))handler {
+    @synchronized (self.processes) {
+        if (self.processes[identifier]) {
+            self.exitHandlers[identifier] = handler;
+            return YES;
+        } else {
+            return NO;
         }
-        [_bookmarks removeAllObjects];
     }
-    
-    [_qemu startDylib:dylib completion:^(BOOL success, NSString *msg) {
-        completion(success, msg);
-        self->_qemu = nil;
-    }];
+}
+
+- (void)exitProcessForIdentifier:(NSString *)identifier {
+    NSTask *task;
+    void (^exitHandler)(BOOL, NSString *);
+    BOOL normalExit = NO;
+    @synchronized (self.processes) {
+        task = self.processes[identifier];
+        [self.processes removeObjectForKey:identifier];
+        exitHandler = self.exitHandlers[identifier];
+        [self.exitHandlers removeObjectForKey:identifier];
+    }
+    if (task) {
+        if (task.running) {
+            [task terminate];
+        } else {
+            normalExit = task.terminationReason == NSTaskTerminationReasonExit && task.terminationStatus == 0;
+        }
+    }
+    if (exitHandler) {
+        exitHandler(normalExit, nil); // TODO: get last error line
+    }
 }
 
 @end

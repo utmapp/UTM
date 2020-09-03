@@ -291,26 +291,19 @@ error:
         }
         dispatch_semaphore_signal(self->_qemu_exit_sema);
     }];
-    
-    [_qemu_system ping:^(BOOL pong) {
-        if (!pong) {
-            [self errorTriggered:NSLocalizedString(@"Timed out waiting for QEMU to launch.", @"UTMVirtualMachine")];
+    [self->_ioService connectWithCompletion:^(BOOL success, NSError * _Nullable error) {
+        if (!success) {
+            [self errorTriggered:NSLocalizedString(@"Failed to connect to display server.", @"UTMVirtualMachine")];
         } else {
-            [self->_ioService connectWithCompletion:^(BOOL success, NSError * _Nullable error) {
-                if (!success) {
-                    [self errorTriggered:NSLocalizedString(@"Failed to connect to display server.", @"UTMVirtualMachine")];
-                } else {
-                    [self changeState:kVMStarted];
-                    [self restoreViewState];
-                    if (self.viewState.suspended) {
-                        [self deleteSaveVM];
-                    }
-                }
-            }];
-            self->_qemu.retries = kQMPMaxConnectionTries;
-            [self->_qemu connect];
+            [self changeState:kVMStarted];
+            [self restoreViewState];
+            if (self.viewState.suspended) {
+                [self deleteSaveVM];
+            }
         }
     }];
+    self->_qemu.retries = kQMPMaxConnectionTries;
+    [self->_qemu connect];
     _is_busy = NO;
     return YES;
 }

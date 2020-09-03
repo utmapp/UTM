@@ -25,19 +25,19 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface UTMQemu : NSObject
 
+@property (nonatomic, readonly) NSURL *libraryURL;
 @property (nonatomic) NSArray<NSString *> *argv;
 @property (nonatomic) dispatch_semaphore_t done;
 @property (nonatomic) NSInteger status;
 @property (nonatomic) NSInteger fatal;
 @property (nonatomic) UTMQemuThreadEntry entry;
-@property (nonatomic) QEMUHelperType type;
 
 - (instancetype)init;
 - (instancetype)initWithArgv:(NSArray<NSString *> *)argv NS_DESIGNATED_INITIALIZER;
 - (BOOL)setupXpc;
 - (void)pushArgv:(nullable NSString *)arg;
 - (void)clearArgv;
-- (void)startDylib:(nonnull NSString *)dylib completion:(void(^)(BOOL,NSString *))completion;
+- (void)start:(nonnull NSString *)name completion:(void(^)(BOOL,NSString *))completion;
 - (void)ping:(void (^)(BOOL))onResponse;
 - (void)accessDataWithBookmark:(NSData *)bookmark;
 - (void)accessDataWithBookmark:(NSData *)bookmark securityScoped:(BOOL)securityScoped completion:(void(^)(BOOL, NSData * _Nullable, NSString * _Nullable))completion;

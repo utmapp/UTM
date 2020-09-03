@@ -34,7 +34,18 @@ static const NSURLBookmarkResolutionOptions kBookmarkResolutionOptions = NSURLBo
     NSXPCConnection *_connection;
 }
 
+#pragma mark - Properties
+
 @synthesize argv = _argv;
+
+- (NSURL *)libraryURL {
+    NSURL *bundleURL = [[NSBundle mainBundle] bundleURL];
+    NSURL *contentsURL = [bundleURL URLByAppendingPathComponent:@"Contents" isDirectory:YES];
+    NSURL *frameworksURL = [contentsURL URLByAppendingPathComponent:@"Frameworks" isDirectory:YES];
+    return frameworksURL;
+}
+
+#pragma mark - Construction
 
 - (instancetype)init {
     return [self initWithArgv:[NSArray<NSString *> array]];
@@ -56,6 +67,8 @@ static const NSURLBookmarkResolutionOptions kBookmarkResolutionOptions = NSURLBo
         [url stopAccessingSecurityScopedResource];
     }
 }
+
+#pragma mark - Methods
 
 - (BOOL)setupXpc {
 #if !TARGET_OS_IPHONE // only supported on macOS
@@ -147,12 +160,41 @@ static const NSURLBookmarkResolutionOptions kBookmarkResolutionOptions = NSURLBo
     });
 }
 
-- (void)startDylib:(nonnull NSString *)dylib completion:(void(^)(BOOL,NSString *))completion {
-    if (_connection) {
+- (void)startQemuRemote:(nonnull NSString *)name completion:(void(^)(BOOL,NSString *))completion {
+    dispatch_semaphore_t lock = dispatch_semaphore_create(0);
+    __block NSString *taskIdentifier;
+    NSError *error;
+    NSData *libBookmark = [self.libraryURL bookmarkDataWithOptions:0
+                                    includingResourceValuesForKeys:nil
+                                                     relativeToURL:nil
+                                                             error:&error];
+    if (!libBookmark) {
+        completion(NO, error.localizedDescription);
+        return;
+    }
+    [[_connection remoteObjectProxyWithErrorHandler:^(NSError * _Nonnull error) {
+        completion(NO, error.localizedDescription);
+        dispatch_semaphore_signal(lock);
+    }] startQemu:name libraryBookmark:libBookmark argv:self.argv onStarted:^(NSString *identifier) {
+        UTMLog(@"started %@!", identifier);
+        taskIdentifier = identifier;
+        dispatch_semaphore_signal(lock);
+    }];
+    dispatch_semaphore_wait(lock, DISPATCH_TIME_FOREVER);
+    if (!taskIdentifier) {
+        completion(NO, NSLocalizedString(@"Failed to start QEMU process.", @"UTMQemu"));
+    } else {
         [[_connection remoteObjectProxyWithErrorHandler:^(NSError * _Nonnull error) {
             completion(NO, error.localizedDescription);
-        }] startDylib:dylib type:self.type argv:self.argv completion:completion];
+        }] registerExitHandlerForIdentifier:taskIdentifier handler:completion];
+    }
+}
+
+- (void)start:(nonnull NSString *)name completion:(void(^)(BOOL,NSString *))completion {
+    if (_connection) {
+        [self startQemuRemote:name completion:completion];
     } else {
+        NSString *dylib = [NSString stringWithFormat:@"lib%@.utm.dylib", name];
         [self startDylibThread:dylib completion:completion];
     }
 }
