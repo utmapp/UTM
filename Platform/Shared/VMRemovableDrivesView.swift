@@ -22,7 +22,7 @@ struct VMRemovableDrivesView: View {
     @EnvironmentObject private var data: UTMData
     @ObservedObject private var config: UTMConfiguration
     @ObservedObject private var sessionConfig: UTMViewState
-    @Environment(\.importFiles) private var importFiles: ImportFilesAction
+    //@Environment(\.importFiles) private var importFiles: ImportFilesAction
     
     init(vm: UTMVirtualMachine) {
         self.vm = vm
@@ -65,6 +65,7 @@ struct VMRemovableDrivesView: View {
     }
     
     private func selectShareDirectory() {
+        /* // FIXME: rework with beta 6 APIs
         importFiles(singleOfType: [.folder]) { ret in
             data.busyWork {
                 switch ret {
@@ -78,6 +79,7 @@ struct VMRemovableDrivesView: View {
                 }
             }
         }
+ */
     }
     
     private func clearShareDirectory() {
@@ -85,6 +87,7 @@ struct VMRemovableDrivesView: View {
     }
     
     private func selectRemovableImage(forDrive drive: UTMDrive) {
+        /* // FIXME: rework with beta 6 APIs
         importFiles(singleOfType: [.data]) { ret in
             data.busyWork {
                 switch ret {
@@ -98,6 +101,7 @@ struct VMRemovableDrivesView: View {
                 }
             }
         }
+         */
     }
     
     private func clearRemovableImage(forDrive drive: UTMDrive) {
