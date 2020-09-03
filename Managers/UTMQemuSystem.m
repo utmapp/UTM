@@ -26,7 +26,7 @@
 
 static void *start_qemu(void *args) {
     UTMQemuSystem *self = (__bridge_transfer UTMQemuSystem *)args;
-    __weak NSArray<NSString *> *qemuArgv = self.argv;
+    NSArray<NSString *> *qemuArgv = self.argv;
     
     NSCAssert(self->_qemu_init != NULL, @"Started thread with invalid function.");
     NSCAssert(self->_qemu_main_loop != NULL, @"Started thread with invalid function.");

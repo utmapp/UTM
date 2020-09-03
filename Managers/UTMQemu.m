@@ -20,14 +20,6 @@
 #import <pthread.h>
 #import <TargetConditionals.h>
 
-#if TARGET_OS_IPHONE
-static const NSURLBookmarkCreationOptions kBookmarkCreationOptions = 0;
-static const NSURLBookmarkResolutionOptions kBookmarkResolutionOptions = 0;
-#else
-static const NSURLBookmarkCreationOptions kBookmarkCreationOptions = NSURLBookmarkCreationWithSecurityScope;
-static const NSURLBookmarkResolutionOptions kBookmarkResolutionOptions = NSURLBookmarkResolutionWithSecurityScope;
-#endif
-
 @implementation UTMQemu {
     NSMutableArray<NSString *> *_argv;
     NSMutableArray<NSURL *> *_urls;
@@ -210,6 +202,7 @@ static const NSURLBookmarkResolutionOptions kBookmarkResolutionOptions = NSURLBo
 }
 
 - (void)accessDataWithBookmarkThread:(NSData *)bookmark securityScoped:(BOOL)securityScoped completion:(void(^)(BOOL, NSData * _Nullable, NSString * _Nullable))completion  {
+#if 0 // FIXME: enable when we support iOS bookmarks
     BOOL stale = NO;
     NSError *err;
     NSURL *url = [NSURL URLByResolvingBookmarkData:bookmark
@@ -239,6 +232,7 @@ static const NSURLBookmarkResolutionOptions kBookmarkResolutionOptions = NSURLBo
         UTMLog(@"Failed to access security scoped resource for: %@", url);
     }
     completion(YES, bookmark, url.path);
+#endif
 }
 
 - (void)accessDataWithBookmark:(NSData *)bookmark {

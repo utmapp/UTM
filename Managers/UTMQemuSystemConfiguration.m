@@ -42,8 +42,13 @@
 }
 
 - (NSArray<NSString *> *)argv {
-    [self argsFromConfiguration:NO];
-    return [super argv];
+    NSArray<NSString *> *argv = [super argv];
+    if (argv.count > 0) {
+        return argv;
+    } else {
+        [self argsFromConfiguration:NO];
+        return [super argv];
+    }
 }
 
 - (void)architectureSpecificConfiguration {
