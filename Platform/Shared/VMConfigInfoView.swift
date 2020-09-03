@@ -32,7 +32,7 @@ struct VMConfigInfoView: View {
     @State private var imageSelectVisible: Bool = false
     @State private var iconStyle: IconStyle = .generic
     @State private var warningMessage: String? = nil
-    @Environment(\.importFiles) private var importFiles: ImportFilesAction
+    //@Environment(\.importFiles) private var importFiles: ImportFilesAction
     
     var body: some View {
         VStack {
@@ -125,6 +125,7 @@ struct VMConfigInfoView: View {
     
     #if os(macOS)
     private func imageCustomSelect() {
+        /* // FIXME: rework with beta 6 APIs
         importFiles(singleOfType: [.image]) { result in
             switch result {
             case .success(let url):
@@ -135,6 +136,7 @@ struct VMConfigInfoView: View {
                 break
             }
         }
+ */
     }
     #endif
     

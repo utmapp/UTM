@@ -24,7 +24,7 @@ struct VMConfigDrivesView: View {
     @State private var createDriveVisible: Bool = false
     @State private var attemptDelete: IndexSet?
     @EnvironmentObject private var data: UTMData
-    @Environment(\.importFiles) private var importFiles: ImportFilesAction
+    //@Environment(\.importFiles) private var importFiles: ImportFilesAction
     
     var body: some View {
         Group {
@@ -81,6 +81,7 @@ struct VMConfigDrivesView: View {
     }
     
     private func importDrive() {
+        /* // FIXME: rework with beta 6 APIs
         importFiles(singleOfType: [.item]) { ret in
             data.busyWork {
                 switch ret {
@@ -94,6 +95,7 @@ struct VMConfigDrivesView: View {
                 }
             }
         }
+ */
     }
     
     private func newDrive(driveImage: VMDriveImage) {
