@@ -94,7 +94,7 @@ static void *start_qemu_img(void *args) {
 - (void)startWithCompletion:(void(^)(BOOL, NSString *))completion {
     // FIXME: get rid of this
     static BOOL once = NO;
-    if (once) {
+    if (!self.hasRemoteProcess && once) {
         completion(NO, NSLocalizedString(@"Running qemu-img more than once is unimplemented. Restart the app to create another disk.", nil));
         return;
     }

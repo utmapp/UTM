@@ -37,6 +37,10 @@
     return frameworksURL;
 }
 
+- (BOOL)hasRemoteProcess {
+    return _connection != nil;
+}
+
 #pragma mark - Construction
 
 - (instancetype)init {
