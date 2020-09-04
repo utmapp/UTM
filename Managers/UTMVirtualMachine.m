@@ -33,7 +33,7 @@
 #import "UTMPortAllocator.h"
 #import "qapi-events.h"
 
-const int kQMPMaxConnectionTries = 10; // qemu needs to start spice server first
+const int kQMPMaxConnectionTries = 30; // qemu needs to start spice server first
 const int64_t kStopTimeout = (int64_t)30*NSEC_PER_SEC;
 
 NSString *const kUTMErrorDomain = @"com.osy86.utm";
@@ -291,9 +291,9 @@ error:
         }
         dispatch_semaphore_signal(self->_qemu_exit_sema);
     }];
-    [self->_ioService connectWithCompletion:^(BOOL success, NSError * _Nullable error) {
+    [self->_ioService connectWithCompletion:^(BOOL success, NSString * _Nullable msg) {
         if (!success) {
-            [self errorTriggered:NSLocalizedString(@"Failed to connect to display server.", @"UTMVirtualMachine")];
+            [self errorTriggered:msg];
         } else {
             [self changeState:kVMStarted];
             [self restoreViewState];

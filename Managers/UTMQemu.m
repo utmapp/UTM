@@ -153,8 +153,6 @@
 }
 
 - (void)startQemuRemote:(nonnull NSString *)name completion:(void(^)(BOOL,NSString *))completion {
-    dispatch_semaphore_t lock = dispatch_semaphore_create(0);
-    __block NSString *taskIdentifier;
     NSError *error;
     NSData *libBookmark = [self.libraryURL bookmarkDataWithOptions:0
                                     includingResourceValuesForKeys:nil
@@ -166,20 +164,7 @@
     }
     [[_connection remoteObjectProxyWithErrorHandler:^(NSError * _Nonnull error) {
         completion(NO, error.localizedDescription);
-        dispatch_semaphore_signal(lock);
-    }] startQemu:name libraryBookmark:libBookmark argv:self.argv onStarted:^(NSString *identifier) {
-        UTMLog(@"started %@!", identifier);
-        taskIdentifier = identifier;
-        dispatch_semaphore_signal(lock);
-    }];
-    dispatch_semaphore_wait(lock, DISPATCH_TIME_FOREVER);
-    if (!taskIdentifier) {
-        completion(NO, NSLocalizedString(@"Failed to start QEMU process.", @"UTMQemu"));
-    } else {
-        [[_connection remoteObjectProxyWithErrorHandler:^(NSError * _Nonnull error) {
-            completion(NO, error.localizedDescription);
-        }] registerExitHandlerForIdentifier:taskIdentifier handler:completion];
-    }
+    }] startQemu:name libraryBookmark:libBookmark argv:self.argv onExit:completion];
 }
 
 - (void)start:(nonnull NSString *)name completion:(void(^)(BOOL,NSString *))completion {

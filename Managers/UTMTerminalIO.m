@@ -36,7 +36,7 @@
     return [_terminal connectWithError: err];
 }
 
-- (void)connectWithCompletion: (void(^)(BOOL, NSError*)) block {
+- (void)connectWithCompletion: (void(^)(BOOL, NSString * _Nullable msg)) block {
     // there's no connection to be made, so just return YES
     block(YES, nil);
 }
