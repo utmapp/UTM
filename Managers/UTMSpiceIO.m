@@ -22,10 +22,17 @@
 #import "UTMViewState.h"
 #import "CocoaSpice.h"
 
-const int kMaxConnectionTries = 10; // qemu needs to start spice server first
+extern NSString *const kUTMErrorDomain;
+static const int kMaxConnectionTries = 10; // qemu needs to start spice server first
+static const int64_t kRetryWait = (int64_t)1*NSEC_PER_SEC;
+
+typedef void (^doConnect_t)(void);
+typedef void (^connectionCallback_t)(BOOL success, NSError * _Nullable err);
 
 @interface UTMSpiceIO ()
 
+@property (nonatomic, nullable) doConnect_t doConnect;
+@property (nonatomic, nullable) connectionCallback_t connectionCallback;
 @property (nonatomic, nullable) CSConnection *spiceConnection;
 @property (nonatomic, nullable) CSMain *spice;
 @property (nonatomic, nullable) CSSession *session;
@@ -34,9 +41,7 @@ const int kMaxConnectionTries = 10; // qemu needs to start spice server first
 
 @end
 
-@implementation UTMSpiceIO {
-    void (^_connectionBlock)(BOOL, NSError*);
-}
+@implementation UTMSpiceIO
 
 - (instancetype)initWithConfiguration:(UTMConfiguration *)configuration port:(NSInteger)port {
     if (self = [super init]) {
@@ -97,20 +102,24 @@ const int kMaxConnectionTries = 10; // qemu needs to start spice server first
     return YES;
 }
 
-- (void)connectWithCompletion: (void(^)(BOOL, NSError*)) block {
-    int tries = kMaxConnectionTries;
-    do {
-        [NSThread sleepForTimeInterval:0.1f];
-        if ([self.spiceConnection connect]) {
-            break;
+- (void)connectWithCompletion:(void(^)(BOOL, NSError*))block {
+    __block int tries = kMaxConnectionTries;
+    __block __weak doConnect_t weakDoConnect;
+    __weak UTMSpiceIO *weakSelf = self;
+    self.doConnect = ^{
+        if (tries-- > 0) {
+            if ([weakSelf.spiceConnection connect]) {
+                weakSelf.connectionCallback = block;
+            } else {
+                dispatch_after(kRetryWait, dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0), weakDoConnect);
+            }
+        } else { // base case, no more tries
+            NSError *err = [NSError errorWithDomain:kUTMErrorDomain code:-1 userInfo:@{NSLocalizedDescriptionKey: NSLocalizedString(@"Failed to connect to SPICE server.", "UTMSpiceIO")}];
+            block(NO, err);
         }
-    } while (tries-- > 0);
-    if (tries == 0) {
-        //TODO: error
-        block(NO, nil);
-    } else {
-        _connectionBlock = block;
-    }
+    };
+    weakDoConnect = self.doConnect;
+    dispatch_async(dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0), self.doConnect);
 }
 
 - (void)disconnect {
@@ -157,10 +166,10 @@ const int kMaxConnectionTries = 10; // qemu needs to start spice server first
 
 - (void)spiceError:(CSConnection *)connection err:(NSString *)msg {
     NSAssert(connection == self.spiceConnection, @"Unknown connection");
-    //[self errorTriggered:msg];
-    if (_connectionBlock) {
-        _connectionBlock(NO, nil);
-        _connectionBlock = nil;
+    if (self.connectionCallback) {
+        NSError *err = [NSError errorWithDomain:kUTMErrorDomain code:-1 userInfo:@{NSLocalizedDescriptionKey: msg}];
+        self.connectionCallback(NO, err);
+        self.connectionCallback = nil;
     }
 }
 
@@ -173,9 +182,9 @@ const int kMaxConnectionTries = 10; // qemu needs to start spice server first
         _delegate.vmInput = input;
         [self addObserver:self forKeyPath:@"primaryDisplay.viewportScale" options:0 context:nil];
         [self addObserver:self forKeyPath:@"primaryDisplay.displaySize" options:0 context:nil];
-        if (_connectionBlock) {
-            _connectionBlock(YES, nil);
-            _connectionBlock = nil;
+        if (self.connectionCallback) {
+            self.connectionCallback(YES, nil);
+            self.connectionCallback = nil;
         }
     }
 }
