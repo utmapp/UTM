@@ -14,6 +14,7 @@
 // limitations under the License.
 //
 
+#import <sys/sysctl.h>
 #import <TargetConditionals.h>
 #import "UTMQemuSystemConfiguration.h"
 #import "UTMConfiguration.h"
@@ -28,7 +29,22 @@
 #import "UTMJailbreak.h"
 #import "UTMLogging.h"
 
+@interface UTMQemuSystemConfiguration ()
+
+@property (nonatomic, readonly) NSInteger emulatedCpuCount;
+
+@end
+
 @implementation UTMQemuSystemConfiguration
+
+static size_t hostCpuCount(void) {
+    size_t len;
+    unsigned int ncpu = 0;
+
+    len = sizeof(ncpu);
+    sysctlbyname("hw.ncpu", &ncpu, &len, NULL, 0);
+    return ncpu;
+}
 
 - (instancetype)initWithConfiguration:(UTMConfiguration *)configuration imgPath:(nonnull NSURL *)imgPath {
     self = [self init];
@@ -49,6 +65,35 @@
         [self argsFromConfiguration:NO];
         return [super argv];
     }
+}
+
+- (NSInteger)emulatedCpuCount {
+    NSInteger userCount = [self.configuration.systemCPUCount integerValue];
+    size_t ncpu = hostCpuCount();
+    if (userCount > 0 || ncpu == 0) {
+        return userCount; // user override
+    }
+#if defined(__arm__)
+    // in ARM we can only emulate other weak architectures
+    NSString *arch = self.configuration.systemArchitecture;
+    if ([arch isEqualToString:@"alpha"] ||
+        [arch isEqualToString:@"arm"] ||
+        [arch isEqualToString:@"aarch64"] ||
+        [arch isEqualToString:@"avr"] ||
+        [arch hasPrefix:@"mips"] ||
+        [arch hasPrefix:@"ppc"] ||
+        [arch hasPrefix:@"riscv"] ||
+        [arch hasPrefix:@"xtensa"]) {
+        return ncpu;
+    } else {
+        return 1;
+    }
+#elif defined(__i386__)
+    // in x86 we can emulate weak on strong
+    return ncpu;
+#else
+    return 1;
+#endif
 }
 
 - (void)architectureSpecificConfiguration {
@@ -268,7 +313,7 @@
     [self pushArgv:@"-qmp"];
     [self pushArgv:[NSString stringWithFormat:@"tcp:localhost:%lu,server,nowait", self.qmpPort]];
     [self pushArgv:@"-smp"];
-    [self pushArgv:[NSString stringWithFormat:@"cpus=%@,sockets=1", self.configuration.systemCPUCount]];
+    [self pushArgv:[NSString stringWithFormat:@"cpus=%lu,sockets=1", self.emulatedCpuCount]];
     [self pushArgv:@"-machine"];
     [self pushArgv:[NSString stringWithFormat:@"%@,%@", self.configuration.systemTarget, [self machineProperties]]];
     if ([self useHypervisor]) {

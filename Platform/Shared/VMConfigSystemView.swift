@@ -76,7 +76,7 @@ struct VMConfigSystemView: View {
                     Text("Show Advanced Settings")
                 })
                 if showAdvanced {
-                    Section(footer: Text("For most non-ARM targets, all CPUs will be emulated by a single CPU by default. Force Multicore will allow multi-CPU emulation even if the memory model is not supported by QEMU (x86 on ARM for example). This could result in incorrect emulation.").padding(.bottom)) {
+                    Section(footer: Text("Set to 0 to use maximum supported CPUs. Force multicore might result in incorrect emulation.").padding(.bottom)) {
                         HStack {
                             Text("CPU Count")
                             Spacer()
@@ -147,8 +147,8 @@ struct VMConfigSystemView: View {
     }
     
     func validateCpuCount() {
-        guard let cpuCount = config.systemCPUCount?.intValue, cpuCount > 0 else {
-            config.systemCPUCount = NSNumber(value: 1)
+        guard let cpuCount = config.systemCPUCount?.intValue, cpuCount >= 0 else {
+            config.systemCPUCount = NSNumber(value: 0)
             return
         }
     }

@@ -142,7 +142,7 @@ const float kMemoryWarningThreshold = 0.8;
     BOOL valid = NO;
     NSAssert(sender == self.cpuCountField, @"Invalid sender");
     self.cpuCount = sender.text.integerValue;
-    if (self.cpuCount > 0) {
+    if (self.cpuCount >= 0) {
         valid = YES;
     } else {
         [self showAlert:NSLocalizedString(@"Invalid core count.", @"VMConfigSystemViewController") actions:nil completion:nil];

@@ -76,7 +76,6 @@ const NSString *const kUTMConfigInfoKey = @"Info";
         self.systemArchitecture = @"x86_64";
         self.systemTarget = @"pc";
         self.systemMemory = @512;
-        self.systemCPUCount = @1;
         self.systemBootDevice = @"cd";
         self.systemUUID = [[NSUUID UUID] UUIDString];
         self.displayUpscaler = @"linear";

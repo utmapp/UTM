@@ -985,7 +985,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
                         <sections>
-                            <tableViewSection headerTitle="Hardware" footerTitle="For most non-ARM targets, all CPUs will be emulated by a single CPU by default." id="spp-Cv-g7X">
+                            <tableViewSection headerTitle="Hardware" footerTitle="For most non-ARM targets, all CPUs will be emulated by a single CPU by default. Set 0 to use maximum supported number of CPU." id="spp-Cv-g7X">
                                 <cells>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" textLabel="ziF-JQ-bTj" detailTextLabel="9fH-Qw-nVS" style="IBUITableViewCellStyleValue1" id="oTc-93-cjJ" customClass="VMConfigTogglePickerCell">
                                         <rect key="frame" x="0.0" y="55.333332061767578" width="375" height="44"/>
@@ -1165,7 +1165,7 @@
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
-                                                <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="1" textAlignment="right" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="I4t-8W-Nev" customClass="VMConfigTextField">
+                                                <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="0" textAlignment="right" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="I4t-8W-Nev" customClass="VMConfigTextField">
                                                     <rect key="frame" x="199" y="11" width="160" height="22"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <textInputTraits key="textInputTraits" keyboardType="numberPad" returnKeyType="done" enablesReturnKeyAutomatically="YES"/>
