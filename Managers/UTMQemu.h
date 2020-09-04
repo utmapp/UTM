@@ -25,6 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface UTMQemu : NSObject
 
+@property (nonatomic, readonly) BOOL hasRemoteProcess;
 @property (nonatomic, readonly) NSURL *libraryURL;
 @property (nonatomic) NSArray<NSString *> *argv;
 @property (nonatomic) dispatch_semaphore_t done;
