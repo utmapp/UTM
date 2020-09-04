@@ -32,7 +32,7 @@ static NSInteger firstZeroBit(UInt64 x) {
     return (t < 64) ? t : -1;
 }
 
-static BOOL isPortAvailable(NSInteger port) {
+BOOL isPortAvailable(NSInteger port) {
     struct sockaddr_in addr = {0};
     int sockfd = socket(AF_INET, SOCK_STREAM, 0);
     if (sockfd < 0) {

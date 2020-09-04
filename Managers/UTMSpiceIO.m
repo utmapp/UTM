@@ -22,12 +22,13 @@
 #import "UTMViewState.h"
 #import "CocoaSpice.h"
 
+extern BOOL isPortAvailable(NSInteger port); // from UTMPortAllocator
 extern NSString *const kUTMErrorDomain;
-static const int kMaxConnectionTries = 10; // qemu needs to start spice server first
+static const int kMaxConnectionTries = 30; // qemu needs to start spice server first
 static const int64_t kRetryWait = (int64_t)1*NSEC_PER_SEC;
 
 typedef void (^doConnect_t)(void);
-typedef void (^connectionCallback_t)(BOOL success, NSError * _Nullable err);
+typedef void (^connectionCallback_t)(BOOL success, NSString * _Nullable msg);
 
 @interface UTMSpiceIO ()
 
@@ -102,21 +103,28 @@ typedef void (^connectionCallback_t)(BOOL success, NSError * _Nullable err);
     return YES;
 }
 
-- (void)connectWithCompletion:(void(^)(BOOL, NSError*))block {
+- (void)connectWithCompletion:(void(^)(BOOL, NSString * _Nullable))block {
     __block int tries = kMaxConnectionTries;
     __block __weak doConnect_t weakDoConnect;
     __weak UTMSpiceIO *weakSelf = self;
     self.doConnect = ^{
         if (tries-- > 0) {
-            if ([weakSelf.spiceConnection connect]) {
-                weakSelf.connectionCallback = block;
+            if (!isPortAvailable(weakSelf.port)) { // port is in use, try connecting
+                if ([weakSelf.spiceConnection connect]) {
+                    weakSelf.connectionCallback = block;
+                    weakSelf.doConnect = nil;
+                    return;
+                }
             } else {
-                dispatch_after(kRetryWait, dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0), weakDoConnect);
+                UTMLog(@"SPICE port not in use yet, retries left: %d", tries);
+                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, kRetryWait), dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0), weakDoConnect);
+                return;
             }
-        } else { // base case, no more tries
-            NSError *err = [NSError errorWithDomain:kUTMErrorDomain code:-1 userInfo:@{NSLocalizedDescriptionKey: NSLocalizedString(@"Failed to connect to SPICE server.", "UTMSpiceIO")}];
-            block(NO, err);
         }
+        // if we get here, error is unrecoverable
+        block(NO, NSLocalizedString(@"Failed to connect to SPICE server.", "UTMSpiceIO"));
+        weakSelf.connectionCallback = nil;
+        weakSelf.doConnect = nil;
     };
     weakDoConnect = self.doConnect;
     dispatch_async(dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0), self.doConnect);
@@ -167,8 +175,7 @@ typedef void (^connectionCallback_t)(BOOL success, NSError * _Nullable err);
 - (void)spiceError:(CSConnection *)connection err:(NSString *)msg {
     NSAssert(connection == self.spiceConnection, @"Unknown connection");
     if (self.connectionCallback) {
-        NSError *err = [NSError errorWithDomain:kUTMErrorDomain code:-1 userInfo:@{NSLocalizedDescriptionKey: msg}];
-        self.connectionCallback(NO, err);
+        self.connectionCallback(NO, msg);
         self.connectionCallback = nil;
     }
 }

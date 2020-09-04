@@ -24,7 +24,7 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol UTMInputOutput <NSObject>
 
 - (BOOL)startWithError:(NSError **)err;
-- (void)connectWithCompletion: (void(^)(BOOL, NSError* _Nullable)) block;
+- (void)connectWithCompletion:(void(^)(BOOL, NSString * _Nullable))block;
 - (void)disconnect;
 - (void)setDebugMode: (BOOL)debugMode;
 - (UTMScreenshot* _Nullable)screenshot;

@@ -20,8 +20,6 @@
 @interface QEMUHelper ()
 
 @property NSMutableArray<NSURL *> *urls;
-@property NSMutableDictionary<NSString *, NSTask *> *processes;
-@property NSMutableDictionary<NSString *, void(^)(BOOL, NSString *)> *exitHandlers;
 
 @end
 
@@ -30,7 +28,6 @@
 - (instancetype)init {
     if (self = [super init]) {
         self.urls = [NSMutableArray array];
-        self.processes = [NSMutableDictionary dictionary];
     }
     return self;
 }
@@ -73,11 +70,11 @@
     completion(YES, bookmark, url.path);
 }
 
-- (void)startQemu:(NSString *)binName libraryBookmark:(NSData *)libBookmark  argv:(NSArray<NSString *> *)argv onStarted:(void(^)(NSString * _Nullable))onStarted {
+- (void)startQemu:(NSString *)binName libraryBookmark:(NSData *)libBookmark argv:(NSArray<NSString *> *)argv onExit:(void(^)(BOOL,NSString *))onExit {
     NSURL *qemuURL = [[NSBundle mainBundle] URLForAuxiliaryExecutable:binName];
     if (!qemuURL || ![[NSFileManager defaultManager] fileExistsAtPath:qemuURL.path]) {
         NSLog(@"Cannot find executable for %@", binName);
-        onStarted(nil);
+        onExit(NO, NSLocalizedString(@"Cannot find QEMU executable.", @"QEMUHelper"));
         return;
     }
     
@@ -89,74 +86,22 @@
                                                      error:&err];
     if (!libraryPath || ![[NSFileManager defaultManager] fileExistsAtPath:libraryPath.path]) {
         NSLog(@"Cannot resolve library path: %@", err);
-        onStarted(nil);
+        onExit(NO, NSLocalizedString(@"Cannot find QEMU support libraries.", @"QEMUHelper"));
         return;
     }
     
     NSTask *task = [NSTask new];
-    NSString *identifier = [self storeProcess:task];
     task.executableURL = qemuURL;
     task.arguments = argv;
     task.environment = @{@"DYLD_LIBRARY_PATH": libraryPath.path};
     task.qualityOfService = NSQualityOfServiceUserInitiated;
     task.terminationHandler = ^(NSTask *task) {
-        [self exitProcessForIdentifier:identifier];
+        BOOL normalExit = task.terminationReason == NSTaskTerminationReasonExit && task.terminationStatus == 0;
+        onExit(normalExit, nil); // TODO: get last error line
     };
     if (![task launchAndReturnError:&err]) {
         NSLog(@"Error starting QEMU: %@", err);
-        [self exitProcessForIdentifier:identifier];
-        onStarted(nil);
-    } else {
-        onStarted(identifier);
-    }
-}
-
-- (void)registerExitHandlerForIdentifier:(NSString *)identifier handler:(void(^)(BOOL,NSString *))handler {
-    if (![self storeExitHandlerForIdentifier:identifier handler:handler]) {
-        handler(NO, NSLocalizedString(@"QEMU already exited.", @"QEMUHelper"));
-    }
-}
-
-#pragma mark - Helpers
-
-- (NSString *)storeProcess:(NSTask *)process {
-    @synchronized (self.processes) {
-        NSString *identifier = [NSUUID UUID].UUIDString;
-        self.processes[identifier] = process;
-        return identifier;
-    }
-}
-
-- (BOOL)storeExitHandlerForIdentifier:(NSString *)identifier handler:(void(^)(BOOL,NSString *))handler {
-    @synchronized (self.processes) {
-        if (self.processes[identifier]) {
-            self.exitHandlers[identifier] = handler;
-            return YES;
-        } else {
-            return NO;
-        }
-    }
-}
-
-- (void)exitProcessForIdentifier:(NSString *)identifier {
-    NSTask *task;
-    void (^exitHandler)(BOOL, NSString *);
-    BOOL normalExit = NO;
-    @synchronized (self.processes) {
-        task = self.processes[identifier];
-        [self.processes removeObjectForKey:identifier];
-        exitHandler = self.exitHandlers[identifier];
-        [self.exitHandlers removeObjectForKey:identifier];
-    }
-    if (task) {
-        if (task.running) {
-            [task terminate];
-        } else {
-            normalExit = task.terminationReason == NSTaskTerminationReasonExit && task.terminationStatus == 0;
-        }
-    }
-    if (exitHandler) {
-        exitHandler(normalExit, nil); // TODO: get last error line
+        onExit(NO, NSLocalizedString(@"Error starting QEMU.", @"QEMUHelper"));
     }
 }
 
