@@ -20,17 +20,18 @@ import SwiftUI
 struct VMConfigDrivesView: View {
     @ObservedObject var config: UTMConfiguration
     @State private var newDrivePopover: Bool = false
+    @State private var importDrivePresented: Bool = false
     @StateObject private var newDrive: VMDriveImage = VMDriveImage()
     @EnvironmentObject private var data: UTMData
-    @Environment(\.importFiles) private var importFiles: ImportFilesAction
     
     var body: some View {
         VStack {
             HStack {
                 Spacer()
-                Button(action: importDrive, label: {
+                Button(action: { importDrivePresented.toggle() }, label: {
                     Label("Import Drive", systemImage: "square.and.arrow.down").labelStyle(TitleOnlyLabelStyle())
                 })
+                .fileImporter(isPresented: $importDrivePresented, allowedContentTypes: [.item], onCompletion: importDrive)
                 Button(action: { newDrivePopover.toggle() }, label: {
                     Label("New Drive", systemImage: "plus").labelStyle(TitleOnlyLabelStyle())
                 })
@@ -63,18 +64,14 @@ struct VMConfigDrivesView: View {
         return false
     }
     
-    private func importDrive() {
-        importFiles(singleOfType: [.item]) { ret in
-            data.busyWork {
-                switch ret {
-                case .success(let url):
-                    try data.importDrive(url, forConfig: config)
-                    break
-                case .failure(let err):
-                    throw err
-                case .none:
-                    break
-                }
+    private func importDrive(result: Result<URL, Error>) {
+        data.busyWork {
+            switch result {
+            case .success(let url):
+                try data.importDrive(url, forConfig: config)
+                break
+            case .failure(let err):
+                throw err
             }
         }
     }

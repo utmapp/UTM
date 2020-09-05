@@ -634,6 +634,7 @@
 		CE2D958E24AD4F990059923A /* UTMApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE2D955524AD4F980059923A /* UTMApp.swift */; };
 		CE2D958F24AD4FF00059923A /* VMCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE2D954324AD4F980059923A /* VMCardView.swift */; };
 		CE2D959024AD50D50059923A /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 521F3EFB2414F73800130500 /* Localizable.strings */; };
+		CE3B49E32503124A007BF713 /* Xcode12Beta6FileImporterFix.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE3B49E22503124A007BF713 /* Xcode12Beta6FileImporterFix.swift */; };
 		CE4698F924C8FBD9008C1BD6 /* Icons in Resources */ = {isa = PBXBuildFile; fileRef = CE4698F824C8FBD9008C1BD6 /* Icons */; };
 		CE4698FA24C8FBD9008C1BD6 /* Icons in Resources */ = {isa = PBXBuildFile; fileRef = CE4698F824C8FBD9008C1BD6 /* Icons */; };
 		CE612AC624D3B50700FA6300 /* VMDisplayWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE612AC524D3B50700FA6300 /* VMDisplayWindowController.swift */; };
@@ -1367,6 +1368,7 @@
 		CE3ADD66240EFBCA002D6A5F /* VMDisplayMetalViewController+Keyboard.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "VMDisplayMetalViewController+Keyboard.m"; sourceTree = "<group>"; };
 		CE3ADD682411C661002D6A5F /* VMCursor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VMCursor.h; sourceTree = "<group>"; };
 		CE3ADD692411C661002D6A5F /* VMCursor.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VMCursor.m; sourceTree = "<group>"; };
+		CE3B49E22503124A007BF713 /* Xcode12Beta6FileImporterFix.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Xcode12Beta6FileImporterFix.swift; sourceTree = "<group>"; };
 		CE4507D0226A5BE200A28D22 /* VMKeyboardView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VMKeyboardView.h; sourceTree = "<group>"; };
 		CE4507D1226A5BE200A28D22 /* VMKeyboardView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VMKeyboardView.m; sourceTree = "<group>"; };
 		CE4507D3226A5C9900A28D22 /* VMKeyboardViewDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VMKeyboardViewDelegate.h; sourceTree = "<group>"; };
@@ -1848,6 +1850,7 @@
 				CE2D953D24AD4F980059923A /* VMSettingsView.swift */,
 				CE2D954124AD4F980059923A /* Info.plist */,
 				CE2D953F24AD4F980059923A /* macOS.entitlements */,
+				CE3B49E22503124A007BF713 /* Xcode12Beta6FileImporterFix.swift */,
 			);
 			path = macOS;
 			sourceTree = "<group>";
@@ -3074,6 +3077,7 @@
 				CE0B6D1E24AD57FC00FE012D /* qapi-commands-trace.c in Sources */,
 				CE0B6D1C24AD57FC00FE012D /* qapi-commands-char.c in Sources */,
 				CE0B6D6424AD584D00FE012D /* qapi-visit-error.c in Sources */,
+				CE3B49E32503124A007BF713 /* Xcode12Beta6FileImporterFix.swift in Sources */,
 				CE0B6D5A24AD584C00FE012D /* qapi-events-trace.c in Sources */,
 				CE0B6CFD24AD569A00FE012D /* gst_ios_init.m in Sources */,
 				CEF83EBB24F9ABEA00557D15 /* UTMQemuManager+BlockDevices.m in Sources */,

@@ -23,8 +23,8 @@ struct VMConfigDrivesView: View {
     @ObservedObject var config: UTMConfiguration
     @State private var createDriveVisible: Bool = false
     @State private var attemptDelete: IndexSet?
+    @State private var importDrivePresented: Bool = false
     @EnvironmentObject private var data: UTMData
-    //@Environment(\.importFiles) private var importFiles: ImportFilesAction
     
     var body: some View {
         Group {
@@ -62,9 +62,10 @@ struct VMConfigDrivesView: View {
         .navigationBarItems(trailing:
             HStack {
                 EditButton().padding(.trailing, 10)
-                Button(action: importDrive, label: {
+                Button(action: { importDrivePresented.toggle() }, label: {
                     Label("Import Drive", systemImage: "square.and.arrow.down").labelStyle(IconOnlyLabelStyle())
                 }).padding(.trailing, 10)
+                .fileImporter(isPresented: $importDrivePresented, allowedContentTypes: [.item], onCompletion: importDrive)
                 Button(action: { createDriveVisible.toggle() }, label: {
                     Label("New Drive", systemImage: "plus").labelStyle(IconOnlyLabelStyle())
                 })
@@ -80,22 +81,16 @@ struct VMConfigDrivesView: View {
         }
     }
     
-    private func importDrive() {
-        /* // FIXME: rework with beta 6 APIs
-        importFiles(singleOfType: [.item]) { ret in
-            data.busyWork {
-                switch ret {
-                case .success(let url):
-                    try data.importDrive(url, forConfig: config)
-                    break
-                case .failure(let err):
-                    throw err
-                case .none:
-                    break
-                }
+    private func importDrive(result: Result<URL, Error>) {
+        data.busyWork {
+            switch result {
+            case .success(let url):
+                try data.importDrive(url, forConfig: config)
+                break
+            case .failure(let err):
+                throw err
             }
         }
- */
     }
     
     private func newDrive(driveImage: VMDriveImage) {
