@@ -93,14 +93,10 @@ const NSString *const kUTMConfigInfoKey = @"Info";
     return self;
 }
 
-- (instancetype)initWithDictionary:(NSMutableDictionary *)dictionary name:(NSString *)name path:(NSURL *)path {
+- (instancetype)initWithDictionary:(NSDictionary *)dictionary name:(NSString *)name path:(NSURL *)path {
     self = [super init];
     if (self) {
-        _rootDict = dictionary;
-        self.name = name;
-        self.existingPath = path;
-        
-        [self migrateConfigurationIfNecessary];
+        [self reloadConfigurationWithDictionary:dictionary name:name path:path];
     }
     return self;
 }
@@ -118,11 +114,18 @@ const NSString *const kUTMConfigInfoKey = @"Info";
     return ioFile;
 }
 
+- (void)reloadConfigurationWithDictionary:(NSDictionary *)dictionary name:(NSString *)name path:(NSURL *)path {
+    [self propertyWillChange];
+    _rootDict = CFBridgingRelease(CFPropertyListCreateDeepCopy(kCFAllocatorDefault, (__bridge CFDictionaryRef)dictionary, kCFPropertyListMutableContainers));
+    self.name = name;
+    self.existingPath = path;
+    [self migrateConfigurationIfNecessary];
+}
+
 #pragma mark - NSCopying
 
 - (id)copyWithZone:(NSZone *)zone {
-    NSMutableDictionary* dictRepresentation = [[self dictRepresentation] mutableCopy];
-    return [[UTMConfiguration alloc] initWithDictionary:dictRepresentation name:_name path:_existingPath];
+    return [[UTMConfiguration alloc] initWithDictionary:_rootDict name:_name path:_existingPath];
 }
 
 #pragma mark - Settings

@@ -46,6 +46,8 @@ NSString *const kSuspendSnapshotName = @"suspend";
 
 @interface UTMVirtualMachine ()
 
+@property (nonatomic, readwrite, nullable) NSURL *path;
+@property (nonatomic, readwrite) UTMConfiguration *configuration;
 @property (nonatomic, readonly) UTMQemuManager *qemu;
 @property (nonatomic, readonly) UTMQemu *system;
 @property (nonatomic, readwrite) UTMViewState *viewState;
@@ -64,7 +66,6 @@ NSString *const kSuspendSnapshotName = @"suspend";
     int64_t _absolute_input_index;
 }
 
-@synthesize path = _path;
 @synthesize busy = _is_busy;
 @synthesize system = _qemu_system;
 
@@ -121,16 +122,12 @@ NSString *const kSuspendSnapshotName = @"suspend";
 - (nullable instancetype)initWithURL:(NSURL *)url {
     self = [self init];
     if (self) {
-        _path = url;
+        self.path = url;
         self.parentPath = url.URLByDeletingLastPathComponent;
-        NSString *name = [UTMVirtualMachine virtualMachineName:url];
-        NSMutableDictionary *plist = [self loadPlist:[url URLByAppendingPathComponent:kUTMBundleConfigFilename] withError:nil];
-        if (!plist) {
-            UTMLog(@"Failed to parse config for %@", url);
+        if (![self loadConfigurationWithReload:NO error:nil]) {
             self = nil;
             return self;
         }
-        _configuration = [[UTMConfiguration alloc] initWithDictionary:plist name:name path:url];
         [self loadViewState];
         [self loadScreenshot];
         if (self.viewState.suspended) {
@@ -146,7 +143,7 @@ NSString *const kSuspendSnapshotName = @"suspend";
     self = [self init];
     if (self) {
         self.parentPath = dstUrl;
-        _configuration = configuration;
+        self.configuration = configuration;
         self.viewState = [[UTMViewState alloc] initDefaults];
     }
     return self;
@@ -163,6 +160,27 @@ NSString *const kSuspendSnapshotName = @"suspend";
 
 - (NSURL *)packageURLForName:(NSString *)name {
     return [[self.parentPath URLByAppendingPathComponent:name] URLByAppendingPathExtension:kUTMBundleExtension];
+}
+
+- (BOOL)loadConfigurationWithReload:(BOOL)reload error:(NSError * _Nullable __autoreleasing *)err {
+    NSAssert(self.path != nil, @"Cannot load configuration on an unsaved VM.");
+    NSString *name = [UTMVirtualMachine virtualMachineName:self.path];
+    NSDictionary *plist = [self loadPlist:[self.path URLByAppendingPathComponent:kUTMBundleConfigFilename] withError:err];
+    if (!plist) {
+        UTMLog(@"Failed to parse config for %@, error: %@", self.path, err ? *err : nil);
+        return NO;
+    }
+    if (reload) {
+        NSAssert(self.configuration != nil, @"Trying to reload when no configuration is loaded.");
+        [self.configuration reloadConfigurationWithDictionary:plist name:name path:self.path];
+    } else {
+        self.configuration = [[UTMConfiguration alloc] initWithDictionary:plist name:name path:self.path];
+    }
+    return YES;
+}
+
+- (BOOL)reloadConfigurationWithError:(NSError * _Nullable __autoreleasing *)err {
+    return [self loadConfigurationWithReload:YES error:err];
 }
 
 - (BOOL)saveUTMWithError:(NSError * _Nullable *)err {
@@ -219,7 +237,7 @@ NSString *const kSuspendSnapshotName = @"suspend";
             }
         }
     }
-    _path = url;
+    self.path = url;
     return YES;
 error:
     if (err) {
@@ -517,7 +535,7 @@ error:
 }
 
 - (UTMDisplayType)supportedDisplayType {
-    if ([_configuration displayConsoleOnly]) {
+    if ([self.configuration displayConsoleOnly]) {
         return UTMDisplayTypeConsole;
     } else {
         return UTMDisplayTypeFullGraphic;
@@ -526,9 +544,9 @@ error:
 
 - (id<UTMInputOutput>)inputOutputServiceWithPort:(NSInteger)port {
     if ([self supportedDisplayType] == UTMDisplayTypeConsole) {
-        return [[UTMTerminalIO alloc] initWithConfiguration:[_configuration copy]];
+        return [[UTMTerminalIO alloc] initWithConfiguration:[self.configuration copy]];
     } else {
-        return [[UTMSpiceIO alloc] initWithConfiguration:[_configuration copy] port:port];
+        return [[UTMSpiceIO alloc] initWithConfiguration:[self.configuration copy] port:port];
     }
 }
 
@@ -581,7 +599,7 @@ error:
 
 #pragma mark - Plist Handling
 
-- (NSMutableDictionary *)loadPlist:(NSURL *)path withError:(NSError **)err {
+- (NSDictionary *)loadPlist:(NSURL *)path withError:(NSError **)err {
     NSData *data = [NSData dataWithContentsOfURL:path];
     if (!data) {
         if (err) {
@@ -589,11 +607,14 @@ error:
         }
         return nil;
     }
-    id plist = [NSPropertyListSerialization propertyListWithData:data options:NSPropertyListMutableContainersAndLeaves format:nil error:err];
-    if (err) {
+    id plist = [NSPropertyListSerialization propertyListWithData:data options:0 format:nil error:err];
+    if (!plist) {
         return nil;
     }
-    if (![plist isKindOfClass:[NSMutableDictionary class]]) {
+    if (![plist isKindOfClass:[NSDictionary class]]) {
+        if (err) {
+            *err = [NSError errorWithDomain:kUTMErrorDomain code:-1 userInfo:@{NSLocalizedDescriptionKey: NSLocalizedString(@"Config format incorrect.", @"UTMVirtualMachine")}];
+        }
         return nil;
     }
     return plist;
@@ -633,7 +654,7 @@ error:
 }
 
 - (void)loadViewState {
-    NSMutableDictionary *plist = [self loadPlist:[self.path URLByAppendingPathComponent:kUTMBundleViewFilename] withError:nil];
+    NSDictionary *plist = [self loadPlist:[self.path URLByAppendingPathComponent:kUTMBundleViewFilename] withError:nil];
     if (plist) {
         self.viewState = [[UTMViewState alloc] initWithDictionary:plist];
     } else {

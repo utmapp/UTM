@@ -18,8 +18,8 @@ import SwiftUI
 
 @available(iOS 14, *)
 struct VMSettingsView: View {
+    let vm: UTMVirtualMachine?
     @ObservedObject var config: UTMConfiguration
-    var save: (UTMConfiguration) -> Void
     
     @EnvironmentObject private var data: UTMData
     @Environment(\.presentationMode) private var presentationMode: Binding<PresentationMode>
@@ -86,20 +86,35 @@ struct VMSettingsView: View {
             }
             .navigationTitle("Settings")
             .navigationViewStyle(StackNavigationViewStyle())
-            .navigationBarItems(leading: Button(action: {
-                presentationMode.wrappedValue.dismiss()
-            }, label: {
+            .navigationBarItems(leading: Button(action: cancel, label: {
                 Text("Cancel")
             }), trailing: HStack {
-                Button(action: {
-                    save(config)
-                    presentationMode.wrappedValue.dismiss()
-                }, label: {
+                Button(action: save, label: {
                     Text("Save")
                 })
             })
         }.disabled(data.busy)
         .overlay(BusyOverlay())
+    }
+    
+    func save() {
+        presentationMode.wrappedValue.dismiss()
+        data.busyWork {
+            if let existing = self.vm {
+                try data.save(vm: existing)
+            } else {
+                try data.create(config: self.config)
+            }
+        }
+    }
+    
+    func cancel() {
+        presentationMode.wrappedValue.dismiss()
+        if let existing = self.vm {
+            data.busyWork {
+                try data.discardChanges(forVM: existing)
+            }
+        }
     }
 }
 
@@ -126,6 +141,6 @@ struct VMSettingsView_Previews: PreviewProvider {
     @State static private var config = UTMConfiguration(name: "Test")
     
     static var previews: some View {
-        VMSettingsView(config: config) { _ in }
+        VMSettingsView(vm: nil, config: config)
     }
 }

@@ -145,12 +145,26 @@ class UTMData: ObservableObject {
     
     func save(vm: UTMVirtualMachine) throws {
         do {
+            let oldPath = vm.path
             try vm.saveUTM()
+            let newPath = vm.path
+            if oldPath?.path != newPath?.path {
+                logger.info("FIXME: path changed")
+            }
         } catch {
             // refresh the VM object as it is now stale
-            refreshConfiguration(for: vm)
+            do {
+                try discardChanges(forVM: vm)
+            } catch {
+                // if we can't discard changes, recreate the VM from scratch
+                recreate(vm: vm)
+            }
             throw error
         }
+    }
+    
+    func discardChanges(forVM vm: UTMVirtualMachine) throws {
+        try vm.reloadConfiguration()
     }
     
     func create(config: UTMConfiguration) throws {
@@ -298,7 +312,7 @@ class UTMData: ObservableObject {
     
     // MARK: - Helper functions
     
-    private func refreshConfiguration(for vm: UTMVirtualMachine) {
+    private func recreate(vm: UTMVirtualMachine) {
         guard let path = vm.path else {
             logger.error("Attempting to refresh unsaved VM \(vm.configuration.name)")
             return

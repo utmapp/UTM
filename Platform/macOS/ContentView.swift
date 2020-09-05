@@ -45,9 +45,8 @@ struct ContentView: View {
             }
             VMPlaceholderView()
             .sheet(isPresented: $newVMScratchPresented) {
-                VMSettingsView(config: UTMConfiguration(name: data.newDefaultVMName())) { config in
-                    data.busyWork() { try data.create(config: config) }
-                }.environmentObject(data)
+                VMSettingsView(vm: nil, config: UTMConfiguration(name: data.newDefaultVMName()))
+                    .environmentObject(data)
             }
         }.environmentObject(data)
         .frame(minWidth: 800, idealWidth: 1200, minHeight: 600, idealHeight: 800)

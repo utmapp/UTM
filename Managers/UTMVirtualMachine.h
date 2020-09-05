@@ -52,6 +52,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable instancetype)initWithURL:(NSURL *)url;
 - (instancetype)initWithConfiguration:(UTMConfiguration *)configuration withDestinationURL:(NSURL *)dstUrl;
 
+- (BOOL)reloadConfigurationWithError:(NSError * _Nullable *)err;
 - (BOOL)saveUTMWithError:(NSError * _Nullable *)err;
 
 - (BOOL)startVM;
