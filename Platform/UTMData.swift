@@ -148,8 +148,21 @@ class UTMData: ObservableObject {
             let oldPath = vm.path
             try vm.saveUTM()
             let newPath = vm.path
+            // change the saved path
             if oldPath?.path != newPath?.path {
-                logger.info("FIXME: path changed")
+                guard let oldName = oldPath?.lastPathComponent else {
+                    return
+                }
+                guard let newName = newPath?.lastPathComponent else {
+                    return
+                }
+                let defaults = UserDefaults.standard
+                if var files = defaults.array(forKey: "VMList") as? [String] {
+                    if let index = files.firstIndex(of: oldName) {
+                        files[index] = newName
+                        defaults.set(files, forKey: "VMList")
+                    }
+                }
             }
         } catch {
             // refresh the VM object as it is now stale
