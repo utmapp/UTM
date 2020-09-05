@@ -22,7 +22,9 @@ struct VMRemovableDrivesView: View {
     @EnvironmentObject private var data: UTMData
     @ObservedObject private var config: UTMConfiguration
     @ObservedObject private var sessionConfig: UTMViewState
-    //@Environment(\.importFiles) private var importFiles: ImportFilesAction
+    @State private var shareDirectoryFileImportPresented: Bool = false
+    @State private var diskImageFileImportPresented: Bool = false
+    @State private var currentDrive: UTMDrive?
     
     init(vm: UTMVirtualMachine) {
         self.vm = vm
@@ -40,10 +42,10 @@ struct VMRemovableDrivesView: View {
                     Button(action: clearShareDirectory, label: {
                         Text("Clear")
                     })
-                    Button(action: selectShareDirectory, label: {
+                    Button(action: { shareDirectoryFileImportPresented.toggle() }, label: {
                         Text("Browse")
                     })
-                }
+                }.fileImporter(isPresented: $shareDirectoryFileImportPresented, allowedContentTypes: [.folder], onCompletion: selectShareDirectory)
             }
             ForEach(vm.drives) { drive in
                 if drive.status != .fixed {
@@ -55,53 +57,49 @@ struct VMRemovableDrivesView: View {
                         Button(action: { clearRemovableImage(forDrive: drive) }, label: {
                             Text("Clear")
                         })
-                        Button(action: { selectRemovableImage(forDrive: drive) }, label: {
+                        Button(action: {
+                            currentDrive = drive
+                            diskImageFileImportPresented.toggle()
+                        }, label: {
                             Text("Browse")
                         })
                     }
+                }
+            }.fileImporter(isPresented: $diskImageFileImportPresented, allowedContentTypes: [.data]) { result in
+                if let currentDrive = self.currentDrive {
+                    selectRemovableImage(forDrive: currentDrive, result: result)
+                    self.currentDrive = nil
                 }
             }
         }
     }
     
-    private func selectShareDirectory() {
-        /* // FIXME: rework with beta 6 APIs
-        importFiles(singleOfType: [.folder]) { ret in
-            data.busyWork {
-                switch ret {
-                case .success(let url):
-                    try vm.changeSharedDirectory(url)
-                    break
-                case .failure(let err):
-                    throw err
-                case .none:
-                    break
-                }
+    private func selectShareDirectory(result: Result<URL, Error>) {
+        data.busyWork {
+            switch result {
+            case .success(let url):
+                try vm.changeSharedDirectory(url)
+                break
+            case .failure(let err):
+                throw err
             }
         }
- */
     }
     
     private func clearShareDirectory() {
         vm.clearSharedDirectory()
     }
     
-    private func selectRemovableImage(forDrive drive: UTMDrive) {
-        /* // FIXME: rework with beta 6 APIs
-        importFiles(singleOfType: [.data]) { ret in
-            data.busyWork {
-                switch ret {
-                case .success(let url):
-                    try vm.changeMedium(for: drive, url: url)
-                    break
-                case .failure(let err):
-                    throw err
-                case .none:
-                    break
-                }
+    private func selectRemovableImage(forDrive drive: UTMDrive, result: Result<URL, Error>) {
+        data.busyWork {
+            switch result {
+            case .success(let url):
+                try vm.changeMedium(for: drive, url: url)
+                break
+            case .failure(let err):
+                throw err
             }
         }
-         */
     }
     
     private func clearRemovableImage(forDrive drive: UTMDrive) {

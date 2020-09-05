@@ -32,7 +32,6 @@ struct VMConfigInfoView: View {
     @State private var imageSelectVisible: Bool = false
     @State private var iconStyle: IconStyle = .generic
     @State private var warningMessage: String? = nil
-    //@Environment(\.importFiles) private var importFiles: ImportFilesAction
     
     var body: some View {
         VStack {
@@ -75,9 +74,16 @@ struct VMConfigInfoView: View {
                     switch iconStyle {
                     case .custom:
                         #if os(macOS)
-                        Button(action: imageCustomSelect, label: {
+                        Button(action: { imageSelectVisible.toggle() }, label: {
                             IconPreview(url: config.existingCustomIconURL)
-                        }).buttonStyle(PlainButtonStyle())
+                        }).fileImporter(isPresented: $imageSelectVisible, allowedContentTypes: [.image]) { result in
+                            switch result {
+                            case .success(let url):
+                                imageCustomSelected(url: url)
+                            case .failure:
+                                break
+                            }
+                        }.buttonStyle(PlainButtonStyle())
                         #else
                         Button(action: { imageSelectVisible.toggle() }, label: {
                             IconPreview(url: config.existingCustomIconURL)
@@ -122,23 +128,6 @@ struct VMConfigInfoView: View {
             warningMessage = NSLocalizedString("Name is an invalid filename.", comment: "VMConfigInfoView")
         }
     }
-    
-    #if os(macOS)
-    private func imageCustomSelect() {
-        /* // FIXME: rework with beta 6 APIs
-        importFiles(singleOfType: [.image]) { result in
-            switch result {
-            case .success(let url):
-                imageCustomSelected(url: url)
-            case .failure:
-                break
-            case .none:
-                break
-            }
-        }
- */
-    }
-    #endif
     
     private func imageCustomSelected(url: URL?) {
         if let imageURL = url {
