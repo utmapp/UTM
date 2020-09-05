@@ -231,7 +231,7 @@ NSString *const kSuspendSnapshotName = @"suspend";
             if (![fileManager moveItemAtURL:tmpPath toURL:dstPath error:&_err]) {
                 goto error;
             }
-        } else {
+        } else if (![fileManager fileExistsAtPath:dstPath.path]) {
             if (![fileManager createDirectoryAtURL:dstPath withIntermediateDirectories:NO attributes:nil error:&_err]) {
                 goto error;
             }
