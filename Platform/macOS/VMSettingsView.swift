@@ -18,45 +18,65 @@ import SwiftUI
 
 @available(macOS 11, *)
 struct VMSettingsView: View {
+    let vm: UTMVirtualMachine?
     @ObservedObject var config: UTMConfiguration
-    var save: (UTMConfiguration) -> Void
     
     @EnvironmentObject private var data: UTMData
     @Environment(\.presentationMode) private var presentationMode: Binding<PresentationMode>
     
     var body: some View {
         ToolbarTabView {
-            PreferencePane(label: "Information", systemImage: "info.circle", cancel: { presentationMode.wrappedValue.dismiss() }, save: { save(config) }) {
+            PreferencePane(label: "Information", systemImage: "info.circle", cancel: cancel, save: save) {
                 VMConfigInfoView(config: config)
             }
-            PreferencePane(label: "System", systemImage: "cpu", cancel: { presentationMode.wrappedValue.dismiss() }, save: { save(config) }) {
+            PreferencePane(label: "System", systemImage: "cpu", cancel: cancel, save: save) {
                 VMConfigSystemView(config: config)
             }
-            PreferencePane(label: "QEMU", systemImage: "shippingbox", cancel: { presentationMode.wrappedValue.dismiss() }, save: { save(config) }) {
+            PreferencePane(label: "QEMU", systemImage: "shippingbox", cancel: cancel, save: save) {
                 VMConfigQEMUView(config: config)
                     .environmentObject(data)
             }
-            PreferencePane(label: "Drives", systemImage: "internaldrive", cancel: { presentationMode.wrappedValue.dismiss() }, save: { save(config) }) {
+            PreferencePane(label: "Drives", systemImage: "internaldrive", cancel: cancel, save: save) {
                 VMConfigDrivesView(config: config)
                     .environmentObject(data)
             }
-            PreferencePane(label: "Display", systemImage: "rectangle.on.rectangle", cancel: { presentationMode.wrappedValue.dismiss() }, save: { save(config) }) {
+            PreferencePane(label: "Display", systemImage: "rectangle.on.rectangle", cancel: cancel, save: save) {
                 VMConfigDisplayView(config: config)
             }
-            PreferencePane(label: "Input", systemImage: "keyboard", cancel: { presentationMode.wrappedValue.dismiss() }, save: { save(config) }) {
+            PreferencePane(label: "Input", systemImage: "keyboard", cancel: cancel, save: save) {
                 VMConfigInputView(config: config)
             }
-            PreferencePane(label: "Network", systemImage: "network", cancel: { presentationMode.wrappedValue.dismiss() }, save: { save(config) }) {
+            PreferencePane(label: "Network", systemImage: "network", cancel: cancel, save: save) {
                 VMConfigNetworkView(config: config)
             }
-            PreferencePane(label: "Sound", systemImage: "speaker.wave.2", cancel: { presentationMode.wrappedValue.dismiss() }, save: { save(config) }) {
+            PreferencePane(label: "Sound", systemImage: "speaker.wave.2", cancel: cancel, save: save) {
                 VMConfigSoundView(config: config)
             }
-            PreferencePane(label: "Sharing", systemImage: "person.crop.circle.fill", cancel: { presentationMode.wrappedValue.dismiss() }, save: { save(config) }) {
+            PreferencePane(label: "Sharing", systemImage: "person.crop.circle.fill", cancel: cancel, save: save) {
                 VMConfigSharingView(config: config)
             }
         }.frame(minWidth: 800, minHeight: 400)
         .overlay(BusyOverlay())
+    }
+    
+    func save() {
+        presentationMode.wrappedValue.dismiss()
+        data.busyWork {
+            if let existing = self.vm {
+                try data.save(vm: existing)
+            } else {
+                try data.create(config: self.config)
+            }
+        }
+    }
+    
+    func cancel() {
+        presentationMode.wrappedValue.dismiss()
+        if let existing = self.vm {
+            data.busyWork {
+                try data.discardChanges(forVM: existing)
+            }
+        }
     }
 }
 
@@ -87,10 +107,7 @@ struct PreferencePane<Content: View>: View {
                 Button(action: cancel) {
                     Text("Cancel")
                 }
-                Button(action: {
-                    save()
-                    cancel()
-                }) {
+                Button(action: save) {
                     Text("Save")
                 }
             }.padding([.bottom, .trailing])
@@ -103,8 +120,6 @@ struct VMSettingsView_Previews: PreviewProvider {
     @State static private var config = UTMConfiguration(name: "Test")
     
     static var previews: some View {
-        VMSettingsView(config: config) { _ in
-            
-        }
+        VMSettingsView(vm: nil, config: config)
     }
 }

@@ -61,9 +61,8 @@ struct VMDetailsView: View {
         .navigationTitle(vm.configuration.name)
         .modifier(VMToolbarModifier(vm: vm, bottom: !regularScreenSizeClass))
         .sheet(isPresented: $data.showSettingsModal) {
-            VMSettingsView(config: vm.configuration) { _ in
-                data.busyWork() { try data.save(vm: vm) }
-            }.environmentObject(data)
+            VMSettingsView(vm: vm, config: vm.configuration)
+                .environmentObject(data)
         }
     }
 }

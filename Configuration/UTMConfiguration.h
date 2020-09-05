@@ -29,9 +29,10 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)migrateConfigurationIfNecessary;
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initDefaults:(NSString *)name NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(name:));
-- (instancetype)initWithDictionary:(NSMutableDictionary *)dictionary name:(NSString *)name path:(NSURL *)path NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithDictionary:(NSDictionary *)dictionary name:(NSString *)name path:(NSURL *)path NS_DESIGNATED_INITIALIZER;
 
 - (NSURL*)terminalInputOutputURL;
+- (void)reloadConfigurationWithDictionary:(NSDictionary *)dictionary name:(NSString *)name path:(NSURL *)path;
 
 @end
 
