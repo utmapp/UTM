@@ -21,6 +21,7 @@ struct ContentView: View {
     @State private var editMode = false
     @StateObject private var data = UTMData()
     @State private var newPopupPresented = false
+    @State private var newVMScratchPresented = false
     
     var body: some View {
         NavigationView {
@@ -43,6 +44,11 @@ struct ContentView: View {
                 }
             }
             VMPlaceholderView()
+            .sheet(isPresented: $newVMScratchPresented) {
+                VMSettingsView(config: UTMConfiguration(name: data.newDefaultVMName())) { config in
+                    data.busyWork() { try data.create(config: config) }
+                }.environmentObject(data)
+            }
         }.environmentObject(data)
         .frame(minWidth: 800, idealWidth: 1200, minHeight: 600, idealHeight: 800)
         .disabled(data.busy)
@@ -58,11 +64,16 @@ struct ContentView: View {
         })
         .help("New VM")
         .popover(isPresented: $newPopupPresented, arrowEdge: .bottom) {
-            Text("Hi")
+            VStack {
+                Text("You can download an existing VM configuration for popular operating systems from the UTM gallery or start from scratch.")
+                Spacer()
+                Link("Go To Gallery", destination: URL(string: "https://getutm.app/gallery/")!)
+                Button("Start from Scratch") {
+                    newVMScratchPresented.toggle()
+                }
+            }.frame(width: 200, height: 150)
+            .padding()
         }
-    }
-    
-    private func newVMFromTemplate() {
     }
     
     private func delete(indexSet: IndexSet) {

@@ -24,6 +24,7 @@ struct ContentView: View {
     @State private var newPopupPresented = false
     @State private var newVMScratchPresented = false
     @State private var jitAlertPresented = false
+    @Environment(\.openURL) var openURL
     
     var body: some View {
         NavigationView {
@@ -67,21 +68,25 @@ struct ContentView: View {
     }
     
     private var newButton: some View {
+        return Button(action: { newVMScratchPresented.toggle() }, label: {
+            Label("New VM", systemImage: "plus").labelStyle(IconOnlyLabelStyle())
+        })
+        #if false // FIXME: when bug is fixed with actionSheet
         Button(action: { newPopupPresented.toggle() }, label: {
             Label("New VM", systemImage: "plus").labelStyle(IconOnlyLabelStyle())
         })
         .actionSheet(isPresented: $newPopupPresented) {
-            let sheet = ActionSheet(title: Text("New VM"),
-                                    message: Text("Would you like to pick a template?"),
-                                    buttons: [
-                                        .default(Text("Template"), action: newVMFromTemplate),
-                                        .default(Text("Advanced"), action: { newVMScratchPresented.toggle() })
-                                    ])
-            return sheet
+            ActionSheet(title: Text("New VM"),
+                        message: Text("You can download an existing VM configuration for popular operating systems from the UTM gallery or start from scratch."),
+                        buttons: [.default(Text("Go to Gallery"), action: newVMFromTemplate),
+                                  .default(Text("Start from Scratch"), action: { newVMScratchPresented.toggle() })
+                        ])
         }
+        #endif
     }
     
     private func newVMFromTemplate() {
+        openURL(URL(string: "https://getutm.app/gallery/")!)
     }
     
     private func delete(indexSet: IndexSet) {
