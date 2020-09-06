@@ -51,7 +51,7 @@ struct ContentView: View {
                 VMSettingsView(vm: nil, config: UTMConfiguration(name: data.newDefaultVMName()))
                     .environmentObject(data)
             }
-            VMPlaceholderView()
+            VMPlaceholderView(createNewVMPresented: $newVMScratchPresented)
         }.disabled(data.busy)
         .onAppear {
             data.refresh()

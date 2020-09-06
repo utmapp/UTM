@@ -43,7 +43,7 @@ struct ContentView: View {
                     newButton
                 }
             }
-            VMPlaceholderView()
+            VMPlaceholderView(createNewVMPresented: $newVMScratchPresented)
             .sheet(isPresented: $newVMScratchPresented) {
                 VMSettingsView(vm: nil, config: UTMConfiguration(name: data.newDefaultVMName()))
                     .environmentObject(data)
