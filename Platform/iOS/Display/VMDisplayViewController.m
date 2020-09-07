@@ -155,6 +155,9 @@
             self.toolbarVisible = YES; // always show toolbar when paused
             self.pauseResumeButton.enabled = YES;
             self.restartButton.enabled = NO;
+            self.zoomButton.enabled = NO;
+            self.keyboardButton.enabled = NO;
+            self.drivesButton.enabled = NO;
             [self.pauseResumeButton setImage:[UIImage imageNamed:@"Toolbar Start"] forState:UIControlStateNormal];
             [self.powerExitButton setImage:[UIImage imageNamed:@"Toolbar Exit"] forState:UIControlStateNormal];
             break;
@@ -167,6 +170,9 @@
             self.pauseResumeButton.enabled = NO;
             self.restartButton.enabled = NO;
             self.placeholderView.hidden = NO;
+            self.zoomButton.enabled = NO;
+            self.keyboardButton.enabled = NO;
+            self.drivesButton.enabled = NO;
             [self.placeholderIndicator startAnimating];
             [self.powerExitButton setImage:[UIImage imageNamed:@"Toolbar Exit"] forState:UIControlStateNormal];
             break;
@@ -180,6 +186,9 @@
             [self.placeholderIndicator stopAnimating];
             self.pauseResumeButton.enabled = YES;
             self.restartButton.enabled = YES;
+            self.zoomButton.enabled = YES;
+            self.keyboardButton.enabled = YES;
+            self.drivesButton.enabled = YES;
             [self.pauseResumeButton setImage:[UIImage imageNamed:@"Toolbar Pause"] forState:UIControlStateNormal];
             [self.powerExitButton setImage:[UIImage imageNamed:@"Toolbar Power"] forState:UIControlStateNormal];
             break;
