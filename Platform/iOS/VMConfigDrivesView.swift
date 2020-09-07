@@ -35,12 +35,13 @@ struct VMConfigDrivesView: View {
                     List {
                         ForEach(0..<config.countDrives, id: \.self) { index in
                             let fileName = config.driveImagePath(for: index) ?? ""
+                            let displayName = config.driveRemovable(for: index) ? NSLocalizedString("(removable)", comment: "VMConfigDrivesView") : fileName
                             let imageType = config.driveImageType(for: index)
                             let interfaceType = config.driveInterfaceType(for: index) ?? ""
                             NavigationLink(
                                 destination: VMConfigDriveDetailsView(config: config, index: index), label: {
                                     VStack(alignment: .leading) {
-                                        Text(fileName)
+                                        Text(displayName)
                                             .lineLimit(1)
                                         HStack {
                                             Text(imageType.description).font(.caption)
@@ -134,7 +135,7 @@ private struct CreateDrive: View {
                 }), trailing: Button(action: done, label: {
                     Text("Done")
                 }))
-        }
+        }.navigationViewStyle(StackNavigationViewStyle())
     }
     
     private func cancel() {
