@@ -51,6 +51,7 @@ struct ContentView: View {
         }.environmentObject(data)
         .frame(minWidth: 800, idealWidth: 1200, minHeight: 600, idealHeight: 800)
         .disabled(data.busy)
+        .onOpenURL(perform: importUTM)
         .onAppear {
             data.refresh()
         }
@@ -81,6 +82,12 @@ struct ContentView: View {
             data.busyWork {
                 try data.delete(vm: vm)
             }
+        }
+    }
+    
+    private func importUTM(url: URL) {
+        data.busyWork {
+            try data.importUTM(url: url)
         }
     }
 }
