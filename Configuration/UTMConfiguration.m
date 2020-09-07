@@ -59,36 +59,10 @@ const NSString *const kUTMConfigInfoKey = @"Info";
 
 #pragma mark - Initialization
 
-- (instancetype)initDefaults:(NSString *)name {
+- (instancetype)init {
     self = [super init];
     if (self) {
-        _rootDict = [[NSMutableDictionary alloc] initWithCapacity:8];
-        _rootDict[kUTMConfigSystemKey] = [[NSMutableDictionary alloc] init];
-        _rootDict[kUTMConfigDisplayKey] = [[NSMutableDictionary alloc] init];
-        _rootDict[kUTMConfigInputKey] = [[NSMutableDictionary alloc] init];
-        _rootDict[kUTMConfigNetworkingKey] = [[NSMutableDictionary alloc] init];
-        _rootDict[kUTMConfigPrintingKey] = [[NSMutableDictionary alloc] init];
-        _rootDict[kUTMConfigSoundKey] = [[NSMutableDictionary alloc] init];
-        _rootDict[kUTMConfigSharingKey] = [[NSMutableDictionary alloc] init];
-        _rootDict[kUTMConfigDrivesKey] = [[NSMutableArray alloc] init];
-        _rootDict[kUTMConfigDebugKey] = [[NSMutableDictionary alloc] init];
-        _rootDict[kUTMConfigInfoKey] = [[NSMutableDictionary alloc] init];
-        self.systemArchitecture = @"x86_64";
-        self.systemTarget = @"pc";
-        self.systemMemory = @512;
-        self.systemBootDevice = @"cd";
-        self.systemUUID = [[NSUUID UUID] UUIDString];
-        self.displayUpscaler = @"linear";
-        self.displayDownscaler = @"linear";
-        self.consoleFont = @"Menlo";
-        self.consoleFontSize = @12;
-        self.consoleTheme = @"Default";
-        self.networkEnabled = YES;
-        self.soundEnabled = YES;
-        self.soundCard = @"ac97";
-        self.networkCard = @"rtl8139";
-        self.shareClipboardEnabled = YES;
-        self.name = name;
+        [self resetDefaults];
     }
     return self;
 }
@@ -112,6 +86,37 @@ const NSString *const kUTMConfigInfoKey = @"Info";
     NSString* ioFileName = [NSString stringWithFormat: @"%@.terminal", self.name];
     NSURL* ioFile = [tmpDir URLByAppendingPathComponent: ioFileName];
     return ioFile;
+}
+
+- (void)resetDefaults {
+    [self propertyWillChange];
+    _rootDict = [[NSMutableDictionary alloc] initWithCapacity:8];
+    _rootDict[kUTMConfigSystemKey] = [[NSMutableDictionary alloc] init];
+    _rootDict[kUTMConfigDisplayKey] = [[NSMutableDictionary alloc] init];
+    _rootDict[kUTMConfigInputKey] = [[NSMutableDictionary alloc] init];
+    _rootDict[kUTMConfigNetworkingKey] = [[NSMutableDictionary alloc] init];
+    _rootDict[kUTMConfigPrintingKey] = [[NSMutableDictionary alloc] init];
+    _rootDict[kUTMConfigSoundKey] = [[NSMutableDictionary alloc] init];
+    _rootDict[kUTMConfigSharingKey] = [[NSMutableDictionary alloc] init];
+    _rootDict[kUTMConfigDrivesKey] = [[NSMutableArray alloc] init];
+    _rootDict[kUTMConfigDebugKey] = [[NSMutableDictionary alloc] init];
+    _rootDict[kUTMConfigInfoKey] = [[NSMutableDictionary alloc] init];
+    self.systemArchitecture = @"x86_64";
+    self.systemTarget = @"pc";
+    self.systemMemory = @512;
+    self.systemBootDevice = @"cd";
+    self.systemUUID = [[NSUUID UUID] UUIDString];
+    self.displayUpscaler = @"linear";
+    self.displayDownscaler = @"linear";
+    self.consoleFont = @"Menlo";
+    self.consoleFontSize = @12;
+    self.consoleTheme = @"Default";
+    self.networkEnabled = YES;
+    self.soundEnabled = YES;
+    self.soundCard = @"ac97";
+    self.networkCard = @"rtl8139";
+    self.shareClipboardEnabled = YES;
+    self.name = [NSUUID UUID].UUIDString;
 }
 
 - (void)reloadConfigurationWithDictionary:(NSDictionary *)dictionary name:(NSString *)name path:(NSURL *)path {

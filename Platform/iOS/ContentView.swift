@@ -19,6 +19,7 @@ import IQKeyboardManagerSwift
 
 @available(iOS 14, *)
 struct ContentView: View {
+    @StateObject private var newConfiguration = UTMConfiguration()
     @State private var editMode = false
     @EnvironmentObject private var data: UTMData
     @State private var newPopupPresented = false
@@ -48,10 +49,15 @@ struct ContentView: View {
                     EditButton()
                 }
             }
-            .sheet(isPresented: $newVMScratchPresented) {
-                VMSettingsView(vm: nil, config: UTMConfiguration(name: data.newDefaultVMName()))
+            .sheet(isPresented: $newVMScratchPresented, onDismiss: {
+                newConfiguration.resetDefaults()
+            }, content: {
+                VMSettingsView(vm: nil, config: newConfiguration)
                     .environmentObject(data)
-            }
+                    .onAppear {
+                        newConfiguration.name = data.newDefaultVMName()
+                    }
+            })
             VMPlaceholderView(createNewVMPresented: $newVMScratchPresented)
                 .overlay(BusyOverlay())
         }.disabled(data.busy)

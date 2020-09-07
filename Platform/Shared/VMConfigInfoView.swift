@@ -195,7 +195,7 @@ private struct IconSelect: View {
 
 @available(iOS 14, macOS 11, *)
 struct VMConfigInfoView_Previews: PreviewProvider {
-    @ObservedObject static private var config = UTMConfiguration(name: "Test")
+    @ObservedObject static private var config = UTMConfiguration()
     
     static var previews: some View {
         Group {

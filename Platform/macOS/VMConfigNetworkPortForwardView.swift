@@ -99,7 +99,7 @@ struct PortForwardEdit: View {
 
 @available(macOS 11, *)
 struct VMConfigNetworkPortForwardView_Previews: PreviewProvider {
-    @State static private var config = UTMConfiguration(name: "Test")
+    @State static private var config = UTMConfiguration()
     @State static private var configPort = UTMConfigurationPortForward()
     
     static var previews: some View {

@@ -33,8 +33,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy, nullable) NSData *sharedDirectory;
 @property (nonatomic, copy, nullable) NSString *sharedDirectoryPath;
 
-- (instancetype)init NS_UNAVAILABLE;
-- (instancetype)initDefaults NS_DESIGNATED_INITIALIZER;
+- (instancetype)init NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithDictionary:(NSDictionary *)dictionary NS_DESIGNATED_INITIALIZER;
 
 - (void)setBookmark:(NSData *)bookmark path:(NSString *)path forRemovableDrive:(NSString *)drive persistent:(BOOL)persistent;

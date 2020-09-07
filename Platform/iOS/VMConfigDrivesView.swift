@@ -151,7 +151,7 @@ private struct CreateDrive: View {
 
 @available(iOS 14, *)
 struct VMConfigDrivesView_Previews: PreviewProvider {
-    @ObservedObject static private var config = UTMConfiguration(name: "Test")
+    @ObservedObject static private var config = UTMConfiguration()
     
     static var previews: some View {
         Group {

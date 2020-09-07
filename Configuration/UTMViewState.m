@@ -193,7 +193,7 @@ const NSString *const kUTMViewStateRemovableDrivesPathKey = @"RemovableDrivesPat
 
 #pragma mark - Init
 
-- (instancetype)initDefaults {
+- (instancetype)init {
     self = [super init];
     if (self) {
         _rootDict = [NSMutableDictionary dictionary];

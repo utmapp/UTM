@@ -138,7 +138,7 @@ struct RoundRectIconLabelStyle: LabelStyle {
 
 @available(iOS 14, *)
 struct VMSettingsView_Previews: PreviewProvider {
-    @State static private var config = UTMConfiguration(name: "Test")
+    @State static private var config = UTMConfiguration()
     
     static var previews: some View {
         VMSettingsView(vm: nil, config: config)

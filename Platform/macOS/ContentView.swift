@@ -18,6 +18,7 @@ import SwiftUI
 
 @available(macOS 11, *)
 struct ContentView: View {
+    @StateObject private var newConfiguration = UTMConfiguration()
     @State private var editMode = false
     @StateObject private var data = UTMData()
     @State private var newPopupPresented = false
@@ -44,10 +45,15 @@ struct ContentView: View {
                 }
             }
             VMPlaceholderView(createNewVMPresented: $newVMScratchPresented)
-            .sheet(isPresented: $newVMScratchPresented) {
-                VMSettingsView(vm: nil, config: UTMConfiguration(name: data.newDefaultVMName()))
+            .sheet(isPresented: $newVMScratchPresented, onDismiss: {
+                newConfiguration.resetDefaults()
+            }, content: {
+                VMSettingsView(vm: nil, config: newConfiguration)
                     .environmentObject(data)
-            }
+                    .onAppear {
+                        newConfiguration.name = data.newDefaultVMName()
+                    }
+            })
         }.overlay(BusyOverlay())
         .environmentObject(data)
         .frame(minWidth: 800, idealWidth: 1200, minHeight: 600, idealHeight: 800)

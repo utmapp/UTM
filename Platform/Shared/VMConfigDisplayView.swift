@@ -82,7 +82,7 @@ struct VMConfigDisplayView: View {
 
 @available(iOS 14, macOS 11, *)
 struct VMConfigDisplayView_Previews: PreviewProvider {
-    @ObservedObject static private var config = UTMConfiguration(name: "Test")
+    @ObservedObject static private var config = UTMConfiguration()
     
     static var previews: some View {
         VMConfigDisplayView(config: config)
