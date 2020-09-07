@@ -31,7 +31,8 @@ struct ContentView: View {
             List {
                 ForEach(data.virtualMachines) { vm in
                     NavigationLink(
-                        destination: VMDetailsView(vm: vm),
+                        destination: VMDetailsView(vm: vm)
+                            .overlay(BusyOverlay()),
                         tag: vm,
                         selection: $data.selectedVM,
                         label: { VMCardView(vm: vm) })
@@ -52,6 +53,7 @@ struct ContentView: View {
                     .environmentObject(data)
             }
             VMPlaceholderView(createNewVMPresented: $newVMScratchPresented)
+                .overlay(BusyOverlay())
         }.disabled(data.busy)
         .onOpenURL(perform: importUTM)
         .onAppear {
@@ -61,7 +63,6 @@ struct ContentView: View {
                 jitAlertPresented.toggle()
             }
         }
-        .overlay(BusyOverlay())
         .alert(isPresented: $jitAlertPresented, content: {
             Alert(title: Text("Your version of iOS does not support running VMs while unmodified. You must either run UTM while jailbroken or with a remote debugger attached."))
         })
