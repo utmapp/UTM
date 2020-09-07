@@ -53,7 +53,9 @@ struct VMRemovableDrivesView: View {
                     HStack {
                         Label("Interface: \(drive.interface ?? "")", systemImage: drive.imageType == .CD ? "opticaldiscdrive" : "externaldrive")
                         Spacer()
-                        Text(path).truncationMode(.head)
+                        Text(path)
+                            .lineLimit(1)
+                            .truncationMode(.head)
                         Button(action: { clearRemovableImage(forDrive: drive) }, label: {
                             Text("Clear")
                         })
