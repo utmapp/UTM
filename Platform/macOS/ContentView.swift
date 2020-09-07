@@ -48,14 +48,14 @@ struct ContentView: View {
                 VMSettingsView(vm: nil, config: UTMConfiguration(name: data.newDefaultVMName()))
                     .environmentObject(data)
             }
-        }.environmentObject(data)
+        }.overlay(BusyOverlay())
+        .environmentObject(data)
         .frame(minWidth: 800, idealWidth: 1200, minHeight: 600, idealHeight: 800)
         .disabled(data.busy)
         .onOpenURL(perform: importUTM)
         .onAppear {
             data.refresh()
         }
-        .overlay(BusyOverlay())
     }
     
     private var newButton: some View {
