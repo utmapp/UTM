@@ -62,7 +62,10 @@ static size_t hostCpuCount(void) {
     if (argv.count > 0) {
         return argv;
     } else {
-        [self argsFromConfiguration:NO];
+        [self argsRequired];
+        if (!self.configuration.ignoreAllConfiguration) {
+            [self argsFromConfiguration];
+        }
         return [super argv];
     }
 }
@@ -300,7 +303,7 @@ static size_t hostCpuCount(void) {
     return @"";
 }
 
-- (void)argsFromConfiguration:(BOOL)withUserArgs {
+- (void)argsRequired {
     NSURL *resourceURL = [[NSBundle mainBundle] URLForResource:@"qemu" withExtension:nil];
     [self clearArgv];
     [self pushArgv:@"-L"];
@@ -312,6 +315,21 @@ static size_t hostCpuCount(void) {
     [self pushArgv:@"-S"]; // startup stopped
     [self pushArgv:@"-qmp"];
     [self pushArgv:[NSString stringWithFormat:@"tcp:localhost:%lu,server,nowait", self.qmpPort]];
+    if (self.configuration.displayConsoleOnly) {
+        [self pushArgv:@"-nographic"];
+        // terminal character device
+        NSURL* ioFile = [self.configuration terminalInputOutputURL];
+        [self pushArgv: @"-chardev"];
+        [self pushArgv: [NSString stringWithFormat: @"pipe,id=term0,path=%@", ioFile.path]];
+        [self pushArgv: @"-serial"];
+        [self pushArgv: @"chardev:term0"];
+    } else {
+        [self pushArgv:@"-spice"];
+        [self pushArgv:[NSString stringWithFormat:@"port=%lu,addr=127.0.0.1,disable-ticketing,image-compression=off,playback-compression=off,streaming-video=off", self.spicePort]];
+    }
+}
+
+- (void)argsFromConfiguration {
     [self pushArgv:@"-smp"];
     [self pushArgv:[NSString stringWithFormat:@"cpus=%lu,sockets=1", self.emulatedCpuCount]];
     [self pushArgv:@"-machine"];
@@ -343,19 +361,6 @@ static size_t hostCpuCount(void) {
     [self pushArgv:@"-name"];
     [self pushArgv:self.configuration.name];
     [self argsForDrives];
-    if (self.configuration.displayConsoleOnly) {
-        [self pushArgv:@"-nographic"];
-        // terminal character device
-        NSURL* ioFile = [self.configuration terminalInputOutputURL];
-        [self pushArgv: @"-chardev"];
-        [self pushArgv: [NSString stringWithFormat: @"pipe,id=term0,path=%@", ioFile.path]];
-        [self pushArgv: @"-serial"];
-        [self pushArgv: @"chardev:term0"];
-    } else {
-        [self pushArgv:@"-spice"];
-        [self pushArgv:[NSString stringWithFormat:@"port=%lu,addr=127.0.0.1,disable-ticketing,image-compression=off,playback-compression=off,streaming-video=off", self.spicePort]];
-
-    }
     [self argsForNetwork];
     // usb input if not legacy
     if (!self.configuration.inputLegacy) {
@@ -383,8 +388,10 @@ static size_t hostCpuCount(void) {
     // fix windows time issues
     [self pushArgv:@"-rtc"];
     [self pushArgv:@"base=localtime"];
+}
     
-    if (withUserArgs && self.configuration.systemArguments.count != 0) {
+- (void)argsFromUser {
+    if (self.configuration.systemArguments.count != 0) {
         NSArray *addArgs = self.configuration.systemArguments;
         // Splits all spaces into their own, except when between quotes.
         NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"(\"[^\"]+\"|\\+|\\S+)" options:0 error:nil];
@@ -414,7 +421,11 @@ static size_t hostCpuCount(void) {
 
 - (void)startWithCompletion:(void (^)(BOOL, NSString * _Nonnull))completion {
     NSString *name = [NSString stringWithFormat:@"qemu-system-%@", self.configuration.systemArchitecture];
-    [self argsFromConfiguration:YES];
+    [self argsRequired];
+    if (!self.configuration.ignoreAllConfiguration) {
+        [self argsFromConfiguration];
+    }
+    [self argsFromUser];
     [self start:name completion:completion];
 }
 

@@ -32,6 +32,7 @@ const NSString *const kUTMConfigSoundEnabledKey = @"SoundEnabled";
 const NSString *const kUTMConfigSoundCardDeviceKey = @"SoundCard";
 
 const NSString *const kUTMConfigDebugLogKey = @"DebugLog";
+const NSString *const kUTMConfigIgnoreAllConfigurationKey = @"IgnoreAllConfiguration";
 
 const NSString *const kUTMConfigIconKey = @"Icon";
 const NSString *const kUTMConfigIconCustomKey = @"IconCustom";
@@ -112,6 +113,15 @@ const NSString *const kUTMConfigNotesKey = @"Notes";
 - (void)setDebugLogEnabled:(BOOL)debugLogEnabled {
     [self propertyWillChange];
     self.rootDict[kUTMConfigDebugKey][kUTMConfigDebugLogKey] = @(debugLogEnabled);
+}
+
+- (BOOL)ignoreAllConfiguration {
+    return [self.rootDict[kUTMConfigDebugKey][kUTMConfigIgnoreAllConfigurationKey] boolValue];
+}
+
+- (void)setIgnoreAllConfiguration:(BOOL)ignoreAllConfiguration {
+    [self propertyWillChange];
+    self.rootDict[kUTMConfigDebugKey][kUTMConfigIgnoreAllConfigurationKey] = @(ignoreAllConfiguration);
 }
 
 - (void)setIcon:(NSString *)icon {
