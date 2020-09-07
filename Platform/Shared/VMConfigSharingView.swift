@@ -45,7 +45,7 @@ struct VMConfigSharingView: View {
 
 @available(iOS 14, macOS 11, *)
 struct VMConfigSharingView_Previews: PreviewProvider {
-    @State static private var config = UTMConfiguration(name: "Test")
+    @State static private var config = UTMConfiguration()
     
     static var previews: some View {
         VMConfigSharingView(config: config)

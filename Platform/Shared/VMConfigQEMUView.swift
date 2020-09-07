@@ -150,7 +150,7 @@ struct CustomArguments: View {
 
 @available(iOS 14, macOS 11, *)
 struct VMConfigQEMUView_Previews: PreviewProvider {
-    @ObservedObject static private var config = UTMConfiguration(name: "Test")
+    @ObservedObject static private var config = UTMConfiguration()
     
     static var previews: some View {
         VMConfigQEMUView(config: config)

@@ -117,7 +117,7 @@ struct PreferencePane<Content: View>: View {
 
 @available(macOS 11, *)
 struct VMSettingsView_Previews: PreviewProvider {
-    @State static private var config = UTMConfiguration(name: "Test")
+    @State static private var config = UTMConfiguration()
     
     static var previews: some View {
         VMSettingsView(vm: nil, config: config)

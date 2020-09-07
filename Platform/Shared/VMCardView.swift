@@ -140,6 +140,6 @@ struct Logo: View {
 @available(iOS 14, macOS 11, *)
 struct VMCardView_Previews: PreviewProvider {
     static var previews: some View {
-        VMCardView(vm: UTMVirtualMachine(configuration: UTMConfiguration(name: "Test"), withDestinationURL: URL(fileURLWithPath: "/")))
+        VMCardView(vm: UTMVirtualMachine(configuration: UTMConfiguration(), withDestinationURL: URL(fileURLWithPath: "/")))
     }
 }

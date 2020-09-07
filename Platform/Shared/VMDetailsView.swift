@@ -156,7 +156,7 @@ struct DetailsLabelStyle: LabelStyle {
 
 @available(iOS 14, macOS 11, *)
 struct VMDetailsView_Previews: PreviewProvider {
-    @State static private var config = UTMConfiguration(name: "Test")
+    @State static private var config = UTMConfiguration()
     
     static var previews: some View {
         VMDetailsView(vm: UTMVirtualMachine(configuration: config, withDestinationURL: URL(fileURLWithPath: "")))

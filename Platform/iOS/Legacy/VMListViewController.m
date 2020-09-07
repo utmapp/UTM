@@ -236,7 +236,8 @@
         UINavigationController *navController = (UINavigationController *)segue.destinationViewController;
         NSAssert([navController.topViewController conformsToProtocol:@protocol(UTMConfigurationDelegate)], @"Invalid segue destination");
         id<UTMConfigurationDelegate> controller = (id<UTMConfigurationDelegate>)navController.topViewController;
-        controller.configuration = [[UTMConfiguration alloc] initDefaults:[self createNewDefaultName]];
+        controller.configuration = [[UTMConfiguration alloc] init];
+        controller.configuration.name = [self createNewDefaultName];
     } else if ([segue.identifier isEqualToString:@"startVM"]) {
         NSAssert([segue.destinationViewController isKindOfClass:[VMDisplayMetalViewController class]], @"Destination not a metal view");
         VMDisplayMetalViewController *metalView = (VMDisplayMetalViewController *)segue.destinationViewController;

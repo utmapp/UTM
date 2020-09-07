@@ -135,7 +135,7 @@ struct DriveCard: View {
 
 @available(macOS 11, *)
 struct VMConfigDrivesView_Previews: PreviewProvider {
-    @ObservedObject static private var config = UTMConfiguration(name: "Test")
+    @ObservedObject static private var config = UTMConfiguration()
     
     static var previews: some View {
         Group {

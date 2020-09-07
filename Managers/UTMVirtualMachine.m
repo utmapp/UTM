@@ -47,7 +47,7 @@ NSString *const kSuspendSnapshotName = @"suspend";
 @interface UTMVirtualMachine ()
 
 @property (nonatomic, readwrite, nullable) NSURL *path;
-@property (nonatomic, readwrite) UTMConfiguration *configuration;
+@property (nonatomic, readwrite, copy) UTMConfiguration *configuration;
 @property (nonatomic, readonly) UTMQemuManager *qemu;
 @property (nonatomic, readonly) UTMQemu *system;
 @property (nonatomic, readwrite) UTMViewState *viewState;
@@ -144,7 +144,7 @@ NSString *const kSuspendSnapshotName = @"suspend";
     if (self) {
         self.parentPath = dstUrl;
         self.configuration = configuration;
-        self.viewState = [[UTMViewState alloc] initDefaults];
+        self.viewState = [[UTMViewState alloc] init];
     }
     return self;
 }
@@ -658,7 +658,7 @@ error:
     if (plist) {
         self.viewState = [[UTMViewState alloc] initWithDictionary:plist];
     } else {
-        self.viewState = [[UTMViewState alloc] initDefaults];
+        self.viewState = [[UTMViewState alloc] init];
     }
 }
 
