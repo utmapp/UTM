@@ -31,13 +31,18 @@ struct VMDetailsView: View {
     private let regularScreenSizeClass: Bool = true
     #endif
     
+    private var sizeLabel: String {
+        let size = data.computeSize(forVM: vm)
+        return ByteCountFormatter.string(fromByteCount: size, countStyle: .file)
+    }
+    
     var body: some View {
         ScrollView {
             Screenshot(vm: vm, large: regularScreenSizeClass)
             let notes = vm.configuration.notes ?? ""
             if regularScreenSizeClass && !notes.isEmpty {
                 HStack(alignment: .top) {
-                    Details(config: vm.configuration)
+                    Details(config: vm.configuration, sizeLabel: sizeLabel)
                         .padding()
                         .frame(maxWidth: .infinity)
                     Text(notes)
@@ -49,7 +54,7 @@ struct VMDetailsView: View {
                     .padding([.leading, .trailing, .bottom])
             } else {
                 VStack {
-                    Details(config: vm.configuration)
+                    Details(config: vm.configuration, sizeLabel: sizeLabel)
                     if !notes.isEmpty {
                         Text(notes)
                             .font(.body)
@@ -104,6 +109,8 @@ struct Screenshot: View {
 @available(iOS 14, macOS 11, *)
 struct Details: View {
     @ObservedObject var config: UTMConfiguration
+    let sizeLabel: String
+    @EnvironmentObject private var data: UTMData
     
     var body: some View {
         VStack {
@@ -128,7 +135,7 @@ struct Details: View {
             HStack {
                 Label("Size", systemImage: "internaldrive")
                 Spacer()
-                Text("12 GB") // TODO: get actual size
+                Text(sizeLabel)
                     .foregroundColor(.secondary)
             }
         }.lineLimit(1)
