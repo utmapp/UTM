@@ -106,10 +106,10 @@ struct PreferencePane<Content: View>: View {
                 Spacer()
                 Button(action: cancel) {
                     Text("Cancel")
-                }
+                }.keyboardShortcut(.cancelAction)
                 Button(action: save) {
                     Text("Save")
-                }
+                }.keyboardShortcut("S", modifiers: .command)
             }.padding([.bottom, .trailing])
         }.toolbarTabItem(label, systemImage: systemImage)
     }
