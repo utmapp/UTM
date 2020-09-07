@@ -53,6 +53,7 @@ struct ContentView: View {
             }
             VMPlaceholderView(createNewVMPresented: $newVMScratchPresented)
         }.disabled(data.busy)
+        .onOpenURL(perform: importUTM)
         .onAppear {
             data.refresh()
             IQKeyboardManager.shared.enable = true
@@ -94,6 +95,12 @@ struct ContentView: View {
             data.busyWork {
                 try data.delete(vm: vm)
             }
+        }
+    }
+    
+    private func importUTM(url: URL) {
+        data.busyWork {
+            try data.importUTM(url: url)
         }
     }
 }

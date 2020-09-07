@@ -245,6 +245,49 @@ class UTMData: ObservableObject {
         return [dstLogPath]
     }
     
+    func copyUTM(at: URL, to: URL, move: Bool = false) throws {
+        if move {
+            try fileManager.moveItem(at: at, to: to)
+        } else {
+            try fileManager.copyItem(at: at, to: to)
+        }
+        guard let vm = UTMVirtualMachine(url: to) else {
+            throw NSLocalizedString("Failed to parse imported VM.", comment: "UTMData")
+        }
+        DispatchQueue.main.async {
+            self.virtualMachines.append(vm)
+            self.selectedVM = vm
+        }
+    }
+    
+    func importUTM(url: URL) throws {
+        logger.info("importing: \(url)")
+        let fileBasePath = url.deletingLastPathComponent()
+        let fileName = url.lastPathComponent
+        let dest = documentsURL.appendingPathComponent(fileName, isDirectory: true)
+        if dest.resolvingSymlinksInPath().path == url.resolvingSymlinksInPath().path {
+            if let vm = virtualMachines.first(where: { vm -> Bool in
+                guard let vmPath = vm.path else {
+                    return false
+                }
+                return vmPath.lastPathComponent == fileName
+            }) {
+                logger.info("found existing vm!")
+                DispatchQueue.main.async {
+                    self.selectedVM = vm
+                }
+            } else {
+                logger.error("cannot find existing vm")
+            }
+        } else if (fileBasePath.resolvingSymlinksInPath().path == documentsURL.appendingPathComponent("Inbox", isDirectory: true).path) {
+            logger.info("moving from Inbox")
+            try copyUTM(at: url, to: dest, move: true)
+        } else {
+            logger.info("copying to Documents")
+            try copyUTM(at: url, to: dest)
+        }
+    }
+    
     // MARK: - Disk drive functions
     
     func importDrive(_ drive: URL, forConfig: UTMConfiguration, copy: Bool = false) throws {
