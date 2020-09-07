@@ -288,6 +288,9 @@
     self.keyboardVisible = !self.keyboardVisible;
 }
 
+- (IBAction)drivesPressed:(UIButton *)sender {
+}
+
 - (IBAction)hideToolbarButton:(UIButton *)sender {
     self.toolbarVisible = NO;
 }

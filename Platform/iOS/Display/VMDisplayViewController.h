@@ -34,6 +34,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (weak, nonatomic) IBOutlet UIButton *pauseResumeButton;
 @property (weak, nonatomic) IBOutlet UIButton *restartButton;
 @property (weak, nonatomic) IBOutlet UIButton *zoomButton;
+@property (weak, nonatomic) IBOutlet UIButton *drivesButton;
 @property (weak, nonatomic) IBOutlet UIVisualEffectView *placeholderView;
 @property (weak, nonatomic) IBOutlet UIActivityIndicatorView *placeholderIndicator;
 @property (weak, nonatomic) IBOutlet UIButton *resumeBigButton;
@@ -55,6 +56,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (IBAction)restartPressed:(UIButton *)sender;
 - (IBAction)showKeyboardButton:(UIButton *)sender;
 - (IBAction)hideToolbarButton:(UIButton *)sender;
+- (IBAction)drivesPressed:(UIButton *)sender;
 
 @end
 

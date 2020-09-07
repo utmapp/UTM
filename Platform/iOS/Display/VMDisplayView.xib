@@ -11,6 +11,7 @@
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="VMDisplayViewController">
             <connections>
                 <outlet property="displayView" destination="NOe-rz-jvy" id="T3M-rd-GYB"/>
+                <outlet property="drivesButton" destination="pvl-sJ-gEX" id="nh5-iv-uHh"/>
                 <outlet property="inputAccessoryView" destination="qdd-t1-YV9" id="bFg-sV-ulc"/>
                 <outlet property="pauseResumeButton" destination="f3q-Wp-4H1" id="iCI-1b-o7B"/>
                 <outlet property="placeholderIndicator" destination="18B-yK-cUi" id="ACc-pi-9qK"/>
@@ -120,14 +121,17 @@
                                                         <action selector="showKeyboardButton:" destination="-1" eventType="touchUpInside" id="ClZ-xo-syD"/>
                                                     </connections>
                                                 </button>
-                                                <button opaque="NO" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" pointerInteraction="YES" translatesAutoresizingMaskIntoConstraints="NO" id="pvl-sJ-gEX">
+                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" pointerInteraction="YES" translatesAutoresizingMaskIntoConstraints="NO" id="pvl-sJ-gEX">
                                                     <rect key="frame" x="76" y="0.0" width="30" height="30"/>
                                                     <accessibility key="accessibilityConfiguration" label="Settings"/>
                                                     <constraints>
                                                         <constraint firstAttribute="height" constant="30" id="Sb4-jZ-q30"/>
                                                         <constraint firstAttribute="width" constant="30" id="d0B-1d-7nz"/>
                                                     </constraints>
-                                                    <state key="normal" image="Toolbar Settings"/>
+                                                    <state key="normal" image="Toolbar Disc"/>
+                                                    <connections>
+                                                        <action selector="drivesPressed:" destination="-1" eventType="touchUpInside" id="bDp-Sz-88C"/>
+                                                    </connections>
                                                 </button>
                                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" pointerInteraction="YES" translatesAutoresizingMaskIntoConstraints="NO" id="8HW-IX-DYi">
                                                     <rect key="frame" x="114" y="0.0" width="30" height="30"/>
@@ -895,6 +899,7 @@
         <image name="Keyboard Hide" width="30" height="30"/>
         <image name="Keyboard Paste" width="30" height="30"/>
         <image name="Resume Icon" width="50" height="50"/>
+        <image name="Toolbar Disc" width="30" height="30"/>
         <image name="Toolbar Hide" width="30" height="30"/>
         <image name="Toolbar Keyboard" width="30" height="30"/>
         <image name="Toolbar Maximize" width="30" height="30"/>
