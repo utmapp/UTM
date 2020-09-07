@@ -13,6 +13,7 @@
                 <outlet property="displayView" destination="NOe-rz-jvy" id="T3M-rd-GYB"/>
                 <outlet property="drivesButton" destination="pvl-sJ-gEX" id="nh5-iv-uHh"/>
                 <outlet property="inputAccessoryView" destination="qdd-t1-YV9" id="bFg-sV-ulc"/>
+                <outlet property="keyboardButton" destination="wJL-Zb-gv1" id="UNI-QN-MI5"/>
                 <outlet property="pauseResumeButton" destination="f3q-Wp-4H1" id="iCI-1b-o7B"/>
                 <outlet property="placeholderIndicator" destination="18B-yK-cUi" id="ACc-pi-9qK"/>
                 <outlet property="placeholderView" destination="PK2-6H-Mm0" id="TaA-3O-Opc"/>
