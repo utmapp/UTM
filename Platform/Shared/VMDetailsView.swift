@@ -18,7 +18,7 @@ import SwiftUI
 
 @available(iOS 14, macOS 11, *)
 struct VMDetailsView: View {
-    var vm: UTMVirtualMachine
+    let vm: UTMVirtualMachine
     @EnvironmentObject private var data: UTMData
     @Environment(\.presentationMode) private var presentationMode: Binding<PresentationMode>
     #if !os(macOS)
