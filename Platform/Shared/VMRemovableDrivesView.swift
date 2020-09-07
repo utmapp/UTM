@@ -18,7 +18,7 @@ import SwiftUI
 
 @available(iOS 14, macOS 11, *)
 struct VMRemovableDrivesView: View {
-    var vm: UTMVirtualMachine
+    let vm: UTMVirtualMachine
     @EnvironmentObject private var data: UTMData
     @ObservedObject private var config: UTMConfiguration
     @ObservedObject private var sessionConfig: UTMViewState
