@@ -117,6 +117,8 @@ const NSString *const kUTMConfigInfoKey = @"Info";
     self.networkCard = @"rtl8139";
     self.shareClipboardEnabled = YES;
     self.name = [NSUUID UUID].UUIDString;
+    self.existingPath = nil;
+    self.selectedCustomIconPath = nil;
 }
 
 - (void)reloadConfigurationWithDictionary:(NSDictionary *)dictionary name:(NSString *)name path:(NSURL *)path {
@@ -124,6 +126,7 @@ const NSString *const kUTMConfigInfoKey = @"Info";
     _rootDict = CFBridgingRelease(CFPropertyListCreateDeepCopy(kCFAllocatorDefault, (__bridge CFDictionaryRef)dictionary, kCFPropertyListMutableContainers));
     self.name = name;
     self.existingPath = path;
+    self.selectedCustomIconPath = nil;
     [self migrateConfigurationIfNecessary];
 }
 
