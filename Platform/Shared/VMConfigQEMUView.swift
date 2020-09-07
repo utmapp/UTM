@@ -19,7 +19,6 @@ import SwiftUI
 @available(iOS 14, macOS 11, *)
 struct VMConfigQEMUView: View {
     @ObservedObject var config: UTMConfiguration
-    @State private var customArgsOnly: Bool = false //FIXME: implement this
     @State private var newArg: String = ""
     @State private var showExportLog: Bool = false
     @EnvironmentObject private var data: UTMData
@@ -45,7 +44,7 @@ struct VMConfigQEMUView: View {
                     .disabled(!logExists)
                 }
                 Section(header: Text("QEMU Arguments")) {
-                    Toggle(isOn: $customArgsOnly, label: {
+                    Toggle(isOn: $config.ignoreAllConfiguration.animation(), label: {
                         Text("Advanced: Bypass configuration and manually specify arguments")
                     })
                     let qemuSystem = UTMQemuSystemConfiguration(configuration: config, imgPath: URL(fileURLWithPath: "/path/to/Images"))
