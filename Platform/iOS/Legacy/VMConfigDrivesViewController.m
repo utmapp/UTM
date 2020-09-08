@@ -57,7 +57,11 @@
     NSAssert(indexPath.section == 0, @"Invalid section");
     NSAssert(cell, @"Invalid cell");
     
-    cell.textLabel.text = [self.configuration driveImagePathForIndex:indexPath.row];
+    if ([self.configuration driveRemovableForIndex:indexPath.row]) {
+        cell.textLabel.text = NSLocalizedString(@"(removable)", @"VMConfigDrivesViewController");
+    } else {
+        cell.textLabel.text = [self.configuration driveImagePathForIndex:indexPath.row];
+    }
     UTMDiskImageType type = [self.configuration driveImageTypeForIndex:indexPath.row];
     NSString *typeStr = [UTMConfiguration supportedImageTypesPretty][type];
     NSString *interface = [self.configuration driveInterfaceTypeForIndex:indexPath.row];

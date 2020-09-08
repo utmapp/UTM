@@ -24,7 +24,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface VMConfigDriveDetailViewController : VMConfigViewController
 
+// removable
+@property (weak, nonatomic) IBOutlet UISwitch *removableToggle;
+@property (nonatomic) BOOL removable;
+
+// image source
+@property (weak, nonatomic) IBOutlet UITableViewCell *existingPathCell;
 @property (weak, nonatomic) IBOutlet UILabel *existingPathLabel;
+@property (nonatomic, nullable, copy) NSString *imageName;
 
 // image type
 @property (weak, nonatomic) IBOutlet VMConfigTogglePickerCell *imageTypePickerCell;
@@ -37,6 +44,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, assign) NSUInteger driveIndex;
 @property (nonatomic, assign) BOOL valid;
+
+- (IBAction)removableToggleChanged:(UISwitch *)sender;
+- (IBAction)saveButtonPressed:(UIBarButtonItem *)sender;
 
 @end
 

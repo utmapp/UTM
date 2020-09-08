@@ -20,6 +20,7 @@
 #import "VMConfigDrivePickerViewController.h"
 #import "VMConfigPickerView.h"
 #import "VMConfigTogglePickerCell.h"
+#import "UIViewController+Extensions.h"
 
 @interface VMConfigDriveDetailViewController ()
 
@@ -37,6 +38,8 @@
         self.existingPathLabel.text = [self.configuration driveImagePathForIndex:self.driveIndex];
         self.imageType = [self.configuration driveImageTypeForIndex:self.driveIndex];
         self.driveInterfaceType = [self.configuration driveInterfaceTypeForIndex:self.driveIndex];
+        self.removable = [self.configuration driveRemovableForIndex:self.driveIndex];
+        [self showImagePathCell:!self.removable animated:NO];
     } else {
         self.imageType = UTMDiskImageTypeDisk;
         self.driveInterfaceType = [UTMConfiguration defaultDriveInterface];
@@ -74,6 +77,13 @@
         [self.configuration setDriveInterfaceType:driveInterfaceType forIndex:self.driveIndex];
     }
     self.driveLocationPickerCell.detailTextLabel.text = driveInterfaceType.length > 0 ? driveInterfaceType : @" ";
+}
+
+- (void)setRemovable:(BOOL)removable {
+    _removable = removable;
+    if (self.removableToggle.on != removable) {
+        self.removableToggle.on = removable;
+    }
 }
 
 #pragma mark - Picker delegate
@@ -116,12 +126,44 @@
 - (IBAction)unwindToDriveDetailFromDrivePicker:(UIStoryboardSegue*)sender {
     NSAssert([sender.sourceViewController isKindOfClass:[VMConfigDrivePickerViewController class]], @"Invalid segue destination");
     VMConfigDrivePickerViewController *source = (VMConfigDrivePickerViewController *)sender.sourceViewController;
+    self.imageName = source.selectedName;
+}
+
+#pragma mark - Actions
+
+- (void)showImagePathCell:(BOOL)visible animated:(BOOL)animated {
+    [self cell:self.existingPathCell setHidden:!visible];
+    [self reloadDataAnimated:animated];
+}
+
+- (IBAction)removableToggleChanged:(UISwitch *)sender {
+    self.removable = sender.on;
+    [self showImagePathCell:!self.removable animated:YES];
+}
+
+- (IBAction)saveButtonPressed:(UIBarButtonItem *)sender {
+    if (!self.removable && self.imageName.length == 0) {
+        [self showAlert:NSLocalizedString(@"You must select a disk image.", @"VMConfigDriveDetailsViewController") actions:nil completion:nil];
+        return;
+    }
     if (!self.valid) {
         self.valid = YES;
-        self.driveIndex = [self.configuration newDrive:source.selectedName type:self.imageType interface:self.driveInterfaceType];
+        if (self.removable) {
+            self.driveIndex = [self.configuration newRemovableDrive:self.imageType interface:self.driveInterfaceType];
+        } else {
+            self.driveIndex = [self.configuration newDrive:self.imageName type:self.imageType interface:self.driveInterfaceType];
+        }
     } else {
-        [self.configuration setImagePath:source.selectedName forIndex:self.driveIndex];
+        [self.configuration setDriveRemovable:self.removable forIndex:self.driveIndex];
+        if (self.removable) {
+            [self.configuration setImagePath:@"" forIndex:self.driveIndex];
+        } else {
+            [self.configuration setImagePath:self.imageName forIndex:self.driveIndex];
+        }
+        [self.configuration setDriveInterfaceType:self.driveInterfaceType forIndex:self.driveIndex];
+        [self.configuration setDriveImageType:self.imageType forIndex:self.driveIndex];
     }
+    [self.navigationController popViewControllerAnimated:YES];
 }
 
 @end
