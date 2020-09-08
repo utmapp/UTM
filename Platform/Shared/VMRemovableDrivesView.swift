@@ -26,6 +26,10 @@ struct VMRemovableDrivesView: View {
     @State private var diskImageFileImportPresented: Bool = false
     @State private var currentDrive: UTMDrive?
     
+    var fileManager: FileManager {
+        FileManager.default
+    }
+    
     init(vm: UTMVirtualMachine) {
         self.vm = vm
         self.config = vm.configuration
@@ -80,6 +84,7 @@ struct VMRemovableDrivesView: View {
         data.busyWork {
             switch result {
             case .success(let url):
+                try vm.checkSandboxAccess(url)
                 try vm.changeSharedDirectory(url)
                 break
             case .failure(let err):
