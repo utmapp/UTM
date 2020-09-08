@@ -16,15 +16,15 @@ UTM is a full featured virtual machine host for iOS. In short, it allows you to 
 * JIT based acceleration using qemu TCG
 * Frontend designed from scratch for iOS11+ using the latest and greatest APIs
 * Create, manage, run VMs directly from your device
-* No jailbreak required!
+* No jailbreak required for iOS 11-13! (required for iOS 14+)
 
 ## Install
 
-If you just want to use UTM, this is not the right place! Visit https://getutm.app/install/ for directions.
+If you just want to use UTM on iOS 11-13 or on jailbroken iOS 14, this is not the right place! Visit https://getutm.app/install/ for directions.
 
-## Building
+## Building (iOS)
 
-Make sure you have cloned with submodules `git submodule update --init --recursive`.
+To run UTM without a jailbreak on iOS 14 (as well as to develop UTM on any iOS version), you must run with the Xcode debugger attached.
 
 ### Easy
 
@@ -38,13 +38,20 @@ If you want to build the dependencies yourself, it is highly recommended that yo
     `brew install bison pkg-config gettext glib libgpg-error nasm`
    Make sure to add `bison` to your `$PATH` environment!
 2. `git submodule update --init --recursive` if you haven't already
-3. Run `./scripts/build_dependencies.sh` to start the build. If building for the simulator, run `./scripts/build_dependencies.sh -a x86_64` instead.
+3. Run `./scripts/build_dependencies.sh` to start the build. If building for the simulator, run `./scripts/build_dependencies.sh -p ios -a x86_64` instead.
 4. Open `UTM.xcodeproj` and select your signing certificate
-5. Build and deploy from Xcode
+5. Select iOS as the target, build and deploy from Xcode
 
-## Signing
+## Building (macOS)
 
-If you build with Xcode, signing should be done automatically. iOS 13.3.1 is NOT supported due to a signing bug. You can use any version lower or higher than 13.3.1.
+Mostly the same as for iOS but with the following changes:
+
+* For building dependencies on Intel platforms, run `./scripts/build_dependencies.sh -p macos -a x86_64`
+* For building dependencies on Apple Silicon platforms, run `./scripts/build_dependencies.sh -p macos -a arm64`
+
+You may also download the prebuilt dependencies from Github instead.
+
+## Signing (iOS)
 
 ### Signing Release
 
