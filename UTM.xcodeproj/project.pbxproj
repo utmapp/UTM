@@ -637,6 +637,8 @@
 		CE3B49E32503124A007BF713 /* Xcode12Beta6FileImporterFix.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE3B49E22503124A007BF713 /* Xcode12Beta6FileImporterFix.swift */; };
 		CE4698F924C8FBD9008C1BD6 /* Icons in Resources */ = {isa = PBXBuildFile; fileRef = CE4698F824C8FBD9008C1BD6 /* Icons */; };
 		CE4698FA24C8FBD9008C1BD6 /* Icons in Resources */ = {isa = PBXBuildFile; fileRef = CE4698F824C8FBD9008C1BD6 /* Icons */; };
+		CE4EF2702506DBFD00E9D33B /* VMRemovableDrivesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE4EF26F2506DBFD00E9D33B /* VMRemovableDrivesViewController.swift */; };
+		CE4EF2722506DD7900E9D33B /* VMRemovableDrivesView.xib in Resources */ = {isa = PBXBuildFile; fileRef = CE4EF2712506DD7900E9D33B /* VMRemovableDrivesView.xib */; };
 		CE612AC624D3B50700FA6300 /* VMDisplayWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE612AC524D3B50700FA6300 /* VMDisplayWindowController.swift */; };
 		CE7D972C24B2B17D0080CB69 /* BusyOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE7D972B24B2B17D0080CB69 /* BusyOverlay.swift */; };
 		CE8813D324CD230300532628 /* ActivityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE8813D224CD230300532628 /* ActivityView.swift */; };
@@ -1379,6 +1381,8 @@
 		CE4AA14B2264004F002E4A54 /* CSConnection.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CSConnection.m; sourceTree = "<group>"; };
 		CE4AA14D22642EB4002E4A54 /* CSConnectionDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CSConnectionDelegate.h; sourceTree = "<group>"; };
 		CE4AA14E2265B152002E4A54 /* libqemu-img.utm.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libqemu-img.utm.dylib"; path = "sysroot-$(PLATFORM_FAMILY_NAME)-$(PLATFORM_PREFERRED_ARCH)/lib/libqemu-img.utm.dylib"; sourceTree = "<group>"; };
+		CE4EF26F2506DBFD00E9D33B /* VMRemovableDrivesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMRemovableDrivesViewController.swift; sourceTree = "<group>"; };
+		CE4EF2712506DD7900E9D33B /* VMRemovableDrivesView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = VMRemovableDrivesView.xib; sourceTree = "<group>"; };
 		CE54252C2436E48D00E520F7 /* UTMConfigurationPortForward.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UTMConfigurationPortForward.h; sourceTree = "<group>"; };
 		CE54252D2436E48D00E520F7 /* UTMConfigurationPortForward.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UTMConfigurationPortForward.m; sourceTree = "<group>"; };
 		CE54252F2437C09C00E520F7 /* UTMConfiguration+Drives.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UTMConfiguration+Drives.h"; sourceTree = "<group>"; };
@@ -2318,6 +2322,8 @@
 				E28394C0240C268A006742E2 /* VMDisplayTerminalViewController.m */,
 				CEC05DF72464B93900DA82B2 /* VMDisplayTerminalViewController+Keyboard.h */,
 				CEC05DF82464B93900DA82B2 /* VMDisplayTerminalViewController+Keyboard.m */,
+				CE4EF2712506DD7900E9D33B /* VMRemovableDrivesView.xib */,
+				CE4EF26F2506DBFD00E9D33B /* VMRemovableDrivesViewController.swift */,
 				CEEB66442284B942002737B2 /* VMKeyboardButton.h */,
 				CEEB66452284B942002737B2 /* VMKeyboardButton.m */,
 				CE4507D0226A5BE200A28D22 /* VMKeyboardView.h */,
@@ -2618,6 +2624,7 @@
 				CE2D936B24AD46670059923A /* Localizable.strings in Resources */,
 				CE2D936C24AD46670059923A /* qemu in Resources */,
 				CE2D936D24AD46670059923A /* VMDisplayView.xib in Resources */,
+				CE4EF2722506DD7900E9D33B /* VMRemovableDrivesView.xib in Resources */,
 				CE2D937024AD46670059923A /* terminal.html in Resources */,
 				CE2D937224AD46670059923A /* Settings.bundle in Resources */,
 				CE0B6CED24AD532A00FE012D /* Assets.xcassets in Resources */,
@@ -2771,6 +2778,7 @@
 				CEB63A8E24F46E6E00CAF323 /* VMConfigViewController.m in Sources */,
 				CEF83ECC24FB382B00557D15 /* UTMVirtualMachine+Terminal.m in Sources */,
 				CEB63A9224F46E6E00CAF323 /* VMConfigInputViewController.m in Sources */,
+				CE4EF2702506DBFD00E9D33B /* VMRemovableDrivesViewController.swift in Sources */,
 				CE2D92AA24AD46670059923A /* UTMSpiceIO.m in Sources */,
 				CE2D92AB24AD46670059923A /* qapi-events-machine-target.c in Sources */,
 				CE2D92AC24AD46670059923A /* qapi-types-misc.c in Sources */,

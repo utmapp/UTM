@@ -21,8 +21,11 @@
 #import "UTMLogging.h"
 #import "UTMVirtualMachine.h"
 #import "VMConfigExistingViewController.h"
+#import "UTM-Swift.h"
 
 @interface VMDisplayViewController ()
+
+@property (nonatomic) VMRemovableDrivesViewController *removableDrivesViewController;
 
 @end
 
@@ -45,6 +48,9 @@
     self.displayView.frame = self.view.bounds;
     self.displayView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
     [self.view addSubview:self.displayView];
+    
+    // removable drives VC
+    self.removableDrivesViewController = [[VMRemovableDrivesViewController alloc] initWithNibName:@"VMRemovableDrivesView" bundle:nil];
 }
 
 #pragma mark - Properties
@@ -298,6 +304,9 @@
 }
 
 - (IBAction)drivesPressed:(UIButton *)sender {
+    self.removableDrivesViewController.modalPresentationStyle = UIModalPresentationPageSheet;
+    self.removableDrivesViewController.vm = self.vm;
+    [self presentViewController:self.removableDrivesViewController animated:YES completion:nil];
 }
 
 - (IBAction)hideToolbarButton:(UIButton *)sender {
