@@ -2507,8 +2507,37 @@
                         <sections>
                             <tableViewSection headerTitle="Image" id="SCF-Z9-xBk">
                                 <cells>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" textLabel="CDM-d1-Xuf" detailTextLabel="iuP-Eh-P68" style="IBUITableViewCellStyleValue1" id="VTl-xi-ink">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" id="aHn-wD-uca">
                                         <rect key="frame" x="0.0" y="55.333332061767578" width="375" height="44"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="aHn-wD-uca" id="luW-1a-tXf">
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Removable" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="K1N-PB-wfm">
+                                                    <rect key="frame" x="16" y="11.666666666666664" width="84" height="21"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                                <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="31y-Z3-Act">
+                                                    <rect key="frame" x="310" y="6.6666666666666679" width="51" height="31.000000000000004"/>
+                                                    <connections>
+                                                        <action selector="removableToggleChanged:" destination="LEE-I0-SfL" eventType="valueChanged" id="t04-o6-n8Q"/>
+                                                    </connections>
+                                                </switch>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstItem="31y-Z3-Act" firstAttribute="trailing" secondItem="luW-1a-tXf" secondAttribute="trailingMargin" id="616-V4-ncH"/>
+                                                <constraint firstItem="K1N-PB-wfm" firstAttribute="centerY" secondItem="luW-1a-tXf" secondAttribute="centerY" id="CIY-OD-2Zz"/>
+                                                <constraint firstItem="31y-Z3-Act" firstAttribute="centerY" secondItem="luW-1a-tXf" secondAttribute="centerY" id="J6t-0E-FIu"/>
+                                                <constraint firstItem="31y-Z3-Act" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="K1N-PB-wfm" secondAttribute="trailing" constant="8" symbolic="YES" id="OBc-sb-eIQ"/>
+                                                <constraint firstItem="K1N-PB-wfm" firstAttribute="leading" secondItem="luW-1a-tXf" secondAttribute="leadingMargin" id="e4J-5l-EmG"/>
+                                            </constraints>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" textLabel="CDM-d1-Xuf" detailTextLabel="iuP-Eh-P68" style="IBUITableViewCellStyleValue1" id="VTl-xi-ink">
+                                        <rect key="frame" x="0.0" y="99.333332061767578" width="375" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="VTl-xi-ink" id="94n-ta-l2f">
                                             <rect key="frame" x="0.0" y="0.0" width="348" height="44"/>
@@ -2657,11 +2686,19 @@
                             <outlet property="delegate" destination="LEE-I0-SfL" id="WME-fa-dbI"/>
                         </connections>
                     </tableView>
-                    <navigationItem key="navigationItem" title="New Drive/Image" id="XLc-iy-COp"/>
+                    <navigationItem key="navigationItem" title="New Drive/Image" id="XLc-iy-COp">
+                        <barButtonItem key="rightBarButtonItem" systemItem="save" id="R6h-hu-6Fc">
+                            <connections>
+                                <action selector="saveButtonPressed:" destination="LEE-I0-SfL" id="iVb-yH-X64"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
                     <connections>
                         <outlet property="driveLocationPickerCell" destination="17E-cW-AVf" id="uv2-Kl-Jsk"/>
+                        <outlet property="existingPathCell" destination="VTl-xi-ink" id="0Nc-c9-tUk"/>
                         <outlet property="existingPathLabel" destination="iuP-Eh-P68" id="dti-2P-X2T"/>
                         <outlet property="imageTypePickerCell" destination="fSV-PP-Loi" id="Di5-B2-RUu"/>
+                        <outlet property="removableToggle" destination="31y-Z3-Act" id="vIy-jU-iJb"/>
                         <outletCollection property="driveTypeCells" destination="17E-cW-AVf" id="nMw-2a-KNp"/>
                         <outletCollection property="configPickerToggles" destination="fSV-PP-Loi" id="3E2-1I-WMX"/>
                         <outletCollection property="configPickerToggles" destination="17E-cW-AVf" id="lTh-HA-ubb"/>
