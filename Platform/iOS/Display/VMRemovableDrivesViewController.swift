@@ -51,7 +51,7 @@ extension VMRemovableDrivesViewController: UITableViewDataSource, UITableViewDel
         guard let drive = self.drives?[indexPath.row] else {
             return cell
         }
-        if #available(iOS 13.0, *) {
+        if #available(iOS 14.0, *) {
             switch drive.status {
             case .fixed: cell.icon.image = UIImage(systemName: "internaldrive")
             case .ejected: cell.icon.image = UIImage(systemName: "opticaldiscdrive")
@@ -59,12 +59,11 @@ extension VMRemovableDrivesViewController: UITableViewDataSource, UITableViewDel
             @unknown default:
                 break
             }
-            if drive.status == .fixed {
-                cell.label.textColor = .secondaryLabel
-            }
         }
         if drive.status != .fixed {
             cell.accessoryType = .disclosureIndicator
+        } else if #available(iOS 13.0, *) {
+            cell.label.textColor = .secondaryLabel
         }
         cell.label.text = drive.label
         return cell
