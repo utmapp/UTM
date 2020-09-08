@@ -27,6 +27,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)ejectDrive:(UTMDrive *)drive force:(BOOL)force error:(NSError * _Nullable *)error;
 - (BOOL)changeMediumForDrive:(UTMDrive *)drive url:(NSURL *)url error:(NSError * _Nullable *)error;
 - (void)restoreRemovableDrivesFromBookmarks;
+- (BOOL)checkSandboxAccess:(NSURL *)url error:(NSError * _Nullable __autoreleasing *)error;
 
 @end
 

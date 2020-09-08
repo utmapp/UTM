@@ -75,6 +75,12 @@ extern NSString *const kUTMErrorDomain;
                                       relativeToURL:nil
                                               error:error];
     if (!bookmark) {
+        if (error) {
+            *error = [NSError errorWithDomain:kUTMErrorDomain code:-1 userInfo:@{NSLocalizedDescriptionKey: NSLocalizedString(@"Failed create bookmark.", "UTMVirtualMachine+Drives")}];
+        }
+        return NO;
+    }
+    if (![self checkSandboxAccess:url error:error]) {
         return NO;
     }
     [self.viewState setBookmark:bookmark path:url.path forRemovableDrive:drive.name persistent:NO];
@@ -124,6 +130,17 @@ extern NSString *const kUTMErrorDomain;
             }
         }
     }
+}
+
+- (BOOL)checkSandboxAccess:(NSURL *)url error:(NSError * _Nullable __autoreleasing *)error {
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    if (![fileManager fileExistsAtPath:url.path]) {
+        if (error) {
+            *error = [NSError errorWithDomain:kUTMErrorDomain code:-1 userInfo:@{NSLocalizedDescriptionKey: NSLocalizedString(@"This version of UTM does not allow file access outside of UTM's Documents directory.", "UTMVirtualMachine+Drives")}];
+        }
+        return NO;
+    }
+    return YES;
 }
 
 @end
