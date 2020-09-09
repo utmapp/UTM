@@ -90,17 +90,18 @@ const NSString *const kUTMConfigInfoKey = @"Info";
 
 - (void)resetDefaults {
     [self propertyWillChange];
-    _rootDict = [[NSMutableDictionary alloc] initWithCapacity:8];
-    _rootDict[kUTMConfigSystemKey] = [[NSMutableDictionary alloc] init];
-    _rootDict[kUTMConfigDisplayKey] = [[NSMutableDictionary alloc] init];
-    _rootDict[kUTMConfigInputKey] = [[NSMutableDictionary alloc] init];
-    _rootDict[kUTMConfigNetworkingKey] = [[NSMutableDictionary alloc] init];
-    _rootDict[kUTMConfigPrintingKey] = [[NSMutableDictionary alloc] init];
-    _rootDict[kUTMConfigSoundKey] = [[NSMutableDictionary alloc] init];
-    _rootDict[kUTMConfigSharingKey] = [[NSMutableDictionary alloc] init];
-    _rootDict[kUTMConfigDrivesKey] = [[NSMutableArray alloc] init];
-    _rootDict[kUTMConfigDebugKey] = [[NSMutableDictionary alloc] init];
-    _rootDict[kUTMConfigInfoKey] = [[NSMutableDictionary alloc] init];
+    _rootDict = [@{
+        kUTMConfigSystemKey: [NSMutableDictionary new],
+        kUTMConfigDisplayKey: [NSMutableDictionary new],
+        kUTMConfigInputKey: [NSMutableDictionary new],
+        kUTMConfigNetworkingKey: [NSMutableDictionary new],
+        kUTMConfigPrintingKey: [NSMutableDictionary new],
+        kUTMConfigSoundKey: [NSMutableDictionary new],
+        kUTMConfigSharingKey: [NSMutableDictionary new],
+        kUTMConfigDrivesKey: [NSMutableDictionary new],
+        kUTMConfigDebugKey: [NSMutableDictionary new],
+        kUTMConfigInfoKey: [NSMutableDictionary new],
+    } mutableCopy];
     self.systemArchitecture = @"x86_64";
     self.systemTarget = @"pc";
     self.systemMemory = @512;
