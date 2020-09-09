@@ -14,6 +14,7 @@
 // limitations under the License.
 //
 
+#include <dlfcn.h>
 #include <errno.h>
 #include <mach/mach.h>
 #include <pthread.h>
@@ -24,11 +25,14 @@
 #include <unistd.h>
 #include "UTMJailbreak.h"
 
-extern boolean_t exc_server(mach_msg_header_t *, mach_msg_header_t *);
-extern int ptrace(int request, pid_t pid, caddr_t addr, int data);
+static int (*csops)(pid_t pid, unsigned int ops, void * useraddr, size_t usersize);
+static boolean_t (*exc_server)(mach_msg_header_t *, mach_msg_header_t *);
+static int (*ptrace)(int request, pid_t pid, caddr_t addr, int data);
 
-#define PT_TRACE_ME 0
-#define PT_SIGEXC 12
+#define    CS_OPS_STATUS        0    /* return status */
+#define CS_DEBUGGED 0x10000000  /* process is currently or has previously been debugged and allowed to run with invalid pages */
+#define PT_TRACE_ME     0       /* child declares it's being traced */
+#define PT_SIGEXC       12      /* signals as exceptions for current_proc */
 
 kern_return_t catch_exception_raise(mach_port_t exception_port,
                                     mach_port_t thread,
@@ -41,6 +45,17 @@ kern_return_t catch_exception_raise(mach_port_t exception_port,
     return KERN_FAILURE;
 }
 
+static void init_sys_functions(void) {
+    static bool init_done = false;
+    if (!init_done) {
+        csops = dlsym(dlopen(NULL, RTLD_LAZY), "csops");
+        exc_server = dlsym(dlopen(NULL, RTLD_LAZY), "exc_server");
+        ptrace = dlsym(dlopen(NULL, RTLD_LAZY), "ptrace");
+        // these should always resolve but maybe we have a fallback anyways?
+        init_done = 1;
+    }
+}
+
 static void *exception_handler(void *argument) {
     mach_port_t port = *(mach_port_t *)argument;
     mach_msg_server(exc_server, 2048, port, 0);
@@ -48,10 +63,8 @@ static void *exception_handler(void *argument) {
 }
 
 static bool am_i_being_debugged() {
-    int mib[] = {CTL_KERN, KERN_PROC, KERN_PROC_PID, getpid()};
-    struct kinfo_proc info = {};
-    size_t size = sizeof(info);
-    return !sysctl(mib, sizeof(mib) / sizeof(*mib), &info, &size, NULL, 0) && !!(info.kp_proc.p_flag & P_TRACED);
+    int flags;
+    return !csops(getpid(), CS_OPS_STATUS, &flags, sizeof(flags)) && flags & CS_DEBUGGED;
 }
 
 
@@ -69,12 +82,9 @@ bool jb_has_ptrace_hack(void) {
 #if defined(NO_PTRACE_HACK)
     return false;
 #else
+    init_sys_functions();
     int res = ptrace(-1, -1, NULL, 0);
-    if (res < 0 && errno == EINVAL) {
-        return true;
-    } else {
-        return false;
-    }
+    return res < 0 && errno == EINVAL;
 #endif
 }
 
@@ -82,6 +92,7 @@ bool jb_enable_ptrace_hack(void) {
 #if defined(NO_PTRACE_HACK)
     return false;
 #else
+    init_sys_functions();
     bool debugged = am_i_being_debugged();
     
     // Thanks to this comment: https://news.ycombinator.com/item?id=18431524
