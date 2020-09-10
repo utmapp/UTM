@@ -18,6 +18,7 @@
 #import "VMDisplayMetalViewController+Keyboard.h"
 #import "VMDisplayMetalViewController+Touch.h"
 #import "VMDisplayMetalViewController+Pointer.h"
+#import "VMDisplayMetalViewController+Pencil.h"
 #import "VMDisplayMetalViewController+Gamepad.h"
 #import "VMKeyboardView.h"
 #import "UTMRenderer.h"
@@ -77,6 +78,10 @@
         if (NSClassFromString(@"UIPointerInteraction") != nil) {
             [self initPointerInteraction];
         }
+    }
+    // Apple Pencil 2 double tap support on iOS 12.1+
+    if (@available(iOS 12.1, *)) {
+        [self initPencilInteraction];
     }
 }
 
