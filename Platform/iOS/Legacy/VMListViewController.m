@@ -55,7 +55,9 @@
                                                         action:NSSelectorFromString(@"deleteAction:")];
     UIMenuItem *duplicateItem = [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"Clone", @"Clone context menu")
                                                            action:NSSelectorFromString(@"cloneAction:")];
-    [[UIMenuController sharedMenuController] setMenuItems:@[deleteItem, duplicateItem]];
+    UIMenuItem *shareItem = [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"Share", @"Share context menu")
+                                                       action:NSSelectorFromString(@"shareAction:")];
+    [[UIMenuController sharedMenuController] setMenuItems:@[deleteItem, duplicateItem, shareItem]];
     
     // Set up refresh
     UIRefreshControl *refresh = [UIRefreshControl new];
@@ -200,6 +202,28 @@
     [self presentViewController:alert animated:YES completion:nil];
 }
 
+- (void)shareVM:(NSURL *)url rect: (CGRect)rect {
+    NSArray *objectsToShare = @[url];
+
+    UIActivityViewController *controller = [[UIActivityViewController alloc] initWithActivityItems:objectsToShare applicationActivities:nil];
+
+    // Exclude all activities except AirDrop.
+    NSArray *excludedActivities = @[UIActivityTypePostToTwitter, UIActivityTypePostToFacebook,
+                                       UIActivityTypePostToWeibo,
+                                       UIActivityTypeMessage, UIActivityTypeMail,
+                                       UIActivityTypePrint, UIActivityTypeCopyToPasteboard,
+                                       UIActivityTypeAssignToContact, UIActivityTypeSaveToCameraRoll,
+                                       UIActivityTypeAddToReadingList, UIActivityTypePostToFlickr,
+                                       UIActivityTypePostToVimeo, UIActivityTypePostToTencentWeibo];
+    controller.excludedActivityTypes = excludedActivities;
+
+    [controller.popoverPresentationController setSourceView: self.view];
+    [controller.popoverPresentationController setSourceRect: rect];
+    
+    // Present the controller
+    [self presentViewController:controller animated:YES completion:nil];
+}
+
 - (void)deleteVM:(NSURL *)url {
     NSString *name = [UTMVirtualMachine virtualMachineName:url];
     [self showAlertSerialized:NSLocalizedString(@"Are you sure you want to delete this VM? Any drives associated will also be deleted.", @"Delete confirmation") isQuestion:YES completion:^{
@@ -286,7 +310,7 @@
 }
 
 - (BOOL)collectionView:(UICollectionView *)collectionView canPerformAction:(SEL)action forItemAtIndexPath:(NSIndexPath *)indexPath withSender:(id)sender {
-    if (action == NSSelectorFromString(@"deleteAction:") || action == NSSelectorFromString(@"cloneAction:")) {
+    if (action == NSSelectorFromString(@"deleteAction:") || action == NSSelectorFromString(@"cloneAction:")  || action == NSSelectorFromString(@"shareAction:")) {
         return YES;
     } else {
         return NO;
@@ -304,6 +328,11 @@
         [self deleteVM:source];
     } else if (action == NSSelectorFromString(@"cloneAction:")) {
         [self cloneVM:source];
+    } else if (action == NSSelectorFromString(@"shareAction:")) {
+        UICollectionViewLayoutAttributes * theAttributes = [collectionView layoutAttributesForItemAtIndexPath:indexPath];
+
+        CGRect cellFrameInSuperview = [collectionView convertRect:theAttributes.frame toView:[collectionView superview]];
+        [self shareVM:source rect:cellFrameInSuperview];
     }
 }
 
