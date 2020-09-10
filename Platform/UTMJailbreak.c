@@ -25,9 +25,9 @@
 #include <unistd.h>
 #include "UTMJailbreak.h"
 
-static int (*csops)(pid_t pid, unsigned int ops, void * useraddr, size_t usersize);
-static boolean_t (*exc_server)(mach_msg_header_t *, mach_msg_header_t *);
-static int (*ptrace)(int request, pid_t pid, caddr_t addr, int data);
+extern int csops(pid_t pid, unsigned int ops, void * useraddr, size_t usersize);
+extern boolean_t exc_server(mach_msg_header_t *, mach_msg_header_t *);
+extern int ptrace(int request, pid_t pid, caddr_t addr, int data);
 
 #define    CS_OPS_STATUS        0    /* return status */
 #define CS_DEBUGGED 0x10000000  /* process is currently or has previously been debugged and allowed to run with invalid pages */
@@ -43,17 +43,6 @@ kern_return_t catch_exception_raise(mach_port_t exception_port,
     fprintf(stderr, "Caught exception %d (this should be EXC_SOFTWARE), with code 0x%x (this should be EXC_SOFT_SIGNAL) and subcode %d. Forcing suicide.", exception, *code, code[1]);
     // _exit doesn't seem to work, but this does. ¯\_(ツ)_/¯
     return KERN_FAILURE;
-}
-
-static void init_sys_functions(void) {
-    static bool init_done = false;
-    if (!init_done) {
-        csops = dlsym(dlopen(NULL, RTLD_LAZY), "csops");
-        exc_server = dlsym(dlopen(NULL, RTLD_LAZY), "exc_server");
-        ptrace = dlsym(dlopen(NULL, RTLD_LAZY), "ptrace");
-        // these should always resolve but maybe we have a fallback anyways?
-        init_done = 1;
-    }
 }
 
 static void *exception_handler(void *argument) {
@@ -82,7 +71,6 @@ bool jb_has_ptrace_hack(void) {
 #if defined(NO_PTRACE_HACK)
     return false;
 #else
-    init_sys_functions();
     int res = ptrace(-1, -1, NULL, 0);
     return res < 0 && errno == EINVAL;
 #endif
@@ -92,7 +80,6 @@ bool jb_enable_ptrace_hack(void) {
 #if defined(NO_PTRACE_HACK)
     return false;
 #else
-    init_sys_functions();
     bool debugged = am_i_being_debugged();
     
     // Thanks to this comment: https://news.ycombinator.com/item?id=18431524
