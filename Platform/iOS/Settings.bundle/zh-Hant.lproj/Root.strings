@@ -26,16 +26,16 @@
 "Cursor" = "光標";
 
 /* (No Comment) */
-"D-DOWN" = "方向鍵下";
+"D-DOWN" = "下方向鍵";
 
 /* (No Comment) */
-"D-LEFT" = "方向鍵左";
+"D-LEFT" = "左方向鍵";
 
 /* (No Comment) */
-"D-RIGHT" = "方向鍵右";
+"D-RIGHT" = "右方向鍵";
 
 /* (No Comment) */
-"D-UP" = "方向鍵上";
+"D-UP" = "上方向鍵";
 
 /* (No Comment) */
 "Disabled" = "禁用";
