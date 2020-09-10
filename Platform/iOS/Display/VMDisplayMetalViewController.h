@@ -34,6 +34,7 @@ NS_ASSUME_NONNULL_BEGIN
     BOOL _mouseLeftDown;
     BOOL _mouseRightDown;
     BOOL _mouseMiddleDown;
+    BOOL _pencilForceRightClickOnce;
     VMCursor *_cursor;
     VMScroll *_scroll;
     
