@@ -26,16 +26,16 @@
 "Cursor" = "光标";
 
 /* (No Comment) */
-"D-DOWN" = "方向键下";
+"D-DOWN" = "下方向键";
 
 /* (No Comment) */
-"D-LEFT" = "方向键左";
+"D-LEFT" = "左方向键";
 
 /* (No Comment) */
-"D-RIGHT" = "方向键右";
+"D-RIGHT" = "右方向键";
 
 /* (No Comment) */
-"D-UP" = "方向键上";
+"D-UP" = "上方向键";
 
 /* (No Comment) */
 "Disabled" = "禁用";
@@ -68,7 +68,7 @@
 "Group" = "组";
 
 /* (No Comment) */
-"Left" = "方向键左";
+"Left" = "左方向键";
 
 /* (No Comment) */
 "Long Press" = "长按";
@@ -143,5 +143,5 @@
 "Two Finger Tap" = "双指轻点";
 
 /* (No Comment) */
-"Up" = "方向键上";
+"Up" = "上方向键";
 

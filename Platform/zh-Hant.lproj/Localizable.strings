@@ -1,26 +1,26 @@
 /* VMConfigDriveCreateViewController */
-"A file already exists for this name, if you proceed, it will be replaced." = "此名稱的檔案已存在，如果繼續，它將被替換。";
+"A file already exists for this name, if you proceed, it will be replaced." = "同名的項目已被創建，如果您繼續，正在創建的項目將會替換它。";
 
 /* VMDisplayViewController */
-"An internal error has occured. UTM will terminate." = "發生內部錯誤。UTM即將退出。";
+"An internal error has occured. UTM will terminate." = "發生了一個內部錯誤。 UTM即將退出。";
 
 /* VMConfigDirectoryPickerViewController */
-"Are you sure you want to delete this directory? All files and subdirectories WILL be deleted." = "您確定要删除此目錄嗎？所有檔案和子目錄將被删除。";
+"Are you sure you want to delete this directory? All files and subdirectories WILL be deleted." = "您確定要刪除此目錄嗎？所有文件和子目錄將會被刪除。";
 
 /* Delete confirmation */
-"Are you sure you want to delete this VM? Any drives associated will also be deleted." = "您確定要删除此虛擬機器嗎？所有關聯的磁片/光碟鏡像也將被删除。";
+"Are you sure you want to delete this VM? Any drives associated will also be deleted." = "您確定要刪除此虛擬機嗎？所有與虛擬機關聯的磁盤/光盤鏡像也將會被刪除。";
 
 /* VMDisplayViewController */
 "Are you sure you want to exit UTM?." = "您確定要退出UTM嗎？";
 
 /* VMConfigDrivePickerViewController */
-"Are you sure you want to permanently delete this disk image?" = "您確定要永久删除該磁片鏡像嗎？";
+"Are you sure you want to permanently delete this disk image?" = "您確定要永久刪除該磁盤鏡像嗎？";
 
 /* VMDisplayViewController */
-"Are you sure you want to reset this VM? Any unsaved changes will be lost." = "您確定要重置此虛擬機器嗎？任何未保存的更改將遺失。";
+"Are you sure you want to reset this VM? Any unsaved changes will be lost." = "您確定要重置此虛擬機嗎？ 任何未保存的更改將會丟失。";
 
 /* VMDisplayViewController */
-"Are you sure you want to stop this VM and exit? Any unsaved changes will be lost." = "您確定要強制關閉虛擬機器嗎？所有未保存的更改都會遺失。";
+"Are you sure you want to stop this VM and exit? Any unsaved changes will be lost." = "您確定要強制關閉虛擬機嗎？所有未保存的更改都將會丟失。";
 
 /* VMConfigSharingViewController */
 "Browse..." = "瀏覽";
@@ -31,7 +31,7 @@
 "Cancel" = "取消";
 
 /* VMConfigDriveCreateViewController */
-"Cannot create directory for disk image." = "無法在路徑中創建磁片鏡像";
+"Cannot create directory for disk image." = "無法為磁盤映像創建目錄。";
 
 /* Configuration boot device */
 "CD/DVD" = "CD/DVD";
@@ -49,33 +49,33 @@
 "Create Directory" = "創建目錄";
 
 /* VMConfigDriveCreateViewController */
-"Creating disk..." = "磁片創建中...";
+"Creating disk..." = "磁盤創建中...";
 
 /* Delete button
    Delete context menu
    VMConfigDirectoryPickerViewController */
-"Delete" = "删除";
+"Delete" = "刪除";
 
 /* VMConfigDrivesViewController */
-"Delete Data" = "删除";
+"Delete Data" = "刪除數據";
 
 /* Delete VM overlay */
-"Deleting %@..." = "正在删除 %@...";
+"Deleting %@..." = "正在刪除 %@...";
 
 /* VMConfigDirectoryPickerViewController */
 "Directory Name" = "目錄名稱";
 
 /* VMDisplayTerminalViewController */
-"Disable this bar in Settings -> General -> Keyboards -> Shortcuts" = "在設定->通用->鍵盤->快速鍵禁用此欄";
+"Disable this bar in Settings -> General -> Keyboards -> Shortcuts" = "在 設置->通用->鍵盤->快捷鍵 中禁用此欄";
 
 /* VMConfigDriveCreateViewController */
-"Disk creation failed." = "磁片鏡像創建失敗";
+"Disk creation failed." = "磁盤鏡像創建失敗";
 
 /* UTMConfiguration */
-"Disk Image" = "磁片鏡像";
+"Disk Image" = "磁盤鏡像";
 
 /* VMConfigDrivesViewController */
-"Do you want to also delete the disk image data? If yes, the data will be lost. Otherwise, you can create a new drive with the existing data." = "您是否還要删除磁片映射數據？如果是，數據將遺失。否則，您可以使用現有數據創建新驅動器。";
+"Do you want to also delete the disk image data? If yes, the data will be lost. Otherwise, you can create a new drive with the existing data." = "您是否還要刪除磁盤映像數據呢?如果是，數據將丟失。否則，您可以使用現有數據創建一個新驅動器。";
 
 /* VMConfigDirectoryPickerViewController
    VMConfigPortForwardingViewController */
@@ -94,28 +94,28 @@
 "Failed to load plist" = "無法加載plist";
 
 /* VMDisplayViewController */
-"Failed to save VM state. Do you have at least one read-write drive attached that supports snapshots?" = "保存虛擬機器狀態失敗。您是否至少裝有一個支持快照的讀寫驅動器？";
+"Failed to save VM state. Do you have at least one read-write drive attached that supports snapshots?" = "保存虛擬機狀態失敗。 您是否裝載了至少一個支持快照的讀寫驅動器？";
 
 /* Configuration boot device */
-"Floppy" = "軟碟";
+"Floppy" = "軟盤";
 
 /* VMConfigPortForwardingViewController */
 "Guest address (optional)" = "客戶機地址(可選)";
 
 /* VMConfigPortForwardingViewController */
-"Guest port (required)" = "客戶機埠(必需)";
+"Guest port (required)" = "客戶機端口(必填)";
 
 /* Configuration boot device */
-"Hard Disk" = "硬碟";
+"Hard Disk" = "硬盤";
 
 /* VMDisplayViewController */
-"Hint: To show the toolbar again, use a three-finger swipe down on the screen." = "提示：要再次顯示工具列，請使用三指在荧幕上向下滑動。";
+"Hint: To show the toolbar again, use a three-finger swipe down on the screen." = "提示：要再次顯示工具欄，請使用三指在屏幕從上向下滑動。";
 
 /* VMConfigPortForwardingViewController */
 "Host address (optional)" = "主機地址(可選)";
 
 /* VMConfigPortForwardingViewController */
-"Host port (required)" = "主機埠(必需)";
+"Host port (required)" = "主機端口(必填)";
 
 /* Import button */
 "Import" = "導入";
@@ -124,22 +124,22 @@
 "Internal error has occurred." = "發生內部錯誤";
 
 /* UTMVirtualMachine */
-"Internal error starting main loop." = "啟動虛擬機器時發生內部錯誤(main loop)。";
+"Internal error starting main loop." = "啓動虛擬機時發生內部錯誤(main loop)。";
 
 /* UTMVirtualMachine */
-"Internal error starting VM." = "啟動虛擬機器時發生內部錯誤。";
+"Internal error starting VM." = "啓動虛擬機時發生內部錯誤。";
 
 /* VMConfigSystemViewController */
-"Invalid core count." = "無效覈心數量。";
+"Invalid core count." = "無效的核心數量。";
 
 /* VMConfigSystemViewController */
-"Invalid memory size." = "無效記憶體大小。";
+"Invalid memory size." = "無效的內存大小。";
 
 /* VMConfigDriveCreateViewController */
-"Invalid name" = "無效名稱";
+"Invalid name" = "無效的名稱";
 
 /* VMConfigDriveCreateViewController */
-"Invalid size" = "無效大小";
+"Invalid size" = "無效的大小";
 
 /* VMConfigSystemViewController */
 "JIT cache size cannot be larger than 2GB." = "JIT緩存大小不能大於2GB。";
@@ -157,10 +157,10 @@
 "Nearest Neighbor" = "近鄰取樣";
 
 /* VMConfigPortForwardingViewController */
-"New port forward" = "新建埠轉發";
+"New port forward" = "新建端口轉發";
 
 /* Clone VM name prompt message */
-"New VM name" = "輸入新的虛擬機器的名字";
+"New VM name" = "輸入新的虛擬機的名字";
 
 /* No button
    VMDisplayViewController */
@@ -171,31 +171,31 @@
 
 /* OK button
    OK Button */
-"OK" = "好";
+"OK" = "好的";
 
 /* UTMQemu */
 "QEMU exited from an error: %@" = "QEMU遇到錯誤退出: %@";
 
 /* VMDisplayViewController */
-"Running low on memory! UTM might soon be killed by iOS. You can prevent this by decreasing the amount of memory and/or JIT cache assigned to this VM" = "記憶體不足！UTM可能很快會被iOS強制終止您可以通過减少分配給該虛擬機器的記憶體或JIT緩存來防止這種情況。";
+"Running low on memory! UTM might soon be killed by iOS. You can prevent this by decreasing the amount of memory and/or JIT cache assigned to this VM" = "內存不足！ UTM可能很快會被iOS強制終止 您可以通過減少給該虛擬機分配的內存或JIT緩存來防止這種情況。";
 
 /* No comment provided by engineer. */
-"Running qemu-img more than once is unimplemented. Restart the app to create another disk." = "同時運行多個虛擬機器的功能還未完成，請點左上角X重新啟動UTM後再試。";
+"Running qemu-img more than once is unimplemented. Restart the app to create another disk." = "同時運行多個虛擬機的功能還未完成，請點左上角X重新啓動UTM後再試。";
 
 /* Save VM overlay */
 "Saving %@..." = "%@保存中...";
 
 /* VMConfigSharingViewController */
-"Shared path has moved. Please re-choose." = "共亯目錄已被移動，請重新選擇。";
+"Shared path has moved. Please re-choose." = "共享目錄已被移動，請重新選擇。";
 
 /* VMConfigSharingViewController */
-"Shared path is no longer valid. Please re-choose." = "共亯目錄已經失效，請重新選擇。";
+"Shared path is no longer valid. Please re-choose." = "共享目錄已經失效， 請重新選擇。";
 
 /* VMConfigPortForwardingViewController */
 "TCP Forward" = "TCP";
 
 /* VMConfigSystemViewController */
-"The total memory usage is close to your device's limit. iOS will kill the VM if it consumes too much memory." = "此記憶體設定接近您設備可用記憶體的極限。消耗過大記憶體的虛擬機器會被iOS強制終止。";
+"The total memory usage is close to your device's limit. iOS will kill the VM if it consumes too much memory." = "此內存設置接近您設備可用內存的極限。消耗過大內存的虛擬機會被iOS強制終止。";
 
 /* UTMQemuManager */
 "Timed out waiting for RPC." = "RPC連接超時。";
@@ -204,14 +204,15 @@
 "UDP Forward" = "UDP";
 
 /* VMConfigSystemViewController */
-"Warning: iOS will kill apps that use more than 80% of the device's total memory." = "警告：iOS會強制關閉使用設備總記憶體80%以上的應用。";
+"Warning: iOS will kill apps that use more than 80% of the device's total memory." = "警告：iOS會強制關閉使用設備總內存80％以上的應用。";
 
 /* Startup message */
-"Welcome to UTM! Due to a bug in iOS, if you force kill this app, the system will be unstable and you cannot launch UTM again until you reboot. The recommended way to terminate this app is the button on the top left." = "歡迎使用UTM！由於iOS中的一個Bug，如果您強制關閉UTM，系統將變得不穩定，並且您必須重新啟動您的設備才能再次使用UTM建議點擊左上方的按鈕來退出UTM。";
+"Welcome to UTM! Due to a bug in iOS, if you force kill this app, the system will be unstable and you cannot launch UTM again until you reboot. The recommended way to terminate this app is the button on the top left." = "歡迎使用UTM！因為iOS的一個Bug，如果您強制關閉UTM，系統將變得不穩定，您必須重新啓動您的設備才能再次使用UTM。我們建議點擊左上方的按鈕來退出UTM。";
 
 /* VMConfigDrivePickerViewController */
-"Would you like to import an existing disk image or create a new one?" = "您是想導入一個磁片鏡像還是創建新的空白磁片鏡像？";
+"Would you like to import an existing disk image or create a new one?" = "您想導入一個磁盤鏡像還是創建新的空白磁盤鏡像？";
 
 /* VMDisplayViewController
    Yes button */
 "Yes" = "是的";
+
