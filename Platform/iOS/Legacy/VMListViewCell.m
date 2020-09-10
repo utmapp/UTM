@@ -82,4 +82,8 @@
     [self sendAction:sender action:_cmd];
 }
 
+- (void)shareAction:(id)sender {
+    [self sendAction:sender action:_cmd];
+}
+
 @end
