@@ -59,21 +59,12 @@ static bool am_i_being_debugged() {
 
 bool jb_has_jit_entitlement(void) {
     void *addr = mmap(NULL, PAGE_SIZE, PROT_READ | PROT_WRITE | PROT_EXEC, MAP_ANON | MAP_PRIVATE | MAP_JIT, -1, 0);
-    if (addr != NULL) {
+    if (addr != MAP_FAILED) {
         munmap(addr, PAGE_SIZE);
         return true;
     } else {
         return false;
     }
-}
-
-bool jb_has_ptrace_hack(void) {
-#if defined(NO_PTRACE_HACK)
-    return false;
-#else
-    int res = ptrace(-1, -1, NULL, 0);
-    return res < 0 && errno == EINVAL;
-#endif
 }
 
 bool jb_enable_ptrace_hack(void) {

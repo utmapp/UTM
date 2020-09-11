@@ -2883,7 +2883,7 @@ index eace2c113b..83d8fe43e0 100644
 +    void *test = mmap(NULL, qemu_real_host_page_size,
 +                      PROT_WRITE | PROT_READ | PROT_EXEC,
 +                      MAP_PRIVATE | MAP_ANONYMOUS | MAP_JIT, -1, 0);
-+    if (test == NULL) {
++    if (test == MAP_FAILED) {
 +        return true;
 +    } else {
 +        munmap(test, qemu_real_host_page_size);

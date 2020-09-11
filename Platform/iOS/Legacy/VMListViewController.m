@@ -98,7 +98,7 @@
         }
     });
     
-    if (jb_has_ptrace_hack()) {
+    if (!jb_has_jit_entitlement()) {
         [self showStartupMessage];
     }
 }

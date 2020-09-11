@@ -26,15 +26,11 @@ class Main {
         setupLogging()
         // check if we have jailbreak
         if jb_has_jit_entitlement() {
-            logger.info("JIT: found dynamic codesign entitlement")
-        } else if jb_has_ptrace_hack() {
-            logger.info("JIT: ptrace() hack supported, attempting to enable")
-            if !jb_enable_ptrace_hack() {
-                logger.info("JIT: ptrace() hack failed")
-                jitAvailable = false
-            }
+            logger.info("JIT: found entitlement")
+        } else if jb_enable_ptrace_hack() {
+            logger.info("JIT: ptrace() hack supported")
         } else {
-            logger.info("JIT: not supported")
+            logger.info("JIT: ptrace() hack failed")
             jitAvailable = false
         }
         if #available(iOS 14, macOS 11, *) {
