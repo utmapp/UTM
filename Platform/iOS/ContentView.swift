@@ -106,6 +106,9 @@ struct ContentView: View {
     }
     
     private func importUTM(url: URL) {
+        guard url.isFileURL else {
+            return // ignore
+        }
         data.busyWork {
             try data.importUTM(url: url)
         }
