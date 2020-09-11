@@ -98,7 +98,7 @@ const NSString *const kUTMConfigInfoKey = @"Info";
         kUTMConfigPrintingKey: [NSMutableDictionary new],
         kUTMConfigSoundKey: [NSMutableDictionary new],
         kUTMConfigSharingKey: [NSMutableDictionary new],
-        kUTMConfigDrivesKey: [NSMutableDictionary new],
+        kUTMConfigDrivesKey: [NSMutableArray new],
         kUTMConfigDebugKey: [NSMutableDictionary new],
         kUTMConfigInfoKey: [NSMutableDictionary new],
     } mutableCopy];
