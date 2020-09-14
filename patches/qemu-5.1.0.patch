@@ -5733,3 +5733,49 @@ index b0194cb..eb57116 100644
 -- 
 2.24.1 (Apple Git-126)
 
+From 0f83a02f6aac64e5efe0bc7b1058d0e0b8525e91 Mon Sep 17 00:00:00 2001
+From: osy <osy86@users.noreply.github.com>
+Date: Mon, 14 Sep 2020 15:06:29 -0700
+Subject: [PATCH] block: check availablity for preadv/pwritev on mac
+
+macOS 11/iOS 14 added preadv/pwritev APIs. Due to weak linking, configure
+will succeed with CONFIG_PREADV even when targeting a lower OS version. We
+therefore need to check at run time if we can actually use these APIs.
+---
+ block/file-posix.c | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
+
+diff --git a/block/file-posix.c b/block/file-posix.c
+index c8c13ab218..601074a242 100644
+--- a/block/file-posix.c
++++ b/block/file-posix.c
+@@ -1396,12 +1396,26 @@ static bool preadv_present = true;
+ static ssize_t
+ qemu_preadv(int fd, const struct iovec *iov, int nr_iov, off_t offset)
+ {
++#ifdef CONFIG_DARWIN // preadv introduced in macOS 11
++    if (!__builtin_available(macOS 11, iOS 14, watchOS 7, tvOS 14, *)) {
++        preadv_present = false;
++        return -ENOSYS;
++    }
++    else
++#endif
+     return preadv(fd, iov, nr_iov, offset);
+ }
+ 
+ static ssize_t
+ qemu_pwritev(int fd, const struct iovec *iov, int nr_iov, off_t offset)
+ {
++#ifdef CONFIG_DARWIN // pwritev introduced in macOS 11
++    if (!__builtin_available(macOS 11, iOS 14, watchOS 7, tvOS 14, *)) {
++        preadv_present = false;
++        return -ENOSYS;
++    }
++    else
++#endif
+     return pwritev(fd, iov, nr_iov, offset);
+ }
+ 
+-- 
+2.24.3 (Apple Git-128)
+
