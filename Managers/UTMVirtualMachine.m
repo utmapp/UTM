@@ -25,7 +25,7 @@
 #import "UTMViewState.h"
 #import "UTMQemuImg.h"
 #import "UTMQemuManager.h"
-#import "UTMQemuSystemConfiguration.h"
+#import "UTMQemuSystem.h"
 #import "UTMTerminalIO.h"
 #import "UTMSpiceIO.h"
 #import "UTMLogging.h"
@@ -57,7 +57,7 @@ NSString *const kSuspendSnapshotName = @"suspend";
 @end
 
 @implementation UTMVirtualMachine {
-    UTMQemuSystemConfiguration *_qemu_system;
+    UTMQemuSystem *_qemu_system;
     dispatch_semaphore_t _will_quit_sema;
     dispatch_semaphore_t _qemu_exit_sema;
     BOOL _is_busy;
@@ -264,7 +264,7 @@ error:
     }
     
     if (!_qemu_system) {
-        _qemu_system = [[UTMQemuSystemConfiguration alloc] initWithConfiguration:self.configuration imgPath:self.path];
+        _qemu_system = [[UTMQemuSystem alloc] initWithConfiguration:self.configuration imgPath:self.path];
 #if !TARGET_OS_IPHONE
         [_qemu_system setupXpc];
 #endif

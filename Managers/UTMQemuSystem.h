@@ -18,7 +18,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface UTMQemuSystemConfiguration : UTMQemu
+@interface UTMQemuSystem : UTMQemu
 
 @property (nonatomic) UTMConfiguration *configuration;
 @property (nonatomic) NSURL *imgPath;

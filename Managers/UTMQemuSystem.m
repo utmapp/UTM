@@ -17,7 +17,7 @@
 #import <dlfcn.h>
 #import <sys/sysctl.h>
 #import <TargetConditionals.h>
-#import "UTMQemuSystemConfiguration.h"
+#import "UTMQemuSystem.h"
 #import "UTMConfiguration.h"
 #import "UTMConfiguration+Constants.h"
 #import "UTMConfiguration+Display.h"
@@ -30,20 +30,20 @@
 #import "UTMJailbreak.h"
 #import "UTMLogging.h"
 
-@interface UTMQemuSystemConfiguration ()
+@interface UTMQemuSystem ()
 
 @property (nonatomic, readonly) NSInteger emulatedCpuCount;
 
 @end
 
-@implementation UTMQemuSystemConfiguration {
+@implementation UTMQemuSystem {
     int (*_qemu_init)(int, const char *[], const char *[]);
     void (*_qemu_main_loop)(void);
     void (*_qemu_cleanup)(void);
 }
 
 static void *start_qemu(void *args) {
-    UTMQemuSystemConfiguration *self = (__bridge_transfer UTMQemuSystemConfiguration *)args;
+    UTMQemuSystem *self = (__bridge_transfer UTMQemuSystem *)args;
     NSArray<NSString *> *qemuArgv = self.argv;
     
     NSCAssert(self->_qemu_init != NULL, @"Started thread with invalid function.");
