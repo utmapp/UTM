@@ -14,11 +14,11 @@
 // limitations under the License.
 //
 
-#import "UTMQemuSystem.h"
+#import "UTMQemu.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface UTMQemuSystemConfiguration : UTMQemuSystem
+@interface UTMQemuSystemConfiguration : UTMQemu
 
 @property (nonatomic) UTMConfiguration *configuration;
 @property (nonatomic) NSURL *imgPath;

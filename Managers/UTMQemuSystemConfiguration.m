@@ -14,6 +14,7 @@
 // limitations under the License.
 //
 
+#import <dlfcn.h>
 #import <sys/sysctl.h>
 #import <TargetConditionals.h>
 #import "UTMQemuSystemConfiguration.h"
@@ -35,7 +36,35 @@
 
 @end
 
-@implementation UTMQemuSystemConfiguration
+@implementation UTMQemuSystemConfiguration {
+    int (*_qemu_init)(int, const char *[], const char *[]);
+    void (*_qemu_main_loop)(void);
+    void (*_qemu_cleanup)(void);
+}
+
+static void *start_qemu(void *args) {
+    UTMQemuSystemConfiguration *self = (__bridge_transfer UTMQemuSystemConfiguration *)args;
+    NSArray<NSString *> *qemuArgv = self.argv;
+    
+    NSCAssert(self->_qemu_init != NULL, @"Started thread with invalid function.");
+    NSCAssert(self->_qemu_main_loop != NULL, @"Started thread with invalid function.");
+    NSCAssert(self->_qemu_cleanup != NULL, @"Started thread with invalid function.");
+    NSCAssert(qemuArgv, @"Started thread with invalid argv.");
+    
+    int argc = (int)qemuArgv.count + 1;
+    const char *argv[argc];
+    argv[0] = "qemu-system";
+    for (int i = 0; i < qemuArgv.count; i++) {
+        argv[i+1] = [qemuArgv[i] UTF8String];
+    }
+    const char *envp[] = { NULL };
+    self->_qemu_init(argc, argv, envp);
+    self->_qemu_main_loop();
+    self->_qemu_cleanup();
+    self.status = 0;
+    dispatch_semaphore_signal(self.done);
+    return NULL;
+}
 
 static size_t hostCpuCount(void) {
     size_t len;
@@ -53,6 +82,7 @@ static size_t hostCpuCount(void) {
         self.imgPath = imgPath;
         self.qmpPort = 4444;
         self.spicePort = 5930;
+        self.entry = start_qemu;
     }
     return self;
 }
@@ -417,6 +447,13 @@ static size_t hostCpuCount(void) {
             }
         }
     }
+}
+
+- (BOOL)didLoadDylib:(void *)handle {
+    _qemu_init = dlsym(handle, "qemu_init");
+    _qemu_main_loop = dlsym(handle, "qemu_main_loop");
+    _qemu_cleanup = dlsym(handle, "qemu_cleanup");
+    return (_qemu_init != NULL) && (_qemu_main_loop != NULL) && (_qemu_cleanup != NULL);
 }
 
 - (void)startWithCompletion:(void (^)(BOOL, NSString * _Nonnull))completion {
