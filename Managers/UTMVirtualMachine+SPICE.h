@@ -26,6 +26,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)clearSharedDirectory;
 - (BOOL)startSharedDirectoryWithError:(NSError * _Nullable __autoreleasing *)error;
 
+- (void)requestInputTablet:(BOOL)tablet;
+
 @end
 
 NS_ASSUME_NONNULL_END

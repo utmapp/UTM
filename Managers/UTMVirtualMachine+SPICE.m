@@ -16,9 +16,11 @@
 
 #import <TargetConditionals.h>
 #import "UTMVirtualMachine+SPICE.h"
+#import "CocoaSpice.h"
 #import "UTMConfiguration+Display.h"
 #import "UTMConfiguration+Sharing.h"
 #import "UTMLogging.h"
+#import "UTMQemuManager.h"
 #import "UTMSpiceIO.h"
 #import "UTMViewState.h"
 
@@ -34,6 +36,7 @@ static const NSURLBookmarkResolutionOptions kBookmarkResolutionOptions = NSURLBo
 
 @interface UTMVirtualMachine ()
 
+@property (nonatomic, readonly) UTMQemuManager *qemu;
 @property (nonatomic, readonly, nullable) id<UTMInputOutput> ioService;
 
 @end
@@ -49,6 +52,8 @@ static const NSURLBookmarkResolutionOptions kBookmarkResolutionOptions = NSURLBo
     }
     return (UTMSpiceIO *)self.ioService;
 }
+
+#pragma mark - Shared Directory
 
 - (BOOL)hasShareDirectoryEnabled {
     return self.configuration.shareDirectoryEnabled && !self.configuration.displayConsoleOnly;
@@ -127,6 +132,30 @@ static const NSURLBookmarkResolutionOptions kBookmarkResolutionOptions = NSURLBo
         }
     }
     return YES;
+}
+
+#pragma mark - Input device switching
+
+- (void)requestInputTablet:(BOOL)tablet {
+    [self.qemu mouseIndexForAbsolute:tablet withCompletion:^(int64_t index, NSError *err) {
+        if (err) {
+            UTMLog(@"error finding index: %@", err);
+        } else {
+            UTMLog(@"found index:%lld absolute:%d", index, tablet);
+            [self.qemu mouseSelect:index withCompletion:^(NSString *res, NSError *err) {
+                if (err) {
+                    UTMLog(@"input select returned error: %@", err);
+                } else {
+                    UTMSpiceIO *spiceIO = [self spiceIoWithError:&err];
+                    if (spiceIO) {
+                        [spiceIO.primaryInput requestMouseMode:!tablet];
+                    } else {
+                        UTMLog(@"failed to get SPICE manager: %@", err);
+                    }
+                }
+            }];
+        }
+    }];
 }
 
 @end

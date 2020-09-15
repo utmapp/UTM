@@ -63,7 +63,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (weak, nonatomic) IBOutlet UIImageView *placeholderImageView;
 @property (weak, nonatomic) IBOutlet VMKeyboardView *keyboardView;
 
-@property (nonatomic, readonly, weak) UTMSpiceIO *spiceIO;
 @property (nonatomic, assign) BOOL lastDisplayChangeResize;
 @property (nonatomic, readonly) BOOL serverModeCursor;
 

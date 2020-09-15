@@ -26,6 +26,7 @@
 #import "UTMSpiceIO.h"
 #import "UTMLogging.h"
 #import "UTMVirtualMachine.h"
+#import "UTMVirtualMachine+SPICE.h"
 
 const CGFloat kScrollSpeedReduction = 100.0f;
 const CGFloat kCursorResistance = 50.0f;
@@ -572,13 +573,7 @@ static CGFloat CGPointToPixel(CGFloat point) {
     self.vmInput.inhibitCursor = shouldHideCursor;
     if (shouldUseServerMouse != self.vmInput.serverModeCursor) {
         UTMLog(@"Switching mouse mode to server:%d for type:%ld", shouldUseServerMouse, type);
-        [self.vm requestInputTablet:!shouldUseServerMouse completion:^(NSString *res, NSError *err) {
-            if (err) {
-                UTMLog(@"input select returned error: %@", err);
-            } else {
-                [self.spiceIO.primaryInput requestMouseMode:shouldUseServerMouse];
-            }
-        }];
+        [self.vm requestInputTablet:!shouldUseServerMouse];
         return YES;
     }
     return NO;
