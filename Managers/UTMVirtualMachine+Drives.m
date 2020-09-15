@@ -25,8 +25,8 @@ extern NSString *const kUTMErrorDomain;
 
 @interface UTMVirtualMachine ()
 
-@property (nonatomic, readonly) UTMQemuManager *qemu;
-@property (nonatomic, readonly) UTMQemu *system;
+@property (nonatomic, readonly, nullable) UTMQemuManager *qemu;
+@property (nonatomic, readonly, nullable) UTMQemu *system;
 
 @end
 

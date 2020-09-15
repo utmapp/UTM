@@ -49,23 +49,19 @@ NSString *const kSuspendSnapshotName = @"suspend";
 @property (nonatomic, readwrite, nullable) NSURL *path;
 @property (nonatomic, readwrite, copy) UTMConfiguration *configuration;
 @property (nonatomic, readonly) UTMQemuManager *qemu;
-@property (nonatomic, readonly) UTMQemu *system;
+@property (nonatomic, readwrite, nullable) UTMQemuSystem *system;
 @property (nonatomic, readwrite) UTMViewState *viewState;
 @property (nonatomic, weak) UTMLogging *logging;
 @property (nonatomic, readonly, nullable) id<UTMInputOutput> ioService;
+@property (nonatomic, readwrite) BOOL busy;
+@property (nonatomic, readwrite, nullable) UTMScreenshot *screenshot;
 
 @end
 
 @implementation UTMVirtualMachine {
-    UTMQemuSystem *_qemu_system;
     dispatch_semaphore_t _will_quit_sema;
     dispatch_semaphore_t _qemu_exit_sema;
-    BOOL _is_busy;
-    UTMScreenshot *_screenshot;
 }
-
-@synthesize busy = _is_busy;
-@synthesize system = _qemu_system;
 
 - (void)setDelegate:(id<UTMVirtualMachineDelegate>)delegate {
     _delegate = delegate;
@@ -255,7 +251,7 @@ error:
         if (self.busy || (self.state != kVMStopped && self.state != kVMSuspended)) {
             return NO; // already started
         } else {
-            _is_busy = YES;
+            self.busy = YES;
         }
     }
     // start logging
@@ -263,25 +259,25 @@ error:
         [self.logging logToFile:[self.path URLByAppendingPathComponent:[UTMConfiguration debugLogName]]];
     }
     
-    if (!_qemu_system) {
-        _qemu_system = [[UTMQemuSystem alloc] initWithConfiguration:self.configuration imgPath:self.path];
+    if (!self.system) {
+        self.system = [[UTMQemuSystem alloc] initWithConfiguration:self.configuration imgPath:self.path];
 #if !TARGET_OS_IPHONE
-        [_qemu_system setupXpc];
+        [self.system setupXpc];
 #endif
-        _qemu_system.qmpPort = [[UTMPortAllocator sharedInstance] allocatePort];
-        _qemu_system.spicePort = [[UTMPortAllocator sharedInstance] allocatePort];
-        _qemu = [[UTMQemuManager alloc] initWithPort:_qemu_system.qmpPort];
+        self.system.qmpPort = [[UTMPortAllocator sharedInstance] allocatePort];
+        self.system.spicePort = [[UTMPortAllocator sharedInstance] allocatePort];
+        _qemu = [[UTMQemuManager alloc] initWithPort:self.system.qmpPort];
         _qemu.delegate = self;
     }
 
-    if (!_qemu_system) {
+    if (!self.system) {
         [self errorTriggered:NSLocalizedString(@"Internal error starting VM.", @"UTMVirtualMachine")];
-        _is_busy = NO;
+        self.busy = NO;
         return NO;
     }
     
     if (!_ioService) {
-        _ioService = [self inputOutputServiceWithPort:_qemu_system.spicePort];
+        _ioService = [self inputOutputServiceWithPort:self.system.spicePort];
     }
     
     self.delegate.vmMessage = nil;
@@ -293,13 +289,13 @@ error:
     BOOL ioStatus = [_ioService startWithError: nil];
     if (!ioStatus) {
         [self errorTriggered:NSLocalizedString(@"Internal error starting main loop.", @"UTMVirtualMachine")];
-        _is_busy = NO;
+        self.busy = NO;
         return NO;
     }
     if (self.viewState.suspended) {
-        _qemu_system.snapshot = kSuspendSnapshotName;
+        self.system.snapshot = kSuspendSnapshotName;
     }
-    [_qemu_system startWithCompletion:^(BOOL success, NSString *msg){
+    [self.system startWithCompletion:^(BOOL success, NSString *msg){
         if (!success) {
             [self errorTriggered:msg];
         }
@@ -318,7 +314,7 @@ error:
     }];
     self->_qemu.retries = kQMPMaxConnectionTries;
     [self->_qemu connect];
-    _is_busy = NO;
+    self.busy = NO;
     return YES;
 }
 
@@ -327,7 +323,7 @@ error:
         if (self.busy || self.state != kVMStarted) {
             return NO; // already stopping
         } else {
-            _is_busy = YES;
+            self.busy = YES;
         }
     }
     self.viewState.suspended = NO;
@@ -351,13 +347,13 @@ error:
         // TODO: force shutdown
         UTMLog(@"Exit operation timeout");
     }
-    [[UTMPortAllocator sharedInstance] freePort:_qemu_system.qmpPort];
-    [[UTMPortAllocator sharedInstance] freePort:_qemu_system.spicePort];
-    _qemu_system = nil;
+    [[UTMPortAllocator sharedInstance] freePort:self.system.qmpPort];
+    [[UTMPortAllocator sharedInstance] freePort:self.system.spicePort];
+    self.system = nil;
     [self changeState:kVMStopped];
     // stop logging
     [self.logging endLog];
-    _is_busy = NO;
+    self.busy = NO;
     return YES;
 }
 
@@ -366,7 +362,7 @@ error:
         if (self.busy || (self.state != kVMStarted && self.state != kVMPaused)) {
             return NO; // already stopping
         } else {
-            _is_busy = YES;
+            self.busy = YES;
         }
     }
     [self syncViewState];
@@ -394,7 +390,7 @@ error:
     } else {
         [self changeState:kVMError];
     }
-    _is_busy = NO;
+    self.busy = NO;
     return success;
 }
 
@@ -403,7 +399,7 @@ error:
         if (self.busy || self.state != kVMStarted) {
             return NO; // already stopping
         } else {
-            _is_busy = YES;
+            self.busy = YES;
         }
     }
     [self syncViewState];
@@ -428,7 +424,7 @@ error:
     } else {
         [self changeState:kVMError];
     }
-    _is_busy = NO;
+    self.busy = NO;
     return success;
 }
 
@@ -437,7 +433,7 @@ error:
         if (self.busy || (self.state != kVMPaused && self.state != kVMStarted)) {
             return NO;
         } else {
-            _is_busy = YES;
+            self.busy = YES;
         }
     }
     UTMVMState state = self.state;
@@ -465,7 +461,7 @@ error:
         [self saveScreenshot];
     }
     [self changeState:state];
-    _is_busy = NO;
+    self.busy = NO;
     return success;
 }
 
@@ -499,7 +495,7 @@ error:
         if (self.busy || self.state != kVMPaused) {
             return NO;
         } else {
-            _is_busy = YES;
+            self.busy = YES;
         }
     }
     [self changeState:kVMResuming];
@@ -526,7 +522,7 @@ error:
     if (self.viewState.suspended) {
         [self deleteSaveVM];
     }
-    _is_busy = NO;
+    self.busy = NO;
     return success;
 }
 
@@ -571,7 +567,7 @@ error:
 - (void)qemuWillQuit:(UTMQemuManager *)manager guest:(BOOL)guest reason:(ShutdownCause)reason {
     UTMLog(@"qemuWillQuit, reason = %s", ShutdownCause_str(reason));
     dispatch_semaphore_signal(_will_quit_sema);
-    if (!_is_busy) {
+    if (!self.busy) {
         [self quitVM];
     }
 }
@@ -666,24 +662,23 @@ error:
 
 #pragma mark - Screenshot
 
-@synthesize screenshot = _screenshot;
-
 - (void)loadScreenshot {
     NSURL *url = [self.path URLByAppendingPathComponent:kUTMBundleScreenshotFilename];
-    _screenshot = [[UTMScreenshot alloc] initWithContentsOfURL:url];
+    self.screenshot = [[UTMScreenshot alloc] initWithContentsOfURL:url];
 }
 
 - (void)saveScreenshot {
-    _screenshot = [self.ioService screenshot];
+    self.screenshot = [self.ioService screenshot];
     NSURL *url = [self.path URLByAppendingPathComponent:kUTMBundleScreenshotFilename];
-    if (_screenshot) {
-        [_screenshot writeToURL:url atomically:NO];
+    if (self.screenshot) {
+        [self.screenshot writeToURL:url atomically:NO];
     }
 }
 
 - (void)deleteScreenshot {
     NSURL *url = [self.path URLByAppendingPathComponent:kUTMBundleScreenshotFilename];
     [[NSFileManager defaultManager] removeItemAtURL:url error:nil];
+    self.screenshot = nil;
 }
 
 @end

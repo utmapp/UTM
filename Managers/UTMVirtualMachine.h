@@ -42,7 +42,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) UTMViewState *viewState;
 @property (nonatomic, assign, readonly) UTMVMState state;
 @property (nonatomic, readonly) BOOL busy;
-@property (nonatomic, readonly) UTMScreenshot *screenshot;
+@property (nonatomic, readonly, nullable) UTMScreenshot *screenshot;
 
 + (BOOL)URLisVirtualMachine:(NSURL *)url NS_SWIFT_NAME(isVirtualMachine(url:));
 + (NSString *)virtualMachineName:(NSURL *)url;

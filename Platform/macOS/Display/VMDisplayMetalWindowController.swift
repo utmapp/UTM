@@ -96,7 +96,7 @@ class VMDisplayMetalWindowController: VMDisplayWindowController, UTMSpiceIODeleg
     override func enterSuspended(isBusy busy: Bool) {
         if !busy {
             metalView.isHidden = true
-            screenshotView.image = vm.screenshot.image
+            screenshotView.image = vm.screenshot?.image
             screenshotView.isHidden = false
         }
         super.enterSuspended(isBusy: busy)
