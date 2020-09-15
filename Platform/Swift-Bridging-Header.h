@@ -34,7 +34,7 @@
 #include "UTMViewState.h"
 #include "UTMVirtualMachine.h"
 #include "UTMVirtualMachine+Drives.h"
-#include "UTMVirtualMachine+Sharing.h"
+#include "UTMVirtualMachine+SPICE.h"
 #include "UTMRenderer.h"
 #include "UTMScreenshot.h"
 #include "UTMSpiceIO.h"

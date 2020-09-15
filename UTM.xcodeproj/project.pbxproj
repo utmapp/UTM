@@ -705,8 +705,8 @@
 		CEF83EBF24F9C3BF00557D15 /* UTMVirtualMachine+Drives.m in Sources */ = {isa = PBXBuildFile; fileRef = CEF83EBD24F9C3BF00557D15 /* UTMVirtualMachine+Drives.m */; };
 		CEF83EC224F9C9E100557D15 /* UTMDrive.m in Sources */ = {isa = PBXBuildFile; fileRef = CEF83EC124F9C9E100557D15 /* UTMDrive.m */; };
 		CEF83EC324F9C9E100557D15 /* UTMDrive.m in Sources */ = {isa = PBXBuildFile; fileRef = CEF83EC124F9C9E100557D15 /* UTMDrive.m */; };
-		CEF83EC724FB1B9300557D15 /* UTMVirtualMachine+Sharing.m in Sources */ = {isa = PBXBuildFile; fileRef = CEF83EC624FB1B9300557D15 /* UTMVirtualMachine+Sharing.m */; };
-		CEF83EC824FB1B9300557D15 /* UTMVirtualMachine+Sharing.m in Sources */ = {isa = PBXBuildFile; fileRef = CEF83EC624FB1B9300557D15 /* UTMVirtualMachine+Sharing.m */; };
+		CEF83EC724FB1B9300557D15 /* UTMVirtualMachine+SPICE.m in Sources */ = {isa = PBXBuildFile; fileRef = CEF83EC624FB1B9300557D15 /* UTMVirtualMachine+SPICE.m */; };
+		CEF83EC824FB1B9300557D15 /* UTMVirtualMachine+SPICE.m in Sources */ = {isa = PBXBuildFile; fileRef = CEF83EC624FB1B9300557D15 /* UTMVirtualMachine+SPICE.m */; };
 		CEF83ECC24FB382B00557D15 /* UTMVirtualMachine+Terminal.m in Sources */ = {isa = PBXBuildFile; fileRef = CEF83ECB24FB382B00557D15 /* UTMVirtualMachine+Terminal.m */; };
 		CEF83ECD24FB382B00557D15 /* UTMVirtualMachine+Terminal.m in Sources */ = {isa = PBXBuildFile; fileRef = CEF83ECB24FB382B00557D15 /* UTMVirtualMachine+Terminal.m */; };
 		CEF83ED324FDEA9400557D15 /* UTMPortAllocator.m in Sources */ = {isa = PBXBuildFile; fileRef = CEF83ED224FDEA9400557D15 /* UTMPortAllocator.m */; };
@@ -1529,8 +1529,8 @@
 		CEF83EBD24F9C3BF00557D15 /* UTMVirtualMachine+Drives.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UTMVirtualMachine+Drives.m"; sourceTree = "<group>"; };
 		CEF83EC024F9C9E100557D15 /* UTMDrive.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UTMDrive.h; sourceTree = "<group>"; };
 		CEF83EC124F9C9E100557D15 /* UTMDrive.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UTMDrive.m; sourceTree = "<group>"; };
-		CEF83EC624FB1B9300557D15 /* UTMVirtualMachine+Sharing.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UTMVirtualMachine+Sharing.m"; sourceTree = "<group>"; };
-		CEF83EC924FB1BB200557D15 /* UTMVirtualMachine+Sharing.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UTMVirtualMachine+Sharing.h"; sourceTree = "<group>"; };
+		CEF83EC624FB1B9300557D15 /* UTMVirtualMachine+SPICE.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UTMVirtualMachine+SPICE.m"; sourceTree = "<group>"; };
+		CEF83EC924FB1BB200557D15 /* UTMVirtualMachine+SPICE.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UTMVirtualMachine+SPICE.h"; sourceTree = "<group>"; };
 		CEF83ECA24FB382B00557D15 /* UTMVirtualMachine+Terminal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UTMVirtualMachine+Terminal.h"; sourceTree = "<group>"; };
 		CEF83ECB24FB382B00557D15 /* UTMVirtualMachine+Terminal.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UTMVirtualMachine+Terminal.m"; sourceTree = "<group>"; };
 		CEF83ED124FDEA9400557D15 /* UTMPortAllocator.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UTMPortAllocator.h; sourceTree = "<group>"; };
@@ -2277,8 +2277,8 @@
 				CE5F165B2261395000F3D56B /* UTMVirtualMachine.m */,
 				CEF83EBC24F9C3BF00557D15 /* UTMVirtualMachine+Drives.h */,
 				CEF83EBD24F9C3BF00557D15 /* UTMVirtualMachine+Drives.m */,
-				CEF83EC924FB1BB200557D15 /* UTMVirtualMachine+Sharing.h */,
-				CEF83EC624FB1B9300557D15 /* UTMVirtualMachine+Sharing.m */,
+				CEF83EC924FB1BB200557D15 /* UTMVirtualMachine+SPICE.h */,
+				CEF83EC624FB1B9300557D15 /* UTMVirtualMachine+SPICE.m */,
 				CEF83ECA24FB382B00557D15 /* UTMVirtualMachine+Terminal.h */,
 				CEF83ECB24FB382B00557D15 /* UTMVirtualMachine+Terminal.m */,
 				E28394B5240C20E1006742E2 /* UTMTerminal.h */,
@@ -2899,7 +2899,7 @@
 				CE2D955D24AD4F990059923A /* VMConfigSoundView.swift in Sources */,
 				CE2D930324AD46670059923A /* qapi-events-crypto.c in Sources */,
 				CE2D930424AD46670059923A /* UTMConfiguration.m in Sources */,
-				CEF83EC724FB1B9300557D15 /* UTMVirtualMachine+Sharing.m in Sources */,
+				CEF83EC724FB1B9300557D15 /* UTMVirtualMachine+SPICE.m in Sources */,
 				CE2D957924AD4F990059923A /* VMDetailsView.swift in Sources */,
 				CE2D930524AD46670059923A /* VMDisplayMetalViewController.m in Sources */,
 				CE2D930624AD46670059923A /* qapi-commands-misc.c in Sources */,
@@ -3051,7 +3051,7 @@
 				CEFC6CDE24C25697003F6962 /* VMDriveImage.swift in Sources */,
 				CE0B6D5F24AD584D00FE012D /* qapi-types-char.c in Sources */,
 				CE0B6D1324AD57FC00FE012D /* qapi-commands-qom.c in Sources */,
-				CEF83EC824FB1B9300557D15 /* UTMVirtualMachine+Sharing.m in Sources */,
+				CEF83EC824FB1B9300557D15 /* UTMVirtualMachine+SPICE.m in Sources */,
 				CE93758924B930270074066F /* BusyOverlay.swift in Sources */,
 				CE0B6D2424AD57FC00FE012D /* qapi-commands-rocker.c in Sources */,
 				CEF83ED424FDEA9400557D15 /* UTMPortAllocator.m in Sources */,

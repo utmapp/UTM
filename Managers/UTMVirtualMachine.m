@@ -17,7 +17,7 @@
 #import <TargetConditionals.h>
 #import "UTMVirtualMachine.h"
 #import "UTMVirtualMachine+Drives.h"
-#import "UTMVirtualMachine+Sharing.h"
+#import "UTMVirtualMachine+SPICE.h"
 #import "UTMConfiguration.h"
 #import "UTMConfiguration+Constants.h"
 #import "UTMConfiguration+Display.h"

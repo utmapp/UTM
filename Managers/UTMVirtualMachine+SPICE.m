@@ -15,7 +15,7 @@
 //
 
 #import <TargetConditionals.h>
-#import "UTMVirtualMachine+Sharing.h"
+#import "UTMVirtualMachine+SPICE.h"
 #import "UTMConfiguration+Display.h"
 #import "UTMConfiguration+Sharing.h"
 #import "UTMLogging.h"
@@ -38,7 +38,7 @@ static const NSURLBookmarkResolutionOptions kBookmarkResolutionOptions = NSURLBo
 
 @end
 
-@implementation UTMVirtualMachine (Sharing)
+@implementation UTMVirtualMachine (SPICE)
 
 - (UTMSpiceIO *)spiceIoWithError:(NSError * _Nullable __autoreleasing *)error {
     if (![self.ioService isKindOfClass:[UTMSpiceIO class]]) {

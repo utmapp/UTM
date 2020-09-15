@@ -18,7 +18,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface UTMVirtualMachine (Sharing)
+@interface UTMVirtualMachine (SPICE)
 
 @property (nonatomic, readonly) BOOL hasShareDirectoryEnabled;
 
