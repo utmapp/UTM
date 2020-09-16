@@ -96,7 +96,6 @@ struct VMConfigInfoView: View {
                             IconPreview(url: config.existingIconURL)
                         }).popover(isPresented: $imageSelectVisible, arrowEdge: .bottom) {
                             IconSelect(onIconSelected: imageSelected)
-                                .frame(width: 400, height: 400)
                         }.buttonStyle(PlainButtonStyle())
                     default:
                         EmptyView()
@@ -180,16 +179,50 @@ private struct IconSelect: View {
     typealias PlatformImage = UIImage
     #endif
     
-    var body: some View {
-        ScrollView {
-            LazyVGrid(columns: gridLayout, spacing: 30) {
-                ForEach(icons, id: \.self) { icon in
-                    Button(action: { onIconSelected(icon) }, label: {
-                        Logo(logo: PlatformImage(contentsOfURL: icon))
-                    }).buttonStyle(PlainButtonStyle())
-                }
-            }.padding([.top, .bottom])
+    struct IconSelectModifier: ViewModifier {
+        @Environment(\.presentationMode) private var presentationMode: Binding<PresentationMode>
+        
+        #if os(macOS)
+        let isPhone: Bool = false
+        #else
+        var isPhone: Bool {
+            UIDevice.current.userInterfaceIdiom == .phone
         }
+        #endif
+        
+        func body(content: Content) -> some View {
+            if isPhone {
+                return AnyView(
+                    VStack {
+                        HStack {
+                            Spacer()
+                            Button(action: { presentationMode.wrappedValue.dismiss() }, label: {
+                                Text("Cancel")
+                            }).padding()
+                        }
+                        ScrollView {
+                            content.padding(.bottom)
+                        }
+                    }
+                )
+            } else {
+                return AnyView(
+                    ScrollView {
+                        content.padding([.top, .bottom])
+                    }.frame(width: 400, height: 400)
+                )
+            }
+        }
+    }
+    
+    var body: some View {
+        LazyVGrid(columns: gridLayout, spacing: 30) {
+            ForEach(icons, id: \.self) { icon in
+                Button(action: { onIconSelected(icon) }, label: {
+                    Logo(logo: PlatformImage(contentsOfURL: icon))
+                }).buttonStyle(PlainButtonStyle())
+            }
+        }.modifier(IconSelectModifier())
     }
 }
 
