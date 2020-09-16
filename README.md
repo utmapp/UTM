@@ -24,7 +24,7 @@ If you just want to use UTM on iOS 11-13 or on jailbroken iOS 14, this is not th
 
 ## Building (iOS)
 
-To run UTM without a jailbreak on iOS 14 (as well as to develop UTM on any iOS version), you must run with the Xcode debugger attached.
+To run UTM without a jailbreak on iOS 14 (as well as to develop UTM on any iOS version), [you must run with the Xcode debugger attached](Documentation/TetheredLaunch.md).
 
 ### Easy
 
