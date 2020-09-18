@@ -656,8 +656,8 @@
 		CE9375A324BBDE770074066F /* VMConfigDrivesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE93759E24BBDD6A0074066F /* VMConfigDrivesView.swift */; };
 		CEB63A7624F4654400CAF323 /* Main.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEB63A7524F4654400CAF323 /* Main.swift */; };
 		CEB63A7724F4654400CAF323 /* Main.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEB63A7524F4654400CAF323 /* Main.swift */; };
-		CEB63A7A24F469E300CAF323 /* UTMJailbreak.c in Sources */ = {isa = PBXBuildFile; fileRef = CEB63A7924F469E300CAF323 /* UTMJailbreak.c */; };
-		CEB63A7B24F469E300CAF323 /* UTMJailbreak.c in Sources */ = {isa = PBXBuildFile; fileRef = CEB63A7924F469E300CAF323 /* UTMJailbreak.c */; };
+		CEB63A7A24F469E300CAF323 /* UTMJailbreak.m in Sources */ = {isa = PBXBuildFile; fileRef = CEB63A7924F469E300CAF323 /* UTMJailbreak.m */; };
+		CEB63A7B24F469E300CAF323 /* UTMJailbreak.m in Sources */ = {isa = PBXBuildFile; fileRef = CEB63A7924F469E300CAF323 /* UTMJailbreak.m */; };
 		CEB63A7C24F46E5700CAF323 /* VMConfigStepper.m in Sources */ = {isa = PBXBuildFile; fileRef = CEE0420E24412C520001680F /* VMConfigStepper.m */; };
 		CEB63A7D24F46E5700CAF323 /* VMConfigSwitch.m in Sources */ = {isa = PBXBuildFile; fileRef = CEBCAF5324353B3700C2B423 /* VMConfigSwitch.m */; };
 		CEB63A7E24F46E5700CAF323 /* VMConfigTogglePickerCell.m in Sources */ = {isa = PBXBuildFile; fileRef = CEBCAF592435468600C2B423 /* VMConfigTogglePickerCell.m */; };
@@ -1474,7 +1474,7 @@
 		CEA02A982436C7A30087E45F /* UTMConfiguration+Networking.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UTMConfiguration+Networking.m"; sourceTree = "<group>"; };
 		CEB63A7524F4654400CAF323 /* Main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Main.swift; sourceTree = "<group>"; };
 		CEB63A7824F468BA00CAF323 /* UTMJailbreak.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UTMJailbreak.h; sourceTree = "<group>"; };
-		CEB63A7924F469E300CAF323 /* UTMJailbreak.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = UTMJailbreak.c; sourceTree = "<group>"; };
+		CEB63A7924F469E300CAF323 /* UTMJailbreak.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UTMJailbreak.m; sourceTree = "<group>"; };
 		CEBBF1A424B56A2900C15049 /* UTMDataExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMDataExtension.swift; sourceTree = "<group>"; };
 		CEBBF1A624B5730F00C15049 /* UTMDataExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMDataExtension.swift; sourceTree = "<group>"; };
 		CEBCAF4C243525DB00C2B423 /* VMConfigTextField.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VMConfigTextField.h; sourceTree = "<group>"; };
@@ -1826,7 +1826,7 @@
 				CE2D955524AD4F980059923A /* UTMApp.swift */,
 				CE020BA224AEDC7C00B44AB6 /* UTMData.swift */,
 				CE2D954624AD4F980059923A /* UTMExtensions.swift */,
-				CEB63A7924F469E300CAF323 /* UTMJailbreak.c */,
+				CEB63A7924F469E300CAF323 /* UTMJailbreak.m */,
 				CEB63A7824F468BA00CAF323 /* UTMJailbreak.h */,
 				CE020BAA24AEE00000B44AB6 /* UTMLoggingSwift.swift */,
 				CE2D955624AD4F980059923A /* Swift-Bridging-Header.h */,
@@ -2869,7 +2869,7 @@
 				CE2D92F524AD46670059923A /* VMDisplayTerminalViewController.m in Sources */,
 				CE0B6D8624AD5ADE00FE012D /* UTMScreenshot.m in Sources */,
 				CE2D92F624AD46670059923A /* qapi-events-block-core.c in Sources */,
-				CEB63A7A24F469E300CAF323 /* UTMJailbreak.c in Sources */,
+				CEB63A7A24F469E300CAF323 /* UTMJailbreak.m in Sources */,
 				CE2D92F724AD46670059923A /* UTMQemuManager.m in Sources */,
 				CEB63A8024F46E5700CAF323 /* VMConfigPickerView.m in Sources */,
 				CEB63A7C24F46E5700CAF323 /* VMConfigStepper.m in Sources */,
@@ -2944,7 +2944,7 @@
 			files = (
 				CEB63A7724F4654400CAF323 /* Main.swift in Sources */,
 				CE0B6D0024AD56AE00FE012D /* UTMVirtualMachine.m in Sources */,
-				CEB63A7B24F469E300CAF323 /* UTMJailbreak.c in Sources */,
+				CEB63A7B24F469E300CAF323 /* UTMJailbreak.m in Sources */,
 				CE0B6D0E24AD56E500FE012D /* UTMShaders.metal in Sources */,
 				CE0B6D3924AD57FD00FE012D /* qapi-commands-job.c in Sources */,
 				CE0B6D0524AD56AE00FE012D /* UTMQemuImg.m in Sources */,
