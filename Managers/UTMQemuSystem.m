@@ -27,7 +27,6 @@
 #import "UTMConfiguration+Sharing.h"
 #import "UTMConfiguration+System.h"
 #import "UTMConfigurationPortForward.h"
-#import "UTMJailbreak.h"
 #import "UTMLogging.h"
 
 @interface UTMQemuSystem ()
@@ -300,16 +299,6 @@ static size_t hostCpuCount(void) {
     if ([self.configuration.systemJitCacheSize integerValue] > 0) {
         accel = [accel stringByAppendingFormat:@",tb-size=%@", [self.configuration.systemJitCacheSize stringValue]];
     }
-    
-    // Avoid alias mapping if we support dynamic codesigning
-#if TARGET_OS_IPHONE
-    if (@available(iOS 14, *)) {
-        // only iOS 14 supports the pthread JIT calls
-        if (jb_has_jit_entitlement()) {
-            accel = [accel stringByAppendingString:@",mirror-rwx=off"];
-        }
-    }
-#endif
     
     return accel;
 }

@@ -5779,3 +5779,146 @@ index c8c13ab218..601074a242 100644
 -- 
 2.24.3 (Apple Git-128)
 
+From 4f9aa6b396d7e9f40ad0f4cdc99e0e6f1558979e Mon Sep 17 00:00:00 2001
+From: osy <osy86@users.noreply.github.com>
+Date: Thu, 17 Sep 2020 18:53:11 -0700
+Subject: [PATCH] tcg: Apple Silicon JIT for < iOS 14
+
+Reverse engineered functions from libsystem_pthread.dylib.
+---
+ accel/tcg/cpu-exec.c        | 17 ++++++++-
+ include/tcg/tcg-apple-jit.h | 76 +++++++++++++++++++++++++++++++++++++
+ 2 files changed, 91 insertions(+), 2 deletions(-)
+ create mode 100644 include/tcg/tcg-apple-jit.h
+
+diff --git a/accel/tcg/cpu-exec.c b/accel/tcg/cpu-exec.c
+index 5295ec7d4d..dd1b1a0cfc 100644
+--- a/accel/tcg/cpu-exec.c
++++ b/accel/tcg/cpu-exec.c
+@@ -37,6 +37,9 @@
+ #endif
+ #include "sysemu/cpus.h"
+ #include "sysemu/replay.h"
++#if defined(CONFIG_DARWIN)
++#include "tcg/tcg-apple-jit.h"
++#endif
+ 
+ /* -icount align implementation. */
+ 
+@@ -137,19 +140,29 @@ static void init_delay_params(SyncClocks *sc, const CPUState *cpu)
+ }
+ #endif /* CONFIG USER ONLY */
+ 
+-#if defined(HAVE_PTHREAD_JIT_PROTECT)
++#if defined(CONFIG_DARWIN)
+ static void tb_pre_exec(void)
+ {
++    // assumes sys_icache_invalidate already called
++#if defined(HAVE_PTHREAD_JIT_PROTECT)
+     if (__builtin_available(macOS 11, iOS 14, watchOS 7, tvOS 14, *)) {
+         pthread_jit_write_protect_np(true);
+-        // sys_icache_invalidate should already be called!
++    } else
++#endif
++    if (jit_write_protect_supported()) {
++        jit_write_protect(true);
+     }
+ }
+ 
+ static void tb_post_exec(void)
+ {
++#if defined(HAVE_PTHREAD_JIT_PROTECT)
+     if (__builtin_available(macOS 11, iOS 14, watchOS 7, tvOS 14, *)) {
+         pthread_jit_write_protect_np(false);
++    } else
++#endif
++    if (jit_write_protect_supported()) {
++        jit_write_protect(false);
+     }
+ }
+ #else // not needed on non-Darwin platforms
+diff --git a/include/tcg/tcg-apple-jit.h b/include/tcg/tcg-apple-jit.h
+new file mode 100644
+index 0000000000..f7c8392488
+--- /dev/null
++++ b/include/tcg/tcg-apple-jit.h
+@@ -0,0 +1,76 @@
++/*
++ * Apple Silicon APRR functions for JIT handling
++ *
++ * Copyright (c) 2020 osy
++ *
++ * This library is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU Lesser General Public
++ * License as published by the Free Software Foundation; either
++ * version 2.1 of the License, or (at your option) any later version.
++ *
++ * This library is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++ * Lesser General Public License for more details.
++ *
++ * You should have received a copy of the GNU Lesser General Public
++ * License along with this library; if not, see <http://www.gnu.org/licenses/>.
++ */
++
++// Credits to: https://siguza.github.io/APRR/
++// Reversed from /usr/lib/system/libsystem_pthread.dylib
++
++#ifndef TCG_APPLE_JIT_H
++#define TCG_APPLE_JIT_H
++
++#if defined(__aarch64__) && defined(CONFIG_DARWIN)
++
++#define _COMM_PAGE_START_ADDRESS        (0x0000000FFFFFC000ULL) /* In TTBR0 */
++#define _COMM_PAGE_APRR_SUPPORT         (_COMM_PAGE_START_ADDRESS+0x10C)
++#define _COMM_PAGE_APPR_WRITE_ENABLE    (_COMM_PAGE_START_ADDRESS+0x110)
++#define _COMM_PAGE_APRR_WRITE_DISABLE   (_COMM_PAGE_START_ADDRESS+0x118)
++
++static __attribute__ ((__always_inline__)) bool jit_write_protect_supported(void)
++{
++    uint8_t aprr_support = *(volatile uint8_t *)_COMM_PAGE_APRR_SUPPORT;
++    return aprr_support > 0;
++}
++
++static __attribute__ ((__always_inline__)) void jit_write_protect(int enabled)
++{
++    uint8_t aprr_support = *(volatile uint8_t *)_COMM_PAGE_APRR_SUPPORT;
++    if (aprr_support == 0 || aprr_support > 3) {
++        return;
++    } else if (aprr_support == 1) {
++        __asm__ __volatile__ (
++            "mov x0, %0\n"
++            "ldr x0, [x0]\n"
++            "msr S3_4_c15_c2_7, x0\n"
++            "isb sy\n"
++            :: "r" (enabled ? _COMM_PAGE_APPR_WRITE_ENABLE : _COMM_PAGE_APRR_WRITE_DISABLE) : "memory", "x0"
++        );
++    } else {
++        __asm__ __volatile__ (
++            "mov x0, %0\n"
++            "ldr x0, [x0]\n"
++            "msr S3_6_c15_c1_5, x0\n"
++            "isb sy\n"
++            :: "r" (enabled ? _COMM_PAGE_APPR_WRITE_ENABLE : _COMM_PAGE_APRR_WRITE_DISABLE) : "memory", "x0"
++        );
++    }
++}
++
++#else // defined(__aarch64__) && defined(CONFIG_DARWIN)
++
++static __attribute__ ((__always_inline__)) bool jit_write_protect_supported(void)
++{
++    return false;
++}
++
++static __attribute__ ((__always_inline__)) void jit_write_protect(int enabled)
++{
++}
++
++#endif
++
++#endif // define TCG_APPLE_JIT_H
+-- 
+2.24.3 (Apple Git-128)
+
