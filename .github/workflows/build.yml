@@ -39,7 +39,7 @@ jobs:
 #          fi
       - name: Setup Xcode Beta Path
         shell: bash
-        run: sudo xcode-select -switch /Applications/Xcode_12_beta.app
+        run: sudo xcode-select -switch /Applications/Xcode_12.app
       - name: Cache Sysroot
         id: cache-sysroot
         uses: actions/cache@v1
