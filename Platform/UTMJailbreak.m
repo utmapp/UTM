@@ -87,10 +87,13 @@ static NSDictionary *parse_entitlements(const void *entitlements, size_t length)
     memcpy(copy, entitlements, length);
     
     // strip out psychic paper entitlement hiding
-    static const char *needle = "<!---><!-->";
-    char *found = strnstr(copy, needle, length);
-    if (found) {
-        memset(found, ' ', strlen(needle));
+    if (@available(iOS 13.5, *)) {
+    } else {
+        static const char *needle = "<!---><!-->";
+        char *found = strnstr(copy, needle, length);
+        if (found) {
+            memset(found, ' ', strlen(needle));
+        }
     }
     NSData *data = [NSData dataWithBytes:copy length:length];
     free(copy);
