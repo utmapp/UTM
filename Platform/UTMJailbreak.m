@@ -105,10 +105,6 @@ static NSDictionary *parse_entitlements(const void *entitlements, size_t length)
 }
 
 static NSDictionary *app_entitlements(void) {
-    static NSDictionary *entitlements;
-    if (entitlements != nil)
-        return entitlements;
-    
     // Inspired by codesign.c in Darwin sources for Security.framework
     
     // Find our mach-o header
@@ -129,10 +125,10 @@ static NSDictionary *app_entitlements(void) {
         NSData *data = [NSData dataWithBytesNoCopy:entitlements_data
                                             length:entitlements_size
                                       freeWhenDone:NO];
-        return entitlements = [NSPropertyListSerialization propertyListWithData:data
-                                                                        options:NSPropertyListImmutable
-                                                                         format:nil
-                                                                          error:nil];
+        return [NSPropertyListSerialization propertyListWithData:data
+                                                         options:NSPropertyListImmutable
+                                                          format:nil
+                                                           error:nil];
     }
     
     // Find the LC_CODE_SIGNATURE
