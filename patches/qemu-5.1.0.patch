@@ -1,7 +1,7 @@
 From a9bafced71aa14b4734559543e491658358adb85 Mon Sep 17 00:00:00 2001
 From: osy <osy86@users.noreply.github.com>
 Date: Wed, 24 Apr 2019 20:16:48 -0700
-Subject: [PATCH 1/7] build: Add support for iOS host
+Subject: [PATCH 1/8] build: Add support for iOS host
 
 Fix build errors with clang
 Block driver modified to handle iOS
@@ -430,7 +430,7 @@ index 9bc2a5ecbe..298e2d306c 100644
 From bd3929e6b39a6d60bbdc72f5d86fc415a196dac7 Mon Sep 17 00:00:00 2001
 From: osy <osy86@users.noreply.github.com>
 Date: Wed, 27 Mar 2019 14:47:00 -0700
-Subject: [PATCH 2/7] build: Added support for building QEMU as a shared
+Subject: [PATCH 2/8] build: Added support for building QEMU as a shared
  library
 
 For building QEMU as a shared lib, it must be loaded as a dylib. This breaks
@@ -697,7 +697,7 @@ index 694865b63e..906b2e134c 100644
 From 7b72c6b9c7c88f9c4c3cfa6357ea5762fabb8a1b Mon Sep 17 00:00:00 2001
 From: osy <osy86@users.noreply.github.com>
 Date: Fri, 29 Mar 2019 15:41:07 -0700
-Subject: [PATCH 3/7] coroutine: add libucontext as external library
+Subject: [PATCH 3/8] coroutine: add libucontext as external library
 
 iOS does not support ucontext natively for aarch64 and the sigaltstack is also unsupported (even worse, it fails silently, see: https://openradar.appspot.com/13002712 )
 ---
@@ -847,7 +847,7 @@ index 904b375192..1e1dd43512 100644
 From 75a3837dfbe4fae47b38bbbff4ec16a12926034c Mon Sep 17 00:00:00 2001
 From: osy <osy86@users.noreply.github.com>
 Date: Sun, 23 Feb 2020 22:13:35 -0800
-Subject: [PATCH 4/7] tcg: implement bulletproof JIT
+Subject: [PATCH 4/8] tcg: implement bulletproof JIT
 
 On iOS, we cannot allocate RWX pages without special entitlements. As a
 workaround, we can a RX region and then mirror map it to a separate RX
@@ -2806,7 +2806,7 @@ index 992d50cb1e..baacafa983 100644
 From fc9a7b1fa7104ff5d5a047de892c2d39690af90f Mon Sep 17 00:00:00 2001
 From: osy <osy86@users.noreply.github.com>
 Date: Tue, 31 Mar 2020 16:20:24 -0700
-Subject: [PATCH 5/7] slirp: update for iOS resolv fix
+Subject: [PATCH 5/8] slirp: update for iOS resolv fix
 
 We cannot access /etc/resolv.conf on iOS so libslirp is modified to use
 libresolv instead. Since we link to it statically we need to add the
@@ -2846,23 +2846,23 @@ index 0ab4633fbd..09faa69a54 100755
 -- 
 2.24.3 (Apple Git-128)
 
-From 71a38e02dd85a22e73355cdc2047ba34fde05064 Mon Sep 17 00:00:00 2001
+From f62eb8f4191ef11ea4fce46588c95389c5a87184 Mon Sep 17 00:00:00 2001
 From: osy <osy86@users.noreply.github.com>
 Date: Wed, 29 Jul 2020 14:14:47 -0700
-Subject: [PATCH 6/7] tcg: mirror mapping RWX pages for iOS optional
+Subject: [PATCH 6/8] tcg: mirror mapping RWX pages for iOS optional
 
 This allows jailbroken devices with entitlements to switch the option off.
 ---
- accel/tcg/tcg-all.c       | 44 ++++++++++++++++++++++++++++++-
+ accel/tcg/tcg-all.c       | 27 +++++++++++++++++++-
  accel/tcg/translate-all.c | 54 +++++++++++++++++++++++++--------------
  bsd-user/main.c           |  2 +-
  include/sysemu/tcg.h      |  2 +-
  linux-user/main.c         |  2 +-
- qemu-options.hx           | 12 +++++++++
- 6 files changed, 93 insertions(+), 23 deletions(-)
+ qemu-options.hx           | 11 ++++++++
+ 6 files changed, 75 insertions(+), 23 deletions(-)
 
 diff --git a/accel/tcg/tcg-all.c b/accel/tcg/tcg-all.c
-index eace2c113b..83d8fe43e0 100644
+index eace2c113b..7daaf94d94 100644
 --- a/accel/tcg/tcg-all.c
 +++ b/accel/tcg/tcg-all.c
 @@ -41,6 +41,7 @@ typedef struct TCGState {
@@ -2873,33 +2873,11 @@ index eace2c113b..83d8fe43e0 100644
  } TCGState;
  
  #define TYPE_TCG_ACCEL ACCEL_CLASS_NAME("tcg")
-@@ -115,18 +116,36 @@ static bool default_mttcg_enabled(void)
-     }
- }
- 
-+static bool default_mirror_rwx(void)
-+{
-+#ifdef CONFIG_IOS_JIT // only applicable for iOS
-+    void *test = mmap(NULL, qemu_real_host_page_size,
-+                      PROT_WRITE | PROT_READ | PROT_EXEC,
-+                      MAP_PRIVATE | MAP_ANONYMOUS | MAP_JIT, -1, 0);
-+    if (test == MAP_FAILED) {
-+        return true;
-+    } else {
-+        munmap(test, qemu_real_host_page_size);
-+        return false;
-+    }
-+#else
-+    return false;
-+#endif
-+}
-+
- static void tcg_accel_instance_init(Object *obj)
- {
+@@ -120,13 +121,14 @@ static void tcg_accel_instance_init(Object *obj)
      TCGState *s = TCG_STATE(obj);
  
      s->mttcg_enabled = default_mttcg_enabled();
-+    s->mirror_rwx = default_mirror_rwx();
++    s->mirror_rwx = false;
  }
  
  static int tcg_init(MachineState *ms)
@@ -2911,7 +2889,7 @@ index eace2c113b..83d8fe43e0 100644
      cpu_interrupt_handler = tcg_handle_interrupt;
      mttcg_enabled = s->mttcg_enabled;
      return 0;
-@@ -191,6 +210,22 @@ static void tcg_set_tb_size(Object *obj, Visitor *v,
+@@ -191,6 +193,22 @@ static void tcg_set_tb_size(Object *obj, Visitor *v,
      s->tb_size = value;
  }
  
@@ -2934,7 +2912,7 @@ index eace2c113b..83d8fe43e0 100644
  static void tcg_accel_class_init(ObjectClass *oc, void *data)
  {
      AccelClass *ac = ACCEL_CLASS(oc);
-@@ -208,6 +243,13 @@ static void tcg_accel_class_init(ObjectClass *oc, void *data)
+@@ -208,6 +226,13 @@ static void tcg_accel_class_init(ObjectClass *oc, void *data)
      object_class_property_set_description(oc, "tb-size",
          "TCG translation block cache size");
  
@@ -3105,7 +3083,7 @@ index 75c9785157..3856b2611d 100644
      cpu = cpu_create(cpu_type);
      env = cpu->env_ptr;
 diff --git a/qemu-options.hx b/qemu-options.hx
-index 708583b4ce..a5b56f9963 100644
+index 708583b4ce..4b8cdfd544 100644
 --- a/qemu-options.hx
 +++ b/qemu-options.hx
 @@ -123,6 +123,9 @@ DEF("accel", HAS_ARG, QEMU_OPTION_accel,
@@ -3118,7 +3096,7 @@ index 708583b4ce..a5b56f9963 100644
      "                tb-size=n (TCG translation block cache size)\n"
      "                thread=single|multi (enable multi-threaded TCG)\n", QEMU_ARCH_ALL)
  SRST
-@@ -148,6 +151,15 @@ SRST
+@@ -148,6 +151,14 @@ SRST
      ``kvm-shadow-mem=size``
          Defines the size of the KVM shadow MMU.
  
@@ -3127,8 +3105,7 @@ index 708583b4ce..a5b56f9963 100644
 +    ``mirror-rwx=on|off``
 +        Only applicable to TCG running on iOS hosts. When enabled, TB code
 +        is written to a mirror mapped address separate from the address that is
-+        executed. By default, this is enabled if running on Darwin and mmap
-+        fails to allocate PROT_WRITE | PROT_READ | PROT_EXEC.
++        executed. By default, this is disabled.
 +#endif
 +
      ``tb-size=n``
@@ -3137,58 +3114,166 @@ index 708583b4ce..a5b56f9963 100644
 -- 
 2.24.3 (Apple Git-128)
 
-From 3665d6d7e26ca01e02ca6b9a5ae361c9bb24e123 Mon Sep 17 00:00:00 2001
+From 0656dbe7225be02da035e6e9f6d0b81b7ccc2b1b Mon Sep 17 00:00:00 2001
 From: osy <osy86@users.noreply.github.com>
 Date: Wed, 29 Jul 2020 14:15:54 -0700
-Subject: [PATCH 7/7] tcg: support JIT on Apple Silicon
+Subject: [PATCH 7/8] tcg: support JIT on Apple Silicon
 
 https://developer.apple.com/documentation/apple_silicon/porting_just-in-time_compilers_to_apple_silicon
----
- accel/tcg/cpu-exec.c | 22 ++++++++++++++++++++++
- configure            | 19 +++++++++++++++++++
- 2 files changed, 41 insertions(+)
 
+For < iOS 14, reverse engineered functions from libsystem_pthread.dylib is
+implemented to handle APRR supported SoCs.
+
+The following rules apply for JIT write protect:
+  * JIT write-protect is enabled before tcg_qemu_tb_exec()
+  * JIT write-protect is disabled after tcg_qemu_tb_exec() returns
+  * JIT write-protect is disabled inside do_tb_phys_invalidate() but if it
+    is called inside of tcg_qemu_tb_exec() then write-protect will be
+    enabled again before returning.
+  * JIT write-protect is disabled by cpu_loop_exit() for interrupt handling.
+  * JIT write-protect is disabled everywhere else.
+---
+ accel/tcg/cpu-exec-common.c |  2 +
+ accel/tcg/cpu-exec.c        |  2 +
+ accel/tcg/translate-all.c   | 51 +++++++++++++++++++++++++
+ configure                   | 19 ++++++++++
+ include/exec/exec-all.h     |  2 +
+ include/tcg/tcg-apple-jit.h | 76 +++++++++++++++++++++++++++++++++++++
+ include/tcg/tcg.h           |  3 ++
+ tcg/tcg.c                   |  4 ++
+ 8 files changed, 159 insertions(+)
+ create mode 100644 include/tcg/tcg-apple-jit.h
+
+diff --git a/accel/tcg/cpu-exec-common.c b/accel/tcg/cpu-exec-common.c
+index 12c1e3e974..f1eb767b02 100644
+--- a/accel/tcg/cpu-exec-common.c
++++ b/accel/tcg/cpu-exec-common.c
+@@ -64,6 +64,8 @@ void cpu_reloading_memory_map(void)
+ 
+ void cpu_loop_exit(CPUState *cpu)
+ {
++    /* Unlock JIT write protect if applicable. */
++    tb_exec_unlock();
+     /* Undo the setting in cpu_tb_exec.  */
+     cpu->can_do_io = 1;
+     siglongjmp(cpu->jmp_env, 1);
 diff --git a/accel/tcg/cpu-exec.c b/accel/tcg/cpu-exec.c
-index 39173ffed6..5295ec7d4d 100644
+index 39173ffed6..a76d699e23 100644
 --- a/accel/tcg/cpu-exec.c
 +++ b/accel/tcg/cpu-exec.c
-@@ -137,6 +137,26 @@ static void init_delay_params(SyncClocks *sc, const CPUState *cpu)
- }
- #endif /* CONFIG USER ONLY */
- 
-+#if defined(HAVE_PTHREAD_JIT_PROTECT)
-+static void tb_pre_exec(void)
-+{
-+    if (__builtin_available(macOS 11, iOS 14, watchOS 7, tvOS 14, *)) {
-+        pthread_jit_write_protect_np(true);
-+        // sys_icache_invalidate should already be called!
-+    }
-+}
-+
-+static void tb_post_exec(void)
-+{
-+    if (__builtin_available(macOS 11, iOS 14, watchOS 7, tvOS 14, *)) {
-+        pthread_jit_write_protect_np(false);
-+    }
-+}
-+#else // not needed on non-Darwin platforms
-+static void tb_pre_exec(void) {}
-+static void tb_post_exec(void) {}
-+#endif
-+
- /* Execute a TB, and fix up the CPU state afterwards if necessary */
- static inline tcg_target_ulong cpu_tb_exec(CPUState *cpu, TranslationBlock *itb)
- {
-@@ -169,7 +189,9 @@ static inline tcg_target_ulong cpu_tb_exec(CPUState *cpu, TranslationBlock *itb)
+@@ -169,7 +169,9 @@ static inline tcg_target_ulong cpu_tb_exec(CPUState *cpu, TranslationBlock *itb)
      }
  #endif /* DEBUG_DISAS */
  
-+    tb_pre_exec();
++    tb_exec_lock();
      ret = tcg_qemu_tb_exec(env, tb_ptr);
-+    tb_post_exec();
++    tb_exec_unlock();
      cpu->can_do_io = 1;
      last_tb = (TranslationBlock *)(ret & ~TB_EXIT_MASK);
      tb_exit = ret & TB_EXIT_MASK;
+diff --git a/accel/tcg/translate-all.c b/accel/tcg/translate-all.c
+index 3cf6017e2b..09467b480d 100644
+--- a/accel/tcg/translate-all.c
++++ b/accel/tcg/translate-all.c
+@@ -27,6 +27,9 @@
+ #include "disas/disas.h"
+ #include "exec/exec-all.h"
+ #include "tcg/tcg.h"
++#if defined(CONFIG_DARWIN)
++#include "tcg/tcg-apple-jit.h"
++#endif
+ #if defined(CONFIG_USER_ONLY)
+ #include "qemu.h"
+ #if defined(__FreeBSD__) || defined(__FreeBSD_kernel__)
+@@ -75,6 +78,9 @@ extern kern_return_t mach_vm_remap(vm_map_t target_task,
+                                   );
+ #endif
+ 
++static bool tb_exec_is_locked(void);
++static void tb_exec_change(bool locked);
++
+ /* #define DEBUG_TB_INVALIDATE */
+ /* #define DEBUG_TB_FLUSH */
+ /* make various TB consistency checks */
+@@ -1242,6 +1248,7 @@ void tcg_exec_init(unsigned long tb_size, bool mirror_rwx)
+     page_init();
+     tb_htable_init();
+     code_gen_alloc(tb_size, mirror_rwx);
++    tb_exec_unlock();
+ #if defined(CONFIG_SOFTMMU)
+     /* There's no guest base to take into account, so go ahead and
+        initialize the prologue now.  */
+@@ -1518,8 +1525,11 @@ static void do_tb_phys_invalidate(TranslationBlock *tb, bool rm_from_page_list)
+     PageDesc *p;
+     uint32_t h;
+     tb_page_addr_t phys_pc;
++    bool code_gen_locked;
+ 
+     assert_memory_lock();
++    code_gen_locked = tb_exec_is_locked();
++    tb_exec_unlock();
+ 
+     /* make sure no further incoming jumps will be chained to this TB */
+     qemu_spin_lock(&tb->jmp_lock);
+@@ -1532,6 +1542,7 @@ static void do_tb_phys_invalidate(TranslationBlock *tb, bool rm_from_page_list)
+                      tb->trace_vcpu_dstate);
+     if (!(tb->cflags & CF_NOCACHE) &&
+         !qht_remove(&tb_ctx.htable, tb, h)) {
++        tb_exec_change(code_gen_locked);
+         return;
+     }
+ 
+@@ -1564,6 +1575,8 @@ static void do_tb_phys_invalidate(TranslationBlock *tb, bool rm_from_page_list)
+ 
+     atomic_set(&tcg_ctx->tb_phys_invalidate_count,
+                tcg_ctx->tb_phys_invalidate_count + 1);
++
++    tb_exec_change(code_gen_locked);
+ }
+ 
+ static void tb_phys_invalidate__locked(TranslationBlock *tb)
+@@ -2797,3 +2810,41 @@ void tcg_flush_softmmu_tlb(CPUState *cs)
+     tlb_flush(cs);
+ #endif
+ }
++
++#if defined(CONFIG_DARWIN) && !defined(CONFIG_TCG_INTERPRETER)
++static bool tb_exec_is_locked(void)
++{
++    return tcg_ctx->code_gen_locked;
++}
++
++static void tb_exec_change(bool locked)
++{
++#if defined(HAVE_PTHREAD_JIT_PROTECT)
++    if (__builtin_available(macOS 11, iOS 14, watchOS 7, tvOS 14, *)) {
++        pthread_jit_write_protect_np(locked);
++    } else
++#endif
++    if (jit_write_protect_supported()) {
++        jit_write_protect(locked);
++    }
++    tcg_ctx->code_gen_locked = locked;
++}
++#else // not needed on non-Darwin platforms
++static bool tb_exec_is_locked(void)
++{
++    return false;
++}
++
++static void tb_exec_change(bool locked) {}
++#endif
++
++void tb_exec_lock(void)
++{
++    // assumes sys_icache_invalidate already called
++    tb_exec_change(true);
++}
++
++void tb_exec_unlock(void)
++{
++    tb_exec_change(false);
++}
 diff --git a/configure b/configure
 index 09faa69a54..44d1f3644d 100755
 --- a/configure
@@ -3226,6 +3311,183 @@ index 09faa69a54..44d1f3644d 100755
  if test "$tcg_interpreter" = "yes"; then
    QEMU_INCLUDES="-iquote \$(SRC_PATH)/tcg/tci $QEMU_INCLUDES"
  elif test "$ARCH" = "sparc64" ; then
+diff --git a/include/exec/exec-all.h b/include/exec/exec-all.h
+index 8d3a52fb81..95895d5d2c 100644
+--- a/include/exec/exec-all.h
++++ b/include/exec/exec-all.h
+@@ -520,6 +520,8 @@ TranslationBlock *tb_htable_lookup(CPUState *cpu, target_ulong pc,
+                                    target_ulong cs_base, uint32_t flags,
+                                    uint32_t cf_mask);
+ void tb_set_jmp_target(TranslationBlock *tb, int n, uintptr_t addr);
++void tb_exec_lock(void);
++void tb_exec_unlock(void);
+ 
+ /* GETPC is the true target of the return instruction that we'll execute.  */
+ #if defined(CONFIG_TCG_INTERPRETER)
+diff --git a/include/tcg/tcg-apple-jit.h b/include/tcg/tcg-apple-jit.h
+new file mode 100644
+index 0000000000..6ed480b634
+--- /dev/null
++++ b/include/tcg/tcg-apple-jit.h
+@@ -0,0 +1,76 @@
++/*
++ * Apple Silicon APRR functions for JIT handling
++ *
++ * Copyright (c) 2020 osy
++ *
++ * This library is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU Lesser General Public
++ * License as published by the Free Software Foundation; either
++ * version 2.1 of the License, or (at your option) any later version.
++ *
++ * This library is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++ * Lesser General Public License for more details.
++ *
++ * You should have received a copy of the GNU Lesser General Public
++ * License along with this library; if not, see <http://www.gnu.org/licenses/>.
++ */
++
++// Credits to: https://siguza.github.io/APRR/
++// Reversed from /usr/lib/system/libsystem_pthread.dylib
++
++#ifndef TCG_APPLE_JIT_H
++#define TCG_APPLE_JIT_H
++
++#if defined(__aarch64__) && defined(CONFIG_DARWIN)
++
++#define _COMM_PAGE_START_ADDRESS        (0x0000000FFFFFC000ULL) /* In TTBR0 */
++#define _COMM_PAGE_APRR_SUPPORT         (_COMM_PAGE_START_ADDRESS+0x10C)
++#define _COMM_PAGE_APPR_WRITE_ENABLE    (_COMM_PAGE_START_ADDRESS+0x110)
++#define _COMM_PAGE_APRR_WRITE_DISABLE   (_COMM_PAGE_START_ADDRESS+0x118)
++
++static __attribute__ ((__always_inline__)) bool jit_write_protect_supported(void)
++{
++    uint8_t aprr_support = *(volatile uint8_t *)_COMM_PAGE_APRR_SUPPORT;
++    return aprr_support > 0;
++}
++
++static __attribute__ ((__always_inline__)) void jit_write_protect(int enabled) // write protect enable = write disable
++{
++    uint8_t aprr_support = *(volatile uint8_t *)_COMM_PAGE_APRR_SUPPORT;
++    if (aprr_support == 0 || aprr_support > 3) {
++        return;
++    } else if (aprr_support == 1) {
++        __asm__ __volatile__ (
++            "mov x0, %0\n"
++            "ldr x0, [x0]\n"
++            "msr S3_4_c15_c2_7, x0\n"
++            "isb sy\n"
++            :: "r" (enabled ? _COMM_PAGE_APRR_WRITE_DISABLE : _COMM_PAGE_APPR_WRITE_ENABLE) : "memory", "x0"
++        );
++    } else {
++        __asm__ __volatile__ (
++            "mov x0, %0\n"
++            "ldr x0, [x0]\n"
++            "msr S3_6_c15_c1_5, x0\n"
++            "isb sy\n"
++            :: "r" (enabled ? _COMM_PAGE_APRR_WRITE_DISABLE : _COMM_PAGE_APPR_WRITE_ENABLE) : "memory", "x0"
++        );
++    }
++}
++
++#else // defined(__aarch64__) && defined(CONFIG_DARWIN)
++
++static __attribute__ ((__always_inline__)) bool jit_write_protect_supported(void)
++{
++    return false;
++}
++
++static __attribute__ ((__always_inline__)) void jit_write_protect(int enabled)
++{
++}
++
++#endif
++
++#endif // define TCG_APPLE_JIT_H
+diff --git a/include/tcg/tcg.h b/include/tcg/tcg.h
+index cda957d729..11f0e5ab06 100644
+--- a/include/tcg/tcg.h
++++ b/include/tcg/tcg.h
+@@ -630,6 +630,9 @@ struct TCGContext {
+ #if defined(CONFIG_IOS_JIT)
+     ptrdiff_t code_rw_mirror_diff;
+ #endif
++#if defined(CONFIG_DARWIN) && !defined(CONFIG_TCG_INTERPRETER)
++    bool code_gen_locked; // on Darwin each thread tracks W^X flags
++#endif
+ 
+     /* Threshold to flush the translated code buffer.  */
+     void *code_gen_highwater;
+diff --git a/tcg/tcg.c b/tcg/tcg.c
+index ab0e7a4ae6..b32e617c0f 100644
+--- a/tcg/tcg.c
++++ b/tcg/tcg.c
+@@ -781,6 +781,8 @@ static void alloc_tcg_plugin_context(TCGContext *s)
+ void tcg_register_thread(void)
+ {
+     tcg_ctx = &tcg_init_ctx;
++
++    tb_exec_unlock();
+ }
+ #else
+ void tcg_register_thread(void)
+@@ -815,6 +817,8 @@ void tcg_register_thread(void)
+     err = tcg_region_initial_alloc__locked(tcg_ctx);
+     g_assert(!err);
+     qemu_mutex_unlock(&region.lock);
++
++    tb_exec_unlock();
+ }
+ #endif /* !CONFIG_USER_ONLY */
+ 
+-- 
+2.24.3 (Apple Git-128)
+
+From 96b80015e00ab35b80784ad5ca4bb5c2af008302 Mon Sep 17 00:00:00 2001
+From: osy <osy86@users.noreply.github.com>
+Date: Mon, 14 Sep 2020 15:06:29 -0700
+Subject: [PATCH 8/8] block: check availablity for preadv/pwritev on mac
+
+macOS 11/iOS 14 added preadv/pwritev APIs. Due to weak linking, configure
+will succeed with CONFIG_PREADV even when targeting a lower OS version. We
+therefore need to check at run time if we can actually use these APIs.
+---
+ block/file-posix.c | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
+
+diff --git a/block/file-posix.c b/block/file-posix.c
+index c8c13ab218..601074a242 100644
+--- a/block/file-posix.c
++++ b/block/file-posix.c
+@@ -1396,12 +1396,26 @@ static bool preadv_present = true;
+ static ssize_t
+ qemu_preadv(int fd, const struct iovec *iov, int nr_iov, off_t offset)
+ {
++#ifdef CONFIG_DARWIN // preadv introduced in macOS 11
++    if (!__builtin_available(macOS 11, iOS 14, watchOS 7, tvOS 14, *)) {
++        preadv_present = false;
++        return -ENOSYS;
++    }
++    else
++#endif
+     return preadv(fd, iov, nr_iov, offset);
+ }
+ 
+ static ssize_t
+ qemu_pwritev(int fd, const struct iovec *iov, int nr_iov, off_t offset)
+ {
++#ifdef CONFIG_DARWIN // pwritev introduced in macOS 11
++    if (!__builtin_available(macOS 11, iOS 14, watchOS 7, tvOS 14, *)) {
++        preadv_present = false;
++        return -ENOSYS;
++    }
++    else
++#endif
+     return pwritev(fd, iov, nr_iov, offset);
+ }
+ 
 -- 
 2.24.3 (Apple Git-128)
 
@@ -5732,50 +5994,4 @@ index b0194cb..eb57116 100644
                                 socklen_t addrlen, struct stat *cached_stat,
 -- 
 2.24.1 (Apple Git-126)
-
-From 0f83a02f6aac64e5efe0bc7b1058d0e0b8525e91 Mon Sep 17 00:00:00 2001
-From: osy <osy86@users.noreply.github.com>
-Date: Mon, 14 Sep 2020 15:06:29 -0700
-Subject: [PATCH] block: check availablity for preadv/pwritev on mac
-
-macOS 11/iOS 14 added preadv/pwritev APIs. Due to weak linking, configure
-will succeed with CONFIG_PREADV even when targeting a lower OS version. We
-therefore need to check at run time if we can actually use these APIs.
----
- block/file-posix.c | 14 ++++++++++++++
- 1 file changed, 14 insertions(+)
-
-diff --git a/block/file-posix.c b/block/file-posix.c
-index c8c13ab218..601074a242 100644
---- a/block/file-posix.c
-+++ b/block/file-posix.c
-@@ -1396,12 +1396,26 @@ static bool preadv_present = true;
- static ssize_t
- qemu_preadv(int fd, const struct iovec *iov, int nr_iov, off_t offset)
- {
-+#ifdef CONFIG_DARWIN // preadv introduced in macOS 11
-+    if (!__builtin_available(macOS 11, iOS 14, watchOS 7, tvOS 14, *)) {
-+        preadv_present = false;
-+        return -ENOSYS;
-+    }
-+    else
-+#endif
-     return preadv(fd, iov, nr_iov, offset);
- }
- 
- static ssize_t
- qemu_pwritev(int fd, const struct iovec *iov, int nr_iov, off_t offset)
- {
-+#ifdef CONFIG_DARWIN // pwritev introduced in macOS 11
-+    if (!__builtin_available(macOS 11, iOS 14, watchOS 7, tvOS 14, *)) {
-+        preadv_present = false;
-+        return -ENOSYS;
-+    }
-+    else
-+#endif
-     return pwritev(fd, iov, nr_iov, offset);
- }
- 
--- 
-2.24.3 (Apple Git-128)
 

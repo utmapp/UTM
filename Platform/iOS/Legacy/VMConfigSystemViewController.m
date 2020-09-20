@@ -21,6 +21,7 @@
 #import "VMConfigSystemViewController.h"
 #import "UTMConfiguration+Constants.h"
 #import "UTMConfiguration+System.h"
+#import "UTMJailbreak.h"
 #import "UTMLogging.h"
 #import "VMConfigPickerView.h"
 #import "VMConfigTextField.h"
@@ -230,8 +231,9 @@ const float kMemoryWarningThreshold = 0.8;
         jitSize = guestRam / 4;
     }
     // we need to double observed JIT size due to iOS restrictions
-    // FIXME: remove this doubling when JIT is fixed
-    jitSize *= 2;
+    if (!jb_has_jit_entitlement()) {
+        jitSize *= 2;
+    }
     _estimatedRam = kBaseUsageBytes + guestRam + jitSize;
     self.estimatedRamLabel.text = [NSString stringWithFormat:@"%lu MB", _estimatedRam / kMBinBytes];
 }

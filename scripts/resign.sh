@@ -46,8 +46,11 @@ cat >"$FAKEENT" <<EOL
 <dict>
 	<key>get-task-allow</key>
 	<true/>
+	<!-- https://siguza.github.io/psychicpaper/ -->
+	<!---><!-->
 	<key>dynamic-codesigning</key>
 	<true/>
+	<!-- -->
 </dict>
 </plist>
 EOL

@@ -301,15 +301,10 @@ static size_t hostCpuCount(void) {
         accel = [accel stringByAppendingFormat:@",tb-size=%@", [self.configuration.systemJitCacheSize stringValue]];
     }
     
-    // Avoid alias mapping if we support dynamic codesigning
-#if TARGET_OS_IPHONE
-    if (@available(iOS 14, *)) {
-        // only iOS 14 supports the pthread JIT calls
-        if (jb_has_jit_entitlement()) {
-            accel = [accel stringByAppendingString:@",mirror-rwx=off"];
-        }
+    // use mirror mapping when we don't have JIT entitlements
+    if (!jb_has_jit_entitlement()) {
+        accel = [accel stringByAppendingString:@",mirror-rwx=on"];
     }
-#endif
     
     return accel;
 }

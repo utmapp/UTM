@@ -29,15 +29,11 @@ jobs:
         uses: actions/checkout@v1
         with:
           submodules: recursive
-#      - name: Setup Xcode Path
-#        shell: bash
-#        run: |
-#          if [ ! -d "${{ secrets.XCODE_PATH }}" ]; then
-#            echo "WARNING: invalid XCODE_PATH specified in Github Secrets, using default Xcode version"
-#          else
-#            sudo xcode-select -switch "${{ secrets.XCODE_PATH }}"
-#          fi
-      - name: Setup Xcode Beta Path
+      - name: Setup Xcode
+        shell: bash
+        run: sudo xcode-select -switch /Applications/Xcode_12.app
+      - name: Setup Xcode (macOS)
+        if: matrix.platform == 'macos' # TODO: remove this hack when Xcode is fixed
         shell: bash
         run: sudo xcode-select -switch /Applications/Xcode_12_beta.app
       - name: Cache Sysroot

@@ -139,7 +139,8 @@ struct VMConfigSystemView: View {
         }
         let totalDeviceMemory = ProcessInfo.processInfo.physicalMemory
         let actualJitSizeMib = jitSizeMib == 0 ? memorySizeMib / 4 : jitSizeMib
-        let estMemoryUsage = UInt64(memorySizeMib + 2*actualJitSizeMib + baseUsageMib) * bytesInMib
+        let jitMirrorMultiplier = jb_has_jit_entitlement() ? 1 : 2;
+        let estMemoryUsage = UInt64(memorySizeMib + jitMirrorMultiplier*actualJitSizeMib + baseUsageMib) * bytesInMib
         if Double(estMemoryUsage) > Double(totalDeviceMemory) * warningThreshold {
             let format = NSLocalizedString("Allocating too much memory will crash the VM. Your device has %llu MB of memory and the estimated usage is %llu MB.", comment: "VMConfigSystemView")
             warningMessage = String(format: format, totalDeviceMemory / bytesInMib, estMemoryUsage / bytesInMib)
