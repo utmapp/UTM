@@ -15,6 +15,7 @@
 		CE020BAC24AEE00000B44AB6 /* UTMLoggingSwift.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE020BAA24AEE00000B44AB6 /* UTMLoggingSwift.swift */; };
 		CE020BB624B14F8400B44AB6 /* UTMVirtualMachineExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE020BB524B14F8400B44AB6 /* UTMVirtualMachineExtension.swift */; };
 		CE020BB724B14F8400B44AB6 /* UTMVirtualMachineExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE020BB524B14F8400B44AB6 /* UTMVirtualMachineExtension.swift */; };
+		CE020FA2251A661F00665C85 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CE550BD72259479D0063E575 /* LaunchScreen.storyboard */; };
 		CE03D05224D90B4E00F76B84 /* UTMQemuSystem.m in Sources */ = {isa = PBXBuildFile; fileRef = CE03D05024D90B4E00F76B84 /* UTMQemuSystem.m */; };
 		CE03D05324D90B4E00F76B84 /* UTMQemuSystem.m in Sources */ = {isa = PBXBuildFile; fileRef = CE03D05024D90B4E00F76B84 /* UTMQemuSystem.m */; };
 		CE03D08624D90F0700F76B84 /* libgmodule-2.0.0.utm.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63D822653C7300FC7E63 /* libgmodule-2.0.0.utm.dylib */; };
@@ -2626,6 +2627,7 @@
 				CE4EF2722506DD7900E9D33B /* VMRemovableDrivesView.xib in Resources */,
 				CE2D937024AD46670059923A /* terminal.html in Resources */,
 				CE2D937224AD46670059923A /* Settings.bundle in Resources */,
+				CE020FA2251A661F00665C85 /* LaunchScreen.storyboard in Resources */,
 				CE0B6CED24AD532A00FE012D /* Assets.xcassets in Resources */,
 				CE2D937324AD46670059923A /* hterm_all.js in Resources */,
 			);
