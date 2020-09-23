@@ -639,6 +639,7 @@
 		CE4EF2702506DBFD00E9D33B /* VMRemovableDrivesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE4EF26F2506DBFD00E9D33B /* VMRemovableDrivesViewController.swift */; };
 		CE4EF2722506DD7900E9D33B /* VMRemovableDrivesView.xib in Resources */ = {isa = PBXBuildFile; fileRef = CE4EF2712506DD7900E9D33B /* VMRemovableDrivesView.xib */; };
 		CE5076DB250AB55D00C26C19 /* VMDisplayMetalViewController+Pencil.m in Sources */ = {isa = PBXBuildFile; fileRef = CE5076DA250AB55D00C26C19 /* VMDisplayMetalViewController+Pencil.m */; };
+		CE5C5DC5251AED89009A72AB /* UTMNoJailbreak.m in Sources */ = {isa = PBXBuildFile; fileRef = CE5C5DC4251AED89009A72AB /* UTMNoJailbreak.m */; };
 		CE612AC624D3B50700FA6300 /* VMDisplayWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE612AC524D3B50700FA6300 /* VMDisplayWindowController.swift */; };
 		CE7B9259251ACCFC00B7E963 /* VMDisplayMetalViewController+Pointer.h in Sources */ = {isa = PBXBuildFile; fileRef = 83FBDD53242FA71900D2C5D7 /* VMDisplayMetalViewController+Pointer.h */; };
 		CE7B925A251ACCFC00B7E963 /* qapi-types-rocker.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C14D23FCEC09001177D6 /* qapi-types-rocker.c */; };
@@ -811,7 +812,6 @@
 		CE7B9301251ACCFC00B7E963 /* VMDisplayTerminalViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = E28394C0240C268A006742E2 /* VMDisplayTerminalViewController.m */; };
 		CE7B9302251ACCFC00B7E963 /* UTMScreenshot.m in Sources */ = {isa = PBXBuildFile; fileRef = CE0B6D8424AD5ADE00FE012D /* UTMScreenshot.m */; };
 		CE7B9303251ACCFC00B7E963 /* qapi-events-block-core.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C0EF23FCEC04001177D6 /* qapi-events-block-core.c */; };
-		CE7B9304251ACCFC00B7E963 /* UTMJailbreak.m in Sources */ = {isa = PBXBuildFile; fileRef = CEB63A7924F469E300CAF323 /* UTMJailbreak.m */; };
 		CE7B9305251ACCFC00B7E963 /* UTMQemuManager.m in Sources */ = {isa = PBXBuildFile; fileRef = CE36B280227668D1004A1435 /* UTMQemuManager.m */; };
 		CE7B9306251ACCFC00B7E963 /* VMConfigPickerView.m in Sources */ = {isa = PBXBuildFile; fileRef = CEBCAF5624353B9F00C2B423 /* VMConfigPickerView.m */; };
 		CE7B9307251ACCFC00B7E963 /* VMConfigStepper.m in Sources */ = {isa = PBXBuildFile; fileRef = CEE0420E24412C520001680F /* VMConfigStepper.m */; };
@@ -1859,6 +1859,7 @@
 		CE550BD82259479D0063E575 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		CE550BE222596E790063E575 /* VMListViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VMListViewCell.h; sourceTree = "<group>"; };
 		CE550BE322596E790063E575 /* VMListViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VMListViewCell.m; sourceTree = "<group>"; };
+		CE5C5DC4251AED89009A72AB /* UTMNoJailbreak.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UTMNoJailbreak.m; sourceTree = "<group>"; };
 		CE5E4956225C5A4400148CEF /* VMConfigExistingViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VMConfigExistingViewController.h; sourceTree = "<group>"; };
 		CE5E4957225C5A4400148CEF /* VMConfigExistingViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VMConfigExistingViewController.m; sourceTree = "<group>"; };
 		CE5F165B2261395000F3D56B /* UTMVirtualMachine.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UTMVirtualMachine.m; sourceTree = "<group>"; };
@@ -2352,6 +2353,7 @@
 				CE2D954624AD4F980059923A /* UTMExtensions.swift */,
 				CEB63A7924F469E300CAF323 /* UTMJailbreak.m */,
 				CEB63A7824F468BA00CAF323 /* UTMJailbreak.h */,
+				CE5C5DC4251AED89009A72AB /* UTMNoJailbreak.m */,
 				CE020BAA24AEE00000B44AB6 /* UTMLoggingSwift.swift */,
 				CE2D955624AD4F980059923A /* Swift-Bridging-Header.h */,
 				CE550BD52259479D0063E575 /* Assets.xcassets */,
@@ -3760,6 +3762,7 @@
 				CE7B926D251ACCFC00B7E963 /* VMConfigNetworkingViewController.m in Sources */,
 				CE7B926E251ACCFC00B7E963 /* UTMPortAllocator.m in Sources */,
 				CE7B926F251ACCFC00B7E963 /* UTMQemu.m in Sources */,
+				CE5C5DC5251AED89009A72AB /* UTMNoJailbreak.m in Sources */,
 				CE7B9270251ACCFC00B7E963 /* qapi-visit-machine.c in Sources */,
 				CE7B9271251ACCFC00B7E963 /* CSSession.m in Sources */,
 				CE7B9272251ACCFC00B7E963 /* qapi-commands-machine-target.c in Sources */,
@@ -3908,7 +3911,6 @@
 				CE7B9301251ACCFC00B7E963 /* VMDisplayTerminalViewController.m in Sources */,
 				CE7B9302251ACCFC00B7E963 /* UTMScreenshot.m in Sources */,
 				CE7B9303251ACCFC00B7E963 /* qapi-events-block-core.c in Sources */,
-				CE7B9304251ACCFC00B7E963 /* UTMJailbreak.m in Sources */,
 				CE7B9305251ACCFC00B7E963 /* UTMQemuManager.m in Sources */,
 				CE7B9306251ACCFC00B7E963 /* VMConfigPickerView.m in Sources */,
 				CE7B9307251ACCFC00B7E963 /* VMConfigStepper.m in Sources */,
