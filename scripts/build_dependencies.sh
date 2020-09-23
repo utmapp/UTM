@@ -41,7 +41,7 @@ command -v realpath >/dev/null 2>&1 || realpath() {
 usage () {
     echo "Usage: [VARIABLE...] $(basename $0) [-p platform] [-a architecture] [-d] [-r] [-q]"
     echo ""
-    echo "  -p platform      Target platform. Default ios. [ios|macos]"
+    echo "  -p platform      Target platform. Default ios. [ios|ios-se|macos]"
     echo "  -a architecture  Target architecture. Default arm64. [armv7|armv7s|arm64|i386|x86_64]"
     echo "  -d, --download   Force re-download of source even if already downloaded."
     echo "  -r, --rebuild    Build only. Do not download, patch, configure."
@@ -358,7 +358,7 @@ fi
 export CHOST
 
 case $PLATFORM in
-ios )
+ios | ios-se )
     if [ -z "$SDKMINVER" ]; then
         SDKMINVER="$IOS_SDKMINVER"
         CFLAGS_MINVER="-miphoneos-version-min=$SDKMINVER"
@@ -371,8 +371,13 @@ ios )
         SDK=iphonesimulator
         ;;
     esac
-    PLATFORM_FAMILY_NAME="iOS"
-    QEMU_PLATFORM_BUILD_FLAGS="--enable-shared-lib"
+    if [ "$PLATFORM" == "ios" ]; then
+        PLATFORM_FAMILY_NAME="iOS"
+        QEMU_PLATFORM_BUILD_FLAGS="--enable-shared-lib"
+    else
+        PLATFORM_FAMILY_NAME="iOS-SE"
+        QEMU_PLATFORM_BUILD_FLAGS="--enable-shared-lib --enable-tcg-interpreter"
+    fi
     ;;
 macos )
     if [ -z "$SDKMINVER" ]; then
@@ -457,7 +462,7 @@ if [ -z "$QEMU_ONLY" ]; then
     rm -f "$BUILD_DIR/BUILD_SUCCESS"
     build_qemu_dependencies
 fi
-build_qemu $QEMU_PLATFORM_BUILD_FLAGS
+build_qemu "$QEMU_PLATFORM_BUILD_FLAGS"
 if [ -z "$QEMU_ONLY" ]; then
     steal_libucontext # should be a better way...
     build_spice_client

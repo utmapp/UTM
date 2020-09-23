@@ -5995,3 +5995,98 @@ index b0194cb..eb57116 100644
 -- 
 2.24.1 (Apple Git-126)
 
+From 9e0f24d0d4e03197cce6d332edc8291d01be6727 Mon Sep 17 00:00:00 2001
+From: osy <osy86@users.noreply.github.com>
+Date: Tue, 22 Sep 2020 12:42:53 -0700
+Subject: [PATCH] tcgi: iOS support
+
+---
+ accel/tcg/tcg-all.c       | 4 ++--
+ accel/tcg/translate-all.c | 6 +++++-
+ qemu-options.hx           | 2 ++
+ tcg/tci/tcg-target.h      | 4 ----
+ 4 files changed, 9 insertions(+), 7 deletions(-)
+
+diff --git a/accel/tcg/tcg-all.c b/accel/tcg/tcg-all.c
+index 7daaf94d94..c608b25ec2 100644
+--- a/accel/tcg/tcg-all.c
++++ b/accel/tcg/tcg-all.c
+@@ -193,7 +193,7 @@ static void tcg_set_tb_size(Object *obj, Visitor *v,
+     s->tb_size = value;
+ }
+ 
+-#ifdef CONFIG_IOS_JIT
++#if defined(CONFIG_IOS_JIT) && !defined(CONFIG_TCG_INTERPRETER)
+ static bool tcg_get_mirror_rwx(Object *obj, Error **errp)
+ {
+     TCGState *s = TCG_STATE(obj);
+@@ -226,7 +226,7 @@ static void tcg_accel_class_init(ObjectClass *oc, void *data)
+     object_class_property_set_description(oc, "tb-size",
+         "TCG translation block cache size");
+ 
+-#ifdef CONFIG_IOS_JIT
++#if defined(CONFIG_IOS_JIT) && !defined(CONFIG_TCG_INTERPRETER)
+     object_class_property_add_bool(oc, "mirror-rwx",
+         tcg_get_mirror_rwx, tcg_set_mirror_rwx);
+     object_class_property_set_description(oc, "mirror-rwx",
+diff --git a/accel/tcg/translate-all.c b/accel/tcg/translate-all.c
+index 09467b480d..8c32b58fd1 100644
+--- a/accel/tcg/translate-all.c
++++ b/accel/tcg/translate-all.c
+@@ -1094,12 +1094,16 @@ static inline void *alloc_code_gen_buffer(bool no_rwx_pages)
+ #else
+ static inline void *alloc_code_gen_buffer(bool no_rwx_pages)
+ {
++#if defined(CONFIG_TCG_INTERPRETER)
++    int prot = PROT_READ;
++#else
+     int prot = PROT_READ | PROT_EXEC;
++#endif
+     int flags = MAP_PRIVATE | MAP_ANONYMOUS;
+     size_t size = tcg_ctx->code_gen_buffer_size;
+     void *buf;
+ 
+-#if defined(CONFIG_DARWIN) // both iOS and macOS (Apple Silicon) applicable
++#if defined(CONFIG_DARWIN) && !defined(CONFIG_TCG_INTERPRETER) // both iOS and macOS (Apple Silicon) applicable
+     if (!no_rwx_pages) {
+         prot |= PROT_WRITE;
+         flags |= MAP_JIT;
+diff --git a/qemu-options.hx b/qemu-options.hx
+index 4b8cdfd544..d9832a09ce 100644
+--- a/qemu-options.hx
++++ b/qemu-options.hx
+@@ -124,7 +124,9 @@ DEF("accel", HAS_ARG, QEMU_OPTION_accel,
+     "                kernel-irqchip=on|off|split controls accelerated irqchip support (default=on)\n"
+     "                kvm-shadow-mem=size of KVM shadow MMU in bytes\n"
+ #ifdef CONFIG_IOS_JIT
++#ifndef CONFIG_TCG_INTERPRETER
+     "                mirror-rwx=on|off (mirror map executable pages for TCG on iOS)\n"
++#endif
+ #endif
+     "                tb-size=n (TCG translation block cache size)\n"
+     "                thread=single|multi (enable multi-threaded TCG)\n", QEMU_ARCH_ALL)
+diff --git a/tcg/tci/tcg-target.h b/tcg/tci/tcg-target.h
+index e6bf09d12c..81687bdce0 100644
+--- a/tcg/tci/tcg-target.h
++++ b/tcg/tci/tcg-target.h
+@@ -198,7 +198,6 @@ static inline void flush_icache_range(uintptr_t start, uintptr_t stop)
+ #if defined(CONFIG_IOS_JIT)
+ static inline void flush_dcache_range(uintptr_t start, uintptr_t stop)
+ {
+-#error "Unimplemented dcache flush function"
+ }
+ #endif
+ 
+@@ -216,9 +215,6 @@ static inline void tb_target_set_jmp_target(uintptr_t tc_ptr,
+     /* patch the branch destination */
+     atomic_set((int32_t *)jmp_addr, addr - (jmp_addr + 4));
+     /* no need to flush icache explicitly */
+-#if defined(CONFIG_IOS_JIT)
+-    flush_dcache_range(wr_addr, wr_addr + 4);
+-#endif
+ }
+ 
+ #endif /* TCG_TARGET_H */
+-- 
+2.24.3 (Apple Git-128)
+

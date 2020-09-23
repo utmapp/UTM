@@ -4,7 +4,7 @@ set -e
 usage () {
     echo "Usage: $(basename $0) [-p platform] [-a architecture] [-t targetversion] [-o output]"
     echo ""
-    echo "  -p platform      Target platform. Default ios. [ios|macos]"
+    echo "  -p platform      Target platform. Default ios. [ios|ios-se|macos]"
     echo "  -a architecture  Target architecture. Default arm64. [armv7|armv7s|arm64|i386|x86_64]"
     echo "  -o output        Output archive path. Default is current directory."
     echo ""
@@ -39,19 +39,7 @@ while [ "x$1" != "x" ]; do
 done
 
 case $PLATFORM in
-ios )
-    SCHEME="iOS"
-    ;;
-macos )
-    SCHEME="macOS"
-    ;;
-* )
-    usage
-    ;;
-esac
-
-case $PLATFORM in
-ios )
+ios | ios-se )
     case $ARCH in
     arm* )
         SDK=iphoneos
@@ -63,11 +51,15 @@ ios )
         usage
         ;;
     esac
-    PLATFORM_FAMILY_NAME="iOS"
+    if [ "$PLATFORM" == "ios" ]; then
+        SCHEME="iOS"
+    else
+        SCHEME="iOS-SE"
+    fi
     ;;
 macos )
     SDK=macosx
-    PLATFORM_FAMILY_NAME="macOS"
+    SCHEME="macOS"
     ;;
 * )
     usage

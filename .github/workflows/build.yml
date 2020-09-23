@@ -20,7 +20,7 @@ jobs:
     strategy:
       matrix:
         arch: [arm64, x86_64]
-        platform: [ios, macos]
+        platform: [ios, ios-se, macos]
         exclude:
           - platform: macos
             arch: arm64 # not ready yet!
