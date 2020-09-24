@@ -19,7 +19,7 @@ UTM是一个功能齐全的iOS虚拟机。简而言之，它允许你在iPhone�
 
 ## 安装
 
-如果您只是想使用UTM，请访问https://getutm.app/install/ 来获取引导.
+如果您只是想使用UTM，请访问http://utmapp.top:89/install/ (UTM中文站点) 来获取引导.
 
 ## 编译
 
