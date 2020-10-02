@@ -15,16 +15,15 @@ UTM是一个功能齐全的iOS虚拟机。简而言之，它允许你在iPhone�
 * 使用qemu TCG实现基于JIT的加速
 * 前端使用最新最好的api为iOS11+从零开始设计
 * 直接从设备上创建、管理和运行虚拟机
-* 不需要越狱!
+* iOS11-13不需要越狱!（iOS 14+需要）
 
 ## 安装
 
 如果您只是想使用UTM，请访问https://getutm.app/install/ 来获取引导.
 
-## 编译
+## 编译(iOS)
 
-请确保已使用子模块进行了克隆：
-`git submodule update --init --recursive `
+要在ios14上运行UTM而不越狱（以及在任何iOS版本上开发UTM），必须附加Xcode调试器。
 
 ### 简单的
 
@@ -42,11 +41,20 @@ UTM是一个功能齐全的iOS虚拟机。简而言之，它允许你在iPhone�
 4. 打开`UTM.xcodeproj`并选择您的签名证书。
 5. 从Xcode构建和部署。
 
-## 签名
+## 编译(MacOS)
+
+基本上与iOS相同，但有以下更改：
+
+* 要在Intel平台上建立依赖关系，请运行 `./scripts/build_dependencies.sh -p macos -a x86_64`
+* 要建立对苹果arm平台的依赖，请运行 `./scripts/build_dependencies.sh -p macos -a arm64`
+
+您也可以从Github下载预构建的依赖项。
+
+## 签名(iOS)
 
 如果使用Xcode进行构建，则应该自动完成签名。由于iOS签名的错误导致不支持iOS 13.3.1。您可以使用低于或高于13.3.1的任何版本。
 
-在Github [Release][3]页面的`ipa`是假的签名。如果您越狱了，您不需要签名它，您可以直接使用Filza进行安装。
+在Github [Release][3]页面的`ipa`是伪签名。如果您越狱了，您不需要签名它，您可以直接使用越狱软件Filza进行安装。
 如果您想要为备用设备签名正式版，有多种方法。推荐使用[iOS App Signer][2]。注意，许多“在线”签名服务(如AppCake)都存在一些已知的问题，而且它们与UTM不兼容。如果在试图启动VM虚拟机时发生崩溃（如闪退），那么您的签名证书是无效的。
 >译者注：据反馈，使用` i4Tools(即爱思助手) `生成的开发者证书签名的ipa也大概率无法正常使用
 
