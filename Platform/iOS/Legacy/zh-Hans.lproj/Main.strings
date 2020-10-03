@@ -211,7 +211,7 @@
 /* Class = "UILabel"; text = "Memory"; ObjectID = "HRc-mq-43y"; */
 "HRc-mq-43y.text" = "内存";
 
-/* Class = "UITextField"; placeholder = "1"; ObjectID = "I4t-8W-Nev"; */
+/* Class = "UITextField"; placeholder = "0"; ObjectID = "I4t-8W-Nev"; */
 "I4t-8W-Nev.placeholder" = "2";
 
 /* Class = "UILabel"; text = "Default"; ObjectID = "Ijr-H4-Hee"; */
@@ -370,7 +370,7 @@
 /* Class = "UITableViewSection"; headerTitle = "Image"; ObjectID = "SCF-Z9-xBk"; */
 "SCF-Z9-xBk.headerTitle" = "镜像";
 
-/* Class = "UITableViewSection"; footerTitle = "For most non-ARM targets, all CPUs will be emulated by a single CPU by default."; ObjectID = "spp-Cv-g7X"; */
+/* Class = "UITableViewSection"; footerTitle = "For most non-ARM targets, all CPUs will be emulated by a single CPU by default. Set 0 to use maximum supported number of CPU."; ObjectID = "spp-Cv-g7X"; */
 "spp-Cv-g7X.footerTitle" = "对于大多数非ARM架构的系统，默认情况下多CPU将由单个CPU模拟。当您设置内存过大时，可能会导致虚拟机无法启动。";
 
 /* Class = "UITableViewSection"; headerTitle = "Hardware"; ObjectID = "spp-Cv-g7X"; */
