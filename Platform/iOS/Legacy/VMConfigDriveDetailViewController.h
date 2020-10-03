@@ -43,7 +43,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, nullable, strong) NSString *driveInterfaceType;
 
 @property (nonatomic, assign) NSUInteger driveIndex;
-@property (nonatomic, assign) BOOL valid;
+@property (nonatomic, assign) BOOL existing;
 
 - (IBAction)removableToggleChanged:(UISwitch *)sender;
 - (IBAction)saveButtonPressed:(UIBarButtonItem *)sender;

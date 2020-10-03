@@ -24,6 +24,8 @@
 
 @interface VMConfigDriveDetailViewController ()
 
+@property (nonatomic, assign) BOOL edited;
+
 @end
 
 @implementation VMConfigDriveDetailViewController
@@ -34,8 +36,11 @@
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-    if (self.valid) {
-        self.existingPathLabel.text = [self.configuration driveImagePathForIndex:self.driveIndex];
+    if (self.edited) {
+        return;
+    }
+    if (self.existing) {
+        self.imageName = [self.configuration driveImagePathForIndex:self.driveIndex];
         self.imageType = [self.configuration driveImageTypeForIndex:self.driveIndex];
         self.driveInterfaceType = [self.configuration driveInterfaceTypeForIndex:self.driveIndex];
         self.removable = [self.configuration driveRemovableForIndex:self.driveIndex];
@@ -50,6 +55,7 @@
         [self showDriveTypeOptions:NO animated:NO];
     }
     [self hidePickersAnimated:NO];
+    self.edited = YES;
 }
 
 - (void)showDriveTypeOptions:(BOOL)visible animated:(BOOL)animated {
@@ -65,7 +71,7 @@
 - (void)setImageType:(UTMDiskImageType)imageType {
     NSAssert(imageType < UTMDiskImageTypeMax, @"Invalid image type %lu", imageType);
     _imageType = imageType;
-    if (self.valid) {
+    if (self.existing) {
         [self.configuration setDriveImageType:imageType forIndex:self.driveIndex];
     }
     self.imageTypePickerCell.detailTextLabel.text = [UTMConfiguration supportedImageTypes][imageType];
@@ -73,7 +79,7 @@
 
 - (void)setDriveInterfaceType:(NSString *)driveInterfaceType {
     _driveInterfaceType = driveInterfaceType;
-    if (self.valid) {
+    if (self.existing) {
         [self.configuration setDriveInterfaceType:driveInterfaceType forIndex:self.driveIndex];
     }
     self.driveLocationPickerCell.detailTextLabel.text = driveInterfaceType.length > 0 ? driveInterfaceType : @" ";
@@ -84,6 +90,11 @@
     if (self.removableToggle.on != removable) {
         self.removableToggle.on = removable;
     }
+}
+
+- (void)setImageName:(NSString *)imageName {
+    _imageName = imageName;
+    self.existingPathLabel.text = imageName;
 }
 
 #pragma mark - Picker delegate
@@ -146,8 +157,8 @@
         [self showAlert:NSLocalizedString(@"You must select a disk image.", @"VMConfigDriveDetailsViewController") actions:nil completion:nil];
         return;
     }
-    if (!self.valid) {
-        self.valid = YES;
+    if (!self.existing) {
+        self.existing = YES;
         if (self.removable) {
             self.driveIndex = [self.configuration newRemovableDrive:self.imageType interface:self.driveInterfaceType];
         } else {

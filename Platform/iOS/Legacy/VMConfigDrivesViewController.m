@@ -109,12 +109,12 @@
         VMConfigDriveDetailViewController *view = (VMConfigDriveDetailViewController *)segue.destinationViewController;
         view.configuration = self.configuration;
         view.driveIndex = idxPath.row;
-        view.valid = YES;
+        view.existing = YES;
     } else if ([segue.identifier isEqualToString:@"newDrive"]) {
         NSAssert([segue.destinationViewController isKindOfClass:[VMConfigDriveDetailViewController class]], @"Invalid segue destination");
         VMConfigDriveDetailViewController *view = (VMConfigDriveDetailViewController *)segue.destinationViewController;
         view.configuration = self.configuration;
-        view.valid = NO;
+        view.existing = NO;
     }
 }
 
