@@ -87,7 +87,7 @@ class UTMData: ObservableObject {
             let files = try fileManager.contentsOfDirectory(at: documentsURL, includingPropertiesForKeys: [.isDirectoryKey], options: .skipsHiddenFiles)
             let newFiles = files.filter { newFile in
                 !virtualMachines.contains { existingVM in
-                    existingVM.path == newFile
+                    existingVM.path?.lastPathComponent == newFile.lastPathComponent
                 }
             }
             for file in newFiles {
