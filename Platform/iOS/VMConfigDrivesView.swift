@@ -66,12 +66,12 @@ struct VMConfigDrivesView: View {
                 Button(action: { importDrivePresented.toggle() }, label: {
                     Label("Import Drive", systemImage: "square.and.arrow.down").labelStyle(IconOnlyLabelStyle())
                 }).padding(.trailing, 10)
-                .fileImporter(isPresented: $importDrivePresented, allowedContentTypes: [.item], onCompletion: importDrive)
                 Button(action: { createDriveVisible.toggle() }, label: {
                     Label("New Drive", systemImage: "plus").labelStyle(IconOnlyLabelStyle())
                 })
             }
         )
+        .fileImporter(isPresented: $importDrivePresented, allowedContentTypes: [.item], onCompletion: importDrive)
         .sheet(isPresented: $createDriveVisible) {
             CreateDrive(onDismiss: newDrive)
         }
