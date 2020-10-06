@@ -309,7 +309,7 @@ class UTMData: ObservableObject {
     
     // MARK: - Disk drive functions
     
-    func importDrive(_ drive: URL, forConfig: UTMConfiguration, copy: Bool = false) throws {
+    func importDrive(_ drive: URL, forConfig: UTMConfiguration, copy: Bool = true) throws {
         let name = drive.lastPathComponent
         let imagesPath = forConfig.imagesPath
         let dstPath = imagesPath.appendingPathComponent(name)
