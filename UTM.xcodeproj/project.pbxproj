@@ -253,6 +253,7 @@
 		CE0B6F2F24AD67BE00FE012D /* libjson-glib-1.0.0.utm.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63E222653C7400FC7E63 /* libjson-glib-1.0.0.utm.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CE0B6F3124AD67C100FE012D /* libphodav-2.0.0.utm.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE059DC0243BD67100338317 /* libphodav-2.0.0.utm.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CE0B6F5424AD67FA00FE012D /* libspice-client-glib-2.0.8.utm.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63FE22653C7500FC7E63 /* libspice-client-glib-2.0.8.utm.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE0E9B87252FD06B0026E02B /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE0E9B86252FD06B0026E02B /* SwiftUI.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		CE0FE12824D3B08B0086CEF0 /* VMDisplayWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = CE0FE12724D3B08B0086CEF0 /* VMDisplayWindow.xib */; };
 		CE178ED725017EB100CE0E33 /* qemu-system-i386 in CopyFiles */ = {isa = PBXBuildFile; fileRef = CE178EB025017EAE00CE0E33 /* qemu-system-i386 */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CE178ED825017EB100CE0E33 /* qemu-system-mips64 in CopyFiles */ = {isa = PBXBuildFile; fileRef = CE178EB125017EAE00CE0E33 /* qemu-system-mips64 */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
@@ -961,6 +962,7 @@
 		CE0B6D8A24AD658000FE012D /* CSSessionMac.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CSSessionMac.m; sourceTree = "<group>"; };
 		CE0E828D24E4D4CE003EA9FE /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = Base; path = Base.lproj/Localizable.strings; sourceTree = "<group>"; };
 		CE0E829424E4D509003EA9FE /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = Base; path = Base.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		CE0E9B86252FD06B0026E02B /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
 		CE0FE12724D3B08B0086CEF0 /* VMDisplayWindow.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = VMDisplayWindow.xib; sourceTree = "<group>"; };
 		CE178EB025017EAE00CE0E33 /* qemu-system-i386 */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; name = "qemu-system-i386"; path = "sysroot-$(PLATFORM_FAMILY_NAME)-$(PLATFORM_PREFERRED_ARCH)/bin/qemu-system-i386"; sourceTree = "<group>"; };
 		CE178EB125017EAE00CE0E33 /* qemu-system-mips64 */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; name = "qemu-system-mips64"; path = "sysroot-$(PLATFORM_FAMILY_NAME)-$(PLATFORM_PREFERRED_ARCH)/bin/qemu-system-mips64"; sourceTree = "<group>"; };
@@ -1598,6 +1600,7 @@
 				CE2D934E24AD46670059923A /* libgstbase-1.0.0.utm.dylib in Frameworks */,
 				CE020BA724AEDEF000B44AB6 /* Logging in Frameworks */,
 				CE2D934F24AD46670059923A /* libphodav-2.0.0.utm.dylib in Frameworks */,
+				CE0E9B87252FD06B0026E02B /* SwiftUI.framework in Frameworks */,
 				CE2D935024AD46670059923A /* libgstcontroller-1.0.0.utm.dylib in Frameworks */,
 				CE2D935124AD46670059923A /* libgstaudio-1.0.0.utm.dylib in Frameworks */,
 				CE2D935224AD46670059923A /* libgpg-error.0.utm.dylib in Frameworks */,
@@ -1724,6 +1727,7 @@
 		CE2D63D622653C7300FC7E63 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				CE0E9B86252FD06B0026E02B /* SwiftUI.framework */,
 				CEF83F902500985000557D15 /* Foundation.framework */,
 				CE059DC0243BD67100338317 /* libphodav-2.0.0.utm.dylib */,
 				CE66450C2269313200B0849A /* MetalKit.framework */,

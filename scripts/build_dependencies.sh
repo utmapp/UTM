@@ -361,14 +361,15 @@ case $PLATFORM in
 ios )
     if [ -z "$SDKMINVER" ]; then
         SDKMINVER="$IOS_SDKMINVER"
-        CFLAGS_MINVER="-miphoneos-version-min=$SDKMINVER"
     fi
     case $ARCH in
     arm* )
         SDK=iphoneos
+        CFLAGS_MINVER="-miphoneos-version-min=$SDKMINVER"
         ;;
     i386 | x86_64 )
         SDK=iphonesimulator
+        CFLAGS_MINVER="-mios-simulator-version-min=$SDKMINVER"
         ;;
     esac
     PLATFORM_FAMILY_NAME="iOS"
@@ -377,9 +378,9 @@ ios )
 macos )
     if [ -z "$SDKMINVER" ]; then
         SDKMINVER="$MAC_SDKMINVER"
-        CFLAGS_MINVER="-mmacos-version-min=$SDKMINVER"
     fi
     SDK=macosx
+    CFLAGS_MINVER="-mmacos-version-min=$SDKMINVER"
     PLATFORM_FAMILY_NAME="macOS"
     QEMU_PLATFORM_BUILD_FLAGS=""
     ;;
@@ -426,8 +427,8 @@ export PREFIX
 # Flags
 CFLAGS="$CFLAGS -arch $ARCH -isysroot $SDKROOT -I$PREFIX/include $CFLAGS_MINVER"
 CPPFLAGS="$CPPFLAGS -arch $ARCH -isysroot $SDKROOT -I$PREFIX/include $CFLAGS_MINVER"
-CXXFLAGS="$CXXFLAGS -arch $ARCH -isysroot $SDKROOT -I$PREFIX/include"
-LDFLAGS="$LDFLAGS -arch $ARCH -isysroot $SDKROOT -L$PREFIX/lib"
+CXXFLAGS="$CXXFLAGS -arch $ARCH -isysroot $SDKROOT -I$PREFIX/include $CFLAGS_MINVER"
+LDFLAGS="$LDFLAGS -arch $ARCH -isysroot $SDKROOT -L$PREFIX/lib $CFLAGS_MINVER"
 MAKEFLAGS="-j$NCPU"
 PKG_CONFIG_PATH="$PKG_CONFIG_PATH":"$SDKROOT/usr/lib/pkgconfig":"$PREFIX/lib/pkgconfig":"$PREFIX/share/pkgconfig"
 PKG_CONFIG_LIBDIR=""
