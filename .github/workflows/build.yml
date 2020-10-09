@@ -45,8 +45,8 @@ jobs:
       - name: Setup Path
         shell: bash
         run: |
-          echo "::add-path::/usr/local/opt/gettext/bin"
-          echo "::add-path::/usr/local/opt/bison/bin"
+          echo "/usr/local/opt/gettext/bin" >> $GITHUB_PATH
+          echo "/usr/local/opt/bison/bin" >> $GITHUB_PATH
       - name: Build Sysroot
         if: steps.cache-sysroot.outputs.cache-hit != 'true'
         run: |
