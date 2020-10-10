@@ -74,7 +74,7 @@ Install UTM using [AltStore](https://altstore.io) on Windows
 
 2. Mount developer image
 ```
-ideviceimagemounter /path/to/DeveloperDiskImage.dmg /path/to/DeveloperDiskImage.dmg.signature .
+ideviceimagemounter /path/to/DeveloperDiskImage.dmg /path/to/DeveloperDiskImage.dmg.signature
 ```
 3. Launch UTM
 ```
