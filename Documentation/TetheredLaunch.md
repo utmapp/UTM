@@ -70,11 +70,12 @@ Install UTM using [AltStore](https://altstore.io) on Windows
 
 ### Launching
 
-1. Mount developer image
+1. Go to AltStore and find UTM's app ID
+2. Mount developer image
 ```
 ideviceimagemounter /path/to/DeveloperDiskImage.dmg /path/to/DeveloperDiskImage.dmg.signature
 ```
-2. Launch UTM
+3. Launch UTM
 ```
-idevicedebug run com.osy86.UTM
+idevicedebug run <utm_app_id>
 ```
