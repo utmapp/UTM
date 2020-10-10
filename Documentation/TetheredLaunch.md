@@ -58,7 +58,7 @@ Xcode might show this message when trying to create a signing profile. You need 
 
 ### Prerequisites
 
-- Windows + (linux/freebsd/whatever OS libimobiledevice runs on)
+- Windows 10
 - [Latest IPA Release][3]
 - AltServer on Windows
 - [libimobildevice](https://github.com/libimobiledevice/libimobiledevice) on the other OS
@@ -70,13 +70,11 @@ Install UTM using [AltStore](https://altstore.io) on Windows
 
 ### Launching
 
-1. Now reboot your PC into the other OS.
-
-2. Mount developer image
+1. Mount developer image
 ```
 ideviceimagemounter /path/to/DeveloperDiskImage.dmg /path/to/DeveloperDiskImage.dmg.signature
 ```
-3. Launch UTM
+2. Launch UTM
 ```
 idevicedebug run com.osy86.UTM
 ```
