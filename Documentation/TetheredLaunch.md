@@ -58,11 +58,11 @@ Xcode might show this message when trying to create a signing profile. You need 
 
 ### Prerequisites
 
-- [Latest IPA Release][3]
 - Windows + (linux/freebsd/whatever OS libimobiledevice runs on)
-- ideviceimagemounter
-- idevicedebug
-- A developer disk image. (Download [here](https://github.com/xushuduo/Xcode-iOS-Developer-Disk-Image/releases))
+- [Latest IPA Release][3]
+- AltServer on Windows
+- [libimobildevice](https://github.com/libimobiledevice/libimobiledevice) on the other OS
+- A developer disk image on the other OS. (Download [here](https://github.com/xushuduo/Xcode-iOS-Developer-Disk-Image/releases))
 
 ### Signing & Installing
 
@@ -70,7 +70,7 @@ Install UTM using [AltStore](https://altstore.io) on Windows
 
 ### Launching
 
-1. Now reboot your PC into (linux/freebsd/ whatever OS libimobiledevice runs on).
+1. Now reboot your PC into the other OS.
 
 2. Mount developer image
 ```
