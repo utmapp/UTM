@@ -71,6 +71,9 @@ Install UTM using [AltStore](https://altstore.io) on Windows
 ### Launching
 
 1. Go to AltStore and find UTM's app ID
+
+(The following can be done on any OS libimobiledevice runs on, such as android for launching UTM on the go)
+
 2. Mount developer image
 ```
 ideviceimagemounter /path/to/DeveloperDiskImage.dmg /path/to/DeveloperDiskImage.dmg.signature
