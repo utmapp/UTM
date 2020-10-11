@@ -66,19 +66,43 @@ Xcode might show this message when trying to create a signing profile. You need 
 
 ### Signing & Installing
 
-Install UTM using [AltStore](https://altstore.io) on Windows
+Install UTM using [AltStore](https://altstore.io) and go to AltStore and find UTM's app ID, you will need it later.
 
+(The following can be done on any OS libimobiledevice runs on)
+### Getting libimobiledevice
+
+Windows: https://github.com/libimobiledevice-win32/imobiledevice-net/releases
+
+macOS: `brew install libimobiledevice`
+
+Raspberry Pi OS, Debian, Ubuntu, jailbroken iOS/iPadOS/tvOS : `apt install libimobiledevice-utils`
+
+Android (Termux), ALT Linux, PCLinuxOS: `apt install libimobiledevice`
+
+Fedora, CentOS: `yum install libimobiledevice-utils`
+
+OpenWrt: `opkg install libimobiledevice-utils`
+
+Alpine, postmarketOS: `apk add libimobiledevice`
+
+Arch Linux, KaOS: `pacman -Syu libimobiledevice`
+
+FreeBSD, Solaris: `pkg install libimobiledevice`
+
+Mageia, OpenMandriva : `dnf install libimobiledevice`
+
+openSUSE: `zypper install libimobiledevice6`
+
+Slackware: `upgradepkg --install-new libimobiledevice`
+
+Solus: `eopkg install libimobiledevice`
 ### Launching
 
-1. Go to AltStore and find UTM's app ID
-
-(The following can be done on any OS libimobiledevice runs on, such as android for launching UTM on the go)
-
-2. Mount developer image
-```
+1. Mount developer image
+```sh
 ideviceimagemounter /path/to/DeveloperDiskImage.dmg /path/to/DeveloperDiskImage.dmg.signature
 ```
-3. Launch UTM
-```
+2. Launch UTM
+```sh
 idevicedebug run <utm_app_id>
 ```
