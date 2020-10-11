@@ -54,7 +54,7 @@ Xcode might show this message when trying to create a signing profile. You need 
 [4]: https://dantheman827.github.io/ios-app-signer/
 [5]: https://github.com/ios-control/ios-deploy
 
-## PC
+## Others
 
 ### Prerequisites
 
