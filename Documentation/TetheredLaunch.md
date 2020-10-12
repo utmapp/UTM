@@ -61,7 +61,7 @@ Xcode might show this message when trying to create a signing profile. You need 
 - Windows 10
 - [Latest IPA Release][3]
 - AltServer on Windows
-- [libimobildevice](https://github.com/libimobiledevice/libimobiledevice) on the other OS
+- [libimobiledevice](https://github.com/libimobiledevice/libimobiledevice) on the other OS
 - A developer disk image on the other OS. (Download [here](https://github.com/xushuduo/Xcode-iOS-Developer-Disk-Image/releases))
 
 ### Signing & Installing
