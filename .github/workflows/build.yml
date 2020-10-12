@@ -50,7 +50,7 @@ jobs:
       - name: Build Sysroot
         if: steps.cache-sysroot.outputs.cache-hit != 'true'
         run: |
-          brew install bison pkg-config nasm
+          brew install bison pkg-config nasm make meson
           rm -f /usr/local/lib/pkgconfig/*.pc
           ./scripts/build_dependencies.sh -p ${{ matrix.platform }} -a ${{ matrix.arch }}
       - name: Compress Sysroot
