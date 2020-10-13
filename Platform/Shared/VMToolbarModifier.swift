@@ -38,13 +38,6 @@ struct VMToolbarModifier: ViewModifier {
             return .navigationBarTrailing
         }
     }
-    var spacerPlacement: ToolbarItemPlacement {
-        if bottom {
-            return .bottomBar
-        } else {
-            return .status // FIXME: hack around SwiftUI bug
-        }
-    }
     var padding: CGFloat {
         if bottom {
             return 0
@@ -56,7 +49,7 @@ struct VMToolbarModifier: ViewModifier {
     
     func body(content: Content) -> some View {
         content.toolbar {
-            ToolbarItem(placement: buttonPlacement) {
+            ToolbarItemGroup(placement: buttonPlacement) {
                 Button {
                     data.busyWork {
                         try data.delete(vm: vm)
@@ -69,13 +62,11 @@ struct VMToolbarModifier: ViewModifier {
                         .labelStyle(IconOnlyLabelStyle())
                 }.help("Delete selected VM")
                 .padding(.leading, padding)
-            }
-            #if !os(macOS)
-            ToolbarItem(placement: spacerPlacement) {
-                Spacer()
-            }
-            #endif
-            ToolbarItem(placement: buttonPlacement) {
+                #if !os(macOS)
+                if bottom {
+                    Spacer()
+                }
+                #endif
                 Button {
                     data.busyWork {
                         try data.clone(vm: vm)
@@ -87,13 +78,11 @@ struct VMToolbarModifier: ViewModifier {
                         .labelStyle(IconOnlyLabelStyle())
                 }.help("Clone selected VM")
                 .padding(.leading, padding)
-            }
-            #if !os(macOS)
-            ToolbarItem(placement: spacerPlacement) {
-                Spacer()
-            }
-            #endif
-            ToolbarItem(placement: buttonPlacement) {
+                #if !os(macOS)
+                if bottom {
+                    Spacer()
+                }
+                #endif
                 Button {
                     showSharePopup.toggle()
                 } label: {
@@ -104,13 +93,11 @@ struct VMToolbarModifier: ViewModifier {
                 .modifier(VMShareFileModifier(isPresented: $showSharePopup) {
                     [vm.path!]
                 })
-            }
-            #if !os(macOS)
-            ToolbarItem(placement: spacerPlacement) {
-                Spacer()
-            }
-            #endif
-            ToolbarItem(placement: buttonPlacement) {
+                #if !os(macOS)
+                if bottom {
+                    Spacer()
+                }
+                #endif
                 Button {
                     data.run(vm: data.selectedVM!)
                 } label: {
@@ -118,13 +105,11 @@ struct VMToolbarModifier: ViewModifier {
                         .labelStyle(IconOnlyLabelStyle())
                 }.help("Run selected VM")
                 .padding(.leading, padding)
-            }
-            #if !os(macOS)
-            ToolbarItem(placement: spacerPlacement) {
-                Spacer()
-            }
-            #endif
-            ToolbarItem(placement: buttonPlacement) {
+                #if !os(macOS)
+                if bottom {
+                    Spacer()
+                }
+                #endif
                 Button {
                     data.edit(vm: vm)
                 } label: {
