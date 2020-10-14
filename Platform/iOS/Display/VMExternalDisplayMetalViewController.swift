@@ -16,17 +16,21 @@
 
 import UIKit
 
-class VMExternalDisplayMetalViewController: VMDisplayViewController {
+class VMExternalDisplayMetalViewController: UIViewController {
     private let mtkView = MTKView()
-    
-    var renderer: UTMRenderer!
     var screenSize: CGSize!
+    
+    override func loadView() {
+        super.loadView()
+        NotificationCenter.default.addObserver(self, selector: #selector(handleDisplayAdded), name: .init(rawValue: "externalDisplayAdded"), object: nil)
+    }
+    
+    private var renderer: UTMRenderer!
     var sourceScreen: UTMRenderSource?
     var sourceCursor: UTMRenderSource?
 
     override func viewDidLoad() {
-        // don't call VMDisplayViewController.viewDidLoad because that inits the accesory view
-        (self as UIViewController).viewDidLoad()
+        super.viewDidLoad()
         
         view.addSubview(mtkView)
         mtkView.bindFrameToSuperviewBounds()
@@ -37,8 +41,25 @@ class VMExternalDisplayMetalViewController: VMDisplayViewController {
             UTM.logger.critical("Metal is not supported on this device")
             return;
         }
+    }
+    
+    @objc func handleDisplayAdded(_ notification: Notification) {
+        print("Yippie kay jay Schweinebacke")
+        guard let userInfo = notification.userInfo,
+              let display = userInfo["display"] as? CSDisplayMetal,
+              let input = userInfo["input"] as? CSInput else { return }
+        sourceScreen = display
+        sourceCursor = input
         
+        renderer = UTMRenderer(metalKitView: mtkView)
+        renderer.sourceScreen = sourceScreen
+        renderer.sourceCursor = sourceCursor
         mtkView.delegate = renderer
+        renderer.mtkView(mtkView, drawableSizeWillChange: screenSize)
     }
 
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        NotificationCenter.default.removeObserver(self)
+    }
 }

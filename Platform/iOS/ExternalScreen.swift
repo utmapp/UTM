@@ -24,15 +24,10 @@ import UIKit
     private var externalWindow: UIWindow?
     private weak var externalVC: UIViewController?
     
-    private var sourceScreen: UTMRenderSource?
-    private var sourceCursor: UTMRenderSource?
-    
-    @objc init(vmViewController: VMDisplayMetalViewController, metalView: MTKView, sourceScreen: UTMRenderSource?, sourceCursor: UTMRenderSource?) {
+    @objc init(vmViewController: VMDisplayMetalViewController, metalView: MTKView) {
         super.init()
         self.vmViewController = vmViewController
         self.metalView = metalView
-        self.sourceScreen = sourceScreen
-        self.sourceCursor = sourceCursor
         
         // Listen for external screen events
         NotificationCenter.default.addObserver(forName: UIScreen.didConnectNotification, object: nil, queue: nil) { [weak self] notification in
@@ -56,7 +51,7 @@ import UIKit
             if let window = self.externalWindow, window.screen == oldScreen {
                 if let extVC = self.externalVC as? VMExternalDisplayMetalViewController {
                     // discard external metal view
-                    extVC.renderer = nil // ?
+                    extVC.dismiss(animated: false, completion: nil)
                 } else if let extVC = self.externalVC {
                     extVC.view.removeFromSuperview()
                     metalView.removeFromSuperview()
@@ -104,11 +99,9 @@ import UIKit
         let newWindow = UIWindow(frame: screenFrame)
         externalWindow = newWindow
         newWindow.screen = newScreen
-        
-        metalView.removeFromSuperview()
 
-        makeExternalOnlyVC(newWindow: newWindow)
-//        makeExternalDuplicateVC(newWindow: newWindow)
+        makeExtendedDisplayVC(newWindow: newWindow)
+//        makeExternalOnlyVC(newWindow: newWindow)
         
         newWindow.isHidden = false
         
@@ -123,23 +116,20 @@ import UIKit
         }
     }
     
-    private func makeExternalDuplicateVC(newWindow: UIWindow) {
+    private func makeExtendedDisplayVC(newWindow: UIWindow) {
         let extVC = VMExternalDisplayMetalViewController()
         extVC.screenSize = newWindow.bounds.size
-        extVC.renderer = (metalView!.delegate as! UTMRenderer)
-        extVC.sourceScreen = sourceScreen
-        extVC.sourceCursor = sourceCursor
-        newWindow.rootViewController = extVC
         extVC.loadView()
-        DispatchQueue.main.async {
-            let renderer = (self.metalView!.delegate as! UTMRenderer)
-            renderer.mtkView(self.metalView!, drawableSizeWillChange: self.externalWindow!.bounds.size)
-            self.metalView!.drawableSize = newWindow.bounds.size
-        }
+        newWindow.rootViewController = extVC
         self.externalVC = extVC
+        /// request `CSDisplay` to create a virtual display with the external window bounds
+        guard let mainDisplay = vmViewController.vmDisplay else { return }
+        let newMonitorID = mainDisplay.monitorID + 1 // TODO more than 1 external?
+        mainDisplay.requestResolution(newWindow.bounds, monitorID: newMonitorID)
     }
     
     private func makeExternalOnlyVC(newWindow: UIWindow) {
+        metalView.removeFromSuperview()
         let externalVC = UIViewController()
         newWindow.rootViewController = externalVC
         externalVC.view.addSubview(metalView)

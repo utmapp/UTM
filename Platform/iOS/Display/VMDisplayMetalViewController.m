@@ -91,7 +91,7 @@
         [self initPencilInteraction];
     }
     // External screen
-    _externalController = [[ExternalScreenController alloc] initWithVmViewController:self metalView: self.mtkView sourceScreen: self.vmDisplay sourceCursor: self.vmInput];
+    _externalController = [[ExternalScreenController alloc] initWithVmViewController:self metalView: self.mtkView];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
