@@ -466,7 +466,7 @@
 "Note: select the path to share from the main screen." = "注意：从主屏幕选择要共享的路径。";
 
 /* No comment provided by engineer. */
-"Notes" = "注意";
+"Notes" = "备注";
 
 /* OK button
    OK Button */
@@ -662,3 +662,30 @@
 
 /* No comment provided by engineer. */
 "Your version of iOS does not support running VMs while unmodified. You must either run UTM while jailbroken or with a remote debugger attached." = "您的iOS版本不支持在未修改的情况下运行VMs。您必须在越狱时运行UTM，或者附加远程调试器。";
+
+/* No comment provided by engineer. */
+"Information" = "信息";
+
+/* No comment provided by engineer. */
+"Settings" = "设置";
+
+/* No comment provided by engineer. */
+"QEMU" = "QEMU模拟器";
+
+/* No comment provided by engineer. */
+"Drives" = "驱动器";
+
+/* No comment provided by engineer. */
+"Display" = "显示";
+
+/* No comment provided by engineer. */
+"Input" = "输入";
+
+/* No comment provided by engineer. */
+"Network" = "网络";
+
+/* No comment provided by engineer. */
+"Sound" = "声音";
+
+/* No comment provided by engineer. */
+"Sharing" = "共享";

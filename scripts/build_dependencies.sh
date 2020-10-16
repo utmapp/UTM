@@ -39,13 +39,13 @@ command -v realpath >/dev/null 2>&1 || realpath() {
 }
 
 usage () {
-    echo "Usage: [VARIABLE...] $(basename $0) [-p platform] [-a architecture] [-d] [-r] [-q]"
+    echo "Usage: [VARIABLE...] $(basename $0) [-p platform] [-a architecture] [-q qemu_path] [-d] [-r]"
     echo ""
     echo "  -p platform      Target platform. Default ios. [ios|macos]"
     echo "  -a architecture  Target architecture. Default arm64. [armv7|armv7s|arm64|i386|x86_64]"
+    echo "  -q qemu_path     Do not download QEMU, use qemu_path instead."
     echo "  -d, --download   Force re-download of source even if already downloaded."
-    echo "  -r, --rebuild    Build only. Do not download, patch, configure."
-    echo "  -q, --qemu       Build qemu only. Do not build other projects."
+    echo "  -r, --rebuild    Avoid cleaning build directory."
     echo ""
     echo "  VARIABLEs are:"
     echo "    SDKVERSION     Target a specific SDK version."
@@ -57,6 +57,8 @@ usage () {
 }
 
 check_env () {
+    command -v gmake >/dev/null 2>&1 || { echo >&2 "${RED}You must install GNU make on your host machine (and link it to 'gmake').${NC}"; exit 1; }
+    command -v meson >/dev/null 2>&1 || { echo >&2 "${RED}You must install 'meson' on your host machine.${NC}"; exit 1; }
     command -v pkg-config >/dev/null 2>&1 || { echo >&2 "${RED}You must install 'pkg-config' on your host machine.${NC}"; exit 1; }
     command -v msgfmt >/dev/null 2>&1 || { echo >&2 "${RED}You must install 'gettext' on your host machine.\n\t'msgfmt' needs to be in your \$PATH as well.${NC}"; exit 1; }
     command -v glib-mkenums >/dev/null 2>&1 || { echo >&2 "${RED}You must install 'glib' on your host machine.\n\t'glib-mkenums' needs to be in your \$PATH as well.${NC}"; exit 1; }
@@ -198,11 +200,6 @@ build_qemu_dependencies () {
 }
 
 build_qemu () {
-    #QEMU_DIR="$BUILD_DIR/qemu"
-    #if [ ! -d "$QEMU_DIR" ]; then
-    #    echo "${GREEN}Cloning qemu...${NC}"
-    #    git clone --depth 1 --recursive --shallow-submodules "$QEMU_GIT" "$QEMU_DIR"
-    #fi
     QEMU_CFLAGS="$CFLAGS"
     QEMU_CXXFLAGS="$CXXFLAGS"
     QEMU_LDFLAGS="$LDFLAGS"
@@ -212,7 +209,17 @@ build_qemu () {
     CFLAGS=
     CXXFLAGS=
     LDFLAGS=
-    build $QEMU_SRC $1 --with-coroutine=libucontext
+
+    pwd="$(pwd)"
+    cd "$QEMU_DIR"
+    echo "${GREEN}Configuring QEMU...${NC}"
+    ./configure --prefix="$PREFIX" --host="$CHOST" --with-coroutine=libucontext $@
+    echo "${GREEN}Building QEMU...${NC}"
+    gmake "$MAKEFLAGS"
+    echo "${GREEN}Installing QEMU...${NC}"
+    gmake "$MAKEFLAGS" install
+    cd "$pwd"
+
     CFLAGS="$QEMU_CFLAGS"
     CXXFLAGS="$QEMU_CXXFLAGS"
     LDFLAGS="$QEMU_LDFLAGS"
@@ -220,10 +227,8 @@ build_qemu () {
 
 steal_libucontext () {
     # HACK: use the libucontext built by qemu
-    FILE="$(basename $QEMU_SRC)"
-    NAME="${FILE%.tar.*}"
-    cp "$BUILD_DIR/$NAME/libucontext/libucontext.a" "$PREFIX/lib/libucontext.a"
-    cp "$BUILD_DIR/$NAME/libucontext/include/libucontext.h" "$PREFIX/include/libucontext.h"
+    cp "$QEMU_DIR/libucontext/libucontext.a" "$PREFIX/lib/libucontext.a"
+    cp "$QEMU_DIR/libucontext/include/libucontext.h" "$PREFIX/include/libucontext.h"
 }
 
 build_spice_client () {
@@ -300,7 +305,7 @@ generate_qapi () {
 # parse args
 ARCH=
 REBUILD=
-QEMU_ONLY=
+QEMU_DIR=
 REDOWNLOAD=
 PLATFORM_FAMILY_NAME=
 while [ "x$1" != "x" ]; do
@@ -316,7 +321,8 @@ while [ "x$1" != "x" ]; do
         REBUILD=y
         ;;
     -q | --qemu )
-        QEMU_ONLY=y
+        QEMU_DIR="$2"
+        shift
         ;;
     -p )
         PLATFORM=$2
@@ -382,7 +388,7 @@ macos )
     SDK=macosx
     CFLAGS_MINVER="-mmacos-version-min=$SDKMINVER"
     PLATFORM_FAMILY_NAME="macOS"
-    QEMU_PLATFORM_BUILD_FLAGS=""
+    QEMU_PLATFORM_BUILD_FLAGS="--disable-cocoa"
     ;;
 * )
     usage
@@ -392,13 +398,21 @@ export SDK
 export SDKMINVER
 
 # Setup directories
+BASEDIR="$(dirname "$(realpath $0)")"
 BUILD_DIR="build-$PLATFORM_FAMILY_NAME-$ARCH"
-PATCHES_DIR="patches"
 SYSROOT_DIR="sysroot-$PLATFORM_FAMILY_NAME-$ARCH"
+PATCHES_DIR="$BASEDIR/../patches"
+
+if [ -z "$QEMU_DIR" ]; then
+    FILE="$(basename $QEMU_SRC)"
+    QEMU_DIR="$BUILD_DIR/${FILE%.tar.*}"
+elif [ ! -d "$QEMU_DIR" ]; then
+    echo "${RED}Cannot find: ${QEMU_DIR}...${NC}"
+    exit 1
+fi
 
 [ -d "$SYSROOT_DIR" ] || mkdir -p "$SYSROOT_DIR"
 PREFIX="$(realpath "$SYSROOT_DIR")"
-BASEDIR="$(dirname "$(realpath $0)")"
 
 # Export supplied SDKVERSION or use system default
 if [ ! -z "$SDKVERSION" ]; then
@@ -443,7 +457,7 @@ export PKG_CONFIG_LIBDIR
 check_env
 
 if [ ! -f "$BUILD_DIR/BUILD_SUCCESS" ]; then
-    if [ ! -z "$REBUILD" -o ! -z "$QEMU_ONLY" ]; then
+    if [ ! -z "$REBUILD" ]; then
         echo "${RED}Error, no previous successful build found.${NC}"
         exit 1
     fi
@@ -452,17 +466,13 @@ fi
 if [ -z "$REBUILD" ]; then
     download_all
 fi
-if [ -z "$QEMU_ONLY" ]; then
-    echo "${GREEN}Deleting old sysroot!${NC}"
-    rm -rf "$PREFIX/"*
-    rm -f "$BUILD_DIR/BUILD_SUCCESS"
-    build_qemu_dependencies
-fi
+echo "${GREEN}Deleting old sysroot!${NC}"
+rm -rf "$PREFIX/"*
+rm -f "$BUILD_DIR/BUILD_SUCCESS"
+build_qemu_dependencies
 build_qemu $QEMU_PLATFORM_BUILD_FLAGS
-if [ -z "$QEMU_ONLY" ]; then
-    steal_libucontext # should be a better way...
-    build_spice_client
-fi
+steal_libucontext # should be a better way...
+build_spice_client
 fixup_all
 remove_shared_gst_plugins # another hack...
 generate_qapi $QEMU_SRC
