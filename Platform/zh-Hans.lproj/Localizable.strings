@@ -194,13 +194,13 @@
 "Emulated Network Card" = "模拟网卡";
 
 /* No comment provided by engineer. */
-"Enable Clipboard Sharing" = "启用剪贴板共享";
+"Enable Clipboard Sharing" = "剪贴板共享";
 
 /* No comment provided by engineer. */
-"Enable Directory Sharing" = "启用目录共享";
+"Enable Directory Sharing" = "目录共享";
 
 /* No comment provided by engineer. */
-"Enabled" = "已启用";
+"Enabled" = "启用";
 
 /* VMDisplayWindowController */
 "Error" = "错误";
@@ -233,7 +233,7 @@
 "Failed to load plist" = "无法加载plist";
 
 /* UTMData */
-"Failed to parse imported VM." = "无法分析导入的VM。";
+"Failed to parse imported VM." = "无法解析导入的VM。";
 
 /* VMDisplayViewController */
 "Failed to save VM state. Do you have at least one read-write drive attached that supports snapshots?" = "保存虚拟机状态失败。 您是否装载了至少一个支持快照的读写驱动器？";
@@ -257,7 +257,7 @@
 "Full Graphics" = "完整图形";
 
 /* No comment provided by engineer. */
-"Gesture and Cursor Settings" = "完整的图形几何图形和光标设置";
+"Gesture and Cursor Settings" = "更多图形和光标设置";
 
 /* No comment provided by engineer. */
 "Go to Gallery" = "转到图库";
@@ -463,7 +463,7 @@
 "None" = "空";
 
 /* No comment provided by engineer. */
-"Note: select the path to share from the main screen." = "注意：从主屏幕选择要共享的路径。";
+"Note: select the path to share from the main screen." = "注意：请从主屏幕选择要共享的路径。";
 
 /* No comment provided by engineer. */
 "Notes" = "备注";
@@ -506,7 +506,7 @@
 "Removable" = "可移除";
 
 /* No comment provided by engineer. */
-"Requires SPICE guest agent tools to be installed." = "需要安装SPICE来宾代理工具。";
+"Requires SPICE guest agent tools to be installed." = "需要安装SPICE代理工具。";
 
 /* No comment provided by engineer. */
 "Requires SPICE guest agent tools to be installed. Retina Mode is recommended only if the guest OS supports HiDPI." = "需要安装SPICE来宾代理工具。只有当来宾操作系统支持HiDPI时，才建议使用Retina模式。";
@@ -661,7 +661,7 @@
 "You must terminate the running VM before you can import a new VM." = "必须先终止正在运行的虚拟机，然后才能导入新的虚拟机。";
 
 /* No comment provided by engineer. */
-"Your version of iOS does not support running VMs while unmodified. You must either run UTM while jailbroken or with a remote debugger attached." = "您的iOS版本不支持在未修改的情况下运行VMs。您必须在越狱时运行UTM，或者附加远程调试器。";
+"Your version of iOS does not support running VMs while unmodified. You must either run UTM while jailbroken or with a remote debugger attached." = "您的iOS版本不支持在未越狱的情况下运行虚拟机。您必须在越狱时运行UTM，或者附加远程调试器。";
 
 /* No comment provided by engineer. */
 "Information" = "信息";
@@ -689,3 +689,24 @@
 
 /* No comment provided by engineer. */
 "Sharing" = "共享";
+
+/* No comment provided by engineer. */
+"Create a New Virtual Machine" = "新建虚拟机";
+
+/* No comment provided by engineer. */
+"User Guide" = "使用说明 ";
+
+/* No comment provided by engineer. */
+"Browse UTM Gallery" = "浏览UTM库";
+
+/* No comment provided by engineer. */
+"Generic" = "默认";
+
+/* No comment provided by engineer. */
+"Operating System" = "开源系统";
+
+/* No comment provided by engineer. */
+"Custom" = "自定义";
+
+/* No comment provided by engineer. */
+"Machine" = "处理器";
