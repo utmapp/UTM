@@ -380,7 +380,7 @@
 "Legacy (PS/2) Mode" = "레거시 (PS/2)모드";
 
 /* UTMConfiguration */
-"Linear" = "양선형 보간법";
+"Linear" = "선형 보간법";
 
 /* UTMConfiguration */
 "Linux Device Tree Binary" = "Linux Device Tree Binary";
@@ -419,7 +419,7 @@
 "Name is an invalid filename." = "잘못된 파일이름입니다.";
 
 /* UTMConfiguration */
-"Nearest Neighbor" = "최근접 보간법";
+"Nearest Neighbor" = "최근접 이웃 보간법";
 
 /* No comment provided by engineer. */
 "New" = "추가";
