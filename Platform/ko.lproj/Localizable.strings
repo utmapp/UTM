@@ -638,7 +638,7 @@
 "Warning: iOS will kill apps that use more than 80% of the device's total memory." = "주의: iOS는 전체 메모리의 80% 이상을 사용 시 애플리케이션을 종료합니다.";
 
 /* No comment provided by engineer. */
-"Welcome to UTM" = "UTM에 오신 것을 환경합니다!";
+"Welcome to UTM" = "UTM에 오신 것을 환영합니다";
 
 /* Startup message */
 "Welcome to UTM! Due to a bug in iOS, if you force kill this app, the system will be unstable and you cannot launch UTM again until you reboot. The recommended way to terminate this app is the button on the top left." = "UTM에 오신것을 환영합니다! iOS의 버그로 인해, 애플리케이션을 강제종료 할 시 시스템이 불안정해지고 재부팅하기 전까지 UTM을 다시 실행할 수 없습니다. 좌측상단의 X 버튼으로 UTM을 종료하는 것을 권장합니다.";
