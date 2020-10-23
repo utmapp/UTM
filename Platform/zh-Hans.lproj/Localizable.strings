@@ -638,7 +638,7 @@
 "Warning: iOS will kill apps that use more than 80% of the device's total memory." = "警告：iOS会强制关闭使用设备总内存80％以上的应用。";
 
 /* No comment provided by engineer. */
-"Welcome to UTM" = "欢迎来到UTM！";
+"Welcome to UTM" = "欢迎使用UTM！";
 
 /* Startup message */
 "Welcome to UTM! Due to a bug in iOS, if you force kill this app, the system will be unstable and you cannot launch UTM again until you reboot. The recommended way to terminate this app is the button on the top left." = "欢迎使用UTM！因为iOS的一个Bug，如果您强制关闭UTM，系统将变得不稳定，您必须重新启动您的设备才能再次使用UTM。我们建议点击左上方的按钮来退出UTM。";
