@@ -1,58 +1,715 @@
-/*
-  Localizable.strings
-  UTM
+/* VMConfigDriveCreateViewController */
+"A file already exists for this name, if you proceed, it will be replaced." = "동일한 이름의 파일이 존재합니다. 계속 진행할 시 새로운 것으로 대체됩니다.";
 
-  Created by obbcth on 2020/4/2.
-  Copyright © 2020 osy. All rights reserved.
-*/
+/* No comment provided by engineer. */
+"Acceleration" = "가속";
 
-// Operation
+/* No comment provided by engineer. */
+"Additional Settings" = "추가 설정";
 
-"OK" = "확인";
-"Yes" = "예";
-"No" = "아니오";
-"Delete" = "삭제";
-"Cancel" = "취소";
-"Import" = "불러오기";
-"Create" = "생성하기";
-"Delete" = "삭제";
-"Clone" = "복제";
-"No more alert" = "알림 끄기";
-//Label
-"Name" = "이름";
-// Device
-"Hard Disk" = "Hard Disk";
-"CD/DVD" = "CD/DVD";
-"Floppy" = "Floppy";
-// Message
-"Disk creation failed." = "디스크이미지 생성에 실패하였습니다.";
-"A file already exists for this name, if you proceed, it; will be replaced." = "동일한 이름의 파일이 존재합니다. 계속 진행 시 파일을 덮어쓰게 됩니다.";
-"Invalid size" = "올바르지 않은 크기입니다.";
-"Invalid name" = "올바르지 않은 이름입니다.";
-"Creating disk..." = "디스크이미지 생성중...";
-"Cannot create directory for disk image." = "디스크이미지를 위한 폴더 생성이 불가합니다.";
-"Error renaming file" = "파일 이름 변경에 실패하였습니다.";
-"Are you sure you want to permanently delete this disk image?" = "이 디스크이미지를 영구적으로 지우시겠습니까？";
-"Would you like to import an existing disk image or create a new one?" = "디스크이미지를 불러오시겠습니까, 아니면 새로 생성하시겠습니까?";
-"Error parsing JSON." = "JSON 파싱에 실패하였습니다.";
-"Internal error has occurred." = "내부 오류가 발생하였습니다.";
-"QEMU exited from an error." = "QEMU가 오류로 인해 종료되었습니다.";
-"Running qemu-img more than once is unimplemented. Restart the app to create another disk." = "qemu-img를 이용한 디스크이미지 생성은 한 개로 제한되어 있습니다. 애플리케이션을 다시 시작하여 새 디스크이미지를 생성하세요.";
-"Are you sure you want to stop this VM and exit? Any unsaved changes will be lost." = "VM을 종료하시겠습니까?\n저장하지 않은 변경사항은 삭제됩니다.";
-"Hint: To show the toolbar again, use a three-finger swipe down on the screen." = "힌트: 도구모음을 다시 보려면, 세 손가락으로 화면을 쓸어내리세요.";
-"Running low on memory! UTM might soon be killed by iOS. You can prevent this by decreasing the amount of memory and/or JIT cache assigned to this VM" = "메모리가 부족합니다! UTM은 곧 iOS에 의해 종료될 것입니다. 메모리의 값을 줄이거나, VM에 할당한 JIT Cache의 값을 줄여 이 문제를 해결할 수 있습니다.";
-"Welcome to UTM! Due to a bug in iOS, if you force kill this app, the system will be unstable and you cannot launch UTM again until you reboot. The recommended way to terminate this app is the button on the top left." = "UTM에 오신 것을 환영합니다! iOS의 버그로 인해, 앱을 강제종료하면 재부팅을 하기 전까지 UTM을 실행할 수 없습니다. 따라서 좌측 상단의 버튼을 이용하여 종료해주시기 바랍니다.";
-"New VM name" = "새 VM 이름";
-"Saving %@..." = "%@ 저장중...";
-"Deleting %@..." = "%@를 삭제하는 중...";
-"Are you sure you want to delete this VM? Any drives associated will also be deleted." = "VM을 삭제하시겠습니까?\n관련 디스크이미지도 전부 삭제됩니다.";
-"An internal error has occured." = "내부 오류가 발생하였습니다.";
-"Saving %@..." = "%@ 저장중...";
-"Launching another VM is not implemented. Please close UTM with the top left button and re-launch it." = "다른 VM을 실행하는 것은 아직 개발중입니다.\n좌측 상단의 버튼을 이용하여 UTM을 종료하고 다시 실행해주시기 바랍니다.";
-"Are you sure you want to exit UTM? Any running VM will be killed." = "UTM을 종료하시겠습니까?\n실행중인 VM은 모두 종료됩니다.";
-"The total memory usage is close to your device's limit. iOS will kill the VM if it consumes too much memory." = "메모리 사용량이 최대치에 가까워졌습니다.\nVM이 너무 많은 메모리를 사용 시 iOS에 의해 종료될 수 있습니다.";
-"QEMU exited from an error: %@" = "QEMU가 다음의 오류로 인해 종료되었습니다: %@";
-"This page is currently not implemented yet. None of these options work." = "현재 페이지는 아직 개발중입니다.\n어떠한 기능도 작동하지 않습니다.";
+/* No comment provided by engineer. */
+"Advanced: Bypass configuration and manually specify arguments" = "고급: 모든 설정을 무시하고 수동으로 구문 설정";
+
+/* VMConfigSystemView */
+"Allocating too much memory will crash the VM. Your device has %llu MB of memory and the estimated usage is %llu MB." = "너무 많은 양의 메모리를 할당하면 VM이 충돌할 수 있습니다. 이 기기는 총 %1$llu MB 메모리를 탑재하였으며, 현재 %2$llu MB 사용중입니다.";
+
+/* No comment provided by engineer. */
+"Always use native (HiDPI) resolution" = "항상 네이티브 해상도（HiDPI） 사용";
+
+/* VMDisplayWindowController */
+"An internal error has occured." = "내부 오류가 발생했습니다.";
+
+/* VMDisplayViewController */
+"An internal error has occured. UTM will terminate." = "내부 오류가 발생했습니다. UTM을 종료합니다.";
+
+/* No comment provided by engineer. */
+"Another Tab" = "다른 탭";
+
+/* No comment provided by engineer. */
+"Architecture" = "아키텍쳐";
+
+/* VMConfigDirectoryPickerViewController */
+"Are you sure you want to delete this directory? All files and subdirectories WILL be deleted." = "이 폴더를 지우겠습니까? 폴더의 모든 내용이 삭제됩니다.";
+
+/* Delete confirmation */
+"Are you sure you want to delete this VM? Any drives associated will also be deleted." = "이 VM을 지우겠습니까? 관련된 드라이브 또한 삭제됩니다.";
+
+/* VMDisplayViewController */
 "Are you sure you want to exit UTM?." = "UTM을 종료하시겠습니까?";
-"Are you sure you want to reset this VM? Any unsaved changes will be lost." = "VM을 리셋하시겠습니까?\n저장하지 않은 변경사항은 삭제됩니다.";
-"No debug log found!" = "로그가 발견되지 않았습니다!";
+
+/* VMConfigDrivePickerViewController */
+"Are you sure you want to permanently delete this disk image?" = "이 디스크이미지를 영구적으로 제거하시겠습니까?";
+
+/* VMDisplayViewController */
+"Are you sure you want to reset this VM? Any unsaved changes will be lost." = "VM을 리셋하시겠습니까? 모든 저장하지 않은 변경사항은 유실됩니다.";
+
+/* VMDisplayViewController */
+"Are you sure you want to stop this VM and exit? Any unsaved changes will be lost." = "VM을 종료하겠습니까? 모든 저장하지 않은 변경사항은 유실됩니다.";
+
+/* No comment provided by engineer. */
+"Argument" = "구문";
+
+/* UTMConfiguration */
+"BIOS" = "BIOS";
+
+/* No comment provided by engineer. */
+"Blinking Cursor" = "커서 깜박임";
+
+/* No comment provided by engineer. */
+"Browse" = "선택";
+
+/* VMConfigSharingViewController */
+"Browse..." = "탐색...";
+
+/* Cancel button
+   VMConfigDirectoryPickerViewController
+   VMConfigPortForwardingViewController
+   VMRemovableDrivesViewController */
+"Cancel" = "취소";
+
+/* VMConfigDriveCreateViewController */
+"Cannot create directory for disk image." = "디스크이미지를 위한 폴더를 생성할 수 없습니다.";
+
+/* VMListViewController */
+"Cannot find VM." = "VM을 찾을 수 없습니다.";
+
+/* UTMVirtualMachine+Sharing */
+"Cannot start shared directory before SPICE starts." = "SPICE가 시작하기 전 공유폴더를 시작할 수 없습니다.";
+
+/* VMDisplayMetalWindowController */
+"Captured mouse" = "Captured mouse";
+
+/* Configuration boot device */
+"CD/DVD" = "CD/DVD";
+
+/* UTMConfiguration */
+"CD/DVD Image" = "CD/DVD";
+
+/* VMRemovableDrivesViewController */
+"Change" = "변경";
+
+/* No comment provided by engineer. */
+"Clear" = "초기화";
+
+/* No comment provided by engineer. */
+"Clipboard Sharing" = "클립보드 공유";
+
+/* Clone context menu */
+"Clone" = "복제";
+
+/* No comment provided by engineer. */
+"Command to send when resizing the console. Placeholder $COLS is the number of columns and $ROWS is the number of rows." = "콘솔의 크기를 변경할 때 명령어를 보냅니다. $COLS 인자는 열, $ROWS 인자는 행을 말합니다.";
+
+/* UTMVirtualMachine */
+"Config format incorrect." = "구성설정 형식이 잘못되었습니다.";
+
+/* No comment provided by engineer. */
+"Confirm Delete" = "삭제 확인";
+
+/* VMDisplayWindowController */
+"Confirmation" = "확인";
+
+/* No comment provided by engineer. */
+"Console Only" = "콘솔 인터페이스";
+
+/* No comment provided by engineer. */
+"CPU Count" = "CPU 개수";
+
+/* Create button */
+"Create" = "생성";
+
+/* VMConfigDirectoryPickerViewController */
+"Create Directory" = "폴더 생성";
+
+/* VMConfigDriveCreateViewController */
+"Creating disk..." = "디스크 생성중...";
+
+/* No comment provided by engineer. */
+"Debug Logging" = "디버그 로그 활성화";
+
+/* No comment provided by engineer. */
+"Default" = "기본값";
+
+/* Delete button
+   Delete context menu
+   VMConfigDirectoryPickerViewController */
+"Delete" = "삭제";
+
+/* VMConfigDrivesViewController */
+"Delete Data" = "데이터 삭제";
+
+/* Delete VM overlay */
+"Deleting %@..." = "%@ 삭제중...";
+
+/* No comment provided by engineer. */
+"DHCP Domain Name" = "DHCP 도메인 이름";
+
+/* No comment provided by engineer. */
+"DHCP Host" = "DHCP 호스트";
+
+/* No comment provided by engineer. */
+"DHCP Start" = "DHCP 시작";
+
+/* VMConfigDirectoryPickerViewController */
+"Directory Name" = "폴더 이름";
+
+/* VMDisplayTerminalViewController */
+"Disable this bar in Settings -> General -> Keyboards -> Shortcuts" = "설정 앱 -> 일반 -> 키보드 -> 단축키 옵션을 통해 이 바를 비활성화하세요.";
+
+/* VMConfigDriveCreateViewController */
+"Disk creation failed." = "디스크 생성에 실패했습니다.";
+
+/* UTMConfiguration */
+"Disk Image" = "Hard Drive";
+
+/* No comment provided by engineer. */
+"DNS Search Domains" = "DNS 검색 도메인";
+
+/* No comment provided by engineer. */
+"DNS Server" = "DNS 서버";
+
+/* No comment provided by engineer. */
+"DNS Server (IPv6)" = "DNS 서버(IPv6)";
+
+/* VMConfigDrivesViewController */
+"Do you want to also delete the disk image data? If yes, the data will be lost. Otherwise, you can create a new drive with the existing data." = "디스크이미지 데이터를 지우겠습니까? 데이터가 삭제됩니다. 취소할 경우, 기존 데이터로 새로운 드라이브를 생성할 수 있습니다.";
+
+/* VMConfigDirectoryPickerViewController
+   VMConfigPortForwardingViewController */
+"Done" = "확인";
+
+/* No comment provided by engineer. */
+"Downscaling" = "다운스케일링";
+
+/* VMRemovableDrivesViewController */
+"Drive Options" = "드라이브 옵션";
+
+/* VMRemovableDrivesViewController */
+"Eject" = "꺼내기";
+
+/* No comment provided by engineer. */
+"Emulated Audio Card" = "오디오 카드";
+
+/* No comment provided by engineer. */
+"Emulated Network Card" = "네트워크 카드";
+
+/* No comment provided by engineer. */
+"Enable Clipboard Sharing" = "클립보드 공유 활성화";
+
+/* No comment provided by engineer. */
+"Enable Directory Sharing" = "공유폴더 활성화";
+
+/* No comment provided by engineer. */
+"Enabled" = "활성화";
+
+/* VMDisplayWindowController */
+"Error" = "에러";
+
+/* UTMJSONStream */
+"Error parsing JSON." = "JSON 파싱 중 에러";
+
+/* VMConfigDriveCreateViewController */
+"Error renaming file" = "파일 이름 변경 중 에러";
+
+/* UTMVirtualMachine+Drives */
+"Failed create bookmark." = "북마크 생성에 실패했습니다.";
+
+/* UTMVirtualMachine+Drives */
+"Failed to access drive image path." = "드라이브 이미지 경로 접근에 실패했습니다.";
+
+/* VMConfigInfoView */
+"Failed to check name." = "이름 체크에 실패했습니다.";
+
+/* UTMData */
+"Failed to clone VM." = "VM 복제에 실패했습니다.";
+
+/* UTMSpiceIO */
+"Failed to connect to SPICE server." = "SPICE 서버 연결에 실패했습니다.";
+
+/* VMRemovableDrivesViewController */
+"Failed to get VM object." = "VM 요소를 가져오는 데 실패했습니다.";
+
+/* UTMVirtualMachine */
+"Failed to load plist" = "plist를 불러오는 데 실패했습니다.";
+
+/* UTMData */
+"Failed to parse imported VM." = "추가된 VM을 파싱하는 데 실패했습니다.";
+
+/* VMDisplayViewController */
+"Failed to save VM state. Do you have at least one read-write drive attached that supports snapshots?" = "VM 상태 저장에 실패했습니다. 적어도 하나 이상의 스냅샷을 지원하는 쓰기 드라이브가 있는지 확인하세요.";
+
+/* No comment provided by engineer. */
+"Fit To Screen" = "화면에 맞춤";
+
+/* Configuration boot device */
+"Floppy" = "Floppy";
+
+/* No comment provided by engineer. */
+"Font" = "폰트";
+
+/* No comment provided by engineer. */
+"Font Size" = "폰트 크기";
+
+/* No comment provided by engineer. */
+"Force Multicore" = "멀티코어 강제 활성화";
+
+/* No comment provided by engineer. */
+"Full Graphics" = "그래픽 인터페이스";
+
+/* No comment provided by engineer. */
+"Gesture and Cursor Settings" = "제스쳐, 커서 설정";
+
+/* No comment provided by engineer. */
+"Go to Gallery" = "UTM 갤러리 방문";
+
+/* No comment provided by engineer. */
+"Guest Address" = "게스트 주소";
+
+/* VMConfigPortForwardingViewController */
+"Guest address (optional)" = "게스트 주소(선택)";
+
+/* No comment provided by engineer. */
+"Guest Network" = "게스트 네트워크";
+
+/* No comment provided by engineer. */
+"Guest Network (IPv6)" = "게스트 네트워크(IPv6)";
+
+/* UTMQemuManager */
+"Guest panic" = "Guest panic";
+
+/* No comment provided by engineer. */
+"Guest Port" = "게스트 포트";
+
+/* VMConfigPortForwardingViewController */
+"Guest port (required)" = "게스트 포트(필수)";
+
+/* Configuration boot device */
+"Hard Disk" = "하드디스크";
+
+/* No comment provided by engineer. */
+"Hardware" = "장치";
+
+/* VMDisplayViewController */
+"Hint: To show the toolbar again, use a three-finger swipe down on the screen." = "팁: 도구모음을 다시 보려면, 세 손가락으로 화면을 쓸어내리세요.";
+
+/* No comment provided by engineer. */
+"Host Address" = "호스트 주소";
+
+/* No comment provided by engineer. */
+"Host Address (IPv6)" = "호스트 주소(IPv6)";
+
+/* VMConfigPortForwardingViewController */
+"Host address (optional)" = "호스트 주소(선택)";
+
+/* No comment provided by engineer. */
+"Host Port" = "호스트 포트";
+
+/* VMConfigPortForwardingViewController */
+"Host port (required)" = "호스트 포트(필수)";
+
+/* No comment provided by engineer. */
+"Icon" = "아이콘";
+
+/* No comment provided by engineer. */
+"Image Type" = "이미지 종류";
+
+/* Import button */
+"Import" = "추가";
+
+/* Save VM overlay */
+"Importing %@..." = "%@ 추가중...";
+
+/* No comment provided by engineer. */
+"Interface" = "인터페이스";
+
+/* UTMQemu */
+"Internal error has occurred." = "내부 오류가 발생했습니다.";
+
+/* UTMVirtualMachine */
+"Internal error starting main loop." = "main loop 시작 중 내부 오류가 발생했습니다.";
+
+/* UTMVirtualMachine */
+"Internal error starting VM." = "VM 시작 중 내부 오류가 발생했습니다.";
+
+/* VMDisplayMetalWindowController */
+"Internal error." = "내부 오류.";
+
+/* VMConfigSystemViewController */
+"Invalid core count." = "잘못된 코어 값입니다.";
+
+/* UTMData */
+"Invalid drive size." = "잘못된 드라이브 크기 값입니다.";
+
+/* VMRemovableDrivesViewController */
+"Invalid file selected." = "잘못된 파일 선택입니다.";
+
+/* VMConfigSystemViewController */
+"Invalid memory size." = "잘못된 메모리 크기 값입니다.";
+
+/* VMConfigDriveCreateViewController */
+"Invalid name" = "잘못된 이름";
+
+/* VMConfigDriveCreateViewController */
+"Invalid size" = "잘못된 크기";
+
+/* VMListViewController */
+"Invalid UTM not imported." = "Invalid UTM not imported.";
+
+/* No comment provided by engineer. */
+"Invert Mouse Scroll" = "마우스 스크롤 반전";
+
+/* No comment provided by engineer. */
+"IP Configuration" = "IP 구성설정";
+
+/* No comment provided by engineer. */
+"Isolate Guest from Host" = "호스트로부터 게스트 분리";
+
+/* No comment provided by engineer. */
+"JIT Cache" = "JIT 캐시";
+
+/* VMConfigSystemViewController */
+"JIT cache size cannot be larger than 2GB." = "JIT 캐시는 2GB를 초과할 수 없습니다.";
+
+/* VMConfigSystemViewController */
+"JIT cache size too small." = "JIT 캐시가 너무 작습니다.";
+
+/* No comment provided by engineer. */
+"Legacy" = "레거시";
+
+/* No comment provided by engineer. */
+"Legacy (PS/2) Mode" = "레거시 (PS/2) 모드";
+
+/* UTMConfiguration */
+"Linear" = "선형 보간법";
+
+/* UTMConfiguration */
+"Linux Device Tree Binary" = "Linux Device Tree Binary";
+
+/* UTMConfiguration */
+"Linux Kernel" = "Linux Kernel";
+
+/* UTMConfiguration */
+"Linux RAM Disk" = "Linux RAM Disk";
+
+/* No comment provided by engineer. */
+"Logging" = "로그";
+
+/* UTMQemuManager */
+"Manager being deallocated, killing pending RPC." = "Manager being deallocated, killing pending RPC.";
+
+/* No comment provided by engineer. */
+"MB" = "MB";
+
+/* No comment provided by engineer. */
+"Memory" = "메모리";
+
+/* VMDisplayMetalWindowController */
+"Metal is not supported on this device. Cannot render display." = "이 기기에서 Metal을 지원하지 않습니다. 디스플레이를 렌더링할 수 없습니다.";
+
+/* No comment provided by engineer. */
+"Mouse Wheel" = "마우스 휠";
+
+/* Save VM overlay */
+"Moving %@..." = "%@ 이동중...";
+
+/* Clone VM name prompt title */
+"Name" = "이름";
+
+/* VMConfigInfoView */
+"Name is an invalid filename." = "잘못된 파일이름입니다.";
+
+/* UTMConfiguration */
+"Nearest Neighbor" = "최근접 이웃 보간법";
+
+/* No comment provided by engineer. */
+"New" = "추가";
+
+/* VMConfigPortForwardingViewController */
+"New port forward" = "포트포워딩 추가";
+
+/* No comment provided by engineer. */
+"New VM" = "VM 추가";
+
+/* Clone VM name prompt message */
+"New VM name" = "새 VM 이름";
+
+/* No comment provided by engineer. */
+"New..." = "추가...";
+
+/* No button
+   VMDisplayViewController
+   VMListViewController */
+"No" = "아니오";
+
+/* UTMQemuManager */
+"No connection for RPC." = "No connection for RPC.";
+
+/* VMConfigExistingViewController */
+"No debug log found!" = "디버그 로그가 없습니다!";
+
+/* No comment provided by engineer. */
+"No drives added." = "드라이브가 없습니다.";
+
+/* VMDisplayWindowController */
+"No drives connected." = "연결된 드라이브가 없습니다.";
+
+/* UTMData */
+"No log found!" = "로그가 없습니다!";
+
+/* UTMDrive */
+"none" = "none";
+
+/* No comment provided by engineer. */
+"None" = "없음";
+
+/* No comment provided by engineer. */
+"Note: select the path to share from the main screen." = "팁: 공유폴더 경로는 VM 정보 요약 화면에서 지정할 수 있습니다.";
+
+/* No comment provided by engineer. */
+"Notes" = "메모";
+
+/* OK button
+   OK Button */
+"OK" = "확인";
+
+/* VMDisplayWindowController */
+"Pause" = "중지";
+
+/* VMDisplayWindowController */
+"Play" = "시작";
+
+/* No comment provided by engineer. */
+"Port Forward" = "포트포워딩";
+
+/* No comment provided by engineer. */
+"Protocol" = "프로토콜";
+
+/* No comment provided by engineer. */
+"PS/2 has higher compatibility with older operating systems but does not support custom cursor settings." = "PS/2는 오래된 운영체제에서 더 나은 호환성을 가지지만 커스텀 커서에 관한 설정을 지원하지 않습니다.";
+
+/* No comment provided by engineer. */
+"QEMU Arguments" = "QEMU 구문";
+
+/* UTMQemu */
+"QEMU exited from an error: %@" = "QEMU는 다음의 에러로 인해 종료되었습니다: %@";
+
+/* No comment provided by engineer. */
+"QEMU Machine Properties" = "QEMU 추가 구문";
+
+/* VMDisplayWindowController */
+"Querying drives status..." = "Querying drives status...";
+
+/* No comment provided by engineer. */
+"Read Only" = "읽기 전용";
+
+/* No comment provided by engineer. */
+"Removable" = "제거 가능";
+
+/* No comment provided by engineer. */
+"Requires SPICE guest agent tools to be installed." = "SPICE guest agent tools 도구가 설치되어 있어야 합니다.";
+
+/* No comment provided by engineer. */
+"Requires SPICE guest agent tools to be installed. Retina Mode is recommended only if the guest OS supports HiDPI." = "SPICE guest agent tools 도구가 설치되어 있어야 합니다. 레티나 모드는 게스트 OS가 HiDPI를 지원할 시에만 권장합니다.";
+
+/* No comment provided by engineer. */
+"Requires SPICE WebDAV service to be installed." = "SPICE WebDAV 서비스가 설치되어 있어야 합니다.";
+
+/* No comment provided by engineer. */
+"Resize Console Command" = "콘솔창 조절 명령어";
+
+/* No comment provided by engineer. */
+"Resolution" = "해상도";
+
+/* No comment provided by engineer. */
+"Retina Mode" = "레티나 모드";
+
+/* VMDisplayViewController */
+"Running low on memory! UTM might soon be killed by iOS. You can prevent this by decreasing the amount of memory and/or JIT cache assigned to this VM" = "메모리가 부족한 상태입니다! iOS에 의해 UTM은 종료될 수 있습니다. 메모리 양을 줄이거나 JIT 캐시를 조정하여 이를 방지할 수 있습니다.";
+
+/* No comment provided by engineer. */
+"Running qemu-img more than once is unimplemented. Restart the app to create another disk." = "qemu-img를 여러개 실행하는 것은 아직 구현하지 않았습니다. 애플리케이션을 다시 시작하여 새로운 디스크이미지를 만드세요.";
+
+/* No comment provided by engineer. */
+"Save" = "저장";
+
+/* Save VM overlay */
+"Saving %@..." = "%@ 저장중...";
+
+/* No comment provided by engineer. */
+"Scaling" = "스케일링";
+
+/* VMDisplayWindowController */
+"Select Drive Image" = "디스크이미지 선택";
+
+/* VMDisplayWindowController */
+"Select Shared Folder" = "공유폴더 선택";
+
+/* No comment provided by engineer. */
+"Selected:" = "선택:";
+
+/* No comment provided by engineer. */
+"Set to 0 for default which is 1/4 of the allocated Memory size. This is in addition to the host memory!" = "0으로 설정 시 기본값인 메모리 크기의 1/4를 할당합니다. 이것은 위에서 설정한 메모리 크기와 별개입니다!";
+
+/* No comment provided by engineer. */
+"Set to 0 to use maximum supported CPUs. Force multicore might result in incorrect emulation." = "0으로 설정 시 가능한 최대 CPU의 개수를 설정합니다. 멀티코어 강제 활성화시 부정확한 에뮬레이션을 일으킬 수 있습니다.";
+
+/* Share context menu */
+"Share" = "공유";
+
+/* No comment provided by engineer. */
+"Shared Directory" = "공유폴더";
+
+/* VMConfigSharingViewController */
+"Shared path has moved. Please re-choose." = "공유폴더 경로가 이동되었습니다. 다시 선택하세요.";
+
+/* VMConfigSharingViewController */
+"Shared path is no longer valid. Please re-choose." = "공유폴더 경로가 잘못되었습니다. 다시 선택하세요.";
+
+/* No comment provided by engineer. */
+"Show Advanced Settings" = "고급 설정 보기";
+
+/* No comment provided by engineer. */
+"Size" = "크기";
+
+/* No comment provided by engineer. */
+"Start from Scratch" = "새로 시작하기";
+
+/* No comment provided by engineer. */
+"Style" = "스타일";
+
+/* No comment provided by engineer. */
+"System" = "시스템";
+
+/* VMConfigPortForwardingViewController */
+"TCP Forward" = "TCP Forward";
+
+/* No comment provided by engineer. */
+"Test" = "테스트";
+
+/* No comment provided by engineer. */
+"The First Tab" = "처음 탭";
+
+/* No comment provided by engineer. */
+"The Last Tab" = "마지막 탭";
+
+/* VMConfigSystemViewController */
+"The total memory usage is close to your device's limit. iOS will kill the VM if it consumes too much memory." = "총 메모리 사용량이 기기의 최대치에 가까워졌습니다. 너무 많은 메모리를 사용 시 iOS가 VM을 종료시킬 수 있습니다.";
+
+/* No comment provided by engineer. */
+"Theme" = "테마";
+
+/* VMDisplayWindowController */
+"This may corrupt the VM and any unsaved changes will be lost. To quit safely, shut down from the guest." = "이것은 VM을 망가뜨릴 수 있고 저장하지 않은 변경사항은 유실됩니다. 게스트 운영체제에서 안전하게 종료하세요.";
+
+/* UTMVirtualMachine+Drives */
+"This version of UTM does not allow file access outside of UTM's Documents directory." = "이 버전의 UTM은 UTM 도큐먼트 폴더 외의 파일 액세스를 지원하지 않습니다.";
+
+/* VMDisplayWindowController */
+"This will reset the VM and any unsaved state will be lost." = "이것은 VM을 리셋하고 저장하지 않은 변경사항은 유실됩니다.";
+
+/* UTMQemuManager */
+"Timed out waiting for RPC." = "Timed out waiting for RPC.";
+
+/* VMDisplayMetalWindowController */
+"To release the mouse cursor, press ⌃+⌥ (Ctrl+Opt or Ctrl+Alt) at the same time." = "마우스 커서를 해제하려면 ⌃+⌥（Ctrl+Opt 또는 Ctrl+Alt）를 입력하세요.";
+
+/* No comment provided by engineer. */
+"Try to use hardware hypervisor when available" = "가능한 경우 하드웨어 하이퍼바이저 사용";
+
+/* No comment provided by engineer. */
+"Type" = "인터페이스";
+
+/* VMConfigPortForwardingViewController */
+"UDP Forward" = "UDP Forward";
+
+/* UTMConfigurationExtension */
+"Unknown" = "Unknown";
+
+/* No comment provided by engineer. */
+"Upscaling" = "업스케일링";
+
+/* No comment provided by engineer. */
+"VM display size is fixed" = "VM 디스플레이 크기가 고정되었습니다";
+
+/* UTMVirtualMachine+Sharing */
+"VM frontend does not support shared directories." = "VM 프론트엔드는 공유폴더를 지원하지 않습니다.";
+
+/* VMConfigSystemViewController */
+"Warning: iOS will kill apps that use more than 80% of the device's total memory." = "주의: iOS는 전체 메모리의 80% 이상을 사용 시 애플리케이션을 종료합니다.";
+
+/* No comment provided by engineer. */
+"Welcome to UTM" = "UTM에 오신 것을 환영합니다";
+
+/* Startup message */
+"Welcome to UTM! Due to a bug in iOS, if you force kill this app, the system will be unstable and you cannot launch UTM again until you reboot. The recommended way to terminate this app is the button on the top left." = "UTM에 오신것을 환영합니다! iOS의 버그로 인해, 애플리케이션을 강제종료 할 시 시스템이 불안정해지고 재부팅하기 전까지 UTM을 다시 실행할 수 없습니다. 좌측상단의 X 버튼으로 UTM을 종료하는 것을 권장합니다.";
+
+/* VMConfigDrivePickerViewController */
+"Would you like to import an existing disk image or create a new one?" = "기존의 디스크이미지를 불러오시겠습니까, 아니면 새로 만드시겠습니까?";
+
+/* VMDisplayViewController
+   VMListViewController
+   Yes button */
+"Yes" = "예";
+
+/* No comment provided by engineer. */
+"You can download an existing VM configuration for popular operating systems from the UTM gallery or start from scratch." = "UTM 갤러리에서 샘플 VM을 다운로드하거나, 처음부터 새로 시작할 수 있습니다.";
+
+/* VMConfigDriveDetailsViewController */
+"You must select a disk image." = "디스크이미지를 반드시 선택하여야 합니다.";
+
+/* VMDisplayViewController */
+"You must terminate the running VM before you can import a new VM." = "새로운 VM을 추가하기 위해선 기존의 VM을 종료하여야 합니다.";
+
+/* No comment provided by engineer. */
+"Your version of iOS does not support running VMs while unmodified. You must either run UTM while jailbroken or with a remote debugger attached." = "이 기기의 iOS 버전은 UTM을 구동하기 위해 탈옥하거나, 디버깅이 활성화된 상태이어야 합니다.";
+
+/* No comment provided by engineer. */
+"Information" = "정보";
+
+/* No comment provided by engineer. */
+"Settings" = "설정";
+
+/* No comment provided by engineer. */
+"QEMU" = "QEMU";
+
+/* No comment provided by engineer. */
+"Drives" = "드라이브";
+
+/* No comment provided by engineer. */
+"Display" = "디스플레이";
+
+/* No comment provided by engineer. */
+"Input" = "입력";
+
+/* No comment provided by engineer. */
+"Network" = "네트워크";
+
+/* No comment provided by engineer. */
+"Sound" = "소리";
+
+/* No comment provided by engineer. */
+"Sharing" = "공유";
+
+/* No comment provided by engineer. */
+"Machine" = "시스템";
+
+/* No comment provided by engineer. */
+"Create a New Virtual Machine" = "새 가상머신 만들기";
+
+/* No comment provided by engineer. */
+"Browse UTM Gallery" = "UTM 갤러리 둘러보기";
+
+/* No comment provided by engineer. */
+"User Guide" = "유저 가이드";
+
+/* No comment provided by engineer. */
+"Export Debug Log" = "디버그 로그 내보내기";
+
+/* No comment provided by engineer. */
+"Generic" = "기본";
+
+/* No comment provided by engineer. */
+"Operating System" = "운영체제";
+
+/* No comment provided by engineer. */
+"Custom" = "커스텀";
