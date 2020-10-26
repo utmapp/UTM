@@ -280,6 +280,9 @@ class UTMData: ObservableObject {
     }
     
     func importUTM(url: URL) throws {
+        _ = url.startAccessingSecurityScopedResource()
+        defer { url.stopAccessingSecurityScopedResource() }
+        
         logger.info("importing: \(url)")
         let fileBasePath = url.deletingLastPathComponent()
         let fileName = url.lastPathComponent
