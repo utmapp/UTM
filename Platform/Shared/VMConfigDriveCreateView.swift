@@ -31,7 +31,7 @@ struct VMConfigDriveCreateView: View {
                 HStack {
                     Text("Size")
                     Spacer()
-                    TextField("Size", value: $driveImage.size, formatter: NumberFormatter(), onCommit: validateSize)
+                    TextField("Size", value: $driveImage.size, formatter: NumberFormatter(), onEditingChanged: validateSize)
                         .multilineTextAlignment(.trailing)
                     Text("MB")
                 }
@@ -43,7 +43,10 @@ struct VMConfigDriveCreateView: View {
         }
     }
     
-    private func validateSize() {
+    private func validateSize(editing: Bool) {
+        guard !editing else {
+            return
+        }
         if driveImage.size < minSizeMib {
             driveImage.size = minSizeMib
         }

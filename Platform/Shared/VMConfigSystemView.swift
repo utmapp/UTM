@@ -61,12 +61,12 @@ struct VMConfigSystemView: View {
                     HStack {
                         Slider(value: memorySizeIndexObserver, in: 0...Float(validMemoryValues.count-1), step: 1) { start in
                             if !start {
-                                validateMemorySize()
+                                validateMemorySize(editing: false)
                             }
                         } label: {
                             Text("Memory")
                         }
-                        TextField("Size", value: $config.systemMemory, formatter: NumberFormatter(), onCommit: validateMemorySize)
+                        TextField("Size", value: $config.systemMemory, formatter: NumberFormatter(), onEditingChanged: validateMemorySize)
                             .frame(width: 50, height: nil)
                             .keyboardType(.numberPad)
                         Text("MB")
@@ -80,7 +80,7 @@ struct VMConfigSystemView: View {
                         HStack {
                             Text("CPU Count")
                             Spacer()
-                            TextField("Size", value: $config.systemCPUCount, formatter: NumberFormatter(), onCommit: validateCpuCount)
+                            TextField("Size", value: $config.systemCPUCount, formatter: NumberFormatter(), onEditingChanged: validateCpuCount)
                                 .multilineTextAlignment(.trailing)
                                 .keyboardType(.numberPad)
                         }
@@ -92,7 +92,7 @@ struct VMConfigSystemView: View {
                         HStack {
                             Text("JIT Cache")
                             Spacer()
-                            TextField("Default", value: $config.systemJitCacheSize, formatter: NumberFormatter(), onCommit: validateMemorySize)
+                            TextField("Default", value: $config.systemJitCacheSize, formatter: NumberFormatter(), onEditingChanged: validateMemorySize)
                                 .multilineTextAlignment(.trailing)
                                 .keyboardType(.numberPad)
                             Text("MB")
@@ -128,7 +128,10 @@ struct VMConfigSystemView: View {
         return NSNumber(value: validMemoryValues[i])
     }
     
-    func validateMemorySize() {
+    func validateMemorySize(editing: Bool) {
+        guard !editing else {
+            return
+        }
         guard let memorySizeMib = config.systemMemory?.intValue, memorySizeMib >= minMemoryMib else {
             config.systemMemory = NSNumber(value: minMemoryMib)
             return
@@ -147,7 +150,10 @@ struct VMConfigSystemView: View {
         }
     }
     
-    func validateCpuCount() {
+    func validateCpuCount(editing: Bool) {
+        guard !editing else {
+            return
+        }
         guard let cpuCount = config.systemCPUCount?.intValue, cpuCount >= 0 else {
             config.systemCPUCount = NSNumber(value: 0)
             return

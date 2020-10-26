@@ -55,7 +55,7 @@ struct VMConfigQEMUView: View {
                             TextField("", text: .constant(arg))
                         }.disabled(true)
                         CustomArguments(config: config)
-                        TextField("New...", text: $newArg, onEditingChanged: {_ in }, onCommit: addArg)
+                        TextField("New...", text: $newArg, onEditingChanged: addArg)
                     }
                     #else
                     List {
@@ -63,7 +63,7 @@ struct VMConfigQEMUView: View {
                             Text(arg)
                         }.foregroundColor(.secondary)
                         CustomArguments(config: config)
-                        TextField("New...", text: $newArg, onEditingChanged: {_ in }, onCommit: addArg)
+                        TextField("New...", text: $newArg, onEditingChanged: addArg)
                     }
                     #endif
                 }
@@ -91,7 +91,10 @@ struct VMConfigQEMUView: View {
         }
     }
     
-    private func addArg() {
+    private func addArg(editing: Bool) {
+        guard !editing else {
+            return
+        }
         if newArg != "" {
             config.newArgument(newArg)
         }
@@ -116,8 +119,8 @@ struct CustomArguments: View {
                 config.updateArgument(at: i, withValue: $0)
             }
             HStack {
-                TextField("Argument", text: argBinding, onCommit: {
-                    if argBinding.wrappedValue == "" {
+                TextField("Argument", text: argBinding, onEditingChanged: { editing in
+                    if !editing && argBinding.wrappedValue == "" {
                         config.removeArgument(at: i)
                     }
                 })

@@ -56,7 +56,7 @@ struct VMConfigInfoView: View {
                 }
 
                 Section(header: Text("Name"), footer: EmptyView().padding(.bottom)) {
-                    TextField("Name", text: $config.name, onCommit: validateName)
+                    TextField("Name", text: $config.name, onEditingChanged: validateName)
                         .keyboardType(.asciiCapable)
                 }
                 Section(header: Text("Notes"), footer: EmptyView().padding(.bottom)) {
@@ -113,7 +113,10 @@ struct VMConfigInfoView: View {
         }
     }
     
-    private func validateName() {
+    private func validateName(editing: Bool) {
+        guard !editing else {
+            return
+        }
         let fileManager = FileManager.default
         let tempPath = fileManager.temporaryDirectory
         let fakeFile = tempPath.appendingPathComponent(config.name)
