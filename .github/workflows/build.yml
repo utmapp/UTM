@@ -31,11 +31,7 @@ jobs:
           submodules: recursive
       - name: Setup Xcode
         shell: bash
-        run: sudo xcode-select -switch /Applications/Xcode_12.app
-      - name: Setup Xcode (macOS)
-        if: matrix.platform == 'macos' # TODO: remove this hack when Xcode is fixed
-        shell: bash
-        run: sudo xcode-select -switch /Applications/Xcode_12_beta.app
+        run: sudo xcode-select -switch /Applications/Xcode_12.2.app
       - name: Cache Sysroot
         id: cache-sysroot
         uses: actions/cache@v1
