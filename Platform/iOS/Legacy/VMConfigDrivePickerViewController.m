@@ -112,6 +112,15 @@
             [self showAlert:err.localizedDescription completion:nil];
         }
     }
+    BOOL isDir = false;
+    if (![[NSFileManager defaultManager] fileExistsAtPath:urls[0].path isDirectory:&isDir] || isDir) {
+        if ([[urls[0] pathExtension] isEqualToString:@"utm"]) {
+            [self showAlert:NSLocalizedString(@"You cannot import a .utm package as a drive. Did you mean to open the package with UTM?", @"VMConfigDrivePickerViewController") completion:nil];
+        } else {
+            [self showAlert:NSLocalizedString(@"You cannot import a directory as a drive.", @"VMConfigDrivePickerViewController") completion:nil];
+        }
+        return;
+    }
     if (!err && ![[NSFileManager defaultManager] moveItemAtURL:urls[0] toURL:dstUrl error:&err]) {
         [self showAlert:err.localizedDescription completion:nil];
     } else {

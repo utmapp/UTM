@@ -313,6 +313,15 @@ class UTMData: ObservableObject {
         _ = drive.startAccessingSecurityScopedResource()
         defer { drive.stopAccessingSecurityScopedResource() }
         
+        var isDir: ObjCBool = false
+        guard fileManager.fileExists(atPath: drive.path, isDirectory: &isDir), !isDir.boolValue else {
+            if drive.pathExtension == "utm" {
+                throw NSLocalizedString("You cannot import a .utm package as a drive. Did you mean to open the package with UTM?", comment: "UTMData")
+            } else {
+                throw NSLocalizedString("You cannot import a directory as a drive.", comment: "UTMData")
+            }
+        }
+        
         let name = drive.lastPathComponent
         let imagesPath = forConfig.imagesPath
         let dstPath = imagesPath.appendingPathComponent(name)
