@@ -187,7 +187,6 @@ NSString *const kSuspendSnapshotName = @"suspend";
         if (![fileManager moveItemAtURL:self.configuration.existingPath toURL:url error:&_err]) {
             goto error;
         }
-        self.configuration.existingPath = url;
     }
     // save icon
     if (self.configuration.iconCustom && self.configuration.selectedCustomIconPath) {
@@ -229,6 +228,7 @@ NSString *const kSuspendSnapshotName = @"suspend";
             }
         }
     }
+    self.configuration.existingPath = url;
     self.path = url;
     return YES;
 error:
