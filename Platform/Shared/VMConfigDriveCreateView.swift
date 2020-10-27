@@ -31,7 +31,11 @@ struct VMConfigDriveCreateView: View {
                 HStack {
                     Text("Size")
                     Spacer()
-                    TextField("Size", value: $driveImage.size, formatter: NumberFormatter(), onEditingChanged: validateSize)
+                    NumberTextField("Size", number: Binding<NSNumber?>(get: {
+                        NSNumber(value: driveImage.size)
+                    }, set: {
+                        driveImage.size = $0?.intValue ?? 0
+                    }), onEditingChanged: validateSize)
                         .multilineTextAlignment(.trailing)
                     Text("MB")
                 }
