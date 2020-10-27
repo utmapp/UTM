@@ -22,12 +22,16 @@ struct NumberTextField: View {
     @Binding private var number: NSNumber?
     private var onEditingChanged: (Bool) -> Void
     private var onCommit: () -> Void
+    private let formatter: NumberFormatter
     
     init(_ titleKey: LocalizedStringKey, number: Binding<NSNumber?>, onEditingChanged: @escaping (Bool) -> Void = { _ in }, onCommit: @escaping () -> Void = {}) {
         self.titleKey = titleKey
         self._number = number
         self.onEditingChanged = onEditingChanged
         self.onCommit = onCommit
+        self.formatter = NumberFormatter()
+        self.formatter.usesGroupingSeparator = false
+        self.formatter.usesSignificantDigits = false
     }
     
     var body: some View {
@@ -35,9 +39,9 @@ struct NumberTextField: View {
             guard let number = self.number else {
                 return ""
             }
-            return NumberFormatter().string(from: number) ?? ""
+            return self.formatter.string(from: number) ?? ""
         }, set: {
-            self.number = NumberFormatter().number(from: $0)
+            self.number = self.formatter.number(from: $0)
         }), onEditingChanged: onEditingChanged, onCommit: onCommit)
             .keyboardType(.numberPad)
     }
