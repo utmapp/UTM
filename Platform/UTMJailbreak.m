@@ -77,7 +77,7 @@ static void *exception_handler(void *argument) {
     return NULL;
 }
 
-static bool am_i_being_debugged() {
+bool jb_has_debugger_attached(void) {
     int flags;
     return !csops(getpid(), CS_OPS_STATUS, &flags, sizeof(flags)) && flags & CS_DEBUGGED;
 }
@@ -177,7 +177,7 @@ bool jb_enable_ptrace_hack(void) {
 #if defined(NO_PTRACE_HACK)
     return false;
 #else
-    bool debugged = am_i_being_debugged();
+    bool debugged = jb_has_debugger_attached();
     
     // Thanks to this comment: https://news.ycombinator.com/item?id=18431524
     // We use this hack to allow mmap with PROT_EXEC (which usually requires the

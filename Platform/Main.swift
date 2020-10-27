@@ -27,6 +27,8 @@ class Main {
         // check if we have jailbreak
         if jb_has_jit_entitlement() {
             logger.info("JIT: found entitlement")
+        } else if jb_has_debugger_attached() {
+            logger.info("JIT: debugger attached")
         } else if jb_enable_ptrace_hack() {
             logger.info("JIT: ptrace() hack supported")
         } else {

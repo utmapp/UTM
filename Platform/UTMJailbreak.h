@@ -20,6 +20,7 @@
 #include <stdbool.h>
 
 bool jb_has_jit_entitlement(void);
+bool jb_has_debugger_attached(void);
 bool jb_enable_ptrace_hack(void);
 
 #endif /* UTMJailbreak_h */
