@@ -692,6 +692,8 @@
 		CEBDA1DF24D8BDDB0010B5EC /* QEMUHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = CEBDA1DE24D8BDDB0010B5EC /* QEMUHelper.m */; };
 		CEBDA1E124D8BDDB0010B5EC /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = CEBDA1E024D8BDDB0010B5EC /* main.m */; };
 		CEBDA1E524D8BDDB0010B5EC /* QEMUHelper.xpc in Embed XPC Services */ = {isa = PBXBuildFile; fileRef = CEBDA1DA24D8BDDA0010B5EC /* QEMUHelper.xpc */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		CED234ED254796E500ED0A57 /* NumberTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = CED234EC254796E500ED0A57 /* NumberTextField.swift */; };
+		CED234EE254796E500ED0A57 /* NumberTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = CED234EC254796E500ED0A57 /* NumberTextField.swift */; };
 		CED814E924C79F070042F0F1 /* VMConfigDriveCreateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CED814E824C79F070042F0F1 /* VMConfigDriveCreateView.swift */; };
 		CED814EA24C79F070042F0F1 /* VMConfigDriveCreateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CED814E824C79F070042F0F1 /* VMConfigDriveCreateView.swift */; };
 		CED814EC24C7C2850042F0F1 /* VMConfigInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CED814EB24C7C2850042F0F1 /* VMConfigInfoView.swift */; };
@@ -1504,6 +1506,7 @@
 		CECC764F2273A7D50059B955 /* qapi-visit-core.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "qapi-visit-core.c"; sourceTree = "<group>"; };
 		CECC76502273A7D50059B955 /* cf-output-visitor.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "cf-output-visitor.c"; sourceTree = "<group>"; };
 		CECC76562273A88F0059B955 /* qemu-compat.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "qemu-compat.h"; sourceTree = "<group>"; };
+		CED234EC254796E500ED0A57 /* NumberTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NumberTextField.swift; sourceTree = "<group>"; };
 		CED33AE12267893D00FF1977 /* UTMQemuImg.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UTMQemuImg.h; sourceTree = "<group>"; };
 		CED33AE22267893D00FF1977 /* UTMQemuImg.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UTMQemuImg.m; sourceTree = "<group>"; };
 		CED814E824C79F070042F0F1 /* VMConfigDriveCreateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMConfigDriveCreateView.swift; sourceTree = "<group>"; };
@@ -2343,6 +2346,7 @@
 			children = (
 				E28394B7240C2191006742E2 /* HTerm */,
 				CE7D972B24B2B17D0080CB69 /* BusyOverlay.swift */,
+				CED234EC254796E500ED0A57 /* NumberTextField.swift */,
 				CE2D954324AD4F980059923A /* VMCardView.swift */,
 				CE2D953724AD4F980059923A /* VMConfigDisplayView.swift */,
 				CED814E824C79F070042F0F1 /* VMConfigDriveCreateView.swift */,
@@ -2843,6 +2847,7 @@
 				CE2D92DB24AD46670059923A /* CSDisplayMetal.m in Sources */,
 				CE2D92DD24AD46670059923A /* qapi-events-tpm.c in Sources */,
 				CE03D05224D90B4E00F76B84 /* UTMQemuSystem.m in Sources */,
+				CED234ED254796E500ED0A57 /* NumberTextField.swift in Sources */,
 				CEB63A9024F46E6E00CAF323 /* VMConfigPortForwardingViewController.m in Sources */,
 				CE2D92DE24AD46670059923A /* qapi-events-job.c in Sources */,
 				CE2D953224AD4F040059923A /* UTMConfigurationExtension.swift in Sources */,
@@ -2963,6 +2968,7 @@
 				CE0B6D1F24AD57FC00FE012D /* qapi-events-dump.c in Sources */,
 				CE0B6D7B24AD584D00FE012D /* qapi-visit-dump.c in Sources */,
 				CE0B6D5824AD584C00FE012D /* qapi-types-qdev.c in Sources */,
+				CED234EE254796E500ED0A57 /* NumberTextField.swift in Sources */,
 				CE0B6D2F24AD57FC00FE012D /* qapi-events-char.c in Sources */,
 				CE0B6D6A24AD584D00FE012D /* qapi-types-migration.c in Sources */,
 				CE0B6D6E24AD584D00FE012D /* qapi-types-audio.c in Sources */,

@@ -66,9 +66,8 @@ struct VMConfigSystemView: View {
                         } label: {
                             Text("Memory")
                         }
-                        TextField("Size", value: $config.systemMemory, formatter: NumberFormatter(), onEditingChanged: validateMemorySize)
+                        NumberTextField("Size", number: $config.systemMemory, onEditingChanged: validateMemorySize)
                             .frame(width: 50, height: nil)
-                            .keyboardType(.numberPad)
                         Text("MB")
                     }
                 }
@@ -80,9 +79,8 @@ struct VMConfigSystemView: View {
                         HStack {
                             Text("CPU Count")
                             Spacer()
-                            TextField("Size", value: $config.systemCPUCount, formatter: NumberFormatter(), onEditingChanged: validateCpuCount)
+                            NumberTextField("Size", number: $config.systemCPUCount, onEditingChanged: validateCpuCount)
                                 .multilineTextAlignment(.trailing)
-                                .keyboardType(.numberPad)
                         }
                         Toggle(isOn: $config.systemForceMulticore, label: {
                             Text("Force Multicore")
@@ -92,9 +90,8 @@ struct VMConfigSystemView: View {
                         HStack {
                             Text("JIT Cache")
                             Spacer()
-                            TextField("Default", value: $config.systemJitCacheSize, formatter: NumberFormatter(), onEditingChanged: validateMemorySize)
+                            NumberTextField("Default", number: $config.systemJitCacheSize, onEditingChanged: validateMemorySize)
                                 .multilineTextAlignment(.trailing)
-                                .keyboardType(.numberPad)
                             Text("MB")
                         }
                     }
