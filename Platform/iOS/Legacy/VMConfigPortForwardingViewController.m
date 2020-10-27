@@ -55,7 +55,7 @@
     NSAssert(indexPath.section == 0, @"Invalid section");
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"portForwardCell" forIndexPath:indexPath];
     UTMConfigurationPortForward *portForward = [self.configuration portForwardForIndex:indexPath.row];
-    cell.textLabel.text = [NSString stringWithFormat:@"%@:%ld ➡️ %@:%ld", portForward.hostAddress, portForward.hostPort, portForward.guestAddress, portForward.guestPort];
+    cell.textLabel.text = [NSString stringWithFormat:@"%@:%@ ➡️ %@:%@", portForward.hostAddress, portForward.hostPort, portForward.guestAddress, portForward.guestPort];
     cell.detailTextLabel.text = portForward.protocol;
     return cell;
 }
@@ -98,7 +98,7 @@
     [alertController addTextFieldWithConfigurationHandler:^(UITextField * _Nonnull textField) {
         textField.placeholder = NSLocalizedString(@"Host port (required)", @"VMConfigPortForwardingViewController");
         textField.keyboardType = UIKeyboardTypeNumberPad;
-        textField.text = existing ? [@(existing.hostPort) stringValue] : @"";
+        textField.text = existing ? [existing.hostPort stringValue] : @"";
     }];
     [alertController addTextFieldWithConfigurationHandler:^(UITextField * _Nonnull textField) {
         textField.placeholder = NSLocalizedString(@"Guest address (optional)", @"VMConfigPortForwardingViewController");
@@ -108,7 +108,7 @@
     [alertController addTextFieldWithConfigurationHandler:^(UITextField * _Nonnull textField) {
         textField.placeholder = NSLocalizedString(@"Guest port (required)", @"VMConfigPortForwardingViewController");
         textField.keyboardType = UIKeyboardTypeNumberPad;
-        textField.text = existing ? [@(existing.guestPort) stringValue] : @"";
+        textField.text = existing ? [existing.guestPort stringValue] : @"";
     }];
     [alertController addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"Cancel", @"VMConfigPortForwardingViewController")
                                                         style:UIAlertActionStyleCancel
@@ -119,9 +119,9 @@
         UTMConfigurationPortForward *portForward = [[UTMConfigurationPortForward alloc] init];
         portForward.protocol = tcp ? @"tcp" : @"udp";
         portForward.hostAddress = alertController.textFields[0].text;
-        portForward.hostPort = [alertController.textFields[1].text integerValue];
+        portForward.hostPort = @([alertController.textFields[1].text integerValue]);
         portForward.guestAddress = alertController.textFields[2].text;
-        portForward.guestPort = [alertController.textFields[3].text integerValue];
+        portForward.guestPort = @([alertController.textFields[3].text integerValue]);
         //TODO: validate input
         if (existing) {
             [self.configuration updatePortForwardAtIndex:index withValue:portForward];

@@ -22,9 +22,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, nullable) NSString *protocol;
 @property (nonatomic, nullable) NSString *hostAddress;
-@property (nonatomic) NSInteger hostPort;
+@property (nonatomic, nullable) NSNumber *hostPort;
 @property (nonatomic, nullable) NSString *guestAddress;
-@property (nonatomic) NSInteger guestPort;
+@property (nonatomic, nullable) NSNumber *guestPort;
 
 @end
 

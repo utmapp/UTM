@@ -29,7 +29,7 @@
     _hostAddress = hostAddress;
 }
 
-- (void)setHostPort:(NSInteger)hostPort {
+- (void)setHostPort:(NSNumber *)hostPort {
     [self propertyWillChange];
     _hostPort = hostPort;
 }
@@ -39,7 +39,7 @@
     _guestAddress = guestAddress;
 }
 
-- (void)setGuestPort:(NSInteger)guestPort {
+- (void)setGuestPort:(NSNumber *)guestPort {
     [self propertyWillChange];
     _guestPort = guestPort;
 }
