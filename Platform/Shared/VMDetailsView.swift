@@ -42,7 +42,7 @@ struct VMDetailsView: View {
             let notes = vm.configuration.notes ?? ""
             if regularScreenSizeClass && !notes.isEmpty {
                 HStack(alignment: .top) {
-                    Details(config: vm.configuration, sizeLabel: sizeLabel)
+                    Details(config: vm.configuration, sessionConfig: vm.viewState, sizeLabel: sizeLabel)
                         .padding()
                         .frame(maxWidth: .infinity)
                     Text(notes)
@@ -54,7 +54,7 @@ struct VMDetailsView: View {
                     .padding([.leading, .trailing, .bottom])
             } else {
                 VStack {
-                    Details(config: vm.configuration, sizeLabel: sizeLabel)
+                    Details(config: vm.configuration, sessionConfig: vm.viewState, sizeLabel: sizeLabel)
                     if !notes.isEmpty {
                         Text(notes)
                             .font(.body)
@@ -109,11 +109,18 @@ struct Screenshot: View {
 @available(iOS 14, macOS 11, *)
 struct Details: View {
     @ObservedObject var config: UTMConfiguration
+    @ObservedObject var sessionConfig: UTMViewState
     let sizeLabel: String
     @EnvironmentObject private var data: UTMData
     
     var body: some View {
         VStack {
+            HStack {
+                Label("Status", systemImage: "info.circle")
+                Spacer()
+                Text(sessionConfig.suspended ? "Suspended" : "Not running")
+                    .foregroundColor(.secondary)
+            }
             HStack {
                 Label("Architecture", systemImage: "cpu")
                 Spacer()
