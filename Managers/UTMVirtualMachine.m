@@ -467,24 +467,26 @@ error:
 
 - (BOOL)deleteSaveVM {
     __block BOOL success = YES;
-    dispatch_semaphore_t save_sema = dispatch_semaphore_create(0);
-    [_qemu vmDeleteSaveWithCompletion:^(NSString *result, NSError *err) {
-        UTMLog(@"delete save callback: %@", result);
-        if (err) {
-            UTMLog(@"error: %@", err);
+    if (self.qemu) { // if QEMU is running
+        dispatch_semaphore_t save_sema = dispatch_semaphore_create(0);
+        [_qemu vmDeleteSaveWithCompletion:^(NSString *result, NSError *err) {
+            UTMLog(@"delete save callback: %@", result);
+            if (err) {
+                UTMLog(@"error: %@", err);
+                success = NO;
+            } else if ([result localizedCaseInsensitiveContainsString:@"Error"]) {
+                UTMLog(@"save result: %@", result);
+                success = NO; // error message
+            }
+            dispatch_semaphore_signal(save_sema);
+        } snapshotName:kSuspendSnapshotName];
+        if (dispatch_semaphore_wait(save_sema, dispatch_time(DISPATCH_TIME_NOW, kStopTimeout)) != 0) {
+            UTMLog(@"Delete save operation timeout");
             success = NO;
-        } else if ([result localizedCaseInsensitiveContainsString:@"Error"]) {
-            UTMLog(@"save result: %@", result);
-            success = NO; // error message
+        } else {
+            UTMLog(@"Delete save completed");
         }
-        dispatch_semaphore_signal(save_sema);
-    } snapshotName:kSuspendSnapshotName];
-    if (dispatch_semaphore_wait(save_sema, dispatch_time(DISPATCH_TIME_NOW, kStopTimeout)) != 0) {
-        UTMLog(@"Delete save operation timeout");
-        success = NO;
-    } else {
-        UTMLog(@"Delete save completed");
-    }
+    } // otherwise we mark as deleted
     self.viewState.suspended = NO;
     [self saveViewState];
     return success;

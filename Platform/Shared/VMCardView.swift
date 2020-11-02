@@ -22,6 +22,7 @@ struct VMCardView: View {
     @ObservedObject private var sessionConfig: UTMViewState
     @EnvironmentObject private var data: UTMData
     @State private var showSharePopup = false
+    @State private var showConfirmStop = false
     
     #if os(macOS)
     let buttonColor: Color = .black
@@ -67,10 +68,18 @@ struct VMCardView: View {
             } label: {
                 Label("Edit", systemImage: "slider.horizontal.3")
             }.disabled(sessionConfig.suspended)
-            Button {
-                data.run(vm: vm)
-            } label: {
-                Label("Run", systemImage: "play.fill")
+            if sessionConfig.suspended {
+                Button {
+                    showConfirmStop.toggle()
+                } label: {
+                    Label("Stop", systemImage: "stop.fill")
+                }
+            } else {
+                Button {
+                    data.run(vm: vm)
+                } label: {
+                    Label("Run", systemImage: "play.fill")
+                }
             }
             Button {
                 showSharePopup.toggle()
@@ -97,6 +106,11 @@ struct VMCardView: View {
         .modifier(VMShareFileModifier(isPresented: $showSharePopup) {
             [vm.path!]
         })
+        .alert(isPresented: $showConfirmStop) {
+            Alert(title: Text("Do you want to force stop this VM and lose all unsaved data?"), primaryButton: .cancel(), secondaryButton: .destructive(Text("Stop")) {
+                data.stop(vm: vm)
+            })
+        }
     }
 }
 

@@ -39,4 +39,8 @@ extension UTMData {
             logger.critical("Failed to create window controller.")
         }
     }
+    
+    func stop(vm: UTMVirtualMachine) {
+        
+    }
 }

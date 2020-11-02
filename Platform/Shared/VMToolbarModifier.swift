@@ -23,6 +23,7 @@ struct VMToolbarModifier: ViewModifier {
     let bottom: Bool
     @ObservedObject private var sessionConfig: UTMViewState
     @State private var showSharePopup = false
+    @State private var showConfirmStop = false
     @EnvironmentObject private var data: UTMData
     @Environment(\.presentationMode) private var presentationMode: Binding<PresentationMode>
     
@@ -105,13 +106,23 @@ struct VMToolbarModifier: ViewModifier {
                     Spacer()
                 }
                 #endif
-                Button {
-                    data.run(vm: data.selectedVM!)
-                } label: {
-                    Label("Run", systemImage: "play.fill")
-                        .labelStyle(IconOnlyLabelStyle())
-                }.help("Run selected VM")
-                .padding(.leading, padding)
+                if sessionConfig.suspended {
+                    Button {
+                        showConfirmStop.toggle()
+                    } label: {
+                        Label("Stop", systemImage: "stop.fill")
+                            .labelStyle(IconOnlyLabelStyle())
+                    }.help("Stop selected VM")
+                    .padding(.leading, padding)
+                } else {
+                    Button {
+                        data.run(vm: data.selectedVM!)
+                    } label: {
+                        Label("Run", systemImage: "play.fill")
+                            .labelStyle(IconOnlyLabelStyle())
+                    }.help("Run selected VM")
+                    .padding(.leading, padding)
+                }
                 #if !os(macOS)
                 if bottom {
                     Spacer()
@@ -126,6 +137,11 @@ struct VMToolbarModifier: ViewModifier {
                 .disabled(sessionConfig.suspended)
                 .padding(.leading, padding)
             }
+        }
+        .alert(isPresented: $showConfirmStop) {
+            Alert(title: Text("Do you want to force stop this VM and lose all unsaved data?"), primaryButton: .cancel(), secondaryButton: .destructive(Text("Stop")) {
+                data.stop(vm: vm)
+            })
         }
     }
 }
