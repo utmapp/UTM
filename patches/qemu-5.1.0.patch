@@ -990,7 +990,7 @@ index 2d83013633..039c66698e 100644
 +                        &mirror,
 +                        size,
 +                        0,
-+                        VM_FLAGS_ANYWHERE | VM_FLAGS_RANDOM_ADDR,
++                        VM_FLAGS_ANYWHERE,
 +                        mach_task_self(),
 +                        (mach_vm_address_t)base,
 +                        false,
