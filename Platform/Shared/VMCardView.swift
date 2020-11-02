@@ -19,6 +19,7 @@ import SwiftUI
 @available(iOS 14, macOS 11, *)
 struct VMCardView: View {
     let vm: UTMVirtualMachine
+    @ObservedObject private var sessionConfig: UTMViewState
     @EnvironmentObject private var data: UTMData
     @State private var showSharePopup = false
     
@@ -29,6 +30,11 @@ struct VMCardView: View {
     let buttonColor: Color = .accentColor
     typealias PlatformImage = UIImage
     #endif
+    
+    init(vm: UTMVirtualMachine) {
+        self.vm = vm
+        self.sessionConfig = vm.viewState
+    }
     
     var body: some View {
         HStack {
@@ -60,7 +66,7 @@ struct VMCardView: View {
                 data.edit(vm: vm)
             } label: {
                 Label("Edit", systemImage: "slider.horizontal.3")
-            }
+            }.disabled(sessionConfig.suspended)
             Button {
                 data.run(vm: vm)
             } label: {

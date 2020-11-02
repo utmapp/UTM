@@ -21,6 +21,7 @@ import SwiftUI
 struct VMToolbarModifier: ViewModifier {
     let vm: UTMVirtualMachine
     let bottom: Bool
+    @ObservedObject private var sessionConfig: UTMViewState
     @State private var showSharePopup = false
     @EnvironmentObject private var data: UTMData
     @Environment(\.presentationMode) private var presentationMode: Binding<PresentationMode>
@@ -46,6 +47,12 @@ struct VMToolbarModifier: ViewModifier {
         }
     }
     #endif
+    
+    init(vm: UTMVirtualMachine, bottom: Bool) {
+        self.vm = vm
+        self.bottom = bottom
+        self.sessionConfig = vm.viewState
+    }
     
     func body(content: Content) -> some View {
         content.toolbar {
@@ -116,6 +123,7 @@ struct VMToolbarModifier: ViewModifier {
                     Label("Edit", systemImage: "slider.horizontal.3")
                         .labelStyle(IconOnlyLabelStyle())
                 }.help("Edit selected VM")
+                .disabled(sessionConfig.suspended)
                 .padding(.leading, padding)
             }
         }
