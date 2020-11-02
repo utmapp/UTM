@@ -165,12 +165,29 @@ static NSDictionary *app_entitlements(void) {
     return nil;
 }
 
-bool jb_has_jit_entitlement(void) {
+static NSDictionary *cached_app_entitlements(void) {
     static NSDictionary *entitlements = nil;
     if (!entitlements) {
         entitlements = app_entitlements();
     }
+    return entitlements;
+}
+
+bool jb_has_jit_entitlement(void) {
+    NSDictionary *entitlements = cached_app_entitlements();
     return [entitlements[@"dynamic-codesigning"] boolValue];
+}
+
+bool jb_has_cs_execseg_allow_unsigned(void) {
+    NSDictionary *entitlements = cached_app_entitlements();
+    if (@available(iOS 14.2, *)) {
+        // technically we need to check the Code Directory and make sure
+        // CS_EXECSEG_ALLOW_UNSIGNED is set but we assume that it is properly
+        // signed, which should reflect the get-task-allow entitlement
+        return [entitlements[@"get-task-allow"] boolValue];
+    } else {
+        return false;
+    }
 }
 
 bool jb_enable_ptrace_hack(void) {

@@ -29,6 +29,8 @@ class Main {
             logger.info("JIT: found entitlement")
         } else if jb_has_debugger_attached() {
             logger.info("JIT: debugger attached")
+        } else if jb_has_cs_execseg_allow_unsigned() {
+            logger.info("JIT: CS_EXECSEG_ALLOW_UNSIGNED set")
         } else if jb_enable_ptrace_hack() {
             logger.info("JIT: ptrace() hack supported")
         } else {
