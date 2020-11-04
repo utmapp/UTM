@@ -64,6 +64,59 @@ jobs:
         with:
           name: UTM-${{ matrix.platform }}-${{ matrix.arch }}
           path: build-utm
+  universal:
+    name: Build UTM (macOS Universal)
+    runs-on: macos-latest
+    needs: build
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+        with:
+          submodules: recursive
+      - name: Cache Sysroot
+        id: cache-sysroot
+        uses: actions/cache@v1
+        with:
+          path: sysroot-macOS-arm64_x86_64
+          key: macos-universal-${{ hashFiles('scripts/build_dependencies.sh') }}-${{ hashFiles('patches/**') }}
+      - name: Download Sysroot (arm64)
+        if: steps.cache-sysroot.outputs.cache-hit != 'true'
+        uses: actions/download-artifact@v1
+        with:
+          name: Sysroot-macos-arm64
+      - name: Download Sysroot (x86_64)
+        if: steps.cache-sysroot.outputs.cache-hit != 'true'
+        uses: actions/download-artifact@v1
+        with:
+          name: Sysroot-macos-x86_64
+      - name: Pack Universal Sysroot
+        if: steps.cache-sysroot.outputs.cache-hit != 'true'
+        run: |
+          tar xf Sysroot-macos-arm64/sysroot.tgz
+          tar xf Sysroot-macos-x86_64/sysroot.tgz
+          ./scripts/pack_dependencies.sh . macos arm64 x86_64
+      - name: Compress Sysroot
+        if: steps.cache-sysroot.outputs.cache-hit != 'true'
+        run: |
+          rm -rf sysroot_tar
+          mkdir sysroot_tar
+          tar cf sysroot_tar/sysroot.tgz sysroot-macOS-arm64_x86_64
+      - name: Upload Sysroot
+        if: steps.cache-sysroot.outputs.cache-hit != 'true'
+        uses: actions/upload-artifact@v1
+        with:
+          name: Sysroot-macos-universal
+          path: sysroot_tar
+      - name: Setup Xcode
+        shell: bash
+        run: sudo xcode-select -switch /Applications/Xcode_12.2.app
+      - name: Build UTM
+        run: ./scripts/build_utm.sh -p macos -a "arm64 x86_64" -o build-utm/UTM
+      - name: Upload UTM
+        uses: actions/upload-artifact@v1
+        with:
+          name: UTM-macos-universal
+          path: build-utm
   package:
     name: Package
     runs-on: macos-latest

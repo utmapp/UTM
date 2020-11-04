@@ -74,4 +74,6 @@ macos )
     ;;
 esac
 
-xcodebuild archive -archivePath "$OUTPUT" -scheme "$SCHEME" -sdk "$SDK" -arch "$ARCH" -configuration Release CODE_SIGNING_ALLOWED=NO
+ARCH_ARGS=$(echo $ARCH | xargs printf -- "-arch %s ")
+
+xcodebuild archive -archivePath "$OUTPUT" -scheme "$SCHEME" -sdk "$SDK" $ARCH_ARGS -configuration Release CODE_SIGNING_ALLOWED=NO
