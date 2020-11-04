@@ -1520,6 +1520,7 @@
 		CEE0420E24412C520001680F /* VMConfigStepper.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VMConfigStepper.m; sourceTree = "<group>"; };
 		CEE0421024418F2E0001680F /* UTMConfiguration+Miscellaneous.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UTMConfiguration+Miscellaneous.h"; sourceTree = "<group>"; };
 		CEE0421124418F2E0001680F /* UTMConfiguration+Miscellaneous.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UTMConfiguration+Miscellaneous.m"; sourceTree = "<group>"; };
+		CEE747522553460300F7D1F3 /* BuildConfig.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = BuildConfig.xcconfig; sourceTree = "<group>"; };
 		CEEB66442284B942002737B2 /* VMKeyboardButton.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VMKeyboardButton.h; sourceTree = "<group>"; };
 		CEEB66452284B942002737B2 /* VMKeyboardButton.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VMKeyboardButton.m; sourceTree = "<group>"; };
 		CEEC811A24E48EC600ACB0B3 /* SettingsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
@@ -2173,6 +2174,7 @@
 		CE550BC0225947990063E575 = {
 			isa = PBXGroup;
 			children = (
+				CEE747522553460300F7D1F3 /* BuildConfig.xcconfig */,
 				CE258ACC22715F8300E5A333 /* README.md */,
 				CE4AA1462262FB58002E4A54 /* CocoaSpice */,
 				CE31C242225E543A00A965DD /* Configuration */,
@@ -3227,12 +3229,12 @@
 				ENABLE_BITCODE = NO;
 				ENABLE_PREVIEWS = YES;
 				HEADER_SEARCH_PATHS = (
-					"$(PROJECT_DIR)/sysroot-$(PLATFORM_FAMILY_NAME)-$(ARCHS:identifier)/include",
-					"$(PROJECT_DIR)/sysroot-$(PLATFORM_FAMILY_NAME)-$(ARCHS:identifier)/include/gstreamer-1.0",
-					"$(PROJECT_DIR)/sysroot-$(PLATFORM_FAMILY_NAME)-$(ARCHS:identifier)/include/glib-2.0",
-					"$(PROJECT_DIR)/sysroot-$(PLATFORM_FAMILY_NAME)-$(ARCHS:identifier)/lib/glib-2.0/include",
-					"$(PROJECT_DIR)/sysroot-$(PLATFORM_FAMILY_NAME)-$(ARCHS:identifier)/include/spice-client-glib-2.0",
-					"$(PROJECT_DIR)/sysroot-$(PLATFORM_FAMILY_NAME)-$(ARCHS:identifier)/include/spice-1",
+					"$(PROJECT_DIR)/$(SYSROOT_DIR)/include",
+					"$(PROJECT_DIR)/$(SYSROOT_DIR)/include/gstreamer-1.0",
+					"$(PROJECT_DIR)/$(SYSROOT_DIR)/include/glib-2.0",
+					"$(PROJECT_DIR)/$(SYSROOT_DIR)/lib/glib-2.0/include",
+					"$(PROJECT_DIR)/$(SYSROOT_DIR)/include/spice-client-glib-2.0",
+					"$(PROJECT_DIR)/$(SYSROOT_DIR)/include/spice-1",
 				);
 				INFOPLIST_FILE = Platform/iOS/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
@@ -3241,8 +3243,8 @@
 					"@executable_path/Frameworks",
 				);
 				LIBRARY_SEARCH_PATHS = (
-					"$(PROJECT_DIR)/sysroot-$(PLATFORM_FAMILY_NAME)-$(ARCHS:identifier)/lib",
-					"$(PROJECT_DIR)/sysroot-$(PLATFORM_FAMILY_NAME)-$(ARCHS:identifier)/lib/gstreamer-1.0",
+					"$(PROJECT_DIR)/$(SYSROOT_DIR)/lib",
+					"$(PROJECT_DIR)/$(SYSROOT_DIR)/lib/gstreamer-1.0",
 				);
 				MARKETING_VERSION = 2.0b8;
 				PRODUCT_BUNDLE_IDENTIFIER = com.osy86.UTM.Beta;
@@ -3264,12 +3266,12 @@
 				ENABLE_BITCODE = NO;
 				ENABLE_PREVIEWS = YES;
 				HEADER_SEARCH_PATHS = (
-					"$(PROJECT_DIR)/sysroot-$(PLATFORM_FAMILY_NAME)-$(ARCHS:identifier)/include",
-					"$(PROJECT_DIR)/sysroot-$(PLATFORM_FAMILY_NAME)-$(ARCHS:identifier)/include/gstreamer-1.0",
-					"$(PROJECT_DIR)/sysroot-$(PLATFORM_FAMILY_NAME)-$(ARCHS:identifier)/include/glib-2.0",
-					"$(PROJECT_DIR)/sysroot-$(PLATFORM_FAMILY_NAME)-$(ARCHS:identifier)/lib/glib-2.0/include",
-					"$(PROJECT_DIR)/sysroot-$(PLATFORM_FAMILY_NAME)-$(ARCHS:identifier)/include/spice-client-glib-2.0",
-					"$(PROJECT_DIR)/sysroot-$(PLATFORM_FAMILY_NAME)-$(ARCHS:identifier)/include/spice-1",
+					"$(PROJECT_DIR)/$(SYSROOT_DIR)/include",
+					"$(PROJECT_DIR)/$(SYSROOT_DIR)/include/gstreamer-1.0",
+					"$(PROJECT_DIR)/$(SYSROOT_DIR)/include/glib-2.0",
+					"$(PROJECT_DIR)/$(SYSROOT_DIR)/lib/glib-2.0/include",
+					"$(PROJECT_DIR)/$(SYSROOT_DIR)/include/spice-client-glib-2.0",
+					"$(PROJECT_DIR)/$(SYSROOT_DIR)/include/spice-1",
 				);
 				INFOPLIST_FILE = Platform/iOS/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
@@ -3278,8 +3280,8 @@
 					"@executable_path/Frameworks",
 				);
 				LIBRARY_SEARCH_PATHS = (
-					"$(PROJECT_DIR)/sysroot-$(PLATFORM_FAMILY_NAME)-$(ARCHS:identifier)/lib",
-					"$(PROJECT_DIR)/sysroot-$(PLATFORM_FAMILY_NAME)-$(ARCHS:identifier)/lib/gstreamer-1.0",
+					"$(PROJECT_DIR)/$(SYSROOT_DIR)/lib",
+					"$(PROJECT_DIR)/$(SYSROOT_DIR)/lib/gstreamer-1.0",
 				);
 				MARKETING_VERSION = 2.0b8;
 				PRODUCT_BUNDLE_IDENTIFIER = com.osy86.UTM.Beta;
@@ -3304,12 +3306,12 @@
 				CURRENT_PROJECT_VERSION = 8;
 				ENABLE_PREVIEWS = YES;
 				HEADER_SEARCH_PATHS = (
-					"$(PROJECT_DIR)/sysroot-$(PLATFORM_FAMILY_NAME)-$(ARCHS:identifier)/include",
-					"$(PROJECT_DIR)/sysroot-$(PLATFORM_FAMILY_NAME)-$(ARCHS:identifier)/include/gstreamer-1.0",
-					"$(PROJECT_DIR)/sysroot-$(PLATFORM_FAMILY_NAME)-$(ARCHS:identifier)/include/glib-2.0",
-					"$(PROJECT_DIR)/sysroot-$(PLATFORM_FAMILY_NAME)-$(ARCHS:identifier)/lib/glib-2.0/include",
-					"$(PROJECT_DIR)/sysroot-$(PLATFORM_FAMILY_NAME)-$(ARCHS:identifier)/include/spice-client-glib-2.0",
-					"$(PROJECT_DIR)/sysroot-$(PLATFORM_FAMILY_NAME)-$(ARCHS:identifier)/include/spice-1",
+					"$(PROJECT_DIR)/$(SYSROOT_DIR)/include",
+					"$(PROJECT_DIR)/$(SYSROOT_DIR)/include/gstreamer-1.0",
+					"$(PROJECT_DIR)/$(SYSROOT_DIR)/include/glib-2.0",
+					"$(PROJECT_DIR)/$(SYSROOT_DIR)/lib/glib-2.0/include",
+					"$(PROJECT_DIR)/$(SYSROOT_DIR)/include/spice-client-glib-2.0",
+					"$(PROJECT_DIR)/$(SYSROOT_DIR)/include/spice-1",
 				);
 				INFOPLIST_FILE = Platform/macOS/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -3317,8 +3319,8 @@
 					"@executable_path/../Frameworks",
 				);
 				LIBRARY_SEARCH_PATHS = (
-					"$(PROJECT_DIR)/sysroot-$(PLATFORM_FAMILY_NAME)-$(ARCHS:identifier)/lib",
-					"$(PROJECT_DIR)/sysroot-$(PLATFORM_FAMILY_NAME)-$(ARCHS:identifier)/lib/gstreamer-1.0",
+					"$(PROJECT_DIR)/$(SYSROOT_DIR)/lib",
+					"$(PROJECT_DIR)/$(SYSROOT_DIR)/lib/gstreamer-1.0",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 11.0;
 				MARKETING_VERSION = 2.0b8;
@@ -3346,12 +3348,12 @@
 				CURRENT_PROJECT_VERSION = 8;
 				ENABLE_PREVIEWS = YES;
 				HEADER_SEARCH_PATHS = (
-					"$(PROJECT_DIR)/sysroot-$(PLATFORM_FAMILY_NAME)-$(ARCHS:identifier)/include",
-					"$(PROJECT_DIR)/sysroot-$(PLATFORM_FAMILY_NAME)-$(ARCHS:identifier)/include/gstreamer-1.0",
-					"$(PROJECT_DIR)/sysroot-$(PLATFORM_FAMILY_NAME)-$(ARCHS:identifier)/include/glib-2.0",
-					"$(PROJECT_DIR)/sysroot-$(PLATFORM_FAMILY_NAME)-$(ARCHS:identifier)/lib/glib-2.0/include",
-					"$(PROJECT_DIR)/sysroot-$(PLATFORM_FAMILY_NAME)-$(ARCHS:identifier)/include/spice-client-glib-2.0",
-					"$(PROJECT_DIR)/sysroot-$(PLATFORM_FAMILY_NAME)-$(ARCHS:identifier)/include/spice-1",
+					"$(PROJECT_DIR)/$(SYSROOT_DIR)/include",
+					"$(PROJECT_DIR)/$(SYSROOT_DIR)/include/gstreamer-1.0",
+					"$(PROJECT_DIR)/$(SYSROOT_DIR)/include/glib-2.0",
+					"$(PROJECT_DIR)/$(SYSROOT_DIR)/lib/glib-2.0/include",
+					"$(PROJECT_DIR)/$(SYSROOT_DIR)/include/spice-client-glib-2.0",
+					"$(PROJECT_DIR)/$(SYSROOT_DIR)/include/spice-1",
 				);
 				INFOPLIST_FILE = Platform/macOS/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -3359,8 +3361,8 @@
 					"@executable_path/../Frameworks",
 				);
 				LIBRARY_SEARCH_PATHS = (
-					"$(PROJECT_DIR)/sysroot-$(PLATFORM_FAMILY_NAME)-$(ARCHS:identifier)/lib",
-					"$(PROJECT_DIR)/sysroot-$(PLATFORM_FAMILY_NAME)-$(ARCHS:identifier)/lib/gstreamer-1.0",
+					"$(PROJECT_DIR)/$(SYSROOT_DIR)/lib",
+					"$(PROJECT_DIR)/$(SYSROOT_DIR)/lib/gstreamer-1.0",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 11.0;
 				MARKETING_VERSION = 2.0b8;
@@ -3376,6 +3378,7 @@
 		};
 		CE550BDD2259479D0063E575 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = CEE747522553460300F7D1F3 /* BuildConfig.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
@@ -3437,6 +3440,7 @@
 		};
 		CE550BDE2259479D0063E575 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = CEE747522553460300F7D1F3 /* BuildConfig.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
