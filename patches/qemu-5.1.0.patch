@@ -5958,3 +5958,14 @@ index b0194cb..eb57116 100644
 -- 
 2.24.1 (Apple Git-126)
 
+--- a/configure	2020-11-03 22:13:16.000000000 -0800
++++ b/configure	2020-11-03 22:13:43.000000000 -0800
+@@ -6270,7 +6270,7 @@
+ #include <Hypervisor/hv.h>
+ int main() { return 0;}
+ EOF
+-  if ! compile_object ""; then
++  if ! compile_object "" || test "$cpu" = "aarch64"; then
+     hvf='no'
+   else
+     hvf='yes'

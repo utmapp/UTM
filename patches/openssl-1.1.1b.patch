@@ -1,0 +1,45 @@
+diff -urN a/Configurations/10-main.conf b/Configurations/10-main.conf
+--- a/Configurations/10-main.conf	2019-02-26 06:15:30.000000000 -0800
++++ b/Configurations/10-main.conf	2020-11-03 19:48:02.000000000 -0800
+@@ -1554,6 +1554,14 @@
+         bn_ops           => "SIXTY_FOUR_BIT_LONG",
+         perlasm_scheme   => "macosx",
+     },
++    "darwin64-arm64-cc" => {
++        inherit_from     => [ "darwin-common", asm("aarch64_asm") ],
++        CFLAGS           => add("-Wall"),
++        cflags           => add("-arch arm64"),
++        lib_cppflags     => add("-DL_ENDIAN"),
++        bn_ops           => "SIXTY_FOUR_BIT_LONG",
++        perlasm_scheme   => "ios64",
++    },
+ 
+ ##### GNU Hurd
+     "hurd-x86" => {
+diff -urN a/Configurations/15-ios.conf b/Configurations/15-ios.conf
+--- a/Configurations/15-ios.conf	2019-02-26 06:15:30.000000000 -0800
++++ b/Configurations/15-ios.conf	2020-11-03 19:00:27.000000000 -0800
+@@ -32,6 +32,13 @@
+         inherit_from     => [ "ios-common" ],
+         CC               => "xcrun -sdk iphonesimulator cc",
+     },
++    "iossimulator64-xcrun" => {
++        inherit_from     => [ "ios-common", asm("x86_64_asm") ],
++        CC               => "xcrun -sdk iphonesimulator cc",
++        cflags           => add("-arch x86_64 -mios-version-min=7.0.0 -fno-common"),
++        bn_ops           => "SIXTY_FOUR_BIT_LONG RC4_CHAR",
++        perlasm_scheme   => "macosx",
++    },
+ # It takes three prior-set environment variables to make it work:
+ #
+ # CROSS_COMPILE=/where/toolchain/is/usr/bin/ [note ending slash]
+@@ -59,4 +66,9 @@
+         CC               => "cc",
+         cflags           => add("-isysroot \$(CROSS_TOP)/SDKs/\$(CROSS_SDK)"),
+     },
++    "iossimulator64-cross" => {
++        inherit_from     => [ "iossimulator64-xcrun" ],
++        CC               => "cc",
++        cflags           => add("-isysroot \$(CROSS_TOP)/SDKs/\$(CROSS_SDK)"),
++    },
+ );

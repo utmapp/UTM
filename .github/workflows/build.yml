@@ -21,9 +21,6 @@ jobs:
       matrix:
         arch: [arm64, x86_64]
         platform: [ios, macos]
-        exclude:
-          - platform: macos
-            arch: arm64 # not ready yet!
     steps:
       - name: Checkout
         uses: actions/checkout@v1

@@ -132,7 +132,7 @@ build_openssl() {
     TOOLCHAIN_PATH="$(dirname $(xcrun --sdk $SDK -find clang))"
     PATH="$PATH:$TOOLCHAIN_PATH"
     CROSS_TOP="$(xcrun --sdk $SDK --show-sdk-platform-path)/Developer" # for openssl
-    CROSS_SDK="$SDKNAME.$SDKVERSION.sdk" # for openssl
+    CROSS_SDK="$SDKNAME$SDKVERSION.sdk" # for openssl
     export CROSS_TOP
     export CROSS_SDK
     export PATH
@@ -150,6 +150,38 @@ build_openssl() {
         OPENSSL_CROSS=darwin64-x86_64-cc
         ;;
     esac
+    case $PLATFORM in
+    ios )
+        case $ARCH in
+        armv7 | armv7s )
+            OPENSSL_CROSS=iphoneos-cross
+            ;;
+        arm64 )
+            OPENSSL_CROSS=ios64-cross
+            ;;
+        i386 | x86_64 )
+            OPENSSL_CROSS=iossimulator64-cross
+            ;;
+        esac
+        ;;
+    macos )
+        case $ARCH in
+        arm64 )
+            OPENSSL_CROSS=darwin64-arm64-cc
+            ;;
+        i386 )
+            OPENSSL_CROSS=darwin-i386-cc
+            ;;
+        x86_64 )
+            OPENSSL_CROSS=darwin64-x86_64-cc
+            ;;
+        esac
+        ;;
+    esac
+    if [ -z "$OPENSSL_CROSS" ]; then
+        echo "${RED}Unsupported configuration for OpenSSL $PLATFORM, $ARCH${NC}"
+        exit 1
+    fi
 
     cd "$DIR"
     if [ -z "$REBUILD" ]; then
@@ -348,19 +380,20 @@ fi
 if [ -z "$CHOST" ]; then
     case $ARCH in
     armv7 | armv7s )
-        CHOST=arm-apple-darwin
+        CPU=arm
         ;;
     arm64 )
-        CHOST=aarch64-apple-darwin
+        CPU=aarch64
         ;;
     i386 | x86_64 )
-        CHOST=$ARCH-apple-darwin
+        CPU=$ARCH
         ;;
     * )
         usage
         ;;
     esac
 fi
+CHOST=$CPU-apple-darwin
 export CHOST
 
 case $PLATFORM in
@@ -378,6 +411,7 @@ ios )
         CFLAGS_MINVER="-mios-simulator-version-min=$SDKMINVER"
         ;;
     esac
+    CFLAGS_TARGET=
     PLATFORM_FAMILY_NAME="iOS"
     QEMU_PLATFORM_BUILD_FLAGS="--enable-shared-lib"
     ;;
@@ -387,8 +421,9 @@ macos )
     fi
     SDK=macosx
     CFLAGS_MINVER="-mmacos-version-min=$SDKMINVER"
+    CFLAGS_TARGET="-target $ARCH-apple-macos"
     PLATFORM_FAMILY_NAME="macOS"
-    QEMU_PLATFORM_BUILD_FLAGS="--disable-cocoa"
+    QEMU_PLATFORM_BUILD_FLAGS="--disable-cocoa --cpu=$CPU"
     ;;
 * )
     usage
@@ -415,9 +450,9 @@ fi
 PREFIX="$(realpath "$SYSROOT_DIR")"
 
 # Export supplied SDKVERSION or use system default
+SDKNAME=$(basename $(xcrun --sdk $SDK --show-sdk-platform-path) .platform)
 if [ ! -z "$SDKVERSION" ]; then
-    SDKNAME=$(basename $(xcrun --sdk $SDK --show-sdk-platform-path) .platform)
-    SDKROOT=$(xcrun --sdk $SDK --show-sdk-platform-path)"/Developer/SDKs/$SDKNAME.$SDKVERSION.sdk"
+    SDKROOT=$(xcrun --sdk $SDK --show-sdk-platform-path)"/Developer/SDKs/$SDKNAME$SDKVERSION.sdk"
 else
     SDKVERSION=$(xcrun --sdk $SDK --show-sdk-version) # current version
     SDKROOT=$(xcrun --sdk $SDK --show-sdk-path) # current version
@@ -439,10 +474,10 @@ export LD
 export PREFIX
 
 # Flags
-CFLAGS="$CFLAGS -arch $ARCH -isysroot $SDKROOT -I$PREFIX/include $CFLAGS_MINVER"
-CPPFLAGS="$CPPFLAGS -arch $ARCH -isysroot $SDKROOT -I$PREFIX/include $CFLAGS_MINVER"
-CXXFLAGS="$CXXFLAGS -arch $ARCH -isysroot $SDKROOT -I$PREFIX/include $CFLAGS_MINVER"
-LDFLAGS="$LDFLAGS -arch $ARCH -isysroot $SDKROOT -L$PREFIX/lib $CFLAGS_MINVER"
+CFLAGS="$CFLAGS -arch $ARCH -isysroot $SDKROOT -I$PREFIX/include $CFLAGS_MINVER $CFLAGS_TARGET"
+CPPFLAGS="$CPPFLAGS -arch $ARCH -isysroot $SDKROOT -I$PREFIX/include $CFLAGS_MINVER $CFLAGS_TARGET"
+CXXFLAGS="$CXXFLAGS -arch $ARCH -isysroot $SDKROOT -I$PREFIX/include $CFLAGS_MINVER $CFLAGS_TARGET"
+LDFLAGS="$LDFLAGS -arch $ARCH -isysroot $SDKROOT -L$PREFIX/lib $CFLAGS_MINVER $CFLAGS_TARGET"
 MAKEFLAGS="-j$NCPU"
 PKG_CONFIG_PATH="$PKG_CONFIG_PATH":"$SDKROOT/usr/lib/pkgconfig":"$PREFIX/lib/pkgconfig":"$PREFIX/share/pkgconfig"
 PKG_CONFIG_LIBDIR=""
