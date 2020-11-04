@@ -64,7 +64,7 @@ jobs:
         with:
           name: UTM-${{ matrix.platform }}-${{ matrix.arch }}
           path: build-utm
-  universal:
+  build-universal:
     name: Build UTM (macOS Universal)
     runs-on: macos-latest
     needs: build
@@ -117,8 +117,8 @@ jobs:
         with:
           name: UTM-macos-universal
           path: build-utm
-  package:
-    name: Package
+  package-ios:
+    name: Package (iOS)
     runs-on: macos-latest
     needs: build
     if: github.event_name == 'release'
@@ -152,3 +152,28 @@ jobs:
           token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
           repository: ${{ secrets.DISPATCH_REPO_NAME }}
           event-type: new-release
+  package-mac:
+    name: Package (macOS)
+    runs-on: macos-latest
+    needs: build-universal
+    if: github.event_name == 'release'
+    steps:
+      - name: Download Artifact
+        uses: actions/download-artifact@v1
+        with:
+          name: UTM-macos-universal
+      - name: Fixup Permissions
+        run: find UTM-macos-universal/UTM.xcarchive -type f \( -path '*/Contents/MacOS/*' -or -path '*/Frameworks/*.dylib' \) -exec chmod +x \{\} \;
+      - name: Install create-dmg
+        run: brew install create-dmg
+      - name: Create DMG
+        run: APPLICATION_LINK=1 create-dmg --volname "UTM" UTM.dmg UTM-macos-universal/UTM.xcarchive/Products/Applications/
+      - name: Upload Release Asset
+        uses: actions/upload-release-asset@v1.0.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: UTM.dmg
+          asset_name: UTM.dmg
+          asset_content_type: application/octet-stream
