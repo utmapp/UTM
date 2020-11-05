@@ -24,7 +24,7 @@ cat >"$OPTIONS" <<EOL
 	<string>development</string>
 	<key>provisioningProfiles</key>
 	<dict>
-		<key>com.osy86.UTM</key>
+		<key>com.utmapp.UTM</key>
 		<string>${PROFILE_NAME}</string>
 	</dict>
 	<key>signingStyle</key>

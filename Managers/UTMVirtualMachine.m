@@ -36,7 +36,7 @@
 const int kQMPMaxConnectionTries = 30; // qemu needs to start spice server first
 const int64_t kStopTimeout = (int64_t)30*NSEC_PER_SEC;
 
-NSString *const kUTMErrorDomain = @"com.osy86.utm";
+NSString *const kUTMErrorDomain = @"com.utmapp.utm";
 NSString *const kUTMBundleConfigFilename = @"config.plist";
 NSString *const kUTMBundleExtension = @"utm";
 NSString *const kUTMBundleViewFilename = @"view.plist";

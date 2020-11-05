@@ -16,7 +16,7 @@
 
 import Logging
 
-let logger = Logger(label: "com.osy86.UTM")
+let logger = Logger(label: "com.utmapp.UTM")
 
 @main
 class Main {

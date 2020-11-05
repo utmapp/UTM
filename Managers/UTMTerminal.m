@@ -47,8 +47,8 @@ dispatch_io_t createInputIO(NSURL* url, dispatch_queue_t queue) {
     self = [super init];
     if (self) {
         // serial queues for input/output processing
-        self->_outputQueue = dispatch_queue_create("com.osy86.UTM.TerminalOutputQueue", NULL);
-        self->_inputQueue = dispatch_queue_create("com.osy86.UTM.TerminalInputQueue", NULL);
+        self->_outputQueue = dispatch_queue_create("com.utmapp.UTM.TerminalOutputQueue", NULL);
+        self->_inputQueue = dispatch_queue_create("com.utmapp.UTM.TerminalInputQueue", NULL);
         
         self->_outPipeFd = -1;
         if (![self configurePipesUsingURL: url]) {

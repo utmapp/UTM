@@ -68,7 +68,7 @@
 
 - (BOOL)setupXpc {
 #if !TARGET_OS_IPHONE // only supported on macOS
-    _connection = [[NSXPCConnection alloc] initWithServiceName:@"com.osy86.QEMUHelper"];
+    _connection = [[NSXPCConnection alloc] initWithServiceName:@"com.utmapp.QEMUHelper"];
     _connection.remoteObjectInterface = [NSXPCInterface interfaceWithProtocol:@protocol(QEMUHelperProtocol)];
     [_connection resume];
 #endif
