@@ -204,6 +204,7 @@ class UTMData: ObservableObject {
             if vm == self.selectedVM {
                 self.selectedVM = nil
             }
+            vm.viewState.deleted = true // alert views to update
         }
     }
     
