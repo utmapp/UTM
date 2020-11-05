@@ -65,12 +65,10 @@ extension UTMData {
         UIView.transition(with: window, duration: duration, options: options, animations: {}, completion: nil)
     }
     
-    func stop(vm: UTMVirtualMachine) {
+    func stop(vm: UTMVirtualMachine) throws {
         if vm.viewState.suspended {
-            self.busyWork {
-                guard vm.deleteSaveVM() else {
-                    throw NSLocalizedString("Failed to delete saved state.", comment: "UTMDataExtension")
-                }
+            guard vm.deleteSaveVM() else {
+                throw NSLocalizedString("Failed to delete saved state.", comment: "UTMDataExtension")
             }
         }
     }

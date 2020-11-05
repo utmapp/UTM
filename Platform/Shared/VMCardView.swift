@@ -22,7 +22,7 @@ struct VMCardView: View {
     @ObservedObject private var sessionConfig: UTMViewState
     @EnvironmentObject private var data: UTMData
     @State private var showSharePopup = false
-    @State private var showConfirmStop = false
+    @State private var confirmAction: ConfirmAction?
     
     #if os(macOS)
     let buttonColor: Color = .black
@@ -70,7 +70,7 @@ struct VMCardView: View {
             }.disabled(sessionConfig.suspended)
             if sessionConfig.suspended {
                 Button {
-                    showConfirmStop.toggle()
+                    confirmAction = .confirmStopVM
                 } label: {
                     Label("Stop", systemImage: "stop.fill")
                 }
@@ -87,17 +87,13 @@ struct VMCardView: View {
                 Label("Share", systemImage: "square.and.arrow.up")
             }
             Button {
-                data.busyWork {
-                    try data.clone(vm: vm)
-                }
+                confirmAction = .confirmCloneVM
             } label: {
                 Label("Clone", systemImage: "doc.on.doc")
             }
             Divider()
             Button {
-                data.busyWork {
-                    try data.delete(vm: vm)
-                }
+                confirmAction = .confirmDeleteVM
             } label: {
                 Label("Delete", systemImage: "trash")
                     .foregroundColor(.red)
@@ -106,11 +102,9 @@ struct VMCardView: View {
         .modifier(VMShareFileModifier(isPresented: $showSharePopup) {
             [vm.path!]
         })
-        .alert(isPresented: $showConfirmStop) {
-            Alert(title: Text("Do you want to force stop this VM and lose all unsaved data?"), primaryButton: .cancel(), secondaryButton: .destructive(Text("Stop")) {
-                data.stop(vm: vm)
-            })
-        }
+        .modifier(VMConfirmActionModifier(vm: vm, confirmAction: $confirmAction) {
+            
+        })
     }
 }
 

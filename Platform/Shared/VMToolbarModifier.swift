@@ -23,7 +23,7 @@ struct VMToolbarModifier: ViewModifier {
     let bottom: Bool
     @ObservedObject private var sessionConfig: UTMViewState
     @State private var showSharePopup = false
-    @State private var showConfirmStop = false
+    @State private var confirmAction: ConfirmAction?
     @EnvironmentObject private var data: UTMData
     @Environment(\.presentationMode) private var presentationMode: Binding<PresentationMode>
     
@@ -59,11 +59,7 @@ struct VMToolbarModifier: ViewModifier {
         content.toolbar {
             ToolbarItemGroup(placement: buttonPlacement) {
                 Button {
-                    data.busyWork {
-                        try data.delete(vm: vm)
-                    }
-                    data.selectedVM = nil
-                    presentationMode.wrappedValue.dismiss()
+                    confirmAction = .confirmDeleteVM
                 } label: {
                     Label("Delete", systemImage: "trash")
                         .foregroundColor(destructiveButtonColor)
@@ -76,11 +72,7 @@ struct VMToolbarModifier: ViewModifier {
                 }
                 #endif
                 Button {
-                    data.busyWork {
-                        try data.clone(vm: vm)
-                    }
-                    data.selectedVM = nil
-                    presentationMode.wrappedValue.dismiss()
+                    confirmAction = .confirmCloneVM
                 } label: {
                     Label("Clone", systemImage: "doc.on.doc")
                         .labelStyle(IconOnlyLabelStyle())
@@ -108,7 +100,7 @@ struct VMToolbarModifier: ViewModifier {
                 #endif
                 if sessionConfig.suspended {
                     Button {
-                        showConfirmStop.toggle()
+                        confirmAction = .confirmStopVM
                     } label: {
                         Label("Stop", systemImage: "stop.fill")
                             .labelStyle(IconOnlyLabelStyle())
@@ -138,10 +130,8 @@ struct VMToolbarModifier: ViewModifier {
                 .padding(.leading, padding)
             }
         }
-        .alert(isPresented: $showConfirmStop) {
-            Alert(title: Text("Do you want to force stop this VM and lose all unsaved data?"), primaryButton: .cancel(), secondaryButton: .destructive(Text("Stop")) {
-                data.stop(vm: vm)
-            })
-        }
+        .modifier(VMConfirmActionModifier(vm: vm, confirmAction: $confirmAction) {
+            presentationMode.wrappedValue.dismiss()
+        })
     }
 }

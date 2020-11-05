@@ -40,7 +40,7 @@ extension UTMData {
         }
     }
     
-    func stop(vm: UTMVirtualMachine) {
+    func stop(vm: UTMVirtualMachine) throws {
         
     }
 }
