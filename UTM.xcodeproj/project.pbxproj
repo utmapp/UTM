@@ -3247,7 +3247,7 @@
 					"$(PROJECT_DIR)/$(SYSROOT_DIR)/lib/gstreamer-1.0",
 				);
 				MARKETING_VERSION = 2.0.8;
-				PRODUCT_BUNDLE_IDENTIFIER = com.utmapp.UTM.Beta;
+				PRODUCT_BUNDLE_IDENTIFIER = com.utmapp.UTM;
 				PRODUCT_NAME = "$(PROJECT_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "Platform/Swift-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -3284,7 +3284,7 @@
 					"$(PROJECT_DIR)/$(SYSROOT_DIR)/lib/gstreamer-1.0",
 				);
 				MARKETING_VERSION = 2.0.8;
-				PRODUCT_BUNDLE_IDENTIFIER = com.utmapp.UTM.Beta;
+				PRODUCT_BUNDLE_IDENTIFIER = com.utmapp.UTM;
 				PRODUCT_NAME = "$(PROJECT_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "Platform/Swift-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
