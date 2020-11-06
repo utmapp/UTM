@@ -116,7 +116,7 @@ struct DriveCard: View {
     
     func deleteDrive() {
         data.busyWork {
-            try data.removeDrive(at: index, forConfig: config)
+            try data.removeDrive(at: index, for: config)
         }
     }
     
