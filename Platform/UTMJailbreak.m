@@ -175,7 +175,7 @@ static NSDictionary *cached_app_entitlements(void) {
 
 bool jb_has_jit_entitlement(void) {
     NSDictionary *entitlements = cached_app_entitlements();
-    return [entitlements[@"dynamic-codesigning"] boolValue];
+    return [entitlements[@"dynamic-codesigning"] boolValue] || [entitlements[@"com.apple.security.cs.allow-jit"] boolValue];
 }
 
 bool jb_has_cs_execseg_allow_unsigned(void) {
