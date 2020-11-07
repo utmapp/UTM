@@ -390,10 +390,11 @@ class UTMData: ObservableObject {
     }
     
     func removeDrive(at: Int, forConfig: UTMConfiguration) throws {
-        let path = forConfig.driveImagePath(for: at)!
+        let name = forConfig.driveImagePath(for: at)!
+        let path = forConfig.imagesPath.appendingPathComponent(name)
         
-        if fileManager.fileExists(atPath: path) {
-            try fileManager.removeItem(atPath: path)
+        if fileManager.fileExists(atPath: path.path) {
+            try fileManager.removeItem(at: path)
         }
         
         DispatchQueue.main.async {
