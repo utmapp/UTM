@@ -185,28 +185,28 @@ static size_t hostCpuCount(void) {
                 break;
             }
             case UTMDiskImageTypeBIOS: {
-                if (!hasImage) {
+                if (hasImage) {
                     [self pushArgv:@"-bios"];
                     [self pushArgv:fullPathURL.path];
                 }
                 break;
             }
             case UTMDiskImageTypeKernel: {
-                if (!hasImage) {
+                if (hasImage) {
                     [self pushArgv:@"-kernel"];
                     [self pushArgv:fullPathURL.path];
                 }
                 break;
             }
             case UTMDiskImageTypeInitrd: {
-                if (!hasImage) {
+                if (hasImage) {
                     [self pushArgv:@"-initrd"];
                     [self pushArgv:fullPathURL.path];
                 }
                 break;
             }
             case UTMDiskImageTypeDTB: {
-                if (!hasImage) {
+                if (hasImage) {
                     [self pushArgv:@"-dtb"];
                     [self pushArgv:fullPathURL.path];
                 }
