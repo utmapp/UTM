@@ -402,6 +402,13 @@ class UTMData: ObservableObject {
         }
     }
     
+    // MARK: - Networking
+    
+    func enableNetworking() {
+        let task = URLSession.shared.dataTask(with: URL(string: "http://captive.apple.com")!)
+        task.resume()
+    }
+    
     // MARK: - Helper functions
     
     private func recreate(vm: UTMVirtualMachine) {

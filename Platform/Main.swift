@@ -24,6 +24,7 @@ class Main {
     
     static func main() {
         setupLogging()
+        registerDefaultsFromSettingsBundle()
         // check if we have jailbreak
         if jb_has_jit_entitlement() {
             logger.info("JIT: found entitlement")
@@ -54,6 +55,30 @@ class Main {
                 UTMLoggingSwift(label: label),
                 StreamLogHandler.standardOutput(label: label)
             ])
+        }
+    }
+    
+    // https://stackoverflow.com/a/44675628
+    static private func registerDefaultsFromSettingsBundle() {
+        let userDefaults = UserDefaults.standard
+
+        if let settingsURL = Bundle.main.url(forResource: "Root", withExtension: "plist", subdirectory: "Settings.bundle"),
+            let settings = NSDictionary(contentsOf: settingsURL),
+            let preferences = settings["PreferenceSpecifiers"] as? [NSDictionary] {
+
+            var defaultsToRegister = [String: AnyObject]()
+            for prefSpecification in preferences {
+                if let key = prefSpecification["Key"] as? String,
+                    let value = prefSpecification["DefaultValue"] {
+
+                    defaultsToRegister[key] = value as AnyObject
+                    logger.debug("registerDefaultsFromSettingsBundle: (\(key), \(value)) \(type(of: value))")
+                }
+            }
+
+            userDefaults.register(defaults: defaultsToRegister)
+        } else {
+            logger.debug("registerDefaultsFromSettingsBundle: Could not find Settings.bundle")
         }
     }
 }

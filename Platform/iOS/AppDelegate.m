@@ -29,7 +29,6 @@ const NSNotificationName UTMImportNotification = @"UTMImportNotification";
     // Override point for customization after application launch.
     // trigger "allow network usage" popup in some regions
     [[NSURLSession.sharedSession dataTaskWithURL:[NSURL URLWithString:@"http://captive.apple.com"]] resume];
-    [self registerDefaultsFromSettingsBundle];
     if (launchOptions[UIApplicationLaunchOptionsURLKey]) {
         self.openURL = launchOptions[UIApplicationLaunchOptionsURLKey];
     }
@@ -46,31 +45,6 @@ const NSNotificationName UTMImportNotification = @"UTMImportNotification";
     self.openURL = url;
     [[NSNotificationCenter defaultCenter] postNotificationName:UTMImportNotification object:self];
     return YES;
-}
-
-#pragma - mark NSUserDefaults
-
-- (void)registerDefaultsFromSettingsBundle {
-    // this function writes default settings as settings
-    NSString *settingsBundle = [[NSBundle mainBundle] pathForResource:@"Settings" ofType:@"bundle"];
-    if(!settingsBundle) {
-        NSLog(@"Could not find Settings.bundle");
-        return;
-    }
-
-    NSDictionary *settings = [NSDictionary dictionaryWithContentsOfFile:[settingsBundle stringByAppendingPathComponent:@"Root.plist"]];
-    NSArray *preferences = [settings objectForKey:@"PreferenceSpecifiers"];
-
-    NSMutableDictionary *defaultsToRegister = [[NSMutableDictionary alloc] initWithCapacity:[preferences count]];
-    for(NSDictionary *prefSpecification in preferences) {
-        NSString *key = [prefSpecification objectForKey:@"Key"];
-        if(key) {
-            [defaultsToRegister setObject:[prefSpecification objectForKey:@"DefaultValue"] forKey:key];
-            NSLog(@"writing as default %@ to the key %@",[prefSpecification objectForKey:@"DefaultValue"],key);
-        }
-    }
-
-    [[NSUserDefaults standardUserDefaults] registerDefaults:defaultsToRegister];
 }
 
 

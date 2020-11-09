@@ -62,6 +62,7 @@ struct ContentView: View {
         .onOpenURL(perform: importUTM)
         .onAppear {
             data.refresh()
+            data.enableNetworking()
             IQKeyboardManager.shared.enable = true
             if !Main.jitAvailable {
                 jitAlertPresented.toggle()
