@@ -175,10 +175,14 @@ const NSString *const kUTMViewStateRemovableDrivesPathKey = @"RemovableDrivesPat
 
 - (void)removeBookmarkForRemovableDrive:(NSString *)drive {
     [self propertyWillChange];
-    [_removableDrives removeObjectForKey:drive];
-    [_removableDrivesTemp removeObjectForKey:drive];
-    [_removableDrivesPath removeObjectForKey:drive];
-    [_removableDrivesPathTemp removeObjectForKey:drive];
+    if ([_removableDrives valueForKey:drive]) {
+        [_removableDrives removeObjectForKey:drive];
+        [_removableDrivesPath removeObjectForKey:drive];
+    }
+    if ([_removableDrivesTemp valueForKey:drive]) {
+        [_removableDrivesTemp removeObjectForKey:drive];
+        [_removableDrivesPathTemp removeObjectForKey:drive];
+    }
 }
 
 - (nullable NSData *)bookmarkForRemovableDrive:(NSString *)drive persistent:(out BOOL *)persistent {

@@ -98,7 +98,7 @@ extern NSString *const kUTMErrorDomain;
                          securityScoped:persistent
                              completion:^(BOOL success, NSData *newBookmark, NSString *path) {
         if (success) {
-            [self.viewState setBookmark:newBookmark path:path forRemovableDrive:drive.name persistent:YES];
+            [self.viewState setBookmark:newBookmark path:path forRemovableDrive:drive.name persistent:persistent];
             [self.qemu changeMediumForDrive:drive.name path:path error:error];
         } else {
             if (error) {
