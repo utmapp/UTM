@@ -19,8 +19,10 @@ import SwiftUI
 @available(iOS 14, macOS 11, *)
 struct VMCardView: View {
     let vm: UTMVirtualMachine
+    @ObservedObject private var sessionConfig: UTMViewState
     @EnvironmentObject private var data: UTMData
     @State private var showSharePopup = false
+    @State private var confirmAction: ConfirmAction?
     
     #if os(macOS)
     let buttonColor: Color = .black
@@ -29,6 +31,11 @@ struct VMCardView: View {
     let buttonColor: Color = .accentColor
     typealias PlatformImage = UIImage
     #endif
+    
+    init(vm: UTMVirtualMachine) {
+        self.vm = vm
+        self.sessionConfig = vm.viewState
+    }
     
     var body: some View {
         HStack {
@@ -60,11 +67,19 @@ struct VMCardView: View {
                 data.edit(vm: vm)
             } label: {
                 Label("Edit", systemImage: "slider.horizontal.3")
-            }
-            Button {
-                data.run(vm: vm)
-            } label: {
-                Label("Run", systemImage: "play.fill")
+            }.disabled(sessionConfig.suspended)
+            if sessionConfig.suspended {
+                Button {
+                    confirmAction = .confirmStopVM
+                } label: {
+                    Label("Stop", systemImage: "stop.fill")
+                }
+            } else {
+                Button {
+                    data.run(vm: vm)
+                } label: {
+                    Label("Run", systemImage: "play.fill")
+                }
             }
             Button {
                 showSharePopup.toggle()
@@ -72,17 +87,13 @@ struct VMCardView: View {
                 Label("Share", systemImage: "square.and.arrow.up")
             }
             Button {
-                data.busyWork {
-                    try data.clone(vm: vm)
-                }
+                confirmAction = .confirmCloneVM
             } label: {
                 Label("Clone", systemImage: "doc.on.doc")
             }
             Divider()
             Button {
-                data.busyWork {
-                    try data.delete(vm: vm)
-                }
+                confirmAction = .confirmDeleteVM
             } label: {
                 Label("Delete", systemImage: "trash")
                     .foregroundColor(.red)
@@ -90,6 +101,9 @@ struct VMCardView: View {
         }
         .modifier(VMShareFileModifier(isPresented: $showSharePopup) {
             [vm.path!]
+        })
+        .modifier(VMConfirmActionModifier(vm: vm, confirmAction: $confirmAction) {
+            
         })
     }
 }

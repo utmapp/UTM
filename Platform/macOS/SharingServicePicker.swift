@@ -29,12 +29,18 @@ struct SharingsPicker: NSViewRepresentable {
 
     func updateNSView(_ nsView: NSView, context: Context) {
         if isPresented {
-            let picker = NSSharingServicePicker(items: sharingItems)
-            picker.delegate = context.coordinator
+            if let _ = nsView.window {
+                let picker = NSSharingServicePicker(items: sharingItems)
+                picker.delegate = context.coordinator
 
-            // !! MUST BE CALLED IN ASYNC, otherwise blocks update
-            DispatchQueue.main.async {
-                picker.show(relativeTo: .zero, of: nsView, preferredEdge: .minY)
+                // !! MUST BE CALLED IN ASYNC, otherwise blocks update
+                DispatchQueue.main.async {
+                    picker.show(relativeTo: .zero, of: nsView, preferredEdge: .minY)
+                }
+            } else {
+                DispatchQueue.main.async {
+                    isPresented = false
+                }
             }
         }
     }

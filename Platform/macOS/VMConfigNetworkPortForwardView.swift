@@ -48,7 +48,7 @@ struct VMConfigNetworkPortForwardView: View {
                     }
 
                     Button(action: { editingNewPortBinding.wrappedValue = true }, label: {
-                        Text("\(configPort.guestAddress ?? ""):\(String(configPort.guestPort)) ➡️ \(configPort.hostAddress ?? ""):\(String(configPort.hostPort)) (\(configPort.protocol ?? ""))")
+                        Text(verbatim: "\(configPort.guestAddress ?? ""):\(configPort.guestPort ?? 0) ➡️ \(configPort.hostAddress ?? ""):\(configPort.hostPort ?? 0)")
                     }).buttonStyle(PlainButtonStyle())
                     .popover(isPresented: editingNewPortBinding, arrowEdge: .bottom) {
                         PortForwardEdit(config: config, index: index).padding()
@@ -86,7 +86,7 @@ struct PortForwardEdit: View {
                 Spacer()
                 Button(action: savePortForward, label: {
                     Text("Save")
-                }).disabled(configPort.guestPort == 0 || configPort.hostPort == 0)
+                }).disabled(configPort.guestPort?.intValue ?? 0 == 0 || configPort.hostPort?.intValue ?? 0 == 0)
             }
         }
     }
@@ -111,15 +111,15 @@ struct VMConfigNetworkPortForwardView_Previews: PreviewProvider {
                     let newConfigPort = UTMConfigurationPortForward()
                     newConfigPort.protocol = "tcp"
                     newConfigPort.guestAddress = "1.2.3.4"
-                    newConfigPort.guestPort = 1234
+                    newConfigPort.guestPort = NSNumber(value: 1234)
                     newConfigPort.hostAddress = "4.3.2.1"
-                    newConfigPort.hostPort = 4321
+                    newConfigPort.hostPort = NSNumber(value: 4321)
                     config.newPortForward(newConfigPort)
                     newConfigPort.protocol = "udp"
                     newConfigPort.guestAddress = nil
-                    newConfigPort.guestPort = 2222
+                    newConfigPort.guestPort = NSNumber(value: 2222)
                     newConfigPort.hostAddress = nil
-                    newConfigPort.hostPort = 3333
+                    newConfigPort.hostPort = NSNumber(value: 3333)
                     config.newPortForward(newConfigPort)
                 }
             }

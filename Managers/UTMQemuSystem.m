@@ -185,28 +185,28 @@ static size_t hostCpuCount(void) {
                 break;
             }
             case UTMDiskImageTypeBIOS: {
-                if (!hasImage) {
+                if (hasImage) {
                     [self pushArgv:@"-bios"];
                     [self pushArgv:fullPathURL.path];
                 }
                 break;
             }
             case UTMDiskImageTypeKernel: {
-                if (!hasImage) {
+                if (hasImage) {
                     [self pushArgv:@"-kernel"];
                     [self pushArgv:fullPathURL.path];
                 }
                 break;
             }
             case UTMDiskImageTypeInitrd: {
-                if (!hasImage) {
+                if (hasImage) {
                     [self pushArgv:@"-initrd"];
                     [self pushArgv:fullPathURL.path];
                 }
                 break;
             }
             case UTMDiskImageTypeDTB: {
-                if (!hasImage) {
+                if (hasImage) {
                     [self pushArgv:@"-dtb"];
                     [self pushArgv:fullPathURL.path];
                 }
@@ -261,7 +261,7 @@ static size_t hostCpuCount(void) {
         }
         for (NSUInteger i = 0; i < [self.configuration countPortForwards]; i++) {
             UTMConfigurationPortForward *portForward = [self.configuration portForwardForIndex:i];
-            [netstr appendFormat:@",hostfwd=%@:%@:%ld-%@:%ld", portForward.protocol, portForward.hostAddress, portForward.hostPort, portForward.guestAddress, portForward.guestPort];
+            [netstr appendFormat:@",hostfwd=%@:%@:%@-%@:%@", portForward.protocol, portForward.hostAddress, portForward.hostPort, portForward.guestAddress, portForward.guestPort];
         }
         [self pushArgv:netstr];
     } else {

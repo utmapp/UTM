@@ -35,7 +35,7 @@ The recommended way to obtain the dependencies is to use the built artifacts fro
 If you want to build the dependencies yourself, it is highly recommended that you start with a fresh macOS VM. This is because some of the dependencies attempt to use `/usr/local/lib` even though the architecture does not match. Certain installed libraries like `libusb` and `gawk` will break the build.
 
 1. Install Xcode command line and the following build prerequisites
-    `brew install bison pkg-config gettext glib libgpg-error nasm`
+    `brew install bison pkg-config gettext glib libgpg-error nasm make meson`
    Make sure to add `bison` to your `$PATH` environment!
 2. `git submodule update --init --recursive` if you haven't already
 3. Run `./scripts/build_dependencies.sh` to start the build. If building for the simulator, run `./scripts/build_dependencies.sh -p ios -a x86_64` instead.

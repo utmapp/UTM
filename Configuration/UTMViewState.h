@@ -30,6 +30,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) BOOL showToolbar;
 @property (nonatomic, assign) BOOL showKeyboard;
 @property (nonatomic, assign) BOOL suspended;
+@property (nonatomic, assign) BOOL deleted;
 @property (nonatomic, copy, nullable) NSData *sharedDirectory;
 @property (nonatomic, copy, nullable) NSString *sharedDirectoryPath;
 

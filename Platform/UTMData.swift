@@ -204,6 +204,7 @@ class UTMData: ObservableObject {
             if vm == self.selectedVM {
                 self.selectedVM = nil
             }
+            vm.viewState.deleted = true // alert views to update
         }
     }
     
@@ -280,6 +281,9 @@ class UTMData: ObservableObject {
     }
     
     func importUTM(url: URL) throws {
+        _ = url.startAccessingSecurityScopedResource()
+        defer { url.stopAccessingSecurityScopedResource() }
+        
         logger.info("importing: \(url)")
         let fileBasePath = url.deletingLastPathComponent()
         let fileName = url.lastPathComponent
@@ -310,6 +314,18 @@ class UTMData: ObservableObject {
     // MARK: - Disk drive functions
     
     func importDrive(_ drive: URL, forConfig: UTMConfiguration, copy: Bool = true) throws {
+        _ = drive.startAccessingSecurityScopedResource()
+        defer { drive.stopAccessingSecurityScopedResource() }
+        
+        var isDir: ObjCBool = false
+        guard fileManager.fileExists(atPath: drive.path, isDirectory: &isDir), !isDir.boolValue else {
+            if drive.pathExtension == "utm" {
+                throw NSLocalizedString("You cannot import a .utm package as a drive. Did you mean to open the package with UTM?", comment: "UTMData")
+            } else {
+                throw NSLocalizedString("You cannot import a directory as a drive.", comment: "UTMData")
+            }
+        }
+        
         let name = drive.lastPathComponent
         let imagesPath = forConfig.imagesPath
         let dstPath = imagesPath.appendingPathComponent(name)
@@ -373,16 +389,24 @@ class UTMData: ObservableObject {
         }
     }
     
-    func removeDrive(at: Int, forConfig: UTMConfiguration) throws {
-        let path = forConfig.driveImagePath(for: at)!
-        
-        if fileManager.fileExists(atPath: path) {
-            try fileManager.removeItem(atPath: path)
+    func removeDrive(at index: Int, for config: UTMConfiguration) throws {
+        if let name = config.driveImagePath(for: index) {
+            let path = config.imagesPath.appendingPathComponent(name);
+            if fileManager.fileExists(atPath: path.path) {
+                try fileManager.removeItem(at: path)
+            }
         }
         
         DispatchQueue.main.async {
-            forConfig.removeDrive(at: at)
+            config.removeDrive(at: index)
         }
+    }
+    
+    // MARK: - Networking
+    
+    func enableNetworking() {
+        let task = URLSession.shared.dataTask(with: URL(string: "http://captive.apple.com")!)
+        task.resume()
     }
     
     // MARK: - Helper functions

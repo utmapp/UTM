@@ -32,8 +32,7 @@ struct ContentView: View {
             List {
                 ForEach(data.virtualMachines) { vm in
                     NavigationLink(
-                        destination: VMDetailsView(vm: vm)
-                            .overlay(BusyOverlay()),
+                        destination: VMDetailsView(vm: vm),
                         tag: vm,
                         selection: $data.selectedVM,
                         label: { VMCardView(vm: vm) })
@@ -59,11 +58,11 @@ struct ContentView: View {
                     }
             })
             VMPlaceholderView(createNewVMPresented: $newVMScratchPresented)
-                .overlay(BusyOverlay())
         }.disabled(data.busy)
         .onOpenURL(perform: importUTM)
         .onAppear {
             data.refresh()
+            data.enableNetworking()
             IQKeyboardManager.shared.enable = true
             if !Main.jitAvailable {
                 jitAlertPresented.toggle()
@@ -72,6 +71,7 @@ struct ContentView: View {
         .alert(isPresented: $jitAlertPresented, content: {
             Alert(title: Text("Your version of iOS does not support running VMs while unmodified. You must either run UTM while jailbroken or with a remote debugger attached."))
         })
+        .overlay(BusyOverlay())
     }
     
     private var newButton: some View {

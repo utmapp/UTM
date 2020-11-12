@@ -16,7 +16,7 @@
 
 import Logging
 
-let logger = Logger(label: "com.osy86.UTM")
+let logger = Logger(label: "com.utmapp.UTM")
 
 @main
 class Main {
@@ -24,9 +24,14 @@ class Main {
     
     static func main() {
         setupLogging()
+        registerDefaultsFromSettingsBundle()
         // check if we have jailbreak
         if jb_has_jit_entitlement() {
             logger.info("JIT: found entitlement")
+        } else if jb_has_debugger_attached() {
+            logger.info("JIT: debugger attached")
+        } else if jb_has_cs_execseg_allow_unsigned() {
+            logger.info("JIT: CS_EXECSEG_ALLOW_UNSIGNED set")
         } else if jb_enable_ptrace_hack() {
             logger.info("JIT: ptrace() hack supported")
         } else {
@@ -50,6 +55,30 @@ class Main {
                 UTMLoggingSwift(label: label),
                 StreamLogHandler.standardOutput(label: label)
             ])
+        }
+    }
+    
+    // https://stackoverflow.com/a/44675628
+    static private func registerDefaultsFromSettingsBundle() {
+        let userDefaults = UserDefaults.standard
+
+        if let settingsURL = Bundle.main.url(forResource: "Root", withExtension: "plist", subdirectory: "Settings.bundle"),
+            let settings = NSDictionary(contentsOf: settingsURL),
+            let preferences = settings["PreferenceSpecifiers"] as? [NSDictionary] {
+
+            var defaultsToRegister = [String: AnyObject]()
+            for prefSpecification in preferences {
+                if let key = prefSpecification["Key"] as? String,
+                    let value = prefSpecification["DefaultValue"] {
+
+                    defaultsToRegister[key] = value as AnyObject
+                    logger.debug("registerDefaultsFromSettingsBundle: (\(key), \(value)) \(type(of: value))")
+                }
+            }
+
+            userDefaults.register(defaults: defaultsToRegister)
+        } else {
+            logger.debug("registerDefaultsFromSettingsBundle: Could not find Settings.bundle")
         }
     }
 }

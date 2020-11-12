@@ -21,9 +21,6 @@ jobs:
       matrix:
         arch: [arm64, x86_64]
         platform: [ios, macos]
-        exclude:
-          - platform: macos
-            arch: arm64 # not ready yet!
     steps:
       - name: Checkout
         uses: actions/checkout@v1
@@ -31,11 +28,7 @@ jobs:
           submodules: recursive
       - name: Setup Xcode
         shell: bash
-        run: sudo xcode-select -switch /Applications/Xcode_12.app
-      - name: Setup Xcode (macOS)
-        if: matrix.platform == 'macos' # TODO: remove this hack when Xcode is fixed
-        shell: bash
-        run: sudo xcode-select -switch /Applications/Xcode_12_beta.app
+        run: sudo xcode-select -switch /Applications/Xcode_12.2.app
       - name: Cache Sysroot
         id: cache-sysroot
         uses: actions/cache@v1
@@ -50,7 +43,7 @@ jobs:
       - name: Build Sysroot
         if: steps.cache-sysroot.outputs.cache-hit != 'true'
         run: |
-          brew install bison pkg-config nasm
+          brew install bison pkg-config nasm make meson
           rm -f /usr/local/lib/pkgconfig/*.pc
           ./scripts/build_dependencies.sh -p ${{ matrix.platform }} -a ${{ matrix.arch }}
       - name: Compress Sysroot
@@ -71,8 +64,61 @@ jobs:
         with:
           name: UTM-${{ matrix.platform }}-${{ matrix.arch }}
           path: build-utm
-  package:
-    name: Package
+  build-universal:
+    name: Build UTM (macOS Universal)
+    runs-on: macos-latest
+    needs: build
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+        with:
+          submodules: recursive
+      - name: Cache Sysroot
+        id: cache-sysroot
+        uses: actions/cache@v1
+        with:
+          path: sysroot-macOS-arm64_x86_64
+          key: macos-universal-${{ hashFiles('scripts/build_dependencies.sh') }}-${{ hashFiles('patches/**') }}
+      - name: Download Sysroot (arm64)
+        if: steps.cache-sysroot.outputs.cache-hit != 'true'
+        uses: actions/download-artifact@v1
+        with:
+          name: Sysroot-macos-arm64
+      - name: Download Sysroot (x86_64)
+        if: steps.cache-sysroot.outputs.cache-hit != 'true'
+        uses: actions/download-artifact@v1
+        with:
+          name: Sysroot-macos-x86_64
+      - name: Pack Universal Sysroot
+        if: steps.cache-sysroot.outputs.cache-hit != 'true'
+        run: |
+          tar xf Sysroot-macos-arm64/sysroot.tgz
+          tar xf Sysroot-macos-x86_64/sysroot.tgz
+          ./scripts/pack_dependencies.sh . macos arm64 x86_64
+      - name: Compress Sysroot
+        if: steps.cache-sysroot.outputs.cache-hit != 'true'
+        run: |
+          rm -rf sysroot_tar
+          mkdir sysroot_tar
+          tar cf sysroot_tar/sysroot.tgz sysroot-macOS-arm64_x86_64
+      - name: Upload Sysroot
+        if: steps.cache-sysroot.outputs.cache-hit != 'true'
+        uses: actions/upload-artifact@v1
+        with:
+          name: Sysroot-macos-universal
+          path: sysroot_tar
+      - name: Setup Xcode
+        shell: bash
+        run: sudo xcode-select -switch /Applications/Xcode_12.2.app
+      - name: Build UTM
+        run: ./scripts/build_utm.sh -p macos -a "arm64 x86_64" -o build-utm/UTM
+      - name: Upload UTM
+        uses: actions/upload-artifact@v1
+        with:
+          name: UTM-macos-universal
+          path: build-utm
+  package-ios:
+    name: Package (iOS)
     runs-on: macos-latest
     needs: build
     if: github.event_name == 'release'
@@ -106,3 +152,28 @@ jobs:
           token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
           repository: ${{ secrets.DISPATCH_REPO_NAME }}
           event-type: new-release
+  package-mac:
+    name: Package (macOS)
+    runs-on: macos-latest
+    needs: build-universal
+    if: github.event_name == 'release'
+    steps:
+      - name: Download Artifact
+        uses: actions/download-artifact@v1
+        with:
+          name: UTM-macos-universal
+      - name: Fixup Permissions
+        run: find UTM-macos-universal/UTM.xcarchive -type f \( -path '*/Contents/MacOS/*' -or -path '*/Frameworks/*.dylib' \) -exec chmod +x \{\} \;
+      - name: Install create-dmg
+        run: brew install create-dmg
+      - name: Create DMG
+        run: APPLICATION_LINK=1 create-dmg --volname "UTM" UTM.dmg UTM-macos-universal/UTM.xcarchive/Products/Applications/
+      - name: Upload Release Asset
+        uses: actions/upload-release-asset@v1.0.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: UTM.dmg
+          asset_name: UTM.dmg
+          asset_content_type: application/octet-stream

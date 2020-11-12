@@ -37,37 +37,50 @@ struct VMDetailsView: View {
     }
     
     var body: some View {
-        ScrollView {
-            Screenshot(vm: vm, large: regularScreenSizeClass)
-            let notes = vm.configuration.notes ?? ""
-            if regularScreenSizeClass && !notes.isEmpty {
-                HStack(alignment: .top) {
-                    Details(config: vm.configuration, sizeLabel: sizeLabel)
-                        .padding()
-                        .frame(maxWidth: .infinity)
-                    Text(notes)
-                        .font(.body)
-                        .padding()
-                        .frame(maxWidth: .infinity)
+        if vm.viewState.deleted {
+            VStack {
+                Spacer()
+                HStack {
+                    Spacer()
+                    Text("This virtual machine has been deleted.")
+                        .font(.headline)
+                    Spacer()
                 }
-                VMRemovableDrivesView(vm: vm)
-                    .padding([.leading, .trailing, .bottom])
-            } else {
-                VStack {
-                    Details(config: vm.configuration, sizeLabel: sizeLabel)
-                    if !notes.isEmpty {
+                Spacer()
+            }
+        } else {
+            ScrollView {
+                Screenshot(vm: vm, large: regularScreenSizeClass)
+                let notes = vm.configuration.notes ?? ""
+                if regularScreenSizeClass && !notes.isEmpty {
+                    HStack(alignment: .top) {
+                        Details(config: vm.configuration, sessionConfig: vm.viewState, sizeLabel: sizeLabel)
+                            .padding()
+                            .frame(maxWidth: .infinity)
                         Text(notes)
                             .font(.body)
+                            .padding()
+                            .frame(maxWidth: .infinity)
                     }
                     VMRemovableDrivesView(vm: vm)
-                }.padding([.leading, .trailing, .bottom])
+                        .padding([.leading, .trailing, .bottom])
+                } else {
+                    VStack {
+                        Details(config: vm.configuration, sessionConfig: vm.viewState, sizeLabel: sizeLabel)
+                        if !notes.isEmpty {
+                            Text(notes)
+                                .font(.body)
+                        }
+                        VMRemovableDrivesView(vm: vm)
+                    }.padding([.leading, .trailing, .bottom])
+                }
+            }.labelStyle(DetailsLabelStyle())
+            .navigationTitle(vm.configuration.name)
+            .modifier(VMToolbarModifier(vm: vm, bottom: !regularScreenSizeClass))
+            .sheet(isPresented: $data.showSettingsModal) {
+                VMSettingsView(vm: vm, config: vm.configuration)
+                    .environmentObject(data)
             }
-        }.labelStyle(DetailsLabelStyle())
-        .navigationTitle(vm.configuration.name)
-        .modifier(VMToolbarModifier(vm: vm, bottom: !regularScreenSizeClass))
-        .sheet(isPresented: $data.showSettingsModal) {
-            VMSettingsView(vm: vm, config: vm.configuration)
-                .environmentObject(data)
         }
     }
 }
@@ -109,11 +122,18 @@ struct Screenshot: View {
 @available(iOS 14, macOS 11, *)
 struct Details: View {
     @ObservedObject var config: UTMConfiguration
+    @ObservedObject var sessionConfig: UTMViewState
     let sizeLabel: String
     @EnvironmentObject private var data: UTMData
     
     var body: some View {
         VStack {
+            HStack {
+                Label("Status", systemImage: "info.circle")
+                Spacer()
+                Text(sessionConfig.suspended ? "Suspended" : "Not running")
+                    .foregroundColor(.secondary)
+            }
             HStack {
                 Label("Architecture", systemImage: "cpu")
                 Spacer()

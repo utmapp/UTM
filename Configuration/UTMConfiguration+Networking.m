@@ -196,9 +196,9 @@ static const NSString *const kUTMConfigNetworkPortForwardGuestPortKey = @"GuestP
         portForward = [[UTMConfigurationPortForward alloc] init];
         portForward.protocol = dict[kUTMConfigNetworkPortForwardProtocolKey];
         portForward.hostAddress = dict[kUTMConfigNetworkPortForwardHostAddressKey];
-        portForward.hostPort = [dict[kUTMConfigNetworkPortForwardHostPortKey] integerValue];
+        portForward.hostPort = dict[kUTMConfigNetworkPortForwardHostPortKey];
         portForward.guestAddress = dict[kUTMConfigNetworkPortForwardGuestAddressKey];
-        portForward.guestPort = [dict[kUTMConfigNetworkPortForwardGuestPortKey] integerValue];
+        portForward.guestPort = dict[kUTMConfigNetworkPortForwardGuestPortKey];
     }
     return portForward;
 }
@@ -210,9 +210,9 @@ static const NSString *const kUTMConfigNetworkPortForwardGuestPortKey = @"GuestP
     NSMutableDictionary *dict = [NSMutableDictionary dictionary];
     dict[kUTMConfigNetworkPortForwardProtocolKey] = argument.protocol;
     dict[kUTMConfigNetworkPortForwardHostAddressKey] = argument.hostAddress;
-    dict[kUTMConfigNetworkPortForwardHostPortKey] = @(argument.hostPort);
+    dict[kUTMConfigNetworkPortForwardHostPortKey] = argument.hostPort;
     dict[kUTMConfigNetworkPortForwardGuestAddressKey] = argument.guestAddress;
-    dict[kUTMConfigNetworkPortForwardGuestPortKey] = @(argument.guestPort);
+    dict[kUTMConfigNetworkPortForwardGuestPortKey] = argument.guestPort;
     [self propertyWillChange];
     self.rootDict[kUTMConfigNetworkingKey][kUTMConfigNetworkPortForwardKey][index] = dict;
 }

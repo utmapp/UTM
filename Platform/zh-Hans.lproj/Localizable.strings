@@ -8,7 +8,7 @@
 "Additional Settings" = "附加设置";
 
 /* No comment provided by engineer. */
-"Advanced: Bypass configuration and manually specify arguments" = "高级：绕过配置并手动指定参数";
+"Advanced: Bypass configuration and manually specify arguments" = "高级:手动指定参数";
 
 /* VMConfigSystemView */
 "Allocating too much memory will crash the VM. Your device has %llu MB of memory and the estimated usage is %llu MB." = "设置过多的内存会停止VM运行。你的设备拥有 %1$llu MB 的内存，估计使用量是 %2$llu MB。";
@@ -17,10 +17,10 @@
 "Always use native (HiDPI) resolution" = "始终使用本机（HiDPI）分辨率";
 
 /* VMDisplayWindowController */
-"An internal error has occured." = "发生内部错误。";
+"An internal error has occured." = "发生未知错误。";
 
 /* VMDisplayViewController */
-"An internal error has occured. UTM will terminate." = "发生了一个内部错误。 UTM即将退出。";
+"An internal error has occured. UTM will terminate." = "发生未知错误。 UTM即将退出...";
 
 /* No comment provided by engineer. */
 "Another Tab" = "另一个选项";
@@ -148,13 +148,13 @@
 "DHCP Host" = "DHCP服务器";
 
 /* No comment provided by engineer. */
-"DHCP Start" = "DHCP开始";
+"DHCP Start" = "起始DHCP";
 
 /* VMConfigDirectoryPickerViewController */
 "Directory Name" = "目录名称";
 
 /* VMDisplayTerminalViewController */
-"Disable this bar in Settings -> General -> Keyboards -> Shortcuts" = "在 设置->通用->键盘->快捷键 中禁用此栏";
+"Disable this bar in Settings -> General -> Keyboards -> Shortcuts" = "在 设置 -> 通用 -> 键盘 -> 快捷键 中禁用此栏";
 
 /* VMConfigDriveCreateViewController */
 "Disk creation failed." = "磁盘镜像创建失败";
@@ -166,7 +166,7 @@
 "DNS Search Domains" = "DNS搜索域";
 
 /* No comment provided by engineer. */
-"DNS Server" = "DNS服务器";
+"DNS Server" = "DNS服务器(IPv4)";
 
 /* No comment provided by engineer. */
 "DNS Server (IPv6)" = "DNS服务器(IPv6)";
@@ -194,13 +194,13 @@
 "Emulated Network Card" = "模拟网卡";
 
 /* No comment provided by engineer. */
-"Enable Clipboard Sharing" = "启用剪贴板共享";
+"Enable Clipboard Sharing" = "剪贴板共享";
 
 /* No comment provided by engineer. */
-"Enable Directory Sharing" = "启用目录共享";
+"Enable Directory Sharing" = "目录共享";
 
 /* No comment provided by engineer. */
-"Enabled" = "已启用";
+"Enabled" = "启用";
 
 /* VMDisplayWindowController */
 "Error" = "错误";
@@ -215,25 +215,25 @@
 "Failed create bookmark." = "创建书签失败。";
 
 /* UTMVirtualMachine+Drives */
-"Failed to access drive image path." = "无法访问驱动器映像路径。";
+"Failed to access drive image path." = "无法访问驱动器映像路径";
 
 /* VMConfigInfoView */
-"Failed to check name." = "无法检查名称。";
+"Failed to check name." = "无法检查名称";
 
 /* UTMData */
-"Failed to clone VM." = "无法复制VM。";
+"Failed to clone VM." = "无法复制VM";
 
 /* UTMSpiceIO */
-"Failed to connect to SPICE server." = "无法连接到SPICE服务器。";
+"Failed to connect to SPICE server." = "无法连接到SPICE服务器";
 
 /* VMRemovableDrivesViewController */
-"Failed to get VM object." = "无法获取VM对象。";
+"Failed to get VM object." = "无法获取VM对象";
 
 /* UTMVirtualMachine */
 "Failed to load plist" = "无法加载plist";
 
 /* UTMData */
-"Failed to parse imported VM." = "无法分析导入的VM。";
+"Failed to parse imported VM." = "无法解析导入的VM。";
 
 /* VMDisplayViewController */
 "Failed to save VM state. Do you have at least one read-write drive attached that supports snapshots?" = "保存虚拟机状态失败。 您是否装载了至少一个支持快照的读写驱动器？";
@@ -257,7 +257,7 @@
 "Full Graphics" = "完整图形";
 
 /* No comment provided by engineer. */
-"Gesture and Cursor Settings" = "完整的图形几何图形和光标设置";
+"Gesture and Cursor Settings" = "更多图形和光标设置";
 
 /* No comment provided by engineer. */
 "Go to Gallery" = "转到图库";
@@ -311,7 +311,7 @@
 "Icon" = "图标";
 
 /* No comment provided by engineer. */
-"Image Type" = "图标格式";
+"Image Type" = "格式";
 
 /* Import button */
 "Import" = "导入";
@@ -320,7 +320,7 @@
 "Importing %@..." = "导入 %@...";
 
 /* No comment provided by engineer. */
-"Interface" = "界面";
+"Interface" = "接口";
 
 /* UTMQemu */
 "Internal error has occurred." = "发生内部错误";
@@ -413,7 +413,7 @@
 "Moving %@..." = "删除 %@...";
 
 /* Clone VM name prompt title */
-"Name" = "名字";
+"Name" = "名称";
 
 /* VMConfigInfoView */
 "Name is an invalid filename." = "名称是无效的文件名。";
@@ -463,10 +463,10 @@
 "None" = "空";
 
 /* No comment provided by engineer. */
-"Note: select the path to share from the main screen." = "注意：从主屏幕选择要共享的路径。";
+"Note: select the path to share from the main screen." = "注意：请从主屏幕选取文件共享的路径。";
 
 /* No comment provided by engineer. */
-"Notes" = "注意";
+"Notes" = "备注";
 
 /* OK button
    OK Button */
@@ -479,7 +479,7 @@
 "Play" = "继续";
 
 /* No comment provided by engineer. */
-"Port Forward" = "前进";
+"Port Forward" = "更多";
 
 /* No comment provided by engineer. */
 "Protocol" = "协议";
@@ -494,7 +494,7 @@
 "QEMU exited from an error: %@" = "QEMU遇到错误退出: %@";
 
 /* No comment provided by engineer. */
-"QEMU Machine Properties" = "QEMU机器属性";
+"QEMU Machine Properties" = "QEMU属性";
 
 /* VMDisplayWindowController */
 "Querying drives status..." = "正在查询驱动器状态...";
@@ -503,10 +503,10 @@
 "Read Only" = "只读";
 
 /* No comment provided by engineer. */
-"Removable" = "可移除";
+"Removable" = "可扩展";
 
 /* No comment provided by engineer. */
-"Requires SPICE guest agent tools to be installed." = "需要安装SPICE来宾代理工具。";
+"Requires SPICE guest agent tools to be installed." = "需要安装SPICE代理工具。";
 
 /* No comment provided by engineer. */
 "Requires SPICE guest agent tools to be installed. Retina Mode is recommended only if the guest OS supports HiDPI." = "需要安装SPICE来宾代理工具。只有当来宾操作系统支持HiDPI时，才建议使用Retina模式。";
@@ -548,7 +548,7 @@
 "Selected:" = "选择:";
 
 /* No comment provided by engineer. */
-"Set to 0 for default which is 1/4 of the allocated Memory size. This is in addition to the host memory!" = "默认设置为0，即分配内存大小的1/4。这是除了主机内存！";
+"Set to 0 for default which is 1/4 of the allocated Memory size. This is in addition to the host memory!" = "默认设置为0，即分配内存大小的1/4。主机内存除外。";
 
 /* No comment provided by engineer. */
 "Set to 0 to use maximum supported CPUs. Force multicore might result in incorrect emulation." = "设置为0以使用最大支持的CPU。强制多核可能导致不正确的模拟。";
@@ -661,4 +661,61 @@
 "You must terminate the running VM before you can import a new VM." = "必须先终止正在运行的虚拟机，然后才能导入新的虚拟机。";
 
 /* No comment provided by engineer. */
-"Your version of iOS does not support running VMs while unmodified. You must either run UTM while jailbroken or with a remote debugger attached." = "您的iOS版本不支持在未修改的情况下运行VMs。您必须在越狱时运行UTM，或者附加远程调试器。";
+"Your version of iOS does not support running VMs while unmodified. You must either run UTM while jailbroken or with a remote debugger attached." = "您的iOS版本不支持在未越狱的情况下运行虚拟机。您必须在越狱时运行UTM，或者附加远程调试器。";
+
+/* No comment provided by engineer. */
+"Information" = "信息";
+
+/* No comment provided by engineer. */
+"Settings" = "设置";
+
+/* No comment provided by engineer. */
+"QEMU" = "QEMU";
+
+/* No comment provided by engineer. */
+"Drives" = "驱动器";
+
+/* No comment provided by engineer. */
+"Display" = "显示";
+
+/* No comment provided by engineer. */
+"Input" = "输入";
+
+/* No comment provided by engineer. */
+"Network" = "网络";
+
+/* No comment provided by engineer. */
+"Sound" = "声音";
+
+/* No comment provided by engineer. */
+"Sharing" = "共享";
+
+/* No comment provided by engineer. */
+"Create a New Virtual Machine" = "新建虚拟机";
+
+/* No comment provided by engineer. */
+"User Guide" = "使用说明 ";
+
+/* No comment provided by engineer. */
+"Browse UTM Gallery" = "浏览UTM库";
+
+/* No comment provided by engineer. */
+"Generic" = "默认";
+
+/* No comment provided by engineer. */
+"Operating System" = "操作系统图标";
+
+/* No comment provided by engineer. */
+"Custom" = "自定义";
+
+/* No comment provided by engineer. */
+"Machine" = "处理器";
+
+/* No comment provided by engineer. */
+"Edit" = "编辑";
+
+/* No comment provided by engineer. */
+"Run" = "运行";
+
+/* No comment provided by engineer. */
+"None" = "无";

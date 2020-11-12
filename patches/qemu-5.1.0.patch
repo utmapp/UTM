@@ -990,7 +990,7 @@ index 2d83013633..039c66698e 100644
 +                        &mirror,
 +                        size,
 +                        0,
-+                        VM_FLAGS_ANYWHERE | VM_FLAGS_RANDOM_ADDR,
++                        VM_FLAGS_ANYWHERE,
 +                        mach_task_self(),
 +                        (mach_vm_address_t)base,
 +                        false,
@@ -3274,43 +3274,6 @@ index 3cf6017e2b..09467b480d 100644
 +{
 +    tb_exec_change(false);
 +}
-diff --git a/configure b/configure
-index 09faa69a54..44d1f3644d 100755
---- a/configure
-+++ b/configure
-@@ -6588,6 +6588,21 @@ EOF
-     fi
- fi
- 
-+##########################################
-+# check for Apple Silicon JIT function
-+
-+if [ "$darwin" = "yes" ] ; then
-+  cat > $TMPC << EOF
-+#include <pthread.h>
-+int main() { pthread_jit_write_protect_np(0); return 0; }
-+EOF
-+  if ! compile_prog ""; then
-+    have_pthread_jit_protect='no'
-+  else
-+    have_pthread_jit_protect='yes'
-+  fi
-+fi
-+
- 
- ##########################################
- # End of CC checks
-@@ -8021,6 +8036,10 @@ if test "$secret_keyring" = "yes" ; then
-   fi
- fi
- 
-+if test "$have_pthread_jit_protect" = "yes" ; then
-+  echo "HAVE_PTHREAD_JIT_PROTECT=y" >> $config_host_mak
-+fi
-+
- if test "$tcg_interpreter" = "yes"; then
-   QEMU_INCLUDES="-iquote \$(SRC_PATH)/tcg/tci $QEMU_INCLUDES"
- elif test "$ARCH" = "sparc64" ; then
 diff --git a/include/exec/exec-all.h b/include/exec/exec-all.h
 index 8d3a52fb81..95895d5d2c 100644
 --- a/include/exec/exec-all.h
@@ -5995,3 +5958,14 @@ index b0194cb..eb57116 100644
 -- 
 2.24.1 (Apple Git-126)
 
+--- a/configure	2020-11-03 22:13:16.000000000 -0800
++++ b/configure	2020-11-03 22:13:43.000000000 -0800
+@@ -6270,7 +6270,7 @@
+ #include <Hypervisor/hv.h>
+ int main() { return 0;}
+ EOF
+-  if ! compile_object ""; then
++  if ! compile_object "" || test "$cpu" = "aarch64"; then
+     hvf='no'
+   else
+     hvf='yes'

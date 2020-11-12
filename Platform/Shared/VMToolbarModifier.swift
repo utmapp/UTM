@@ -21,7 +21,9 @@ import SwiftUI
 struct VMToolbarModifier: ViewModifier {
     let vm: UTMVirtualMachine
     let bottom: Bool
+    @ObservedObject private var sessionConfig: UTMViewState
     @State private var showSharePopup = false
+    @State private var confirmAction: ConfirmAction?
     @EnvironmentObject private var data: UTMData
     @Environment(\.presentationMode) private var presentationMode: Binding<PresentationMode>
     
@@ -38,13 +40,6 @@ struct VMToolbarModifier: ViewModifier {
             return .navigationBarTrailing
         }
     }
-    var spacerPlacement: ToolbarItemPlacement {
-        if bottom {
-            return .bottomBar
-        } else {
-            return .status // FIXME: hack around SwiftUI bug
-        }
-    }
     var padding: CGFloat {
         if bottom {
             return 0
@@ -54,46 +49,40 @@ struct VMToolbarModifier: ViewModifier {
     }
     #endif
     
+    init(vm: UTMVirtualMachine, bottom: Bool) {
+        self.vm = vm
+        self.bottom = bottom
+        self.sessionConfig = vm.viewState
+    }
+    
     func body(content: Content) -> some View {
         content.toolbar {
-            ToolbarItem(placement: buttonPlacement) {
+            ToolbarItemGroup(placement: buttonPlacement) {
                 Button {
-                    data.busyWork {
-                        try data.delete(vm: vm)
-                    }
-                    data.selectedVM = nil
-                    presentationMode.wrappedValue.dismiss()
+                    confirmAction = .confirmDeleteVM
                 } label: {
                     Label("Delete", systemImage: "trash")
                         .foregroundColor(destructiveButtonColor)
                         .labelStyle(IconOnlyLabelStyle())
                 }.help("Delete selected VM")
                 .padding(.leading, padding)
-            }
-            #if !os(macOS)
-            ToolbarItem(placement: spacerPlacement) {
-                Spacer()
-            }
-            #endif
-            ToolbarItem(placement: buttonPlacement) {
+                #if !os(macOS)
+                if bottom {
+                    Spacer()
+                }
+                #endif
                 Button {
-                    data.busyWork {
-                        try data.clone(vm: vm)
-                    }
-                    data.selectedVM = nil
-                    presentationMode.wrappedValue.dismiss()
+                    confirmAction = .confirmCloneVM
                 } label: {
                     Label("Clone", systemImage: "doc.on.doc")
                         .labelStyle(IconOnlyLabelStyle())
                 }.help("Clone selected VM")
                 .padding(.leading, padding)
-            }
-            #if !os(macOS)
-            ToolbarItem(placement: spacerPlacement) {
-                Spacer()
-            }
-            #endif
-            ToolbarItem(placement: buttonPlacement) {
+                #if !os(macOS)
+                if bottom {
+                    Spacer()
+                }
+                #endif
                 Button {
                     showSharePopup.toggle()
                 } label: {
@@ -104,35 +93,45 @@ struct VMToolbarModifier: ViewModifier {
                 .modifier(VMShareFileModifier(isPresented: $showSharePopup) {
                     [vm.path!]
                 })
-            }
-            #if !os(macOS)
-            ToolbarItem(placement: spacerPlacement) {
-                Spacer()
-            }
-            #endif
-            ToolbarItem(placement: buttonPlacement) {
-                Button {
-                    data.run(vm: data.selectedVM!)
-                } label: {
-                    Label("Run", systemImage: "play.fill")
-                        .labelStyle(IconOnlyLabelStyle())
-                }.help("Run selected VM")
-                .padding(.leading, padding)
-            }
-            #if !os(macOS)
-            ToolbarItem(placement: spacerPlacement) {
-                Spacer()
-            }
-            #endif
-            ToolbarItem(placement: buttonPlacement) {
+                #if !os(macOS)
+                if bottom {
+                    Spacer()
+                }
+                #endif
+                if sessionConfig.suspended {
+                    Button {
+                        confirmAction = .confirmStopVM
+                    } label: {
+                        Label("Stop", systemImage: "stop.fill")
+                            .labelStyle(IconOnlyLabelStyle())
+                    }.help("Stop selected VM")
+                    .padding(.leading, padding)
+                } else {
+                    Button {
+                        data.run(vm: data.selectedVM!)
+                    } label: {
+                        Label("Run", systemImage: "play.fill")
+                            .labelStyle(IconOnlyLabelStyle())
+                    }.help("Run selected VM")
+                    .padding(.leading, padding)
+                }
+                #if !os(macOS)
+                if bottom {
+                    Spacer()
+                }
+                #endif
                 Button {
                     data.edit(vm: vm)
                 } label: {
                     Label("Edit", systemImage: "slider.horizontal.3")
                         .labelStyle(IconOnlyLabelStyle())
                 }.help("Edit selected VM")
+                .disabled(sessionConfig.suspended)
                 .padding(.leading, padding)
             }
         }
+        .modifier(VMConfirmActionModifier(vm: vm, confirmAction: $confirmAction) {
+            presentationMode.wrappedValue.dismiss()
+        })
     }
 }

@@ -103,7 +103,7 @@ struct VMConfigDrivesView: View {
     private func deleteDrives(offsets: IndexSet) {
         data.busyWork {
             for offset in offsets {
-                try data.removeDrive(at: offset, forConfig: config)
+                try data.removeDrive(at: offset, for: config)
             }
         }
     }

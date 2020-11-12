@@ -33,7 +33,7 @@ UTM是一个功能齐全的iOS虚拟机。简而言之，它允许你在iPhone�
 
 如果您想自己构建依赖项，强烈建议您从一个全新的macOS VM开始。这是因为一些依赖项尽管架构并不匹配，仍试图使用`/usr/local/lib`。某些已安装的库如`libusb`和`gawk`将破坏构建。
 1. 使用`brew`安装Xcode命令行和以下构建条件
-`brew install bison pkg-config gettext glib libgpg-error nasm`
+`brew install bison pkg-config gettext glib libgpg-error nasm make meson`
 并且请确保将“bison”添加到您的“$PATH”环境中!
 2. 如果你还没有clone子模块，运行以下命令
 `git submodule update --init --recursive` 

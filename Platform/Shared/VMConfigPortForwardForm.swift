@@ -34,8 +34,7 @@ struct VMConfigPortForwardForm: View {
             HStack {
                 Text("Guest Port")
                 Spacer()
-                TextField("1234", value: $configPort.guestPort, formatter: NumberFormatter())
-                    .keyboardType(.numberPad)
+                NumberTextField("1234", number: $configPort.guestPort)
             }
             HStack {
                 Text("Host Address")
@@ -46,8 +45,7 @@ struct VMConfigPortForwardForm: View {
             HStack {
                 Text("Host Port")
                 Spacer()
-                TextField("1234", value: $configPort.hostPort, formatter: NumberFormatter())
-                    .keyboardType(.numberPad)
+                NumberTextField("1234", number: $configPort.hostPort)
             }
         }
     }

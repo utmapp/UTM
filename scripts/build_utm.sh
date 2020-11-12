@@ -1,6 +1,11 @@
 #!/bin/sh
 set -e
 
+command -v realpath >/dev/null 2>&1 || realpath() {
+    [[ $1 = /* ]] && echo "$1" || echo "$PWD/${1#./}"
+}
+BASEDIR="$(dirname "$(realpath $0)")"
+
 usage () {
     echo "Usage: $(basename $0) [-p platform] [-a architecture] [-t targetversion] [-o output]"
     echo ""
@@ -64,14 +69,24 @@ ios )
         ;;
     esac
     PLATFORM_FAMILY_NAME="iOS"
+    CODESIGN_ARGS="CODE_SIGNING_ALLOWED=NO"
     ;;
 macos )
     SDK=macosx
     PLATFORM_FAMILY_NAME="macOS"
+    CODESIGN_ARGS=
     ;;
 * )
     usage
     ;;
 esac
 
-xcodebuild archive -archivePath "$OUTPUT" -scheme "$SCHEME" -sdk "$SDK" -arch "$ARCH" -configuration Release CODE_SIGNING_ALLOWED=NO
+ARCH_ARGS=$(echo $ARCH | xargs printf -- "-arch %s ")
+
+xcodebuild archive -archivePath "$OUTPUT" -scheme "$SCHEME" -sdk "$SDK" $ARCH_ARGS -configuration Release $CODESIGN_ARGS
+
+if [ "$PLATFORM" == "macos" ]; then
+    # we have to ad-hoc sign the QEMU binaries
+    echo "Signing QEMU binaries..."
+    find "$OUTPUT.xcarchive" -path '*/Contents/MacOS/qemu-*' -type f -exec codesign -s - -f --entitlements "$BASEDIR/../QEMUHelper/QEMUHelper.entitlements" --preserve-metadata=identifier,requirements,flags,runtime \{\} \;
+fi

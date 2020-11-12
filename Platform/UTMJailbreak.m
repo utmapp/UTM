@@ -77,7 +77,7 @@ static void *exception_handler(void *argument) {
     return NULL;
 }
 
-static bool am_i_being_debugged() {
+bool jb_has_debugger_attached(void) {
     int flags;
     return !csops(getpid(), CS_OPS_STATUS, &flags, sizeof(flags)) && flags & CS_DEBUGGED;
 }
@@ -165,19 +165,36 @@ static NSDictionary *app_entitlements(void) {
     return nil;
 }
 
-bool jb_has_jit_entitlement(void) {
+static NSDictionary *cached_app_entitlements(void) {
     static NSDictionary *entitlements = nil;
     if (!entitlements) {
         entitlements = app_entitlements();
     }
-    return [entitlements[@"dynamic-codesigning"] boolValue];
+    return entitlements;
+}
+
+bool jb_has_jit_entitlement(void) {
+    NSDictionary *entitlements = cached_app_entitlements();
+    return [entitlements[@"dynamic-codesigning"] boolValue] || [entitlements[@"com.apple.security.cs.allow-jit"] boolValue];
+}
+
+bool jb_has_cs_execseg_allow_unsigned(void) {
+    NSDictionary *entitlements = cached_app_entitlements();
+    if (@available(iOS 14.2, *)) {
+        // technically we need to check the Code Directory and make sure
+        // CS_EXECSEG_ALLOW_UNSIGNED is set but we assume that it is properly
+        // signed, which should reflect the get-task-allow entitlement
+        return [entitlements[@"get-task-allow"] boolValue];
+    } else {
+        return false;
+    }
 }
 
 bool jb_enable_ptrace_hack(void) {
 #if defined(NO_PTRACE_HACK)
     return false;
 #else
-    bool debugged = am_i_being_debugged();
+    bool debugged = jb_has_debugger_attached();
     
     // Thanks to this comment: https://news.ycombinator.com/item?id=18431524
     // We use this hack to allow mmap with PROT_EXEC (which usually requires the

@@ -47,10 +47,9 @@ struct VMConfigDisplayView: View {
                             Stepper(value: fontSizeObserver, in: 1...72) {
                                     Text("Font Size")
                             }
-                            TextField("", value: $config.consoleFontSize, formatter: NumberFormatter())
+                            NumberTextField("", number: $config.consoleFontSize)
                                 .frame(width: 50)
                                 .multilineTextAlignment(.trailing)
-                                .keyboardType(.numberPad)
                         }
                         Toggle(isOn: $config.consoleCursorBlink, label: {
                             Text("Blinking Cursor")

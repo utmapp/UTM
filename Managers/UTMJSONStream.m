@@ -42,7 +42,7 @@ enum ParserState {
     if (self) {
         self.host = host;
         self.port = port;
-        _streamQueue = dispatch_queue_create("com.osy86.UTM.JSONStream", NULL);
+        _streamQueue = dispatch_queue_create("com.utmapp.UTM.JSONStream", NULL);
     }
     return self;
 }
