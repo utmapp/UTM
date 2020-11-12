@@ -70,7 +70,10 @@ extern NSString *const kUTMErrorDomain;
 }
 
 - (BOOL)changeMediumForDrive:(UTMDrive *)drive url:(NSURL *)url error:(NSError * _Nullable __autoreleasing *)error {
-    NSData *bookmark = [url bookmarkDataWithOptions:0
+    // assume security scoped, it doesn't hurt even if the file is in the documents directory!
+    BOOL securityScoped = YES;
+    NSUInteger createOptions = securityScoped ? ( 1 << 11 ) : 0;
+    NSData *bookmark = [url bookmarkDataWithOptions:createOptions
                      includingResourceValuesForKeys:nil
                                       relativeToURL:nil
                                               error:error];
@@ -80,22 +83,22 @@ extern NSString *const kUTMErrorDomain;
         }
         return NO;
     }
-    if (![self checkSandboxAccess:url error:error]) {
-        return NO;
-    }
     [self.viewState setBookmark:bookmark path:url.path forRemovableDrive:drive.name persistent:NO];
     if (!self.qemu.isConnected) {
         return YES; // not ready yet
     } else {
-        return [self changeMediumForDriveInternal:drive bookmark:bookmark persistent:NO error:error];
+        if (securityScoped) {
+            [url startAccessingSecurityScopedResource];
+        }
+        return [self changeMediumForDriveInternal:drive bookmark:bookmark securityScoped:securityScoped persistent:NO error:error];
     }
 }
 
-- (BOOL)changeMediumForDriveInternal:(UTMDrive *)drive bookmark:(NSData *)bookmark persistent:(BOOL)persistent error:(NSError * _Nullable __autoreleasing *)error {
+- (BOOL)changeMediumForDriveInternal:(UTMDrive *)drive bookmark:(NSData *)bookmark securityScoped:(BOOL)securityScoped persistent:(BOOL)persistent error:(NSError * _Nullable __autoreleasing *)error {
     __block BOOL ret = NO;
     dispatch_semaphore_t sema = dispatch_semaphore_create(0);
     [self.system accessDataWithBookmark:bookmark
-                         securityScoped:persistent
+                         securityScoped:securityScoped
                              completion:^(BOOL success, NSData *newBookmark, NSString *path) {
         if (success) {
             [self.viewState setBookmark:newBookmark path:path forRemovableDrive:drive.name persistent:persistent];
@@ -125,7 +128,7 @@ extern NSString *const kUTMErrorDomain;
                 [self.viewState removeBookmarkForRemovableDrive:drive.name];
                 continue;
             }
-            if (![self changeMediumForDriveInternal:drive bookmark:bookmark persistent:persistent error:nil]) {
+            if (![self changeMediumForDriveInternal:drive bookmark:bookmark securityScoped:YES persistent:persistent error:nil]) {
                 UTMLog(@"failed to change %@ image to %@", drive.name, path);
             }
         }
