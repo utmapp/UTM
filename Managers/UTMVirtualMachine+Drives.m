@@ -135,15 +135,4 @@ extern NSString *const kUTMErrorDomain;
     }
 }
 
-- (BOOL)checkSandboxAccess:(NSURL *)url error:(NSError * _Nullable __autoreleasing *)error {
-    NSFileManager *fileManager = [NSFileManager defaultManager];
-    if (![fileManager fileExistsAtPath:url.path]) {
-        if (error) {
-            *error = [NSError errorWithDomain:kUTMErrorDomain code:-1 userInfo:@{NSLocalizedDescriptionKey: NSLocalizedString(@"This version of UTM does not allow file access outside of UTM's Documents directory.", "UTMVirtualMachine+Drives")}];
-        }
-        return NO;
-    }
-    return YES;
-}
-
 @end
