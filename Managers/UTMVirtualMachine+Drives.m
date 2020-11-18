@@ -43,16 +43,23 @@ extern NSString *const kUTMErrorDomain;
         drive.interface = [self.configuration driveInterfaceTypeForIndex:i];
         drive.name = [NSString stringWithFormat:@"drive%lu", i];
         NSString *path = removableDrives[drive.name];
-        if (path) {
+        if ([self.configuration driveRemovableForIndex:i]) {
+            // removable drive
             if (path.length > 0) {
                 drive.status = UTMDriveStatusInserted;
                 drive.path = path;
             } else {
-                drive.status = UTMDriveStatusEjected;
+                path = [self.configuration driveImagePathForIndex:i];
+                if (path.length > 0) {
+                    drive.path = path;
+                    drive.status = UTMDriveStatusInserted;
+                } else {
+                    drive.path = @"";
+                    drive.status = UTMDriveStatusEjected;
+                }
             }
-        } else if ([self.configuration driveRemovableForIndex:i]) { // qemu not started yet
-            drive.status = UTMDriveStatusEjected;
         } else {
+            // fixed drive
             drive.status = UTMDriveStatusFixed;
             drive.path = [self.configuration driveImagePathForIndex:i];
         }
@@ -63,10 +70,18 @@ extern NSString *const kUTMErrorDomain;
 
 - (BOOL)ejectDrive:(UTMDrive *)drive force:(BOOL)force error:(NSError * _Nullable __autoreleasing *)error {
     [self.viewState removeBookmarkForRemovableDrive:drive.name];
-    if (!self.qemu.isConnected) {
-        return YES; // not ready yet
+    [self.configuration setImagePath:@"" forIndex:drive.index];
+    bool saved = [self saveUTMWithError:error];
+    if (!saved) {
+        return NO;
     }
-    return [self.qemu ejectDrive:drive.name force:force error:error];
+    if (self.qemu.isConnected) {
+        return [self.qemu ejectDrive:drive.name force:force error:error];
+    } else {
+        // not running
+        drive.status = UTMDriveStatusEjected;
+        return YES;
+    }
 }
 
 - (BOOL)changeMediumForDrive:(UTMDrive *)drive url:(NSURL *)url error:(NSError * _Nullable __autoreleasing *)error {
@@ -86,22 +101,31 @@ extern NSString *const kUTMErrorDomain;
         }
         return NO;
     }
-    [self.viewState setBookmark:bookmark path:url.path forRemovableDrive:drive.name persistent:NO];
+    // save configuration
+    [self.configuration setImagePath:url.path forIndex:drive.index];
+    bool saved = [self saveUTMWithError:error];
+    if (!saved) {
+        return NO;
+    }
     if (!self.qemu.isConnected) {
-        return YES; // not ready yet
+        [self.viewState setBookmark:bookmark path:url.path forRemovableDrive:drive.name];
+        return YES; // VM not running
     } else {
-        return [self changeMediumForDriveInternal:drive bookmark:bookmark securityScoped:securityScoped persistent:NO error:error];
+        bool ret = [self changeMediumForDriveInternal:drive bookmark:bookmark securityScoped:securityScoped error:error];
+        if (ret) {
+            [self.viewState setBookmark:bookmark path:url.path forRemovableDrive:drive.name];
+        }
+        return ret;
     }
 }
 
-- (BOOL)changeMediumForDriveInternal:(UTMDrive *)drive bookmark:(NSData *)bookmark securityScoped:(BOOL)securityScoped persistent:(BOOL)persistent error:(NSError * _Nullable __autoreleasing *)error {
+- (BOOL)changeMediumForDriveInternal:(UTMDrive *)drive bookmark:(NSData *)bookmark securityScoped:(BOOL)securityScoped error:(NSError * _Nullable __autoreleasing *)error {
     __block BOOL ret = NO;
     dispatch_semaphore_t sema = dispatch_semaphore_create(0);
     [self.system accessDataWithBookmark:bookmark
                          securityScoped:securityScoped
                              completion:^(BOOL success, NSData *newBookmark, NSString *path) {
         if (success) {
-            [self.viewState setBookmark:newBookmark path:path forRemovableDrive:drive.name persistent:persistent];
             [self.qemu changeMediumForDrive:drive.name path:path error:error];
         } else {
             if (error) {
@@ -118,8 +142,7 @@ extern NSString *const kUTMErrorDomain;
 - (void)restoreRemovableDrivesFromBookmarks {
     NSArray<UTMDrive *> *drives = self.drives;
     for (UTMDrive *drive in drives) {
-        BOOL persistent = NO;
-        NSData *bookmark = [self.viewState bookmarkForRemovableDrive:drive.name persistent:&persistent];
+        NSData *bookmark = [self.viewState bookmarkForRemovableDrive:drive.name];
         if (bookmark) {
             NSString *path = nil;
             UTMLog(@"found bookmark for %@", drive.name);
@@ -128,7 +151,7 @@ extern NSString *const kUTMErrorDomain;
                 [self.viewState removeBookmarkForRemovableDrive:drive.name];
                 continue;
             }
-            if (![self changeMediumForDriveInternal:drive bookmark:bookmark securityScoped:YES persistent:persistent error:nil]) {
+            if (![self changeMediumForDriveInternal:drive bookmark:bookmark securityScoped:YES error:nil]) {
                 UTMLog(@"failed to change %@ image to %@", drive.name, path);
             }
         }

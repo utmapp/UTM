@@ -39,9 +39,7 @@ const NSString *const kUTMViewStateRemovableDrivesPathKey = @"RemovableDrivesPat
 @implementation UTMViewState {
     NSMutableDictionary *_rootDict;
     NSMutableDictionary<NSString *, NSData *> *_removableDrives;
-    NSMutableDictionary<NSString *, NSData *> *_removableDrivesTemp;
     NSMutableDictionary<NSString *, NSString *> *_removableDrivesPath;
-    NSMutableDictionary<NSString *, NSString *> *_removableDrivesPathTemp;
     BOOL _deleted;
 }
 
@@ -160,17 +158,10 @@ const NSString *const kUTMViewStateRemovableDrivesPathKey = @"RemovableDrivesPat
 
 #pragma mark - Removable drives
 
-- (void)setBookmark:(NSData *)bookmark path:(NSString *)path forRemovableDrive:(NSString *)drive persistent:(BOOL)persistent {
+- (void)setBookmark:(NSData *)bookmark path:(NSString *)path forRemovableDrive:(NSString *)drive {
     [self propertyWillChange];
-    if (persistent) {
-        _removableDrives[drive] = bookmark;
-        _removableDrivesPath[drive] = path;
-        [_removableDrivesTemp removeObjectForKey:drive];
-        [_removableDrivesPathTemp removeObjectForKey:drive];
-    } else {
-        _removableDrivesTemp[drive] = bookmark;
-        _removableDrivesPathTemp[drive] = path;
-    }
+    _removableDrives[drive] = bookmark;
+    _removableDrivesPath[drive] = path;
 }
 
 - (void)removeBookmarkForRemovableDrive:(NSString *)drive {
@@ -179,30 +170,14 @@ const NSString *const kUTMViewStateRemovableDrivesPathKey = @"RemovableDrivesPat
         [_removableDrives removeObjectForKey:drive];
         [_removableDrivesPath removeObjectForKey:drive];
     }
-    if ([_removableDrivesTemp valueForKey:drive]) {
-        [_removableDrivesTemp removeObjectForKey:drive];
-        [_removableDrivesPathTemp removeObjectForKey:drive];
-    }
 }
 
-- (nullable NSData *)bookmarkForRemovableDrive:(NSString *)drive persistent:(out BOOL *)persistent {
-    NSData *temp = _removableDrivesTemp[drive];
-    if (temp) {
-        *persistent = NO;
-        return temp;
-    } else {
-        *persistent = YES;
-        return _removableDrives[drive];
-    }
+- (nullable NSData *)bookmarkForRemovableDrive:(NSString *)drive {
+    return _removableDrives[drive];
 }
 
 - (nullable NSString *)pathForRemovableDrive:(NSString *)drive {
-    NSString *temp = _removableDrivesPathTemp[drive];
-    if (temp) {
-        return temp;
-    } else {
-        return _removableDrivesPath[drive];
-    }
+    return _removableDrivesPath[drive];
 }
 
 #pragma mark - Init
@@ -212,9 +187,7 @@ const NSString *const kUTMViewStateRemovableDrivesPathKey = @"RemovableDrivesPat
     if (self) {
         _rootDict = [NSMutableDictionary dictionary];
         _removableDrives = [NSMutableDictionary dictionary];
-        _removableDrivesTemp = [NSMutableDictionary dictionary];
         _removableDrivesPath = [NSMutableDictionary dictionary];
-        _removableDrivesPathTemp = [NSMutableDictionary dictionary];
         _rootDict[kUTMViewStateRemovableDrivesKey] = _removableDrives;
         _rootDict[kUTMViewStateRemovableDrivesPathKey] = _removableDrivesPath;
         self.displayScale = 1.0;
@@ -232,16 +205,18 @@ const NSString *const kUTMViewStateRemovableDrivesPathKey = @"RemovableDrivesPat
     self = [super init];
     if (self) {
         _rootDict = CFBridgingRelease(CFPropertyListCreateDeepCopy(kCFAllocatorDefault, (__bridge CFDictionaryRef)dictionary, kCFPropertyListMutableContainers));
-        _removableDrives = dictionary[kUTMViewStateRemovableDrivesKey];
-        _removableDrivesPath = dictionary[kUTMViewStateRemovableDrivesPathKey];
-        _removableDrivesTemp = [NSMutableDictionary dictionary];
-        _removableDrivesPathTemp = [NSMutableDictionary dictionary];
-        if (!_removableDrives) {
-            _removableDrives = [NSMutableDictionary dictionary];
+        _removableDrives = [NSMutableDictionary dictionary];
+        CFDictionaryRef storedDrives = (__bridge CFDictionaryRef)(dictionary[kUTMViewStateRemovableDrivesKey]);
+        if (storedDrives) {
+            [_removableDrives addEntriesFromDictionary:((__bridge NSDictionary<NSString *,NSData *> * _Nonnull)(storedDrives))];
+        } else {
             _rootDict[kUTMViewStateRemovableDrivesKey] = _removableDrives;
         }
-        if (!_removableDrivesPath) {
-            _removableDrivesPath = [NSMutableDictionary dictionary];
+        _removableDrivesPath = [NSMutableDictionary dictionary];
+        CFDictionaryRef storedDrivePaths = (__bridge CFDictionaryRef)(dictionary[kUTMViewStateRemovableDrivesPathKey]);
+        if (storedDrivePaths) {
+            [_removableDrivesPath addEntriesFromDictionary:((__bridge NSDictionary<NSString *,NSString *> * _Nonnull)(storedDrivePaths))];
+        } else {
             _rootDict[kUTMViewStateRemovableDrivesPathKey] = _removableDrivesPath;
         }
     }

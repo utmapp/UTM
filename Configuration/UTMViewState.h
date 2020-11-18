@@ -37,9 +37,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)init NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithDictionary:(NSDictionary *)dictionary NS_DESIGNATED_INITIALIZER;
 
-- (void)setBookmark:(NSData *)bookmark path:(NSString *)path forRemovableDrive:(NSString *)drive persistent:(BOOL)persistent;
+- (void)setBookmark:(NSData *)bookmark path:(NSString *)path forRemovableDrive:(NSString *)drive;
 - (void)removeBookmarkForRemovableDrive:(NSString *)drive;
-- (nullable NSData *)bookmarkForRemovableDrive:(NSString *)drive persistent:(out BOOL *)persistent;
+- (nullable NSData *)bookmarkForRemovableDrive:(NSString *)drive;
 - (nullable NSString *)pathForRemovableDrive:(NSString *)drive;
 
 @end
