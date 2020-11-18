@@ -35,7 +35,7 @@ struct VMConfigDrivesView: View {
                     List {
                         ForEach(0..<config.countDrives, id: \.self) { index in
                             let fileName = config.driveImagePath(for: index) ?? ""
-                            let displayName = config.driveRemovable(for: index) ? NSLocalizedString("(removable)", comment: "VMConfigDrivesView") : fileName
+                            let displayName = config.driveRemovable(for: index) ? NSLocalizedString("Removable Drive", comment: "VMConfigDrivesView") : fileName
                             let imageType = config.driveImageType(for: index)
                             let interfaceType = config.driveInterfaceType(for: index) ?? ""
                             NavigationLink(

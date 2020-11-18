@@ -65,14 +65,16 @@ struct VMConfigDriveDetailsView: View {
     var body: some View {
         Form {
             Toggle(isOn: $removable.animation(), label: {
-                Text("Removable")
+                Text("Removable Drive")
             }).disabled(true)
-            HStack {
-                Text("Name")
-                Spacer()
-                Text(name ?? "")
-                    .lineLimit(1)
-                    .multilineTextAlignment(.trailing)
+            if !removable {
+                HStack {
+                    Text("Name")
+                    Spacer()
+                    Text(name ?? "")
+                        .lineLimit(1)
+                        .multilineTextAlignment(.trailing)
+                }
             }
             VMConfigStringPicker(selection: $imageTypeString, label: Text("Image Type"), rawValues: UTMConfiguration.supportedImageTypes(), displayValues: UTMConfiguration.supportedImageTypesPretty())
             if imageType == .disk || imageType == .CD {

@@ -58,7 +58,7 @@
     NSAssert(cell, @"Invalid cell");
     
     if ([self.configuration driveRemovableForIndex:indexPath.row]) {
-        cell.textLabel.text = NSLocalizedString(@"(removable)", @"VMConfigDrivesViewController");
+        cell.textLabel.text = NSLocalizedString(@"Removable Drive", @"VMConfigDrivesViewController");
     } else {
         cell.textLabel.text = [self.configuration driveImagePathForIndex:indexPath.row];
     }
