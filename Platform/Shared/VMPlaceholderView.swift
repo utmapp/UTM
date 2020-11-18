@@ -67,9 +67,15 @@ private struct TileButton: View {
 
 @available(iOS 14, macOS 11, *)
 private struct TileButtonStyle: ButtonStyle {
-    let defaultColor = Color(red: 220.0/255.0, green: 220.0/255.0, blue: 220.0/255.0)
-    let pressedColor = Color(red: 200.0/255.0, green: 200.0/255.0, blue: 200.0/255.0)
-    let foregroundColor = Color(red: 126.0/255.0, green: 126.0/255.0, blue: 126.0/255.0)
+    #if os(macOS)
+    let defaultColor = Color(NSColor.controlBackgroundColor)
+    let pressedColor = Color(NSColor.selectedContentBackgroundColor)
+    let foregroundColor = Color(NSColor.secondaryLabelColor)
+    #else
+    let defaultColor = Color(UIColor.secondarySystemBackground)
+    let pressedColor = Color(UIColor.systemFill)
+    let foregroundColor = Color(UIColor.secondaryLabel)
+    #endif
     
     func makeBody(configuration: Configuration) -> some View {
         ZStack {
