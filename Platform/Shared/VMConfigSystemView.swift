@@ -95,8 +95,9 @@ struct VMConfigSystemView: View {
                             Text("MB")
                         }
                     }
-                    Section(header: Text("QEMU Machine Properties")) {
+                    Section(header: Text("QEMU Additional Options")) {
                         TextField("None", text: $config.systemMachineProperties.bound)
+                        VMConfigStringPicker(selection: $config.systemBootDevice, label: Text("Boot Order"), rawValues: UTMConfiguration.supportedBootDevices(), displayValues: UTMConfiguration.supportedBootDevicesPretty())
                     }
                 }
             }
