@@ -72,6 +72,9 @@ extern NSString *const kUTMErrorDomain;
 - (BOOL)changeMediumForDrive:(UTMDrive *)drive url:(NSURL *)url error:(NSError * _Nullable __autoreleasing *)error {
     // assume security scoped, it doesn't hurt even if the file is in the documents directory!
     BOOL securityScoped = YES;
+    if (securityScoped && ![url startAccessingSecurityScopedResource]) {
+        return NO;
+    }
     NSUInteger createOptions = securityScoped ? ( 1 << 11 ) : 0;
     NSData *bookmark = [url bookmarkDataWithOptions:createOptions
                      includingResourceValuesForKeys:nil
@@ -79,7 +82,7 @@ extern NSString *const kUTMErrorDomain;
                                               error:error];
     if (!bookmark) {
         if (error) {
-            *error = [NSError errorWithDomain:kUTMErrorDomain code:-1 userInfo:@{NSLocalizedDescriptionKey: NSLocalizedString(@"Failed create bookmark.", "UTMVirtualMachine+Drives")}];
+            *error = [NSError errorWithDomain:kUTMErrorDomain code:-1 userInfo:@{NSLocalizedDescriptionKey: NSLocalizedString(@"Failed to create bookmark.", "UTMVirtualMachine+Drives")}];
         }
         return NO;
     }
@@ -87,9 +90,6 @@ extern NSString *const kUTMErrorDomain;
     if (!self.qemu.isConnected) {
         return YES; // not ready yet
     } else {
-        if (securityScoped) {
-            [url startAccessingSecurityScopedResource];
-        }
         return [self changeMediumForDriveInternal:drive bookmark:bookmark securityScoped:securityScoped persistent:NO error:error];
     }
 }

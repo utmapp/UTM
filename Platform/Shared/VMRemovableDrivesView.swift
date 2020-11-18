@@ -84,9 +84,6 @@ struct VMRemovableDrivesView: View {
         data.busyWork {
             switch result {
             case .success(let url):
-                guard url.startAccessingSecurityScopedResource() else {
-                    return
-                }
                 try vm.changeSharedDirectory(url)
                 break
             case .failure(let err):

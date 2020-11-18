@@ -74,6 +74,9 @@ static const NSURLBookmarkResolutionOptions kBookmarkResolutionOptions = NSURLBo
 }
 
 - (BOOL)changeSharedDirectory:(NSURL *)url error:(NSError * _Nullable __autoreleasing *)error {
+    if (![url startAccessingSecurityScopedResource]) {
+        return NO;
+    }
     if (!self.ioService) {
         // if we haven't started the VM yet, save the URL for when the VM starts
         return [self saveSharedDirectory:url error:error];
