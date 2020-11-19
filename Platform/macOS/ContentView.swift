@@ -33,6 +33,7 @@ struct ContentView: View {
                         tag: vm,
                         selection: $data.selectedVM,
                         label: { VMCardView(vm: vm) })
+                        .modifier(VMContextMenuModifier(vm: vm))
                 }.onMove(perform: data.move)
                 .onDelete(perform: delete)
             }.frame(minWidth: 250, idealWidth: 350)
