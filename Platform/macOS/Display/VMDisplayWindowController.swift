@@ -158,6 +158,9 @@ extension VMDisplayWindowController: NSWindowDelegate {
     }
     
     func windowWillClose(_ notification: Notification) {
+        DispatchQueue.global(qos: .background).async {
+            self.vm.quitVM()
+        }
         onClose?(notification)
     }
 }

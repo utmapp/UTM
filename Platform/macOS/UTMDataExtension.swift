@@ -41,6 +41,14 @@ extension UTMData {
     }
     
     func stop(vm: UTMVirtualMachine) throws {
-        
+        if let window = vmWindows[vm] {
+            window.close()
+        } else if vm.viewState.suspended {
+            guard vm.deleteSaveVM() else {
+                throw NSLocalizedString("Failed to delete saved state.", comment: "UTMDataExtension")
+            }
+        } else {
+            throw NSLocalizedString("VM is not suspended or active.", comment: "UTMDataExtension")
+        }
     }
 }
