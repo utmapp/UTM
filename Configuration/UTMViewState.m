@@ -43,6 +43,7 @@ const NSString *const kUTMViewStateRemovableDrivesPathKey = @"RemovableDrivesPat
     NSMutableDictionary<NSString *, NSString *> *_removableDrivesPath;
     NSMutableDictionary<NSString *, NSString *> *_removableDrivesPathTemp;
     BOOL _deleted;
+    BOOL _active;
 }
 
 #pragma mark - Properties
@@ -130,6 +131,15 @@ const NSString *const kUTMViewStateRemovableDrivesPathKey = @"RemovableDrivesPat
 - (void)setDeleted:(BOOL)deleted {
     [self propertyWillChange];
     _deleted = deleted;
+}
+
+- (BOOL)active {
+    return _active;
+}
+
+- (void)setActive:(BOOL)active {
+    [self propertyWillChange];
+    _active = active;
 }
 
 - (NSData *)sharedDirectory {

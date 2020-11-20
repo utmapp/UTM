@@ -148,6 +148,7 @@ NSString *const kSuspendSnapshotName = @"suspend";
             [self.delegate virtualMachine:self transitionToState:state];
         });
     }
+    self.viewState.active = (state == kVMStarted);
 }
 
 - (NSURL *)packageURLForName:(NSString *)name {

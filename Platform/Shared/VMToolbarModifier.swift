@@ -98,7 +98,7 @@ struct VMToolbarModifier: ViewModifier {
                     Spacer()
                 }
                 #endif
-                if sessionConfig.suspended {
+                if sessionConfig.suspended || sessionConfig.active {
                     Button {
                         confirmAction = .confirmStopVM
                     } label: {
