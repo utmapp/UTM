@@ -93,7 +93,7 @@
     NSTask *task = [NSTask new];
     task.executableURL = qemuURL;
     task.arguments = argv;
-    task.environment = @{@"DYLD_LIBRARY_PATH": libraryPath.path};
+    //task.environment = @{@"DYLD_LIBRARY_PATH": libraryPath.path};
     task.qualityOfService = NSQualityOfServiceUserInitiated;
     task.terminationHandler = ^(NSTask *task) {
         BOOL normalExit = task.terminationReason == NSTaskTerminationReasonExit && task.terminationStatus == 0;
