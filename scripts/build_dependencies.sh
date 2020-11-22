@@ -15,9 +15,6 @@
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 set -e
 
-# Include URL list
-source "$(dirname $0)/sources"
-
 # Printing coloured lines
 GREEN='\033[0;32m'
 RED='\033[0;31m'
@@ -307,7 +304,7 @@ fixup () {
 fixup_all () {
     OLDIFS=$IFS
     IFS=$'\n'
-    QEMU_ENTITLEMENTS="$BASEDIR/QEMU.entitlements"
+    QEMU_ENTITLEMENTS="$PATCHES_DIR/QEMU.entitlements"
     FILES=$(find "$SYSROOT_DIR/lib" -type f -name "*.dylib")
     for f in $FILES
     do
@@ -440,6 +437,9 @@ BASEDIR="$(dirname "$(realpath $0)")"
 BUILD_DIR="build-$PLATFORM_FAMILY_NAME-$ARCH"
 SYSROOT_DIR="sysroot-$PLATFORM_FAMILY_NAME-$ARCH"
 PATCHES_DIR="$BASEDIR/../patches"
+
+# Include URL list
+source "$PATCHES_DIR/sources"
 
 if [ -z "$QEMU_DIR" ]; then
     FILE="$(basename $QEMU_SRC)"
