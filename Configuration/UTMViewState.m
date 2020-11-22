@@ -238,8 +238,8 @@ const NSString *const kUTMViewStateRemovableDrivesPathKey = @"RemovableDrivesPat
     self = [super init];
     if (self) {
         _rootDict = CFBridgingRelease(CFPropertyListCreateDeepCopy(kCFAllocatorDefault, (__bridge CFDictionaryRef)dictionary, kCFPropertyListMutableContainers));
-        _removableDrives = dictionary[kUTMViewStateRemovableDrivesKey];
-        _removableDrivesPath = dictionary[kUTMViewStateRemovableDrivesPathKey];
+        _removableDrives = _rootDict[kUTMViewStateRemovableDrivesKey];
+        _removableDrivesPath = _rootDict[kUTMViewStateRemovableDrivesPathKey];
         _removableDrivesTemp = [NSMutableDictionary dictionary];
         _removableDrivesPathTemp = [NSMutableDictionary dictionary];
         if (!_removableDrives) {
