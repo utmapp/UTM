@@ -180,16 +180,6 @@
     }
 }
 
-- (void)ping:(void (^)(BOOL))onResponse {
-    if (_connection) {
-        [[_connection remoteObjectProxyWithErrorHandler:^(NSError * _Nonnull error) {
-            onResponse(NO);
-        }] ping:onResponse];
-    } else {
-        onResponse(YES);
-    }
-}
-
 - (void)accessDataWithBookmarkThread:(NSData *)bookmark securityScoped:(BOOL)securityScoped completion:(void(^)(BOOL, NSData * _Nullable, NSString * _Nullable))completion  {
 #if 0 // FIXME: enable when we support iOS bookmarks
     BOOL stale = NO;
