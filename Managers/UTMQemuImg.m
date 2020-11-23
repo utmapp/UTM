@@ -99,6 +99,19 @@ static void *start_qemu_img(void *args) {
         return;
     }
     [self buildArgv];
+    if (self.inputPath) {
+        [self accessDataWithBookmark:[self.inputPath bookmarkDataWithOptions:0
+                                              includingResourceValuesForKeys:nil
+                                                               relativeToURL:nil
+                                                                       error:nil]];
+    }
+    if (self.outputPath) {
+        NSURL *outputDirectory = [self.outputPath URLByDeletingLastPathComponent];
+        [self accessDataWithBookmark:[outputDirectory bookmarkDataWithOptions:0
+                                               includingResourceValuesForKeys:nil
+                                                                relativeToURL:nil
+                                                                        error:nil]];
+    }
     [self start:@"qemu-img" completion:completion];
     once = YES;
 }
