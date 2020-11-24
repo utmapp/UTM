@@ -33,6 +33,8 @@ void UTMLog(NSString *format, ...) {
 
 @interface UTMLogging ()
 
+@property (nonatomic, nullable) NSOutputStream *fileOutputStream;
+
 - (void)didRecieveNewLine:(NSString *)line onDescriptor:(int)fd;
 
 @end
@@ -40,7 +42,6 @@ void UTMLog(NSString *format, ...) {
 @implementation UTMLogging {
     pthread_t _stdout_thread;
     pthread_t _stderr_thread;
-    NSOutputStream *_stream;
     int _real_stdout;
     int _real_stderr;
     int _stdout;
@@ -81,7 +82,7 @@ void *utm_logging_thread_stderr(void *arg) {
     static BOOL initialized = NO;
     if (!initialized) {
         initialized = YES;
-        gLoggingInstance = [[UTMLogging alloc] init];
+        gLoggingInstance = [[UTMLogging alloc] initGlobal];
     }
 }
 
@@ -89,7 +90,7 @@ void *utm_logging_thread_stderr(void *arg) {
     return gLoggingInstance;
 }
 
-- (id)init {
+- (instancetype)initGlobal {
     self = [super init];
     if (self) {
         if (gLoggingInstance != nil) {
@@ -212,27 +213,27 @@ void *utm_logging_thread_stderr(void *arg) {
 
 - (void)logToFile:(NSURL *)path {
     [self endLog];
-    _stream = [NSOutputStream outputStreamWithURL:path append:NO];
-    [_stream open];
+    self.fileOutputStream = [NSOutputStream outputStreamWithURL:path append:NO];
+    [self.fileOutputStream open];
     __weak typeof(self) weakSelf = self;
     atexit_b(^{
         typeof(self) _self = weakSelf;
         if (_self) {
-            NSStreamStatus status = _self->_stream.streamStatus;
+            NSStreamStatus status = _self.fileOutputStream.streamStatus;
             if (status == NSStreamStatusOpen || status == NSStreamStatusWriting) {
-                [_self->_stream close];
+                [_self.fileOutputStream close];
             }
         }
     });
 }
 
 - (void)endLog {
-    [_stream close];
-    _stream = nil;
+    [self.fileOutputStream close];
+    self.fileOutputStream = nil;
 }
 
 - (void)writeLine:(NSString *)line {
-    [_stream write:(void *)[line cStringUsingEncoding:NSASCIIStringEncoding] maxLength:line.length];
+    [self.fileOutputStream write:(void *)[line cStringUsingEncoding:NSASCIIStringEncoding] maxLength:line.length];
 }
 
 @end
