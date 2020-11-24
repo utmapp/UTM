@@ -51,7 +51,7 @@ NSString *const kSuspendSnapshotName = @"suspend";
 @property (nonatomic, readonly) UTMQemuManager *qemu;
 @property (nonatomic, readwrite, nullable) UTMQemuSystem *system;
 @property (nonatomic, readwrite) UTMViewState *viewState;
-@property (nonatomic, weak) UTMLogging *logging;
+@property (nonatomic) UTMLogging *logging;
 @property (nonatomic, readonly, nullable) id<UTMInputOutput> ioService;
 @property (nonatomic, readwrite) BOOL busy;
 @property (nonatomic, readwrite, nullable) UTMScreenshot *screenshot;
@@ -106,7 +106,11 @@ NSString *const kSuspendSnapshotName = @"suspend";
     if (self) {
         _will_quit_sema = dispatch_semaphore_create(0);
         _qemu_exit_sema = dispatch_semaphore_create(0);
+#if TARGET_OS_IPHONE
         self.logging = [UTMLogging sharedInstance];
+#else
+        self.logging = [UTMLogging new];
+#endif
     }
     return self;
 }
@@ -262,6 +266,7 @@ error:
     
     if (!self.system) {
         self.system = [[UTMQemuSystem alloc] initWithConfiguration:self.configuration imgPath:self.path];
+        self.system.logging = self.logging;
 #if !TARGET_OS_IPHONE
         [self.system setupXpc];
 #endif

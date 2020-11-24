@@ -16,6 +16,7 @@
 
 #import <pthread.h>
 #import <stdio.h>
+#import <TargetConditionals.h>
 #import <unistd.h>
 #import "UTMLogging.h"
 
@@ -47,7 +48,9 @@ void UTMLog(NSString *format, ...) {
     if (!initialized) {
         initialized = YES;
         gLoggingInstance = [[UTMLogging alloc] init];
+#if TARGET_OS_IPHONE // not supported on macOS
         [gLoggingInstance redirectStandardFds];
+#endif
     }
 }
 

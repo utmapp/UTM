@@ -368,6 +368,7 @@ class UTMData: ObservableObject {
             #if os(macOS)
             imgCreate.setupXpc()
             #endif
+            imgCreate.logging = UTMLogging()
             imgCreate.start { (_success, _msg) in
                 success = _success
                 msg = _msg

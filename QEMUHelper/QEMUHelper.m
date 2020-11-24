@@ -70,7 +70,7 @@
     completion(YES, bookmark, url.path);
 }
 
-- (void)startQemu:(NSString *)binName libraryBookmark:(NSData *)libBookmark argv:(NSArray<NSString *> *)argv onExit:(void(^)(BOOL,NSString *))onExit {
+- (void)startQemu:(NSString *)binName standardOutput:(NSFileHandle *)standardOutput standardError:(NSFileHandle *)standardError libraryBookmark:(NSData *)libBookmark argv:(NSArray<NSString *> *)argv onExit:(void(^)(BOOL,NSString *))onExit {
     NSURL *qemuURL = [[NSBundle mainBundle] URLForAuxiliaryExecutable:binName];
     if (!qemuURL || ![[NSFileManager defaultManager] fileExistsAtPath:qemuURL.path]) {
         NSLog(@"Cannot find executable for %@", binName);
@@ -93,6 +93,8 @@
     NSTask *task = [NSTask new];
     task.executableURL = qemuURL;
     task.arguments = argv;
+    task.standardOutput = standardOutput;
+    task.standardError = standardError;
     //task.environment = @{@"DYLD_LIBRARY_PATH": libraryPath.path};
     task.qualityOfService = NSQualityOfServiceUserInitiated;
     task.terminationHandler = ^(NSTask *task) {
