@@ -72,7 +72,7 @@ struct ContentView: View {
         .alert(isPresented: $jitAlertPresented, content: {
             Alert(title: Text("Your version of iOS does not support running VMs while unmodified. You must either run UTM while jailbroken or with a remote debugger attached."))
         })
-        .overlay(BusyOverlay())
+        .overlay(data.showSettingsModal ? AnyView(EmptyView()) : AnyView(BusyOverlay()))
     }
     
     private var newButton: some View {

@@ -55,7 +55,7 @@ struct ContentView: View {
                         newConfiguration.name = data.newDefaultVMName()
                     }
             })
-        }.overlay(BusyOverlay())
+        }.overlay(data.showSettingsModal ? AnyView(EmptyView()) : AnyView(BusyOverlay()))
         .environmentObject(data)
         .frame(minWidth: 800, idealWidth: 1200, minHeight: 600, idealHeight: 800)
         .disabled(data.busy)
