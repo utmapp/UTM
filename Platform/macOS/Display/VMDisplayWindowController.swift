@@ -180,7 +180,9 @@ extension VMDisplayWindowController: UTMVirtualMachineDelegate {
         switch state {
         case .vmError:
             let message = vmMessage ?? NSLocalizedString("An internal error has occured.", comment: "VMDisplayWindowController")
-            showErrorAlert(message)
+            showErrorAlert(message) { _ in
+                self.close()
+            }
         case .vmStopped, .vmPaused, .vmSuspended:
             enterSuspended(isBusy: false)
         case .vmPausing, .vmStopping, .vmStarting, .vmResuming:
