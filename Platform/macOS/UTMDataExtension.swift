@@ -26,7 +26,7 @@ extension UTMData {
                 window = nil
             }
             if vm.configuration.displayConsoleOnly {
-                // TODO: console mode
+                window = VMDisplayTerminalWindowController(vm: vm, onClose: close)
             } else {
                 window = VMDisplayMetalWindowController(vm: vm, onClose: close)
             }

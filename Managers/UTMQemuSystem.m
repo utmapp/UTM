@@ -345,6 +345,10 @@ static size_t hostCpuCount(void) {
         // terminal character device
         NSURL* ioFile = [self.configuration terminalInputOutputURL];
         [self pushArgv: @"-chardev"];
+        [self accessDataWithBookmark:[[ioFile URLByDeletingLastPathComponent] bookmarkDataWithOptions:0
+                                                                       includingResourceValuesForKeys:nil
+                                                                                        relativeToURL:nil
+                                                                                                error:nil]];
         [self pushArgv: [NSString stringWithFormat: @"pipe,id=term0,path=%@", ioFile.path]];
         [self pushArgv: @"-serial"];
         [self pushArgv: @"chardev:term0"];

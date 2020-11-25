@@ -34,9 +34,12 @@
 #include "UTMVirtualMachine.h"
 #include "UTMVirtualMachine+Drives.h"
 #include "UTMVirtualMachine+SPICE.h"
+#include "UTMVirtualMachine+Terminal.h"
 #include "UTMRenderer.h"
 #include "UTMScreenshot.h"
 #include "UTMSpiceIO.h"
+#include "UTMTerminal.h"
+#include "UTMTerminalDelegate.h"
 #include "CocoaSpice.h"
 #if TARGET_OS_IPHONE
 #include "AppDelegate.h"
