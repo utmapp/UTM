@@ -29,6 +29,7 @@
 #include <string.h>
 #include <sys/mman.h>
 #include <sys/sysctl.h>
+#include <sys/utsname.h>
 #include <TargetConditionals.h>
 #include <unistd.h>
 #include "UTMJailbreak.h"
@@ -173,6 +174,40 @@ static NSDictionary *cached_app_entitlements(void) {
     return entitlements;
 }
 
+#if TARGET_OS_IPHONE && !TARGET_OS_SIMULATOR
+
+#define _COMM_PAGE_START_ADDRESS        (0x0000000FFFFFC000ULL) /* In TTBR0 */
+#define _COMM_PAGE_APRR_SUPPORT         (_COMM_PAGE_START_ADDRESS+0x10C)
+
+// this is kinda hacky heuristic to figure out if we are running >= A12
+// not sure why 14.2 JIT doesn't work below A12 yet but oh well
+static bool is_device_A12_or_newer(void) {
+    // devices without APRR are definitely < A12
+    char aprr_support = *(volatile char *)_COMM_PAGE_APRR_SUPPORT;
+    if (aprr_support == 0) {
+        return false;
+    }
+    // we still have A11 devices that support APRR
+    struct utsname systemInfo;
+    if (uname(&systemInfo) != 0) {
+        return false;
+    }
+    // iPhone 8, 8 Plus, and iPhone X
+    if (strncmp("iPhone10,", systemInfo.machine, 9) == 0) {
+        return false;
+    } else {
+        return true;
+    }
+}
+
+#else
+
+static bool is_device_A12_or_newer(void) {
+    return false;
+}
+
+#endif
+
 bool jb_has_jit_entitlement(void) {
 #if TARGET_OS_OSX
     return true;
@@ -188,7 +223,7 @@ bool jb_has_cs_execseg_allow_unsigned(void) {
         // technically we need to check the Code Directory and make sure
         // CS_EXECSEG_ALLOW_UNSIGNED is set but we assume that it is properly
         // signed, which should reflect the get-task-allow entitlement
-        return [entitlements[@"get-task-allow"] boolValue];
+        return is_device_A12_or_newer() && [entitlements[@"get-task-allow"] boolValue];
     } else {
         return false;
     }
