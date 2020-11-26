@@ -178,7 +178,7 @@ extension VMDisplayMetalWindowController {
 extension VMDisplayMetalWindowController: VMMetalViewInputDelegate {
     private func captureMouse() {
         let action = { () -> Void in
-            self.vmInput?.requestMouseMode(false)
+            self.vm.requestInputTablet(false)
             self.metalView?.captureMouse()
         }
         if isCursorCaptureAlertShown {
@@ -198,7 +198,7 @@ extension VMDisplayMetalWindowController: VMMetalViewInputDelegate {
     }
     
     private func releaseMouse() {
-        vmInput?.requestMouseMode(true)
+        vm.requestInputTablet(true)
         metalView?.releaseMouse()
     }
     
