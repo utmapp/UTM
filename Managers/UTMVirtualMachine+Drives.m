@@ -28,6 +28,8 @@ extern NSString *const kUTMErrorDomain;
 @property (nonatomic, readonly, nullable) UTMQemuManager *qemu;
 @property (nonatomic, readonly, nullable) UTMQemu *system;
 
+- (void)saveViewState;
+
 @end
 
 @implementation UTMVirtualMachine (Drives)
@@ -63,6 +65,7 @@ extern NSString *const kUTMErrorDomain;
 
 - (BOOL)ejectDrive:(UTMDrive *)drive force:(BOOL)force error:(NSError * _Nullable __autoreleasing *)error {
     [self.viewState removeBookmarkForRemovableDrive:drive.name];
+    [self saveViewState];
     if (!self.qemu.isConnected) {
         return YES; // not ready yet
     }
@@ -99,6 +102,7 @@ extern NSString *const kUTMErrorDomain;
                              completion:^(BOOL success, NSData *newBookmark, NSString *path) {
         if (success) {
             [self.viewState setBookmark:newBookmark path:path forRemovableDrive:drive.name persistent:YES];
+            [self saveViewState];
             [self.qemu changeMediumForDrive:drive.name path:path error:error];
         } else {
             if (error) {

@@ -39,6 +39,8 @@ static const NSURLBookmarkResolutionOptions kBookmarkResolutionOptions = NSURLBo
 @property (nonatomic, readonly, nullable) UTMQemuManager *qemu;
 @property (nonatomic, readonly, nullable) id<UTMInputOutput> ioService;
 
+- (void)saveViewState;
+
 @end
 
 @implementation UTMVirtualMachine (SPICE)
@@ -69,6 +71,7 @@ static const NSURLBookmarkResolutionOptions kBookmarkResolutionOptions = NSURLBo
     } else {
         self.viewState.sharedDirectory = bookmark;
         self.viewState.sharedDirectoryPath = url.path;
+        [self saveViewState];
         return YES;
     }
 }
@@ -89,6 +92,7 @@ static const NSURLBookmarkResolutionOptions kBookmarkResolutionOptions = NSURLBo
 - (void)clearSharedDirectory {
     self.viewState.sharedDirectory = nil;
     self.viewState.sharedDirectoryPath = nil;
+    [self saveViewState];
 }
 
 - (BOOL)startSharedDirectoryWithError:(NSError * _Nullable __autoreleasing *)error {
