@@ -22,12 +22,14 @@ class VMDisplayWindowController: NSWindowController {
     @IBOutlet weak var activityIndicator: NSProgressIndicator!
     @IBOutlet weak var startButton: NSButton!
     
+    @IBOutlet weak var toolbar: NSToolbar!
     @IBOutlet weak var stopToolbarItem: NSToolbarItem!
     @IBOutlet weak var startPauseToolbarItem: NSToolbarItem!
     @IBOutlet weak var restartToolbarItem: NSToolbarItem!
     @IBOutlet weak var captureMouseToolbarItem: NSToolbarItem!
     @IBOutlet weak var drivesToolbarItem: NSToolbarItem!
     @IBOutlet weak var sharedFolderToolbarItem: NSToolbarItem!
+    @IBOutlet weak var resizeConsoleToolbarItem: NSToolbarItem!
     
     var vm: UTMVirtualMachine!
     var onClose: ((Notification) -> Void)?
@@ -89,6 +91,9 @@ class VMDisplayWindowController: NSWindowController {
     
     @IBAction func captureMouseButtonPressed(_ sender: Any) {
         isMouseCaptued.toggle()
+    }
+    
+    @IBAction func resizeConsoleButtonPressed(_ sender: Any) {
     }
     
     // MARK: - UI states
@@ -170,6 +175,16 @@ extension VMDisplayWindowController: NSWindowDelegate {
 extension VMDisplayWindowController: NSToolbarItemValidation {
     func validateToolbarItem(_ item: NSToolbarItem) -> Bool {
         return true
+    }
+    
+    func removeToolbarItem(_ item: NSToolbarItem) {
+        let items = toolbar.items
+        for i in items.indices {
+            if items[i] == item {
+                toolbar.removeItem(at: i)
+                return
+            }
+        }
     }
 }
 

@@ -41,6 +41,9 @@ class VMDisplayTerminalWindowController: VMDisplayWindowController {
         webView.autoresizingMask = [.width, .height]
         displayView.addSubview(webView)
         
+        // hide unused toolbar
+        removeToolbarItem(captureMouseToolbarItem)
+        
         // load terminal.html
         guard let resourceURL = Bundle.main.resourceURL else {
             showErrorAlert(NSLocalizedString("Cannot find bundle resources.", comment: "VMDisplayTerminalWindowController"))
@@ -60,7 +63,8 @@ class VMDisplayTerminalWindowController: VMDisplayWindowController {
         vm.ioDelegate = self
     }
     
-    func windowDidResize(_ notification: Notification) {
+    // MARK: - Resizing console
+    override func resizeConsoleButtonPressed(_ sender: Any) {
         guard let columns = self.columns else {
             logger.error("Did not get columns from page")
             return
