@@ -53,11 +53,14 @@ class VMDisplayTerminalWindowController: VMDisplayWindowController {
         
         if vm.state == .vmStopped || vm.state == .vmSuspended {
             enterSuspended(isBusy: false)
-            vm.startVM()
+            DispatchQueue.global(qos: .userInitiated).async {
+                self.vm.startVM()
+                self.vm.ioDelegate = self
+            }
         } else {
             enterLive()
+            vm.ioDelegate = self
         }
-        vm.ioDelegate = self
     }
     
     override func enterLive() {
