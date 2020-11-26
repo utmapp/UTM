@@ -16,14 +16,22 @@
 
 import Logging
 
-let logger = Logger(label: "com.utmapp.UTM")
+let logger = Logger(label: "com.utmapp.UTM") { label in
+    var stdOutLogger = StreamLogHandler.standardOutput(label: label)
+    #if DEBUG
+    stdOutLogger.logLevel = .debug
+    #endif
+    return MultiplexLogHandler([
+        UTMLoggingSwift(label: label),
+        stdOutLogger
+    ])
+}
 
 @main
 class Main {
     static var jitAvailable = true
     
     static func main() {
-        setupLogging()
         registerDefaultsFromSettingsBundle()
         // check if we have jailbreak
         if jb_has_jit_entitlement() {
@@ -46,15 +54,6 @@ class Main {
             #else
             UIApplicationMain(CommandLine.argc, CommandLine.unsafeArgv, nil, NSStringFromClass(AppDelegate.self))
             #endif
-        }
-    }
-    
-    static private func setupLogging() {
-        LoggingSystem.bootstrap { label in
-            return MultiplexLogHandler([
-                UTMLoggingSwift(label: label),
-                StreamLogHandler.standardOutput(label: label)
-            ])
         }
     }
     
