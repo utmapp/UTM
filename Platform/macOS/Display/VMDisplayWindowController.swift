@@ -109,6 +109,7 @@ class VMDisplayWindowController: NSWindowController {
         captureMouseToolbarItem.isEnabled = true
         drivesToolbarItem.isEnabled = vmConfiguration?.countDrives ?? 0 > 0
         sharedFolderToolbarItem.isEnabled = vm.hasShareDirectoryEnabled
+        window!.title = vmConfiguration?.name ?? "UTM"
     }
     
     func enterSuspended(isBusy busy: Bool) {
