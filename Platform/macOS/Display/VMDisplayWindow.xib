@@ -140,7 +140,7 @@
                             </connections>
                         </button>
                     </toolbarItem>
-                    <toolbarItem implicitItemIdentifier="E86439F7-239E-4570-B1FE-FFF2B4BA3F10" label="Capture Mouse" paletteLabel="Capture Mouse" toolTip="Send console resize command" image="cursorarrow.rays" catalog="system" sizingBehavior="auto" id="FN7-zs-mWC">
+                    <toolbarItem implicitItemIdentifier="E86439F7-239E-4570-B1FE-FFF2B4BA3F10" label="Capture Mouse" paletteLabel="Capture Mouse" toolTip="Capture mouse cursor (⌃+⌥ to release)" image="cursorarrow.rays" catalog="system" sizingBehavior="auto" id="FN7-zs-mWC">
                         <button key="view" verticalHuggingPriority="750" id="Ge3-wo-FzQ">
                             <rect key="frame" x="30" y="14" width="28" height="23"/>
                             <autoresizingMask key="autoresizingMask"/>
@@ -153,7 +153,7 @@
                             </connections>
                         </button>
                     </toolbarItem>
-                    <toolbarItem implicitItemIdentifier="1F853CFA-B8C9-429E-A0F4-CE2943B2E9BF" label="Resize Console" paletteLabel="Resize Console" toolTip="Capture mouse cursor (⌃+⌥ to release)" image="arrow.up.left.and.arrow.down.right" catalog="system" sizingBehavior="auto" id="Ulf-oT-4cP">
+                    <toolbarItem implicitItemIdentifier="1F853CFA-B8C9-429E-A0F4-CE2943B2E9BF" label="Resize Console" paletteLabel="Resize Console" toolTip="Send console resize command" image="arrow.up.left.and.arrow.down.right" catalog="system" sizingBehavior="auto" id="Ulf-oT-4cP">
                         <button key="view" verticalHuggingPriority="750" id="nbx-4W-2pu">
                             <rect key="frame" x="29" y="14" width="29" height="23"/>
                             <autoresizingMask key="autoresizingMask"/>

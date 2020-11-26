@@ -107,6 +107,7 @@ class VMDisplayWindowController: NSWindowController {
         startPauseToolbarItem.isEnabled = true
         stopToolbarItem.isEnabled = true
         captureMouseToolbarItem.isEnabled = true
+        resizeConsoleToolbarItem.isEnabled = true
         drivesToolbarItem.isEnabled = vmConfiguration?.countDrives ?? 0 > 0
         sharedFolderToolbarItem.isEnabled = vm.hasShareDirectoryEnabled
         window!.title = vmConfiguration?.name ?? "UTM"
@@ -129,6 +130,7 @@ class VMDisplayWindowController: NSWindowController {
             startButton.isHidden = false
         }
         captureMouseToolbarItem.isEnabled = false
+        resizeConsoleToolbarItem.isEnabled = false
         drivesToolbarItem.isEnabled = false
         sharedFolderToolbarItem.isEnabled = false
     }
@@ -176,16 +178,6 @@ extension VMDisplayWindowController: NSWindowDelegate {
 extension VMDisplayWindowController: NSToolbarItemValidation {
     func validateToolbarItem(_ item: NSToolbarItem) -> Bool {
         return true
-    }
-    
-    func removeToolbarItem(_ item: NSToolbarItem) {
-        let items = toolbar.items
-        for i in items.indices {
-            if items[i] == item {
-                toolbar.removeItem(at: i)
-                return
-            }
-        }
     }
 }
 

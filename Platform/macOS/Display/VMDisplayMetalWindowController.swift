@@ -65,9 +65,6 @@ class VMDisplayMetalWindowController: VMDisplayWindowController, UTMSpiceIODeleg
         metalView.delegate = renderer
         metalView.inputDelegate = self
         
-        // hide unused toolbar
-        removeToolbarItem(resizeConsoleToolbarItem)
-        
         settingObservations.append(UserDefaults.standard.observe(\.AlwaysNativeResolution, options: .new) { (defaults, change) in
             self.displaySizeDidChange(size: self.displaySize)
         })
@@ -94,6 +91,7 @@ class VMDisplayMetalWindowController: VMDisplayWindowController, UTMSpiceIODeleg
             self.displaySizeDidChange(size: size)
         }
         super.enterLive()
+        resizeConsoleToolbarItem.isEnabled = false // disable item
     }
     
     override func enterSuspended(isBusy busy: Bool) {

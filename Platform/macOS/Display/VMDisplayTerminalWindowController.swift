@@ -41,9 +41,6 @@ class VMDisplayTerminalWindowController: VMDisplayWindowController {
         webView.autoresizingMask = [.width, .height]
         displayView.addSubview(webView)
         
-        // hide unused toolbar
-        removeToolbarItem(captureMouseToolbarItem)
-        
         // load terminal.html
         guard let resourceURL = Bundle.main.resourceURL else {
             showErrorAlert(NSLocalizedString("Cannot find bundle resources.", comment: "VMDisplayTerminalWindowController"))
@@ -61,6 +58,11 @@ class VMDisplayTerminalWindowController: VMDisplayWindowController {
             enterLive()
         }
         vm.ioDelegate = self
+    }
+    
+    override func enterLive() {
+        super.enterLive()
+        captureMouseToolbarItem.isEnabled = false
     }
     
     // MARK: - Resizing console
