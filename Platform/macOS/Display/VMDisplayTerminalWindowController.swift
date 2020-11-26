@@ -38,7 +38,7 @@ class VMDisplayTerminalWindowController: VMDisplayWindowController {
         webConfig.userContentController.add(self, name: JSCommand.sendGesture.rawValue)
         webConfig.userContentController.add(self, name: JSCommand.sendTerminalSize.rawValue)
         webView = WKWebView(frame: displayView.bounds, configuration: webConfig)
-        webView.autoresizingMask = [.minXMargin, .maxXMargin, .minYMargin, .maxYMargin]
+        webView.autoresizingMask = [.width, .height]
         displayView.addSubview(webView)
         
         // load terminal.html
