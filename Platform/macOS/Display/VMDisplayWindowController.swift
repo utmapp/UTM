@@ -78,6 +78,13 @@ class VMDisplayWindowController: NSWindowController {
             DispatchQueue.global(qos: .background).async {
                 self.vm.resumeVM()
             }
+        } else if vm.state == .vmStopped {
+            DispatchQueue.global(qos: .userInitiated).async {
+                self.vm.startVM()
+                self.vm.ioDelegate = self
+            }
+        } else {
+            logger.error("Invalid state \(vm.state)")
         }
     }
     
