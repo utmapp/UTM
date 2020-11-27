@@ -226,12 +226,14 @@ typedef void (^connectionCallback_t)(BOOL success, NSString * _Nullable msg);
 - (void)startSharingDirectory {
     if (self.sharedDirectory) {
         UTMLog(@"setting share directory to %@", self.sharedDirectory.path);
+        [self.sharedDirectory startAccessingSecurityScopedResource];
         [self.session setSharedDirectory:self.sharedDirectory.path readOnly:self.configuration.shareDirectoryReadOnly];
     }
 }
 
 - (void)endSharingDirectory {
     if (self.sharedDirectory) {
+        [self.sharedDirectory stopAccessingSecurityScopedResource];
         self.sharedDirectory = nil;
         UTMLog(@"ended share directory sharing");
     }
