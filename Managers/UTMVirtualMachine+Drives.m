@@ -64,8 +64,10 @@ extern NSString *const kUTMErrorDomain;
 }
 
 - (BOOL)ejectDrive:(UTMDrive *)drive force:(BOOL)force error:(NSError * _Nullable __autoreleasing *)error {
+    NSString *oldPath = [self.viewState pathForRemovableDrive:drive.name];
     [self.viewState removeBookmarkForRemovableDrive:drive.name];
     [self saveViewState];
+    [self.system stopAccessingPath:oldPath];
     if (!self.qemu.isConnected) {
         return YES; // not ready yet
     }
@@ -85,10 +87,12 @@ extern NSString *const kUTMErrorDomain;
         }
         return NO;
     }
+    NSString *oldPath = [self.viewState pathForRemovableDrive:drive.name];
     [self.viewState setBookmark:bookmark path:url.path forRemovableDrive:drive.name persistent:NO];
     if (!self.qemu.isConnected) {
         return YES; // not ready yet
     } else {
+        [self.system stopAccessingPath:oldPath];
         return [self changeMediumForDriveInternal:drive bookmark:bookmark persistent:NO error:error];
     }
 }

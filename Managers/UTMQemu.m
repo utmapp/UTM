@@ -235,4 +235,26 @@
     }
 }
 
+- (void)stopAccessingPathThread:(nullable NSString *)path {
+    if (!path) {
+        return;
+    }
+    for (NSURL *url in _urls) {
+        if ([url.path isEqualToString:path]) {
+            [url stopAccessingSecurityScopedResource];
+            [_urls removeObject:url];
+            return;
+        }
+    }
+    UTMLog(@"Cannot find '%@' in existing scoped access.", path);
+}
+
+- (void)stopAccessingPath:(nullable NSString *)path {
+    if (_connection) {
+        [[_connection remoteObjectProxy] stopAccessingPath:path];
+    } else {
+        [self stopAccessingPathThread:path];
+    }
+}
+
 @end
