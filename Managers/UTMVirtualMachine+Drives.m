@@ -93,15 +93,15 @@ extern NSString *const kUTMErrorDomain;
         return YES; // not ready yet
     } else {
         [self.system stopAccessingPath:oldPath];
-        return [self changeMediumForDriveInternal:drive bookmark:bookmark persistent:NO error:error];
+        return [self changeMediumForDriveInternal:drive bookmark:bookmark securityScoped:NO error:error];
     }
 }
 
-- (BOOL)changeMediumForDriveInternal:(UTMDrive *)drive bookmark:(NSData *)bookmark persistent:(BOOL)persistent error:(NSError * _Nullable __autoreleasing *)error {
+- (BOOL)changeMediumForDriveInternal:(UTMDrive *)drive bookmark:(NSData *)bookmark securityScoped:(BOOL)securityScoped error:(NSError * _Nullable __autoreleasing *)error {
     __block BOOL ret = NO;
     dispatch_semaphore_t sema = dispatch_semaphore_create(0);
     [self.system accessDataWithBookmark:bookmark
-                         securityScoped:persistent
+                         securityScoped:securityScoped
                              completion:^(BOOL success, NSData *newBookmark, NSString *path) {
         if (success) {
             [self.viewState setBookmark:newBookmark path:path forRemovableDrive:drive.name persistent:YES];
@@ -132,7 +132,7 @@ extern NSString *const kUTMErrorDomain;
                 [self.viewState removeBookmarkForRemovableDrive:drive.name];
                 continue;
             }
-            if (![self changeMediumForDriveInternal:drive bookmark:bookmark persistent:persistent error:nil]) {
+            if (![self changeMediumForDriveInternal:drive bookmark:bookmark securityScoped:persistent error:nil]) {
                 UTMLog(@"failed to change %@ image to %@", drive.name, path);
             }
         }
