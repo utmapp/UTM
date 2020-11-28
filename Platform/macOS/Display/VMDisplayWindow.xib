@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="17147" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="17506" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaDFRPlugin" version="17007"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="17147"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaDFRPlugin" version="17008"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="17506"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
         <capability name="the Touch Bar" minToolsVersion="8.1" minSystemVersion="10.12.2" requiredIntegratedClassName="NSTouchBar"/>
     </dependencies>
@@ -14,12 +14,14 @@
                 <outlet property="displayView" destination="M5X-Is-pc9" id="U6s-s4-48i"/>
                 <outlet property="drivesToolbarItem" destination="bKL-Th-FFw" id="3SQ-Qt-5jn"/>
                 <outlet property="overlayView" destination="nKs-QY-EOf" id="sD4-fu-HIL"/>
+                <outlet property="resizeConsoleToolbarItem" destination="Ulf-oT-4cP" id="gIb-1X-LHA"/>
                 <outlet property="restartToolbarItem" destination="G7P-HJ-bcy" id="R8T-hV-Gr6"/>
                 <outlet property="screenshotView" destination="UUd-qY-POz" id="nMM-Nr-mQo"/>
                 <outlet property="sharedFolderToolbarItem" destination="7EC-GE-fIl" id="fz7-Lc-ch7"/>
                 <outlet property="startButton" destination="ZTi-Hs-ge6" id="FLE-Yi-azI"/>
                 <outlet property="startPauseToolbarItem" destination="kT2-2U-cYm" id="AwM-e3-ge3"/>
                 <outlet property="stopToolbarItem" destination="Bkx-Ph-j0D" id="yqL-pR-3gr"/>
+                <outlet property="toolbar" destination="qD6-Hj-nyo" id="0iO-Gs-sGk"/>
                 <outlet property="touchBar" destination="MdV-I1-RxZ" id="rFp-7N-UJC"/>
                 <outlet property="window" destination="QvC-M9-y7g" id="vHh-hj-7eR"/>
             </connections>
@@ -30,7 +32,7 @@
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="196" y="240" width="800" height="600"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="2560" height="1415"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1920" height="1055"/>
             <view key="contentView" wantsLayer="YES" id="EiT-Mj-1SZ">
                 <rect key="frame" x="0.0" y="0.0" width="800" height="600"/>
                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -101,7 +103,7 @@
                 <allowedToolbarItems>
                     <toolbarItem implicitItemIdentifier="9683821E-BFE9-43BA-9AB9-54F930376FD0" label="Stop" paletteLabel="Stop" toolTip="Shuts down and stops the VM" image="power" catalog="system" sizingBehavior="auto" navigational="YES" id="Bkx-Ph-j0D">
                         <button key="view" verticalHuggingPriority="750" id="FNq-Q0-aIF">
-                            <rect key="frame" x="6" y="14" width="21" height="23"/>
+                            <rect key="frame" x="3" y="14" width="27" height="23"/>
                             <autoresizingMask key="autoresizingMask"/>
                             <buttonCell key="cell" type="roundTextured" bezelStyle="texturedRounded" image="power" catalog="system" imagePosition="only" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="CFB-He-ag2">
                                 <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
@@ -114,7 +116,7 @@
                     </toolbarItem>
                     <toolbarItem implicitItemIdentifier="49A5F942-A936-49D2-B6AA-AAA5F726396B" label="Start/Pause" paletteLabel="Start/Pause" toolTip="Start/pause the VM" image="play.fill" catalog="system" sizingBehavior="auto" navigational="YES" id="kT2-2U-cYm">
                         <button key="view" verticalHuggingPriority="750" id="0gP-t0-ORQ">
-                            <rect key="frame" x="25" y="14" width="18" height="23"/>
+                            <rect key="frame" x="22" y="14" width="24" height="23"/>
                             <autoresizingMask key="autoresizingMask"/>
                             <buttonCell key="cell" type="roundTextured" bezelStyle="texturedRounded" image="play.fill" catalog="system" imagePosition="only" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="sRx-SF-jCQ">
                                 <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
@@ -127,7 +129,7 @@
                     </toolbarItem>
                     <toolbarItem implicitItemIdentifier="FAFCA770-EA16-4713-BAB0-6FAC76767F48" label="Restart" paletteLabel="Restart" toolTip="Restarts the VM" image="restart" catalog="system" sizingBehavior="auto" navigational="YES" id="G7P-HJ-bcy">
                         <button key="view" verticalHuggingPriority="750" id="ES2-tt-K1A">
-                            <rect key="frame" x="14" y="14" width="18" height="23"/>
+                            <rect key="frame" x="11" y="14" width="24" height="23"/>
                             <autoresizingMask key="autoresizingMask"/>
                             <buttonCell key="cell" type="roundTextured" bezelStyle="texturedRounded" image="restart" catalog="system" imagePosition="only" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="LA8-B0-6E9">
                                 <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
@@ -140,7 +142,7 @@
                     </toolbarItem>
                     <toolbarItem implicitItemIdentifier="E86439F7-239E-4570-B1FE-FFF2B4BA3F10" label="Capture Mouse" paletteLabel="Capture Mouse" toolTip="Capture mouse cursor (⌃+⌥ to release)" image="cursorarrow.rays" catalog="system" sizingBehavior="auto" id="FN7-zs-mWC">
                         <button key="view" verticalHuggingPriority="750" id="Ge3-wo-FzQ">
-                            <rect key="frame" x="33" y="14" width="22" height="23"/>
+                            <rect key="frame" x="30" y="14" width="28" height="23"/>
                             <autoresizingMask key="autoresizingMask"/>
                             <buttonCell key="cell" type="roundTextured" bezelStyle="texturedRounded" image="cursorarrow.rays" catalog="system" imagePosition="only" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="EYc-Sr-2L8">
                                 <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
@@ -151,9 +153,22 @@
                             </connections>
                         </button>
                     </toolbarItem>
+                    <toolbarItem implicitItemIdentifier="1F853CFA-B8C9-429E-A0F4-CE2943B2E9BF" label="Resize Console" paletteLabel="Resize Console" toolTip="Send console resize command" image="arrow.up.left.and.arrow.down.right" catalog="system" sizingBehavior="auto" id="Ulf-oT-4cP">
+                        <button key="view" verticalHuggingPriority="750" id="nbx-4W-2pu">
+                            <rect key="frame" x="29" y="14" width="29" height="23"/>
+                            <autoresizingMask key="autoresizingMask"/>
+                            <buttonCell key="cell" type="roundTextured" bezelStyle="texturedRounded" image="arrow.up.left.and.arrow.down.right" catalog="system" imagePosition="only" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="eje-Uj-ltn">
+                                <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                                <font key="font" metaFont="system"/>
+                            </buttonCell>
+                            <connections>
+                                <action selector="resizeConsoleButtonPressed:" target="-2" id="APo-3g-su8"/>
+                            </connections>
+                        </button>
+                    </toolbarItem>
                     <toolbarItem implicitItemIdentifier="E26256BC-2B5F-409C-98FF-96C436660BD7" label="Drives" paletteLabel="Drives" toolTip="Drive image options" image="opticaldisc" catalog="system" sizingBehavior="auto" id="bKL-Th-FFw">
                         <button key="view" verticalHuggingPriority="750" id="O9E-id-HIO">
-                            <rect key="frame" x="10" y="14" width="21" height="23"/>
+                            <rect key="frame" x="7" y="14" width="27" height="23"/>
                             <autoresizingMask key="autoresizingMask"/>
                             <buttonCell key="cell" type="roundTextured" bezelStyle="texturedRounded" image="opticaldisc" catalog="system" imagePosition="only" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="6ry-MQ-PA2">
                                 <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
@@ -166,7 +181,7 @@
                     </toolbarItem>
                     <toolbarItem implicitItemIdentifier="BC7277DA-3080-4525-B162-1DFD21A5B7B1" label="Shared Folder" paletteLabel="Shared Folder" toolTip="Shared folder" image="folder.badge.person.crop" catalog="system" sizingBehavior="auto" id="7EC-GE-fIl">
                         <button key="view" verticalHuggingPriority="750" id="l7R-sT-uoV">
-                            <rect key="frame" x="29" y="14" width="24" height="23"/>
+                            <rect key="frame" x="25" y="14" width="31" height="23"/>
                             <autoresizingMask key="autoresizingMask"/>
                             <buttonCell key="cell" type="roundTextured" bezelStyle="texturedRounded" image="folder.badge.person.crop" catalog="system" imagePosition="only" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="s1r-QI-ktp">
                                 <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
@@ -183,6 +198,7 @@
                     <toolbarItem reference="kT2-2U-cYm"/>
                     <toolbarItem reference="G7P-HJ-bcy"/>
                     <toolbarItem reference="FN7-zs-mWC"/>
+                    <toolbarItem reference="Ulf-oT-4cP"/>
                     <toolbarItem reference="bKL-Th-FFw"/>
                     <toolbarItem reference="7EC-GE-fIl"/>
                 </defaultToolbarItems>
@@ -197,8 +213,9 @@
         </touchBar>
     </objects>
     <resources>
+        <image name="arrow.up.left.and.arrow.down.right" catalog="system" width="17" height="15"/>
         <image name="cursorarrow.rays" catalog="system" width="16" height="16"/>
-        <image name="folder.badge.person.crop" catalog="system" width="19" height="14"/>
+        <image name="folder.badge.person.crop" catalog="system" width="20" height="14"/>
         <image name="opticaldisc" catalog="system" width="15" height="15"/>
         <image name="play.circle.fill" catalog="system" width="15" height="15"/>
         <image name="play.fill" catalog="system" width="12" height="13"/>

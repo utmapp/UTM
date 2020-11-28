@@ -74,11 +74,14 @@ class VMDisplayMetalWindowController: VMDisplayWindowController, UTMSpiceIODeleg
         
         if vm.state == .vmStopped || vm.state == .vmSuspended {
             enterSuspended(isBusy: false)
-            vm.startVM()
+            DispatchQueue.global(qos: .userInitiated).async {
+                self.vm.startVM()
+                self.vm.ioDelegate = self
+            }
         } else {
             enterLive()
+            vm.ioDelegate = self
         }
-        vm.ioDelegate = self
     }
     
     override func enterLive() {
@@ -91,6 +94,7 @@ class VMDisplayMetalWindowController: VMDisplayWindowController, UTMSpiceIODeleg
             self.displaySizeDidChange(size: size)
         }
         super.enterLive()
+        resizeConsoleToolbarItem.isEnabled = false // disable item
     }
     
     override func enterSuspended(isBusy busy: Bool) {
@@ -177,7 +181,7 @@ extension VMDisplayMetalWindowController {
 extension VMDisplayMetalWindowController: VMMetalViewInputDelegate {
     private func captureMouse() {
         let action = { () -> Void in
-            self.vmInput?.requestMouseMode(false)
+            self.vm.requestInputTablet(false)
             self.metalView?.captureMouse()
         }
         if isCursorCaptureAlertShown {
@@ -197,7 +201,7 @@ extension VMDisplayMetalWindowController: VMMetalViewInputDelegate {
     }
     
     private func releaseMouse() {
-        vmInput?.requestMouseMode(true)
+        vm.requestInputTablet(true)
         metalView?.releaseMouse()
     }
     

@@ -27,7 +27,10 @@ struct VMConfigDriveCreateView: View {
             Toggle(isOn: $driveImage.removable.animation(), label: {
                 Text("Removable")
             })
-            if !driveImage.removable {
+            if driveImage.removable {
+                Text("Note: Image file for removable drives is specified before launch and can be changed while the VM is running.")
+                    .frame(height: 80) // FIXME: don't hard code this
+            } else {
                 HStack {
                     Text("Size")
                     Spacer()

@@ -28,6 +28,8 @@ extern NSString *const kUTMErrorDomain;
 @property (nonatomic, readonly, nullable) UTMQemuManager *qemu;
 @property (nonatomic, readonly, nullable) UTMQemu *system;
 
+- (void)saveViewState;
+
 @end
 
 @implementation UTMVirtualMachine (Drives)
@@ -62,7 +64,10 @@ extern NSString *const kUTMErrorDomain;
 }
 
 - (BOOL)ejectDrive:(UTMDrive *)drive force:(BOOL)force error:(NSError * _Nullable __autoreleasing *)error {
+    NSString *oldPath = [self.viewState pathForRemovableDrive:drive.name];
     [self.viewState removeBookmarkForRemovableDrive:drive.name];
+    [self saveViewState];
+    [self.system stopAccessingPath:oldPath];
     if (!self.qemu.isConnected) {
         return YES; // not ready yet
     }
@@ -70,35 +75,37 @@ extern NSString *const kUTMErrorDomain;
 }
 
 - (BOOL)changeMediumForDrive:(UTMDrive *)drive url:(NSURL *)url error:(NSError * _Nullable __autoreleasing *)error {
+    [url startAccessingSecurityScopedResource];
     NSData *bookmark = [url bookmarkDataWithOptions:0
                      includingResourceValuesForKeys:nil
                                       relativeToURL:nil
                                               error:error];
+    [url stopAccessingSecurityScopedResource];
     if (!bookmark) {
         if (error) {
             *error = [NSError errorWithDomain:kUTMErrorDomain code:-1 userInfo:@{NSLocalizedDescriptionKey: NSLocalizedString(@"Failed create bookmark.", "UTMVirtualMachine+Drives")}];
         }
         return NO;
     }
-    if (![self checkSandboxAccess:url error:error]) {
-        return NO;
-    }
+    NSString *oldPath = [self.viewState pathForRemovableDrive:drive.name];
     [self.viewState setBookmark:bookmark path:url.path forRemovableDrive:drive.name persistent:NO];
     if (!self.qemu.isConnected) {
         return YES; // not ready yet
     } else {
-        return [self changeMediumForDriveInternal:drive bookmark:bookmark persistent:NO error:error];
+        [self.system stopAccessingPath:oldPath];
+        return [self changeMediumForDriveInternal:drive bookmark:bookmark securityScoped:NO error:error];
     }
 }
 
-- (BOOL)changeMediumForDriveInternal:(UTMDrive *)drive bookmark:(NSData *)bookmark persistent:(BOOL)persistent error:(NSError * _Nullable __autoreleasing *)error {
+- (BOOL)changeMediumForDriveInternal:(UTMDrive *)drive bookmark:(NSData *)bookmark securityScoped:(BOOL)securityScoped error:(NSError * _Nullable __autoreleasing *)error {
     __block BOOL ret = NO;
     dispatch_semaphore_t sema = dispatch_semaphore_create(0);
     [self.system accessDataWithBookmark:bookmark
-                         securityScoped:persistent
+                         securityScoped:securityScoped
                              completion:^(BOOL success, NSData *newBookmark, NSString *path) {
         if (success) {
             [self.viewState setBookmark:newBookmark path:path forRemovableDrive:drive.name persistent:YES];
+            [self saveViewState];
             [self.qemu changeMediumForDrive:drive.name path:path error:error];
         } else {
             if (error) {
@@ -125,22 +132,11 @@ extern NSString *const kUTMErrorDomain;
                 [self.viewState removeBookmarkForRemovableDrive:drive.name];
                 continue;
             }
-            if (![self changeMediumForDriveInternal:drive bookmark:bookmark persistent:persistent error:nil]) {
+            if (![self changeMediumForDriveInternal:drive bookmark:bookmark securityScoped:persistent error:nil]) {
                 UTMLog(@"failed to change %@ image to %@", drive.name, path);
             }
         }
     }
-}
-
-- (BOOL)checkSandboxAccess:(NSURL *)url error:(NSError * _Nullable __autoreleasing *)error {
-    NSFileManager *fileManager = [NSFileManager defaultManager];
-    if (![fileManager fileExistsAtPath:url.path]) {
-        if (error) {
-            *error = [NSError errorWithDomain:kUTMErrorDomain code:-1 userInfo:@{NSLocalizedDescriptionKey: NSLocalizedString(@"This version of UTM does not allow file access outside of UTM's Documents directory.", "UTMVirtualMachine+Drives")}];
-        }
-        return NO;
-    }
-    return YES;
 }
 
 @end

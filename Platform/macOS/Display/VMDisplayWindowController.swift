@@ -22,12 +22,14 @@ class VMDisplayWindowController: NSWindowController {
     @IBOutlet weak var activityIndicator: NSProgressIndicator!
     @IBOutlet weak var startButton: NSButton!
     
+    @IBOutlet weak var toolbar: NSToolbar!
     @IBOutlet weak var stopToolbarItem: NSToolbarItem!
     @IBOutlet weak var startPauseToolbarItem: NSToolbarItem!
     @IBOutlet weak var restartToolbarItem: NSToolbarItem!
     @IBOutlet weak var captureMouseToolbarItem: NSToolbarItem!
     @IBOutlet weak var drivesToolbarItem: NSToolbarItem!
     @IBOutlet weak var sharedFolderToolbarItem: NSToolbarItem!
+    @IBOutlet weak var resizeConsoleToolbarItem: NSToolbarItem!
     
     var vm: UTMVirtualMachine!
     var onClose: ((Notification) -> Void)?
@@ -76,6 +78,13 @@ class VMDisplayWindowController: NSWindowController {
             DispatchQueue.global(qos: .background).async {
                 self.vm.resumeVM()
             }
+        } else if vm.state == .vmStopped {
+            DispatchQueue.global(qos: .userInitiated).async {
+                self.vm.startVM()
+                self.vm.ioDelegate = self
+            }
+        } else {
+            logger.error("Invalid state \(vm.state)")
         }
     }
     
@@ -91,6 +100,9 @@ class VMDisplayWindowController: NSWindowController {
         isMouseCaptued.toggle()
     }
     
+    @IBAction func resizeConsoleButtonPressed(_ sender: Any) {
+    }
+    
     // MARK: - UI states
     
     func enterLive() {
@@ -102,8 +114,10 @@ class VMDisplayWindowController: NSWindowController {
         startPauseToolbarItem.isEnabled = true
         stopToolbarItem.isEnabled = true
         captureMouseToolbarItem.isEnabled = true
+        resizeConsoleToolbarItem.isEnabled = true
         drivesToolbarItem.isEnabled = vmConfiguration?.countDrives ?? 0 > 0
         sharedFolderToolbarItem.isEnabled = vm.hasShareDirectoryEnabled
+        window!.title = vmConfiguration?.name ?? "UTM"
     }
     
     func enterSuspended(isBusy busy: Bool) {
@@ -123,6 +137,7 @@ class VMDisplayWindowController: NSWindowController {
             startButton.isHidden = false
         }
         captureMouseToolbarItem.isEnabled = false
+        resizeConsoleToolbarItem.isEnabled = false
         drivesToolbarItem.isEnabled = false
         sharedFolderToolbarItem.isEnabled = false
     }
@@ -158,6 +173,9 @@ extension VMDisplayWindowController: NSWindowDelegate {
     }
     
     func windowWillClose(_ notification: Notification) {
+        DispatchQueue.global(qos: .background).async {
+            self.vm.quitVM()
+        }
         onClose?(notification)
     }
 }
@@ -177,7 +195,9 @@ extension VMDisplayWindowController: UTMVirtualMachineDelegate {
         switch state {
         case .vmError:
             let message = vmMessage ?? NSLocalizedString("An internal error has occured.", comment: "VMDisplayWindowController")
-            showErrorAlert(message)
+            showErrorAlert(message) { _ in
+                self.close()
+            }
         case .vmStopped, .vmPaused, .vmSuspended:
             enterSuspended(isBusy: false)
         case .vmPausing, .vmStopping, .vmStarting, .vmResuming:
@@ -317,7 +337,6 @@ extension VMDisplayWindowController {
             }
             DispatchQueue.global(qos: .background).async {
                 do {
-                    try self.vm.checkSandboxAccess(url)
                     try self.vm.changeSharedDirectory(url)
                 } catch {
                     DispatchQueue.main.async {

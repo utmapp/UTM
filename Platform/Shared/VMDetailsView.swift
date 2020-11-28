@@ -131,7 +131,7 @@ struct Details: View {
             HStack {
                 Label("Status", systemImage: "info.circle")
                 Spacer()
-                Text(sessionConfig.suspended ? "Suspended" : "Not running")
+                Text(sessionConfig.active ? "Running" : (sessionConfig.suspended ? "Suspended" : "Not running"))
                     .foregroundColor(.secondary)
             }
             HStack {

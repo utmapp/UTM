@@ -158,16 +158,28 @@ jobs:
     needs: build-universal
     if: github.event_name == 'release'
     steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+      - name: Import signing certificate into keychain
+        uses: apple-actions/import-codesign-certs@v1
+        with:
+          p12-file-base64: ${{ secrets.SIGNING_CERTIFICATE_P12_DATA }}
+          p12-password: ${{ secrets.SIGNING_CERTIFICATE_PASSWORD }}
       - name: Download Artifact
         uses: actions/download-artifact@v1
         with:
           name: UTM-macos-universal
       - name: Fixup Permissions
         run: find UTM-macos-universal/UTM.xcarchive -type f \( -path '*/Contents/MacOS/*' -or -path '*/Frameworks/*.dylib' \) -exec chmod +x \{\} \;
-      - name: Install create-dmg
-        run: brew install create-dmg
-      - name: Create DMG
-        run: APPLICATION_LINK=1 create-dmg --volname "UTM" UTM.dmg UTM-macos-universal/UTM.xcarchive/Products/Applications/
+      - name: Package for Release
+        run: ./scripts/resign_mac.sh UTM-macos-universal/UTM.xcarchive . "$SIGNING_TEAM_ID"
+        env:
+          SIGNING_TEAM_ID: ${{ secrets.SIGNING_TEAM_ID }}
+      - name: Notarize app
+        run: npx notarize-cli --file "UTM.dmg" --bundle-id "com.utmapp.UTM"
+        env:
+          NOTARIZE_USERNAME: ${{ secrets.SIGNING_USERNAME }}
+          NOTARIZE_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
       - name: Upload Release Asset
         uses: actions/upload-release-asset@v1.0.1
         env:

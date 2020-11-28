@@ -7,6 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2C33B3A92566C9B100A954A6 /* VMContextMenuModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C33B3A82566C9B100A954A6 /* VMContextMenuModifier.swift */; };
+		2C33B3AA2566C9B100A954A6 /* VMContextMenuModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C33B3A82566C9B100A954A6 /* VMContextMenuModifier.swift */; };
+		2C6D9E03256EE454003298E6 /* VMDisplayTerminalWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C6D9E02256EE454003298E6 /* VMDisplayTerminalWindowController.swift */; };
+		2C6D9E06256F0646003298E6 /* hterm_all.js in Resources */ = {isa = PBXBuildFile; fileRef = E28394BD240C22F1006742E2 /* hterm_all.js */; };
+		2C6D9E07256F0646003298E6 /* terminal.html in Resources */ = {isa = PBXBuildFile; fileRef = E28394B8240C219F006742E2 /* terminal.html */; };
+		2C6D9E08256F0646003298E6 /* terminal.js in Resources */ = {isa = PBXBuildFile; fileRef = E28394B9240C219F006742E2 /* terminal.js */; };
+		2C6D9E142571AFE5003298E6 /* UTMQcow2.c in Sources */ = {isa = PBXBuildFile; fileRef = 2C6D9E132571AFE5003298E6 /* UTMQcow2.c */; };
+		2C6D9E152571AFE5003298E6 /* UTMQcow2.c in Sources */ = {isa = PBXBuildFile; fileRef = 2C6D9E132571AFE5003298E6 /* UTMQcow2.c */; };
 		CE020BA324AEDC7C00B44AB6 /* UTMData.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE020BA224AEDC7C00B44AB6 /* UTMData.swift */; };
 		CE020BA424AEDC7C00B44AB6 /* UTMData.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE020BA224AEDC7C00B44AB6 /* UTMData.swift */; };
 		CE020BA724AEDEF000B44AB6 /* Logging in Frameworks */ = {isa = PBXBuildFile; productRef = CE020BA624AEDEF000B44AB6 /* Logging */; };
@@ -67,7 +75,6 @@
 		CE0B6D0224AD56AE00FE012D /* UTMQemu.m in Sources */ = {isa = PBXBuildFile; fileRef = CE9D197B226542FE00355E14 /* UTMQemu.m */; };
 		CE0B6D0324AD56AE00FE012D /* UTMTerminal.m in Sources */ = {isa = PBXBuildFile; fileRef = E28394B3240C20E0006742E2 /* UTMTerminal.m */; };
 		CE0B6D0424AD56AE00FE012D /* UTMSpiceIO.m in Sources */ = {isa = PBXBuildFile; fileRef = E2D64BC8241DB24B0034E0C6 /* UTMSpiceIO.m */; };
-		CE0B6D0524AD56AE00FE012D /* UTMQemuImg.m in Sources */ = {isa = PBXBuildFile; fileRef = CED33AE22267893D00FF1977 /* UTMQemuImg.m */; };
 		CE0B6D0624AD56AE00FE012D /* UTMTerminalIO.m in Sources */ = {isa = PBXBuildFile; fileRef = E2D64BCB241DB62A0034E0C6 /* UTMTerminalIO.m */; };
 		CE0B6D0724AD56AE00FE012D /* UTMQemuManager.m in Sources */ = {isa = PBXBuildFile; fileRef = CE36B280227668D1004A1435 /* UTMQemuManager.m */; };
 		CE0B6D0824AD56C300FE012D /* qapi-visit-core.c in Sources */ = {isa = PBXBuildFile; fileRef = CECC764F2273A7D50059B955 /* qapi-visit-core.c */; };
@@ -454,7 +461,6 @@
 		CE2D932124AD46670059923A /* qapi-types-audio.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C11423FCEC06001177D6 /* qapi-types-audio.c */; };
 		CE2D932224AD46670059923A /* VMScroll.m in Sources */ = {isa = PBXBuildFile; fileRef = CE20FAE72448D2BE0059AE11 /* VMScroll.m */; };
 		CE2D932324AD46670059923A /* UTMTerminal.m in Sources */ = {isa = PBXBuildFile; fileRef = E28394B3240C20E0006742E2 /* UTMTerminal.m */; };
-		CE2D932424AD46670059923A /* UTMQemuImg.m in Sources */ = {isa = PBXBuildFile; fileRef = CED33AE22267893D00FF1977 /* UTMQemuImg.m */; };
 		CE2D932524AD46670059923A /* qapi-types-char.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C12023FCEC07001177D6 /* qapi-types-char.c */; };
 		CE2D932724AD46670059923A /* CSConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = CE4AA14B2264004F002E4A54 /* CSConnection.m */; };
 		CE2D932824AD46670059923A /* qapi-visit-audio.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C0BE23FCEC02001177D6 /* qapi-visit-audio.c */; };
@@ -581,7 +587,6 @@
 		CE2D93AC24AD46670059923A /* libqemu-system-lm32.utm.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63E922653C7400FC7E63 /* libqemu-system-lm32.utm.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CE2D93AD24AD46670059923A /* libgstsdp-1.0.0.utm.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D641622653C7500FC7E63 /* libgstsdp-1.0.0.utm.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CE2D93AE24AD46670059923A /* libqemu-system-nios2.utm.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63DF22653C7400FC7E63 /* libqemu-system-nios2.utm.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CE2D93AF24AD46670059923A /* libqemu-img.utm.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE4AA14E2265B152002E4A54 /* libqemu-img.utm.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CE2D93B024AD46670059923A /* libgstaudio-1.0.0.utm.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63EF22653C7400FC7E63 /* libgstaudio-1.0.0.utm.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CE2D93B124AD46670059923A /* libgstcheck-1.0.0.utm.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D641422653C7500FC7E63 /* libgstcheck-1.0.0.utm.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CE2D93B224AD46670059923A /* libqemu-system-xtensa.utm.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63ED22653C7400FC7E63 /* libqemu-system-xtensa.utm.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
@@ -848,7 +853,6 @@
 				CE2D93AC24AD46670059923A /* libqemu-system-lm32.utm.dylib in Embed Libraries */,
 				CE2D93AD24AD46670059923A /* libgstsdp-1.0.0.utm.dylib in Embed Libraries */,
 				CE2D93AE24AD46670059923A /* libqemu-system-nios2.utm.dylib in Embed Libraries */,
-				CE2D93AF24AD46670059923A /* libqemu-img.utm.dylib in Embed Libraries */,
 				CE2D93B024AD46670059923A /* libgstaudio-1.0.0.utm.dylib in Embed Libraries */,
 				CE2D93B124AD46670059923A /* libgstcheck-1.0.0.utm.dylib in Embed Libraries */,
 				CE2D93B224AD46670059923A /* libqemu-system-xtensa.utm.dylib in Embed Libraries */,
@@ -926,6 +930,10 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		2C33B3A82566C9B100A954A6 /* VMContextMenuModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMContextMenuModifier.swift; sourceTree = "<group>"; };
+		2C6D9E02256EE454003298E6 /* VMDisplayTerminalWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMDisplayTerminalWindowController.swift; sourceTree = "<group>"; };
+		2C6D9E122571AFE5003298E6 /* UTMQcow2.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UTMQcow2.h; sourceTree = "<group>"; };
+		2C6D9E132571AFE5003298E6 /* UTMQcow2.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = UTMQcow2.c; sourceTree = "<group>"; };
 		423BCE65240F6A80001989AC /* VMConfigSystemArgumentsViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VMConfigSystemArgumentsViewController.m; sourceTree = "<group>"; };
 		423BCE67240F6A8A001989AC /* VMConfigSystemArgumentsViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VMConfigSystemArgumentsViewController.h; sourceTree = "<group>"; };
 		521F3EFA2414F73800130500 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
@@ -1384,7 +1392,6 @@
 		CE4AA14A2264004F002E4A54 /* CSConnection.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CSConnection.h; sourceTree = "<group>"; };
 		CE4AA14B2264004F002E4A54 /* CSConnection.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CSConnection.m; sourceTree = "<group>"; };
 		CE4AA14D22642EB4002E4A54 /* CSConnectionDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CSConnectionDelegate.h; sourceTree = "<group>"; };
-		CE4AA14E2265B152002E4A54 /* libqemu-img.utm.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libqemu-img.utm.dylib"; path = "sysroot-$(PLATFORM_FAMILY_NAME)-$(ARCHS:identifier)/lib/libqemu-img.utm.dylib"; sourceTree = "<group>"; };
 		CE4EF26F2506DBFD00E9D33B /* VMRemovableDrivesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMRemovableDrivesViewController.swift; sourceTree = "<group>"; };
 		CE4EF2712506DD7900E9D33B /* VMRemovableDrivesView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = VMRemovableDrivesView.xib; sourceTree = "<group>"; };
 		CE5076D9250AB55D00C26C19 /* VMDisplayMetalViewController+Pencil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "VMDisplayMetalViewController+Pencil.h"; sourceTree = "<group>"; };
@@ -1510,8 +1517,6 @@
 		CECC76502273A7D50059B955 /* cf-output-visitor.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "cf-output-visitor.c"; sourceTree = "<group>"; };
 		CECC76562273A88F0059B955 /* qemu-compat.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "qemu-compat.h"; sourceTree = "<group>"; };
 		CED234EC254796E500ED0A57 /* NumberTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NumberTextField.swift; sourceTree = "<group>"; };
-		CED33AE12267893D00FF1977 /* UTMQemuImg.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UTMQemuImg.h; sourceTree = "<group>"; };
-		CED33AE22267893D00FF1977 /* UTMQemuImg.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UTMQemuImg.m; sourceTree = "<group>"; };
 		CED814E824C79F070042F0F1 /* VMConfigDriveCreateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMConfigDriveCreateView.swift; sourceTree = "<group>"; };
 		CED814EB24C7C2850042F0F1 /* VMConfigInfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMConfigInfoView.swift; sourceTree = "<group>"; };
 		CED814EE24C7EB760042F0F1 /* ImagePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePicker.swift; sourceTree = "<group>"; };
@@ -1711,6 +1716,7 @@
 				CE0FE12724D3B08B0086CEF0 /* VMDisplayWindow.xib */,
 				CE612AC524D3B50700FA6300 /* VMDisplayWindowController.swift */,
 				CEBDA1D424D69DB20010B5EC /* VMDisplayMetalWindowController.swift */,
+				2C6D9E02256EE454003298E6 /* VMDisplayTerminalWindowController.swift */,
 				CE03D0D124DCF4B600F76B84 /* VMMetalView.swift */,
 				CE03D0D324DCF6DD00F76B84 /* VMMetalViewInputDelegate.swift */,
 			);
@@ -1787,7 +1793,6 @@
 				CE2D640322653C7500FC7E63 /* libopus.0.utm.dylib */,
 				CE2D641922653C7600FC7E63 /* libpixman-1.0.utm.dylib */,
 				CE2D640522653C7500FC7E63 /* libpng16.16.utm.dylib */,
-				CE4AA14E2265B152002E4A54 /* libqemu-img.utm.dylib */,
 				CE2D63FD22653C7500FC7E63 /* libqemu-system-aarch64.utm.dylib */,
 				CE2D641322653C7500FC7E63 /* libqemu-system-alpha.utm.dylib */,
 				CE2D640722653C7500FC7E63 /* libqemu-system-arm.utm.dylib */,
@@ -2265,10 +2270,10 @@
 				CE6EDCE1241DA0E900A719DC /* UTMLogging.m */,
 				CEF83ED124FDEA9400557D15 /* UTMPortAllocator.h */,
 				CEF83ED224FDEA9400557D15 /* UTMPortAllocator.m */,
+				2C6D9E122571AFE5003298E6 /* UTMQcow2.h */,
+				2C6D9E132571AFE5003298E6 /* UTMQcow2.c */,
 				CE9D197A226542FE00355E14 /* UTMQemu.h */,
 				CE9D197B226542FE00355E14 /* UTMQemu.m */,
-				CED33AE12267893D00FF1977 /* UTMQemuImg.h */,
-				CED33AE22267893D00FF1977 /* UTMQemuImg.m */,
 				CE36B27F227668D1004A1435 /* UTMQemuManager.h */,
 				CE36B280227668D1004A1435 /* UTMQemuManager.m */,
 				CEF83EB824F9ABEA00557D15 /* UTMQemuManager+BlockDevices.h */,
@@ -2366,6 +2371,7 @@
 				CE2D954924AD4F980059923A /* VMConfigStringPicker.swift */,
 				CE2D955324AD4F980059923A /* VMConfigSystemView.swift */,
 				CE6D21DB2553A6ED001D29C5 /* VMConfirmActionModifier.swift */,
+				2C33B3A82566C9B100A954A6 /* VMContextMenuModifier.swift */,
 				CE2D954B24AD4F980059923A /* VMDetailsView.swift */,
 				CEFC6CDC24C25697003F6962 /* VMDriveImage.swift */,
 				CE2D954224AD4F980059923A /* VMPlaceholderView.swift */,
@@ -2648,6 +2654,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2C6D9E06256F0646003298E6 /* hterm_all.js in Resources */,
+				2C6D9E07256F0646003298E6 /* terminal.html in Resources */,
+				2C6D9E08256F0646003298E6 /* terminal.js in Resources */,
 				CE0B6CEC24AD532500FE012D /* Assets.xcassets in Resources */,
 				CEF83F262500901300557D15 /* qemu in Resources */,
 				CE4698FA24C8FBD9008C1BD6 /* Icons in Resources */,
@@ -2808,7 +2817,9 @@
 				CE2D92B724AD46670059923A /* qapi-visit-common.c in Sources */,
 				CEF83EBE24F9C3BF00557D15 /* UTMVirtualMachine+Drives.m in Sources */,
 				CE2D92B824AD46670059923A /* qapi-events-trace.c in Sources */,
+				2C6D9E142571AFE5003298E6 /* UTMQcow2.c in Sources */,
 				CE2D92B924AD46670059923A /* qapi-events-qdev.c in Sources */,
+				2C33B3A92566C9B100A954A6 /* VMContextMenuModifier.swift in Sources */,
 				CEB63A9424F4747900CAF323 /* VMListViewController.m in Sources */,
 				CE5076DB250AB55D00C26C19 /* VMDisplayMetalViewController+Pencil.m in Sources */,
 				CE2D92BA24AD46670059923A /* qapi-events-dump.c in Sources */,
@@ -2943,7 +2954,6 @@
 				CE2D932224AD46670059923A /* VMScroll.m in Sources */,
 				CE2D957D24AD4F990059923A /* VMConfigNetworkPortForwardView.swift in Sources */,
 				CE2D932324AD46670059923A /* UTMTerminal.m in Sources */,
-				CE2D932424AD46670059923A /* UTMQemuImg.m in Sources */,
 				CEB63A7D24F46E5700CAF323 /* VMConfigSwitch.m in Sources */,
 				CE2D932524AD46670059923A /* qapi-types-char.c in Sources */,
 				CE2D932724AD46670059923A /* CSConnection.m in Sources */,
@@ -2962,11 +2972,11 @@
 				CEB63A7B24F469E300CAF323 /* UTMJailbreak.m in Sources */,
 				CE0B6D0E24AD56E500FE012D /* UTMShaders.metal in Sources */,
 				CE0B6D3924AD57FD00FE012D /* qapi-commands-job.c in Sources */,
-				CE0B6D0524AD56AE00FE012D /* UTMQemuImg.m in Sources */,
 				CE0B6D3724AD57FD00FE012D /* qapi-events-block-core.c in Sources */,
 				CE0B6D5E24AD584D00FE012D /* qapi-visit-authz.c in Sources */,
 				CE0B6D4624AD584C00FE012D /* qapi-events-rdma.c in Sources */,
 				CE0B6D0624AD56AE00FE012D /* UTMTerminalIO.m in Sources */,
+				2C6D9E03256EE454003298E6 /* VMDisplayTerminalWindowController.swift in Sources */,
 				CE6D21DD2553A6ED001D29C5 /* VMConfirmActionModifier.swift in Sources */,
 				CE020BB724B14F8400B44AB6 /* UTMVirtualMachineExtension.swift in Sources */,
 				CE0B6D4424AD584C00FE012D /* qapi-visit-block.c in Sources */,
@@ -3093,6 +3103,7 @@
 				CE2D956C24AD4F990059923A /* VMCardView.swift in Sources */,
 				CE0B6D7124AD584D00FE012D /* qapi-types-introspect.c in Sources */,
 				CE0B6D0D24AD56C300FE012D /* qapi-util.c in Sources */,
+				2C6D9E152571AFE5003298E6 /* UTMQcow2.c in Sources */,
 				CE2D955C24AD4F980059923A /* VMConfigQEMUView.swift in Sources */,
 				CE2D953324AD4F040059923A /* UTMConfigurationExtension.swift in Sources */,
 				CE0B6D7024AD584D00FE012D /* qapi-types-job.c in Sources */,
@@ -3113,6 +3124,7 @@
 				CE0B6D7624AD584D00FE012D /* qapi-types-machine.c in Sources */,
 				CE0B6D3824AD57FD00FE012D /* qapi-commands-authz.c in Sources */,
 				CE0B6D4524AD584C00FE012D /* qapi-types-run-state.c in Sources */,
+				2C33B3AA2566C9B100A954A6 /* VMContextMenuModifier.swift in Sources */,
 				CE0B6D5B24AD584D00FE012D /* qapi-visit-misc-target.c in Sources */,
 				CE0B6D0C24AD56C300FE012D /* error.c in Sources */,
 				CE2D955A24AD4F980059923A /* VMToolbarModifier.swift in Sources */,
@@ -3231,7 +3243,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CLANG_ENABLE_MODULES = YES;
-				CURRENT_PROJECT_VERSION = 9;
+				CURRENT_PROJECT_VERSION = 12;
 				ENABLE_BITCODE = NO;
 				ENABLE_PREVIEWS = YES;
 				HEADER_SEARCH_PATHS = (
@@ -3252,7 +3264,7 @@
 					"$(PROJECT_DIR)/$(SYSROOT_DIR)/lib",
 					"$(PROJECT_DIR)/$(SYSROOT_DIR)/lib/gstreamer-1.0",
 				);
-				MARKETING_VERSION = 2.0.9;
+				MARKETING_VERSION = 2.0.12;
 				PRODUCT_BUNDLE_IDENTIFIER = com.utmapp.UTM;
 				PRODUCT_NAME = "$(PROJECT_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "Platform/Swift-Bridging-Header.h";
@@ -3268,7 +3280,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CLANG_ENABLE_MODULES = YES;
-				CURRENT_PROJECT_VERSION = 9;
+				CURRENT_PROJECT_VERSION = 12;
 				ENABLE_BITCODE = NO;
 				ENABLE_PREVIEWS = YES;
 				HEADER_SEARCH_PATHS = (
@@ -3289,7 +3301,7 @@
 					"$(PROJECT_DIR)/$(SYSROOT_DIR)/lib",
 					"$(PROJECT_DIR)/$(SYSROOT_DIR)/lib/gstreamer-1.0",
 				);
-				MARKETING_VERSION = 2.0.9;
+				MARKETING_VERSION = 2.0.12;
 				PRODUCT_BUNDLE_IDENTIFIER = com.utmapp.UTM;
 				PRODUCT_NAME = "$(PROJECT_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "Platform/Swift-Bridging-Header.h";
@@ -3309,7 +3321,8 @@
 				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 9;
+				CURRENT_PROJECT_VERSION = 12;
+				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				HEADER_SEARCH_PATHS = (
 					"$(PROJECT_DIR)/$(SYSROOT_DIR)/include",
@@ -3329,7 +3342,7 @@
 					"$(PROJECT_DIR)/$(SYSROOT_DIR)/lib/gstreamer-1.0",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 11.0;
-				MARKETING_VERSION = 2.0.9;
+				MARKETING_VERSION = 2.0.12;
 				PRODUCT_BUNDLE_IDENTIFIER = com.utmapp.UTM;
 				PRODUCT_NAME = "$(PROJECT_NAME)";
 				SDKROOT = macosx;
@@ -3351,7 +3364,8 @@
 				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 9;
+				CURRENT_PROJECT_VERSION = 12;
+				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				HEADER_SEARCH_PATHS = (
 					"$(PROJECT_DIR)/$(SYSROOT_DIR)/include",
@@ -3371,7 +3385,7 @@
 					"$(PROJECT_DIR)/$(SYSROOT_DIR)/lib/gstreamer-1.0",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 11.0;
-				MARKETING_VERSION = 2.0.9;
+				MARKETING_VERSION = 2.0.12;
 				PRODUCT_BUNDLE_IDENTIFIER = com.utmapp.UTM;
 				PRODUCT_NAME = "$(PROJECT_NAME)";
 				SDKROOT = macosx;
@@ -3508,6 +3522,7 @@
 				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
 				INFOPLIST_FILE = QEMUHelper/Info.plist;
 				MACOSX_DEPLOYMENT_TARGET = 11.0;
 				MARKETING_VERSION = 2.0;
@@ -3526,6 +3541,7 @@
 				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
 				INFOPLIST_FILE = QEMUHelper/Info.plist;
 				MACOSX_DEPLOYMENT_TARGET = 11.0;
 				MARKETING_VERSION = 2.0;

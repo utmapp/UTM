@@ -84,9 +84,3 @@ esac
 ARCH_ARGS=$(echo $ARCH | xargs printf -- "-arch %s ")
 
 xcodebuild archive -archivePath "$OUTPUT" -scheme "$SCHEME" -sdk "$SDK" $ARCH_ARGS -configuration Release $CODESIGN_ARGS
-
-if [ "$PLATFORM" == "macos" ]; then
-    # we have to ad-hoc sign the QEMU binaries
-    echo "Signing QEMU binaries..."
-    find "$OUTPUT.xcarchive" -path '*/Contents/MacOS/qemu-*' -type f -exec codesign -s - -f --entitlements "$BASEDIR/../QEMUHelper/QEMUHelper.entitlements" --preserve-metadata=identifier,requirements,flags,runtime \{\} \;
-fi

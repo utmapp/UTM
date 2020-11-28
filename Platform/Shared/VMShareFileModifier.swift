@@ -23,7 +23,10 @@ struct VMShareFileModifier: ViewModifier {
     
     #if os(macOS)
     func body(content: Content) -> some View {
-        content.overlay(SharingsPicker(isPresented: $isPresented, sharingItems: files()))
+        ZStack {
+            SharingsPicker(isPresented: $isPresented, sharingItems: files())
+            content
+        }
     }
     #else
     func body(content: Content) -> some View {

@@ -27,7 +27,7 @@
 extern NSString *const kUTMErrorDomain;
 
 #if TARGET_OS_IPHONE
-static const NSURLBookmarkCreationOptions kBookmarkCreationOptions = 0;
+static const NSURLBookmarkCreationOptions kBookmarkCreationOptions = NSURLBookmarkCreationMinimalBookmark;
 static const NSURLBookmarkResolutionOptions kBookmarkResolutionOptions = 0;
 #else
 static const NSURLBookmarkCreationOptions kBookmarkCreationOptions = NSURLBookmarkCreationWithSecurityScope;
@@ -38,6 +38,8 @@ static const NSURLBookmarkResolutionOptions kBookmarkResolutionOptions = NSURLBo
 
 @property (nonatomic, readonly, nullable) UTMQemuManager *qemu;
 @property (nonatomic, readonly, nullable) id<UTMInputOutput> ioService;
+
+- (void)saveViewState;
 
 @end
 
@@ -60,15 +62,18 @@ static const NSURLBookmarkResolutionOptions kBookmarkResolutionOptions = NSURLBo
 }
 
 - (BOOL)saveSharedDirectory:(NSURL *)url error:(NSError * _Nullable __autoreleasing *)error {
+    [url startAccessingSecurityScopedResource];
     NSData *bookmark = [url bookmarkDataWithOptions:kBookmarkCreationOptions
                      includingResourceValuesForKeys:nil
                                       relativeToURL:nil
                                               error:error];
+    [url stopAccessingSecurityScopedResource];
     if (!bookmark) {
         return NO;
     } else {
         self.viewState.sharedDirectory = bookmark;
         self.viewState.sharedDirectoryPath = url.path;
+        [self saveViewState];
         return YES;
     }
 }
@@ -89,6 +94,7 @@ static const NSURLBookmarkResolutionOptions kBookmarkResolutionOptions = NSURLBo
 - (void)clearSharedDirectory {
     self.viewState.sharedDirectory = nil;
     self.viewState.sharedDirectoryPath = nil;
+    [self saveViewState];
 }
 
 - (BOOL)startSharedDirectoryWithError:(NSError * _Nullable __autoreleasing *)error {
@@ -122,11 +128,15 @@ static const NSURLBookmarkResolutionOptions kBookmarkResolutionOptions = NSURLBo
                                         bookmarkDataIsStale:&stale
                                                       error:error];
         if (shareURL) {
-            [spiceIO changeSharedDirectory:shareURL];
+            BOOL success = YES;
             if (stale) {
                 UTMLog(@"stale bookmark, attempting to recreate");
-                return [self saveSharedDirectory:shareURL error:error];
+                success = [self saveSharedDirectory:shareURL error:error];
             }
+            if (success) {
+                [spiceIO changeSharedDirectory:shareURL];
+            }
+            return success;
         } else {
             return NO;
         }

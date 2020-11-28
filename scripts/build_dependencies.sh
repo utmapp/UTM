@@ -15,9 +15,6 @@
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 set -e
 
-# Include URL list
-source "$(dirname $0)/sources"
-
 # Printing coloured lines
 GREEN='\033[0;32m'
 RED='\033[0;31m'
@@ -289,15 +286,15 @@ fixup () {
     echo "${GREEN}Fixing up $FILE...${NC}"
     newname="@rpath/$NEWFILENAME"
     install_name_tool -id "$newname" "$FILE"
-    for f in $LIST
+    for g in $LIST
     do
-        base=$(basename "$f")
+        base=$(basename "$g")
         basefilename=${base%.*}
         basefileext=${base:${#basefilename}}
-        dir=$(dirname "$f")
+        dir=$(dirname "$g")
         if [ "$dir" == "$PREFIX/lib" ]; then
             newname="@rpath/$basefilename.utm$basefileext"
-            install_name_tool -change "$f" "$newname" "$FILE"
+            install_name_tool -change "$g" "$newname" "$FILE"
         fi
     done
     mv "$FILE" "$(dirname "$FILE")/$NEWFILENAME"
@@ -307,6 +304,7 @@ fixup () {
 fixup_all () {
     OLDIFS=$IFS
     IFS=$'\n'
+    QEMU_ENTITLEMENTS="$PATCHES_DIR/QEMU.entitlements"
     FILES=$(find "$SYSROOT_DIR/lib" -type f -name "*.dylib")
     for f in $FILES
     do
@@ -316,6 +314,8 @@ fixup_all () {
     for f in $FILES
     do
         fixup $f
+        install_name_tool -add_rpath "@executable_path/../../../../Frameworks" "$f"
+        codesign --force --sign - --entitlements "$QEMU_ENTITLEMENTS" --timestamp=none "$f"
     done
     IFS=$OLDIFS
 }
@@ -437,6 +437,9 @@ BASEDIR="$(dirname "$(realpath $0)")"
 BUILD_DIR="build-$PLATFORM_FAMILY_NAME-$ARCH"
 SYSROOT_DIR="sysroot-$PLATFORM_FAMILY_NAME-$ARCH"
 PATCHES_DIR="$BASEDIR/../patches"
+
+# Include URL list
+source "$PATCHES_DIR/sources"
 
 if [ -z "$QEMU_DIR" ]; then
     FILE="$(basename $QEMU_SRC)"

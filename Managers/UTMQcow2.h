@@ -14,20 +14,18 @@
 // limitations under the License.
 //
 
-#import "UTMVirtualMachine.h"
+#ifndef UTMQcow2_h
+#define UTMQcow2_h
 
-@class UTMDrive;
+#include <stdbool.h>
+#include <CoreFoundation/CoreFoundation.h>
 
-NS_ASSUME_NONNULL_BEGIN
+CF_IMPLICIT_BRIDGING_ENABLED
+#pragma clang assume_nonnull begin
 
-@interface UTMVirtualMachine (Drives)
+bool GenerateDefaultQcow2File(CFURLRef path, size_t sizeInMib);
 
-@property (nonatomic, readonly) NSArray<UTMDrive *> *drives;
+#pragma clang assume_nonnull end
+CF_IMPLICIT_BRIDGING_DISABLED
 
-- (BOOL)ejectDrive:(UTMDrive *)drive force:(BOOL)force error:(NSError * _Nullable *)error;
-- (BOOL)changeMediumForDrive:(UTMDrive *)drive url:(NSURL *)url error:(NSError * _Nullable *)error;
-- (void)restoreRemovableDrivesFromBookmarks;
-
-@end
-
-NS_ASSUME_NONNULL_END
+#endif /* UTMQcow2_h */

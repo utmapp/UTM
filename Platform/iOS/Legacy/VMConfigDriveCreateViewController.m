@@ -15,7 +15,7 @@
 //
 
 #import "VMConfigDriveCreateViewController.h"
-#import "UTMQemuImg.h"
+#import "UTMQcow2.h"
 
 extern NSString *const kUTMErrorDomain;
 
@@ -62,27 +62,14 @@ extern NSString *const kUTMErrorDomain;
 }
 
 - (BOOL)createDisk:(NSError * _Nullable *)err {
-    __block NSError *perr = nil;
-    dispatch_semaphore_t sema = dispatch_semaphore_create(0);
-    UTMQemuImg *imgCreate = [[UTMQemuImg alloc] init];
-    imgCreate.op = kUTMQemuImgCreate;
-    imgCreate.outputPath = self.changePath;
-    imgCreate.sizeMiB = self.size;
-    imgCreate.compressed = self.imageExpanding;
-    [imgCreate startWithCompletion:^(BOOL success, NSString *msg){
-        if (!success) {
-            if (!msg) {
-                msg = NSLocalizedString(@"Disk creation failed.", @"VMConfigDriveCreateViewController");
-            }
-            perr = [NSError errorWithDomain:kUTMErrorDomain code:-1 userInfo:@{NSLocalizedDescriptionKey: msg}];
+    if (!GenerateDefaultQcow2File((__bridge CFURLRef)self.changePath, self.size)) {
+        if (err) {
+            NSString *msg = NSLocalizedString(@"Disk creation failed.", @"VMConfigDriveCreateViewController");
+            *err = [NSError errorWithDomain:kUTMErrorDomain code:-1 userInfo:@{NSLocalizedDescriptionKey: msg}];
         }
-        dispatch_semaphore_signal(sema);
-    }];
-    dispatch_semaphore_wait(sema, DISPATCH_TIME_FOREVER);
-    if (err) {
-        *err = perr;
+        return NO;
     }
-    return (perr == nil);
+    return YES;
 }
 
 - (void)workWithIndicator:(NSString *)msg block:(void(^)(void))block completion:(void (^)(void))completion  {

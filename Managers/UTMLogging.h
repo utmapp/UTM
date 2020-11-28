@@ -22,6 +22,8 @@ void UTMLog(NSString *format, ...) NS_FORMAT_FUNCTION(1,2) NS_NO_TAIL_CALL;
 
 @interface UTMLogging : NSObject
 
+@property (nonatomic, readonly) NSPipe *standardOutput;
+@property (nonatomic, readonly) NSPipe *standardError;
 @property (nonatomic) NSString *lastErrorLine;
 
 + (UTMLogging *)sharedInstance;

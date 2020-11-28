@@ -266,7 +266,7 @@ class VMMetalView: MTKView {
     override func mouseMoved(with event: NSEvent) {
         logger.debug("mouse moved: \(event.deltaX), \(event.deltaY)")
         if isMouseCaptured {
-            inputDelegate?.mouseMove(relativePoint: CGPoint(x: event.deltaX, y: event.deltaY),
+            inputDelegate?.mouseMove(relativePoint: CGPoint(x: event.deltaX, y: -event.deltaY),
                                      button: NSEvent.pressedMouseButtons.inputButtons())
         } else {
             let location = event.locationInWindow

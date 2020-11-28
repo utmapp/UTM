@@ -45,10 +45,10 @@ struct VMRemovableDrivesView: View {
                     Text(sessionConfig.sharedDirectoryPath ?? "").truncationMode(.head)
                     Button(action: clearShareDirectory, label: {
                         Text("Clear")
-                    })
+                    }).disabled(vm.viewState.suspended)
                     Button(action: { shareDirectoryFileImportPresented.toggle() }, label: {
                         Text("Browse")
-                    })
+                    }).disabled(vm.viewState.suspended)
                 }.fileImporter(isPresented: $shareDirectoryFileImportPresented, allowedContentTypes: [.folder], onCompletion: selectShareDirectory)
             }
             ForEach(vm.drives) { drive in
@@ -62,13 +62,13 @@ struct VMRemovableDrivesView: View {
                             .truncationMode(.head)
                         Button(action: { clearRemovableImage(forDrive: drive) }, label: {
                             Text("Clear")
-                        })
+                        }).disabled(vm.viewState.suspended)
                         Button(action: {
                             currentDrive = drive
                             diskImageFileImportPresented.toggle()
                         }, label: {
                             Text("Browse")
-                        })
+                        }).disabled(vm.viewState.suspended)
                     }
                 }
             }.fileImporter(isPresented: $diskImageFileImportPresented, allowedContentTypes: [.data]) { result in
@@ -84,7 +84,6 @@ struct VMRemovableDrivesView: View {
         data.busyWork {
             switch result {
             case .success(let url):
-                try vm.checkSandboxAccess(url)
                 try vm.changeSharedDirectory(url)
                 break
             case .failure(let err):

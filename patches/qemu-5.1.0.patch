@@ -5969,3 +5969,64 @@ index b0194cb..eb57116 100644
      hvf='no'
    else
      hvf='yes'
+diff -urN a/softmmu/main.c b/softmmu/main.c
+--- a/softmmu/main.c	2020-08-11 14:17:14.000000000 -0500
++++ b/softmmu/main.c	2020-11-21 15:43:52.000000000 -0600
+@@ -26,6 +26,45 @@
+ #include "qemu-common.h"
+ #include "sysemu/sysemu.h"
+ 
++#ifdef CONFIG_DARWIN
++#include <pthread.h>
++#include <sys/event.h>
++#include <stdlib.h>
++#include <unistd.h>
++
++const char __attribute__((section("__TEXT,__info_plist"))) info_plist[] =
++    "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
++    "<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">\n"
++    "<plist version=\"1.0\">\n"
++    "<dict>\n"
++    "	<key>CFBundleIdentifier</key>\n"
++    "	<string>org.qemu.QEMU</string>\n"
++    "</dict>\n"
++    "</plist>\n";
++
++// http://mac-os-x.10953.n7.nabble.com/Ensure-NSTask-terminates-when-parent-application-does-td31477.html
++static void *WatchForParentTermination(void *args)
++{
++    pid_t ppid = getppid(); // get parent pid
++
++    int kq = kqueue();
++    if (kq != -1) {
++        struct kevent procEvent; // wait for parent to exit
++        EV_SET(&procEvent, // kevent
++               ppid, // ident
++               EVFILT_PROC, // filter
++               EV_ADD, // flags
++               NOTE_EXIT, // fflags
++               0, // data
++               0); // udata
++        kevent(kq, &procEvent, 1, &procEvent, 1, NULL);
++    }
++
++    exit(0);
++    return NULL;
++}
++#endif // CONFIG_DARWIN
++
+ #ifdef CONFIG_SDL
+ #if defined(__APPLE__) || defined(main)
+ #include <SDL.h>
+@@ -46,6 +85,11 @@
+ int main(int argc, char **argv, char **envp)
+ {
+     qemu_init(argc, argv, envp);
++#ifdef CONFIG_DARWIN
++    pthread_t thread;
++    pthread_create(&thread, NULL, WatchForParentTermination, NULL);
++    pthread_detach(thread);
++#endif
+     qemu_main_loop();
+     qemu_cleanup();
+ 

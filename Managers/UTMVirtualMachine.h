@@ -22,6 +22,7 @@
 #import "UTMInputOutput.h"
 
 @class UTMConfiguration;
+@class UTMLogging;
 @class UTMQemuManager;
 @class UTMScreenshot;
 
