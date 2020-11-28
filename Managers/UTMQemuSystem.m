@@ -303,7 +303,7 @@ static size_t hostCpuCount(void) {
     
     // use mirror mapping when we don't have JIT entitlements
     if (!jb_has_jit_entitlement()) {
-        accel = [accel stringByAppendingString:@",mirror-rwx=on"];
+        accel = [accel stringByAppendingString:@",split-wx=on"];
     }
     
     return accel;

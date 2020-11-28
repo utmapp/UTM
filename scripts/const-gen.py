@@ -20,7 +20,6 @@ TARGETS = [
     Name("cris", "CRIS"),
     Name("hppa", "HPPA"),
     Name("i386", "i386 (x86)"),
-    Name("lm32", "LatticeMico32 (lm32)"),
     Name("m68k", "m68k"),
     Name("microblaze", "Microblaze"),
     Name("microblazeel", "Microblaze (Little Endian)"),
@@ -42,7 +41,6 @@ TARGETS = [
     Name("sparc", "SPARC"),
     Name("sparc64", "SPARC64"),
     Name("tricore", "TriCore"),
-    Name("unicore32", "Unicore32"),
     Name("x86_64", "x86_64"),
     Name("xtensa", "Xtensa"),
     Name("xtensaeb", "Xtensa (Big Endian)")
