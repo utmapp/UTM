@@ -14,12 +14,12 @@
 # This work is licensed under the terms of the GNU GPL, version 2.
 # See the COPYING file in the top-level directory.
 
+from collections import OrderedDict
 import os
 import re
-from collections import OrderedDict
 
-from qapi.error import QAPIParseError, QAPISemError
-from qapi.source import QAPISourceInfo
+from .error import QAPIParseError, QAPISemError
+from .source import QAPISourceInfo
 
 
 class QAPISchemaParser:
@@ -52,8 +52,8 @@ class QAPISchemaParser:
             info = self.info
             if self.tok == '#':
                 self.reject_expr_doc(cur_doc)
-                cur_doc = self.get_doc(info)
-                self.docs.append(cur_doc)
+                for cur_doc in self.get_doc(info):
+                    self.docs.append(cur_doc)
                 continue
 
             expr = self.get_expr(False)
@@ -270,7 +270,8 @@ class QAPISchemaParser:
             raise QAPIParseError(
                 self, "junk after '##' at start of documentation comment")
 
-        doc = QAPIDoc(self, info)
+        docs = []
+        cur_doc = QAPIDoc(self, info)
         self.accept(False)
         while self.tok == '#':
             if self.val.startswith('##'):
@@ -279,10 +280,20 @@ class QAPISchemaParser:
                     raise QAPIParseError(
                         self,
                         "junk after '##' at end of documentation comment")
-                doc.end_comment()
+                cur_doc.end_comment()
+                docs.append(cur_doc)
                 self.accept()
-                return doc
-            doc.append(self.val)
+                return docs
+            if self.val.startswith('# ='):
+                if cur_doc.symbol:
+                    raise QAPIParseError(
+                        self,
+                        "unexpected '=' markup in definition documentation")
+                if cur_doc.body.text:
+                    cur_doc.end_comment()
+                    docs.append(cur_doc)
+                    cur_doc = QAPIDoc(self, info)
+            cur_doc.append(self.val)
             self.accept(False)
 
         raise QAPIParseError(self, "documentation comment must end with '##'")
@@ -308,18 +319,32 @@ class QAPIDoc:
     """
 
     class Section:
-        def __init__(self, name=None):
+        def __init__(self, parser, name=None, indent=0):
+            # parser, for error messages about indentation
+            self._parser = parser
             # optional section name (argument/member or section name)
             self.name = name
-            # the list of lines for this section
             self.text = ''
+            # the expected indent level of the text of this section
+            self._indent = indent
 
         def append(self, line):
+            # Strip leading spaces corresponding to the expected indent level
+            # Blank lines are always OK.
+            if line:
+                indent = re.match(r'\s*', line).end()
+                if indent < self._indent:
+                    raise QAPIParseError(
+                        self._parser,
+                        "unexpected de-indent (expected at least %d spaces)" %
+                        self._indent)
+                line = line[self._indent:]
+
             self.text += line.rstrip() + '\n'
 
     class ArgSection(Section):
-        def __init__(self, name):
-            super().__init__(name)
+        def __init__(self, parser, name, indent=0):
+            super().__init__(parser, name, indent)
             self.member = None
 
         def connect(self, member):
@@ -333,7 +358,7 @@ class QAPIDoc:
         self._parser = parser
         self.info = info
         self.symbol = None
-        self.body = QAPIDoc.Section()
+        self.body = QAPIDoc.Section(parser)
         # dict mapping parameter name to ArgSection
         self.args = OrderedDict()
         self.features = OrderedDict()
@@ -417,10 +442,10 @@ class QAPIDoc:
                 self._append_line = self._append_various_line
                 self._append_various_line(line)
             else:
-                self._append_freeform(line.strip())
+                self._append_freeform(line)
         else:
             # This is a free-form documentation block
-            self._append_freeform(line.strip())
+            self._append_freeform(line)
 
     def _append_args_line(self, line):
         """
@@ -437,8 +462,21 @@ class QAPIDoc:
         name = line.split(' ', 1)[0]
 
         if name.startswith('@') and name.endswith(':'):
-            line = line[len(name)+1:]
-            self._start_args_section(name[1:-1])
+            # If line is "@arg:   first line of description", find
+            # the index of 'f', which is the indent we expect for any
+            # following lines.  We then remove the leading "@arg:"
+            # from line and replace it with spaces so that 'f' has the
+            # same index as it did in the original line and can be
+            # handled the same way we will handle following lines.
+            indent = re.match(r'@\S*:\s*', line).end()
+            line = line[indent:]
+            if not line:
+                # Line was just the "@arg:" header; following lines
+                # are not indented
+                indent = 0
+            else:
+                line = ' ' * indent + line
+            self._start_args_section(name[1:-1], indent)
         elif self._is_section_tag(name):
             self._append_line = self._append_various_line
             self._append_various_line(line)
@@ -453,14 +491,27 @@ class QAPIDoc:
                 self._append_various_line(line)
             return
 
-        self._append_freeform(line.strip())
+        self._append_freeform(line)
 
     def _append_features_line(self, line):
         name = line.split(' ', 1)[0]
 
         if name.startswith('@') and name.endswith(':'):
-            line = line[len(name)+1:]
-            self._start_features_section(name[1:-1])
+            # If line is "@arg:   first line of description", find
+            # the index of 'f', which is the indent we expect for any
+            # following lines.  We then remove the leading "@arg:"
+            # from line and replace it with spaces so that 'f' has the
+            # same index as it did in the original line and can be
+            # handled the same way we will handle following lines.
+            indent = re.match(r'@\S*:\s*', line).end()
+            line = line[indent:]
+            if not line:
+                # Line was just the "@arg:" header; following lines
+                # are not indented
+                indent = 0
+            else:
+                line = ' ' * indent + line
+            self._start_features_section(name[1:-1], indent)
         elif self._is_section_tag(name):
             self._append_line = self._append_various_line
             self._append_various_line(line)
@@ -472,7 +523,7 @@ class QAPIDoc:
             self._append_various_line(line)
             return
 
-        self._append_freeform(line.strip())
+        self._append_freeform(line)
 
     def _append_various_line(self, line):
         """
@@ -492,16 +543,25 @@ class QAPIDoc:
                                  "'%s' can't follow '%s' section"
                                  % (name, self.sections[0].name))
         if self._is_section_tag(name):
-            line = line[len(name)+1:]
-            self._start_section(name[:-1])
-
-        if (not self._section.name or
-                not self._section.name.startswith('Example')):
-            line = line.strip()
+            # If line is "Section:   first line of description", find
+            # the index of 'f', which is the indent we expect for any
+            # following lines.  We then remove the leading "Section:"
+            # from line and replace it with spaces so that 'f' has the
+            # same index as it did in the original line and can be
+            # handled the same way we will handle following lines.
+            indent = re.match(r'\S*:\s*', line).end()
+            line = line[indent:]
+            if not line:
+                # Line was just the "Section:" header; following lines
+                # are not indented
+                indent = 0
+            else:
+                line = ' ' * indent + line
+            self._start_section(name[:-1], indent)
 
         self._append_freeform(line)
 
-    def _start_symbol_section(self, symbols_dict, name):
+    def _start_symbol_section(self, symbols_dict, name, indent):
         # FIXME invalid names other than the empty string aren't flagged
         if not name:
             raise QAPIParseError(self._parser, "invalid parameter name")
@@ -510,21 +570,21 @@ class QAPIDoc:
                                  "'%s' parameter name duplicated" % name)
         assert not self.sections
         self._end_section()
-        self._section = QAPIDoc.ArgSection(name)
+        self._section = QAPIDoc.ArgSection(self._parser, name, indent)
         symbols_dict[name] = self._section
 
-    def _start_args_section(self, name):
-        self._start_symbol_section(self.args, name)
+    def _start_args_section(self, name, indent):
+        self._start_symbol_section(self.args, name, indent)
 
-    def _start_features_section(self, name):
-        self._start_symbol_section(self.features, name)
+    def _start_features_section(self, name, indent):
+        self._start_symbol_section(self.features, name, indent)
 
-    def _start_section(self, name=None):
+    def _start_section(self, name=None, indent=0):
         if name in ('Returns', 'Since') and self.has_section(name):
             raise QAPIParseError(self._parser,
                                  "duplicated '%s' section" % name)
         self._end_section()
-        self._section = QAPIDoc.Section(name)
+        self._section = QAPIDoc.Section(self._parser, name, indent)
         self.sections.append(self._section)
 
     def _end_section(self):
@@ -547,7 +607,8 @@ class QAPIDoc:
     def connect_member(self, member):
         if member.name not in self.args:
             # Undocumented TODO outlaw
-            self.args[member.name] = QAPIDoc.ArgSection(member.name)
+            self.args[member.name] = QAPIDoc.ArgSection(self._parser,
+                                                        member.name)
         self.args[member.name].connect(member)
 
     def connect_feature(self, feature):

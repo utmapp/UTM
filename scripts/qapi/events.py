@@ -14,23 +14,35 @@ This work is licensed under the terms of the GNU GPL, version 2.
 See the COPYING file in the top-level directory.
 """
 
-from qapi.common import *
-from qapi.gen import QAPISchemaModularCVisitor, ifcontext
-from qapi.schema import QAPISchemaEnumMember
-from qapi.types import gen_enum, gen_enum_lookup
+from typing import List
+
+from .common import c_enum_const, c_name, mcgen, gen_if, gen_endif
+from .gen import QAPISchemaModularCVisitor, build_params, ifcontext
+from .schema import (
+    QAPISchema,
+    QAPISchemaEnumMember,
+    QAPISchemaFeature,
+    QAPISchemaObjectType,
+)
+from .source import QAPISourceInfo
+from .types import gen_enum, gen_enum_lookup
 
 
-def build_handler_name(name):
+def build_handler_name(name: str) -> str:
     return 'qapi_%s_handler' % name.lower()
 
 
-def build_event_handler_proto(name, arg_type, boxed):
+def build_event_handler_proto(name: str,
+                              arg_type: QAPISchemaObjectType,
+                              boxed: bool) -> str:
     return 'typedef void (*%(handler)s)(%(param)s)' % {
         'handler': build_handler_name(name),
         'param': build_params(arg_type, boxed, extra='void *ctx')}
 
 
-def gen_event_dispatch_decl(name, arg_type, boxed):
+def gen_event_dispatch_decl(name: str,
+                            arg_type: QAPISchemaObjectType,
+                            boxed: bool) -> str:
     return mcgen('''
 
 %(proto)s;
@@ -42,7 +54,7 @@ void qapi_event_dispatch_%(name)s(%(handler_type)s handler, CFDictionaryRef data
 
 
 # Calling the handler
-def gen_call_handler(typ):
+def gen_call_handler(typ: QAPISchemaObjectType) -> str:
     if typ:
         assert not typ.variants
         ret = ''
@@ -59,7 +71,11 @@ def gen_call_handler(typ):
         return 'ctx'
 
 
-def gen_event_dispatch(name, arg_type, boxed, event_enum_name, event_dispatch):
+def gen_event_dispatch(name: str,
+                       arg_type: QAPISchemaObjectType,
+                       boxed: bool,
+                       event_enum_name: str,
+                       event_dispatch: str) -> str:
     # FIXME: Our declaration of local variables (and of 'errp' in the
     # parameter list) can collide with exploded members of the event's
     # data type passed in as parameters.  If this collision ever hits in
@@ -112,7 +128,7 @@ void qapi_event_dispatch_%(name)s(%(handler_type)s handler, CFDictionaryRef data
     return ret
 
 
-def gen_dispatcher_proto(name):
+def gen_dispatcher_proto(name: str) -> str:
     return mcgen('''
 
 void %(name)s(const char *event, CFDictionaryRef data, void *ctx);
@@ -120,7 +136,9 @@ void %(name)s(const char *event, CFDictionaryRef data, void *ctx);
                 name=name)
 
 
-def gen_dispatcher(name, event_enum_name, events):
+def gen_dispatcher(name: str,
+                   event_enum_name: str,
+                   events) -> str:
     ret = mcgen('''
 
 void %(name)s(const char *event, CFDictionaryRef data, void *ctx)
@@ -154,7 +172,7 @@ void %(name)s(const char *event, CFDictionaryRef data, void *ctx)
     return ret
 
 
-def gen_registry(events):
+def gen_registry(events) -> str:
     ret = mcgen('''
 
 typedef struct {
@@ -178,16 +196,16 @@ extern qapi_enum_handler_registry qapi_enum_handler_registry_data;
 
 class QAPISchemaGenEventVisitor(QAPISchemaModularCVisitor):
 
-    def __init__(self, prefix):
+    def __init__(self, prefix: str):
         super().__init__(
             prefix, 'qapi-events',
             ' * Schema-defined QAPI/QMP events', None, __doc__)
         self._event_enum_name = c_name(prefix + 'QAPIEvent', protect=False)
         self._event_registry = []
-        self._event_enum_members = []
+        self._event_enum_members: List[QAPISchemaEnumMember] = []
         self._event_dispatch_name = c_name(prefix + 'qapi_event_dispatch')
 
-    def _begin_user_module(self, name):
+    def _begin_user_module(self, name: str) -> None:
         events = self._module_basename('qapi-events', name)
         types = self._module_basename('qapi-types', name)
         visit = self._module_basename('qapi-visit', name)
@@ -209,7 +227,7 @@ class QAPISchemaGenEventVisitor(QAPISchemaModularCVisitor):
 ''',
                              types=types))
 
-    def visit_end(self):
+    def visit_end(self) -> None:
         self._add_system_module('dispatch', ' * QAPI Events dispatch')
         self._genc.preamble_add(mcgen('''
 #include "qemu-compat.h"
@@ -231,7 +249,13 @@ class QAPISchemaGenEventVisitor(QAPISchemaModularCVisitor):
                                       self._event_enum_name,
                                       self._event_registry))
 
-    def visit_event(self, name, info, ifcond, features, arg_type, boxed):
+    def visit_event(self,
+                    name: str,
+                    info: QAPISourceInfo,
+                    ifcond: List[str],
+                    features: List[QAPISchemaFeature],
+                    arg_type: QAPISchemaObjectType,
+                    boxed: bool) -> None:
         with ifcontext(ifcond, self._genh, self._genc):
             self._genh.add(gen_event_dispatch_decl(name, arg_type, boxed))
             self._genc.add(gen_event_dispatch(name, arg_type, boxed,
@@ -243,7 +267,9 @@ class QAPISchemaGenEventVisitor(QAPISchemaModularCVisitor):
         self._event_enum_members.append(QAPISchemaEnumMember(name, None))
 
 
-def gen_events(schema, output_dir, prefix):
+def gen_events(schema: QAPISchema,
+               output_dir: str,
+               prefix: str) -> None:
     vis = QAPISchemaGenEventVisitor(prefix)
     schema.visit(vis)
     vis.write(output_dir)
