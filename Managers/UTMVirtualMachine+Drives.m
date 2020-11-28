@@ -45,16 +45,23 @@ extern NSString *const kUTMErrorDomain;
         drive.interface = [self.configuration driveInterfaceTypeForIndex:i];
         drive.name = [NSString stringWithFormat:@"drive%lu", i];
         NSString *path = removableDrives[drive.name];
-        if (path) {
+        if ([self.configuration driveRemovableForIndex:i]) {
+            // removable drive
             if (path.length > 0) {
                 drive.status = UTMDriveStatusInserted;
                 drive.path = path;
             } else {
-                drive.status = UTMDriveStatusEjected;
+                path = [self.configuration driveImagePathForIndex:i];
+                if (path.length > 0) {
+                    drive.status = UTMDriveStatusInserted;
+                    drive.path = path;
+                } else {
+                    drive.status = UTMDriveStatusEjected;
+                    drive.path = nil;
+                }
             }
-        } else if ([self.configuration driveRemovableForIndex:i]) { // qemu not started yet
-            drive.status = UTMDriveStatusEjected;
         } else {
+            // fixed drive
             drive.status = UTMDriveStatusFixed;
             drive.path = [self.configuration driveImagePathForIndex:i];
         }
@@ -66,6 +73,7 @@ extern NSString *const kUTMErrorDomain;
 - (BOOL)ejectDrive:(UTMDrive *)drive force:(BOOL)force error:(NSError * _Nullable __autoreleasing *)error {
     NSString *oldPath = [self.viewState pathForRemovableDrive:drive.name];
     [self.viewState removeBookmarkForRemovableDrive:drive.name];
+    [self.configuration setImagePath:@"" forIndex:drive.index];
     [self saveViewState];
     [self.system stopAccessingPath:oldPath];
     if (!self.qemu.isConnected) {
@@ -87,12 +95,17 @@ extern NSString *const kUTMErrorDomain;
         }
         return NO;
     }
-    NSString *oldPath = [self.viewState pathForRemovableDrive:drive.name];
-    [self.viewState setBookmark:bookmark path:url.path forRemovableDrive:drive.name persistent:NO];
     if (!self.qemu.isConnected) {
+        [self.viewState setBookmark:bookmark path:url.path forRemovableDrive:drive.name persistent:YES];
+        [self.configuration setImagePath:url.path forIndex:drive.index];
+        [self saveViewState];
         return YES; // not ready yet
     } else {
-        [self.system stopAccessingPath:oldPath];
+        [self.viewState setBookmark:bookmark path:url.path forRemovableDrive:drive.name persistent:NO];
+        NSString *oldPath = [self.viewState pathForRemovableDrive:drive.name];
+        if (oldPath) {
+            [self.system stopAccessingPath:oldPath];
+        }
         return [self changeMediumForDriveInternal:drive bookmark:bookmark securityScoped:NO error:error];
     }
 }
