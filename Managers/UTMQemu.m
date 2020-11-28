@@ -188,11 +188,10 @@
 }
 
 - (void)accessDataWithBookmarkThread:(NSData *)bookmark securityScoped:(BOOL)securityScoped completion:(void(^)(BOOL, NSData * _Nullable, NSString * _Nullable))completion  {
-#if 0 // FIXME: enable when we support iOS bookmarks
     BOOL stale = NO;
     NSError *err;
     NSURL *url = [NSURL URLByResolvingBookmarkData:bookmark
-                                           options:(securityScoped ? kBookmarkResolutionOptions : 0)
+                                           options:0
                                      relativeToURL:nil
                                bookmarkDataIsStale:&stale
                                              error:&err];
@@ -202,7 +201,7 @@
         return;
     }
     if (stale || !securityScoped) {
-        bookmark = [url bookmarkDataWithOptions:kBookmarkCreationOptions
+        bookmark = [url bookmarkDataWithOptions:NSURLBookmarkCreationMinimalBookmark
                  includingResourceValuesForKeys:nil
                                   relativeToURL:nil
                                           error:&err];
@@ -218,7 +217,6 @@
         UTMLog(@"Failed to access security scoped resource for: %@", url);
     }
     completion(YES, bookmark, url.path);
-#endif
 }
 
 - (void)accessDataWithBookmark:(NSData *)bookmark {
@@ -234,6 +232,28 @@
         [[_connection remoteObjectProxy] accessDataWithBookmark:bookmark securityScoped:securityScoped completion:completion];
     } else {
         [self accessDataWithBookmarkThread:bookmark securityScoped:securityScoped completion:completion];
+    }
+}
+
+- (void)stopAccessingPathThread:(nullable NSString *)path {
+    if (!path) {
+        return;
+    }
+    for (NSURL *url in _urls) {
+        if ([url.path isEqualToString:path]) {
+            [url stopAccessingSecurityScopedResource];
+            [_urls removeObject:url];
+            return;
+        }
+    }
+    UTMLog(@"Cannot find '%@' in existing scoped access.", path);
+}
+
+- (void)stopAccessingPath:(nullable NSString *)path {
+    if (_connection) {
+        [[_connection remoteObjectProxy] stopAccessingPath:path];
+    } else {
+        [self stopAccessingPathThread:path];
     }
 }
 

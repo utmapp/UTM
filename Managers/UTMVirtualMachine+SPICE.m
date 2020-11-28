@@ -27,7 +27,7 @@
 extern NSString *const kUTMErrorDomain;
 
 #if TARGET_OS_IPHONE
-static const NSURLBookmarkCreationOptions kBookmarkCreationOptions = 0;
+static const NSURLBookmarkCreationOptions kBookmarkCreationOptions = NSURLBookmarkCreationMinimalBookmark;
 static const NSURLBookmarkResolutionOptions kBookmarkResolutionOptions = 0;
 #else
 static const NSURLBookmarkCreationOptions kBookmarkCreationOptions = NSURLBookmarkCreationWithSecurityScope;
@@ -62,10 +62,12 @@ static const NSURLBookmarkResolutionOptions kBookmarkResolutionOptions = NSURLBo
 }
 
 - (BOOL)saveSharedDirectory:(NSURL *)url error:(NSError * _Nullable __autoreleasing *)error {
+    [url startAccessingSecurityScopedResource];
     NSData *bookmark = [url bookmarkDataWithOptions:kBookmarkCreationOptions
                      includingResourceValuesForKeys:nil
                                       relativeToURL:nil
                                               error:error];
+    [url stopAccessingSecurityScopedResource];
     if (!bookmark) {
         return NO;
     } else {
@@ -126,11 +128,15 @@ static const NSURLBookmarkResolutionOptions kBookmarkResolutionOptions = NSURLBo
                                         bookmarkDataIsStale:&stale
                                                       error:error];
         if (shareURL) {
-            [spiceIO changeSharedDirectory:shareURL];
+            BOOL success = YES;
             if (stale) {
                 UTMLog(@"stale bookmark, attempting to recreate");
-                return [self saveSharedDirectory:shareURL error:error];
+                success = [self saveSharedDirectory:shareURL error:error];
             }
+            if (success) {
+                [spiceIO changeSharedDirectory:shareURL];
+            }
+            return success;
         } else {
             return NO;
         }

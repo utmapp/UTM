@@ -84,7 +84,6 @@ struct VMRemovableDrivesView: View {
         data.busyWork {
             switch result {
             case .success(let url):
-                try vm.checkSandboxAccess(url)
                 try vm.changeSharedDirectory(url)
                 break
             case .failure(let err):

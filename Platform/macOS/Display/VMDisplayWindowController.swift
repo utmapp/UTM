@@ -337,7 +337,6 @@ extension VMDisplayWindowController {
             }
             DispatchQueue.global(qos: .background).async {
                 do {
-                    try self.vm.checkSandboxAccess(url)
                     try self.vm.changeSharedDirectory(url)
                 } catch {
                     DispatchQueue.main.async {
