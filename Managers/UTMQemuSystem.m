@@ -456,13 +456,12 @@ static size_t hostCpuCount(void) {
 }
 
 - (void)startWithCompletion:(void (^)(BOOL, NSString * _Nonnull))completion {
-    NSString *name = [NSString stringWithFormat:@"qemu-system-%@", self.configuration.systemArchitecture];
     [self argsRequired];
     if (!self.configuration.ignoreAllConfiguration) {
         [self argsFromConfiguration];
     }
     [self argsFromUser];
-    [self start:name completion:completion];
+    [self startQemu:self.configuration.systemArchitecture completion:completion];
 }
 
 @end
