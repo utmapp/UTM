@@ -18,7 +18,7 @@ import SwiftUI
 
 @available(iOS 14, macOS 11, *)
 struct VMRemovableDrivesView: View {
-    let vm: UTMVirtualMachine
+    @State var vm: UTMVirtualMachine
     @EnvironmentObject private var data: UTMData
     @ObservedObject private var config: UTMConfiguration
     @ObservedObject private var sessionConfig: UTMViewState
@@ -31,13 +31,13 @@ struct VMRemovableDrivesView: View {
     }
     
     init(vm: UTMVirtualMachine) {
-        self.vm = vm
+        self._vm = State<UTMVirtualMachine>(initialValue: vm)
         self.config = vm.configuration
         self.sessionConfig = vm.viewState
     }
     
     var body: some View {
-        Group {
+        return Group {
             if config.shareDirectoryEnabled {
                 HStack {
                     Label("Shared Directory", systemImage: "externaldrive.badge.person.crop")
@@ -45,30 +45,29 @@ struct VMRemovableDrivesView: View {
                     Text(sessionConfig.sharedDirectoryPath ?? "").truncationMode(.head)
                     Button(action: clearShareDirectory, label: {
                         Text("Clear")
-                    }).disabled(vm.viewState.suspended)
+                    }).disabled(sessionConfig.suspended)
                     Button(action: { shareDirectoryFileImportPresented.toggle() }, label: {
                         Text("Browse")
-                    }).disabled(vm.viewState.suspended)
+                    }).disabled(sessionConfig.suspended)
                 }.fileImporter(isPresented: $shareDirectoryFileImportPresented, allowedContentTypes: [.folder], onCompletion: selectShareDirectory)
             }
-            ForEach(vm.drives) { drive in
-                if drive.status != .fixed {
-                    let path = sessionConfig.path(forRemovableDrive: drive.name ?? "") ?? ""
-                    HStack {
-                        Label("Interface: \(drive.interface ?? "")", systemImage: drive.imageType == .CD ? "opticaldiscdrive" : "externaldrive")
-                        Spacer()
-                        Text(path)
-                            .lineLimit(1)
-                            .truncationMode(.head)
+            ForEach(vm.drives.filter { $0.status != .fixed }) { drive in
+                HStack {
+                    DriveLabel(drive: drive)
+                    Button(action: {
+                        currentDrive = drive
+                        diskImageFileImportPresented.toggle()
+                    }, label: {
+                        Label("Browse", systemImage: "doc.badge.plus")
+                    }).disabled(sessionConfig.suspended)
+                    Spacer()
+                    Text(pathFor(drive))
+                        .lineLimit(1)
+                        .truncationMode(.tail)
+                    if drive.status != .ejected {
                         Button(action: { clearRemovableImage(forDrive: drive) }, label: {
-                            Text("Clear")
-                        }).disabled(vm.viewState.suspended)
-                        Button(action: {
-                            currentDrive = drive
-                            diskImageFileImportPresented.toggle()
-                        }, label: {
-                            Text("Browse")
-                        }).disabled(vm.viewState.suspended)
+                            Label("Clear", systemImage: "eject")
+                        }).disabled(sessionConfig.suspended)
                     }
                 }
             }.fileImporter(isPresented: $diskImageFileImportPresented, allowedContentTypes: [.data]) { result in
@@ -76,6 +75,28 @@ struct VMRemovableDrivesView: View {
                     selectRemovableImage(forDrive: currentDrive, result: result)
                     self.currentDrive = nil
                 }
+            }
+        }
+    }
+    
+    private func pathFor(_ drive: UTMDrive) -> String {
+        let path = sessionConfig.path(forRemovableDrive: drive.name ?? "") ?? ""
+        if path.count > 0 {
+            let url = URL(fileURLWithPath: path)
+            return url.lastPathComponent
+        } else {
+            return NSLocalizedString("(empty)", comment: "A removable drive that has no image file inserted.")
+        }
+    }
+    
+    private struct DriveLabel: View {
+        let drive: UTMDrive
+
+        var body: some View {
+            if drive.imageType == .CD {
+                return Label("CD/DVD", systemImage: drive.status == .ejected ? "opticaldiscdrive" : "opticaldiscdrive.fill")
+            } else {
+                return Label("Removable", systemImage: "externaldrive")
             }
         }
     }
