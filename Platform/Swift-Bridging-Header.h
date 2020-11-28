@@ -27,7 +27,6 @@
 #include "UTMDrive.h"
 #include "UTMQcow2.h"
 #include "UTMQemu.h"
-#include "UTMQemuImg.h"
 #include "UTMQemuSystem.h"
 #include "UTMJailbreak.h"
 #include "UTMLogging.h"
