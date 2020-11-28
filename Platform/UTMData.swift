@@ -356,27 +356,8 @@ class UTMData: ObservableObject {
             }
             
             // create drive
-            // TODO: implement custom qcow2 creation
-            let sema = DispatchSemaphore(value: 0)
-            let imgCreate = UTMQemuImg()
-            var success = false
-            var msg = ""
-            imgCreate.op = .create
-            imgCreate.outputPath = dstPath
-            imgCreate.sizeMiB = drive.size
-            imgCreate.compressed = true
-            #if os(macOS)
-            imgCreate.setupXpc()
-            #endif
-            imgCreate.logging = UTMLogging()
-            imgCreate.start { (_success, _msg) in
-                success = _success
-                msg = _msg
-                sema.signal()
-            }
-            sema.wait()
-            if !success {
-                throw msg
+            if !GenerateDefaultQcow2File(dstPath as CFURL, drive.size) {
+                throw NSLocalizedString("Disk creation failed.", comment: "UTMData")
             }
         }
         

@@ -25,6 +25,7 @@
 #include "UTMConfiguration+System.h"
 #include "UTMConfigurationPortForward.h"
 #include "UTMDrive.h"
+#include "UTMQcow2.h"
 #include "UTMQemu.h"
 #include "UTMQemuImg.h"
 #include "UTMQemuSystem.h"

@@ -23,7 +23,6 @@
 #import "UTMConfiguration+Display.h"
 #import "UTMConfiguration+Miscellaneous.h"
 #import "UTMViewState.h"
-#import "UTMQemuImg.h"
 #import "UTMQemuManager.h"
 #import "UTMQemuSystem.h"
 #import "UTMTerminalIO.h"
