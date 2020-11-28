@@ -113,7 +113,7 @@ def sortItems(items):
     return sorted(items, key=lambda item: item.desc if item.desc else item.name)
 
 def getMachines(qemu_path):
-    output = subprocess.check_output([qemu_path, '-machine', 'help'])
+    output = subprocess.check_output([qemu_path, '-machine', 'help']).decode('utf-8')
     return parseListing(output)
 
 def getDefaultMachine(target, machines):
@@ -129,11 +129,11 @@ def getDefaultMachine(target, machines):
     return -1
 
 def getSoundCards(qemu_path):
-    output = subprocess.check_output([qemu_path, '-soundhw', 'help'])
+    output = subprocess.check_output([qemu_path, '-soundhw', 'help']).decode('utf-8')
     return parseListing(output)
 
 def getNetworkCards(qemu_path):
-    output = subprocess.check_output([qemu_path, '-device', 'help'])
+    output = subprocess.check_output([qemu_path, '-device', 'help']).decode('utf-8')
     devices = parseDeviceListing(output)
     return devices["Network devices"]
 
