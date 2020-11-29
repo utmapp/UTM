@@ -45,7 +45,6 @@ struct ContentView: View {
                     newButton
                 }
             }
-            VMPlaceholderView(createNewVMPresented: $newVMScratchPresented)
             .sheet(isPresented: $newVMScratchPresented, onDismiss: {
                 newConfiguration.resetDefaults()
             }, content: {
@@ -55,6 +54,7 @@ struct ContentView: View {
                         newConfiguration.name = data.newDefaultVMName()
                     }
             })
+            VMPlaceholderView(createNewVMPresented: $newVMScratchPresented)
         }.overlay(data.showSettingsModal ? AnyView(EmptyView()) : AnyView(BusyOverlay()))
         .environmentObject(data)
         .frame(minWidth: 800, idealWidth: 1200, minHeight: 600, idealHeight: 800)
