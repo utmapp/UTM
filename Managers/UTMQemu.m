@@ -93,7 +93,9 @@
             args = [args stringByAppendingFormat:@" %@", arg];
         }
     }
-    UTMLog(@"Running: %@", args);
+    NSString *line = [[NSString alloc] initWithFormat:@"Running: %@\n", args];
+    [self.logging writeLine:line];
+    NSLog(@"%@", line);
 }
 
 - (BOOL)didLoadDylib:(void *)handle {
@@ -135,7 +137,6 @@
         completion(NO, NSLocalizedString(@"Internal error has occurred.", @"UTMQemu"));
         return;
     }
-    [self printArgv];
     pthread_attr_init(&qosAttribute);
     pthread_attr_set_qos_class_np(&qosAttribute, QOS_CLASS_USER_INTERACTIVE, 0);
     pthread_create(&qemu_thread, &qosAttribute, self.entry, (__bridge_retained void *)self);
@@ -179,6 +180,7 @@
 }
 
 - (void)startQemu:(nonnull NSString *)arch completion:(void(^)(BOOL,NSString *))completion {
+    [self printArgv];
     if (_connection) {
         NSString *exe = [NSString stringWithFormat:@"qemu-system-%@", arch];
         [self startQemuRemote:exe completion:completion];
