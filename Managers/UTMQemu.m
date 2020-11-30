@@ -178,11 +178,12 @@
     }];
 }
 
-- (void)start:(nonnull NSString *)name completion:(void(^)(BOOL,NSString *))completion {
+- (void)startQemu:(nonnull NSString *)arch completion:(void(^)(BOOL,NSString *))completion {
     if (_connection) {
-        [self startQemuRemote:name completion:completion];
+        NSString *exe = [NSString stringWithFormat:@"qemu-system-%@", arch];
+        [self startQemuRemote:exe completion:completion];
     } else {
-        NSString *dylib = [NSString stringWithFormat:@"lib%@.utm.dylib", name];
+        NSString *dylib = [NSString stringWithFormat:@"libqemu-%@-softmmu.utm.dylib", arch];
         [self startDylibThread:dylib completion:completion];
     }
 }

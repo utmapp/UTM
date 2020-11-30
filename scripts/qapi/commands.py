@@ -15,11 +15,35 @@ This work is licensed under the terms of the GNU GPL, version 2.
 See the COPYING file in the top-level directory.
 """
 
-from qapi.common import *
-from qapi.gen import QAPIGenCCode, QAPISchemaModularCVisitor, ifcontext
+from typing import (
+    Dict,
+    List,
+    Optional,
+    Set,
+)
+
+from .common import c_name, mcgen
+from .gen import (
+    QAPIGenC,
+    QAPIGenCCode,
+    QAPISchemaModularCVisitor,
+    build_params,
+    ifcontext,
+)
+from .schema import (
+    QAPISchema,
+    QAPISchemaFeature,
+    QAPISchemaObjectType,
+    QAPISchemaType,
+)
+from .source import QAPISourceInfo
 
 
-def gen_command_decl(name, arg_type, boxed, ret_type, proto=True):
+def gen_command_decl(name: str,
+                     arg_type: Optional[QAPISchemaObjectType],
+                     boxed: bool,
+                     ret_type: Optional[QAPISchemaType],
+                     proto: bool = True) -> str:
     return mcgen('''
 %(c_type)s qmp_%(c_name)s(%(params)s)%(proto)s
 ''',
@@ -29,7 +53,7 @@ def gen_command_decl(name, arg_type, boxed, ret_type, proto=True):
                  params=build_params(arg_type, boxed, 'Error **errp, void *ctx'))
 
 
-def gen_marshal_rpc(ret_type):
+def gen_marshal_rpc(ret_type: QAPISchemaType) -> str:
     return mcgen('''
 
 static %(c_type)s qmp_marshal_rpc_%(c_name)s(CFDictionaryRef args, Error **errp, void *ctx)
@@ -61,7 +85,10 @@ static %(c_type)s qmp_marshal_rpc_%(c_name)s(CFDictionaryRef args, Error **errp,
                  c_type=ret_type.c_type(), c_name=ret_type.c_name())
 
 
-def gen_rpc_call(name, arg_type, boxed, ret_type):
+def gen_rpc_call(name: str,
+                 arg_type: Optional[QAPISchemaObjectType],
+                 boxed: bool,
+                 ret_type: Optional[QAPISchemaType]) -> str:
     have_args = boxed or (arg_type and not arg_type.is_empty())
 
     ret = mcgen('''
@@ -168,14 +195,13 @@ out:
 
 
 class QAPISchemaGenCommandVisitor(QAPISchemaModularCVisitor):
-
-    def __init__(self, prefix):
+    def __init__(self, prefix: str):
         super().__init__(
             prefix, 'qapi-commands',
             ' * Schema-defined QAPI/QMP commands', None, __doc__)
-        self._visited_ret_types = {}
+        self._visited_ret_types: Dict[QAPIGenC, Set[QAPISchemaType]] = {}
 
-    def _begin_user_module(self, name):
+    def _begin_user_module(self, name: str) -> None:
         self._visited_ret_types[self._genc] = set()
         commands = self._module_basename('qapi-commands', name)
         types = self._module_basename('qapi-types', name)
@@ -197,9 +223,19 @@ class QAPISchemaGenCommandVisitor(QAPISchemaModularCVisitor):
 ''',
                              types=types))
 
-    def visit_command(self, name, info, ifcond, features,
-                      arg_type, ret_type, gen, success_response, boxed,
-                      allow_oob, allow_preconfig):
+    def visit_command(self,
+                      name: str,
+                      info: QAPISourceInfo,
+                      ifcond: List[str],
+                      features: List[QAPISchemaFeature],
+                      arg_type: Optional[QAPISchemaObjectType],
+                      ret_type: Optional[QAPISchemaType],
+                      gen: bool,
+                      success_response: bool,
+                      boxed: bool,
+                      allow_oob: bool,
+                      allow_preconfig: bool,
+                      coroutine: bool) -> None:
         if not gen:
             return
         # FIXME: If T is a user-defined type, the user is responsible
@@ -217,7 +253,9 @@ class QAPISchemaGenCommandVisitor(QAPISchemaModularCVisitor):
             self._genc.add(gen_rpc_call(name, arg_type, boxed, ret_type))
 
 
-def gen_commands(schema, output_dir, prefix):
+def gen_commands(schema: QAPISchema,
+                 output_dir: str,
+                 prefix: str) -> None:
     vis = QAPISchemaGenCommandVisitor(prefix)
     schema.visit(vis)
     vis.write(output_dir)

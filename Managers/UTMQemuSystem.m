@@ -303,7 +303,7 @@ static size_t hostCpuCount(void) {
     
     // use mirror mapping when we don't have JIT entitlements
     if (!jb_has_jit_entitlement()) {
-        accel = [accel stringByAppendingString:@",mirror-rwx=on"];
+        accel = [accel stringByAppendingString:@",split-wx=on"];
     }
     
     return accel;
@@ -456,13 +456,12 @@ static size_t hostCpuCount(void) {
 }
 
 - (void)startWithCompletion:(void (^)(BOOL, NSString * _Nonnull))completion {
-    NSString *name = [NSString stringWithFormat:@"qemu-system-%@", self.configuration.systemArchitecture];
     [self argsRequired];
     if (!self.configuration.ignoreAllConfiguration) {
         [self argsFromConfiguration];
     }
     [self argsFromUser];
-    [self start:name completion:completion];
+    [self startQemu:self.configuration.systemArchitecture completion:completion];
 }
 
 @end

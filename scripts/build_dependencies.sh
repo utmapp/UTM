@@ -242,7 +242,7 @@ build_qemu () {
     pwd="$(pwd)"
     cd "$QEMU_DIR"
     echo "${GREEN}Configuring QEMU...${NC}"
-    ./configure --prefix="$PREFIX" --host="$CHOST" --with-coroutine=libucontext $@
+    ./configure --prefix="$PREFIX" --host="$CHOST" --cross-prefix="" --with-coroutine=libucontext $@
     echo "${GREEN}Building QEMU...${NC}"
     gmake "$MAKEFLAGS"
     echo "${GREEN}Installing QEMU...${NC}"
@@ -256,7 +256,7 @@ build_qemu () {
 
 steal_libucontext () {
     # HACK: use the libucontext built by qemu
-    cp "$QEMU_DIR/libucontext/libucontext.a" "$PREFIX/lib/libucontext.a"
+    cp "$QEMU_DIR/build/libucontext.a" "$PREFIX/lib/libucontext.a"
     cp "$QEMU_DIR/libucontext/include/libucontext.h" "$PREFIX/include/libucontext.h"
 }
 
@@ -413,7 +413,7 @@ ios )
     esac
     CFLAGS_TARGET=
     PLATFORM_FAMILY_NAME="iOS"
-    QEMU_PLATFORM_BUILD_FLAGS="--enable-shared-lib"
+    QEMU_PLATFORM_BUILD_FLAGS="--enable-shared-lib --disable-hvf --disable-cocoa"
     ;;
 macos )
     if [ -z "$SDKMINVER" ]; then

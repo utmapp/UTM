@@ -10,10 +10,18 @@ This work is licensed under the terms of the GNU GPL, version 2.
 See the COPYING file in the top-level directory.
 """
 
-from qapi.common import *
-from qapi.gen import QAPISchemaMonolithicCVisitor
-from qapi.schema import (QAPISchemaArrayType, QAPISchemaBuiltinType,
-                         QAPISchemaType)
+from .common import (
+    c_name,
+    gen_endif,
+    gen_if,
+    mcgen,
+)
+from .gen import QAPISchemaMonolithicCVisitor
+from .schema import (
+    QAPISchemaArrayType,
+    QAPISchemaBuiltinType,
+    QAPISchemaType,
+)
 
 
 def _make_tree(obj, ifcond, features, extra=None):
@@ -216,7 +224,7 @@ const QLitObject %(c_name)s = %(c_string)s;
 
     def visit_command(self, name, info, ifcond, features,
                       arg_type, ret_type, gen, success_response, boxed,
-                      allow_oob, allow_preconfig):
+                      allow_oob, allow_preconfig, coroutine):
         arg_type = arg_type or self._schema.the_empty_object_type
         ret_type = ret_type or self._schema.the_empty_object_type
         obj = {'arg-type': self._use_type(arg_type),
