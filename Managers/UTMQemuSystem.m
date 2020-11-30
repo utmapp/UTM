@@ -30,9 +30,14 @@
 #import "UTMJailbreak.h"
 #import "UTMLogging.h"
 
+typedef struct {
+    NSInteger cpus;
+    NSInteger threads;
+} CPUCount;
+
 @interface UTMQemuSystem ()
 
-@property (nonatomic, readonly) NSInteger emulatedCpuCount;
+@property (nonatomic, readonly) CPUCount emulatedCpuCount;
 
 @end
 
@@ -66,12 +71,12 @@ static void *start_qemu(void *args) {
     return NULL;
 }
 
-static size_t hostCpuCount(void) {
+static size_t sysctl_read(const char *name) {
     size_t len;
     unsigned int ncpu = 0;
 
     len = sizeof(ncpu);
-    sysctlbyname("hw.ncpu", &ncpu, &len, NULL, 0);
+    sysctlbyname(name, &ncpu, &len, NULL, 0);
     return ncpu;
 }
 
@@ -100,10 +105,21 @@ static size_t hostCpuCount(void) {
     }
 }
 
-- (NSInteger)emulatedCpuCount {
-    NSInteger userCount = [self.configuration.systemCPUCount integerValue];
-    size_t ncpu = hostCpuCount();
-    if (userCount > 0 || ncpu == 0) {
+- (CPUCount)emulatedCpuCount {
+    static const CPUCount singleCpu = {
+        .cpus = 1,
+        .threads = 1,
+    };
+    CPUCount hostCount = {
+        .cpus = sysctl_read("hw.physicalcpu"),
+        .threads = sysctl_read("hw.logicalcpu"),
+    };
+    NSInteger userCpus = [self.configuration.systemCPUCount integerValue];
+    if (userCpus > 0 || hostCount.cpus == 0) {
+        CPUCount userCount = {
+            .cpus = userCpus,
+            .threads = userCpus,
+        };
         return userCount; // user override
     }
 #if defined(__aarch64__)
@@ -117,15 +133,15 @@ static size_t hostCpuCount(void) {
         [arch hasPrefix:@"ppc"] ||
         [arch hasPrefix:@"riscv"] ||
         [arch hasPrefix:@"xtensa"]) {
-        return ncpu;
+        return hostCount;
     } else {
-        return 1;
+        return singleCpu;
     }
 #elif defined(__i386__)
     // in x86 we can emulate weak on strong
-    return ncpu;
+    return hostCount;
 #else
-    return 1;
+    return singleCpu;
 #endif
 }
 
@@ -360,7 +376,7 @@ static size_t hostCpuCount(void) {
 
 - (void)argsFromConfiguration {
     [self pushArgv:@"-smp"];
-    [self pushArgv:[NSString stringWithFormat:@"cpus=%lu,sockets=1", self.emulatedCpuCount]];
+    [self pushArgv:[NSString stringWithFormat:@"cpus=%lu,sockets=1,cores=%lu,threads=%lu", self.emulatedCpuCount.cpus, self.emulatedCpuCount.cpus, self.emulatedCpuCount.threads / self.emulatedCpuCount.cpus]];
     [self pushArgv:@"-machine"];
     [self pushArgv:[NSString stringWithFormat:@"%@,%@", self.configuration.systemTarget, [self machineProperties]]];
     if ([self useHypervisor]) {
