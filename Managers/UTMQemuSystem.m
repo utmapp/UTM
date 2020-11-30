@@ -106,7 +106,7 @@ static size_t hostCpuCount(void) {
     if (userCount > 0 || ncpu == 0) {
         return userCount; // user override
     }
-#if defined(__arm__)
+#if defined(__aarch64__)
     // in ARM we can only emulate other weak architectures
     NSString *arch = self.configuration.systemArchitecture;
     if ([arch isEqualToString:@"alpha"] ||
