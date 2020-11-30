@@ -163,9 +163,6 @@ static size_t sysctl_read(const char *name) {
             [self pushArgv:@"-cpu"];
             [self pushArgv:@"cortex-a72"];
         }
-        // this is required for virt devices
-        [self pushArgv:@"-device"];
-        [self pushArgv:@"virtio-gpu-pci"];
     }
 }
 

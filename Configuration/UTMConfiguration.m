@@ -34,6 +34,9 @@ const NSString *const kUTMConfigSharingKey = @"Sharing";
 const NSString *const kUTMConfigDrivesKey = @"Drives";
 const NSString *const kUTMConfigDebugKey = @"Debug";
 const NSString *const kUTMConfigInfoKey = @"Info";
+const NSString *const kUTMConfigVersionKey = @"ConfigurationVersion";
+
+const NSInteger kCurrentConfigurationVersion = 2;
 
 @interface UTMConfiguration ()
 
@@ -55,6 +58,7 @@ const NSString *const kUTMConfigInfoKey = @"Info";
     [self migrateNetworkConfigurationIfNecessary];
     [self migrateSystemConfigurationIfNecessary];
     [self migrateDisplayConfigurationIfNecessary];
+    self.version = @(kCurrentConfigurationVersion);
 }
 
 #pragma mark - Initialization
@@ -120,6 +124,7 @@ const NSString *const kUTMConfigInfoKey = @"Info";
     self.name = [NSUUID UUID].UUIDString;
     self.existingPath = nil;
     self.selectedCustomIconPath = nil;
+    self.version = @(kCurrentConfigurationVersion);
 }
 
 - (void)reloadConfigurationWithDictionary:(NSDictionary *)dictionary name:(NSString *)name path:(NSURL *)path {
@@ -152,6 +157,15 @@ const NSString *const kUTMConfigInfoKey = @"Info";
 - (void)setSelectedCustomIconPath:(NSURL *)selectedCustomIconPath {
     [self propertyWillChange];
     _selectedCustomIconPath = selectedCustomIconPath;
+}
+
+- (void)setVersion:(NSNumber *)version {
+    [self propertyWillChange];
+    self.rootDict[kUTMConfigVersionKey] = version;
+}
+
+- (NSNumber *)version {
+    return self.rootDict[kUTMConfigVersionKey];
 }
 
 @end
