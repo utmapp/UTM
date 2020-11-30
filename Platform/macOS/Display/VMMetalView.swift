@@ -263,6 +263,18 @@ class VMMetalView: MTKView {
         }
     }
     
+    override func mouseDragged(with event: NSEvent) {
+        mouseMoved(with: event)
+    }
+    
+    override func rightMouseDragged(with event: NSEvent) {
+        mouseMoved(with: event)
+    }
+    
+    override func otherMouseDragged(with event: NSEvent) {
+        mouseMoved(with: event)
+    }
+    
     override func mouseMoved(with event: NSEvent) {
         logger.debug("mouse moved: \(event.deltaX), \(event.deltaY)")
         if isMouseCaptured {
