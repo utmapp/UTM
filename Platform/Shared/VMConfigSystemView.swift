@@ -79,7 +79,7 @@ struct VMConfigSystemView: View {
                         HStack {
                             Text("CPU Count")
                             Spacer()
-                            NumberTextField("Size", number: $config.systemCPUCount, onEditingChanged: validateCpuCount)
+                            NumberTextField("Default", number: $config.systemCPUCount, onEditingChanged: validateCpuCount)
                                 .multilineTextAlignment(.trailing)
                         }
                         Toggle(isOn: $config.systemForceMulticore, label: {
@@ -95,7 +95,7 @@ struct VMConfigSystemView: View {
                             Text("MB")
                         }
                     }
-                    Section(header: Text("QEMU Additional Options")) {
+                    Section(header: Text("QEMU Machine Properties")) {
                         TextField("None", text: $config.systemMachineProperties.bound)
                         VMConfigStringPicker(selection: $config.systemBootDevice, label: Text("Boot Order"), rawValues: UTMConfiguration.supportedBootDevices(), displayValues: UTMConfiguration.supportedBootDevicesPretty())
                     }

@@ -36,7 +36,7 @@ struct VMContextMenuModifier: ViewModifier {
             } label: {
                 Label("Edit", systemImage: "slider.horizontal.3")
             }.disabled(sessionConfig.suspended || sessionConfig.active)
-            if sessionConfig.suspended {
+            if sessionConfig.suspended || sessionConfig.active {
                 Button {
                     confirmAction = .confirmStopVM
                 } label: {

@@ -126,7 +126,7 @@ struct VMToolbarModifier: ViewModifier {
                     Label("Edit", systemImage: "slider.horizontal.3")
                         .labelStyle(IconOnlyLabelStyle())
                 }.help("Edit selected VM")
-                .disabled(sessionConfig.suspended)
+                .disabled(sessionConfig.suspended || sessionConfig.active)
                 .padding(.leading, padding)
             }
         }
