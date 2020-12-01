@@ -413,7 +413,7 @@ ios )
     esac
     CFLAGS_TARGET=
     PLATFORM_FAMILY_NAME="iOS"
-    QEMU_PLATFORM_BUILD_FLAGS="--enable-shared-lib --disable-hvf --disable-cocoa"
+    QEMU_PLATFORM_BUILD_FLAGS="--enable-shared-lib --disable-hvf --disable-cocoa --disable-curl"
     ;;
 macos )
     if [ -z "$SDKMINVER" ]; then
@@ -423,7 +423,7 @@ macos )
     CFLAGS_MINVER="-mmacos-version-min=$SDKMINVER"
     CFLAGS_TARGET="-target $ARCH-apple-macos"
     PLATFORM_FAMILY_NAME="macOS"
-    QEMU_PLATFORM_BUILD_FLAGS="--disable-cocoa --cpu=$CPU"
+    QEMU_PLATFORM_BUILD_FLAGS="--disable-cocoa --disable-curl --cpu=$CPU"
     ;;
 * )
     usage
