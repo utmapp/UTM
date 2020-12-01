@@ -37,8 +37,10 @@ typedef struct {
 
 @interface UTMQemuSystem ()
 
+@property (nonatomic, readonly) NSURL *resourceURL;
 @property (nonatomic, readonly) CPUCount emulatedCpuCount;
 @property (nonatomic, readonly) BOOL useHypervisor;
+@property (nonatomic, readonly) BOOL hasCustomBios;
 
 @end
 
@@ -106,6 +108,10 @@ static size_t sysctl_read(const char *name) {
     }
 }
 
+- (NSURL *)resourceURL {
+    return [[NSBundle mainBundle] URLForResource:@"qemu" withExtension:nil];
+}
+
 - (CPUCount)emulatedCpuCount {
     static const CPUCount singleCpu = {
         .cpus = 1,
@@ -163,6 +169,14 @@ static size_t sysctl_read(const char *name) {
         if (!self.useHypervisor && [self.configuration.systemArchitecture isEqualToString:@"aarch64"]) {
             [self pushArgv:@"-cpu"];
             [self pushArgv:@"cortex-a72"];
+        }
+        NSString *name = [NSString stringWithFormat:@"edk2-%@-code.fd", self.configuration.systemArchitecture];
+        NSURL *path = [self.resourceURL URLByAppendingPathComponent:name];
+        if (!self.hasCustomBios && [[NSFileManager defaultManager] fileExistsAtPath:path.path]) {
+            [self pushArgv:@"-bios"];
+            [self pushArgv:path.path]; // accessDataWithBookmark called already
+            [self pushArgv:@"-device"];
+            [self pushArgv:@"ramfb"];
         }
     }
 }
@@ -328,6 +342,31 @@ static size_t sysctl_read(const char *name) {
     return [defaults boolForKey:@"UseHypervisor"];
 }
 
+- (BOOL)hasCustomBios {
+    for (NSUInteger i = 0; i < self.configuration.countDrives; i++) {
+        UTMDiskImageType type = [self.configuration driveImageTypeForIndex:i];
+        NSString *interface = [self.configuration driveInterfaceTypeForIndex:i];
+        switch (type) {
+            case UTMDiskImageTypeDisk:
+            case UTMDiskImageTypeCD: {
+                if ([interface isEqualToString:@"pflash"]) {
+                    return YES;
+                }
+                break;
+            }
+            case UTMDiskImageTypeBIOS:
+            case UTMDiskImageTypeKernel: {
+                return YES;
+                break;
+            }
+            default: {
+                continue;
+            }
+        }
+    }
+    return NO;
+}
+
 - (NSString *)machineProperties {
     if (self.configuration.systemMachineProperties.length > 0) {
         return self.configuration.systemMachineProperties; // use specified properties
@@ -346,14 +385,13 @@ static size_t sysctl_read(const char *name) {
 }
 
 - (void)argsRequired {
-    NSURL *resourceURL = [[NSBundle mainBundle] URLForResource:@"qemu" withExtension:nil];
     [self clearArgv];
     [self pushArgv:@"-L"];
-    [self accessDataWithBookmark:[resourceURL bookmarkDataWithOptions:0
-                                       includingResourceValuesForKeys:nil
-                                                        relativeToURL:nil
-                                                                error:nil]];
-    [self pushArgv:resourceURL.path];
+    [self accessDataWithBookmark:[self.resourceURL bookmarkDataWithOptions:0
+                                            includingResourceValuesForKeys:nil
+                                                             relativeToURL:nil
+                                                                     error:nil]];
+    [self pushArgv:self.resourceURL.path];
     [self pushArgv:@"-S"]; // startup stopped
     [self pushArgv:@"-qmp"];
     [self pushArgv:[NSString stringWithFormat:@"tcp:localhost:%lu,server,nowait", self.qmpPort]];
