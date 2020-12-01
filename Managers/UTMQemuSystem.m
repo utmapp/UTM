@@ -298,6 +298,26 @@ static size_t sysctl_read(const char *name) {
     }
 }
 
+- (void)argsForUsb {
+    // assume that for virt machines we can use USB 3.0 controller
+    if ([self.configuration.systemTarget hasPrefix:@"virt"]) {
+        [self pushArgv:@"-device"];
+        [self pushArgv:@"qemu-xhci"];
+    } else { // USB 2.0 controller is most compatible
+        [self pushArgv:@"-device"];
+        [self pushArgv:@"usb-ehci"];
+    }
+    // set up USB input devices unless user requested legacy (QEMU default PS/2 input)
+    if (!self.configuration.inputLegacy) {
+        [self pushArgv:@"-device"];
+        [self pushArgv:@"usb-tablet"];
+        [self pushArgv:@"-device"];
+        [self pushArgv:@"usb-mouse"];
+        [self pushArgv:@"-device"];
+        [self pushArgv:@"usb-kbd"];
+    }
+}
+
 - (void)argsForSharing {
     if (self.configuration.shareClipboardEnabled || self.configuration.shareDirectoryEnabled) {
         [self pushArgv:@"-device"];
@@ -446,17 +466,7 @@ static size_t sysctl_read(const char *name) {
     [self pushArgv:self.configuration.name];
     [self argsForDrives];
     [self argsForNetwork];
-    // usb input if not legacy
-    if (!self.configuration.inputLegacy) {
-        [self pushArgv:@"-device"];
-        [self pushArgv:@"usb-ehci"];
-        [self pushArgv:@"-device"];
-        [self pushArgv:@"usb-tablet"];
-        [self pushArgv:@"-device"];
-        [self pushArgv:@"usb-mouse"];
-        [self pushArgv:@"-device"];
-        [self pushArgv:@"usb-kbd"];
-    }
+    [self argsForUsb];
     if (self.snapshot) {
         [self pushArgv:@"-loadvm"];
         [self pushArgv:self.snapshot];
