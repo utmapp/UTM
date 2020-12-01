@@ -38,6 +38,7 @@ typedef struct {
 @interface UTMQemuSystem ()
 
 @property (nonatomic, readonly) CPUCount emulatedCpuCount;
+@property (nonatomic, readonly) BOOL useHypervisor;
 
 @end
 
@@ -159,7 +160,7 @@ static size_t sysctl_read(const char *name) {
 
 - (void)targetSpecificConfiguration {
     if ([self.configuration.systemTarget hasPrefix:@"virt"]) {
-        if (![self useHypervisor] && [self.configuration.systemArchitecture isEqualToString:@"aarch64"]) {
+        if (!self.useHypervisor && [self.configuration.systemArchitecture isEqualToString:@"aarch64"]) {
             [self pushArgv:@"-cpu"];
             [self pushArgv:@"cortex-a72"];
         }
@@ -338,6 +339,9 @@ static size_t sysctl_read(const char *name) {
     if ([self.configuration.systemTarget isEqualToString:@"mac99"]) {
         return @"via=pmu";
     }
+    if ([self.configuration.systemTarget hasPrefix:@"virt"] && self.useHypervisor) {
+        return @"highmem=off";
+    }
     return @"";
 }
 
@@ -376,7 +380,7 @@ static size_t sysctl_read(const char *name) {
     [self pushArgv:[NSString stringWithFormat:@"cpus=%lu,sockets=1,cores=%lu,threads=%lu", self.emulatedCpuCount.cpus, self.emulatedCpuCount.cpus, self.emulatedCpuCount.threads / self.emulatedCpuCount.cpus]];
     [self pushArgv:@"-machine"];
     [self pushArgv:[NSString stringWithFormat:@"%@,%@", self.configuration.systemTarget, [self machineProperties]]];
-    if ([self useHypervisor]) {
+    if (self.useHypervisor) {
         [self pushArgv:@"-accel"];
         [self pushArgv:@"hvf"];
         [self pushArgv:@"-cpu"];
