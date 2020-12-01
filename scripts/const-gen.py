@@ -175,9 +175,9 @@ def generate(targets, machines, networkCards, soundCards):
     output += generateMap('supportedTargetsForArchitecturePretty', 'architecture', targetKeys, {machine.name: [item.desc for item in machine.items] for machine in machines})
     output += generateIndexMap('defaultTargetIndexForArchitecture', 'architecture', targetKeys, {machine.name: machine.default for machine in machines})
     output += generateArray('supportedNetworkCards', [item.name for item in networkCards])
-    output += generateArray('supportedNetworkCardsPretty', [item.desc for item in networkCards])
+    output += generateArray('supportedNetworkCardsPretty', [item.desc if item.desc else item.name for item in networkCards])
     output += generateArray('supportedSoundCardDevices', [item.name for item in soundCards])
-    output += generateArray('supportedSoundCardDevicesPretty', [item.desc for item in soundCards])
+    output += generateArray('supportedSoundCardDevicesPretty', [item.desc if item.desc else item.name for item in soundCards])
     output += '@end\n'
     return output
 
