@@ -27,11 +27,12 @@ struct VMConfigDriveCreateView: View {
         Form {
             Toggle(isOn: $driveImage.removable.animation(), label: {
                 Text("Removable")
-            })
-            if driveImage.removable {
-                Text("Note: Image file for removable drives is specified before launch and can be changed while the VM is running.")
-                    .frame(height: 80) // FIXME: don't hard code this
-            } else {
+            }).onChange(of: driveImage.removable) { removable in
+                driveImage.imageType = removable ? .CD : .disk
+                driveImage.interface = UTMConfiguration.defaultDriveInterface(forTarget: target, type: driveImage.imageType)
+            }
+            VMConfigStringPicker(selection: $driveImage.interface, label: Text("Interface"), rawValues: UTMConfiguration.supportedDriveInterfaces(), displayValues: UTMConfiguration.supportedDriveInterfacesPretty())
+            if !driveImage.removable {
                 HStack {
                     Text("Size")
                     Spacer()
@@ -43,17 +44,6 @@ struct VMConfigDriveCreateView: View {
                         .multilineTextAlignment(.trailing)
                     Text("MB")
                 }
-            }
-            VMConfigStringPicker(selection: $driveImage.imageTypeString, label: Text("Image Type"), rawValues: UTMConfiguration.supportedImageTypes(), displayValues: UTMConfiguration.supportedImageTypesPretty())
-                .onChange(of: driveImage.imageTypeString, perform: { value in
-                    guard let imageTypeString = value else {
-                        return
-                    }
-                    let imageType = UTMDiskImageType.enumFromString(imageTypeString)
-                    driveImage.interface = UTMConfiguration.defaultDriveInterface(forTarget: target, type: imageType)
-                })
-            if driveImage.imageType == .disk || driveImage.imageType == .CD {
-                VMConfigStringPicker(selection: $driveImage.interface, label: Text("Interface"), rawValues: UTMConfiguration.supportedDriveInterfaces(), displayValues: UTMConfiguration.supportedDriveInterfacesPretty())
             }
         }.onAppear() {
             driveImage.interface = UTMConfiguration.defaultDriveInterface(forTarget: target, type: driveImage.imageType)
