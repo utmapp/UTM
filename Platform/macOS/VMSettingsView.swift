@@ -55,7 +55,7 @@ struct VMSettingsView: View {
             PreferencePane(label: "Sharing", systemImage: "person.crop.circle.fill", cancel: cancel, save: save) {
                 VMConfigSharingView(config: config)
             }
-        }.disabled(data.busy)
+        }//FIXME: SwiftUI bug .disabled(data.busy)
         .frame(minWidth: 800, minHeight: 400)
         .overlay(BusyOverlay())
     }
