@@ -391,16 +391,6 @@ static size_t sysctl_read(const char *name) {
     if (self.configuration.systemMachineProperties.length > 0) {
         return self.configuration.systemMachineProperties; // use specified properties
     }
-    // otherwise use default properties for each machine
-    if ([self.configuration.systemTarget hasPrefix:@"pc"] || [self.configuration.systemTarget hasPrefix:@"q35"]) {
-        return @"vmport=off";
-    }
-    if ([self.configuration.systemTarget isEqualToString:@"mac99"]) {
-        return @"via=pmu";
-    }
-    if ([self.configuration.systemTarget hasPrefix:@"virt"] && self.useHypervisor) {
-        return @"highmem=off";
-    }
     return @"";
 }
 

@@ -17,6 +17,7 @@
 #include "TargetConditionals.h"
 #include "UTMConfiguration.h"
 #include "UTMConfiguration+Constants.h"
+#include "UTMConfiguration+Defaults.h"
 #include "UTMConfiguration+Display.h"
 #include "UTMConfiguration+Drives.h"
 #include "UTMConfiguration+Miscellaneous.h"

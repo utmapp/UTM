@@ -15,6 +15,7 @@
 //
 
 #import "UTMConfiguration+Constants.h"
+#import "UTMConfiguration+Defaults.h"
 #import "UTMConfiguration+System.h"
 #import "UTM-Swift.h"
 
@@ -65,6 +66,10 @@ static const NSString *const kUTMConfigMachinePropertiesKey = @"MachinePropertie
         if ([self.systemTarget hasPrefix:@"virt"]) {
             [self newArgument:@"-device"];
             [self newArgument:@"virtio-gpu-pci"];
+        }
+        NSString *machineProp = [self defaultMachinePropertiesForTarget:self.systemTarget];
+        if (machineProp && self.systemMachineProperties.length == 0) {
+            self.systemMachineProperties = machineProp;
         }
     }
 }

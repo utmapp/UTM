@@ -58,6 +58,11 @@ struct VMConfigSystemView: View {
                 Section(header: Text("Hardware")) {
                     VMConfigStringPicker(selection: archObserver, label: Text("Architecture"), rawValues: UTMConfiguration.supportedArchitectures(), displayValues: UTMConfiguration.supportedArchitecturesPretty())
                     VMConfigStringPicker(selection: $config.systemTarget, label: Text("System"), rawValues: UTMConfiguration.supportedTargets(forArchitecture: config.systemArchitecture) ?? [], displayValues: UTMConfiguration.supportedTargets(forArchitecturePretty: config.systemArchitecture) ?? [])
+                        .onChange(of: config.systemTarget, perform: { value in
+                            if let target = value {
+                                config.loadDefaults(forTarget: target)
+                            }
+                        })
                     HStack {
                         Slider(value: memorySizeIndexObserver, in: 0...Float(validMemoryValues.count-1), step: 1) { start in
                             if !start {
