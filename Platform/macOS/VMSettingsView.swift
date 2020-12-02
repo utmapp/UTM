@@ -55,8 +55,8 @@ struct VMSettingsView: View {
             PreferencePane(label: "Sharing", systemImage: "person.crop.circle.fill", cancel: cancel, save: save) {
                 VMConfigSharingView(config: config)
             }
-        }.frame(minWidth: 800, minHeight: 400)
-        .disabled(data.busy)
+        }.disabled(data.busy)
+        .frame(minWidth: 800, minHeight: 400)
         .overlay(BusyOverlay())
     }
     
