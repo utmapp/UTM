@@ -90,7 +90,7 @@
 + (NSArray<NSString *>*)supportedImageTypesPretty {
     return @[
              NSLocalizedString(@"Disk Image", "UTMConfiguration"),
-             NSLocalizedString(@"CD/DVD Image", "UTMConfiguration"),
+             NSLocalizedString(@"CD/DVD (ISO) Image", "UTMConfiguration"),
              NSLocalizedString(@"BIOS", "UTMConfiguration"),
              NSLocalizedString(@"Linux Kernel", "UTMConfiguration"),
              NSLocalizedString(@"Linux RAM Disk", "UTMConfiguration"),
