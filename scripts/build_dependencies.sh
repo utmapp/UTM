@@ -280,7 +280,7 @@ fixup () {
     if [ -z "$BASEFILEEXT" ]; then
         NEWFILENAME="$BASE"
     fi
-    LIST=$(otool -L "$FILE" | tail -n +3 | cut -d ' ' -f 1 | awk '{$1=$1};1')
+    LIST=$(otool -L "$FILE" | tail -n +2 | cut -d ' ' -f 1 | awk '{$1=$1};1')
     OLDIFS=$IFS
     IFS=$'\n'
     echo "${GREEN}Fixing up $FILE...${NC}"
