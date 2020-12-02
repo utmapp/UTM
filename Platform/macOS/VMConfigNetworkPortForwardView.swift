@@ -34,7 +34,7 @@ struct VMConfigNetworkPortForwardView: View {
                         .frame(width: 250)
                 }
             }, footer: EmptyView().padding(.bottom)) {
-            List {
+            VStack {
                 ForEach(0..<config.countPortForwards, id: \.self) { index in
                     let configPort = config.portForward(for: index)!
                     let editingNewPortBinding = Binding<Bool> {
@@ -49,7 +49,7 @@ struct VMConfigNetworkPortForwardView: View {
 
                     Button(action: { editingNewPortBinding.wrappedValue = true }, label: {
                         Text(verbatim: "\(configPort.guestAddress):\(configPort.guestPort!) ➡️ \(configPort.hostAddress):\(configPort.hostPort!)")
-                    }).buttonStyle(PlainButtonStyle())
+                    }).buttonStyle(BorderedButtonStyle())
                     .popover(isPresented: editingNewPortBinding, arrowEdge: .bottom) {
                         PortForwardEdit(config: config, index: index).padding()
                             .frame(width: 250)
