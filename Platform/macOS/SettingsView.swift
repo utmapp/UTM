@@ -20,7 +20,7 @@ import SwiftUI
 struct SettingsView: View {
     @AppStorage("AlwaysNativeResolution") var isAlwaysNativeResolution = false
     @AppStorage("DisplayFixed") var isVMDisplayFixed = false
-    @AppStorage("UseHypervisor") var isHypervisorUsed = false
+    @AppStorage("UseHypervisor") var isHypervisorUsed = true
     
     var body: some View {
         Form {
@@ -45,7 +45,7 @@ extension UserDefaults {
     @objc dynamic var NoCursorCaptureAlert: Bool { false }
     @objc dynamic var AlwaysNativeResolution: Bool { false }
     @objc dynamic var DisplayFixed: Bool { false }
-    @objc dynamic var UseHypervisor: Bool { false }
+    @objc dynamic var UseHypervisor: Bool { true }
 }
 
 @available(macOS 11, *)
