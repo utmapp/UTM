@@ -29,8 +29,8 @@ struct VMConfigNetworkPortForwardView: View {
                         destination: PortForwardEdit(config: config, index: index),
                         label: {
                             VStack(alignment: .leading) {
-                                Text(verbatim: "\(configPort.guestAddress ?? ""):\(configPort.guestPort ?? 0) ➡️ \(configPort.hostAddress ?? ""):\(configPort.hostPort ?? 0)")
-                                Text(configPort.protocol ?? "").font(.subheadline)
+                                Text(verbatim: "\(configPort.guestAddress):\(configPort.guestPort!) ➡️ \(configPort.hostAddress):\(configPort.hostPort!)")
+                                Text(configPort.protocol!).font(.subheadline)
                             }
                         })
                 }.onDelete(perform: deletePortForwards)
@@ -104,9 +104,9 @@ struct VMConfigNetworkPortForwardView_Previews: PreviewProvider {
                     newConfigPort.hostPort = NSNumber(value: 4321)
                     config.newPortForward(newConfigPort)
                     newConfigPort.protocol = "udp"
-                    newConfigPort.guestAddress = nil
+                    newConfigPort.guestAddress = ""
                     newConfigPort.guestPort = NSNumber(value: 2222)
-                    newConfigPort.hostAddress = nil
+                    newConfigPort.hostAddress = ""
                     newConfigPort.hostPort = NSNumber(value: 3333)
                     config.newPortForward(newConfigPort)
                 }

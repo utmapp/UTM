@@ -28,7 +28,7 @@ struct VMConfigPortForwardForm: View {
             HStack {
                 Text("Guest Address")
                 Spacer()
-                TextField("0.0.0.0", text: $configPort.guestAddress.bound)
+                TextField("0.0.0.0", text: $configPort.guestAddress)
                     .keyboardType(.decimalPad)
             }
             HStack {
@@ -39,7 +39,7 @@ struct VMConfigPortForwardForm: View {
             HStack {
                 Text("Host Address")
                 Spacer()
-                TextField("127.0.0.1", text: $configPort.hostAddress.bound)
+                TextField("127.0.0.1", text: $configPort.hostAddress)
                     .keyboardType(.decimalPad)
             }
             HStack {
@@ -73,9 +73,9 @@ struct VMConfigPortForwardForm_Previews: PreviewProvider {
                 newConfigPort.hostPort = 4321
                 config.newPortForward(newConfigPort)
                 newConfigPort.protocol = "udp"
-                newConfigPort.guestAddress = nil
+                newConfigPort.guestAddress = ""
                 newConfigPort.guestPort = 2222
-                newConfigPort.hostAddress = nil
+                newConfigPort.hostAddress = ""
                 newConfigPort.hostPort = 3333
                 config.newPortForward(newConfigPort)
             }

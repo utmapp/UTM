@@ -19,9 +19,23 @@
 
 @implementation UTMConfigurationPortForward
 
+@synthesize protocol = _protocol;
+@synthesize hostAddress = _hostAddress;
+@synthesize hostPort = _hostPort;
+@synthesize guestAddress = _guestAddress;
+@synthesize guestPort = _guestPort;
+
 - (void)setProtocol:(NSString *)protocol {
     [self propertyWillChange];
     _protocol = protocol;
+}
+
+- (NSString *)protocol {
+    if (_protocol) {
+        return _protocol;
+    } else {
+        return @"tcp";
+    }
 }
 
 - (void)setHostAddress:(NSString *)hostAddress {
@@ -29,9 +43,25 @@
     _hostAddress = hostAddress;
 }
 
+- (NSString *)hostAddress {
+    if (_hostAddress) {
+        return _hostAddress;
+    } else {
+        return @"";
+    }
+}
+
 - (void)setHostPort:(NSNumber *)hostPort {
     [self propertyWillChange];
     _hostPort = hostPort;
+}
+
+- (NSNumber *)hostPort {
+    if (_hostPort) {
+        return _hostPort;
+    } else {
+        return @(0);
+    }
 }
 
 - (void)setGuestAddress:(NSString *)guestAddress {
@@ -39,9 +69,25 @@
     _guestAddress = guestAddress;
 }
 
+- (NSString *)guestAddress {
+    if (_guestAddress) {
+        return _guestAddress;
+    } else {
+        return @"";
+    }
+}
+
 - (void)setGuestPort:(NSNumber *)guestPort {
     [self propertyWillChange];
     _guestPort = guestPort;
+}
+
+- (NSNumber *)guestPort {
+    if (_guestPort) {
+        return _guestPort;
+    } else {
+        return @(0);
+    }
 }
 
 @end

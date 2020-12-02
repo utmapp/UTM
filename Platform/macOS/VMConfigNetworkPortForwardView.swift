@@ -48,7 +48,7 @@ struct VMConfigNetworkPortForwardView: View {
                     }
 
                     Button(action: { editingNewPortBinding.wrappedValue = true }, label: {
-                        Text(verbatim: "\(configPort.guestAddress ?? ""):\(configPort.guestPort ?? 0) ➡️ \(configPort.hostAddress ?? ""):\(configPort.hostPort ?? 0)")
+                        Text(verbatim: "\(configPort.guestAddress):\(configPort.guestPort!) ➡️ \(configPort.hostAddress):\(configPort.hostPort!)")
                     }).buttonStyle(PlainButtonStyle())
                     .popover(isPresented: editingNewPortBinding, arrowEdge: .bottom) {
                         PortForwardEdit(config: config, index: index).padding()
@@ -116,9 +116,9 @@ struct VMConfigNetworkPortForwardView_Previews: PreviewProvider {
                     newConfigPort.hostPort = NSNumber(value: 4321)
                     config.newPortForward(newConfigPort)
                     newConfigPort.protocol = "udp"
-                    newConfigPort.guestAddress = nil
+                    newConfigPort.guestAddress = ""
                     newConfigPort.guestPort = NSNumber(value: 2222)
-                    newConfigPort.hostAddress = nil
+                    newConfigPort.hostAddress = ""
                     newConfigPort.hostPort = NSNumber(value: 3333)
                     config.newPortForward(newConfigPort)
                 }
