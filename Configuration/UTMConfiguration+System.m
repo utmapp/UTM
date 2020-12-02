@@ -67,7 +67,7 @@ static const NSString *const kUTMConfigMachinePropertiesKey = @"MachinePropertie
             [self newArgument:@"-device"];
             [self newArgument:@"virtio-gpu-pci"];
         }
-        NSString *machineProp = [self defaultMachinePropertiesForTarget:self.systemTarget];
+        NSString *machineProp = [UTMConfiguration defaultMachinePropertiesForTarget:self.systemTarget];
         if (machineProp && self.systemMachineProperties.length == 0) {
             self.systemMachineProperties = machineProp;
         }

@@ -31,13 +31,13 @@
     } else if ([target isEqualToString:@"mac99"]) {
         self.soundEnabled = NO;
     }
-    NSString *machineProp = [self defaultMachinePropertiesForTarget:target];
+    NSString *machineProp = [UTMConfiguration defaultMachinePropertiesForTarget:target];
     if (machineProp) {
         self.systemMachineProperties = machineProp;
     }
 }
 
-- (nullable NSString *)defaultMachinePropertiesForTarget:(NSString *)target {
++ (nullable NSString *)defaultMachinePropertiesForTarget:(NSString *)target {
     if ([target hasPrefix:@"pc"] || [target hasPrefix:@"q35"]) {
         return @"vmport=off";
     } else if ([target isEqualToString:@"virt"] || [target hasPrefix:@"virt-"]) {

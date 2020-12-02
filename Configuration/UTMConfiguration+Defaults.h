@@ -21,7 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface UTMConfiguration (Defaults)
 
 - (void)loadDefaultsForTarget:(NSString *)target;
-- (nullable NSString *)defaultMachinePropertiesForTarget:(NSString *)target;
++ (nullable NSString *)defaultMachinePropertiesForTarget:(NSString *)target;
 
 @end
 
