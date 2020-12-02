@@ -36,17 +36,6 @@ struct VMConfigSystemView: View {
     var body: some View {
         VStack {
             Form {
-                let archObserver = Binding<String?>(
-                    get: {
-                        return config.systemArchitecture
-                    },
-                    set: {
-                        config.systemArchitecture = $0
-                        let index = UTMConfiguration.defaultTargetIndex(forArchitecture: $0)
-                        let targets = UTMConfiguration.supportedTargets(forArchitecture: $0)
-                        config.systemTarget = targets?[index]
-                    }
-                )
                 let memorySizeIndexObserver = Binding<Float>(
                     get: {
                         return memorySizePickerIndex(size: config.systemMemory)
@@ -56,7 +45,15 @@ struct VMConfigSystemView: View {
                     }
                 )
                 Section(header: Text("Hardware")) {
-                    VMConfigStringPicker(selection: archObserver, label: Text("Architecture"), rawValues: UTMConfiguration.supportedArchitectures(), displayValues: UTMConfiguration.supportedArchitecturesPretty())
+                    VMConfigStringPicker(selection: $config.systemArchitecture, label: Text("Architecture"), rawValues: UTMConfiguration.supportedArchitectures(), displayValues: UTMConfiguration.supportedArchitecturesPretty())
+                        .onChange(of: config.systemArchitecture, perform: { value in
+                            guard let arch = value else {
+                                return
+                            }
+                            let index = UTMConfiguration.defaultTargetIndex(forArchitecture: arch)
+                            let targets = UTMConfiguration.supportedTargets(forArchitecture: arch)
+                            config.systemTarget = targets?[index]
+                        })
                     VMConfigStringPicker(selection: $config.systemTarget, label: Text("System"), rawValues: UTMConfiguration.supportedTargets(forArchitecture: config.systemArchitecture) ?? [], displayValues: UTMConfiguration.supportedTargets(forArchitecturePretty: config.systemArchitecture) ?? [])
                         .onChange(of: config.systemTarget, perform: { value in
                             if let target = value {
