@@ -202,10 +202,6 @@
     return @"Images";
 }
 
-+ (NSString *)defaultDriveInterface {
-    return [self supportedDriveInterfaces][0];
-}
-
 + (NSString *)debugLogName {
     return @"debug.log";
 }

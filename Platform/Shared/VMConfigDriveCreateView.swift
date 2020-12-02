@@ -18,6 +18,7 @@ import SwiftUI
 
 @available(iOS 14, macOS 11, *)
 struct VMConfigDriveCreateView: View {
+    let target: String?
     let minSizeMib = 1
     
     @ObservedObject var driveImage: VMDriveImage
@@ -44,9 +45,18 @@ struct VMConfigDriveCreateView: View {
                 }
             }
             VMConfigStringPicker(selection: $driveImage.imageTypeString, label: Text("Image Type"), rawValues: UTMConfiguration.supportedImageTypes(), displayValues: UTMConfiguration.supportedImageTypesPretty())
+                .onChange(of: driveImage.imageTypeString, perform: { value in
+                    guard let imageTypeString = value else {
+                        return
+                    }
+                    let imageType = UTMDiskImageType.enumFromString(imageTypeString)
+                    driveImage.interface = UTMConfiguration.defaultDriveInterface(forTarget: target, type: imageType)
+                })
             if driveImage.imageType == .disk || driveImage.imageType == .CD {
                 VMConfigStringPicker(selection: $driveImage.interface, label: Text("Interface"), rawValues: UTMConfiguration.supportedDriveInterfaces(), displayValues: UTMConfiguration.supportedDriveInterfacesPretty())
             }
+        }.onAppear() {
+            driveImage.interface = UTMConfiguration.defaultDriveInterface(forTarget: target, type: driveImage.imageType)
         }
     }
     
@@ -65,6 +75,6 @@ struct VMConfigDriveCreateView_Previews: PreviewProvider {
     @StateObject static private var driveImage = VMDriveImage()
     
     static var previews: some View {
-        VMConfigDriveCreateView(driveImage: driveImage)
+        VMConfigDriveCreateView(target: nil, driveImage: driveImage)
     }
 }

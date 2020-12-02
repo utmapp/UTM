@@ -48,4 +48,15 @@
     return nil;
 }
 
++ (NSString *)defaultDriveInterfaceForTarget:(NSString *)target type:(UTMDiskImageType)type {
+    if ([target isEqualToString:@"virt"] || [target hasPrefix:@"virt-"]) {
+        if (type == UTMDiskImageTypeCD) {
+            return @"usb";
+        } else {
+            return @"nvme";
+        }
+    }
+    return @"ide";
+}
+
 @end

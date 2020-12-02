@@ -338,7 +338,13 @@ class UTMData: ObservableObject {
             try fileManager.moveItem(at: drive, to: dstPath)
         }
         DispatchQueue.main.async {
-            forConfig.newDrive(name, type: .CD, interface: UTMConfiguration.defaultDriveInterface())
+            let interface: String
+            if let target = forConfig.systemTarget {
+                interface = UTMConfiguration.defaultDriveInterface(forTarget: target, type: .CD)
+            } else {
+                interface = "none"
+            }
+            forConfig.newDrive(name, type: .CD, interface: interface)
         }
     }
     
@@ -362,7 +368,7 @@ class UTMData: ObservableObject {
         }
         
         DispatchQueue.main.async {
-            let interface = drive.interface ?? UTMConfiguration.defaultDriveInterface()
+            let interface = drive.interface ?? "none"
             if drive.removable {
                 forConfig.newRemovableDrive(drive.imageType, interface: interface)
             } else {

@@ -19,7 +19,7 @@ class VMDriveImage: ObservableObject {
     @Published var size: Int = 10240
     @Published var removable: Bool = false
     @Published var imageTypeString: String? = UTMDiskImageType.disk.description
-    @Published var interface: String? = UTMConfiguration.defaultDriveInterface()
+    @Published var interface: String? = "none"
     
     var imageType: UTMDiskImageType {
         get {

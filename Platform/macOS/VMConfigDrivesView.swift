@@ -37,7 +37,7 @@ struct VMConfigDrivesView: View {
                 })
                 .popover(isPresented: $newDrivePopover, arrowEdge: .bottom) {
                     VStack {
-                        VMConfigDriveCreateView(driveImage: newDrive)
+                        VMConfigDriveCreateView(target: config.systemTarget, driveImage: newDrive)
                         HStack {
                             Spacer()
                             Button(action: { addNewDrive(newDrive) }, label: {
@@ -143,7 +143,7 @@ struct VMConfigDrivesView_Previews: PreviewProvider {
         }.onAppear {
             if config.countDrives == 0 {
                 config.newDrive("test.img", type: .disk, interface: "ide")
-                config.newDrive("bios.bin", type: .BIOS, interface: UTMConfiguration.defaultDriveInterface())
+                config.newDrive("bios.bin", type: .BIOS, interface: "none")
             }
         }
     }

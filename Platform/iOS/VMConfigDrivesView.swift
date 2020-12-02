@@ -73,7 +73,7 @@ struct VMConfigDrivesView: View {
         )
         .fileImporter(isPresented: $importDrivePresented, allowedContentTypes: [.item], onCompletion: importDrive)
         .sheet(isPresented: $createDriveVisible) {
-            CreateDrive(onDismiss: newDrive)
+            CreateDrive(target: config.systemTarget, onDismiss: newDrive)
         }
         .actionSheet(item: $attemptDelete) { offsets in
             ActionSheet(title: Text("Confirm Delete"), message: Text("Are you sure you want to permanently delete this disk image?"), buttons: [.cancel(), .destructive(Text("Delete")) {
@@ -119,17 +119,19 @@ struct VMConfigDrivesView: View {
 
 @available(iOS 14, *)
 private struct CreateDrive: View {
+    let target: String?
     let onDismiss: (VMDriveImage) -> Void
     @StateObject private var driveImage = VMDriveImage()
     @Environment(\.presentationMode) private var presentationMode: Binding<PresentationMode>
     
-    init(onDismiss: @escaping (VMDriveImage) -> Void) {
+    init(target: String?, onDismiss: @escaping (VMDriveImage) -> Void) {
+        self.target = target
         self.onDismiss = onDismiss
     }
     
     var body: some View {
         NavigationView {
-            VMConfigDriveCreateView(driveImage: driveImage)
+            VMConfigDriveCreateView(target: target, driveImage: driveImage)
                 .navigationBarItems(leading: Button(action: cancel, label: {
                     Text("Cancel")
                 }), trailing: Button(action: done, label: {
@@ -157,13 +159,13 @@ struct VMConfigDrivesView_Previews: PreviewProvider {
     static var previews: some View {
         Group {
             VMConfigDrivesView(config: config)
-            CreateDrive { _ in
+            CreateDrive(target: nil) { _ in
                 
             }
         }.onAppear {
             if config.countDrives == 0 {
                 config.newDrive("test.img", type: .disk, interface: "ide")
-                config.newDrive("bios.bin", type: .BIOS, interface: UTMConfiguration.defaultDriveInterface())
+                config.newDrive("bios.bin", type: .BIOS, interface: "none")
             }
         }
     }

@@ -33,7 +33,6 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSArray<NSString *>*)supportedConsoleThemes API_AVAILABLE(ios(11));
 + (NSArray<NSString *>*)supportedConsoleFonts API_AVAILABLE(ios(11));
 + (NSString *)diskImagesDirectory;
-+ (NSString *)defaultDriveInterface;
 + (NSString *)debugLogName;
 
 @end

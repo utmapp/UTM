@@ -15,6 +15,7 @@
 //
 
 #import "UTMConfiguration.h"
+#import "UTMConfiguration+Drives.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -22,6 +23,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)loadDefaultsForTarget:(NSString *)target;
 + (nullable NSString *)defaultMachinePropertiesForTarget:(NSString *)target;
++ (NSString *)defaultDriveInterfaceForTarget:(nullable NSString *)target type:(UTMDiskImageType)type;
 
 @end
 
