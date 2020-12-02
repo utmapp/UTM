@@ -27,6 +27,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSArray<NSString *>*)supportedImageTypes;
 + (NSArray<NSString *>*)supportedResolutions;
 + (NSArray<NSString *>*)supportedDriveInterfaces;
++ (NSArray<NSString *>*)supportedDriveInterfacesPretty;
 + (NSArray<NSString *>*)supportedScalersPretty;
 + (NSArray<NSString *>*)supportedScalers;
 + (NSArray<NSString *>*)supportedConsoleThemes API_AVAILABLE(ios(11));

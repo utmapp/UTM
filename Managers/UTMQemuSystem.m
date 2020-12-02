@@ -181,6 +181,20 @@ static size_t sysctl_read(const char *name) {
     }
 }
 
+- (NSString *)expandDriveInterface:(NSString *)interface identifier:(NSString *)identifier removable:(BOOL)removable {
+    if ([interface isEqualToString:@"nvme"]) {
+        [self pushArgv:@"-device"];
+        [self pushArgv:[NSString stringWithFormat:@"nvme,drive=%@,serial=%@", identifier, identifier]];
+        return @"none";
+    } else if ([interface isEqualToString:@"usb"]) {
+        [self pushArgv:@"-device"];
+        [self pushArgv:[NSString stringWithFormat:@"usb-storage,drive=%@,removable=%@", identifier, removable ? @"true" : @"false"]];
+        return @"none";
+    } else {
+        return interface; // no expand needed
+    }
+}
+
 - (void)argsForDrives {
     for (NSUInteger i = 0; i < self.configuration.countDrives; i++) {
         NSString *path = [self.configuration driveImagePathForIndex:i];
@@ -203,9 +217,13 @@ static size_t sysctl_read(const char *name) {
         switch (type) {
             case UTMDiskImageTypeDisk:
             case UTMDiskImageTypeCD: {
+                NSString *interface = [self.configuration driveInterfaceTypeForIndex:i];
+                BOOL removable = type == UTMDiskImageTypeCD;
+                NSString *identifier = [NSString stringWithFormat:@"drive%lu", i];
+                NSString *realInterface = [self expandDriveInterface:interface identifier:identifier removable:removable];
                 NSString *drive;
                 [self pushArgv:@"-drive"];
-                drive = [NSString stringWithFormat:@"if=%@,media=%@,id=drive%lu", [self.configuration driveInterfaceTypeForIndex:i], type == UTMDiskImageTypeCD ? @"cdrom" : @"disk", i];
+                drive = [NSString stringWithFormat:@"if=%@,media=%@,id=%@", interface, removable ? @"cdrom" : @"disk", identifier];
                 if (hasImage) {
                     drive = [NSString stringWithFormat:@"%@,file=%@", drive, fullPathURL.path];
                 }

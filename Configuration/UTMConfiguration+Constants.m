@@ -137,7 +137,24 @@
              @"floppy",
              @"pflash",
              @"virtio",
+             @"nvme",
+             @"usb",
              @"none"
+             ];
+}
+
++ (NSArray<NSString *>*)supportedDriveInterfacesPretty {
+    return @[
+             @"IDE",
+             @"SCSI",
+             @"SD Card",
+             @"MTD (NAND/NOR)",
+             @"Floppy",
+             @"PC System Flash",
+             @"VirtIO",
+             @"NVMe",
+             @"USB",
+             @"None (Advanced)"
              ];
 }
 

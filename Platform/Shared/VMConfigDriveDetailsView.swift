@@ -78,7 +78,7 @@ struct VMConfigDriveDetailsView: View {
             }
             VMConfigStringPicker(selection: $imageTypeString, label: Text("Image Type"), rawValues: UTMConfiguration.supportedImageTypes(), displayValues: UTMConfiguration.supportedImageTypesPretty())
             if imageType == .disk || imageType == .CD {
-                VMConfigStringPicker(selection: $interface, label: Text("Interface"), rawValues: UTMConfiguration.supportedDriveInterfaces(), displayValues: UTMConfiguration.supportedDriveInterfaces())
+                VMConfigStringPicker(selection: $interface, label: Text("Interface"), rawValues: UTMConfiguration.supportedDriveInterfaces(), displayValues: UTMConfiguration.supportedDriveInterfacesPretty())
             }
         }
     }
