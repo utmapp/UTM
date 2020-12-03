@@ -327,6 +327,7 @@ class UTMData: ObservableObject {
         }
         
         let name = drive.lastPathComponent
+        let imageType: UTMDiskImageType = drive.pathExtension.lowercased() == "iso" ? .CD : .disk
         let imagesPath = forConfig.imagesPath
         let dstPath = imagesPath.appendingPathComponent(name)
         if !fileManager.fileExists(atPath: imagesPath.path) {
@@ -340,11 +341,11 @@ class UTMData: ObservableObject {
         DispatchQueue.main.async {
             let interface: String
             if let target = forConfig.systemTarget {
-                interface = UTMConfiguration.defaultDriveInterface(forTarget: target, type: .CD)
+                interface = UTMConfiguration.defaultDriveInterface(forTarget: target, type: imageType)
             } else {
                 interface = "none"
             }
-            forConfig.newDrive(name, type: .CD, interface: interface)
+            forConfig.newDrive(name, type: imageType, interface: interface)
         }
     }
     
