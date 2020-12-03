@@ -223,7 +223,7 @@ static size_t sysctl_read(const char *name) {
                 NSString *realInterface = [self expandDriveInterface:interface identifier:identifier removable:removable];
                 NSString *drive;
                 [self pushArgv:@"-drive"];
-                drive = [NSString stringWithFormat:@"if=%@,media=%@,id=%@", interface, removable ? @"cdrom" : @"disk", identifier];
+                drive = [NSString stringWithFormat:@"if=%@,media=%@,id=%@", realInterface, removable ? @"cdrom" : @"disk", identifier];
                 if (hasImage) {
                     drive = [NSString stringWithFormat:@"%@,file=%@", drive, fullPathURL.path];
                 }
