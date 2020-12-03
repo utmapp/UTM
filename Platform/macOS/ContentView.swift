@@ -46,7 +46,7 @@ struct ContentView: View {
                 }
             }
             .sheet(isPresented: $newVMScratchPresented, onDismiss: {
-                newConfiguration.resetDefaults()
+                //FIXME: SwiftUI bug this is never called: newConfiguration.resetDefaults()
             }, content: {
                 VMSettingsView(vm: nil, config: newConfiguration)
                     .environmentObject(data)
@@ -54,6 +54,11 @@ struct ContentView: View {
                         newConfiguration.name = data.newDefaultVMName()
                     }
             })
+            .onChange(of: newVMScratchPresented) { value in
+                if !value {
+                    newConfiguration.resetDefaults()
+                }
+            }
             VMPlaceholderView(createNewVMPresented: $newVMScratchPresented)
         }.overlay(data.showSettingsModal ? AnyView(EmptyView()) : AnyView(BusyOverlay()))
         .environmentObject(data)
