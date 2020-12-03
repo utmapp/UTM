@@ -53,7 +53,7 @@
         if (type == UTMDiskImageTypeCD) {
             return @"usb";
         } else {
-            return @"nvme"; // prob should be virtio but Windows doesn't like it
+            return @"virtio";
         }
     }
     return @"ide";
