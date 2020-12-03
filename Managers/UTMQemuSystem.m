@@ -472,9 +472,9 @@ static size_t sysctl_read(const char *name) {
     }
     [self pushArgv:@"-name"];
     [self pushArgv:self.configuration.name];
+    [self argsForUsb];
     [self argsForDrives];
     [self argsForNetwork];
-    [self argsForUsb];
     if (self.snapshot) {
         [self pushArgv:@"-loadvm"];
         [self pushArgv:self.snapshot];
