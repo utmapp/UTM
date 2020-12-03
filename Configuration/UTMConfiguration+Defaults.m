@@ -27,7 +27,7 @@
         self.networkCard = @"rtl8139";
     } else if ([target isEqualToString:@"virt"] || [target hasPrefix:@"virt-"]) {
         self.soundCard = @"hda";
-        self.networkCard = @"rtl8139";
+        self.networkCard = @"virtio-net-pci";
     } else if ([target isEqualToString:@"mac99"]) {
         self.soundEnabled = NO;
     }
@@ -53,7 +53,7 @@
         if (type == UTMDiskImageTypeCD) {
             return @"usb";
         } else {
-            return @"nvme";
+            return @"nvme"; // prob should be virtio but Windows doesn't like it
         }
     }
     return @"ide";
