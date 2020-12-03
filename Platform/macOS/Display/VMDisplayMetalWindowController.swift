@@ -255,4 +255,7 @@ extension VMDisplayMetalWindowController: VMMetalViewInputDelegate {
         sendExtendedKey(.release, keyCode: keyCode)
     }
     
+    func requestReleaseCapture() {
+        releaseMouse()
+    }
 }

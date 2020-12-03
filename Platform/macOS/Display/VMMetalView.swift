@@ -204,7 +204,7 @@ class VMMetalView: MTKView {
         logger.debug("modifers: \(modifiers)")
         if modifiers.isSuperset(of: [.option, .control]) {
             logger.debug("release cursor")
-            releaseMouse()
+            inputDelegate?.requestReleaseCapture()
         }
         sendModifiers(lastModifiers.subtracting(modifiers), press: false)
         sendModifiers(modifiers.subtracting(lastModifiers), press: true)
