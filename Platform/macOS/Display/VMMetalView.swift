@@ -313,11 +313,13 @@ extension VMMetalView {
         CGAssociateMouseAndMouseCursorPosition(0)
         CGWarpMouseCursorPosition(screenCenter ?? .zero)
         isMouseCaptured = true
+        NSCursor.hide()
     }
     
     func releaseMouse() {
         CGAssociateMouseAndMouseCursorPosition(1)
         isMouseCaptured = false
+        NSCursor.unhide()
     }
 }
 

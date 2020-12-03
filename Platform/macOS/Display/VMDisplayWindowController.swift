@@ -38,8 +38,6 @@ class VMDisplayWindowController: NSWindowController {
     var toolbarVisible: Bool = false // ignored
     var keyboardVisible: Bool = false // ignored
     
-    var isMouseCaptued: Bool = false
-    
     override var windowNibName: NSNib.Name? {
         "VMDisplayWindow"
     }
@@ -97,7 +95,6 @@ class VMDisplayWindowController: NSWindowController {
     }
     
     @IBAction func captureMouseButtonPressed(_ sender: Any) {
-        isMouseCaptued.toggle()
     }
     
     @IBAction func resizeConsoleButtonPressed(_ sender: Any) {

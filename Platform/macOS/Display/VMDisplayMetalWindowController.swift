@@ -21,16 +21,6 @@ class VMDisplayMetalWindowController: VMDisplayWindowController, UTMSpiceIODeleg
     @objc dynamic var vmDisplay: CSDisplayMetal?
     @objc dynamic var vmInput: CSInput?
     
-    override var isMouseCaptued: Bool {
-        didSet {
-            if isMouseCaptued {
-                captureMouse()
-            } else {
-                releaseMouse()
-            }
-        }
-    }
-    
     private var displaySizeObserver: NSKeyValueObservation?
     private var displaySize: CGSize = .zero
     
@@ -105,6 +95,10 @@ class VMDisplayMetalWindowController: VMDisplayWindowController, UTMSpiceIODeleg
         }
         super.enterSuspended(isBusy: busy)
     }
+    
+    override func captureMouseButtonPressed(_ sender: Any) {
+        captureMouse()
+    }
 }
     
 // MARK: - Screen management
@@ -165,14 +159,14 @@ extension VMDisplayMetalWindowController {
     }
     
     func windowDidBecomeKey(_ notification: Notification) {
-        if let metalView = self.metalView {
-            metalView.becomeFirstResponder()
+        if let window = self.window {
+            _ = window.makeFirstResponder(metalView)
         }
     }
     
     func windowDidResignKey(_ notification: Notification) {
-        if let metalView = self.metalView {
-            metalView.resignFirstResponder()
+        if let window = self.window {
+            _ = window.makeFirstResponder(nil)
         }
     }
 }
