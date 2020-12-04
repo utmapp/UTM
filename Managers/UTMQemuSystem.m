@@ -39,7 +39,7 @@ typedef struct {
 
 @property (nonatomic, readonly) NSURL *resourceURL;
 @property (nonatomic, readonly) CPUCount emulatedCpuCount;
-@property (nonatomic, readonly) BOOL useHypervisor;
+@property (nonatomic, readonly) BOOL noHypervisor;
 @property (nonatomic, readonly) BOOL hasCustomBios;
 
 @end
@@ -166,7 +166,7 @@ static size_t sysctl_read(const char *name) {
 
 - (void)targetSpecificConfiguration {
     if ([self.configuration.systemTarget hasPrefix:@"virt"]) {
-        if (!self.useHypervisor && [self.configuration.systemArchitecture isEqualToString:@"aarch64"]) {
+        if (self.noHypervisor && [self.configuration.systemArchitecture isEqualToString:@"aarch64"]) {
             [self pushArgv:@"-cpu"];
             [self pushArgv:@"cortex-a72"];
         }
@@ -375,9 +375,9 @@ static size_t sysctl_read(const char *name) {
     return accel;
 }
 
-- (BOOL)useHypervisor {
+- (BOOL)noHypervisor {
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    return [defaults boolForKey:@"UseHypervisor"];
+    return [defaults boolForKey:@"NoHypervisor"];
 }
 
 - (BOOL)hasCustomBios {
@@ -446,7 +446,7 @@ static size_t sysctl_read(const char *name) {
     [self pushArgv:[NSString stringWithFormat:@"cpus=%lu,sockets=1,cores=%lu,threads=%lu", self.emulatedCpuCount.cpus, self.emulatedCpuCount.cpus, self.emulatedCpuCount.threads / self.emulatedCpuCount.cpus]];
     [self pushArgv:@"-machine"];
     [self pushArgv:[NSString stringWithFormat:@"%@,%@", self.configuration.systemTarget, [self machineProperties]]];
-    if (self.useHypervisor) {
+    if (!self.noHypervisor) {
         [self pushArgv:@"-accel"];
         [self pushArgv:@"hvf"];
         [self pushArgv:@"-cpu"];

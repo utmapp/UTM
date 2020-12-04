@@ -20,7 +20,7 @@ import SwiftUI
 struct SettingsView: View {
     @AppStorage("AlwaysNativeResolution") var isAlwaysNativeResolution = false
     @AppStorage("DisplayFixed") var isVMDisplayFixed = false
-    @AppStorage("UseHypervisor") var isHypervisorUsed = true
+    @AppStorage("NoHypervisor") var isNoHypervisor = false
     
     var body: some View {
         Form {
@@ -33,8 +33,8 @@ struct SettingsView: View {
                 })
             }
             Section(header: Text("Acceleration")) {
-                Toggle(isOn: $isHypervisorUsed, label: {
-                    Text("Try to use hardware hypervisor when available")
+                Toggle(isOn: $isNoHypervisor, label: {
+                    Text("Force slower emulation even when hypervisor is available")
                 })
             }
         }.padding()
@@ -45,7 +45,7 @@ extension UserDefaults {
     @objc dynamic var NoCursorCaptureAlert: Bool { false }
     @objc dynamic var AlwaysNativeResolution: Bool { false }
     @objc dynamic var DisplayFixed: Bool { false }
-    @objc dynamic var UseHypervisor: Bool { true }
+    @objc dynamic var NoHypervisor: Bool { false }
 }
 
 @available(macOS 11, *)
