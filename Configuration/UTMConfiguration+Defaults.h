@@ -21,6 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface UTMConfiguration (Defaults)
 
+- (void)loadDefaults;
 - (void)loadDefaultsForTarget:(NSString *)target;
 + (nullable NSString *)defaultMachinePropertiesForTarget:(NSString *)target;
 + (NSString *)defaultDriveInterfaceForTarget:(nullable NSString *)target type:(UTMDiskImageType)type;

@@ -16,6 +16,7 @@
 
 #import "UTMConfiguration.h"
 #import "UTMConfiguration+Constants.h"
+#import "UTMConfiguration+Defaults.h"
 #import "UTMConfiguration+Display.h"
 #import "UTMConfiguration+Drives.h"
 #import "UTMConfiguration+Miscellaneous.h"
@@ -106,25 +107,8 @@ const NSInteger kCurrentConfigurationVersion = 2;
         kUTMConfigDebugKey: [NSMutableDictionary new],
         kUTMConfigInfoKey: [NSMutableDictionary new],
     } mutableCopy];
-    self.systemArchitecture = @"x86_64";
-    self.systemTarget = @"pc";
-    self.systemMemory = @512;
-    self.systemBootDevice = @"cd";
-    self.systemUUID = [[NSUUID UUID] UUIDString];
-    self.displayUpscaler = @"linear";
-    self.displayDownscaler = @"linear";
-    self.consoleFont = @"Menlo";
-    self.consoleFontSize = @12;
-    self.consoleTheme = @"Default";
-    self.networkEnabled = YES;
-    self.soundEnabled = YES;
-    self.soundCard = @"ac97";
-    self.networkCard = @"rtl8139";
-    self.shareClipboardEnabled = YES;
-    self.name = [NSUUID UUID].UUIDString;
-    self.existingPath = nil;
-    self.selectedCustomIconPath = nil;
     self.version = @(kCurrentConfigurationVersion);
+    [self loadDefaults];
 }
 
 - (void)reloadConfigurationWithDictionary:(NSDictionary *)dictionary name:(NSString *)name path:(NSURL *)path {
