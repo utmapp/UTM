@@ -376,8 +376,12 @@ static size_t sysctl_read(const char *name) {
 }
 
 - (BOOL)noHypervisor {
+#if TARGET_OS_IPHONE
+    return YES;
+#else
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     return [defaults boolForKey:@"NoHypervisor"];
+#endif
 }
 
 - (BOOL)hasCustomBios {
