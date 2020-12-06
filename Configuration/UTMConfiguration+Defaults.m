@@ -17,6 +17,7 @@
 #import "UTMConfiguration+Defaults.h"
 #import "UTMConfiguration+Miscellaneous.h"
 #import "UTMConfiguration+Networking.h"
+#import "UTMConfiguration+Sharing.h"
 #import "UTMConfiguration+System.h"
 
 @implementation UTMConfiguration (Defaults)
@@ -25,9 +26,11 @@
     if ([target hasPrefix:@"pc"] || [target hasPrefix:@"q35"]) {
         self.soundCard = @"ac97";
         self.networkCard = @"rtl8139";
+        self.shareClipboardEnabled = YES;
     } else if ([target isEqualToString:@"virt"] || [target hasPrefix:@"virt-"]) {
         self.soundCard = @"hda";
         self.networkCard = @"virtio-net-pci";
+        self.shareClipboardEnabled = YES;
     } else if ([target isEqualToString:@"mac99"]) {
         self.soundEnabled = NO;
     }
