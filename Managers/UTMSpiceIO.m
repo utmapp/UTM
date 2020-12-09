@@ -150,6 +150,7 @@ typedef void (^connectionCallback_t)(BOOL success, NSString * _Nullable msg);
         if (self.hasObservers) {
             [self removeObserver:self forKeyPath:@"primaryDisplay.viewportScale"];
             [self removeObserver:self forKeyPath:@"primaryDisplay.displaySize"];
+            self.hasObservers = NO;
         }
         [self.spiceConnection disconnect];
         self.spiceConnection.delegate = nil;
