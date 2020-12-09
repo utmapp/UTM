@@ -548,7 +548,7 @@
 "Selected:" = "선택:";
 
 /* No comment provided by engineer. */
-"Set to 0 for default which is 1/4 of the allocated Memory size. This is in addition to the host memory!" = "0으로 설정 시 기본값인 메모리 크기의 1/4를 할당합니다. 이것은 위에서 설정한 메모리 크기와 별개입니다!";
+"Set to 0 for default which is 1/4 of the allocated Memory size. This is in addition to the host memory!" = "0으로 설정 시 기본값인 메모리 크기의 1/4를 할당합니다. 위에서 설정한 메모리 크기와 별개입니다!";
 
 /* No comment provided by engineer. */
 "Set to 0 to use maximum supported CPUs. Force multicore might result in incorrect emulation." = "0으로 설정 시 가능한 최대 CPU의 개수를 설정합니다. 멀티코어 강제 활성화시 부정확한 에뮬레이션을 일으킬 수 있습니다.";
@@ -599,13 +599,13 @@
 "Theme" = "테마";
 
 /* VMDisplayWindowController */
-"This may corrupt the VM and any unsaved changes will be lost. To quit safely, shut down from the guest." = "이것은 VM을 망가뜨릴 수 있고 저장하지 않은 변경사항은 유실됩니다. 게스트 운영체제에서 안전하게 종료하세요.";
+"This may corrupt the VM and any unsaved changes will be lost. To quit safely, shut down from the guest." = "저장하지 않은 변경사항은 유실됩니다. 게스트 운영체제에서 안전하게 종료하세요.";
 
 /* UTMVirtualMachine+Drives */
 "This version of UTM does not allow file access outside of UTM's Documents directory." = "이 버전의 UTM은 UTM 도큐먼트 폴더 외의 파일 액세스를 지원하지 않습니다.";
 
 /* VMDisplayWindowController */
-"This will reset the VM and any unsaved state will be lost." = "이것은 VM을 리셋하고 저장하지 않은 변경사항은 유실됩니다.";
+"This will reset the VM and any unsaved state will be lost." = "저장하지 않은 변경사항은 유실됩니다.";
 
 /* UTMQemuManager */
 "Timed out waiting for RPC." = "Timed out waiting for RPC.";
@@ -614,7 +614,7 @@
 "To release the mouse cursor, press ⌃+⌥ (Ctrl+Opt or Ctrl+Alt) at the same time." = "마우스 커서를 해제하려면 ⌃+⌥（Ctrl+Opt 또는 Ctrl+Alt）를 입력하세요.";
 
 /* No comment provided by engineer. */
-"Try to use hardware hypervisor when available" = "가능한 경우 하드웨어 하이퍼바이저 사용";
+"Try to use hardware hypervisor when available" = "가능한 경우 하드웨어 가속 사용";
 
 /* No comment provided by engineer. */
 "Type" = "인터페이스";
@@ -629,7 +629,7 @@
 "Upscaling" = "업스케일링";
 
 /* No comment provided by engineer. */
-"VM display size is fixed" = "VM 디스플레이 크기가 고정되었습니다";
+"VM display size is fixed" = "VM 디스플레이 크기 고정";
 
 /* UTMVirtualMachine+Sharing */
 "VM frontend does not support shared directories." = "VM 프론트엔드는 공유폴더를 지원하지 않습니다.";
@@ -713,3 +713,15 @@
 
 /* No comment provided by engineer. */
 "Custom" = "커스텀";
+
+/* No comment provided by engineer. */
+"Status" = "상태";
+
+/* No comment provided by engineer. */
+"Not running" = "실행중이지 않음";
+
+/* No comment provided by engineer. */
+"Running" = "실행중";
+
+/* No comment provided by engineer. */
+"Suspended" = "중지됨";
