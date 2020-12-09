@@ -38,6 +38,8 @@ class VMDisplayWindowController: NSWindowController {
     var toolbarVisible: Bool = false // ignored
     var keyboardVisible: Bool = false // ignored
     
+    @Setting("NoHypervisor") private var isNoHypervisor: Bool = false
+    
     override var windowNibName: NSNib.Name? {
         "VMDisplayWindow"
     }
@@ -108,7 +110,10 @@ class VMDisplayWindowController: NSWindowController {
         let pauseDescription = NSLocalizedString("Pause", comment: "VMDisplayWindowController")
         startPauseToolbarItem.image = NSImage(systemSymbolName: "pause", accessibilityDescription: pauseDescription)
         startPauseToolbarItem.label = pauseDescription
-        startPauseToolbarItem.isEnabled = true
+        if isNoHypervisor {
+            // currently HVF doesn't support suspending
+            startPauseToolbarItem.isEnabled = true
+        }
         stopToolbarItem.isEnabled = true
         captureMouseToolbarItem.isEnabled = true
         resizeConsoleToolbarItem.isEnabled = true
