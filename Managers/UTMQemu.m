@@ -56,12 +56,7 @@
 }
 
 - (void)dealloc {
-    if (_connection) {
-        [_connection invalidate];
-    }
-    for (NSURL *url in _urls) {
-        [url stopAccessingSecurityScopedResource];
-    }
+    [self stopQemu];
 }
 
 #pragma mark - Methods
@@ -187,6 +182,15 @@
     } else {
         NSString *dylib = [NSString stringWithFormat:@"libqemu-%@-softmmu.utm.dylib", arch];
         [self startDylibThread:dylib completion:completion];
+    }
+}
+
+- (void)stopQemu {
+    if (_connection) {
+        [_connection invalidate];
+    }
+    for (NSURL *url in _urls) {
+        [url stopAccessingSecurityScopedResource];
     }
 }
 

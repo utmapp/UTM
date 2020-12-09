@@ -54,8 +54,9 @@ class VMDisplayTerminalWindowController: VMDisplayWindowController {
         if vm.state == .vmStopped || vm.state == .vmSuspended {
             enterSuspended(isBusy: false)
             DispatchQueue.global(qos: .userInitiated).async {
-                self.vm.startVM()
-                self.vm.ioDelegate = self
+                if self.vm.startVM() {
+                    self.vm.ioDelegate = self
+                }
             }
         } else {
             enterLive()

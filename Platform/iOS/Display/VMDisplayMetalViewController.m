@@ -88,8 +88,9 @@
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     if (self.vm.state == kVMStopped || self.vm.state == kVMSuspended) {
-        [self.vm startVM];
-        self.vm.ioDelegate = self;
+        if ([self.vm startVM]) {
+            self.vm.ioDelegate = self;
+        }
     }
 }
 

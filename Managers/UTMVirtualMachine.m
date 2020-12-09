@@ -243,9 +243,11 @@ error:
 }
 
 - (void)errorTriggered:(nullable NSString *)msg {
-    self.viewState.suspended = NO;
-    [self saveViewState];
-    [self quitVMForce:true];
+    if (self.state != kVMStopped && self.state != kVMError) {
+        self.viewState.suspended = NO;
+        [self saveViewState];
+        [self quitVMForce:true];
+    }
     if (self.state != kVMError) { // don't stack errors
         self.delegate.vmMessage = msg;
         [self changeState:kVMError];
@@ -345,6 +347,7 @@ error:
     // save view settings early to win exit race
     [self saveViewState];
     
+    _qemu.retries = 0;
     [_qemu vmQuitWithCompletion:nil];
     if (force || dispatch_semaphore_wait(_will_quit_sema, dispatch_time(DISPATCH_TIME_NOW, kStopTimeout)) != 0) {
         UTMLog(@"Stop operation timeout or force quit");
@@ -358,12 +361,17 @@ error:
     if (force || dispatch_semaphore_wait(_qemu_exit_sema, dispatch_time(DISPATCH_TIME_NOW, kStopTimeout)) != 0) {
         UTMLog(@"Exit operation timeout or force quit");
     }
-    [[UTMPortAllocator sharedInstance] freePort:self.system.qmpPort];
-    [[UTMPortAllocator sharedInstance] freePort:self.system.spicePort];
-    self.system = nil;
-    if (!force) {
-        [self changeState:kVMStopped];
+    [self.system stopQemu];
+    if (self.system.qmpPort) {
+        [[UTMPortAllocator sharedInstance] freePort:self.system.qmpPort];
+        self.system.qmpPort = 0;
     }
+    if (self.system.spicePort) {
+        [[UTMPortAllocator sharedInstance] freePort:self.system.spicePort];
+        self.system.spicePort = 0;
+    }
+    self.system = nil;
+    [self changeState:kVMStopped];
     // stop logging
     [self.logging endLog];
     self.busy = NO;
