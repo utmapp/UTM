@@ -364,7 +364,7 @@ static size_t sysctl_read(const char *name) {
         accel = [accel stringByAppendingString:@",thread=multi"];
     }
     if ([self.configuration.systemJitCacheSize integerValue] > 0) {
-        accel = [accel stringByAppendingFormat:@",tb-size=%@", [self.configuration.systemJitCacheSize stringValue]];
+        accel = [accel stringByAppendingFormat:@",tb-size=%ld", (long)[self.configuration.systemJitCacheSize integerValue]];
     }
     
     // use mirror mapping when we don't have JIT entitlements
