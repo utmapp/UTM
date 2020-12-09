@@ -29,6 +29,10 @@
     return self;
 }
 
+- (void)dealloc {
+    [self disconnect];
+}
+
 #pragma mark - UTMInputOutput
 
 - (BOOL)startWithError:(NSError *__autoreleasing  _Nullable * _Nullable)err {

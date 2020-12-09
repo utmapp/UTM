@@ -53,6 +53,10 @@ typedef void (^connectionCallback_t)(BOOL success, NSString * _Nullable msg);
     return self;
 }
 
+- (void)dealloc {
+    [self disconnect];
+}
+
 - (void)setDelegate:(id<UTMSpiceIODelegate>)delegate {
     _delegate = delegate;
     _delegate.vmDisplay = self.primaryDisplay;
@@ -138,6 +142,7 @@ typedef void (^connectionCallback_t)(BOOL success, NSString * _Nullable msg);
     self.spiceConnection = nil;
     [self.spice spiceStop];
     self.spice = nil;
+    self.doConnect = nil;
 }
 
 - (UTMScreenshot *)screenshot {
