@@ -109,9 +109,9 @@ extension VMDisplayMetalWindowController {
             logger.debug("Ignoring zero size display")
             return
         }
-        logger.debug("resizing to: (\(size.width), \(size.height))")
-        displaySize = size
         DispatchQueue.main.async {
+            logger.debug("resizing to: (\(size.width), \(size.height))")
+            self.displaySize = size
             guard let window = self.window else { return }
             guard let vmDisplay = self.vmDisplay else { return }
             let currentScreenScale = window.screen?.backingScaleFactor ?? 1.0
@@ -121,10 +121,12 @@ extension VMDisplayMetalWindowController {
                 vmDisplay.viewportScale = nativeScale
             }
             let minScaledSize = CGSize(width: size.width * nativeScale / currentScreenScale, height: size.height * nativeScale / currentScreenScale)
+            let fullContentWidth = size.width * vmDisplay.viewportScale / currentScreenScale
+            let fullContentHeight = size.height * vmDisplay.viewportScale / currentScreenScale
             let contentRect = CGRect(x: window.frame.origin.x,
                                      y: 0,
-                                     width: size.width * vmDisplay.viewportScale / currentScreenScale,
-                                     height: size.height * vmDisplay.viewportScale / currentScreenScale)
+                                     width: ceil(fullContentWidth),
+                                     height: ceil(fullContentHeight))
             var windowRect = window.frameRect(forContentRect: contentRect)
             windowRect.origin.y = window.frame.origin.y + window.frame.height - windowRect.height
             window.contentMinSize = minScaledSize
