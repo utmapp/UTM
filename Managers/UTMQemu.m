@@ -165,7 +165,11 @@
     NSFileHandle *standardOutput = self.logging.standardOutput.fileHandleForWriting;
     NSFileHandle *standardError = self.logging.standardError.fileHandleForWriting;
     [[_connection remoteObjectProxyWithErrorHandler:^(NSError * _Nonnull error) {
-        completion(NO, error.localizedDescription);
+        if (error.domain == NSCocoaErrorDomain && error.code == NSXPCConnectionInvalid) {
+            completion(YES, nil); // inhibit this error since we always see it on quit
+        } else {
+            completion(NO, error.localizedDescription);
+        }
     }] startQemu:name standardOutput:standardOutput standardError:standardError libraryBookmark:libBookmark argv:self.argv onExit:^(BOOL success, NSString *msg){
         if (!success && !msg) {
             msg = self.logging.lastErrorLine;
