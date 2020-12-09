@@ -245,9 +245,11 @@ error:
 - (void)errorTriggered:(nullable NSString *)msg {
     self.viewState.suspended = NO;
     [self saveViewState];
-    [self quitVM];
-    self.delegate.vmMessage = msg;
-    [self changeState:kVMError];
+    [self quitVMForce:true];
+    if (self.state != kVMError) { // don't stack errors
+        self.delegate.vmMessage = msg;
+        [self changeState:kVMError];
+    }
 }
 
 - (BOOL)startVM {
@@ -324,8 +326,12 @@ error:
 }
 
 - (BOOL)quitVM {
+    return [self quitVMForce:false];
+}
+
+- (BOOL)quitVMForce:(BOOL)force {
     @synchronized (self) {
-        if (self.busy || self.state != kVMStarted) {
+        if (!force && (self.busy || self.state != kVMStarted)) {
             return NO; // already stopping
         } else {
             self.busy = YES;
@@ -333,14 +339,15 @@ error:
     }
     self.viewState.suspended = NO;
     [self syncViewState];
-    [self changeState:kVMStopping];
+    if (!force) {
+        [self changeState:kVMStopping];
+    }
     // save view settings early to win exit race
     [self saveViewState];
     
     [_qemu vmQuitWithCompletion:nil];
-    if (dispatch_semaphore_wait(_will_quit_sema, dispatch_time(DISPATCH_TIME_NOW, kStopTimeout)) != 0) {
-        // TODO: force shutdown
-        UTMLog(@"Stop operation timeout");
+    if (force || dispatch_semaphore_wait(_will_quit_sema, dispatch_time(DISPATCH_TIME_NOW, kStopTimeout)) != 0) {
+        UTMLog(@"Stop operation timeout or force quit");
     }
     [_qemu disconnect];
     _qemu.delegate = nil;
@@ -348,14 +355,15 @@ error:
     [_ioService disconnect];
     _ioService = nil;
     
-    if (dispatch_semaphore_wait(_qemu_exit_sema, dispatch_time(DISPATCH_TIME_NOW, kStopTimeout)) != 0) {
-        // TODO: force shutdown
-        UTMLog(@"Exit operation timeout");
+    if (force || dispatch_semaphore_wait(_qemu_exit_sema, dispatch_time(DISPATCH_TIME_NOW, kStopTimeout)) != 0) {
+        UTMLog(@"Exit operation timeout or force quit");
     }
     [[UTMPortAllocator sharedInstance] freePort:self.system.qmpPort];
     [[UTMPortAllocator sharedInstance] freePort:self.system.spicePort];
     self.system = nil;
-    [self changeState:kVMStopped];
+    if (!force) {
+        [self changeState:kVMStopped];
+    }
     // stop logging
     [self.logging endLog];
     self.busy = NO;
