@@ -39,6 +39,7 @@ typedef void (^connectionCallback_t)(BOOL success, NSString * _Nullable msg);
 @property (nonatomic, nullable) CSSession *session;
 @property (nonatomic, nullable, copy) NSURL *sharedDirectory;
 @property (nonatomic) NSInteger port;
+@property (nonatomic) BOOL hasObservers;
 
 @end
 
@@ -64,18 +65,20 @@ typedef void (^connectionCallback_t)(BOOL success, NSString * _Nullable msg);
 }
 
 - (void)initializeSpiceIfNeeded {
-    if (!self.spice) {
-        self.spice = [[CSMain alloc] init];
+    @synchronized (self) {
+        if (!self.spice) {
+            self.spice = [[CSMain alloc] init];
+        }
+        
+        if (!self.spiceConnection) {
+            self.spiceConnection = [[CSConnection alloc] initWithHost:@"127.0.0.1" port:[NSString stringWithFormat:@"%lu", self.port]];
+            self.spiceConnection.delegate = self;
+            self.spiceConnection.audioEnabled = _configuration.soundEnabled;
+        }
+        
+        self.spiceConnection.glibMainContext = self.spice.glibMainContext;
+        [self.spice spiceSetDebug:YES];
     }
-    
-    if (!self.spiceConnection) {
-        self.spiceConnection = [[CSConnection alloc] initWithHost:@"127.0.0.1" port:[NSString stringWithFormat:@"%lu", self.port]];
-        self.spiceConnection.delegate = self;
-        self.spiceConnection.audioEnabled = _configuration.soundEnabled;
-    }
-    
-    self.spiceConnection.glibMainContext = self.spice.glibMainContext;
-    [self.spice spiceSetDebug:YES];
     _primaryDisplay = nil;
     _primaryInput = nil;
     _delegate.vmDisplay = nil;
@@ -83,7 +86,9 @@ typedef void (^connectionCallback_t)(BOOL success, NSString * _Nullable msg);
 }
 
 - (BOOL)isSpiceInitialized {
-    return self.spice != nil && self.spiceConnection != nil;
+    @synchronized (self) {
+        return self.spice != nil && self.spiceConnection != nil;
+    }
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context {
@@ -99,9 +104,11 @@ typedef void (^connectionCallback_t)(BOOL success, NSString * _Nullable msg);
 
 - (BOOL)startWithError:(NSError **)err {
     [self initializeSpiceIfNeeded];
-    if (![self.spice spiceStart]) {
-        // error
-        return NO;
+    @synchronized (self) {
+        if (![self.spice spiceStart]) {
+            // error
+            return NO;
+        }
     }
     
     return YES;
@@ -112,12 +119,14 @@ typedef void (^connectionCallback_t)(BOOL success, NSString * _Nullable msg);
     __block __weak doConnect_t weakDoConnect;
     __weak UTMSpiceIO *weakSelf = self;
     self.doConnect = ^{
-        if (tries-- > 0) {
+        if (weakSelf && tries-- > 0) {
             if (!isPortAvailable(weakSelf.port)) { // port is in use, try connecting
-                if ([weakSelf.spiceConnection connect]) {
-                    weakSelf.connectionCallback = block;
-                    weakSelf.doConnect = nil;
-                    return;
+                @synchronized (weakSelf) {
+                    if ([weakSelf.spiceConnection connect]) {
+                        weakSelf.connectionCallback = block;
+                        weakSelf.doConnect = nil;
+                        return;
+                    }
                 }
             } else {
                 UTMLog(@"SPICE port not in use yet, retries left: %d", tries);
@@ -125,8 +134,10 @@ typedef void (^connectionCallback_t)(BOOL success, NSString * _Nullable msg);
                 return;
             }
         }
-        // if we get here, error is unrecoverable
-        block(NO, NSLocalizedString(@"Failed to connect to SPICE server.", "UTMSpiceIO"));
+        if (tries == 0) {
+            // if we get here, error is unrecoverable
+            block(NO, NSLocalizedString(@"Failed to connect to SPICE server.", "UTMSpiceIO"));
+        }
         weakSelf.connectionCallback = nil;
         weakSelf.doConnect = nil;
     };
@@ -135,13 +146,17 @@ typedef void (^connectionCallback_t)(BOOL success, NSString * _Nullable msg);
 }
 
 - (void)disconnect {
-    [self removeObserver:self forKeyPath:@"primaryDisplay.viewportScale"];
-    [self removeObserver:self forKeyPath:@"primaryDisplay.displaySize"];
-    [self.spiceConnection disconnect];
-    self.spiceConnection.delegate = nil;
-    self.spiceConnection = nil;
-    [self.spice spiceStop];
-    self.spice = nil;
+    @synchronized (self) {
+        if (self.hasObservers) {
+            [self removeObserver:self forKeyPath:@"primaryDisplay.viewportScale"];
+            [self removeObserver:self forKeyPath:@"primaryDisplay.displaySize"];
+        }
+        [self.spiceConnection disconnect];
+        self.spiceConnection.delegate = nil;
+        self.spiceConnection = nil;
+        [self.spice spiceStop];
+        self.spice = nil;
+    }
     self.doConnect = nil;
 }
 
@@ -150,7 +165,9 @@ typedef void (^connectionCallback_t)(BOOL success, NSString * _Nullable msg);
 }
 
 - (void)setDebugMode:(BOOL)debugMode {
-    [self.spice spiceSetDebug: debugMode];
+    @synchronized (self) {
+        [self.spice spiceSetDebug: debugMode];
+    }
 }
 
 - (void)syncViewState:(UTMViewState *)viewState {
@@ -192,8 +209,11 @@ typedef void (^connectionCallback_t)(BOOL success, NSString * _Nullable msg);
         _primaryInput = input;
         _delegate.vmDisplay = display;
         _delegate.vmInput = input;
-        [self addObserver:self forKeyPath:@"primaryDisplay.viewportScale" options:0 context:nil];
-        [self addObserver:self forKeyPath:@"primaryDisplay.displaySize" options:0 context:nil];
+        @synchronized (self) {
+            [self addObserver:self forKeyPath:@"primaryDisplay.viewportScale" options:0 context:nil];
+            [self addObserver:self forKeyPath:@"primaryDisplay.displaySize" options:0 context:nil];
+            self.hasObservers = YES;
+        }
         if (self.connectionCallback) {
             self.connectionCallback(YES, nil);
             self.connectionCallback = nil;
