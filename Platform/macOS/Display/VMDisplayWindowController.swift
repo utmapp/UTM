@@ -111,7 +111,7 @@ class VMDisplayWindowController: NSWindowController {
         let pauseDescription = NSLocalizedString("Pause", comment: "VMDisplayWindowController")
         startPauseToolbarItem.image = NSImage(systemSymbolName: "pause", accessibilityDescription: pauseDescription)
         startPauseToolbarItem.label = pauseDescription
-        if isNoHypervisor {
+        if isNoHypervisor || !vmConfiguration!.isTargetArchitectureMatchHost {
             // currently HVF doesn't support suspending
             startPauseToolbarItem.isEnabled = true
         }

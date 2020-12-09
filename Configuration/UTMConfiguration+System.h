@@ -31,6 +31,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, nullable, copy) NSString *systemMachineProperties;
 @property (nonatomic, nullable, readonly) NSArray<NSString *> *systemArguments;
 @property (nonatomic, readonly) NSInteger countArguments;
+@property (nonatomic, readonly) BOOL isTargetArchitectureMatchHost;
 
 - (void)migrateSystemConfigurationIfNecessary;
 

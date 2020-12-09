@@ -199,4 +199,16 @@ static const NSString *const kUTMConfigMachinePropertiesKey = @"MachinePropertie
     return self.rootDict[kUTMConfigSystemKey][kUTMConfigAddArgsKey];
 }
 
+#pragma mark - Computed properties
+
+- (BOOL)isTargetArchitectureMatchHost {
+#if defined(__aarch64__)
+    return [self.systemArchitecture isEqualToString:@"aarch64"];
+#elif defined(__i386__)
+    return [self.systemArchitecture isEqualToString:@"x86_64"];
+#else
+    return NO;
+#endif
+}
+
 @end
