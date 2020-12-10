@@ -68,7 +68,7 @@ EOL
 
 	rm -rf "$INPUT_COPY"
 	cp -r "$INPUT" "$INPUT_COPY"
-	find "$INPUT_COPY/Products/Applications/UTM.app" -path '*/qemu-system-*' -exec codesign --force --sign - --entitlements "$QEMU_ENTITLEMENTS" --timestamp=none --options runtime \{\} \;
+	find "$INPUT_COPY/Products/Applications/UTM.app" -path '*/qemu-*' -exec codesign --force --sign - --entitlements "$QEMU_ENTITLEMENTS" --timestamp=none --options runtime \{\} \;
 	codesign --force --sign - --entitlements "$EMPTY_ENTITLEMENTS" --timestamp=none --options runtime "$INPUT_COPY/Products/Applications/UTM.app/Contents/MacOS/UTM"
 	codesign --force --sign - --entitlements "$EMPTY_ENTITLEMENTS" --timestamp=none --options runtime "$INPUT_COPY/Products/Applications/UTM.app/Contents/XPCServices/QEMUHelper.xpc/Contents/MacOS/QEMUHelper"
 	rm "$QEMU_ENTITLEMENTS"
