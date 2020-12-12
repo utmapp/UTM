@@ -392,7 +392,7 @@
 "Linux RAM Disk" = "Linux RAM 磁盘";
 
 /* No comment provided by engineer. */
-"Logging" = "登录中";
+"Logging" = "日志";
 
 /* UTMQemuManager */
 "Manager being deallocated, killing pending RPC." = "正在释放管理器，正在终止挂起的RPC。";
@@ -719,3 +719,30 @@
 
 /* No comment provided by engineer. */
 "None" = "无";
+
+/* No comment provided by engineer. */
+"Running" = "运行中";
+
+/* No comment provided by engineer. */
+"Not running" = "未运行";
+
+/* No comment provided by engineer. */
+"Suspended" = "暂停中";
+
+/* No comment provided by engineer. */
+"Status" = "状态";
+
+/* No comment provided by engineer. */
+"Stop" = "终止";
+
+/* No comment provided by engineer. */
+"Do you want to force stop this VM and lose all unsaved data?" = "您是否想强制停止此VM并丢失所有未保存的数据?";
+
+/* No comment provided by engineer. */
+"Export Debug Log" = "导出日志";
+
+/* No comment provided by engineer. */
+"Boot Order" = "启动顺序";
+
+/* No comment provided by engineer. */
+"Cannot allocate memory" = "无法分配内存(可能是内存过大)";
