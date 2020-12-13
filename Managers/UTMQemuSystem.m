@@ -176,7 +176,7 @@ static size_t sysctl_read(const char *name) {
             [self pushArgv:@"-bios"];
             [self pushArgv:path.path]; // accessDataWithBookmark called already
             [self pushArgv:@"-device"];
-            [self pushArgv:@"ramfb"];
+            [self pushArgv:@"virtio-ramfb"];
         }
     }
 }
