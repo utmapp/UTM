@@ -23,10 +23,18 @@
 #import <spice-client.h>
 #import <spice/vd_agent.h>
 
+static const NSString *const kDefaultShareReadme =
+    @"You have not selected a shared directory. This is a temporary directory "
+     "that can be deleted at any time. You can access these files on the host "
+     "at /tmp/Public relative to UTM's sandbox (if enabled). To select a "
+     "permanent shared directory, shut down the VM and select a shared "
+     "directory from the VM details screen.";
+
 @interface CSSession ()
 
 @property (nonatomic, readwrite, nullable) SpiceSession *session;
 @property (nonatomic, readonly) BOOL sessionReadOnly;
+@property (nonatomic, readonly) NSURL *defaultPublicShare;
 
 @end
 
@@ -307,6 +315,10 @@ static void cs_channel_destroy(SpiceSession *session, SpiceChannel *channel,
         self.session = session;
         g_object_ref(session);
         
+        // g_get_user_special_dir(G_USER_DIRECTORY_PUBLIC_SHARE) returns NULL so we replace it with a valid value here
+        [self createDefaultShareReadme];
+        [self setSharedDirectory:self.defaultPublicShare.path readOnly:NO];
+        
         UTMLog(@"%s:%d", __FUNCTION__, __LINE__);
         g_signal_connect(session, "channel-new",
                          G_CALLBACK(cs_channel_new), GLIB_OBJC_RETAIN(self));
@@ -420,6 +432,26 @@ static void cs_channel_destroy(SpiceSession *session, SpiceChannel *channel,
 - (void)setSharedDirectory:(NSString *)path readOnly:(BOOL)readOnly {
     g_object_set(_session, "shared-dir", [path cStringUsingEncoding:NSUTF8StringEncoding], NULL);
     g_object_set(_session, "share-dir-ro", readOnly, NULL);
+}
+
+- (NSURL *)defaultPublicShare {
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    NSURL *tmpDir = [fileManager temporaryDirectory];
+    NSURL *publicShare = [tmpDir URLByAppendingPathComponent:@"Public" isDirectory:YES];
+    BOOL isDir = NO;
+    if (![fileManager fileExistsAtPath:publicShare.path isDirectory:&isDir] || !isDir) {
+        [fileManager removeItemAtURL:publicShare error:nil]; // remove file if exists
+        [fileManager createDirectoryAtURL:publicShare withIntermediateDirectories:NO attributes:nil error:nil];
+    }
+    return publicShare;
+}
+
+- (void)createDefaultShareReadme {
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    NSURL *readme = [self.defaultPublicShare URLByAppendingPathComponent:@"README.txt"];
+    if (![fileManager fileExistsAtPath:readme.path]) {
+        [kDefaultShareReadme writeToURL:readme atomically:YES encoding:NSASCIIStringEncoding error:nil];
+    }
 }
 
 @end
