@@ -119,7 +119,7 @@ extern NSString *const kUTMErrorDomain;
     return ret;
 }
 
-- (void)restoreRemovableDrivesFromBookmarks {
+- (BOOL)restoreRemovableDrivesFromBookmarksWithError:(NSError * _Nullable __autoreleasing *)error {
     NSArray<UTMDrive *> *drives = self.drives;
     for (UTMDrive *drive in drives) {
         BOOL persistent = NO;
@@ -132,11 +132,13 @@ extern NSString *const kUTMErrorDomain;
                 [self.viewState removeBookmarkForRemovableDrive:drive.name];
                 continue;
             }
-            if (![self changeMediumForDriveInternal:drive bookmark:bookmark securityScoped:persistent error:nil]) {
+            if (![self changeMediumForDriveInternal:drive bookmark:bookmark securityScoped:persistent error:error]) {
                 UTMLog(@"failed to change %@ image to %@", drive.name, path);
+                return NO;
             }
         }
     }
+    return YES;
 }
 
 @end

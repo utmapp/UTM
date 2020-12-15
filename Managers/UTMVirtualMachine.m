@@ -605,11 +605,20 @@ error:
 // this is called right before we execute qmp_cont so we can setup additional option
 - (void)qemuQmpDidConnect:(UTMQemuManager *)manager {
     UTMLog(@"qemuQmpDidConnect");
-    NSError *err;
-    if (!self.configuration.displayConsoleOnly && ![self startSharedDirectoryWithError:&err]) {
-        UTMLog(@"Ignoring error trying to start shared directory: %@", err);
+    NSError *err = nil;
+    if (!self.configuration.displayConsoleOnly) {
+        if (![self startSharedDirectoryWithError:&err]) {
+            UTMLog(@"Error trying to start shared directory: %@", err);
+        }
     }
-    [self restoreRemovableDrivesFromBookmarks];
+    if (!err && ![self restoreRemovableDrivesFromBookmarksWithError:&err]) {
+        UTMLog(@"Error trying to restore removable drives: %@", err);
+    }
+    if (err) {
+        dispatch_async(dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0), ^{
+            [self errorTriggered:err.localizedDescription];
+        });
+    }
 }
 
 #pragma mark - Plist Handling
