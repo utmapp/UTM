@@ -15,6 +15,7 @@
 //
 
 #import "CSSession.h"
+#import "CSSession+Sharing.h"
 #import "CocoaSpice.h"
 #import "UTMLogging.h"
 #import <glib.h>
@@ -25,6 +26,8 @@
 
 @property (nonatomic, readwrite, nullable) SpiceSession *session;
 @property (nonatomic, readonly) BOOL sessionReadOnly;
+
+- (void)createDefaultShareReadme;
 
 @end
 
@@ -138,6 +141,10 @@ static void cs_channel_destroy(SpiceSession *session, SpiceChannel *channel,
         
         self.session = session;
         g_object_ref(session);
+        
+        // g_get_user_special_dir(G_USER_DIRECTORY_PUBLIC_SHARE) returns NULL so we replace it with a valid value here
+        [self createDefaultShareReadme];
+        [self setSharedDirectory:self.defaultPublicShare.path readOnly:NO];
         
         UTMLog(@"%s:%d", __FUNCTION__, __LINE__);
         g_signal_connect(session, "channel-new",

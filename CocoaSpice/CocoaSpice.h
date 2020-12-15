@@ -22,6 +22,7 @@
 #include "CSInput.h"
 #include "CSMain.h"
 #include "CSSession.h"
+#include "CSSession+Sharing.h"
 
 #define GLIB_OBJC_RETAIN(x) (__bridge_retained void *)(x)
 #define GLIB_OBJC_RELEASE(x) (__bridge void *)(__bridge_transfer NSObject *)(__bridge void *)(x)

@@ -709,6 +709,8 @@
 		CEBDA1DF24D8BDDB0010B5EC /* QEMUHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = CEBDA1DE24D8BDDB0010B5EC /* QEMUHelper.m */; };
 		CEBDA1E124D8BDDB0010B5EC /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = CEBDA1E024D8BDDB0010B5EC /* main.m */; };
 		CEBDA1E524D8BDDB0010B5EC /* QEMUHelper.xpc in Embed XPC Services */ = {isa = PBXBuildFile; fileRef = CEBDA1DA24D8BDDA0010B5EC /* QEMUHelper.xpc */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		CEBE02642588494100B9BCA8 /* CSSession+Sharing.m in Sources */ = {isa = PBXBuildFile; fileRef = CEBE02632588494100B9BCA8 /* CSSession+Sharing.m */; };
+		CEBE02652588494100B9BCA8 /* CSSession+Sharing.m in Sources */ = {isa = PBXBuildFile; fileRef = CEBE02632588494100B9BCA8 /* CSSession+Sharing.m */; };
 		CED234ED254796E500ED0A57 /* NumberTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = CED234EC254796E500ED0A57 /* NumberTextField.swift */; };
 		CED234EE254796E500ED0A57 /* NumberTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = CED234EC254796E500ED0A57 /* NumberTextField.swift */; };
 		CED814E924C79F070042F0F1 /* VMConfigDriveCreateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CED814E824C79F070042F0F1 /* VMConfigDriveCreateView.swift */; };
@@ -1524,6 +1526,8 @@
 		CEBDA1DE24D8BDDB0010B5EC /* QEMUHelper.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = QEMUHelper.m; sourceTree = "<group>"; };
 		CEBDA1E024D8BDDB0010B5EC /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		CEBDA1E224D8BDDB0010B5EC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		CEBE02622588494100B9BCA8 /* CSSession+Sharing.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "CSSession+Sharing.h"; sourceTree = "<group>"; };
+		CEBE02632588494100B9BCA8 /* CSSession+Sharing.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "CSSession+Sharing.m"; sourceTree = "<group>"; };
 		CEC05DF42463E3D300DA82B2 /* VMDisplayView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VMDisplayView.h; sourceTree = "<group>"; };
 		CEC05DF52463E3D300DA82B2 /* VMDisplayView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VMDisplayView.m; sourceTree = "<group>"; };
 		CEC05DF72464B93900DA82B2 /* VMDisplayTerminalViewController+Keyboard.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "VMDisplayTerminalViewController+Keyboard.h"; sourceTree = "<group>"; };
@@ -2205,6 +2209,8 @@
 				CE5425382439334400E520F7 /* CSSession.h */,
 				CE5425392439334400E520F7 /* CSSession.m */,
 				CE0B6D8A24AD658000FE012D /* CSSessionMac.m */,
+				CEBE02622588494100B9BCA8 /* CSSession+Sharing.h */,
+				CEBE02632588494100B9BCA8 /* CSSession+Sharing.m */,
 			);
 			path = CocoaSpice;
 			sourceTree = "<group>";
@@ -2853,6 +2859,7 @@
 				2C6D9E142571AFE5003298E6 /* UTMQcow2.c in Sources */,
 				2CE8EAFE2572E14D000E2EBB /* qapi-types-block-export.c in Sources */,
 				CE2D92B924AD46670059923A /* qapi-events-qdev.c in Sources */,
+				CEBE02642588494100B9BCA8 /* CSSession+Sharing.m in Sources */,
 				2C33B3A92566C9B100A954A6 /* VMContextMenuModifier.swift in Sources */,
 				CEB63A9424F4747900CAF323 /* VMListViewController.m in Sources */,
 				CE5076DB250AB55D00C26C19 /* VMDisplayMetalViewController+Pencil.m in Sources */,
@@ -3114,6 +3121,7 @@
 				CE0B6D2424AD57FC00FE012D /* qapi-commands-rocker.c in Sources */,
 				CEF83ED424FDEA9400557D15 /* UTMPortAllocator.m in Sources */,
 				CE0B6D7D24AD584D00FE012D /* qapi-events-ui.c in Sources */,
+				CEBE02652588494100B9BCA8 /* CSSession+Sharing.m in Sources */,
 				CE0B6D5624AD584C00FE012D /* qapi-types-machine-target.c in Sources */,
 				CE93759624BB7EA00074066F /* UTMTabViewController.swift in Sources */,
 				CE0B6D0424AD56AE00FE012D /* UTMSpiceIO.m in Sources */,

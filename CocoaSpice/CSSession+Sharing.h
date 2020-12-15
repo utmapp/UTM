@@ -14,18 +14,15 @@
 // limitations under the License.
 //
 
-#import <Foundation/Foundation.h>
-
-typedef struct _SpiceSession SpiceSession;
+#import "CSSession.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface CSSession : NSObject
+@interface CSSession (Sharing)
 
-@property (nonatomic, readonly, nullable) SpiceSession *session;
-@property (nonatomic) BOOL shareClipboard;
+@property (nonatomic, readonly) NSURL *defaultPublicShare;
 
-- (id)initWithSession:(nonnull SpiceSession *)session;
+- (void)setSharedDirectory:(NSString *)path readOnly:(BOOL)readOnly;
 
 @end
 
