@@ -113,12 +113,14 @@ static const NSURLBookmarkResolutionOptions kBookmarkResolutionOptions = NSURLBo
     }
     
     NSData *bookmark = nil;
+    BOOL legacy = NO;
     if (self.viewState.sharedDirectory) {
         UTMLog(@"found shared directory bookmark");
         bookmark = self.viewState.sharedDirectory;
     } else if (self.configuration.shareDirectoryBookmark) {
         UTMLog(@"found shared directory bookmark (legacy)");
         bookmark = self.configuration.shareDirectoryBookmark;
+        legacy = YES;
     }
     if (bookmark) {
         BOOL stale;
@@ -137,6 +139,9 @@ static const NSURLBookmarkResolutionOptions kBookmarkResolutionOptions = NSURLBo
                 [spiceIO changeSharedDirectory:shareURL];
             }
             return success;
+        } else if (legacy) { // ignore errors for legacy sharing since we don't have a good way of handling it
+            UTMLog(@"Ignoring error on legacy shared directory");
+            return YES;
         } else {
             return NO;
         }
