@@ -204,7 +204,7 @@ static const NSString *const kUTMConfigMachinePropertiesKey = @"MachinePropertie
 - (BOOL)isTargetArchitectureMatchHost {
 #if defined(__aarch64__)
     return [self.systemArchitecture isEqualToString:@"aarch64"];
-#elif defined(__i386__)
+#elif defined(__x86_64__)
     return [self.systemArchitecture isEqualToString:@"x86_64"];
 #else
     return NO;

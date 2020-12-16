@@ -144,7 +144,7 @@ static size_t sysctl_read(const char *name) {
     } else {
         return singleCpu;
     }
-#elif defined(__i386__)
+#elif defined(__x86_64__)
     // in x86 we can emulate weak on strong
     return hostCount;
 #else
