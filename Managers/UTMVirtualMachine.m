@@ -606,17 +606,20 @@ error:
 - (void)qemuQmpDidConnect:(UTMQemuManager *)manager {
     UTMLog(@"qemuQmpDidConnect");
     NSError *err = nil;
+    NSString *errMsg = nil;
     if (!self.configuration.displayConsoleOnly) {
         if (![self startSharedDirectoryWithError:&err]) {
-            UTMLog(@"Error trying to start shared directory: %@", err);
+            errMsg = [NSString stringWithFormat:NSLocalizedString(@"Error trying to start shared directory: %@", @"UTMVirtualMachine"), err.localizedDescription];
+            UTMLog(@"%@", errMsg);
         }
     }
     if (!err && ![self restoreRemovableDrivesFromBookmarksWithError:&err]) {
-        UTMLog(@"Error trying to restore removable drives: %@", err);
+        errMsg = [NSString stringWithFormat:NSLocalizedString(@"Error trying to restore removable drives: %@", @"UTMVirtualMachine"), err.localizedDescription];
+        UTMLog(@"%@", errMsg);
     }
-    if (err) {
+    if (errMsg) {
         dispatch_async(dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0), ^{
-            [self errorTriggered:err.localizedDescription];
+            [self errorTriggered:errMsg];
         });
     }
 }
