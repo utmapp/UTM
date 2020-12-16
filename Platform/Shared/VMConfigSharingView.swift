@@ -32,6 +32,9 @@ struct VMConfigSharingView: View {
                 Section(header: Text("Shared Directory"), footer: Text("Requires SPICE WebDAV service to be installed.").padding(.bottom)) {
                     Toggle(isOn: $config.shareDirectoryEnabled.animation(), label: {
                         Text("Enable Directory Sharing")
+                    }).onChange(of: config.shareDirectoryEnabled, perform: { _ in
+                        // remove legacy bookmark data
+                        config.shareDirectoryBookmark = nil
                     })
                     Toggle(isOn: $config.shareDirectoryReadOnly, label: {
                         Text("Read Only")

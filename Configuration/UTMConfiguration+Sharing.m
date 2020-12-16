@@ -77,7 +77,11 @@ const NSString *const kUTMConfigDirectoryBookmarkKey = @"DirectoryBookmark";
 
 - (void)setShareDirectoryBookmark:(NSData *)shareDirectoryBookmark {
     [self propertyWillChange];
-    self.rootDict[kUTMConfigSharingKey][kUTMConfigDirectoryBookmarkKey] = shareDirectoryBookmark;
+    if (!shareDirectoryBookmark) {
+        [self.rootDict[kUTMConfigSharingKey] removeObjectForKey:kUTMConfigDirectoryBookmarkKey];
+    } else {
+        self.rootDict[kUTMConfigSharingKey][kUTMConfigDirectoryBookmarkKey] = shareDirectoryBookmark;
+    }
 }
 
 @end
