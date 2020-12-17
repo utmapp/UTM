@@ -22,6 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readonly) NSURL *defaultPublicShare;
 
+- (void)createDefaultShareReadme;
 - (void)setSharedDirectory:(NSString *)path readOnly:(BOOL)readOnly;
 
 @end

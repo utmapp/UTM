@@ -29,8 +29,6 @@
 @property (nonatomic, readwrite, nullable) SpiceSession *session;
 @property (nonatomic, readonly) BOOL sessionReadOnly;
 
-- (void)createDefaultShareReadme;
-
 @end
 
 @implementation CSSession {
