@@ -48,10 +48,51 @@ typealias SystemPasteboardType = NSPasteboard.PasteboardType
     @objc(generalPasteboard)
     static let general = UTMPasteboard(for: SystemPasteboard.general)
     
+    private(set) var changeCount: Int
     fileprivate let systemPasteboard: SystemPasteboard
+    private var timer: Timer?
+    private var listeners = Set<AnyHashable>()
     
     private init(for systemPasteboard: SystemPasteboard) {
         self.systemPasteboard = systemPasteboard
+        self.changeCount = systemPasteboard.changeCount
+    }
+    
+    @nonobjc func requestPollingMode<T>(forHashable hashable: T) where T: Hashable {
+        if listeners.isEmpty {
+            timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
+                self.onTimerTick()
+            }
+        }
+        _ = listeners.insert(hashable)
+    }
+    
+    @objc func requestPollingMode(forObject object: AnyHashable) {
+        requestPollingMode(forHashable: object)
+    }
+    
+    @nonobjc func releasePollingMode<T>(forHashable hashable: T) where T: Hashable {
+        _ = listeners.remove(hashable)
+        if listeners.isEmpty {
+            timer?.invalidate()
+            timer = nil
+        }
+    }
+    
+    @objc func releasePollingMode(forObject object: AnyHashable) {
+        releasePollingMode(forHashable: object)
+    }
+    
+    private func onTimerTick() {
+        let newCount = systemPasteboard.changeCount
+        if newCount > changeCount {
+            if hasContents() {
+                NotificationCenter.default.post(name: .pasteboardChangedNotification, object: self)
+            } else {
+                NotificationCenter.default.post(name: .pasteboardRemovedNotification, object: self)
+            }
+        }
+        changeCount = newCount
     }
 }
 
@@ -105,16 +146,18 @@ extension UTMPasteboard.PasteboardType: RawRepresentable {
 }
 
 @objc extension UTMPasteboard {
-    var changeCount: Int {
-        systemPasteboard.changeCount
+    func hasContents() -> Bool {
+        return systemPasteboard.types.count > 0
     }
     
     func clearContents() {
+        changeCount += 1
         systemPasteboard.items = []
     }
     
     func setData(_ data: Data, forType dataType: PasteboardType) {
         clearContents()
+        changeCount += 1
         systemPasteboard.setData(data, forPasteboardType: dataType.rawValue)
     }
     
@@ -124,6 +167,7 @@ extension UTMPasteboard.PasteboardType: RawRepresentable {
     
     func setString(_ string: String, forType dataType: PasteboardType) {
         clearContents()
+        changeCount += 1
         systemPasteboard.setValue(string, forPasteboardType: dataType.rawValue)
     }
     
@@ -187,16 +231,22 @@ extension UTMPasteboard.PasteboardType: RawRepresentable {
 }
 
 @objc extension UTMPasteboard {
-    var changeCount: Int {
-        systemPasteboard.changeCount
+    func hasContents() -> Bool {
+        if let types = systemPasteboard.types {
+            return types.count > 0
+        } else {
+            return false
+        }
     }
     
     func clearContents() {
+        changeCount += 1
         _ = systemPasteboard.clearContents()
     }
     
     func setData(_ data: Data, forType dataType: PasteboardType) {
         clearContents()
+        changeCount += 1
         _ = systemPasteboard.setData(data, forType: dataType.rawValue)
     }
     
@@ -206,6 +256,7 @@ extension UTMPasteboard.PasteboardType: RawRepresentable {
     
     func setString(_ string: String, forType dataType: PasteboardType) {
         clearContents()
+        changeCount += 1
         _ = systemPasteboard.setString(string, forType: dataType.rawValue)
     }
     
@@ -231,11 +282,11 @@ extension UTMPasteboard.PasteboardType: RawRepresentable {
 #endif
 
 extension NSNotification.Name {
-    public static let changedNotification: NSNotification.Name = .init(rawValue: "utmPasteboardChangedNotification")
-    public static let removedNotification: NSNotification.Name = .init(rawValue: "utmPasteboardRemovedNotification")
+    public static let pasteboardChangedNotification: NSNotification.Name = .init(rawValue: "utmPasteboardChangedNotification")
+    public static let pasteboardRemovedNotification: NSNotification.Name = .init(rawValue: "utmPasteboardRemovedNotification")
 }
 
 @objc extension UTMPasteboard {
-    public static let changedNotification = NSNotification.Name.changedNotification
-    public static let removedNotification = NSNotification.Name.removedNotification
+    public static let changedNotification = NSNotification.Name.pasteboardChangedNotification
+    public static let removedNotification = NSNotification.Name.pasteboardRemovedNotification
 }

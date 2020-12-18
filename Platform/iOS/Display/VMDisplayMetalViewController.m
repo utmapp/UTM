@@ -29,6 +29,7 @@
 #import "UTMLogging.h"
 #import "CSDisplayMetal.h"
 #import "UTMScreenshot.h"
+#import "UTM-Swift.h"
 
 @implementation VMDisplayMetalViewController {
     UTMRenderer *_renderer;
@@ -110,6 +111,9 @@
                 self.placeholderImageView.image = self.vm.screenshot.image;
                 self.mtkView.hidden = YES;
             } completion:nil];
+            if (self.vmConfiguration.shareClipboardEnabled) {
+                [[UTMPasteboard generalPasteboard] releasePollingModeForObject:self];
+            }
             break;
         }
         case kVMStarted: {
@@ -120,6 +124,9 @@
             self->_renderer.sourceScreen = self.vmDisplay;
             self->_renderer.sourceCursor = self.vmInput;
             [self displayResize:self.view.bounds.size];
+            if (self.vmConfiguration.shareClipboardEnabled) {
+                [[UTMPasteboard generalPasteboard] requestPollingModeForObject:self];
+            }
             break;
         }
         default: {

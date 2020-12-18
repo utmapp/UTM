@@ -84,6 +84,9 @@ class VMDisplayMetalWindowController: VMDisplayWindowController, UTMSpiceIODeleg
             guard let size = change.newValue else { return }
             self.displaySizeDidChange(size: size)
         }
+        if vmConfiguration!.shareClipboardEnabled {
+            UTMPasteboard.general.requestPollingMode(forHashable: self) // start clipboard polling
+        }
         super.enterLive()
         resizeConsoleToolbarItem.isEnabled = false // disable item
     }
@@ -93,6 +96,9 @@ class VMDisplayMetalWindowController: VMDisplayWindowController, UTMSpiceIODeleg
             metalView.isHidden = true
             screenshotView.image = vm.screenshot?.image
             screenshotView.isHidden = false
+        }
+        if vmConfiguration!.shareClipboardEnabled {
+            UTMPasteboard.general.releasePollingMode(forHashable: self) // stop clipboard polling
         }
         super.enterSuspended(isBusy: busy)
     }
