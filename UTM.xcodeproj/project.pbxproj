@@ -216,7 +216,6 @@
 		CE0B6D8224AD584D00FE012D /* qapi-types-block-core.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C09923FCEC00001177D6 /* qapi-types-block-core.c */; };
 		CE0B6D8624AD5ADE00FE012D /* UTMScreenshot.m in Sources */ = {isa = PBXBuildFile; fileRef = CE0B6D8424AD5ADE00FE012D /* UTMScreenshot.m */; };
 		CE0B6D8724AD5ADE00FE012D /* UTMScreenshot.m in Sources */ = {isa = PBXBuildFile; fileRef = CE0B6D8424AD5ADE00FE012D /* UTMScreenshot.m */; };
-		CE0B6D8B24AD658000FE012D /* CSSessionMac.m in Sources */ = {isa = PBXBuildFile; fileRef = CE0B6D8A24AD658000FE012D /* CSSessionMac.m */; };
 		CE0B6EBB24AD677200FE012D /* libgstgio.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CE9D19622265425A00355E14 /* libgstgio.a */; };
 		CE0B6EBC24AD677200FE012D /* libgstpbutils-1.0.0.utm.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D640E22653C7500FC7E63 /* libgstpbutils-1.0.0.utm.dylib */; };
 		CE0B6EC224AD677200FE012D /* libgstvideorate.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CE9D19592265425900355E14 /* libgstvideorate.a */; };
@@ -718,6 +717,9 @@
 		CED814EC24C7C2850042F0F1 /* VMConfigInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CED814EB24C7C2850042F0F1 /* VMConfigInfoView.swift */; };
 		CED814ED24C7C2850042F0F1 /* VMConfigInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CED814EB24C7C2850042F0F1 /* VMConfigInfoView.swift */; };
 		CED814EF24C7EB760042F0F1 /* ImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = CED814EE24C7EB760042F0F1 /* ImagePicker.swift */; };
+		CEDF83F6258ADE130030E4AC /* CSSession.m in Sources */ = {isa = PBXBuildFile; fileRef = CE5425392439334400E520F7 /* CSSession.m */; };
+		CEDF83F9258AE24E0030E4AC /* UTMPasteboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEDF83F8258AE24E0030E4AC /* UTMPasteboard.swift */; };
+		CEDF83FA258AE24E0030E4AC /* UTMPasteboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEDF83F8258AE24E0030E4AC /* UTMPasteboard.swift */; };
 		CEEC811B24E48EC700ACB0B3 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEEC811A24E48EC600ACB0B3 /* SettingsView.swift */; };
 		CEF83EBA24F9ABEA00557D15 /* UTMQemuManager+BlockDevices.m in Sources */ = {isa = PBXBuildFile; fileRef = CEF83EB924F9ABEA00557D15 /* UTMQemuManager+BlockDevices.m */; };
 		CEF83EBB24F9ABEA00557D15 /* UTMQemuManager+BlockDevices.m in Sources */ = {isa = PBXBuildFile; fileRef = CEF83EB924F9ABEA00557D15 /* UTMQemuManager+BlockDevices.m */; };
@@ -1544,6 +1546,7 @@
 		CED814EE24C7EB760042F0F1 /* ImagePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePicker.swift; sourceTree = "<group>"; };
 		CEDC1DF02260EE4B008D9A6D /* StaticDataTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StaticDataTableViewController.h; sourceTree = "<group>"; };
 		CEDC1DF12260EE4B008D9A6D /* StaticDataTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StaticDataTableViewController.m; sourceTree = "<group>"; };
+		CEDF83F8258AE24E0030E4AC /* UTMPasteboard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMPasteboard.swift; sourceTree = "<group>"; };
 		CEE0420A244117040001680F /* UTMConfiguration+Display.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UTMConfiguration+Display.h"; sourceTree = "<group>"; };
 		CEE0420B244117040001680F /* UTMConfiguration+Display.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UTMConfiguration+Display.m"; sourceTree = "<group>"; };
 		CEE0420D24412C520001680F /* VMConfigStepper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VMConfigStepper.h; sourceTree = "<group>"; };
@@ -2304,6 +2307,7 @@
 				CE36B27E227665B7004A1435 /* UTMJSONStreamDelegate.h */,
 				CE6EDCE0241DA0E900A719DC /* UTMLogging.h */,
 				CE6EDCE1241DA0E900A719DC /* UTMLogging.m */,
+				CEDF83F8258AE24E0030E4AC /* UTMPasteboard.swift */,
 				CEF83ED124FDEA9400557D15 /* UTMPortAllocator.h */,
 				CEF83ED224FDEA9400557D15 /* UTMPortAllocator.m */,
 				2C6D9E122571AFE5003298E6 /* UTMQcow2.h */,
@@ -2981,6 +2985,7 @@
 				CEB63A8624F46E6E00CAF323 /* VMConfigSystemViewController.m in Sources */,
 				CE8813D324CD230300532628 /* ActivityView.swift in Sources */,
 				CE2D931224AD46670059923A /* qapi-dispatch-events.c in Sources */,
+				CEDF83F9258AE24E0030E4AC /* UTMPasteboard.swift in Sources */,
 				CE2D931324AD46670059923A /* qapi-visit-authz.c in Sources */,
 				CE2D956924AD4F990059923A /* VMPlaceholderView.swift in Sources */,
 				CE2D931524AD46670059923A /* VMDisplayMetalViewController+Pointer.m in Sources */,
@@ -3043,6 +3048,7 @@
 				CE03D0D224DCF4B600F76B84 /* VMMetalView.swift in Sources */,
 				CE0B6CF124AD567300FE012D /* CSMain.m in Sources */,
 				CE0B6CEE24AD566A00FE012D /* CSConnection.m in Sources */,
+				CEDF83F6258ADE130030E4AC /* CSSession.m in Sources */,
 				CE0B6D8024AD584D00FE012D /* qapi-events-sockets.c in Sources */,
 				CE0B6D6224AD584D00FE012D /* qapi-types-misc-target.c in Sources */,
 				CE0B6D7A24AD584D00FE012D /* qapi-events-machine-target.c in Sources */,
@@ -3138,7 +3144,6 @@
 				CE0B6D6924AD584D00FE012D /* qapi-events-tpm.c in Sources */,
 				CEBDA1D524D69DB20010B5EC /* VMDisplayMetalWindowController.swift in Sources */,
 				CE2D957824AD4F990059923A /* VMConfigStringPicker.swift in Sources */,
-				CE0B6D8B24AD658000FE012D /* CSSessionMac.m in Sources */,
 				CE0B6D3224AD57FC00FE012D /* qapi-events-introspect.c in Sources */,
 				CE0B6CF624AD568400FE012D /* UTMConfiguration+Drives.m in Sources */,
 				CE0B6D4324AD584C00FE012D /* qapi-types.c in Sources */,
@@ -3196,6 +3201,7 @@
 				2CE8EAFF2572E14D000E2EBB /* qapi-types-block-export.c in Sources */,
 				CE0B6D8724AD5ADE00FE012D /* UTMScreenshot.m in Sources */,
 				CE93759224BA775C0074066F /* ToolbarTabView.swift in Sources */,
+				CEDF83FA258AE24E0030E4AC /* UTMPasteboard.swift in Sources */,
 				CE0B6D1124AD57C700FE012D /* qapi-builtin-visit.c in Sources */,
 				CE0B6D3F24AD584C00FE012D /* qapi-visit-qom.c in Sources */,
 				CE2D958A24AD4F990059923A /* VMConfigSystemView.swift in Sources */,
