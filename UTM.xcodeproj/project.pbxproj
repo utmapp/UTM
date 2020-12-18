@@ -994,7 +994,6 @@
 		CE059DCA243FBA3C00338317 /* VMConfigCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VMConfigCell.m; sourceTree = "<group>"; };
 		CE0B6D8324AD5ADE00FE012D /* UTMScreenshot.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UTMScreenshot.h; sourceTree = "<group>"; };
 		CE0B6D8424AD5ADE00FE012D /* UTMScreenshot.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UTMScreenshot.m; sourceTree = "<group>"; };
-		CE0B6D8A24AD658000FE012D /* CSSessionMac.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CSSessionMac.m; sourceTree = "<group>"; };
 		CE0E828D24E4D4CE003EA9FE /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = Base; path = Base.lproj/Localizable.strings; sourceTree = "<group>"; };
 		CE0E829424E4D509003EA9FE /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = Base; path = Base.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		CE0E9B86252FD06B0026E02B /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
@@ -2211,7 +2210,6 @@
 				CE26FC24226EBC5A0090BE9B /* CSMain.m */,
 				CE5425382439334400E520F7 /* CSSession.h */,
 				CE5425392439334400E520F7 /* CSSession.m */,
-				CE0B6D8A24AD658000FE012D /* CSSessionMac.m */,
 				CEBE02622588494100B9BCA8 /* CSSession+Sharing.h */,
 				CEBE02632588494100B9BCA8 /* CSSession+Sharing.m */,
 			);

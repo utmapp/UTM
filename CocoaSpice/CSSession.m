@@ -18,8 +18,7 @@
 #import "CSSession+Sharing.h"
 #import "CocoaSpice.h"
 #import "UTMLogging.h"
-#import <MobileCoreServices/MobileCoreServices.h>
-#import <UIKit/UIKit.h>
+#import "UTM-Swift.h"
 #import <glib.h>
 #import <spice-client.h>
 #import <spice/vd_agent.h>
@@ -33,39 +32,31 @@
 
 @implementation CSSession {
     SpiceMainChannel        *_main;
-    NSInteger               _pasteboardChanges;
 }
 
-static NSString *utiForClipboardType(guint type)
+static UTMPasteboardType utmTypeForClipboardType(guint type)
 {
-    CFStringRef uti = NULL;
     switch (type) {
         case VD_AGENT_CLIPBOARD_UTF8_TEXT: {
-            uti = kUTTypeUTF8PlainText;
-            break;
+            return UTMPasteboardTypeString;
         }
         case VD_AGENT_CLIPBOARD_IMAGE_PNG: {
-            uti = kUTTypePNG;
-            break;
+            return UTMPasteboardTypePng;
         }
         case VD_AGENT_CLIPBOARD_IMAGE_BMP: {
-            uti = kUTTypeBMP;
-            break;
+            return UTMPasteboardTypeBmp;
         }
         case VD_AGENT_CLIPBOARD_IMAGE_TIFF: {
-            uti = kUTTypeTIFF;
-            break;
+            return UTMPasteboardTypeTiff;
         }
         case VD_AGENT_CLIPBOARD_IMAGE_JPG: {
-            uti = kUTTypeJPEG;
-            break;
+            return UTMPasteboardTypeJpg;
         }
         default: {
-            g_warning("unknown clipboard type %d", type);
             break;
         }
     }
-    return (__bridge NSString *)uti;
+    return UTMPasteboardTypeString;
 }
 
 // helper from spice-util.c
@@ -175,16 +166,12 @@ static void cs_clipboard_got_from_guest(SpiceMainChannel *main, guint selection,
             size = (guint)strlen(conv);
         }
         NSString *string = [NSString stringWithUTF8String:(conv ? conv : (const char *)data)];
-        self->_pasteboardChanges = [UIPasteboard generalPasteboard].changeCount + 1;
-        [[UIPasteboard generalPasteboard] setValue:string forPasteboardType:(__bridge NSString *)kUTTypeUTF8PlainText];
+        [[UTMPasteboard generalPasteboard] setString:string];
         g_free(conv);
     } else {
-        NSString *uti = utiForClipboardType(type);
-        if (uti) {
-            NSData *pasteData = [NSData dataWithBytes:data length:size];
-            self->_pasteboardChanges = [UIPasteboard generalPasteboard].changeCount + 1;
-            [[UIPasteboard generalPasteboard] setData:pasteData forPasteboardType:uti];
-        }
+        UTMPasteboardType utmType = utmTypeForClipboardType(type);
+        NSData *pasteData = [NSData dataWithBytes:data length:size];
+        [[UTMPasteboard generalPasteboard] setData:pasteData forType:utmType];
     }
 }
 
@@ -227,8 +214,8 @@ static gboolean cs_clipboard_request(SpiceMainChannel *main, guint selection,
         return FALSE;
     }
 
-    NSString *uti = utiForClipboardType(type);
-    NSData *data = [[UIPasteboard generalPasteboard] dataForPasteboardType:uti];
+    UTMPasteboardType utmType = utmTypeForClipboardType(type);
+    NSData *data = [[UTMPasteboard generalPasteboard] dataForType:utmType];
     spice_main_channel_clipboard_selection_notify(self->_main, selection, type, data.bytes, data.length);
 
     return TRUE;
@@ -238,8 +225,7 @@ static void cs_clipboard_release(SpiceMainChannel *main, guint selection,
                                  gpointer user_data)
 {
     CSSession *self = (__bridge CSSession *)user_data;
-    self->_pasteboardChanges = [UIPasteboard generalPasteboard].changeCount + 1;
-    [UIPasteboard generalPasteboard].items = @[];
+    [[UTMPasteboard generalPasteboard] clearContents];
 }
 
 static void cs_channel_new(SpiceSession *session, SpiceChannel *channel,
@@ -281,20 +267,13 @@ static void cs_channel_destroy(SpiceSession *session, SpiceChannel *channel,
     if (self = [super init]) {
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(pasteboardDidChange:)
-                                                     name:UIPasteboardChangedNotification
+                                                     name:UTMPasteboard.changedNotification
                                                    object:nil];
         
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(pasteboardDidRemove:)
-                                                     name:UIPasteboardRemovedNotification
+                                                     name:UTMPasteboard.removedNotification
                                                    object:nil];
-        
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(willEnterForeground:)
-                                                     name:UIApplicationWillEnterForegroundNotification
-                                                   object:nil];
-        
-        _pasteboardChanges = [UIPasteboard generalPasteboard].changeCount;
     }
     return self;
 }
@@ -332,17 +311,12 @@ static void cs_channel_destroy(SpiceSession *session, SpiceChannel *channel,
     g_signal_handlers_disconnect_by_func(self.session, G_CALLBACK(cs_channel_destroy), GLIB_OBJC_RELEASE(self));
     g_object_unref(self.session);
     self.session = NULL;
-    
     [[NSNotificationCenter defaultCenter] removeObserver:self
-                                                    name:UIPasteboardChangedNotification
+                                                    name:UTMPasteboard.changedNotification
                                                   object:nil];
     
     [[NSNotificationCenter defaultCenter] removeObserver:self
-                                                    name:UIPasteboardRemovedNotification
-                                                  object:nil];
-    
-    [[NSNotificationCenter defaultCenter] removeObserver:self
-                                                    name:UIApplicationWillEnterForegroundNotification
+                                                    name:UTMPasteboard.removedNotification
                                                   object:nil];
 }
 
@@ -353,23 +327,17 @@ static void cs_channel_destroy(SpiceSession *session, SpiceChannel *channel,
     if (!self.shareClipboard || self.sessionReadOnly) {
         return;
     }
-    if ([UIPasteboard generalPasteboard].changeCount <= _pasteboardChanges) {
-        UTMLog(@"ignoring excess pasteboard change");
-        return;
-    } else {
-        _pasteboardChanges = [UIPasteboard generalPasteboard].changeCount;
-    }
     guint32 type = VD_AGENT_CLIPBOARD_NONE;
-    NSArray *types = [[UIPasteboard generalPasteboard] pasteboardTypes];
-    if ([types containsObject:(__bridge NSString *)kUTTypePNG]) {
+    UTMPasteboard *pb = [UTMPasteboard generalPasteboard];
+    if ([pb canReadItemForType:UTMPasteboardTypePng]) {
         type = VD_AGENT_CLIPBOARD_IMAGE_PNG;
-    } else if ([types containsObject:(__bridge NSString *)kUTTypeBMP]) {
+    } else if ([pb canReadItemForType:UTMPasteboardTypeBmp]) {
         type = VD_AGENT_CLIPBOARD_IMAGE_BMP;
-    } else if ([types containsObject:(__bridge NSString *)kUTTypeTIFF]) {
+    } else if ([pb canReadItemForType:UTMPasteboardTypeTiff]) {
         type = VD_AGENT_CLIPBOARD_IMAGE_TIFF;
-    } else if ([types containsObject:(__bridge NSString *)kUTTypeJPEG]) {
+    } else if ([pb canReadItemForType:UTMPasteboardTypeJpg]) {
         type = VD_AGENT_CLIPBOARD_IMAGE_JPG;
-    } else if ([[UIPasteboard generalPasteboard] hasStrings]) {
+    } else if ([pb canReadItemForType:UTMPasteboardTypeString]) {
         type = VD_AGENT_CLIPBOARD_UTF8_TEXT;
     } else {
         UTMLog(@"pasteboard with unrecognized type");
@@ -384,16 +352,9 @@ static void cs_channel_destroy(SpiceSession *session, SpiceChannel *channel,
     if (!self.shareClipboard || self.sessionReadOnly) {
         return;
     }
-    _pasteboardChanges = [UIPasteboard generalPasteboard].changeCount;
     guint32 type = VD_AGENT_CLIPBOARD_UTF8_TEXT;
     if (spice_main_channel_agent_test_capability(self->_main, VD_AGENT_CAP_CLIPBOARD_BY_DEMAND)) {
         spice_main_channel_clipboard_selection_grab(self->_main, VD_AGENT_CLIPBOARD_SELECTION_CLIPBOARD, &type, 1);
-    }
-}
-
-- (void)willEnterForeground:(NSNotification *)notification {
-    if ([UIPasteboard generalPasteboard].changeCount > _pasteboardChanges) {
-        [self pasteboardDidChange:notification];
     }
 }
 
