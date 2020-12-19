@@ -54,6 +54,7 @@ struct VMConfigNetworkPortForwardView: View {
 struct PortForwardEdit: View {
     @StateObject private var configPort: UTMConfigurationPortForward
     private let save: () -> Void
+    private let delete: (() -> Void)?
     @Environment(\.presentationMode) private var presentationMode: Binding<PresentationMode>
     
     init(config: UTMConfiguration, index: Int? = nil) {
@@ -67,6 +68,13 @@ struct PortForwardEdit: View {
         save = {
             config.updatePortForward(at: index ?? config.countPortForwards, withValue: configPort)
         }
+        if let i = index {
+            delete = {
+                config.removePortForward(at: i)
+            }
+        } else {
+            delete = nil
+        }
     }
     
     var body: some View {
@@ -75,14 +83,22 @@ struct PortForwardEdit: View {
                 VMConfigPortForwardForm(configPort: configPort).multilineTextAlignment(.trailing)
             }
         }.navigationBarItems(trailing:
-            Button(action: savePortForward, label: {
-                Text("Save")
-            }).disabled(configPort.guestPort?.intValue ?? 0 == 0 || configPort.hostPort?.intValue ?? 0 == 0)
+            HStack {
+                if let delete = self.delete {
+                    Button(action: { closePopup(after: delete) }, label: {
+                        Text("Delete")
+                    }).foregroundColor(.red)
+                    .padding()
+                }
+                Button(action: { closePopup(after: save) }, label: {
+                    Text("Save")
+                }).disabled(configPort.guestPort?.intValue ?? 0 == 0 || configPort.hostPort?.intValue ?? 0 == 0)
+            }
         )
     }
     
-    private func savePortForward() {
-        save()
+    private func closePopup(after action: () -> Void) {
+        action()
         self.presentationMode.wrappedValue.dismiss()
     }
 }
