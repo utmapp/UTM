@@ -426,7 +426,7 @@ static size_t sysctl_read(const char *name) {
     [self pushArgv:self.resourceURL.path];
     [self pushArgv:@"-S"]; // startup stopped
     [self pushArgv:@"-qmp"];
-    [self pushArgv:[NSString stringWithFormat:@"tcp:localhost:%lu,server,nowait", self.qmpPort]];
+    [self pushArgv:[NSString stringWithFormat:@"tcp:127.0.0.1:%lu,server,nowait", self.qmpPort]];
     if (self.configuration.displayConsoleOnly) {
         [self pushArgv:@"-nographic"];
         // terminal character device
