@@ -73,6 +73,7 @@ download () {
     TARGET="$BUILD_DIR/$FILE"
     DIR="$BUILD_DIR/$NAME"
     PATCH="$PATCHES_DIR/${NAME}.patch"
+    DATA="$PATCHES_DIR/data/${NAME}"
     if [ -f "$TARGET" -a -z "$REDOWNLOAD" ]; then
         echo "${GREEN}$TARGET already downloaded! Run with -d to force re-download.${NC}"
     else
@@ -89,6 +90,10 @@ download () {
     if [ -f "$PATCH" ]; then
         echo "${GREEN}Patching ${NAME}...${NC}"
         patch -d "$DIR" -p1 < "$PATCH"
+    fi
+    if [ -d "$DATA" ]; then
+        echo "${GREEN}Patching data ${NAME}...${NC}"
+        cp -r "$DATA/" "$DIR"
     fi
 }
 
