@@ -21,7 +21,7 @@
 
 @interface UTMQemuManager ()
 
-- (NSError *)errorForQerror:(Error *)qerr;
+- (__autoreleasing NSError *)errorForQerror:(Error *)qerr;
 
 @end
 
@@ -74,7 +74,7 @@
     return YES;
 }
 
-- (BOOL)changeMediumForDrive:(NSString *)drive path:(NSString *)path error:(NSError * _Nullable *)error {
+- (BOOL)changeMediumForDrive:(NSString *)drive path:(NSString *)path error:(NSError * _Nullable __autoreleasing *)error {
     Error *qerr = NULL;
     qmp_blockdev_change_medium(true, [drive cStringUsingEncoding:NSUTF8StringEncoding], false, NULL, [path cStringUsingEncoding:NSUTF8StringEncoding], false, NULL, false, BLOCKDEV_CHANGE_READ_ONLY_MODE_RETAIN, &qerr, (__bridge void *)self);
     if (qerr) {

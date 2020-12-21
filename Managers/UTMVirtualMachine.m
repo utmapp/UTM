@@ -605,7 +605,7 @@ error:
 // this is called right before we execute qmp_cont so we can setup additional option
 - (void)qemuQmpDidConnect:(UTMQemuManager *)manager {
     UTMLog(@"qemuQmpDidConnect");
-    NSError *err = nil;
+    __autoreleasing NSError *err = nil;
     NSString *errMsg = nil;
     if (!self.configuration.displayConsoleOnly) {
         if (![self startSharedDirectoryWithError:&err]) {

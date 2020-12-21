@@ -228,7 +228,7 @@ void qmp_rpc_call(CFDictionaryRef args, CFDictionaryRef *ret, Error **err, void 
     }];
 }
 
-- (NSError *)errorForQerror:(Error *)qerr {
+- (__autoreleasing NSError *)errorForQerror:(Error *)qerr {
     return [NSError errorWithDomain:kUTMErrorDomain code:-1 userInfo:@{NSLocalizedDescriptionKey: [NSString stringWithCString:error_get_pretty(qerr) encoding:NSASCIIStringEncoding]}];
 }
 

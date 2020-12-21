@@ -99,6 +99,7 @@ extern NSString *const kUTMErrorDomain;
 
 - (BOOL)changeMediumForDriveInternal:(UTMDrive *)drive bookmark:(NSData *)bookmark securityScoped:(BOOL)securityScoped error:(NSError * _Nullable __autoreleasing *)error {
     __block BOOL ret = NO;
+    __block NSError *qemuError = nil;
     dispatch_semaphore_t sema = dispatch_semaphore_create(0);
     [self.system accessDataWithBookmark:bookmark
                          securityScoped:securityScoped
@@ -106,16 +107,15 @@ extern NSString *const kUTMErrorDomain;
         if (success) {
             [self.viewState setBookmark:newBookmark path:path forRemovableDrive:drive.name persistent:YES];
             [self saveViewState];
-            [self.qemu changeMediumForDrive:drive.name path:path error:error];
+            success = [self.qemu changeMediumForDrive:drive.name path:path error:&qemuError];
         } else {
-            if (error) {
-                *error = [NSError errorWithDomain:kUTMErrorDomain code:-1 userInfo:@{NSLocalizedDescriptionKey: NSLocalizedString(@"Failed to access drive image path.", "UTMVirtualMachine+Drives")}];
-            }
+            qemuError = [NSError errorWithDomain:kUTMErrorDomain code:-1 userInfo:@{NSLocalizedDescriptionKey: NSLocalizedString(@"Failed to access drive image path.", "UTMVirtualMachine+Drives")}];
         }
         ret = success;
         dispatch_semaphore_signal(sema);
     }];
     dispatch_semaphore_wait(sema, DISPATCH_TIME_FOREVER);
+    *error = qemuError;
     return ret;
 }
 
