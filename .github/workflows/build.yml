@@ -136,7 +136,7 @@ jobs:
       - name: Fakesign IPA
         run: |
           find UTM-ios-arm64/UTM.xcarchive -type f \( -path '*/UTM.app/UTM' -or -path '*/UTM.app/Frameworks/*.dylib' \) -exec chmod +x \{\} \;
-          ./scripts/resign.sh ipa UTM-ios-arm64/UTM.xcarchive .
+          ./scripts/package.sh ipa UTM-ios-arm64/UTM.xcarchive .
       - name: Upload Release Asset
         uses: actions/upload-release-asset@v1.0.1
         env:
@@ -173,7 +173,7 @@ jobs:
       - name: Fixup Permissions
         run: find UTM-macos-universal/UTM.xcarchive -type f \( -path '*/Contents/MacOS/*' -or -path '*/Frameworks/*.dylib' \) -exec chmod +x \{\} \;
       - name: Package for Release
-        run: ./scripts/resign_mac.sh --no-sandbox UTM-macos-universal/UTM.xcarchive . "$SIGNING_TEAM_ID"
+        run: ./scripts/package_mac.sh --no-sandbox UTM-macos-universal/UTM.xcarchive . "$SIGNING_TEAM_ID"
         env:
           SIGNING_TEAM_ID: ${{ secrets.SIGNING_TEAM_ID }}
       - name: Notarize app
