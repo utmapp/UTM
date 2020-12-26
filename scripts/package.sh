@@ -118,8 +118,6 @@ create_deb() {
 	mkdir -p "$OUTPUT"
 	rm -rf "$DEB_TMP"
 	mkdir -p "$DEB_TMP/DEBIAN"
-	cp -a "`dirname $0`/postrm" "$DEB_TMP/DEBIAN/postrm"
-	cp -a "`dirname $0`/postrm" "$DEB_TMP/DEBIAN/extrainst_"
 cat >"$DEB_TMP/DEBIAN/control" <<EOL
 Package: com.utmapp.UTM
 Version: ${VERSION}
