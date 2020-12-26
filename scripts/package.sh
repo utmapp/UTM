@@ -100,6 +100,7 @@ fake_sign() {
 
 	mkdir -p "$_output"
 	cp -r "$_input" "$_output/"
+	find "$_output" -type f \( -path '*/UTM.app/UTM' -or -path '*/UTM.app/Frameworks/*.dylib' \) -exec chmod +x \{\} \;
 	find "$_output" -type f -path '*/Frameworks/*.dylib' -exec ldid -S \{\} \;
 	ldid -S${_fakeent} "$_output/Applications/UTM.app/UTM"
 }
@@ -124,14 +125,21 @@ Package: com.utmapp.UTM
 Version: ${VERSION}
 Section: Productivity
 Architecture: iphoneos-arm
-Depends: firmware-sbin
+Depends: firmware (>=11.0), firmware-sbin
 Installed-Size: ${SIZE}
 Maintainer: osy <dev@getutm.app>
 Description: Virtual machines for iOS
 Homepage: https://getutm.app/
+Name: UTM
+Author: osy
+Depiction: https://cydia.getutm.app/depiction/web/com.utmapp.UTM.html
+Icon: https://cydia.getutm.app/assets/com.utmapp.UTM/icon.png
+Moderndepiction: https://cydia.getutm.app/depiction/native/com.utmapp.UTM.json
+Sileodepiction: https://cydia.getutm.app/depiction/native/com.utmapp.UTM.json
+Tags: compatible_min::ios11.0
 EOL
 	fake_sign "$INPUT/Products/Applications" "$DEB_TMP" "$FAKEENT"
-	dpkg-deb -b "$DEB_TMP" "$OUTPUT/UTM.deb"
+	dpkg-deb -b -Zgzip -z9 "$DEB_TMP" "$OUTPUT/UTM.deb"
 	rm -r "$DEB_TMP"
 }
 
