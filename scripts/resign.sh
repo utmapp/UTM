@@ -1,19 +1,69 @@
 #!/bin/sh
 
 set -e
-if [ $# -ne 2 ] && [ $# -ne 4 ]; then
-	echo "usage: $0 UTM.xcarchive outputPath [PROFILE_NAME TEAM_ID]"
+
+usage() {
+	echo "usage: $0 MODE inputXcarchive outputPath [PROFILE_NAME TEAM_ID]"
+	echo "  MODE is one of:"
+	echo "          deb (Cydia DEB)"
+	echo "          ipa (unsigned IPA with Psychic paper support)"
+	echo "          signedipa (developer signed IPA with valid PROFILE_NAME and TEAM_ID)"
+	echo "  inputXcarchive is path to UTM.xcarchive"
+	echo "  outputPath is path to an EMPTY output directory for UTM.ipa or UTM.deb"
+	echo "  PROFILE_NAME is only used for signedipa and is the name of the signing profile"
+	echo "  TEAM_ID is only used for signedipa and is the name of the team matching the profile"
 	exit 1
+}
+
+if [ $# -lt 2 ]; then
+	usage
 fi
 
-INPUT=$1
-OUTPUT=$2
-PROFILE_NAME=$3
-TEAM_ID=$4
-OPTIONS="/tmp/options.plist"
-FAKEENT="/tmp/fakeent.plist"
+case $1 in
+deb )
+	MODE=deb
+    shift
+    ;;
+ipa )
+	MODE=ipa
+	shift
+    ;;
+signedipa )
+	MODE=signedipa
+	shift
+	;;
+* )
+    usage
+    ;;
+esac
 
-cat >"$OPTIONS" <<EOL
+INPUT=$1
+INPUT_APP="$INPUT/Products/Applications/UTM.app"
+OUTPUT=$2
+
+if [ ! -d "$INPUT_APP" ]; then
+	echo "Invalid xcarchive input!"
+	usage
+fi
+
+if [ -z "$OUTPUT" ]; then
+	echo "Invalid output path"
+	usage
+fi
+
+itunes_sign() {
+	INPUT=$1
+	OUTPUT=$2
+	PROFILE_NAME=$3
+	TEAM_ID=$4
+	OPTIONS="/tmp/options.plist"
+
+	if [ -z "$PROFILE_NAME" || -z "$TEAM_ID" ]; then
+		echo "Invalid profile name or team id!"
+		usage
+	fi
+
+	cat >"$OPTIONS" <<EOL
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
@@ -39,7 +89,85 @@ cat >"$OPTIONS" <<EOL
 </plist>
 EOL
 
-cat >"$FAKEENT" <<EOL
+	xcodebuild -exportArchive -exportOptionsPlist "$OPTIONS" -archivePath "$INPUT" -exportPath "$OUTPUT"
+	rm "$OPTIONS"
+}
+
+fake_sign() {
+	_input=$1
+	_output=$2
+	_fakeent=$3
+
+	mkdir -p "$_output"
+	cp -r "$_input" "$_output/"
+	find "$_output" -type f -path '*/Frameworks/*.dylib' -exec ldid -S \{\} \;
+	ldid -S${_fakeent} "$_output/Applications/UTM.app/UTM"
+}
+
+create_deb() {
+	INPUT=$1
+	INPUT_APP="$INPUT/Products/Applications/UTM.app"
+	OUTPUT=$2
+	FAKEENT=$3
+	DEB_TMP="$OUTPUT/deb"
+	SIZE_KIB=`du -sk "$INPUT_APP"| cut -f 1`
+	SIZE=`expr $SIZE_KIB \* 1024`
+	VERSION=`/usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" "$INPUT_APP/Info.plist"`
+
+	mkdir -p "$OUTPUT"
+	rm -rf "$DEB_TMP"
+	mkdir -p "$DEB_TMP/DEBIAN"
+	cp -a "`dirname $0`/postrm" "$DEB_TMP/DEBIAN/postrm"
+	cp -a "`dirname $0`/postrm" "$DEB_TMP/DEBIAN/extrainst_"
+cat >"$DEB_TMP/DEBIAN/control" <<EOL
+Package: com.utmapp.UTM
+Version: ${VERSION}
+Section: Productivity
+Architecture: iphoneos-arm
+Depends: firmware-sbin
+Installed-Size: ${SIZE}
+Maintainer: osy <dev@getutm.app>
+Description: Virtual machines for iOS
+Homepage: https://getutm.app/
+EOL
+	fake_sign "$INPUT/Products/Applications" "$DEB_TMP" "$FAKEENT"
+	dpkg-deb -b "$DEB_TMP" "$OUTPUT/UTM.deb"
+	rm -r "$DEB_TMP"
+}
+
+create_fake_ipa() {
+	INPUT=$1
+	OUTPUT=$2
+	FAKEENT=$3
+
+	mkdir -p "$OUTPUT"
+	rm -rf "$OUTPUT/Applications" "$OUTPUT/Payload" "$OUTPUT/UTM.ipa"
+	fake_sign "$INPUT/Products/Applications" "$OUTPUT" "$FAKEENT"
+	mv "$OUTPUT/Applications" "$OUTPUT/Payload"
+	cd "$OUTPUT"
+	zip -r "UTM.ipa" "Payload" -x "._*" -x ".DS_Store" -x "__MACOSX"
+	rm -r "Payload"
+}
+
+case $MODE in
+deb )
+	FAKEENT="/tmp/fakeent.plist"
+	cat >"$FAKEENT" <<EOL
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>dynamic-codesigning</key>
+	<true/>
+</dict>
+</plist>
+EOL
+	create_deb "$INPUT" "$OUTPUT" "$FAKEENT"
+    rm "$FAKEENT"
+    ;;
+ipa )
+	FAKEENT="/tmp/fakeent.plist"
+	cat >"$FAKEENT" <<EOL
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
@@ -54,19 +182,10 @@ cat >"$FAKEENT" <<EOL
 </dict>
 </plist>
 EOL
-
-if [ $# -eq 2 ]; then
-	mkdir -p "$OUTPUT"
-	rm -rf "$OUTPUT/Payload" "$OUTPUT/UTM.ipa"
-	cp -r "$INPUT/Products/Applications" "$OUTPUT/Payload"
-	find "$OUTPUT/Payload" -type f -path '*/Frameworks/*.dylib' -exec ldid -S \{\} \;
-	ldid -S${FAKEENT} "$OUTPUT/Payload/UTM.app/UTM"
-	cd "$OUTPUT"
-	zip -r "UTM.ipa" "Payload" -x "._*" -x ".DS_Store" -x "__MACOSX"
-	rm -r "Payload"
-else
-	xcodebuild -exportArchive -exportOptionsPlist "$OPTIONS" -archivePath "$INPUT" -exportPath "$OUTPUT"
-fi
-
-rm "$OPTIONS"
-rm "$FAKEENT"
+	create_fake_ipa "$INPUT" "$OUTPUT" "$FAKEENT"
+    rm "$FAKEENT"
+    ;;
+signedipa )
+	itunes_sign "$INPUT" "$OUTPUT" $3 $4
+	;;
+esac

@@ -1,0 +1,70 @@
+#!/bin/bash
+# extrainst_
+# postrm
+
+## Acceptable parameters for finish
+# return - normal behaviour (return to cydia)
+# reopen - exit cydia
+# restart - reload springboard
+# reload - reload springboard
+# reboot - reboot device
+##
+# Historically, 'restart' restarted springboard but did not reload the launchdaemon.
+# (reload was used for this purpose.) Now, restart and reload are equivalent.
+function finish() {
+	f="${1}"
+
+	# No control fd: bail out
+	[[ -z "${f}" || -z "${CYDIA}" ]] && return
+	cydia=(${CYDIA})
+
+	# Cydia control fd version != 1: bail out
+	[[ ${cydia[1]} -eq 1 ]] || return
+
+	echo "finish:${f}" >&${cydia[0]}
+}
+
+if [[ `basename $0` == "extrainst_" ]]; then
+	case "$1" in
+	install )
+		echo Removing
+		finish restart
+		;;
+	upgrade )
+		echo Removing
+		finish return
+		;;
+	esac
+elif [[ `basename $0` == "postrm" ]]; then
+	# If this script is postrm, you need to do something a bit more complex:
+	# postrm is called with remove, purge, upgrade, failed-upgrade, abort-install and abort-upgrade
+	# You probably only want to act on remove and (as this is the actual removal phase.)
+	case "$1" in
+	remove )
+		echo Removing
+		finish restart
+		;;
+	purge )
+		echo Purging
+		finish restart
+		;;
+	abort-install )
+		echo Aborting install
+		finish return
+		;;
+	upgrade )
+		echo Upgrading
+		finish restart
+		;;
+	abort-upgrade )
+		echo Aborting upgrade
+		finish return
+		;;
+	failed-upgrade )
+		echo Failed upgrading
+		finish return
+		;;
+	esac
+fi
+
+exit 0
