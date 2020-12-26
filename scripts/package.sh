@@ -112,7 +112,6 @@ create_deb() {
 	FAKEENT=$3
 	DEB_TMP="$OUTPUT/deb"
 	SIZE_KIB=`du -sk "$INPUT_APP"| cut -f 1`
-	SIZE=`expr $SIZE_KIB \* 1024`
 	VERSION=`/usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" "$INPUT_APP/Info.plist"`
 
 	mkdir -p "$OUTPUT"
@@ -124,7 +123,7 @@ Version: ${VERSION}
 Section: Productivity
 Architecture: iphoneos-arm
 Depends: firmware (>=11.0), firmware-sbin
-Installed-Size: ${SIZE}
+Installed-Size: ${SIZE_KIB}
 Maintainer: osy <dev@getutm.app>
 Description: Virtual machines for iOS
 Homepage: https://getutm.app/
