@@ -602,9 +602,11 @@ static CGFloat CGPointToPixel(CGFloat point) {
                 }
                 // Apple Pencil 2 right click mode
                 if (@available(iOS 12.1, *)) {
-                    primary = !_pencilForceRightClickOnce;
-                    secondary = _pencilForceRightClickOnce;
-                    _pencilForceRightClickOnce = false;
+                    if (touch.type == UITouchTypePencil) {
+                        primary = !_pencilForceRightClickOnce;
+                        secondary = _pencilForceRightClickOnce;
+                        _pencilForceRightClickOnce = false;
+                    }
                 }
                 [_cursor startMovement:pos];
                 [_cursor updateMovement:pos];
