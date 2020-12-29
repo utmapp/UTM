@@ -61,12 +61,8 @@ static const NSString *const kUTMConfigMachinePropertiesKey = @"MachinePropertie
         NSInteger index = [bootPretty indexOfObject:self.systemBootDevice];
         self.systemBootDevice = [UTMConfiguration supportedBootDevices][index];
     }
-    // Older versions assumes -device virtio-gpu-pci for virt configurations
+    // Older versions hard codes properties
     if ([self.version integerValue] < 2) {
-        if ([self.systemTarget hasPrefix:@"virt"]) {
-            [self newArgument:@"-device"];
-            [self newArgument:@"virtio-gpu-pci"];
-        }
         NSString *machineProp = [UTMConfiguration defaultMachinePropertiesForTarget:self.systemTarget];
         if (machineProp && self.systemMachineProperties.length == 0) {
             self.systemMachineProperties = machineProp;
