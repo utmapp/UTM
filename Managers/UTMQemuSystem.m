@@ -166,7 +166,7 @@ static size_t sysctl_read(const char *name) {
 
 - (void)targetSpecificConfiguration {
     if ([self.configuration.systemTarget hasPrefix:@"virt"]) {
-        if (self.useHypervisor && [self.configuration.systemArchitecture isEqualToString:@"aarch64"]) {
+        if (!self.useHypervisor && [self.configuration.systemArchitecture isEqualToString:@"aarch64"]) {
             [self pushArgv:@"-cpu"];
             [self pushArgv:@"cortex-a72"];
         }
@@ -175,9 +175,9 @@ static size_t sysctl_read(const char *name) {
         if (!self.hasCustomBios && [[NSFileManager defaultManager] fileExistsAtPath:path.path]) {
             [self pushArgv:@"-bios"];
             [self pushArgv:path.path]; // accessDataWithBookmark called already
-            [self pushArgv:@"-device"];
-            [self pushArgv:@"virtio-ramfb"];
         }
+        [self pushArgv:@"-device"];
+        [self pushArgv:@"virtio-ramfb"];
     }
 }
 

@@ -66,7 +66,7 @@ In more technical detail, there are two kinds of signing certificates: "developm
 If you want to sign an `xcarchive` such as from a [Github Actions][1] built artifact, you can use the following command:
 
 ```
-./scripts/resign.sh UTM.xcarchive outputPath PROFILE_NAME TEAM_ID
+./scripts/package.sh signedipa UTM.xcarchive outputPath PROFILE_NAME TEAM_ID
 ```
 
 Where `PROFILE_NAME` is the name of the provisioning profile and `TEAM_ID` is the identifier next to the team name in the provisioning profile. Make sure the signing key is imported into your keychain and the provision profile is installed on your iOS device.
@@ -74,7 +74,7 @@ Where `PROFILE_NAME` is the name of the provisioning profile and `TEAM_ID` is th
 If you have a jailbroken device, you can also fake-sign it (with `ldid` installed):
 
 ```
-./scripts/resign.sh UTM.xcarchive outputPath
+./scripts/package.sh ipa UTM.xcarchive outputPath
 ```
 
 ## Why isn't this in the AppStore?

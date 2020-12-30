@@ -66,7 +66,7 @@ UTM是一个功能齐全的iOS虚拟机。简而言之，它允许你在iPhone�
 如果你想要给一个` xcarchive `签名，例如从[Github Actions][1]中编译Build，你可以使用以下命令:
 
 ```
-./scripts/resign.sh UTM.xcarchive outputPath PROFILE_NAME TEAM_ID
+./scripts/package.sh signedipa UTM.xcarchive outputPath PROFILE_NAME TEAM_ID
 ```
 
 其中`PROFILE_NAME`是配置文件的名称，而`TEAM_ID`是配置文件中团队名称旁边的标识符。确保签名密钥已被导入到您的密钥链中，并且配置文件已安装在您的iOS设备上。
@@ -74,7 +74,7 @@ UTM是一个功能齐全的iOS虚拟机。简而言之，它允许你在iPhone�
 如果你有一个越狱的设备，你也可以伪造签名(安装了“ldid”插件):
 
 ```
-./scripts/resign.sh UTM.xcarchive outputPath
+./scripts/package.sh ipa UTM.xcarchive outputPath
 ```
 ## UTM使用注意事项
 

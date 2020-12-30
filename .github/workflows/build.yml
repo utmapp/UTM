@@ -118,8 +118,8 @@ jobs:
         with:
           name: UTM-macos-universal
           path: build-utm
-  package-ios:
-    name: Package (iOS)
+  package-ipa:
+    name: Package (iOS IPA)
     runs-on: macos-latest
     needs: build
     if: github.event_name == 'release'
@@ -131,12 +131,9 @@ jobs:
         with:
           name: UTM-ios-arm64
       - name: Install ldid
-        run: |
-          brew install ldid
+        run: brew install ldid
       - name: Fakesign IPA
-        run: |
-          find UTM-ios-arm64/UTM.xcarchive -type f \( -path '*/UTM.app/UTM' -or -path '*/UTM.app/Frameworks/*.dylib' \) -exec chmod +x \{\} \;
-          ./scripts/resign.sh UTM-ios-arm64/UTM.xcarchive .
+        run: ./scripts/package.sh ipa UTM-ios-arm64/UTM.xcarchive .
       - name: Upload Release Asset
         uses: actions/upload-release-asset@v1.0.1
         env:
@@ -151,7 +148,39 @@ jobs:
         uses: peter-evans/repository-dispatch@v1
         with:
           token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-          repository: ${{ secrets.DISPATCH_REPO_NAME }}
+          repository: ${{ secrets.DISPATCH_ALTSTORE_REPO_NAME }}
+          event-type: new-release
+  package-deb:
+    name: Package (iOS DEB)
+    runs-on: macos-latest
+    needs: build
+    if: github.event_name == 'release'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+      - name: Download Artifact
+        uses: actions/download-artifact@v1
+        with:
+          name: UTM-ios-arm64
+      - name: Install ldid + dpkg
+        run: brew install ldid dpkg
+      - name: Fakesign IPA
+        run: ./scripts/package.sh deb UTM-ios-arm64/UTM.xcarchive .
+      - name: Upload Release Asset
+        uses: actions/upload-release-asset@v1.0.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: UTM.deb
+          asset_name: UTM.deb
+          asset_content_type: application/octet-stream
+      - name: Send Dispatch Event
+        continue-on-error: true
+        uses: peter-evans/repository-dispatch@v1
+        with:
+          token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+          repository: ${{ secrets.DISPATCH_CYDIA_REPO_NAME }}
           event-type: new-release
   package-mac:
     name: Package (macOS)
@@ -173,7 +202,7 @@ jobs:
       - name: Fixup Permissions
         run: find UTM-macos-universal/UTM.xcarchive -type f \( -path '*/Contents/MacOS/*' -or -path '*/Frameworks/*.dylib' \) -exec chmod +x \{\} \;
       - name: Package for Release
-        run: ./scripts/resign_mac.sh --no-sandbox UTM-macos-universal/UTM.xcarchive . "$SIGNING_TEAM_ID"
+        run: ./scripts/package_mac.sh --no-sandbox UTM-macos-universal/UTM.xcarchive . "$SIGNING_TEAM_ID"
         env:
           SIGNING_TEAM_ID: ${{ secrets.SIGNING_TEAM_ID }}
       - name: Notarize app

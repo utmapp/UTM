@@ -89,6 +89,10 @@
     return [self boolForSetting:@"RunInBackground"];
 }
 
+- (BOOL)disableIdleTimer {
+    return [self boolForSetting:@"DisableIdleTimer"];
+}
+
 #pragma mark - View handling
 
 - (void)viewDidLoad {
@@ -166,6 +170,7 @@
             self.drivesButton.enabled = NO;
             [self.pauseResumeButton setImage:[UIImage imageNamed:@"Toolbar Start"] forState:UIControlStateNormal];
             [self.powerExitButton setImage:[UIImage imageNamed:@"Toolbar Exit"] forState:UIControlStateNormal];
+            [UIApplication sharedApplication].idleTimerDisabled = NO;
             break;
         }
         case kVMPausing:
@@ -197,6 +202,7 @@
             self.drivesButton.enabled = YES;
             [self.pauseResumeButton setImage:[UIImage imageNamed:@"Toolbar Pause"] forState:UIControlStateNormal];
             [self.powerExitButton setImage:[UIImage imageNamed:@"Toolbar Power"] forState:UIControlStateNormal];
+            [UIApplication sharedApplication].idleTimerDisabled = self.disableIdleTimer;
             break;
         }
     }
