@@ -202,7 +202,7 @@ jobs:
       - name: Fixup Permissions
         run: find UTM-macos-universal/UTM.xcarchive -type f \( -path '*/Contents/MacOS/*' -or -path '*/Frameworks/*.dylib' \) -exec chmod +x \{\} \;
       - name: Package for Release
-        run: ./scripts/package_mac.sh --no-sandbox UTM-macos-universal/UTM.xcarchive . "$SIGNING_TEAM_ID"
+        run: ./scripts/package_mac.sh UTM-macos-universal/UTM.xcarchive . "$SIGNING_TEAM_ID"
         env:
           SIGNING_TEAM_ID: ${{ secrets.SIGNING_TEAM_ID }}
       - name: Notarize app
