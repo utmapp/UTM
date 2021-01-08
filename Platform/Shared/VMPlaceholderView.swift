@@ -35,7 +35,7 @@ struct VMPlaceholderView: View {
                     createNewVMPresented.toggle()
                 }
                 TileButton(titleKey: "Browse UTM Gallery", systemImage: "square.grid.3x2") {
-                    openURL(URL(string: "https://getutm.app/gallery/")!)
+                    openURL(URL(string: "https://getutm.app/vms/")!)
                 }
                 TileButton(titleKey: "User Guide", systemImage: "questionmark.circle") {
                     #if os(macOS)
