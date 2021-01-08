@@ -273,6 +273,7 @@
 		CE0B6F2F24AD67BE00FE012D /* libjson-glib-1.0.0.utm.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63E222653C7400FC7E63 /* libjson-glib-1.0.0.utm.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CE0B6F3124AD67C100FE012D /* libphodav-2.0.0.utm.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE059DC0243BD67100338317 /* libphodav-2.0.0.utm.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CE0B6F5424AD67FA00FE012D /* libspice-client-glib-2.0.8.utm.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63FE22653C7500FC7E63 /* libspice-client-glib-2.0.8.utm.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE0DF17225A80B6300A51894 /* Bootstrap.c in Sources */ = {isa = PBXBuildFile; fileRef = CE0DF17125A80B6300A51894 /* Bootstrap.c */; };
 		CE0E9B87252FD06B0026E02B /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE0E9B86252FD06B0026E02B /* SwiftUI.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		CE0FE12824D3B08B0086CEF0 /* VMDisplayWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = CE0FE12724D3B08B0086CEF0 /* VMDisplayWindow.xib */; };
 		CE178ED725017EB100CE0E33 /* qemu-system-i386 in CopyFiles */ = {isa = PBXBuildFile; fileRef = CE178EB025017EAE00CE0E33 /* qemu-system-i386 */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
@@ -994,6 +995,8 @@
 		CE059DCA243FBA3C00338317 /* VMConfigCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VMConfigCell.m; sourceTree = "<group>"; };
 		CE0B6D8324AD5ADE00FE012D /* UTMScreenshot.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UTMScreenshot.h; sourceTree = "<group>"; };
 		CE0B6D8424AD5ADE00FE012D /* UTMScreenshot.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UTMScreenshot.m; sourceTree = "<group>"; };
+		CE0DF17025A80B6300A51894 /* Bootstrap.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Bootstrap.h; sourceTree = "<group>"; };
+		CE0DF17125A80B6300A51894 /* Bootstrap.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = Bootstrap.c; sourceTree = "<group>"; };
 		CE0E828D24E4D4CE003EA9FE /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = Base; path = Base.lproj/Localizable.strings; sourceTree = "<group>"; };
 		CE0E829424E4D509003EA9FE /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = Base; path = Base.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		CE0E9B86252FD06B0026E02B /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
@@ -2444,6 +2447,8 @@
 			isa = PBXGroup;
 			children = (
 				CE03D0D024D9A62B00F76B84 /* QEMUHelper.entitlements */,
+				CE0DF17025A80B6300A51894 /* Bootstrap.h */,
+				CE0DF17125A80B6300A51894 /* Bootstrap.c */,
 				CEBDA1DC24D8BDDA0010B5EC /* QEMUHelperProtocol.h */,
 				CEBDA1DD24D8BDDB0010B5EC /* QEMUHelper.h */,
 				CEBDA1DE24D8BDDB0010B5EC /* QEMUHelper.m */,
@@ -3235,6 +3240,7 @@
 			files = (
 				CEBDA1E124D8BDDB0010B5EC /* main.m in Sources */,
 				CEBDA1DF24D8BDDB0010B5EC /* QEMUHelper.m in Sources */,
+				CE0DF17225A80B6300A51894 /* Bootstrap.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
