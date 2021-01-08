@@ -309,18 +309,10 @@ fixup () {
 fixup_all () {
     OLDIFS=$IFS
     IFS=$'\n'
-    QEMU_ENTITLEMENTS="$PATCHES_DIR/QEMU.entitlements"
     FILES=$(find "$SYSROOT_DIR/lib" -type f -name "*.dylib")
     for f in $FILES
     do
         fixup $f
-    done
-    FILES=$(find "$SYSROOT_DIR/bin" -type f -name "qemu-*")
-    for f in $FILES
-    do
-        fixup $f
-        install_name_tool -add_rpath "@executable_path/../../../../Frameworks" "$f"
-        codesign --force --sign - --entitlements "$QEMU_ENTITLEMENTS" --timestamp=none "$f"
     done
     IFS=$OLDIFS
 }
