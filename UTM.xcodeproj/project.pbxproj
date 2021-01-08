@@ -274,45 +274,37 @@
 		CE0B6F3124AD67C100FE012D /* libphodav-2.0.0.utm.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE059DC0243BD67100338317 /* libphodav-2.0.0.utm.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CE0B6F5424AD67FA00FE012D /* libspice-client-glib-2.0.8.utm.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63FE22653C7500FC7E63 /* libspice-client-glib-2.0.8.utm.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CE0DF17225A80B6300A51894 /* Bootstrap.c in Sources */ = {isa = PBXBuildFile; fileRef = CE0DF17125A80B6300A51894 /* Bootstrap.c */; };
+		CE0DF19425A83C1700A51894 /* libqemu-aarch64-softmmu.utm.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63FD22653C7500FC7E63 /* libqemu-aarch64-softmmu.utm.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE0DF19525A83C1700A51894 /* libqemu-alpha-softmmu.utm.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D641322653C7500FC7E63 /* libqemu-alpha-softmmu.utm.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE0DF19625A83C1700A51894 /* libqemu-arm-softmmu.utm.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D640722653C7500FC7E63 /* libqemu-arm-softmmu.utm.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE0DF19725A83C1700A51894 /* libqemu-cris-softmmu.utm.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63E622653C7400FC7E63 /* libqemu-cris-softmmu.utm.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE0DF19825A83C1700A51894 /* libqemu-hppa-softmmu.utm.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63F222653C7400FC7E63 /* libqemu-hppa-softmmu.utm.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE0DF19925A83C1700A51894 /* libqemu-i386-softmmu.utm.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63D722653C7300FC7E63 /* libqemu-i386-softmmu.utm.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE0DF19A25A83C1700A51894 /* libqemu-m68k-softmmu.utm.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63EB22653C7400FC7E63 /* libqemu-m68k-softmmu.utm.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE0DF19B25A83C1700A51894 /* libqemu-microblaze-softmmu.utm.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63E422653C7400FC7E63 /* libqemu-microblaze-softmmu.utm.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE0DF19C25A83C1700A51894 /* libqemu-microblazeel-softmmu.utm.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63F022653C7400FC7E63 /* libqemu-microblazeel-softmmu.utm.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE0DF19D25A83C1700A51894 /* libqemu-mips-softmmu.utm.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63FF22653C7500FC7E63 /* libqemu-mips-softmmu.utm.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE0DF19E25A83C1700A51894 /* libqemu-mips64-softmmu.utm.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63F422653C7400FC7E63 /* libqemu-mips64-softmmu.utm.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE0DF19F25A83C1700A51894 /* libqemu-mips64el-softmmu.utm.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D640822653C7500FC7E63 /* libqemu-mips64el-softmmu.utm.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE0DF1A025A83C1700A51894 /* libqemu-mipsel-softmmu.utm.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D640622653C7500FC7E63 /* libqemu-mipsel-softmmu.utm.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE0DF1A125A83C1700A51894 /* libqemu-moxie-softmmu.utm.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63EA22653C7400FC7E63 /* libqemu-moxie-softmmu.utm.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE0DF1A225A83C1700A51894 /* libqemu-nios2-softmmu.utm.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63DF22653C7400FC7E63 /* libqemu-nios2-softmmu.utm.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE0DF1A325A83C1700A51894 /* libqemu-or1k-softmmu.utm.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D640B22653C7500FC7E63 /* libqemu-or1k-softmmu.utm.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE0DF1A425A83C1700A51894 /* libqemu-ppc-softmmu.utm.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63E722653C7400FC7E63 /* libqemu-ppc-softmmu.utm.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE0DF1A525A83C1700A51894 /* libqemu-ppc64-softmmu.utm.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D640C22653C7500FC7E63 /* libqemu-ppc64-softmmu.utm.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE0DF1A625A83C1700A51894 /* libqemu-riscv32-softmmu.utm.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63FA22653C7400FC7E63 /* libqemu-riscv32-softmmu.utm.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE0DF1A725A83C1700A51894 /* libqemu-riscv64-softmmu.utm.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63FB22653C7500FC7E63 /* libqemu-riscv64-softmmu.utm.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE0DF1A825A83C1700A51894 /* libqemu-s390x-softmmu.utm.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63FC22653C7500FC7E63 /* libqemu-s390x-softmmu.utm.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE0DF1A925A83C1700A51894 /* libqemu-sh4-softmmu.utm.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D640222653C7500FC7E63 /* libqemu-sh4-softmmu.utm.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE0DF1AA25A83C1700A51894 /* libqemu-sh4eb-softmmu.utm.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63E122653C7400FC7E63 /* libqemu-sh4eb-softmmu.utm.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE0DF1AB25A83C1700A51894 /* libqemu-sparc-softmmu.utm.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D640D22653C7500FC7E63 /* libqemu-sparc-softmmu.utm.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE0DF1AC25A83C1700A51894 /* libqemu-sparc64-softmmu.utm.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D640F22653C7500FC7E63 /* libqemu-sparc64-softmmu.utm.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE0DF1AD25A83C1700A51894 /* libqemu-tricore-softmmu.utm.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63EC22653C7400FC7E63 /* libqemu-tricore-softmmu.utm.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE0DF1AE25A83C1700A51894 /* libqemu-x86_64-softmmu.utm.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D640022653C7500FC7E63 /* libqemu-x86_64-softmmu.utm.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE0DF1AF25A83C1700A51894 /* libqemu-xtensa-softmmu.utm.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63ED22653C7400FC7E63 /* libqemu-xtensa-softmmu.utm.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE0DF1B025A83C1700A51894 /* libqemu-xtensaeb-softmmu.utm.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D641222653C7500FC7E63 /* libqemu-xtensaeb-softmmu.utm.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CE0E9B87252FD06B0026E02B /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE0E9B86252FD06B0026E02B /* SwiftUI.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		CE0FE12824D3B08B0086CEF0 /* VMDisplayWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = CE0FE12724D3B08B0086CEF0 /* VMDisplayWindow.xib */; };
-		CE178ED725017EB100CE0E33 /* qemu-system-i386 in CopyFiles */ = {isa = PBXBuildFile; fileRef = CE178EB025017EAE00CE0E33 /* qemu-system-i386 */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CE178ED825017EB100CE0E33 /* qemu-system-mips64 in CopyFiles */ = {isa = PBXBuildFile; fileRef = CE178EB125017EAE00CE0E33 /* qemu-system-mips64 */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CE178ED925017EB100CE0E33 /* qemu-img in CopyFiles */ = {isa = PBXBuildFile; fileRef = CE178EB225017EAF00CE0E33 /* qemu-img */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CE178EDA25017EB100CE0E33 /* qemu-system-riscv32 in CopyFiles */ = {isa = PBXBuildFile; fileRef = CE178EB325017EAF00CE0E33 /* qemu-system-riscv32 */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CE178EDB25017EB100CE0E33 /* qemu-system-ppc64 in CopyFiles */ = {isa = PBXBuildFile; fileRef = CE178EB425017EAF00CE0E33 /* qemu-system-ppc64 */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CE178EDC25017EB100CE0E33 /* qemu-io in CopyFiles */ = {isa = PBXBuildFile; fileRef = CE178EB525017EAF00CE0E33 /* qemu-io */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CE178EDD25017EB100CE0E33 /* qemu-system-sh4eb in CopyFiles */ = {isa = PBXBuildFile; fileRef = CE178EB625017EAF00CE0E33 /* qemu-system-sh4eb */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CE178EDE25017EB100CE0E33 /* qemu-system-xtensaeb in CopyFiles */ = {isa = PBXBuildFile; fileRef = CE178EB725017EAF00CE0E33 /* qemu-system-xtensaeb */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CE178EDF25017EB100CE0E33 /* qemu-system-mips in CopyFiles */ = {isa = PBXBuildFile; fileRef = CE178EB825017EAF00CE0E33 /* qemu-system-mips */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CE178EE025017EB100CE0E33 /* qemu-system-m68k in CopyFiles */ = {isa = PBXBuildFile; fileRef = CE178EB925017EAF00CE0E33 /* qemu-system-m68k */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CE178EE125017EB100CE0E33 /* qemu-edid in CopyFiles */ = {isa = PBXBuildFile; fileRef = CE178EBA25017EAF00CE0E33 /* qemu-edid */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CE178EE225017EB100CE0E33 /* qemu-ga in CopyFiles */ = {isa = PBXBuildFile; fileRef = CE178EBB25017EAF00CE0E33 /* qemu-ga */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CE178EE325017EB100CE0E33 /* qemu-system-moxie in CopyFiles */ = {isa = PBXBuildFile; fileRef = CE178EBC25017EAF00CE0E33 /* qemu-system-moxie */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CE178EE425017EB100CE0E33 /* qemu-system-rx in CopyFiles */ = {isa = PBXBuildFile; fileRef = CE178EBD25017EAF00CE0E33 /* qemu-system-rx */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CE178EE525017EB100CE0E33 /* qemu-storage-daemon in CopyFiles */ = {isa = PBXBuildFile; fileRef = CE178EBE25017EAF00CE0E33 /* qemu-storage-daemon */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CE178EE625017EB100CE0E33 /* qemu-system-microblaze in CopyFiles */ = {isa = PBXBuildFile; fileRef = CE178EBF25017EB000CE0E33 /* qemu-system-microblaze */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CE178EE725017EB100CE0E33 /* qemu-system-xtensa in CopyFiles */ = {isa = PBXBuildFile; fileRef = CE178EC025017EB000CE0E33 /* qemu-system-xtensa */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CE178EE825017EB100CE0E33 /* qemu-system-nios2 in CopyFiles */ = {isa = PBXBuildFile; fileRef = CE178EC125017EB000CE0E33 /* qemu-system-nios2 */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CE178EE925017EB100CE0E33 /* qemu-system-hppa in CopyFiles */ = {isa = PBXBuildFile; fileRef = CE178EC225017EB000CE0E33 /* qemu-system-hppa */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CE178EEA25017EB100CE0E33 /* qemu-system-avr in CopyFiles */ = {isa = PBXBuildFile; fileRef = CE178EC325017EB000CE0E33 /* qemu-system-avr */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CE178EEB25017EB100CE0E33 /* qemu-system-aarch64 in CopyFiles */ = {isa = PBXBuildFile; fileRef = CE178EC425017EB000CE0E33 /* qemu-system-aarch64 */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CE178EEC25017EB100CE0E33 /* qemu-system-riscv64 in CopyFiles */ = {isa = PBXBuildFile; fileRef = CE178EC525017EB000CE0E33 /* qemu-system-riscv64 */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CE178EED25017EB100CE0E33 /* qemu-system-sparc in CopyFiles */ = {isa = PBXBuildFile; fileRef = CE178EC625017EB000CE0E33 /* qemu-system-sparc */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CE178EEE25017EB100CE0E33 /* qemu-system-mips64el in CopyFiles */ = {isa = PBXBuildFile; fileRef = CE178EC725017EB000CE0E33 /* qemu-system-mips64el */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CE178EEF25017EB100CE0E33 /* qemu-system-x86_64 in CopyFiles */ = {isa = PBXBuildFile; fileRef = CE178EC825017EB000CE0E33 /* qemu-system-x86_64 */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CE178EF025017EB100CE0E33 /* qemu-system-sparc64 in CopyFiles */ = {isa = PBXBuildFile; fileRef = CE178EC925017EB000CE0E33 /* qemu-system-sparc64 */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CE178EF125017EB100CE0E33 /* qemu-system-sh4 in CopyFiles */ = {isa = PBXBuildFile; fileRef = CE178ECA25017EB000CE0E33 /* qemu-system-sh4 */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CE178EF225017EB100CE0E33 /* qemu-system-mipsel in CopyFiles */ = {isa = PBXBuildFile; fileRef = CE178ECB25017EB000CE0E33 /* qemu-system-mipsel */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CE178EF325017EB100CE0E33 /* qemu-system-s390x in CopyFiles */ = {isa = PBXBuildFile; fileRef = CE178ECC25017EB000CE0E33 /* qemu-system-s390x */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CE178EF525017EB100CE0E33 /* qemu-system-or1k in CopyFiles */ = {isa = PBXBuildFile; fileRef = CE178ECE25017EB100CE0E33 /* qemu-system-or1k */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CE178EF725017EB100CE0E33 /* qemu-nbd in CopyFiles */ = {isa = PBXBuildFile; fileRef = CE178ED025017EB100CE0E33 /* qemu-nbd */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CE178EF825017EB100CE0E33 /* qemu-system-cris in CopyFiles */ = {isa = PBXBuildFile; fileRef = CE178ED125017EB100CE0E33 /* qemu-system-cris */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CE178EF925017EB100CE0E33 /* qemu-system-arm in CopyFiles */ = {isa = PBXBuildFile; fileRef = CE178ED225017EB100CE0E33 /* qemu-system-arm */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CE178EFA25017EB100CE0E33 /* qemu-system-tricore in CopyFiles */ = {isa = PBXBuildFile; fileRef = CE178ED325017EB100CE0E33 /* qemu-system-tricore */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CE178EFB25017EB100CE0E33 /* qemu-system-microblazeel in CopyFiles */ = {isa = PBXBuildFile; fileRef = CE178ED425017EB100CE0E33 /* qemu-system-microblazeel */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CE178EFC25017EB100CE0E33 /* qemu-system-alpha in CopyFiles */ = {isa = PBXBuildFile; fileRef = CE178ED525017EB100CE0E33 /* qemu-system-alpha */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CE178EFD25017EB100CE0E33 /* qemu-system-ppc in CopyFiles */ = {isa = PBXBuildFile; fileRef = CE178ED625017EB100CE0E33 /* qemu-system-ppc */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CE2D926A24AD46670059923A /* VMDisplayMetalViewController+Pointer.h in Sources */ = {isa = PBXBuildFile; fileRef = 83FBDD53242FA71900D2C5D7 /* VMDisplayMetalViewController+Pointer.h */; };
 		CE2D926B24AD46670059923A /* qapi-types-rocker.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C14D23FCEC09001177D6 /* qapi-types-rocker.c */; };
 		CE2D926E24AD46670059923A /* qapi-commands-crypto.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C0AE23FCEC01001177D6 /* qapi-commands-crypto.c */; };
@@ -505,9 +497,7 @@
 		CE2D934524AD46670059923A /* libgthread-2.0.0.utm.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63DC22653C7300FC7E63 /* libgthread-2.0.0.utm.dylib */; };
 		CE2D934624AD46670059923A /* libgstrtp-1.0.0.utm.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63DD22653C7400FC7E63 /* libgstrtp-1.0.0.utm.dylib */; };
 		CE2D934724AD46670059923A /* libgstriff-1.0.0.utm.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63DE22653C7400FC7E63 /* libgstriff-1.0.0.utm.dylib */; };
-		CE2D934824AD46670059923A /* libqemu-nios2-softmmu.utm.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63DF22653C7400FC7E63 /* libqemu-nios2-softmmu.utm.dylib */; };
 		CE2D934924AD46670059923A /* libgstreamer-1.0.0.utm.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63E022653C7400FC7E63 /* libgstreamer-1.0.0.utm.dylib */; };
-		CE2D934A24AD46670059923A /* libqemu-sh4eb-softmmu.utm.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63E122653C7400FC7E63 /* libqemu-sh4eb-softmmu.utm.dylib */; };
 		CE2D934B24AD46670059923A /* libjson-glib-1.0.0.utm.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63E222653C7400FC7E63 /* libjson-glib-1.0.0.utm.dylib */; };
 		CE2D934C24AD46670059923A /* libffi.6.utm.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63E322653C7400FC7E63 /* libffi.6.utm.dylib */; };
 		CE2D934D24AD46670059923A /* libgstnet-1.0.0.utm.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63E522653C7400FC7E63 /* libgstnet-1.0.0.utm.dylib */; };
@@ -802,6 +792,35 @@
 				CE03D0C924D9140A00F76B84 /* libpixman-1.0.utm.dylib in Embed Libraries */,
 				CE0B6F2024AD679F00FE012D /* libgstfft-1.0.0.utm.dylib in Embed Libraries */,
 				CE0B6F2324AD67A400FE012D /* libgstpbutils-1.0.0.utm.dylib in Embed Libraries */,
+				CE0DF19425A83C1700A51894 /* libqemu-aarch64-softmmu.utm.dylib in Embed Libraries */,
+				CE0DF19525A83C1700A51894 /* libqemu-alpha-softmmu.utm.dylib in Embed Libraries */,
+				CE0DF19625A83C1700A51894 /* libqemu-arm-softmmu.utm.dylib in Embed Libraries */,
+				CE0DF19725A83C1700A51894 /* libqemu-cris-softmmu.utm.dylib in Embed Libraries */,
+				CE0DF19825A83C1700A51894 /* libqemu-hppa-softmmu.utm.dylib in Embed Libraries */,
+				CE0DF19925A83C1700A51894 /* libqemu-i386-softmmu.utm.dylib in Embed Libraries */,
+				CE0DF19A25A83C1700A51894 /* libqemu-m68k-softmmu.utm.dylib in Embed Libraries */,
+				CE0DF19B25A83C1700A51894 /* libqemu-microblaze-softmmu.utm.dylib in Embed Libraries */,
+				CE0DF19C25A83C1700A51894 /* libqemu-microblazeel-softmmu.utm.dylib in Embed Libraries */,
+				CE0DF19D25A83C1700A51894 /* libqemu-mips-softmmu.utm.dylib in Embed Libraries */,
+				CE0DF19E25A83C1700A51894 /* libqemu-mips64-softmmu.utm.dylib in Embed Libraries */,
+				CE0DF19F25A83C1700A51894 /* libqemu-mips64el-softmmu.utm.dylib in Embed Libraries */,
+				CE0DF1A025A83C1700A51894 /* libqemu-mipsel-softmmu.utm.dylib in Embed Libraries */,
+				CE0DF1A125A83C1700A51894 /* libqemu-moxie-softmmu.utm.dylib in Embed Libraries */,
+				CE0DF1A225A83C1700A51894 /* libqemu-nios2-softmmu.utm.dylib in Embed Libraries */,
+				CE0DF1A325A83C1700A51894 /* libqemu-or1k-softmmu.utm.dylib in Embed Libraries */,
+				CE0DF1A425A83C1700A51894 /* libqemu-ppc-softmmu.utm.dylib in Embed Libraries */,
+				CE0DF1A525A83C1700A51894 /* libqemu-ppc64-softmmu.utm.dylib in Embed Libraries */,
+				CE0DF1A625A83C1700A51894 /* libqemu-riscv32-softmmu.utm.dylib in Embed Libraries */,
+				CE0DF1A725A83C1700A51894 /* libqemu-riscv64-softmmu.utm.dylib in Embed Libraries */,
+				CE0DF1A825A83C1700A51894 /* libqemu-s390x-softmmu.utm.dylib in Embed Libraries */,
+				CE0DF1A925A83C1700A51894 /* libqemu-sh4-softmmu.utm.dylib in Embed Libraries */,
+				CE0DF1AA25A83C1700A51894 /* libqemu-sh4eb-softmmu.utm.dylib in Embed Libraries */,
+				CE0DF1AB25A83C1700A51894 /* libqemu-sparc-softmmu.utm.dylib in Embed Libraries */,
+				CE0DF1AC25A83C1700A51894 /* libqemu-sparc64-softmmu.utm.dylib in Embed Libraries */,
+				CE0DF1AD25A83C1700A51894 /* libqemu-tricore-softmmu.utm.dylib in Embed Libraries */,
+				CE0DF1AE25A83C1700A51894 /* libqemu-x86_64-softmmu.utm.dylib in Embed Libraries */,
+				CE0DF1AF25A83C1700A51894 /* libqemu-xtensa-softmmu.utm.dylib in Embed Libraries */,
+				CE0DF1B025A83C1700A51894 /* libqemu-xtensaeb-softmmu.utm.dylib in Embed Libraries */,
 			);
 			name = "Embed Libraries";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -892,52 +911,6 @@
 			name = "Embed XPC Services";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		CEF83ED524FF464E00557D15 /* CopyFiles */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 6;
-			files = (
-				CE178EE925017EB100CE0E33 /* qemu-system-hppa in CopyFiles */,
-				CE178EE225017EB100CE0E33 /* qemu-ga in CopyFiles */,
-				CE178EDC25017EB100CE0E33 /* qemu-io in CopyFiles */,
-				CE178EFD25017EB100CE0E33 /* qemu-system-ppc in CopyFiles */,
-				CE178EE725017EB100CE0E33 /* qemu-system-xtensa in CopyFiles */,
-				CE178EE825017EB100CE0E33 /* qemu-system-nios2 in CopyFiles */,
-				CE178EEF25017EB100CE0E33 /* qemu-system-x86_64 in CopyFiles */,
-				CE178EF925017EB100CE0E33 /* qemu-system-arm in CopyFiles */,
-				CE178ED825017EB100CE0E33 /* qemu-system-mips64 in CopyFiles */,
-				CE178EDB25017EB100CE0E33 /* qemu-system-ppc64 in CopyFiles */,
-				CE178EFA25017EB100CE0E33 /* qemu-system-tricore in CopyFiles */,
-				CE178EF325017EB100CE0E33 /* qemu-system-s390x in CopyFiles */,
-				CE178EEE25017EB100CE0E33 /* qemu-system-mips64el in CopyFiles */,
-				CE178EF525017EB100CE0E33 /* qemu-system-or1k in CopyFiles */,
-				CE178EFC25017EB100CE0E33 /* qemu-system-alpha in CopyFiles */,
-				CE178EF125017EB100CE0E33 /* qemu-system-sh4 in CopyFiles */,
-				CE178EE025017EB100CE0E33 /* qemu-system-m68k in CopyFiles */,
-				CE178EE625017EB100CE0E33 /* qemu-system-microblaze in CopyFiles */,
-				CE178ED925017EB100CE0E33 /* qemu-img in CopyFiles */,
-				CE178EDA25017EB100CE0E33 /* qemu-system-riscv32 in CopyFiles */,
-				CE178EF725017EB100CE0E33 /* qemu-nbd in CopyFiles */,
-				CE178EE425017EB100CE0E33 /* qemu-system-rx in CopyFiles */,
-				CE178EF825017EB100CE0E33 /* qemu-system-cris in CopyFiles */,
-				CE178EF225017EB100CE0E33 /* qemu-system-mipsel in CopyFiles */,
-				CE178EE125017EB100CE0E33 /* qemu-edid in CopyFiles */,
-				CE178EED25017EB100CE0E33 /* qemu-system-sparc in CopyFiles */,
-				CE178EDF25017EB100CE0E33 /* qemu-system-mips in CopyFiles */,
-				CE178EFB25017EB100CE0E33 /* qemu-system-microblazeel in CopyFiles */,
-				CE178EDE25017EB100CE0E33 /* qemu-system-xtensaeb in CopyFiles */,
-				CE178EE325017EB100CE0E33 /* qemu-system-moxie in CopyFiles */,
-				CE178EE525017EB100CE0E33 /* qemu-storage-daemon in CopyFiles */,
-				CE178ED725017EB100CE0E33 /* qemu-system-i386 in CopyFiles */,
-				CE178EDD25017EB100CE0E33 /* qemu-system-sh4eb in CopyFiles */,
-				CE178EEC25017EB100CE0E33 /* qemu-system-riscv64 in CopyFiles */,
-				CE178EEA25017EB100CE0E33 /* qemu-system-avr in CopyFiles */,
-				CE178EEB25017EB100CE0E33 /* qemu-system-aarch64 in CopyFiles */,
-				CE178EF025017EB100CE0E33 /* qemu-system-sparc64 in CopyFiles */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
@@ -1001,45 +974,6 @@
 		CE0E829424E4D509003EA9FE /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = Base; path = Base.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		CE0E9B86252FD06B0026E02B /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
 		CE0FE12724D3B08B0086CEF0 /* VMDisplayWindow.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = VMDisplayWindow.xib; sourceTree = "<group>"; };
-		CE178EB025017EAE00CE0E33 /* qemu-system-i386 */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; name = "qemu-system-i386"; path = "sysroot-$(PLATFORM_FAMILY_NAME)-$(ARCHS:identifier)/bin/qemu-system-i386"; sourceTree = "<group>"; };
-		CE178EB125017EAE00CE0E33 /* qemu-system-mips64 */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; name = "qemu-system-mips64"; path = "sysroot-$(PLATFORM_FAMILY_NAME)-$(ARCHS:identifier)/bin/qemu-system-mips64"; sourceTree = "<group>"; };
-		CE178EB225017EAF00CE0E33 /* qemu-img */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; name = "qemu-img"; path = "sysroot-$(PLATFORM_FAMILY_NAME)-$(ARCHS:identifier)/bin/qemu-img"; sourceTree = "<group>"; };
-		CE178EB325017EAF00CE0E33 /* qemu-system-riscv32 */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; name = "qemu-system-riscv32"; path = "sysroot-$(PLATFORM_FAMILY_NAME)-$(ARCHS:identifier)/bin/qemu-system-riscv32"; sourceTree = "<group>"; };
-		CE178EB425017EAF00CE0E33 /* qemu-system-ppc64 */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; name = "qemu-system-ppc64"; path = "sysroot-$(PLATFORM_FAMILY_NAME)-$(ARCHS:identifier)/bin/qemu-system-ppc64"; sourceTree = "<group>"; };
-		CE178EB525017EAF00CE0E33 /* qemu-io */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; name = "qemu-io"; path = "sysroot-$(PLATFORM_FAMILY_NAME)-$(ARCHS:identifier)/bin/qemu-io"; sourceTree = "<group>"; };
-		CE178EB625017EAF00CE0E33 /* qemu-system-sh4eb */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; name = "qemu-system-sh4eb"; path = "sysroot-$(PLATFORM_FAMILY_NAME)-$(ARCHS:identifier)/bin/qemu-system-sh4eb"; sourceTree = "<group>"; };
-		CE178EB725017EAF00CE0E33 /* qemu-system-xtensaeb */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; name = "qemu-system-xtensaeb"; path = "sysroot-$(PLATFORM_FAMILY_NAME)-$(ARCHS:identifier)/bin/qemu-system-xtensaeb"; sourceTree = "<group>"; };
-		CE178EB825017EAF00CE0E33 /* qemu-system-mips */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; name = "qemu-system-mips"; path = "sysroot-$(PLATFORM_FAMILY_NAME)-$(ARCHS:identifier)/bin/qemu-system-mips"; sourceTree = "<group>"; };
-		CE178EB925017EAF00CE0E33 /* qemu-system-m68k */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; name = "qemu-system-m68k"; path = "sysroot-$(PLATFORM_FAMILY_NAME)-$(ARCHS:identifier)/bin/qemu-system-m68k"; sourceTree = "<group>"; };
-		CE178EBA25017EAF00CE0E33 /* qemu-edid */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; name = "qemu-edid"; path = "sysroot-$(PLATFORM_FAMILY_NAME)-$(ARCHS:identifier)/bin/qemu-edid"; sourceTree = "<group>"; };
-		CE178EBB25017EAF00CE0E33 /* qemu-ga */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; name = "qemu-ga"; path = "sysroot-$(PLATFORM_FAMILY_NAME)-$(ARCHS:identifier)/bin/qemu-ga"; sourceTree = "<group>"; };
-		CE178EBC25017EAF00CE0E33 /* qemu-system-moxie */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; name = "qemu-system-moxie"; path = "sysroot-$(PLATFORM_FAMILY_NAME)-$(ARCHS:identifier)/bin/qemu-system-moxie"; sourceTree = "<group>"; };
-		CE178EBD25017EAF00CE0E33 /* qemu-system-rx */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; name = "qemu-system-rx"; path = "sysroot-$(PLATFORM_FAMILY_NAME)-$(ARCHS:identifier)/bin/qemu-system-rx"; sourceTree = "<group>"; };
-		CE178EBE25017EAF00CE0E33 /* qemu-storage-daemon */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; name = "qemu-storage-daemon"; path = "sysroot-$(PLATFORM_FAMILY_NAME)-$(ARCHS:identifier)/bin/qemu-storage-daemon"; sourceTree = "<group>"; };
-		CE178EBF25017EB000CE0E33 /* qemu-system-microblaze */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; name = "qemu-system-microblaze"; path = "sysroot-$(PLATFORM_FAMILY_NAME)-$(ARCHS:identifier)/bin/qemu-system-microblaze"; sourceTree = "<group>"; };
-		CE178EC025017EB000CE0E33 /* qemu-system-xtensa */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; name = "qemu-system-xtensa"; path = "sysroot-$(PLATFORM_FAMILY_NAME)-$(ARCHS:identifier)/bin/qemu-system-xtensa"; sourceTree = "<group>"; };
-		CE178EC125017EB000CE0E33 /* qemu-system-nios2 */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; name = "qemu-system-nios2"; path = "sysroot-$(PLATFORM_FAMILY_NAME)-$(ARCHS:identifier)/bin/qemu-system-nios2"; sourceTree = "<group>"; };
-		CE178EC225017EB000CE0E33 /* qemu-system-hppa */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; name = "qemu-system-hppa"; path = "sysroot-$(PLATFORM_FAMILY_NAME)-$(ARCHS:identifier)/bin/qemu-system-hppa"; sourceTree = "<group>"; };
-		CE178EC325017EB000CE0E33 /* qemu-system-avr */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; name = "qemu-system-avr"; path = "sysroot-$(PLATFORM_FAMILY_NAME)-$(ARCHS:identifier)/bin/qemu-system-avr"; sourceTree = "<group>"; };
-		CE178EC425017EB000CE0E33 /* qemu-system-aarch64 */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; name = "qemu-system-aarch64"; path = "sysroot-$(PLATFORM_FAMILY_NAME)-$(ARCHS:identifier)/bin/qemu-system-aarch64"; sourceTree = "<group>"; };
-		CE178EC525017EB000CE0E33 /* qemu-system-riscv64 */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; name = "qemu-system-riscv64"; path = "sysroot-$(PLATFORM_FAMILY_NAME)-$(ARCHS:identifier)/bin/qemu-system-riscv64"; sourceTree = "<group>"; };
-		CE178EC625017EB000CE0E33 /* qemu-system-sparc */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; name = "qemu-system-sparc"; path = "sysroot-$(PLATFORM_FAMILY_NAME)-$(ARCHS:identifier)/bin/qemu-system-sparc"; sourceTree = "<group>"; };
-		CE178EC725017EB000CE0E33 /* qemu-system-mips64el */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; name = "qemu-system-mips64el"; path = "sysroot-$(PLATFORM_FAMILY_NAME)-$(ARCHS:identifier)/bin/qemu-system-mips64el"; sourceTree = "<group>"; };
-		CE178EC825017EB000CE0E33 /* qemu-system-x86_64 */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; name = "qemu-system-x86_64"; path = "sysroot-$(PLATFORM_FAMILY_NAME)-$(ARCHS:identifier)/bin/qemu-system-x86_64"; sourceTree = "<group>"; };
-		CE178EC925017EB000CE0E33 /* qemu-system-sparc64 */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; name = "qemu-system-sparc64"; path = "sysroot-$(PLATFORM_FAMILY_NAME)-$(ARCHS:identifier)/bin/qemu-system-sparc64"; sourceTree = "<group>"; };
-		CE178ECA25017EB000CE0E33 /* qemu-system-sh4 */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; name = "qemu-system-sh4"; path = "sysroot-$(PLATFORM_FAMILY_NAME)-$(ARCHS:identifier)/bin/qemu-system-sh4"; sourceTree = "<group>"; };
-		CE178ECB25017EB000CE0E33 /* qemu-system-mipsel */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; name = "qemu-system-mipsel"; path = "sysroot-$(PLATFORM_FAMILY_NAME)-$(ARCHS:identifier)/bin/qemu-system-mipsel"; sourceTree = "<group>"; };
-		CE178ECC25017EB000CE0E33 /* qemu-system-s390x */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; name = "qemu-system-s390x"; path = "sysroot-$(PLATFORM_FAMILY_NAME)-$(ARCHS:identifier)/bin/qemu-system-s390x"; sourceTree = "<group>"; };
-		CE178ECD25017EB100CE0E33 /* qemu-system-lm32 */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; name = "qemu-system-lm32"; path = "sysroot-$(PLATFORM_FAMILY_NAME)-$(ARCHS:identifier)/bin/qemu-system-lm32"; sourceTree = "<group>"; };
-		CE178ECE25017EB100CE0E33 /* qemu-system-or1k */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; name = "qemu-system-or1k"; path = "sysroot-$(PLATFORM_FAMILY_NAME)-$(ARCHS:identifier)/bin/qemu-system-or1k"; sourceTree = "<group>"; };
-		CE178ECF25017EB100CE0E33 /* qemu-system-unicore32 */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; name = "qemu-system-unicore32"; path = "sysroot-$(PLATFORM_FAMILY_NAME)-$(ARCHS:identifier)/bin/qemu-system-unicore32"; sourceTree = "<group>"; };
-		CE178ED025017EB100CE0E33 /* qemu-nbd */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; name = "qemu-nbd"; path = "sysroot-$(PLATFORM_FAMILY_NAME)-$(ARCHS:identifier)/bin/qemu-nbd"; sourceTree = "<group>"; };
-		CE178ED125017EB100CE0E33 /* qemu-system-cris */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; name = "qemu-system-cris"; path = "sysroot-$(PLATFORM_FAMILY_NAME)-$(ARCHS:identifier)/bin/qemu-system-cris"; sourceTree = "<group>"; };
-		CE178ED225017EB100CE0E33 /* qemu-system-arm */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; name = "qemu-system-arm"; path = "sysroot-$(PLATFORM_FAMILY_NAME)-$(ARCHS:identifier)/bin/qemu-system-arm"; sourceTree = "<group>"; };
-		CE178ED325017EB100CE0E33 /* qemu-system-tricore */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; name = "qemu-system-tricore"; path = "sysroot-$(PLATFORM_FAMILY_NAME)-$(ARCHS:identifier)/bin/qemu-system-tricore"; sourceTree = "<group>"; };
-		CE178ED425017EB100CE0E33 /* qemu-system-microblazeel */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; name = "qemu-system-microblazeel"; path = "sysroot-$(PLATFORM_FAMILY_NAME)-$(ARCHS:identifier)/bin/qemu-system-microblazeel"; sourceTree = "<group>"; };
-		CE178ED525017EB100CE0E33 /* qemu-system-alpha */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; name = "qemu-system-alpha"; path = "sysroot-$(PLATFORM_FAMILY_NAME)-$(ARCHS:identifier)/bin/qemu-system-alpha"; sourceTree = "<group>"; };
-		CE178ED625017EB100CE0E33 /* qemu-system-ppc */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; name = "qemu-system-ppc"; path = "sysroot-$(PLATFORM_FAMILY_NAME)-$(ARCHS:identifier)/bin/qemu-system-ppc"; sourceTree = "<group>"; };
 		CE20FAE32444FC6E0059AE11 /* VMConfigDirectoryPickerViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VMConfigDirectoryPickerViewController.h; sourceTree = "<group>"; };
 		CE20FAE42444FC6E0059AE11 /* VMConfigDirectoryPickerViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VMConfigDirectoryPickerViewController.m; sourceTree = "<group>"; };
 		CE20FAE62448D2BE0059AE11 /* VMScroll.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VMScroll.h; sourceTree = "<group>"; };
@@ -1571,7 +1505,6 @@
 		CEF83ECB24FB382B00557D15 /* UTMVirtualMachine+Terminal.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UTMVirtualMachine+Terminal.m"; sourceTree = "<group>"; };
 		CEF83ED124FDEA9400557D15 /* UTMPortAllocator.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UTMPortAllocator.h; sourceTree = "<group>"; };
 		CEF83ED224FDEA9400557D15 /* UTMPortAllocator.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UTMPortAllocator.m; sourceTree = "<group>"; };
-		CEF83F902500985000557D15 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
 		CEFC6CDC24C25697003F6962 /* VMDriveImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMDriveImage.swift; sourceTree = "<group>"; };
 		CEFE75D9228933DE0050ABCC /* gst_ios_init.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = gst_ios_init.m; sourceTree = "<group>"; };
 		CEFE75DA228933DE0050ABCC /* gst_ios_init.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = gst_ios_init.h; sourceTree = "<group>"; };
@@ -1628,9 +1561,7 @@
 				CE2D934524AD46670059923A /* libgthread-2.0.0.utm.dylib in Frameworks */,
 				CE2D934624AD46670059923A /* libgstrtp-1.0.0.utm.dylib in Frameworks */,
 				CE2D934724AD46670059923A /* libgstriff-1.0.0.utm.dylib in Frameworks */,
-				CE2D934824AD46670059923A /* libqemu-nios2-softmmu.utm.dylib in Frameworks */,
 				CE2D934924AD46670059923A /* libgstreamer-1.0.0.utm.dylib in Frameworks */,
-				CE2D934A24AD46670059923A /* libqemu-sh4eb-softmmu.utm.dylib in Frameworks */,
 				CE2D934B24AD46670059923A /* libjson-glib-1.0.0.utm.dylib in Frameworks */,
 				CE2D934C24AD46670059923A /* libffi.6.utm.dylib in Frameworks */,
 				CE2D934D24AD46670059923A /* libgstnet-1.0.0.utm.dylib in Frameworks */,
@@ -1766,7 +1697,6 @@
 			isa = PBXGroup;
 			children = (
 				CE0E9B86252FD06B0026E02B /* SwiftUI.framework */,
-				CEF83F902500985000557D15 /* Foundation.framework */,
 				CE059DC0243BD67100338317 /* libphodav-2.0.0.utm.dylib */,
 				CE66450C2269313200B0849A /* MetalKit.framework */,
 				CE9D195D2265425900355E14 /* libgstadder.a */,
@@ -2235,7 +2165,6 @@
 				CE9D18F72265410E00355E14 /* qemu */,
 				CE4698F824C8FBD9008C1BD6 /* Icons */,
 				CE550BCA225947990063E575 /* Products */,
-				CEF83F2424FF472000557D15 /* Executables */,
 				CE2D63D622653C7300FC7E63 /* Frameworks */,
 			);
 			sourceTree = "<group>";
@@ -2491,52 +2420,6 @@
 			path = StaticDataTableViewController;
 			sourceTree = "<group>";
 		};
-		CEF83F2424FF472000557D15 /* Executables */ = {
-			isa = PBXGroup;
-			children = (
-				CE178EBA25017EAF00CE0E33 /* qemu-edid */,
-				CE178EBB25017EAF00CE0E33 /* qemu-ga */,
-				CE178EB225017EAF00CE0E33 /* qemu-img */,
-				CE178EB525017EAF00CE0E33 /* qemu-io */,
-				CE178ED025017EB100CE0E33 /* qemu-nbd */,
-				CE178EBE25017EAF00CE0E33 /* qemu-storage-daemon */,
-				CE178EC425017EB000CE0E33 /* qemu-system-aarch64 */,
-				CE178ED525017EB100CE0E33 /* qemu-system-alpha */,
-				CE178ED225017EB100CE0E33 /* qemu-system-arm */,
-				CE178EC325017EB000CE0E33 /* qemu-system-avr */,
-				CE178ED125017EB100CE0E33 /* qemu-system-cris */,
-				CE178EC225017EB000CE0E33 /* qemu-system-hppa */,
-				CE178EB025017EAE00CE0E33 /* qemu-system-i386 */,
-				CE178ECD25017EB100CE0E33 /* qemu-system-lm32 */,
-				CE178EB925017EAF00CE0E33 /* qemu-system-m68k */,
-				CE178EBF25017EB000CE0E33 /* qemu-system-microblaze */,
-				CE178ED425017EB100CE0E33 /* qemu-system-microblazeel */,
-				CE178EB825017EAF00CE0E33 /* qemu-system-mips */,
-				CE178EB125017EAE00CE0E33 /* qemu-system-mips64 */,
-				CE178EC725017EB000CE0E33 /* qemu-system-mips64el */,
-				CE178ECB25017EB000CE0E33 /* qemu-system-mipsel */,
-				CE178EBC25017EAF00CE0E33 /* qemu-system-moxie */,
-				CE178EC125017EB000CE0E33 /* qemu-system-nios2 */,
-				CE178ECE25017EB100CE0E33 /* qemu-system-or1k */,
-				CE178ED625017EB100CE0E33 /* qemu-system-ppc */,
-				CE178EB425017EAF00CE0E33 /* qemu-system-ppc64 */,
-				CE178EB325017EAF00CE0E33 /* qemu-system-riscv32 */,
-				CE178EC525017EB000CE0E33 /* qemu-system-riscv64 */,
-				CE178EBD25017EAF00CE0E33 /* qemu-system-rx */,
-				CE178ECC25017EB000CE0E33 /* qemu-system-s390x */,
-				CE178ECA25017EB000CE0E33 /* qemu-system-sh4 */,
-				CE178EB625017EAF00CE0E33 /* qemu-system-sh4eb */,
-				CE178EC625017EB000CE0E33 /* qemu-system-sparc */,
-				CE178EC925017EB000CE0E33 /* qemu-system-sparc64 */,
-				CE178ED325017EB100CE0E33 /* qemu-system-tricore */,
-				CE178ECF25017EB100CE0E33 /* qemu-system-unicore32 */,
-				CE178EC825017EB000CE0E33 /* qemu-system-x86_64 */,
-				CE178EC025017EB000CE0E33 /* qemu-system-xtensa */,
-				CE178EB725017EAF00CE0E33 /* qemu-system-xtensaeb */,
-			);
-			name = Executables;
-			sourceTree = "<group>";
-		};
 		CEFE75D8228933870050ABCC /* gstreamer */ = {
 			isa = PBXGroup;
 			children = (
@@ -2613,7 +2496,6 @@
 				CEBDA1D624D8BDDA0010B5EC /* Sources */,
 				CEBDA1D724D8BDDA0010B5EC /* Frameworks */,
 				CEBDA1D824D8BDDA0010B5EC /* Resources */,
-				CEF83ED524FF464E00557D15 /* CopyFiles */,
 			);
 			buildRules = (
 			);
