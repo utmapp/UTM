@@ -180,11 +180,10 @@
 
 - (void)startQemu:(nonnull NSString *)arch completion:(void(^)(BOOL,NSString *))completion {
     [self printArgv];
+    NSString *dylib = [NSString stringWithFormat:@"libqemu-%@-softmmu.utm.dylib", arch];
     if (_connection) {
-        NSString *exe = [NSString stringWithFormat:@"qemu-system-%@", arch];
-        [self startQemuRemote:exe completion:completion];
+        [self startQemuRemote:dylib completion:completion];
     } else {
-        NSString *dylib = [NSString stringWithFormat:@"libqemu-%@-softmmu.utm.dylib", arch];
         [self startDylibThread:dylib completion:completion];
     }
 }

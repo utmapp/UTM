@@ -88,13 +88,6 @@
 }
 
 - (void)startQemu:(NSString *)binName standardOutput:(NSFileHandle *)standardOutput standardError:(NSFileHandle *)standardError libraryBookmark:(NSData *)libBookmark argv:(NSArray<NSString *> *)argv onExit:(void(^)(BOOL,NSString *))onExit {
-    NSURL *qemuURL = [[NSBundle mainBundle] URLForAuxiliaryExecutable:binName];
-    if (!qemuURL || ![[NSFileManager defaultManager] fileExistsAtPath:qemuURL.path]) {
-        NSLog(@"Cannot find executable for %@", binName);
-        onExit(NO, NSLocalizedString(@"Cannot find QEMU executable.", @"QEMUHelper"));
-        return;
-    }
-    
     NSError *err;
     NSURL *libraryPath = [NSURL URLByResolvingBookmarkData:libBookmark
                                                    options:0
@@ -130,7 +123,7 @@
     int argc = (int)argv.count + 1;
     char **cargv = calloc(argc, sizeof(char *));
     cargv[0] = cpath;
-    for (int i = 0; i < argc; i++) {
+    for (int i = 0; i < argc-1; i++) {
         cargv[i+1] = strdup(argv[i].UTF8String);
     }
     int newStdOut = standardOutput.fileDescriptor;
@@ -151,8 +144,8 @@
         dispatch_async(self.childWaitQueue, ^{
             do {
                 int status;
-                if (waitpid(pid, &status, WNOHANG) <= 0) {
-                    NSLog(@"waitpid(%d) returned error.", pid);
+                if (waitpid(pid, &status, 0) < 0) {
+                    NSLog(@"waitpid(%d) returned error: %d", pid, errno);
                     onExit(NO, NSLocalizedString(@"QEMU exited unexpectedly.", @"QEMUHelper"));
                 } else if (WIFEXITED(status)) {
                     NSLog(@"child process %d terminated", pid);

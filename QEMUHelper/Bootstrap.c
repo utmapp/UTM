@@ -16,34 +16,73 @@
 
 #include "Bootstrap.h"
 #include <dlfcn.h>
+#include <pthread.h>
+#include <sys/event.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 
-static int launchQemu(const char *dylibPath, int argc, const char **argv) {
-    void *dlctx;
+typedef struct {
     int (*qemu_init)(int, const char *[], const char *[]);
     void (*qemu_main_loop)(void);
     void (*qemu_cleanup)(void);
+} qemu_main_t;
+
+// http://mac-os-x.10953.n7.nabble.com/Ensure-NSTask-terminates-when-parent-application-does-td31477.html
+static void *WatchForParentTermination(void *args) {
+    pid_t ppid = getppid(); // get parent pid
+
+    int kq = kqueue();
+    if (kq != -1) {
+        struct kevent procEvent; // wait for parent to exit
+        EV_SET(&procEvent, // kevent
+               ppid, // ident
+               EVFILT_PROC, // filter
+               EV_ADD, // flags
+               NOTE_EXIT, // fflags
+               0, // data
+               0); // udata
+        kevent(kq, &procEvent, 1, &procEvent, 1, NULL);
+    }
+
+    exit(0);
+    return NULL;
+}
+
+static int loadQemu(const char *dylibPath, qemu_main_t *funcs) {
+    void *dlctx;
     
-    if ((dlctx = dlopen(dylibPath, RTLD_LAZY | RTLD_FIRST)) == NULL) {
+    if ((dlctx = dlopen(dylibPath, RTLD_LOCAL | RTLD_LAZY | RTLD_FIRST)) == NULL) {
         fprintf(stderr, "Error loading %s: %s\n", dylibPath, dlerror());
         return -1;
     }
-    qemu_init = dlsym(dlctx, "qemu_init");
-    qemu_main_loop = dlsym(dlctx, "qemu_main_loop");
-    qemu_cleanup = dlsym(dlctx, "qemu_cleanup");
-    if (qemu_init == NULL || qemu_main_loop == NULL || qemu_cleanup == NULL) {
+    funcs->qemu_init = dlsym(dlctx, "qemu_init");
+    funcs->qemu_main_loop = dlsym(dlctx, "qemu_main_loop");
+    funcs->qemu_cleanup = dlsym(dlctx, "qemu_cleanup");
+    if (funcs->qemu_init == NULL || funcs->qemu_main_loop == NULL || funcs->qemu_cleanup == NULL) {
         fprintf(stderr, "Error resolving %s: %s\n", dylibPath, dlerror());
         return -1;
     }
-    const char *envp[] = { NULL };
-    qemu_init(argc, argv, envp);
-    qemu_main_loop();
-    qemu_cleanup();
     return 0;
 }
 
+static void __attribute__((noreturn)) runQemu(qemu_main_t *funcs, int argc, const char **argv) {
+    const char *envp[] = { NULL };
+    funcs->qemu_init(argc, argv, envp);
+    pthread_t thread;
+    pthread_create(&thread, NULL, WatchForParentTermination, NULL);
+    pthread_detach(thread);
+    funcs->qemu_main_loop();
+    funcs->qemu_cleanup();
+    exit(0);
+}
+
 pid_t startQemu(const char *dylibPath, int argc, const char **argv, int newStdout, int newStderr) {
+    qemu_main_t funcs = {};
+    int res = loadQemu(dylibPath, &funcs);
+    if (res < 0) {
+        return res;
+    }
     pid_t pid = fork();
     if (pid != 0) { // parent or error
         return pid;
@@ -53,6 +92,6 @@ pid_t startQemu(const char *dylibPath, int argc, const char **argv, int newStdou
     dup2(newStderr, STDERR_FILENO);
     close(newStdout);
     close(newStderr);
-    int res = launchQemu(dylibPath, argc, argv);
-    exit(res);
+    // launch qemu
+    runQemu(&funcs, argc, argv);
 }
