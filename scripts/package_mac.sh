@@ -77,6 +77,7 @@ EOL
 fi
 
 xcodebuild -exportArchive -exportOptionsPlist "$OPTIONS" -archivePath "$INPUT" -exportPath "$SIGNED"
+find "$SIGNED/UTM.app" -type f \( -path '*/Contents/MacOS/*' -or -path '*/Contents/Frameworks/*.dylib' \) -exec chmod +x \{\} \;
 
 rm "$OPTIONS"
 if [ ! -z "$INPUT_COPY" ]; then
