@@ -23,6 +23,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) BOOL running;
 @property (nonatomic, readonly) void *glibMainContext;
 
++ (CSMain *)sharedInstance;
+- (instancetype)init NS_UNAVAILABLE;
 - (void)spiceSetDebug:(BOOL)enabled;
 - (BOOL)spiceStart;
 - (void)spiceStop;

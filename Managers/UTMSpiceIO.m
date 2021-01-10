@@ -67,7 +67,7 @@ typedef void (^connectionCallback_t)(BOOL success, NSString * _Nullable msg);
 - (void)initializeSpiceIfNeeded {
     @synchronized (self) {
         if (!self.spice) {
-            self.spice = [[CSMain alloc] init];
+            self.spice = [CSMain sharedInstance];
         }
         
         if (!self.spiceConnection) {
@@ -155,7 +155,6 @@ typedef void (^connectionCallback_t)(BOOL success, NSString * _Nullable msg);
         [self.spiceConnection disconnect];
         self.spiceConnection.delegate = nil;
         self.spiceConnection = nil;
-        [self.spice spiceStop];
         self.spice = nil;
     }
     self.doConnect = nil;

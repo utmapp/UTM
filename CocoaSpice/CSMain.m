@@ -24,13 +24,13 @@
 @interface CSMain ()
 
 @property (nonatomic, readwrite) BOOL running;
+@property (nonatomic) pthread_t spiceThread;
 
 @end
 
 @implementation CSMain {
     GMainContext *_main_context;
     GMainLoop *_main_loop;
-    pthread_t _spice_thread;
 }
 
 static void logHandler(const gchar *log_domain, GLogLevelFlags log_level,
@@ -81,6 +81,15 @@ void *spice_main_loop(void *args) {
     return NULL;
 }
 
++ (CSMain *)sharedInstance {
+    static CSMain *sharedInstance = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        sharedInstance = [[self alloc] init];
+    });
+    return sharedInstance;
+}
+
 - (void *)glibMainContext {
     return _main_context;
 }
@@ -111,21 +120,28 @@ void *spice_main_loop(void *args) {
 }
 
 - (BOOL)spiceStart {
-    if (!self.running) {
-        if (pthread_create(&_spice_thread, NULL, &spice_main_loop, (__bridge_retained void *)self) != 0) {
-            return NO;
+    @synchronized (self) {
+        if (!self.running) {
+            pthread_t spiceThread;
+            if (pthread_create(&spiceThread, NULL, &spice_main_loop, (__bridge_retained void *)self) != 0) {
+                return NO;
+            }
+            self.running = YES;
+            self.spiceThread = spiceThread;
         }
-        self.running = YES;
     }
     return YES;
 }
 
 - (void)spiceStop {
-    if (self.running) {
-        void *status;
-        g_main_loop_quit(_main_loop);
-        pthread_join(_spice_thread, &status);
-        self.running = NO;
+    @synchronized (self) {
+        if (self.running) {
+            void *status;
+            g_main_loop_quit(_main_loop);
+            pthread_join(self.spiceThread, &status);
+            self.running = NO;
+            self.spiceThread = NULL;
+        }
     }
 }
 
