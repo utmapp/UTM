@@ -77,7 +77,6 @@ typedef void (^connectionCallback_t)(BOOL success, NSString * _Nullable msg);
         }
         
         self.spiceConnection.glibMainContext = self.spice.glibMainContext;
-        [self.spice spiceSetDebug:YES];
     }
     _primaryDisplay = nil;
     _primaryInput = nil;
