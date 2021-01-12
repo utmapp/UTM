@@ -92,6 +92,8 @@ pid_t startQemu(const char *dylibPath, int argc, const char **argv, int newStdou
     dup2(newStderr, STDERR_FILENO);
     close(newStdout);
     close(newStderr);
+    // set thread QoS
+    pthread_set_qos_class_self_np(QOS_CLASS_USER_INTERACTIVE, 0);
     // launch qemu
     runQemu(&funcs, argc, argv);
 }
