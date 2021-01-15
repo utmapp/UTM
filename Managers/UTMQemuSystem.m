@@ -363,9 +363,11 @@ static size_t sysctl_read(const char *name) {
     if (self.configuration.systemForceMulticore) {
         accel = [accel stringByAppendingString:@",thread=multi"];
     }
-    if ([self.configuration.systemJitCacheSize integerValue] > 0) {
-        accel = [accel stringByAppendingFormat:@",tb-size=%ld", (long)[self.configuration.systemJitCacheSize integerValue]];
+    NSInteger tb_size = self.configuration.systemMemory.integerValue / 4;
+    if (self.configuration.systemJitCacheSize.integerValue > 0) {
+        tb_size = self.configuration.systemJitCacheSize.integerValue;
     }
+    accel = [accel stringByAppendingFormat:@",tb-size=%ld", tb_size];
     
     // use mirror mapping when we don't have JIT entitlements
     if (!jb_has_jit_entitlement()) {
