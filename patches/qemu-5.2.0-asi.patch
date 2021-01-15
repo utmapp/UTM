@@ -220,3 +220,30 @@ index 0000000000..d08bb90a14
 -- 
 2.24.3 (Apple Git-128)
 
+From 0bf3710a3ff7bd15f9ff1d768495055d6a7f4261 Mon Sep 17 00:00:00 2001
+From: osy <50960678+osy@users.noreply.github.com>
+Date: Fri, 15 Jan 2021 14:51:38 -0800
+Subject: [PATCH] tcg: do not use MAP_JIT when splitwx
+
+---
+ accel/tcg/translate-all.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/accel/tcg/translate-all.c b/accel/tcg/translate-all.c
+index 5773c561cb..165e631e04 100644
+--- a/accel/tcg/translate-all.c
++++ b/accel/tcg/translate-all.c
+@@ -1301,7 +1301,9 @@ static bool alloc_code_gen_buffer(size_t size, int splitwx, Error **errp)
+     prot = PROT_READ | PROT_WRITE;
+ #elif defined(CONFIG_DARWIN)
+     /* Applicable to both iOS and macOS (Apple Silicon). */
+-    flags |= MAP_JIT;
++    if (!splitwx) {
++        flags |= MAP_JIT;
++    }
+ #endif
+ 
+     return alloc_code_gen_buffer_anon(size, prot, flags, errp);
+-- 
+2.28.0
+
