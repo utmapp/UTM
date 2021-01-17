@@ -40,42 +40,99 @@ struct VMRemovableDrivesView: View {
         Group {
             if config.shareDirectoryEnabled {
                 HStack {
-                    Label("Shared Directory", systemImage: "externaldrive.badge.person.crop")
+                    // Is a shared directory set?
+                    let hasSharedDir = sessionConfig.sharedDirectoryPath != nil
+                    // Browse/Clear menu
+                    Menu {
+                        // Browse button
+                        Button(action: { shareDirectoryFileImportPresented.toggle() }, label: {
+                            Label("Browse", systemImage: "doc.badge.plus")
+                        })
+                        if hasSharedDir {
+                            // Clear button
+                            Button(action: clearShareDirectory, label: {
+                                Label("Clear", systemImage: "eject")
+                            })
+                        }
+                    } label: {
+                        Label { Text("Shared Directory") } icon: {
+                            Image(systemName: hasSharedDir ? "externaldrive.fill.badge.person.crop" : "externaldrive.badge.person.crop") }
+                    }.disabled(sessionConfig.suspended)
                     Spacer()
-                    Text(sessionConfig.sharedDirectoryPath ?? "").truncationMode(.head)
-                    Button(action: clearShareDirectory, label: {
-                        Text("Clear")
-                    }).disabled(vm.viewState.suspended)
-                    Button(action: { shareDirectoryFileImportPresented.toggle() }, label: {
-                        Text("Browse")
-                    }).disabled(vm.viewState.suspended)
+                    SharedPath(path: sessionConfig.sharedDirectoryPath)
                 }.fileImporter(isPresented: $shareDirectoryFileImportPresented, allowedContentTypes: [.folder], onCompletion: selectShareDirectory)
             }
-            ForEach(vm.drives) { drive in
-                if drive.status != .fixed {
-                    let path = sessionConfig.path(forRemovableDrive: drive.name ?? "") ?? ""
-                    HStack {
-                        Label("Interface: \(drive.interface ?? "")", systemImage: drive.imageType == .CD ? "opticaldiscdrive" : "externaldrive")
-                        Spacer()
-                        Text(path)
-                            .lineLimit(1)
-                            .truncationMode(.head)
-                        Button(action: { clearRemovableImage(forDrive: drive) }, label: {
-                            Text("Clear")
-                        }).disabled(vm.viewState.suspended)
+            ForEach(vm.drives.filter { $0.status != .fixed }) { drive in
+                HStack {
+                    // Drive menu
+                    Menu {
+                        // Browse button
                         Button(action: {
                             currentDrive = drive
                             diskImageFileImportPresented.toggle()
                         }, label: {
-                            Text("Browse")
-                        }).disabled(vm.viewState.suspended)
-                    }
+                            Label("Browse", systemImage: "doc.badge.plus")
+                        })
+                        // Eject button
+                        if drive.status != .ejected {
+                            Button(action: { clearRemovableImage(forDrive: drive) }, label: {
+                                Label("Clear", systemImage: "eject")
+                            })
+                        }
+                    } label: {
+                        DriveLabel(drive: drive)
+                    }.disabled(sessionConfig.suspended)
+                    Spacer()
+                    // Disk image path, or (empty)
+                    Text(pathFor(drive))
+                        .lineLimit(1)
+                        .truncationMode(.tail)
+                        .foregroundColor(.secondary)
                 }
             }.fileImporter(isPresented: $diskImageFileImportPresented, allowedContentTypes: [.data]) { result in
                 if let currentDrive = self.currentDrive {
                     selectRemovableImage(forDrive: currentDrive, result: result)
                     self.currentDrive = nil
                 }
+            }
+        }
+    }
+    
+    private struct SharedPath: View {
+        let path: String?
+
+        var body: some View {
+            if let path = path {
+                let url = URL(fileURLWithPath: path)
+                Text(url.lastPathComponent)
+                    .truncationMode(.head)
+                    .lineLimit(1)
+                    .foregroundColor(.secondary)
+            } else {
+                Text("(empty)")
+                    .foregroundColor(.secondary)
+            }
+        }
+    }
+    
+    private func pathFor(_ drive: UTMDrive) -> String {
+        let path = sessionConfig.path(forRemovableDrive: drive.name ?? "") ?? ""
+        if path.count > 0 {
+            let url = URL(fileURLWithPath: path)
+            return url.lastPathComponent
+        } else {
+            return NSLocalizedString("(empty)", comment: "A removable drive that has no image file inserted.")
+        }
+    }
+    
+    private struct DriveLabel: View {
+        let drive: UTMDrive
+
+        var body: some View {
+            if drive.imageType == .CD {
+                return Label("CD/DVD", systemImage: drive.status == .ejected ? "opticaldiscdrive" : "opticaldiscdrive.fill")
+            } else {
+                return Label("Removable", systemImage: "externaldrive")
             }
         }
     }

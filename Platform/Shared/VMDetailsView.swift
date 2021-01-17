@@ -129,37 +129,45 @@ struct Details: View {
     var body: some View {
         VStack {
             HStack {
-                Label("Status", systemImage: "info.circle")
+                plainLabel("Status", systemImage: "info.circle")
                 Spacer()
                 Text(sessionConfig.active ? "Running" : (sessionConfig.suspended ? "Suspended" : "Not running"))
                     .foregroundColor(.secondary)
             }
             HStack {
-                Label("Architecture", systemImage: "cpu")
+                plainLabel("Architecture", systemImage: "cpu")
                 Spacer()
                 Text(config.systemArchitecturePretty)
                     .foregroundColor(.secondary)
             }
             HStack {
-                Label("Machine", systemImage: "desktopcomputer")
+                plainLabel("Machine", systemImage: "desktopcomputer")
                 Spacer()
                 Text(config.systemTargetPretty)
                     .foregroundColor(.secondary)
             }
             HStack {
-                Label("Memory", systemImage: "memorychip")
+                plainLabel("Memory", systemImage: "memorychip")
                 Spacer()
                 Text(config.systemMemoryPretty)
                     .foregroundColor(.secondary)
             }
             HStack {
-                Label("Size", systemImage: "internaldrive")
+                plainLabel("Size", systemImage: "internaldrive")
                 Spacer()
                 Text(sizeLabel)
                     .foregroundColor(.secondary)
             }
         }.lineLimit(1)
         .truncationMode(.tail)
+    }
+    
+    private func plainLabel(_ text: String, systemImage: String) -> some View {
+        return Label {
+            Text(text)
+        } icon: {
+            Image(systemName: systemImage).foregroundColor(.primary)
+        }
     }
 }
 
