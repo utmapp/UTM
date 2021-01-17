@@ -472,6 +472,10 @@ static size_t sysctl_read(const char *name) {
     }
     [self pushArgv:@"-m"];
     [self pushArgv:[self.configuration.systemMemory stringValue]];
+#if TARGET_OS_OSX
+    // FIXME: sound support broken after fork(), so we disable for now
+    if (!self.configuration.displayConsoleOnly)
+#endif
     if (self.configuration.soundEnabled) {
         [self pushArgv:@"-soundhw"];
         [self pushArgv:self.configuration.soundCard];
