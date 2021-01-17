@@ -55,6 +55,8 @@
         self.shareClipboardEnabled = YES;
     } else if ([target isEqualToString:@"mac99"]) {
         self.soundEnabled = NO;
+    } else if ([target isEqualToString:@"isapc"]) {
+        self.inputLegacy = YES; // no USB support
     }
     NSString *machineProp = [UTMConfiguration defaultMachinePropertiesForTarget:target];
     if (machineProp) {

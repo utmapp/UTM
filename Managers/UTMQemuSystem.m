@@ -41,6 +41,7 @@ typedef struct {
 @property (nonatomic, readonly) CPUCount emulatedCpuCount;
 @property (nonatomic, readonly) BOOL useHypervisor;
 @property (nonatomic, readonly) BOOL hasCustomBios;
+@property (nonatomic, readonly) BOOL usbSupported;
 
 @end
 
@@ -411,6 +412,10 @@ static size_t sysctl_read(const char *name) {
     return NO;
 }
 
+- (BOOL)usbSupported {
+    return ![self.configuration.systemTarget isEqualToString:@"isapc"];
+}
+
 - (NSString *)machineProperties {
     if (self.configuration.systemMachineProperties.length > 0) {
         return self.configuration.systemMachineProperties; // use specified properties
@@ -482,7 +487,9 @@ static size_t sysctl_read(const char *name) {
     }
     [self pushArgv:@"-name"];
     [self pushArgv:self.configuration.name];
-    [self argsForUsb];
+    if (self.usbSupported) {
+        [self argsForUsb];
+    }
     [self argsForDrives];
     [self argsForNetwork];
     if (self.snapshot) {
