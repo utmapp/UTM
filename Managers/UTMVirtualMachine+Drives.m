@@ -88,6 +88,8 @@ extern NSString *const kUTMErrorDomain;
         return NO;
     }
     if (!self.qemu.isConnected) {
+        // On macOS, the `bookmark` will not work for the helper process.
+        // This is caught and addressed in `restoreRemovableDrivesFromBookmarksWithError`.
         [self.viewState setBookmark:bookmark path:url.path forRemovableDrive:drive.name persistent:YES];
         [self saveViewState];
         return YES; // not ready yet
@@ -129,7 +131,6 @@ extern NSString *const kUTMErrorDomain;
         BOOL persistent = NO;
         NSData *bookmark = [self.viewState bookmarkForRemovableDrive:drive.name persistent:&persistent];
         if (bookmark) {
-            NSString *path = nil;
             UTMLog(@"found bookmark for %@", drive.name);
             if (drive.status == UTMDriveStatusFixed) {
                 UTMLog(@"%@ is no longer removable, removing bookmark", drive.name);
@@ -137,8 +138,24 @@ extern NSString *const kUTMErrorDomain;
                 continue;
             }
             if (![self changeMediumForDriveInternal:drive bookmark:bookmark securityScoped:persistent error:error]) {
-                UTMLog(@"failed to change %@ image to %@", drive.name, path);
+#if TARGET_OS_IPHONE
+                UTMLog(@"failed to change %@ image", drive.name);
                 return NO;
+#else
+                // On macOS, at this point it is possible that a disk image was chosen while the VM was powered down.
+                // This results in an invalid bookmark so we need to re-run changeMediumForDrive.
+                // If the viewState contains the path for the drive, we can use that to create a new bookmark.
+                NSString* path = [self.viewState pathForRemovableDrive:drive.name];
+                if (path) {
+                    NSURL* url = [NSURL fileURLWithPath:path];
+                    if (![self changeMediumForDrive:drive url:url error:error]) {
+                        UTMLog(@"failed to change %@ image to %@", drive.name, path);
+                        return NO;
+                    }
+                } else {
+                    continue;
+                }
+#endif
             }
         }
     }

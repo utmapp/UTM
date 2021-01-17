@@ -18,7 +18,7 @@ import SwiftUI
 
 @available(iOS 14, macOS 11, *)
 struct VMRemovableDrivesView: View {
-    @State var vm: UTMVirtualMachine
+    let vm: UTMVirtualMachine
     @EnvironmentObject private var data: UTMData
     @ObservedObject private var config: UTMConfiguration
     @ObservedObject private var sessionConfig: UTMViewState
@@ -31,50 +31,86 @@ struct VMRemovableDrivesView: View {
     }
     
     init(vm: UTMVirtualMachine) {
-        self._vm = State<UTMVirtualMachine>(initialValue: vm)
+        self.vm = vm
         self.config = vm.configuration
         self.sessionConfig = vm.viewState
     }
     
     var body: some View {
-        return Group {
+        Group {
             if config.shareDirectoryEnabled {
                 HStack {
-                    Label("Shared Directory", systemImage: "externaldrive.badge.person.crop")
+                    // Is a shared directory set?
+                    let hasSharedDir = sessionConfig.sharedDirectoryPath != nil
+                    // Browse/Clear menu
+                    Menu {
+                        // Browse button
+                        Button(action: { shareDirectoryFileImportPresented.toggle() }, label: {
+                            Label("Browse", systemImage: "doc.badge.plus")
+                        })
+                        if hasSharedDir {
+                            // Clear button
+                            Button(action: clearShareDirectory, label: {
+                                Label("Clear", systemImage: "eject")
+                            })
+                        }
+                    } label: {
+                        Label { Text("Shared Directory") } icon: {
+                            Image(systemName: hasSharedDir ? "externaldrive.fill.badge.person.crop" : "externaldrive.badge.person.crop") }
+                    }.disabled(sessionConfig.suspended)
                     Spacer()
-                    Text(sessionConfig.sharedDirectoryPath ?? "").truncationMode(.head)
-                    Button(action: clearShareDirectory, label: {
-                        Text("Clear")
-                    }).disabled(sessionConfig.suspended)
-                    Button(action: { shareDirectoryFileImportPresented.toggle() }, label: {
-                        Text("Browse")
-                    }).disabled(sessionConfig.suspended)
+                    SharedPath(path: sessionConfig.sharedDirectoryPath)
                 }.fileImporter(isPresented: $shareDirectoryFileImportPresented, allowedContentTypes: [.folder], onCompletion: selectShareDirectory)
             }
             ForEach(vm.drives.filter { $0.status != .fixed }) { drive in
                 HStack {
-                    DriveLabel(drive: drive)
-                    Button(action: {
-                        currentDrive = drive
-                        diskImageFileImportPresented.toggle()
-                    }, label: {
-                        Label("Browse", systemImage: "doc.badge.plus")
-                    }).disabled(sessionConfig.suspended)
+                    // Drive menu
+                    Menu {
+                        // Browse button
+                        Button(action: {
+                            currentDrive = drive
+                            diskImageFileImportPresented.toggle()
+                        }, label: {
+                            Label("Browse", systemImage: "doc.badge.plus")
+                        })
+                        // Eject button
+                        if drive.status != .ejected {
+                            Button(action: { clearRemovableImage(forDrive: drive) }, label: {
+                                Label("Clear", systemImage: "eject")
+                            })
+                        }
+                    } label: {
+                        DriveLabel(drive: drive)
+                    }.disabled(sessionConfig.suspended)
                     Spacer()
+                    // Disk image path, or (empty)
                     Text(pathFor(drive))
                         .lineLimit(1)
                         .truncationMode(.tail)
-                    if drive.status != .ejected {
-                        Button(action: { clearRemovableImage(forDrive: drive) }, label: {
-                            Label("Clear", systemImage: "eject")
-                        }).disabled(sessionConfig.suspended)
-                    }
+                        .foregroundColor(.secondary)
                 }
             }.fileImporter(isPresented: $diskImageFileImportPresented, allowedContentTypes: [.data]) { result in
                 if let currentDrive = self.currentDrive {
                     selectRemovableImage(forDrive: currentDrive, result: result)
                     self.currentDrive = nil
                 }
+            }
+        }
+    }
+    
+    private struct SharedPath: View {
+        let path: String?
+
+        var body: some View {
+            if let path = path {
+                let url = URL(fileURLWithPath: path)
+                Text(url.lastPathComponent)
+                    .truncationMode(.head)
+                    .lineLimit(1)
+                    .foregroundColor(.secondary)
+            } else {
+                Text("(empty)")
+                    .foregroundColor(.secondary)
             }
         }
     }
