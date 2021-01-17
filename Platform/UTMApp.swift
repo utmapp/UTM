@@ -23,7 +23,7 @@ struct UTMApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView().environmentObject(data)
-        }
+        }.commands { SidebarCommands() }
         #if os(macOS)
         Settings {
             SettingsView()
