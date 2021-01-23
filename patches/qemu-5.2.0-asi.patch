@@ -247,3 +247,34 @@ index 5773c561cb..165e631e04 100644
 -- 
 2.28.0
 
+From c8b356ceda87e21cda1598bcaaf3985b44065991 Mon Sep 17 00:00:00 2001
+From: osy <50960678+osy@users.noreply.github.com>
+Date: Fri, 22 Jan 2021 22:41:32 -0800
+Subject: [PATCH] tcg: disable assertion for mprotect(PROT_NONE)
+
+On macOS 11.2, the system returns error if you try to PROT_NONE a JIT
+region.
+---
+ tcg/tcg.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/tcg/tcg.c b/tcg/tcg.c
+index c218e0c1b7..7a300016f6 100644
+--- a/tcg/tcg.c
++++ b/tcg/tcg.c
+@@ -741,10 +741,10 @@ void tcg_region_init(void)
+ 
+         tcg_region_bounds(i, &start, &end);
+         rc = qemu_mprotect_none(end, page_size);
+-        g_assert(!rc);
++        //g_assert(!rc);
+         if (splitwx_diff) {
+             rc = qemu_mprotect_none(end + splitwx_diff, page_size);
+-            g_assert(!rc);
++            //g_assert(!rc);
+         }
+     }
+ 
+-- 
+2.28.0
+
