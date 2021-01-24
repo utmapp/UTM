@@ -86,7 +86,7 @@ struct VMConfigDrivesView: View {
         data.busyWork {
             switch result {
             case .success(let url):
-                try data.importDrive(url, forConfig: config)
+                try data.importDrive(url, for: config)
                 break
             case .failure(let err):
                 throw err
@@ -96,7 +96,7 @@ struct VMConfigDrivesView: View {
     
     private func newDrive(driveImage: VMDriveImage) {
         data.busyWork {
-            try data.createDrive(driveImage, forConfig: config)
+            try data.createDrive(driveImage, for: config)
         }
     }
     
