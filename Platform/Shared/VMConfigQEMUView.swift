@@ -45,7 +45,7 @@ struct VMConfigQEMUView: View {
                     .disabled(!logExists)
                 }
                 Section(header: Text("QEMU Arguments")) {
-                    Button("Export QEMU Arguments") {
+                    Button("Export QEMU Command") {
                         showExportArgs.toggle()
                     }.modifier(VMShareItemModifier(isPresented: $showExportArgs, items: exportArgs))
                     Toggle(isOn: $config.ignoreAllConfiguration.animation(), label: {
