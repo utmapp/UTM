@@ -21,6 +21,7 @@
 #import "UTMConfiguration.h"
 #import "UTMConfiguration+Constants.h"
 #import "UTMConfiguration+Display.h"
+#import "UTMConfiguration+Drives.h"
 #import "UTMConfiguration+Miscellaneous.h"
 #import "UTMViewState.h"
 #import "UTMQemuManager.h"
@@ -223,6 +224,17 @@ NSString *const kSuspendSnapshotName = @"suspend";
         
         // create images directory
         if ([fileManager fileExistsAtPath:tmpPath.path]) {
+            // delete any orphaned images
+            NSArray<NSString *> *orphans = self.configuration.orphanedDrives;
+            for (NSInteger i = 0; i < orphans.count; i++) {
+                NSURL *orphanPath = [tmpPath URLByAppendingPathComponent:orphans[i]];
+                UTMLog(@"Deleting orphaned image '%@'", orphans[i]);
+                if (![fileManager removeItemAtURL:orphanPath error:&_err]) {
+                    UTMLog(@"Ignoring error deleting orphaned image: %@", _err.localizedDescription);
+                    _err = nil;
+                }
+            }
+            // move remaining drives to VM package
             if (![fileManager moveItemAtURL:tmpPath toURL:dstPath error:&_err]) {
                 goto error;
             }

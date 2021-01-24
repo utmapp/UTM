@@ -17,6 +17,7 @@
 #import "UTMConfiguration.h"
 
 typedef NS_ENUM(NSInteger, UTMDiskImageType) {
+    UTMDiskImageTypeNone,
     UTMDiskImageTypeDisk,
     UTMDiskImageTypeCD,
     UTMDiskImageTypeBIOS,
@@ -32,8 +33,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readonly) NSURL *imagesPath;
 @property (nonatomic, readonly) NSInteger countDrives;
+@property (nonatomic, nullable, readonly) NSArray<NSString *> *orphanedDrives;
 
 - (void)migrateDriveConfigurationIfNecessary;
+- (void)recoverOrphanedDrives;
 
 - (NSInteger)newDrive:(NSString *)name type:(UTMDiskImageType)type interface:(NSString *)interface;
 - (NSInteger)newRemovableDrive:(UTMDiskImageType)type interface:(NSString *)interface;

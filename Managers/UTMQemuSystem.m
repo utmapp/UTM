@@ -259,6 +259,9 @@ static size_t sysctl_read(const char *name) {
                 }
                 break;
             }
+            case UTMDiskImageTypeNone: {
+                break; // ignore this image
+            }
             default: {
                 UTMLog(@"WARNING: unknown image type %lu, ignoring image %@", type, fullPathURL);
                 break;

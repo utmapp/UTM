@@ -60,6 +60,38 @@ static const NSString *const kUTMConfigCdromKey = @"Cdrom";
     }];
 }
 
+#pragma mark - Orphan drives
+
+// ensure user can delete the drive image from the interface if something wrong happens
+- (NSArray<NSString *> *)orphanedDrives {
+    NSFileManager *manager = [NSFileManager defaultManager];
+    NSArray<NSURL *> *files = [manager contentsOfDirectoryAtURL:self.imagesPath includingPropertiesForKeys:nil options:0 error:nil];
+    if (files.count == 0) {
+        return nil; // empty or does not exist
+    }
+    // find existing drives
+    NSMutableSet<NSString *> *existing = [NSMutableSet set];
+    for (NSInteger i = 0; i < self.countDrives; i++) {
+        [existing addObject:[self driveImagePathForIndex:i]];
+    }
+    // add any missing drives
+    NSMutableArray<NSString *> *orphans = [NSMutableArray array];
+    for (NSURL *file in files) {
+        NSString *name = [file lastPathComponent];
+        if (![existing containsObject:name]) {
+            [orphans addObject:name];
+        }
+    }
+    return orphans;
+}
+
+- (void)recoverOrphanedDrives {
+    NSArray<NSString *> *orphans = self.orphanedDrives;
+    for (NSInteger i = 0; i < orphans.count; i++) {
+        [self newDrive:orphans[i] type:UTMDiskImageTypeNone interface:@""];
+    }
+}
+
 #pragma mark - Drives array handling
 
 - (NSInteger)countDrives {
