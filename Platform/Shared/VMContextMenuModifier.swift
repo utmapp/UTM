@@ -31,6 +31,14 @@ struct VMContextMenuModifier: ViewModifier {
     
     func body(content: Content) -> some View {
         content.contextMenu {
+            #if os(macOS)
+            Button {
+                NSWorkspace.shared.activateFileViewerSelecting([vm.path!])
+            } label: {
+                Label("Show in Finder", systemImage: "folder")
+            }
+            Divider()
+            #endif
             Button {
                 data.edit(vm: vm)
             } label: {
