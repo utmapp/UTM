@@ -140,7 +140,7 @@
 - (void)virtualMachine:(UTMVirtualMachine *)vm transitionToState:(UTMVMState)state {
     static BOOL hasStartedOnce = NO;
     if (hasStartedOnce && state == kVMStopped) {
-        exit(0);
+        [self terminateApplication];
     }
     switch (state) {
         case kVMError: {
@@ -148,7 +148,7 @@
             self.resumeBigButton.hidden = YES;
             NSString *msg = self.vmMessage ? self.vmMessage : NSLocalizedString(@"An internal error has occured. UTM will terminate.", @"VMDisplayViewController");
             [self showAlert:msg actions:nil completion:^(UIAlertAction *action){
-                exit(0);
+                [self terminateApplication];
             }];
             break;
         }
@@ -215,6 +215,23 @@
 - (void)updateKeyboardAccessoryFrame {
 }
 
+#pragma mark - Termination
+
+// from: https://stackoverflow.com/a/17802404/4236245
+- (void)terminateApplication {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        // animate to home screen
+        UIApplication *app = [UIApplication sharedApplication];
+        [app performSelector:@selector(suspend)];
+
+        // wait 2 seconds while app is going background
+        [NSThread sleepForTimeInterval:2.0];
+
+        // exit app when app is in background
+        exit(0);
+    });
+}
+
 #pragma mark - Toolbar actions
 
 - (UIStatusBarStyle)preferredStatusBarStyle {
@@ -275,7 +292,7 @@
         UIAlertAction *yes = [UIAlertAction actionWithTitle:NSLocalizedString(@"Yes", @"VMDisplayViewController") style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action){
             dispatch_async(dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0), ^{
                 [self.vm quitVM];
-                exit(0);
+                [self terminateApplication];
             });
         }];
         UIAlertAction *no = [UIAlertAction actionWithTitle:NSLocalizedString(@"No", @"VMDisplayViewController") style:UIAlertActionStyleCancel handler:nil];
@@ -284,7 +301,7 @@
              completion:nil];
     } else {
         UIAlertAction *yes = [UIAlertAction actionWithTitle:NSLocalizedString(@"Yes", @"VMDisplayViewController") style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action){
-            exit(0);
+            [self terminateApplication];
         }];
         UIAlertAction *no = [UIAlertAction actionWithTitle:NSLocalizedString(@"No", @"VMDisplayViewController") style:UIAlertActionStyleCancel handler:nil];
         [self showAlert:NSLocalizedString(@"Are you sure you want to exit UTM?.", @"VMDisplayViewController")

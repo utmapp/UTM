@@ -50,6 +50,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)inputViewIsFirstResponder;
 - (void)updateKeyboardAccessoryFrame;
+- (void)terminateApplication;
 
 - (IBAction)changeDisplayZoom:(UIButton *)sender;
 - (IBAction)pauseResumePressed:(UIButton *)sender;
