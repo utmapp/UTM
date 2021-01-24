@@ -25,7 +25,7 @@
 
 - (void)loadDefaults {
     self.systemArchitecture = @"x86_64";
-    self.systemTarget = @"pc";
+    self.systemTarget = @"q35";
     self.systemMemory = @512;
     self.systemBootDevice = @"cd";
     self.systemUUID = [[NSUUID UUID] UUIDString];
