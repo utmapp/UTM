@@ -21,6 +21,7 @@ struct VMConfigQEMUView: View {
     @ObservedObject var config: UTMConfiguration
     @State private var newArg: String = ""
     @State private var showExportLog: Bool = false
+    @State private var showExportArgs: Bool = false
     @EnvironmentObject private var data: UTMData
     
     private var logExists: Bool {
@@ -44,6 +45,9 @@ struct VMConfigQEMUView: View {
                     .disabled(!logExists)
                 }
                 Section(header: Text("QEMU Arguments")) {
+                    Button("Export QEMU Arguments") {
+                        showExportArgs.toggle()
+                    }.modifier(VMShareItemModifier(isPresented: $showExportArgs, items: exportArgs))
                     Toggle(isOn: $config.ignoreAllConfiguration.animation(), label: {
                         Text("Advanced: Bypass configuration and manually specify arguments")
                     })
@@ -100,6 +104,21 @@ struct VMConfigQEMUView: View {
             config.newArgument(newArg)
         }
         newArg = ""
+    }
+    
+    private func exportArgs() -> [String] {
+        let existingPath = config.existingPath ?? URL(fileURLWithPath: "Images")
+        let qemuSystem = UTMQemuSystem(configuration: config, imgPath: existingPath)
+        qemuSystem.updateArgv(withUserOptions: true)
+        var argString = "qemu-system-\(config.systemArchitecture ?? "unknown")"
+        for arg in qemuSystem.argv {
+            if arg.contains(" ") {
+                argString += " \"\(arg)\""
+            } else {
+                argString += " \(arg)"
+            }
+        }
+        return [argString]
     }
 }
 

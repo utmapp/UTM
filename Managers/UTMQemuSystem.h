@@ -28,6 +28,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithConfiguration:(UTMConfiguration *)configuration imgPath:(NSURL *)imgPath;
+- (void)updateArgvWithUserOptions:(BOOL)userOptions;
 - (void)startWithCompletion:(void(^)(BOOL, NSString *))completion;
 
 @end

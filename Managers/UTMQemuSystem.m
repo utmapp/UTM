@@ -98,15 +98,11 @@ static size_t sysctl_read(const char *name) {
 
 - (NSArray<NSString *> *)argv {
     NSArray<NSString *> *argv = [super argv];
-    if (argv.count > 0) {
-        return argv;
-    } else {
-        [self argsRequired];
-        if (!self.configuration.ignoreAllConfiguration) {
-            [self argsFromConfiguration];
-        }
-        return [super argv];
+    if (argv.count == 0) {
+        // HACK: when called from QEMU settings page
+        [self updateArgvWithUserOptions:NO];
     }
+    return [super argv];
 }
 
 - (NSURL *)resourceURL {
@@ -548,12 +544,18 @@ static size_t sysctl_read(const char *name) {
     return (_qemu_init != NULL) && (_qemu_main_loop != NULL) && (_qemu_cleanup != NULL);
 }
 
-- (void)startWithCompletion:(void (^)(BOOL, NSString * _Nonnull))completion {
+- (void)updateArgvWithUserOptions:(BOOL)userOptions {
     [self argsRequired];
     if (!self.configuration.ignoreAllConfiguration) {
         [self argsFromConfiguration];
     }
-    [self argsFromUser];
+    if (userOptions) {
+        [self argsFromUser];
+    }
+}
+
+- (void)startWithCompletion:(void (^)(BOOL, NSString * _Nonnull))completion {
+    [self updateArgvWithUserOptions:YES];
     [self startQemu:self.configuration.systemArchitecture completion:completion];
 }
 
