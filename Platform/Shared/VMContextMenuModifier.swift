@@ -75,7 +75,7 @@ struct VMContextMenuModifier: ViewModifier {
                     .foregroundColor(.red)
             }
         }
-        .modifier(VMShareFileModifier(isPresented: $showSharePopup) {
+        .modifier(VMShareItemModifier(isPresented: $showSharePopup) {
             [vm.path!]
         })
         .modifier(VMConfirmActionModifier(vm: vm, confirmAction: $confirmAction) {

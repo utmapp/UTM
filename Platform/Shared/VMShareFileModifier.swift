@@ -17,21 +17,21 @@
 import SwiftUI
 
 @available(iOS 14, macOS 11, *)
-struct VMShareFileModifier: ViewModifier {
+struct VMShareItemModifier: ViewModifier {
     @Binding var isPresented: Bool
-    let files: () -> [URL]
+    let items: () -> [Any]
     
     #if os(macOS)
     func body(content: Content) -> some View {
         ZStack {
-            SharingsPicker(isPresented: $isPresented, sharingItems: files())
+            SharingsPicker(isPresented: $isPresented, sharingItems: items())
             content
         }
     }
     #else
     func body(content: Content) -> some View {
         content.popover(isPresented: $isPresented) {
-            ActivityView(activityItems: files())
+            ActivityView(activityItems: items())
         }
     }
     #endif

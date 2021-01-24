@@ -40,7 +40,7 @@ struct VMConfigQEMUView: View {
                     })
                     Button("Export Debug Log") {
                         showExportLog.toggle()
-                    }.modifier(VMShareFileModifier(isPresented: $showExportLog, files: exportDebugLog))
+                    }.modifier(VMShareItemModifier(isPresented: $showExportLog, items: exportDebugLog))
                     .disabled(!logExists)
                 }
                 Section(header: Text("QEMU Arguments")) {
