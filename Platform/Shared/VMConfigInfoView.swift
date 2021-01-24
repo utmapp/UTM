@@ -110,7 +110,7 @@ struct VMConfigInfoView: View {
             }
         }.alert(item: $warningMessage) { warning in
             Alert(title: Text(warning))
-        }
+        }.disableAutocorrection(true)
     }
     
     private func validateName(editing: Bool) {

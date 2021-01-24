@@ -105,7 +105,7 @@ struct VMConfigSystemView: View {
             }
         }.alert(item: $warningMessage) { warning in
             Alert(title: Text(warning))
-        }
+        }.disableAutocorrection(true)
     }
     
     func memorySizePickerIndex(size: NSNumber?) -> Float {

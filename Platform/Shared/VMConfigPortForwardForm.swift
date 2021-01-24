@@ -47,7 +47,7 @@ struct VMConfigPortForwardForm: View {
                 Spacer()
                 NumberTextField("1234", number: $configPort.hostPort)
             }
-        }
+        }.disableAutocorrection(true)
     }
 }
 

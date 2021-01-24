@@ -68,6 +68,7 @@ struct VMConfigQEMUView: View {
                     #endif
                 }
             }.navigationBarItems(trailing: EditButton())
+            .disableAutocorrection(true)
         }
     }
     

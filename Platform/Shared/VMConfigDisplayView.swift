@@ -75,7 +75,7 @@ struct VMConfigDisplayView: View {
                     }
                 }
             }
-        }
+        }.disableAutocorrection(true)
     }
 }
 

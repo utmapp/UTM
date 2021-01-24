@@ -124,7 +124,7 @@ struct IPConfigurationSection: View {
                         .keyboardType(.asciiCapable)
                 }
             }
-        }
+        }.disableAutocorrection(true)
     }
 }
 
