@@ -18,10 +18,12 @@ import SwiftUI
 
 @available(iOS 14, macOS 11, *)
 struct VMConfigDriveCreateView: View {
+    private let mibToGib = 1024
     let target: String?
     let minSizeMib = 1
     
     @ObservedObject var driveImage: VMDriveImage
+    @State private var isGiB: Bool = true
     
     var body: some View {
         Form {
@@ -37,12 +39,15 @@ struct VMConfigDriveCreateView: View {
                     Text("Size")
                     Spacer()
                     NumberTextField("Size", number: Binding<NSNumber?>(get: {
-                        NSNumber(value: driveImage.size)
+                        NSNumber(value: convertToDisplay(fromSizeMib: driveImage.size))
                     }, set: {
-                        driveImage.size = $0?.intValue ?? 0
+                        driveImage.size = convertToMib(fromSize: $0?.intValue ?? 0)
                     }), onEditingChanged: validateSize)
                         .multilineTextAlignment(.trailing)
-                    Text("MB")
+                    Button(action: { isGiB.toggle() }, label: {
+                        Text(isGiB ? "GB" : "MB")
+                            .foregroundColor(.blue)
+                    }).buttonStyle(PlainButtonStyle())
                 }
             }
         }.onAppear() {
@@ -56,6 +61,22 @@ struct VMConfigDriveCreateView: View {
         }
         if driveImage.size < minSizeMib {
             driveImage.size = minSizeMib
+        }
+    }
+    
+    private func convertToMib(fromSize size: Int) -> Int {
+        if isGiB {
+            return size * mibToGib
+        } else {
+            return size
+        }
+    }
+    
+    private func convertToDisplay(fromSizeMib sizeMib: Int) -> Int {
+        if isGiB {
+            return sizeMib / mibToGib
+        } else {
+            return sizeMib
         }
     }
 }
