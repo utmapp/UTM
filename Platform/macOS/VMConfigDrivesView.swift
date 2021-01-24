@@ -68,7 +68,7 @@ struct VMConfigDrivesView: View {
         data.busyWork {
             switch result {
             case .success(let url):
-                try data.importDrive(url, forConfig: config)
+                try data.importDrive(url, for: config)
                 break
             case .failure(let err):
                 throw err
@@ -79,7 +79,7 @@ struct VMConfigDrivesView: View {
     private func addNewDrive(_ newDrive: VMDriveImage) {
         newDrivePopover = false // hide popover
         data.busyWork {
-            try data.createDrive(newDrive, forConfig: config)
+            try data.createDrive(newDrive, for: config)
         }
     }
 }

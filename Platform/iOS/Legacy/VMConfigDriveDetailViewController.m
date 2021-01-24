@@ -168,9 +168,7 @@
         }
     } else {
         [self.configuration setDriveRemovable:self.removable forIndex:self.driveIndex];
-        if (self.removable) {
-            [self.configuration setImagePath:@"" forIndex:self.driveIndex];
-        } else {
+        if (!self.removable) {
             [self.configuration setImagePath:self.imageName forIndex:self.driveIndex];
         }
         [self.configuration setDriveInterfaceType:self.driveInterfaceType forIndex:self.driveIndex];
