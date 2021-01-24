@@ -50,10 +50,10 @@ DEFAULTS = {
     "aarch64": "virt",
     "arm": "virt",
     "avr": "mega",
-    "i386": "pc",
+    "i386": "q35",
     "rx": "gdbsim-r5f562n7",
     "tricore": "tricore_testboard",
-    "x86_64": "pc"
+    "x86_64": "q35"
 }
 
 HEADER = '''//
