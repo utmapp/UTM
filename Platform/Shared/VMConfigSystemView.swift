@@ -76,6 +76,29 @@ struct VMConfigSystemView: View {
                     Text("Show Advanced Settings")
                 })
                 if showAdvanced {
+                    Section(header: Text("CPU")) {
+                        VMConfigStringPicker(selection: $config.systemCPU.animation(), label: Text("CPU"), rawValues: UTMConfiguration.supportedCpus(forArchitecture: config.systemArchitecture) ?? [], displayValues: UTMConfiguration.supportedCpus(forArchitecturePretty: config.systemArchitecture) ?? [])
+                    }
+                    let allFlags = UTMConfiguration.supportedCpuFlags(forArchitecture: config.systemArchitecture) ?? []
+                    let activeFlags = config.systemCPUFlags ?? []
+                    if config.systemCPU != "default" && allFlags.count > 0 {
+                        Section(header: Text("CPU Flags")) {
+                            ForEach(allFlags) { flag in
+                                let isFlagOn = Binding<Bool> { () -> Bool in
+                                    activeFlags.contains(flag)
+                                } set: { isOn in
+                                    if isOn {
+                                        config.newCPUFlag(flag)
+                                    } else {
+                                        config.removeCPUFlag(flag)
+                                    }
+                                }
+                                Toggle(isOn: isFlagOn, label: {
+                                    Text(flag)
+                                })
+                            }
+                        }
+                    }
                     Section(footer: Text("Set to 0 to use maximum supported CPUs. Force multicore might result in incorrect emulation.").padding(.bottom)) {
                         HStack {
                             Text("CPU Count")

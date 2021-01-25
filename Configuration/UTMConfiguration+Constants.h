@@ -41,6 +41,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (NSArray<NSString *>*)supportedArchitectures;
 + (NSArray<NSString *>*)supportedArchitecturesPretty;
++ (nullable NSArray<NSString *>*)supportedCpusForArchitecture:(nullable NSString *)architecture;
++ (nullable NSArray<NSString *>*)supportedCpusForArchitecturePretty:(nullable NSString *)architecture;
++ (nullable NSArray<NSString *>*)supportedCpuFlagsForArchitecture:(nullable NSString *)architecture;
 + (nullable NSArray<NSString *>*)supportedTargetsForArchitecture:(nullable NSString *)architecture;
 + (nullable NSArray<NSString *>*)supportedTargetsForArchitecturePretty:(nullable NSString *)architecture;
 + (NSInteger)defaultTargetIndexForArchitecture:(nullable NSString *)architecture;
