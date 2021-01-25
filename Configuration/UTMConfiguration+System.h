@@ -21,6 +21,8 @@ NS_ASSUME_NONNULL_BEGIN
 @interface UTMConfiguration (System)
 
 @property (nonatomic, nullable, copy) NSString *systemArchitecture;
+@property (nonatomic, nullable, copy) NSString *systemCPU;
+@property (nonatomic, nullable, readonly) NSArray<NSString *> *systemCPUFlags;
 @property (nonatomic, nullable, copy) NSNumber *systemMemory;
 @property (nonatomic, nullable, copy) NSNumber *systemCPUCount;
 @property (nonatomic, nullable, copy) NSString *systemTarget;
@@ -40,6 +42,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)moveArgumentIndex:(NSInteger)index to:(NSInteger)newIndex;
 - (void)updateArgumentAtIndex:(NSInteger)index withValue:(NSString*)argument;
 - (void)removeArgumentAtIndex:(NSInteger)index;
+
+- (NSInteger)newCPUFlag:(NSString *)CPUFlag;
+- (void)removeCPUFlag:(NSString *)CPUFlag;
 
 @end
 

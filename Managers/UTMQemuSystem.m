@@ -163,10 +163,6 @@ static size_t sysctl_read(const char *name) {
 
 - (void)targetSpecificConfiguration {
     if ([self.configuration.systemTarget hasPrefix:@"virt"]) {
-        if (!self.useHypervisor && [self.configuration.systemArchitecture isEqualToString:@"aarch64"]) {
-            [self pushArgv:@"-cpu"];
-            [self pushArgv:@"cortex-a72"];
-        }
         NSString *name = [NSString stringWithFormat:@"edk2-%@-code.fd", self.configuration.systemArchitecture];
         NSURL *path = [self.resourceURL URLByAppendingPathComponent:name];
         if (!self.hasCustomBios && [[NSFileManager defaultManager] fileExistsAtPath:path.path]) {
@@ -190,6 +186,28 @@ static size_t sysctl_read(const char *name) {
     } else {
         return interface; // no expand needed
     }
+}
+
+- (void)argsForCpu {
+    if ([self.configuration.systemCPU isEqualToString:@"default"] && self.useHypervisor) {
+        // if default and not hypervisor, we don't pass any -cpu argument
+        [self pushArgv:@"-cpu"];
+        [self pushArgv:@"host"];
+    } else if (self.configuration.systemCPU.length > 0) {
+        NSString *cpu = self.configuration.systemCPU;
+        for (NSString *flag in self.configuration.systemCPUFlags) {
+            unichar prefix = [flag characterAtIndex:0];
+            if (prefix != '-' && prefix != '+') {
+                cpu = [cpu stringByAppendingFormat:@",+%@", flag];
+            } else {
+                cpu = [cpu stringByAppendingFormat:@",%@", flag];
+            }
+        }
+        [self pushArgv:@"-cpu"];
+        [self pushArgv:cpu];
+    }
+    [self pushArgv:@"-smp"];
+    [self pushArgv:[NSString stringWithFormat:@"cpus=%lu,sockets=1,cores=%lu,threads=%lu", self.emulatedCpuCount.threads, self.emulatedCpuCount.cpus, self.emulatedCpuCount.threads / self.emulatedCpuCount.cpus]];
 }
 
 - (void)argsForDrives {
@@ -452,15 +470,11 @@ static size_t sysctl_read(const char *name) {
 }
 
 - (void)argsFromConfiguration {
-    [self pushArgv:@"-smp"];
-    [self pushArgv:[NSString stringWithFormat:@"cpus=%lu,sockets=1,cores=%lu,threads=%lu", self.emulatedCpuCount.threads, self.emulatedCpuCount.cpus, self.emulatedCpuCount.threads / self.emulatedCpuCount.cpus]];
     [self pushArgv:@"-machine"];
     [self pushArgv:[NSString stringWithFormat:@"%@,%@", self.configuration.systemTarget, [self machineProperties]]];
     if (self.useHypervisor) {
         [self pushArgv:@"-accel"];
         [self pushArgv:@"hvf"];
-        [self pushArgv:@"-cpu"];
-        [self pushArgv:@"host"];
     }
     [self pushArgv:@"-accel"];
     [self pushArgv:[self tcgAccelProperties]];

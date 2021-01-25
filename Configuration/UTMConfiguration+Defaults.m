@@ -25,6 +25,7 @@
 
 - (void)loadDefaults {
     self.systemArchitecture = @"x86_64";
+    self.systemCPU = @"default";
     self.systemTarget = @"q35";
     self.systemMemory = @512;
     self.systemBootDevice = @"cd";
@@ -62,6 +63,9 @@
     if (machineProp) {
         self.systemMachineProperties = machineProp;
     }
+    if (target && architecture) {
+        self.systemCPU = [UTMConfiguration defaultCPUForTarget:target architecture:architecture];
+    }
 }
 
 + (nullable NSString *)defaultMachinePropertiesForTarget:(nullable NSString *)target {
@@ -84,6 +88,16 @@
         }
     }
     return @"ide";
+}
+
++ (NSString *)defaultCPUForTarget:(NSString *)target architecture:(NSString *)architecture {
+    if ([architecture isEqualToString:@"aarch64"]) {
+        return @"cortex-a72";
+    } else if ([architecture isEqualToString:@"arm"]) {
+        return @"cortex-a15";
+    } else {
+        return @"default";
+    }
 }
 
 @end
