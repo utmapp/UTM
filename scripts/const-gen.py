@@ -181,6 +181,7 @@ def parseCpu(listing):
             flags += parseX86Flags(line)
         elif header[1] == 'Recognized feature flags:':
             flags += parseS390Flags(line)
+    flags = sorted(set(flags)) # sort and de-duplicate
     return (cpus, flags)
 
 def sortItems(items):
