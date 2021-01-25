@@ -233,7 +233,7 @@ static const NSString *const kUTMConfigMachinePropertiesKey = @"MachinePropertie
 - (void)removeCPUFlag:(NSString *)CPUFlag {
     NSMutableArray<NSString *> *flags = self.rootDict[kUTMConfigSystemKey][kUTMConfigCPUFlagsKey];
     [self propertyWillChange];
-    [flags removeObjectIdenticalTo:CPUFlag];
+    [flags removeObject:CPUFlag];
 }
 
 #pragma mark - Computed properties
