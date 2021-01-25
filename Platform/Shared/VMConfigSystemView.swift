@@ -18,7 +18,6 @@ import SwiftUI
 
 @available(iOS 14, macOS 11, *)
 struct VMConfigSystemView: View {
-    let validMemoryValues = [32, 64, 128, 256, 512, 768, 1024, 1536, 2048, 3072, 4096, 6144, 8192, 10240, 12288, 14336, 16384, 32768]
     let bytesInMib: UInt64 = 1024 * 1024
     let minMemoryMib = 32
     let baseUsageMib = 128
@@ -29,50 +28,13 @@ struct VMConfigSystemView: View {
     #endif
     
     @ObservedObject var config: UTMConfiguration
-    @State private var memorySizeIndex: Float = 0
     @State private var showAdvanced: Bool = false
     @State private var warningMessage: String? = nil
-    @State private var showAllFlags: Bool = false
     
     var body: some View {
         VStack {
             Form {
-                let memorySizeIndexObserver = Binding<Float>(
-                    get: {
-                        return memorySizePickerIndex(size: config.systemMemory)
-                    },
-                    set: {
-                        config.systemMemory = memorySize(pickerIndex: $0)
-                    }
-                )
-                Section(header: Text("Hardware")) {
-                    VMConfigStringPicker(selection: $config.systemArchitecture, label: Text("Architecture"), rawValues: UTMConfiguration.supportedArchitectures(), displayValues: UTMConfiguration.supportedArchitecturesPretty())
-                        .onChange(of: config.systemArchitecture, perform: { value in
-                            guard let arch = value else {
-                                return
-                            }
-                            let index = UTMConfiguration.defaultTargetIndex(forArchitecture: arch)
-                            let targets = UTMConfiguration.supportedTargets(forArchitecture: arch)
-                            config.systemTarget = targets?[index]
-                            config.loadDefaults(forTarget: config.systemTarget, architecture: arch)
-                        })
-                    VMConfigStringPicker(selection: $config.systemTarget, label: Text("System"), rawValues: UTMConfiguration.supportedTargets(forArchitecture: config.systemArchitecture) ?? [], displayValues: UTMConfiguration.supportedTargets(forArchitecturePretty: config.systemArchitecture) ?? [])
-                        .onChange(of: config.systemTarget, perform: { value in
-                            config.loadDefaults(forTarget: value, architecture: config.systemArchitecture)
-                        })
-                    HStack {
-                        Slider(value: memorySizeIndexObserver, in: 0...Float(validMemoryValues.count-1), step: 1) { start in
-                            if !start {
-                                validateMemorySize(editing: false)
-                            }
-                        } label: {
-                            Text("Memory")
-                        }
-                        NumberTextField("Size", number: $config.systemMemory, onEditingChanged: validateMemorySize)
-                            .frame(width: 50, height: nil)
-                        Text("MB")
-                    }
-                }
+                HardwareOptions(config: config, validateMemorySize: validateMemorySize)
                 Toggle(isOn: $showAdvanced.animation(), label: {
                     Text("Show Advanced Settings")
                 })
@@ -80,42 +42,7 @@ struct VMConfigSystemView: View {
                     Section(header: Text("CPU")) {
                         VMConfigStringPicker(selection: $config.systemCPU.animation(), label: EmptyView(), rawValues: UTMConfiguration.supportedCpus(forArchitecture: config.systemArchitecture) ?? [], displayValues: UTMConfiguration.supportedCpus(forArchitecturePretty: config.systemArchitecture) ?? [])
                     }
-                    let allFlags = UTMConfiguration.supportedCpuFlags(forArchitecture: config.systemArchitecture) ?? []
-                    let activeFlags = config.systemCPUFlags ?? []
-                    if config.systemCPU != "default" && allFlags.count > 0 {
-                        Section(header: Text("CPU Flags")) {
-                            if showAllFlags || activeFlags.count > 0 {
-                                OptionsList {
-                                    ForEach(allFlags) { flag in
-                                        let isFlagOn = Binding<Bool> { () -> Bool in
-                                            activeFlags.contains(flag)
-                                        } set: { isOn in
-                                            if isOn {
-                                                config.newCPUFlag(flag)
-                                            } else {
-                                                config.removeCPUFlag(flag)
-                                            }
-                                        }
-                                        if showAllFlags || isFlagOn.wrappedValue {
-                                            Toggle(isOn: isFlagOn, label: {
-                                                Text(flag)
-                                            })
-                                        }
-                                    }
-                                }
-                            }
-                            Button {
-                                showAllFlags.toggle()
-                            } label: {
-                                if (showAllFlags) {
-                                    Text("Hide Unused Flags...")
-                                } else {
-                                    Text("Show All Flags...")
-                                }
-                            }
-
-                        }
-                    }
+                    CPUFlagsOptions(config: config)
                     Section(header: Text("CPU Cores"), footer: Text("Set to 0 to use maximum supported CPUs. Force multicore might result in incorrect emulation.").padding(.bottom)) {
                         HStack {
                             NumberTextField("Default", number: $config.systemCPUCount, onEditingChanged: validateCpuCount)
@@ -144,26 +71,6 @@ struct VMConfigSystemView: View {
         }.alert(item: $warningMessage) { warning in
             Alert(title: Text(warning))
         }.disableAutocorrection(true)
-    }
-    
-    func memorySizePickerIndex(size: NSNumber?) -> Float {
-        guard let sizeUnwrap = size else {
-            return 0
-        }
-        for (i, s) in validMemoryValues.enumerated() {
-            if s >= Int(truncating: sizeUnwrap) {
-                return Float(i)
-            }
-        }
-        return Float(validMemoryValues.count - 1)
-    }
-    
-    func memorySize(pickerIndex: Float) -> NSNumber {
-        let i = Int(pickerIndex)
-        guard i >= 0 && i < validMemoryValues.count else {
-            return 0
-        }
-        return NSNumber(value: validMemoryValues[i])
     }
     
     func validateMemorySize(editing: Bool) {
@@ -195,6 +102,120 @@ struct VMConfigSystemView: View {
         guard let cpuCount = config.systemCPUCount?.intValue, cpuCount >= 0 else {
             config.systemCPUCount = NSNumber(value: 0)
             return
+        }
+    }
+}
+
+@available(iOS 14, macOS 11, *)
+struct HardwareOptions: View {
+    let validMemoryValues = [32, 64, 128, 256, 512, 768, 1024, 1536, 2048, 3072, 4096, 6144, 8192, 10240, 12288, 14336, 16384, 32768]
+    
+    @ObservedObject var config: UTMConfiguration
+    let validateMemorySize: (Bool) -> Void
+    @State private var memorySizeIndex: Float = 0
+    @State private var warningMessage: String? = nil
+    
+    var body: some View {
+        let memorySizeIndexObserver = Binding<Float>(
+            get: {
+                return memorySizePickerIndex(size: config.systemMemory)
+            },
+            set: {
+                config.systemMemory = memorySize(pickerIndex: $0)
+            }
+        )
+        Section(header: Text("Hardware")) {
+            VMConfigStringPicker(selection: $config.systemArchitecture, label: Text("Architecture"), rawValues: UTMConfiguration.supportedArchitectures(), displayValues: UTMConfiguration.supportedArchitecturesPretty())
+                .onChange(of: config.systemArchitecture, perform: { value in
+                    guard let arch = value else {
+                        return
+                    }
+                    let index = UTMConfiguration.defaultTargetIndex(forArchitecture: arch)
+                    let targets = UTMConfiguration.supportedTargets(forArchitecture: arch)
+                    config.systemTarget = targets?[index]
+                    config.loadDefaults(forTarget: config.systemTarget, architecture: arch)
+                })
+            VMConfigStringPicker(selection: $config.systemTarget, label: Text("System"), rawValues: UTMConfiguration.supportedTargets(forArchitecture: config.systemArchitecture) ?? [], displayValues: UTMConfiguration.supportedTargets(forArchitecturePretty: config.systemArchitecture) ?? [])
+                .onChange(of: config.systemTarget, perform: { value in
+                    config.loadDefaults(forTarget: value, architecture: config.systemArchitecture)
+                })
+            HStack {
+                Slider(value: memorySizeIndexObserver, in: 0...Float(validMemoryValues.count-1), step: 1) { start in
+                    if !start {
+                        validateMemorySize(false)
+                    }
+                } label: {
+                    Text("Memory")
+                }
+                NumberTextField("Size", number: $config.systemMemory, onEditingChanged: validateMemorySize)
+                    .frame(width: 50, height: nil)
+                Text("MB")
+            }
+        }
+    }
+    
+    func memorySizePickerIndex(size: NSNumber?) -> Float {
+        guard let sizeUnwrap = size else {
+            return 0
+        }
+        for (i, s) in validMemoryValues.enumerated() {
+            if s >= Int(truncating: sizeUnwrap) {
+                return Float(i)
+            }
+        }
+        return Float(validMemoryValues.count - 1)
+    }
+    
+    func memorySize(pickerIndex: Float) -> NSNumber {
+        let i = Int(pickerIndex)
+        guard i >= 0 && i < validMemoryValues.count else {
+            return 0
+        }
+        return NSNumber(value: validMemoryValues[i])
+    }
+}
+
+@available(iOS 14, macOS 11, *)
+struct CPUFlagsOptions: View {
+    @ObservedObject var config: UTMConfiguration
+    @State private var showAllFlags: Bool = false
+    
+    var body: some View {
+        let allFlags = UTMConfiguration.supportedCpuFlags(forArchitecture: config.systemArchitecture) ?? []
+        let activeFlags = config.systemCPUFlags ?? []
+        if config.systemCPU != "default" && allFlags.count > 0 {
+            Section(header: Text("CPU Flags")) {
+                if showAllFlags || activeFlags.count > 0 {
+                    OptionsList {
+                        ForEach(allFlags) { flag in
+                            let isFlagOn = Binding<Bool> { () -> Bool in
+                                activeFlags.contains(flag)
+                            } set: { isOn in
+                                if isOn {
+                                    config.newCPUFlag(flag)
+                                } else {
+                                    config.removeCPUFlag(flag)
+                                }
+                            }
+                            if showAllFlags || isFlagOn.wrappedValue {
+                                Toggle(isOn: isFlagOn, label: {
+                                    Text(flag)
+                                })
+                            }
+                        }
+                    }
+                }
+                Button {
+                    showAllFlags.toggle()
+                } label: {
+                    if (showAllFlags) {
+                        Text("Hide Unused Flags...")
+                    } else {
+                        Text("Show All Flags...")
+                    }
+                }
+
+            }
         }
     }
 }
