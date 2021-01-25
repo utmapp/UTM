@@ -32,6 +32,7 @@ struct VMConfigSystemView: View {
     @State private var memorySizeIndex: Float = 0
     @State private var showAdvanced: Bool = false
     @State private var warningMessage: String? = nil
+    @State private var showAllFlags: Bool = false
     
     var body: some View {
         VStack {
@@ -83,20 +84,36 @@ struct VMConfigSystemView: View {
                     let activeFlags = config.systemCPUFlags ?? []
                     if config.systemCPU != "default" && allFlags.count > 0 {
                         Section(header: Text("CPU Flags")) {
-                            ForEach(allFlags) { flag in
-                                let isFlagOn = Binding<Bool> { () -> Bool in
-                                    activeFlags.contains(flag)
-                                } set: { isOn in
-                                    if isOn {
-                                        config.newCPUFlag(flag)
-                                    } else {
-                                        config.removeCPUFlag(flag)
+                            if showAllFlags || activeFlags.count > 0 {
+                                OptionsList {
+                                    ForEach(allFlags) { flag in
+                                        let isFlagOn = Binding<Bool> { () -> Bool in
+                                            activeFlags.contains(flag)
+                                        } set: { isOn in
+                                            if isOn {
+                                                config.newCPUFlag(flag)
+                                            } else {
+                                                config.removeCPUFlag(flag)
+                                            }
+                                        }
+                                        if showAllFlags || isFlagOn.wrappedValue {
+                                            Toggle(isOn: isFlagOn, label: {
+                                                Text(flag)
+                                            })
+                                        }
                                     }
                                 }
-                                Toggle(isOn: isFlagOn, label: {
-                                    Text(flag)
-                                })
                             }
+                            Button {
+                                showAllFlags.toggle()
+                            } label: {
+                                if (showAllFlags) {
+                                    Text("Hide Unused Flags...")
+                                } else {
+                                    Text("Show All Flags...")
+                                }
+                            }
+
                         }
                     }
                     Section(header: Text("CPU Cores"), footer: Text("Set to 0 to use maximum supported CPUs. Force multicore might result in incorrect emulation.").padding(.bottom)) {
@@ -179,6 +196,34 @@ struct VMConfigSystemView: View {
             config.systemCPUCount = NSNumber(value: 0)
             return
         }
+    }
+}
+
+@available(iOS 14, macOS 11, *)
+struct OptionsList<Content>: View where Content: View {
+    private var columns: [GridItem] = [
+        GridItem(.fixed(150), spacing: 16),
+        GridItem(.fixed(150), spacing: 16),
+        GridItem(.fixed(150), spacing: 16),
+        GridItem(.fixed(150), spacing: 16)
+    ]
+    
+    var content: () -> Content
+    
+    init(content: @escaping () -> Content) {
+        self.content = content
+    }
+    
+    var body: some View {
+        #if os(macOS)
+        LazyVGrid(columns: columns, alignment: .leading) {
+            content()
+        }
+        #else
+        LazyVStack {
+            content()
+        }
+        #endif
     }
 }
 
