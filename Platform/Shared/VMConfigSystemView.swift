@@ -77,7 +77,7 @@ struct VMConfigSystemView: View {
                 })
                 if showAdvanced {
                     Section(header: Text("CPU")) {
-                        VMConfigStringPicker(selection: $config.systemCPU.animation(), label: Text("CPU"), rawValues: UTMConfiguration.supportedCpus(forArchitecture: config.systemArchitecture) ?? [], displayValues: UTMConfiguration.supportedCpus(forArchitecturePretty: config.systemArchitecture) ?? [])
+                        VMConfigStringPicker(selection: $config.systemCPU.animation(), label: EmptyView(), rawValues: UTMConfiguration.supportedCpus(forArchitecture: config.systemArchitecture) ?? [], displayValues: UTMConfiguration.supportedCpus(forArchitecturePretty: config.systemArchitecture) ?? [])
                     }
                     let allFlags = UTMConfiguration.supportedCpuFlags(forArchitecture: config.systemArchitecture) ?? []
                     let activeFlags = config.systemCPUFlags ?? []
@@ -99,21 +99,18 @@ struct VMConfigSystemView: View {
                             }
                         }
                     }
-                    Section(footer: Text("Set to 0 to use maximum supported CPUs. Force multicore might result in incorrect emulation.").padding(.bottom)) {
+                    Section(header: Text("CPU Cores"), footer: Text("Set to 0 to use maximum supported CPUs. Force multicore might result in incorrect emulation.").padding(.bottom)) {
                         HStack {
-                            Text("CPU Count")
-                            Spacer()
                             NumberTextField("Default", number: $config.systemCPUCount, onEditingChanged: validateCpuCount)
                                 .multilineTextAlignment(.trailing)
+                            Text("Cores")
                         }
                         Toggle(isOn: $config.systemForceMulticore, label: {
                             Text("Force Multicore")
                         })
                     }
-                    Section(footer: Text("Set to 0 for default which is 1/4 of the allocated Memory size. This is in addition to the host memory!").padding(.bottom)) {
+                    Section(header: Text("JIT Cache"), footer: Text("Set to 0 for default which is 1/4 of the allocated Memory size. This is in addition to the host memory!").padding(.bottom)) {
                         HStack {
-                            Text("JIT Cache")
-                            Spacer()
                             NumberTextField("Default", number: $config.systemJitCacheSize, onEditingChanged: validateMemorySize)
                                 .multilineTextAlignment(.trailing)
                             Text("MB")
@@ -121,6 +118,8 @@ struct VMConfigSystemView: View {
                     }
                     Section(header: Text("QEMU Machine Properties")) {
                         TextField("None", text: $config.systemMachineProperties.bound)
+                    }
+                    Section(header: Text("Boot Options")) {
                         VMConfigStringPicker(selection: $config.systemBootDevice, label: Text("Boot Order"), rawValues: UTMConfiguration.supportedBootDevices(), displayValues: UTMConfiguration.supportedBootDevicesPretty())
                     }
                 }
