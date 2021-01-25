@@ -10,7 +10,7 @@ from collections import namedtuple
 
 Name = namedtuple('Name', 'name desc')
 Device = namedtuple('Device', 'name bus alias desc')
-Machines = namedtuple('Machines', 'name items default')
+Architecture = namedtuple('Architecture', 'name items default')
 
 TARGETS = [
     Name("alpha", "Alpha"),
@@ -89,7 +89,7 @@ def parseListing(listing):
             break
         name = line[0:idx]
         description = line[idx:].strip()
-        result.add(Name(name, description))
+        result.add(Name(name, '{} ({})'.format(description, name)))
     return result
 
 def parseDeviceListing(listing):
@@ -103,7 +103,13 @@ def parseDeviceListing(listing):
             group = line.rstrip(':')
             continue
         search = re.search('^name "(?P<name>[^"]*)"(?:, bus (?P<bus>[^\s]+))?(?:, alias "(?P<alias>[^"]+)")?(?:, desc "(?P<desc>[^"]+)")?$', line)
-        item = Device(search.group('name'), search.group('bus'), search.group('alias'), search.group('desc'))
+        name = search.group('name')
+        desc = search.group('desc')
+        if not desc:
+            desc = name
+        else:
+            desc = '{} ({})'.format(desc, name)
+        item = Device(name, search.group('bus'), search.group('alias'), desc)
         result[group].add(item)
     return result
 
@@ -119,9 +125,14 @@ def parseCpu(listing):
         return Name(search.group('name'), search.group('name'))
     def parseStandard(line):
         search = re.search('^(?P<arch>\S+)\s+(?P<name>\S+)\s+(?P<desc>.*)?$', line)
+        name = search.group('name')
         desc = search.group('desc').strip()
         desc = ' '.join(desc.split())
-        return Name(search.group('name'), desc)
+        if not desc or desc.startswith('(alias'):
+            desc = name
+        else:
+            desc = '{} ({})'.format(desc, name)
+        return Name(name, desc)
     def parseSparcFlags(line):
         if line.startswith('Default CPU feature flags'):
             flags = line.split(':')[1].strip()
@@ -188,7 +199,6 @@ def getDefaultMachine(target, machines):
             return idx
         elif not find and "default" in machine.desc:
             return idx
-    print(machines)
     return -1
 
 def getSoundCards(qemu_path):
@@ -241,14 +251,15 @@ def generate(targets, cpus, cpuFlags, machines, networkCards, soundCards):
     output += generateArray('supportedArchitectures', targetKeys)
     output += generateArray('supportedArchitecturesPretty', [item.desc for item in targets])
     output += generateMap('supportedCpusForArchitecture', 'architecture', targetKeys, {cpu.name: [item.name for item in cpu.items] for cpu in cpus})
+    output += generateMap('supportedCpusForArchitecturePretty', 'architecture', targetKeys, {cpu.name: [item.desc for item in cpu.items] for cpu in cpus})
     output += generateMap('supportedCpuFlagsForArchitecture', 'architecture', targetKeys, {machine.name: [item for item in machine.items] for machine in cpuFlags})
     output += generateMap('supportedTargetsForArchitecture', 'architecture', targetKeys, {machine.name: [item.name for item in machine.items] for machine in machines})
     output += generateMap('supportedTargetsForArchitecturePretty', 'architecture', targetKeys, {machine.name: [item.desc for item in machine.items] for machine in machines})
     output += generateIndexMap('defaultTargetIndexForArchitecture', 'architecture', targetKeys, {machine.name: machine.default for machine in machines})
     output += generateArray('supportedNetworkCards', [item.name for item in networkCards])
-    output += generateArray('supportedNetworkCardsPretty', [item.desc if item.desc else item.name for item in networkCards])
+    output += generateArray('supportedNetworkCardsPretty', [item.desc for item in networkCards])
     output += generateArray('supportedSoundCardDevices', [item.name for item in soundCards])
-    output += generateArray('supportedSoundCardDevicesPretty', [item.desc if item.desc else item.name for item in soundCards])
+    output += generateArray('supportedSoundCardDevicesPretty', [item.desc for item in soundCards])
     output += '@end\n'
     return output
 
@@ -268,12 +279,12 @@ def main(argv):
                 raise "Invalid path."
         machines = sortItems(getMachines(path))
         default = getDefaultMachine(target.name, machines)
-        allMachines.append(Machines(target.name, machines, default))
+        allMachines.append(Architecture(target.name, machines, default))
         networkCards = networkCards.union(getNetworkCards(path))
         soundCards = soundCards.union(getSoundCards(path))
         cpus, flags = getCpus(path)
-        allCpus.append(Machines(target.name, cpus, 0))
-        allCpuFlags.append(Machines(target.name, flags, 0))
+        allCpus.append(Architecture(target.name, cpus, 0))
+        allCpuFlags.append(Architecture(target.name, flags, 0))
     # generate constants
     print(generate(TARGETS, allCpus, allCpuFlags, allMachines, sortItems(networkCards), sortItems(soundCards)))
 
