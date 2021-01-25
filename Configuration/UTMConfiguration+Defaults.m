@@ -44,7 +44,7 @@
     self.selectedCustomIconPath = nil;
 }
 
-- (void)loadDefaultsForTarget:(NSString *)target {
+- (void)loadDefaultsForTarget:(nullable NSString *)target architecture:(nullable NSString *)architecture {
     if ([target hasPrefix:@"pc"] || [target hasPrefix:@"q35"]) {
         self.soundCard = @"ac97";
         self.networkCard = @"rtl8139";
@@ -64,7 +64,7 @@
     }
 }
 
-+ (nullable NSString *)defaultMachinePropertiesForTarget:(NSString *)target {
++ (nullable NSString *)defaultMachinePropertiesForTarget:(nullable NSString *)target {
     if ([target hasPrefix:@"pc"] || [target hasPrefix:@"q35"]) {
         return @"vmport=off";
     } else if ([target isEqualToString:@"virt"] || [target hasPrefix:@"virt-"]) {
