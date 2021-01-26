@@ -470,6 +470,7 @@ static size_t sysctl_read(const char *name) {
 }
 
 - (void)argsFromConfiguration {
+    [self argsForCpu];
     [self pushArgv:@"-machine"];
     [self pushArgv:[NSString stringWithFormat:@"%@,%@", self.configuration.systemTarget, [self machineProperties]]];
     if (self.useHypervisor) {
