@@ -193,7 +193,7 @@ static size_t sysctl_read(const char *name) {
         // if default and not hypervisor, we don't pass any -cpu argument
         [self pushArgv:@"-cpu"];
         [self pushArgv:@"host"];
-    } else if (self.configuration.systemCPU.length > 0) {
+    } else if (self.configuration.systemCPU.length > 0 && ![self.configuration.systemCPU isEqualToString:@"default"]) {
         NSString *cpu = self.configuration.systemCPU;
         for (NSString *flag in self.configuration.systemCPUFlags) {
             unichar prefix = [flag characterAtIndex:0];
