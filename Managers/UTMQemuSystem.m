@@ -78,7 +78,7 @@ static void *start_qemu(void *args) {
 static size_t sysctl_read(const char *name) {
     size_t len;
     unsigned int ncpu = 0;
-
+    
     len = sizeof(ncpu);
     sysctlbyname(name, &ncpu, &len, NULL, 0);
     return ncpu;
@@ -152,8 +152,6 @@ static size_t sysctl_read(const char *name) {
 - (void)architectureSpecificConfiguration {
     if ([self.configuration.systemArchitecture isEqualToString:@"x86_64"] ||
         [self.configuration.systemArchitecture isEqualToString:@"i386"]) {
-        [self pushArgv:@"-vga"];
-        [self pushArgv:@"qxl"];
         [self pushArgv:@"-global"];
         [self pushArgv:@"PIIX4_PM.disable_s3=1"]; // applies for pc-i440fx-* types
         [self pushArgv:@"-global"];
@@ -169,8 +167,6 @@ static size_t sysctl_read(const char *name) {
             [self pushArgv:@"-bios"];
             [self pushArgv:path.path]; // accessDataWithBookmark called already
         }
-        [self pushArgv:@"-device"];
-        [self pushArgv:@"virtio-ramfb"];
     }
 }
 
@@ -451,6 +447,8 @@ static size_t sysctl_read(const char *name) {
     [self pushArgv:@"-S"]; // startup stopped
     [self pushArgv:@"-qmp"];
     [self pushArgv:[NSString stringWithFormat:@"tcp:127.0.0.1:%lu,server,nowait", self.qmpPort]];
+    [self pushArgv:@"-vga"];
+    [self pushArgv:@"none"];// -vga none, avoid adding duplicate graphics cards
     if (self.configuration.displayConsoleOnly) {
         [self pushArgv:@"-nographic"];
         // terminal character device
@@ -466,6 +464,8 @@ static size_t sysctl_read(const char *name) {
     } else {
         [self pushArgv:@"-spice"];
         [self pushArgv:[NSString stringWithFormat:@"port=%lu,addr=127.0.0.1,disable-ticketing,image-compression=off,playback-compression=off,streaming-video=off", self.spicePort]];
+        [self pushArgv:@"-device"];
+        [self pushArgv:self.configuration.graphicsCard];
     }
 }
 

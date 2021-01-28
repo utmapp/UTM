@@ -50,10 +50,12 @@
         self.soundCard = @"ac97";
         self.networkCard = @"rtl8139";
         self.shareClipboardEnabled = YES;
+        self.graphicsCard = @"qxl-vga";
     } else if ([target isEqualToString:@"virt"] || [target hasPrefix:@"virt-"]) {
         self.soundCard = @"hda";
         self.networkCard = @"virtio-net-pci";
         self.shareClipboardEnabled = YES;
+        self.graphicsCard = @"ramfb";
     } else if ([target isEqualToString:@"mac99"]) {
         self.soundEnabled = NO;
     } else if ([target isEqualToString:@"isapc"]) {

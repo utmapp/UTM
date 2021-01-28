@@ -73,6 +73,9 @@ struct VMConfigDisplayView: View {
                         VMConfigStringPicker(selection: $config.displayUpscaler, label: Text("Upscaling"), rawValues: UTMConfiguration.supportedScalers(), displayValues: UTMConfiguration.supportedScalersPretty())
                         VMConfigStringPicker(selection: $config.displayDownscaler, label: Text("Downscaling"), rawValues: UTMConfiguration.supportedScalers(), displayValues: UTMConfiguration.supportedScalersPretty())
                     }
+                    Section(header: Text("Graphics Card"), footer: Text("QEMU arguments for -device graphics card. For i386/x86_64, qxl-vga is set by default, for virt systems  ramfb is set by default.")) {
+                        VMConfigStringPicker(selection: $config.graphicsCard, label: Text("Device"), rawValues: UTMConfiguration.supportedGraphicsCard(), displayValues: UTMConfiguration.supportedGraphicsCard())
+                    }
                 }
             }
         }.disableAutocorrection(true)

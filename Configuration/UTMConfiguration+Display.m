@@ -29,6 +29,7 @@ const NSString *const kUTMConfigConsoleFontKey = @"ConsoleFont";
 const NSString *const kUTMConfigConsoleFontSizeKey = @"ConsoleFontSize";
 const NSString *const kUTMConfigConsoleBlinkKey = @"ConsoleBlink";
 const NSString *const kUTMConfigConsoleResizeCommandKey = @"ConsoleResizeCommand";
+const NSString *const kUTMConfigGraphicsCardKey = @"GraphicsCard";
 
 @interface UTMConfiguration ()
 
@@ -55,6 +56,13 @@ const NSString *const kUTMConfigConsoleResizeCommandKey = @"ConsoleResizeCommand
     }
     if (self.consoleFontSize.integerValue == 0) {
         self.consoleFontSize = @12;
+    }
+    if (!self.graphicsCard) {
+        if ([self.systemTarget hasPrefix:@"pc"] || [self.systemTarget hasPrefix:@"q35"]) {
+            self.graphicsCard = @"qxl-vga";
+        } else if ([self.systemTarget isEqualToString:@"virt"] || [self.systemTarget hasPrefix:@"virt-"]) {
+            self.graphicsCard = @"ramfb";
+        }
     }
 }
 
@@ -164,6 +172,15 @@ const NSString *const kUTMConfigConsoleResizeCommandKey = @"ConsoleResizeCommand
 
 - (NSString *)consoleResizeCommand {
     return self.rootDict[kUTMConfigDisplayKey][kUTMConfigConsoleResizeCommandKey];
+}
+
+- (void)setGraphicsCard:(NSString *)graphicsCard {
+    [self propertyWillChange];
+    self.rootDict[kUTMConfigDisplayKey][kUTMConfigGraphicsCardKey] = graphicsCard;
+}
+
+- (NSString *)graphicsCard {
+    return self.rootDict[kUTMConfigDisplayKey][kUTMConfigGraphicsCardKey];
 }
 
 @end
