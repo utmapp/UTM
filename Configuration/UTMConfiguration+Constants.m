@@ -68,7 +68,11 @@
     } else if ([key isEqualToString:@"consoleFonts"]) {
         return [self supportedConsoleFonts];
     } else if ([key isEqualToString:@"graphicsCard"]) {
-        return [self supportedGraphicsCard];
+        if (pretty) {
+            return [self supportedGraphicsCardPretty];
+        } else {
+            return [self supportedGraphicsCard];
+        }
     }
     return @[];
 }
@@ -182,18 +186,6 @@
     ];
 }
 
-+ (NSArray<NSString *>*)supportedGraphicsCard {
-    return @[
-        @"qxl-vga",
-        @"cirrus-vga",
-        @"ati-vga",
-        @"VGA",
-        @"virtio-vga",
-        @"virtio-gpu-pci",
-        @"qxl",
-        @"ramfb"
-    ];
-}
 
 
 #if !TARGET_OS_OSX

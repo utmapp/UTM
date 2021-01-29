@@ -32,7 +32,6 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSArray<NSString *>*)supportedScalers;
 + (NSArray<NSString *>*)supportedConsoleThemes API_AVAILABLE(ios(11));
 + (NSArray<NSString *>*)supportedConsoleFonts API_AVAILABLE(ios(11));
-+ (NSArray<NSString *>*)supportedGraphicsCard;
 + (NSString *)diskImagesDirectory;
 + (NSString *)debugLogName;
 
@@ -52,6 +51,8 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSArray<NSString *>*)supportedNetworkCardsPretty;
 + (NSArray<NSString *>*)supportedSoundCardDevices;
 + (NSArray<NSString *>*)supportedSoundCardDevicesPretty;
++ (NSArray<NSString *>*)supportedGraphicsCard;
++ (NSArray<NSString *>*)supportedGraphicsCardPretty;
 
 @end
 

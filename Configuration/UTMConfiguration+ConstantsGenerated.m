@@ -5438,5 +5438,31 @@
              ];
 }
 
++ (NSArray<NSString *>*)supportedGraphicsCard {
+    return @[
+        @"qxl-vga",
+        @"cirrus-vga",
+        @"ati-vga",
+        @"VGA",
+        @"virtio-vga",
+        @"virtio-gpu-pci",
+        @"qxl",
+        @"ramfb"
+    ];
+}
+
++ (NSArray<NSString *>*)supportedGraphicsCardPretty {
+    return @[
+        @"qxl vga (-device qxl-vga)",
+        @"cirrus vga (-device cirrus-vga)",
+        @"ati vga (-device ati-vga)",
+        @"standard VGA (-device VGA)",
+        @"virtio vga (-device virtio-vga)",
+        @"virtio gpu (-device virtio-gpu-pci)",
+        @"qxl (-device qxl)",
+        @"ramfb (-device ramfb)"
+    ];
+}
+
 @end
 
