@@ -20,7 +20,7 @@
 static const NSString *const kDefaultShareReadme =
     @"You have not selected a shared directory. This is a temporary directory "
      "that can be deleted at any time. You can access these files on the host "
-     "at /tmp/Public relative to UTM's sandbox (if enabled). To select a "
+     "at ~/Documents/Public relative to UTM's sandbox (if enabled). To select a "
      "permanent shared directory, shut down the VM and select a shared "
      "directory from the VM details screen.";
 
@@ -33,8 +33,8 @@ static const NSString *const kDefaultShareReadme =
 
 - (NSURL *)defaultPublicShare {
     NSFileManager *fileManager = [NSFileManager defaultManager];
-    NSURL *tmpDir = [fileManager temporaryDirectory];
-    NSURL *publicShare = [tmpDir URLByAppendingPathComponent:@"Public" isDirectory:YES];
+    NSURL *documentsDir = [[fileManager URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] firstObject];
+    NSURL *publicShare = [documentsDir URLByAppendingPathComponent:@"Public" isDirectory:YES];
     BOOL isDir = NO;
     if (![fileManager fileExistsAtPath:publicShare.path isDirectory:&isDir] || !isDir) {
         [fileManager removeItemAtURL:publicShare error:nil]; // remove file if exists
