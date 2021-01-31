@@ -58,12 +58,6 @@ typedef void (^connectionCallback_t)(BOOL success, NSString * _Nullable msg);
     [self disconnect];
 }
 
-- (void)setDelegate:(id<UTMSpiceIODelegate>)delegate {
-    _delegate = delegate;
-    _delegate.vmDisplay = self.primaryDisplay;
-    _delegate.vmInput = self.primaryInput;
-}
-
 - (void)initializeSpiceIfNeeded {
     @synchronized (self) {
         if (!self.spice) {
@@ -261,6 +255,14 @@ typedef void (^connectionCallback_t)(BOOL success, NSString * _Nullable msg);
         self.sharedDirectory = nil;
         UTMLog(@"ended share directory sharing");
     }
+}
+
+#pragma mark - Properties
+
+- (void)setDelegate:(id<UTMSpiceIODelegate>)delegate {
+    _delegate = delegate;
+    _delegate.vmDisplay = self.primaryDisplay;
+    _delegate.vmInput = self.primaryInput;
 }
 
 @end
