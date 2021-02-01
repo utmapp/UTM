@@ -33,6 +33,16 @@ struct VMConfigDisplayView: View {
                     Text("Full Graphics").tag(false)
                     Text("Console Only").tag(true)
                 }.pickerStyle(displayTypePickerStyle)
+                .onChange(of: config.displayConsoleOnly) { newConsoleOnly in
+                    if newConsoleOnly {
+                        if config.shareClipboardEnabled {
+                            config.shareClipboardEnabled = false
+                        }
+                        if config.shareDirectoryEnabled {
+                            config.shareDirectoryEnabled = false
+                        }
+                    }
+                }
                 if config.displayConsoleOnly {
                     let fontSizeObserver = Binding<Int> {
                         Int(truncating: config.consoleFontSize ?? 1)
