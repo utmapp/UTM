@@ -23,6 +23,10 @@ struct VMConfigSharingView: View {
     var body: some View {
         VStack {
             Form {
+                if config.displayConsoleOnly {
+                    Text("These settings are unavailable in console display mode.")
+                }
+                
                 Section(header: Text("Clipboard Sharing"), footer: Text("Requires SPICE guest agent tools to be installed.").padding(.bottom)) {
                     Toggle(isOn: $config.shareClipboardEnabled, label: {
                         Text("Enable Clipboard Sharing")
@@ -41,7 +45,7 @@ struct VMConfigSharingView: View {
                     })
                     Text("Note: select the path to share from the main screen.")
                 }
-            }
+            }.disabled(config.displayConsoleOnly)
         }
     }
 }
