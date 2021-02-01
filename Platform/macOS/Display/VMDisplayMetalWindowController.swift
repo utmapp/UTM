@@ -23,6 +23,8 @@ class VMDisplayMetalWindowController: VMDisplayWindowController, UTMSpiceIODeleg
     
     private var displaySizeObserver: NSKeyValueObservation?
     private var displaySize: CGSize = .zero
+    private var isDisplaySizeDynamic: Bool = false
+    private let minDynamicSize = CGSize(width: 800, height: 600)
     
     // MARK: - User preferences
     
@@ -110,7 +112,7 @@ class VMDisplayMetalWindowController: VMDisplayWindowController, UTMSpiceIODeleg
     
 // MARK: - Screen management
 extension VMDisplayMetalWindowController {
-    func displaySizeDidChange(size: CGSize) {
+    fileprivate func displaySizeDidChange(size: CGSize) {
         if size == .zero {
             logger.debug("Ignoring zero size display")
             return
@@ -123,7 +125,7 @@ extension VMDisplayMetalWindowController {
             let currentScreenScale = window.screen?.backingScaleFactor ?? 1.0
             let nativeScale = self.isAlwaysNativeResolution ? 1.0 : currentScreenScale
             // change optional scale if needed
-            if self.isDisplayFixed || (!self.isAlwaysNativeResolution && vmDisplay.viewportScale < currentScreenScale) {
+            if self.isDisplaySizeDynamic || self.isDisplayFixed || (!self.isAlwaysNativeResolution && vmDisplay.viewportScale < currentScreenScale) {
                 vmDisplay.viewportScale = nativeScale
             }
             let minScaledSize = CGSize(width: size.width * nativeScale / currentScreenScale, height: size.height * nativeScale / currentScreenScale)
@@ -135,11 +137,24 @@ extension VMDisplayMetalWindowController {
                                      height: ceil(fullContentHeight))
             var windowRect = window.frameRect(forContentRect: contentRect)
             windowRect.origin.y = window.frame.origin.y + window.frame.height - windowRect.height
-            window.contentMinSize = minScaledSize
-            window.contentAspectRatio = size
-            window.setFrame(windowRect, display: false, animate: true)
+            if self.isDisplaySizeDynamic {
+                window.contentMinSize = self.minDynamicSize
+                window.contentResizeIncrements = NSSize(width: 1, height: 1)
+                window.setFrame(windowRect, display: false, animate: false)
+            } else {
+                window.contentMinSize = minScaledSize
+                window.contentAspectRatio = size
+                window.setFrame(windowRect, display: false, animate: true)
+            }
             self.metalView.setFrameSize(contentRect.size)
         }
+    }
+    
+    func dynamicResolutionSupportDidChange(_ supported: Bool) {
+        if isDisplaySizeDynamic != supported {
+            displaySizeDidChange(size: displaySize)
+        }
+        isDisplaySizeDynamic = supported
     }
     
     func windowDidChangeScreen(_ notification: Notification) {
@@ -149,10 +164,9 @@ extension VMDisplayMetalWindowController {
         }
     }
     
-    func windowWillResize(_ sender: NSWindow, to frameSize: NSSize) -> NSSize {
+    fileprivate func updateHostScaling(for window: NSWindow, frameSize: NSSize) -> NSSize {
         guard !isDisplayFixed else { return frameSize }
         guard displaySize != .zero else { return frameSize }
-        guard let window = self.window else { return frameSize }
         guard let vmDisplay = self.vmDisplay else { return frameSize }
         let currentScreenScale = window.screen?.backingScaleFactor ?? 1.0
         let targetContentSize = window.contentRect(forFrameRect: CGRect(origin: .zero, size: frameSize)).size
@@ -165,6 +179,32 @@ extension VMDisplayMetalWindowController {
         logger.debug("changed scale \(targetScale)")
         self.metalView.setFrameSize(scaledSize)
         return targetFrameSize
+    }
+    
+    fileprivate func updateGuestResolution(for window: NSWindow, frameSize: NSSize) -> NSSize {
+        guard let vmDisplay = self.vmDisplay else { return frameSize }
+        let currentScreenScale = window.screen?.backingScaleFactor ?? 1.0
+        let nativeScale = isAlwaysNativeResolution ? 1.0 : currentScreenScale
+        let targetSize = window.contentRect(forFrameRect: CGRect(origin: .zero, size: frameSize)).size
+        let targetSizeScaled = isAlwaysNativeResolution ? targetSize.applying(CGAffineTransform(scaleX: nativeScale, y: nativeScale)) : targetSize
+        logger.debug("Requesting resolution: (\(targetSizeScaled.width), \(targetSizeScaled.height))")
+        let bounds = CGRect(origin: .zero, size: targetSizeScaled)
+        vmDisplay.requestResolution(bounds)
+        return frameSize
+    }
+
+    func windowWillResize(_ sender: NSWindow, to frameSize: NSSize) -> NSSize {
+        guard !self.isDisplaySizeDynamic else {
+            return frameSize
+        }
+        return updateHostScaling(for: sender, frameSize: frameSize)
+    }
+    
+    func windowDidEndLiveResize(_ notification: Notification) {
+        guard self.isDisplaySizeDynamic, let window = self.window else {
+            return
+        }
+        _ = updateGuestResolution(for: window, frameSize: window.frame.size)
     }
     
     func windowDidBecomeKey(_ notification: Notification) {
