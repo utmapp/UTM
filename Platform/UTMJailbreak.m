@@ -226,6 +226,9 @@ bool jb_has_jit_entitlement(void) {
 bool jb_has_cs_execseg_allow_unsigned(void) {
     NSDictionary *entitlements = cached_app_entitlements();
     if (@available(iOS 14.2, *)) {
+        if (@available(iOS 14.4, *)) {
+            return false; // iOS 14.4 broke it again
+        }
         // technically we need to check the Code Directory and make sure
         // CS_EXECSEG_ALLOW_UNSIGNED is set but we assume that it is properly
         // signed, which should reflect the get-task-allow entitlement
