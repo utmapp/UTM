@@ -175,7 +175,11 @@ typedef void (^connectionCallback_t)(BOOL success, NSString * _Nullable msg);
 - (void)restoreViewState:(UTMViewState *)viewState {
     self.primaryDisplay.viewportOrigin = CGPointMake(viewState.displayOriginX, viewState.displayOriginY);
     self.primaryDisplay.displaySize = CGSizeMake(viewState.displaySizeWidth, viewState.displaySizeHeight);
-    self.primaryDisplay.viewportScale = viewState.displayScale;
+    if (viewState.displayScale) { // cannot be zero
+        self.primaryDisplay.viewportScale = viewState.displayScale;
+    } else {
+        self.primaryDisplay.viewportScale = 1.0; // default value
+    }
 }
 
 #pragma mark - CSConnectionDelegate
