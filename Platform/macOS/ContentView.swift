@@ -22,7 +22,6 @@ struct ContentView: View {
     @State private var editMode = false
     @StateObject private var data = UTMData()
     @State private var newPopupPresented = false
-    @State private var newVMScratchPresented = false
     
     var body: some View {
         NavigationView {
@@ -45,7 +44,7 @@ struct ContentView: View {
                     newButton
                 }
             }
-            .sheet(isPresented: $newVMScratchPresented, onDismiss: {
+            .sheet(isPresented: $data.showNewVMSheet, onDismiss: {
                 //FIXME: SwiftUI bug this is never called: newConfiguration.resetDefaults()
             }, content: {
                 VMSettingsView(vm: nil, config: newConfiguration)
@@ -54,16 +53,16 @@ struct ContentView: View {
                         newConfiguration.name = data.newDefaultVMName()
                     }
             })
-            .onChange(of: newVMScratchPresented) { value in
+            .onChange(of: data.showNewVMSheet) { value in
                 if !value {
                     newConfiguration.resetDefaults()
                 }
             }
-            VMPlaceholderView(createNewVMPresented: $newVMScratchPresented)
+            VMPlaceholderView()
         }.overlay(data.showSettingsModal ? AnyView(EmptyView()) : AnyView(BusyOverlay()))
         .environmentObject(data)
         .frame(minWidth: 800, idealWidth: 1200, minHeight: 600, idealHeight: 800)
-        .disabled(data.busy && !newVMScratchPresented && !data.showSettingsModal)
+        .disabled(data.busy && !data.showNewVMSheet && !data.showSettingsModal)
         .onOpenURL(perform: importUTM)
         .onAppear {
             data.refresh()
@@ -82,7 +81,7 @@ struct ContentView: View {
                 Spacer()
                 Link("Go To Gallery", destination: URL(string: "https://getutm.app/gallery/")!)
                 Button("Start from Scratch") {
-                    newVMScratchPresented.toggle()
+                    data.newVM()
                 }
             }.frame(width: 200, height: 150)
             .padding()

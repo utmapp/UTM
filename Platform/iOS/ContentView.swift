@@ -23,7 +23,6 @@ struct ContentView: View {
     @State private var editMode = false
     @EnvironmentObject private var data: UTMData
     @State private var newPopupPresented = false
-    @State private var newVMScratchPresented = false
     @State private var jitAlertPresented = false
     @Environment(\.openURL) var openURL
     
@@ -49,7 +48,7 @@ struct ContentView: View {
                     EditButton()
                 }
             }
-            .sheet(isPresented: $newVMScratchPresented, onDismiss: {
+            .sheet(isPresented: $data.showNewVMSheet, onDismiss: {
                 newConfiguration.resetDefaults()
             }, content: {
                 VMSettingsView(vm: nil, config: newConfiguration)
@@ -58,7 +57,7 @@ struct ContentView: View {
                         newConfiguration.name = data.newDefaultVMName()
                     }
             })
-            VMPlaceholderView(createNewVMPresented: $newVMScratchPresented)
+            VMPlaceholderView()
         }.disabled(data.busy)
         .onOpenURL(perform: importUTM)
         .onAppear {
@@ -76,7 +75,7 @@ struct ContentView: View {
     }
     
     private var newButton: some View {
-        return Button(action: { newVMScratchPresented.toggle() }, label: {
+        return Button(action: { data.newVM() }, label: {
             Label("New VM", systemImage: "plus").labelStyle(IconOnlyLabelStyle())
         })
         #if false // FIXME: when bug is fixed with actionSheet
@@ -87,7 +86,7 @@ struct ContentView: View {
             ActionSheet(title: Text("New VM"),
                         message: Text("You can download an existing VM configuration for popular operating systems from the UTM gallery or start from scratch."),
                         buttons: [.default(Text("Go to Gallery"), action: newVMFromTemplate),
-                                  .default(Text("Start from Scratch"), action: { newVMScratchPresented.toggle() })
+                                  .default(Text("Start from Scratch"), action: { data.newVM() })
                         ])
         }
         #endif
