@@ -2,6 +2,15 @@
 "A file already exists for this name, if you proceed, it will be replaced." = "同名的项目已被创建，如果您继续，正在创建的项目将会替换它。";
 
 /* No comment provided by engineer. */
+"Do you want to duplicate this VM and all its data?" = "是否要复制该虚拟机及其所有数据?";
+
+/* No comment provided by engineer. */
+"Do you want to delete this VM and all its data?" = "是否删除该虚拟机及其所有数据?";
+
+/* No comment provided by engineer. */
+"Do you want to force stop this VM and lose all unsaved data?" = "是否要强制关闭该虚拟机并丢失所有未保存的数据?";
+
+/* No comment provided by engineer. */
 "Acceleration" = "加速";
 
 /* No comment provided by engineer. */
@@ -172,7 +181,7 @@
 "DNS Server (IPv6)" = "DNS服务器(IPv6)";
 
 /* VMConfigDrivesViewController */
-"Do you want to also delete the disk image data? If yes, the data will be lost. Otherwise, you can create a new drive with the existing data." = "您是否还要删除磁盘映像数据呢?如果是，数据将丢失。否则，您可以使用现有数据创建一个新驱动器。";
+"Do you want to also delete the disk image data? If yes, the data will be lost. Otherwise, you can create a new drive with the existing data." = "您是否还要删除磁盘映像数据?如果是，数据将丢失。否则，您可以使用现有数据创建一个新驱动器。";
 
 /* VMConfigDirectoryPickerViewController
    VMConfigPortForwardingViewController */
