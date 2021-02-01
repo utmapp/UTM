@@ -22,6 +22,7 @@ extension UTMData {
         if vm.configuration.displayConsoleOnly {
             let vc = VMDisplayTerminalViewController()
             let webView = WKWebView()
+            webView.isOpaque = false
             vm.delegate = vc
             vc.vm = vm
             vc.webView = webView
