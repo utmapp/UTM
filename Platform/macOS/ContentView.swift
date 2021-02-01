@@ -67,6 +67,7 @@ struct ContentView: View {
         .onOpenURL(perform: importUTM)
         .onAppear {
             data.refresh()
+            NSWindow.allowsAutomaticWindowTabbing = false
         }
     }
     
