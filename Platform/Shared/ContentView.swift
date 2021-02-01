@@ -15,13 +15,15 @@
 //
 
 import SwiftUI
+#if !os(macOS)
 import IQKeyboardManagerSwift
+#endif
 
-@available(iOS 14, *)
+@available(iOS 14, macOS 11, *)
 struct ContentView: View {
     @StateObject private var newConfiguration = UTMConfiguration()
     @State private var editMode = false
-    @EnvironmentObject private var data: UTMData
+    @StateObject private var data = UTMData()
     @State private var newPopupPresented = false
     @State private var jitAlertPresented = false
     @Environment(\.openURL) var openURL
@@ -38,17 +40,26 @@ struct ContentView: View {
                         .modifier(VMContextMenuModifier(vm: vm))
                 }.onMove(perform: data.move)
                 .onDelete(perform: delete)
-            }.listStyle(SidebarListStyle())
+            }.optionalSidebarFrame()
+            .listStyle(SidebarListStyle())
             .navigationTitle("UTM")
+            .navigationOptionalSubtitle(data.selectedVM?.configuration.name ?? "")
             .toolbar {
+                #if os(macOS)
+                ToolbarItem(placement: .navigation) {
+                    newButton
+                }
+                #else
                 ToolbarItem(placement: .navigationBarLeading) {
                     newButton
                 }
                 ToolbarItem(placement: .navigationBarTrailing) {
                     EditButton()
                 }
+                #endif
             }
             .sheet(isPresented: $data.showNewVMSheet, onDismiss: {
+                //FIXME: SwiftUI bug this is never called on macOS
                 newConfiguration.resetDefaults()
             }, content: {
                 VMSettingsView(vm: nil, config: newConfiguration)
@@ -57,44 +68,60 @@ struct ContentView: View {
                         newConfiguration.name = data.newDefaultVMName()
                     }
             })
+            .onChange(of: data.showNewVMSheet) { value in
+                //FIXME: this doesn't always work on iOS
+                if !value {
+                    newConfiguration.resetDefaults()
+                }
+            }
             VMPlaceholderView()
-        }.disabled(data.busy)
+        }.overlay(data.showSettingsModal ? AnyView(EmptyView()) : AnyView(BusyOverlay()))
+        .environmentObject(data)
+        .optionalWindowFrame()
+        .disabled(data.busy && !data.showNewVMSheet && !data.showSettingsModal)
         .onOpenURL(perform: importUTM)
         .onAppear {
             data.refresh()
+            #if os(macOS)
+            NSWindow.allowsAutomaticWindowTabbing = false
+            #else
             data.enableNetworking()
             IQKeyboardManager.shared.enable = true
             if !Main.jitAvailable {
                 jitAlertPresented.toggle()
             }
-        }
-        .alert(isPresented: $jitAlertPresented, content: {
+            #endif
+        }.alert(isPresented: $jitAlertPresented, content: {
             Alert(title: Text("Your version of iOS does not support running VMs while unmodified. You must either run UTM while jailbroken or with a remote debugger attached."))
         })
-        .overlay(data.showSettingsModal ? AnyView(EmptyView()) : AnyView(BusyOverlay()))
     }
     
+    #if os(macOS)
     private var newButton: some View {
-        return Button(action: { data.newVM() }, label: {
-            Label("New VM", systemImage: "plus").labelStyle(IconOnlyLabelStyle())
-        })
-        #if false // FIXME: when bug is fixed with actionSheet
         Button(action: { newPopupPresented.toggle() }, label: {
             Label("New VM", systemImage: "plus").labelStyle(IconOnlyLabelStyle())
         })
-        .actionSheet(isPresented: $newPopupPresented) {
-            ActionSheet(title: Text("New VM"),
-                        message: Text("You can download an existing VM configuration for popular operating systems from the UTM gallery or start from scratch."),
-                        buttons: [.default(Text("Go to Gallery"), action: newVMFromTemplate),
-                                  .default(Text("Start from Scratch"), action: { data.newVM() })
-                        ])
+        .help("New VM")
+        .popover(isPresented: $newPopupPresented, arrowEdge: .bottom) {
+            VStack {
+                Text("You can download an existing VM configuration for popular operating systems from the UTM gallery or start from scratch.")
+                Spacer()
+                Link("Go To Gallery", destination: URL(string: "https://getutm.app/gallery/")!)
+                Button("Start from Scratch") {
+                    data.newVM()
+                }
+            }.frame(width: 200, height: 150)
+            .padding()
         }
-        #endif
     }
-    
-    private func newVMFromTemplate() {
-        openURL(URL(string: "https://getutm.app/gallery/")!)
+    #else
+    // BUG: iOS cannot show actionSheet from toolbar
+    private var newButton: some View {
+        Button(action: { data.newVM() }, label: {
+            Label("New VM", systemImage: "plus").labelStyle(IconOnlyLabelStyle())
+        })
     }
+    #endif
     
     private func delete(indexSet: IndexSet) {
         let selected = data.virtualMachines[indexSet]
@@ -115,7 +142,42 @@ struct ContentView: View {
     }
 }
 
+#if os(macOS)
+@available(macOS 11, *)
+fileprivate extension View {
+    func navigationOptionalSubtitle<S>(_ subtitle: S) -> some View where S : StringProtocol {
+        return self.navigationSubtitle(subtitle)
+    }
+    
+    func optionalSidebarFrame() -> some View {
+        return self.frame(minWidth: 250, idealWidth: 350)
+    }
+    
+    func optionalWindowFrame() -> some View {
+        return self.frame(minWidth: 800, idealWidth: 1200, minHeight: 600, idealHeight: 800)
+    }
+}
+#else
 @available(iOS 14, *)
+fileprivate extension View {
+    // ignore subtitle on iOS
+    func navigationOptionalSubtitle<S>(_ subtitle: S) -> some View where S : StringProtocol {
+        return self
+    }
+    
+    // ignore frame size
+    func optionalSidebarFrame() -> some View {
+        return self
+    }
+    
+    // ignore frame size
+    func optionalWindowFrame() -> some View {
+        return self
+    }
+}
+#endif
+
+@available(iOS 14, macOS 11, *)
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         ContentView()
