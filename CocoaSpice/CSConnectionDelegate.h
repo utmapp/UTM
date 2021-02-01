@@ -21,6 +21,11 @@
 @class CSInput;
 @class CSSession;
 
+typedef NS_OPTIONS(NSInteger, CSConnectionAgentFeature) {
+    kCSConnectionAgentFeatureNone,
+    kCSConnectionAgentFeatureMonitorsConfig
+};
+
 NS_ASSUME_NONNULL_BEGIN
 
 @protocol CSConnectionDelegate <NSObject>
@@ -31,6 +36,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)spiceDisplayCreated:(CSConnection *)connection display:(CSDisplayMetal *)display input:(CSInput *)input;
 - (void)spiceSessionCreated:(CSConnection *)connection session:(CSSession *)session;
 - (void)spiceSessionEnded:(CSConnection *)connection session:(CSSession *)session;
+- (void)spiceAgentConnected:(CSConnection *)connection supportingFeatures:(CSConnectionAgentFeature)features;
+- (void)spiceAgentDisconnected:(CSConnection *)connection;
 
 @end
 
