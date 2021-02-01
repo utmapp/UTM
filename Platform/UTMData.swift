@@ -32,6 +32,7 @@ struct AlertMessage: Identifiable {
 class UTMData: ObservableObject {
     
     @Published var showSettingsModal: Bool
+    @Published var showNewVMSheet: Bool
     @Published var alertMessage: AlertMessage?
     @Published var busy: Bool
     @Published var selectedVM: UTMVirtualMachine?
@@ -67,6 +68,7 @@ class UTMData: ObservableObject {
     init() {
         let defaults = UserDefaults.standard
         self.showSettingsModal = false
+        self.showNewVMSheet = false
         self.busy = false
         self.virtualMachines = []
         if let files = defaults.array(forKey: "VMList") as? [String] {
@@ -232,12 +234,20 @@ class UTMData: ObservableObject {
         }
     }
     
+    func newVM() {
+        DispatchQueue.main.async {
+            self.showSettingsModal = false
+            self.showNewVMSheet = true
+        }
+    }
+    
     func edit(vm: UTMVirtualMachine) {
         DispatchQueue.main.async {
             // show orphans for proper removal
             vm.configuration.recoverOrphanedDrives()
             self.selectedVM = vm
             self.showSettingsModal = true
+            self.showNewVMSheet = false
         }
     }
     
