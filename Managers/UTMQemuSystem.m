@@ -351,6 +351,10 @@ static size_t sysctl_read(const char *name) {
 }
 
 - (void)argsForSharing {
+    if (self.configuration.displayConsoleOnly) {
+        return; // no SPICE for console only
+    }
+    
     if (self.configuration.shareClipboardEnabled || self.configuration.shareDirectoryEnabled) {
         [self pushArgv:@"-device"];
         [self pushArgv:@"virtio-serial"];
