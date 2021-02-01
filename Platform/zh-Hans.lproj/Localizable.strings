@@ -2,6 +2,15 @@
 "A file already exists for this name, if you proceed, it will be replaced." = "已存在同名的项目，如果您继续操作，正在创建的项目将会替换原有的同名项目。";
 
 /* No comment provided by engineer. */
+"Do you want to duplicate this VM and all its data?" = "是否要复制该虚拟机及其所有数据?";
+
+/* No comment provided by engineer. */
+"Do you want to delete this VM and all its data?" = "是否删除该虚拟机及其所有数据?";
+
+/* No comment provided by engineer. */
+"Do you want to force stop this VM and lose all unsaved data?" = "是否要强制关闭该虚拟机并丢失所有未保存的数据?";
+
+/* No comment provided by engineer. */
 "Acceleration" = "加速";
 
 /* No comment provided by engineer. */
