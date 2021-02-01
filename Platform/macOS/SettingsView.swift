@@ -21,6 +21,7 @@ struct SettingsView: View {
     @AppStorage("AlwaysNativeResolution") var isAlwaysNativeResolution = false
     @AppStorage("DisplayFixed") var isVMDisplayFixed = false
     @AppStorage("NoHypervisor") var isNoHypervisor = false
+    @AppStorage("CtrlRightClick") var isCtrlRightClick = false
     
     var body: some View {
         Form {
@@ -37,6 +38,11 @@ struct SettingsView: View {
                     Text("Force slower emulation even when hypervisor is available")
                 })
             }
+            Section(header: Text("Input")) {
+                Toggle(isOn: $isCtrlRightClick, label: {
+                    Text("Hold Control (⌃) for right click")
+                })
+            }
         }.padding()
     }
 }
@@ -46,6 +52,7 @@ extension UserDefaults {
     @objc dynamic var AlwaysNativeResolution: Bool { false }
     @objc dynamic var DisplayFixed: Bool { false }
     @objc dynamic var NoHypervisor: Bool { false }
+    @objc dynamic var CtrlRightClick: Bool { false }
 }
 
 @available(macOS 11, *)
