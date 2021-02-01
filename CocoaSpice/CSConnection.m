@@ -18,6 +18,7 @@
 #import "UTMLogging.h"
 #import <glib.h>
 #import <spice-client.h>
+#import <spice/vd_agent.h>
 
 @interface CSConnection ()
 
@@ -125,6 +126,24 @@ static void cs_display_monitors(SpiceChannel *display, GParamSpec *pspec,
     g_clear_pointer(&monitors, g_array_unref);
 }
 
+static void cs_main_agent_update(SpiceChannel *main, gpointer data)
+{
+    CSConnection *self = (__bridge CSConnection *)data;
+    gboolean agent_connected = false;
+    CSConnectionAgentFeature features = kCSConnectionAgentFeatureNone;
+    
+    g_object_get(main, "agent-connected", &agent_connected, NULL);
+    UTMLog(@"SPICE agent connected: %d", agent_connected);
+    if (agent_connected) {
+        if (spice_main_channel_agent_test_capability(SPICE_MAIN_CHANNEL(main), VD_AGENT_CAP_MONITORS_CONFIG)) {
+            features |= kCSConnectionAgentFeatureMonitorsConfig;
+        }
+        [self.delegate spiceAgentConnected:self supportingFeatures:features];
+    } else {
+        [self.delegate spiceAgentDisconnected:self];
+    }
+}
+
 static void cs_channel_new(SpiceSession *s, SpiceChannel *channel, gpointer data)
 {
     CSConnection *self = (__bridge CSConnection *)data;
@@ -140,6 +159,8 @@ static void cs_channel_new(SpiceSession *s, SpiceChannel *channel, gpointer data
         UTMLog(@"%s:%d", __FUNCTION__, __LINE__);
         g_signal_connect(channel, "channel-event",
                          G_CALLBACK(cs_main_channel_event), GLIB_OBJC_RETAIN(self));
+        g_signal_connect(channel, "main_agent_update",
+                         G_CALLBACK(cs_main_agent_update), GLIB_OBJC_RETAIN(self));
     }
     
     if (SPICE_IS_DISPLAY_CHANNEL(channel)) {
@@ -177,6 +198,7 @@ static void cs_channel_destroy(SpiceSession *s, SpiceChannel *channel, gpointer 
         SPICE_DEBUG("zap main channel");
         self->_main = NULL;
         g_signal_handlers_disconnect_by_func(channel, G_CALLBACK(cs_main_channel_event), GLIB_OBJC_RELEASE(self));
+        g_signal_handlers_disconnect_by_func(channel, G_CALLBACK(cs_main_agent_update), GLIB_OBJC_RELEASE(self));
     }
     
     if (SPICE_IS_DISPLAY_CHANNEL(channel)) {

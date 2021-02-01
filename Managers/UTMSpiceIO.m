@@ -40,6 +40,7 @@ typedef void (^connectionCallback_t)(BOOL success, NSString * _Nullable msg);
 @property (nonatomic, nullable, copy) NSURL *sharedDirectory;
 @property (nonatomic) NSInteger port;
 @property (nonatomic) BOOL hasObservers;
+@property (nonatomic) BOOL dynamicResolutionSupported;
 
 @end
 
@@ -229,6 +230,14 @@ typedef void (^connectionCallback_t)(BOOL success, NSString * _Nullable msg);
     self.session = nil;
 }
 
+- (void)spiceAgentConnected:(CSConnection *)connection supportingFeatures:(CSConnectionAgentFeature)features {
+    self.dynamicResolutionSupported = (features & kCSConnectionAgentFeatureMonitorsConfig) != kCSConnectionAgentFeatureNone;
+}
+
+- (void)spiceAgentDisconnected:(CSConnection *)connection {
+    self.dynamicResolutionSupported = NO;
+}
+
 #pragma mark - Shared Directory
 
 - (void)changeSharedDirectory:(NSURL *)url {
@@ -263,6 +272,19 @@ typedef void (^connectionCallback_t)(BOOL success, NSString * _Nullable msg);
     _delegate = delegate;
     _delegate.vmDisplay = self.primaryDisplay;
     _delegate.vmInput = self.primaryInput;
+    // make sure to send the dynamic resolution change when attached
+    if ([self.delegate respondsToSelector:@selector(dynamicResolutionSupportDidChange:)]) {
+        [self.delegate dynamicResolutionSupportDidChange:self.dynamicResolutionSupported];
+    }
+}
+
+- (void)setDynamicResolutionSupported:(BOOL)dynamicResolutionSupported {
+    if (_dynamicResolutionSupported != dynamicResolutionSupported) {
+        if ([self.delegate respondsToSelector:@selector(dynamicResolutionSupportDidChange:)]) {
+            [self.delegate dynamicResolutionSupportDidChange:dynamicResolutionSupported];
+        }
+    }
+    _dynamicResolutionSupported = dynamicResolutionSupported;
 }
 
 @end
