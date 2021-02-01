@@ -26,11 +26,14 @@ class VMDisplayMetalWindowController: VMDisplayWindowController, UTMSpiceIODeleg
     private var isDisplaySizeDynamic: Bool = false
     private let minDynamicSize = CGSize(width: 800, height: 600)
     
+    private var ctrlKeyDown: Bool = false
+    
     // MARK: - User preferences
     
     @Setting("NoCursorCaptureAlert") private var isCursorCaptureAlertShown: Bool = false
     @Setting("AlwaysNativeResolution") private var isAlwaysNativeResolution: Bool = false
     @Setting("DisplayFixed") private var isDisplayFixed: Bool = false
+    @Setting("CtrlRightClick") private var isCtrlRightClick: Bool = false
     private var settingObservations = [NSKeyValueObservation]()
     
     // MARK: - Init
@@ -266,12 +269,22 @@ extension VMDisplayMetalWindowController: VMMetalViewInputDelegate {
         vmInput?.sendMouseMotion(button, point: translated)
     }
     
+    private func modifyMouseButton(_ button: CSInputButton) -> CSInputButton {
+        let buttonMod: CSInputButton
+        if button.contains(.left) && ctrlKeyDown && isCtrlRightClick {
+            buttonMod = button.subtracting(.left).union(.right)
+        } else {
+            buttonMod = button
+        }
+        return buttonMod
+    }
+    
     func mouseDown(button: CSInputButton) {
-        vmInput?.sendMouseButton(button, pressed: true, point: .zero)
+        vmInput?.sendMouseButton(modifyMouseButton(button), pressed: true, point: .zero)
     }
     
     func mouseUp(button: CSInputButton) {
-        vmInput?.sendMouseButton(button, pressed: false, point: .zero)
+        vmInput?.sendMouseButton(modifyMouseButton(button), pressed: false, point: .zero)
     }
     
     func mouseScroll(dy: CGFloat, button: CSInputButton) {
@@ -293,10 +306,16 @@ extension VMDisplayMetalWindowController: VMMetalViewInputDelegate {
     }
     
     func keyDown(keyCode: Int) {
+        if (keyCode & 0xFF) == 0x1D { // Ctrl
+            ctrlKeyDown = true
+        }
         sendExtendedKey(.press, keyCode: keyCode)
     }
     
     func keyUp(keyCode: Int) {
+        if (keyCode & 0xFF) == 0x1D { // Ctrl
+            ctrlKeyDown = false
+        }
         sendExtendedKey(.release, keyCode: keyCode)
     }
     
