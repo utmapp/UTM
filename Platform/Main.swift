@@ -17,12 +17,14 @@
 import Logging
 
 let logger = Logger(label: "com.utmapp.UTM") { label in
+    var utmLogger = UTMLoggingSwift(label: label)
     var stdOutLogger = StreamLogHandler.standardOutput(label: label)
     #if DEBUG
+    utmLogger.logLevel = .debug
     stdOutLogger.logLevel = .debug
     #endif
     return MultiplexLogHandler([
-        UTMLoggingSwift(label: label),
+        utmLogger,
         stdOutLogger
     ])
 }
