@@ -25,6 +25,7 @@ struct ContentView: View {
     @State private var editMode = false
     @StateObject private var data = UTMData()
     @State private var newPopupPresented = false
+    @State private var importSheetPresented = false
     @Environment(\.openURL) var openURL
     
     var body: some View {
@@ -79,6 +80,11 @@ struct ContentView: View {
         .optionalWindowFrame()
         .disabled(data.busy && !data.showNewVMSheet && !data.showSettingsModal)
         .onOpenURL(perform: importUTM)
+        .onReceive(NSNotification.NewVirtualMachine) { _ in
+            data.newVM()
+        }.onReceive(NSNotification.ImportVirtualMachine) { _ in
+            importSheetPresented = true
+        }.fileImporter(isPresented: $importSheetPresented, allowedContentTypes: [.UTM], onCompletion: selectImportedUTM)
         .onAppear {
             data.refresh()
             #if os(macOS)
@@ -136,6 +142,13 @@ struct ContentView: View {
             return // ignore
         }
         data.busyWork {
+            try data.importUTM(url: url)
+        }
+    }
+    
+    private func selectImportedUTM(result: Result<URL, Error>) {
+        data.busyWork {
+            let url = try result.get()
             try data.importUTM(url: url)
         }
     }

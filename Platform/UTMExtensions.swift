@@ -15,6 +15,7 @@
 //
 
 import SwiftUI
+import UniformTypeIdentifiers
 
 extension Optional where Wrapped == String {
     var _bound: String? {
@@ -78,6 +79,24 @@ extension Array {
             return slice
         }
     }
+}
+
+@available(iOS 13, macOS 11, *)
+extension View {
+    func onReceive(_ name: Notification.Name,
+                   center: NotificationCenter = .default,
+                   object: AnyObject? = nil,
+                   perform action: @escaping (Notification) -> Void) -> some View {
+        self.onReceive(
+            center.publisher(for: name, object: object), perform: action
+        )
+    }
+}
+
+@available(iOS 14, macOS 11, *)
+extension UTType {
+    // SwiftUI BUG: exportedAs: "com.utmapp.utm" doesn't work
+    static let UTM = UTType(exportedAs: "utm")
 }
 
 #if !os(macOS)
