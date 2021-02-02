@@ -25,7 +25,6 @@ struct ContentView: View {
     @State private var editMode = false
     @StateObject private var data = UTMData()
     @State private var newPopupPresented = false
-    @State private var jitAlertPresented = false
     @Environment(\.openURL) var openURL
     
     var body: some View {
@@ -88,12 +87,12 @@ struct ContentView: View {
             data.enableNetworking()
             IQKeyboardManager.shared.enable = true
             if !Main.jitAvailable {
-                jitAlertPresented.toggle()
+                data.busyWork {
+                    throw NSLocalizedString("Your version of iOS does not support running VMs while unmodified. You must either run UTM while jailbroken or with a remote debugger attached.", comment: "ContentView")
+                }
             }
             #endif
-        }.alert(isPresented: $jitAlertPresented, content: {
-            Alert(title: Text("Your version of iOS does not support running VMs while unmodified. You must either run UTM while jailbroken or with a remote debugger attached."))
-        })
+        }
     }
     
     #if os(macOS)
