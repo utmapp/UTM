@@ -80,6 +80,7 @@ struct ContentView: View {
         .optionalWindowFrame()
         .disabled(data.busy && !data.showNewVMSheet && !data.showSettingsModal)
         .onOpenURL(perform: importUTM)
+        .handlesExternalEvents(preferring: ["*"], allowing: ["*"])
         .onReceive(NSNotification.NewVirtualMachine) { _ in
             data.newVM()
         }.onReceive(NSNotification.ImportVirtualMachine) { _ in
