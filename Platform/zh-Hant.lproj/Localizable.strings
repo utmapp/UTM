@@ -216,3 +216,11 @@
    Yes button */
 "Yes" = "是的";
 
+/* No comment provided by engineer. */
+"Do you want to duplicate this VM and all its data?" = "是否要復制該虛擬機及其所有數據?";
+
+/* No comment provided by engineer. */
+"Do you want to delete this VM and all its data?" = "是否刪除該虛擬機及其所有數據?";
+
+/* No comment provided by engineer. */
+"Do you want to force stop this VM and lose all unsaved data?" = "是否要強制關閉該虛擬機並丟失所有未保存的數據?";
