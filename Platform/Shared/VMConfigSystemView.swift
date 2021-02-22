@@ -135,6 +135,15 @@ struct HardwareOptions: View {
                     config.systemTarget = targets?[index]
                     config.loadDefaults(forTarget: config.systemTarget, architecture: arch)
                     // disable unsupported hardware
+                    if let displayCard = config.displayCard {
+                        if !UTMConfiguration.supportedDisplayCards(forArchitecture: arch)!.contains(where: { $0.caseInsensitiveCompare(displayCard) == .orderedSame }) {
+                            if UTMConfiguration.supportedDisplayCards(forArchitecture: arch)!.contains("VGA") {
+                                config.displayCard = "VGA" // most devices support VGA
+                            } else {
+                                config.displayConsoleOnly = true
+                            }
+                        }
+                    }
                     if let networkCard = config.networkCard {
                         if !UTMConfiguration.supportedNetworkCards(forArchitecture: arch)!.contains(where: { $0.caseInsensitiveCompare(networkCard) == .orderedSame }) {
                             config.networkEnabled = false

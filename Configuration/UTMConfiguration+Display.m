@@ -29,6 +29,7 @@ const NSString *const kUTMConfigConsoleFontKey = @"ConsoleFont";
 const NSString *const kUTMConfigConsoleFontSizeKey = @"ConsoleFontSize";
 const NSString *const kUTMConfigConsoleBlinkKey = @"ConsoleBlink";
 const NSString *const kUTMConfigConsoleResizeCommandKey = @"ConsoleResizeCommand";
+const NSString *const kUTMConfigDisplayCardKey = @"DisplayCard";
 
 @interface UTMConfiguration ()
 
@@ -55,6 +56,13 @@ const NSString *const kUTMConfigConsoleResizeCommandKey = @"ConsoleResizeCommand
     }
     if (self.consoleFontSize.integerValue == 0) {
         self.consoleFontSize = @12;
+    }
+    if (!self.displayCard) {
+        if ([self.systemTarget hasPrefix:@"pc"] || [self.systemTarget hasPrefix:@"q35"]) {
+            self.displayCard = @"qxl-vga";
+        } else if ([self.systemTarget isEqualToString:@"virt"] || [self.systemTarget hasPrefix:@"virt-"]) {
+            self.displayCard = @"virtio-ramfb";
+        }
     }
 }
 
@@ -164,6 +172,15 @@ const NSString *const kUTMConfigConsoleResizeCommandKey = @"ConsoleResizeCommand
 
 - (NSString *)consoleResizeCommand {
     return self.rootDict[kUTMConfigDisplayKey][kUTMConfigConsoleResizeCommandKey];
+}
+
+- (void)setDisplayCard:(NSString *)displayCard {
+    [self propertyWillChange];
+    self.rootDict[kUTMConfigDisplayKey][kUTMConfigDisplayCardKey] = displayCard;
+}
+
+- (NSString *)displayCard {
+    return self.rootDict[kUTMConfigDisplayKey][kUTMConfigDisplayCardKey];
 }
 
 @end

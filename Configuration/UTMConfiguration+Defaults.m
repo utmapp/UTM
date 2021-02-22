@@ -30,6 +30,7 @@
     self.systemMemory = @512;
     self.systemBootDevice = @"cd";
     self.systemUUID = [[NSUUID UUID] UUIDString];
+    self.displayCard = @"qxl-vga";
     self.displayUpscaler = @"linear";
     self.displayDownscaler = @"linear";
     self.consoleFont = @"Menlo";
@@ -52,12 +53,14 @@
         self.networkCard = @"rtl8139";
         self.networkEnabled = YES;
         self.shareClipboardEnabled = YES;
+        self.displayCard = @"qxl-vga";
     } else if ([target isEqualToString:@"virt"] || [target hasPrefix:@"virt-"]) {
         self.soundCard = @"intel-hda";
         self.soundEnabled = YES;
         self.networkCard = @"virtio-net-pci";
         self.networkEnabled = YES;
         self.shareClipboardEnabled = YES;
+        self.displayCard = @"virtio-ramfb";
     } else if ([target isEqualToString:@"mac99"]) {
         self.soundEnabled = NO;
     } else if ([target isEqualToString:@"isapc"]) {

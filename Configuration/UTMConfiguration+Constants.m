@@ -67,6 +67,12 @@
         return [self supportedConsoleThemes];
     } else if ([key isEqualToString:@"consoleFonts"]) {
         return [self supportedConsoleFonts];
+    } else if ([key isEqualToString:@"displayCard"]) {
+        if (pretty) {
+            return [self supportedDisplayCardsForArchitecture:@"x86_64"];
+        } else {
+            return [self supportedDisplayCardsForArchitecturePretty:@"x86_64"];
+        }
     }
     return @[];
 }

@@ -47,10 +47,12 @@ NS_ASSUME_NONNULL_BEGIN
 + (nullable NSArray<NSString *>*)supportedTargetsForArchitecture:(nullable NSString *)architecture;
 + (nullable NSArray<NSString *>*)supportedTargetsForArchitecturePretty:(nullable NSString *)architecture;
 + (NSInteger)defaultTargetIndexForArchitecture:(nullable NSString *)architecture;
++ (nullable NSArray<NSString *>*)supportedDisplayCardsForArchitecture:(nullable NSString *)architecture;
++ (nullable NSArray<NSString *>*)supportedDisplayCardsForArchitecturePretty:(nullable NSString *)architecture;
 + (nullable NSArray<NSString *>*)supportedNetworkCardsForArchitecture:(nullable NSString *)architecture;
 + (nullable NSArray<NSString *>*)supportedNetworkCardsForArchitecturePretty:(nullable NSString *)architecture;
 + (nullable NSArray<NSString *>*)supportedSoundCardsForArchitecture:(nullable NSString *)architecture;
-+ (nullable NSArray<NSString *>*)supportedSoundCardsForArchitecturePretty:(nullable NSString *)arc;
++ (nullable NSArray<NSString *>*)supportedSoundCardsForArchitecturePretty:(nullable NSString *)architecture;
 
 @end
 

@@ -33,6 +33,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, nullable, copy) NSNumber *consoleFontSize;
 @property (nonatomic, assign) BOOL consoleCursorBlink;
 @property (nonatomic, nullable, copy) NSString *consoleResizeCommand;
+@property (nonatomic, nullable, copy) NSString *displayCard;
 
 - (void)migrateDisplayConfigurationIfNecessary;
 

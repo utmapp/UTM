@@ -33,6 +33,7 @@ struct VMConfigDisplayView: View {
                     Text("Full Graphics").tag(false)
                     Text("Console Only").tag(true)
                 }.pickerStyle(displayTypePickerStyle)
+                .disabled(UTMConfiguration.supportedDisplayCards(forArchitecture: config.systemArchitecture)?.isEmpty ?? true)
                 .onChange(of: config.displayConsoleOnly) { newConsoleOnly in
                     if newConsoleOnly {
                         if config.shareClipboardEnabled {
@@ -70,6 +71,10 @@ struct VMConfigDisplayView: View {
                         TextField("stty cols $COLS rows $ROWS\n", text: $config.consoleResizeCommand.bound)
                     }
                 } else {
+                    Section(header: Text("Hardware"), footer: EmptyView().padding(.bottom)) {
+                        VMConfigStringPicker(selection: $config.displayCard, label: Text("Emulated Display Card"), rawValues: UTMConfiguration.supportedDisplayCards(forArchitecture: config.systemArchitecture), displayValues: UTMConfiguration.supportedDisplayCards(forArchitecturePretty: config.systemArchitecture))
+                    }
+                    
                     Section(header: Text("Resolution"), footer: Text("Requires SPICE guest agent tools to be installed. Retina Mode is recommended only if the guest OS supports HiDPI.").padding(.bottom)) {
                         Toggle(isOn: $config.displayFitScreen, label: {
                             Text("Fit To Screen")
