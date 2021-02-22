@@ -500,8 +500,12 @@ static size_t sysctl_read(const char *name) {
     if (!self.configuration.displayConsoleOnly)
 #endif
     if (self.configuration.soundEnabled) {
-        [self pushArgv:@"-soundhw"];
+        [self pushArgv:@"-device"];
         [self pushArgv:self.configuration.soundCard];
+        if ([self.configuration.soundCard containsString:@"hda"]) {
+            [self pushArgv:@"-device"];
+            [self pushArgv:@"hda-duplex"];
+        }
     }
     [self pushArgv:@"-name"];
     [self pushArgv:self.configuration.name];
