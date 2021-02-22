@@ -56,9 +56,12 @@ const NSString *const kUTMConfigNotesKey = @"Notes";
     if (!self.rootDict[kUTMConfigInfoKey]) {
         self.rootDict[kUTMConfigInfoKey] = [NSMutableDictionary dictionary];
     }
-    
-    if (!self.rootDict[kUTMConfigSoundKey][kUTMConfigSoundCardDeviceKey]) {
-        self.rootDict[kUTMConfigSoundKey][kUTMConfigSoundCardDeviceKey] = @"AC97";
+    if (!self.soundCard) {
+        self.soundCard = @"AC97";
+    } else if ([self.soundCard isEqualToString:@"hda"]) {
+        self.soundCard = @"intel-hda"; // migrate name
+    } else if ([self.soundCard isEqualToString:@"pcspk"]) {
+        self.soundEnabled = NO; // no longer supported
     }
     // Migrate input settings
     [self.rootDict[kUTMConfigInputKey] removeObjectForKey:kUTMConfigTouchscreenModeKey];
