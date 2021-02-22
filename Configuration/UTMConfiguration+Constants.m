@@ -27,9 +27,9 @@
 + (NSArray<NSString *>*)supportedOptions:(NSString *)key pretty:(BOOL)pretty {
     if ([key isEqualToString:@"networkCards"]) {
         if (pretty) {
-            return [self supportedNetworkCardsPretty];
+            return [self supportedNetworkCardsForArchitecturePretty:@"x86_64"];
         } else {
-            return [self supportedNetworkCards];
+            return [self supportedNetworkCardsForArchitecture:@"x86_64"];
         }
     } else if ([key isEqualToString:@"soundCards"]) {
         if (pretty) {

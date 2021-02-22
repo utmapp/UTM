@@ -134,6 +134,12 @@ struct HardwareOptions: View {
                     let targets = UTMConfiguration.supportedTargets(forArchitecture: arch)
                     config.systemTarget = targets?[index]
                     config.loadDefaults(forTarget: config.systemTarget, architecture: arch)
+                    // disable unsupported hardware
+                    if let networkCard = config.networkCard {
+                        if !UTMConfiguration.supportedNetworkCards(forArchitecture: arch)!.contains(where: { $0.caseInsensitiveCompare(networkCard) == .orderedSame }) {
+                            config.networkEnabled = false
+                        }
+                    }
                 })
             VMConfigStringPicker(selection: $config.systemTarget, label: Text("System"), rawValues: UTMConfiguration.supportedTargets(forArchitecture: config.systemArchitecture), displayValues: UTMConfiguration.supportedTargets(forArchitecturePretty: config.systemArchitecture))
                 .onChange(of: config.systemTarget, perform: { value in

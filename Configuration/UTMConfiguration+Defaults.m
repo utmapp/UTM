@@ -49,6 +49,7 @@
     if ([target hasPrefix:@"pc"] || [target hasPrefix:@"q35"]) {
         self.soundCard = @"ac97";
         self.networkCard = @"rtl8139";
+        self.networkEnabled = YES;
         self.shareClipboardEnabled = YES;
     } else if ([target isEqualToString:@"virt"] || [target hasPrefix:@"virt-"]) {
         self.soundCard = @"hda";
