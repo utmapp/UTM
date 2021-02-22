@@ -23,11 +23,11 @@ struct VMConfigStringPicker<Label> : View where Label : View {
     var rawValues: [String]
     var displayValues: [String]
     
-    init(selection: Binding<String?>, label: Label, rawValues: [String], displayValues: [String]) {
+    init(selection: Binding<String?>, label: Label, rawValues: [String]?, displayValues: [String]?) {
         self._selection = selection
         self.label = label
-        self.rawValues = rawValues
-        self.displayValues = displayValues
+        self.rawValues = rawValues ?? []
+        self.displayValues = displayValues ?? []
     }
     
     var body: some View {

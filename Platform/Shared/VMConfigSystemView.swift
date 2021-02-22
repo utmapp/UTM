@@ -40,7 +40,7 @@ struct VMConfigSystemView: View {
                 })
                 if showAdvanced {
                     Section(header: Text("CPU")) {
-                        VMConfigStringPicker(selection: $config.systemCPU.animation(), label: EmptyView(), rawValues: UTMConfiguration.supportedCpus(forArchitecture: config.systemArchitecture) ?? [], displayValues: UTMConfiguration.supportedCpus(forArchitecturePretty: config.systemArchitecture) ?? [])
+                        VMConfigStringPicker(selection: $config.systemCPU.animation(), label: EmptyView(), rawValues: UTMConfiguration.supportedCpus(forArchitecture: config.systemArchitecture), displayValues: UTMConfiguration.supportedCpus(forArchitecturePretty: config.systemArchitecture))
                     }
                     CPUFlagsOptions(config: config)
                     Section(header: Text("CPU Cores"), footer: Text("Set to 0 to use maximum supported CPUs. Force multicore might result in incorrect emulation.").padding(.bottom)) {
@@ -135,7 +135,7 @@ struct HardwareOptions: View {
                     config.systemTarget = targets?[index]
                     config.loadDefaults(forTarget: config.systemTarget, architecture: arch)
                 })
-            VMConfigStringPicker(selection: $config.systemTarget, label: Text("System"), rawValues: UTMConfiguration.supportedTargets(forArchitecture: config.systemArchitecture) ?? [], displayValues: UTMConfiguration.supportedTargets(forArchitecturePretty: config.systemArchitecture) ?? [])
+            VMConfigStringPicker(selection: $config.systemTarget, label: Text("System"), rawValues: UTMConfiguration.supportedTargets(forArchitecture: config.systemArchitecture), displayValues: UTMConfiguration.supportedTargets(forArchitecturePretty: config.systemArchitecture))
                 .onChange(of: config.systemTarget, perform: { value in
                     config.loadDefaults(forTarget: value, architecture: config.systemArchitecture)
                 })
