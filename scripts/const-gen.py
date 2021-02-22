@@ -206,10 +206,10 @@ def getSoundCards(qemu_path):
     output = subprocess.check_output([qemu_path, '-soundhw', 'help']).decode('utf-8')
     return parseListing(output)
 
-def getNetworkCards(qemu_path):
+def getDevices(qemu_path):
     output = subprocess.check_output([qemu_path, '-device', 'help']).decode('utf-8')
     devices = parseDeviceListing(output)
-    return devices["Network devices"]
+    return devices
 
 def getCpus(qemu_path):
     output = subprocess.check_output([qemu_path, '-cpu', 'help']).decode('utf-8')
@@ -281,7 +281,8 @@ def main(argv):
         machines = sortItems(getMachines(path))
         default = getDefaultMachine(target.name, machines)
         allMachines.append(Architecture(target.name, machines, default))
-        networkCards = networkCards.union(getNetworkCards(path))
+        devices = getDevices(path)
+        networkCards = networkCards.union(devices["Network devices"])
         soundCards = soundCards.union(getSoundCards(path))
         cpus, flags = getCpus(path)
         allCpus.append(Architecture(target.name, cpus, 0))
