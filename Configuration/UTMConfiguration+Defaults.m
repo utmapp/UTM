@@ -54,6 +54,7 @@
     } else if ([target isEqualToString:@"virt"] || [target hasPrefix:@"virt-"]) {
         self.soundCard = @"hda";
         self.networkCard = @"virtio-net-pci";
+        self.networkEnabled = YES;
         self.shareClipboardEnabled = YES;
     } else if ([target isEqualToString:@"mac99"]) {
         self.soundEnabled = NO;
