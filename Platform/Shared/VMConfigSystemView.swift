@@ -140,6 +140,11 @@ struct HardwareOptions: View {
                             config.networkEnabled = false
                         }
                     }
+                    if let soundCard = config.soundCard {
+                        if !UTMConfiguration.supportedSoundCards(forArchitecture: arch)!.contains(where: { $0.caseInsensitiveCompare(soundCard) == .orderedSame }) {
+                            config.soundEnabled = false
+                        }
+                    }
                 })
             VMConfigStringPicker(selection: $config.systemTarget, label: Text("System"), rawValues: UTMConfiguration.supportedTargets(forArchitecture: config.systemArchitecture), displayValues: UTMConfiguration.supportedTargets(forArchitecturePretty: config.systemArchitecture))
                 .onChange(of: config.systemTarget, perform: { value in

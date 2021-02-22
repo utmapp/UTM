@@ -37,7 +37,7 @@
     self.consoleTheme = @"Default";
     self.networkEnabled = YES;
     self.soundEnabled = YES;
-    self.soundCard = @"ac97";
+    self.soundCard = @"AC97";
     self.networkCard = @"rtl8139";
     self.shareClipboardEnabled = YES;
     self.name = [NSUUID UUID].UUIDString;
@@ -47,12 +47,14 @@
 
 - (void)loadDefaultsForTarget:(nullable NSString *)target architecture:(nullable NSString *)architecture {
     if ([target hasPrefix:@"pc"] || [target hasPrefix:@"q35"]) {
-        self.soundCard = @"ac97";
+        self.soundCard = @"AC97";
+        self.soundEnabled = YES;
         self.networkCard = @"rtl8139";
         self.networkEnabled = YES;
         self.shareClipboardEnabled = YES;
     } else if ([target isEqualToString:@"virt"] || [target hasPrefix:@"virt-"]) {
-        self.soundCard = @"hda";
+        self.soundCard = @"intel-hda";
+        self.soundEnabled = YES;
         self.networkCard = @"virtio-net-pci";
         self.networkEnabled = YES;
         self.shareClipboardEnabled = YES;

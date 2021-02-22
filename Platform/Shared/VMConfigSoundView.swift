@@ -28,9 +28,9 @@ struct VMConfigSoundView: View {
                         Text("Enabled")
                     })
                     if config.soundEnabled {
-                        VMConfigStringPicker(selection: $config.soundCard, label: Text("Emulated Audio Card"), rawValues: UTMConfiguration.supportedSoundCardDevices(), displayValues: UTMConfiguration.supportedSoundCardDevicesPretty())
+                        VMConfigStringPicker(selection: $config.soundCard, label: Text("Emulated Audio Card"), rawValues: UTMConfiguration.supportedSoundCards(forArchitecture: config.systemArchitecture), displayValues: UTMConfiguration.supportedSoundCards(forArchitecturePretty: config.systemArchitecture))
                     }
-                }
+                }.disabled(UTMConfiguration.supportedSoundCards(forArchitecture: config.systemArchitecture)?.isEmpty ?? true)
             }
         }
     }

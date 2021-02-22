@@ -58,7 +58,7 @@ const NSString *const kUTMConfigNotesKey = @"Notes";
     }
     
     if (!self.rootDict[kUTMConfigSoundKey][kUTMConfigSoundCardDeviceKey]) {
-        self.rootDict[kUTMConfigSoundKey][kUTMConfigSoundCardDeviceKey] = [UTMConfiguration supportedSoundCardDevices][0];
+        self.rootDict[kUTMConfigSoundKey][kUTMConfigSoundCardDeviceKey] = @"AC97";
     }
     // Migrate input settings
     [self.rootDict[kUTMConfigInputKey] removeObjectForKey:kUTMConfigTouchscreenModeKey];
