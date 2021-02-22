@@ -36,7 +36,7 @@ struct VMConfigStringPicker<Label> : View where Label : View {
                 guard let selection = self.selection else {
                     return 0
                 }
-                return self.rawValues.firstIndex(of: selection) ?? 0
+                return self.rawValues.firstIndex(where: { $0.caseInsensitiveCompare(selection) == .orderedSame }) ?? 0
             },
             set: {
                 self.selection = self.rawValues[$0]
