@@ -246,7 +246,7 @@ def generateIndexMap(name, keyName, keys, indexMap):
 def generateMapForeachArchitecture(name, targetKeys, targetItems, isPretty=False):
     return generateMap(name, 'architecture', targetKeys, {target.name: [item.desc if isPretty else item.name for item in sortItems(target.items)] for target in targetItems})
 
-def generate(targets, cpus, cpuFlags, machines, networkCards, soundCards):
+def generate(targets, cpus, cpuFlags, machines, displayCards, networkCards, soundCards):
     targetKeys = [item.name for item in targets]
     output  = HEADER
     output += generateArray('supportedArchitectures', targetKeys)
@@ -257,6 +257,8 @@ def generate(targets, cpus, cpuFlags, machines, networkCards, soundCards):
     output += generateMapForeachArchitecture('supportedTargetsForArchitecture', targetKeys, machines)
     output += generateMapForeachArchitecture('supportedTargetsForArchitecturePretty', targetKeys, machines, isPretty=True)
     output += generateIndexMap('defaultTargetIndexForArchitecture', 'architecture', targetKeys, {machine.name: machine.default for machine in machines})
+    output += generateMapForeachArchitecture('supportedDisplayCardsForArchitecture', targetKeys, displayCards)
+    output += generateMapForeachArchitecture('supportedDisplayCardsForArchitecturePretty', targetKeys, displayCards, isPretty=True)
     output += generateMapForeachArchitecture('supportedNetworkCardsForArchitecture', targetKeys, networkCards)
     output += generateMapForeachArchitecture('supportedNetworkCardsForArchitecturePretty', targetKeys, networkCards, isPretty=True)
     output += generateMapForeachArchitecture('supportedSoundCardsForArchitecture', targetKeys, soundCards)
@@ -269,6 +271,7 @@ def main(argv):
     allMachines = []
     allCpus = []
     allCpuFlags = []
+    allDisplayCards = []
     allSoundCards = []
     allNetworkCards = []
     # parse outputs
@@ -282,13 +285,14 @@ def main(argv):
         default = getDefaultMachine(target.name, machines)
         allMachines.append(Architecture(target.name, machines, default))
         devices = getDevices(path)
+        allDisplayCards.append(Architecture(target.name, devices["Display devices"], 0))
         allNetworkCards.append(Architecture(target.name, devices["Network devices"], 0))
         allSoundCards.append(Architecture(target.name, devices["Sound devices"], 0))
         cpus, flags = getCpus(path)
         allCpus.append(Architecture(target.name, cpus, 0))
         allCpuFlags.append(Architecture(target.name, flags, 0))
     # generate constants
-    print(generate(TARGETS, allCpus, allCpuFlags, allMachines, allNetworkCards, allSoundCards))
+    print(generate(TARGETS, allCpus, allCpuFlags, allMachines, allDisplayCards, allNetworkCards, allSoundCards))
 
 if __name__ == "__main__":
     main(sys.argv)
