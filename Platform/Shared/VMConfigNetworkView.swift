@@ -45,9 +45,9 @@ struct VMConfigNetworkView: View {
                         IPConfigurationSection(config: config).multilineTextAlignment(.trailing)
                         #endif
                     }
+                    
+                    VMConfigNetworkPortForwardView(config: config)
                 }
-                
-                VMConfigNetworkPortForwardView(config: config)
             }
         }
     }
