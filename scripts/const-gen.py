@@ -136,10 +136,10 @@ def parseCpu(listing):
     def parseSparcFlags(line):
         if line.startswith('Default CPU feature flags'):
             flags = line.split(':')[1].strip()
-            return ['-' + flag for flag in flags.split(' ')]
+            return [Name('-' + flag, '-' + flag) for flag in flags.split(' ')]
         elif line.startswith('Available CPU feature flags'):
             flags = line.split(':')[1].strip()
-            return ['+' + flag for flag in flags.split(' ')]
+            return [Name('+' + flag, '+' + flag) for flag in flags.split(' ')]
         elif line.startswith('Numerical features'):
             return []
         else:
@@ -148,12 +148,13 @@ def parseCpu(listing):
         if line.endswith(':'):
             return []
         else:
-            return [line.split(' ')[0]]
+            flag = line.split(' ')[0]
+            return [Name(flag, flag)]
     def parseX86Flags(line):
         flags = []
         for flag in line.split(' '):
             if flag:
-                flags.append(flag)
+                flags.append(Name(flag, flag))
         return flags
     output = enumerate(listing.splitlines())
     cpus = [Name('default', 'Default')]
@@ -181,7 +182,7 @@ def parseCpu(listing):
             flags += parseX86Flags(line)
         elif header[1] == 'Recognized feature flags:':
             flags += parseS390Flags(line)
-    flags = sorted(set(flags)) # sort and de-duplicate
+    flags = sortItems(set(flags)) # sort and de-duplicate
     return (cpus, flags)
 
 def sortItems(items):
@@ -246,19 +247,22 @@ def generateIndexMap(name, keyName, keys, indexMap):
     output += '}\n\n'
     return output
 
+def generateMapForeachArchitecture(name, targetKeys, targetItems, isPretty=False):
+    return generateMap(name, 'architecture', targetKeys, {target.name: [item.desc if isPretty else item.name for item in target.items] for target in targetItems})
+
 def generate(targets, cpus, cpuFlags, machines, networkCards, soundCards):
     targetKeys = [item.name for item in targets]
     output  = HEADER
     output += generateArray('supportedArchitectures', targetKeys)
     output += generateArray('supportedArchitecturesPretty', [item.desc for item in targets])
-    output += generateMap('supportedCpusForArchitecture', 'architecture', targetKeys, {cpu.name: [item.name for item in cpu.items] for cpu in cpus})
-    output += generateMap('supportedCpusForArchitecturePretty', 'architecture', targetKeys, {cpu.name: [item.desc for item in cpu.items] for cpu in cpus})
-    output += generateMap('supportedCpuFlagsForArchitecture', 'architecture', targetKeys, {machine.name: [item for item in machine.items] for machine in cpuFlags})
-    output += generateMap('supportedTargetsForArchitecture', 'architecture', targetKeys, {machine.name: [item.name for item in machine.items] for machine in machines})
-    output += generateMap('supportedTargetsForArchitecturePretty', 'architecture', targetKeys, {machine.name: [item.desc for item in machine.items] for machine in machines})
+    output += generateMapForeachArchitecture('supportedCpusForArchitecture', targetKeys, cpus)
+    output += generateMapForeachArchitecture('supportedCpusForArchitecturePretty', targetKeys, cpus, isPretty=True)
+    output += generateMapForeachArchitecture('supportedCpuFlagsForArchitecture', targetKeys, cpuFlags)
+    output += generateMapForeachArchitecture('supportedTargetsForArchitecture', targetKeys, machines)
+    output += generateMapForeachArchitecture('supportedTargetsForArchitecturePretty', targetKeys, machines, isPretty=True)
     output += generateIndexMap('defaultTargetIndexForArchitecture', 'architecture', targetKeys, {machine.name: machine.default for machine in machines})
-    output += generateMap('supportedNetworkCardsForArchitecture', 'architecture', targetKeys, {machine.name: [item.name for item in machine.items] for machine in networkCards})
-    output += generateMap('supportedNetworkCardsForArchitecturePretty', 'architecture', targetKeys, {machine.name: [item.desc for item in machine.items] for machine in networkCards})
+    output += generateMapForeachArchitecture('supportedNetworkCardsForArchitecture', targetKeys, networkCards)
+    output += generateMapForeachArchitecture('supportedNetworkCardsForArchitecturePretty', targetKeys, networkCards, isPretty=True)
     output += generateArray('supportedSoundCardDevices', [item.name for item in soundCards])
     output += generateArray('supportedSoundCardDevicesPretty', [item.desc for item in soundCards])
     output += '@end\n'
