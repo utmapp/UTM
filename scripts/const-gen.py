@@ -257,8 +257,8 @@ def generate(targets, cpus, cpuFlags, machines, networkCards, soundCards):
     output += generateMap('supportedTargetsForArchitecture', 'architecture', targetKeys, {machine.name: [item.name for item in machine.items] for machine in machines})
     output += generateMap('supportedTargetsForArchitecturePretty', 'architecture', targetKeys, {machine.name: [item.desc for item in machine.items] for machine in machines})
     output += generateIndexMap('defaultTargetIndexForArchitecture', 'architecture', targetKeys, {machine.name: machine.default for machine in machines})
-    output += generateArray('supportedNetworkCards', [item.name for item in networkCards])
-    output += generateArray('supportedNetworkCardsPretty', [item.desc for item in networkCards])
+    output += generateMap('supportedNetworkCardsForArchitecture', 'architecture', targetKeys, {machine.name: [item.name for item in machine.items] for machine in networkCards})
+    output += generateMap('supportedNetworkCardsForArchitecturePretty', 'architecture', targetKeys, {machine.name: [item.desc for item in machine.items] for machine in networkCards})
     output += generateArray('supportedSoundCardDevices', [item.name for item in soundCards])
     output += generateArray('supportedSoundCardDevicesPretty', [item.desc for item in soundCards])
     output += '@end\n'
@@ -270,7 +270,7 @@ def main(argv):
     allCpus = []
     allCpuFlags = []
     soundCards = set()
-    networkCards = set()
+    allNetworkCards = []
     # parse outputs
     for target in TARGETS:
         path = '{}/{}-softmmu/qemu-system-{}'.format(base, target.name, target.name)
@@ -282,13 +282,13 @@ def main(argv):
         default = getDefaultMachine(target.name, machines)
         allMachines.append(Architecture(target.name, machines, default))
         devices = getDevices(path)
-        networkCards = networkCards.union(devices["Network devices"])
+        allNetworkCards.append(Architecture(target.name, devices["Network devices"], 0))
         soundCards = soundCards.union(getSoundCards(path))
         cpus, flags = getCpus(path)
         allCpus.append(Architecture(target.name, cpus, 0))
         allCpuFlags.append(Architecture(target.name, flags, 0))
     # generate constants
-    print(generate(TARGETS, allCpus, allCpuFlags, allMachines, sortItems(networkCards), sortItems(soundCards)))
+    print(generate(TARGETS, allCpus, allCpuFlags, allMachines, allNetworkCards, sortItems(soundCards)))
 
 if __name__ == "__main__":
     main(sys.argv)
