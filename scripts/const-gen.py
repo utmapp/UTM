@@ -287,7 +287,8 @@ def main(argv):
         devices = getDevices(path)
         allDisplayCards.append(Architecture(target.name, devices["Display devices"], 0))
         allNetworkCards.append(Architecture(target.name, devices["Network devices"], 0))
-        allSoundCards.append(Architecture(target.name, devices["Sound devices"], 0))
+        nonHdaDevices = [device for device in devices["Sound devices"] if device.bus != 'HDA']
+        allSoundCards.append(Architecture(target.name, nonHdaDevices, 0))
         cpus, flags = getCpus(path)
         allCpus.append(Architecture(target.name, cpus, 0))
         allCpuFlags.append(Architecture(target.name, flags, 0))
