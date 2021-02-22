@@ -182,7 +182,7 @@ def parseCpu(listing):
             flags += parseX86Flags(line)
         elif header[1] == 'Recognized feature flags:':
             flags += parseS390Flags(line)
-    flags = sortItems(set(flags)) # sort and de-duplicate
+    flags = set(flags) # de-duplicate
     return (cpus, flags)
 
 def sortItems(items):
@@ -248,7 +248,7 @@ def generateIndexMap(name, keyName, keys, indexMap):
     return output
 
 def generateMapForeachArchitecture(name, targetKeys, targetItems, isPretty=False):
-    return generateMap(name, 'architecture', targetKeys, {target.name: [item.desc if isPretty else item.name for item in target.items] for target in targetItems})
+    return generateMap(name, 'architecture', targetKeys, {target.name: [item.desc if isPretty else item.name for item in sortItems(target.items)] for target in targetItems})
 
 def generate(targets, cpus, cpuFlags, machines, networkCards, soundCards):
     targetKeys = [item.name for item in targets]
