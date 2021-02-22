@@ -203,10 +203,6 @@ def getDefaultMachine(target, machines):
             return idx
     return -1
 
-def getSoundCards(qemu_path):
-    output = subprocess.check_output([qemu_path, '-soundhw', 'help']).decode('utf-8')
-    return parseListing(output)
-
 def getDevices(qemu_path):
     output = subprocess.check_output([qemu_path, '-device', 'help']).decode('utf-8')
     devices = parseDeviceListing(output)
@@ -263,8 +259,8 @@ def generate(targets, cpus, cpuFlags, machines, networkCards, soundCards):
     output += generateIndexMap('defaultTargetIndexForArchitecture', 'architecture', targetKeys, {machine.name: machine.default for machine in machines})
     output += generateMapForeachArchitecture('supportedNetworkCardsForArchitecture', targetKeys, networkCards)
     output += generateMapForeachArchitecture('supportedNetworkCardsForArchitecturePretty', targetKeys, networkCards, isPretty=True)
-    output += generateArray('supportedSoundCardDevices', [item.name for item in soundCards])
-    output += generateArray('supportedSoundCardDevicesPretty', [item.desc for item in soundCards])
+    output += generateMapForeachArchitecture('supportedSoundCardsForArchitecture', targetKeys, soundCards)
+    output += generateMapForeachArchitecture('supportedSoundCardsForArchitecturePretty', targetKeys, soundCards, isPretty=True)
     output += '@end\n'
     return output
 
@@ -273,7 +269,7 @@ def main(argv):
     allMachines = []
     allCpus = []
     allCpuFlags = []
-    soundCards = set()
+    allSoundCards = []
     allNetworkCards = []
     # parse outputs
     for target in TARGETS:
@@ -287,12 +283,12 @@ def main(argv):
         allMachines.append(Architecture(target.name, machines, default))
         devices = getDevices(path)
         allNetworkCards.append(Architecture(target.name, devices["Network devices"], 0))
-        soundCards = soundCards.union(getSoundCards(path))
+        allSoundCards.append(Architecture(target.name, devices["Sound devices"], 0))
         cpus, flags = getCpus(path)
         allCpus.append(Architecture(target.name, cpus, 0))
         allCpuFlags.append(Architecture(target.name, flags, 0))
     # generate constants
-    print(generate(TARGETS, allCpus, allCpuFlags, allMachines, allNetworkCards, sortItems(soundCards)))
+    print(generate(TARGETS, allCpus, allCpuFlags, allMachines, allNetworkCards, allSoundCards))
 
 if __name__ == "__main__":
     main(sys.argv)
