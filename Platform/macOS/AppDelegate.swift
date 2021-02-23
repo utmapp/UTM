@@ -1,5 +1,5 @@
 //
-// Copyright © 2020 osy. All rights reserved.
+// Copyright © 2021 osy. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,23 +14,8 @@
 // limitations under the License.
 //
 
-import SwiftUI
-
-@available(iOS 14, macOS 11, *)
-struct UTMApp: App {
-    @StateObject var data = UTMData()
-    #if os(macOS)
-    @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate: AppDelegate
-    #endif
-    
-    var body: some Scene {
-        WindowGroup {
-            ContentView().environmentObject(data)
-        }.commands { VMCommands() }
-        #if os(macOS)
-        Settings {
-            SettingsView()
-        }
-        #endif
+class AppDelegate: NSObject, NSApplicationDelegate {
+    func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
+        true
     }
 }
