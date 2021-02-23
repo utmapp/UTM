@@ -80,23 +80,36 @@ jobs:
         with:
           path: sysroot-macOS-arm64_x86_64
           key: macos-universal-${{ hashFiles('scripts/build_dependencies.sh') }}-${{ hashFiles('patches/**') }}
-      - name: Download Sysroot (arm64)
+      - name: Download Sysroot (arm64) from cache
         if: steps.cache-sysroot.outputs.cache-hit != 'true'
         id: cache-sysroot-arm64
         uses: actions/cache@v1
         with:
           path: sysroot-macOS-arm64
           key: macos-arm64-${{ hashFiles('scripts/build_dependencies.sh') }}-${{ hashFiles('patches/**') }}
-      - name: Download Sysroot (x86_64)
+      - name: Download Sysroot (arm64) from artifact
+        if: steps.cache-sysroot.outputs.cache-hit != 'true' && steps.cache-sysroot-arm64.outputs.cache-hit != 'true'
+        uses: actions/download-artifact@v1
+        with:
+          name: Sysroot-macos-arm64
+      - name: Download Sysroot (x86_64) from cache
         if: steps.cache-sysroot.outputs.cache-hit != 'true'
         id: cache-sysroot-x86_64
         uses: actions/cache@v1
         with:
           path: sysroot-macOS-x86_64
           key: macos-x86_64-${{ hashFiles('scripts/build_dependencies.sh') }}-${{ hashFiles('patches/**') }}
+      - name: Download Sysroot (x86_64) from artifact
+        if: steps.cache-sysroot.outputs.cache-hit != 'true' && steps.cache-sysroot-x86_64.outputs.cache-hit != 'true'
+        uses: actions/download-artifact@v1
+        with:
+          name: Sysroot-macos-x86_64
       - name: Pack Universal Sysroot
         if: steps.cache-sysroot.outputs.cache-hit != 'true'
-        run: ./scripts/pack_dependencies.sh . macos arm64 x86_64
+        run: |
+          tar xf Sysroot-macos-arm64/sysroot.tgz || true
+          tar xf Sysroot-macos-x86_64/sysroot.tgz || true
+          ./scripts/pack_dependencies.sh . macos arm64 x86_64
       - name: Compress Sysroot
         if: steps.cache-sysroot.outputs.cache-hit != 'true'
         run: |
