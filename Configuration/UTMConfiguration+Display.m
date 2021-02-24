@@ -62,6 +62,8 @@ const NSString *const kUTMConfigDisplayCardKey = @"DisplayCard";
             self.displayCard = @"qxl-vga";
         } else if ([self.systemTarget isEqualToString:@"virt"] || [self.systemTarget hasPrefix:@"virt-"]) {
             self.displayCard = @"virtio-ramfb";
+        } else {
+            self.displayCard = @"VGA";
         }
     }
 }
