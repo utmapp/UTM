@@ -141,6 +141,8 @@ struct HardwareOptions: View {
                                 config.displayCard = "VGA" // most devices support VGA
                             } else {
                                 config.displayConsoleOnly = true
+                                config.shareClipboardEnabled = false
+                                config.shareDirectoryEnabled = false
                             }
                         }
                     }
