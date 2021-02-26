@@ -219,7 +219,7 @@ static size_t sysctl_read(const char *name) {
 }
 
 - (void)argsForDrives {
-    NSInteger bootindex = 1;
+    NSInteger bootindex = 0;
     for (NSUInteger i = 0; i < self.configuration.countDrives; i++) {
         NSString *path = [self.configuration driveImagePathForIndex:i];
         UTMDiskImageType type = [self.configuration driveImageTypeForIndex:i];

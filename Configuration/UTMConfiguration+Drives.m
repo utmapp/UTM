@@ -191,9 +191,6 @@ static const NSString *const kUTMConfigCdromKey = @"Cdrom";
     NSMutableDictionary *drive = self.rootDict[kUTMConfigDrivesKey][index];
     [self propertyWillChange];
     [self.rootDict[kUTMConfigDrivesKey] removeObjectAtIndex:index];
-    if (index < newIndex) {
-        newIndex--;
-    }
     [self.rootDict[kUTMConfigDrivesKey] insertObject:drive atIndex:newIndex];
 }
 
