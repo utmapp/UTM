@@ -171,7 +171,19 @@ static size_t sysctl_read(const char *name) {
 }
 
 - (NSString *)expandDriveInterface:(NSString *)interface identifier:(NSString *)identifier removable:(BOOL)removable {
-    if ([interface isEqualToString:@"nvme"]) {
+    if ([interface isEqualToString:@"ide"]) {
+        [self pushArgv:@"-device"];
+        [self pushArgv:[NSString stringWithFormat:@"%@,drive=%@", removable ? @"ide-cd" : @"ide-hd", identifier]];
+        return @"none";
+    } else if ([interface isEqualToString:@"scsi"]) {
+        [self pushArgv:@"-device"];
+        [self pushArgv:[NSString stringWithFormat:@"%@,drive=%@", removable ? @"scsi-cd" : @"scsi-hd", identifier]];
+        return @"none";
+    } else if ([interface isEqualToString:@"virtio"]) {
+        [self pushArgv:@"-device"];
+        [self pushArgv:[NSString stringWithFormat:@"%@,drive=%@", [self.configuration.systemArchitecture isEqualToString:@"s390x"] ? @"virtio-blk-ccw" : @"virtio-blk-pci", identifier]];
+        return @"none";
+    } else if ([interface isEqualToString:@"nvme"]) {
         [self pushArgv:@"-device"];
         [self pushArgv:[NSString stringWithFormat:@"nvme,drive=%@,serial=%@", identifier, identifier]];
         return @"none";
