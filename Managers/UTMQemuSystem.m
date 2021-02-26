@@ -170,26 +170,26 @@ static size_t sysctl_read(const char *name) {
     }
 }
 
-- (NSString *)expandDriveInterface:(NSString *)interface identifier:(NSString *)identifier removable:(BOOL)removable {
+- (NSString *)expandDriveInterface:(NSString *)interface identifier:(NSString *)identifier removable:(BOOL)removable bootindex:(NSInteger *)bootindex {
     if ([interface isEqualToString:@"ide"]) {
         [self pushArgv:@"-device"];
-        [self pushArgv:[NSString stringWithFormat:@"%@,drive=%@", removable ? @"ide-cd" : @"ide-hd", identifier]];
+        [self pushArgv:[NSString stringWithFormat:@"%@,drive=%@,bootindex=%lu", removable ? @"ide-cd" : @"ide-hd", identifier, (*bootindex)++]];
         return @"none";
     } else if ([interface isEqualToString:@"scsi"]) {
         [self pushArgv:@"-device"];
-        [self pushArgv:[NSString stringWithFormat:@"%@,drive=%@", removable ? @"scsi-cd" : @"scsi-hd", identifier]];
+        [self pushArgv:[NSString stringWithFormat:@"%@,drive=%@,bootindex=%lu", removable ? @"scsi-cd" : @"scsi-hd", identifier, (*bootindex)++]];
         return @"none";
     } else if ([interface isEqualToString:@"virtio"]) {
         [self pushArgv:@"-device"];
-        [self pushArgv:[NSString stringWithFormat:@"%@,drive=%@", [self.configuration.systemArchitecture isEqualToString:@"s390x"] ? @"virtio-blk-ccw" : @"virtio-blk-pci", identifier]];
+        [self pushArgv:[NSString stringWithFormat:@"%@,drive=%@,bootindex=%lu", [self.configuration.systemArchitecture isEqualToString:@"s390x"] ? @"virtio-blk-ccw" : @"virtio-blk-pci", identifier, (*bootindex)++]];
         return @"none";
     } else if ([interface isEqualToString:@"nvme"]) {
         [self pushArgv:@"-device"];
-        [self pushArgv:[NSString stringWithFormat:@"nvme,drive=%@,serial=%@", identifier, identifier]];
+        [self pushArgv:[NSString stringWithFormat:@"nvme,drive=%@,serial=%@,bootindex=%lu", identifier, identifier, (*bootindex)++]];
         return @"none";
     } else if ([interface isEqualToString:@"usb"]) {
         [self pushArgv:@"-device"];
-        [self pushArgv:[NSString stringWithFormat:@"usb-storage,drive=%@,removable=%@", identifier, removable ? @"true" : @"false"]];
+        [self pushArgv:[NSString stringWithFormat:@"usb-storage,drive=%@,removable=%@,bootindex=%lu", identifier, removable ? @"true" : @"false", (*bootindex)++]];
         return @"none";
     } else {
         return interface; // no expand needed
@@ -219,6 +219,7 @@ static size_t sysctl_read(const char *name) {
 }
 
 - (void)argsForDrives {
+    NSInteger bootindex = 1;
     for (NSUInteger i = 0; i < self.configuration.countDrives; i++) {
         NSString *path = [self.configuration driveImagePathForIndex:i];
         UTMDiskImageType type = [self.configuration driveImageTypeForIndex:i];
@@ -243,7 +244,7 @@ static size_t sysctl_read(const char *name) {
                 NSString *interface = [self.configuration driveInterfaceTypeForIndex:i];
                 BOOL removable = [self.configuration driveRemovableForIndex:i];
                 NSString *identifier = [NSString stringWithFormat:@"drive%lu", i];
-                NSString *realInterface = [self expandDriveInterface:interface identifier:identifier removable:removable];
+                NSString *realInterface = [self expandDriveInterface:interface identifier:identifier removable:removable bootindex:&bootindex];
                 NSString *drive;
                 [self pushArgv:@"-drive"];
                 drive = [NSString stringWithFormat:@"if=%@,media=%@,id=%@", realInterface, removable ? @"cdrom" : @"disk", identifier];
