@@ -23,9 +23,8 @@ struct VMToolbarModifier: ViewModifier {
     let bottom: Bool
     @ObservedObject private var sessionConfig: UTMViewState
     @State private var showSharePopup = false
-    @State private var confirmAction: ConfirmAction?
+    @Binding private var confirmAction: ConfirmAction?
     @EnvironmentObject private var data: UTMData
-    @Environment(\.presentationMode) private var presentationMode: Binding<PresentationMode>
     
     #if os(macOS)
     let destructiveButtonColor: Color = .primary
@@ -49,10 +48,11 @@ struct VMToolbarModifier: ViewModifier {
     }
     #endif
     
-    init(vm: UTMVirtualMachine, bottom: Bool) {
+    init(vm: UTMVirtualMachine, bottom: Bool, confirmAction: Binding<ConfirmAction?>) {
         self.vm = vm
         self.bottom = bottom
         self.sessionConfig = vm.viewState
+        self._confirmAction = confirmAction
     }
     
     func body(content: Content) -> some View {
@@ -130,8 +130,5 @@ struct VMToolbarModifier: ViewModifier {
                 .padding(.leading, padding)
             }
         }
-        .modifier(VMConfirmActionModifier(vm: vm, confirmAction: $confirmAction) {
-            presentationMode.wrappedValue.dismiss()
-        })
     }
 }

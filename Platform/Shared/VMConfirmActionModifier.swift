@@ -26,36 +26,48 @@ enum ConfirmAction: Int, Identifiable {
 
 @available(iOS 14, macOS 11, *)
 struct VMConfirmActionModifier: ViewModifier {
-    let vm: UTMVirtualMachine
+    @Binding var vm: UTMVirtualMachine?
     @Binding var confirmAction: ConfirmAction?
-    let onConfirm: () -> Void
+    let onConfirm: (() -> Void)?
     @EnvironmentObject private var data: UTMData
     
+    @ViewBuilder
     func body(content: Content) -> some View {
-        content.alert(item: $confirmAction) { action in
-            switch action {
-            case .confirmCloneVM:
-                return Alert(title: Text("Do you want to duplicate this VM and all its data?"), primaryButton: .cancel(), secondaryButton: .default(Text("Yes")) {
-                    data.busyWork {
-                        try data.clone(vm: vm)
-                    }
-                    onConfirm()
-                })
-            case .confirmDeleteVM:
-                return Alert(title: Text("Do you want to delete this VM and all its data?"), primaryButton: .cancel(), secondaryButton: .destructive(Text("Delete")) {
-                    data.busyWork {
-                        try data.delete(vm: vm)
-                    }
-                    onConfirm()
-                })
-            case .confirmStopVM:
-                return Alert(title: Text("Do you want to force stop this VM and lose all unsaved data?"), primaryButton: .cancel(), secondaryButton: .destructive(Text("Stop")) {
-                    data.busyWork {
-                        try data.stop(vm: vm)
-                    }
-                    onConfirm()
-                })
+        if let vm = vm {
+            content.alert(item: $confirmAction) { action in
+                switch action {
+                case .confirmCloneVM:
+                    return Alert(title: Text("Do you want to duplicate this VM and all its data?"), primaryButton: .cancel(), secondaryButton: .default(Text("Yes")) {
+                        dismiss()
+                        data.busyWork {
+                            try data.clone(vm: vm)
+                        }
+                        onConfirm?()
+                    })
+                case .confirmDeleteVM:
+                    return Alert(title: Text("Do you want to delete this VM and all its data?"), primaryButton: .cancel(), secondaryButton: .destructive(Text("Delete")) {
+                        dismiss()
+                        data.busyWork {
+                            try data.delete(vm: vm)
+                        }
+                        onConfirm?()
+                    })
+                case .confirmStopVM:
+                    return Alert(title: Text("Do you want to force stop this VM and lose all unsaved data?"), primaryButton: .cancel(), secondaryButton: .destructive(Text("Stop")) {
+                        dismiss()
+                        data.busyWork {
+                            try data.stop(vm: vm)
+                        }
+                        onConfirm?()
+                    })
+                }
             }
+        } else {
+            content
         }
+    }
+    
+    private func dismiss() {
+        self.confirmAction = nil
     }
 }

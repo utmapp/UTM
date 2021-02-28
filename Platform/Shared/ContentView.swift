@@ -27,17 +27,23 @@ struct ContentView: View {
     @State private var newPopupPresented = false
     @State private var importSheetPresented = false
     @Environment(\.openURL) var openURL
+    @State private var confirmAction: ConfirmAction?
     
     var body: some View {
         NavigationView {
             List {
                 ForEach(data.virtualMachines) { vm in
                     NavigationLink(
-                        destination: VMDetailsView(vm: vm),
+                        destination: VMDetailsView(vm: vm, confirmAction: $confirmAction),
                         tag: vm,
                         selection: $data.selectedVM,
                         label: { VMCardView(vm: vm) })
-                        .modifier(VMContextMenuModifier(vm: vm))
+                        .modifier(VMContextMenuModifier(vm: vm, confirmAction: $confirmAction))
+                        .onChange(of: vm.viewState.deleted) { deleted in
+                            if deleted {
+                                data.selectedVM = nil
+                            }
+                        }
                 }.onMove(perform: data.move)
                 .onDelete(perform: delete)
             }.optionalSidebarFrame()
@@ -72,8 +78,12 @@ struct ContentView: View {
                 //FIXME: this doesn't always work on iOS
                 if !value {
                     newConfiguration.resetDefaults()
+                    #if os(macOS) // crashes on iOS due to SwiftUI bug
+                    data.selectedVM = data.virtualMachines.last
+                    #endif
                 }
             }
+            .modifier(VMConfirmActionModifier(vm: $data.selectedVM, confirmAction: $confirmAction, onConfirm: nil))
             VMPlaceholderView()
         }.overlay(data.showSettingsModal ? AnyView(EmptyView()) : AnyView(BusyOverlay()))
         .environmentObject(data)

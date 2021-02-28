@@ -20,6 +20,7 @@ import SwiftUI
 struct VMDetailsView: View {
     let vm: UTMVirtualMachine
     @EnvironmentObject private var data: UTMData
+    @Binding var confirmAction: ConfirmAction?
     @Environment(\.presentationMode) private var presentationMode: Binding<PresentationMode>
     #if !os(macOS)
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass: UserInterfaceSizeClass?
@@ -76,7 +77,7 @@ struct VMDetailsView: View {
                 }
             }.labelStyle(DetailsLabelStyle())
             .navigationTitle(vm.configuration.name)
-            .modifier(VMToolbarModifier(vm: vm, bottom: !regularScreenSizeClass))
+            .modifier(VMToolbarModifier(vm: vm, bottom: !regularScreenSizeClass, confirmAction: $confirmAction))
             .sheet(isPresented: $data.showSettingsModal) {
                 VMSettingsView(vm: vm, config: vm.configuration)
                     .environmentObject(data)
@@ -194,7 +195,7 @@ struct VMDetailsView_Previews: PreviewProvider {
     @State static private var config = UTMConfiguration()
     
     static var previews: some View {
-        VMDetailsView(vm: UTMVirtualMachine(configuration: config, withDestinationURL: URL(fileURLWithPath: "")))
+        VMDetailsView(vm: UTMVirtualMachine(configuration: config, withDestinationURL: URL(fileURLWithPath: "")), confirmAction: .constant(nil))
         .onAppear {
             config.shareDirectoryEnabled = true
             config.newDrive("", type: .disk, interface: "ide")

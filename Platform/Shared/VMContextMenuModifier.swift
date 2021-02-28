@@ -22,11 +22,12 @@ struct VMContextMenuModifier: ViewModifier {
     @ObservedObject private var sessionConfig: UTMViewState
     @EnvironmentObject private var data: UTMData
     @State private var showSharePopup = false
-    @State private var confirmAction: ConfirmAction?
+    @Binding var confirmAction: ConfirmAction?
     
-    init(vm: UTMVirtualMachine) {
+    init(vm: UTMVirtualMachine, confirmAction: Binding<ConfirmAction?>) {
         self.vm = vm
         self.sessionConfig = vm.viewState
+        self._confirmAction = confirmAction
     }
     
     func body(content: Content) -> some View {
@@ -40,18 +41,21 @@ struct VMContextMenuModifier: ViewModifier {
             Divider()
             #endif
             Button {
+                data.selectedVM = vm
                 data.edit(vm: vm)
             } label: {
                 Label("Edit", systemImage: "slider.horizontal.3")
             }.disabled(sessionConfig.suspended || sessionConfig.active)
             if sessionConfig.suspended || sessionConfig.active {
                 Button {
+                    data.selectedVM = vm
                     confirmAction = .confirmStopVM
                 } label: {
                     Label("Stop", systemImage: "stop.fill")
                 }
             } else {
                 Button {
+                    data.selectedVM = vm
                     data.run(vm: vm)
                 } label: {
                     Label("Run", systemImage: "play.fill")
@@ -63,12 +67,14 @@ struct VMContextMenuModifier: ViewModifier {
                 Label("Share", systemImage: "square.and.arrow.up")
             }
             Button {
+                data.selectedVM = vm
                 confirmAction = .confirmCloneVM
             } label: {
                 Label("Clone", systemImage: "doc.on.doc")
             }
             Divider()
             Button {
+                data.selectedVM = vm
                 confirmAction = .confirmDeleteVM
             } label: {
                 Label("Delete", systemImage: "trash")
@@ -77,9 +83,6 @@ struct VMContextMenuModifier: ViewModifier {
         }
         .modifier(VMShareItemModifier(isPresented: $showSharePopup) {
             [vm.path!]
-        })
-        .modifier(VMConfirmActionModifier(vm: vm, confirmAction: $confirmAction) {
-            
         })
     }
 }
