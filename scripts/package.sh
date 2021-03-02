@@ -111,6 +111,7 @@ create_deb() {
 	local OUTPUT=$2
 	local FAKEENT=$3
 	local DEB_TMP="$OUTPUT/deb"
+	local IPA_PATH="$DEB_TMP/Library/Caches/com.utmapp.UTM"
 	local SIZE_KIB=`du -sk "$INPUT_APP"| cut -f 1`
 	local VERSION=`/usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" "$INPUT_APP/Info.plist"`
 
@@ -122,7 +123,7 @@ Package: com.utmapp.UTM
 Version: ${VERSION}
 Section: Productivity
 Architecture: iphoneos-arm
-Depends: firmware (>=11.0), firmware-sbin
+Depends: firmware (>=11.0), firmware-sbin, net.angelxwind.appsyncunified, com.linusyang.appinst
 Installed-Size: ${SIZE_KIB}
 Maintainer: osy <dev@getutm.app>
 Description: Virtual machines for iOS
@@ -135,7 +136,20 @@ Moderndepiction: https://cydia.getutm.app/depiction/native/com.utmapp.UTM.json
 Sileodepiction: https://cydia.getutm.app/depiction/native/com.utmapp.UTM.json
 Tags: compatible_min::ios11.0
 EOL
-	fake_sign "$INPUT/Products/Applications" "$DEB_TMP" "$FAKEENT"
+cat >"$DEB_TMP/DEBIAN/postinst" <<EOL
+#!/bin/sh
+
+appinst /Library/Caches/com.utmapp.UTM/UTM.ipa
+EOL
+cat >"$DEB_TMP/DEBIAN/postrm" <<EOL
+#!/bin/sh
+
+echo "NOTICE: UTM app and data files are NOT deleted automatically! You can delete data from the built-in Files app and the UTM app from your home screen!"
+EOL
+	chmod +x "$DEB_TMP/DEBIAN/postinst"
+	chmod +x "$DEB_TMP/DEBIAN/postrm"
+	mkdir -p "$IPA_PATH"
+	create_fake_ipa "$INPUT" "$IPA_PATH" "$FAKEENT"
 	dpkg-deb -b -Zgzip -z9 "$DEB_TMP" "$OUTPUT/UTM.deb"
 	rm -r "$DEB_TMP"
 }
