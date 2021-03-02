@@ -41,7 +41,8 @@ struct NumberTextField: View {
             }
             return self.formatter.string(from: number) ?? ""
         }, set: {
-            self.number = self.formatter.number(from: $0)
+            // make sure we never set nil
+            self.number = self.formatter.number(from: $0) ?? NSNumber(value: 0)
         }), onEditingChanged: onEditingChanged, onCommit: onCommit)
             .keyboardType(.numberPad)
     }
