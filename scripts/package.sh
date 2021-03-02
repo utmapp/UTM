@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 set -e
 
@@ -52,11 +52,11 @@ if [ -z "$OUTPUT" ]; then
 fi
 
 itunes_sign() {
-	INPUT=$1
-	OUTPUT=$2
-	PROFILE_NAME=$3
-	TEAM_ID=$4
-	OPTIONS="/tmp/options.plist"
+	local INPUT=$1
+	local OUTPUT=$2
+	local PROFILE_NAME=$3
+	local TEAM_ID=$4
+	local OPTIONS="/tmp/options.plist"
 
 	if [ -z "$PROFILE_NAME" || -z "$TEAM_ID" ]; then
 		echo "Invalid profile name or team id!"
@@ -94,9 +94,9 @@ EOL
 }
 
 fake_sign() {
-	_input=$1
-	_output=$2
-	_fakeent=$3
+	local _input=$1
+	local _output=$2
+	local _fakeent=$3
 
 	mkdir -p "$_output"
 	cp -r "$_input" "$_output/"
@@ -106,13 +106,13 @@ fake_sign() {
 }
 
 create_deb() {
-	INPUT=$1
-	INPUT_APP="$INPUT/Products/Applications/UTM.app"
-	OUTPUT=$2
-	FAKEENT=$3
-	DEB_TMP="$OUTPUT/deb"
-	SIZE_KIB=`du -sk "$INPUT_APP"| cut -f 1`
-	VERSION=`/usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" "$INPUT_APP/Info.plist"`
+	local INPUT=$1
+	local INPUT_APP="$INPUT/Products/Applications/UTM.app"
+	local OUTPUT=$2
+	local FAKEENT=$3
+	local DEB_TMP="$OUTPUT/deb"
+	local SIZE_KIB=`du -sk "$INPUT_APP"| cut -f 1`
+	local VERSION=`/usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" "$INPUT_APP/Info.plist"`
 
 	mkdir -p "$OUTPUT"
 	rm -rf "$DEB_TMP"
@@ -141,9 +141,9 @@ EOL
 }
 
 create_fake_ipa() {
-	INPUT=$1
-	OUTPUT=$2
-	FAKEENT=$3
+	local INPUT=$1
+	local OUTPUT=$2
+	local FAKEENT=$3
 
 	mkdir -p "$OUTPUT"
 	rm -rf "$OUTPUT/Applications" "$OUTPUT/Payload" "$OUTPUT/UTM.ipa"
