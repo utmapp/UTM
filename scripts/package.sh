@@ -2,6 +2,11 @@
 
 set -e
 
+command -v realpath >/dev/null 2>&1 || realpath() {
+    [[ $1 = /* ]] && echo "$1" || echo "$PWD/${1#./}"
+}
+BASEDIR="$(dirname "$(realpath $0)")"
+
 usage() {
 	echo "usage: $0 MODE inputXcarchive outputPath [PROFILE_NAME TEAM_ID]"
 	echo "  MODE is one of:"
@@ -123,7 +128,7 @@ Package: com.utmapp.UTM
 Version: ${VERSION}
 Section: Productivity
 Architecture: iphoneos-arm
-Depends: firmware (>=11.0), firmware-sbin, net.angelxwind.appsyncunified, com.linusyang.appinst
+Depends: firmware (>=11.0), firmware-sbin, net.angelxwind.appsyncunified
 Installed-Size: ${SIZE_KIB}
 Maintainer: osy <dev@getutm.app>
 Description: Virtual machines for iOS
@@ -136,18 +141,12 @@ Moderndepiction: https://cydia.getutm.app/depiction/native/com.utmapp.UTM.json
 Sileodepiction: https://cydia.getutm.app/depiction/native/com.utmapp.UTM.json
 Tags: compatible_min::ios11.0
 EOL
-cat >"$DEB_TMP/DEBIAN/postinst" <<EOL
-#!/bin/sh
-
-appinst /Library/Caches/com.utmapp.UTM/UTM.ipa
-EOL
-cat >"$DEB_TMP/DEBIAN/postrm" <<EOL
-#!/bin/sh
-
-echo "NOTICE: UTM app and data files are NOT deleted automatically! You can delete data from the built-in Files app and the UTM app from your home screen!"
-EOL
-	chmod +x "$DEB_TMP/DEBIAN/postinst"
-	chmod +x "$DEB_TMP/DEBIAN/postrm"
+	xcrun -sdk iphoneos clang -arch arm64 -fobjc-arc "$BASEDIR/deb/postinst.m" "$BASEDIR/deb/CoreServices.tbd" -o "$DEB_TMP/DEBIAN/postinst"
+	strip "$DEB_TMP/DEBIAN/postinst"
+	ldid -S"$BASEDIR/deb/postinst.xml" "$DEB_TMP/DEBIAN/postinst"
+	xcrun -sdk iphoneos clang -arch arm64 -fobjc-arc "$BASEDIR/deb/prerm.m" "$BASEDIR/deb/CoreServices.tbd" -o "$DEB_TMP/DEBIAN/prerm"
+	strip "$DEB_TMP/DEBIAN/prerm"
+	ldid -S"$BASEDIR/deb/prerm.xml" "$DEB_TMP/DEBIAN/prerm"
 	mkdir -p "$IPA_PATH"
 	create_fake_ipa "$INPUT" "$IPA_PATH" "$FAKEENT"
 	dpkg-deb -b -Zgzip -z9 "$DEB_TMP" "$OUTPUT/UTM.deb"
