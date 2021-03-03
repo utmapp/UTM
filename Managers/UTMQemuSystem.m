@@ -312,7 +312,7 @@ static size_t sysctl_read(const char *name) {
             [netstr appendFormat:@",ipv6-host=%@", self.configuration.networkHostIPv6];
         }
         if (self.configuration.networkIsolate) {
-            [netstr appendString:@"restrict=on"];
+            [netstr appendString:@",restrict=on"];
         }
         if (self.configuration.networkHost.length > 0) {
             [netstr appendFormat:@",hostname=%@", self.configuration.networkHost];
