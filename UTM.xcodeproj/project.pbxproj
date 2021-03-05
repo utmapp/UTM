@@ -643,6 +643,9 @@
 		CE4EF2722506DD7900E9D33B /* VMRemovableDrivesView.xib in Resources */ = {isa = PBXBuildFile; fileRef = CE4EF2712506DD7900E9D33B /* VMRemovableDrivesView.xib */; };
 		CE5076DB250AB55D00C26C19 /* VMDisplayMetalViewController+Pencil.m in Sources */ = {isa = PBXBuildFile; fileRef = CE5076DA250AB55D00C26C19 /* VMDisplayMetalViewController+Pencil.m */; };
 		CE612AC624D3B50700FA6300 /* VMDisplayWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE612AC524D3B50700FA6300 /* VMDisplayWindowController.swift */; };
+		CE6B240B25F1F3CE0020D43E /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = CE6B240A25F1F3CE0020D43E /* main.c */; };
+		CE6B241125F1F53E0020D43E /* Bootstrap.c in Sources */ = {isa = PBXBuildFile; fileRef = CE0DF17125A80B6300A51894 /* Bootstrap.c */; };
+		CE6B241525F1F5780020D43E /* QEMULauncher in CopyFiles */ = {isa = PBXBuildFile; fileRef = CE6B240825F1F3CE0020D43E /* QEMULauncher */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CE6D21DC2553A6ED001D29C5 /* VMConfirmActionModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE6D21DB2553A6ED001D29C5 /* VMConfirmActionModifier.swift */; };
 		CE6D21DD2553A6ED001D29C5 /* VMConfirmActionModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE6D21DB2553A6ED001D29C5 /* VMConfirmActionModifier.swift */; };
 		CE772AAC25C8B0F600E4E379 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE772AAB25C8B0F600E4E379 /* ContentView.swift */; };
@@ -743,6 +746,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		CE6B241225F1F55C0020D43E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = CE550BC1225947990063E575 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = CE6B240725F1F3CE0020D43E;
+			remoteInfo = QEMULauncher;
+		};
 		CEBDA1E324D8BDDB0010B5EC /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = CE550BC1225947990063E575 /* Project object */;
@@ -901,6 +911,16 @@
 				CE2D93BA24AD46670059923A /* libgstpbutils-1.0.0.utm.dylib in Embed Libraries */,
 			);
 			name = "Embed Libraries";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		CE6B241425F1F5630020D43E /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 6;
+			files = (
+				CE6B241525F1F5780020D43E /* QEMULauncher in CopyFiles */,
+			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		CEBDA1E924D8BDDB0010B5EC /* Embed XPC Services */ = {
@@ -1382,6 +1402,10 @@
 		CE66450E2269355F00B0849A /* CocoaSpice.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CocoaSpice.h; sourceTree = "<group>"; };
 		CE66450F226935F000B0849A /* CSInput.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CSInput.h; sourceTree = "<group>"; };
 		CE664510226935F000B0849A /* CSInput.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CSInput.m; sourceTree = "<group>"; };
+		CE6B240825F1F3CE0020D43E /* QEMULauncher */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = QEMULauncher; sourceTree = BUILT_PRODUCTS_DIR; };
+		CE6B240A25F1F3CE0020D43E /* main.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
+		CE6B240F25F1F43A0020D43E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		CE6B241025F1F4B30020D43E /* QEMULauncher.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = QEMULauncher.entitlements; sourceTree = "<group>"; };
 		CE6D21DB2553A6ED001D29C5 /* VMConfirmActionModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMConfirmActionModifier.swift; sourceTree = "<group>"; };
 		CE6EDCDD241C4A6800A719DC /* UTMViewState.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UTMViewState.h; sourceTree = "<group>"; };
 		CE6EDCDE241C4A6800A719DC /* UTMViewState.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UTMViewState.m; sourceTree = "<group>"; };
@@ -2166,6 +2190,7 @@
 				CE2D63CE2265150F00FC7E63 /* Renderer */,
 				CEBDA1DB24D8BDDA0010B5EC /* QEMUHelper */,
 				CE9D18F72265410E00355E14 /* qemu */,
+				CE6B240925F1F3CE0020D43E /* QEMULauncher */,
 				CE4698F824C8FBD9008C1BD6 /* Icons */,
 				CE550BCA225947990063E575 /* Products */,
 				CE2D63D622653C7300FC7E63 /* Frameworks */,
@@ -2179,6 +2204,7 @@
 				CE2D93BE24AD46670059923A /* UTM.app */,
 				CE2D951C24AD48BE0059923A /* UTM.app */,
 				CEBDA1DA24D8BDDA0010B5EC /* QEMUHelper.xpc */,
+				CE6B240825F1F3CE0020D43E /* QEMULauncher */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -2279,6 +2305,16 @@
 				CE020BB524B14F8400B44AB6 /* UTMVirtualMachineExtension.swift */,
 			);
 			path = Managers;
+			sourceTree = "<group>";
+		};
+		CE6B240925F1F3CE0020D43E /* QEMULauncher */ = {
+			isa = PBXGroup;
+			children = (
+				CE6B241025F1F4B30020D43E /* QEMULauncher.entitlements */,
+				CE6B240A25F1F3CE0020D43E /* main.c */,
+				CE6B240F25F1F43A0020D43E /* Info.plist */,
+			);
+			path = QEMULauncher;
 			sourceTree = "<group>";
 		};
 		CE7BED4D22600F5000A1E1B6 /* Display */ = {
@@ -2494,6 +2530,21 @@
 			productReference = CE2D951C24AD48BE0059923A /* UTM.app */;
 			productType = "com.apple.product-type.application";
 		};
+		CE6B240725F1F3CE0020D43E /* QEMULauncher */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = CE6B240E25F1F3CE0020D43E /* Build configuration list for PBXNativeTarget "QEMULauncher" */;
+			buildPhases = (
+				CE6B240425F1F3CE0020D43E /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = QEMULauncher;
+			productName = QEMULauncher;
+			productReference = CE6B240825F1F3CE0020D43E /* QEMULauncher */;
+			productType = "com.apple.product-type.tool";
+		};
 		CEBDA1D924D8BDDA0010B5EC /* QEMUHelper */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = CEBDA1E624D8BDDB0010B5EC /* Build configuration list for PBXNativeTarget "QEMUHelper" */;
@@ -2501,10 +2552,12 @@
 				CEBDA1D624D8BDDA0010B5EC /* Sources */,
 				CEBDA1D724D8BDDA0010B5EC /* Frameworks */,
 				CEBDA1D824D8BDDA0010B5EC /* Resources */,
+				CE6B241425F1F5630020D43E /* CopyFiles */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				CE6B241325F1F55C0020D43E /* PBXTargetDependency */,
 			);
 			name = QEMUHelper;
 			productName = QEMUHelper;
@@ -2527,6 +2580,9 @@
 					CE2D951B24AD48BE0059923A = {
 						CreatedOnToolsVersion = 12.0;
 						LastSwiftMigration = 1200;
+					};
+					CE6B240725F1F3CE0020D43E = {
+						CreatedOnToolsVersion = 12.5;
 					};
 					CEBDA1D924D8BDDA0010B5EC = {
 						CreatedOnToolsVersion = 12.0;
@@ -2556,6 +2612,7 @@
 				CE2D926824AD46670059923A /* iOS */,
 				CE2D951B24AD48BE0059923A /* macOS */,
 				CEBDA1D924D8BDDA0010B5EC /* QEMUHelper */,
+				CE6B240725F1F3CE0020D43E /* QEMULauncher */,
 			);
 		};
 /* End PBXProject section */
@@ -3124,6 +3181,15 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		CE6B240425F1F3CE0020D43E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CE6B241125F1F53E0020D43E /* Bootstrap.c in Sources */,
+				CE6B240B25F1F3CE0020D43E /* main.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		CEBDA1D624D8BDDA0010B5EC /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -3137,6 +3203,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		CE6B241325F1F55C0020D43E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = CE6B240725F1F3CE0020D43E /* QEMULauncher */;
+			targetProxy = CE6B241225F1F55C0020D43E /* PBXContainerItemProxy */;
+		};
 		CEBDA1E424D8BDDB0010B5EC /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = CEBDA1D924D8BDDA0010B5EC /* QEMUHelper */;
@@ -3274,6 +3345,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 23;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				HEADER_SEARCH_PATHS = (
@@ -3297,6 +3369,7 @@
 				MARKETING_VERSION = 2.0.23;
 				PRODUCT_BUNDLE_IDENTIFIER = com.utmapp.UTM;
 				PRODUCT_NAME = "$(PROJECT_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = macosx;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OBJC_BRIDGING_HEADER = "Platform/Swift-Bridging-Header.h";
@@ -3317,6 +3390,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 23;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				HEADER_SEARCH_PATHS = (
@@ -3340,6 +3414,7 @@
 				MARKETING_VERSION = 2.0.23;
 				PRODUCT_BUNDLE_IDENTIFIER = com.utmapp.UTM;
 				PRODUCT_NAME = "$(PROJECT_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = macosx;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OBJC_BRIDGING_HEADER = "Platform/Swift-Bridging-Header.h";
@@ -3466,6 +3541,50 @@
 			};
 			name = Release;
 		};
+		CE6B240C25F1F3CE0020D43E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CODE_SIGN_ENTITLEMENTS = QEMULauncher/QEMULauncher.entitlements;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_INJECT_BASE_ENTITLEMENTS = NO;
+				CODE_SIGN_STYLE = Automatic;
+				CREATE_INFOPLIST_SECTION_IN_BINARY = YES;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_HARDENED_RUNTIME = YES;
+				INFOPLIST_FILE = QEMULauncher/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "@executable_path/../../../../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 11.0;
+				MARKETING_VERSION = 2.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.utmapp.QEMULauncher;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		CE6B240D25F1F3CE0020D43E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CODE_SIGN_ENTITLEMENTS = QEMULauncher/QEMULauncher.entitlements;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_INJECT_BASE_ENTITLEMENTS = NO;
+				CODE_SIGN_STYLE = Automatic;
+				CREATE_INFOPLIST_SECTION_IN_BINARY = YES;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_HARDENED_RUNTIME = YES;
+				INFOPLIST_FILE = QEMULauncher/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "@executable_path/../../../../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 11.0;
+				MARKETING_VERSION = 2.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.utmapp.QEMULauncher;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
 		CEBDA1E724D8BDDB0010B5EC /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -3474,6 +3593,7 @@
 				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_HARDENED_RUNTIME = YES;
 				INFOPLIST_FILE = QEMUHelper/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -3484,6 +3604,7 @@
 				MARKETING_VERSION = 2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.utmapp.QEMUHelper;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
 			};
@@ -3497,6 +3618,7 @@
 				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_HARDENED_RUNTIME = YES;
 				INFOPLIST_FILE = QEMUHelper/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -3507,6 +3629,7 @@
 				MARKETING_VERSION = 2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.utmapp.QEMUHelper;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
 			};
@@ -3538,6 +3661,15 @@
 			buildConfigurations = (
 				CE550BDD2259479D0063E575 /* Debug */,
 				CE550BDE2259479D0063E575 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		CE6B240E25F1F3CE0020D43E /* Build configuration list for PBXNativeTarget "QEMULauncher" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				CE6B240C25F1F3CE0020D43E /* Debug */,
+				CE6B240D25F1F3CE0020D43E /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

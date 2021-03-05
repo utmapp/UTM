@@ -100,23 +100,37 @@
         return;
     }
     
-#if 0 // old NSTask code does not work with inherited sandbox
+    if (@available(macOS 11.3, *)) { // macOS 11.3 fixed sandbox bug for hypervisor to work
+        [self startQemuTask:binName standardOutput:standardOutput standardError:standardError libraryPath:libraryPath argv:argv onExit:onExit];
+    } else { // old deprecated fork() method
+        [self startQemuFork:binName standardOutput:standardOutput standardError:standardError libraryPath:libraryPath argv:argv onExit:onExit];
+    }
+}
+
+- (void)startQemuTask:(NSString *)binName standardOutput:(NSFileHandle *)standardOutput standardError:(NSFileHandle *)standardError libraryPath:(NSURL *)libraryPath argv:(NSArray<NSString *> *)argv onExit:(void(^)(BOOL,NSString *))onExit {
+    NSError *err;
     NSTask *task = [NSTask new];
-    task.executableURL = qemuURL;
-    task.arguments = argv;
+    NSMutableArray<NSString *> *newArgv = [argv mutableCopy];
+    NSString *path = [libraryPath URLByAppendingPathComponent:binName].path;
+    [newArgv insertObject:path atIndex:0];
+    task.executableURL = [[NSBundle mainBundle] URLForAuxiliaryExecutable:@"QEMULauncher"];
+    task.arguments = newArgv;
     task.standardOutput = standardOutput;
     task.standardError = standardError;
     //task.environment = @{@"DYLD_LIBRARY_PATH": libraryPath.path};
     task.qualityOfService = NSQualityOfServiceUserInitiated;
     task.terminationHandler = ^(NSTask *task) {
         BOOL normalExit = task.terminationReason == NSTaskTerminationReasonExit && task.terminationStatus == 0;
-        onExit(normalExit, nil); // TODO: get last error line
+        onExit(normalExit, nil);
     };
     if (![task launchAndReturnError:&err]) {
         NSLog(@"Error starting QEMU: %@", err);
         onExit(NO, NSLocalizedString(@"Error starting QEMU.", @"QEMUHelper"));
     }
-#endif
+}
+
+
+- (void)startQemuFork:(NSString *)binName standardOutput:(NSFileHandle *)standardOutput standardError:(NSFileHandle *)standardError libraryPath:(NSURL *)libraryPath argv:(NSArray<NSString *> *)argv onExit:(void(^)(BOOL,NSString *))onExit {
     // convert all the Objective-C strings to C strings as we should not use objects in this context after fork()
     NSString *path = [libraryPath URLByAppendingPathComponent:binName].path;
     char *cpath = strdup(path.UTF8String);
@@ -128,7 +142,7 @@
     }
     int newStdOut = standardOutput.fileDescriptor;
     int newStdErr = standardError.fileDescriptor;
-    pid_t pid = startQemu(cpath, argc, (const char **)cargv, newStdOut, newStdErr);
+    pid_t pid = startQemuFork(cpath, argc, (const char **)cargv, newStdOut, newStdErr);
     // free all resources regardless of error because on success, child has a copy
     [standardOutput closeFile];
     [standardError closeFile];
