@@ -67,6 +67,6 @@ fastlane/test_output
 
 iOSInjectionProject/
 
-build/
+build*/
 sysroot*/
 .DS_Store
