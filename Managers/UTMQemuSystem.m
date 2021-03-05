@@ -348,6 +348,9 @@ static size_t sysctl_read(const char *name) {
     if ([self.configuration.systemTarget hasPrefix:@"virt"]) {
         [self pushArgv:@"-device"];
         [self pushArgv:@"qemu-xhci"];
+    } else if ([self.configuration.systemTarget hasPrefix:@"pc"]) {
+        // USB 1.0 controller for old PC system
+        [self pushArgv:@"-usb"];
     } else { // USB 2.0 controller is most compatible
         [self pushArgv:@"-device"];
         [self pushArgv:@"usb-ehci"];
