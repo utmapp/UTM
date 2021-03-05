@@ -21,6 +21,12 @@
 #import "UTMConfiguration+Sharing.h"
 #import "UTMConfiguration+System.h"
 
+@interface UTMConfiguration ()
+
+- (NSString *)generateMacAddress;
+
+@end
+
 @implementation UTMConfiguration (Defaults)
 
 - (void)loadDefaults {
@@ -40,6 +46,7 @@
     self.soundEnabled = YES;
     self.soundCard = @"AC97";
     self.networkCard = @"rtl8139";
+    self.networkCardMac = [self generateMacAddress];
     self.shareClipboardEnabled = YES;
     self.name = [NSUUID UUID].UUIDString;
     self.existingPath = nil;
