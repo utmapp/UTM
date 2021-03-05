@@ -296,7 +296,7 @@ static size_t sysctl_read(const char *name) {
 - (void)argsForNetwork {
     if (self.configuration.networkEnabled) {
         [self pushArgv:@"-device"];
-        [self pushArgv:[NSString stringWithFormat:@"%@,netdev=net0", self.configuration.networkCard]];
+        [self pushArgv:[NSString stringWithFormat:@"%@,mac=%@,netdev=net0", self.configuration.networkCard, self.configuration.networkCardMac]];
         [self pushArgv:@"-netdev"];
         NSMutableString *netstr = [NSMutableString stringWithString:@"user,id=net0"];
         if (self.configuration.networkAddress.length > 0) {
