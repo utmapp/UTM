@@ -511,16 +511,15 @@ static size_t sysctl_read(const char *name) {
     }
     [self pushArgv:@"-m"];
     [self pushArgv:[self.configuration.systemMemory stringValue]];
-#if TARGET_OS_OSX
-    // FIXME: sound support broken after fork(), so we disable for now
-    if (!self.configuration.displayConsoleOnly)
-#endif
-    if (self.configuration.soundEnabled) {
-        [self pushArgv:@"-device"];
-        [self pushArgv:self.configuration.soundCard];
-        if ([self.configuration.soundCard containsString:@"hda"]) {
+    // < macOS 11.3 we use fork() which is buggy and things are broken
+    if (@available(macOS 11.3, *)) {
+        if (self.configuration.soundEnabled) {
             [self pushArgv:@"-device"];
-            [self pushArgv:@"hda-duplex"];
+            [self pushArgv:self.configuration.soundCard];
+            if ([self.configuration.soundCard containsString:@"hda"]) {
+                [self pushArgv:@"-device"];
+                [self pushArgv:@"hda-duplex"];
+            }
         }
     }
     [self pushArgv:@"-name"];
