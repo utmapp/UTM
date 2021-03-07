@@ -122,34 +122,7 @@ extension VMDisplayMetalWindowController {
         }
         DispatchQueue.main.async {
             logger.debug("resizing to: (\(size.width), \(size.height))")
-            self.displaySize = size
-            guard let window = self.window else { return }
-            guard let vmDisplay = self.vmDisplay else { return }
-            let currentScreenScale = window.screen?.backingScaleFactor ?? 1.0
-            let nativeScale = self.isAlwaysNativeResolution ? 1.0 : currentScreenScale
-            // change optional scale if needed
-            if self.isDisplaySizeDynamic || self.isDisplayFixed || (!self.isAlwaysNativeResolution && vmDisplay.viewportScale < currentScreenScale) {
-                vmDisplay.viewportScale = nativeScale
-            }
-            let minScaledSize = CGSize(width: size.width * nativeScale / currentScreenScale, height: size.height * nativeScale / currentScreenScale)
-            let fullContentWidth = size.width * vmDisplay.viewportScale / currentScreenScale
-            let fullContentHeight = size.height * vmDisplay.viewportScale / currentScreenScale
-            let contentRect = CGRect(x: window.frame.origin.x,
-                                     y: 0,
-                                     width: ceil(fullContentWidth),
-                                     height: ceil(fullContentHeight))
-            var windowRect = window.frameRect(forContentRect: contentRect)
-            windowRect.origin.y = window.frame.origin.y + window.frame.height - windowRect.height
-            if self.isDisplaySizeDynamic {
-                window.contentMinSize = self.minDynamicSize
-                window.contentResizeIncrements = NSSize(width: 1, height: 1)
-                window.setFrame(windowRect, display: false, animate: false)
-            } else {
-                window.contentMinSize = minScaledSize
-                window.contentAspectRatio = size
-                window.setFrame(windowRect, display: false, animate: true)
-            }
-            self.metalView.setFrameSize(contentRect.size)
+            self.updateHostFrame(forGuestResolution: size)
         }
     }
     
@@ -165,6 +138,37 @@ extension VMDisplayMetalWindowController {
         if let vmDisplay = self.vmDisplay {
             displaySizeDidChange(size: vmDisplay.displaySize)
         }
+    }
+    
+    fileprivate func updateHostFrame(forGuestResolution size: CGSize) {
+        displaySize = size
+        guard let window = window else { return }
+        guard let vmDisplay = vmDisplay else { return }
+        let currentScreenScale = window.screen?.backingScaleFactor ?? 1.0
+        let nativeScale = isAlwaysNativeResolution ? 1.0 : currentScreenScale
+        // change optional scale if needed
+        if isDisplaySizeDynamic || isDisplayFixed || (!isAlwaysNativeResolution && vmDisplay.viewportScale < currentScreenScale) {
+            vmDisplay.viewportScale = nativeScale
+        }
+        let minScaledSize = CGSize(width: size.width * nativeScale / currentScreenScale, height: size.height * nativeScale / currentScreenScale)
+        let fullContentWidth = size.width * vmDisplay.viewportScale / currentScreenScale
+        let fullContentHeight = size.height * vmDisplay.viewportScale / currentScreenScale
+        let contentRect = CGRect(x: window.frame.origin.x,
+                                 y: 0,
+                                 width: ceil(fullContentWidth),
+                                 height: ceil(fullContentHeight))
+        var windowRect = window.frameRect(forContentRect: contentRect)
+        windowRect.origin.y = window.frame.origin.y + window.frame.height - windowRect.height
+        if isDisplaySizeDynamic {
+            window.contentMinSize = minDynamicSize
+            window.contentResizeIncrements = NSSize(width: 1, height: 1)
+            window.setFrame(windowRect, display: false, animate: false)
+        } else {
+            window.contentMinSize = minScaledSize
+            window.contentAspectRatio = size
+            window.setFrame(windowRect, display: false, animate: true)
+        }
+        metalView.setFrameSize(contentRect.size)
     }
     
     fileprivate func updateHostScaling(for window: NSWindow, frameSize: NSSize) -> NSSize {
