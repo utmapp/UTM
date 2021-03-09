@@ -618,7 +618,7 @@ diff -aur a/src/continuation.h b/src/continuation.h
  #include "spice-common.h"
  #include <stddef.h>
 +#ifdef HAVE_LIBUCONTEXT
-+#include <libucontext.h>
++#include <libucontext/libucontext.h>
 +#define ucontext_t libucontext_ucontext_t
 +#define getcontext libucontext_getcontext
 +#define setcontext libucontext_setcontext

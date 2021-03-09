@@ -259,10 +259,18 @@ build_qemu () {
     LDFLAGS="$QEMU_LDFLAGS"
 }
 
-steal_libucontext () {
-    # HACK: use the libucontext built by qemu
-    cp "$QEMU_DIR/build/libucontext.a" "$PREFIX/lib/libucontext.a"
-    cp "$QEMU_DIR/libucontext/include/libucontext.h" "$PREFIX/include/libucontext.h"
+build_libucontext () {
+    MESON_CROSS="$(realpath "$QEMU_DIR/build/config-meson.cross")"
+    pwd="$(pwd)"
+
+    cd "$QEMU_DIR/subprojects/libucontext"
+    echo "${GREEN}Configuring libucontext...${NC}"
+    meson build --prefix="/" --buildtype=plain --cross-file "$MESON_CROSS" -Ddefault_library=static -Dfreestanding=true $@
+    echo "${GREEN}Building libucontext...${NC}"
+    meson compile -C build
+    echo "${GREEN}Installing libucontext...${NC}"
+    DESTDIR="$PREFIX" meson install -C build
+    cd "$pwd"
 }
 
 build_spice_client () {
@@ -506,7 +514,7 @@ rm -rf "$PREFIX/"*
 rm -f "$BUILD_DIR/BUILD_SUCCESS"
 build_qemu_dependencies
 build_qemu $QEMU_PLATFORM_BUILD_FLAGS
-steal_libucontext # should be a better way...
+build_libucontext
 build_spice_client
 fixup_all
 remove_shared_gst_plugins # another hack...
