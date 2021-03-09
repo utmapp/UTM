@@ -234,29 +234,15 @@ build_qemu_dependencies () {
 }
 
 build_qemu () {
-    QEMU_CFLAGS="$CFLAGS"
-    QEMU_CXXFLAGS="$CXXFLAGS"
-    QEMU_LDFLAGS="$LDFLAGS"
-    export QEMU_CFLAGS
-    export QEMU_CXXFLAGS
-    export QEMU_LDFLAGS
-    CFLAGS=
-    CXXFLAGS=
-    LDFLAGS=
-
     pwd="$(pwd)"
     cd "$QEMU_DIR"
     echo "${GREEN}Configuring QEMU...${NC}"
-    ./configure --prefix="$PREFIX" --host="$CHOST" --cross-prefix="" --with-coroutine=libucontext $@
+    ./configure --prefix="$PREFIX" --host="$CHOST" --cross-prefix="" $@
     echo "${GREEN}Building QEMU...${NC}"
     gmake "$MAKEFLAGS"
     echo "${GREEN}Installing QEMU...${NC}"
     gmake "$MAKEFLAGS" install
     cd "$pwd"
-
-    CFLAGS="$QEMU_CFLAGS"
-    CXXFLAGS="$QEMU_CXXFLAGS"
-    LDFLAGS="$QEMU_LDFLAGS"
 }
 
 build_libucontext () {
@@ -418,7 +404,7 @@ ios )
     esac
     CFLAGS_TARGET=
     PLATFORM_FAMILY_NAME="iOS"
-    QEMU_PLATFORM_BUILD_FLAGS="--enable-shared-lib --disable-hvf --disable-cocoa --disable-curl"
+    QEMU_PLATFORM_BUILD_FLAGS="--enable-shared-lib --disable-hvf --disable-cocoa --disable-curl --disable-slirp-smbd --with-coroutine=libucontext"
     ;;
 macos )
     if [ -z "$SDKMINVER" ]; then
