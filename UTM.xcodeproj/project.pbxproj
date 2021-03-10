@@ -667,6 +667,10 @@
 		CE9375A124BBDDD10074066F /* VMConfigDriveDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE9375A024BBDDD10074066F /* VMConfigDriveDetailsView.swift */; };
 		CE9375A224BBDDD10074066F /* VMConfigDriveDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE9375A024BBDDD10074066F /* VMConfigDriveDetailsView.swift */; };
 		CE9375A324BBDE770074066F /* VMConfigDrivesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE93759E24BBDD6A0074066F /* VMConfigDrivesView.swift */; };
+		CEA9053825F981E900801E7C /* libusb-1.0.0.utm.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CEA9053725F981E900801E7C /* libusb-1.0.0.utm.dylib */; };
+		CEA9053D25F9824700801E7C /* libusb-1.0.0.utm.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CEA9053725F981E900801E7C /* libusb-1.0.0.utm.dylib */; };
+		CEA9054225F982C400801E7C /* libusb-1.0.0.utm.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CEA9053725F981E900801E7C /* libusb-1.0.0.utm.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CEA9054525F982CA00801E7C /* libusb-1.0.0.utm.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CEA9053725F981E900801E7C /* libusb-1.0.0.utm.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CEB63A7624F4654400CAF323 /* Main.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEB63A7524F4654400CAF323 /* Main.swift */; };
 		CEB63A7724F4654400CAF323 /* Main.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEB63A7524F4654400CAF323 /* Main.swift */; };
 		CEB63A7A24F469E300CAF323 /* UTMJailbreak.m in Sources */ = {isa = PBXBuildFile; fileRef = CEB63A7924F469E300CAF323 /* UTMJailbreak.m */; };
@@ -810,6 +814,7 @@
 				CE0DF19625A83C1700A51894 /* libqemu-arm-softmmu.utm.dylib in Embed Libraries */,
 				CE0DF19725A83C1700A51894 /* libqemu-cris-softmmu.utm.dylib in Embed Libraries */,
 				CE0DF19825A83C1700A51894 /* libqemu-hppa-softmmu.utm.dylib in Embed Libraries */,
+				CEA9054225F982C400801E7C /* libusb-1.0.0.utm.dylib in Embed Libraries */,
 				CE0DF19925A83C1700A51894 /* libqemu-i386-softmmu.utm.dylib in Embed Libraries */,
 				CE0DF19A25A83C1700A51894 /* libqemu-m68k-softmmu.utm.dylib in Embed Libraries */,
 				CE0DF19B25A83C1700A51894 /* libqemu-microblaze-softmmu.utm.dylib in Embed Libraries */,
@@ -885,6 +890,7 @@
 				CE2D939D24AD46670059923A /* libglib-2.0.0.utm.dylib in Embed Libraries */,
 				CE2D939E24AD46670059923A /* libqemu-x86_64-softmmu.utm.dylib in Embed Libraries */,
 				CE2D939F24AD46670059923A /* libqemu-xtensaeb-softmmu.utm.dylib in Embed Libraries */,
+				CEA9054525F982CA00801E7C /* libusb-1.0.0.utm.dylib in Embed Libraries */,
 				CE2D93A024AD46670059923A /* libqemu-arm-softmmu.utm.dylib in Embed Libraries */,
 				CE2D93A124AD46670059923A /* libintl.8.utm.dylib in Embed Libraries */,
 				CE2D93A224AD46670059923A /* libgstreamer-1.0.0.utm.dylib in Embed Libraries */,
@@ -1470,6 +1476,7 @@
 		CEA02A952436C6480087E45F /* VMConfigPortForwardingViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = VMConfigPortForwardingViewController.m; path = Platform/iOS/Legacy/VMConfigPortForwardingViewController.m; sourceTree = SOURCE_ROOT; };
 		CEA02A972436C7A30087E45F /* UTMConfiguration+Networking.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UTMConfiguration+Networking.h"; sourceTree = "<group>"; };
 		CEA02A982436C7A30087E45F /* UTMConfiguration+Networking.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UTMConfiguration+Networking.m"; sourceTree = "<group>"; };
+		CEA9053725F981E900801E7C /* libusb-1.0.0.utm.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libusb-1.0.0.utm.dylib"; path = "sysroot-$(PLATFORM_FAMILY_NAME)-$(ARCHS:identifier)/lib/libusb-1.0.0.utm.dylib"; sourceTree = "<group>"; };
 		CEB63A7524F4654400CAF323 /* Main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Main.swift; sourceTree = "<group>"; };
 		CEB63A7824F468BA00CAF323 /* UTMJailbreak.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UTMJailbreak.h; sourceTree = "<group>"; };
 		CEB63A7924F469E300CAF323 /* UTMJailbreak.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UTMJailbreak.m; sourceTree = "<group>"; };
@@ -1620,6 +1627,7 @@
 				CE2D936524AD46670059923A /* libssl.1.1.utm.dylib in Frameworks */,
 				CE2D936624AD46670059923A /* libspice-server.1.utm.dylib in Frameworks */,
 				CE2D936724AD46670059923A /* libpixman-1.0.utm.dylib in Frameworks */,
+				CEA9053D25F9824700801E7C /* libusb-1.0.0.utm.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1627,6 +1635,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CEA9053825F981E900801E7C /* libusb-1.0.0.utm.dylib in Frameworks */,
 				CE0B6F0E24AD677200FE012D /* libgstaudioconvert.a in Frameworks */,
 				CE0B6EF024AD677200FE012D /* libgstcontroller-1.0.0.utm.dylib in Frameworks */,
 				CE0B6EE024AD677200FE012D /* libgstosxaudio.a in Frameworks */,
@@ -1724,6 +1733,7 @@
 		CE2D63D622653C7300FC7E63 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				CEA9053725F981E900801E7C /* libusb-1.0.0.utm.dylib */,
 				CE0E9B86252FD06B0026E02B /* SwiftUI.framework */,
 				CE059DC0243BD67100338317 /* libphodav-2.0.0.utm.dylib */,
 				CE66450C2269313200B0849A /* MetalKit.framework */,
@@ -3286,6 +3296,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(PROJECT_DIR)/$(SYSROOT_DIR)/lib",
 					"$(PROJECT_DIR)/$(SYSROOT_DIR)/lib/gstreamer-1.0",
+					"$(PROJECT_DIR)/sysroot-$(PLATFORM_FAMILY_NAME)-$(ARCHS:identifier)/lib",
 				);
 				MARKETING_VERSION = 2.0.23;
 				PRODUCT_BUNDLE_IDENTIFIER = com.utmapp.UTM;
@@ -3323,6 +3334,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(PROJECT_DIR)/$(SYSROOT_DIR)/lib",
 					"$(PROJECT_DIR)/$(SYSROOT_DIR)/lib/gstreamer-1.0",
+					"$(PROJECT_DIR)/sysroot-$(PLATFORM_FAMILY_NAME)-$(ARCHS:identifier)/lib",
 				);
 				MARKETING_VERSION = 2.0.23;
 				PRODUCT_BUNDLE_IDENTIFIER = com.utmapp.UTM;
@@ -3364,6 +3376,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(PROJECT_DIR)/$(SYSROOT_DIR)/lib",
 					"$(PROJECT_DIR)/$(SYSROOT_DIR)/lib/gstreamer-1.0",
+					"$(PROJECT_DIR)/sysroot-$(PLATFORM_FAMILY_NAME)-$(ARCHS:identifier)/lib",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 11.0;
 				MARKETING_VERSION = 2.0.23;
@@ -3409,6 +3422,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(PROJECT_DIR)/$(SYSROOT_DIR)/lib",
 					"$(PROJECT_DIR)/$(SYSROOT_DIR)/lib/gstreamer-1.0",
+					"$(PROJECT_DIR)/sysroot-$(PLATFORM_FAMILY_NAME)-$(ARCHS:identifier)/lib",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 11.0;
 				MARKETING_VERSION = 2.0.23;
