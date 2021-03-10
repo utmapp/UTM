@@ -121,6 +121,33 @@ download_all () {
     download $PHODAV_SRC
     download $SPICE_CLIENT_SRC
     download $QEMU_SRC
+    download $USB_SRC
+}
+
+copy_private_headers() {
+    MACOS_SDK_PATH="$(xcrun --sdk macosx --show-sdk-path)"
+    IOKIT_HEADERS_PATH="$MACOS_SDK_PATH/System/Library/Frameworks/IOKit.framework/Headers"
+    OSTYPES_HEADERS_PATH="$MACOS_SDK_PATH/usr/include/libkern"
+    OUTPUT_INCLUDES="$PREFIX/include"
+    if [ ! -d "$IOKIT_HEADERS_PATH" ]; then
+        echo "${RED}Failed to find IOKit headers in: $IOKIT_HEADERS_PATH${NC}"
+        exit 1
+    fi
+    if [ ! -d "$OSTYPES_HEADERS_PATH" ]; then
+        echo "${RED}Failed to find libkern headers in: $OSTYPES_HEADERS_PATH${NC}"
+        exit 1
+    fi
+    echo "${GREEN}Copying private headers...${NC}"
+    mkdir -p "$OUTPUT_INCLUDES"
+    cp -r "$IOKIT_HEADERS_PATH" "$OUTPUT_INCLUDES/IOKit"
+    rm "$OUTPUT_INCLUDES/IOKit/storage/IOMedia.h" # needed to pass QEMU check
+    # patch headers
+    LC_ALL=C sed -i '' -e 's/#if KERNEL_USER32/#if 0/g' $(find "$OUTPUT_INCLUDES/IOKit" -type f)
+    LC_ALL=C sed -i '' -e 's/#if !KERNEL_USER32/#if 1/g' $(find "$OUTPUT_INCLUDES/IOKit" -type f)
+    LC_ALL=C sed -i '' -e 's/#if KERNEL/#if 0/g' $(find "$OUTPUT_INCLUDES/IOKit" -type f)
+    LC_ALL=C sed -i '' -e 's/#if !KERNEL/#if 1/g' $(find "$OUTPUT_INCLUDES/IOKit" -type f)
+    mkdir -p "$OUTPUT_INCLUDES/libkern"
+    cp -r "$OSTYPES_HEADERS_PATH/OSTypes.h" "$OUTPUT_INCLUDES/libkern/OSTypes.h"
 }
 
 build_openssl() {
@@ -231,6 +258,7 @@ build_qemu_dependencies () {
     build $OPUS_SRC
     build $SPICE_PROTOCOL_SRC
     build $SPICE_SERVER_SRC
+    build $USB_SRC
 }
 
 build_qemu () {
@@ -498,6 +526,7 @@ fi
 echo "${GREEN}Deleting old sysroot!${NC}"
 rm -rf "$PREFIX/"*
 rm -f "$BUILD_DIR/BUILD_SUCCESS"
+copy_private_headers
 build_qemu_dependencies
 build_qemu $QEMU_PLATFORM_BUILD_FLAGS
 build_libucontext
