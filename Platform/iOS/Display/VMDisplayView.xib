@@ -21,6 +21,7 @@
                 <outlet property="restartButton" destination="xt5-Fw-Nb9" id="1o8-4n-lvl"/>
                 <outlet property="resumeBigButton" destination="q8Q-UP-yRo" id="XJg-Mq-IBz"/>
                 <outlet property="toolbarAccessoryView" destination="FjS-ZA-duw" id="D8Q-Zf-eVY"/>
+                <outlet property="usbButton" destination="lhn-j4-i51" id="Mdz-XK-Ikr"/>
                 <outlet property="zoomButton" destination="aZW-jv-ozW" id="q9y-bK-xbD"/>
                 <outletCollection property="customKeyModifierButtons" destination="jxu-AQ-u8c" id="4En-WD-DQc"/>
                 <outletCollection property="customKeyModifierButtons" destination="bCv-uH-SSy" id="iDi-by-YwA"/>
@@ -124,6 +125,18 @@
                                                 </button>
                                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" pointerInteraction="YES" translatesAutoresizingMaskIntoConstraints="NO" id="pvl-sJ-gEX">
                                                     <rect key="frame" x="76" y="0.0" width="30" height="30"/>
+                                                    <accessibility key="accessibilityConfiguration" label="Settings"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="height" constant="30" id="a3z-pY-gWm"/>
+                                                        <constraint firstAttribute="width" constant="30" id="pWn-tf-bcE"/>
+                                                    </constraints>
+                                                    <state key="normal" image="Toolbar USB"/>
+                                                    <connections>
+                                                        <action selector="usbPressed:" destination="-1" eventType="touchUpInside" id="ibi-6S-HUk"/>
+                                                    </connections>
+                                                </button>
+                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" pointerInteraction="YES" translatesAutoresizingMaskIntoConstraints="NO" id="pvl-sJ-gEX">
+                                                    <rect key="frame" x="114" y="0.0" width="30" height="30"/>
                                                     <accessibility key="accessibilityConfiguration" label="Settings"/>
                                                     <constraints>
                                                         <constraint firstAttribute="height" constant="30" id="Sb4-jZ-q30"/>
@@ -907,6 +920,6 @@
         <image name="Toolbar Pause" width="30" height="30"/>
         <image name="Toolbar Power" width="30" height="30"/>
         <image name="Toolbar Restart" width="30" height="30"/>
-        <image name="Toolbar Settings" width="30" height="30"/>
+        <image name="Toolbar USB" width="30" height="30"/>
     </resources>
 </document>

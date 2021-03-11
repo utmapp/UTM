@@ -326,6 +326,9 @@
     self.keyboardVisible = !self.keyboardVisible;
 }
 
+- (IBAction)usbPressed:(UIButton *)sender {
+}
+
 - (IBAction)drivesPressed:(UIButton *)sender {
     self.removableDrivesViewController.modalPresentationStyle = UIModalPresentationPageSheet;
     self.removableDrivesViewController.vm = self.vm;
