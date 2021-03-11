@@ -27,6 +27,7 @@ class VMDisplayWindowController: NSWindowController {
     @IBOutlet weak var startPauseToolbarItem: NSToolbarItem!
     @IBOutlet weak var restartToolbarItem: NSToolbarItem!
     @IBOutlet weak var captureMouseToolbarItem: NSToolbarItem!
+    @IBOutlet weak var usbToolbarItem: NSToolbarItem!
     @IBOutlet weak var drivesToolbarItem: NSToolbarItem!
     @IBOutlet weak var sharedFolderToolbarItem: NSToolbarItem!
     @IBOutlet weak var resizeConsoleToolbarItem: NSToolbarItem!
@@ -101,6 +102,9 @@ class VMDisplayWindowController: NSWindowController {
     }
     
     @IBAction func resizeConsoleButtonPressed(_ sender: Any) {
+    }
+    
+    @IBAction func usbButtonPressed(_ sender: Any) {
     }
     
     // MARK: - UI states
