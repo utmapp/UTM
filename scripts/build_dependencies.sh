@@ -122,6 +122,7 @@ download_all () {
     download $SPICE_CLIENT_SRC
     download $QEMU_SRC
     download $USB_SRC
+    download $USBREDIR_SRC
 }
 
 copy_private_headers() {
@@ -259,6 +260,7 @@ build_qemu_dependencies () {
     build $SPICE_PROTOCOL_SRC
     build $SPICE_SERVER_SRC
     build $USB_SRC
+    build $USBREDIR_SRC
 }
 
 build_qemu () {

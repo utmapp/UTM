@@ -1,0 +1,35 @@
+From 985e79d5f98d5586d87204317462549332c1dd46 Mon Sep 17 00:00:00 2001
+From: Frediano Ziglio <fziglio@redhat.com>
+Date: Wed, 23 Jan 2019 10:08:49 +0000
+Subject: [PATCH] usbredirserver: Make compile under MacOS
+
+This fixes Gitlab issue #9
+(cfr https://gitlab.freedesktop.org/spice/usbredir/issues/9).
+
+Signed-off-by: Frediano Ziglio <fziglio@redhat.com>
+Acked-by: Christophe Fergeau <cfergeau@redhat.com>
+---
+ usbredirserver/usbredirserver.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/usbredirserver/usbredirserver.c b/usbredirserver/usbredirserver.c
+index 6aa2740..badb7bc 100644
+--- a/usbredirserver/usbredirserver.c
++++ b/usbredirserver/usbredirserver.c
+@@ -43,6 +43,13 @@
+ 
+ #define SERVER_VERSION "usbredirserver " PACKAGE_VERSION
+ 
++#if !defined(SOL_TCP) && defined(IPPROTO_TCP)
++#define SOL_TCP IPPROTO_TCP
++#endif
++#if !defined(TCP_KEEPIDLE) && defined(TCP_KEEPALIVE) && defined(__APPLE__)
++#define TCP_KEEPIDLE TCP_KEEPALIVE
++#endif
++
+ static int verbose = usbredirparser_info;
+ static int client_fd, running = 1;
+ static libusb_context *ctx;
+-- 
+GitLab
+
