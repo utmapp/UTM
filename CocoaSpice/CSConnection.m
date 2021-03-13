@@ -23,6 +23,7 @@
 @interface CSConnection ()
 
 @property (nonatomic, readwrite) CSSession *session;
+@property (nonatomic, readwrite) CSUSBManager *usbManager;
 
 @end
 
@@ -277,6 +278,13 @@ static void cs_connection_destroy(SpiceSession *session,
                          G_CALLBACK(cs_channel_destroy), GLIB_OBJC_RETAIN(self));
         g_signal_connect(_session, "disconnected",
                          G_CALLBACK(cs_connection_destroy), GLIB_OBJC_RETAIN(self));
+        
+        SpiceUsbDeviceManager *manager = spice_usb_device_manager_get(_session, NULL);
+        if (manager) {
+            self.usbManager = [[CSUSBManager alloc] initWithUsbDeviceManager:manager];
+        } else {
+            UTMLog(@"Failed to get SpiceUsbDeviceManager!");
+        }
     }
     return self;
 }

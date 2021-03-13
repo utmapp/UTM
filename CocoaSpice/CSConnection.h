@@ -18,6 +18,7 @@
 #import "CSConnectionDelegate.h"
 
 @class CSDisplayMetal;
+@class CSUSBManager;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -26,6 +27,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) NSArray<NSArray<CSDisplayMetal *> *> *monitors;
 @property (nonatomic, readonly) NSArray<NSArray<CSInput *> *> *inputs;
 @property (nonatomic, readonly) CSSession *session;
+@property (nonatomic, readonly) CSUSBManager *usbManager;
 @property (nonatomic, weak, nullable) id<CSConnectionDelegate> delegate;
 @property (nonatomic, copy) NSString *host;
 @property (nonatomic, copy) NSString *port;

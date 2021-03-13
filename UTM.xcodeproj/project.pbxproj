@@ -659,6 +659,10 @@
 		CE8813D824CD2A8B00532628 /* SharingServicePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE8813D724CD2A8B00532628 /* SharingServicePicker.swift */; };
 		CE8813DB24D1290600532628 /* UTMConfiguration+ConstantsGenerated.m in Sources */ = {isa = PBXBuildFile; fileRef = CE8813D924D1290600532628 /* UTMConfiguration+ConstantsGenerated.m */; };
 		CE8813DC24D1290600532628 /* UTMConfiguration+ConstantsGenerated.m in Sources */ = {isa = PBXBuildFile; fileRef = CE8813D924D1290600532628 /* UTMConfiguration+ConstantsGenerated.m */; };
+		CE900B9E25FC2869007533FD /* CSUSBManager.m in Sources */ = {isa = PBXBuildFile; fileRef = CE900B9D25FC2869007533FD /* CSUSBManager.m */; };
+		CE900B9F25FC2869007533FD /* CSUSBManager.m in Sources */ = {isa = PBXBuildFile; fileRef = CE900B9D25FC2869007533FD /* CSUSBManager.m */; };
+		CE900BAF25FC3E65007533FD /* CSUSBDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = CE900BAE25FC3E65007533FD /* CSUSBDevice.m */; };
+		CE900BB025FC3E65007533FD /* CSUSBDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = CE900BAE25FC3E65007533FD /* CSUSBDevice.m */; };
 		CE93758924B930270074066F /* BusyOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE7D972B24B2B17D0080CB69 /* BusyOverlay.swift */; };
 		CE93759024BA74510074066F /* ToolbarTabViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE93758F24BA74510074066F /* ToolbarTabViewController.swift */; };
 		CE93759224BA775C0074066F /* ToolbarTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE93759124BA775C0074066F /* ToolbarTabView.swift */; };
@@ -1445,6 +1449,11 @@
 		CE8813D724CD2A8B00532628 /* SharingServicePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharingServicePicker.swift; sourceTree = "<group>"; };
 		CE8813D924D1290600532628 /* UTMConfiguration+ConstantsGenerated.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UTMConfiguration+ConstantsGenerated.m"; sourceTree = "<group>"; };
 		CE8E6620227E5DF2003B9903 /* UTMQemuManagerDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UTMQemuManagerDelegate.h; sourceTree = "<group>"; };
+		CE900B9C25FC2869007533FD /* CSUSBManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CSUSBManager.h; sourceTree = "<group>"; };
+		CE900B9D25FC2869007533FD /* CSUSBManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CSUSBManager.m; sourceTree = "<group>"; };
+		CE900BA225FC31E4007533FD /* CSUSBManagerDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CSUSBManagerDelegate.h; sourceTree = "<group>"; };
+		CE900BAD25FC3E65007533FD /* CSUSBDevice.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CSUSBDevice.h; sourceTree = "<group>"; };
+		CE900BAE25FC3E65007533FD /* CSUSBDevice.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CSUSBDevice.m; sourceTree = "<group>"; };
 		CE93758F24BA74510074066F /* ToolbarTabViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToolbarTabViewController.swift; sourceTree = "<group>"; };
 		CE93759124BA775C0074066F /* ToolbarTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToolbarTabView.swift; sourceTree = "<group>"; };
 		CE93759524BB7E9F0074066F /* UTMTabViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMTabViewController.swift; sourceTree = "<group>"; };
@@ -2182,6 +2191,11 @@
 				CE5425392439334400E520F7 /* CSSession.m */,
 				CEBE02622588494100B9BCA8 /* CSSession+Sharing.h */,
 				CEBE02632588494100B9BCA8 /* CSSession+Sharing.m */,
+				CE900BAD25FC3E65007533FD /* CSUSBDevice.h */,
+				CE900BAE25FC3E65007533FD /* CSUSBDevice.m */,
+				CE900B9C25FC2869007533FD /* CSUSBManager.h */,
+				CE900B9D25FC2869007533FD /* CSUSBManager.m */,
+				CE900BA225FC31E4007533FD /* CSUSBManagerDelegate.h */,
 			);
 			path = CocoaSpice;
 			sourceTree = "<group>";
@@ -2731,6 +2745,7 @@
 				CE2D927424AD46670059923A /* WKWebView+Workarounds.m in Sources */,
 				CE2D927524AD46670059923A /* qapi-visit-crypto.c in Sources */,
 				CE2D927624AD46670059923A /* qapi-visit-tpm.c in Sources */,
+				CE900B9E25FC2869007533FD /* CSUSBManager.m in Sources */,
 				2CE8EB41257811E8000E2EBB /* UTMConfiguration+Defaults.m in Sources */,
 				CE2D927724AD46670059923A /* qapi-visit-trace.c in Sources */,
 				CE2D927824AD46670059923A /* qapi-events-rocker.c in Sources */,
@@ -2900,6 +2915,7 @@
 				CE2D92F524AD46670059923A /* VMDisplayTerminalViewController.m in Sources */,
 				CE0B6D8624AD5ADE00FE012D /* UTMScreenshot.m in Sources */,
 				CE2D92F624AD46670059923A /* qapi-events-block-core.c in Sources */,
+				CE900BAF25FC3E65007533FD /* CSUSBDevice.m in Sources */,
 				CEB63A7A24F469E300CAF323 /* UTMJailbreak.m in Sources */,
 				CE2D92F724AD46670059923A /* UTMQemuManager.m in Sources */,
 				CEB63A8024F46E5700CAF323 /* VMConfigPickerView.m in Sources */,
@@ -3014,6 +3030,7 @@
 				CE0B6D2C24AD57FC00FE012D /* qapi-commands-ui.c in Sources */,
 				CE0B6D2324AD57FC00FE012D /* qapi-commands-crypto.c in Sources */,
 				CE0B6CFA24AD568400FE012D /* UTMConfiguration+System.m in Sources */,
+				CE900BB025FC3E65007533FD /* CSUSBDevice.m in Sources */,
 				CEBBF1A824B921F000C15049 /* VMDetailsView.swift in Sources */,
 				CE0B6D7E24AD584D00FE012D /* qapi-events-misc.c in Sources */,
 				CE0B6D4124AD584C00FE012D /* qapi-visit-transaction.c in Sources */,
@@ -3073,6 +3090,7 @@
 				CE0B6D3D24AD584C00FE012D /* qapi-visit-block-core.c in Sources */,
 				CE0B6D5C24AD584D00FE012D /* qapi-events-net.c in Sources */,
 				CE93759024BA74510074066F /* ToolbarTabViewController.swift in Sources */,
+				CE900B9F25FC2869007533FD /* CSUSBManager.m in Sources */,
 				CE0B6D0324AD56AE00FE012D /* UTMTerminal.m in Sources */,
 				CE0B6CFC24AD568400FE012D /* UTMConfigurationPortForward.m in Sources */,
 				CE0B6D7924AD584D00FE012D /* qapi-visit-rdma.c in Sources */,
