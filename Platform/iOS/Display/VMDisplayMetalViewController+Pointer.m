@@ -21,6 +21,10 @@
 #import "VMDisplayMetalViewController+Pointer.h"
 #import "VMCursor.h"
 #import "CSDisplayMetal.h"
+#import "VMScroll.h"
+#import "UTMVirtualMachine.h"
+#import "UTMVirtualMachine+SPICE.h"
+#import "UTMLogging.h"
 
 NS_AVAILABLE_IOS(13.4)
 @implementation VMDisplayMetalViewController (Pointer)
@@ -35,6 +39,55 @@ NS_AVAILABLE_IOS(13.4)
         scroll.minimumNumberOfTouches = 0;
         scroll.maximumNumberOfTouches = 0;
         [self.mtkView addGestureRecognizer:scroll];
+    }
+}
+
+- (BOOL)switchMouseType:(VMMouseType)type {
+    BOOL shouldUseServerMouse = YES;
+    self.vmInput.inhibitCursor = NO;
+    if (shouldUseServerMouse != self.vmInput.serverModeCursor) {
+        UTMLog(@"Switching mouse mode to server:%d for type:%ld", shouldUseServerMouse, type);
+        [self.vm requestInputTablet:!shouldUseServerMouse];
+        return YES;
+    }
+    return NO;
+}
+
+- (void) initGCMouse {
+    if (@available(iOS 14.0, *)) {  //if ios 14.0 above, use CGMouse instead
+        GCMouse *mouse = GCMouse.current;
+        __weak typeof(self) _self = self;
+        VMDisplayMetalViewController *s = _self;
+        mouse.mouseInput.mouseMovedHandler = ^(GCMouseInput * _Nonnull mouse, float deltaX, float deltaY) {
+            [self switchMouseType:VMMouseTypeRelative];
+            [self.vmInput sendMouseMotion:self.mouseButtonDown point:CGPointMake(deltaX, -deltaY)];
+        };
+        mouse.mouseInput.leftButton.pressedChangedHandler = ^(GCControllerButtonInput * _Nonnull button, float value, BOOL pressed) {
+            s->_mouseLeftDown = pressed;
+            [s.vmInput sendMouseButton:kCSInputButtonLeft pressed:pressed point:CGPointZero];
+        };
+
+        mouse.mouseInput.rightButton.pressedChangedHandler = ^(GCControllerButtonInput * _Nonnull button, float value, BOOL pressed) {
+            s->_mouseRightDown = pressed;
+            [s.vmInput sendMouseButton:kCSInputButtonRight pressed:pressed point:CGPointZero];
+
+        };
+
+        mouse.mouseInput.middleButton.pressedChangedHandler = ^(GCControllerButtonInput * _Nonnull button, float value, BOOL pressed) {
+            s->_mouseMiddleDown = pressed;
+            [s.vmInput sendMouseButton:kCSInputButtonMiddle pressed:pressed point:CGPointZero];
+
+        };
+        
+        // no handler to the gcmouse scroll event, gestureScroll works fine.
+    }
+}
+
+- (BOOL) prefersPointerLocked {
+    if (self.indirectMouseType == VMMouseTypeAbsolute || self.indirectMouseType == VMMouseTypeAbsoluteHideCursor) {
+        return YES;
+    } else {
+        return NO;
     }
 }
 
@@ -74,6 +127,11 @@ static CGFloat CGPointToPixel(CGFloat point) {
 
 
 - (UIPointerRegion *)pointerInteraction:(UIPointerInteraction *)interaction regionForRequest:(UIPointerRegionRequest *)request defaultRegion:(UIPointerRegion *)defaultRegion {
+    if (@available(iOS 14.0, *)) {
+        if (self.prefersPointerLocked) {
+            return nil;
+        }
+    }
     // Requesting region for the VM display?
     if (interaction.view == self.mtkView && self.hasTouchpadPointer) {
         // Then we need to find out if the pointer is in the actual display area or outside
