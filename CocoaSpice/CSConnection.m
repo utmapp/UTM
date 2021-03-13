@@ -101,9 +101,7 @@ static void cs_display_monitors(SpiceChannel *display, GParamSpec *pspec,
         CSDisplayMetal *monitor = [[CSDisplayMetal alloc] initWithSession:self.spiceSession channelID:chid monitorID:i];
         [self->_monitors[chid] addObject:monitor];
         
-        CSInput *input = [[CSInput alloc] initWithSession:self.spiceSession channelID:chid monitorID:i];
-        
-        [self.delegate spiceDisplayCreated:self display:monitor input:input];
+        [self.delegate spiceDisplayCreated:self display:monitor input:self.input];
     }
     
     // clear any extra displays
@@ -248,28 +246,6 @@ static void cs_connection_destroy(SpiceSession *session,
     _glibMainContext = glibMainContext;
 }
 
-- (id)init {
-    self = [super init];
-    if (self) {
-        self.spiceSession = spice_session_new();
-        UTMLog(@"%s:%d", __FUNCTION__, __LINE__);
-        g_signal_connect(self.spiceSession, "channel-new",
-                         G_CALLBACK(cs_channel_new), GLIB_OBJC_RETAIN(self));
-        g_signal_connect(self.spiceSession, "channel-destroy",
-                         G_CALLBACK(cs_channel_destroy), GLIB_OBJC_RETAIN(self));
-        g_signal_connect(self.spiceSession, "disconnected",
-                         G_CALLBACK(cs_connection_destroy), GLIB_OBJC_RETAIN(self));
-        
-        SpiceUsbDeviceManager *manager = spice_usb_device_manager_get(self.spiceSession, NULL);
-        if (manager) {
-            self.usbManager = [[CSUSBManager alloc] initWithUsbDeviceManager:manager];
-        } else {
-            UTMLog(@"Failed to get SpiceUsbDeviceManager!");
-        }
-    }
-    return self;
-}
-
 - (void)dealloc {
     UTMLog(@"%s:%d", __FUNCTION__, __LINE__);
     g_signal_handlers_disconnect_by_func(self.spiceSession, G_CALLBACK(cs_channel_new), GLIB_OBJC_RELEASE(self));
@@ -282,14 +258,27 @@ static void cs_connection_destroy(SpiceSession *session,
 
 - (instancetype)initWithHost:(NSString *)host port:(NSString *)port {
     if (self = [super init]) {
+        self.spiceSession = spice_session_new();
         self.host = host;
         self.port = port;
+        UTMLog(@"%s:%d", __FUNCTION__, __LINE__);
+        g_signal_connect(self.spiceSession, "channel-new",
+                         G_CALLBACK(cs_channel_new), GLIB_OBJC_RETAIN(self));
+        g_signal_connect(self.spiceSession, "channel-destroy",
+                         G_CALLBACK(cs_channel_destroy), GLIB_OBJC_RETAIN(self));
+        g_signal_connect(self.spiceSession, "disconnected",
+                         G_CALLBACK(cs_connection_destroy), GLIB_OBJC_RETAIN(self));
+        
+        SpiceUsbDeviceManager *manager = spice_usb_device_manager_get(self.spiceSession, NULL);
+        g_assert(manager != NULL);
+        self.usbManager = [[CSUSBManager alloc] initWithUsbDeviceManager:manager];
+        self.input = [[CSInput alloc] initWithSession:self.spiceSession];
+        self.session = [[CSSession alloc] initWithSession:self.spiceSession];
     }
     return self;
 }
 
 - (BOOL)connect {
-    self.session = [[CSSession alloc] initWithSession:self.spiceSession];
     [self.delegate spiceSessionCreated:self session:self.session];
     return spice_session_connect(self.spiceSession);
 }
@@ -297,7 +286,6 @@ static void cs_connection_destroy(SpiceSession *session,
 - (void)disconnect {
     [self.delegate spiceSessionEnded:self session:self.session];
     spice_session_disconnect(self.spiceSession);
-    self.session = NULL;
 }
 
 @end

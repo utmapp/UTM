@@ -24,9 +24,7 @@
 
 @interface CSInput ()
 
-@property (nonatomic, readwrite, nullable) SpiceSession *session;
-@property (nonatomic, readwrite, assign) NSInteger channelID;
-@property (nonatomic, readwrite, assign) NSInteger monitorID;
+@property (nonatomic, nullable) SpiceSession *session;
 @property (nonatomic, nullable) SpiceMainChannel *main;
 @property (nonatomic, nullable) SpiceInputsChannel *inputs;
 
@@ -187,7 +185,7 @@ static int cs_button_to_spice(CSInputButton button)
     return spice;
 }
 
-- (void)sendMouseMotion:(CSInputButton)button point:(CGPoint)point {
+- (void)sendMouseMotion:(CSInputButton)button point:(CGPoint)point forMonitorID:(NSInteger)monitorID {
     if (!self.inputs)
         return;
     if (self.disableInputs)
@@ -197,9 +195,14 @@ static int cs_button_to_spice(CSInputButton button)
         spice_inputs_channel_motion(self.inputs, point.x, point.y,
                                     cs_button_mask_to_spice(button));
     } else {
-        spice_inputs_channel_position(self.inputs, point.x, point.y, (int)self.monitorID,
+        spice_inputs_channel_position(self.inputs, point.x, point.y, (int)monitorID,
                                       cs_button_mask_to_spice(button));
     }
+}
+
+// FIXME: remove this when multiple displays are implemented properly
+- (void)sendMouseMotion:(CSInputButton)button point:(CGPoint)point {
+    [self sendMouseMotion:button point:point forMonitorID:0];
 }
 
 - (void)sendMouseScroll:(CSInputScroll)type button:(CSInputButton)button dy:(CGFloat)dy {
@@ -278,14 +281,12 @@ static int cs_button_to_spice(CSInputButton button)
 
 #pragma mark - Initializers
 
-- (instancetype)initWithSession:(nonnull SpiceSession *)session channelID:(NSInteger)channelID monitorID:(NSInteger)monitorID {
+- (instancetype)initWithSession:(SpiceSession *)session {
     self = [super init];
     if (self) {
         GList *list;
         GList *it;
         
-        self.channelID = channelID;
-        self.monitorID = monitorID;
         self.session = session;
         g_object_ref(session);
         

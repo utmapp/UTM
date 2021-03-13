@@ -42,9 +42,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface CSInput : NSObject
 
-@property (nonatomic, readonly, nullable) SpiceSession *session;
-@property (nonatomic, readonly, assign) NSInteger channelID;
-@property (nonatomic, readonly, assign) NSInteger monitorID;
 @property (nonatomic, readonly, assign) BOOL serverModeCursor;
 @property (nonatomic, assign) BOOL disableInputs;
 
@@ -53,12 +50,13 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)releaseKeys;
 
 - (void)sendMouseMotion:(CSInputButton)button point:(CGPoint)point;
+- (void)sendMouseMotion:(CSInputButton)button point:(CGPoint)point forMonitorID:(NSInteger)monitorID;
 - (void)sendMouseScroll:(CSInputScroll)type button:(CSInputButton)button dy:(CGFloat)dy;
 - (void)sendMouseButton:(CSInputButton)button pressed:(BOOL)pressed point:(CGPoint)point;
 - (void)requestMouseMode:(BOOL)server;
 
 - (instancetype)init NS_UNAVAILABLE;
-- (instancetype)initWithSession:(nonnull SpiceSession *)session channelID:(NSInteger)channelID monitorID:(NSInteger)monitorID NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithSession:(SpiceSession *)session NS_DESIGNATED_INITIALIZER;
 
 @end
 
