@@ -40,8 +40,6 @@
 @end
 
 @implementation CSDisplayMetal {
-    BOOL                    _sigsconnected;
-    
     //gint                    _mark;
     gint                    _canvasFormat;
     gint                    _canvasStride;
@@ -173,7 +171,6 @@ static void cs_channel_new(SpiceSession *s, SpiceChannel *channel, gpointer data
             return;
         }
         self.display = SPICE_DISPLAY_CHANNEL(channel);
-        NSCAssert(!self->_sigsconnected, @"Signals already connected!");
         UTMLog(@"%s:%d", __FUNCTION__, __LINE__);
         g_signal_connect(channel, "display-primary-create",
                          G_CALLBACK(cs_primary_create), GLIB_OBJC_RETAIN(self));
@@ -187,7 +184,6 @@ static void cs_channel_new(SpiceSession *s, SpiceChannel *channel, gpointer data
                                G_CALLBACK(cs_update_monitor_area), GLIB_OBJC_RETAIN(self));
         g_signal_connect_after(channel, "gst-video-overlay",
                                G_CALLBACK(cs_set_overlay), GLIB_OBJC_RETAIN(self));
-        self->_sigsconnected = YES;
         if (spice_display_channel_get_primary(channel, 0, &primary)) {
             cs_primary_create(channel, primary.format, primary.width, primary.height,
                               primary.stride, primary.shmid, primary.data, (__bridge void *)self);
@@ -217,7 +213,6 @@ static void cs_channel_destroy(SpiceSession *s, SpiceChannel *channel, gpointer 
         }
         cs_primary_destroy(self.display, (__bridge void *)self);
         self.display = NULL;
-        NSCAssert(self->_sigsconnected, @"Signals not connected!");
         UTMLog(@"%s:%d", __FUNCTION__, __LINE__);
         g_signal_handlers_disconnect_by_func(channel, G_CALLBACK(cs_primary_create), GLIB_OBJC_RELEASE(self));
         g_signal_handlers_disconnect_by_func(channel, G_CALLBACK(cs_primary_destroy), GLIB_OBJC_RELEASE(self));
@@ -225,7 +220,6 @@ static void cs_channel_destroy(SpiceSession *s, SpiceChannel *channel, gpointer 
         g_signal_handlers_disconnect_by_func(channel, G_CALLBACK(cs_mark), GLIB_OBJC_RELEASE(self));
         g_signal_handlers_disconnect_by_func(channel, G_CALLBACK(cs_update_monitor_area), GLIB_OBJC_RELEASE(self));
         g_signal_handlers_disconnect_by_func(channel, G_CALLBACK(cs_set_overlay), GLIB_OBJC_RELEASE(self));
-        self->_sigsconnected = NO;
         return;
     }
     
@@ -297,7 +291,6 @@ static void cs_channel_destroy(SpiceSession *s, SpiceChannel *channel, gpointer 
         self.channelID = channelID;
         self.monitorID = monitorID;
         self.session = session;
-        _sigsconnected = NO;
         g_object_ref(session);
         
         UTMLog(@"%s:%d", __FUNCTION__, __LINE__);
