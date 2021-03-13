@@ -439,9 +439,14 @@ static int cs_button_to_spice(CSInputButton button)
                          G_CALLBACK(cs_channel_destroy), GLIB_OBJC_RETAIN(self));
         list = spice_session_get_channels(session);
         for (it = g_list_first(list); it != NULL; it = g_list_next(it)) {
-            if (!SPICE_IS_DISPLAY_CHANNEL(it->data)) {
+            if (SPICE_IS_MAIN_CHANNEL(it->data)) {
                 cs_channel_new(session, it->data, (__bridge void *)self);
+                break;
             }
+        }
+        for (it = g_list_first(list); it != NULL; it = g_list_next(it)) {
+            if (!SPICE_IS_MAIN_CHANNEL(it->data))
+                cs_channel_new(session, it->data, (__bridge void *)self);
         }
         g_list_free(list);
     }
