@@ -34,13 +34,12 @@
 @property (nonatomic, readwrite, nullable) SpiceSession *session;
 @property (nonatomic, readwrite, assign) NSInteger channelID;
 @property (nonatomic, readwrite, assign) NSInteger monitorID;
+@property (nonatomic, nullable) SpiceDisplayChannel *display;
+@property (nonatomic, nullable) SpiceMainChannel *main;
 
 @end
 
 @implementation CSDisplayMetal {
-    SpiceDisplayChannel     *_display;
-    SpiceMainChannel        *_main;
-    
     BOOL                    _sigsconnected;
     
     //gint                    _mark;
@@ -119,7 +118,7 @@ static void cs_update_monitor_area(SpiceChannel *channel, GParamSpec *pspec, gpo
     if (self.monitorID < 0)
         goto whole;
     
-    g_object_get(self->_display, "monitors", &monitors, NULL);
+    g_object_get(self.display, "monitors", &monitors, NULL);
     for (i = 0; monitors != NULL && i < monitors->len; i++) {
         cfg = &g_array_index(monitors, SpiceDisplayMonitorConfig, i);
         if (cfg->id == self.monitorID) {
@@ -130,7 +129,7 @@ static void cs_update_monitor_area(SpiceChannel *channel, GParamSpec *pspec, gpo
     if (c == NULL) {
         DISPLAY_DEBUG(self, "update monitor: no monitor %d", (int)self.monitorID);
         self.ready = NO;
-        if (spice_channel_test_capability(SPICE_CHANNEL(self->_display),
+        if (spice_channel_test_capability(SPICE_CHANNEL(self.display),
                                           SPICE_DISPLAY_CAP_MONITORS_CONFIG)) {
             DISPLAY_DEBUG(self, "waiting until MonitorsConfig is received");
             g_clear_pointer(&monitors, g_array_unref);
@@ -173,7 +172,7 @@ static void cs_channel_new(SpiceSession *s, SpiceChannel *channel, gpointer data
         if (channel_id != self.channelID) {
             return;
         }
-        self->_display = SPICE_DISPLAY_CHANNEL(channel);
+        self.display = SPICE_DISPLAY_CHANNEL(channel);
         NSCAssert(!self->_sigsconnected, @"Signals already connected!");
         UTMLog(@"%s:%d", __FUNCTION__, __LINE__);
         g_signal_connect(channel, "display-primary-create",
@@ -200,7 +199,7 @@ static void cs_channel_new(SpiceSession *s, SpiceChannel *channel, gpointer data
     }
     
     if (SPICE_IS_MAIN_CHANNEL(channel)) {
-        self->_main = SPICE_MAIN_CHANNEL(channel);
+        self.main = SPICE_MAIN_CHANNEL(channel);
         return;
     }
 }
@@ -216,8 +215,8 @@ static void cs_channel_destroy(SpiceSession *s, SpiceChannel *channel, gpointer 
         if (channel_id != self.channelID) {
             return;
         }
-        cs_primary_destroy(self->_display, (__bridge void *)self);
-        self->_display = NULL;
+        cs_primary_destroy(self.display, (__bridge void *)self);
+        self.display = NULL;
         NSCAssert(self->_sigsconnected, @"Signals not connected!");
         UTMLog(@"%s:%d", __FUNCTION__, __LINE__);
         g_signal_handlers_disconnect_by_func(channel, G_CALLBACK(cs_primary_create), GLIB_OBJC_RELEASE(self));
@@ -322,8 +321,8 @@ static void cs_channel_destroy(SpiceSession *s, SpiceChannel *channel, gpointer 
 }
 
 - (void)dealloc {
-    if (_display) {
-        cs_channel_destroy(self.session, SPICE_CHANNEL(_display), (__bridge void *)self);
+    if (self.display) {
+        cs_channel_destroy(self.session, SPICE_CHANNEL(self.display), (__bridge void *)self);
     }
     UTMLog(@"%s:%d", __FUNCTION__, __LINE__);
     g_signal_handlers_disconnect_by_func(self.session, G_CALLBACK(cs_channel_new), GLIB_OBJC_RELEASE(self));
@@ -408,19 +407,19 @@ static void cs_channel_destroy(SpiceSession *s, SpiceChannel *channel, gpointer 
 }
 
 - (void)requestResolution:(CGRect)bounds {
-    if (!_main) {
+    if (!self.main) {
         UTMLog(@"ignoring change resolution because main channel not found");
         return;
     }
-    spice_main_channel_update_display_enabled(_main, (int)self.monitorID, TRUE, FALSE);
-    spice_main_channel_update_display(_main,
+    spice_main_channel_update_display_enabled(self.main, (int)self.monitorID, TRUE, FALSE);
+    spice_main_channel_update_display(self.main,
                                       (int)self.monitorID,
                                       bounds.origin.x,
                                       bounds.origin.y,
                                       bounds.size.width,
                                       bounds.size.height,
                                       TRUE);
-    spice_main_channel_send_monitor_config(_main);
+    spice_main_channel_send_monitor_config(self.main);
 }
 
 @end

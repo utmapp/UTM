@@ -31,13 +31,13 @@
 @property (nonatomic, readwrite, assign) BOOL hasCursor;
 @property (nonatomic, readwrite) CGSize cursorSize;
 @property (nonatomic, readwrite) CGPoint cursorHotspot;
+@property (nonatomic, nullable) SpiceMainChannel *main;
+@property (nonatomic, nullable) SpiceInputsChannel *inputs;
 
 @end
 
 @implementation CSInput {
-    SpiceMainChannel        *_main;
     SpiceCursorChannel      *_cursor;
-    SpiceInputsChannel      *_inputs;
     
     CGPoint                 _mouse_guest;
     CGFloat                 _scroll_delta_y;
@@ -144,7 +144,7 @@ static void cs_channel_new(SpiceSession *s, SpiceChannel *channel, gpointer data
     
     g_object_get(channel, "channel-id", &chid, NULL);
     if (SPICE_IS_MAIN_CHANNEL(channel)) {
-        self->_main = SPICE_MAIN_CHANNEL(channel);
+        self.main = SPICE_MAIN_CHANNEL(channel);
         g_signal_connect(channel, "main-mouse-update",
                          G_CALLBACK(cs_update_mouse_mode), GLIB_OBJC_RETAIN(self));
         cs_update_mouse_mode(channel, data);
@@ -175,7 +175,7 @@ static void cs_channel_new(SpiceSession *s, SpiceChannel *channel, gpointer data
     }
     
     if (SPICE_IS_INPUTS_CHANNEL(channel)) {
-        self->_inputs = SPICE_INPUTS_CHANNEL(channel);
+        self.inputs = SPICE_INPUTS_CHANNEL(channel);
         spice_channel_connect(channel);
         return;
     }
@@ -192,7 +192,7 @@ static void cs_channel_destroy(SpiceSession *s, SpiceChannel *channel, gpointer 
     [self destroyTexture];
     
     if (SPICE_IS_MAIN_CHANNEL(channel)) {
-        self->_main = NULL;
+        self.main = NULL;
         g_signal_handlers_disconnect_by_func(channel, G_CALLBACK(cs_update_mouse_mode), GLIB_OBJC_RELEASE(self));
         return;
     }
@@ -209,7 +209,7 @@ static void cs_channel_destroy(SpiceSession *s, SpiceChannel *channel, gpointer 
     }
     
     if (SPICE_IS_INPUTS_CHANNEL(channel)) {
-        self->_inputs = NULL;
+        self.inputs = NULL;
         return;
     }
     
@@ -225,11 +225,11 @@ static void cs_channel_destroy(SpiceSession *s, SpiceChannel *channel, gpointer 
      * 0x45 is the NumLock.
      */
     if (type == kCSInputKeyPress) {
-        spice_inputs_channel_key_press(_inputs, 0x21d);
-        spice_inputs_channel_key_press(_inputs, 0x45);
+        spice_inputs_channel_key_press(self.inputs, 0x21d);
+        spice_inputs_channel_key_press(self.inputs, 0x45);
     } else {
-        spice_inputs_channel_key_release(_inputs, 0x21d);
-        spice_inputs_channel_key_release(_inputs, 0x45);
+        spice_inputs_channel_key_release(self.inputs, 0x21d);
+        spice_inputs_channel_key_release(self.inputs, 0x45);
     }
 }
 
@@ -238,7 +238,7 @@ static void cs_channel_destroy(SpiceSession *s, SpiceChannel *channel, gpointer 
     
     g_return_if_fail(scancode != 0);
     
-    if (!self->_inputs)
+    if (!self.inputs)
         return;
     
     if (self.disableInputs)
@@ -251,7 +251,7 @@ static void cs_channel_destroy(SpiceSession *s, SpiceChannel *channel, gpointer 
     
     switch (type) {
         case kCSInputKeyPress:
-            spice_inputs_channel_key_press(self->_inputs, scancode);
+            spice_inputs_channel_key_press(self.inputs, scancode);
             
             self->_key_state[i] |= m;
             break;
@@ -261,7 +261,7 @@ static void cs_channel_destroy(SpiceSession *s, SpiceChannel *channel, gpointer 
                 break;
             
             
-            spice_inputs_channel_key_release(self->_inputs, scancode);
+            spice_inputs_channel_key_release(self.inputs, scancode);
             
             self->_key_state[i] &= ~m;
             break;
@@ -317,16 +317,16 @@ static int cs_button_to_spice(CSInputButton button)
 }
 
 - (void)sendMouseMotion:(CSInputButton)button point:(CGPoint)point {
-    if (!self->_inputs)
+    if (!self.inputs)
         return;
     if (self.disableInputs)
         return;
     
     if (self.serverModeCursor) {
-        spice_inputs_channel_motion(self->_inputs, point.x, point.y,
+        spice_inputs_channel_motion(self.inputs, point.x, point.y,
                                     cs_button_mask_to_spice(button));
     } else {
-        spice_inputs_channel_position(self->_inputs, point.x, point.y, (int)self.monitorID,
+        spice_inputs_channel_position(self.inputs, point.x, point.y, (int)self.monitorID,
                                       cs_button_mask_to_spice(button));
     }
 }
@@ -336,30 +336,30 @@ static int cs_button_to_spice(CSInputButton button)
     
     DISPLAY_DEBUG(self, "%s", __FUNCTION__);
     
-    if (!self->_inputs)
+    if (!self.inputs)
         return;
     if (self.disableInputs)
         return;
     
     switch (type) {
         case kCSInputScrollUp:
-            spice_inputs_channel_button_press(self->_inputs, SPICE_MOUSE_BUTTON_UP, button_state);
-            spice_inputs_channel_button_release(self->_inputs, SPICE_MOUSE_BUTTON_UP, button_state);
+            spice_inputs_channel_button_press(self.inputs, SPICE_MOUSE_BUTTON_UP, button_state);
+            spice_inputs_channel_button_release(self.inputs, SPICE_MOUSE_BUTTON_UP, button_state);
             break;
         case kCSInputScrollDown:
-            spice_inputs_channel_button_press(self->_inputs, SPICE_MOUSE_BUTTON_DOWN, button_state);
-            spice_inputs_channel_button_release(self->_inputs, SPICE_MOUSE_BUTTON_DOWN, button_state);
+            spice_inputs_channel_button_press(self.inputs, SPICE_MOUSE_BUTTON_DOWN, button_state);
+            spice_inputs_channel_button_release(self.inputs, SPICE_MOUSE_BUTTON_DOWN, button_state);
             break;
         case kCSInputScrollSmooth:
             self->_scroll_delta_y += dy;
             while (ABS(self->_scroll_delta_y) >= 1) {
                 if (self->_scroll_delta_y < 0) {
-                    spice_inputs_channel_button_press(self->_inputs, SPICE_MOUSE_BUTTON_UP, button_state);
-                    spice_inputs_channel_button_release(self->_inputs, SPICE_MOUSE_BUTTON_UP, button_state);
+                    spice_inputs_channel_button_press(self.inputs, SPICE_MOUSE_BUTTON_UP, button_state);
+                    spice_inputs_channel_button_release(self.inputs, SPICE_MOUSE_BUTTON_UP, button_state);
                     self->_scroll_delta_y += 1;
                 } else {
-                    spice_inputs_channel_button_press(self->_inputs, SPICE_MOUSE_BUTTON_DOWN, button_state);
-                    spice_inputs_channel_button_release(self->_inputs, SPICE_MOUSE_BUTTON_DOWN, button_state);
+                    spice_inputs_channel_button_press(self.inputs, SPICE_MOUSE_BUTTON_DOWN, button_state);
+                    spice_inputs_channel_button_release(self.inputs, SPICE_MOUSE_BUTTON_DOWN, button_state);
                     self->_scroll_delta_y -= 1;
                 }
             }
@@ -383,15 +383,15 @@ static int cs_button_to_spice(CSInputButton button)
         return;
     }
     
-    if (!self->_inputs)
+    if (!self.inputs)
         return;
     
     if (pressed) {
-        spice_inputs_channel_button_press(self->_inputs,
+        spice_inputs_channel_button_press(self.inputs,
                                           cs_button_to_spice(button),
                                           cs_button_mask_to_spice(button));
     } else {
-        spice_inputs_channel_button_release(self->_inputs,
+        spice_inputs_channel_button_release(self.inputs,
                                             cs_button_to_spice(button),
                                             cs_button_mask_to_spice(button));
     }
@@ -399,9 +399,9 @@ static int cs_button_to_spice(CSInputButton button)
 
 - (void)requestMouseMode:(BOOL)server {
     if (server) {
-        spice_main_channel_request_mouse_mode(_main, SPICE_MOUSE_MODE_SERVER);
+        spice_main_channel_request_mouse_mode(self.main, SPICE_MOUSE_MODE_SERVER);
     } else {
-        spice_main_channel_request_mouse_mode(_main, SPICE_MOUSE_MODE_CLIENT);
+        spice_main_channel_request_mouse_mode(self.main, SPICE_MOUSE_MODE_CLIENT);
     }
 }
 
@@ -452,8 +452,8 @@ static int cs_button_to_spice(CSInputButton button)
     if (_cursor) {
         cs_channel_destroy(self.session, SPICE_CHANNEL(_cursor), (__bridge void *)self);
     }
-    if (_main) {
-        cs_channel_destroy(self.session, SPICE_CHANNEL(_main), (__bridge void *)self);
+    if (self.main) {
+        cs_channel_destroy(self.session, SPICE_CHANNEL(self.main), (__bridge void *)self);
     }
     UTMLog(@"%s:%d", __FUNCTION__, __LINE__);
     g_signal_handlers_disconnect_by_func(self.session, G_CALLBACK(cs_channel_new), GLIB_OBJC_RELEASE(self));
