@@ -675,6 +675,14 @@
 		CEA9053D25F9824700801E7C /* libusb-1.0.0.utm.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CEA9053725F981E900801E7C /* libusb-1.0.0.utm.dylib */; };
 		CEA9054225F982C400801E7C /* libusb-1.0.0.utm.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CEA9053725F981E900801E7C /* libusb-1.0.0.utm.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CEA9054525F982CA00801E7C /* libusb-1.0.0.utm.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CEA9053725F981E900801E7C /* libusb-1.0.0.utm.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CEA9058925FC69D100801E7C /* libusbredirhost.1.utm.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CEA9058725FC69D100801E7C /* libusbredirhost.1.utm.dylib */; };
+		CEA9058A25FC69D100801E7C /* libusbredirparser.1.utm.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CEA9058825FC69D100801E7C /* libusbredirparser.1.utm.dylib */; };
+		CEA9058F25FC6A1400801E7C /* libusbredirhost.1.utm.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CEA9058725FC69D100801E7C /* libusbredirhost.1.utm.dylib */; };
+		CEA9059025FC6A1700801E7C /* libusbredirparser.1.utm.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CEA9058825FC69D100801E7C /* libusbredirparser.1.utm.dylib */; };
+		CEA9059125FC6A3300801E7C /* libusbredirhost.1.utm.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CEA9058725FC69D100801E7C /* libusbredirhost.1.utm.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CEA9059225FC6A3500801E7C /* libusbredirparser.1.utm.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CEA9058825FC69D100801E7C /* libusbredirparser.1.utm.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CEA9059525FC6A3A00801E7C /* libusbredirhost.1.utm.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CEA9058725FC69D100801E7C /* libusbredirhost.1.utm.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CEA9059625FC6A3B00801E7C /* libusbredirparser.1.utm.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CEA9058825FC69D100801E7C /* libusbredirparser.1.utm.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CEB63A7624F4654400CAF323 /* Main.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEB63A7524F4654400CAF323 /* Main.swift */; };
 		CEB63A7724F4654400CAF323 /* Main.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEB63A7524F4654400CAF323 /* Main.swift */; };
 		CEB63A7A24F469E300CAF323 /* UTMJailbreak.m in Sources */ = {isa = PBXBuildFile; fileRef = CEB63A7924F469E300CAF323 /* UTMJailbreak.m */; };
@@ -784,6 +792,7 @@
 				CE0B6F1D24AD679B00FE012D /* libgstbase-1.0.0.utm.dylib in Embed Libraries */,
 				CE0B6F2224AD67A200FE012D /* libgstnet-1.0.0.utm.dylib in Embed Libraries */,
 				CE03D09124D9124900F76B84 /* libjpeg.62.utm.dylib in Embed Libraries */,
+				CEA9059525FC6A3A00801E7C /* libusbredirhost.1.utm.dylib in Embed Libraries */,
 				CEF83F8C250094E300557D15 /* libpng16.16.utm.dylib in Embed Libraries */,
 				CEF83F8F250094EE00557D15 /* libgcrypt.20.utm.dylib in Embed Libraries */,
 				CE0B6F5424AD67FA00FE012D /* libspice-client-glib-2.0.8.utm.dylib in Embed Libraries */,
@@ -802,6 +811,7 @@
 				CE0B6F1C24AD679800FE012D /* libgstaudio-1.0.0.utm.dylib in Embed Libraries */,
 				CE0B6F1E24AD679C00FE012D /* libgstcheck-1.0.0.utm.dylib in Embed Libraries */,
 				CE03D08D24D9123F00F76B84 /* libglib-2.0.0.utm.dylib in Embed Libraries */,
+				CEA9059625FC6A3B00801E7C /* libusbredirparser.1.utm.dylib in Embed Libraries */,
 				CE0B6F2724AD67AA00FE012D /* libgstrtsp-1.0.0.utm.dylib in Embed Libraries */,
 				CE03D0CB24D9142500F76B84 /* libssl.1.1.utm.dylib in Embed Libraries */,
 				CE03D0CF24D9A33000F76B84 /* libiconv.2.utm.dylib in Embed Libraries */,
@@ -860,6 +870,7 @@
 				CE2D937A24AD46670059923A /* libgstbase-1.0.0.utm.dylib in Embed Libraries */,
 				CE2D937B24AD46670059923A /* libffi.6.utm.dylib in Embed Libraries */,
 				CE2D937C24AD46670059923A /* libssl.1.1.utm.dylib in Embed Libraries */,
+				CEA9059125FC6A3300801E7C /* libusbredirhost.1.utm.dylib in Embed Libraries */,
 				CE2D937D24AD46670059923A /* libgio-2.0.0.utm.dylib in Embed Libraries */,
 				CE2D937E24AD46670059923A /* libpng16.16.utm.dylib in Embed Libraries */,
 				CE2D937F24AD46670059923A /* libgstnet-1.0.0.utm.dylib in Embed Libraries */,
@@ -878,6 +889,7 @@
 				CE2D938D24AD46670059923A /* libphodav-2.0.0.utm.dylib in Embed Libraries */,
 				CE2D938E24AD46670059923A /* libgthread-2.0.0.utm.dylib in Embed Libraries */,
 				CE2D938F24AD46670059923A /* libqemu-aarch64-softmmu.utm.dylib in Embed Libraries */,
+				CEA9059225FC6A3500801E7C /* libusbredirparser.1.utm.dylib in Embed Libraries */,
 				CE2D939024AD46670059923A /* libqemu-mips-softmmu.utm.dylib in Embed Libraries */,
 				CE2D939124AD46670059923A /* libqemu-s390x-softmmu.utm.dylib in Embed Libraries */,
 				CE2D939224AD46670059923A /* libgobject-2.0.0.utm.dylib in Embed Libraries */,
@@ -1486,6 +1498,8 @@
 		CEA02A972436C7A30087E45F /* UTMConfiguration+Networking.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UTMConfiguration+Networking.h"; sourceTree = "<group>"; };
 		CEA02A982436C7A30087E45F /* UTMConfiguration+Networking.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UTMConfiguration+Networking.m"; sourceTree = "<group>"; };
 		CEA9053725F981E900801E7C /* libusb-1.0.0.utm.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libusb-1.0.0.utm.dylib"; path = "sysroot-$(PLATFORM_FAMILY_NAME)-$(ARCHS:identifier)/lib/libusb-1.0.0.utm.dylib"; sourceTree = "<group>"; };
+		CEA9058725FC69D100801E7C /* libusbredirhost.1.utm.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libusbredirhost.1.utm.dylib; path = "sysroot-$(PLATFORM_FAMILY_NAME)-$(ARCHS:identifier)/lib/libusbredirhost.1.utm.dylib"; sourceTree = "<group>"; };
+		CEA9058825FC69D100801E7C /* libusbredirparser.1.utm.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libusbredirparser.1.utm.dylib; path = "sysroot-$(PLATFORM_FAMILY_NAME)-$(ARCHS:identifier)/lib/libusbredirparser.1.utm.dylib"; sourceTree = "<group>"; };
 		CEB63A7524F4654400CAF323 /* Main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Main.swift; sourceTree = "<group>"; };
 		CEB63A7824F468BA00CAF323 /* UTMJailbreak.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UTMJailbreak.h; sourceTree = "<group>"; };
 		CEB63A7924F469E300CAF323 /* UTMJailbreak.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UTMJailbreak.m; sourceTree = "<group>"; };
@@ -1605,6 +1619,7 @@
 				CE2D934524AD46670059923A /* libgthread-2.0.0.utm.dylib in Frameworks */,
 				CE2D934624AD46670059923A /* libgstrtp-1.0.0.utm.dylib in Frameworks */,
 				CE2D934724AD46670059923A /* libgstriff-1.0.0.utm.dylib in Frameworks */,
+				CEA9058F25FC6A1400801E7C /* libusbredirhost.1.utm.dylib in Frameworks */,
 				CE2D934924AD46670059923A /* libgstreamer-1.0.0.utm.dylib in Frameworks */,
 				CE2D934B24AD46670059923A /* libjson-glib-1.0.0.utm.dylib in Frameworks */,
 				CE2D934C24AD46670059923A /* libffi.6.utm.dylib in Frameworks */,
@@ -1612,6 +1627,7 @@
 				CE2D934E24AD46670059923A /* libgstbase-1.0.0.utm.dylib in Frameworks */,
 				CE020BA724AEDEF000B44AB6 /* Logging in Frameworks */,
 				CE2D934F24AD46670059923A /* libphodav-2.0.0.utm.dylib in Frameworks */,
+				CEA9059025FC6A1700801E7C /* libusbredirparser.1.utm.dylib in Frameworks */,
 				CE0E9B87252FD06B0026E02B /* SwiftUI.framework in Frameworks */,
 				CE2D935024AD46670059923A /* libgstcontroller-1.0.0.utm.dylib in Frameworks */,
 				CE2D935124AD46670059923A /* libgstaudio-1.0.0.utm.dylib in Frameworks */,
@@ -1644,6 +1660,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CEA9058925FC69D100801E7C /* libusbredirhost.1.utm.dylib in Frameworks */,
+				CEA9058A25FC69D100801E7C /* libusbredirparser.1.utm.dylib in Frameworks */,
 				CEA9053825F981E900801E7C /* libusb-1.0.0.utm.dylib in Frameworks */,
 				CE0B6F0E24AD677200FE012D /* libgstaudioconvert.a in Frameworks */,
 				CE0B6EF024AD677200FE012D /* libgstcontroller-1.0.0.utm.dylib in Frameworks */,
@@ -1742,6 +1760,8 @@
 		CE2D63D622653C7300FC7E63 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				CEA9058725FC69D100801E7C /* libusbredirhost.1.utm.dylib */,
+				CEA9058825FC69D100801E7C /* libusbredirparser.1.utm.dylib */,
 				CEA9053725F981E900801E7C /* libusb-1.0.0.utm.dylib */,
 				CE0E9B86252FD06B0026E02B /* SwiftUI.framework */,
 				CE059DC0243BD67100338317 /* libphodav-2.0.0.utm.dylib */,
