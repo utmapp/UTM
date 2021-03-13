@@ -1,0 +1,147 @@
+/* (No Comment) */
+"Apple Pencil Input" = "Apple Pencil Input";
+
+/* (No Comment) */
+"Auto save on background" = "バックグラウンドでの自動保存";
+
+/* (No Comment) */
+"Auto save on low memory" = "低メモリでの自動保存";
+
+/* (No Comment) */
+"Background" = "バックグラウンド";
+
+/* (No Comment) */
+"Backspace" = "Backspace";
+
+/* (No Comment) */
+"Caps" = "Caps";
+
+/* (No Comment) */
+"Click & Hold" = "Click & Hold";
+
+/* (No Comment) */
+"Continue running VM in the background" = "Continue running VM in the background";
+
+/* (No Comment) */
+"Cursor" = "Cursor";
+
+/* (No Comment) */
+"D-DOWN" = "D-DOWN";
+
+/* (No Comment) */
+"D-LEFT" = "D-LEFT";
+
+/* (No Comment) */
+"D-RIGHT" = "D-RIGHT";
+
+/* (No Comment) */
+"D-UP" = "D-UP";
+
+/* (No Comment) */
+"Disabled" = "Disabled";
+
+/* (No Comment) */
+"Down" = "Down";
+
+/* (No Comment) */
+"Drag cursor" = "Drag cursor";
+
+/* (No Comment) */
+"Enabled" = "Enabled";
+
+/* (No Comment) */
+"Enter" = "Enter";
+
+/* (No Comment) */
+"Follow cursor" = "Follow cursor";
+
+/* (No Comment) */
+"Gamepad" = "Gamepad";
+
+/* (No Comment) */
+"Gamepad - Cursor Speed" = "Gamepad - Cursor Speed";
+
+/* (No Comment) */
+"Gestures" = "Gestures";
+
+/* A single strings file, whose title is specified in your preferences schema. The strings files provide the localized content to display to the user for each of your preferences. */
+"Group" = "Group";
+
+/* (No Comment) */
+"Left" = "Left";
+
+/* (No Comment) */
+"Long Press" = "Long Press";
+
+/* (No Comment) */
+"Menu" = "Menu";
+
+/* (No Comment) */
+"Mouse Left Button" = "Mouse Left Button";
+
+/* (No Comment) */
+"Mouse Middle Button" = "Mouse Middle Button";
+
+/* (No Comment) */
+"Mouse Right Button" = "Mouse Right Button";
+
+/* (No Comment) */
+"Mouse Wheel" = "Mouse Wheel";
+
+/* (No Comment) */
+"Mouse Wheel (per swipe)" = "Mouse Wheel (per swipe)";
+
+/* (No Comment) */
+"Move Screen" = "Move Screen";
+
+/* (No Comment) */
+"Name" = "Name";
+
+/* (No Comment) */
+"none given" = "none given";
+
+/* (No Comment) */
+"Right" = "Right";
+
+/* (No Comment) */
+"Right Click" = "Right Click";
+
+/* (No Comment) */
+"Space" = "Space";
+
+/* (No Comment) */
+"Tablet mode (always show cursor)" = "Tablet mode (always show cursor)";
+
+/* (No Comment) */
+"Tablet mode (try hiding cursor)" = "Tablet mode (try hiding cursor)";
+
+/* (No Comment) */
+"Three Finger Pan" = "Three Finger Pan";
+
+/* (No Comment) */
+"Touch Input" = "Touch Input";
+
+/* (No Comment) */
+"Touch mode (always show cursor)" = "Touch mode (always show cursor)";
+
+/* (No Comment) */
+"Touch mode (try hiding cursor)" = "Touch mode (try hiding cursor)";
+
+/* (No Comment) */
+"Touchpad/Mouse Input" = "Touchpad/Mouse Input";
+
+/* (No Comment) */
+"Two Finger Pan" = "Two Finger Pan";
+
+/* (No Comment) */
+"Two Finger Scroll" = "Two Finger Scroll";
+
+/* (No Comment) */
+"Two Finger Swipe" = "Two Finger Swipe";
+
+/* (No Comment) */
+"Two Finger Tap" = "Two Finger Tap";
+
+/* (No Comment) */
+"Up" = "Up";
+

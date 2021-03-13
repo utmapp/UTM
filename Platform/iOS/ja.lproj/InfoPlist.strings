@@ -1,0 +1,18 @@
+/* Bundle name */
+"CFBundleName" = "UTM";
+
+/* Privacy - Location Always and When In Use Usage Description */
+"NSLocationAlwaysAndWhenInUseUsageDescription" = "VMバックグラウンドアクセスには位置情報サービスが必要です。 位置データがデバイスから離れることはありません。";
+
+/* Privacy - Location Always Usage Description */
+"NSLocationAlwaysUsageDescription" = "VMバックグラウンドアクセスには位置情報サービスが必要です。 位置データがデバイスから離れることはありません。";
+
+/* Privacy - Location When In Use Usage Description */
+"NSLocationWhenInUseUsageDescription" = "VMバックグラウンドアクセスには位置情報サービスが必要です。 位置データがデバイスから離れることはありません。";
+
+/* Privacy - Microphone Usage Description */
+"NSMicrophoneUsageDescription" = "VMはマイクにアクセスする必要があります。";
+
+/* (No Comment) */
+"UTM virtual machine" = "UTM仮想マシン";
+
