@@ -24,16 +24,15 @@
 
 @property (nonatomic, readwrite) CSSession *session;
 @property (nonatomic, readwrite) CSUSBManager *usbManager;
+@property (nonatomic, readwrite) CSInput *input;
+@property (nonatomic, readwrite) SpiceSession *spiceSession;
+@property (nonatomic, readwrite) SpiceMainChannel *spiceMain;
+@property (nonatomic, readwrite) SpiceAudio *spiceAudio;
 
 @end
 
 @implementation CSConnection {
-    SpiceSession     *_session;
-    SpiceMainChannel *_main;
-    SpiceAudio       *_audio;
     NSMutableArray<NSMutableArray<CSDisplayMetal *> *> *_monitors;
-    NSMutableArray<NSMutableArray<CSInput *> *> *_inputs;
-    CSSession        *_csSession;
 }
 
 static void cs_main_channel_event(SpiceChannel *channel, SpiceChannelEvent event,
@@ -53,7 +52,7 @@ static void cs_main_channel_event(SpiceChannel *channel, SpiceChannelEvent event
         case SPICE_CHANNEL_CLOSED:
             /* this event is only sent if the channel was succesfully opened before */
             g_message("main channel: closed");
-            spice_session_disconnect(self->_session);
+            spice_session_disconnect(self.spiceSession);
             break;
         case SPICE_CHANNEL_ERROR_IO:
         case SPICE_CHANNEL_ERROR_TLS:
@@ -91,37 +90,26 @@ static void cs_display_monitors(SpiceChannel *display, GParamSpec *pspec,
     if (!self->_monitors) {
         self->_monitors = [NSMutableArray<NSMutableArray<CSDisplayMetal *> *> array];
     }
-    if (!self->_inputs) {
-        self->_inputs = [NSMutableArray<NSMutableArray<CSInput *> *> array];
-    }
     
     // create enough outer arrays to let us index
-    while (self->_monitors.count <= chid) {
+    while (self.monitors.count <= chid) {
         [self->_monitors addObject:[NSMutableArray<CSDisplayMetal *> array]];
-    }
-    while (self->_inputs.count <= chid) {
-        [self->_inputs addObject:[NSMutableArray<CSInput *> array]];
     }
     
     // create new monitors for this display
-    for (i = self->_monitors[chid].count; i < monitors->len; i++) {
-        CSDisplayMetal *monitor = [[CSDisplayMetal alloc] initWithSession:self->_session channelID:chid monitorID:i];
+    for (i = self.monitors[chid].count; i < monitors->len; i++) {
+        CSDisplayMetal *monitor = [[CSDisplayMetal alloc] initWithSession:self.spiceSession channelID:chid monitorID:i];
         [self->_monitors[chid] addObject:monitor];
         
-        CSInput *input = [[CSInput alloc] initWithSession:self->_session channelID:chid monitorID:i];
-        [self->_inputs[chid] addObject:input];
+        CSInput *input = [[CSInput alloc] initWithSession:self.spiceSession channelID:chid monitorID:i];
         
         [self.delegate spiceDisplayCreated:self display:monitor input:input];
     }
     
     // clear any extra displays
-    NSUInteger total = self->_monitors.count;
+    NSUInteger total = self.monitors.count;
     for (i = monitors->len; i < total; i++) {
         [self->_monitors[chid] removeLastObject];
-    }
-    total = self->_inputs.count;
-    for (i = monitors->len; i < total; i++) {
-        [self->_inputs[chid] removeLastObject];
     }
     
     g_clear_pointer(&monitors, g_array_unref);
@@ -155,8 +143,8 @@ static void cs_channel_new(SpiceSession *s, SpiceChannel *channel, gpointer data
     
     if (SPICE_IS_MAIN_CHANNEL(channel)) {
         SPICE_DEBUG("new main channel");
-        g_assert(!self->_main); // should only be 1 main channel
-        self->_main = SPICE_MAIN_CHANNEL(channel);
+        g_assert(!self.spiceMain); // should only be 1 main channel
+        self.spiceMain = SPICE_MAIN_CHANNEL(channel);
         UTMLog(@"%s:%d", __FUNCTION__, __LINE__);
         g_signal_connect(channel, "channel-event",
                          G_CALLBACK(cs_main_channel_event), GLIB_OBJC_RETAIN(self));
@@ -175,7 +163,7 @@ static void cs_channel_new(SpiceSession *s, SpiceChannel *channel, gpointer data
     if (SPICE_IS_PLAYBACK_CHANNEL(channel)) {
         SPICE_DEBUG("new audio channel");
         if (self.audioEnabled) {
-            self->_audio = spice_audio_get(s, self.glibMainContext);
+            self.spiceAudio = spice_audio_get(s, self.glibMainContext);
             spice_channel_connect(channel);
         } else {
             SPICE_DEBUG("audio disabled");
@@ -197,7 +185,7 @@ static void cs_channel_destroy(SpiceSession *s, SpiceChannel *channel, gpointer 
     if (SPICE_IS_MAIN_CHANNEL(channel)) {
         UTMLog(@"%s:%d", __FUNCTION__, __LINE__);
         SPICE_DEBUG("zap main channel");
-        self->_main = NULL;
+        self.spiceMain = NULL;
         g_signal_handlers_disconnect_by_func(channel, G_CALLBACK(cs_main_channel_event), GLIB_OBJC_RELEASE(self));
         g_signal_handlers_disconnect_by_func(channel, G_CALLBACK(cs_main_agent_update), GLIB_OBJC_RELEASE(self));
     }
@@ -207,12 +195,11 @@ static void cs_channel_destroy(SpiceSession *s, SpiceChannel *channel, gpointer 
         SPICE_DEBUG("zap display channel (#%d)", chid);
         g_signal_handlers_disconnect_by_func(channel, G_CALLBACK(cs_display_monitors), GLIB_OBJC_RELEASE(self));
         [self->_monitors[chid] removeAllObjects];
-        [self->_inputs[chid] removeAllObjects];
     }
     
     if (SPICE_IS_PLAYBACK_CHANNEL(channel)) {
         SPICE_DEBUG("zap audio channel");
-        self->_audio = NULL;
+        self.spiceAudio = NULL;
     }
 }
 
@@ -227,31 +214,25 @@ static void cs_connection_destroy(SpiceSession *session,
     return _monitors;
 }
 
-- (NSArray<NSArray<CSInput *> *> *)inputs {
-    return _inputs;
-}
-
-@synthesize session = _csSession;
-
 - (void)setHost:(NSString *)host {
-    g_object_set(_session, "host", [host UTF8String], NULL);
+    g_object_set(self.spiceSession, "host", [host UTF8String], NULL);
 }
 
 - (NSString *)host {
     gchar *strhost;
-    g_object_get(_session, "host", &strhost, NULL);
+    g_object_get(self.spiceSession, "host", &strhost, NULL);
     NSString *nshost = [NSString stringWithUTF8String:strhost];
     g_free(strhost);
     return nshost;
 }
 
 - (void)setPort:(NSString *)port {
-    g_object_set(_session, "port", [port UTF8String], NULL);
+    g_object_set(self.spiceSession, "port", [port UTF8String], NULL);
 }
 
 - (NSString *)port {
     gchar *strhost;
-    g_object_get(_session, "port", &strhost, NULL);
+    g_object_get(self.spiceSession, "port", &strhost, NULL);
     NSString *nshost = [NSString stringWithUTF8String:strhost];
     g_free(strhost);
     return nshost;
@@ -270,16 +251,16 @@ static void cs_connection_destroy(SpiceSession *session,
 - (id)init {
     self = [super init];
     if (self) {
-        _session = spice_session_new();
+        self.spiceSession = spice_session_new();
         UTMLog(@"%s:%d", __FUNCTION__, __LINE__);
-        g_signal_connect(_session, "channel-new",
+        g_signal_connect(self.spiceSession, "channel-new",
                          G_CALLBACK(cs_channel_new), GLIB_OBJC_RETAIN(self));
-        g_signal_connect(_session, "channel-destroy",
+        g_signal_connect(self.spiceSession, "channel-destroy",
                          G_CALLBACK(cs_channel_destroy), GLIB_OBJC_RETAIN(self));
-        g_signal_connect(_session, "disconnected",
+        g_signal_connect(self.spiceSession, "disconnected",
                          G_CALLBACK(cs_connection_destroy), GLIB_OBJC_RETAIN(self));
         
-        SpiceUsbDeviceManager *manager = spice_usb_device_manager_get(_session, NULL);
+        SpiceUsbDeviceManager *manager = spice_usb_device_manager_get(self.spiceSession, NULL);
         if (manager) {
             self.usbManager = [[CSUSBManager alloc] initWithUsbDeviceManager:manager];
         } else {
@@ -291,17 +272,16 @@ static void cs_connection_destroy(SpiceSession *session,
 
 - (void)dealloc {
     UTMLog(@"%s:%d", __FUNCTION__, __LINE__);
-    g_signal_handlers_disconnect_by_func(_session, G_CALLBACK(cs_channel_new), GLIB_OBJC_RELEASE(self));
-    g_signal_handlers_disconnect_by_func(_session, G_CALLBACK(cs_channel_destroy), GLIB_OBJC_RELEASE(self));
-    g_signal_handlers_disconnect_by_func(_session, G_CALLBACK(cs_connection_destroy), GLIB_OBJC_RELEASE(self));
-    g_object_unref(_session);
-    _session = NULL;
+    g_signal_handlers_disconnect_by_func(self.spiceSession, G_CALLBACK(cs_channel_new), GLIB_OBJC_RELEASE(self));
+    g_signal_handlers_disconnect_by_func(self.spiceSession, G_CALLBACK(cs_channel_destroy), GLIB_OBJC_RELEASE(self));
+    g_signal_handlers_disconnect_by_func(self.spiceSession, G_CALLBACK(cs_connection_destroy), GLIB_OBJC_RELEASE(self));
+    g_object_unref(self.spiceSession);
+    self.spiceSession = NULL;
     self.glibMainContext = NULL;
 }
 
-- (id)initWithHost:(NSString *)host port:(NSString *)port {
-    self = [self init];
-    if (self) {
+- (instancetype)initWithHost:(NSString *)host port:(NSString *)port {
+    if (self = [super init]) {
         self.host = host;
         self.port = port;
     }
@@ -309,14 +289,14 @@ static void cs_connection_destroy(SpiceSession *session,
 }
 
 - (BOOL)connect {
-    self.session = [[CSSession alloc] initWithSession:_session];
+    self.session = [[CSSession alloc] initWithSession:self.spiceSession];
     [self.delegate spiceSessionCreated:self session:self.session];
-    return spice_session_connect(_session);
+    return spice_session_connect(self.spiceSession);
 }
 
 - (void)disconnect {
     [self.delegate spiceSessionEnded:self session:self.session];
-    spice_session_disconnect(_session);
+    spice_session_disconnect(self.spiceSession);
     self.session = NULL;
 }
 
