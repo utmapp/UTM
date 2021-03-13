@@ -84,8 +84,7 @@ class VMDisplayMetalWindowController: VMDisplayWindowController, UTMSpiceIODeleg
     override func enterLive() {
         metalView.isHidden = false
         screenshotView.isHidden = true
-        renderer!.sourceScreen = vmDisplay
-        renderer!.sourceCursor = vmInput
+        renderer!.source = vmDisplay
         displaySizeObserver = observe(\.vmDisplay!.displaySize, options: [.initial, .new]) { (_, change) in
             guard let size = change.newValue else { return }
             self.displaySizeDidChange(size: size)
@@ -282,7 +281,7 @@ extension VMDisplayMetalWindowController: VMMetalViewInputDelegate {
         let point = CGPoint(x: newX, y: newY)
         logger.debug("move cursor: cocoa (\(absolutePoint.x), \(absolutePoint.y)), native (\(newX), \(newY))")
         vmInput?.sendMouseMotion(button, point: point)
-        vmInput?.forceCursorPosition(point) // required to show cursor on screen
+        vmDisplay?.forceCursorPosition(point) // required to show cursor on screen
     }
     
     func mouseMove(relativePoint: CGPoint, button: CSInputButton) {

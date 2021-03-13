@@ -27,115 +27,18 @@
 @property (nonatomic, readwrite, nullable) SpiceSession *session;
 @property (nonatomic, readwrite, assign) NSInteger channelID;
 @property (nonatomic, readwrite, assign) NSInteger monitorID;
-@property (nonatomic, readwrite, assign) BOOL serverModeCursor;
-@property (nonatomic, readwrite, assign) BOOL hasCursor;
-@property (nonatomic, readwrite) CGSize cursorSize;
-@property (nonatomic, readwrite) CGPoint cursorHotspot;
 @property (nonatomic, nullable) SpiceMainChannel *main;
 @property (nonatomic, nullable) SpiceInputsChannel *inputs;
 
 @end
 
 @implementation CSInput {
-    SpiceCursorChannel      *_cursor;
-    
-    CGPoint                 _mouse_guest;
     CGFloat                 _scroll_delta_y;
     
     uint32_t                _key_state[512 / 32];
-    
-    // Drawing cursor
-    id<MTLDevice>           _device;
-    id<MTLTexture>          _texture;
-    id<MTLBuffer>           _vertices;
-    NSUInteger              _numVertices;
-    dispatch_semaphore_t    _drawLock;
-    BOOL                    _cursorHidden;
 }
 
-#pragma mark - glib events
-
-static void cs_update_mouse_mode(SpiceChannel *channel, gpointer data)
-{
-    CSInput *self = (__bridge CSInput *)data;
-    enum SpiceMouseMode mouse_mode;
-    
-    g_object_get(channel, "mouse-mode", &mouse_mode, NULL);
-    DISPLAY_DEBUG(self, "mouse mode %u", mouse_mode);
-    
-    self.serverModeCursor = (mouse_mode == SPICE_MOUSE_MODE_SERVER);
-    
-    if (self.serverModeCursor) {
-        self->_mouse_guest.x = -1;
-        self->_mouse_guest.y = -1;
-    }
-}
-
-static void cs_cursor_invalidate(CSInput *self)
-{
-    // We implement two different textures so invalidate is not needed
-}
-
-static void cs_cursor_set(SpiceCursorChannel *channel,
-                          G_GNUC_UNUSED GParamSpec *pspec,
-                          gpointer data)
-{
-    CSInput *self = (__bridge CSInput *)data;
-    SpiceCursorShape *cursor_shape;
-    
-    g_object_get(G_OBJECT(channel), "cursor", &cursor_shape, NULL);
-    if (G_UNLIKELY(cursor_shape == NULL || cursor_shape->data == NULL)) {
-        if (cursor_shape != NULL) {
-            g_boxed_free(SPICE_TYPE_CURSOR_SHAPE, cursor_shape);
-        }
-        return;
-    }
-    
-    cs_cursor_invalidate(self);
-    
-    CGPoint hotspot = CGPointMake(cursor_shape->hot_spot_x, cursor_shape->hot_spot_y);
-    CGSize newSize = CGSizeMake(cursor_shape->width, cursor_shape->height);
-    if (!CGSizeEqualToSize(newSize, self.cursorSize) || !CGPointEqualToPoint(hotspot, self.cursorHotspot)) {
-        [self rebuildTexture:newSize center:hotspot];
-    }
-    [self drawCursor:cursor_shape->data];
-    self->_cursorHidden = NO;
-    cs_cursor_invalidate(self);
-}
-
-static void cs_cursor_move(SpiceCursorChannel *channel, gint x, gint y, gpointer data)
-{
-    CSInput *self = (__bridge CSInput *)data;
-    
-    cs_cursor_invalidate(self); // old pointer buffer
-    
-    self->_mouse_guest.x = x;
-    self->_mouse_guest.y = y;
-    
-    cs_cursor_invalidate(self); // new pointer buffer
-    
-    /* apparently we have to restore cursor when "cursor_move" */
-    if (self.hasCursor) {
-        self->_cursorHidden = NO;
-    }
-}
-
-static void cs_cursor_hide(SpiceCursorChannel *channel, gpointer data)
-{
-    CSInput *self = (__bridge CSInput *)data;
-    
-    self->_cursorHidden = YES;
-    cs_cursor_invalidate(self);
-}
-
-static void cs_cursor_reset(SpiceCursorChannel *channel, gpointer data)
-{
-    CSInput *self = (__bridge CSInput *)data;
-    
-    DISPLAY_DEBUG(self, "%s",  __FUNCTION__);
-    [self destroyTexture];
-    cs_cursor_invalidate(self);
-}
+#pragma mark - Channel events
 
 static void cs_channel_new(SpiceSession *s, SpiceChannel *channel, gpointer data)
 {
@@ -145,32 +48,6 @@ static void cs_channel_new(SpiceSession *s, SpiceChannel *channel, gpointer data
     g_object_get(channel, "channel-id", &chid, NULL);
     if (SPICE_IS_MAIN_CHANNEL(channel)) {
         self.main = SPICE_MAIN_CHANNEL(channel);
-        g_signal_connect(channel, "main-mouse-update",
-                         G_CALLBACK(cs_update_mouse_mode), GLIB_OBJC_RETAIN(self));
-        cs_update_mouse_mode(channel, data);
-        return;
-    }
-    
-    if (SPICE_IS_CURSOR_CHANNEL(channel)) {
-        gpointer cursor_shape;
-        if (chid != self.channelID)
-            return;
-        self->_cursor = SPICE_CURSOR_CHANNEL(channel);
-        g_signal_connect(channel, "notify::cursor",
-                         G_CALLBACK(cs_cursor_set), GLIB_OBJC_RETAIN(self));
-        g_signal_connect(channel, "cursor-move",
-                         G_CALLBACK(cs_cursor_move), GLIB_OBJC_RETAIN(self));
-        g_signal_connect(channel, "cursor-hide",
-                         G_CALLBACK(cs_cursor_hide), GLIB_OBJC_RETAIN(self));
-        g_signal_connect(channel, "cursor-reset",
-                         G_CALLBACK(cs_cursor_reset), GLIB_OBJC_RETAIN(self));
-        spice_channel_connect(channel);
-        
-        g_object_get(G_OBJECT(channel), "cursor", &cursor_shape, NULL);
-        if (cursor_shape != NULL) {
-            g_boxed_free(SPICE_TYPE_CURSOR_SHAPE, cursor_shape);
-            cs_cursor_set(self->_cursor, NULL, (__bridge void *)self);
-        }
         return;
     }
     
@@ -189,22 +66,8 @@ static void cs_channel_destroy(SpiceSession *s, SpiceChannel *channel, gpointer 
     g_object_get(channel, "channel-id", &chid, NULL);
     DISPLAY_DEBUG(self, "channel_destroy %d", chid);
     
-    [self destroyTexture];
-    
     if (SPICE_IS_MAIN_CHANNEL(channel)) {
         self.main = NULL;
-        g_signal_handlers_disconnect_by_func(channel, G_CALLBACK(cs_update_mouse_mode), GLIB_OBJC_RELEASE(self));
-        return;
-    }
-    
-    if (SPICE_IS_CURSOR_CHANNEL(channel)) {
-        if (chid != self.channelID)
-            return;
-        self->_cursor = NULL;
-        g_signal_handlers_disconnect_by_func(channel, G_CALLBACK(cs_cursor_set), GLIB_OBJC_RELEASE(self));
-        g_signal_handlers_disconnect_by_func(channel, G_CALLBACK(cs_cursor_move), GLIB_OBJC_RELEASE(self));
-        g_signal_handlers_disconnect_by_func(channel, G_CALLBACK(cs_cursor_hide), GLIB_OBJC_RELEASE(self));
-        g_signal_handlers_disconnect_by_func(channel, G_CALLBACK(cs_cursor_reset), GLIB_OBJC_RELEASE(self));
         return;
     }
     
@@ -214,6 +77,14 @@ static void cs_channel_destroy(SpiceSession *s, SpiceChannel *channel, gpointer 
     }
     
     return;
+}
+
+#pragma mark - Properties
+
+- (BOOL)serverModeCursor {
+    enum SpiceMouseMode mouse_mode;
+    g_object_get(self.main, "mouse-mode", &mouse_mode, NULL);
+    return (mouse_mode == SPICE_MOUSE_MODE_SERVER);
 }
 
 #pragma mark - Key handling
@@ -405,24 +276,10 @@ static int cs_button_to_spice(CSInputButton button)
     }
 }
 
-- (void)forceCursorPosition:(CGPoint)pos {
-    _mouse_guest = pos;
-}
-
 #pragma mark - Initializers
 
-- (id)init {
+- (instancetype)initWithSession:(nonnull SpiceSession *)session channelID:(NSInteger)channelID monitorID:(NSInteger)monitorID {
     self = [super init];
-    if (self) {
-        _drawLock = dispatch_semaphore_create(1);
-        self.viewportScale = 1.0f;
-        self.viewportOrigin = CGPointMake(0, 0);
-    }
-    return self;
-}
-
-- (id)initWithSession:(nonnull SpiceSession *)session channelID:(NSInteger)channelID monitorID:(NSInteger)monitorID {
-    self = [self init];
     if (self) {
         GList *list;
         GList *it;
@@ -454,9 +311,6 @@ static int cs_button_to_spice(CSInputButton button)
 }
 
 - (void)dealloc {
-    if (_cursor) {
-        cs_channel_destroy(self.session, SPICE_CHANNEL(_cursor), (__bridge void *)self);
-    }
     if (self.main) {
         cs_channel_destroy(self.session, SPICE_CHANNEL(self.main), (__bridge void *)self);
     }
@@ -465,94 +319,6 @@ static int cs_button_to_spice(CSInputButton button)
     g_signal_handlers_disconnect_by_func(self.session, G_CALLBACK(cs_channel_destroy), GLIB_OBJC_RELEASE(self));
     g_object_unref(self.session);
     self.session = NULL;
-}
-
-#pragma mark - Drawing Cursor
-
-@synthesize device = _device;
-@synthesize drawLock = _drawLock;
-@synthesize texture = _texture;
-@synthesize numVertices = _numVertices;
-@synthesize vertices = _vertices;
-@synthesize viewportOrigin;
-@synthesize viewportScale;
-
-- (void)rebuildTexture:(CGSize)size center:(CGPoint)hotspot {
-    // hotspot is the offset in buffer for the center of the pointer
-    if (!_device) {
-        UTMLog(@"MTL device not ready for cursor draw");
-        return;
-    }
-    dispatch_semaphore_wait(_drawLock, DISPATCH_TIME_FOREVER);
-    MTLTextureDescriptor *textureDescriptor = [[MTLTextureDescriptor alloc] init];
-    // don't worry that that components are reversed, we fix it in shaders
-    textureDescriptor.pixelFormat = MTLPixelFormatBGRA8Unorm;
-    textureDescriptor.width = size.width;
-    textureDescriptor.height = size.height;
-    _texture = [_device newTextureWithDescriptor:textureDescriptor];
-
-    // We flip the y-coordinates because pixman renders flipped
-    UTMVertex quadVertices[] =
-    {
-     // Pixel positions, Texture coordinates
-     { { -hotspot.x + size.width, hotspot.y               },  { 1.f, 0.f } },
-     { { -hotspot.x             , hotspot.y               },  { 0.f, 0.f } },
-     { { -hotspot.x             , hotspot.y - size.height },  { 0.f, 1.f } },
-     
-     { { -hotspot.x + size.width, hotspot.y               },  { 1.f, 0.f } },
-     { { -hotspot.x             , hotspot.y - size.height },  { 0.f, 1.f } },
-     { { -hotspot.x + size.width, hotspot.y - size.height },  { 1.f, 1.f } },
-    };
-
-    // Create our vertex buffer, and initialize it with our quadVertices array
-    _vertices = [_device newBufferWithBytes:quadVertices
-                                    length:sizeof(quadVertices)
-                                   options:MTLResourceStorageModeShared];
-
-    // Calculate the number of vertices by dividing the byte length by the size of each vertex
-    _numVertices = sizeof(quadVertices) / sizeof(UTMVertex);
-    self.cursorSize = size;
-    self.cursorHotspot = hotspot;
-    self.hasCursor = YES;
-    dispatch_semaphore_signal(_drawLock);
-}
-
-- (void)destroyTexture {
-    dispatch_semaphore_wait(_drawLock, DISPATCH_TIME_FOREVER);
-    _numVertices = 0;
-    _vertices = nil;
-    _texture = nil;
-    self.cursorSize = CGSizeZero;
-    self.cursorHotspot = CGPointZero;
-    self.hasCursor = NO;
-    dispatch_semaphore_signal(_drawLock);
-}
-
-- (void)drawCursor:(const void *)buffer {
-    const NSInteger pixelSize = 4;
-    MTLRegion region = {
-        { 0, 0 }, // MTLOrigin
-        { self.cursorSize.width, self.cursorSize.height, 1} // MTLSize
-    };
-    dispatch_semaphore_wait(_drawLock, DISPATCH_TIME_FOREVER);
-    [_texture replaceRegion:region
-                mipmapLevel:0
-                  withBytes:buffer
-                bytesPerRow:self.cursorSize.width*pixelSize];
-    dispatch_semaphore_signal(_drawLock);
-}
-
-- (BOOL)visible {
-    return !self.inhibitCursor && self.hasCursor && !_cursorHidden;
-}
-
-- (CGPoint)viewportOrigin {
-    CGPoint point = _mouse_guest;
-    point.x -= self.displaySize.width/2;
-    point.y -= self.displaySize.height/2;
-    point.x *= self.viewportScale;
-    point.y *= self.viewportScale;
-    return point;
 }
 
 @end

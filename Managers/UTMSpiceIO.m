@@ -39,7 +39,6 @@ typedef void (^connectionCallback_t)(BOOL success, NSString * _Nullable msg);
 @property (nonatomic, nullable) CSSession *session;
 @property (nonatomic, nullable, copy) NSURL *sharedDirectory;
 @property (nonatomic) NSInteger port;
-@property (nonatomic) BOOL hasObservers;
 @property (nonatomic) BOOL dynamicResolutionSupported;
 
 @end
@@ -82,15 +81,6 @@ typedef void (^connectionCallback_t)(BOOL success, NSString * _Nullable msg);
 - (BOOL)isSpiceInitialized {
     @synchronized (self) {
         return self.spice != nil && self.spiceConnection != nil;
-    }
-}
-
-- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context {
-    // make sure the CSDisplay properties are synced with the CSInput
-    if ([keyPath isEqualToString:@"primaryDisplay.viewportScale"]) {
-        self.primaryInput.viewportScale = self.primaryDisplay.viewportScale;
-    } else if ([keyPath isEqualToString:@"primaryDisplay.displaySize"]) {
-        self.primaryInput.displaySize = self.primaryDisplay.displaySize;
     }
 }
 
@@ -141,11 +131,6 @@ typedef void (^connectionCallback_t)(BOOL success, NSString * _Nullable msg);
 
 - (void)disconnect {
     @synchronized (self) {
-        if (self.hasObservers) {
-            [self removeObserver:self forKeyPath:@"primaryDisplay.viewportScale"];
-            [self removeObserver:self forKeyPath:@"primaryDisplay.displaySize"];
-            self.hasObservers = NO;
-        }
         [self.spiceConnection disconnect];
         self.spiceConnection.delegate = nil;
         self.spiceConnection = nil;
@@ -207,11 +192,6 @@ typedef void (^connectionCallback_t)(BOOL success, NSString * _Nullable msg);
         _primaryInput = input;
         _delegate.vmDisplay = display;
         _delegate.vmInput = input;
-        @synchronized (self) {
-            [self addObserver:self forKeyPath:@"primaryDisplay.viewportScale" options:0 context:nil];
-            [self addObserver:self forKeyPath:@"primaryDisplay.displaySize" options:0 context:nil];
-            self.hasObservers = YES;
-        }
         if (self.connectionCallback) {
             self.connectionCallback(YES, nil);
             self.connectionCallback = nil;

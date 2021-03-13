@@ -63,8 +63,7 @@
     
     // Initialize our renderer with the view size
     [_renderer mtkView:self.mtkView drawableSizeWillChange:self.mtkView.drawableSize];
-    _renderer.sourceScreen = self.vmDisplay;
-    _renderer.sourceCursor = self.vmInput;
+    _renderer.source = self.vmDisplay;
     
     [_renderer changeUpscaler:self.vmConfiguration.displayUpscalerValue
                    downscaler:self.vmConfiguration.displayDownscalerValue];
@@ -121,8 +120,7 @@
                 self.placeholderImageView.hidden = YES;
                 self.mtkView.hidden = NO;
             } completion:nil];
-            self->_renderer.sourceScreen = self.vmDisplay;
-            self->_renderer.sourceCursor = self.vmInput;
+            self->_renderer.source = self.vmDisplay;
             [self displayResize:self.view.bounds.size];
             if (self.vmConfiguration.shareClipboardEnabled) {
                 [[UTMPasteboard generalPasteboard] requestPollingModeForObject:self];

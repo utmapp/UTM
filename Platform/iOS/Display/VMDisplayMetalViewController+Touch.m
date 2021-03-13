@@ -338,7 +338,7 @@ static CGFloat CGPointToPixel(CGFloat point) {
     translated = [self clipCursorToDisplay:translated];
     if (!self.vmInput.serverModeCursor) {
         [self.vmInput sendMouseMotion:self.mouseButtonDown point:translated];
-        [self.vmInput forceCursorPosition:translated]; // required to show cursor on screen
+        [self.vmDisplay forceCursorPosition:translated]; // required to show cursor on screen
     } else {
         UTMLog(@"Warning: ignored mouse set (%f, %f) while mouse is in server mode", translated.x, translated.y);
     }
@@ -571,7 +571,7 @@ static CGFloat CGPointToPixel(CGFloat point) {
 - (BOOL)switchMouseType:(VMMouseType)type {
     BOOL shouldHideCursor = (type == VMMouseTypeAbsoluteHideCursor);
     BOOL shouldUseServerMouse = (type == VMMouseTypeRelative);
-    self.vmInput.inhibitCursor = shouldHideCursor;
+    self.vmDisplay.inhibitCursor = shouldHideCursor;
     if (shouldUseServerMouse != self.vmInput.serverModeCursor) {
         UTMLog(@"Switching mouse mode to server:%d for type:%ld", shouldUseServerMouse, type);
         [self.vm requestInputTablet:!shouldUseServerMouse];

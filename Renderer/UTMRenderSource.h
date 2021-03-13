@@ -21,14 +21,18 @@ NS_ASSUME_NONNULL_BEGIN
 
 @protocol UTMRenderSource <NSObject>
 
-@property (nonatomic, readonly) BOOL visible;
-@property (nonatomic, assign) CGPoint viewportOrigin;
-@property (nonatomic, assign) CGFloat viewportScale;
+@property (nonatomic, readonly) BOOL cursorVisible;
+@property (nonatomic) CGPoint cursorOrigin;
+@property (nonatomic) CGPoint viewportOrigin;
+@property (nonatomic) CGFloat viewportScale;
 @property (nonatomic, readonly) dispatch_semaphore_t drawLock;
-@property (nonatomic, nullable, strong) id<MTLDevice> device;
-@property (nonatomic, nullable, readonly) id<MTLTexture> texture;
-@property (nonatomic, readonly) NSUInteger numVertices;
-@property (nonatomic, nullable, readonly) id<MTLBuffer> vertices;
+@property (nonatomic, nullable) id<MTLDevice> device;
+@property (nonatomic, nullable, readonly) id<MTLTexture> displayTexture;
+@property (nonatomic, nullable, readonly) id<MTLTexture> cursorTexture;
+@property (nonatomic, readonly) NSUInteger displayNumVertices;
+@property (nonatomic, readonly) NSUInteger cursorNumVertices;
+@property (nonatomic, nullable, readonly) id<MTLBuffer> displayVertices;
+@property (nonatomic, nullable, readonly) id<MTLBuffer> cursorVertices;
 
 @end
 
