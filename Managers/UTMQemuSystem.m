@@ -348,12 +348,9 @@ static size_t sysctl_read(const char *name) {
     if ([self.configuration.systemTarget hasPrefix:@"virt"]) {
         [self pushArgv:@"-device"];
         [self pushArgv:@"qemu-xhci"];
-    } else if ([self.configuration.systemTarget hasPrefix:@"pc"]) {
-        // USB 1.0 controller for old PC system
+    } else {
+        // default USB controller for other systems
         [self pushArgv:@"-usb"];
-    } else { // USB 2.0 controller is most compatible
-        [self pushArgv:@"-device"];
-        [self pushArgv:@"usb-ehci"];
     }
     // set up USB input devices unless user requested legacy (QEMU default PS/2 input)
     if (!self.configuration.inputLegacy) {
@@ -363,6 +360,13 @@ static size_t sysctl_read(const char *name) {
         [self pushArgv:@"usb-mouse"];
         [self pushArgv:@"-device"];
         [self pushArgv:@"usb-kbd"];
+    }
+    // set up usb forwarding
+    for (int i = 0; i < [self.configuration.usbRedirectionMaximumDevices integerValue]; i++) {
+        [self pushArgv:@"-chardev"];
+        [self pushArgv:[NSString stringWithFormat:@"spicevmc,name=usbredir,id=usbredirchardev%d", i]];
+        [self pushArgv:@"-device"];
+        [self pushArgv:[NSString stringWithFormat:@"usb-redir,chardev=usbredirchardev%d,id=usbredirdev%d", i, i]];
     }
 }
 
