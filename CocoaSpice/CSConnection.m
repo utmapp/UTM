@@ -101,7 +101,7 @@ static void cs_display_monitors(SpiceChannel *display, GParamSpec *pspec,
         CSDisplayMetal *monitor = [[CSDisplayMetal alloc] initWithSession:self.spiceSession channelID:chid monitorID:i];
         [self->_monitors[chid] addObject:monitor];
         
-        [self.delegate spiceDisplayCreated:self display:monitor input:self.input];
+        [self.delegate spiceDisplayCreated:self display:monitor];
     }
     
     // clear any extra displays
