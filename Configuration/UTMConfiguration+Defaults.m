@@ -48,6 +48,7 @@
     self.networkCard = @"rtl8139";
     self.networkCardMac = [self generateMacAddress];
     self.shareClipboardEnabled = YES;
+    self.usbRedirectionMaximumDevices = @3;
     self.name = [NSUUID UUID].UUIDString;
     self.existingPath = nil;
     self.selectedCustomIconPath = nil;

@@ -25,6 +25,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) BOOL shareDirectoryReadOnly;
 @property (nonatomic, nullable, copy) NSString *shareDirectoryName;
 @property (nonatomic, nullable, copy) NSData *shareDirectoryBookmark;
+@property (nonatomic, nullable, copy) NSNumber *usbRedirectionMaximumDevices;
+
+- (void)migrateSharingConfigurationIfNecessary;
 
 @end
 

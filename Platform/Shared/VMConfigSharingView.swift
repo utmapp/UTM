@@ -45,7 +45,41 @@ struct VMConfigSharingView: View {
                     })
                     Text("Note: select the path to share from the main screen.")
                 }
+                
+                Section(header: Text("USB Sharing"), footer: EmptyView().padding(.bottom)) {
+                    if !jb_has_usb_entitlement() {
+                        Text("USB not supported in this build of UTM.")
+                    }
+                    let maxUsbObserver = Binding<Int> {
+                        Int(truncating: config.usbRedirectionMaximumDevices ?? 0)
+                    } set: {
+                        config.usbRedirectionMaximumDevices = NSNumber(value: $0)
+                    }
+                    HStack {
+                        Stepper(value: maxUsbObserver, in: 0...64) {
+                            Text("Maximum Shared USB Devices")
+                        }
+                        NumberTextField("", number: $config.usbRedirectionMaximumDevices, onEditingChanged: validateMaxUsb)
+                            .frame(width: 50)
+                            .multilineTextAlignment(.trailing)
+                    }
+                }.disabled(!jb_has_usb_entitlement())
             }.disabled(config.displayConsoleOnly)
+        }
+    }
+    
+    func validateMaxUsb(editing: Bool) {
+        guard !editing else {
+            return
+        }
+        guard let maxUsb = config.usbRedirectionMaximumDevices?.intValue else {
+            config.usbRedirectionMaximumDevices = 3
+            return
+        }
+        if maxUsb < 0 {
+            config.usbRedirectionMaximumDevices = 0
+        } else if maxUsb > 64 {
+            config.usbRedirectionMaximumDevices = 64
         }
     }
 }

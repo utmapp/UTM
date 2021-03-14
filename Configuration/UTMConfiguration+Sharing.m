@@ -24,6 +24,7 @@ const NSString *const kUTMConfigDirectorySharingKey = @"DirectorySharing";
 const NSString *const kUTMConfigDirectoryReadOnlyKey = @"DirectoryReadOnly";
 const NSString *const kUTMConfigDirectoryNameKey = @"DirectoryName";
 const NSString *const kUTMConfigDirectoryBookmarkKey = @"DirectoryBookmark";
+const NSString *const kUTMConfigUsbRedirectMaxKey = @"UsbRedirectMax";
 
 @interface UTMConfiguration ()
 
@@ -32,6 +33,14 @@ const NSString *const kUTMConfigDirectoryBookmarkKey = @"DirectoryBookmark";
 @end
 
 @implementation UTMConfiguration (Sharing)
+
+#pragma mark - Migration
+
+- (void)migrateSharingConfigurationIfNecessary {
+    if (!self.rootDict[kUTMConfigSharingKey][kUTMConfigUsbRedirectMaxKey]) {
+        self.usbRedirectionMaximumDevices = @3;
+    }
+}
 
 #pragma mark - Sharing settings
 
@@ -82,6 +91,15 @@ const NSString *const kUTMConfigDirectoryBookmarkKey = @"DirectoryBookmark";
     } else {
         self.rootDict[kUTMConfigSharingKey][kUTMConfigDirectoryBookmarkKey] = shareDirectoryBookmark;
     }
+}
+
+- (NSNumber *)usbRedirectionMaximumDevices {
+    return self.rootDict[kUTMConfigSharingKey][kUTMConfigUsbRedirectMaxKey];
+}
+
+- (void)setUsbRedirectionMaximumDevices:(NSNumber *)usbRedirectionMaximumDevices {
+    [self propertyWillChange];
+    self.rootDict[kUTMConfigSharingKey][kUTMConfigUsbRedirectMaxKey] = usbRedirectionMaximumDevices;
 }
 
 @end
