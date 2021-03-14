@@ -168,6 +168,7 @@
             self.zoomButton.enabled = NO;
             self.keyboardButton.enabled = NO;
             self.drivesButton.enabled = NO;
+            self.usbButton.enabled = NO;
             [self.pauseResumeButton setImage:[UIImage imageNamed:@"Toolbar Start"] forState:UIControlStateNormal];
             [self.powerExitButton setImage:[UIImage imageNamed:@"Toolbar Exit"] forState:UIControlStateNormal];
             [UIApplication sharedApplication].idleTimerDisabled = NO;
@@ -184,6 +185,7 @@
             self.zoomButton.enabled = NO;
             self.keyboardButton.enabled = NO;
             self.drivesButton.enabled = NO;
+            self.usbButton.enabled = NO;
             [self.placeholderIndicator startAnimating];
             [self.powerExitButton setImage:[UIImage imageNamed:@"Toolbar Exit"] forState:UIControlStateNormal];
             break;
@@ -200,6 +202,7 @@
             self.zoomButton.enabled = YES;
             self.keyboardButton.enabled = YES;
             self.drivesButton.enabled = YES;
+            self.usbButton.enabled = self.vm.hasUsbRedirection;
             [self.pauseResumeButton setImage:[UIImage imageNamed:@"Toolbar Pause"] forState:UIControlStateNormal];
             [self.powerExitButton setImage:[UIImage imageNamed:@"Toolbar Power"] forState:UIControlStateNormal];
             [UIApplication sharedApplication].idleTimerDisabled = self.disableIdleTimer;

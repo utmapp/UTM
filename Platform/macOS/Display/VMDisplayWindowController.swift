@@ -124,6 +124,7 @@ class VMDisplayWindowController: NSWindowController {
         resizeConsoleToolbarItem.isEnabled = true
         drivesToolbarItem.isEnabled = vmConfiguration!.countDrives > 0
         sharedFolderToolbarItem.isEnabled = vm.hasShareDirectoryEnabled
+        usbToolbarItem.isEnabled = vm.hasUsbRedirection
         window!.title = vmConfiguration!.name
     }
     
@@ -147,6 +148,7 @@ class VMDisplayWindowController: NSWindowController {
         resizeConsoleToolbarItem.isEnabled = false
         drivesToolbarItem.isEnabled = false
         sharedFolderToolbarItem.isEnabled = false
+        usbToolbarItem.isEnabled = false
     }
     
     // MARK: - Alert

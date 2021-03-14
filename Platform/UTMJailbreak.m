@@ -223,6 +223,15 @@ bool jb_has_jit_entitlement(void) {
 #endif
 }
 
+bool jb_has_usb_entitlement(void) {
+    NSDictionary *entitlements = cached_app_entitlements();
+#if TARGET_OS_OSX
+    return [entitlements[@"com.apple.security.device.usb"] boolValue];
+#else
+    return entitlements[@"com.apple.security.exception.iokit-user-client-class"] != nil;
+#endif
+}
+
 bool jb_has_cs_execseg_allow_unsigned(void) {
     NSDictionary *entitlements = cached_app_entitlements();
     if (@available(iOS 14.2, *)) {
