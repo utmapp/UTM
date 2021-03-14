@@ -98,13 +98,13 @@ class VMDisplayWindowController: NSWindowController {
         }
     }
     
-    @IBAction func captureMouseButtonPressed(_ sender: Any) {
+    @IBAction dynamic func captureMouseButtonPressed(_ sender: Any) {
     }
     
-    @IBAction func resizeConsoleButtonPressed(_ sender: Any) {
+    @IBAction dynamic func resizeConsoleButtonPressed(_ sender: Any) {
     }
     
-    @IBAction func usbButtonPressed(_ sender: Any) {
+    @IBAction dynamic func usbButtonPressed(_ sender: Any) {
     }
     
     // MARK: - UI states

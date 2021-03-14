@@ -131,7 +131,10 @@ extension VMDisplayMetalWindowController: UTMSpiceIODelegate {
     }
     
     func spiceDidChange(_ usbManager: CSUSBManager) {
-        vmUsbManager = usbManager
+        if usbManager != vmUsbManager {
+            vmUsbManager = usbManager
+            usbManager.delegate = self
+        }
     }
 }
     
@@ -363,5 +366,57 @@ extension VMDisplayMetalWindowController: VMMetalViewInputDelegate {
     
     func requestReleaseCapture() {
         releaseMouse()
+    }
+}
+
+// MARK: - USB handling
+
+extension VMDisplayMetalWindowController: CSUSBManagerDelegate {
+    func spiceUsbManager(_ usbManager: CSUSBManager, deviceError error: String, for device: CSUSBDevice) {
+        logger.debug("USB device error: (\(device)) \(error)")
+    }
+    
+    func spiceUsbManager(_ usbManager: CSUSBManager, deviceAttached device: CSUSBDevice) {
+        logger.debug("USB device attached: \(device)")
+    }
+    
+    func spiceUsbManager(_ usbManager: CSUSBManager, deviceRemoved device: CSUSBDevice) {
+        logger.debug("USB device removed: \(device)")
+    }
+}
+
+extension VMDisplayMetalWindowController {
+    @IBAction override func usbButtonPressed(_ sender: Any) {
+        let menu = NSMenu()
+        menu.autoenablesItems = false
+        let item = NSMenuItem()
+        item.title = NSLocalizedString("Querying USB devices...", comment: "VMDisplayMetalWindowController")
+        item.isEnabled = false
+        menu.addItem(item)
+        DispatchQueue.global(qos: .userInitiated).async {
+            let devices = self.vmUsbManager?.usbDevices ?? []
+            DispatchQueue.main.async {
+                self.updateUsbDevicesMenu(menu, devices: devices)
+            }
+        }
+        if let event = NSApplication.shared.currentEvent {
+            NSMenu.popUpContextMenu(menu, with: event, for: sender as! NSView)
+        }
+    }
+    
+    func updateUsbDevicesMenu(_ menu: NSMenu, devices: [CSUSBDevice]) {
+        menu.removeAllItems()
+        if devices.count == 0 {
+            let item = NSMenuItem()
+            item.title = NSLocalizedString("No USB devices detected.", comment: "VMDisplayMetalWindowController")
+            item.isEnabled = false
+            menu.addItem(item)
+        }
+        for device in devices {
+            let item = NSMenuItem()
+            item.title = device.description
+            menu.addItem(item)
+        }
+        menu.update()
     }
 }
