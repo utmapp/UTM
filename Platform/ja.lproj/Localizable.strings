@@ -20,25 +20,25 @@
 "127.0.0.1" = "127.0.0.1";
 
 /* VMConfigDriveCreateViewController */
-"A file already exists for this name, if you proceed, it will be replaced." = "この名前のファイルはすでに存在します。継続すると、ファイルが置き換えられます。";
+"A file already exists for this name, if you proceed, it will be replaced." = "この名前のファイルはすでに存在します。続行すると、ファイルが置き換えられます。";
 
 /* VMListViewController */
 "A VM already exists with this name." = "この名前のVMはすでに存在します。";
 
 /* No comment provided by engineer. */
-"Acceleration" = "加速";
+"Acceleration" = "アクセラレーション";
 
 /* No comment provided by engineer. */
 "Additional Settings" = "その他";
 
 /* No comment provided by engineer. */
-"Advanced: Bypass configuration and manually specify arguments" = "アドバンスト：設定をバイパスし、引数を手動で指定します。";
+"Advanced: Bypass configuration and manually specify arguments" = "高度な設定：設定をバイパスし、引数を手動で指定します。";
 
 /* VMConfigSystemView */
-"Allocating too much memory will crash the VM. Your device has %llu MB of memory and the estimated usage is %llu MB." = "メモリを配分すぎる時、VMはシステムに強制終了されます。このデバイスは%1$llu MBのメモリがあり、推定使用量は%2$llu MBです。";
+"Allocating too much memory will crash the VM. Your device has %llu MB of memory and the estimated usage is %llu MB." = "メモリを割り当てすぎると、VMはシステムに強制終了されます。このデバイスは%1$llu MBのメモリがあり、推定使用量は%2$llu MBです。";
 
 /* No comment provided by engineer. */
-"Always use native (HiDPI) resolution" = "常にネイティブ（HiDPI）解像度を使用する。";
+"Always use native (HiDPI) resolution" = "常にネイティブ解像度 (HiDPI)を使用する。";
 
 /* VMDisplayWindowController */
 "An internal error has occured." = "内部エラーが発生しました。";
@@ -110,7 +110,7 @@
 "CD/DVD" = "CD/DVD";
 
 /* UTMConfiguration */
-"CD/DVD (ISO) Image" = "CD/DVD（ISOイメージ）";
+"CD/DVD (ISO) Image" = "CD/DVD(ISOイメージ)";
 
 /* VMDisplayWindowController */
 "Change" = "変更";
@@ -122,13 +122,13 @@
 "Clone" = "クローン";
 
 /* No comment provided by engineer. */
-"Command to send when resizing the console. Placeholder $COLS is the number of columns and $ROWS is the number of rows." = "コンソールのサイズを変更するときに送信するコマンド。 プレースホルダー $COLSは列の数であり、$ROWSは行の数です。";
+"Command to send when resizing the console. Placeholder $COLS is the number of columns and $ROWS is the number of rows." = "コンソールのサイズを変更するときに送信するコマンド。プレースホルダー $COLS は列の数、 $ROWS  は行の数に置き換えられます。";
 
 /* UTMVirtualMachine */
 "Config format incorrect." = "設定形式が正しくありません。";
 
 /* No comment provided by engineer. */
-"Confirm Delete" = "削除確認";
+"Confirm Delete" = "削除する";
 
 /* VMDisplayWindowController */
 "Confirmation" = "確認";
@@ -202,10 +202,10 @@
 "DNS Server (IPv6)" = "DNSサーバ(IPv6)";
 
 /* VMConfigDrivesViewController */
-"Do you want to also delete the disk image data? If yes, the data will be lost. Otherwise, you can create a new drive with the existing data." = "ディスクイメージデータも削除しますか？ はいの場合、データは失われます。 それ以外の場合は、既存のデータを使用して新しいドライブを作成できます。";
+"Do you want to also delete the disk image data? If yes, the data will be lost. Otherwise, you can create a new drive with the existing data." = "ディスクイメージデータも削除しますか？ 削除すると、データは失われます。 それ以外の場合は、同じデータを使用して新しいドライブを作成できます。";
 
 /* No comment provided by engineer. */
-"Do you want to delete this VM and all its data?" = "このVMとそのすべてのデータを削除しますか？";
+"Do you want to delete this VM and all its data?" = "VMとそのすべてのデータを削除しますか？";
 
 /* No comment provided by engineer. */
 "Do you want to duplicate this VM and all its data?" = "このVMとそのすべてのデータを複製しますか？";
@@ -218,13 +218,13 @@
 "Done" = "完了";
 
 /* No comment provided by engineer. */
-"Downscaling" = "Downscaling";
+"Downscaling" = "ダウンスケール";
 
 /* VMRemovableDrivesViewController */
 "Drive Options" = "ドライブオプション";
 
 /* VMDisplayWindowController */
-"Eject" = "イジェクト";
+"Eject" = "取り出す";
 
 /* No comment provided by engineer. */
 "Emulated Audio Card" = "サウンドカード";
@@ -299,7 +299,7 @@
 "fec0::3" = "fec0::3";
 
 /* No comment provided by engineer. */
-"Fit To Screen" = "画面にフィット";
+"Fit To Screen" = "画面に嵌る";
 
 /* Configuration boot device */
 "Floppy" = "フロッピー";
@@ -314,7 +314,7 @@
 "Force Multicore" = "強制マルチコア";
 
 /* No comment provided by engineer. */
-"Force slower emulation even when hypervisor is available" = "ハイパーバイザーが使用可能な場合でも、遅いエミュレーションを強制します";
+"Force slower emulation even when hypervisor is available" = "ハイパーバイザーが使用可能な場合でも、遅いエミュレーションを強制する";
 
 /* No comment provided by engineer. */
 "Full Graphics" = "グラフィックス";
@@ -326,7 +326,7 @@
 "Guest Address" = "ゲストアドレス";
 
 /* VMConfigPortForwardingViewController */
-"Guest address (optional)" = "ゲストアドレス（オプショナル）";
+"Guest address (optional)" = "ゲストアドレス(省略可)";
 
 /* No comment provided by engineer. */
 "Guest Network" = "ゲストネットワーク";
@@ -341,7 +341,7 @@
 "Guest Port" = "ゲストポート";
 
 /* VMConfigPortForwardingViewController */
-"Guest port (required)" = "ゲストポート（必須）";
+"Guest port (required)" = "ゲストポート(必須)";
 
 /* Configuration boot device */
 "Hard Disk" = "ハードディスク";
@@ -356,7 +356,7 @@
 "Hint: To show the toolbar again, use a three-finger swipe down on the screen." = "ヒント：ツールバーを再度表示するには、画面を3本の指で下にスワイプします";
 
 /* No comment provided by engineer. */
-"Hold Control (⌃) for right click" = "コントロール（⌃）を押したまま右クリックします";
+"Hold Control (⌃) for right click" = "コントロール(⌃)を押したまま右クリックします";
 
 /* No comment provided by engineer. */
 "Host Address" = "ホストアドレス";
@@ -422,7 +422,7 @@
 "Invalid size" = "サイズが無効です。";
 
 /* VMListViewController */
-"Invalid UTM not imported." = "無効なUTMがインポートされていません。";
+"Invalid UTM not imported." = "無効なUTMがインポートされませんでした。";
 
 /* No comment provided by engineer. */
 "Invert Mouse Scroll" = "マウススクロールを反転";
@@ -443,10 +443,10 @@
 "JIT cache size too small." = "JITキャッシュサイズが小さすぎます。";
 
 /* No comment provided by engineer. */
-"Legacy" = "レガシ";
+"Legacy" = "レガシー";
 
 /* No comment provided by engineer. */
-"Legacy (PS/2) Mode" = "レガシ (PS/2) モート";
+"Legacy (PS/2) Mode" = "レガシー(PS/2)モート";
 
 /* No comment provided by engineer. */
 "License" = "ライセンス";
@@ -473,7 +473,7 @@
 "MB" = "MB";
 
 /* No comment provided by engineer. */
-"Memory" = "メモリー";
+"Memory" = "メモリ";
 
 /* VMDisplayMetalWindowController */
 "Metal is not supported on this device. Cannot render display." = "Metal is not supported on this device. Cannot render display.";
@@ -482,13 +482,13 @@
 "Mouse Wheel" = "マウスホイール";
 
 /* Save VM overlay */
-"Moving %@..." = "%@移動中...";
+"Moving %@..." = "%@を移動中...";
 
 /* Clone VM name prompt title */
 "Name" = "名前";
 
 /* VMConfigInfoView */
-"Name is an invalid filename." = "無効なファイル名前";
+"Name is an invalid filename." = "ファイル名は無効です。";
 
 /* UTMConfiguration */
 "Nearest Neighbor" = "Nearest Neighbor";
@@ -544,10 +544,10 @@
 "OK" = "OK";
 
 /* VMDisplayWindowController */
-"Pause" = "休止";
+"Pause" = "停止";
 
 /* VMDisplayWindowController */
-"Play" = "スタート";
+"Play" = "再開";
 
 /* No comment provided by engineer. */
 "Port Forward" = "ポートフォワーディング";
@@ -556,7 +556,7 @@
 "Protocol" = "プロトコル";
 
 /* No comment provided by engineer. */
-"PS/2 has higher compatibility with older operating systems but does not support custom cursor settings." = "PS / 2は、古いオペレーティングシステムとの互換性が高くなっていますが、カスタムカーソル設定はサポートしていません。";
+"PS/2 has higher compatibility with older operating systems but does not support custom cursor settings." = "PS/2は、古いオペレーティングシステムとの互換性が高いますが、カスタムカーソル設定はサポートしていません。";
 
 /* No comment provided by engineer. */
 "QEMU Arguments" = "QEMU引数";
@@ -581,13 +581,13 @@
 "Removable Drive" = "リムーバブル ドライブ";
 
 /* No comment provided by engineer. */
-"Requires SPICE guest agent tools to be installed." = "SPICEゲストエージェントツールをインストールのは必要です。";
+"Requires SPICE guest agent tools to be installed." = "SPICEゲストエージェントツールをインストールする必要があります。";
 
 /* No comment provided by engineer. */
 "Requires SPICE guest agent tools to be installed. Retina Mode is recommended only if the guest OS supports HiDPI." = "SPICEゲストエージェントツールをインストールする必要があります。 Retinaモードは、ゲストOSがHiDPIをサポートしている場合にのみ推奨されます。";
 
 /* No comment provided by engineer. */
-"Requires SPICE WebDAV service to be installed." = "SPICEWebDAVサービスをインストールのは必要です。";
+"Requires SPICE WebDAV service to be installed." = "SPICE WebDAVサービスをインストールのは必要です。";
 
 /* No comment provided by engineer. */
 "Resize Console Command" = "Resize Console Command";
@@ -596,19 +596,19 @@
 "Resolution" = "解像度";
 
 /* No comment provided by engineer. */
-"Retina Mode" = "網膜モード";
+"Retina Mode" = "Retinaモード";
 
 /* VMDisplayViewController */
-"Running low on memory! UTM might soon be killed by iOS. You can prevent this by decreasing the amount of memory and/or JIT cache assigned to this VM" = "メモリ不足！ UTMはiOSに強制終了される可能性があります。このVMのメモリやJITキャッシュの量を減らすると、これを防ぐことができます";
+"Running low on memory! UTM might soon be killed by iOS. You can prevent this by decreasing the amount of memory and/or JIT cache assigned to this VM" = "メモリ不足です！ UTMはiOSに強制終了される可能性があります。このVMのメモリやJITキャッシュの量を減らすると、これを防ぐことができます";
 
 /* No comment provided by engineer. */
-"Save" = "セーブ";
+"Save" = "保存";
 
 /* Save VM overlay */
-"Saving %@..." = "%@セーブ中...";
+"Saving %@..." = "%@を保存中...";
 
 /* No comment provided by engineer. */
-"Scaling" = "Scaling";
+"Scaling" = "スケーリング";
 
 /* VMDisplayWindowController */
 "Select Drive Image" = "ドライブイメージを選択します";
@@ -620,7 +620,7 @@
 "Selected:" = "Selected:";
 
 /* No comment provided by engineer. */
-"Set to 0 for default which is 1/4 of the allocated Memory size. This is in addition to the host memory!" = "割り当てられたメモリサイズの1/4であるデフォルトの0に設定します。 これはホストメモリに追加されます！";
+"Set to 0 for default which is 1/4 of the allocated Memory size. This is in addition to the host memory!" = "デフォルトの0に設定したら、割り当てられたメモリサイズの1/4を使います。これはホストメモリに含まれません！";
 
 /* No comment provided by engineer. */
 "Set to 0 to use maximum supported CPUs. Force multicore might result in incorrect emulation." = "サポートされている最大CPUを使用するには、0に設定します。 マルチコアを強制すると、エミュレーションが正しくなくなる可能性があります。";
@@ -635,7 +635,7 @@
 "Shared path has moved. Please re-choose." = "共有ディレクトリが移動しました。 再選択してください。";
 
 /* VMConfigSharingViewController */
-"Shared path is no longer valid. Please re-choose." = "共有ディレクトリは無効になりました。 再選択してください。";
+"Shared path is no longer valid. Please re-choose." = "共有ディレクトリは無効になりました。もう一度選択してください。";
 
 /* No comment provided by engineer. */
 "Show Advanced Settings" = "詳細設定を表示する";
@@ -692,7 +692,7 @@
 "Timed out waiting for RPC." = "Timed out waiting for RPC.";
 
 /* VMDisplayMetalWindowController */
-"To release the mouse cursor, press ⌃+⌥ (Ctrl+Opt or Ctrl+Alt) at the same time." = "マウスカーソルを離すには、⌃ +⌥（Ctrl + OptまたはCtrl + Alt）を同時に押します。";
+"To release the mouse cursor, press ⌃+⌥ (Ctrl+Opt or Ctrl+Alt) at the same time." = "マウスカーソルを離すには、⌃ +⌥(Ctrl + Opt または Ctrl + Alt) を同時に押します。";
 
 /* No comment provided by engineer. */
 "Type" = "Type";
@@ -704,7 +704,7 @@
 "Unknown" = "Unknown";
 
 /* No comment provided by engineer. */
-"Upscaling" = "Upscaling";
+"Upscaling" = "アップスケーリング";
 
 /* No comment provided by engineer. */
 "Virtual Machine Gallery" = "仮想マシンギャラリー";
@@ -719,7 +719,7 @@
 "Warning: iOS will kill apps that use more than 80% of the device's total memory." = "警告：iOSは、デバイスの合計メモリの80％以上を使用するアプリを強制終了します。";
 
 /* No comment provided by engineer. */
-"Welcome to UTM" = "ようこそ「UTM」";
+"Welcome to UTM" = "ようこそUTM";
 
 /* Startup message */
 "Welcome to UTM! Due to a bug in iOS, if you force kill this app, the system will be unstable and you cannot launch UTM again until you reboot. The recommended way to terminate this app is the button on the top left." = "UTMへようこそ！ iOSのバグが原因で、このアプリを強制終了すると、システムが不安定になり、再起動するまでUTMを再度起動できなくなります。 このアプリを終了するための推奨される方法は、左上のボタンです。";
@@ -733,22 +733,22 @@
 "Yes" = "はい";
 
 /* No comment provided by engineer. */
-"You can download an existing VM configuration for popular operating systems from the UTM gallery or start from scratch." = "一般的なオペレーティングシステムの既存のVM構成をUTMギャラリーからダウンロードするか、最初から開始することができます。";
+"You can download an existing VM configuration for popular operating systems from the UTM gallery or start from scratch." = "一般的なオペレーティングシステムの既存のVM構成をUTMギャラリーからダウンロードするか、新規に作成することができます。";
 
 /* UTMData */
-"You cannot import a .utm package as a drive. Did you mean to open the package with UTM?" = ".utmパッケージをドライブとしてインポートすることはできません。 UTMでパッケージを開くつもりでしたか？";
+"You cannot import a .utm package as a drive. Did you mean to open the package with UTM?" = ".utmパッケージをドライブとしてインポートすることはできません。 UTMでパッケージとして開きますか？";
 
 /* UTMData */
 "You cannot import a directory as a drive." = "ディレクトリをドライブとしてインポートすることはできません。";
 
 /* VMConfigDriveDetailsViewController */
-"You must select a disk image." = "ディスクイメージを選択するのは必要です。";
+"You must select a disk image." = "ディスクイメージを選択してください。";
 
 /* VMDisplayViewController */
 "You must terminate the running VM before you can import a new VM." = "新しいVMをインポートする前に、実行中のVMを終了する必要があります。";
 
 /* ContentView */
-"Your version of iOS does not support running VMs while unmodified. You must either run UTM while jailbroken or with a remote debugger attached." = "お使いのバージョンのiOSは、変更されていない状態でのVMの実行をサポートしていません。 ジェイルブレイク中またはリモートデバッガーを接続した状態でUTMを実行する必要があります。";
+"Your version of iOS does not support running VMs while unmodified. You must either run UTM while jailbroken or with a remote debugger attached." = "お使いのバージョンのiOSは、変更されていない状態でのVMの実行をサポートしていません。 ジェイルブレイクするかリモートデバッガーを接続した状態でUTMを実行する必要があります。";
 
 /* No comment provided by engineer. */
 "Create a New Virtual Machine" = "新しい仮想マシンを作成する";
@@ -760,13 +760,13 @@
 "Browse UTM Gallery" = "UTMギャラリーを閲覧する";
 
 /* No comment provided by engineer. */
-"Running" = "起動した";
+"Running" = "起動中";
 
 /* No comment provided by engineer. */
 "Not running" = "";
 
 /* No comment provided by engineer. */
-"Suspended" = "中止した";
+"Suspended" = "停止";
 
 /* No comment provided by engineer. */
 "Status" = "状態";

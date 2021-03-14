@@ -8,7 +8,7 @@
 "NSLocationAlwaysUsageDescription" = "VMバックグラウンドアクセスには位置情報サービスが必要です。 位置データがデバイスから離れることはありません。";
 
 /* Privacy - Location When In Use Usage Description */
-"NSLocationWhenInUseUsageDescription" = "VMバックグラウンドアクセスには位置情報サービスが必要です。 位置データがデバイスから離れることはありません。";
+"NSLocationWhenInUseUsageDescription" = "VMバックグラウンドアクセスには位置情報サービスが必要です。 位置データがデバイスから漏ることはありません。";
 
 /* Privacy - Microphone Usage Description */
 "NSMicrophoneUsageDescription" = "VMはマイクにアクセスする必要があります。";
