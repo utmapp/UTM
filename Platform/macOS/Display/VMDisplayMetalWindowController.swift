@@ -14,12 +14,13 @@
 // limitations under the License.
 //
 
-class VMDisplayMetalWindowController: VMDisplayWindowController, UTMSpiceIODelegate {
+class VMDisplayMetalWindowController: VMDisplayWindowController {
     var metalView: VMMetalView!
     var renderer: UTMRenderer?
     
-    @objc dynamic var vmDisplay: CSDisplayMetal?
-    @objc dynamic var vmInput: CSInput?
+    @objc fileprivate weak var vmDisplay: CSDisplayMetal?
+    @objc fileprivate weak var vmInput: CSInput?
+    @objc fileprivate weak var vmUsbManager: CSUSBManager?
     
     private var displaySizeObserver: NSKeyValueObservation?
     private var displaySize: CGSize = .zero
@@ -84,7 +85,6 @@ class VMDisplayMetalWindowController: VMDisplayWindowController, UTMSpiceIODeleg
     override func enterLive() {
         metalView.isHidden = false
         screenshotView.isHidden = true
-        renderer!.source = vmDisplay
         displaySizeObserver = observe(\.vmDisplay!.displaySize, options: [.initial, .new]) { (_, change) in
             guard let size = change.newValue else { return }
             self.displaySizeDidChange(size: size)
@@ -110,6 +110,28 @@ class VMDisplayMetalWindowController: VMDisplayWindowController, UTMSpiceIODeleg
     
     override func captureMouseButtonPressed(_ sender: Any) {
         captureMouse()
+    }
+}
+
+// MARK: - SPICE IO
+extension VMDisplayMetalWindowController: UTMSpiceIODelegate {
+    func spiceDidChange(_ input: CSInput) {
+        vmInput = input
+    }
+    
+    func spiceDidCreateDisplay(_ display: CSDisplayMetal) {
+        if display.channelID == 0 && display.monitorID == 0 {
+            vmDisplay = display
+            renderer!.source = vmDisplay
+        }
+    }
+    
+    func spiceDidDestroyDisplay(_ display: CSDisplayMetal) {
+        //TODO: implement something here
+    }
+    
+    func spiceDidChange(_ usbManager: CSUSBManager) {
+        vmUsbManager = usbManager
     }
 }
     

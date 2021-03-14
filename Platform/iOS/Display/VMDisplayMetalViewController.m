@@ -35,9 +35,6 @@
     UTMRenderer *_renderer;
 }
 
-@synthesize vmDisplay;
-@synthesize vmInput;
-
 - (BOOL)serverModeCursor {
     return self.vmInput.serverModeCursor;
 }
@@ -63,7 +60,6 @@
     
     // Initialize our renderer with the view size
     [_renderer mtkView:self.mtkView drawableSizeWillChange:self.mtkView.drawableSize];
-    _renderer.source = self.vmDisplay;
     
     [_renderer changeUpscaler:self.vmConfiguration.displayUpscalerValue
                    downscaler:self.vmConfiguration.displayDownscalerValue];
@@ -120,7 +116,6 @@
                 self.placeholderImageView.hidden = YES;
                 self.mtkView.hidden = NO;
             } completion:nil];
-            self->_renderer.source = self.vmDisplay;
             [self displayResize:self.view.bounds.size];
             if (self.vmConfiguration.shareClipboardEnabled) {
                 [[UTMPasteboard generalPasteboard] requestPollingModeForObject:self];
@@ -197,6 +192,27 @@
         bounds = CGRectApplyAffineTransform(bounds, transform);
     }
     [self.vmDisplay requestResolution:bounds];
+}
+
+#pragma mark - SPICE IO Delegates
+
+- (void)spiceDidChangeInput:(CSInput *)input {
+    self.vmInput = input;
+}
+
+- (void)spiceDidCreateDisplay:(CSDisplayMetal *)display {
+    if (display.channelID == 0 && display.monitorID == 0) {
+        self.vmDisplay = display;
+        _renderer.source = display;
+    }
+}
+
+- (void)spiceDidDestroyDisplay:(CSDisplayMetal *)display {
+    // TODO: implement something here
+}
+
+- (void)spiceDidChangeUsbManager:(CSUSBManager *)usbManager {
+    self.vmUsbManager = usbManager;
 }
 
 @end

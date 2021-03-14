@@ -32,6 +32,9 @@ typedef void (^connectionCallback_t)(BOOL success, NSString * _Nullable msg);
 
 @interface UTMSpiceIO ()
 
+@property (nonatomic, readwrite, nullable) CSDisplayMetal *primaryDisplay;
+@property (nonatomic, readwrite, nullable) CSInput *primaryInput;
+@property (nonatomic, readwrite, nullable) CSUSBManager *primaryUsbManager;
 @property (nonatomic, nullable) doConnect_t doConnect;
 @property (nonatomic, nullable) connectionCallback_t connectionCallback;
 @property (nonatomic, nullable) CSConnection *spiceConnection;
@@ -70,10 +73,6 @@ typedef void (^connectionCallback_t)(BOOL success, NSString * _Nullable msg);
             self.spiceConnection.session.shareClipboard = _configuration.shareClipboardEnabled;
         }
     }
-    _primaryDisplay = nil;
-    _primaryInput = nil;
-    _delegate.vmDisplay = nil;
-    _delegate.vmInput = nil;
 }
 
 - (BOOL)isSpiceInitialized {
@@ -135,6 +134,9 @@ typedef void (^connectionCallback_t)(BOOL success, NSString * _Nullable msg);
         self.spiceConnection = nil;
         self.spice = nil;
     }
+    self.primaryDisplay = nil;
+    self.primaryInput = nil;
+    self.primaryUsbManager = nil;
     self.doConnect = nil;
 }
 
@@ -170,6 +172,10 @@ typedef void (^connectionCallback_t)(BOOL success, NSString * _Nullable msg);
 
 - (void)spiceConnected:(CSConnection *)connection {
     NSAssert(connection == self.spiceConnection, @"Unknown connection");
+    self.primaryInput = connection.input;
+    [self.delegate spiceDidChangeInput:connection.input];
+    self.primaryUsbManager = connection.usbManager;
+    [self.delegate spiceDidChangeUsbManager:connection.usbManager];
 }
 
 - (void)spiceDisconnected:(CSConnection *)connection {
@@ -186,11 +192,9 @@ typedef void (^connectionCallback_t)(BOOL success, NSString * _Nullable msg);
 
 - (void)spiceDisplayCreated:(CSConnection *)connection display:(CSDisplayMetal *)display {
     NSAssert(connection == self.spiceConnection, @"Unknown connection");
+    [self.delegate spiceDidCreateDisplay:display];
     if (display.channelID == 0 && display.monitorID == 0) {
-        _primaryDisplay = display;
-        _primaryInput = connection.input;
-        _delegate.vmDisplay = display;
-        _delegate.vmInput = connection.input;
+        self.primaryDisplay = display;
         if (self.connectionCallback) {
             self.connectionCallback(YES, nil);
             self.connectionCallback = nil;
@@ -200,7 +204,7 @@ typedef void (^connectionCallback_t)(BOOL success, NSString * _Nullable msg);
 
 - (void)spiceDisplayDestroyed:(CSConnection *)connection display:(CSDisplayMetal *)display {
     NSAssert(connection == self.spiceConnection, @"Unknown connection");
-    //FIXME: implement this
+    [self.delegate spiceDidDestroyDisplay:display];
 }
 
 - (void)spiceAgentConnected:(CSConnection *)connection supportingFeatures:(CSConnectionAgentFeature)features {
@@ -241,18 +245,30 @@ typedef void (^connectionCallback_t)(BOOL success, NSString * _Nullable msg);
 
 - (void)setDelegate:(id<UTMSpiceIODelegate>)delegate {
     _delegate = delegate;
-    _delegate.vmDisplay = self.primaryDisplay;
-    _delegate.vmInput = self.primaryInput;
-    // make sure to send the dynamic resolution change when attached
-    if ([self.delegate respondsToSelector:@selector(dynamicResolutionSupportDidChange:)]) {
-        [self.delegate dynamicResolutionSupportDidChange:self.dynamicResolutionSupported];
+    // make sure to send initial data
+    if (self.primaryInput) {
+        [self.delegate spiceDidChangeInput:self.primaryInput];
+    }
+    if (self.primaryDisplay) {
+        [self.delegate spiceDidCreateDisplay:self.primaryDisplay];
+    }
+    for (CSDisplayMetal *display in self.spiceConnection.monitors) {
+        if (display != self.primaryDisplay) {
+            [self.delegate spiceDidCreateDisplay:display];
+        }
+    }
+    if (self.primaryUsbManager) {
+        [self.delegate spiceDidChangeUsbManager:self.primaryUsbManager];
+    }
+    if ([self.delegate respondsToSelector:@selector(spiceDynamicResolutionSupportDidChange:)]) {
+        [self.delegate spiceDynamicResolutionSupportDidChange:self.dynamicResolutionSupported];
     }
 }
 
 - (void)setDynamicResolutionSupported:(BOOL)dynamicResolutionSupported {
     if (_dynamicResolutionSupported != dynamicResolutionSupported) {
-        if ([self.delegate respondsToSelector:@selector(dynamicResolutionSupportDidChange:)]) {
-            [self.delegate dynamicResolutionSupportDidChange:dynamicResolutionSupported];
+        if ([self.delegate respondsToSelector:@selector(spiceDynamicResolutionSupportDidChange:)]) {
+            [self.delegate spiceDynamicResolutionSupportDidChange:dynamicResolutionSupported];
         }
     }
     _dynamicResolutionSupported = dynamicResolutionSupported;

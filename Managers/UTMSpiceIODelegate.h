@@ -18,16 +18,19 @@
 
 @class CSDisplayMetal;
 @class CSInput;
+@class CSUSBManager;
 
 NS_ASSUME_NONNULL_BEGIN
 
 @protocol UTMSpiceIODelegate<NSObject>
 
-@property (nonatomic, weak) CSDisplayMetal *vmDisplay;
-@property (nonatomic, weak) CSInput *vmInput;
+- (void)spiceDidChangeInput:(CSInput *)input;
+- (void)spiceDidCreateDisplay:(CSDisplayMetal *)display;
+- (void)spiceDidDestroyDisplay:(CSDisplayMetal *)display;
+- (void)spiceDidChangeUsbManager:(CSUSBManager *)usbManager;
 
 @optional
-- (void)dynamicResolutionSupportDidChange:(BOOL)supported;
+- (void)spiceDynamicResolutionSupportDidChange:(BOOL)supported;
 
 @end
 
