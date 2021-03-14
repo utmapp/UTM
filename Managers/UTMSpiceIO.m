@@ -36,7 +36,6 @@ typedef void (^connectionCallback_t)(BOOL success, NSString * _Nullable msg);
 @property (nonatomic, nullable) connectionCallback_t connectionCallback;
 @property (nonatomic, nullable) CSConnection *spiceConnection;
 @property (nonatomic, nullable) CSMain *spice;
-@property (nonatomic, nullable) CSSession *session;
 @property (nonatomic, nullable, copy) NSURL *sharedDirectory;
 @property (nonatomic) NSInteger port;
 @property (nonatomic) BOOL dynamicResolutionSupported;
@@ -68,9 +67,8 @@ typedef void (^connectionCallback_t)(BOOL success, NSString * _Nullable msg);
             self.spiceConnection = [[CSConnection alloc] initWithHost:@"127.0.0.1" port:[NSString stringWithFormat:@"%lu", self.port]];
             self.spiceConnection.delegate = self;
             self.spiceConnection.audioEnabled = _configuration.soundEnabled;
+            self.spiceConnection.session.shareClipboard = _configuration.shareClipboardEnabled;
         }
-        
-        self.spiceConnection.glibMainContext = self.spice.glibMainContext;
     }
     _primaryDisplay = nil;
     _primaryInput = nil;
@@ -131,6 +129,7 @@ typedef void (^connectionCallback_t)(BOOL success, NSString * _Nullable msg);
 
 - (void)disconnect {
     @synchronized (self) {
+        [self endSharingDirectory];
         [self.spiceConnection disconnect];
         self.spiceConnection.delegate = nil;
         self.spiceConnection = nil;
@@ -199,21 +198,6 @@ typedef void (^connectionCallback_t)(BOOL success, NSString * _Nullable msg);
     }
 }
 
-- (void)spiceSessionCreated:(CSConnection *)connection session:(CSSession *)session {
-    self.session = session;
-    session.shareClipboard = self.configuration.shareClipboardEnabled;
-    if (self.configuration.shareDirectoryEnabled) {
-        [self startSharingDirectory];
-    } else {
-        UTMLog(@"shared directory disabled");
-    }
-}
-
-- (void)spiceSessionEnded:(CSConnection *)connection session:(CSSession *)session {
-    [self endSharingDirectory];
-    self.session = nil;
-}
-
 - (void)spiceAgentConnected:(CSConnection *)connection supportingFeatures:(CSConnectionAgentFeature)features {
     self.dynamicResolutionSupported = (features & kCSConnectionAgentFeatureMonitorsConfig) != kCSConnectionAgentFeatureNone;
 }
@@ -229,16 +213,14 @@ typedef void (^connectionCallback_t)(BOOL success, NSString * _Nullable msg);
         [self endSharingDirectory];
     }
     self.sharedDirectory = url;
-    if (self.session) {
-        [self startSharingDirectory];
-    }
+    [self startSharingDirectory];
 }
 
 - (void)startSharingDirectory {
     if (self.sharedDirectory) {
         UTMLog(@"setting share directory to %@", self.sharedDirectory.path);
         [self.sharedDirectory startAccessingSecurityScopedResource];
-        [self.session setSharedDirectory:self.sharedDirectory.path readOnly:self.configuration.shareDirectoryReadOnly];
+        [self.spiceConnection.session setSharedDirectory:self.sharedDirectory.path readOnly:self.configuration.shareDirectoryReadOnly];
     }
 }
 

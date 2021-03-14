@@ -32,7 +32,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy) NSString *host;
 @property (nonatomic, copy) NSString *port;
 @property (nonatomic, assign) BOOL audioEnabled;
-@property (nonatomic, assign, nullable) void *glibMainContext;
 
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithHost:(NSString *)host port:(NSString *)port NS_DESIGNATED_INITIALIZER;

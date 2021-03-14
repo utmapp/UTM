@@ -161,7 +161,7 @@ static void cs_channel_new(SpiceSession *s, SpiceChannel *channel, gpointer data
     if (SPICE_IS_PLAYBACK_CHANNEL(channel)) {
         SPICE_DEBUG("new audio channel");
         if (self.audioEnabled) {
-            self.spiceAudio = spice_audio_get(s, self.glibMainContext);
+            self.spiceAudio = spice_audio_get(s, [CSMain sharedInstance].glibMainContext);
             spice_channel_connect(channel);
         } else {
             SPICE_DEBUG("audio disabled");
@@ -236,16 +236,6 @@ static void cs_connection_destroy(SpiceSession *session,
     return nshost;
 }
 
-- (void)setGlibMainContext:(void *)glibMainContext {
-    if (_glibMainContext != NULL) {
-        g_main_context_unref((GMainContext *)_glibMainContext);
-    }
-    if (glibMainContext) {
-        g_main_context_ref((GMainContext *)glibMainContext);
-    }
-    _glibMainContext = glibMainContext;
-}
-
 - (void)dealloc {
     UTMLog(@"%s:%d", __FUNCTION__, __LINE__);
     g_signal_handlers_disconnect_by_func(self.spiceSession, G_CALLBACK(cs_channel_new), GLIB_OBJC_RELEASE(self));
@@ -253,7 +243,6 @@ static void cs_connection_destroy(SpiceSession *session,
     g_signal_handlers_disconnect_by_func(self.spiceSession, G_CALLBACK(cs_connection_destroy), GLIB_OBJC_RELEASE(self));
     g_object_unref(self.spiceSession);
     self.spiceSession = NULL;
-    self.glibMainContext = NULL;
 }
 
 - (instancetype)initWithHost:(NSString *)host port:(NSString *)port {
@@ -279,12 +268,10 @@ static void cs_connection_destroy(SpiceSession *session,
 }
 
 - (BOOL)connect {
-    [self.delegate spiceSessionCreated:self session:self.session];
     return spice_session_connect(self.spiceSession);
 }
 
 - (void)disconnect {
-    [self.delegate spiceSessionEnded:self session:self.session];
     spice_session_disconnect(self.spiceSession);
 }
 
