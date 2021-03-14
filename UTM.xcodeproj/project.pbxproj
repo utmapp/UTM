@@ -3324,6 +3324,7 @@
 					"$(PROJECT_DIR)/$(SYSROOT_DIR)/lib/glib-2.0/include",
 					"$(PROJECT_DIR)/$(SYSROOT_DIR)/include/spice-client-glib-2.0",
 					"$(PROJECT_DIR)/$(SYSROOT_DIR)/include/spice-1",
+					"$(PROJECT_DIR)/$(SYSROOT_DIR)/include/libusb-1.0",
 				);
 				INFOPLIST_FILE = Platform/iOS/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
@@ -3362,6 +3363,7 @@
 					"$(PROJECT_DIR)/$(SYSROOT_DIR)/lib/glib-2.0/include",
 					"$(PROJECT_DIR)/$(SYSROOT_DIR)/include/spice-client-glib-2.0",
 					"$(PROJECT_DIR)/$(SYSROOT_DIR)/include/spice-1",
+					"$(PROJECT_DIR)/$(SYSROOT_DIR)/include/libusb-1.0",
 				);
 				INFOPLIST_FILE = Platform/iOS/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
@@ -3405,6 +3407,7 @@
 					"$(PROJECT_DIR)/$(SYSROOT_DIR)/lib/glib-2.0/include",
 					"$(PROJECT_DIR)/$(SYSROOT_DIR)/include/spice-client-glib-2.0",
 					"$(PROJECT_DIR)/$(SYSROOT_DIR)/include/spice-1",
+					"$(PROJECT_DIR)/$(SYSROOT_DIR)/include/libusb-1.0",
 				);
 				INFOPLIST_FILE = Platform/macOS/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -3451,6 +3454,7 @@
 					"$(PROJECT_DIR)/$(SYSROOT_DIR)/lib/glib-2.0/include",
 					"$(PROJECT_DIR)/$(SYSROOT_DIR)/include/spice-client-glib-2.0",
 					"$(PROJECT_DIR)/$(SYSROOT_DIR)/include/spice-1",
+					"$(PROJECT_DIR)/$(SYSROOT_DIR)/include/libusb-1.0",
 				);
 				INFOPLIST_FILE = Platform/macOS/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (

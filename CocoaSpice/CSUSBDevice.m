@@ -17,6 +17,7 @@
 #import "CSUSBDevice.h"
 #import <glib.h>
 #import <spice-client.h>
+#import <libusb.h>
 
 @interface CSUSBDevice ()
 
@@ -35,6 +36,34 @@
         self.device = device;
     }
     return self;
+}
+
+- (NSString *)name {
+    libusb_device *dev = (libusb_device *)spice_usb_device_get_libusb_device(self.device);
+    struct libusb_device_descriptor ddesc;
+    libusb_device_handle *handle;
+    if (dev == NULL) {
+        return nil;
+    }
+    if (libusb_get_device_descriptor(dev, &ddesc) != 0) {
+        return nil;
+    }
+    if (libusb_open(dev, &handle) == 0) {
+        unsigned char name[64] = { 0 };
+        int bus = libusb_get_bus_number(dev);
+        int port = libusb_get_port_number(dev);
+        libusb_get_string_descriptor_ascii(handle,
+                                           ddesc.iProduct,
+                                           name, sizeof(name));
+        libusb_close(handle);
+        if (name[0] == '\0') {
+            return nil;
+        } else {
+            return [NSString stringWithFormat:@"%s (%d:%d)", (const char *)name, bus, port];
+        }
+    } else {
+        return nil;
+    }
 }
 
 - (NSString *)description {

@@ -414,7 +414,7 @@ extension VMDisplayMetalWindowController {
         }
         for device in devices {
             let item = NSMenuItem()
-            item.title = device.description
+            item.title = device.name ?? device.description
             menu.addItem(item)
         }
         menu.update()
