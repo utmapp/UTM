@@ -158,6 +158,7 @@ create_fake_ipa() {
 	local OUTPUT=$2
 	local FAKEENT=$3
 
+	pwd="$(pwd)"
 	mkdir -p "$OUTPUT"
 	rm -rf "$OUTPUT/Applications" "$OUTPUT/Payload" "$OUTPUT/UTM.ipa"
 	fake_sign "$INPUT/Products/Applications" "$OUTPUT" "$FAKEENT"
@@ -165,6 +166,7 @@ create_fake_ipa() {
 	cd "$OUTPUT"
 	zip -r "UTM.ipa" "Payload" -x "._*" -x ".DS_Store" -x "__MACOSX"
 	rm -r "Payload"
+	cd "$pwd"
 }
 
 case $MODE in
