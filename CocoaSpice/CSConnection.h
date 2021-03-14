@@ -24,7 +24,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface CSConnection : NSObject
 
-@property (nonatomic, readonly, nullable) NSArray<NSArray<CSDisplayMetal *> *> *monitors;
+@property (nonatomic, readonly) NSArray<CSDisplayMetal *> *monitors;
 @property (nonatomic, readonly) CSSession *session;
 @property (nonatomic, readonly) CSInput *input;
 @property (nonatomic, readonly) CSUSBManager *usbManager;

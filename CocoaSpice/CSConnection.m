@@ -28,12 +28,11 @@
 @property (nonatomic, readwrite) SpiceSession *spiceSession;
 @property (nonatomic, readwrite) SpiceMainChannel *spiceMain;
 @property (nonatomic, readwrite) SpiceAudio *spiceAudio;
+@property (nonatomic, readwrite) NSArray<CSDisplayMetal *> *monitors;
 
 @end
 
-@implementation CSConnection {
-    NSMutableArray<NSMutableArray<CSDisplayMetal *> *> *_monitors;
-}
+@implementation CSConnection
 
 static void cs_main_channel_event(SpiceChannel *channel, SpiceChannelEvent event,
                                gpointer data)
@@ -77,40 +76,58 @@ static void cs_display_monitors(SpiceChannel *display, GParamSpec *pspec,
                              gpointer data)
 {
     CSConnection *self = (__bridge CSConnection *)data;
-    GArray *monitors = NULL;
+    GArray *cfgs = NULL;
+    SpiceDisplayMonitorConfig *cfg = NULL;
     int chid;
-    NSUInteger i;
     
     g_object_get(display,
                  "channel-id", &chid,
-                 "monitors", &monitors,
+                 "monitors", &cfgs,
                  NULL);
-    g_return_if_fail(monitors != NULL);
+    g_return_if_fail(cfgs != NULL);
     
-    if (!self->_monitors) {
-        self->_monitors = [NSMutableArray<NSMutableArray<CSDisplayMetal *> *> array];
+    NSMutableIndexSet *markedItems = [NSMutableIndexSet indexSet];
+    NSMutableArray<CSDisplayMetal *> *oldMonitors = [self.monitors mutableCopy];
+    NSMutableArray<CSDisplayMetal *> *newMonitors = [NSMutableArray array];
+    
+    // mark monitors that are in use
+    for (int i = 0; i < cfgs->len; i++) {
+        cfg = &g_array_index(cfgs, SpiceDisplayMonitorConfig, i);
+        int j;
+        for (j = 0; j < oldMonitors.count; j++) {
+            CSDisplayMetal *monitor = oldMonitors[j];
+            if (cfg->id == monitor.monitorID && chid == monitor.channelID) {
+                [markedItems addIndex:j];
+                break;
+            }
+        }
+        if (j == oldMonitors.count) { // not seen
+            CSDisplayMetal *monitor = [[CSDisplayMetal alloc] initWithSession:self.spiceSession channelID:chid monitorID:i];
+            [newMonitors addObject:monitor];
+            [self.delegate spiceDisplayCreated:self display:monitor];
+        }
     }
     
-    // create enough outer arrays to let us index
-    while (self.monitors.count <= chid) {
-        [self->_monitors addObject:[NSMutableArray<CSDisplayMetal *> array]];
+    // mark monitors that are in other channels
+    for (int j = 0; j < oldMonitors.count; j++) {
+        CSDisplayMetal *monitor = oldMonitors[j];
+        if (chid != monitor.channelID) {
+            [markedItems addIndex:j];
+        }
     }
     
-    // create new monitors for this display
-    for (i = self.monitors[chid].count; i < monitors->len; i++) {
-        CSDisplayMetal *monitor = [[CSDisplayMetal alloc] initWithSession:self.spiceSession channelID:chid monitorID:i];
-        [self->_monitors[chid] addObject:monitor];
-        
-        [self.delegate spiceDisplayCreated:self display:monitor];
+    // set the new monitors array
+    NSMutableArray<CSDisplayMetal *> *monitors = [[oldMonitors objectsAtIndexes:markedItems] mutableCopy];
+    [oldMonitors removeObjectsAtIndexes:markedItems];
+    [monitors addObjectsFromArray:newMonitors];
+    self.monitors = monitors;
+    
+    // remove old monitors
+    for (CSDisplayMetal *monitor in oldMonitors) {
+        [self.delegate spiceDisplayDestroyed:self display:monitor];
     }
     
-    // clear any extra displays
-    NSUInteger total = self.monitors.count;
-    for (i = monitors->len; i < total; i++) {
-        [self->_monitors[chid] removeLastObject];
-    }
-    
-    g_clear_pointer(&monitors, g_array_unref);
+    g_clear_pointer(&cfgs, g_array_unref);
 }
 
 static void cs_main_agent_update(SpiceChannel *main, gpointer data)
@@ -192,7 +209,10 @@ static void cs_channel_destroy(SpiceSession *s, SpiceChannel *channel, gpointer 
         UTMLog(@"%s:%d", __FUNCTION__, __LINE__);
         SPICE_DEBUG("zap display channel (#%d)", chid);
         g_signal_handlers_disconnect_by_func(channel, G_CALLBACK(cs_display_monitors), GLIB_OBJC_RELEASE(self));
-        [self->_monitors[chid] removeAllObjects];
+        for (CSDisplayMetal *monitor in self.monitors) {
+            [self.delegate spiceDisplayDestroyed:self display:monitor];
+        }
+        self.monitors = [NSArray<CSDisplayMetal *> array];
     }
     
     if (SPICE_IS_PLAYBACK_CHANNEL(channel)) {
@@ -206,10 +226,6 @@ static void cs_connection_destroy(SpiceSession *session,
 {
     CSConnection *self = (__bridge CSConnection *)data;
     [self.delegate spiceDisconnected:self];
-}
-
-- (NSArray<NSArray<CSDisplayMetal *> *> *)monitors {
-    return _monitors;
 }
 
 - (void)setHost:(NSString *)host {
@@ -263,6 +279,7 @@ static void cs_connection_destroy(SpiceSession *session,
         self.usbManager = [[CSUSBManager alloc] initWithUsbDeviceManager:manager];
         self.input = [[CSInput alloc] initWithSession:self.spiceSession];
         self.session = [[CSSession alloc] initWithSession:self.spiceSession];
+        self.monitors = [NSArray<CSDisplayMetal *> array];
     }
     return self;
 }

@@ -184,18 +184,23 @@ typedef void (^connectionCallback_t)(BOOL success, NSString * _Nullable msg);
     }
 }
 
-- (void)spiceDisplayCreated:(CSConnection *)connection display:(CSDisplayMetal *)display input:(CSInput *)input {
+- (void)spiceDisplayCreated:(CSConnection *)connection display:(CSDisplayMetal *)display {
     NSAssert(connection == self.spiceConnection, @"Unknown connection");
     if (display.channelID == 0 && display.monitorID == 0) {
         _primaryDisplay = display;
-        _primaryInput = input;
+        _primaryInput = connection.input;
         _delegate.vmDisplay = display;
-        _delegate.vmInput = input;
+        _delegate.vmInput = connection.input;
         if (self.connectionCallback) {
             self.connectionCallback(YES, nil);
             self.connectionCallback = nil;
         }
     }
+}
+
+- (void)spiceDisplayDestroyed:(CSConnection *)connection display:(CSDisplayMetal *)display {
+    NSAssert(connection == self.spiceConnection, @"Unknown connection");
+    //FIXME: implement this
 }
 
 - (void)spiceAgentConnected:(CSConnection *)connection supportingFeatures:(CSConnectionAgentFeature)features {

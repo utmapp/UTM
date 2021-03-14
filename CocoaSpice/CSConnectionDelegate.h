@@ -34,6 +34,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)spiceDisconnected:(CSConnection *)connection;
 - (void)spiceError:(CSConnection *)connection err:(nullable NSString *)msg;
 - (void)spiceDisplayCreated:(CSConnection *)connection display:(CSDisplayMetal *)display;
+- (void)spiceDisplayDestroyed:(CSConnection *)connection display:(CSDisplayMetal *)display;
 - (void)spiceAgentConnected:(CSConnection *)connection supportingFeatures:(CSConnectionAgentFeature)features;
 - (void)spiceAgentDisconnected:(CSConnection *)connection;
 
