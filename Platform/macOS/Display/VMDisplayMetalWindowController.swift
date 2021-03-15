@@ -39,6 +39,7 @@ class VMDisplayMetalWindowController: VMDisplayWindowController {
     @Setting("AlwaysNativeResolution") private var isAlwaysNativeResolution: Bool = false
     @Setting("DisplayFixed") private var isDisplayFixed: Bool = false
     @Setting("CtrlRightClick") private var isCtrlRightClick: Bool = false
+    @Setting("NoUsbPrompt") private var isNoUsbPrompt: Bool = false
     private var settingObservations = [NSKeyValueObservation]()
     
     // MARK: - Init
@@ -377,14 +378,57 @@ extension VMDisplayMetalWindowController: VMMetalViewInputDelegate {
 extension VMDisplayMetalWindowController: CSUSBManagerDelegate {
     func spiceUsbManager(_ usbManager: CSUSBManager, deviceError error: String, for device: CSUSBDevice) {
         logger.debug("USB device error: (\(device)) \(error)")
+        showErrorAlert(error)
     }
     
     func spiceUsbManager(_ usbManager: CSUSBManager, deviceAttached device: CSUSBDevice) {
         logger.debug("USB device attached: \(device)")
+        if !isNoUsbPrompt {
+            DispatchQueue.main.async {
+                if self.window!.isKeyWindow {
+                    self.showConnectPrompt(for: device)
+                }
+            }
+        }
     }
     
     func spiceUsbManager(_ usbManager: CSUSBManager, deviceRemoved device: CSUSBDevice) {
         logger.debug("USB device removed: \(device)")
+        if let i = connectedUsbDevices.firstIndex(of: device) {
+            connectedUsbDevices.remove(at: i)
+        }
+    }
+    
+    func showConnectPrompt(for usbDevice: CSUSBDevice) {
+        guard let usbManager = vmUsbManager else {
+            logger.error("cannot get usb manager")
+            return
+        }
+        let alert = NSAlert()
+        alert.alertStyle = .informational
+        alert.messageText = NSLocalizedString("USB Device", comment: "VMDisplayMetalWindowController")
+        alert.informativeText = NSLocalizedString("Would you like to connect '\(usbDevice.name ?? usbDevice.description)' to this virtual machine?", comment: "VMDisplayMetalWindowController")
+        alert.showsSuppressionButton = true
+        alert.addButton(withTitle: NSLocalizedString("Confirm", comment: "VMDisplayMetalWindowController"))
+        alert.addButton(withTitle: NSLocalizedString("Cancel", comment: "VMDisplayMetalWindowController"))
+        alert.beginSheetModal(for: window!) { response in
+            if let suppressionButton = alert.suppressionButton,
+               suppressionButton.state == .on {
+                self.isNoUsbPrompt = true
+            }
+            guard response == .alertFirstButtonReturn else {
+                return
+            }
+            DispatchQueue.global(qos: .background).async {
+                usbManager.connectUsbDevice(usbDevice) { (result, message) in
+                    if let msg = message {
+                        DispatchQueue.main.async {
+                            self.showErrorAlert(msg)
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 
