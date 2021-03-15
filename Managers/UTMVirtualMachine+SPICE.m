@@ -177,7 +177,7 @@ static const NSURLBookmarkResolutionOptions kBookmarkResolutionOptions = NSURLBo
 #pragma mark - USB redirection
 
 - (BOOL)hasUsbRedirection {
-    return jb_has_usb_entitlement();
+    return jb_has_usb_entitlement() && !self.configuration.displayConsoleOnly;
 }
 
 @end

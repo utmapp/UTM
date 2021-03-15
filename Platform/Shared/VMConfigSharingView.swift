@@ -49,6 +49,8 @@ struct VMConfigSharingView: View {
                 Section(header: Text("USB Sharing"), footer: EmptyView().padding(.bottom)) {
                     if !jb_has_usb_entitlement() {
                         Text("USB not supported in this build of UTM.")
+                    } else if config.displayConsoleOnly {
+                        Text("USB not supported in console display mode.")
                     }
                     let maxUsbObserver = Binding<Int> {
                         Int(truncating: config.usbRedirectionMaximumDevices ?? 0)
