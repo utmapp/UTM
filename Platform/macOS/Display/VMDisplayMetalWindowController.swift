@@ -30,6 +30,9 @@ class VMDisplayMetalWindowController: VMDisplayWindowController {
     
     private var ctrlKeyDown: Bool = false
     
+    private var allUsbDevices: [CSUSBDevice] = []
+    private var connectedUsbDevices: [CSUSBDevice] = []
+    
     // MARK: - User preferences
     
     @Setting("NoCursorCaptureAlert") private var isCursorCaptureAlertShown: Bool = false
@@ -405,6 +408,7 @@ extension VMDisplayMetalWindowController {
     }
     
     func updateUsbDevicesMenu(_ menu: NSMenu, devices: [CSUSBDevice]) {
+        allUsbDevices = devices
         menu.removeAllItems()
         if devices.count == 0 {
             let item = NSMenuItem()
@@ -412,11 +416,61 @@ extension VMDisplayMetalWindowController {
             item.isEnabled = false
             menu.addItem(item)
         }
-        for device in devices {
+        for (i, device) in devices.enumerated() {
             let item = NSMenuItem()
+            let canRedirect = vmUsbManager?.canRedirectUsbDevice(device, errorMessage: nil) ?? false
+            let isConnected = vmUsbManager?.isUsbDeviceConnected(device) ?? false
+            let isConnectedToSelf = connectedUsbDevices.contains(device)
             item.title = device.name ?? device.description
+            item.isEnabled = canRedirect && (isConnectedToSelf || !isConnected);
+            item.state = isConnectedToSelf ? .on : .off;
+            item.tag = i
+            item.target = self
+            item.action = isConnectedToSelf ? #selector(disconnectUsbDevice) : #selector(connectUsbDevice)
             menu.addItem(item)
         }
         menu.update()
+    }
+    
+    @objc func connectUsbDevice(sender: AnyObject) {
+        guard let menu = sender as? NSMenuItem else {
+            logger.error("wrong sender for connectUsbDevice")
+            return
+        }
+        guard let usbManager = vmUsbManager else {
+            logger.error("cannot get usb manager")
+            return
+        }
+        let device = allUsbDevices[menu.tag]
+        DispatchQueue.global(qos: .background).async {
+            usbManager.connectUsbDevice(device) { (result, message) in
+                if let msg = message {
+                    DispatchQueue.main.async {
+                        self.showErrorAlert(msg)
+                    }
+                }
+            }
+        }
+    }
+    
+    @objc func disconnectUsbDevice(sender: AnyObject) {
+        guard let menu = sender as? NSMenuItem else {
+            logger.error("wrong sender for disconnectUsbDevice")
+            return
+        }
+        guard let usbManager = vmUsbManager else {
+            logger.error("cannot get usb manager")
+            return
+        }
+        let device = allUsbDevices[menu.tag]
+        DispatchQueue.global(qos: .background).async {
+            usbManager.disconnectUsbDevice(device) { (result, message) in
+                if let msg = message {
+                    DispatchQueue.main.async {
+                        self.showErrorAlert(msg)
+                    }
+                }
+            }
+        }
     }
 }
