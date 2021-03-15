@@ -172,18 +172,23 @@ static size_t sysctl_read(const char *name) {
 
 - (NSString *)expandDriveInterface:(NSString *)interface identifier:(NSString *)identifier removable:(BOOL)removable busInterfaceMap:(NSMutableDictionary<NSString *, NSNumber *> *)busInterfaceMap {
     NSInteger bootindex = [busInterfaceMap[@"boot"] integerValue];
+    NSInteger busindex = [busInterfaceMap[interface] integerValue];
     if ([interface isEqualToString:@"ide"]) {
         [self pushArgv:@"-device"];
-        [self pushArgv:[NSString stringWithFormat:@"%@,drive=%@,bootindex=%lu", removable ? @"ide-cd" : @"ide-hd", identifier, bootindex++]];
+        [self pushArgv:[NSString stringWithFormat:@"%@,bus=ide.%lu,drive=%@,bootindex=%lu", removable ? @"ide-cd" : @"ide-hd", busindex++, identifier, bootindex++]];
     } else if ([interface isEqualToString:@"scsi"]) {
+        if (busindex == 0) {
+            [self pushArgv:@"-device"];
+            [self pushArgv:@"lsi53c895a,id=scsi0"];
+        }
         [self pushArgv:@"-device"];
-        [self pushArgv:[NSString stringWithFormat:@"%@,drive=%@,bootindex=%lu", removable ? @"scsi-cd" : @"scsi-hd", identifier, bootindex++]];
+        [self pushArgv:[NSString stringWithFormat:@"%@,bus=scsi0.0,channel=0,scsi-id=%lu,drive=%@,bootindex=%lu", removable ? @"scsi-cd" : @"scsi-hd", busindex++, identifier, bootindex++]];
     } else if ([interface isEqualToString:@"virtio"]) {
         [self pushArgv:@"-device"];
         [self pushArgv:[NSString stringWithFormat:@"%@,drive=%@,bootindex=%lu", [self.configuration.systemArchitecture isEqualToString:@"s390x"] ? @"virtio-blk-ccw" : @"virtio-blk-pci", identifier, bootindex++]];
     } else if ([interface isEqualToString:@"nvme"]) {
         [self pushArgv:@"-device"];
-        [self pushArgv:[NSString stringWithFormat:@"nvme,drive=%@,serial=%@,bootindex=%lu", identifier, identifier, bootindex++]];
+        [self pushArgv:[NSString stringWithFormat:@"nvme,drive=%@,serial=%@", identifier, identifier]];
     } else if ([interface isEqualToString:@"usb"]) {
         [self pushArgv:@"-device"];
         [self pushArgv:[NSString stringWithFormat:@"usb-storage,drive=%@,removable=%@,bootindex=%lu", identifier, removable ? @"true" : @"false", bootindex++]];
@@ -191,6 +196,7 @@ static size_t sysctl_read(const char *name) {
         return interface; // no expand needed
     }
     busInterfaceMap[@"boot"] = @(bootindex);
+    busInterfaceMap[interface] = @(busindex);
     return @"none";
 }
 
