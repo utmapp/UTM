@@ -18,6 +18,18 @@
 #import <glib.h>
 #import <spice-client.h>
 
+typedef enum {
+    kUsbManagerCallConnect,
+    kUsbManagerCallDisconnect
+} usbManagerCall;
+
+typedef struct {
+    usbManagerCall call;
+    SpiceUsbDeviceManager *manager;
+    SpiceUsbDevice *device;
+    gpointer callback;
+} usbManagerData;
+
 @interface CSUSBManager ()
 
 @property (nonatomic, readwrite, nonnull) SpiceUsbDeviceManager *usbDeviceManager;
@@ -88,6 +100,22 @@ static void cs_disconnect_cb(GObject *gobject, GAsyncResult *res, gpointer data)
     } else {
         callback(YES, nil);
     }
+}
+
+static gboolean cs_call_manager(gpointer user_data)
+{
+    usbManagerData *data = (usbManagerData *)user_data;
+    switch (data->call) {
+        case kUsbManagerCallConnect:
+            spice_usb_device_manager_connect_device_async(data->manager, data->device, NULL, cs_connect_cb, data->callback);
+            break;
+        case kUsbManagerCallDisconnect:
+            spice_usb_device_manager_disconnect_device_async(data->manager, data->device, NULL, cs_disconnect_cb, data->callback);
+            break;
+        default:
+            g_assert(0);
+    }
+    return G_SOURCE_REMOVE;
 }
 
 #pragma mark - Properties
@@ -188,12 +216,25 @@ static void cs_disconnect_cb(GObject *gobject, GAsyncResult *res, gpointer data)
     return spice_usb_device_manager_is_device_connected(self.usbDeviceManager, usbDevice.device);
 }
 
+- (void)spiceUsbManagerCall:(usbManagerCall)call forUsbDevice:(CSUSBDevice *)usbDevice withCompletion:(CSUSBManagerConnectionCallback)completion {
+    usbManagerData *data = g_new0(usbManagerData, 1);
+    data->call = call;
+    data->manager = self.usbDeviceManager;
+    data->device = usbDevice.device;
+    data->callback = (__bridge_retained gpointer)completion;
+    g_main_context_invoke_full([CSMain sharedInstance].glibMainContext,
+                               G_PRIORITY_HIGH,
+                               cs_call_manager,
+                               data,
+                               g_free);
+}
+
 - (void)connectUsbDevice:(CSUSBDevice *)usbDevice withCompletion:(CSUSBManagerConnectionCallback)completion {
-    spice_usb_device_manager_connect_device_async(self.usbDeviceManager, usbDevice.device, NULL, cs_connect_cb, (__bridge_retained gpointer)(completion));
+    [self spiceUsbManagerCall:kUsbManagerCallConnect forUsbDevice:usbDevice withCompletion:completion];
 }
 
 - (void)disconnectUsbDevice:(CSUSBDevice *)usbDevice withCompletion:(CSUSBManagerConnectionCallback)completion {
-    spice_usb_device_manager_disconnect_device_async(self.usbDeviceManager, usbDevice.device, NULL, cs_disconnect_cb, (__bridge_retained gpointer)(completion));
+    [self spiceUsbManagerCall:kUsbManagerCallDisconnect forUsbDevice:usbDevice withCompletion:completion];
 }
 
 @end
