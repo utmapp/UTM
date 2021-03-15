@@ -170,30 +170,28 @@ static size_t sysctl_read(const char *name) {
     }
 }
 
-- (NSString *)expandDriveInterface:(NSString *)interface identifier:(NSString *)identifier removable:(BOOL)removable bootindex:(NSInteger *)bootindex {
+- (NSString *)expandDriveInterface:(NSString *)interface identifier:(NSString *)identifier removable:(BOOL)removable busInterfaceMap:(NSMutableDictionary<NSString *, NSNumber *> *)busInterfaceMap {
+    NSInteger bootindex = [busInterfaceMap[@"boot"] integerValue];
     if ([interface isEqualToString:@"ide"]) {
         [self pushArgv:@"-device"];
-        [self pushArgv:[NSString stringWithFormat:@"%@,drive=%@,bootindex=%lu", removable ? @"ide-cd" : @"ide-hd", identifier, (*bootindex)++]];
-        return @"none";
+        [self pushArgv:[NSString stringWithFormat:@"%@,drive=%@,bootindex=%lu", removable ? @"ide-cd" : @"ide-hd", identifier, bootindex++]];
     } else if ([interface isEqualToString:@"scsi"]) {
         [self pushArgv:@"-device"];
-        [self pushArgv:[NSString stringWithFormat:@"%@,drive=%@,bootindex=%lu", removable ? @"scsi-cd" : @"scsi-hd", identifier, (*bootindex)++]];
-        return @"none";
+        [self pushArgv:[NSString stringWithFormat:@"%@,drive=%@,bootindex=%lu", removable ? @"scsi-cd" : @"scsi-hd", identifier, bootindex++]];
     } else if ([interface isEqualToString:@"virtio"]) {
         [self pushArgv:@"-device"];
-        [self pushArgv:[NSString stringWithFormat:@"%@,drive=%@,bootindex=%lu", [self.configuration.systemArchitecture isEqualToString:@"s390x"] ? @"virtio-blk-ccw" : @"virtio-blk-pci", identifier, (*bootindex)++]];
-        return @"none";
+        [self pushArgv:[NSString stringWithFormat:@"%@,drive=%@,bootindex=%lu", [self.configuration.systemArchitecture isEqualToString:@"s390x"] ? @"virtio-blk-ccw" : @"virtio-blk-pci", identifier, bootindex++]];
     } else if ([interface isEqualToString:@"nvme"]) {
         [self pushArgv:@"-device"];
-        [self pushArgv:[NSString stringWithFormat:@"nvme,drive=%@,serial=%@,bootindex=%lu", identifier, identifier, (*bootindex)++]];
-        return @"none";
+        [self pushArgv:[NSString stringWithFormat:@"nvme,drive=%@,serial=%@,bootindex=%lu", identifier, identifier, bootindex++]];
     } else if ([interface isEqualToString:@"usb"]) {
         [self pushArgv:@"-device"];
-        [self pushArgv:[NSString stringWithFormat:@"usb-storage,drive=%@,removable=%@,bootindex=%lu", identifier, removable ? @"true" : @"false", (*bootindex)++]];
-        return @"none";
+        [self pushArgv:[NSString stringWithFormat:@"usb-storage,drive=%@,removable=%@,bootindex=%lu", identifier, removable ? @"true" : @"false", bootindex++]];
     } else {
         return interface; // no expand needed
     }
+    busInterfaceMap[@"boot"] = @(bootindex);
+    return @"none";
 }
 
 - (void)argsForCpu {
@@ -219,7 +217,7 @@ static size_t sysctl_read(const char *name) {
 }
 
 - (void)argsForDrives {
-    NSInteger bootindex = 0;
+    NSMutableDictionary<NSString *, NSNumber *> *busInterfaceMap = [NSMutableDictionary dictionary];
     for (NSUInteger i = 0; i < self.configuration.countDrives; i++) {
         NSString *path = [self.configuration driveImagePathForIndex:i];
         UTMDiskImageType type = [self.configuration driveImageTypeForIndex:i];
@@ -244,7 +242,7 @@ static size_t sysctl_read(const char *name) {
                 NSString *interface = [self.configuration driveInterfaceTypeForIndex:i];
                 BOOL removable = [self.configuration driveRemovableForIndex:i];
                 NSString *identifier = [NSString stringWithFormat:@"drive%lu", i];
-                NSString *realInterface = [self expandDriveInterface:interface identifier:identifier removable:removable bootindex:&bootindex];
+                NSString *realInterface = [self expandDriveInterface:interface identifier:identifier removable:removable busInterfaceMap:busInterfaceMap];
                 NSString *drive;
                 [self pushArgv:@"-drive"];
                 drive = [NSString stringWithFormat:@"if=%@,media=%@,id=%@", realInterface, removable ? @"cdrom" : @"disk", identifier];
