@@ -30,4 +30,11 @@ class VMDriveImage: ObservableObject {
             imageTypeString = newValue.description
         }
     }
+    
+    func reset(forSystemTarget target: String?, removable: Bool) {
+        self.removable = removable
+        self.imageType = removable ? .CD : .disk
+        self.interface = UTMConfiguration.defaultDriveInterface(forTarget: target, type: imageType)
+        self.size = removable ? 0 : 10240
+    }
 }

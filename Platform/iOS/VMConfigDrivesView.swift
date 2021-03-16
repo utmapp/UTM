@@ -144,6 +144,9 @@ private struct CreateDrive: View {
                     Text("Done")
                 }))
         }.navigationViewStyle(StackNavigationViewStyle())
+        .onAppear {
+            driveImage.reset(forSystemTarget: target, removable: false)
+        }
     }
     
     private func cancel() {

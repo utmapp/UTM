@@ -35,6 +35,11 @@ struct VMConfigDrivesView: View {
                 Button(action: { newDrivePopover.toggle() }, label: {
                     Label("New Drive", systemImage: "plus").labelStyle(TitleOnlyLabelStyle())
                 })
+                .onChange(of: newDrivePopover, perform: { showPopover in
+                    if showPopover {
+                        newDrive.reset(forSystemTarget: config.systemTarget, removable: false)
+                    }
+                })
                 .popover(isPresented: $newDrivePopover, arrowEdge: .bottom) {
                     VStack {
                         VMConfigDriveCreateView(target: config.systemTarget, driveImage: newDrive)
