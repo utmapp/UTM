@@ -2,13 +2,13 @@
 "CFBundleName" = "UTM";
 
 /* Privacy - Location Always and When In Use Usage Description */
-"NSLocationAlwaysAndWhenInUseUsageDescription" = "VMバックグラウンドアクセスには位置情報サービスが必要です。 位置データがデバイスから離れることはありません。";
+"NSLocationAlwaysAndWhenInUseUsageDescription" = "VMバックグラウンドアクセスには位置情報サービスが必要です。 位置データを送信することはありません。";
 
 /* Privacy - Location Always Usage Description */
-"NSLocationAlwaysUsageDescription" = "VMバックグラウンドアクセスには位置情報サービスが必要です。 位置データがデバイスから離れることはありません。";
+"NSLocationAlwaysUsageDescription" = "VMバックグラウンドアクセスには位置情報サービスが必要です。 位置データを送信することはありません。";
 
 /* Privacy - Location When In Use Usage Description */
-"NSLocationWhenInUseUsageDescription" = "VMバックグラウンドアクセスには位置情報サービスが必要です。 位置データがデバイスから漏ることはありません。";
+"NSLocationWhenInUseUsageDescription" = "VMバックグラウンドアクセスには位置情報サービスが必要です。 位置データを送信することはありません。";
 
 /* Privacy - Microphone Usage Description */
 "NSMicrophoneUsageDescription" = "VMはマイクにアクセスする必要があります。";

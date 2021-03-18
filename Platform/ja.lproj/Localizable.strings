@@ -254,40 +254,40 @@
 "Error renaming file" = "Error renaming file";
 
 /* UTMVirtualMachine */
-"Error trying to restore removable drives: %@" = "Error trying to restore removable drives: %@";
+"Error trying to restore removable drives: %@" = "リムーバブルドライブをリストア中にエラーが発生しました: %@";
 
 /* UTMVirtualMachine */
-"Error trying to start shared directory: %@" = "Error trying to start shared directory: %@";
+"Error trying to start shared directory: %@" = "共有ディレクトリの起動中にエラーが発生しました: %@";
 
 /* UTMVirtualMachine+Drives */
-"Failed create bookmark." = "Failed create bookmark.";
+"Failed create bookmark." = "ブックマークの作成に失敗しました。";
 
 /* UTMVirtualMachine+Drives */
-"Failed to access drive image path." = "Failed to access drive image path.";
+"Failed to access drive image path." = "ドライブイメージパスへのアクセスに失敗しました。";
 
 /* VMConfigInfoView */
-"Failed to check name." = "Failed to check name.";
+"Failed to check name." = "名前の確認に失敗しました";
 
 /* UTMData */
-"Failed to clone VM." = "Failed to clone VM.";
+"Failed to clone VM." = "VMのクローンに失敗しました";
 
 /* UTMSpiceIO */
-"Failed to connect to SPICE server." = "Failed to connect to SPICE server.";
+"Failed to connect to SPICE server." = "SPICEサーバーへの接続に失敗しました。";
 
 /* UTMDataExtension */
-"Failed to delete saved state." = "Failed to delete saved state.";
+"Failed to delete saved state." = "保存された状態の削除に失敗しました。";
 
 /* VMRemovableDrivesViewController */
-"Failed to get VM object." = "Failed to get VM object.";
+"Failed to get VM object." = "VMオブジェクトの取得に失敗しました。";
 
 /* UTMVirtualMachine */
-"Failed to load plist" = "Failed to load plist";
+"Failed to load plist" = "plistのロードに失敗しました";
 
 /* UTMData */
-"Failed to parse imported VM." = "Failed to parse imported VM.";
+"Failed to parse imported VM." = "インポートされたVMの解析に失敗しました。";
 
 /* VMDisplayWindowController */
-"Failed to save VM state. Do you have at least one read-write drive attached that supports snapshots?" = "Failed to save VM state. Do you have at least one read-write drive attached that supports snapshots?";
+"Failed to save VM state. Do you have at least one read-write drive attached that supports snapshots?" = "VMの状態を保存できませんでした。 スナップショットをサポートする読み取り/書き込みドライブが少なくとも1つ接続されていますか？";
 
 /* No comment provided by engineer. */
 "fec0::/64" = "fec0::/64";
@@ -299,7 +299,7 @@
 "fec0::3" = "fec0::3";
 
 /* No comment provided by engineer. */
-"Fit To Screen" = "画面に嵌る";
+"Fit To Screen" = "スクリーンに合わせる";
 
 /* Configuration boot device */
 "Floppy" = "フロッピー";
@@ -353,10 +353,10 @@
 "Hide Unused Flags..." = "Hide Unused Flags...";
 
 /* VMDisplayViewController */
-"Hint: To show the toolbar again, use a three-finger swipe down on the screen." = "ヒント：ツールバーを再度表示するには、画面を3本の指で下にスワイプします";
+"Hint: To show the toolbar again, use a three-finger swipe down on the screen." = "ヒント：ツールバーを再度表示するには、画面を3本の指で下にスワイプする";
 
 /* No comment provided by engineer. */
-"Hold Control (⌃) for right click" = "コントロール(⌃)を押したまま右クリックします";
+"Hold Control (⌃) for right click" = "コントロール(⌃)を押したまま右クリックする";
 
 /* No comment provided by engineer. */
 "Host Address" = "ホストアドレス";
@@ -365,7 +365,7 @@
 "Host Address (IPv6)" = "ホストアドレス (IPv6)";
 
 /* VMConfigPortForwardingViewController */
-"Host address (optional)" = "ホストアドレス (オプショナル)";
+"Host address (optional)" = "ホストアドレス (省略可)";
 
 /* No comment provided by engineer. */
 "Host Port" = "ホストポート";
@@ -556,7 +556,7 @@
 "Protocol" = "プロトコル";
 
 /* No comment provided by engineer. */
-"PS/2 has higher compatibility with older operating systems but does not support custom cursor settings." = "PS/2は、古いオペレーティングシステムとの互換性が高いますが、カスタムカーソル設定はサポートしていません。";
+"PS/2 has higher compatibility with older operating systems but does not support custom cursor settings." = "PS/2は、古いオペレーティングシステムとの互換性が高いですが、カスタムカーソル設定はサポートしていません。";
 
 /* No comment provided by engineer. */
 "QEMU Arguments" = "QEMU引数";
@@ -611,10 +611,10 @@
 "Scaling" = "スケーリング";
 
 /* VMDisplayWindowController */
-"Select Drive Image" = "ドライブイメージを選択します";
+"Select Drive Image" = "ドライブイメージを選択する";
 
 /* VMDisplayWindowController */
-"Select Shared Folder" = "共有フォルダを選択します";
+"Select Shared Folder" = "共有フォルダを選択する";
 
 /* No comment provided by engineer. */
 "Selected:" = "Selected:";
@@ -623,7 +623,7 @@
 "Set to 0 for default which is 1/4 of the allocated Memory size. This is in addition to the host memory!" = "デフォルトの0に設定したら、割り当てられたメモリサイズの1/4を使います。これはホストメモリに含まれません！";
 
 /* No comment provided by engineer. */
-"Set to 0 to use maximum supported CPUs. Force multicore might result in incorrect emulation." = "サポートされている最大CPUを使用するには、0に設定します。 マルチコアを強制すると、エミュレーションが正しくなくなる可能性があります。";
+"Set to 0 to use maximum supported CPUs. Force multicore might result in incorrect emulation." = "サポートされている最大CPUを使用するには、0に設定する。 マルチコアを強制すると、エミュレーションが正しくなくなる可能性があります。";
 
 /* Share context menu */
 "Share" = "共有";
@@ -638,7 +638,7 @@
 "Shared path is no longer valid. Please re-choose." = "共有ディレクトリは無効になりました。もう一度選択してください。";
 
 /* No comment provided by engineer. */
-"Show Advanced Settings" = "詳細設定を表示する";
+"Show Advanced Settings" = "高度な設定を表示する";
 
 /* No comment provided by engineer. */
 "Show All Flags..." = "すべてのフラグを表示...";
@@ -671,7 +671,7 @@
 "The Last Tab" = "The Last Tab";
 
 /* VMConfigSystemViewController */
-"The total memory usage is close to your device's limit. iOS will kill the VM if it consumes too much memory." = "合計メモリ使用量がデバイスの制限に近づいています。 iOSは、メモリを大量に消費するとVMを強制終了します。";
+"The total memory usage is close to your device's limit. iOS will kill the VM if it consumes too much memory." = "合計メモリ使用量がデバイスの制限に近づいています。 iOSは、メモリを大量に消費するとVMを強制終了する。";
 
 /* No comment provided by engineer. */
 "Theme" = "テーマ";
@@ -680,7 +680,7 @@
 "These settings are unavailable in console display mode." = "これらの設定は、コンソール表示モードでは使用できません。";
 
 /* VMDisplayWindowController */
-"This may corrupt the VM and any unsaved changes will be lost. To quit safely, shut down from the guest." = "これによりVMが破損し、保存されていない変更が失われる可能性があります。 安全に終了するには、ゲストからシャットダウンします。";
+"This may corrupt the VM and any unsaved changes will be lost. To quit safely, shut down from the guest." = "これによりVMが破損し、保存されていない変更が失われる可能性があります。 安全に終了するには、ゲストからシャットダウンする。";
 
 /* No comment provided by engineer. */
 "This virtual machine has been deleted." = "このVMは削除されました。";
@@ -692,7 +692,7 @@
 "Timed out waiting for RPC." = "Timed out waiting for RPC.";
 
 /* VMDisplayMetalWindowController */
-"To release the mouse cursor, press ⌃+⌥ (Ctrl+Opt or Ctrl+Alt) at the same time." = "マウスカーソルを離すには、⌃ +⌥(Ctrl + Opt または Ctrl + Alt) を同時に押します。";
+"To release the mouse cursor, press ⌃+⌥ (Ctrl+Opt or Ctrl+Alt) at the same time." = "マウスカーソルを離すには、⌃ +⌥(Ctrl + Opt または Ctrl + Alt) を同時に押す。";
 
 /* No comment provided by engineer. */
 "Type" = "Type";
@@ -716,10 +716,10 @@
 "VM frontend does not support shared directories." = "VMフロントエンドは共有ディレクトリをサポートしていません。";
 
 /* VMConfigSystemViewController */
-"Warning: iOS will kill apps that use more than 80% of the device's total memory." = "警告：iOSは、デバイスの合計メモリの80％以上を使用するアプリを強制終了します。";
+"Warning: iOS will kill apps that use more than 80% of the device's total memory." = "警告：iOSは、デバイスの合計メモリの80％以上を使用するアプリを強制終了する。";
 
 /* No comment provided by engineer. */
-"Welcome to UTM" = "ようこそUTM";
+"Welcome to UTM" = "ようこそ UTM";
 
 /* Startup message */
 "Welcome to UTM! Due to a bug in iOS, if you force kill this app, the system will be unstable and you cannot launch UTM again until you reboot. The recommended way to terminate this app is the button on the top left." = "UTMへようこそ！ iOSのバグが原因で、このアプリを強制終了すると、システムが不安定になり、再起動するまでUTMを再度起動できなくなります。 このアプリを終了するための推奨される方法は、左上のボタンです。";
@@ -763,7 +763,7 @@
 "Running" = "起動中";
 
 /* No comment provided by engineer. */
-"Not running" = "";
+"Not running" = "起動していません";
 
 /* No comment provided by engineer. */
 "Suspended" = "停止";
@@ -802,4 +802,4 @@
 "Type" = "種類";
 
 /* No comment provided by engineer. */
-"Note: select the path to share from the main screen." = "注：メイン画面から共有ディレクトリを選択します。";
+"Note: select the path to share from the main screen." = "注：メイン画面から共有ディレクトリを選択する。";

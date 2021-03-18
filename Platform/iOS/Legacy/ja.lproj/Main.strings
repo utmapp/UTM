@@ -68,7 +68,7 @@
 "7CX-Cp-RMc.text" = "詳細";
 
 /* Class = "UILabel"; text = "Open Configuration after Creation"; ObjectID = "7DJ-Cp-oMO"; */
-"7DJ-Cp-oMO.text" = "作成後に構成を開く";
+"7DJ-Cp-oMO.text" = "作成後に設定を開く";
 
 /* Class = "UINavigationItem"; title = "Disk Image"; ObjectID = "7id-FA-bJg"; */
 "7id-FA-bJg.title" = "ディスクイメージ";
@@ -305,7 +305,7 @@
 "MAs-NR-G0n.text" = "MB";
 
 /* Class = "UITableViewSection"; footerTitle = "Default JIT Cache size is 1/4 of the allocated Memory size. This is in addition to the host memory! Force Multicore will allow multi-CPU emulation even if the memory model is not supported by QEMU (x86 on ARM for example). This could result in incorrect emulation."; ObjectID = "MGc-rW-PLa"; */
-"MGc-rW-PLa.footerTitle" = "デフォルトの0に設定したら、割り当てられたメモリサイズの1/4を使います。これはホストメモリに含まれません!";
+"MGc-rW-PLa.footerTitle" = "デフォルトの0に設定すると、割り当てられたメモリサイズの1/4が使われます。これはホストメモリに含まれません!";
 
 /* Class = "UITableViewSection"; headerTitle = "QEMU"; ObjectID = "MGc-rW-PLa"; */
 "MGc-rW-PLa.headerTitle" = "QEMU";
@@ -392,7 +392,7 @@
 "RTg-tj-6ja.placeholder" = "10.0.2.2";
 
 /* Class = "UITableViewSection"; footerTitle = "PS/2 has higher compatibility with older operating systems but does not support custom cursor settings."; ObjectID = "Rtj-zp-arL"; */
-"Rtj-zp-arL.footerTitle" = "PS/2は、古いオペレーティングシステムとの互換性が高いますが、カスタムカーソル設定はサポートしていません。";
+"Rtj-zp-arL.footerTitle" = "PS/2は、古いオペレーティングシステムとの互換性が高いですが、カスタムカーソル設定はサポートしていません。";
 
 /* Class = "UITableViewSection"; headerTitle = "Legacy"; ObjectID = "Rtj-zp-arL"; */
 "Rtj-zp-arL.headerTitle" = "レガシー";
@@ -404,13 +404,13 @@
 "SCF-Z9-xBk.headerTitle" = "イメージ";
 
 /* Class = "UITableViewSection"; footerTitle = "For i386/x86_64, use qxl-vga. For virt systems use virtio-ramfb."; ObjectID = "SNE-dA-z6i"; */
-"SNE-dA-z6i.footerTitle" = "For i386/x86_64, use qxl-vga. For virt systems use virtio-ramfb.";
+"SNE-dA-z6i.footerTitle" = "i386/x86_64のデフォルト設定はqxl-vgaです。virtシステムのデフォルト設定はvirtio-ramfbです。";
 
 /* Class = "UITableViewSection"; headerTitle = "Display Card"; ObjectID = "SNE-dA-z6i"; */
 "SNE-dA-z6i.headerTitle" = "ビデオカード";
 
 /* Class = "UITableViewSection"; footerTitle = "For most non-ARM targets, all CPUs will be emulated by a single CPU by default. Set 0 to use maximum supported number of CPU."; ObjectID = "spp-Cv-g7X"; */
-"spp-Cv-g7X.footerTitle" = "For most non-ARM targets, all CPUs will be emulated by a single CPU by default. Set 0 to use maximum supported number of CPU.";
+"spp-Cv-g7X.footerTitle" = "ほとんどの非ARMターゲットでは、すべてのCPUがデフォルトで単一のCPUによってエミュレートされます。サポートされている最大CPU数を使用すると、0を設定する。";
 
 /* Class = "UITableViewSection"; headerTitle = "Hardware"; ObjectID = "spp-Cv-g7X"; */
 "spp-Cv-g7X.headerTitle" = "ハードウェア";
@@ -467,7 +467,7 @@
 "vU7-wd-ipe.text" = "ログをエクスポート...";
 
 /* Class = "UITableViewSection"; footerTitle = "If you attempt to allocate more resources than what is on your device, the VM may not boot and your device may become unstable."; ObjectID = "wbc-1J-nlk"; */
-"wbc-1J-nlk.footerTitle" = "警告：iOSは、デバイスの合計メモリの80％以上を使用するアプリを強制終了します。";
+"wbc-1J-nlk.footerTitle" = "警告：iOSは、デバイスの合計メモリの80％以上を使用するアプリを強制終了する。";
 
 /* Class = "UITableViewSection"; headerTitle = "Host Information"; ObjectID = "wbc-1J-nlk"; */
 "wbc-1J-nlk.headerTitle" = "ホスト情報";

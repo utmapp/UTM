@@ -1,29 +1,29 @@
 /* (No Comment) */
-"Apple Pencil Input" = "Apple Pencil Input";
+"Apple Pencil Input" = "Apple Pencil";
 
 /* (No Comment) */
-"Auto save on background" = "バックグラウンドでの自動保存";
+"Auto save on background" = "バックグラウンド自動的に保存する";
 
 /* (No Comment) */
-"Auto save on low memory" = "低メモリでの自動保存";
+"Auto save on low memory" = "低メモリ自動的に保存する";
 
 /* (No Comment) */
 "Background" = "バックグラウンド";
 
 /* (No Comment) */
-"Backspace" = "Backspace";
+"Backspace" = "バックスペース";
 
 /* (No Comment) */
-"Caps" = "Caps";
+"Caps" = "キャップスロック";
 
 /* (No Comment) */
-"Click & Hold" = "Click & Hold";
+"Click & Hold" = "クリック＆ホールド";
 
 /* (No Comment) */
-"Continue running VM in the background" = "Continue running VM in the background";
+"Continue running VM in the background" = "バックグラウンドでVMを続行する";
 
 /* (No Comment) */
-"Cursor" = "Cursor";
+"Cursor" = "カーソル";
 
 /* (No Comment) */
 "D-DOWN" = "D-DOWN";
@@ -38,110 +38,110 @@
 "D-UP" = "D-UP";
 
 /* (No Comment) */
-"Disabled" = "Disabled";
+"Disabled" = "無効";
 
 /* (No Comment) */
-"Down" = "Down";
+"Down" = "下";
 
 /* (No Comment) */
-"Drag cursor" = "Drag cursor";
+"Drag cursor" = "カーソルを引っ張る";
 
 /* (No Comment) */
-"Enabled" = "Enabled";
+"Enabled" = "有効";
 
 /* (No Comment) */
 "Enter" = "Enter";
 
 /* (No Comment) */
-"Follow cursor" = "Follow cursor";
+"Follow cursor" = "カーソルを従う";
 
 /* (No Comment) */
-"Gamepad" = "Gamepad";
+"Gamepad" = "ゲームパッド";
 
 /* (No Comment) */
-"Gamepad - Cursor Speed" = "Gamepad - Cursor Speed";
+"Gamepad - Cursor Speed" = "ゲームパッド - カーソルスピード";
 
 /* (No Comment) */
-"Gestures" = "Gestures";
+"Gestures" = "ジェスチャー";
 
 /* A single strings file, whose title is specified in your preferences schema. The strings files provide the localized content to display to the user for each of your preferences. */
-"Group" = "Group";
+"Group" = "グループ";
 
 /* (No Comment) */
-"Left" = "Left";
+"Left" = "左";
 
 /* (No Comment) */
-"Long Press" = "Long Press";
+"Long Press" = "長押し";
 
 /* (No Comment) */
-"Menu" = "Menu";
+"Menu" = "メニュー";
 
 /* (No Comment) */
-"Mouse Left Button" = "Mouse Left Button";
+"Mouse Left Button" = "マウスの左ボタン";
 
 /* (No Comment) */
-"Mouse Middle Button" = "Mouse Middle Button";
+"Mouse Middle Button" = "マウスの中間ボタン";
 
 /* (No Comment) */
-"Mouse Right Button" = "Mouse Right Button";
+"Mouse Right Button" = "マウスの右ボタン";
 
 /* (No Comment) */
-"Mouse Wheel" = "Mouse Wheel";
+"Mouse Wheel" = "マウスホイール";
 
 /* (No Comment) */
-"Mouse Wheel (per swipe)" = "Mouse Wheel (per swipe)";
+"Mouse Wheel (per swipe)" = "マウスホイール (スワイプするたび)";
 
 /* (No Comment) */
-"Move Screen" = "Move Screen";
+"Move Screen" = "画面を移動";
 
 /* (No Comment) */
-"Name" = "Name";
+"Name" = "名前";
 
 /* (No Comment) */
-"none given" = "none given";
+"none given" = "デフォルト";
 
 /* (No Comment) */
-"Right" = "Right";
+"Right" = "右";
 
 /* (No Comment) */
-"Right Click" = "Right Click";
+"Right Click" = "右クリック";
 
 /* (No Comment) */
-"Space" = "Space";
+"Space" = "スペース";
 
 /* (No Comment) */
-"Tablet mode (always show cursor)" = "Tablet mode (always show cursor)";
+"Tablet mode (always show cursor)" = "タブレットモード(常にカーソルを表示)";
 
 /* (No Comment) */
-"Tablet mode (try hiding cursor)" = "Tablet mode (try hiding cursor)";
+"Tablet mode (try hiding cursor)" = "タブレットモード（カーソルを非表示）";
 
 /* (No Comment) */
-"Three Finger Pan" = "Three Finger Pan";
+"Three Finger Pan" = "3本の指で引っ張る";
 
 /* (No Comment) */
-"Touch Input" = "Touch Input";
+"Touch Input" = "タッチ";
 
 /* (No Comment) */
-"Touch mode (always show cursor)" = "Touch mode (always show cursor)";
+"Touch mode (always show cursor)" = "タッチモード（常にカーソルを表示）";
 
 /* (No Comment) */
-"Touch mode (try hiding cursor)" = "Touch mode (try hiding cursor)";
+"Touch mode (try hiding cursor)" = "タッチモード（カーソルを非表示）";
 
 /* (No Comment) */
-"Touchpad/Mouse Input" = "Touchpad/Mouse Input";
+"Touchpad/Mouse Input" = "タッチパッド/マウス";
 
 /* (No Comment) */
-"Two Finger Pan" = "Two Finger Pan";
+"Two Finger Pan" = "2本の指で引っ張る";
 
 /* (No Comment) */
-"Two Finger Scroll" = "Two Finger Scroll";
+"Two Finger Scroll" = "2本の指スクロール";
 
 /* (No Comment) */
-"Two Finger Swipe" = "Two Finger Swipe";
+"Two Finger Swipe" = "2本の指スワイプ";
 
 /* (No Comment) */
-"Two Finger Tap" = "Two Finger Tap";
+"Two Finger Tap" = "2本の指タップ";
 
 /* (No Comment) */
-"Up" = "Up";
+"Up" = "上";
 
