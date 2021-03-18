@@ -20,6 +20,7 @@
 #import "VMDisplayMetalViewController+Pointer.h"
 #import "VMDisplayMetalViewController+Pencil.h"
 #import "VMDisplayMetalViewController+Gamepad.h"
+#import "VMDisplayMetalViewController+USB.h"
 #import "VMKeyboardView.h"
 #import "UTMRenderer.h"
 #import "UTMVirtualMachine.h"
@@ -212,7 +213,8 @@
 }
 
 - (void)spiceDidChangeUsbManager:(CSUSBManager *)usbManager {
-    self.vmUsbManager = usbManager;
+    self.usbDevicesViewController.vmUsbManager = usbManager;
+    usbManager.delegate = self;
 }
 
 @end

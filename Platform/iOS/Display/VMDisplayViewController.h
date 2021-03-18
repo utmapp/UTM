@@ -20,6 +20,8 @@
 
 @class UTMVirtualMachine;
 @class VMKeyboardButton;
+@class VMRemovableDrivesViewController;
+@class VMUSBDevicesViewController;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -41,6 +43,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (weak, nonatomic) IBOutlet UIActivityIndicatorView *placeholderIndicator;
 @property (weak, nonatomic) IBOutlet UIButton *resumeBigButton;
 @property (strong, nonatomic) IBOutletCollection(VMKeyboardButton) NSArray *customKeyModifierButtons;
+
+@property (nonatomic) VMRemovableDrivesViewController *removableDrivesViewController;
+@property (nonatomic) VMUSBDevicesViewController *usbDevicesViewController;
 
 @property (nonatomic, readonly) BOOL largeScreen;
 @property (nonatomic, readwrite) BOOL prefersStatusBarHidden;

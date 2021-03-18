@@ -65,7 +65,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (weak, nonatomic) CSInput *vmInput;
 @property (weak, nonatomic) CSDisplayMetal *vmDisplay;
-@property (weak, nonatomic) CSUSBManager *vmUsbManager;
 
 @property (nonatomic, assign) BOOL lastDisplayChangeResize;
 @property (nonatomic, readonly) BOOL serverModeCursor;

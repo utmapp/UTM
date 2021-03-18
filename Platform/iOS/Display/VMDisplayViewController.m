@@ -23,12 +23,6 @@
 #import "VMConfigExistingViewController.h"
 #import "UTM-Swift.h"
 
-@interface VMDisplayViewController ()
-
-@property (nonatomic) VMRemovableDrivesViewController *removableDrivesViewController;
-
-@end
-
 @implementation VMDisplayViewController {
     // status bar
     BOOL _prefersStatusBarHidden;
@@ -49,8 +43,9 @@
     self.displayView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
     [self.view addSubview:self.displayView];
     
-    // removable drives VC
+    // set up other nibs
     self.removableDrivesViewController = [[VMRemovableDrivesViewController alloc] initWithNibName:@"VMRemovableDrivesView" bundle:nil];
+    self.usbDevicesViewController = [[VMUSBDevicesViewController alloc] initWithNibName:@"VMUSBDevicesView" bundle:nil];
 }
 
 #pragma mark - Properties
@@ -330,6 +325,8 @@
 }
 
 - (IBAction)usbPressed:(UIButton *)sender {
+    self.usbDevicesViewController.modalPresentationStyle = UIModalPresentationPageSheet;
+    [self presentViewController:self.usbDevicesViewController animated:YES completion:nil];
 }
 
 - (IBAction)drivesPressed:(UIButton *)sender {

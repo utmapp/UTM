@@ -177,6 +177,13 @@ deb )
 <dict>
 	<key>dynamic-codesigning</key>
 	<true/>
+	<key>com.apple.security.exception.iokit-user-client-class</key>
+	<array>
+		<string>AppleUSBHostDeviceUserClient</string>
+		<string>AppleUSBHostInterfaceUserClient</string>
+	</array>
+	<key>com.apple.system.diagnostics.iokit-properties</key>
+	<true/>
 </dict>
 </plist>
 EOL
@@ -195,6 +202,13 @@ ipa )
 	<!-- https://siguza.github.io/psychicpaper/ -->
 	<!---><!-->
 	<key>dynamic-codesigning</key>
+	<true/>
+	<key>com.apple.security.exception.iokit-user-client-class</key>
+	<array>
+		<string>AppleUSBHostDeviceUserClient</string>
+		<string>AppleUSBHostInterfaceUserClient</string>
+	</array>
+	<key>com.apple.system.diagnostics.iokit-properties</key>
 	<true/>
 	<!-- -->
 </dict>

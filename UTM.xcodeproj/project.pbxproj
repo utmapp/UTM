@@ -683,6 +683,9 @@
 		CEA9059225FC6A3500801E7C /* libusbredirparser.1.utm.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CEA9058825FC69D100801E7C /* libusbredirparser.1.utm.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CEA9059525FC6A3A00801E7C /* libusbredirhost.1.utm.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CEA9058725FC69D100801E7C /* libusbredirhost.1.utm.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CEA9059625FC6A3B00801E7C /* libusbredirparser.1.utm.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CEA9058825FC69D100801E7C /* libusbredirparser.1.utm.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CEA905C92603DA0D00801E7C /* VMDisplayMetalViewController+USB.m in Sources */ = {isa = PBXBuildFile; fileRef = CEA905C82603DA0D00801E7C /* VMDisplayMetalViewController+USB.m */; };
+		CEA905CD2603DBFB00801E7C /* VMUSBDevicesView.xib in Resources */ = {isa = PBXBuildFile; fileRef = CEA905CC2603DBFB00801E7C /* VMUSBDevicesView.xib */; };
+		CEA905D82603DC5300801E7C /* VMUSBDevicesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEA905D72603DC5300801E7C /* VMUSBDevicesViewController.swift */; };
 		CEB63A7624F4654400CAF323 /* Main.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEB63A7524F4654400CAF323 /* Main.swift */; };
 		CEB63A7724F4654400CAF323 /* Main.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEB63A7524F4654400CAF323 /* Main.swift */; };
 		CEB63A7A24F469E300CAF323 /* UTMJailbreak.m in Sources */ = {isa = PBXBuildFile; fileRef = CEB63A7924F469E300CAF323 /* UTMJailbreak.m */; };
@@ -1500,6 +1503,10 @@
 		CEA9053725F981E900801E7C /* libusb-1.0.0.utm.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libusb-1.0.0.utm.dylib"; path = "sysroot-$(PLATFORM_FAMILY_NAME)-$(ARCHS:identifier)/lib/libusb-1.0.0.utm.dylib"; sourceTree = "<group>"; };
 		CEA9058725FC69D100801E7C /* libusbredirhost.1.utm.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libusbredirhost.1.utm.dylib; path = "sysroot-$(PLATFORM_FAMILY_NAME)-$(ARCHS:identifier)/lib/libusbredirhost.1.utm.dylib"; sourceTree = "<group>"; };
 		CEA9058825FC69D100801E7C /* libusbredirparser.1.utm.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libusbredirparser.1.utm.dylib; path = "sysroot-$(PLATFORM_FAMILY_NAME)-$(ARCHS:identifier)/lib/libusbredirparser.1.utm.dylib"; sourceTree = "<group>"; };
+		CEA905C72603DA0D00801E7C /* VMDisplayMetalViewController+USB.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "VMDisplayMetalViewController+USB.h"; sourceTree = "<group>"; };
+		CEA905C82603DA0D00801E7C /* VMDisplayMetalViewController+USB.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "VMDisplayMetalViewController+USB.m"; sourceTree = "<group>"; };
+		CEA905CC2603DBFB00801E7C /* VMUSBDevicesView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = VMUSBDevicesView.xib; sourceTree = "<group>"; };
+		CEA905D72603DC5300801E7C /* VMUSBDevicesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMUSBDevicesViewController.swift; sourceTree = "<group>"; };
 		CEB63A7524F4654400CAF323 /* Main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Main.swift; sourceTree = "<group>"; };
 		CEB63A7824F468BA00CAF323 /* UTMJailbreak.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UTMJailbreak.h; sourceTree = "<group>"; };
 		CEB63A7924F469E300CAF323 /* UTMJailbreak.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UTMJailbreak.m; sourceTree = "<group>"; };
@@ -2385,6 +2392,8 @@
 				CE056CA5242454100004B68A /* VMDisplayMetalViewController+Touch.m */,
 				5286EC8E2437488E007E6CBC /* VMDisplayMetalViewController+Gamepad.h */,
 				5286EC8F2437488E007E6CBC /* VMDisplayMetalViewController+Gamepad.m */,
+				CEA905C72603DA0D00801E7C /* VMDisplayMetalViewController+USB.h */,
+				CEA905C82603DA0D00801E7C /* VMDisplayMetalViewController+USB.m */,
 				E28394BF240C268A006742E2 /* VMDisplayTerminalViewController.h */,
 				E28394C0240C268A006742E2 /* VMDisplayTerminalViewController.m */,
 				CEC05DF72464B93900DA82B2 /* VMDisplayTerminalViewController+Keyboard.h */,
@@ -2398,6 +2407,8 @@
 				CE4507D3226A5C9900A28D22 /* VMKeyboardViewDelegate.h */,
 				E2151A57241451120008E6AC /* UIViewController+Extensions.h */,
 				E2151A58241451120008E6AC /* UIViewController+Extensions.m */,
+				CEA905CC2603DBFB00801E7C /* VMUSBDevicesView.xib */,
+				CEA905D72603DC5300801E7C /* VMUSBDevicesViewController.swift */,
 				E2B0F9D02426E5510065DFBE /* WKWebView+Workarounds.h */,
 				E2B0F9D12426E5510065DFBE /* WKWebView+Workarounds.m */,
 			);
@@ -2670,6 +2681,7 @@
 				CEB63A9324F4722900CAF323 /* Main.storyboard in Resources */,
 				CE2D936A24AD46670059923A /* terminal.js in Resources */,
 				CE2D936B24AD46670059923A /* Localizable.strings in Resources */,
+				CEA905CD2603DBFB00801E7C /* VMUSBDevicesView.xib in Resources */,
 				CE2D936C24AD46670059923A /* qemu in Resources */,
 				CE2D936D24AD46670059923A /* VMDisplayView.xib in Resources */,
 				CE4EF2722506DD7900E9D33B /* VMRemovableDrivesView.xib in Resources */,
@@ -2773,6 +2785,7 @@
 				CEB63A8B24F46E6E00CAF323 /* VMConfigSoundViewController.m in Sources */,
 				CE2D927924AD46670059923A /* qapi-visit-qom.c in Sources */,
 				CE2D927A24AD46670059923A /* UTMConfiguration+System.m in Sources */,
+				CEA905D82603DC5300801E7C /* VMUSBDevicesViewController.swift in Sources */,
 				CE2D927B24AD46670059923A /* qapi-types-job.c in Sources */,
 				CEB63A8924F46E6E00CAF323 /* VMConfigNetworkingViewController.m in Sources */,
 				CEF83ED324FDEA9400557D15 /* UTMPortAllocator.m in Sources */,
@@ -2997,6 +3010,7 @@
 				CE2D932224AD46670059923A /* VMScroll.m in Sources */,
 				CE2D957D24AD4F990059923A /* VMConfigNetworkPortForwardView.swift in Sources */,
 				CE2D932324AD46670059923A /* UTMTerminal.m in Sources */,
+				CEA905C92603DA0D00801E7C /* VMDisplayMetalViewController+USB.m in Sources */,
 				CEB63A7D24F46E5700CAF323 /* VMConfigSwitch.m in Sources */,
 				CE2D932524AD46670059923A /* qapi-types-char.c in Sources */,
 				CE2D932724AD46670059923A /* CSConnection.m in Sources */,
