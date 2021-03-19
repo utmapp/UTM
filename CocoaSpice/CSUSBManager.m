@@ -205,7 +205,7 @@ static gboolean cs_call_manager(gpointer user_data)
 - (BOOL)canRedirectUsbDevice:(CSUSBDevice *)usbDevice errorMessage:(NSString * _Nullable __autoreleasing *)errorMessage {
     GError *err = NULL;
     gboolean res = spice_usb_device_manager_can_redirect_device(self.usbDeviceManager, usbDevice.device, &err);
-    if (!errorMessage && err) {
+    if (errorMessage && err) {
         *errorMessage = [NSString stringWithUTF8String:err->message];
     }
     g_clear_error(&err);
