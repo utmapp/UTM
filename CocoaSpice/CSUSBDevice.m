@@ -33,9 +33,13 @@
 
 - (instancetype)initWithDevice:(SpiceUsbDevice *)device {
     if (self = [super init]) {
-        self.device = device;
+        self.device = g_boxed_copy(spice_usb_device_get_type(), device);
     }
     return self;
+}
+
+- (void)dealloc {
+    g_boxed_free(spice_usb_device_get_type(), self.device);
 }
 
 - (NSString *)name {
