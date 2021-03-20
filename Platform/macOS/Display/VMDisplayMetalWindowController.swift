@@ -421,9 +421,12 @@ extension VMDisplayMetalWindowController: CSUSBManagerDelegate {
             }
             DispatchQueue.global(qos: .background).async {
                 usbManager.connectUsbDevice(usbDevice) { (result, message) in
-                    if let msg = message {
-                        DispatchQueue.main.async {
+                    DispatchQueue.main.async {
+                        if let msg = message {
                             self.showErrorAlert(msg)
+                        }
+                        if result {
+                            self.connectedUsbDevices.append(usbDevice)
                         }
                     }
                 }
@@ -488,9 +491,12 @@ extension VMDisplayMetalWindowController {
         let device = allUsbDevices[menu.tag]
         DispatchQueue.global(qos: .background).async {
             usbManager.connectUsbDevice(device) { (result, message) in
-                if let msg = message {
-                    DispatchQueue.main.async {
+                DispatchQueue.main.async {
+                    if let msg = message {
                         self.showErrorAlert(msg)
+                    }
+                    if result {
+                        self.connectedUsbDevices.append(device)
                     }
                 }
             }
@@ -509,9 +515,12 @@ extension VMDisplayMetalWindowController {
         let device = allUsbDevices[menu.tag]
         DispatchQueue.global(qos: .background).async {
             usbManager.disconnectUsbDevice(device) { (result, message) in
-                if let msg = message {
-                    DispatchQueue.main.async {
+                DispatchQueue.main.async {
+                    if let msg = message {
                         self.showErrorAlert(msg)
+                    }
+                    if result {
+                        self.connectedUsbDevices.removeAll(where: { $0 == device })
                     }
                 }
             }
