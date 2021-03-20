@@ -47,6 +47,11 @@ struct VMPlaceholderView: View {
                 Spacer()
             }
             Spacer()
+            #if os(iOS)
+            Text("UTM is not for sale. If you've ever paid for UTM, please tell us on Github and ask the store to refund.")
+                .foregroundColor(Color.gray)
+                .padding(.bottom, 13.0)
+            #endif
         }
     }
 }
