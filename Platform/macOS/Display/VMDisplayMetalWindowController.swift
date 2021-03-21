@@ -384,7 +384,9 @@ extension VMDisplayMetalWindowController: VMMetalViewInputDelegate {
 extension VMDisplayMetalWindowController: CSUSBManagerDelegate {
     func spiceUsbManager(_ usbManager: CSUSBManager, deviceError error: String, for device: CSUSBDevice) {
         logger.debug("USB device error: (\(device)) \(error)")
-        showErrorAlert(error)
+        DispatchQueue.main.async {
+            self.showErrorAlert(error)
+        }
     }
     
     func spiceUsbManager(_ usbManager: CSUSBManager, deviceAttached device: CSUSBDevice) {

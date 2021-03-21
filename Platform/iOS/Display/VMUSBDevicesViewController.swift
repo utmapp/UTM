@@ -76,7 +76,9 @@ class VMUSBDevicesViewController: UIViewController {
             logger.error("invalid usb manager")
             return
         }
-        connectedUsbDevices.removeAll(where: { $0 == device })
+        DispatchQueue.main.async {
+            self.connectedUsbDevices.removeAll(where: { $0 == device })
+        }
         DispatchQueue.global(qos: .userInitiated).async {
             vmUsbManager.disconnectUsbDevice(device) { (_, _) in }
         }
