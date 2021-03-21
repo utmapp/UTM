@@ -52,6 +52,7 @@
     if (libusb_get_device_descriptor(dev, &ddesc) != 0) {
         return nil;
     }
+    libusb_set_option(NULL, LIBUSB_OPTION_FORCE_CAPTURE_OPEN, 0);
     if (libusb_open(dev, &handle) == 0) {
         unsigned char name[64] = { 0 };
         int bus = libusb_get_bus_number(dev);
