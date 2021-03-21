@@ -110,6 +110,9 @@
             if (self.vmConfiguration.shareClipboardEnabled) {
                 [[UTMPasteboard generalPasteboard] releasePollingModeForObject:self];
             }
+            if (state == kVMStopped) {
+                [self.usbDevicesViewController clearDevices];
+            }
             break;
         }
         case kVMStarted: {
@@ -213,6 +216,7 @@
 }
 
 - (void)spiceDidChangeUsbManager:(CSUSBManager *)usbManager {
+    [self.usbDevicesViewController clearDevices];
     self.usbDevicesViewController.vmUsbManager = usbManager;
     usbManager.delegate = self;
 }

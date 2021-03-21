@@ -70,6 +70,22 @@ class VMUSBDevicesViewController: UIViewController {
             }
         }
     }
+    
+    @objc public func removeDevice(_ device: CSUSBDevice) {
+        guard let vmUsbManager = self.vmUsbManager else {
+            logger.error("invalid usb manager")
+            return
+        }
+        connectedUsbDevices.removeAll(where: { $0 == device })
+        DispatchQueue.global(qos: .userInitiated).async {
+            vmUsbManager.disconnectUsbDevice(device) { (_, _) in }
+        }
+    }
+    
+    @objc public func clearDevices() {
+        connectedUsbDevices.removeAll()
+        allUsbDevices.removeAll()
+    }
 }
 
 extension VMUSBDevicesViewController: UITableViewDataSource, UITableViewDelegate {

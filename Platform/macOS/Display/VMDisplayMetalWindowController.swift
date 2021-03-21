@@ -109,6 +109,10 @@ class VMDisplayMetalWindowController: VMDisplayWindowController {
         if vmConfiguration!.shareClipboardEnabled {
             UTMPasteboard.general.releasePollingMode(forHashable: self) // stop clipboard polling
         }
+        if vm.state == .vmStopped {
+            connectedUsbDevices.removeAll()
+            allUsbDevices.removeAll()
+        }
         super.enterSuspended(isBusy: busy)
     }
     
@@ -136,6 +140,8 @@ extension VMDisplayMetalWindowController: UTMSpiceIODelegate {
     
     func spiceDidChange(_ usbManager: CSUSBManager) {
         if usbManager != vmUsbManager {
+            connectedUsbDevices.removeAll()
+            allUsbDevices.removeAll()
             vmUsbManager = usbManager
             usbManager.delegate = self
         }

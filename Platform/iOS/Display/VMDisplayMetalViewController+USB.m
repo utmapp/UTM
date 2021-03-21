@@ -57,6 +57,7 @@
 
 - (void)spiceUsbManager:(CSUSBManager *)usbManager deviceRemoved:(CSUSBDevice *)device {
     UTMLog(@"USB device removed: %@", device);
+    [self.usbDevicesViewController removeDevice:device];
 }
 
 @end
