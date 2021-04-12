@@ -62,10 +62,6 @@ typedef void (^connectionCallback_t)(BOOL success, NSString * _Nullable msg);
 
 - (void)initializeSpiceIfNeeded {
     @synchronized (self) {
-        if (!self.spice) {
-            self.spice = [CSMain sharedInstance];
-        }
-        
         if (!self.spiceConnection) {
             self.spiceConnection = [[CSConnection alloc] initWithHost:@"127.0.0.1" port:[NSString stringWithFormat:@"%lu", self.port]];
             self.spiceConnection.delegate = self;
@@ -84,13 +80,16 @@ typedef void (^connectionCallback_t)(BOOL success, NSString * _Nullable msg);
 #pragma mark - UTMInputOutput
 
 - (BOOL)startWithError:(NSError **)err {
-    [self initializeSpiceIfNeeded];
     @synchronized (self) {
+        if (!self.spice) {
+            self.spice = [CSMain sharedInstance];
+        }
         if (![self.spice spiceStart]) {
             // error
             return NO;
         }
     }
+    [self initializeSpiceIfNeeded];
     
     return YES;
 }
