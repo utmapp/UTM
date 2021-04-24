@@ -167,7 +167,7 @@
                             </connections>
                         </button>
                     </toolbarItem>
-                    <toolbarItem implicitItemIdentifier="25B28B29-2844-41D5-A3D4-DD33723B7764" label="USB" paletteLabel="USB" toolTip="Drive image options" image="Toolbar USB" sizingBehavior="auto" id="tlw-Fb-ne3">
+                    <toolbarItem implicitItemIdentifier="25B28B29-2844-41D5-A3D4-DD33723B7764" label="USB" paletteLabel="USB" toolTip="USB devices" image="Toolbar USB" sizingBehavior="auto" id="tlw-Fb-ne3">
                         <button key="view" verticalHuggingPriority="750" id="TXS-HH-LSR">
                             <rect key="frame" x="0.0" y="14" width="30" height="23"/>
                             <autoresizingMask key="autoresizingMask"/>
