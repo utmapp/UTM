@@ -30,8 +30,7 @@ struct VMConfigDriveCreateView: View {
             Toggle(isOn: $driveImage.removable.animation(), label: {
                 Text("Removable")
             }).onChange(of: driveImage.removable) { removable in
-                driveImage.imageType = removable ? .CD : .disk
-                driveImage.interface = UTMConfiguration.defaultDriveInterface(forTarget: target, type: driveImage.imageType)
+                driveImage.reset(forSystemTarget: target, removable: removable)
             }
             VMConfigStringPicker(selection: $driveImage.interface, label: Text("Interface"), rawValues: UTMConfiguration.supportedDriveInterfaces(), displayValues: UTMConfiguration.supportedDriveInterfacesPretty())
             if !driveImage.removable {
@@ -50,8 +49,6 @@ struct VMConfigDriveCreateView: View {
                     }).buttonStyle(PlainButtonStyle())
                 }
             }
-        }.onAppear() {
-            driveImage.interface = UTMConfiguration.defaultDriveInterface(forTarget: target, type: driveImage.imageType)
         }
     }
     
