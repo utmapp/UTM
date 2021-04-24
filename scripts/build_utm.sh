@@ -68,13 +68,9 @@ ios )
         usage
         ;;
     esac
-    PLATFORM_FAMILY_NAME="iOS"
-    CODESIGN_ARGS="CODE_SIGNING_ALLOWED=NO"
     ;;
 macos )
     SDK=macosx
-    PLATFORM_FAMILY_NAME="macOS"
-    CODESIGN_ARGS=
     ;;
 * )
     usage
@@ -83,4 +79,4 @@ esac
 
 ARCH_ARGS=$(echo $ARCH | xargs printf -- "-arch %s ")
 
-xcodebuild archive -archivePath "$OUTPUT" -scheme "$SCHEME" -sdk "$SDK" $ARCH_ARGS -configuration Release $CODESIGN_ARGS
+xcodebuild archive -archivePath "$OUTPUT" -scheme "$SCHEME" -sdk "$SDK" $ARCH_ARGS -configuration Release CODE_SIGNING_ALLOWED=NO
