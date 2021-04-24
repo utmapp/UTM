@@ -223,14 +223,38 @@ bool jb_has_jit_entitlement(void) {
 #endif
 }
 
+#if TARGET_OS_OSX
+@import Security;
+
+bool jb_has_usb_entitlement(void) {
+    SecTaskRef task;
+    CFTypeRef value;
+    static bool cached = false;
+    static bool entitled = false;
+    
+    if (cached) {
+        return entitled;
+    }
+
+    task = SecTaskCreateFromSelf (kCFAllocatorDefault);
+    if (task == NULL) {
+      return false;
+    }
+    value = SecTaskCopyValueForEntitlement(task, CFSTR("com.apple.security.device.usb"), NULL);
+    CFRelease (task);
+    entitled = value && (CFGetTypeID (value) == CFBooleanGetTypeID ()) && CFBooleanGetValue (value);
+    cached = true;
+    if (value) {
+      CFRelease (value);
+    }
+    return entitled;
+}
+#else
 bool jb_has_usb_entitlement(void) {
     NSDictionary *entitlements = cached_app_entitlements();
-#if TARGET_OS_OSX
-    return [entitlements[@"com.apple.security.device.usb"] boolValue];
-#else
     return entitlements[@"com.apple.security.exception.iokit-user-client-class"] != nil;
-#endif
 }
+#endif
 
 bool jb_has_cs_execseg_allow_unsigned(void) {
     NSDictionary *entitlements = cached_app_entitlements();
