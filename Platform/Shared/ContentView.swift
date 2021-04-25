@@ -23,7 +23,7 @@ import IQKeyboardManagerSwift
 struct ContentView: View {
     @StateObject private var newConfiguration = UTMConfiguration()
     @State private var editMode = false
-    @StateObject private var data = UTMData()
+    @EnvironmentObject private var data: UTMData
     @State private var newPopupPresented = false
     @State private var importSheetPresented = false
     @Environment(\.openURL) var openURL
