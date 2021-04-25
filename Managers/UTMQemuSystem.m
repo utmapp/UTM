@@ -246,7 +246,7 @@ static size_t sysctl_read(const char *name) {
             case UTMDiskImageTypeDisk:
             case UTMDiskImageTypeCD: {
                 NSString *interface = [self.configuration driveInterfaceTypeForIndex:i];
-                BOOL removable = [self.configuration driveRemovableForIndex:i];
+                BOOL removable = (type == UTMDiskImageTypeCD) || [self.configuration driveRemovableForIndex:i];
                 NSString *identifier = [NSString stringWithFormat:@"drive%lu", i];
                 NSString *realInterface = [self expandDriveInterface:interface identifier:identifier removable:removable busInterfaceMap:busInterfaceMap];
                 NSString *drive;
