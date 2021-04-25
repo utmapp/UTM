@@ -142,7 +142,7 @@ class VMMetalView: MTKView {
     weak var inputDelegate: VMMetalViewInputDelegate?
     private var wholeTrackingArea: NSTrackingArea?
     private var lastModifiers = NSEvent.ModifierFlags()
-    private var isMouseCaptured = false
+    private(set) var isMouseCaptured = false
     
     override var acceptsFirstResponder: Bool { true }
     

@@ -14,6 +14,8 @@
 // limitations under the License.
 //
 
+import Carbon.HIToolbox
+
 class VMDisplayMetalWindowController: VMDisplayWindowController, UTMSpiceIODelegate {
     var metalView: VMMetalView!
     var renderer: UTMRenderer?
@@ -27,6 +29,7 @@ class VMDisplayMetalWindowController: VMDisplayWindowController, UTMSpiceIODeleg
     private var isFullScreen: Bool = false
     private let minDynamicSize = CGSize(width: 800, height: 600)
     
+    private var localEventMonitor: Any? = nil
     private var ctrlKeyDown: Bool = false
     
     // MARK: - User preferences
@@ -93,6 +96,14 @@ class VMDisplayMetalWindowController: VMDisplayWindowController, UTMSpiceIODeleg
         if vmConfiguration!.shareClipboardEnabled {
             UTMPasteboard.general.requestPollingMode(forHashable: self) // start clipboard polling
         }
+        // monitor Cmd+Q and Cmd+W and capture them if needed
+        localEventMonitor = NSEvent.addLocalMonitorForEvents(matching: [.keyDown, .keyUp]) { event in
+            if !self.handleCaptureKeys(for: event) {
+                return event
+            } else {
+                return nil
+            }
+        }
         super.enterLive()
         resizeConsoleToolbarItem.isEnabled = false // disable item
     }
@@ -105,6 +116,10 @@ class VMDisplayMetalWindowController: VMDisplayWindowController, UTMSpiceIODeleg
         }
         if vmConfiguration!.shareClipboardEnabled {
             UTMPasteboard.general.releasePollingMode(forHashable: self) // stop clipboard polling
+        }
+        if let localEventMonitor = self.localEventMonitor {
+            NSEvent.removeMonitor(localEventMonitor)
+            self.localEventMonitor = nil
         }
         super.enterSuspended(isBusy: busy)
     }
@@ -342,5 +357,39 @@ extension VMDisplayMetalWindowController: VMMetalViewInputDelegate {
     
     func requestReleaseCapture() {
         releaseMouse()
+    }
+    
+    private func handleCaptureKeys(for event: NSEvent) -> Bool {
+        // if captured we route all keyevents to view, even Cmd+Q and Cmd+W
+        if let metalView = metalView, metalView.isMouseCaptured {
+            if event.type == .keyDown {
+                metalView.keyDown(with: event)
+            } else if event.type == .keyUp {
+                metalView.keyUp(with: event)
+            }
+            return true
+        }
+        // otherwise, we confirm Cmd+Q and Cmd+W
+        if event.modifierFlags.contains(.command) && event.type == .keyDown {
+            if event.keyCode == kVK_ANSI_Q {
+                showConfirmAlert(NSLocalizedString("Quitting UTM will kill all running VMs.", comment: "VMDisplayMetalWindowController")) {
+                    NSApp.terminate(self)
+                }
+                return true
+            } else if event.keyCode == kVK_ANSI_W {
+                if vm.state == .vmStarted {
+                    showConfirmAlert(NSLocalizedString("Closing this window will kill the VM.", comment: "VMDisplayMetalWindowController")) {
+                        DispatchQueue.global(qos: .background).async {
+                            self.vm.quitVM()
+                        }
+                    }
+                } else if vm.state == .vmStopped || vm.state == .vmError {
+                    return false // we can close the window
+                } else {
+                    return true // do not close window when in progress
+                }
+            }
+        }
+        return false
     }
 }
