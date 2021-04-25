@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="17700" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
-    <device id="retina6_0" orientation="portrait" appearance="light"/>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="17701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_0" orientation="landscape" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17703"/>
@@ -32,23 +32,23 @@
         </placeholder>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
         <view contentMode="scaleToFill" id="NOe-rz-jvy" customClass="VMDisplayView">
-            <rect key="frame" x="0.0" y="0.0" width="390" height="844"/>
+            <rect key="frame" x="0.0" y="0.0" width="844" height="390"/>
             <autoresizingMask key="autoresizingMask"/>
             <subviews>
                 <visualEffectView opaque="NO" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" translatesAutoresizingMaskIntoConstraints="NO" id="PK2-6H-Mm0">
-                    <rect key="frame" x="0.0" y="0.0" width="390" height="844"/>
+                    <rect key="frame" x="0.0" y="0.0" width="844" height="390"/>
                     <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="3zv-lo-2BB">
-                        <rect key="frame" x="0.0" y="0.0" width="390" height="844"/>
+                        <rect key="frame" x="0.0" y="0.0" width="844" height="390"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <visualEffectView opaque="NO" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" translatesAutoresizingMaskIntoConstraints="NO" id="AsK-xy-gZJ">
-                                <rect key="frame" x="0.0" y="0.0" width="390" height="844"/>
+                                <rect key="frame" x="0.0" y="0.0" width="844" height="390"/>
                                 <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="7J7-Z4-Ve2">
-                                    <rect key="frame" x="0.0" y="0.0" width="390" height="844"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="844" height="390"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="large" translatesAutoresizingMaskIntoConstraints="NO" id="18B-yK-cUi">
-                                            <rect key="frame" x="170" y="397" width="50" height="50"/>
+                                            <rect key="frame" x="397" y="170" width="50" height="50"/>
                                             <constraints>
                                                 <constraint firstAttribute="width" constant="50" id="bb9-iz-6cD"/>
                                                 <constraint firstAttribute="height" constant="50" id="psn-10-jFZ"/>
@@ -56,7 +56,7 @@
                                             <color key="color" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         </activityIndicatorView>
                                         <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" pointerInteraction="YES" translatesAutoresizingMaskIntoConstraints="NO" id="q8Q-UP-yRo">
-                                            <rect key="frame" x="170" y="397" width="50" height="50"/>
+                                            <rect key="frame" x="397" y="170" width="50" height="50"/>
                                             <state key="normal" image="Resume Icon"/>
                                             <connections>
                                                 <action selector="pauseResumePressed:" destination="-1" eventType="touchUpInside" id="PZC-MN-K1m"/>
@@ -85,19 +85,19 @@
                     <blurEffect style="dark"/>
                 </visualEffectView>
                 <visualEffectView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="FjS-ZA-duw" userLabel="Toolbar Accessory View">
-                    <rect key="frame" x="0.0" y="0.0" width="390" height="89"/>
+                    <rect key="frame" x="254" y="0.0" width="336" height="45"/>
                     <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="1wu-bz-Xp2">
-                        <rect key="frame" x="0.0" y="0.0" width="390" height="89"/>
+                        <rect key="frame" x="0.0" y="0.0" width="336" height="45"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <visualEffectView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Ei8-fx-4c8">
-                                <rect key="frame" x="0.0" y="0.0" width="390" height="89"/>
+                                <rect key="frame" x="0.0" y="0.0" width="336" height="45"/>
                                 <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="Rze-tP-FG4">
-                                    <rect key="frame" x="0.0" y="0.0" width="390" height="89"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="336" height="45"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <stackView opaque="NO" contentMode="scaleToFill" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="3GX-CD-ScP">
-                                            <rect key="frame" x="192" y="51" width="182" height="30"/>
+                                            <rect key="frame" x="138" y="7" width="182" height="30"/>
                                             <subviews>
                                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" pointerInteraction="YES" translatesAutoresizingMaskIntoConstraints="NO" id="aZW-jv-ozW">
                                                     <rect key="frame" x="0.0" y="0.0" width="30" height="30"/>
@@ -163,7 +163,7 @@
                                             </subviews>
                                         </stackView>
                                         <stackView opaque="NO" contentMode="scaleToFill" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="wuU-55-lVv">
-                                            <rect key="frame" x="16" y="51" width="106" height="30"/>
+                                            <rect key="frame" x="16" y="7" width="106" height="30"/>
                                             <subviews>
                                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" pointerInteraction="YES" translatesAutoresizingMaskIntoConstraints="NO" id="eU8-Ps-vxM">
                                                     <rect key="frame" x="0.0" y="0.0" width="30" height="30"/>
@@ -211,8 +211,14 @@
                                         <constraint firstItem="wuU-55-lVv" firstAttribute="leading" secondItem="Rze-tP-FG4" secondAttribute="leading" constant="16" id="6lJ-mm-rgm"/>
                                         <constraint firstAttribute="bottomMargin" secondItem="3GX-CD-ScP" secondAttribute="bottom" id="Cao-hu-DcZ"/>
                                         <constraint firstAttribute="bottomMargin" secondItem="wuU-55-lVv" secondAttribute="bottom" id="IKe-0o-kav"/>
+                                        <constraint firstItem="3GX-CD-ScP" firstAttribute="leading" secondItem="wuU-55-lVv" secondAttribute="trailing" constant="16" id="Z77-jb-3SF"/>
                                         <constraint firstAttribute="trailing" secondItem="3GX-CD-ScP" secondAttribute="trailing" constant="16" id="oJG-6X-4rf"/>
                                     </constraints>
+                                    <variation key="heightClass=regular-widthClass=compact">
+                                        <mask key="constraints">
+                                            <exclude reference="Z77-jb-3SF"/>
+                                        </mask>
+                                    </variation>
                                 </view>
                                 <vibrancyEffect>
                                     <blurEffect style="dark"/>
@@ -227,15 +233,9 @@
                         </constraints>
                     </view>
                     <constraints>
-                        <constraint firstAttribute="width" constant="350" id="HFI-2e-sKi"/>
                         <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="45" id="QMX-ff-Bpe"/>
                     </constraints>
                     <blurEffect style="light"/>
-                    <variation key="heightClass=regular-widthClass=compact">
-                        <mask key="constraints">
-                            <exclude reference="HFI-2e-sKi"/>
-                        </mask>
-                    </variation>
                 </visualEffectView>
             </subviews>
             <viewLayoutGuide key="safeArea" id="oBd-R5-iCm"/>
@@ -259,10 +259,10 @@
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
             <subviews>
                 <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="5qW-HU-Ng6">
-                    <rect key="frame" x="8" y="48" width="144" height="36"/>
+                    <rect key="frame" x="52" y="4" width="144" height="39"/>
                     <subviews>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="bCv-uH-SSy" customClass="VMKeyboardButton">
-                            <rect key="frame" x="0.0" y="0.0" width="30" height="36"/>
+                            <rect key="frame" x="0.0" y="0.0" width="30" height="39"/>
                             <accessibility key="accessibilityConfiguration" label="Control"/>
                             <constraints>
                                 <constraint firstAttribute="width" constant="30" id="1ta-eg-kb4">
@@ -287,7 +287,7 @@
                             </connections>
                         </button>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="jxu-AQ-u8c" customClass="VMKeyboardButton">
-                            <rect key="frame" x="38" y="0.0" width="30" height="36"/>
+                            <rect key="frame" x="38" y="0.0" width="30" height="39"/>
                             <accessibility key="accessibilityConfiguration" label="Option"/>
                             <fontDescription key="fontDescription" type="system" pointSize="20"/>
                             <state key="normal" title="⌥">
@@ -307,7 +307,7 @@
                             </connections>
                         </button>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Pjh-3m-tFX" customClass="VMKeyboardButton">
-                            <rect key="frame" x="76" y="0.0" width="30" height="36"/>
+                            <rect key="frame" x="76" y="0.0" width="30" height="39"/>
                             <accessibility key="accessibilityConfiguration" label="Command"/>
                             <fontDescription key="fontDescription" type="system" pointSize="20"/>
                             <state key="normal" title="⌘">
@@ -327,7 +327,7 @@
                             </connections>
                         </button>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="QPo-cD-UlK" customClass="VMKeyboardButton">
-                            <rect key="frame" x="114" y="0.0" width="30" height="36"/>
+                            <rect key="frame" x="114" y="0.0" width="30" height="39"/>
                             <accessibility key="accessibilityConfiguration" label="Shift"/>
                             <fontDescription key="fontDescription" type="system" pointSize="20"/>
                             <state key="normal" title="⇧">
@@ -349,7 +349,7 @@
                     </subviews>
                 </stackView>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="rtU-Yt-FhT">
-                    <rect key="frame" x="962" y="51" width="30" height="30"/>
+                    <rect key="frame" x="962" y="8.6666666666666643" width="30" height="30"/>
                     <accessibility key="accessibilityConfiguration" label="Hide Keyboard"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="30" id="HND-dS-els"/>
@@ -361,7 +361,7 @@
                     </connections>
                 </button>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="740-aI-39P">
-                    <rect key="frame" x="924" y="51" width="30" height="30"/>
+                    <rect key="frame" x="924" y="8.6666666666666643" width="30" height="30"/>
                     <accessibility key="accessibilityConfiguration" label="Paste"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="30" id="X6C-tA-13a"/>
@@ -373,13 +373,13 @@
                     </connections>
                 </button>
                 <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" translatesAutoresizingMaskIntoConstraints="NO" id="RiC-BP-EoA">
-                    <rect key="frame" x="160" y="0.0" width="756" height="68"/>
+                    <rect key="frame" x="204" y="0.0" width="712" height="68"/>
                     <subviews>
                         <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="N5L-oQ-JTY">
-                            <rect key="frame" x="0.0" y="48" width="1056" height="36"/>
+                            <rect key="frame" x="0.0" y="4" width="1056" height="39"/>
                             <subviews>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="7pj-Jz-7JR" customClass="VMKeyboardButton">
-                                    <rect key="frame" x="0.0" y="0.0" width="30" height="36"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="30" height="39"/>
                                     <accessibility key="accessibilityConfiguration" label="Tab"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="20"/>
                                     <state key="normal" title="⇥">
@@ -397,7 +397,7 @@
                                     </connections>
                                 </button>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="n12-9R-99C" customClass="VMKeyboardButton">
-                                    <rect key="frame" x="38" y="0.0" width="30" height="36"/>
+                                    <rect key="frame" x="38" y="0.0" width="30" height="39"/>
                                     <accessibility key="accessibilityConfiguration" label="Escape"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="20"/>
                                     <state key="normal" title="⎋">
@@ -415,7 +415,7 @@
                                     </connections>
                                 </button>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="BUL-js-yMh" customClass="VMKeyboardButton">
-                                    <rect key="frame" x="76" y="0.0" width="30" height="36"/>
+                                    <rect key="frame" x="76" y="0.0" width="30" height="39"/>
                                     <accessibility key="accessibilityConfiguration" label="Up"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="20"/>
                                     <state key="normal" title="↑">
@@ -433,7 +433,7 @@
                                     </connections>
                                 </button>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="RCo-l7-gvf" customClass="VMKeyboardButton">
-                                    <rect key="frame" x="114" y="0.0" width="30" height="36"/>
+                                    <rect key="frame" x="114" y="0.0" width="30" height="39"/>
                                     <accessibility key="accessibilityConfiguration" label="Down"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="20"/>
                                     <state key="normal" title="↓">
@@ -451,7 +451,7 @@
                                     </connections>
                                 </button>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="EVa-2J-CRA" customClass="VMKeyboardButton">
-                                    <rect key="frame" x="152" y="0.0" width="30" height="36"/>
+                                    <rect key="frame" x="152" y="0.0" width="30" height="39"/>
                                     <accessibility key="accessibilityConfiguration" label="Left"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="20"/>
                                     <state key="normal" title="←">
@@ -469,7 +469,7 @@
                                     </connections>
                                 </button>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8Lh-4D-Fz6" customClass="VMKeyboardButton">
-                                    <rect key="frame" x="190" y="0.0" width="30" height="36"/>
+                                    <rect key="frame" x="190" y="0.0" width="30" height="39"/>
                                     <accessibility key="accessibilityConfiguration" label="Right"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="20"/>
                                     <state key="normal" title="→">
@@ -487,7 +487,7 @@
                                     </connections>
                                 </button>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="AY8-eJ-bAP" customClass="VMKeyboardButton">
-                                    <rect key="frame" x="228" y="0.0" width="30" height="36"/>
+                                    <rect key="frame" x="228" y="0.0" width="30" height="39"/>
                                     <accessibility key="accessibilityConfiguration" label="Right"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="20"/>
                                     <state key="normal" title="Del">
@@ -505,7 +505,7 @@
                                     </connections>
                                 </button>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="PWe-Va-Qi1" customClass="VMKeyboardButton">
-                                    <rect key="frame" x="266" y="0.0" width="30" height="36"/>
+                                    <rect key="frame" x="266" y="0.0" width="30" height="39"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="20"/>
                                     <state key="normal" title="F1">
                                         <color key="titleColor" systemColor="darkTextColor"/>
@@ -522,7 +522,7 @@
                                     </connections>
                                 </button>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="kd1-fj-kXM" customClass="VMKeyboardButton">
-                                    <rect key="frame" x="304" y="0.0" width="30" height="36"/>
+                                    <rect key="frame" x="304" y="0.0" width="30" height="39"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="20"/>
                                     <state key="normal" title="F2">
                                         <color key="titleColor" systemColor="darkTextColor"/>
@@ -539,7 +539,7 @@
                                     </connections>
                                 </button>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gUX-ez-mbt" customClass="VMKeyboardButton">
-                                    <rect key="frame" x="342" y="0.0" width="30" height="36"/>
+                                    <rect key="frame" x="342" y="0.0" width="30" height="39"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="20"/>
                                     <state key="normal" title="F3">
                                         <color key="titleColor" systemColor="darkTextColor"/>
@@ -556,7 +556,7 @@
                                     </connections>
                                 </button>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="c7C-CG-EBg" customClass="VMKeyboardButton">
-                                    <rect key="frame" x="380" y="0.0" width="30" height="36"/>
+                                    <rect key="frame" x="380" y="0.0" width="30" height="39"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="20"/>
                                     <state key="normal" title="F4">
                                         <color key="titleColor" systemColor="darkTextColor"/>
@@ -573,7 +573,7 @@
                                     </connections>
                                 </button>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="DxX-zu-urb" customClass="VMKeyboardButton">
-                                    <rect key="frame" x="418" y="0.0" width="30" height="36"/>
+                                    <rect key="frame" x="418" y="0.0" width="30" height="39"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="20"/>
                                     <state key="normal" title="F5">
                                         <color key="titleColor" systemColor="darkTextColor"/>
@@ -590,7 +590,7 @@
                                     </connections>
                                 </button>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Rb5-vO-sIx" customClass="VMKeyboardButton">
-                                    <rect key="frame" x="456" y="0.0" width="30" height="36"/>
+                                    <rect key="frame" x="456" y="0.0" width="30" height="39"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="20"/>
                                     <state key="normal" title="F6">
                                         <color key="titleColor" systemColor="darkTextColor"/>
@@ -607,7 +607,7 @@
                                     </connections>
                                 </button>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3yi-Pr-1ih" customClass="VMKeyboardButton">
-                                    <rect key="frame" x="494" y="0.0" width="30" height="36"/>
+                                    <rect key="frame" x="494" y="0.0" width="30" height="39"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="20"/>
                                     <state key="normal" title="F7">
                                         <color key="titleColor" systemColor="darkTextColor"/>
@@ -624,7 +624,7 @@
                                     </connections>
                                 </button>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="LlV-Ae-CrL" customClass="VMKeyboardButton">
-                                    <rect key="frame" x="532" y="0.0" width="30" height="36"/>
+                                    <rect key="frame" x="532" y="0.0" width="30" height="39"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="20"/>
                                     <state key="normal" title="F8">
                                         <color key="titleColor" systemColor="darkTextColor"/>
@@ -641,7 +641,7 @@
                                     </connections>
                                 </button>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="UNT-ei-lIn" customClass="VMKeyboardButton">
-                                    <rect key="frame" x="570" y="0.0" width="30" height="36"/>
+                                    <rect key="frame" x="570" y="0.0" width="30" height="39"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="20"/>
                                     <state key="normal" title="F9">
                                         <color key="titleColor" systemColor="darkTextColor"/>
@@ -658,7 +658,7 @@
                                     </connections>
                                 </button>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="AhH-ij-IF8" customClass="VMKeyboardButton">
-                                    <rect key="frame" x="608" y="0.0" width="30" height="36"/>
+                                    <rect key="frame" x="608" y="0.0" width="30" height="39"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="18"/>
                                     <state key="normal" title="F10">
                                         <color key="titleColor" systemColor="darkTextColor"/>
@@ -675,7 +675,7 @@
                                     </connections>
                                 </button>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="rfk-su-cFq" customClass="VMKeyboardButton">
-                                    <rect key="frame" x="646" y="0.0" width="30" height="36"/>
+                                    <rect key="frame" x="646" y="0.0" width="30" height="39"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="18"/>
                                     <state key="normal" title="F11">
                                         <color key="titleColor" systemColor="darkTextColor"/>
@@ -692,7 +692,7 @@
                                     </connections>
                                 </button>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="EDi-KP-KwO" customClass="VMKeyboardButton">
-                                    <rect key="frame" x="684" y="0.0" width="30" height="36"/>
+                                    <rect key="frame" x="684" y="0.0" width="30" height="39"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="18"/>
                                     <state key="normal" title="F12">
                                         <color key="titleColor" systemColor="darkTextColor"/>
@@ -709,7 +709,7 @@
                                     </connections>
                                 </button>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="FDV-W6-qlO" customClass="VMKeyboardButton">
-                                    <rect key="frame" x="722" y="0.0" width="30" height="36"/>
+                                    <rect key="frame" x="722" y="0.0" width="30" height="39"/>
                                     <accessibility key="accessibilityConfiguration" label="Caps Lock"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="12"/>
                                     <state key="normal" title="Caps">
@@ -727,7 +727,7 @@
                                     </connections>
                                 </button>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="sF1-tj-hUG" customClass="VMKeyboardButton">
-                                    <rect key="frame" x="760" y="0.0" width="30" height="36"/>
+                                    <rect key="frame" x="760" y="0.0" width="30" height="39"/>
                                     <accessibility key="accessibilityConfiguration" label="Scroll Lock"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="10"/>
                                     <state key="normal" title="Scroll">
@@ -745,7 +745,7 @@
                                     </connections>
                                 </button>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="BUk-Vf-yE5" customClass="VMKeyboardButton">
-                                    <rect key="frame" x="798" y="0.0" width="30" height="36"/>
+                                    <rect key="frame" x="798" y="0.0" width="30" height="39"/>
                                     <accessibility key="accessibilityConfiguration" label="Num Lock"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="12"/>
                                     <state key="normal" title="Num">
@@ -763,7 +763,7 @@
                                     </connections>
                                 </button>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="wordWrap" translatesAutoresizingMaskIntoConstraints="NO" id="Pes-KN-KzU" customClass="VMKeyboardButton">
-                                    <rect key="frame" x="836" y="0.0" width="30" height="36"/>
+                                    <rect key="frame" x="836" y="0.0" width="30" height="39"/>
                                     <accessibility key="accessibilityConfiguration" label="Print Screen"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="12"/>
                                     <state key="normal" title="Pr Scr">
@@ -781,7 +781,7 @@
                                     </connections>
                                 </button>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="kO0-HZ-5w2" customClass="VMKeyboardButton">
-                                    <rect key="frame" x="874" y="0.0" width="30" height="36"/>
+                                    <rect key="frame" x="874" y="0.0" width="30" height="39"/>
                                     <accessibility key="accessibilityConfiguration" label="Insert"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="12"/>
                                     <state key="normal" title="Ins">
@@ -799,7 +799,7 @@
                                     </connections>
                                 </button>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="LU6-kH-vN3" customClass="VMKeyboardButton">
-                                    <rect key="frame" x="912" y="0.0" width="30" height="36"/>
+                                    <rect key="frame" x="912" y="0.0" width="30" height="39"/>
                                     <accessibility key="accessibilityConfiguration" label="Home"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="10"/>
                                     <state key="normal" title="Home">
@@ -817,7 +817,7 @@
                                     </connections>
                                 </button>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="TOV-fV-TTa" customClass="VMKeyboardButton">
-                                    <rect key="frame" x="950" y="0.0" width="30" height="36"/>
+                                    <rect key="frame" x="950" y="0.0" width="30" height="39"/>
                                     <accessibility key="accessibilityConfiguration" label="End"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="12"/>
                                     <state key="normal" title="End">
@@ -835,7 +835,7 @@
                                     </connections>
                                 </button>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="wordWrap" translatesAutoresizingMaskIntoConstraints="NO" id="pX1-7o-dbU" customClass="VMKeyboardButton">
-                                    <rect key="frame" x="988" y="0.0" width="30" height="36"/>
+                                    <rect key="frame" x="988" y="0.0" width="30" height="39"/>
                                     <accessibility key="accessibilityConfiguration" label="Page Up"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="12"/>
                                     <state key="normal" title="Pg Up">
@@ -853,7 +853,7 @@
                                     </connections>
                                 </button>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="wordWrap" translatesAutoresizingMaskIntoConstraints="NO" id="h4q-XF-UMn" customClass="VMKeyboardButton">
-                                    <rect key="frame" x="1026" y="0.0" width="30" height="36"/>
+                                    <rect key="frame" x="1026" y="0.0" width="30" height="39"/>
                                     <accessibility key="accessibilityConfiguration" label="Page Down"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="12"/>
                                     <state key="normal" title="Pg Dn">
