@@ -48,7 +48,7 @@
     self.usbDevicesViewController = [[VMUSBDevicesViewController alloc] initWithNibName:@"VMUSBDevicesView" bundle:nil];
     
     // hide USB icon if not supported
-    self.usbButton.hidden = self.vm.hasUsbRedirection;
+    self.usbButton.hidden = !self.vm.hasUsbRedirection;
 }
 
 #pragma mark - Properties
