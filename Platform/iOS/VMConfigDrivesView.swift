@@ -31,6 +31,7 @@ struct VMConfigDrivesView: View {
             if config.countDrives == 0 {
                 Text("No drives added.").font(.headline)
             } else {
+                Text("Note: Boot order is as listed.")
                 Form {
                     List {
                         ForEach(0..<config.countDrives, id: \.self) { index in

@@ -34,7 +34,12 @@
     self.systemCPU = @"default";
     self.systemTarget = @"q35";
     self.systemMemory = @512;
-    self.systemBootDevice = @"cd";
+    if (@available(iOS 14, *)) {
+        // use bootindex on new UI
+        self.systemBootDevice = @"";
+    } else {
+        self.systemBootDevice = @"cd";
+    }
     self.systemUUID = [[NSUUID UUID] UUIDString];
     self.displayCard = @"qxl-vga";
     self.displayUpscaler = @"linear";

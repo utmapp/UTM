@@ -74,6 +74,10 @@ static const NSString *const kUTMConfigMachinePropertiesKey = @"MachinePropertie
             self.systemMachineProperties = machineProp;
         }
     }
+    // iOS 14 uses bootindex and systemBootDevice is deprecated
+    if (@available(iOS 14, *)) {
+        self.systemBootDevice = @"";
+    }
 }
 
 #pragma mark - System Properties
