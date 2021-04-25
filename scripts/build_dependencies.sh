@@ -38,7 +38,7 @@ command -v realpath >/dev/null 2>&1 || realpath() {
 usage () {
     echo "Usage: [VARIABLE...] $(basename $0) [-p platform] [-a architecture] [-q qemu_path] [-d] [-r]"
     echo ""
-    echo "  -p platform      Target platform. Default ios. [ios|macos]"
+    echo "  -p platform      Target platform. Default ios. [ios|ios-tci|macos]"
     echo "  -a architecture  Target architecture. Default arm64. [armv7|armv7s|arm64|i386|x86_64]"
     echo "  -q qemu_path     Do not download QEMU, use qemu_path instead."
     echo "  -d, --download   Force re-download of source even if already downloaded."
@@ -181,7 +181,7 @@ build_openssl() {
         ;;
     esac
     case $PLATFORM in
-    ios )
+    ios | ios-tci )
         case $ARCH in
         armv7 | armv7s )
             OPENSSL_CROSS=iphoneos-cross
@@ -418,7 +418,7 @@ CHOST=$CPU-apple-darwin
 export CHOST
 
 case $PLATFORM in
-ios )
+ios | ios-tci )
     if [ -z "$SDKMINVER" ]; then
         SDKMINVER="$IOS_SDKMINVER"
     fi
@@ -433,8 +433,13 @@ ios )
         ;;
     esac
     CFLAGS_TARGET=
-    PLATFORM_FAMILY_NAME="iOS"
-    QEMU_PLATFORM_BUILD_FLAGS="--enable-shared-lib --disable-hvf --disable-cocoa --disable-curl --disable-slirp-smbd --with-coroutine=libucontext"
+    if [ "$PLATFORM" == "ios-tci" ]; then
+        TCI_BUILD_FLAGS="--enable-tcg-interpreter"
+        PLATFORM_FAMILY_NAME="iOS-TCI"
+    else
+        PLATFORM_FAMILY_NAME="iOS"
+    fi
+    QEMU_PLATFORM_BUILD_FLAGS="--enable-shared-lib --disable-hvf --disable-cocoa --disable-curl --disable-slirp-smbd --with-coroutine=libucontext $TCI_BUILD_FLAGS"
     ;;
 macos )
     if [ -z "$SDKMINVER" ]; then

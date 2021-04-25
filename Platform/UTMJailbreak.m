@@ -217,6 +217,8 @@ static bool is_device_A12_or_newer(void) {
 bool jb_has_jit_entitlement(void) {
 #if TARGET_OS_OSX
     return true;
+#elif defined(WITH_QEMU_TCI)
+    return false;
 #else
     NSDictionary *entitlements = cached_app_entitlements();
     return [entitlements[@"dynamic-codesigning"] boolValue];
@@ -272,7 +274,7 @@ bool jb_has_cs_execseg_allow_unsigned(void) {
 }
 
 bool jb_enable_ptrace_hack(void) {
-#if defined(NO_PTRACE_HACK)
+#if defined(WITH_QEMU_TCI)
     return false;
 #else
     bool debugged = jb_has_debugger_attached();

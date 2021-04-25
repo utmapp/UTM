@@ -20,7 +20,7 @@ jobs:
     strategy:
       matrix:
         arch: [arm64, x86_64]
-        platform: [ios, macos]
+        platform: [ios, ios-tci, macos]
     steps:
       - name: Checkout
         uses: actions/checkout@v1

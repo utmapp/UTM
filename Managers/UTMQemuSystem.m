@@ -411,10 +411,12 @@ static size_t sysctl_read(const char *name) {
     }
     accel = [accel stringByAppendingFormat:@",tb-size=%ld", tb_size];
     
+#if !defined(WITH_QEMU_TCI)
     // use mirror mapping when we don't have JIT entitlements
     if (!jb_has_jit_entitlement()) {
         accel = [accel stringByAppendingString:@",split-wx=on"];
     }
+#endif
     
     return accel;
 }

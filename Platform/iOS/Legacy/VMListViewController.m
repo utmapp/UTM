@@ -98,9 +98,11 @@
         }
     });
     
+#if !defined(WITH_QEMU_TCI)
     if (!jb_has_jit_entitlement()) {
         [self showStartupMessage];
     }
+#endif
 }
 
 #pragma mark - Properties
