@@ -201,7 +201,10 @@ extension VMDisplayWindowController: UTMVirtualMachineDelegate {
             showErrorAlert(message) { _ in
                 self.close()
             }
-        case .vmStopped, .vmPaused, .vmSuspended:
+        case .vmStopped:
+            NSCursor.unhide()
+            self.close()
+        case .vmPaused, .vmSuspended:
             enterSuspended(isBusy: false)
         case .vmPausing, .vmStopping, .vmStarting, .vmResuming:
             enterSuspended(isBusy: true)
