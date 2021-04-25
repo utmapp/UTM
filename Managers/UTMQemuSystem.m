@@ -516,14 +516,19 @@ static size_t sysctl_read(const char *name) {
     [self pushArgv:@"-m"];
     [self pushArgv:[self.configuration.systemMemory stringValue]];
     // < macOS 11.3 we use fork() which is buggy and things are broken
+    BOOL forceDisableSound = NO;
     if (@available(macOS 11.3, *)) {
-        if (self.configuration.soundEnabled) {
+    } else {
+        if (self.configuration.displayConsoleOnly) {
+            forceDisableSound = YES;
+        }
+    }
+    if (self.configuration.soundEnabled && !forceDisableSound) {
+        [self pushArgv:@"-device"];
+        [self pushArgv:self.configuration.soundCard];
+        if ([self.configuration.soundCard containsString:@"hda"]) {
             [self pushArgv:@"-device"];
-            [self pushArgv:self.configuration.soundCard];
-            if ([self.configuration.soundCard containsString:@"hda"]) {
-                [self pushArgv:@"-device"];
-                [self pushArgv:@"hda-duplex"];
-            }
+            [self pushArgv:@"hda-duplex"];
         }
     }
     [self pushArgv:@"-name"];
