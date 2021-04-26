@@ -121,8 +121,10 @@ download_all () {
     download $PHODAV_SRC
     download $SPICE_CLIENT_SRC
     download $QEMU_SRC
-    download $USB_SRC
-    download $USBREDIR_SRC
+    if [ -z "$SKIP_USB_BUILD" ]; then
+        download $USB_SRC
+        download $USBREDIR_SRC
+    fi
 }
 
 copy_private_headers() {
@@ -259,8 +261,10 @@ build_qemu_dependencies () {
     build $OPUS_SRC
     build $SPICE_PROTOCOL_SRC
     build $SPICE_SERVER_SRC
-    build $USB_SRC
-    build $USBREDIR_SRC
+    if [ -z "$SKIP_USB_BUILD" ]; then
+        build $USB_SRC
+        build $USBREDIR_SRC
+    fi
 }
 
 build_qemu () {
@@ -438,6 +442,7 @@ ios | ios-tci )
     if [ "$PLATFORM" == "ios-tci" ]; then
         TCI_BUILD_FLAGS="--enable-tcg-interpreter"
         PLATFORM_FAMILY_NAME="iOS-TCI"
+        SKIP_USB_BUILD=1
     else
         PLATFORM_FAMILY_NAME="iOS"
     fi

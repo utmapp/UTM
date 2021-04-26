@@ -953,7 +953,6 @@
 		CEA45F3D263519B5002FA97D /* gthread-2.0.0.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63DC22653C7300FC7E63 /* gthread-2.0.0.framework */; };
 		CEA45F3E263519B5002FA97D /* gstrtp-1.0.0.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63DD22653C7400FC7E63 /* gstrtp-1.0.0.framework */; };
 		CEA45F3F263519B5002FA97D /* gstriff-1.0.0.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63DE22653C7400FC7E63 /* gstriff-1.0.0.framework */; };
-		CEA45F40263519B5002FA97D /* usbredirhost.1.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CEA9058725FC69D100801E7C /* usbredirhost.1.framework */; };
 		CEA45F41263519B5002FA97D /* gstreamer-1.0.0.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63E022653C7400FC7E63 /* gstreamer-1.0.0.framework */; };
 		CEA45F42263519B5002FA97D /* json-glib-1.0.0.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63E222653C7400FC7E63 /* json-glib-1.0.0.framework */; };
 		CEA45F43263519B5002FA97D /* ffi.7.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63E322653C7400FC7E63 /* ffi.7.framework */; };
@@ -961,7 +960,6 @@
 		CEA45F45263519B5002FA97D /* gstbase-1.0.0.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63E822653C7400FC7E63 /* gstbase-1.0.0.framework */; };
 		CEA45F46263519B5002FA97D /* Logging in Frameworks */ = {isa = PBXBuildFile; productRef = CEA45E20263519B5002FA97D /* Logging */; };
 		CEA45F47263519B5002FA97D /* phodav-2.0.0.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE059DC0243BD67100338317 /* phodav-2.0.0.framework */; };
-		CEA45F48263519B5002FA97D /* usbredirparser.1.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CEA9058825FC69D100801E7C /* usbredirparser.1.framework */; };
 		CEA45F49263519B5002FA97D /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE0E9B86252FD06B0026E02B /* SwiftUI.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		CEA45F4A263519B5002FA97D /* gstcontroller-1.0.0.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63EE22653C7400FC7E63 /* gstcontroller-1.0.0.framework */; };
 		CEA45F4B263519B5002FA97D /* gstaudio-1.0.0.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63EF22653C7400FC7E63 /* gstaudio-1.0.0.framework */; };
@@ -986,7 +984,6 @@
 		CEA45F5E263519B5002FA97D /* ssl.1.1.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D641722653C7500FC7E63 /* ssl.1.1.framework */; };
 		CEA45F5F263519B5002FA97D /* spice-server.1.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D641822653C7500FC7E63 /* spice-server.1.framework */; };
 		CEA45F60263519B5002FA97D /* pixman-1.0.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D641922653C7600FC7E63 /* pixman-1.0.framework */; };
-		CEA45F61263519B5002FA97D /* usb-1.0.0.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CEA9053725F981E900801E7C /* usb-1.0.0.framework */; };
 		CEA45F64263519B5002FA97D /* Icons in Resources */ = {isa = PBXBuildFile; fileRef = CE4698F824C8FBD9008C1BD6 /* Icons */; };
 		CEA45F65263519B5002FA97D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CE550BD2225947990063E575 /* Main.storyboard */; };
 		CEA45F66263519B5002FA97D /* terminal.js in Resources */ = {isa = PBXBuildFile; fileRef = E28394B9240C219F006742E2 /* terminal.js */; };
@@ -1007,7 +1004,6 @@
 		CEA45F76263519B5002FA97D /* gstbase-1.0.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63E822653C7400FC7E63 /* gstbase-1.0.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CEA45F77263519B5002FA97D /* ffi.7.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63E322653C7400FC7E63 /* ffi.7.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CEA45F78263519B5002FA97D /* ssl.1.1.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D641722653C7500FC7E63 /* ssl.1.1.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CEA45F79263519B5002FA97D /* usbredirhost.1.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CEA9058725FC69D100801E7C /* usbredirhost.1.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CEA45F7A263519B5002FA97D /* gio-2.0.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63F822653C7400FC7E63 /* gio-2.0.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CEA45F7B263519B5002FA97D /* png16.16.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D640522653C7500FC7E63 /* png16.16.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CEA45F7C263519B5002FA97D /* gstnet-1.0.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63E522653C7400FC7E63 /* gstnet-1.0.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
@@ -1026,7 +1022,6 @@
 		CEA45F89263519B5002FA97D /* phodav-2.0.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE059DC0243BD67100338317 /* phodav-2.0.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CEA45F8A263519B5002FA97D /* gthread-2.0.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63DC22653C7300FC7E63 /* gthread-2.0.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CEA45F8B263519B5002FA97D /* qemu-aarch64-softmmu.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63FD22653C7500FC7E63 /* qemu-aarch64-softmmu.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CEA45F8C263519B5002FA97D /* usbredirparser.1.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CEA9058825FC69D100801E7C /* usbredirparser.1.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CEA45F8D263519B5002FA97D /* qemu-mips-softmmu.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63FF22653C7500FC7E63 /* qemu-mips-softmmu.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CEA45F8E263519B5002FA97D /* qemu-s390x-softmmu.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63FC22653C7500FC7E63 /* qemu-s390x-softmmu.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CEA45F8F263519B5002FA97D /* gobject-2.0.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63F522653C7400FC7E63 /* gobject-2.0.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
@@ -1043,7 +1038,6 @@
 		CEA45F9A263519B5002FA97D /* glib-2.0.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D640422653C7500FC7E63 /* glib-2.0.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CEA45F9B263519B5002FA97D /* qemu-x86_64-softmmu.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D640022653C7500FC7E63 /* qemu-x86_64-softmmu.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CEA45F9C263519B5002FA97D /* qemu-xtensaeb-softmmu.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D641222653C7500FC7E63 /* qemu-xtensaeb-softmmu.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CEA45F9D263519B5002FA97D /* usb-1.0.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CEA9053725F981E900801E7C /* usb-1.0.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CEA45F9E263519B5002FA97D /* qemu-arm-softmmu.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D640722653C7500FC7E63 /* qemu-arm-softmmu.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CEA45F9F263519B5002FA97D /* intl.8.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63DA22653C7300FC7E63 /* intl.8.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CEA45FA0263519B5002FA97D /* gstreamer-1.0.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63E022653C7400FC7E63 /* gstreamer-1.0.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
@@ -1358,7 +1352,6 @@
 				CEA45F76263519B5002FA97D /* gstbase-1.0.0.framework in Embed Libraries */,
 				CEA45F77263519B5002FA97D /* ffi.7.framework in Embed Libraries */,
 				CEA45F78263519B5002FA97D /* ssl.1.1.framework in Embed Libraries */,
-				CEA45F79263519B5002FA97D /* usbredirhost.1.framework in Embed Libraries */,
 				CEA45F7A263519B5002FA97D /* gio-2.0.0.framework in Embed Libraries */,
 				CEA45F7B263519B5002FA97D /* png16.16.framework in Embed Libraries */,
 				CEA45F7C263519B5002FA97D /* gstnet-1.0.0.framework in Embed Libraries */,
@@ -1377,7 +1370,6 @@
 				CEA45F89263519B5002FA97D /* phodav-2.0.0.framework in Embed Libraries */,
 				CEA45F8A263519B5002FA97D /* gthread-2.0.0.framework in Embed Libraries */,
 				CEA45F8B263519B5002FA97D /* qemu-aarch64-softmmu.framework in Embed Libraries */,
-				CEA45F8C263519B5002FA97D /* usbredirparser.1.framework in Embed Libraries */,
 				CEA45F8D263519B5002FA97D /* qemu-mips-softmmu.framework in Embed Libraries */,
 				CEA45F8E263519B5002FA97D /* qemu-s390x-softmmu.framework in Embed Libraries */,
 				CEA45F8F263519B5002FA97D /* gobject-2.0.0.framework in Embed Libraries */,
@@ -1394,7 +1386,6 @@
 				CEA45F9A263519B5002FA97D /* glib-2.0.0.framework in Embed Libraries */,
 				CEA45F9B263519B5002FA97D /* qemu-x86_64-softmmu.framework in Embed Libraries */,
 				CEA45F9C263519B5002FA97D /* qemu-xtensaeb-softmmu.framework in Embed Libraries */,
-				CEA45F9D263519B5002FA97D /* usb-1.0.0.framework in Embed Libraries */,
 				CEA45F9E263519B5002FA97D /* qemu-arm-softmmu.framework in Embed Libraries */,
 				CEA45F9F263519B5002FA97D /* intl.8.framework in Embed Libraries */,
 				CEA45FA0263519B5002FA97D /* gstreamer-1.0.0.framework in Embed Libraries */,
@@ -2236,7 +2227,6 @@
 				CEA45F3D263519B5002FA97D /* gthread-2.0.0.framework in Frameworks */,
 				CEA45F3E263519B5002FA97D /* gstrtp-1.0.0.framework in Frameworks */,
 				CEA45F3F263519B5002FA97D /* gstriff-1.0.0.framework in Frameworks */,
-				CEA45F40263519B5002FA97D /* usbredirhost.1.framework in Frameworks */,
 				CEA45F41263519B5002FA97D /* gstreamer-1.0.0.framework in Frameworks */,
 				CEA45F42263519B5002FA97D /* json-glib-1.0.0.framework in Frameworks */,
 				CEA45F43263519B5002FA97D /* ffi.7.framework in Frameworks */,
@@ -2244,7 +2234,6 @@
 				CEA45F45263519B5002FA97D /* gstbase-1.0.0.framework in Frameworks */,
 				CEA45F46263519B5002FA97D /* Logging in Frameworks */,
 				CEA45F47263519B5002FA97D /* phodav-2.0.0.framework in Frameworks */,
-				CEA45F48263519B5002FA97D /* usbredirparser.1.framework in Frameworks */,
 				CEA45F49263519B5002FA97D /* SwiftUI.framework in Frameworks */,
 				CEA45F4A263519B5002FA97D /* gstcontroller-1.0.0.framework in Frameworks */,
 				CEA45F4B263519B5002FA97D /* gstaudio-1.0.0.framework in Frameworks */,
@@ -2269,7 +2258,6 @@
 				CEA45F5E263519B5002FA97D /* ssl.1.1.framework in Frameworks */,
 				CEA45F5F263519B5002FA97D /* spice-server.1.framework in Frameworks */,
 				CEA45F60263519B5002FA97D /* pixman-1.0.framework in Frameworks */,
-				CEA45F61263519B5002FA97D /* usb-1.0.0.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
