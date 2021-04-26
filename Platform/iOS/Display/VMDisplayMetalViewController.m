@@ -110,9 +110,11 @@
             if (self.vmConfiguration.shareClipboardEnabled) {
                 [[UTMPasteboard generalPasteboard] releasePollingModeForObject:self];
             }
+#if !defined(WITH_QEMU_TCI)
             if (state == kVMStopped) {
                 [self.usbDevicesViewController clearDevices];
             }
+#endif
             break;
         }
         case kVMStarted: {
@@ -215,10 +217,12 @@
     // TODO: implement something here
 }
 
+#if !defined(WITH_QEMU_TCI)
 - (void)spiceDidChangeUsbManager:(CSUSBManager *)usbManager {
     [self.usbDevicesViewController clearDevices];
     self.usbDevicesViewController.vmUsbManager = usbManager;
     usbManager.delegate = self;
 }
+#endif
 
 @end

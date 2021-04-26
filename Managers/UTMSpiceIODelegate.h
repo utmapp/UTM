@@ -27,7 +27,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)spiceDidChangeInput:(CSInput *)input;
 - (void)spiceDidCreateDisplay:(CSDisplayMetal *)display;
 - (void)spiceDidDestroyDisplay:(CSDisplayMetal *)display;
+#if !defined(WITH_QEMU_TCI)
 - (void)spiceDidChangeUsbManager:(CSUSBManager *)usbManager;
+#endif
 
 @optional
 - (void)spiceDynamicResolutionSupportDidChange:(BOOL)supported;

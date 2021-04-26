@@ -276,7 +276,9 @@ static void cs_connection_destroy(SpiceSession *session,
         
         SpiceUsbDeviceManager *manager = spice_usb_device_manager_get(self.spiceSession, NULL);
         g_assert(manager != NULL);
+#if !defined(WITH_QEMU_TCI)
         self.usbManager = [[CSUSBManager alloc] initWithUsbDeviceManager:manager];
+#endif
         self.input = [[CSInput alloc] initWithSession:self.spiceSession];
         self.session = [[CSSession alloc] initWithSession:self.spiceSession];
         self.monitors = [NSArray<CSDisplayMetal *> array];

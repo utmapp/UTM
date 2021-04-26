@@ -45,7 +45,9 @@
     
     // set up other nibs
     self.removableDrivesViewController = [[VMRemovableDrivesViewController alloc] initWithNibName:@"VMRemovableDrivesView" bundle:nil];
+#if !defined(WITH_QEMU_TCI)
     self.usbDevicesViewController = [[VMUSBDevicesViewController alloc] initWithNibName:@"VMUSBDevicesView" bundle:nil];
+#endif
     
     // hide USB icon if not supported
     self.usbButton.hidden = !self.vm.hasUsbRedirection;
@@ -328,8 +330,10 @@
 }
 
 - (IBAction)usbPressed:(UIButton *)sender {
+#if !defined(WITH_QEMU_TCI)
     self.usbDevicesViewController.modalPresentationStyle = UIModalPresentationPageSheet;
     [self presentViewController:self.usbDevicesViewController animated:YES completion:nil];
+#endif
 }
 
 - (IBAction)drivesPressed:(UIButton *)sender {

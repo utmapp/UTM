@@ -34,7 +34,9 @@ typedef void (^connectionCallback_t)(BOOL success, NSString * _Nullable msg);
 
 @property (nonatomic, readwrite, nullable) CSDisplayMetal *primaryDisplay;
 @property (nonatomic, readwrite, nullable) CSInput *primaryInput;
+#if !defined(WITH_QEMU_TCI)
 @property (nonatomic, readwrite, nullable) CSUSBManager *primaryUsbManager;
+#endif
 @property (nonatomic, nullable) doConnect_t doConnect;
 @property (nonatomic, nullable) connectionCallback_t connectionCallback;
 @property (nonatomic, nullable) CSConnection *spiceConnection;
@@ -135,7 +137,9 @@ typedef void (^connectionCallback_t)(BOOL success, NSString * _Nullable msg);
     }
     self.primaryDisplay = nil;
     self.primaryInput = nil;
+#if !defined(WITH_QEMU_TCI)
     self.primaryUsbManager = nil;
+#endif
     self.doConnect = nil;
 }
 
@@ -173,8 +177,10 @@ typedef void (^connectionCallback_t)(BOOL success, NSString * _Nullable msg);
     NSAssert(connection == self.spiceConnection, @"Unknown connection");
     self.primaryInput = connection.input;
     [self.delegate spiceDidChangeInput:connection.input];
+#if !defined(WITH_QEMU_TCI)
     self.primaryUsbManager = connection.usbManager;
     [self.delegate spiceDidChangeUsbManager:connection.usbManager];
+#endif
 }
 
 - (void)spiceDisconnected:(CSConnection *)connection {
@@ -256,9 +262,11 @@ typedef void (^connectionCallback_t)(BOOL success, NSString * _Nullable msg);
             [self.delegate spiceDidCreateDisplay:display];
         }
     }
+#if !defined(WITH_QEMU_TCI)
     if (self.primaryUsbManager) {
         [self.delegate spiceDidChangeUsbManager:self.primaryUsbManager];
     }
+#endif
     if ([self.delegate respondsToSelector:@selector(spiceDynamicResolutionSupportDidChange:)]) {
         [self.delegate spiceDynamicResolutionSupportDidChange:self.dynamicResolutionSupported];
     }
