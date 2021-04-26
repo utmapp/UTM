@@ -52,6 +52,7 @@ struct cs_entitlements {
     char entitlements[];
 };
 
+#if !TARGET_OS_OSX && !defined(WITH_QEMU_TCI)
 extern int csops(pid_t pid, unsigned int ops, void * useraddr, size_t usersize);
 extern boolean_t exc_server(mach_msg_header_t *, mach_msg_header_t *);
 extern int ptrace(int request, pid_t pid, caddr_t addr, int data);
@@ -83,10 +84,15 @@ static bool jb_has_debugger_attached(void) {
     int flags;
     return !csops(getpid(), CS_OPS_STATUS, &flags, sizeof(flags)) && flags & CS_DEBUGGED;
 }
+#endif
 
 bool jb_has_cs_disabled(void) {
+#if TARGET_OS_OSX || defined(WITH_QEMU_TCI)
+    return false;
+#else
     int flags;
     return !csops(getpid(), CS_OPS_STATUS, &flags, sizeof(flags)) && (flags & ~CS_KILL) == flags;
+#endif
 }
 
 static NSDictionary *parse_entitlements(const void *entitlements, size_t length) {
@@ -274,7 +280,7 @@ bool jb_has_cs_execseg_allow_unsigned(void) {
 }
 
 bool jb_enable_ptrace_hack(void) {
-#if defined(WITH_QEMU_TCI)
+#if TARGET_OS_OSX || defined(WITH_QEMU_TCI)
     return false;
 #else
     bool debugged = jb_has_debugger_attached();
