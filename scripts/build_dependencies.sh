@@ -304,29 +304,31 @@ fixup () {
     FILE=$1
     BASE=$(basename "$FILE")
     BASEFILENAME=${BASE%.*}
-    BASEFILEEXT=${BASE:${#BASEFILENAME}}
-    NEWFILENAME="$BASEFILENAME.utm$BASEFILEEXT"
-    if [ -z "$BASEFILEEXT" ]; then
-        NEWFILENAME="$BASE"
-    fi
+    LIBNAME=${BASEFILENAME#lib*}
+    FRAMEWORKNAME="$LIBNAME.framework"
+    FRAMEWORKPATH="$PREFIX/Frameworks/$FRAMEWORKNAME"
+    NEWFILE="$FRAMEWORKPATH/$LIBNAME"
     LIST=$(otool -L "$FILE" | tail -n +2 | cut -d ' ' -f 1 | awk '{$1=$1};1')
     OLDIFS=$IFS
     IFS=$'\n'
     echo "${GREEN}Fixing up $FILE...${NC}"
-    newname="@rpath/$NEWFILENAME"
-    install_name_tool -id "$newname" "$FILE"
+    mkdir -p "$FRAMEWORKPATH"
+    cp -a "$FILE" "$NEWFILE"
+    /usr/libexec/PlistBuddy -c "Add :CFBundleExecutable string $LIBNAME" "$FRAMEWORKPATH/Info.plist"
+    /usr/libexec/PlistBuddy -c "Add :CFBundleIdentifier string com.utmapp.$LIBNAME" "$FRAMEWORKPATH/Info.plist"
+    newname="@rpath/$FRAMEWORKNAME/$LIBNAME"
+    install_name_tool -id "$newname" "$NEWFILE"
     for g in $LIST
     do
         base=$(basename "$g")
         basefilename=${base%.*}
-        basefileext=${base:${#basefilename}}
+        libname=${basefilename#lib*}
         dir=$(dirname "$g")
         if [ "$dir" == "$PREFIX/lib" ]; then
-            newname="@rpath/$basefilename.utm$basefileext"
-            install_name_tool -change "$g" "$newname" "$FILE"
+            newname="@rpath/$libname.framework/$libname"
+            install_name_tool -change "$g" "$newname" "$NEWFILE"
         fi
     done
-    mv "$FILE" "$(dirname "$FILE")/$NEWFILENAME"
     IFS=$OLDIFS
 }
 

@@ -71,6 +71,8 @@ pack_dir() {
 pack_all_objs "$BASEDIR" "*/bin/qemu-*"
 pack_all_objs "$BASEDIR" "*/lib/*.dylib"
 pack_all_objs "$BASEDIR" "*/lib/*.a"
+pack_dir "$BASEDIR" "Frameworks" # for all the Info.plist
+pack_all_objs "$BASEDIR" "*/Frameworks/*.framework/*"
 pack_dir "$BASEDIR" "include"
 pack_dir "$BASEDIR" "lib/glib-2.0/include"
 pack_dir "$BASEDIR" "qapi"
