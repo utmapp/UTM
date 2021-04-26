@@ -309,6 +309,7 @@ fixup () {
     BASE=$(basename "$FILE")
     BASEFILENAME=${BASE%.*}
     LIBNAME=${BASEFILENAME#lib*}
+    BUNDLE_ID="com.utmapp.${LIBNAME//_/-}"
     FRAMEWORKNAME="$LIBNAME.framework"
     FRAMEWORKPATH="$PREFIX/Frameworks/$FRAMEWORKNAME"
     NEWFILE="$FRAMEWORKPATH/$LIBNAME"
@@ -319,7 +320,10 @@ fixup () {
     mkdir -p "$FRAMEWORKPATH"
     cp -a "$FILE" "$NEWFILE"
     /usr/libexec/PlistBuddy -c "Add :CFBundleExecutable string $LIBNAME" "$FRAMEWORKPATH/Info.plist"
-    /usr/libexec/PlistBuddy -c "Add :CFBundleIdentifier string com.utmapp.$LIBNAME" "$FRAMEWORKPATH/Info.plist"
+    /usr/libexec/PlistBuddy -c "Add :CFBundleIdentifier string $BUNDLE_ID" "$FRAMEWORKPATH/Info.plist"
+    /usr/libexec/PlistBuddy -c "Add :MinimumOSVersion string $SDKMINVER" "$FRAMEWORKPATH/Info.plist"
+    /usr/libexec/PlistBuddy -c "Add :CFBundleVersion string 1" "$FRAMEWORKPATH/Info.plist"
+    /usr/libexec/PlistBuddy -c "Add :CFBundleShortVersionString string 1.0" "$FRAMEWORKPATH/Info.plist"
     newname="@rpath/$FRAMEWORKNAME/$LIBNAME"
     install_name_tool -id "$newname" "$NEWFILE"
     for g in $LIST
