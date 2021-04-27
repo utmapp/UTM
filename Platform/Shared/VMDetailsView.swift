@@ -59,6 +59,7 @@ struct VMDetailsView: View {
                             .frame(maxWidth: .infinity)
                         Text(notes)
                             .font(.body)
+                            .fixedSize(horizontal: false, vertical: true)
                             .padding()
                             .frame(maxWidth: .infinity)
                     }
@@ -70,6 +71,7 @@ struct VMDetailsView: View {
                         if !notes.isEmpty {
                             Text(notes)
                                 .font(.body)
+                                .fixedSize(horizontal: false, vertical: true)
                         }
                         VMRemovableDrivesView(vm: vm)
                     }.padding([.leading, .trailing, .bottom])

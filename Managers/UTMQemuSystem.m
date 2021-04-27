@@ -246,7 +246,7 @@ static size_t sysctl_read(const char *name) {
             case UTMDiskImageTypeDisk:
             case UTMDiskImageTypeCD: {
                 NSString *interface = [self.configuration driveInterfaceTypeForIndex:i];
-                BOOL removable = [self.configuration driveRemovableForIndex:i];
+                BOOL removable = (type == UTMDiskImageTypeCD) || [self.configuration driveRemovableForIndex:i];
                 NSString *identifier = [NSString stringWithFormat:@"drive%lu", i];
                 NSString *realInterface = [self expandDriveInterface:interface identifier:identifier removable:removable busInterfaceMap:busInterfaceMap];
                 NSString *drive;
@@ -511,7 +511,8 @@ static size_t sysctl_read(const char *name) {
     [self pushArgv:[self tcgAccelProperties]];
     [self architectureSpecificConfiguration];
     [self targetSpecificConfiguration];
-    if (![self.configuration.systemBootDevice isEqualToString:@"hdd"]) {
+    // legacy boot order; new bootindex uses drive ordering
+    if (self.configuration.systemBootDevice.length > 0 && ![self.configuration.systemBootDevice isEqualToString:@"hdd"]) {
         [self pushArgv:@"-boot"];
         if ([self.configuration.systemBootDevice isEqualToString:@"floppy"]) {
             [self pushArgv:@"order=ab"];
@@ -522,14 +523,19 @@ static size_t sysctl_read(const char *name) {
     [self pushArgv:@"-m"];
     [self pushArgv:[self.configuration.systemMemory stringValue]];
     // < macOS 11.3 we use fork() which is buggy and things are broken
+    BOOL forceDisableSound = NO;
     if (@available(macOS 11.3, *)) {
-        if (self.configuration.soundEnabled) {
+    } else {
+        if (self.configuration.displayConsoleOnly) {
+            forceDisableSound = YES;
+        }
+    }
+    if (self.configuration.soundEnabled && !forceDisableSound) {
+        [self pushArgv:@"-device"];
+        [self pushArgv:self.configuration.soundCard];
+        if ([self.configuration.soundCard containsString:@"hda"]) {
             [self pushArgv:@"-device"];
-            [self pushArgv:self.configuration.soundCard];
-            if ([self.configuration.soundCard containsString:@"hda"]) {
-                [self pushArgv:@"-device"];
-                [self pushArgv:@"hda-duplex"];
-            }
+            [self pushArgv:@"hda-duplex"];
         }
     }
     [self pushArgv:@"-name"];

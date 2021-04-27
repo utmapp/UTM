@@ -63,9 +63,6 @@ struct VMConfigSystemView: View {
                     Section(header: Text("QEMU Machine Properties")) {
                         TextField("None", text: $config.systemMachineProperties.bound)
                     }
-                    Section(header: Text("Boot Options")) {
-                        VMConfigStringPicker(selection: $config.systemBootDevice, label: Text("Boot Order"), rawValues: UTMConfiguration.supportedBootDevices(), displayValues: UTMConfiguration.supportedBootDevicesPretty())
-                    }
                 }
             }
         }.alert(item: $warningMessage) { warning in

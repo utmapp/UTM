@@ -583,8 +583,13 @@ static CGFloat CGPointToPixel(CGFloat point) {
 #pragma mark - Touch event handling
 
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
-    if (!self.vmConfiguration.inputLegacy) {
+    if (!_mouseCaptured && !self.vmConfiguration.inputLegacy) {
         for (UITouch *touch in [event touchesForView:self.mtkView]) {
+            if (@available(iOS 14, *)) {
+                if (self.prefersPointerLocked && (touch.type == UITouchTypeIndirect || touch.type == UITouchTypeIndirectPointer)) {
+                    continue; // skip indirect touches if we are capturing mouse input
+                }
+            }
             VMMouseType type = [self touchTypeToMouseType:touch.type];
             if ([self switchMouseType:type]) {
                 [self dragCursor:UIGestureRecognizerStateEnded primary:YES secondary:YES middle:YES]; // reset drag

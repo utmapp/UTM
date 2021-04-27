@@ -21,9 +21,78 @@
 #import "VMDisplayMetalViewController+Pointer.h"
 #import "VMCursor.h"
 #import "CSDisplayMetal.h"
+#import "VMScroll.h"
+#import "UTMVirtualMachine.h"
+#import "UTMVirtualMachine+SPICE.h"
+#import "UTMLogging.h"
+
+@interface VMDisplayMetalViewController ()
+
+- (BOOL)switchMouseType:(VMMouseType)type; // defined in VMDisplayMetalViewController+Touch.m
+
+@end
 
 NS_AVAILABLE_IOS(13.4)
 @implementation VMDisplayMetalViewController (Pointer)
+
+#pragma mark - GCMouse
+
+- (void)initGCMouse {
+    if (@available(iOS 14.0, *)) {  //if ios 14.0 above, use CGMouse instead
+        [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(mouseDidBecomeCurrent:) name:GCMouseDidBecomeCurrentNotification object:nil];
+        [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(mouseDidStopBeingCurrent:) name:GCMouseDidStopBeingCurrentNotification object:nil];
+    }
+}
+
+- (BOOL)prefersPointerLocked {
+    return _mouseCaptured;
+}
+
+- (void)mouseDidBecomeCurrent:(NSNotification *)notification API_AVAILABLE(ios(14)) {
+    GCMouse *mouse = notification.object;
+    UTMLog(@"mouseDidBecomeCurrent: %p", mouse);
+    if (!mouse) {
+        UTMLog(@"invalid mouse object!");
+        return;
+    }
+    mouse.mouseInput.mouseMovedHandler = ^(GCMouseInput * _Nonnull mouse, float deltaX, float deltaY) {
+        [self.vmInput sendMouseMotion:self.mouseButtonDown point:CGPointMake(deltaX, -deltaY)];
+    };
+    mouse.mouseInput.leftButton.pressedChangedHandler = ^(GCControllerButtonInput * _Nonnull button, float value, BOOL pressed) {
+        self->_mouseLeftDown = pressed;
+        [self.vmInput sendMouseButton:kCSInputButtonLeft pressed:pressed point:CGPointZero];
+    };
+    mouse.mouseInput.rightButton.pressedChangedHandler = ^(GCControllerButtonInput * _Nonnull button, float value, BOOL pressed) {
+        self->_mouseRightDown = pressed;
+        [self.vmInput sendMouseButton:kCSInputButtonRight pressed:pressed point:CGPointZero];
+
+    };
+    mouse.mouseInput.middleButton.pressedChangedHandler = ^(GCControllerButtonInput * _Nonnull button, float value, BOOL pressed) {
+        self->_mouseMiddleDown = pressed;
+        [self.vmInput sendMouseButton:kCSInputButtonMiddle pressed:pressed point:CGPointZero];
+    };
+    // no handler to the gcmouse scroll event, gestureScroll works fine.
+    [self switchMouseType:VMMouseTypeRelative];
+    _mouseCaptured = YES;
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self setNeedsUpdateOfPrefersPointerLocked];
+    });
+}
+
+- (void)mouseDidStopBeingCurrent:(NSNotification *)notification API_AVAILABLE(ios(14)) {
+    GCMouse *mouse = notification.object;
+    UTMLog(@"mouseDidStopBeingCurrent: %p", mouse);
+    mouse.mouseInput.mouseMovedHandler = nil;
+    mouse.mouseInput.leftButton.pressedChangedHandler = nil;
+    mouse.mouseInput.rightButton.pressedChangedHandler = nil;
+    mouse.mouseInput.middleButton.pressedChangedHandler = nil;
+    _mouseCaptured = NO;
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self setNeedsUpdateOfPrefersPointerLocked];
+    });
+}
+
+#pragma mark - UIPointerInteractionDelegate
 
 // Add pointer interaction to VM view
 -(void)initPointerInteraction {
@@ -42,7 +111,6 @@ NS_AVAILABLE_IOS(13.4)
     return !self.vmConfiguration.inputLegacy && !self.vmInput.serverModeCursor && self.indirectMouseType != VMMouseTypeRelative;
 }
 
-#pragma mark - UIPointerInteractionDelegate
 - (UIPointerStyle *)pointerInteraction:(UIPointerInteraction *)interaction styleForRegion:(UIPointerRegion *)region {
     // Hide cursor while hovering in VM view
     if (interaction.view == self.mtkView && self.hasTouchpadPointer) {
@@ -74,6 +142,11 @@ static CGFloat CGPointToPixel(CGFloat point) {
 
 
 - (UIPointerRegion *)pointerInteraction:(UIPointerInteraction *)interaction regionForRequest:(UIPointerRegionRequest *)request defaultRegion:(UIPointerRegion *)defaultRegion {
+    if (@available(iOS 14.0, *)) {
+        if (self.prefersPointerLocked) {
+            return nil;
+        }
+    }
     // Requesting region for the VM display?
     if (interaction.view == self.mtkView && self.hasTouchpadPointer) {
         // Then we need to find out if the pointer is in the actual display area or outside
