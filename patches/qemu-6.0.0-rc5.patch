@@ -27172,8 +27172,8 @@ diff -Naur a/tcg/aarch64-tcti/tcti-gadget-gen.py b/tcg/aarch64-tcti/tcti-gadget-
 +
 +    # Create our C/ASM framing.
 +    #print(f"__attribute__((naked)) static void gadget_{name}(void)")
-+    print(f"__attribute__((naked)) void gadget_{name}(void);")
-+    print(f"__attribute__((naked)) void gadget_{name}(void)")
++    print(f"__attribute__((naked)) static void gadget_{name}(void);")
++    print(f"__attribute__((naked)) static void gadget_{name}(void)")
 +    print("{")
 +
 +    # Add the core gadget
@@ -27236,7 +27236,7 @@ diff -Naur a/tcg/aarch64-tcti/tcti-gadget-gen.py b/tcg/aarch64-tcti/tcti-gadget-
 +    with_register_substitutions(name, ("d", "n", "m"), *lines)
 +
 +    # Print out an array that contains all of our gadgets, for lookup.
-+    print(f"void* gadget_{name}[{TCG_REGISTER_COUNT}][{TCG_REGISTER_COUNT}][{TCG_REGISTER_COUNT}] = ", end="")
++    print(f"static void* gadget_{name}[{TCG_REGISTER_COUNT}][{TCG_REGISTER_COUNT}][{TCG_REGISTER_COUNT}] = ", end="")
 +    print("{")
 +
 +    # D array
@@ -27261,7 +27261,7 @@ diff -Naur a/tcg/aarch64-tcti/tcti-gadget-gen.py b/tcg/aarch64-tcti/tcti-gadget-
 +    with_register_substitutions(name, ["d", "n"], *lines, immediate_range=immediate_range)
 +
 +    # Print out an array that contains all of our gadgets, for lookup.
-+    print(f"void* gadget_{name}[{TCG_REGISTER_COUNT}][{TCG_REGISTER_COUNT}][{len(immediate_range)}] = ", end="")
++    print(f"static void* gadget_{name}[{TCG_REGISTER_COUNT}][{TCG_REGISTER_COUNT}][{len(immediate_range)}] = ", end="")
 +    print("{")
 +
 +    # D array
@@ -27286,7 +27286,7 @@ diff -Naur a/tcg/aarch64-tcti/tcti-gadget-gen.py b/tcg/aarch64-tcti/tcti-gadget-
 +    with_register_substitutions(name, substitutions, *lines)
 +
 +    # Print out an array that contains all of our gadgets, for lookup.
-+    print(f"void* gadget_{name}[{TCG_REGISTER_COUNT}][{TCG_REGISTER_COUNT}] = ", end="")
++    print(f"static void* gadget_{name}[{TCG_REGISTER_COUNT}][{TCG_REGISTER_COUNT}] = ", end="")
 +    print("{")
 +
 +    # N array
@@ -27351,7 +27351,7 @@ diff -Naur a/tcg/aarch64-tcti/tcti-gadget-gen.py b/tcg/aarch64-tcti/tcti-gadget-
 +    with_register_substitutions(name, (substitution,), *lines)
 +
 +    # Print out an array that contains all of our gadgets, for lookup.
-+    print(f"void* gadget_{name}[{TCG_REGISTER_COUNT}] = ", end="")
++    print(f"static void* gadget_{name}[{TCG_REGISTER_COUNT}] = ", end="")
 +    print("{")
 +
 +    for n in TCG_REGISTER_NUMBERS:
@@ -27365,7 +27365,7 @@ diff -Naur a/tcg/aarch64-tcti/tcti-gadget-gen.py b/tcg/aarch64-tcti/tcti-gadget-
 +    with_register_substitutions(name, ['d'], *lines, immediate_range=immediate_range)
 +
 +    # Print out an array that contains all of our gadgets, for lookup.
-+    print(f"void* gadget_{name}[{TCG_REGISTER_COUNT}][{len(immediate_range)}] = ", end="")
++    print(f"static void* gadget_{name}[{TCG_REGISTER_COUNT}][{len(immediate_range)}] = ", end="")
 +    print("{")
 +
 +    # D array

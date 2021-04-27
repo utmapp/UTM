@@ -113,6 +113,12 @@ struct Visitor
        The core takes care of the return type in the public interface. */
     void (*optional)(Visitor *v, const char *name, bool *present);
 
+    /* Optional */
+    bool (*deprecated_accept)(Visitor *v, const char *name, Error **errp);
+
+    /* Optional */
+    bool (*deprecated)(Visitor *v, const char *name);
+
     /* Must be set */
     VisitorType type;
 

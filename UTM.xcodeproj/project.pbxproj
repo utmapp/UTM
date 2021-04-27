@@ -123,7 +123,7 @@
 		CE0B6D2524AD57FC00FE012D /* qapi-commands-sockets.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C0BD23FCEC02001177D6 /* qapi-commands-sockets.c */; };
 		CE0B6D2624AD57FC00FE012D /* qapi-commands-run-state.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C07E23FCEBFF001177D6 /* qapi-commands-run-state.c */; };
 		CE0B6D2724AD57FC00FE012D /* qapi-commands-tpm.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C0BF23FCEC02001177D6 /* qapi-commands-tpm.c */; };
-		CE0B6D2824AD57FC00FE012D /* qapi-dispatch-events.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C09223FCEC00001177D6 /* qapi-dispatch-events.c */; };
+		CE0B6D2824AD57FC00FE012D /* qapi-emit-events.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C09223FCEC00001177D6 /* qapi-emit-events.c */; };
 		CE0B6D2924AD57FC00FE012D /* qapi-commands-machine-target.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C0DB23FCEC03001177D6 /* qapi-commands-machine-target.c */; };
 		CE0B6D2A24AD57FC00FE012D /* qapi-commands.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C0D223FCEC03001177D6 /* qapi-commands.c */; };
 		CE0B6D2B24AD57FC00FE012D /* qapi-events-error.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C0F023FCEC04001177D6 /* qapi-events-error.c */; };
@@ -451,7 +451,7 @@
 		CE2D930E24AD46670059923A /* qapi-commands-block-core.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C0DF23FCEC04001177D6 /* qapi-commands-block-core.c */; };
 		CE2D930F24AD46670059923A /* qapi-types-authz.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C0DA23FCEC03001177D6 /* qapi-types-authz.c */; };
 		CE2D931024AD46670059923A /* qapi-types-qdev.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C15B23FCEC0A001177D6 /* qapi-types-qdev.c */; };
-		CE2D931224AD46670059923A /* qapi-dispatch-events.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C09223FCEC00001177D6 /* qapi-dispatch-events.c */; };
+		CE2D931224AD46670059923A /* qapi-emit-events.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C09223FCEC00001177D6 /* qapi-emit-events.c */; };
 		CE2D931324AD46670059923A /* qapi-visit-authz.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C0B823FCEC02001177D6 /* qapi-visit-authz.c */; };
 		CE2D931524AD46670059923A /* VMDisplayMetalViewController+Pointer.m in Sources */ = {isa = PBXBuildFile; fileRef = 83FBDD55242FA7BC00D2C5D7 /* VMDisplayMetalViewController+Pointer.m */; };
 		CE2D931624AD46670059923A /* qapi-commands-run-state.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C07E23FCEBFF001177D6 /* qapi-commands-run-state.c */; };
@@ -896,7 +896,7 @@
 		CEA45F06263519B5002FA97D /* qapi-types-qdev.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C15B23FCEC0A001177D6 /* qapi-types-qdev.c */; };
 		CEA45F07263519B5002FA97D /* VMConfigSystemViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CE74C285225D88ED004E4FF1 /* VMConfigSystemViewController.m */; };
 		CEA45F08263519B5002FA97D /* ActivityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE8813D224CD230300532628 /* ActivityView.swift */; };
-		CEA45F09263519B5002FA97D /* qapi-dispatch-events.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C09223FCEC00001177D6 /* qapi-dispatch-events.c */; };
+		CEA45F09263519B5002FA97D /* qapi-emit-events.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C09223FCEC00001177D6 /* qapi-emit-events.c */; };
 		CEA45F0A263519B5002FA97D /* UTMPasteboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEDF83F8258AE24E0030E4AC /* UTMPasteboard.swift */; };
 		CEA45F0B263519B5002FA97D /* qapi-visit-authz.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C0B823FCEC02001177D6 /* qapi-visit-authz.c */; };
 		CEA45F0C263519B5002FA97D /* VMPlaceholderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE2D954224AD4F980059923A /* VMPlaceholderView.swift */; };
@@ -1510,7 +1510,7 @@
 		CE23C08F23FCEC00001177D6 /* qapi-commands-net.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-commands-net.c"; path = "$(SYSROOT_DIR)/qapi/qapi-commands-net.c"; sourceTree = SOURCE_ROOT; };
 		CE23C09023FCEC00001177D6 /* qapi-visit-trace.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-visit-trace.h"; path = "$(SYSROOT_DIR)/qapi/qapi-visit-trace.h"; sourceTree = SOURCE_ROOT; };
 		CE23C09123FCEC00001177D6 /* qapi-events-net.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-events-net.h"; path = "$(SYSROOT_DIR)/qapi/qapi-events-net.h"; sourceTree = SOURCE_ROOT; };
-		CE23C09223FCEC00001177D6 /* qapi-dispatch-events.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-dispatch-events.c"; path = "$(SYSROOT_DIR)/qapi/qapi-dispatch-events.c"; sourceTree = SOURCE_ROOT; };
+		CE23C09223FCEC00001177D6 /* qapi-emit-events.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-emit-events.c"; path = "$(SYSROOT_DIR)/qapi/qapi-emit-events.c"; sourceTree = SOURCE_ROOT; };
 		CE23C09323FCEC00001177D6 /* qapi-types-qdev.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-types-qdev.h"; path = "$(SYSROOT_DIR)/qapi/qapi-types-qdev.h"; sourceTree = SOURCE_ROOT; };
 		CE23C09423FCEC00001177D6 /* qapi-commands-misc-target.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-commands-misc-target.h"; path = "$(SYSROOT_DIR)/qapi/qapi-commands-misc-target.h"; sourceTree = SOURCE_ROOT; };
 		CE23C09523FCEC00001177D6 /* qapi-visit-job.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-visit-job.c"; path = "$(SYSROOT_DIR)/qapi/qapi-visit-job.c"; sourceTree = SOURCE_ROOT; };
@@ -1706,7 +1706,7 @@
 		CE23C15323FCEC09001177D6 /* qapi-commands-machine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-commands-machine.h"; path = "$(SYSROOT_DIR)/qapi/qapi-commands-machine.h"; sourceTree = SOURCE_ROOT; };
 		CE23C15423FCEC0A001177D6 /* qapi-types-trace.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-types-trace.h"; path = "$(SYSROOT_DIR)/qapi/qapi-types-trace.h"; sourceTree = SOURCE_ROOT; };
 		CE23C15523FCEC0A001177D6 /* qapi-commands-qom.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-commands-qom.c"; path = "$(SYSROOT_DIR)/qapi/qapi-commands-qom.c"; sourceTree = SOURCE_ROOT; };
-		CE23C15623FCEC0A001177D6 /* qapi-dispatch-events.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-dispatch-events.h"; path = "$(SYSROOT_DIR)/qapi/qapi-dispatch-events.h"; sourceTree = SOURCE_ROOT; };
+		CE23C15623FCEC0A001177D6 /* qapi-emit-events.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-emit-events.h"; path = "$(SYSROOT_DIR)/qapi/qapi-emit-events.h"; sourceTree = SOURCE_ROOT; };
 		CE23C15723FCEC0A001177D6 /* qapi-commands-job.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-commands-job.c"; path = "$(SYSROOT_DIR)/qapi/qapi-commands-job.c"; sourceTree = SOURCE_ROOT; };
 		CE23C15823FCEC0A001177D6 /* qapi-types-machine.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-types-machine.c"; path = "$(SYSROOT_DIR)/qapi/qapi-types-machine.c"; sourceTree = SOURCE_ROOT; };
 		CE23C15923FCEC0A001177D6 /* qapi-events-rocker.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-events-rocker.c"; path = "$(SYSROOT_DIR)/qapi/qapi-events-rocker.c"; sourceTree = SOURCE_ROOT; };
@@ -2543,8 +2543,8 @@
 				CE23C10323FCEC05001177D6 /* qapi-commands-ui.h */,
 				CE23C0D223FCEC03001177D6 /* qapi-commands.c */,
 				CE23C0AA23FCEC01001177D6 /* qapi-commands.h */,
-				CE23C09223FCEC00001177D6 /* qapi-dispatch-events.c */,
-				CE23C15623FCEC0A001177D6 /* qapi-dispatch-events.h */,
+				CE23C09223FCEC00001177D6 /* qapi-emit-events.c */,
+				CE23C15623FCEC0A001177D6 /* qapi-emit-events.h */,
 				2CE8EAF22572E0D0000E2EBB /* qapi-events-acpi.c */,
 				2CE8EAF12572E0D0000E2EBB /* qapi-events-acpi.h */,
 				CE23C13E23FCEC08001177D6 /* qapi-events-audio.c */,
@@ -3582,7 +3582,7 @@
 				CE2D931024AD46670059923A /* qapi-types-qdev.c in Sources */,
 				CEB63A8624F46E6E00CAF323 /* VMConfigSystemViewController.m in Sources */,
 				CE8813D324CD230300532628 /* ActivityView.swift in Sources */,
-				CE2D931224AD46670059923A /* qapi-dispatch-events.c in Sources */,
+				CE2D931224AD46670059923A /* qapi-emit-events.c in Sources */,
 				CEDF83F9258AE24E0030E4AC /* UTMPasteboard.swift in Sources */,
 				CE2D931324AD46670059923A /* qapi-visit-authz.c in Sources */,
 				CE2D956924AD4F990059923A /* VMPlaceholderView.swift in Sources */,
@@ -3787,7 +3787,7 @@
 				2CE8EB0A2572E173000E2EBB /* qapi-visit-block-export.c in Sources */,
 				2CE8EB052572E166000E2EBB /* qapi-visit-acpi.c in Sources */,
 				CE0B6D2D24AD57FC00FE012D /* qapi-commands-machine.c in Sources */,
-				CE0B6D2824AD57FC00FE012D /* qapi-dispatch-events.c in Sources */,
+				CE0B6D2824AD57FC00FE012D /* qapi-emit-events.c in Sources */,
 				CEEC811B24E48EC700ACB0B3 /* SettingsView.swift in Sources */,
 				CE0B6D6624AD584D00FE012D /* qapi-visit-machine-target.c in Sources */,
 				CE2D957024AD4F990059923A /* VMRemovableDrivesView.swift in Sources */,
@@ -4072,7 +4072,7 @@
 				CEA45F06263519B5002FA97D /* qapi-types-qdev.c in Sources */,
 				CEA45F07263519B5002FA97D /* VMConfigSystemViewController.m in Sources */,
 				CEA45F08263519B5002FA97D /* ActivityView.swift in Sources */,
-				CEA45F09263519B5002FA97D /* qapi-dispatch-events.c in Sources */,
+				CEA45F09263519B5002FA97D /* qapi-emit-events.c in Sources */,
 				CEA45F0A263519B5002FA97D /* UTMPasteboard.swift in Sources */,
 				CEA45F0B263519B5002FA97D /* qapi-visit-authz.c in Sources */,
 				CEA45F0C263519B5002FA97D /* VMPlaceholderView.swift in Sources */,
