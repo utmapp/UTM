@@ -1861,7 +1861,7 @@
 		CE4EF2712506DD7900E9D33B /* VMRemovableDrivesView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = VMRemovableDrivesView.xib; sourceTree = "<group>"; };
 		CE5076D9250AB55D00C26C19 /* VMDisplayMetalViewController+Pencil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "VMDisplayMetalViewController+Pencil.h"; sourceTree = "<group>"; };
 		CE5076DA250AB55D00C26C19 /* VMDisplayMetalViewController+Pencil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "VMDisplayMetalViewController+Pencil.m"; sourceTree = "<group>"; };
-		CE50A41A2637A7450050430F /* CodeSigning.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = CodeSigning.xcconfig; sourceTree = "<group>"; };
+		CE50A41F2637BB200050430F /* Build.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Build.xcconfig; sourceTree = "<group>"; };
 		CE54252C2436E48D00E520F7 /* UTMConfigurationPortForward.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UTMConfigurationPortForward.h; sourceTree = "<group>"; };
 		CE54252D2436E48D00E520F7 /* UTMConfigurationPortForward.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UTMConfigurationPortForward.m; sourceTree = "<group>"; };
 		CE54252F2437C09C00E520F7 /* UTMConfiguration+Drives.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UTMConfiguration+Drives.h"; sourceTree = "<group>"; };
@@ -2758,7 +2758,7 @@
 		CE550BC0225947990063E575 = {
 			isa = PBXGroup;
 			children = (
-				CE50A41A2637A7450050430F /* CodeSigning.xcconfig */,
+				CE50A41F2637BB200050430F /* Build.xcconfig */,
 				CE258ACC22715F8300E5A333 /* README.md */,
 				CE4AA1462262FB58002E4A54 /* CocoaSpice */,
 				CE31C242225E543A00A965DD /* Configuration */,
@@ -4279,7 +4279,7 @@
 		};
 		CE550BDD2259479D0063E575 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = CE50A41A2637A7450050430F /* CodeSigning.xcconfig */;
+			baseConfigurationReference = CE50A41F2637BB200050430F /* Build.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
@@ -4312,7 +4312,6 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 28;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
@@ -4347,7 +4346,6 @@
 					"$(PROJECT_DIR)/$(SYSROOT_DIR)/lib",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 11.0;
-				MARKETING_VERSION = 2.1.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -4358,7 +4356,7 @@
 		};
 		CE550BDE2259479D0063E575 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = CE50A41A2637A7450050430F /* CodeSigning.xcconfig */;
+			baseConfigurationReference = CE50A41F2637BB200050430F /* Build.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
@@ -4391,7 +4389,6 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 28;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -4420,7 +4417,6 @@
 					"$(PROJECT_DIR)/$(SYSROOT_DIR)/lib",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 11.0;
-				MARKETING_VERSION = 2.1.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
