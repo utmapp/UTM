@@ -444,7 +444,11 @@ ios | ios-tci )
     esac
     CFLAGS_TARGET=
     if [ "$PLATFORM" == "ios-tci" ]; then
-        TCI_BUILD_FLAGS="--enable-tcg-interpreter"
+        if [ "$ARCH" == "arm64" ]; then
+            TCI_BUILD_FLAGS="--enable-tcg-tcti"
+        else
+            TCI_BUILD_FLAGS="--enable-tcg-interpreter"
+        fi
         PLATFORM_FAMILY_NAME="iOS-TCI"
         SKIP_USB_BUILD=1
     else
