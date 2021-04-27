@@ -16,7 +16,7 @@
 
 import Carbon.HIToolbox
 
-class VMDisplayMetalWindowController: VMDisplayWindowController, UTMSpiceIODelegate {
+class VMDisplayMetalWindowController: VMDisplayWindowController {
     var metalView: VMMetalView!
     var renderer: UTMRenderer?
     
