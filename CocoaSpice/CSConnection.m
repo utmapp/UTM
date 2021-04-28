@@ -274,9 +274,9 @@ static void cs_connection_destroy(SpiceSession *session,
         g_signal_connect(self.spiceSession, "disconnected",
                          G_CALLBACK(cs_connection_destroy), GLIB_OBJC_RETAIN(self));
         
+#if !defined(WITH_QEMU_TCI)
         SpiceUsbDeviceManager *manager = spice_usb_device_manager_get(self.spiceSession, NULL);
         g_assert(manager != NULL);
-#if !defined(WITH_QEMU_TCI)
         self.usbManager = [[CSUSBManager alloc] initWithUsbDeviceManager:manager];
 #endif
         self.input = [[CSInput alloc] initWithSession:self.spiceSession];
