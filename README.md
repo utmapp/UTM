@@ -26,6 +26,8 @@ UTM/QEMU requires dynamic code generation (JIT) for maximum performance. JIT on 
 
 UTM SE ("slow edition") uses a [threaded interpreter][3] which performs better than a traditional interpreter but still slower than JIT. This technique is similar to what [iSH][4] does for dynamic execution. As a result, UTM SE does not require jailbreaking or any JIT workarounds and can be sideloaded as a regular app.
 
+To optimize for size and build times, only the following architectures are included in UTM SE: ARM, PPC, RISC-V, and x86 (all with both 32-bit and 64-bit variants).
+
 ## Install
 
 UTM (SE) for iOS: https://getutm.app/install/
