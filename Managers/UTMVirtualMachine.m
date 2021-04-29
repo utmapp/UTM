@@ -84,7 +84,7 @@ NSString *const kSuspendSnapshotName = @"suspend";
         ((UTMSpiceIO *)self.ioService).delegate = ioDelegate;
     } else if ([self.ioService isKindOfClass:[UTMTerminalIO class]]) {
         ((UTMTerminalIO *)self.ioService).terminal.delegate = ioDelegate;
-    } else {
+    } else if (self.state == kVMStarted) {
         NSAssert(0, @"ioService class is invalid: %@", NSStringFromClass([self.ioService class]));
     }
 }
