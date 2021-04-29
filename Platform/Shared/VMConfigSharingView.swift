@@ -46,6 +46,7 @@ struct VMConfigSharingView: View {
                     Text("Note: select the path to share from the main screen.")
                 }
                 
+                #if !WITH_QEMU_TCI
                 Section(header: Text("USB Sharing"), footer: EmptyView().padding(.bottom)) {
                     if !jb_has_usb_entitlement() {
                         Text("USB not supported in this build of UTM.")
@@ -66,6 +67,7 @@ struct VMConfigSharingView: View {
                             .multilineTextAlignment(.trailing)
                     }
                 }.disabled(!jb_has_usb_entitlement())
+                #endif
             }.disabled(config.displayConsoleOnly)
         }
     }

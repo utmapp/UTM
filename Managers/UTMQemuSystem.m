@@ -365,6 +365,7 @@ static size_t sysctl_read(const char *name) {
         [self pushArgv:@"-device"];
         [self pushArgv:@"usb-kbd"];
     }
+#if !defined(WITH_QEMU_TCI)
     // set up usb forwarding
     for (int i = 0; i < [self.configuration.usbRedirectionMaximumDevices integerValue]; i++) {
         [self pushArgv:@"-chardev"];
@@ -372,6 +373,7 @@ static size_t sysctl_read(const char *name) {
         [self pushArgv:@"-device"];
         [self pushArgv:[NSString stringWithFormat:@"usb-redir,chardev=usbredirchardev%d,id=usbredirdev%d", i, i]];
     }
+#endif
 }
 
 - (void)argsForSharing {
