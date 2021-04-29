@@ -993,7 +993,6 @@
 		CEA45F6F263519B5002FA97D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CE550BD52259479D0063E575 /* Assets.xcassets */; };
 		CEA45F70263519B5002FA97D /* hterm_all.js in Resources */ = {isa = PBXBuildFile; fileRef = E28394BD240C22F1006742E2 /* hterm_all.js */; };
 		CEA45F72263519B5002FA97D /* gpg-error.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63F122653C7400FC7E63 /* gpg-error.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CEA45F73263519B5002FA97D /* qemu-mips64el-softmmu.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D640822653C7500FC7E63 /* qemu-mips64el-softmmu.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CEA45F74263519B5002FA97D /* gstcontroller-1.0.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63EE22653C7400FC7E63 /* gstcontroller-1.0.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CEA45F75263519B5002FA97D /* gstallocators-1.0.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D641122653C7500FC7E63 /* gstallocators-1.0.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CEA45F76263519B5002FA97D /* gstbase-1.0.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63E822653C7400FC7E63 /* gstbase-1.0.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
@@ -1002,37 +1001,22 @@
 		CEA45F7A263519B5002FA97D /* gio-2.0.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63F822653C7400FC7E63 /* gio-2.0.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CEA45F7B263519B5002FA97D /* png16.16.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D640522653C7500FC7E63 /* png16.16.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CEA45F7C263519B5002FA97D /* gstnet-1.0.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63E522653C7400FC7E63 /* gstnet-1.0.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CEA45F7D263519B5002FA97D /* qemu-cris-softmmu.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63E622653C7400FC7E63 /* qemu-cris-softmmu.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CEA45F7E263519B5002FA97D /* crypto.1.1.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D640A22653C7500FC7E63 /* crypto.1.1.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CEA45F7F263519B5002FA97D /* qemu-riscv64-softmmu.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63FB22653C7500FC7E63 /* qemu-riscv64-softmmu.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CEA45F80263519B5002FA97D /* gstapp-1.0.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63DB22653C7300FC7E63 /* gstapp-1.0.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CEA45F81263519B5002FA97D /* qemu-moxie-softmmu.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63EA22653C7400FC7E63 /* qemu-moxie-softmmu.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CEA45F82263519B5002FA97D /* qemu-microblaze-softmmu.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63E422653C7400FC7E63 /* qemu-microblaze-softmmu.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CEA45F83263519B5002FA97D /* qemu-sh4-softmmu.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D640222653C7500FC7E63 /* qemu-sh4-softmmu.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CEA45F84263519B5002FA97D /* gsttag-1.0.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63F622653C7400FC7E63 /* gsttag-1.0.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CEA45F85263519B5002FA97D /* qemu-or1k-softmmu.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D640B22653C7500FC7E63 /* qemu-or1k-softmmu.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CEA45F86263519B5002FA97D /* gstrtp-1.0.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63DD22653C7400FC7E63 /* gstrtp-1.0.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CEA45F87263519B5002FA97D /* gstriff-1.0.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63DE22653C7400FC7E63 /* gstriff-1.0.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CEA45F88263519B5002FA97D /* qemu-ppc-softmmu.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63E722653C7400FC7E63 /* qemu-ppc-softmmu.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CEA45F89263519B5002FA97D /* phodav-2.0.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE059DC0243BD67100338317 /* phodav-2.0.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CEA45F8A263519B5002FA97D /* gthread-2.0.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63DC22653C7300FC7E63 /* gthread-2.0.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CEA45F8B263519B5002FA97D /* qemu-aarch64-softmmu.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63FD22653C7500FC7E63 /* qemu-aarch64-softmmu.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CEA45F8D263519B5002FA97D /* qemu-mips-softmmu.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63FF22653C7500FC7E63 /* qemu-mips-softmmu.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CEA45F8E263519B5002FA97D /* qemu-s390x-softmmu.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63FC22653C7500FC7E63 /* qemu-s390x-softmmu.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CEA45F8F263519B5002FA97D /* gobject-2.0.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63F522653C7400FC7E63 /* gobject-2.0.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CEA45F90263519B5002FA97D /* gmodule-2.0.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63D822653C7300FC7E63 /* gmodule-2.0.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CEA45F91263519B5002FA97D /* qemu-tricore-softmmu.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63EC22653C7400FC7E63 /* qemu-tricore-softmmu.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CEA45F92263519B5002FA97D /* qemu-sparc64-softmmu.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D640F22653C7500FC7E63 /* qemu-sparc64-softmmu.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CEA45F93263519B5002FA97D /* qemu-riscv32-softmmu.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63FA22653C7400FC7E63 /* qemu-riscv32-softmmu.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CEA45F94263519B5002FA97D /* qemu-mips64-softmmu.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63F422653C7400FC7E63 /* qemu-mips64-softmmu.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CEA45F95263519B5002FA97D /* qemu-m68k-softmmu.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63EB22653C7400FC7E63 /* qemu-m68k-softmmu.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CEA45F96263519B5002FA97D /* qemu-sparc-softmmu.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D640D22653C7500FC7E63 /* qemu-sparc-softmmu.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CEA45F97263519B5002FA97D /* qemu-ppc64-softmmu.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D640C22653C7500FC7E63 /* qemu-ppc64-softmmu.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CEA45F98263519B5002FA97D /* qemu-alpha-softmmu.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D641322653C7500FC7E63 /* qemu-alpha-softmmu.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CEA45F99263519B5002FA97D /* qemu-sh4eb-softmmu.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63E122653C7400FC7E63 /* qemu-sh4eb-softmmu.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CEA45F9A263519B5002FA97D /* glib-2.0.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D640422653C7500FC7E63 /* glib-2.0.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CEA45F9B263519B5002FA97D /* qemu-x86_64-softmmu.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D640022653C7500FC7E63 /* qemu-x86_64-softmmu.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CEA45F9C263519B5002FA97D /* qemu-xtensaeb-softmmu.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D641222653C7500FC7E63 /* qemu-xtensaeb-softmmu.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CEA45F9E263519B5002FA97D /* qemu-arm-softmmu.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D640722653C7500FC7E63 /* qemu-arm-softmmu.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CEA45F9F263519B5002FA97D /* intl.8.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63DA22653C7300FC7E63 /* intl.8.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CEA45FA0263519B5002FA97D /* gstreamer-1.0.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63E022653C7400FC7E63 /* gstreamer-1.0.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
@@ -1040,18 +1024,13 @@
 		CEA45FA2263519B5002FA97D /* json-glib-1.0.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63E222653C7400FC7E63 /* json-glib-1.0.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CEA45FA3263519B5002FA97D /* pixman-1.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D641922653C7600FC7E63 /* pixman-1.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CEA45FA4263519B5002FA97D /* jpeg.62.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63D922653C7300FC7E63 /* jpeg.62.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CEA45FA5263519B5002FA97D /* qemu-microblazeel-softmmu.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63F022653C7400FC7E63 /* qemu-microblazeel-softmmu.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CEA45FA6263519B5002FA97D /* qemu-hppa-softmmu.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63F222653C7400FC7E63 /* qemu-hppa-softmmu.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CEA45FA7263519B5002FA97D /* qemu-i386-softmmu.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63D722653C7300FC7E63 /* qemu-i386-softmmu.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CEA45FA8263519B5002FA97D /* spice-client-glib-2.0.8.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63FE22653C7500FC7E63 /* spice-client-glib-2.0.8.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CEA45FA9263519B5002FA97D /* opus.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D640322653C7500FC7E63 /* opus.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CEA45FAA263519B5002FA97D /* gstsdp-1.0.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D641622653C7500FC7E63 /* gstsdp-1.0.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CEA45FAB263519B5002FA97D /* qemu-nios2-softmmu.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63DF22653C7400FC7E63 /* qemu-nios2-softmmu.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CEA45FAC263519B5002FA97D /* gstaudio-1.0.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63EF22653C7400FC7E63 /* gstaudio-1.0.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CEA45FAD263519B5002FA97D /* gstcheck-1.0.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D641422653C7500FC7E63 /* gstcheck-1.0.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CEA45FAE263519B5002FA97D /* qemu-xtensa-softmmu.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63ED22653C7400FC7E63 /* qemu-xtensa-softmmu.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CEA45FAF263519B5002FA97D /* iconv.2.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D641522653C7500FC7E63 /* iconv.2.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CEA45FB0263519B5002FA97D /* qemu-mipsel-softmmu.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D640622653C7500FC7E63 /* qemu-mipsel-softmmu.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CEA45FB1263519B5002FA97D /* gstrtsp-1.0.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D640122653C7500FC7E63 /* gstrtsp-1.0.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CEA45FB2263519B5002FA97D /* spice-server.1.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D641822653C7500FC7E63 /* spice-server.1.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CEA45FB3263519B5002FA97D /* gcrypt.20.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63F322653C7400FC7E63 /* gcrypt.20.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
@@ -1341,7 +1320,6 @@
 			dstSubfolderSpec = 10;
 			files = (
 				CEA45F72263519B5002FA97D /* gpg-error.0.framework in Embed Libraries */,
-				CEA45F73263519B5002FA97D /* qemu-mips64el-softmmu.framework in Embed Libraries */,
 				CEA45F74263519B5002FA97D /* gstcontroller-1.0.0.framework in Embed Libraries */,
 				CEA45F75263519B5002FA97D /* gstallocators-1.0.0.framework in Embed Libraries */,
 				CEA45F76263519B5002FA97D /* gstbase-1.0.0.framework in Embed Libraries */,
@@ -1350,37 +1328,22 @@
 				CEA45F7A263519B5002FA97D /* gio-2.0.0.framework in Embed Libraries */,
 				CEA45F7B263519B5002FA97D /* png16.16.framework in Embed Libraries */,
 				CEA45F7C263519B5002FA97D /* gstnet-1.0.0.framework in Embed Libraries */,
-				CEA45F7D263519B5002FA97D /* qemu-cris-softmmu.framework in Embed Libraries */,
 				CEA45F7E263519B5002FA97D /* crypto.1.1.framework in Embed Libraries */,
 				CEA45F7F263519B5002FA97D /* qemu-riscv64-softmmu.framework in Embed Libraries */,
 				CEA45F80263519B5002FA97D /* gstapp-1.0.0.framework in Embed Libraries */,
-				CEA45F81263519B5002FA97D /* qemu-moxie-softmmu.framework in Embed Libraries */,
-				CEA45F82263519B5002FA97D /* qemu-microblaze-softmmu.framework in Embed Libraries */,
-				CEA45F83263519B5002FA97D /* qemu-sh4-softmmu.framework in Embed Libraries */,
 				CEA45F84263519B5002FA97D /* gsttag-1.0.0.framework in Embed Libraries */,
-				CEA45F85263519B5002FA97D /* qemu-or1k-softmmu.framework in Embed Libraries */,
 				CEA45F86263519B5002FA97D /* gstrtp-1.0.0.framework in Embed Libraries */,
 				CEA45F87263519B5002FA97D /* gstriff-1.0.0.framework in Embed Libraries */,
 				CEA45F88263519B5002FA97D /* qemu-ppc-softmmu.framework in Embed Libraries */,
 				CEA45F89263519B5002FA97D /* phodav-2.0.0.framework in Embed Libraries */,
 				CEA45F8A263519B5002FA97D /* gthread-2.0.0.framework in Embed Libraries */,
 				CEA45F8B263519B5002FA97D /* qemu-aarch64-softmmu.framework in Embed Libraries */,
-				CEA45F8D263519B5002FA97D /* qemu-mips-softmmu.framework in Embed Libraries */,
-				CEA45F8E263519B5002FA97D /* qemu-s390x-softmmu.framework in Embed Libraries */,
 				CEA45F8F263519B5002FA97D /* gobject-2.0.0.framework in Embed Libraries */,
 				CEA45F90263519B5002FA97D /* gmodule-2.0.0.framework in Embed Libraries */,
-				CEA45F91263519B5002FA97D /* qemu-tricore-softmmu.framework in Embed Libraries */,
-				CEA45F92263519B5002FA97D /* qemu-sparc64-softmmu.framework in Embed Libraries */,
 				CEA45F93263519B5002FA97D /* qemu-riscv32-softmmu.framework in Embed Libraries */,
-				CEA45F94263519B5002FA97D /* qemu-mips64-softmmu.framework in Embed Libraries */,
-				CEA45F95263519B5002FA97D /* qemu-m68k-softmmu.framework in Embed Libraries */,
-				CEA45F96263519B5002FA97D /* qemu-sparc-softmmu.framework in Embed Libraries */,
 				CEA45F97263519B5002FA97D /* qemu-ppc64-softmmu.framework in Embed Libraries */,
-				CEA45F98263519B5002FA97D /* qemu-alpha-softmmu.framework in Embed Libraries */,
-				CEA45F99263519B5002FA97D /* qemu-sh4eb-softmmu.framework in Embed Libraries */,
 				CEA45F9A263519B5002FA97D /* glib-2.0.0.framework in Embed Libraries */,
 				CEA45F9B263519B5002FA97D /* qemu-x86_64-softmmu.framework in Embed Libraries */,
-				CEA45F9C263519B5002FA97D /* qemu-xtensaeb-softmmu.framework in Embed Libraries */,
 				CEA45F9E263519B5002FA97D /* qemu-arm-softmmu.framework in Embed Libraries */,
 				CEA45F9F263519B5002FA97D /* intl.8.framework in Embed Libraries */,
 				CEA45FA0263519B5002FA97D /* gstreamer-1.0.0.framework in Embed Libraries */,
@@ -1388,18 +1351,13 @@
 				CEA45FA2263519B5002FA97D /* json-glib-1.0.0.framework in Embed Libraries */,
 				CEA45FA3263519B5002FA97D /* pixman-1.0.framework in Embed Libraries */,
 				CEA45FA4263519B5002FA97D /* jpeg.62.framework in Embed Libraries */,
-				CEA45FA5263519B5002FA97D /* qemu-microblazeel-softmmu.framework in Embed Libraries */,
-				CEA45FA6263519B5002FA97D /* qemu-hppa-softmmu.framework in Embed Libraries */,
 				CEA45FA7263519B5002FA97D /* qemu-i386-softmmu.framework in Embed Libraries */,
 				CEA45FA8263519B5002FA97D /* spice-client-glib-2.0.8.framework in Embed Libraries */,
 				CEA45FA9263519B5002FA97D /* opus.0.framework in Embed Libraries */,
 				CEA45FAA263519B5002FA97D /* gstsdp-1.0.0.framework in Embed Libraries */,
-				CEA45FAB263519B5002FA97D /* qemu-nios2-softmmu.framework in Embed Libraries */,
 				CEA45FAC263519B5002FA97D /* gstaudio-1.0.0.framework in Embed Libraries */,
 				CEA45FAD263519B5002FA97D /* gstcheck-1.0.0.framework in Embed Libraries */,
-				CEA45FAE263519B5002FA97D /* qemu-xtensa-softmmu.framework in Embed Libraries */,
 				CEA45FAF263519B5002FA97D /* iconv.2.framework in Embed Libraries */,
-				CEA45FB0263519B5002FA97D /* qemu-mipsel-softmmu.framework in Embed Libraries */,
 				CEA45FB1263519B5002FA97D /* gstrtsp-1.0.0.framework in Embed Libraries */,
 				CEA45FB2263519B5002FA97D /* spice-server.1.framework in Embed Libraries */,
 				CEA45FB3263519B5002FA97D /* gcrypt.20.framework in Embed Libraries */,

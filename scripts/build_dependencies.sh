@@ -445,7 +445,7 @@ ios | ios-tci )
     CFLAGS_TARGET=
     if [ "$PLATFORM" == "ios-tci" ]; then
         if [ "$ARCH" == "arm64" ]; then
-            TCI_BUILD_FLAGS="--enable-tcg-tcti"
+            TCI_BUILD_FLAGS="--enable-tcg-tcti --target-list=aarch64-softmmu,arm-softmmu,i386-softmmu,ppc-softmmu,ppc64-softmmu,riscv32-softmmu,riscv64-softmmu,x86_64-softmmu"
         else
             TCI_BUILD_FLAGS="--enable-tcg-interpreter"
         fi
@@ -454,7 +454,7 @@ ios | ios-tci )
     else
         PLATFORM_FAMILY_NAME="iOS"
     fi
-    QEMU_PLATFORM_BUILD_FLAGS="--enable-shared-lib --disable-hvf --disable-cocoa --disable-curl --disable-slirp-smbd --with-coroutine=libucontext $TCI_BUILD_FLAGS"
+    QEMU_PLATFORM_BUILD_FLAGS="--disable-debug-info --enable-shared-lib --disable-hvf --disable-cocoa --disable-curl --disable-slirp-smbd --with-coroutine=libucontext $TCI_BUILD_FLAGS"
     ;;
 macos )
     if [ -z "$SDKMINVER" ]; then
@@ -464,7 +464,7 @@ macos )
     CFLAGS_MINVER="-mmacos-version-min=$SDKMINVER"
     CFLAGS_TARGET="-target $ARCH-apple-macos"
     PLATFORM_FAMILY_NAME="macOS"
-    QEMU_PLATFORM_BUILD_FLAGS="--enable-shared-lib --disable-cocoa --disable-curl --cpu=$CPU"
+    QEMU_PLATFORM_BUILD_FLAGS="--disable-debug-info --enable-shared-lib --disable-cocoa --disable-curl --cpu=$CPU"
     ;;
 * )
     usage
