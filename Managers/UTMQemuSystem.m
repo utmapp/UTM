@@ -110,7 +110,7 @@ static size_t sysctl_read(const char *name) {
 }
 
 - (CPUCount)emulatedCpuCount {
-    static const CPUCount singleCpu = {
+    static const __unused CPUCount singleCpu = {
         .cpus = 1,
         .threads = 1,
     };

@@ -338,15 +338,12 @@
     }
 }
 
-/*
 - (BOOL)collectionView:(UICollectionView *)collectionView canHandleDropSession:(id<UIDropSession>)session {
-    // TODO: implement this
+    return NO;
 }
 
 - (void)collectionView:(nonnull UICollectionView *)collectionView performDropWithCoordinator:(nonnull id<UICollectionViewDropCoordinator>)coordinator {
-    // TODO: implement this
 }
-*/
 
 #pragma mark - Work status indicator
 

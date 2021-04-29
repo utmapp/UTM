@@ -489,21 +489,21 @@ gst_ios_init (void)
     const gchar *docs_dir = [docs UTF8String];
     gchar *ca_certificates;
     
-    g_setenv ("TMP", tmp_dir, TRUE);
-    g_setenv ("TEMP", tmp_dir, TRUE);
-    g_setenv ("TMPDIR", tmp_dir, TRUE);
-    g_setenv ("XDG_RUNTIME_DIR", resources_dir, TRUE);
-    g_setenv ("XDG_CACHE_HOME", cache_dir, TRUE);
+    g_setenv ("TMP", tmp_dir, true);
+    g_setenv ("TEMP", tmp_dir, true);
+    g_setenv ("TMPDIR", tmp_dir, true);
+    g_setenv ("XDG_RUNTIME_DIR", resources_dir, true);
+    g_setenv ("XDG_CACHE_HOME", cache_dir, true);
     
-    g_setenv ("HOME", docs_dir, TRUE);
-    g_setenv ("XDG_DATA_DIRS", resources_dir, TRUE);
-    g_setenv ("XDG_CONFIG_DIRS", resources_dir, TRUE);
-    g_setenv ("XDG_CONFIG_HOME", cache_dir, TRUE);
-    g_setenv ("XDG_DATA_HOME", resources_dir, TRUE);
-    g_setenv ("FONTCONFIG_PATH", resources_dir, TRUE);
+    g_setenv ("HOME", docs_dir, true);
+    g_setenv ("XDG_DATA_DIRS", resources_dir, true);
+    g_setenv ("XDG_CONFIG_DIRS", resources_dir, true);
+    g_setenv ("XDG_CONFIG_HOME", cache_dir, true);
+    g_setenv ("XDG_DATA_HOME", resources_dir, true);
+    g_setenv ("FONTCONFIG_PATH", resources_dir, true);
     
     ca_certificates = g_build_filename (resources_dir, "ssl", "certs", "ca-certifcates.crt", NULL);
-    g_setenv ("CA_CERTIFICATES", ca_certificates, TRUE);
+    g_setenv ("CA_CERTIFICATES", ca_certificates, true);
     g_free (ca_certificates);
     
     gst_init (NULL, NULL);

@@ -224,7 +224,7 @@ bool visit_type_uint32(Visitor *v, const char *name, uint32_t *obj,
     trace_visit_type_uint32(v, name, obj);
     value = *obj;
     ok = visit_type_uintN(v, &value, name, UINT32_MAX, "uint32_t", errp);
-    *obj = value;
+    *obj = (uint32_t)value;
     return ok;
 }
 
@@ -293,7 +293,7 @@ bool visit_type_int32(Visitor *v, const char *name, int32_t *obj,
     value = *obj;
     ok = visit_type_intN(v, &value, name, INT32_MIN, INT32_MAX, "int32_t",
                         errp);
-    *obj = value;
+    *obj = (int32_t)value;
     return ok;
 }
 
@@ -397,7 +397,7 @@ static bool input_type_enum(Visitor *v, const char *name, int *obj,
     }
 
     g_free(enum_str);
-    *obj = value;
+    *obj = (int)value;
     return true;
 }
 

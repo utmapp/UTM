@@ -23,6 +23,9 @@
 #import <spice-client.h>
 #import <spice/protocol.h>
 
+#ifdef DISPLAY_DEBUG
+#undef DISPLAY_DEBUG
+#endif
 #define DISPLAY_DEBUG(display, fmt, ...) \
     SPICE_DEBUG("%d:%d " fmt, \
                 (int)display.channelID, \
@@ -112,8 +115,8 @@ static void cs_mark(SpiceChannel *channel, gint mark, gpointer data) {
 }
 
 static gboolean cs_set_overlay(SpiceChannel *channel, void* pipeline_ptr, gpointer data) {
-    CSDisplayMetal *self = (__bridge CSDisplayMetal *)data;
-#warning Unimplemented
+    //FIXME: implement overlay
+    //CSDisplayMetal *self = (__bridge CSDisplayMetal *)data;
     return false;
 }
 
