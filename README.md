@@ -28,7 +28,7 @@ To run UTM without a jailbreak on iOS 14 (as well as to develop UTM on any iOS v
 
 ### Easy
 
-The recommended way to obtain the dependencies is to use the built artifacts from [Github Actions][5]. Look for the latest release build and download the Sysroot artifact from either the arm64 build (for iOS) or x86_64 build (for iOS Simulator). Then unzip the artifact to the root directory of UTM. You can then open `UTM.xcodeproj`, select your signing certificate, and then run UTM from Xcode.
+The recommended way to obtain the dependencies is to use the built artifacts from [Github Actions][5]. Look for the latest release build and download the Sysroot artifact from either the arm64 build (for iOS) or x86_64 build (for iOS Simulator). Clone UTM and then unzip the artifact to the root directory. Run `git submodule init` and then `git submodule update`. You can then open `UTM.xcodeproj`, select your signing certificate, and then run UTM from Xcode.
 
 ### Advanced
 
