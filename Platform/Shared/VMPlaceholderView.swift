@@ -46,7 +46,7 @@ struct VMPlaceholderView: View {
                 }
                 #if os(iOS)
                 TileButton(titleKey: "Download Spice Guest Tools", systemImage: "arrow.down.square") {
-                    openURL(URL(string: "https://www.spice-space.org/download.html")!)
+                    openURL(URL(string: "https://mac.getutm.app/support/")!)
                 }
                 #endif
                 Spacer()
