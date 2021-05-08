@@ -445,7 +445,7 @@ ios | ios-tci )
     CFLAGS_TARGET=
     if [ "$PLATFORM" == "ios-tci" ]; then
         if [ "$ARCH" == "arm64" ]; then
-            TCI_BUILD_FLAGS="--enable-tcg-tcti --target-list=aarch64-softmmu,arm-softmmu,i386-softmmu,ppc-softmmu,ppc64-softmmu,riscv32-softmmu,riscv64-softmmu,x86_64-softmmu"
+            TCI_BUILD_FLAGS="--enable-tcg-tcti --target-list=i386-softmmu"
         else
             TCI_BUILD_FLAGS="--enable-tcg-interpreter"
         fi
