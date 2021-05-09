@@ -82,7 +82,6 @@ struct ContentView: View {
             }
             VMPlaceholderView()
         }.overlay(data.showSettingsModal ? AnyView(EmptyView()) : AnyView(BusyOverlay()))
-        .environmentObject(data)
         .optionalWindowFrame()
         .disabled(data.busy && !data.showNewVMSheet && !data.showSettingsModal)
         .onOpenURL(perform: importUTM)
