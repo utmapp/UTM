@@ -24,6 +24,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, assign) BOOL networkEnabled;
 @property (nonatomic, assign) BOOL networkIsolate;
+@property (nonatomic, nullable, copy) NSString *networkMode;
+@property (nonatomic, nullable, copy) NSString *networkBridgeInterface;
 @property (nonatomic, nullable, copy) NSString *networkCard;
 @property (nonatomic, nullable, copy) NSString *networkCardMac;
 @property (nonatomic, nullable, copy) NSString *networkAddress;

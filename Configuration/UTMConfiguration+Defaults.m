@@ -47,7 +47,7 @@
     self.consoleFont = @"Menlo";
     self.consoleFontSize = @12;
     self.consoleTheme = @"Default";
-    self.networkEnabled = YES;
+    self.networkMode = @"emulated";
     self.soundEnabled = YES;
     self.soundCard = @"AC97";
     self.networkCard = @"rtl8139";
@@ -64,14 +64,12 @@
         self.soundCard = @"AC97";
         self.soundEnabled = YES;
         self.networkCard = @"rtl8139";
-        self.networkEnabled = YES;
         self.shareClipboardEnabled = YES;
         self.displayCard = @"qxl-vga";
     } else if ([target isEqualToString:@"virt"] || [target hasPrefix:@"virt-"]) {
         self.soundCard = @"intel-hda";
         self.soundEnabled = YES;
         self.networkCard = @"virtio-net-pci";
-        self.networkEnabled = YES;
         self.shareClipboardEnabled = YES;
         self.displayCard = @"virtio-ramfb";
         self.usb3Support = NO;

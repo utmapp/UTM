@@ -22,6 +22,8 @@ extern const NSString *const kUTMConfigNetworkingKey;
 
 static const NSString *const kUTMConfigNetworkEnabledKey = @"NetworkEnabled";
 static const NSString *const kUTMConfigNetworkIsolateGuestKey = @"IsolateGuest";
+static const NSString *const kUTMConfigNetworkModeKey = @"NetworkMode";
+static const NSString *const kUTMConfigNetworkBridgeInterfaceKey = @"NetworkBridgeInterface";
 static const NSString *const kUTMConfigNetworkCardKey = @"NetworkCard";
 static const NSString *const kUTMConfigNetworkCardMacKey = @"NetworkCardMAC";
 static const NSString *const kUTMConfigNetworkIPSubnetKey = @"IPSubnet";
@@ -61,6 +63,11 @@ static const NSString *const kUTMConfigNetworkPortForwardGuestPortKey = @"GuestP
     if (!self.networkCardMac) {
         self.networkCardMac = [self generateMacAddress];
     }
+    // default network mode
+    if ([self.rootDict[kUTMConfigNetworkingKey] objectForKey:kUTMConfigNetworkEnabledKey]) {
+        self.networkEnabled = [self.rootDict[kUTMConfigNetworkingKey][kUTMConfigNetworkEnabledKey] boolValue];
+        [self.rootDict[kUTMConfigNetworkingKey] removeObjectForKey:kUTMConfigNetworkEnabledKey];
+    }
 }
 
 #pragma mark - Generate MAC
@@ -80,12 +87,15 @@ static const NSString *const kUTMConfigNetworkPortForwardGuestPortKey = @"GuestP
 #pragma mark - Network settings
 
 - (void)setNetworkEnabled:(BOOL)networkEnabled {
-    [self propertyWillChange];
-    self.rootDict[kUTMConfigNetworkingKey][kUTMConfigNetworkEnabledKey] = @(networkEnabled);
+    if (networkEnabled) {
+        self.networkMode = @"emulated";
+    } else {
+        self.networkMode = @"none";
+    }
 }
 
 - (BOOL)networkEnabled {
-    return [self.rootDict[kUTMConfigNetworkingKey][kUTMConfigNetworkEnabledKey] boolValue];
+    return ![self.networkMode isEqualToString:@"none"];
 }
 
 - (void)setNetworkIsolate:(BOOL)networkLocalhostOnly {
@@ -95,6 +105,24 @@ static const NSString *const kUTMConfigNetworkPortForwardGuestPortKey = @"GuestP
 
 - (BOOL)networkIsolate {
     return [self.rootDict[kUTMConfigNetworkingKey][kUTMConfigNetworkIsolateGuestKey] boolValue];
+}
+
+- (void)setNetworkMode:(NSString *)networkMode {
+    [self propertyWillChange];
+    self.rootDict[kUTMConfigNetworkingKey][kUTMConfigNetworkModeKey] = networkMode;
+}
+
+- (NSString *)networkMode {
+    return self.rootDict[kUTMConfigNetworkingKey][kUTMConfigNetworkModeKey];
+}
+
+- (void)setNetworkBridgeInterface:(NSString *)networkBridgeInterface {
+    [self propertyWillChange];
+    self.rootDict[kUTMConfigNetworkingKey][kUTMConfigNetworkBridgeInterfaceKey] = networkBridgeInterface;
+}
+
+- (NSString *)networkBridgeInterface {
+    return self.rootDict[kUTMConfigNetworkingKey][kUTMConfigNetworkBridgeInterfaceKey];
 }
 
 - (void)setNetworkCard:(NSString *)networkCard {

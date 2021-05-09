@@ -25,9 +25,21 @@ struct VMConfigNetworkView: View {
         VStack {
             Form {
                 Section(header: Text("Hardware"), footer: EmptyView().padding(.bottom)) {
+                    #if os(macOS)
+                    VMConfigStringPicker(selection: $config.networkMode, label: Text("Network Mode"), rawValues: UTMConfiguration.supportedNetworkModes(), displayValues: UTMConfiguration.supportedNetworkModesPretty())
+                    if config.networkMode == "bridged" {
+                        HStack {
+                            Text("Bridged Interface")
+                            Spacer()
+                            TextField("en0", text: $config.networkBridgeInterface.bound)
+                                .keyboardType(.asciiCapable)
+                        }
+                    }
+                    #else
                     Toggle(isOn: $config.networkEnabled.animation(), label: {
                         Text("Enabled")
                     })
+                    #endif
                     if config.networkEnabled {
                         VMConfigStringPicker(selection: $config.networkCard, label: Text("Emulated Network Card"), rawValues: UTMConfiguration.supportedNetworkCards(forArchitecture: config.systemArchitecture), displayValues: UTMConfiguration.supportedNetworkCards(forArchitecturePretty: config.systemArchitecture))
                     }
