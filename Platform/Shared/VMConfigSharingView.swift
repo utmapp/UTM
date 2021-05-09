@@ -53,6 +53,9 @@ struct VMConfigSharingView: View {
                     } else if config.displayConsoleOnly {
                         Text("USB not supported in console display mode.")
                     }
+                    Toggle(isOn: $config.usb3Support) {
+                        Text("USB 3.0 (XHCI) Support")
+                    }
                     let maxUsbObserver = Binding<Int> {
                         Int(truncating: config.usbRedirectionMaximumDevices ?? 0)
                     } set: {

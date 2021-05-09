@@ -74,6 +74,7 @@
         self.networkEnabled = YES;
         self.shareClipboardEnabled = YES;
         self.displayCard = @"virtio-ramfb";
+        self.usb3Support = NO;
     } else if ([target isEqualToString:@"mac99"]) {
         self.soundEnabled = NO;
     } else if ([target isEqualToString:@"isapc"]) {
