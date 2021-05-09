@@ -348,30 +348,45 @@ static size_t sysctl_read(const char *name) {
 }
 
 - (void)argsForUsb {
-    // assume that for virt machines we can use USB 3.0 controller
-    if ([self.configuration.systemTarget hasPrefix:@"virt"]) {
-        [self pushArgv:@"-device"];
-        [self pushArgv:@"qemu-xhci"];
-    } else {
-        // default USB controller for other systems
-        [self pushArgv:@"-usb"];
-    }
     // set up USB input devices unless user requested legacy (QEMU default PS/2 input)
     if (!self.configuration.inputLegacy) {
+        [self pushArgv:@"-usb"];
         [self pushArgv:@"-device"];
-        [self pushArgv:@"usb-tablet"];
+        [self pushArgv:@"usb-tablet,bus=usb-bus.0"];
         [self pushArgv:@"-device"];
-        [self pushArgv:@"usb-mouse"];
+        [self pushArgv:@"usb-mouse,bus=usb-bus.0"];
         [self pushArgv:@"-device"];
-        [self pushArgv:@"usb-kbd"];
+        [self pushArgv:@"usb-kbd,bus=usb-bus.0"];
     }
 #if !defined(WITH_QEMU_TCI)
+    NSInteger maxDevices = [self.configuration.usbRedirectionMaximumDevices integerValue];
+    if (self.configuration.usb3Support) {
+        NSString *controller = @"qemu-xhci";
+        if ([self.configuration.systemTarget hasPrefix:@"pc"] || [self.configuration.systemTarget hasPrefix:@"q35"]) {
+            controller = @"nec-usb-xhci"; // Windows 7 doesn't like qemu-xchi
+        }
+        for (int j = 0; j < ((maxDevices + 2) / 3); j++) {
+            [self pushArgv:@"-device"];
+            [self pushArgv:[NSString stringWithFormat:@"%@,id=usb-controller-%d", controller, j]];
+        }
+    } else {
+        for (int j = 0; j < ((maxDevices + 2) / 3); j++) {
+            [self pushArgv:@"-device"];
+            [self pushArgv:[NSString stringWithFormat:@"ich9-usb-ehci1,id=usb-controller-%d", j]];
+            [self pushArgv:@"-device"];
+            [self pushArgv:[NSString stringWithFormat:@"ich9-usb-uhci1,masterbus=usb-controller-%d.0,firstport=0,multifunction=on", j]];
+            [self pushArgv:@"-device"];
+            [self pushArgv:[NSString stringWithFormat:@"ich9-usb-uhci2,masterbus=usb-controller-%d.0,firstport=2,multifunction=on", j]];
+            [self pushArgv:@"-device"];
+            [self pushArgv:[NSString stringWithFormat:@"ich9-usb-uhci3,masterbus=usb-controller-%d.0,firstport=4,multifunction=on", j]];
+        }
+    }
     // set up usb forwarding
-    for (int i = 0; i < [self.configuration.usbRedirectionMaximumDevices integerValue]; i++) {
+    for (int i = 0; i < maxDevices; i++) {
         [self pushArgv:@"-chardev"];
         [self pushArgv:[NSString stringWithFormat:@"spicevmc,name=usbredir,id=usbredirchardev%d", i]];
         [self pushArgv:@"-device"];
-        [self pushArgv:[NSString stringWithFormat:@"usb-redir,chardev=usbredirchardev%d,id=usbredirdev%d", i, i]];
+        [self pushArgv:[NSString stringWithFormat:@"usb-redir,chardev=usbredirchardev%d,id=usbredirdev%d,bus=usb-controller-%d.0", i, i, i / 3]];
     }
 #endif
 }
