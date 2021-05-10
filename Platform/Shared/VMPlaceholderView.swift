@@ -31,7 +31,7 @@ struct VMPlaceholderView: View {
                     data.newVM()
                 }
                 TileButton(titleKey: "Browse UTM Gallery", systemImage: "arrow.down.circle") {
-                    openURL(URL(string: "https://getutm.app/gallery/")!)
+                    openURL(URL(string: "https://mac.getutm.app/gallery/")!)
                 }
             }
             HStack {
