@@ -302,7 +302,26 @@ static size_t sysctl_read(const char *name) {
         [self pushArgv:@"-device"];
         [self pushArgv:[NSString stringWithFormat:@"%@,mac=%@,netdev=net0", self.configuration.networkCard, self.configuration.networkCardMac]];
         [self pushArgv:@"-netdev"];
-        NSMutableString *netstr = [NSMutableString stringWithString:@"user,id=net0"];
+        NSString *device = @"user";
+        NSMutableString *netstr;
+        if ([self.configuration.networkMode isEqualToString:@"shared"]) {
+            device = @"vmnet-macos";
+            if (self.configuration.networkIsolate) {
+                netstr = [NSMutableString stringWithString:@"vmnet-macos,mode=host,id=net0"];
+            } else {
+                netstr = [NSMutableString stringWithString:@"vmnet-macos,mode=shared,id=net0"];
+            }
+        } else if ([self.configuration.networkMode isEqualToString:@"bridged"]) {
+            netstr = [NSMutableString stringWithString:@"vmnet-macos,mode=bridged,id=net0"];
+            if (self.configuration.networkBridgeInterface.length > 0) {
+                [netstr appendFormat:@",ifname=%@", self.configuration.networkBridgeInterface];
+            }
+        } else {
+            netstr = [NSMutableString stringWithString:@"user,id=net0"];
+            if (self.configuration.networkIsolate) {
+                [netstr appendString:@",restrict=on"];
+            }
+        }
         if (self.configuration.networkAddress.length > 0) {
             [netstr appendFormat:@",net=%@", self.configuration.networkAddress];
         }
@@ -314,9 +333,6 @@ static size_t sysctl_read(const char *name) {
         }
         if (self.configuration.networkHostIPv6.length > 0) {
             [netstr appendFormat:@",ipv6-host=%@", self.configuration.networkHostIPv6];
-        }
-        if (self.configuration.networkIsolate) {
-            [netstr appendString:@",restrict=on"];
         }
         if (self.configuration.networkHost.length > 0) {
             [netstr appendFormat:@",hostname=%@", self.configuration.networkHost];
