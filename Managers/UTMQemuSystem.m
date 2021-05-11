@@ -507,13 +507,15 @@ static size_t sysctl_read(const char *name) {
     [self architectureSpecificConfiguration];
     [self targetSpecificConfiguration];
     // legacy boot order; new bootindex uses drive ordering
+    [self pushArgv:@"-boot"];
     if (self.configuration.systemBootDevice.length > 0 && ![self.configuration.systemBootDevice isEqualToString:@"hdd"]) {
-        [self pushArgv:@"-boot"];
         if ([self.configuration.systemBootDevice isEqualToString:@"floppy"]) {
             [self pushArgv:@"order=ab"];
         } else {
             [self pushArgv:@"order=d"];
         }
+    } else {
+        [self pushArgv:@"menu=on"];
     }
     [self pushArgv:@"-m"];
     [self pushArgv:[self.configuration.systemMemory stringValue]];
