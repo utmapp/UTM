@@ -192,6 +192,11 @@ static size_t sysctl_read(const char *name) {
     } else if ([interface isEqualToString:@"usb"]) {
         [self pushArgv:@"-device"];
         [self pushArgv:[NSString stringWithFormat:@"usb-storage,drive=%@,removable=%@,bootindex=%lu", identifier, removable ? @"true" : @"false", bootindex++]];
+    } else if ([interface isEqualToString:@"floppy"] && [self.configuration.systemTarget hasPrefix:@"q35"]) {
+        [self pushArgv:@"-device"];
+        [self pushArgv:[NSString stringWithFormat:@"isa-fdc,id=fdc%lu,bootindexA=%lu", busindex, bootindex++]];
+        [self pushArgv:@"-device"];
+        [self pushArgv:[NSString stringWithFormat:@"floppy,unit=0,bus=fdc%lu.0,drive=%@", busindex++, identifier]];
     } else {
         return interface; // no expand needed
     }
