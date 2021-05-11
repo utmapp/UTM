@@ -23,30 +23,26 @@ struct VMPlaceholderView: View {
     
     var body: some View {
         VStack {
-            Spacer()
             HStack {
-                Spacer()
                 Text("Welcome to UTM").font(.title)
-                Spacer()
             }
             HStack {
-                Spacer()
                 TileButton(titleKey: "Create a New Virtual Machine", systemImage: "plus.circle") {
                     data.newVM()
                 }
-                TileButton(titleKey: "Browse UTM Gallery", systemImage: "square.grid.3x2") {
-                    openURL(URL(string: "https://getutm.app/gallery/")!)
+                TileButton(titleKey: "Browse UTM Gallery", systemImage: "arrow.down.circle") {
+                    openURL(URL(string: "https://mac.getutm.app/gallery/")!)
                 }
-                TileButton(titleKey: "User Guide", systemImage: "questionmark.circle") {
-                    #if os(macOS)
-                    openURL(URL(string: "https://mac.getutm.app/guide/")!)
-                    #else
-                    openURL(URL(string: "https://getutm.app/guide_v2/")!)
-                    #endif
-                }
-                Spacer()
             }
-            Spacer()
+            HStack {
+                /// Link to Mac sites on all platforms because they are more up to date
+                TileButton(titleKey: "User Guide", systemImage: "book.circle") {
+                    openURL(URL(string: "https://mac.getutm.app/guide/")!)
+                }
+                TileButton(titleKey: "Support", systemImage: "questionmark.circle") {
+                    openURL(URL(string: "https://mac.getutm.app/support/")!)
+                }
+            }
         }
     }
 }
