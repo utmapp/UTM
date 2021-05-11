@@ -180,9 +180,9 @@ struct VMRemovableDrivesView_Previews: PreviewProvider {
         VMRemovableDrivesView(vm: UTMVirtualMachine(configuration: config, withDestinationURL: URL(fileURLWithPath: "")))
         .onAppear {
             config.shareDirectoryEnabled = true
-            config.newDrive("", type: .disk, interface: "ide")
-            config.newDrive("", type: .disk, interface: "sata")
-            config.newDrive("", type: .CD, interface: "ide")
+            config.newDrive("", path: "", type: .disk, interface: "ide")
+            config.newDrive("", path: "", type: .disk, interface: "sata")
+            config.newDrive("", path: "", type: .CD, interface: "ide")
         }
     }
 }

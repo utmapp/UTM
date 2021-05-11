@@ -42,7 +42,7 @@ extern NSString *const kUTMErrorDomain;
         drive.index = i;
         drive.imageType = [self.configuration driveImageTypeForIndex:i];
         drive.interface = [self.configuration driveInterfaceTypeForIndex:i];
-        drive.name = [NSString stringWithFormat:@"drive%lu", i];
+        drive.name = [self.configuration driveNameForIndex:i];
         if ([self.configuration driveRemovableForIndex:i]) {
             // removable drive -> path stored only in viewState
             NSString *path = [self.viewState pathForRemovableDrive:drive.name];

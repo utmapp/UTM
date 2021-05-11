@@ -160,11 +160,12 @@
         return;
     }
     if (!self.existing) {
+        NSString *name = [NSUUID UUID].UUIDString;
         self.existing = YES;
         if (self.removable) {
-            self.driveIndex = [self.configuration newRemovableDrive:self.imageType interface:self.driveInterfaceType];
+            self.driveIndex = [self.configuration newRemovableDrive:name type:self.imageType interface:self.driveInterfaceType];
         } else {
-            self.driveIndex = [self.configuration newDrive:self.imageName type:self.imageType interface:self.driveInterfaceType];
+            self.driveIndex = [self.configuration newDrive:name path:self.imageName type:self.imageType interface:self.driveInterfaceType];
         }
     } else {
         [self.configuration setDriveRemovable:self.removable forIndex:self.driveIndex];

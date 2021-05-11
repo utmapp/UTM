@@ -148,8 +148,8 @@ struct VMConfigDrivesView_Previews: PreviewProvider {
             VMConfigDrivesView(config: config)
         }.onAppear {
             if config.countDrives == 0 {
-                config.newDrive("test.img", type: .disk, interface: "ide")
-                config.newDrive("bios.bin", type: .BIOS, interface: "none")
+                config.newDrive("drive0", path: "test.img", type: .disk, interface: "ide")
+                config.newDrive("drive1", path: "bios.bin", type: .BIOS, interface: "none")
             }
         }
     }
