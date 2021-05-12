@@ -423,6 +423,10 @@ extension VMDisplayMetalWindowController: VMMetalViewInputDelegate {
                     return true // do not close window when in progress
                 }
             }
+        } else if event.modifierFlags.contains(.command) && event.type == .keyUp {
+            // for some reason, macOS doesn't like to send Cmd+KeyUp
+            metalView.keyUp(with: event)
+            return true
         }
         return false
     }

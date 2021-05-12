@@ -20,6 +20,7 @@
 
 extern const NSString *const kUTMConfigDrivesKey;
 
+static const NSString *const kUTMConfigDriveNameKey = @"DriveName";
 static const NSString *const kUTMConfigImagePathKey = @"ImagePath";
 static const NSString *const kUTMConfigImageTypeKey = @"ImageType";
 static const NSString *const kUTMConfigInterfaceTypeKey = @"InterfaceType";
@@ -58,6 +59,19 @@ static const NSString *const kUTMConfigCdromKey = @"Cdrom";
             [obj removeObjectForKey:kUTMConfigCdromKey];
         }
     }];
+    // add drive name
+    BOOL hasEmpty = NO;
+    for (NSInteger i = 0; i < self.countDrives; i++) {
+        if ([self driveNameForIndex:i] == nil) {
+            hasEmpty = YES;
+            break;
+        }
+    }
+    if (hasEmpty) { // reset all names if any are empty
+        for (NSInteger i = 0; i < self.countDrives; i++) {
+            [self setDriveName:[NSString stringWithFormat:@"drive%ld", i] forIndex:i];
+        }
+    }
 }
 
 #pragma mark - Orphan drives
@@ -90,7 +104,8 @@ static const NSString *const kUTMConfigCdromKey = @"Cdrom";
 - (void)recoverOrphanedDrives {
     NSArray<NSString *> *orphans = self.orphanedDrives;
     for (NSInteger i = 0; i < orphans.count; i++) {
-        [self newDrive:orphans[i] type:UTMDiskImageTypeNone interface:@""];
+        NSString *name = [NSUUID UUID].UUIDString;
+        [self newDrive:name path:orphans[i] type:UTMDiskImageTypeNone interface:@""];
     }
 }
 
@@ -100,11 +115,12 @@ static const NSString *const kUTMConfigCdromKey = @"Cdrom";
     return [self.rootDict[kUTMConfigDrivesKey] count];
 }
 
-- (NSInteger)newDrive:(NSString *)name type:(UTMDiskImageType)type interface:(NSString *)interface {
+- (NSInteger)newDrive:(NSString *)name path:(NSString *)path type:(UTMDiskImageType)type interface:(NSString *)interface {
     NSInteger index = [self countDrives];
     NSString *strType = [UTMConfiguration supportedImageTypes][type];
     NSMutableDictionary *drive = [[NSMutableDictionary alloc] initWithDictionary:@{
-        kUTMConfigImagePathKey: name,
+        kUTMConfigDriveNameKey: name,
+        kUTMConfigImagePathKey: path,
         kUTMConfigImageTypeKey: strType,
         kUTMConfigInterfaceTypeKey: interface
     }];
@@ -113,10 +129,11 @@ static const NSString *const kUTMConfigCdromKey = @"Cdrom";
     return index;
 }
 
-- (NSInteger)newRemovableDrive:(UTMDiskImageType)type interface:(NSString *)interface {
+- (NSInteger)newRemovableDrive:(NSString *)name type:(UTMDiskImageType)type interface:(NSString *)interface {
     NSInteger index = [self countDrives];
     NSString *strType = [UTMConfiguration supportedImageTypes][type];
     NSMutableDictionary *drive = [[NSMutableDictionary alloc] initWithDictionary:@{
+        kUTMConfigDriveNameKey: name,
         kUTMConfigRemovableKey: @(YES),
         kUTMConfigImageTypeKey: strType,
         kUTMConfigInterfaceTypeKey: interface
@@ -124,6 +141,19 @@ static const NSString *const kUTMConfigCdromKey = @"Cdrom";
     [self propertyWillChange];
     [self.rootDict[kUTMConfigDrivesKey] addObject:drive];
     return index;
+}
+
+- (nullable NSString *)driveNameForIndex:(NSInteger)index {
+    if (index >= self.countDrives) {
+        return nil;
+    } else {
+        return self.rootDict[kUTMConfigDrivesKey][index][kUTMConfigDriveNameKey];
+    }
+}
+
+- (void)setDriveName:(NSString *)name forIndex:(NSInteger)index {
+    [self propertyWillChange];
+    self.rootDict[kUTMConfigDrivesKey][index][kUTMConfigDriveNameKey] = name;
 }
 
 - (nullable NSString *)driveImagePathForIndex:(NSInteger)index {

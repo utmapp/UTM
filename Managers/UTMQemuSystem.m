@@ -192,6 +192,11 @@ static size_t sysctl_read(const char *name) {
     } else if ([interface isEqualToString:@"usb"]) {
         [self pushArgv:@"-device"];
         [self pushArgv:[NSString stringWithFormat:@"usb-storage,drive=%@,removable=%@,bootindex=%lu", identifier, removable ? @"true" : @"false", bootindex++]];
+    } else if ([interface isEqualToString:@"floppy"] && [self.configuration.systemTarget hasPrefix:@"q35"]) {
+        [self pushArgv:@"-device"];
+        [self pushArgv:[NSString stringWithFormat:@"isa-fdc,id=fdc%lu,bootindexA=%lu", busindex, bootindex++]];
+        [self pushArgv:@"-device"];
+        [self pushArgv:[NSString stringWithFormat:@"floppy,unit=0,bus=fdc%lu.0,drive=%@", busindex++, identifier]];
     } else {
         return interface; // no expand needed
     }
@@ -247,7 +252,7 @@ static size_t sysctl_read(const char *name) {
             case UTMDiskImageTypeCD: {
                 NSString *interface = [self.configuration driveInterfaceTypeForIndex:i];
                 BOOL removable = (type == UTMDiskImageTypeCD) || [self.configuration driveRemovableForIndex:i];
-                NSString *identifier = [NSString stringWithFormat:@"drive%lu", i];
+                NSString *identifier = [self.configuration driveNameForIndex:i];
                 NSString *realInterface = [self expandDriveInterface:interface identifier:identifier removable:removable busInterfaceMap:busInterfaceMap];
                 NSString *drive;
                 [self pushArgv:@"-drive"];
@@ -545,13 +550,15 @@ static size_t sysctl_read(const char *name) {
     [self architectureSpecificConfiguration];
     [self targetSpecificConfiguration];
     // legacy boot order; new bootindex uses drive ordering
+    [self pushArgv:@"-boot"];
     if (self.configuration.systemBootDevice.length > 0 && ![self.configuration.systemBootDevice isEqualToString:@"hdd"]) {
-        [self pushArgv:@"-boot"];
         if ([self.configuration.systemBootDevice isEqualToString:@"floppy"]) {
             [self pushArgv:@"order=ab"];
         } else {
             [self pushArgv:@"order=d"];
         }
+    } else {
+        [self pushArgv:@"menu=on"];
     }
     [self pushArgv:@"-m"];
     [self pushArgv:[self.configuration.systemMemory stringValue]];

@@ -24,6 +24,8 @@ struct VMRemovableDrivesView: View {
     @ObservedObject private var sessionConfig: UTMViewState
     @State private var shareDirectoryFileImportPresented: Bool = false
     @State private var diskImageFileImportPresented: Bool = false
+    /// Explanation see "SwiftUI FileImporter modal bug" in the `body`
+    @State private var workaroundFileImporterBug: Bool = false
     @State private var currentDrive: UTMDrive?
     
     var fileManager: FileManager {
@@ -69,10 +71,32 @@ struct VMRemovableDrivesView: View {
                         // Browse button
                         Button(action: {
                             currentDrive = drive
-                            diskImageFileImportPresented.toggle()
+                            // MARK: SwiftUI FileImporter modal bug
+                            /// At this point in the execution, `diskImageFileImportPresented` must be `false`.
+                            /// However there is a SwiftUI FileImporter modal bug:
+                            /// if the user taps outside the import modal to cancel instead of tapping the actual cancel button,
+                            /// the `.fileImporter` doesn't actually set the isPresented Binding to `false`.
+                            if (diskImageFileImportPresented) {
+                                /// bug! Let's set the bool to false ourselves.
+                                diskImageFileImportPresented = false
+                                /// One more thing: we can't immediately set it to `true` again because then the state won't have changed.
+                                /// So we have to use the workaround, which is caught in the `.onChange` below.
+                                workaroundFileImporterBug = true
+                            } else {
+                                diskImageFileImportPresented = true
+                            }
                         }, label: {
                             Label("Browse", systemImage: "doc.badge.plus")
                         })
+                        .onChange(of: workaroundFileImporterBug) { doWorkaround in
+                            /// Explanation see "SwiftUI FileImporter modal bug" above
+                            if doWorkaround {
+                                DispatchQueue.main.async {
+                                    workaroundFileImporterBug = false
+                                    diskImageFileImportPresented = true
+                                }
+                            }
+                        }
                         // Eject button
                         if drive.status != .ejected {
                             Button(action: { clearRemovableImage(forDrive: drive) }, label: {
@@ -180,9 +204,9 @@ struct VMRemovableDrivesView_Previews: PreviewProvider {
         VMRemovableDrivesView(vm: UTMVirtualMachine(configuration: config, withDestinationURL: URL(fileURLWithPath: "")))
         .onAppear {
             config.shareDirectoryEnabled = true
-            config.newDrive("", type: .disk, interface: "ide")
-            config.newDrive("", type: .disk, interface: "sata")
-            config.newDrive("", type: .CD, interface: "ide")
+            config.newDrive("", path: "", type: .disk, interface: "ide")
+            config.newDrive("", path: "", type: .disk, interface: "sata")
+            config.newDrive("", path: "", type: .CD, interface: "ide")
         }
     }
 }

@@ -38,8 +38,10 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)migrateDriveConfigurationIfNecessary;
 - (void)recoverOrphanedDrives;
 
-- (NSInteger)newDrive:(NSString *)name type:(UTMDiskImageType)type interface:(NSString *)interface;
-- (NSInteger)newRemovableDrive:(UTMDiskImageType)type interface:(NSString *)interface;
+- (NSInteger)newDrive:(NSString *)name path:(NSString *)path type:(UTMDiskImageType)type interface:(NSString *)interface;
+- (NSInteger)newRemovableDrive:(NSString *)name type:(UTMDiskImageType)type interface:(NSString *)interface;
+- (nullable NSString *)driveNameForIndex:(NSInteger)index;
+- (void)setDriveName:(NSString *)name forIndex:(NSInteger)index;
 - (nullable NSString *)driveImagePathForIndex:(NSInteger)index;
 - (void)setImagePath:(NSString *)path forIndex:(NSInteger)index;
 - (nullable NSString *)driveInterfaceTypeForIndex:(NSInteger)index;
