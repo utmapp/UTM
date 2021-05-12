@@ -8,13 +8,14 @@ command -v realpath >/dev/null 2>&1 || realpath() {
 BASEDIR="$(dirname "$(realpath $0)")"
 
 if [ $# -lt 3 ]; then
-	echo "usage: $0 MODE UTM.xcarchive outputPath [TEAM_ID PROFILE_NAME]"
+	echo "usage: $0 MODE UTM.xcarchive outputPath [TEAM_ID PROFILE_NAME HELPER_PROFILE_NAME]"
 	echo "  MODE is one of:"
 	echo "          unsigned (unsigned DMG)"
 	echo "          developer-id (signed DMG)"
 	echo "          app-store (Mac App Store package)"
 	echo "  TEAM_ID is required if not unsigned"
 	echo "  PROFILE_NAME is required if not unsigned, can be the name or UUID"
+	echo "  HELPER_PROFILE_NAME is required if not unsigned, can be the name or UUID"
 	exit 1
 fi
 
@@ -23,6 +24,7 @@ INPUT=$2
 OUTPUT=$3
 TEAM_ID=$4
 PROFILE_NAME=$5
+HELPER_PROFILE_NAME=$6
 OPTIONS="/tmp/options.plist"
 SIGNED="/tmp/signed"
 UTM_ENTITLEMENTS="/tmp/utm.entitlements"
@@ -45,6 +47,8 @@ cat >"$OPTIONS" <<EOL
 	<dict>
 		<key>com.utmapp.UTM</key>
 		<string>${PROFILE_NAME}</string>
+		<key>com.utmapp.QEMUHelper</key>
+		<string>${HELPER_PROFILE_NAME}</string>
 	</dict>
 	<key>signingStyle</key>
 	<string>manual</string>

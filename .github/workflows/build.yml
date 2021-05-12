@@ -222,6 +222,11 @@ jobs:
         env:
           PROFILE_DATA: ${{ secrets.PROFILE_DATA }}
           PROFILE_UUID: ${{ secrets.PROFILE_UUID }}
+      - name: Install Helper Provisioning Profile
+        run: echo $PROFILE_DATA | base64 --decode -o ~/Library/MobileDevice/Provisioning\ Profiles/$PROFILE_UUID.provisionprofile
+        env:
+          PROFILE_DATA: ${{ secrets.HELPER_PROFILE_DATA }}
+          PROFILE_UUID: ${{ secrets.HELPER_PROFILE_UUID }}
       - name: Download Artifact
         uses: actions/download-artifact@v1
         with:
@@ -229,10 +234,11 @@ jobs:
       - name: Fixup Permissions
         run: find UTM-macos-universal/UTM.xcarchive -type f \( -path '*/Contents/MacOS/*' -or -path '*/Frameworks/*.dylib' \) -exec chmod +x \{\} \;
       - name: Package for Release
-        run: ./scripts/package_mac.sh developer-id UTM-macos-universal/UTM.xcarchive . "$SIGNING_TEAM_ID" "$PROFILE_UUID"
+        run: ./scripts/package_mac.sh developer-id UTM-macos-universal/UTM.xcarchive . "$SIGNING_TEAM_ID" "$PROFILE_UUID" "$HELPER_PROFILE_UUID"
         env:
           SIGNING_TEAM_ID: ${{ secrets.SIGNING_TEAM_ID }}
           PROFILE_UUID: ${{ secrets.PROFILE_UUID }}
+          HELPER_PROFILE_UUID: ${{ secrets.HELPER_PROFILE_UUID }}
       - name: Notarize app
         run: npx notarize-cli --file "UTM.dmg" --bundle-id "com.utmapp.UTM"
         env:
