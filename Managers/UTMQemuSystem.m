@@ -371,7 +371,12 @@ static size_t sysctl_read(const char *name) {
 - (void)argsForUsb {
     // set up USB input devices unless user requested legacy (QEMU default PS/2 input)
     if (!self.configuration.inputLegacy) {
-        [self pushArgv:@"-usb"];
+        if ([self.configuration.systemTarget hasPrefix:@"virt"]) {
+            [self pushArgv:@"-device"];
+            [self pushArgv:@"qemu-xhci,id=usb-bus"];
+        } else {
+            [self pushArgv:@"-usb"];
+        }
         [self pushArgv:@"-device"];
         [self pushArgv:@"usb-tablet,bus=usb-bus.0"];
         [self pushArgv:@"-device"];
