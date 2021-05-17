@@ -77,8 +77,8 @@ fi
 # ad-hoc sign with the right entitlements
 rm -rf "$INPUT_COPY"
 cp -r "$INPUT" "$INPUT_COPY"
-find "$INPUT_COPY/Products/Applications/UTM.app" -type f \( -path '*/Contents/MacOS/*' -or -path '*/Contents/Frameworks/*.dylib' \) -exec chmod +x \{\} \;
-find "$INPUT_COPY/Products/Applications/UTM.app" -path '*/Contents/Frameworks/*.dylib' -exec codesign --force --sign - --timestamp=none \{\} \;
+find "$INPUT_COPY/Products/Applications/UTM.app" -type f \( -path '*/Contents/MacOS/*' -or \( -path '*/Frameworks/*.framework/*' -and -not -name 'Info.plist' \) \) -exec chmod +x \{\} \;
+find "$INPUT_COPY/Products/Applications/UTM.app" \( -path '*/Frameworks/*.framework/*' -and -not -name 'Info.plist' \) -exec codesign --force --sign - --timestamp=none \{\} \;
 codesign --force --sign - --entitlements "$LAUNCHER_ENTITLEMENTS" --timestamp=none --options runtime "$INPUT_COPY/Products/Applications/UTM.app/Contents/XPCServices/QEMUHelper.xpc/Contents/MacOS/QEMULauncher"
 codesign --force --sign - --entitlements "$HELPER_ENTITLEMENTS" --timestamp=none --options runtime "$INPUT_COPY/Products/Applications/UTM.app/Contents/XPCServices/QEMUHelper.xpc/Contents/MacOS/QEMUHelper"
 codesign --force --sign - --entitlements "$UTM_ENTITLEMENTS" --timestamp=none --options runtime "$INPUT_COPY/Products/Applications/UTM.app/Contents/MacOS/UTM"

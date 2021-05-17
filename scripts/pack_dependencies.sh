@@ -42,6 +42,10 @@ pack_all_objs() {
     IFS=$'\n'
     for f in $LIST
     do
+        NAME=$(basename "$f")
+        if [ "$NAME" == "Info.plist" ]; then
+            continue # skip Info.plist
+        fi
         FILE=${f/"$MAIN_DIR"/}
         INPUTS=$(echo $ALL_ARCHS | xargs printf -- "$BASEDIR/sysroot-$SCHEME-%s$FILE\n")
         OUTPUT="$BASEDIR/sysroot-$SCHEME-${ALL_ARCHS/ /_}$FILE"

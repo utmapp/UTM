@@ -25,27 +25,23 @@ if [ $# -lt 2 ]; then
 	usage
 fi
 
-case $1 in
-deb )
-	MODE=deb
-	shift
+MODE=$1
+INPUT=$2
+OUTPUT=$3
+
+case $MODE in
+deb | ipa | signedipa )
+	NAME="UTM"
+	INPUT_APP="$INPUT/Products/Applications/UTM.app"
 	;;
-ipa )
-	MODE=ipa
-	shift
-	;;
-signedipa )
-	MODE=signedipa
-	shift
+ipa-se )
+	NAME="UTM SE"
+	INPUT_APP="$INPUT/Products/Applications/UTM SE.app"
 	;;
 * )
 	usage
 	;;
 esac
-
-INPUT=$1
-INPUT_APP="$INPUT/Products/Applications/UTM.app"
-OUTPUT=$2
 
 if [ ! -d "$INPUT_APP" ]; then
 	echo "Invalid xcarchive input!"
@@ -100,15 +96,16 @@ EOL
 }
 
 fake_sign() {
-	local _input=$1
-	local _output=$2
-	local _fakeent=$3
+	local _name=$1
+	local _input=$2
+	local _output=$3
+	local _fakeent=$4
 
 	mkdir -p "$_output"
 	cp -r "$_input" "$_output/"
-	find "$_output" -type f \( -path '*/UTM.app/UTM' -or -path '*/UTM.app/Frameworks/*.dylib' \) -exec chmod +x \{\} \;
-	find "$_output" -type f -path '*/Frameworks/*.dylib' -exec ldid -S \{\} \;
-	ldid -S${_fakeent} "$_output/Applications/UTM.app/UTM"
+	find "$_output" -type f \( \( -path '*/UTM*.app/UTM*' -or -path '*/UTM*.app/Frameworks/*.framework/*' \) -and -not -name 'Info.plist' \) -exec chmod +x \{\} \;
+	find "$_output" -type f \( -path '*/Frameworks/*.framework/*' -and -not -name 'Info.plist' \) -exec ldid -S \{\} \;
+	ldid -S${_fakeent} "$_output/Applications/$_name.app/$_name"
 }
 
 create_deb() {
@@ -149,20 +146,21 @@ EOL
 	strip "$DEB_TMP/DEBIAN/prerm"
 	ldid -S"$BASEDIR/deb/prerm.xml" "$DEB_TMP/DEBIAN/prerm"
 	mkdir -p "$IPA_PATH"
-	create_fake_ipa "$INPUT" "$IPA_PATH" "$FAKEENT"
+	create_fake_ipa "UTM" "$INPUT" "$IPA_PATH" "$FAKEENT"
 	dpkg-deb -b -Zgzip -z9 "$DEB_TMP" "$OUTPUT/UTM.deb"
 	rm -r "$DEB_TMP"
 }
 
 create_fake_ipa() {
-	local INPUT=$1
-	local OUTPUT=$2
-	local FAKEENT=$3
+	local NAME=$1
+	local INPUT=$2
+	local OUTPUT=$3
+	local FAKEENT=$4
 
 	pwd="$(pwd)"
 	mkdir -p "$OUTPUT"
 	rm -rf "$OUTPUT/Applications" "$OUTPUT/Payload" "$OUTPUT/UTM.ipa"
-	fake_sign "$INPUT/Products/Applications" "$OUTPUT" "$FAKEENT"
+	fake_sign "$NAME" "$INPUT/Products/Applications" "$OUTPUT" "$FAKEENT"
 	mv "$OUTPUT/Applications" "$OUTPUT/Payload"
 	cd "$OUTPUT"
 	zip -r "UTM.ipa" "Payload" -x "._*" -x ".DS_Store" -x "__MACOSX"
@@ -217,13 +215,13 @@ ipa )
 </dict>
 </plist>
 EOL
-	create_fake_ipa "$INPUT" "$OUTPUT" "$FAKEENT"
+	create_fake_ipa "$NAME" "$INPUT" "$OUTPUT" "$FAKEENT"
 	rm "$FAKEENT"
 	;;
 ipa-se )
-	create_fake_ipa "$INPUT" "$OUTPUT"
+	create_fake_ipa "$NAME" "$INPUT" "$OUTPUT"
 	;;
 signedipa )
-	itunes_sign "$INPUT" "$OUTPUT" $3 $4
+	itunes_sign "$INPUT" "$OUTPUT" $4 $5
 	;;
 esac
