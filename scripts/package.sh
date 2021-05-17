@@ -163,7 +163,7 @@ create_fake_ipa() {
 	fake_sign "$NAME" "$INPUT/Products/Applications" "$OUTPUT" "$FAKEENT"
 	mv "$OUTPUT/Applications" "$OUTPUT/Payload"
 	cd "$OUTPUT"
-	zip -r "UTM.ipa" "Payload" -x "._*" -x ".DS_Store" -x "__MACOSX"
+	zip -r "$NAME.ipa" "Payload" -x "._*" -x ".DS_Store" -x "__MACOSX"
 	rm -r "Payload"
 	cd "$pwd"
 }

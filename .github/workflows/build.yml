@@ -159,8 +159,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ github.event.release.upload_url }}
-          asset_path: UTM-SE.ipa
-          asset_name: UTM-SE.ipa
+          asset_path: UTM SE.ipa
+          asset_name: UTM SE.ipa
           asset_content_type: application/octet-stream
       - name: Send Dispatch Event
         continue-on-error: true
