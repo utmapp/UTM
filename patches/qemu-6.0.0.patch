@@ -1,6 +1,6 @@
 diff -Naur a/.gitmodules b/.gitmodules
---- a/.gitmodules	2021-04-26 12:51:23.000000000 -0700
-+++ b/.gitmodules	2021-04-26 23:22:35.000000000 -0700
+--- a/.gitmodules	2021-04-29 10:18:58.000000000 -0700
++++ b/.gitmodules	2021-05-16 20:19:59.000000000 -0700
 @@ -49,9 +49,9 @@
  [submodule "roms/edk2"]
  	path = roms/edk2
@@ -22,8 +22,8 @@ diff -Naur a/.gitmodules b/.gitmodules
 +	path = subprojects/libucontext
 +	url = https://github.com/utmapp/libucontext.git
 diff -Naur a/accel/tcg/cpu-exec.c b/accel/tcg/cpu-exec.c
---- a/accel/tcg/cpu-exec.c	2021-04-26 12:51:23.000000000 -0700
-+++ b/accel/tcg/cpu-exec.c	2021-04-26 23:22:35.000000000 -0700
+--- a/accel/tcg/cpu-exec.c	2021-04-29 10:18:58.000000000 -0700
++++ b/accel/tcg/cpu-exec.c	2021-05-16 20:19:59.000000000 -0700
 @@ -26,6 +26,7 @@
  #include "disas/disas.h"
  #include "exec/exec-all.h"
@@ -33,8 +33,8 @@ diff -Naur a/accel/tcg/cpu-exec.c b/accel/tcg/cpu-exec.c
  #include "qemu/compiler.h"
  #include "qemu/timer.h"
 diff -Naur a/accel/tcg/translate-all.c b/accel/tcg/translate-all.c
---- a/accel/tcg/translate-all.c	2021-04-26 12:51:23.000000000 -0700
-+++ b/accel/tcg/translate-all.c	2021-04-26 23:22:35.000000000 -0700
+--- a/accel/tcg/translate-all.c	2021-04-29 10:18:59.000000000 -0700
++++ b/accel/tcg/translate-all.c	2021-05-16 20:19:59.000000000 -0700
 @@ -27,6 +27,7 @@
  #include "disas/disas.h"
  #include "exec/exec-all.h"
@@ -71,8 +71,8 @@ diff -Naur a/accel/tcg/translate-all.c b/accel/tcg/translate-all.c
      prot = PROT_READ | PROT_WRITE;
  #elif defined(CONFIG_DARWIN)
 diff -Naur a/block/file-posix.c b/block/file-posix.c
---- a/block/file-posix.c	2021-04-26 12:51:23.000000000 -0700
-+++ b/block/file-posix.c	2021-04-26 23:22:35.000000000 -0700
+--- a/block/file-posix.c	2021-04-29 10:18:58.000000000 -0700
++++ b/block/file-posix.c	2021-05-16 20:20:00.000000000 -0700
 @@ -42,6 +42,8 @@
  #include "scsi/constants.h"
  
@@ -223,8 +223,8 @@ diff -Naur a/block/file-posix.c b/block/file-posix.c
  
  block_init(bdrv_file_init);
 diff -Naur a/block.c b/block.c
---- a/block.c	2021-04-26 12:51:23.000000000 -0700
-+++ b/block.c	2021-04-26 23:22:35.000000000 -0700
+--- a/block.c	2021-04-29 10:18:58.000000000 -0700
++++ b/block.c	2021-05-16 20:20:00.000000000 -0700
 @@ -54,7 +54,7 @@
  #ifdef CONFIG_BSD
  #include <sys/ioctl.h>
@@ -235,8 +235,8 @@ diff -Naur a/block.c b/block.c
  #endif
  #endif
 diff -Naur a/configure b/configure
---- a/configure	2021-04-26 12:51:23.000000000 -0700
-+++ b/configure	2021-04-26 23:22:35.000000000 -0700
+--- a/configure	2021-04-29 10:18:59.000000000 -0700
++++ b/configure	2021-05-16 20:20:00.000000000 -0700
 @@ -362,6 +362,7 @@
  fortify_source="$default_feature"
  strip_opt="yes"
@@ -423,8 +423,8 @@ diff -Naur a/configure b/configure
  if test "$?" -ne 0 ; then
      error_exit "meson setup failed"
 diff -Naur a/disas.c b/disas.c
---- a/disas.c	2021-04-26 12:51:23.000000000 -0700
-+++ b/disas.c	2021-04-26 23:22:35.000000000 -0700
+--- a/disas.c	2021-04-29 10:18:58.000000000 -0700
++++ b/disas.c	2021-05-16 20:20:00.000000000 -0700
 @@ -152,6 +152,8 @@
  #endif
  #if defined(CONFIG_TCG_INTERPRETER)
@@ -434,9 +434,1016 @@ diff -Naur a/disas.c b/disas.c
  #elif defined(__i386__)
      s->info.mach = bfd_mach_i386_i386;
      s->info.print_insn = print_insn_i386;
+diff -Naur a/hw/audio/Kconfig b/hw/audio/Kconfig
+--- a/hw/audio/Kconfig	2021-04-29 10:18:58.000000000 -0700
++++ b/hw/audio/Kconfig	2021-05-16 20:20:00.000000000 -0700
+@@ -50,3 +50,6 @@
+ 
+ config MARVELL_88W8618
+     bool
++
++config SCREAMER
++    bool
+diff -Naur a/hw/audio/meson.build b/hw/audio/meson.build
+--- a/hw/audio/meson.build	2021-04-29 10:18:58.000000000 -0700
++++ b/hw/audio/meson.build	2021-05-16 20:20:00.000000000 -0700
+@@ -13,3 +13,4 @@
+ softmmu_ss.add(when: 'CONFIG_SB16', if_true: files('sb16.c'))
+ softmmu_ss.add(when: 'CONFIG_VT82C686', if_true: files('via-ac97.c'))
+ softmmu_ss.add(when: 'CONFIG_WM8750', if_true: files('wm8750.c'))
++softmmu_ss.add(when: 'CONFIG_SCREAMER', if_true: files('screamer.c'))
+diff -Naur a/hw/audio/screamer.c b/hw/audio/screamer.c
+--- a/hw/audio/screamer.c	1969-12-31 16:00:00.000000000 -0800
++++ b/hw/audio/screamer.c	2021-05-16 20:20:00.000000000 -0700
+@@ -0,0 +1,985 @@
++/*
++ * File: Screamer.c
++ * Description: Implement the Screamer sound chip used in Apple Macintoshes.
++ * It works by filling a buffer, then playing the buffer.
++ */
++
++#include "qemu/osdep.h"
++#include "audio/audio.h"
++#include "hw/hw.h"
++#include "hw/irq.h"
++#include <inttypes.h>
++#include "hw/ppc/mac.h"
++#include "hw/qdev-properties.h"
++#include "migration/vmstate.h"
++#include "include/hw/audio/screamer.h"
++
++#define DEBUG_SCREAMER 0
++#define DPRINTF(fmt, ...) \
++do { if (DEBUG_SCREAMER) { printf(fmt , ## __VA_ARGS__); } } while (0)
++
++#define SOUND_CONTROL_REG  0
++#define CODEC_CONTROL_REG  1
++#define CODEC_STATUS_REG   2
++#define CLIP_COUNT_REG     3
++#define BYTE_SWAP_REG      4
++#define FRAME_COUNT_REG    5
++
++#define AWACS_BUSY         0x01000000
++
++/* Used with AWACS register 1 */
++#define RECALIBRATE         0x004
++#define LOOPTHRU            0x040
++#define SPEAKER_MUTE        0x080
++#define HEADPHONE_MUTE      0x200
++#define OUTPUT_ZERO         0x400
++#define OUTPUT_ONE          0x800
++#define PARALLEL_OUTPUT     0xc00
++
++/* Function prototypes */
++static uint32_t set_busy_bit(uint32_t value, int bit);
++static uint32_t set_part_ready_bit(uint32_t value, int bit_value);
++static uint32_t set_revision(uint32_t input_value);
++static uint32_t set_manufacturer(uint32_t input_value);
++static int get_sampling_rate(ScreamerState *s);
++static uint32_t get_frame_count_reg(ScreamerState *s);
++static void add_to_speaker_buffer(DBDMA_io *io);
++static void dma_request(DBDMA_io *io);
++
++
++/**************************** Getters *************************/
++
++/* Returns the codec control register's encoded AWACS address */
++static uint8_t get_codec_control_address(uint32_t value)
++{
++    uint8_t return_value;
++    return_value = (value >> 12) & 0x00000fff;
++    return return_value;
++}
++
++
++static uint32_t get_sound_control_reg(ScreamerState *s)
++{
++    DPRINTF("%s() called - returned 0x%x\n", __func__, s->sound_control);
++    return s->sound_control;
++}
++
++/* The AWACS registers are accessed thru this register */
++static uint32_t get_codec_control_reg(ScreamerState *s)
++{
++    int awacs_register = get_codec_control_address(s->codec_control);
++    uint32_t return_value = s->awacs[awacs_register];
++    return_value = set_busy_bit(return_value, 0); /* Tell CPU we are ready */
++    DPRINTF("%s() called - returned 0x%x\tAWACS register: %d\n", __func__,
++            return_value, awacs_register);
++    return return_value;
++}
++
++/*
++ * Determines if the readback bit is set.
++ * It is used by the Codec Control register.
++ */
++static bool readback_enabled(ScreamerState *s)
++{
++/* Note: bit zero is the readback enabled bit */
++    if (s->awacs[7] & 1) {
++        return true;
++    } else {
++        return false;
++    }
++}
++
++static uint32_t get_codec_status_reg(ScreamerState *s)
++{
++    uint32_t return_value;
++
++    /* if in readback mode - return AWACS register value */
++    if (readback_enabled(s)) {
++        int awacs_register = (s->awacs[7] & 0xe) >> 1;
++        s->awacs[7] = s->awacs[7] & 0xfffffffe; /* turn off readback mode */
++        return_value = s->awacs[awacs_register] << 4;
++        DPRINTF("readback enable bit is set, returning AWACS register %d\t"
++                "value:0x%x\n", awacs_register, return_value);
++
++        return return_value;
++    }
++
++    /* Tell CPU we are ready */
++    return_value = set_part_ready_bit(s->codec_status, 1);
++
++    /* Set Revision to Screamer */
++    return_value = set_revision(return_value);
++
++    /* Set the Manufacturer to Crystal */
++    return_value = set_manufacturer(return_value);
++    DPRINTF("%s() called - returned 0x%x\n", __func__, return_value);
++
++    return return_value;
++}
++
++static uint32_t get_clip_count_reg(ScreamerState *s)
++{
++    DPRINTF("%s() called - returned 0x%x\n", __func__, s->clip_count);
++    uint32_t return_value;
++    return_value = s->clip_count;
++    /* This is reset everytime it is read */
++    s->clip_count = 0;
++    return return_value;
++}
++
++static uint32_t get_byte_swap_reg(ScreamerState *s)
++{
++    DPRINTF("%s() called - returned 0x%x\n", __func__, s->byte_swap);
++    /*
++     * If all you hear is noise, it could be this register reporting the
++     * wrong value.
++     */
++    return s->byte_swap ? 0 : 1;
++}
++
++/*
++ * Returns the frame (sample) count
++ */
++static uint32_t get_frame_count_reg(ScreamerState *s)
++{
++    DPRINTF("%s() called - returned 0x%x\n", __func__, s->frame_count);
++    return s->frame_count;
++}
++
++static uint8_t get_left_vol(uint32_t value)
++{
++    return value & 0xf;
++}
++
++static uint8_t get_right_vol(uint32_t value)
++{
++    return value & 0x3c0 >> 6;
++}
++
++/*
++ * Returns the sampling rate.
++ * If the audio is playing back too fast or too slow, this function may be the
++ * cause.
++ */
++static int get_sampling_rate(ScreamerState *s)
++{
++    uint32_t screamer_rate = s->sound_control & 0x700;
++    int return_value;
++
++    /* All return values are in Hertz */
++    switch (screamer_rate) {
++    case 0x0:
++        return_value = 44100;
++        break;
++    case 0x100:
++        return_value = 29400;
++        break;
++    case 0x200:
++        return_value = 22050;
++        break;
++    case 0x300:
++        return_value = 17640;
++        break;
++    case 0x400:
++        return_value = 14700;
++        break;
++    case 0x500:
++        return_value = 11025;
++        break;
++    case 0x600:
++        return_value = 8820;
++        break;
++    case 0x700:
++        return_value = 7350;
++        break;
++    default:
++        DPRINTF("get_sampling_rate() unknown value: 0x%x\nDefaulting to"
++                " 44100 Hz.\n", screamer_rate);
++        return 44100;
++}
++    DPRINTF("%s() called - returning %dHz\n", __func__, return_value);
++    return return_value;
++}
++
++/**************************** End of getters *************************/
++
++/***************************** Speaker call back *************************/
++
++/* resets the play and buffer position markers */
++static void reset_markers(ScreamerState *s)
++{
++    s->spk_play_position = 0;
++    s->spk_buffer_position = 0;
++}
++
++
++/* Sends the samples to the host for playing */
++static void send_samples_to_host(ScreamerState *s, int max_samples)
++{
++    int write_length, requested_length;
++    requested_length = MIN(max_samples, (s->spk_buffer_position -
++                                         s->spk_play_position));
++    write_length = AUD_write(s->speaker_voice,
++                             &s->spk_buffer[s->spk_play_position],
++                             requested_length);
++    DPRINTF("requested length: %d\twrite length: %d\t",
++            requested_length, write_length);
++    s->spk_play_position += write_length;
++    DPRINTF("AUD_write %d/%d\n", s->spk_play_position, s->spk_buffer_position);
++    s->frame_count += write_length;
++}
++
++
++/*
++ * Called by QEMU's audio system to tell the output backend to send samples
++ * from the buffer to the host sound system.
++ * opaque: a pointer to the ScreamerState instance.
++ * max_samples: the number of samples that can be sent to the hardware buffer.
++ */
++static void speaker_callback(void *opaque, int max_samples)
++{
++    ScreamerState *s = (ScreamerState *) opaque;
++
++    /* if we have more samples to play */
++    if (s->spk_buffer_position > 0) {
++        if (s->spk_buffer_position > s->spk_play_position) {
++            DPRINTF("%s() called - max_samples: %d\n", __func__, max_samples);
++            send_samples_to_host(s, max_samples);
++        }
++        if (s->spk_play_position >= s->spk_buffer_position) {
++            DPRINTF("done playing buffer\n");
++            DPRINTF("pp: %d\tbp: %d\n", s->spk_play_position,
++                    s->spk_buffer_position);
++            if (s->spk_play_position > s->spk_buffer_position) {
++                DPRINTF("Error detected! - pp > bp\n\a");
++            }
++            reset_markers(s);
++            /* play postponed samples */
++            if (s->dma_io.len > 0) {
++                DPRINTF("playing postponed samples\n");
++                add_to_speaker_buffer(&s->dma_io);
++                return;
++            }
++        }
++    }
++}
++
++/************************* End of speaker call back *************************/
++
++
++/* Opens the speaker's voice */
++static void open_speaker_voice(ScreamerState *s)
++{
++    DPRINTF("%s() called\n", __func__);
++
++    /* if voice is already open return from function */
++    if (s->speaker_voice != NULL) {
++        DPRINTF("closing speaker voice\n");
++        AUD_close_out(&s->card, s->speaker_voice);
++        s->speaker_voice = NULL;
++    }
++    struct audsettings audio_settings;
++    audio_settings.freq = get_sampling_rate(s);  /* in hertz */
++    audio_settings.nchannels = 2;                /* stereo output */
++    audio_settings.fmt = AUDIO_FORMAT_S16;       /* signed 16 bit */
++    audio_settings.endianness = get_byte_swap_reg(s); /* endianness */
++    s->speaker_voice = AUD_open_out(&s->card, s->speaker_voice, SOUND_CHIP_NAME
++                                    " speaker", s, speaker_callback,
++                                    &audio_settings);
++    if (!s->speaker_voice) {
++        AUD_log(SOUND_CHIP_NAME, "Out voice could not be opened\n");
++    } else {
++        AUD_set_active_out(s->speaker_voice, true);
++    }
++}
++
++
++/******************************* Setters *************************************/
++
++
++/* Updates QEMU's audio backend settings */
++static void set_QEMU_audio_settings(ScreamerState *s)
++{
++    DPRINTF("%s() called\n", __func__);
++    open_speaker_voice(s);
++}
++
++
++/* Return value: 1 = muted  0 = not muted */
++static int is_muted(ScreamerState *s)
++{
++    int mute_state = s->awacs[1] & SPEAKER_MUTE ? 1 : 0;
++    if (s->awacs[1] & SPEAKER_MUTE) {
++        DPRINTF("speaker is muted\n");
++    } else {
++        DPRINTF("speaker is unmuted\n");
++    }
++
++    if (s->awacs[1] & HEADPHONE_MUTE) {
++        DPRINTF("headphone is muted\n");
++    } else {
++        DPRINTF("headphone is unmuted\n");
++    }
++    return mute_state;
++}
++
++
++/* Converts Screamer's volume system to QEMU's system */
++static int screamer_to_qemu_volume(int x)
++{
++    return -16 * x + 240;
++}
++
++
++/* Sets QEMU's volume. */
++static void set_volume(ScreamerState *s)
++{
++    int should_mute = is_muted(s);
++
++    /* Get Screamer volume values */
++    uint8_t left_vol = get_left_vol(s->awacs[4]);
++    uint8_t right_vol = get_right_vol(s->awacs[4]);
++    DPRINTF("set_volume() called - M:%d\tL:%d\tR:%d\n", should_mute, left_vol,
++            right_vol);
++
++    /* Convert Screamer to QEMU volume values */
++    left_vol = screamer_to_qemu_volume(left_vol);
++    right_vol = screamer_to_qemu_volume(right_vol);
++    DPRINTF("QEMU volume: L:%d\tR:%d\n", left_vol, right_vol);
++    AUD_set_volume_out(s->speaker_voice, should_mute, left_vol, right_vol);
++}
++
++
++/* Sets the sound control register */
++static void set_sound_control_reg(ScreamerState *s, uint32_t value)
++{
++    DPRINTF("set_sound_control_reg() called - value: 0x%x\n", value);
++    s->sound_control = value;
++    set_QEMU_audio_settings(s);
++}
++
++
++/* Used for input gain only - can be ignored for now. */
++static void set_awacs_0_reg(ScreamerState *s, uint32_t new_value)
++{
++    DPRINTF("Settings AWACS register 0 to 0x%x\n", s->awacs[0]);
++    s->awacs[0] = new_value;
++}
++
++
++static void set_awacs_1_reg(ScreamerState *s, uint32_t new_value)
++{
++    DPRINTF("Settings AWACS register 1 to 0x%x\n", new_value);
++
++    s->awacs[1] = new_value;
++
++    /* If recalibration requested */
++    if (new_value & RECALIBRATE) {
++        DPRINTF("Recalibration requested - unimplemented\n");
++        new_value = new_value ^ RECALIBRATE; /* Turn off recalibrate bit */
++    }
++
++    /* If loop thru set - what does this mean? */
++    if (new_value & LOOPTHRU) {
++        DPRINTF("Loopthru enabled - doing nothing\n");
++    }
++
++    /* Set headphone jack mute state */
++    if (new_value & HEADPHONE_MUTE) {
++        DPRINTF("Headphone muted\n");
++    }
++
++    else {
++        DPRINTF("Headphone unmuted\n");
++    }
++
++    if (new_value & SPEAKER_MUTE) {
++        DPRINTF("Speaker muted\n");
++    }
++
++    else {
++        DPRINTF("Speaker unmuted\n");
++    }
++
++    if (new_value & OUTPUT_ZERO) {
++        DPRINTF("output zero set - not sure what this means\n");
++    }
++
++    if (new_value & OUTPUT_ONE) {
++        DPRINTF("output one set - not sure what this means\n");
++    }
++
++    if (new_value & PARALLEL_OUTPUT) {
++        DPRINTF("parallel port enabled - but no parallel port here\n");
++    }
++
++    set_volume(s);
++}
++
++
++/* This is used for headphone volume - not needed */
++static void set_awacs_2_reg(ScreamerState *s, uint32_t new_value)
++{
++    DPRINTF("Settings AWACS register 2 to 0x%x\n"
++            "Ignoring change in headphone volume.\n", s->awacs[2]);
++    s->awacs[2] = new_value;
++}
++
++
++/* Unknown register purpose */
++static void set_awacs_3_reg(ScreamerState *s, uint32_t new_value)
++{
++    DPRINTF("Settings AWACS register 3 to 0x%x\n"
++            "This register has an unknown purpose and does not do anything\n",
++            s->awacs[3]);
++    s->awacs[3] = new_value;
++}
++
++
++/* Mostly deals with speaker volume */
++static void set_awacs_4_reg(ScreamerState *s, uint32_t new_value)
++{
++    DPRINTF("AWACS register 4 write: 0x%x\n", new_value);
++    s->awacs[4] = new_value;
++    set_volume(s);
++}
++
++
++/* This register is about loop thru stuff I don't understand */
++static void set_awacs_5_reg(ScreamerState *s, uint32_t new_value)
++{
++    DPRINTF("Settings AWACS register 5 to 0x%x\n"
++            "Loop thru update ignored.\n", s->awacs[5]);
++    s->awacs[5] = new_value;
++}
++
++
++/* Prints the states of the AWACS power register */
++static void print_power_reg_values(uint32_t value)
++{
++    if ((value & 0x3) == 0) {
++        printf("Screamer run state set\n");
++    }
++    if ((value & 0x3) == 1) {
++        printf("Screamer doze state set\n");
++    }
++    if ((value & 0x3) == 2) {
++        printf("Screamer idle state set\n");
++    }
++}
++
++
++/* Power Magement register */
++static void set_awacs_6_reg(ScreamerState *s, uint32_t new_value)
++{
++    DPRINTF("Settings AWACS register 6 to 0x%x\n"
++            "Power management update ignored.\n", s->awacs[6]);
++    if (DEBUG_SCREAMER) {
++        print_power_reg_values(new_value);
++    }
++    s->awacs[6] = new_value;
++}
++
++
++/* Read Back - repeating something that was sent to this chip? */
++static void set_awacs_7_reg(ScreamerState *s, uint32_t new_value)
++{
++    DPRINTF("Settings AWACS register 7 to 0x%x\n", new_value);
++    s->awacs[7] = new_value;
++}
++
++
++/* Sets the AWACs registers - a.k.a. shadow registers */
++static void set_awacs_register(ScreamerState *s, uint32_t value)
++{
++    int the_register = get_codec_control_address(value);
++
++    switch (the_register) {
++    case 0:
++        set_awacs_0_reg(s, value);
++        break;
++    case 1:
++        set_awacs_1_reg(s, value);
++        break;
++    case 2:
++        set_awacs_2_reg(s, value);
++        break;
++    case 3:
++        set_awacs_3_reg(s, value);
++        break;
++    case 4:
++        set_awacs_4_reg(s, value);
++        break;
++    case 5:
++        set_awacs_5_reg(s, value);
++        break;
++    case 6:
++        set_awacs_6_reg(s, value);
++        break;
++    case 7:
++        set_awacs_7_reg(s, value);
++        break;
++    default:
++        DPRINTF("Unhandled awacs registers %d\n", the_register);
++    }
++}
++
++
++/* Used to set the AWACS registers */
++static void set_codec_control_reg(ScreamerState *s, uint32_t value)
++{
++    DPRINTF("set_codec_control_reg() called - value: 0x%x\n", value);
++    s->codec_control = value;
++    set_awacs_register(s, value);
++}
++
++static void set_codec_status_reg(ScreamerState *s, uint32_t value)
++{
++    DPRINTF("set_codec_status_reg() called - value: 0x%x\n", value);
++    s->codec_status = value;
++}
++
++static void set_clip_count_reg(ScreamerState *s, uint32_t new_value)
++{
++    DPRINTF("set_clip_count_reg() called - value: 0x%x\n", new_value);
++    s->clip_count = new_value;
++}
++
++static void set_byte_swap_reg(ScreamerState *s, uint32_t value)
++{
++    DPRINTF("set_byte_swap_reg() called - value: 0x%x\n", value);
++    s->byte_swap = value;
++}
++
++static void set_frame_count_reg(ScreamerState *s, uint32_t new_value)
++{
++    DPRINTF("%s() called - value: 0x%x\n", __func__, new_value);
++    s->frame_count = new_value;
++}
++
++/*
++ * Sets the busy bit of codec control register.
++ * It is used to tell the CPU to wait.
++ * value: the codec control register's value
++ * bit_value: used to set or disable the busy bit
++ */
++static uint32_t set_busy_bit(uint32_t value, int bit_value)
++{
++    const int busy_bit = 0x01000000;
++    uint32_t return_value;
++    if (bit_value == 1)  /* Set this bit */
++        return_value = (value | busy_bit);
++    else /* bit_value == 0  Disable this bit */
++        return_value = (value & ~busy_bit);
++    return return_value;
++}
++
++
++/*
++ * Sets the part ready bit of the codec status register
++ * value: the codec status register's value
++ * bit_value: used to set or disable the part ready bit
++ */
++static uint32_t set_part_ready_bit(uint32_t value, int bit_value)
++{
++    const int part_ready_bit = 0x00400000;
++    uint32_t return_value;
++    if (bit_value == 1)  /* Set this bit */
++        return_value = (value | part_ready_bit);
++    else /* bit_value == 0  Disable this bit */
++        return_value = (value & ~part_ready_bit);
++    return return_value;
++}
++
++/* Sets bits 12 and 13 to 1 to indicate the Screamer revision */
++static uint32_t set_revision(uint32_t input_value)
++{
++    uint32_t return_value;
++    return_value = input_value | 0x3000;
++    return return_value;
++}
++
++/* Sets bit 8 to indicate Crystal as the manufacturer */
++static uint32_t set_manufacturer(uint32_t input_value)
++{
++    uint32_t return_value;
++    return_value = input_value | 0x100;
++    return return_value;
++}
++
++
++/************************** End of Setters *********************************/
++
++
++/*************************** DMA functions *********************************/
++
++/*
++ * Sends audio samples from a microphone or line-in to memory.
++ * Used for sound input.
++ * Currently only prevents a deadlock condition with Mac OS 9.
++ */
++static void screamer_to_dma(DBDMA_io *io)
++{
++    DPRINTF("%s() called\n", __func__);
++    ScreamerState *s = (ScreamerState *)io->opaque;
++    DBDMAState *dbs = s->dbdma;
++    DBDMA_channel *ch = &dbs->channels[0x12];
++    ch->regs[DBDMA_STATUS] |= DEAD;
++    ch->regs[DBDMA_STATUS] &= ~ACTIVE;
++    io->dma_end(io);
++    return;
++}
++
++
++static void print_dma_info(DBDMA_io *io)
++{
++    #define RUN        0x8000
++    #define PAUSE      0x4000
++    #define FLUSH      0x2000
++    #define WAKE       0x1000
++    #define DEAD       0x0800
++    #define ACTIVE     0x0400
++    #define BT         0x0100
++    #define DEVSTAT    0x00ff
++
++    /*
++     * RUN and PAUSE are bits under software control only.
++     * FLUSH and WAKE are set by SW and cleared by hardware.
++     * DEAD, ACTIVE and BT are only under hardware control.
++     */
++
++    DBDMA_channel *ch = io->channel;
++    printf("DMA FLAGS: ");
++
++    if (ch->regs[DBDMA_STATUS] & RUN) {
++        printf("RUN ");
++    }
++
++    if (ch->regs[DBDMA_STATUS] & ACTIVE) {
++        printf("ACTIVE ");
++    }
++
++    if (ch->regs[DBDMA_STATUS] & PAUSE) {
++        printf("PAUSE ");
++    }
++
++    if (ch->regs[DBDMA_STATUS] & DEAD) {
++        printf("DEAD ");
++    }
++
++    if (ch->regs[DBDMA_STATUS] & WAKE) {
++        printf("WAKE ");
++    }
++
++    if (ch->regs[DBDMA_STATUS] & BT) {
++        printf("BT ");
++    }
++
++    if (ch->regs[DBDMA_STATUS] & DEVSTAT) {
++        printf("DEVSTAT ");
++    }
++
++    if (ch->regs[DBDMA_STATUS] & FLUSH) {
++        printf("FLUSH ");
++    }
++
++    if (ch->io.processing == true) {
++        printf("processing  ");
++    }
++
++    printf("\n");
++}
++
++/* Tell the DMA controller we request more samples */
++static void dma_request(DBDMA_io *io)
++{
++    DPRINTF("%s() called\n", __func__);
++    if (DEBUG_SCREAMER) {
++        print_dma_info(io);
++    }
++    io->len = 0;
++    io->dma_end(io);
++}
++
++
++/* Adds sample data to the buffer */
++static void add_to_speaker_buffer(DBDMA_io *io)
++{
++    ScreamerState *s = (ScreamerState *) io->opaque;
++
++    if (s->spk_buffer_position + io->len > MAX_BUFFER_SIZE) {
++        /* postpone calling these samples until the buffer has been emptied */
++        memcpy(&s->dma_io, io, sizeof(DBDMA_io));
++        return;
++    }
++    dma_memory_read(&address_space_memory, io->addr,
++                    &s->spk_buffer[s->spk_buffer_position], io->len);
++    s->spk_buffer_position += io->len;
++    DPRINTF("%s() called - len: %d pos: %d/%d\n", __func__, io->len,
++            s->spk_buffer_position, MAX_BUFFER_SIZE);
++
++    dma_request(io);
++}
++
++/*
++ * Called by the DMA chip to transfer samples from memory to the
++ * Screamer chip.
++ * Used for sound output.
++ */
++static void dma_to_screamer(DBDMA_io *io)
++{
++    add_to_speaker_buffer(io);
++}
++
++
++/*
++ * This will flush the audio buffer of previous audio - eliminating previous
++ * audio playback.
++ */
++static void send_silence_to_speaker(ScreamerState *s)
++{
++    DPRINTF("Silencing audio buffer...\n");
++    int length = MAX_BUFFER_SIZE;
++    s->spk_buffer_position = length;
++    s->spk_play_position = 0;
++    memset(s->spk_buffer, 0, length);
++    s->dma_io.len = 0; /* stop any postponed samples from playing */
++}
++
++
++/* This is called after audio stops playing */
++static void dma_send_flush(DBDMA_io *io)
++{
++    DPRINTF("dma_send_flush() called\n");
++    if (DEBUG_SCREAMER) {
++        print_dma_info(io);
++    }
++    ScreamerState *s = (ScreamerState *)io->opaque;
++    reset_markers(s);
++    send_silence_to_speaker(s);
++    if (io->len > 0) {
++        dma_request(io);
++    }
++}
++
++
++static void dma_receive_flush(DBDMA_io *io)
++{
++    DPRINTF("dma_receive_flush() called\n");
++}
++
++
++/* Set the functions the DMA system will call */
++void screamer_register_dma_functions(ScreamerState *s, void *dbdma,
++                                   int send_channel, int receive_channel)
++{
++    DPRINTF("%s() called\n", __func__);
++    DPRINTF("send channel: %d\treceive channel: %d\n", send_channel,
++           receive_channel);
++    s->dbdma = dbdma;
++
++    /* Setup the DMA send system */
++    DBDMA_register_channel(s->dbdma, send_channel, s->dma_send_irq,
++                           dma_to_screamer, dma_send_flush, s);
++
++    /* Setup the DMA receive system */
++    DBDMA_register_channel(s->dbdma, receive_channel, s->dma_receive_irq,
++                           screamer_to_dma, dma_receive_flush, s);
++}
++
++/************************* End of DMA functions **************************/
++
++/* Resets this sound chip */
++static void screamer_reset(DeviceState *d)
++{
++    DPRINTF("screamer_reset() called\n");
++    ScreamerState *s = SCREAMER(d);
++    set_sound_control_reg(s, 0);
++    set_codec_control_reg(s, 0);
++    set_codec_status_reg(s, 0);
++    set_clip_count_reg(s, 0);
++    set_byte_swap_reg(s, 0);
++    set_frame_count_reg(s, 0);
++    int i, num_awacs_regs = 8;
++    for (i = 0; i < num_awacs_regs; i++) {
++        s->awacs[i] = 0;
++    }
++    set_QEMU_audio_settings(s);
++    reset_markers(s);
++    s->dma_io.len = 0;
++}
++
++/* Called when the CPU reads the memory addresses assigned to Screamer */
++static uint64_t screamer_mmio_read(void *opaque, hwaddr addr, unsigned size)
++{
++    ScreamerState *state = opaque;
++    uint32_t return_value;
++
++    addr = addr >> 4;
++    switch (addr) {
++    case SOUND_CONTROL_REG:
++        return_value = get_sound_control_reg(state);
++        break;
++    case CODEC_CONTROL_REG:
++        return_value = get_codec_control_reg(state);
++        break;
++    case CODEC_STATUS_REG:
++        return_value = get_codec_status_reg(state);
++        break;
++    case CLIP_COUNT_REG:
++        return_value = get_clip_count_reg(state);
++        break;
++    case BYTE_SWAP_REG:
++        return_value = get_byte_swap_reg(state);
++        break;
++    case FRAME_COUNT_REG:
++        return_value = get_frame_count_reg(state);
++        break;
++    default:
++        DPRINTF("Unknown register read - addr:%" HWADDR_PRIx "\tsize:%d\n",
++                addr, size);
++        return_value = 12021981; /* Value used for debugging purposes */
++    }
++    DPRINTF("screamer_mmio_read() called addr: %" HWADDR_PRIx "  size: %d",
++            addr >> 4, size);
++    DPRINTF("  returning 0x%x\n", return_value);
++    return return_value;
++}
++
++
++/* Called when the CPU writes to the memory addresses assigned to Screamer */
++static void screamer_mmio_write(void *opaque, hwaddr addr, uint64_t raw_value,
++                                unsigned size)
++{
++    DPRINTF("screamer_mmio_write() called - size: %d\n", size);
++    ScreamerState *state = opaque;
++    uint32_t value = raw_value & 0xffffffff;
++    addr = addr >> 4;
++
++    switch (addr) {
++    case SOUND_CONTROL_REG:
++        set_sound_control_reg(state, value);
++        break;
++    case CODEC_CONTROL_REG:
++        set_codec_control_reg(state, value);
++        break;
++    case CODEC_STATUS_REG:
++        set_codec_status_reg(state, value);
++        break;
++    case CLIP_COUNT_REG:
++        set_clip_count_reg(state, value);
++        break;
++    case BYTE_SWAP_REG:
++        set_byte_swap_reg(state, value);
++        break;
++    case FRAME_COUNT_REG:
++        set_frame_count_reg(state, value);
++        break;
++    default:
++        DPRINTF("Unknown register write - addr:%" HWADDR_PRIx "\tvalue:%d\n",
++                addr, value);
++    }
++}
++
++/* Used for memory_region_init_io() for memory mapped I/O */
++static const MemoryRegionOps screamer_ops = {
++    .read = screamer_mmio_read,
++    .write = screamer_mmio_write,
++    .endianness = DEVICE_LITTLE_ENDIAN,
++    .valid = {
++        .min_access_size = 4,
++        .max_access_size = 4
++    }
++};
++
++/* Called when the device has become active */
++static void screamer_realize(DeviceState *dev, Error **errp)
++{
++    DPRINTF("screamer_realize() called\n");
++    screamer_reset(dev);
++}
++
++
++/*
++ * Called when an instance of the Screamer device is created.
++ * Also called when this HMP command is called: device_add screamer
++ */
++static void screamer_init(Object *obj)
++{
++    DPRINTF("screamer_init() called\n");
++
++    ScreamerState *s = (ScreamerState *)obj;
++    SysBusDevice *d = SYS_BUS_DEVICE(obj);
++    const int region_size = 5 * 32;
++
++    /* Makes the read and write ops work */
++    memory_region_init_io(&s->io_memory_region, OBJECT(s),
++                          &screamer_ops, s, SOUND_CHIP_NAME, region_size);
++
++    /* Sets the SysBusDevice's memory property */
++    sysbus_init_mmio(d, &s->io_memory_region);
++
++    /* Setup all the interrupt requests */
++    sysbus_init_irq(d, &s->irq);
++    sysbus_init_irq(d, &s->dma_send_irq);
++    sysbus_init_irq(d, &s->dma_receive_irq);
++
++    /* Registers Screamer with QEMU's audio system */
++    AUD_register_card(SOUND_CHIP_NAME, &s->card);
++}
++
++
++/*
++ * When saving and restoring the state of the VM, this is used to save and
++ * restore the registers.
++ */
++static const VMStateDescription vmstate_screamer = {
++    .name = "Screamer",
++    .version_id = 1,
++    .minimum_version_id = 1,
++    .fields = (VMStateField[]) {
++        VMSTATE_UINT16_ARRAY(awacs, ScreamerState, 8), /* 8 AWACS registers */
++        VMSTATE_UINT32(sound_control, ScreamerState),
++        VMSTATE_UINT32(codec_control, ScreamerState),
++        VMSTATE_UINT32(codec_status, ScreamerState),
++        VMSTATE_UINT32(clip_count, ScreamerState),
++        VMSTATE_UINT32(byte_swap, ScreamerState),
++        VMSTATE_UINT32(frame_count, ScreamerState),
++        VMSTATE_END_OF_LIST()
++    }
++};
++
++
++/*
++ * Sets the class data. It is like polymorphism and inheritance in object
++ * oriented languages.
++ */
++static void screamer_class_init(ObjectClass *class, void *data)
++{
++    DPRINTF("screamer_class_init() called\n");
++    DeviceClass *dc = DEVICE_CLASS(class);
++    dc->realize = screamer_realize;
++    dc->reset = screamer_reset;
++    dc->desc = "Apple Screamer";
++    dc->vmsd = &vmstate_screamer;
++    dc->hotpluggable = false;
++}
++
++/* Used for QOM function registration */
++static const TypeInfo screamer_info = {
++    .name          = "screamer",
++    .parent        = TYPE_SYS_BUS_DEVICE,
++    .instance_size = sizeof(ScreamerState),
++    .instance_init = screamer_init,
++    .class_init    = screamer_class_init,
++};
++
++/* QOM registration of above functions for calling */
++static void screamer_register_types(void)
++{
++    DPRINTF("screamer_register_types() called\n");
++    type_register_static(&screamer_info);
++}
++
++/* QEMU Object Model (QOM) stuff */
++type_init(screamer_register_types)
 diff -Naur a/hw/display/meson.build b/hw/display/meson.build
---- a/hw/display/meson.build	2021-04-26 12:51:23.000000000 -0700
-+++ b/hw/display/meson.build	2021-04-26 23:22:36.000000000 -0700
+--- a/hw/display/meson.build	2021-04-29 10:18:58.000000000 -0700
++++ b/hw/display/meson.build	2021-05-16 20:20:00.000000000 -0700
 @@ -60,6 +60,7 @@
    virtio_gpu_ss.add(when: ['CONFIG_VIRTIO_GPU', 'CONFIG_VIRGL'],
                      if_true: [files('virtio-gpu-3d.c'), pixman, virgl])
@@ -447,7 +1454,7 @@ diff -Naur a/hw/display/meson.build b/hw/display/meson.build
  
 diff -Naur a/hw/display/virtio-ramfb.c b/hw/display/virtio-ramfb.c
 --- a/hw/display/virtio-ramfb.c	1969-12-31 16:00:00.000000000 -0800
-+++ b/hw/display/virtio-ramfb.c	2021-04-26 23:22:36.000000000 -0700
++++ b/hw/display/virtio-ramfb.c	2021-05-16 20:20:00.000000000 -0700
 @@ -0,0 +1,188 @@
 +#include "qemu/osdep.h"
 +#include "hw/pci/pci.h"
@@ -637,9 +1644,101 @@ diff -Naur a/hw/display/virtio-ramfb.c b/hw/display/virtio-ramfb.c
 +}
 +
 +type_init(virtio_ramfb_register_types)
+diff -Naur a/hw/misc/macio/macio.c b/hw/misc/macio/macio.c
+--- a/hw/misc/macio/macio.c	2021-04-29 10:18:58.000000000 -0700
++++ b/hw/misc/macio/macio.c	2021-05-16 20:20:00.000000000 -0700
+@@ -37,6 +37,7 @@
+ #include "hw/intc/heathrow_pic.h"
+ #include "sysemu/sysemu.h"
+ #include "trace.h"
++#include "include/hw/audio/screamer.h"
+ 
+ /* Note: this code is strongly inspirated from the corresponding code
+  * in PearPC */
+@@ -105,6 +106,17 @@
+     sysbus_dev = SYS_BUS_DEVICE(&s->dbdma);
+     memory_region_add_subregion(&s->bar, 0x08000,
+                                 sysbus_mmio_get_region(sysbus_dev, 0));
++    if (!qdev_realize(DEVICE(&s->screamer), BUS(&s->macio_bus), errp)) {
++        return;
++    }
++
++    /* Add the screamer sound chip */
++    sysbus_dev = SYS_BUS_DEVICE(&s->screamer);
++    const int offset = 0x14000; /* Offset from base address register (bar) */
++    const int region_number = 0; /* which memory region to use */
++    memory_region_add_subregion(&s->bar, offset,
++                                sysbus_mmio_get_region(sysbus_dev,
++                                                       region_number));
+ 
+     qdev_prop_set_uint32(DEVICE(&s->escc), "disabled", 0);
+     qdev_prop_set_uint32(DEVICE(&s->escc), "frequency", ESCC_CLOCK);
+@@ -365,6 +377,19 @@
+         memory_region_add_subregion(&s->bar, 0x16000,
+                                     sysbus_mmio_get_region(sysbus_dev, 0));
+     }
++
++    /* Screamer Sound Chip */
++    const int gpio_0 = 0;
++    const int gpio_1 = 1;
++    const int transmit_channel = 0x10;
++    const int receive_channel = 0x12;
++    sysbus_dev = SYS_BUS_DEVICE(&s->screamer);
++    sysbus_connect_irq(sysbus_dev, gpio_0, qdev_get_gpio_in(pic_dev,
++                                           NEWWORLD_SCREAMER_IRQ));
++    sysbus_connect_irq(sysbus_dev, gpio_1, qdev_get_gpio_in(pic_dev,
++                                           NEWWORLD_SCREAMER_DMA_IRQ));
++    screamer_register_dma_functions(SCREAMER(sysbus_dev), &s->dbdma,
++                                    transmit_channel, receive_channel);
+ }
+ 
+ static void macio_newworld_init(Object *obj)
+@@ -394,6 +419,9 @@
+     object_initialize_child(OBJECT(s), "dbdma", &s->dbdma, TYPE_MAC_DBDMA);
+ 
+     object_initialize_child(OBJECT(s), "escc", &s->escc, TYPE_ESCC);
++
++    object_initialize_child(OBJECT(s), SOUND_CHIP_NAME, &s->screamer,
++                            TYPE_SCREAMER);
+ }
+ 
+ static const VMStateDescription vmstate_macio_oldworld = {
+diff -Naur a/hw/ppc/Kconfig b/hw/ppc/Kconfig
+--- a/hw/ppc/Kconfig	2021-04-29 10:18:58.000000000 -0700
++++ b/hw/ppc/Kconfig	2021-05-16 20:20:00.000000000 -0700
+@@ -106,6 +106,7 @@
+     select MAC_PMU
+     select UNIN_PCI
+     select FW_CFG_PPC
++    select SCREAMER
+ 
+ config E500
+     bool
+diff -Naur a/hw/ppc/mac.h b/hw/ppc/mac.h
+--- a/hw/ppc/mac.h	2021-04-29 10:18:58.000000000 -0700
++++ b/hw/ppc/mac.h	2021-05-16 20:20:00.000000000 -0700
+@@ -35,6 +35,8 @@
+ #include "hw/pci/pci_host.h"
+ #include "hw/pci-host/uninorth.h"
+ #include "qom/object.h"
++#include "hw/ppc/mac_dbdma.h"
++#include "audio/audio.h"
+ 
+ /* SMP is not enabled, for now */
+ #define MAX_CPUS 1
+@@ -67,6 +69,9 @@
+ #define NEWWORLD_IDE1_DMA_IRQ  0x3
+ #define NEWWORLD_EXTING_GPIO1  0x2f
+ #define NEWWORLD_EXTING_GPIO9  0x37
++#define NEWWORLD_SCREAMER_IRQ  0x18
++#define NEWWORLD_SCREAMER_DMA_IRQ 0x9
++#define NEWWORLD_SCREAMER_RX_IRQ 0xa
+ 
+ /* Core99 machine */
+ #define TYPE_CORE99_MACHINE MACHINE_TYPE_NAME("mac99")
 diff -Naur a/include/disas/dis-asm.h b/include/disas/dis-asm.h
---- a/include/disas/dis-asm.h	2021-04-26 12:51:23.000000000 -0700
-+++ b/include/disas/dis-asm.h	2021-04-26 23:22:36.000000000 -0700
+--- a/include/disas/dis-asm.h	2021-04-29 10:18:58.000000000 -0700
++++ b/include/disas/dis-asm.h	2021-05-16 20:20:00.000000000 -0700
 @@ -411,6 +411,7 @@
  typedef int (*disassembler_ftype) (bfd_vma, disassemble_info *);
  
@@ -649,8 +1748,8 @@ diff -Naur a/include/disas/dis-asm.h b/include/disas/dis-asm.h
  int print_insn_little_mips      (bfd_vma, disassemble_info*);
  int print_insn_nanomips         (bfd_vma, disassemble_info*);
 diff -Naur a/include/exec/exec-all.h b/include/exec/exec-all.h
---- a/include/exec/exec-all.h	2021-04-26 12:51:23.000000000 -0700
-+++ b/include/exec/exec-all.h	2021-04-26 23:22:36.000000000 -0700
+--- a/include/exec/exec-all.h	2021-04-29 10:18:58.000000000 -0700
++++ b/include/exec/exec-all.h	2021-05-16 20:20:00.000000000 -0700
 @@ -543,7 +543,11 @@
  #if defined(CONFIG_TCG_INTERPRETER)
  extern __thread uintptr_t tci_tb_ptr;
@@ -663,9 +1762,74 @@ diff -Naur a/include/exec/exec-all.h b/include/exec/exec-all.h
  # define GETPC() \
      ((uintptr_t)__builtin_extract_return_addr(__builtin_return_address(0)))
  #endif
+diff -Naur a/include/hw/audio/screamer.h b/include/hw/audio/screamer.h
+--- a/include/hw/audio/screamer.h	1969-12-31 16:00:00.000000000 -0800
++++ b/include/hw/audio/screamer.h	2021-05-16 20:20:00.000000000 -0700
+@@ -0,0 +1,42 @@
++/*
++ * File: screamer.h
++ * Description: header file to the hw/audio/screamer.c file
++ */
++
++#ifndef screamer_h
++#define screamer_h
++
++#include <inttypes.h>
++#include "audio/audio.h"
++#include "hw/ppc/mac_dbdma.h"
++
++#define TYPE_SCREAMER "screamer"
++#define SCREAMER(obj) OBJECT_CHECK(ScreamerState, (obj), TYPE_SCREAMER)
++#define SOUND_CHIP_NAME "Screamer Sound Chip"
++#define MAX_BUFFER_SIZE (128 * 64)
++
++typedef struct ScreamerState {
++    SysBusDevice parent_obj;
++    uint16_t awacs[8]; /* Shadow/awacs registers */
++    uint32_t sound_control;
++    uint32_t codec_control;
++    uint32_t codec_status;
++    uint32_t clip_count;
++    uint32_t byte_swap;
++    uint32_t frame_count;
++    SWVoiceOut *speaker_voice;
++    DBDMAState *dbdma;
++    qemu_irq dma_send_irq;
++    qemu_irq dma_receive_irq;
++    qemu_irq irq;
++    QEMUSoundCard card;
++    MemoryRegion io_memory_region;
++    uint8_t spk_buffer[MAX_BUFFER_SIZE];
++    uint16_t spk_buffer_position, spk_play_position;
++    DBDMA_io dma_io;
++} ScreamerState;
++
++void screamer_register_dma_functions(ScreamerState *s, void *dbdma,
++                                     int send_channel, int receive_channel);
++
++#endif /* screamer_h */
+diff -Naur a/include/hw/misc/macio/macio.h b/include/hw/misc/macio/macio.h
+--- a/include/hw/misc/macio/macio.h	2021-04-29 10:18:58.000000000 -0700
++++ b/include/hw/misc/macio/macio.h	2021-05-16 20:20:00.000000000 -0700
+@@ -36,6 +36,7 @@
+ #include "hw/ppc/mac.h"
+ #include "hw/ppc/mac_dbdma.h"
+ #include "hw/ppc/openpic.h"
++#include "hw/audio/screamer.h"
+ #include "qom/object.h"
+ 
+ /* MacIO virtual bus */
+@@ -88,6 +89,7 @@
+     PMUState pmu;
+     DBDMAState dbdma;
+     ESCCState escc;
++    ScreamerState screamer;
+     uint64_t frequency;
+ };
+ 
 diff -Naur a/include/qemu/osdep.h b/include/qemu/osdep.h
---- a/include/qemu/osdep.h	2021-04-26 12:51:23.000000000 -0700
-+++ b/include/qemu/osdep.h	2021-04-26 23:22:37.000000000 -0700
+--- a/include/qemu/osdep.h	2021-04-29 10:18:59.000000000 -0700
++++ b/include/qemu/osdep.h	2021-05-16 20:20:00.000000000 -0700
 @@ -702,30 +702,6 @@
   */
  size_t qemu_get_host_physmem(void);
@@ -699,7 +1863,7 @@ diff -Naur a/include/qemu/osdep.h b/include/qemu/osdep.h
   */
 diff -Naur a/include/tcg/tcg-apple-jit.h b/include/tcg/tcg-apple-jit.h
 --- a/include/tcg/tcg-apple-jit.h	1969-12-31 16:00:00.000000000 -0800
-+++ b/include/tcg/tcg-apple-jit.h	2021-04-26 23:22:37.000000000 -0700
++++ b/include/tcg/tcg-apple-jit.h	2021-05-16 20:20:00.000000000 -0700
 @@ -0,0 +1,100 @@
 +/*
 + * Apple Silicon functions for JIT handling
@@ -802,8 +1966,8 @@ diff -Naur a/include/tcg/tcg-apple-jit.h b/include/tcg/tcg-apple-jit.h
 +
 +#endif /* define TCG_APPLE_JIT_H */
 diff -Naur a/include/tcg/tcg.h b/include/tcg/tcg.h
---- a/include/tcg/tcg.h	2021-04-26 12:51:23.000000000 -0700
-+++ b/include/tcg/tcg.h	2021-04-26 23:22:37.000000000 -0700
+--- a/include/tcg/tcg.h	2021-04-29 10:18:58.000000000 -0700
++++ b/include/tcg/tcg.h	2021-05-16 20:20:00.000000000 -0700
 @@ -1296,7 +1296,7 @@
  #define TB_EXIT_IDXMAX    1
  #define TB_EXIT_REQUESTED 3
@@ -814,8 +1978,8 @@ diff -Naur a/include/tcg/tcg.h b/include/tcg/tcg.h
  #else
  typedef uintptr_t tcg_prologue_fn(CPUArchState *env, const void *tb_ptr);
 diff -Naur a/meson.build b/meson.build
---- a/meson.build	2021-04-26 12:51:23.000000000 -0700
-+++ b/meson.build	2021-04-26 23:22:37.000000000 -0700
+--- a/meson.build	2021-04-29 10:18:58.000000000 -0700
++++ b/meson.build	2021-05-16 20:20:01.000000000 -0700
 @@ -58,6 +58,7 @@
  supported_oses = ['windows', 'freebsd', 'netbsd', 'openbsd', 'darwin', 'sunos', 'linux']
  supported_cpus = ['ppc', 'ppc64', 's390x', 'riscv32', 'riscv64', 'x86', 'x86_64',
@@ -1111,8 +2275,8 @@ diff -Naur a/meson.build b/meson.build
  summary_info += {'coroutine pool':    config_host['CONFIG_COROUTINE_POOL'] == '1'}
  if have_block
 diff -Naur a/meson_options.txt b/meson_options.txt
---- a/meson_options.txt	2021-04-26 12:51:23.000000000 -0700
-+++ b/meson_options.txt	2021-04-26 23:22:37.000000000 -0700
+--- a/meson_options.txt	2021-04-29 10:18:58.000000000 -0700
++++ b/meson_options.txt	2021-05-16 20:20:01.000000000 -0700
 @@ -6,6 +6,8 @@
         description: 'search PATH for firmware files')
  option('sphinx_build', type : 'string', value : '',
@@ -1141,8 +2305,8 @@ diff -Naur a/meson_options.txt b/meson_options.txt
  option('vhost_user_blk_server', type: 'feature', value: 'auto',
         description: 'build vhost-user-blk server')
 diff -Naur a/net/clients.h b/net/clients.h
---- a/net/clients.h	2021-04-26 12:51:23.000000000 -0700
-+++ b/net/clients.h	2021-04-26 23:22:37.000000000 -0700
+--- a/net/clients.h	2021-04-29 10:18:58.000000000 -0700
++++ b/net/clients.h	2021-05-16 20:20:01.000000000 -0700
 @@ -63,4 +63,9 @@
  
  int net_init_vhost_vdpa(const Netdev *netdev, const char *name,
@@ -1154,8 +2318,8 @@ diff -Naur a/net/clients.h b/net/clients.h
 +#endif
  #endif /* QEMU_NET_CLIENTS_H */
 diff -Naur a/net/meson.build b/net/meson.build
---- a/net/meson.build	2021-04-26 12:51:23.000000000 -0700
-+++ b/net/meson.build	2021-04-26 23:22:37.000000000 -0700
+--- a/net/meson.build	2021-04-29 10:18:58.000000000 -0700
++++ b/net/meson.build	2021-05-16 20:20:01.000000000 -0700
 @@ -37,5 +37,6 @@
  softmmu_ss.add(when: 'CONFIG_POSIX', if_true: files(tap_posix))
  softmmu_ss.add(when: 'CONFIG_WIN32', if_true: files('tap-win32.c'))
@@ -1164,8 +2328,8 @@ diff -Naur a/net/meson.build b/net/meson.build
  
  subdir('can')
 diff -Naur a/net/net.c b/net/net.c
---- a/net/net.c	2021-04-26 12:51:23.000000000 -0700
-+++ b/net/net.c	2021-04-26 23:22:37.000000000 -0700
+--- a/net/net.c	2021-04-29 10:18:59.000000000 -0700
++++ b/net/net.c	2021-05-16 20:20:01.000000000 -0700
 @@ -1002,6 +1002,9 @@
  #ifdef CONFIG_L2TPV3
          [NET_CLIENT_DRIVER_L2TPV3]    = net_init_l2tpv3,
@@ -1177,8 +2341,8 @@ diff -Naur a/net/net.c b/net/net.c
  
  
 diff -Naur a/net/slirp.c b/net/slirp.c
---- a/net/slirp.c	2021-04-26 12:51:23.000000000 -0700
-+++ b/net/slirp.c	2021-04-26 23:22:37.000000000 -0700
+--- a/net/slirp.c	2021-04-29 10:18:59.000000000 -0700
++++ b/net/slirp.c	2021-05-16 20:20:01.000000000 -0700
 @@ -27,7 +27,7 @@
  #include "net/slirp.h"
  
@@ -1253,7 +2417,7 @@ diff -Naur a/net/slirp.c b/net/slirp.c
  {
 diff -Naur a/net/vmnet-macos.c b/net/vmnet-macos.c
 --- a/net/vmnet-macos.c	1969-12-31 16:00:00.000000000 -0800
-+++ b/net/vmnet-macos.c	2021-04-26 23:22:37.000000000 -0700
++++ b/net/vmnet-macos.c	2021-05-16 20:20:01.000000000 -0700
 @@ -0,0 +1,446 @@
 +/*
 + * vmnet.framework backed netdev for macOS 10.15+ hosts
@@ -1702,8 +2866,8 @@ diff -Naur a/net/vmnet-macos.c b/net/vmnet-macos.c
 +    return 0;
 +}
 diff -Naur a/qapi/block-core.json b/qapi/block-core.json
---- a/qapi/block-core.json	2021-04-26 12:51:23.000000000 -0700
-+++ b/qapi/block-core.json	2021-04-26 23:22:38.000000000 -0700
+--- a/qapi/block-core.json	2021-04-29 10:18:58.000000000 -0700
++++ b/qapi/block-core.json	2021-05-16 20:20:01.000000000 -0700
 @@ -897,7 +897,8 @@
    'discriminator': 'driver',
    'data': {
@@ -1736,8 +2900,8 @@ diff -Naur a/qapi/block-core.json b/qapi/block-core.json
        'https':      'BlockdevOptionsCurlHttps',
        'iscsi':      'BlockdevOptionsIscsi',
 diff -Naur a/qapi/net.json b/qapi/net.json
---- a/qapi/net.json	2021-04-26 12:51:23.000000000 -0700
-+++ b/qapi/net.json	2021-04-26 23:22:38.000000000 -0700
+--- a/qapi/net.json	2021-04-29 10:18:59.000000000 -0700
++++ b/qapi/net.json	2021-05-16 20:20:01.000000000 -0700
 @@ -451,6 +451,115 @@
      '*queues':       'int' } }
  
@@ -1890,8 +3054,8 @@ diff -Naur a/qapi/net.json b/qapi/net.json
  ##
  # @RxState:
 diff -Naur a/qemu-options.hx b/qemu-options.hx
---- a/qemu-options.hx	2021-04-26 12:51:23.000000000 -0700
-+++ b/qemu-options.hx	2021-04-26 23:22:38.000000000 -0700
+--- a/qemu-options.hx	2021-04-29 10:18:59.000000000 -0700
++++ b/qemu-options.hx	2021-05-16 20:20:01.000000000 -0700
 @@ -2543,6 +2543,15 @@
      "-netdev vhost-vdpa,id=str,vhostdev=/path/to/dev\n"
      "                configure a vhost-vdpa network,Establish a vhost-vdpa netdev\n"
@@ -1909,8 +3073,8 @@ diff -Naur a/qemu-options.hx b/qemu-options.hx
      "                configure a hub port on the hub with ID 'n'\n", QEMU_ARCH_ALL)
  DEF("nic", HAS_ARG, QEMU_OPTION_nic,
 diff -Naur a/scripts/mtest2make.py b/scripts/mtest2make.py
---- a/scripts/mtest2make.py	2021-04-26 12:51:23.000000000 -0700
-+++ b/scripts/mtest2make.py	2021-04-26 23:22:38.000000000 -0700
+--- a/scripts/mtest2make.py	2021-04-29 10:18:58.000000000 -0700
++++ b/scripts/mtest2make.py	2021-05-16 20:20:01.000000000 -0700
 @@ -75,18 +75,18 @@
      print('run-test-%d: $(.test.deps.%d)' % (i,i))
      print('\t@$(call .test.run,%d,$(.test.output-format))' % (i,))
@@ -1944,7 +3108,7 @@ diff -Naur a/scripts/mtest2make.py b/scripts/mtest2make.py
      all_tap = ' '.join(('%s-report-%s.tap' % (prefix, k) for k in suites.keys()))
 diff -Naur a/subprojects/libslirp/.clang-format b/subprojects/libslirp/.clang-format
 --- a/subprojects/libslirp/.clang-format	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libslirp/.clang-format	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libslirp/.clang-format	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,58 @@
 +# https://clang.llvm.org/docs/ClangFormat.html
 +# https://clang.llvm.org/docs/ClangFormatStyleOptions.html
@@ -2006,7 +3170,7 @@ diff -Naur a/subprojects/libslirp/.clang-format b/subprojects/libslirp/.clang-fo
 +...
 diff -Naur a/subprojects/libslirp/.gitignore b/subprojects/libslirp/.gitignore
 --- a/subprojects/libslirp/.gitignore	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libslirp/.gitignore	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libslirp/.gitignore	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,10 @@
 +*.[aod]
 +*.gcda
@@ -2020,7 +3184,7 @@ diff -Naur a/subprojects/libslirp/.gitignore b/subprojects/libslirp/.gitignore
 +/tags
 diff -Naur a/subprojects/libslirp/.gitlab-ci.yml b/subprojects/libslirp/.gitlab-ci.yml
 --- a/subprojects/libslirp/.gitlab-ci.yml	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libslirp/.gitlab-ci.yml	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libslirp/.gitlab-ci.yml	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,43 @@
 +image: fedora:latest
 +
@@ -2067,14 +3231,14 @@ diff -Naur a/subprojects/libslirp/.gitlab-ci.yml b/subprojects/libslirp/.gitlab-
 +    --form description="`git describe --tags` / $CI_COMMIT_TITLE / $CI_COMMIT_REF_NAME:$CI_PIPELINE_ID "
 diff -Naur a/subprojects/libslirp/.gitpublish b/subprojects/libslirp/.gitpublish
 --- a/subprojects/libslirp/.gitpublish	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libslirp/.gitpublish	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libslirp/.gitpublish	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,3 @@
 +[gitpublishprofile "default"]
 +base = master
 +to = slirp@lists.freedesktop.org
 diff -Naur a/subprojects/libslirp/CHANGELOG.md b/subprojects/libslirp/CHANGELOG.md
 --- a/subprojects/libslirp/CHANGELOG.md	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libslirp/CHANGELOG.md	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libslirp/CHANGELOG.md	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,143 @@
 +# Changelog
 +
@@ -2221,7 +3385,7 @@ diff -Naur a/subprojects/libslirp/CHANGELOG.md b/subprojects/libslirp/CHANGELOG.
 +[4.0.0]: https://gitlab.freedesktop.org/slirp/libslirp/commits/v4.0.0
 diff -Naur a/subprojects/libslirp/COPYRIGHT b/subprojects/libslirp/COPYRIGHT
 --- a/subprojects/libslirp/COPYRIGHT	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libslirp/COPYRIGHT	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libslirp/COPYRIGHT	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,62 @@
 +Slirp was written by Danny Gasparovski.
 +Copyright (c), 1995,1996 All Rights Reserved.
@@ -2287,7 +3451,7 @@ diff -Naur a/subprojects/libslirp/COPYRIGHT b/subprojects/libslirp/COPYRIGHT
 +copyrights.
 diff -Naur a/subprojects/libslirp/README.md b/subprojects/libslirp/README.md
 --- a/subprojects/libslirp/README.md	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libslirp/README.md	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libslirp/README.md	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,60 @@
 +# libslirp
 +
@@ -2351,7 +3515,7 @@ diff -Naur a/subprojects/libslirp/README.md b/subprojects/libslirp/README.md
 +See the [COPYRIGHT](COPYRIGHT) file for details.
 diff -Naur a/subprojects/libslirp/build-aux/git-version-gen b/subprojects/libslirp/build-aux/git-version-gen
 --- a/subprojects/libslirp/build-aux/git-version-gen	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libslirp/build-aux/git-version-gen	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libslirp/build-aux/git-version-gen	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,158 @@
 +#!/bin/sh
 +# Print a version string.
@@ -2513,7 +3677,7 @@ diff -Naur a/subprojects/libslirp/build-aux/git-version-gen b/subprojects/libsli
 +# End:
 diff -Naur a/subprojects/libslirp/meson.build b/subprojects/libslirp/meson.build
 --- a/subprojects/libslirp/meson.build	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libslirp/meson.build	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libslirp/meson.build	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,158 @@
 +project('libslirp', 'c',
 +  version : '4.4.0',
@@ -2675,13 +3839,13 @@ diff -Naur a/subprojects/libslirp/meson.build b/subprojects/libslirp/meson.build
 +endif
 diff -Naur a/subprojects/libslirp/meson_options.txt b/subprojects/libslirp/meson_options.txt
 --- a/subprojects/libslirp/meson_options.txt	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libslirp/meson_options.txt	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libslirp/meson_options.txt	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,2 @@
 +option('version_suffix', type: 'string', value: '',
 +       description: 'Suffix to append to SLIRP_VERSION_STRING')
 diff -Naur a/subprojects/libslirp/src/arp_table.c b/subprojects/libslirp/src/arp_table.c
 --- a/subprojects/libslirp/src/arp_table.c	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libslirp/src/arp_table.c	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libslirp/src/arp_table.c	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,92 @@
 +/* SPDX-License-Identifier: MIT */
 +/*
@@ -2777,7 +3941,7 @@ diff -Naur a/subprojects/libslirp/src/arp_table.c b/subprojects/libslirp/src/arp
 +}
 diff -Naur a/subprojects/libslirp/src/bootp.c b/subprojects/libslirp/src/bootp.c
 --- a/subprojects/libslirp/src/bootp.c	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libslirp/src/bootp.c	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libslirp/src/bootp.c	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,369 @@
 +/* SPDX-License-Identifier: MIT */
 +/*
@@ -3150,7 +4314,7 @@ diff -Naur a/subprojects/libslirp/src/bootp.c b/subprojects/libslirp/src/bootp.c
 +}
 diff -Naur a/subprojects/libslirp/src/bootp.h b/subprojects/libslirp/src/bootp.h
 --- a/subprojects/libslirp/src/bootp.h	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libslirp/src/bootp.h	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libslirp/src/bootp.h	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,129 @@
 +/* SPDX-License-Identifier: BSD-3-Clause */
 +/* bootp/dhcp defines */
@@ -3283,7 +4447,7 @@ diff -Naur a/subprojects/libslirp/src/bootp.h b/subprojects/libslirp/src/bootp.h
 +#endif
 diff -Naur a/subprojects/libslirp/src/cksum.c b/subprojects/libslirp/src/cksum.c
 --- a/subprojects/libslirp/src/cksum.c	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libslirp/src/cksum.c	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libslirp/src/cksum.c	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,179 @@
 +/* SPDX-License-Identifier: BSD-3-Clause */
 +/*
@@ -3466,7 +4630,7 @@ diff -Naur a/subprojects/libslirp/src/cksum.c b/subprojects/libslirp/src/cksum.c
 +}
 diff -Naur a/subprojects/libslirp/src/debug.h b/subprojects/libslirp/src/debug.h
 --- a/subprojects/libslirp/src/debug.h	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libslirp/src/debug.h	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libslirp/src/debug.h	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,51 @@
 +/* SPDX-License-Identifier: BSD-3-Clause */
 +/*
@@ -3521,7 +4685,7 @@ diff -Naur a/subprojects/libslirp/src/debug.h b/subprojects/libslirp/src/debug.h
 +#endif /* DEBUG_H_ */
 diff -Naur a/subprojects/libslirp/src/dhcpv6.c b/subprojects/libslirp/src/dhcpv6.c
 --- a/subprojects/libslirp/src/dhcpv6.c	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libslirp/src/dhcpv6.c	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libslirp/src/dhcpv6.c	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,224 @@
 +/* SPDX-License-Identifier: BSD-3-Clause */
 +/*
@@ -3749,7 +4913,7 @@ diff -Naur a/subprojects/libslirp/src/dhcpv6.c b/subprojects/libslirp/src/dhcpv6
 +}
 diff -Naur a/subprojects/libslirp/src/dhcpv6.h b/subprojects/libslirp/src/dhcpv6.h
 --- a/subprojects/libslirp/src/dhcpv6.h	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libslirp/src/dhcpv6.h	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libslirp/src/dhcpv6.h	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,68 @@
 +/* SPDX-License-Identifier: BSD-3-Clause */
 +/*
@@ -3821,7 +4985,7 @@ diff -Naur a/subprojects/libslirp/src/dhcpv6.h b/subprojects/libslirp/src/dhcpv6
 +#endif
 diff -Naur a/subprojects/libslirp/src/dnssearch.c b/subprojects/libslirp/src/dnssearch.c
 --- a/subprojects/libslirp/src/dnssearch.c	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libslirp/src/dnssearch.c	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libslirp/src/dnssearch.c	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,306 @@
 +/* SPDX-License-Identifier: MIT */
 +/*
@@ -4131,7 +5295,7 @@ diff -Naur a/subprojects/libslirp/src/dnssearch.c b/subprojects/libslirp/src/dns
 +}
 diff -Naur a/subprojects/libslirp/src/if.c b/subprojects/libslirp/src/if.c
 --- a/subprojects/libslirp/src/if.c	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libslirp/src/if.c	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libslirp/src/if.c	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,213 @@
 +/* SPDX-License-Identifier: BSD-3-Clause */
 +/*
@@ -4348,7 +5512,7 @@ diff -Naur a/subprojects/libslirp/src/if.c b/subprojects/libslirp/src/if.c
 +}
 diff -Naur a/subprojects/libslirp/src/if.h b/subprojects/libslirp/src/if.h
 --- a/subprojects/libslirp/src/if.h	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libslirp/src/if.h	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libslirp/src/if.h	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,25 @@
 +/* SPDX-License-Identifier: BSD-3-Clause */
 +/*
@@ -4377,7 +5541,7 @@ diff -Naur a/subprojects/libslirp/src/if.h b/subprojects/libslirp/src/if.h
 +#endif
 diff -Naur a/subprojects/libslirp/src/ip.h b/subprojects/libslirp/src/ip.h
 --- a/subprojects/libslirp/src/ip.h	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libslirp/src/ip.h	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libslirp/src/ip.h	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,242 @@
 +/* SPDX-License-Identifier: BSD-3-Clause */
 +/*
@@ -4623,7 +5787,7 @@ diff -Naur a/subprojects/libslirp/src/ip.h b/subprojects/libslirp/src/ip.h
 +#endif
 diff -Naur a/subprojects/libslirp/src/ip6.h b/subprojects/libslirp/src/ip6.h
 --- a/subprojects/libslirp/src/ip6.h	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libslirp/src/ip6.h	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libslirp/src/ip6.h	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,214 @@
 +/* SPDX-License-Identifier: BSD-3-Clause */
 +/*
@@ -4841,7 +6005,7 @@ diff -Naur a/subprojects/libslirp/src/ip6.h b/subprojects/libslirp/src/ip6.h
 +#endif
 diff -Naur a/subprojects/libslirp/src/ip6_icmp.c b/subprojects/libslirp/src/ip6_icmp.c
 --- a/subprojects/libslirp/src/ip6_icmp.c	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libslirp/src/ip6_icmp.c	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libslirp/src/ip6_icmp.c	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,439 @@
 +/* SPDX-License-Identifier: BSD-3-Clause */
 +/*
@@ -5284,7 +6448,7 @@ diff -Naur a/subprojects/libslirp/src/ip6_icmp.c b/subprojects/libslirp/src/ip6_
 +}
 diff -Naur a/subprojects/libslirp/src/ip6_icmp.h b/subprojects/libslirp/src/ip6_icmp.h
 --- a/subprojects/libslirp/src/ip6_icmp.h	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libslirp/src/ip6_icmp.h	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libslirp/src/ip6_icmp.h	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,220 @@
 +/* SPDX-License-Identifier: BSD-3-Clause */
 +/*
@@ -5508,7 +6672,7 @@ diff -Naur a/subprojects/libslirp/src/ip6_icmp.h b/subprojects/libslirp/src/ip6_
 +#endif
 diff -Naur a/subprojects/libslirp/src/ip6_input.c b/subprojects/libslirp/src/ip6_input.c
 --- a/subprojects/libslirp/src/ip6_input.c	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libslirp/src/ip6_input.c	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libslirp/src/ip6_input.c	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,85 @@
 +/* SPDX-License-Identifier: BSD-3-Clause */
 +/*
@@ -5597,7 +6761,7 @@ diff -Naur a/subprojects/libslirp/src/ip6_input.c b/subprojects/libslirp/src/ip6
 +}
 diff -Naur a/subprojects/libslirp/src/ip6_output.c b/subprojects/libslirp/src/ip6_output.c
 --- a/subprojects/libslirp/src/ip6_output.c	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libslirp/src/ip6_output.c	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libslirp/src/ip6_output.c	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,39 @@
 +/* SPDX-License-Identifier: BSD-3-Clause */
 +/*
@@ -5640,7 +6804,7 @@ diff -Naur a/subprojects/libslirp/src/ip6_output.c b/subprojects/libslirp/src/ip
 +}
 diff -Naur a/subprojects/libslirp/src/ip_icmp.c b/subprojects/libslirp/src/ip_icmp.c
 --- a/subprojects/libslirp/src/ip_icmp.c	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libslirp/src/ip_icmp.c	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libslirp/src/ip_icmp.c	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,513 @@
 +/* SPDX-License-Identifier: BSD-3-Clause */
 +/*
@@ -6157,7 +7321,7 @@ diff -Naur a/subprojects/libslirp/src/ip_icmp.c b/subprojects/libslirp/src/ip_ic
 +}
 diff -Naur a/subprojects/libslirp/src/ip_icmp.h b/subprojects/libslirp/src/ip_icmp.h
 --- a/subprojects/libslirp/src/ip_icmp.h	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libslirp/src/ip_icmp.h	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libslirp/src/ip_icmp.h	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,168 @@
 +/* SPDX-License-Identifier: BSD-3-Clause */
 +/*
@@ -6329,7 +7493,7 @@ diff -Naur a/subprojects/libslirp/src/ip_icmp.h b/subprojects/libslirp/src/ip_ic
 +#endif
 diff -Naur a/subprojects/libslirp/src/ip_input.c b/subprojects/libslirp/src/ip_input.c
 --- a/subprojects/libslirp/src/ip_input.c	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libslirp/src/ip_input.c	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libslirp/src/ip_input.c	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,461 @@
 +/* SPDX-License-Identifier: BSD-3-Clause */
 +/*
@@ -6794,7 +7958,7 @@ diff -Naur a/subprojects/libslirp/src/ip_input.c b/subprojects/libslirp/src/ip_i
 +}
 diff -Naur a/subprojects/libslirp/src/ip_output.c b/subprojects/libslirp/src/ip_output.c
 --- a/subprojects/libslirp/src/ip_output.c	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libslirp/src/ip_output.c	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libslirp/src/ip_output.c	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,169 @@
 +/* SPDX-License-Identifier: BSD-3-Clause */
 +/*
@@ -6967,7 +8131,7 @@ diff -Naur a/subprojects/libslirp/src/ip_output.c b/subprojects/libslirp/src/ip_
 +}
 diff -Naur a/subprojects/libslirp/src/libslirp-version.h.in b/subprojects/libslirp/src/libslirp-version.h.in
 --- a/subprojects/libslirp/src/libslirp-version.h.in	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libslirp/src/libslirp-version.h.in	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libslirp/src/libslirp-version.h.in	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,24 @@
 +/* SPDX-License-Identifier: BSD-3-Clause */
 +#ifndef LIBSLIRP_VERSION_H_
@@ -6995,7 +8159,7 @@ diff -Naur a/subprojects/libslirp/src/libslirp-version.h.in b/subprojects/libsli
 +#endif /* LIBSLIRP_VERSION_H_ */
 diff -Naur a/subprojects/libslirp/src/libslirp.h b/subprojects/libslirp/src/libslirp.h
 --- a/subprojects/libslirp/src/libslirp.h	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libslirp/src/libslirp.h	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libslirp/src/libslirp.h	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,175 @@
 +/* SPDX-License-Identifier: BSD-3-Clause */
 +#ifndef LIBSLIRP_H
@@ -7174,7 +8338,7 @@ diff -Naur a/subprojects/libslirp/src/libslirp.h b/subprojects/libslirp/src/libs
 +#endif /* LIBSLIRP_H */
 diff -Naur a/subprojects/libslirp/src/libslirp.map b/subprojects/libslirp/src/libslirp.map
 --- a/subprojects/libslirp/src/libslirp.map	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libslirp/src/libslirp.map	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libslirp/src/libslirp.map	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,30 @@
 +SLIRP_4.0 {
 +global:
@@ -7208,7 +8372,7 @@ diff -Naur a/subprojects/libslirp/src/libslirp.map b/subprojects/libslirp/src/li
 +} SLIRP_4.1;
 diff -Naur a/subprojects/libslirp/src/main.h b/subprojects/libslirp/src/main.h
 --- a/subprojects/libslirp/src/main.h	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libslirp/src/main.h	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libslirp/src/main.h	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,16 @@
 +/* SPDX-License-Identifier: BSD-3-Clause */
 +/*
@@ -7228,7 +8392,7 @@ diff -Naur a/subprojects/libslirp/src/main.h b/subprojects/libslirp/src/main.h
 +#endif
 diff -Naur a/subprojects/libslirp/src/mbuf.c b/subprojects/libslirp/src/mbuf.c
 --- a/subprojects/libslirp/src/mbuf.c	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libslirp/src/mbuf.c	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libslirp/src/mbuf.c	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,224 @@
 +/* SPDX-License-Identifier: BSD-3-Clause */
 +/*
@@ -7456,7 +8620,7 @@ diff -Naur a/subprojects/libslirp/src/mbuf.c b/subprojects/libslirp/src/mbuf.c
 +}
 diff -Naur a/subprojects/libslirp/src/mbuf.h b/subprojects/libslirp/src/mbuf.h
 --- a/subprojects/libslirp/src/mbuf.h	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libslirp/src/mbuf.h	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libslirp/src/mbuf.h	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,127 @@
 +/* SPDX-License-Identifier: BSD-3-Clause */
 +/*
@@ -7587,7 +8751,7 @@ diff -Naur a/subprojects/libslirp/src/mbuf.h b/subprojects/libslirp/src/mbuf.h
 +#endif
 diff -Naur a/subprojects/libslirp/src/misc.c b/subprojects/libslirp/src/misc.c
 --- a/subprojects/libslirp/src/misc.c	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libslirp/src/misc.c	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libslirp/src/misc.c	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,390 @@
 +/* SPDX-License-Identifier: BSD-3-Clause */
 +/*
@@ -7982,7 +9146,7 @@ diff -Naur a/subprojects/libslirp/src/misc.c b/subprojects/libslirp/src/misc.c
 \ No newline at end of file
 diff -Naur a/subprojects/libslirp/src/misc.h b/subprojects/libslirp/src/misc.h
 --- a/subprojects/libslirp/src/misc.h	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libslirp/src/misc.h	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libslirp/src/misc.h	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,72 @@
 +/* SPDX-License-Identifier: BSD-3-Clause */
 +/*
@@ -8058,7 +9222,7 @@ diff -Naur a/subprojects/libslirp/src/misc.h b/subprojects/libslirp/src/misc.h
 +#endif
 diff -Naur a/subprojects/libslirp/src/ncsi-pkt.h b/subprojects/libslirp/src/ncsi-pkt.h
 --- a/subprojects/libslirp/src/ncsi-pkt.h	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libslirp/src/ncsi-pkt.h	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libslirp/src/ncsi-pkt.h	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,445 @@
 +/* SPDX-License-Identifier: BSD-3-Clause */
 +/*
@@ -8507,7 +9671,7 @@ diff -Naur a/subprojects/libslirp/src/ncsi-pkt.h b/subprojects/libslirp/src/ncsi
 +#endif /* NCSI_PKT_H */
 diff -Naur a/subprojects/libslirp/src/ncsi.c b/subprojects/libslirp/src/ncsi.c
 --- a/subprojects/libslirp/src/ncsi.c	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libslirp/src/ncsi.c	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libslirp/src/ncsi.c	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,197 @@
 +/* SPDX-License-Identifier: BSD-3-Clause */
 +/*
@@ -8708,7 +9872,7 @@ diff -Naur a/subprojects/libslirp/src/ncsi.c b/subprojects/libslirp/src/ncsi.c
 +}
 diff -Naur a/subprojects/libslirp/src/ndp_table.c b/subprojects/libslirp/src/ndp_table.c
 --- a/subprojects/libslirp/src/ndp_table.c	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libslirp/src/ndp_table.c	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libslirp/src/ndp_table.c	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,87 @@
 +/* SPDX-License-Identifier: BSD-3-Clause */
 +/*
@@ -8799,7 +9963,7 @@ diff -Naur a/subprojects/libslirp/src/ndp_table.c b/subprojects/libslirp/src/ndp
 +}
 diff -Naur a/subprojects/libslirp/src/sbuf.c b/subprojects/libslirp/src/sbuf.c
 --- a/subprojects/libslirp/src/sbuf.c	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libslirp/src/sbuf.c	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libslirp/src/sbuf.c	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,168 @@
 +/* SPDX-License-Identifier: BSD-3-Clause */
 +/*
@@ -8971,7 +10135,7 @@ diff -Naur a/subprojects/libslirp/src/sbuf.c b/subprojects/libslirp/src/sbuf.c
 +}
 diff -Naur a/subprojects/libslirp/src/sbuf.h b/subprojects/libslirp/src/sbuf.h
 --- a/subprojects/libslirp/src/sbuf.h	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libslirp/src/sbuf.h	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libslirp/src/sbuf.h	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,27 @@
 +/* SPDX-License-Identifier: BSD-3-Clause */
 +/*
@@ -9002,7 +10166,7 @@ diff -Naur a/subprojects/libslirp/src/sbuf.h b/subprojects/libslirp/src/sbuf.h
 +#endif
 diff -Naur a/subprojects/libslirp/src/slirp.c b/subprojects/libslirp/src/slirp.c
 --- a/subprojects/libslirp/src/slirp.c	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libslirp/src/slirp.c	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libslirp/src/slirp.c	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,1293 @@
 +/* SPDX-License-Identifier: MIT */
 +/*
@@ -10299,7 +11463,7 @@ diff -Naur a/subprojects/libslirp/src/slirp.c b/subprojects/libslirp/src/slirp.c
 +}
 diff -Naur a/subprojects/libslirp/src/slirp.h b/subprojects/libslirp/src/slirp.h
 --- a/subprojects/libslirp/src/slirp.h	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libslirp/src/slirp.h	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libslirp/src/slirp.h	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,285 @@
 +/* SPDX-License-Identifier: BSD-3-Clause */
 +#ifndef SLIRP_H
@@ -10588,7 +11752,7 @@ diff -Naur a/subprojects/libslirp/src/slirp.h b/subprojects/libslirp/src/slirp.h
 +#endif
 diff -Naur a/subprojects/libslirp/src/socket.c b/subprojects/libslirp/src/socket.c
 --- a/subprojects/libslirp/src/socket.c	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libslirp/src/socket.c	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libslirp/src/socket.c	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,1010 @@
 +/* SPDX-License-Identifier: BSD-3-Clause */
 +/*
@@ -11602,7 +12766,7 @@ diff -Naur a/subprojects/libslirp/src/socket.c b/subprojects/libslirp/src/socket
 +}
 diff -Naur a/subprojects/libslirp/src/socket.h b/subprojects/libslirp/src/socket.h
 --- a/subprojects/libslirp/src/socket.h	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libslirp/src/socket.h	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libslirp/src/socket.h	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,164 @@
 +/* SPDX-License-Identifier: BSD-3-Clause */
 +/*
@@ -11770,7 +12934,7 @@ diff -Naur a/subprojects/libslirp/src/socket.h b/subprojects/libslirp/src/socket
 +#endif /* SLIRP_SOCKET_H */
 diff -Naur a/subprojects/libslirp/src/state.c b/subprojects/libslirp/src/state.c
 --- a/subprojects/libslirp/src/state.c	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libslirp/src/state.c	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libslirp/src/state.c	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,379 @@
 +/* SPDX-License-Identifier: MIT */
 +/*
@@ -12153,7 +13317,7 @@ diff -Naur a/subprojects/libslirp/src/state.c b/subprojects/libslirp/src/state.c
 +}
 diff -Naur a/subprojects/libslirp/src/stream.c b/subprojects/libslirp/src/stream.c
 --- a/subprojects/libslirp/src/stream.c	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libslirp/src/stream.c	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libslirp/src/stream.c	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,120 @@
 +/* SPDX-License-Identifier: MIT */
 +/*
@@ -12277,7 +13441,7 @@ diff -Naur a/subprojects/libslirp/src/stream.c b/subprojects/libslirp/src/stream
 +}
 diff -Naur a/subprojects/libslirp/src/stream.h b/subprojects/libslirp/src/stream.h
 --- a/subprojects/libslirp/src/stream.h	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libslirp/src/stream.h	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libslirp/src/stream.h	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,35 @@
 +/* SPDX-License-Identifier: BSD-3-Clause */
 +#ifndef STREAM_H_
@@ -12316,7 +13480,7 @@ diff -Naur a/subprojects/libslirp/src/stream.h b/subprojects/libslirp/src/stream
 +#endif /* STREAM_H_ */
 diff -Naur a/subprojects/libslirp/src/tcp.h b/subprojects/libslirp/src/tcp.h
 --- a/subprojects/libslirp/src/tcp.h	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libslirp/src/tcp.h	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libslirp/src/tcp.h	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,169 @@
 +/* SPDX-License-Identifier: BSD-3-Clause */
 +/*
@@ -12489,7 +13653,7 @@ diff -Naur a/subprojects/libslirp/src/tcp.h b/subprojects/libslirp/src/tcp.h
 +#endif
 diff -Naur a/subprojects/libslirp/src/tcp_input.c b/subprojects/libslirp/src/tcp_input.c
 --- a/subprojects/libslirp/src/tcp_input.c	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libslirp/src/tcp_input.c	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libslirp/src/tcp_input.c	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,1539 @@
 +/* SPDX-License-Identifier: BSD-3-Clause */
 +/*
@@ -14032,7 +15196,7 @@ diff -Naur a/subprojects/libslirp/src/tcp_input.c b/subprojects/libslirp/src/tcp
 +}
 diff -Naur a/subprojects/libslirp/src/tcp_output.c b/subprojects/libslirp/src/tcp_output.c
 --- a/subprojects/libslirp/src/tcp_output.c	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libslirp/src/tcp_output.c	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libslirp/src/tcp_output.c	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,516 @@
 +/* SPDX-License-Identifier: BSD-3-Clause */
 +/*
@@ -14552,7 +15716,7 @@ diff -Naur a/subprojects/libslirp/src/tcp_output.c b/subprojects/libslirp/src/tc
 +}
 diff -Naur a/subprojects/libslirp/src/tcp_subr.c b/subprojects/libslirp/src/tcp_subr.c
 --- a/subprojects/libslirp/src/tcp_subr.c	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libslirp/src/tcp_subr.c	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libslirp/src/tcp_subr.c	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,980 @@
 +/* SPDX-License-Identifier: BSD-3-Clause */
 +/*
@@ -15536,7 +16700,7 @@ diff -Naur a/subprojects/libslirp/src/tcp_subr.c b/subprojects/libslirp/src/tcp_
 +}
 diff -Naur a/subprojects/libslirp/src/tcp_timer.c b/subprojects/libslirp/src/tcp_timer.c
 --- a/subprojects/libslirp/src/tcp_timer.c	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libslirp/src/tcp_timer.c	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libslirp/src/tcp_timer.c	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,286 @@
 +/* SPDX-License-Identifier: BSD-3-Clause */
 +/*
@@ -15826,7 +16990,7 @@ diff -Naur a/subprojects/libslirp/src/tcp_timer.c b/subprojects/libslirp/src/tcp
 +}
 diff -Naur a/subprojects/libslirp/src/tcp_timer.h b/subprojects/libslirp/src/tcp_timer.h
 --- a/subprojects/libslirp/src/tcp_timer.h	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libslirp/src/tcp_timer.h	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libslirp/src/tcp_timer.h	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,130 @@
 +/* SPDX-License-Identifier: BSD-3-Clause */
 +/*
@@ -15960,7 +17124,7 @@ diff -Naur a/subprojects/libslirp/src/tcp_timer.h b/subprojects/libslirp/src/tcp
 +#endif
 diff -Naur a/subprojects/libslirp/src/tcp_var.h b/subprojects/libslirp/src/tcp_var.h
 --- a/subprojects/libslirp/src/tcp_var.h	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libslirp/src/tcp_var.h	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libslirp/src/tcp_var.h	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,161 @@
 +/* SPDX-License-Identifier: BSD-3-Clause */
 +/*
@@ -16125,7 +17289,7 @@ diff -Naur a/subprojects/libslirp/src/tcp_var.h b/subprojects/libslirp/src/tcp_v
 +#endif
 diff -Naur a/subprojects/libslirp/src/tcpip.h b/subprojects/libslirp/src/tcpip.h
 --- a/subprojects/libslirp/src/tcpip.h	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libslirp/src/tcpip.h	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libslirp/src/tcpip.h	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,104 @@
 +/* SPDX-License-Identifier: BSD-3-Clause */
 +/*
@@ -16233,7 +17397,7 @@ diff -Naur a/subprojects/libslirp/src/tcpip.h b/subprojects/libslirp/src/tcpip.h
 +#endif
 diff -Naur a/subprojects/libslirp/src/tftp.c b/subprojects/libslirp/src/tftp.c
 --- a/subprojects/libslirp/src/tftp.c	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libslirp/src/tftp.c	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libslirp/src/tftp.c	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,464 @@
 +/* SPDX-License-Identifier: MIT */
 +/*
@@ -16701,7 +17865,7 @@ diff -Naur a/subprojects/libslirp/src/tftp.c b/subprojects/libslirp/src/tftp.c
 +}
 diff -Naur a/subprojects/libslirp/src/tftp.h b/subprojects/libslirp/src/tftp.h
 --- a/subprojects/libslirp/src/tftp.h	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libslirp/src/tftp.h	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libslirp/src/tftp.h	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,54 @@
 +/* SPDX-License-Identifier: BSD-3-Clause */
 +/* tftp defines */
@@ -16759,7 +17923,7 @@ diff -Naur a/subprojects/libslirp/src/tftp.h b/subprojects/libslirp/src/tftp.h
 +#endif
 diff -Naur a/subprojects/libslirp/src/udp.c b/subprojects/libslirp/src/udp.c
 --- a/subprojects/libslirp/src/udp.c	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libslirp/src/udp.c	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libslirp/src/udp.c	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,397 @@
 +/* SPDX-License-Identifier: BSD-3-Clause */
 +/*
@@ -17160,7 +18324,7 @@ diff -Naur a/subprojects/libslirp/src/udp.c b/subprojects/libslirp/src/udp.c
 +}
 diff -Naur a/subprojects/libslirp/src/udp.h b/subprojects/libslirp/src/udp.h
 --- a/subprojects/libslirp/src/udp.h	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libslirp/src/udp.h	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libslirp/src/udp.h	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,90 @@
 +/* SPDX-License-Identifier: BSD-3-Clause */
 +/*
@@ -17254,7 +18418,7 @@ diff -Naur a/subprojects/libslirp/src/udp.h b/subprojects/libslirp/src/udp.h
 +#endif
 diff -Naur a/subprojects/libslirp/src/udp6.c b/subprojects/libslirp/src/udp6.c
 --- a/subprojects/libslirp/src/udp6.c	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libslirp/src/udp6.c	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libslirp/src/udp6.c	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,188 @@
 +/* SPDX-License-Identifier: BSD-3-Clause */
 +/*
@@ -17446,7 +18610,7 @@ diff -Naur a/subprojects/libslirp/src/udp6.c b/subprojects/libslirp/src/udp6.c
 +}
 diff -Naur a/subprojects/libslirp/src/util.c b/subprojects/libslirp/src/util.c
 --- a/subprojects/libslirp/src/util.c	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libslirp/src/util.c	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libslirp/src/util.c	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,429 @@
 +/* SPDX-License-Identifier: MIT */
 +/*
@@ -17879,7 +19043,7 @@ diff -Naur a/subprojects/libslirp/src/util.c b/subprojects/libslirp/src/util.c
 +}
 diff -Naur a/subprojects/libslirp/src/util.h b/subprojects/libslirp/src/util.h
 --- a/subprojects/libslirp/src/util.h	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libslirp/src/util.h	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libslirp/src/util.h	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,189 @@
 +/* SPDX-License-Identifier: MIT */
 +/*
@@ -18072,7 +19236,7 @@ diff -Naur a/subprojects/libslirp/src/util.h b/subprojects/libslirp/src/util.h
 +#endif
 diff -Naur a/subprojects/libslirp/src/version.c b/subprojects/libslirp/src/version.c
 --- a/subprojects/libslirp/src/version.c	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libslirp/src/version.c	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libslirp/src/version.c	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,8 @@
 +/* SPDX-License-Identifier: BSD-3-Clause */
 +#include "libslirp.h"
@@ -18084,7 +19248,7 @@ diff -Naur a/subprojects/libslirp/src/version.c b/subprojects/libslirp/src/versi
 +}
 diff -Naur a/subprojects/libslirp/src/vmstate.c b/subprojects/libslirp/src/vmstate.c
 --- a/subprojects/libslirp/src/vmstate.c	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libslirp/src/vmstate.c	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libslirp/src/vmstate.c	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,444 @@
 +/* SPDX-License-Identifier: BSD-3-Clause */
 +/*
@@ -18532,7 +19696,7 @@ diff -Naur a/subprojects/libslirp/src/vmstate.c b/subprojects/libslirp/src/vmsta
 +}
 diff -Naur a/subprojects/libslirp/src/vmstate.h b/subprojects/libslirp/src/vmstate.h
 --- a/subprojects/libslirp/src/vmstate.h	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libslirp/src/vmstate.h	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libslirp/src/vmstate.h	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,391 @@
 +/* SPDX-License-Identifier: BSD-3-Clause */
 +/*
@@ -18927,7 +20091,7 @@ diff -Naur a/subprojects/libslirp/src/vmstate.h b/subprojects/libslirp/src/vmsta
 +#endif
 diff -Naur a/subprojects/libucontext/.gitignore b/subprojects/libucontext/.gitignore
 --- a/subprojects/libucontext/.gitignore	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libucontext/.gitignore	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libucontext/.gitignore	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,16 @@
 +include/libucontext/bits.h
 +*.o
@@ -18947,12 +20111,12 @@ diff -Naur a/subprojects/libucontext/.gitignore b/subprojects/libucontext/.gitig
 +*.core
 diff -Naur a/subprojects/libucontext/.mailmap b/subprojects/libucontext/.mailmap
 --- a/subprojects/libucontext/.mailmap	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libucontext/.mailmap	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libucontext/.mailmap	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1 @@
 +Ariadne Conill <ariadne@dereferenced.org> <nenolod@dereferenced.org>
 diff -Naur a/subprojects/libucontext/LICENSE b/subprojects/libucontext/LICENSE
 --- a/subprojects/libucontext/LICENSE	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libucontext/LICENSE	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libucontext/LICENSE	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,9 @@
 +Copyright (c) 2018-2020 Ariadne Conill <ariadne@dereferenced.org>
 +
@@ -18965,7 +20129,7 @@ diff -Naur a/subprojects/libucontext/LICENSE b/subprojects/libucontext/LICENSE
 +from the use of this software.
 diff -Naur a/subprojects/libucontext/Makefile b/subprojects/libucontext/Makefile
 --- a/subprojects/libucontext/Makefile	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libucontext/Makefile	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libucontext/Makefile	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,239 @@
 +SCDOC := scdoc
 +
@@ -19208,7 +20372,7 @@ diff -Naur a/subprojects/libucontext/Makefile b/subprojects/libucontext/Makefile
 +.PHONY: check dist
 diff -Naur a/subprojects/libucontext/NEWS b/subprojects/libucontext/NEWS
 --- a/subprojects/libucontext/NEWS	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libucontext/NEWS	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libucontext/NEWS	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,100 @@
 +Changes from 0.13.1 to 1.0
 +--------------------------
@@ -19312,7 +20476,7 @@ diff -Naur a/subprojects/libucontext/NEWS b/subprojects/libucontext/NEWS
 +  trampoline.
 diff -Naur a/subprojects/libucontext/README.md b/subprojects/libucontext/README.md
 --- a/subprojects/libucontext/README.md	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libucontext/README.md	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libucontext/README.md	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,90 @@
 +# `libucontext`
 +
@@ -19406,13 +20570,13 @@ diff -Naur a/subprojects/libucontext/README.md b/subprojects/libucontext/README.
 +  assumption.
 diff -Naur a/subprojects/libucontext/VERSION b/subprojects/libucontext/VERSION
 --- a/subprojects/libucontext/VERSION	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libucontext/VERSION	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libucontext/VERSION	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1 @@
 +1.0
 \ No newline at end of file
 diff -Naur a/subprojects/libucontext/arch/aarch64/defs.h b/subprojects/libucontext/arch/aarch64/defs.h
 --- a/subprojects/libucontext/arch/aarch64/defs.h	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libucontext/arch/aarch64/defs.h	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libucontext/arch/aarch64/defs.h	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,26 @@
 +#ifndef __ARCH_AARCH64_DEFS_H
 +#define __ARCH_AARCH64_DEFS_H
@@ -19442,7 +20606,7 @@ diff -Naur a/subprojects/libucontext/arch/aarch64/defs.h b/subprojects/libuconte
 +#endif
 diff -Naur a/subprojects/libucontext/arch/aarch64/getcontext.S b/subprojects/libucontext/arch/aarch64/getcontext.S
 --- a/subprojects/libucontext/arch/aarch64/getcontext.S	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libucontext/arch/aarch64/getcontext.S	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libucontext/arch/aarch64/getcontext.S	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,57 @@
 +/*
 + * Copyright (c) 2018, 2020 Ariadne Conill <ariadne@dereferenced.org>
@@ -19503,7 +20667,7 @@ diff -Naur a/subprojects/libucontext/arch/aarch64/getcontext.S b/subprojects/lib
 +END(libucontext_getcontext)
 diff -Naur a/subprojects/libucontext/arch/aarch64/include/libucontext/bits.h b/subprojects/libucontext/arch/aarch64/include/libucontext/bits.h
 --- a/subprojects/libucontext/arch/aarch64/include/libucontext/bits.h	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libucontext/arch/aarch64/include/libucontext/bits.h	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libucontext/arch/aarch64/include/libucontext/bits.h	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,34 @@
 +#ifndef LIBUCONTEXT_BITS_H
 +#define LIBUCONTEXT_BITS_H
@@ -19541,7 +20705,7 @@ diff -Naur a/subprojects/libucontext/arch/aarch64/include/libucontext/bits.h b/s
 +#endif
 diff -Naur a/subprojects/libucontext/arch/aarch64/makecontext.c b/subprojects/libucontext/arch/aarch64/makecontext.c
 --- a/subprojects/libucontext/arch/aarch64/makecontext.c	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libucontext/arch/aarch64/makecontext.c	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libucontext/arch/aarch64/makecontext.c	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,65 @@
 +/*
 + * Copyright (c) 2018 Ariadne Conill <ariadne@dereferenced.org>
@@ -19610,7 +20774,7 @@ diff -Naur a/subprojects/libucontext/arch/aarch64/makecontext.c b/subprojects/li
 +#endif
 diff -Naur a/subprojects/libucontext/arch/aarch64/setcontext.S b/subprojects/libucontext/arch/aarch64/setcontext.S
 --- a/subprojects/libucontext/arch/aarch64/setcontext.S	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libucontext/arch/aarch64/setcontext.S	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libucontext/arch/aarch64/setcontext.S	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,49 @@
 +/*
 + * Copyright (c) 2018, 2020 Ariadne Conill <ariadne@dereferenced.org>
@@ -19663,7 +20827,7 @@ diff -Naur a/subprojects/libucontext/arch/aarch64/setcontext.S b/subprojects/lib
 +END(libucontext_setcontext)
 diff -Naur a/subprojects/libucontext/arch/aarch64/swapcontext.S b/subprojects/libucontext/arch/aarch64/swapcontext.S
 --- a/subprojects/libucontext/arch/aarch64/swapcontext.S	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libucontext/arch/aarch64/swapcontext.S	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libucontext/arch/aarch64/swapcontext.S	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,63 @@
 +/*
 + * Copyright (c) 2018 Ariadne Conill <ariadne@dereferenced.org>
@@ -19730,14 +20894,14 @@ diff -Naur a/subprojects/libucontext/arch/aarch64/swapcontext.S b/subprojects/li
 +END(libucontext_swapcontext)
 diff -Naur a/subprojects/libucontext/arch/aarch64/trampoline.c b/subprojects/libucontext/arch/aarch64/trampoline.c
 --- a/subprojects/libucontext/arch/aarch64/trampoline.c	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libucontext/arch/aarch64/trampoline.c	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libucontext/arch/aarch64/trampoline.c	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,3 @@
 +#include "defs.h"
 +#include <libucontext/libucontext.h>
 +#include "common-trampoline.c"
 diff -Naur a/subprojects/libucontext/arch/arm/defs.h b/subprojects/libucontext/arch/arm/defs.h
 --- a/subprojects/libucontext/arch/arm/defs.h	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libucontext/arch/arm/defs.h	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libucontext/arch/arm/defs.h	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,13 @@
 +#ifndef __ARCH_ARM_DEFS_H
 +
@@ -19754,7 +20918,7 @@ diff -Naur a/subprojects/libucontext/arch/arm/defs.h b/subprojects/libucontext/a
 +#endif
 diff -Naur a/subprojects/libucontext/arch/arm/getcontext.S b/subprojects/libucontext/arch/arm/getcontext.S
 --- a/subprojects/libucontext/arch/arm/getcontext.S	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libucontext/arch/arm/getcontext.S	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libucontext/arch/arm/getcontext.S	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,28 @@
 +/*
 + * Copyright (c) 2018, 2020 Ariadne Conill <ariadne@dereferenced.org>
@@ -19786,7 +20950,7 @@ diff -Naur a/subprojects/libucontext/arch/arm/getcontext.S b/subprojects/libucon
 +END(libucontext_getcontext)
 diff -Naur a/subprojects/libucontext/arch/arm/include/libucontext/bits.h b/subprojects/libucontext/arch/arm/include/libucontext/bits.h
 --- a/subprojects/libucontext/arch/arm/include/libucontext/bits.h	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libucontext/arch/arm/include/libucontext/bits.h	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libucontext/arch/arm/include/libucontext/bits.h	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,28 @@
 +#ifndef LIBUCONTEXT_BITS_H
 +#define LIBUCONTEXT_BITS_H
@@ -19818,7 +20982,7 @@ diff -Naur a/subprojects/libucontext/arch/arm/include/libucontext/bits.h b/subpr
 +#endif
 diff -Naur a/subprojects/libucontext/arch/arm/makecontext.c b/subprojects/libucontext/arch/arm/makecontext.c
 --- a/subprojects/libucontext/arch/arm/makecontext.c	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libucontext/arch/arm/makecontext.c	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libucontext/arch/arm/makecontext.c	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,65 @@
 +/*
 + * Copyright (c) 2018, 2020 Ariadne Conill <ariadne@dereferenced.org>
@@ -19887,7 +21051,7 @@ diff -Naur a/subprojects/libucontext/arch/arm/makecontext.c b/subprojects/libuco
 +#endif
 diff -Naur a/subprojects/libucontext/arch/arm/setcontext.S b/subprojects/libucontext/arch/arm/setcontext.S
 --- a/subprojects/libucontext/arch/arm/setcontext.S	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libucontext/arch/arm/setcontext.S	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libucontext/arch/arm/setcontext.S	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,27 @@
 +/*
 + * Copyright (c) 2018, 2020 Ariadne Conill <ariadne@dereferenced.org>
@@ -19918,7 +21082,7 @@ diff -Naur a/subprojects/libucontext/arch/arm/setcontext.S b/subprojects/libucon
 +END(libucontext_setcontext)
 diff -Naur a/subprojects/libucontext/arch/arm/swapcontext.S b/subprojects/libucontext/arch/arm/swapcontext.S
 --- a/subprojects/libucontext/arch/arm/swapcontext.S	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libucontext/arch/arm/swapcontext.S	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libucontext/arch/arm/swapcontext.S	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,31 @@
 +/*
 + * Copyright (c) 2018, 2020 Ariadne Conill <ariadne@dereferenced.org>
@@ -19953,14 +21117,14 @@ diff -Naur a/subprojects/libucontext/arch/arm/swapcontext.S b/subprojects/libuco
 +END(libucontext_swapcontext)
 diff -Naur a/subprojects/libucontext/arch/arm/trampoline.c b/subprojects/libucontext/arch/arm/trampoline.c
 --- a/subprojects/libucontext/arch/arm/trampoline.c	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libucontext/arch/arm/trampoline.c	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libucontext/arch/arm/trampoline.c	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,3 @@
 +#include "defs.h"
 +#include <libucontext/libucontext.h>
 +#include "common-trampoline.c"
 diff -Naur a/subprojects/libucontext/arch/common/common-defs.h b/subprojects/libucontext/arch/common/common-defs.h
 --- a/subprojects/libucontext/arch/common/common-defs.h	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libucontext/arch/common/common-defs.h	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libucontext/arch/common/common-defs.h	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,61 @@
 +#ifndef __ARCH_COMMON_COMMON_DEFS_H
 +#define __ARCH_COMMON_COMMON_DEFS_H
@@ -20025,7 +21189,7 @@ diff -Naur a/subprojects/libucontext/arch/common/common-defs.h b/subprojects/lib
 +#endif
 diff -Naur a/subprojects/libucontext/arch/common/common-trampoline.c b/subprojects/libucontext/arch/common/common-trampoline.c
 --- a/subprojects/libucontext/arch/common/common-trampoline.c	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libucontext/arch/common/common-trampoline.c	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libucontext/arch/common/common-trampoline.c	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,29 @@
 +/*
 + * Copyright (c) 2020 Ariadne Conill <ariadne@dereferenced.org>
@@ -20058,7 +21222,7 @@ diff -Naur a/subprojects/libucontext/arch/common/common-trampoline.c b/subprojec
 +}
 diff -Naur a/subprojects/libucontext/arch/common/include/libucontext/bits.h b/subprojects/libucontext/arch/common/include/libucontext/bits.h
 --- a/subprojects/libucontext/arch/common/include/libucontext/bits.h	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libucontext/arch/common/include/libucontext/bits.h	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libucontext/arch/common/include/libucontext/bits.h	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,13 @@
 +#ifndef LIBUCONTEXT_BITS_H
 +#define LIBUCONTEXT_BITS_H
@@ -20075,7 +21239,7 @@ diff -Naur a/subprojects/libucontext/arch/common/include/libucontext/bits.h b/su
 +#endif
 diff -Naur a/subprojects/libucontext/arch/m68k/defs.h b/subprojects/libucontext/arch/m68k/defs.h
 --- a/subprojects/libucontext/arch/m68k/defs.h	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libucontext/arch/m68k/defs.h	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libucontext/arch/m68k/defs.h	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,34 @@
 +#ifndef __ARCH_M68K_DEFS_H
 +#define __ARCH_M68K_DEFS_H
@@ -20113,7 +21277,7 @@ diff -Naur a/subprojects/libucontext/arch/m68k/defs.h b/subprojects/libucontext/
 +#endif
 diff -Naur a/subprojects/libucontext/arch/m68k/getcontext.S b/subprojects/libucontext/arch/m68k/getcontext.S
 --- a/subprojects/libucontext/arch/m68k/getcontext.S	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libucontext/arch/m68k/getcontext.S	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libucontext/arch/m68k/getcontext.S	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,30 @@
 +/*
 + * Copyright (c) 2020 Ariadne Conill <ariadne@dereferenced.org>
@@ -20147,7 +21311,7 @@ diff -Naur a/subprojects/libucontext/arch/m68k/getcontext.S b/subprojects/libuco
 +END(libucontext_getcontext)
 diff -Naur a/subprojects/libucontext/arch/m68k/include/libucontext/bits.h b/subprojects/libucontext/arch/m68k/include/libucontext/bits.h
 --- a/subprojects/libucontext/arch/m68k/include/libucontext/bits.h	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libucontext/arch/m68k/include/libucontext/bits.h	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libucontext/arch/m68k/include/libucontext/bits.h	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,28 @@
 +#ifndef LIBUCONTEXT_BITS_H
 +#define LIBUCONTEXT_BITS_H
@@ -20179,7 +21343,7 @@ diff -Naur a/subprojects/libucontext/arch/m68k/include/libucontext/bits.h b/subp
 +#endif
 diff -Naur a/subprojects/libucontext/arch/m68k/makecontext.c b/subprojects/libucontext/arch/m68k/makecontext.c
 --- a/subprojects/libucontext/arch/m68k/makecontext.c	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libucontext/arch/m68k/makecontext.c	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libucontext/arch/m68k/makecontext.c	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,64 @@
 +/*
 + * Copyright (c) 2020 Ariadne Conill <ariadne@dereferenced.org>
@@ -20247,7 +21411,7 @@ diff -Naur a/subprojects/libucontext/arch/m68k/makecontext.c b/subprojects/libuc
 +#endif
 diff -Naur a/subprojects/libucontext/arch/m68k/setcontext.S b/subprojects/libucontext/arch/m68k/setcontext.S
 --- a/subprojects/libucontext/arch/m68k/setcontext.S	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libucontext/arch/m68k/setcontext.S	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libucontext/arch/m68k/setcontext.S	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,31 @@
 +/*
 + * Copyright (c) 2020 Ariadne Conill <ariadne@dereferenced.org>
@@ -20282,7 +21446,7 @@ diff -Naur a/subprojects/libucontext/arch/m68k/setcontext.S b/subprojects/libuco
 +END(libucontext_setcontext)
 diff -Naur a/subprojects/libucontext/arch/m68k/swapcontext.S b/subprojects/libucontext/arch/m68k/swapcontext.S
 --- a/subprojects/libucontext/arch/m68k/swapcontext.S	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libucontext/arch/m68k/swapcontext.S	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libucontext/arch/m68k/swapcontext.S	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,40 @@
 +/*
 + * Copyright (c) 2020 Ariadne Conill <ariadne@dereferenced.org>
@@ -20326,14 +21490,14 @@ diff -Naur a/subprojects/libucontext/arch/m68k/swapcontext.S b/subprojects/libuc
 +END(libucontext_swapcontext)
 diff -Naur a/subprojects/libucontext/arch/m68k/trampoline.c b/subprojects/libucontext/arch/m68k/trampoline.c
 --- a/subprojects/libucontext/arch/m68k/trampoline.c	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libucontext/arch/m68k/trampoline.c	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libucontext/arch/m68k/trampoline.c	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,3 @@
 +#include "defs.h"
 +#include <libucontext/libucontext.h>
 +#include "common-trampoline.c"
 diff -Naur a/subprojects/libucontext/arch/mips/defs.h b/subprojects/libucontext/arch/mips/defs.h
 --- a/subprojects/libucontext/arch/mips/defs.h	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libucontext/arch/mips/defs.h	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libucontext/arch/mips/defs.h	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,94 @@
 +#ifndef __ARCH_MIPS64_DEFS_H
 +#define __ARCH_MIPS64_DEFS_H
@@ -20431,7 +21595,7 @@ diff -Naur a/subprojects/libucontext/arch/mips/defs.h b/subprojects/libucontext/
 +#endif
 diff -Naur a/subprojects/libucontext/arch/mips/getcontext.S b/subprojects/libucontext/arch/mips/getcontext.S
 --- a/subprojects/libucontext/arch/mips/getcontext.S	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libucontext/arch/mips/getcontext.S	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libucontext/arch/mips/getcontext.S	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,47 @@
 +/*
 + * Copyright (c) 2020 Ariadne Conill <ariadne@dereferenced.org>
@@ -20482,7 +21646,7 @@ diff -Naur a/subprojects/libucontext/arch/mips/getcontext.S b/subprojects/libuco
 +END(libucontext_getcontext)
 diff -Naur a/subprojects/libucontext/arch/mips/include/libucontext/bits.h b/subprojects/libucontext/arch/mips/include/libucontext/bits.h
 --- a/subprojects/libucontext/arch/mips/include/libucontext/bits.h	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libucontext/arch/mips/include/libucontext/bits.h	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libucontext/arch/mips/include/libucontext/bits.h	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,27 @@
 +#ifndef LIBUCONTEXT_BITS_H
 +#define LIBUCONTEXT_BITS_H
@@ -20513,7 +21677,7 @@ diff -Naur a/subprojects/libucontext/arch/mips/include/libucontext/bits.h b/subp
 +#endif
 diff -Naur a/subprojects/libucontext/arch/mips/makecontext.S b/subprojects/libucontext/arch/mips/makecontext.S
 --- a/subprojects/libucontext/arch/mips/makecontext.S	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libucontext/arch/mips/makecontext.S	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libucontext/arch/mips/makecontext.S	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,101 @@
 +/*
 + * Copyright (c) 2020 Ariadne Conill <ariadne@dereferenced.org>
@@ -20618,7 +21782,7 @@ diff -Naur a/subprojects/libucontext/arch/mips/makecontext.S b/subprojects/libuc
 +END(libucontext_makecontext)
 diff -Naur a/subprojects/libucontext/arch/mips/setcontext.S b/subprojects/libucontext/arch/mips/setcontext.S
 --- a/subprojects/libucontext/arch/mips/setcontext.S	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libucontext/arch/mips/setcontext.S	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libucontext/arch/mips/setcontext.S	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,51 @@
 +/*
 + * Copyright (c) 2020 Ariadne Conill <ariadne@dereferenced.org>
@@ -20673,7 +21837,7 @@ diff -Naur a/subprojects/libucontext/arch/mips/setcontext.S b/subprojects/libuco
 +END(libucontext_setcontext)
 diff -Naur a/subprojects/libucontext/arch/mips/startcontext.S b/subprojects/libucontext/arch/mips/startcontext.S
 --- a/subprojects/libucontext/arch/mips/startcontext.S	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libucontext/arch/mips/startcontext.S	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libucontext/arch/mips/startcontext.S	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,35 @@
 +/*
 + * Copyright (c) 2020 Ariadne Conill <ariadne@dereferenced.org>
@@ -20712,7 +21876,7 @@ diff -Naur a/subprojects/libucontext/arch/mips/startcontext.S b/subprojects/libu
 +END(libucontext_trampoline)
 diff -Naur a/subprojects/libucontext/arch/mips/swapcontext.S b/subprojects/libucontext/arch/mips/swapcontext.S
 --- a/subprojects/libucontext/arch/mips/swapcontext.S	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libucontext/arch/mips/swapcontext.S	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libucontext/arch/mips/swapcontext.S	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,82 @@
 +/*
 + * Copyright (c) 2020 Ariadne Conill <ariadne@dereferenced.org>
@@ -20798,7 +21962,7 @@ diff -Naur a/subprojects/libucontext/arch/mips/swapcontext.S b/subprojects/libuc
 +END(libucontext_swapcontext)
 diff -Naur a/subprojects/libucontext/arch/mips64/defs.h b/subprojects/libucontext/arch/mips64/defs.h
 --- a/subprojects/libucontext/arch/mips64/defs.h	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libucontext/arch/mips64/defs.h	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libucontext/arch/mips64/defs.h	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,92 @@
 +#ifndef __ARCH_MIPS64_DEFS_H
 +#define __ARCH_MIPS64_DEFS_H
@@ -20894,7 +22058,7 @@ diff -Naur a/subprojects/libucontext/arch/mips64/defs.h b/subprojects/libucontex
 +#endif
 diff -Naur a/subprojects/libucontext/arch/mips64/getcontext.S b/subprojects/libucontext/arch/mips64/getcontext.S
 --- a/subprojects/libucontext/arch/mips64/getcontext.S	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libucontext/arch/mips64/getcontext.S	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libucontext/arch/mips64/getcontext.S	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,47 @@
 +/*
 + * Copyright (c) 2020 Ariadne Conill <ariadne@dereferenced.org>
@@ -20945,7 +22109,7 @@ diff -Naur a/subprojects/libucontext/arch/mips64/getcontext.S b/subprojects/libu
 +END(libucontext_getcontext)
 diff -Naur a/subprojects/libucontext/arch/mips64/include/libucontext/bits.h b/subprojects/libucontext/arch/mips64/include/libucontext/bits.h
 --- a/subprojects/libucontext/arch/mips64/include/libucontext/bits.h	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libucontext/arch/mips64/include/libucontext/bits.h	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libucontext/arch/mips64/include/libucontext/bits.h	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,47 @@
 +#ifndef LIBUCONTEXT_BITS_H
 +#define LIBUCONTEXT_BITS_H
@@ -20996,7 +22160,7 @@ diff -Naur a/subprojects/libucontext/arch/mips64/include/libucontext/bits.h b/su
 +#endif
 diff -Naur a/subprojects/libucontext/arch/mips64/makecontext.S b/subprojects/libucontext/arch/mips64/makecontext.S
 --- a/subprojects/libucontext/arch/mips64/makecontext.S	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libucontext/arch/mips64/makecontext.S	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libucontext/arch/mips64/makecontext.S	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,107 @@
 +/*
 + * Copyright (c) 2020 Ariadne Conill <ariadne@dereferenced.org>
@@ -21107,7 +22271,7 @@ diff -Naur a/subprojects/libucontext/arch/mips64/makecontext.S b/subprojects/lib
 +END(libucontext_makecontext)
 diff -Naur a/subprojects/libucontext/arch/mips64/setcontext.S b/subprojects/libucontext/arch/mips64/setcontext.S
 --- a/subprojects/libucontext/arch/mips64/setcontext.S	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libucontext/arch/mips64/setcontext.S	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libucontext/arch/mips64/setcontext.S	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,55 @@
 +/*
 + * Copyright (c) 2020 Ariadne Conill <ariadne@dereferenced.org>
@@ -21166,7 +22330,7 @@ diff -Naur a/subprojects/libucontext/arch/mips64/setcontext.S b/subprojects/libu
 +END(libucontext_setcontext)
 diff -Naur a/subprojects/libucontext/arch/mips64/startcontext.S b/subprojects/libucontext/arch/mips64/startcontext.S
 --- a/subprojects/libucontext/arch/mips64/startcontext.S	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libucontext/arch/mips64/startcontext.S	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libucontext/arch/mips64/startcontext.S	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,35 @@
 +/*
 + * Copyright (c) 2020 Ariadne Conill <ariadne@dereferenced.org>
@@ -21205,7 +22369,7 @@ diff -Naur a/subprojects/libucontext/arch/mips64/startcontext.S b/subprojects/li
 +END(libucontext_trampoline)
 diff -Naur a/subprojects/libucontext/arch/mips64/swapcontext.S b/subprojects/libucontext/arch/mips64/swapcontext.S
 --- a/subprojects/libucontext/arch/mips64/swapcontext.S	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libucontext/arch/mips64/swapcontext.S	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libucontext/arch/mips64/swapcontext.S	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,87 @@
 +/*
 + * Copyright (c) 2020 Ariadne Conill <ariadne@dereferenced.org>
@@ -21296,7 +22460,7 @@ diff -Naur a/subprojects/libucontext/arch/mips64/swapcontext.S b/subprojects/lib
 +END(libucontext_swapcontext)
 diff -Naur a/subprojects/libucontext/arch/ppc/defs.h b/subprojects/libucontext/arch/ppc/defs.h
 --- a/subprojects/libucontext/arch/ppc/defs.h	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libucontext/arch/ppc/defs.h	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libucontext/arch/ppc/defs.h	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,64 @@
 +#ifndef __ARCH_PPC_DEFS_H
 +#define __ARCH_PPC_DEFS_H
@@ -21364,7 +22528,7 @@ diff -Naur a/subprojects/libucontext/arch/ppc/defs.h b/subprojects/libucontext/a
 +#endif
 diff -Naur a/subprojects/libucontext/arch/ppc/getcontext.S b/subprojects/libucontext/arch/ppc/getcontext.S
 --- a/subprojects/libucontext/arch/ppc/getcontext.S	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libucontext/arch/ppc/getcontext.S	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libucontext/arch/ppc/getcontext.S	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,22 @@
 +/*
 + * Copyright (c) 2019 Bobby Bingham <koorogi@koorogi.info>
@@ -21390,7 +22554,7 @@ diff -Naur a/subprojects/libucontext/arch/ppc/getcontext.S b/subprojects/libucon
 +END(libucontext_getcontext)
 diff -Naur a/subprojects/libucontext/arch/ppc/makecontext.c b/subprojects/libucontext/arch/ppc/makecontext.c
 --- a/subprojects/libucontext/arch/ppc/makecontext.c	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libucontext/arch/ppc/makecontext.c	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libucontext/arch/ppc/makecontext.c	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,64 @@
 +/*
 + * Copyright (c) 2018 Ariadne Conill <ariadne@dereferenced.org>
@@ -21458,7 +22622,7 @@ diff -Naur a/subprojects/libucontext/arch/ppc/makecontext.c b/subprojects/libuco
 +#endif
 diff -Naur a/subprojects/libucontext/arch/ppc/retfromsyscall.c b/subprojects/libucontext/arch/ppc/retfromsyscall.c
 --- a/subprojects/libucontext/arch/ppc/retfromsyscall.c	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libucontext/arch/ppc/retfromsyscall.c	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libucontext/arch/ppc/retfromsyscall.c	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,25 @@
 +/*
 + * Copyright (c) 2018 Ariadne Conill <ariadne@dereferenced.org>
@@ -21487,7 +22651,7 @@ diff -Naur a/subprojects/libucontext/arch/ppc/retfromsyscall.c b/subprojects/lib
 +
 diff -Naur a/subprojects/libucontext/arch/ppc/setcontext.S b/subprojects/libucontext/arch/ppc/setcontext.S
 --- a/subprojects/libucontext/arch/ppc/setcontext.S	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libucontext/arch/ppc/setcontext.S	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libucontext/arch/ppc/setcontext.S	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,23 @@
 +/*
 + * Copyright (c) 2019 Bobby Bingham <koorogi@koorogi.info>
@@ -21514,7 +22678,7 @@ diff -Naur a/subprojects/libucontext/arch/ppc/setcontext.S b/subprojects/libucon
 +END(libucontext_setcontext)
 diff -Naur a/subprojects/libucontext/arch/ppc/startcontext.S b/subprojects/libucontext/arch/ppc/startcontext.S
 --- a/subprojects/libucontext/arch/ppc/startcontext.S	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libucontext/arch/ppc/startcontext.S	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libucontext/arch/ppc/startcontext.S	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,28 @@
 +/*
 + * Copyright (c) 2018 Ariadne Conill <ariadne@dereferenced.org>
@@ -21546,7 +22710,7 @@ diff -Naur a/subprojects/libucontext/arch/ppc/startcontext.S b/subprojects/libuc
 +END(libucontext_trampoline)
 diff -Naur a/subprojects/libucontext/arch/ppc/swapcontext.S b/subprojects/libucontext/arch/ppc/swapcontext.S
 --- a/subprojects/libucontext/arch/ppc/swapcontext.S	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libucontext/arch/ppc/swapcontext.S	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libucontext/arch/ppc/swapcontext.S	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,29 @@
 +/*
 + * Copyright (c) 2019 Bobby Bingham <koorogi@koorogi.info>
@@ -21579,7 +22743,7 @@ diff -Naur a/subprojects/libucontext/arch/ppc/swapcontext.S b/subprojects/libuco
 +END(__libucontext_swapcontext)
 diff -Naur a/subprojects/libucontext/arch/ppc64/defs.h b/subprojects/libucontext/arch/ppc64/defs.h
 --- a/subprojects/libucontext/arch/ppc64/defs.h	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libucontext/arch/ppc64/defs.h	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libucontext/arch/ppc64/defs.h	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,67 @@
 +#ifndef __ARCH_PPC_DEFS_H
 +#define __ARCH_PPC_DEFS_H
@@ -21650,7 +22814,7 @@ diff -Naur a/subprojects/libucontext/arch/ppc64/defs.h b/subprojects/libucontext
 +#endif
 diff -Naur a/subprojects/libucontext/arch/ppc64/getcontext.S b/subprojects/libucontext/arch/ppc64/getcontext.S
 --- a/subprojects/libucontext/arch/ppc64/getcontext.S	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libucontext/arch/ppc64/getcontext.S	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libucontext/arch/ppc64/getcontext.S	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,27 @@
 +/*
 + * Copyright (c) 2019 Bobby Bingham <koorogi@koorogi.info>
@@ -21681,7 +22845,7 @@ diff -Naur a/subprojects/libucontext/arch/ppc64/getcontext.S b/subprojects/libuc
 +END(libucontext_getcontext)
 diff -Naur a/subprojects/libucontext/arch/ppc64/makecontext.c b/subprojects/libucontext/arch/ppc64/makecontext.c
 --- a/subprojects/libucontext/arch/ppc64/makecontext.c	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libucontext/arch/ppc64/makecontext.c	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libucontext/arch/ppc64/makecontext.c	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,65 @@
 +/*
 + * Copyright (c) 2018 Ariadne Conill <ariadne@dereferenced.org>
@@ -21750,7 +22914,7 @@ diff -Naur a/subprojects/libucontext/arch/ppc64/makecontext.c b/subprojects/libu
 +#endif
 diff -Naur a/subprojects/libucontext/arch/ppc64/retfromsyscall.c b/subprojects/libucontext/arch/ppc64/retfromsyscall.c
 --- a/subprojects/libucontext/arch/ppc64/retfromsyscall.c	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libucontext/arch/ppc64/retfromsyscall.c	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libucontext/arch/ppc64/retfromsyscall.c	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,25 @@
 +/*
 + * Copyright (c) 2018 Ariadne Conill <ariadne@dereferenced.org>
@@ -21779,7 +22943,7 @@ diff -Naur a/subprojects/libucontext/arch/ppc64/retfromsyscall.c b/subprojects/l
 +
 diff -Naur a/subprojects/libucontext/arch/ppc64/setcontext.S b/subprojects/libucontext/arch/ppc64/setcontext.S
 --- a/subprojects/libucontext/arch/ppc64/setcontext.S	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libucontext/arch/ppc64/setcontext.S	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libucontext/arch/ppc64/setcontext.S	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,28 @@
 +/*
 + * Copyright (c) 2019 Bobby Bingham <koorogi@koorogi.info>
@@ -21811,7 +22975,7 @@ diff -Naur a/subprojects/libucontext/arch/ppc64/setcontext.S b/subprojects/libuc
 +END(libucontext_setcontext)
 diff -Naur a/subprojects/libucontext/arch/ppc64/startcontext.S b/subprojects/libucontext/arch/ppc64/startcontext.S
 --- a/subprojects/libucontext/arch/ppc64/startcontext.S	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libucontext/arch/ppc64/startcontext.S	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libucontext/arch/ppc64/startcontext.S	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,33 @@
 +/*
 + * Copyright (c) 2018 Ariadne Conill <ariadne@dereferenced.org>
@@ -21848,7 +23012,7 @@ diff -Naur a/subprojects/libucontext/arch/ppc64/startcontext.S b/subprojects/lib
 +END(libucontext_trampoline)
 diff -Naur a/subprojects/libucontext/arch/ppc64/swapcontext.S b/subprojects/libucontext/arch/ppc64/swapcontext.S
 --- a/subprojects/libucontext/arch/ppc64/swapcontext.S	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libucontext/arch/ppc64/swapcontext.S	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libucontext/arch/ppc64/swapcontext.S	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,34 @@
 +/*
 + * Copyright (c) 2019 Bobby Bingham <koorogi@koorogi.info>
@@ -21886,7 +23050,7 @@ diff -Naur a/subprojects/libucontext/arch/ppc64/swapcontext.S b/subprojects/libu
 +END(__libucontext_swapcontext)
 diff -Naur a/subprojects/libucontext/arch/riscv64/defs.h b/subprojects/libucontext/arch/riscv64/defs.h
 --- a/subprojects/libucontext/arch/riscv64/defs.h	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libucontext/arch/riscv64/defs.h	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libucontext/arch/riscv64/defs.h	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,55 @@
 +#ifndef __ARCH_RISCV64_DEFS_H
 +#define __ARCH_RISCV64_DEFS_H
@@ -21945,7 +23109,7 @@ diff -Naur a/subprojects/libucontext/arch/riscv64/defs.h b/subprojects/libuconte
 +#endif
 diff -Naur a/subprojects/libucontext/arch/riscv64/getcontext.S b/subprojects/libucontext/arch/riscv64/getcontext.S
 --- a/subprojects/libucontext/arch/riscv64/getcontext.S	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libucontext/arch/riscv64/getcontext.S	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libucontext/arch/riscv64/getcontext.S	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,45 @@
 +/*
 + * Copyright (c) 2020 Ariadne Conill <ariadne@dereferenced.org>
@@ -21994,7 +23158,7 @@ diff -Naur a/subprojects/libucontext/arch/riscv64/getcontext.S b/subprojects/lib
 +END(libucontext_getcontext)
 diff -Naur a/subprojects/libucontext/arch/riscv64/include/libucontext/bits.h b/subprojects/libucontext/arch/riscv64/include/libucontext/bits.h
 --- a/subprojects/libucontext/arch/riscv64/include/libucontext/bits.h	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libucontext/arch/riscv64/include/libucontext/bits.h	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libucontext/arch/riscv64/include/libucontext/bits.h	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,48 @@
 +#ifndef LIBUCONTEXT_BITS_H
 +#define LIBUCONTEXT_BITS_H
@@ -22046,7 +23210,7 @@ diff -Naur a/subprojects/libucontext/arch/riscv64/include/libucontext/bits.h b/s
 +#endif
 diff -Naur a/subprojects/libucontext/arch/riscv64/makecontext.c b/subprojects/libucontext/arch/riscv64/makecontext.c
 --- a/subprojects/libucontext/arch/riscv64/makecontext.c	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libucontext/arch/riscv64/makecontext.c	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libucontext/arch/riscv64/makecontext.c	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,65 @@
 +/*
 + * Copyright (c) 2018 Ariadne Conill <ariadne@dereferenced.org>
@@ -22115,7 +23279,7 @@ diff -Naur a/subprojects/libucontext/arch/riscv64/makecontext.c b/subprojects/li
 +#endif
 diff -Naur a/subprojects/libucontext/arch/riscv64/setcontext.S b/subprojects/libucontext/arch/riscv64/setcontext.S
 --- a/subprojects/libucontext/arch/riscv64/setcontext.S	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libucontext/arch/riscv64/setcontext.S	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libucontext/arch/riscv64/setcontext.S	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,56 @@
 +/*
 + * Copyright (c) 2020 Ariadne Conill <ariadne@dereferenced.org>
@@ -22175,7 +23339,7 @@ diff -Naur a/subprojects/libucontext/arch/riscv64/setcontext.S b/subprojects/lib
 +END(libucontext_setcontext)
 diff -Naur a/subprojects/libucontext/arch/riscv64/swapcontext.S b/subprojects/libucontext/arch/riscv64/swapcontext.S
 --- a/subprojects/libucontext/arch/riscv64/swapcontext.S	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libucontext/arch/riscv64/swapcontext.S	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libucontext/arch/riscv64/swapcontext.S	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,81 @@
 +/*
 + * Copyright (c) 2020 Ariadne Conill <ariadne@dereferenced.org>
@@ -22260,14 +23424,14 @@ diff -Naur a/subprojects/libucontext/arch/riscv64/swapcontext.S b/subprojects/li
 +END(libucontext_swapcontext)
 diff -Naur a/subprojects/libucontext/arch/riscv64/trampoline.c b/subprojects/libucontext/arch/riscv64/trampoline.c
 --- a/subprojects/libucontext/arch/riscv64/trampoline.c	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libucontext/arch/riscv64/trampoline.c	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libucontext/arch/riscv64/trampoline.c	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,3 @@
 +#include "defs.h"
 +#include <libucontext/libucontext.h>
 +#include "common-trampoline.c"
 diff -Naur a/subprojects/libucontext/arch/s390x/defs.h b/subprojects/libucontext/arch/s390x/defs.h
 --- a/subprojects/libucontext/arch/s390x/defs.h	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libucontext/arch/s390x/defs.h	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libucontext/arch/s390x/defs.h	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,15 @@
 +#ifndef __ARCH_S390X_DEFS_H
 +#define __ARCH_S390X_DEFS_H
@@ -22286,7 +23450,7 @@ diff -Naur a/subprojects/libucontext/arch/s390x/defs.h b/subprojects/libucontext
 +#endif
 diff -Naur a/subprojects/libucontext/arch/s390x/getcontext.S b/subprojects/libucontext/arch/s390x/getcontext.S
 --- a/subprojects/libucontext/arch/s390x/getcontext.S	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libucontext/arch/s390x/getcontext.S	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libucontext/arch/s390x/getcontext.S	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,26 @@
 +/*
 + * Copyright (c) 2018, 2020 Ariadne Conill <ariadne@dereferenced.org>
@@ -22316,7 +23480,7 @@ diff -Naur a/subprojects/libucontext/arch/s390x/getcontext.S b/subprojects/libuc
 +END(libucontext_getcontext)
 diff -Naur a/subprojects/libucontext/arch/s390x/include/libucontext/bits.h b/subprojects/libucontext/arch/s390x/include/libucontext/bits.h
 --- a/subprojects/libucontext/arch/s390x/include/libucontext/bits.h	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libucontext/arch/s390x/include/libucontext/bits.h	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libucontext/arch/s390x/include/libucontext/bits.h	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,41 @@
 +#ifndef LIBUCONTEXT_BITS_H
 +#define LIBUCONTEXT_BITS_H
@@ -22361,7 +23525,7 @@ diff -Naur a/subprojects/libucontext/arch/s390x/include/libucontext/bits.h b/sub
 +#endif
 diff -Naur a/subprojects/libucontext/arch/s390x/makecontext.c b/subprojects/libucontext/arch/s390x/makecontext.c
 --- a/subprojects/libucontext/arch/s390x/makecontext.c	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libucontext/arch/s390x/makecontext.c	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libucontext/arch/s390x/makecontext.c	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,71 @@
 +/*
 + * Copyright (c) 2018, 2020 Ariadne Conill <ariadne@dereferenced.org>
@@ -22436,7 +23600,7 @@ diff -Naur a/subprojects/libucontext/arch/s390x/makecontext.c b/subprojects/libu
 +#endif
 diff -Naur a/subprojects/libucontext/arch/s390x/setcontext.S b/subprojects/libucontext/arch/s390x/setcontext.S
 --- a/subprojects/libucontext/arch/s390x/setcontext.S	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libucontext/arch/s390x/setcontext.S	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libucontext/arch/s390x/setcontext.S	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,25 @@
 +/*
 + * Copyright (c) 2018, 2020 Ariadne Conill <ariadne@dereferenced.org>
@@ -22465,7 +23629,7 @@ diff -Naur a/subprojects/libucontext/arch/s390x/setcontext.S b/subprojects/libuc
 +END(libucontext_setcontext)
 diff -Naur a/subprojects/libucontext/arch/s390x/startcontext.S b/subprojects/libucontext/arch/s390x/startcontext.S
 --- a/subprojects/libucontext/arch/s390x/startcontext.S	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libucontext/arch/s390x/startcontext.S	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libucontext/arch/s390x/startcontext.S	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,30 @@
 +/*
 + * Copyright (c) 2018, 2020 Ariadne Conill <ariadne@dereferenced.org>
@@ -22499,7 +23663,7 @@ diff -Naur a/subprojects/libucontext/arch/s390x/startcontext.S b/subprojects/lib
 +END(libucontext_trampoline)
 diff -Naur a/subprojects/libucontext/arch/s390x/swapcontext.S b/subprojects/libucontext/arch/s390x/swapcontext.S
 --- a/subprojects/libucontext/arch/s390x/swapcontext.S	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libucontext/arch/s390x/swapcontext.S	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libucontext/arch/s390x/swapcontext.S	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,30 @@
 +/*
 + * Copyright (c) 2018, 2020 Ariadne Conill <ariadne@dereferenced.org>
@@ -22533,7 +23697,7 @@ diff -Naur a/subprojects/libucontext/arch/s390x/swapcontext.S b/subprojects/libu
 +END(libucontext_swapcontext)
 diff -Naur a/subprojects/libucontext/arch/sh/defs.h b/subprojects/libucontext/arch/sh/defs.h
 --- a/subprojects/libucontext/arch/sh/defs.h	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libucontext/arch/sh/defs.h	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libucontext/arch/sh/defs.h	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,20 @@
 +#ifndef __ARCH_SH4_DEFS_H
 +#define __ARCH_SH4_DEFS_H
@@ -22557,7 +23721,7 @@ diff -Naur a/subprojects/libucontext/arch/sh/defs.h b/subprojects/libucontext/ar
 +#endif
 diff -Naur a/subprojects/libucontext/arch/sh/getcontext.S b/subprojects/libucontext/arch/sh/getcontext.S
 --- a/subprojects/libucontext/arch/sh/getcontext.S	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libucontext/arch/sh/getcontext.S	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libucontext/arch/sh/getcontext.S	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,56 @@
 +/*
 + * Copyright (c) 2020 Ariadne Conill <ariadne@dereferenced.org>
@@ -22617,7 +23781,7 @@ diff -Naur a/subprojects/libucontext/arch/sh/getcontext.S b/subprojects/libucont
 +END(libucontext_getcontext)
 diff -Naur a/subprojects/libucontext/arch/sh/include/libucontext/bits.h b/subprojects/libucontext/arch/sh/include/libucontext/bits.h
 --- a/subprojects/libucontext/arch/sh/include/libucontext/bits.h	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libucontext/arch/sh/include/libucontext/bits.h	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libucontext/arch/sh/include/libucontext/bits.h	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,29 @@
 +#ifndef LIBUCONTEXT_BITS_H
 +#define LIBUCONTEXT_BITS_H
@@ -22650,7 +23814,7 @@ diff -Naur a/subprojects/libucontext/arch/sh/include/libucontext/bits.h b/subpro
 +#endif
 diff -Naur a/subprojects/libucontext/arch/sh/makecontext.c b/subprojects/libucontext/arch/sh/makecontext.c
 --- a/subprojects/libucontext/arch/sh/makecontext.c	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libucontext/arch/sh/makecontext.c	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libucontext/arch/sh/makecontext.c	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,62 @@
 +/*
 + * Copyright (c) 2020 Ariadne Conill <ariadne@dereferenced.org>
@@ -22716,7 +23880,7 @@ diff -Naur a/subprojects/libucontext/arch/sh/makecontext.c b/subprojects/libucon
 +#endif
 diff -Naur a/subprojects/libucontext/arch/sh/setcontext.S b/subprojects/libucontext/arch/sh/setcontext.S
 --- a/subprojects/libucontext/arch/sh/setcontext.S	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libucontext/arch/sh/setcontext.S	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libucontext/arch/sh/setcontext.S	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,60 @@
 +/*
 + * Copyright (c) 2020 Ariadne Conill <ariadne@dereferenced.org>
@@ -22780,7 +23944,7 @@ diff -Naur a/subprojects/libucontext/arch/sh/setcontext.S b/subprojects/libucont
 +END(libucontext_setcontext)
 diff -Naur a/subprojects/libucontext/arch/sh/swapcontext.S b/subprojects/libucontext/arch/sh/swapcontext.S
 --- a/subprojects/libucontext/arch/sh/swapcontext.S	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libucontext/arch/sh/swapcontext.S	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libucontext/arch/sh/swapcontext.S	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,95 @@
 +/*
 + * Copyright (c) 2020 Ariadne Conill <ariadne@dereferenced.org>
@@ -22879,14 +24043,14 @@ diff -Naur a/subprojects/libucontext/arch/sh/swapcontext.S b/subprojects/libucon
 +END(libucontext_swapcontext)
 diff -Naur a/subprojects/libucontext/arch/sh/trampoline.c b/subprojects/libucontext/arch/sh/trampoline.c
 --- a/subprojects/libucontext/arch/sh/trampoline.c	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libucontext/arch/sh/trampoline.c	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libucontext/arch/sh/trampoline.c	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,3 @@
 +#include "defs.h"
 +#include <libucontext/libucontext.h>
 +#include "common-trampoline.c"
 diff -Naur a/subprojects/libucontext/arch/x86/defs.h b/subprojects/libucontext/arch/x86/defs.h
 --- a/subprojects/libucontext/arch/x86/defs.h	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libucontext/arch/x86/defs.h	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libucontext/arch/x86/defs.h	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,65 @@
 +#ifndef __ARCH_X86_DEFS_H
 +#define __ARCH_X86_DEFS_H
@@ -22955,7 +24119,7 @@ diff -Naur a/subprojects/libucontext/arch/x86/defs.h b/subprojects/libucontext/a
 +#endif
 diff -Naur a/subprojects/libucontext/arch/x86/getcontext.S b/subprojects/libucontext/arch/x86/getcontext.S
 --- a/subprojects/libucontext/arch/x86/getcontext.S	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libucontext/arch/x86/getcontext.S	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libucontext/arch/x86/getcontext.S	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,50 @@
 +/*
 + * Copyright (c) 2018, 2020 Ariadne Conill <ariadne@dereferenced.org>
@@ -23009,7 +24173,7 @@ diff -Naur a/subprojects/libucontext/arch/x86/getcontext.S b/subprojects/libucon
 +END(libucontext_getcontext)
 diff -Naur a/subprojects/libucontext/arch/x86/include/libucontext/bits.h b/subprojects/libucontext/arch/x86/include/libucontext/bits.h
 --- a/subprojects/libucontext/arch/x86/include/libucontext/bits.h	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libucontext/arch/x86/include/libucontext/bits.h	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libucontext/arch/x86/include/libucontext/bits.h	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,48 @@
 +#ifndef LIBUCONTEXT_BITS_H
 +#define LIBUCONTEXT_BITS_H
@@ -23061,7 +24225,7 @@ diff -Naur a/subprojects/libucontext/arch/x86/include/libucontext/bits.h b/subpr
 +
 diff -Naur a/subprojects/libucontext/arch/x86/makecontext.c b/subprojects/libucontext/arch/x86/makecontext.c
 --- a/subprojects/libucontext/arch/x86/makecontext.c	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libucontext/arch/x86/makecontext.c	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libucontext/arch/x86/makecontext.c	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,62 @@
 +/*
 + * Copyright (c) 2018 Ariadne Conill <ariadne@dereferenced.org>
@@ -23127,7 +24291,7 @@ diff -Naur a/subprojects/libucontext/arch/x86/makecontext.c b/subprojects/libuco
 +#endif
 diff -Naur a/subprojects/libucontext/arch/x86/setcontext.S b/subprojects/libucontext/arch/x86/setcontext.S
 --- a/subprojects/libucontext/arch/x86/setcontext.S	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libucontext/arch/x86/setcontext.S	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libucontext/arch/x86/setcontext.S	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,45 @@
 +/*
 + * Copyright (c) 2018, 2020 Ariadne Conill <ariadne@dereferenced.org>
@@ -23176,7 +24340,7 @@ diff -Naur a/subprojects/libucontext/arch/x86/setcontext.S b/subprojects/libucon
 +END(libucontext_setcontext)
 diff -Naur a/subprojects/libucontext/arch/x86/swapcontext.S b/subprojects/libucontext/arch/x86/swapcontext.S
 --- a/subprojects/libucontext/arch/x86/swapcontext.S	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libucontext/arch/x86/swapcontext.S	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libucontext/arch/x86/swapcontext.S	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,73 @@
 +/*
 + * Copyright (c) 2018, 2020 Ariadne Conill <ariadne@dereferenced.org>
@@ -23253,14 +24417,14 @@ diff -Naur a/subprojects/libucontext/arch/x86/swapcontext.S b/subprojects/libuco
 +END(libucontext_swapcontext)
 diff -Naur a/subprojects/libucontext/arch/x86/trampoline.c b/subprojects/libucontext/arch/x86/trampoline.c
 --- a/subprojects/libucontext/arch/x86/trampoline.c	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libucontext/arch/x86/trampoline.c	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libucontext/arch/x86/trampoline.c	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,3 @@
 +#include "defs.h"
 +#include <libucontext/libucontext.h>
 +#include "common-trampoline.c"
 diff -Naur a/subprojects/libucontext/arch/x86_64/defs.h b/subprojects/libucontext/arch/x86_64/defs.h
 --- a/subprojects/libucontext/arch/x86_64/defs.h	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libucontext/arch/x86_64/defs.h	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libucontext/arch/x86_64/defs.h	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,105 @@
 +#ifndef __ARCH_X86_64_DEFS_H
 +#define __ARCH_X86_64_DEFS_H
@@ -23369,7 +24533,7 @@ diff -Naur a/subprojects/libucontext/arch/x86_64/defs.h b/subprojects/libucontex
 +#endif
 diff -Naur a/subprojects/libucontext/arch/x86_64/getcontext.S b/subprojects/libucontext/arch/x86_64/getcontext.S
 --- a/subprojects/libucontext/arch/x86_64/getcontext.S	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libucontext/arch/x86_64/getcontext.S	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libucontext/arch/x86_64/getcontext.S	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,49 @@
 +/*
 + * Copyright (c) 2018, 2020 Ariadne Conill <ariadne@dereferenced.org>
@@ -23422,7 +24586,7 @@ diff -Naur a/subprojects/libucontext/arch/x86_64/getcontext.S b/subprojects/libu
 +END(libucontext_getcontext)
 diff -Naur a/subprojects/libucontext/arch/x86_64/include/libucontext/bits.h b/subprojects/libucontext/arch/x86_64/include/libucontext/bits.h
 --- a/subprojects/libucontext/arch/x86_64/include/libucontext/bits.h	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libucontext/arch/x86_64/include/libucontext/bits.h	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libucontext/arch/x86_64/include/libucontext/bits.h	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,64 @@
 +#include <stddef.h>
 +
@@ -23490,7 +24654,7 @@ diff -Naur a/subprojects/libucontext/arch/x86_64/include/libucontext/bits.h b/su
 +#endif
 diff -Naur a/subprojects/libucontext/arch/x86_64/makecontext.c b/subprojects/libucontext/arch/x86_64/makecontext.c
 --- a/subprojects/libucontext/arch/x86_64/makecontext.c	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libucontext/arch/x86_64/makecontext.c	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libucontext/arch/x86_64/makecontext.c	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,83 @@
 +/*
 + * Copyright (c) 2018 Ariadne Conill <ariadne@dereferenced.org>
@@ -23577,7 +24741,7 @@ diff -Naur a/subprojects/libucontext/arch/x86_64/makecontext.c b/subprojects/lib
 +#endif
 diff -Naur a/subprojects/libucontext/arch/x86_64/setcontext.S b/subprojects/libucontext/arch/x86_64/setcontext.S
 --- a/subprojects/libucontext/arch/x86_64/setcontext.S	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libucontext/arch/x86_64/setcontext.S	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libucontext/arch/x86_64/setcontext.S	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,46 @@
 +/*
 + * Copyright (c) 2018, 2020 Ariadne Conill <ariadne@dereferenced.org>
@@ -23627,7 +24791,7 @@ diff -Naur a/subprojects/libucontext/arch/x86_64/setcontext.S b/subprojects/libu
 +END(libucontext_setcontext)
 diff -Naur a/subprojects/libucontext/arch/x86_64/swapcontext.S b/subprojects/libucontext/arch/x86_64/swapcontext.S
 --- a/subprojects/libucontext/arch/x86_64/swapcontext.S	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libucontext/arch/x86_64/swapcontext.S	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libucontext/arch/x86_64/swapcontext.S	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,75 @@
 +/*
 + * Copyright (c) 2018, 2020 Ariadne Conill <ariadne@dereferenced.org>
@@ -23706,14 +24870,14 @@ diff -Naur a/subprojects/libucontext/arch/x86_64/swapcontext.S b/subprojects/lib
 +END(libucontext_swapcontext)
 diff -Naur a/subprojects/libucontext/arch/x86_64/trampoline.c b/subprojects/libucontext/arch/x86_64/trampoline.c
 --- a/subprojects/libucontext/arch/x86_64/trampoline.c	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libucontext/arch/x86_64/trampoline.c	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libucontext/arch/x86_64/trampoline.c	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,3 @@
 +#include "defs.h"
 +#include <libucontext/libucontext.h>
 +#include "common-trampoline.c"
 diff -Naur a/subprojects/libucontext/doc/libucontext.scd b/subprojects/libucontext/doc/libucontext.scd
 --- a/subprojects/libucontext/doc/libucontext.scd	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libucontext/doc/libucontext.scd	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libucontext/doc/libucontext.scd	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,174 @@
 +libucontext(3)
 +
@@ -23891,7 +25055,7 @@ diff -Naur a/subprojects/libucontext/doc/libucontext.scd b/subprojects/libuconte
 +
 diff -Naur a/subprojects/libucontext/examples/cooperative_threading.c b/subprojects/libucontext/examples/cooperative_threading.c
 --- a/subprojects/libucontext/examples/cooperative_threading.c	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libucontext/examples/cooperative_threading.c	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libucontext/examples/cooperative_threading.c	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,94 @@
 +#include <assert.h>
 +#include <stddef.h>
@@ -23989,7 +25153,7 @@ diff -Naur a/subprojects/libucontext/examples/cooperative_threading.c b/subproje
 +}
 diff -Naur a/subprojects/libucontext/include/libucontext/libucontext.h b/subprojects/libucontext/include/libucontext/libucontext.h
 --- a/subprojects/libucontext/include/libucontext/libucontext.h	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libucontext/include/libucontext/libucontext.h	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libucontext/include/libucontext/libucontext.h	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,12 @@
 +#ifndef LIBUCONTEXT_LIBUCONTEXT_H
 +#define LIBUCONTEXT_LIBUCONTEXT_H
@@ -24005,7 +25169,7 @@ diff -Naur a/subprojects/libucontext/include/libucontext/libucontext.h b/subproj
 +#endif
 diff -Naur a/subprojects/libucontext/libucontext.pc.in b/subprojects/libucontext/libucontext.pc.in
 --- a/subprojects/libucontext/libucontext.pc.in	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libucontext/libucontext.pc.in	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libucontext/libucontext.pc.in	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,8 @@
 +libdir=@LIBUCONTEXT_LIBDIR@
 +includedir=@LIBUCONTEXT_INCLUDEDIR@
@@ -24017,7 +25181,7 @@ diff -Naur a/subprojects/libucontext/libucontext.pc.in b/subprojects/libucontext
 +Cflags: -I${includedir}
 diff -Naur a/subprojects/libucontext/libucontext_posix.c b/subprojects/libucontext/libucontext_posix.c
 --- a/subprojects/libucontext/libucontext_posix.c	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libucontext/libucontext_posix.c	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libucontext/libucontext_posix.c	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,59 @@
 +/*
 + * Copyright (c) 2020 Ariadne Conill <ariadne@dereferenced.org>
@@ -24080,7 +25244,7 @@ diff -Naur a/subprojects/libucontext/libucontext_posix.c b/subprojects/libuconte
 +}
 diff -Naur a/subprojects/libucontext/meson.build b/subprojects/libucontext/meson.build
 --- a/subprojects/libucontext/meson.build	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libucontext/meson.build	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libucontext/meson.build	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,169 @@
 +project(
 +  'libucontext',
@@ -24253,7 +25417,7 @@ diff -Naur a/subprojects/libucontext/meson.build b/subprojects/libucontext/meson
 +endif
 diff -Naur a/subprojects/libucontext/meson_options.txt b/subprojects/libucontext/meson_options.txt
 --- a/subprojects/libucontext/meson_options.txt	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libucontext/meson_options.txt	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libucontext/meson_options.txt	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,4 @@
 +option('freestanding', type : 'boolean', value : false,
 +       description: 'Do not use system headers')
@@ -24262,7 +25426,7 @@ diff -Naur a/subprojects/libucontext/meson_options.txt b/subprojects/libucontext
 \ No newline at end of file
 diff -Naur a/subprojects/libucontext/test_libucontext.c b/subprojects/libucontext/test_libucontext.c
 --- a/subprojects/libucontext/test_libucontext.c	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libucontext/test_libucontext.c	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libucontext/test_libucontext.c	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,102 @@
 +/*
 + * libucontext test program based on POSIX example program.
@@ -24368,7 +25532,7 @@ diff -Naur a/subprojects/libucontext/test_libucontext.c b/subprojects/libucontex
 +}
 diff -Naur a/subprojects/libucontext/test_libucontext_posix.c b/subprojects/libucontext/test_libucontext_posix.c
 --- a/subprojects/libucontext/test_libucontext_posix.c	1969-12-31 16:00:00.000000000 -0800
-+++ b/subprojects/libucontext/test_libucontext_posix.c	2021-04-26 23:27:36.000000000 -0700
++++ b/subprojects/libucontext/test_libucontext_posix.c	2021-05-16 20:23:15.000000000 -0700
 @@ -0,0 +1,102 @@
 +/*
 + * libucontext test program based on POSIX example program.
@@ -24474,7 +25638,7 @@ diff -Naur a/subprojects/libucontext/test_libucontext_posix.c b/subprojects/libu
 +}
 diff -Naur a/tcg/aarch64-tcti/README.md b/tcg/aarch64-tcti/README.md
 --- a/tcg/aarch64-tcti/README.md	1969-12-31 16:00:00.000000000 -0800
-+++ b/tcg/aarch64-tcti/README.md	2021-04-26 23:22:38.000000000 -0700
++++ b/tcg/aarch64-tcti/README.md	2021-05-16 20:20:01.000000000 -0700
 @@ -0,0 +1,1026 @@
 +# QEMU Tiny-Code Threaded Interpreter (AArch64)
 +
@@ -25504,7 +26668,7 @@ diff -Naur a/tcg/aarch64-tcti/README.md b/tcg/aarch64-tcti/README.md
 +We still need to look up out how to map QEMU MB types map to AArch64 ones. This might take nuance.
 diff -Naur a/tcg/aarch64-tcti/tcg-target-con-set.h b/tcg/aarch64-tcti/tcg-target-con-set.h
 --- a/tcg/aarch64-tcti/tcg-target-con-set.h	1969-12-31 16:00:00.000000000 -0800
-+++ b/tcg/aarch64-tcti/tcg-target-con-set.h	2021-04-26 23:22:38.000000000 -0700
++++ b/tcg/aarch64-tcti/tcg-target-con-set.h	2021-05-16 20:20:01.000000000 -0700
 @@ -0,0 +1,21 @@
 +/* SPDX-License-Identifier: MIT */
 +/*
@@ -25529,7 +26693,7 @@ diff -Naur a/tcg/aarch64-tcti/tcg-target-con-set.h b/tcg/aarch64-tcti/tcg-target
 +C_O2_I4(r, r, r, r, r, r)
 diff -Naur a/tcg/aarch64-tcti/tcg-target-con-str.h b/tcg/aarch64-tcti/tcg-target-con-str.h
 --- a/tcg/aarch64-tcti/tcg-target-con-str.h	1969-12-31 16:00:00.000000000 -0800
-+++ b/tcg/aarch64-tcti/tcg-target-con-str.h	2021-04-26 23:22:38.000000000 -0700
++++ b/tcg/aarch64-tcti/tcg-target-con-str.h	2021-05-16 20:20:01.000000000 -0700
 @@ -0,0 +1,11 @@
 +/* SPDX-License-Identifier: MIT */
 +/*
@@ -25544,7 +26708,7 @@ diff -Naur a/tcg/aarch64-tcti/tcg-target-con-str.h b/tcg/aarch64-tcti/tcg-target
 +REGS('r', MAKE_64BIT_MASK(0, TCG_TARGET_NB_REGS))
 diff -Naur a/tcg/aarch64-tcti/tcg-target.c.inc b/tcg/aarch64-tcti/tcg-target.c.inc
 --- a/tcg/aarch64-tcti/tcg-target.c.inc	1969-12-31 16:00:00.000000000 -0800
-+++ b/tcg/aarch64-tcti/tcg-target.c.inc	2021-04-26 23:22:38.000000000 -0700
++++ b/tcg/aarch64-tcti/tcg-target.c.inc	2021-05-16 20:20:01.000000000 -0700
 @@ -0,0 +1,1347 @@
 +/*
 + * Tiny Code Threaded Intepreter for QEMU
@@ -26895,7 +28059,7 @@ diff -Naur a/tcg/aarch64-tcti/tcg-target.c.inc b/tcg/aarch64-tcti/tcg-target.c.i
 +
 diff -Naur a/tcg/aarch64-tcti/tcg-target.h b/tcg/aarch64-tcti/tcg-target.h
 --- a/tcg/aarch64-tcti/tcg-target.h	1969-12-31 16:00:00.000000000 -0800
-+++ b/tcg/aarch64-tcti/tcg-target.h	2021-04-26 23:22:38.000000000 -0700
++++ b/tcg/aarch64-tcti/tcg-target.h	2021-05-16 20:20:01.000000000 -0700
 @@ -0,0 +1,220 @@
 +/*
 + * Tiny Code Generator for QEMU
@@ -27119,7 +28283,7 @@ diff -Naur a/tcg/aarch64-tcti/tcg-target.h b/tcg/aarch64-tcti/tcg-target.h
 +#endif /* TCG_TARGET_H */
 diff -Naur a/tcg/aarch64-tcti/tcti-gadget-gen.py b/tcg/aarch64-tcti/tcti-gadget-gen.py
 --- a/tcg/aarch64-tcti/tcti-gadget-gen.py	1969-12-31 16:00:00.000000000 -0800
-+++ b/tcg/aarch64-tcti/tcti-gadget-gen.py	2021-04-26 23:22:38.000000000 -0700
++++ b/tcg/aarch64-tcti/tcti-gadget-gen.py	2021-05-16 20:20:01.000000000 -0700
 @@ -0,0 +1,788 @@
 +#!/usr/bin/env python3
 +""" Gadget-code generator for QEMU TCTI on AArch64. 
@@ -27910,8 +29074,8 @@ diff -Naur a/tcg/aarch64-tcti/tcti-gadget-gen.py b/tcg/aarch64-tcti/tcti-gadget-
 +# Statistics.
 +sys.stderr.write(f"\nGenerated {gadgets} gadgets with {instructions} instructions ({instructions * 4} B).\n\n")
 diff -Naur a/tcg/tcg.c b/tcg/tcg.c
---- a/tcg/tcg.c	2021-04-26 12:51:23.000000000 -0700
-+++ b/tcg/tcg.c	2021-04-26 23:22:38.000000000 -0700
+--- a/tcg/tcg.c	2021-04-29 10:18:58.000000000 -0700
++++ b/tcg/tcg.c	2021-05-16 20:20:01.000000000 -0700
 @@ -49,6 +49,7 @@
  #include "hw/boards.h"
  #endif
@@ -27984,8 +29148,8 @@ diff -Naur a/tcg/tcg.c b/tcg/tcg.c
      flush_idcache_range((uintptr_t)tcg_splitwx_to_rx(s->code_buf),
                          (uintptr_t)s->code_buf,
 diff -Naur a/util/coroutine-ucontext.c b/util/coroutine-ucontext.c
---- a/util/coroutine-ucontext.c	2021-04-26 12:51:23.000000000 -0700
-+++ b/util/coroutine-ucontext.c	2021-04-26 23:22:40.000000000 -0700
+--- a/util/coroutine-ucontext.c	2021-04-29 10:18:59.000000000 -0700
++++ b/util/coroutine-ucontext.c	2021-05-16 20:20:02.000000000 -0700
 @@ -23,7 +23,16 @@
  #undef _FORTIFY_SOURCE
  #endif
@@ -28004,8 +29168,8 @@ diff -Naur a/util/coroutine-ucontext.c b/util/coroutine-ucontext.c
  
  #ifdef CONFIG_VALGRIND_H
 diff -Naur a/util/osdep.c b/util/osdep.c
---- a/util/osdep.c	2021-04-26 12:51:23.000000000 -0700
-+++ b/util/osdep.c	2021-04-26 23:22:40.000000000 -0700
+--- a/util/osdep.c	2021-04-29 10:18:59.000000000 -0700
++++ b/util/osdep.c	2021-05-16 20:20:02.000000000 -0700
 @@ -39,6 +39,10 @@
  #include "qemu/error-report.h"
  #include "monitor/monitor.h"
