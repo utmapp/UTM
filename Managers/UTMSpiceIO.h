@@ -22,6 +22,7 @@
 @class UTMConfiguration;
 @class CSDisplayMetal;
 @class CSInput;
+@class CSUSBManager;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -30,6 +31,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly, nonnull) UTMConfiguration* configuration;
 @property (nonatomic, readonly, nullable) CSDisplayMetal *primaryDisplay;
 @property (nonatomic, readonly, nullable) CSInput *primaryInput;
+#if !defined(WITH_QEMU_TCI)
+@property (nonatomic, readonly, nullable) CSUSBManager *primaryUsbManager;
+#endif
 @property (nonatomic, weak, nullable) id<UTMSpiceIODelegate> delegate;
 
 - (instancetype)init NS_UNAVAILABLE;

@@ -1,0 +1,1016 @@
+From e9002c31f15f8c84623b1392d4a6f8b5415163a1 Mon Sep 17 00:00:00 2001
+From: osy <50960678+osy@users.noreply.github.com>
+Date: Tue, 11 May 2021 20:36:31 -0700
+Subject: [PATCH 1/5] darwin: add timeout for reset reenumerate
+
+USBDeviceReEnumerate() does not return an error code (bug?) so if it fails
+we could be stuck waiting forever. Set a sane timeout to 10s.
+---
+ libusb/os/darwin_usb.c | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
+
+diff --git a/libusb/os/darwin_usb.c b/libusb/os/darwin_usb.c
+index e415589..13ab402 100644
+--- a/libusb/os/darwin_usb.c
++++ b/libusb/os/darwin_usb.c
+@@ -41,6 +41,10 @@
+  * function. Its use is also conditionalized to only older deployment targets. */
+ #define OBJC_SILENCE_GC_DEPRECATIONS 1
+ 
++/* Default timeout to 10s for reenumerate. This is needed because USBDeviceReEnumerate
++ * does not return error status on macOS. */
++#define DARWIN_REENUMERATE_TIMEOUT_US 10000000
++
+ #include <AvailabilityMacros.h>
+ #if MAC_OS_X_VERSION_MIN_REQUIRED >= 1060 && MAC_OS_X_VERSION_MIN_REQUIRED < 101200
+   #include <objc/objc-auto.h>
+@@ -1672,6 +1676,7 @@ static int darwin_reset_device(struct libusb_device_handle *dev_handle) {
+   IOUSBConfigurationDescriptor *cached_configurations;
+   IOReturn kresult;
+   UInt8 i;
++  UInt32 time;
+ 
+   if (dpriv->in_reenumerate) {
+     /* ack, two (or more) threads are trying to reset the device! abort! */
+@@ -1699,9 +1704,15 @@ static int darwin_reset_device(struct libusb_device_handle *dev_handle) {
+ 
+   usbi_dbg ("darwin/reset_device: waiting for re-enumeration to complete...");
+ 
++  time = 0;
+   while (dpriv->in_reenumerate) {
+     struct timespec delay = {.tv_sec = 0, .tv_nsec = 1000};
+     nanosleep (&delay, NULL);
++    if (time++ >= DARWIN_REENUMERATE_TIMEOUT_US) {
++      usbi_err (HANDLE_CTX (dev_handle), "darwin/reenumerate_device: timeout waiting for reenumerate");
++      dpriv->in_reenumerate = false;
++      return LIBUSB_ERROR_TIMEOUT;
++    }
+   }
+ 
+   /* compare descriptors */
+-- 
+2.28.0
+
+From 99d9de957cb74b86782e311fe534810fba0e87e6 Mon Sep 17 00:00:00 2001
+From: osy <50960678+osy@users.noreply.github.com>
+Date: Tue, 11 May 2021 20:45:44 -0700
+Subject: [PATCH 2/5] darwin: rename darwin_reset_device
+
+Since it calls USBDeviceReEnumerate() and not USBDeviceReset(), we name
+it accordingly.
+---
+ libusb/os/darwin_usb.c | 15 ++++++++-------
+ 1 file changed, 8 insertions(+), 7 deletions(-)
+
+diff --git a/libusb/os/darwin_usb.c b/libusb/os/darwin_usb.c
+index 13ab402..c32ec1a 100644
+--- a/libusb/os/darwin_usb.c
++++ b/libusb/os/darwin_usb.c
+@@ -81,6 +81,7 @@ static pthread_t libusb_darwin_at;
+ static int darwin_get_config_descriptor(struct libusb_device *dev, uint8_t config_index, void *buffer, size_t len);
+ static int darwin_claim_interface(struct libusb_device_handle *dev_handle, uint8_t iface);
+ static int darwin_release_interface(struct libusb_device_handle *dev_handle, uint8_t iface);
++static int darwin_reenumerate_device(struct libusb_device_handle *dev_handle, bool capture);
+ static int darwin_reset_device(struct libusb_device_handle *dev_handle);
+ static void darwin_async_io_callback (void *refcon, IOReturn result, void *arg0);
+ 
+@@ -1667,7 +1668,7 @@ static int darwin_restore_state (struct libusb_device_handle *dev_handle, int8_t
+   return LIBUSB_SUCCESS;
+ }
+ 
+-static int darwin_reset_device(struct libusb_device_handle *dev_handle) {
++static int darwin_reenumerate_device (struct libusb_device_handle *dev_handle) {
+   struct darwin_cached_device *dpriv = DARWIN_CACHED_DEVICE(dev_handle->dev);
+   unsigned long claimed_interfaces = dev_handle->claimed_interfaces;
+   int8_t active_config = dpriv->active_config;
+@@ -1702,7 +1703,7 @@ static int darwin_reset_device(struct libusb_device_handle *dev_handle) {
+     return darwin_to_libusb (kresult);
+   }
+ 
+-  usbi_dbg ("darwin/reset_device: waiting for re-enumeration to complete...");
++  usbi_dbg ("darwin/reenumerate_device: waiting for re-enumeration to complete...");
+ 
+   time = 0;
+   while (dpriv->in_reenumerate) {
+@@ -1716,23 +1717,23 @@ static int darwin_reset_device(struct libusb_device_handle *dev_handle) {
+   }
+ 
+   /* compare descriptors */
+-  usbi_dbg ("darwin/reset_device: checking whether descriptors changed");
++  usbi_dbg ("darwin/reenumerate_device: checking whether descriptors changed");
+ 
+   if (memcmp (&descriptor, &dpriv->dev_descriptor, sizeof (descriptor))) {
+     /* device descriptor changed. need to return not found. */
+-    usbi_dbg ("darwin/reset_device: device descriptor changed");
++    usbi_dbg ("darwin/reenumerate_device: device descriptor changed");
+     return LIBUSB_ERROR_NOT_FOUND;
+   }
+ 
+   for (i = 0 ; i < descriptor.bNumConfigurations ; ++i) {
+     (void) (*(dpriv->device))->GetConfigurationDescriptorPtr (dpriv->device, i, &cached_configuration);
+     if (memcmp (cached_configuration, cached_configurations + i, sizeof (cached_configurations[i]))) {
+-      usbi_dbg ("darwin/reset_device: configuration descriptor %d changed", i);
++      usbi_dbg ("darwin/reenumerate_device: configuration descriptor %d changed", i);
+       return LIBUSB_ERROR_NOT_FOUND;
+     }
+   }
+ 
+-  usbi_dbg ("darwin/reset_device: device reset complete. restoring state...");
++  usbi_dbg ("darwin/reenumerate_device: device reset complete. restoring state...");
+ 
+   return darwin_restore_state (dev_handle, active_config, claimed_interfaces);
+ }
+@@ -2291,7 +2292,7 @@ const struct usbi_os_backend usbi_backend = {
+ 
+         .set_interface_altsetting = darwin_set_interface_altsetting,
+         .clear_halt = darwin_clear_halt,
+-        .reset_device = darwin_reset_device,
++        .reset_device = darwin_reenumerate_device,
+ 
+ #if InterfaceVersion >= 550
+         .alloc_streams = darwin_alloc_streams,
+-- 
+2.28.0
+
+From a687026702654b35aacf021242bc1b56574e0226 Mon Sep 17 00:00:00 2001
+From: osy <50960678+osy@users.noreply.github.com>
+Date: Tue, 11 May 2021 20:56:27 -0700
+Subject: [PATCH 3/5] darwin: use detach kernel APIs for capture
+
+When libusb_detach_kernel_driver() is called on the first interface, we use
+the capture re-enumerate APIs to force kernel drivers to detach. On
+subsequent calls, a counter is incremented to keep track of the number of
+detach calls. When libusb_attach_kernel_driver() is called for the same
+number of times, then we re-enumerate (reset) and let kernel drivers
+re-attach.
+
+darwin_kernel_driver_active() is changed to attempt to claim an interface
+and return 1 only if a kIOReturnExclusiveAccess status is returned. The old
+implementation which looks for a CFBundleID in the IORegistryEntry does not
+seem to work in all cases.
+
+darwin_reset_device() is aware of the capture status and will re-set twice
+if capture mode is enabled: once to do a USB reset and again to re-capture.
+---
+ libusb/core.c          |   7 +-
+ libusb/os/darwin_usb.c | 155 +++++++++++++++++++++++++++++++++++------
+ libusb/os/darwin_usb.h |  11 +++
+ 3 files changed, 146 insertions(+), 27 deletions(-)
+
+diff --git a/libusb/core.c b/libusb/core.c
+index 07d459c..c198389 100644
+--- a/libusb/core.c
++++ b/libusb/core.c
+@@ -1997,7 +1997,7 @@ int API_EXPORTED libusb_kernel_driver_active(libusb_device_handle *dev_handle,
+  * Detach a kernel driver from an interface. If successful, you will then be
+  * able to claim the interface and perform I/O.
+  *
+- * This functionality is not available on Darwin or Windows.
++ * This functionality is not available on Windows.
+  *
+  * Note that libusb itself also talks to the device through a special kernel
+  * driver, if this driver is already attached to the device, this call will
+@@ -2033,10 +2033,9 @@ int API_EXPORTED libusb_detach_kernel_driver(libusb_device_handle *dev_handle,
+ 
+ /** \ingroup libusb_dev
+  * Re-attach an interface's kernel driver, which was previously detached
+- * using libusb_detach_kernel_driver(). This call is only effective on
+- * Linux and returns LIBUSB_ERROR_NOT_SUPPORTED on all other platforms.
++ * using libusb_detach_kernel_driver().
+  *
+- * This functionality is not available on Darwin or Windows.
++ * This functionality is not available on Windows.
+  *
+  * \param dev_handle a device handle
+  * \param interface_number the interface to attach the driver from
+diff --git a/libusb/os/darwin_usb.c b/libusb/os/darwin_usb.c
+index c32ec1a..596d98f 100644
+--- a/libusb/os/darwin_usb.c
++++ b/libusb/os/darwin_usb.c
+@@ -1668,10 +1668,11 @@ static int darwin_restore_state (struct libusb_device_handle *dev_handle, int8_t
+   return LIBUSB_SUCCESS;
+ }
+ 
+-static int darwin_reenumerate_device (struct libusb_device_handle *dev_handle) {
++static int darwin_reenumerate_device (struct libusb_device_handle *dev_handle, bool capture) {
+   struct darwin_cached_device *dpriv = DARWIN_CACHED_DEVICE(dev_handle->dev);
+   unsigned long claimed_interfaces = dev_handle->claimed_interfaces;
+   int8_t active_config = dpriv->active_config;
++  UInt32 options = 0;
+   IOUSBDeviceDescriptor descriptor;
+   IOUSBConfigurationDescriptorPtr cached_configuration;
+   IOUSBConfigurationDescriptor *cached_configurations;
+@@ -1695,14 +1696,30 @@ static int darwin_reenumerate_device (struct libusb_device_handle *dev_handle) {
+     memcpy (cached_configurations + i, cached_configuration, sizeof (cached_configurations[i]));
+   }
+ 
++  /* if we need to release capture */
++  if (HAS_CAPTURE_DEVICE()) {
++    if (capture) {
++      options |= kUSBReEnumerateCaptureDeviceMask;
++    }
++  } else {
++    capture = false;
++  }
++
+   /* from macOS 10.11 ResetDevice no longer does anything so just use USBDeviceReEnumerate */
+-  kresult = (*(dpriv->device))->USBDeviceReEnumerate (dpriv->device, 0);
++  kresult = (*(dpriv->device))->USBDeviceReEnumerate (dpriv->device, options);
+   if (kresult != kIOReturnSuccess) {
+     usbi_err (HANDLE_CTX (dev_handle), "USBDeviceReEnumerate: %s", darwin_error_str (kresult));
+     dpriv->in_reenumerate = false;
+     return darwin_to_libusb (kresult);
+   }
+ 
++  /* capture mode does not re-enumerate but it does require re-open */
++  if (capture) {
++    usbi_dbg ("darwin/reenumerate_device: restoring state...");
++    dpriv->in_reenumerate = false;
++    return darwin_restore_state (dev_handle, active_config, claimed_interfaces);
++  }
++
+   usbi_dbg ("darwin/reenumerate_device: waiting for re-enumeration to complete...");
+ 
+   time = 0;
+@@ -1738,30 +1755,25 @@ static int darwin_reenumerate_device (struct libusb_device_handle *dev_handle) {
+   return darwin_restore_state (dev_handle, active_config, claimed_interfaces);
+ }
+ 
+-static int darwin_kernel_driver_active(struct libusb_device_handle *dev_handle, uint8_t interface) {
++static int darwin_reset_device (struct libusb_device_handle *dev_handle) {
+   struct darwin_cached_device *dpriv = DARWIN_CACHED_DEVICE(dev_handle->dev);
+-  io_service_t usbInterface;
+-  CFTypeRef driver;
+   IOReturn kresult;
+ 
+-  kresult = darwin_get_interface (dpriv->device, interface, &usbInterface);
+-  if (kresult != kIOReturnSuccess) {
+-    usbi_err (HANDLE_CTX (dev_handle), "darwin_get_interface: %s", darwin_error_str(kresult));
+-
++  if (dpriv->capture_count > 0) {
++    /* we have to use ResetDevice as USBDeviceReEnumerate() loses the authorization for capture */
++    kresult = (*(dpriv->device))->ResetDevice (dpriv->device);
+     return darwin_to_libusb (kresult);
++  } else {
++    return darwin_reenumerate_device (dev_handle, false);
+   }
++}
+ 
+-  driver = IORegistryEntryCreateCFProperty (usbInterface, kIOBundleIdentifierKey, kCFAllocatorDefault, 0);
+-  IOObjectRelease (usbInterface);
+-
+-  if (driver) {
+-    CFRelease (driver);
+-
+-    return 1;
++static int darwin_kernel_driver_active(struct libusb_device_handle *dev_handle, uint8_t interface) {
++  enum libusb_error ret = darwin_claim_interface (dev_handle, interface);
++  if (ret == LIBUSB_SUCCESS) {
++    darwin_release_interface (dev_handle, interface);
+   }
+-
+-  /* no driver */
+-  return 0;
++  return (ret == LIBUSB_ERROR_ACCESS);
+ }
+ 
+ static void darwin_destroy_device(struct libusb_device *dev) {
+@@ -2274,9 +2286,98 @@ static int darwin_free_streams (struct libusb_device_handle *dev_handle, unsigne
+ }
+ #endif
+ 
++#if InterfaceVersion >= 700
++
++static int darwin_reload_device (struct libusb_device_handle *dev_handle) {
++  struct darwin_cached_device *dpriv = DARWIN_CACHED_DEVICE(dev_handle->dev);
++  enum libusb_error err;
++
++  usbi_mutex_lock(&darwin_cached_devices_lock);
++  (*(dpriv->device))->Release(dpriv->device);
++  dpriv->device = darwin_device_from_service (dpriv->service);
++  if (!dpriv->device) {
++    err = LIBUSB_ERROR_NO_DEVICE;
++  } else {
++    err = LIBUSB_SUCCESS;
++  }
++  usbi_mutex_unlock(&darwin_cached_devices_lock);
++
++  return err;
++}
++
++/* On macOS, we capture an entire device at once, not individual interfaces. */
++
++static int darwin_detach_kernel_driver (struct libusb_device_handle *dev_handle, uint8_t interface) {
++  UNUSED(interface);
++  struct darwin_cached_device *dpriv = DARWIN_CACHED_DEVICE(dev_handle->dev);
++  IOReturn kresult;
++  enum libusb_error err;
++
++  if (HAS_CAPTURE_DEVICE()) {
++  } else {
++    return LIBUSB_ERROR_NOT_SUPPORTED;
++  }
++
++  if (dpriv->capture_count == 0) {
++    /* reset device to release existing drivers */
++    err = darwin_reenumerate_device (dev_handle, true);
++    if (err != LIBUSB_SUCCESS) {
++      return err;
++    }
++  }
++  dpriv->capture_count++;
++  return LIBUSB_SUCCESS;
++}
++
++
++static int darwin_attach_kernel_driver (struct libusb_device_handle *dev_handle, uint8_t interface) {
++  UNUSED(interface);
++  struct darwin_cached_device *dpriv = DARWIN_CACHED_DEVICE(dev_handle->dev);
++
++  if (HAS_CAPTURE_DEVICE()) {
++  } else {
++    return LIBUSB_ERROR_NOT_SUPPORTED;
++  }
++
++  dpriv->capture_count--;
++  if (dpriv->capture_count > 0) {
++    return LIBUSB_SUCCESS;
++  } else {
++    dpriv->capture_count = 0;
++  }
++  /* reset device to attach kernel drivers */
++  return darwin_reenumerate_device (dev_handle, false);
++}
++
++static int darwin_capture_claim_interface(struct libusb_device_handle *dev_handle, uint8_t iface) {
++  enum libusb_error ret;
++  if (dev_handle->auto_detach_kernel_driver) {
++    ret = darwin_detach_kernel_driver (dev_handle, iface);
++    if (ret != LIBUSB_SUCCESS) {
++      return ret;
++    }
++  }
++  return darwin_claim_interface (dev_handle, iface);
++}
++
++static int darwin_capture_release_interface(struct libusb_device_handle *dev_handle, uint8_t iface) {
++  enum libusb_error ret;
++
++  ret = darwin_release_interface (dev_handle, iface);
++  if (ret != LIBUSB_SUCCESS) {
++    return ret;
++  }
++  if (dev_handle->auto_detach_kernel_driver) {
++    ret = darwin_attach_kernel_driver (dev_handle, iface);
++  }
++  return ret;
++}
++
++#endif
++
+ const struct usbi_os_backend usbi_backend = {
+         .name = "Darwin",
+-        .caps = 0,
++        .caps = USBI_CAP_SUPPORTS_DETACH_KERNEL_DRIVER,
+         .init = darwin_init,
+         .exit = darwin_exit,
+         .get_active_config_descriptor = darwin_get_active_config_descriptor,
+@@ -2287,12 +2388,10 @@ const struct usbi_os_backend usbi_backend = {
+         .close = darwin_close,
+         .get_configuration = darwin_get_configuration,
+         .set_configuration = darwin_set_configuration,
+-        .claim_interface = darwin_claim_interface,
+-        .release_interface = darwin_release_interface,
+ 
+         .set_interface_altsetting = darwin_set_interface_altsetting,
+         .clear_halt = darwin_clear_halt,
+-        .reset_device = darwin_reenumerate_device,
++        .reset_device = darwin_reset_device,
+ 
+ #if InterfaceVersion >= 550
+         .alloc_streams = darwin_alloc_streams,
+@@ -2301,6 +2400,16 @@ const struct usbi_os_backend usbi_backend = {
+ 
+         .kernel_driver_active = darwin_kernel_driver_active,
+ 
++#if InterfaceVersion >= 700
++        .detach_kernel_driver = darwin_detach_kernel_driver,
++        .attach_kernel_driver = darwin_attach_kernel_driver,
++        .claim_interface = darwin_capture_claim_interface,
++        .release_interface = darwin_capture_release_interface,
++#else
++        .claim_interface = darwin_claim_interface,
++        .release_interface = darwin_release_interface,
++#endif
++
+         .destroy_device = darwin_destroy_device,
+ 
+         .submit_transfer = darwin_submit_transfer,
+diff --git a/libusb/os/darwin_usb.h b/libusb/os/darwin_usb.h
+index b799bfd..179341c 100644
+--- a/libusb/os/darwin_usb.h
++++ b/libusb/os/darwin_usb.h
+@@ -148,6 +148,16 @@
+ #define IO_OBJECT_NULL ((io_object_t) 0)
+ #endif
+ 
++/* Testing availability */
++#ifndef __has_builtin
++  #define __has_builtin(x) 0  // Compatibility with non-clang compilers.
++#endif
++#if __has_builtin(__builtin_available)
++  #define HAS_CAPTURE_DEVICE() __builtin_available(macOS 10.10, *)
++#else
++  #define HAS_CAPTURE_DEVICE() 0
++#endif
++
+ typedef IOCFPlugInInterface *io_cf_plugin_ref_t;
+ typedef IONotificationPortRef io_notification_port_t;
+ 
+@@ -166,6 +176,7 @@ struct darwin_cached_device {
+   int                   can_enumerate;
+   int                   refcount;
+   bool                  in_reenumerate;
++  int                   capture_count;
+ };
+ 
+ struct darwin_device_priv {
+-- 
+2.28.0
+
+From 9f8df764171abd870c680908bb6d37e857558090 Mon Sep 17 00:00:00 2001
+From: osy <50960678+osy@users.noreply.github.com>
+Date: Tue, 11 May 2021 20:58:59 -0700
+Subject: [PATCH 4/5] darwin: add authorization for device capture
+
+To use USBDeviceReEnumerate with kUSBReEnumerateCaptureDeviceMask your app
+either needs to be running as root OR have the 'com.apple.vm.device-access'
+entitlement AND have the user authorization requested via
+IOServiceAuthorize().
+
+We can use the capture re-enumerate APIs if either 1) the process is running
+as root or 2) the 'com.apple.vm.device-access' entitlement is used AND
+IOServiceAuthorize() is called. We assume that if the entitlement is not
+there then we are running as root--if this is not true, then
+darwin_detach_kernel_driver will fail anyways.
+
+The authorization status is cached in the device's start() so we have to
+stop() and start() the device by destroying the plugin and recreating it
+again.
+---
+ Xcode/libusb.xcodeproj/project.pbxproj | 79 ++++++++++++++++++--------
+ configure.ac                           |  2 +-
+ libusb/os/darwin_usb.c                 | 49 ++++++++++++++++
+ libusb/os/darwin_usb.h                 |  1 +
+ 4 files changed, 105 insertions(+), 26 deletions(-)
+
+diff --git a/Xcode/libusb.xcodeproj/project.pbxproj b/Xcode/libusb.xcodeproj/project.pbxproj
+index fcda7e2..958e256 100644
+--- a/Xcode/libusb.xcodeproj/project.pbxproj
++++ b/Xcode/libusb.xcodeproj/project.pbxproj
+@@ -66,6 +66,32 @@
+ 		20951C0625630F8F00ED6351 /* ezusb.h in Headers */ = {isa = PBXBuildFile; fileRef = 008FBFDD1628BA0E00BC5BE2 /* ezusb.h */; };
+ 		20951C0F25630FD300ED6351 /* libusb_testlib.h in Headers */ = {isa = PBXBuildFile; fileRef = 008A23CA236C849A004854AA /* libusb_testlib.h */; };
+ 		20951C152563125200ED6351 /* libusb.h in Headers */ = {isa = PBXBuildFile; fileRef = 008FBF5A1628B7E800BC5BE2 /* libusb.h */; };
++		CEA0F5EF26321FAA00ADF3EC /* config.h in Headers */ = {isa = PBXBuildFile; fileRef = 008FBFA41628B84200BC5BE2 /* config.h */; };
++		CEA0F5F026321FAA00ADF3EC /* config.h in Headers */ = {isa = PBXBuildFile; fileRef = 008FBFA41628B84200BC5BE2 /* config.h */; };
++		CEA0F5F126321FAA00ADF3EC /* libusb.h in Headers */ = {isa = PBXBuildFile; fileRef = 008FBF5A1628B7E800BC5BE2 /* libusb.h */; };
++		CEA0F5F226321FAA00ADF3EC /* libusb-1.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 008FBF311628B79300BC5BE2 /* libusb-1.0.0.dylib */; };
++		CEA0F5F326321FAA00ADF3EC /* config.h in Headers */ = {isa = PBXBuildFile; fileRef = 008FBFA41628B84200BC5BE2 /* config.h */; };
++		CEA0F5F426321FAA00ADF3EC /* libusb.h in Headers */ = {isa = PBXBuildFile; fileRef = 008FBF5A1628B7E800BC5BE2 /* libusb.h */; };
++		CEA0F5F526321FAA00ADF3EC /* libusb-1.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 008FBF311628B79300BC5BE2 /* libusb-1.0.0.dylib */; };
++		CEA0F5F626321FAA00ADF3EC /* config.h in Headers */ = {isa = PBXBuildFile; fileRef = 008FBFA41628B84200BC5BE2 /* config.h */; };
++		CEA0F5F726321FAA00ADF3EC /* libusb.h in Headers */ = {isa = PBXBuildFile; fileRef = 008FBF5A1628B7E800BC5BE2 /* libusb.h */; };
++		CEA0F5F826321FAA00ADF3EC /* libusb-1.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 008FBF311628B79300BC5BE2 /* libusb-1.0.0.dylib */; };
++		CEA0F5F926321FAA00ADF3EC /* config.h in Headers */ = {isa = PBXBuildFile; fileRef = 008FBFA41628B84200BC5BE2 /* config.h */; };
++		CEA0F5FA26321FAA00ADF3EC /* libusb.h in Headers */ = {isa = PBXBuildFile; fileRef = 008FBF5A1628B7E800BC5BE2 /* libusb.h */; };
++		CEA0F5FB26321FAA00ADF3EC /* libusb-1.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 008FBF311628B79300BC5BE2 /* libusb-1.0.0.dylib */; };
++		CEA0F5FC26321FAA00ADF3EC /* config.h in Headers */ = {isa = PBXBuildFile; fileRef = 008FBFA41628B84200BC5BE2 /* config.h */; };
++		CEA0F5FD26321FAA00ADF3EC /* libusb.h in Headers */ = {isa = PBXBuildFile; fileRef = 008FBF5A1628B7E800BC5BE2 /* libusb.h */; };
++		CEA0F5FE26321FAA00ADF3EC /* libusb-1.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 008FBF311628B79300BC5BE2 /* libusb-1.0.0.dylib */; };
++		CEA0F5FF26321FAA00ADF3EC /* config.h in Headers */ = {isa = PBXBuildFile; fileRef = 008FBFA41628B84200BC5BE2 /* config.h */; };
++		CEA0F60026321FAA00ADF3EC /* libusb.h in Headers */ = {isa = PBXBuildFile; fileRef = 008FBF5A1628B7E800BC5BE2 /* libusb.h */; };
++		CEA0F60126321FAA00ADF3EC /* libusb-1.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 008FBF311628B79300BC5BE2 /* libusb-1.0.0.dylib */; };
++		CEA0F60226321FAA00ADF3EC /* config.h in Headers */ = {isa = PBXBuildFile; fileRef = 008FBFA41628B84200BC5BE2 /* config.h */; };
++		CEA0F60326321FAA00ADF3EC /* libusb.h in Headers */ = {isa = PBXBuildFile; fileRef = 008FBF5A1628B7E800BC5BE2 /* libusb.h */; };
++		CEA0F60426321FAA00ADF3EC /* libusb-1.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 008FBF311628B79300BC5BE2 /* libusb-1.0.0.dylib */; };
++		CEA0F60526321FAA00ADF3EC /* config.h in Headers */ = {isa = PBXBuildFile; fileRef = 008FBFA41628B84200BC5BE2 /* config.h */; };
++		CEA0F60626321FAA00ADF3EC /* libusb.h in Headers */ = {isa = PBXBuildFile; fileRef = 008FBF5A1628B7E800BC5BE2 /* libusb.h */; };
++		CEA0F60726321FAA00ADF3EC /* libusb-1.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 008FBF311628B79300BC5BE2 /* libusb-1.0.0.dylib */; };
++		CEA45DFB2634CDFA002FA97D /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CEDCEA6E2632200A00F7AA49 /* Security.framework */; };
+ /* End PBXBuildFile section */
+ 
+ /* Begin PBXContainerItemProxy section */
+@@ -254,6 +280,7 @@
+ 		20468D6E243298C100650534 /* sam3u_benchmark.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = sam3u_benchmark.c; sourceTree = "<group>"; usesTabs = 1; };
+ 		20468D75243298D300650534 /* testlibusb */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = testlibusb; sourceTree = BUILT_PRODUCTS_DIR; };
+ 		20468D7C2432990000650534 /* testlibusb.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = testlibusb.c; sourceTree = "<group>"; usesTabs = 1; };
++		CEDCEA6E2632200A00F7AA49 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
+ /* End PBXFileReference section */
+ 
+ /* Begin PBXFrameworksBuildPhase section */
+@@ -261,7 +288,7 @@
+ 			isa = PBXFrameworksBuildPhase;
+ 			buildActionMask = 2147483647;
+ 			files = (
+-				006AD4261C8C5AD9007F8C6A /* libusb-1.0.0.dylib in Frameworks */,
++				CEA0F5F826321FAA00ADF3EC /* libusb-1.0.0.dylib in Frameworks */,
+ 			);
+ 			runOnlyForDeploymentPostprocessing = 0;
+ 		};
+@@ -269,7 +296,7 @@
+ 			isa = PBXFrameworksBuildPhase;
+ 			buildActionMask = 2147483647;
+ 			files = (
+-				006AD4261C8C5AD9007F8C6A /* libusb-1.0.0.dylib in Frameworks */,
++				CEA0F60126321FAA00ADF3EC /* libusb-1.0.0.dylib in Frameworks */,
+ 			);
+ 			runOnlyForDeploymentPostprocessing = 0;
+ 		};
+@@ -279,6 +306,7 @@
+ 			files = (
+ 				008FBFAB1628B8CB00BC5BE2 /* libobjc.dylib in Frameworks */,
+ 				008FBFA91628B88000BC5BE2 /* IOKit.framework in Frameworks */,
++				CEA45DFB2634CDFA002FA97D /* Security.framework in Frameworks */,
+ 				008FBFA71628B87000BC5BE2 /* CoreFoundation.framework in Frameworks */,
+ 			);
+ 			runOnlyForDeploymentPostprocessing = 0;
+@@ -287,7 +315,7 @@
+ 			isa = PBXFrameworksBuildPhase;
+ 			buildActionMask = 2147483647;
+ 			files = (
+-				006AD4261C8C5AD9007F8C6A /* libusb-1.0.0.dylib in Frameworks */,
++				CEA0F60726321FAA00ADF3EC /* libusb-1.0.0.dylib in Frameworks */,
+ 			);
+ 			runOnlyForDeploymentPostprocessing = 0;
+ 		};
+@@ -303,7 +331,7 @@
+ 			isa = PBXFrameworksBuildPhase;
+ 			buildActionMask = 2147483647;
+ 			files = (
+-				006AD4261C8C5AD9007F8C6A /* libusb-1.0.0.dylib in Frameworks */,
++				CEA0F5F226321FAA00ADF3EC /* libusb-1.0.0.dylib in Frameworks */,
+ 			);
+ 			runOnlyForDeploymentPostprocessing = 0;
+ 		};
+@@ -311,7 +339,7 @@
+ 			isa = PBXFrameworksBuildPhase;
+ 			buildActionMask = 2147483647;
+ 			files = (
+-				006AD4261C8C5AD9007F8C6A /* libusb-1.0.0.dylib in Frameworks */,
++				CEA0F5F526321FAA00ADF3EC /* libusb-1.0.0.dylib in Frameworks */,
+ 			);
+ 			runOnlyForDeploymentPostprocessing = 0;
+ 		};
+@@ -319,7 +347,7 @@
+ 			isa = PBXFrameworksBuildPhase;
+ 			buildActionMask = 2147483647;
+ 			files = (
+-				006AD4261C8C5AD9007F8C6A /* libusb-1.0.0.dylib in Frameworks */,
++				CEA0F5FB26321FAA00ADF3EC /* libusb-1.0.0.dylib in Frameworks */,
+ 			);
+ 			runOnlyForDeploymentPostprocessing = 0;
+ 		};
+@@ -327,7 +355,7 @@
+ 			isa = PBXFrameworksBuildPhase;
+ 			buildActionMask = 2147483647;
+ 			files = (
+-				006AD4261C8C5AD9007F8C6A /* libusb-1.0.0.dylib in Frameworks */,
++				CEA0F5FE26321FAA00ADF3EC /* libusb-1.0.0.dylib in Frameworks */,
+ 			);
+ 			runOnlyForDeploymentPostprocessing = 0;
+ 		};
+@@ -335,7 +363,7 @@
+ 			isa = PBXFrameworksBuildPhase;
+ 			buildActionMask = 2147483647;
+ 			files = (
+-				006AD4261C8C5AD9007F8C6A /* libusb-1.0.0.dylib in Frameworks */,
++				CEA0F60426321FAA00ADF3EC /* libusb-1.0.0.dylib in Frameworks */,
+ 			);
+ 			runOnlyForDeploymentPostprocessing = 0;
+ 		};
+@@ -453,6 +481,7 @@
+ 				008FBFAA1628B8CB00BC5BE2 /* libobjc.dylib */,
+ 				008FBFA81628B88000BC5BE2 /* IOKit.framework */,
+ 				008FBFA61628B87000BC5BE2 /* CoreFoundation.framework */,
++				CEDCEA6E2632200A00F7AA49 /* Security.framework */,
+ 			);
+ 			name = Apple;
+ 			path = ../libusb;
+@@ -481,7 +510,7 @@
+ 			isa = PBXHeadersBuildPhase;
+ 			buildActionMask = 2147483647;
+ 			files = (
+-				008FBFA51628B84200BC5BE2 /* config.h in Headers */,
++				CEA0F5EF26321FAA00ADF3EC /* config.h in Headers */,
+ 				20951C152563125200ED6351 /* libusb.h in Headers */,
+ 			);
+ 			runOnlyForDeploymentPostprocessing = 0;
+@@ -490,8 +519,8 @@
+ 			isa = PBXHeadersBuildPhase;
+ 			buildActionMask = 2147483647;
+ 			files = (
+-				008FBFA51628B84200BC5BE2 /* config.h in Headers */,
+-				20951C152563125200ED6351 /* libusb.h in Headers */,
++				CEA0F5F026321FAA00ADF3EC /* config.h in Headers */,
++				CEA0F5F126321FAA00ADF3EC /* libusb.h in Headers */,
+ 			);
+ 			runOnlyForDeploymentPostprocessing = 0;
+ 		};
+@@ -499,9 +528,9 @@
+ 			isa = PBXHeadersBuildPhase;
+ 			buildActionMask = 2147483647;
+ 			files = (
+-				008FBFA51628B84200BC5BE2 /* config.h in Headers */,
++				CEA0F5F326321FAA00ADF3EC /* config.h in Headers */,
+ 				20951C0625630F8F00ED6351 /* ezusb.h in Headers */,
+-				20951C152563125200ED6351 /* libusb.h in Headers */,
++				CEA0F5F426321FAA00ADF3EC /* libusb.h in Headers */,
+ 			);
+ 			runOnlyForDeploymentPostprocessing = 0;
+ 		};
+@@ -509,8 +538,8 @@
+ 			isa = PBXHeadersBuildPhase;
+ 			buildActionMask = 2147483647;
+ 			files = (
+-				008FBFA51628B84200BC5BE2 /* config.h in Headers */,
+-				20951C152563125200ED6351 /* libusb.h in Headers */,
++				CEA0F5F626321FAA00ADF3EC /* config.h in Headers */,
++				CEA0F5F726321FAA00ADF3EC /* libusb.h in Headers */,
+ 			);
+ 			runOnlyForDeploymentPostprocessing = 0;
+ 		};
+@@ -518,8 +547,8 @@
+ 			isa = PBXHeadersBuildPhase;
+ 			buildActionMask = 2147483647;
+ 			files = (
+-				008FBFA51628B84200BC5BE2 /* config.h in Headers */,
+-				20951C152563125200ED6351 /* libusb.h in Headers */,
++				CEA0F5F926321FAA00ADF3EC /* config.h in Headers */,
++				CEA0F5FA26321FAA00ADF3EC /* libusb.h in Headers */,
+ 			);
+ 			runOnlyForDeploymentPostprocessing = 0;
+ 		};
+@@ -527,8 +556,8 @@
+ 			isa = PBXHeadersBuildPhase;
+ 			buildActionMask = 2147483647;
+ 			files = (
+-				008FBFA51628B84200BC5BE2 /* config.h in Headers */,
+-				20951C152563125200ED6351 /* libusb.h in Headers */,
++				CEA0F5FC26321FAA00ADF3EC /* config.h in Headers */,
++				CEA0F5FD26321FAA00ADF3EC /* libusb.h in Headers */,
+ 			);
+ 			runOnlyForDeploymentPostprocessing = 0;
+ 		};
+@@ -536,9 +565,9 @@
+ 			isa = PBXHeadersBuildPhase;
+ 			buildActionMask = 2147483647;
+ 			files = (
+-				008FBFA51628B84200BC5BE2 /* config.h in Headers */,
++				CEA0F5FF26321FAA00ADF3EC /* config.h in Headers */,
+ 				20951C0F25630FD300ED6351 /* libusb_testlib.h in Headers */,
+-				20951C152563125200ED6351 /* libusb.h in Headers */,
++				CEA0F60026321FAA00ADF3EC /* libusb.h in Headers */,
+ 			);
+ 			runOnlyForDeploymentPostprocessing = 0;
+ 		};
+@@ -546,8 +575,8 @@
+ 			isa = PBXHeadersBuildPhase;
+ 			buildActionMask = 2147483647;
+ 			files = (
+-				008FBFA51628B84200BC5BE2 /* config.h in Headers */,
+-				20951C152563125200ED6351 /* libusb.h in Headers */,
++				CEA0F60226321FAA00ADF3EC /* config.h in Headers */,
++				CEA0F60326321FAA00ADF3EC /* libusb.h in Headers */,
+ 			);
+ 			runOnlyForDeploymentPostprocessing = 0;
+ 		};
+@@ -555,8 +584,8 @@
+ 			isa = PBXHeadersBuildPhase;
+ 			buildActionMask = 2147483647;
+ 			files = (
+-				008FBFA51628B84200BC5BE2 /* config.h in Headers */,
+-				20951C152563125200ED6351 /* libusb.h in Headers */,
++				CEA0F60526321FAA00ADF3EC /* config.h in Headers */,
++				CEA0F60626321FAA00ADF3EC /* libusb.h in Headers */,
+ 			);
+ 			runOnlyForDeploymentPostprocessing = 0;
+ 		};
+diff --git a/configure.ac b/configure.ac
+index 5b880f6..91d515a 100644
+--- a/configure
++++ b/configure
+@@ -16498,7 +16498,7 @@
+ fi
+ done
+ 
+-	LIBS="${LIBS} -lobjc -Wl,-framework,IOKit -Wl,-framework,CoreFoundation"
++	LIBS="${LIBS} -lobjc -Wl,-framework,IOKit -Wl,-framework,CoreFoundation -Wl,-framework,Security"
+ 	;;
+ haiku)
+ 	LIBS="${LIBS} -lbe"
+diff --git a/libusb/os/darwin_usb.c b/libusb/os/darwin_usb.c
+index 596d98f..b8ef960 100644
+--- a/libusb/os/darwin_usb.c
++++ b/libusb/os/darwin_usb.c
+@@ -172,6 +172,7 @@ static void darwin_deref_cached_device(struct darwin_cached_device *cached_dev)
+       (*(cached_dev->device))->Release(cached_dev->device);
+       cached_dev->device = NULL;
+     }
++    IOObjectRelease (cached_dev->service);
+     free (cached_dev);
+   }
+ }
+@@ -1057,6 +1058,9 @@ static enum libusb_error darwin_get_cached_device(io_service_t service, struct d
+       (*device)->GetLocationID (device, &new_device->location);
+       new_device->port = port;
+       new_device->parent_session = parent_sessionID;
++    } else {
++      /* release the ref to old device's service */
++      IOObjectRelease (new_device->service);
+     }
+ 
+     /* keep track of devices regardless of if we successfully enumerate them to
+@@ -1065,6 +1069,10 @@ static enum libusb_error darwin_get_cached_device(io_service_t service, struct d
+ 
+     new_device->session = sessionID;
+     new_device->device = device;
++    new_device->service = service;
++
++    /* retain the service */
++    IOObjectRetain (service);
+ 
+     /* cache the device descriptor */
+     ret = darwin_cache_device_descriptor(new_device);
+@@ -2288,6 +2296,34 @@ static int darwin_free_streams (struct libusb_device_handle *dev_handle, unsigne
+ 
+ #if InterfaceVersion >= 700
+ 
++/* macOS APIs for getting entitlement values */
++
++#if TARGET_OS_OSX
++#include <Security/Security.h>
++#else
++typedef struct __SecTask *SecTaskRef;
++extern SecTaskRef SecTaskCreateFromSelf(CFAllocatorRef allocator);
++extern CFTypeRef SecTaskCopyValueForEntitlement(SecTaskRef task, CFStringRef entitlement, CFErrorRef *error);
++#endif
++
++static bool darwin_has_capture_entitlements (void) {
++  SecTaskRef task;
++  CFTypeRef value;
++  bool entitled;
++
++  task = SecTaskCreateFromSelf (kCFAllocatorDefault);
++  if (task == NULL) {
++    return false;
++  }
++  value = SecTaskCopyValueForEntitlement(task, CFSTR("com.apple.vm.device-access"), NULL);
++  CFRelease (task);
++  entitled = value && (CFGetTypeID (value) == CFBooleanGetTypeID ()) && CFBooleanGetValue (value);
++  if (value) {
++    CFRelease (value);
++  }
++  return entitled;
++}
++
+ static int darwin_reload_device (struct libusb_device_handle *dev_handle) {
+   struct darwin_cached_device *dpriv = DARWIN_CACHED_DEVICE(dev_handle->dev);
+   enum libusb_error err;
+@@ -2319,6 +2355,19 @@ static int darwin_detach_kernel_driver (struct libusb_device_handle *dev_handle,
+   }
+ 
+   if (dpriv->capture_count == 0) {
++    /* request authorization */
++    if (darwin_has_capture_entitlements ()) {
++      kresult = IOServiceAuthorize (dpriv->service, kIOServiceInteractionAllowed);
++      if (kresult != kIOReturnSuccess) {
++        usbi_err (HANDLE_CTX (dev_handle), "IOServiceAuthorize: %s", darwin_error_str(kresult));
++        return darwin_to_libusb (kresult);
++      }
++      /* we need start() to be called again for authorization status to refresh */
++      err = darwin_reload_device (dev_handle);
++      if (err != LIBUSB_SUCCESS) {
++        return err;
++      }
++    }
+     /* reset device to release existing drivers */
+     err = darwin_reenumerate_device (dev_handle, true);
+     if (err != LIBUSB_SUCCESS) {
+diff --git a/libusb/os/darwin_usb.h b/libusb/os/darwin_usb.h
+index 179341c..201dc36 100644
+--- a/libusb/os/darwin_usb.h
++++ b/libusb/os/darwin_usb.h
+@@ -171,6 +171,7 @@ struct darwin_cached_device {
+   USBDeviceAddress      address;
+   char                  sys_path[21];
+   usb_device_t        **device;
++  io_service_t          service;
+   int                   open_count;
+   UInt8                 first_config, active_config, port;
+   int                   can_enumerate;
+-- 
+2.28.0
+
+From e31c9ad95d7431f69c5b1aa612555408fc308b8a Mon Sep 17 00:00:00 2001
+From: osy <50960678+osy@users.noreply.github.com>
+Date: Tue, 11 May 2021 21:01:11 -0700
+Subject: [PATCH 5/5] darwin: remove redundant macOS version checks
+
+The InterfaceVersion is what we want and there is no reason to also check
+that the InterfaceVersion matches the macOS version it was introduced in.
+This check inadvertently disables features for other Apple platforms that
+use IOKit.
+---
+ libusb/os/darwin_usb.h | 28 ++++++++++++++--------------
+ 1 file changed, 14 insertions(+), 14 deletions(-)
+
+diff --git a/libusb/os/darwin_usb.h b/libusb/os/darwin_usb.h
+index 201dc36..9021266 100644
+--- a/libusb/os/darwin_usb.h
++++ b/libusb/os/darwin_usb.h
+@@ -33,56 +33,56 @@
+ /* IOUSBInterfaceInferface */
+ 
+ /* New in OS 10.12.0. */
+-#if defined (kIOUSBInterfaceInterfaceID800) && (MAC_OS_X_VERSION_MIN_REQUIRED >= 101200)
++#if defined (kIOUSBInterfaceInterfaceID800)
+ 
+ #define usb_interface_t IOUSBInterfaceInterface800
+ #define InterfaceInterfaceID kIOUSBInterfaceInterfaceID800
+ #define InterfaceVersion 800
+ 
+ /* New in OS 10.10.0. */
+-#elif defined (kIOUSBInterfaceInterfaceID700) && (MAC_OS_X_VERSION_MIN_REQUIRED >= 101000)
++#elif defined (kIOUSBInterfaceInterfaceID700)
+ 
+ #define usb_interface_t IOUSBInterfaceInterface700
+ #define InterfaceInterfaceID kIOUSBInterfaceInterfaceID700
+ #define InterfaceVersion 700
+ 
+ /* New in OS 10.9.0. */
+-#elif defined (kIOUSBInterfaceInterfaceID650) && (MAC_OS_X_VERSION_MIN_REQUIRED >= 1090)
++#elif defined (kIOUSBInterfaceInterfaceID650)
+ 
+ #define usb_interface_t IOUSBInterfaceInterface650
+ #define InterfaceInterfaceID kIOUSBInterfaceInterfaceID650
+ #define InterfaceVersion 650
+ 
+ /* New in OS 10.8.2 but can't test deployment target to that granularity, so round up. */
+-#elif defined (kIOUSBInterfaceInterfaceID550) && (MAC_OS_X_VERSION_MIN_REQUIRED >= 1090)
++#elif defined (kIOUSBInterfaceInterfaceID550)
+ 
+ #define usb_interface_t IOUSBInterfaceInterface550
+ #define InterfaceInterfaceID kIOUSBInterfaceInterfaceID550
+ #define InterfaceVersion 550
+ 
+ /* New in OS 10.7.3 but can't test deployment target to that granularity, so round up. */
+-#elif defined (kIOUSBInterfaceInterfaceID500) && (MAC_OS_X_VERSION_MIN_REQUIRED >= 1080)
++#elif defined (kIOUSBInterfaceInterfaceID500)
+ 
+ #define usb_interface_t IOUSBInterfaceInterface500
+ #define InterfaceInterfaceID kIOUSBInterfaceInterfaceID500
+ #define InterfaceVersion 500
+ 
+ /* New in OS 10.5.0. */
+-#elif defined (kIOUSBInterfaceInterfaceID300) && (MAC_OS_X_VERSION_MIN_REQUIRED >= 1050)
++#elif defined (kIOUSBInterfaceInterfaceID300)
+ 
+ #define usb_interface_t IOUSBInterfaceInterface300
+ #define InterfaceInterfaceID kIOUSBInterfaceInterfaceID300
+ #define InterfaceVersion 300
+ 
+ /* New in OS 10.4.5 (or 10.4.6?) but can't test deployment target to that granularity, so round up. */
+-#elif defined (kIOUSBInterfaceInterfaceID245) && (MAC_OS_X_VERSION_MIN_REQUIRED >= 1050)
++#elif defined (kIOUSBInterfaceInterfaceID245)
+ 
+ #define usb_interface_t IOUSBInterfaceInterface245
+ #define InterfaceInterfaceID kIOUSBInterfaceInterfaceID245
+ #define InterfaceVersion 245
+ 
+ /* New in OS 10.4.0. */
+-#elif defined (kIOUSBInterfaceInterfaceID220) && (MAC_OS_X_VERSION_MIN_REQUIRED >= 1040)
++#elif defined (kIOUSBInterfaceInterfaceID220)
+ 
+ #define usb_interface_t IOUSBInterfaceInterface220
+ #define InterfaceInterfaceID kIOUSBInterfaceInterfaceID220
+@@ -97,42 +97,42 @@
+ /* IOUSBDeviceInterface */
+ 
+ /* New in OS 10.9.0. */
+-#if defined (kIOUSBDeviceInterfaceID650) && (MAC_OS_X_VERSION_MIN_REQUIRED >= 1090)
++#if defined (kIOUSBDeviceInterfaceID650)
+ 
+ #define usb_device_t    IOUSBDeviceInterface650
+ #define DeviceInterfaceID kIOUSBDeviceInterfaceID650
+ #define DeviceVersion 650
+ 
+ /* New in OS 10.7.3 but can't test deployment target to that granularity, so round up. */
+-#elif defined (kIOUSBDeviceInterfaceID500) && (MAC_OS_X_VERSION_MIN_REQUIRED >= 1080)
++#elif defined (kIOUSBDeviceInterfaceID500)
+ 
+ #define usb_device_t    IOUSBDeviceInterface500
+ #define DeviceInterfaceID kIOUSBDeviceInterfaceID500
+ #define DeviceVersion 500
+ 
+ /* New in OS 10.5.4 but can't test deployment target to that granularity, so round up. */
+-#elif defined (kIOUSBDeviceInterfaceID320) && (MAC_OS_X_VERSION_MIN_REQUIRED >= 1060)
++#elif defined (kIOUSBDeviceInterfaceID320)
+ 
+ #define usb_device_t    IOUSBDeviceInterface320
+ #define DeviceInterfaceID kIOUSBDeviceInterfaceID320
+ #define DeviceVersion 320
+ 
+ /* New in OS 10.5.0. */
+-#elif defined (kIOUSBDeviceInterfaceID300) && (MAC_OS_X_VERSION_MIN_REQUIRED >= 1050)
++#elif defined (kIOUSBDeviceInterfaceID300)
+ 
+ #define usb_device_t    IOUSBDeviceInterface300
+ #define DeviceInterfaceID kIOUSBDeviceInterfaceID300
+ #define DeviceVersion 300
+ 
+ /* New in OS 10.4.5 (or 10.4.6?) but can't test deployment target to that granularity, so round up. */
+-#elif defined (kIOUSBDeviceInterfaceID245) && (MAC_OS_X_VERSION_MIN_REQUIRED >= 1050)
++#elif defined (kIOUSBDeviceInterfaceID245)
+ 
+ #define usb_device_t    IOUSBDeviceInterface245
+ #define DeviceInterfaceID kIOUSBDeviceInterfaceID245
+ #define DeviceVersion 245
+ 
+ /* New in OS 10.2.3 but can't test deployment target to that granularity, so round up. */
+-#elif defined (kIOUSBDeviceInterfaceID197) && (MAC_OS_X_VERSION_MIN_REQUIRED >= 1030)
++#elif defined (kIOUSBDeviceInterfaceID197)
+ 
+ #define usb_device_t    IOUSBDeviceInterface197
+ #define DeviceInterfaceID kIOUSBDeviceInterfaceID197
+-- 
+2.28.0
+
+From ca6ac13fee4d3f01d645cdeb45264e93263109ef Mon Sep 17 00:00:00 2001
+From: osy <50960678+osy@users.noreply.github.com>
+Date: Sat, 15 May 2021 23:29:54 -0700
+Subject: [PATCH] darwin: reset by re-enumerate on non-macOS platforms
+
+On non-macOS platforms, ResetDevice() does nothing so we use the "old" way of
+calling re-enumerate. If the device is captured, we have to re-enumerate, then
+re-capture, re-authorize, and finally restore the state.
+---
+ libusb/os/darwin_usb.c | 28 ++++++++++++++++++++++++++--
+ 1 file changed, 26 insertions(+), 2 deletions(-)
+
+diff --git a/libusb/os/darwin_usb.c b/libusb/os/darwin_usb.c
+index b8ef960..9f913cb 100644
+--- a/libusb/os/darwin_usb.c
++++ b/libusb/os/darwin_usb.c
+@@ -92,6 +92,8 @@ static enum libusb_error process_new_device (struct libusb_context *ctx, struct
+ static enum libusb_error darwin_get_cached_device(io_service_t service, struct darwin_cached_device **cached_out,
+                                                   UInt64 *old_session_id);
+ 
++static int darwin_detach_kernel_driver (struct libusb_device_handle *dev_handle, uint8_t interface);
++
+ #if defined(ENABLE_LOGGING)
+ static const char *darwin_error_str (IOReturn result) {
+   static char string_buffer[50];
+@@ -1765,15 +1767,37 @@ static int darwin_reenumerate_device (struct libusb_device_handle *dev_handle, b
+ 
+ static int darwin_reset_device (struct libusb_device_handle *dev_handle) {
+   struct darwin_cached_device *dpriv = DARWIN_CACHED_DEVICE(dev_handle->dev);
++  unsigned long claimed_interfaces = dev_handle->claimed_interfaces;
++  int8_t active_config = dpriv->active_config;
++  int capture_count;
+   IOReturn kresult;
++  enum libusb_error ret;
+ 
++#if TARGET_OS_OSX
++  /* ResetDevice() is missing on non-macOS platforms */
+   if (dpriv->capture_count > 0) {
+     /* we have to use ResetDevice as USBDeviceReEnumerate() loses the authorization for capture */
+     kresult = (*(dpriv->device))->ResetDevice (dpriv->device);
+     return darwin_to_libusb (kresult);
+-  } else {
+-    return darwin_reenumerate_device (dev_handle, false);
+   }
++#endif
++  ret = darwin_reenumerate_device (dev_handle, false);
++  if ((ret == LIBUSB_SUCCESS || ret == LIBUSB_ERROR_NOT_FOUND) && dpriv->capture_count > 0) {
++    /* save old capture_count */
++    capture_count = dpriv->capture_count;
++    /* reset capture count */
++    dpriv->capture_count = 0;
++    /* attempt to detach kernel driver again as it is now re-attached */
++    ret = darwin_detach_kernel_driver (dev_handle, 0);
++    if (ret != LIBUSB_SUCCESS) {
++      return ret;
++    }
++    /* restore capture_count */
++    dpriv->capture_count = capture_count;
++    /* restore configuration */
++    ret = darwin_restore_state (dev_handle, active_config, claimed_interfaces);
++  }
++  return ret;
+ }
+ 
+ static int darwin_kernel_driver_active(struct libusb_device_handle *dev_handle, uint8_t interface) {
+-- 
+2.28.0
+

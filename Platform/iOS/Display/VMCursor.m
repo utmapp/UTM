@@ -16,6 +16,7 @@
 
 #import "VMCursor.h"
 #import "VMDisplayMetalViewController+Touch.h"
+#import "CSDisplayMetal.h"
 
 @implementation VMCursor {
     CGPoint _start;
@@ -46,8 +47,8 @@
 
 - (CGRect)bounds {
     CGRect bounds = CGRectZero;
-    bounds.size.width = MAX(1, _controller.vmInput.cursorSize.width);
-    bounds.size.height = MAX(1, _controller.vmInput.cursorSize.height);
+    bounds.size.width = MAX(1, _controller.vmDisplay.cursorSize.width);
+    bounds.size.height = MAX(1, _controller.vmDisplay.cursorSize.height);
     return bounds;
 }
 

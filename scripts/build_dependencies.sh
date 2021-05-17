@@ -38,7 +38,7 @@ command -v realpath >/dev/null 2>&1 || realpath() {
 usage () {
     echo "Usage: [VARIABLE...] $(basename $0) [-p platform] [-a architecture] [-q qemu_path] [-d] [-r]"
     echo ""
-    echo "  -p platform      Target platform. Default ios. [ios|macos]"
+    echo "  -p platform      Target platform. Default ios. [ios|ios-tci|macos]"
     echo "  -a architecture  Target architecture. Default arm64. [armv7|armv7s|arm64|i386|x86_64]"
     echo "  -q qemu_path     Do not download QEMU, use qemu_path instead."
     echo "  -d, --download   Force re-download of source even if already downloaded."
@@ -121,6 +121,36 @@ download_all () {
     download $PHODAV_SRC
     download $SPICE_CLIENT_SRC
     download $QEMU_SRC
+    if [ -z "$SKIP_USB_BUILD" ]; then
+        download $USB_SRC
+        download $USBREDIR_SRC
+    fi
+}
+
+copy_private_headers() {
+    MACOS_SDK_PATH="$(xcrun --sdk macosx --show-sdk-path)"
+    IOKIT_HEADERS_PATH="$MACOS_SDK_PATH/System/Library/Frameworks/IOKit.framework/Headers"
+    OSTYPES_HEADERS_PATH="$MACOS_SDK_PATH/usr/include/libkern"
+    OUTPUT_INCLUDES="$PREFIX/include"
+    if [ ! -d "$IOKIT_HEADERS_PATH" ]; then
+        echo "${RED}Failed to find IOKit headers in: $IOKIT_HEADERS_PATH${NC}"
+        exit 1
+    fi
+    if [ ! -d "$OSTYPES_HEADERS_PATH" ]; then
+        echo "${RED}Failed to find libkern headers in: $OSTYPES_HEADERS_PATH${NC}"
+        exit 1
+    fi
+    echo "${GREEN}Copying private headers...${NC}"
+    mkdir -p "$OUTPUT_INCLUDES"
+    cp -r "$IOKIT_HEADERS_PATH" "$OUTPUT_INCLUDES/IOKit"
+    rm "$OUTPUT_INCLUDES/IOKit/storage/IOMedia.h" # needed to pass QEMU check
+    # patch headers
+    LC_ALL=C sed -i '' -e 's/#if KERNEL_USER32/#if 0/g' $(find "$OUTPUT_INCLUDES/IOKit" -type f)
+    LC_ALL=C sed -i '' -e 's/#if !KERNEL_USER32/#if 1/g' $(find "$OUTPUT_INCLUDES/IOKit" -type f)
+    LC_ALL=C sed -i '' -e 's/#if KERNEL/#if 0/g' $(find "$OUTPUT_INCLUDES/IOKit" -type f)
+    LC_ALL=C sed -i '' -e 's/#if !KERNEL/#if 1/g' $(find "$OUTPUT_INCLUDES/IOKit" -type f)
+    mkdir -p "$OUTPUT_INCLUDES/libkern"
+    cp -r "$OSTYPES_HEADERS_PATH/OSTypes.h" "$OUTPUT_INCLUDES/libkern/OSTypes.h"
 }
 
 build_openssl() {
@@ -153,7 +183,7 @@ build_openssl() {
         ;;
     esac
     case $PLATFORM in
-    ios )
+    ios | ios-tci )
         case $ARCH in
         armv7 | armv7s )
             OPENSSL_CROSS=iphoneos-cross
@@ -231,38 +261,36 @@ build_qemu_dependencies () {
     build $OPUS_SRC
     build $SPICE_PROTOCOL_SRC
     build $SPICE_SERVER_SRC
+    if [ -z "$SKIP_USB_BUILD" ]; then
+        build $USB_SRC
+        build $USBREDIR_SRC
+    fi
 }
 
 build_qemu () {
-    QEMU_CFLAGS="$CFLAGS"
-    QEMU_CXXFLAGS="$CXXFLAGS"
-    QEMU_LDFLAGS="$LDFLAGS"
-    export QEMU_CFLAGS
-    export QEMU_CXXFLAGS
-    export QEMU_LDFLAGS
-    CFLAGS=
-    CXXFLAGS=
-    LDFLAGS=
-
     pwd="$(pwd)"
     cd "$QEMU_DIR"
     echo "${GREEN}Configuring QEMU...${NC}"
-    ./configure --prefix="$PREFIX" --host="$CHOST" --cross-prefix="" --with-coroutine=libucontext $@
+    ./configure --prefix="$PREFIX" --host="$CHOST" --cross-prefix="" $@
     echo "${GREEN}Building QEMU...${NC}"
     gmake "$MAKEFLAGS"
     echo "${GREEN}Installing QEMU...${NC}"
     gmake "$MAKEFLAGS" install
     cd "$pwd"
-
-    CFLAGS="$QEMU_CFLAGS"
-    CXXFLAGS="$QEMU_CXXFLAGS"
-    LDFLAGS="$QEMU_LDFLAGS"
 }
 
-steal_libucontext () {
-    # HACK: use the libucontext built by qemu
-    cp "$QEMU_DIR/build/libucontext.a" "$PREFIX/lib/libucontext.a"
-    cp "$QEMU_DIR/libucontext/include/libucontext.h" "$PREFIX/include/libucontext.h"
+build_libucontext () {
+    MESON_CROSS="$(realpath "$QEMU_DIR/build/config-meson.cross")"
+    pwd="$(pwd)"
+
+    cd "$QEMU_DIR/subprojects/libucontext"
+    echo "${GREEN}Configuring libucontext...${NC}"
+    meson build --prefix="/" --buildtype=plain --cross-file "$MESON_CROSS" -Ddefault_library=static -Dfreestanding=true $@
+    echo "${GREEN}Building libucontext...${NC}"
+    meson compile -C build
+    echo "${GREEN}Installing libucontext...${NC}"
+    DESTDIR="$PREFIX" meson install -C build
+    cd "$pwd"
 }
 
 build_spice_client () {
@@ -280,29 +308,35 @@ fixup () {
     FILE=$1
     BASE=$(basename "$FILE")
     BASEFILENAME=${BASE%.*}
-    BASEFILEEXT=${BASE:${#BASEFILENAME}}
-    NEWFILENAME="$BASEFILENAME.utm$BASEFILEEXT"
-    if [ -z "$BASEFILEEXT" ]; then
-        NEWFILENAME="$BASE"
-    fi
+    LIBNAME=${BASEFILENAME#lib*}
+    BUNDLE_ID="com.utmapp.${LIBNAME//_/-}"
+    FRAMEWORKNAME="$LIBNAME.framework"
+    FRAMEWORKPATH="$PREFIX/Frameworks/$FRAMEWORKNAME"
+    NEWFILE="$FRAMEWORKPATH/$LIBNAME"
     LIST=$(otool -L "$FILE" | tail -n +2 | cut -d ' ' -f 1 | awk '{$1=$1};1')
     OLDIFS=$IFS
     IFS=$'\n'
     echo "${GREEN}Fixing up $FILE...${NC}"
-    newname="@rpath/$NEWFILENAME"
-    install_name_tool -id "$newname" "$FILE"
+    mkdir -p "$FRAMEWORKPATH"
+    cp -a "$FILE" "$NEWFILE"
+    /usr/libexec/PlistBuddy -c "Add :CFBundleExecutable string $LIBNAME" "$FRAMEWORKPATH/Info.plist"
+    /usr/libexec/PlistBuddy -c "Add :CFBundleIdentifier string $BUNDLE_ID" "$FRAMEWORKPATH/Info.plist"
+    /usr/libexec/PlistBuddy -c "Add :MinimumOSVersion string $SDKMINVER" "$FRAMEWORKPATH/Info.plist"
+    /usr/libexec/PlistBuddy -c "Add :CFBundleVersion string 1" "$FRAMEWORKPATH/Info.plist"
+    /usr/libexec/PlistBuddy -c "Add :CFBundleShortVersionString string 1.0" "$FRAMEWORKPATH/Info.plist"
+    newname="@rpath/$FRAMEWORKNAME/$LIBNAME"
+    install_name_tool -id "$newname" "$NEWFILE"
     for g in $LIST
     do
         base=$(basename "$g")
         basefilename=${base%.*}
-        basefileext=${base:${#basefilename}}
+        libname=${basefilename#lib*}
         dir=$(dirname "$g")
         if [ "$dir" == "$PREFIX/lib" ]; then
-            newname="@rpath/$basefilename.utm$basefileext"
-            install_name_tool -change "$g" "$newname" "$FILE"
+            newname="@rpath/$libname.framework/$libname"
+            install_name_tool -change "$g" "$newname" "$NEWFILE"
         fi
     done
-    mv "$FILE" "$(dirname "$FILE")/$NEWFILENAME"
     IFS=$OLDIFS
 }
 
@@ -394,7 +428,7 @@ CHOST=$CPU-apple-darwin
 export CHOST
 
 case $PLATFORM in
-ios )
+ios | ios-tci )
     if [ -z "$SDKMINVER" ]; then
         SDKMINVER="$IOS_SDKMINVER"
     fi
@@ -409,8 +443,18 @@ ios )
         ;;
     esac
     CFLAGS_TARGET=
-    PLATFORM_FAMILY_NAME="iOS"
-    QEMU_PLATFORM_BUILD_FLAGS="--enable-shared-lib --disable-hvf --disable-cocoa --disable-curl"
+    if [ "$PLATFORM" == "ios-tci" ]; then
+        if [ "$ARCH" == "arm64" ]; then
+            TCI_BUILD_FLAGS="--enable-tcg-tcti --target-list=aarch64-softmmu,arm-softmmu,i386-softmmu,ppc-softmmu,ppc64-softmmu,riscv32-softmmu,riscv64-softmmu,x86_64-softmmu"
+        else
+            TCI_BUILD_FLAGS="--enable-tcg-interpreter"
+        fi
+        PLATFORM_FAMILY_NAME="iOS-TCI"
+        SKIP_USB_BUILD=1
+    else
+        PLATFORM_FAMILY_NAME="iOS"
+    fi
+    QEMU_PLATFORM_BUILD_FLAGS="--disable-debug-info --enable-shared-lib --disable-hvf --disable-cocoa --disable-curl --disable-slirp-smbd --with-coroutine=libucontext $TCI_BUILD_FLAGS"
     ;;
 macos )
     if [ -z "$SDKMINVER" ]; then
@@ -420,7 +464,7 @@ macos )
     CFLAGS_MINVER="-mmacos-version-min=$SDKMINVER"
     CFLAGS_TARGET="-target $ARCH-apple-macos"
     PLATFORM_FAMILY_NAME="macOS"
-    QEMU_PLATFORM_BUILD_FLAGS="--enable-shared-lib --disable-cocoa --disable-curl --cpu=$CPU"
+    QEMU_PLATFORM_BUILD_FLAGS="--disable-debug-info --enable-shared-lib --disable-cocoa --disable-curl --cpu=$CPU"
     ;;
 * )
     usage
@@ -504,9 +548,10 @@ fi
 echo "${GREEN}Deleting old sysroot!${NC}"
 rm -rf "$PREFIX/"*
 rm -f "$BUILD_DIR/BUILD_SUCCESS"
+copy_private_headers
 build_qemu_dependencies
 build_qemu $QEMU_PLATFORM_BUILD_FLAGS
-steal_libucontext # should be a better way...
+build_libucontext
 build_spice_client
 fixup_all
 remove_shared_gst_plugins # another hack...

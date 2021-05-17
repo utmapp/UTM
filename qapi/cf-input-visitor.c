@@ -258,6 +258,9 @@ static bool cf_input_start_struct(Visitor *v, const char *name, void **obj,
     if (obj) {
         *obj = NULL;
     }
+    if (!cfobj) {
+        return false;
+    }
     if (CFGetTypeID(cfobj) != CFDictionaryGetTypeID()) {
         error_setg(errp, QERR_INVALID_PARAMETER_TYPE,
                    full_name(qiv, name), "object");

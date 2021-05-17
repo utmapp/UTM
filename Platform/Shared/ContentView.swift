@@ -19,6 +19,12 @@ import SwiftUI
 import IQKeyboardManagerSwift
 #endif
 
+#if WITH_QEMU_TCI
+let productName = "UTM SE"
+#else
+let productName = "UTM"
+#endif
+
 @available(iOS 14, macOS 11, *)
 struct ContentView: View {
     @StateObject private var newConfiguration = UTMConfiguration()
@@ -42,7 +48,7 @@ struct ContentView: View {
                 .onDelete(perform: delete)
             }.optionalSidebarFrame()
             .listStyle(SidebarListStyle())
-            .navigationTitle("UTM")
+            .navigationTitle(productName)
             .navigationOptionalSubtitle(data.selectedVM?.configuration.name ?? "")
             .toolbar {
                 #if os(macOS)
@@ -76,7 +82,6 @@ struct ContentView: View {
             }
             VMPlaceholderView()
         }.overlay(data.showSettingsModal ? AnyView(EmptyView()) : AnyView(BusyOverlay()))
-        .environmentObject(data)
         .optionalWindowFrame()
         .disabled(data.busy && !data.showNewVMSheet && !data.showSettingsModal)
         .onOpenURL(perform: importUTM)
@@ -93,11 +98,13 @@ struct ContentView: View {
             #else
             data.enableNetworking()
             IQKeyboardManager.shared.enable = true
+            #if !WITH_QEMU_TCI
             if !Main.jitAvailable {
                 data.busyWork {
                     throw NSLocalizedString("Your version of iOS does not support running VMs while unmodified. You must either run UTM while jailbroken or with a remote debugger attached.", comment: "ContentView")
                 }
             }
+            #endif
             #endif
         }
     }

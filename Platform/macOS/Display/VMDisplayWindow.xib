@@ -23,6 +23,7 @@
                 <outlet property="stopToolbarItem" destination="Bkx-Ph-j0D" id="yqL-pR-3gr"/>
                 <outlet property="toolbar" destination="qD6-Hj-nyo" id="0iO-Gs-sGk"/>
                 <outlet property="touchBar" destination="MdV-I1-RxZ" id="rFp-7N-UJC"/>
+                <outlet property="usbToolbarItem" destination="tlw-Fb-ne3" id="LDL-Ug-hcY"/>
                 <outlet property="window" destination="QvC-M9-y7g" id="vHh-hj-7eR"/>
             </connections>
         </customObject>
@@ -155,7 +156,7 @@
                     </toolbarItem>
                     <toolbarItem implicitItemIdentifier="1F853CFA-B8C9-429E-A0F4-CE2943B2E9BF" label="Resize Console" paletteLabel="Resize Console" toolTip="Send console resize command" image="arrow.up.left.and.arrow.down.right" catalog="system" sizingBehavior="auto" id="Ulf-oT-4cP">
                         <button key="view" verticalHuggingPriority="750" id="nbx-4W-2pu">
-                            <rect key="frame" x="29" y="14" width="29" height="23"/>
+                            <rect key="frame" x="30" y="14" width="28" height="23"/>
                             <autoresizingMask key="autoresizingMask"/>
                             <buttonCell key="cell" type="roundTextured" bezelStyle="texturedRounded" image="arrow.up.left.and.arrow.down.right" catalog="system" imagePosition="only" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="eje-Uj-ltn">
                                 <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
@@ -163,6 +164,19 @@
                             </buttonCell>
                             <connections>
                                 <action selector="resizeConsoleButtonPressed:" target="-2" id="APo-3g-su8"/>
+                            </connections>
+                        </button>
+                    </toolbarItem>
+                    <toolbarItem implicitItemIdentifier="25B28B29-2844-41D5-A3D4-DD33723B7764" label="USB" paletteLabel="USB" toolTip="USB devices" image="Toolbar USB" sizingBehavior="auto" id="tlw-Fb-ne3">
+                        <button key="view" verticalHuggingPriority="750" id="TXS-HH-LSR">
+                            <rect key="frame" x="0.0" y="14" width="30" height="23"/>
+                            <autoresizingMask key="autoresizingMask"/>
+                            <buttonCell key="cell" type="roundTextured" bezelStyle="texturedRounded" image="Toolbar USB" imagePosition="only" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="QSt-cp-DTl">
+                                <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                                <font key="font" metaFont="system"/>
+                            </buttonCell>
+                            <connections>
+                                <action selector="usbButtonPressed:" target="-2" id="O2X-6D-raO"/>
                             </connections>
                         </button>
                     </toolbarItem>
@@ -181,7 +195,7 @@
                     </toolbarItem>
                     <toolbarItem implicitItemIdentifier="BC7277DA-3080-4525-B162-1DFD21A5B7B1" label="Shared Folder" paletteLabel="Shared Folder" toolTip="Shared folder" image="folder.badge.person.crop" catalog="system" sizingBehavior="auto" id="7EC-GE-fIl">
                         <button key="view" verticalHuggingPriority="750" id="l7R-sT-uoV">
-                            <rect key="frame" x="25" y="14" width="31" height="23"/>
+                            <rect key="frame" x="26" y="14" width="30" height="23"/>
                             <autoresizingMask key="autoresizingMask"/>
                             <buttonCell key="cell" type="roundTextured" bezelStyle="texturedRounded" image="folder.badge.person.crop" catalog="system" imagePosition="only" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="s1r-QI-ktp">
                                 <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
@@ -199,6 +213,7 @@
                     <toolbarItem reference="G7P-HJ-bcy"/>
                     <toolbarItem reference="FN7-zs-mWC"/>
                     <toolbarItem reference="Ulf-oT-4cP"/>
+                    <toolbarItem reference="tlw-Fb-ne3"/>
                     <toolbarItem reference="bKL-Th-FFw"/>
                     <toolbarItem reference="7EC-GE-fIl"/>
                 </defaultToolbarItems>
@@ -213,9 +228,10 @@
         </touchBar>
     </objects>
     <resources>
-        <image name="arrow.up.left.and.arrow.down.right" catalog="system" width="17" height="15"/>
+        <image name="Toolbar USB" width="30" height="30"/>
+        <image name="arrow.up.left.and.arrow.down.right" catalog="system" width="16" height="15"/>
         <image name="cursorarrow.rays" catalog="system" width="16" height="16"/>
-        <image name="folder.badge.person.crop" catalog="system" width="20" height="14"/>
+        <image name="folder.badge.person.crop" catalog="system" width="19" height="14"/>
         <image name="opticaldisc" catalog="system" width="15" height="15"/>
         <image name="play.circle.fill" catalog="system" width="15" height="15"/>
         <image name="play.fill" catalog="system" width="12" height="13"/>

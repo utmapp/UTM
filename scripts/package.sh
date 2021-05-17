@@ -3,20 +3,21 @@
 set -e
 
 command -v realpath >/dev/null 2>&1 || realpath() {
-    [[ $1 = /* ]] && echo "$1" || echo "$PWD/${1#./}"
+	[[ $1 = /* ]] && echo "$1" || echo "$PWD/${1#./}"
 }
 BASEDIR="$(dirname "$(realpath $0)")"
 
 usage() {
-	echo "usage: $0 MODE inputXcarchive outputPath [PROFILE_NAME TEAM_ID]"
+	echo "usage: $0 MODE inputXcarchive outputPath [TEAM_ID PROFILE_NAME]"
 	echo "  MODE is one of:"
 	echo "          deb (Cydia DEB)"
 	echo "          ipa (unsigned IPA with Psychic paper support)"
+	echo "          ipa-se (unsigned IPA with no entitlements)"
 	echo "          signedipa (developer signed IPA with valid PROFILE_NAME and TEAM_ID)"
 	echo "  inputXcarchive is path to UTM.xcarchive"
 	echo "  outputPath is path to an EMPTY output directory for UTM.ipa or UTM.deb"
-	echo "  PROFILE_NAME is only used for signedipa and is the name of the signing profile"
 	echo "  TEAM_ID is only used for signedipa and is the name of the team matching the profile"
+	echo "  PROFILE_NAME is only used for signedipa and is the name of the signing profile"
 	exit 1
 }
 
@@ -27,19 +28,19 @@ fi
 case $1 in
 deb )
 	MODE=deb
-    shift
-    ;;
+	shift
+	;;
 ipa )
 	MODE=ipa
 	shift
-    ;;
+	;;
 signedipa )
 	MODE=signedipa
 	shift
 	;;
 * )
-    usage
-    ;;
+	usage
+	;;
 esac
 
 INPUT=$1
@@ -59,8 +60,8 @@ fi
 itunes_sign() {
 	local INPUT=$1
 	local OUTPUT=$2
-	local PROFILE_NAME=$3
-	local TEAM_ID=$4
+	local TEAM_ID=$3
+	local PROFILE_NAME=$4
 	local OPTIONS="/tmp/options.plist"
 
 	if [ -z "$PROFILE_NAME" || -z "$TEAM_ID" ]; then
@@ -179,12 +180,19 @@ deb )
 <dict>
 	<key>dynamic-codesigning</key>
 	<true/>
+	<key>com.apple.security.exception.iokit-user-client-class</key>
+	<array>
+		<string>AppleUSBHostDeviceUserClient</string>
+		<string>AppleUSBHostInterfaceUserClient</string>
+	</array>
+	<key>com.apple.system.diagnostics.iokit-properties</key>
+	<true/>
 </dict>
 </plist>
 EOL
 	create_deb "$INPUT" "$OUTPUT" "$FAKEENT"
-    rm "$FAKEENT"
-    ;;
+	rm "$FAKEENT"
+	;;
 ipa )
 	FAKEENT="/tmp/fakeent.plist"
 	cat >"$FAKEENT" <<EOL
@@ -198,13 +206,23 @@ ipa )
 	<!---><!-->
 	<key>dynamic-codesigning</key>
 	<true/>
+	<key>com.apple.security.exception.iokit-user-client-class</key>
+	<array>
+		<string>AppleUSBHostDeviceUserClient</string>
+		<string>AppleUSBHostInterfaceUserClient</string>
+	</array>
+	<key>com.apple.system.diagnostics.iokit-properties</key>
+	<true/>
 	<!-- -->
 </dict>
 </plist>
 EOL
 	create_fake_ipa "$INPUT" "$OUTPUT" "$FAKEENT"
-    rm "$FAKEENT"
-    ;;
+	rm "$FAKEENT"
+	;;
+ipa-se )
+	create_fake_ipa "$INPUT" "$OUTPUT"
+	;;
 signedipa )
 	itunes_sign "$INPUT" "$OUTPUT" $3 $4
 	;;

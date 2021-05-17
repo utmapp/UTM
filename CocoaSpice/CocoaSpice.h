@@ -23,14 +23,14 @@
 #include "CSMain.h"
 #include "CSSession.h"
 #include "CSSession+Sharing.h"
+#include "CSUSBDevice.h"
+#include "CSUSBManager.h"
 
 #define GLIB_OBJC_RETAIN(x) (__bridge_retained void *)(x)
 #define GLIB_OBJC_RELEASE(x) (__bridge void *)(__bridge_transfer NSObject *)(__bridge void *)(x)
 
 #define DISPLAY_DEBUG(display, fmt, ...) \
-    SPICE_DEBUG("%d:%d " fmt, \
-        (int)display.channelID, \
-        (int)display.monitorID, \
+    SPICE_DEBUG(fmt, \
         ## __VA_ARGS__)
 
 #endif /* CocoaSpice_h */

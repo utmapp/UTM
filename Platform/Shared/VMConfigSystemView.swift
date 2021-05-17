@@ -109,6 +109,7 @@ struct HardwareOptions: View {
     
     @ObservedObject var config: UTMConfiguration
     let validateMemorySize: (Bool) -> Void
+    @EnvironmentObject private var data: UTMData
     @State private var memorySizeIndex: Float = 0
     @State private var warningMessage: String? = nil
     
@@ -154,6 +155,10 @@ struct HardwareOptions: View {
                         }
                     }
                 })
+            if !data.isSupported(systemArchitecture: config.systemArchitecture) {
+                Text("The selected architecture is unsupported in this version of UTM.")
+                    .foregroundColor(.red)
+            }
             VMConfigStringPicker(selection: $config.systemTarget, label: Text("System"), rawValues: UTMConfiguration.supportedTargets(forArchitecture: config.systemArchitecture), displayValues: UTMConfiguration.supportedTargets(forArchitecturePretty: config.systemArchitecture))
                 .onChange(of: config.systemTarget, perform: { value in
                     config.loadDefaults(forTarget: value, architecture: config.systemArchitecture)

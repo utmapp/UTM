@@ -9,7 +9,7 @@ BASEDIR="$(dirname "$(realpath $0)")"
 usage () {
     echo "Usage: $(basename $0) [-p platform] [-a architecture] [-t targetversion] [-o output]"
     echo ""
-    echo "  -p platform      Target platform. Default ios. [ios|macos]"
+    echo "  -p platform      Target platform. Default ios. [ios|ios-tci|macos]"
     echo "  -a architecture  Target architecture. Default arm64. [armv7|armv7s|arm64|i386|x86_64]"
     echo "  -o output        Output archive path. Default is current directory."
     echo ""
@@ -47,6 +47,9 @@ case $PLATFORM in
 ios )
     SCHEME="iOS"
     ;;
+ios-tci )
+    SCHEME="iOS-TCI"
+    ;;
 macos )
     SCHEME="macOS"
     ;;
@@ -56,7 +59,7 @@ macos )
 esac
 
 case $PLATFORM in
-ios )
+ios | ios-tci )
     case $ARCH in
     arm* )
         SDK=iphoneos
@@ -68,13 +71,9 @@ ios )
         usage
         ;;
     esac
-    PLATFORM_FAMILY_NAME="iOS"
-    CODESIGN_ARGS="CODE_SIGNING_ALLOWED=NO"
     ;;
 macos )
     SDK=macosx
-    PLATFORM_FAMILY_NAME="macOS"
-    CODESIGN_ARGS=
     ;;
 * )
     usage
@@ -83,4 +82,4 @@ esac
 
 ARCH_ARGS=$(echo $ARCH | xargs printf -- "-arch %s ")
 
-xcodebuild archive -archivePath "$OUTPUT" -scheme "$SCHEME" -sdk "$SDK" $ARCH_ARGS -configuration Release $CODESIGN_ARGS
+xcodebuild archive -archivePath "$OUTPUT" -scheme "$SCHEME" -sdk "$SDK" $ARCH_ARGS -configuration Release CODE_SIGNING_ALLOWED=NO

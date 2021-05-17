@@ -134,6 +134,24 @@ bool visit_optional(Visitor *v, const char *name, bool *present)
     return *present;
 }
 
+bool visit_deprecated_accept(Visitor *v, const char *name, Error **errp)
+{
+    trace_visit_deprecated_accept(v, name);
+    if (v->deprecated_accept) {
+        return v->deprecated_accept(v, name, errp);
+    }
+    return true;
+}
+
+bool visit_deprecated(Visitor *v, const char *name)
+{
+    trace_visit_deprecated(v, name);
+    if (v->deprecated) {
+        return v->deprecated(v, name);
+    }
+    return true;
+}
+
 bool visit_is_input(Visitor *v)
 {
     return v->type == VISITOR_INPUT;
@@ -206,7 +224,7 @@ bool visit_type_uint32(Visitor *v, const char *name, uint32_t *obj,
     trace_visit_type_uint32(v, name, obj);
     value = *obj;
     ok = visit_type_uintN(v, &value, name, UINT32_MAX, "uint32_t", errp);
-    *obj = value;
+    *obj = (uint32_t)value;
     return ok;
 }
 
@@ -275,7 +293,7 @@ bool visit_type_int32(Visitor *v, const char *name, int32_t *obj,
     value = *obj;
     ok = visit_type_intN(v, &value, name, INT32_MIN, INT32_MAX, "int32_t",
                         errp);
-    *obj = value;
+    *obj = (int32_t)value;
     return ok;
 }
 
@@ -379,7 +397,7 @@ static bool input_type_enum(Visitor *v, const char *name, int *obj,
     }
 
     g_free(enum_str);
-    *obj = value;
+    *obj = (int)value;
     return true;
 }
 

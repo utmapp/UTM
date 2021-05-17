@@ -72,9 +72,7 @@ void *spice_main_loop(void *args) {
     
     g_main_context_ref(self->_main_context);
     g_main_context_push_thread_default(self->_main_context);
-    spice_util_set_main_context(self->_main_context);
     g_main_loop_run(self->_main_loop);
-    spice_util_set_main_context(NULL);
     g_main_context_pop_thread_default(self->_main_context);
     g_main_context_unref(self->_main_context);
     
@@ -123,6 +121,7 @@ void *spice_main_loop(void *args) {
     @synchronized (self) {
         if (!self.running) {
             pthread_t spiceThread;
+            spice_util_set_main_context(_main_context);
             if (pthread_create(&spiceThread, NULL, &spice_main_loop, (__bridge_retained void *)self) != 0) {
                 return NO;
             }
@@ -137,6 +136,7 @@ void *spice_main_loop(void *args) {
     @synchronized (self) {
         if (self.running) {
             void *status;
+            spice_util_set_main_context(NULL);
             g_main_loop_quit(_main_loop);
             pthread_join(self.spiceThread, &status);
             self.running = NO;

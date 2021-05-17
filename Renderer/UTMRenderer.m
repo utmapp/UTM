@@ -34,14 +34,9 @@ Implementation of renderer class which performs Metal setup and per frame render
     id<MTLSamplerState> _sampler;
 }
 
-- (void)setSourceScreen:(id<UTMRenderSource>)source {
+- (void)setSource:(id<UTMRenderSource>)source {
     source.device = _device;
-    _sourceScreen = source;
-}
-
-- (void)setSourceCursor:(id<UTMRenderSource>)source {
-    source.device = _device;
-    _sourceCursor = source;
+    _source = source;
 }
 
 /// Initialize with the MetalKit view from which we'll obtain our Metal device
@@ -154,7 +149,8 @@ static matrix_float4x4 matrix_scale_translate(CGFloat scale, CGPoint translate)
 /// Called whenever the view needs to render a frame
 - (void)drawInMTKView:(nonnull MTKView *)view
 {
-    if (view.hidden) {
+    id<UTMRenderSource> source = self.source;
+    if (view.hidden || !source) {
         return;
     }
 
@@ -167,96 +163,81 @@ static matrix_float4x4 matrix_scale_translate(CGFloat scale, CGPoint translate)
 
     if(renderPassDescriptor != nil)
     {
-        BOOL screenDrawn = NO;
-        __weak dispatch_semaphore_t screenLock = nil;
-        __weak dispatch_semaphore_t cursorLock = nil;
-
         // Create a render command encoder so we can render into something
         id<MTLRenderCommandEncoder> renderEncoder =
         [commandBuffer renderCommandEncoderWithDescriptor:renderPassDescriptor];
         renderEncoder.label = @"MyRenderEncoder";
         
-        if (self.sourceScreen) {
-            // Lock screen updates
-            bool hasAlpha = NO;
-            screenLock = self.sourceScreen.drawLock;
-            dispatch_semaphore_wait(screenLock, DISPATCH_TIME_FOREVER);
-            
-            if (self.sourceScreen.visible) {
-                // Render the screen first
-                
-                matrix_float4x4 transform = matrix_scale_translate(self.sourceScreen.viewportScale,
-                                                                   self.sourceScreen.viewportOrigin);
+        // Lock screen updates
+        dispatch_semaphore_t drawLock = source.drawLock;
+        dispatch_semaphore_wait(drawLock, DISPATCH_TIME_FOREVER);
+        
+        // Render the screen first
+        
+        bool hasAlpha = NO;
+        matrix_float4x4 transform = matrix_scale_translate(source.viewportScale,
+                                                           source.viewportOrigin);
 
-                [renderEncoder setRenderPipelineState:_pipelineState];
+        [renderEncoder setRenderPipelineState:_pipelineState];
 
-                [renderEncoder setVertexBuffer:self.sourceScreen.vertices
-                                        offset:0
-                                      atIndex:UTMVertexInputIndexVertices];
+        [renderEncoder setVertexBuffer:source.displayVertices
+                                offset:0
+                              atIndex:UTMVertexInputIndexVertices];
 
-                [renderEncoder setVertexBytes:&_viewportSize
-                                       length:sizeof(_viewportSize)
-                                      atIndex:UTMVertexInputIndexViewportSize];
+        [renderEncoder setVertexBytes:&_viewportSize
+                               length:sizeof(_viewportSize)
+                              atIndex:UTMVertexInputIndexViewportSize];
 
-                [renderEncoder setVertexBytes:&transform
-                                       length:sizeof(transform)
-                                      atIndex:UTMVertexInputIndexTransform];
+        [renderEncoder setVertexBytes:&transform
+                               length:sizeof(transform)
+                              atIndex:UTMVertexInputIndexTransform];
 
-                [renderEncoder setVertexBytes:&hasAlpha
-                                       length:sizeof(hasAlpha)
-                                      atIndex:UTMVertexInputIndexHasAlpha];
+        [renderEncoder setVertexBytes:&hasAlpha
+                               length:sizeof(hasAlpha)
+                              atIndex:UTMVertexInputIndexHasAlpha];
 
-                // Set the texture object.  The UTMTextureIndexBaseColor enum value corresponds
-                ///  to the 'colorMap' argument in our 'samplingShader' function because its
-                //   texture attribute qualifier also uses UTMTextureIndexBaseColor for its index
-                [renderEncoder setFragmentTexture:self.sourceScreen.texture
-                                          atIndex:UTMTextureIndexBaseColor];
-                
-                [renderEncoder setFragmentSamplerState:_sampler
-                                               atIndex:UTMSamplerIndexTexture];
+        // Set the texture object.  The UTMTextureIndexBaseColor enum value corresponds
+        ///  to the 'colorMap' argument in our 'samplingShader' function because its
+        //   texture attribute qualifier also uses UTMTextureIndexBaseColor for its index
+        [renderEncoder setFragmentTexture:source.displayTexture
+                                  atIndex:UTMTextureIndexBaseColor];
+        
+        [renderEncoder setFragmentSamplerState:_sampler
+                                       atIndex:UTMSamplerIndexTexture];
 
-                // Draw the vertices of our triangles
-                [renderEncoder drawPrimitives:MTLPrimitiveTypeTriangle
-                                  vertexStart:0
-                                  vertexCount:self.sourceScreen.numVertices];
-                
-                screenDrawn = YES;
-            }
-        }
-
-        if (screenDrawn && self.sourceCursor) {
-            // Lock cursor updates
+        // Draw the vertices of our triangles
+        [renderEncoder drawPrimitives:MTLPrimitiveTypeTriangle
+                          vertexStart:0
+                          vertexCount:source.displayNumVertices];
+        
+        // Draw cursor
+        if (source.cursorVisible) {
+            // Next render the cursor
             bool hasAlpha = YES;
-            cursorLock = self.sourceCursor.drawLock;
-            dispatch_semaphore_wait(cursorLock, DISPATCH_TIME_FOREVER);
-            
-            if (self.sourceCursor.visible) {
-                // Next render the cursor
-                matrix_float4x4 transform = matrix_scale_translate(self.sourceScreen.viewportScale,
-                                                                   CGPointMake(self.sourceScreen.viewportOrigin.x +
-                                                                               self.sourceCursor.viewportOrigin.x,
-                                                                               self.sourceScreen.viewportOrigin.y +
-                                                                               self.sourceCursor.viewportOrigin.y));
-                [renderEncoder setVertexBuffer:self.sourceCursor.vertices
-                                        offset:0
-                                      atIndex:UTMVertexInputIndexVertices];
-                [renderEncoder setVertexBytes:&_viewportSize
-                                       length:sizeof(_viewportSize)
-                                      atIndex:UTMVertexInputIndexViewportSize];
-                [renderEncoder setVertexBytes:&transform
-                                     length:sizeof(transform)
-                                    atIndex:UTMVertexInputIndexTransform];
-                [renderEncoder setVertexBytes:&hasAlpha
-                                     length:sizeof(hasAlpha)
-                                    atIndex:UTMVertexInputIndexHasAlpha];
-                [renderEncoder setFragmentTexture:self.sourceCursor.texture
-                                          atIndex:UTMTextureIndexBaseColor];
-                [renderEncoder setFragmentSamplerState:_sampler
-                                               atIndex:UTMSamplerIndexTexture];
-                [renderEncoder drawPrimitives:MTLPrimitiveTypeTriangle
-                                  vertexStart:0
-                                  vertexCount:self.sourceCursor.numVertices];
-            }
+            matrix_float4x4 transform = matrix_scale_translate(source.viewportScale,
+                                                               CGPointMake(source.viewportOrigin.x +
+                                                                           source.cursorOrigin.x,
+                                                                           source.viewportOrigin.y +
+                                                                           source.cursorOrigin.y));
+            [renderEncoder setVertexBuffer:source.cursorVertices
+                                    offset:0
+                                  atIndex:UTMVertexInputIndexVertices];
+            [renderEncoder setVertexBytes:&_viewportSize
+                                   length:sizeof(_viewportSize)
+                                  atIndex:UTMVertexInputIndexViewportSize];
+            [renderEncoder setVertexBytes:&transform
+                                 length:sizeof(transform)
+                                atIndex:UTMVertexInputIndexTransform];
+            [renderEncoder setVertexBytes:&hasAlpha
+                                 length:sizeof(hasAlpha)
+                                atIndex:UTMVertexInputIndexHasAlpha];
+            [renderEncoder setFragmentTexture:source.cursorTexture
+                                      atIndex:UTMTextureIndexBaseColor];
+            [renderEncoder setFragmentSamplerState:_sampler
+                                           atIndex:UTMSamplerIndexTexture];
+            [renderEncoder drawPrimitives:MTLPrimitiveTypeTriangle
+                              vertexStart:0
+                              vertexCount:source.cursorNumVertices];
         }
 
         [renderEncoder endEncoding];
@@ -268,12 +249,7 @@ static matrix_float4x4 matrix_scale_translate(CGFloat scale, CGPoint translate)
         [commandBuffer addCompletedHandler:^(id<MTLCommandBuffer> commandBuffer) {
             // GPU work is complete
             // Signal the semaphore to start the CPU work
-            if (screenLock) {
-                dispatch_semaphore_signal(screenLock);
-            }
-            if (cursorLock) {
-                dispatch_semaphore_signal(cursorLock);
-            }
+            dispatch_semaphore_signal(drawLock);
         }];
     }
 

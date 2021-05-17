@@ -70,3 +70,4 @@ iOSInjectionProject/
 build*/
 sysroot*/
 .DS_Store
+CodeSigning.xcconfig

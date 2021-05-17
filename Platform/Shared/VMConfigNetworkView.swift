@@ -25,9 +25,20 @@ struct VMConfigNetworkView: View {
         VStack {
             Form {
                 Section(header: Text("Hardware"), footer: EmptyView().padding(.bottom)) {
+                    #if os(macOS)
+                    // FIXME: when vmnet entitlement bug is fixed update with proper macOS version
+                    if #available(macOS 99.0, *) {
+                        NetworkModeSection(config: config)
+                    } else {
+                        Toggle(isOn: $config.networkEnabled.animation(), label: {
+                            Text("Enabled")
+                        })
+                    }
+                    #else
                     Toggle(isOn: $config.networkEnabled.animation(), label: {
                         Text("Enabled")
                     })
+                    #endif
                     if config.networkEnabled {
                         VMConfigStringPicker(selection: $config.networkCard, label: Text("Emulated Network Card"), rawValues: UTMConfiguration.supportedNetworkCards(forArchitecture: config.systemArchitecture), displayValues: UTMConfiguration.supportedNetworkCards(forArchitecturePretty: config.systemArchitecture))
                     }
@@ -48,6 +59,23 @@ struct VMConfigNetworkView: View {
                     
                     VMConfigNetworkPortForwardView(config: config)
                 }
+            }
+        }
+    }
+}
+
+@available(iOS 14, macOS 11, *)
+struct NetworkModeSection: View {
+    @ObservedObject var config: UTMConfiguration
+    
+    var body: some View {
+        VMConfigStringPicker(selection: $config.networkMode, label: Text("Network Mode"), rawValues: UTMConfiguration.supportedNetworkModes(), displayValues: UTMConfiguration.supportedNetworkModesPretty())
+        if config.networkMode == "bridged" {
+            HStack {
+                Text("Bridged Interface")
+                Spacer()
+                TextField("en0", text: $config.networkBridgeInterface.bound)
+                    .keyboardType(.asciiCapable)
             }
         }
     }

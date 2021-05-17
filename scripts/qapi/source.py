@@ -21,10 +21,12 @@ class QAPISchemaPragma:
     def __init__(self) -> None:
         # Are documentation comments required?
         self.doc_required = False
-        # Whitelist of commands allowed to return a non-dictionary
-        self.returns_whitelist: List[str] = []
-        # Whitelist of entities allowed to violate case conventions
-        self.name_case_whitelist: List[str] = []
+        # Commands whose names may use '_'
+        self.command_name_exceptions: List[str] = []
+        # Commands allowed to return a non-dictionary
+        self.command_returns_exceptions: List[str] = []
+        # Types whose member names may violate case conventions
+        self.member_name_exceptions: List[str] = []
 
 
 class QAPISourceInfo:

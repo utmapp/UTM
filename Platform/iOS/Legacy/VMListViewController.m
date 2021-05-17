@@ -98,9 +98,11 @@
         }
     });
     
+#if !defined(WITH_QEMU_TCI)
     if (!jb_has_jit_entitlement()) {
         [self showStartupMessage];
     }
+#endif
 }
 
 #pragma mark - Properties
@@ -336,15 +338,12 @@
     }
 }
 
-/*
 - (BOOL)collectionView:(UICollectionView *)collectionView canHandleDropSession:(id<UIDropSession>)session {
-    // TODO: implement this
+    return NO;
 }
 
 - (void)collectionView:(nonnull UICollectionView *)collectionView performDropWithCoordinator:(nonnull id<UICollectionViewDropCoordinator>)coordinator {
-    // TODO: implement this
 }
-*/
 
 #pragma mark - Work status indicator
 

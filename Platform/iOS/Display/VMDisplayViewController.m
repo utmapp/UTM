@@ -23,12 +23,6 @@
 #import "VMConfigExistingViewController.h"
 #import "UTM-Swift.h"
 
-@interface VMDisplayViewController ()
-
-@property (nonatomic) VMRemovableDrivesViewController *removableDrivesViewController;
-
-@end
-
 @implementation VMDisplayViewController {
     // status bar
     BOOL _prefersStatusBarHidden;
@@ -49,8 +43,14 @@
     self.displayView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
     [self.view addSubview:self.displayView];
     
-    // removable drives VC
+    // set up other nibs
     self.removableDrivesViewController = [[VMRemovableDrivesViewController alloc] initWithNibName:@"VMRemovableDrivesView" bundle:nil];
+#if !defined(WITH_QEMU_TCI)
+    self.usbDevicesViewController = [[VMUSBDevicesViewController alloc] initWithNibName:@"VMUSBDevicesView" bundle:nil];
+#endif
+    
+    // hide USB icon if not supported
+    self.usbButton.hidden = !self.vm.hasUsbRedirection;
 }
 
 #pragma mark - Properties
@@ -168,6 +168,7 @@
             self.zoomButton.enabled = NO;
             self.keyboardButton.enabled = NO;
             self.drivesButton.enabled = NO;
+            self.usbButton.enabled = NO;
             [self.pauseResumeButton setImage:[UIImage imageNamed:@"Toolbar Start"] forState:UIControlStateNormal];
             [self.powerExitButton setImage:[UIImage imageNamed:@"Toolbar Exit"] forState:UIControlStateNormal];
             [UIApplication sharedApplication].idleTimerDisabled = NO;
@@ -184,6 +185,7 @@
             self.zoomButton.enabled = NO;
             self.keyboardButton.enabled = NO;
             self.drivesButton.enabled = NO;
+            self.usbButton.enabled = NO;
             [self.placeholderIndicator startAnimating];
             [self.powerExitButton setImage:[UIImage imageNamed:@"Toolbar Exit"] forState:UIControlStateNormal];
             break;
@@ -200,6 +202,7 @@
             self.zoomButton.enabled = YES;
             self.keyboardButton.enabled = YES;
             self.drivesButton.enabled = YES;
+            self.usbButton.enabled = self.vm.hasUsbRedirection;
             [self.pauseResumeButton setImage:[UIImage imageNamed:@"Toolbar Pause"] forState:UIControlStateNormal];
             [self.powerExitButton setImage:[UIImage imageNamed:@"Toolbar Power"] forState:UIControlStateNormal];
             [UIApplication sharedApplication].idleTimerDisabled = self.disableIdleTimer;
@@ -324,6 +327,13 @@
 
 - (IBAction)showKeyboardButton:(UIButton *)sender {
     self.keyboardVisible = !self.keyboardVisible;
+}
+
+- (IBAction)usbPressed:(UIButton *)sender {
+#if !defined(WITH_QEMU_TCI)
+    self.usbDevicesViewController.modalPresentationStyle = UIModalPresentationPageSheet;
+    [self presentViewController:self.usbDevicesViewController animated:YES completion:nil];
+#endif
 }
 
 - (IBAction)drivesPressed:(UIButton *)sender {

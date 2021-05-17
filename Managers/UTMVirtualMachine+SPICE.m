@@ -23,6 +23,7 @@
 #import "UTMQemuManager.h"
 #import "UTMSpiceIO.h"
 #import "UTMViewState.h"
+#import "UTMJailbreak.h"
 
 extern NSString *const kUTMErrorDomain;
 
@@ -171,6 +172,12 @@ static const NSURLBookmarkResolutionOptions kBookmarkResolutionOptions = NSURLBo
             }];
         }
     }];
+}
+
+#pragma mark - USB redirection
+
+- (BOOL)hasUsbRedirection {
+    return jb_has_usb_entitlement() && !self.configuration.displayConsoleOnly;
 }
 
 @end

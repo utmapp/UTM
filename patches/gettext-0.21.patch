@@ -1,0 +1,85 @@
+diff --git a/libtextstyle/lib/get_ppid_of.c b/libtextstyle/lib/get_ppid_of.c
+index 5579cd9..8323618 100644
+--- a/libtextstyle/lib/get_ppid_of.c
++++ b/libtextstyle/lib/get_ppid_of.c
+@@ -32,10 +32,6 @@
+ # include <sys/sysctl.h> /* sysctl, struct kinfo_proc */
+ #endif
+ 
+-#if defined __APPLE__ && defined __MACH__                   /* Mac OS X */
+-# include <libproc.h>
+-#endif
+-
+ #if defined _AIX                                            /* AIX */
+ # include <procinfo.h>
+ #endif
+@@ -225,27 +221,6 @@ get_ppid_of (pid_t pid)
+ 
+ #endif
+ 
+-#if defined __APPLE__ && defined __MACH__                   /* Mac OS X */
+-
+-# if defined PROC_PIDT_SHORTBSDINFO
+-  struct proc_bsdshortinfo info;
+-
+-  if (proc_pidinfo (pid, PROC_PIDT_SHORTBSDINFO, 0, &info, sizeof (info))
+-      == sizeof (info))
+-    return info.pbsi_ppid;
+-# else
+-  /* Note: The second part of 'struct proc_bsdinfo' differs in size between
+-     32-bit and 64-bit environments, and the kernel of Mac OS X 10.5 knows
+-     only about the 32-bit 'struct proc_bsdinfo'.  Fortunately all the info
+-     we need is in the first part, which is the same in 32-bit and 64-bit.  */
+-  struct proc_bsdinfo info;
+-
+-  if (proc_pidinfo (pid, PROC_PIDTBSDINFO, 0, &info, 128) == 128)
+-    return info.pbi_ppid;
+-# endif
+-
+-#endif
+-
+ #if defined _AIX                                            /* AIX */
+ 
+   /* Reference: https://www.ibm.com/support/knowledgecenter/en/ssw_aix_61/com.ibm.aix.basetrf1/getprocs.htm
+diff --git a/libtextstyle/lib/get_progname_of.c b/libtextstyle/lib/get_progname_of.c
+index 4b08489..d86dfd4 100644
+--- a/libtextstyle/lib/get_progname_of.c
++++ b/libtextstyle/lib/get_progname_of.c
+@@ -40,10 +40,6 @@
+ # include <sys/sysctl.h> /* sysctl, struct kinfo_proc */
+ #endif
+ 
+-#if defined __APPLE__ && defined __MACH__                   /* Mac OS X */
+-# include <libproc.h>
+-#endif
+-
+ #if defined _AIX                                            /* AIX */
+ # include <procinfo.h>
+ #endif
+@@ -265,26 +261,6 @@ get_progname_of (pid_t pid)
+ 
+ #endif
+ 
+-#if defined __APPLE__ && defined __MACH__                   /* Mac OS X */
+-
+-# if defined PROC_PIDT_SHORTBSDINFO
+-  struct proc_bsdshortinfo info;
+-
+-  if (proc_pidinfo (pid, PROC_PIDT_SHORTBSDINFO, 0, &info, sizeof (info))
+-      == sizeof (info))
+-    return strdup (info.pbsi_comm);
+-# else
+-  /* Note: The second part of 'struct proc_bsdinfo' differs in size between
+-     32-bit and 64-bit environments, and the kernel of Mac OS X 10.5 knows
+-     only about the 32-bit 'struct proc_bsdinfo'.  Fortunately all the info
+-     we need is in the first part, which is the same in 32-bit and 64-bit.  */
+-  struct proc_bsdinfo info;
+-
+-  if (proc_pidinfo (pid, PROC_PIDTBSDINFO, 0, &info, 128) == 128)
+-    return strdup (info.pbi_comm);
+-# endif
+-
+-#endif
+ 
+ #if defined _AIX                                            /* AIX */
+ 

@@ -21,11 +21,12 @@ from .common import c_name
 from .error import QAPISemError
 
 
-# Names must be letters, numbers, -, and _.  They must start with letter,
-# except for downstream extensions which must start with __RFQDN_.
-# Dots are only valid in the downstream extension prefix.
-valid_name = re.compile(r'^(__[a-zA-Z0-9.-]+_)?'
-                        '[a-zA-Z][a-zA-Z0-9_-]*$')
+# Names consist of letters, digits, -, and _, starting with a letter.
+# An experimental name is prefixed with x-.  A name of a downstream
+# extension is prefixed with __RFQDN_.  The latter prefix goes first.
+valid_name = re.compile(r'(__[a-z0-9.-]+_)?'
+                        r'(x-)?'
+                        r'([a-z][a-z0-9_-]*)$', re.IGNORECASE)
 
 
 def check_name_is_str(name, info, source):
@@ -33,30 +34,47 @@ def check_name_is_str(name, info, source):
         raise QAPISemError(info, "%s requires a string name" % source)
 
 
-def check_name_str(name, info, source,
-                   allow_optional=False, enum_member=False,
-                   permit_upper=False):
-    membername = name
-
-    if allow_optional and name.startswith('*'):
-        membername = name[1:]
-    # Enum members can start with a digit, because the generated C
-    # code always prefixes it with the enum name
-    if enum_member and membername[0].isdigit():
-        membername = 'D' + membername
+def check_name_str(name, info, source):
     # Reserve the entire 'q_' namespace for c_name(), and for 'q_empty'
     # and 'q_obj_*' implicit type names.
-    if not valid_name.match(membername) or \
-       c_name(membername, False).startswith('q_'):
+    match = valid_name.match(name)
+    if not match or c_name(name, False).startswith('q_'):
         raise QAPISemError(info, "%s has an invalid name" % source)
-    if not permit_upper and name.lower() != name:
+    return match.group(3)
+
+
+def check_name_upper(name, info, source):
+    stem = check_name_str(name, info, source)
+    if re.search(r'[a-z-]', stem):
         raise QAPISemError(
-            info, "%s uses uppercase in name" % source)
-    assert not membername.startswith('*')
+            info, "name of %s must not use lowercase or '-'" % source)
+
+
+def check_name_lower(name, info, source,
+                     permit_upper=False,
+                     permit_underscore=False):
+    stem = check_name_str(name, info, source)
+    if ((not permit_upper and re.search(r'[A-Z]', stem))
+            or (not permit_underscore and '_' in stem)):
+        raise QAPISemError(
+            info, "name of %s must not use uppercase or '_'" % source)
+
+
+def check_name_camel(name, info, source):
+    stem = check_name_str(name, info, source)
+    if not re.match(r'[A-Z][A-Za-z0-9]*[a-z][A-Za-z0-9]*$', stem):
+        raise QAPISemError(info, "name of %s must use CamelCase" % source)
 
 
 def check_defn_name_str(name, info, meta):
-    check_name_str(name, info, meta, permit_upper=True)
+    if meta == 'event':
+        check_name_upper(name, info, meta)
+    elif meta == 'command':
+        check_name_lower(
+            name, info, meta,
+            permit_underscore=name in info.pragma.command_name_exceptions)
+    else:
+        check_name_camel(name, info, meta)
     if name.endswith('Kind') or name.endswith('List'):
         raise QAPISemError(
             info, "%s name should not end in '%s'" % (meta, name[-4:]))
@@ -166,13 +184,16 @@ def check_type(value, info, source,
         raise QAPISemError(info,
                            "%s should be an object or type name" % source)
 
-    permit_upper = allow_dict in info.pragma.name_case_whitelist
+    permissive = allow_dict in info.pragma.member_name_exceptions
 
     # value is a dictionary, check that each member is okay
     for (key, arg) in value.items():
         key_source = "%s member '%s'" % (source, key)
-        check_name_str(key, info, key_source,
-                       allow_optional=True, permit_upper=permit_upper)
+        if key.startswith('*'):
+            key = key[1:]
+        check_name_lower(key, info, key_source,
+                         permit_upper=permissive,
+                         permit_underscore=permissive)
         if c_name(key, False) == 'u' or c_name(key, False).startswith('has_'):
             raise QAPISemError(info, "%s uses reserved name" % key_source)
         check_keys(arg, info, key_source, ['type'], ['if', 'features'])
@@ -194,7 +215,7 @@ def check_features(features, info):
         check_keys(f, info, source, ['name'], ['if'])
         check_name_is_str(f['name'], info, source)
         source = "%s '%s'" % (source, f['name'])
-        check_name_str(f['name'], info, source)
+        check_name_lower(f['name'], info, source)
         check_if(f, info, source)
 
 
@@ -208,17 +229,22 @@ def check_enum(expr, info):
     if prefix is not None and not isinstance(prefix, str):
         raise QAPISemError(info, "'prefix' must be a string")
 
-    permit_upper = name in info.pragma.name_case_whitelist
+    permissive = name in info.pragma.member_name_exceptions
 
     members[:] = [m if isinstance(m, dict) else {'name': m}
                   for m in members]
     for member in members:
         source = "'data' member"
+        member_name = member['name']
         check_keys(member, info, source, ['name'], ['if'])
-        check_name_is_str(member['name'], info, source)
-        source = "%s '%s'" % (source, member['name'])
-        check_name_str(member['name'], info, source,
-                       enum_member=True, permit_upper=permit_upper)
+        check_name_is_str(member_name, info, source)
+        source = "%s '%s'" % (source, member_name)
+        # Enum members may start with a digit
+        if member_name[0].isdigit():
+            member_name = 'd' + member_name # Hack: hide the digit
+        check_name_lower(member_name, info, source,
+                         permit_upper=permissive,
+                         permit_underscore=permissive)
         check_if(member, info, source)
 
 
@@ -247,7 +273,9 @@ def check_union(expr, info):
 
     for (key, value) in members.items():
         source = "'data' member '%s'" % key
-        check_name_str(key, info, source)
+        if discriminator is None:
+            check_name_lower(key, info, source)
+        # else: name is in discriminator enum, which gets checked
         check_keys(value, info, source, ['type'], ['if'])
         check_if(value, info, source)
         check_type(value['type'], info, source, allow_array=not base)
@@ -260,7 +288,7 @@ def check_alternate(expr, info):
         raise QAPISemError(info, "'data' must not be empty")
     for (key, value) in members.items():
         source = "'data' member '%s'" % key
-        check_name_str(key, info, source)
+        check_name_lower(key, info, source)
         check_keys(value, info, source, ['type'], ['if'])
         check_if(value, info, source)
         check_type(value['type'], info, source)

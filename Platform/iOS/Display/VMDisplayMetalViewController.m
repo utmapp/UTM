@@ -20,6 +20,7 @@
 #import "VMDisplayMetalViewController+Pointer.h"
 #import "VMDisplayMetalViewController+Pencil.h"
 #import "VMDisplayMetalViewController+Gamepad.h"
+#import "VMDisplayMetalViewController+USB.h"
 #import "VMKeyboardView.h"
 #import "UTMRenderer.h"
 #import "UTMVirtualMachine.h"
@@ -34,9 +35,6 @@
 @implementation VMDisplayMetalViewController {
     UTMRenderer *_renderer;
 }
-
-@synthesize vmDisplay;
-@synthesize vmInput;
 
 - (BOOL)serverModeCursor {
     return self.vmInput.serverModeCursor;
@@ -63,8 +61,6 @@
     
     // Initialize our renderer with the view size
     [_renderer mtkView:self.mtkView drawableSizeWillChange:self.mtkView.drawableSize];
-    _renderer.sourceScreen = self.vmDisplay;
-    _renderer.sourceCursor = self.vmInput;
     
     [_renderer changeUpscaler:self.vmConfiguration.displayUpscalerValue
                    downscaler:self.vmConfiguration.displayDownscalerValue];
@@ -115,6 +111,11 @@
             if (self.vmConfiguration.shareClipboardEnabled) {
                 [[UTMPasteboard generalPasteboard] releasePollingModeForObject:self];
             }
+#if !defined(WITH_QEMU_TCI)
+            if (state == kVMStopped) {
+                [self.usbDevicesViewController clearDevices];
+            }
+#endif
             break;
         }
         case kVMStarted: {
@@ -122,8 +123,6 @@
                 self.placeholderImageView.hidden = YES;
                 self.mtkView.hidden = NO;
             } completion:nil];
-            self->_renderer.sourceScreen = self.vmDisplay;
-            self->_renderer.sourceCursor = self.vmInput;
             [self displayResize:self.view.bounds.size];
             if (self.vmConfiguration.shareClipboardEnabled) {
                 [[UTMPasteboard generalPasteboard] requestPollingModeForObject:self];
@@ -201,5 +200,30 @@
     }
     [self.vmDisplay requestResolution:bounds];
 }
+
+#pragma mark - SPICE IO Delegates
+
+- (void)spiceDidChangeInput:(CSInput *)input {
+    self.vmInput = input;
+}
+
+- (void)spiceDidCreateDisplay:(CSDisplayMetal *)display {
+    if (display.channelID == 0 && display.monitorID == 0) {
+        self.vmDisplay = display;
+        _renderer.source = display;
+    }
+}
+
+- (void)spiceDidDestroyDisplay:(CSDisplayMetal *)display {
+    // TODO: implement something here
+}
+
+#if !defined(WITH_QEMU_TCI)
+- (void)spiceDidChangeUsbManager:(CSUSBManager *)usbManager {
+    [self.usbDevicesViewController clearDevices];
+    self.usbDevicesViewController.vmUsbManager = usbManager;
+    usbManager.delegate = self;
+}
+#endif
 
 @end

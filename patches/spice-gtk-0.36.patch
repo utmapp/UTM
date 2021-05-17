@@ -270,49 +270,6 @@ diff -aur a/configure b/configure
   if test "0" = "1"; then
    HAVE_INTROSPECTION_TRUE=
    HAVE_INTROSPECTION_FALSE='#'
-diff -aur a/configure.ac b/configure.ac
---- a/configure.ac	2019-01-16 03:31:42.000000000 -0800
-+++ b/configure.ac	2019-04-15 20:07:05.000000000 -0700
-@@ -147,7 +147,8 @@
- AS_IF([test "x$with_gtk" != "xno"],
-       [AS_IF([test "x$os_win32" = "xyes"],
-              [PKG_CHECK_MODULES(GTK, gtk+-3.0 >= $GTK_REQUIRED)],
--             [PKG_CHECK_MODULES(GTK, gtk+-3.0 >= $GTK_REQUIRED epoxy)])]
-+             [PKG_CHECK_MODULES(GTK, gtk+-3.0 >= $GTK_REQUIRED epoxy)])
-+        PKG_CHECK_MODULES(CAIRO, cairo >= 1.2.0)]
-       [GTK_CFLAGS="$GTK_CFLAGS -DGDK_VERSION_MIN_REQUIRED=$GTK_ENCODED_VERSION \
-                                -DGDK_VERSION_MAX_ALLOWED=$GTK_ENCODED_VERSION"])
- SPICE_GTK_REQUIRES="${SPICE_GTK_REQUIRES} gtk+-3.0 >= $GTK_REQUIRED"
-@@ -169,8 +170,6 @@
- 
- PKG_CHECK_MODULES(GIO, gio-2.0 >= 2.36 $gio_os)
- 
--PKG_CHECK_MODULES(CAIRO, cairo >= 1.2.0)
--
- PKG_CHECK_MODULES(GTHREAD, gthread-2.0)
- 
- PKG_CHECK_MODULES(JSON, json-glib-1.0)
-@@ -435,6 +434,9 @@
- AC_DEFINE_UNQUOTED([WITH_GTHREAD],[$WITH_GTHREAD], [Whether to use gthread coroutine impl])
- AM_CONDITIONAL(WITH_GTHREAD, [test "x$WITH_GTHREAD" = "x1"])
- 
-+AC_CHECK_LIB(ucontext, libucontext_makecontext, UCONTEXT_LIBS='-lucontext' AC_DEFINE([HAVE_LIBUCONTEXT], 1, [Use libucontext?]), [])
-+AC_SUBST(UCONTEXT_LIBS)
-+
- AM_CONDITIONAL([HAVE_INTROSPECTION], [test "0" = "1"])
- m4_ifdef([GOBJECT_INTROSPECTION_CHECK],[
-     PKG_CHECK_EXISTS([GOBJECT_INTROSPECTION],
-diff -aur a/src/Makefile.am b/src/Makefile.am
---- a/src/Makefile.am	2019-01-16 03:31:42.000000000 -0800
-+++ b/src/Makefile.am	2019-04-15 20:07:05.000000000 -0700
-@@ -201,6 +201,7 @@
- 	$(USBREDIR_LIBS)						\
- 	$(GUDEV_LIBS)							\
- 	$(PHODAV_LIBS)							\
-+	$(UCONTEXT_LIBS)					\
- 	$(NULL)
- 
- if WITH_POLKIT
 diff -aur a/src/Makefile.in b/src/Makefile.in
 --- a/src/Makefile.in	2019-01-16 05:38:41.000000000 -0800
 +++ b/src/Makefile.in	2019-04-15 20:07:05.000000000 -0700
@@ -345,10 +302,137 @@ diff -aur a/src/Makefile.in b/src/Makefile.in
  @WITH_POLKIT_FALSE@USB_ACL_HELPER_SRCS = 
  @WITH_POLKIT_TRUE@USB_ACL_HELPER_SRCS = \
  @WITH_POLKIT_TRUE@	usb-acl-helper.c			\
-diff -aur a/src/channel-display-gst.c b/src/channel-display-gst.c
---- a/src/channel-display-gst.c	2019-01-16 03:31:42.000000000 -0800
-+++ b/src/channel-display-gst.c	2019-04-22 23:30:57.000000000 -0700
-@@ -183,13 +183,13 @@
+From 42de36de002bbcba7534446445b6a811dc780e50 Mon Sep 17 00:00:00 2001
+From: osy <50960678+osy@users.noreply.github.com>
+Date: Wed, 24 Apr 2019 18:42:46 -0700
+Subject: [PATCH 1/3] autoconf: removed cairo dependency for glib only builds
+
+---
+ configure.ac | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
+
+diff --git a/configure.ac b/configure.ac
+index 2f63422..e835eeb 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -147,7 +147,8 @@ AM_CONDITIONAL([WITH_GTK],[test "$with_gtk" != "no"])
+ AS_IF([test "x$with_gtk" != "xno"],
+       [AS_IF([test "x$os_win32" = "xyes"],
+              [PKG_CHECK_MODULES(GTK, gtk+-3.0 >= $GTK_REQUIRED)],
+-             [PKG_CHECK_MODULES(GTK, gtk+-3.0 >= $GTK_REQUIRED epoxy)])]
++             [PKG_CHECK_MODULES(GTK, gtk+-3.0 >= $GTK_REQUIRED epoxy)])
++        PKG_CHECK_MODULES(CAIRO, cairo >= 1.2.0)]
+       [GTK_CFLAGS="$GTK_CFLAGS -DGDK_VERSION_MIN_REQUIRED=$GTK_ENCODED_VERSION \
+                                -DGDK_VERSION_MAX_ALLOWED=$GTK_ENCODED_VERSION"])
+ SPICE_GTK_REQUIRES="${SPICE_GTK_REQUIRES} gtk+-3.0 >= $GTK_REQUIRED"
+@@ -169,8 +170,6 @@ PKG_CHECK_MODULES(GOBJECT2, gobject-2.0)
+ 
+ PKG_CHECK_MODULES(GIO, gio-2.0 >= 2.36 $gio_os)
+ 
+-PKG_CHECK_MODULES(CAIRO, cairo >= 1.2.0)
+-
+ PKG_CHECK_MODULES(GTHREAD, gthread-2.0)
+ 
+ PKG_CHECK_MODULES(JSON, json-glib-1.0)
+-- 
+2.28.0
+
+From f5b9472449fca5cba417ea8ada5194e8c28ceedc Mon Sep 17 00:00:00 2001
+From: osy <50960678+osy@users.noreply.github.com>
+Date: Wed, 24 Apr 2019 18:44:05 -0700
+Subject: [PATCH 2/3] coroutine: added support for libucontext
+
+---
+ configure.ac       | 3 +++
+ src/Makefile.am    | 1 +
+ src/continuation.h | 9 +++++++++
+ 3 files changed, 13 insertions(+)
+
+diff --git a/configure.ac b/configure.ac
+index e835eeb..2c7cf77 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -434,6 +434,9 @@ AM_CONDITIONAL(WITH_WINFIBER, [test "x$WITH_WINFIBER" = "x1"])
+ AC_DEFINE_UNQUOTED([WITH_GTHREAD],[$WITH_GTHREAD], [Whether to use gthread coroutine impl])
+ AM_CONDITIONAL(WITH_GTHREAD, [test "x$WITH_GTHREAD" = "x1"])
+ 
++AC_CHECK_LIB(ucontext, libucontext_makecontext, UCONTEXT_LIBS='-lucontext' AC_DEFINE([HAVE_LIBUCONTEXT], 1, [Use libucontext?]), [])
++AC_SUBST(UCONTEXT_LIBS)
++
+ AM_CONDITIONAL([HAVE_INTROSPECTION], [test "0" = "1"])
+ m4_ifdef([GOBJECT_INTROSPECTION_CHECK],[
+     PKG_CHECK_EXISTS([GOBJECT_INTROSPECTION],
+diff --git a/src/Makefile.am b/src/Makefile.am
+index a9617d4..8f60ea4 100644
+--- a/src/Makefile.am
++++ b/src/Makefile.am
+@@ -201,6 +201,7 @@ libspice_client_glib_impl_la_LIBADD =					\
+ 	$(USBREDIR_LIBS)						\
+ 	$(GUDEV_LIBS)							\
+ 	$(PHODAV_LIBS)							\
++	$(UCONTEXT_LIBS)					\
+ 	$(NULL)
+ 
+ if WITH_POLKIT
+diff --git a/src/continuation.h b/src/continuation.h
+index d1fd137..e75c479 100644
+--- a/src/continuation.h
++++ b/src/continuation.h
+@@ -23,7 +23,16 @@
+ 
+ #include "spice-common.h"
+ #include <stddef.h>
++#ifdef HAVE_LIBUCONTEXT
++#include <libucontext/libucontext.h>
++#define ucontext_t libucontext_ucontext_t
++#define getcontext libucontext_getcontext
++#define setcontext libucontext_setcontext
++#define swapcontext libucontext_swapcontext
++#define makecontext libucontext_makecontext
++#else
+ #include <ucontext.h>
++#endif
+ #include <setjmp.h>
+ 
+ struct continuation
+-- 
+2.28.0
+
+From 607a4d1bbc9965e7a055bdeb6238592339ef51ac Mon Sep 17 00:00:00 2001
+From: osy <50960678+osy@users.noreply.github.com>
+Date: Wed, 24 Apr 2019 18:45:38 -0700
+Subject: [PATCH 3/3] spice-glib: removed usage of default GMainContext
+
+Libraries should not use the default glib main context because it might be owned by another thread.
+See: https://developer.gnome.org/programming-guidelines/stable/main-contexts.html.en#using-gmaincontext-in-a-library
+---
+ src/channel-display-gst.c   |  10 +--
+ src/channel-display-mjpeg.c |   6 +-
+ src/channel-display.c       |   6 +-
+ src/channel-main.c          |  30 ++++----
+ src/channel-usbredir.c      |   2 +-
+ src/channel-webdav.c        |   6 +-
+ src/gio-coroutine.c         |  13 ++--
+ src/map-file                |   1 +
+ src/smartcard-manager.c     |   5 +-
+ src/spice-channel.c         |  14 ++--
+ src/spice-glib-sym-file     |   1 +
+ src/spice-gstaudio.c        |   6 +-
+ src/spice-session.c         |   8 +--
+ src/spice-util-priv.h       |   8 +++
+ src/spice-util.c            | 139 ++++++++++++++++++++++++++++++++++++
+ src/spice-util.h            |   1 +
+ src/spice-widget.c          |   8 +--
+ src/usb-acl-helper.c        |   2 +-
+ src/usb-device-manager.c    |   3 +-
+ src/vmcstream.c             |   2 +-
+ 20 files changed, 212 insertions(+), 59 deletions(-)
+
+diff --git a/src/channel-display-gst.c b/src/channel-display-gst.c
+index 0b871a7..7d40349 100644
+--- a/src/channel-display-gst.c
++++ b/src/channel-display-gst.c
+@@ -183,13 +183,13 @@ static void schedule_frame(SpiceGstDecoder *decoder)
          }
  
          if (spice_mmtime_diff(now, gstframe->frame->mm_time) < 0) {
@@ -365,7 +449,7 @@ diff -aur a/src/channel-display-gst.c b/src/channel-display-gst.c
          } else {
              SPICE_DEBUG("%s: rendering too late by %u ms (ts: %u, mmtime: %u), dropping",
                          __FUNCTION__, now - gstframe->frame->mm_time,
-@@ -515,7 +515,7 @@
+@@ -515,7 +515,7 @@ static void spice_gst_decoder_reschedule(VideoDecoder *video_decoder)
      g_mutex_unlock(&decoder->queues_mutex);
  
      if (timer_id != 0) {
@@ -374,7 +458,7 @@ diff -aur a/src/channel-display-gst.c b/src/channel-display-gst.c
      }
      schedule_frame(decoder);
  }
-@@ -535,7 +535,7 @@
+@@ -535,7 +535,7 @@ static void spice_gst_decoder_destroy(VideoDecoder *video_decoder)
       * scheduled display_frame() call and drop the queued frames.
       */
      if (decoder->timer_id) {
@@ -383,10 +467,11 @@ diff -aur a/src/channel-display-gst.c b/src/channel-display-gst.c
      }
      g_mutex_clear(&decoder->queues_mutex);
      g_queue_free_full(decoder->decoding_queue, (GDestroyNotify)free_gst_frame);
-diff -aur a/src/channel-display-mjpeg.c b/src/channel-display-mjpeg.c
---- a/src/channel-display-mjpeg.c	2019-01-03 03:14:58.000000000 -0800
-+++ b/src/channel-display-mjpeg.c	2019-04-22 23:31:06.000000000 -0700
-@@ -194,7 +194,7 @@
+diff --git a/src/channel-display-mjpeg.c b/src/channel-display-mjpeg.c
+index e79fd86..18ace75 100644
+--- a/src/channel-display-mjpeg.c
++++ b/src/channel-display-mjpeg.c
+@@ -194,7 +194,7 @@ static void mjpeg_decoder_schedule(MJpegDecoder *decoder)
              if (spice_mmtime_diff(time, frame->mm_time) <= 0) {
                  guint32 d = frame->mm_time - time;
                  decoder->cur_frame = frame;
@@ -395,7 +480,7 @@ diff -aur a/src/channel-display-mjpeg.c b/src/channel-display-mjpeg.c
                  break;
              }
  
-@@ -218,7 +218,7 @@
+@@ -218,7 +218,7 @@ static void _msg_in_unref_func(gpointer data, gpointer user_data)
  static void mjpeg_decoder_drop_queue(MJpegDecoder *decoder)
  {
      if (decoder->timer_id != 0) {
@@ -404,7 +489,7 @@ diff -aur a/src/channel-display-mjpeg.c b/src/channel-display-mjpeg.c
          decoder->timer_id = 0;
      }
      if (decoder->cur_frame) {
-@@ -270,7 +270,7 @@
+@@ -270,7 +270,7 @@ static void mjpeg_decoder_reschedule(VideoDecoder *video_decoder)
  
      SPICE_DEBUG("%s", __FUNCTION__);
      if (decoder->timer_id != 0) {
@@ -413,10 +498,11 @@ diff -aur a/src/channel-display-mjpeg.c b/src/channel-display-mjpeg.c
          decoder->timer_id = 0;
      }
      mjpeg_decoder_schedule(decoder);
-diff -aur a/src/channel-display.c b/src/channel-display.c
---- a/src/channel-display.c	2019-01-16 03:31:42.000000000 -0800
-+++ b/src/channel-display.c	2019-04-22 23:31:13.000000000 -0700
-@@ -147,7 +147,7 @@
+diff --git a/src/channel-display.c b/src/channel-display.c
+index ae949eb..db94d1d 100644
+--- a/src/channel-display.c
++++ b/src/channel-display.c
+@@ -147,7 +147,7 @@ static void spice_display_channel_dispose(GObject *object)
      SpiceDisplayChannelPrivate *c = SPICE_DISPLAY_CHANNEL(object)->priv;
  
      if (c->mark_false_event_id != 0) {
@@ -425,7 +511,7 @@ diff -aur a/src/channel-display.c b/src/channel-display.c
          c->mark_false_event_id = 0;
      }
  
-@@ -1900,7 +1900,7 @@
+@@ -1900,7 +1900,7 @@ static void display_handle_surface_create(SpiceChannel *channel, SpiceMsgIn *in)
          surface->primary = true;
          create_canvas(channel, surface);
          if (c->mark_false_event_id != 0) {
@@ -434,7 +520,7 @@ diff -aur a/src/channel-display.c b/src/channel-display.c
              c->mark_false_event_id = FALSE;
          }
      } else {
-@@ -1941,7 +1941,7 @@
+@@ -1941,7 +1941,7 @@ static void display_handle_surface_destroy(SpiceChannel *channel, SpiceMsgIn *in
          CHANNEL_DEBUG(channel, "%d: FIXME primary destroy, but is display really disabled?", id);
          /* this is done with a timeout in spicec as well, it's *ugly* */
          if (id != 0 && c->mark_false_event_id == 0) {
@@ -443,10 +529,11 @@ diff -aur a/src/channel-display.c b/src/channel-display.c
          }
          c->primary = NULL;
          g_coroutine_signal_emit(channel, signals[SPICE_DISPLAY_PRIMARY_DESTROY], 0);
-diff -aur a/src/channel-main.c b/src/channel-main.c
---- a/src/channel-main.c	2019-01-05 02:27:02.000000000 -0800
-+++ b/src/channel-main.c	2019-04-22 23:31:30.000000000 -0700
-@@ -357,17 +357,17 @@
+diff --git a/src/channel-main.c b/src/channel-main.c
+index f8be9ff..9b77c20 100644
+--- a/src/channel-main.c
++++ b/src/channel-main.c
+@@ -357,17 +357,17 @@ static void spice_main_channel_dispose(GObject *obj)
      SpiceMainChannelPrivate *c = SPICE_MAIN_CHANNEL(obj)->priv;
  
      if (c->timer_id) {
@@ -467,7 +554,7 @@ diff -aur a/src/channel-main.c b/src/channel-main.c
          c->migrate_delayed_id = 0;
      }
  
-@@ -1157,7 +1157,7 @@
+@@ -1157,7 +1157,7 @@ gboolean spice_main_channel_send_monitor_config(SpiceMainChannel *channel)
  
      spice_channel_wakeup(SPICE_CHANNEL(channel), FALSE);
      if (c->timer_id != 0) {
@@ -476,7 +563,7 @@ diff -aur a/src/channel-main.c b/src/channel-main.c
          c->timer_id = 0;
      }
  
-@@ -1529,16 +1529,16 @@
+@@ -1529,16 +1529,16 @@ static void update_display_timer(SpiceMainChannel *channel, guint seconds)
      SpiceMainChannelPrivate *c = channel->priv;
  
      if (c->timer_id)
@@ -496,7 +583,7 @@ diff -aur a/src/channel-main.c b/src/channel-main.c
      }
  
  }
-@@ -1759,7 +1759,7 @@
+@@ -1759,7 +1759,7 @@ static void main_handle_channels_list(SpiceChannel *channel, SpiceMsgIn *in)
          /* no need to explicitely switch to main context, since
             synchronous call is not needed. */
          /* no need to track idle, session is refed */
@@ -505,7 +592,7 @@ diff -aur a/src/channel-main.c b/src/channel-main.c
      }
  }
  
-@@ -2187,7 +2187,7 @@
+@@ -2187,7 +2187,7 @@ static void spice_main_channel_send_migration_handshake(SpiceChannel *channel)
  
      if (!spice_channel_test_capability(channel, SPICE_MAIN_CAP_SEAMLESS_MIGRATE)) {
          c->migrate_data->do_seamless = false;
@@ -514,7 +601,7 @@ diff -aur a/src/channel-main.c b/src/channel-main.c
      } else {
          SpiceMsgcMainMigrateDstDoSeamless msg_data;
          SpiceMsgOut *msg_out;
-@@ -2373,7 +2373,7 @@
+@@ -2373,7 +2373,7 @@ static void main_migrate_connect(SpiceChannel *channel,
      main_priv->migrate_data = &mig;
  
      /* no need to track idle, call is sync for this coroutine */
@@ -523,7 +610,7 @@ diff -aur a/src/channel-main.c b/src/channel-main.c
  
      /* switch to main loop and wait for connections */
      coroutine_yield(NULL);
-@@ -2422,7 +2422,7 @@
+@@ -2422,7 +2422,7 @@ static void main_handle_migrate_dst_seamless_ack(SpiceChannel *channel, SpiceMsg
  
      g_return_if_fail(c->state == SPICE_CHANNEL_STATE_MIGRATION_HANDSHAKE);
      main_priv->migrate_data->do_seamless = true;
@@ -532,7 +619,7 @@ diff -aur a/src/channel-main.c b/src/channel-main.c
  }
  
  static void main_handle_migrate_dst_seamless_nack(SpiceChannel *channel, SpiceMsgIn *in)
-@@ -2432,7 +2432,7 @@
+@@ -2432,7 +2432,7 @@ static void main_handle_migrate_dst_seamless_nack(SpiceChannel *channel, SpiceMs
  
      g_return_if_fail(c->state == SPICE_CHANNEL_STATE_MIGRATION_HANDSHAKE);
      main_priv->migrate_data->do_seamless = false;
@@ -541,7 +628,7 @@ diff -aur a/src/channel-main.c b/src/channel-main.c
  }
  
  /* main context */
-@@ -2459,7 +2459,7 @@
+@@ -2459,7 +2459,7 @@ static void main_handle_migrate_end(SpiceChannel *channel, SpiceMsgIn *in)
      g_return_if_fail(c->migrate_delayed_id == 0);
      g_return_if_fail(spice_channel_test_capability(channel, SPICE_MAIN_CAP_SEMI_SEAMLESS_MIGRATE));
  
@@ -550,7 +637,7 @@ diff -aur a/src/channel-main.c b/src/channel-main.c
  }
  
  /* main context */
-@@ -2501,7 +2501,7 @@
+@@ -2501,7 +2501,7 @@ static void main_handle_migrate_switch_host(SpiceChannel *channel, SpiceMsgIn *i
  
      if (c->switch_host_delayed_id != 0) {
          g_warning("Switching host already in progress, aborting it");
@@ -559,7 +646,7 @@ diff -aur a/src/channel-main.c b/src/channel-main.c
          c->switch_host_delayed_id = 0;
      }
  
-@@ -2514,7 +2514,7 @@
+@@ -2514,7 +2514,7 @@ static void main_handle_migrate_switch_host(SpiceChannel *channel, SpiceMsgIn *i
      spice_session_set_port(session, mig->port, FALSE);
      spice_session_set_port(session, mig->sport, TRUE);
  
@@ -568,10 +655,11 @@ diff -aur a/src/channel-main.c b/src/channel-main.c
  }
  
  /* coroutine context */
-diff -aur a/src/channel-usbredir.c b/src/channel-usbredir.c
---- a/src/channel-usbredir.c	2019-01-03 03:14:58.000000000 -0800
-+++ b/src/channel-usbredir.c	2019-04-22 20:05:35.000000000 -0700
-@@ -942,7 +942,7 @@
+diff --git a/src/channel-usbredir.c b/src/channel-usbredir.c
+index 182edc4..adc3944 100644
+--- a/src/channel-usbredir.c
++++ b/src/channel-usbredir.c
+@@ -942,7 +942,7 @@ static void usbredir_handle_msg(SpiceChannel *c, SpiceMsgIn *in)
          err_data.spice_device = g_boxed_copy(spice_usb_device_get_type(), spice_device);
          err_data.error = err;
          spice_usbredir_channel_unlock(channel);
@@ -580,10 +668,11 @@ diff -aur a/src/channel-usbredir.c b/src/channel-usbredir.c
          coroutine_yield(NULL);
  
          g_boxed_free(spice_usb_device_get_type(), err_data.spice_device);
-diff -aur a/src/channel-webdav.c b/src/channel-webdav.c
---- a/src/channel-webdav.c	2019-01-03 03:14:58.000000000 -0800
-+++ b/src/channel-webdav.c	2019-04-22 23:31:35.000000000 -0700
-@@ -98,7 +98,7 @@
+diff --git a/src/channel-webdav.c b/src/channel-webdav.c
+index 8e4db1a..82a3ebb 100644
+--- a/src/channel-webdav.c
++++ b/src/channel-webdav.c
+@@ -98,7 +98,7 @@ static void output_queue_free(OutputQueue *queue)
      g_queue_free_full(queue->queue, g_free);
      g_clear_object(&queue->output);
      if (queue->idle_id)
@@ -592,7 +681,7 @@ diff -aur a/src/channel-webdav.c b/src/channel-webdav.c
      g_free(queue);
  }
  
-@@ -121,7 +121,7 @@
+@@ -121,7 +121,7 @@ static void output_queue_flush_cb(GObject *source_object,
      g_clear_error(&error);
  
      if (!q->idle_id)
@@ -601,7 +690,7 @@ diff -aur a/src/channel-webdav.c b/src/channel-webdav.c
  
      g_free(e);
  }
-@@ -176,7 +176,7 @@
+@@ -176,7 +176,7 @@ static void output_queue_push(OutputQueue *q, const guint8 *buf, gsize size,
      g_queue_push_tail(q->queue, e);
  
      if (!q->idle_id && !q->flushing)
@@ -610,29 +699,10 @@ diff -aur a/src/channel-webdav.c b/src/channel-webdav.c
  }
  
  typedef struct Client
-diff -aur a/src/continuation.h b/src/continuation.h
---- a/src/continuation.h	2017-06-20 09:14:41.000000000 -0700
-+++ b/src/continuation.h	2019-04-15 20:07:05.000000000 -0700
-@@ -23,7 +23,16 @@
- 
- #include "spice-common.h"
- #include <stddef.h>
-+#ifdef HAVE_LIBUCONTEXT
-+#include <libucontext.h>
-+#define ucontext_t libucontext_ucontext_t
-+#define getcontext libucontext_getcontext
-+#define setcontext libucontext_setcontext
-+#define swapcontext libucontext_swapcontext
-+#define makecontext libucontext_makecontext
-+#else
- #include <ucontext.h>
-+#endif
- #include <setjmp.h>
- 
- struct continuation
-diff -aur a/src/gio-coroutine.c b/src/gio-coroutine.c
---- a/src/gio-coroutine.c	2018-06-05 07:37:15.000000000 -0700
-+++ b/src/gio-coroutine.c	2019-04-22 23:31:40.000000000 -0700
+diff --git a/src/gio-coroutine.c b/src/gio-coroutine.c
+index 59ae06c..9f4e3be 100644
+--- a/src/gio-coroutine.c
++++ b/src/gio-coroutine.c
 @@ -21,6 +21,7 @@
  #include "config.h"
  
@@ -641,7 +711,7 @@ diff -aur a/src/gio-coroutine.c b/src/gio-coroutine.c
  
  typedef struct _GConditionWaitSource
  {
-@@ -57,14 +58,14 @@
+@@ -57,14 +58,14 @@ GIOCondition g_coroutine_socket_wait(GCoroutine *self,
  
      src = g_socket_create_source(sock, cond | G_IO_HUP | G_IO_ERR | G_IO_NVAL, NULL);
      g_source_set_callback(src, (GSourceFunc)g_io_wait_helper, self, NULL);
@@ -658,7 +728,7 @@ diff -aur a/src/gio-coroutine.c b/src/gio-coroutine.c
  
      self->wait_id = 0;
      return val;
-@@ -77,7 +78,7 @@
+@@ -77,7 +78,7 @@ void g_coroutine_condition_cancel(GCoroutine *coroutine)
      if (coroutine->condition_id == 0)
          return;
  
@@ -667,7 +737,7 @@ diff -aur a/src/gio-coroutine.c b/src/gio-coroutine.c
      coroutine->condition_id = 0;
  }
  
-@@ -167,7 +168,7 @@
+@@ -167,7 +168,7 @@ gboolean g_coroutine_condition_wait(GCoroutine *self, GConditionWaitFunc func, g
      vsrc->func = func;
      vsrc->data = data;
  
@@ -676,7 +746,7 @@ diff -aur a/src/gio-coroutine.c b/src/gio-coroutine.c
      g_source_set_callback(src, g_condition_wait_helper, self, NULL);
      coroutine_yield(NULL);
      g_source_unref(src);
-@@ -221,7 +222,7 @@
+@@ -221,7 +222,7 @@ g_coroutine_signal_emit(gpointer instance, guint signal_id,
          g_signal_emit_valist(instance, signal_id, detail, data.var_args);
      } else {
          g_object_ref(instance);
@@ -685,7 +755,7 @@ diff -aur a/src/gio-coroutine.c b/src/gio-coroutine.c
          coroutine_yield(NULL);
          g_warn_if_fail(data.notified);
          g_object_unref(instance);
-@@ -258,7 +259,7 @@
+@@ -258,7 +259,7 @@ void g_coroutine_object_notify(GObject *object,
          data.propname = (gpointer)property_name;
          data.notified = FALSE;
  
@@ -694,10 +764,11 @@ diff -aur a/src/gio-coroutine.c b/src/gio-coroutine.c
  
          /* This switches to the system coroutine context, lets
           * the idle function run to dispatch the signal, and
-diff -aur a/src/map-file b/src/map-file
---- a/src/map-file	2019-01-03 03:14:58.000000000 -0800
-+++ b/src/map-file	2019-04-22 20:55:48.000000000 -0700
-@@ -187,6 +187,7 @@
+diff --git a/src/map-file b/src/map-file
+index 500683c..e063f0e 100644
+--- a/src/map-file
++++ b/src/map-file
+@@ -187,6 +187,7 @@ spice_util_get_version_string;
  spice_util_set_debug;
  spice_uuid_to_string;
  spice_webdav_channel_get_type;
@@ -705,9 +776,10 @@ diff -aur a/src/map-file b/src/map-file
  local:
  *;
  };
-diff -aur a/src/smartcard-manager.c b/src/smartcard-manager.c
---- a/src/smartcard-manager.c	2019-01-08 01:42:46.000000000 -0800
-+++ b/src/smartcard-manager.c	2019-04-22 23:34:47.000000000 -0700
+diff --git a/src/smartcard-manager.c b/src/smartcard-manager.c
+index ceecfdc..be437dd 100644
+--- a/src/smartcard-manager.c
++++ b/src/smartcard-manager.c
 @@ -28,6 +28,7 @@
  #include "smartcard-manager.h"
  #include "smartcard-manager-priv.h"
@@ -716,7 +788,7 @@ diff -aur a/src/smartcard-manager.c b/src/smartcard-manager.c
  
  /**
   * SECTION:smartcard-manager
-@@ -110,7 +111,7 @@
+@@ -110,7 +111,7 @@ static void spice_smartcard_manager_finalize(GObject *gobject)
      SpiceSmartcardManagerPrivate *priv = manager->priv;
  
      if (priv->monitor_id != 0) {
@@ -725,7 +797,7 @@ diff -aur a/src/smartcard-manager.c b/src/smartcard-manager.c
          priv->monitor_id = 0;
      }
  
-@@ -363,7 +364,7 @@
+@@ -363,7 +364,7 @@ static guint smartcard_monitor_add(SmartcardSourceFunc callback,
  
      source = smartcard_monitor_source_new();
      g_source_set_callback(source, (GSourceFunc)callback, user_data, NULL);
@@ -734,10 +806,11 @@ diff -aur a/src/smartcard-manager.c b/src/smartcard-manager.c
      g_source_unref(source);
  
      return id;
-diff -aur a/src/spice-channel.c b/src/spice-channel.c
---- a/src/spice-channel.c	2019-01-05 02:27:02.000000000 -0800
-+++ b/src/spice-channel.c	2019-04-22 23:31:54.000000000 -0700
-@@ -743,9 +743,9 @@
+diff --git a/src/spice-channel.c b/src/spice-channel.c
+index 61de177..c2926bb 100644
+--- a/src/spice-channel.c
++++ b/src/spice-channel.c
+@@ -743,9 +743,9 @@ void spice_msg_out_send(SpiceMsgOut *out)
      if (was_empty && !c->xmit_queue_wakeup_id) {
          c->xmit_queue_wakeup_id =
              /* Use g_timeout_add_full so that can specify the priority */
@@ -750,7 +823,7 @@ diff -aur a/src/spice-channel.c b/src/spice-channel.c
      }
  
  end:
-@@ -2692,7 +2692,7 @@
+@@ -2692,7 +2692,7 @@ cleanup:
          c->event = SPICE_CHANNEL_ERROR_CONNECT;
      }
  
@@ -759,7 +832,7 @@ diff -aur a/src/spice-channel.c b/src/spice-channel.c
      /* Co-routine exits now - the SpiceChannel object may no longer exist,
         so don't do anything else now unless you like SEGVs */
      return NULL;
-@@ -2752,7 +2752,7 @@
+@@ -2752,7 +2752,7 @@ static gboolean channel_connect(SpiceChannel *channel, gboolean tls)
      g_object_ref(G_OBJECT(channel)); /* Unref'd when co-routine exits */
  
      /* we connect in idle, to let previous coroutine exit, if present */
@@ -768,7 +841,7 @@ diff -aur a/src/spice-channel.c b/src/spice-channel.c
  
      return true;
  }
-@@ -2818,7 +2818,7 @@
+@@ -2818,7 +2818,7 @@ static void channel_reset(SpiceChannel *channel, gboolean migrating)
  
      CHANNEL_DEBUG(channel, "channel reset");
      if (c->connect_delayed_id) {
@@ -777,7 +850,7 @@ diff -aur a/src/spice-channel.c b/src/spice-channel.c
          c->connect_delayed_id = 0;
      }
  
-@@ -2850,7 +2850,7 @@
+@@ -2850,7 +2850,7 @@ static void channel_reset(SpiceChannel *channel, gboolean migrating)
      g_queue_foreach(&c->xmit_queue, (GFunc)spice_msg_out_unref, NULL);
      g_queue_clear(&c->xmit_queue);
      if (c->xmit_queue_wakeup_id) {
@@ -786,17 +859,19 @@ diff -aur a/src/spice-channel.c b/src/spice-channel.c
          c->xmit_queue_wakeup_id = 0;
      }
      g_mutex_unlock(&c->xmit_queue_lock);
-diff -aur a/src/spice-glib-sym-file b/src/spice-glib-sym-file
---- a/src/spice-glib-sym-file	2019-01-03 03:14:58.000000000 -0800
-+++ b/src/spice-glib-sym-file	2019-04-22 20:55:38.000000000 -0700
-@@ -164,3 +164,4 @@
+diff --git a/src/spice-glib-sym-file b/src/spice-glib-sym-file
+index 2df1cc0..1f7f25d 100644
+--- a/src/spice-glib-sym-file
++++ b/src/spice-glib-sym-file
+@@ -164,3 +164,4 @@ spice_util_get_version_string
  spice_util_set_debug
  spice_uuid_to_string
  spice_webdav_channel_get_type
 +spice_util_set_main_context
-diff -aur a/src/spice-gstaudio.c b/src/spice-gstaudio.c
---- a/src/spice-gstaudio.c	2019-01-16 03:32:53.000000000 -0800
-+++ b/src/spice-gstaudio.c	2019-04-22 23:32:00.000000000 -0700
+diff --git a/src/spice-gstaudio.c b/src/spice-gstaudio.c
+index 98c1f4f..d68057f 100644
+--- a/src/spice-gstaudio.c
++++ b/src/spice-gstaudio.c
 @@ -25,7 +25,7 @@
  #include "spice-gstaudio.h"
  #include "spice-common.h"
@@ -806,7 +881,7 @@ diff -aur a/src/spice-gstaudio.c b/src/spice-gstaudio.c
  
  struct stream {
      GstElement              *pipe;
-@@ -243,7 +243,7 @@
+@@ -243,7 +243,7 @@ static void playback_stop(SpiceGstaudio *gstaudio)
      if (p->playback.pipe)
          gst_element_set_state(p->playback.pipe, GST_STATE_READY);
      if (p->mmtime_id != 0) {
@@ -815,7 +890,7 @@ diff -aur a/src/spice-gstaudio.c b/src/spice-gstaudio.c
          p->mmtime_id = 0;
      }
  }
-@@ -320,7 +320,7 @@
+@@ -320,7 +320,7 @@ cleanup:
  
      if (!p->playback.fake && p->mmtime_id == 0) {
          update_mmtime_timeout_cb(gstaudio);
@@ -824,10 +899,11 @@ diff -aur a/src/spice-gstaudio.c b/src/spice-gstaudio.c
      }
  }
  
-diff -aur a/src/spice-session.c b/src/spice-session.c
---- a/src/spice-session.c	2019-01-05 02:27:02.000000000 -0800
-+++ b/src/spice-session.c	2019-04-22 23:32:40.000000000 -0700
-@@ -1828,7 +1828,7 @@
+diff --git a/src/spice-session.c b/src/spice-session.c
+index 5609c9b..c4d9703 100644
+--- a/src/spice-session.c
++++ b/src/spice-session.c
+@@ -1828,7 +1828,7 @@ end:
  
      s->migrate_wait_init = FALSE;
      if (s->after_main_init) {
@@ -836,7 +912,7 @@ diff -aur a/src/spice-session.c b/src/spice-session.c
          s->after_main_init = 0;
      }
  
-@@ -1903,7 +1903,7 @@
+@@ -1903,7 +1903,7 @@ gboolean spice_session_migrate_after_main_init(SpiceSession *self)
      g_return_val_if_fail(s->after_main_init == 0, FALSE);
  
      s->migrate_wait_init = FALSE;
@@ -845,7 +921,7 @@ diff -aur a/src/spice-session.c b/src/spice-session.c
  
      return TRUE;
  }
-@@ -1996,7 +1996,7 @@
+@@ -1996,7 +1996,7 @@ void spice_session_disconnect(SpiceSession *session)
          return;
  
      g_object_ref(session);
@@ -854,7 +930,7 @@ diff -aur a/src/spice-session.c b/src/spice-session.c
  }
  
  /**
-@@ -2238,7 +2238,7 @@
+@@ -2238,7 +2238,7 @@ GSocketConnection* spice_session_channel_open_host(SpiceSession *session, SpiceC
      g_socket_client_set_enable_proxy(open_host.client, s->proxy != NULL);
      g_socket_client_set_timeout(open_host.client, SOCKET_TIMEOUT);
  
@@ -863,10 +939,11 @@ diff -aur a/src/spice-session.c b/src/spice-session.c
      /* switch to main loop and wait for connection */
      coroutine_yield(NULL);
  
-diff -aur a/src/spice-util-priv.h b/src/spice-util-priv.h
---- a/src/spice-util-priv.h	2016-09-07 03:16:46.000000000 -0700
-+++ b/src/spice-util-priv.h	2019-04-22 23:29:35.000000000 -0700
-@@ -32,6 +32,14 @@
+diff --git a/src/spice-util-priv.h b/src/spice-util-priv.h
+index 38b0deb..8a24742 100644
+--- a/src/spice-util-priv.h
++++ b/src/spice-util-priv.h
+@@ -32,6 +32,14 @@ gchar* spice_unix2dos(const gchar *str, gssize len);
  gchar* spice_dos2unix(const gchar *str, gssize len);
  void spice_mono_edge_highlight(unsigned width, unsigned hight,
                                 const guint8 *and, const guint8 *xor, guint8 *dest);
@@ -881,10 +958,11 @@ diff -aur a/src/spice-util-priv.h b/src/spice-util-priv.h
  
  G_END_DECLS
  
-diff -aur a/src/spice-util.c b/src/spice-util.c
---- a/src/spice-util.c	2017-06-20 09:14:41.000000000 -0700
-+++ b/src/spice-util.c	2019-04-22 23:30:37.000000000 -0700
-@@ -476,3 +476,142 @@
+diff --git a/src/spice-util.c b/src/spice-util.c
+index f5a35ed..950be6b 100644
+--- a/src/spice-util.c
++++ b/src/spice-util.c
+@@ -476,3 +476,142 @@ void spice_mono_edge_highlight(unsigned width, unsigned height,
          xor += bpl;
      }
  }
@@ -1027,10 +1105,11 @@ diff -aur a/src/spice-util.c b/src/spice-util.c
 +
 +    return source != NULL;
 +}
-diff -aur a/src/spice-util.h b/src/spice-util.h
---- a/src/spice-util.h	2017-06-20 09:14:41.000000000 -0700
-+++ b/src/spice-util.h	2019-04-22 19:39:06.000000000 -0700
-@@ -31,6 +31,7 @@
+diff --git a/src/spice-util.h b/src/spice-util.h
+index 1d80f1c..65cadb1 100644
+--- a/src/spice-util.h
++++ b/src/spice-util.h
+@@ -31,6 +31,7 @@ gulong spice_g_signal_connect_object(gpointer instance,
                                       gpointer gobject,
                                       GConnectFlags connect_flags);
  gchar* spice_uuid_to_string(const guint8 uuid[16]);
@@ -1038,10 +1117,11 @@ diff -aur a/src/spice-util.h b/src/spice-util.h
  
  #define SPICE_DEBUG(fmt, ...)                                   \
      do {                                                        \
-diff -aur a/src/spice-widget.c b/src/spice-widget.c
---- a/src/spice-widget.c	2019-01-16 03:31:42.000000000 -0800
-+++ b/src/spice-widget.c	2019-04-22 23:32:53.000000000 -0700
-@@ -446,7 +446,7 @@
+diff --git a/src/spice-widget.c b/src/spice-widget.c
+index 8adcc38..202d6cd 100644
+--- a/src/spice-widget.c
++++ b/src/spice-widget.c
+@@ -446,7 +446,7 @@ static void spice_display_dispose(GObject *obj)
      d->gtk_session = NULL;
  
      if (d->key_delayed_id) {
@@ -1050,7 +1130,7 @@ diff -aur a/src/spice-widget.c b/src/spice-widget.c
          d->key_delayed_id = 0;
      }
  
-@@ -1351,7 +1351,7 @@
+@@ -1351,7 +1351,7 @@ static void key_press_and_release(SpiceDisplay *display)
      d->key_delayed_scancode = 0;
  
      if (d->key_delayed_id) {
@@ -1059,7 +1139,7 @@ diff -aur a/src/spice-widget.c b/src/spice-widget.c
          d->key_delayed_id = 0;
      }
  }
-@@ -1368,7 +1368,7 @@
+@@ -1368,7 +1368,7 @@ static gboolean key_press_delayed(gpointer data)
      d->key_delayed_scancode = 0;
  
      if (d->key_delayed_id) {
@@ -1068,7 +1148,7 @@ diff -aur a/src/spice-widget.c b/src/spice-widget.c
          d->key_delayed_id = 0;
      }
  
-@@ -1421,7 +1421,7 @@
+@@ -1421,7 +1421,7 @@ static void send_key(SpiceDisplay *display, int scancode, SendKeyType type, gboo
              d->keypress_delay != 0 &&
              !(d->key_state[i] & m)) {
              g_warn_if_fail(d->key_delayed_id == 0);
@@ -1077,10 +1157,11 @@ diff -aur a/src/spice-widget.c b/src/spice-widget.c
              d->key_delayed_scancode = scancode;
          } else
              spice_inputs_channel_key_press(d->inputs, scancode);
-diff -aur a/src/usb-acl-helper.c b/src/usb-acl-helper.c
---- a/src/usb-acl-helper.c	2019-01-03 03:14:58.000000000 -0800
-+++ b/src/usb-acl-helper.c	2019-04-22 20:07:08.000000000 -0700
-@@ -209,7 +209,7 @@
+diff --git a/src/usb-acl-helper.c b/src/usb-acl-helper.c
+index 186b86e..ab788ac 100644
+--- a/src/usb-acl-helper.c
++++ b/src/usb-acl-helper.c
+@@ -209,7 +209,7 @@ void spice_usb_acl_helper_open_acl_async(SpiceUsbAclHelper *self,
          g_task_return_error(task, err);
          goto done;
      }
@@ -1089,10 +1170,19 @@ diff -aur a/src/usb-acl-helper.c b/src/usb-acl-helper.c
  
      priv->in_ch = g_io_channel_unix_new(in);
      g_io_channel_set_close_on_unref(priv->in_ch, TRUE);
-diff -aur a/src/usb-device-manager.c b/src/usb-device-manager.c
---- a/src/usb-device-manager.c	2019-01-07 23:44:42.000000000 -0800
-+++ b/src/usb-device-manager.c	2019-04-22 20:06:28.000000000 -0700
-@@ -1142,7 +1142,7 @@
+diff --git a/src/usb-device-manager.c b/src/usb-device-manager.c
+index 55b672b..4e1ea87 100644
+--- a/src/usb-device-manager.c
++++ b/src/usb-device-manager.c
+@@ -45,6 +45,7 @@
+ #include "spice-client.h"
+ #include "spice-marshal.h"
+ #include "usb-device-manager-priv.h"
++#include "spice-util-priv.h"
+ 
+ #include <glib/gi18n-lib.h>
+ 
+@@ -1142,7 +1143,7 @@ static int spice_usb_device_manager_hotplug_cb(libusb_context       *ctx,
      args->self = g_object_ref(self);
      args->device = libusb_ref_device(device);
      args->event = event;
@@ -1101,10 +1191,11 @@ diff -aur a/src/usb-device-manager.c b/src/usb-device-manager.c
      return 0;
  }
  #endif // USE_USBREDIR
-diff -aur a/src/vmcstream.c b/src/vmcstream.c
---- a/src/vmcstream.c	2016-08-12 05:45:49.000000000 -0700
-+++ b/src/vmcstream.c	2019-04-22 20:06:35.000000000 -0700
-@@ -163,7 +163,7 @@
+diff --git a/src/vmcstream.c b/src/vmcstream.c
+index 0634bce..1891806 100644
+--- a/src/vmcstream.c
++++ b/src/vmcstream.c
+@@ -163,7 +163,7 @@ spice_vmc_input_stream_co_data(SpiceVmcInputStream *self,
          cb_data = g_new(complete_in_idle_cb_data , 1);
          cb_data->task = g_object_ref(self->task);
          cb_data->pos = self->pos;
@@ -1113,3 +1204,6 @@ diff -aur a/src/vmcstream.c b/src/vmcstream.c
  
          g_clear_object(&self->task);
      }
+-- 
+2.28.0
+

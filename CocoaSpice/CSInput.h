@@ -40,29 +40,23 @@ typedef NS_ENUM(NSInteger, CSInputScroll) {
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface CSInput : NSObject <UTMRenderSource>
+@interface CSInput : NSObject
 
-@property (nonatomic, readonly, nullable) SpiceSession *session;
-@property (nonatomic, readonly, assign) NSInteger channelID;
-@property (nonatomic, readonly, assign) NSInteger monitorID;
 @property (nonatomic, readonly, assign) BOOL serverModeCursor;
-@property (nonatomic, readonly, assign) BOOL hasCursor;
 @property (nonatomic, assign) BOOL disableInputs;
-@property (nonatomic, readonly) CGSize cursorSize;
-@property (nonatomic, assign) CGSize displaySize;
-@property (nonatomic, assign) BOOL inhibitCursor;
 
 - (void)sendKey:(CSInputKey)type code:(int)scancode;
 - (void)sendPause:(CSInputKey)type;
 - (void)releaseKeys;
 
 - (void)sendMouseMotion:(CSInputButton)button point:(CGPoint)point;
+- (void)sendMouseMotion:(CSInputButton)button point:(CGPoint)point forMonitorID:(NSInteger)monitorID;
 - (void)sendMouseScroll:(CSInputScroll)type button:(CSInputButton)button dy:(CGFloat)dy;
 - (void)sendMouseButton:(CSInputButton)button pressed:(BOOL)pressed point:(CGPoint)point;
 - (void)requestMouseMode:(BOOL)server;
-- (void)forceCursorPosition:(CGPoint)pos;
 
-- (id)initWithSession:(nonnull SpiceSession *)session channelID:(NSInteger)channelID monitorID:(NSInteger)monitorID;
+- (instancetype)init NS_UNAVAILABLE;
+- (instancetype)initWithSession:(SpiceSession *)session NS_DESIGNATED_INITIALIZER;
 
 @end
 

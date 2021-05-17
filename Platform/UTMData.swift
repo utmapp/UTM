@@ -468,6 +468,22 @@ class UTMData: ObservableObject {
         }
     }
     
+    func isSupported(systemArchitecture: String?) -> Bool {
+        guard let arch = systemArchitecture else {
+            return true // ignore this
+        }
+        let bundleURL = Bundle.main.bundleURL
+        #if os(macOS)
+        let contentsURL = bundleURL.appendingPathComponent("Contents", isDirectory: true)
+        #else
+        let contentsURL = bundleURL
+        #endif
+        let frameworksURL = contentsURL.appendingPathComponent("Frameworks", isDirectory: true)
+        let framework = frameworksURL.appendingPathComponent("qemu-" + arch + "-softmmu.framework/qemu-" + arch + "-softmmu", isDirectory: false)
+        logger.error("\(framework.path)")
+        return fileManager.fileExists(atPath: framework.path)
+    }
+    
     func busyWork(_ work: @escaping () throws -> Void) {
         DispatchQueue.main.async {
             self.busy = true

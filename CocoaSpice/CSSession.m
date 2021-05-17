@@ -224,7 +224,7 @@ static gboolean cs_clipboard_request(SpiceMainChannel *main, guint selection,
 static void cs_clipboard_release(SpiceMainChannel *main, guint selection,
                                  gpointer user_data)
 {
-    CSSession *self = (__bridge CSSession *)user_data;
+    //CSSession *self = (__bridge CSSession *)user_data;
     [[UTMPasteboard generalPasteboard] clearContents];
 }
 

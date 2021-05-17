@@ -28,9 +28,11 @@ struct VMSettingsView: View {
         ToolbarTabView {
             PreferencePane(label: "Information", systemImage: "info.circle", cancel: cancel, save: save) {
                 VMConfigInfoView(config: config)
+                    .environmentObject(data)
             }
             PreferencePane(label: "System", systemImage: "cpu", cancel: cancel, save: save) {
                 VMConfigSystemView(config: config)
+                    .environmentObject(data)
             }
             PreferencePane(label: "QEMU", systemImage: "shippingbox", cancel: cancel, save: save) {
                 VMConfigQEMUView(config: config)
@@ -42,18 +44,23 @@ struct VMSettingsView: View {
             }
             PreferencePane(label: "Display", systemImage: "rectangle.on.rectangle", cancel: cancel, save: save) {
                 VMConfigDisplayView(config: config)
+                    .environmentObject(data)
             }
             PreferencePane(label: "Input", systemImage: "keyboard", cancel: cancel, save: save) {
                 VMConfigInputView(config: config)
+                    .environmentObject(data)
             }
             PreferencePane(label: "Network", systemImage: "network", cancel: cancel, save: save) {
                 VMConfigNetworkView(config: config)
+                    .environmentObject(data)
             }
             PreferencePane(label: "Sound", systemImage: "speaker.wave.2", cancel: cancel, save: save) {
                 VMConfigSoundView(config: config)
+                    .environmentObject(data)
             }
             PreferencePane(label: "Sharing", systemImage: "person.crop.circle.fill", cancel: cancel, save: save) {
                 VMConfigSharingView(config: config)
+                    .environmentObject(data)
             }
         }.frame(minWidth: 800, minHeight: 400)
         .disabled(data.busy)

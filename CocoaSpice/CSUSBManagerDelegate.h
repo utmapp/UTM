@@ -1,5 +1,5 @@
 //
-// Copyright © 2020 osy. All rights reserved.
+// Copyright © 2021 osy. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,6 +14,19 @@
 // limitations under the License.
 //
 
-// Configuration settings file format documentation can be found at:
-// https://help.apple.com/xcode/#/dev745c5c974
-SYSROOT_DIR = "sysroot-$(TARGET_NAME)-$(ARCHS:identifier)"
+#import <Foundation/Foundation.h>
+
+@class CSUSBDevice;
+@class CSUSBManager;
+
+NS_ASSUME_NONNULL_BEGIN
+
+@protocol CSUSBManagerDelegate <NSObject>
+
+- (void)spiceUsbManager:(CSUSBManager *)usbManager deviceError:(NSString *)error forDevice:(CSUSBDevice *)device;
+- (void)spiceUsbManager:(CSUSBManager *)usbManager deviceAttached:(CSUSBDevice *)device;
+- (void)spiceUsbManager:(CSUSBManager *)usbManager deviceRemoved:(CSUSBDevice *)device;
+
+@end
+
+NS_ASSUME_NONNULL_END

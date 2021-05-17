@@ -39,17 +39,6 @@
     }
 }
 
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
-    /* // TODO: re-enable directory picker
-    if (cell == self.selectDirectoryCell) {
-        [self selectDirectory];
-        [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    }
-     */
-    [super tableView:tableView didSelectRowAtIndexPath:indexPath];
-}
-
 - (void)showShareDirectoryOptions:(BOOL)visible animated:(BOOL)animated {
     [self cells:self.directorySharingCells setHidden:!visible];
     if (self.configuration.shareDirectoryName.length == 0) {

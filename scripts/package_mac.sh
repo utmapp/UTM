@@ -1,22 +1,36 @@
 #!/bin/sh
 
 set -e
+
+command -v realpath >/dev/null 2>&1 || realpath() {
+    [[ $1 = /* ]] && echo "$1" || echo "$PWD/${1#./}"
+}
+BASEDIR="$(dirname "$(realpath $0)")"
+
 if [ $# -lt 3 ]; then
-	echo "usage: $0 [--no-sandbox] UTM.xcarchive outputPath TEAM_ID"
+	echo "usage: $0 MODE UTM.xcarchive outputPath [TEAM_ID PROFILE_NAME HELPER_PROFILE_NAME]"
+	echo "  MODE is one of:"
+	echo "          unsigned (unsigned DMG)"
+	echo "          developer-id (signed DMG)"
+	echo "          app-store (Mac App Store package)"
+	echo "  TEAM_ID is required if not unsigned"
+	echo "  PROFILE_NAME is required if not unsigned, can be the name or UUID"
+	echo "  HELPER_PROFILE_NAME is required if not unsigned, can be the name or UUID"
 	exit 1
 fi
 
-NO_SANDBOX=0
-if [ "$1" == "--no-sandbox" ]; then
-	NO_SANDBOX=1
-	shift
-fi
-
-INPUT=$1
-OUTPUT=$2
-TEAM_ID=$3
+MODE=$1
+INPUT=$2
+OUTPUT=$3
+TEAM_ID=$4
+PROFILE_NAME=$5
+HELPER_PROFILE_NAME=$6
 OPTIONS="/tmp/options.plist"
 SIGNED="/tmp/signed"
+UTM_ENTITLEMENTS="/tmp/utm.entitlements"
+LAUNCHER_ENTITLEMENTS="/tmp/launcher.entitlements"
+HELPER_ENTITLEMENTS="/tmp/helper.entitlements"
+INPUT_COPY="/tmp/UTM.xcarchive"
 
 cat >"$OPTIONS" <<EOL
 <?xml version="1.0" encoding="UTF-8"?>
@@ -25,10 +39,19 @@ cat >"$OPTIONS" <<EOL
 <dict>
 	<key>compileBitcode</key>
 	<false/>
+	<key>installerSigningCertificate</key>
+	<string>3rd Party Mac Developer Installer</string>
 	<key>method</key>
-	<string>developer-id</string>
+	<string>${MODE}</string>
+	<key>provisioningProfiles</key>
+	<dict>
+		<key>com.utmapp.UTM</key>
+		<string>${PROFILE_NAME}</string>
+		<key>com.utmapp.QEMUHelper</key>
+		<string>${HELPER_PROFILE_NAME}</string>
+	</dict>
 	<key>signingStyle</key>
-	<string>automatic</string>
+	<string>manual</string>
 	<key>stripSwiftSymbols</key>
 	<true/>
 	<key>teamID</key>
@@ -39,50 +62,44 @@ cat >"$OPTIONS" <<EOL
 </plist>
 EOL
 
-# FIXME: until macOS Hypervisor.framework works with sandboxed NSTask, we have to remove it
-if [ $NO_SANDBOX -eq 1 ]; then
-	INPUT_COPY="/tmp/UTM.xcarchive"
-	QEMU_ENTITLEMENTS="/tmp/qemu.entitlements"
-	EMPTY_ENTITLEMENTS="/tmp/empty.entitlements"
+cp "$BASEDIR/../Platform/macOS/macOS.entitlements" "$UTM_ENTITLEMENTS"
+cp "$BASEDIR/../QEMULauncher/QEMULauncher.entitlements" "$LAUNCHER_ENTITLEMENTS"
+cp "$BASEDIR/../QEMUHelper/QEMUHelper.entitlements" "$HELPER_ENTITLEMENTS"
 
-	cat >"$QEMU_ENTITLEMENTS" <<EOL
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-	<key>com.apple.security.cs.allow-jit</key>
-	<true/>
-	<key>com.apple.security.hypervisor</key>
-	<true/>
-</dict>
-</plist>
-EOL
-
-	cat >"$EMPTY_ENTITLEMENTS" <<EOL
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict/>
-</plist>
-EOL
-
-	rm -rf "$INPUT_COPY"
-	cp -r "$INPUT" "$INPUT_COPY"
-	find "$INPUT_COPY/Products/Applications/UTM.app" -path '*/qemu-*' -exec codesign --force --sign - --entitlements "$QEMU_ENTITLEMENTS" --timestamp=none --options runtime \{\} \;
-	codesign --force --sign - --entitlements "$EMPTY_ENTITLEMENTS" --timestamp=none --options runtime "$INPUT_COPY/Products/Applications/UTM.app/Contents/MacOS/UTM"
-	codesign --force --sign - --entitlements "$EMPTY_ENTITLEMENTS" --timestamp=none --options runtime "$INPUT_COPY/Products/Applications/UTM.app/Contents/XPCServices/QEMUHelper.xpc/Contents/MacOS/QEMUHelper"
-	rm "$QEMU_ENTITLEMENTS"
-	rm "$EMPTY_ENTITLEMENTS"
-	INPUT="$INPUT_COPY"
+if [ "$MODE" == "unsigned" ]; then
+	/usr/libexec/PlistBuddy -c "Delete :com.apple.vm.device-access" "$UTM_ENTITLEMENTS"
+	/usr/libexec/PlistBuddy -c "Delete :com.apple.vm.networking" "$HELPER_ENTITLEMENTS"
+	/usr/libexec/PlistBuddy -c "Add :com.apple.security.cs.disable-library-validation bool true" "$UTM_ENTITLEMENTS"
+	/usr/libexec/PlistBuddy -c "Add :com.apple.security.cs.disable-library-validation bool true" "$LAUNCHER_ENTITLEMENTS"
+	/usr/libexec/PlistBuddy -c "Add :com.apple.security.cs.disable-library-validation bool true" "$HELPER_ENTITLEMENTS"
 fi
 
-xcodebuild -exportArchive -exportOptionsPlist "$OPTIONS" -archivePath "$INPUT" -exportPath "$SIGNED"
-find "$SIGNED/UTM.app" -type f \( -path '*/Contents/MacOS/*' -or -path '*/Contents/Frameworks/*.dylib' \) -exec chmod +x \{\} \;
+# ad-hoc sign with the right entitlements
+rm -rf "$INPUT_COPY"
+cp -r "$INPUT" "$INPUT_COPY"
+find "$INPUT_COPY/Products/Applications/UTM.app" -type f \( -path '*/Contents/MacOS/*' -or -path '*/Contents/Frameworks/*.dylib' \) -exec chmod +x \{\} \;
+find "$INPUT_COPY/Products/Applications/UTM.app" -path '*/Contents/Frameworks/*.dylib' -exec codesign --force --sign - --timestamp=none \{\} \;
+codesign --force --sign - --entitlements "$LAUNCHER_ENTITLEMENTS" --timestamp=none --options runtime "$INPUT_COPY/Products/Applications/UTM.app/Contents/XPCServices/QEMUHelper.xpc/Contents/MacOS/QEMULauncher"
+codesign --force --sign - --entitlements "$HELPER_ENTITLEMENTS" --timestamp=none --options runtime "$INPUT_COPY/Products/Applications/UTM.app/Contents/XPCServices/QEMUHelper.xpc/Contents/MacOS/QEMUHelper"
+codesign --force --sign - --entitlements "$UTM_ENTITLEMENTS" --timestamp=none --options runtime "$INPUT_COPY/Products/Applications/UTM.app/Contents/MacOS/UTM"
+
+# re-sign with certificate and profile if requested
+if [ "$MODE" == "unsigned" ]; then
+	mv "$INPUT_COPY/Products/Applications" "$SIGNED"
+else
+	xcodebuild -exportArchive -exportOptionsPlist "$OPTIONS" -archivePath "$INPUT_COPY" -exportPath "$SIGNED"
+fi
 
 rm "$OPTIONS"
-if [ ! -z "$INPUT_COPY" ]; then
-	rm -rf "$INPUT_COPY"
-fi
+rm "$UTM_ENTITLEMENTS"
+rm "$LAUNCHER_ENTITLEMENTS"
+rm "$HELPER_ENTITLEMENTS"
+rm -rf "$INPUT_COPY"
 
-rm -f "$OUTPUT/UTM.dmg"
-hdiutil create -fs HFS+ -srcfolder "$SIGNED/UTM.app" -volname "UTM" "$OUTPUT/UTM.dmg"
+if [ "$MODE" == "app-store" ]; then
+	cp "$SIGNED/UTM.pkg" "$OUTPUT/UTM.pkg"
+else
+	rm -f "$OUTPUT/UTM.dmg"
+	hdiutil create -fs HFS+ -srcfolder "$SIGNED/UTM.app" -volname "UTM" "$OUTPUT/UTM.dmg"
+fi
+rm -rf "$SIGNED"

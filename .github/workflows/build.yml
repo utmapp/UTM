@@ -16,22 +16,22 @@ on:
 jobs:
   build:
     name: Build UTM
-    runs-on: macos-latest
+    runs-on: macos-10.15
     strategy:
       matrix:
         arch: [arm64, x86_64]
-        platform: [ios, macos]
+        platform: [ios, ios-tci, macos]
     steps:
       - name: Checkout
-        uses: actions/checkout@v1
+        uses: actions/checkout@v2
         with:
           submodules: recursive
       - name: Setup Xcode
         shell: bash
-        run: sudo xcode-select -switch /Applications/Xcode_12.2.app
+        run: sudo xcode-select -switch /Applications/Xcode_12.4.app
       - name: Cache Sysroot
         id: cache-sysroot
-        uses: actions/cache@v1
+        uses: actions/cache@v2
         with:
           path: sysroot-${{ matrix.platform }}-${{ matrix.arch }}
           key: ${{ matrix.platform }}-${{ matrix.arch }}-${{ hashFiles('scripts/build_dependencies.sh') }}-${{ hashFiles('patches/**') }}
@@ -49,83 +49,80 @@ jobs:
           ./scripts/build_dependencies.sh -p ${{ matrix.platform }} -a ${{ matrix.arch }}
       - name: Compress Sysroot
         if: steps.cache-sysroot.outputs.cache-hit != 'true'
-        run: |
-          mkdir sysroot_tar
-          tar cf sysroot_tar/sysroot.tgz sysroot*
+        run: tar cf sysroot.tgz sysroot*
       - name: Upload Sysroot
         if: steps.cache-sysroot.outputs.cache-hit != 'true'
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v2
         with:
           name: Sysroot-${{ matrix.platform }}-${{ matrix.arch }}
-          path: sysroot_tar
+          path: sysroot.tgz
       - name: Build UTM
         run: ./scripts/build_utm.sh -p ${{ matrix.platform }} -a ${{ matrix.arch }} -o build-utm/UTM
       - name: Upload UTM
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v2
         with:
           name: UTM-${{ matrix.platform }}-${{ matrix.arch }}
           path: build-utm
   build-universal:
     name: Build UTM (macOS Universal)
-    runs-on: macos-latest
+    runs-on: macos-10.15
     needs: build
     if: github.event_name == 'release'
     steps:
       - name: Checkout
-        uses: actions/checkout@v1
+        uses: actions/checkout@v2
         with:
           submodules: recursive
       - name: Download Sysroot (arm64)
-        uses: actions/download-artifact@v1
+        uses: actions/download-artifact@v2
         with:
           name: Sysroot-macos-arm64
+          path: Sysroot-1
       - name: Download Sysroot (x86_64)
-        uses: actions/download-artifact@v1
+        uses: actions/download-artifact@v2
         with:
           name: Sysroot-macos-x86_64
+          path: Sysroot-2
       - name: Pack Universal Sysroot
         run: |
-          tar xf Sysroot-macos-arm64/sysroot.tgz
-          tar xf Sysroot-macos-x86_64/sysroot.tgz
+          tar xf Sysroot-1/sysroot.tgz
+          tar xf Sysroot-2/sysroot.tgz
           ./scripts/pack_dependencies.sh . macos arm64 x86_64
       - name: Compress Sysroot
-        run: |
-          rm -rf sysroot_tar
-          mkdir sysroot_tar
-          tar cf sysroot_tar/sysroot.tgz sysroot-macOS-arm64_x86_64
+        run: tar cf sysroot.tgz sysroot-macOS-arm64_x86_64
       - name: Upload Sysroot
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v2
         with:
           name: Sysroot-macos-universal
-          path: sysroot_tar
+          path: sysroot.tgz
       - name: Setup Xcode
         shell: bash
-        run: sudo xcode-select -switch /Applications/Xcode_12.2.app
+        run: sudo xcode-select -switch /Applications/Xcode_12.4.app
       - name: Build UTM
         run: ./scripts/build_utm.sh -p macos -a "arm64 x86_64" -o build-utm/UTM
       - name: Upload UTM
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v2
         with:
           name: UTM-macos-universal
           path: build-utm
   package-ipa:
     name: Package (iOS IPA)
-    runs-on: macos-latest
+    runs-on: macos-10.15
     needs: build
     if: github.event_name == 'release'
     steps:
       - name: Checkout
-        uses: actions/checkout@v1
+        uses: actions/checkout@v2
       - name: Download Artifact
-        uses: actions/download-artifact@v1
+        uses: actions/download-artifact@v2
         with:
           name: UTM-ios-arm64
       - name: Install ldid
         run: brew install ldid
       - name: Fakesign IPA
-        run: ./scripts/package.sh ipa UTM-ios-arm64/UTM.xcarchive .
+        run: ./scripts/package.sh ipa UTM.xcarchive .
       - name: Upload Release Asset
-        uses: actions/upload-release-asset@v1.0.1
+        uses: actions/upload-release-asset@v1.0.2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -140,24 +137,56 @@ jobs:
           token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
           repository: ${{ secrets.DISPATCH_ALTSTORE_REPO_NAME }}
           event-type: new-release
-  package-deb:
-    name: Package (iOS DEB)
-    runs-on: macos-latest
+  package-ipa-se:
+    name: Package (iOS-TCI IPA)
+    runs-on: macos-10.15
     needs: build
     if: github.event_name == 'release'
     steps:
       - name: Checkout
-        uses: actions/checkout@v1
+        uses: actions/checkout@v2
       - name: Download Artifact
-        uses: actions/download-artifact@v1
+        uses: actions/download-artifact@v2
+        with:
+          name: UTM-ios-tci-arm64
+      - name: Install ldid
+        run: brew install ldid
+      - name: Fakesign IPA
+        run: ./scripts/package.sh ipa-se UTM.xcarchive .
+      - name: Upload Release Asset
+        uses: actions/upload-release-asset@v1.0.2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: UTM-SE.ipa
+          asset_name: UTM-SE.ipa
+          asset_content_type: application/octet-stream
+      - name: Send Dispatch Event
+        continue-on-error: true
+        uses: peter-evans/repository-dispatch@v1
+        with:
+          token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+          repository: ${{ secrets.DISPATCH_ALTSTORE_REPO_NAME }}
+          event-type: new-release
+  package-deb:
+    name: Package (iOS DEB)
+    runs-on: macos-10.15
+    needs: build
+    if: github.event_name == 'release'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Download Artifact
+        uses: actions/download-artifact@v2
         with:
           name: UTM-ios-arm64
       - name: Install ldid + dpkg
         run: brew install ldid dpkg
       - name: Fakesign IPA
-        run: ./scripts/package.sh deb UTM-ios-arm64/UTM.xcarchive .
+        run: ./scripts/package.sh deb UTM.xcarchive .
       - name: Upload Release Asset
-        uses: actions/upload-release-asset@v1.0.1
+        uses: actions/upload-release-asset@v1.0.2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -174,34 +203,44 @@ jobs:
           event-type: new-release
   package-mac:
     name: Package (macOS)
-    runs-on: macos-latest
+    runs-on: macos-10.15
     needs: build-universal
     if: github.event_name == 'release'
     steps:
       - name: Checkout
-        uses: actions/checkout@v1
+        uses: actions/checkout@v2
       - name: Import signing certificate into keychain
         uses: apple-actions/import-codesign-certs@v1
         with:
           p12-file-base64: ${{ secrets.SIGNING_CERTIFICATE_P12_DATA }}
           p12-password: ${{ secrets.SIGNING_CERTIFICATE_PASSWORD }}
+      - name: Install Provisioning Profile
+        run: echo $PROFILE_DATA | base64 --decode -o ~/Library/MobileDevice/Provisioning\ Profiles/$PROFILE_UUID.provisionprofile
+        env:
+          PROFILE_DATA: ${{ secrets.PROFILE_DATA }}
+          PROFILE_UUID: ${{ secrets.PROFILE_UUID }}
+      - name: Install Helper Provisioning Profile
+        run: echo $PROFILE_DATA | base64 --decode -o ~/Library/MobileDevice/Provisioning\ Profiles/$PROFILE_UUID.provisionprofile
+        env:
+          PROFILE_DATA: ${{ secrets.HELPER_PROFILE_DATA }}
+          PROFILE_UUID: ${{ secrets.HELPER_PROFILE_UUID }}
       - name: Download Artifact
-        uses: actions/download-artifact@v1
+        uses: actions/download-artifact@v2
         with:
           name: UTM-macos-universal
-      - name: Fixup Permissions
-        run: find UTM-macos-universal/UTM.xcarchive -type f \( -path '*/Contents/MacOS/*' -or -path '*/Frameworks/*.dylib' \) -exec chmod +x \{\} \;
       - name: Package for Release
-        run: ./scripts/package_mac.sh UTM-macos-universal/UTM.xcarchive . "$SIGNING_TEAM_ID"
+        run: ./scripts/package_mac.sh developer-id UTM.xcarchive . "$SIGNING_TEAM_ID" "$PROFILE_UUID" "$HELPER_PROFILE_UUID"
         env:
           SIGNING_TEAM_ID: ${{ secrets.SIGNING_TEAM_ID }}
+          PROFILE_UUID: ${{ secrets.PROFILE_UUID }}
+          HELPER_PROFILE_UUID: ${{ secrets.HELPER_PROFILE_UUID }}
       - name: Notarize app
         run: npx notarize-cli --file "UTM.dmg" --bundle-id "com.utmapp.UTM"
         env:
           NOTARIZE_USERNAME: ${{ secrets.SIGNING_USERNAME }}
           NOTARIZE_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
       - name: Upload Release Asset
-        uses: actions/upload-release-asset@v1.0.1
+        uses: actions/upload-release-asset@v1.0.2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:

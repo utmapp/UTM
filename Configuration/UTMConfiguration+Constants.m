@@ -206,6 +206,24 @@
 }
 #endif
 
++ (NSArray<NSString *> *)supportedNetworkModes {
+    return @[
+        @"none",
+        @"emulated",
+        @"shared",
+        @"bridged",
+    ];
+}
+
++ (NSArray<NSString *> *)supportedNetworkModesPretty {
+    return @[
+        NSLocalizedString(@"None", "UTMConfiguration"),
+        NSLocalizedString(@"Emulated VLAN", "UTMConfiguration"),
+        NSLocalizedString(@"Shared Network", "UTMConfiguration"),
+        NSLocalizedString(@"Bridged (Advanced)", "UTMConfiguration"),
+    ];
+}
+
 + (NSString *)diskImagesDirectory {
     return @"Images";
 }

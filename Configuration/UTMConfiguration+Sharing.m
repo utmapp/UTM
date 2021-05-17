@@ -15,6 +15,7 @@
 //
 
 #import "UTMConfiguration+Sharing.h"
+#import "UTMConfiguration+System.h"
 #import "UTM-Swift.h"
 
 extern const NSString *const kUTMConfigSharingKey;
@@ -24,6 +25,8 @@ const NSString *const kUTMConfigDirectorySharingKey = @"DirectorySharing";
 const NSString *const kUTMConfigDirectoryReadOnlyKey = @"DirectoryReadOnly";
 const NSString *const kUTMConfigDirectoryNameKey = @"DirectoryName";
 const NSString *const kUTMConfigDirectoryBookmarkKey = @"DirectoryBookmark";
+const NSString *const kUTMConfigUsb3SupportKey = @"Usb3Support";
+const NSString *const kUTMConfigUsbRedirectMaxKey = @"UsbRedirectMax";
 
 @interface UTMConfiguration ()
 
@@ -32,6 +35,19 @@ const NSString *const kUTMConfigDirectoryBookmarkKey = @"DirectoryBookmark";
 @end
 
 @implementation UTMConfiguration (Sharing)
+
+#pragma mark - Migration
+
+- (void)migrateSharingConfigurationIfNecessary {
+    if (!self.rootDict[kUTMConfigSharingKey][kUTMConfigUsbRedirectMaxKey]) {
+        self.usbRedirectionMaximumDevices = @3;
+    }
+    if (![self.rootDict[kUTMConfigSharingKey] objectForKey:kUTMConfigUsb3SupportKey]) {
+        if ([self.systemTarget isEqualToString:@"virt"] || [self.systemTarget hasPrefix:@"virt-"]) {
+            self.usb3Support = YES;
+        }
+    }
+}
 
 #pragma mark - Sharing settings
 
@@ -82,6 +98,24 @@ const NSString *const kUTMConfigDirectoryBookmarkKey = @"DirectoryBookmark";
     } else {
         self.rootDict[kUTMConfigSharingKey][kUTMConfigDirectoryBookmarkKey] = shareDirectoryBookmark;
     }
+}
+
+- (void)setUsb3Support:(BOOL)usb3Support {
+    [self propertyWillChange];
+    self.rootDict[kUTMConfigSharingKey][kUTMConfigUsb3SupportKey] = @(usb3Support);
+}
+
+- (BOOL)usb3Support {
+    return [self.rootDict[kUTMConfigSharingKey][kUTMConfigUsb3SupportKey] boolValue];
+}
+
+- (NSNumber *)usbRedirectionMaximumDevices {
+    return self.rootDict[kUTMConfigSharingKey][kUTMConfigUsbRedirectMaxKey];
+}
+
+- (void)setUsbRedirectionMaximumDevices:(NSNumber *)usbRedirectionMaximumDevices {
+    [self propertyWillChange];
+    self.rootDict[kUTMConfigSharingKey][kUTMConfigUsbRedirectMaxKey] = usbRedirectionMaximumDevices;
 }
 
 @end

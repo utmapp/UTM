@@ -21,6 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface UTMVirtualMachine (SPICE)
 
 @property (nonatomic, readonly) BOOL hasShareDirectoryEnabled;
+@property (nonatomic, readonly) BOOL hasUsbRedirection;
 
 - (BOOL)changeSharedDirectory:(NSURL *)url error:(NSError * _Nullable *)error;
 - (void)clearSharedDirectory;

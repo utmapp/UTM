@@ -32,6 +32,8 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSArray<NSString *>*)supportedScalers;
 + (NSArray<NSString *>*)supportedConsoleThemes API_AVAILABLE(ios(11));
 + (NSArray<NSString *>*)supportedConsoleFonts API_AVAILABLE(ios(11));
++ (NSArray<NSString *>*)supportedNetworkModes;
++ (NSArray<NSString *>*)supportedNetworkModesPretty;
 + (NSString *)diskImagesDirectory;
 + (NSString *)debugLogName;
 

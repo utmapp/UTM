@@ -27,6 +27,7 @@ class VMDisplayWindowController: NSWindowController {
     @IBOutlet weak var startPauseToolbarItem: NSToolbarItem!
     @IBOutlet weak var restartToolbarItem: NSToolbarItem!
     @IBOutlet weak var captureMouseToolbarItem: NSToolbarItem!
+    @IBOutlet weak var usbToolbarItem: NSToolbarItem!
     @IBOutlet weak var drivesToolbarItem: NSToolbarItem!
     @IBOutlet weak var sharedFolderToolbarItem: NSToolbarItem!
     @IBOutlet weak var resizeConsoleToolbarItem: NSToolbarItem!
@@ -97,10 +98,13 @@ class VMDisplayWindowController: NSWindowController {
         }
     }
     
-    @IBAction func captureMouseButtonPressed(_ sender: Any) {
+    @IBAction dynamic func captureMouseButtonPressed(_ sender: Any) {
     }
     
-    @IBAction func resizeConsoleButtonPressed(_ sender: Any) {
+    @IBAction dynamic func resizeConsoleButtonPressed(_ sender: Any) {
+    }
+    
+    @IBAction dynamic func usbButtonPressed(_ sender: Any) {
     }
     
     // MARK: - UI states
@@ -120,6 +124,7 @@ class VMDisplayWindowController: NSWindowController {
         resizeConsoleToolbarItem.isEnabled = true
         drivesToolbarItem.isEnabled = vmConfiguration!.countDrives > 0
         sharedFolderToolbarItem.isEnabled = vm.hasShareDirectoryEnabled
+        usbToolbarItem.isEnabled = vm.hasUsbRedirection
         window!.title = vmConfiguration!.name
     }
     
@@ -143,6 +148,7 @@ class VMDisplayWindowController: NSWindowController {
         resizeConsoleToolbarItem.isEnabled = false
         drivesToolbarItem.isEnabled = false
         sharedFolderToolbarItem.isEnabled = false
+        usbToolbarItem.isEnabled = false
     }
     
     // MARK: - Alert

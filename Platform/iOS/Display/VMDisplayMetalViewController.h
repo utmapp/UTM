@@ -64,6 +64,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (weak, nonatomic) IBOutlet UIImageView *placeholderImageView;
 @property (weak, nonatomic) IBOutlet VMKeyboardView *keyboardView;
 
+@property (weak, nonatomic) CSInput *vmInput;
+@property (weak, nonatomic) CSDisplayMetal *vmDisplay;
+
 @property (nonatomic, assign) BOOL lastDisplayChangeResize;
 @property (nonatomic, readonly) BOOL serverModeCursor;
 

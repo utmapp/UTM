@@ -52,6 +52,7 @@ struct cs_entitlements {
     char entitlements[];
 };
 
+#if !TARGET_OS_OSX && !defined(WITH_QEMU_TCI)
 extern int csops(pid_t pid, unsigned int ops, void * useraddr, size_t usersize);
 extern boolean_t exc_server(mach_msg_header_t *, mach_msg_header_t *);
 extern int ptrace(int request, pid_t pid, caddr_t addr, int data);
@@ -83,10 +84,15 @@ static bool jb_has_debugger_attached(void) {
     int flags;
     return !csops(getpid(), CS_OPS_STATUS, &flags, sizeof(flags)) && flags & CS_DEBUGGED;
 }
+#endif
 
 bool jb_has_cs_disabled(void) {
+#if TARGET_OS_OSX || defined(WITH_QEMU_TCI)
+    return false;
+#else
     int flags;
     return !csops(getpid(), CS_OPS_STATUS, &flags, sizeof(flags)) && (flags & ~CS_KILL) == flags;
+#endif
 }
 
 static NSDictionary *parse_entitlements(const void *entitlements, size_t length) {
@@ -217,11 +223,46 @@ static bool is_device_A12_or_newer(void) {
 bool jb_has_jit_entitlement(void) {
 #if TARGET_OS_OSX
     return true;
+#elif defined(WITH_QEMU_TCI)
+    return false;
 #else
     NSDictionary *entitlements = cached_app_entitlements();
     return [entitlements[@"dynamic-codesigning"] boolValue];
 #endif
 }
+
+#if TARGET_OS_OSX
+@import Security;
+
+bool jb_has_usb_entitlement(void) {
+    SecTaskRef task;
+    CFTypeRef value;
+    static bool cached = false;
+    static bool entitled = false;
+    
+    if (cached) {
+        return entitled;
+    }
+
+    task = SecTaskCreateFromSelf (kCFAllocatorDefault);
+    if (task == NULL) {
+      return false;
+    }
+    value = SecTaskCopyValueForEntitlement(task, CFSTR("com.apple.security.device.usb"), NULL);
+    CFRelease (task);
+    entitled = value && (CFGetTypeID (value) == CFBooleanGetTypeID ()) && CFBooleanGetValue (value);
+    cached = true;
+    if (value) {
+      CFRelease (value);
+    }
+    return entitled;
+}
+#else
+bool jb_has_usb_entitlement(void) {
+    NSDictionary *entitlements = cached_app_entitlements();
+    return entitlements[@"com.apple.security.exception.iokit-user-client-class"] != nil;
+}
+#endif
 
 bool jb_has_cs_execseg_allow_unsigned(void) {
     NSDictionary *entitlements = cached_app_entitlements();
@@ -239,7 +280,7 @@ bool jb_has_cs_execseg_allow_unsigned(void) {
 }
 
 bool jb_enable_ptrace_hack(void) {
-#if defined(NO_PTRACE_HACK)
+#if TARGET_OS_OSX || defined(WITH_QEMU_TCI)
     return false;
 #else
     bool debugged = jb_has_debugger_attached();

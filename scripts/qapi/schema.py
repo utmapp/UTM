@@ -28,7 +28,7 @@ from .parser import QAPISchemaParser
 class QAPISchemaEntity:
     meta: Optional[str] = None
 
-    def __init__(self, name, info, doc, ifcond=None, features=None):
+    def __init__(self, name: str, info, doc, ifcond=None, features=None):
         assert name is None or isinstance(name, str)
         for f in features or []:
             assert isinstance(f, QAPISchemaFeature)
@@ -68,7 +68,8 @@ class QAPISchemaEntity:
 
     def _set_module(self, schema, info):
         assert self._checked
-        self._module = schema.module_by_fname(info and info.fname)
+        fname = info.fname if info else QAPISchemaModule.BUILTIN_MODULE_NAME
+        self._module = schema.module_by_fname(fname)
         self._module.add_entity(self)
 
     def set_module(self, schema):
@@ -137,9 +138,39 @@ class QAPISchemaVisitor:
 
 
 class QAPISchemaModule:
+
+    BUILTIN_MODULE_NAME = './builtin'
+
     def __init__(self, name):
         self.name = name
         self._entity_list = []
+
+    @staticmethod
+    def is_system_module(name: str) -> bool:
+        """
+        System modules are internally defined modules.
+
+        Their names start with the "./" prefix.
+        """
+        return name.startswith('./')
+
+    @classmethod
+    def is_user_module(cls, name: str) -> bool:
+        """
+        User modules are those defined by the user in qapi JSON files.
+
+        They do not start with the "./" prefix.
+        """
+        return not cls.is_system_module(name)
+
+    @classmethod
+    def is_builtin_module(cls, name: str) -> bool:
+        """
+        The built-in module is a single System module for the built-in types.
+
+        It is always "./builtin".
+        """
+        return name == cls.BUILTIN_MODULE_NAME
 
     def add_entity(self, ent):
         self._entity_list.append(ent)
@@ -748,7 +779,7 @@ class QAPISchemaCommand(QAPISchemaEntity):
         if self._ret_type_name:
             self.ret_type = schema.resolve_type(
                 self._ret_type_name, self.info, "command's 'returns'")
-            if self.name not in self.info.pragma.returns_whitelist:
+            if self.name not in self.info.pragma.command_returns_exceptions:
                 typ = self.ret_type
                 if isinstance(typ, QAPISchemaArrayType):
                     typ = self.ret_type.element_type
@@ -825,7 +856,7 @@ class QAPISchema:
         self._entity_dict = {}
         self._module_dict = OrderedDict()
         self._schema_dir = os.path.dirname(fname)
-        self._make_module(None)  # built-ins
+        self._make_module(QAPISchemaModule.BUILTIN_MODULE_NAME)
         self._make_module(fname)
         self._predefining = True
         self._def_predefineds()
@@ -870,9 +901,9 @@ class QAPISchema:
                 info, "%s uses unknown type '%s'" % (what, name))
         return typ
 
-    def _module_name(self, fname):
-        if fname is None:
-            return None
+    def _module_name(self, fname: str) -> str:
+        if QAPISchemaModule.is_system_module(fname):
+            return fname
         return os.path.relpath(fname, self._schema_dir)
 
     def _make_module(self, fname):
@@ -883,7 +914,6 @@ class QAPISchema:
 
     def module_by_fname(self, fname):
         name = self._module_name(fname)
-        assert name in self._module_dict
         return self._module_dict[name]
 
     def _def_include(self, expr, info, doc):

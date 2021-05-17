@@ -211,7 +211,7 @@ class QAPISchemaGenEventVisitor(QAPISchemaModularCVisitor):
         visit = self._module_basename('qapi-visit', name)
         self._genc.add(mcgen('''
 #include "qemu-compat.h"
-#include "%(prefix)sqapi-dispatch-events.h"
+#include "%(prefix)sqapi-emit-events.h"
 #include "%(events)s.h"
 #include "%(visit)s.h"
 #include "error.h"
@@ -228,10 +228,10 @@ class QAPISchemaGenEventVisitor(QAPISchemaModularCVisitor):
                              types=types))
 
     def visit_end(self) -> None:
-        self._add_system_module('dispatch', ' * QAPI Events dispatch')
+        self._add_module('./emit', ' * QAPI Events emission')
         self._genc.preamble_add(mcgen('''
 #include "qemu-compat.h"
-#include "%(prefix)sqapi-dispatch-events.h"
+#include "%(prefix)sqapi-emit-events.h"
 #include "error.h"
 ''',
                                       prefix=self._prefix))

@@ -32,11 +32,29 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly, assign) NSInteger monitorID;
 @property (nonatomic, assign) CGSize displaySize;
 @property (nonatomic, readonly) UTMScreenshot *screenshot;
+@property (nonatomic, assign) BOOL inhibitCursor;
+@property (nonatomic) CGSize cursorSize;
 
-- (id)initWithSession:(nonnull SpiceSession *)session channelID:(NSInteger)channelID monitorID:(NSInteger)monitorID;
-- (id)initWithSession:(nonnull SpiceSession *)session channelID:(NSInteger)channelID;
+// properties from UTMRenderSource
+@property (nonatomic, readonly) BOOL cursorVisible;
+@property (nonatomic) CGPoint cursorOrigin;
+@property (nonatomic) CGPoint viewportOrigin;
+@property (nonatomic) CGFloat viewportScale;
+@property (nonatomic, readonly) dispatch_semaphore_t drawLock;
+@property (nonatomic, nullable) id<MTLDevice> device;
+@property (nonatomic, nullable, readonly) id<MTLTexture> displayTexture;
+@property (nonatomic, nullable, readonly) id<MTLTexture> cursorTexture;
+@property (nonatomic, readonly) NSUInteger displayNumVertices;
+@property (nonatomic, readonly) NSUInteger cursorNumVertices;
+@property (nonatomic, nullable, readonly) id<MTLBuffer> displayVertices;
+@property (nonatomic, nullable, readonly) id<MTLBuffer> cursorVertices;
+
+- (instancetype)init NS_UNAVAILABLE;
+- (instancetype)initWithSession:(nonnull SpiceSession *)session channelID:(NSInteger)channelID monitorID:(NSInteger)monitorID NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithSession:(nonnull SpiceSession *)session channelID:(NSInteger)channelID;
 - (void)updateVisibleAreaWithRect:(CGRect)rect;
 - (void)requestResolution:(CGRect)bounds;
+- (void)forceCursorPosition:(CGPoint)pos;
 
 @end
 

@@ -1,0 +1,900 @@
+diff -ur libffi-3.3/configure libffi-3.3.new/configure
+--- libffi-3.3/configure	2019-11-23 06:59:04.000000000 -0700
++++ libffi-3.3.new/configure	2021-01-04 19:48:48.000000000 -0700
+@@ -3082,12 +3082,7 @@
+ program_transform_name=`$as_echo "$program_transform_name" | sed "$ac_script"`
+ 
+ if test x"${MISSING+set}" != xset; then
+-  case $am_aux_dir in
+-  *\ * | *\	*)
+-    MISSING="\${SHELL} \"$am_aux_dir/missing\"" ;;
+-  *)
+-    MISSING="\${SHELL} $am_aux_dir/missing" ;;
+-  esac
++  MISSING="\${SHELL} '$am_aux_dir/missing'"
+ fi
+ # Use eval to expand $SHELL
+ if eval "$MISSING --is-lightweight"; then
+@@ -8413,16 +8408,11 @@
+       _lt_dar_allow_undefined='$wl-undefined ${wl}suppress' ;;
+     darwin1.*)
+       _lt_dar_allow_undefined='$wl-flat_namespace $wl-undefined ${wl}suppress' ;;
+-    darwin*) # darwin 5.x on
+-      # if running on 10.5 or later, the deployment target defaults
+-      # to the OS version, if on x86, and 10.4, the deployment
+-      # target defaults to 10.4. Don't you love it?
+-      case ${MACOSX_DEPLOYMENT_TARGET-10.0},$host in
+-	10.0,*86*-darwin8*|10.0,*-darwin[91]*)
+-	  _lt_dar_allow_undefined='$wl-undefined ${wl}dynamic_lookup' ;;
+-	10.[012][,.]*)
++    darwin*)
++      case ${MACOSX_DEPLOYMENT_TARGET},$host in
++	10.[012],*|,*powerpc*)
+ 	  _lt_dar_allow_undefined='$wl-flat_namespace $wl-undefined ${wl}suppress' ;;
+-	10.*)
++	*)
+ 	  _lt_dar_allow_undefined='$wl-undefined ${wl}dynamic_lookup' ;;
+       esac
+     ;;
+@@ -12042,9 +12032,6 @@
+   # before this can be enabled.
+   hardcode_into_libs=yes
+ 
+-  # Add ABI-specific directories to the system library path.
+-  sys_lib_dlsearch_path_spec="/lib64 /usr/lib64 /lib /usr/lib"
+-
+   # Ideally, we could use ldconfig to report *all* directores which are
+   # searched for libraries, however this is still not possible.  Aside from not
+   # being certain /sbin/ldconfig is available, command
+@@ -12053,7 +12040,7 @@
+   # appending ld.so.conf contents (and includes) to the search path.
+   if test -f /etc/ld.so.conf; then
+     lt_ld_extra=`awk '/^include / { system(sprintf("cd /etc; cat %s 2>/dev/null", \$2)); skip = 1; } { if (!skip) print \$0; skip = 0; }' < /etc/ld.so.conf | $SED -e 's/#.*//;/^[	 ]*hwcap[	 ]/d;s/[:,	]/ /g;s/=[^=]*$//;s/=[^= ]* / /g;s/"//g;/^$/d' | tr '\n' ' '`
+-    sys_lib_dlsearch_path_spec="$sys_lib_dlsearch_path_spec $lt_ld_extra"
++    sys_lib_dlsearch_path_spec="/lib /usr/lib $lt_ld_extra"
+   fi
+ 
+   # We used to test for /lib/ld.so.1 and disable shared libraries on
+@@ -16007,9 +15994,6 @@
+   # before this can be enabled.
+   hardcode_into_libs=yes
+ 
+-  # Add ABI-specific directories to the system library path.
+-  sys_lib_dlsearch_path_spec="/lib64 /usr/lib64 /lib /usr/lib"
+-
+   # Ideally, we could use ldconfig to report *all* directores which are
+   # searched for libraries, however this is still not possible.  Aside from not
+   # being certain /sbin/ldconfig is available, command
+@@ -16018,7 +16002,7 @@
+   # appending ld.so.conf contents (and includes) to the search path.
+   if test -f /etc/ld.so.conf; then
+     lt_ld_extra=`awk '/^include / { system(sprintf("cd /etc; cat %s 2>/dev/null", \$2)); skip = 1; } { if (!skip) print \$0; skip = 0; }' < /etc/ld.so.conf | $SED -e 's/#.*//;/^[	 ]*hwcap[	 ]/d;s/[:,	]/ /g;s/=[^=]*$//;s/=[^= ]* / /g;s/"//g;/^$/d' | tr '\n' ' '`
+-    sys_lib_dlsearch_path_spec="$sys_lib_dlsearch_path_spec $lt_ld_extra"
++    sys_lib_dlsearch_path_spec="/lib /usr/lib $lt_ld_extra"
+   fi
+ 
+   # We used to test for /lib/ld.so.1 and disable shared libraries on
+@@ -18411,6 +18395,59 @@
+     ;;
+ esac
+ 
++{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether compiler supports pointer authentication" >&5
++$as_echo_n "checking whether compiler supports pointer authentication... " >&6; }
++if ${libffi_cv_as_ptrauth+:} false; then :
++  $as_echo_n "(cached) " >&6
++else
++
++   libffi_cv_as_ptrauth=unknown
++   cat confdefs.h - <<_ACEOF >conftest.$ac_ext
++/* end confdefs.h.  */
++
++int
++main ()
++{
++
++#ifdef __clang__
++# if __has_feature(ptrauth_calls)
++#  define HAVE_PTRAUTH 1
++# endif
++#endif
++
++#ifndef HAVE_PTRAUTH
++# error Pointer authentication not supported
++#endif
++
++  ;
++  return 0;
++}
++_ACEOF
++if ac_fn_c_try_compile "$LINENO"; then :
++  libffi_cv_as_ptrauth=yes
++else
++  libffi_cv_as_ptrauth=no
++fi
++rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
++
++fi
++{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $libffi_cv_as_ptrauth" >&5
++$as_echo "$libffi_cv_as_ptrauth" >&6; }
++if test "x$libffi_cv_as_ptrauth" = xyes; then
++
++$as_echo "#define HAVE_PTRAUTH 1" >>confdefs.h
++
++fi
++
++# Set additional defines for Apple Silicon.
++case "$target" in
++    aarch64-apple-darwin* | arm64-apple-darwin*)
++
++$as_echo "#define FFI_TRAMPOLINE_WHOLE_DYLIB 1" >>confdefs.h
++
++	;;
++esac
++
+ # On PaX enable kernels that have MPROTECT enable we can't use PROT_EXEC.
+ # Check whether --enable-pax_emutramp was given.
+ if test "${enable_pax_emutramp+set}" = set; then :
+@@ -21144,7 +21181,9 @@
+     { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+ $as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+ as_fn_error $? "Something went wrong bootstrapping makefile fragments
+-    for automatic dependency tracking.  Try re-running configure with the
++    for automatic dependency tracking.  If GNU make was not used, consider
++    re-running the configure script with MAKE=\"gmake\" (or whatever is
++    necessary).  You can also try re-running configure with the
+     '--disable-dependency-tracking' option to at least be able to build
+     the package (albeit without support for automatic dependency tracking).
+ See \`config.log' for more details" "$LINENO" 5; }
+diff -ur libffi-3.3/configure.ac libffi-3.3.new/configure.ac
+--- libffi-3.3/configure.ac	2019-11-23 06:58:22.000000000 -0700
++++ libffi-3.3.new/configure.ac	2021-01-04 19:48:35.000000000 -0700
+@@ -176,6 +176,35 @@
+     ;;
+ esac
+ 
++AC_CACHE_CHECK([whether compiler supports pointer authentication],
++   libffi_cv_as_ptrauth, [
++   libffi_cv_as_ptrauth=unknown
++   AC_TRY_COMPILE(,[
++#ifdef __clang__
++# if __has_feature(ptrauth_calls)
++#  define HAVE_PTRAUTH 1
++# endif
++#endif
++
++#ifndef HAVE_PTRAUTH
++# error Pointer authentication not supported
++#endif
++		   ],
++		   [libffi_cv_as_ptrauth=yes],
++		   [libffi_cv_as_ptrauth=no])
++])
++if test "x$libffi_cv_as_ptrauth" = xyes; then
++    AC_DEFINE(HAVE_PTRAUTH, 1,
++	      [Define if your compiler supports pointer authentication.])
++fi
++
++# Set additional defines for Apple Silicon.
++case "$target" in
++    aarch64-apple-darwin* | arm64-apple-darwin*)
++	AC_DEFINE([FFI_TRAMPOLINE_WHOLE_DYLIB], 1, [Creating a separate libffi-trampolines.dylib and remapping the entire dylib])
++	;;
++esac
++    
+ # On PaX enable kernels that have MPROTECT enable we can't use PROT_EXEC.
+ AC_ARG_ENABLE(pax_emutramp,
+   [  --enable-pax_emutramp       enable pax emulated trampolines, for we can't use PROT_EXEC],
+diff -ur libffi-3.3/fficonfig.h.in libffi-3.3.new/fficonfig.h.in
+--- libffi-3.3/fficonfig.h.in	2019-11-01 03:30:04.000000000 -0600
++++ libffi-3.3.new/fficonfig.h.in	2021-01-04 19:48:48.000000000 -0700
+@@ -32,6 +32,10 @@
+ /* Define this if you do not want support for aggregate types. */
+ #undef FFI_NO_STRUCTS
+ 
++/* Creating a separate libffi-trampolines.dylib and remapping the entire dylib
++   */
++#undef FFI_TRAMPOLINE_WHOLE_DYLIB
++
+ /* Define to 1 if you have `alloca', as a function or macro. */
+ #undef HAVE_ALLOCA
+ 
+@@ -94,6 +98,9 @@
+ /* Define if read-only mmap of a plain file works. */
+ #undef HAVE_MMAP_FILE
+ 
++/* Define if your compiler supports pointer authentication. */
++#undef HAVE_PTRAUTH
++
+ /* Define if .eh_frame sections should be read-only. */
+ #undef HAVE_RO_EH_FRAME
+ 
+diff -ur libffi-3.3/include/ffi.h.in libffi-3.3.new/include/ffi.h.in
+--- libffi-3.3/include/ffi.h.in	2019-11-13 05:57:22.000000000 -0700
++++ libffi-3.3.new/include/ffi.h.in	2021-01-04 19:39:16.000000000 -0700
+@@ -349,6 +349,11 @@
+ 		      void *user_data,
+ 		      void*codeloc);
+ 
++#if defined(__x86_64__) || defined(__arm64__)
++FFI_API ffi_closure *
++ffi_find_closure_for_code(void *code);
++#endif
++
+ #ifdef __sgi
+ # pragma pack 8
+ #endif
+diff -ur libffi-3.3/src/aarch64/ffi.c libffi-3.3.new/src/aarch64/ffi.c
+--- libffi-3.3/src/aarch64/ffi.c	2019-10-31 08:49:54.000000000 -0600
++++ libffi-3.3.new/src/aarch64/ffi.c	2021-01-04 19:40:32.000000000 -0700
+@@ -62,6 +62,9 @@
+ #if FFI_EXEC_TRAMPOLINE_TABLE
+ 
+ #ifdef __MACH__
++#ifdef HAVE_PTRAUTH
++#include <ptrauth.h>
++#endif
+ #include <mach/vm_param.h>
+ #endif
+ 
+@@ -599,11 +602,12 @@
+   else if (flags & AARCH64_RET_NEED_COPY)
+     rsize = 16;
+ 
+-  /* Allocate consectutive stack for everything we'll need.  */
+-  context = alloca (sizeof(struct call_context) + stack_bytes + 32 + rsize);
++  /* Allocate consectutive stack for everything we'll need.
++     The frame uses 40 bytes for: lr, fp, rvalue, flags, sp */
++  context = alloca (sizeof(struct call_context) + stack_bytes + 40 + rsize);
+   stack = context + 1;
+   frame = (void*)((uintptr_t)stack + (uintptr_t)stack_bytes);
+-  rvalue = (rsize ? (void*)((uintptr_t)frame + 32) : orig_rvalue);
++  rvalue = (rsize ? (void*)((uintptr_t)frame + 40) : orig_rvalue);
+ 
+   arg_init (&state);
+   for (i = 0, nargs = cif->nargs; i < nargs; i++)
+@@ -643,12 +647,13 @@
+ 		state.ngrn = N_X_ARG_REG;
+ 		/* Note that the default abi extends each argument
+ 		   to a full 64-bit slot, while the iOS abi allocates
+-		   only enough space. */
++		   only enough space, except for variadic arguments. */
+ #ifdef __APPLE__
+-		memcpy(d, a, s);
+-#else
+-		*(ffi_arg *)d = ext;
++		if (!state.allocating_variadic)
++		  memcpy(d, a, s);
++		else
+ #endif
++		  *(ffi_arg *)d = ext;
+ 	      }
+ 	  }
+ 	  break;
+@@ -756,6 +761,8 @@
+   ffi_call_int (cif, fn, rvalue, avalue, NULL);
+ }
+ 
++#if FFI_CLOSURES
++
+ #ifdef FFI_GO_CLOSURES
+ void
+ ffi_call_go (ffi_cif *cif, void (*fn) (void), void *rvalue,
+@@ -789,7 +796,14 @@
+ 
+ #if FFI_EXEC_TRAMPOLINE_TABLE
+ #ifdef __MACH__
++#ifdef HAVE_PTRAUTH
++  codeloc = ptrauth_auth_data(codeloc, ptrauth_key_function_pointer, 0);
++#endif
++#ifdef FFI_TRAMPOLINE_WHOLE_DYLIB
++  void **config = (void **)((uint8_t *)codeloc - 2*PAGE_MAX_SIZE);
++#else
+   void **config = (void **)((uint8_t *)codeloc - PAGE_MAX_SIZE);
++#endif
+   config[0] = closure;
+   config[1] = start;
+ #endif
+@@ -825,6 +839,22 @@
+   return FFI_OK;
+ }
+ 
++ffi_closure *
++ffi_find_closure_for_code(void *codeloc)
++{
++#if FFI_EXEC_TRAMPOLINE_TABLE
++#  ifdef FFI_TRAMPOLINE_WHOLE_DYLIB
++    void **config = (void **)((uint8_t *)codeloc - 2*PAGE_MAX_SIZE);
++#  else
++    void **config = (void **)((uint8_t *)codeloc - PAGE_MAX_SIZE);
++#  endif
++    return config[0];
++#else
++    return (ffi_closure*)codeloc;
++#endif
++}
++
++
+ #ifdef FFI_GO_CLOSURES
+ extern void ffi_go_closure_SYSV (void) FFI_HIDDEN;
+ extern void ffi_go_closure_SYSV_V (void) FFI_HIDDEN;
+@@ -1006,4 +1036,6 @@
+   return flags;
+ }
+ 
++#endif /* FFI_CLOSURES */
++
+ #endif /* (__aarch64__) || defined(__arm64__)|| defined (_M_ARM64)*/
+diff -ur libffi-3.3/src/aarch64/internal.h libffi-3.3.new/src/aarch64/internal.h
+--- libffi-3.3/src/aarch64/internal.h	2019-10-31 08:49:54.000000000 -0600
++++ libffi-3.3.new/src/aarch64/internal.h	2021-01-04 19:39:16.000000000 -0700
+@@ -65,3 +65,24 @@
+ #define N_X_ARG_REG		8
+ #define N_V_ARG_REG		8
+ #define CALL_CONTEXT_SIZE	(N_V_ARG_REG * 16 + N_X_ARG_REG * 8)
++
++/* Helpers for writing assembly compatible with arm ptr auth */
++#ifdef LIBFFI_ASM
++
++#ifdef HAVE_PTRAUTH
++#define SIGN_LR pacibsp
++#define SIGN_LR_WITH_REG(x) pacib lr, x
++#define AUTH_LR_AND_RET retab
++#define AUTH_LR_WITH_REG(x) autib lr, x
++#define BRANCH_AND_LINK_TO_REG blraaz
++#define BRANCH_TO_REG braaz
++#else
++#define SIGN_LR
++#define SIGN_LR_WITH_REG(x)
++#define AUTH_LR_AND_RET ret
++#define AUTH_LR_WITH_REG(x)
++#define BRANCH_AND_LINK_TO_REG blr
++#define BRANCH_TO_REG br
++#endif
++
++#endif
+diff -ur libffi-3.3/src/aarch64/sysv.S libffi-3.3.new/src/aarch64/sysv.S
+--- libffi-3.3/src/aarch64/sysv.S	2019-10-31 08:49:54.000000000 -0600
++++ libffi-3.3.new/src/aarch64/sysv.S	2021-01-04 19:40:21.000000000 -0700
+@@ -78,9 +78,22 @@
+ 
+ 	cfi_startproc
+ CNAME(ffi_call_SYSV):
++	/* Sign the lr with x1 since that is where it will be stored */
++	SIGN_LR_WITH_REG(x1)
++
+ 	/* Use a stack frame allocated by our caller.  */
+-	cfi_def_cfa(x1, 32);
++#if defined(HAVE_PTRAUTH) && defined(__APPLE__)
++	/* darwin's libunwind assumes that the cfa is the sp and that's the data
++	 * used to sign the lr.  In order to allow unwinding through this
++	 * function it is necessary to point the cfa at the signing register.
++	 */
++	cfi_def_cfa(x1, 0);
++#else
++	cfi_def_cfa(x1, 40);
++#endif
+ 	stp	x29, x30, [x1]
++	mov	x9, sp
++	str	x9, [x1, #32]
+ 	mov	x29, x1
+ 	mov	sp, x0
+ 	cfi_def_cfa_register(x29)
+@@ -111,13 +124,15 @@
+ 	/* Deallocate the context, leaving the stacked arguments.  */
+ 	add	sp, sp, #CALL_CONTEXT_SIZE
+ 
+-	blr     x9			/* call fn */
++	BRANCH_AND_LINK_TO_REG     x9			/* call fn */
+ 
+ 	ldp	x3, x4, [x29, #16]	/* reload rvalue and flags */
+ 
+ 	/* Partially deconstruct the stack frame.  */
+-	mov     sp, x29
++	ldr	x9, [x29, #32]
++	mov	sp, x9
+ 	cfi_def_cfa_register (sp)
++	mov	x2, x29			/* Preserve for auth */
+ 	ldp     x29, x30, [x29]
+ 
+ 	/* Save the return value as directed.  */
+@@ -131,71 +146,76 @@
+ 	   and therefore we want to extend to 64 bits; these types
+ 	   have two consecutive entries allocated for them.  */
+ 	.align	4
+-0:	ret				/* VOID */
++0:	b 99f				/* VOID */
+ 	nop
+ 1:	str	x0, [x3]		/* INT64 */
+-	ret
++	b 99f
+ 2:	stp	x0, x1, [x3]		/* INT128 */
+-	ret
++	b 99f
+ 3:	brk	#1000			/* UNUSED */
+-	ret
++	b 99f
+ 4:	brk	#1000			/* UNUSED */
+-	ret
++	b 99f
+ 5:	brk	#1000			/* UNUSED */
+-	ret
++	b 99f
+ 6:	brk	#1000			/* UNUSED */
+-	ret
++	b 99f
+ 7:	brk	#1000			/* UNUSED */
+-	ret
++	b 99f
+ 8:	st4	{ v0.s, v1.s, v2.s, v3.s }[0], [x3]	/* S4 */
+-	ret
++	b 99f
+ 9:	st3	{ v0.s, v1.s, v2.s }[0], [x3]	/* S3 */
+-	ret
++	b 99f
+ 10:	stp	s0, s1, [x3]		/* S2 */
+-	ret
++	b 99f
+ 11:	str	s0, [x3]		/* S1 */
+-	ret
++	b 99f
+ 12:	st4	{ v0.d, v1.d, v2.d, v3.d }[0], [x3]	/* D4 */
+-	ret
++	b 99f
+ 13:	st3	{ v0.d, v1.d, v2.d }[0], [x3]	/* D3 */
+-	ret
++	b 99f
+ 14:	stp	d0, d1, [x3]		/* D2 */
+-	ret
++	b 99f
+ 15:	str	d0, [x3]		/* D1 */
+-	ret
++	b 99f
+ 16:	str	q3, [x3, #48]		/* Q4 */
+ 	nop
+ 17:	str	q2, [x3, #32]		/* Q3 */
+ 	nop
+ 18:	stp	q0, q1, [x3]		/* Q2 */
+-	ret
++	b 99f
+ 19:	str	q0, [x3]		/* Q1 */
+-	ret
++	b 99f
+ 20:	uxtb	w0, w0			/* UINT8 */
+ 	str	x0, [x3]
+-21:	ret				/* reserved */
++21:	b 99f				/* reserved */
+ 	nop
+ 22:	uxth	w0, w0			/* UINT16 */
+ 	str	x0, [x3]
+-23:	ret				/* reserved */
++23:	b 99f				/* reserved */
+ 	nop
+ 24:	mov	w0, w0			/* UINT32 */
+ 	str	x0, [x3]
+-25:	ret				/* reserved */
++25:	b 99f				/* reserved */
+ 	nop
+ 26:	sxtb	x0, w0			/* SINT8 */
+ 	str	x0, [x3]
+-27:	ret				/* reserved */
++27:	b 99f				/* reserved */
+ 	nop
+ 28:	sxth	x0, w0			/* SINT16 */
+ 	str	x0, [x3]
+-29:	ret				/* reserved */
++29:	b 99f				/* reserved */
+ 	nop
+ 30:	sxtw	x0, w0			/* SINT32 */
+ 	str	x0, [x3]
+-31:	ret				/* reserved */
++31:	b 99f				/* reserved */
+ 	nop
+ 
++	/* Return now that result has been populated. */
++99:
++	AUTH_LR_WITH_REG(x2)
++	ret
++
+ 	cfi_endproc
+ 
+ 	.globl	CNAME(ffi_call_SYSV)
+@@ -205,6 +225,8 @@
+ 	.size CNAME(ffi_call_SYSV), .-CNAME(ffi_call_SYSV)
+ #endif
+ 
++#if FFI_CLOSURES
++
+ /* ffi_closure_SYSV
+ 
+    Closure invocation glue. This is the low level code invoked directly by
+@@ -224,6 +246,7 @@
+ 	.align 4
+ CNAME(ffi_closure_SYSV_V):
+ 	cfi_startproc
++	SIGN_LR
+ 	stp     x29, x30, [sp, #-ffi_closure_SYSV_FS]!
+ 	cfi_adjust_cfa_offset (ffi_closure_SYSV_FS)
+ 	cfi_rel_offset (x29, 0)
+@@ -247,6 +270,7 @@
+ 	.align	4
+ 	cfi_startproc
+ CNAME(ffi_closure_SYSV):
++	SIGN_LR
+ 	stp     x29, x30, [sp, #-ffi_closure_SYSV_FS]!
+ 	cfi_adjust_cfa_offset (ffi_closure_SYSV_FS)
+ 	cfi_rel_offset (x29, 0)
+@@ -263,7 +287,9 @@
+ 	/* Load ffi_closure_inner arguments.  */
+ 	ldp	PTR_REG(0), PTR_REG(1), [x17, #FFI_TRAMPOLINE_CLOSURE_OFFSET]	/* load cif, fn */
+ 	ldr	PTR_REG(2), [x17, #FFI_TRAMPOLINE_CLOSURE_OFFSET+PTR_SIZE*2]	/* load user_data */
++#ifdef FFI_GO_CLOSURES
+ .Ldo_closure:
++#endif
+ 	add	x3, sp, #16				/* load context */
+ 	add	x4, sp, #ffi_closure_SYSV_FS		/* load stack */
+ 	add	x5, sp, #16+CALL_CONTEXT_SIZE		/* load rvalue */
+@@ -346,7 +372,7 @@
+ 	cfi_adjust_cfa_offset (-ffi_closure_SYSV_FS)
+ 	cfi_restore (x29)
+ 	cfi_restore (x30)
+-	ret
++	AUTH_LR_AND_RET
+ 	cfi_endproc
+ 
+ 	.globl	CNAME(ffi_closure_SYSV)
+@@ -432,6 +458,7 @@
+ 	.size	CNAME(ffi_go_closure_SYSV), . - CNAME(ffi_go_closure_SYSV)
+ #endif
+ #endif /* FFI_GO_CLOSURES */
++#endif /* FFI_CLOSURES */
+ #endif /* __arm64__ */
+ 
+ #if defined __ELF__ && defined __linux__
+Only in libffi-3.3.new/src/aarch64: trampoline.S
+diff -ur libffi-3.3/src/arm/ffi.c libffi-3.3.new/src/arm/ffi.c
+--- libffi-3.3/src/arm/ffi.c	2019-10-31 08:49:54.000000000 -0600
++++ libffi-3.3.new/src/arm/ffi.c	2021-01-04 19:39:16.000000000 -0700
+@@ -421,12 +421,14 @@
+   ffi_call_int (cif, fn, rvalue, avalue, NULL);
+ }
+ 
++#ifdef FFI_GO_CLOSURES
+ void
+ ffi_call_go (ffi_cif *cif, void (*fn) (void), void *rvalue,
+ 	     void **avalue, void *closure)
+ {
+   ffi_call_int (cif, fn, rvalue, avalue, closure);
+ }
++#endif
+ 
+ static void *
+ ffi_prep_incoming_args_SYSV (ffi_cif *cif, void *rvalue,
+@@ -529,6 +531,8 @@
+   return rvalue;
+ }
+ 
++#if FFI_CLOSURES
++
+ struct closure_frame
+ {
+   char vfp_space[8*8] __attribute__((aligned(8)));
+@@ -564,8 +568,11 @@
+ 
+ void ffi_closure_SYSV (void) FFI_HIDDEN;
+ void ffi_closure_VFP (void) FFI_HIDDEN;
++
++#ifdef FFI_GO_CLOSURES
+ void ffi_go_closure_SYSV (void) FFI_HIDDEN;
+ void ffi_go_closure_VFP (void) FFI_HIDDEN;
++#endif
+ 
+ /* the cif must already be prep'ed */
+ 
+@@ -622,6 +629,7 @@
+   return FFI_OK;
+ }
+ 
++#ifdef FFI_GO_CLOSURES
+ ffi_status
+ ffi_prep_go_closure (ffi_go_closure *closure, ffi_cif *cif,
+ 		     void (*fun) (ffi_cif *, void *, void **, void *))
+@@ -643,6 +651,9 @@
+ 
+   return FFI_OK;
+ }
++#endif
++
++#endif /* FFI_CLOSURES */
+ 
+ /* Below are routines for VFP hard-float support. */
+ 
+diff -ur libffi-3.3/src/arm/sysv.S libffi-3.3.new/src/arm/sysv.S
+--- libffi-3.3/src/arm/sysv.S	2019-10-31 08:49:54.000000000 -0600
++++ libffi-3.3.new/src/arm/sysv.S	2021-01-04 19:39:16.000000000 -0700
+@@ -208,6 +208,7 @@
+ 	UNWIND(.fnend)
+ ARM_FUNC_END(ffi_call_SYSV)
+ 
++#if FFI_CLOSURES
+ 
+ /*
+ 	int ffi_closure_inner_* (cif, fun, user_data, frame)
+@@ -354,6 +355,8 @@
+ 	cfi_endproc
+ ARM_FUNC_END(ffi_closure_ret)
+ 
++#endif /* FFI_CLOSURES */
++
+ #if FFI_EXEC_TRAMPOLINE_TABLE
+ 
+ #ifdef __MACH__
+diff -ur libffi-3.3/src/closures.c libffi-3.3.new/src/closures.c
+--- libffi-3.3/src/closures.c	2019-11-20 04:15:41.000000000 -0700
++++ libffi-3.3.new/src/closures.c	2021-01-04 19:39:16.000000000 -0700
+@@ -148,10 +148,19 @@
+ 
+ #include <mach/mach.h>
+ #include <pthread.h>
++#ifdef HAVE_PTRAUTH
++#include <ptrauth.h>
++#endif
+ #include <stdio.h>
+ #include <stdlib.h>
+ 
++#ifdef FFI_TRAMPOLINE_WHOLE_DYLIB
++#include <assert.h>
++#include <dispatch/dispatch.h>
++#include <dlfcn.h>
++#else
+ extern void *ffi_closure_trampoline_table_page;
++#endif
+ 
+ typedef struct ffi_trampoline_table ffi_trampoline_table;
+ typedef struct ffi_trampoline_table_entry ffi_trampoline_table_entry;
+@@ -160,7 +169,6 @@
+ {
+   /* contiguous writable and executable pages */
+   vm_address_t config_page;
+-  vm_address_t trampoline_page;
+ 
+   /* free list tracking */
+   uint16_t free_count;
+@@ -180,6 +188,21 @@ struct ffi_trampoline_table_entry
+ /* Total number of trampolines that fit in one trampoline table */
+ #define FFI_TRAMPOLINE_COUNT (PAGE_MAX_SIZE / FFI_TRAMPOLINE_SIZE)
+ 
++/* The trampoline dylib has one page for the MACHO_HEADER and one page for the
++ * trampolines. iOS 12.0 and later, and macOS on Apple Silicon require that
++ * the entire dylib needs to be remapped as a unit.
++ *
++ * arm (legacy): Allocate two pages -- a config page and a placeholder for the trampolines
++ * arm64 (modern): Allocate three pages -- a config page and two placeholders for the trampoline dylib
++ */
++#ifdef FFI_TRAMPOLINE_WHOLE_DYLIB
++#define FFI_TRAMPOLINE_ALLOCATION_PAGE_COUNT 3
++#define FFI_TRAMPOLINE_PAGE_SEGMENT_OFFSET PAGE_MAX_SIZE
++#else
++#define FFI_TRAMPOLINE_ALLOCATION_PAGE_COUNT 2
++#define FFI_TRAMPOLINE_PAGE_SEGMENT_OFFSET 0
++#endif
++
+ static pthread_mutex_t ffi_trampoline_lock = PTHREAD_MUTEX_INITIALIZER;
+ static ffi_trampoline_table *ffi_trampoline_tables = NULL;
+ 
+@@ -195,34 +218,67 @@
+   kern_return_t kt;
+   uint16_t i;
+ 
+-  /* Allocate two pages -- a config page and a placeholder page */
+   config_page = 0x0;
+-  kt = vm_allocate (mach_task_self (), &config_page, PAGE_MAX_SIZE * 2,
++  /* The entire allocation is:
++   *    config_page
++   *    trampoline_segment
++   *
++   * trampoline_segment is:
++   *    trampoline dylib mach-o header (if FFI_TRAMPOLINE_WHOLE_DYLIB)
++   *    trampoline page
++   */
++  kt = vm_allocate (mach_task_self (), &config_page, FFI_TRAMPOLINE_ALLOCATION_PAGE_COUNT * PAGE_MAX_SIZE,
+ 		    VM_FLAGS_ANYWHERE);
+   if (kt != KERN_SUCCESS)
+     return NULL;
+ 
+-  /* Remap the trampoline table on top of the placeholder page */
+-  trampoline_page = config_page + PAGE_MAX_SIZE;
+-  trampoline_page_template = (vm_address_t)&ffi_closure_trampoline_table_page;
++  static void *trampoline_table_page;
++
++#ifdef FFI_TRAMPOLINE_WHOLE_DYLIB
++  static dispatch_once_t trampoline_template_init_once;
++
++  dispatch_once(&trampoline_template_init_once, ^{
++    void * const trampoline_handle = dlopen("/usr/lib/libffi-trampolines.dylib", RTLD_NOW | RTLD_LOCAL | RTLD_FIRST);
++    assert(trampoline_handle);
++
++    trampoline_table_page = dlsym(trampoline_handle, "ffi_closure_trampoline_table_page");
++    assert(trampoline_table_page);
++  });
++#else
++  trampoline_table_page = &ffi_closure_trampoline_table_page;
++#endif
++
++#ifdef HAVE_PTRAUTH
++  trampoline_page_template = (uintptr_t)ptrauth_auth_data(trampoline_table_page, ptrauth_key_function_pointer, 0);
++#else
++  trampoline_page_template = (uintptr_t)trampoline_table_page;
++#endif
++
+ #ifdef __arm__
+   /* ffi_closure_trampoline_table_page can be thumb-biased on some ARM archs */
+   trampoline_page_template &= ~1UL;
+ #endif
+-  kt = vm_remap (mach_task_self (), &trampoline_page, PAGE_MAX_SIZE, 0x0,
+-		 VM_FLAGS_OVERWRITE, mach_task_self (), trampoline_page_template,
++
++  vm_address_t trampoline_segment_template = trampoline_page_template - FFI_TRAMPOLINE_PAGE_SEGMENT_OFFSET;
++  vm_size_t trampoline_segment_size = (FFI_TRAMPOLINE_ALLOCATION_PAGE_COUNT - 1) * PAGE_MAX_SIZE;
++
++  /* Remap the trampoline table on top of the placeholder page */
++  vm_address_t trampoline_segment = config_page + PAGE_MAX_SIZE;
++  kt = vm_remap (mach_task_self(), &trampoline_segment, trampoline_segment_size, 0x0,
++		 VM_FLAGS_FIXED | VM_FLAGS_OVERWRITE, mach_task_self(), trampoline_segment_template,
+ 		 FALSE, &cur_prot, &max_prot, VM_INHERIT_SHARE);
+-  if (kt != KERN_SUCCESS)
++  if (kt != KERN_SUCCESS || !(cur_prot & VM_PROT_EXECUTE))
+     {
+-      vm_deallocate (mach_task_self (), config_page, PAGE_MAX_SIZE * 2);
++      vm_deallocate (mach_task_self (), config_page, FFI_TRAMPOLINE_ALLOCATION_PAGE_COUNT * PAGE_MAX_SIZE);
+       return NULL;
+     }
+ 
++  trampoline_page = trampoline_segment + FFI_TRAMPOLINE_PAGE_SEGMENT_OFFSET;
++
+   /* We have valid trampoline and config pages */
+   table = calloc (1, sizeof (ffi_trampoline_table));
+   table->free_count = FFI_TRAMPOLINE_COUNT;
+   table->config_page = config_page;
+-  table->trampoline_page = trampoline_page;
+ 
+   /* Create and initialize the free list */
+   table->free_list_pool =
+@@ -232,7 +278,10 @@
+     {
+       ffi_trampoline_table_entry *entry = &table->free_list_pool[i];
+       entry->trampoline =
+-	(void *) (table->trampoline_page + (i * FFI_TRAMPOLINE_SIZE));
++	(void *) (trampoline_page + (i * FFI_TRAMPOLINE_SIZE));
++#ifdef HAVE_PTRAUTH
++      entry->trampoline = ptrauth_sign_unauthenticated(entry->trampoline, ptrauth_key_function_pointer, 0);
++#endif
+ 
+       if (i < table->free_count - 1)
+ 	entry->next = &table->free_list_pool[i + 1];
+diff -ur libffi-3.3/src/x86/ffi.c libffi-3.3.new/src/x86/ffi.c
+--- libffi-3.3/src/x86/ffi.c	2019-10-31 08:49:54.000000000 -0600
++++ libffi-3.3.new/src/x86/ffi.c	2021-01-04 19:38:38.000000000 -0700
+@@ -397,12 +397,14 @@
+   ffi_call_int (cif, fn, rvalue, avalue, NULL);
+ }
+ 
++#ifdef FFI_GO_CLOSURES
+ void
+ ffi_call_go (ffi_cif *cif, void (*fn)(void), void *rvalue,
+ 	     void **avalue, void *closure)
+ {
+   ffi_call_int (cif, fn, rvalue, avalue, closure);
+ }
++#endif
+ 
+ /** private members **/
+ 
+@@ -572,6 +574,8 @@
+   return FFI_OK;
+ }
+ 
++#ifdef FFI_GO_CLOSURES
++
+ void FFI_HIDDEN ffi_go_closure_EAX(void);
+ void FFI_HIDDEN ffi_go_closure_ECX(void);
+ void FFI_HIDDEN ffi_go_closure_STDCALL(void);
+@@ -608,6 +612,8 @@
+   return FFI_OK;
+ }
+ 
++#endif /* FFI_GO_CLOSURES */
++
+ /* ------- Native raw API support -------------------------------- */
+ 
+ #if !FFI_NO_RAW_API
+diff -ur libffi-3.3/src/x86/ffi64.c libffi-3.3.new/src/x86/ffi64.c
+--- libffi-3.3/src/x86/ffi64.c	2019-10-31 08:49:54.000000000 -0600
++++ libffi-3.3.new/src/x86/ffi64.c	2021-01-04 19:39:16.000000000 -0700
+@@ -688,6 +688,8 @@
+   ffi_call_int (cif, fn, rvalue, avalue, NULL);
+ }
+ 
++#ifdef FFI_GO_CLOSURES
++
+ #ifndef __ILP32__
+ extern void
+ ffi_call_go_efi64(ffi_cif *cif, void (*fn)(void), void *rvalue,
+@@ -708,6 +710,7 @@
+   ffi_call_int (cif, fn, rvalue, avalue, closure);
+ }
+ 
++#endif /* FFI_GO_CLOSURES */
+ 
+ extern void ffi_closure_unix64(void) FFI_HIDDEN;
+ extern void ffi_closure_unix64_sse(void) FFI_HIDDEN;
+@@ -761,6 +764,12 @@
+   return FFI_OK;
+ }
+ 
++ffi_closure *
++ffi_find_closure_for_code(void *code)
++{
++    return (ffi_closure *) code;
++}
++
+ int FFI_HIDDEN
+ ffi_closure_unix64_inner(ffi_cif *cif,
+ 			 void (*fun)(ffi_cif*, void*, void**, void*),
+@@ -854,6 +863,8 @@
+   return flags;
+ }
+ 
++#ifdef FFI_GO_CLOSURES
++
+ extern void ffi_go_closure_unix64(void) FFI_HIDDEN;
+ extern void ffi_go_closure_unix64_sse(void) FFI_HIDDEN;
+ 
+@@ -883,4 +894,6 @@
+   return FFI_OK;
+ }
+ 
++#endif /* FFI_GO_CLOSURES */
++
+ #endif /* __x86_64__ */
+diff -ur libffi-3.3/src/x86/ffiw64.c libffi-3.3.new/src/x86/ffiw64.c
+--- libffi-3.3/src/x86/ffiw64.c	2019-10-31 08:49:54.000000000 -0600
++++ libffi-3.3.new/src/x86/ffiw64.c	2021-01-04 19:38:38.000000000 -0700
+@@ -187,7 +187,10 @@
+ 
+ 
+ extern void ffi_closure_win64(void) FFI_HIDDEN;
++
++#ifdef FFI_GO_CLOSURES
+ extern void ffi_go_closure_win64(void) FFI_HIDDEN;
++#endif
+ 
+ ffi_status
+ EFI64(ffi_prep_closure_loc)(ffi_closure* closure,
+@@ -225,6 +228,7 @@
+   return FFI_OK;
+ }
+ 
++#ifdef FFI_GO_CLOSURES
+ ffi_status
+ EFI64(ffi_prep_go_closure)(ffi_go_closure* closure, ffi_cif* cif,
+ 		     void (*fun)(ffi_cif*, void*, void**, void*))
+@@ -244,6 +248,7 @@
+ 
+   return FFI_OK;
+ }
++#endif
+ 
+ struct win64_closure_frame
+ {
+diff -ur libffi-3.3/testsuite/libffi.closures/huge_struct.c libffi-3.3.new/testsuite/libffi.closures/huge_struct.c
+--- libffi-3.3/testsuite/libffi.closures/huge_struct.c	2019-11-19 08:06:49.000000000 -0700
++++ libffi-3.3.new/testsuite/libffi.closures/huge_struct.c	2021-01-04 19:39:02.000000000 -0700
+@@ -9,6 +9,8 @@
+ /* { dg-options -mlong-double-128 { target powerpc64*-*-linux* } } */
+ /* { dg-options -Wformat=0 { target moxie*-*-elf or1k-*-* } } */
+ 
++#include <inttypes.h>
++
+ #include "ffitest.h"
+ 
+ typedef	struct BigStruct{

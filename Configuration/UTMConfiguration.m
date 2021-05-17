@@ -59,6 +59,7 @@ const NSInteger kCurrentConfigurationVersion = 2;
     [self migrateNetworkConfigurationIfNecessary];
     [self migrateSystemConfigurationIfNecessary];
     [self migrateDisplayConfigurationIfNecessary];
+    [self migrateSharingConfigurationIfNecessary];
     self.version = @(kCurrentConfigurationVersion);
 }
 

@@ -22,6 +22,7 @@ struct SettingsView: View {
     @AppStorage("DisplayFixed") var isVMDisplayFixed = false
     @AppStorage("NoHypervisor") var isNoHypervisor = false
     @AppStorage("CtrlRightClick") var isCtrlRightClick = false
+    @AppStorage("NoUsbPrompt") var isNoUsbPrompt = false
     
     var body: some View {
         Form {
@@ -43,6 +44,11 @@ struct SettingsView: View {
                     Text("Hold Control (⌃) for right click")
                 })
             }
+            Section(header: Text("USB")) {
+                Toggle(isOn: $isNoUsbPrompt, label: {
+                    Text("Do not show prompt when USB device is plugged in")
+                })
+            }
         }.padding()
     }
 }
@@ -53,6 +59,7 @@ extension UserDefaults {
     @objc dynamic var DisplayFixed: Bool { false }
     @objc dynamic var NoHypervisor: Bool { false }
     @objc dynamic var CtrlRightClick: Bool { false }
+    @objc dynamic var NoUsbPrompt: Bool { false }
 }
 
 @available(macOS 11, *)

@@ -18,7 +18,7 @@
 #import "UTMJSONStream.h"
 #import "UTMLogging.h"
 #import "qapi-commands.h"
-#import "qapi-dispatch-events.h"
+#import "qapi-emit-events.h"
 #import "qapi-events.h"
 #import "error.h"
 

@@ -32,14 +32,17 @@ typedef void (^connectionCallback_t)(BOOL success, NSString * _Nullable msg);
 
 @interface UTMSpiceIO ()
 
+@property (nonatomic, readwrite, nullable) CSDisplayMetal *primaryDisplay;
+@property (nonatomic, readwrite, nullable) CSInput *primaryInput;
+#if !defined(WITH_QEMU_TCI)
+@property (nonatomic, readwrite, nullable) CSUSBManager *primaryUsbManager;
+#endif
 @property (nonatomic, nullable) doConnect_t doConnect;
 @property (nonatomic, nullable) connectionCallback_t connectionCallback;
 @property (nonatomic, nullable) CSConnection *spiceConnection;
 @property (nonatomic, nullable) CSMain *spice;
-@property (nonatomic, nullable) CSSession *session;
 @property (nonatomic, nullable, copy) NSURL *sharedDirectory;
 @property (nonatomic) NSInteger port;
-@property (nonatomic) BOOL hasObservers;
 @property (nonatomic) BOOL dynamicResolutionSupported;
 
 @end
@@ -61,22 +64,13 @@ typedef void (^connectionCallback_t)(BOOL success, NSString * _Nullable msg);
 
 - (void)initializeSpiceIfNeeded {
     @synchronized (self) {
-        if (!self.spice) {
-            self.spice = [CSMain sharedInstance];
-        }
-        
         if (!self.spiceConnection) {
             self.spiceConnection = [[CSConnection alloc] initWithHost:@"127.0.0.1" port:[NSString stringWithFormat:@"%lu", self.port]];
             self.spiceConnection.delegate = self;
             self.spiceConnection.audioEnabled = _configuration.soundEnabled;
+            self.spiceConnection.session.shareClipboard = _configuration.shareClipboardEnabled;
         }
-        
-        self.spiceConnection.glibMainContext = self.spice.glibMainContext;
     }
-    _primaryDisplay = nil;
-    _primaryInput = nil;
-    _delegate.vmDisplay = nil;
-    _delegate.vmInput = nil;
 }
 
 - (BOOL)isSpiceInitialized {
@@ -85,25 +79,19 @@ typedef void (^connectionCallback_t)(BOOL success, NSString * _Nullable msg);
     }
 }
 
-- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context {
-    // make sure the CSDisplay properties are synced with the CSInput
-    if ([keyPath isEqualToString:@"primaryDisplay.viewportScale"]) {
-        self.primaryInput.viewportScale = self.primaryDisplay.viewportScale;
-    } else if ([keyPath isEqualToString:@"primaryDisplay.displaySize"]) {
-        self.primaryInput.displaySize = self.primaryDisplay.displaySize;
-    }
-}
-
 #pragma mark - UTMInputOutput
 
 - (BOOL)startWithError:(NSError **)err {
-    [self initializeSpiceIfNeeded];
     @synchronized (self) {
+        if (!self.spice) {
+            self.spice = [CSMain sharedInstance];
+        }
         if (![self.spice spiceStart]) {
             // error
             return NO;
         }
     }
+    [self initializeSpiceIfNeeded];
     
     return YES;
 }
@@ -141,16 +129,17 @@ typedef void (^connectionCallback_t)(BOOL success, NSString * _Nullable msg);
 
 - (void)disconnect {
     @synchronized (self) {
-        if (self.hasObservers) {
-            [self removeObserver:self forKeyPath:@"primaryDisplay.viewportScale"];
-            [self removeObserver:self forKeyPath:@"primaryDisplay.displaySize"];
-            self.hasObservers = NO;
-        }
+        [self endSharingDirectory];
         [self.spiceConnection disconnect];
         self.spiceConnection.delegate = nil;
         self.spiceConnection = nil;
         self.spice = nil;
     }
+    self.primaryDisplay = nil;
+    self.primaryInput = nil;
+#if !defined(WITH_QEMU_TCI)
+    self.primaryUsbManager = nil;
+#endif
     self.doConnect = nil;
 }
 
@@ -186,6 +175,12 @@ typedef void (^connectionCallback_t)(BOOL success, NSString * _Nullable msg);
 
 - (void)spiceConnected:(CSConnection *)connection {
     NSAssert(connection == self.spiceConnection, @"Unknown connection");
+    self.primaryInput = connection.input;
+    [self.delegate spiceDidChangeInput:connection.input];
+#if !defined(WITH_QEMU_TCI)
+    self.primaryUsbManager = connection.usbManager;
+    [self.delegate spiceDidChangeUsbManager:connection.usbManager];
+#endif
 }
 
 - (void)spiceDisconnected:(CSConnection *)connection {
@@ -200,18 +195,11 @@ typedef void (^connectionCallback_t)(BOOL success, NSString * _Nullable msg);
     }
 }
 
-- (void)spiceDisplayCreated:(CSConnection *)connection display:(CSDisplayMetal *)display input:(CSInput *)input {
+- (void)spiceDisplayCreated:(CSConnection *)connection display:(CSDisplayMetal *)display {
     NSAssert(connection == self.spiceConnection, @"Unknown connection");
+    [self.delegate spiceDidCreateDisplay:display];
     if (display.channelID == 0 && display.monitorID == 0) {
-        _primaryDisplay = display;
-        _primaryInput = input;
-        _delegate.vmDisplay = display;
-        _delegate.vmInput = input;
-        @synchronized (self) {
-            [self addObserver:self forKeyPath:@"primaryDisplay.viewportScale" options:0 context:nil];
-            [self addObserver:self forKeyPath:@"primaryDisplay.displaySize" options:0 context:nil];
-            self.hasObservers = YES;
-        }
+        self.primaryDisplay = display;
         if (self.connectionCallback) {
             self.connectionCallback(YES, nil);
             self.connectionCallback = nil;
@@ -219,19 +207,9 @@ typedef void (^connectionCallback_t)(BOOL success, NSString * _Nullable msg);
     }
 }
 
-- (void)spiceSessionCreated:(CSConnection *)connection session:(CSSession *)session {
-    self.session = session;
-    session.shareClipboard = self.configuration.shareClipboardEnabled;
-    if (self.configuration.shareDirectoryEnabled) {
-        [self startSharingDirectory];
-    } else {
-        UTMLog(@"shared directory disabled");
-    }
-}
-
-- (void)spiceSessionEnded:(CSConnection *)connection session:(CSSession *)session {
-    [self endSharingDirectory];
-    self.session = nil;
+- (void)spiceDisplayDestroyed:(CSConnection *)connection display:(CSDisplayMetal *)display {
+    NSAssert(connection == self.spiceConnection, @"Unknown connection");
+    [self.delegate spiceDidDestroyDisplay:display];
 }
 
 - (void)spiceAgentConnected:(CSConnection *)connection supportingFeatures:(CSConnectionAgentFeature)features {
@@ -249,16 +227,14 @@ typedef void (^connectionCallback_t)(BOOL success, NSString * _Nullable msg);
         [self endSharingDirectory];
     }
     self.sharedDirectory = url;
-    if (self.session) {
-        [self startSharingDirectory];
-    }
+    [self startSharingDirectory];
 }
 
 - (void)startSharingDirectory {
     if (self.sharedDirectory) {
         UTMLog(@"setting share directory to %@", self.sharedDirectory.path);
         [self.sharedDirectory startAccessingSecurityScopedResource];
-        [self.session setSharedDirectory:self.sharedDirectory.path readOnly:self.configuration.shareDirectoryReadOnly];
+        [self.spiceConnection.session setSharedDirectory:self.sharedDirectory.path readOnly:self.configuration.shareDirectoryReadOnly];
     }
 }
 
@@ -274,18 +250,32 @@ typedef void (^connectionCallback_t)(BOOL success, NSString * _Nullable msg);
 
 - (void)setDelegate:(id<UTMSpiceIODelegate>)delegate {
     _delegate = delegate;
-    _delegate.vmDisplay = self.primaryDisplay;
-    _delegate.vmInput = self.primaryInput;
-    // make sure to send the dynamic resolution change when attached
-    if ([self.delegate respondsToSelector:@selector(dynamicResolutionSupportDidChange:)]) {
-        [self.delegate dynamicResolutionSupportDidChange:self.dynamicResolutionSupported];
+    // make sure to send initial data
+    if (self.primaryInput) {
+        [self.delegate spiceDidChangeInput:self.primaryInput];
+    }
+    if (self.primaryDisplay) {
+        [self.delegate spiceDidCreateDisplay:self.primaryDisplay];
+    }
+    for (CSDisplayMetal *display in self.spiceConnection.monitors) {
+        if (display != self.primaryDisplay) {
+            [self.delegate spiceDidCreateDisplay:display];
+        }
+    }
+#if !defined(WITH_QEMU_TCI)
+    if (self.primaryUsbManager) {
+        [self.delegate spiceDidChangeUsbManager:self.primaryUsbManager];
+    }
+#endif
+    if ([self.delegate respondsToSelector:@selector(spiceDynamicResolutionSupportDidChange:)]) {
+        [self.delegate spiceDynamicResolutionSupportDidChange:self.dynamicResolutionSupported];
     }
 }
 
 - (void)setDynamicResolutionSupported:(BOOL)dynamicResolutionSupported {
     if (_dynamicResolutionSupported != dynamicResolutionSupported) {
-        if ([self.delegate respondsToSelector:@selector(dynamicResolutionSupportDidChange:)]) {
-            [self.delegate dynamicResolutionSupportDidChange:dynamicResolutionSupported];
+        if ([self.delegate respondsToSelector:@selector(spiceDynamicResolutionSupportDidChange:)]) {
+            [self.delegate spiceDynamicResolutionSupportDidChange:dynamicResolutionSupported];
         }
     }
     _dynamicResolutionSupported = dynamicResolutionSupported;
