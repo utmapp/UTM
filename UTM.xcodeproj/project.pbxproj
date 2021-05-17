@@ -4225,7 +4225,6 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 11.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "$(PRODUCT_BUNDLE_PREFIX:default=com.utmapp).UTM";
-				MARKETING_VERSION = 2.0.28;
 				PRODUCT_NAME = "$(PROJECT_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "$(PROVISIONING_PROFILE_SPECIFIER_MAC:default=)";
 				SDKROOT = macosx;
@@ -4274,7 +4273,7 @@
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
-				FRAMEWORK_SEARCH_PATHS = "$(SYSROOT_DIR)/Frameworks";
+				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/$(INCLUDE_SYSROOT_DIR)/Frameworks";
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -4290,19 +4289,19 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
-					"$(PROJECT_DIR)/$(SYSROOT_DIR)/include",
-					"$(PROJECT_DIR)/$(SYSROOT_DIR)/include/gstreamer-1.0",
-					"$(PROJECT_DIR)/$(SYSROOT_DIR)/include/glib-2.0",
-					"$(PROJECT_DIR)/$(SYSROOT_DIR)/lib/glib-2.0/include",
-					"$(PROJECT_DIR)/$(SYSROOT_DIR)/include/spice-client-glib-2.0",
-					"$(PROJECT_DIR)/$(SYSROOT_DIR)/include/spice-1",
-					"$(PROJECT_DIR)/$(SYSROOT_DIR)/include/libusb-1.0",
+					"$(PROJECT_DIR)/$(INCLUDE_SYSROOT_DIR)/include",
+					"$(PROJECT_DIR)/$(INCLUDE_SYSROOT_DIR)/include/gstreamer-1.0",
+					"$(PROJECT_DIR)/$(INCLUDE_SYSROOT_DIR)/include/glib-2.0",
+					"$(PROJECT_DIR)/$(INCLUDE_SYSROOT_DIR)/lib/glib-2.0/include",
+					"$(PROJECT_DIR)/$(INCLUDE_SYSROOT_DIR)/include/spice-client-glib-2.0",
+					"$(PROJECT_DIR)/$(INCLUDE_SYSROOT_DIR)/include/spice-1",
+					"$(PROJECT_DIR)/$(INCLUDE_SYSROOT_DIR)/include/libusb-1.0",
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LIBRARY_SEARCH_PATHS = (
-					"$(PROJECT_DIR)/$(SYSROOT_DIR)/lib",
-					"$(PROJECT_DIR)/$(SYSROOT_DIR)/lib/gstreamer-1.0",
-					"$(PROJECT_DIR)/$(SYSROOT_DIR)/lib",
+					"$(PROJECT_DIR)/$(INCLUDE_SYSROOT_DIR)/lib",
+					"$(PROJECT_DIR)/$(INCLUDE_SYSROOT_DIR)/lib/gstreamer-1.0",
+					"$(PROJECT_DIR)/$(INCLUDE_SYSROOT_DIR)/lib",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
@@ -4351,7 +4350,7 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				FRAMEWORK_SEARCH_PATHS = "$(SYSROOT_DIR)/Frameworks";
+				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/$(INCLUDE_SYSROOT_DIR)/Frameworks";
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -4361,19 +4360,19 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
-					"$(PROJECT_DIR)/$(SYSROOT_DIR)/include",
-					"$(PROJECT_DIR)/$(SYSROOT_DIR)/include/gstreamer-1.0",
-					"$(PROJECT_DIR)/$(SYSROOT_DIR)/include/glib-2.0",
-					"$(PROJECT_DIR)/$(SYSROOT_DIR)/lib/glib-2.0/include",
-					"$(PROJECT_DIR)/$(SYSROOT_DIR)/include/spice-client-glib-2.0",
-					"$(PROJECT_DIR)/$(SYSROOT_DIR)/include/spice-1",
-					"$(PROJECT_DIR)/$(SYSROOT_DIR)/include/libusb-1.0",
+					"$(PROJECT_DIR)/$(INCLUDE_SYSROOT_DIR)/include",
+					"$(PROJECT_DIR)/$(INCLUDE_SYSROOT_DIR)/include/gstreamer-1.0",
+					"$(PROJECT_DIR)/$(INCLUDE_SYSROOT_DIR)/include/glib-2.0",
+					"$(PROJECT_DIR)/$(INCLUDE_SYSROOT_DIR)/lib/glib-2.0/include",
+					"$(PROJECT_DIR)/$(INCLUDE_SYSROOT_DIR)/include/spice-client-glib-2.0",
+					"$(PROJECT_DIR)/$(INCLUDE_SYSROOT_DIR)/include/spice-1",
+					"$(PROJECT_DIR)/$(INCLUDE_SYSROOT_DIR)/include/libusb-1.0",
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LIBRARY_SEARCH_PATHS = (
-					"$(PROJECT_DIR)/$(SYSROOT_DIR)/lib",
-					"$(PROJECT_DIR)/$(SYSROOT_DIR)/lib/gstreamer-1.0",
-					"$(PROJECT_DIR)/$(SYSROOT_DIR)/lib",
+					"$(PROJECT_DIR)/$(INCLUDE_SYSROOT_DIR)/lib",
+					"$(PROJECT_DIR)/$(INCLUDE_SYSROOT_DIR)/lib/gstreamer-1.0",
+					"$(PROJECT_DIR)/$(INCLUDE_SYSROOT_DIR)/lib",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = NO;

@@ -20,5 +20,8 @@
 MARKETING_VERSION = 2.1.0
 CURRENT_PROJECT_VERSION = 29
 
+// Fix for Xcode build bug where this cannot be defined in the project file
+INCLUDE_SYSROOT_DIR = "sysroot-$(TARGET_NAME)-$(ARCHS:identifier)"
+
 // Codesigning settings defined optionally, see Documentation/iOSDevelopment.md
 #include? "CodeSigning.xcconfig"
