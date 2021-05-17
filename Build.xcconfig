@@ -18,7 +18,7 @@
 // https://help.apple.com/xcode/#/dev745c5c974
 
 MARKETING_VERSION = 2.1.0
-CURRENT_PROJECT_VERSION = 28
+CURRENT_PROJECT_VERSION = 29
 
 // Codesigning settings defined optionally, see Documentation/iOSDevelopment.md
 #include? "CodeSigning.xcconfig"
