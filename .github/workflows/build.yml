@@ -214,16 +214,16 @@ jobs:
         with:
           p12-file-base64: ${{ secrets.SIGNING_CERTIFICATE_P12_DATA }}
           p12-password: ${{ secrets.SIGNING_CERTIFICATE_PASSWORD }}
-      - name: Install Provisioning Profile
-        run: echo $PROFILE_DATA | base64 --decode -o ~/Library/MobileDevice/Provisioning\ Profiles/$PROFILE_UUID.provisionprofile
+      - name: Install Provisioning Profiles
+        run: |
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+          echo $PROFILE_DATA | base64 --decode -o ~/Library/MobileDevice/Provisioning\ Profiles/$PROFILE_UUID.provisionprofile
+          echo $HELPER_PROFILE_DATA | base64 --decode -o ~/Library/MobileDevice/Provisioning\ Profiles/$HELPER_PROFILE_UUID.provisionprofile
         env:
           PROFILE_DATA: ${{ secrets.PROFILE_DATA }}
           PROFILE_UUID: ${{ secrets.PROFILE_UUID }}
-      - name: Install Helper Provisioning Profile
-        run: echo $PROFILE_DATA | base64 --decode -o ~/Library/MobileDevice/Provisioning\ Profiles/$PROFILE_UUID.provisionprofile
-        env:
-          PROFILE_DATA: ${{ secrets.HELPER_PROFILE_DATA }}
-          PROFILE_UUID: ${{ secrets.HELPER_PROFILE_UUID }}
+          HELPER_PROFILE_DATA: ${{ secrets.HELPER_PROFILE_DATA }}
+          HELPER_PROFILE_UUID: ${{ secrets.HELPER_PROFILE_UUID }}
       - name: Download Artifact
         uses: actions/download-artifact@v2
         with:
