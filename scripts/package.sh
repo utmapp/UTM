@@ -103,7 +103,6 @@ fake_sign() {
 
 	mkdir -p "$_output"
 	cp -a "$_input" "$_output/"
-	find "$_output" -type f \( \( -path '*/UTM*.app/UTM*' -or -path '*/UTM*.app/Frameworks/*.framework/*' \) -and -not -name 'Info.plist' \) -exec chmod +x \{\} \;
 	find "$_output" -type f \( -path '*/Frameworks/*.framework/*' -and -not -name 'Info.plist' \) -exec ldid -S \{\} \;
 	ldid -S${_fakeent} "$_output/Applications/$_name.app/$_name"
 }
