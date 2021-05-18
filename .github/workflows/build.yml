@@ -12,6 +12,12 @@ on:
   pull_request:
   release:
     types: [created]
+  workflow_dispatch:
+    inputs:
+      test_release:
+        description: 'Test release?'
+        required: true
+        default: 'false'
 
 jobs:
   build:
@@ -53,10 +59,10 @@ jobs:
           rm -f /usr/local/lib/pkgconfig/*.pc
           ./scripts/build_dependencies.sh -p ${{ matrix.platform }} -a ${{ matrix.arch }}
       - name: Compress Sysroot
-        if: steps.cache-sysroot.outputs.cache-hit != 'true' || github.event_name == 'release'
+        if: steps.cache-sysroot.outputs.cache-hit != 'true' || github.event_name == 'release' || github.event.inputs.test_release == 'true'
         run: tar cf sysroot.tgz sysroot*
       - name: Upload Sysroot
-        if: steps.cache-sysroot.outputs.cache-hit != 'true' || github.event_name == 'release'
+        if: steps.cache-sysroot.outputs.cache-hit != 'true' || github.event_name == 'release' || github.event.inputs.test_release == 'true'
         uses: actions/upload-artifact@v2
         with:
           name: Sysroot-${{ matrix.platform }}-${{ matrix.arch }}
@@ -74,7 +80,7 @@ jobs:
     name: Build UTM (macOS Universal)
     runs-on: macos-10.15
     needs: build
-    if: github.event_name == 'release'
+    if: github.event_name == 'release' || github.event.inputs.test_release == 'true'
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -118,7 +124,7 @@ jobs:
     name: Package (iOS IPA)
     runs-on: macos-10.15
     needs: build
-    if: github.event_name == 'release'
+    if: github.event_name == 'release' || github.event.inputs.test_release == 'true'
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -133,6 +139,7 @@ jobs:
           tar xf UTM.xcarchive.tgz
           ./scripts/package.sh ipa UTM.xcarchive .
       - name: Upload Release Asset
+        if: github.event_name == 'release'
         uses: actions/upload-release-asset@v1.0.2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -142,6 +149,7 @@ jobs:
           asset_name: UTM.ipa
           asset_content_type: application/octet-stream
       - name: Send Dispatch Event
+        if: github.event_name == 'release'
         continue-on-error: true
         uses: peter-evans/repository-dispatch@v1
         with:
@@ -152,7 +160,7 @@ jobs:
     name: Package (iOS-TCI IPA)
     runs-on: macos-10.15
     needs: build
-    if: github.event_name == 'release'
+    if: github.event_name == 'release' || github.event.inputs.test_release == 'true'
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -167,6 +175,7 @@ jobs:
           tar xf UTM.xcarchive.tgz
           ./scripts/package.sh ipa-se UTM.xcarchive .
       - name: Upload Release Asset
+        if: github.event_name == 'release'
         uses: actions/upload-release-asset@v1.0.2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -176,6 +185,7 @@ jobs:
           asset_name: UTM SE.ipa
           asset_content_type: application/octet-stream
       - name: Send Dispatch Event
+        if: github.event_name == 'release'
         continue-on-error: true
         uses: peter-evans/repository-dispatch@v1
         with:
@@ -186,7 +196,7 @@ jobs:
     name: Package (iOS DEB)
     runs-on: macos-10.15
     needs: build
-    if: github.event_name == 'release'
+    if: github.event_name == 'release' || github.event.inputs.test_release == 'true'
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -201,6 +211,7 @@ jobs:
           tar xf UTM.xcarchive.tgz
           ./scripts/package.sh deb UTM.xcarchive .
       - name: Upload Release Asset
+        if: github.event_name == 'release'
         uses: actions/upload-release-asset@v1.0.2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -210,6 +221,7 @@ jobs:
           asset_name: UTM.deb
           asset_content_type: application/octet-stream
       - name: Send Dispatch Event
+        if: github.event_name == 'release'
         continue-on-error: true
         uses: peter-evans/repository-dispatch@v1
         with:
@@ -220,7 +232,7 @@ jobs:
     name: Package (macOS)
     runs-on: macos-10.15
     needs: build-universal
-    if: github.event_name == 'release'
+    if: github.event_name == 'release' || github.event.inputs.test_release == 'true'
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -257,6 +269,7 @@ jobs:
           NOTARIZE_USERNAME: ${{ secrets.SIGNING_USERNAME }}
           NOTARIZE_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
       - name: Upload Release Asset
+        if: github.event_name == 'release'
         uses: actions/upload-release-asset@v1.0.2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
