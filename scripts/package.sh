@@ -178,12 +178,16 @@ deb )
 <dict>
 	<key>dynamic-codesigning</key>
 	<true/>
+	<key>com.apple.private.iokit.IOServiceSetAuthorizationID</key>
+	<true/>
 	<key>com.apple.security.exception.iokit-user-client-class</key>
 	<array>
 		<string>AppleUSBHostDeviceUserClient</string>
 		<string>AppleUSBHostInterfaceUserClient</string>
 	</array>
 	<key>com.apple.system.diagnostics.iokit-properties</key>
+	<true/>
+	<key>com.apple.vm.device-access</key>
 	<true/>
 </dict>
 </plist>
@@ -204,12 +208,16 @@ ipa )
 	<!---><!-->
 	<key>dynamic-codesigning</key>
 	<true/>
+	<key>com.apple.private.iokit.IOServiceSetAuthorizationID</key>
+	<true/>
 	<key>com.apple.security.exception.iokit-user-client-class</key>
 	<array>
 		<string>AppleUSBHostDeviceUserClient</string>
 		<string>AppleUSBHostInterfaceUserClient</string>
 	</array>
 	<key>com.apple.system.diagnostics.iokit-properties</key>
+	<true/>
+	<key>com.apple.vm.device-access</key>
 	<true/>
 	<!-- -->
 </dict>

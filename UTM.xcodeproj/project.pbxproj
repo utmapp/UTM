@@ -671,6 +671,9 @@
 		CE9375A124BBDDD10074066F /* VMConfigDriveDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE9375A024BBDDD10074066F /* VMConfigDriveDetailsView.swift */; };
 		CE9375A224BBDDD10074066F /* VMConfigDriveDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE9375A024BBDDD10074066F /* VMConfigDriveDetailsView.swift */; };
 		CE9375A324BBDE770074066F /* VMConfigDrivesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE93759E24BBDD6A0074066F /* VMConfigDrivesView.swift */; };
+		CE9A353426533A52005077CF /* JailbreakInterposer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE9A352D26533A51005077CF /* JailbreakInterposer.framework */; };
+		CE9A353526533A52005077CF /* JailbreakInterposer.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE9A352D26533A51005077CF /* JailbreakInterposer.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		CE9A354026533AE6005077CF /* JailbreakInterposer.c in Sources */ = {isa = PBXBuildFile; fileRef = CE9A353F26533AE6005077CF /* JailbreakInterposer.c */; };
 		CEA45E25263519B5002FA97D /* VMDisplayMetalViewController+Pointer.h in Sources */ = {isa = PBXBuildFile; fileRef = 83FBDD53242FA71900D2C5D7 /* VMDisplayMetalViewController+Pointer.h */; };
 		CEA45E26263519B5002FA97D /* qapi-types-rocker.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C14D23FCEC09001177D6 /* qapi-types-rocker.c */; };
 		CEA45E27263519B5002FA97D /* VMRemovableDrivesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE2D954524AD4F980059923A /* VMRemovableDrivesView.swift */; };
@@ -1137,6 +1140,13 @@
 			remoteGlobalIDString = CE6B240725F1F3CE0020D43E;
 			remoteInfo = QEMULauncher;
 		};
+		CE9A353226533A52005077CF /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = CE550BC1225947990063E575 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = CE9A352C26533A51005077CF;
+			remoteInfo = JailbreakInterposer;
+		};
 		CEBDA1E324D8BDDB0010B5EC /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = CE550BC1225947990063E575 /* Project object */;
@@ -1247,6 +1257,7 @@
 				CE2D938224AD46670059923A /* qemu-riscv64-softmmu.framework in Embed Libraries */,
 				CE2D938324AD46670059923A /* gstapp-1.0.0.framework in Embed Libraries */,
 				CE2D938424AD46670059923A /* qemu-moxie-softmmu.framework in Embed Libraries */,
+				CE9A353526533A52005077CF /* JailbreakInterposer.framework in Embed Libraries */,
 				CE2D938524AD46670059923A /* qemu-microblaze-softmmu.framework in Embed Libraries */,
 				CE2D938624AD46670059923A /* qemu-sh4-softmmu.framework in Embed Libraries */,
 				CE2D938824AD46670059923A /* gsttag-1.0.0.framework in Embed Libraries */,
@@ -1894,6 +1905,9 @@
 		CE93759524BB7E9F0074066F /* UTMTabViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMTabViewController.swift; sourceTree = "<group>"; };
 		CE93759E24BBDD6A0074066F /* VMConfigDrivesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMConfigDrivesView.swift; sourceTree = "<group>"; };
 		CE9375A024BBDDD10074066F /* VMConfigDriveDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMConfigDriveDetailsView.swift; sourceTree = "<group>"; };
+		CE9A352D26533A51005077CF /* JailbreakInterposer.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = JailbreakInterposer.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		CE9A353026533A52005077CF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		CE9A353F26533AE6005077CF /* JailbreakInterposer.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = JailbreakInterposer.c; sourceTree = "<group>"; };
 		CE9D18F72265410E00355E14 /* qemu */ = {isa = PBXFileReference; lastKnownFileType = folder; name = qemu; path = "$(SYSROOT_DIR)/share/qemu"; sourceTree = "<group>"; };
 		CE9D19522265425900355E14 /* libgstautodetect.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libgstautodetect.a; path = "$(SYSROOT_DIR)/lib/gstreamer-1.0/libgstautodetect.a"; sourceTree = "<group>"; };
 		CE9D19532265425900355E14 /* libgstaudiotestsrc.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libgstaudiotestsrc.a; path = "$(SYSROOT_DIR)/lib/gstreamer-1.0/libgstaudiotestsrc.a"; sourceTree = "<group>"; };
@@ -2061,6 +2075,7 @@
 				CE2D935224AD46670059923A /* gpg-error.0.framework in Frameworks */,
 				CE2D935324AD46670059923A /* gcrypt.20.framework in Frameworks */,
 				CE2D935424AD46670059923A /* gobject-2.0.0.framework in Frameworks */,
+				CE9A353426533A52005077CF /* JailbreakInterposer.framework in Frameworks */,
 				CE2D935524AD46670059923A /* gsttag-1.0.0.framework in Frameworks */,
 				CE2D935624AD46670059923A /* gio-2.0.0.framework in Frameworks */,
 				CE2D935724AD46670059923A /* gstvideo-1.0.0.framework in Frameworks */,
@@ -2146,6 +2161,13 @@
 				CE0B6EFC24AD677200FE012D /* libgstaudiotestsrc.a in Frameworks */,
 				CE0B6EF824AD677200FE012D /* gstsdp-1.0.0.framework in Frameworks */,
 				CE0B6EEA24AD677200FE012D /* libgstcoreelements.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		CE9A352A26533A51005077CF /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2728,6 +2750,7 @@
 				CEBDA1DB24D8BDDA0010B5EC /* QEMUHelper */,
 				CE9D18F72265410E00355E14 /* qemu */,
 				CE6B240925F1F3CE0020D43E /* QEMULauncher */,
+				CE9A352E26533A51005077CF /* JailbreakInterposer */,
 				CE4698F824C8FBD9008C1BD6 /* Icons */,
 				CE550BCA225947990063E575 /* Products */,
 				CE2D63D622653C7300FC7E63 /* Frameworks */,
@@ -2743,6 +2766,7 @@
 				CEBDA1DA24D8BDDA0010B5EC /* QEMUHelper.xpc */,
 				CE6B240825F1F3CE0020D43E /* QEMULauncher */,
 				CEA45FB9263519B5002FA97D /* UTM SE.app */,
+				CE9A352D26533A51005077CF /* JailbreakInterposer.framework */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -2902,6 +2926,15 @@
 			path = Display;
 			sourceTree = "<group>";
 		};
+		CE9A352E26533A51005077CF /* JailbreakInterposer */ = {
+			isa = PBXGroup;
+			children = (
+				CE9A353026533A52005077CF /* Info.plist */,
+				CE9A353F26533AE6005077CF /* JailbreakInterposer.c */,
+			);
+			path = JailbreakInterposer;
+			sourceTree = "<group>";
+		};
 		CEB63A9624F47C1200CAF323 /* Shared */ = {
 			isa = PBXGroup;
 			children = (
@@ -3024,6 +3057,16 @@
 		};
 /* End PBXGroup section */
 
+/* Begin PBXHeadersBuildPhase section */
+		CE9A352826533A51005077CF /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
 /* Begin PBXNativeTarget section */
 		CE2D926824AD46670059923A /* iOS */ = {
 			isa = PBXNativeTarget;
@@ -3038,6 +3081,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				CE9A353326533A52005077CF /* PBXTargetDependency */,
 			);
 			name = iOS;
 			packageProductDependencies = (
@@ -3086,6 +3130,24 @@
 			productName = QEMULauncher;
 			productReference = CE6B240825F1F3CE0020D43E /* QEMULauncher */;
 			productType = "com.apple.product-type.tool";
+		};
+		CE9A352C26533A51005077CF /* JailbreakInterposer */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = CE9A353826533A52005077CF /* Build configuration list for PBXNativeTarget "JailbreakInterposer" */;
+			buildPhases = (
+				CE9A352826533A51005077CF /* Headers */,
+				CE9A352926533A51005077CF /* Sources */,
+				CE9A352A26533A51005077CF /* Frameworks */,
+				CE9A352B26533A51005077CF /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = JailbreakInterposer;
+			productName = JailbreakInterposer;
+			productReference = CE9A352D26533A51005077CF /* JailbreakInterposer.framework */;
+			productType = "com.apple.product-type.framework";
 		};
 		CEA45E1F263519B5002FA97D /* iOS-TCI */ = {
 			isa = PBXNativeTarget;
@@ -3149,6 +3211,9 @@
 					CE6B240725F1F3CE0020D43E = {
 						CreatedOnToolsVersion = 12.5;
 					};
+					CE9A352C26533A51005077CF = {
+						CreatedOnToolsVersion = 12.4;
+					};
 					CEBDA1D924D8BDDA0010B5EC = {
 						CreatedOnToolsVersion = 12.0;
 					};
@@ -3179,6 +3244,7 @@
 				CE2D951B24AD48BE0059923A /* macOS */,
 				CEBDA1D924D8BDDA0010B5EC /* QEMUHelper */,
 				CE6B240725F1F3CE0020D43E /* QEMULauncher */,
+				CE9A352C26533A51005077CF /* JailbreakInterposer */,
 			);
 		};
 /* End PBXProject section */
@@ -3216,6 +3282,13 @@
 				CE4698FA24C8FBD9008C1BD6 /* Icons in Resources */,
 				CE2D959024AD50D50059923A /* Localizable.strings in Resources */,
 				CE0FE12824D3B08B0086CEF0 /* VMDisplayWindow.xib in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		CE9A352B26533A51005077CF /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3801,6 +3874,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		CE9A352926533A51005077CF /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CE9A354026533AE6005077CF /* JailbreakInterposer.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		CEA45E24263519B5002FA97D /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -4075,6 +4156,11 @@
 			isa = PBXTargetDependency;
 			target = CE6B240725F1F3CE0020D43E /* QEMULauncher */;
 			targetProxy = CE6B241225F1F55C0020D43E /* PBXContainerItemProxy */;
+		};
+		CE9A353326533A52005077CF /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = CE9A352C26533A51005077CF /* JailbreakInterposer */;
+			targetProxy = CE9A353226533A52005077CF /* PBXContainerItemProxy */;
 		};
 		CEBDA1E424D8BDDB0010B5EC /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -4427,6 +4513,50 @@
 			};
 			name = Release;
 		};
+		CE9A353626533A52005077CF /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "$(CODE_SIGN_IDENTITY_IOS:default=Apple Development)";
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				INFOPLIST_FILE = JailbreakInterposer/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				OTHER_LDFLAGS = "-Wl,-framework,IOKit";
+				PRODUCT_BUNDLE_IDENTIFIER = "$(PRODUCT_BUNDLE_PREFIX:default=com.utmapp).JailbreakInterposer";
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SKIP_INSTALL = YES;
+			};
+			name = Debug;
+		};
+		CE9A353726533A52005077CF /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "$(CODE_SIGN_IDENTITY_IOS:default=Apple Development)";
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				INFOPLIST_FILE = JailbreakInterposer/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				OTHER_LDFLAGS = "-Wl,-framework,IOKit";
+				PRODUCT_BUNDLE_IDENTIFIER = "$(PRODUCT_BUNDLE_PREFIX:default=com.utmapp).JailbreakInterposer";
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SKIP_INSTALL = YES;
+			};
+			name = Release;
+		};
 		CEA45FB7263519B5002FA97D /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -4567,6 +4697,15 @@
 			buildConfigurations = (
 				CE6B240C25F1F3CE0020D43E /* Debug */,
 				CE6B240D25F1F3CE0020D43E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		CE9A353826533A52005077CF /* Build configuration list for PBXNativeTarget "JailbreakInterposer" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				CE9A353626533A52005077CF /* Debug */,
+				CE9A353726533A52005077CF /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
