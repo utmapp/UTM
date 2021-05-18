@@ -14,6 +14,8 @@
 // limitations under the License.
 //
 
+#include <TargetConditionals.h>
+#if !TARGET_OS_SIMULATOR
 #include <IOKit/IOKitLib.h>
 #include <unistd.h>
 
@@ -54,3 +56,4 @@ __attribute__ ((used, section ("__DATA,__interpose")))
 static struct {
     void *replacement, *original;
 } replace_IOServiceAuthorize = { IOServiceAuthorizeReplacement, IOServiceAuthorize };
+#endif
