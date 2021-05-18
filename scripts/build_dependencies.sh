@@ -311,19 +311,32 @@ fixup () {
     LIBNAME=${BASEFILENAME#lib*}
     BUNDLE_ID="com.utmapp.${LIBNAME//_/-}"
     FRAMEWORKNAME="$LIBNAME.framework"
-    FRAMEWORKPATH="$PREFIX/Frameworks/$FRAMEWORKNAME"
+    BASEFRAMEWORKPATH="$PREFIX/Frameworks/$FRAMEWORKNAME"
+    if [ "$PLATFORM" == "macos" ]; then
+        FRAMEWORKPATH="$BASEFRAMEWORKPATH/Versions/A"
+        INFOPATH="$FRAMEWORKPATH/Resources"
+    else
+        FRAMEWORKPATH="$BASEFRAMEWORKPATH"
+        INFOPATH="$FRAMEWORKPATH"
+    fi
     NEWFILE="$FRAMEWORKPATH/$LIBNAME"
     LIST=$(otool -L "$FILE" | tail -n +2 | cut -d ' ' -f 1 | awk '{$1=$1};1')
     OLDIFS=$IFS
     IFS=$'\n'
     echo "${GREEN}Fixing up $FILE...${NC}"
     mkdir -p "$FRAMEWORKPATH"
+    mkdir -p "$INFOPATH"
     cp -a "$FILE" "$NEWFILE"
-    /usr/libexec/PlistBuddy -c "Add :CFBundleExecutable string $LIBNAME" "$FRAMEWORKPATH/Info.plist"
-    /usr/libexec/PlistBuddy -c "Add :CFBundleIdentifier string $BUNDLE_ID" "$FRAMEWORKPATH/Info.plist"
-    /usr/libexec/PlistBuddy -c "Add :MinimumOSVersion string $SDKMINVER" "$FRAMEWORKPATH/Info.plist"
-    /usr/libexec/PlistBuddy -c "Add :CFBundleVersion string 1" "$FRAMEWORKPATH/Info.plist"
-    /usr/libexec/PlistBuddy -c "Add :CFBundleShortVersionString string 1.0" "$FRAMEWORKPATH/Info.plist"
+    /usr/libexec/PlistBuddy -c "Add :CFBundleExecutable string $LIBNAME" "$INFOPATH/Info.plist"
+    /usr/libexec/PlistBuddy -c "Add :CFBundleIdentifier string $BUNDLE_ID" "$INFOPATH/Info.plist"
+    /usr/libexec/PlistBuddy -c "Add :MinimumOSVersion string $SDKMINVER" "$INFOPATH/Info.plist"
+    /usr/libexec/PlistBuddy -c "Add :CFBundleVersion string 1" "$INFOPATH/Info.plist"
+    /usr/libexec/PlistBuddy -c "Add :CFBundleShortVersionString string 1.0" "$INFOPATH/Info.plist"
+    if [ "$PLATFORM" == "macos" ]; then
+        ln -sf "A" "$BASEFRAMEWORKPATH/Versions/Current"
+        ln -sf "Versions/Current/Resources" "$BASEFRAMEWORKPATH/Resources"
+        ln -sf "Versions/Current/$LIBNAME" "$BASEFRAMEWORKPATH/$LIBNAME"
+    fi
     newname="@rpath/$FRAMEWORKNAME/$LIBNAME"
     install_name_tool -id "$newname" "$NEWFILE"
     for g in $LIST
