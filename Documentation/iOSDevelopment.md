@@ -13,7 +13,14 @@ Alternatively, run `git submodule update --init --recursive` after cloning if yo
 
 ## Dependencies
 
-The easy way is to get the prebuilt dependences from [Github Actions][1]. Pick the latest release and download all of the `Sysroot-iOS-*` artifacts. You need to be logged in to Github to download artifacts. If you want to run on a real iOS device, get the `arm64` variant. If you want to run on iOS simulator for Intel Mac, get the `x86_64` variant. At this time, there is no pre-built for iOS simulator for M1 Macs.
+The easy way is to get the prebuilt dependences from [Github Actions][1]. Pick the latest release and download the `Sysroot-*` artifact for the targets you wish to develop on. You need to be logged in to Github to download artifacts.
+
+|              | Intel                      | Apple Silicon             |
+|--------------|----------------------------|---------------------------|
+| iOS          | N/A                        | `ios-arm64`               |
+| iOS SE       | N/A                        | `ios-tci-arm64`           |
+| Simulator    | `ios_simulator-x86_64`     | `ios_simulator-arm64`     |
+| Simulator SE | `ios_simulator-tci-x86_64` | `ios_simulator-tci-arm64` |
 
 ### Building Dependencies (Advanced)
 
@@ -24,8 +31,8 @@ If you want to build the dependencies yourself, it is highly recommended that yo
     `brew install bison pkg-config gettext glib libgpg-error nasm make meson`
    Make sure to add `bison` and `gettext` to your `$PATH` environment variable!
 	`export PATH=/usr/local/opt/bison/bin:/usr/local/opt/gettext/bin:$PATH`
-3. Run `./scripts/build_dependencies.sh -p ios -a arm64` for iOS devices.
-4. (Intel Macs only) Run `./scripts/build_dependencies.sh -p ios -a x86_64` for iOS simulator.
+3. Run `./scripts/build_dependencies.sh -p PLATFORM -a ARCHITECTURE` where `ARCHITECTURE` is the last part of the table above (e.g. `x86_64`) and `PLATFORM` is the first part (e.g. `ios_simulator-tci`).
+4. Repeat the above for any other platforms and architectures you wish to target.
 
 ## Building UTM
 
@@ -37,7 +44,7 @@ You can build UTM with the script:
 ./scripts/build_utm.sh -p ios -a arm64 -o /path/to/output/directory
 ```
 
-The built artifact is an unsigned `.xcarchive` which you can use with the package tool (see below).
+The built artifact is an unsigned `.xcarchive` which you can use with the package tool (see below). Replace `ios` with `ios-tci` to build UTM SE.
 
 ### Packaging
 

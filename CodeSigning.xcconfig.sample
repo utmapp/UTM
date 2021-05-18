@@ -1,2 +1,38 @@
+// Your Team ID. See `Documentation/iOSDevelopment.md` for help finding this.
 DEVELOPMENT_TEAM = XYZ0123456
+
+// Prefix of unique bundle IDs registered to you in Apple Developer Portal.
+// You need to register:
+//   - com.myuniquename.UTM
+//   - com.myuniquename.QEMUHelper
+//   - com.myuniquename.QEMULauncher
 PRODUCT_BUNDLE_PREFIX = com.myuniquename
+
+// Name of the iOS development signing certificate, you probably do not need
+// to change this.
+CODE_SIGN_IDENTITY_IOS = Apple Development
+
+// The values below are specific to macOS development. If you do not define
+// these keys, the build will default to ad-hoc signing. You will need to
+// follow `Documentation/MacDevelopment.md` to disable library verification and
+// remove unsupported entitlements.
+
+// Name of the macOS development signing certificate. Comment out this line to
+// use ad-hoc signing.
+CODE_SIGN_IDENTITY_MAC = Apple Development
+
+// Create a Mac provisioning profile for com.myuniquename.UTM with the
+// Hypervisor entitlements and get its UUID. If you do not have access to these
+// entitlements, comment out the line and delete the following entitlements
+//   - com.apple.vm.device-access
+// from the following file
+//   - Platform/macOS/macOS.entitlements
+PROVISIONING_PROFILE_SPECIFIER_MAC = 00000000-1111-2222-3333-444444444444
+
+// Create a Mac provisioning profile for com.myuniquename.QEMUHelper with the
+// Hypervisor entitlements and get its UUID. If you do not have access to these
+// entitlements, comment out the line and delete the following entitlements
+//   - com.apple.vm.networking
+// from the following file
+//   - QEMUHelper/QEMUHelper.entitlements
+PROVISIONING_PROFILE_SPECIFIER_HELPER = 00000000-1111-2222-3333-555555555555
