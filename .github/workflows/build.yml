@@ -62,12 +62,14 @@ jobs:
           name: Sysroot-${{ matrix.platform }}-${{ matrix.arch }}
           path: sysroot.tgz
       - name: Build UTM
-        run: ./scripts/build_utm.sh -p ${{ matrix.platform }} -a ${{ matrix.arch }} -o build-utm/UTM
+        run: |
+          ./scripts/build_utm.sh -p ${{ matrix.platform }} -a ${{ matrix.arch }} -o UTM
+          tar cf UTM.xcarchive.tgz UTM.xcarchive
       - name: Upload UTM
         uses: actions/upload-artifact@v2
         with:
           name: UTM-${{ matrix.platform }}-${{ matrix.arch }}
-          path: build-utm
+          path: UTM.xcarchive.tgz
   build-universal:
     name: Build UTM (macOS Universal)
     runs-on: macos-10.15
@@ -104,12 +106,14 @@ jobs:
         shell: bash
         run: sudo xcode-select -switch /Applications/Xcode_12.4.app
       - name: Build UTM
-        run: ./scripts/build_utm.sh -p macos -a "arm64 x86_64" -o build-utm/UTM
+        run: |
+          ./scripts/build_utm.sh -p macos -a "arm64 x86_64" -o UTM
+          tar cf UTM.xcarchive.tgz UTM.xcarchive
       - name: Upload UTM
         uses: actions/upload-artifact@v2
         with:
           name: UTM-macos-universal
-          path: build-utm
+          path: UTM.xcarchive.tgz
   package-ipa:
     name: Package (iOS IPA)
     runs-on: macos-10.15
@@ -125,7 +129,9 @@ jobs:
       - name: Install ldid
         run: brew install ldid
       - name: Fakesign IPA
-        run: ./scripts/package.sh ipa UTM.xcarchive .
+        run: |
+          tar xf UTM.xcarchive.tgz
+          ./scripts/package.sh ipa UTM.xcarchive .
       - name: Upload Release Asset
         uses: actions/upload-release-asset@v1.0.2
         env:
@@ -157,7 +163,9 @@ jobs:
       - name: Install ldid
         run: brew install ldid
       - name: Fakesign IPA
-        run: ./scripts/package.sh ipa-se UTM.xcarchive .
+        run: |
+          tar xf UTM.xcarchive.tgz
+          ./scripts/package.sh ipa-se UTM.xcarchive .
       - name: Upload Release Asset
         uses: actions/upload-release-asset@v1.0.2
         env:
@@ -189,7 +197,9 @@ jobs:
       - name: Install ldid + dpkg
         run: brew install ldid dpkg
       - name: Fakesign IPA
-        run: ./scripts/package.sh deb UTM.xcarchive .
+        run: |
+          tar xf UTM.xcarchive.tgz
+          ./scripts/package.sh deb UTM.xcarchive .
       - name: Upload Release Asset
         uses: actions/upload-release-asset@v1.0.2
         env:
@@ -234,7 +244,9 @@ jobs:
         with:
           name: UTM-macos-universal
       - name: Package for Release
-        run: ./scripts/package_mac.sh developer-id UTM.xcarchive . "$SIGNING_TEAM_ID" "$PROFILE_UUID" "$HELPER_PROFILE_UUID"
+        run: |
+          tar xf UTM.xcarchive.tgz
+          ./scripts/package_mac.sh developer-id UTM.xcarchive . "$SIGNING_TEAM_ID" "$PROFILE_UUID" "$HELPER_PROFILE_UUID"
         env:
           SIGNING_TEAM_ID: ${{ secrets.SIGNING_TEAM_ID }}
           PROFILE_UUID: ${{ secrets.PROFILE_UUID }}
