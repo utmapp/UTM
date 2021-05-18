@@ -20,7 +20,12 @@ jobs:
     strategy:
       matrix:
         arch: [arm64, x86_64]
-        platform: [ios, ios-tci, macos]
+        platform: [ios, ios_simulator, ios-tci, macos]
+        exclude:
+          - arch: x86_64
+            platform: ios
+          - arch: x86_64
+            platform: ios-tci
     steps:
       - name: Checkout
         uses: actions/checkout@v2

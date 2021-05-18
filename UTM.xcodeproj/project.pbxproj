@@ -4383,7 +4383,6 @@
 					"$(PROJECT_DIR)/$(QUOTED_SYSROOT_DIR)/include/spice-1",
 					"$(PROJECT_DIR)/$(QUOTED_SYSROOT_DIR)/include/libusb-1.0",
 				);
-				QUOTED_SYSROOT_DIR = "\"$(SYSROOT_DIR)\"";
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(PROJECT_DIR)/$(QUOTED_SYSROOT_DIR)/lib",
@@ -4394,8 +4393,9 @@
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
+				QUOTED_SYSROOT_DIR = "\"$(SYSROOT_DIR)\"";
 				SDKROOT = iphoneos;
-				SYSROOT_DIR = "sysroot-$(PLATFORM_DISPLAY_NAME)-$(ARCHS:identifier)";
+				SYSROOT_DIR = "sysroot-$(PLATFORM_DISPLAY_NAME:identifier)$(PLATFORM_SUFFIX)-$(ARCHS:identifier)";
 			};
 			name = Debug;
 		};
@@ -4455,7 +4455,6 @@
 					"$(PROJECT_DIR)/$(QUOTED_SYSROOT_DIR)/include/spice-1",
 					"$(PROJECT_DIR)/$(QUOTED_SYSROOT_DIR)/include/libusb-1.0",
 				);
-				QUOTED_SYSROOT_DIR = "\"$(SYSROOT_DIR)\"";
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(PROJECT_DIR)/$(QUOTED_SYSROOT_DIR)/lib",
@@ -4465,8 +4464,9 @@
 				MACOSX_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
+				QUOTED_SYSROOT_DIR = "\"$(SYSROOT_DIR)\"";
 				SDKROOT = iphoneos;
-				SYSROOT_DIR = "sysroot-$(PLATFORM_DISPLAY_NAME)-$(ARCHS:identifier)";
+				SYSROOT_DIR = "sysroot-$(PLATFORM_DISPLAY_NAME:identifier)$(PLATFORM_SUFFIX)-$(ARCHS:identifier)";
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
@@ -4576,6 +4576,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				PLATFORM_SUFFIX = "-TCI";
 				PRODUCT_BUNDLE_IDENTIFIER = "$(PRODUCT_BUNDLE_PREFIX:default=com.utmapp).UTM-SE";
 				PRODUCT_MODULE_NAME = UTM;
 				PRODUCT_NAME = "UTM SE";
@@ -4606,6 +4607,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				PLATFORM_SUFFIX = "-TCI";
 				PRODUCT_BUNDLE_IDENTIFIER = "$(PRODUCT_BUNDLE_PREFIX:default=com.utmapp).UTM-SE";
 				PRODUCT_MODULE_NAME = UTM;
 				PRODUCT_NAME = "UTM SE";

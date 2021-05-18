@@ -9,7 +9,7 @@ BASEDIR="$(dirname "$(realpath $0)")"
 usage () {
     echo "Usage: $(basename $0) [-p platform] [-a architecture] [-t targetversion] [-o output]"
     echo ""
-    echo "  -p platform      Target platform. Default ios. [ios|ios-tci|macos]"
+    echo "  -p platform      Target platform. Default ios. [ios|ios_simulator|ios-tci|ios_simulator-tci|macos]"
     echo "  -a architecture  Target architecture. Default arm64. [armv7|armv7s|arm64|i386|x86_64]"
     echo "  -o output        Output archive path. Default is current directory."
     echo ""
@@ -44,10 +44,10 @@ while [ "x$1" != "x" ]; do
 done
 
 case $PLATFORM in
-ios )
+ios | ios_simulator )
     SCHEME="iOS"
     ;;
-ios-tci )
+*-tci )
     SCHEME="iOS-TCI"
     ;;
 macos )
@@ -60,17 +60,10 @@ esac
 
 case $PLATFORM in
 ios | ios-tci )
-    case $ARCH in
-    arm* )
-        SDK=iphoneos
-        ;;
-    i386 | x86_64 )
-        SDK=iphonesimulator
-        ;;
-    * )
-        usage
-        ;;
-    esac
+    SDK=iphoneos
+    ;;
+*simulator* )
+    SDK=iphonesimulator
     ;;
 macos )
     SDK=macosx

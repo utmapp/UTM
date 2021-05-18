@@ -38,7 +38,7 @@ command -v realpath >/dev/null 2>&1 || realpath() {
 usage () {
     echo "Usage: [VARIABLE...] $(basename $0) [-p platform] [-a architecture] [-q qemu_path] [-d] [-r]"
     echo ""
-    echo "  -p platform      Target platform. Default ios. [ios|ios-tci|macos]"
+    echo "  -p platform      Target platform. Default ios. [ios|ios_simulator|ios-tci|ios_simulator-tci|macos]"
     echo "  -a architecture  Target architecture. Default arm64. [armv7|armv7s|arm64|i386|x86_64]"
     echo "  -q qemu_path     Do not download QEMU, use qemu_path instead."
     echo "  -d, --download   Force re-download of source even if already downloaded."
@@ -441,32 +441,37 @@ CHOST=$CPU-apple-darwin
 export CHOST
 
 case $PLATFORM in
-ios | ios-tci )
+ios* )
     if [ -z "$SDKMINVER" ]; then
         SDKMINVER="$IOS_SDKMINVER"
     fi
-    case $ARCH in
-    arm* )
-        SDK=iphoneos
-        CFLAGS_MINVER="-miphoneos-version-min=$SDKMINVER"
-        ;;
-    i386 | x86_64 )
+    case $PLATFORM in
+    *simulator* )
         SDK=iphonesimulator
         CFLAGS_MINVER="-mios-simulator-version-min=$SDKMINVER"
+        PLATFORM_FAMILY_PREFIX="iOS_Simulator"
+        ;;
+    * )
+        SDK=iphoneos
+        CFLAGS_MINVER="-miphoneos-version-min=$SDKMINVER"
+        PLATFORM_FAMILY_PREFIX="iOS"
         ;;
     esac
     CFLAGS_TARGET=
-    if [ "$PLATFORM" == "ios-tci" ]; then
+    case $PLATFORM in
+    *-tci )
         if [ "$ARCH" == "arm64" ]; then
             TCI_BUILD_FLAGS="--enable-tcg-tcti --target-list=aarch64-softmmu,arm-softmmu,i386-softmmu,ppc-softmmu,ppc64-softmmu,riscv32-softmmu,riscv64-softmmu,x86_64-softmmu"
         else
             TCI_BUILD_FLAGS="--enable-tcg-interpreter"
         fi
-        PLATFORM_FAMILY_NAME="iOS-TCI"
+        PLATFORM_FAMILY_NAME="$PLATFORM_FAMILY_PREFIX-TCI"
         SKIP_USB_BUILD=1
-    else
-        PLATFORM_FAMILY_NAME="iOS"
-    fi
+        ;;
+    * )
+        PLATFORM_FAMILY_NAME="$PLATFORM_FAMILY_PREFIX"
+        ;;
+    esac
     QEMU_PLATFORM_BUILD_FLAGS="--disable-debug-info --enable-shared-lib --disable-hvf --disable-cocoa --disable-curl --disable-slirp-smbd --with-coroutine=libucontext $TCI_BUILD_FLAGS"
     ;;
 macos )
