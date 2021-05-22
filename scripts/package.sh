@@ -60,7 +60,7 @@ itunes_sign() {
 	local PROFILE_NAME=$4
 	local OPTIONS="/tmp/options.plist"
 
-	if [ -z "$PROFILE_NAME" || -z "$TEAM_ID" ]; then
+	if [ -z "$PROFILE_NAME" -o -z "$TEAM_ID" ]; then
 		echo "Invalid profile name or team id!"
 		usage
 	fi
