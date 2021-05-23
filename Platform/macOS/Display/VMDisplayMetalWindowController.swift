@@ -329,7 +329,7 @@ extension VMDisplayMetalWindowController: VMMetalViewInputDelegate {
         let newX = absolutePoint.x * currentScreenScale / viewportScale
         let newY = (frameSize.height - absolutePoint.y) * currentScreenScale / viewportScale
         let point = CGPoint(x: newX, y: newY)
-        logger.debug("move cursor: cocoa (\(absolutePoint.x), \(absolutePoint.y)), native (\(newX), \(newY))")
+        logger.trace("move cursor: cocoa (\(absolutePoint.x), \(absolutePoint.y)), native (\(newX), \(newY))")
         vmInput?.sendMouseMotion(button, point: point)
         vmDisplay?.forceCursorPosition(point) // required to show cursor on screen
     }
