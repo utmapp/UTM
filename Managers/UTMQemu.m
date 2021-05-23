@@ -180,7 +180,12 @@
 
 - (void)startQemu:(nonnull NSString *)arch completion:(void(^)(BOOL,NSString *))completion {
     [self printArgv];
-    NSString *dylib = [NSString stringWithFormat:@"qemu-%@-softmmu.framework/qemu-%@-softmmu", arch, arch];
+#if TARGET_OS_IPHONE
+    NSString *base = @"";
+#else
+    NSString *base = @"Versions/A/";
+#endif
+    NSString *dylib = [NSString stringWithFormat:@"qemu-%@-softmmu.framework/%@qemu-%@-softmmu", arch, base, arch];
     if (_connection) {
         [self startQemuRemote:dylib completion:completion];
     } else {

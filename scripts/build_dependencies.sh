@@ -346,7 +346,11 @@ fixup () {
         libname=${basefilename#lib*}
         dir=$(dirname "$g")
         if [ "$dir" == "$PREFIX/lib" ]; then
-            newname="@rpath/$libname.framework/$libname"
+            if [ "$PLATFORM" == "macos" ]; then
+                newname="@rpath/$libname.framework/Versions/A/$libname"
+            else
+                newname="@rpath/$libname.framework/$libname"
+            fi
             install_name_tool -change "$g" "$newname" "$NEWFILE"
         fi
     done

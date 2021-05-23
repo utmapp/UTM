@@ -475,11 +475,13 @@ class UTMData: ObservableObject {
         let bundleURL = Bundle.main.bundleURL
         #if os(macOS)
         let contentsURL = bundleURL.appendingPathComponent("Contents", isDirectory: true)
+        let base = "Versions/A/"
         #else
         let contentsURL = bundleURL
+        let base = ""
         #endif
         let frameworksURL = contentsURL.appendingPathComponent("Frameworks", isDirectory: true)
-        let framework = frameworksURL.appendingPathComponent("qemu-" + arch + "-softmmu.framework/qemu-" + arch + "-softmmu", isDirectory: false)
+        let framework = frameworksURL.appendingPathComponent("qemu-" + arch + "-softmmu.framework/" + base + "qemu-" + arch + "-softmmu", isDirectory: false)
         logger.error("\(framework.path)")
         return fileManager.fileExists(atPath: framework.path)
     }
