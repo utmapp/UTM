@@ -128,6 +128,7 @@ class VMDisplayMetalWindowController: VMDisplayWindowController {
             NSEvent.removeMonitor(localEventMonitor)
             self.localEventMonitor = nil
         }
+        releaseMouse()
         super.enterSuspended(isBusy: busy)
     }
     
