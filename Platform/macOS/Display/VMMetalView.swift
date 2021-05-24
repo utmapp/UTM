@@ -289,9 +289,9 @@ class VMMetalView: MTKView {
     }
     
     override func scrollWheel(with event: NSEvent) {
-        guard event.scrollingDeltaY != 0 else { return }
-        logger.trace("scroll: \(event.scrollingDeltaY)")
-        inputDelegate?.mouseScroll(dy: event.scrollingDeltaY,
+        guard event.deltaY != 0 else { return }
+        logger.trace("scroll: \(event.deltaY)")
+        inputDelegate?.mouseScroll(dy: event.deltaY,
                                    button: NSEvent.pressedMouseButtons.inputButtons())
     }
 }
