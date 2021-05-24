@@ -227,6 +227,25 @@ static size_t sysctl_read(const char *name) {
     [self pushArgv:[NSString stringWithFormat:@"cpus=%lu,sockets=1,cores=%lu,threads=%lu", self.emulatedCpuCount.threads, self.emulatedCpuCount.cpus, self.emulatedCpuCount.threads / self.emulatedCpuCount.cpus]];
 }
 
+- (void)argsForSound {
+    // < macOS 11.3 we use fork() which is buggy and things are broken
+    BOOL forceDisableSound = NO;
+    if (@available(macOS 11.3, *)) {
+    } else {
+        if (self.configuration.displayConsoleOnly) {
+            forceDisableSound = YES;
+        }
+    }
+    if (self.configuration.soundEnabled && !forceDisableSound) {
+        [self pushArgv:@"-device"];
+        [self pushArgv:self.configuration.soundCard];
+        if ([self.configuration.soundCard containsString:@"hda"]) {
+            [self pushArgv:@"-device"];
+            [self pushArgv:@"hda-duplex"];
+        }
+    }
+}
+
 - (void)argsForDrives {
     NSMutableDictionary<NSString *, NSNumber *> *busInterfaceMap = [NSMutableDictionary dictionary];
     for (NSUInteger i = 0; i < self.configuration.countDrives; i++) {
@@ -567,22 +586,7 @@ static size_t sysctl_read(const char *name) {
     }
     [self pushArgv:@"-m"];
     [self pushArgv:[self.configuration.systemMemory stringValue]];
-    // < macOS 11.3 we use fork() which is buggy and things are broken
-    BOOL forceDisableSound = NO;
-    if (@available(macOS 11.3, *)) {
-    } else {
-        if (self.configuration.displayConsoleOnly) {
-            forceDisableSound = YES;
-        }
-    }
-    if (self.configuration.soundEnabled && !forceDisableSound) {
-        [self pushArgv:@"-device"];
-        [self pushArgv:self.configuration.soundCard];
-        if ([self.configuration.soundCard containsString:@"hda"]) {
-            [self pushArgv:@"-device"];
-            [self pushArgv:@"hda-duplex"];
-        }
-    }
+    [self argsForSound];
     [self pushArgv:@"-name"];
     [self pushArgv:self.configuration.name];
     if (self.usbSupported) {
