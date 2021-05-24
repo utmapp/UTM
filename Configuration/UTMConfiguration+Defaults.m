@@ -74,7 +74,8 @@
         self.displayCard = @"virtio-ramfb";
         self.usb3Support = NO;
     } else if ([target isEqualToString:@"mac99"]) {
-        self.soundEnabled = NO;
+        self.soundCard = @"screamer";
+        self.soundEnabled = YES;
     } else if ([target isEqualToString:@"isapc"]) {
         self.inputLegacy = YES; // no USB support
     }

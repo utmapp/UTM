@@ -237,11 +237,18 @@ static size_t sysctl_read(const char *name) {
         }
     }
     if (self.configuration.soundEnabled && !forceDisableSound) {
-        [self pushArgv:@"-device"];
-        [self pushArgv:self.configuration.soundCard];
-        if ([self.configuration.soundCard containsString:@"hda"]) {
+        if ([self.configuration.soundCard isEqualToString:@"screamer"]) {
+            // force CoreAudio backend for mac99 which only supports 44100 Hz
+            [self pushArgv:@"-audiodev"];
+            [self pushArgv:@"coreaudio,id=audio0"];
+            // no device setting for screamer
+        } else {
             [self pushArgv:@"-device"];
-            [self pushArgv:@"hda-duplex"];
+            [self pushArgv:self.configuration.soundCard];
+            if ([self.configuration.soundCard containsString:@"hda"]) {
+                [self pushArgv:@"-device"];
+                [self pushArgv:@"hda-duplex"];
+            }
         }
     }
 }

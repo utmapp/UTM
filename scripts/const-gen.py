@@ -56,6 +56,21 @@ DEFAULTS = {
     "x86_64": "q35"
 }
 
+AUDIO_SCREAMER = Device('screamer', 'macio', '', 'Screamer (Mac99 only)')
+
+ADD_DEVICES = {
+    "ppc": {
+        "Sound devices": set([
+            AUDIO_SCREAMER
+        ])
+    },
+    "ppc64": {
+        "Sound devices": set([
+            AUDIO_SCREAMER
+        ])
+    },
+}
+
 HEADER = '''//
 // Copyright © 2020 osy. All rights reserved.
 //
@@ -92,10 +107,10 @@ def parseListing(listing):
         result.add(Name(name, '{} ({})'.format(description, name)))
     return result
 
-def parseDeviceListing(listing):
+def parseDeviceListing(defaults, listing):
     output = listing.splitlines()
     group = ''
-    result = defaultdict(set)
+    result = defaultdict(set, defaults)
     for line in output:
         if not line:
             continue
@@ -188,7 +203,7 @@ def parseCpu(listing):
 def sortItems(items):
     return sorted(items, key=lambda item: item.desc if item.desc else item.name)
 
-def getMachines(qemu_path):
+def getMachines(target, qemu_path):
     output = subprocess.check_output([qemu_path, '-machine', 'help']).decode('utf-8')
     return parseListing(output)
 
@@ -203,12 +218,12 @@ def getDefaultMachine(target, machines):
             return idx
     return -1
 
-def getDevices(qemu_path):
+def getDevices(target, qemu_path):
     output = subprocess.check_output([qemu_path, '-device', 'help']).decode('utf-8')
-    devices = parseDeviceListing(output)
+    devices = parseDeviceListing(ADD_DEVICES[target.name] if target.name in ADD_DEVICES else {}, output)
     return devices
 
-def getCpus(qemu_path):
+def getCpus(target, qemu_path):
     output = subprocess.check_output([qemu_path, '-cpu', 'help']).decode('utf-8')
     return parseCpu(output)
 
@@ -281,15 +296,16 @@ def main(argv):
             path = '{}/qemu-system-{}'.format(base, target.name)
             if not os.path.exists(path):
                 raise "Invalid path."
-        machines = sortItems(getMachines(path))
+        machines = sortItems(getMachines(target, path))
         default = getDefaultMachine(target.name, machines)
         allMachines.append(Architecture(target.name, machines, default))
-        devices = getDevices(path)
+        devices = getDevices(target, path)
+
         allDisplayCards.append(Architecture(target.name, devices["Display devices"], 0))
         allNetworkCards.append(Architecture(target.name, devices["Network devices"], 0))
         nonHdaDevices = [device for device in devices["Sound devices"] if device.bus != 'HDA']
         allSoundCards.append(Architecture(target.name, nonHdaDevices, 0))
-        cpus, flags = getCpus(path)
+        cpus, flags = getCpus(target, path)
         allCpus.append(Architecture(target.name, cpus, 0))
         allCpuFlags.append(Architecture(target.name, flags, 0))
     # generate constants
