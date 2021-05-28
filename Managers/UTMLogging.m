@@ -65,7 +65,12 @@ void UTMLog(NSString *format, ...) {
         self.standardOutput.fileHandleForReading.readabilityHandler = ^(NSFileHandle *handle) {
             typeof(self) _self = _weakSelf;
             NSData *data = [handle availableData];
-            [_self.originalStdoutWrite writeData:data];
+            @try {
+                [_self.originalStdoutWrite writeData:data];
+            } @catch (NSException *e) {
+                // fd closed on us
+                _self.originalStdoutWrite = nil;
+            }
             [_self.fileOutputStream write:data.bytes maxLength:data.length];
         };
         self.standardError = [NSPipe pipe];
@@ -73,7 +78,12 @@ void UTMLog(NSString *format, ...) {
         self.standardError.fileHandleForReading.readabilityHandler = ^(NSFileHandle *handle) {
             typeof(self) _self = _weakSelf;
             NSData *data = [handle availableData];
-            [_self.originalStderrWrite writeData:data];
+            @try {
+                [_self.originalStderrWrite writeData:data];
+            } @catch (NSException *e) {
+                // fd closed on us
+                _self.originalStderrWrite = nil;
+            }
             [_self.fileOutputStream write:data.bytes maxLength:data.length];
             _self.lastErrorLine = [_self parseLastLine:data buffer:&errorBuffer];
         };
