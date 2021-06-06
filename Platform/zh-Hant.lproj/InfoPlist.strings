@@ -1,14 +1,14 @@
 /* Privacy - Location Always and When In Use Usage Description */
-"NSLocationAlwaysAndWhenInUseUsageDescription" = "由於iOS的機制，後台保持虛擬機運行需要借助定位服務。您的位置信息將不會被發送。";
+"NSLocationAlwaysAndWhenInUseUsageDescription" = "由於 iOS 的機制，後台維持虛擬機執行需要借助定位服務。這不會傳送您的位置資訊。";
 
 /* Privacy - Location Always Usage Description */
-"NSLocationAlwaysUsageDescription" = "由於iOS的機制，後台保持虛擬機運行需要借助定位服務。您的位置信息將不會被發送。";
+"NSLocationAlwaysUsageDescription" = "由於 iOS 的機制，後台維持虛擬機執行需要借助定位服務。這不會傳送您的位置資訊。";
 
 /* Privacy - Location When In Use Usage Description */
-"NSLocationWhenInUseUsageDescription" = "由於iOS的後台機制，後台保持虛擬機運行需要借助定位服務。您的位置信息將不會被發送。";
+"NSLocationWhenInUseUsageDescription" = "由於 iOS 的機制，後台維持虛擬機執行需要借助定位服務。這不會傳送您的位置資訊。";
 
 /* Privacy - Microphone Usage Description */
-"NSMicrophoneUsageDescription" = "UTM需要您的同意才能使用麥克風。";
+"NSMicrophoneUsageDescription" = "UTM 需要您的授權才能使用麥克風。";
 
 /* (No Comment) */
 "UTM virtual machine" = "";
