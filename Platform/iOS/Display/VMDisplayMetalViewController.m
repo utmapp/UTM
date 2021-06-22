@@ -97,41 +97,34 @@
     [self displayResize:size];
 }
 
-- (void)virtualMachine:(UTMVirtualMachine *)vm transitionToState:(UTMVMState)state {
-    [super virtualMachine:vm transitionToState:state];
-    switch (state) {
-        case kVMStopped:
-        case kVMPaused:
-        case kVMSuspended: {
-            [UIView transitionWithView:self.view duration:0.5 options:UIViewAnimationOptionTransitionCrossDissolve animations:^{
-                self.placeholderImageView.hidden = NO;
-                self.placeholderImageView.image = self.vm.screenshot.image;
-                self.mtkView.hidden = YES;
-            } completion:nil];
-            if (self.vmConfiguration.shareClipboardEnabled) {
-                [[UTMPasteboard generalPasteboard] releasePollingModeForObject:self];
-            }
+- (void)enterSuspendedWithIsBusy:(BOOL)busy {
+    [super enterSuspendedWithIsBusy:busy];
+    if (!busy) {
+        [UIView transitionWithView:self.view duration:0.5 options:UIViewAnimationOptionTransitionCrossDissolve animations:^{
+            self.placeholderImageView.hidden = NO;
+            self.placeholderImageView.image = self.vm.screenshot.image;
+            self.mtkView.hidden = YES;
+        } completion:nil];
+        if (self.vmConfiguration.shareClipboardEnabled) {
+            [[UTMPasteboard generalPasteboard] releasePollingModeForObject:self];
+        }
 #if !defined(WITH_QEMU_TCI)
-            if (state == kVMStopped) {
-                [self.usbDevicesViewController clearDevices];
-            }
+        if (self.vm.state == kVMStopped) {
+            [self.usbDevicesViewController clearDevices];
+        }
 #endif
-            break;
-        }
-        case kVMStarted: {
-            [UIView transitionWithView:self.view duration:0.5 options:UIViewAnimationOptionTransitionCrossDissolve animations:^{
-                self.placeholderImageView.hidden = YES;
-                self.mtkView.hidden = NO;
-            } completion:nil];
-            [self displayResize:self.view.bounds.size];
-            if (self.vmConfiguration.shareClipboardEnabled) {
-                [[UTMPasteboard generalPasteboard] requestPollingModeForObject:self];
-            }
-            break;
-        }
-        default: {
-            break;
-        }
+    }
+}
+
+- (void)enterLive {
+    [super enterLive];
+    [UIView transitionWithView:self.view duration:0.5 options:UIViewAnimationOptionTransitionCrossDissolve animations:^{
+        self.placeholderImageView.hidden = YES;
+        self.mtkView.hidden = NO;
+    } completion:nil];
+    [self displayResize:self.view.bounds.size];
+    if (self.vmConfiguration.shareClipboardEnabled) {
+        [[UTMPasteboard generalPasteboard] requestPollingModeForObject:self];
     }
 }
 

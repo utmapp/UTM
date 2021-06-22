@@ -45,9 +45,11 @@
 #if TARGET_OS_IPHONE
 #include "AppDelegate.h"
 #include "UIViewController+Extensions.h"
+#include "UTMLocationManager.h"
 #include "VMDisplayViewController.h"
 #include "VMDisplayMetalViewController.h"
 #include "VMDisplayMetalViewController+Keyboard.h"
 #include "VMDisplayTerminalViewController.h"
+#include "VMKeyboardButton.h"
 #include "VMKeyboardView.h"
 #endif

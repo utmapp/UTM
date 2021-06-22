@@ -20,6 +20,7 @@
 #import "VMKeyboardButton.h"
 #import "VMKeyboardView.h"
 #import "WKWebView+Workarounds.h"
+#import "UTM-Swift.h"
 
 @implementation VMDisplayTerminalViewController (Keyboard)
 

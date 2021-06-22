@@ -23,6 +23,7 @@
 #import "UTMVirtualMachine+Terminal.h"
 #import "UIViewController+Extensions.h"
 #import "WKWebView+Workarounds.h"
+#import "UTM-Swift.h"
 
 NSString *const kVMDefaultResizeCmd = @"stty cols $COLS rows $ROWS\\n";
 
@@ -187,27 +188,16 @@ NSString* const kVMSendTerminalSizeHandler = @"UTMSendTerminalSize";
     }];
 }
 
-#pragma mark - UTMVirtualMachineDelegate
+#pragma mark - State transition
 
-- (void)virtualMachine:(UTMVirtualMachine *)vm transitionToState:(UTMVMState)state {
-    [super virtualMachine:vm transitionToState:state];
-    
-    switch (state) {
-        case kVMPausing:
-        case kVMStopping:
-        case kVMStarting:
-        case kVMResuming: {
-            self.webView.userInteractionEnabled = NO;
-            break;
-        }
-        case kVMStarted: {
-            self.webView.userInteractionEnabled = YES;
-            break;
-        }
-        default: {
-            break;
-        }
-    }
+- (void)enterSuspendedWithIsBusy:(BOOL)busy {
+    [super enterSuspendedWithIsBusy:busy];
+    self.webView.userInteractionEnabled = NO;
+}
+
+- (void)enterLive {
+    [super enterLive];
+    self.webView.userInteractionEnabled = YES;
 }
 
 @end
