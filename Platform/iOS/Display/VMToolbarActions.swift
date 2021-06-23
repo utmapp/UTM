@@ -14,6 +14,8 @@
 // limitations under the License.
 //
 
+import SwiftUI
+
 @objc public class VMToolbarActions: NSObject {
     weak var viewController: VMDisplayViewController?
     
@@ -77,6 +79,14 @@
         }
     }
     
+    private var longIdleTask: DispatchWorkItem?
+    
+    @objc var isUserInteracting: Bool = true {
+        willSet {
+            optionalObjectWillChange()
+        }
+    }
+    
     private func optionalObjectWillChange() {
         if #available(iOS 14, *) {
             self.objectWillChange.send()
@@ -116,6 +126,27 @@
             }
         } completion: { _ in
         }
+    }
+    
+    func assertUserInteraction() {
+        guard !hasLegacyToolbar else {
+            return
+        }
+        if let task = longIdleTask {
+            task.cancel()
+        }
+        isUserInteracting = true
+        longIdleTask = DispatchWorkItem {
+            self.longIdleTask = nil
+            if #available(iOS 14, *), !UIAccessibility.isReduceMotionEnabled {
+                withAnimation {
+                    self.isUserInteracting = false
+                }
+            } else {
+                self.isUserInteracting = false
+            }
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 15, execute: longIdleTask!)
     }
     
     @objc func enterSuspended(isBusy busy: Bool) {

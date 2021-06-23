@@ -241,6 +241,19 @@ public extension VMDisplayViewController {
     }
 }
 
+// MARK: Toolbar hiding
+public extension VMDisplayViewController {
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        for touch in touches {
+            if touch.type == .direct {
+                toolbar.assertUserInteraction()
+                break
+            }
+        }
+        super.touchesBegan(touches, with: event)
+    }
+}
+
 // MARK: Notification handling
 extension VMDisplayViewController {
     func handleEnteredBackground() {

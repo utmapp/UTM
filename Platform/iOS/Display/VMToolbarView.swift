@@ -22,8 +22,9 @@ struct VMToolbarView: View {
     @AppStorage("ToolbarLocation") private var location: ToolbarLocation = .topRight
     @State private var shake: Bool = true
     @State private var isMoving: Bool = false
-    @State private var isIdle: Bool = true
+    @State private var isIdle: Bool = false
     @State private var dragPosition: CGPoint = .zero
+    @State private var shortIdleTask: DispatchWorkItem?
     
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @Environment(\.verticalSizeClass) private var verticalSizeClass
@@ -59,6 +60,20 @@ struct VMToolbarView: View {
             return "chevron.left"
         } else {
             return "chevron.right"
+        }
+    }
+    
+    private var toolbarToggleOpacity: Double {
+        if isCollapsed {
+            if !state.isUserInteracting {
+                return 0
+            } else if isIdle {
+                return 0.2
+            } else {
+                return 1
+            }
+        } else {
+            return 1
         }
     }
     
@@ -109,14 +124,15 @@ struct VMToolbarView: View {
             .transition(.slide)
             .animation(.default)
             Button {
-                isIdle = false
+                resetIdle()
+                state.assertUserInteraction()
                 withOptionalAnimation {
                     isCollapsed.toggle()
                 }
             } label: {
                 Label("Hide", systemImage: isCollapsed ? nameOfHideIcon : nameOfShowIcon)
             }.buttonStyle(ToolbarButtonStyle())
-            .opacity(isIdle && isCollapsed ? 0.1 : 1)
+            .opacity(toolbarToggleOpacity)
             .modifier(Shake(shake: shake))
             .position(position(for: geometry))
             .highPriorityGesture(
@@ -136,20 +152,12 @@ struct VMToolbarView: View {
                         }
                     }
             )
-            .onAppear {
-                isIdle = false
-                if isCollapsed {
+            .onChange(of: state.isRunning) { running in
+                resetIdle()
+                state.assertUserInteraction()
+                if running && isCollapsed {
                     withOptionalAnimation(.easeInOut(duration: 1)) {
                         shake.toggle()
-                    }
-                }
-            }
-            .onChange(of: isIdle) { idle in
-                if !idle {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
-                        withOptionalAnimation {
-                            self.isIdle = true
-                        }
                     }
                 }
             }
@@ -201,6 +209,20 @@ struct VMToolbarView: View {
         }
         let x = isCollapsed ? 0 : -CGFloat(index-sub)*spacing
         return CGSize(width: x, height: 0)
+    }
+    
+    private func resetIdle() {
+        if let task = shortIdleTask {
+            task.cancel()
+        }
+        self.isIdle = false
+        shortIdleTask = DispatchWorkItem {
+            self.shortIdleTask = nil
+            withOptionalAnimation {
+                self.isIdle = true
+            }
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 5, execute: shortIdleTask!)
     }
 }
 
