@@ -425,7 +425,7 @@ static CGFloat CGPointToPixel(CGFloat point) {
 
 - (IBAction)gesturePinch:(UIPinchGestureRecognizer *)sender {
     // disable pinch if move screen on pan is disabled
-    if (self.twoFingerPanType == VMGestureTypeMoveScreen || self.threeFingerPanType == VMGestureTypeMoveScreen) {
+    if (sender.state == UIGestureRecognizerStateEnded && (self.twoFingerPanType == VMGestureTypeMoveScreen || self.threeFingerPanType == VMGestureTypeMoveScreen)) {
         NSAssert(sender.scale > 0, @"sender.scale cannot be 0");
         self.vmDisplay.viewportScale *= sender.scale;
         sender.scale = 1.0;
