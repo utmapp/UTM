@@ -67,11 +67,12 @@ NS_ASSUME_NONNULL_BEGIN
 @property (weak, nonatomic) CSInput *vmInput;
 @property (weak, nonatomic) CSDisplayMetal *vmDisplay;
 
-@property (nonatomic, assign) BOOL lastDisplayChangeResize;
 @property (nonatomic, readonly) BOOL serverModeCursor;
 
 - (void)setupSubviews;
 - (void)sendExtendedKey:(CSInputKey)type code:(int)code;
+- (void)resetDisplay;
+- (void)resizeDisplayToFit;
 
 @end
 

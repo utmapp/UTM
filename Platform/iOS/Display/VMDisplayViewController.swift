@@ -38,14 +38,6 @@ private var memoryAlertOnce = false
     var disableIdleTimer: Bool {
         bool(forSetting: "DisableIdleTimer")
     }
-    
-    var hasLegacyToolbar: Bool {
-        if #available(iOS 14, *) {
-            return false
-        } else {
-            return true
-        }
-    }
 }
 
 // MARK: - View Loading
@@ -64,24 +56,16 @@ public extension VMDisplayViewController {
         #if !WITH_QEMU_TCI
         usbDevicesViewController = VMUSBDevicesViewController(nibName: "VMUSBDevicesView", bundle: nil)
         #endif
-        
-        // remove legacy toolbar
-        if !hasLegacyToolbar {
-            // remove legacy toolbar
-            toolbarAccessoryView.removeFromSuperview()
-        }
-        
-        // hide USB icon if not supported
-        usbButton.isHidden = !vm.hasUsbRedirection
     }
     
     @objc func createToolbar(in view: UIView) {
+        toolbar = VMToolbarActions(with: self)
         guard floatingToolbarViewController == nil else {
             return
         }
         if #available(iOS 14, *) {
             // create new toolbar
-            floatingToolbarViewController = UIHostingController(rootView: VMToolbarView())
+            floatingToolbarViewController = UIHostingController(rootView: VMToolbarView(state: self.toolbar))
             let childView = floatingToolbarViewController.view!
             childView.backgroundColor = .clear
             view.addSubview(childView)
@@ -106,6 +90,15 @@ public extension VMDisplayViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(true, animated: animated)
+        
+        // remove legacy toolbar
+        if !toolbar.hasLegacyToolbar {
+            // remove legacy toolbar
+            toolbarAccessoryView.removeFromSuperview()
+        }
+        
+        // hide USB icon if not supported
+        toolbar.isUsbSupported = vm.hasUsbRedirection
         
         let nc = NotificationCenter.default
         weak var _self = self
@@ -166,10 +159,6 @@ public extension VMDisplayViewController {
 @objc extension VMDisplayViewController {
     func enterSuspended(isBusy busy: Bool) {
         if busy {
-            if hasLegacyToolbar {
-                pauseResumeButton.isEnabled = false
-                powerExitButton.setImage(UIImage(named: "Toolbar Exit")!, for: .normal)
-            }
             resumeBigButton.isHidden = true
             placeholderView.isHidden = false
             placeholderIndicator.startAnimating()
@@ -182,21 +171,9 @@ public extension VMDisplayViewController {
             } completion: { _ in
             }
             placeholderIndicator.stopAnimating()
-            if hasLegacyToolbar {
-                toolbarVisible = true
-                pauseResumeButton.isEnabled = true
-                pauseResumeButton.setImage(UIImage(named: "Toolbar Start")!, for: .normal)
-                powerExitButton.setImage(UIImage(named: "Toolbar Exit")!, for: .normal)
-                UIApplication.shared.isIdleTimerDisabled = false
-            }
+            UIApplication.shared.isIdleTimerDisabled = false
         }
-        if hasLegacyToolbar {
-            restartButton.isEnabled = false
-            zoomButton.isEnabled = false
-            keyboardButton.isEnabled = false
-            drivesButton.isEnabled = false
-            usbButton.isEnabled = false
-        }
+        toolbar.enterSuspended(isBusy: busy)
     }
     
     func enterLive() {
@@ -206,17 +183,8 @@ public extension VMDisplayViewController {
         } completion: { _ in
         }
         placeholderIndicator.stopAnimating()
-        if hasLegacyToolbar {
-            pauseResumeButton.isEnabled = true
-            restartButton.isEnabled = true
-            zoomButton.isEnabled = true
-            keyboardButton.isEnabled = true
-            drivesButton.isEnabled = true
-            usbButton.isEnabled = vm.hasUsbRedirection
-            pauseResumeButton.setImage(UIImage(named: "Toolbar Pause")!, for: .normal)
-            powerExitButton.setImage(UIImage(named: "Toolbar Power")!, for: .normal)
-        }
         UIApplication.shared.isIdleTimerDisabled = disableIdleTimer
+        toolbar.enterLive()
     }
     
     private func suspend() {
@@ -240,102 +208,36 @@ public extension VMDisplayViewController {
 
 // MARK: - Toolbar actions
 @objc extension VMDisplayViewController {
-    func hideToolbar() {
-        guard hasLegacyToolbar else {
-            return
-        }
-        UIView.transition(with: view, duration: 0.3, options: .transitionCrossDissolve) {
-            self.toolbarAccessoryView.isHidden = true
-            self.prefersStatusBarHidden = true
-        } completion: { _ in
-        }
-        if !bool(forSetting: "HasShownHideToolbarAlert") {
-            showAlert(NSLocalizedString("Hint: To show the toolbar again, use a three-finger swipe down on the screen.", comment: "VMDisplayViewController"), actions: nil) { action in
-                UserDefaults.standard.set(true, forKey: "HasShownHideToolbarAlert")
-            }
-        }
-    }
-    
-    func showToolbar() {
-        guard hasLegacyToolbar else {
-            return
-        }
-        UIView.transition(with: view, duration: 0.3, options: .transitionCrossDissolve) {
-            self.toolbarAccessoryView.isHidden = false
-            if !self.largeScreen {
-                self.prefersStatusBarHidden = false
-            }
-        } completion: { _ in
-        }
-    }
-    
     @IBAction func changeDisplayZoom(_ sender: UIButton) {
-        
+        toolbar.changeDisplayZoomPressed()
     }
     
     @IBAction func pauseResumePressed(_ sender: UIButton) {
-        DispatchQueue.global(qos: .background).async {
-            if self.vm.state == .vmStarted {
-                self.vm.pauseVM()
-                if !self.vm.saveVM() {
-                    DispatchQueue.main.async {
-                        self.showAlert(NSLocalizedString("Failed to save VM state. Do you have at least one read-write drive attached that supports snapshots?", comment: "VMDisplayViewController"), actions: nil, completion: nil)
-                    }
-                }
-            } else if self.vm.state == .vmPaused {
-                self.vm.resumeVM()
-            }
-        }
+        toolbar.pauseResumePressed()
     }
     
     @IBAction func powerPressed(_ sender: UIButton) {
-        if vm.state == .vmStarted {
-            let yes = UIAlertAction(title: NSLocalizedString("Yes", comment: "VMDisplayViewController"), style: .destructive) { action in
-                DispatchQueue.global(qos: .background).async {
-                    self.vm.quitVM()
-                    self.terminateApplication()
-                }
-            }
-            let no = UIAlertAction(title: NSLocalizedString("No", comment: "VMDisplayViewController"), style: .cancel, handler: nil)
-            self.showAlert(NSLocalizedString("Are you sure you want to stop this VM and exit? Any unsaved changes will be lost.", comment: "VMDisplayViewController"), actions: [yes, no], completion: nil)
-        } else {
-            let yes = UIAlertAction(title: NSLocalizedString("Yes", comment: "VMDisplayViewController"), style: .destructive) { action in
-                self.terminateApplication()
-            }
-            let no = UIAlertAction(title: NSLocalizedString("No", comment: "VMDisplayViewController"), style: .cancel, handler: nil)
-            self.showAlert(NSLocalizedString("Are you sure you want to exit UTM?", comment: "VMDisplayViewController"), actions: [yes, no], completion: nil)
-        }
+        toolbar.powerPressed()
     }
     
     @IBAction func restartPressed(_ sender: UIButton) {
-        let yes = UIAlertAction(title: NSLocalizedString("Yes", comment: "VMDisplayViewController"), style: .destructive) { action in
-            DispatchQueue.global(qos: .background).async {
-                self.vm.resetVM()
-            }
-        }
-        let no = UIAlertAction(title: NSLocalizedString("No", comment: "VMDisplayViewController"), style: .cancel, handler: nil)
-        self.showAlert(NSLocalizedString("Are you sure you want to reset this VM? Any unsaved changes will be lost.", comment: "VMDisplayViewController"), actions: [yes, no], completion: nil)
+        toolbar.restartPressed()
     }
     
     @IBAction func showKeyboardButton(_ sender: UIButton) {
-        keyboardVisible = !keyboardVisible
+        toolbar.showKeyboardPressed()
     }
     
     @IBAction func hideToolbarButton(_ sender: UIButton) {
-        toolbarVisible = false
+        toolbar.hideToolbarPressed()
     }
     
     @IBAction func drivesPressed(_ sender: UIButton) {
-        removableDrivesViewController.modalPresentationStyle = .pageSheet
-        removableDrivesViewController.vm = vm
-        present(removableDrivesViewController, animated: true, completion: nil)
+        toolbar.drivesPressed()
     }
     
     @IBAction func usbPressed(_ sender: UIButton) {
-        #if !WITH_QEMU_TCI
-        usbDevicesViewController.modalPresentationStyle = .pageSheet
-        present(usbDevicesViewController, animated: true, completion: nil)
-        #endif
+        toolbar.usbPressed()
     }
 }
 

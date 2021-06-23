@@ -27,6 +27,8 @@ struct VMToolbarView: View {
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @Environment(\.verticalSizeClass) private var verticalSizeClass
     
+    @StateObject var state: VMToolbarActions
+    
     private var spacing: CGFloat {
         let direction: CGFloat
         let distance: CGFloat
@@ -63,41 +65,44 @@ struct VMToolbarView: View {
         GeometryReader { geometry in
             Group {
                 Button {
-                    
+                    state.powerPressed()
                 } label: {
-                    Label("Power Off", systemImage: "power")
-                }.offset(x: isCollapsed ? 0 : -7*spacing)
+                    Label(state.isRunning ? "Power Off" : "Quit", systemImage: state.isRunning ? "power" : "xmark")
+                }.offset(offset(for: 7))
                 Button {
-                    
+                    state.pauseResumePressed()
                 } label: {
-                    Label("Pause", systemImage: "pause")
-                }.offset(x: isCollapsed ? 0 : -6*spacing)
+                    Label(state.isRunning ? "Pause" : "Play", systemImage: state.isRunning ? "pause" : "play")
+                }.offset(offset(for: 6))
                 Button {
-                    
+                    state.restartPressed()
                 } label: {
                     Label("Restart", systemImage: "restart")
-                }.offset(x: isCollapsed ? 0 : -5*spacing)
+                }.offset(offset(for: 5))
                 Button {
-                    
+                    state.changeDisplayZoomPressed()
                 } label: {
-                    Label("Zoom", systemImage: "arrow.down.right.and.arrow.up.left")
-                }.offset(x: isCollapsed ? 0 : -4*spacing)
+                    Label("Zoom", systemImage: state.lastDisplayChangeResize ? "arrow.down.right.and.arrow.up.left" : "arrow.up.left.and.arrow.down.right")
+                }.offset(offset(for: 4))
+                if state.isUsbSupported {
+                    Button {
+                        state.usbPressed()
+                    } label: {
+                        Label("USB", image: "Toolbar USB")
+                    }.offset(offset(for: 3))
+                }
                 Button {
-                    
-                } label: {
-                    Label("Network", systemImage: "network")
-                }.offset(x: isCollapsed ? 0 : -3*spacing)
-                Button {
-                    
+                    state.drivesPressed()
                 } label: {
                     Label("Disk", systemImage: "opticaldisc")
-                }.offset(x: isCollapsed ? 0 : -2*spacing)
+                }.offset(offset(for: 2))
                 Button {
-                    
+                    state.showKeyboardPressed()
                 } label: {
                     Label("Keyboard", systemImage: "keyboard")
-                }.offset(x: isCollapsed ? 0 : -1*spacing)
+                }.offset(offset(for: 1))
             }.buttonStyle(ToolbarButtonStyle())
+            .disabled(state.isBusy)
             .opacity(isCollapsed ? 0 : 1)
             .position(position(for: geometry))
             .transition(.slide)
@@ -175,6 +180,15 @@ struct VMToolbarView: View {
             return .topRight
         }
     }
+    
+    private func offset(for index: Int) -> CGSize {
+        var sub = 0
+        if !state.isUsbSupported && index >= 3 {
+            sub = 1
+        }
+        let x = isCollapsed ? 0 : -CGFloat(index-sub)*spacing
+        return CGSize(width: x, height: 0)
+    }
 }
 
 enum ToolbarLocation: Int {
@@ -231,6 +245,6 @@ struct Shake: GeometryEffect {
 @available(iOS 14, *)
 struct VMToolbarView_Previews: PreviewProvider {
     static var previews: some View {
-        VMToolbarView()
+        VMToolbarView(state: VMToolbarActions(with: VMDisplayViewController()))
     }
 }

@@ -163,15 +163,6 @@
 
 #pragma mark - Toolbar actions
 
-- (void)setLastDisplayChangeResize:(BOOL)lastDisplayChangeResize {
-    _lastDisplayChangeResize = lastDisplayChangeResize;
-    if (lastDisplayChangeResize) {
-        [self.zoomButton setImage:[UIImage imageNamed:@"Toolbar Minimize"] forState:UIControlStateNormal];
-    } else {
-        [self.zoomButton setImage:[UIImage imageNamed:@"Toolbar Maximize"] forState:UIControlStateNormal];
-    }
-}
-
 - (void)resizeDisplayToFit {
     CGSize viewSize = self.mtkView.drawableSize;
     CGSize displaySize = self.vmDisplay.displaySize;
@@ -183,15 +174,6 @@
 - (void)resetDisplay {
     self.vmDisplay.viewportScale = 1.0;
     self.vmDisplay.viewportOrigin = CGPointMake(0, 0);
-}
-
-- (IBAction)changeDisplayZoom:(UIButton *)sender {
-    if (self.lastDisplayChangeResize) {
-        [self resetDisplay];
-    } else {
-        [self resizeDisplayToFit];
-    }
-    self.lastDisplayChangeResize = !self.lastDisplayChangeResize;
 }
 
 #pragma mark - Resizing

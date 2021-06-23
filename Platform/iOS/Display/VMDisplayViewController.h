@@ -21,6 +21,7 @@
 @class UTMVirtualMachine;
 @class VMKeyboardButton;
 @class VMRemovableDrivesViewController;
+@class VMToolbarActions;
 @class VMUSBDevicesViewController;
 
 @interface VMDisplayViewController : UIViewController<UTMVirtualMachineDelegate>
@@ -40,6 +41,7 @@
 @property (weak, nonatomic) IBOutlet UIButton *resumeBigButton;
 @property (strong, nonatomic) IBOutletCollection(VMKeyboardButton) NSArray *customKeyModifierButtons;
 
+@property (nonatomic) VMToolbarActions *toolbar;
 @property (nonatomic) UIViewController *floatingToolbarViewController;
 @property (nonatomic) VMRemovableDrivesViewController *removableDrivesViewController;
 @property (nonatomic) VMUSBDevicesViewController *usbDevicesViewController;

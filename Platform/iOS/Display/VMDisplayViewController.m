@@ -42,9 +42,9 @@
 
 - (void)setToolbarVisible:(BOOL)toolbarVisible {
     if (toolbarVisible) {
-        [self showToolbar];
+        [self.toolbar show];
     } else {
-        [self hideToolbar];
+        [self.toolbar hide];
     }
     _toolbarVisible = toolbarVisible;
 }
