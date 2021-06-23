@@ -21,7 +21,7 @@
         self.viewController = viewController
     }
     
-    var hasLegacyToolbar: Bool {
+    @objc var hasLegacyToolbar: Bool {
         if #available(iOS 14, *) {
             return false
         } else {

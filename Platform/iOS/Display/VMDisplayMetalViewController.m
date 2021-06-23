@@ -96,6 +96,13 @@
     }
 }
 
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    if (!self.toolbar.hasLegacyToolbar) {
+        self.prefersStatusBarHidden = YES;
+    }
+}
+
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     if (self.vm.state == kVMStopped || self.vm.state == kVMSuspended) {
