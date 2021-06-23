@@ -227,7 +227,7 @@ struct ToolbarButtonStyle: ButtonStyle {
                 .opacity(configuration.isPressed ? 0.8 : 0.7)
                 .blur(radius: 0.1)
             configuration.label
-                .labelStyle(.iconOnly)
+                .labelStyle(IconOnlyLabelStyle())
                 .foregroundColor(configuration.isPressed ? .secondary : .white)
                 .opacity(0.75)
         }.frame(width: size, height: size)
