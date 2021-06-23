@@ -22,6 +22,7 @@ struct VMToolbarView: View {
     @AppStorage("ToolbarLocation") private var location: ToolbarLocation = .topRight
     @State private var shake: Bool = true
     @State private var isMoving: Bool = false
+    @State private var isIdle: Bool = true
     @State private var dragPosition: CGPoint = .zero
     
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
@@ -108,12 +109,14 @@ struct VMToolbarView: View {
             .transition(.slide)
             .animation(.default)
             Button {
+                isIdle = false
                 withOptionalAnimation {
                     isCollapsed.toggle()
                 }
             } label: {
                 Label("Hide", systemImage: isCollapsed ? nameOfHideIcon : nameOfShowIcon)
             }.buttonStyle(ToolbarButtonStyle())
+            .opacity(isIdle && isCollapsed ? 0.1 : 1)
             .modifier(Shake(shake: shake))
             .position(position(for: geometry))
             .highPriorityGesture(
@@ -134,9 +137,19 @@ struct VMToolbarView: View {
                     }
             )
             .onAppear {
+                isIdle = false
                 if isCollapsed {
                     withOptionalAnimation(.easeInOut(duration: 1)) {
                         shake.toggle()
+                    }
+                }
+            }
+            .onChange(of: isIdle) { idle in
+                if !idle {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
+                        withOptionalAnimation {
+                            self.isIdle = true
+                        }
                     }
                 }
             }
