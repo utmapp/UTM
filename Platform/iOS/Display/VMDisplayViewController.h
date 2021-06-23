@@ -40,6 +40,7 @@
 @property (weak, nonatomic) IBOutlet UIButton *resumeBigButton;
 @property (strong, nonatomic) IBOutletCollection(VMKeyboardButton) NSArray *customKeyModifierButtons;
 
+@property (nonatomic) UIViewController *floatingToolbarViewController;
 @property (nonatomic) VMRemovableDrivesViewController *removableDrivesViewController;
 @property (nonatomic) VMUSBDevicesViewController *usbDevicesViewController;
 

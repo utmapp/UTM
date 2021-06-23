@@ -42,6 +42,14 @@ NSString* const kVMSendTerminalSizeHandler = @"UTMSendTerminalSize";
     UISwipeGestureRecognizer *_swipeDown;
 }
 
+- (void)setupSubviews {
+    self.webView = [[WKWebView alloc] initWithFrame:CGRectZero];
+    self.webView.opaque = NO;
+    [self.view insertSubview:self.webView atIndex:0];
+    [self.webView bindFrameToSuperviewBounds];
+    [self createToolbarIn:self.webView];
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     // webview setup

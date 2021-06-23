@@ -14,6 +14,8 @@
 // limitations under the License.
 //
 
+import SwiftUI
+
 private var memoryAlertOnce = false
 
 @objc public extension VMDisplayViewController {
@@ -36,6 +38,14 @@ private var memoryAlertOnce = false
     var disableIdleTimer: Bool {
         bool(forSetting: "DisableIdleTimer")
     }
+    
+    var hasLegacyToolbar: Bool {
+        if #available(iOS 14, *) {
+            return false
+        } else {
+            return true
+        }
+    }
 }
 
 // MARK: - View Loading
@@ -55,8 +65,30 @@ public extension VMDisplayViewController {
         usbDevicesViewController = VMUSBDevicesViewController(nibName: "VMUSBDevicesView", bundle: nil)
         #endif
         
+        // remove legacy toolbar
+        if !hasLegacyToolbar {
+            // remove legacy toolbar
+            toolbarAccessoryView.removeFromSuperview()
+        }
+        
         // hide USB icon if not supported
         usbButton.isHidden = !vm.hasUsbRedirection
+    }
+    
+    @objc func createToolbar(in view: UIView) {
+        guard floatingToolbarViewController == nil else {
+            return
+        }
+        if #available(iOS 14, *) {
+            // create new toolbar
+            floatingToolbarViewController = UIHostingController(rootView: VMToolbarView())
+            let childView = floatingToolbarViewController.view!
+            childView.backgroundColor = .clear
+            view.addSubview(childView)
+            childView.bindFrameToSuperviewBounds()
+            addChild(floatingToolbarViewController)
+            floatingToolbarViewController.didMove(toParent: self)
+        }
     }
     
     override func viewDidLoad() {
@@ -134,11 +166,13 @@ public extension VMDisplayViewController {
 @objc extension VMDisplayViewController {
     func enterSuspended(isBusy busy: Bool) {
         if busy {
+            if hasLegacyToolbar {
+                pauseResumeButton.isEnabled = false
+                powerExitButton.setImage(UIImage(named: "Toolbar Exit")!, for: .normal)
+            }
             resumeBigButton.isHidden = true
-            pauseResumeButton.isEnabled = false
             placeholderView.isHidden = false
             placeholderIndicator.startAnimating()
-            powerExitButton.setImage(UIImage(named: "Toolbar Exit")!, for: .normal)
         } else {
             UIView.transition(with: view, duration: 0.5, options: .transitionCrossDissolve) {
                 self.placeholderView.isHidden = false
@@ -148,17 +182,21 @@ public extension VMDisplayViewController {
             } completion: { _ in
             }
             placeholderIndicator.stopAnimating()
-            toolbarVisible = true
-            pauseResumeButton.isEnabled = true
-            pauseResumeButton.setImage(UIImage(named: "Toolbar Start")!, for: .normal)
-            powerExitButton.setImage(UIImage(named: "Toolbar Exit")!, for: .normal)
-            UIApplication.shared.isIdleTimerDisabled = false
+            if hasLegacyToolbar {
+                toolbarVisible = true
+                pauseResumeButton.isEnabled = true
+                pauseResumeButton.setImage(UIImage(named: "Toolbar Start")!, for: .normal)
+                powerExitButton.setImage(UIImage(named: "Toolbar Exit")!, for: .normal)
+                UIApplication.shared.isIdleTimerDisabled = false
+            }
         }
-        restartButton.isEnabled = false
-        zoomButton.isEnabled = false
-        keyboardButton.isEnabled = false
-        drivesButton.isEnabled = false
-        usbButton.isEnabled = false
+        if hasLegacyToolbar {
+            restartButton.isEnabled = false
+            zoomButton.isEnabled = false
+            keyboardButton.isEnabled = false
+            drivesButton.isEnabled = false
+            usbButton.isEnabled = false
+        }
     }
     
     func enterLive() {
@@ -168,14 +206,16 @@ public extension VMDisplayViewController {
         } completion: { _ in
         }
         placeholderIndicator.stopAnimating()
-        pauseResumeButton.isEnabled = true
-        restartButton.isEnabled = true
-        zoomButton.isEnabled = true
-        keyboardButton.isEnabled = true
-        drivesButton.isEnabled = true
-        usbButton.isEnabled = vm.hasUsbRedirection
-        pauseResumeButton.setImage(UIImage(named: "Toolbar Pause")!, for: .normal)
-        powerExitButton.setImage(UIImage(named: "Toolbar Power")!, for: .normal)
+        if hasLegacyToolbar {
+            pauseResumeButton.isEnabled = true
+            restartButton.isEnabled = true
+            zoomButton.isEnabled = true
+            keyboardButton.isEnabled = true
+            drivesButton.isEnabled = true
+            usbButton.isEnabled = vm.hasUsbRedirection
+            pauseResumeButton.setImage(UIImage(named: "Toolbar Pause")!, for: .normal)
+            powerExitButton.setImage(UIImage(named: "Toolbar Power")!, for: .normal)
+        }
         UIApplication.shared.isIdleTimerDisabled = disableIdleTimer
     }
     
@@ -201,6 +241,9 @@ public extension VMDisplayViewController {
 // MARK: - Toolbar actions
 @objc extension VMDisplayViewController {
     func hideToolbar() {
+        guard hasLegacyToolbar else {
+            return
+        }
         UIView.transition(with: view, duration: 0.3, options: .transitionCrossDissolve) {
             self.toolbarAccessoryView.isHidden = true
             self.prefersStatusBarHidden = true
@@ -214,6 +257,9 @@ public extension VMDisplayViewController {
     }
     
     func showToolbar() {
+        guard hasLegacyToolbar else {
+            return
+        }
         UIView.transition(with: view, duration: 0.3, options: .transitionCrossDissolve) {
             self.toolbarAccessoryView.isHidden = false
             if !self.largeScreen {

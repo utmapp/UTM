@@ -21,31 +21,16 @@ extension UTMData {
     private func createDisplay(vm: UTMVirtualMachine) -> VMDisplayViewController {
         if vm.configuration.displayConsoleOnly {
             let vc = VMDisplayTerminalViewController()
-            let webView = WKWebView()
-            webView.isOpaque = false
             vm.delegate = vc
             vc.vm = vm
-            vc.webView = webView
-            vc.view.insertSubview(webView, at: 0)
-            webView.bindFrameToSuperviewBounds()
+            vc.setupSubviews()
             vc.virtualMachine(vm, transitionTo: vm.state)
             return vc
         } else {
             let vc = VMDisplayMetalViewController()
-            let keyboardView = VMKeyboardView(frame: .zero)
-            let placeholder = UIImageView()
-            let metal = MTKView()
             vm.delegate = vc
             vc.vm = vm
-            vc.keyboardView = keyboardView
-            vc.placeholderImageView = placeholder
-            vc.mtkView = metal
-            keyboardView.delegate = vc
-            vc.view.insertSubview(keyboardView, at: 0)
-            vc.view.insertSubview(placeholder, at: 1)
-            placeholder.bindFrameToSuperviewBounds()
-            vc.view.insertSubview(metal, at: 2)
-            metal.bindFrameToSuperviewBounds()
+            vc.setupSubviews()
             vc.virtualMachine(vm, transitionTo: vm.state)
             return vc
         }

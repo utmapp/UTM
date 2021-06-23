@@ -129,8 +129,10 @@ struct VMToolbarView: View {
                     }
             )
             .onAppear {
-                withOptionalAnimation(.easeInOut(duration: 1)) {
-                    shake.toggle()
+                if isCollapsed {
+                    withOptionalAnimation(.easeInOut(duration: 1)) {
+                        shake.toggle()
+                    }
                 }
             }
         }

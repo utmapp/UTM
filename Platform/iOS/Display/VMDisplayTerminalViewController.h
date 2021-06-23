@@ -23,11 +23,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface VMDisplayTerminalViewController : VMDisplayViewController<UTMTerminalDelegate, WKScriptMessageHandler, UIGestureRecognizerDelegate, WKNavigationDelegate>
 
-@property (weak, nonatomic) IBOutlet WKWebView *webView;
+@property (nonatomic) IBOutlet WKWebView *webView;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *webViewTopConstraint;
 
 @property (nonatomic) NSNumber *columns;
 @property (nonatomic) NSNumber *rows;
+
+- (void)setupSubviews;
 
 @end
 

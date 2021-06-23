@@ -36,6 +36,19 @@
     UTMRenderer *_renderer;
 }
 
+- (void)setupSubviews {
+    self.keyboardView = [[VMKeyboardView alloc] initWithFrame:CGRectZero];
+    self.placeholderImageView = [[UIImageView alloc] initWithFrame:CGRectZero];
+    self.mtkView = [[MTKView alloc] initWithFrame:CGRectZero];
+    self.keyboardView.delegate = self;
+    [self.view insertSubview:self.keyboardView atIndex:0];
+    [self.view insertSubview:self.placeholderImageView atIndex:1];
+    [self.placeholderImageView bindFrameToSuperviewBounds];
+    [self.view insertSubview:self.mtkView atIndex:2];
+    [self.mtkView bindFrameToSuperviewBounds];
+    [self createToolbarIn:self.mtkView];
+}
+
 - (BOOL)serverModeCursor {
     return self.vmInput.serverModeCursor;
 }
