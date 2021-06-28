@@ -26,7 +26,7 @@ jobs:
     strategy:
       matrix:
         arch: [arm64, x86_64]
-        platform: [ios, ios_simulator, ios-tci, macos]
+        platform: [ios, ios_simulator, ios_simulator-tci, ios-tci, macos]
         exclude:
           - arch: x86_64
             platform: ios
