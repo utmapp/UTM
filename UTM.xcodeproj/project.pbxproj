@@ -1130,6 +1130,15 @@
 		CEF83F8F250094EE00557D15 /* gcrypt.20.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63F322653C7400FC7E63 /* gcrypt.20.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CEFC6CDD24C25697003F6962 /* VMDriveImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEFC6CDC24C25697003F6962 /* VMDriveImage.swift */; };
 		CEFC6CDE24C25697003F6962 /* VMDriveImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEFC6CDC24C25697003F6962 /* VMDriveImage.swift */; };
+		EE37FBA4268A915E00DC204F /* UTM_SEUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE37FBA3268A915E00DC204F /* UTM_SEUITests.swift */; };
+		EE37FBB8268ABED900DC204F /* ConfigurationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE37FBB7268ABED900DC204F /* ConfigurationTests.swift */; };
+		EE37FBC2268ABF8D00DC204F /* BaseTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE37FBC1268ABF8D00DC204F /* BaseTest.swift */; };
+		EE37FBC8268AC16800DC204F /* VMListPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE37FBC7268AC16800DC204F /* VMListPage.swift */; };
+		EE37FBD2268AC5E700DC204F /* SettingsPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE37FBD1268AC5E700DC204F /* SettingsPage.swift */; };
+		EE37FBD9268ACDE500DC204F /* InformationPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE37FBD8268ACDE500DC204F /* InformationPage.swift */; };
+		EEDE66FF268969A700ACC335 /* CodeSigning.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = EEDE66FE268969A600ACC335 /* CodeSigning.xcconfig */; };
+		EEDE6700268969A700ACC335 /* CodeSigning.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = EEDE66FE268969A600ACC335 /* CodeSigning.xcconfig */; };
+		EEDE6701268969A700ACC335 /* CodeSigning.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = EEDE66FE268969A600ACC335 /* CodeSigning.xcconfig */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -1153,6 +1162,13 @@
 			proxyType = 1;
 			remoteGlobalIDString = CEBDA1D924D8BDDA0010B5EC;
 			remoteInfo = QEMUHelper;
+		};
+		EE37FBA6268A915E00DC204F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = CE550BC1225947990063E575 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = CEA45E1F263519B5002FA97D;
+			remoteInfo = "iOS-TCI";
 		};
 /* End PBXContainerItemProxy section */
 
@@ -2025,6 +2041,16 @@
 		E2D64BCA241DB62A0034E0C6 /* UTMTerminalIO.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UTMTerminalIO.h; sourceTree = "<group>"; };
 		E2D64BCB241DB62A0034E0C6 /* UTMTerminalIO.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UTMTerminalIO.m; sourceTree = "<group>"; };
 		E2D64BE0241EAEBE0034E0C6 /* UTMSpiceIODelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UTMSpiceIODelegate.h; sourceTree = "<group>"; };
+		EE37FBA1268A915E00DC204F /* UTM SEUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "UTM SEUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		EE37FBA3268A915E00DC204F /* UTM_SEUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTM_SEUITests.swift; sourceTree = "<group>"; };
+		EE37FBA5268A915E00DC204F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		EE37FBAF268A916B00DC204F /* Test.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = Test.xctestplan; sourceTree = "<group>"; };
+		EE37FBB7268ABED900DC204F /* ConfigurationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigurationTests.swift; sourceTree = "<group>"; };
+		EE37FBC1268ABF8D00DC204F /* BaseTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseTest.swift; sourceTree = "<group>"; };
+		EE37FBC7268AC16800DC204F /* VMListPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMListPage.swift; sourceTree = "<group>"; };
+		EE37FBD1268AC5E700DC204F /* SettingsPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsPage.swift; sourceTree = "<group>"; };
+		EE37FBD8268ACDE500DC204F /* InformationPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InformationPage.swift; sourceTree = "<group>"; };
+		EEDE66FE268969A600ACC335 /* CodeSigning.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = CodeSigning.xcconfig; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -2238,6 +2264,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		CEBDA1D724D8BDDA0010B5EC /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		EE37FB9E268A915D00DC204F /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -2738,6 +2771,7 @@
 		CE550BC0225947990063E575 = {
 			isa = PBXGroup;
 			children = (
+				EEDE66FE268969A600ACC335 /* CodeSigning.xcconfig */,
 				CE50A41F2637BB200050430F /* Build.xcconfig */,
 				CE258ACC22715F8300E5A333 /* README.md */,
 				CE4AA1462262FB58002E4A54 /* CocoaSpice */,
@@ -2752,6 +2786,7 @@
 				CE6B240925F1F3CE0020D43E /* QEMULauncher */,
 				CE9A352E26533A51005077CF /* JailbreakInterposer */,
 				CE4698F824C8FBD9008C1BD6 /* Icons */,
+				EE37FBA2268A915E00DC204F /* UTM SEUITests */,
 				CE550BCA225947990063E575 /* Products */,
 				CE2D63D622653C7300FC7E63 /* Frameworks */,
 			);
@@ -2767,6 +2802,7 @@
 				CE6B240825F1F3CE0020D43E /* QEMULauncher */,
 				CEA45FB9263519B5002FA97D /* UTM SE.app */,
 				CE9A352D26533A51005077CF /* JailbreakInterposer.framework */,
+				EE37FBA1268A915E00DC204F /* UTM SEUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -3055,6 +3091,53 @@
 			path = HTerm;
 			sourceTree = "<group>";
 		};
+		EE37FBA2268A915E00DC204F /* UTM SEUITests */ = {
+			isa = PBXGroup;
+			children = (
+				EE37FBB6268ABEC200DC204F /* Tests */,
+				EE37FBB5268ABEBA00DC204F /* PageObjects */,
+				EE37FBB4268ABEB400DC204F /* Utils */,
+				EE37FBAF268A916B00DC204F /* Test.xctestplan */,
+				EE37FBA3268A915E00DC204F /* UTM_SEUITests.swift */,
+				EE37FBA5268A915E00DC204F /* Info.plist */,
+			);
+			path = "UTM SEUITests";
+			sourceTree = "<group>";
+		};
+		EE37FBB4268ABEB400DC204F /* Utils */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Utils;
+			sourceTree = "<group>";
+		};
+		EE37FBB5268ABEBA00DC204F /* PageObjects */ = {
+			isa = PBXGroup;
+			children = (
+				EE37FBD7268ACDD100DC204F /* Settings */,
+				EE37FBC1268ABF8D00DC204F /* BaseTest.swift */,
+				EE37FBC7268AC16800DC204F /* VMListPage.swift */,
+				EE37FBD1268AC5E700DC204F /* SettingsPage.swift */,
+			);
+			path = PageObjects;
+			sourceTree = "<group>";
+		};
+		EE37FBB6268ABEC200DC204F /* Tests */ = {
+			isa = PBXGroup;
+			children = (
+				EE37FBB7268ABED900DC204F /* ConfigurationTests.swift */,
+			);
+			path = Tests;
+			sourceTree = "<group>";
+		};
+		EE37FBD7268ACDD100DC204F /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				EE37FBD8268ACDE500DC204F /* InformationPage.swift */,
+			);
+			path = Settings;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -3191,13 +3274,31 @@
 			productReference = CEBDA1DA24D8BDDA0010B5EC /* QEMUHelper.xpc */;
 			productType = "com.apple.product-type.xpc-service";
 		};
+		EE37FBA0268A915D00DC204F /* UTM SEUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = EE37FBAA268A915E00DC204F /* Build configuration list for PBXNativeTarget "UTM SEUITests" */;
+			buildPhases = (
+				EE37FB9D268A915D00DC204F /* Sources */,
+				EE37FB9E268A915D00DC204F /* Frameworks */,
+				EE37FB9F268A915D00DC204F /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				EE37FBA7268A915E00DC204F /* PBXTargetDependency */,
+			);
+			name = "UTM SEUITests";
+			productName = "UTM SEUITests";
+			productReference = EE37FBA1268A915E00DC204F /* UTM SEUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
 		CE550BC1225947990063E575 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastSwiftUpdateCheck = 1200;
+				LastSwiftUpdateCheck = 1240;
 				LastUpgradeCheck = 1020;
 				ORGANIZATIONNAME = osy;
 				TargetAttributes = {
@@ -3216,6 +3317,10 @@
 					};
 					CEBDA1D924D8BDDA0010B5EC = {
 						CreatedOnToolsVersion = 12.0;
+					};
+					EE37FBA0268A915D00DC204F = {
+						CreatedOnToolsVersion = 12.4;
+						TestTargetID = CEA45E1F263519B5002FA97D;
 					};
 				};
 			};
@@ -3245,6 +3350,7 @@
 				CEBDA1D924D8BDDA0010B5EC /* QEMUHelper */,
 				CE6B240725F1F3CE0020D43E /* QEMULauncher */,
 				CE9A352C26533A51005077CF /* JailbreakInterposer */,
+				EE37FBA0268A915D00DC204F /* UTM SEUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -3263,6 +3369,7 @@
 				CE2D936D24AD46670059923A /* VMDisplayView.xib in Resources */,
 				CE4EF2722506DD7900E9D33B /* VMRemovableDrivesView.xib in Resources */,
 				CE2D937024AD46670059923A /* terminal.html in Resources */,
+				EEDE66FF268969A700ACC335 /* CodeSigning.xcconfig in Resources */,
 				CE2D937224AD46670059923A /* Settings.bundle in Resources */,
 				CE020FA2251A661F00665C85 /* LaunchScreen.storyboard in Resources */,
 				CE0B6CED24AD532A00FE012D /* Assets.xcassets in Resources */,
@@ -3281,6 +3388,7 @@
 				CEF83F262500901300557D15 /* qemu in Resources */,
 				CE4698FA24C8FBD9008C1BD6 /* Icons in Resources */,
 				CE2D959024AD50D50059923A /* Localizable.strings in Resources */,
+				EEDE6701268969A700ACC335 /* CodeSigning.xcconfig in Resources */,
 				CE0FE12824D3B08B0086CEF0 /* VMDisplayWindow.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -3298,6 +3406,7 @@
 			files = (
 				CEA45F64263519B5002FA97D /* Icons in Resources */,
 				CEA45F65263519B5002FA97D /* Main.storyboard in Resources */,
+				EEDE6700268969A700ACC335 /* CodeSigning.xcconfig in Resources */,
 				CEA45F66263519B5002FA97D /* terminal.js in Resources */,
 				CEA45F67263519B5002FA97D /* Localizable.strings in Resources */,
 				CEA45F69263519B5002FA97D /* qemu in Resources */,
@@ -3312,6 +3421,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		CEBDA1D824D8BDDA0010B5EC /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		EE37FB9F268A915D00DC204F /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -4149,6 +4265,19 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		EE37FB9D268A915D00DC204F /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				EE37FBB8268ABED900DC204F /* ConfigurationTests.swift in Sources */,
+				EE37FBC2268ABF8D00DC204F /* BaseTest.swift in Sources */,
+				EE37FBA4268A915E00DC204F /* UTM_SEUITests.swift in Sources */,
+				EE37FBC8268AC16800DC204F /* VMListPage.swift in Sources */,
+				EE37FBD2268AC5E700DC204F /* SettingsPage.swift in Sources */,
+				EE37FBD9268ACDE500DC204F /* InformationPage.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -4166,6 +4295,11 @@
 			isa = PBXTargetDependency;
 			target = CEBDA1D924D8BDDA0010B5EC /* QEMUHelper */;
 			targetProxy = CEBDA1E324D8BDDB0010B5EC /* PBXContainerItemProxy */;
+		};
+		EE37FBA7268A915E00DC204F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = CEA45E1F263519B5002FA97D /* iOS-TCI */;
+			targetProxy = EE37FBA6268A915E00DC204F /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -4221,6 +4355,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "$(CODE_SIGN_IDENTITY_IOS:default=Apple Development)";
+				DEVELOPMENT_TEAM = ZT2H4NNXSQ;
 				ENABLE_BITCODE = NO;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = Platform/iOS/Info.plist;
@@ -4229,7 +4364,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "$(PRODUCT_BUNDLE_PREFIX:default=com.utmapp).UTM";
+				PRODUCT_BUNDLE_IDENTIFIER = com.ntindle.UTM;
 				PRODUCT_NAME = "$(PROJECT_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "Platform/Swift-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -4245,6 +4380,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "$(CODE_SIGN_IDENTITY_IOS:default=Apple Development)";
+				DEVELOPMENT_TEAM = ZT2H4NNXSQ;
 				ENABLE_BITCODE = NO;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = Platform/iOS/Info.plist;
@@ -4253,7 +4389,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "$(PRODUCT_BUNDLE_PREFIX:default=com.utmapp).UTM";
+				PRODUCT_BUNDLE_IDENTIFIER = com.ntindle.UTM;
 				PRODUCT_NAME = "$(PROJECT_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "Platform/Swift-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
@@ -4269,9 +4405,10 @@
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CODE_SIGN_ENTITLEMENTS = Platform/macOS/macOS.entitlements;
-				CODE_SIGN_IDENTITY = "$(CODE_SIGN_IDENTITY_MAC:default=-)";
-				CODE_SIGN_STYLE = Manual;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = ZT2H4NNXSQ;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = Platform/macOS/Info.plist;
@@ -4280,9 +4417,9 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 11.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "$(PRODUCT_BUNDLE_PREFIX:default=com.utmapp).UTM";
+				PRODUCT_BUNDLE_IDENTIFIER = com.ntindle.UTM;
 				PRODUCT_NAME = "$(PROJECT_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = "$(PROVISIONING_PROFILE_SPECIFIER_MAC:default=)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = macosx;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OBJC_BRIDGING_HEADER = "Platform/Swift-Bridging-Header.h";
@@ -4299,9 +4436,10 @@
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CODE_SIGN_ENTITLEMENTS = Platform/macOS/macOS.entitlements;
-				CODE_SIGN_IDENTITY = "$(CODE_SIGN_IDENTITY_MAC:default=-)";
-				CODE_SIGN_STYLE = Manual;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = ZT2H4NNXSQ;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = Platform/macOS/Info.plist;
@@ -4310,9 +4448,9 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 11.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "$(PRODUCT_BUNDLE_PREFIX:default=com.utmapp).UTM";
+				PRODUCT_BUNDLE_IDENTIFIER = com.ntindle.UTM;
 				PRODUCT_NAME = "$(PROJECT_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = "$(PROVISIONING_PROFILE_SPECIFIER_MAC:default=)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = macosx;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OBJC_BRIDGING_HEADER = "Platform/Swift-Bridging-Header.h";
@@ -4476,15 +4614,16 @@
 			buildSettings = {
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CODE_SIGN_ENTITLEMENTS = QEMULauncher/QEMULauncher.entitlements;
-				CODE_SIGN_IDENTITY = "$(CODE_SIGN_IDENTITY_MAC:default=-)";
+				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_INJECT_BASE_ENTITLEMENTS = NO;
 				CODE_SIGN_STYLE = Automatic;
 				CREATE_INFOPLIST_SECTION_IN_BINARY = YES;
+				DEVELOPMENT_TEAM = ZT2H4NNXSQ;
 				ENABLE_HARDENED_RUNTIME = YES;
 				INFOPLIST_FILE = QEMULauncher/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/../../../../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 11.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "$(PRODUCT_BUNDLE_PREFIX:default=com.utmapp).QEMULauncher";
+				PRODUCT_BUNDLE_IDENTIFIER = com.ntindle.QEMULauncher;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = macosx;
@@ -4497,15 +4636,16 @@
 			buildSettings = {
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CODE_SIGN_ENTITLEMENTS = QEMULauncher/QEMULauncher.entitlements;
-				CODE_SIGN_IDENTITY = "$(CODE_SIGN_IDENTITY_MAC:default=-)";
+				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_INJECT_BASE_ENTITLEMENTS = NO;
 				CODE_SIGN_STYLE = Automatic;
 				CREATE_INFOPLIST_SECTION_IN_BINARY = YES;
+				DEVELOPMENT_TEAM = ZT2H4NNXSQ;
 				ENABLE_HARDENED_RUNTIME = YES;
 				INFOPLIST_FILE = QEMULauncher/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/../../../../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 11.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "$(PRODUCT_BUNDLE_PREFIX:default=com.utmapp).QEMULauncher";
+				PRODUCT_BUNDLE_IDENTIFIER = com.ntindle.QEMULauncher;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = macosx;
@@ -4529,7 +4669,7 @@
 					"@loader_path/Frameworks",
 				);
 				OTHER_LDFLAGS = "-Wl,-framework,IOKit";
-				PRODUCT_BUNDLE_IDENTIFIER = "$(PRODUCT_BUNDLE_PREFIX:default=com.utmapp).JailbreakInterposer";
+				PRODUCT_BUNDLE_IDENTIFIER = com.ntindle.JailbreakInterposer;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
 			};
@@ -4551,7 +4691,7 @@
 					"@loader_path/Frameworks",
 				);
 				OTHER_LDFLAGS = "-Wl,-framework,IOKit";
-				PRODUCT_BUNDLE_IDENTIFIER = "$(PRODUCT_BUNDLE_PREFIX:default=com.utmapp).JailbreakInterposer";
+				PRODUCT_BUNDLE_IDENTIFIER = com.ntindle.JailbreakInterposer;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
 			};
@@ -4564,6 +4704,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "$(CODE_SIGN_IDENTITY_IOS:default=Apple Development)";
+				DEVELOPMENT_TEAM = ZT2H4NNXSQ;
 				ENABLE_BITCODE = NO;
 				ENABLE_PREVIEWS = YES;
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -4577,7 +4718,7 @@
 					"@executable_path/Frameworks",
 				);
 				PLATFORM_SUFFIX = "-TCI";
-				PRODUCT_BUNDLE_IDENTIFIER = "$(PRODUCT_BUNDLE_PREFIX:default=com.utmapp).UTM-SE";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.ntindle.UTM-SE";
 				PRODUCT_MODULE_NAME = UTM;
 				PRODUCT_NAME = "UTM SE";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = WITH_QEMU_TCI;
@@ -4595,6 +4736,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "$(CODE_SIGN_IDENTITY_IOS:default=Apple Development)";
+				DEVELOPMENT_TEAM = ZT2H4NNXSQ;
 				ENABLE_BITCODE = NO;
 				ENABLE_PREVIEWS = YES;
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -4608,7 +4750,7 @@
 					"@executable_path/Frameworks",
 				);
 				PLATFORM_SUFFIX = "-TCI";
-				PRODUCT_BUNDLE_IDENTIFIER = "$(PRODUCT_BUNDLE_PREFIX:default=com.utmapp).UTM-SE";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.ntindle.UTM-SE";
 				PRODUCT_MODULE_NAME = UTM;
 				PRODUCT_NAME = "UTM SE";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = WITH_QEMU_TCI;
@@ -4623,9 +4765,10 @@
 			buildSettings = {
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CODE_SIGN_ENTITLEMENTS = QEMUHelper/QEMUHelper.entitlements;
-				CODE_SIGN_IDENTITY = "$(CODE_SIGN_IDENTITY_MAC:default=-)";
-				CODE_SIGN_STYLE = Manual;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = ZT2H4NNXSQ;
 				ENABLE_HARDENED_RUNTIME = YES;
 				INFOPLIST_FILE = QEMUHelper/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -4633,9 +4776,9 @@
 					"@executable_path/../../../../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 11.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "$(PRODUCT_BUNDLE_PREFIX:default=com.utmapp).QEMUHelper";
+				PRODUCT_BUNDLE_IDENTIFIER = com.ntindle.QEMUHelper;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = "$(PROVISIONING_PROFILE_SPECIFIER_HELPER:default=)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
 			};
@@ -4646,9 +4789,10 @@
 			buildSettings = {
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CODE_SIGN_ENTITLEMENTS = QEMUHelper/QEMUHelper.entitlements;
-				CODE_SIGN_IDENTITY = "$(CODE_SIGN_IDENTITY_MAC:default=-)";
-				CODE_SIGN_STYLE = Manual;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = ZT2H4NNXSQ;
 				ENABLE_HARDENED_RUNTIME = YES;
 				INFOPLIST_FILE = QEMUHelper/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -4656,11 +4800,59 @@
 					"@executable_path/../../../../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 11.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "$(PRODUCT_BUNDLE_PREFIX:default=com.utmapp).QEMUHelper";
+				PRODUCT_BUNDLE_IDENTIFIER = com.ntindle.QEMUHelper;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = "$(PROVISIONING_PROFILE_SPECIFIER_HELPER:default=)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
+			};
+			name = Release;
+		};
+		EE37FBA8268A915E00DC204F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = ZT2H4NNXSQ;
+				INFOPLIST_FILE = "UTM SEUITests/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 14.4;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "com.ntindle.UTM-SEUITests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = "iOS-TCI";
+			};
+			name = Debug;
+		};
+		EE37FBA9268A915E00DC204F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = ZT2H4NNXSQ;
+				INFOPLIST_FILE = "UTM SEUITests/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 14.4;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "com.ntindle.UTM-SEUITests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = "iOS-TCI";
 			};
 			name = Release;
 		};
@@ -4726,6 +4918,15 @@
 			buildConfigurations = (
 				CEBDA1E724D8BDDB0010B5EC /* Debug */,
 				CEBDA1E824D8BDDB0010B5EC /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		EE37FBAA268A915E00DC204F /* Build configuration list for PBXNativeTarget "UTM SEUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				EE37FBA8268A915E00DC204F /* Debug */,
+				EE37FBA9268A915E00DC204F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
