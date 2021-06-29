@@ -58,6 +58,7 @@ struct VMConfigInfoView: View {
                 Section(header: Text("Name"), footer: EmptyView().padding(.bottom)) {
                     TextField("Name", text: $config.name, onEditingChanged: validateName)
                         .keyboardType(.asciiCapable)
+                        .accessibilityIdentifier("Name")
                 }
                 Section(header: Text("Notes"), footer: EmptyView().padding(.bottom)) {
                     TextEditor(text: $config.notes.bound)

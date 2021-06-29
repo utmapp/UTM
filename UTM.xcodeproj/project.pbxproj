@@ -1130,6 +1130,12 @@
 		CEF83F8F250094EE00557D15 /* gcrypt.20.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63F322653C7400FC7E63 /* gcrypt.20.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CEFC6CDD24C25697003F6962 /* VMDriveImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEFC6CDC24C25697003F6962 /* VMDriveImage.swift */; };
 		CEFC6CDE24C25697003F6962 /* VMDriveImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEFC6CDC24C25697003F6962 /* VMDriveImage.swift */; };
+		EE37FBA4268A915E00DC204F /* UTM_SEUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE37FBA3268A915E00DC204F /* UTM_SEUITests.swift */; };
+		EE37FBB8268ABED900DC204F /* ConfigurationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE37FBB7268ABED900DC204F /* ConfigurationTests.swift */; };
+		EE37FBC2268ABF8D00DC204F /* BaseTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE37FBC1268ABF8D00DC204F /* BaseTest.swift */; };
+		EE37FBC8268AC16800DC204F /* VMListPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE37FBC7268AC16800DC204F /* VMListPage.swift */; };
+		EE37FBD2268AC5E700DC204F /* SettingsPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE37FBD1268AC5E700DC204F /* SettingsPage.swift */; };
+		EE37FBD9268ACDE500DC204F /* InformationPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE37FBD8268ACDE500DC204F /* InformationPage.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -1153,6 +1159,13 @@
 			proxyType = 1;
 			remoteGlobalIDString = CEBDA1D924D8BDDA0010B5EC;
 			remoteInfo = QEMUHelper;
+		};
+		EE37FBA6268A915E00DC204F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = CE550BC1225947990063E575 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = CEA45E1F263519B5002FA97D;
+			remoteInfo = "iOS-TCI";
 		};
 /* End PBXContainerItemProxy section */
 
@@ -2025,6 +2038,15 @@
 		E2D64BCA241DB62A0034E0C6 /* UTMTerminalIO.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UTMTerminalIO.h; sourceTree = "<group>"; };
 		E2D64BCB241DB62A0034E0C6 /* UTMTerminalIO.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UTMTerminalIO.m; sourceTree = "<group>"; };
 		E2D64BE0241EAEBE0034E0C6 /* UTMSpiceIODelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UTMSpiceIODelegate.h; sourceTree = "<group>"; };
+		EE37FBA1268A915E00DC204F /* UTM SEUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "UTM SEUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		EE37FBA3268A915E00DC204F /* UTM_SEUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTM_SEUITests.swift; sourceTree = "<group>"; };
+		EE37FBA5268A915E00DC204F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		EE37FBAF268A916B00DC204F /* Test.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = Test.xctestplan; sourceTree = "<group>"; };
+		EE37FBB7268ABED900DC204F /* ConfigurationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigurationTests.swift; sourceTree = "<group>"; };
+		EE37FBC1268ABF8D00DC204F /* BaseTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseTest.swift; sourceTree = "<group>"; };
+		EE37FBC7268AC16800DC204F /* VMListPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMListPage.swift; sourceTree = "<group>"; };
+		EE37FBD1268AC5E700DC204F /* SettingsPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsPage.swift; sourceTree = "<group>"; };
+		EE37FBD8268ACDE500DC204F /* InformationPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InformationPage.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -2238,6 +2260,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		CEBDA1D724D8BDDA0010B5EC /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		EE37FB9E268A915D00DC204F /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -2752,6 +2781,7 @@
 				CE6B240925F1F3CE0020D43E /* QEMULauncher */,
 				CE9A352E26533A51005077CF /* JailbreakInterposer */,
 				CE4698F824C8FBD9008C1BD6 /* Icons */,
+				EE37FBA2268A915E00DC204F /* UTM SEUITests */,
 				CE550BCA225947990063E575 /* Products */,
 				CE2D63D622653C7300FC7E63 /* Frameworks */,
 			);
@@ -2767,6 +2797,7 @@
 				CE6B240825F1F3CE0020D43E /* QEMULauncher */,
 				CEA45FB9263519B5002FA97D /* UTM SE.app */,
 				CE9A352D26533A51005077CF /* JailbreakInterposer.framework */,
+				EE37FBA1268A915E00DC204F /* UTM SEUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -3055,6 +3086,53 @@
 			path = HTerm;
 			sourceTree = "<group>";
 		};
+		EE37FBA2268A915E00DC204F /* UTM SEUITests */ = {
+			isa = PBXGroup;
+			children = (
+				EE37FBB6268ABEC200DC204F /* Tests */,
+				EE37FBB5268ABEBA00DC204F /* PageObjects */,
+				EE37FBB4268ABEB400DC204F /* Utils */,
+				EE37FBAF268A916B00DC204F /* Test.xctestplan */,
+				EE37FBA3268A915E00DC204F /* UTM_SEUITests.swift */,
+				EE37FBA5268A915E00DC204F /* Info.plist */,
+			);
+			path = "UTM SEUITests";
+			sourceTree = "<group>";
+		};
+		EE37FBB4268ABEB400DC204F /* Utils */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Utils;
+			sourceTree = "<group>";
+		};
+		EE37FBB5268ABEBA00DC204F /* PageObjects */ = {
+			isa = PBXGroup;
+			children = (
+				EE37FBD7268ACDD100DC204F /* Settings */,
+				EE37FBC1268ABF8D00DC204F /* BaseTest.swift */,
+				EE37FBC7268AC16800DC204F /* VMListPage.swift */,
+				EE37FBD1268AC5E700DC204F /* SettingsPage.swift */,
+			);
+			path = PageObjects;
+			sourceTree = "<group>";
+		};
+		EE37FBB6268ABEC200DC204F /* Tests */ = {
+			isa = PBXGroup;
+			children = (
+				EE37FBB7268ABED900DC204F /* ConfigurationTests.swift */,
+			);
+			path = Tests;
+			sourceTree = "<group>";
+		};
+		EE37FBD7268ACDD100DC204F /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				EE37FBD8268ACDE500DC204F /* InformationPage.swift */,
+			);
+			path = Settings;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -3191,13 +3269,31 @@
 			productReference = CEBDA1DA24D8BDDA0010B5EC /* QEMUHelper.xpc */;
 			productType = "com.apple.product-type.xpc-service";
 		};
+		EE37FBA0268A915D00DC204F /* UTM SEUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = EE37FBAA268A915E00DC204F /* Build configuration list for PBXNativeTarget "UTM SEUITests" */;
+			buildPhases = (
+				EE37FB9D268A915D00DC204F /* Sources */,
+				EE37FB9E268A915D00DC204F /* Frameworks */,
+				EE37FB9F268A915D00DC204F /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				EE37FBA7268A915E00DC204F /* PBXTargetDependency */,
+			);
+			name = "UTM SEUITests";
+			productName = "UTM SEUITests";
+			productReference = EE37FBA1268A915E00DC204F /* UTM SEUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
 		CE550BC1225947990063E575 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastSwiftUpdateCheck = 1200;
+				LastSwiftUpdateCheck = 1240;
 				LastUpgradeCheck = 1020;
 				ORGANIZATIONNAME = osy;
 				TargetAttributes = {
@@ -3216,6 +3312,10 @@
 					};
 					CEBDA1D924D8BDDA0010B5EC = {
 						CreatedOnToolsVersion = 12.0;
+					};
+					EE37FBA0268A915D00DC204F = {
+						CreatedOnToolsVersion = 12.4;
+						TestTargetID = CEA45E1F263519B5002FA97D;
 					};
 				};
 			};
@@ -3245,6 +3345,7 @@
 				CEBDA1D924D8BDDA0010B5EC /* QEMUHelper */,
 				CE6B240725F1F3CE0020D43E /* QEMULauncher */,
 				CE9A352C26533A51005077CF /* JailbreakInterposer */,
+				EE37FBA0268A915D00DC204F /* UTM SEUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -3312,6 +3413,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		CEBDA1D824D8BDDA0010B5EC /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		EE37FB9F268A915D00DC204F /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -4149,6 +4257,19 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		EE37FB9D268A915D00DC204F /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				EE37FBB8268ABED900DC204F /* ConfigurationTests.swift in Sources */,
+				EE37FBC2268ABF8D00DC204F /* BaseTest.swift in Sources */,
+				EE37FBA4268A915E00DC204F /* UTM_SEUITests.swift in Sources */,
+				EE37FBC8268AC16800DC204F /* VMListPage.swift in Sources */,
+				EE37FBD2268AC5E700DC204F /* SettingsPage.swift in Sources */,
+				EE37FBD9268ACDE500DC204F /* InformationPage.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -4166,6 +4287,11 @@
 			isa = PBXTargetDependency;
 			target = CEBDA1D924D8BDDA0010B5EC /* QEMUHelper */;
 			targetProxy = CEBDA1E324D8BDDB0010B5EC /* PBXContainerItemProxy */;
+		};
+		EE37FBA7268A915E00DC204F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = CEA45E1F263519B5002FA97D /* iOS-TCI */;
+			targetProxy = EE37FBA6268A915E00DC204F /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -4664,6 +4790,52 @@
 			};
 			name = Release;
 		};
+		EE37FBA8268A915E00DC204F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CODE_SIGN_STYLE = Manual;
+				INFOPLIST_FILE = "UTM SEUITests/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 14.4;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "$(PRODUCT_BUNDLE_PREFIX:default=com.utmapp).UTM-SEUITests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = "iOS-TCI";
+			};
+			name = Debug;
+		};
+		EE37FBA9268A915E00DC204F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CODE_SIGN_STYLE = Manual;
+				INFOPLIST_FILE = "UTM SEUITests/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 14.4;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "$(PRODUCT_BUNDLE_PREFIX:default=com.utmapp).UTM-SEUITests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = "iOS-TCI";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -4726,6 +4898,15 @@
 			buildConfigurations = (
 				CEBDA1E724D8BDDB0010B5EC /* Debug */,
 				CEBDA1E824D8BDDB0010B5EC /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		EE37FBAA268A915E00DC204F /* Build configuration list for PBXNativeTarget "UTM SEUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				EE37FBA8268A915E00DC204F /* Debug */,
+				EE37FBA9268A915E00DC204F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
