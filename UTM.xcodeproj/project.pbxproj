@@ -2767,6 +2767,7 @@
 		CE550BC0225947990063E575 = {
 			isa = PBXGroup;
 			children = (
+				EEDE66FE268969A600ACC335 /* CodeSigning.xcconfig */,
 				CE50A41F2637BB200050430F /* Build.xcconfig */,
 				CE258ACC22715F8300E5A333 /* README.md */,
 				CE4AA1462262FB58002E4A54 /* CocoaSpice */,
@@ -3364,6 +3365,7 @@
 				CE2D936D24AD46670059923A /* VMDisplayView.xib in Resources */,
 				CE4EF2722506DD7900E9D33B /* VMRemovableDrivesView.xib in Resources */,
 				CE2D937024AD46670059923A /* terminal.html in Resources */,
+				EEDE66FF268969A700ACC335 /* CodeSigning.xcconfig in Resources */,
 				CE2D937224AD46670059923A /* Settings.bundle in Resources */,
 				CE020FA2251A661F00665C85 /* LaunchScreen.storyboard in Resources */,
 				CE0B6CED24AD532A00FE012D /* Assets.xcassets in Resources */,
@@ -3382,6 +3384,7 @@
 				CEF83F262500901300557D15 /* qemu in Resources */,
 				CE4698FA24C8FBD9008C1BD6 /* Icons in Resources */,
 				CE2D959024AD50D50059923A /* Localizable.strings in Resources */,
+				EEDE6701268969A700ACC335 /* CodeSigning.xcconfig in Resources */,
 				CE0FE12824D3B08B0086CEF0 /* VMDisplayWindow.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -3399,6 +3402,7 @@
 			files = (
 				CEA45F64263519B5002FA97D /* Icons in Resources */,
 				CEA45F65263519B5002FA97D /* Main.storyboard in Resources */,
+				EEDE6700268969A700ACC335 /* CodeSigning.xcconfig in Resources */,
 				CEA45F66263519B5002FA97D /* terminal.js in Resources */,
 				CEA45F67263519B5002FA97D /* Localizable.strings in Resources */,
 				CEA45F69263519B5002FA97D /* qemu in Resources */,
@@ -4347,6 +4351,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "$(CODE_SIGN_IDENTITY_IOS:default=Apple Development)";
+				DEVELOPMENT_TEAM = ZT2H4NNXSQ;
 				ENABLE_BITCODE = NO;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = Platform/iOS/Info.plist;
@@ -4355,7 +4360,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "$(PRODUCT_BUNDLE_PREFIX:default=com.utmapp).UTM";
+				PRODUCT_BUNDLE_IDENTIFIER = com.ntindle.UTM;
 				PRODUCT_NAME = "$(PROJECT_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "Platform/Swift-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -4371,6 +4376,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "$(CODE_SIGN_IDENTITY_IOS:default=Apple Development)";
+				DEVELOPMENT_TEAM = ZT2H4NNXSQ;
 				ENABLE_BITCODE = NO;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = Platform/iOS/Info.plist;
@@ -4379,7 +4385,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "$(PRODUCT_BUNDLE_PREFIX:default=com.utmapp).UTM";
+				PRODUCT_BUNDLE_IDENTIFIER = com.ntindle.UTM;
 				PRODUCT_NAME = "$(PROJECT_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "Platform/Swift-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
@@ -4395,9 +4401,10 @@
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CODE_SIGN_ENTITLEMENTS = Platform/macOS/macOS.entitlements;
-				CODE_SIGN_IDENTITY = "$(CODE_SIGN_IDENTITY_MAC:default=-)";
-				CODE_SIGN_STYLE = Manual;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = ZT2H4NNXSQ;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = Platform/macOS/Info.plist;
@@ -4406,9 +4413,9 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 11.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "$(PRODUCT_BUNDLE_PREFIX:default=com.utmapp).UTM";
+				PRODUCT_BUNDLE_IDENTIFIER = com.ntindle.UTM;
 				PRODUCT_NAME = "$(PROJECT_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = "$(PROVISIONING_PROFILE_SPECIFIER_MAC:default=)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = macosx;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OBJC_BRIDGING_HEADER = "Platform/Swift-Bridging-Header.h";
@@ -4425,9 +4432,10 @@
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CODE_SIGN_ENTITLEMENTS = Platform/macOS/macOS.entitlements;
-				CODE_SIGN_IDENTITY = "$(CODE_SIGN_IDENTITY_MAC:default=-)";
-				CODE_SIGN_STYLE = Manual;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = ZT2H4NNXSQ;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = Platform/macOS/Info.plist;
@@ -4436,9 +4444,9 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 11.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "$(PRODUCT_BUNDLE_PREFIX:default=com.utmapp).UTM";
+				PRODUCT_BUNDLE_IDENTIFIER = com.ntindle.UTM;
 				PRODUCT_NAME = "$(PROJECT_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = "$(PROVISIONING_PROFILE_SPECIFIER_MAC:default=)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = macosx;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OBJC_BRIDGING_HEADER = "Platform/Swift-Bridging-Header.h";
@@ -4602,15 +4610,16 @@
 			buildSettings = {
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CODE_SIGN_ENTITLEMENTS = QEMULauncher/QEMULauncher.entitlements;
-				CODE_SIGN_IDENTITY = "$(CODE_SIGN_IDENTITY_MAC:default=-)";
+				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_INJECT_BASE_ENTITLEMENTS = NO;
 				CODE_SIGN_STYLE = Automatic;
 				CREATE_INFOPLIST_SECTION_IN_BINARY = YES;
+				DEVELOPMENT_TEAM = ZT2H4NNXSQ;
 				ENABLE_HARDENED_RUNTIME = YES;
 				INFOPLIST_FILE = QEMULauncher/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/../../../../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 11.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "$(PRODUCT_BUNDLE_PREFIX:default=com.utmapp).QEMULauncher";
+				PRODUCT_BUNDLE_IDENTIFIER = com.ntindle.QEMULauncher;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = macosx;
@@ -4623,15 +4632,16 @@
 			buildSettings = {
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CODE_SIGN_ENTITLEMENTS = QEMULauncher/QEMULauncher.entitlements;
-				CODE_SIGN_IDENTITY = "$(CODE_SIGN_IDENTITY_MAC:default=-)";
+				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_INJECT_BASE_ENTITLEMENTS = NO;
 				CODE_SIGN_STYLE = Automatic;
 				CREATE_INFOPLIST_SECTION_IN_BINARY = YES;
+				DEVELOPMENT_TEAM = ZT2H4NNXSQ;
 				ENABLE_HARDENED_RUNTIME = YES;
 				INFOPLIST_FILE = QEMULauncher/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/../../../../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 11.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "$(PRODUCT_BUNDLE_PREFIX:default=com.utmapp).QEMULauncher";
+				PRODUCT_BUNDLE_IDENTIFIER = com.ntindle.QEMULauncher;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = macosx;
@@ -4655,7 +4665,7 @@
 					"@loader_path/Frameworks",
 				);
 				OTHER_LDFLAGS = "-Wl,-framework,IOKit";
-				PRODUCT_BUNDLE_IDENTIFIER = "$(PRODUCT_BUNDLE_PREFIX:default=com.utmapp).JailbreakInterposer";
+				PRODUCT_BUNDLE_IDENTIFIER = com.ntindle.JailbreakInterposer;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
 			};
@@ -4677,7 +4687,7 @@
 					"@loader_path/Frameworks",
 				);
 				OTHER_LDFLAGS = "-Wl,-framework,IOKit";
-				PRODUCT_BUNDLE_IDENTIFIER = "$(PRODUCT_BUNDLE_PREFIX:default=com.utmapp).JailbreakInterposer";
+				PRODUCT_BUNDLE_IDENTIFIER = com.ntindle.JailbreakInterposer;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
 			};
@@ -4690,6 +4700,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "$(CODE_SIGN_IDENTITY_IOS:default=Apple Development)";
+				DEVELOPMENT_TEAM = ZT2H4NNXSQ;
 				ENABLE_BITCODE = NO;
 				ENABLE_PREVIEWS = YES;
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -4703,7 +4714,7 @@
 					"@executable_path/Frameworks",
 				);
 				PLATFORM_SUFFIX = "-TCI";
-				PRODUCT_BUNDLE_IDENTIFIER = "$(PRODUCT_BUNDLE_PREFIX:default=com.utmapp).UTM-SE";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.ntindle.UTM-SE";
 				PRODUCT_MODULE_NAME = UTM;
 				PRODUCT_NAME = "UTM SE";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = WITH_QEMU_TCI;
@@ -4721,6 +4732,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "$(CODE_SIGN_IDENTITY_IOS:default=Apple Development)";
+				DEVELOPMENT_TEAM = ZT2H4NNXSQ;
 				ENABLE_BITCODE = NO;
 				ENABLE_PREVIEWS = YES;
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -4734,7 +4746,7 @@
 					"@executable_path/Frameworks",
 				);
 				PLATFORM_SUFFIX = "-TCI";
-				PRODUCT_BUNDLE_IDENTIFIER = "$(PRODUCT_BUNDLE_PREFIX:default=com.utmapp).UTM-SE";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.ntindle.UTM-SE";
 				PRODUCT_MODULE_NAME = UTM;
 				PRODUCT_NAME = "UTM SE";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = WITH_QEMU_TCI;
@@ -4749,9 +4761,10 @@
 			buildSettings = {
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CODE_SIGN_ENTITLEMENTS = QEMUHelper/QEMUHelper.entitlements;
-				CODE_SIGN_IDENTITY = "$(CODE_SIGN_IDENTITY_MAC:default=-)";
-				CODE_SIGN_STYLE = Manual;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = ZT2H4NNXSQ;
 				ENABLE_HARDENED_RUNTIME = YES;
 				INFOPLIST_FILE = QEMUHelper/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -4759,9 +4772,9 @@
 					"@executable_path/../../../../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 11.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "$(PRODUCT_BUNDLE_PREFIX:default=com.utmapp).QEMUHelper";
+				PRODUCT_BUNDLE_IDENTIFIER = com.ntindle.QEMUHelper;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = "$(PROVISIONING_PROFILE_SPECIFIER_HELPER:default=)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
 			};
@@ -4772,9 +4785,10 @@
 			buildSettings = {
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CODE_SIGN_ENTITLEMENTS = QEMUHelper/QEMUHelper.entitlements;
-				CODE_SIGN_IDENTITY = "$(CODE_SIGN_IDENTITY_MAC:default=-)";
-				CODE_SIGN_STYLE = Manual;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = ZT2H4NNXSQ;
 				ENABLE_HARDENED_RUNTIME = YES;
 				INFOPLIST_FILE = QEMUHelper/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -4782,9 +4796,9 @@
 					"@executable_path/../../../../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 11.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "$(PRODUCT_BUNDLE_PREFIX:default=com.utmapp).QEMUHelper";
+				PRODUCT_BUNDLE_IDENTIFIER = com.ntindle.QEMUHelper;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = "$(PROVISIONING_PROFILE_SPECIFIER_HELPER:default=)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
 			};
