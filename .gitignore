@@ -72,4 +72,4 @@ sysroot*/
 .DS_Store
 CodeSigning.xcconfig
 /.venv
-.pyc
+*.pyc
