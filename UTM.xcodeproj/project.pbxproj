@@ -678,7 +678,6 @@
 		CE93759924BB821F0074066F /* IQKeyboardManagerSwift in Frameworks */ = {isa = PBXBuildFile; productRef = CE93759824BB821F0074066F /* IQKeyboardManagerSwift */; };
 		CE9375A124BBDDD10074066F /* VMConfigDriveDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE9375A024BBDDD10074066F /* VMConfigDriveDetailsView.swift */; };
 		CE9375A224BBDDD10074066F /* VMConfigDriveDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE9375A024BBDDD10074066F /* VMConfigDriveDetailsView.swift */; };
-		CE9375A324BBDE770074066F /* VMConfigDrivesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE93759E24BBDD6A0074066F /* VMConfigDrivesView.swift */; };
 		CE9A353426533A52005077CF /* JailbreakInterposer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE9A352D26533A51005077CF /* JailbreakInterposer.framework */; };
 		CE9A353526533A52005077CF /* JailbreakInterposer.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE9A352D26533A51005077CF /* JailbreakInterposer.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		CE9A354026533AE6005077CF /* JailbreakInterposer.c in Sources */ = {isa = PBXBuildFile; fileRef = CE9A353F26533AE6005077CF /* JailbreakInterposer.c */; };
@@ -1914,7 +1913,6 @@
 		CE93758F24BA74510074066F /* ToolbarTabViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToolbarTabViewController.swift; sourceTree = "<group>"; };
 		CE93759124BA775C0074066F /* ToolbarTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToolbarTabView.swift; sourceTree = "<group>"; };
 		CE93759524BB7E9F0074066F /* UTMTabViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMTabViewController.swift; sourceTree = "<group>"; };
-		CE93759E24BBDD6A0074066F /* VMConfigDrivesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMConfigDrivesView.swift; sourceTree = "<group>"; };
 		CE9375A024BBDDD10074066F /* VMConfigDriveDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMConfigDriveDetailsView.swift; sourceTree = "<group>"; };
 		CE9A352D26533A51005077CF /* JailbreakInterposer.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = JailbreakInterposer.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		CE9A353026533A52005077CF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -2412,7 +2410,6 @@
 				CEBBF1A624B5730F00C15049 /* UTMDataExtension.swift */,
 				CE93759524BB7E9F0074066F /* UTMTabViewController.swift */,
 				84A381A9268CB30C0048EE4D /* VMConfigDrivesButtons.swift */,
-				CE93759E24BBDD6A0074066F /* VMConfigDrivesView.swift */,
 				CE2D953E24AD4F980059923A /* VMConfigNetworkPortForwardView.swift */,
 				CE2D953D24AD4F980059923A /* VMSettingsView.swift */,
 				CE2D954124AD4F980059923A /* Info.plist */,
@@ -3799,7 +3796,6 @@
 				CE0B6D3224AD57FC00FE012D /* qapi-events-introspect.c in Sources */,
 				CE0B6CF624AD568400FE012D /* UTMConfiguration+Drives.m in Sources */,
 				CE0B6D4324AD584C00FE012D /* qapi-types.c in Sources */,
-				CE9375A324BBDE770074066F /* VMConfigDrivesView.swift in Sources */,
 				CE0B6D0824AD56C300FE012D /* qapi-visit-core.c in Sources */,
 				CE0B6D2024AD57FC00FE012D /* qapi-commands-dump.c in Sources */,
 				CE0B6D5224AD584C00FE012D /* qapi-visit-sockets.c in Sources */,

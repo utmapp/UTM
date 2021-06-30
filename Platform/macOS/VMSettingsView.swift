@@ -56,7 +56,7 @@ struct VMSettingsView: View {
                 }
                 Section(header: Text("Drives")) {
                     ForEach(0..<config.countDrives, id: \.self) { index in
-                        NavigationLink(destination: EmptyView(), tag: index, selection: $selectedDriveIndex) {
+                        NavigationLink(destination: VMConfigDriveDetailsView(config: config, index: index).scrollable(), tag: index, selection: $selectedDriveIndex) {
                             Label(config.driveLabel(for: index), systemImage: "externaldrive")
                         }
                     }.onMove(perform: moveDrives)
