@@ -14,16 +14,16 @@
 // limitations under the License.
 //
 
-#import "UTMConfiguration.h"
-#import "UTMConfiguration+Miscellaneous.h"
+#import "UTMQemuConfiguration.h"
+#import "UTMQemuConfiguration+Miscellaneous.h"
 #import "VMDisplayMetalViewController.h"
 #import "VMDisplayMetalViewController+Touch.h"
 #import "VMDisplayMetalViewController+Pointer.h"
 #import "VMCursor.h"
 #import "CSDisplayMetal.h"
 #import "VMScroll.h"
-#import "UTMVirtualMachine.h"
-#import "UTMVirtualMachine+SPICE.h"
+#import "UTMQemuVirtualMachine.h"
+#import "UTMQemuVirtualMachine+SPICE.h"
 #import "UTMLogging.h"
 
 @interface VMDisplayMetalViewController ()
@@ -108,7 +108,7 @@ NS_AVAILABLE_IOS(13.4)
 }
 
 - (BOOL)hasTouchpadPointer {
-    return !self.vmConfiguration.inputLegacy && !self.vmInput.serverModeCursor && self.indirectMouseType != VMMouseTypeRelative;
+    return !self.vmQemuConfig.inputLegacy && !self.vmInput.serverModeCursor && self.indirectMouseType != VMMouseTypeRelative;
 }
 
 - (UIPointerStyle *)pointerInteraction:(UIPointerInteraction *)interaction styleForRegion:(UIPointerRegion *)region {

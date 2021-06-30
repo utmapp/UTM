@@ -34,7 +34,7 @@ struct VMRemovableDrivesView: View {
     
     init(vm: UTMVirtualMachine) {
         self.vm = vm
-        self.config = vm.configuration
+        self.config = vm.config
         self.sessionConfig = vm.viewState
     }
     
@@ -198,7 +198,7 @@ struct VMRemovableDrivesView: View {
 
 @available(iOS 14, macOS 11, *)
 struct VMRemovableDrivesView_Previews: PreviewProvider {
-    @State static private var config = UTMConfiguration()
+    @State static private var config = UTMQemuConfiguration()
     
     static var previews: some View {
         VMRemovableDrivesView(vm: UTMVirtualMachine(configuration: config, withDestinationURL: URL(fileURLWithPath: "")))

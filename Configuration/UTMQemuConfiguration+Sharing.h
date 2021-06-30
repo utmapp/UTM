@@ -14,13 +14,21 @@
 // limitations under the License.
 //
 
-#import "UTMVirtualMachine.h"
+#import "UTMQemuConfiguration.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface UTMVirtualMachine (Terminal)
+@interface UTMQemuConfiguration (Sharing)
 
-- (void)sendInput:(NSString*)inputStr;
+@property (nonatomic, assign) BOOL shareClipboardEnabled;
+@property (nonatomic, assign) BOOL shareDirectoryEnabled;
+@property (nonatomic, assign) BOOL shareDirectoryReadOnly;
+@property (nonatomic, nullable, copy) NSString *shareDirectoryName;
+@property (nonatomic, nullable, copy) NSData *shareDirectoryBookmark;
+@property (nonatomic, assign) BOOL usb3Support;
+@property (nonatomic, nullable, copy) NSNumber *usbRedirectionMaximumDevices;
+
+- (void)migrateSharingConfigurationIfNecessary;
 
 @end
 

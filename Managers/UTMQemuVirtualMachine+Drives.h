@@ -1,5 +1,5 @@
 //
-// Copyright © 2019 osy. All rights reserved.
+// Copyright © 2020 osy. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,18 +14,19 @@
 // limitations under the License.
 //
 
-#import <UIKit/UIKit.h>
-#import "UTMQemuConfigurationDelegate.h"
+#import "UTMQemuVirtualMachine.h"
+
+@class UTMDrive;
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface VMConfigDrivePickerViewController : UITableViewController<UTMQemuConfigurationDelegate, UIDocumentPickerDelegate>
+@interface UTMQemuVirtualMachine (Drives)
 
-@property (nonatomic, strong) NSURL *imagesPath;
-@property (weak, nonatomic) IBOutlet UIBarButtonItem *addButtonItem;
-@property (nonatomic, readonly) NSString *selectedName;
+@property (nonatomic, readonly) NSArray<UTMDrive *> *drives;
 
-- (IBAction)addButton:(UIBarButtonItem *)sender;
+- (BOOL)ejectDrive:(UTMDrive *)drive force:(BOOL)force error:(NSError * _Nullable *)error;
+- (BOOL)changeMediumForDrive:(UTMDrive *)drive url:(NSURL *)url error:(NSError * _Nullable *)error;
+- (BOOL)restoreRemovableDrivesFromBookmarksWithError:(NSError * _Nullable __autoreleasing *)error;
 
 @end
 

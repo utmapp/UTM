@@ -16,20 +16,20 @@
 
 import Combine
 
-@objc extension UTMConfiguration: ObservableObject {
+@objc extension UTMQemuConfiguration {
     private static let gibInMib = 1024
     
-    var systemTargetPretty: String {
+    override var systemTargetPretty: String {
         guard let arch = self.systemArchitecture else {
             return ""
         }
         guard let target = self.systemTarget else {
             return ""
         }
-        guard let targets = UTMConfiguration.supportedTargets(forArchitecture: arch) else {
+        guard let targets = UTMQemuConfiguration.supportedTargets(forArchitecture: arch) else {
             return ""
         }
-        guard let prettyTargets = UTMConfiguration.supportedTargets(forArchitecturePretty: arch) else {
+        guard let prettyTargets = UTMQemuConfiguration.supportedTargets(forArchitecturePretty: arch) else {
             return ""
         }
         guard let index = targets.firstIndex(of: target) else {
@@ -38,9 +38,9 @@ import Combine
         return prettyTargets[index]
     }
     
-    var systemArchitecturePretty: String {
-        let archs = UTMConfiguration.supportedArchitectures()
-        let prettyArchs = UTMConfiguration.supportedArchitecturesPretty()
+    override var systemArchitecturePretty: String {
+        let archs = UTMQemuConfiguration.supportedArchitectures()
+        let prettyArchs = UTMQemuConfiguration.supportedArchitecturesPretty()
         guard let arch = self.systemArchitecture else {
             return ""
         }
@@ -50,15 +50,29 @@ import Combine
         return prettyArchs[index]
     }
     
-    var systemMemoryPretty: String {
+    override var systemMemoryPretty: String {
         guard let memory = self.systemMemory else {
-            return NSLocalizedString("Unknown", comment: "UTMConfigurationExtension")
+            return NSLocalizedString("Unknown", comment: "UTMQemuConfigurationExtension")
         }
-        if memory.intValue > UTMConfiguration.gibInMib {
-            return String(format: "%.1f GB", memory.floatValue / Float(UTMConfiguration.gibInMib))
+        if memory.intValue > UTMQemuConfiguration.gibInMib {
+            return String(format: "%.1f GB", memory.floatValue / Float(UTMQemuConfiguration.gibInMib))
         } else {
             return String(format: "%d MB", memory.intValue)
         }
+    }
+}
+
+@objc extension UTMConfiguration: ObservableObject {
+    var systemTargetPretty: String {
+        ""
+    }
+    
+    var systemArchitecturePretty: String {
+        ""
+    }
+    
+    var systemMemoryPretty: String {
+        ""
     }
     
     var existingCustomIconURL: URL? {
@@ -92,7 +106,7 @@ import Combine
     }
 }
 
-@objc extension UTMConfigurationPortForward: ObservableObject {
+@objc extension UTMQemuConfigurationPortForward: ObservableObject {
     func propertyWillChange() -> Void {
         if #available(iOS 13, macOS 11, *) {
             DispatchQueue.main.async { self.objectWillChange.send() }
@@ -111,7 +125,7 @@ import Combine
 extension UTMDiskImageType: CustomStringConvertible {
     public var description: String {
         let index = rawValue
-        let imageTypeList = UTMConfiguration.supportedImageTypes()
+        let imageTypeList = UTMQemuConfiguration.supportedImageTypes()
         if index >= 0 && index < imageTypeList.count {
             return imageTypeList[index]
         } else {
@@ -120,7 +134,7 @@ extension UTMDiskImageType: CustomStringConvertible {
     }
     
     static public func enumFromString(_ str: String?) -> UTMDiskImageType {
-        let imageTypeList = UTMConfiguration.supportedImageTypes()
+        let imageTypeList = UTMQemuConfiguration.supportedImageTypes()
         guard let unwrapStr = str else {
             return UTMDiskImageType.disk
         }

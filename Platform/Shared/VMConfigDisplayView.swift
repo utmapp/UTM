@@ -18,7 +18,7 @@ import SwiftUI
 
 @available(iOS 14, macOS 11, *)
 struct VMConfigDisplayView: View {
-    @ObservedObject var config: UTMConfiguration
+    @ObservedObject var config: UTMQemuConfiguration
     
     #if os(macOS)
     let displayTypePickerStyle = RadioGroupPickerStyle()
@@ -33,7 +33,7 @@ struct VMConfigDisplayView: View {
                     Text("Full Graphics").tag(false)
                     Text("Console Only").tag(true)
                 }.pickerStyle(displayTypePickerStyle)
-                .disabled(UTMConfiguration.supportedDisplayCards(forArchitecture: config.systemArchitecture)?.isEmpty ?? true)
+                .disabled(UTMQemuConfiguration.supportedDisplayCards(forArchitecture: config.systemArchitecture)?.isEmpty ?? true)
                 .onChange(of: config.displayConsoleOnly) { newConsoleOnly in
                     if newConsoleOnly {
                         if config.shareClipboardEnabled {
@@ -52,8 +52,8 @@ struct VMConfigDisplayView: View {
                     }
 
                     Section(header: Text("Style"), footer: EmptyView().padding(.bottom)) {
-                        VMConfigStringPicker(selection: $config.consoleTheme, label: Text("Theme"), rawValues: UTMConfiguration.supportedConsoleThemes(), displayValues: UTMConfiguration.supportedConsoleThemes())
-                        VMConfigStringPicker(selection: $config.consoleFont, label: Text("Font"), rawValues: UTMConfiguration.supportedConsoleFonts(), displayValues: UTMConfiguration.supportedConsoleFonts())
+                        VMConfigStringPicker(selection: $config.consoleTheme, label: Text("Theme"), rawValues: UTMQemuConfiguration.supportedConsoleThemes(), displayValues: UTMQemuConfiguration.supportedConsoleThemes())
+                        VMConfigStringPicker(selection: $config.consoleFont, label: Text("Font"), rawValues: UTMQemuConfiguration.supportedConsoleFonts(), displayValues: UTMQemuConfiguration.supportedConsoleFonts())
                         HStack {
                             Stepper(value: fontSizeObserver, in: 1...72) {
                                     Text("Font Size")
@@ -72,7 +72,7 @@ struct VMConfigDisplayView: View {
                     }
                 } else {
                     Section(header: Text("Hardware"), footer: EmptyView().padding(.bottom)) {
-                        VMConfigStringPicker(selection: $config.displayCard, label: Text("Emulated Display Card"), rawValues: UTMConfiguration.supportedDisplayCards(forArchitecture: config.systemArchitecture), displayValues: UTMConfiguration.supportedDisplayCards(forArchitecturePretty: config.systemArchitecture))
+                        VMConfigStringPicker(selection: $config.displayCard, label: Text("Emulated Display Card"), rawValues: UTMQemuConfiguration.supportedDisplayCards(forArchitecture: config.systemArchitecture), displayValues: UTMQemuConfiguration.supportedDisplayCards(forArchitecturePretty: config.systemArchitecture))
                     }
                     
                     Section(header: Text("Resolution"), footer: Text("Requires SPICE guest agent tools to be installed. Retina Mode is recommended only if the guest OS supports HiDPI.").padding(.bottom)) {
@@ -85,8 +85,8 @@ struct VMConfigDisplayView: View {
                     }
                     
                     Section(header: Text("Scaling"), footer: EmptyView().padding(.bottom)) {
-                        VMConfigStringPicker(selection: $config.displayUpscaler, label: Text("Upscaling"), rawValues: UTMConfiguration.supportedScalers(), displayValues: UTMConfiguration.supportedScalersPretty())
-                        VMConfigStringPicker(selection: $config.displayDownscaler, label: Text("Downscaling"), rawValues: UTMConfiguration.supportedScalers(), displayValues: UTMConfiguration.supportedScalersPretty())
+                        VMConfigStringPicker(selection: $config.displayUpscaler, label: Text("Upscaling"), rawValues: UTMQemuConfiguration.supportedScalers(), displayValues: UTMQemuConfiguration.supportedScalersPretty())
+                        VMConfigStringPicker(selection: $config.displayDownscaler, label: Text("Downscaling"), rawValues: UTMQemuConfiguration.supportedScalers(), displayValues: UTMQemuConfiguration.supportedScalersPretty())
                     }
                 }
             }
@@ -96,7 +96,7 @@ struct VMConfigDisplayView: View {
 
 @available(iOS 14, macOS 11, *)
 struct VMConfigDisplayView_Previews: PreviewProvider {
-    @ObservedObject static private var config = UTMConfiguration()
+    @ObservedObject static private var config = UTMQemuConfiguration()
     
     static var previews: some View {
         VMConfigDisplayView(config: config)

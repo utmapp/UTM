@@ -15,9 +15,9 @@
 //
 
 #import "VMConfigDisplayViewController.h"
-#import "UTMConfiguration.h"
-#import "UTMConfiguration+Constants.h"
-#import "UTMConfiguration+Display.h"
+#import "UTMQemuConfiguration.h"
+#import "UTMQemuConfiguration+Constants.h"
+#import "UTMQemuConfiguration+Display.h"
 
 @interface VMConfigDisplayViewController ()
 

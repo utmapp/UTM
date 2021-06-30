@@ -14,13 +14,13 @@
 // limitations under the License.
 //
 
-#import "UTMConfiguration.h"
+#import "UTMQemuConfiguration.h"
 
-@class UTMConfigurationPortForward;
+@class UTMQemuConfigurationPortForward;
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface UTMConfiguration (Networking)
+@interface UTMQemuConfiguration (Networking)
 
 @property (nonatomic, assign) BOOL networkEnabled;
 @property (nonatomic, assign) BOOL networkIsolate;
@@ -42,11 +42,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)migrateNetworkConfigurationIfNecessary;
 
-- (NSInteger)newPortForward:(UTMConfigurationPortForward *)argument;
-- (nullable UTMConfigurationPortForward *)portForwardForIndex:(NSInteger)index;
-- (void)updatePortForwardAtIndex:(NSInteger)index withValue:(UTMConfigurationPortForward *)argument;
+- (NSInteger)newPortForward:(UTMQemuConfigurationPortForward *)argument;
+- (nullable UTMQemuConfigurationPortForward *)portForwardForIndex:(NSInteger)index;
+- (void)updatePortForwardAtIndex:(NSInteger)index withValue:(UTMQemuConfigurationPortForward *)argument;
 - (void)removePortForwardAtIndex:(NSInteger)index;
-- (NSArray<UTMConfigurationPortForward *> *)portForwards;
+- (NSArray<UTMQemuConfigurationPortForward *> *)portForwards;
 
 @end
 

@@ -14,18 +14,20 @@
 // limitations under the License.
 //
 
-#import <UIKit/UIKit.h>
-#import "UTMQemuConfigurationDelegate.h"
+#import <Foundation/Foundation.h>
+#import "UTMConfiguration.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface VMConfigDrivePickerViewController : UITableViewController<UTMQemuConfigurationDelegate, UIDocumentPickerDelegate>
+@interface UTMQemuConfiguration : UTMConfiguration
 
-@property (nonatomic, strong) NSURL *imagesPath;
-@property (weak, nonatomic) IBOutlet UIBarButtonItem *addButtonItem;
-@property (nonatomic, readonly) NSString *selectedName;
+- (void)migrateConfigurationIfNecessary;
+- (instancetype)init NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithDictionary:(NSDictionary *)dictionary name:(NSString *)name path:(NSURL *)path NS_DESIGNATED_INITIALIZER;
 
-- (IBAction)addButton:(UIBarButtonItem *)sender;
+- (NSURL*)terminalInputOutputURL;
+- (void)resetDefaults;
+- (void)reloadConfigurationWithDictionary:(NSDictionary *)dictionary name:(NSString *)name path:(NSURL *)path;
 
 @end
 

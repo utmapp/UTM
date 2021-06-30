@@ -51,10 +51,10 @@ struct VMDetailsView: View {
         } else {
             ScrollView {
                 Screenshot(vm: vm, large: regularScreenSizeClass)
-                let notes = vm.configuration.notes ?? ""
+                let notes = vm.config.notes ?? ""
                 if regularScreenSizeClass && !notes.isEmpty {
                     HStack(alignment: .top) {
-                        Details(config: vm.configuration, sessionConfig: vm.viewState, sizeLabel: sizeLabel)
+                        Details(config: vm.config, sessionConfig: vm.viewState, sizeLabel: sizeLabel)
                             .padding()
                             .frame(maxWidth: .infinity)
                         Text(notes)
@@ -67,7 +67,7 @@ struct VMDetailsView: View {
                         .padding([.leading, .trailing, .bottom])
                 } else {
                     VStack {
-                        Details(config: vm.configuration, sessionConfig: vm.viewState, sizeLabel: sizeLabel)
+                        Details(config: vm.config, sessionConfig: vm.viewState, sizeLabel: sizeLabel)
                         if !notes.isEmpty {
                             Text(notes)
                                 .font(.body)
@@ -77,10 +77,10 @@ struct VMDetailsView: View {
                     }.padding([.leading, .trailing, .bottom])
                 }
             }.labelStyle(DetailsLabelStyle())
-            .navigationTitle(vm.configuration.name)
+            .navigationTitle(vm.config.name)
             .modifier(VMToolbarModifier(vm: vm, bottom: !regularScreenSizeClass))
             .sheet(isPresented: $data.showSettingsModal) {
-                VMSettingsView(vm: vm, config: vm.configuration)
+                VMSettingsView(vm: vm, config: vm.config)
                     .environmentObject(data)
             }
         }
@@ -193,7 +193,7 @@ struct DetailsLabelStyle: LabelStyle {
 
 @available(iOS 14, macOS 11, *)
 struct VMDetailsView_Previews: PreviewProvider {
-    @State static private var config = UTMConfiguration()
+    @State static private var config = UTMQemuConfiguration()
     
     static var previews: some View {
         VMDetailsView(vm: UTMVirtualMachine(configuration: config, withDestinationURL: URL(fileURLWithPath: "")))

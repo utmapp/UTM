@@ -1,5 +1,5 @@
 //
-// Copyright © 2019 osy. All rights reserved.
+// Copyright © 2021 osy. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,119 +15,32 @@
 //
 
 #import "UTMConfiguration.h"
-#import "UTMConfiguration+Constants.h"
-#import "UTMConfiguration+Defaults.h"
-#import "UTMConfiguration+Display.h"
-#import "UTMConfiguration+Drives.h"
-#import "UTMConfiguration+Miscellaneous.h"
-#import "UTMConfiguration+Networking.h"
-#import "UTMConfiguration+Sharing.h"
-#import "UTMConfiguration+System.h"
 #import "UTM-Swift.h"
-
-const NSString *const kUTMConfigSystemKey = @"System";
-const NSString *const kUTMConfigDisplayKey = @"Display";
-const NSString *const kUTMConfigInputKey = @"Input";
-const NSString *const kUTMConfigNetworkingKey = @"Networking";
-const NSString *const kUTMConfigPrintingKey = @"Printing";
-const NSString *const kUTMConfigSoundKey = @"Sound";
-const NSString *const kUTMConfigSharingKey = @"Sharing";
-const NSString *const kUTMConfigDrivesKey = @"Drives";
-const NSString *const kUTMConfigDebugKey = @"Debug";
-const NSString *const kUTMConfigInfoKey = @"Info";
-const NSString *const kUTMConfigVersionKey = @"ConfigurationVersion";
-
-const NSInteger kCurrentConfigurationVersion = 2;
 
 @interface UTMConfiguration ()
 
-@property (nonatomic, readonly) NSMutableDictionary *rootDict;
+@property (nonatomic, readwrite) NSString *uuid;
 
 @end
 
-@implementation UTMConfiguration {
-    NSMutableDictionary *_rootDict;
+@implementation UTMConfiguration
+
++ (NSString *)diskImagesDirectory {
+    return @"Images";
 }
 
-@synthesize rootDict = _rootDict;
-
-#pragma mark - Migration
-
-- (void)migrateConfigurationIfNecessary {
-    [self migrateMiscellaneousConfigurationIfNecessary];
-    [self migrateDriveConfigurationIfNecessary];
-    [self migrateNetworkConfigurationIfNecessary];
-    [self migrateSystemConfigurationIfNecessary];
-    [self migrateDisplayConfigurationIfNecessary];
-    [self migrateSharingConfigurationIfNecessary];
-    self.version = @(kCurrentConfigurationVersion);
++ (NSString *)debugLogName {
+    return @"debug.log";
 }
-
-#pragma mark - Initialization
 
 - (instancetype)init {
-    self = [super init];
-    if (self) {
-        [self resetDefaults];
+    if (self = [super init]) {
+        self.uuid = [[NSUUID UUID] UUIDString];
     }
     return self;
 }
 
-- (instancetype)initWithDictionary:(NSDictionary *)dictionary name:(NSString *)name path:(NSURL *)path {
-    self = [super init];
-    if (self) {
-        [self reloadConfigurationWithDictionary:dictionary name:name path:path];
-    }
-    return self;
-}
-
-#pragma mark - Dictionary representation
-
-- (NSDictionary *)dictRepresentation {
-    return (NSDictionary *)_rootDict;
-}
-
-- (NSURL*)terminalInputOutputURL {
-    NSURL* tmpDir = [[NSFileManager defaultManager] temporaryDirectory];
-    NSString* ioFileName = [NSString stringWithFormat: @"%@.terminal", self.name];
-    NSURL* ioFile = [tmpDir URLByAppendingPathComponent: ioFileName];
-    return ioFile;
-}
-
-- (void)resetDefaults {
-    [self propertyWillChange];
-    _rootDict = [@{
-        kUTMConfigSystemKey: [NSMutableDictionary new],
-        kUTMConfigDisplayKey: [NSMutableDictionary new],
-        kUTMConfigInputKey: [NSMutableDictionary new],
-        kUTMConfigNetworkingKey: [NSMutableDictionary new],
-        kUTMConfigPrintingKey: [NSMutableDictionary new],
-        kUTMConfigSoundKey: [NSMutableDictionary new],
-        kUTMConfigSharingKey: [NSMutableDictionary new],
-        kUTMConfigDrivesKey: [NSMutableArray new],
-        kUTMConfigDebugKey: [NSMutableDictionary new],
-        kUTMConfigInfoKey: [NSMutableDictionary new],
-    } mutableCopy];
-    self.version = @(kCurrentConfigurationVersion);
-    [self loadDefaults];
-}
-
-- (void)reloadConfigurationWithDictionary:(NSDictionary *)dictionary name:(NSString *)name path:(NSURL *)path {
-    [self propertyWillChange];
-    _rootDict = CFBridgingRelease(CFPropertyListCreateDeepCopy(kCFAllocatorDefault, (__bridge CFDictionaryRef)dictionary, kCFPropertyListMutableContainers));
-    self.name = name;
-    self.existingPath = path;
-    self.selectedCustomIconPath = nil;
-    [self migrateConfigurationIfNecessary];
-}
-
-#pragma mark - NSCopying
-
-- (id)copyWithZone:(NSZone *)zone {
-    return [[UTMConfiguration alloc] initWithDictionary:_rootDict name:_name path:_existingPath];
-}
-
-#pragma mark - Settings
+#pragma mark - Properties
 
 - (void)setName:(NSString *)name {
     [self propertyWillChange];
@@ -142,15 +55,6 @@ const NSInteger kCurrentConfigurationVersion = 2;
 - (void)setSelectedCustomIconPath:(NSURL *)selectedCustomIconPath {
     [self propertyWillChange];
     _selectedCustomIconPath = selectedCustomIconPath;
-}
-
-- (void)setVersion:(NSNumber *)version {
-    [self propertyWillChange];
-    self.rootDict[kUTMConfigVersionKey] = version;
-}
-
-- (NSNumber *)version {
-    return self.rootDict[kUTMConfigVersionKey];
 }
 
 @end

@@ -1,5 +1,5 @@
 //
-// Copyright © 2020 osy. All rights reserved.
+// Copyright © 2019 osy. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,18 +14,17 @@
 // limitations under the License.
 //
 
-#import "UTMConfiguration.h"
-#import "UTMConfiguration+Drives.h"
+#import <Foundation/Foundation.h>
+
+@class UTMQemuConfiguration;
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface UTMConfiguration (Defaults)
+@protocol UTMQemuConfigurationDelegate <NSObject>
 
-- (void)loadDefaults;
-- (void)loadDefaultsForTarget:(nullable NSString *)target architecture:(nullable NSString *)architecture;
-+ (nullable NSString *)defaultMachinePropertiesForTarget:(nullable NSString *)target;
-+ (NSString *)defaultDriveInterfaceForTarget:(nullable NSString *)target type:(UTMDiskImageType)type;
-+ (NSString *)defaultCPUForTarget:(NSString *)target architecture:(NSString *)architecture;
+@required
+
+@property (nonatomic) UTMQemuConfiguration *configuration;
 
 @end
 

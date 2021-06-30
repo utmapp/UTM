@@ -27,6 +27,10 @@
 @synthesize keyboardVisible = _keyboardVisible;
 @synthesize toolbarVisible = _toolbarVisible;
 
+- (UTMQemuConfiguration *)vmQemuConfig {
+    return (UTMQemuConfiguration *)vmConfiguration;
+}
+
 - (BOOL)prefersHomeIndicatorAutoHidden {
     return YES; // always hide home indicator
 }

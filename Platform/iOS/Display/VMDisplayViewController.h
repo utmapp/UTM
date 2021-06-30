@@ -18,7 +18,8 @@
 #import "CSInput.h"
 #import "UTMVirtualMachineDelegate.h"
 
-@class UTMVirtualMachine;
+@class UTMQemuConfiguration;
+@class UTMQemuVirtualMachine;
 @class VMKeyboardButton;
 @class VMRemovableDrivesViewController;
 @class VMToolbarActions;
@@ -41,6 +42,7 @@
 @property (weak, nonatomic) IBOutlet UIButton *resumeBigButton;
 @property (strong, nonatomic) IBOutletCollection(VMKeyboardButton) NSArray *customKeyModifierButtons;
 
+@property (nonatomic, readonly) UTMQemuConfiguration *vmQemuConfig;
 @property (nonatomic) VMToolbarActions *toolbar;
 @property (nonatomic) UIViewController *floatingToolbarViewController;
 @property (nonatomic) VMRemovableDrivesViewController *removableDrivesViewController;
@@ -48,7 +50,7 @@
 
 @property (nonatomic) BOOL hasAutoSave;
 @property (nonatomic, readwrite) BOOL prefersStatusBarHidden;
-@property (nonatomic, strong) UTMVirtualMachine *vm;
+@property (nonatomic, strong) UTMQemuVirtualMachine *vm;
 
 @property (nonatomic, strong) NSMutableArray<UIKeyCommand *> *mutableKeyCommands;
 

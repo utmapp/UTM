@@ -27,37 +27,41 @@ struct VMSettingsView: View {
     @State private var infoActive: Bool = true
     @State private var selectedDriveIndex: Int?
     
+    private var qemuConfig: UTMQemuConfiguration {
+        config as! UTMQemuConfiguration
+    }
+    
     var body: some View {
         NavigationView {
             List {
-                NavigationLink(destination: VMConfigInfoView(config: config).scrollable(), isActive: $infoActive) {
+                NavigationLink(destination: VMConfigInfoView(config: qemuConfig).scrollable(), isActive: $infoActive) {
                     Label("Information", systemImage: "info.circle")
                 }
-                NavigationLink(destination: VMConfigSystemView(config: config).scrollable()) {
+                NavigationLink(destination: VMConfigSystemView(config: qemuConfig).scrollable()) {
                     Label("System", systemImage: "cpu")
                 }
-                NavigationLink(destination: VMConfigQEMUView(config: config).scrollable()) {
+                NavigationLink(destination: VMConfigQEMUView(config: qemuConfig).scrollable()) {
                     Label("QEMU", systemImage: "shippingbox")
                 }
-                NavigationLink(destination: VMConfigDisplayView(config: config).scrollable()) {
+                NavigationLink(destination: VMConfigDisplayView(config: qemuConfig).scrollable()) {
                     Label("Display", systemImage: "rectangle.on.rectangle")
                 }
-                NavigationLink(destination: VMConfigInputView(config: config).scrollable()) {
+                NavigationLink(destination: VMConfigInputView(config: qemuConfig).scrollable()) {
                     Label("Input", systemImage: "keyboard")
                 }
-                NavigationLink(destination: VMConfigNetworkView(config: config).scrollable()) {
+                NavigationLink(destination: VMConfigNetworkView(config: qemuConfig).scrollable()) {
                     Label("Network", systemImage: "network")
                 }
-                NavigationLink(destination: VMConfigSoundView(config: config).scrollable()) {
+                NavigationLink(destination: VMConfigSoundView(config: qemuConfig).scrollable()) {
                     Label("Sound", systemImage: "speaker.wave.2")
                 }
-                NavigationLink(destination: VMConfigSharingView(config: config).scrollable()) {
+                NavigationLink(destination: VMConfigSharingView(config: qemuConfig).scrollable()) {
                     Label("Sharing", systemImage: "person.crop.circle.fill")
                 }
                 Section(header: Text("Drives")) {
-                    ForEach(0..<config.countDrives, id: \.self) { index in
-                        NavigationLink(destination: VMConfigDriveDetailsView(config: config, index: index).scrollable(), tag: index, selection: $selectedDriveIndex) {
-                            Label(config.driveLabel(for: index), systemImage: "externaldrive")
+                    ForEach(0..<qemuConfig.countDrives, id: \.self) { index in
+                        NavigationLink(destination: VMConfigDriveDetailsView(config: qemuConfig, index: index).scrollable(), tag: index, selection: $selectedDriveIndex) {
+                            Label(qemuConfig.driveLabel(for: index), systemImage: "externaldrive")
                         }
                     }.onMove(perform: moveDrives)
                 }
@@ -65,7 +69,7 @@ struct VMSettingsView: View {
         }.frame(minWidth: 800, minHeight: 400)
         .toolbar {
             ToolbarItemGroup(placement: .automatic) {
-                VMConfigDrivesButtons(vm: vm, config: config, selectedDriveIndex: $selectedDriveIndex)
+                VMConfigDrivesButtons(vm: vm, config: config as! UTMQemuConfiguration, selectedDriveIndex: $selectedDriveIndex)
             }
             ToolbarItemGroup(placement: .cancellationAction) {
                 Button(action: cancel) {
@@ -87,7 +91,7 @@ struct VMSettingsView: View {
             if let existing = self.vm {
                 try data.save(vm: existing)
             } else {
-                try data.create(config: self.config)
+                try data.create(config: self.qemuConfig)
             }
         }
     }
@@ -109,7 +113,7 @@ struct VMSettingsView: View {
             } else {
                 realDestination = destination
             }
-            config.moveDrive(offset, to: realDestination)
+            qemuConfig.moveDrive(offset, to: realDestination)
             if selectedDriveIndex == offset {
                 selectedDriveIndex = realDestination
             }
@@ -136,7 +140,7 @@ extension View {
 
 @available(macOS 11, *)
 struct VMSettingsView_Previews: PreviewProvider {
-    @State static private var config = UTMConfiguration()
+    @State static private var config = UTMQemuConfiguration()
     
     static var previews: some View {
         VMSettingsView(vm: nil, config: config)

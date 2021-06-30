@@ -58,7 +58,7 @@
 /* No comment provided by engineer. */
 "Argument" = "Argument";
 
-/* UTMConfiguration */
+/* UTMQemuConfiguration */
 "BIOS" = "BIOS";
 
 /* No comment provided by engineer. */
@@ -91,7 +91,7 @@
 /* Configuration boot device */
 "CD/DVD" = "CD/DVD";
 
-/* UTMConfiguration */
+/* UTMQemuConfiguration */
 "CD/DVD Image" = "CD/DVD 镜像";
 
 /* VMRemovableDrivesViewController */
@@ -192,7 +192,7 @@
 /* VMConfigDriveCreateViewController */
 "Disk creation failed." = "磁盘镜像创建失败";
 
-/* UTMConfiguration */
+/* UTMQemuConfiguration */
 "Disk Image" = "磁盘镜像";
 
 /* No comment provided by engineer. */
@@ -412,16 +412,16 @@
 /* No comment provided by engineer. */
 "Legacy (PS/2) Mode" = "输入(PS/2)模式";
 
-/* UTMConfiguration */
+/* UTMQemuConfiguration */
 "Linear" = "线性";
 
-/* UTMConfiguration */
+/* UTMQemuConfiguration */
 "Linux Device Tree Binary" = "Linux设备树二进制文件";
 
-/* UTMConfiguration */
+/* UTMQemuConfiguration */
 "Linux Kernel" = "Linux内核";
 
-/* UTMConfiguration */
+/* UTMQemuConfiguration */
 "Linux RAM Disk" = "Linux RAM 磁盘";
 
 /* No comment provided by engineer. */
@@ -451,7 +451,7 @@
 /* VMConfigInfoView */
 "Name is an invalid filename." = "名称是无效的文件名。";
 
-/* UTMConfiguration */
+/* UTMQemuConfiguration */
 "Nearest Neighbor" = "近邻取样";
 
 /* No comment provided by engineer. */
@@ -655,7 +655,7 @@
 /* VMConfigPortForwardingViewController */
 "UDP Forward" = "UDP";
 
-/* UTMConfigurationExtension */
+/* UTMQemuConfigurationExtension */
 "Unknown" = "未知";
 
 /* No comment provided by engineer. */

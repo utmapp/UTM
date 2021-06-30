@@ -31,15 +31,15 @@ struct VMCardView: View {
     
     var body: some View {
         HStack {
-            if vm.configuration.iconCustom {
-                Logo(logo: PlatformImage(contentsOfURL: vm.configuration.existingCustomIconURL))
+            if vm.config.iconCustom {
+                Logo(logo: PlatformImage(contentsOfURL: vm.config.existingCustomIconURL))
             } else {
-                Logo(logo: PlatformImage(contentsOfURL: vm.configuration.existingIconURL))
+                Logo(logo: PlatformImage(contentsOfURL: vm.config.existingIconURL))
             }
             VStack(alignment: .leading) {
-                Text(vm.configuration.name)
+                Text(vm.config.name)
                     .font(.headline)
-                Text(vm.configuration.systemTargetPretty)
+                Text(vm.config.subtitle)
                     .font(.subheadline)
             }.lineLimit(1)
             .truncationMode(.tail)
@@ -103,6 +103,6 @@ struct Logo: View {
 @available(iOS 14, macOS 11, *)
 struct VMCardView_Previews: PreviewProvider {
     static var previews: some View {
-        VMCardView(vm: UTMVirtualMachine(configuration: UTMConfiguration(), withDestinationURL: URL(fileURLWithPath: "/")))
+        VMCardView(vm: UTMVirtualMachine(configuration: UTMQemuConfiguration(), withDestinationURL: URL(fileURLWithPath: "/")))
     }
 }

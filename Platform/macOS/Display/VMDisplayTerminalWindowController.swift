@@ -80,7 +80,7 @@ class VMDisplayTerminalWindowController: VMDisplayWindowController {
             logger.error("Did not get rows from page")
             return
         }
-        let template = vmConfiguration?.consoleResizeCommand ?? kVMDefaultResizeCmd
+        let template = vmQemuConfig?.consoleResizeCommand ?? kVMDefaultResizeCmd
         let cmd = template
             .replacingOccurrences(of: "$COLS", with: String(columns))
             .replacingOccurrences(of: "$ROWS", with: String(rows))
@@ -95,15 +95,15 @@ extension VMDisplayTerminalWindowController: WKNavigationDelegate {
     }
     
     func updateSettings() {
-        if let consoleFont = vmConfiguration?.consoleFont {
-            let consoleFontSize = vmConfiguration?.consoleFontSize?.intValue ?? 12
+        if let consoleFont = vmQemuConfig?.consoleFont {
+            let consoleFontSize = vmQemuConfig?.consoleFontSize?.intValue ?? 12
             webView.evaluateJavaScript("changeFont('\(consoleFont)', \(consoleFontSize));") { (_, err) in
                 if let error = err {
                     logger.error("changeFont error: \(error)")
                 }
             }
         }
-        if let cursorBlink = vmConfiguration?.consoleCursorBlink {
+        if let cursorBlink = vmQemuConfig?.consoleCursorBlink {
             webView.evaluateJavaScript("setCursorBlink(\(cursorBlink ? "true" : "false"));") { (_, err) in
                 if let error = err {
                     logger.error("setCursorBlink error: \(error)")

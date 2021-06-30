@@ -18,40 +18,29 @@
 #import "UTMVirtualMachineDelegate.h"
 #import "CSConnectionDelegate.h"
 #import "UTMRenderSource.h"
-#import "UTMQemuManagerDelegate.h"
 #import "UTMInputOutput.h"
 
 @class UTMConfiguration;
 @class UTMLogging;
-@class UTMQemuManager;
 @class UTMScreenshot;
-
-typedef NS_ENUM(NSInteger, UTMDisplayType) {
-    UTMDisplayTypeFullGraphic,
-    UTMDisplayTypeConsole
-};
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface UTMVirtualMachine : NSObject<UTMQemuManagerDelegate>
+@interface UTMVirtualMachine : NSObject
 
 @property (nonatomic, readonly, nullable) NSURL *path;
 @property (nonatomic, weak, nullable) id<UTMVirtualMachineDelegate> delegate;
-@property (nonatomic, weak, nullable) id ioDelegate;
-@property (nonatomic, strong) NSURL *parentPath;
-@property (nonatomic, readonly, copy) UTMConfiguration *configuration;
+@property (nonatomic, readonly, copy) UTMConfiguration *config;
 @property (nonatomic, readonly) UTMViewState *viewState;
 @property (nonatomic, assign, readonly) UTMVMState state;
-@property (nonatomic, readonly) BOOL busy;
 @property (nonatomic, readonly, nullable) UTMScreenshot *screenshot;
 
 + (BOOL)URLisVirtualMachine:(NSURL *)url NS_SWIFT_NAME(isVirtualMachine(url:));
 + (NSString *)virtualMachineName:(NSURL *)url;
 + (NSURL *)virtualMachinePath:(NSString *)name inParentURL:(NSURL *)parent;
 
-- (instancetype)init NS_DESIGNATED_INITIALIZER;
-- (nullable instancetype)initWithURL:(NSURL *)url;
-- (instancetype)initWithConfiguration:(UTMConfiguration *)configuration withDestinationURL:(NSURL *)dstUrl;
++ (nullable UTMVirtualMachine *)virtualMachineWithURL:(NSURL *)url;
++ (UTMVirtualMachine *)virtualMachineWithConfiguration:(UTMConfiguration *)configuration withDestinationURL:(NSURL *)dstUrl;
 
 - (BOOL)reloadConfigurationWithError:(NSError * _Nullable *)err;
 - (BOOL)saveUTMWithError:(NSError * _Nullable *)err;
@@ -64,8 +53,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)saveVM;
 - (BOOL)deleteSaveVM;
 - (BOOL)resumeVM;
-
-- (UTMDisplayType)supportedDisplayType;
 
 @end
 

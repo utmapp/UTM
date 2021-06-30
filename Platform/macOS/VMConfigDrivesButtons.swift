@@ -18,7 +18,7 @@ import SwiftUI
 
 struct VMConfigDrivesButtons: View {
     let vm: UTMVirtualMachine?
-    @ObservedObject var config: UTMConfiguration
+    @ObservedObject var config: UTMQemuConfiguration
     @Binding var selectedDriveIndex: Int?
     
     @EnvironmentObject private var data: UTMData

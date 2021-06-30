@@ -36,7 +36,7 @@
 /* Configuration boot device */
 "CD/DVD" = "CD/DVD";
 
-/* UTMConfiguration */
+/* UTMQemuConfiguration */
 "CD/DVD Image" = "CD/DVD 鏡像";
 
 /* Clone context menu */
@@ -71,7 +71,7 @@
 /* VMConfigDriveCreateViewController */
 "Disk creation failed." = "磁盤鏡像創建失敗";
 
-/* UTMConfiguration */
+/* UTMQemuConfiguration */
 "Disk Image" = "磁盤鏡像";
 
 /* VMConfigDrivesViewController */
@@ -147,13 +147,13 @@
 /* VMConfigSystemViewController */
 "JIT cache size too small." = "JIT緩存過小。";
 
-/* UTMConfiguration */
+/* UTMQemuConfiguration */
 "Linear" = "線性";
 
 /* Clone VM name prompt title */
 "Name" = "名字";
 
-/* UTMConfiguration */
+/* UTMQemuConfiguration */
 "Nearest Neighbor" = "近鄰取樣";
 
 /* VMConfigPortForwardingViewController */

@@ -15,9 +15,9 @@
 //
 
 #import "UTMSpiceIO.h"
-#import "UTMConfiguration.h"
-#import "UTMConfiguration+Miscellaneous.h"
-#import "UTMConfiguration+Sharing.h"
+#import "UTMQemuConfiguration.h"
+#import "UTMQemuConfiguration+Miscellaneous.h"
+#import "UTMQemuConfiguration+Sharing.h"
 #import "UTMLogging.h"
 #import "UTMViewState.h"
 #import "CocoaSpice.h"
@@ -49,7 +49,7 @@ typedef void (^connectionCallback_t)(BOOL success, NSString * _Nullable msg);
 
 @implementation UTMSpiceIO
 
-- (instancetype)initWithConfiguration:(UTMConfiguration *)configuration port:(NSInteger)port {
+- (instancetype)initWithConfiguration:(UTMQemuConfiguration *)configuration port:(NSInteger)port {
     if (self = [super init]) {
         _configuration = configuration;
         _port = port;

@@ -14,8 +14,8 @@
 // limitations under the License.
 //
 
-#import "UTMConfiguration+Constants.h"
-#import "UTMConfiguration+Miscellaneous.h"
+#import "UTMQemuConfiguration+Constants.h"
+#import "UTMQemuConfiguration+Miscellaneous.h"
 #import "UTM-Swift.h"
 
 extern const NSString *const kUTMConfigInputKey;
@@ -38,13 +38,13 @@ const NSString *const kUTMConfigIconKey = @"Icon";
 const NSString *const kUTMConfigIconCustomKey = @"IconCustom";
 const NSString *const kUTMConfigNotesKey = @"Notes";
 
-@interface UTMConfiguration ()
+@interface UTMQemuConfiguration ()
 
 @property (nonatomic, readonly) NSMutableDictionary *rootDict;
 
 @end
 
-@implementation UTMConfiguration (Miscellaneous)
+@implementation UTMQemuConfiguration (Miscellaneous)
 
 #pragma mark - Migration
 

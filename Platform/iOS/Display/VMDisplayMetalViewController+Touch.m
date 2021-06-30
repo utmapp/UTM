@@ -21,12 +21,12 @@
 #import "VMCursor.h"
 #import "VMScroll.h"
 #import "CSDisplayMetal.h"
-#import "UTMConfiguration.h"
-#import "UTMConfiguration+Miscellaneous.h"
+#import "UTMQemuConfiguration.h"
+#import "UTMQemuConfiguration+Miscellaneous.h"
 #import "UTMSpiceIO.h"
 #import "UTMLogging.h"
-#import "UTMVirtualMachine.h"
-#import "UTMVirtualMachine+SPICE.h"
+#import "UTMQemuVirtualMachine.h"
+#import "UTMQemuVirtualMachine+SPICE.h"
 
 const CGFloat kScrollSpeedReduction = 100.0f;
 const CGFloat kCursorResistance = 50.0f;
@@ -358,7 +358,7 @@ static CGFloat CGPointToPixel(CGFloat point) {
 
 - (CGPoint)moveMouseScroll:(CGPoint)translation {
     translation.y = CGPointToPixel(translation.y) / kScrollSpeedReduction;
-    if (self.vmConfiguration.inputScrollInvert) {
+    if (self.vmQemuConfig.inputScrollInvert) {
         translation.y = -translation.y;
     }
     [self.vmInput sendMouseScroll:kCSInputScrollSmooth button:self.mouseButtonDown dy:translation.y];
@@ -583,7 +583,7 @@ static CGFloat CGPointToPixel(CGFloat point) {
 #pragma mark - Touch event handling
 
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
-    if (!_mouseCaptured && !self.vmConfiguration.inputLegacy) {
+    if (!_mouseCaptured && !self.vmQemuConfig.inputLegacy) {
         for (UITouch *touch in [event touchesForView:self.mtkView]) {
             if (@available(iOS 14, *)) {
                 if (self.prefersPointerLocked && (touch.type == UITouchTypeIndirect || touch.type == UITouchTypeIndirectPointer)) {
@@ -626,7 +626,7 @@ static CGFloat CGPointToPixel(CGFloat point) {
 
 - (void)touchesMoved:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
     // move cursor in client mode, in server mode we handle in gesturePan
-    if (!self.vmConfiguration.inputLegacy && !self.vmInput.serverModeCursor) {
+    if (!self.vmQemuConfig.inputLegacy && !self.vmInput.serverModeCursor) {
         for (UITouch *touch in [event touchesForView:self.mtkView]) {
             [_cursor updateMovement:[touch locationInView:self.mtkView]];
             break; // handle single touch
@@ -637,7 +637,7 @@ static CGFloat CGPointToPixel(CGFloat point) {
 
 - (void)touchesCancelled:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
     // release click in client mode, in server mode we handle in gesturePan
-    if (!self.vmConfiguration.inputLegacy && !self.vmInput.serverModeCursor) {
+    if (!self.vmQemuConfig.inputLegacy && !self.vmInput.serverModeCursor) {
         [self dragCursor:UIGestureRecognizerStateEnded primary:YES secondary:YES middle:YES];
     }
     [super touchesCancelled:touches withEvent:event];
@@ -645,7 +645,7 @@ static CGFloat CGPointToPixel(CGFloat point) {
 
 - (void)touchesEnded:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
     // release click in client mode, in server mode we handle in gesturePan
-    if (!self.vmConfiguration.inputLegacy && !self.vmInput.serverModeCursor) {
+    if (!self.vmQemuConfig.inputLegacy && !self.vmInput.serverModeCursor) {
         [self dragCursor:UIGestureRecognizerStateEnded primary:YES secondary:YES middle:YES];
     }
     [super touchesEnded:touches withEvent:event];

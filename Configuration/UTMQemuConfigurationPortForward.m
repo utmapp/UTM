@@ -14,10 +14,10 @@
 // limitations under the License.
 //
 
-#import "UTMConfigurationPortForward.h"
+#import "UTMQemuConfigurationPortForward.h"
 #import "UTM-Swift.h"
 
-@implementation UTMConfigurationPortForward
+@implementation UTMQemuConfigurationPortForward
 
 @synthesize protocol = _protocol;
 @synthesize hostAddress = _hostAddress;

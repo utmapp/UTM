@@ -25,8 +25,8 @@
 #import "UTMRenderer.h"
 #import "UTMVirtualMachine.h"
 #import "UTMQemuManager.h"
-#import "UTMConfiguration.h"
-#import "UTMConfiguration+Display.h"
+#import "UTMQemuConfiguration.h"
+#import "UTMQemuConfiguration+Display.h"
 #import "UTMLogging.h"
 #import "CSDisplayMetal.h"
 #import "UTMScreenshot.h"
@@ -75,8 +75,8 @@
     // Initialize our renderer with the view size
     [_renderer mtkView:self.mtkView drawableSizeWillChange:self.mtkView.drawableSize];
     
-    [_renderer changeUpscaler:self.vmConfiguration.displayUpscalerValue
-                   downscaler:self.vmConfiguration.displayDownscalerValue];
+    [_renderer changeUpscaler:self.vmQemuConfig.displayUpscalerValue
+                   downscaler:self.vmQemuConfig.displayDownscalerValue];
     
     self.mtkView.delegate = _renderer;
     
@@ -125,7 +125,7 @@
             self.placeholderImageView.image = self.vm.screenshot.image;
             self.mtkView.hidden = YES;
         } completion:nil];
-        if (self.vmConfiguration.shareClipboardEnabled) {
+        if (self.vmQemuConfig.shareClipboardEnabled) {
             [[UTMPasteboard generalPasteboard] releasePollingModeForObject:self];
         }
 #if !defined(WITH_QEMU_TCI)
@@ -143,7 +143,7 @@
         self.mtkView.hidden = NO;
     } completion:nil];
     [self displayResize:self.view.bounds.size];
-    if (self.vmConfiguration.shareClipboardEnabled) {
+    if (self.vmQemuConfig.shareClipboardEnabled) {
         [[UTMPasteboard generalPasteboard] requestPollingModeForObject:self];
     }
 }
@@ -188,7 +188,7 @@
 - (void)displayResize:(CGSize)size {
     UTMLog(@"resizing to (%f, %f)", size.width, size.height);
     CGRect bounds = CGRectMake(0, 0, size.width, size.height);
-    if (self.vmConfiguration.displayRetina) {
+    if (self.vmQemuConfig.displayRetina) {
         CGFloat scale = [UIScreen mainScreen].scale;
         CGAffineTransform transform = CGAffineTransformMakeScale(scale, scale);
         bounds = CGRectApplyAffineTransform(bounds, transform);

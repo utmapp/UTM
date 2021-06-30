@@ -14,9 +14,9 @@
 // limitations under the License.
 //
 
-#import "UTMConfiguration+Constants.h"
-#import "UTMConfiguration+Defaults.h"
-#import "UTMConfiguration+System.h"
+#import "UTMQemuConfiguration+Constants.h"
+#import "UTMQemuConfiguration+Defaults.h"
+#import "UTMQemuConfiguration+System.h"
 #import "UTM-Swift.h"
 
 extern const NSString *const kUTMConfigSystemKey;
@@ -34,13 +34,13 @@ static const NSString *const kUTMConfigAddArgsKey = @"AddArgs";
 static const NSString *const kUTMConfigSystemUUIDKey = @"SystemUUID";
 static const NSString *const kUTMConfigMachinePropertiesKey = @"MachineProperties";
 
-@interface UTMConfiguration ()
+@interface UTMQemuConfiguration ()
 
 @property (nonatomic, readonly) NSMutableDictionary *rootDict;
 
 @end
 
-@implementation UTMConfiguration (System)
+@implementation UTMQemuConfiguration (System)
 
 #pragma mark - Migration
 
@@ -54,22 +54,22 @@ static const NSString *const kUTMConfigMachinePropertiesKey = @"MachinePropertie
     }
     // Migrate default target
     if ([self.rootDict[kUTMConfigSystemKey][kUTMConfigTargetKey] length] == 0) {
-        NSInteger index = [UTMConfiguration defaultTargetIndexForArchitecture:self.systemArchitecture];
-        self.rootDict[kUTMConfigSystemKey][kUTMConfigTargetKey] = [UTMConfiguration supportedTargetsForArchitecture:self.systemArchitecture][index];
+        NSInteger index = [UTMQemuConfiguration defaultTargetIndexForArchitecture:self.systemArchitecture];
+        self.rootDict[kUTMConfigSystemKey][kUTMConfigTargetKey] = [UTMQemuConfiguration supportedTargetsForArchitecture:self.systemArchitecture][index];
     }
     // Fix issue with boot order
-    NSArray<NSString *> *bootPretty = [UTMConfiguration supportedBootDevicesPretty];
+    NSArray<NSString *> *bootPretty = [UTMQemuConfiguration supportedBootDevicesPretty];
     if ([bootPretty containsObject:self.systemBootDevice]) {
         NSInteger index = [bootPretty indexOfObject:self.systemBootDevice];
-        self.systemBootDevice = [UTMConfiguration supportedBootDevices][index];
+        self.systemBootDevice = [UTMQemuConfiguration supportedBootDevices][index];
     }
     // Default CPU
     if ([self.rootDict[kUTMConfigSystemKey][kUTMConfigCPUKey] length] == 0) {
-        self.rootDict[kUTMConfigSystemKey][kUTMConfigCPUKey] = [UTMConfiguration defaultCPUForTarget:self.systemTarget architecture:self.systemArchitecture];
+        self.rootDict[kUTMConfigSystemKey][kUTMConfigCPUKey] = [UTMQemuConfiguration defaultCPUForTarget:self.systemTarget architecture:self.systemArchitecture];
     }
     // Older versions hard codes properties
     if ([self.version integerValue] < 2) {
-        NSString *machineProp = [UTMConfiguration defaultMachinePropertiesForTarget:self.systemTarget];
+        NSString *machineProp = [UTMQemuConfiguration defaultMachinePropertiesForTarget:self.systemTarget];
         if (machineProp && self.systemMachineProperties.length == 0) {
             self.systemMachineProperties = machineProp;
         }

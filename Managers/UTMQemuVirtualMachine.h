@@ -1,5 +1,5 @@
 //
-// Copyright © 2019 osy. All rights reserved.
+// Copyright © 2021 osy. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,17 +14,24 @@
 // limitations under the License.
 //
 
-#import <Foundation/Foundation.h>
+#import "UTMVirtualMachine.h"
+#import "UTMQemuManagerDelegate.h"
 
-@class UTMConfiguration;
+@class UTMQemuConfiguration;
+
+typedef NS_ENUM(NSInteger, UTMDisplayType) {
+    UTMDisplayTypeFullGraphic,
+    UTMDisplayTypeConsole
+};
 
 NS_ASSUME_NONNULL_BEGIN
 
-@protocol UTMConfigurationDelegate <NSObject>
+@interface UTMQemuVirtualMachine : UTMVirtualMachine<UTMQemuManagerDelegate>
 
-@required
+@property (nonatomic, weak, nullable) id ioDelegate;
+@property (nonatomic, readonly) UTMQemuConfiguration *qemuConfig;
 
-@property (nonatomic) UTMConfiguration *configuration;
+- (UTMDisplayType)supportedDisplayType;
 
 @end
 

@@ -18,9 +18,9 @@
 #if !TARGET_OS_OSX
 #import <UIKit/UIKit.h>
 #endif
-#import "UTMConfiguration+Constants.h"
+#import "UTMQemuConfiguration+Constants.h"
 
-@implementation UTMConfiguration (Constants)
+@implementation UTMQemuConfiguration (Constants)
 
 #pragma mark - Constant supported values
 
@@ -95,13 +95,13 @@
 
 + (NSArray<NSString *>*)supportedImageTypesPretty {
     return @[
-             NSLocalizedString(@"None", "UTMConfiguration"),
-             NSLocalizedString(@"Disk Image", "UTMConfiguration"),
-             NSLocalizedString(@"CD/DVD (ISO) Image", "UTMConfiguration"),
-             NSLocalizedString(@"BIOS", "UTMConfiguration"),
-             NSLocalizedString(@"Linux Kernel", "UTMConfiguration"),
-             NSLocalizedString(@"Linux RAM Disk", "UTMConfiguration"),
-             NSLocalizedString(@"Linux Device Tree Binary", "UTMConfiguration")
+             NSLocalizedString(@"None", "UTMQemuConfiguration"),
+             NSLocalizedString(@"Disk Image", "UTMQemuConfiguration"),
+             NSLocalizedString(@"CD/DVD (ISO) Image", "UTMQemuConfiguration"),
+             NSLocalizedString(@"BIOS", "UTMQemuConfiguration"),
+             NSLocalizedString(@"Linux Kernel", "UTMQemuConfiguration"),
+             NSLocalizedString(@"Linux RAM Disk", "UTMQemuConfiguration"),
+             NSLocalizedString(@"Linux Device Tree Binary", "UTMQemuConfiguration")
              ];
 }
 
@@ -168,8 +168,8 @@
 
 + (NSArray<NSString *>*)supportedScalersPretty {
     return @[
-        NSLocalizedString(@"Linear", "UTMConfiguration"),
-        NSLocalizedString(@"Nearest Neighbor", "UTMConfiguration"),
+        NSLocalizedString(@"Linear", "UTMQemuConfiguration"),
+        NSLocalizedString(@"Nearest Neighbor", "UTMQemuConfiguration"),
     ];
 }
 
@@ -217,19 +217,11 @@
 
 + (NSArray<NSString *> *)supportedNetworkModesPretty {
     return @[
-        NSLocalizedString(@"None", "UTMConfiguration"),
-        NSLocalizedString(@"Emulated VLAN", "UTMConfiguration"),
-        NSLocalizedString(@"Shared Network", "UTMConfiguration"),
-        NSLocalizedString(@"Bridged (Advanced)", "UTMConfiguration"),
+        NSLocalizedString(@"None", "UTMQemuConfiguration"),
+        NSLocalizedString(@"Emulated VLAN", "UTMQemuConfiguration"),
+        NSLocalizedString(@"Shared Network", "UTMQemuConfiguration"),
+        NSLocalizedString(@"Bridged (Advanced)", "UTMQemuConfiguration"),
     ];
-}
-
-+ (NSString *)diskImagesDirectory {
-    return @"Images";
-}
-
-+ (NSString *)debugLogName {
-    return @"debug.log";
 }
 
 @end

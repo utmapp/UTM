@@ -20,10 +20,8 @@ extension UTMVirtualMachine: Identifiable {
     public var id: String {
         if self.path != nil {
             return self.path!.path // path if we're an existing VM
-        } else if self.configuration.systemUUID != nil {
-            return self.configuration.systemUUID! // static UUID for new VM
         } else {
-            return UUID().uuidString // fallback to unique UUID
+            return self.config.uuid
         }
     }
 }

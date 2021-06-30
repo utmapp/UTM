@@ -14,7 +14,7 @@
 // limitations under the License.
 //
 
-#import "UTMVirtualMachine+Terminal.h"
+#import "UTMQemuVirtualMachine+Terminal.h"
 #import "UTMLogging.h"
 #import "VMDisplayTerminalViewController+Keyboard.h"
 #import "VMKeyboardButton.h"

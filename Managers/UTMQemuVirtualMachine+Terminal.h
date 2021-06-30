@@ -1,5 +1,5 @@
 //
-// Copyright © 2019 osy. All rights reserved.
+// Copyright © 2020 osy. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,18 +14,13 @@
 // limitations under the License.
 //
 
-#import <UIKit/UIKit.h>
-#import "UTMQemuConfigurationDelegate.h"
+#import "UTMQemuVirtualMachine.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface VMConfigDrivePickerViewController : UITableViewController<UTMQemuConfigurationDelegate, UIDocumentPickerDelegate>
+@interface UTMQemuVirtualMachine (Terminal)
 
-@property (nonatomic, strong) NSURL *imagesPath;
-@property (weak, nonatomic) IBOutlet UIBarButtonItem *addButtonItem;
-@property (nonatomic, readonly) NSString *selectedName;
-
-- (IBAction)addButton:(UIBarButtonItem *)sender;
+- (void)sendInput:(NSString*)inputStr;
 
 @end
 

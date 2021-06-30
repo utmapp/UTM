@@ -20,14 +20,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface UTMQemuSystem : UTMQemu
 
-@property (nonatomic) UTMConfiguration *configuration;
+@property (nonatomic) UTMQemuConfiguration *configuration;
 @property (nonatomic) NSURL *imgPath;
 @property (nonatomic, nullable) NSString *snapshot;
 @property (nonatomic) NSInteger qmpPort;
 @property (nonatomic) NSInteger spicePort;
 
 - (instancetype)init NS_UNAVAILABLE;
-- (instancetype)initWithConfiguration:(UTMConfiguration *)configuration imgPath:(NSURL *)imgPath;
+- (instancetype)initWithConfiguration:(UTMQemuConfiguration *)configuration imgPath:(NSURL *)imgPath;
 - (void)updateArgvWithUserOptions:(BOOL)userOptions;
 - (void)startWithCompletion:(void(^)(BOOL, NSString *))completion;
 

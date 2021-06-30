@@ -14,23 +14,18 @@
 // limitations under the License.
 //
 
-#import "UTMConfiguration.h"
+#import "UTMQemuConfiguration.h"
+#import "UTMQemuConfiguration+Drives.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface UTMConfiguration (Miscellaneous)
+@interface UTMQemuConfiguration (Defaults)
 
-@property (nonatomic, assign) BOOL inputLegacy;
-@property (nonatomic, assign) BOOL inputScrollInvert;
-@property (nonatomic, assign) BOOL soundEnabled;
-@property (nonatomic, nullable, copy) NSString *soundCard;
-@property (nonatomic, assign) BOOL debugLogEnabled;
-@property (nonatomic, assign) BOOL ignoreAllConfiguration;
-@property (nonatomic, nullable, copy) NSString *icon;
-@property (nonatomic, assign) BOOL iconCustom;
-@property (nonatomic, nullable, copy) NSString *notes;
-
-- (void)migrateMiscellaneousConfigurationIfNecessary;
+- (void)loadDefaults;
+- (void)loadDefaultsForTarget:(nullable NSString *)target architecture:(nullable NSString *)architecture;
++ (nullable NSString *)defaultMachinePropertiesForTarget:(nullable NSString *)target;
++ (NSString *)defaultDriveInterfaceForTarget:(nullable NSString *)target type:(UTMDiskImageType)type;
++ (NSString *)defaultCPUForTarget:(NSString *)target architecture:(NSString *)architecture;
 
 @end
 

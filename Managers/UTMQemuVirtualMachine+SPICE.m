@@ -15,10 +15,10 @@
 //
 
 #import <TargetConditionals.h>
-#import "UTMVirtualMachine+SPICE.h"
+#import "UTMQemuVirtualMachine+SPICE.h"
 #import "CocoaSpice.h"
-#import "UTMConfiguration+Display.h"
-#import "UTMConfiguration+Sharing.h"
+#import "UTMQemuConfiguration+Display.h"
+#import "UTMQemuConfiguration+Sharing.h"
 #import "UTMLogging.h"
 #import "UTMQemuManager.h"
 #import "UTMSpiceIO.h"
@@ -35,7 +35,7 @@ static const NSURLBookmarkCreationOptions kBookmarkCreationOptions = NSURLBookma
 static const NSURLBookmarkResolutionOptions kBookmarkResolutionOptions = NSURLBookmarkResolutionWithSecurityScope;
 #endif
 
-@interface UTMVirtualMachine ()
+@interface UTMQemuVirtualMachine ()
 
 @property (nonatomic, readonly, nullable) UTMQemuManager *qemu;
 @property (nonatomic, readonly, nullable) id<UTMInputOutput> ioService;
@@ -44,7 +44,7 @@ static const NSURLBookmarkResolutionOptions kBookmarkResolutionOptions = NSURLBo
 
 @end
 
-@implementation UTMVirtualMachine (SPICE)
+@implementation UTMQemuVirtualMachine (SPICE)
 
 - (UTMSpiceIO *)spiceIoWithError:(NSError * _Nullable __autoreleasing *)error {
     if (![self.ioService isKindOfClass:[UTMSpiceIO class]]) {
@@ -59,7 +59,7 @@ static const NSURLBookmarkResolutionOptions kBookmarkResolutionOptions = NSURLBo
 #pragma mark - Shared Directory
 
 - (BOOL)hasShareDirectoryEnabled {
-    return self.configuration.shareDirectoryEnabled && !self.configuration.displayConsoleOnly;
+    return self.qemuConfig.shareDirectoryEnabled && !self.qemuConfig.displayConsoleOnly;
 }
 
 - (BOOL)saveSharedDirectory:(NSURL *)url error:(NSError * _Nullable __autoreleasing *)error {
@@ -105,7 +105,7 @@ static const NSURLBookmarkResolutionOptions kBookmarkResolutionOptions = NSURLBo
         }
         return NO;
     }
-    if (!self.configuration.shareDirectoryEnabled) {
+    if (!self.qemuConfig.shareDirectoryEnabled) {
         return YES;
     }
     UTMSpiceIO *spiceIO = [self spiceIoWithError:error];
@@ -118,9 +118,9 @@ static const NSURLBookmarkResolutionOptions kBookmarkResolutionOptions = NSURLBo
     if (self.viewState.sharedDirectory) {
         UTMLog(@"found shared directory bookmark");
         bookmark = self.viewState.sharedDirectory;
-    } else if (self.configuration.shareDirectoryBookmark) {
+    } else if (self.qemuConfig.shareDirectoryBookmark) {
         UTMLog(@"found shared directory bookmark (legacy)");
-        bookmark = self.configuration.shareDirectoryBookmark;
+        bookmark = self.qemuConfig.shareDirectoryBookmark;
         legacy = YES;
     }
     if (bookmark) {
@@ -177,7 +177,7 @@ static const NSURLBookmarkResolutionOptions kBookmarkResolutionOptions = NSURLBo
 #pragma mark - USB redirection
 
 - (BOOL)hasUsbRedirection {
-    return jb_has_usb_entitlement() && !self.configuration.displayConsoleOnly;
+    return jb_has_usb_entitlement() && !self.qemuConfig.displayConsoleOnly;
 }
 
 @end

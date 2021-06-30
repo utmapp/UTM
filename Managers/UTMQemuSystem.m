@@ -18,15 +18,15 @@
 #import <sys/sysctl.h>
 #import <TargetConditionals.h>
 #import "UTMQemuSystem.h"
-#import "UTMConfiguration.h"
-#import "UTMConfiguration+Constants.h"
-#import "UTMConfiguration+Display.h"
-#import "UTMConfiguration+Drives.h"
-#import "UTMConfiguration+Miscellaneous.h"
-#import "UTMConfiguration+Networking.h"
-#import "UTMConfiguration+Sharing.h"
-#import "UTMConfiguration+System.h"
-#import "UTMConfigurationPortForward.h"
+#import "UTMQemuConfiguration.h"
+#import "UTMQemuConfiguration+Constants.h"
+#import "UTMQemuConfiguration+Display.h"
+#import "UTMQemuConfiguration+Drives.h"
+#import "UTMQemuConfiguration+Miscellaneous.h"
+#import "UTMQemuConfiguration+Networking.h"
+#import "UTMQemuConfiguration+Sharing.h"
+#import "UTMQemuConfiguration+System.h"
+#import "UTMQemuConfigurationPortForward.h"
 #import "UTMJailbreak.h"
 #import "UTMLogging.h"
 
@@ -84,7 +84,7 @@ static size_t sysctl_read(const char *name) {
     return ncpu;
 }
 
-- (instancetype)initWithConfiguration:(UTMConfiguration *)configuration imgPath:(nonnull NSURL *)imgPath {
+- (instancetype)initWithConfiguration:(UTMQemuConfiguration *)configuration imgPath:(nonnull NSURL *)imgPath {
     self = [self init];
     if (self) {
         self.configuration = configuration;
@@ -265,7 +265,7 @@ static size_t sysctl_read(const char *name) {
             if ([path characterAtIndex:0] == '/') {
                 fullPathURL = [NSURL fileURLWithPath:path isDirectory:NO];
             } else {
-                fullPathURL = [[self.imgPath URLByAppendingPathComponent:[UTMConfiguration diskImagesDirectory]] URLByAppendingPathComponent:[self.configuration driveImagePathForIndex:i]];
+                fullPathURL = [[self.imgPath URLByAppendingPathComponent:[UTMQemuConfiguration diskImagesDirectory]] URLByAppendingPathComponent:[self.configuration driveImagePathForIndex:i]];
             }
             [self accessDataWithBookmark:[fullPathURL bookmarkDataWithOptions:0
                                                includingResourceValuesForKeys:nil
@@ -384,7 +384,7 @@ static size_t sysctl_read(const char *name) {
             [netstr appendFormat:@",domainname=%@", self.configuration.networkDhcpDomain];
         }
         for (NSUInteger i = 0; i < [self.configuration countPortForwards]; i++) {
-            UTMConfigurationPortForward *portForward = [self.configuration portForwardForIndex:i];
+            UTMQemuConfigurationPortForward *portForward = [self.configuration portForwardForIndex:i];
             [netstr appendFormat:@",hostfwd=%@:%@:%@-%@:%@", portForward.protocol, portForward.hostAddress, portForward.hostPort, portForward.guestAddress, portForward.guestPort];
         }
         [self pushArgv:netstr];

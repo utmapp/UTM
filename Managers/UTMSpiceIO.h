@@ -19,7 +19,7 @@
 #import "CSConnectionDelegate.h"
 #import "UTMSpiceIODelegate.h"
 
-@class UTMConfiguration;
+@class UTMQemuConfiguration;
 @class CSDisplayMetal;
 @class CSInput;
 @class CSUSBManager;
@@ -28,7 +28,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface UTMSpiceIO : NSObject<UTMInputOutput, CSConnectionDelegate>
 
-@property (nonatomic, readonly, nonnull) UTMConfiguration* configuration;
+@property (nonatomic, readonly, nonnull) UTMQemuConfiguration* configuration;
 @property (nonatomic, readonly, nullable) CSDisplayMetal *primaryDisplay;
 @property (nonatomic, readonly, nullable) CSInput *primaryInput;
 #if !defined(WITH_QEMU_TCI)
@@ -37,7 +37,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, weak, nullable) id<UTMSpiceIODelegate> delegate;
 
 - (instancetype)init NS_UNAVAILABLE;
-- (instancetype)initWithConfiguration: (UTMConfiguration*) configuration port:(NSInteger)port NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithConfiguration: (UTMQemuConfiguration*) configuration port:(NSInteger)port NS_DESIGNATED_INITIALIZER;
 - (void)changeSharedDirectory:(NSURL *)url;
 
 @end

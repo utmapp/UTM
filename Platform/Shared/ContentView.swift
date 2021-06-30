@@ -27,7 +27,7 @@ let productName = "UTM"
 
 @available(iOS 14, macOS 11, *)
 struct ContentView: View {
-    @StateObject private var newConfiguration = UTMConfiguration()
+    @StateObject private var newConfiguration = UTMQemuConfiguration()
     @State private var editMode = false
     @EnvironmentObject private var data: UTMData
     @State private var newPopupPresented = false
@@ -49,7 +49,7 @@ struct ContentView: View {
             }.optionalSidebarFrame()
             .listStyle(SidebarListStyle())
             .navigationTitle(productName)
-            .navigationOptionalSubtitle(data.selectedVM?.configuration.name ?? "")
+            .navigationOptionalSubtitle(data.selectedVM?.config.name ?? "")
             .toolbar {
                 #if os(macOS)
                 ToolbarItem(placement: .navigation) {

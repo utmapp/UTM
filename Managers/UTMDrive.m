@@ -15,12 +15,12 @@
 //
 
 #import "UTMDrive.h"
-#import "UTMConfiguration+Constants.h"
+#import "UTMQemuConfiguration+Constants.h"
 
 @implementation UTMDrive
 
 - (NSString *)label {
-    NSString *imageTypeStr = [UTMConfiguration supportedImageTypesPretty][self.imageType];
+    NSString *imageTypeStr = [UTMQemuConfiguration supportedImageTypesPretty][self.imageType];
     NSString *filename = self.path.lastPathComponent;
     if (!filename) {
         filename = NSLocalizedString(@"none", @"UTMDrive");

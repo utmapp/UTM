@@ -14,16 +14,24 @@
 // limitations under the License.
 //
 
-#import "UTMConfiguration.h"
+#import "UTMVirtualMachine.h"
+
+@class UTMDrive;
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface UTMConfiguration (Drives)
+@interface UTMVirtualMachine (IO)
 
-@property (nonatomic, readonly) NSURL *imagesPath;
-@property (nonatomic, nullable, readonly) NSArray<NSString *> *orphanedDrives;
+@property (nonatomic, readonly) NSArray<UTMDrive *> *drives;
+@property (nonatomic, readonly) BOOL hasShareDirectoryEnabled;
+@property (nonatomic, readonly) BOOL hasUsbRedirection;
 
-- (void)recoverOrphanedDrives;
+- (BOOL)ejectDrive:(UTMDrive *)drive force:(BOOL)force error:(NSError * _Nullable *)error;
+- (BOOL)changeMediumForDrive:(UTMDrive *)drive url:(NSURL *)url error:(NSError * _Nullable *)error;
+- (BOOL)restoreRemovableDrivesFromBookmarksWithError:(NSError * _Nullable __autoreleasing *)error;
+
+- (BOOL)changeSharedDirectory:(NSURL *)url error:(NSError * _Nullable *)error;
+- (void)clearSharedDirectory;
 
 @end
 

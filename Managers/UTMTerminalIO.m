@@ -16,11 +16,11 @@
 
 #import "UTMLogging.h"
 #import "UTMTerminalIO.h"
-#import "UTMConfiguration.h"
+#import "UTMQemuConfiguration.h"
 
 @implementation UTMTerminalIO
 
-- (id)initWithConfiguration: (UTMConfiguration*) configuration {
+- (id)initWithConfiguration: (UTMQemuConfiguration*) configuration {
     if (self = [super init]) {
         NSURL* terminalURL = [configuration terminalInputOutputURL];
         _terminal = [[UTMTerminal alloc] initWithURL: terminalURL];

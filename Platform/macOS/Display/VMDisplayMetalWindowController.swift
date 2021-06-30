@@ -65,7 +65,7 @@ class VMDisplayMetalWindowController: VMDisplayWindowController {
             return
         }
         renderer.mtkView(metalView, drawableSizeWillChange: metalView.drawableSize)
-        renderer.changeUpscaler(vmConfiguration?.displayUpscalerValue ?? .linear, downscaler: vmConfiguration?.displayDownscalerValue ?? .linear)
+        renderer.changeUpscaler(vmQemuConfig?.displayUpscalerValue ?? .linear, downscaler: vmQemuConfig?.displayDownscalerValue ?? .linear)
         metalView.delegate = renderer
         metalView.inputDelegate = self
         
@@ -96,7 +96,7 @@ class VMDisplayMetalWindowController: VMDisplayWindowController {
             guard let size = change.newValue else { return }
             self.displaySizeDidChange(size: size)
         }
-        if vmConfiguration!.shareClipboardEnabled {
+        if vmQemuConfig!.shareClipboardEnabled {
             UTMPasteboard.general.requestPollingMode(forHashable: self) // start clipboard polling
         }
         // monitor Cmd+Q and Cmd+W and capture them if needed
@@ -117,7 +117,7 @@ class VMDisplayMetalWindowController: VMDisplayWindowController {
             screenshotView.image = vm.screenshot?.image
             screenshotView.isHidden = false
         }
-        if vmConfiguration!.shareClipboardEnabled {
+        if vmQemuConfig!.shareClipboardEnabled {
             UTMPasteboard.general.releasePollingMode(forHashable: self) // stop clipboard polling
         }
         if vm.state == .vmStopped {
@@ -360,7 +360,7 @@ extension VMDisplayMetalWindowController: VMMetalViewInputDelegate {
     
     func mouseScroll(dy: CGFloat, button: CSInputButton) {
         var scrollDy = dy
-        if vmConfiguration?.inputScrollInvert ?? false {
+        if vmQemuConfig?.inputScrollInvert ?? false {
             scrollDy = -scrollDy
         }
         vmInput?.sendMouseScroll(.smooth, button: button, dy: dy)

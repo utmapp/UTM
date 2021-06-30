@@ -16,11 +16,11 @@
 
 #import "VMDisplayTerminalViewController.h"
 #import "VMDisplayTerminalViewController+Keyboard.h"
-#import "UTMConfiguration.h"
-#import "UTMConfiguration+Display.h"
+#import "UTMQemuConfiguration.h"
+#import "UTMQemuConfiguration+Display.h"
 #import "UTMLogging.h"
-#import "UTMVirtualMachine.h"
-#import "UTMVirtualMachine+Terminal.h"
+#import "UTMQemuVirtualMachine.h"
+#import "UTMQemuVirtualMachine+Terminal.h"
 #import "UIViewController+Extensions.h"
 #import "WKWebView+Workarounds.h"
 #import "UTM-Swift.h"
@@ -94,10 +94,10 @@ NSString* const kVMSendTerminalSizeHandler = @"UTMSendTerminalSize";
 }
 
 - (void)updateSettings {
-    [_webView evaluateJavaScript:[NSString stringWithFormat:@"changeFont('%@', %ld);", self.vmConfiguration.consoleFont, self.vmConfiguration.consoleFontSize.integerValue] completionHandler:^(id _Nullable _, NSError * _Nullable error) {
+    [_webView evaluateJavaScript:[NSString stringWithFormat:@"changeFont('%@', %ld);", self.vmQemuConfig.consoleFont, self.vmQemuConfig.consoleFontSize.integerValue] completionHandler:^(id _Nullable _, NSError * _Nullable error) {
         UTMLog(@"changeFont error: %@", error);
     }];
-    [_webView evaluateJavaScript:[NSString stringWithFormat:@"setCursorBlink(%@);", self.vmConfiguration.consoleCursorBlink ? @"true" : @"false"] completionHandler:^(id _Nullable _, NSError * _Nullable error) {
+    [_webView evaluateJavaScript:[NSString stringWithFormat:@"setCursorBlink(%@);", self.vmQemuConfig.consoleCursorBlink ? @"true" : @"false"] completionHandler:^(id _Nullable _, NSError * _Nullable error) {
         UTMLog(@"setCursorBlink error: %@", error);
     }];
 }
@@ -131,7 +131,7 @@ NSString* const kVMSendTerminalSizeHandler = @"UTMSendTerminalSize";
 #pragma mark - Resize console
 
 - (void)changeDisplayZoom:(UIButton *)sender {
-    NSString *cmd = self.vmConfiguration.consoleResizeCommand;
+    NSString *cmd = self.vmQemuConfig.consoleResizeCommand;
     if (cmd.length == 0) {
         cmd = kVMDefaultResizeCmd;
     }

@@ -1,5 +1,5 @@
 //
-// Copyright © 2019 osy. All rights reserved.
+// Copyright © 2021 osy. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -27,13 +27,17 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, nullable, copy) NSURL *selectedCustomIconPath;
 @property (nonatomic, nullable, copy) NSNumber *version;
 
-- (void)migrateConfigurationIfNecessary;
-- (instancetype)init NS_DESIGNATED_INITIALIZER;
-- (instancetype)initWithDictionary:(NSDictionary *)dictionary name:(NSString *)name path:(NSURL *)path NS_DESIGNATED_INITIALIZER;
+@property (nonatomic, readonly) NSString *subtitle;
+@property (nonatomic, readonly) NSString *uuid;
 
-- (NSURL*)terminalInputOutputURL;
-- (void)resetDefaults;
-- (void)reloadConfigurationWithDictionary:(NSDictionary *)dictionary name:(NSString *)name path:(NSURL *)path;
+@property (nonatomic, assign) BOOL shareDirectoryEnabled;
+
+@property (nonatomic, nullable, copy) NSString *icon;
+@property (nonatomic, assign) BOOL iconCustom;
+@property (nonatomic, nullable, copy) NSString *notes;
+
++ (NSString *)diskImagesDirectory;
++ (NSString *)debugLogName;
 
 @end
 

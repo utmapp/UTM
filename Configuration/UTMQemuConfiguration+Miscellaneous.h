@@ -14,19 +14,23 @@
 // limitations under the License.
 //
 
-#import "UTMVirtualMachine.h"
-
-@class UTMDrive;
+#import "UTMQemuConfiguration.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface UTMVirtualMachine (Drives)
+@interface UTMQemuConfiguration (Miscellaneous)
 
-@property (nonatomic, readonly) NSArray<UTMDrive *> *drives;
+@property (nonatomic, assign) BOOL inputLegacy;
+@property (nonatomic, assign) BOOL inputScrollInvert;
+@property (nonatomic, assign) BOOL soundEnabled;
+@property (nonatomic, nullable, copy) NSString *soundCard;
+@property (nonatomic, assign) BOOL debugLogEnabled;
+@property (nonatomic, assign) BOOL ignoreAllConfiguration;
+@property (nonatomic, nullable, copy) NSString *icon;
+@property (nonatomic, assign) BOOL iconCustom;
+@property (nonatomic, nullable, copy) NSString *notes;
 
-- (BOOL)ejectDrive:(UTMDrive *)drive force:(BOOL)force error:(NSError * _Nullable *)error;
-- (BOOL)changeMediumForDrive:(UTMDrive *)drive url:(NSURL *)url error:(NSError * _Nullable *)error;
-- (BOOL)restoreRemovableDrivesFromBookmarksWithError:(NSError * _Nullable __autoreleasing *)error;
+- (void)migrateMiscellaneousConfigurationIfNecessary;
 
 @end
 

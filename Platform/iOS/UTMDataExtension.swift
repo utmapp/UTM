@@ -19,17 +19,18 @@ import Foundation
 @available(iOS 14, *)
 extension UTMData {
     private func createDisplay(vm: UTMVirtualMachine) -> VMDisplayViewController {
-        if vm.configuration.displayConsoleOnly {
+        let qvm = vm as! UTMQemuVirtualMachine
+        if qvm.qemuConfig.displayConsoleOnly {
             let vc = VMDisplayTerminalViewController()
             vm.delegate = vc
-            vc.vm = vm
+            vc.vm = qvm
             vc.setupSubviews()
             vc.virtualMachine(vm, transitionTo: vm.state)
             return vc
         } else {
             let vc = VMDisplayMetalViewController()
             vm.delegate = vc
-            vc.vm = vm
+            vc.vm = qvm
             vc.setupSubviews()
             vc.virtualMachine(vm, transitionTo: vm.state)
             return vc

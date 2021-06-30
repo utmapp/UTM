@@ -17,9 +17,9 @@
 #import "VMListViewController.h"
 #import "AppDelegate.h"
 #import "VMListViewCell.h"
-#import "UTMConfigurationDelegate.h"
-#import "UTMConfiguration.h"
-#import "UTMVirtualMachine.h"
+#import "UTMQemuConfigurationDelegate.h"
+#import "UTMQemuConfiguration.h"
+#import "UTMQemuVirtualMachine.h"
 #import "UIViewController+Extensions.h"
 #import "VMDisplayMetalViewController.h"
 #import "VMDisplayTerminalViewController.h"
@@ -31,8 +31,8 @@
 @interface VMListViewController ()
 
 @property (nonatomic, readonly) NSURL *documentsPath;
-@property (nonatomic, strong) UTMVirtualMachine *modifyingVM;
-@property (nonatomic, strong) NSArray<UTMVirtualMachine *> *vmList;
+@property (nonatomic, strong) UTMQemuVirtualMachine *modifyingVM;
+@property (nonatomic, strong) NSArray<UTMQemuVirtualMachine *> *vmList;
 @property (nonatomic, nullable, strong) UIAlertController *alert;
 @property (nonatomic, strong) dispatch_semaphore_t viewVisibleSema;
 @property (nonatomic, strong) dispatch_queue_t viewVisibleQueue;
@@ -120,14 +120,14 @@
     });
 }
 
-- (NSArray<UTMVirtualMachine *> *)fetchVirtualMachines {
+- (NSArray<UTMQemuVirtualMachine *> *)fetchVirtualMachines {
     NSArray<NSURL *> *files = [[NSFileManager defaultManager] contentsOfDirectoryAtURL:self.documentsPath includingPropertiesForKeys:@[NSURLIsDirectoryKey] options:NSDirectoryEnumerationSkipsHiddenFiles error:nil];
-    NSMutableArray<UTMVirtualMachine *> *vms = [[NSMutableArray alloc] initWithCapacity:files.count];
+    NSMutableArray<UTMQemuVirtualMachine *> *vms = [[NSMutableArray alloc] initWithCapacity:files.count];
     for (NSURL *file in files) {
         NSNumber *isDir;
         [file getResourceValue:&isDir forKey:NSURLIsDirectoryKey error:nil];
-        if ([isDir boolValue] && [UTMVirtualMachine URLisVirtualMachine:file]) {
-            UTMVirtualMachine *vm = [[UTMVirtualMachine alloc] initWithURL:file];
+        if ([isDir boolValue] && [UTMQemuVirtualMachine URLisVirtualMachine:file]) {
+            UTMQemuVirtualMachine *vm = (UTMQemuVirtualMachine *)[UTMQemuVirtualMachine virtualMachineWithURL:file];
             if (vm) {
                 [vms addObject:vm];
             }
@@ -143,7 +143,7 @@
     NSUInteger idx = 1;
     do {
         NSString *name = nameForId(idx);
-        NSURL *file = [UTMVirtualMachine virtualMachinePath:name inParentURL:self.documentsPath];
+        NSURL *file = [UTMQemuVirtualMachine virtualMachinePath:name inParentURL:self.documentsPath];
         if (![[NSFileManager defaultManager] fileExistsAtPath:file.path]) {
             return name;
         }
@@ -188,7 +188,7 @@
                                                             preferredStyle:UIAlertControllerStyleAlert];
     [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"OK", @"OK button") style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
         NSString *name = alert.textFields[0].text;
-        NSURL *newPath = [UTMVirtualMachine virtualMachinePath:name inParentURL:self.documentsPath];
+        NSURL *newPath = [UTMQemuVirtualMachine virtualMachinePath:name inParentURL:self.documentsPath];
         dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), ^{
             NSError *err = nil;
             [self workStartedWhenVisible:[NSString stringWithFormat:NSLocalizedString(@"Saving %@...", @"Save VM overlay"), name]];
@@ -199,7 +199,7 @@
     }]];
     [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"Cancel", @"Cancel button") style:UIAlertActionStyleCancel handler:nil]];
     [alert addTextFieldWithConfigurationHandler:^(UITextField * _Nonnull textField) {
-        textField.text = [UTMVirtualMachine virtualMachineName:url];
+        textField.text = [UTMQemuVirtualMachine virtualMachineName:url];
     }];
     [self presentViewController:alert animated:YES completion:nil];
 }
@@ -227,7 +227,7 @@
 }
 
 - (void)deleteVM:(NSURL *)url {
-    NSString *name = [UTMVirtualMachine virtualMachineName:url];
+    NSString *name = [UTMQemuVirtualMachine virtualMachineName:url];
     [self showAlertSerialized:NSLocalizedString(@"Are you sure you want to delete this VM? Any drives associated will also be deleted.", @"Delete confirmation") isQuestion:YES completion:^{
         NSError *err = nil;
         [self workStartedWhenVisible:[NSString stringWithFormat:NSLocalizedString(@"Deleting %@...", @"Delete VM overlay"), name]];
@@ -239,7 +239,7 @@
 
 #pragma mark - Navigation
 
-- (nonnull UTMVirtualMachine *)vmForCell:(id)cell {
+- (nonnull UTMQemuVirtualMachine *)vmForCell:(id)cell {
     NSIndexPath *index = [self.collectionView indexPathForCell:cell];
     NSAssert(index, @"Cannot find index for selected VM");
     NSAssert(index.section == 0, @"Invalid section");
@@ -251,30 +251,30 @@
     if ([segue.identifier isEqualToString:@"editVMConfig"]){
         NSAssert([segue.destinationViewController isKindOfClass:[UINavigationController class]], @"Destination not a navigation view");
         UINavigationController *navController = (UINavigationController *)segue.destinationViewController;
-        NSAssert([navController.topViewController conformsToProtocol:@protocol(UTMConfigurationDelegate)], @"Invalid segue destination");
-        id<UTMConfigurationDelegate> controller = (id<UTMConfigurationDelegate>)navController.topViewController;
+        NSAssert([navController.topViewController conformsToProtocol:@protocol(UTMQemuConfigurationDelegate)], @"Invalid segue destination");
+        id<UTMQemuConfigurationDelegate> controller = (id<UTMQemuConfigurationDelegate>)navController.topViewController;
         NSAssert([sender isKindOfClass:[UIButton class]], @"Sender is not a UIButton");
         id cell = ((UIButton *)sender).superview.superview;
         self.modifyingVM = [self vmForCell:cell];
-        controller.configuration = self.modifyingVM.configuration;
+        controller.configuration = self.modifyingVM.qemuConfig;
     } else if ([segue.identifier isEqualToString:@"newVM"]) {
         NSAssert([segue.destinationViewController isKindOfClass:[UINavigationController class]], @"Destination not a navigation view");
         UINavigationController *navController = (UINavigationController *)segue.destinationViewController;
-        NSAssert([navController.topViewController conformsToProtocol:@protocol(UTMConfigurationDelegate)], @"Invalid segue destination");
-        id<UTMConfigurationDelegate> controller = (id<UTMConfigurationDelegate>)navController.topViewController;
-        controller.configuration = [[UTMConfiguration alloc] init];
+        NSAssert([navController.topViewController conformsToProtocol:@protocol(UTMQemuConfigurationDelegate)], @"Invalid segue destination");
+        id<UTMQemuConfigurationDelegate> controller = (id<UTMQemuConfigurationDelegate>)navController.topViewController;
+        controller.configuration = [[UTMQemuConfiguration alloc] init];
         controller.configuration.name = [self createNewDefaultName];
     } else if ([segue.identifier isEqualToString:@"startVM"]) {
         NSAssert([segue.destinationViewController isKindOfClass:[VMDisplayMetalViewController class]], @"Destination not a metal view");
         VMDisplayMetalViewController *metalView = (VMDisplayMetalViewController *)segue.destinationViewController;
-        UTMVirtualMachine *vm = (UTMVirtualMachine*) sender;
+        UTMQemuVirtualMachine *vm = (UTMQemuVirtualMachine*) sender;
         metalView.vm = vm;
         vm.delegate = metalView;
         [metalView virtualMachine:vm transitionToState:vm.state];
     } else if ([[segue identifier] isEqualToString:@"startVMConsole"]) {
         NSAssert([segue.destinationViewController isKindOfClass:[VMDisplayTerminalViewController class]], @"Destination not a terminal view");
         VMDisplayTerminalViewController *terminalView = (VMDisplayTerminalViewController *)segue.destinationViewController;
-        UTMVirtualMachine *vm = (UTMVirtualMachine*) sender;
+        UTMQemuVirtualMachine *vm = (UTMQemuVirtualMachine*) sender;
         terminalView.vm = vm;
         vm.delegate = terminalView;
     }
@@ -297,8 +297,8 @@
     VMListViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"vmListCell" forIndexPath:indexPath];
     
     // Configure the cell
-    UTMVirtualMachine *vm = self.vmList[indexPath.row];
-    cell.nameLabel.text = self.vmList[indexPath.row].configuration.name;
+    UTMQemuVirtualMachine *vm = self.vmList[indexPath.row];
+    cell.nameLabel.text = self.vmList[indexPath.row].qemuConfig.name;
     [cell changeState:vm.state image:vm.screenshot.image];
     
     return cell;
@@ -393,7 +393,7 @@
     });
 }
 
-- (void)startVm:(UTMVirtualMachine *)vm {
+- (void)startVm:(UTMQemuVirtualMachine *)vm {
     if (vm.supportedDisplayType == UTMDisplayTypeFullGraphic) {
         [self performSegueWithIdentifier:@"startVM" sender:vm];
     } else if (vm.supportedDisplayType == UTMDisplayTypeConsole) {
@@ -404,16 +404,16 @@
 #pragma mark - Actions
 
 - (IBAction)unwindToMainFromConfiguration:(UIStoryboardSegue*)sender {
-    NSAssert([sender.sourceViewController conformsToProtocol:@protocol(UTMConfigurationDelegate)], @"Invalid source for unwind");
-    id<UTMConfigurationDelegate> source = (id<UTMConfigurationDelegate>)sender.sourceViewController;
+    NSAssert([sender.sourceViewController conformsToProtocol:@protocol(UTMQemuConfigurationDelegate)], @"Invalid source for unwind");
+    id<UTMQemuConfigurationDelegate> source = (id<UTMQemuConfigurationDelegate>)sender.sourceViewController;
     dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), ^{
         NSError *err;
         [self workStartedWhenVisible:[NSString stringWithFormat:NSLocalizedString(@"Saving %@...", @"Save VM overlay"), source.configuration.name]];
-        UTMVirtualMachine *vm;
-        if (self.modifyingVM.configuration == source.configuration) {
+        UTMQemuVirtualMachine *vm;
+        if (self.modifyingVM.qemuConfig == source.configuration) {
             vm = self.modifyingVM;
         } else {
-            vm = [[UTMVirtualMachine alloc] initWithConfiguration:source.configuration withDestinationURL:self.documentsPath];
+            vm = (UTMQemuVirtualMachine *)[UTMVirtualMachine virtualMachineWithConfiguration:source.configuration withDestinationURL:self.documentsPath];
         }
         [vm saveUTMWithError:&err];
         [self workCompletedWhenVisible:err.localizedDescription];
@@ -422,13 +422,13 @@
 
 - (IBAction)startVmFromButton:(UIButton *)sender {
     UICollectionViewCell* cell = (UICollectionViewCell*) sender.superview.superview.superview.superview.superview.superview;
-    UTMVirtualMachine* vm = [self vmForCell: cell];
+    UTMQemuVirtualMachine* vm = [self vmForCell: cell];
     [self startVm:vm];
 }
 
 - (IBAction)startVmFromScreen:(UIButton *)sender {
     UICollectionViewCell* cell = (UICollectionViewCell*) sender.superview.superview;
-    UTMVirtualMachine* vm = [self vmForCell: cell];
+    UTMQemuVirtualMachine* vm = [self vmForCell: cell];
     [self startVm:vm];
 }
 
@@ -459,8 +459,8 @@
     if (file.length == 0) {
         [self showAlertSerialized:NSLocalizedString(@"Invalid UTM not imported.", @"VMListViewController") isQuestion:NO completion:nil];
     } else if ([[dest URLByResolvingSymlinksInPath] isEqual:[url URLByResolvingSymlinksInPath]]) {
-        UTMVirtualMachine *found;
-        for (UTMVirtualMachine *vm in self.vmList) {
+        UTMQemuVirtualMachine *found;
+        for (UTMQemuVirtualMachine *vm in self.vmList) {
             if ([vm.path.lastPathComponent isEqualToString:file]) {
                 found = vm;
                 break;

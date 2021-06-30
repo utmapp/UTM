@@ -14,17 +14,20 @@
 // limitations under the License.
 //
 
-#import <Foundation/Foundation.h>
+#import "UTMQemuVirtualMachine.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface UTMConfigurationPortForward : NSObject
+@interface UTMQemuVirtualMachine (SPICE)
 
-@property (nonatomic, nullable) NSString *protocol;
-@property (nonatomic) NSString *hostAddress;
-@property (nonatomic, nullable) NSNumber *hostPort;
-@property (nonatomic) NSString *guestAddress;
-@property (nonatomic, nullable) NSNumber *guestPort;
+@property (nonatomic, readonly) BOOL hasShareDirectoryEnabled;
+@property (nonatomic, readonly) BOOL hasUsbRedirection;
+
+- (BOOL)changeSharedDirectory:(NSURL *)url error:(NSError * _Nullable *)error;
+- (void)clearSharedDirectory;
+- (BOOL)startSharedDirectoryWithError:(NSError * _Nullable __autoreleasing *)error;
+
+- (void)requestInputTablet:(BOOL)tablet;
 
 @end
 

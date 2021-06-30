@@ -27,7 +27,7 @@ struct VMConfigSystemView: View {
     let warningThreshold = 0.4
     #endif
     
-    @ObservedObject var config: UTMConfiguration
+    @ObservedObject var config: UTMQemuConfiguration
     @State private var showAdvanced: Bool = false
     @State private var warningMessage: String? = nil
     
@@ -40,7 +40,7 @@ struct VMConfigSystemView: View {
                 })
                 if showAdvanced {
                     Section(header: Text("CPU")) {
-                        VMConfigStringPicker(selection: $config.systemCPU.animation(), label: EmptyView(), rawValues: UTMConfiguration.supportedCpus(forArchitecture: config.systemArchitecture), displayValues: UTMConfiguration.supportedCpus(forArchitecturePretty: config.systemArchitecture))
+                        VMConfigStringPicker(selection: $config.systemCPU.animation(), label: EmptyView(), rawValues: UTMQemuConfiguration.supportedCpus(forArchitecture: config.systemArchitecture), displayValues: UTMQemuConfiguration.supportedCpus(forArchitecturePretty: config.systemArchitecture))
                     }
                     CPUFlagsOptions(config: config)
                     Section(header: Text("CPU Cores"), footer: Text("Set to 0 to use maximum supported CPUs. Force multicore might result in incorrect emulation.").padding(.bottom)) {
@@ -107,7 +107,7 @@ struct VMConfigSystemView: View {
 struct HardwareOptions: View {
     let validMemoryValues = [32, 64, 128, 256, 512, 768, 1024, 1536, 2048, 3072, 4096, 6144, 8192, 10240, 12288, 14336, 16384, 32768]
     
-    @ObservedObject var config: UTMConfiguration
+    @ObservedObject var config: UTMQemuConfiguration
     let validateMemorySize: (Bool) -> Void
     @EnvironmentObject private var data: UTMData
     @State private var memorySizeIndex: Float = 0
@@ -123,19 +123,19 @@ struct HardwareOptions: View {
             }
         )
         Section(header: Text("Hardware")) {
-            VMConfigStringPicker(selection: $config.systemArchitecture, label: Text("Architecture"), rawValues: UTMConfiguration.supportedArchitectures(), displayValues: UTMConfiguration.supportedArchitecturesPretty())
+            VMConfigStringPicker(selection: $config.systemArchitecture, label: Text("Architecture"), rawValues: UTMQemuConfiguration.supportedArchitectures(), displayValues: UTMQemuConfiguration.supportedArchitecturesPretty())
                 .onChange(of: config.systemArchitecture, perform: { value in
                     guard let arch = value else {
                         return
                     }
-                    let index = UTMConfiguration.defaultTargetIndex(forArchitecture: arch)
-                    let targets = UTMConfiguration.supportedTargets(forArchitecture: arch)
+                    let index = UTMQemuConfiguration.defaultTargetIndex(forArchitecture: arch)
+                    let targets = UTMQemuConfiguration.supportedTargets(forArchitecture: arch)
                     config.systemTarget = targets?[index]
                     config.loadDefaults(forTarget: config.systemTarget, architecture: arch)
                     // disable unsupported hardware
                     if let displayCard = config.displayCard {
-                        if !UTMConfiguration.supportedDisplayCards(forArchitecture: arch)!.contains(where: { $0.caseInsensitiveCompare(displayCard) == .orderedSame }) {
-                            if UTMConfiguration.supportedDisplayCards(forArchitecture: arch)!.contains("VGA") {
+                        if !UTMQemuConfiguration.supportedDisplayCards(forArchitecture: arch)!.contains(where: { $0.caseInsensitiveCompare(displayCard) == .orderedSame }) {
+                            if UTMQemuConfiguration.supportedDisplayCards(forArchitecture: arch)!.contains("VGA") {
                                 config.displayCard = "VGA" // most devices support VGA
                             } else {
                                 config.displayConsoleOnly = true
@@ -145,12 +145,12 @@ struct HardwareOptions: View {
                         }
                     }
                     if let networkCard = config.networkCard {
-                        if !UTMConfiguration.supportedNetworkCards(forArchitecture: arch)!.contains(where: { $0.caseInsensitiveCompare(networkCard) == .orderedSame }) {
+                        if !UTMQemuConfiguration.supportedNetworkCards(forArchitecture: arch)!.contains(where: { $0.caseInsensitiveCompare(networkCard) == .orderedSame }) {
                             config.networkEnabled = false
                         }
                     }
                     if let soundCard = config.soundCard {
-                        if !UTMConfiguration.supportedSoundCards(forArchitecture: arch)!.contains(where: { $0.caseInsensitiveCompare(soundCard) == .orderedSame }) {
+                        if !UTMQemuConfiguration.supportedSoundCards(forArchitecture: arch)!.contains(where: { $0.caseInsensitiveCompare(soundCard) == .orderedSame }) {
                             config.soundEnabled = false
                         }
                     }
@@ -159,7 +159,7 @@ struct HardwareOptions: View {
                 Text("The selected architecture is unsupported in this version of UTM.")
                     .foregroundColor(.red)
             }
-            VMConfigStringPicker(selection: $config.systemTarget, label: Text("System"), rawValues: UTMConfiguration.supportedTargets(forArchitecture: config.systemArchitecture), displayValues: UTMConfiguration.supportedTargets(forArchitecturePretty: config.systemArchitecture))
+            VMConfigStringPicker(selection: $config.systemTarget, label: Text("System"), rawValues: UTMQemuConfiguration.supportedTargets(forArchitecture: config.systemArchitecture), displayValues: UTMQemuConfiguration.supportedTargets(forArchitecturePretty: config.systemArchitecture))
                 .onChange(of: config.systemTarget, perform: { value in
                     config.loadDefaults(forTarget: value, architecture: config.systemArchitecture)
                 })
@@ -201,11 +201,11 @@ struct HardwareOptions: View {
 
 @available(iOS 14, macOS 11, *)
 struct CPUFlagsOptions: View {
-    @ObservedObject var config: UTMConfiguration
+    @ObservedObject var config: UTMQemuConfiguration
     @State private var showAllFlags: Bool = false
     
     var body: some View {
-        let allFlags = UTMConfiguration.supportedCpuFlags(forArchitecture: config.systemArchitecture) ?? []
+        let allFlags = UTMQemuConfiguration.supportedCpuFlags(forArchitecture: config.systemArchitecture) ?? []
         let activeFlags = config.systemCPUFlags ?? []
         if config.systemCPU != "default" && allFlags.count > 0 {
             Section(header: Text("CPU Flags")) {
@@ -274,7 +274,7 @@ struct OptionsList<Content>: View where Content: View {
 
 @available(iOS 14, macOS 11, *)
 struct VMConfigSystemView_Previews: PreviewProvider {
-    @ObservedObject static private var config = UTMConfiguration()
+    @ObservedObject static private var config = UTMQemuConfiguration()
     
     static var previews: some View {
         VMConfigSystemView(config: config)

@@ -14,11 +14,11 @@
 // limitations under the License.
 //
 
-#import "UTMConfiguration.h"
+#import "UTMQemuConfiguration.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface UTMConfiguration (Constants)
+@interface UTMQemuConfiguration (Constants)
 
 + (NSArray<NSString *>*)supportedOptions:(NSString *)key pretty:(BOOL)pretty;
 + (NSArray<NSString *>*)supportedBootDevicesPretty;
@@ -34,12 +34,10 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSArray<NSString *>*)supportedConsoleFonts API_AVAILABLE(ios(11));
 + (NSArray<NSString *>*)supportedNetworkModes;
 + (NSArray<NSString *>*)supportedNetworkModesPretty;
-+ (NSString *)diskImagesDirectory;
-+ (NSString *)debugLogName;
 
 @end
 
-@interface UTMConfiguration (ConstantsGenerated)
+@interface UTMQemuConfiguration (ConstantsGenerated)
 
 + (NSArray<NSString *>*)supportedArchitectures;
 + (NSArray<NSString *>*)supportedArchitecturesPretty;

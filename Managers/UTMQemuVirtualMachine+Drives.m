@@ -14,7 +14,7 @@
 // limitations under the License.
 //
 
-#import "UTMVirtualMachine+Drives.h"
+#import "UTMQemuVirtualMachine+Drives.h"
 #import "UTMLogging.h"
 #import "UTMViewState.h"
 #import "UTMDrive.h"
@@ -23,7 +23,7 @@
 
 extern NSString *const kUTMErrorDomain;
 
-@interface UTMVirtualMachine ()
+@interface UTMQemuVirtualMachine ()
 
 @property (nonatomic, readonly, nullable) UTMQemuManager *qemu;
 @property (nonatomic, readonly, nullable) UTMQemu *system;
@@ -32,18 +32,18 @@ extern NSString *const kUTMErrorDomain;
 
 @end
 
-@implementation UTMVirtualMachine (Drives)
+@implementation UTMQemuVirtualMachine (Drives)
 
 - (NSArray<UTMDrive *> *)drives {
-    NSInteger count = self.configuration.countDrives;
+    NSInteger count = self.qemuConfig.countDrives;
     id drives = [NSMutableArray<UTMDrive *> arrayWithCapacity:count];
     for (NSInteger i = 0; i < count; i++) {
         UTMDrive *drive = [UTMDrive new];
         drive.index = i;
-        drive.imageType = [self.configuration driveImageTypeForIndex:i];
-        drive.interface = [self.configuration driveInterfaceTypeForIndex:i];
-        drive.name = [self.configuration driveNameForIndex:i];
-        if ([self.configuration driveRemovableForIndex:i]) {
+        drive.imageType = [self.qemuConfig driveImageTypeForIndex:i];
+        drive.interface = [self.qemuConfig driveInterfaceTypeForIndex:i];
+        drive.name = [self.qemuConfig driveNameForIndex:i];
+        if ([self.qemuConfig driveRemovableForIndex:i]) {
             // removable drive -> path stored only in viewState
             NSString *path = [self.viewState pathForRemovableDrive:drive.name];
             if (path.length > 0) {
@@ -56,7 +56,7 @@ extern NSString *const kUTMErrorDomain;
         } else {
             // fixed drive -> path stored in configuration
             drive.status = UTMDriveStatusFixed;
-            drive.path = [self.configuration driveImagePathForIndex:i];
+            drive.path = [self.qemuConfig driveImagePathForIndex:i];
         }
         [drives addObject:drive];
     }

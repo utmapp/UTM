@@ -14,7 +14,7 @@
 // limitations under the License.
 //
 
-#import "UTMConfiguration+Display.h"
+#import "UTMQemuConfiguration+Display.h"
 #import "UTM-Swift.h"
 
 extern const NSString *const kUTMConfigDisplayKey;
@@ -31,13 +31,13 @@ const NSString *const kUTMConfigConsoleBlinkKey = @"ConsoleBlink";
 const NSString *const kUTMConfigConsoleResizeCommandKey = @"ConsoleResizeCommand";
 const NSString *const kUTMConfigDisplayCardKey = @"DisplayCard";
 
-@interface UTMConfiguration ()
+@interface UTMQemuConfiguration ()
 
 @property (nonatomic, readonly) NSMutableDictionary *rootDict;
 
 @end
 
-@implementation UTMConfiguration (Display)
+@implementation UTMQemuConfiguration (Display)
 
 #pragma mark - Migration
 

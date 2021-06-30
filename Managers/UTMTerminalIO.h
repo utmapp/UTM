@@ -18,7 +18,7 @@
 #import "UTMTerminal.h"
 #import "UTMInputOutput.h"
 
-@class UTMConfiguration;
+@class UTMQemuConfiguration;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -26,7 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, strong, readonly) UTMTerminal* terminal;
 
-- (id)initWithConfiguration: (UTMConfiguration*) configuration;
+- (id)initWithConfiguration: (UTMQemuConfiguration*) configuration;
 
 @end
 

@@ -16,9 +16,9 @@
 
 // !! THIS FILE IS GENERATED FROM const-gen.py, DO NOT MODIFY MANUALLY !!
 
-#import "UTMConfiguration+Constants.h"
+#import "UTMQemuConfiguration+Constants.h"
 
-@implementation UTMConfiguration (ConstantsGenerated)
+@implementation UTMQemuConfiguration (ConstantsGenerated)
 
 + (NSArray<NSString *>*)supportedArchitectures {
     return @[

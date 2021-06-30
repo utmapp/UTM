@@ -32,12 +32,16 @@ class VMDisplayWindowController: NSWindowController {
     @IBOutlet weak var sharedFolderToolbarItem: NSToolbarItem!
     @IBOutlet weak var resizeConsoleToolbarItem: NSToolbarItem!
     
-    var vm: UTMVirtualMachine!
+    var vm: UTMQemuVirtualMachine!
     var onClose: ((Notification) -> Void)?
     var vmMessage: String?
     var vmConfiguration: UTMConfiguration?
     var toolbarVisible: Bool = false // ignored
     var keyboardVisible: Bool = false // ignored
+    
+    var vmQemuConfig: UTMQemuConfiguration? {
+        vmConfiguration as? UTMQemuConfiguration
+    }
     
     @Setting("NoHypervisor") private var isNoHypervisor: Bool = false
     
@@ -49,7 +53,7 @@ class VMDisplayWindowController: NSWindowController {
         self
     }
     
-    convenience init(vm: UTMVirtualMachine, onClose: ((Notification) -> Void)?) {
+    convenience init(vm: UTMQemuVirtualMachine, onClose: ((Notification) -> Void)?) {
         self.init(window: nil)
         self.vm = vm
         self.onClose = onClose
@@ -115,14 +119,14 @@ class VMDisplayWindowController: NSWindowController {
         let pauseDescription = NSLocalizedString("Pause", comment: "VMDisplayWindowController")
         startPauseToolbarItem.image = NSImage(systemSymbolName: "pause", accessibilityDescription: pauseDescription)
         startPauseToolbarItem.label = pauseDescription
-        if isNoHypervisor || !vmConfiguration!.isTargetArchitectureMatchHost {
+        if isNoHypervisor || !vmQemuConfig!.isTargetArchitectureMatchHost {
             // currently HVF doesn't support suspending
             startPauseToolbarItem.isEnabled = true
         }
         stopToolbarItem.isEnabled = true
         captureMouseToolbarItem.isEnabled = true
         resizeConsoleToolbarItem.isEnabled = true
-        drivesToolbarItem.isEnabled = vmConfiguration!.countDrives > 0
+        drivesToolbarItem.isEnabled = vmQemuConfig!.countDrives > 0
         sharedFolderToolbarItem.isEnabled = vm.hasShareDirectoryEnabled
         usbToolbarItem.isEnabled = vm.hasUsbRedirection
         window!.title = vmConfiguration!.name

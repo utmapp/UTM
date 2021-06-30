@@ -14,16 +14,16 @@
 // limitations under the License.
 //
 
-#import "UTMVirtualMachine+Terminal.h"
+#import "UTMQemuVirtualMachine+Terminal.h"
 #import "UTMTerminalIO.h"
 
-@interface UTMVirtualMachine ()
+@interface UTMQemuVirtualMachine ()
 
 @property (nonatomic, readonly, nullable) id<UTMInputOutput> ioService;
 
 @end
 
-@implementation UTMVirtualMachine (Terminal)
+@implementation UTMQemuVirtualMachine (Terminal)
 
 - (void)sendInput:(NSString *)inputStr {
     NSAssert([self.ioService isKindOfClass:[UTMTerminalIO class]], @"Invalid ioService type '%@' should be UTMTerminalIO", NSStringFromClass([self.ioService class]));

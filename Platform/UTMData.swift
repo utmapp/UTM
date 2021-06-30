@@ -134,7 +134,7 @@ class UTMData: ObservableObject {
         return ProcessInfo.processInfo.globallyUniqueString
     }
     
-    func newDefaultDrivePath(type: UTMDiskImageType, forConfig: UTMConfiguration) -> String {
+    func newDefaultDrivePath(type: UTMDiskImageType, forConfig: UTMQemuConfiguration) -> String {
         let nameForId = { (i: Int) in "\(type.description)-\(i).qcow2" }
         for i in 0..<1000 {
             let name = nameForId(i)
@@ -146,7 +146,7 @@ class UTMData: ObservableObject {
         return UUID().uuidString
     }
     
-    func newDefaultDriveName(for config: UTMConfiguration) -> String {
+    func newDefaultDriveName(for config: UTMQemuConfiguration) -> String {
         let nameForId = { (i: Int) in "drive\(i)" }
         for i in 0..<1000 {
             let name = nameForId(i)
@@ -208,11 +208,11 @@ class UTMData: ObservableObject {
         // discard cached drive selection
         selectedDiskImagesCache.removeAll()
         // delete orphaned drives
-        guard let orphanedDrives = vm.configuration.orphanedDrives else {
+        guard let orphanedDrives = vm.config.orphanedDrives else {
             return
         }
         for name in orphanedDrives {
-            let imagesPath = vm.configuration.imagesPath
+            let imagesPath = vm.config.imagesPath
             let orphanPath = imagesPath.appendingPathComponent(name)
             logger.debug("Removing orphaned drive '\(name)'")
             try fileManager.removeItem(at: orphanPath)
@@ -249,7 +249,7 @@ class UTMData: ObservableObject {
     }
     
     func clone(vm: UTMVirtualMachine) throws {
-        let newName = newDefaultVMName(base: vm.configuration.name)
+        let newName = newDefaultVMName(base: vm.config.name)
         let newPath = UTMVirtualMachine.virtualMachinePath(newName, inParentURL: documentsURL)
         
         try fileManager.copyItem(at: vm.path!, to: newPath)
@@ -272,7 +272,7 @@ class UTMData: ObservableObject {
     func edit(vm: UTMVirtualMachine) {
         DispatchQueue.main.async {
             // show orphans for proper removal
-            vm.configuration.recoverOrphanedDrives()
+            vm.config.recoverOrphanedDrives()
             self.selectedVM = vm
             self.showSettingsModal = true
             self.showNewVMSheet = false
@@ -300,12 +300,12 @@ class UTMData: ObservableObject {
     
     // MARK: - Export debug log
     
-    func exportDebugLog(forConfig: UTMConfiguration) throws -> [URL] {
+    func exportDebugLog(forConfig: UTMQemuConfiguration) throws -> [URL] {
         guard let path = forConfig.existingPath else {
             throw NSLocalizedString("No log found!", comment: "UTMData")
         }
-        let srcLogPath = path.appendingPathComponent(UTMConfiguration.debugLogName())
-        let dstLogPath = tempURL.appendingPathComponent(UTMConfiguration.debugLogName())
+        let srcLogPath = path.appendingPathComponent(UTMQemuConfiguration.debugLogName())
+        let dstLogPath = tempURL.appendingPathComponent(UTMQemuConfiguration.debugLogName())
         
         if fileManager.fileExists(atPath: dstLogPath.path) {
             try fileManager.removeItem(at: dstLogPath)
@@ -363,7 +363,7 @@ class UTMData: ObservableObject {
     
     // MARK: - Disk drive functions
     
-    func importDrive(_ drive: URL, for config: UTMConfiguration, imageType: UTMDiskImageType, on interface: String, copy: Bool) throws {
+    func importDrive(_ drive: URL, for config: UTMQemuConfiguration, imageType: UTMDiskImageType, on interface: String, copy: Bool) throws {
         _ = drive.startAccessingSecurityScopedResource()
         defer { drive.stopAccessingSecurityScopedResource() }
         
@@ -393,18 +393,18 @@ class UTMData: ObservableObject {
         }
     }
     
-    func importDrive(_ drive: URL, for config: UTMConfiguration, copy: Bool = true) throws {
+    func importDrive(_ drive: URL, for config: UTMQemuConfiguration, copy: Bool = true) throws {
         let imageType: UTMDiskImageType = drive.pathExtension.lowercased() == "iso" ? .CD : .disk
         let interface: String
         if let target = config.systemTarget {
-            interface = UTMConfiguration.defaultDriveInterface(forTarget: target, type: imageType)
+            interface = UTMQemuConfiguration.defaultDriveInterface(forTarget: target, type: imageType)
         } else {
             interface = "none"
         }
         try importDrive(drive, for: config, imageType: imageType, on: interface, copy: copy)
     }
     
-    func createDrive(_ drive: VMDriveImage, for config: UTMConfiguration, with driveImage: URL? = nil) throws {
+    func createDrive(_ drive: VMDriveImage, for config: UTMQemuConfiguration, with driveImage: URL? = nil) throws {
         var path: String = ""
         if !drive.removable {
             assert(driveImage == nil, "Cannot call createDrive with a driveImage!")
@@ -438,7 +438,7 @@ class UTMData: ObservableObject {
         }
     }
     
-    func removeDrive(at index: Int, for config: UTMConfiguration) throws {
+    func removeDrive(at index: Int, for config: UTMQemuConfiguration) throws {
         if let path = config.driveImagePath(for: index) {
             let fullPath = config.imagesPath.appendingPathComponent(path);
             if fileManager.fileExists(atPath: fullPath.path) {
@@ -479,7 +479,7 @@ class UTMData: ObservableObject {
     
     private func recreate(vm: UTMVirtualMachine) {
         guard let path = vm.path else {
-            logger.error("Attempting to refresh unsaved VM \(vm.configuration.name)")
+            logger.error("Attempting to refresh unsaved VM \(vm.config.name)")
             return
         }
         guard let newVM = UTMVirtualMachine(url: path) else {

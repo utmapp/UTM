@@ -14,8 +14,8 @@
 // limitations under the License.
 //
 
-#import "UTMConfiguration+Networking.h"
-#import "UTMConfigurationPortForward.h"
+#import "UTMQemuConfiguration+Networking.h"
+#import "UTMQemuConfigurationPortForward.h"
 #import "UTM-Swift.h"
 
 extern const NSString *const kUTMConfigNetworkingKey;
@@ -44,13 +44,13 @@ static const NSString *const kUTMConfigNetworkPortForwardHostPortKey = @"HostPor
 static const NSString *const kUTMConfigNetworkPortForwardGuestAddressKey = @"GuestAddress";
 static const NSString *const kUTMConfigNetworkPortForwardGuestPortKey = @"GuestPort";
 
-@interface UTMConfiguration ()
+@interface UTMQemuConfiguration ()
 
 @property (nonatomic, readonly) NSMutableDictionary *rootDict;
 
 @end
 
-@implementation UTMConfiguration (Networking)
+@implementation UTMQemuConfiguration (Networking)
 
 #pragma mark - Migration
 
@@ -239,17 +239,17 @@ static const NSString *const kUTMConfigNetworkPortForwardGuestPortKey = @"GuestP
     return [self.rootDict[kUTMConfigNetworkingKey][kUTMConfigNetworkPortForwardKey] count];
 }
 
-- (NSInteger)newPortForward:(UTMConfigurationPortForward *)argument {
+- (NSInteger)newPortForward:(UTMQemuConfigurationPortForward *)argument {
     NSInteger index = [self countPortForwards];
     [self updatePortForwardAtIndex:index withValue:argument];
     return index;
 }
 
-- (nullable UTMConfigurationPortForward *)portForwardForIndex:(NSInteger)index {
+- (nullable UTMQemuConfigurationPortForward *)portForwardForIndex:(NSInteger)index {
     NSDictionary *dict = self.rootDict[kUTMConfigNetworkingKey][kUTMConfigNetworkPortForwardKey][index];
-    UTMConfigurationPortForward *portForward = nil;
+    UTMQemuConfigurationPortForward *portForward = nil;
     if (dict) {
-        portForward = [[UTMConfigurationPortForward alloc] init];
+        portForward = [[UTMQemuConfigurationPortForward alloc] init];
         portForward.protocol = dict[kUTMConfigNetworkPortForwardProtocolKey];
         portForward.hostAddress = dict[kUTMConfigNetworkPortForwardHostAddressKey];
         portForward.hostPort = dict[kUTMConfigNetworkPortForwardHostPortKey];
@@ -259,7 +259,7 @@ static const NSString *const kUTMConfigNetworkPortForwardGuestPortKey = @"GuestP
     return portForward;
 }
 
-- (void)updatePortForwardAtIndex:(NSInteger)index withValue:(UTMConfigurationPortForward *)argument {
+- (void)updatePortForwardAtIndex:(NSInteger)index withValue:(UTMQemuConfigurationPortForward *)argument {
     if (![self.rootDict[kUTMConfigNetworkingKey][kUTMConfigNetworkPortForwardKey] isKindOfClass:[NSMutableArray class]]) {
         self.rootDict[kUTMConfigNetworkingKey][kUTMConfigNetworkPortForwardKey] = [NSMutableArray array];
     }
@@ -278,7 +278,7 @@ static const NSString *const kUTMConfigNetworkPortForwardGuestPortKey = @"GuestP
     [self.rootDict[kUTMConfigNetworkingKey][kUTMConfigNetworkPortForwardKey] removeObjectAtIndex:index];
 }
 
-- (NSArray<UTMConfigurationPortForward *> *)portForwards {
+- (NSArray<UTMQemuConfigurationPortForward *> *)portForwards {
     return self.rootDict[kUTMConfigNetworkingKey][kUTMConfigNetworkPortForwardKey];
 }
 

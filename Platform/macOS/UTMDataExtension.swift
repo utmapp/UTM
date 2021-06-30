@@ -25,10 +25,11 @@ extension UTMData {
                 self.vmWindows.removeValue(forKey: vm)
                 window = nil
             }
-            if vm.configuration.displayConsoleOnly {
-                window = VMDisplayTerminalWindowController(vm: vm, onClose: close)
+            let qvm = vm as! UTMQemuVirtualMachine
+            if qvm.qemuConfig.displayConsoleOnly {
+                window = VMDisplayTerminalWindowController(vm: qvm, onClose: close)
             } else {
-                window = VMDisplayMetalWindowController(vm: vm, onClose: close)
+                window = VMDisplayMetalWindowController(vm: qvm, onClose: close)
             }
         }
         if let unwrappedWindow = window {

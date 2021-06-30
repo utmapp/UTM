@@ -14,20 +14,20 @@
 // limitations under the License.
 //
 
-#import "UTMConfiguration+Defaults.h"
-#import "UTMConfiguration+Display.h"
-#import "UTMConfiguration+Miscellaneous.h"
-#import "UTMConfiguration+Networking.h"
-#import "UTMConfiguration+Sharing.h"
-#import "UTMConfiguration+System.h"
+#import "UTMQemuConfiguration+Defaults.h"
+#import "UTMQemuConfiguration+Display.h"
+#import "UTMQemuConfiguration+Miscellaneous.h"
+#import "UTMQemuConfiguration+Networking.h"
+#import "UTMQemuConfiguration+Sharing.h"
+#import "UTMQemuConfiguration+System.h"
 
-@interface UTMConfiguration ()
+@interface UTMQemuConfiguration ()
 
 - (NSString *)generateMacAddress;
 
 @end
 
-@implementation UTMConfiguration (Defaults)
+@implementation UTMQemuConfiguration (Defaults)
 
 - (void)loadDefaults {
     self.systemArchitecture = @"x86_64";
@@ -40,7 +40,7 @@
     } else {
         self.systemBootDevice = @"cd";
     }
-    self.systemUUID = [[NSUUID UUID] UUIDString];
+    self.systemUUID = super.uuid;
     self.displayCard = @"qxl-vga";
     self.displayUpscaler = @"linear";
     self.displayDownscaler = @"linear";
@@ -79,12 +79,12 @@
     } else if ([target isEqualToString:@"isapc"]) {
         self.inputLegacy = YES; // no USB support
     }
-    NSString *machineProp = [UTMConfiguration defaultMachinePropertiesForTarget:target];
+    NSString *machineProp = [UTMQemuConfiguration defaultMachinePropertiesForTarget:target];
     if (machineProp) {
         self.systemMachineProperties = machineProp;
     }
     if (target && architecture) {
-        self.systemCPU = [UTMConfiguration defaultCPUForTarget:target architecture:architecture];
+        self.systemCPU = [UTMQemuConfiguration defaultCPUForTarget:target architecture:architecture];
     }
 }
 
