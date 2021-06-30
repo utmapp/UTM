@@ -32,7 +32,9 @@ class ConfigurationTests : XCTestCase {
         VMListPage().tapDone()
         VMListPage().tapAdd()
         SettingsPage().tapInformation()
-        InformationPage().tapBack()
         
+        InformationPage().tapName()
+        InformationPage().fillName("Test")
+        InformationPage().tapBack()
     }
 }

@@ -33,6 +33,20 @@ public class InformationPage : BaseTest {
         backButton.tap()
         return self
     }
+    
+    @discardableResult
+    func tapName(completion: Completion=nil)-> Self{
+        log("tap the name field")
+        nameField.tap()
+        return self
+    }
+    
+    @discardableResult
+    func fillName(_ text: String, completion: Completion=nil)-> Self{
+        log("type \(text) into the name field")
+        nameField.typeText(text)
+        return self
+    }
 
 }
 
