@@ -26,7 +26,7 @@ jobs:
     strategy:
       matrix:
         arch: [arm64, x86_64]
-        platform: [ios, ios_simulator, ios-tci, macos]
+        platform: [ios, ios_simulator, ios_simulator-tci, ios-tci, macos]
         exclude:
           - arch: x86_64
             platform: ios
@@ -59,10 +59,10 @@ jobs:
           rm -f /usr/local/lib/pkgconfig/*.pc
           ./scripts/build_dependencies.sh -p ${{ matrix.platform }} -a ${{ matrix.arch }}
       - name: Compress Sysroot
-        if: steps.cache-sysroot.outputs.cache-hit != 'true' || github.event_name == 'release' || github.event.inputs.test_release == 'true'
+        if: steps.cache-sysroot.outputs.cache-hit != 'true' || github.event_name == 'release' || github.event.inputs.test_release == 'true' || (matrix.platform == 'ios_simulator-tci' && matrix.arch == 'x86_64')
         run: tar cf sysroot.tgz sysroot*
       - name: Upload Sysroot
-        if: steps.cache-sysroot.outputs.cache-hit != 'true' || github.event_name == 'release' || github.event.inputs.test_release == 'true'
+        if: steps.cache-sysroot.outputs.cache-hit != 'true' || github.event_name == 'release' || github.event.inputs.test_release == 'true' || (matrix.platform == 'ios_simulator-tci' && matrix.arch == 'x86_64')
         uses: actions/upload-artifact@v2
         with:
           name: Sysroot-${{ matrix.platform }}-${{ matrix.arch }}
@@ -120,6 +120,61 @@ jobs:
         with:
           name: UTM-macos-universal
           path: UTM.xcarchive.tgz
+          
+  # Testing
+  test:
+    name: Test UTM SE
+    needs: build
+    runs-on: macos-10.15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          submodules: recursive
+      - name: Setup Xcode
+        shell: bash
+        run: sudo xcode-select -switch /Applications/Xcode_12.4.app
+      - name: Setup Path
+        shell: bash
+        run: |
+          echo "/usr/local/opt/gettext/bin" >> $GITHUB_PATH
+          echo "/usr/local/opt/bison/bin" >> $GITHUB_PATH
+      - name: Download Artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: UTM-ios_simulator-tci-x86_64
+      - name: Download Sysroot
+        uses: actions/download-artifact@v2
+        with:
+         name: Sysroot-ios_simulator-tci-x86_64
+      - name: Unpack Sysroot
+        run: tar zxvf sysroot.tgz
+
+      - name: List with XCode
+        run: xcodebuild -project UTM.xcodeproj/ -list
+
+      - name: Test with XCode
+        run: xcodebuild -project UTM.xcodeproj/ -scheme 'iOS-TCI' -destination 'platform=iOS Simulator,OS=14.4,name=iPhone 8'  -resultBundlePath TestResults clean build test CODE_SIGNING_ALLOWED=NO 
+      
+      - name: Compress Test Results
+        run: tar cf TestResults.tgz TestResults*
+      - name: Upload Test Results
+        uses: actions/upload-artifact@v2
+        with:
+          name: TestResults
+          path: TestResults.tgz
+      - name: Test results
+        uses: tbartelmess/analyze-xcoderesults-action@0.1.1
+        if: always()
+        with:
+          results: TestResults.xcresult
+          warningAnnotations: true
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      #- name: GitHub Script
+      #  uses: actions/github-script@v4.0.2
+      #  with:
+      #    script: "xcodebuild -project UTM.xcodeproj/ -scheme UTM_SEUITests -destination 'platform=iOS Simulator,OS=14.4,name=iPhone 8' clean build test"
   package-ipa:
     name: Package (iOS IPA)
     runs-on: macos-10.15
