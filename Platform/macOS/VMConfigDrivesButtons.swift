@@ -34,6 +34,11 @@ struct VMConfigDrivesButtons: View {
                 Label("New Drive", systemImage: "externaldrive.badge.plus")
             }.help("Add a new drive.")
             .fileImporter(isPresented: $importDrivePresented, allowedContentTypes: [.item], onCompletion: importDrive)
+            .onChange(of: newDrivePopover, perform: { showPopover in
+                if showPopover {
+                    newDrive.reset(forSystemTarget: config.systemTarget, removable: false)
+                }
+            })
             .popover(isPresented: $newDrivePopover, arrowEdge: .top) {
                 VStack {
                     VMConfigDriveCreateView(target: config.systemTarget, driveImage: newDrive)
