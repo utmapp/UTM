@@ -225,7 +225,9 @@ static const NSString *const kUTMConfigMachinePropertiesKey = @"MachinePropertie
     if (![flags isKindOfClass:[NSMutableArray class]]) {
         flags = self.rootDict[kUTMConfigSystemKey][kUTMConfigCPUFlagsKey] = [NSMutableArray array];
     }
-    NSUInteger index = [flags indexOfObjectIdenticalTo:CPUFlag];
+    NSUInteger index = [flags indexOfObjectPassingTest:^(NSString * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        return [CPUFlag isEqualToString:obj];
+    }];
     if (index != NSNotFound) {
         return (NSInteger)index;
     }
