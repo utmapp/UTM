@@ -29,6 +29,7 @@
 		2CE8EB0A2572E173000E2EBB /* qapi-visit-block-export.c in Sources */ = {isa = PBXBuildFile; fileRef = 2CE8EB082572E173000E2EBB /* qapi-visit-block-export.c */; };
 		2CE8EB41257811E8000E2EBB /* UTMConfiguration+Defaults.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CE8EB40257811E8000E2EBB /* UTMConfiguration+Defaults.m */; };
 		2CE8EB42257811E8000E2EBB /* UTMConfiguration+Defaults.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CE8EB40257811E8000E2EBB /* UTMConfiguration+Defaults.m */; };
+		84A381AA268CB30C0048EE4D /* VMConfigDrivesButtons.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A381A9268CB30C0048EE4D /* VMConfigDrivesButtons.swift */; };
 		84C60FB72681A41B00B58C00 /* VMToolbarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C60FB62681A41B00B58C00 /* VMToolbarView.swift */; };
 		84C60FB82681A41B00B58C00 /* VMToolbarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C60FB62681A41B00B58C00 /* VMToolbarView.swift */; };
 		84C60FBA268269D700B58C00 /* VMDisplayViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C60FB9268269D700B58C00 /* VMDisplayViewController.swift */; };
@@ -1431,6 +1432,7 @@
 		52873FDA247F5B1B0063E4C8 /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
 		83FBDD53242FA71900D2C5D7 /* VMDisplayMetalViewController+Pointer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "VMDisplayMetalViewController+Pointer.h"; sourceTree = "<group>"; };
 		83FBDD55242FA7BC00D2C5D7 /* VMDisplayMetalViewController+Pointer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "VMDisplayMetalViewController+Pointer.m"; sourceTree = "<group>"; };
+		84A381A9268CB30C0048EE4D /* VMConfigDrivesButtons.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMConfigDrivesButtons.swift; sourceTree = "<group>"; };
 		84C60FB62681A41B00B58C00 /* VMToolbarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMToolbarView.swift; sourceTree = "<group>"; };
 		84C60FB9268269D700B58C00 /* VMDisplayViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMDisplayViewController.swift; sourceTree = "<group>"; };
 		84C60FBE2682BDA800B58C00 /* VMToolbarActions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMToolbarActions.swift; sourceTree = "<group>"; };
@@ -2409,6 +2411,7 @@
 				CE93758F24BA74510074066F /* ToolbarTabViewController.swift */,
 				CEBBF1A624B5730F00C15049 /* UTMDataExtension.swift */,
 				CE93759524BB7E9F0074066F /* UTMTabViewController.swift */,
+				84A381A9268CB30C0048EE4D /* VMConfigDrivesButtons.swift */,
 				CE93759E24BBDD6A0074066F /* VMConfigDrivesView.swift */,
 				CE2D953E24AD4F980059923A /* VMConfigNetworkPortForwardView.swift */,
 				CE2D953D24AD4F980059923A /* VMSettingsView.swift */,
@@ -3832,6 +3835,7 @@
 				CED814ED24C7C2850042F0F1 /* VMConfigInfoView.swift in Sources */,
 				2CE8EB0A2572E173000E2EBB /* qapi-visit-block-export.c in Sources */,
 				2CE8EB052572E166000E2EBB /* qapi-visit-acpi.c in Sources */,
+				84A381AA268CB30C0048EE4D /* VMConfigDrivesButtons.swift in Sources */,
 				CE0B6D2D24AD57FC00FE012D /* qapi-commands-machine.c in Sources */,
 				CE0B6D2824AD57FC00FE012D /* qapi-emit-events.c in Sources */,
 				CEEC811B24E48EC700ACB0B3 /* SettingsView.swift in Sources */,

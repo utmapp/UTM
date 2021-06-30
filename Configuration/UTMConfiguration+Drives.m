@@ -229,4 +229,20 @@ static const NSString *const kUTMConfigCdromKey = @"Cdrom";
     [self.rootDict[kUTMConfigDrivesKey] removeObjectAtIndex:index];
 }
 
+- (NSString *)driveLabelForIndex:(NSInteger)index {
+    NSArray<NSString *> *interfaces = [UTMConfiguration supportedDriveInterfaces];
+    NSArray<NSString *> *interfacesPretty = [UTMConfiguration supportedDriveInterfacesPretty];
+    NSString *interface = [self driveInterfaceTypeForIndex:index];
+    NSInteger interfaceIndex = NSNotFound;
+    if (interface) {
+        interfaceIndex = [interfaces indexOfObjectPassingTest:^(NSString * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+            return [interface isEqualToString:obj];
+        }];
+    }
+    if (interfaceIndex == NSNotFound) {
+        interfaceIndex = interfacesPretty.count - 1;
+    }
+    return [NSString stringWithFormat:NSLocalizedString(@"%@ Drive", @"UTMConfiguration+Drives"), interfacesPretty[interfaceIndex]];
+}
+
 @end

@@ -52,6 +52,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setDriveRemovable:(BOOL)isRemovable forIndex:(NSInteger)index;
 - (void)moveDriveIndex:(NSInteger)index to:(NSInteger)newIndex;
 - (void)removeDriveAtIndex:(NSInteger)index;
+- (NSString *)driveLabelForIndex:(NSInteger)index;
 
 @end
 
