@@ -672,8 +672,6 @@
 		CE900BAF25FC3E65007533FD /* CSUSBDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = CE900BAE25FC3E65007533FD /* CSUSBDevice.m */; };
 		CE900BB025FC3E65007533FD /* CSUSBDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = CE900BAE25FC3E65007533FD /* CSUSBDevice.m */; };
 		CE93758924B930270074066F /* BusyOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE7D972B24B2B17D0080CB69 /* BusyOverlay.swift */; };
-		CE93759024BA74510074066F /* ToolbarTabViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE93758F24BA74510074066F /* ToolbarTabViewController.swift */; };
-		CE93759224BA775C0074066F /* ToolbarTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE93759124BA775C0074066F /* ToolbarTabView.swift */; };
 		CE93759624BB7EA00074066F /* UTMTabViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE93759524BB7E9F0074066F /* UTMTabViewController.swift */; };
 		CE93759924BB821F0074066F /* IQKeyboardManagerSwift in Frameworks */ = {isa = PBXBuildFile; productRef = CE93759824BB821F0074066F /* IQKeyboardManagerSwift */; };
 		CE9375A124BBDDD10074066F /* VMConfigDriveDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE9375A024BBDDD10074066F /* VMConfigDriveDetailsView.swift */; };
@@ -1910,8 +1908,6 @@
 		CE900BA225FC31E4007533FD /* CSUSBManagerDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CSUSBManagerDelegate.h; sourceTree = "<group>"; };
 		CE900BAD25FC3E65007533FD /* CSUSBDevice.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CSUSBDevice.h; sourceTree = "<group>"; };
 		CE900BAE25FC3E65007533FD /* CSUSBDevice.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CSUSBDevice.m; sourceTree = "<group>"; };
-		CE93758F24BA74510074066F /* ToolbarTabViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToolbarTabViewController.swift; sourceTree = "<group>"; };
-		CE93759124BA775C0074066F /* ToolbarTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToolbarTabView.swift; sourceTree = "<group>"; };
 		CE93759524BB7E9F0074066F /* UTMTabViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMTabViewController.swift; sourceTree = "<group>"; };
 		CE9375A024BBDDD10074066F /* VMConfigDriveDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMConfigDriveDetailsView.swift; sourceTree = "<group>"; };
 		CE9A352D26533A51005077CF /* JailbreakInterposer.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = JailbreakInterposer.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -2405,8 +2401,6 @@
 				CEECE13B25E47D9500A2AAB8 /* AppDelegate.swift */,
 				CEEC811A24E48EC600ACB0B3 /* SettingsView.swift */,
 				CE8813D724CD2A8B00532628 /* SharingServicePicker.swift */,
-				CE93759124BA775C0074066F /* ToolbarTabView.swift */,
-				CE93758F24BA74510074066F /* ToolbarTabViewController.swift */,
 				CEBBF1A624B5730F00C15049 /* UTMDataExtension.swift */,
 				CE93759524BB7E9F0074066F /* UTMTabViewController.swift */,
 				84A381A9268CB30C0048EE4D /* VMConfigDrivesButtons.swift */,
@@ -3760,7 +3754,6 @@
 				CE0B6CF324AD568400FE012D /* UTMConfiguration.m in Sources */,
 				CE0B6D3D24AD584C00FE012D /* qapi-visit-block-core.c in Sources */,
 				CE0B6D5C24AD584D00FE012D /* qapi-events-net.c in Sources */,
-				CE93759024BA74510074066F /* ToolbarTabViewController.swift in Sources */,
 				CE900B9F25FC2869007533FD /* CSUSBManager.m in Sources */,
 				CE0B6D0324AD56AE00FE012D /* UTMTerminal.m in Sources */,
 				CE0B6CFC24AD568400FE012D /* UTMConfigurationPortForward.m in Sources */,
@@ -3849,7 +3842,6 @@
 				CE0B6D8224AD584D00FE012D /* qapi-types-block-core.c in Sources */,
 				2CE8EAFF2572E14D000E2EBB /* qapi-types-block-export.c in Sources */,
 				CE0B6D8724AD5ADE00FE012D /* UTMScreenshot.m in Sources */,
-				CE93759224BA775C0074066F /* ToolbarTabView.swift in Sources */,
 				CEDF83FA258AE24E0030E4AC /* UTMPasteboard.swift in Sources */,
 				CE0B6D1124AD57C700FE012D /* qapi-builtin-visit.c in Sources */,
 				CE0B6D3F24AD584C00FE012D /* qapi-visit-qom.c in Sources */,
