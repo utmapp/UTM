@@ -49,6 +49,8 @@ class UTMData: ObservableObject {
         }
     }
     
+    private var selectedDiskImagesCache: [String: URL]
+    
     #if os(macOS)
     var vmWindows: [UTMVirtualMachine: VMDisplayWindowController] = [:]
     #endif
@@ -71,6 +73,7 @@ class UTMData: ObservableObject {
         self.showNewVMSheet = false
         self.busy = false
         self.virtualMachines = []
+        self.selectedDiskImagesCache = [:]
         if let files = defaults.array(forKey: "VMList") as? [String] {
             for file in files {
                 let url = documentsURL.appendingPathComponent(file, isDirectory: true)
@@ -170,6 +173,7 @@ class UTMData: ObservableObject {
         do {
             let oldPath = vm.path
             try vm.saveUTM()
+            try commitDiskImages(for: vm)
             let newPath = vm.path
             // change the saved path
             if oldPath?.path != newPath?.path {
@@ -201,6 +205,8 @@ class UTMData: ObservableObject {
     
     func discardChanges(forVM vm: UTMVirtualMachine) throws {
         try vm.reloadConfiguration()
+        // discard cached drive selection
+        selectedDiskImagesCache.removeAll()
         // delete orphaned drives
         guard let orphanedDrives = vm.configuration.orphanedDrives else {
             return
@@ -216,6 +222,7 @@ class UTMData: ObservableObject {
     func create(config: UTMConfiguration) throws {
         let vm = UTMVirtualMachine(configuration: config, withDestinationURL: documentsURL)
         try save(vm: vm)
+        try commitDiskImages(for: vm)
         DispatchQueue.main.async {
             self.virtualMachines.append(vm)
         }
@@ -356,7 +363,7 @@ class UTMData: ObservableObject {
     
     // MARK: - Disk drive functions
     
-    func importDrive(_ drive: URL, for config: UTMConfiguration, copy: Bool = true) throws {
+    func importDrive(_ drive: URL, for config: UTMConfiguration, imageType: UTMDiskImageType, on interface: String, copy: Bool) throws {
         _ = drive.startAccessingSecurityScopedResource()
         defer { drive.stopAccessingSecurityScopedResource() }
         
@@ -370,7 +377,6 @@ class UTMData: ObservableObject {
         }
         
         let path = drive.lastPathComponent
-        let imageType: UTMDiskImageType = drive.pathExtension.lowercased() == "iso" ? .CD : .disk
         let imagesPath = config.imagesPath
         let dstPath = imagesPath.appendingPathComponent(path)
         if !fileManager.fileExists(atPath: imagesPath.path) {
@@ -383,19 +389,25 @@ class UTMData: ObservableObject {
         }
         DispatchQueue.main.async {
             let name = self.newDefaultDriveName(for: config)
-            let interface: String
-            if let target = config.systemTarget {
-                interface = UTMConfiguration.defaultDriveInterface(forTarget: target, type: imageType)
-            } else {
-                interface = "none"
-            }
             config.newDrive(name, path: path, type: imageType, interface: interface)
         }
     }
     
-    func createDrive(_ drive: VMDriveImage, for config: UTMConfiguration) throws {
+    func importDrive(_ drive: URL, for config: UTMConfiguration, copy: Bool = true) throws {
+        let imageType: UTMDiskImageType = drive.pathExtension.lowercased() == "iso" ? .CD : .disk
+        let interface: String
+        if let target = config.systemTarget {
+            interface = UTMConfiguration.defaultDriveInterface(forTarget: target, type: imageType)
+        } else {
+            interface = "none"
+        }
+        try importDrive(drive, for: config, imageType: imageType, on: interface, copy: copy)
+    }
+    
+    func createDrive(_ drive: VMDriveImage, for config: UTMConfiguration, with driveImage: URL? = nil) throws {
         var path: String = ""
         if !drive.removable {
+            assert(driveImage == nil, "Cannot call createDrive with a driveImage!")
             guard drive.size > 0 else {
                 throw NSLocalizedString("Invalid drive size.", comment: "UTMData")
             }
@@ -412,8 +424,11 @@ class UTMData: ObservableObject {
             }
         }
         
+        let name = self.newDefaultDriveName(for: config)
+        if let url = driveImage {
+            selectedDiskImagesCache[name] = url
+        }
         DispatchQueue.main.async {
-            let name = self.newDefaultDriveName(for: config)
             let interface = drive.interface ?? "none"
             if drive.removable {
                 config.newRemovableDrive(name, type: drive.imageType, interface: interface)
@@ -430,9 +445,26 @@ class UTMData: ObservableObject {
                 try fileManager.removeItem(at: fullPath)
             }
         }
-        
+        if let name = config.driveName(for: index) {
+            selectedDiskImagesCache.removeValue(forKey: name)
+        }
         DispatchQueue.main.async {
             config.removeDrive(at: index)
+        }
+    }
+    
+    private func commitDiskImages(for vm: UTMVirtualMachine) throws {
+        let drives = vm.drives
+        defer {
+            selectedDiskImagesCache.removeAll()
+        }
+        try selectedDiskImagesCache.forEach { name, url in
+            let drive = drives.first { drive in
+                drive.name == name
+            }
+            if let drive = drive {
+                try vm.changeMedium(for: drive, url: url)
+            }
         }
     }
     

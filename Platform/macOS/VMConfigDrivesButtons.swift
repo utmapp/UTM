@@ -22,14 +22,36 @@ struct VMConfigDrivesButtons: View {
     @Binding var selectedDriveIndex: Int?
     
     @EnvironmentObject private var data: UTMData
+    @State private var newDrivePopover: Bool = false
+    @StateObject private var newDrive: VMDriveImage = VMDriveImage()
+    @State private var importDrivePresented: Bool = false
     
     var body: some View {
         Group {
             Button {
-                
+                newDrivePopover.toggle()
             } label: {
                 Label("New Drive", systemImage: "externaldrive.badge.plus")
             }.help("Add a new drive.")
+            .fileImporter(isPresented: $importDrivePresented, allowedContentTypes: [.item], onCompletion: importDrive)
+            .popover(isPresented: $newDrivePopover, arrowEdge: .top) {
+                VStack {
+                    VMConfigDriveCreateView(target: config.systemTarget, driveImage: newDrive)
+                    HStack {
+                        Spacer()
+                        Button(action: { importDrivePresented.toggle() }, label: {
+                            if newDrive.removable {
+                                Text("Browse")
+                            } else {
+                                Text("Import")
+                            }
+                        }).help("Select an existing disk image.")
+                        Button(action: { addNewDrive(newDrive) }, label: {
+                            Text("Create")
+                        }).help("Create an empty drive.")
+                    }
+                }.padding()
+            }
             if let index = selectedDriveIndex, index != 0 {
                 Button {
                     deleteDrive(atIndex: index)
@@ -69,6 +91,41 @@ struct VMConfigDrivesButtons: View {
         withAnimation {
             config.moveDrive(index, to: index + 1)
             selectedDriveIndex = index + 1
+        }
+    }
+    
+    private func importDrive(result: Result<URL, Error>) {
+        data.busyWork {
+            switch result {
+            case .success(let url):
+                if newDrive.removable {
+                    try data.createDrive(newDrive, for: config, with: url)
+                } else {
+                    try data.importDrive(url, for: config, imageType: newDrive.imageType, on: newDrive.interface!, copy: true)
+                }
+                break
+            case .failure(let err):
+                throw err
+            }
+        }
+    }
+    
+    private func browseImage(result: Result<URL, Error>) {
+        data.busyWork {
+            switch result {
+            case .success(let url):
+                try data.importDrive(url, for: config, imageType: newDrive.imageType, on: newDrive.interface!, copy: true)
+                break
+            case .failure(let err):
+                throw err
+            }
+        }
+    }
+    
+    private func addNewDrive(_ newDrive: VMDriveImage) {
+        newDrivePopover = false // hide popover
+        data.busyWork {
+            try data.createDrive(newDrive, for: config)
         }
     }
 }
