@@ -207,19 +207,22 @@ class UTMData: ObservableObject {
         try vm.reloadConfiguration()
         // discard cached drive selection
         selectedDiskImagesCache.removeAll()
+        guard let config = vm.config as? UTMQemuConfiguration else {
+            return
+        }
         // delete orphaned drives
-        guard let orphanedDrives = vm.config.orphanedDrives else {
+        guard let orphanedDrives = config.orphanedDrives else {
             return
         }
         for name in orphanedDrives {
-            let imagesPath = vm.config.imagesPath
+            let imagesPath = config.imagesPath
             let orphanPath = imagesPath.appendingPathComponent(name)
             logger.debug("Removing orphaned drive '\(name)'")
             try fileManager.removeItem(at: orphanPath)
         }
     }
     
-    func create(config: UTMConfiguration) throws {
+    func create(config: UTMConfigurable) throws {
         let vm = UTMVirtualMachine(configuration: config, withDestinationURL: documentsURL)
         try save(vm: vm)
         try commitDiskImages(for: vm)
@@ -272,7 +275,9 @@ class UTMData: ObservableObject {
     func edit(vm: UTMVirtualMachine) {
         DispatchQueue.main.async {
             // show orphans for proper removal
-            vm.config.recoverOrphanedDrives()
+            if let config = vm.config as? UTMQemuConfiguration {
+                config.recoverOrphanedDrives()
+            }
             self.selectedVM = vm
             self.showSettingsModal = true
             self.showNewVMSheet = false

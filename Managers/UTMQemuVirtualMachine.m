@@ -116,6 +116,60 @@ NSString *const kSuspendSnapshotName = @"suspend";
     return [super saveConfigurationWithError:err];
 }
 
+- (BOOL)saveIconWithError:(NSError * _Nullable __autoreleasing *)err {
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    NSURL *url = [self packageURLForName:self.qemuConfig.name];
+    if (self.qemuConfig.iconCustom && self.qemuConfig.selectedCustomIconPath) {
+        NSURL *oldIconPath = [url URLByAppendingPathComponent:self.qemuConfig.icon];
+        NSString *newIcon = self.qemuConfig.selectedCustomIconPath.lastPathComponent;
+        NSURL *newIconPath = [url URLByAppendingPathComponent:newIcon];
+        
+        // delete old icon
+        if ([fileManager fileExistsAtPath:oldIconPath.path]) {
+            [fileManager removeItemAtURL:oldIconPath error:nil]; // ignore error
+        }
+        // copy new icon
+        if (![fileManager copyItemAtURL:self.qemuConfig.selectedCustomIconPath toURL:newIconPath error:err]) {
+            return NO;
+        }
+        // commit icon
+        self.qemuConfig.icon = newIcon;
+        self.qemuConfig.selectedCustomIconPath = nil;
+    }
+    return [super saveIconWithError:err];
+}
+
+- (BOOL)saveDisksWithError:(NSError * _Nullable __autoreleasing *)err {
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    NSURL *url = [self packageURLForName:self.qemuConfig.name];
+    if (!self.qemuConfig.existingPath) {
+        NSURL *dstPath = [url URLByAppendingPathComponent:[UTMQemuConfiguration diskImagesDirectory] isDirectory:YES];
+        NSURL *tmpPath = [fileManager.temporaryDirectory URLByAppendingPathComponent:[UTMQemuConfiguration diskImagesDirectory] isDirectory:YES];
+        
+        // create images directory
+        if ([fileManager fileExistsAtPath:tmpPath.path]) {
+            // delete any orphaned images
+            NSArray<NSString *> *orphans = self.qemuConfig.orphanedDrives;
+            for (NSInteger i = 0; i < orphans.count; i++) {
+                NSURL *orphanPath = [tmpPath URLByAppendingPathComponent:orphans[i]];
+                UTMLog(@"Deleting orphaned image '%@'", orphans[i]);
+                if (![fileManager removeItemAtURL:orphanPath error:nil]) {
+                    UTMLog(@"Ignoring error deleting orphaned image");
+                }
+            }
+            // move remaining drives to VM package
+            if (![fileManager moveItemAtURL:tmpPath toURL:dstPath error:err]) {
+                return NO;
+            }
+        } else if (![fileManager fileExistsAtPath:dstPath.path]) {
+            if (![fileManager createDirectoryAtURL:dstPath withIntermediateDirectories:NO attributes:nil error:err]) {
+                return NO;
+            }
+        }
+    }
+    return [super saveDisksWithError:err];
+}
+
 #pragma mark - VM actions
 
 - (BOOL)startVM {

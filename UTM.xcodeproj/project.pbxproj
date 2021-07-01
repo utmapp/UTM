@@ -41,12 +41,6 @@
 		84FCABBA268CE05E0036196C /* UTMQemuVirtualMachine.m in Sources */ = {isa = PBXBuildFile; fileRef = 84FCABB9268CE05E0036196C /* UTMQemuVirtualMachine.m */; };
 		84FCABBB268CE05E0036196C /* UTMQemuVirtualMachine.m in Sources */ = {isa = PBXBuildFile; fileRef = 84FCABB9268CE05E0036196C /* UTMQemuVirtualMachine.m */; };
 		84FCABBC268CE05E0036196C /* UTMQemuVirtualMachine.m in Sources */ = {isa = PBXBuildFile; fileRef = 84FCABB9268CE05E0036196C /* UTMQemuVirtualMachine.m */; };
-		84FCABC0268D08DC0036196C /* UTMConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = 84FCABBF268D08DC0036196C /* UTMConfiguration.m */; };
-		84FCABC1268D08DC0036196C /* UTMConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = 84FCABBF268D08DC0036196C /* UTMConfiguration.m */; };
-		84FCABC2268D08DC0036196C /* UTMConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = 84FCABBF268D08DC0036196C /* UTMConfiguration.m */; };
-		84FCABC5268D17070036196C /* UTMConfiguration+Drives.m in Sources */ = {isa = PBXBuildFile; fileRef = 84FCABC4268D17070036196C /* UTMConfiguration+Drives.m */; };
-		84FCABC6268D17070036196C /* UTMConfiguration+Drives.m in Sources */ = {isa = PBXBuildFile; fileRef = 84FCABC4268D17070036196C /* UTMConfiguration+Drives.m */; };
-		84FCABC7268D17070036196C /* UTMConfiguration+Drives.m in Sources */ = {isa = PBXBuildFile; fileRef = 84FCABC4268D17070036196C /* UTMConfiguration+Drives.m */; };
 		84FCABCA268D17E80036196C /* UTMVirtualMachine+IO.m in Sources */ = {isa = PBXBuildFile; fileRef = 84FCABC9268D17E70036196C /* UTMVirtualMachine+IO.m */; };
 		84FCABCB268D17E80036196C /* UTMVirtualMachine+IO.m in Sources */ = {isa = PBXBuildFile; fileRef = 84FCABC9268D17E70036196C /* UTMVirtualMachine+IO.m */; };
 		84FCABCC268D17E80036196C /* UTMVirtualMachine+IO.m in Sources */ = {isa = PBXBuildFile; fileRef = 84FCABC9268D17E70036196C /* UTMVirtualMachine+IO.m */; };
@@ -1442,16 +1436,13 @@
 		83FBDD53242FA71900D2C5D7 /* VMDisplayMetalViewController+Pointer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "VMDisplayMetalViewController+Pointer.h"; sourceTree = "<group>"; };
 		83FBDD55242FA7BC00D2C5D7 /* VMDisplayMetalViewController+Pointer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "VMDisplayMetalViewController+Pointer.m"; sourceTree = "<group>"; };
 		84A381A9268CB30C0048EE4D /* VMConfigDrivesButtons.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMConfigDrivesButtons.swift; sourceTree = "<group>"; };
+		84C584D7268E5349000FCABF /* UTMConfigurable.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UTMConfigurable.h; sourceTree = "<group>"; };
 		84C60FB62681A41B00B58C00 /* VMToolbarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMToolbarView.swift; sourceTree = "<group>"; };
 		84C60FB9268269D700B58C00 /* VMDisplayViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMDisplayViewController.swift; sourceTree = "<group>"; };
 		84C60FBE2682BDA800B58C00 /* VMToolbarActions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMToolbarActions.swift; sourceTree = "<group>"; };
 		84FCABB8268CE05E0036196C /* UTMQemuVirtualMachine.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UTMQemuVirtualMachine.h; sourceTree = "<group>"; };
 		84FCABB9268CE05E0036196C /* UTMQemuVirtualMachine.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UTMQemuVirtualMachine.m; sourceTree = "<group>"; };
 		84FCABBD268CE4080036196C /* UTMVirtualMachine-Private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UTMVirtualMachine-Private.h"; sourceTree = "<group>"; };
-		84FCABBE268D08DC0036196C /* UTMConfiguration.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UTMConfiguration.h; sourceTree = "<group>"; };
-		84FCABBF268D08DC0036196C /* UTMConfiguration.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UTMConfiguration.m; sourceTree = "<group>"; };
-		84FCABC3268D17070036196C /* UTMConfiguration+Drives.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UTMConfiguration+Drives.h"; sourceTree = "<group>"; };
-		84FCABC4268D17070036196C /* UTMConfiguration+Drives.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UTMConfiguration+Drives.m"; sourceTree = "<group>"; };
 		84FCABC8268D17E70036196C /* UTMVirtualMachine+IO.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UTMVirtualMachine+IO.h"; sourceTree = "<group>"; };
 		84FCABC9268D17E70036196C /* UTMVirtualMachine+IO.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UTMVirtualMachine+IO.m"; sourceTree = "<group>"; };
 		C8958B6C243634DA002D86B4 /* ko */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ko; path = ko.lproj/Main.strings; sourceTree = "<group>"; };
@@ -2455,10 +2446,7 @@
 		CE31C242225E543A00A965DD /* Configuration */ = {
 			isa = PBXGroup;
 			children = (
-				84FCABBE268D08DC0036196C /* UTMConfiguration.h */,
-				84FCABBF268D08DC0036196C /* UTMConfiguration.m */,
-				84FCABC3268D17070036196C /* UTMConfiguration+Drives.h */,
-				84FCABC4268D17070036196C /* UTMConfiguration+Drives.m */,
+				84C584D7268E5349000FCABF /* UTMConfigurable.h */,
 				CE31C243225E553500A965DD /* UTMQemuConfiguration.h */,
 				CE31C244225E555600A965DD /* UTMQemuConfiguration.m */,
 				CE5425352437DDE900E520F7 /* UTMQemuConfiguration+Constants.h */,
@@ -3499,7 +3487,6 @@
 				CED814EC24C7C2850042F0F1 /* VMConfigInfoView.swift in Sources */,
 				CE2D92A324AD46670059923A /* qapi-util.c in Sources */,
 				CE2D92A424AD46670059923A /* qapi-commands-job.c in Sources */,
-				84FCABC5268D17070036196C /* UTMConfiguration+Drives.m in Sources */,
 				CE2D92A524AD46670059923A /* VMKeyboardView.m in Sources */,
 				CE2D92A624AD46670059923A /* qapi-commands-net.c in Sources */,
 				CE2D92A724AD46670059923A /* qapi-types-common.c in Sources */,
@@ -3679,7 +3666,6 @@
 				CE2D932524AD46670059923A /* qapi-types-char.c in Sources */,
 				CE2D932724AD46670059923A /* CSConnection.m in Sources */,
 				CE2D932824AD46670059923A /* qapi-visit-audio.c in Sources */,
-				84FCABC0268D08DC0036196C /* UTMConfiguration.m in Sources */,
 				CE2D932924AD46670059923A /* qapi-builtin-visit.c in Sources */,
 				CE2D932A24AD46670059923A /* UTMRenderer.m in Sources */,
 			);
@@ -3837,7 +3823,6 @@
 				CE2D953324AD4F040059923A /* UTMQemuConfigurationExtension.swift in Sources */,
 				CE0B6D7024AD584D00FE012D /* qapi-types-job.c in Sources */,
 				CE0B6D1224AD57CB00FE012D /* qapi-commands-audio.c in Sources */,
-				84FCABC2268D08DC0036196C /* UTMConfiguration.m in Sources */,
 				CE0B6D1E24AD57FC00FE012D /* qapi-commands-trace.c in Sources */,
 				CE0B6D1C24AD57FC00FE012D /* qapi-commands-char.c in Sources */,
 				CE0B6D6424AD584D00FE012D /* qapi-visit-error.c in Sources */,
@@ -3882,7 +3867,6 @@
 				CEDF83FA258AE24E0030E4AC /* UTMPasteboard.swift in Sources */,
 				CE0B6D1124AD57C700FE012D /* qapi-builtin-visit.c in Sources */,
 				CE0B6D3F24AD584C00FE012D /* qapi-visit-qom.c in Sources */,
-				84FCABC7268D17070036196C /* UTMConfiguration+Drives.m in Sources */,
 				CE2D958A24AD4F990059923A /* VMConfigSystemView.swift in Sources */,
 				CE8813D824CD2A8B00532628 /* SharingServicePicker.swift in Sources */,
 				CEBBF1A724B5730F00C15049 /* UTMDataExtension.swift in Sources */,
@@ -4086,7 +4070,6 @@
 				CEA45EBC263519B5002FA97D /* qapi-events-tpm.c in Sources */,
 				CEA45EBD263519B5002FA97D /* UTMQemuSystem.m in Sources */,
 				84C60FC02682BDA800B58C00 /* VMToolbarActions.swift in Sources */,
-				84FCABC6268D17070036196C /* UTMConfiguration+Drives.m in Sources */,
 				CEA45EBE263519B5002FA97D /* NumberTextField.swift in Sources */,
 				CEA45EBF263519B5002FA97D /* VMConfigPortForwardingViewController.m in Sources */,
 				CEA45EC0263519B5002FA97D /* qapi-events-job.c in Sources */,
@@ -4155,7 +4138,6 @@
 				CEA45F00263519B5002FA97D /* VMCardView.swift in Sources */,
 				CEA45F01263519B5002FA97D /* UTMQemuConfiguration+Sharing.m in Sources */,
 				CEA45F02263519B5002FA97D /* qapi-commands-ui.c in Sources */,
-				84FCABC1268D08DC0036196C /* UTMConfiguration.m in Sources */,
 				CEA45F03263519B5002FA97D /* qapi-events-authz.c in Sources */,
 				CEA45F04263519B5002FA97D /* qapi-commands-block-core.c in Sources */,
 				CEA45F05263519B5002FA97D /* qapi-types-authz.c in Sources */,

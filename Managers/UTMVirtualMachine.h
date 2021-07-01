@@ -20,7 +20,7 @@
 #import "UTMRenderSource.h"
 #import "UTMInputOutput.h"
 
-@class UTMConfiguration;
+@protocol UTMConfigurable;
 @class UTMLogging;
 @class UTMScreenshot;
 
@@ -30,7 +30,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readonly, nullable) NSURL *path;
 @property (nonatomic, weak, nullable) id<UTMVirtualMachineDelegate> delegate;
-@property (nonatomic, readonly, copy) UTMConfiguration *config;
+@property (nonatomic, readonly, copy) id<UTMConfigurable> config;
 @property (nonatomic, readonly) UTMViewState *viewState;
 @property (nonatomic, assign, readonly) UTMVMState state;
 @property (nonatomic, readonly, nullable) UTMScreenshot *screenshot;
@@ -40,7 +40,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSURL *)virtualMachinePath:(NSString *)name inParentURL:(NSURL *)parent;
 
 + (nullable UTMVirtualMachine *)virtualMachineWithURL:(NSURL *)url;
-+ (UTMVirtualMachine *)virtualMachineWithConfiguration:(UTMConfiguration *)configuration withDestinationURL:(NSURL *)dstUrl;
++ (UTMVirtualMachine *)virtualMachineWithConfiguration:(id<UTMConfigurable>)configuration withDestinationURL:(NSURL *)dstUrl;
 
 - (BOOL)reloadConfigurationWithError:(NSError * _Nullable *)err;
 - (BOOL)saveUTMWithError:(NSError * _Nullable *)err;

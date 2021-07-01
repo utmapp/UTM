@@ -51,6 +51,21 @@ const NSInteger kCurrentConfigurationVersion = 2;
 
 @synthesize rootDict = _rootDict;
 
+- (void)setName:(NSString *)name {
+    [self propertyWillChange];
+    _name = name;
+}
+
+- (void)setExistingPath:(NSURL *)existingPath {
+    [self propertyWillChange];
+    _existingPath = existingPath;
+}
+
+- (void)setSelectedCustomIconPath:(NSURL *)selectedCustomIconPath {
+    [self propertyWillChange];
+    _selectedCustomIconPath = selectedCustomIconPath;
+}
+
 #pragma mark - Migration
 
 - (void)migrateConfigurationIfNecessary {
@@ -136,16 +151,6 @@ const NSInteger kCurrentConfigurationVersion = 2;
 
 - (NSNumber *)version {
     return self.rootDict[kUTMConfigVersionKey];
-}
-
-#pragma mark - Other fields
-
-- (NSString *)subtitle {
-    return self.systemTargetPretty;
-}
-
-- (NSString *)uuid {
-    return self.systemUUID;
 }
 
 @end

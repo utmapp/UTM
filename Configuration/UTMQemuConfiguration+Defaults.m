@@ -40,7 +40,7 @@
     } else {
         self.systemBootDevice = @"cd";
     }
-    self.systemUUID = super.uuid;
+    self.systemUUID = [[NSUUID UUID] UUIDString];
     self.displayCard = @"qxl-vga";
     self.displayUpscaler = @"linear";
     self.displayDownscaler = @"linear";

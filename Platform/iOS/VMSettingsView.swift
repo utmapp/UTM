@@ -19,69 +19,65 @@ import SwiftUI
 @available(iOS 14, *)
 struct VMSettingsView: View {
     let vm: UTMVirtualMachine?
-    @ObservedObject var config: UTMConfiguration
+    @ObservedObject var config: UTMQemuConfiguration
     
     @EnvironmentObject private var data: UTMData
     @Environment(\.presentationMode) private var presentationMode: Binding<PresentationMode>
-    
-    var qemuConfig: UTMQemuConfiguration {
-        config as! UTMQemuConfiguration
-    }
     
     var body: some View {
         NavigationView {
             Form {
                 List {
                     NavigationLink(
-                        destination: VMConfigInfoView(config: qemuConfig).navigationTitle("Information"),
+                        destination: VMConfigInfoView(config: config).navigationTitle("Information"),
                         label: {
                             Label("Information", systemImage: "info.circle")
                                 .labelStyle(RoundRectIconLabelStyle())
                         })
                     NavigationLink(
-                        destination: VMConfigSystemView(config: qemuConfig).navigationTitle("System"),
+                        destination: VMConfigSystemView(config: config).navigationTitle("System"),
                         label: {
                             Label("System", systemImage: "cpu")
                                 .labelStyle(RoundRectIconLabelStyle())
                         })
                     NavigationLink(
-                        destination: VMConfigQEMUView(config: qemuConfig).navigationTitle("QEMU"),
+                        destination: VMConfigQEMUView(config: config).navigationTitle("QEMU"),
                         label: {
                             Label("QEMU", systemImage: "shippingbox")
                                 .labelStyle(RoundRectIconLabelStyle())
                         })
                     NavigationLink(
-                        destination: VMConfigDrivesView(config: qemuConfig).navigationTitle("Drives"),
+                        destination: VMConfigDrivesView(config: config).navigationTitle("Drives"),
                         label: {
                             Label("Drives", systemImage: "internaldrive")
                                 .labelStyle(RoundRectIconLabelStyle())
                         })
                     NavigationLink(
-                        destination: VMConfigDisplayView(config: qemuConfig).navigationTitle("Display"),
+                        destination: VMConfigDisplayView(config: config).navigationTitle("Display"),
                         label: {
                             Label("Display", systemImage: "rectangle.on.rectangle")
                                 .labelStyle(RoundRectIconLabelStyle(color: .green))
                         })
                     NavigationLink(
-                        destination: VMConfigInputView(config: qemuConfig).navigationTitle("Input"),
+                        destination: VMConfigInputView(config: config).navigationTitle("Input"),
                         label: {
                             Label("Input", systemImage: "keyboard")
                                 .labelStyle(RoundRectIconLabelStyle(color: .green))
                         })
                     NavigationLink(
-                        destination: VMConfigNetworkView(config: qemuConfig).navigationTitle("Network"),
+                        destination: VMConfigNetworkView(config: config).navigationTitle("Network"),
                         label: {
                             Label("Network", systemImage: "network")
                                 .labelStyle(RoundRectIconLabelStyle(color: .green))
                         })
                     NavigationLink(
-                        destination: VMConfigSoundView(config: qemuConfig).navigationTitle("Sound"),
+                        destination: VMConfigSoundView(config: config).navigationTitle("Sound"),
                         label: {
                             Label("Sound", systemImage: "speaker.wave.2")
                                 .labelStyle(RoundRectIconLabelStyle(color: .green))
                         })
                     NavigationLink(
-                        destination: VMConfigSharingView(config: qemuConfig).navigationTitle("Sharing"),
+                        destination: VMConfigSharingView(config: config).navigationTitle("Sharing"),
                         label: {
                             Label("Sharing", systemImage: "person.crop.circle.fill")
                                 .labelStyle(RoundRectIconLabelStyle(color: .yellow))

@@ -22,6 +22,14 @@
 
 @implementation UTMQemuConfiguration (Constants)
 
++ (NSString *)diskImagesDirectory {
+    return @"Images";
+}
+
++ (NSString *)debugLogName {
+    return @"debug.log";
+}
+
 #pragma mark - Constant supported values
 
 + (NSArray<NSString *>*)supportedOptions:(NSString *)key pretty:(BOOL)pretty {

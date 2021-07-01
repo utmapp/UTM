@@ -17,8 +17,8 @@
 #import "UTMVirtualMachine.h"
 #import "UTMVirtualMachine-Private.h"
 #import "UTMQemuVirtualMachine.h"
-#import "UTMConfiguration.h"
-#import "UTMConfiguration+Drives.h"
+#import "UTMConfigurable.h"
+#import "UTMQemuConfiguration+Constants.h"
 #import "UTMLogging.h"
 #import "UTMScreenshot.h"
 #import "UTMViewState.h"
@@ -53,7 +53,7 @@ NSString *const kUTMBundleScreenshotFilename = @"screenshot.png";
     return [[UTMQemuVirtualMachine alloc] initWithURL:url];
 }
 
-+ (UTMVirtualMachine *)virtualMachineWithConfiguration:(UTMConfiguration *)configuration withDestinationURL:(NSURL *)dstUrl {
++ (UTMVirtualMachine *)virtualMachineWithConfiguration:(id<UTMConfigurable>)configuration withDestinationURL:(NSURL *)dstUrl {
     return [[UTMQemuVirtualMachine alloc] initWithConfiguration:configuration withDestinationURL:dstUrl];
 }
 
@@ -89,7 +89,7 @@ NSString *const kUTMBundleScreenshotFilename = @"screenshot.png";
     return self;
 }
 
-- (instancetype)initWithConfiguration:(UTMConfiguration *)configuration withDestinationURL:(NSURL *)dstUrl {
+- (instancetype)initWithConfiguration:(id<UTMConfigurable>)configuration withDestinationURL:(NSURL *)dstUrl {
     self = [self init];
     if (self) {
         self.parentPath = dstUrl;
@@ -125,76 +125,41 @@ NSString *const kUTMBundleScreenshotFilename = @"screenshot.png";
     return YES;
 }
 
+- (BOOL)saveIconWithError:(NSError * _Nullable __autoreleasing *)err {
+    return YES;
+}
+
+- (BOOL)saveDisksWithError:(NSError * _Nullable __autoreleasing *)err {
+    return YES;
+}
+
 - (BOOL)saveUTMWithError:(NSError * _Nullable *)err {
     NSFileManager *fileManager = [NSFileManager defaultManager];
     NSURL *url = [self packageURLForName:self.config.name];
-    __block NSError *_err;
     if (!self.config.existingPath) { // new package
-        if (![fileManager createDirectoryAtURL:url withIntermediateDirectories:YES attributes:nil error:&_err]) {
-            goto error;
+        if (![fileManager createDirectoryAtURL:url withIntermediateDirectories:YES attributes:nil error:err]) {
+            return NO;
         }
     } else if (![self.config.existingPath.URLByStandardizingPath isEqual:url.URLByStandardizingPath]) { // rename if needed
-        if (![fileManager moveItemAtURL:self.config.existingPath toURL:url error:&_err]) {
-            goto error;
+        if (![fileManager moveItemAtURL:self.config.existingPath toURL:url error:err]) {
+            return NO;
         }
     }
     // save icon
-    if (self.config.iconCustom && self.config.selectedCustomIconPath) {
-        NSURL *oldIconPath = [url URLByAppendingPathComponent:self.config.icon];
-        NSString *newIcon = self.config.selectedCustomIconPath.lastPathComponent;
-        NSURL *newIconPath = [url URLByAppendingPathComponent:newIcon];
-        
-        // delete old icon
-        if ([fileManager fileExistsAtPath:oldIconPath.path]) {
-            [fileManager removeItemAtURL:oldIconPath error:&_err]; // ignore error
-        }
-        // copy new icon
-        if (![fileManager copyItemAtURL:self.config.selectedCustomIconPath toURL:newIconPath error:&_err]) {
-            goto error;
-        }
-        // commit icon
-        self.config.icon = newIcon;
-        self.config.selectedCustomIconPath = nil;
+    if (![self saveIconWithError:err]) {
+        return NO;
     }
     // save config
     if (![self saveConfigurationWithError:err]) {
         return NO;
     }
     // create disk images directory
-    if (!self.config.existingPath) {
-        NSURL *dstPath = [url URLByAppendingPathComponent:[UTMConfiguration diskImagesDirectory] isDirectory:YES];
-        NSURL *tmpPath = [fileManager.temporaryDirectory URLByAppendingPathComponent:[UTMConfiguration diskImagesDirectory] isDirectory:YES];
-        
-        // create images directory
-        if ([fileManager fileExistsAtPath:tmpPath.path]) {
-            // delete any orphaned images
-            NSArray<NSString *> *orphans = self.config.orphanedDrives;
-            for (NSInteger i = 0; i < orphans.count; i++) {
-                NSURL *orphanPath = [tmpPath URLByAppendingPathComponent:orphans[i]];
-                UTMLog(@"Deleting orphaned image '%@'", orphans[i]);
-                if (![fileManager removeItemAtURL:orphanPath error:&_err]) {
-                    UTMLog(@"Ignoring error deleting orphaned image: %@", _err.localizedDescription);
-                    _err = nil;
-                }
-            }
-            // move remaining drives to VM package
-            if (![fileManager moveItemAtURL:tmpPath toURL:dstPath error:&_err]) {
-                goto error;
-            }
-        } else if (![fileManager fileExistsAtPath:dstPath.path]) {
-            if (![fileManager createDirectoryAtURL:dstPath withIntermediateDirectories:NO attributes:nil error:&_err]) {
-                goto error;
-            }
-        }
+    if (![self saveDisksWithError:err]) {
+        return NO;
     }
     self.config.existingPath = url;
     self.path = url;
     return YES;
-error:
-    if (err) {
-        *err = _err;
-    }
-    return NO;
 }
 
 - (void)errorTriggered:(nullable NSString *)msg {

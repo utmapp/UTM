@@ -19,6 +19,7 @@ import SwiftUI
 @available(iOS 14, macOS 11, *)
 struct VMDetailsView: View {
     let vm: UTMVirtualMachine
+    @ObservedObject private var config: UTMQemuConfiguration
     @EnvironmentObject private var data: UTMData
     @Environment(\.presentationMode) private var presentationMode: Binding<PresentationMode>
     #if !os(macOS)
@@ -36,6 +37,11 @@ struct VMDetailsView: View {
         return ByteCountFormatter.string(fromByteCount: size, countStyle: .file)
     }
     
+    init(vm: UTMVirtualMachine) {
+        self.vm = vm
+        self.config = vm.config as! UTMQemuConfiguration
+    }
+    
     var body: some View {
         if vm.viewState.deleted {
             VStack {
@@ -51,10 +57,10 @@ struct VMDetailsView: View {
         } else {
             ScrollView {
                 Screenshot(vm: vm, large: regularScreenSizeClass)
-                let notes = vm.config.notes ?? ""
+                let notes = config.notes ?? ""
                 if regularScreenSizeClass && !notes.isEmpty {
                     HStack(alignment: .top) {
-                        Details(config: vm.config, sessionConfig: vm.viewState, sizeLabel: sizeLabel)
+                        QemuDetails(config: config, sessionConfig: vm.viewState, sizeLabel: sizeLabel)
                             .padding()
                             .frame(maxWidth: .infinity)
                         Text(notes)
@@ -67,7 +73,7 @@ struct VMDetailsView: View {
                         .padding([.leading, .trailing, .bottom])
                 } else {
                     VStack {
-                        Details(config: vm.config, sessionConfig: vm.viewState, sizeLabel: sizeLabel)
+                        QemuDetails(config: config, sessionConfig: vm.viewState, sizeLabel: sizeLabel)
                         if !notes.isEmpty {
                             Text(notes)
                                 .font(.body)
@@ -77,10 +83,10 @@ struct VMDetailsView: View {
                     }.padding([.leading, .trailing, .bottom])
                 }
             }.labelStyle(DetailsLabelStyle())
-            .navigationTitle(vm.config.name)
+            .navigationTitle(config.name)
             .modifier(VMToolbarModifier(vm: vm, bottom: !regularScreenSizeClass))
             .sheet(isPresented: $data.showSettingsModal) {
-                VMSettingsView(vm: vm, config: vm.config)
+                VMSettingsView(vm: vm, config: config)
                     .environmentObject(data)
             }
         }
@@ -122,8 +128,8 @@ struct Screenshot: View {
 }
 
 @available(iOS 14, macOS 11, *)
-struct Details: View {
-    @ObservedObject var config: UTMConfiguration
+struct QemuDetails: View {
+    @ObservedObject var config: UTMQemuConfiguration
     @ObservedObject var sessionConfig: UTMViewState
     let sizeLabel: String
     @EnvironmentObject private var data: UTMData

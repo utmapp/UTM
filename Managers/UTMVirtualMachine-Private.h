@@ -22,7 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readwrite, nullable) NSURL *path;
 @property (nonatomic, strong) NSURL *parentPath;
-@property (nonatomic, readwrite, copy) UTMConfiguration *config;
+@property (nonatomic, readwrite, copy) id<UTMConfigurable> config;
 @property (nonatomic, readwrite) UTMViewState *viewState;
 @property (nonatomic) UTMLogging *logging;
 @property (nonatomic, readwrite) BOOL busy;
@@ -31,13 +31,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)init NS_DESIGNATED_INITIALIZER;
 - (nullable instancetype)initWithURL:(NSURL *)url;
-- (instancetype)initWithConfiguration:(UTMConfiguration *)configuration withDestinationURL:(NSURL *)dstUrl;
+- (instancetype)initWithConfiguration:(id<UTMConfigurable>)configuration withDestinationURL:(NSURL *)dstUrl;
 
 - (NSURL *)packageURLForName:(NSString *)name;
 - (void)changeState:(UTMVMState)state;
 - (void)errorTriggered:(nullable NSString *)msg;
 - (BOOL)loadConfigurationWithReload:(BOOL)reload error:(NSError * _Nullable __autoreleasing *)err;
 - (BOOL)saveConfigurationWithError:(NSError * _Nullable __autoreleasing *)err;
+- (BOOL)saveIconWithError:(NSError * _Nullable __autoreleasing *)err;
+- (BOOL)saveDisksWithError:(NSError * _Nullable __autoreleasing *)err;
 
 - (NSDictionary *)loadPlist:(NSURL *)path withError:(NSError **)err;
 - (BOOL)savePlist:(NSURL *)path dict:(NSDictionary *)dict withError:(NSError **)err;

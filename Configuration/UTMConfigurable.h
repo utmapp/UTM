@@ -18,26 +18,10 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface UTMConfiguration : NSObject<NSCopying>
-
-@property (nonatomic, weak, readonly) NSDictionary *dictRepresentation;
+@protocol UTMConfigurable <NSObject>
 
 @property (nonatomic, copy) NSString *name;
 @property (nonatomic, nullable, copy) NSURL *existingPath;
-@property (nonatomic, nullable, copy) NSURL *selectedCustomIconPath;
-@property (nonatomic, nullable, copy) NSNumber *version;
-
-@property (nonatomic, readonly) NSString *subtitle;
-@property (nonatomic, readonly) NSString *uuid;
-
-@property (nonatomic, assign) BOOL shareDirectoryEnabled;
-
-@property (nonatomic, nullable, copy) NSString *icon;
-@property (nonatomic, assign) BOOL iconCustom;
-@property (nonatomic, nullable, copy) NSString *notes;
-
-+ (NSString *)diskImagesDirectory;
-+ (NSString *)debugLogName;
 
 @end
 

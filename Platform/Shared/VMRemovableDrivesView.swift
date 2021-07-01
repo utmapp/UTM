@@ -20,7 +20,7 @@ import SwiftUI
 struct VMRemovableDrivesView: View {
     let vm: UTMVirtualMachine
     @EnvironmentObject private var data: UTMData
-    @ObservedObject private var config: UTMConfiguration
+    @ObservedObject private var config: UTMQemuConfiguration
     @ObservedObject private var sessionConfig: UTMViewState
     @State private var shareDirectoryFileImportPresented: Bool = false
     @State private var diskImageFileImportPresented: Bool = false
@@ -34,7 +34,7 @@ struct VMRemovableDrivesView: View {
     
     init(vm: UTMVirtualMachine) {
         self.vm = vm
-        self.config = vm.config
+        self.config = vm.config as! UTMQemuConfiguration
         self.sessionConfig = vm.viewState
     }
     

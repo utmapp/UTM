@@ -35,7 +35,7 @@ class VMDisplayWindowController: NSWindowController {
     var vm: UTMQemuVirtualMachine!
     var onClose: ((Notification) -> Void)?
     var vmMessage: String?
-    var vmConfiguration: UTMConfiguration?
+    var vmConfiguration: UTMConfigurable?
     var toolbarVisible: Bool = false // ignored
     var keyboardVisible: Bool = false // ignored
     

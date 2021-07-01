@@ -20,6 +20,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface UTMQemuConfiguration (Constants)
 
++ (NSString *)diskImagesDirectory;
++ (NSString *)debugLogName;
+
 + (NSArray<NSString *>*)supportedOptions:(NSString *)key pretty:(BOOL)pretty;
 + (NSArray<NSString *>*)supportedBootDevicesPretty;
 + (NSArray<NSString *>*)supportedBootDevices;

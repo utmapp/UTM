@@ -15,8 +15,7 @@
 //
 
 #include "TargetConditionals.h"
-#include "UTMConfiguration.h"
-#include "UTMConfiguration+Drives.h"
+#include "UTMConfigurable.h"
 #include "UTMQemuConfiguration.h"
 #include "UTMQemuConfiguration+Constants.h"
 #include "UTMQemuConfiguration+Defaults.h"

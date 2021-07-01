@@ -16,10 +16,10 @@
 
 import Combine
 
-@objc extension UTMQemuConfiguration {
+@objc extension UTMQemuConfiguration: ObservableObject {
     private static let gibInMib = 1024
     
-    override var systemTargetPretty: String {
+    var systemTargetPretty: String {
         guard let arch = self.systemArchitecture else {
             return ""
         }
@@ -38,7 +38,7 @@ import Combine
         return prettyTargets[index]
     }
     
-    override var systemArchitecturePretty: String {
+    var systemArchitecturePretty: String {
         let archs = UTMQemuConfiguration.supportedArchitectures()
         let prettyArchs = UTMQemuConfiguration.supportedArchitecturesPretty()
         guard let arch = self.systemArchitecture else {
@@ -50,7 +50,7 @@ import Combine
         return prettyArchs[index]
     }
     
-    override var systemMemoryPretty: String {
+    var systemMemoryPretty: String {
         guard let memory = self.systemMemory else {
             return NSLocalizedString("Unknown", comment: "UTMQemuConfigurationExtension")
         }
@@ -59,20 +59,6 @@ import Combine
         } else {
             return String(format: "%d MB", memory.intValue)
         }
-    }
-}
-
-@objc extension UTMConfiguration: ObservableObject {
-    var systemTargetPretty: String {
-        ""
-    }
-    
-    var systemArchitecturePretty: String {
-        ""
-    }
-    
-    var systemMemoryPretty: String {
-        ""
     }
     
     var existingCustomIconURL: URL? {

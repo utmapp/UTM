@@ -15,11 +15,18 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "UTMConfiguration.h"
+#import "UTMConfigurable.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface UTMQemuConfiguration : UTMConfiguration
+@interface UTMQemuConfiguration : NSObject<NSCopying, UTMConfigurable>
+
+@property (nonatomic, weak, readonly) NSDictionary *dictRepresentation;
+@property (nonatomic, nullable, copy) NSNumber *version;
+
+@property (nonatomic, copy) NSString *name;
+@property (nonatomic, nullable, copy) NSURL *existingPath;
+@property (nonatomic, nullable, copy) NSURL *selectedCustomIconPath;
 
 - (void)migrateConfigurationIfNecessary;
 - (instancetype)init NS_DESIGNATED_INITIALIZER;
