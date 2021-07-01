@@ -49,7 +49,7 @@ struct ContentView: View {
             }.optionalSidebarFrame()
             .listStyle(SidebarListStyle())
             .navigationTitle(productName)
-            .navigationOptionalSubtitle(data.selectedVM?.config.name ?? "")
+            .navigationOptionalSubtitle(data.selectedVM?.title ?? "")
             .toolbar {
                 #if os(macOS)
                 ToolbarItem(placement: .navigation) {

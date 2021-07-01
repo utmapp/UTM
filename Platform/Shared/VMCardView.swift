@@ -18,8 +18,7 @@ import SwiftUI
 
 @available(iOS 14, macOS 11, *)
 struct VMCardView: View {
-    let vm: UTMVirtualMachine
-    @ObservedObject private var config: UTMQemuConfiguration
+    @ObservedObject var vm: UTMVirtualMachine
     @EnvironmentObject private var data: UTMData
     
     #if os(macOS)
@@ -30,22 +29,13 @@ struct VMCardView: View {
     typealias PlatformImage = UIImage
     #endif
     
-    init(vm: UTMVirtualMachine) {
-        self.vm = vm
-        self.config = vm.config as! UTMQemuConfiguration
-    }
-    
     var body: some View {
         HStack {
-            if config.iconCustom {
-                Logo(logo: PlatformImage(contentsOfURL: config.existingCustomIconURL))
-            } else {
-                Logo(logo: PlatformImage(contentsOfURL: config.existingIconURL))
-            }
+            Logo(logo: PlatformImage(contentsOfURL: vm.icon))
             VStack(alignment: .leading) {
-                Text(config.name)
+                Text(vm.title)
                     .font(.headline)
-                Text(config.systemTargetPretty)
+                Text(vm.subtitle)
                     .font(.subheadline)
             }.lineLimit(1)
             .truncationMode(.tail)

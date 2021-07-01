@@ -35,6 +35,7 @@
 #include "UTMViewState.h"
 #include "UTMVirtualMachine.h"
 #include "UTMVirtualMachine+IO.h"
+#include "UTMVirtualMachine-Protected.h"
 #include "UTMQemuVirtualMachine.h"
 #include "UTMQemuVirtualMachine+Drives.h"
 #include "UTMQemuVirtualMachine+SPICE.h"

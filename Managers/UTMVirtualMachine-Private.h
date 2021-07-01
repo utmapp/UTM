@@ -29,7 +29,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readwrite, nullable) UTMScreenshot *screenshot;
 @property (nonatomic, assign, readwrite) UTMVMState state;
 
-- (instancetype)init NS_DESIGNATED_INITIALIZER;
+- (instancetype)init;
 - (nullable instancetype)initWithURL:(NSURL *)url;
 - (instancetype)initWithConfiguration:(id<UTMConfigurable>)configuration withDestinationURL:(NSURL *)dstUrl;
 
@@ -37,9 +37,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)changeState:(UTMVMState)state;
 - (void)errorTriggered:(nullable NSString *)msg;
 - (BOOL)loadConfigurationWithReload:(BOOL)reload error:(NSError * _Nullable __autoreleasing *)err;
-- (BOOL)saveConfigurationWithError:(NSError * _Nullable __autoreleasing *)err;
-- (BOOL)saveIconWithError:(NSError * _Nullable __autoreleasing *)err;
-- (BOOL)saveDisksWithError:(NSError * _Nullable __autoreleasing *)err;
 
 - (NSDictionary *)loadPlist:(NSURL *)path withError:(NSError **)err;
 - (BOOL)savePlist:(NSURL *)path dict:(NSDictionary *)dict withError:(NSError **)err;

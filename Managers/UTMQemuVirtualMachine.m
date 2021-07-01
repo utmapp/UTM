@@ -103,17 +103,17 @@ NSString *const kSuspendSnapshotName = @"suspend";
     } else {
         self.config = [[UTMQemuConfiguration alloc] initWithDictionary:plist name:name path:self.path];
     }
-    return [super loadConfigurationWithReload:reload error:err];
+    return YES;
 }
 
 - (BOOL)saveConfigurationWithError:(NSError * _Nullable __autoreleasing *)err {
-    NSURL *url = [self packageURLForName:self.config.name];
+    NSURL *url = [self packageURLForName:self.qemuConfig.name];
     if (![self savePlist:[url URLByAppendingPathComponent:kUTMBundleConfigFilename]
                     dict:self.qemuConfig.dictRepresentation
                withError:err]) {
         return NO;
     }
-    return [super saveConfigurationWithError:err];
+    return YES;
 }
 
 - (BOOL)saveIconWithError:(NSError * _Nullable __autoreleasing *)err {
@@ -136,7 +136,7 @@ NSString *const kSuspendSnapshotName = @"suspend";
         self.qemuConfig.icon = newIcon;
         self.qemuConfig.selectedCustomIconPath = nil;
     }
-    return [super saveIconWithError:err];
+    return YES;
 }
 
 - (BOOL)saveDisksWithError:(NSError * _Nullable __autoreleasing *)err {
@@ -167,7 +167,36 @@ NSString *const kSuspendSnapshotName = @"suspend";
             }
         }
     }
-    return [super saveDisksWithError:err];
+    return YES;
+}
+
+- (BOOL)saveUTMWithError:(NSError * _Nullable *)err {
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    NSURL *url = [self packageURLForName:self.qemuConfig.name];
+    if (!self.qemuConfig.existingPath) { // new package
+        if (![fileManager createDirectoryAtURL:url withIntermediateDirectories:YES attributes:nil error:err]) {
+            return NO;
+        }
+    } else if (![self.qemuConfig.existingPath.URLByStandardizingPath isEqual:url.URLByStandardizingPath]) { // rename if needed
+        if (![fileManager moveItemAtURL:self.qemuConfig.existingPath toURL:url error:err]) {
+            return NO;
+        }
+    }
+    // save icon
+    if (![self saveIconWithError:err]) {
+        return NO;
+    }
+    // save config
+    if (![self saveConfigurationWithError:err]) {
+        return NO;
+    }
+    // create disk images directory
+    if (![self saveDisksWithError:err]) {
+        return NO;
+    }
+    self.qemuConfig.existingPath = url;
+    self.path = url;
+    return YES;
 }
 
 #pragma mark - VM actions

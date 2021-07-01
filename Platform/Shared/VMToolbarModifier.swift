@@ -19,9 +19,8 @@ import SwiftUI
 // Lots of dirty hacks to work around SwiftUI bugs introduced in Beta 2
 @available(iOS 14, macOS 11, *)
 struct VMToolbarModifier: ViewModifier {
-    let vm: UTMVirtualMachine
+    @ObservedObject var vm: UTMVirtualMachine
     let bottom: Bool
-    @ObservedObject private var sessionConfig: UTMViewState
     @State private var showSharePopup = false
     @State private var confirmAction: ConfirmAction?
     @EnvironmentObject private var data: UTMData
@@ -48,12 +47,6 @@ struct VMToolbarModifier: ViewModifier {
         }
     }
     #endif
-    
-    init(vm: UTMVirtualMachine, bottom: Bool) {
-        self.vm = vm
-        self.bottom = bottom
-        self.sessionConfig = vm.viewState
-    }
     
     func body(content: Content) -> some View {
         content.toolbar {
@@ -98,7 +91,7 @@ struct VMToolbarModifier: ViewModifier {
                     Spacer()
                 }
                 #endif
-                if sessionConfig.suspended || sessionConfig.active {
+                if vm.viewState.suspended || vm.viewState.active {
                     Button {
                         confirmAction = .confirmStopVM
                     } label: {
@@ -126,7 +119,7 @@ struct VMToolbarModifier: ViewModifier {
                     Label("Edit", systemImage: "slider.horizontal.3")
                         .labelStyle(IconOnlyLabelStyle())
                 }.help("Edit selected VM")
-                .disabled(sessionConfig.suspended || sessionConfig.active)
+                .disabled(vm.viewState.suspended || vm.viewState.active)
                 .padding(.leading, padding)
             }
         }

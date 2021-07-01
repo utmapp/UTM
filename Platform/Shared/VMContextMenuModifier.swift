@@ -18,16 +18,10 @@ import SwiftUI
 
 @available(iOS 14, macOS 11, *)
 struct VMContextMenuModifier: ViewModifier {
-    let vm: UTMVirtualMachine
-    @ObservedObject private var sessionConfig: UTMViewState
+    @ObservedObject var vm: UTMVirtualMachine
     @EnvironmentObject private var data: UTMData
     @State private var showSharePopup = false
     @State private var confirmAction: ConfirmAction?
-    
-    init(vm: UTMVirtualMachine) {
-        self.vm = vm
-        self.sessionConfig = vm.viewState
-    }
     
     func body(content: Content) -> some View {
         content.contextMenu {
@@ -43,8 +37,8 @@ struct VMContextMenuModifier: ViewModifier {
                 data.edit(vm: vm)
             } label: {
                 Label("Edit", systemImage: "slider.horizontal.3")
-            }.disabled(sessionConfig.suspended || sessionConfig.active)
-            if sessionConfig.suspended || sessionConfig.active {
+            }.disabled(vm.viewState.suspended || vm.viewState.active)
+            if vm.viewState.suspended || vm.viewState.active {
                 Button {
                     confirmAction = .confirmStopVM
                 } label: {

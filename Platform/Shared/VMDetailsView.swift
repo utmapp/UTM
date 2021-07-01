@@ -18,8 +18,7 @@ import SwiftUI
 
 @available(iOS 14, macOS 11, *)
 struct VMDetailsView: View {
-    let vm: UTMVirtualMachine
-    @ObservedObject private var config: UTMQemuConfiguration
+    @ObservedObject var vm: UTMVirtualMachine
     @EnvironmentObject private var data: UTMData
     @Environment(\.presentationMode) private var presentationMode: Binding<PresentationMode>
     #if !os(macOS)
@@ -37,11 +36,6 @@ struct VMDetailsView: View {
         return ByteCountFormatter.string(fromByteCount: size, countStyle: .file)
     }
     
-    init(vm: UTMVirtualMachine) {
-        self.vm = vm
-        self.config = vm.config as! UTMQemuConfiguration
-    }
-    
     var body: some View {
         if vm.viewState.deleted {
             VStack {
@@ -57,10 +51,10 @@ struct VMDetailsView: View {
         } else {
             ScrollView {
                 Screenshot(vm: vm, large: regularScreenSizeClass)
-                let notes = config.notes ?? ""
+                let notes = vm.notes ?? ""
                 if regularScreenSizeClass && !notes.isEmpty {
                     HStack(alignment: .top) {
-                        QemuDetails(config: config, sessionConfig: vm.viewState, sizeLabel: sizeLabel)
+                        Details(vm: vm, sizeLabel: sizeLabel)
                             .padding()
                             .frame(maxWidth: .infinity)
                         Text(notes)
@@ -73,7 +67,7 @@ struct VMDetailsView: View {
                         .padding([.leading, .trailing, .bottom])
                 } else {
                     VStack {
-                        QemuDetails(config: config, sessionConfig: vm.viewState, sizeLabel: sizeLabel)
+                        Details(vm: vm, sizeLabel: sizeLabel)
                         if !notes.isEmpty {
                             Text(notes)
                                 .font(.body)
@@ -83,10 +77,10 @@ struct VMDetailsView: View {
                     }.padding([.leading, .trailing, .bottom])
                 }
             }.labelStyle(DetailsLabelStyle())
-            .navigationTitle(config.name)
+            .navigationTitle(vm.title)
             .modifier(VMToolbarModifier(vm: vm, bottom: !regularScreenSizeClass))
             .sheet(isPresented: $data.showSettingsModal) {
-                VMSettingsView(vm: vm, config: config)
+                VMSettingsView(vm: vm, config: vm.config as! UTMQemuConfiguration)
                     .environmentObject(data)
             }
         }
@@ -128,9 +122,8 @@ struct Screenshot: View {
 }
 
 @available(iOS 14, macOS 11, *)
-struct QemuDetails: View {
-    @ObservedObject var config: UTMQemuConfiguration
-    @ObservedObject var sessionConfig: UTMViewState
+struct Details: View {
+    @ObservedObject var vm: UTMVirtualMachine
     let sizeLabel: String
     @EnvironmentObject private var data: UTMData
     
@@ -139,25 +132,25 @@ struct QemuDetails: View {
             HStack {
                 plainLabel("Status", systemImage: "info.circle")
                 Spacer()
-                Text(sessionConfig.active ? "Running" : (sessionConfig.suspended ? "Suspended" : "Not running"))
+                Text(vm.viewState.active ? "Running" : (vm.viewState.suspended ? "Suspended" : "Not running"))
                     .foregroundColor(.secondary)
             }
             HStack {
                 plainLabel("Architecture", systemImage: "cpu")
                 Spacer()
-                Text(config.systemArchitecturePretty)
+                Text(vm.systemArchitecture)
                     .foregroundColor(.secondary)
             }
             HStack {
                 plainLabel("Machine", systemImage: "desktopcomputer")
                 Spacer()
-                Text(config.systemTargetPretty)
+                Text(vm.systemTarget)
                     .foregroundColor(.secondary)
             }
             HStack {
                 plainLabel("Memory", systemImage: "memorychip")
                 Spacer()
-                Text(config.systemMemoryPretty)
+                Text(vm.systemMemory)
                     .foregroundColor(.secondary)
             }
             HStack {

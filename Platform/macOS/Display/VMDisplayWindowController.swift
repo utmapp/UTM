@@ -129,7 +129,7 @@ class VMDisplayWindowController: NSWindowController {
         drivesToolbarItem.isEnabled = vmQemuConfig!.countDrives > 0
         sharedFolderToolbarItem.isEnabled = vm.hasShareDirectoryEnabled
         usbToolbarItem.isEnabled = vm.hasUsbRedirection
-        window!.title = vmConfiguration!.name
+        window!.title = vmQemuConfig!.name
     }
     
     func enterSuspended(isBusy busy: Bool) {

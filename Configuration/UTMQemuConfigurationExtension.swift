@@ -17,50 +17,6 @@
 import Combine
 
 @objc extension UTMQemuConfiguration: ObservableObject {
-    private static let gibInMib = 1024
-    
-    var systemTargetPretty: String {
-        guard let arch = self.systemArchitecture else {
-            return ""
-        }
-        guard let target = self.systemTarget else {
-            return ""
-        }
-        guard let targets = UTMQemuConfiguration.supportedTargets(forArchitecture: arch) else {
-            return ""
-        }
-        guard let prettyTargets = UTMQemuConfiguration.supportedTargets(forArchitecturePretty: arch) else {
-            return ""
-        }
-        guard let index = targets.firstIndex(of: target) else {
-            return ""
-        }
-        return prettyTargets[index]
-    }
-    
-    var systemArchitecturePretty: String {
-        let archs = UTMQemuConfiguration.supportedArchitectures()
-        let prettyArchs = UTMQemuConfiguration.supportedArchitecturesPretty()
-        guard let arch = self.systemArchitecture else {
-            return ""
-        }
-        guard let index = archs.firstIndex(of: arch) else {
-            return ""
-        }
-        return prettyArchs[index]
-    }
-    
-    var systemMemoryPretty: String {
-        guard let memory = self.systemMemory else {
-            return NSLocalizedString("Unknown", comment: "UTMQemuConfigurationExtension")
-        }
-        if memory.intValue > UTMQemuConfiguration.gibInMib {
-            return String(format: "%.1f GB", memory.floatValue / Float(UTMQemuConfiguration.gibInMib))
-        } else {
-            return String(format: "%d MB", memory.intValue)
-        }
-    }
-    
     var existingCustomIconURL: URL? {
         if let current = self.selectedCustomIconPath {
             return current // if we just selected a path

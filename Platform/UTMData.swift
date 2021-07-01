@@ -252,7 +252,7 @@ class UTMData: ObservableObject {
     }
     
     func clone(vm: UTMVirtualMachine) throws {
-        let newName = newDefaultVMName(base: vm.config.name)
+        let newName = newDefaultVMName(base: vm.title)
         let newPath = UTMVirtualMachine.virtualMachinePath(newName, inParentURL: documentsURL)
         
         try fileManager.copyItem(at: vm.path!, to: newPath)
@@ -484,7 +484,7 @@ class UTMData: ObservableObject {
     
     private func recreate(vm: UTMVirtualMachine) {
         guard let path = vm.path else {
-            logger.error("Attempting to refresh unsaved VM \(vm.config.name)")
+            logger.error("Attempting to refresh unsaved VM \(vm.title)")
             return
         }
         guard let newVM = UTMVirtualMachine(url: path) else {

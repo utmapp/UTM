@@ -14,11 +14,21 @@
 // limitations under the License.
 //
 
-#import <Foundation/Foundation.h>
+#import "UTMVirtualMachine.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@protocol UTMConfigurable <NSObject>
+@interface UTMVirtualMachine ()
+
+@property (nonatomic, readonly) NSString *title;
+@property (nonatomic, readonly) NSString *subtitle;
+
+@property (nonatomic, nullable, readonly) NSURL *icon;
+@property (nonatomic, nullable, readonly) NSString *notes;
+
+@property (nonatomic, readonly) NSString *systemTarget;
+@property (nonatomic, readonly) NSString *systemArchitecture;
+@property (nonatomic, readonly) NSString *systemMemory;
 
 @end
 

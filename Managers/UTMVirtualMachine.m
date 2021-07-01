@@ -22,6 +22,7 @@
 #import "UTMLogging.h"
 #import "UTMScreenshot.h"
 #import "UTMViewState.h"
+#import "UTM-Swift.h"
 
 NSString *const kUTMErrorDomain = @"com.utmapp.utm";
 NSString *const kUTMBundleConfigFilename = @"config.plist";
@@ -29,12 +30,40 @@ NSString *const kUTMBundleExtension = @"utm";
 NSString *const kUTMBundleViewFilename = @"view.plist";
 NSString *const kUTMBundleScreenshotFilename = @"screenshot.png";
 
+@interface UTMVirtualMachine ()
+
+@property (nonatomic) NSArray *anyCancellable;
+
+@end
+
 @implementation UTMVirtualMachine
 
 - (void)setDelegate:(id<UTMVirtualMachineDelegate>)delegate {
     _delegate = delegate;
     _delegate.vmConfiguration = self.config;
     [self restoreViewState];
+}
+
+- (void)setState:(UTMVMState)state {
+    [self propertyWillChange];
+    _state = state;
+}
+
+- (void)setScreenshot:(UTMScreenshot *)screenshot {
+    [self propertyWillChange];
+    _screenshot = screenshot;
+}
+
+- (void)setViewState:(UTMViewState *)viewState {
+    [self propertyWillChange];
+    _viewState = viewState;
+    self.anyCancellable = [self subscribeToConfiguration];
+}
+
+- (void)setConfig:(id<UTMConfigurable>)config {
+    [self propertyWillChange];
+    _config = config;
+    self.anyCancellable = [self subscribeToConfiguration];
 }
 
 + (BOOL)URLisVirtualMachine:(NSURL *)url {
@@ -74,11 +103,11 @@ NSString *const kUTMBundleScreenshotFilename = @"screenshot.png";
     if (self) {
         self.path = url;
         self.parentPath = url.URLByDeletingLastPathComponent;
+        [self loadViewState];
         if (![self loadConfigurationWithReload:NO error:nil]) {
             self = nil;
             return self;
         }
-        [self loadViewState];
         [self loadScreenshot];
         if (self.viewState.suspended) {
             self.state = kVMSuspended;
@@ -93,8 +122,8 @@ NSString *const kUTMBundleScreenshotFilename = @"screenshot.png";
     self = [self init];
     if (self) {
         self.parentPath = dstUrl;
-        self.config = configuration;
         self.viewState = [[UTMViewState alloc] init];
+        self.config = configuration;
     }
     return self;
 }
@@ -113,55 +142,6 @@ NSString *const kUTMBundleScreenshotFilename = @"screenshot.png";
     return [[self.parentPath URLByAppendingPathComponent:name] URLByAppendingPathExtension:kUTMBundleExtension];
 }
 
-- (BOOL)loadConfigurationWithReload:(BOOL)reload error:(NSError * _Nullable __autoreleasing *)err {
-    return YES;
-}
-
-- (BOOL)reloadConfigurationWithError:(NSError * _Nullable __autoreleasing *)err {
-    return [self loadConfigurationWithReload:YES error:err];
-}
-
-- (BOOL)saveConfigurationWithError:(NSError * _Nullable __autoreleasing *)err {
-    return YES;
-}
-
-- (BOOL)saveIconWithError:(NSError * _Nullable __autoreleasing *)err {
-    return YES;
-}
-
-- (BOOL)saveDisksWithError:(NSError * _Nullable __autoreleasing *)err {
-    return YES;
-}
-
-- (BOOL)saveUTMWithError:(NSError * _Nullable *)err {
-    NSFileManager *fileManager = [NSFileManager defaultManager];
-    NSURL *url = [self packageURLForName:self.config.name];
-    if (!self.config.existingPath) { // new package
-        if (![fileManager createDirectoryAtURL:url withIntermediateDirectories:YES attributes:nil error:err]) {
-            return NO;
-        }
-    } else if (![self.config.existingPath.URLByStandardizingPath isEqual:url.URLByStandardizingPath]) { // rename if needed
-        if (![fileManager moveItemAtURL:self.config.existingPath toURL:url error:err]) {
-            return NO;
-        }
-    }
-    // save icon
-    if (![self saveIconWithError:err]) {
-        return NO;
-    }
-    // save config
-    if (![self saveConfigurationWithError:err]) {
-        return NO;
-    }
-    // create disk images directory
-    if (![self saveDisksWithError:err]) {
-        return NO;
-    }
-    self.config.existingPath = url;
-    self.path = url;
-    return YES;
-}
-
 - (void)errorTriggered:(nullable NSString *)msg {
     if (self.state != kVMStopped && self.state != kVMError) {
         self.viewState.suspended = NO;
@@ -175,6 +155,14 @@ NSString *const kUTMBundleScreenshotFilename = @"screenshot.png";
 }
 
 #define notImplemented @throw [NSException exceptionWithName:NSInvalidArgumentException reason:[NSString stringWithFormat:@"%s must be overridden in a subclass.", __PRETTY_FUNCTION__] userInfo:nil]
+
+- (BOOL)loadConfigurationWithReload:(BOOL)reload error:(NSError * _Nullable __autoreleasing *)err {
+    notImplemented;
+}
+
+- (BOOL)saveUTMWithError:(NSError * _Nullable *)err {
+    notImplemented;
+}
 
 - (BOOL)startVM {
     notImplemented;
