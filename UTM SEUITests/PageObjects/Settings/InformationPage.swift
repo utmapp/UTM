@@ -21,26 +21,38 @@ public class InformationPage : BaseTest {
     override var rootElement: XCUIElement{
         return app.buttons["Settings"]
     }
+
+    // TODO: Add methods for icon style
+
     //PageElements
     lazy var backButton = app.buttons["Settings"]
-    lazy var nameField = app.textFields["Name"]
-   
+    lazy var styleButon = app.buttons["Style"]
 
-    
+    lazy var nameField = app.textFields["Name"]
+    // Verify not a text editor not text field
+    lazy var notesField = app.textFields["Notes"]
+
     @discardableResult
     func tapBack(completion: Completion=nil)-> Self{
         log("tap the back button")
         backButton.tap()
         return self
     }
-    
+
+    @discardableResult
+    func tapStyle(completion: Completion=nil)-> Self{
+        log("tap the style button")
+        styleButton.tap()
+        return self
+    }
+
     @discardableResult
     func tapName(completion: Completion=nil)-> Self{
         log("tap the name field")
         nameField.tap()
         return self
     }
-    
+
     @discardableResult
     func fillName(_ text: String, completion: Completion=nil)-> Self{
         log("type \(text) into the name field")
@@ -48,6 +60,17 @@ public class InformationPage : BaseTest {
         return self
     }
 
+    @discardableResult
+    func tapNotes(completion: Completion=nil)-> Self{
+        log("tap the notes field")
+        notesField.tap()
+        return self
+    }
+
+    @discardableResult
+    func fillNotes(_ text: String, completion: Completion=nil)-> Self{
+        log("type \(text) into the notes field")
+        notesField.typeText(text)
+        return self
+    }
 }
-
-
