@@ -16,7 +16,7 @@
 
 import Combine
 
-@objc extension UTMQemuConfiguration: ObservableObject {
+extension UTMConfigurable {
     var existingCustomIconURL: URL? {
         if let current = self.selectedCustomIconPath {
             return current // if we just selected a path
@@ -40,7 +40,9 @@ import Combine
             return nil
         }
     }
-    
+}
+
+@objc extension UTMQemuConfiguration: ObservableObject {
     func propertyWillChange() -> Void {
         if #available(iOS 13, macOS 11, *) {
             DispatchQueue.main.async { self.objectWillChange.send() }

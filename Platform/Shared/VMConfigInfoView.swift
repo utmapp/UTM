@@ -27,8 +27,8 @@ private enum IconStyle: String, Identifiable, CaseIterable {
 }
 
 @available(iOS 14, macOS 11, *)
-struct VMConfigInfoView: View {
-    @ObservedObject var config: UTMQemuConfiguration
+struct VMConfigInfoView<Config: ObservableObject & UTMConfigurable>: View {
+    @ObservedObject var config: Config
     @State private var imageSelectVisible: Bool = false
     @State private var iconStyle: IconStyle = .generic
     @State private var warningMessage: String? = nil

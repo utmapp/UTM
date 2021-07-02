@@ -19,53 +19,28 @@ import SwiftUI
 @available(macOS 11, *)
 struct VMSettingsView: View {
     let vm: UTMVirtualMachine?
-    @ObservedObject var config: UTMQemuConfiguration
+    let config: UTMConfigurable
     
     @EnvironmentObject private var data: UTMData
     @Environment(\.presentationMode) private var presentationMode: Binding<PresentationMode>
     
-    @State private var infoActive: Bool = true
     @State private var selectedDriveIndex: Int?
     
     var body: some View {
         NavigationView {
             List {
-                NavigationLink(destination: VMConfigInfoView(config: config).scrollable(), isActive: $infoActive) {
-                    Label("Information", systemImage: "info.circle")
-                }
-                NavigationLink(destination: VMConfigSystemView(config: config).scrollable()) {
-                    Label("System", systemImage: "cpu")
-                }
-                NavigationLink(destination: VMConfigQEMUView(config: config).scrollable()) {
-                    Label("QEMU", systemImage: "shippingbox")
-                }
-                NavigationLink(destination: VMConfigDisplayView(config: config).scrollable()) {
-                    Label("Display", systemImage: "rectangle.on.rectangle")
-                }
-                NavigationLink(destination: VMConfigInputView(config: config).scrollable()) {
-                    Label("Input", systemImage: "keyboard")
-                }
-                NavigationLink(destination: VMConfigNetworkView(config: config).scrollable()) {
-                    Label("Network", systemImage: "network")
-                }
-                NavigationLink(destination: VMConfigSoundView(config: config).scrollable()) {
-                    Label("Sound", systemImage: "speaker.wave.2")
-                }
-                NavigationLink(destination: VMConfigSharingView(config: config).scrollable()) {
-                    Label("Sharing", systemImage: "person.crop.circle.fill")
-                }
-                Section(header: Text("Drives")) {
-                    ForEach(0..<config.countDrives, id: \.self) { index in
-                        NavigationLink(destination: VMConfigDriveDetailsView(config: config, index: index).scrollable(), tag: index, selection: $selectedDriveIndex) {
-                            Label(config.driveLabel(for: index), systemImage: "externaldrive")
-                        }
-                    }.onMove(perform: moveDrives)
+                if let qemuConfig = config as? UTMQemuConfiguration {
+                    VMQEMUSettingsView(vm: vm, config: qemuConfig, selectedDriveIndex: $selectedDriveIndex)
+                } else if #available(macOS 12, *), let appleConfig = config as? UTMAppleConfiguration {
+                    VMAppleSettingsView(vm: vm, config: appleConfig)
                 }
             }.listStyle(.sidebar)
         }.frame(minWidth: 800, minHeight: 400)
         .toolbar {
             ToolbarItemGroup(placement: .automatic) {
-                VMConfigDrivesButtons(vm: vm, config: config, selectedDriveIndex: $selectedDriveIndex)
+                if let qemuConfig = config as? UTMQemuConfiguration {
+                    VMConfigDrivesButtons(vm: vm, config: qemuConfig, selectedDriveIndex: $selectedDriveIndex)
+                }
             }
             ToolbarItemGroup(placement: .cancellationAction) {
                 Button(action: cancel) {
@@ -97,21 +72,6 @@ struct VMSettingsView: View {
         if let existing = self.vm {
             data.busyWork {
                 try data.discardChanges(forVM: existing)
-            }
-        }
-    }
-    
-    func moveDrives(from source: IndexSet, to destination: Int) {
-        for offset in source {
-            let realDestination: Int
-            if offset < destination {
-                realDestination = destination - 1
-            } else {
-                realDestination = destination
-            }
-            config.moveDrive(offset, to: realDestination)
-            if selectedDriveIndex == offset {
-                selectedDriveIndex = realDestination
             }
         }
     }

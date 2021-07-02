@@ -34,6 +34,15 @@ struct NumberTextField: View {
         self.formatter.usesSignificantDigits = false
     }
     
+    init(_ titleKey: LocalizedStringKey, number: Binding<Int>, onEditingChanged: @escaping (Bool) -> Void = { _ in }, onCommit: @escaping () -> Void = {}) {
+        let nsnumber = Binding<NSNumber?> {
+            return NSNumber(value: number.wrappedValue)
+        } set: { newValue in
+            number.wrappedValue = newValue?.intValue ?? 0
+        }
+        self.init(titleKey, number: nsnumber, onEditingChanged: onEditingChanged, onCommit: onCommit)
+    }
+    
     var body: some View {
         TextField(titleKey, text: Binding<String>(get: { () -> String in
             guard let number = self.number else {
