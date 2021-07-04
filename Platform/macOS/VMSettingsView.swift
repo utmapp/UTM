@@ -34,7 +34,7 @@ struct VMSettingsView: View {
                 } else if #available(macOS 12, *), let appleConfig = config as? UTMAppleConfiguration {
                     VMAppleSettingsView(vm: vm, config: appleConfig)
                 }
-            }.listStyle(.sidebar)
+            }.listStyle(SidebarListStyle())
         }.frame(minWidth: 800, minHeight: 400)
         .toolbar {
             ToolbarItemGroup(placement: .automatic) {
