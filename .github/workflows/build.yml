@@ -22,7 +22,7 @@ on:
 jobs:
   build:
     name: Build UTM
-    runs-on: macos-10.15
+    runs-on: macos-11
     strategy:
       matrix:
         arch: [arm64, x86_64]
@@ -39,7 +39,7 @@ jobs:
           submodules: recursive
       - name: Setup Xcode
         shell: bash
-        run: sudo xcode-select -switch /Applications/Xcode_12.4.app
+        run: sudo xcode-select -switch /Applications/Xcode_13.0.app
       - name: Cache Sysroot
         id: cache-sysroot
         uses: actions/cache@v2
@@ -110,7 +110,7 @@ jobs:
           path: sysroot.tgz
       - name: Setup Xcode
         shell: bash
-        run: sudo xcode-select -switch /Applications/Xcode_12.4.app
+        run: sudo xcode-select -switch /Applications/Xcode_13.0.app
       - name: Build UTM
         run: |
           ./scripts/build_utm.sh -p macos -a "arm64 x86_64" -o UTM
