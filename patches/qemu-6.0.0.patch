@@ -32732,3 +32732,39 @@ diff -Naur a/util/osdep.c b/util/osdep.c
  static bool fips_enabled = false;
  
  static const char *hw_version = QEMU_HW_VERSION;
+From 2ee6330b9ead0b333a8ed6f7e7861dd7e6128133 Mon Sep 17 00:00:00 2001
+From: Yasuo Kuwahara <kwhr00@gmail.com>
+Date: Tue, 25 May 2021 18:46:19 +0900
+Subject: [PATCH] tcg/aarch64: Fix tcg_out_rotl
+
+The last argument of tcg_out_extr() must be in the range 0-31 if ext==0.
+Before the fix, when m==0 it becomes 32 and it crashes with an Illegal
+instruction on Apple Silicon.  After the fix, it will be 0.  If m is in
+the range 1-31, it is the same as before.
+
+Signed-off-by: Yasuo Kuwahara <kwhr00@gmail.com>
+Message-Id: <CAHfJ0vSXnmnTLmT0kR=a8ACRdw_UsLYOhStzUzgVEHoH8U-7sA@mail.gmail.com>
+Signed-off-by: Richard Henderson <richard.henderson@linaro.org>
+---
+ tcg/aarch64/tcg-target.c.inc | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
+
+diff --git a/tcg/aarch64/tcg-target.c.inc b/tcg/aarch64/tcg-target.c.inc
+index f07ba98aa4..5bd366f2d4 100644
+--- a/tcg/aarch64/tcg-target.c.inc
++++ b/tcg/aarch64/tcg-target.c.inc
+@@ -1291,9 +1291,8 @@ static inline void tcg_out_rotr(TCGContext *s, TCGType ext,
+ static inline void tcg_out_rotl(TCGContext *s, TCGType ext,
+                                 TCGReg rd, TCGReg rn, unsigned int m)
+ {
+-    int bits = ext ? 64 : 32;
+-    int max = bits - 1;
+-    tcg_out_extr(s, ext, rd, rn, rn, bits - (m & max));
++    int max = ext ? 63 : 31;
++    tcg_out_extr(s, ext, rd, rn, rn, -m & max);
+ }
+ 
+ static inline void tcg_out_dep(TCGContext *s, TCGType ext, TCGReg rd,
+-- 
+2.28.0
+
