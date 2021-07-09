@@ -162,6 +162,13 @@ extension VMDisplayMetalWindowController: UTMSpiceIODelegate {
             usbManager.delegate = self
         }
     }
+    
+    func spiceDynamicResolutionSupportDidChange(_ supported: Bool) {
+        if isDisplaySizeDynamic != supported {
+            displaySizeDidChange(size: displaySize)
+        }
+        isDisplaySizeDynamic = supported
+    }
 }
     
 // MARK: - Screen management
@@ -184,13 +191,6 @@ extension VMDisplayMetalWindowController {
                 self.updateHostFrame(forGuestResolution: size)
             }
         }
-    }
-    
-    func dynamicResolutionSupportDidChange(_ supported: Bool) {
-        if isDisplaySizeDynamic != supported {
-            displaySizeDidChange(size: displaySize)
-        }
-        isDisplaySizeDynamic = supported
     }
     
     func windowDidChangeScreen(_ notification: Notification) {
