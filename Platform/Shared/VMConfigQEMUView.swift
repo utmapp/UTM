@@ -55,16 +55,16 @@ struct VMConfigQEMUView: View {
                     let fixedArgs = qemuSystem.argv
                     #if os(macOS)
                     VStack {
-                        ForEach(fixedArgs, id: \.self) { arg in
-                            TextField("", text: .constant(arg))
+                        ForEach(fixedArgs.indices) { i in
+                            TextField("", text: .constant(fixedArgs[i]))
                         }.disabled(true)
                         CustomArguments(config: config)
                         TextField("New...", text: $newArg, onEditingChanged: addArg)
                     }
                     #else
                     List {
-                        ForEach(fixedArgs, id: \.self) { arg in
-                            Text(arg)
+                        ForEach(fixedArgs.indices) { i in
+                            Text(fixedArgs[i])
                         }.foregroundColor(.secondary)
                         CustomArguments(config: config)
                         TextField("New...", text: $newArg, onEditingChanged: addArg)
