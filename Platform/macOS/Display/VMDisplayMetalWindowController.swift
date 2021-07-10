@@ -166,6 +166,11 @@ extension VMDisplayMetalWindowController: UTMSpiceIODelegate {
     func spiceDynamicResolutionSupportDidChange(_ supported: Bool) {
         if isDisplaySizeDynamic != supported {
             displaySizeDidChange(size: displaySize)
+            DispatchQueue.main.async {
+                if supported, let window = self.window {
+                    _ = self.updateGuestResolution(for: window, frameSize: window.frame.size)
+                }
+            }
         }
         isDisplaySizeDynamic = supported
     }
@@ -263,7 +268,12 @@ extension VMDisplayMetalWindowController {
         guard !self.isDisplayFixed else {
             return frameSize
         }
-        return updateHostScaling(for: sender, frameSize: frameSize)
+        let newSize = updateHostScaling(for: sender, frameSize: frameSize)
+        if isFullScreen {
+            return frameSize
+        } else {
+            return newSize
+        }
     }
     
     func windowDidEndLiveResize(_ notification: Notification) {
