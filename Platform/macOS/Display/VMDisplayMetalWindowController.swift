@@ -129,6 +129,7 @@ class VMDisplayMetalWindowController: VMDisplayWindowController {
             self.localEventMonitor = nil
         }
         releaseMouse()
+        displaySizeObserver = nil
         super.enterSuspended(isBusy: busy)
     }
     
