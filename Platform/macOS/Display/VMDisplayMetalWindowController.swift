@@ -29,6 +29,8 @@ class VMDisplayMetalWindowController: VMDisplayWindowController {
     private var isDisplaySizeDynamic: Bool = false
     private var isFullScreen: Bool = false
     private let minDynamicSize = CGSize(width: 800, height: 600)
+    private let resizeTimeoutSecs: Double = 5
+    private var cancelResize: DispatchWorkItem?
     
     private var localEventMonitor: Any? = nil
     private var ctrlKeyDown: Bool = false
@@ -180,6 +182,9 @@ extension VMDisplayMetalWindowController: UTMSpiceIODelegate {
 // MARK: - Screen management
 extension VMDisplayMetalWindowController {
     fileprivate func displaySizeDidChange(size: CGSize) {
+        // cancel any pending resize
+        cancelResize?.cancel()
+        cancelResize = nil
         guard size != .zero else {
             logger.debug("Ignoring zero size display")
             return
@@ -282,6 +287,12 @@ extension VMDisplayMetalWindowController {
             return
         }
         _ = updateGuestResolution(for: window, frameSize: window.frame.size)
+        cancelResize = DispatchWorkItem {
+            if let vmDisplay = self.vmDisplay {
+                self.displaySizeDidChange(size: vmDisplay.displaySize)
+            }
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + resizeTimeoutSecs, execute: cancelResize!)
     }
     
     func windowDidEnterFullScreen(_ notification: Notification) {
