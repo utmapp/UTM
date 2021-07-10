@@ -563,6 +563,9 @@ static size_t sysctl_read(const char *name) {
     [self pushArgv:@"-S"]; // startup stopped
     [self pushArgv:@"-qmp"];
     [self pushArgv:[NSString stringWithFormat:@"tcp:127.0.0.1:%lu,server,nowait", self.qmpPort]];
+    // prevent QEMU default devices, which leads to duplicate CD drive (fix #2538)
+    // see https://github.com/qemu/qemu/blob/6005ee07c380cbde44292f5f6c96e7daa70f4f7d/docs/qdev-device-use.txt#L382
+    [self pushArgv:@"-nodefaults"];
     [self pushArgv:@"-vga"];
     [self pushArgv:@"none"];// -vga none, avoid adding duplicate graphics cards
     if (self.configuration.displayConsoleOnly) {
