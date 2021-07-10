@@ -168,10 +168,6 @@ static matrix_float4x4 matrix_scale_translate(CGFloat scale, CGPoint translate)
         [commandBuffer renderCommandEncoderWithDescriptor:renderPassDescriptor];
         renderEncoder.label = @"MyRenderEncoder";
         
-        // Lock screen updates
-        dispatch_semaphore_t drawLock = source.drawLock;
-        dispatch_semaphore_wait(drawLock, DISPATCH_TIME_FOREVER);
-        
         // Render the screen first
         
         bool hasAlpha = NO;
@@ -245,11 +241,25 @@ static matrix_float4x4 matrix_scale_translate(CGFloat scale, CGPoint translate)
         // Schedule a present once the framebuffer is complete using the current drawable
         [commandBuffer presentDrawable:view.currentDrawable];
         
+        // Lock screen updates
+        __weak dispatch_semaphore_t drawLock = source.drawLock;
+        
+        // Acquire lock before GPU schedules rendering
+        [commandBuffer addScheduledHandler:^(id<MTLCommandBuffer> commandBuffer) {
+            dispatch_semaphore_t _drawLock = drawLock;
+            if (_drawLock) {
+                dispatch_semaphore_wait(drawLock, DISPATCH_TIME_FOREVER);
+            }
+        }];
+        
         // Release lock after GPU is done
         [commandBuffer addCompletedHandler:^(id<MTLCommandBuffer> commandBuffer) {
             // GPU work is complete
             // Signal the semaphore to start the CPU work
-            dispatch_semaphore_signal(drawLock);
+            dispatch_semaphore_t _drawLock = drawLock;
+            if (_drawLock) {
+                dispatch_semaphore_signal(_drawLock);
+            }
         }];
     }
 
