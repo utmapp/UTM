@@ -132,6 +132,10 @@ static size_t sysctl_read(const char *name) {
         return singleCpu;
     }
 #if defined(__aarch64__)
+    CPUCount hostPcoreCount = {
+        .cpus = sysctl_read("hw.perflevel0.physicalcpu"),
+        .threads = sysctl_read("hw.perflevel0.logicalcpu"),
+    };
     // in ARM we can only emulate other weak architectures
     if ([arch isEqualToString:@"alpha"] ||
         [arch isEqualToString:@"arm"] ||
@@ -141,7 +145,11 @@ static size_t sysctl_read(const char *name) {
         [arch hasPrefix:@"ppc"] ||
         [arch hasPrefix:@"riscv"] ||
         [arch hasPrefix:@"xtensa"]) {
-        return hostCount;
+        if (self.useOnlyPcores && hostPcoreCount.cpus > 0) {
+            return hostPcoreCount;
+        } else {
+            return hostCount;
+        }
     } else {
         return singleCpu;
     }
@@ -501,6 +509,11 @@ static size_t sysctl_read(const char *name) {
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     return self.configuration.isTargetArchitectureMatchHost && ![defaults boolForKey:@"NoHypervisor"];
 #endif
+}
+
+- (BOOL)useOnlyPcores {
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    return [defaults boolForKey:@"UseOnlyPcores"];
 }
 
 - (BOOL)hasCustomBios {
