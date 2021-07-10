@@ -126,9 +126,13 @@ static size_t sysctl_read(const char *name) {
         };
         return userCount; // user override
     }
+    NSString *arch = self.configuration.systemArchitecture;
+    // SPARC5 defaults to single CPU
+    if ([arch hasPrefix:@"sparc"]) {
+        return singleCpu;
+    }
 #if defined(__aarch64__)
     // in ARM we can only emulate other weak architectures
-    NSString *arch = self.configuration.systemArchitecture;
     if ([arch isEqualToString:@"alpha"] ||
         [arch isEqualToString:@"arm"] ||
         [arch isEqualToString:@"aarch64"] ||
