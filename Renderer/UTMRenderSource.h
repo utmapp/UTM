@@ -25,7 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) CGPoint cursorOrigin;
 @property (nonatomic) CGPoint viewportOrigin;
 @property (nonatomic) CGFloat viewportScale;
-@property (nonatomic, readonly) dispatch_semaphore_t drawLock;
+@property (nonatomic, readonly) dispatch_queue_t renderQueue;
 @property (nonatomic, nullable) id<MTLDevice> device;
 @property (nonatomic, nullable, readonly) id<MTLTexture> displayTexture;
 @property (nonatomic, nullable, readonly) id<MTLTexture> cursorTexture;
