@@ -36,3 +36,11 @@ PROVISIONING_PROFILE_SPECIFIER_MAC = 00000000-1111-2222-3333-444444444444
 // from the following file
 //   - QEMUHelper/QEMUHelper.entitlements
 PROVISIONING_PROFILE_SPECIFIER_HELPER = 00000000-1111-2222-3333-555555555555
+
+// Create a Mac provisioning profile for com.myuniquename.QEMULauncher with the
+// Hypervisor entitlements and get its UUID. If you do not have access to these
+// entitlements, comment out the line and delete the following entitlements
+//   - com.apple.vm.networking
+// from the following file
+//   - QEMULauncher/QEMULauncher.entitlements
+PROVISIONING_PROFILE_SPECIFIER_LAUNCHER = 00000000-1111-2222-3333-555555555555

@@ -69,6 +69,7 @@ cp "$BASEDIR/../QEMUHelper/QEMUHelper.entitlements" "$HELPER_ENTITLEMENTS"
 if [ "$MODE" == "unsigned" ]; then
 	/usr/libexec/PlistBuddy -c "Delete :com.apple.vm.device-access" "$UTM_ENTITLEMENTS"
 	/usr/libexec/PlistBuddy -c "Delete :com.apple.vm.networking" "$HELPER_ENTITLEMENTS"
+	/usr/libexec/PlistBuddy -c "Delete :com.apple.vm.networking" "$LAUNCHER_ENTITLEMENTS"
 	/usr/libexec/PlistBuddy -c "Add :com.apple.security.cs.disable-library-validation bool true" "$UTM_ENTITLEMENTS"
 	/usr/libexec/PlistBuddy -c "Add :com.apple.security.cs.disable-library-validation bool true" "$LAUNCHER_ENTITLEMENTS"
 	/usr/libexec/PlistBuddy -c "Add :com.apple.security.cs.disable-library-validation bool true" "$HELPER_ENTITLEMENTS"

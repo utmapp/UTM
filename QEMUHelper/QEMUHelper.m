@@ -113,7 +113,7 @@
     NSMutableArray<NSString *> *newArgv = [argv mutableCopy];
     NSString *path = [libraryPath URLByAppendingPathComponent:binName].path;
     [newArgv insertObject:path atIndex:0];
-    task.executableURL = [[NSBundle mainBundle] URLForAuxiliaryExecutable:@"QEMULauncher"];
+    task.executableURL = [[[NSBundle mainBundle] URLForAuxiliaryExecutable:@"QEMULauncher.app"] URLByAppendingPathComponent:@"Contents/MacOS/QEMULauncher"];
     task.arguments = newArgv;
     task.standardOutput = standardOutput;
     task.standardError = standardError;
