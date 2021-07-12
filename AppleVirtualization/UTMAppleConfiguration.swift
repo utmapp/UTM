@@ -73,6 +73,7 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
     }
     
     #if arch(arm64)
+    @available(macOS 12, *)
     var macPlatform: MacPlatform? {
         get {
             guard let config = apple.platform as? VZMacPlatformConfiguration else {
@@ -286,11 +287,11 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
         cpuCount = try values.decode(Int.self, forKey: .cpuCount)
         memorySize = try values.decode(UInt64.self, forKey: .memorySize)
         bootLoader = try values.decodeIfPresent(Bootloader.self, forKey: .bootLoader)
-        #if arch(arm64)
-        macPlatform = try values.decodeIfPresent(MacPlatform.self, forKey: .macPlatform)
-        #endif
         networkDevices = try values.decode([Network].self, forKey: .networkDevices)
         if #available(macOS 12, *) {
+            #if arch(arm64)
+            macPlatform = try values.decodeIfPresent(MacPlatform.self, forKey: .macPlatform)
+            #endif
             displays = try values.decode([Display].self, forKey: .displays)
             isAudioEnabled = try values.decode(Bool.self, forKey: .isAudioEnabled)
             isKeyboardEnabled = try values.decode(Bool.self, forKey: .isKeyboardEnabled)
@@ -311,11 +312,11 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
         try container.encode(cpuCount, forKey: .cpuCount)
         try container.encode(memorySize, forKey: .memorySize)
         try container.encodeIfPresent(bootLoader, forKey: .bootLoader)
-        #if arch(arm64)
-        try container.encodeIfPresent(macPlatform, forKey: .macPlatform)
-        #endif
         try container.encode(networkDevices, forKey: .networkDevices)
         if #available(macOS 12, *) {
+            #if arch(arm64)
+            try container.encodeIfPresent(macPlatform, forKey: .macPlatform)
+            #endif
             try container.encode(displays, forKey: .displays)
             try container.encode(isAudioEnabled, forKey: .isAudioEnabled)
             try container.encode(isKeyboardEnabled, forKey: .isKeyboardEnabled)
