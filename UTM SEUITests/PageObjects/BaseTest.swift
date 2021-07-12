@@ -65,5 +65,13 @@ public class BaseTest {
     func text(_ name:String)->XCUIElement {
         return app.staticTexts[name]
     }
+    
+    func textEditors(_ name: String)->XCUIElement{
+        return app.otherElements[name]
+    }
+
+    func textViews(_ name: String)->XCUIElement{
+        return app.textViews[name]
+    }
 
 }

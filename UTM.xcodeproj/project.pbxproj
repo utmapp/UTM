@@ -1130,6 +1130,9 @@
 		CEF83F8F250094EE00557D15 /* gcrypt.20.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63F322653C7400FC7E63 /* gcrypt.20.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CEFC6CDD24C25697003F6962 /* VMDriveImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEFC6CDC24C25697003F6962 /* VMDriveImage.swift */; };
 		CEFC6CDE24C25697003F6962 /* VMDriveImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEFC6CDC24C25697003F6962 /* VMDriveImage.swift */; };
+		EE28B4862690054E005F4E15 /* SystemPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE28B4852690054E005F4E15 /* SystemPage.swift */; };
+		EE28B4902690065D005F4E15 /* ArchitecturePage.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE28B48F2690065D005F4E15 /* ArchitecturePage.swift */; };
+		EE28B496269008DC005F4E15 /* VMSystemPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE28B495269008DC005F4E15 /* VMSystemPage.swift */; };
 		EE37FBA4268A915E00DC204F /* UTM_SEUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE37FBA3268A915E00DC204F /* UTM_SEUITests.swift */; };
 		EE37FBB8268ABED900DC204F /* ConfigurationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE37FBB7268ABED900DC204F /* ConfigurationTests.swift */; };
 		EE37FBC2268ABF8D00DC204F /* BaseTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE37FBC1268ABF8D00DC204F /* BaseTest.swift */; };
@@ -2038,6 +2041,9 @@
 		E2D64BCA241DB62A0034E0C6 /* UTMTerminalIO.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UTMTerminalIO.h; sourceTree = "<group>"; };
 		E2D64BCB241DB62A0034E0C6 /* UTMTerminalIO.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UTMTerminalIO.m; sourceTree = "<group>"; };
 		E2D64BE0241EAEBE0034E0C6 /* UTMSpiceIODelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UTMSpiceIODelegate.h; sourceTree = "<group>"; };
+		EE28B4852690054E005F4E15 /* SystemPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemPage.swift; sourceTree = "<group>"; };
+		EE28B48F2690065D005F4E15 /* ArchitecturePage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchitecturePage.swift; sourceTree = "<group>"; };
+		EE28B495269008DC005F4E15 /* VMSystemPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMSystemPage.swift; sourceTree = "<group>"; };
 		EE37FBA1268A915E00DC204F /* UTM SEUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "UTM SEUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		EE37FBA3268A915E00DC204F /* UTM_SEUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTM_SEUITests.swift; sourceTree = "<group>"; };
 		EE37FBA5268A915E00DC204F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -3086,6 +3092,16 @@
 			path = HTerm;
 			sourceTree = "<group>";
 		};
+		EE28B4842690051A005F4E15 /* SystemPages */ = {
+			isa = PBXGroup;
+			children = (
+				EE28B4852690054E005F4E15 /* SystemPage.swift */,
+				EE28B48F2690065D005F4E15 /* ArchitecturePage.swift */,
+				EE28B495269008DC005F4E15 /* VMSystemPage.swift */,
+			);
+			path = SystemPages;
+			sourceTree = "<group>";
+		};
 		EE37FBA2268A915E00DC204F /* UTM SEUITests */ = {
 			isa = PBXGroup;
 			children = (
@@ -3128,6 +3144,7 @@
 		EE37FBD7268ACDD100DC204F /* Settings */ = {
 			isa = PBXGroup;
 			children = (
+				EE28B4842690051A005F4E15 /* SystemPages */,
 				EE37FBD8268ACDE500DC204F /* InformationPage.swift */,
 			);
 			path = Settings;
@@ -4262,10 +4279,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				EE37FBB8268ABED900DC204F /* ConfigurationTests.swift in Sources */,
+				EE28B4902690065D005F4E15 /* ArchitecturePage.swift in Sources */,
 				EE37FBC2268ABF8D00DC204F /* BaseTest.swift in Sources */,
+				EE28B4862690054E005F4E15 /* SystemPage.swift in Sources */,
 				EE37FBA4268A915E00DC204F /* UTM_SEUITests.swift in Sources */,
 				EE37FBC8268AC16800DC204F /* VMListPage.swift in Sources */,
 				EE37FBD2268AC5E700DC204F /* SettingsPage.swift in Sources */,
+				EE28B496269008DC005F4E15 /* VMSystemPage.swift in Sources */,
 				EE37FBD9268ACDE500DC204F /* InformationPage.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

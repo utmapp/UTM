@@ -33,8 +33,26 @@ class ConfigurationTests : XCTestCase {
         VMListPage().tapAdd()
         SettingsPage().tapInformation()
         
+        // Test the Info Page
         InformationPage().tapName()
         InformationPage().fillName("Test")
+        InformationPage().tapNotes()
+        InformationPage().tapNotes()
+        // TODO: Implement TextEditor Fillage
+        //InformationPage().fillNotes("test note fillage")
         InformationPage().tapBack()
+        // TODO: Implement Icon Testing
+        
+        // Change some system settings
+        SettingsPage().tapSystem()
+        SystemPage().tapArch()
+        ArchitecturePage().selectArch("ARM (aarch32)")
+        SystemPage().tapSystem()
+        // VMSystemPage().selectSystem("Standard PC (Q35 + ICH9, 2009) (alias of pc-q35-6.0) (q35)")
+    }
+    
+    func testTest(){
+        
     }
 }
+

@@ -63,6 +63,7 @@ struct VMConfigInfoView: View {
                 Section(header: Text("Notes"), footer: EmptyView().padding(.bottom)) {
                     TextEditor(text: $config.notes.bound)
                         .frame(minHeight: 200)
+                        .accessibilityIdentifier("Notes")
                 }
                 Section(header: Text("Icon"), footer: EmptyView().padding(.bottom)) {
                     Picker(selection: style.animation(), label: Text("Style")) {
