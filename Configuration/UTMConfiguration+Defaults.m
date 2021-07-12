@@ -48,7 +48,11 @@
     self.consoleFontSize = @12;
     self.consoleTheme = @"Default";
 #if TARGET_OS_OSX
-    self.networkMode = @"shared";
+    if (@available(macOS 11.3, *)) {
+        self.networkMode = @"shared";
+    } else {
+        self.networkMode = @"emulated";
+    }
 #else
     self.networkMode = @"emulated";
 #endif
