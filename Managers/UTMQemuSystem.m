@@ -126,9 +126,17 @@ static size_t sysctl_read(const char *name) {
         };
         return userCount; // user override
     }
-#if defined(__aarch64__)
-    // in ARM we can only emulate other weak architectures
     NSString *arch = self.configuration.systemArchitecture;
+    // SPARC5 defaults to single CPU
+    if ([arch hasPrefix:@"sparc"]) {
+        return singleCpu;
+    }
+#if defined(__aarch64__)
+    CPUCount hostPcoreCount = {
+        .cpus = sysctl_read("hw.perflevel0.physicalcpu"),
+        .threads = sysctl_read("hw.perflevel0.logicalcpu"),
+    };
+    // in ARM we can only emulate other weak architectures
     if ([arch isEqualToString:@"alpha"] ||
         [arch isEqualToString:@"arm"] ||
         [arch isEqualToString:@"aarch64"] ||
@@ -137,7 +145,11 @@ static size_t sysctl_read(const char *name) {
         [arch hasPrefix:@"ppc"] ||
         [arch hasPrefix:@"riscv"] ||
         [arch hasPrefix:@"xtensa"]) {
-        return hostCount;
+        if (self.useOnlyPcores && hostPcoreCount.cpus > 0) {
+            return hostPcoreCount;
+        } else {
+            return hostCount;
+        }
     } else {
         return singleCpu;
     }
@@ -278,7 +290,7 @@ static size_t sysctl_read(const char *name) {
             case UTMDiskImageTypeCD: {
                 NSString *interface = [self.configuration driveInterfaceTypeForIndex:i];
                 BOOL removable = (type == UTMDiskImageTypeCD) || [self.configuration driveRemovableForIndex:i];
-                NSString *identifier = [self.configuration driveNameForIndex:i];
+                NSString *identifier = [NSString stringWithFormat:@"drive%lu", i];
                 NSString *realInterface = [self expandDriveInterface:interface identifier:identifier removable:removable busInterfaceMap:busInterfaceMap];
                 NSString *drive;
                 [self pushArgv:@"-drive"];
@@ -499,6 +511,11 @@ static size_t sysctl_read(const char *name) {
 #endif
 }
 
+- (BOOL)useOnlyPcores {
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    return [defaults boolForKey:@"UseOnlyPcores"];
+}
+
 - (BOOL)hasCustomBios {
     for (NSUInteger i = 0; i < self.configuration.countDrives; i++) {
         UTMDiskImageType type = [self.configuration driveImageTypeForIndex:i];
@@ -546,6 +563,9 @@ static size_t sysctl_read(const char *name) {
     [self pushArgv:@"-S"]; // startup stopped
     [self pushArgv:@"-qmp"];
     [self pushArgv:[NSString stringWithFormat:@"tcp:127.0.0.1:%lu,server,nowait", self.qmpPort]];
+    // prevent QEMU default devices, which leads to duplicate CD drive (fix #2538)
+    // see https://github.com/qemu/qemu/blob/6005ee07c380cbde44292f5f6c96e7daa70f4f7d/docs/qdev-device-use.txt#L382
+    [self pushArgv:@"-nodefaults"];
     [self pushArgv:@"-vga"];
     [self pushArgv:@"none"];// -vga none, avoid adding duplicate graphics cards
     if (self.configuration.displayConsoleOnly) {

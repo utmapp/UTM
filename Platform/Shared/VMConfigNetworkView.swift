@@ -26,8 +26,7 @@ struct VMConfigNetworkView: View {
             Form {
                 Section(header: Text("Hardware"), footer: EmptyView().padding(.bottom)) {
                     #if os(macOS)
-                    // FIXME: when vmnet entitlement bug is fixed update with proper macOS version
-                    if #available(macOS 99.0, *) {
+                    if #available(macOS 11.3, *) { // requires macOS 11.3 inherited sandbox fix
                         NetworkModeSection(config: config)
                     } else {
                         Toggle(isOn: $config.networkEnabled.animation(), label: {

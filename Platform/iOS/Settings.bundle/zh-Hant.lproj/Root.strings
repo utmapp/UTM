@@ -1,29 +1,29 @@
 /* (No Comment) */
-"Apple Pencil Input" = "Apple Pencil輸入";
+"Apple Pencil Input" = "Apple Pencil 輸入";
 
 /* (No Comment) */
-"Auto save on background" = "後臺運行時自動保存";
+"Auto save on background" = "背景自動儲存";
 
 /* (No Comment) */
-"Auto save on low memory" = "記憶體不足時自動保存";
+"Auto save on low memory" = "記憶體不足時自動儲存";
 
 /* (No Comment) */
-"Background" = "後臺";
+"Background" = "後台";
 
 /* (No Comment) */
-"Backspace" = "退格";
+"Backspace" = "Backspace";
 
 /* (No Comment) */
-"Caps" = "大寫鎖定";
+"Caps" = "Caps";
 
 /* (No Comment) */
 "Click & Hold" = "按一下並按住";
 
 /* (No Comment) */
-"Continue running VM in the background" = "後臺運行時保持虛擬機運行";
+"Continue running VM in the background" = "繼續在背景執行虛擬機";
 
 /* (No Comment) */
-"Cursor" = "光標";
+"Cursor" = "游標";
 
 /* (No Comment) */
 "D-DOWN" = "下方向鍵";
@@ -38,22 +38,22 @@
 "D-UP" = "上方向鍵";
 
 /* (No Comment) */
-"Disabled" = "禁用";
+"Disabled" = "已停用";
 
 /* (No Comment) */
-"Down" = "方向鍵下";
+"Down" = "下";
 
 /* (No Comment) */
-"Drag cursor" = "拖動光標";
+"Drag cursor" = "拖曳游標";
 
 /* (No Comment) */
-"Enabled" = "啟用";
+"Enabled" = "已啟用";
 
 /* (No Comment) */
-"Enter" = "回車";
+"Enter" = "Enter";
 
 /* (No Comment) */
-"Follow cursor" = "跟隨光標";
+"Follow cursor" = "隨游標移動";
 
 /* (No Comment) */
 "Gamepad" = "手柄";
@@ -65,10 +65,10 @@
 "Gestures" = "手勢";
 
 /* A single strings file, whose title is specified in your preferences schema. The strings files provide the localized content to display to the user for each of your preferences. */
-"Group" = "組";
+"Group" = "群組";
 
 /* (No Comment) */
-"Left" = "方向鍵左";
+"Left" = "左";
 
 /* (No Comment) */
 "Long Press" = "長按";
@@ -89,10 +89,10 @@
 "Mouse Wheel" = "滑鼠滾輪";
 
 /* (No Comment) */
-"Mouse Wheel (per swipe)" = "滑鼠滾輪";
+"Mouse Wheel (per swipe)" = "滑鼠滾輪（滑動單位）";
 
 /* (No Comment) */
-"Move Screen" = "移動顯示幕";
+"Move Screen" = "移動螢幕";
 
 /* (No Comment) */
 "Name" = "名稱";
@@ -101,46 +101,47 @@
 "none given" = "未指定";
 
 /* (No Comment) */
-"Right" = "方向鍵右";
+"Right" = "右";
 
 /* (No Comment) */
-"Right Click" = "按右鍵";
+"Right Click" = "右鍵";
 
 /* (No Comment) */
-"Space" = "空格";
+"Space" = "空白鍵";
 
 /* (No Comment) */
-"Tablet mode (always show cursor)" = "平板模式（顯示光標）";
+"Tablet mode (always show cursor)" = "平板模式（持續顯示游標）";
 
 /* (No Comment) */
-"Tablet mode (try hiding cursor)" = "平板模式（隱藏光標）";
+"Tablet mode (try hiding cursor)" = "平板模式（嘗試隱藏游標）";
 
 /* (No Comment) */
-"Three Finger Pan" = "三指拖動";
+"Three Finger Pan" = "三指平移";
 
 /* (No Comment) */
-"Touch Input" = "觸屏輸入";
+"Touch Input" = "觸控輸入";
 
 /* (No Comment) */
-"Touch mode (always show cursor)" = "觸屏模式（顯示光標）";
+"Touch mode (always show cursor)" = "觸控模式（持續顯示游標）";
 
 /* (No Comment) */
-"Touch mode (try hiding cursor)" = "觸屏模式（隱藏光標）";
+"Touch mode (try hiding cursor)" = "觸控模式（嘗試隱藏游標）";
 
 /* (No Comment) */
-"Touchpad/Mouse Input" = "觸控板/滑鼠輸入";
+"Touchpad/Mouse Input" = "觸控板／滑鼠輸入";
 
 /* (No Comment) */
-"Two Finger Pan" = "雙指拖動";
+"Two Finger Pan" = "兩指平移";
 
 /* (No Comment) */
-"Two Finger Scroll" = "雙指滾動";
+"Two Finger Scroll" = "兩指捲動";
 
 /* (No Comment) */
-"Two Finger Swipe" = "雙指輕掃";
+"Two Finger Swipe" = "兩指撥動";
 
 /* (No Comment) */
-"Two Finger Tap" = "雙指輕點";
+"Two Finger Tap" = "兩指輕觸";
 
 /* (No Comment) */
-"Up" = "方向鍵上";
+"Up" = "上";
+

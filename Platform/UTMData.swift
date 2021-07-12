@@ -203,12 +203,18 @@ class UTMData: ObservableObject {
         }
     }
     
-    func discardChanges(forVM vm: UTMVirtualMachine) throws {
-        try vm.reloadConfiguration()
-        // discard cached drive selection
-        selectedDiskImagesCache.removeAll()
-        guard let config = vm.config as? UTMQemuConfiguration else {
-            return
+    func discardChanges(forVM vm: UTMVirtualMachine? = nil) throws {
+        let config: UTMQemuConfiguration
+        if let vm = vm {
+            try vm.reloadConfiguration()
+            guard let qemuConfig = vm.config as? UTMQemuConfiguration else {
+                // FIXME: non-qemu orphaned drives
+                return
+            }
+            config = qemuConfig
+        } else {
+            // create a tmp empty config so we can get orphanedDrives for tmp path
+            config = UTMQemuConfiguration()
         }
         // delete orphaned drives
         guard let orphanedDrives = config.orphanedDrives else {

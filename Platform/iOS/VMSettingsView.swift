@@ -110,10 +110,8 @@ struct VMSettingsView: View {
     
     func cancel() {
         presentationMode.wrappedValue.dismiss()
-        if let existing = self.vm {
-            data.busyWork {
-                try data.discardChanges(forVM: existing)
-            }
+        data.busyWork {
+            try data.discardChanges(forVM: self.vm)
         }
     }
 }

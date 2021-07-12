@@ -8,7 +8,7 @@ command -v realpath >/dev/null 2>&1 || realpath() {
 BASEDIR="$(dirname "$(realpath $0)")"
 
 if [ $# -lt 3 ]; then
-	echo "usage: $0 MODE UTM.xcarchive outputPath [TEAM_ID PROFILE_NAME HELPER_PROFILE_NAME]"
+	echo "usage: $0 MODE UTM.xcarchive outputPath [TEAM_ID PROFILE_NAME HELPER_PROFILE_NAME LAUNCHER_PROFILE_NAME]"
 	echo "  MODE is one of:"
 	echo "          unsigned (unsigned DMG)"
 	echo "          developer-id (signed DMG)"
@@ -16,6 +16,7 @@ if [ $# -lt 3 ]; then
 	echo "  TEAM_ID is required if not unsigned"
 	echo "  PROFILE_NAME is required if not unsigned, can be the name or UUID"
 	echo "  HELPER_PROFILE_NAME is required if not unsigned, can be the name or UUID"
+	echo "  LAUNCHER_PROFILE_NAME is required if not unsigned, can be the name or UUID"
 	exit 1
 fi
 
@@ -25,6 +26,7 @@ OUTPUT=$3
 TEAM_ID=$4
 PROFILE_NAME=$5
 HELPER_PROFILE_NAME=$6
+LAUNCHER_PROFILE_NAME=$7
 OPTIONS="/tmp/options.plist"
 SIGNED="/tmp/signed"
 UTM_ENTITLEMENTS="/tmp/utm.entitlements"
@@ -49,6 +51,8 @@ cat >"$OPTIONS" <<EOL
 		<string>${PROFILE_NAME}</string>
 		<key>com.utmapp.QEMUHelper</key>
 		<string>${HELPER_PROFILE_NAME}</string>
+		<key>com.utmapp.QEMULauncher</key>
+		<string>${LAUNCHER_PROFILE_NAME}</string>
 	</dict>
 	<key>signingStyle</key>
 	<string>manual</string>
@@ -69,6 +73,7 @@ cp "$BASEDIR/../QEMUHelper/QEMUHelper.entitlements" "$HELPER_ENTITLEMENTS"
 if [ "$MODE" == "unsigned" ]; then
 	/usr/libexec/PlistBuddy -c "Delete :com.apple.vm.device-access" "$UTM_ENTITLEMENTS"
 	/usr/libexec/PlistBuddy -c "Delete :com.apple.vm.networking" "$HELPER_ENTITLEMENTS"
+	/usr/libexec/PlistBuddy -c "Delete :com.apple.vm.networking" "$LAUNCHER_ENTITLEMENTS"
 	/usr/libexec/PlistBuddy -c "Add :com.apple.security.cs.disable-library-validation bool true" "$UTM_ENTITLEMENTS"
 	/usr/libexec/PlistBuddy -c "Add :com.apple.security.cs.disable-library-validation bool true" "$LAUNCHER_ENTITLEMENTS"
 	/usr/libexec/PlistBuddy -c "Add :com.apple.security.cs.disable-library-validation bool true" "$HELPER_ENTITLEMENTS"

@@ -143,13 +143,29 @@ class VMMetalView: MTKView {
     private var wholeTrackingArea: NSTrackingArea?
     private var lastModifiers = NSEvent.ModifierFlags()
     private(set) var isMouseCaptured = false
+    private(set) var isFirstResponder = false
+    private(set) var isMouseInWindow = false
     
     override var acceptsFirstResponder: Bool { true }
     
+    override func becomeFirstResponder() -> Bool {
+        isFirstResponder = true
+        if isMouseInWindow {
+            NSCursor.hide()
+        }
+        return super.becomeFirstResponder()
+    }
+    
+    override func resignFirstResponder() -> Bool {
+        isFirstResponder = false
+        return super.resignFirstResponder()
+    }
+    
     override func updateTrackingAreas() {
-        logger.debug("update tracking area")
-        let trackingArea = NSTrackingArea(rect: CGRect(origin: .zero, size: frame.size), options: [.mouseMoved, .mouseEnteredAndExited, .activeWhenFirstResponder], owner: self, userInfo: nil)
+        let trackingArea = NSTrackingArea(rect: CGRect(origin: .zero, size: frame.size), options: [.mouseMoved, .mouseEnteredAndExited, .activeInKeyWindow], owner: self, userInfo: nil)
+        logger.debug("update tracking area: \(trackingArea.rect)")
         if let oldTrackingArea = wholeTrackingArea {
+            logger.debug("remove old tracking area: \(oldTrackingArea.rect)")
             removeTrackingArea(oldTrackingArea)
             NSCursor.unhide()
         }
@@ -159,12 +175,16 @@ class VMMetalView: MTKView {
     }
     
     override func mouseEntered(with event: NSEvent) {
-        logger.debug("mouse entered")
-        NSCursor.hide()
+        logger.debug("mouse entered (first responder: \(isFirstResponder))")
+        isMouseInWindow = true
+        if isFirstResponder {
+            NSCursor.hide()
+        }
     }
     
     override func mouseExited(with event: NSEvent) {
         logger.debug("mouse exited")
+        isMouseInWindow = false
         NSCursor.unhide()
     }
     
