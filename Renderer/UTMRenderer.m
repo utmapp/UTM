@@ -239,13 +239,11 @@ static matrix_float4x4 matrix_scale_translate(CGFloat scale, CGPoint translate)
         [renderEncoder endEncoding];
         
         dispatch_queue_t renderQueue = source.renderQueue;
-        dispatch_semaphore_t renderDoneEvent = dispatch_semaphore_create(0);
         
         // Lock screen updates
         [commandBuffer addScheduledHandler:^(id<MTLCommandBuffer> commandBuffer) {
-            dispatch_async(renderQueue, ^{
-                dispatch_semaphore_wait(renderDoneEvent, DISPATCH_TIME_FOREVER);
-            });
+            dispatch_suspend(renderQueue);
+            // FIXME: potential race between currently executing block and presentDrawable
         }];
         
         // Schedule a present once the framebuffer is complete using the current drawable
@@ -255,7 +253,7 @@ static matrix_float4x4 matrix_scale_translate(CGFloat scale, CGPoint translate)
         [commandBuffer addCompletedHandler:^(id<MTLCommandBuffer> commandBuffer) {
             // GPU work is complete
             // Signal the semaphore to start the CPU work
-            dispatch_semaphore_signal(renderDoneEvent);
+            dispatch_resume(renderQueue);
         }];
     }
 
