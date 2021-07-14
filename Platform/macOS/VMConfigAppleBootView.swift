@@ -18,8 +18,24 @@ import SwiftUI
 
 @available(macOS 12, *)
 struct VMConfigAppleBootView: View {
+    private enum BootloaderSelection: Int, Identifiable {
+        var id: Int {
+            self.rawValue
+        }
+        case kernel
+        case ipsw
+    }
+    
     @ObservedObject var config: UTMAppleConfiguration
+    @EnvironmentObject private var data: UTMData
     @State private var operatingSystem: Bootloader.OperatingSystem?
+    @State private var selectedOperatingSystem: Bootloader.OperatingSystem?
+    @State private var alertBootloaderSelection: BootloaderSelection?
+    @State private var importFileShown: Bool = false
+    
+    private var currentOperatingSystem: Bootloader.OperatingSystem? {
+        config.bootLoader?.operatingSystem
+    }
     
     var body: some View {
         Form {
@@ -30,7 +46,29 @@ struct VMConfigAppleBootView: View {
                     Text(os.rawValue)
                         .tag(os as Bootloader.OperatingSystem?)
                 }
-            }
+            }.onChange(of: operatingSystem) { newValue in
+                guard newValue != currentOperatingSystem else {
+                    return
+                }
+                if newValue == .Linux {
+                    alertBootloaderSelection = .kernel
+                } else if newValue == .macOS {
+                    alertBootloaderSelection = .ipsw
+                }
+                // don't change display until AFTER file selected
+                selectedOperatingSystem = operatingSystem
+                operatingSystem = currentOperatingSystem
+            }.alert(item: $alertBootloaderSelection) { selection in
+                let okay = Alert.Button.default(Text("OK")) {
+                    importFileShown = true
+                }
+                switch selection {
+                case .kernel:
+                    return Alert(title: Text("Please select an uncompressed Linux kernel image."), dismissButton: okay)
+                case .ipsw:
+                    return Alert(title: Text("Please select a macOS recovery IPSW."), dismissButton: okay)
+                }
+            }.fileImporter(isPresented: $importFileShown, allowedContentTypes: [.data], onCompletion: selectImportedFile)
             if operatingSystem == .Linux {
                 Section(header: Text("Linux Settings")) {
                     HStack {
@@ -59,6 +97,22 @@ struct VMConfigAppleBootView: View {
                         }
                     }
                 }
+            }
+        }.onAppear {
+            operatingSystem = currentOperatingSystem
+        }
+    }
+    
+    private func selectImportedFile(result: Result<URL, Error>) {
+        // reset operating system to old value
+        guard let selectedOperatingSystem = selectedOperatingSystem else {
+            return
+        }
+        data.busyWork {
+            let url = try result.get()
+            DispatchQueue.main.async {
+                config.bootLoader = Bootloader(for: selectedOperatingSystem)
+                operatingSystem = currentOperatingSystem
             }
         }
     }
