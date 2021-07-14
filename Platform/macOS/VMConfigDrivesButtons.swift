@@ -16,15 +16,26 @@
 
 import SwiftUI
 
-struct VMConfigDrivesButtons: View {
+struct VMConfigDrivesButtons<Config: ObservableObject & UTMConfigurable>: View {
     let vm: UTMVirtualMachine?
-    @ObservedObject var config: UTMQemuConfiguration
+    @ObservedObject var config: Config
     @Binding var selectedDriveIndex: Int?
     
     @EnvironmentObject private var data: UTMData
     @State private var newDrivePopover: Bool = false
-    @StateObject private var newDrive: VMDriveImage = VMDriveImage()
+    @StateObject private var newQemuDrive: VMDriveImage = VMDriveImage()
+    @State private var newAppleDriveSize: Int = 0
     @State private var importDrivePresented: Bool = false
+    
+    var countDrives: Int {
+        if let qemuConfig = config as? UTMQemuConfiguration {
+            return qemuConfig.countDrives
+        } else if let appleConfig = config as? UTMAppleConfiguration {
+            return appleConfig.storageAttachments.count
+        } else {
+            return 0
+        }
+    }
     
     var body: some View {
         Group {
@@ -36,22 +47,34 @@ struct VMConfigDrivesButtons: View {
             .fileImporter(isPresented: $importDrivePresented, allowedContentTypes: [.item], onCompletion: importDrive)
             .onChange(of: newDrivePopover, perform: { showPopover in
                 if showPopover {
-                    newDrive.reset(forSystemTarget: config.systemTarget, removable: false)
+                    if let qemuConfig = config as? UTMQemuConfiguration {
+                    newQemuDrive.reset(forSystemTarget: qemuConfig.systemTarget, removable: false)
+                    } else if let _ = config as? UTMAppleConfiguration {
+                        newAppleDriveSize = 10240
+                    }
                 }
             })
             .popover(isPresented: $newDrivePopover, arrowEdge: .top) {
                 VStack {
-                    VMConfigDriveCreateView(target: config.systemTarget, driveImage: newDrive)
+                    if let qemuConfig = config as? UTMQemuConfiguration {
+                        VMConfigDriveCreateView(target: qemuConfig.systemTarget, driveImage: newQemuDrive)
+                    } else if #available(macOS 12, *), let _ = config as? UTMAppleConfiguration {
+                        VMConfigAppleDriveCreateView(driveSize: $newAppleDriveSize)
+                    }
                     HStack {
                         Spacer()
                         Button(action: { importDrivePresented.toggle() }, label: {
-                            if newDrive.removable {
-                                Text("Browse")
+                            if let _ = config as? UTMQemuConfiguration {
+                                if newQemuDrive.removable {
+                                    Text("Browse")
+                                } else {
+                                    Text("Import")
+                                }
                             } else {
                                 Text("Import")
                             }
                         }).help("Select an existing disk image.")
-                        Button(action: { addNewDrive(newDrive) }, label: {
+                        Button(action: { addNewDrive(newQemuDrive) }, label: {
                             Text("Create")
                         }).help("Create an empty drive.")
                     }
@@ -68,7 +91,7 @@ struct VMConfigDrivesButtons: View {
                 } label: {
                     Label("Move Up", systemImage: "chevron.up")
                 }.help("Make boot order priority higher.")
-                if index != config.countDrives - 1 {
+                if index != countDrives - 1 {
                     Button {
                         moveDriveDown(fromIndex: index)
                     } label: {
@@ -81,20 +104,33 @@ struct VMConfigDrivesButtons: View {
     
     func deleteDrive(atIndex index: Int) {
         data.busyWork {
-            try data.removeDrive(at: index, for: config)
+            if let qemuConfig = config as? UTMQemuConfiguration {
+                try data.removeDrive(at: index, for: qemuConfig)
+            } else if let appleConfig = config as? UTMAppleConfiguration {
+                let drive = appleConfig.storageAttachments.remove(at: index)
+                appleConfig.storageAttachmentsToDelete.insert(drive)
+            }
         }
     }
     
     func moveDriveUp(fromIndex index: Int) {
         withAnimation {
-            config.moveDrive(index, to: index - 1)
+            if let qemuConfig = config as? UTMQemuConfiguration {
+                qemuConfig.moveDrive(index, to: index - 1)
+            } else if let appleConfig = config as? UTMAppleConfiguration {
+                appleConfig.storageAttachments.move(fromOffsets: IndexSet(integer: index), toOffset: index - 1)
+            }
             selectedDriveIndex = index - 1
         }
     }
     
     func moveDriveDown(fromIndex index: Int) {
         withAnimation {
-            config.moveDrive(index, to: index + 1)
+            if let qemuConfig = config as? UTMQemuConfiguration {
+                qemuConfig.moveDrive(index, to: index + 1)
+            } else if let appleConfig = config as? UTMAppleConfiguration {
+                appleConfig.storageAttachments.move(fromOffsets: IndexSet(integer: index), toOffset: index + 1)
+            }
             selectedDriveIndex = index + 1
         }
     }
@@ -103,10 +139,14 @@ struct VMConfigDrivesButtons: View {
         data.busyWork {
             switch result {
             case .success(let url):
-                if newDrive.removable {
-                    try data.createDrive(newDrive, for: config, with: url)
-                } else {
-                    try data.importDrive(url, for: config, imageType: newDrive.imageType, on: newDrive.interface!, copy: true)
+                if let qemuConfig = config as? UTMQemuConfiguration {
+                    if newQemuDrive.removable {
+                        try data.createDrive(newQemuDrive, for: qemuConfig, with: url)
+                    } else {
+                        try data.importDrive(url, for: qemuConfig, imageType: newQemuDrive.imageType, on: newQemuDrive.interface!, copy: true)
+                    }
+                } else if let appleConfig = config as? UTMAppleConfiguration {
+                    // TODO: import drive
                 }
                 break
             case .failure(let err):
@@ -116,10 +156,11 @@ struct VMConfigDrivesButtons: View {
     }
     
     private func browseImage(result: Result<URL, Error>) {
+        let qemuConfig = config as! UTMQemuConfiguration
         data.busyWork {
             switch result {
             case .success(let url):
-                try data.importDrive(url, for: config, imageType: newDrive.imageType, on: newDrive.interface!, copy: true)
+                try data.importDrive(url, for: qemuConfig, imageType: newQemuDrive.imageType, on: newQemuDrive.interface!, copy: true)
                 break
             case .failure(let err):
                 throw err
@@ -130,7 +171,11 @@ struct VMConfigDrivesButtons: View {
     private func addNewDrive(_ newDrive: VMDriveImage) {
         newDrivePopover = false // hide popover
         data.busyWork {
-            try data.createDrive(newDrive, for: config)
+            if let qemuConfig = config as? UTMQemuConfiguration {
+                try data.createDrive(newDrive, for: qemuConfig)
+            } else if let appleConfig = config as? UTMAppleConfiguration {
+                // TODO: create drive
+            }
         }
     }
 }

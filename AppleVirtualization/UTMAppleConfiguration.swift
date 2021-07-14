@@ -35,6 +35,16 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
     
     @Published var notes: String?
     
+    @Published var consoleTheme: String?
+    
+    @Published var consoleFont: String?
+    
+    @Published var consoleFontSize: NSNumber?
+    
+    @Published var consoleCursorBlink: Bool
+    
+    @Published var consoleResizeCommand: String?
+    
     var cpuCount: Int {
         get {
             apple.cpuCount
@@ -62,6 +72,11 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
             if let linux = apple.bootLoader as? VZLinuxBootLoader {
                 return Bootloader(from: linux)
             } else {
+                #if arch(arm64)
+                if #available(macOS 12, *), let _ = apple.bootLoader as? VZMacOSBootLoader {
+                    return Bootloader(for: .macOS)
+                }
+                #endif
                 return nil
             }
         }
@@ -95,7 +110,7 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
     
     var networkDevices: [Network] {
         get {
-            apple.networkDevices.map { config in
+            apple.networkDevices.compactMap { config in
                 Network(from: config)
             }
         }
@@ -243,6 +258,11 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
         case icon
         case iconCustom
         case notes
+        case consoleTheme
+        case consoleFont
+        case consoleFontSize
+        case consoleCursorBlink
+        case consoleResizeCommand
         case cpuCount
         case memorySize
         case bootLoader
@@ -271,6 +291,7 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
         baseURL = base
         name = ""
         iconCustom = false
+        consoleCursorBlink = true
     }
     
     convenience init() {
@@ -305,6 +326,16 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
         icon = try values.decodeIfPresent(String.self, forKey: .icon)
         iconCustom = try values.decode(Bool.self, forKey: .iconCustom)
         notes = try values.decodeIfPresent(String.self, forKey: .notes)
+        consoleTheme = try values.decodeIfPresent(String.self, forKey: .consoleTheme)
+        consoleFont = try values.decodeIfPresent(String.self, forKey: .consoleFont)
+        let fontSize = try values.decodeIfPresent(Int.self, forKey: .consoleFontSize)
+        if let fontSize = fontSize {
+            consoleFontSize = NSNumber(value: fontSize)
+        } else {
+            consoleFontSize = nil
+        }
+        consoleCursorBlink = try values.decode(Bool.self, forKey: .consoleCursorBlink)
+        consoleResizeCommand = try values.decodeIfPresent(String.self, forKey: .consoleResizeCommand)
     }
     
     func encode(to encoder: Encoder) throws {
@@ -330,6 +361,11 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
         try container.encodeIfPresent(icon, forKey: .icon)
         try container.encode(iconCustom, forKey: .iconCustom)
         try container.encodeIfPresent(notes, forKey: .notes)
+        try container.encodeIfPresent(consoleTheme, forKey: .consoleTheme)
+        try container.encodeIfPresent(consoleFont, forKey: .consoleFont)
+        try container.encodeIfPresent(consoleFontSize?.intValue, forKey: .consoleFontSize)
+        try container.encode(consoleCursorBlink, forKey: .consoleCursorBlink)
+        try container.encodeIfPresent(consoleResizeCommand, forKey: .consoleResizeCommand)
     }
     
     func resetDefaults() {
@@ -339,7 +375,10 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
 }
 
 struct Bootloader: Codable {
-    enum OperatingSystem: String, Codable {
+    enum OperatingSystem: String, CaseIterable, Identifiable, Codable {
+        var id: String {
+            rawValue
+        }
         case Linux
         case macOS
     }
@@ -348,6 +387,10 @@ struct Bootloader: Codable {
     var linuxKernelPath: String?
     var linuxCommandLine: String?
     var linuxInitialRamdiskPath: String?
+    
+    init(for operatingSystem: OperatingSystem) {
+        self.operatingSystem = operatingSystem
+    }
     
     init(from linux: VZLinuxBootLoader) {
         self.operatingSystem = .Linux
@@ -383,8 +426,10 @@ struct Bootloader: Codable {
 }
 
 struct Network: Codable {
-    enum NetworkMode: String, Codable {
-        case None
+    enum NetworkMode: String, CaseIterable, Identifiable, Codable {
+        var id: String {
+            rawValue
+        }
         case Shared
         case Bridged
     }
@@ -393,10 +438,9 @@ struct Network: Codable {
     var bridgeInterfaceIdentifier: String?
     var macAddress: String?
     
-    init(from config: VZNetworkDeviceConfiguration) {
+    init?(from config: VZNetworkDeviceConfiguration) {
         guard let virtioConfig = config as? VZVirtioNetworkDeviceConfiguration else {
-            self.networkMode = .None
-            return
+            return nil
         }
         self.macAddress = virtioConfig.macAddress.string
         if let attachment = virtioConfig.attachment as? VZBridgedNetworkDeviceAttachment {
@@ -405,7 +449,7 @@ struct Network: Codable {
         } else if let _ = virtioConfig.attachment as? VZNATNetworkDeviceAttachment {
             self.networkMode = .Shared
         } else {
-            self.networkMode = .None
+            return nil
         }
     }
     
@@ -432,7 +476,6 @@ struct Network: Codable {
                 let attachment = VZBridgedNetworkDeviceAttachment(interface: found)
                 config.attachment = attachment
             }
-        case .None: break
         }
         return config
     }
@@ -440,9 +483,24 @@ struct Network: Codable {
 
 @available(macOS 12, *)
 struct Display: Codable {
+    struct Resolution: Hashable {
+        var width: Int
+        var height: Int
+        func hash(into hasher: inout Hasher) {
+            hasher.combine(width)
+            hasher.combine(height)
+        }
+    }
+    
     var widthInPixels: Int
     var heightInPixels: Int
     var pixelsPerInch: Int
+    
+    init(for resolution: Resolution, isHidpi: Bool) {
+        self.widthInPixels = resolution.width
+        self.heightInPixels = resolution.height
+        self.pixelsPerInch = isHidpi ? 226 : 80
+    }
     
     init(from config: VZMacGraphicsDisplayConfiguration) {
         self.widthInPixels = config.widthInPixels
@@ -497,10 +555,14 @@ struct MacPlatform: Codable {
 }
 #endif
 
-struct DiskImage: Codable, Hashable {
+struct DiskImage: Codable, Hashable, Identifiable {
     var size: UInt64
     var isReadOnly: Bool
     var imagePath: String
+    
+    var id: Int {
+        hashValue
+    }
     
     init(newSize: UInt64) {
         size = newSize
@@ -515,5 +577,7 @@ struct DiskImage: Codable, Hashable {
     
     func hash(into hasher: inout Hasher) {
         imagePath.hash(into: &hasher)
+        size.hash(into: &hasher)
+        isReadOnly.hash(into: &hasher)
     }
 }

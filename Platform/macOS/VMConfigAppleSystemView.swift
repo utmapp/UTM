@@ -21,6 +21,7 @@ import Virtualization
 struct VMConfigAppleSystemView: View {
     
     @ObservedObject var config: UTMAppleConfiguration
+    @State private var isAdvanced: Bool = false
     
     var minCores: Int {
         VZVirtualMachineConfiguration.minimumAllowedCPUCount
@@ -39,28 +40,36 @@ struct VMConfigAppleSystemView: View {
     }
     
     var body: some View {
-        VStack {
-            Form {
-                HStack {
-                    Stepper(value: $config.cpuCount, in: minCores...maxCores) {
-                        Text("CPU Cores")
-                    }
-                    NumberTextField("", number: $config.cpuCount, onEditingChanged: { _ in
-                        if config.cpuCount < minCores {
-                            config.cpuCount = minCores
-                        } else if config.cpuCount > maxCores {
-                            config.cpuCount = maxCores
-                        }
-                    })
-                        .frame(width: 50)
-                        .multilineTextAlignment(.trailing)
+        Form {
+            HStack {
+                Stepper(value: $config.cpuCount, in: minCores...maxCores) {
+                    Text("CPU Cores")
                 }
-                RAMSlider(systemMemory: $config.memorySize) { _ in
-                    if config.memorySize < minMemory {
-                        config.memorySize = minMemory
-                    } else if config.memorySize > maxMemory {
-                        config.memorySize = maxMemory
+                NumberTextField("", number: $config.cpuCount, onEditingChanged: { _ in
+                    if config.cpuCount < minCores {
+                        config.cpuCount = minCores
+                    } else if config.cpuCount > maxCores {
+                        config.cpuCount = maxCores
                     }
+                })
+                    .frame(width: 50)
+                    .multilineTextAlignment(.trailing)
+            }
+            RAMSlider(systemMemory: $config.memorySize) { _ in
+                if config.memorySize < minMemory {
+                    config.memorySize = minMemory
+                } else if config.memorySize > maxMemory {
+                    config.memorySize = maxMemory
+                }
+            }
+            Toggle("Show Advanced Settings", isOn: $isAdvanced)
+            if isAdvanced {
+                Section(header: Text("Advanced Settings")) {
+                    Toggle("Enable Sound", isOn: $config.isAudioEnabled)
+                    Toggle("Enable Balloon Device", isOn: $config.isBalloonEnabled)
+                    Toggle("Enable Entropy Device", isOn: $config.isEntropyEnabled)
+                    Toggle("Enable Keyboard", isOn: $config.isKeyboardEnabled)
+                    Toggle("Enable Pointer", isOn: $config.isPointingEnabled)
                 }
             }
         }

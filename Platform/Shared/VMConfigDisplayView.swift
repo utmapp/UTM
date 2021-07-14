@@ -45,31 +45,7 @@ struct VMConfigDisplayView: View {
                     }
                 }
                 if config.displayConsoleOnly {
-                    let fontSizeObserver = Binding<Int> {
-                        Int(truncating: config.consoleFontSize ?? 1)
-                    } set: {
-                        config.consoleFontSize = NSNumber(value: $0)
-                    }
-
-                    Section(header: Text("Style"), footer: EmptyView().padding(.bottom)) {
-                        VMConfigStringPicker(selection: $config.consoleTheme, label: Text("Theme"), rawValues: UTMQemuConfiguration.supportedConsoleThemes(), displayValues: UTMQemuConfiguration.supportedConsoleThemes())
-                        VMConfigStringPicker(selection: $config.consoleFont, label: Text("Font"), rawValues: UTMQemuConfiguration.supportedConsoleFonts(), displayValues: UTMQemuConfiguration.supportedConsoleFonts())
-                        HStack {
-                            Stepper(value: fontSizeObserver, in: 1...72) {
-                                    Text("Font Size")
-                            }
-                            NumberTextField("", number: $config.consoleFontSize)
-                                .frame(width: 50)
-                                .multilineTextAlignment(.trailing)
-                        }
-                        Toggle(isOn: $config.consoleCursorBlink, label: {
-                            Text("Blinking Cursor")
-                        })
-                    }
-                    
-                    Section(header: Text("Resize Console Command"), footer: Text("Command to send when resizing the console. Placeholder $COLS is the number of columns and $ROWS is the number of rows.")) {
-                        TextField("stty cols $COLS rows $ROWS\n", text: $config.consoleResizeCommand.bound)
-                    }
+                    VMConfigDisplayConsoleView(config: config)
                 } else {
                     Section(header: Text("Hardware"), footer: EmptyView().padding(.bottom)) {
                         VMConfigStringPicker(selection: $config.displayCard, label: Text("Emulated Display Card"), rawValues: UTMQemuConfiguration.supportedDisplayCards(forArchitecture: config.systemArchitecture), displayValues: UTMQemuConfiguration.supportedDisplayCards(forArchitecturePretty: config.systemArchitecture))

@@ -31,6 +31,27 @@ struct VMAppleSettingsView: View {
         NavigationLink(destination: VMConfigAppleSystemView(config: config).scrollable()) {
             Label("System", systemImage: "cpu")
         }
+        NavigationLink(destination: VMConfigAppleBootView(config: config).scrollable()) {
+            Label("Boot", systemImage: "power.circle")
+        }
+        NavigationLink(destination: VMConfigAppleDisplayView(config: config).scrollable()) {
+            Label("Display", systemImage: "rectangle.on.rectangle")
+        }
+        NavigationLink(destination: VMConfigAppleNetworkingView(config: config).scrollable()) {
+            Label("Network", systemImage: "network")
+        }
+        NavigationLink(destination: VMConfigAppleSharingView(config: config).scrollable()) {
+            Label("Sharing", systemImage: "person.crop.circle.fill")
+        }
+        Section(header: Text("Drives")) {
+            ForEach(config.storageAttachments) { diskImage in
+                NavigationLink(destination: VMConfigAppleDriveDetailsView(diskImage: diskImage)) {
+                    Label(diskImage.imagePath, systemImage: "externaldrive")
+                }
+            }.onMove { indicies, dest in
+                config.storageAttachments.move(fromOffsets: indicies, toOffset: dest)
+            }
+        }
     }
 }
 

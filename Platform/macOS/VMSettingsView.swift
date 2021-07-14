@@ -17,9 +17,9 @@
 import SwiftUI
 
 @available(macOS 11, *)
-struct VMSettingsView: View {
+struct VMSettingsView<Config: ObservableObject & UTMConfigurable>: View {
     let vm: UTMVirtualMachine?
-    let config: UTMConfigurable
+    let config: Config
     
     @EnvironmentObject private var data: UTMData
     @Environment(\.presentationMode) private var presentationMode: Binding<PresentationMode>
@@ -38,9 +38,7 @@ struct VMSettingsView: View {
         }.frame(minWidth: 800, minHeight: 400)
         .toolbar {
             ToolbarItemGroup(placement: .automatic) {
-                if let qemuConfig = config as? UTMQemuConfiguration {
-                    VMConfigDrivesButtons(vm: vm, config: qemuConfig, selectedDriveIndex: $selectedDriveIndex)
-                }
+                VMConfigDrivesButtons(vm: vm, config: config, selectedDriveIndex: $selectedDriveIndex)
             }
             ToolbarItemGroup(placement: .cancellationAction) {
                 Button(action: cancel) {
