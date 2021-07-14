@@ -74,7 +74,7 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
             } else {
                 #if arch(arm64)
                 if #available(macOS 12, *), let _ = apple.bootLoader as? VZMacOSBootLoader {
-                    return Bootloader(for: .macOS)
+                    return try? Bootloader(for: .macOS)
                 }
                 #endif
                 return nil
@@ -83,7 +83,24 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
         
         set {
             objectWillChange.send()
-            apple.bootLoader = newValue?.vzBootloader(atBase: baseURL)
+            apple.bootLoader = newValue?.vzBootloader()
+        }
+    }
+    
+    var linuxCommandLine: String {
+        get {
+            if let linux = apple.bootLoader as? VZLinuxBootLoader {
+                return linux.commandLine
+            } else {
+                return ""
+            }
+        }
+        
+        set {
+            if let linux = apple.bootLoader as? VZLinuxBootLoader {
+                objectWillChange.send()
+                linux.commandLine = newValue
+            }
         }
     }
     
@@ -107,6 +124,9 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
         }
     }
     #endif
+    
+    @available(macOS 12, *)
+    @Published var macRecoveryIpswURL: URL?
     
     var networkDevices: [Network] {
         get {
@@ -267,6 +287,7 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
         case memorySize
         case bootLoader
         case macPlatform
+        case macRecoveryIpswBookmark
         case networkDevices
         case displays
         case numberOfDirectoryShares
@@ -276,14 +297,6 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
         case isSerialEnabled
         case isKeyboardEnabled
         case isPointingEnabled
-    }
-    
-    enum DecodeError: Error {
-        case invalidBaseURL
-    }
-    
-    static var baseURL: CodingUserInfoKey {
-        return CodingUserInfoKey(rawValue: "baseURL")!
     }
     
     init(at base: URL) {
@@ -299,9 +312,9 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
     }
     
     required convenience init(from decoder: Decoder) throws {
-        let baseURL = decoder.userInfo[Self.baseURL] as? URL
+        let baseURL = decoder.userInfo[.baseURL] as? URL
         guard let baseURL = baseURL else {
-            throw DecodeError.invalidBaseURL
+            throw ConfigError.invalidBaseURL
         }
         self.init(at: baseURL)
         let values = try decoder.container(keyedBy: CodingKeys.self)
@@ -313,6 +326,10 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
             #if arch(arm64)
             macPlatform = try values.decodeIfPresent(MacPlatform.self, forKey: .macPlatform)
             #endif
+            if let recoveryIpswBookmark = try values.decodeIfPresent(Data.self, forKey: .macRecoveryIpswBookmark) {
+                var stale: Bool = false
+                macRecoveryIpswURL = try URL(resolvingBookmarkData: recoveryIpswBookmark, options: .withSecurityScope, bookmarkDataIsStale: &stale)
+            }
             displays = try values.decode([Display].self, forKey: .displays)
             isAudioEnabled = try values.decode(Bool.self, forKey: .isAudioEnabled)
             isKeyboardEnabled = try values.decode(Bool.self, forKey: .isKeyboardEnabled)
@@ -348,6 +365,8 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
             #if arch(arm64)
             try container.encodeIfPresent(macPlatform, forKey: .macPlatform)
             #endif
+            let recoveryIpswBookmark = try macRecoveryIpswURL?.bookmarkData(options: .withSecurityScope)
+            try container.encodeIfPresent(recoveryIpswBookmark, forKey: .macRecoveryIpswBookmark)
             try container.encode(displays, forKey: .displays)
             try container.encode(isAudioEnabled, forKey: .isAudioEnabled)
             try container.encode(isKeyboardEnabled, forKey: .isKeyboardEnabled)
@@ -384,32 +403,63 @@ struct Bootloader: Codable {
     }
     
     var operatingSystem: OperatingSystem
-    var linuxKernelPath: String?
+    var linuxKernelURL: URL?
     var linuxCommandLine: String?
-    var linuxInitialRamdiskPath: String?
+    var linuxInitialRamdiskURL: URL?
     
-    init(for operatingSystem: OperatingSystem) {
+    private enum CodingKeys: String, CodingKey {
+        case operatingSystem
+        case linuxKernelPath
+        case linuxCommandLine
+        case linuxInitialRamdiskPath
+    }
+    
+    init(from decoder: Decoder) throws {
+        guard let baseURL = decoder.userInfo[.baseURL] as? URL else {
+            throw ConfigError.invalidBaseURL
+        }
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        operatingSystem = try container.decode(OperatingSystem.self, forKey: .operatingSystem)
+        if let linuxKernelPath = try container.decodeIfPresent(String.self, forKey: .linuxKernelPath) {
+            linuxKernelURL = baseURL.appendingPathComponent(linuxKernelPath)
+        }
+        linuxCommandLine = try container.decodeIfPresent(String.self, forKey: .linuxCommandLine)
+        if let linuxInitialRamdiskPath = try container.decodeIfPresent(String.self, forKey: .linuxInitialRamdiskPath) {
+            linuxInitialRamdiskURL = baseURL.appendingPathComponent(linuxInitialRamdiskPath)
+        }
+    }
+    
+    init(for operatingSystem: OperatingSystem, linuxKernelURL: URL? = nil) throws {
         self.operatingSystem = operatingSystem
+        self.linuxKernelURL = linuxKernelURL
+        if operatingSystem == .Linux && linuxKernelURL == nil {
+            throw ConfigError.kernelNotSpecified
+        }
     }
     
     init(from linux: VZLinuxBootLoader) {
         self.operatingSystem = .Linux
-        self.linuxKernelPath = linux.kernelURL.lastPathComponent
+        self.linuxKernelURL = linux.kernelURL
         self.linuxCommandLine = linux.commandLine
-        self.linuxInitialRamdiskPath = linux.initialRamdiskURL?.lastPathComponent
+        self.linuxInitialRamdiskURL = linux.initialRamdiskURL
     }
     
-    func vzBootloader(atBase baseURL: URL) -> VZBootLoader? {
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(operatingSystem, forKey: .operatingSystem)
+        try container.encodeIfPresent(linuxKernelURL?.lastPathComponent, forKey: .linuxKernelPath)
+        try container.encodeIfPresent(linuxCommandLine, forKey: .linuxCommandLine)
+        try container.encodeIfPresent(linuxInitialRamdiskURL?.lastPathComponent, forKey: .linuxInitialRamdiskPath)
+    }
+    
+    func vzBootloader() -> VZBootLoader? {
         switch operatingSystem {
         case .Linux:
-            guard let linuxKernelPath = linuxKernelPath else {
+            guard let linuxKernelURL = linuxKernelURL else {
                 return nil
             }
-            let kernelURL = baseURL.appendingPathComponent(linuxKernelPath)
-            let linux = VZLinuxBootLoader(kernelURL: kernelURL)
-            if let linuxInitialRamdiskPath = linuxInitialRamdiskPath {
-                linux.initialRamdiskURL = baseURL.appendingPathComponent(linuxInitialRamdiskPath)
-            }
+            let linux = VZLinuxBootLoader(kernelURL: linuxKernelURL)
+            linux.initialRamdiskURL = linuxInitialRamdiskURL
             if let linuxCommandLine = linuxCommandLine {
                 linux.commandLine = linuxCommandLine
             }
@@ -520,18 +570,42 @@ struct Display: Codable {
 struct MacPlatform: Codable {
     var hardwareModel: Data
     var machineIdentifier: Data
-    var auxiliaryStoragePath: String?
+    var auxiliaryStorageURL: URL?
+    
+    private enum CodingKeys: String, CodingKey {
+        case hardwareModel
+        case machineIdentifier
+        case auxiliaryStoragePath
+    }
+    
+    init(from decoder: Decoder) throws {
+        guard let baseURL = decoder.userInfo[.baseURL] as? URL else {
+            throw ConfigError.invalidBaseURL
+        }
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        hardwareModel = try container.decode(Data.self, forKey: .hardwareModel)
+        machineIdentifier = try container.decode(Data.self, forKey: .machineIdentifier)
+        if let auxiliaryStoragePath = try container.decodeIfPresent(String.self, forKey: .auxiliaryStoragePath) {
+            auxiliaryStorageURL = baseURL.appendingPathComponent(auxiliaryStoragePath)
+        }
+    }
     
     init(newHardware: VZMacHardwareModel) {
         hardwareModel = newHardware.dataRepresentation
         machineIdentifier = VZMacMachineIdentifier().dataRepresentation
-        auxiliaryStoragePath = "MacPlatformData"
     }
     
     init(from config: VZMacPlatformConfiguration) {
         hardwareModel = config.hardwareModel.dataRepresentation
         machineIdentifier = config.machineIdentifier.dataRepresentation
-        auxiliaryStoragePath = config.auxiliaryStorage?.url.lastPathComponent
+        auxiliaryStorageURL = config.auxiliaryStorage?.url
+    }
+    
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(hardwareModel, forKey: .hardwareModel)
+        try container.encode(machineIdentifier, forKey: .machineIdentifier)
+        try container.encodeIfPresent(auxiliaryStorageURL?.lastPathComponent, forKey: .auxiliaryStoragePath)
     }
     
     func vzMacPlatform(atBase baseURL: URL) -> VZMacPlatformConfiguration? {
@@ -542,8 +616,7 @@ struct MacPlatform: Codable {
             return nil
         }
         var vzAuxiliaryStorage: VZMacAuxiliaryStorage?
-        if let auxiliaryStoragePath = auxiliaryStoragePath {
-            let auxiliaryStorageURL = baseURL.appendingPathComponent(auxiliaryStoragePath)
+        if let auxiliaryStorageURL = auxiliaryStorageURL {
             vzAuxiliaryStorage = VZMacAuxiliaryStorage(contentsOf: auxiliaryStorageURL)
         }
         let config = VZMacPlatformConfiguration()
@@ -579,5 +652,16 @@ struct DiskImage: Codable, Hashable, Identifiable {
         imagePath.hash(into: &hasher)
         size.hash(into: &hasher)
         isReadOnly.hash(into: &hasher)
+    }
+}
+
+fileprivate enum ConfigError: Error {
+    case invalidBaseURL
+    case kernelNotSpecified
+}
+
+fileprivate extension CodingUserInfoKey {
+    static var baseURL: CodingUserInfoKey {
+        return CodingUserInfoKey(rawValue: "baseURL")!
     }
 }

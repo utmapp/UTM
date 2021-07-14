@@ -14,6 +14,7 @@
 // limitations under the License.
 //
 
+import Virtualization
 import SwiftUI
 
 @available(macOS 12, *)
@@ -23,14 +24,15 @@ struct VMConfigAppleBootView: View {
             self.rawValue
         }
         case kernel
+        case ramdisk
         case ipsw
     }
     
     @ObservedObject var config: UTMAppleConfiguration
     @EnvironmentObject private var data: UTMData
     @State private var operatingSystem: Bootloader.OperatingSystem?
-    @State private var selectedOperatingSystem: Bootloader.OperatingSystem?
     @State private var alertBootloaderSelection: BootloaderSelection?
+    @State private var importBootloaderSelection: BootloaderSelection?
     @State private var importFileShown: Bool = false
     
     private var currentOperatingSystem: Bootloader.OperatingSystem? {
@@ -50,16 +52,25 @@ struct VMConfigAppleBootView: View {
                 guard newValue != currentOperatingSystem else {
                     return
                 }
+                guard newValue != nil else {
+                    config.bootLoader = nil
+                    config.macRecoveryIpswURL = nil
+                    #if arch(arm64)
+                    config.macPlatform = nil
+                    #endif
+                    return
+                }
                 if newValue == .Linux {
                     alertBootloaderSelection = .kernel
                 } else if newValue == .macOS {
                     alertBootloaderSelection = .ipsw
                 }
                 // don't change display until AFTER file selected
-                selectedOperatingSystem = operatingSystem
+                importBootloaderSelection = nil
                 operatingSystem = currentOperatingSystem
             }.alert(item: $alertBootloaderSelection) { selection in
                 let okay = Alert.Button.default(Text("OK")) {
+                    importBootloaderSelection = selection
                     importFileShown = true
                 }
                 switch selection {
@@ -67,33 +78,41 @@ struct VMConfigAppleBootView: View {
                     return Alert(title: Text("Please select an uncompressed Linux kernel image."), dismissButton: okay)
                 case .ipsw:
                     return Alert(title: Text("Please select a macOS recovery IPSW."), dismissButton: okay)
+                default:
+                    return Alert(title: Text("Select a file."), dismissButton: okay)
                 }
             }.fileImporter(isPresented: $importFileShown, allowedContentTypes: [.data], onCompletion: selectImportedFile)
             if operatingSystem == .Linux {
                 Section(header: Text("Linux Settings")) {
                     HStack {
-                        TextField("Kernel Image", text: .constant("(none)"))
+                        TextField("Kernel Image", text: .constant(config.bootLoader?.linuxKernelURL?.lastPathComponent ?? ""))
+                            .disabled(true)
                         Button("Browse") {
-                            
+                            importBootloaderSelection = .kernel
+                            importFileShown = true
                         }
                     }
                     HStack {
-                        TextField("Ramdisk (optional)", text: .constant("(none)"))
+                        TextField("Ramdisk (optional)", text: .constant(config.bootLoader?.linuxInitialRamdiskURL?.lastPathComponent ?? ""))
+                            .disabled(true)
                         Button("Clear") {
-                            
+                            config.bootLoader?.linuxInitialRamdiskURL = nil
                         }
                         Button("Browse") {
-                            
+                            importBootloaderSelection = .ramdisk
+                            importFileShown = true
                         }
                     }
-                    TextField("Boot arguments", text: .constant(""))
+                    TextField("Boot arguments", text: $config.linuxCommandLine)
                 }
             } else if operatingSystem == .macOS {
                 Section(header: Text("macOS Settings")) {
                     HStack {
-                        TextField("IPSW Image", text: .constant("(none)"))
+                        TextField("IPSW Image", text: .constant(config.macRecoveryIpswURL?.lastPathComponent ?? ""))
+                            .disabled(true)
                         Button("Browse") {
-                            
+                            importBootloaderSelection = .ipsw
+                            importFileShown = true
                         }
                     }
                 }
@@ -105,15 +124,28 @@ struct VMConfigAppleBootView: View {
     
     private func selectImportedFile(result: Result<URL, Error>) {
         // reset operating system to old value
-        guard let selectedOperatingSystem = selectedOperatingSystem else {
+        guard let selection = importBootloaderSelection else {
             return
         }
-        data.busyWork {
+        data.busyWorkAsync {
             let url = try result.get()
-            DispatchQueue.main.async {
-                config.bootLoader = Bootloader(for: selectedOperatingSystem)
-                operatingSystem = currentOperatingSystem
+            switch selection {
+            case .ipsw:
+                #if arch(arm64)
+                let image = try await VZMacOSRestoreImage.image(from: url)
+                guard let model = image.mostFeaturefulSupportedConfiguration?.hardwareModel else {
+                    throw NSLocalizedString("Your machine does not support running this IPSW.", comment: "VMConfigAppleBootView")
+                }
+                config.macPlatform = MacPlatform(newHardware: model)
+                config.macRecoveryIpswURL = url
+                config.bootLoader = try Bootloader(for: .macOS)
+                #endif
+            case .kernel:
+                config.bootLoader = try Bootloader(for: .Linux, linuxKernelURL: url)
+            case .ramdisk:
+                config.bootLoader!.linuxInitialRamdiskURL = url
             }
+            operatingSystem = currentOperatingSystem
         }
     }
 }

@@ -549,4 +549,26 @@ class UTMData: ObservableObject {
             }
         }
     }
+    
+    @available(iOS 15, macOS 12, *)
+    func busyWorkAsync(_ work: @escaping () async throws -> Void) {
+        Task(priority: .userInitiated) {
+            DispatchQueue.main.async {
+                self.busy = true
+            }
+            defer {
+                DispatchQueue.main.async {
+                    self.busy = false
+                }
+            }
+            do {
+                try await work()
+            } catch {
+                logger.error("\(error)")
+                DispatchQueue.main.async {
+                    self.alertMessage = AlertMessage(error.localizedDescription)
+                }
+            }
+        }
+    }
 }
