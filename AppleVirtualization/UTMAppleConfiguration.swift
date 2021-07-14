@@ -137,7 +137,7 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
         
         set {
             objectWillChange.send()
-            apple.networkDevices = newValue.map { network in
+            apple.networkDevices = newValue.compactMap { network in
                 network.vzNetworking()
             }
         }
@@ -486,7 +486,12 @@ struct Network: Codable {
     
     var networkMode: NetworkMode
     var bridgeInterfaceIdentifier: String?
-    var macAddress: String?
+    var macAddress: String
+    
+    init(newInterfaceForMode networkMode: NetworkMode) {
+        self.networkMode = networkMode
+        self.macAddress = VZMACAddress.randomLocallyAdministered().string
+    }
     
     init?(from config: VZNetworkDeviceConfiguration) {
         guard let virtioConfig = config as? VZVirtioNetworkDeviceConfiguration else {
@@ -503,22 +508,22 @@ struct Network: Codable {
         }
     }
     
-    func vzNetworking() -> VZNetworkDeviceConfiguration {
+    func vzNetworking() -> VZNetworkDeviceConfiguration? {
         let config = VZVirtioNetworkDeviceConfiguration()
-        if let macAddress = macAddress {
-            config.macAddress = VZMACAddress(string: macAddress) ?? .randomLocallyAdministered()
-        } else {
-            config.macAddress = .randomLocallyAdministered()
+        guard let macAddress = VZMACAddress(string: macAddress) else {
+            return nil
         }
+        config.macAddress = macAddress
         switch networkMode {
         case .Shared:
             let attachment = VZNATNetworkDeviceAttachment()
             config.attachment = attachment
         case .Bridged:
             var found: VZBridgedNetworkInterface?
-            for interface in VZBridgedNetworkInterface.networkInterfaces {
+            for interface in VZBridgedNetworkInterface.networkInterfaces.reversed() {
+                // this defaults to first interface if not found
+                found = interface
                 if interface.identifier == bridgeInterfaceIdentifier {
-                    found = interface
                     break
                 }
             }
