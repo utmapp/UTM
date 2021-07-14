@@ -18,27 +18,71 @@ import SwiftUI
 
 @available(macOS 12, *)
 struct VMConfigAppleDisplayView: View {
+    private let defaultResolution = Display.Resolution(width: 1920, height: 1200)
+    
     @ObservedObject var config: UTMAppleConfiguration
-    @State private var isConsoleMode: Bool = false
-    @State private var resolution = Display.Resolution(width: 1920, height: 1200)
-    @State private var isHidpi: Bool = false
+    
+    private var displayResolution: Binding<Display.Resolution> {
+        Binding<Display.Resolution> {
+            if let display = config.displays.first {
+                return Display.Resolution(width: display.widthInPixels, height: display.heightInPixels)
+            } else {
+                return defaultResolution
+            }
+        } set: { newValue in
+            var newDisplay: Display
+            if config.displays.isEmpty {
+                newDisplay = Display(for: newValue, isHidpi: false)
+            } else {
+                newDisplay = config.displays.first!
+                newDisplay.widthInPixels = newValue.width
+                newDisplay.heightInPixels = newValue.height
+            }
+            config.displays = [newDisplay]
+        }
+    }
+    
+    private var isHidpi: Binding<Bool> {
+        Binding<Bool> {
+            if let display = config.displays.first {
+                return display.pixelsPerInch >= 226
+            } else {
+                return false
+            }
+        } set: { newValue in
+            var newDisplay: Display
+            if config.displays.isEmpty {
+                newDisplay = Display(for: defaultResolution, isHidpi: newValue)
+            } else {
+                newDisplay = config.displays.first!
+                newDisplay.pixelsPerInch = newValue ? 226 : 80
+            }
+            config.displays = [newDisplay]
+        }
+    }
     
     var body: some View {
         Form {
-            Picker("Display Mode", selection: $isConsoleMode) {
+            Picker("Display Mode", selection: $config.isSerialEnabled) {
                 Text("Console Mode")
                     .tag(true)
                 Text("Full Graphics")
                     .tag(false)
             }
-            if isConsoleMode {
+            if config.isSerialEnabled {
                 VMConfigDisplayConsoleView(config: config)
             } else {
-                Picker("Resolution", selection: $resolution) {
+                Picker("Resolution", selection: displayResolution) {
                     Text("1920x1200")
-                        .tag(Display.Resolution(width: 1920, height: 1200))
+                        .tag(defaultResolution)
+                    Text("1680x1050")
+                        .tag(Display.Resolution(width: 1680, height: 1050))
+                    Text("1280x800")
+                        .tag(Display.Resolution(width: 1280, height: 800))
+                    Text("1024x640")
+                        .tag(Display.Resolution(width: 1024, height: 640))
                 }
-                Toggle("HiDPI (Retina)", isOn: $isHidpi)
+                Toggle("HiDPI (Retina)", isOn: isHidpi)
             }
         }
     }
