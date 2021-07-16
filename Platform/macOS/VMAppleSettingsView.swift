@@ -22,7 +22,6 @@ struct VMAppleSettingsView: View {
     @ObservedObject var config: UTMAppleConfiguration
     
     @State private var infoActive: Bool = true
-    @State private var selectedDriveIndex: Int?
     
     var body: some View {
         NavigationLink(destination: VMConfigInfoView(config: config).scrollable(), isActive: $infoActive) {
@@ -44,12 +43,12 @@ struct VMAppleSettingsView: View {
             Label("Sharing", systemImage: "person.crop.circle.fill")
         }
         Section(header: Text("Drives")) {
-            ForEach(config.storageAttachments) { diskImage in
-                NavigationLink(destination: VMConfigAppleDriveDetailsView(diskImage: diskImage)) {
-                    Label(diskImage.imagePath, systemImage: "externaldrive")
+            ForEach($config.diskImages) { $diskImage in
+                NavigationLink(destination: VMConfigAppleDriveDetailsView(diskImage: $diskImage).scrollable()) {
+                    Label("\(diskImage.sizeString) Image", systemImage: "externaldrive")
                 }
             }.onMove { indicies, dest in
-                config.storageAttachments.move(fromOffsets: indicies, toOffset: dest)
+                config.diskImages.move(fromOffsets: indicies, toOffset: dest)
             }
         }
     }

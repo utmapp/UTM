@@ -168,9 +168,9 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
         }
     }
     
-    @Published var storageAttachments: [DiskImage] = []
+    @Published var diskImages: [DiskImage] = []
     
-    var storageAttachmentsToDelete: Set<DiskImage> = Set()
+    var diskImagesToDelete: Set<DiskImage> = Set()
     
     @Published var numberOfDirectoryShares: Int = 0
     
@@ -634,29 +634,75 @@ struct MacPlatform: Codable {
 #endif
 
 struct DiskImage: Codable, Hashable, Identifiable {
-    var size: UInt64
+    private let bytesInMib = 1048576
+    
+    var size: Int
     var isReadOnly: Bool
-    var imagePath: String
+    var imageURL: URL?
+    private var uuid = UUID() // for identifiable
+    
+    private enum CodingKeys: String, CodingKey {
+        case size
+        case isReadOnly
+        case imagePath
+    }
     
     var id: Int {
         hashValue
     }
     
-    init(newSize: UInt64) {
-        size = newSize
-        isReadOnly = false
-        imagePath = UUID().uuidString + ".dmg"
+    var sizeString: String {
+        ByteCountFormatter.string(fromByteCount: Int64(size) * Int64(bytesInMib), countStyle: .file)
     }
     
-    func vzDiskImage(atBase baseURL: URL) throws -> VZDiskImageStorageDeviceAttachment? {
-        let url = baseURL.appendingPathComponent(imagePath)
-        return try VZDiskImageStorageDeviceAttachment(url: url, readOnly: isReadOnly)
+    init(newSize: Int) {
+        size = newSize
+        isReadOnly = false
+    }
+    
+    init(importImage url: URL) {
+        imageURL = url
+        isReadOnly = false
+        if let attributes = try? url.resourceValues(forKeys: [.fileSizeKey]), let fileSize = attributes.fileSize {
+            size = fileSize / bytesInMib
+        } else {
+            size = 0
+        }
+    }
+    
+    init(from decoder: Decoder) throws {
+        guard let baseURL = decoder.userInfo[.baseURL] as? URL else {
+            throw ConfigError.invalidBaseURL
+        }
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        size = try container.decode(Int.self, forKey: .size)
+        isReadOnly = try container.decode(Bool.self, forKey: .isReadOnly)
+        if let imagePath = try container.decodeIfPresent(String.self, forKey: .imagePath) {
+            imageURL = baseURL.appendingPathComponent(imagePath)
+        }
+    }
+    
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(size, forKey: .size)
+        try container.encode(isReadOnly, forKey: .isReadOnly)
+        try container.encodeIfPresent(imageURL?.lastPathComponent, forKey: .imagePath)
+    }
+    
+    func vzDiskImage() throws -> VZDiskImageStorageDeviceAttachment? {
+        if let imageURL = imageURL {
+            return try VZDiskImageStorageDeviceAttachment(url: imageURL, readOnly: isReadOnly)
+        } else {
+            return nil
+        }
     }
     
     func hash(into hasher: inout Hasher) {
-        imagePath.hash(into: &hasher)
-        size.hash(into: &hasher)
-        isReadOnly.hash(into: &hasher)
+        if let imageURL = imageURL {
+            imageURL.lastPathComponent.hash(into: &hasher)
+        } else {
+            uuid.hash(into: &hasher)
+        }
     }
 }
 

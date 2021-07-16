@@ -18,12 +18,13 @@ import SwiftUI
 
 @available(macOS 12, *)
 struct VMConfigAppleDriveDetailsView: View {
-    let diskImage: DiskImage
+    @Binding var diskImage: DiskImage
     
     var body: some View {
         Form {
-            TextField("Name", text: .constant(diskImage.imagePath))
-            Toggle("Read Only?", isOn: .constant(diskImage.isReadOnly))
+            TextField("Name", text: .constant(diskImage.imageURL?.lastPathComponent ?? NSLocalizedString("(new)", comment: "VMConfigAppleDriveDetailsView")))
+                .disabled(true)
+            Toggle("Read Only?", isOn: $diskImage.isReadOnly)
         }
     }
 }
@@ -31,6 +32,6 @@ struct VMConfigAppleDriveDetailsView: View {
 @available(macOS 12, *)
 struct VMConfigAppleDriveDetailsView_Previews: PreviewProvider {
     static var previews: some View {
-        VMConfigAppleDriveDetailsView(diskImage: DiskImage(newSize: 100))
+        VMConfigAppleDriveDetailsView(diskImage: .constant(DiskImage(newSize: 100)))
     }
 }

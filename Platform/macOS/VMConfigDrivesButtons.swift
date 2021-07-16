@@ -31,7 +31,7 @@ struct VMConfigDrivesButtons<Config: ObservableObject & UTMConfigurable>: View {
         if let qemuConfig = config as? UTMQemuConfiguration {
             return qemuConfig.countDrives
         } else if let appleConfig = config as? UTMAppleConfiguration {
-            return appleConfig.storageAttachments.count
+            return appleConfig.diskImages.count
         } else {
             return 0
         }
@@ -107,8 +107,8 @@ struct VMConfigDrivesButtons<Config: ObservableObject & UTMConfigurable>: View {
             if let qemuConfig = config as? UTMQemuConfiguration {
                 try data.removeDrive(at: index, for: qemuConfig)
             } else if let appleConfig = config as? UTMAppleConfiguration {
-                let drive = appleConfig.storageAttachments.remove(at: index)
-                appleConfig.storageAttachmentsToDelete.insert(drive)
+                let drive = appleConfig.diskImages.remove(at: index)
+                appleConfig.diskImagesToDelete.insert(drive)
             }
         }
     }
@@ -118,7 +118,7 @@ struct VMConfigDrivesButtons<Config: ObservableObject & UTMConfigurable>: View {
             if let qemuConfig = config as? UTMQemuConfiguration {
                 qemuConfig.moveDrive(index, to: index - 1)
             } else if let appleConfig = config as? UTMAppleConfiguration {
-                appleConfig.storageAttachments.move(fromOffsets: IndexSet(integer: index), toOffset: index - 1)
+                appleConfig.diskImages.move(fromOffsets: IndexSet(integer: index), toOffset: index - 1)
             }
             selectedDriveIndex = index - 1
         }
@@ -129,7 +129,7 @@ struct VMConfigDrivesButtons<Config: ObservableObject & UTMConfigurable>: View {
             if let qemuConfig = config as? UTMQemuConfiguration {
                 qemuConfig.moveDrive(index, to: index + 1)
             } else if let appleConfig = config as? UTMAppleConfiguration {
-                appleConfig.storageAttachments.move(fromOffsets: IndexSet(integer: index), toOffset: index + 1)
+                appleConfig.diskImages.move(fromOffsets: IndexSet(integer: index), toOffset: index + 1)
             }
             selectedDriveIndex = index + 1
         }
@@ -146,7 +146,16 @@ struct VMConfigDrivesButtons<Config: ObservableObject & UTMConfigurable>: View {
                         try data.importDrive(url, for: qemuConfig, imageType: newQemuDrive.imageType, on: newQemuDrive.interface!, copy: true)
                     }
                 } else if let appleConfig = config as? UTMAppleConfiguration {
-                    // TODO: import drive
+                    let name = url.lastPathComponent
+                    if appleConfig.diskImages.contains(where: { image in
+                        image.imageURL?.lastPathComponent == name
+                    }) {
+                        throw NSLocalizedString("An image already exists with that name.", comment: "VMConfigDrivesButton")
+                    }
+                    let image = DiskImage(importImage: url)
+                    DispatchQueue.main.async {
+                        appleConfig.diskImages.append(image)
+                    }
                 }
                 break
             case .failure(let err):
@@ -174,7 +183,10 @@ struct VMConfigDrivesButtons<Config: ObservableObject & UTMConfigurable>: View {
             if let qemuConfig = config as? UTMQemuConfiguration {
                 try data.createDrive(newDrive, for: qemuConfig)
             } else if let appleConfig = config as? UTMAppleConfiguration {
-                // TODO: create drive
+                let image = DiskImage(newSize: newAppleDriveSize)
+                DispatchQueue.main.async {
+                    appleConfig.diskImages.append(image)
+                }
             }
         }
     }
