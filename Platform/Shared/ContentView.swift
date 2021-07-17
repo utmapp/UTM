@@ -84,7 +84,7 @@ struct ContentView: View {
         }.overlay(data.showSettingsModal ? AnyView(EmptyView()) : AnyView(BusyOverlay()))
         .optionalWindowFrame()
         .disabled(data.busy && !data.showNewVMSheet && !data.showSettingsModal)
-        .onOpenURL(perform: importUTM)
+        .onOpenURL(perform: handleURL)
         .handlesExternalEvents(preferring: ["*"], allowing: ["*"])
         .onReceive(NSNotification.NewVirtualMachine) { _ in
             data.newVM()
@@ -145,6 +145,16 @@ struct ContentView: View {
         }
     }
     
+    private func handleURL(url: URL) {
+        if url.isFileURL {
+            importUTM(url: url)
+        } else if let components = URLComponents(url: url, resolvingAgainstBaseURL: false),
+                  let scheme = components.scheme,
+                  scheme.lowercased() == "utm" {
+            handleUTMURL(with: components)
+        }
+    }
+    
     private func importUTM(url: URL) {
         guard url.isFileURL else {
             return // ignore
@@ -158,6 +168,25 @@ struct ContentView: View {
         data.busyWork {
             let url = try result.get()
             try data.importUTM(url: url)
+        }
+    }
+    
+    private func handleUTMURL(with components: URLComponents) {
+        if let action = components.host {
+            let vmName = components.queryItems?.first(where: { $0.name == "name" })?.value
+            switch action {
+            case "start":
+                // find the vm
+                if let vmName = vmName,
+                   let vm = data.virtualMachines.first(where: { $0.configuration.name == vmName }),
+                   vm.state == .vmStopped || vm.state == .vmPaused
+                {
+                    data.run(vm: vm)
+                }
+                break
+            default:
+                return
+            }
         }
     }
 }
