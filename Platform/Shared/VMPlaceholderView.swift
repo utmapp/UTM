@@ -57,29 +57,7 @@ private struct TileButton: View {
         Button(action: action, label: {
             Label(titleKey, systemImage: systemImage)
                 .labelStyle(TileLabelStyle())
-        }).buttonStyle(TileButtonStyle())
-    }
-}
-
-@available(iOS 14, macOS 11, *)
-private struct TileButtonStyle: ButtonStyle {
-    #if os(macOS)
-    let defaultColor = Color(NSColor.controlBackgroundColor)
-    let pressedColor = Color(NSColor.selectedContentBackgroundColor)
-    let foregroundColor = Color(NSColor.secondaryLabelColor)
-    #else
-    let defaultColor = Color(UIColor.secondarySystemBackground)
-    let pressedColor = Color(UIColor.systemFill)
-    let foregroundColor = Color(UIColor.secondaryLabel)
-    #endif
-    
-    func makeBody(configuration: Configuration) -> some View {
-        ZStack {
-            RoundedRectangle(cornerRadius: 10.0)
-                .fill(configuration.isPressed ? pressedColor : defaultColor)
-            configuration.label
-                .foregroundColor(foregroundColor)
-        }.frame(width: 150, height: 150)
+        }).buttonStyle(BigButtonStyle(width: 150, height: 150))
     }
 }
 

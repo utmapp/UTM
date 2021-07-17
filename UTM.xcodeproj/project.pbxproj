@@ -1129,6 +1129,36 @@
 		CEDF83FA258AE24E0030E4AC /* UTMPasteboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEDF83F8258AE24E0030E4AC /* UTMPasteboard.swift */; };
 		CEEC811B24E48EC700ACB0B3 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEEC811A24E48EC600ACB0B3 /* SettingsView.swift */; };
 		CEECE13C25E47D9500A2AAB8 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEECE13B25E47D9500A2AAB8 /* AppDelegate.swift */; };
+		CEF0300826A25A6900667B63 /* VMWizardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEF0300526A25A6900667B63 /* VMWizardView.swift */; };
+		CEF0304E26A2AFBE00667B63 /* BigButtonStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEF0304C26A2AFBE00667B63 /* BigButtonStyle.swift */; };
+		CEF0304F26A2AFBF00667B63 /* BigButtonStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEF0304C26A2AFBE00667B63 /* BigButtonStyle.swift */; };
+		CEF0305026A2AFBF00667B63 /* BigButtonStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEF0304C26A2AFBE00667B63 /* BigButtonStyle.swift */; };
+		CEF0305126A2AFBF00667B63 /* BigWhiteSpinner.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEF0304D26A2AFBE00667B63 /* BigWhiteSpinner.swift */; };
+		CEF0305226A2AFBF00667B63 /* BigWhiteSpinner.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEF0304D26A2AFBE00667B63 /* BigWhiteSpinner.swift */; };
+		CEF0305326A2AFBF00667B63 /* BigWhiteSpinner.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEF0304D26A2AFBE00667B63 /* BigWhiteSpinner.swift */; };
+		CEF0305B26A2AFDF00667B63 /* VMWizardOSOtherView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEF0305426A2AFDD00667B63 /* VMWizardOSOtherView.swift */; };
+		CEF0305C26A2AFDF00667B63 /* VMWizardOSOtherView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEF0305426A2AFDD00667B63 /* VMWizardOSOtherView.swift */; };
+		CEF0305D26A2AFDF00667B63 /* VMWizardOSOtherView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEF0305426A2AFDD00667B63 /* VMWizardOSOtherView.swift */; };
+		CEF0305E26A2AFDF00667B63 /* VMWizardState.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEF0305526A2AFDD00667B63 /* VMWizardState.swift */; };
+		CEF0305F26A2AFDF00667B63 /* VMWizardState.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEF0305526A2AFDD00667B63 /* VMWizardState.swift */; };
+		CEF0306026A2AFDF00667B63 /* VMWizardState.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEF0305526A2AFDD00667B63 /* VMWizardState.swift */; };
+		CEF0306126A2AFDF00667B63 /* VMWizardOSWindowsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEF0305626A2AFDD00667B63 /* VMWizardOSWindowsView.swift */; };
+		CEF0306226A2AFDF00667B63 /* VMWizardOSWindowsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEF0305626A2AFDD00667B63 /* VMWizardOSWindowsView.swift */; };
+		CEF0306326A2AFDF00667B63 /* VMWizardOSWindowsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEF0305626A2AFDD00667B63 /* VMWizardOSWindowsView.swift */; };
+		CEF0306426A2AFDF00667B63 /* VMWizardOSLinuxView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEF0305726A2AFDE00667B63 /* VMWizardOSLinuxView.swift */; };
+		CEF0306526A2AFDF00667B63 /* VMWizardOSLinuxView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEF0305726A2AFDE00667B63 /* VMWizardOSLinuxView.swift */; };
+		CEF0306626A2AFDF00667B63 /* VMWizardOSLinuxView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEF0305726A2AFDE00667B63 /* VMWizardOSLinuxView.swift */; };
+		CEF0306726A2AFDF00667B63 /* VMWizardOSMacView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEF0305826A2AFDE00667B63 /* VMWizardOSMacView.swift */; };
+		CEF0306826A2AFDF00667B63 /* VMWizardOSMacView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEF0305826A2AFDE00667B63 /* VMWizardOSMacView.swift */; };
+		CEF0306926A2AFDF00667B63 /* VMWizardOSMacView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEF0305826A2AFDE00667B63 /* VMWizardOSMacView.swift */; };
+		CEF0306A26A2AFDF00667B63 /* VMWizardStartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEF0305926A2AFDE00667B63 /* VMWizardStartView.swift */; };
+		CEF0306B26A2AFDF00667B63 /* VMWizardStartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEF0305926A2AFDE00667B63 /* VMWizardStartView.swift */; };
+		CEF0306C26A2AFDF00667B63 /* VMWizardStartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEF0305926A2AFDE00667B63 /* VMWizardStartView.swift */; };
+		CEF0306D26A2AFDF00667B63 /* VMWizardOSView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEF0305A26A2AFDE00667B63 /* VMWizardOSView.swift */; };
+		CEF0306E26A2AFDF00667B63 /* VMWizardOSView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEF0305A26A2AFDE00667B63 /* VMWizardOSView.swift */; };
+		CEF0306F26A2AFDF00667B63 /* VMWizardOSView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEF0305A26A2AFDE00667B63 /* VMWizardOSView.swift */; };
+		CEF0307126A2B04400667B63 /* VMWizardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEF0307026A2B04300667B63 /* VMWizardView.swift */; };
+		CEF0307226A2B04400667B63 /* VMWizardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEF0307026A2B04300667B63 /* VMWizardView.swift */; };
 		CEF83EBA24F9ABEA00557D15 /* UTMQemuManager+BlockDevices.m in Sources */ = {isa = PBXBuildFile; fileRef = CEF83EB924F9ABEA00557D15 /* UTMQemuManager+BlockDevices.m */; };
 		CEF83EBB24F9ABEA00557D15 /* UTMQemuManager+BlockDevices.m in Sources */ = {isa = PBXBuildFile; fileRef = CEF83EB924F9ABEA00557D15 /* UTMQemuManager+BlockDevices.m */; };
 		CEF83EBE24F9C3BF00557D15 /* UTMQemuVirtualMachine+Drives.m in Sources */ = {isa = PBXBuildFile; fileRef = CEF83EBD24F9C3BF00557D15 /* UTMQemuVirtualMachine+Drives.m */; };
@@ -2042,6 +2072,17 @@
 		CEEB66452284B942002737B2 /* VMKeyboardButton.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VMKeyboardButton.m; sourceTree = "<group>"; };
 		CEEC811A24E48EC600ACB0B3 /* SettingsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		CEECE13B25E47D9500A2AAB8 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		CEF0300526A25A6900667B63 /* VMWizardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMWizardView.swift; sourceTree = "<group>"; };
+		CEF0304C26A2AFBE00667B63 /* BigButtonStyle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BigButtonStyle.swift; sourceTree = "<group>"; };
+		CEF0304D26A2AFBE00667B63 /* BigWhiteSpinner.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BigWhiteSpinner.swift; sourceTree = "<group>"; };
+		CEF0305426A2AFDD00667B63 /* VMWizardOSOtherView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VMWizardOSOtherView.swift; sourceTree = "<group>"; };
+		CEF0305526A2AFDD00667B63 /* VMWizardState.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VMWizardState.swift; sourceTree = "<group>"; };
+		CEF0305626A2AFDD00667B63 /* VMWizardOSWindowsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VMWizardOSWindowsView.swift; sourceTree = "<group>"; };
+		CEF0305726A2AFDE00667B63 /* VMWizardOSLinuxView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VMWizardOSLinuxView.swift; sourceTree = "<group>"; };
+		CEF0305826A2AFDE00667B63 /* VMWizardOSMacView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VMWizardOSMacView.swift; sourceTree = "<group>"; };
+		CEF0305926A2AFDE00667B63 /* VMWizardStartView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VMWizardStartView.swift; sourceTree = "<group>"; };
+		CEF0305A26A2AFDE00667B63 /* VMWizardOSView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VMWizardOSView.swift; sourceTree = "<group>"; };
+		CEF0307026A2B04300667B63 /* VMWizardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMWizardView.swift; sourceTree = "<group>"; };
 		CEF83EB824F9ABEA00557D15 /* UTMQemuManager+BlockDevices.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UTMQemuManager+BlockDevices.h"; sourceTree = "<group>"; };
 		CEF83EB924F9ABEA00557D15 /* UTMQemuManager+BlockDevices.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UTMQemuManager+BlockDevices.m"; sourceTree = "<group>"; };
 		CEF83EBC24F9C3BF00557D15 /* UTMQemuVirtualMachine+Drives.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UTMQemuVirtualMachine+Drives.h"; sourceTree = "<group>"; };
@@ -2479,6 +2520,7 @@
 				84C584E4268F8C65000FCABF /* VMAppleSettingsView.swift */,
 				84C584E2268F8AE7000FCABF /* VMQEMUSettingsView.swift */,
 				CE2D953D24AD4F980059923A /* VMSettingsView.swift */,
+				CEF0300526A25A6900667B63 /* VMWizardView.swift */,
 				CE2D954124AD4F980059923A /* Info.plist */,
 				FFB02A8E266CB09C006CD71A /* InfoPlist.strings */,
 				CE2D953F24AD4F980059923A /* macOS.entitlements */,
@@ -2499,6 +2541,7 @@
 				CE2D955124AD4F980059923A /* VMConfigDrivesView.swift */,
 				CE2D954D24AD4F980059923A /* VMConfigNetworkPortForwardView.swift */,
 				CE2D954C24AD4F980059923A /* VMSettingsView.swift */,
+				CEF0307026A2B04300667B63 /* VMWizardView.swift */,
 				CE2D954F24AD4F980059923A /* Info.plist */,
 				FFB02A8A266CB09C006CD71A /* InfoPlist.strings */,
 				5286EC91243748AC007E6CBC /* Settings.bundle */,
@@ -3028,6 +3071,8 @@
 			isa = PBXGroup;
 			children = (
 				E28394B7240C2191006742E2 /* HTerm */,
+				CEF0304C26A2AFBE00667B63 /* BigButtonStyle.swift */,
+				CEF0304D26A2AFBE00667B63 /* BigWhiteSpinner.swift */,
 				CE7D972B24B2B17D0080CB69 /* BusyOverlay.swift */,
 				CE772AAB25C8B0F600E4E379 /* ContentView.swift */,
 				CED234EC254796E500ED0A57 /* NumberTextField.swift */,
@@ -3055,6 +3100,13 @@
 				CE2D954524AD4F980059923A /* VMRemovableDrivesView.swift */,
 				CE8813D424CD265700532628 /* VMShareFileModifier.swift */,
 				CE2D953824AD4F980059923A /* VMToolbarModifier.swift */,
+				CEF0305726A2AFDE00667B63 /* VMWizardOSLinuxView.swift */,
+				CEF0305826A2AFDE00667B63 /* VMWizardOSMacView.swift */,
+				CEF0305426A2AFDD00667B63 /* VMWizardOSOtherView.swift */,
+				CEF0305A26A2AFDE00667B63 /* VMWizardOSView.swift */,
+				CEF0305626A2AFDD00667B63 /* VMWizardOSWindowsView.swift */,
+				CEF0305926A2AFDE00667B63 /* VMWizardStartView.swift */,
+				CEF0305526A2AFDD00667B63 /* VMWizardState.swift */,
 			);
 			path = Shared;
 			sourceTree = "<group>";
@@ -3521,6 +3573,7 @@
 				CE2D927824AD46670059923A /* qapi-events-rocker.c in Sources */,
 				CE772AAC25C8B0F600E4E379 /* ContentView.swift in Sources */,
 				CEB63A8B24F46E6E00CAF323 /* VMConfigSoundViewController.m in Sources */,
+				CEF0306726A2AFDF00667B63 /* VMWizardOSMacView.swift in Sources */,
 				CE2D927924AD46670059923A /* qapi-visit-qom.c in Sources */,
 				CE2D927A24AD46670059923A /* UTMQemuConfiguration+System.m in Sources */,
 				CEA905D82603DC5300801E7C /* VMUSBDevicesViewController.swift in Sources */,
@@ -3534,6 +3587,7 @@
 				CE2D928024AD46670059923A /* UTMQemuConfigurationPortForward.m in Sources */,
 				CE2D928124AD46670059923A /* qapi-events.c in Sources */,
 				CE2D928224AD46670059923A /* qapi-events-introspect.c in Sources */,
+				CEF0307126A2B04400667B63 /* VMWizardView.swift in Sources */,
 				CE2D928324AD46670059923A /* qapi-events-audio.c in Sources */,
 				CE2D928524AD46670059923A /* qapi-events-ui.c in Sources */,
 				CE2D928624AD46670059923A /* qapi-visit-misc.c in Sources */,
@@ -3543,6 +3597,7 @@
 				CE2D928924AD46670059923A /* qapi-visit-machine-target.c in Sources */,
 				CE2D928A24AD46670059923A /* qapi-visit-qdev.c in Sources */,
 				CE2D955724AD4F980059923A /* VMConfigDisplayView.swift in Sources */,
+				CEF0306126A2AFDF00667B63 /* VMWizardOSWindowsView.swift in Sources */,
 				CE2D928B24AD46670059923A /* qapi-visit-core.c in Sources */,
 				CE2D928C24AD46670059923A /* qapi-visit-rdma.c in Sources */,
 				CE2D928D24AD46670059923A /* qapi-types-trace.c in Sources */,
@@ -3556,6 +3611,7 @@
 				CE2D929324AD46670059923A /* gst_ios_init.m in Sources */,
 				CE2D958924AD4F990059923A /* VMConfigSystemView.swift in Sources */,
 				CE8813D524CD265700532628 /* VMShareFileModifier.swift in Sources */,
+				CEF0305126A2AFBF00667B63 /* BigWhiteSpinner.swift in Sources */,
 				CE2D929424AD46670059923A /* cf-input-visitor.c in Sources */,
 				CE2D929524AD46670059923A /* qapi-commands-char.c in Sources */,
 				CE2D929624AD46670059923A /* qapi-visit-migration.c in Sources */,
@@ -3566,6 +3622,7 @@
 				CE2D929C24AD46670059923A /* UTMViewState.m in Sources */,
 				84C60FBF2682BDA800B58C00 /* VMToolbarActions.swift in Sources */,
 				CE020BAB24AEE00000B44AB6 /* UTMLoggingSwift.swift in Sources */,
+				CEF0306426A2AFDF00667B63 /* VMWizardOSLinuxView.swift in Sources */,
 				CE2D958D24AD4F990059923A /* UTMApp.swift in Sources */,
 				2CE8EB042572E166000E2EBB /* qapi-visit-acpi.c in Sources */,
 				CE2D929E24AD46670059923A /* CSMain.m in Sources */,
@@ -3573,6 +3630,7 @@
 				CE2D955B24AD4F980059923A /* VMConfigQEMUView.swift in Sources */,
 				CE2D92A024AD46670059923A /* VMDisplayMetalViewController+Touch.m in Sources */,
 				CE2D92A124AD46670059923A /* UTMQemuConfiguration+Display.m in Sources */,
+				CEF0304E26A2AFBE00667B63 /* BigButtonStyle.swift in Sources */,
 				CE020BB624B14F8400B44AB6 /* UTMVirtualMachineExtension.swift in Sources */,
 				CE2D92A224AD46670059923A /* qapi-visit-block-core.c in Sources */,
 				CEB63A7E24F46E5700CAF323 /* VMConfigTogglePickerCell.m in Sources */,
@@ -3582,6 +3640,7 @@
 				CE2D92A524AD46670059923A /* VMKeyboardView.m in Sources */,
 				CE2D92A624AD46670059923A /* qapi-commands-net.c in Sources */,
 				CE2D92A724AD46670059923A /* qapi-types-common.c in Sources */,
+				CEF0306D26A2AFDF00667B63 /* VMWizardOSView.swift in Sources */,
 				CE2D92A924AD46670059923A /* qapi-types-transaction.c in Sources */,
 				CEB63A8E24F46E6E00CAF323 /* VMConfigViewController.m in Sources */,
 				CEF83ECC24FB382B00557D15 /* UTMQemuVirtualMachine+Terminal.m in Sources */,
@@ -3633,6 +3692,7 @@
 				CE2D92C924AD46670059923A /* qapi-commands-misc-target.c in Sources */,
 				CE2D957524AD4F990059923A /* VMConfigInputView.swift in Sources */,
 				CEF83EC224F9C9E100557D15 /* UTMDrive.m in Sources */,
+				CEF0305B26A2AFDF00667B63 /* VMWizardOSOtherView.swift in Sources */,
 				84C60FB72681A41B00B58C00 /* VMToolbarView.swift in Sources */,
 				2CE8EAEE2572E0C2000E2EBB /* qapi-events-block-export.c in Sources */,
 				CE2D92CB24AD46670059923A /* VMDisplayMetalViewController+Gamepad.m in Sources */,
@@ -3683,6 +3743,7 @@
 				CE2D92EE24AD46670059923A /* qapi-types-block-core.c in Sources */,
 				CE2D92F024AD46670059923A /* qapi-events-transaction.c in Sources */,
 				CE2D957724AD4F990059923A /* VMConfigStringPicker.swift in Sources */,
+				CEF0306A26A2AFDF00667B63 /* VMWizardStartView.swift in Sources */,
 				CE2D92F124AD46670059923A /* qapi-commands-dump.c in Sources */,
 				CE2D92F224AD46670059923A /* VMKeyboardButton.m in Sources */,
 				CE2D92F324AD46670059923A /* qapi-commands-introspect.c in Sources */,
@@ -3699,6 +3760,7 @@
 				CE2D92F824AD46670059923A /* qapi-types-crypto.c in Sources */,
 				CE2D92F924AD46670059923A /* qapi-types-qom.c in Sources */,
 				CEB63A7F24F46E5700CAF323 /* VMConfigCell.m in Sources */,
+				CEF0305E26A2AFDF00667B63 /* VMWizardState.swift in Sources */,
 				CEB63A8824F46E6E00CAF323 /* VMConfigSharingViewController.m in Sources */,
 				CE2D92FA24AD46670059923A /* qapi-commands-rdma.c in Sources */,
 				CE2D92FC24AD46670059923A /* VMDisplayMetalViewController+Keyboard.m in Sources */,
@@ -3809,6 +3871,7 @@
 				CE0B6D7A24AD584D00FE012D /* qapi-events-machine-target.c in Sources */,
 				CE0B6D2C24AD57FC00FE012D /* qapi-commands-ui.c in Sources */,
 				CE0B6D2324AD57FC00FE012D /* qapi-commands-crypto.c in Sources */,
+				CEF0305326A2AFBF00667B63 /* BigWhiteSpinner.swift in Sources */,
 				CE0B6CFA24AD568400FE012D /* UTMQemuConfiguration+System.m in Sources */,
 				CE900BB025FC3E65007533FD /* CSUSBDevice.m in Sources */,
 				CEBBF1A824B921F000C15049 /* VMDetailsView.swift in Sources */,
@@ -3839,6 +3902,7 @@
 				CE0B6D7524AD584D00FE012D /* qapi-visit-ui.c in Sources */,
 				CE0B6D1824AD57FC00FE012D /* qapi-events-audio.c in Sources */,
 				CE0B6D7224AD584D00FE012D /* qapi-types-crypto.c in Sources */,
+				CEF0306926A2AFDF00667B63 /* VMWizardOSMacView.swift in Sources */,
 				CE0B6D8124AD584D00FE012D /* qapi-events.c in Sources */,
 				CED814EA24C79F070042F0F1 /* VMConfigDriveCreateView.swift in Sources */,
 				CE0B6D5524AD584C00FE012D /* qapi-types-common.c in Sources */,
@@ -3854,11 +3918,13 @@
 				CE0B6D5924AD584C00FE012D /* qapi-visit-run-state.c in Sources */,
 				CE0B6CF424AD568400FE012D /* UTMQemuConfiguration+Constants.m in Sources */,
 				CE0B6D0924AD56C300FE012D /* cf-output-visitor.c in Sources */,
+				CEF0306626A2AFDF00667B63 /* VMWizardOSLinuxView.swift in Sources */,
 				CE0B6D2A24AD57FC00FE012D /* qapi-commands.c in Sources */,
 				8401FDA4269D43CF00265F0D /* VMConfigAppleDisplayView.swift in Sources */,
 				CE0B6CF924AD568400FE012D /* UTMQemuConfiguration+Sharing.m in Sources */,
 				CE0B6D3A24AD584C00FE012D /* qapi-types-qom.c in Sources */,
 				CE2D955E24AD4F990059923A /* VMConfigSoundView.swift in Sources */,
+				CEF0306326A2AFDF00667B63 /* VMWizardOSWindowsView.swift in Sources */,
 				CE0B6D4824AD584C00FE012D /* qapi-visit-audio.c in Sources */,
 				CE0B6D3124AD57FC00FE012D /* qapi-events-job.c in Sources */,
 				2CE8EAFA2572E131000E2EBB /* qapi-types-acpi.c in Sources */,
@@ -3877,6 +3943,7 @@
 				CE900B9F25FC2869007533FD /* CSUSBManager.m in Sources */,
 				CE0B6D0324AD56AE00FE012D /* UTMTerminal.m in Sources */,
 				CE0B6CFC24AD568400FE012D /* UTMQemuConfigurationPortForward.m in Sources */,
+				CEF0306C26A2AFDF00667B63 /* VMWizardStartView.swift in Sources */,
 				84FCABBC268CE05E0036196C /* UTMQemuVirtualMachine.m in Sources */,
 				CE0B6D7924AD584D00FE012D /* qapi-visit-rdma.c in Sources */,
 				CE8813D624CD265700532628 /* VMShareFileModifier.swift in Sources */,
@@ -3898,6 +3965,8 @@
 				CE0B6D6124AD584D00FE012D /* qapi-types-authz.c in Sources */,
 				CE0B6D6D24AD584D00FE012D /* qapi-visit-tpm.c in Sources */,
 				CE0B6D0224AD56AE00FE012D /* UTMQemu.m in Sources */,
+				CEF0306026A2AFDF00667B63 /* VMWizardState.swift in Sources */,
+				CEF0300826A25A6900667B63 /* VMWizardView.swift in Sources */,
 				CE0B6D4924AD584C00FE012D /* qapi-types-trace.c in Sources */,
 				CE0B6D7724AD584D00FE012D /* qapi-events-misc-target.c in Sources */,
 				CE0B6CF524AD568400FE012D /* UTMQemuConfiguration+Miscellaneous.m in Sources */,
@@ -3921,6 +3990,7 @@
 				CE0B6D0D24AD56C300FE012D /* qapi-util.c in Sources */,
 				2C6D9E152571AFE5003298E6 /* UTMQcow2.c in Sources */,
 				CE2D955C24AD4F980059923A /* VMConfigQEMUView.swift in Sources */,
+				CEF0305026A2AFBF00667B63 /* BigButtonStyle.swift in Sources */,
 				CE2D953324AD4F040059923A /* UTMQemuConfigurationExtension.swift in Sources */,
 				CE0B6D7024AD584D00FE012D /* qapi-types-job.c in Sources */,
 				CE0B6D1224AD57CB00FE012D /* qapi-commands-audio.c in Sources */,
@@ -3948,6 +4018,7 @@
 				2CE8EB0A2572E173000E2EBB /* qapi-visit-block-export.c in Sources */,
 				2CE8EB052572E166000E2EBB /* qapi-visit-acpi.c in Sources */,
 				84A381AA268CB30C0048EE4D /* VMConfigDrivesButtons.swift in Sources */,
+				CEF0305D26A2AFDF00667B63 /* VMWizardOSOtherView.swift in Sources */,
 				CE0B6D2D24AD57FC00FE012D /* qapi-commands-machine.c in Sources */,
 				CE0B6D2824AD57FC00FE012D /* qapi-emit-events.c in Sources */,
 				CEEC811B24E48EC700ACB0B3 /* SettingsView.swift in Sources */,
@@ -3987,6 +4058,7 @@
 				CE0B6D5D24AD584D00FE012D /* qapi-visit.c in Sources */,
 				CE0B6D1724AD57FC00FE012D /* qapi-commands-misc.c in Sources */,
 				CE0B6D2924AD57FC00FE012D /* qapi-commands-machine-target.c in Sources */,
+				CEF0306F26A2AFDF00667B63 /* VMWizardOSView.swift in Sources */,
 				CE0B6D7324AD584D00FE012D /* qapi-events-migration.c in Sources */,
 				CE020BA424AEDC7C00B44AB6 /* UTMData.swift in Sources */,
 				CE0B6D1A24AD57FC00FE012D /* qapi-commands-qdev.c in Sources */,
@@ -4015,6 +4087,7 @@
 				CEA45E26263519B5002FA97D /* qapi-types-rocker.c in Sources */,
 				CEA45E27263519B5002FA97D /* VMRemovableDrivesView.swift in Sources */,
 				CEA45E28263519B5002FA97D /* qapi-commands-crypto.c in Sources */,
+				CEF0306E26A2AFDF00667B63 /* VMWizardOSView.swift in Sources */,
 				CEA45E29263519B5002FA97D /* qapi-visit-block-export.c in Sources */,
 				CEA45E2A263519B5002FA97D /* qapi-events-char.c in Sources */,
 				CEA45E2B263519B5002FA97D /* qapi-events-error.c in Sources */,
@@ -4047,6 +4120,7 @@
 				CEA45E47263519B5002FA97D /* qapi-events-ui.c in Sources */,
 				CEA45E48263519B5002FA97D /* qapi-visit-misc.c in Sources */,
 				CEA45E49263519B5002FA97D /* VMConfigDisplayViewController.m in Sources */,
+				CEF0306826A2AFDF00667B63 /* VMWizardOSMacView.swift in Sources */,
 				CEA45E4A263519B5002FA97D /* qapi-commands-block.c in Sources */,
 				84FCABCB268D17E80036196C /* UTMVirtualMachine+IO.m in Sources */,
 				CEA45E4B263519B5002FA97D /* BusyOverlay.swift in Sources */,
@@ -4078,6 +4152,7 @@
 				CEA45E65263519B5002FA97D /* UTMApp.swift in Sources */,
 				CEA45E66263519B5002FA97D /* qapi-visit-acpi.c in Sources */,
 				CEA45E67263519B5002FA97D /* CSMain.m in Sources */,
+				CEF0305F26A2AFDF00667B63 /* VMWizardState.swift in Sources */,
 				CEA45E68263519B5002FA97D /* UTMQemuConfiguration+Constants.m in Sources */,
 				CEA45E69263519B5002FA97D /* VMConfigQEMUView.swift in Sources */,
 				CEA45E6A263519B5002FA97D /* VMDisplayMetalViewController+Touch.m in Sources */,
@@ -4098,12 +4173,14 @@
 				CEA45E78263519B5002FA97D /* VMConfigInputViewController.m in Sources */,
 				CEA45E79263519B5002FA97D /* VMRemovableDrivesViewController.swift in Sources */,
 				CEA45E7A263519B5002FA97D /* UTMSpiceIO.m in Sources */,
+				CEF0306B26A2AFDF00667B63 /* VMWizardStartView.swift in Sources */,
 				CEA45E7B263519B5002FA97D /* qapi-events-machine-target.c in Sources */,
 				CEA45E7C263519B5002FA97D /* qapi-types-misc.c in Sources */,
 				CEA45E7D263519B5002FA97D /* qapi-commands-qom.c in Sources */,
 				CEA45E7E263519B5002FA97D /* VMConfigDrivesView.swift in Sources */,
 				CEA45E7F263519B5002FA97D /* qapi-visit-rocker.c in Sources */,
 				CEA45E80263519B5002FA97D /* qapi-visit-net.c in Sources */,
+				CEF0306226A2AFDF00667B63 /* VMWizardOSWindowsView.swift in Sources */,
 				CEA45E81263519B5002FA97D /* VMDriveImage.swift in Sources */,
 				CEA45E82263519B5002FA97D /* VMConfigDirectoryPickerViewController.m in Sources */,
 				CEA45E83263519B5002FA97D /* UTMQemuConfiguration+ConstantsGenerated.m in Sources */,
@@ -4164,12 +4241,14 @@
 				CEA45EB9263519B5002FA97D /* VMCursor.m in Sources */,
 				CEA45EBA263519B5002FA97D /* VMConfigDriveDetailsView.swift in Sources */,
 				CEA45EBB263519B5002FA97D /* CSDisplayMetal.m in Sources */,
+				CEF0305226A2AFBF00667B63 /* BigWhiteSpinner.swift in Sources */,
 				CEA45EBC263519B5002FA97D /* qapi-events-tpm.c in Sources */,
 				CEA45EBD263519B5002FA97D /* UTMQemuSystem.m in Sources */,
 				84C60FC02682BDA800B58C00 /* VMToolbarActions.swift in Sources */,
 				CEA45EBE263519B5002FA97D /* NumberTextField.swift in Sources */,
 				CEA45EBF263519B5002FA97D /* VMConfigPortForwardingViewController.m in Sources */,
 				CEA45EC0263519B5002FA97D /* qapi-events-job.c in Sources */,
+				CEF0306526A2AFDF00667B63 /* VMWizardOSLinuxView.swift in Sources */,
 				CEA45EC1263519B5002FA97D /* UTMQemuConfigurationExtension.swift in Sources */,
 				CEA45EC2263519B5002FA97D /* qapi-dealloc-visitor.c in Sources */,
 				CEA45EC3263519B5002FA97D /* VMCommands.swift in Sources */,
@@ -4194,6 +4273,7 @@
 				CEA45ED5263519B5002FA97D /* qapi-events-transaction.c in Sources */,
 				CEA45ED6263519B5002FA97D /* VMConfigStringPicker.swift in Sources */,
 				CEA45ED7263519B5002FA97D /* qapi-commands-dump.c in Sources */,
+				CEF0307226A2B04400667B63 /* VMWizardView.swift in Sources */,
 				CEA45ED8263519B5002FA97D /* VMKeyboardButton.m in Sources */,
 				CEA45ED9263519B5002FA97D /* qapi-commands-introspect.c in Sources */,
 				CEA45EDA263519B5002FA97D /* qapi-types-sockets.c in Sources */,
@@ -4219,6 +4299,7 @@
 				CEA45EEF263519B5002FA97D /* qapi-commands-audio.c in Sources */,
 				CEA45EF0263519B5002FA97D /* VMConfigTextField.m in Sources */,
 				CEA45EF1263519B5002FA97D /* VMListViewCell.m in Sources */,
+				CEF0304F26A2AFBF00667B63 /* BigButtonStyle.swift in Sources */,
 				CEA45EF2263519B5002FA97D /* qapi-events-common.c in Sources */,
 				CEA45EF3263519B5002FA97D /* UTMTerminalIO.m in Sources */,
 				CEA45EF4263519B5002FA97D /* VMConfigSoundView.swift in Sources */,
@@ -4239,6 +4320,7 @@
 				CEA45F04263519B5002FA97D /* qapi-commands-block-core.c in Sources */,
 				CEA45F05263519B5002FA97D /* qapi-types-authz.c in Sources */,
 				CEA45F06263519B5002FA97D /* qapi-types-qdev.c in Sources */,
+				CEF0305C26A2AFDF00667B63 /* VMWizardOSOtherView.swift in Sources */,
 				CEA45F07263519B5002FA97D /* VMConfigSystemViewController.m in Sources */,
 				CEA45F08263519B5002FA97D /* ActivityView.swift in Sources */,
 				CEA45F09263519B5002FA97D /* qapi-emit-events.c in Sources */,

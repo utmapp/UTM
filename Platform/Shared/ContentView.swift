@@ -27,7 +27,6 @@ let productName = "UTM"
 
 @available(iOS 14, macOS 11, *)
 struct ContentView: View {
-    @StateObject private var newConfiguration = UTMQemuConfiguration()
     @State private var editMode = false
     @EnvironmentObject private var data: UTMData
     @State private var newPopupPresented = false
@@ -64,21 +63,8 @@ struct ContentView: View {
                 }
                 #endif
             }
-            .sheet(isPresented: $data.showNewVMSheet, onDismiss: {
-                //FIXME: SwiftUI bug this is never called on macOS
-                newConfiguration.resetDefaults()
-            }, content: {
-                VMSettingsView(vm: nil, config: newConfiguration)
-                    .environmentObject(data)
-                    .onAppear {
-                        newConfiguration.name = data.newDefaultVMName()
-                    }
-            })
-            .onChange(of: data.showNewVMSheet) { value in
-                //FIXME: this doesn't always work on iOS
-                if !value {
-                    newConfiguration.resetDefaults()
-                }
+            .sheet(isPresented: $data.showNewVMSheet) {
+                VMWizardView()
             }
             VMPlaceholderView()
         }.overlay(data.showSettingsModal ? AnyView(EmptyView()) : AnyView(BusyOverlay()))
@@ -109,32 +95,11 @@ struct ContentView: View {
         }
     }
     
-    #if os(macOS)
-    private var newButton: some View {
-        Button(action: { newPopupPresented.toggle() }, label: {
-            Label("New VM", systemImage: "plus").labelStyle(IconOnlyLabelStyle())
-        })
-        .help("New VM")
-        .popover(isPresented: $newPopupPresented, arrowEdge: .bottom) {
-            VStack {
-                Text("You can download an existing VM configuration for popular operating systems from the UTM gallery or start from scratch.")
-                Spacer()
-                Link("Go To Gallery", destination: URL(string: "https://getutm.app/gallery/")!)
-                Button("Start from Scratch") {
-                    data.newVM()
-                }
-            }.frame(width: 200, height: 150)
-            .padding()
-        }
-    }
-    #else
-    // BUG: iOS cannot show actionSheet from toolbar
     private var newButton: some View {
         Button(action: { data.newVM() }, label: {
             Label("New VM", systemImage: "plus").labelStyle(IconOnlyLabelStyle())
         })
     }
-    #endif
     
     private func delete(indexSet: IndexSet) {
         let selected = data.virtualMachines[indexSet]
