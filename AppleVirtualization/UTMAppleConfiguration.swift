@@ -172,7 +172,7 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
     
     var diskImagesToDelete: Set<DiskImage> = Set()
     
-    @Published var numberOfDirectoryShares: Int = 0
+    @Published var sharedDirectories: [URL] = []
     
     @available(macOS 12, *)
     var isAudioEnabled: Bool {
@@ -290,7 +290,7 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
         case macRecoveryIpswBookmark
         case networkDevices
         case displays
-        case numberOfDirectoryShares
+        case sharedDirectoryBookmarks
         case isAudioEnabled
         case isBalloonEnabled
         case isEntropyEnabled
@@ -335,7 +335,11 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
             isKeyboardEnabled = try values.decode(Bool.self, forKey: .isKeyboardEnabled)
             isPointingEnabled = try values.decode(Bool.self, forKey: .isPointingEnabled)
         }
-        numberOfDirectoryShares = try values.decode(Int.self, forKey: .numberOfDirectoryShares)
+        let sharedDirectoryBookmarks = try values.decode([Data].self, forKey: .sharedDirectoryBookmarks)
+        sharedDirectories = try sharedDirectoryBookmarks.map({ bookmark in
+            var stale: Bool = false
+            return try URL(resolvingBookmarkData: bookmark, options: .withSecurityScope, bookmarkDataIsStale: &stale)
+        })
         isBalloonEnabled = try values.decode(Bool.self, forKey: .isBalloonEnabled)
         isEntropyEnabled = try values.decode(Bool.self, forKey: .isEntropyEnabled)
         isSerialEnabled = try values.decode(Bool.self, forKey: .isSerialEnabled)
@@ -372,7 +376,10 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
             try container.encode(isKeyboardEnabled, forKey: .isKeyboardEnabled)
             try container.encode(isPointingEnabled, forKey: .isPointingEnabled)
         }
-        try container.encode(numberOfDirectoryShares, forKey: .numberOfDirectoryShares)
+        let sharedDirectoryBookmarks = try sharedDirectories.map { url in
+            try url.bookmarkData(options: .withSecurityScope)
+        }
+        try container.encode(sharedDirectoryBookmarks, forKey: .sharedDirectoryBookmarks)
         try container.encode(isBalloonEnabled, forKey: .isBalloonEnabled)
         try container.encode(isEntropyEnabled, forKey: .isEntropyEnabled)
         try container.encode(isSerialEnabled, forKey: .isSerialEnabled)

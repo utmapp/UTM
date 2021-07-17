@@ -19,23 +19,36 @@ import SwiftUI
 @available(macOS 12, *)
 struct VMConfigAppleSharingView: View {
     @ObservedObject var config: UTMAppleConfiguration
-    @State private var sharedDirectories = ["/path/one", "/path/two", "/path/three"]
-    @State private var selected: String?
+    @EnvironmentObject private var data: UTMData
+    @State private var selected: URL?
+    @State private var isImporterPresented: Bool = false
     
     var body: some View {
         Form {
-            Table(sharedDirectories, selection: $selected) {
-                TableColumn("Shared Path") { value in
-                    Text(value)
+            Table(config.sharedDirectories, selection: $selected) {
+                TableColumn("Shared Path") { url in
+                    Text(url.path)
                 }
             }.frame(minHeight: 300)
             HStack {
                 Spacer()
                 Button("Delete") {
-                    
+                    config.sharedDirectories.removeAll { url in
+                        url == selected
+                    }
                 }.disabled(selected == nil)
                 Button("Add") {
-                    
+                    isImporterPresented.toggle()
+                }
+            }.fileImporter(isPresented: $isImporterPresented, allowedContentTypes: [.folder]) { result in
+                data.busyWorkAsync {
+                    let url = try result.get()
+                    if config.sharedDirectories.contains(where: { existing in
+                        url == existing
+                    }) {
+                        throw NSLocalizedString("This directory is already being shared.", comment: "VMConfigAppleSharingView")
+                    }
+                    config.sharedDirectories.append(url)
                 }
             }
         }
