@@ -1123,6 +1123,9 @@
 		CEBE820726A4C74E007AAB12 /* VMWizardSharingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEBE820626A4C74E007AAB12 /* VMWizardSharingView.swift */; };
 		CEBE820826A4C74E007AAB12 /* VMWizardSharingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEBE820626A4C74E007AAB12 /* VMWizardSharingView.swift */; };
 		CEBE820926A4C74E007AAB12 /* VMWizardSharingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEBE820626A4C74E007AAB12 /* VMWizardSharingView.swift */; };
+		CEBE820B26A4C8E0007AAB12 /* VMWizardSummaryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEBE820A26A4C8E0007AAB12 /* VMWizardSummaryView.swift */; };
+		CEBE820C26A4C8E0007AAB12 /* VMWizardSummaryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEBE820A26A4C8E0007AAB12 /* VMWizardSummaryView.swift */; };
+		CEBE820D26A4C8E0007AAB12 /* VMWizardSummaryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEBE820A26A4C8E0007AAB12 /* VMWizardSummaryView.swift */; };
 		CED234ED254796E500ED0A57 /* NumberTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = CED234EC254796E500ED0A57 /* NumberTextField.swift */; };
 		CED234EE254796E500ED0A57 /* NumberTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = CED234EC254796E500ED0A57 /* NumberTextField.swift */; };
 		CED814E924C79F070042F0F1 /* VMConfigDriveCreateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CED814E824C79F070042F0F1 /* VMConfigDriveCreateView.swift */; };
@@ -2054,6 +2057,7 @@
 		CEBE02632588494100B9BCA8 /* CSSession+Sharing.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "CSSession+Sharing.m"; sourceTree = "<group>"; };
 		CEBE820226A4C1B5007AAB12 /* VMWizardDrivesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMWizardDrivesView.swift; sourceTree = "<group>"; };
 		CEBE820626A4C74E007AAB12 /* VMWizardSharingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMWizardSharingView.swift; sourceTree = "<group>"; };
+		CEBE820A26A4C8E0007AAB12 /* VMWizardSummaryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMWizardSummaryView.swift; sourceTree = "<group>"; };
 		CEC05DF42463E3D300DA82B2 /* VMDisplayView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VMDisplayView.h; sourceTree = "<group>"; };
 		CEC05DF52463E3D300DA82B2 /* VMDisplayView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VMDisplayView.m; sourceTree = "<group>"; };
 		CEC05DF72464B93900DA82B2 /* VMDisplayTerminalViewController+Keyboard.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "VMDisplayTerminalViewController+Keyboard.h"; sourceTree = "<group>"; };
@@ -3120,6 +3124,7 @@
 				CEBE820626A4C74E007AAB12 /* VMWizardSharingView.swift */,
 				CEF0305926A2AFDE00667B63 /* VMWizardStartView.swift */,
 				CEF0305526A2AFDD00667B63 /* VMWizardState.swift */,
+				CEBE820A26A4C8E0007AAB12 /* VMWizardSummaryView.swift */,
 			);
 			path = Shared;
 			sourceTree = "<group>";
@@ -3636,6 +3641,7 @@
 				84C60FBF2682BDA800B58C00 /* VMToolbarActions.swift in Sources */,
 				CE020BAB24AEE00000B44AB6 /* UTMLoggingSwift.swift in Sources */,
 				CEF0306426A2AFDF00667B63 /* VMWizardOSLinuxView.swift in Sources */,
+				CEBE820B26A4C8E0007AAB12 /* VMWizardSummaryView.swift in Sources */,
 				CE2D958D24AD4F990059923A /* UTMApp.swift in Sources */,
 				2CE8EB042572E166000E2EBB /* qapi-visit-acpi.c in Sources */,
 				CE2D929E24AD46670059923A /* CSMain.m in Sources */,
@@ -3860,6 +3866,7 @@
 				CE0B6D4424AD584C00FE012D /* qapi-visit-block.c in Sources */,
 				CE0B6D4C24AD584C00FE012D /* qapi-types-misc.c in Sources */,
 				CE772AAD25C8B0F600E4E379 /* ContentView.swift in Sources */,
+				CEBE820D26A4C8E0007AAB12 /* VMWizardSummaryView.swift in Sources */,
 				CE0B6D1B24AD57FC00FE012D /* qapi-commands-block-core.c in Sources */,
 				8401FDB2269E602000265F0D /* VMConfigAppleDriveDetailsView.swift in Sources */,
 				CE0B6D3B24AD584C00FE012D /* qapi-events-machine.c in Sources */,
@@ -4195,6 +4202,7 @@
 				CEA45E7C263519B5002FA97D /* qapi-types-misc.c in Sources */,
 				CEA45E7D263519B5002FA97D /* qapi-commands-qom.c in Sources */,
 				CEA45E7E263519B5002FA97D /* VMConfigDrivesView.swift in Sources */,
+				CEBE820C26A4C8E0007AAB12 /* VMWizardSummaryView.swift in Sources */,
 				CEA45E7F263519B5002FA97D /* qapi-visit-rocker.c in Sources */,
 				CEA45E80263519B5002FA97D /* qapi-visit-net.c in Sources */,
 				CEF0306226A2AFDF00667B63 /* VMWizardOSWindowsView.swift in Sources */,

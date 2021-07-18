@@ -53,8 +53,9 @@ struct VMWizardView: View {
             case .sharing:
                 VMWizardSharingView(wizardState: wizardState)
                     .transition(wizardState.slide)
-            default:
-                EmptyView()
+            case .summary:
+                VMWizardSummaryView(wizardState: wizardState)
+                    .transition(wizardState.slide)
             }
         }.padding()
             .frame(width: 450, height: 450)

@@ -32,20 +32,20 @@ struct VMWizardOSView: View {
                 OperatingSystem(imageName: "mac", name: "macOS 12+")
             }
             Button {
-                wizardState.operatingSystem = .windows
+                wizardState.operatingSystem = .Windows
                 wizardState.useAppleVirtualization = false
                 wizardState.next()
             } label: {
                 OperatingSystem(imageName: "windows", name: "Windows")
             }
             Button {
-                wizardState.operatingSystem = .linux
+                wizardState.operatingSystem = .Linux
                 wizardState.next()
             } label: {
                 OperatingSystem(imageName: "linux", name: "Linux")
             }
             Button {
-                wizardState.operatingSystem = .other
+                wizardState.operatingSystem = .Other
                 wizardState.useAppleVirtualization = false
                 wizardState.next()
             } label: {

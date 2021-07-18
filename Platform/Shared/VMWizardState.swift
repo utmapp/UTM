@@ -34,20 +34,21 @@ enum VMWizardPage: Int, Identifiable {
     case summary
 }
 
-enum VMWizardOS: Int, Identifiable {
-    var id: Int {
+enum VMWizardOS: String, Identifiable {
+    var id: String {
         return self.rawValue
     }
     
-    case other
+    case Other
     case macOS
-    case linux
-    case windows
+    case Linux
+    case Windows
 }
 
 @available(iOS 14, macOS 11, *)
 class VMWizardState: ObservableObject {
-    private let bytesInMib = 1048576
+    let bytesInMib = 1048576
+    let bytesInGib = 1073741824
     
     @Published var slide: AnyTransition = .identity
     @Published var currentPage: VMWizardPage = .start
@@ -67,7 +68,7 @@ class VMWizardState: ObservableObject {
             }
         }
     }
-    @Published var operatingSystem: VMWizardOS = .other
+    @Published var operatingSystem: VMWizardOS = .Other
     #if os(macOS) && arch(arm64)
     @Published var macPlatform: MacPlatform?
     @Published var macRecoveryIpswURL: URL?
@@ -90,6 +91,9 @@ class VMWizardState: ObservableObject {
     #endif
     @Published var systemCpuCount: Int = 1
     @Published var sharingDirectoryURL: URL?
+    @Published var sharingReadOnly: Bool = false
+    @Published var name: String?
+    @Published var isOpenSettingsAfterCreation: Bool = false
     
     var hasNextButton: Bool {
         switch currentPage {
@@ -117,13 +121,13 @@ class VMWizardState: ObservableObject {
             nextPage = .operatingSystem
         case .operatingSystem:
             switch operatingSystem {
-            case .other:
+            case .Other:
                 nextPage = .otherBoot
             case .macOS:
                 nextPage = .macOSBoot
-            case .linux:
+            case .Linux:
                 nextPage = .linuxBoot
-            case .windows:
+            case .Windows:
                 nextPage = .windowsBoot
             }
         case .otherBoot:
@@ -168,7 +172,7 @@ class VMWizardState: ObservableObject {
             }
             nextPage = .drives
             #if arch(arm64)
-            if operatingSystem == .windows && useVirtualization {
+            if operatingSystem == .Windows && useVirtualization {
                 nextPage = .sharing
             }
             #endif
@@ -202,13 +206,13 @@ class VMWizardState: ObservableObject {
             previousPage = .operatingSystem
         case .hardware:
             switch operatingSystem {
-            case .other:
+            case .Other:
                 previousPage = .otherBoot
             case .macOS:
                 previousPage = .macOSBoot
-            case .linux:
+            case .Linux:
                 previousPage = .linuxBoot
-            case .windows:
+            case .Windows:
                 previousPage = .windowsBoot
             }
         case .drives:
@@ -216,7 +220,7 @@ class VMWizardState: ObservableObject {
         case .sharing:
             previousPage = .drives
             #if arch(arm64)
-            if operatingSystem == .windows && useVirtualization {
+            if operatingSystem == .Windows && useVirtualization {
                 previousPage = .hardware // skip drives when using Windows ARM
             }
             #endif
