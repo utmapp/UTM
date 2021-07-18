@@ -15,6 +15,7 @@
 //
 
 import Foundation
+import SwiftUI
 
 enum VMWizardPage: Int, Identifiable {
     var id: Int {
@@ -48,6 +49,7 @@ enum VMWizardOS: Int, Identifiable {
 class VMWizardState: ObservableObject {
     private let bytesInMib = 1048576
     
+    @Published var slide: AnyTransition = .identity
     @Published var currentPage: VMWizardPage = .start
     @Published var alertMessage: AlertMessage?
     @Published var isBusy: Bool = false
@@ -97,34 +99,43 @@ class VMWizardState: ObservableObject {
         }
     }
     
+    var slideIn: AnyTransition {
+        .asymmetric(insertion: .move(edge: .trailing), removal: .opacity)
+    }
+    
+    var slideOut: AnyTransition {
+        .asymmetric(insertion: .move(edge: .leading), removal: .opacity)
+    }
+    
     func next() {
+        var nextPage = currentPage
         switch currentPage {
         case .start:
-            currentPage = .operatingSystem
+            nextPage = .operatingSystem
         case .operatingSystem:
             switch operatingSystem {
             case .other:
-                currentPage = .otherBoot
+                nextPage = .otherBoot
             case .macOS:
-                currentPage = .macOSBoot
+                nextPage = .macOSBoot
             case .linux:
-                currentPage = .linuxBoot
+                nextPage = .linuxBoot
             case .windows:
-                currentPage = .windowsBoot
+                nextPage = .windowsBoot
             }
         case .otherBoot:
             guard isSkipBootImage || bootImageURL != nil else {
                 alertMessage = AlertMessage(NSLocalizedString("Please select a boot image.", comment: "VMWizardState"))
                 return
             }
-            currentPage = .hardware
+            nextPage = .hardware
         case .macOSBoot:
             #if os(macOS) && arch(arm64)
             guard macPlatform != nil && macRecoveryIpswURL != nil else {
                 alertMessage = AlertMessage(NSLocalizedString("Please select an IPSW file.", comment: "VMWizardState"))
                 return
             }
-            currentPage = .hardware
+            nextPage = .hardware
             #endif
         case .linuxBoot:
             if useLinuxKernel {
@@ -138,55 +149,70 @@ class VMWizardState: ObservableObject {
                     return
                 }
             }
-            currentPage = .hardware
+            nextPage = .hardware
         case .windowsBoot:
             guard bootImageURL != nil else {
                 alertMessage = AlertMessage(NSLocalizedString("Please select a boot image.", comment: "VMWizardState"))
                 return
             }
-            currentPage = .hardware
+            nextPage = .hardware
         case .hardware:
-            currentPage = .drives
+            if !useVirtualization {
+                guard systemArchitecture != nil && systemTarget != nil else {
+                    alertMessage = AlertMessage(NSLocalizedString("Please select a system to emulate.", comment: "VMWizardState"))
+                    return
+                }
+            }
+            nextPage = .drives
         case .drives:
-            currentPage = .sharing
+            nextPage = .sharing
         case .sharing:
-            currentPage = .summary
+            nextPage = .summary
         case .summary:
             save()
+        }
+        slide = slideIn
+        withAnimation {
+            currentPage = nextPage
         }
     }
     
     func back() {
+        var lastPage = currentPage
         switch currentPage {
         case .start:
             break
         case .operatingSystem:
-            currentPage = .start
+            lastPage = .start
         case .otherBoot:
-            currentPage = .operatingSystem
+            lastPage = .operatingSystem
         case .macOSBoot:
-            currentPage = .operatingSystem
+            lastPage = .operatingSystem
         case .linuxBoot:
-            currentPage = .operatingSystem
+            lastPage = .operatingSystem
         case .windowsBoot:
-            currentPage = .operatingSystem
+            lastPage = .operatingSystem
         case .hardware:
             switch operatingSystem {
             case .other:
-                currentPage = .otherBoot
+                lastPage = .otherBoot
             case .macOS:
-                currentPage = .macOSBoot
+                lastPage = .macOSBoot
             case .linux:
-                currentPage = .linuxBoot
+                lastPage = .linuxBoot
             case .windows:
-                currentPage = .windowsBoot
+                lastPage = .windowsBoot
             }
         case .drives:
-            currentPage = .hardware
+            lastPage = .hardware
         case .sharing:
-            currentPage = .drives
+            lastPage = .drives
         case .summary:
-            currentPage = .sharing
+            lastPage = .sharing
+        }
+        slide = slideOut
+        withAnimation {
+            currentPage = lastPage
         }
     }
     

@@ -26,20 +26,27 @@ struct VMWizardView: View {
             switch wizardState.currentPage {
             case .start:
                 VMWizardStartView(wizardState: wizardState)
+                    .transition(wizardState.slide)
             case .operatingSystem:
                 VMWizardOSView(wizardState: wizardState)
+                    .transition(wizardState.slide)
             case .otherBoot:
                 VMWizardOSOtherView(wizardState: wizardState)
+                    .transition(wizardState.slide)
             case .macOSBoot:
                 if #available(macOS 12, *) {
                     VMWizardOSMacView(wizardState: wizardState)
+                        .transition(wizardState.slide)
                 }
             case .linuxBoot:
                 VMWizardOSLinuxView(wizardState: wizardState)
+                    .transition(wizardState.slide)
             case .windowsBoot:
                 VMWizardOSWindowsView(wizardState: wizardState)
+                    .transition(wizardState.slide)
             case .hardware:
                 VMWizardHardwareView(wizardState: wizardState)
+                    .transition(wizardState.slide)
             default:
                 EmptyView()
             }
