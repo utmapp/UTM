@@ -258,6 +258,7 @@ class VMWizardState: ObservableObject {
         }
     }
     
+    #if swift(>=5.5)
     @available(iOS 15, macOS 12, *)
     func busyWorkAsync(_ work: @escaping () async throws -> Void) {
         Task(priority: .userInitiated) {
@@ -279,4 +280,5 @@ class VMWizardState: ObservableObject {
             }
         }
     }
+    #endif
 }

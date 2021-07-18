@@ -72,7 +72,7 @@ struct OperatingSystem: View {
     }
     #else
     private var icon: Image {
-        Image(uiImage: UIImage(byReferencing: imageURL))
+        Image(uiImage: UIImage(contentsOfURL: imageURL)!)
     }
     #endif
     
@@ -88,6 +88,7 @@ struct OperatingSystem: View {
     }
 }
 
+@available(iOS 14, macOS 11, *)
 struct VMWizardOSView_Previews: PreviewProvider {
     @StateObject static var wizardState = VMWizardState()
     

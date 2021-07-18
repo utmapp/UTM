@@ -44,6 +44,7 @@ struct BigWhiteSpinner: UIViewRepresentable {
 }
 #endif
 
+@available(iOS 14, macOS 11, *)
 struct BigWhiteSpinner_Previews: PreviewProvider {
     static var previews: some View {
         BigWhiteSpinner()

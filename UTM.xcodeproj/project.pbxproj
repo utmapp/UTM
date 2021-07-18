@@ -674,6 +674,8 @@
 		CE4EF2722506DD7900E9D33B /* VMRemovableDrivesView.xib in Resources */ = {isa = PBXBuildFile; fileRef = CE4EF2712506DD7900E9D33B /* VMRemovableDrivesView.xib */; };
 		CE5076DB250AB55D00C26C19 /* VMDisplayMetalViewController+Pencil.m in Sources */ = {isa = PBXBuildFile; fileRef = CE5076DA250AB55D00C26C19 /* VMDisplayMetalViewController+Pencil.m */; };
 		CE612AC624D3B50700FA6300 /* VMDisplayWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE612AC524D3B50700FA6300 /* VMDisplayWindowController.swift */; };
+		CE65BABF26A4D8DD0001BD6B /* VMConfigDisplayConsoleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8401FDA5269D44E400265F0D /* VMConfigDisplayConsoleView.swift */; };
+		CE65BAC026A4D8DE0001BD6B /* VMConfigDisplayConsoleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8401FDA5269D44E400265F0D /* VMConfigDisplayConsoleView.swift */; };
 		CE6D21DC2553A6ED001D29C5 /* VMConfirmActionModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE6D21DB2553A6ED001D29C5 /* VMConfirmActionModifier.swift */; };
 		CE6D21DD2553A6ED001D29C5 /* VMConfirmActionModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE6D21DB2553A6ED001D29C5 /* VMConfirmActionModifier.swift */; };
 		CE772AAC25C8B0F600E4E379 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE772AAB25C8B0F600E4E379 /* ContentView.swift */; };
@@ -3779,6 +3781,7 @@
 				CEB63A8024F46E5700CAF323 /* VMConfigPickerView.m in Sources */,
 				CEB63A7C24F46E5700CAF323 /* VMConfigStepper.m in Sources */,
 				CE2D92F824AD46670059923A /* qapi-types-crypto.c in Sources */,
+				CE65BAC026A4D8DE0001BD6B /* VMConfigDisplayConsoleView.swift in Sources */,
 				CE2D92F924AD46670059923A /* qapi-types-qom.c in Sources */,
 				CEB63A7F24F46E5700CAF323 /* VMConfigCell.m in Sources */,
 				CEF0305E26A2AFDF00667B63 /* VMWizardState.swift in Sources */,
@@ -4118,6 +4121,7 @@
 				CEA45E2B263519B5002FA97D /* qapi-events-error.c in Sources */,
 				CEA45E2C263519B5002FA97D /* qapi-visit-block.c in Sources */,
 				CEA45E2D263519B5002FA97D /* StaticDataTableViewController.m in Sources */,
+				CE65BABF26A4D8DD0001BD6B /* VMConfigDisplayConsoleView.swift in Sources */,
 				CEA45E2E263519B5002FA97D /* qapi-events-misc.c in Sources */,
 				CEA45E2F263519B5002FA97D /* VMConfigSystemArgumentsViewController.m in Sources */,
 				CEA45E30263519B5002FA97D /* WKWebView+Workarounds.m in Sources */,

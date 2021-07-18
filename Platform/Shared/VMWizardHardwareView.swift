@@ -43,6 +43,7 @@ struct VMWizardHardwareView: View {
         #if canImport(Virtualization)
         VZVirtualMachineConfiguration.minimumAllowedMemorySize
         #else
+        UInt64(8 * wizardState.bytesInMib)
         #endif
     }
     
