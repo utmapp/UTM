@@ -47,6 +47,9 @@ struct VMWizardView: View {
             case .hardware:
                 VMWizardHardwareView(wizardState: wizardState)
                     .transition(wizardState.slide)
+            case .drives:
+                VMWizardDrivesView(wizardState: wizardState)
+                    .transition(wizardState.slide)
             default:
                 EmptyView()
             }

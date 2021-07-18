@@ -83,8 +83,10 @@ class VMWizardState: ObservableObject {
     @Published var systemTarget: String?
     #if os(macOS)
     @Published var systemMemory: UInt64 = 4096 * 1048576
+    @Published var storageSizeGib: Int = 64
     #else
     @Published var systemMemory: UInt64 = 512 * 1048576
+    @Published var storageSizeGib: Int = 8
     #endif
     @Published var systemCpuCount: Int = 1
     
