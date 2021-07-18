@@ -38,6 +38,8 @@ struct VMWizardView: View {
                 VMWizardOSLinuxView(wizardState: wizardState)
             case .windowsBoot:
                 VMWizardOSWindowsView(wizardState: wizardState)
+            case .hardware:
+                VMWizardHardwareView(wizardState: wizardState)
             default:
                 EmptyView()
             }

@@ -46,6 +46,8 @@ enum VMWizardOS: Int, Identifiable {
 
 @available(iOS 14, macOS 11, *)
 class VMWizardState: ObservableObject {
+    private let bytesInMib = 1048576
+    
     @Published var currentPage: VMWizardPage = .start
     @Published var alertMessage: AlertMessage?
     @Published var isBusy: Bool = false
@@ -73,7 +75,16 @@ class VMWizardState: ObservableObject {
     @Published var useLinuxKernel: Bool = false
     @Published var linuxKernelURL: URL?
     @Published var linuxInitialRamdiskURL: URL?
+    @Published var linuxRootImageURL: URL?
     @Published var linuxBootArguments: String = ""
+    @Published var systemArchitecture: String?
+    @Published var systemTarget: String?
+    #if os(macOS)
+    @Published var systemMemory: UInt64 = 4096 * 1048576
+    #else
+    @Published var systemMemory: UInt64 = 512 * 1048576
+    #endif
+    @Published var systemCpuCount: Int = 1
     
     var hasNextButton: Bool {
         switch currentPage {
