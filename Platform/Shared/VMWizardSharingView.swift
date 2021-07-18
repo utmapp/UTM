@@ -40,6 +40,10 @@ struct VMWizardSharingView: View {
                     Text("Clear")
                 }
             }.disabled(wizardState.isBusy)
+            Toggle("Read only share?", isOn: $wizardState.sharingReadOnly)
+            if wizardState.isBusy {
+                BigWhiteSpinner()
+            }
             Spacer()
         }.fileImporter(isPresented: $isFileImporterPresented, allowedContentTypes: [.folder], onCompletion: processDirectory)
     }
