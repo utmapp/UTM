@@ -89,6 +89,7 @@ class VMWizardState: ObservableObject {
     @Published var storageSizeGib: Int = 8
     #endif
     @Published var systemCpuCount: Int = 1
+    @Published var sharingDirectoryURL: URL?
     
     var hasNextButton: Bool {
         switch currentPage {

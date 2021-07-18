@@ -50,6 +50,9 @@ struct VMWizardView: View {
             case .drives:
                 VMWizardDrivesView(wizardState: wizardState)
                     .transition(wizardState.slide)
+            case .sharing:
+                VMWizardSharingView(wizardState: wizardState)
+                    .transition(wizardState.slide)
             default:
                 EmptyView()
             }
