@@ -54,12 +54,12 @@ struct VMWizardView: View {
             .frame(width: 450, height: 450)
             .background(Color(NSColor.windowBackgroundColor))
             .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
+                ToolbarItem(placement: .automatic) {
                     Button("Close") {
                         presentationMode.wrappedValue.dismiss()
                     }
                 }
-                ToolbarItem(placement: .automatic) {
+                ToolbarItem(placement: .cancellationAction) {
                     if wizardState.currentPage != .start {
                         Button("Back") {
                             wizardState.back()
