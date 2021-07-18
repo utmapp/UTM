@@ -25,25 +25,21 @@ struct VMWizardOSWindowsView: View {
         VStack {
             Text("Windows")
                 .font(.largeTitle)
-                .padding()
             #if arch(arm64)
             Link("Download Windows 10 for ARM64 Preview", destination: URL(string: "https://www.microsoft.com/en-us/software-download/windowsinsiderpreviewARM64")!)
-            Text("Boot VHDX Image")
-                .padding()
+            Text("Boot VHDX Image:")
+                .padding(.top)
             #else
-            Text("Boot ISO Image")
-                .padding()
+            Text("Boot ISO Image:")
+                .padding(.top)
             #endif
-            if let selected = wizardState.bootImageURL {
-                Text(selected.lastPathComponent)
-                    .font(.caption)
-            }
+            Text(wizardState.bootImageURL?.lastPathComponent ?? " ")
+                .font(.caption)
             Button {
                 isFileImporterPresented.toggle()
             } label: {
                 Text("Browse")
-            }.buttonStyle(BigButtonStyle(width: 150, height: 50))
-            .disabled(wizardState.isBusy)
+            }.disabled(wizardState.isBusy)
             if wizardState.isBusy {
                 BigWhiteSpinner()
             }

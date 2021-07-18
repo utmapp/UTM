@@ -26,12 +26,14 @@ struct VMWizardOSView: View {
                 .font(.largeTitle)
             Button {
                 wizardState.operatingSystem = .macOS
+                wizardState.useAppleVirtualization = true
                 wizardState.next()
             } label: {
                 OperatingSystem(imageName: "mac", name: "macOS 12+")
             }
             Button {
                 wizardState.operatingSystem = .windows
+                wizardState.useAppleVirtualization = false
                 wizardState.next()
             } label: {
                 OperatingSystem(imageName: "windows", name: "Windows")
@@ -44,6 +46,7 @@ struct VMWizardOSView: View {
             }
             Button {
                 wizardState.operatingSystem = .other
+                wizardState.useAppleVirtualization = false
                 wizardState.next()
             } label: {
                 Text("Other")

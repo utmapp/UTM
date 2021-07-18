@@ -64,7 +64,7 @@ class VMWizardState: ObservableObject {
         }
     }
     @Published var operatingSystem: VMWizardOS = .other
-    #if arch(arm64)
+    #if os(macOS) && arch(arm64)
     @Published var macPlatform: MacPlatform?
     @Published var macRecoveryIpswURL: URL?
     #endif
@@ -108,7 +108,7 @@ class VMWizardState: ObservableObject {
             }
             currentPage = .hardware
         case .macOSBoot:
-            #if arch(arm64)
+            #if os(macOS) && arch(arm64)
             guard macPlatform != nil && macRecoveryIpswURL != nil else {
                 alertMessage = AlertMessage(NSLocalizedString("Please select an IPSW file.", comment: "VMWizardState"))
                 return
@@ -196,7 +196,7 @@ class VMWizardState: ObservableObject {
             do {
                 try work()
             } catch {
-                //logger.error("\(error)")
+                logger.error("\(error)")
                 DispatchQueue.main.async {
                     self.alertMessage = AlertMessage(error.localizedDescription)
                 }
@@ -218,7 +218,7 @@ class VMWizardState: ObservableObject {
             do {
                 try await work()
             } catch {
-                //logger.error("\(error)")
+                logger.error("\(error)")
                 DispatchQueue.main.async {
                     self.alertMessage = AlertMessage(error.localizedDescription)
                 }

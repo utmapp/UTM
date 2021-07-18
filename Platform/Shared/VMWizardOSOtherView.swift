@@ -25,21 +25,17 @@ struct VMWizardOSOtherView: View {
         VStack {
             Text("Boot Image")
                 .font(.largeTitle)
-                .padding()
             Toggle("Skip ISO boot (advanced)", isOn: $wizardState.isSkipBootImage)
             if !wizardState.isSkipBootImage {
-                Text("Boot ISO Image")
-                    .padding()
-                if let selected = wizardState.bootImageURL {
-                    Text(selected.lastPathComponent)
-                        .font(.caption)
-                }
+                Text("Boot ISO Image:")
+                    .padding(.top)
+                Text(wizardState.bootImageURL?.lastPathComponent ?? " ")
+                    .font(.caption)
                 Button {
                     isFileImporterPresented.toggle()
                 } label: {
                     Text("Browse")
-                }.buttonStyle(BigButtonStyle(width: 150, height: 50))
-                .disabled(wizardState.isBusy)
+                }.disabled(wizardState.isBusy)
                 if wizardState.isBusy {
                     BigWhiteSpinner()
                 }

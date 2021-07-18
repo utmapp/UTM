@@ -41,7 +41,8 @@ struct VMWizardView: View {
             default:
                 EmptyView()
             }
-        }.frame(width: 450, height: 450)
+        }.padding()
+            .frame(width: 450, height: 450)
             .background(Color(NSColor.windowBackgroundColor))
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {

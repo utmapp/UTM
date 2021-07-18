@@ -26,7 +26,6 @@ struct VMWizardOSMacView: View {
         VStack {
             Text("macOS")
                 .font(.largeTitle)
-                .padding()
             Text("To install macOS, you need to download a recovery IPSW. (Tip: You can search online for \"m1 mac ipsw\".) Only macOS 12.0 and up are supported.")
                 .padding()
             #if arch(arm64)
@@ -39,8 +38,7 @@ struct VMWizardOSMacView: View {
                 isFileImporterPresented.toggle()
             } label: {
                 Text("Browse")
-            }.buttonStyle(BigButtonStyle(width: 150, height: 50))
-            .disabled(wizardState.isBusy)
+            }.disabled(wizardState.isBusy)
             if wizardState.isBusy {
                 BigWhiteSpinner()
             }
@@ -56,7 +54,6 @@ struct VMWizardOSMacView: View {
             guard let model = image.mostFeaturefulSupportedConfiguration?.hardwareModel else {
                 throw NSLocalizedString("Your machine does not support running this IPSW.", comment: "VMWizardOSMacView")
             }
-            wizardState.useAppleVirtualization = true
             wizardState.macPlatform = MacPlatform(newHardware: model)
             wizardState.macRecoveryIpswURL = url
             wizardState.next()

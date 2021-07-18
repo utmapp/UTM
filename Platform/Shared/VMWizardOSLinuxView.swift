@@ -15,13 +15,13 @@
 //
 
 import SwiftUI
-import Virtualization
 
 @available(iOS 14, macOS 11, *)
 struct VMWizardOSLinuxView: View {
     private enum SelectImage {
         case kernel
         case initialRamdisk
+        case rootImage
         case bootImage
     }
     
@@ -33,7 +33,6 @@ struct VMWizardOSLinuxView: View {
         VStack {
             Text("Linux")
                 .font(.largeTitle)
-                .padding()
             if wizardState.useVirtualization {
                 Toggle("Use Apple Virtualization", isOn: $wizardState.useAppleVirtualization)
                     .help("If set, use Apple's virtualization engine. Otherwise, use QEMU's virtualization engine.")
@@ -42,53 +41,70 @@ struct VMWizardOSLinuxView: View {
                 .help("If set, boot directly from a raw kernel image and initrd. Otherwise, boot from a supported ISO.")
                 .disabled(wizardState.useAppleVirtualization)
             if wizardState.useLinuxKernel {
-                Text("Linux kernel (required)")
-                    .padding()
-                if let selected = wizardState.linuxKernelURL {
-                    Text(selected.lastPathComponent)
-                        .font(.caption)
-                }
+                Text("Linux kernel (required):")
+                    .padding(.top)
+                Text(wizardState.linuxKernelURL?.lastPathComponent ?? " ")
+                    .font(.caption)
                 Button {
                     selectImage = .kernel
                     isFileImporterPresented.toggle()
                 } label: {
                     Text("Browse")
-                }.buttonStyle(BigButtonStyle(width: 150, height: 50))
-                .disabled(wizardState.isBusy)
-                Text("Linux initial ramdisk")
-                    .padding()
-                if let selected = wizardState.linuxInitialRamdiskURL {
-                    Text(selected.lastPathComponent)
-                        .font(.caption)
-                }
-                Button {
-                    selectImage = .initialRamdisk
-                    isFileImporterPresented.toggle()
-                } label: {
-                    Text("Browse")
-                }.buttonStyle(BigButtonStyle(width: 150, height: 50))
-                .disabled(wizardState.isBusy)
+                }.disabled(wizardState.isBusy)
+                
+                Text("Linux initial ramdisk:")
+                    .padding(.top)
+                Text(wizardState.linuxInitialRamdiskURL?.lastPathComponent ?? " ")
+                    .font(.caption)
+                HStack {
+                    Button {
+                        selectImage = .initialRamdisk
+                        isFileImporterPresented.toggle()
+                    } label: {
+                        Text("Browse")
+                    }
+                    Button {
+                        wizardState.linuxInitialRamdiskURL = nil
+                    } label: {
+                        Text("Clear")
+                    }
+                }.disabled(wizardState.isBusy)
+                
+                Text("Linux Root FS Image:")
+                    .padding(.top)
+                Text(wizardState.linuxRootImageURL?.lastPathComponent ?? " ")
+                    .font(.caption)
+                HStack {
+                    Button {
+                        selectImage = .rootImage
+                        isFileImporterPresented.toggle()
+                    } label: {
+                        Text("Browse")
+                    }
+                    Button {
+                        wizardState.linuxRootImageURL = nil
+                    } label: {
+                        Text("Clear")
+                    }
+                }.disabled(wizardState.isBusy)
+                
                 TextField("Boot Arguments", text: $wizardState.linuxBootArguments)
-                    .padding()
             } else {
                 #if arch(arm64)
                 Link("Download Ubuntu Server for ARM", destination: URL(string: "https://ubuntu.com/download/server/arm")!)
                 #else
                 Link("Download Ubuntu Desktop", destination: URL(string: "https://ubuntu.com/download/desktop")!)
                 #endif
-                Text("Boot ISO Image")
-                    .padding()
-                if let selected = wizardState.bootImageURL {
-                    Text(selected.lastPathComponent)
-                        .font(.caption)
-                }
+                Text("Boot ISO Image:")
+                    .padding(.top)
+                Text(wizardState.bootImageURL?.lastPathComponent ?? " ")
+                    .font(.caption)
                 Button {
                     selectImage = .bootImage
                     isFileImporterPresented.toggle()
                 } label: {
                     Text("Browse")
-                }.buttonStyle(BigButtonStyle(width: 150, height: 50))
-                .disabled(wizardState.isBusy)
+                }.disabled(wizardState.isBusy)
             }
             if wizardState.isBusy {
                 BigWhiteSpinner()
@@ -106,6 +122,8 @@ struct VMWizardOSLinuxView: View {
                     wizardState.linuxKernelURL = url
                 case .initialRamdisk:
                     wizardState.linuxInitialRamdiskURL = url
+                case .rootImage:
+                    wizardState.linuxRootImageURL = url
                 case .bootImage:
                     wizardState.bootImageURL = url
                 }
