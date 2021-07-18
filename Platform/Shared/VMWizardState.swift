@@ -166,6 +166,11 @@ class VMWizardState: ObservableObject {
                 }
             }
             nextPage = .drives
+            #if arch(arm64)
+            if operatingSystem == .windows && useVirtualization {
+                nextPage = .sharing
+            }
+            #endif
         case .drives:
             nextPage = .sharing
         case .sharing:
@@ -180,41 +185,46 @@ class VMWizardState: ObservableObject {
     }
     
     func back() {
-        var lastPage = currentPage
+        var previousPage = currentPage
         switch currentPage {
         case .start:
             break
         case .operatingSystem:
-            lastPage = .start
+            previousPage = .start
         case .otherBoot:
-            lastPage = .operatingSystem
+            previousPage = .operatingSystem
         case .macOSBoot:
-            lastPage = .operatingSystem
+            previousPage = .operatingSystem
         case .linuxBoot:
-            lastPage = .operatingSystem
+            previousPage = .operatingSystem
         case .windowsBoot:
-            lastPage = .operatingSystem
+            previousPage = .operatingSystem
         case .hardware:
             switch operatingSystem {
             case .other:
-                lastPage = .otherBoot
+                previousPage = .otherBoot
             case .macOS:
-                lastPage = .macOSBoot
+                previousPage = .macOSBoot
             case .linux:
-                lastPage = .linuxBoot
+                previousPage = .linuxBoot
             case .windows:
-                lastPage = .windowsBoot
+                previousPage = .windowsBoot
             }
         case .drives:
-            lastPage = .hardware
+            previousPage = .hardware
         case .sharing:
-            lastPage = .drives
+            previousPage = .drives
+            #if arch(arm64)
+            if operatingSystem == .windows && useVirtualization {
+                previousPage = .hardware // skip drives when using Windows ARM
+            }
+            #endif
         case .summary:
-            lastPage = .sharing
+            previousPage = .sharing
         }
         slide = slideOut
         withAnimation {
-            currentPage = lastPage
+            currentPage = previousPage
         }
     }
     
