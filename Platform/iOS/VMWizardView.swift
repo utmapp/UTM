@@ -19,10 +19,86 @@ import SwiftUI
 @available(iOS 14, *)
 struct VMWizardView: View {
     @StateObject var wizardState = VMWizardState()
+    
+    var body: some View {
+        NavigationView {
+            WizardWrapper(page: .start, wizardState: wizardState)
+        }.navigationViewStyle(StackNavigationViewStyle())
+        .alert(item: $wizardState.alertMessage) { msg in
+            Alert(title: Text(msg.message))
+        }
+    }
+}
+
+@available(iOS 14, *)
+fileprivate struct WizardWrapper: View {
+    let page: VMWizardPage
+    @ObservedObject var wizardState: VMWizardState
+    @State private var nextPage: VMWizardPage?
     @Environment(\.presentationMode) private var presentationMode: Binding<PresentationMode>
     
     var body: some View {
-        Text("Hello, World!")
+        VStack {
+            switch page {
+            case .start:
+                VMWizardStartView(wizardState: wizardState).padding()
+            case .operatingSystem:
+                VMWizardOSView(wizardState: wizardState).padding()
+            case .macOSBoot:
+                EmptyView()
+            case .linuxBoot:
+                VMWizardOSLinuxView(wizardState: wizardState).padding()
+            case .windowsBoot:
+                VMWizardOSWindowsView(wizardState: wizardState).padding()
+            case .otherBoot:
+                VMWizardOSOtherView(wizardState: wizardState).padding()
+            case .hardware:
+                VMWizardHardwareView(wizardState: wizardState).padding()
+            case .drives:
+                VMWizardDrivesView(wizardState: wizardState).padding()
+            case .sharing:
+                VMWizardSharingView(wizardState: wizardState).padding()
+            case .summary:
+                VMWizardSummaryView(wizardState: wizardState)
+            }
+            NavigationLink(destination: WizardWrapper(page: .start, wizardState: wizardState), tag: .start, selection: $nextPage) {}
+            NavigationLink(destination: WizardWrapper(page: .operatingSystem, wizardState: wizardState), tag: .operatingSystem, selection: $nextPage) {}
+            NavigationLink(destination: WizardWrapper(page: .linuxBoot, wizardState: wizardState), tag: .linuxBoot, selection: $nextPage) {}
+            NavigationLink(destination: WizardWrapper(page: .windowsBoot, wizardState: wizardState), tag: .windowsBoot, selection: $nextPage) {}
+            NavigationLink(destination: WizardWrapper(page: .otherBoot, wizardState: wizardState), tag: .otherBoot, selection: $nextPage) {}
+            NavigationLink(destination: WizardWrapper(page: .hardware, wizardState: wizardState), tag: .hardware, selection: $nextPage) {}
+            NavigationLink(destination: WizardWrapper(page: .drives, wizardState: wizardState), tag: .drives, selection: $nextPage) {}
+            NavigationLink(destination: WizardWrapper(page: .sharing, wizardState: wizardState), tag: .sharing, selection: $nextPage) {}
+            NavigationLink(destination: WizardWrapper(page: .summary, wizardState: wizardState), tag: .summary, selection: $nextPage) {}
+        }
+        .textFieldStyle(RoundedBorderTextFieldStyle())
+        .pickerStyle(MenuPickerStyle())
+        .toolbar {
+            ToolbarItem(placement: .navigationBarLeading) {
+                if wizardState.currentPage == .start {
+                    Button("Close") {
+                        presentationMode.wrappedValue.dismiss()
+                    }
+                }
+            }
+            ToolbarItem(placement: .navigationBarTrailing) {
+                if wizardState.hasNextButton {
+                    Button(wizardState.currentPage == .summary ? "Save" : "Next") {
+                        wizardState.next()
+                    }
+                }
+            }
+        }
+        .onChange(of: nextPage) { newPage in
+            if newPage == nil {
+                wizardState.currentPage = page
+                wizardState.nextPageBinding = $nextPage
+            }
+        }
+        .onAppear {
+            wizardState.currentPage = page
+            wizardState.nextPageBinding = $nextPage
+        }
     }
 }
 

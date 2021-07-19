@@ -51,6 +51,7 @@ struct VMWizardOSLinuxView: View {
                 } label: {
                     Text("Browse")
                 }.disabled(wizardState.isBusy)
+                .buttonStyle(BrowseButtonStyle())
                 
                 Text("Linux initial ramdisk:")
                     .padding(.top)
@@ -69,6 +70,7 @@ struct VMWizardOSLinuxView: View {
                         Text("Clear")
                     }
                 }.disabled(wizardState.isBusy)
+                .buttonStyle(BrowseButtonStyle())
                 
                 Text("Linux Root FS Image:")
                     .padding(.top)
@@ -87,13 +89,16 @@ struct VMWizardOSLinuxView: View {
                         Text("Clear")
                     }
                 }.disabled(wizardState.isBusy)
+                .buttonStyle(BrowseButtonStyle())
                 
                 TextField("Boot Arguments", text: $wizardState.linuxBootArguments)
             } else {
                 #if arch(arm64)
                 Link("Download Ubuntu Server for ARM", destination: URL(string: "https://ubuntu.com/download/server/arm")!)
+                    .buttonStyle(BorderlessButtonStyle())
                 #else
                 Link("Download Ubuntu Desktop", destination: URL(string: "https://ubuntu.com/download/desktop")!)
+                    .buttonStyle(BorderlessButtonStyle())
                 #endif
                 Text("Boot ISO Image:")
                     .padding(.top)
@@ -105,6 +110,7 @@ struct VMWizardOSLinuxView: View {
                 } label: {
                     Text("Browse")
                 }.disabled(wizardState.isBusy)
+                .buttonStyle(BrowseButtonStyle())
             }
             if wizardState.isBusy {
                 BigWhiteSpinner()

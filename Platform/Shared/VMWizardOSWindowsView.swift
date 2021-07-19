@@ -40,6 +40,7 @@ struct VMWizardOSWindowsView: View {
             } label: {
                 Text("Browse")
             }.disabled(wizardState.isBusy)
+            .buttonStyle(BrowseButtonStyle())
             if wizardState.isBusy {
                 BigWhiteSpinner()
             }

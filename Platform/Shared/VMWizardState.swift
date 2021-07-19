@@ -52,6 +52,7 @@ class VMWizardState: ObservableObject {
     
     @Published var slide: AnyTransition = .identity
     @Published var currentPage: VMWizardPage = .start
+    @Published var nextPageBinding: Binding<VMWizardPage?> = .constant(nil)
     @Published var alertMessage: AlertMessage?
     @Published var isBusy: Bool = false
     @Published var useVirtualization: Bool = false {
@@ -186,6 +187,8 @@ class VMWizardState: ObservableObject {
         slide = slideIn
         withAnimation {
             currentPage = nextPage
+            nextPageBinding.wrappedValue = nextPage
+            nextPageBinding = .constant(nil)
         }
     }
     

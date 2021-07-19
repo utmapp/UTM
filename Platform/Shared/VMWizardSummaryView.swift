@@ -41,12 +41,12 @@ struct VMWizardSummaryView: View {
     
     var body: some View {
         VStack {
+            #if os(macOS)
             Text("Summary")
                 .font(.largeTitle)
             ScrollView {
                 Form {
-                    TextField("Name", text: $wizardState.name.bound)
-                    Toggle("Open VM Settings", isOn: $wizardState.isOpenSettingsAfterCreation)
+                    info
                     Divider()
                     system
                         .disabled(true)
@@ -59,6 +59,25 @@ struct VMWizardSummaryView: View {
                 }
             }
             Spacer()
+            #else
+            Form {
+                Section(header: Text("Information")) {
+                    info
+                }
+                Section(header: Text("System")) {
+                    system
+                        .disabled(true)
+                }
+                Section(header: Text("Boot")) {
+                    boot
+                        .disabled(true)
+                }
+                Section(header: Text("Sharing")) {
+                    sharing
+                        .disabled(true)
+                }
+            }.textFieldStyle(DefaultTextFieldStyle())
+            #endif
         }.onAppear {
             if wizardState.name == nil {
                 let os = wizardState.operatingSystem
@@ -71,8 +90,15 @@ struct VMWizardSummaryView: View {
         }
     }
     
+    var info: some View {
+        Group {
+            TextField("Name", text: $wizardState.name.bound)
+            Toggle("Open VM Settings", isOn: $wizardState.isOpenSettingsAfterCreation)
+        }
+    }
+    
     var system: some View {
-        Form {
+        Group {
             TextField("Engine", text: .constant(wizardState.useAppleVirtualization ? "Apple Virtualization" : "QEMU"))
             Toggle("Use Virtualization", isOn: $wizardState.useVirtualization)
             if !wizardState.useVirtualization {
@@ -86,7 +112,7 @@ struct VMWizardSummaryView: View {
     }
     
     var boot: some View {
-        Form {
+        Group {
             TextField("Operating System", text: .constant(wizardState.operatingSystem.rawValue))
             Toggle("Skip Boot Image", isOn: $wizardState.isSkipBootImage)
             if !wizardState.isSkipBootImage {
@@ -110,7 +136,7 @@ struct VMWizardSummaryView: View {
     }
     
     var sharing: some View {
-        Form {
+        Group {
             Toggle("Share Directory", isOn: .constant(wizardState.sharingDirectoryURL != nil))
             if let sharingPath = wizardState.sharingDirectoryURL?.path {
                 TextField("Directory", text: .constant(sharingPath))

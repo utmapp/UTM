@@ -47,7 +47,8 @@ struct VMWizardStartView: View {
                 }
             }
             Link("Download prebuilt from UTM Gallery...", destination: URL(string: "https://mac.getutm.app/gallery/")!)
-        }.buttonStyle(BigButtonStyle(width: 300, height: 100))
+                .buttonStyle(BorderlessButtonStyle())
+        }.buttonStyle(BigButtonStyle(width: 320, height: 100))
     }
 }
 

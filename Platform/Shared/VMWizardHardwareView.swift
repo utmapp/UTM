@@ -66,7 +66,15 @@ struct VMWizardHardwareView: View {
                         let index = UTMQemuConfiguration.defaultTargetIndex(forArchitecture: newValue)
                         wizardState.systemTarget = targets![index]
                     }
+                #if !os(macOS)
+                Text(wizardState.systemArchitecture ?? " ")
+                    .font(.caption)
+                #endif
                 VMConfigStringPicker(selection: $wizardState.systemTarget, label: Text("System"), rawValues: UTMQemuConfiguration.supportedTargets(forArchitecture: wizardState.systemArchitecture), displayValues: UTMQemuConfiguration.supportedTargets(forArchitecturePretty: wizardState.systemArchitecture))
+                #if !os(macOS)
+                Text(wizardState.systemTarget ?? " ")
+                    .font(.caption)
+                #endif
             }
             RAMSlider(systemMemory: $wizardState.systemMemory) { _ in
                 if wizardState.systemMemory < minMemory {

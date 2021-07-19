@@ -21,7 +21,7 @@ struct BigButtonStyle: ButtonStyle {
     let width: CGFloat
     let height: CGFloat
     
-    private struct BigButtonView: View {
+    fileprivate struct BigButtonView: View {
         let width: CGFloat
         let height: CGFloat
         let configuration: BigButtonStyle.Configuration
@@ -55,3 +55,14 @@ struct BigButtonStyle: ButtonStyle {
         BigButtonView(width: width, height: height, configuration: configuration)
     }
 }
+
+#if os(macOS)
+typealias BrowseButtonStyle = DefaultButtonStyle
+#else
+@available(iOS 14, *)
+struct BrowseButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        BigButtonStyle.BigButtonView(width: 150, height: 50, configuration: configuration)
+    }
+}
+#endif

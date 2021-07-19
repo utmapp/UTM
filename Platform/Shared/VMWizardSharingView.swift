@@ -41,6 +41,7 @@ struct VMWizardSharingView: View {
                     Text("Clear")
                 }
             }.disabled(wizardState.isBusy)
+            .buttonStyle(BrowseButtonStyle())
             Toggle("Read only share?", isOn: $wizardState.sharingReadOnly)
             if wizardState.isBusy {
                 BigWhiteSpinner()

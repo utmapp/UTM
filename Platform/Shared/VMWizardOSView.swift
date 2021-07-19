@@ -26,6 +26,7 @@ struct VMWizardOSView: View {
                 .font(.largeTitle)
             Button {
                 wizardState.operatingSystem = .macOS
+                wizardState.isSkipBootImage = false
                 wizardState.useAppleVirtualization = true
                 wizardState.next()
             } label: {
@@ -33,6 +34,7 @@ struct VMWizardOSView: View {
             }
             Button {
                 wizardState.operatingSystem = .Windows
+                wizardState.isSkipBootImage = false
                 wizardState.useAppleVirtualization = false
                 wizardState.next()
             } label: {
@@ -40,6 +42,7 @@ struct VMWizardOSView: View {
             }
             Button {
                 wizardState.operatingSystem = .Linux
+                wizardState.isSkipBootImage = false
                 wizardState.next()
             } label: {
                 OperatingSystem(imageName: "linux", name: "Linux")
@@ -52,7 +55,7 @@ struct VMWizardOSView: View {
                 Text("Other")
                     .font(.title)
             }
-        }.buttonStyle(BigButtonStyle(width: 300, height: 50))
+        }.buttonStyle(BigButtonStyle(width: 320, height: 50))
     }
 }
 
