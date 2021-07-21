@@ -35,12 +35,12 @@ struct SettingsView: View {
                     Text("VM display size is fixed")
                 })
             }
-            Section(header: Text("Acceleration")) {
+            Section(header: Text("Default VM Configuration")) {
                 Toggle(isOn: $isNoHypervisor, label: {
-                    Text("Force slower emulation even when hypervisor is available")
+                    Text("Force slower emulation by default (deprecated: now configured per-VM)")
                 })
                 Toggle(isOn: $isUseOnlyPcores, label: {
-                    Text("Use only performance cores by default")
+                    Text("Use only performance cores by default (deprecated: now configured per-VM)")
                 })
             }
             Section(header: Text("Input")) {

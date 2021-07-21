@@ -502,15 +502,6 @@ static size_t sysctl_read(const char *name) {
     return accel;
 }
 
-- (BOOL)useHypervisor {
-#if TARGET_OS_IPHONE
-    return NO;
-#else
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    return self.configuration.isTargetArchitectureMatchHost && ![defaults boolForKey:@"NoHypervisor"];
-#endif
-}
-
 - (BOOL)useOnlyPcores {
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     return [defaults boolForKey:@"UseOnlyPcores"];
@@ -592,7 +583,7 @@ static size_t sysctl_read(const char *name) {
     [self argsForCpu];
     [self pushArgv:@"-machine"];
     [self pushArgv:[NSString stringWithFormat:@"%@,%@", self.configuration.systemTarget, [self machineProperties]]];
-    if (self.useHypervisor) {
+    if (self.configuration.useHypervisor) {
         [self pushArgv:@"-accel"];
         [self pushArgv:@"hvf"];
     }

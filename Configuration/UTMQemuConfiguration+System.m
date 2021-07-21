@@ -33,6 +33,7 @@ static const NSString *const kUTMConfigForceMulticoreKey = @"ForceMulticore";
 static const NSString *const kUTMConfigAddArgsKey = @"AddArgs";
 static const NSString *const kUTMConfigSystemUUIDKey = @"SystemUUID";
 static const NSString *const kUTMConfigMachinePropertiesKey = @"MachineProperties";
+static const NSString *const kUTMConfigUseHypervisorKey = @"UseHypervisor";
 
 @interface UTMQemuConfiguration ()
 
@@ -77,6 +78,10 @@ static const NSString *const kUTMConfigMachinePropertiesKey = @"MachinePropertie
     // iOS 14 uses bootindex and systemBootDevice is deprecated
     if (@available(iOS 14, *)) {
         self.systemBootDevice = @"";
+    }
+    // migrate global use hypervisor to per-vm
+    if (![self.rootDict[kUTMConfigSystemKey] objectForKey:kUTMConfigUseHypervisorKey]) {
+        self.useHypervisor = self.defaultUseHypervisor;
     }
 }
 
@@ -172,6 +177,15 @@ static const NSString *const kUTMConfigMachinePropertiesKey = @"MachinePropertie
     self.rootDict[kUTMConfigSystemKey][kUTMConfigMachinePropertiesKey] = systemMachineProperties;
 }
 
+- (BOOL)useHypervisor {
+    return [self.rootDict[kUTMConfigSystemKey][kUTMConfigUseHypervisorKey] boolValue];
+}
+
+- (void)setUseHypervisor:(BOOL)useHypervisor {
+    [self propertyWillChange];
+    self.rootDict[kUTMConfigSystemKey][kUTMConfigUseHypervisorKey] = @(useHypervisor);
+}
+
 #pragma mark - Additional arguments array handling
 
 - (NSInteger)countArguments {
@@ -251,6 +265,15 @@ static const NSString *const kUTMConfigMachinePropertiesKey = @"MachinePropertie
     return [self.systemArchitecture isEqualToString:@"x86_64"];
 #else
     return NO;
+#endif
+}
+
+- (BOOL)defaultUseHypervisor {
+#if TARGET_OS_IPHONE
+    return NO;
+#else
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    return self.isTargetArchitectureMatchHost && ![defaults boolForKey:@"NoHypervisor"];
 #endif
 }
 

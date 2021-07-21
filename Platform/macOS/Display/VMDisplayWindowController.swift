@@ -43,8 +43,6 @@ class VMDisplayWindowController: NSWindowController {
         vmConfiguration as? UTMQemuConfiguration
     }
     
-    @Setting("NoHypervisor") private var isNoHypervisor: Bool = false
-    
     override var windowNibName: NSNib.Name? {
         "VMDisplayWindow"
     }
@@ -119,7 +117,7 @@ class VMDisplayWindowController: NSWindowController {
         let pauseDescription = NSLocalizedString("Pause", comment: "VMDisplayWindowController")
         startPauseToolbarItem.image = NSImage(systemSymbolName: "pause", accessibilityDescription: pauseDescription)
         startPauseToolbarItem.label = pauseDescription
-        if isNoHypervisor || !vmQemuConfig!.isTargetArchitectureMatchHost {
+        if !vmQemuConfig!.useHypervisor {
             // currently HVF doesn't support suspending
             startPauseToolbarItem.isEnabled = true
         }

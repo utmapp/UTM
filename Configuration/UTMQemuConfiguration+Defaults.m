@@ -65,6 +65,7 @@
     self.name = [NSUUID UUID].UUIDString;
     self.existingPath = nil;
     self.selectedCustomIconPath = nil;
+    self.useHypervisor = self.defaultUseHypervisor;
 }
 
 - (void)loadDefaultsForTarget:(nullable NSString *)target architecture:(nullable NSString *)architecture {
@@ -87,6 +88,7 @@
     } else if ([target isEqualToString:@"isapc"]) {
         self.inputLegacy = YES; // no USB support
     }
+    self.useHypervisor = self.defaultUseHypervisor;
     NSString *machineProp = [UTMQemuConfiguration defaultMachinePropertiesForTarget:target];
     if (machineProp) {
         self.systemMachineProperties = machineProp;
