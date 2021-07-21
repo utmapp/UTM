@@ -126,12 +126,16 @@ struct VMWizardOSLinuxView: View {
                 switch selectImage {
                 case .kernel:
                     wizardState.linuxKernelURL = url
+                    wizardState.isSkipBootImage = true
+                    wizardState.bootImageURL = nil
                 case .initialRamdisk:
                     wizardState.linuxInitialRamdiskURL = url
                 case .rootImage:
                     wizardState.linuxRootImageURL = url
                 case .bootImage:
                     wizardState.bootImageURL = url
+                    wizardState.isSkipBootImage = false
+                    wizardState.linuxKernelURL = nil
                 }
             }
         }

@@ -228,12 +228,13 @@ class UTMData: ObservableObject {
         }
     }
     
-    func create(config: UTMConfigurable) throws {
+    func create(config: UTMConfigurable, onCompletion: @escaping (UTMVirtualMachine) -> Void = { _ in }) throws {
         let vm = UTMVirtualMachine(configuration: config, withDestinationURL: documentsURL)
         try save(vm: vm)
         try commitDiskImages(for: vm)
         DispatchQueue.main.async {
             self.virtualMachines.append(vm)
+            onCompletion(vm)
         }
     }
     

@@ -20,6 +20,7 @@ import SwiftUI
 struct VMWizardView: View {
     @StateObject var wizardState = VMWizardState()
     @Environment(\.presentationMode) private var presentationMode: Binding<PresentationMode>
+    @EnvironmentObject private var data: UTMData
     
     var body: some View {
         Group {
@@ -75,8 +76,26 @@ struct VMWizardView: View {
                 }
                 ToolbarItem(placement: .confirmationAction) {
                     if wizardState.hasNextButton {
-                        Button(wizardState.currentPage == .summary ? "Save" : "Next") {
+                        Button("Next") {
                             wizardState.next()
+                        }
+                    } else if wizardState.currentPage == .summary {
+                        Button("Save") {
+                            presentationMode.wrappedValue.dismiss()
+                            data.busyWork {
+                                let config = try wizardState.generateConfig()
+                                try data.create(config: config) { vm in
+                                    data.selectedVM = vm
+                                    if wizardState.isOpenSettingsAfterCreation {
+                                        data.showSettingsModal = true
+                                    }
+                                    if let qemuVm = vm as? UTMQemuVirtualMachine {
+                                        data.busyWork {
+                                            try wizardState.qemuPostCreate(with: qemuVm)
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
                 }

@@ -83,8 +83,26 @@ fileprivate struct WizardWrapper: View {
             }
             ToolbarItem(placement: .navigationBarTrailing) {
                 if wizardState.hasNextButton {
-                    Button(wizardState.currentPage == .summary ? "Save" : "Next") {
+                    Button("Next") {
                         wizardState.next()
+                    }
+                } else if wizardState.currentPage == .summary {
+                    Button("Save") {
+                        presentationMode.wrappedValue.dismiss()
+                        data.busyWork {
+                            let config = try wizardState.generateConfig()
+                            try data.create(config: config) { vm in
+                                data.selectedVM = vm
+                                if wizardState.isOpenSettingsAfterCreation {
+                                    data.showSettingsModal = true
+                                }
+                                if let qemuVm = vm as? UTMQemuVirtualMachine {
+                                    data.busyWork {
+                                        try wizardState.qemuPostCreate(with: qemuVm)
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             }

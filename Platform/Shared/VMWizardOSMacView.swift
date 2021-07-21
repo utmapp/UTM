@@ -57,6 +57,8 @@ struct VMWizardOSMacView: View {
             }
             wizardState.macPlatform = MacPlatform(newHardware: model)
             wizardState.macRecoveryIpswURL = url
+            wizardState.isSkipBootImage = true
+            wizardState.bootImageURL = nil
             wizardState.next()
             #else
             throw NSLocalizedString("macOS guests are only supported on ARM64 devices.", comment: "VMWizardOSMacView")

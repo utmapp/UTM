@@ -76,11 +76,16 @@ class VMWizardState: ObservableObject {
     #endif
     @Published var isSkipBootImage: Bool = false
     @Published var bootImageURL: URL?
-    @Published var useLinuxKernel: Bool = false
+    @Published var useLinuxKernel: Bool = false {
+        didSet {
+            isSkipBootImage = useLinuxKernel
+        }
+    }
     @Published var linuxKernelURL: URL?
     @Published var linuxInitialRamdiskURL: URL?
     @Published var linuxRootImageURL: URL?
     @Published var linuxBootArguments: String = ""
+    @Published var windowsBootVhdx: URL?
     @Published var systemArchitecture: String?
     @Published var systemTarget: String?
     #if os(macOS)
@@ -101,6 +106,8 @@ class VMWizardState: ObservableObject {
         case .start:
             return false
         case .operatingSystem:
+            return false
+        case .summary:
             return false
         default:
             return true
@@ -159,7 +166,7 @@ class VMWizardState: ObservableObject {
             }
             nextPage = .hardware
         case .windowsBoot:
-            guard bootImageURL != nil else {
+            guard bootImageURL != nil || windowsBootVhdx != nil else {
                 alertMessage = AlertMessage(NSLocalizedString("Please select a boot image.", comment: "VMWizardState"))
                 return
             }
@@ -173,7 +180,7 @@ class VMWizardState: ObservableObject {
             }
             nextPage = .drives
             #if arch(arm64)
-            if operatingSystem == .Windows && useVirtualization {
+            if operatingSystem == .Windows && windowsBootVhdx != nil {
                 nextPage = .sharing
             }
             #endif
@@ -182,7 +189,7 @@ class VMWizardState: ObservableObject {
         case .sharing:
             nextPage = .summary
         case .summary:
-            save()
+            break
         }
         slide = slideIn
         withAnimation {
@@ -223,7 +230,7 @@ class VMWizardState: ObservableObject {
         case .sharing:
             previousPage = .drives
             #if arch(arm64)
-            if operatingSystem == .Windows && useVirtualization {
+            if operatingSystem == .Windows && windowsBootVhdx != nil {
                 previousPage = .hardware // skip drives when using Windows ARM
             }
             #endif
@@ -236,8 +243,104 @@ class VMWizardState: ObservableObject {
         }
     }
     
-    func save() {
-        
+    private func generateAppleConfig() throws -> UTMAppleConfiguration {
+        let config = UTMAppleConfiguration()
+        return config
+    }
+    
+    private func generateQemuConfig() throws -> UTMQemuConfiguration {
+        let config = UTMQemuConfiguration()
+        config.name = name!
+        config.systemArchitecture = systemArchitecture
+        config.systemTarget = systemTarget
+        config.systemMemory = NSNumber(value: systemMemory / UInt64(bytesInMib))
+        config.systemCPUCount = NSNumber(value: systemCpuCount)
+        config.useHypervisor = useVirtualization
+        config.shareDirectoryReadOnly = sharingReadOnly
+        if !isSkipBootImage && bootImageURL != nil {
+            config.newRemovableDrive("cdrom0", type: .CD, interface: UTMQemuConfiguration.defaultDriveInterface(forTarget: systemTarget, type: .CD))
+        }
+        switch operatingSystem {
+        case .Other:
+            break
+        case .macOS:
+            throw NSLocalizedString("macOS is not supported with QEMU.", comment: "VMWizardState")
+        case .Linux:
+            config.icon = "linux"
+            if useLinuxKernel {
+                config.newDrive("kernel", path: linuxKernelURL!.lastPathComponent, type: .kernel, interface: "")
+                if let linuxInitialRamdiskURL = linuxInitialRamdiskURL {
+                    config.newDrive("initrd", path: linuxInitialRamdiskURL.lastPathComponent, type: .initrd, interface: "")
+                }
+                if let linuxRootImageURL = linuxRootImageURL {
+                    config.newDrive("root", path: linuxRootImageURL.lastPathComponent, type: .disk, interface: UTMQemuConfiguration.defaultDriveInterface(forTarget: systemTarget, type: .disk))
+                }
+                if linuxBootArguments.count > 0 {
+                    config.newArgument("-append")
+                    config.newArgument(linuxBootArguments)
+                }
+            }
+        case .Windows:
+            config.icon = "windows"
+            if let windowsBootVhdx = windowsBootVhdx {
+                config.newDrive("drive0", path: windowsBootVhdx.lastPathComponent, type: .disk, interface: "nvme")
+            }
+        }
+        if windowsBootVhdx == nil {
+            config.newDrive("drive0", path: "data.qcow2", type: .disk, interface: UTMQemuConfiguration.defaultDriveInterface(forTarget: systemTarget, type: .disk))
+        }
+        return config
+    }
+    
+    func generateConfig() throws -> UTMConfigurable {
+        if useVirtualization && useAppleVirtualization {
+            return try generateAppleConfig()
+        } else {
+            return try generateQemuConfig()
+        }
+    }
+    
+    private func copyItem(from url: URL, to destination: URL) throws {
+        let fileManager = FileManager.default
+        _ = url.startAccessingSecurityScopedResource()
+        defer {
+            url.stopAccessingSecurityScopedResource()
+        }
+        if !fileManager.fileExists(atPath: destination.path) {
+            try fileManager.createDirectory(at: destination, withIntermediateDirectories: false, attributes: nil)
+        }
+        let dstUrl = destination.appendingPathComponent(url.lastPathComponent)
+        try fileManager.copyItem(at: url, to: dstUrl)
+    }
+    
+    func qemuPostCreate(with vm: UTMQemuVirtualMachine) throws {
+        if let sharingDirectoryURL = sharingDirectoryURL {
+            try vm.changeSharedDirectory(sharingDirectoryURL)
+        }
+        let drive = vm.drives.first { drive in
+            drive.name == "cdrom0"
+        }
+        if let drive = drive, let bootImageURL = bootImageURL {
+            try vm.changeMedium(for: drive, url: bootImageURL)
+        }
+        let dataUrl = vm.qemuConfig.imagesPath
+        if operatingSystem == .Linux && useLinuxKernel {
+            try copyItem(from: linuxKernelURL!, to: dataUrl)
+            if let linuxInitialRamdiskURL = linuxInitialRamdiskURL {
+                try copyItem(from: linuxInitialRamdiskURL, to: dataUrl)
+            }
+            if let linuxRootImageURL = linuxRootImageURL {
+                try copyItem(from: linuxRootImageURL, to: dataUrl)
+            }
+        }
+        if let windowsBootVhdx = windowsBootVhdx {
+            try copyItem(from: windowsBootVhdx, to: dataUrl)
+        } else {
+            let dstPath = dataUrl.appendingPathComponent("data.qcow2")
+            if !GenerateDefaultQcow2File(dstPath as CFURL, storageSizeGib * bytesInGib / bytesInMib) {
+                throw NSLocalizedString("Disk creation failed.", comment: "VMWizardState")
+            }
+        }
     }
     
     func busyWork(_ work: @escaping () throws -> Void) {

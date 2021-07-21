@@ -115,21 +115,23 @@ struct VMWizardSummaryView: View {
         Group {
             TextField("Operating System", text: .constant(wizardState.operatingSystem.rawValue))
             Toggle("Skip Boot Image", isOn: $wizardState.isSkipBootImage)
-            if !wizardState.isSkipBootImage {
-                switch wizardState.operatingSystem {
-                case .macOS:
-                    #if os(macOS) && arch(arm64)
-                    TextField("IPSW", text: .constant(wizardState.macRecoveryIpswURL?.path ?? ""))
-                    #else
-                    EmptyView()
-                    #endif
-                case .Linux:
-                    TextField("Kernel", text: .constant(wizardState.linuxKernelURL?.path ?? ""))
-                    TextField("Initial Ramdisk", text: .constant(wizardState.linuxInitialRamdiskURL?.path ?? ""))
-                    TextField("Root Image", text: .constant(wizardState.linuxRootImageURL?.path ?? ""))
-                    TextField("Boot Arguments", text: $wizardState.linuxBootArguments)
-                case .Other, .Windows:
+            switch wizardState.operatingSystem {
+            case .macOS:
+                #if os(macOS) && arch(arm64)
+                TextField("IPSW", text: .constant(wizardState.macRecoveryIpswURL?.path ?? ""))
+                #else
+                EmptyView()
+                #endif
+            case .Linux:
+                TextField("Kernel", text: .constant(wizardState.linuxKernelURL?.path ?? ""))
+                TextField("Initial Ramdisk", text: .constant(wizardState.linuxInitialRamdiskURL?.path ?? ""))
+                TextField("Root Image", text: .constant(wizardState.linuxRootImageURL?.path ?? ""))
+                TextField("Boot Arguments", text: $wizardState.linuxBootArguments)
+            case .Windows, .Other:
+                if !wizardState.isSkipBootImage {
                     TextField("Boot Image", text: .constant(wizardState.bootImageURL?.path ?? ""))
+                } else if let windowsBootVhdx = wizardState.windowsBootVhdx {
+                    TextField("Disk Image", text: .constant(windowsBootVhdx.path))
                 }
             }
         }

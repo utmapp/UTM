@@ -20,20 +20,21 @@ import SwiftUI
 struct VMWizardOSWindowsView: View {
     @ObservedObject var wizardState: VMWizardState
     @State private var isFileImporterPresented: Bool = false
+    @State private var useVhdx: Bool = false
     
     var body: some View {
         VStack {
             Text("Windows")
                 .font(.largeTitle)
-            #if arch(arm64)
-            Link("Download Windows 10 for ARM64 Preview", destination: URL(string: "https://www.microsoft.com/en-us/software-download/windowsinsiderpreviewARM64")!)
-            Text("Boot VHDX Image:")
-                .padding(.top)
-            #else
-            Text("Boot ISO Image:")
-                .padding(.top)
-            #endif
-            Text(wizardState.bootImageURL?.lastPathComponent ?? " ")
+            if useVhdx {
+                Link("Download Windows 10 for ARM64 Preview", destination: URL(string: "https://www.microsoft.com/en-us/software-download/windowsinsiderpreviewARM64")!)
+                Text("Boot VHDX Image:")
+                    .padding(.top)
+            } else {
+                Text("Boot ISO Image:")
+                    .padding(.top)
+            }
+            Text((useVhdx ? wizardState.windowsBootVhdx?.lastPathComponent : wizardState.bootImageURL?.lastPathComponent) ?? " ")
                 .font(.caption)
             Button {
                 isFileImporterPresented.toggle()
@@ -46,13 +47,26 @@ struct VMWizardOSWindowsView: View {
             }
             Spacer()
         }.fileImporter(isPresented: $isFileImporterPresented, allowedContentTypes: [.data], onCompletion: processImage)
+        .onAppear {
+            #if arch(arm64)
+            useVhdx = wizardState.useVirtualization
+            #endif
+        }
     }
     
     private func processImage(_ result: Result<URL, Error>) {
         wizardState.busyWork {
             let url = try result.get()
             DispatchQueue.main.async {
-                wizardState.bootImageURL = url
+                if useVhdx {
+                    wizardState.windowsBootVhdx = url
+                    wizardState.bootImageURL = nil
+                    wizardState.isSkipBootImage = true
+                } else {
+                    wizardState.windowsBootVhdx = nil
+                    wizardState.bootImageURL = url
+                    wizardState.isSkipBootImage = false
+                }
             }
         }
     }
