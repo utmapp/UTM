@@ -106,6 +106,10 @@ NSString *const kSuspendSnapshotName = @"suspend";
     return YES;
 }
 
+- (BOOL)reloadConfigurationWithError:(NSError * _Nullable *)err {
+    return [self loadConfigurationWithReload:YES error:err];
+}
+
 - (BOOL)saveConfigurationWithError:(NSError * _Nullable __autoreleasing *)err {
     NSURL *url = [self packageURLForName:self.qemuConfig.name];
     if (![self savePlist:[url URLByAppendingPathComponent:kUTMBundleConfigFilename]
