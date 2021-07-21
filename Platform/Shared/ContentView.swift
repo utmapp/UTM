@@ -172,18 +172,49 @@ struct ContentView: View {
     }
     
     private func handleUTMURL(with components: URLComponents) {
+        func findVM() -> UTMVirtualMachine? {
+            if let vmName = components.queryItems?.first(where: { $0.name == "name" })?.value {
+                return data.virtualMachines.first(where: { $0.configuration.name == vmName })
+            } else {
+                return nil
+            }
+        }
+        
         if let action = components.host {
-            let vmName = components.queryItems?.first(where: { $0.name == "name" })?.value
             switch action {
             case "start":
-                // find the vm
-                if let vmName = vmName,
-                   let vm = data.virtualMachines.first(where: { $0.configuration.name == vmName }),
-                   vm.state == .vmStopped || vm.state == .vmPaused
-                {
+                if let vm = findVM(), vm.state == .vmStopped || vm.state == .vmPaused {
                     data.run(vm: vm)
                 }
                 break
+            case "stop":
+                if let vm = findVM(), vm.state == .vmStarted {
+                    vm.quitVM(force: true)
+                    try? data.stop(vm: vm)
+                }
+                break
+            case "restart":
+                if let vm = findVM(), vm.state == .vmStarted {
+                    DispatchQueue.global(qos: .background).async {
+                        vm.resetVM()
+                    }
+                }
+                break
+            case "pause":
+                if let vm = findVM(), vm.state == .vmStarted {
+                    DispatchQueue.global(qos: .background).async {
+                        vm.pauseVM()
+                    }
+                }
+                break
+                /* Not currently possible because we need a ZIP library to download zipped UTM packages
+            case "downloadVM":
+                if let urlParameter = components.queryItems?.first(where: { $0.name == "url" })?.value,
+                   urlParameter.hasSuffix(".zip"), let url = URL(string: urlParameter) {
+                    UTMImportFromWebTask.start(with: data, downloadFrom: url)
+                }
+                break
+                */
             default:
                 return
             }

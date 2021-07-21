@@ -29,6 +29,9 @@
 		2CE8EB0A2572E173000E2EBB /* qapi-visit-block-export.c in Sources */ = {isa = PBXBuildFile; fileRef = 2CE8EB082572E173000E2EBB /* qapi-visit-block-export.c */; };
 		2CE8EB41257811E8000E2EBB /* UTMConfiguration+Defaults.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CE8EB40257811E8000E2EBB /* UTMConfiguration+Defaults.m */; };
 		2CE8EB42257811E8000E2EBB /* UTMConfiguration+Defaults.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CE8EB40257811E8000E2EBB /* UTMConfiguration+Defaults.m */; };
+		83A004B926A8CC95001AC09E /* UTMImportFromWebTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83A004B826A8CC95001AC09E /* UTMImportFromWebTask.swift */; };
+		83A004BA26A8CC95001AC09E /* UTMImportFromWebTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83A004B826A8CC95001AC09E /* UTMImportFromWebTask.swift */; };
+		83A004BB26A8CC95001AC09E /* UTMImportFromWebTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83A004B826A8CC95001AC09E /* UTMImportFromWebTask.swift */; };
 		8401FD71269BEB2B00265F0D /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = CE6B240A25F1F3CE0020D43E /* main.c */; };
 		8401FD72269BEB3000265F0D /* Bootstrap.c in Sources */ = {isa = PBXBuildFile; fileRef = CE0DF17125A80B6300A51894 /* Bootstrap.c */; };
 		8401FD7A269BECE200265F0D /* QEMULauncher.app in Embed Launcher */ = {isa = PBXBuildFile; fileRef = 8401FD62269BE9C500265F0D /* QEMULauncher.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
@@ -1449,6 +1452,7 @@
 		52873FD8247F5B1B0063E4C8 /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/Main.strings"; sourceTree = "<group>"; };
 		52873FD9247F5B1B0063E4C8 /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		52873FDA247F5B1B0063E4C8 /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
+		83A004B826A8CC95001AC09E /* UTMImportFromWebTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMImportFromWebTask.swift; sourceTree = "<group>"; };
 		83FBDD53242FA71900D2C5D7 /* VMDisplayMetalViewController+Pointer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "VMDisplayMetalViewController+Pointer.h"; sourceTree = "<group>"; };
 		83FBDD55242FA7BC00D2C5D7 /* VMDisplayMetalViewController+Pointer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "VMDisplayMetalViewController+Pointer.m"; sourceTree = "<group>"; };
 		8401FD62269BE9C500265F0D /* QEMULauncher.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = QEMULauncher.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -3009,6 +3013,7 @@
 				CE2D954524AD4F980059923A /* VMRemovableDrivesView.swift */,
 				CE8813D424CD265700532628 /* VMShareFileModifier.swift */,
 				CE2D953824AD4F980059923A /* VMToolbarModifier.swift */,
+				83A004B826A8CC95001AC09E /* UTMImportFromWebTask.swift */,
 			);
 			path = Shared;
 			sourceTree = "<group>";
@@ -3497,6 +3502,7 @@
 				CE2D928924AD46670059923A /* qapi-visit-machine-target.c in Sources */,
 				CE2D928A24AD46670059923A /* qapi-visit-qdev.c in Sources */,
 				CE2D955724AD4F980059923A /* VMConfigDisplayView.swift in Sources */,
+				83A004B926A8CC95001AC09E /* UTMImportFromWebTask.swift in Sources */,
 				CE2D928B24AD46670059923A /* qapi-visit-core.c in Sources */,
 				CE2D928C24AD46670059923A /* qapi-visit-rdma.c in Sources */,
 				CE2D928D24AD46670059923A /* qapi-types-trace.c in Sources */,
@@ -3720,6 +3726,7 @@
 				CE0B6D0024AD56AE00FE012D /* UTMVirtualMachine.m in Sources */,
 				CEB63A7B24F469E300CAF323 /* UTMJailbreak.m in Sources */,
 				CE0B6D0E24AD56E500FE012D /* UTMShaders.metal in Sources */,
+				83A004BB26A8CC95001AC09E /* UTMImportFromWebTask.swift in Sources */,
 				CE0B6D3924AD57FD00FE012D /* qapi-commands-job.c in Sources */,
 				CE0B6D3724AD57FD00FE012D /* qapi-events-block-core.c in Sources */,
 				CE0B6D5E24AD584D00FE012D /* qapi-visit-authz.c in Sources */,
@@ -3959,6 +3966,7 @@
 				CEA45E2E263519B5002FA97D /* qapi-events-misc.c in Sources */,
 				CEA45E2F263519B5002FA97D /* VMConfigSystemArgumentsViewController.m in Sources */,
 				CEA45E30263519B5002FA97D /* WKWebView+Workarounds.m in Sources */,
+				83A004BA26A8CC95001AC09E /* UTMImportFromWebTask.swift in Sources */,
 				CEA45E31263519B5002FA97D /* qapi-visit-crypto.c in Sources */,
 				CEA45E32263519B5002FA97D /* qapi-visit-tpm.c in Sources */,
 				CEA45E34263519B5002FA97D /* UTMConfiguration+Defaults.m in Sources */,
