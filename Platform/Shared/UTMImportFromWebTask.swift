@@ -15,15 +15,52 @@
 //
 
 import Foundation
+import Logging
+import Zip
 
 /// Unfinished: tries to download a file from the web and import it as a UTM virtual machine.
 @available(iOS 14, macOS 11, *)
 class UTMImportFromWebTask: NSObject, URLSessionDelegate, URLSessionDownloadDelegate {
     private var data: UTMData!
     
-    func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
-        /// TODO unzip downloaded file
-        //try? data.importUTM(url: location)
+    /// Call on background queue
+    internal func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
+        let fileManager = FileManager.default
+        let tempDir = fileManager.temporaryDirectory
+        let originalFilename = downloadTask.originalRequest!.url!.lastPathComponent
+        let downloadedZip = tempDir.appendingPathComponent(originalFilename)
+        do {
+            if fileManager.fileExists(atPath: downloadedZip.absoluteString) {
+                try fileManager.removeItem(at: downloadedZip)
+            }
+            try fileManager.moveItem(at: location, to: downloadedZip)
+            let unzippedURL = try Zip.quickUnzipFile(downloadedZip)
+            /// remove the downloaded ZIP file
+            try fileManager.removeItem(at: downloadedZip)
+            handleUnzipped(unzippedURL)
+            /// remove unzipped file
+            try FileManager.default.removeItem(at: unzippedURL)
+        } catch {
+            logger.error(Logger.Message(stringLiteral: error.localizedDescription))
+            try? fileManager.removeItem(at: downloadedZip)
+        }
+    }
+    
+    private func handleUnzipped(_ unzippedFolder: URL) {
+        do {
+            let path = unzippedFolder.path
+            /// try to find .utm file in unzipped folder
+            if let utmFilename = try FileManager.default.contentsOfDirectory(atPath: path).first(where: { $0.hasSuffix(".utm") }) {
+                /// got filename
+                let utmURL = URL(fileURLWithPath: path).appendingPathComponent(utmFilename, isDirectory: false)
+                try self.data.importUTM(url: utmURL)
+            } else {
+                /// utm file not in folder
+                logger.error("No UTM file in extracted ZIP")
+            }
+        } catch {
+            logger.error(Logger.Message(stringLiteral: error.localizedDescription))
+        }
     }
     
     static func start(with data: UTMData, downloadFrom url: URL) {

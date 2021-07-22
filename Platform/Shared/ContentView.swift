@@ -207,14 +207,12 @@ struct ContentView: View {
                     }
                 }
                 break
-                /* Not currently possible because we need a ZIP library to download zipped UTM packages
             case "downloadVM":
                 if let urlParameter = components.queryItems?.first(where: { $0.name == "url" })?.value,
                    urlParameter.hasSuffix(".zip"), let url = URL(string: urlParameter) {
                     UTMImportFromWebTask.start(with: data, downloadFrom: url)
                 }
                 break
-                */
             default:
                 return
             }
