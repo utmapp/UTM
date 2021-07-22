@@ -29,6 +29,9 @@
 		2CE8EB0A2572E173000E2EBB /* qapi-visit-block-export.c in Sources */ = {isa = PBXBuildFile; fileRef = 2CE8EB082572E173000E2EBB /* qapi-visit-block-export.c */; };
 		2CE8EB41257811E8000E2EBB /* UTMConfiguration+Defaults.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CE8EB40257811E8000E2EBB /* UTMConfiguration+Defaults.m */; };
 		2CE8EB42257811E8000E2EBB /* UTMConfiguration+Defaults.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CE8EB40257811E8000E2EBB /* UTMConfiguration+Defaults.m */; };
+		836A40D526AA2A03002068F8 /* Zip in Frameworks */ = {isa = PBXBuildFile; productRef = 836A40D426AA2A03002068F8 /* Zip */; };
+		836A40D726AA2A2C002068F8 /* Zip in Frameworks */ = {isa = PBXBuildFile; productRef = 836A40D626AA2A2C002068F8 /* Zip */; };
+		836A40D926AA2A30002068F8 /* Zip in Frameworks */ = {isa = PBXBuildFile; productRef = 836A40D826AA2A30002068F8 /* Zip */; };
 		83A004B926A8CC95001AC09E /* UTMImportFromWebTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83A004B826A8CC95001AC09E /* UTMImportFromWebTask.swift */; };
 		83A004BA26A8CC95001AC09E /* UTMImportFromWebTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83A004B826A8CC95001AC09E /* UTMImportFromWebTask.swift */; };
 		83A004BB26A8CC95001AC09E /* UTMImportFromWebTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83A004B826A8CC95001AC09E /* UTMImportFromWebTask.swift */; };
@@ -2114,6 +2117,7 @@
 				CE2D934F24AD46670059923A /* phodav-2.0.0.framework in Frameworks */,
 				CEA9059025FC6A1700801E7C /* usbredirparser.1.framework in Frameworks */,
 				CE0E9B87252FD06B0026E02B /* SwiftUI.framework in Frameworks */,
+				836A40D726AA2A2C002068F8 /* Zip in Frameworks */,
 				CE2D935024AD46670059923A /* gstcontroller-1.0.0.framework in Frameworks */,
 				CE2D935124AD46670059923A /* gstaudio-1.0.0.framework in Frameworks */,
 				CE2D935224AD46670059923A /* gpg-error.0.framework in Frameworks */,
@@ -2200,6 +2204,7 @@
 				CE03D08924D90F0700F76B84 /* glib-2.0.0.framework in Frameworks */,
 				CE0B6EC224AD677200FE012D /* libgstvideorate.a in Frameworks */,
 				CE0B6F0C24AD677200FE012D /* gstreamer-1.0.0.framework in Frameworks */,
+				836A40D526AA2A03002068F8 /* Zip in Frameworks */,
 				CEF83F89250094A400557D15 /* png16.16.framework in Frameworks */,
 				CE0B6F0224AD677200FE012D /* libgstjpeg.a in Frameworks */,
 				CE0B6EFC24AD677200FE012D /* libgstaudiotestsrc.a in Frameworks */,
@@ -2273,6 +2278,7 @@
 				CEA45F59263519B5002FA97D /* gstpbutils-1.0.0.framework in Frameworks */,
 				CEA45F5A263519B5002FA97D /* gstallocators-1.0.0.framework in Frameworks */,
 				CEA45F5B263519B5002FA97D /* gstcheck-1.0.0.framework in Frameworks */,
+				836A40D926AA2A30002068F8 /* Zip in Frameworks */,
 				CEA45F5C263519B5002FA97D /* iconv.2.framework in Frameworks */,
 				CEA45F5D263519B5002FA97D /* gstsdp-1.0.0.framework in Frameworks */,
 				CEA45F5E263519B5002FA97D /* ssl.1.1.framework in Frameworks */,
@@ -3156,6 +3162,7 @@
 			packageProductDependencies = (
 				CE020BA624AEDEF000B44AB6 /* Logging */,
 				CE93759824BB821F0074066F /* IQKeyboardManagerSwift */,
+				836A40D626AA2A2C002068F8 /* Zip */,
 			);
 			productName = UTM;
 			productReference = CE2D93BE24AD46670059923A /* UTM.app */;
@@ -3180,6 +3187,7 @@
 			name = macOS;
 			packageProductDependencies = (
 				CE020BA824AEDF3000B44AB6 /* Logging */,
+				836A40D426AA2A03002068F8 /* Zip */,
 			);
 			productName = UTM;
 			productReference = CE2D951C24AD48BE0059923A /* UTM.app */;
@@ -3221,6 +3229,7 @@
 			packageProductDependencies = (
 				CEA45E20263519B5002FA97D /* Logging */,
 				CEA45E22263519B5002FA97D /* IQKeyboardManagerSwift */,
+				836A40D826AA2A30002068F8 /* Zip */,
 			);
 			productName = UTM;
 			productReference = CEA45FB9263519B5002FA97D /* UTM SE.app */;
@@ -3288,6 +3297,7 @@
 			packageReferences = (
 				CE020BA524AEDEF000B44AB6 /* XCRemoteSwiftPackageReference "swift-log" */,
 				CE93759724BB821F0074066F /* XCRemoteSwiftPackageReference "IQKeyboardManager" */,
+				836A40D326AA2A03002068F8 /* XCRemoteSwiftPackageReference "Zip" */,
 			);
 			productRefGroup = CE550BCA225947990063E575 /* Products */;
 			projectDirPath = "";
@@ -4848,6 +4858,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		836A40D326AA2A03002068F8 /* XCRemoteSwiftPackageReference "Zip" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/marmelroy/Zip.git";
+			requirement = {
+				kind = upToNextMinorVersion;
+				minimumVersion = 2.1.1;
+			};
+		};
 		CE020BA524AEDEF000B44AB6 /* XCRemoteSwiftPackageReference "swift-log" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/apple/swift-log";
@@ -4883,6 +4901,21 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		836A40D426AA2A03002068F8 /* Zip */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 836A40D326AA2A03002068F8 /* XCRemoteSwiftPackageReference "Zip" */;
+			productName = Zip;
+		};
+		836A40D626AA2A2C002068F8 /* Zip */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 836A40D326AA2A03002068F8 /* XCRemoteSwiftPackageReference "Zip" */;
+			productName = Zip;
+		};
+		836A40D826AA2A30002068F8 /* Zip */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 836A40D326AA2A03002068F8 /* XCRemoteSwiftPackageReference "Zip" */;
+			productName = Zip;
+		};
 		CE020BA624AEDEF000B44AB6 /* Logging */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = CE020BA524AEDEF000B44AB6 /* XCRemoteSwiftPackageReference "swift-log" */;
