@@ -643,15 +643,18 @@ struct MacPlatform: Codable {
 struct DiskImage: Codable, Hashable, Identifiable {
     private let bytesInMib = 1048576
     
-    var size: Int
+    var sizeMib: Int
     var isReadOnly: Bool
+    var isExternal: Bool
     var imageURL: URL?
     private var uuid = UUID() // for identifiable
     
     private enum CodingKeys: String, CodingKey {
-        case size
+        case sizeMib
         case isReadOnly
+        case isExternal
         case imagePath
+        case imageBookmark
     }
     
     var id: Int {
@@ -659,21 +662,23 @@ struct DiskImage: Codable, Hashable, Identifiable {
     }
     
     var sizeString: String {
-        ByteCountFormatter.string(fromByteCount: Int64(size) * Int64(bytesInMib), countStyle: .file)
+        ByteCountFormatter.string(fromByteCount: Int64(sizeMib) * Int64(bytesInMib), countStyle: .file)
     }
     
     init(newSize: Int) {
-        size = newSize
+        sizeMib = newSize
         isReadOnly = false
+        isExternal = false
     }
     
-    init(importImage url: URL) {
-        imageURL = url
-        isReadOnly = false
+    init(importImage url: URL, isReadOnly: Bool = false, isExternal: Bool = false) {
+        self.imageURL = url
+        self.isReadOnly = isReadOnly
+        self.isExternal = isExternal
         if let attributes = try? url.resourceValues(forKeys: [.fileSizeKey]), let fileSize = attributes.fileSize {
-            size = fileSize / bytesInMib
+            sizeMib = fileSize / bytesInMib
         } else {
-            size = 0
+            sizeMib = 0
         }
     }
     
@@ -682,18 +687,32 @@ struct DiskImage: Codable, Hashable, Identifiable {
             throw ConfigError.invalidBaseURL
         }
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        size = try container.decode(Int.self, forKey: .size)
+        sizeMib = try container.decode(Int.self, forKey: .sizeMib)
         isReadOnly = try container.decode(Bool.self, forKey: .isReadOnly)
-        if let imagePath = try container.decodeIfPresent(String.self, forKey: .imagePath) {
+        isExternal = try container.decode(Bool.self, forKey: .isExternal)
+        if !isExternal, let imagePath = try container.decodeIfPresent(String.self, forKey: .imagePath) {
             imageURL = baseURL.appendingPathComponent(imagePath)
+        } else if let bookmark = try container.decodeIfPresent(Data.self, forKey: .imageBookmark) {
+            var stale: Bool = false
+            imageURL = try URL(resolvingBookmarkData: bookmark, options: .withSecurityScope, bookmarkDataIsStale: &stale)
         }
     }
     
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encode(size, forKey: .size)
+        try container.encode(sizeMib, forKey: .sizeMib)
         try container.encode(isReadOnly, forKey: .isReadOnly)
-        try container.encodeIfPresent(imageURL?.lastPathComponent, forKey: .imagePath)
+        try container.encode(isExternal, forKey: .isExternal)
+        if !isExternal {
+            try container.encodeIfPresent(imageURL?.lastPathComponent, forKey: .imagePath)
+        } else {
+            var options = NSURL.BookmarkCreationOptions.withSecurityScope
+            if isReadOnly {
+                options.insert(.securityScopeAllowOnlyReadAccess)
+            }
+            let bookmark = try imageURL?.bookmarkData(options: options)
+            try container.encodeIfPresent(bookmark, forKey: .imageBookmark)
+        }
     }
     
     func vzDiskImage() throws -> VZDiskImageStorageDeviceAttachment? {

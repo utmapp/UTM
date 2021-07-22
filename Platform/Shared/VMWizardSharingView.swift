@@ -42,7 +42,9 @@ struct VMWizardSharingView: View {
                 }
             }.disabled(wizardState.isBusy)
             .buttonStyle(BrowseButtonStyle())
-            Toggle("Read only share?", isOn: $wizardState.sharingReadOnly)
+            if !wizardState.useAppleVirtualization {
+                Toggle("Read only share?", isOn: $wizardState.sharingReadOnly)
+            }
             if wizardState.isBusy {
                 BigWhiteSpinner()
             }

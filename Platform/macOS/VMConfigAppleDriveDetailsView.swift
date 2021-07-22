@@ -25,6 +25,8 @@ struct VMConfigAppleDriveDetailsView: View {
             TextField("Name", text: .constant(diskImage.imageURL?.lastPathComponent ?? NSLocalizedString("(new)", comment: "VMConfigAppleDriveDetailsView")))
                 .disabled(true)
             Toggle("Read Only?", isOn: $diskImage.isReadOnly)
+            Toggle("External?", isOn: $diskImage.isExternal)
+                .help("If checked, the disk image will be used directly. Otherwise, a copy will be made into the VM bundle.")
         }
     }
 }
