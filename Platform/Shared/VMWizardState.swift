@@ -243,10 +243,53 @@ class VMWizardState: ObservableObject {
         }
     }
     
+    #if os(macOS)
     private func generateAppleConfig() throws -> UTMAppleConfiguration {
         let config = UTMAppleConfiguration()
+        config.name = name!
+        config.memorySize = systemMemory
+        config.cpuCount = systemCpuCount
+        if !isSkipBootImage, let bootImageURL = bootImageURL {
+            config.diskImages.append(DiskImage(importImage: bootImageURL, isReadOnly: false, isExternal: true))
+        }
+        switch operatingSystem {
+        case .Other:
+            break
+        case .macOS:
+            config.icon = "mac"
+            #if os(macOS) && arch(arm64)
+            config.bootLoader = try! Bootloader(for: .macOS)
+            config.macRecoveryIpswURL = macRecoveryIpswURL
+            config.macPlatform = macPlatform
+            #endif
+        case .Linux:
+            config.icon = "linux"
+            #if os(macOS)
+            if useLinuxKernel {
+                var bootloader = try Bootloader(for: .Linux, linuxKernelURL: linuxKernelURL!)
+                bootloader.linuxInitialRamdiskURL = linuxInitialRamdiskURL
+                bootloader.linuxCommandLine = linuxBootArguments
+                config.bootLoader = bootloader
+                if let linuxRootImageURL = linuxRootImageURL {
+                    config.diskImages.append(DiskImage(importImage: linuxRootImageURL))
+                }
+            }
+            #endif
+        case .Windows:
+            config.icon = "windows"
+            if let windowsBootVhdx = windowsBootVhdx {
+                config.diskImages.append(DiskImage(importImage: windowsBootVhdx, isReadOnly: false, isExternal: true))
+            }
+        }
+        if windowsBootVhdx == nil {
+            config.diskImages.append(DiskImage(newSize: storageSizeGib * bytesInGib / bytesInMib))
+        }
+        if let sharingDirectoryURL = sharingDirectoryURL {
+            config.sharedDirectories.append(sharingDirectoryURL)
+        }
         return config
     }
+    #endif
     
     private func generateQemuConfig() throws -> UTMQemuConfiguration {
         let config = UTMQemuConfiguration()
@@ -294,7 +337,11 @@ class VMWizardState: ObservableObject {
     
     func generateConfig() throws -> UTMConfigurable {
         if useVirtualization && useAppleVirtualization {
+            #if os(macOS)
             return try generateAppleConfig()
+            #else
+            throw NSLocalizedString("Unavailable for this platform.", comment: "VMWizardState")
+            #endif
         } else {
             return try generateQemuConfig()
         }
