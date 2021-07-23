@@ -168,7 +168,16 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
         }
     }
     
-    @Published var diskImages: [DiskImage] = []
+    @Published var diskImages: [DiskImage] = [] {
+        didSet {
+            apple.storageDevices = diskImages.compactMap({ diskImage in
+                guard let attachment = try? diskImage.vzDiskImage() else {
+                    return nil
+                }
+                return VZVirtioBlockDeviceConfiguration(attachment: attachment)
+            })
+        }
+    }
     
     var diskImagesToDelete: Set<DiskImage> = Set()
     
