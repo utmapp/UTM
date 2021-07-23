@@ -172,7 +172,47 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
     
     var diskImagesToDelete: Set<DiskImage> = Set()
     
-    @Published var sharedDirectories: [URL] = []
+    @available(macOS 12, *)
+    var sharedDirectories: [SharedDirectory] {
+        get {
+            let fsConfig = apple.directorySharingDevices.first as? VZVirtioFileSystemDeviceConfiguration
+            if let single = fsConfig?.share as? VZSingleDirectoryShare {
+                return [SharedDirectory(from: single.directory)]
+            } else if let multi = fsConfig?.share as? VZMultipleDirectoryShare {
+                return multi.directories.values.map { directory in
+                    SharedDirectory(from: directory)
+                }
+            } else {
+                return []
+            }
+        }
+        
+        set {
+            objectWillChange.send()
+            let fsConfig = VZVirtioFileSystemDeviceConfiguration(tag: "Share")
+            if newValue.count == 1 {
+                let single = VZSingleDirectoryShare(directory: newValue[0].vzSharedDirectory())
+                fsConfig.share = single
+                apple.directorySharingDevices = [fsConfig]
+            } else if newValue.count > 1 {
+                let directories = newValue.reduce(into: [String: VZSharedDirectory]()) { (dict, share) in
+                    let lastPathComponent = share.directoryURL.lastPathComponent
+                    var name = lastPathComponent
+                    var i = 2
+                    while dict.keys.contains(name) {
+                        name = "\(lastPathComponent) (\(i))"
+                        i += 1
+                    }
+                    dict[name] = share.vzSharedDirectory()
+                }
+                let multi = VZMultipleDirectoryShare(directories: directories)
+                fsConfig.share = multi
+                apple.directorySharingDevices = [fsConfig]
+            } else {
+                apple.directorySharingDevices = []
+            }
+        }
+    }
     
     @available(macOS 12, *)
     var isAudioEnabled: Bool {
@@ -290,7 +330,7 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
         case macRecoveryIpswBookmark
         case networkDevices
         case displays
-        case sharedDirectoryBookmarks
+        case sharedDirectories
         case isAudioEnabled
         case isBalloonEnabled
         case isEntropyEnabled
@@ -331,15 +371,11 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
                 macRecoveryIpswURL = try URL(resolvingBookmarkData: recoveryIpswBookmark, options: .withSecurityScope, bookmarkDataIsStale: &stale)
             }
             displays = try values.decode([Display].self, forKey: .displays)
+            sharedDirectories = try values.decode([SharedDirectory].self, forKey: .sharedDirectories)
             isAudioEnabled = try values.decode(Bool.self, forKey: .isAudioEnabled)
             isKeyboardEnabled = try values.decode(Bool.self, forKey: .isKeyboardEnabled)
             isPointingEnabled = try values.decode(Bool.self, forKey: .isPointingEnabled)
         }
-        let sharedDirectoryBookmarks = try values.decode([Data].self, forKey: .sharedDirectoryBookmarks)
-        sharedDirectories = try sharedDirectoryBookmarks.map({ bookmark in
-            var stale: Bool = false
-            return try URL(resolvingBookmarkData: bookmark, options: .withSecurityScope, bookmarkDataIsStale: &stale)
-        })
         isBalloonEnabled = try values.decode(Bool.self, forKey: .isBalloonEnabled)
         isEntropyEnabled = try values.decode(Bool.self, forKey: .isEntropyEnabled)
         isSerialEnabled = try values.decode(Bool.self, forKey: .isSerialEnabled)
@@ -372,14 +408,11 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
             let recoveryIpswBookmark = try macRecoveryIpswURL?.bookmarkData(options: .withSecurityScope)
             try container.encodeIfPresent(recoveryIpswBookmark, forKey: .macRecoveryIpswBookmark)
             try container.encode(displays, forKey: .displays)
+            try container.encode(sharedDirectories, forKey: .sharedDirectories)
             try container.encode(isAudioEnabled, forKey: .isAudioEnabled)
             try container.encode(isKeyboardEnabled, forKey: .isKeyboardEnabled)
             try container.encode(isPointingEnabled, forKey: .isPointingEnabled)
         }
-        let sharedDirectoryBookmarks = try sharedDirectories.map { url in
-            try url.bookmarkData(options: .withSecurityScope)
-        }
-        try container.encode(sharedDirectoryBookmarks, forKey: .sharedDirectoryBookmarks)
         try container.encode(isBalloonEnabled, forKey: .isBalloonEnabled)
         try container.encode(isEntropyEnabled, forKey: .isEntropyEnabled)
         try container.encode(isSerialEnabled, forKey: .isSerialEnabled)
@@ -729,6 +762,58 @@ struct DiskImage: Codable, Hashable, Identifiable {
         } else {
             uuid.hash(into: &hasher)
         }
+    }
+}
+
+@available(macOS 12, *)
+struct SharedDirectory: Codable, Hashable, Identifiable {
+    var directoryURL: URL
+    var isReadOnly: Bool
+    
+    var id: SharedDirectory {
+        self
+    }
+    
+    private enum CodingKeys: String, CodingKey {
+        case directoryBookmark
+        case isReadOnly
+    }
+    
+    init(directoryURL: URL, isReadOnly: Bool = false) {
+        self.directoryURL = directoryURL
+        self.isReadOnly = isReadOnly
+    }
+    
+    init(from config: VZSharedDirectory) {
+        self.isReadOnly = config.isReadOnly
+        self.directoryURL = config.url
+    }
+    
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        isReadOnly = try container.decode(Bool.self, forKey: .isReadOnly)
+        let bookmark = try container.decode(Data.self, forKey: .directoryBookmark)
+        var stale: Bool = false
+        directoryURL = try URL(resolvingBookmarkData: bookmark, options: .withSecurityScope, bookmarkDataIsStale: &stale)
+    }
+    
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(isReadOnly, forKey: .isReadOnly)
+        var options = NSURL.BookmarkCreationOptions.withSecurityScope
+        if isReadOnly {
+            options.insert(.securityScopeAllowOnlyReadAccess)
+        }
+        let bookmark = try directoryURL.bookmarkData(options: options)
+        try container.encode(bookmark, forKey: .directoryBookmark)
+    }
+    
+    func hash(into hasher: inout Hasher) {
+        directoryURL.hash(into: &hasher)
+    }
+    
+    func vzSharedDirectory() -> VZSharedDirectory {
+        VZSharedDirectory(url: directoryURL, readOnly: isReadOnly)
     }
 }
 

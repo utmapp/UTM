@@ -63,10 +63,6 @@ extension String: Identifiable {
     public var id: String { return self }
 }
 
-extension URL: Identifiable {
-    public var id: URL { return self }
-}
-
 extension IndexSet: Identifiable {
     public var id: Int {
         self.hashValue

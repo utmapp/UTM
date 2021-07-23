@@ -20,21 +20,25 @@ import SwiftUI
 struct VMConfigAppleSharingView: View {
     @ObservedObject var config: UTMAppleConfiguration
     @EnvironmentObject private var data: UTMData
-    @State private var selected: URL?
+    @State private var selected: SharedDirectory?
     @State private var isImporterPresented: Bool = false
+    @State private var isAddReadOnly: Bool = false
     
     var body: some View {
         Form {
             Table(config.sharedDirectories, selection: $selected) {
-                TableColumn("Shared Path") { url in
-                    Text(url.path)
+                TableColumn("Shared Path") { share in
+                    Text(share.directoryURL.path)
+                }
+                TableColumn("Read Only?") { share in
+                    Toggle("", isOn: .constant(share.isReadOnly))
                 }
             }.frame(minHeight: 300)
             HStack {
                 Spacer()
                 Button("Delete") {
-                    config.sharedDirectories.removeAll { url in
-                        url == selected
+                    config.sharedDirectories.removeAll { share in
+                        share == selected
                     }
                 }.disabled(selected == nil)
                 Button("Add") {
@@ -44,12 +48,16 @@ struct VMConfigAppleSharingView: View {
                 data.busyWorkAsync {
                     let url = try result.get()
                     if config.sharedDirectories.contains(where: { existing in
-                        url == existing
+                        url == existing.directoryURL
                     }) {
                         throw NSLocalizedString("This directory is already being shared.", comment: "VMConfigAppleSharingView")
                     }
-                    config.sharedDirectories.append(url)
+                    config.sharedDirectories.append(SharedDirectory(directoryURL: url, isReadOnly: isAddReadOnly))
                 }
+            }
+            HStack {
+                Spacer()
+                Toggle("Add read only", isOn: $isAddReadOnly)
             }
         }
     }

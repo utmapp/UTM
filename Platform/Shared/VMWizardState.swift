@@ -284,8 +284,8 @@ class VMWizardState: ObservableObject {
         if windowsBootVhdx == nil {
             config.diskImages.append(DiskImage(newSize: storageSizeGib * bytesInGib / bytesInMib))
         }
-        if let sharingDirectoryURL = sharingDirectoryURL {
-            config.sharedDirectories.append(sharingDirectoryURL)
+        if #available(macOS 12, *), let sharingDirectoryURL = sharingDirectoryURL {
+            config.sharedDirectories = [SharedDirectory(directoryURL: sharingDirectoryURL, isReadOnly: sharingReadOnly)]
         }
         return config
     }
