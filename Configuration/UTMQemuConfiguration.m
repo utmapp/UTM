@@ -153,4 +153,8 @@ const NSInteger kCurrentConfigurationVersion = 2;
     return self.rootDict[kUTMConfigVersionKey];
 }
 
+- (BOOL)isAppleVirtualization {
+    return NO;
+}
+
 @end

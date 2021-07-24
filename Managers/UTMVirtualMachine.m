@@ -79,11 +79,25 @@ NSString *const kUTMBundleScreenshotFilename = @"screenshot.png";
 }
 
 + (nullable UTMVirtualMachine *)virtualMachineWithURL:(NSURL *)url {
+    if (@available(macOS 12, *)) {
+        if ([self isAppleVMForPath:url]) {
+            return [[UTMAppleVirtualMachine alloc] initWithURL:url];
+        }
+    }
     return [[UTMQemuVirtualMachine alloc] initWithURL:url];
 }
 
 + (UTMVirtualMachine *)virtualMachineWithConfiguration:(id<UTMConfigurable>)configuration withDestinationURL:(NSURL *)dstUrl {
+    if (@available(macOS 12, *)) {
+        if (configuration.isAppleVirtualization) {
+            return [[UTMAppleVirtualMachine alloc] initWithConfiguration:configuration withDestinationURL:dstUrl];
+        }
+    }
     return [[UTMQemuVirtualMachine alloc] initWithConfiguration:configuration withDestinationURL:dstUrl];
+}
+
++ (BOOL)isAppleVMForPath:(NSURL *)path {
+    return NO;
 }
 
 - (instancetype)init {
@@ -152,6 +166,10 @@ NSString *const kUTMBundleScreenshotFilename = @"screenshot.png";
         self.delegate.vmMessage = msg;
         [self changeState:kVMError];
     }
+}
+
+- (BOOL)reloadConfigurationWithError:(NSError * _Nullable *)err {
+    return [self loadConfigurationWithReload:YES error:err];
 }
 
 #define notImplemented @throw [NSException exceptionWithName:NSInvalidArgumentException reason:[NSString stringWithFormat:@"%s must be overridden in a subclass.", __PRETTY_FUNCTION__] userInfo:nil]

@@ -362,6 +362,8 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
         consoleCursorBlink = true
         version = currentVersion
         isAppleVirtualization = true
+        memorySize = 4 * 1024 * 1024 * 1024
+        cpuCount = 4
     }
     
     required convenience init(from decoder: Decoder) throws {
@@ -445,14 +447,9 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
         try container.encodeIfPresent(consoleResizeCommand, forKey: .consoleResizeCommand)
     }
     
-    func resetDefaults() {
-        memorySize = 4 * 1024 * 1024 * 1024
-        cpuCount = 4
-    }
-    
     static func load(from packageURL: URL) throws -> UTMAppleConfiguration {
         let dataURL = packageURL.appendingPathComponent("Data")
-        let configURL = packageURL.appendingPathComponent("config.plist")
+        let configURL = packageURL.appendingPathComponent(kUTMBundleConfigFilename)
         let configData = try Data(contentsOf: configURL)
         let decoder = PropertyListDecoder()
         decoder.userInfo = [.dataURL: dataURL]
@@ -481,7 +478,7 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
         // create config.plist
         let encoder = PropertyListEncoder()
         let settingsData = try encoder.encode(self)
-        try settingsData.write(to: packageURL.appendingPathComponent("config.plist"))
+        try settingsData.write(to: packageURL.appendingPathComponent(kUTMBundleConfigFilename))
     }
     
     private func copyItemIfChanged(from sourceURL: URL, to destFolderURL: URL) throws -> URL {

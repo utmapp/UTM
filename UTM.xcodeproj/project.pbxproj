@@ -693,6 +693,7 @@
 		CE900B9F25FC2869007533FD /* CSUSBManager.m in Sources */ = {isa = PBXBuildFile; fileRef = CE900B9D25FC2869007533FD /* CSUSBManager.m */; };
 		CE900BAF25FC3E65007533FD /* CSUSBDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = CE900BAE25FC3E65007533FD /* CSUSBDevice.m */; };
 		CE900BB025FC3E65007533FD /* CSUSBDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = CE900BAE25FC3E65007533FD /* CSUSBDevice.m */; };
+		CE928C2A26ABE6690099F293 /* UTMAppleVirtualMachine.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE928C2926ABE6690099F293 /* UTMAppleVirtualMachine.swift */; };
 		CE93758924B930270074066F /* BusyOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE7D972B24B2B17D0080CB69 /* BusyOverlay.swift */; };
 		CE93759624BB7EA00074066F /* UTMTabViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE93759524BB7E9F0074066F /* UTMTabViewController.swift */; };
 		CE93759924BB821F0074066F /* IQKeyboardManagerSwift in Frameworks */ = {isa = PBXBuildFile; productRef = CE93759824BB821F0074066F /* IQKeyboardManagerSwift */; };
@@ -1995,6 +1996,7 @@
 		CE900BA225FC31E4007533FD /* CSUSBManagerDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CSUSBManagerDelegate.h; sourceTree = "<group>"; };
 		CE900BAD25FC3E65007533FD /* CSUSBDevice.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CSUSBDevice.h; sourceTree = "<group>"; };
 		CE900BAE25FC3E65007533FD /* CSUSBDevice.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CSUSBDevice.m; sourceTree = "<group>"; };
+		CE928C2926ABE6690099F293 /* UTMAppleVirtualMachine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMAppleVirtualMachine.swift; sourceTree = "<group>"; };
 		CE93759524BB7E9F0074066F /* UTMTabViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMTabViewController.swift; sourceTree = "<group>"; };
 		CE9375A024BBDDD10074066F /* VMConfigDriveDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMConfigDriveDetailsView.swift; sourceTree = "<group>"; };
 		CE9A352D26533A51005077CF /* JailbreakInterposer.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = JailbreakInterposer.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -2996,6 +2998,7 @@
 				84C584DC268E70F1000FCABF /* UTMVirtualMachine-Protected.h */,
 				84FCABC8268D17E70036196C /* UTMVirtualMachine+IO.h */,
 				84FCABC9268D17E70036196C /* UTMVirtualMachine+IO.m */,
+				CE928C2926ABE6690099F293 /* UTMAppleVirtualMachine.swift */,
 				E28394B5240C20E1006742E2 /* UTMTerminal.h */,
 				E28394B3240C20E0006742E2 /* UTMTerminal.m */,
 				E28394B4240C20E1006742E2 /* UTMTerminalDelegate.h */,
@@ -3995,6 +3998,7 @@
 				CEF0306026A2AFDF00667B63 /* VMWizardState.swift in Sources */,
 				CEF0300826A25A6900667B63 /* VMWizardView.swift in Sources */,
 				CE0B6D4924AD584C00FE012D /* qapi-types-trace.c in Sources */,
+				CE928C2A26ABE6690099F293 /* UTMAppleVirtualMachine.swift in Sources */,
 				CE0B6D7724AD584D00FE012D /* qapi-events-misc-target.c in Sources */,
 				CE0B6CF524AD568400FE012D /* UTMQemuConfiguration+Miscellaneous.m in Sources */,
 				CE0B6CFB24AD568400FE012D /* UTMQemuConfiguration+Networking.m in Sources */,

@@ -18,6 +18,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+extern NSString *const kUTMBundleConfigFilename;
+
 @interface UTMVirtualMachine ()
 
 @property (nonatomic, readonly) NSString *title;
@@ -29,6 +31,17 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) NSString *systemTarget;
 @property (nonatomic, readonly) NSString *systemArchitecture;
 @property (nonatomic, readonly) NSString *systemMemory;
+
+@property (nonatomic, readwrite, nullable) NSURL *path;
+@property (nonatomic, readwrite, copy) id<UTMConfigurable> config;
+@property (nonatomic, readwrite, nullable) UTMScreenshot *screenshot;
+
++ (BOOL)isAppleVMForPath:(NSURL *)path;
+- (NSURL *)packageURLForName:(NSString *)name;
+- (void)changeState:(UTMVMState)state;
+- (void)errorTriggered:(nullable NSString *)msg;
+
+- (BOOL)loadConfigurationWithReload:(BOOL)reload error:(NSError * _Nullable __autoreleasing *)err;
 
 @end
 

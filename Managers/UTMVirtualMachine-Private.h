@@ -20,24 +20,17 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface UTMVirtualMachine ()
 
-@property (nonatomic, readwrite, nullable) NSURL *path;
 @property (nonatomic, strong) NSURL *parentPath;
-@property (nonatomic, readwrite, copy) id<UTMConfigurable> config;
 @property (nonatomic, readwrite) UTMViewState *viewState;
 @property (nonatomic) UTMLogging *logging;
 @property (nonatomic, readwrite) BOOL busy;
-@property (nonatomic, readwrite, nullable) UTMScreenshot *screenshot;
 @property (nonatomic, assign, readwrite) UTMVMState state;
 
 - (instancetype)init;
 - (nullable instancetype)initWithURL:(NSURL *)url;
 - (instancetype)initWithConfiguration:(id<UTMConfigurable>)configuration withDestinationURL:(NSURL *)dstUrl;
 
-- (NSURL *)packageURLForName:(NSString *)name;
-- (void)changeState:(UTMVMState)state;
-- (void)errorTriggered:(nullable NSString *)msg;
 - (BOOL)loadConfigurationWithReload:(BOOL)reload error:(NSError * _Nullable __autoreleasing *)err;
-
 - (NSDictionary *)loadPlist:(NSURL *)path withError:(NSError **)err;
 - (BOOL)savePlist:(NSURL *)path dict:(NSDictionary *)dict withError:(NSError **)err;
 - (void)syncViewState;

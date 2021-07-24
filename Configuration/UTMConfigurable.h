@@ -33,7 +33,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) BOOL consoleCursorBlink;
 @property (nonatomic, nullable, copy) NSString *consoleResizeCommand;
 
-- (void)resetDefaults;
+@property (nonatomic, readonly, assign) BOOL isAppleVirtualization;
 
 @end
 

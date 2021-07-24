@@ -15,6 +15,7 @@
 //
 
 #import <TargetConditionals.h>
+#import "UTMVirtualMachine-Protected.h"
 #import "UTMVirtualMachine-Private.h"
 #import "UTMQemuVirtualMachine.h"
 #import "UTMQemuVirtualMachine+Drives.h"
@@ -104,10 +105,6 @@ NSString *const kSuspendSnapshotName = @"suspend";
         self.config = [[UTMQemuConfiguration alloc] initWithDictionary:plist name:name path:self.path];
     }
     return YES;
-}
-
-- (BOOL)reloadConfigurationWithError:(NSError * _Nullable *)err {
-    return [self loadConfigurationWithReload:YES error:err];
 }
 
 - (BOOL)saveConfigurationWithError:(NSError * _Nullable __autoreleasing *)err {
