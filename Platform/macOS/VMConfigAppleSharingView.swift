@@ -28,7 +28,7 @@ struct VMConfigAppleSharingView: View {
         Form {
             Table(config.sharedDirectories, selection: $selected) {
                 TableColumn("Shared Path") { share in
-                    Text(share.directoryURL.path)
+                    Text(share.directoryURL?.path ?? "")
                 }
                 TableColumn("Read Only?") { share in
                     Toggle("", isOn: .constant(share.isReadOnly))

@@ -107,8 +107,7 @@ struct VMConfigDrivesButtons<Config: ObservableObject & UTMConfigurable>: View {
             if let qemuConfig = config as? UTMQemuConfiguration {
                 try data.removeDrive(at: index, for: qemuConfig)
             } else if let appleConfig = config as? UTMAppleConfiguration {
-                let drive = appleConfig.diskImages.remove(at: index)
-                appleConfig.diskImagesToDelete.insert(drive)
+                appleConfig.diskImages.remove(at: index)
             }
         }
     }

@@ -21,8 +21,6 @@ import Virtualization
 final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
     let apple: VZVirtualMachineConfiguration
     
-    let baseURL: URL
-    
     @Published var name: String
     
     @Published var existingPath: URL?
@@ -116,7 +114,7 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
         
         set {
             objectWillChange.send()
-            if let macPlatform = newValue, let platform = macPlatform.vzMacPlatform(atBase: baseURL) {
+            if let macPlatform = newValue, let platform = macPlatform.vzMacPlatform() {
                 apple.platform = platform
             } else {
                 apple.platform = VZGenericPlatformConfiguration()
@@ -179,8 +177,6 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
         }
     }
     
-    var diskImagesToDelete: Set<DiskImage> = Set()
-    
     @available(macOS 12, *)
     var sharedDirectories: [SharedDirectory] {
         get {
@@ -199,20 +195,23 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
         set {
             objectWillChange.send()
             let fsConfig = VZVirtioFileSystemDeviceConfiguration(tag: "Share")
-            if newValue.count == 1 {
-                let single = VZSingleDirectoryShare(directory: newValue[0].vzSharedDirectory())
+            let vzSharedDirectories = newValue.compactMap { sharedDirectory in
+                sharedDirectory.vzSharedDirectory()
+            }
+            if vzSharedDirectories.count == 1 {
+                let single = VZSingleDirectoryShare(directory: vzSharedDirectories[0])
                 fsConfig.share = single
                 apple.directorySharingDevices = [fsConfig]
-            } else if newValue.count > 1 {
-                let directories = newValue.reduce(into: [String: VZSharedDirectory]()) { (dict, share) in
-                    let lastPathComponent = share.directoryURL.lastPathComponent
+            } else if vzSharedDirectories.count > 1 {
+                let directories = vzSharedDirectories.reduce(into: [String: VZSharedDirectory]()) { (dict, share) in
+                    let lastPathComponent = share.url.lastPathComponent
                     var name = lastPathComponent
                     var i = 2
                     while dict.keys.contains(name) {
                         name = "\(lastPathComponent) (\(i))"
                         i += 1
                     }
-                    dict[name] = share.vzSharedDirectory()
+                    dict[name] = share
                 }
                 let multi = VZMultipleDirectoryShare(directories: directories)
                 fsConfig.share = multi
@@ -339,6 +338,7 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
         case macRecoveryIpswBookmark
         case networkDevices
         case displays
+        case diskImages
         case sharedDirectories
         case isAudioEnabled
         case isBalloonEnabled
@@ -348,24 +348,15 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
         case isPointingEnabled
     }
     
-    init(at base: URL) {
+    init() {
         apple = VZVirtualMachineConfiguration()
-        baseURL = base
         name = ""
         iconCustom = false
         consoleCursorBlink = true
     }
     
-    convenience init() {
-        self.init(at: URL(fileURLWithPath: "/"))
-    }
-    
     required convenience init(from decoder: Decoder) throws {
-        let baseURL = decoder.userInfo[.baseURL] as? URL
-        guard let baseURL = baseURL else {
-            throw ConfigError.invalidBaseURL
-        }
-        self.init(at: baseURL)
+        self.init()
         let values = try decoder.container(keyedBy: CodingKeys.self)
         cpuCount = try values.decode(Int.self, forKey: .cpuCount)
         memorySize = try values.decode(UInt64.self, forKey: .memorySize)
@@ -377,7 +368,7 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
             #endif
             if let recoveryIpswBookmark = try values.decodeIfPresent(Data.self, forKey: .macRecoveryIpswBookmark) {
                 var stale: Bool = false
-                macRecoveryIpswURL = try URL(resolvingBookmarkData: recoveryIpswBookmark, options: .withSecurityScope, bookmarkDataIsStale: &stale)
+                macRecoveryIpswURL = try? URL(resolvingBookmarkData: recoveryIpswBookmark, options: .withSecurityScope, bookmarkDataIsStale: &stale)
             }
             displays = try values.decode([Display].self, forKey: .displays)
             sharedDirectories = try values.decode([SharedDirectory].self, forKey: .sharedDirectories)
@@ -385,6 +376,7 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
             isKeyboardEnabled = try values.decode(Bool.self, forKey: .isKeyboardEnabled)
             isPointingEnabled = try values.decode(Bool.self, forKey: .isPointingEnabled)
         }
+        diskImages = try values.decode([DiskImage].self, forKey: .diskImages)
         isBalloonEnabled = try values.decode(Bool.self, forKey: .isBalloonEnabled)
         isEntropyEnabled = try values.decode(Bool.self, forKey: .isEntropyEnabled)
         isSerialEnabled = try values.decode(Bool.self, forKey: .isSerialEnabled)
@@ -422,6 +414,7 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
             try container.encode(isKeyboardEnabled, forKey: .isKeyboardEnabled)
             try container.encode(isPointingEnabled, forKey: .isPointingEnabled)
         }
+        try container.encode(diskImages, forKey: .diskImages)
         try container.encode(isBalloonEnabled, forKey: .isBalloonEnabled)
         try container.encode(isEntropyEnabled, forKey: .isEntropyEnabled)
         try container.encode(isSerialEnabled, forKey: .isSerialEnabled)
@@ -439,6 +432,139 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
     func resetDefaults() {
         memorySize = 4 * 1024 * 1024 * 1024
         cpuCount = 4
+    }
+    
+    static func load(from packageURL: URL) throws -> UTMAppleConfiguration {
+        let dataURL = packageURL.appendingPathComponent("Data")
+        let configURL = packageURL.appendingPathComponent("config.plist")
+        let configData = try Data(contentsOf: configURL)
+        let decoder = PropertyListDecoder()
+        decoder.userInfo = [.dataURL: dataURL]
+        return try decoder.decode(UTMAppleConfiguration.self, from: configData)
+    }
+    
+    func save(to packageURL: URL) throws {
+        let fileManager = FileManager.default
+        // create package directory
+        if !fileManager.fileExists(atPath: packageURL.path) {
+            try fileManager.createDirectory(at: packageURL, withIntermediateDirectories: false)
+        }
+        // create data directory
+        let dataURL = packageURL.appendingPathComponent("Data")
+        if !fileManager.fileExists(atPath: dataURL.path) {
+            try fileManager.createDirectory(at: dataURL, withIntermediateDirectories: false)
+        }
+        var existingDataURLs = [URL]()
+        existingDataURLs += try saveIcon(to: dataURL)
+        existingDataURLs += try saveBootloader(to: dataURL)
+        existingDataURLs += try saveImportedDrives(to: dataURL)
+        // cleanup any files before creating new drives
+        try cleanupAllFiles(at: dataURL, notIncluding: existingDataURLs)
+        // create new drives
+        existingDataURLs += try createNewDrives(at: dataURL)
+        // create config.plist
+        let encoder = PropertyListEncoder()
+        let settingsData = try encoder.encode(self)
+        try settingsData.write(to: packageURL.appendingPathComponent("config.plist"))
+    }
+    
+    private func copyItemIfChanged(from sourceURL: URL, to destFolderURL: URL) throws -> URL {
+        _ = sourceURL.startAccessingSecurityScopedResource()
+        defer {
+            sourceURL.stopAccessingSecurityScopedResource()
+        }
+        let fileManager = FileManager.default
+        let destURL = destFolderURL.appendingPathComponent(sourceURL.lastPathComponent)
+        // check if both are same file
+        if fileManager.fileExists(atPath: destURL.path) {
+            let sourceRef = try sourceURL.resourceValues(forKeys: [.fileResourceIdentifierKey]).fileResourceIdentifier
+            let destRef = try destURL.resourceValues(forKeys: [.fileResourceIdentifierKey]).fileResourceIdentifier
+            if sourceRef?.isEqual(destRef) ?? false {
+                return destURL
+            }
+            if fileManager.contentsEqual(atPath: sourceURL.path, andPath: destURL.path) {
+                return destURL
+            }
+        }
+        try fileManager.copyItem(at: sourceURL, to: destURL)
+        return destURL
+    }
+    
+    private func saveIcon(to dataURL: URL) throws -> [URL] {
+        // save new icon
+        if iconCustom {
+            if let iconURL = selectedCustomIconPath {
+                icon = iconURL.lastPathComponent
+                return [try copyItemIfChanged(from: iconURL, to: dataURL)]
+            } else if let existingName = icon {
+                return [dataURL.appendingPathComponent(existingName)]
+            } else {
+                throw ConfigError.customIconInvalid
+            }
+        }
+        return []
+    }
+    
+    private func saveBootloader(to dataURL: URL) throws -> [URL] {
+        let fileManager = FileManager.default
+        var urls = [URL]()
+        if bootLoader != nil && bootLoader!.operatingSystem == .Linux {
+            guard let linuxKernelURL = bootLoader!.linuxKernelURL else {
+                throw ConfigError.kernelNotSpecified
+            }
+            bootLoader!.linuxKernelURL = try copyItemIfChanged(from: linuxKernelURL, to: dataURL)
+            urls.append(bootLoader!.linuxKernelURL!)
+            if let linuxInitialRamdiskURL = bootLoader!.linuxInitialRamdiskURL {
+                bootLoader!.linuxInitialRamdiskURL = try copyItemIfChanged(from: linuxInitialRamdiskURL, to: dataURL)
+                urls.append(bootLoader!.linuxInitialRamdiskURL!)
+            }
+        }
+        #if arch(arm64)
+        if #available(macOS 12, *), macPlatform != nil {
+            let auxStorageURL = supportURL.appendingPathComponent("AuxiliaryStorage")
+            if !fileManager.fileExists(atPath: auxStorageURL.path) {
+                _ = try VZMacAuxiliaryStorage(creatingStorageAt: auxStorageURL, hardwareModel: macPlatform!.hardwareModel, options: 0)
+                macPlatform!.auxiliaryStorageURL = auxStorageURL
+            }
+            urls.append(auxStorageURL)
+        }
+        #endif
+        return urls
+    }
+    
+    private func saveImportedDrives(to dataURL: URL) throws -> [URL] {
+        var urls = [URL]()
+        for i in diskImages.indices {
+            if !diskImages[i].isExternal, let imageURL = diskImages[i].imageURL {
+                let newUrl = try copyItemIfChanged(from: imageURL, to: dataURL)
+                diskImages[i].imageURL = newUrl
+                urls.append(newUrl)
+            }
+        }
+        return urls
+    }
+    
+    private func cleanupAllFiles(at dataURL: URL, notIncluding urls: [URL]) throws {
+        let fileManager = FileManager.default
+        let existingNames = urls.map { url in
+            url.lastPathComponent
+        }
+        let dataFileURLs = try fileManager.contentsOfDirectory(at: dataURL, includingPropertiesForKeys: nil)
+        for dataFileURL in dataFileURLs {
+            if !existingNames.contains(dataFileURL.lastPathComponent) {
+                try fileManager.removeItem(at: dataFileURL)
+            }
+        }
+    }
+    
+    private func createNewDrives(at dataURL: URL) throws -> [URL] {
+        var urls = [URL]()
+        for i in diskImages.indices {
+            if diskImages[i].imageURL == nil {
+                // TODO: implement new drive creation
+            }
+        }
+        return urls
     }
 }
 
@@ -464,17 +590,17 @@ struct Bootloader: Codable {
     }
     
     init(from decoder: Decoder) throws {
-        guard let baseURL = decoder.userInfo[.baseURL] as? URL else {
-            throw ConfigError.invalidBaseURL
+        guard let dataURL = decoder.userInfo[.dataURL] as? URL else {
+            throw ConfigError.invalidDataURL
         }
         let container = try decoder.container(keyedBy: CodingKeys.self)
         operatingSystem = try container.decode(OperatingSystem.self, forKey: .operatingSystem)
         if let linuxKernelPath = try container.decodeIfPresent(String.self, forKey: .linuxKernelPath) {
-            linuxKernelURL = baseURL.appendingPathComponent(linuxKernelPath)
+            linuxKernelURL = dataURL.appendingPathComponent(linuxKernelPath)
         }
         linuxCommandLine = try container.decodeIfPresent(String.self, forKey: .linuxCommandLine)
         if let linuxInitialRamdiskPath = try container.decodeIfPresent(String.self, forKey: .linuxInitialRamdiskPath) {
-            linuxInitialRamdiskURL = baseURL.appendingPathComponent(linuxInitialRamdiskPath)
+            linuxInitialRamdiskURL = dataURL.appendingPathComponent(linuxInitialRamdiskPath)
         }
     }
     
@@ -633,14 +759,14 @@ struct MacPlatform: Codable {
     }
     
     init(from decoder: Decoder) throws {
-        guard let baseURL = decoder.userInfo[.baseURL] as? URL else {
-            throw ConfigError.invalidBaseURL
+        guard let dataURL = decoder.userInfo[.dataURL] as? URL else {
+            throw ConfigError.invalidDataURL
         }
         let container = try decoder.container(keyedBy: CodingKeys.self)
         hardwareModel = try container.decode(Data.self, forKey: .hardwareModel)
         machineIdentifier = try container.decode(Data.self, forKey: .machineIdentifier)
         if let auxiliaryStoragePath = try container.decodeIfPresent(String.self, forKey: .auxiliaryStoragePath) {
-            auxiliaryStorageURL = baseURL.appendingPathComponent(auxiliaryStoragePath)
+            auxiliaryStorageURL = dataURL.appendingPathComponent(auxiliaryStoragePath)
         }
     }
     
@@ -662,7 +788,7 @@ struct MacPlatform: Codable {
         try container.encodeIfPresent(auxiliaryStorageURL?.lastPathComponent, forKey: .auxiliaryStoragePath)
     }
     
-    func vzMacPlatform(atBase baseURL: URL) -> VZMacPlatformConfiguration? {
+    func vzMacPlatform() -> VZMacPlatformConfiguration? {
         guard let vzHardwareModel = VZMacHardwareModel(dataRepresentation: hardwareModel) else {
             return nil
         }
@@ -725,18 +851,18 @@ struct DiskImage: Codable, Hashable, Identifiable {
     }
     
     init(from decoder: Decoder) throws {
-        guard let baseURL = decoder.userInfo[.baseURL] as? URL else {
-            throw ConfigError.invalidBaseURL
+        guard let dataURL = decoder.userInfo[.dataURL] as? URL else {
+            throw ConfigError.invalidDataURL
         }
         let container = try decoder.container(keyedBy: CodingKeys.self)
         sizeMib = try container.decode(Int.self, forKey: .sizeMib)
         isReadOnly = try container.decode(Bool.self, forKey: .isReadOnly)
         isExternal = try container.decode(Bool.self, forKey: .isExternal)
         if !isExternal, let imagePath = try container.decodeIfPresent(String.self, forKey: .imagePath) {
-            imageURL = baseURL.appendingPathComponent(imagePath)
+            imageURL = dataURL.appendingPathComponent(imagePath)
         } else if let bookmark = try container.decodeIfPresent(Data.self, forKey: .imageBookmark) {
             var stale: Bool = false
-            imageURL = try URL(resolvingBookmarkData: bookmark, options: .withSecurityScope, bookmarkDataIsStale: &stale)
+            imageURL = try? URL(resolvingBookmarkData: bookmark, options: .withSecurityScope, bookmarkDataIsStale: &stale)
         }
     }
     
@@ -776,7 +902,7 @@ struct DiskImage: Codable, Hashable, Identifiable {
 
 @available(macOS 12, *)
 struct SharedDirectory: Codable, Hashable, Identifiable {
-    var directoryURL: URL
+    var directoryURL: URL?
     var isReadOnly: Bool
     
     var id: SharedDirectory {
@@ -803,7 +929,7 @@ struct SharedDirectory: Codable, Hashable, Identifiable {
         isReadOnly = try container.decode(Bool.self, forKey: .isReadOnly)
         let bookmark = try container.decode(Data.self, forKey: .directoryBookmark)
         var stale: Bool = false
-        directoryURL = try URL(resolvingBookmarkData: bookmark, options: .withSecurityScope, bookmarkDataIsStale: &stale)
+        directoryURL = try? URL(resolvingBookmarkData: bookmark, options: .withSecurityScope, bookmarkDataIsStale: &stale)
     }
     
     func encode(to encoder: Encoder) throws {
@@ -813,26 +939,31 @@ struct SharedDirectory: Codable, Hashable, Identifiable {
         if isReadOnly {
             options.insert(.securityScopeAllowOnlyReadAccess)
         }
-        let bookmark = try directoryURL.bookmarkData(options: options)
-        try container.encode(bookmark, forKey: .directoryBookmark)
+        let bookmark = try directoryURL?.bookmarkData(options: options)
+        try container.encodeIfPresent(bookmark, forKey: .directoryBookmark)
     }
     
     func hash(into hasher: inout Hasher) {
         directoryURL.hash(into: &hasher)
     }
     
-    func vzSharedDirectory() -> VZSharedDirectory {
-        VZSharedDirectory(url: directoryURL, readOnly: isReadOnly)
+    func vzSharedDirectory() -> VZSharedDirectory? {
+        if let directoryURL = directoryURL {
+            return VZSharedDirectory(url: directoryURL, readOnly: isReadOnly)
+        } else {
+            return nil
+        }
     }
 }
 
 fileprivate enum ConfigError: Error {
-    case invalidBaseURL
+    case invalidDataURL
     case kernelNotSpecified
+    case customIconInvalid
 }
 
 fileprivate extension CodingUserInfoKey {
-    static var baseURL: CodingUserInfoKey {
-        return CodingUserInfoKey(rawValue: "baseURL")!
+    static var dataURL: CodingUserInfoKey {
+        return CodingUserInfoKey(rawValue: "dataURL")!
     }
 }
