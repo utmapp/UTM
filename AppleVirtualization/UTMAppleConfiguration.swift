@@ -19,7 +19,12 @@ import Virtualization
 
 @available(macOS 11, *)
 final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
+    private let currentVersion = 3
     let apple: VZVirtualMachineConfiguration
+    
+    @Published var version: Int
+    
+    @Published var isAppleVirtualization: Bool
     
     @Published var name: String
     
@@ -322,6 +327,8 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
     }
     
     enum CodingKeys: String, CodingKey {
+        case version
+        case isAppleVirtualization
         case name
         case icon
         case iconCustom
@@ -353,11 +360,18 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
         name = ""
         iconCustom = false
         consoleCursorBlink = true
+        version = currentVersion
+        isAppleVirtualization = true
     }
     
     required convenience init(from decoder: Decoder) throws {
         self.init()
         let values = try decoder.container(keyedBy: CodingKeys.self)
+        version = try values.decode(Int.self, forKey: .version)
+        isAppleVirtualization = try values.decode(Bool.self, forKey: .isAppleVirtualization)
+        guard isAppleVirtualization else {
+            throw ConfigError.notAppleConfiguration
+        }
         cpuCount = try values.decode(Int.self, forKey: .cpuCount)
         memorySize = try values.decode(UInt64.self, forKey: .memorySize)
         bootLoader = try values.decodeIfPresent(Bootloader.self, forKey: .bootLoader)
@@ -398,6 +412,8 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
     
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(version, forKey: .version)
+        try container.encode(isAppleVirtualization, forKey: .isAppleVirtualization)
         try container.encode(cpuCount, forKey: .cpuCount)
         try container.encode(memorySize, forKey: .memorySize)
         try container.encodeIfPresent(bootLoader, forKey: .bootLoader)
@@ -957,6 +973,7 @@ struct SharedDirectory: Codable, Hashable, Identifiable {
 }
 
 fileprivate enum ConfigError: Error {
+    case notAppleConfiguration
     case invalidDataURL
     case kernelNotSpecified
     case customIconInvalid
