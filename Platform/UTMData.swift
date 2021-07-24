@@ -173,7 +173,9 @@ class UTMData: ObservableObject {
         do {
             let oldPath = vm.path
             try vm.saveUTM()
-            try commitDiskImages(for: vm)
+            if let qemuVM = vm as? UTMQemuVirtualMachine {
+                try commitDiskImages(for: qemuVM)
+            }
             let newPath = vm.path
             // change the saved path
             if oldPath?.path != newPath?.path {
@@ -231,7 +233,9 @@ class UTMData: ObservableObject {
     func create(config: UTMConfigurable, onCompletion: @escaping (UTMVirtualMachine) -> Void = { _ in }) throws {
         let vm = UTMVirtualMachine(configuration: config, withDestinationURL: documentsURL)
         try save(vm: vm)
-        try commitDiskImages(for: vm)
+        if let qemuVM = vm as? UTMQemuVirtualMachine {
+            try commitDiskImages(for: qemuVM)
+        }
         DispatchQueue.main.async {
             self.virtualMachines.append(vm)
             onCompletion(vm)
@@ -465,7 +469,7 @@ class UTMData: ObservableObject {
         }
     }
     
-    private func commitDiskImages(for vm: UTMVirtualMachine) throws {
+    private func commitDiskImages(for vm: UTMQemuVirtualMachine) throws {
         let drives = vm.drives
         defer {
             selectedDiskImagesCache.removeAll()
