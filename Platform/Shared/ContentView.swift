@@ -198,7 +198,7 @@ struct ContentView: View {
         if let action = components.host {
             switch action {
             case "start":
-                if let vm = findVM(), vm.state == .vmStopped || vm.state == .vmPaused {
+                if let vm = findVM(), vm.state == .vmStopped {
                     data.run(vm: vm)
                 }
                 break
@@ -219,6 +219,12 @@ struct ContentView: View {
                 if let vm = findVM(), vm.state == .vmStarted {
                     DispatchQueue.global(qos: .background).async {
                         vm.pauseVM()
+                    }
+                }
+            case "resume":
+                if let vm = findVM(), vm.state == .vmPaused {
+                    DispatchQueue.global(qos: .background).async {
+                        vm.resumeVM()
                     }
                 }
                 break
