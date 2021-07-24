@@ -63,8 +63,13 @@ struct VMDetailsView: View {
                             .padding()
                             .frame(maxWidth: .infinity)
                     }
-                    VMRemovableDrivesView(vm: vm)
-                        .padding([.leading, .trailing, .bottom])
+                    if #available(macOS 12, *), let appleVM = vm as? UTMAppleVirtualMachine {
+                        VMAppleRemovableDrivesView(vm: appleVM, config: appleVM.appleConfig)
+                            .padding([.leading, .trailing, .bottom])
+                    } else {
+                        VMRemovableDrivesView(vm: vm as! UTMQemuVirtualMachine)
+                            .padding([.leading, .trailing, .bottom])
+                    }
                 } else {
                     VStack {
                         Details(vm: vm, sizeLabel: sizeLabel)
@@ -73,15 +78,24 @@ struct VMDetailsView: View {
                                 .font(.body)
                                 .fixedSize(horizontal: false, vertical: true)
                         }
-                        VMRemovableDrivesView(vm: vm)
+                        if #available(macOS 12, *), let appleVM = vm as? UTMAppleVirtualMachine {
+                            VMAppleRemovableDrivesView(vm: appleVM, config: appleVM.appleConfig)
+                        } else if let qemuVM = vm as? UTMQemuVirtualMachine {
+                            VMRemovableDrivesView(vm: qemuVM)
+                        }
                     }.padding([.leading, .trailing, .bottom])
                 }
             }.labelStyle(DetailsLabelStyle())
             .navigationTitle(vm.title)
             .modifier(VMToolbarModifier(vm: vm, bottom: !regularScreenSizeClass))
             .sheet(isPresented: $data.showSettingsModal) {
-                VMSettingsView(vm: vm, config: vm.config as! UTMQemuConfiguration)
-                    .environmentObject(data)
+                if #available(macOS 12, *), let appleVM = vm as? UTMAppleVirtualMachine {
+                    VMSettingsView(vm: appleVM, config: appleVM.appleConfig)
+                        .environmentObject(data)
+                } else if let qemuVM = vm as? UTMQemuVirtualMachine {
+                    VMSettingsView(vm: qemuVM, config: qemuVM.qemuConfig)
+                        .environmentObject(data)
+                }
             }
         }
     }

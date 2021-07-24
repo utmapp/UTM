@@ -18,7 +18,7 @@ import SwiftUI
 
 @available(iOS 14, macOS 11, *)
 struct VMRemovableDrivesView: View {
-    @ObservedObject var vm: UTMVirtualMachine
+    @ObservedObject var vm: UTMQemuVirtualMachine
     @EnvironmentObject private var data: UTMData
     @State private var shareDirectoryFileImportPresented: Bool = false
     @State private var diskImageFileImportPresented: Bool = false
@@ -193,7 +193,7 @@ struct VMRemovableDrivesView_Previews: PreviewProvider {
     @State static private var config = UTMQemuConfiguration()
     
     static var previews: some View {
-        VMRemovableDrivesView(vm: UTMVirtualMachine(configuration: config, withDestinationURL: URL(fileURLWithPath: "")))
+        VMRemovableDrivesView(vm: UTMVirtualMachine(configuration: config, withDestinationURL: URL(fileURLWithPath: "")) as! UTMQemuVirtualMachine)
         .onAppear {
             config.shareDirectoryEnabled = true
             config.newDrive("", path: "", type: .disk, interface: "ide")

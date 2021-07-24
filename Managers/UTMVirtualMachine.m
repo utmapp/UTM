@@ -80,7 +80,7 @@ NSString *const kUTMBundleScreenshotFilename = @"screenshot.png";
 
 + (nullable UTMVirtualMachine *)virtualMachineWithURL:(NSURL *)url {
     if (@available(macOS 12, *)) {
-        if ([self isAppleVMForPath:url]) {
+        if ([UTMAppleVirtualMachine isAppleVMForPath:url]) {
             return [[UTMAppleVirtualMachine alloc] initWithURL:url];
         }
     }

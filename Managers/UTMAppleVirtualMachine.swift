@@ -20,6 +20,44 @@
         config as? UTMAppleConfiguration
     }
     
+    override var title: String {
+        appleConfig.name
+    }
+    
+    override var subtitle: String {
+        systemTarget
+    }
+    
+    override var icon: URL? {
+        if appleConfig.iconCustom {
+            return appleConfig.existingCustomIconURL
+        } else {
+            return appleConfig.existingIconURL
+        }
+    }
+    
+    override var notes: String? {
+        appleConfig.notes
+    }
+    
+    override var systemTarget: String {
+        appleConfig.bootLoader?.operatingSystem.rawValue ?? ""
+    }
+    
+    override var systemArchitecture: String {
+        #if arch(arm64)
+        "aarch64"
+        #elseif arch(x86_64)
+        "x86_64"
+        #else
+        "Unknown"
+        #endif
+    }
+    
+    override var systemMemory: String {
+        return ByteCountFormatter.string(fromByteCount: Int64(appleConfig.memorySize), countStyle: .memory)
+    }
+    
     override static func isAppleVM(forPath path: URL) -> Bool {
         do {
             _ = try UTMAppleConfiguration.load(from: path)
