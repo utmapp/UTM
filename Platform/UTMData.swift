@@ -48,6 +48,7 @@ class UTMData: ObservableObject {
             defaults.set(paths, forKey: "VMList")
         }
     }
+    @Published private(set) var pendingVMs: [UTMPendingVirtualMachine]
     
     #if os(macOS)
     var vmWindows: [UTMVirtualMachine: VMDisplayWindowController] = [:]
@@ -71,6 +72,7 @@ class UTMData: ObservableObject {
         self.showNewVMSheet = false
         self.busy = false
         self.virtualMachines = []
+        self.pendingVMs = []
         if let files = defaults.array(forKey: "VMList") as? [String] {
             for file in files {
                 let url = documentsURL.appendingPathComponent(file, isDirectory: true)
@@ -315,6 +317,7 @@ class UTMData: ObservableObject {
         return [dstLogPath]
     }
     
+    // MARK: - Import and Download VMs
     func copyUTM(at: URL, to: URL, move: Bool = false) throws {
         if move {
             try fileManager.moveItem(at: at, to: to)
@@ -331,6 +334,7 @@ class UTMData: ObservableObject {
     }
     
     func importUTM(url: URL) throws {
+        guard url.isFileURL else { return }
         _ = url.startAccessingSecurityScopedResource()
         defer { url.stopAccessingSecurityScopedResource() }
         
@@ -359,6 +363,31 @@ class UTMData: ObservableObject {
             logger.info("copying to Documents")
             try copyUTM(at: url, to: dest)
         }
+    }
+    
+    func tryDownloadVM(_ components: URLComponents) {
+        if let urlParameter = components.queryItems?.first(where: { $0.name == "url" })?.value,
+           urlParameter.contains(".zip"), let url = URL(string: urlParameter) {
+            let task = UTMImportFromWebTask(data: self, url: url)
+            let pendingVM = task.startDownload()
+            /// wait a half second before showing the "pending VM" UI, in case of very small file
+            /// this prevents the UI from appearing and disappearing very quickly
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [self] in
+                if !task.isDone {
+                    pendingVMs.append(pendingVM)
+                }
+            }
+        }
+    }
+    
+    func removePendingVM(_ pendingVM: UTMPendingVirtualMachine) {
+        if let index = pendingVMs.firstIndex(of: pendingVM) {
+            pendingVMs.remove(at: index)
+        }
+    }
+    
+    func cancelPendingVM(_ pendingVM: UTMPendingVirtualMachine) {
+        pendingVM.cancel()
     }
     
     // MARK: - Disk drive functions

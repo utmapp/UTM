@@ -46,6 +46,14 @@ struct ContentView: View {
                         .modifier(VMContextMenuModifier(vm: vm))
                 }.onMove(perform: data.move)
                 .onDelete(perform: delete)
+                
+                if data.pendingVMs.count > 0 {
+                    Section(header: Text("Pending")) {
+                        ForEach(data.pendingVMs, id: \.name) { vm in
+                            UTMPendingVMView(vm: vm)
+                        }.onDelete(perform: cancel)
+                    }.transition(.opacity)
+                }
             }.optionalSidebarFrame()
             .listStyle(SidebarListStyle())
             .navigationTitle(productName)
@@ -145,6 +153,13 @@ struct ContentView: View {
         }
     }
     
+    private func cancel(indexSet: IndexSet) {
+        let selected = data.pendingVMs[indexSet]
+        for vm in selected {
+            data.cancelPendingVM(vm)
+        }
+    }
+    
     private func handleURL(url: URL) {
         if url.isFileURL {
             importUTM(url: url)
@@ -208,10 +223,7 @@ struct ContentView: View {
                 }
                 break
             case "downloadVM":
-                if let urlParameter = components.queryItems?.first(where: { $0.name == "url" })?.value,
-                   urlParameter.hasSuffix(".zip"), let url = URL(string: urlParameter) {
-                    UTMImportFromWebTask.start(with: data, downloadFrom: url)
-                }
+                data.tryDownloadVM(components)
                 break
             default:
                 return
