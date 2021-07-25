@@ -18,14 +18,19 @@ import SwiftUI
 
 @available(macOS 12, *)
 struct VMAppleRemovableDrivesView: View {
+    private enum SelectType {
+        case sharedDirectory
+        case diskImage
+    }
+    
     @ObservedObject var vm: UTMAppleVirtualMachine
     @ObservedObject var config: UTMAppleConfiguration
     @EnvironmentObject private var data: UTMData
+    @State private var fileImportPresented: Bool = false
+    @State private var selectType: SelectType = .sharedDirectory
     @State private var selectedSharedDirectoryBinding: Binding<SharedDirectory>?
-    @State private var shareDirectoryFileImportPresented: Bool = false
     @State private var selectedDiskImageBinding: Binding<DiskImage>?
-    @State private var diskImageFileImportPresented: Bool = false
-    /// Explanation see "SwiftUI FileImporter modal bug" in the `body`
+    /// Explanation see "SwiftUI FileImporter modal bug" in `showFileImporter`
     @State private var workaroundFileImporterBug: Bool = false
     
     var body: some View {
@@ -38,8 +43,9 @@ struct VMAppleRemovableDrivesView: View {
                     Menu {
                         // Browse button
                         Button(action: {
+                            selectType = .sharedDirectory
                             selectedSharedDirectoryBinding = $sharedDirectory
-                            shareDirectoryFileImportPresented.toggle()
+                            showFileImporter()
                         }, label: {
                             Label("Browse", systemImage: "doc.badge.plus")
                         })
@@ -58,13 +64,6 @@ struct VMAppleRemovableDrivesView: View {
                     Spacer()
                     FilePath(url: sharedDirectory.directoryURL)
                 }
-            }.fileImporter(isPresented: $shareDirectoryFileImportPresented, allowedContentTypes: [.folder]) { result in
-                if let binding = selectedSharedDirectoryBinding {
-                    selectShareDirectory(for: binding, result: result)
-                    selectedSharedDirectoryBinding = nil
-                } else {
-                    createShareDirectory(result)
-                }
             }
             ForEach($config.diskImages) { $diskImage in
                 HStack {
@@ -73,33 +72,12 @@ struct VMAppleRemovableDrivesView: View {
                         Menu {
                             // Browse button
                             Button(action: {
+                                selectType = .diskImage
                                 selectedDiskImageBinding = $diskImage
-                                // MARK: SwiftUI FileImporter modal bug
-                                /// At this point in the execution, `diskImageFileImportPresented` must be `false`.
-                                /// However there is a SwiftUI FileImporter modal bug:
-                                /// if the user taps outside the import modal to cancel instead of tapping the actual cancel button,
-                                /// the `.fileImporter` doesn't actually set the isPresented Binding to `false`.
-                                if (diskImageFileImportPresented) {
-                                    /// bug! Let's set the bool to false ourselves.
-                                    diskImageFileImportPresented = false
-                                    /// One more thing: we can't immediately set it to `true` again because then the state won't have changed.
-                                    /// So we have to use the workaround, which is caught in the `.onChange` below.
-                                    workaroundFileImporterBug = true
-                                } else {
-                                    diskImageFileImportPresented = true
-                                }
+                                showFileImporter()
                             }, label: {
                                 Label("Browse", systemImage: "doc.badge.plus")
                             })
-                            .onChange(of: workaroundFileImporterBug) { doWorkaround in
-                                /// Explanation see "SwiftUI FileImporter modal bug" above
-                                if doWorkaround {
-                                    DispatchQueue.main.async {
-                                        workaroundFileImporterBug = false
-                                        diskImageFileImportPresented = true
-                                    }
-                                }
-                            }
                             // Eject button
                             if diskImage.isExternal && diskImage.imageURL != nil {
                                 Button(action: { deleteRemovableImage(diskImage) }, label: {
@@ -107,7 +85,7 @@ struct VMAppleRemovableDrivesView: View {
                                 })
                             }
                         } label: {
-                            Label("Removable Drive", systemImage: "externaldrive")
+                            Label("External Drive", systemImage: "externaldrive")
                         }.disabled(vm.viewState.suspended)
                     } else {
                         Label("\(diskImage.sizeString) Drive", systemImage: "internaldrive")
@@ -116,23 +94,42 @@ struct VMAppleRemovableDrivesView: View {
                     // Disk image path, or (empty)
                     FilePath(url: diskImage.imageURL)
                 }
-            }.fileImporter(isPresented: $diskImageFileImportPresented, allowedContentTypes: [.data]) { result in
-                if let binding = selectedDiskImageBinding {
-                    selectRemovableImage(for: binding, result: result)
-                    selectedDiskImageBinding = nil
-                } else {
-                    createRemovableImage(result)
-                }
             }
             HStack {
                 Spacer()
                 Button("New Shared Directory...") {
+                    selectType = .sharedDirectory
                     selectedSharedDirectoryBinding = nil
-                    shareDirectoryFileImportPresented.toggle()
+                    showFileImporter()
                 }
                 Button("New External Drive...") {
+                    selectType = .diskImage
                     selectedDiskImageBinding = nil
-                    diskImageFileImportPresented.toggle()
+                    showFileImporter()
+                }
+            }.fileImporter(isPresented: $fileImportPresented, allowedContentTypes: selectType == .sharedDirectory ? [.folder] : [.data]) { result in
+                if selectType == .sharedDirectory {
+                    if let binding = selectedSharedDirectoryBinding {
+                        selectShareDirectory(for: binding, result: result)
+                        selectedSharedDirectoryBinding = nil
+                    } else {
+                        createShareDirectory(result)
+                    }
+                } else {
+                    if let binding = selectedDiskImageBinding {
+                        selectRemovableImage(for: binding, result: result)
+                        selectedDiskImageBinding = nil
+                    } else {
+                        createRemovableImage(result)
+                    }
+                }
+            }.onChange(of: workaroundFileImporterBug) { doWorkaround in
+                /// Explanation see "SwiftUI FileImporter modal bug" below
+                if doWorkaround {
+                    DispatchQueue.main.async {
+                        workaroundFileImporterBug = false
+                        fileImportPresented = true
+                    }
                 }
             }
         }
@@ -151,6 +148,23 @@ struct VMAppleRemovableDrivesView: View {
                 Text("(empty)")
                     .foregroundColor(.secondary)
             }
+        }
+    }
+    
+    private func showFileImporter() {
+        // MARK: SwiftUI FileImporter modal bug
+        /// At this point in the execution, `diskImageFileImportPresented` must be `false`.
+        /// However there is a SwiftUI FileImporter modal bug:
+        /// if the user taps outside the import modal to cancel instead of tapping the actual cancel button,
+        /// the `.fileImporter` doesn't actually set the isPresented Binding to `false`.
+        if (fileImportPresented) {
+            /// bug! Let's set the bool to false ourselves.
+            fileImportPresented = false
+            /// One more thing: we can't immediately set it to `true` again because then the state won't have changed.
+            /// So we have to use the workaround, which is caught in the `.onChange` below.
+            workaroundFileImporterBug = true
+        } else {
+            fileImportPresented = true
         }
     }
     
