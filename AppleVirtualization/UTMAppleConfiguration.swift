@@ -424,6 +424,10 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
             #if arch(arm64)
             try container.encodeIfPresent(macPlatform, forKey: .macPlatform)
             #endif
+            _ = macRecoveryIpswURL?.startAccessingSecurityScopedResource()
+            defer {
+                macRecoveryIpswURL?.stopAccessingSecurityScopedResource()
+            }
             let recoveryIpswBookmark = try macRecoveryIpswURL?.bookmarkData(options: .withSecurityScope)
             try container.encodeIfPresent(recoveryIpswBookmark, forKey: .macRecoveryIpswBookmark)
             try container.encode(displays, forKey: .displays)
@@ -891,6 +895,10 @@ struct DiskImage: Codable, Hashable, Identifiable {
             if isReadOnly {
                 options.insert(.securityScopeAllowOnlyReadAccess)
             }
+            _ = imageURL?.startAccessingSecurityScopedResource()
+            defer {
+                imageURL?.stopAccessingSecurityScopedResource()
+            }
             let bookmark = try imageURL?.bookmarkData(options: options)
             try container.encodeIfPresent(bookmark, forKey: .imageBookmark)
         }
@@ -951,6 +959,10 @@ struct SharedDirectory: Codable, Hashable, Identifiable {
         var options = NSURL.BookmarkCreationOptions.withSecurityScope
         if isReadOnly {
             options.insert(.securityScopeAllowOnlyReadAccess)
+        }
+        _ = directoryURL?.startAccessingSecurityScopedResource()
+        defer {
+            directoryURL?.stopAccessingSecurityScopedResource()
         }
         let bookmark = try directoryURL?.bookmarkData(options: options)
         try container.encodeIfPresent(bookmark, forKey: .directoryBookmark)
