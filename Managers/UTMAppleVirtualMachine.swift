@@ -80,7 +80,14 @@
         } else {
             savePath = newPath
         }
-        try appleConfig.save(to: savePath)
+        do {
+            try appleConfig.save(to: savePath)
+        } catch {
+            if let reload = try? UTMAppleConfiguration.load(from: savePath) {
+                config = reload
+            }
+            throw error
+        }
         if let existingPath = path, existingPath.lastPathComponent != newPath.lastPathComponent {
             try fileManager.moveItem(at: existingPath, to: newPath)
             path = newPath
