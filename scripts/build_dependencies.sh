@@ -353,7 +353,7 @@ meson_build () {
 
     cd "$SRCDIR"
     echo "${GREEN}Configuring ${NAME}...${NC}"
-    meson utm_build --prefix="$PREFIX" --buildtype=plain --cross-file "$MESON_CROSS" -Dtests=false $@
+    meson utm_build --prefix="$PREFIX" --buildtype=plain --cross-file "$MESON_CROSS" $@
     echo "${GREEN}Building ${NAME}...${NC}"
     meson compile -C utm_build
     echo "${GREEN}Installing ${NAME}...${NC}"
@@ -413,7 +413,7 @@ build_qemu_dependencies () {
     build $GETTEXT_SRC --disable-java
     build $PNG_SRC
     build $JPEG_TURBO_SRC
-    meson_build $GLIB_SRC
+    meson_build $GLIB_SRC -Dtests=false
     build $GPG_ERROR_SRC
     build $GCRYPT_SRC
     build $PIXMAN_SRC
@@ -428,8 +428,8 @@ build_qemu_dependencies () {
     fi
     # GPU support
     build_angle
-    meson_build $EPOXY_REPO
-    meson_build $VIRGLRENDERER_REPO
+    meson_build $EPOXY_REPO -Dtests=false
+    meson_build $VIRGLRENDERER_REPO -Dtests=false
 }
 
 build_qemu () {
@@ -445,11 +445,11 @@ build_qemu () {
 }
 
 build_spice_client () {
-    meson_build "$QEMU_DIR/subprojects/libucontext" -Ddefault_library=static -Dfreestanding=true
+    meson_build "$QEMU_DIR/subprojects/libucontext" -Ddefault_library=static -Dtests=false -Dfreestanding=true
     build $JSON_GLIB_SRC
-    build $GST_SRC --enable-static --enable-static-plugins --disable-registry
-    build $GST_BASE_SRC --enable-static --disable-fatal-warnings --disable-cocoa
-    build $GST_GOOD_SRC --enable-static --disable-osx_video
+    meson_build $GST_SRC -Dtests=disabled -Ddefault_library=both -Dregistry=false
+    meson_build $GST_BASE_SRC -Dtests=disabled -Ddefault_library=both
+    meson_build $GST_GOOD_SRC -Dtests=disabled -Ddefault_library=both
     build $XML2_SRC --enable-shared=no --without-python
     build $SOUP_SRC --without-gnome --without-krb5-config --enable-shared=no --disable-tls-check
     build $PHODAV_SRC
@@ -512,7 +512,7 @@ fixup () {
 fixup_all () {
     OLDIFS=$IFS
     IFS=$'\n'
-    FILES=$(find "$SYSROOT_DIR/lib" -type f -name "*.dylib")
+    FILES=$(find "$SYSROOT_DIR/lib" -type f -maxdepth 1 -name "*.dylib")
     for f in $FILES
     do
         fixup $f
@@ -521,7 +521,7 @@ fixup_all () {
 }
 
 remove_shared_gst_plugins () {
-    find "$SYSROOT_DIR/lib/gstreamer-1.0" \( -name '*.so' -or -name '*.la' \) -exec rm \{\} \;
+    find "$SYSROOT_DIR/lib/gstreamer-1.0" -name '*.dylib' -exec rm \{\} \;
 }
 
 generate_qapi () {
