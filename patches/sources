@@ -27,3 +27,13 @@ XML2_SRC="http://xmlsoft.org/sources/libxml2-2.9.10.tar.gz"
 SOUP_SRC="https://ftp.gnome.org/pub/GNOME/sources/libsoup/2.65/libsoup-2.65.1.tar.xz"
 PHODAV_SRC="http://ftp.gnome.org/pub/GNOME/sources/phodav/2.2/phodav-2.2.tar.xz"
 SPICE_CLIENT_SRC="https://www.spice-space.org/download/gtk/spice-gtk-0.36.tar.bz2"
+
+# Source files for GPU acceleration
+DEPOT_TOOLS_REPO="https://chromium.googlesource.com/chromium/tools/depot_tools.git"
+DEPOT_TOOLS_COMMIT="1cabb17575917b73ec2e270d4187656c20b1ab0c"
+ANGLE_REPO="https://chromium.googlesource.com/angle/angle"
+ANGLE_COMMIT="d15be77864e18f407c317be6f6bc06ee2b7d070a"
+EPOXY_REPO="https://github.com/akihikodaki/libepoxy.git"
+EPOXY_COMMIT="d9c8a226fa89af000117f8d73d4b959c506ce0ef"
+VIRGLRENDERER_REPO="https://github.com/akihikodaki/virglrenderer.git"
+VIRGLRENDERER_COMMIT="8d33e8aff63afac76f0c816b4f92a0a7bea04fb5"

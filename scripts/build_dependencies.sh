@@ -97,6 +97,25 @@ download () {
     fi
 }
 
+clone () {
+    REPO="$1"
+    COMMIT="$2"
+    NAME="$(basename $REPO)"
+    DIR="$BUILD_DIR/$NAME"
+    if [ -d "$DIR" -a -z "$REDOWNLOAD" ]; then
+        echo "${GREEN}$DIR already downloaded! Run with -d to force re-download.${NC}"
+    else
+        rm -rf "$DIR"
+        echo "${GREEN}Cloning ${URL}...${NC}"
+        git clone -n "$REPO" "$DIR"
+    fi
+    git -C "$DIR" checkout -q "$COMMIT"
+    if [ -d "$DIR/utm_build" ]; then
+        echo "${GREEN}Deleting existing build directory in ${DIR}...${NC}"
+        rm -rf "$DIR/utm_build"
+    fi
+}
+
 download_all () {
     [ -d "$BUILD_DIR" ] || mkdir -p "$BUILD_DIR"
     download $FFI_SRC
@@ -125,6 +144,10 @@ download_all () {
         download $USB_SRC
         download $USBREDIR_SRC
     fi
+    clone $DEPOT_TOOLS_REPO $DEPOT_TOOLS_COMMIT
+    clone $ANGLE_REPO $ANGLE_COMMIT
+    clone $EPOXY_REPO $EPOXY_COMMIT
+    clone $VIRGLRENDERER_REPO $VIRGLRENDERER_COMMIT
 }
 
 copy_private_headers() {
@@ -151,6 +174,50 @@ copy_private_headers() {
     LC_ALL=C sed -i '' -e 's/#if !KERNEL/#if 1/g' $(find "$OUTPUT_INCLUDES/IOKit" -type f)
     mkdir -p "$OUTPUT_INCLUDES/libkern"
     cp -r "$OSTYPES_HEADERS_PATH/OSTypes.h" "$OUTPUT_INCLUDES/libkern/OSTypes.h"
+}
+
+meson_quote() {
+    echo "'$(echo $* | sed "s/ /','/g")'"
+}
+
+generate_meson_cross() {
+    cross="$1"
+    echo "# Automatically generated - do not modify" > $cross
+    echo "[built-in options]" >> $cross
+    echo "c_args = [${CFLAGS:+$(meson_quote $CFLAGS)}]" >> $cross
+    echo "cpp_args = [${CXXFLAGS:+$(meson_quote $CXXFLAGS)}]" >> $cross
+    echo "c_link_args = [${LDFLAGS:+$(meson_quote $LDFLAGS)}]" >> $cross
+    echo "cpp_link_args = [${LDFLAGS:+$(meson_quote $LDFLAGS)}]" >> $cross
+    echo "[binaries]" >> $cross
+    echo "c = [$(meson_quote $CC)]" >> $cross
+    echo "cpp = [$(meson_quote $CXX)]" >> $cross
+    echo "objc = [$(meson_quote $OBJCC)]" >> $cross
+    echo "ar = [$(meson_quote $AR)]" >> $cross
+    echo "nm = [$(meson_quote $NM)]" >> $cross
+    echo "pkgconfig = ['pkg-config']" >> $cross
+    echo "ranlib = [$(meson_quote $RANLIB)]" >> $cross
+    echo "strip = [$(meson_quote $STRIP), '-x']" >> $cross
+    echo "[host_machine]" >> $cross
+    echo "system = 'darwin'" >> $cross
+    case "$ARCH" in
+    armv7 | armv7s )
+        echo "cpu_family = 'arm'" >> $cross
+        ;;
+    arm64 )
+        echo "cpu_family = 'aarch64'" >> $cross
+        ;;
+    i386 )
+        echo "cpu_family = 'x86'" >> $cross
+        ;;
+    x86_64 )
+        echo "cpu_family = 'x86_64'" >> $cross
+        ;;
+    *)
+        echo "cpu_family = '$ARCH'" >> $cross
+        ;;
+    esac
+    echo "cpu = '$ARCH'" >> $cross
+    echo "endian = 'little'" >> $cross
 }
 
 build_openssl() {
@@ -247,6 +314,72 @@ build () {
     cd "$pwd"
 }
 
+meson_build () {
+    SRCDIR="$1"
+    shift 1
+    NAME="$(basename $SRCDIR)"
+    MESON_CROSS="$(realpath "$BUILD_DIR/meson.cross")"
+    if [ ! -f "$MESON_CROSS" ]; then
+        generate_meson_cross "$MESON_CROSS"
+    fi
+    pwd="$(pwd)"
+
+    cd "$SRCDIR"
+    echo "${GREEN}Configuring ${NAME}...${NC}"
+    meson utm_build --prefix="$PREFIX" --buildtype=plain --cross-file "$MESON_CROSS" -Dtests=false $@
+    echo "${GREEN}Building ${NAME}...${NC}"
+    meson compile -C utm_build
+    echo "${GREEN}Installing ${NAME}...${NC}"
+    meson install -C utm_build
+    cd "$pwd"
+}
+
+build_angle () {
+    OLD_PATH=$PATH
+    export PATH="$(realpath "$BUILD_DIR/depot_tools.git"):$OLD_PATH"
+    pwd="$(pwd)"
+    cd "$BUILD_DIR/angle"
+    DEPOT_TOOLS_UPDATE=0 python2 scripts/bootstrap.py
+    DEPOT_TOOLS_UPDATE=0 gclient sync
+    case $PLATFORM in
+    ios* )
+        TARGET_OS="ios"
+        IOS_ENABLE_CODE_SIGNING="ios_enable_code_signing=false"
+        ;;
+    macos )
+        TARGET_OS="mac"
+        ;;
+    esac
+    case $ARCH in
+    armv7 | armv7s )
+        TARGET_CPU="arm"
+        ;;
+    arm64 )
+        TARGET_CPU="arm64"
+        ;;
+    i386 )
+        TARGET_CPU="x86"
+        ;;
+    x86_64 )
+        TARGET_CPU="x64"
+        ;;
+    esac
+    gn gen "--args=is_debug=false use_custom_libcxx=false angle_build_all=false $IOS_ENABLE_CODE_SIGNING target_os=\"$TARGET_OS\" target_cpu=\"$TARGET_CPU\"" utm_build
+    ninja -C utm_build -j $NCPU
+    if [ "$TARGET_OS" == "ios" ]; then
+        cp -a "utm_build/libEGL.framework/libEGL" "$PREFIX/lib/libEGL.dylib"
+        cp -a "utm_build/libGLESv2.framework/libGLESv2" "$PREFIX/lib/libGLESv2.dylib"
+    else
+        cp -a "utm_build/libEGL.dylib" "$PREFIX/lib/libEGL.dylib"
+        cp -a "utm_build/libGLESv2.dylib" "$PREFIX/lib/libGLESv2.dylib"
+    fi
+    install_name_tool -id "$PREFIX/lib/libEGL.dylib" "$PREFIX/lib/libEGL.dylib"
+    install_name_tool -id "$PREFIX/lib/libGLESv2.dylib" "$PREFIX/lib/libGLESv2.dylib"
+    rsync -a "include/" "$PREFIX/include"
+    cd "$pwd"
+    export PATH=$OLD_PATH
+}
+
 build_qemu_dependencies () {
     build $FFI_SRC
     build $ICONV_SRC
@@ -261,10 +394,15 @@ build_qemu_dependencies () {
     build $OPUS_SRC
     build $SPICE_PROTOCOL_SRC
     build $SPICE_SERVER_SRC
+    # USB support
     if [ -z "$SKIP_USB_BUILD" ]; then
         build $USB_SRC
         build $USBREDIR_SRC
     fi
+    # GPU support
+    build_angle
+    meson_build "$BUILD_DIR/$(basename $EPOXY_REPO)"
+    meson_build "$BUILD_DIR/$(basename $VIRGLRENDERER_REPO)"
 }
 
 build_qemu () {
@@ -279,21 +417,8 @@ build_qemu () {
     cd "$pwd"
 }
 
-build_libucontext () {
-    MESON_CROSS="$(realpath "$QEMU_DIR/build/config-meson.cross")"
-    pwd="$(pwd)"
-
-    cd "$QEMU_DIR/subprojects/libucontext"
-    echo "${GREEN}Configuring libucontext...${NC}"
-    meson build --prefix="/" --buildtype=plain --cross-file "$MESON_CROSS" -Ddefault_library=static -Dfreestanding=true $@
-    echo "${GREEN}Building libucontext...${NC}"
-    meson compile -C build
-    echo "${GREEN}Installing libucontext...${NC}"
-    DESTDIR="$PREFIX" meson install -C build
-    cd "$pwd"
-}
-
 build_spice_client () {
+    meson_build "$QEMU_DIR/subprojects/libucontext" -Ddefault_library=static -Dfreestanding=true
     build $JSON_GLIB_SRC
     build $GST_SRC --enable-static --enable-static-plugins --disable-registry
     build $GST_BASE_SRC --enable-static --disable-fatal-warnings --disable-cocoa
@@ -532,11 +657,21 @@ fi
 CC=$(xcrun --sdk $SDK --find gcc)
 CPP=$(xcrun --sdk $SDK --find gcc)" -E"
 CXX=$(xcrun --sdk $SDK --find g++)
+OBJCC=$(xcrun --sdk $SDK --find clang)
 LD=$(xcrun --sdk $SDK --find ld)
+AR=$(xcrun --sdk $SDK --find ar)
+NM=$(xcrun --sdk $SDK --find nm)
+RANLIB=$(xcrun --sdk $SDK --find ranlib)
+STRIP=$(xcrun --sdk $SDK --find strip)
 export CC
 export CPP
 export CXX
+export OBJCC
 export LD
+export AR
+export NM
+export RANLIB
+export STRIP
 export PREFIX
 
 # Flags
@@ -573,7 +708,6 @@ rm -f "$BUILD_DIR/BUILD_SUCCESS"
 copy_private_headers
 build_qemu_dependencies
 build_qemu $QEMU_PLATFORM_BUILD_FLAGS
-build_libucontext
 build_spice_client
 fixup_all
 remove_shared_gst_plugins # another hack...
