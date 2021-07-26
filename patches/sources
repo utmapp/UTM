@@ -1,5 +1,8 @@
 #!/bin/sh
 
+# pkg-config
+PKG_CONFIG_SRC="https://pkgconfig.freedesktop.org/releases/pkg-config-0.29.2.tar.gz"
+
 # Source files for qemu
 FFI_SRC="https://sourceware.org/ftp/libffi/libffi-3.3.tar.gz"
 ICONV_SRC="https://ftp.gnu.org/gnu/libiconv/libiconv-1.16.tar.gz"

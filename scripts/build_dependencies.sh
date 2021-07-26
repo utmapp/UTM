@@ -48,7 +48,7 @@ usage () {
     echo "    SDKVERSION     Target a specific SDK version."
     echo "    CHOST          Configure host, set if not deducable by ARCH."
     echo ""
-    echo "    CFLAGS CPPFLAGS CXXFLAGS LDFLAGS PKG_CONFIG_PATH"
+    echo "    CFLAGS CPPFLAGS CXXFLAGS LDFLAGS"
     echo ""
     exit 1
 }
@@ -56,7 +56,6 @@ usage () {
 check_env () {
     command -v gmake >/dev/null 2>&1 || { echo >&2 "${RED}You must install GNU make on your host machine (and link it to 'gmake').${NC}"; exit 1; }
     command -v meson >/dev/null 2>&1 || { echo >&2 "${RED}You must install 'meson' on your host machine.${NC}"; exit 1; }
-    command -v pkg-config >/dev/null 2>&1 || { echo >&2 "${RED}You must install 'pkg-config' on your host machine.${NC}"; exit 1; }
     command -v msgfmt >/dev/null 2>&1 || { echo >&2 "${RED}You must install 'gettext' on your host machine.\n\t'msgfmt' needs to be in your \$PATH as well.${NC}"; exit 1; }
     command -v glib-mkenums >/dev/null 2>&1 || { echo >&2 "${RED}You must install 'glib' on your host machine.\n\t'glib-mkenums' needs to be in your \$PATH as well.${NC}"; exit 1; }
     command -v gpg-error-config >/dev/null 2>&1 || { echo >&2 "${RED}You must install 'libgpg-error' on your host machine.\n\t'gpg-error-config' needs to be in your \$PATH as well.${NC}"; exit 1; }
@@ -118,6 +117,7 @@ clone () {
 
 download_all () {
     [ -d "$BUILD_DIR" ] || mkdir -p "$BUILD_DIR"
+    download $PKG_CONFIG_SRC
     download $FFI_SRC
     download $ICONV_SRC
     download $GETTEXT_SRC
@@ -194,7 +194,7 @@ generate_meson_cross() {
     echo "objc = [$(meson_quote $OBJCC)]" >> $cross
     echo "ar = [$(meson_quote $AR)]" >> $cross
     echo "nm = [$(meson_quote $NM)]" >> $cross
-    echo "pkgconfig = ['pkg-config']" >> $cross
+    echo "pkgconfig = ['$PREFIX/host/bin/pkg-config']" >> $cross
     echo "ranlib = [$(meson_quote $RANLIB)]" >> $cross
     echo "strip = [$(meson_quote $STRIP), '-x']" >> $cross
     echo "[host_machine]" >> $cross
@@ -218,6 +218,27 @@ generate_meson_cross() {
     esac
     echo "cpu = '$ARCH'" >> $cross
     echo "endian = 'little'" >> $cross
+}
+
+# Prevent contamination from host pkg-config files by building our own
+build_pkg_config() {
+    FILE="$(basename $PKG_CONFIG_SRC)"
+    NAME="${FILE%.tar.*}"
+    DIR="$BUILD_DIR/$NAME"
+    pwd="$(pwd)"
+
+    cd "$DIR"
+    if [ -z "$REBUILD" ]; then
+        echo "${GREEN}Configuring ${NAME}...${NC}"
+        env -i ./configure --prefix="$PREFIX" --bindir="$PREFIX/host/bin" $@
+    fi
+    echo "${GREEN}Building ${NAME}...${NC}"
+    make "$MAKEFLAGS"
+    echo "${GREEN}Installing ${NAME}...${NC}"
+    make "$MAKEFLAGS" install
+    cd "$pwd"
+
+    export PATH="$PREFIX/host/bin:$PATH"
 }
 
 build_openssl() {
@@ -607,7 +628,7 @@ ios* )
         PLATFORM_FAMILY_NAME="$PLATFORM_FAMILY_PREFIX"
         ;;
     esac
-    QEMU_PLATFORM_BUILD_FLAGS="--disable-debug-info --enable-shared-lib --disable-hvf --disable-cocoa --disable-curl --disable-slirp-smbd --with-coroutine=libucontext $TCI_BUILD_FLAGS"
+    QEMU_PLATFORM_BUILD_FLAGS="--disable-debug-info --enable-shared-lib --disable-hvf --disable-cocoa --disable-slirp-smbd --with-coroutine=libucontext $TCI_BUILD_FLAGS"
     ;;
 macos )
     if [ -z "$SDKMINVER" ]; then
@@ -617,7 +638,7 @@ macos )
     CFLAGS_MINVER="-mmacos-version-min=$SDKMINVER"
     CFLAGS_TARGET="-target $ARCH-apple-macos"
     PLATFORM_FAMILY_NAME="macOS"
-    QEMU_PLATFORM_BUILD_FLAGS="--disable-debug-info --enable-shared-lib --disable-cocoa --disable-curl --cpu=$CPU"
+    QEMU_PLATFORM_BUILD_FLAGS="--disable-debug-info --enable-shared-lib --disable-cocoa --cpu=$CPU"
     ;;
 * )
     usage
@@ -686,15 +707,11 @@ CPPFLAGS="$CPPFLAGS -arch $ARCH -isysroot $SDKROOT -I$PREFIX/include $CFLAGS_MIN
 CXXFLAGS="$CXXFLAGS -arch $ARCH -isysroot $SDKROOT -I$PREFIX/include $CFLAGS_MINVER $CFLAGS_TARGET"
 LDFLAGS="$LDFLAGS -arch $ARCH -isysroot $SDKROOT -L$PREFIX/lib $CFLAGS_MINVER $CFLAGS_TARGET"
 MAKEFLAGS="-j$NCPU"
-PKG_CONFIG_PATH="$PKG_CONFIG_PATH":"$SDKROOT/usr/lib/pkgconfig":"$PREFIX/lib/pkgconfig":"$PREFIX/share/pkgconfig"
-PKG_CONFIG_LIBDIR=""
 export CFLAGS
 export CPPFLAGS
 export CXXFLAGS
 export LDFLAGS
 export MAKEFLAGS
-export PKG_CONFIG_PATH
-export PKG_CONFIG_LIBDIR
 
 check_env
 
@@ -712,6 +729,7 @@ echo "${GREEN}Deleting old sysroot!${NC}"
 rm -rf "$PREFIX/"*
 rm -f "$BUILD_DIR/BUILD_SUCCESS"
 copy_private_headers
+build_pkg_config
 build_qemu_dependencies
 build_qemu $QEMU_PLATFORM_BUILD_FLAGS
 build_spice_client
