@@ -183,6 +183,8 @@ meson_quote() {
 generate_meson_cross() {
     cross="$1"
     echo "# Automatically generated - do not modify" > $cross
+    echo "[properties]" >> $cross
+    echo "needs_exe_wrapper = true" >> $cross
     echo "[built-in options]" >> $cross
     echo "c_args = [${CFLAGS:+$(meson_quote $CFLAGS)}]" >> $cross
     echo "cpp_args = [${CXXFLAGS:+$(meson_quote $CXXFLAGS)}]" >> $cross
