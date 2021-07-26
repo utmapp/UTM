@@ -200,7 +200,14 @@ generate_meson_cross() {
     echo "ranlib = [$(meson_quote $RANLIB)]" >> $cross
     echo "strip = [$(meson_quote $STRIP), '-x']" >> $cross
     echo "[host_machine]" >> $cross
-    echo "system = 'darwin'" >> $cross
+    case $PLATFORM in
+    ios* )
+        echo "system = 'ios'" >> $cross
+        ;;
+    macos )
+        echo "system = 'darwin'" >> $cross
+        ;;
+    esac
     case "$ARCH" in
     armv7 | armv7s )
         echo "cpu_family = 'arm'" >> $cross
@@ -355,7 +362,7 @@ meson_build () {
 
     cd "$SRCDIR"
     echo "${GREEN}Configuring ${NAME}...${NC}"
-    meson utm_build --prefix="$PREFIX" --buildtype=plain --cross-file "$MESON_CROSS" $@
+    meson utm_build --prefix="$PREFIX" --buildtype=plain --cross-file "$MESON_CROSS" "$@"
     echo "${GREEN}Building ${NAME}...${NC}"
     meson compile -C utm_build
     echo "${GREEN}Installing ${NAME}...${NC}"
@@ -430,7 +437,7 @@ build_qemu_dependencies () {
     fi
     # GPU support
     build_angle
-    meson_build $EPOXY_REPO -Dtests=false
+    meson_build $EPOXY_REPO -Dtests=false -Dglx=no -Degl=yes
     meson_build $VIRGLRENDERER_REPO -Dtests=false
 }
 
@@ -730,6 +737,7 @@ fi
 echo "${GREEN}Deleting old sysroot!${NC}"
 rm -rf "$PREFIX/"*
 rm -f "$BUILD_DIR/BUILD_SUCCESS"
+rm -f "$BUILD_DIR/meson.cross"
 copy_private_headers
 build_pkg_config
 build_qemu_dependencies
