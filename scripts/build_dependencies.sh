@@ -317,7 +317,13 @@ build () {
 meson_build () {
     SRCDIR="$1"
     shift 1
-    NAME="$(basename $SRCDIR)"
+    FILE="$(basename $SRCDIR)"
+    NAME="${FILE%.tar.*}"
+    case $SRCDIR in
+    http* | ftp* )
+        SRCDIR="$BUILD_DIR/$NAME"
+        ;;
+    esac
     MESON_CROSS="$(realpath "$BUILD_DIR/meson.cross")"
     if [ ! -f "$MESON_CROSS" ]; then
         generate_meson_cross "$MESON_CROSS"
@@ -386,7 +392,7 @@ build_qemu_dependencies () {
     build $GETTEXT_SRC --disable-java
     build $PNG_SRC
     build $JPEG_TURBO_SRC
-    build $GLIB_SRC glib_cv_stack_grows=no glib_cv_uscore=no --with-pcre=internal
+    meson_build $GLIB_SRC
     build $GPG_ERROR_SRC
     build $GCRYPT_SRC
     build $PIXMAN_SRC
@@ -401,8 +407,8 @@ build_qemu_dependencies () {
     fi
     # GPU support
     build_angle
-    meson_build "$BUILD_DIR/$(basename $EPOXY_REPO)"
-    meson_build "$BUILD_DIR/$(basename $VIRGLRENDERER_REPO)"
+    meson_build $EPOXY_REPO
+    meson_build $VIRGLRENDERER_REPO
 }
 
 build_qemu () {
