@@ -90,7 +90,6 @@ static size_t sysctl_read(const char *name) {
         self.configuration = configuration;
         self.imgPath = imgPath;
         self.qmpPort = 4444;
-        self.spicePort = 5930;
         self.entry = start_qemu;
     }
     return self;
@@ -581,8 +580,9 @@ static size_t sysctl_read(const char *name) {
         [self pushArgv: @"-serial"];
         [self pushArgv: @"chardev:term0"];
     } else {
+        NSURL *spiceSocketURL = self.configuration.spiceSocketURL;
         [self pushArgv:@"-spice"];
-        [self pushArgv:[NSString stringWithFormat:@"port=%lu,addr=127.0.0.1,disable-ticketing,image-compression=off,playback-compression=off,streaming-video=off", self.spicePort]];
+        [self pushArgv:[NSString stringWithFormat:@"unix=on,addr=%@,disable-ticketing,image-compression=off,playback-compression=off,streaming-video=off", spiceSocketURL.path]];
         [self pushArgv:@"-device"];
         [self pushArgv:self.configuration.displayCard];
     }

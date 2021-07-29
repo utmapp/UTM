@@ -35,9 +35,10 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly, nullable) CSUSBManager *primaryUsbManager;
 #endif
 @property (nonatomic, weak, nullable) id<UTMSpiceIODelegate> delegate;
+@property (nonatomic) BOOL isConnected;
 
 - (instancetype)init NS_UNAVAILABLE;
-- (instancetype)initWithConfiguration: (UTMConfiguration*) configuration port:(NSInteger)port NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithConfiguration: (UTMConfiguration*) configuration NS_DESIGNATED_INITIALIZER;
 - (void)changeSharedDirectory:(NSURL *)url;
 
 @end

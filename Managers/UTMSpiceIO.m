@@ -49,10 +49,9 @@ typedef void (^connectionCallback_t)(BOOL success, NSString * _Nullable msg);
 
 @implementation UTMSpiceIO
 
-- (instancetype)initWithConfiguration:(UTMConfiguration *)configuration port:(NSInteger)port {
+- (instancetype)initWithConfiguration:(UTMConfiguration *)configuration {
     if (self = [super init]) {
         _configuration = configuration;
-        _port = port;
     }
     
     return self;
@@ -65,7 +64,7 @@ typedef void (^connectionCallback_t)(BOOL success, NSString * _Nullable msg);
 - (void)initializeSpiceIfNeeded {
     @synchronized (self) {
         if (!self.spiceConnection) {
-            self.spiceConnection = [[CSConnection alloc] initWithHost:@"127.0.0.1" port:[NSString stringWithFormat:@"%lu", self.port]];
+            self.spiceConnection = [[CSConnection alloc] initWithUnixSocketFile:self.configuration.spiceSocketURL];
             self.spiceConnection.delegate = self;
             self.spiceConnection.audioEnabled = _configuration.soundEnabled;
             self.spiceConnection.session.shareClipboard = _configuration.shareClipboardEnabled;
@@ -102,7 +101,7 @@ typedef void (^connectionCallback_t)(BOOL success, NSString * _Nullable msg);
     __weak UTMSpiceIO *weakSelf = self;
     self.doConnect = ^{
         if (weakSelf && tries-- > 0) {
-            if (!isPortAvailable(weakSelf.port)) { // port is in use, try connecting
+            if (!weakSelf.isConnected) {
                 @synchronized (weakSelf) {
                     if ([weakSelf.spiceConnection connect]) {
                         weakSelf.connectionCallback = block;
@@ -111,7 +110,7 @@ typedef void (^connectionCallback_t)(BOOL success, NSString * _Nullable msg);
                     }
                 }
             } else {
-                UTMLog(@"SPICE port not in use yet, retries left: %d", tries);
+                UTMLog(@"SPICE has not connected yet, retries left: %d", tries);
                 dispatch_after(dispatch_time(DISPATCH_TIME_NOW, kRetryWait), dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0), weakDoConnect);
                 return;
             }
@@ -175,6 +174,7 @@ typedef void (^connectionCallback_t)(BOOL success, NSString * _Nullable msg);
 
 - (void)spiceConnected:(CSConnection *)connection {
     NSAssert(connection == self.spiceConnection, @"Unknown connection");
+    self.isConnected = YES;
     self.primaryInput = connection.input;
     [self.delegate spiceDidChangeInput:connection.input];
 #if !defined(WITH_QEMU_TCI)
@@ -185,10 +185,12 @@ typedef void (^connectionCallback_t)(BOOL success, NSString * _Nullable msg);
 
 - (void)spiceDisconnected:(CSConnection *)connection {
     NSAssert(connection == self.spiceConnection, @"Unknown connection");
+    self.isConnected = NO;
 }
 
 - (void)spiceError:(CSConnection *)connection err:(NSString *)msg {
     NSAssert(connection == self.spiceConnection, @"Unknown connection");
+    self.isConnected = NO;
     if (self.connectionCallback) {
         self.connectionCallback(NO, msg);
         self.connectionCallback = nil;

@@ -286,7 +286,6 @@ error:
         [self.system setupXpc];
 #endif
         self.system.qmpPort = [[UTMPortAllocator sharedInstance] allocatePort];
-        self.system.spicePort = [[UTMPortAllocator sharedInstance] allocatePort];
         _qemu = [[UTMQemuManager alloc] initWithPort:self.system.qmpPort];
         _qemu.delegate = self;
     }
@@ -298,7 +297,7 @@ error:
     }
     
     if (!_ioService) {
-        _ioService = [self inputOutputServiceWithPort:self.system.spicePort];
+        _ioService = [self inputOutputService];
     }
     
     self.delegate.vmMessage = nil;
@@ -377,10 +376,6 @@ error:
     if (self.system.qmpPort) {
         [[UTMPortAllocator sharedInstance] freePort:self.system.qmpPort];
         self.system.qmpPort = 0;
-    }
-    if (self.system.spicePort) {
-        [[UTMPortAllocator sharedInstance] freePort:self.system.spicePort];
-        self.system.spicePort = 0;
     }
     self.system = nil;
     [self changeState:kVMStopped];
@@ -569,11 +564,11 @@ error:
     }
 }
 
-- (id<UTMInputOutput>)inputOutputServiceWithPort:(NSInteger)port {
+- (id<UTMInputOutput>)inputOutputService {
     if ([self supportedDisplayType] == UTMDisplayTypeConsole) {
         return [[UTMTerminalIO alloc] initWithConfiguration:[self.configuration copy]];
     } else {
-        return [[UTMSpiceIO alloc] initWithConfiguration:[self.configuration copy] port:port];
+        return [[UTMSpiceIO alloc] initWithConfiguration:[self.configuration copy]];
     }
 }
 

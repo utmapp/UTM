@@ -89,9 +89,16 @@ const NSInteger kCurrentConfigurationVersion = 2;
 
 - (NSURL*)terminalInputOutputURL {
     NSURL* tmpDir = [[NSFileManager defaultManager] temporaryDirectory];
-    NSString* ioFileName = [NSString stringWithFormat: @"%@.terminal", self.name];
+    NSString* ioFileName = [NSString stringWithFormat: @"%@.terminal", self.systemUUID];
     NSURL* ioFile = [tmpDir URLByAppendingPathComponent: ioFileName];
     return ioFile;
+}
+
+- (NSURL*)spiceSocketURL {
+    NSURL* tmpDir = [[NSFileManager defaultManager] temporaryDirectory];
+    NSString* sockName = [NSString stringWithFormat: @"%@.spice-socket", self.systemUUID];
+    NSURL* sockFile = [tmpDir URLByAppendingPathComponent: sockName];
+    return sockFile;
 }
 
 - (void)resetDefaults {
