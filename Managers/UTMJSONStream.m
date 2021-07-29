@@ -73,21 +73,28 @@ enum ParserState {
 }
 
 - (void)disconnect {
+    NSInputStream *inputStream = nil;
+    NSOutputStream *outputStream = nil;
     @synchronized (self) {
-        [_inputStream close];
-        if (_inputStream) {
-            CFReadStreamSetDispatchQueue((__bridge CFReadStreamRef)_inputStream, NULL);
-        }
-        [_inputStream setDelegate:nil];
+        inputStream = _inputStream;
+        outputStream = _outputStream;
         _inputStream = nil;
-        [_outputStream close];
-        if (_outputStream) {
-            CFWriteStreamSetDispatchQueue((__bridge CFWriteStreamRef)_outputStream, NULL);
-        }
-        [_outputStream setDelegate:nil];
         _outputStream = nil;
         _data = nil;
     }
+    [inputStream close];
+    [outputStream close];
+    // this prevents a race between a running delegate method and freeing the stream
+    dispatch_async(_streamQueue, ^{
+        if (inputStream) {
+            CFReadStreamSetDispatchQueue((__bridge CFReadStreamRef)inputStream, NULL);
+            inputStream.delegate = nil;
+        }
+        if (outputStream) {
+            CFWriteStreamSetDispatchQueue((__bridge CFWriteStreamRef)outputStream, NULL);
+            outputStream.delegate = nil;
+        }
+    });
 }
 
 - (void)parseData {
