@@ -58,10 +58,14 @@ enum ParserState {
 }
 
 - (void)connect {
-    CFReadStreamRef readStream;
-    CFWriteStreamRef writeStream;
-    CFStreamCreatePairWithSocketToHost(kCFAllocatorDefault, (__bridge CFStringRef)self.host, (UInt32)self.port, &readStream, &writeStream);
     @synchronized (self) {
+        if (self.inputStream != nil || self.outputStream != nil) {
+            assert(self.inputStream != nil && self.outputStream != nil);
+            return;
+        }
+        CFReadStreamRef readStream;
+        CFWriteStreamRef writeStream;
+        CFStreamCreatePairWithSocketToHost(kCFAllocatorDefault, (__bridge CFStringRef)self.host, (UInt32)self.port, &readStream, &writeStream);
         self.inputStream = CFBridgingRelease(readStream);
         self.outputStream = CFBridgingRelease(writeStream);
         self.data = [NSMutableData data];
@@ -77,28 +81,27 @@ enum ParserState {
 }
 
 - (void)disconnect {
-    NSInputStream *inputStream = nil;
-    NSOutputStream *outputStream = nil;
     @synchronized (self) {
-        inputStream = self.inputStream;
-        outputStream = self.outputStream;
+        if (self.inputStream == nil || self.outputStream == nil) {
+            assert(self.inputStream == nil && self.outputStream == nil);
+            return;
+        }
+        CFReadStreamRef readStream = (CFReadStreamRef)CFBridgingRetain(self.inputStream);
+        CFWriteStreamRef writeStream = (CFWriteStreamRef)CFBridgingRetain(self.outputStream);
         self.inputStream = nil;
         self.outputStream = nil;
+        self.inputStream.delegate = nil;
+        self.outputStream.delegate = nil;
         self.data = nil;
+        CFReadStreamSetDispatchQueue(readStream, NULL);
+        CFWriteStreamSetDispatchQueue(writeStream, NULL);
+        CFReadStreamClose(readStream);
+        CFWriteStreamClose(writeStream);
+        dispatch_async(self.streamQueue, ^{
+            CFRelease(readStream);
+            CFRelease(writeStream);
+        });
     }
-    [inputStream close];
-    [outputStream close];
-    // this prevents a race between a running delegate method and freeing the stream
-    dispatch_async(self.streamQueue, ^{
-        if (inputStream) {
-            CFReadStreamSetDispatchQueue((__bridge CFReadStreamRef)inputStream, NULL);
-            inputStream.delegate = nil;
-        }
-        if (outputStream) {
-            CFWriteStreamSetDispatchQueue((__bridge CFWriteStreamRef)outputStream, NULL);
-            outputStream.delegate = nil;
-        }
-    });
 }
 
 - (void)parseData {
@@ -203,14 +206,14 @@ enum ParserState {
             @synchronized (self) {
                 NSAssert(aStream == self.inputStream, @"Invalid stream");
                 res = [self.inputStream read:buf maxLength:kMaxBufferSize];
-            }
-            if (res > 0) {
-                [self.data appendBytes:buf length:res];
-                while (self.parsedBytes < [self.data length]) {
-                    [self parseData];
+                if (res > 0) {
+                    [self.data appendBytes:buf length:res];
+                    while (self.parsedBytes < [self.data length]) {
+                        [self parseData];
+                    }
+                } else if (res < 0) {
+                    [self.delegate jsonStream:self seenError:[self.inputStream streamError]];
                 }
-            } else if (res < 0) {
-                [self.delegate jsonStream:self seenError:[self.inputStream streamError]];
             }
             break;
         }
@@ -223,7 +226,7 @@ enum ParserState {
             break;
         }
         case NSStreamEventOpenCompleted: {
-            UTMLog(@"Connected to stream");
+            UTMLog(@"Connected to stream %p", aStream);
             [self.delegate jsonStream:self connected:(aStream == self.inputStream)];
             break;
         }
@@ -234,20 +237,19 @@ enum ParserState {
 }
 
 - (BOOL)sendDictionary:(NSDictionary *)dict {
-    NSError *err;
     @synchronized (self) {
         if (!self.outputStream || (self.outputStream.streamStatus != NSStreamStatusOpen && self.outputStream.streamStatus != NSStreamStatusWriting)) {
             return NO;
         }
         UTMLog(@"Debug JSON send -> %@", dict);
+        NSError *err;
         [NSJSONSerialization writeJSONObject:dict toStream:self.outputStream options:0 error:&err];
+        if (err) {
+            UTMLog(@"Error sending dict: %@", err);
+            return NO;
+        }
     }
-    if (err) {
-        UTMLog(@"Error sending dict: %@", err);
-        return NO;
-    } else {
-        return YES;
-    }
+    return YES;
 }
 
 @end
