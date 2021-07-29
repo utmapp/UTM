@@ -27,28 +27,32 @@ enum ParserState {
     PARSER_INVALID
 };
 
-@implementation UTMJSONStream {
-    NSMutableData *_data;
-    NSInputStream *_inputStream;
-    NSOutputStream *_outputStream;
-    dispatch_queue_t _streamQueue;
-    NSUInteger _parsedBytes;
-    enum ParserState _state;
-    int _open_curly_count;
-}
+@interface UTMJSONStream ()
+
+@property (nonatomic, nullable) NSMutableData *data;
+@property (nonatomic, nullable) NSInputStream *inputStream;
+@property (nonatomic, nullable) NSOutputStream *outputStream;
+@property (nonatomic, nullable) dispatch_queue_t streamQueue;
+@property (nonatomic) NSUInteger parsedBytes;
+@property (nonatomic) enum ParserState state;
+@property (nonatomic) NSInteger openCurlyCount;
+
+@end
+
+@implementation UTMJSONStream
 
 - (instancetype)initHost:(NSString *)host port:(NSInteger)port {
     self = [super init];
     if (self) {
         self.host = host;
         self.port = port;
-        _streamQueue = dispatch_queue_create("com.utmapp.UTM.JSONStream", NULL);
+        self.streamQueue = dispatch_queue_create("com.utmapp.UTM.JSONStream", NULL);
     }
     return self;
 }
 
 - (void)dealloc {
-    if (_inputStream || _outputStream) {
+    if (self.inputStream || self.outputStream) {
         [self disconnect];
     }
 }
@@ -58,17 +62,17 @@ enum ParserState {
     CFWriteStreamRef writeStream;
     CFStreamCreatePairWithSocketToHost(kCFAllocatorDefault, (__bridge CFStringRef)self.host, (UInt32)self.port, &readStream, &writeStream);
     @synchronized (self) {
-        _inputStream = CFBridgingRelease(readStream);
-        _outputStream = CFBridgingRelease(writeStream);
-        _data = [NSMutableData data];
-        _parsedBytes = 0;
-        _open_curly_count = -1;
-        [_inputStream setDelegate:self];
-        CFReadStreamSetDispatchQueue((__bridge CFReadStreamRef)_inputStream, _streamQueue);
-        [_inputStream open];
-        [_outputStream setDelegate:self];
-        CFWriteStreamSetDispatchQueue((__bridge CFWriteStreamRef)_outputStream, _streamQueue);
-        [_outputStream open];
+        self.inputStream = CFBridgingRelease(readStream);
+        self.outputStream = CFBridgingRelease(writeStream);
+        self.data = [NSMutableData data];
+        self.parsedBytes = 0;
+        self.openCurlyCount = -1;
+        [self.inputStream setDelegate:self];
+        CFReadStreamSetDispatchQueue((__bridge CFReadStreamRef)self.inputStream, self.streamQueue);
+        [self.inputStream open];
+        [self.outputStream setDelegate:self];
+        CFWriteStreamSetDispatchQueue((__bridge CFWriteStreamRef)self.outputStream, self.streamQueue);
+        [self.outputStream open];
     }
 }
 
@@ -76,16 +80,16 @@ enum ParserState {
     NSInputStream *inputStream = nil;
     NSOutputStream *outputStream = nil;
     @synchronized (self) {
-        inputStream = _inputStream;
-        outputStream = _outputStream;
-        _inputStream = nil;
-        _outputStream = nil;
-        _data = nil;
+        inputStream = self.inputStream;
+        outputStream = self.outputStream;
+        self.inputStream = nil;
+        self.outputStream = nil;
+        self.data = nil;
     }
     [inputStream close];
     [outputStream close];
     // this prevents a race between a running delegate method and freeing the stream
-    dispatch_async(_streamQueue, ^{
+    dispatch_async(self.streamQueue, ^{
         if (inputStream) {
             CFReadStreamSetDispatchQueue((__bridge CFReadStreamRef)inputStream, NULL);
             inputStream.delegate = nil;
@@ -99,31 +103,31 @@ enum ParserState {
 
 - (void)parseData {
     __block NSUInteger endIndex = 0;
-    [_data enumerateByteRangesUsingBlock:^(const void *bytes, NSRange byteRange, BOOL *stop) {
+    [self.data enumerateByteRangesUsingBlock:^(const void *bytes, NSRange byteRange, BOOL *stop) {
         const char *str = (const char *)bytes;
-        if (byteRange.location + byteRange.length < self->_parsedBytes) {
+        if (byteRange.location + byteRange.length < self.parsedBytes) {
             return;
         }
-        for (NSUInteger i = self->_parsedBytes - byteRange.location; i < byteRange.length; i++) {
-            if (self->_state == PARSER_IN_STRING_ESCAPE) {
-                self->_state = PARSER_IN_STRING;
+        for (NSUInteger i = self.parsedBytes - byteRange.location; i < byteRange.length; i++) {
+            if (self.state == PARSER_IN_STRING_ESCAPE) {
+                self.state = PARSER_IN_STRING;
             } else {
                 switch (str[i]) {
                     case '{': {
-                        if (self->_state == PARSER_NOT_IN_STRING) {
-                            if (self->_open_curly_count == -1) {
-                                self->_open_curly_count = 0;
+                        if (self.state == PARSER_NOT_IN_STRING) {
+                            if (self.openCurlyCount == -1) {
+                                self.openCurlyCount = 0;
                             }
-                            self->_open_curly_count++;
+                            self.openCurlyCount++;
                         }
                         break;
                     }
                     case '}': {
-                        if (self->_state == PARSER_NOT_IN_STRING) {
-                            self->_open_curly_count--;
-                            if (self->_open_curly_count < 0) {
+                        if (self.state == PARSER_NOT_IN_STRING) {
+                            self.openCurlyCount--;
+                            if (self.openCurlyCount < 0) {
                                 UTMLog(@"Saw too many close curly!");
-                                self->_state = PARSER_INVALID;
+                                self.state = PARSER_INVALID;
                                 NSError *err = [NSError errorWithDomain:kUTMErrorDomain code:-1 userInfo:@{NSLocalizedDescriptionKey: NSLocalizedString(@"Error parsing JSON.", "UTMJSONStream")}];
                                 [self.delegate jsonStream:self seenError:err];
                             }
@@ -131,21 +135,21 @@ enum ParserState {
                         break;
                     }
                     case '\\': {
-                        if (self->_state == PARSER_IN_STRING) {
-                            self->_state = PARSER_IN_STRING_ESCAPE;
+                        if (self.state == PARSER_IN_STRING) {
+                            self.state = PARSER_IN_STRING_ESCAPE;
                         } else {
                             UTMLog(@"Saw escape in invalid context");
-                            self->_state = PARSER_INVALID;
+                            self.state = PARSER_INVALID;
                             NSError *err = [NSError errorWithDomain:kUTMErrorDomain code:-1 userInfo:@{NSLocalizedDescriptionKey: NSLocalizedString(@"Error parsing JSON.", "UTMJSONStream")}];
                             [self.delegate jsonStream:self seenError:err];
                         }
                         break;
                     }
                     case '"': {
-                        if (self->_state == PARSER_IN_STRING) {
-                            self->_state = PARSER_NOT_IN_STRING;
+                        if (self.state == PARSER_IN_STRING) {
+                            self.state = PARSER_NOT_IN_STRING;
                         } else {
-                            self->_state = PARSER_IN_STRING;
+                            self.state = PARSER_IN_STRING;
                         }
                         break;
                     }
@@ -154,15 +158,15 @@ enum ParserState {
                         if (str[i] == (char)0xFF ||
                             (str[i] >= '\0' && str[i] < ' ' && str[i] != '\t' && str[i] != '\r' && str[i] != '\n')) {
                             UTMLog(@"Resetting parser...");
-                            self->_state = PARSER_NOT_IN_STRING;
-                            self->_open_curly_count = 0;
+                            self.state = PARSER_NOT_IN_STRING;
+                            self.openCurlyCount = 0;
                         }
                     }
                 }
             }
-            self->_parsedBytes++;
-            if (self->_open_curly_count == 0) {
-                endIndex = self->_parsedBytes;
+            self.parsedBytes++;
+            if (self.openCurlyCount == 0) {
+                endIndex = self.parsedBytes;
                 *stop = YES;
                 break;
             }
@@ -174,10 +178,10 @@ enum ParserState {
 }
 
 - (void)consumeJSONLength:(NSUInteger)length {
-    NSData *jsonData = [_data subdataWithRange:NSMakeRange(0, length)];
-    _data = [NSMutableData dataWithData:[_data subdataWithRange:NSMakeRange(length, _data.length - length)]];
-    _parsedBytes = 0;
-    _open_curly_count = -1;
+    NSData *jsonData = [self.data subdataWithRange:NSMakeRange(0, length)];
+    self.data = [NSMutableData dataWithData:[self.data subdataWithRange:NSMakeRange(length, self.data.length - length)]];
+    self.parsedBytes = 0;
+    self.openCurlyCount = -1;
     NSError *err;
     id json = [NSJSONSerialization JSONObjectWithData:jsonData options:0 error:&err];
     if (err) {
@@ -197,16 +201,16 @@ enum ParserState {
             uint8_t buf[kMaxBufferSize];
             NSInteger res;
             @synchronized (self) {
-                NSAssert(aStream == _inputStream, @"Invalid stream");
-                res = [_inputStream read:buf maxLength:kMaxBufferSize];
+                NSAssert(aStream == self.inputStream, @"Invalid stream");
+                res = [self.inputStream read:buf maxLength:kMaxBufferSize];
             }
             if (res > 0) {
-                [_data appendBytes:buf length:res];
-                while (_parsedBytes < [_data length]) {
+                [self.data appendBytes:buf length:res];
+                while (self.parsedBytes < [self.data length]) {
                     [self parseData];
                 }
             } else if (res < 0) {
-                [self.delegate jsonStream:self seenError:[_inputStream streamError]];
+                [self.delegate jsonStream:self seenError:[self.inputStream streamError]];
             }
             break;
         }
@@ -220,7 +224,7 @@ enum ParserState {
         }
         case NSStreamEventOpenCompleted: {
             UTMLog(@"Connected to stream");
-            [self.delegate jsonStream:self connected:(aStream == _inputStream)];
+            [self.delegate jsonStream:self connected:(aStream == self.inputStream)];
             break;
         }
         default: {
@@ -232,11 +236,11 @@ enum ParserState {
 - (BOOL)sendDictionary:(NSDictionary *)dict {
     NSError *err;
     @synchronized (self) {
-        if (!_outputStream || (_outputStream.streamStatus != NSStreamStatusOpen && _outputStream.streamStatus != NSStreamStatusWriting)) {
+        if (!self.outputStream || (self.outputStream.streamStatus != NSStreamStatusOpen && self.outputStream.streamStatus != NSStreamStatusWriting)) {
             return NO;
         }
         UTMLog(@"Debug JSON send -> %@", dict);
-        [NSJSONSerialization writeJSONObject:dict toStream:_outputStream options:0 error:&err];
+        [NSJSONSerialization writeJSONObject:dict toStream:self.outputStream options:0 error:&err];
     }
     if (err) {
         UTMLog(@"Error sending dict: %@", err);
