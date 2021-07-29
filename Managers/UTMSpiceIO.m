@@ -80,6 +80,9 @@ extern NSString *const kUTMErrorDomain;
         if (!self.spice) {
             self.spice = [CSMain sharedInstance];
         }
+#ifdef SPICE_DEBUG_LOGGING
+        [self.spice spiceSetDebug:YES];
+#endif
         if (![self.spice spiceStart]) {
             // error
             return NO;
@@ -118,12 +121,6 @@ extern NSString *const kUTMErrorDomain;
 
 - (UTMScreenshot *)screenshot {
     return [self.primaryDisplay screenshot];
-}
-
-- (void)setDebugMode:(BOOL)debugMode {
-    @synchronized (self) {
-        [self.spice spiceSetDebug: debugMode];
-    }
 }
 
 - (void)syncViewState:(UTMViewState *)viewState {

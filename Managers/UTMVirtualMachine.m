@@ -302,9 +302,6 @@ error:
     
     self.delegate.vmMessage = nil;
     [self changeState:kVMStarting];
-    if (self.configuration.debugLogEnabled) {
-        [_ioService setDebugMode:YES];
-    }
     
     BOOL ioStatus = [_ioService startWithError: nil];
     if (!ioStatus) {

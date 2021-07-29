@@ -30,7 +30,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)startWithError:(NSError **)err;
 - (void)connectWithCompletion:(ioConnectCompletionHandler_t)block;
 - (void)disconnect;
-- (void)setDebugMode: (BOOL)debugMode;
 - (UTMScreenshot* _Nullable)screenshot;
 - (void)syncViewState:(UTMViewState *)viewState;
 - (void)restoreViewState:(UTMViewState *)viewState;

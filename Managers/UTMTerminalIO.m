@@ -84,10 +84,6 @@
     return nil;
 }
 
-- (void)setDebugMode:(BOOL)debugMode {
-    UTMLog(@"%@ does not support debug mode.", NSStringFromClass([self class]));
-}
-
 - (void)syncViewState:(UTMViewState *)viewState {
 }
 
