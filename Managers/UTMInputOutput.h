@@ -19,12 +19,16 @@
 @class UTMScreenshot;
 @class UTMViewState;
 
+typedef void(^ioConnectCompletionHandler_t)(BOOL, NSError * _Nullable);
+
 NS_ASSUME_NONNULL_BEGIN
 
 @protocol UTMInputOutput <NSObject>
 
+@property (nonatomic, readonly) BOOL isConnected;
+
 - (BOOL)startWithError:(NSError **)err;
-- (void)connectWithCompletion:(void(^)(BOOL, NSString * _Nullable))block;
+- (void)connectWithCompletion:(ioConnectCompletionHandler_t)block;
 - (void)disconnect;
 - (void)setDebugMode: (BOOL)debugMode;
 - (UTMScreenshot* _Nullable)screenshot;

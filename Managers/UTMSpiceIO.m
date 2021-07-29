@@ -24,11 +24,6 @@
 
 extern BOOL isPortAvailable(NSInteger port); // from UTMPortAllocator
 extern NSString *const kUTMErrorDomain;
-static const int kMaxConnectionTries = 30; // qemu needs to start spice server first
-static const int64_t kRetryWait = (int64_t)1*NSEC_PER_SEC;
-
-typedef void (^doConnect_t)(void);
-typedef void (^connectionCallback_t)(BOOL success, NSString * _Nullable msg);
 
 @interface UTMSpiceIO ()
 
@@ -37,13 +32,13 @@ typedef void (^connectionCallback_t)(BOOL success, NSString * _Nullable msg);
 #if !defined(WITH_QEMU_TCI)
 @property (nonatomic, readwrite, nullable) CSUSBManager *primaryUsbManager;
 #endif
-@property (nonatomic, nullable) doConnect_t doConnect;
-@property (nonatomic, nullable) connectionCallback_t connectionCallback;
+@property (nonatomic, nullable) ioConnectCompletionHandler_t connectionCallback;
 @property (nonatomic, nullable) CSConnection *spiceConnection;
 @property (nonatomic, nullable) CSMain *spice;
 @property (nonatomic, nullable, copy) NSURL *sharedDirectory;
 @property (nonatomic) NSInteger port;
 @property (nonatomic) BOOL dynamicResolutionSupported;
+@property (nonatomic, readwrite) BOOL isConnected;
 
 @end
 
@@ -95,35 +90,15 @@ typedef void (^connectionCallback_t)(BOOL success, NSString * _Nullable msg);
     return YES;
 }
 
-- (void)connectWithCompletion:(void(^)(BOOL, NSString * _Nullable))block {
-    __block int tries = kMaxConnectionTries;
-    __block __weak doConnect_t weakDoConnect;
-    __weak UTMSpiceIO *weakSelf = self;
-    self.doConnect = ^{
-        if (weakSelf && tries-- > 0) {
-            if (!weakSelf.isConnected) {
-                @synchronized (weakSelf) {
-                    if ([weakSelf.spiceConnection connect]) {
-                        weakSelf.connectionCallback = block;
-                        weakSelf.doConnect = nil;
-                        return;
-                    }
-                }
-            } else {
-                UTMLog(@"SPICE has not connected yet, retries left: %d", tries);
-                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, kRetryWait), dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0), weakDoConnect);
-                return;
-            }
+- (void)connectWithCompletion:(ioConnectCompletionHandler_t)block {
+    @synchronized (self) {
+        self.connectionCallback = block;
+        if (![self.spiceConnection connect]) {
+            block(NO, [NSError errorWithDomain:kUTMErrorDomain code:-1 userInfo:@{NSLocalizedDescriptionKey: NSLocalizedString(@"Failed to connect to SPICE server.", "UTMSpiceIO")}]);
+            self.connectionCallback = nil;
+            return;
         }
-        if (tries == 0) {
-            // if we get here, error is unrecoverable
-            block(NO, NSLocalizedString(@"Failed to connect to SPICE server.", "UTMSpiceIO"));
-        }
-        weakSelf.connectionCallback = nil;
-        weakSelf.doConnect = nil;
-    };
-    weakDoConnect = self.doConnect;
-    dispatch_async(dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0), self.doConnect);
+    }
 }
 
 - (void)disconnect {
@@ -139,7 +114,6 @@ typedef void (^connectionCallback_t)(BOOL success, NSString * _Nullable msg);
 #if !defined(WITH_QEMU_TCI)
     self.primaryUsbManager = nil;
 #endif
-    self.doConnect = nil;
 }
 
 - (UTMScreenshot *)screenshot {
@@ -181,6 +155,10 @@ typedef void (^connectionCallback_t)(BOOL success, NSString * _Nullable msg);
     self.primaryUsbManager = connection.usbManager;
     [self.delegate spiceDidChangeUsbManager:connection.usbManager];
 #endif
+    if (self.connectionCallback) {
+        self.connectionCallback(YES, nil);
+        self.connectionCallback = nil;
+    }
 }
 
 - (void)spiceDisconnected:(CSConnection *)connection {
@@ -192,7 +170,8 @@ typedef void (^connectionCallback_t)(BOOL success, NSString * _Nullable msg);
     NSAssert(connection == self.spiceConnection, @"Unknown connection");
     self.isConnected = NO;
     if (self.connectionCallback) {
-        self.connectionCallback(NO, msg);
+        NSError *error = [NSError errorWithDomain:kUTMErrorDomain code:-1 userInfo:@{NSLocalizedDescriptionKey: msg}];
+        self.connectionCallback(NO, error);
         self.connectionCallback = nil;
     }
 }
@@ -202,10 +181,6 @@ typedef void (^connectionCallback_t)(BOOL success, NSString * _Nullable msg);
     [self.delegate spiceDidCreateDisplay:display];
     if (display.channelID == 0 && display.monitorID == 0) {
         self.primaryDisplay = display;
-        if (self.connectionCallback) {
-            self.connectionCallback(YES, nil);
-            self.connectionCallback = nil;
-        }
     }
 }
 
