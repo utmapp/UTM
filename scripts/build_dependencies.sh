@@ -236,7 +236,7 @@ build_pkg_config() {
     cd "$DIR"
     if [ -z "$REBUILD" ]; then
         echo "${GREEN}Configuring ${NAME}...${NC}"
-        env -i ./configure --prefix="$PREFIX" --bindir="$PREFIX/host/bin" $@
+        env -i ./configure --prefix="$PREFIX" --bindir="$PREFIX/host/bin" --with-internal-glib $@
     fi
     echo "${GREEN}Building ${NAME}...${NC}"
     make "$MAKEFLAGS"
