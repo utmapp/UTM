@@ -21,7 +21,7 @@ RED='\033[0;31m'
 NC='\033[0m'
 
 # Knobs
-IOS_SDKMINVER="9.0"
+IOS_SDKMINVER="11.0"
 MAC_SDKMINVER="10.11"
 
 # Build environment
