@@ -103,16 +103,13 @@ clone () {
     DIR="$BUILD_DIR/$NAME"
     if [ -d "$DIR" -a -z "$REDOWNLOAD" ]; then
         echo "${GREEN}$DIR already downloaded! Run with -d to force re-download.${NC}"
+        git -C "$DIR" fetch
     else
         rm -rf "$DIR"
         echo "${GREEN}Cloning ${URL}...${NC}"
         git clone -n "$REPO" "$DIR"
     fi
     git -C "$DIR" checkout -q "$COMMIT"
-    if [ -d "$DIR/utm_build" ]; then
-        echo "${GREEN}Deleting existing build directory in ${DIR}...${NC}"
-        rm -rf "$DIR/utm_build"
-    fi
 }
 
 download_all () {
@@ -361,8 +358,11 @@ meson_build () {
     pwd="$(pwd)"
 
     cd "$SRCDIR"
-    echo "${GREEN}Configuring ${NAME}...${NC}"
-    meson utm_build --prefix="$PREFIX" --buildtype=plain --cross-file "$MESON_CROSS" "$@"
+    if [ -z "$REBUILD" ]; then
+        rm -rf utm_build
+        echo "${GREEN}Configuring ${NAME}...${NC}"
+        meson utm_build --prefix="$PREFIX" --buildtype=plain --cross-file "$MESON_CROSS" "$@"
+    fi
     echo "${GREEN}Building ${NAME}...${NC}"
     meson compile -C utm_build
     echo "${GREEN}Installing ${NAME}...${NC}"
