@@ -22,6 +22,7 @@
 #import <glib.h>
 #import <spice-client.h>
 #import <spice/protocol.h>
+#import <IOSurface/IOSurfaceRef.h>
 
 #ifdef DISPLAY_DEBUG
 #undef DISPLAY_DEBUG
@@ -43,10 +44,14 @@
 @property (nonatomic, readwrite) CGPoint cursorHotspot;
 @property (nonatomic, readwrite) BOOL cursorHidden;
 @property (nonatomic, readwrite) BOOL hasCursor;
+@property (nonatomic, readwrite) BOOL isGLEnabled;
+@property (nonatomic, readwrite) BOOL hasGLDrawAck;
+@property (nonatomic) SpiceGlScanout scanout;
 
 // UTMRenderSource properties
 @property (nonatomic) dispatch_queue_t renderQueue;
-@property (nonatomic, nullable, readwrite) id<MTLTexture> displayTexture;
+@property (nonatomic, nullable, readwrite) id<MTLTexture> canvasTexture;
+@property (nonatomic, nullable, readwrite) id<MTLTexture> glTexture;
 @property (nonatomic, nullable, readwrite) id<MTLTexture> cursorTexture;
 @property (nonatomic, readwrite) NSUInteger displayNumVertices;
 @property (nonatomic, readwrite) NSUInteger cursorNumVertices;
@@ -96,6 +101,7 @@ static void cs_invalidate(SpiceChannel *channel,
                        gint x, gint y, gint w, gint h, gpointer data) {
     CSDisplayMetal *self = (__bridge CSDisplayMetal *)data;
     CGRect rect = CGRectIntersection(CGRectMake(x, y, w, h), self->_visibleArea);
+    self.isGLEnabled = NO;
     if (!CGRectIsEmpty(rect)) {
         [self drawRegion:rect];
     }
@@ -151,7 +157,7 @@ static void cs_update_monitor_area(SpiceChannel *channel, GParamSpec *pspec, gpo
     }
     
     /* If only one head on this monitor, update the whole area */
-    if (monitors->len == 1) {
+    if (monitors->len == 1 && !self.isGLEnabled) {
         [self updateVisibleAreaWithRect:CGRectMake(0, 0, c->width, c->height)];
     } else {
         [self updateVisibleAreaWithRect:CGRectMake(c->x, c->y, c->width, c->height)];
@@ -249,6 +255,39 @@ static void cs_cursor_reset(SpiceCursorChannel *channel, gpointer data)
     cs_cursor_invalidate(self);
 }
 
+#pragma mark - GL
+
+static void cs_gl_scanout(SpiceDisplayChannel *channel, GParamSpec *pspec, gpointer data)
+{
+    CSDisplayMetal *self = (__bridge CSDisplayMetal *)data;
+
+    DISPLAY_DEBUG(self, "%s: got scanout",  __FUNCTION__);
+
+    const SpiceGlScanout *scanout;
+
+    scanout = spice_display_channel_get_gl_scanout(self.display);
+    /* should only be called when the display has a scanout */
+    g_return_if_fail(scanout != NULL);
+    
+    self.isGLEnabled = YES;
+    self.hasGLDrawAck = YES;
+    self.scanout = *scanout;
+
+    [self rebuildScanoutTexture];
+}
+
+static void cs_gl_draw(SpiceDisplayChannel *channel,
+                       guint32 x, guint32 y, guint32 w, guint32 h,
+                       gpointer data)
+{
+    CSDisplayMetal *self = (__bridge CSDisplayMetal *)data;
+
+    DISPLAY_DEBUG(self, "%s",  __FUNCTION__);
+
+    self.isGLEnabled = YES;
+    self.hasGLDrawAck = NO;
+}
+
 #pragma mark - Channel events
 
 static void cs_channel_new(SpiceSession *s, SpiceChannel *channel, gpointer data) {
@@ -276,6 +315,10 @@ static void cs_channel_new(SpiceSession *s, SpiceChannel *channel, gpointer data
                                G_CALLBACK(cs_update_monitor_area), GLIB_OBJC_RETAIN(self));
         g_signal_connect_after(channel, "gst-video-overlay",
                                G_CALLBACK(cs_set_overlay), GLIB_OBJC_RETAIN(self));
+        g_signal_connect(channel, "notify::gl-scanout",
+                         G_CALLBACK(cs_gl_scanout), GLIB_OBJC_RETAIN(self));
+        g_signal_connect(channel, "gl-draw",
+                         G_CALLBACK(cs_gl_draw), GLIB_OBJC_RETAIN(self));
         if (spice_display_channel_get_primary(channel, 0, &primary)) {
             cs_primary_create(channel, primary.format, primary.width, primary.height,
                               primary.stride, primary.shmid, primary.data, (__bridge void *)self);
@@ -339,6 +382,8 @@ static void cs_channel_destroy(SpiceSession *s, SpiceChannel *channel, gpointer 
         g_signal_handlers_disconnect_by_func(channel, G_CALLBACK(cs_mark), GLIB_OBJC_RELEASE(self));
         g_signal_handlers_disconnect_by_func(channel, G_CALLBACK(cs_update_monitor_area), GLIB_OBJC_RELEASE(self));
         g_signal_handlers_disconnect_by_func(channel, G_CALLBACK(cs_set_overlay), GLIB_OBJC_RELEASE(self));
+        g_signal_handlers_disconnect_by_func(channel, G_CALLBACK(cs_gl_scanout), GLIB_OBJC_RELEASE(self));
+        g_signal_handlers_disconnect_by_func(channel, G_CALLBACK(cs_gl_draw), GLIB_OBJC_RELEASE(self));
         return;
     }
     
@@ -365,8 +410,12 @@ static void cs_channel_destroy(SpiceSession *s, SpiceChannel *channel, gpointer 
 
 - (void)setDevice:(id<MTLDevice>)device {
     _device = device;
-    [self rebuildDisplayTexture];
     [self rebuildDisplayVertices];
+    if (self.isGLEnabled) {
+        [self rebuildScanoutTexture];
+    } else {
+        [self rebuildCanvasTexture];
+    }
 }
 
 - (UTMScreenshot *)screenshot {
@@ -377,6 +426,9 @@ static void cs_channel_destroy(SpiceSession *s, SpiceChannel *channel, gpointer 
         CGDataProviderRef dataProviderRef = CGDataProviderCreateWithData(NULL, _canvasData, _canvasStride * _canvasArea.size.height, nil);
         img = CGImageCreate(_canvasArea.size.width, _canvasArea.size.height, 8, 32, _canvasStride, colorSpaceRef, kCGBitmapByteOrder32Little | kCGImageAlphaNoneSkipFirst, dataProviderRef, NULL, NO, kCGRenderingIntentDefault);
         CGDataProviderRelease(dataProviderRef);
+    } else if (_glTexture) {
+        // TODO: make screenshot from IOSurface
+        img = NULL;
     } else {
         img = NULL;
     }
@@ -393,6 +445,14 @@ static void cs_channel_destroy(SpiceSession *s, SpiceChannel *channel, gpointer 
         return [[UTMScreenshot alloc] initWithImage:uiimg];
     } else {
         return UTMScreenshot.none;
+    }
+}
+
+- (id<MTLTexture>)displayTexture {
+    if (self.isGLEnabled) {
+        return self.glTexture;
+    } else {
+        return self.canvasTexture;
     }
 }
 
@@ -452,7 +512,13 @@ static void cs_channel_destroy(SpiceSession *s, SpiceChannel *channel, gpointer 
 }
 
 - (void)updateVisibleAreaWithRect:(CGRect)rect {
-    CGRect visible = CGRectIntersection(_canvasArea, rect);
+    CGRect primary;
+    if (self.isGLEnabled) {
+        primary = CGRectMake(0, 0, self.scanout.width, self.scanout.height);
+    } else {
+        primary = _canvasArea;
+    }
+    CGRect visible = CGRectIntersection(primary, rect);
     if (CGRectIsNull(visible)) {
         DISPLAY_DEBUG(self, "The monitor area is not intersecting primary surface");
         self.ready = NO;
@@ -461,11 +527,33 @@ static void cs_channel_destroy(SpiceSession *s, SpiceChannel *channel, gpointer 
         _visibleArea = visible;
     }
     self.displaySize = _visibleArea.size;
-    [self rebuildDisplayTexture];
     [self rebuildDisplayVertices];
+    if (!self.isGLEnabled) {
+        [self rebuildCanvasTexture];
+    }
 }
 
-- (void)rebuildDisplayTexture {
+- (void)rebuildScanoutTexture {
+    if (!self.device) {
+        return; // not ready
+    }
+    IOSurfaceRef iosurface = NULL;
+    if (read(self.scanout.fd, &iosurface, sizeof(iosurface)) != sizeof(iosurface)) {
+        UTMLog(@"Failed to read scanout fd: %d", self.scanout.fd);
+        perror("read");
+        return;
+    }
+    //close(self.scanout.fd);
+
+    MTLTextureDescriptor *textureDescriptor = [[MTLTextureDescriptor alloc] init];
+    textureDescriptor.pixelFormat = MTLPixelFormatBGRA8Unorm;
+    textureDescriptor.width = self.scanout.width;
+    textureDescriptor.height = self.scanout.height;
+    self.glTexture = [self.device newTextureWithDescriptor:textureDescriptor iosurface:iosurface plane:0];
+    CFRelease(iosurface);
+}
+
+- (void)rebuildCanvasTexture {
     if (CGRectIsEmpty(_canvasArea) || !self.device) {
         return;
     }
@@ -474,7 +562,7 @@ static void cs_channel_destroy(SpiceSession *s, SpiceChannel *channel, gpointer 
     textureDescriptor.pixelFormat = (_canvasFormat == SPICE_SURFACE_FMT_32_xRGB) ? MTLPixelFormatBGRA8Unorm : (MTLPixelFormat)43;// FIXME: MTLPixelFormatBGR5A1Unorm is supposed to be available.
     textureDescriptor.width = _visibleArea.size.width;
     textureDescriptor.height = _visibleArea.size.height;
-    self.displayTexture = [self.device newTextureWithDescriptor:textureDescriptor];
+    self.canvasTexture = [self.device newTextureWithDescriptor:textureDescriptor];
     [self drawRegion:_visibleArea];
 }
 
@@ -512,7 +600,7 @@ static void cs_channel_destroy(SpiceSession *s, SpiceChannel *channel, gpointer 
     gint canvasStride = _canvasStride;
     if (canvasData) {
         dispatch_async(self.renderQueue, ^{
-            [self.displayTexture replaceRegion:region
+            [self.canvasTexture  replaceRegion:region
                                    mipmapLevel:0
                                      withBytes:(const char *)canvasData + (NSUInteger)(rect.origin.y*canvasStride + rect.origin.x*pixelSize)
                                    bytesPerRow:canvasStride];
@@ -538,6 +626,13 @@ static void cs_channel_destroy(SpiceSession *s, SpiceChannel *channel, gpointer 
                                       bounds.size.height,
                                       TRUE);
     spice_main_channel_send_monitor_config(self.main);
+}
+
+- (void)rendererFrameHasRendered {
+    if (self.isGLEnabled && !self.hasGLDrawAck) {
+        spice_display_channel_gl_draw_done(self.display);
+        self.hasGLDrawAck = YES;
+    }
 }
 
 #pragma mark - Cursor drawing

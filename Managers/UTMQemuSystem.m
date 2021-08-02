@@ -581,8 +581,9 @@ static size_t sysctl_read(const char *name) {
         [self pushArgv: @"chardev:term0"];
     } else {
         NSURL *spiceSocketURL = self.configuration.spiceSocketURL;
+        BOOL isGLOn = [self.configuration.displayCard hasPrefix:@"virtio"];
         [self pushArgv:@"-spice"];
-        [self pushArgv:[NSString stringWithFormat:@"unix=on,addr=%@,disable-ticketing,image-compression=off,playback-compression=off,streaming-video=off", spiceSocketURL.path]];
+        [self pushArgv:[NSString stringWithFormat:@"unix=on,addr=%@,disable-ticketing=on,image-compression=off,playback-compression=off,streaming-video=off,gl=%@", spiceSocketURL.path, isGLOn ? @"on" : @"off"]];
         [self pushArgv:@"-device"];
         [self pushArgv:self.configuration.displayCard];
     }

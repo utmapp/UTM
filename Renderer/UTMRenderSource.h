@@ -34,6 +34,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, nullable, readonly) id<MTLBuffer> displayVertices;
 @property (nonatomic, nullable, readonly) id<MTLBuffer> cursorVertices;
 
+- (void)rendererFrameHasRendered;
+
 @end
 
 NS_ASSUME_NONNULL_END
