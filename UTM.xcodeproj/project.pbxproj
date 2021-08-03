@@ -643,22 +643,10 @@
 		CE4EF2702506DBFD00E9D33B /* VMRemovableDrivesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE4EF26F2506DBFD00E9D33B /* VMRemovableDrivesViewController.swift */; };
 		CE4EF2722506DD7900E9D33B /* VMRemovableDrivesView.xib in Resources */ = {isa = PBXBuildFile; fileRef = CE4EF2712506DD7900E9D33B /* VMRemovableDrivesView.xib */; };
 		CE5076DB250AB55D00C26C19 /* VMDisplayMetalViewController+Pencil.m in Sources */ = {isa = PBXBuildFile; fileRef = CE5076DA250AB55D00C26C19 /* VMDisplayMetalViewController+Pencil.m */; };
-		CE5451A526AF5F0F008594E5 /* virglrenderer.1.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE5451A126AF5F0F008594E5 /* virglrenderer.1.framework */; };
 		CE5451A626AF5F0F008594E5 /* virglrenderer.1.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE5451A126AF5F0F008594E5 /* virglrenderer.1.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		CE5451A726AF5F10008594E5 /* epoxy.0.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE5451A226AF5F0F008594E5 /* epoxy.0.framework */; };
 		CE5451A826AF5F10008594E5 /* epoxy.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE5451A226AF5F0F008594E5 /* epoxy.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		CE5451A926AF5F10008594E5 /* GLESv2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE5451A326AF5F0F008594E5 /* GLESv2.framework */; };
 		CE5451AA26AF5F10008594E5 /* GLESv2.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE5451A326AF5F0F008594E5 /* GLESv2.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		CE5451AB26AF5F10008594E5 /* EGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE5451A426AF5F0F008594E5 /* EGL.framework */; };
 		CE5451AC26AF5F10008594E5 /* EGL.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE5451A426AF5F0F008594E5 /* EGL.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		CE5451B326AF5F7E008594E5 /* GLESv2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE5451A326AF5F0F008594E5 /* GLESv2.framework */; };
-		CE5451B426AF5F7E008594E5 /* virglrenderer.1.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE5451A126AF5F0F008594E5 /* virglrenderer.1.framework */; };
-		CE5451B526AF5F7E008594E5 /* epoxy.0.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE5451A226AF5F0F008594E5 /* epoxy.0.framework */; };
-		CE5451B626AF5F7E008594E5 /* EGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE5451A426AF5F0F008594E5 /* EGL.framework */; };
-		CE5451B726AF5F81008594E5 /* GLESv2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE5451A326AF5F0F008594E5 /* GLESv2.framework */; };
-		CE5451B826AF5F81008594E5 /* virglrenderer.1.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE5451A126AF5F0F008594E5 /* virglrenderer.1.framework */; };
-		CE5451B926AF5F81008594E5 /* epoxy.0.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE5451A226AF5F0F008594E5 /* epoxy.0.framework */; };
-		CE5451BA26AF5F81008594E5 /* EGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE5451A426AF5F0F008594E5 /* EGL.framework */; };
 		CE612AC624D3B50700FA6300 /* VMDisplayWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE612AC524D3B50700FA6300 /* VMDisplayWindowController.swift */; };
 		CE6D21DC2553A6ED001D29C5 /* VMConfirmActionModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE6D21DB2553A6ED001D29C5 /* VMConfirmActionModifier.swift */; };
 		CE6D21DD2553A6ED001D29C5 /* VMConfirmActionModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE6D21DB2553A6ED001D29C5 /* VMConfirmActionModifier.swift */; };
@@ -1119,6 +1107,14 @@
 		CEDF83FA258AE24E0030E4AC /* UTMPasteboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEDF83F8258AE24E0030E4AC /* UTMPasteboard.swift */; };
 		CEEC811B24E48EC700ACB0B3 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEEC811A24E48EC600ACB0B3 /* SettingsView.swift */; };
 		CEECE13C25E47D9500A2AAB8 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEECE13B25E47D9500A2AAB8 /* AppDelegate.swift */; };
+		CEF78EE626B99F350022CAF4 /* EGL.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE5451A426AF5F0F008594E5 /* EGL.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		CEF78EE726B99F350022CAF4 /* epoxy.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE5451A226AF5F0F008594E5 /* epoxy.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		CEF78EE826B99F350022CAF4 /* GLESv2.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE5451A326AF5F0F008594E5 /* GLESv2.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		CEF78EE926B99F530022CAF4 /* EGL.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE5451A426AF5F0F008594E5 /* EGL.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		CEF78EEA26B99F530022CAF4 /* epoxy.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE5451A226AF5F0F008594E5 /* epoxy.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		CEF78EEB26B99F530022CAF4 /* GLESv2.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE5451A326AF5F0F008594E5 /* GLESv2.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		CEF78EEF26B9B7870022CAF4 /* virglrenderer.1.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE5451A126AF5F0F008594E5 /* virglrenderer.1.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		CEF78EF026B9B7910022CAF4 /* virglrenderer.1.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE5451A126AF5F0F008594E5 /* virglrenderer.1.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		CEF83EBA24F9ABEA00557D15 /* UTMQemuManager+BlockDevices.m in Sources */ = {isa = PBXBuildFile; fileRef = CEF83EB924F9ABEA00557D15 /* UTMQemuManager+BlockDevices.m */; };
 		CEF83EBB24F9ABEA00557D15 /* UTMQemuManager+BlockDevices.m in Sources */ = {isa = PBXBuildFile; fileRef = CEF83EB924F9ABEA00557D15 /* UTMQemuManager+BlockDevices.m */; };
 		CEF83EBE24F9C3BF00557D15 /* UTMVirtualMachine+Drives.m in Sources */ = {isa = PBXBuildFile; fileRef = CEF83EBD24F9C3BF00557D15 /* UTMVirtualMachine+Drives.m */; };
@@ -1249,6 +1245,10 @@
 				CE0DF1AE25A83C1700A51894 /* qemu-x86_64-softmmu.framework in Embed Libraries */,
 				CE0DF1AF25A83C1700A51894 /* qemu-xtensa-softmmu.framework in Embed Libraries */,
 				CE0DF1B025A83C1700A51894 /* qemu-xtensaeb-softmmu.framework in Embed Libraries */,
+				CEF78EF026B9B7910022CAF4 /* virglrenderer.1.framework in Embed Libraries */,
+				CEF78EE926B99F530022CAF4 /* EGL.framework in Embed Libraries */,
+				CEF78EEA26B99F530022CAF4 /* epoxy.0.framework in Embed Libraries */,
+				CEF78EEB26B99F530022CAF4 /* GLESv2.framework in Embed Libraries */,
 			);
 			name = "Embed Libraries";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1325,12 +1325,12 @@
 				CE2D93B324AD46670059923A /* iconv.2.framework in Embed Libraries */,
 				CE2D93B424AD46670059923A /* qemu-mipsel-softmmu.framework in Embed Libraries */,
 				CE2D93B524AD46670059923A /* gstrtsp-1.0.0.framework in Embed Libraries */,
-				CE5451A626AF5F0F008594E5 /* virglrenderer.1.framework in Embed Libraries */,
 				CE2D93B624AD46670059923A /* spice-server.1.framework in Embed Libraries */,
 				CE2D93B824AD46670059923A /* gcrypt.20.framework in Embed Libraries */,
 				CE2D93B924AD46670059923A /* gstfft-1.0.0.framework in Embed Libraries */,
 				CE5451A826AF5F10008594E5 /* epoxy.0.framework in Embed Libraries */,
 				CE2D93BA24AD46670059923A /* gstpbutils-1.0.0.framework in Embed Libraries */,
+				CE5451A626AF5F0F008594E5 /* virglrenderer.1.framework in Embed Libraries */,
 			);
 			name = "Embed Libraries";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1396,6 +1396,10 @@
 				CEA45FB3263519B5002FA97D /* gcrypt.20.framework in Embed Libraries */,
 				CEA45FB4263519B5002FA97D /* gstfft-1.0.0.framework in Embed Libraries */,
 				CEA45FB5263519B5002FA97D /* gstpbutils-1.0.0.framework in Embed Libraries */,
+				CEF78EEF26B9B7870022CAF4 /* virglrenderer.1.framework in Embed Libraries */,
+				CEF78EE626B99F350022CAF4 /* EGL.framework in Embed Libraries */,
+				CEF78EE726B99F350022CAF4 /* epoxy.0.framework in Embed Libraries */,
+				CEF78EE826B99F350022CAF4 /* GLESv2.framework in Embed Libraries */,
 			);
 			name = "Embed Libraries";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2089,7 +2093,6 @@
 				CE2D933E24AD46670059923A /* libgsttypefindfunctions.a in Frameworks */,
 				CE2D933F24AD46670059923A /* libgstvideotestsrc.a in Frameworks */,
 				CE2D934024AD46670059923A /* libgstosxaudio.a in Frameworks */,
-				CE5451A926AF5F10008594E5 /* GLESv2.framework in Frameworks */,
 				CE2D934124AD46670059923A /* gmodule-2.0.0.framework in Frameworks */,
 				CE2D934224AD46670059923A /* jpeg.62.framework in Frameworks */,
 				CE2D934324AD46670059923A /* intl.8.framework in Frameworks */,
@@ -2116,14 +2119,11 @@
 				CE2D935524AD46670059923A /* gsttag-1.0.0.framework in Frameworks */,
 				CE2D935624AD46670059923A /* gio-2.0.0.framework in Frameworks */,
 				CE2D935724AD46670059923A /* gstvideo-1.0.0.framework in Frameworks */,
-				CE5451A526AF5F0F008594E5 /* virglrenderer.1.framework in Frameworks */,
 				CE2D935824AD46670059923A /* spice-client-glib-2.0.8.framework in Frameworks */,
 				CE2D935924AD46670059923A /* gstrtsp-1.0.0.framework in Frameworks */,
 				CE2D935A24AD46670059923A /* opus.0.framework in Frameworks */,
 				CE2D935B24AD46670059923A /* glib-2.0.0.framework in Frameworks */,
-				CE5451AB26AF5F10008594E5 /* EGL.framework in Frameworks */,
 				CE2D935C24AD46670059923A /* png16.16.framework in Frameworks */,
-				CE5451A726AF5F10008594E5 /* epoxy.0.framework in Frameworks */,
 				CE2D935D24AD46670059923A /* gstfft-1.0.0.framework in Frameworks */,
 				CE2D935E24AD46670059923A /* crypto.1.1.framework in Frameworks */,
 				CE2D935F24AD46670059923A /* gstpbutils-1.0.0.framework in Frameworks */,
@@ -2169,7 +2169,6 @@
 				CEF83F862500947D00557D15 /* gcrypt.20.framework in Frameworks */,
 				CE0B6ECB24AD677200FE012D /* gstcheck-1.0.0.framework in Frameworks */,
 				CE0B6F0724AD677200FE012D /* libgstvolume.a in Frameworks */,
-				CE5451B726AF5F81008594E5 /* GLESv2.framework in Frameworks */,
 				CE03D0C624D913C600F76B84 /* opus.0.framework in Frameworks */,
 				CE03D0C824D913FD00F76B84 /* pixman-1.0.framework in Frameworks */,
 				CE0B6EE524AD677200FE012D /* gstbase-1.0.0.framework in Frameworks */,
@@ -2192,7 +2191,6 @@
 				CE03D08624D90F0700F76B84 /* gmodule-2.0.0.framework in Frameworks */,
 				CE03D0CA24D9142000F76B84 /* ssl.1.1.framework in Frameworks */,
 				CE0B6EC624AD677200FE012D /* gstfft-1.0.0.framework in Frameworks */,
-				CE5451BA26AF5F81008594E5 /* EGL.framework in Frameworks */,
 				CE0B6EE624AD677200FE012D /* libgstaudiorate.a in Frameworks */,
 				CEF83F8A250094B200557D15 /* spice-server.1.framework in Frameworks */,
 				CE03D08924D90F0700F76B84 /* glib-2.0.0.framework in Frameworks */,
@@ -2202,8 +2200,6 @@
 				CE0B6F0224AD677200FE012D /* libgstjpeg.a in Frameworks */,
 				CE0B6EFC24AD677200FE012D /* libgstaudiotestsrc.a in Frameworks */,
 				CE0B6EF824AD677200FE012D /* gstsdp-1.0.0.framework in Frameworks */,
-				CE5451B826AF5F81008594E5 /* virglrenderer.1.framework in Frameworks */,
-				CE5451B926AF5F81008594E5 /* epoxy.0.framework in Frameworks */,
 				CE0B6EEA24AD677200FE012D /* libgstcoreelements.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2246,7 +2242,6 @@
 				CEA45F3C263519B5002FA97D /* gstapp-1.0.0.framework in Frameworks */,
 				CEA45F3D263519B5002FA97D /* gthread-2.0.0.framework in Frameworks */,
 				CEA45F3E263519B5002FA97D /* gstrtp-1.0.0.framework in Frameworks */,
-				CE5451B326AF5F7E008594E5 /* GLESv2.framework in Frameworks */,
 				CEA45F3F263519B5002FA97D /* gstriff-1.0.0.framework in Frameworks */,
 				CEA45F41263519B5002FA97D /* gstreamer-1.0.0.framework in Frameworks */,
 				CEA45F42263519B5002FA97D /* json-glib-1.0.0.framework in Frameworks */,
@@ -2269,7 +2264,6 @@
 				CEA45F54263519B5002FA97D /* opus.0.framework in Frameworks */,
 				CEA45F55263519B5002FA97D /* glib-2.0.0.framework in Frameworks */,
 				CEA45F56263519B5002FA97D /* png16.16.framework in Frameworks */,
-				CE5451B626AF5F7E008594E5 /* EGL.framework in Frameworks */,
 				CEA45F57263519B5002FA97D /* gstfft-1.0.0.framework in Frameworks */,
 				CEA45F58263519B5002FA97D /* crypto.1.1.framework in Frameworks */,
 				CEA45F59263519B5002FA97D /* gstpbutils-1.0.0.framework in Frameworks */,
@@ -2279,8 +2273,6 @@
 				CEA45F5D263519B5002FA97D /* gstsdp-1.0.0.framework in Frameworks */,
 				CEA45F5E263519B5002FA97D /* ssl.1.1.framework in Frameworks */,
 				CEA45F5F263519B5002FA97D /* spice-server.1.framework in Frameworks */,
-				CE5451B426AF5F7E008594E5 /* virglrenderer.1.framework in Frameworks */,
-				CE5451B526AF5F7E008594E5 /* epoxy.0.framework in Frameworks */,
 				CEA45F60263519B5002FA97D /* pixman-1.0.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
