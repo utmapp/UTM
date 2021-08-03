@@ -1,7 +1,7 @@
 From 178ae37602a7a3e7be8814a104b12f7421bdacc2 Mon Sep 17 00:00:00 2001
 From: osy <50960678+osy@users.noreply.github.com>
 Date: Mon, 2 Aug 2021 18:08:15 -0700
-Subject: [PATCH] tcti: fix build after latest TCG changes
+Subject: [PATCH 1/2] tcti: fix build after latest TCG changes
 
 ---
  accel/tcg/cpu-exec.c              | 5 +++++
@@ -67,6 +67,115 @@ index fa2ae5c40a..7eb3bb1c3d 100644
  // We don't have a simple gadget for this, since we're always assuming softmmu.
  #define TCG_TARGET_HAS_qemu_st8_i32     0
  
+-- 
+2.28.0
+
+From 8dfd81c4d180084437c39f0de47afa7357f43e9d Mon Sep 17 00:00:00 2001
+From: osy <50960678+osy@users.noreply.github.com>
+Date: Mon, 2 Aug 2021 21:02:02 -0700
+Subject: [PATCH 2/2] virtio-ramfb: enable GL if supported
+
+---
+ hw/display/virtio-ramfb.c | 49 ++++++++++++++++++++++++++++++++++++---
+ 1 file changed, 46 insertions(+), 3 deletions(-)
+
+diff --git a/hw/display/virtio-ramfb.c b/hw/display/virtio-ramfb.c
+index d08bb90a14..19a050ae5d 100644
+--- a/hw/display/virtio-ramfb.c
++++ b/hw/display/virtio-ramfb.c
+@@ -1,4 +1,5 @@
+ #include "qemu/osdep.h"
++#include "sysemu/sysemu.h"
+ #include "hw/pci/pci.h"
+ #include "ui/console.h"
+ #include "hw/qdev-properties.h"
+@@ -27,6 +28,18 @@ struct VirtIORAMFBBaseClass {
+     DeviceReset parent_reset;
+ };
+ 
++static int virtio_ramfb_get_flags(void *opaque)
++{
++    VirtIORAMFBBase *vramfb = opaque;
++    VirtIOGPUBase *g = vramfb->vgpu;
++
++    if (g->hw_ops->get_flags) {
++        return g->hw_ops->get_flags(g);
++    } else {
++        return 0;
++    }
++}
++
+ static void virtio_ramfb_invalidate_display(void *opaque)
+ {
+     VirtIORAMFBBase *vramfb = opaque;
+@@ -37,6 +50,16 @@ static void virtio_ramfb_invalidate_display(void *opaque)
+     }
+ }
+ 
++static void virtio_ramfb_text_update(void *opaque, console_ch_t *chardata)
++{
++    VirtIORAMFBBase *vramfb = opaque;
++    VirtIOGPUBase *g = vramfb->vgpu;
++
++    if (g->hw_ops->text_update) {
++        g->hw_ops->text_update(g, chardata);
++    }
++}
++
+ static void virtio_ramfb_update_display(void *opaque)
+ {
+     VirtIORAMFBBase *vramfb = opaque;
+@@ -70,11 +93,24 @@ static void virtio_ramfb_gl_block(void *opaque, bool block)
+     }
+ }
+ 
++static void virtio_ramfb_gl_flushed(void *opaque)
++{
++    VirtIORAMFBBase *vramfb = opaque;
++    VirtIOGPUBase *g = vramfb->vgpu;
++
++    if (g->hw_ops->gl_flushed) {
++        g->hw_ops->gl_flushed(g);
++    }
++}
++
+ static const GraphicHwOps virtio_ramfb_ops = {
++    .get_flags = virtio_ramfb_get_flags,
+     .invalidate = virtio_ramfb_invalidate_display,
+     .gfx_update = virtio_ramfb_update_display,
++    .text_update = virtio_ramfb_text_update,
+     .ui_info = virtio_ramfb_ui_info,
+     .gl_block = virtio_ramfb_gl_block,
++    .gl_flushed = virtio_ramfb_gl_flushed,
+ };
+ 
+ static const VMStateDescription vmstate_virtio_ramfb = {
+@@ -161,15 +197,22 @@ struct VirtIORAMFB {
+     VirtIORAMFBBase parent_obj;
+ 
+     VirtIOGPU     vdev;
++    VirtIOGPUGL   vdevgl;
+ };
+ 
+ static void virtio_ramfb_inst_initfn(Object *obj)
+ {
+     VirtIORAMFB *dev = VIRTIO_RAMFB(obj);
+ 
+-    virtio_instance_init_common(obj, &dev->vdev, sizeof(dev->vdev),
+-                                TYPE_VIRTIO_GPU);
+-    VIRTIO_RAMFB_BASE(dev)->vgpu = VIRTIO_GPU_BASE(&dev->vdev);
++    if (display_opengl) {
++        virtio_instance_init_common(obj, &dev->vdevgl, sizeof(dev->vdevgl),
++                                    TYPE_VIRTIO_GPU_GL);
++        VIRTIO_RAMFB_BASE(dev)->vgpu = VIRTIO_GPU_BASE(&dev->vdevgl);
++    } else {
++        virtio_instance_init_common(obj, &dev->vdev, sizeof(dev->vdev),
++                                    TYPE_VIRTIO_GPU);
++        VIRTIO_RAMFB_BASE(dev)->vgpu = VIRTIO_GPU_BASE(&dev->vdev);
++    }
+ }
+ 
+ static VirtioPCIDeviceTypeInfo virtio_ramfb_info = {
 -- 
 2.28.0
 
