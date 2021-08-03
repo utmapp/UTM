@@ -380,7 +380,12 @@ build_angle () {
     case $PLATFORM in
     ios* )
         TARGET_OS="ios"
-        IOS_ENABLE_CODE_SIGNING="ios_enable_code_signing=false"
+        IOS_BUILD_ARGS="ios_enable_code_signing=false"
+        if [ "$PLATFORM" == "ios_simulator" ]; then
+            IOS_BUILD_ARGS="$IOS_BUILD_ARGS target_environment=\"simulator\""
+        else
+            IOS_BUILD_ARGS="$IOS_BUILD_ARGS target_environment=\"device\""
+        fi
         ;;
     macos )
         TARGET_OS="mac"
@@ -400,7 +405,7 @@ build_angle () {
         TARGET_CPU="x64"
         ;;
     esac
-    gn gen "--args=is_debug=false angle_build_all=false angle_enable_metal=true angle_enable_gl=false angle_enable_glsl=true angle_enable_gl_desktop=false $IOS_ENABLE_CODE_SIGNING target_os=\"$TARGET_OS\" target_cpu=\"$TARGET_CPU\"" utm_build
+    gn gen "--args=is_debug=false angle_build_all=false angle_enable_metal=true angle_enable_gl=false angle_enable_glsl=true angle_enable_gl_desktop=false $IOS_BUILD_ARGS target_os=\"$TARGET_OS\" target_cpu=\"$TARGET_CPU\"" utm_build
     ninja -C utm_build -j $NCPU
     if [ "$TARGET_OS" == "ios" ]; then
         cp -a "utm_build/libEGL.framework/libEGL" "$PREFIX/lib/libEGL.dylib"
@@ -552,7 +557,7 @@ PLATFORM_FAMILY_NAME=
 while [ "x$1" != "x" ]; do
     case $1 in
     -a )
-        ARCH=$2
+        ARCH=$(echo "$2" | tr '[:upper:]' '[:lower:]')
         shift
         ;;
     -d | --download )
@@ -566,7 +571,7 @@ while [ "x$1" != "x" ]; do
         shift
         ;;
     -p )
-        PLATFORM=$2
+        PLATFORM=$(echo "$2" | tr '[:upper:]' '[:lower:]')
         shift
         ;;
     * )
