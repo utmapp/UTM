@@ -1,0 +1,72 @@
+From 178ae37602a7a3e7be8814a104b12f7421bdacc2 Mon Sep 17 00:00:00 2001
+From: osy <50960678+osy@users.noreply.github.com>
+Date: Mon, 2 Aug 2021 18:08:15 -0700
+Subject: [PATCH] tcti: fix build after latest TCG changes
+
+---
+ accel/tcg/cpu-exec.c              | 5 +++++
+ tcg/aarch64-tcti/tcg-target.c.inc | 6 ++----
+ tcg/aarch64-tcti/tcg-target.h     | 6 +-----
+ 3 files changed, 8 insertions(+), 9 deletions(-)
+
+diff --git a/accel/tcg/cpu-exec.c b/accel/tcg/cpu-exec.c
+index 462556a712..74e7833d8e 100644
+--- a/accel/tcg/cpu-exec.c
++++ b/accel/tcg/cpu-exec.c
+@@ -164,6 +164,11 @@ uint32_t curr_cflags(CPUState *cpu)
+     } else if (qemu_loglevel_mask(CPU_LOG_TB_NOCHAIN)) {
+         cflags |= CF_NO_GOTO_TB;
+     }
++#if defined(CONFIG_TCG_THREADED_INTERPRETER)
++    // GOTO_PTR is too complex to emit a simple gadget for.
++    // We'll let C handle it, since the overhead is similar.
++    cflags |= CF_NO_GOTO_TB;
++#endif
+ 
+     return cflags;
+ }
+diff --git a/tcg/aarch64-tcti/tcg-target.c.inc b/tcg/aarch64-tcti/tcg-target.c.inc
+index d7bb67a921..5a77d2f96d 100644
+--- a/tcg/aarch64-tcti/tcg-target.c.inc
++++ b/tcg/aarch64-tcti/tcg-target.c.inc
+@@ -1214,11 +1214,9 @@ static inline bool tcg_out_sti(TCGContext *s, TCGType type, TCGArg val,
+ }
+ 
+ /* Test if a constant matches the constraint. */
+-static int tcg_target_const_match(tcg_target_long val, TCGType type,
+-                                  const TCGArgConstraint *arg_ct)
++static bool tcg_target_const_match(int64_t val, TCGType type, int ct)
+ {
+-    /* No need to return 0 or 1, 0 or != 0 is good enough. */
+-    return arg_ct->ct & TCG_CT_CONST;
++    return ct & TCG_CT_CONST;
+ }
+ 
+ static void tcg_target_init(TCGContext *s)
+diff --git a/tcg/aarch64-tcti/tcg-target.h b/tcg/aarch64-tcti/tcg-target.h
+index fa2ae5c40a..7eb3bb1c3d 100644
+--- a/tcg/aarch64-tcti/tcg-target.h
++++ b/tcg/aarch64-tcti/tcg-target.h
+@@ -50,6 +50,7 @@
+ 
+ #define TCG_TARGET_INSN_UNIT_SIZE        1
+ #define TCG_TARGET_TLB_DISPLACEMENT_BITS 32
++#define MAX_CODE_GEN_BUFFER_SIZE  ((size_t)-1)
+ 
+ // We're an interpreted target; even if we're JIT-compiling to our interpreter's
+ // weird psuedo-native bytecode. We'll indicate that we're intepreted.
+@@ -142,11 +143,6 @@
+ #define TCG_TARGET_HAS_ctz_i64          0
+ #define TCG_TARGET_HAS_ctpop_i64        0
+ 
+-
+-// GOTO_PTR is too complex to emit a simple gadget for.
+-// We'll let C handle it, since the overhead is similar.
+-#define TCG_TARGET_HAS_goto_ptr         0
+-
+ // We don't have a simple gadget for this, since we're always assuming softmmu.
+ #define TCG_TARGET_HAS_qemu_st8_i32     0
+ 
+-- 
+2.28.0
+
