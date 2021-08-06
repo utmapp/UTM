@@ -26,7 +26,6 @@ class UTMImportFromWebTask: NSObject, URLSessionDelegate, URLSessionDownloadDele
     private var downloadTask: URLSessionTask!
     private var pendingVM: UTMPendingVirtualMachine!
     private(set) var isDone: Bool = false
-    private(set) var downloadProgress: Progress!
     
     init(data: UTMData, url: URL) {
         self.data = data
@@ -34,8 +33,9 @@ class UTMImportFromWebTask: NSObject, URLSessionDelegate, URLSessionDownloadDele
     }
     
     internal func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
+        self.downloadTask = nil
         DispatchQueue.main.async { [self] in
-            downloadProgress = nil
+            pendingVM.setDownloadProgress(1)
         }
         let fileManager = FileManager.default
         let tempDir = fileManager.temporaryDirectory
@@ -55,7 +55,6 @@ class UTMImportFromWebTask: NSObject, URLSessionDelegate, URLSessionDownloadDele
         } catch {
             logger.error(Logger.Message(stringLiteral: error.localizedDescription))
             try? fileManager.removeItem(at: downloadedZip)
-            pendingVM = nil
         }
         /// remove downloading VM View Model
         DispatchQueue.main.async { [self] in
@@ -65,13 +64,42 @@ class UTMImportFromWebTask: NSObject, URLSessionDelegate, URLSessionDownloadDele
         }
     }
     
+    /// received when the download progresses
+    func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didWriteData bytesWritten: Int64, totalBytesWritten: Int64, totalBytesExpectedToWrite: Int64) {
+        DispatchQueue.main.async { [self] in
+            guard pendingVM != nil else { return }
+            let progress = Float(totalBytesWritten) / Float(totalBytesExpectedToWrite)
+            pendingVM.setDownloadProgress(progress)
+        }
+    }
+    
+    /// when the session ends with an error, it could be cancelled or an actual error
+    internal func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
+        DispatchQueue.main.async { [self] in
+            /// make sure the session didn't already finish
+            guard pendingVM != nil else { return }
+            if let error = error {
+                let error = error as NSError
+                if error.code == NSURLErrorCancelled {
+                    /// download was cancelled normally
+                } else {
+                    /// other error
+                    logger.error("\(error.localizedDescription)")
+                    data.alertMessage = AlertMessage(error.localizedDescription)
+                }
+                isDone = true
+                data.removePendingVM(pendingVM)
+                pendingVM = nil
+            }
+        }
+    }
+    
     internal func urlSession(_ session: URLSession, didBecomeInvalidWithError error: Error?) {
-        /// make sure the session didn't already finish
-        guard self.downloadProgress != nil else { return }
-        if let error = error {
-            logger.error("\(error.localizedDescription)")
-            downloadProgress = nil
-            DispatchQueue.main.async { [self] in
+        DispatchQueue.main.async { [self] in
+            /// make sure the session didn't already finish
+            guard pendingVM != nil else { return }
+            if let error = error {
+                logger.error("\(error.localizedDescription)")
                 isDone = true
                 data.removePendingVM(pendingVM)
                 data.alertMessage = AlertMessage(error.localizedDescription)
@@ -103,14 +131,13 @@ class UTMImportFromWebTask: NSObject, URLSessionDelegate, URLSessionDownloadDele
         /// begin the download
         let session = URLSession(configuration: .ephemeral, delegate: self, delegateQueue: nil)
         downloadTask = session.downloadTask(with: url)
-        downloadProgress = downloadTask.progress
-        DispatchQueue.global(qos: .background).async { [self] in
-            downloadTask.resume()
-        }
+        downloadTask.resume()
         /// try to detect the filename from the URL
+        let filename = url.lastPathComponent
         var nameWithoutZIP = "UTM Virtual Machine"
-        if let index = url.lastPathComponent.range(of: ".zip", options: [])?.lowerBound {
-            nameWithoutZIP = String(url.lastPathComponent[..<index])
+        /// Try to get the start index of the `.zip` part of the filename
+        if let index = filename.range(of: ".zip", options: [])?.lowerBound {
+            nameWithoutZIP = String(filename[..<index])
         }
         pendingVM = UTMPendingVirtualMachine(name: nameWithoutZIP, importTask: self)
         return pendingVM
@@ -121,9 +148,6 @@ class UTMImportFromWebTask: NSObject, URLSessionDelegate, URLSessionDownloadDele
     func cancel() {
         guard !isDone && !downloadTask.progress.isFinished else { return }
         downloadTask.cancel()
-        downloadProgress = nil
-        isDone = true
-        data.removePendingVM(pendingVM)
-        pendingVM = nil
+        downloadTask = nil
     }
 }

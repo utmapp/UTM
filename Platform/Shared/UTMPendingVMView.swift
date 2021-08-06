@@ -18,7 +18,7 @@ import SwiftUI
 
 @available(iOS 14, macOS 11, *)
 struct UTMPendingVMView: View {
-    let vm: UTMPendingVirtualMachine
+    @ObservedObject var vm: UTMPendingVirtualMachine
     
     var body: some View {
         HStack(alignment: .center) {
@@ -40,8 +40,7 @@ struct UTMPendingVMView: View {
                     .font(.subheadline)
                     .frame(maxWidth: .infinity)
                     .overlay(
-                        ProgressView(vm.downloadProgress)
-                            .progressViewStyle(MinimalProgressViewStyle())
+                        MinimalProgressView(fractionCompleted: vm.downloadProgress)
                     )
             }
             .frame(maxHeight: 30)
@@ -51,17 +50,18 @@ struct UTMPendingVMView: View {
 }
 
 @available(iOS 14, macOS 11, *)
-struct MinimalProgressViewStyle: ProgressViewStyle {
-    func makeBody(configuration: Configuration) -> some View {
-        let fractionCompleted = CGFloat(configuration.fractionCompleted ?? 0)
-        
-        return ZStack {
+struct MinimalProgressView: View {
+    let fractionCompleted: CGFloat
+    
+    var body: some View {
+        ZStack {
             GeometryReader { frame in
                 RoundedRectangle(cornerRadius: frame.size.height/5)
                     .fill(Color.accentColor)
                     .frame(width: frame.size.width * fractionCompleted, height: frame.size.height/3)
             }
         }
+        .frame(maxWidth: .infinity)
         .padding(1)
     }
 }
