@@ -19,6 +19,9 @@ import SwiftUI
 @available(iOS 14, macOS 11, *)
 struct UTMPendingVMView: View {
     @ObservedObject var vm: UTMPendingVirtualMachine
+    #if os(macOS)
+    @State private var showCancelButton = false
+    #endif
     
     var body: some View {
         HStack(alignment: .center) {
@@ -32,6 +35,7 @@ struct UTMPendingVMView: View {
                         .font(.caption.weight(.medium))
                         .offset(y: -5)
                 )
+                .foregroundColor(.gray)
             
             VStack(alignment: .leading) {
                 Text(vm.name)
@@ -44,8 +48,29 @@ struct UTMPendingVMView: View {
                     )
             }
             .frame(maxHeight: 30)
+            .foregroundColor(.gray)
         }
-        .foregroundColor(.gray)
+        .overlay(
+            HStack {
+                Spacer()
+                #if os(macOS)
+                if showCancelButton {
+                    Button(action: {
+                        vm.cancel()
+                    }, label: {
+                        Image(systemName: "xmark.circle")
+                            .accessibility(label: Text("Cancel download"))
+                    })
+                    .clipShape(Circle())
+                }
+                #endif
+            }
+        )
+        .onHover(perform: { hovering in
+            #if os(macOS)
+            self.showCancelButton = hovering
+            #endif
+        })
     }
 }
 
