@@ -1,30 +1,48 @@
-From 178ae37602a7a3e7be8814a104b12f7421bdacc2 Mon Sep 17 00:00:00 2001
+From f71ace26c5a885d74512c86f0ef2e83a0408468e Mon Sep 17 00:00:00 2001
 From: osy <50960678+osy@users.noreply.github.com>
 Date: Mon, 2 Aug 2021 18:08:15 -0700
-Subject: [PATCH 1/2] tcti: fix build after latest TCG changes
+Subject: [PATCH 1/3] tcti: fix build after latest TCG changes
 
 ---
- accel/tcg/cpu-exec.c              | 5 +++++
+ accel/tcg/tcg-accel-ops.c         | 5 +++++
+ include/tcg/tcg-opc.h             | 4 ++++
  tcg/aarch64-tcti/tcg-target.c.inc | 6 ++----
  tcg/aarch64-tcti/tcg-target.h     | 6 +-----
- 3 files changed, 8 insertions(+), 9 deletions(-)
+ tcg/tcg.c                         | 8 +++++++-
+ 5 files changed, 19 insertions(+), 10 deletions(-)
 
-diff --git a/accel/tcg/cpu-exec.c b/accel/tcg/cpu-exec.c
-index 462556a712..74e7833d8e 100644
---- a/accel/tcg/cpu-exec.c
-+++ b/accel/tcg/cpu-exec.c
-@@ -164,6 +164,11 @@ uint32_t curr_cflags(CPUState *cpu)
-     } else if (qemu_loglevel_mask(CPU_LOG_TB_NOCHAIN)) {
-         cflags |= CF_NO_GOTO_TB;
-     }
+diff --git a/accel/tcg/tcg-accel-ops.c b/accel/tcg/tcg-accel-ops.c
+index 1a8e8390bd..bfc4105bcf 100644
+--- a/accel/tcg/tcg-accel-ops.c
++++ b/accel/tcg/tcg-accel-ops.c
+@@ -45,6 +45,11 @@ void tcg_cpu_init_cflags(CPUState *cpu, bool parallel)
+     uint32_t cflags = cpu->cluster_index << CF_CLUSTER_SHIFT;
+     cflags |= parallel ? CF_PARALLEL : 0;
+     cflags |= icount_enabled() ? CF_USE_ICOUNT : 0;
 +#if defined(CONFIG_TCG_THREADED_INTERPRETER)
 +    // GOTO_PTR is too complex to emit a simple gadget for.
 +    // We'll let C handle it, since the overhead is similar.
-+    cflags |= CF_NO_GOTO_TB;
++    cflags |= CF_NO_GOTO_PTR;
++#endif
+     cpu->tcg_cflags = cflags;
+ }
+ 
+diff --git a/include/tcg/tcg-opc.h b/include/tcg/tcg-opc.h
+index 675873e200..7db7899c86 100644
+--- a/include/tcg/tcg-opc.h
++++ b/include/tcg/tcg-opc.h
+@@ -194,7 +194,11 @@ DEF(insn_start, 0, 0, TLADDR_ARGS * TARGET_INSN_START_WORDS,
+     TCG_OPF_NOT_PRESENT)
+ DEF(exit_tb, 0, 0, 1, TCG_OPF_BB_EXIT | TCG_OPF_BB_END)
+ DEF(goto_tb, 0, 0, 1, TCG_OPF_BB_EXIT | TCG_OPF_BB_END)
++#if defined(CONFIG_TCG_THREADED_INTERPRETER)
++DEF(goto_ptr, 0, 1, 0, TCG_OPF_BB_EXIT | TCG_OPF_BB_END | TCG_OPF_NOT_PRESENT)
++#else
+ DEF(goto_ptr, 0, 1, 0, TCG_OPF_BB_EXIT | TCG_OPF_BB_END)
 +#endif
  
-     return cflags;
- }
+ DEF(plugin_cb_start, 0, 0, 3, TCG_OPF_NOT_PRESENT)
+ DEF(plugin_cb_end, 0, 0, 0, TCG_OPF_NOT_PRESENT)
 diff --git a/tcg/aarch64-tcti/tcg-target.c.inc b/tcg/aarch64-tcti/tcg-target.c.inc
 index d7bb67a921..5a77d2f96d 100644
 --- a/tcg/aarch64-tcti/tcg-target.c.inc
@@ -66,6 +84,31 @@ index fa2ae5c40a..7eb3bb1c3d 100644
 -
  // We don't have a simple gadget for this, since we're always assuming softmmu.
  #define TCG_TARGET_HAS_qemu_st8_i32     0
+ 
+diff --git a/tcg/tcg.c b/tcg/tcg.c
+index b6031417d6..4b6c5ba5e3 100644
+--- a/tcg/tcg.c
++++ b/tcg/tcg.c
+@@ -1175,13 +1175,19 @@ bool tcg_op_supported(TCGOpcode op)
+     case INDEX_op_insn_start:
+     case INDEX_op_exit_tb:
+     case INDEX_op_goto_tb:
+-    case INDEX_op_goto_ptr:
+     case INDEX_op_qemu_ld_i32:
+     case INDEX_op_qemu_st_i32:
+     case INDEX_op_qemu_ld_i64:
+     case INDEX_op_qemu_st_i64:
+         return true;
+ 
++    case INDEX_op_goto_ptr:
++#if defined(CONFIG_TCG_THREADED_INTERPRETER)
++        return false;
++#else
++        return true;
++#endif
++
+     case INDEX_op_qemu_st8_i32:
+         return TCG_TARGET_HAS_qemu_st8_i32;
  
 -- 
 2.28.0
