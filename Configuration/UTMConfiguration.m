@@ -87,16 +87,24 @@ const NSInteger kCurrentConfigurationVersion = 2;
     return (NSDictionary *)_rootDict;
 }
 
+- (NSString *)socketFileName {
+    NSString *name = self.systemUUID;
+    if (name.length < 8) {
+        name = [NSUUID UUID].UUIDString;
+    }
+    return [name substringToIndex:8];
+}
+
 - (NSURL*)terminalInputOutputURL {
     NSURL* tmpDir = [[NSFileManager defaultManager] temporaryDirectory];
-    NSString* ioFileName = [NSString stringWithFormat: @"%@.terminal", self.systemUUID];
+    NSString* ioFileName = [NSString stringWithFormat: @"%@.terminal", [self socketFileName]];
     NSURL* ioFile = [tmpDir URLByAppendingPathComponent: ioFileName];
     return ioFile;
 }
 
 - (NSURL*)spiceSocketURL {
     NSURL* tmpDir = [[NSFileManager defaultManager] temporaryDirectory];
-    NSString* sockName = [NSString stringWithFormat: @"%@.spice-socket", self.systemUUID];
+    NSString* sockName = [NSString stringWithFormat: @"%@.spice-socket", [self socketFileName]];
     NSURL* sockFile = [tmpDir URLByAppendingPathComponent: sockName];
     return sockFile;
 }

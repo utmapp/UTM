@@ -590,6 +590,10 @@ static size_t sysctl_read(const char *name) {
                      [self.configuration.displayCard hasSuffix:@"-gl"];
         }
         [self pushArgv:@"-spice"];
+        [self accessDataWithBookmark:[[spiceSocketURL URLByDeletingLastPathComponent] bookmarkDataWithOptions:0
+                                                                               includingResourceValuesForKeys:nil
+                                                                                                relativeToURL:nil
+                                                                                                        error:nil]];
         [self pushArgv:[NSString stringWithFormat:@"unix=on,addr=%@,disable-ticketing=on,image-compression=off,playback-compression=off,streaming-video=off,gl=%@", spiceSocketURL.path, isGLOn ? @"on" : @"off"]];
         [self pushArgv:@"-device"];
         [self pushArgv:self.configuration.displayCard];
