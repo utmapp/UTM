@@ -113,10 +113,10 @@ index b6031417d6..4b6c5ba5e3 100644
 -- 
 2.28.0
 
-From 8dfd81c4d180084437c39f0de47afa7357f43e9d Mon Sep 17 00:00:00 2001
+From b359778253e57c762b2215305561c5195f076a23 Mon Sep 17 00:00:00 2001
 From: osy <50960678+osy@users.noreply.github.com>
 Date: Mon, 2 Aug 2021 21:02:02 -0700
-Subject: [PATCH 2/2] virtio-ramfb: enable GL if supported
+Subject: [PATCH 2/3] virtio-ramfb: enable GL if supported
 
 ---
  hw/display/virtio-ramfb.c | 49 ++++++++++++++++++++++++++++++++++++---
@@ -219,6 +219,111 @@ index d08bb90a14..19a050ae5d 100644
  }
  
  static VirtioPCIDeviceTypeInfo virtio_ramfb_info = {
+-- 
+2.28.0
+
+From 573fc80babb6db2bc68dbbb2f5ae409d6343ec85 Mon Sep 17 00:00:00 2001
+From: osy <50960678+osy@users.noreply.github.com>
+Date: Sat, 7 Aug 2021 17:41:32 -0700
+Subject: [PATCH 3/3] spice-display: send IOSurfaceID through pipe
+
+This is still a hacky workaround to using mach ports but should support
+different processes on macOS.
+---
+ ui/spice-display.c | 47 ++++++++++++++++++++++++++++++----------------
+ 1 file changed, 31 insertions(+), 16 deletions(-)
+
+diff --git a/ui/spice-display.c b/ui/spice-display.c
+index 64ed3f37e9..8f1f3734b0 100644
+--- a/ui/spice-display.c
++++ b/ui/spice-display.c
+@@ -24,6 +24,9 @@
+ #include "qemu/queue.h"
+ #include "ui/console.h"
+ #include "trace.h"
++#ifdef CONFIG_IOSURFACE
++#include <TargetConditionals.h>
++#endif
+ 
+ #include "ui/spice-display.h"
+ 
+@@ -809,6 +812,9 @@ static int spice_iosurface_create(SimpleSpiceDisplay *ssd, int width, int height
+     AddIntegerValue(dict, kIOSurfaceHeight, height);
+     AddIntegerValue(dict, kIOSurfacePixelFormat, 'BGRA');
+     AddIntegerValue(dict, kIOSurfaceBytesPerElement, 4);
++#if TARGET_OS_OSX
++    CFDictionaryAddValue(dict, kIOSurfaceIsGlobal, kCFBooleanTrue);
++#endif
+ 
+     ssd->iosurface = IOSurfaceCreate(dict);
+     CFRelease(dict);
+@@ -881,6 +887,26 @@ static int spice_iosurface_resize(SimpleSpiceDisplay *ssd, int width, int height
+     }
+ }
+ 
++/* FIXME: use mach ports instead of this hack */
++static int spice_iosurface_create_fd(SimpleSpiceDisplay *ssd, int *fourcc)
++{
++    int fds[2];
++    IOSurfaceID surfaceid;
++
++    if (!ssd->iosurface) {
++        return -1;
++    }
++    if (pipe(fds) < 0) {
++        error_report("spice_iosurface_create_fd: failed to create pipe");
++        return -1;
++    }
++    *fourcc = 'BGRA';
++    surfaceid = IOSurfaceGetID(ssd->iosurface);
++    write(fds[1], &surfaceid, sizeof(surfaceid));
++    close(fds[1]);
++    return fds[0];
++}
++
+ static void spice_iosurface_blit(SimpleSpiceDisplay *ssd, GLuint src_texture, bool flip)
+ {
+     egl_fb tmp_fb = { .texture = src_texture };
+@@ -1029,15 +1055,11 @@ static void spice_gl_switch(DisplayChangeListener *dcl,
+         }
+ #elif defined(CONFIG_IOSURFACE)
+         if (spice_iosurface_resize(ssd, width, height)) {
+-            // FIXME: replace test code with mach ports!
+-            int fds[2];
+-            if (pipe(fds) != 0) {
++            fd = spice_iosurface_create_fd(ssd, &fourcc);
++            if (fd < 0) {
++                error_report("spice_gl_switch: failed to create fd");
++                return;
+             }
+-            fd = fds[0];
+-            fourcc = 'BGRA';
+-            CFRetain(ssd->iosurface);
+-            write(fds[1], &ssd->iosurface, sizeof(ssd->iosurface));
+-            close(fds[1]);
+         } else {
+             error_report("spice_gl_switch: failed to create IOSurface");
+             return;
+@@ -1117,18 +1139,11 @@ static void qemu_spice_gl_scanout_texture(void *dg,
+     fd = egl_get_fd_for_texture(tex_id, &stride, &fourcc, NULL);
+ #elif defined(CONFIG_IOSURFACE)
+     if (spice_iosurface_resize(ssd, backing_width, backing_height)) {
+-        // FIXME: replace test code with mach ports!
+ #if defined(CONFIG_ANGLE)
+         ssd->backing_borrow = backing_borrow;
+         ssd->backing_id = backing_id;
+ #endif
+-        int fds[2];
+-        pipe(fds);
+-        fd = fds[0];
+-        fourcc = 'BGRA';
+-        CFRetain(ssd->iosurface);
+-        write(fds[1], &ssd->iosurface, sizeof(ssd->iosurface));
+-        close(fds[1]);
++        fd = spice_iosurface_create_fd(ssd, &fourcc);
+     } else {
+         fd = -1;
+     }
 -- 
 2.28.0
 

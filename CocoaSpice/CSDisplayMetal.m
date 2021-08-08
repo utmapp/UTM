@@ -537,13 +537,17 @@ static void cs_channel_destroy(SpiceSession *s, SpiceChannel *channel, gpointer 
     if (!self.device) {
         return; // not ready
     }
+    IOSurfaceID iosurfaceid = 0;
     IOSurfaceRef iosurface = NULL;
-    if (read(self.scanout.fd, &iosurface, sizeof(iosurface)) != sizeof(iosurface)) {
+    if (read(self.scanout.fd, &iosurfaceid, sizeof(iosurfaceid)) != sizeof(iosurfaceid)) {
         UTMLog(@"Failed to read scanout fd: %d", self.scanout.fd);
         perror("read");
         return;
     }
-    //close(self.scanout.fd);
+    if ((iosurface = IOSurfaceLookup(iosurfaceid)) == NULL) {
+        UTMLog(@"Failed to lookup surface: %d", iosurfaceid);
+        return;
+    }
 
     MTLTextureDescriptor *textureDescriptor = [[MTLTextureDescriptor alloc] init];
     textureDescriptor.pixelFormat = MTLPixelFormatBGRA8Unorm;
