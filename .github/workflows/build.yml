@@ -115,8 +115,10 @@ jobs:
         run: sudo xcode-select -switch /Applications/Xcode_12.4.app
       - name: Build UTM
         run: |
-          ./scripts/build_utm.sh -p macos -a "arm64 x86_64" -o UTM
+          ./scripts/build_utm.sh -t "$SIGNING_TEAM_ID" -p macos -a "arm64 x86_64" -o UTM
           tar cf UTM.xcarchive.tgz UTM.xcarchive
+        env:
+          SIGNING_TEAM_ID: ${{ secrets.SIGNING_TEAM_ID }}
       - name: Upload UTM
         uses: actions/upload-artifact@v2
         with:

@@ -33,6 +33,7 @@ UTM_ENTITLEMENTS="/tmp/utm.entitlements"
 LAUNCHER_ENTITLEMENTS="/tmp/launcher.entitlements"
 HELPER_ENTITLEMENTS="/tmp/helper.entitlements"
 INPUT_COPY="/tmp/UTM.xcarchive"
+PRODUCT_BUNDLE_PREFIX="com.utmapp"
 
 cat >"$OPTIONS" <<EOL
 <?xml version="1.0" encoding="UTF-8"?>
@@ -47,11 +48,11 @@ cat >"$OPTIONS" <<EOL
 	<string>${MODE}</string>
 	<key>provisioningProfiles</key>
 	<dict>
-		<key>com.utmapp.UTM</key>
+		<key>${PRODUCT_BUNDLE_PREFIX}.UTM</key>
 		<string>${PROFILE_NAME}</string>
-		<key>com.utmapp.QEMUHelper</key>
+		<key>${PRODUCT_BUNDLE_PREFIX}.QEMUHelper</key>
 		<string>${HELPER_PROFILE_NAME}</string>
-		<key>com.utmapp.QEMULauncher</key>
+		<key>${PRODUCT_BUNDLE_PREFIX}.QEMULauncher</key>
 		<string>${LAUNCHER_PROFILE_NAME}</string>
 	</dict>
 	<key>signingStyle</key>
@@ -78,6 +79,13 @@ if [ "$MODE" == "unsigned" ]; then
 	/usr/libexec/PlistBuddy -c "Add :com.apple.security.cs.disable-library-validation bool true" "$LAUNCHER_ENTITLEMENTS"
 	/usr/libexec/PlistBuddy -c "Add :com.apple.security.cs.disable-library-validation bool true" "$HELPER_ENTITLEMENTS"
 fi
+
+if [ ! -z "$TEAM_ID" ]; then
+	TEAM_ID_PREFIX="${TEAM_ID}."
+fi
+
+/usr/libexec/PlistBuddy -c "Set :com.apple.security.application-groups:0 ${TEAM_ID_PREFIX}${PRODUCT_BUNDLE_PREFIX}" "$UTM_ENTITLEMENTS"
+/usr/libexec/PlistBuddy -c "Set :com.apple.security.application-groups:0 ${TEAM_ID_PREFIX}${PRODUCT_BUNDLE_PREFIX}" "$HELPER_ENTITLEMENTS"
 
 # ad-hoc sign with the right entitlements
 rm -rf "$INPUT_COPY"
