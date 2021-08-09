@@ -4416,7 +4416,7 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GCC_PREPROCESSOR_DEFINITIONS = (
-					"UTM_APP_GROUP=\"$(TeamIdentifierPrefix)$(PRODUCT_BUNDLE_PREFIX:default=com.utmapp)\"",
+					"UTM_APP_GROUP=\"$(TeamIdentifierPrefix)$(PRODUCT_BUNDLE_PREFIX:default=com.utmapp).UTM\"",
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = Platform/macOS/Info.plist;
@@ -4450,7 +4450,7 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GCC_PREPROCESSOR_DEFINITIONS = (
-					"UTM_APP_GROUP=\"$(TeamIdentifierPrefix)$(PRODUCT_BUNDLE_PREFIX:default=com.utmapp)\"",
+					"UTM_APP_GROUP=\"$(TeamIdentifierPrefix)$(PRODUCT_BUNDLE_PREFIX:default=com.utmapp).UTM\"",
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = Platform/macOS/Info.plist;

@@ -84,8 +84,8 @@ if [ ! -z "$TEAM_ID" ]; then
 	TEAM_ID_PREFIX="${TEAM_ID}."
 fi
 
-/usr/libexec/PlistBuddy -c "Set :com.apple.security.application-groups:0 ${TEAM_ID_PREFIX}${PRODUCT_BUNDLE_PREFIX}" "$UTM_ENTITLEMENTS"
-/usr/libexec/PlistBuddy -c "Set :com.apple.security.application-groups:0 ${TEAM_ID_PREFIX}${PRODUCT_BUNDLE_PREFIX}" "$HELPER_ENTITLEMENTS"
+/usr/libexec/PlistBuddy -c "Set :com.apple.security.application-groups:0 ${TEAM_ID_PREFIX}${PRODUCT_BUNDLE_PREFIX}.UTM" "$UTM_ENTITLEMENTS"
+/usr/libexec/PlistBuddy -c "Set :com.apple.security.application-groups:0 ${TEAM_ID_PREFIX}${PRODUCT_BUNDLE_PREFIX}.UTM" "$HELPER_ENTITLEMENTS"
 
 # ad-hoc sign with the right entitlements
 rm -rf "$INPUT_COPY"
