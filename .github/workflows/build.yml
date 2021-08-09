@@ -142,6 +142,12 @@ jobs:
         run: |
           tar xf UTM.xcarchive.tgz
           ./scripts/package.sh ipa UTM.xcarchive .
+      - name: Upload Artifact
+        if: github.event_name != 'release'
+        uses: actions/upload-artifact@v2
+        with:
+          name: UTM-ipa
+          path: UTM.ipa
       - name: Upload Release Asset
         if: github.event_name == 'release'
         uses: actions/upload-release-asset@v1.0.2
@@ -178,6 +184,12 @@ jobs:
         run: |
           tar xf UTM.xcarchive.tgz
           ./scripts/package.sh ipa-se UTM.xcarchive .
+      - name: Upload Artifact
+        if: github.event_name != 'release'
+        uses: actions/upload-artifact@v2
+        with:
+          name: UTM-SE-ipa
+          path: UTM SE.ipa
       - name: Upload Release Asset
         if: github.event_name == 'release'
         uses: actions/upload-release-asset@v1.0.2
@@ -214,6 +226,12 @@ jobs:
         run: |
           tar xf UTM.xcarchive.tgz
           ./scripts/package.sh deb UTM.xcarchive .
+      - name: Upload Artifact
+        if: github.event_name != 'release'
+        uses: actions/upload-artifact@v2
+        with:
+          name: UTM-deb
+          path: UTM.deb
       - name: Upload Release Asset
         if: github.event_name == 'release'
         uses: actions/upload-release-asset@v1.0.2
@@ -276,6 +294,12 @@ jobs:
         env:
           NOTARIZE_USERNAME: ${{ secrets.SIGNING_USERNAME }}
           NOTARIZE_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
+      - name: Upload Artifact
+        if: github.event_name != 'release'
+        uses: actions/upload-artifact@v2
+        with:
+          name: UTM-dmg
+          path: UTM.dmg
       - name: Upload Release Asset
         if: github.event_name == 'release'
         uses: actions/upload-release-asset@v1.0.2
