@@ -25,6 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface UTMTerminalIO : NSObject<UTMInputOutput>
 
 @property (nonatomic, strong, readonly) UTMTerminal* terminal;
+@property (nonatomic, readonly) BOOL isConnected;
 
 - (id)initWithConfiguration: (UTMConfiguration*) configuration;
 

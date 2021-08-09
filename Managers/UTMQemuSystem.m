@@ -90,7 +90,6 @@ static size_t sysctl_read(const char *name) {
         self.configuration = configuration;
         self.imgPath = imgPath;
         self.qmpPort = 4444;
-        self.spicePort = 5930;
         self.entry = start_qemu;
     }
     return self;
@@ -573,16 +572,21 @@ static size_t sysctl_read(const char *name) {
         // terminal character device
         NSURL* ioFile = [self.configuration terminalInputOutputURL];
         [self pushArgv: @"-chardev"];
-        [self accessDataWithBookmark:[[ioFile URLByDeletingLastPathComponent] bookmarkDataWithOptions:0
-                                                                       includingResourceValuesForKeys:nil
-                                                                                        relativeToURL:nil
-                                                                                                error:nil]];
         [self pushArgv: [NSString stringWithFormat: @"pipe,id=term0,path=%@", ioFile.path]];
         [self pushArgv: @"-serial"];
         [self pushArgv: @"chardev:term0"];
     } else {
+        NSURL *spiceSocketURL = self.configuration.spiceSocketURL;
+        BOOL isGLOn = NO;
+        // ANGLE Metal backend only supported on iOS 13+
+        if (@available(iOS 13, *)) {
+            // GL supported devices have suffix GL and virtio-ramfb
+            isGLOn = [self.configuration.displayCard isEqualToString:@"virtio-ramfb"] ||
+                     [self.configuration.displayCard containsString:@"-gl-"] ||
+                     [self.configuration.displayCard hasSuffix:@"-gl"];
+        }
         [self pushArgv:@"-spice"];
-        [self pushArgv:[NSString stringWithFormat:@"port=%lu,addr=127.0.0.1,disable-ticketing,image-compression=off,playback-compression=off,streaming-video=off", self.spicePort]];
+        [self pushArgv:[NSString stringWithFormat:@"unix=on,addr=%@,disable-ticketing=on,image-compression=off,playback-compression=off,streaming-video=off,gl=%@", spiceSocketURL.path, isGLOn ? @"on" : @"off"]];
         [self pushArgv:@"-device"];
         [self pushArgv:self.configuration.displayCard];
     }

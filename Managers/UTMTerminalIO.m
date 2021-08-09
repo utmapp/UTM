@@ -18,6 +18,12 @@
 #import "UTMTerminalIO.h"
 #import "UTMConfiguration.h"
 
+@interface UTMTerminalIO ()
+
+@property (nonatomic, readwrite) BOOL isConnected;
+
+@end
+
 @implementation UTMTerminalIO
 
 - (id)initWithConfiguration: (UTMConfiguration*) configuration {
@@ -40,12 +46,14 @@
     return [_terminal connectWithError: err];
 }
 
-- (void)connectWithCompletion: (void(^)(BOOL, NSString * _Nullable msg)) block {
+- (void)connectWithCompletion:(ioConnectCompletionHandler_t)block {
     // there's no connection to be made, so just return YES
+    self.isConnected = YES;
     block(YES, nil);
 }
 
 - (void)disconnect {
+    self.isConnected = NO;
     [_terminal disconnect];
 }
 
@@ -74,10 +82,6 @@
 //
 //    return result;
     return nil;
-}
-
-- (void)setDebugMode:(BOOL)debugMode {
-    UTMLog(@"%@ does not support debug mode.", NSStringFromClass([self class]));
 }
 
 - (void)syncViewState:(UTMViewState *)viewState {

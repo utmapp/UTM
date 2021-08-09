@@ -27,7 +27,6 @@ TARGETS = [
     Name("mipsel", "MIPS (Little Endian)"),
     Name("mips64", "MIPS64"),
     Name("mips64el", "MIPS64 (Little Endian)"),
-    Name("moxie", "Moxie"),
     Name("nios2", "NIOS2"),
     Name("or1k", "OpenRISC"),
     Name("ppc", "PowerPC"),

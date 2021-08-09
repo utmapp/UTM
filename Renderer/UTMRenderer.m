@@ -256,6 +256,7 @@ static matrix_float4x4 matrix_scale_translate(CGFloat scale, CGPoint translate)
             // GPU work is complete
             // Signal the semaphore to start the CPU work
             dispatch_semaphore_signal(renderDoneEvent);
+            [source rendererFrameHasRendered];
         }];
     }
 

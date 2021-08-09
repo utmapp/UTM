@@ -20,7 +20,7 @@ class VMDisplayMetalWindowController: VMDisplayWindowController {
     var metalView: VMMetalView!
     var renderer: UTMRenderer?
     
-    @objc fileprivate weak var vmDisplay: CSDisplayMetal?
+    @objc fileprivate dynamic weak var vmDisplay: CSDisplayMetal?
     @objc fileprivate weak var vmInput: CSInput?
     @objc fileprivate weak var vmUsbManager: CSUSBManager?
     

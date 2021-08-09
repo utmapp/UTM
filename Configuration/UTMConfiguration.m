@@ -24,6 +24,7 @@
 #import "UTMConfiguration+Sharing.h"
 #import "UTMConfiguration+System.h"
 #import "UTM-Swift.h"
+#import <TargetConditionals.h>
 
 const NSString *const kUTMConfigSystemKey = @"System";
 const NSString *const kUTMConfigDisplayKey = @"Display";
@@ -87,11 +88,27 @@ const NSInteger kCurrentConfigurationVersion = 2;
     return (NSDictionary *)_rootDict;
 }
 
-- (NSURL*)terminalInputOutputURL {
-    NSURL* tmpDir = [[NSFileManager defaultManager] temporaryDirectory];
-    NSString* ioFileName = [NSString stringWithFormat: @"%@.terminal", self.name];
-    NSURL* ioFile = [tmpDir URLByAppendingPathComponent: ioFileName];
+- (NSURL *)socketUrlWithSuffix:(NSString *)suffix {
+#if TARGET_OS_IPHONE
+    NSURL* parentDir = [[NSFileManager defaultManager] temporaryDirectory];
+#else
+    NSURL* parentDir = [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:@OS_STRINGIFY(UTM_APP_GROUP)];
+#endif
+    NSString *name = self.systemUUID;
+    if (name.length < 8) {
+        name = [NSUUID UUID].UUIDString;
+    }
+    NSString* ioFileName = [NSString stringWithFormat: @"%@.%@", name, suffix];
+    NSURL* ioFile = [parentDir URLByAppendingPathComponent:ioFileName];
     return ioFile;
+}
+
+- (NSURL*)terminalInputOutputURL {
+    return [self socketUrlWithSuffix:@"terminal"];
+}
+
+- (NSURL*)spiceSocketURL {
+    return [self socketUrlWithSuffix:@"spice"];
 }
 
 - (void)resetDefaults {
