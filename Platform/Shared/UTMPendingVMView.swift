@@ -32,7 +32,7 @@ struct UTMPendingVMView: View {
                 .aspectRatio(contentMode: .fit)
                 .overlay(
                     Image(systemName: "arrow.down.circle.fill")
-                        .font(.caption.weight(.medium))
+                        .font(Font.caption.weight(Font.Weight.medium))
                         .offset(y: -5)
                 )
                 .foregroundColor(.gray)
