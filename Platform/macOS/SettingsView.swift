@@ -53,7 +53,7 @@ struct SettingsView: View {
                     Text("Do not show prompt when USB device is plugged in")
                 })
             }
-        }.padding([.vertical])
+        }.padding(.vertical)
         .padding()
     }
 }
