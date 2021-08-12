@@ -140,6 +140,7 @@ NSString *const kSuspendSnapshotName = @"suspend";
     if (self) {
         self.parentPath = dstUrl;
         self.configuration = configuration;
+        self.configuration.selectedCustomIconPath = configuration.selectedCustomIconPath;
         self.viewState = [[UTMViewState alloc] init];
     }
     return self;
@@ -195,14 +196,16 @@ NSString *const kSuspendSnapshotName = @"suspend";
     }
     // save icon
     if (self.configuration.iconCustom && self.configuration.selectedCustomIconPath) {
-        NSURL *oldIconPath = [url URLByAppendingPathComponent:self.configuration.icon];
+        if (self.configuration.icon != nil) {
+            NSURL *oldIconPath = [url URLByAppendingPathComponent:self.configuration.icon];
+            // delete old icon
+            if ([fileManager fileExistsAtPath:oldIconPath.path]) {
+                [fileManager removeItemAtURL:oldIconPath error:&_err]; // Ignore error
+            }
+        }
         NSString *newIcon = self.configuration.selectedCustomIconPath.lastPathComponent;
         NSURL *newIconPath = [url URLByAppendingPathComponent:newIcon];
         
-        // delete old icon
-        if ([fileManager fileExistsAtPath:oldIconPath.path]) {
-            [fileManager removeItemAtURL:oldIconPath error:&_err]; // ignore error
-        }
         // copy new icon
         if (![fileManager copyItemAtURL:self.configuration.selectedCustomIconPath toURL:newIconPath error:&_err]) {
             goto error;
