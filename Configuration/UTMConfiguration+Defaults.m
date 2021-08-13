@@ -47,7 +47,15 @@
     self.consoleFont = @"Menlo";
     self.consoleFontSize = @12;
     self.consoleTheme = @"Default";
+#if TARGET_OS_OSX
+    if (@available(macOS 11.3, *)) {
+        self.networkMode = @"shared";
+    } else {
+        self.networkMode = @"emulated";
+    }
+#else
     self.networkMode = @"emulated";
+#endif
     self.soundEnabled = YES;
     self.soundCard = @"AC97";
     self.networkCard = @"rtl8139";

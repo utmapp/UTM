@@ -32,6 +32,8 @@ jobs:
             platform: ios
           - arch: x86_64
             platform: ios-tci
+          - arch: arm64
+            platform: ios_simulator # FIXME: enable when ANGLE supports it
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -113,8 +115,10 @@ jobs:
         run: sudo xcode-select -switch /Applications/Xcode_12.4.app
       - name: Build UTM
         run: |
-          ./scripts/build_utm.sh -p macos -a "arm64 x86_64" -o UTM
+          ./scripts/build_utm.sh -t "$SIGNING_TEAM_ID" -p macos -a "arm64 x86_64" -o UTM
           tar cf UTM.xcarchive.tgz UTM.xcarchive
+        env:
+          SIGNING_TEAM_ID: ${{ secrets.SIGNING_TEAM_ID }}
       - name: Upload UTM
         uses: actions/upload-artifact@v2
         with:
@@ -193,6 +197,12 @@ jobs:
         run: |
           tar xf UTM.xcarchive.tgz
           ./scripts/package.sh ipa UTM.xcarchive .
+      - name: Upload Artifact
+        if: github.event_name != 'release'
+        uses: actions/upload-artifact@v2
+        with:
+          name: UTM-ipa
+          path: UTM.ipa
       - name: Upload Release Asset
         if: github.event_name == 'release'
         uses: actions/upload-release-asset@v1.0.2
@@ -229,6 +239,12 @@ jobs:
         run: |
           tar xf UTM.xcarchive.tgz
           ./scripts/package.sh ipa-se UTM.xcarchive .
+      - name: Upload Artifact
+        if: github.event_name != 'release'
+        uses: actions/upload-artifact@v2
+        with:
+          name: UTM-SE-ipa
+          path: UTM SE.ipa
       - name: Upload Release Asset
         if: github.event_name == 'release'
         uses: actions/upload-release-asset@v1.0.2
@@ -265,6 +281,12 @@ jobs:
         run: |
           tar xf UTM.xcarchive.tgz
           ./scripts/package.sh deb UTM.xcarchive .
+      - name: Upload Artifact
+        if: github.event_name != 'release'
+        uses: actions/upload-artifact@v2
+        with:
+          name: UTM-deb
+          path: UTM.deb
       - name: Upload Release Asset
         if: github.event_name == 'release'
         uses: actions/upload-release-asset@v1.0.2
@@ -301,11 +323,14 @@ jobs:
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
           echo $PROFILE_DATA | base64 --decode -o ~/Library/MobileDevice/Provisioning\ Profiles/$PROFILE_UUID.provisionprofile
           echo $HELPER_PROFILE_DATA | base64 --decode -o ~/Library/MobileDevice/Provisioning\ Profiles/$HELPER_PROFILE_UUID.provisionprofile
+          echo $LAUNCHER_PROFILE_DATA | base64 --decode -o ~/Library/MobileDevice/Provisioning\ Profiles/$LAUNCHER_PROFILE_UUID.provisionprofile
         env:
           PROFILE_DATA: ${{ secrets.PROFILE_DATA }}
           PROFILE_UUID: ${{ secrets.PROFILE_UUID }}
           HELPER_PROFILE_DATA: ${{ secrets.HELPER_PROFILE_DATA }}
           HELPER_PROFILE_UUID: ${{ secrets.HELPER_PROFILE_UUID }}
+          LAUNCHER_PROFILE_DATA: ${{ secrets.LAUNCHER_PROFILE_DATA }}
+          LAUNCHER_PROFILE_UUID: ${{ secrets.LAUNCHER_PROFILE_UUID }}
       - name: Download Artifact
         uses: actions/download-artifact@v2
         with:
@@ -313,16 +338,23 @@ jobs:
       - name: Package for Release
         run: |
           tar xf UTM.xcarchive.tgz
-          ./scripts/package_mac.sh developer-id UTM.xcarchive . "$SIGNING_TEAM_ID" "$PROFILE_UUID" "$HELPER_PROFILE_UUID"
+          ./scripts/package_mac.sh developer-id UTM.xcarchive . "$SIGNING_TEAM_ID" "$PROFILE_UUID" "$HELPER_PROFILE_UUID" "$LAUNCHER_PROFILE_UUID"
         env:
           SIGNING_TEAM_ID: ${{ secrets.SIGNING_TEAM_ID }}
           PROFILE_UUID: ${{ secrets.PROFILE_UUID }}
           HELPER_PROFILE_UUID: ${{ secrets.HELPER_PROFILE_UUID }}
+          LAUNCHER_PROFILE_UUID: ${{ secrets.LAUNCHER_PROFILE_UUID }}
       - name: Notarize app
         run: npx notarize-cli --file "UTM.dmg" --bundle-id "com.utmapp.UTM"
         env:
           NOTARIZE_USERNAME: ${{ secrets.SIGNING_USERNAME }}
           NOTARIZE_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
+      - name: Upload Artifact
+        if: github.event_name != 'release'
+        uses: actions/upload-artifact@v2
+        with:
+          name: UTM-dmg
+          path: UTM.dmg
       - name: Upload Release Asset
         if: github.event_name == 'release'
         uses: actions/upload-release-asset@v1.0.2

@@ -112,6 +112,8 @@ static void utm_migration_pass_handler(int64_t pass, void *ctx) {
 @interface UTMQemuManager ()
 
 @property (nonatomic, readwrite) BOOL isConnected;
+@property (nonatomic, readwrite) NSInteger retries;
+@property (nonatomic, nullable) qemuManagerCompletionHandler_t completionCallback;
 
 @end
 
@@ -171,8 +173,14 @@ void qmp_rpc_call(CFDictionaryRef args, CFDictionaryRef *ret, Error **err, void 
     }
 }
 
-- (void)connect {
+- (void)connectWithCompletion:(qemuManagerCompletionHandler_t)block retries:(NSInteger)retries {
+    self.completionCallback = block;
+    self.retries = retries;
     [_jsonStream connect];
+}
+
+- (void)cancelConnectRetry {
+    self.retries = 0;
 }
 
 - (void)disconnect {
@@ -191,12 +199,15 @@ void qmp_rpc_call(CFDictionaryRef args, CFDictionaryRef *ret, Error **err, void 
         _rpc_finish(nil, error);
     }
     [self disconnect];
-    if (self.retries > 0) {
+    if (!self.isConnected && self.retries > 0) {
         self.retries--;
-        UTMLog(@"QMP connection failed, retries left: %d", self.retries);
+        UTMLog(@"QMP connection failed, retries left: %ld", (long)self.retries);
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, kRetryWait), dispatch_get_main_queue(), ^{
             [self->_jsonStream connect];
         });
+    } else if (!self.isConnected && self.completionCallback) {
+        self.completionCallback(NO, error);
+        self.completionCallback = nil;
     }
 }
 
@@ -222,7 +233,10 @@ void qmp_rpc_call(CFDictionaryRef args, CFDictionaryRef *ret, Error **err, void 
             *stop = YES;
         } else if ([key isEqualToString:@"QMP"]) {
             UTMLog(@"Got QMP handshake: %@", dict);
-            [self qmpEnterCommandModeWithError:nil]; // TODO: handle error
+            NSError *error;
+            BOOL success = [self qmpEnterCommandModeWithError:&error];
+            self.completionCallback(success, error);
+            self.completionCallback = nil;
             *stop = YES;
         }
     }];
@@ -247,15 +261,21 @@ void qmp_rpc_call(CFDictionaryRef args, CFDictionaryRef *ret, Error **err, void 
     } else {
         self.isConnected = YES;
         [self.delegate qemuQmpDidConnect:self];
-        qmp_cont(&qerr, (__bridge void *)self);
-        if (qerr != NULL) {
-            if (error) {
-                *error = [self errorForQerror:qerr];
-                error_free(qerr);
-            }
-            self.isConnected = NO;
-            return NO;
+        return YES;
+    }
+}
+
+- (BOOL)continueBootWithError:(NSError * _Nullable __autoreleasing *)error {
+    Error *qerr = NULL;
+    qmp_cont(&qerr, (__bridge void *)self);
+    if (qerr != NULL) {
+        if (error) {
+            *error = [self errorForQerror:qerr];
+            error_free(qerr);
         }
+        self.isConnected = NO;
+        return NO;
+    } else {
         return YES;
     }
 }

@@ -18,6 +18,11 @@ import SwiftUI
 
 @available(iOS 14, macOS 11, *)
 struct VMConfigQEMUView: View {
+    private struct Argument: Identifiable {
+        let id: Int
+        let string: String
+    }
+    
     @ObservedObject var config: UTMConfiguration
     @State private var newArg: String = ""
     @State private var showExportLog: Bool = false
@@ -52,19 +57,19 @@ struct VMConfigQEMUView: View {
                         Text("Advanced: Bypass configuration and manually specify arguments")
                     })
                     let qemuSystem = UTMQemuSystem(configuration: config, imgPath: URL(fileURLWithPath: "Images"))
-                    let fixedArgs = qemuSystem.argv
+                    let fixedArgs = arguments(from: qemuSystem.argv)
                     #if os(macOS)
                     VStack {
-                        ForEach(fixedArgs, id: \.self) { arg in
-                            TextField("", text: .constant(arg))
+                        ForEach(fixedArgs) { arg in
+                            TextField("", text: .constant(arg.string))
                         }.disabled(true)
                         CustomArguments(config: config)
                         TextField("New...", text: $newArg, onEditingChanged: addArg)
                     }
                     #else
                     List {
-                        ForEach(fixedArgs, id: \.self) { arg in
-                            Text(arg)
+                        ForEach(fixedArgs) { arg in
+                            Text(arg.string)
                         }.foregroundColor(.secondary)
                         CustomArguments(config: config)
                         TextField("New...", text: $newArg, onEditingChanged: addArg)
@@ -119,6 +124,12 @@ struct VMConfigQEMUView: View {
             }
         }
         return [argString]
+    }
+    
+    private func arguments(from list: [String]) -> [Argument] {
+        list.indices.map { i in
+            Argument(id: i, string: list[i])
+        }
     }
 }
 

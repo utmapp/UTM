@@ -7,8 +7,9 @@ command -v realpath >/dev/null 2>&1 || realpath() {
 BASEDIR="$(dirname "$(realpath $0)")"
 
 usage () {
-    echo "Usage: $(basename $0) [-p platform] [-a architecture] [-t targetversion] [-o output]"
+    echo "Usage: $(basename $0)  [-t teamid] [-p platform] [-a architecture] [-t targetversion] [-o output]"
     echo ""
+    echo "  -t teamid        Team Identifier for app groups. Optional for iOS. Required for macOS."
     echo "  -p platform      Target platform. Default ios. [ios|ios_simulator|ios-tci|ios_simulator-tci|macos]"
     echo "  -a architecture  Target architecture. Default arm64. [armv7|armv7s|arm64|i386|x86_64]"
     echo "  -o output        Output archive path. Default is current directory."
@@ -16,6 +17,7 @@ usage () {
     exit 1
 }
 
+TEAM_IDENTIFIER=
 ARCH=arm64
 PLATFORM=ios
 OUTPUT=$PWD
@@ -24,6 +26,10 @@ SCHEME=
 
 while [ "x$1" != "x" ]; do
     case $1 in
+    -t )
+        TEAM_IDENTIFIER=$2
+        shift
+        ;;
     -a )
         ARCH=$2
         shift
@@ -74,5 +80,8 @@ macos )
 esac
 
 ARCH_ARGS=$(echo $ARCH | xargs printf -- "-arch %s ")
+if [ ! -z "$TEAM_IDENTIFIER" ]; then
+    TEAM_IDENTIFIER_PREFIX="TeamIdentifierPrefix=${TEAM_IDENTIFIER}."
+fi
 
-xcodebuild archive -archivePath "$OUTPUT" -scheme "$SCHEME" -sdk "$SDK" $ARCH_ARGS -configuration Release CODE_SIGNING_ALLOWED=NO
+xcodebuild archive -archivePath "$OUTPUT" -scheme "$SCHEME" -sdk "$SDK" $ARCH_ARGS -configuration Release CODE_SIGNING_ALLOWED=NO $TEAM_IDENTIFIER_PREFIX

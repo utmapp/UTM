@@ -23,6 +23,7 @@ struct SettingsView: View {
     @AppStorage("NoHypervisor") var isNoHypervisor = false
     @AppStorage("CtrlRightClick") var isCtrlRightClick = false
     @AppStorage("NoUsbPrompt") var isNoUsbPrompt = false
+    @AppStorage("UseOnlyPcores") var isUseOnlyPcores = false
     
     var body: some View {
         Form {
@@ -37,6 +38,9 @@ struct SettingsView: View {
             Section(header: Text("Acceleration")) {
                 Toggle(isOn: $isNoHypervisor, label: {
                     Text("Force slower emulation even when hypervisor is available")
+                })
+                Toggle(isOn: $isUseOnlyPcores, label: {
+                    Text("Use only performance cores by default")
                 })
             }
             Section(header: Text("Input")) {
@@ -60,6 +64,7 @@ extension UserDefaults {
     @objc dynamic var NoHypervisor: Bool { false }
     @objc dynamic var CtrlRightClick: Bool { false }
     @objc dynamic var NoUsbPrompt: Bool { false }
+    @objc dynamic var UseOnlyPcores: Bool { false }
 }
 
 @available(macOS 11, *)

@@ -252,6 +252,11 @@ static void cs_connection_destroy(SpiceSession *session,
     return nshost;
 }
 
+- (void)setUnixSocketURL:(NSURL *)unixSocketURL {
+    g_object_set(self.spiceSession, "unix-path", unixSocketURL.path.UTF8String, NULL);
+    _unixSocketURL = unixSocketURL;
+}
+
 - (void)dealloc {
     UTMLog(@"%s:%d", __FUNCTION__, __LINE__);
     g_signal_handlers_disconnect_by_func(self.spiceSession, G_CALLBACK(cs_channel_new), GLIB_OBJC_RELEASE(self));
@@ -261,27 +266,40 @@ static void cs_connection_destroy(SpiceSession *session,
     self.spiceSession = NULL;
 }
 
+- (void)finishInit {
+    UTMLog(@"%s:%d", __FUNCTION__, __LINE__);
+    g_signal_connect(self.spiceSession, "channel-new",
+                     G_CALLBACK(cs_channel_new), GLIB_OBJC_RETAIN(self));
+    g_signal_connect(self.spiceSession, "channel-destroy",
+                     G_CALLBACK(cs_channel_destroy), GLIB_OBJC_RETAIN(self));
+    g_signal_connect(self.spiceSession, "disconnected",
+                     G_CALLBACK(cs_connection_destroy), GLIB_OBJC_RETAIN(self));
+    
+#if !defined(WITH_QEMU_TCI)
+    SpiceUsbDeviceManager *manager = spice_usb_device_manager_get(self.spiceSession, NULL);
+    g_assert(manager != NULL);
+    self.usbManager = [[CSUSBManager alloc] initWithUsbDeviceManager:manager];
+#endif
+    self.input = [[CSInput alloc] initWithSession:self.spiceSession];
+    self.session = [[CSSession alloc] initWithSession:self.spiceSession];
+    self.monitors = [NSArray<CSDisplayMetal *> array];
+}
+
 - (instancetype)initWithHost:(NSString *)host port:(NSString *)port {
     if (self = [super init]) {
         self.spiceSession = spice_session_new();
         self.host = host;
         self.port = port;
-        UTMLog(@"%s:%d", __FUNCTION__, __LINE__);
-        g_signal_connect(self.spiceSession, "channel-new",
-                         G_CALLBACK(cs_channel_new), GLIB_OBJC_RETAIN(self));
-        g_signal_connect(self.spiceSession, "channel-destroy",
-                         G_CALLBACK(cs_channel_destroy), GLIB_OBJC_RETAIN(self));
-        g_signal_connect(self.spiceSession, "disconnected",
-                         G_CALLBACK(cs_connection_destroy), GLIB_OBJC_RETAIN(self));
-        
-#if !defined(WITH_QEMU_TCI)
-        SpiceUsbDeviceManager *manager = spice_usb_device_manager_get(self.spiceSession, NULL);
-        g_assert(manager != NULL);
-        self.usbManager = [[CSUSBManager alloc] initWithUsbDeviceManager:manager];
-#endif
-        self.input = [[CSInput alloc] initWithSession:self.spiceSession];
-        self.session = [[CSSession alloc] initWithSession:self.spiceSession];
-        self.monitors = [NSArray<CSDisplayMetal *> array];
+        [self finishInit];
+    }
+    return self;
+}
+
+- (instancetype)initWithUnixSocketFile:(NSURL *)socketFile {
+    if (self = [super init]) {
+        self.spiceSession = spice_session_new();
+        self.unixSocketURL = socketFile;
+        [self finishInit];
     }
     return self;
 }

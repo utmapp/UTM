@@ -8,7 +8,7 @@ command -v realpath >/dev/null 2>&1 || realpath() {
 BASEDIR="$(dirname "$(realpath $0)")"
 
 if [ $# -lt 3 ]; then
-	echo "usage: $0 MODE UTM.xcarchive outputPath [TEAM_ID PROFILE_NAME HELPER_PROFILE_NAME]"
+	echo "usage: $0 MODE UTM.xcarchive outputPath [TEAM_ID PROFILE_NAME HELPER_PROFILE_NAME LAUNCHER_PROFILE_NAME]"
 	echo "  MODE is one of:"
 	echo "          unsigned (unsigned DMG)"
 	echo "          developer-id (signed DMG)"
@@ -16,6 +16,7 @@ if [ $# -lt 3 ]; then
 	echo "  TEAM_ID is required if not unsigned"
 	echo "  PROFILE_NAME is required if not unsigned, can be the name or UUID"
 	echo "  HELPER_PROFILE_NAME is required if not unsigned, can be the name or UUID"
+	echo "  LAUNCHER_PROFILE_NAME is required if not unsigned, can be the name or UUID"
 	exit 1
 fi
 
@@ -25,12 +26,14 @@ OUTPUT=$3
 TEAM_ID=$4
 PROFILE_NAME=$5
 HELPER_PROFILE_NAME=$6
+LAUNCHER_PROFILE_NAME=$7
 OPTIONS="/tmp/options.plist"
 SIGNED="/tmp/signed"
 UTM_ENTITLEMENTS="/tmp/utm.entitlements"
 LAUNCHER_ENTITLEMENTS="/tmp/launcher.entitlements"
 HELPER_ENTITLEMENTS="/tmp/helper.entitlements"
 INPUT_COPY="/tmp/UTM.xcarchive"
+PRODUCT_BUNDLE_PREFIX="com.utmapp"
 
 cat >"$OPTIONS" <<EOL
 <?xml version="1.0" encoding="UTF-8"?>
@@ -45,10 +48,12 @@ cat >"$OPTIONS" <<EOL
 	<string>${MODE}</string>
 	<key>provisioningProfiles</key>
 	<dict>
-		<key>com.utmapp.UTM</key>
+		<key>${PRODUCT_BUNDLE_PREFIX}.UTM</key>
 		<string>${PROFILE_NAME}</string>
-		<key>com.utmapp.QEMUHelper</key>
+		<key>${PRODUCT_BUNDLE_PREFIX}.QEMUHelper</key>
 		<string>${HELPER_PROFILE_NAME}</string>
+		<key>${PRODUCT_BUNDLE_PREFIX}.QEMULauncher</key>
+		<string>${LAUNCHER_PROFILE_NAME}</string>
 	</dict>
 	<key>signingStyle</key>
 	<string>manual</string>
@@ -69,16 +74,24 @@ cp "$BASEDIR/../QEMUHelper/QEMUHelper.entitlements" "$HELPER_ENTITLEMENTS"
 if [ "$MODE" == "unsigned" ]; then
 	/usr/libexec/PlistBuddy -c "Delete :com.apple.vm.device-access" "$UTM_ENTITLEMENTS"
 	/usr/libexec/PlistBuddy -c "Delete :com.apple.vm.networking" "$HELPER_ENTITLEMENTS"
+	/usr/libexec/PlistBuddy -c "Delete :com.apple.vm.networking" "$LAUNCHER_ENTITLEMENTS"
 	/usr/libexec/PlistBuddy -c "Add :com.apple.security.cs.disable-library-validation bool true" "$UTM_ENTITLEMENTS"
 	/usr/libexec/PlistBuddy -c "Add :com.apple.security.cs.disable-library-validation bool true" "$LAUNCHER_ENTITLEMENTS"
 	/usr/libexec/PlistBuddy -c "Add :com.apple.security.cs.disable-library-validation bool true" "$HELPER_ENTITLEMENTS"
 fi
 
+if [ ! -z "$TEAM_ID" ]; then
+	TEAM_ID_PREFIX="${TEAM_ID}."
+fi
+
+/usr/libexec/PlistBuddy -c "Set :com.apple.security.application-groups:0 ${TEAM_ID_PREFIX}${PRODUCT_BUNDLE_PREFIX}.UTM" "$UTM_ENTITLEMENTS"
+/usr/libexec/PlistBuddy -c "Set :com.apple.security.application-groups:0 ${TEAM_ID_PREFIX}${PRODUCT_BUNDLE_PREFIX}.UTM" "$HELPER_ENTITLEMENTS"
+
 # ad-hoc sign with the right entitlements
 rm -rf "$INPUT_COPY"
 cp -a "$INPUT" "$INPUT_COPY"
 find "$INPUT_COPY/Products/Applications/UTM.app" -type d -path '*/Frameworks/*.framework' -exec codesign --force --sign - --timestamp=none \{\} \;
-codesign --force --sign - --entitlements "$LAUNCHER_ENTITLEMENTS" --timestamp=none --options runtime "$INPUT_COPY/Products/Applications/UTM.app/Contents/XPCServices/QEMUHelper.xpc/Contents/MacOS/QEMULauncher"
+codesign --force --sign - --entitlements "$LAUNCHER_ENTITLEMENTS" --timestamp=none --options runtime "$INPUT_COPY/Products/Applications/UTM.app/Contents/XPCServices/QEMUHelper.xpc/Contents/MacOS/QEMULauncher.app/Contents/MacOS/QEMULauncher"
 codesign --force --sign - --entitlements "$HELPER_ENTITLEMENTS" --timestamp=none --options runtime "$INPUT_COPY/Products/Applications/UTM.app/Contents/XPCServices/QEMUHelper.xpc/Contents/MacOS/QEMUHelper"
 codesign --force --sign - --entitlements "$UTM_ENTITLEMENTS" --timestamp=none --options runtime "$INPUT_COPY/Products/Applications/UTM.app/Contents/MacOS/UTM"
 

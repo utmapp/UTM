@@ -29,6 +29,9 @@
 		2CE8EB0A2572E173000E2EBB /* qapi-visit-block-export.c in Sources */ = {isa = PBXBuildFile; fileRef = 2CE8EB082572E173000E2EBB /* qapi-visit-block-export.c */; };
 		2CE8EB41257811E8000E2EBB /* UTMConfiguration+Defaults.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CE8EB40257811E8000E2EBB /* UTMConfiguration+Defaults.m */; };
 		2CE8EB42257811E8000E2EBB /* UTMConfiguration+Defaults.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CE8EB40257811E8000E2EBB /* UTMConfiguration+Defaults.m */; };
+		8401FD71269BEB2B00265F0D /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = CE6B240A25F1F3CE0020D43E /* main.c */; };
+		8401FD72269BEB3000265F0D /* Bootstrap.c in Sources */ = {isa = PBXBuildFile; fileRef = CE0DF17125A80B6300A51894 /* Bootstrap.c */; };
+		8401FD7A269BECE200265F0D /* QEMULauncher.app in Embed Launcher */ = {isa = PBXBuildFile; fileRef = 8401FD62269BE9C500265F0D /* QEMULauncher.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		CE020BA324AEDC7C00B44AB6 /* UTMData.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE020BA224AEDC7C00B44AB6 /* UTMData.swift */; };
 		CE020BA424AEDC7C00B44AB6 /* UTMData.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE020BA224AEDC7C00B44AB6 /* UTMData.swift */; };
 		CE020BA724AEDEF000B44AB6 /* Logging in Frameworks */ = {isa = PBXBuildFile; productRef = CE020BA624AEDEF000B44AB6 /* Logging */; };
@@ -287,7 +290,6 @@
 		CE0DF19E25A83C1700A51894 /* qemu-mips64-softmmu.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63F422653C7400FC7E63 /* qemu-mips64-softmmu.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CE0DF19F25A83C1700A51894 /* qemu-mips64el-softmmu.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D640822653C7500FC7E63 /* qemu-mips64el-softmmu.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CE0DF1A025A83C1700A51894 /* qemu-mipsel-softmmu.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D640622653C7500FC7E63 /* qemu-mipsel-softmmu.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CE0DF1A125A83C1700A51894 /* qemu-moxie-softmmu.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63EA22653C7400FC7E63 /* qemu-moxie-softmmu.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CE0DF1A225A83C1700A51894 /* qemu-nios2-softmmu.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63DF22653C7400FC7E63 /* qemu-nios2-softmmu.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CE0DF1A325A83C1700A51894 /* qemu-or1k-softmmu.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D640B22653C7500FC7E63 /* qemu-or1k-softmmu.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CE0DF1A425A83C1700A51894 /* qemu-ppc-softmmu.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63E722653C7400FC7E63 /* qemu-ppc-softmmu.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
@@ -547,7 +549,6 @@
 		CE2D938124AD46670059923A /* crypto.1.1.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D640A22653C7500FC7E63 /* crypto.1.1.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CE2D938224AD46670059923A /* qemu-riscv64-softmmu.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63FB22653C7500FC7E63 /* qemu-riscv64-softmmu.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CE2D938324AD46670059923A /* gstapp-1.0.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63DB22653C7300FC7E63 /* gstapp-1.0.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CE2D938424AD46670059923A /* qemu-moxie-softmmu.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63EA22653C7400FC7E63 /* qemu-moxie-softmmu.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CE2D938524AD46670059923A /* qemu-microblaze-softmmu.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63E422653C7400FC7E63 /* qemu-microblaze-softmmu.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CE2D938624AD46670059923A /* qemu-sh4-softmmu.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D640222653C7500FC7E63 /* qemu-sh4-softmmu.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CE2D938824AD46670059923A /* gsttag-1.0.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63F622653C7400FC7E63 /* gsttag-1.0.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
@@ -642,10 +643,11 @@
 		CE4EF2702506DBFD00E9D33B /* VMRemovableDrivesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE4EF26F2506DBFD00E9D33B /* VMRemovableDrivesViewController.swift */; };
 		CE4EF2722506DD7900E9D33B /* VMRemovableDrivesView.xib in Resources */ = {isa = PBXBuildFile; fileRef = CE4EF2712506DD7900E9D33B /* VMRemovableDrivesView.xib */; };
 		CE5076DB250AB55D00C26C19 /* VMDisplayMetalViewController+Pencil.m in Sources */ = {isa = PBXBuildFile; fileRef = CE5076DA250AB55D00C26C19 /* VMDisplayMetalViewController+Pencil.m */; };
+		CE5451A626AF5F0F008594E5 /* virglrenderer.1.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE5451A126AF5F0F008594E5 /* virglrenderer.1.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		CE5451A826AF5F10008594E5 /* epoxy.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE5451A226AF5F0F008594E5 /* epoxy.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		CE5451AA26AF5F10008594E5 /* GLESv2.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE5451A326AF5F0F008594E5 /* GLESv2.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		CE5451AC26AF5F10008594E5 /* EGL.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE5451A426AF5F0F008594E5 /* EGL.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		CE612AC624D3B50700FA6300 /* VMDisplayWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE612AC524D3B50700FA6300 /* VMDisplayWindowController.swift */; };
-		CE6B240B25F1F3CE0020D43E /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = CE6B240A25F1F3CE0020D43E /* main.c */; };
-		CE6B241125F1F53E0020D43E /* Bootstrap.c in Sources */ = {isa = PBXBuildFile; fileRef = CE0DF17125A80B6300A51894 /* Bootstrap.c */; };
-		CE6B241525F1F5780020D43E /* QEMULauncher in CopyFiles */ = {isa = PBXBuildFile; fileRef = CE6B240825F1F3CE0020D43E /* QEMULauncher */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CE6D21DC2553A6ED001D29C5 /* VMConfirmActionModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE6D21DB2553A6ED001D29C5 /* VMConfirmActionModifier.swift */; };
 		CE6D21DD2553A6ED001D29C5 /* VMConfirmActionModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE6D21DB2553A6ED001D29C5 /* VMConfirmActionModifier.swift */; };
 		CE772AAC25C8B0F600E4E379 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE772AAB25C8B0F600E4E379 /* ContentView.swift */; };
@@ -1105,6 +1107,14 @@
 		CEDF83FA258AE24E0030E4AC /* UTMPasteboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEDF83F8258AE24E0030E4AC /* UTMPasteboard.swift */; };
 		CEEC811B24E48EC700ACB0B3 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEEC811A24E48EC600ACB0B3 /* SettingsView.swift */; };
 		CEECE13C25E47D9500A2AAB8 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEECE13B25E47D9500A2AAB8 /* AppDelegate.swift */; };
+		CEF78EE626B99F350022CAF4 /* EGL.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE5451A426AF5F0F008594E5 /* EGL.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		CEF78EE726B99F350022CAF4 /* epoxy.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE5451A226AF5F0F008594E5 /* epoxy.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		CEF78EE826B99F350022CAF4 /* GLESv2.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE5451A326AF5F0F008594E5 /* GLESv2.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		CEF78EE926B99F530022CAF4 /* EGL.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE5451A426AF5F0F008594E5 /* EGL.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		CEF78EEA26B99F530022CAF4 /* epoxy.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE5451A226AF5F0F008594E5 /* epoxy.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		CEF78EEB26B99F530022CAF4 /* GLESv2.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE5451A326AF5F0F008594E5 /* GLESv2.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		CEF78EEF26B9B7870022CAF4 /* virglrenderer.1.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE5451A126AF5F0F008594E5 /* virglrenderer.1.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		CEF78EF026B9B7910022CAF4 /* virglrenderer.1.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE5451A126AF5F0F008594E5 /* virglrenderer.1.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		CEF83EBA24F9ABEA00557D15 /* UTMQemuManager+BlockDevices.m in Sources */ = {isa = PBXBuildFile; fileRef = CEF83EB924F9ABEA00557D15 /* UTMQemuManager+BlockDevices.m */; };
 		CEF83EBB24F9ABEA00557D15 /* UTMQemuManager+BlockDevices.m in Sources */ = {isa = PBXBuildFile; fileRef = CEF83EB924F9ABEA00557D15 /* UTMQemuManager+BlockDevices.m */; };
 		CEF83EBE24F9C3BF00557D15 /* UTMVirtualMachine+Drives.m in Sources */ = {isa = PBXBuildFile; fileRef = CEF83EBD24F9C3BF00557D15 /* UTMVirtualMachine+Drives.m */; };
@@ -1139,14 +1149,19 @@
 		EE37FBC8268AC16800DC204F /* VMListPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE37FBC7268AC16800DC204F /* VMListPage.swift */; };
 		EE37FBD2268AC5E700DC204F /* SettingsPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE37FBD1268AC5E700DC204F /* SettingsPage.swift */; };
 		EE37FBD9268ACDE500DC204F /* InformationPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE37FBD8268ACDE500DC204F /* InformationPage.swift */; };
+		FFB02A8C266CB09C006CD71A /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = FFB02A8A266CB09C006CD71A /* InfoPlist.strings */; };
+		FFB02A8D266CB09C006CD71A /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = FFB02A8A266CB09C006CD71A /* InfoPlist.strings */; };
+		FFB02A90266CB09C006CD71A /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = FFB02A8E266CB09C006CD71A /* InfoPlist.strings */; };
+		FFB02A93266CB09C006CD71A /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = FFB02A91266CB09C006CD71A /* InfoPlist.strings */; };
+		FFB02A96266CB09C006CD71A /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = FFB02A94266CB09C006CD71A /* Localizable.strings */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		CE6B241225F1F55C0020D43E /* PBXContainerItemProxy */ = {
+		8401FD7B269BECF200265F0D /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = CE550BC1225947990063E575 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = CE6B240725F1F3CE0020D43E;
+			remoteGlobalIDString = 8401FD61269BE9C500265F0D;
 			remoteInfo = QEMULauncher;
 		};
 		CE9A353226533A52005077CF /* PBXContainerItemProxy */ = {
@@ -1231,7 +1246,6 @@
 				CE0DF19E25A83C1700A51894 /* qemu-mips64-softmmu.framework in Embed Libraries */,
 				CE0DF19F25A83C1700A51894 /* qemu-mips64el-softmmu.framework in Embed Libraries */,
 				CE0DF1A025A83C1700A51894 /* qemu-mipsel-softmmu.framework in Embed Libraries */,
-				CE0DF1A125A83C1700A51894 /* qemu-moxie-softmmu.framework in Embed Libraries */,
 				CE0DF1A225A83C1700A51894 /* qemu-nios2-softmmu.framework in Embed Libraries */,
 				CE0DF1A325A83C1700A51894 /* qemu-or1k-softmmu.framework in Embed Libraries */,
 				CE0DF1A425A83C1700A51894 /* qemu-ppc-softmmu.framework in Embed Libraries */,
@@ -1247,6 +1261,10 @@
 				CE0DF1AE25A83C1700A51894 /* qemu-x86_64-softmmu.framework in Embed Libraries */,
 				CE0DF1AF25A83C1700A51894 /* qemu-xtensa-softmmu.framework in Embed Libraries */,
 				CE0DF1B025A83C1700A51894 /* qemu-xtensaeb-softmmu.framework in Embed Libraries */,
+				CEF78EF026B9B7910022CAF4 /* virglrenderer.1.framework in Embed Libraries */,
+				CEF78EE926B99F530022CAF4 /* EGL.framework in Embed Libraries */,
+				CEF78EEA26B99F530022CAF4 /* epoxy.0.framework in Embed Libraries */,
+				CEF78EEB26B99F530022CAF4 /* GLESv2.framework in Embed Libraries */,
 			);
 			name = "Embed Libraries";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1272,7 +1290,6 @@
 				CE2D938124AD46670059923A /* crypto.1.1.framework in Embed Libraries */,
 				CE2D938224AD46670059923A /* qemu-riscv64-softmmu.framework in Embed Libraries */,
 				CE2D938324AD46670059923A /* gstapp-1.0.0.framework in Embed Libraries */,
-				CE2D938424AD46670059923A /* qemu-moxie-softmmu.framework in Embed Libraries */,
 				CE9A353526533A52005077CF /* JailbreakInterposer.framework in Embed Libraries */,
 				CE2D938524AD46670059923A /* qemu-microblaze-softmmu.framework in Embed Libraries */,
 				CE2D938624AD46670059923A /* qemu-sh4-softmmu.framework in Embed Libraries */,
@@ -1299,12 +1316,14 @@
 				CE2D939B24AD46670059923A /* qemu-alpha-softmmu.framework in Embed Libraries */,
 				CE2D939C24AD46670059923A /* qemu-sh4eb-softmmu.framework in Embed Libraries */,
 				CE2D939D24AD46670059923A /* glib-2.0.0.framework in Embed Libraries */,
+				CE5451AC26AF5F10008594E5 /* EGL.framework in Embed Libraries */,
 				CE2D939E24AD46670059923A /* qemu-x86_64-softmmu.framework in Embed Libraries */,
 				CE2D939F24AD46670059923A /* qemu-xtensaeb-softmmu.framework in Embed Libraries */,
 				CEA9054525F982CA00801E7C /* usb-1.0.0.framework in Embed Libraries */,
 				CE2D93A024AD46670059923A /* qemu-arm-softmmu.framework in Embed Libraries */,
 				CE2D93A124AD46670059923A /* intl.8.framework in Embed Libraries */,
 				CE2D93A224AD46670059923A /* gstreamer-1.0.0.framework in Embed Libraries */,
+				CE5451AA26AF5F10008594E5 /* GLESv2.framework in Embed Libraries */,
 				CE2D93A324AD46670059923A /* gstvideo-1.0.0.framework in Embed Libraries */,
 				CE2D93A424AD46670059923A /* json-glib-1.0.0.framework in Embed Libraries */,
 				CE2D93A524AD46670059923A /* pixman-1.0.framework in Embed Libraries */,
@@ -1325,19 +1344,22 @@
 				CE2D93B624AD46670059923A /* spice-server.1.framework in Embed Libraries */,
 				CE2D93B824AD46670059923A /* gcrypt.20.framework in Embed Libraries */,
 				CE2D93B924AD46670059923A /* gstfft-1.0.0.framework in Embed Libraries */,
+				CE5451A826AF5F10008594E5 /* epoxy.0.framework in Embed Libraries */,
 				CE2D93BA24AD46670059923A /* gstpbutils-1.0.0.framework in Embed Libraries */,
+				CE5451A626AF5F0F008594E5 /* virglrenderer.1.framework in Embed Libraries */,
 			);
 			name = "Embed Libraries";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		CE6B241425F1F5630020D43E /* CopyFiles */ = {
+		CE6B241425F1F5630020D43E /* Embed Launcher */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
 			dstSubfolderSpec = 6;
 			files = (
-				CE6B241525F1F5780020D43E /* QEMULauncher in CopyFiles */,
+				8401FD7A269BECE200265F0D /* QEMULauncher.app in Embed Launcher */,
 			);
+			name = "Embed Launcher";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		CEA45F71263519B5002FA97D /* Embed Libraries */ = {
@@ -1390,6 +1412,10 @@
 				CEA45FB3263519B5002FA97D /* gcrypt.20.framework in Embed Libraries */,
 				CEA45FB4263519B5002FA97D /* gstfft-1.0.0.framework in Embed Libraries */,
 				CEA45FB5263519B5002FA97D /* gstpbutils-1.0.0.framework in Embed Libraries */,
+				CEF78EEF26B9B7870022CAF4 /* virglrenderer.1.framework in Embed Libraries */,
+				CEF78EE626B99F350022CAF4 /* EGL.framework in Embed Libraries */,
+				CEF78EE726B99F350022CAF4 /* epoxy.0.framework in Embed Libraries */,
+				CEF78EE826B99F350022CAF4 /* GLESv2.framework in Embed Libraries */,
 			);
 			name = "Embed Libraries";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1441,6 +1467,7 @@
 		52873FDA247F5B1B0063E4C8 /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
 		83FBDD53242FA71900D2C5D7 /* VMDisplayMetalViewController+Pointer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "VMDisplayMetalViewController+Pointer.h"; sourceTree = "<group>"; };
 		83FBDD55242FA7BC00D2C5D7 /* VMDisplayMetalViewController+Pointer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "VMDisplayMetalViewController+Pointer.m"; sourceTree = "<group>"; };
+		8401FD62269BE9C500265F0D /* QEMULauncher.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = QEMULauncher.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C8958B6C243634DA002D86B4 /* ko */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ko; path = ko.lproj/Main.strings; sourceTree = "<group>"; };
 		C8958B6D243634DA002D86B4 /* ko */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ko; path = ko.lproj/Localizable.strings; sourceTree = "<group>"; };
 		CE020BA224AEDC7C00B44AB6 /* UTMData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMData.swift; sourceTree = "<group>"; };
@@ -1734,7 +1761,6 @@
 		CE2D63E622653C7400FC7E63 /* qemu-cris-softmmu.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = "qemu-cris-softmmu.framework"; path = "$(SYSROOT_DIR)/Frameworks/qemu-cris-softmmu.framework"; sourceTree = "<group>"; };
 		CE2D63E722653C7400FC7E63 /* qemu-ppc-softmmu.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = "qemu-ppc-softmmu.framework"; path = "$(SYSROOT_DIR)/Frameworks/qemu-ppc-softmmu.framework"; sourceTree = "<group>"; };
 		CE2D63E822653C7400FC7E63 /* gstbase-1.0.0.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = "gstbase-1.0.0.framework"; path = "$(SYSROOT_DIR)/Frameworks/gstbase-1.0.0.framework"; sourceTree = "<group>"; };
-		CE2D63EA22653C7400FC7E63 /* qemu-moxie-softmmu.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = "qemu-moxie-softmmu.framework"; path = "$(SYSROOT_DIR)/Frameworks/qemu-moxie-softmmu.framework"; sourceTree = "<group>"; };
 		CE2D63EB22653C7400FC7E63 /* qemu-m68k-softmmu.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = "qemu-m68k-softmmu.framework"; path = "$(SYSROOT_DIR)/Frameworks/qemu-m68k-softmmu.framework"; sourceTree = "<group>"; };
 		CE2D63EC22653C7400FC7E63 /* qemu-tricore-softmmu.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = "qemu-tricore-softmmu.framework"; path = "$(SYSROOT_DIR)/Frameworks/qemu-tricore-softmmu.framework"; sourceTree = "<group>"; };
 		CE2D63ED22653C7400FC7E63 /* qemu-xtensa-softmmu.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = "qemu-xtensa-softmmu.framework"; path = "$(SYSROOT_DIR)/Frameworks/qemu-xtensa-softmmu.framework"; sourceTree = "<group>"; };
@@ -1857,6 +1883,10 @@
 		CE5425362437DDE900E520F7 /* UTMConfiguration+Constants.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UTMConfiguration+Constants.m"; sourceTree = "<group>"; };
 		CE5425382439334400E520F7 /* CSSession.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CSSession.h; sourceTree = "<group>"; };
 		CE5425392439334400E520F7 /* CSSession.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CSSession.m; sourceTree = "<group>"; };
+		CE5451A126AF5F0F008594E5 /* virglrenderer.1.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = virglrenderer.1.framework; path = "$(SYSROOT_DIR)/Frameworks/virglrenderer.1.framework"; sourceTree = "<group>"; };
+		CE5451A226AF5F0F008594E5 /* epoxy.0.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = epoxy.0.framework; path = "$(SYSROOT_DIR)/Frameworks/epoxy.0.framework"; sourceTree = "<group>"; };
+		CE5451A326AF5F0F008594E5 /* GLESv2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLESv2.framework; path = "$(SYSROOT_DIR)/Frameworks/GLESv2.framework"; sourceTree = "<group>"; };
+		CE5451A426AF5F0F008594E5 /* EGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = EGL.framework; path = "$(SYSROOT_DIR)/Frameworks/EGL.framework"; sourceTree = "<group>"; };
 		CE550BCC225947990063E575 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		CE550BCD225947990063E575 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		CE550BCF225947990063E575 /* VMListViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VMListViewController.h; sourceTree = "<group>"; };
@@ -1874,7 +1904,6 @@
 		CE66450E2269355F00B0849A /* CocoaSpice.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CocoaSpice.h; sourceTree = "<group>"; };
 		CE66450F226935F000B0849A /* CSInput.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CSInput.h; sourceTree = "<group>"; };
 		CE664510226935F000B0849A /* CSInput.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CSInput.m; sourceTree = "<group>"; };
-		CE6B240825F1F3CE0020D43E /* QEMULauncher */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = QEMULauncher; sourceTree = BUILT_PRODUCTS_DIR; };
 		CE6B240A25F1F3CE0020D43E /* main.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
 		CE6B240F25F1F43A0020D43E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		CE6B241025F1F4B30020D43E /* QEMULauncher.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = QEMULauncher.entitlements; sourceTree = "<group>"; };
@@ -2053,9 +2082,20 @@
 		EE37FBC7268AC16800DC204F /* VMListPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMListPage.swift; sourceTree = "<group>"; };
 		EE37FBD1268AC5E700DC204F /* SettingsPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsPage.swift; sourceTree = "<group>"; };
 		EE37FBD8268ACDE500DC204F /* InformationPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InformationPage.swift; sourceTree = "<group>"; };
+		FFB02A8B266CB09C006CD71A /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
+		FFB02A8F266CB09C006CD71A /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
+		FFB02A92266CB09C006CD71A /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
+		FFB02A95266CB09C006CD71A /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/Localizable.strings"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		8401FD5F269BE9C500265F0D /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		CE2D932B24AD46670059923A /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -2310,6 +2350,10 @@
 		CE2D63D622653C7300FC7E63 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				CE5451A426AF5F0F008594E5 /* EGL.framework */,
+				CE5451A226AF5F0F008594E5 /* epoxy.0.framework */,
+				CE5451A326AF5F0F008594E5 /* GLESv2.framework */,
+				CE5451A126AF5F0F008594E5 /* virglrenderer.1.framework */,
 				CEA9058725FC69D100801E7C /* usbredirhost.1.framework */,
 				CEA9058825FC69D100801E7C /* usbredirparser.1.framework */,
 				CEA9053725F981E900801E7C /* usb-1.0.0.framework */,
@@ -2380,7 +2424,6 @@
 				CE2D63F422653C7400FC7E63 /* qemu-mips64-softmmu.framework */,
 				CE2D640822653C7500FC7E63 /* qemu-mips64el-softmmu.framework */,
 				CE2D640622653C7500FC7E63 /* qemu-mipsel-softmmu.framework */,
-				CE2D63EA22653C7400FC7E63 /* qemu-moxie-softmmu.framework */,
 				CE2D63DF22653C7400FC7E63 /* qemu-nios2-softmmu.framework */,
 				CE2D640B22653C7500FC7E63 /* qemu-or1k-softmmu.framework */,
 				CE2D63E722653C7400FC7E63 /* qemu-ppc-softmmu.framework */,
@@ -2439,6 +2482,7 @@
 				CE2D953E24AD4F980059923A /* VMConfigNetworkPortForwardView.swift */,
 				CE2D953D24AD4F980059923A /* VMSettingsView.swift */,
 				CE2D954124AD4F980059923A /* Info.plist */,
+				FFB02A8E266CB09C006CD71A /* InfoPlist.strings */,
 				CE2D953F24AD4F980059923A /* macOS.entitlements */,
 			);
 			path = macOS;
@@ -2458,6 +2502,7 @@
 				CE2D954D24AD4F980059923A /* VMConfigNetworkPortForwardView.swift */,
 				CE2D954C24AD4F980059923A /* VMSettingsView.swift */,
 				CE2D954F24AD4F980059923A /* Info.plist */,
+				FFB02A8A266CB09C006CD71A /* InfoPlist.strings */,
 				5286EC91243748AC007E6CBC /* Settings.bundle */,
 			);
 			path = iOS;
@@ -2800,10 +2845,10 @@
 				CE2D93BE24AD46670059923A /* UTM.app */,
 				CE2D951C24AD48BE0059923A /* UTM.app */,
 				CEBDA1DA24D8BDDA0010B5EC /* QEMUHelper.xpc */,
-				CE6B240825F1F3CE0020D43E /* QEMULauncher */,
 				CEA45FB9263519B5002FA97D /* UTM SE.app */,
 				CE9A352D26533A51005077CF /* JailbreakInterposer.framework */,
 				EE37FBA1268A915E00DC204F /* UTM SEUITests.xctest */,
+				8401FD62269BE9C500265F0D /* QEMULauncher.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -3036,6 +3081,8 @@
 				CEBDA1DE24D8BDDB0010B5EC /* QEMUHelper.m */,
 				CEBDA1E024D8BDDB0010B5EC /* main.m */,
 				CEBDA1E224D8BDDB0010B5EC /* Info.plist */,
+				FFB02A94266CB09C006CD71A /* Localizable.strings */,
+				FFB02A91266CB09C006CD71A /* InfoPlist.strings */,
 			);
 			path = QEMUHelper;
 			sourceTree = "<group>";
@@ -3163,6 +3210,23 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
+		8401FD61269BE9C500265F0D /* QEMULauncher */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 8401FD6E269BE9C600265F0D /* Build configuration list for PBXNativeTarget "QEMULauncher" */;
+			buildPhases = (
+				8401FD5E269BE9C500265F0D /* Sources */,
+				8401FD5F269BE9C500265F0D /* Frameworks */,
+				8401FD60269BE9C500265F0D /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = QEMULauncher;
+			productName = QEMULauncher;
+			productReference = 8401FD62269BE9C500265F0D /* QEMULauncher.app */;
+			productType = "com.apple.product-type.application";
+		};
 		CE2D926824AD46670059923A /* iOS */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = CE2D93BB24AD46670059923A /* Build configuration list for PBXNativeTarget "iOS" */;
@@ -3210,21 +3274,6 @@
 			productName = UTM;
 			productReference = CE2D951C24AD48BE0059923A /* UTM.app */;
 			productType = "com.apple.product-type.application";
-		};
-		CE6B240725F1F3CE0020D43E /* QEMULauncher */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = CE6B240E25F1F3CE0020D43E /* Build configuration list for PBXNativeTarget "QEMULauncher" */;
-			buildPhases = (
-				CE6B240425F1F3CE0020D43E /* Sources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			name = QEMULauncher;
-			productName = QEMULauncher;
-			productReference = CE6B240825F1F3CE0020D43E /* QEMULauncher */;
-			productType = "com.apple.product-type.tool";
 		};
 		CE9A352C26533A51005077CF /* JailbreakInterposer */ = {
 			isa = PBXNativeTarget;
@@ -3274,12 +3323,12 @@
 				CEBDA1D624D8BDDA0010B5EC /* Sources */,
 				CEBDA1D724D8BDDA0010B5EC /* Frameworks */,
 				CEBDA1D824D8BDDA0010B5EC /* Resources */,
-				CE6B241425F1F5630020D43E /* CopyFiles */,
+				CE6B241425F1F5630020D43E /* Embed Launcher */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				CE6B241325F1F55C0020D43E /* PBXTargetDependency */,
+				8401FD7C269BECF200265F0D /* PBXTargetDependency */,
 			);
 			name = QEMUHelper;
 			productName = QEMUHelper;
@@ -3314,15 +3363,15 @@
 				LastUpgradeCheck = 1020;
 				ORGANIZATIONNAME = osy;
 				TargetAttributes = {
+					8401FD61269BE9C500265F0D = {
+						CreatedOnToolsVersion = 12.4;
+					};
 					CE2D926824AD46670059923A = {
 						LastSwiftMigration = 1200;
 					};
 					CE2D951B24AD48BE0059923A = {
 						CreatedOnToolsVersion = 12.0;
 						LastSwiftMigration = 1200;
-					};
-					CE6B240725F1F3CE0020D43E = {
-						CreatedOnToolsVersion = 12.5;
 					};
 					CE9A352C26533A51005077CF = {
 						CreatedOnToolsVersion = 12.4;
@@ -3360,7 +3409,7 @@
 				CEA45E1F263519B5002FA97D /* iOS-TCI */,
 				CE2D951B24AD48BE0059923A /* macOS */,
 				CEBDA1D924D8BDDA0010B5EC /* QEMUHelper */,
-				CE6B240725F1F3CE0020D43E /* QEMULauncher */,
+				8401FD61269BE9C500265F0D /* QEMULauncher */,
 				CE9A352C26533A51005077CF /* JailbreakInterposer */,
 				EE37FBA0268A915D00DC204F /* UTM SEUITests */,
 			);
@@ -3368,11 +3417,19 @@
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		8401FD60269BE9C500265F0D /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		CE2D936924AD46670059923A /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 				CE4698F924C8FBD9008C1BD6 /* Icons in Resources */,
+				FFB02A8C266CB09C006CD71A /* InfoPlist.strings in Resources */,
 				CEB63A9324F4722900CAF323 /* Main.storyboard in Resources */,
 				CE2D936A24AD46670059923A /* terminal.js in Resources */,
 				CE2D936B24AD46670059923A /* Localizable.strings in Resources */,
@@ -3399,6 +3456,7 @@
 				CEF83F262500901300557D15 /* qemu in Resources */,
 				CE4698FA24C8FBD9008C1BD6 /* Icons in Resources */,
 				CE2D959024AD50D50059923A /* Localizable.strings in Resources */,
+				FFB02A90266CB09C006CD71A /* InfoPlist.strings in Resources */,
 				CE0FE12824D3B08B0086CEF0 /* VMDisplayWindow.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -3417,6 +3475,7 @@
 				CEA45F64263519B5002FA97D /* Icons in Resources */,
 				CEA45F65263519B5002FA97D /* Main.storyboard in Resources */,
 				CEA45F66263519B5002FA97D /* terminal.js in Resources */,
+				FFB02A8D266CB09C006CD71A /* InfoPlist.strings in Resources */,
 				CEA45F67263519B5002FA97D /* Localizable.strings in Resources */,
 				CEA45F69263519B5002FA97D /* qemu in Resources */,
 				CEA45F6A263519B5002FA97D /* VMDisplayView.xib in Resources */,
@@ -3433,6 +3492,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FFB02A93266CB09C006CD71A /* InfoPlist.strings in Resources */,
+				FFB02A96266CB09C006CD71A /* Localizable.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3506,6 +3567,15 @@
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		8401FD5E269BE9C500265F0D /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8401FD72269BEB3000265F0D /* Bootstrap.c in Sources */,
+				8401FD71269BEB2B00265F0D /* main.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		CE2D926924AD46670059923A /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -3990,15 +4060,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		CE6B240425F1F3CE0020D43E /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				CE6B241125F1F53E0020D43E /* Bootstrap.c in Sources */,
-				CE6B240B25F1F3CE0020D43E /* main.c in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		CE9A352926533A51005077CF /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -4293,10 +4354,10 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		CE6B241325F1F55C0020D43E /* PBXTargetDependency */ = {
+		8401FD7C269BECF200265F0D /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = CE6B240725F1F3CE0020D43E /* QEMULauncher */;
-			targetProxy = CE6B241225F1F55C0020D43E /* PBXContainerItemProxy */;
+			target = 8401FD61269BE9C500265F0D /* QEMULauncher */;
+			targetProxy = 8401FD7B269BECF200265F0D /* PBXContainerItemProxy */;
 		};
 		CE9A353326533A52005077CF /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -4357,9 +4418,89 @@
 			name = LaunchScreen.storyboard;
 			sourceTree = "<group>";
 		};
+		FFB02A8A266CB09C006CD71A /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				FFB02A8B266CB09C006CD71A /* zh-Hant */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		FFB02A8E266CB09C006CD71A /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				FFB02A8F266CB09C006CD71A /* zh-Hant */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		FFB02A91266CB09C006CD71A /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				FFB02A92266CB09C006CD71A /* zh-Hant */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		FFB02A94266CB09C006CD71A /* Localizable.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				FFB02A95266CB09C006CD71A /* zh-Hant */,
+			);
+			name = Localizable.strings;
+			sourceTree = "<group>";
+		};
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		8401FD6F269BE9C600265F0D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = QEMULauncher/QEMULauncher.entitlements;
+				CODE_SIGN_IDENTITY = "$(CODE_SIGN_IDENTITY_MAC:default=-)";
+				CODE_SIGN_INJECT_BASE_ENTITLEMENTS = NO;
+				CODE_SIGN_STYLE = Manual;
+				COMBINE_HIDPI_IMAGES = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../../../../../../../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 11.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "$(PRODUCT_BUNDLE_PREFIX:default=com.utmapp).QEMULauncher";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "$(PROVISIONING_PROFILE_SPECIFIER_LAUNCHER:default=)";
+				SDKROOT = macosx;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+			};
+			name = Debug;
+		};
+		8401FD70269BE9C600265F0D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = QEMULauncher/QEMULauncher.entitlements;
+				CODE_SIGN_IDENTITY = "$(CODE_SIGN_IDENTITY_MAC:default=-)";
+				CODE_SIGN_INJECT_BASE_ENTITLEMENTS = NO;
+				CODE_SIGN_STYLE = Manual;
+				COMBINE_HIDPI_IMAGES = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../../../../../../../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 11.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "$(PRODUCT_BUNDLE_PREFIX:default=com.utmapp).QEMULauncher";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "$(PROVISIONING_PROFILE_SPECIFIER_LAUNCHER:default=)";
+				SDKROOT = macosx;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+			};
+			name = Release;
+		};
 		CE2D93BC24AD46670059923A /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -4420,6 +4561,10 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"UTM_APP_GROUP=\"$(TeamIdentifierPrefix)$(PRODUCT_BUNDLE_PREFIX:default=com.utmapp).UTM\"",
+					"$(inherited)",
+				);
 				INFOPLIST_FILE = Platform/macOS/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -4450,6 +4595,10 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"UTM_APP_GROUP=\"$(TeamIdentifierPrefix)$(PRODUCT_BUNDLE_PREFIX:default=com.utmapp).UTM\"",
+					"$(inherited)",
+				);
 				INFOPLIST_FILE = Platform/macOS/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -4614,48 +4763,6 @@
 				SDKROOT = iphoneos;
 				SYSROOT_DIR = "sysroot-$(PLATFORM_DISPLAY_NAME:identifier)$(PLATFORM_SUFFIX)-$(ARCHS:identifier)";
 				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
-		CE6B240C25F1F3CE0020D43E /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
-				CODE_SIGN_ENTITLEMENTS = QEMULauncher/QEMULauncher.entitlements;
-				CODE_SIGN_IDENTITY = "$(CODE_SIGN_IDENTITY_MAC:default=-)";
-				CODE_SIGN_INJECT_BASE_ENTITLEMENTS = NO;
-				CODE_SIGN_STYLE = Automatic;
-				CREATE_INFOPLIST_SECTION_IN_BINARY = YES;
-				ENABLE_HARDENED_RUNTIME = YES;
-				INFOPLIST_FILE = QEMULauncher/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "@executable_path/../../../../Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 11.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "$(PRODUCT_BUNDLE_PREFIX:default=com.utmapp).QEMULauncher";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = "";
-				SDKROOT = macosx;
-				SKIP_INSTALL = YES;
-			};
-			name = Debug;
-		};
-		CE6B240D25F1F3CE0020D43E /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
-				CODE_SIGN_ENTITLEMENTS = QEMULauncher/QEMULauncher.entitlements;
-				CODE_SIGN_IDENTITY = "$(CODE_SIGN_IDENTITY_MAC:default=-)";
-				CODE_SIGN_INJECT_BASE_ENTITLEMENTS = NO;
-				CODE_SIGN_STYLE = Automatic;
-				CREATE_INFOPLIST_SECTION_IN_BINARY = YES;
-				ENABLE_HARDENED_RUNTIME = YES;
-				INFOPLIST_FILE = QEMULauncher/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "@executable_path/../../../../Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 11.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "$(PRODUCT_BUNDLE_PREFIX:default=com.utmapp).QEMULauncher";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = "";
-				SDKROOT = macosx;
-				SKIP_INSTALL = YES;
 			};
 			name = Release;
 		};
@@ -4859,6 +4966,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		8401FD6E269BE9C600265F0D /* Build configuration list for PBXNativeTarget "QEMULauncher" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8401FD6F269BE9C600265F0D /* Debug */,
+				8401FD70269BE9C600265F0D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		CE2D93BB24AD46670059923A /* Build configuration list for PBXNativeTarget "iOS" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -4882,15 +4998,6 @@
 			buildConfigurations = (
 				CE550BDD2259479D0063E575 /* Debug */,
 				CE550BDE2259479D0063E575 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		CE6B240E25F1F3CE0020D43E /* Build configuration list for PBXNativeTarget "QEMULauncher" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				CE6B240C25F1F3CE0020D43E /* Debug */,
-				CE6B240D25F1F3CE0020D43E /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

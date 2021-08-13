@@ -21,7 +21,7 @@ RED='\033[0;31m'
 NC='\033[0m'
 
 # Knobs
-IOS_SDKMINVER="9.0"
+IOS_SDKMINVER="11.0"
 MAC_SDKMINVER="10.11"
 
 # Build environment
@@ -48,7 +48,7 @@ usage () {
     echo "    SDKVERSION     Target a specific SDK version."
     echo "    CHOST          Configure host, set if not deducable by ARCH."
     echo ""
-    echo "    CFLAGS CPPFLAGS CXXFLAGS LDFLAGS PKG_CONFIG_PATH"
+    echo "    CFLAGS CPPFLAGS CXXFLAGS LDFLAGS"
     echo ""
     exit 1
 }
@@ -56,7 +56,6 @@ usage () {
 check_env () {
     command -v gmake >/dev/null 2>&1 || { echo >&2 "${RED}You must install GNU make on your host machine (and link it to 'gmake').${NC}"; exit 1; }
     command -v meson >/dev/null 2>&1 || { echo >&2 "${RED}You must install 'meson' on your host machine.${NC}"; exit 1; }
-    command -v pkg-config >/dev/null 2>&1 || { echo >&2 "${RED}You must install 'pkg-config' on your host machine.${NC}"; exit 1; }
     command -v msgfmt >/dev/null 2>&1 || { echo >&2 "${RED}You must install 'gettext' on your host machine.\n\t'msgfmt' needs to be in your \$PATH as well.${NC}"; exit 1; }
     command -v glib-mkenums >/dev/null 2>&1 || { echo >&2 "${RED}You must install 'glib' on your host machine.\n\t'glib-mkenums' needs to be in your \$PATH as well.${NC}"; exit 1; }
     command -v gpg-error-config >/dev/null 2>&1 || { echo >&2 "${RED}You must install 'libgpg-error' on your host machine.\n\t'gpg-error-config' needs to be in your \$PATH as well.${NC}"; exit 1; }
@@ -97,8 +96,25 @@ download () {
     fi
 }
 
+clone () {
+    REPO="$1"
+    COMMIT="$2"
+    NAME="$(basename $REPO)"
+    DIR="$BUILD_DIR/$NAME"
+    if [ -d "$DIR" -a -z "$REDOWNLOAD" ]; then
+        echo "${GREEN}$DIR already downloaded! Run with -d to force re-download.${NC}"
+        git -C "$DIR" fetch
+    else
+        rm -rf "$DIR"
+        echo "${GREEN}Cloning ${URL}...${NC}"
+        git clone -n "$REPO" "$DIR"
+    fi
+    git -C "$DIR" checkout -q "$COMMIT"
+}
+
 download_all () {
     [ -d "$BUILD_DIR" ] || mkdir -p "$BUILD_DIR"
+    download $PKG_CONFIG_SRC
     download $FFI_SRC
     download $ICONV_SRC
     download $GETTEXT_SRC
@@ -125,6 +141,10 @@ download_all () {
         download $USB_SRC
         download $USBREDIR_SRC
     fi
+    clone $DEPOT_TOOLS_REPO $DEPOT_TOOLS_COMMIT
+    clone $ANGLE_REPO $ANGLE_COMMIT
+    clone $EPOXY_REPO $EPOXY_COMMIT
+    clone $VIRGLRENDERER_REPO $VIRGLRENDERER_COMMIT
 }
 
 copy_private_headers() {
@@ -151,6 +171,80 @@ copy_private_headers() {
     LC_ALL=C sed -i '' -e 's/#if !KERNEL/#if 1/g' $(find "$OUTPUT_INCLUDES/IOKit" -type f)
     mkdir -p "$OUTPUT_INCLUDES/libkern"
     cp -r "$OSTYPES_HEADERS_PATH/OSTypes.h" "$OUTPUT_INCLUDES/libkern/OSTypes.h"
+}
+
+meson_quote() {
+    echo "'$(echo $* | sed "s/ /','/g")'"
+}
+
+generate_meson_cross() {
+    cross="$1"
+    echo "# Automatically generated - do not modify" > $cross
+    echo "[properties]" >> $cross
+    echo "needs_exe_wrapper = true" >> $cross
+    echo "[built-in options]" >> $cross
+    echo "c_args = [${CFLAGS:+$(meson_quote $CFLAGS)}]" >> $cross
+    echo "cpp_args = [${CXXFLAGS:+$(meson_quote $CXXFLAGS)}]" >> $cross
+    echo "c_link_args = [${LDFLAGS:+$(meson_quote $LDFLAGS)}]" >> $cross
+    echo "cpp_link_args = [${LDFLAGS:+$(meson_quote $LDFLAGS)}]" >> $cross
+    echo "[binaries]" >> $cross
+    echo "c = [$(meson_quote $CC)]" >> $cross
+    echo "cpp = [$(meson_quote $CXX)]" >> $cross
+    echo "objc = [$(meson_quote $OBJCC)]" >> $cross
+    echo "ar = [$(meson_quote $AR)]" >> $cross
+    echo "nm = [$(meson_quote $NM)]" >> $cross
+    echo "pkgconfig = ['$PREFIX/host/bin/pkg-config']" >> $cross
+    echo "ranlib = [$(meson_quote $RANLIB)]" >> $cross
+    echo "strip = [$(meson_quote $STRIP), '-x']" >> $cross
+    echo "[host_machine]" >> $cross
+    case $PLATFORM in
+    ios* )
+        echo "system = 'ios'" >> $cross
+        ;;
+    macos )
+        echo "system = 'darwin'" >> $cross
+        ;;
+    esac
+    case "$ARCH" in
+    armv7 | armv7s )
+        echo "cpu_family = 'arm'" >> $cross
+        ;;
+    arm64 )
+        echo "cpu_family = 'aarch64'" >> $cross
+        ;;
+    i386 )
+        echo "cpu_family = 'x86'" >> $cross
+        ;;
+    x86_64 )
+        echo "cpu_family = 'x86_64'" >> $cross
+        ;;
+    *)
+        echo "cpu_family = '$ARCH'" >> $cross
+        ;;
+    esac
+    echo "cpu = '$ARCH'" >> $cross
+    echo "endian = 'little'" >> $cross
+}
+
+# Prevent contamination from host pkg-config files by building our own
+build_pkg_config() {
+    FILE="$(basename $PKG_CONFIG_SRC)"
+    NAME="${FILE%.tar.*}"
+    DIR="$BUILD_DIR/$NAME"
+    pwd="$(pwd)"
+
+    cd "$DIR"
+    if [ -z "$REBUILD" ]; then
+        echo "${GREEN}Configuring ${NAME}...${NC}"
+        env -i ./configure --prefix="$PREFIX" --bindir="$PREFIX/host/bin" --with-internal-glib $@
+    fi
+    echo "${GREEN}Building ${NAME}...${NC}"
+    make "$MAKEFLAGS"
+    echo "${GREEN}Installing ${NAME}...${NC}"
+    make "$MAKEFLAGS" install
+    cd "$pwd"
+
+    export PATH="$PREFIX/host/bin:$PATH"
 }
 
 build_openssl() {
@@ -247,13 +341,93 @@ build () {
     cd "$pwd"
 }
 
+meson_build () {
+    SRCDIR="$1"
+    shift 1
+    FILE="$(basename $SRCDIR)"
+    NAME="${FILE%.tar.*}"
+    case $SRCDIR in
+    http* | ftp* )
+        SRCDIR="$BUILD_DIR/$NAME"
+        ;;
+    esac
+    MESON_CROSS="$(realpath "$BUILD_DIR/meson.cross")"
+    if [ ! -f "$MESON_CROSS" ]; then
+        generate_meson_cross "$MESON_CROSS"
+    fi
+    pwd="$(pwd)"
+
+    cd "$SRCDIR"
+    if [ -z "$REBUILD" ]; then
+        rm -rf utm_build
+        echo "${GREEN}Configuring ${NAME}...${NC}"
+        meson utm_build --prefix="$PREFIX" --buildtype=plain --cross-file "$MESON_CROSS" "$@"
+    fi
+    echo "${GREEN}Building ${NAME}...${NC}"
+    meson compile -C utm_build
+    echo "${GREEN}Installing ${NAME}...${NC}"
+    meson install -C utm_build
+    cd "$pwd"
+}
+
+build_angle () {
+    OLD_PATH=$PATH
+    export PATH="$(realpath "$BUILD_DIR/depot_tools.git"):$OLD_PATH"
+    pwd="$(pwd)"
+    cd "$BUILD_DIR/angle.git"
+    DEPOT_TOOLS_UPDATE=0 python2 scripts/bootstrap.py
+    DEPOT_TOOLS_UPDATE=0 gclient sync
+    case $PLATFORM in
+    ios* )
+        TARGET_OS="ios"
+        IOS_BUILD_ARGS="ios_enable_code_signing=false"
+        if [ "$PLATFORM" == "ios_simulator" ]; then
+            IOS_BUILD_ARGS="$IOS_BUILD_ARGS target_environment=\"simulator\""
+        else
+            IOS_BUILD_ARGS="$IOS_BUILD_ARGS target_environment=\"device\""
+        fi
+        ;;
+    macos )
+        TARGET_OS="mac"
+        ;;
+    esac
+    case $ARCH in
+    armv7 | armv7s )
+        TARGET_CPU="arm"
+        ;;
+    arm64 )
+        TARGET_CPU="arm64"
+        ;;
+    i386 )
+        TARGET_CPU="x86"
+        ;;
+    x86_64 )
+        TARGET_CPU="x64"
+        ;;
+    esac
+    gn gen "--args=is_debug=false angle_build_all=false angle_enable_metal=true angle_enable_gl=false angle_enable_glsl=true angle_enable_gl_desktop=false $IOS_BUILD_ARGS target_os=\"$TARGET_OS\" target_cpu=\"$TARGET_CPU\"" utm_build
+    ninja -C utm_build -j $NCPU
+    if [ "$TARGET_OS" == "ios" ]; then
+        cp -a "utm_build/libEGL.framework/libEGL" "$PREFIX/lib/libEGL.dylib"
+        cp -a "utm_build/libGLESv2.framework/libGLESv2" "$PREFIX/lib/libGLESv2.dylib"
+    else
+        cp -a "utm_build/libEGL.dylib" "$PREFIX/lib/libEGL.dylib"
+        cp -a "utm_build/libGLESv2.dylib" "$PREFIX/lib/libGLESv2.dylib"
+    fi
+    install_name_tool -id "$PREFIX/lib/libEGL.dylib" "$PREFIX/lib/libEGL.dylib"
+    install_name_tool -id "$PREFIX/lib/libGLESv2.dylib" "$PREFIX/lib/libGLESv2.dylib"
+    rsync -a "include/" "$PREFIX/include"
+    cd "$pwd"
+    export PATH=$OLD_PATH
+}
+
 build_qemu_dependencies () {
     build $FFI_SRC
     build $ICONV_SRC
     build $GETTEXT_SRC --disable-java
     build $PNG_SRC
     build $JPEG_TURBO_SRC
-    build $GLIB_SRC glib_cv_stack_grows=no glib_cv_uscore=no --with-pcre=internal
+    meson_build $GLIB_SRC -Dtests=false
     build $GPG_ERROR_SRC
     build $GCRYPT_SRC
     build $PIXMAN_SRC
@@ -261,10 +435,15 @@ build_qemu_dependencies () {
     build $OPUS_SRC
     build $SPICE_PROTOCOL_SRC
     build $SPICE_SERVER_SRC
+    # USB support
     if [ -z "$SKIP_USB_BUILD" ]; then
         build $USB_SRC
         build $USBREDIR_SRC
     fi
+    # GPU support
+    build_angle
+    meson_build $EPOXY_REPO -Dtests=false -Dglx=no -Degl=yes
+    meson_build $VIRGLRENDERER_REPO -Dtests=false
 }
 
 build_qemu () {
@@ -279,25 +458,12 @@ build_qemu () {
     cd "$pwd"
 }
 
-build_libucontext () {
-    MESON_CROSS="$(realpath "$QEMU_DIR/build/config-meson.cross")"
-    pwd="$(pwd)"
-
-    cd "$QEMU_DIR/subprojects/libucontext"
-    echo "${GREEN}Configuring libucontext...${NC}"
-    meson build --prefix="/" --buildtype=plain --cross-file "$MESON_CROSS" -Ddefault_library=static -Dfreestanding=true $@
-    echo "${GREEN}Building libucontext...${NC}"
-    meson compile -C build
-    echo "${GREEN}Installing libucontext...${NC}"
-    DESTDIR="$PREFIX" meson install -C build
-    cd "$pwd"
-}
-
 build_spice_client () {
+    meson_build "$QEMU_DIR/subprojects/libucontext" -Ddefault_library=static -Dtests=false -Dfreestanding=true
     build $JSON_GLIB_SRC
-    build $GST_SRC --enable-static --enable-static-plugins --disable-registry
-    build $GST_BASE_SRC --enable-static --disable-fatal-warnings --disable-cocoa
-    build $GST_GOOD_SRC --enable-static --disable-osx_video
+    meson_build $GST_SRC -Dtests=disabled -Ddefault_library=both -Dregistry=false
+    meson_build $GST_BASE_SRC -Dtests=disabled -Ddefault_library=both
+    meson_build $GST_GOOD_SRC -Dtests=disabled -Ddefault_library=both
     build $XML2_SRC --enable-shared=no --without-python
     build $SOUP_SRC --without-gnome --without-krb5-config --enable-shared=no --disable-tls-check
     build $PHODAV_SRC
@@ -360,7 +526,7 @@ fixup () {
 fixup_all () {
     OLDIFS=$IFS
     IFS=$'\n'
-    FILES=$(find "$SYSROOT_DIR/lib" -type f -name "*.dylib")
+    FILES=$(find "$SYSROOT_DIR/lib" -type f -maxdepth 1 -name "*.dylib")
     for f in $FILES
     do
         fixup $f
@@ -369,7 +535,7 @@ fixup_all () {
 }
 
 remove_shared_gst_plugins () {
-    find "$SYSROOT_DIR/lib/gstreamer-1.0" \( -name '*.so' -or -name '*.la' \) -exec rm \{\} \;
+    find "$SYSROOT_DIR/lib/gstreamer-1.0" -name '*.dylib' -exec rm \{\} \;
 }
 
 generate_qapi () {
@@ -391,7 +557,7 @@ PLATFORM_FAMILY_NAME=
 while [ "x$1" != "x" ]; do
     case $1 in
     -a )
-        ARCH=$2
+        ARCH=$(echo "$2" | tr '[:upper:]' '[:lower:]')
         shift
         ;;
     -d | --download )
@@ -405,7 +571,7 @@ while [ "x$1" != "x" ]; do
         shift
         ;;
     -p )
-        PLATFORM=$2
+        PLATFORM=$(echo "$2" | tr '[:upper:]' '[:lower:]')
         shift
         ;;
     * )
@@ -476,7 +642,7 @@ ios* )
         PLATFORM_FAMILY_NAME="$PLATFORM_FAMILY_PREFIX"
         ;;
     esac
-    QEMU_PLATFORM_BUILD_FLAGS="--disable-debug-info --enable-shared-lib --disable-hvf --disable-cocoa --disable-curl --disable-slirp-smbd --with-coroutine=libucontext $TCI_BUILD_FLAGS"
+    QEMU_PLATFORM_BUILD_FLAGS="--disable-debug-info --enable-shared-lib --disable-hvf --disable-cocoa --disable-slirp-smbd --with-coroutine=libucontext $TCI_BUILD_FLAGS"
     ;;
 macos )
     if [ -z "$SDKMINVER" ]; then
@@ -486,7 +652,7 @@ macos )
     CFLAGS_MINVER="-mmacos-version-min=$SDKMINVER"
     CFLAGS_TARGET="-target $ARCH-apple-macos"
     PLATFORM_FAMILY_NAME="macOS"
-    QEMU_PLATFORM_BUILD_FLAGS="--disable-debug-info --enable-shared-lib --disable-cocoa --disable-curl --cpu=$CPU"
+    QEMU_PLATFORM_BUILD_FLAGS="--disable-debug-info --enable-shared-lib --disable-cocoa --cpu=$CPU"
     ;;
 * )
     usage
@@ -532,11 +698,21 @@ fi
 CC=$(xcrun --sdk $SDK --find gcc)
 CPP=$(xcrun --sdk $SDK --find gcc)" -E"
 CXX=$(xcrun --sdk $SDK --find g++)
+OBJCC=$(xcrun --sdk $SDK --find clang)
 LD=$(xcrun --sdk $SDK --find ld)
+AR=$(xcrun --sdk $SDK --find ar)
+NM=$(xcrun --sdk $SDK --find nm)
+RANLIB=$(xcrun --sdk $SDK --find ranlib)
+STRIP=$(xcrun --sdk $SDK --find strip)
 export CC
 export CPP
 export CXX
+export OBJCC
 export LD
+export AR
+export NM
+export RANLIB
+export STRIP
 export PREFIX
 
 # Flags
@@ -545,15 +721,11 @@ CPPFLAGS="$CPPFLAGS -arch $ARCH -isysroot $SDKROOT -I$PREFIX/include $CFLAGS_MIN
 CXXFLAGS="$CXXFLAGS -arch $ARCH -isysroot $SDKROOT -I$PREFIX/include $CFLAGS_MINVER $CFLAGS_TARGET"
 LDFLAGS="$LDFLAGS -arch $ARCH -isysroot $SDKROOT -L$PREFIX/lib $CFLAGS_MINVER $CFLAGS_TARGET"
 MAKEFLAGS="-j$NCPU"
-PKG_CONFIG_PATH="$PKG_CONFIG_PATH":"$SDKROOT/usr/lib/pkgconfig":"$PREFIX/lib/pkgconfig":"$PREFIX/share/pkgconfig"
-PKG_CONFIG_LIBDIR=""
 export CFLAGS
 export CPPFLAGS
 export CXXFLAGS
 export LDFLAGS
 export MAKEFLAGS
-export PKG_CONFIG_PATH
-export PKG_CONFIG_LIBDIR
 
 check_env
 
@@ -570,10 +742,11 @@ fi
 echo "${GREEN}Deleting old sysroot!${NC}"
 rm -rf "$PREFIX/"*
 rm -f "$BUILD_DIR/BUILD_SUCCESS"
+rm -f "$BUILD_DIR/meson.cross"
 copy_private_headers
+build_pkg_config
 build_qemu_dependencies
 build_qemu $QEMU_PLATFORM_BUILD_FLAGS
-build_libucontext
 build_spice_client
 fixup_all
 remove_shared_gst_plugins # another hack...

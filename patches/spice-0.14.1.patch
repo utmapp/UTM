@@ -10,9 +10,23 @@ diff -aur a/Makefile.in b/Makefile.in
  pkgconfigdir = $(libdir)/pkgconfig
  pkgconfig_DATA = spice-server.pc
  DISTCHECK_CONFIGURE_FLAGS = \
-diff -aur a/server/red-stream.c b/server/red-stream.c
---- a/server/red-stream.c	2018-07-23 03:01:37.000000000 -0700
-+++ b/server/red-stream.c	2019-04-24 09:26:53.000000000 -0700
+
+From 23e9f84657479298f2527dc84ba64f00d811bc96 Mon Sep 17 00:00:00 2001
+From: osy <50960678+osy@users.noreply.github.com>
+Date: Wed, 24 Apr 2019 18:50:25 -0700
+Subject: [PATCH 1/2] OSX: added support for OSX/iOS
+
+Fix some Apple specific issues such as lack of %m print format and buggy TCP_NOPUSH implementation
+---
+ server/red-stream.c | 16 +++++++++++++++-
+ server/red-worker.c |  2 ++
+ server/reds.c       | 18 +++++++++++++++++-
+ 3 files changed, 34 insertions(+), 2 deletions(-)
+
+diff --git a/server/red-stream.c b/server/red-stream.c
+index 18c4a935..3fec87cf 100644
+--- a/server/red-stream.c
++++ b/server/red-stream.c
 @@ -39,7 +39,7 @@
  #include "reds.h"
  
@@ -22,7 +36,7 @@ diff -aur a/server/red-stream.c b/server/red-stream.c
  #define TCP_CORK TCP_NOPUSH
  #endif
  
-@@ -100,6 +100,7 @@
+@@ -100,6 +100,7 @@ struct RedStreamPrivate {
      SpiceCoreInterfaceInternal *core;
  };
  
@@ -30,7 +44,7 @@ diff -aur a/server/red-stream.c b/server/red-stream.c
  /**
   * Set TCP_CORK on socket
   */
-@@ -109,6 +110,7 @@
+@@ -109,6 +110,7 @@ static int socket_set_cork(int socket, int enabled)
      SPICE_VERIFY(sizeof(enabled) == sizeof(int));
      return setsockopt(socket, IPPROTO_TCP, TCP_CORK, &enabled, sizeof(enabled));
  }
@@ -38,7 +52,7 @@ diff -aur a/server/red-stream.c b/server/red-stream.c
  
  static ssize_t stream_write_cb(RedStream *s, const void *buf, size_t size)
  {
-@@ -223,6 +225,7 @@
+@@ -223,6 +225,7 @@ bool red_stream_write_all(RedStream *stream, const void *in_buf, size_t n)
  
  bool red_stream_set_auto_flush(RedStream *s, bool auto_flush)
  {
@@ -46,7 +60,7 @@ diff -aur a/server/red-stream.c b/server/red-stream.c
      if (s->priv->use_cork == !auto_flush) {
          return true;
      }
-@@ -239,15 +242,18 @@
+@@ -239,15 +242,18 @@ bool red_stream_set_auto_flush(RedStream *s, bool auto_flush)
          socket_set_cork(s->socket, 0);
          s->priv->corked = false;
      }
@@ -65,7 +79,7 @@ diff -aur a/server/red-stream.c b/server/red-stream.c
  }
  
  #if HAVE_SASL
-@@ -352,8 +358,16 @@
+@@ -352,8 +358,16 @@ int red_stream_send_msgfd(RedStream *stream, int fd)
          memcpy(CMSG_DATA(cmsg), &fd, fd_size);
      }
  
@@ -82,10 +96,11 @@ diff -aur a/server/red-stream.c b/server/red-stream.c
      } while (r < 0 && (errno == EINTR || errno == EAGAIN));
  
      return r;
-diff -aur a/server/red-worker.c b/server/red-worker.c
---- a/server/red-worker.c	2018-08-09 04:09:22.000000000 -0700
-+++ b/server/red-worker.c	2019-04-23 11:52:06.000000000 -0700
-@@ -1391,7 +1391,9 @@
+diff --git a/server/red-worker.c b/server/red-worker.c
+index ccab9d96..04c695bb 100644
+--- a/server/red-worker.c
++++ b/server/red-worker.c
+@@ -1391,7 +1391,9 @@ bool red_worker_run(RedWorker *worker)
          spice_error("create thread failed %d", r);
      }
      pthread_sigmask(SIG_SETMASK, &curr_sig_mask, NULL);
@@ -95,10 +110,11 @@ diff -aur a/server/red-worker.c b/server/red-worker.c
  
      return r == 0;
  }
-diff -aur a/server/reds.c b/server/reds.c
---- a/server/reds.c	2018-08-09 04:09:22.000000000 -0700
-+++ b/server/reds.c	2019-04-23 11:52:06.000000000 -0700
-@@ -3555,6 +3555,7 @@
+diff --git a/server/reds.c b/server/reds.c
+index 85043a88..f1e19b87 100644
+--- a/server/reds.c
++++ b/server/reds.c
+@@ -3555,6 +3555,7 @@ static const int video_codec_caps[] = {
  static const char* parse_next_video_codec(const char *codecs, char **encoder,
                                            char **codec)
  {
@@ -106,7 +122,7 @@ diff -aur a/server/reds.c b/server/reds.c
      if (!codecs) {
          return NULL;
      }
-@@ -3562,8 +3563,22 @@
+@@ -3562,8 +3563,22 @@ static const char* parse_next_video_codec(const char *codecs, char **encoder,
      if (!*codecs) {
          return NULL;
      }
@@ -129,7 +145,7 @@ diff -aur a/server/reds.c b/server/reds.c
      if (sscanf(codecs, "%m[0-9a-zA-Z_]:%m[0-9a-zA-Z_]%n", encoder, codec, &n) == 2) {
          // this avoids accepting "encoder:codec" followed by garbage like "$%*"
          if (codecs[n] != ';' && codecs[n] != '\0') {
-@@ -3571,7 +3586,8 @@
+@@ -3571,7 +3586,8 @@ static const char* parse_next_video_codec(const char *codecs, char **encoder,
              *codec = NULL;
          }
      }
@@ -139,3 +155,76 @@ diff -aur a/server/reds.c b/server/reds.c
  }
  
  static void reds_set_video_codecs_from_string(RedsState *reds, const char *codecs)
+-- 
+2.28.0
+
+From 9fe644b11858d803d51a5b162be0b18d864fc5c3 Mon Sep 17 00:00:00 2001
+From: osy <50960678+osy@users.noreply.github.com>
+Date: Wed, 28 Jul 2021 17:22:25 -0700
+Subject: [PATCH 2/2] net-utils: fix EINVAL error on AF_UNIX sockets on darwin
+
+---
+ server/net-utils.c | 26 +++++++++++++++++++++++---
+ 1 file changed, 23 insertions(+), 3 deletions(-)
+
+diff --git a/server/net-utils.c b/server/net-utils.c
+index ca8a4e7f..8265f15e 100644
+--- a/server/net-utils.c
++++ b/server/net-utils.c
+@@ -34,6 +34,25 @@
+ 
+ #include "net-utils.h"
+ 
++static inline bool
++darwin_einval_on_unix_socket(int fd, int err)
++{
++#if defined(__APPLE__)
++    if (err == EINVAL || err == EOPNOTSUPP) {
++        union {
++            struct sockaddr sa;
++            char buf[1024];
++        } addr;
++        socklen_t len = sizeof(addr);
++
++        if (getsockname(fd, &addr.sa, &len) == 0 && addr.sa.sa_family == AF_UNIX) {
++            return true;
++        }
++    }
++#endif
++    return false;
++}
++
+ /**
+  * red_socket_set_keepalive:
+  * @fd: a socket file descriptor
+@@ -46,7 +65,7 @@ bool red_socket_set_keepalive(int fd, bool enable, int timeout)
+     int keepalive = !!enable;
+ 
+     if (setsockopt(fd, SOL_SOCKET, SO_KEEPALIVE, &keepalive, sizeof(keepalive)) == -1) {
+-        if (errno != ENOTSUP) {
++        if (errno != ENOTSUP && !darwin_einval_on_unix_socket(fd, errno)) {
+             g_warning("setsockopt for keepalive failed, %s", strerror(errno));
+             return false;
+         }
+@@ -58,7 +77,7 @@ bool red_socket_set_keepalive(int fd, bool enable, int timeout)
+ 
+ #ifdef HAVE_TCP_KEEPIDLE
+     if (setsockopt(fd, IPPROTO_TCP, TCP_KEEPIDLE, &timeout, sizeof(timeout)) == -1) {
+-        if (errno != ENOTSUP) {
++        if (errno != ENOTSUP && !darwin_einval_on_unix_socket(fd, errno)) {
+             g_warning("setsockopt for keepalive timeout failed, %s", strerror(errno));
+             return false;
+         }
+@@ -81,7 +100,8 @@ bool red_socket_set_no_delay(int fd, bool no_delay)
+ 
+     if (setsockopt(fd, IPPROTO_TCP, TCP_NODELAY,
+                    &optval, sizeof(optval)) != 0) {
+-        if (errno != ENOTSUP && errno != ENOPROTOOPT) {
++        if (errno != ENOTSUP && errno != ENOPROTOOPT &&
++            !darwin_einval_on_unix_socket(fd, errno)) {
+             spice_warning("setsockopt failed, %s", strerror(errno));
+             return false;
+         }
+-- 
+2.28.0
+

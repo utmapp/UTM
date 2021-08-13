@@ -27,11 +27,14 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, nullable, copy) NSURL *selectedCustomIconPath;
 @property (nonatomic, nullable, copy) NSNumber *version;
 
+
+@property (nonatomic, readonly) NSURL *terminalInputOutputURL;
+@property (nonatomic, readonly) NSURL *spiceSocketURL;
+
 - (void)migrateConfigurationIfNecessary;
 - (instancetype)init NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithDictionary:(NSDictionary *)dictionary name:(NSString *)name path:(NSURL *)path NS_DESIGNATED_INITIALIZER;
 
-- (NSURL*)terminalInputOutputURL;
 - (void)resetDefaults;
 - (void)reloadConfigurationWithDictionary:(NSDictionary *)dictionary name:(NSString *)name path:(NSURL *)path;
 

@@ -20,7 +20,7 @@ class VMDisplayMetalWindowController: VMDisplayWindowController {
     var metalView: VMMetalView!
     var renderer: UTMRenderer?
     
-    @objc fileprivate weak var vmDisplay: CSDisplayMetal?
+    @objc fileprivate dynamic weak var vmDisplay: CSDisplayMetal?
     @objc fileprivate weak var vmInput: CSInput?
     @objc fileprivate weak var vmUsbManager: CSUSBManager?
     
@@ -29,6 +29,8 @@ class VMDisplayMetalWindowController: VMDisplayWindowController {
     private var isDisplaySizeDynamic: Bool = false
     private var isFullScreen: Bool = false
     private let minDynamicSize = CGSize(width: 800, height: 600)
+    private let resizeTimeoutSecs: Double = 5
+    private var cancelResize: DispatchWorkItem?
     
     private var localEventMonitor: Any? = nil
     private var ctrlKeyDown: Bool = false
@@ -129,6 +131,7 @@ class VMDisplayMetalWindowController: VMDisplayWindowController {
             self.localEventMonitor = nil
         }
         releaseMouse()
+        displaySizeObserver = nil
         super.enterSuspended(isBusy: busy)
     }
     
@@ -162,11 +165,26 @@ extension VMDisplayMetalWindowController: UTMSpiceIODelegate {
             usbManager.delegate = self
         }
     }
+    
+    func spiceDynamicResolutionSupportDidChange(_ supported: Bool) {
+        if isDisplaySizeDynamic != supported {
+            displaySizeDidChange(size: displaySize)
+            DispatchQueue.main.async {
+                if supported, let window = self.window {
+                    _ = self.updateGuestResolution(for: window, frameSize: window.frame.size)
+                }
+            }
+        }
+        isDisplaySizeDynamic = supported
+    }
 }
     
 // MARK: - Screen management
 extension VMDisplayMetalWindowController {
     fileprivate func displaySizeDidChange(size: CGSize) {
+        // cancel any pending resize
+        cancelResize?.cancel()
+        cancelResize = nil
         guard size != .zero else {
             logger.debug("Ignoring zero size display")
             return
@@ -184,13 +202,6 @@ extension VMDisplayMetalWindowController {
                 self.updateHostFrame(forGuestResolution: size)
             }
         }
-    }
-    
-    func dynamicResolutionSupportDidChange(_ supported: Bool) {
-        if isDisplaySizeDynamic != supported {
-            displaySizeDidChange(size: displaySize)
-        }
-        isDisplaySizeDynamic = supported
     }
     
     func windowDidChangeScreen(_ notification: Notification) {
@@ -263,7 +274,12 @@ extension VMDisplayMetalWindowController {
         guard !self.isDisplayFixed else {
             return frameSize
         }
-        return updateHostScaling(for: sender, frameSize: frameSize)
+        let newSize = updateHostScaling(for: sender, frameSize: frameSize)
+        if isFullScreen {
+            return frameSize
+        } else {
+            return newSize
+        }
     }
     
     func windowDidEndLiveResize(_ notification: Notification) {
@@ -271,6 +287,12 @@ extension VMDisplayMetalWindowController {
             return
         }
         _ = updateGuestResolution(for: window, frameSize: window.frame.size)
+        cancelResize = DispatchWorkItem {
+            if let vmDisplay = self.vmDisplay {
+                self.displaySizeDidChange(size: vmDisplay.displaySize)
+            }
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + resizeTimeoutSecs, execute: cancelResize!)
     }
     
     func windowDidEnterFullScreen(_ notification: Notification) {

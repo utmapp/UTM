@@ -90,7 +90,6 @@ static size_t sysctl_read(const char *name) {
         self.configuration = configuration;
         self.imgPath = imgPath;
         self.qmpPort = 4444;
-        self.spicePort = 5930;
         self.entry = start_qemu;
     }
     return self;
@@ -126,9 +125,17 @@ static size_t sysctl_read(const char *name) {
         };
         return userCount; // user override
     }
-#if defined(__aarch64__)
-    // in ARM we can only emulate other weak architectures
     NSString *arch = self.configuration.systemArchitecture;
+    // SPARC5 defaults to single CPU
+    if ([arch hasPrefix:@"sparc"]) {
+        return singleCpu;
+    }
+#if defined(__aarch64__)
+    CPUCount hostPcoreCount = {
+        .cpus = sysctl_read("hw.perflevel0.physicalcpu"),
+        .threads = sysctl_read("hw.perflevel0.logicalcpu"),
+    };
+    // in ARM we can only emulate other weak architectures
     if ([arch isEqualToString:@"alpha"] ||
         [arch isEqualToString:@"arm"] ||
         [arch isEqualToString:@"aarch64"] ||
@@ -137,7 +144,11 @@ static size_t sysctl_read(const char *name) {
         [arch hasPrefix:@"ppc"] ||
         [arch hasPrefix:@"riscv"] ||
         [arch hasPrefix:@"xtensa"]) {
-        return hostCount;
+        if (self.useOnlyPcores && hostPcoreCount.cpus > 0) {
+            return hostPcoreCount;
+        } else {
+            return hostCount;
+        }
     } else {
         return singleCpu;
     }
@@ -278,7 +289,7 @@ static size_t sysctl_read(const char *name) {
             case UTMDiskImageTypeCD: {
                 NSString *interface = [self.configuration driveInterfaceTypeForIndex:i];
                 BOOL removable = (type == UTMDiskImageTypeCD) || [self.configuration driveRemovableForIndex:i];
-                NSString *identifier = [self.configuration driveNameForIndex:i];
+                NSString *identifier = [NSString stringWithFormat:@"drive%lu", i];
                 NSString *realInterface = [self expandDriveInterface:interface identifier:identifier removable:removable busInterfaceMap:busInterfaceMap];
                 NSString *drive;
                 [self pushArgv:@"-drive"];
@@ -499,6 +510,11 @@ static size_t sysctl_read(const char *name) {
 #endif
 }
 
+- (BOOL)useOnlyPcores {
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    return [defaults boolForKey:@"UseOnlyPcores"];
+}
+
 - (BOOL)hasCustomBios {
     for (NSUInteger i = 0; i < self.configuration.countDrives; i++) {
         UTMDiskImageType type = [self.configuration driveImageTypeForIndex:i];
@@ -546,6 +562,9 @@ static size_t sysctl_read(const char *name) {
     [self pushArgv:@"-S"]; // startup stopped
     [self pushArgv:@"-qmp"];
     [self pushArgv:[NSString stringWithFormat:@"tcp:127.0.0.1:%lu,server,nowait", self.qmpPort]];
+    // prevent QEMU default devices, which leads to duplicate CD drive (fix #2538)
+    // see https://github.com/qemu/qemu/blob/6005ee07c380cbde44292f5f6c96e7daa70f4f7d/docs/qdev-device-use.txt#L382
+    [self pushArgv:@"-nodefaults"];
     [self pushArgv:@"-vga"];
     [self pushArgv:@"none"];// -vga none, avoid adding duplicate graphics cards
     if (self.configuration.displayConsoleOnly) {
@@ -553,16 +572,21 @@ static size_t sysctl_read(const char *name) {
         // terminal character device
         NSURL* ioFile = [self.configuration terminalInputOutputURL];
         [self pushArgv: @"-chardev"];
-        [self accessDataWithBookmark:[[ioFile URLByDeletingLastPathComponent] bookmarkDataWithOptions:0
-                                                                       includingResourceValuesForKeys:nil
-                                                                                        relativeToURL:nil
-                                                                                                error:nil]];
         [self pushArgv: [NSString stringWithFormat: @"pipe,id=term0,path=%@", ioFile.path]];
         [self pushArgv: @"-serial"];
         [self pushArgv: @"chardev:term0"];
     } else {
+        NSURL *spiceSocketURL = self.configuration.spiceSocketURL;
+        BOOL isGLOn = NO;
+        // ANGLE Metal backend only supported on iOS 13+
+        if (@available(iOS 13, *)) {
+            // GL supported devices have suffix GL and virtio-ramfb
+            isGLOn = [self.configuration.displayCard isEqualToString:@"virtio-ramfb"] ||
+                     [self.configuration.displayCard containsString:@"-gl-"] ||
+                     [self.configuration.displayCard hasSuffix:@"-gl"];
+        }
         [self pushArgv:@"-spice"];
-        [self pushArgv:[NSString stringWithFormat:@"port=%lu,addr=127.0.0.1,disable-ticketing,image-compression=off,playback-compression=off,streaming-video=off", self.spicePort]];
+        [self pushArgv:[NSString stringWithFormat:@"unix=on,addr=%@,disable-ticketing=on,image-compression=off,playback-compression=off,streaming-video=off,gl=%@", spiceSocketURL.path, isGLOn ? @"on" : @"off"]];
         [self pushArgv:@"-device"];
         [self pushArgv:self.configuration.displayCard];
     }

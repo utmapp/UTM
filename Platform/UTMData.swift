@@ -199,14 +199,21 @@ class UTMData: ObservableObject {
         }
     }
     
-    func discardChanges(forVM vm: UTMVirtualMachine) throws {
-        try vm.reloadConfiguration()
+    func discardChanges(forVM vm: UTMVirtualMachine? = nil) throws {
+        let config: UTMConfiguration
+        if let vm = vm {
+            try vm.reloadConfiguration()
+            config = vm.configuration
+        } else {
+            // create a tmp empty config so we can get orphanedDrives for tmp path
+            config = UTMConfiguration()
+        }
         // delete orphaned drives
-        guard let orphanedDrives = vm.configuration.orphanedDrives else {
+        guard let orphanedDrives = config.orphanedDrives else {
             return
         }
         for name in orphanedDrives {
-            let imagesPath = vm.configuration.imagesPath
+            let imagesPath = config.imagesPath
             let orphanPath = imagesPath.appendingPathComponent(name)
             logger.debug("Removing orphaned drive '\(name)'")
             try fileManager.removeItem(at: orphanPath)

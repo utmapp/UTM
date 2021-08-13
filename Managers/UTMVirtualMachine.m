@@ -286,7 +286,6 @@ error:
         [self.system setupXpc];
 #endif
         self.system.qmpPort = [[UTMPortAllocator sharedInstance] allocatePort];
-        self.system.spicePort = [[UTMPortAllocator sharedInstance] allocatePort];
         _qemu = [[UTMQemuManager alloc] initWithPort:self.system.qmpPort];
         _qemu.delegate = self;
     }
@@ -298,14 +297,11 @@ error:
     }
     
     if (!_ioService) {
-        _ioService = [self inputOutputServiceWithPort:self.system.spicePort];
+        _ioService = [self inputOutputService];
     }
     
     self.delegate.vmMessage = nil;
     [self changeState:kVMStarting];
-    if (self.configuration.debugLogEnabled) {
-        [_ioService setDebugMode:YES];
-    }
     
     BOOL ioStatus = [_ioService startWithError: nil];
     if (!ioStatus) {
@@ -316,26 +312,47 @@ error:
     if (self.viewState.suspended) {
         self.system.snapshot = kSuspendSnapshotName;
     }
+    // start QEMU
     [self.system startWithCompletion:^(BOOL success, NSString *msg){
         if (!success) {
+            self.busy = NO;
             [self errorTriggered:msg];
         }
         dispatch_semaphore_signal(self->_qemu_exit_sema);
     }];
-    [self->_ioService connectWithCompletion:^(BOOL success, NSString * _Nullable msg) {
+    // connect to QMP
+    [self.qemu connectWithCompletion:^(BOOL success, NSError *error) {
         if (!success) {
-            [self errorTriggered:msg];
-        } else {
+            UTMLog(@"Failed to connect to QMP: %@", error);
+            self.busy = NO;
+            [self errorTriggered:error.localizedDescription];
+            return;
+        }
+        // start SPICE client
+        [self.ioService connectWithCompletion:^(BOOL success, NSError *error) {
+            if (!success) {
+                UTMLog(@"Failed to connect to SPICE: %@", error);
+                self.busy = NO;
+                [self errorTriggered:error.localizedDescription];
+                return;
+            }
+            // continue VM boot
+            if (![self.qemu continueBootWithError:&error]) {
+                UTMLog(@"Failed to boot: %@", error);
+                self.busy = NO;
+                [self errorTriggered:error.localizedDescription];
+                return;
+            }
+            assert(self.qemu.isConnected);
+            assert(self.ioService.isConnected);
             [self changeState:kVMStarted];
             [self restoreViewState];
             if (self.viewState.suspended) {
                 [self deleteSaveVM];
             }
-        }
-    }];
-    self->_qemu.retries = kQMPMaxConnectionTries;
-    [self->_qemu connect];
-    self.busy = NO;
+            self.busy = NO;
+        }];
+    } retries:kQMPMaxConnectionTries];
     return YES;
 }
 
@@ -359,7 +376,7 @@ error:
     // save view settings early to win exit race
     [self saveViewState];
     
-    _qemu.retries = 0;
+    [self.qemu cancelConnectRetry];
     [_qemu vmQuitWithCompletion:nil];
     if (force || dispatch_semaphore_wait(_will_quit_sema, dispatch_time(DISPATCH_TIME_NOW, kStopTimeout)) != 0) {
         UTMLog(@"Stop operation timeout or force quit");
@@ -377,10 +394,6 @@ error:
     if (self.system.qmpPort) {
         [[UTMPortAllocator sharedInstance] freePort:self.system.qmpPort];
         self.system.qmpPort = 0;
-    }
-    if (self.system.spicePort) {
-        [[UTMPortAllocator sharedInstance] freePort:self.system.spicePort];
-        self.system.spicePort = 0;
     }
     self.system = nil;
     [self changeState:kVMStopped];
@@ -569,11 +582,11 @@ error:
     }
 }
 
-- (id<UTMInputOutput>)inputOutputServiceWithPort:(NSInteger)port {
+- (id<UTMInputOutput>)inputOutputService {
     if ([self supportedDisplayType] == UTMDisplayTypeConsole) {
         return [[UTMTerminalIO alloc] initWithConfiguration:[self.configuration copy]];
     } else {
-        return [[UTMSpiceIO alloc] initWithConfiguration:[self.configuration copy] port:port];
+        return [[UTMSpiceIO alloc] initWithConfiguration:[self.configuration copy]];
     }
 }
 

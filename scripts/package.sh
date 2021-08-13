@@ -138,10 +138,10 @@ Moderndepiction: https://cydia.getutm.app/depiction/native/com.utmapp.UTM.json
 Sileodepiction: https://cydia.getutm.app/depiction/native/com.utmapp.UTM.json
 Tags: compatible_min::ios11.0
 EOL
-	xcrun -sdk iphoneos clang -arch arm64 -fobjc-arc "$BASEDIR/deb/postinst.m" "$BASEDIR/deb/CoreServices.tbd" -o "$DEB_TMP/DEBIAN/postinst"
+	xcrun -sdk iphoneos clang -arch arm64 -fobjc-arc "$BASEDIR/deb/postinst.m" "$BASEDIR/deb/MobileCoreServices.tbd" -o "$DEB_TMP/DEBIAN/postinst"
 	strip "$DEB_TMP/DEBIAN/postinst"
 	ldid -S"$BASEDIR/deb/postinst.xml" "$DEB_TMP/DEBIAN/postinst"
-	xcrun -sdk iphoneos clang -arch arm64 -fobjc-arc "$BASEDIR/deb/prerm.m" "$BASEDIR/deb/CoreServices.tbd" -o "$DEB_TMP/DEBIAN/prerm"
+	xcrun -sdk iphoneos clang -arch arm64 -fobjc-arc "$BASEDIR/deb/prerm.m" "$BASEDIR/deb/MobileCoreServices.tbd" -o "$DEB_TMP/DEBIAN/prerm"
 	strip "$DEB_TMP/DEBIAN/prerm"
 	ldid -S"$BASEDIR/deb/prerm.xml" "$DEB_TMP/DEBIAN/prerm"
 	mkdir -p "$IPA_PATH"
