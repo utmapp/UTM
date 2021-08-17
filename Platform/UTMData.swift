@@ -15,6 +15,11 @@
 //
 
 import Foundation
+#if os(macOS)
+import AppKit
+#else
+import UIKit
+#endif
 
 @available(iOS 14, macOS 11, *)
 struct AlertMessage: Identifiable {
@@ -52,6 +57,8 @@ class UTMData: ObservableObject {
     
     #if os(macOS)
     var vmWindows: [UTMVirtualMachine: VMDisplayWindowController] = [:]
+    #else
+    var vmVC: VMDisplayViewController?
     #endif
     
     var fileManager: FileManager {
@@ -541,5 +548,60 @@ class UTMData: ObservableObject {
                 }
             }
         }
+    }
+    
+    // MARK: - Automation Features
+    
+    func trySendKeystroke(_ vm: UTMVirtualMachine, urlComponents components: URLComponents) {
+        guard let queryItems = components.queryItems else { return }
+        if vm.configuration.displayConsoleOnly {
+            if let text = queryItems.first(where: { $0.name == "text" })?.value {
+                vm.sendInput(text)
+            }
+        } else {
+            // TODO            
+        }
+    }
+    
+    func tryClickVM(_ vm: UTMVirtualMachine, urlComponents components: URLComponents) {
+        guard !vm.configuration.displayConsoleOnly else { return }
+        guard let queryItems = components.queryItems else { return }
+        /// Parse targeted position
+        var x: CGFloat? = nil
+        var y: CGFloat? = nil
+        let nf = NumberFormatter()
+        nf.allowsFloats = false
+        if let xStr = components.queryItems?.first(where: { item in
+            item.name == "x"
+        })?.value {
+            x = nf.number(from: xStr) as? CGFloat
+        }
+        if let yStr = components.queryItems?.first(where: { item in
+            item.name == "y"
+        })?.value {
+            y = nf.number(from: yStr) as? CGFloat
+        }
+        guard let x = x, let y = y else { return }
+        let point = CGPoint(x: x, y: y)
+        /// Parse which button should be clicked
+        var button: CSInputButton = .left
+        if let buttonStr = queryItems.first(where: { $0.name == "button"})?.value {
+            switch buttonStr {
+            case "middle":
+                button = .middle
+                break
+            case "right":
+                button = .right
+                break
+            default:
+                break
+            }
+        }
+        /// All parameters parsed, perform the click
+        #if os(macOS)
+        tryClickAtPoint(vm: vm, point: point, button: button)
+        #else
+        tryClickAtPoint(point: point, button: button)
+        #endif
     }
 }

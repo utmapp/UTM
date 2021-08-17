@@ -228,6 +228,16 @@ struct ContentView: View {
                     }
                 }
                 break
+            case "sendKey":
+                if let vm = findVM(), vm.state == .vmStarted {
+                    data.trySendKeystroke(vm, urlComponents: components)
+                }
+                break
+            case "click":
+                if let vm = findVM(), vm.state == .vmStarted {
+                    data.tryClickVM(vm, urlComponents: components)
+                }
+                break
             case "downloadVM":
                 data.tryDownloadVM(components)
                 break

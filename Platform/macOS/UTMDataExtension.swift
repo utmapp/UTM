@@ -50,4 +50,16 @@ extension UTMData {
             }
         }
     }
+    
+    func tryClickAtPoint(vm: UTMVirtualMachine, point: CGPoint, button: CSInputButton) {
+        if let vc = vmWindows[vm] as? VMDisplayMetalWindowController {
+            vc.mouseMove(absolutePoint: point, button: [])
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.02) {
+                vc.mouseDown(button: button)
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.02) {
+                    vc.mouseUp(button: button)
+                }
+            }
+        }
+    }
 }
