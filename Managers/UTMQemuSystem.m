@@ -394,9 +394,11 @@ static size_t sysctl_read(const char *name) {
         if (self.configuration.networkDhcpDomain.length > 0) {
             [netstr appendFormat:@",domainname=%@", self.configuration.networkDhcpDomain];
         }
-        for (NSUInteger i = 0; i < [self.configuration countPortForwards]; i++) {
-            UTMConfigurationPortForward *portForward = [self.configuration portForwardForIndex:i];
-            [netstr appendFormat:@",hostfwd=%@:%@:%@-%@:%@", portForward.protocol, portForward.hostAddress, portForward.hostPort, portForward.guestAddress, portForward.guestPort];
+        if (![self.configuration.networkMode isEqualToString:@"bridged"]) {
+            for (NSUInteger i = 0; i < [self.configuration countPortForwards]; i++) {
+                UTMConfigurationPortForward *portForward = [self.configuration portForwardForIndex:i];
+                [netstr appendFormat:@",hostfwd=%@:%@:%@-%@:%@", portForward.protocol, portForward.hostAddress, portForward.hostPort, portForward.guestAddress, portForward.guestPort];
+            }
         }
         [self pushArgv:netstr];
     } else {
