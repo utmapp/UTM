@@ -552,14 +552,17 @@ class UTMData: ObservableObject {
     
     // MARK: - Automation Features
     
-    func trySendKeystroke(_ vm: UTMVirtualMachine, urlComponents components: URLComponents) {
+    func trySendText(_ vm: UTMVirtualMachine, urlComponents components: URLComponents) {
         guard let queryItems = components.queryItems else { return }
+        guard let text = queryItems.first(where: { $0.name == "text" })?.value else { return }
         if vm.configuration.displayConsoleOnly {
-            if let text = queryItems.first(where: { $0.name == "text" })?.value {
-                vm.sendInput(text)
-            }
+            vm.sendInput(text)
         } else {
-            // TODO            
+            #if os(macOS)
+            trySendTextSpice(vm: vm, text: text)
+            #else
+            trySendTextSpice(text)
+            #endif
         }
     }
     

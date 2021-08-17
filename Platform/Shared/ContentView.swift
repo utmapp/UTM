@@ -228,9 +228,9 @@ struct ContentView: View {
                     }
                 }
                 break
-            case "sendKey":
+            case "sendText":
                 if let vm = findVM(), vm.state == .vmStarted {
-                    data.trySendKeystroke(vm, urlComponents: components)
+                    data.trySendText(vm, urlComponents: components)
                 }
                 break
             case "click":

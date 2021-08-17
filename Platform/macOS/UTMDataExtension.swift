@@ -15,6 +15,7 @@
 //
 
 import Foundation
+import Carbon.HIToolbox
 
 @available(macOS 11, *)
 extension UTMData {
@@ -47,6 +48,81 @@ extension UTMData {
         if let window = vmWindows[vm] {
             DispatchQueue.main.async {
                 window.close()
+            }
+        }
+    }
+    
+    func trySendTextSpice(vm: UTMVirtualMachine, text: String) {
+        guard text.count > 0 else { return }
+        if let vc = vmWindows[vm] as? VMDisplayMetalWindowController {
+            func sleep() {
+                Thread.sleep(forTimeInterval: 0.05)
+            }
+            func press(keyCode: UInt16) {
+                vc.keyDown(keyCode: Int(keyCode))
+                sleep()
+                vc.keyUp(keyCode: Int(keyCode))
+                sleep()
+            }
+            func simulateKeyPress(_ keyCodeDict: [String: UInt16]) {
+                /// Press modifier keys if necessary
+                let optionUsed = keyCodeDict["option"] == 1
+                if optionUsed {
+                    vc.keyDown(keyCode: kVK_Option)
+                    sleep()
+                }
+                let shiftUsed = keyCodeDict["shift"] == 1
+                if shiftUsed {
+                    vc.keyDown(keyCode: kVK_Shift)
+                    sleep()
+                }
+                let fnUsed = keyCodeDict["function"] == 1
+                if fnUsed {
+                    vc.keyDown(keyCode: kVK_Function)
+                    sleep()
+                }
+                let ctrlUsed = keyCodeDict["control"] == 1
+                if ctrlUsed {
+                    vc.keyDown(keyCode: kVK_Control)
+                    sleep()
+                }
+                let cmdUsed = keyCodeDict["command"] == 1
+                if cmdUsed {
+                    vc.keyDown(keyCode: kVK_Command)
+                    sleep()
+                }
+                /// Press the key now
+                let actualKeyCode = keyCodeDict["virtKeyCode"]!
+                press(keyCode: actualKeyCode)
+                /// Release modifiers
+                if optionUsed {
+                    vc.keyUp(keyCode: kVK_Option)
+                    sleep()
+                }
+                if shiftUsed {
+                    vc.keyUp(keyCode: kVK_Shift)
+                    sleep()
+                }
+                if fnUsed {
+                    vc.keyUp(keyCode: kVK_Function)
+                    sleep()
+                }
+                if ctrlUsed {
+                    vc.keyUp(keyCode: kVK_Control)
+                    sleep()
+                }
+                if cmdUsed {
+                    vc.keyUp(keyCode: kVK_Command)
+                    sleep()
+                }
+            }
+            UTF8ToKeyCode.createKeyMapIfNeeded()
+            DispatchQueue.global(qos: .userInitiated).async {
+                text.enumerated().forEach { stringItem in
+                    let char = stringItem.element
+                    let keyCodeDict = UTF8ToKeyCode.characterToKeyCode(character: char)
+                    simulateKeyPress(keyCodeDict)
+                }
             }
         }
     }
