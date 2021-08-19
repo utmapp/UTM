@@ -425,8 +425,14 @@ static size_t sysctl_read(const char *name) {
     NSInteger maxDevices = [self.configuration.usbRedirectionMaximumDevices integerValue];
     if (self.configuration.usb3Support) {
         NSString *controller = @"qemu-xhci";
-        if ([self.configuration.systemTarget hasPrefix:@"pc"] || [self.configuration.systemTarget hasPrefix:@"q35"]) {
+        if ([self.configuration.systemTarget hasPrefix:@"pc"] ||
+            [self.configuration.systemTarget hasPrefix:@"q35"]) {
             controller = @"nec-usb-xhci"; // Windows 7 doesn't like qemu-xchi
+            if ([[self.configuration.name lowercaseString] containsString:@"macos"] &&
+                self.useHypervisor) {
+                // likely a macOS Guest, disable MSI feature of USB controller to prevent QEMU crash
+                [self pushArgv:@"-global nec-usb-xhci.msi=off"];
+            }
         }
         for (int j = 0; j < ((maxDevices + 2) / 3); j++) {
             [self pushArgv:@"-device"];
