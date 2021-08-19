@@ -55,73 +55,91 @@ extension UTMData {
     func trySendTextSpice(vm: UTMVirtualMachine, text: String) {
         guard text.count > 0 else { return }
         if let vc = vmWindows[vm] as? VMDisplayMetalWindowController {
+            KeyCodeMap.createKeyMapIfNeeded()
+            
             func sleep() {
                 Thread.sleep(forTimeInterval: 0.05)
             }
-            func press(keyCode: UInt16) {
-                vc.keyDown(keyCode: Int(keyCode))
-                sleep()
-                vc.keyUp(keyCode: Int(keyCode))
-                sleep()
+            func keyDown(keyCode: Int) {
+                if let scanCodes = KeyCodeMap.keyCodeToScanCodes[keyCode] {
+                    vc.keyDown(scanCode: Int(scanCodes.down))
+                    sleep()
+                }
             }
-            func simulateKeyPress(_ keyCodeDict: [String: UInt16]) {
+            func keyUp(keyCode: Int) {
+                /// Due to how Spice works we need to send keyUp for the .down scan code
+                /// instead of sending the key down for the scan code that indicates key up.
+                if let scanCodes = KeyCodeMap.keyCodeToScanCodes[keyCode] {
+                    vc.keyUp(scanCode: Int(scanCodes.down))
+                    sleep()
+                }
+            }
+            func press(keyCode: Int) {
+                keyDown(keyCode: keyCode)
+                keyUp(keyCode: keyCode)
+            }
+            
+            func simulateKeyPress(_ keyCodeDict: [String: Int]) {
                 /// Press modifier keys if necessary
                 let optionUsed = keyCodeDict["option"] == 1
                 if optionUsed {
-                    vc.keyDown(keyCode: kVK_Option)
+                    keyDown(keyCode: kVK_Option)
                     sleep()
                 }
                 let shiftUsed = keyCodeDict["shift"] == 1
                 if shiftUsed {
-                    vc.keyDown(keyCode: kVK_Shift)
+                    keyDown(keyCode: kVK_Shift)
                     sleep()
                 }
                 let fnUsed = keyCodeDict["function"] == 1
                 if fnUsed {
-                    vc.keyDown(keyCode: kVK_Function)
+                    keyDown(keyCode: kVK_Function)
                     sleep()
                 }
                 let ctrlUsed = keyCodeDict["control"] == 1
                 if ctrlUsed {
-                    vc.keyDown(keyCode: kVK_Control)
+                    keyDown(keyCode: kVK_Control)
                     sleep()
                 }
                 let cmdUsed = keyCodeDict["command"] == 1
                 if cmdUsed {
-                    vc.keyDown(keyCode: kVK_Command)
+                    keyDown(keyCode: kVK_Command)
                     sleep()
                 }
                 /// Press the key now
-                let actualKeyCode = keyCodeDict["virtKeyCode"]!
-                press(keyCode: actualKeyCode)
+                let keyCode = keyCodeDict["virtKeyCode"]!
+                press(keyCode: keyCode)
                 /// Release modifiers
                 if optionUsed {
-                    vc.keyUp(keyCode: kVK_Option)
+                    keyUp(keyCode: kVK_Option)
                     sleep()
                 }
                 if shiftUsed {
-                    vc.keyUp(keyCode: kVK_Shift)
+                    keyUp(keyCode: kVK_Shift)
                     sleep()
                 }
                 if fnUsed {
-                    vc.keyUp(keyCode: kVK_Function)
+                    keyUp(keyCode: kVK_Function)
                     sleep()
                 }
                 if ctrlUsed {
-                    vc.keyUp(keyCode: kVK_Control)
+                    keyUp(keyCode: kVK_Control)
                     sleep()
                 }
                 if cmdUsed {
-                    vc.keyUp(keyCode: kVK_Command)
+                    keyUp(keyCode: kVK_Command)
                     sleep()
                 }
             }
-            UTF8ToKeyCode.createKeyMapIfNeeded()
             DispatchQueue.global(qos: .userInitiated).async {
                 text.enumerated().forEach { stringItem in
                     let char = stringItem.element
-                    let keyCodeDict = UTF8ToKeyCode.characterToKeyCode(character: char)
-                    simulateKeyPress(keyCodeDict)
+                    /// drop unknown chars
+                    if let keyCodeDict = KeyCodeMap.characterToKeyCode(character: char) {
+                        simulateKeyPress(keyCodeDict)
+                    } else {
+                        logger.warning("SendText dropping unknown char: \(char)")
+                    }
                 }
             }
         }

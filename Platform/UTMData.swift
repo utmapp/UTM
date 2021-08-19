@@ -584,8 +584,8 @@ class UTMData: ObservableObject {
         })?.value {
             y = nf.number(from: yStr) as? CGFloat
         }
-        guard let x = x, let y = y else { return }
-        let point = CGPoint(x: x, y: y)
+        guard let xPos = x, let yPos = y else { return }
+        let point = CGPoint(x: xPos, y: yPos)
         /// Parse which button should be clicked
         var button: CSInputButton = .left
         if let buttonStr = queryItems.first(where: { $0.name == "button"})?.value {

@@ -41,6 +41,7 @@
 		83A004B926A8CC95001AC09E /* UTMImportFromWebTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83A004B826A8CC95001AC09E /* UTMImportFromWebTask.swift */; };
 		83A004BA26A8CC95001AC09E /* UTMImportFromWebTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83A004B826A8CC95001AC09E /* UTMImportFromWebTask.swift */; };
 		83A004BB26A8CC95001AC09E /* UTMImportFromWebTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83A004B826A8CC95001AC09E /* UTMImportFromWebTask.swift */; };
+		83C15C5F26CC441500ADFD45 /* KeyCodeMap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83C15C5E26CC441000ADFD45 /* KeyCodeMap.swift */; };
 		8401FD71269BEB2B00265F0D /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = CE6B240A25F1F3CE0020D43E /* main.c */; };
 		8401FD72269BEB3000265F0D /* Bootstrap.c in Sources */ = {isa = PBXBuildFile; fileRef = CE0DF17125A80B6300A51894 /* Bootstrap.c */; };
 		8401FD7A269BECE200265F0D /* QEMULauncher.app in Embed Launcher */ = {isa = PBXBuildFile; fileRef = 8401FD62269BE9C500265F0D /* QEMULauncher.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
@@ -1464,6 +1465,7 @@
 		83034C0626AB630F006B4BAF /* UTMPendingVMView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMPendingVMView.swift; sourceTree = "<group>"; };
 		835AA7B026AB7C85007A0411 /* UTMPendingVirtualMachine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMPendingVirtualMachine.swift; sourceTree = "<group>"; };
 		83A004B826A8CC95001AC09E /* UTMImportFromWebTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMImportFromWebTask.swift; sourceTree = "<group>"; };
+		83C15C5E26CC441000ADFD45 /* KeyCodeMap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyCodeMap.swift; sourceTree = "<group>"; };
 		83FBDD53242FA71900D2C5D7 /* VMDisplayMetalViewController+Pointer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "VMDisplayMetalViewController+Pointer.h"; sourceTree = "<group>"; };
 		83FBDD55242FA7BC00D2C5D7 /* VMDisplayMetalViewController+Pointer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "VMDisplayMetalViewController+Pointer.m"; sourceTree = "<group>"; };
 		8401FD62269BE9C500265F0D /* QEMULauncher.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = QEMULauncher.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -2467,6 +2469,7 @@
 				CE2D954124AD4F980059923A /* Info.plist */,
 				FFB02A8E266CB09C006CD71A /* InfoPlist.strings */,
 				CE2D953F24AD4F980059923A /* macOS.entitlements */,
+				83C15C5E26CC441000ADFD45 /* KeyCodeMap.swift */,
 			);
 			path = macOS;
 			sourceTree = "<group>";
@@ -3820,6 +3823,7 @@
 				CE0B6D4024AD584C00FE012D /* qapi-types-rocker.c in Sources */,
 				CE0B6CEF24AD566D00FE012D /* CSDisplayMetal.m in Sources */,
 				CE0B6D6724AD584D00FE012D /* qapi-types-ui.c in Sources */,
+				83C15C5F26CC441500ADFD45 /* KeyCodeMap.swift in Sources */,
 				CE0B6D6824AD584D00FE012D /* qapi-visit-machine.c in Sources */,
 				CE0B6D4A24AD584C00FE012D /* qapi-types-error.c in Sources */,
 				CE0B6D2124AD57FC00FE012D /* qapi-commands-error.c in Sources */,

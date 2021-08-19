@@ -398,18 +398,18 @@ extension VMDisplayMetalWindowController: VMMetalViewInputDelegate {
         }
     }
     
-    func keyDown(keyCode: Int) {
-        if (keyCode & 0xFF) == 0x1D { // Ctrl
+    func keyDown(scanCode: Int) {
+        if (scanCode & 0xFF) == 0x1D { // Ctrl
             ctrlKeyDown = true
         }
-        sendExtendedKey(.press, keyCode: keyCode)
+        sendExtendedKey(.press, keyCode: scanCode)
     }
     
-    func keyUp(keyCode: Int) {
-        if (keyCode & 0xFF) == 0x1D { // Ctrl
+    func keyUp(scanCode: Int) {
+        if (scanCode & 0xFF) == 0x1D { // Ctrl
             ctrlKeyDown = false
         }
-        sendExtendedKey(.release, keyCode: keyCode)
+        sendExtendedKey(.release, keyCode: scanCode)
     }
     
     func requestReleaseCapture() {
