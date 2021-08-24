@@ -1,0 +1,25 @@
+From ed5db9693bc028ea1c98bfd084bff588eb182554 Mon Sep 17 00:00:00 2001
+From: osy <50960678+osy@users.noreply.github.com>
+Date: Mon, 23 Aug 2021 19:57:38 -0700
+Subject: [PATCH] resolv: fix memory leak when using libresolv
+
+---
+ src/subprojects/libslirp/slirp.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/subprojects/libslirp/src/slirp.c b/subprojects/libslirp/src/slirp.c
+index 5d60cb5..05e2bb0 100644
+--- a/subprojects/libslirp/src/slirp.c
++++ b/subprojects/libslirp/src/slirp.c
+@@ -182,7 +182,7 @@ static int get_dns_addr_libresolv(int af, void *pdns_addr, void *cached_addr,
+         }
+     }
+ 
+-    res_nclose(&state);
++    res_ndestroy(&state);
+     if (!found)
+         return -1;
+     return 0;
+-- 
+2.28.0
+
