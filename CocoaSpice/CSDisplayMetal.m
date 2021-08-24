@@ -554,6 +554,7 @@ static void cs_channel_destroy(SpiceSession *s, SpiceChannel *channel, gpointer 
     textureDescriptor.pixelFormat = MTLPixelFormatBGRA8Unorm;
     textureDescriptor.width = self.scanout.width;
     textureDescriptor.height = self.scanout.height;
+    textureDescriptor.usage = MTLTextureUsageShaderRead;
     self.glTexture = [self.device newTextureWithDescriptor:textureDescriptor iosurface:iosurface plane:0];
     CFRelease(iosurface);
 }
