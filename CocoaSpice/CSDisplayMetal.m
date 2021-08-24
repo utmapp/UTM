@@ -219,6 +219,7 @@ static void cs_cursor_set(SpiceCursorChannel *channel,
     [self drawCursor:cursor_shape->data];
     self.cursorHidden = NO;
     cs_cursor_invalidate(self);
+    g_boxed_free(SPICE_TYPE_CURSOR_SHAPE, cursor_shape);
 }
 
 static void cs_cursor_move(SpiceCursorChannel *channel, gint x, gint y, gpointer data)
@@ -694,10 +695,11 @@ static void cs_channel_destroy(SpiceSession *s, SpiceChannel *channel, gpointer 
         { 0, 0 }, // MTLOrigin
         { self.cursorSize.width, self.cursorSize.height, 1} // MTLSize
     };
+    NSData *data = [NSData dataWithBytes:buffer length:self.cursorSize.width*self.cursorSize.height*pixelSize];
     dispatch_async(self.renderQueue, ^{
         [self.cursorTexture replaceRegion:region
                               mipmapLevel:0
-                                withBytes:buffer
+                                withBytes:data.bytes
                               bytesPerRow:self.cursorSize.width*pixelSize];
     });
 }
