@@ -405,7 +405,7 @@ build_angle () {
         TARGET_CPU="x64"
         ;;
     esac
-    gn gen "--args=is_debug=false angle_build_all=false angle_enable_metal=true angle_enable_gl=false angle_enable_glsl=true angle_enable_gl_desktop=false $IOS_BUILD_ARGS target_os=\"$TARGET_OS\" target_cpu=\"$TARGET_CPU\"" utm_build
+    gn gen "--args=is_debug=false angle_build_all=false angle_enable_metal=true $IOS_BUILD_ARGS target_os=\"$TARGET_OS\" target_cpu=\"$TARGET_CPU\"" utm_build
     ninja -C utm_build -j $NCPU
     if [ "$TARGET_OS" == "ios" ]; then
         cp -a "utm_build/libEGL.framework/libEGL" "$PREFIX/lib/libEGL.dylib"
