@@ -380,7 +380,7 @@ build_angle () {
     case $PLATFORM in
     ios* )
         TARGET_OS="ios"
-        IOS_BUILD_ARGS="ios_enable_code_signing=false"
+        IOS_BUILD_ARGS="ios_enable_code_signing=false ios_deployment_target=\"$IOS_SDKMINVER\""
         if [ "$PLATFORM" == "ios_simulator" ]; then
             IOS_BUILD_ARGS="$IOS_BUILD_ARGS target_environment=\"simulator\""
         else

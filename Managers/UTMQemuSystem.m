@@ -579,14 +579,10 @@ static size_t sysctl_read(const char *name) {
         [self pushArgv: @"chardev:term0"];
     } else {
         NSURL *spiceSocketURL = self.configuration.spiceSocketURL;
-        BOOL isGLOn = NO;
-        // ANGLE Metal backend only supported on iOS 13+
-        if (@available(iOS 13, *)) {
-            // GL supported devices have suffix GL and virtio-ramfb
-            isGLOn = [self.configuration.displayCard isEqualToString:@"virtio-ramfb"] ||
-                     [self.configuration.displayCard containsString:@"-gl-"] ||
-                     [self.configuration.displayCard hasSuffix:@"-gl"];
-        }
+        // GL supported devices have suffix GL and virtio-ramfb
+        BOOL isGLOn = [self.configuration.displayCard isEqualToString:@"virtio-ramfb"] ||
+                      [self.configuration.displayCard containsString:@"-gl-"] ||
+                      [self.configuration.displayCard hasSuffix:@"-gl"];
         [self pushArgv:@"-spice"];
         [self pushArgv:[NSString stringWithFormat:@"unix=on,addr=%@,disable-ticketing=on,image-compression=off,playback-compression=off,streaming-video=off,gl=%@", spiceSocketURL.path, isGLOn ? @"on" : @"off"]];
         [self pushArgv:@"-device"];
