@@ -56,8 +56,8 @@ struct VMConfigNetworkView: View {
                         #endif
                     }
                     
-                    /// Bridged networking doesn't support port forwarding
-                    if config.networkMode != "bridged" {
+                    /// Bridged and shared networking doesn't support port forwarding
+                    if config.networkMode == "emulated" {
                         VMConfigNetworkPortForwardView(config: config)
                     }
                 }
