@@ -15,6 +15,9 @@
 //
 
 import Logging
+#if canImport(AltKit)
+import AltKit
+#endif
 
 let logger = Logger(label: "com.utmapp.UTM") { label in
     var utmLogger = UTMLoggingSwift(label: label)
@@ -54,6 +57,9 @@ class Main {
             #if os(macOS)
             logger.critical("This version of macOS is not supported!")
             #else
+            #if canImport(AltKit)
+            initAltKit()
+            #endif
             UIApplicationMain(CommandLine.argc, CommandLine.unsafeArgv, nil, NSStringFromClass(AppDelegate.self))
             #endif
         }
@@ -82,4 +88,31 @@ class Main {
             logger.debug("registerDefaultsFromSettingsBundle: Could not find Settings.bundle")
         }
     }
+    
+#if canImport(AltKit)
+    static private func initAltKit() {
+        ServerManager.shared.startDiscovering()
+
+        ServerManager.shared.autoconnect { result in
+            switch result
+            {
+            case .failure(let error): print("Could not auto-connect to server.", error)
+            case .success(let connection):
+                connection.enableUnsignedCodeExecution { result in
+                    switch result
+                    {
+                    case .failure(let error):
+                        logger.debug("Could not enable JIT compilation. \(error.localizedDescription)")
+                    case .success:
+                        logger.debug("Successfully enabled JIT compilation!")
+                        jitAvailable = true
+                        ServerManager.shared.stopDiscovering()
+                    }
+                    
+                    connection.disconnect()
+                }
+            }
+        }
+    }
+#endif
 }
