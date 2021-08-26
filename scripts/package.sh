@@ -188,6 +188,8 @@ deb )
 	<true/>
 	<key>com.apple.vm.device-access</key>
 	<true/>
+	<key>com.apple.developer.kernel.increased-memory-limit</key>
+	<true/>
 </dict>
 </plist>
 EOL
@@ -202,6 +204,8 @@ ipa )
 <plist version="1.0">
 <dict>
 	<key>get-task-allow</key>
+	<true/>
+	<key>com.apple.developer.kernel.increased-memory-limit</key>
 	<true/>
 	<!-- https://siguza.github.io/psychicpaper/ -->
 	<!---><!-->
@@ -226,7 +230,18 @@ EOL
 	rm "$FAKEENT"
 	;;
 ipa-se )
-	create_fake_ipa "$NAME" "$INPUT" "$OUTPUT"
+	FAKEENT="/tmp/fakeent.plist"
+	cat >"$FAKEENT" <<EOL
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>com.apple.developer.kernel.increased-memory-limit</key>
+	<true/>
+</dict>
+</plist>
+EOL
+	create_fake_ipa "$NAME" "$INPUT" "$OUTPUT" "$FAKEENT"
 	;;
 signedipa )
 	itunes_sign "$INPUT" "$OUTPUT" $4 $5

@@ -85,3 +85,5 @@ if [ ! -z "$TEAM_IDENTIFIER" ]; then
 fi
 
 xcodebuild archive -archivePath "$OUTPUT" -scheme "$SCHEME" -sdk "$SDK" $ARCH_ARGS -configuration Release CODE_SIGNING_ALLOWED=NO $TEAM_IDENTIFIER_PREFIX
+BUILT_PATH=$(find $OUTPUT.xcarchive -name '*.app' -type d | head -1)
+codesign --force --sign - --entitlements "$BASEDIR/../Platform/iOS/iOS.entitlements" --timestamp=none "$BUILT_PATH"

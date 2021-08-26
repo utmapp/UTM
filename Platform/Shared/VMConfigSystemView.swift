@@ -21,11 +21,7 @@ struct VMConfigSystemView: View {
     let bytesInMib: UInt64 = 1024 * 1024
     let minMemoryMib = 32
     let baseUsageMib = 128
-    #if os(macOS)
     let warningThreshold = 0.9
-    #else
-    let warningThreshold = 0.4
-    #endif
     
     @ObservedObject var config: UTMConfiguration
     @State private var showAdvanced: Bool = false
@@ -86,7 +82,13 @@ struct VMConfigSystemView: View {
             config.systemJitCacheSize = NSNumber(value: 0)
             return
         }
-        let totalDeviceMemory = ProcessInfo.processInfo.physicalMemory
+        var totalDeviceMemory = ProcessInfo.processInfo.physicalMemory
+        #if os(iOS)
+        let availableMemory = UInt64(os_proc_available_memory())
+        if availableMemory > 0 {
+            totalDeviceMemory = availableMemory
+        }
+        #endif
         let actualJitSizeMib = jitSizeMib == 0 ? memorySizeMib / 4 : jitSizeMib
         let jitMirrorMultiplier = jb_has_jit_entitlement() ? 1 : 2;
         let estMemoryUsage = UInt64(memorySizeMib + jitMirrorMultiplier*actualJitSizeMib + baseUsageMib) * bytesInMib

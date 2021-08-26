@@ -14,6 +14,7 @@
 // limitations under the License.
 //
 
+#include <os/proc.h>
 #include "TargetConditionals.h"
 #include "UTMConfiguration.h"
 #include "UTMConfiguration+Constants.h"
