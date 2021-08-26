@@ -84,9 +84,10 @@ To build the Xcode project without a registered developer account, you will need
 
 1. Open `Platform/macOS/macOS.entitlements` and delete the entry for `com.apple.vm.device-access`.
 2. Open `QEMUHelper/QEMUHelper.entitlements` and delete the entry for `com.apple.vm.networking`.
-3. In the project settings, select the "macOS" target and go to the "Signing & Capabilities" tab and check the box for "Disable Library Validation".
-4. Repeat for the "QEMUHelper" target.
-5. Repeat for the "QEMULauncher" target.
+3. Open `QEMULauncher/QEMULauncher.entitlements` and delete the entry for `com.apple.vm.networking`.
+4. In the project settings, select the "macOS" target and go to the "Signing & Capabilities" tab and check the box for "Disable Library Validation".
+5. Repeat step 4 for the "QEMUHelper" target.
+6. Repeat step 4 for the "QEMULauncher" target.
 
 You should now be able to run and debug UTM. If you have a registered developer account with access to Hypervisor entitlements, you should create a `CodeSigning.xcconfig` file with the proper values (see `CodeSigning.xcconfig.sample`). Otherwise, the build will default to ad-hoc signing.
 
