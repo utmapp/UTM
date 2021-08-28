@@ -1,0 +1,18 @@
+/* Bundle name */
+"CFBundleName" = "UTM SE";
+
+/* Privacy - Location Always and When In Use Usage Description */
+"NSLocationAlwaysAndWhenInUseUsageDescription" = "虛擬機背景存取權需要位置服務。位置資料不會傳出手機。";
+
+/* Privacy - Location Always Usage Description */
+"NSLocationAlwaysUsageDescription" = "虛擬機背景存取權需要位置服務。位置資料不會傳出手機。";
+
+/* Privacy - Location When In Use Usage Description */
+"NSLocationWhenInUseUsageDescription" = "虛擬機背景存取權需要位置服務。位置資料不會傳出手機。";
+
+/* Privacy - Microphone Usage Description */
+"NSMicrophoneUsageDescription" = "虛擬機需要麥克風存取權。";
+
+/* (No Comment) */
+"UTM virtual machine" = "UTM 虛擬機";
+
