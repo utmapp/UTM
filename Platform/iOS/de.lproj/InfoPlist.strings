@@ -2,17 +2,18 @@
 "CFBundleName" = "UTM SE";
 
 /* Privacy - Location Always and When In Use Usage Description */
-"NSLocationAlwaysAndWhenInUseUsageDescription" = "虛擬機背景存取權需要位置服務。位置資料不會傳出手機。";
+"NSLocationAlwaysAndWhenInUseUsageDescription" = "Standortdienste sind für den Hintergrundzugriff auf die virtuelle Maschine erforderlich. Standortdaten werden nicht übertragen.";
 
 /* Privacy - Location Always Usage Description */
-"NSLocationAlwaysUsageDescription" = "虛擬機背景存取權需要位置服務。位置資料不會傳出手機。";
+"NSLocationAlwaysUsageDescription" = "Standortdienste sind für den Hintergrundzugriff auf die virtuelle Maschine erforderlich. Standortdaten werden nicht übertragen.";
 
 /* Privacy - Location When In Use Usage Description */
-"NSLocationWhenInUseUsageDescription" = "虛擬機背景存取權需要位置服務。位置資料不會傳出手機。";
+"NSLocationWhenInUseUsageDescription" = "Standortdienste sind für den Hintergrundzugriff auf die virtuelle Maschine erforderlich. Standortdaten werden nicht übertragen.";
 
 /* Privacy - Microphone Usage Description */
-"NSMicrophoneUsageDescription" = "虛擬機需要麥克風存取權。";
+"NSMicrophoneUsageDescription" = "Die VM benötigt Mikrofonzugriff.
+";
 
 /* (No Comment) */
-"UTM virtual machine" = "UTM 虛擬機";
+"UTM virtual machine" = "UTM Virtuelle Machine";
 

@@ -1418,6 +1418,14 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		1FAFC17326D9D4AD00403522 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
+		1FAFC17426D9D4AD00403522 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/Main.strings; sourceTree = "<group>"; };
+		1FAFC17526D9D4AD00403522 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		1FAFC17626D9D4AD00403522 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		1FAFC17726D9D4AD00403522 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/Localizable.strings; sourceTree = "<group>"; };
+		1FAFC17826D9D4AE00403522 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		1FAFC17926D9D4AE00403522 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/Localizable.strings; sourceTree = "<group>"; };
+		1FAFC17A26D9D4AE00403522 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		2C33B3A82566C9B100A954A6 /* VMContextMenuModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMContextMenuModifier.swift; sourceTree = "<group>"; };
 		2C6D9E02256EE454003298E6 /* VMDisplayTerminalWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMDisplayTerminalWindowController.swift; sourceTree = "<group>"; };
 		2C6D9E122571AFE5003298E6 /* UTMQcow2.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UTMQcow2.h; sourceTree = "<group>"; };
@@ -3278,6 +3286,7 @@
 				"zh-Hans",
 				ko,
 				"zh-Hant",
+				de,
 			);
 			mainGroup = CE550BC0225947990063E575;
 			packageReferences = (
@@ -4238,6 +4247,7 @@
 				C8958B6D243634DA002D86B4 /* ko */,
 				52873FD9247F5B1B0063E4C8 /* zh-Hant */,
 				CE0E828D24E4D4CE003EA9FE /* Base */,
+				1FAFC17726D9D4AD00403522 /* de */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";
@@ -4249,6 +4259,7 @@
 				52459A322440C84E006A58D0 /* zh-Hans */,
 				52873FDA247F5B1B0063E4C8 /* zh-Hant */,
 				CE0E829424E4D509003EA9FE /* Base */,
+				1FAFC17826D9D4AE00403522 /* de */,
 			);
 			name = InfoPlist.strings;
 			sourceTree = "<group>";
@@ -4260,6 +4271,7 @@
 				525535A1241B8A52003C80FC /* zh-Hans */,
 				C8958B6C243634DA002D86B4 /* ko */,
 				52873FD8247F5B1B0063E4C8 /* zh-Hant */,
+				1FAFC17426D9D4AD00403522 /* de */,
 			);
 			name = Main.storyboard;
 			sourceTree = "<group>";
@@ -4268,6 +4280,7 @@
 			isa = PBXVariantGroup;
 			children = (
 				CE550BD82259479D0063E575 /* Base */,
+				1FAFC17326D9D4AD00403522 /* de */,
 			);
 			name = LaunchScreen.storyboard;
 			sourceTree = "<group>";
@@ -4276,6 +4289,7 @@
 			isa = PBXVariantGroup;
 			children = (
 				FFB02A8B266CB09C006CD71A /* zh-Hant */,
+				1FAFC17526D9D4AD00403522 /* de */,
 			);
 			name = InfoPlist.strings;
 			sourceTree = "<group>";
@@ -4284,6 +4298,7 @@
 			isa = PBXVariantGroup;
 			children = (
 				FFB02A8F266CB09C006CD71A /* zh-Hant */,
+				1FAFC17626D9D4AD00403522 /* de */,
 			);
 			name = InfoPlist.strings;
 			sourceTree = "<group>";
@@ -4292,6 +4307,7 @@
 			isa = PBXVariantGroup;
 			children = (
 				FFB02A92266CB09C006CD71A /* zh-Hant */,
+				1FAFC17A26D9D4AE00403522 /* de */,
 			);
 			name = InfoPlist.strings;
 			sourceTree = "<group>";
@@ -4300,6 +4316,7 @@
 			isa = PBXVariantGroup;
 			children = (
 				FFB02A95266CB09C006CD71A /* zh-Hant */,
+				1FAFC17926D9D4AE00403522 /* de */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";
