@@ -249,10 +249,12 @@ static size_t sysctl_read(const char *name) {
     }
     if (self.configuration.soundEnabled && !forceDisableSound) {
         if ([self.configuration.soundCard isEqualToString:@"screamer"]) {
+#if !TARGET_OS_IPHONE
             // force CoreAudio backend for mac99 which only supports 44100 Hz
             [self pushArgv:@"-audiodev"];
             [self pushArgv:@"coreaudio,id=audio0"];
             // no device setting for screamer
+#endif
         } else {
             [self pushArgv:@"-device"];
             [self pushArgv:self.configuration.soundCard];
