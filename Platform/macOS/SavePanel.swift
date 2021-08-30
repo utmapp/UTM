@@ -41,7 +41,7 @@ struct SavePanel: NSViewRepresentable {
                     savePanel.title = "Select where to save UTM Virtual Machine:"
                     savePanel.nameFieldStringValue = sourceUrl.deletingPathExtension().lastPathComponent
                     savePanel.allowedContentTypes = [.UTM]
-                }
+                } else { return }
 
                 savePanel.begin { result in
                     if result == .OK {
