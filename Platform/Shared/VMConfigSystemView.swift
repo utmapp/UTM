@@ -105,23 +105,12 @@ struct VMConfigSystemView: View {
 
 @available(iOS 14, macOS 11, *)
 struct HardwareOptions: View {
-    let validMemoryValues = [32, 64, 128, 256, 512, 768, 1024, 1536, 2048, 3072, 4096, 6144, 8192, 10240, 12288, 14336, 16384, 32768]
-    
     @ObservedObject var config: UTMConfiguration
     let validateMemorySize: (Bool) -> Void
     @EnvironmentObject private var data: UTMData
-    @State private var memorySizeIndex: Float = 0
     @State private var warningMessage: String? = nil
     
     var body: some View {
-        let memorySizeIndexObserver = Binding<Float>(
-            get: {
-                return memorySizePickerIndex(size: config.systemMemory)
-            },
-            set: {
-                config.systemMemory = memorySize(pickerIndex: $0)
-            }
-        )
         Section(header: Text("Hardware")) {
             VMConfigStringPicker(selection: $config.systemArchitecture, label: Text("Architecture"), rawValues: UTMConfiguration.supportedArchitectures(), displayValues: UTMConfiguration.supportedArchitecturesPretty())
                 .onChange(of: config.systemArchitecture, perform: { value in
@@ -163,39 +152,8 @@ struct HardwareOptions: View {
                 .onChange(of: config.systemTarget, perform: { value in
                     config.loadDefaults(forTarget: value, architecture: config.systemArchitecture)
                 })
-            HStack {
-                Slider(value: memorySizeIndexObserver, in: 0...Float(validMemoryValues.count-1), step: 1) { start in
-                    if !start {
-                        validateMemorySize(false)
-                    }
-                } label: {
-                    Text("Memory")
-                }
-                NumberTextField("Size", number: $config.systemMemory, onEditingChanged: validateMemorySize)
-                    .frame(width: 50, height: nil)
-                Text("MB")
-            }
+            RAMSlider(systemMemory: $config.systemMemory, onValidate: validateMemorySize)
         }
-    }
-    
-    func memorySizePickerIndex(size: NSNumber?) -> Float {
-        guard let sizeUnwrap = size else {
-            return 0
-        }
-        for (i, s) in validMemoryValues.enumerated() {
-            if s >= Int(truncating: sizeUnwrap) {
-                return Float(i)
-            }
-        }
-        return Float(validMemoryValues.count - 1)
-    }
-    
-    func memorySize(pickerIndex: Float) -> NSNumber {
-        let i = Int(pickerIndex)
-        guard i >= 0 && i < validMemoryValues.count else {
-            return 0
-        }
-        return NSNumber(value: validMemoryValues[i])
     }
 }
 

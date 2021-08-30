@@ -307,6 +307,9 @@
 		CE0DF1B025A83C1700A51894 /* qemu-xtensaeb-softmmu.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D641222653C7500FC7E63 /* qemu-xtensaeb-softmmu.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CE0E9B87252FD06B0026E02B /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE0E9B86252FD06B0026E02B /* SwiftUI.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		CE0FE12824D3B08B0086CEF0 /* VMDisplayWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = CE0FE12724D3B08B0086CEF0 /* VMDisplayWindow.xib */; };
+		CE19392626DCB094005CEC17 /* RAMSlider.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE19392526DCB093005CEC17 /* RAMSlider.swift */; };
+		CE19392726DCB094005CEC17 /* RAMSlider.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE19392526DCB093005CEC17 /* RAMSlider.swift */; };
+		CE19392826DCB094005CEC17 /* RAMSlider.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE19392526DCB093005CEC17 /* RAMSlider.swift */; };
 		CE2D926A24AD46670059923A /* VMDisplayMetalViewController+Pointer.h in Sources */ = {isa = PBXBuildFile; fileRef = 83FBDD53242FA71900D2C5D7 /* VMDisplayMetalViewController+Pointer.h */; };
 		CE2D926B24AD46670059923A /* qapi-types-rocker.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C14D23FCEC09001177D6 /* qapi-types-rocker.c */; };
 		CE2D926E24AD46670059923A /* qapi-commands-crypto.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C0AE23FCEC01001177D6 /* qapi-commands-crypto.c */; };
@@ -1479,6 +1482,7 @@
 		CE0E829424E4D509003EA9FE /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = Base; path = Base.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		CE0E9B86252FD06B0026E02B /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
 		CE0FE12724D3B08B0086CEF0 /* VMDisplayWindow.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = VMDisplayWindow.xib; sourceTree = "<group>"; };
+		CE19392526DCB093005CEC17 /* RAMSlider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RAMSlider.swift; sourceTree = "<group>"; };
 		CE20FAE32444FC6E0059AE11 /* VMConfigDirectoryPickerViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VMConfigDirectoryPickerViewController.h; sourceTree = "<group>"; };
 		CE20FAE42444FC6E0059AE11 /* VMConfigDirectoryPickerViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VMConfigDirectoryPickerViewController.m; sourceTree = "<group>"; };
 		CE20FAE62448D2BE0059AE11 /* VMScroll.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VMScroll.h; sourceTree = "<group>"; };
@@ -2987,6 +2991,7 @@
 				CE7D972B24B2B17D0080CB69 /* BusyOverlay.swift */,
 				CE772AAB25C8B0F600E4E379 /* ContentView.swift */,
 				CED234EC254796E500ED0A57 /* NumberTextField.swift */,
+				CE19392526DCB093005CEC17 /* RAMSlider.swift */,
 				CE2D954324AD4F980059923A /* VMCardView.swift */,
 				CE772AB225C8B7B500E4E379 /* VMCommands.swift */,
 				CE2D953724AD4F980059923A /* VMConfigDisplayView.swift */,
@@ -3554,6 +3559,7 @@
 				CE2D92B424AD46670059923A /* qapi-visit-run-state.c in Sources */,
 				CED814E924C79F070042F0F1 /* VMConfigDriveCreateView.swift in Sources */,
 				CE2D92B524AD46670059923A /* qapi-commands-tpm.c in Sources */,
+				CE19392626DCB094005CEC17 /* RAMSlider.swift in Sources */,
 				CE2D92B724AD46670059923A /* qapi-visit-common.c in Sources */,
 				CEF83EBE24F9C3BF00557D15 /* UTMVirtualMachine+Drives.m in Sources */,
 				CE2D92B824AD46670059923A /* qapi-events-trace.c in Sources */,
@@ -3879,6 +3885,7 @@
 				CE0B6D4724AD584C00FE012D /* qapi-visit-net.c in Sources */,
 				CE0B6D7624AD584D00FE012D /* qapi-types-machine.c in Sources */,
 				CE0B6D3824AD57FD00FE012D /* qapi-commands-authz.c in Sources */,
+				CE19392826DCB094005CEC17 /* RAMSlider.swift in Sources */,
 				CE0B6D4524AD584C00FE012D /* qapi-types-run-state.c in Sources */,
 				2C33B3AA2566C9B100A954A6 /* VMContextMenuModifier.swift in Sources */,
 				CE0B6D5B24AD584D00FE012D /* qapi-visit-misc-target.c in Sources */,
@@ -4120,6 +4127,7 @@
 				CEA45ED1263519B5002FA97D /* UTMLocationManager.m in Sources */,
 				CEA45ED2263519B5002FA97D /* qapi-events-block.c in Sources */,
 				CEA45ED3263519B5002FA97D /* VMSettingsView.swift in Sources */,
+				CE19392726DCB094005CEC17 /* RAMSlider.swift in Sources */,
 				CEA45ED4263519B5002FA97D /* qapi-types-block-core.c in Sources */,
 				CEA45ED5263519B5002FA97D /* qapi-events-transaction.c in Sources */,
 				CEA45ED6263519B5002FA97D /* VMConfigStringPicker.swift in Sources */,
