@@ -42,6 +42,7 @@ typedef struct {
 @property (nonatomic, readonly) BOOL useHypervisor;
 @property (nonatomic, readonly) BOOL hasCustomBios;
 @property (nonatomic, readonly) BOOL usbSupported;
+@property (nonatomic, readonly) BOOL hasVirtio;
 
 @end
 
@@ -161,21 +162,22 @@ static size_t sysctl_read(const char *name) {
 }
 
 - (void)architectureSpecificConfiguration {
-    if ([self.configuration.systemArchitecture isEqualToString:@"x86_64"] ||
-        [self.configuration.systemArchitecture isEqualToString:@"i386"]) {
+    NSString *arch = self.configuration.systemArchitecture;
+    if ([arch isEqualToString:@"x86_64"] || [arch isEqualToString:@"i386"]) {
         [self pushArgv:@"-global"];
         [self pushArgv:@"PIIX4_PM.disable_s3=1"]; // applies for pc-i440fx-* types
         [self pushArgv:@"-global"];
         [self pushArgv:@"ICH9-LPC.disable_s3=1"]; // applies for pc-q35-* types
     }
-}
-
-- (void)targetSpecificConfiguration {
-    if ([self.configuration.systemTarget hasPrefix:@"virt"]) {
-        NSString *name = [NSString stringWithFormat:@"edk2-%@-code.fd", self.configuration.systemArchitecture];
+    if (self.hasVirtio) {
+        NSString *name = [NSString stringWithFormat:@"edk2-%@-code.fd", arch];
         NSURL *path = [self.resourceURL URLByAppendingPathComponent:name];
         if (!self.hasCustomBios && [[NSFileManager defaultManager] fileExistsAtPath:path.path]) {
-            [self pushArgv:@"-bios"];
+            if ([arch isEqualToString:@"x86_64"] || [arch isEqualToString:@"i386"]) {
+                [self pushArgv:@"-pflash"];
+            } else {
+                [self pushArgv:@"-bios"];
+            }
             [self pushArgv:path.path]; // accessDataWithBookmark called already
         }
     }
@@ -551,6 +553,11 @@ static size_t sysctl_read(const char *name) {
     return ![self.configuration.systemTarget isEqualToString:@"isapc"];
 }
 
+- (BOOL)hasVirtio {
+    return [self.configuration.systemTarget hasPrefix:@"virt"] ||
+           (!self.configuration.displayConsoleOnly && [self.configuration.displayCard hasPrefix:@"virtio"]);
+}
+
 - (NSString *)machineProperties {
     if (self.configuration.systemMachineProperties.length > 0) {
         return self.configuration.systemMachineProperties; // use specified properties
@@ -606,7 +613,6 @@ static size_t sysctl_read(const char *name) {
     [self pushArgv:@"-accel"];
     [self pushArgv:[self tcgAccelProperties]];
     [self architectureSpecificConfiguration];
-    [self targetSpecificConfiguration];
     // legacy boot order; new bootindex uses drive ordering
     [self pushArgv:@"-boot"];
     if (self.configuration.systemBootDevice.length > 0 && ![self.configuration.systemBootDevice isEqualToString:@"hdd"]) {
