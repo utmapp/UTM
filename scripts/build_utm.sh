@@ -86,4 +86,11 @@ fi
 
 xcodebuild archive -archivePath "$OUTPUT" -scheme "$SCHEME" -sdk "$SDK" $ARCH_ARGS -configuration Release CODE_SIGNING_ALLOWED=NO $TEAM_IDENTIFIER_PREFIX
 BUILT_PATH=$(find $OUTPUT.xcarchive -name '*.app' -type d | head -1)
-codesign --force --sign - --entitlements "$BASEDIR/../Platform/iOS/iOS.entitlements" --timestamp=none "$BUILT_PATH"
+find "$BUILT_PATH" -type d -path '*/Frameworks/*.framework' -exec codesign --force --sign - --timestamp=none \{\} \;
+if [ "$PLATFORM" != "macos" ]; then
+    codesign --force --sign - --entitlements "$BASEDIR/../Platform/iOS/iOS.entitlements" --timestamp=none "$BUILT_PATH"
+else
+    codesign --force --sign - --entitlements "$BASEDIR/../QEMULauncher/QEMULauncher.entitlements" --timestamp=none --options runtime "$BUILT_PATH/Contents/XPCServices/QEMUHelper.xpc/Contents/MacOS/QEMULauncher.app/Contents/MacOS/QEMULauncher"
+    codesign --force --sign - --entitlements "$BASEDIR/../QEMUHelper/QEMUHelper.entitlements" --timestamp=none --options runtime "$BUILT_PATH/Contents/XPCServices/QEMUHelper.xpc/Contents/MacOS/QEMUHelper"
+    codesign --force --sign - --entitlements "$BASEDIR/../Platform/macOS/macOS.entitlements" --timestamp=none --options runtime "$BUILT_PATH/Contents/MacOS/UTM"
+fi
