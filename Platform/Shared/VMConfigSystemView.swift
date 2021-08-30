@@ -61,7 +61,11 @@ struct VMConfigSystemView: View {
                         }
                     }
                     Section(header: Text("QEMU Machine Properties")) {
-                        TextField("None", text: $config.systemMachineProperties.bound)
+                        if #available(iOS 15, macOS 12, *) {
+                            TextField("", text: $config.systemMachineProperties.bound, prompt: Text("None"))
+                        } else {
+                            TextField("None", text: $config.systemMachineProperties.bound)
+                        }
                     }
                 }
             }

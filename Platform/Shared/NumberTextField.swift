@@ -21,30 +21,70 @@ struct NumberTextField: View {
     private var titleKey: LocalizedStringKey
     @Binding private var number: NSNumber?
     private var onEditingChanged: (Bool) -> Void
-    private var onCommit: () -> Void
     private let formatter: NumberFormatter
+    @available(iOS 15, macOS 12, *)
+    @FocusState private var focused: Bool
     
-    init(_ titleKey: LocalizedStringKey, number: Binding<NSNumber?>, onEditingChanged: @escaping (Bool) -> Void = { _ in }, onCommit: @escaping () -> Void = {}) {
+    init(_ titleKey: LocalizedStringKey, number: Binding<NSNumber?>, onEditingChanged: @escaping (Bool) -> Void = { _ in }) {
         self.titleKey = titleKey
         self._number = number
         self.onEditingChanged = onEditingChanged
-        self.onCommit = onCommit
         self.formatter = NumberFormatter()
         self.formatter.usesGroupingSeparator = false
         self.formatter.usesSignificantDigits = false
     }
     
     var body: some View {
-        TextField(titleKey, text: Binding<String>(get: { () -> String in
-            guard let number = self.number else {
-                return ""
-            }
-            return self.formatter.string(from: number) ?? ""
-        }, set: {
-            // make sure we never set nil
-            self.number = self.formatter.number(from: $0) ?? NSNumber(value: 0)
-        }), onEditingChanged: onEditingChanged, onCommit: onCommit)
-            .keyboardType(.numberPad)
+        if #available(iOS 15, macOS 12, *) {
+            TextField(value: $number, format: NSNumber.StringFormatStyle(), prompt: Text(titleKey), label: {
+                EmptyView()
+            })
+                .keyboardType(.numberPad)
+                .focused($focused)
+                .onChange(of: number) { _ in
+                    onEditingChanged(focused)
+                }
+                .onSubmit {
+                    focused = false
+                    onEditingChanged(false)
+                }
+        } else {
+            TextField(titleKey, text: Binding<String>(get: { () -> String in
+                guard let number = self.number else {
+                    return ""
+                }
+                return self.formatter.string(from: number) ?? ""
+            }, set: {
+                // make sure we never set nil
+                self.number = self.formatter.number(from: $0) ?? NSNumber(value: 0)
+            }), onEditingChanged: onEditingChanged)
+                .keyboardType(.numberPad)
+        }
+    }
+}
+
+@available(iOS 15, macOS 12, *)
+extension NSNumber {
+    struct StringFormatStyle: ParseableFormatStyle {
+        var parseStrategy: StringParseStrategy {
+            return StringParseStrategy()
+        }
+        
+        func format(_ value: NSNumber) -> String {
+            let formatter = NumberFormatter()
+            formatter.usesGroupingSeparator = false
+            formatter.usesSignificantDigits = false
+            return formatter.string(from: value) ?? ""
+        }
+    }
+    
+    struct StringParseStrategy: ParseStrategy {
+        func parse(_ value: String) throws -> NSNumber {
+            let formatter = NumberFormatter()
+            formatter.usesGroupingSeparator = false
+            formatter.usesSignificantDigits = false
+            return formatter.number(from: value) ?? NSNumber(value: 0)
+        }
     }
 }
 

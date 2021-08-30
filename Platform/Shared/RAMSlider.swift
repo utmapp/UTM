@@ -25,6 +25,18 @@ struct RAMSlider: View {
     @Binding var systemMemory: NSNumber?
     @State private var memorySizeIndex: Float = 0
     
+    #if os(macOS)
+    var useMontereyWorkaround: Bool {
+        if #available(macOS 12, *) {
+            return true
+        } else {
+            return false
+        }
+    }
+    #else
+    let useMontereyWorkaround = false
+    #endif
+    
     var memorySizeIndexObserver: Binding<Float> {
         Binding<Float>(
             get: {
@@ -51,17 +63,34 @@ struct RAMSlider: View {
     }
     
     var body: some View {
-        HStack {
-            Slider(value: memorySizeIndexObserver, in: 0...Float(validMemoryValues.count-1), step: 1) { start in
-                if !start {
-                    validateMemorySize(false)
+        if useMontereyWorkaround {
+            HStack {
+                Slider(value: memorySizeIndexObserver, in: 0...Float(validMemoryValues.count-1), step: 1) { start in
+                    if !start {
+                        validateMemorySize(false)
+                    }
+                } label: {
+                    Text("Memory")
                 }
-            } label: {
-                Text("Memory")
+                GeometryReader { geo in
+                    NumberTextField("Size", number: $systemMemory, onEditingChanged: validateMemorySize)
+                        .position(x: 20, y: geo.size.height / 2)
+                }.frame(width: 50)
+                Text("MB")
             }
-            NumberTextField("Size", number: $systemMemory, onEditingChanged: validateMemorySize)
-                .frame(width: 50, height: nil)
-            Text("MB")
+        } else {
+            HStack {
+                Slider(value: memorySizeIndexObserver, in: 0...Float(validMemoryValues.count-1), step: 1) { start in
+                    if !start {
+                        validateMemorySize(false)
+                    }
+                } label: {
+                    Text("Memory")
+                }
+                NumberTextField("Size", number: $systemMemory, onEditingChanged: validateMemorySize)
+                    .frame(width: 50, height: nil)
+                Text("MB")
+            }
         }
     }
     
