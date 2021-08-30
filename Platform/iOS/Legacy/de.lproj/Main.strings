@@ -24,13 +24,13 @@
 "2r8-dE-rzF.text" = "Größe";
 
 /* Class = "UINavigationItem"; title = "Select Image"; ObjectID = "340-Mu-Hwt"; */
-"340-Mu-Hwt.title" = "Bild aufwählen";
+"340-Mu-Hwt.title" = "Bild auswählen";
 
 /* Class = "UILabel"; text = "Subtitle"; ObjectID = "3G1-cS-MAp"; */
 "3G1-cS-MAp.text" = "Untertitel";
 
 /* Class = "UILabel"; text = "Full Graphics"; ObjectID = "3Jg-sa-a1s"; */
-"3Jg-sa-a1s.text" = "Vollständige Grafikunterstützung";
+"3Jg-sa-a1s.text" = "Grafikmodus (Standard)";
 
 /* Class = "UILabel"; text = "Path"; ObjectID = "3i2-h0-zr5"; */
 "3i2-h0-zr5.text" = "Pfad";
@@ -78,7 +78,7 @@
 "7CX-Cp-RMc.text" = "Details";
 
 /* Class = "UILabel"; text = "Open Configuration after Creation"; ObjectID = "7DJ-Cp-oMO"; */
-"7DJ-Cp-oMO.text" = "Konfiguration nach Erstellung öffnen";
+"7DJ-Cp-oMO.text" = "Konfiguration nach Erstellen öffnen";
 
 /* Class = "UINavigationItem"; title = "Disk Image"; ObjectID = "7id-FA-bJg"; */
 "7id-FA-bJg.title" = "Laufwerk-Abbild";
@@ -111,10 +111,10 @@
 "CeH-xF-3fF.headerTitle" = "Hardware";
 
 /* Class = "UILabel"; text = "Sound Card"; ObjectID = "DN6-Iz-3mv"; */
-"DN6-Iz-3mv.text" = "Audio Hardware";
+"DN6-Iz-3mv.text" = "Soundkarte";
 
 /* Class = "UILabel"; text = "Fit to Screen"; ObjectID = "DSd-aZ-Qka"; */
-"DSd-aZ-Qka.text" = "An Bildschrim anpassen";
+"DSd-aZ-Qka.text" = "An Bildschirm anpassen";
 
 /* Class = "UITextField"; placeholder = "hda.img"; ObjectID = "Dx6-pD-sU3"; */
 "Dx6-pD-sU3.placeholder" = "hda.img";
@@ -123,7 +123,7 @@
 "EGI-JP-qwU.text" = "Pfad";
 
 /* Class = "UILabel"; text = "Total RAM"; ObjectID = "ETs-n1-aUr"; */
-"ETs-n1-aUr.text" = "verfügbarer Speicher";
+"ETs-n1-aUr.text" = "Gesamter RAM";
 
 /* Class = "UINavigationItem"; title = "Input"; ObjectID = "Etn-MD-71X"; */
 "Etn-MD-71X.title" = "Eingabe";
@@ -138,7 +138,7 @@
 "Ffd-jl-gNs.text" = "Festplatte";
 
 /* Class = "UITableViewSection"; footerTitle = "Requires SPICE guest agent tools to be installed."; ObjectID = "Fjo-PM-Pc6"; */
-"Fjo-PM-Pc6.footerTitle" = "Benötigt die Installation der SPICE Gast-System-Werkzeuge.";
+"Fjo-PM-Pc6.footerTitle" = "Setzt in der VM installierte SPICE Guest Tools voraus.";
 
 /* Class = "UITableViewSection"; headerTitle = "Clipboard Sharing"; ObjectID = "Fjo-PM-Pc6"; */
 "Fjo-PM-Pc6.headerTitle" = "Zwischenablage teilen";
@@ -168,13 +168,13 @@
 "Jp2-wl-rfZ.text" = "ac97";
 
 /* Class = "UILabel"; text = "Removable"; ObjectID = "K1N-PB-wfm"; */
-"K1N-PB-wfm.text" = "Trennbar";
+"K1N-PB-wfm.text" = "Wechselbar";
 
 /* Class = "UILabel"; text = "Default"; ObjectID = "KFq-K6-6KS"; */
 "KFq-K6-6KS.text" = "Voreinstellung";
 
 /* Class = "UILabel"; text = "Network Card"; ObjectID = "KRc-3d-cbz"; */
-"KRc-3d-cbz.text" = "Netzwerk Schnittstelle";
+"KRc-3d-cbz.text" = "Netzwerkkarte";
 
 /* Class = "UILabel"; text = "Font Size"; ObjectID = "KSo-te-FQs"; */
 "KSo-te-FQs.text" = "Schriftgröße";
@@ -186,7 +186,7 @@
 "LTq-Mi-VuJ.footerTitle" = "Auszuführender Befehl bei Größenveränderung der Konsole. Platzhalter $COLS ist die Anzahl der Spalten und $ROWS ist die Anzahl der Reihen.";
 
 /* Class = "UITableViewSection"; headerTitle = "Resize Console Command"; ObjectID = "LTq-Mi-VuJ"; */
-"LTq-Mi-VuJ.headerTitle" = "Konsolen Größenveränderungs Befehl";
+"LTq-Mi-VuJ.headerTitle" = "Befehl zur Größenänderung der Konsole";
 
 /* Class = "UILabel"; text = "Enabled"; ObjectID = "Llu-cx-Osx"; */
 "Llu-cx-Osx.text" = "Aktiviert";
@@ -195,13 +195,13 @@
 "MAs-NR-G0n.text" = "MB";
 
 /* Class = "UITableViewSection"; footerTitle = "Default JIT Cache size is 1/4 of the allocated Memory size. This is in addition to the host memory! Force Multicore will allow multi-CPU emulation even if the memory model is not supported by QEMU (x86 on ARM for example). This could result in incorrect emulation."; ObjectID = "MGc-rW-PLa"; */
-"MGc-rW-PLa.footerTitle" = "Die Voreinstung der Größe des JIT Zwischenspeichers entspricht einem Viertel der Größe des zugewiesenen Speichers. Zusätzlich zum bereits reservierten Speicher! „Multicore erzwingen“ aktiviert Multi-CPU-Emulation auch dann, wenn die Speicherstruktur nicht von QEMU unterstützt wird (beispielsweise x86 auf ARM). Dies kann zu fehlerhafter EMulation führen.";
+"MGc-rW-PLa.footerTitle" = "Die Standard-Größe des JIT-Speichers entspricht einem Viertel des zugewiesenen Arbeitsspeichers. Er zählt also zusätzlich zum Arbeitsspeicher! „Multicore erzwingen“ aktiviert Multi-CPU-Emulation auch dann, wenn die Speicherstruktur nicht von QEMU unterstützt wird (beispielsweise x86 auf ARM). Dies kann zu fehlerhafter Emulation führen.";
 
 /* Class = "UITableViewSection"; headerTitle = "QEMU"; ObjectID = "MGc-rW-PLa"; */
 "MGc-rW-PLa.headerTitle" = "QEMU";
 
 /* Class = "UINavigationItem"; title = "Sound"; ObjectID = "MGj-2L-8uR"; */
-"MGj-2L-8uR.title" = "Audio";
+"MGj-2L-8uR.title" = "Ton";
 
 /* Class = "UINavigationItem"; title = "Create VM"; ObjectID = "My3-qO-OLf"; */
 "My3-qO-OLf.title" = "VM erstellen";
@@ -228,10 +228,10 @@
 "RTg-tj-6ja.placeholder" = "10.0.2.2";
 
 /* Class = "UITableViewSection"; footerTitle = "PS/2 has higher compatibility with older operating systems but does not support custom cursor settings."; ObjectID = "Rtj-zp-arL"; */
-"Rtj-zp-arL.footerTitle" = "PS/2 verfügt über eine höher Kompatbilität mit älteren Betriebssystemen, unterstützt aber keine Anpassung der Mausbedienung.";
+"Rtj-zp-arL.footerTitle" = "PS/2 funktioniert besser mit älteren Betriebssystemen, unterstützt aber keine erweiterten Maus-Einstellungen.";
 
 /* Class = "UITableViewSection"; headerTitle = "Legacy"; ObjectID = "Rtj-zp-arL"; */
-"Rtj-zp-arL.headerTitle" = "Kompatbilität";
+"Rtj-zp-arL.headerTitle" = "Kompatibilität";
 
 /* Class = "UITextField"; placeholder = "512"; ObjectID = "S2s-iX-Lul"; */
 "S2s-iX-Lul.placeholder" = "512";
@@ -243,7 +243,7 @@
 "SNE-dA-z6i.footerTitle" = "i386/x86_64 Systeme: qxl-vga, „virt“-Systeme: virtio-ramfb";
 
 /* Class = "UITableViewSection"; headerTitle = "Display Card"; ObjectID = "SNE-dA-z6i"; */
-"SNE-dA-z6i.headerTitle" = "Ausgabe-Schnittstelle";
+"SNE-dA-z6i.headerTitle" = "Grafikkarte";
 
 /* Class = "UILabel"; text = "Memory"; ObjectID = "SvG-PI-7bh"; */
 "SvG-PI-7bh.text" = "Speicher";
@@ -258,7 +258,7 @@
 "TeT-9a-let.title" = "Konfiguration";
 
 /* Class = "UILabel"; text = "Port Forwarding..."; ObjectID = "UjF-Vd-L2A"; */
-"UjF-Vd-L2A.text" = "Port Weiterleitung…";
+"UjF-Vd-L2A.text" = "Port-Weiterleitung…";
 
 /* Class = "UITextField"; placeholder = "fec0::/64"; ObjectID = "UuB-XR-fJS"; */
 "UuB-XR-fJS.placeholder" = "fec0::/64";
@@ -270,7 +270,7 @@
 "VQv-L6-Wpd.text" = "Name";
 
 /* Class = "UINavigationItem"; title = "Additional QEMU Arguments"; ObjectID = "Vsj-CY-Ew5"; */
-"Vsj-CY-Ew5.title" = "Weiter QEMU Argumente";
+"Vsj-CY-Ew5.title" = "Weitere QEMU Parameter";
 
 /* Class = "UITableViewSection"; headerTitle = "Debug"; ObjectID = "WkA-K4-U3C"; */
 "WkA-K4-U3C.headerTitle" = "Fehlerbehebung";
@@ -330,7 +330,7 @@
 "cU3-TI-v0c.text" = "Hoch-Skalierung";
 
 /* Class = "UILabel"; text = "Legacy (PS/2) Mode"; ObjectID = "d5G-2Y-589"; */
-"d5G-2Y-589.text" = "PS/2 Kompatibilitäts-Modus";
+"d5G-2Y-589.text" = "Kompatibilitäts-Modus (PS/2)";
 
 /* Class = "UILabel"; text = "CPU Cores"; ObjectID = "dHW-er-x98"; */
 "dHW-er-x98.text" = "CPU Kerne";
@@ -342,10 +342,10 @@
 "dhz-mO-gca.text" = "Details";
 
 /* Class = "UITableViewSection"; footerTitle = "Requires SPICE WebDAV service to be installed."; ObjectID = "dpu-6y-nD0"; */
-"dpu-6y-nD0.footerTitle" = "Benötigt die Installation der SPICE Gast-System-Werkzeuge.";
+"dpu-6y-nD0.footerTitle" = "Setzt in der VM installierte SPICE WebDAV Software voraus.";
 
 /* Class = "UITableViewSection"; headerTitle = "Shared Directory"; ObjectID = "dpu-6y-nD0"; */
-"dpu-6y-nD0.headerTitle" = "Freigegeben Ordner";
+"dpu-6y-nD0.headerTitle" = "Freigegeber Ordner";
 
 /* Class = "UILabel"; text = "Guest Network (IPv6)"; ObjectID = "eAi-sh-x9d"; */
 "eAi-sh-x9d.text" = "Gast-Netzwerk (IPv6)";
@@ -363,7 +363,7 @@
 "fOG-3K-1lH.text" = "Gast-Netwerk";
 
 /* Class = "UILabel"; text = "Display"; ObjectID = "fZG-YK-q4O"; */
-"fZG-YK-q4O.text" = "Ausgabe";
+"fZG-YK-q4O.text" = "Anzeige";
 
 /* Class = "UILabel"; text = "Downscaling"; ObjectID = "g1h-Bh-yRJ"; */
 "g1h-Bh-yRJ.text" = "Runter-Skalierung";
@@ -414,13 +414,13 @@
 "mTW-BC-BPZ.headerTitle" = "Erweitere Konfiguration";
 
 /* Class = "UILabel"; text = "Console Mode"; ObjectID = "nGh-ET-2qO"; */
-"nGh-ET-2qO.text" = "Konsolen-Modus";
+"nGh-ET-2qO.text" = "Text-Modus (Konsole)";
 
 /* Class = "UITextField"; placeholder = "1024"; ObjectID = "nKg-bw-usb"; */
 "nKg-bw-usb.placeholder" = "1024";
 
 /* Class = "UITableViewSection"; headerTitle = "Basic"; ObjectID = "npu-cv-8wY"; */
-"npu-cv-8wY.headerTitle" = "Einfach";
+"npu-cv-8wY.headerTitle" = "Grundlegend";
 
 /* Class = "UILabel"; text = "Debug Log"; ObjectID = "o5n-nQ-vae"; */
 "o5n-nQ-vae.text" = "Debug Log";
@@ -462,7 +462,7 @@
 "riB-R9-dTb.text" = "System";
 
 /* Class = "UITableViewSection"; footerTitle = "For most non-ARM targets, all CPUs will be emulated by a single CPU by default. Set 0 to use maximum supported number of CPU."; ObjectID = "spp-Cv-g7X"; */
-"spp-Cv-g7X.footerTitle" = "Die meisten Prozessoren werden standardmäßig auf einem CPU-Kern emuliert. Eine Ausnahme bilden ARM Prozessoren. Mit der Eingabe „0“ wird zur Emulation die Maximal-Anzahl an Prozessor-Kernen verwendet.";
+"spp-Cv-g7X.footerTitle" = "Die meisten Prozessoren außer ARM werden standardmäßig auf einem CPU-Kern emuliert. Mit der Eingabe „0“ wird automatisch die maximale Anzahl an Prozessor-Kernen verwendet.";
 
 /* Class = "UITableViewSection"; headerTitle = "Hardware"; ObjectID = "spp-Cv-g7X"; */
 "spp-Cv-g7X.headerTitle" = "Hardware";
@@ -480,7 +480,7 @@
 "ujd-Ae-CRP.text" = "Nur lesen";
 
 /* Class = "UITextField"; placeholder = "QEMU Args"; ObjectID = "upL-Oh-a3A"; */
-"upL-Oh-a3A.placeholder" = "QEMU Argumente";
+"upL-Oh-a3A.placeholder" = "QEMU Parameter";
 
 /* Class = "UILabel"; text = "0"; ObjectID = "uy0-gI-CBW"; */
 "uy0-gI-CBW.text" = "0";
@@ -495,19 +495,19 @@
 "wDi-gr-I7A.headerTitle" = "Laufwerke";
 
 /* Class = "UITableViewSection"; footerTitle = "If you attempt to allocate more resources than what is on your device, the VM may not boot and your device may become unstable."; ObjectID = "wbc-1J-nlk"; */
-"wbc-1J-nlk.footerTitle" = "Wenn einer Virtuellen Machine mehr Ressource zugewiesen werden als verfügbar sind startet das Gast-System u.U. nicht und/oder dein System reagiert nicht mehr.";
+"wbc-1J-nlk.footerTitle" = "Wenn einer Virtuellen Machine mehr Ressource zugewiesen werden als verfügbar sind startet die VM u.U. nicht und/oder dein System reagiert nicht mehr.";
 
 /* Class = "UITableViewSection"; headerTitle = "Host Information"; ObjectID = "wbc-1J-nlk"; */
 "wbc-1J-nlk.headerTitle" = "Host Informationen";
 
 /* Class = "UILabel"; text = "Sound"; ObjectID = "wis-6w-tHz"; */
-"wis-6w-tHz.text" = "Audio";
+"wis-6w-tHz.text" = "Ton";
 
 /* Class = "UITableViewSection"; headerTitle = "Type"; ObjectID = "wjd-8h-Xoa"; */
 "wjd-8h-Xoa.headerTitle" = "Art";
 
 /* Class = "UILabel"; text = "Additional QEMU Arguments"; ObjectID = "wvt-Dh-tQm"; */
-"wvt-Dh-tQm.text" = "Weitere QEMU Argumente";
+"wvt-Dh-tQm.text" = "Weitere QEMU Parameter";
 
 /* Class = "UILabel"; text = "0.0"; ObjectID = "x96-L4-Oag"; */
 "x96-L4-Oag.text" = "0.0";
@@ -519,13 +519,13 @@
 "xoO-as-9Kn.text" = "Abbild-Typ";
 
 /* Class = "UINavigationItem"; title = "Display"; ObjectID = "xuY-6V-eU1"; */
-"xuY-6V-eU1.title" = "Ausgabe";
+"xuY-6V-eU1.title" = "Anzeige";
 
 /* Class = "UINavigationItem"; title = "Virtual Machines"; ObjectID = "y7c-vs-jlM"; */
-"y7c-vs-jlM.title" = "Virtuelle Machinen";
+"y7c-vs-jlM.title" = "Virtuelle Maschinen";
 
 /* Class = "UILabel"; text = "Architecture"; ObjectID = "ziF-JQ-bTj"; */
 "ziF-JQ-bTj.text" = "Architektur";
 
 /* Class = "UILabel"; text = "Machine Properties"; ObjectID = "zoj-Ic-dyX"; */
-"zoj-Ic-dyX.text" = "Geräte Eigenschaften";
+"zoj-Ic-dyX.text" = "System-Eigenschaften";
