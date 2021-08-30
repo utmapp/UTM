@@ -11,8 +11,7 @@
 "NSLocationWhenInUseUsageDescription" = "Standortdienste sind für den Hintergrundzugriff auf die virtuelle Maschine erforderlich. Standortdaten werden nicht übertragen.";
 
 /* Privacy - Microphone Usage Description */
-"NSMicrophoneUsageDescription" = "Die VM benötigt Mikrofonzugriff.
-";
+"NSMicrophoneUsageDescription" = "Die VM benötigt Mikrofonzugriff.";
 
 /* (No Comment) */
 "UTM virtual machine" = "UTM Virtuelle Machine";
