@@ -173,12 +173,8 @@ static size_t sysctl_read(const char *name) {
         NSString *name = [NSString stringWithFormat:@"edk2-%@-code.fd", arch];
         NSURL *path = [self.resourceURL URLByAppendingPathComponent:name];
         if (!self.hasCustomBios && [[NSFileManager defaultManager] fileExistsAtPath:path.path]) {
-            if ([arch isEqualToString:@"x86_64"] || [arch isEqualToString:@"i386"]) {
-                [self pushArgv:@"-pflash"];
-            } else {
-                [self pushArgv:@"-bios"];
-            }
-            [self pushArgv:path.path]; // accessDataWithBookmark called already
+            [self pushArgv:@"-drive"];
+            [self pushArgv:[NSString stringWithFormat:@"if=pflash,format=raw,file=%@,readonly=on", path.path]]; // accessDataWithBookmark called already
         }
     }
 }
