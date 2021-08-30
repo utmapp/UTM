@@ -19,6 +19,7 @@ import UniformTypeIdentifiers
 
 @available(macOS 11, *)
 struct SavePanel: NSViewRepresentable {
+    @EnvironmentObject private var data: UTMData
     @Binding var isPresented: Bool
     var shareItem: Any
 
@@ -45,10 +46,12 @@ struct SavePanel: NSViewRepresentable {
                 savePanel.begin { result in
                     if result == .OK {
                         if let destUrl = savePanel.url {
-                            try? FileManager.default.copyItem(at: sourceUrl, to: destUrl)
+                            do {
+                                try FileManager.default.copyItem(at: sourceUrl, to: destUrl)
+                            } catch {
+                                data.alertMessage = AlertMessage(error.localizedDescription)
+                            }
                         }
-                    } else {
-                        NSSound.beep()
                     }
                 }
             } else if let command = shareItem as? String {
@@ -59,10 +62,12 @@ struct SavePanel: NSViewRepresentable {
                 savePanel.begin { result in
                     if result == .OK {
                         if let destUrl = savePanel.url {
-                            try? command.write(to: destUrl, atomically: true, encoding: .utf8)
+                            do {
+                                try command.write(to: destUrl, atomically: true, encoding: .utf8)
+                            } catch {
+                                data.alertMessage = AlertMessage(error.localizedDescription)
+                            }
                         }
-                    } else {
-                        NSSound.beep()
                     }
                 }
             }
