@@ -24,7 +24,7 @@ struct VMShareItemModifier: ViewModifier {
     #if os(macOS)
     func body(content: Content) -> some View {
         ZStack {
-            SharingsPicker(isPresented: $isPresented, sharingItems: items())
+            SavePanel(isPresented: $isPresented, shareItem: items()[0]) // Only ever called with 1 item
             content
         }
     }

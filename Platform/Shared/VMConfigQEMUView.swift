@@ -81,7 +81,7 @@ struct VMConfigQEMUView: View {
     }
     
     private func exportDebugLog() -> [URL] {
-        if let result = try? data.exportDebugLog(forConfig: config) {
+        if let result = try? data.exportDebugLog(for: config) {
             return result
         } else {
             return [] // TODO: implement error handling
