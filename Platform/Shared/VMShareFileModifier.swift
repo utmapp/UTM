@@ -19,20 +19,38 @@ import SwiftUI
 @available(iOS 14, macOS 11, *)
 struct VMShareItemModifier: ViewModifier {
     @Binding var isPresented: Bool
-    let items: () -> [Any]
+    // TODO: Change name to shareItem
+    let makeShareItem: () -> ShareItem?
     
     #if os(macOS)
     func body(content: Content) -> some View {
         ZStack {
-            SavePanel(isPresented: $isPresented, shareItem: items()[0]) // Only ever called with 1 item
+            SavePanel(isPresented: $isPresented, shareItem: makeShareItem())
             content
         }
     }
     #else
     func body(content: Content) -> some View {
         content.popover(isPresented: $isPresented) {
-            ActivityView(activityItems: items())
+            if let shareItem = makeShareItem()?.toActivityItem() {
+                ActivityView(activityItems: [shareItem as Any])
+            }
         }
     }
     #endif
+    
+    enum ShareItem {
+        case debugLog(URL)
+        case utmVm(URL)
+        case qemuCommand(String)
+        
+        func toActivityItem() -> Any {
+            switch self {
+            case .debugLog(let url), .utmVm(let url):
+                return url
+            case .qemuCommand(let command):
+                return command
+            }
+        }
+    }
 }

@@ -21,7 +21,7 @@ import UniformTypeIdentifiers
 struct SavePanel: NSViewRepresentable {
     @EnvironmentObject private var data: UTMData
     @Binding var isPresented: Bool
-    var shareItem: Any
+    var shareItem: VMShareItemModifier.ShareItem?
 
     func makeNSView(context: Context) -> some NSView {
         return NSView()
@@ -29,20 +29,32 @@ struct SavePanel: NSViewRepresentable {
 
     func updateNSView(_ nsView: NSViewType, context: Context) {
         if isPresented {
+            guard let shareItem = shareItem else {
+                return
+            }
+            
+            // Initializing the SavePanel and setting it's properties
             let savePanel = NSSavePanel()
             savePanel.directoryURL = URL(fileURLWithPath: "/Users/\(NSUserName())/Downloads")
-
-            if let sourceUrl = shareItem as? URL {
-                if sourceUrl.pathExtension == "log" {
-                    savePanel.title = "Select where to save debug log:"
-                    savePanel.nameFieldStringValue = "debug"
-                    savePanel.allowedContentTypes = [.appleLog]
-                } else if sourceUrl.pathExtension == "utm" {
-                    savePanel.title = "Select where to save UTM Virtual Machine:"
-                    savePanel.nameFieldStringValue = sourceUrl.deletingPathExtension().lastPathComponent
-                    savePanel.allowedContentTypes = [.UTM]
-                } else { return }
-
+            
+            switch shareItem {
+            case .debugLog:
+                savePanel.title = "Select where to save debug log:"
+                savePanel.nameFieldStringValue = "debug"
+                savePanel.allowedContentTypes = [.appleLog]
+            case let .utmVm(sourceUrl):
+                savePanel.title = "Select where to save UTM Virtual Machine:"
+                savePanel.nameFieldStringValue = sourceUrl.deletingPathExtension().lastPathComponent
+                savePanel.allowedContentTypes = [.UTM]
+            case .qemuCommand:
+                savePanel.title = "Select where to export QEMU command:"
+                savePanel.nameFieldStringValue = "command"
+                savePanel.allowedContentTypes = [.plainText]
+            }
+            
+            // Calling savePanel.begin with the appropriate completion handlers
+            switch shareItem {
+            case .debugLog(let sourceUrl), .utmVm(let sourceUrl):
                 savePanel.begin { result in
                     if result == .OK {
                         if let destUrl = savePanel.url {
@@ -54,11 +66,7 @@ struct SavePanel: NSViewRepresentable {
                         }
                     }
                 }
-            } else if let command = shareItem as? String {
-                savePanel.title = "Select where to export QEMU command:"
-                savePanel.nameFieldStringValue = "command"
-                savePanel.allowedContentTypes = [.plainText]
-
+            case .qemuCommand(let command):
                 savePanel.begin { result in
                     if result == .OK {
                         if let destUrl = savePanel.url {

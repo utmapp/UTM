@@ -296,12 +296,12 @@ class UTMData: ObservableObject {
     
     // MARK: - Export debug log
     
-    func exportDebugLog(for config: UTMConfiguration) throws -> [URL] {
+    func exportDebugLog(for config: UTMConfiguration) throws -> VMShareItemModifier.ShareItem {
         guard let path = config.existingPath else {
             throw NSLocalizedString("No log found!", comment: "UTMData")
         }
         let srcLogPath = path.appendingPathComponent(UTMConfiguration.debugLogName())
-        return [srcLogPath]
+        return .debugLog(srcLogPath)
     }
     
     func copyUTM(at: URL, to: URL, move: Bool = false) throws {
