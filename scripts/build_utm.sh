@@ -17,6 +17,7 @@ usage () {
     exit 1
 }
 
+PRODUCT_BUNDLE_PREFIX="com.utmapp"
 TEAM_IDENTIFIER=
 ARCH=arm64
 PLATFORM=ios
@@ -87,10 +88,28 @@ fi
 xcodebuild archive -archivePath "$OUTPUT" -scheme "$SCHEME" -sdk "$SDK" $ARCH_ARGS -configuration Release CODE_SIGNING_ALLOWED=NO $TEAM_IDENTIFIER_PREFIX
 BUILT_PATH=$(find $OUTPUT.xcarchive -name '*.app' -type d | head -1)
 find "$BUILT_PATH" -type d -path '*/Frameworks/*.framework' -exec codesign --force --sign - --timestamp=none \{\} \;
-if [ "$PLATFORM" != "macos" ]; then
-    codesign --force --sign - --entitlements "$BASEDIR/../Platform/iOS/iOS.entitlements" --timestamp=none "$BUILT_PATH"
+if [ "$PLATFORM" == "macos" ]; then
+    # always build with vm entitlements, package_mac.sh can strip it later
+    # this way we can import into Xcode and re-sign from there
+    UTM_ENTITLEMENTS="/tmp/utm.entitlements"
+    LAUNCHER_ENTITLEMENTS="/tmp/launcher.entitlements"
+    HELPER_ENTITLEMENTS="/tmp/helper.entitlements"
+    cp "$BASEDIR/../Platform/macOS/macOS.entitlements" "$UTM_ENTITLEMENTS"
+    cp "$BASEDIR/../QEMULauncher/QEMULauncher.entitlements" "$LAUNCHER_ENTITLEMENTS"
+    cp "$BASEDIR/../QEMUHelper/QEMUHelper.entitlements" "$HELPER_ENTITLEMENTS"
+    if [ ! -z "$TEAM_IDENTIFIER" ]; then
+        TEAM_ID_PREFIX="${TEAM_IDENTIFIER}."
+    fi
+
+    /usr/libexec/PlistBuddy -c "Set :com.apple.security.application-groups:0 ${TEAM_ID_PREFIX}${PRODUCT_BUNDLE_PREFIX}.UTM" "$UTM_ENTITLEMENTS"
+    /usr/libexec/PlistBuddy -c "Set :com.apple.security.application-groups:0 ${TEAM_ID_PREFIX}${PRODUCT_BUNDLE_PREFIX}.UTM" "$HELPER_ENTITLEMENTS"
+    codesign --force --sign - --entitlements "$LAUNCHER_ENTITLEMENTS" --timestamp=none --options runtime "$BUILT_PATH/Contents/XPCServices/QEMUHelper.xpc/Contents/MacOS/QEMULauncher.app/Contents/MacOS/QEMULauncher"
+    codesign --force --sign - --entitlements "$HELPER_ENTITLEMENTS" --timestamp=none --options runtime "$BUILT_PATH/Contents/XPCServices/QEMUHelper.xpc/Contents/MacOS/QEMUHelper"
+    codesign --force --sign - --entitlements "$UTM_ENTITLEMENTS" --timestamp=none --options runtime "$BUILT_PATH/Contents/MacOS/UTM"
+    rm "$UTM_ENTITLEMENTS"
+    rm "$LAUNCHER_ENTITLEMENTS"
+    rm "$HELPER_ENTITLEMENTS"
 else
-    codesign --force --sign - --entitlements "$BASEDIR/../QEMULauncher/QEMULauncher.entitlements" --timestamp=none --options runtime "$BUILT_PATH/Contents/XPCServices/QEMUHelper.xpc/Contents/MacOS/QEMULauncher.app/Contents/MacOS/QEMULauncher"
-    codesign --force --sign - --entitlements "$BASEDIR/../QEMUHelper/QEMUHelper.entitlements" --timestamp=none --options runtime "$BUILT_PATH/Contents/XPCServices/QEMUHelper.xpc/Contents/MacOS/QEMUHelper"
-    codesign --force --sign - --entitlements "$BASEDIR/../Platform/macOS/macOS.entitlements" --timestamp=none --options runtime "$BUILT_PATH/Contents/MacOS/UTM"
+    # always build with iOS entitlements, package.sh can strip it later
+    codesign --force --sign - --entitlements "$BASEDIR/../Platform/iOS/iOS.entitlements" --timestamp=none "$BUILT_PATH"
 fi

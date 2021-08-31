@@ -2026,6 +2026,9 @@
 		CEEB66452284B942002737B2 /* VMKeyboardButton.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VMKeyboardButton.m; sourceTree = "<group>"; };
 		CEEC811A24E48EC600ACB0B3 /* SettingsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		CEECE13B25E47D9500A2AAB8 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		CEF6F5EA26DDD60500BC434D /* macOS-unsigned.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "macOS-unsigned.entitlements"; sourceTree = "<group>"; };
+		CEF6F5EB26DDD63100BC434D /* QEMUHelper-unsigned.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "QEMUHelper-unsigned.entitlements"; sourceTree = "<group>"; };
+		CEF6F5EC26DDD65700BC434D /* QEMULauncher-unsigned.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "QEMULauncher-unsigned.entitlements"; sourceTree = "<group>"; };
 		CEF83EB824F9ABEA00557D15 /* UTMQemuManager+BlockDevices.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UTMQemuManager+BlockDevices.h"; sourceTree = "<group>"; };
 		CEF83EB924F9ABEA00557D15 /* UTMQemuManager+BlockDevices.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UTMQemuManager+BlockDevices.m"; sourceTree = "<group>"; };
 		CEF83EBC24F9C3BF00557D15 /* UTMVirtualMachine+Drives.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UTMVirtualMachine+Drives.h"; sourceTree = "<group>"; };
@@ -2454,6 +2457,7 @@
 				CE2D954124AD4F980059923A /* Info.plist */,
 				FFB02A8E266CB09C006CD71A /* InfoPlist.strings */,
 				CE2D953F24AD4F980059923A /* macOS.entitlements */,
+				CEF6F5EA26DDD60500BC434D /* macOS-unsigned.entitlements */,
 			);
 			path = macOS;
 			sourceTree = "<group>";
@@ -2924,6 +2928,7 @@
 			isa = PBXGroup;
 			children = (
 				CE6B241025F1F4B30020D43E /* QEMULauncher.entitlements */,
+				CEF6F5EC26DDD65700BC434D /* QEMULauncher-unsigned.entitlements */,
 				CE6B240A25F1F3CE0020D43E /* main.c */,
 				CE6B240F25F1F43A0020D43E /* Info.plist */,
 			);
@@ -3044,6 +3049,7 @@
 			isa = PBXGroup;
 			children = (
 				CE03D0D024D9A62B00F76B84 /* QEMUHelper.entitlements */,
+				CEF6F5EB26DDD63100BC434D /* QEMUHelper-unsigned.entitlements */,
 				CE0DF17025A80B6300A51894 /* Bootstrap.h */,
 				CE0DF17125A80B6300A51894 /* Bootstrap.c */,
 				CEBDA1DC24D8BDDA0010B5EC /* QEMUHelperProtocol.h */,
@@ -4320,7 +4326,7 @@
 		8401FD6F269BE9C600265F0D /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_ENTITLEMENTS = QEMULauncher/QEMULauncher.entitlements;
+				CODE_SIGN_ENTITLEMENTS = "$(LAUNCHER_CODE_SIGN_ENTITLEMENTS)";
 				CODE_SIGN_IDENTITY = "$(CODE_SIGN_IDENTITY_MAC:default=-)";
 				CODE_SIGN_INJECT_BASE_ENTITLEMENTS = NO;
 				CODE_SIGN_STYLE = Manual;
@@ -4344,7 +4350,7 @@
 		8401FD70269BE9C600265F0D /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_ENTITLEMENTS = QEMULauncher/QEMULauncher.entitlements;
+				CODE_SIGN_ENTITLEMENTS = "$(LAUNCHER_CODE_SIGN_ENTITLEMENTS)";
 				CODE_SIGN_IDENTITY = "$(CODE_SIGN_IDENTITY_MAC:default=-)";
 				CODE_SIGN_INJECT_BASE_ENTITLEMENTS = NO;
 				CODE_SIGN_STYLE = Manual;
@@ -4371,6 +4377,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = "$(IOS_CODE_SIGN_ENTITLEMENTS)";
 				CODE_SIGN_IDENTITY = "$(CODE_SIGN_IDENTITY_IOS:default=Apple Development)";
 				ENABLE_BITCODE = NO;
 				ENABLE_PREVIEWS = YES;
@@ -4395,6 +4402,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = "$(IOS_CODE_SIGN_ENTITLEMENTS)";
 				CODE_SIGN_IDENTITY = "$(CODE_SIGN_IDENTITY_IOS:default=Apple Development)";
 				ENABLE_BITCODE = NO;
 				ENABLE_PREVIEWS = YES;
@@ -4419,7 +4427,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
-				CODE_SIGN_ENTITLEMENTS = Platform/macOS/macOS.entitlements;
+				CODE_SIGN_ENTITLEMENTS = "$(MAC_CODE_SIGN_ENTITLEMENTS)";
 				CODE_SIGN_IDENTITY = "$(CODE_SIGN_IDENTITY_MAC:default=-)";
 				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
@@ -4453,7 +4461,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
-				CODE_SIGN_ENTITLEMENTS = Platform/macOS/macOS.entitlements;
+				CODE_SIGN_ENTITLEMENTS = "$(MAC_CODE_SIGN_ENTITLEMENTS)";
 				CODE_SIGN_IDENTITY = "$(CODE_SIGN_IDENTITY_MAC:default=-)";
 				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
@@ -4680,6 +4688,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = "$(IOS_CODE_SIGN_ENTITLEMENTS)";
 				CODE_SIGN_IDENTITY = "$(CODE_SIGN_IDENTITY_IOS:default=Apple Development)";
 				ENABLE_BITCODE = NO;
 				ENABLE_PREVIEWS = YES;
@@ -4711,6 +4720,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = "$(IOS_CODE_SIGN_ENTITLEMENTS)";
 				CODE_SIGN_IDENTITY = "$(CODE_SIGN_IDENTITY_IOS:default=Apple Development)";
 				ENABLE_BITCODE = NO;
 				ENABLE_PREVIEWS = YES;
@@ -4739,7 +4749,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
-				CODE_SIGN_ENTITLEMENTS = QEMUHelper/QEMUHelper.entitlements;
+				CODE_SIGN_ENTITLEMENTS = "$(HELPER_CODE_SIGN_ENTITLEMENTS)";
 				CODE_SIGN_IDENTITY = "$(CODE_SIGN_IDENTITY_MAC:default=-)";
 				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
@@ -4762,7 +4772,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
-				CODE_SIGN_ENTITLEMENTS = QEMUHelper/QEMUHelper.entitlements;
+				CODE_SIGN_ENTITLEMENTS = "$(HELPER_CODE_SIGN_ENTITLEMENTS)";
 				CODE_SIGN_IDENTITY = "$(CODE_SIGN_IDENTITY_MAC:default=-)";
 				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
