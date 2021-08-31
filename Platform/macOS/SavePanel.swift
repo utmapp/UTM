@@ -59,7 +59,16 @@ struct SavePanel: NSViewRepresentable {
                     if result == .OK {
                         if let destUrl = savePanel.url {
                             do {
-                                try FileManager.default.copyItem(at: sourceUrl, to: destUrl)
+                                let fileManager = FileManager.default
+                                
+                                // All this mess is because FileManager.replaceItemAt deletes the source item
+                                let tempUrl = fileManager.temporaryDirectory.appendingPathComponent(sourceUrl.lastPathComponent)
+                                if fileManager.fileExists(atPath: tempUrl.path) {
+                                    try fileManager.removeItem(at: tempUrl)
+                                }
+                                try fileManager.copyItem(at: sourceUrl, to: tempUrl)
+                                
+                                _ = try fileManager.replaceItemAt(destUrl, withItemAt: tempUrl)
                             } catch {
                                 data.alertMessage = AlertMessage(error.localizedDescription)
                             }
