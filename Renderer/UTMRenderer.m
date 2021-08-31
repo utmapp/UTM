@@ -238,24 +238,12 @@ static matrix_float4x4 matrix_scale_translate(CGFloat scale, CGPoint translate)
 
         [renderEncoder endEncoding];
         
-        dispatch_queue_t renderQueue = source.renderQueue;
-        dispatch_semaphore_t renderDoneEvent = dispatch_semaphore_create(0);
-        
-        // Lock screen updates
-        [commandBuffer addScheduledHandler:^(id<MTLCommandBuffer> commandBuffer) {
-            dispatch_async(renderQueue, ^{
-                dispatch_semaphore_wait(renderDoneEvent, DISPATCH_TIME_FOREVER);
-            });
-        }];
-        
         // Schedule a present once the framebuffer is complete using the current drawable
         [commandBuffer presentDrawable:view.currentDrawable];
         
         // Release lock after GPU is done
         [commandBuffer addCompletedHandler:^(id<MTLCommandBuffer> commandBuffer) {
             // GPU work is complete
-            // Signal the semaphore to start the CPU work
-            dispatch_semaphore_signal(renderDoneEvent);
             [source rendererFrameHasRendered];
         }];
     }
