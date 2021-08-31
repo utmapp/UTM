@@ -51,4 +51,12 @@
 #include "VMDisplayMetalViewController+Keyboard.h"
 #include "VMDisplayTerminalViewController.h"
 #include "VMKeyboardView.h"
+#elif TARGET_OS_OSX
+typedef uint32_t CGSConnectionID;
+typedef CF_ENUM(uint32_t, CGSGlobalHotKeyOperatingMode) {
+    kCGSGlobalHotKeyOperatingModeEnable = 0,
+    kCGSGlobalHotKeyOperatingModeDisable = 1,
+};
+extern CGSConnectionID CGSMainConnectionID(void);
+extern CGError CGSSetGlobalHotKeyOperatingMode(CGSConnectionID connection, CGSGlobalHotKeyOperatingMode mode);
 #endif
