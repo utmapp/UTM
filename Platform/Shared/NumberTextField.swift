@@ -17,13 +17,11 @@
 import SwiftUI
 
 @available(iOS 13, macOS 11, *)
-struct NumberTextField: View {
+struct NumberTextFieldOld: View {
     private var titleKey: LocalizedStringKey
     @Binding private var number: NSNumber?
     private var onEditingChanged: (Bool) -> Void
     private let formatter: NumberFormatter
-    @available(iOS 15, macOS 12, *)
-    @FocusState private var focused: Bool
     
     init(_ titleKey: LocalizedStringKey, number: Binding<NSNumber?>, onEditingChanged: @escaping (Bool) -> Void = { _ in }) {
         self.titleKey = titleKey
@@ -35,30 +33,68 @@ struct NumberTextField: View {
     }
     
     var body: some View {
+        TextField(titleKey, text: Binding<String>(get: { () -> String in
+            guard let number = self.number else {
+                return ""
+            }
+            return self.formatter.string(from: number) ?? ""
+        }, set: {
+            // make sure we never set nil
+            self.number = self.formatter.number(from: $0) ?? NSNumber(value: 0)
+        }), onEditingChanged: onEditingChanged)
+            .keyboardType(.numberPad)
+    }
+}
+
+@available(iOS 15, macOS 12, *)
+struct NumberTextFieldNew: View {
+    private var titleKey: LocalizedStringKey
+    @Binding private var number: NSNumber?
+    private var onEditingChanged: (Bool) -> Void
+    
+    // Due to FB9581726 we cannot make `focused` available only on newer APIs.
+    // Therefore we have to mark the availability on the entire struct.
+    @FocusState private var focused: Bool
+    
+    init(_ titleKey: LocalizedStringKey, number: Binding<NSNumber?>, onEditingChanged: @escaping (Bool) -> Void = { _ in }) {
+        self.titleKey = titleKey
+        self._number = number
+        self.onEditingChanged = onEditingChanged
+    }
+    
+    var body: some View {
+        TextField(value: $number, format: NSNumber.StringFormatStyle(), prompt: Text(titleKey), label: {
+            EmptyView()
+        })
+            .keyboardType(.numberPad)
+            .focused($focused)
+            .onChange(of: number) { _ in
+                onEditingChanged(focused)
+            }
+            .onSubmit {
+                focused = false
+                onEditingChanged(false)
+            }
+    }
+}
+
+@available(iOS 13, macOS 11, *)
+struct NumberTextField: View {
+    private var titleKey: LocalizedStringKey
+    @Binding private var number: NSNumber?
+    private var onEditingChanged: (Bool) -> Void
+    
+    init(_ titleKey: LocalizedStringKey, number: Binding<NSNumber?>, onEditingChanged: @escaping (Bool) -> Void = { _ in }) {
+        self.titleKey = titleKey
+        self._number = number
+        self.onEditingChanged = onEditingChanged
+    }
+    
+    var body: some View {
         if #available(iOS 15, macOS 12, *) {
-            TextField(value: $number, format: NSNumber.StringFormatStyle(), prompt: Text(titleKey), label: {
-                EmptyView()
-            })
-                .keyboardType(.numberPad)
-                .focused($focused)
-                .onChange(of: number) { _ in
-                    onEditingChanged(focused)
-                }
-                .onSubmit {
-                    focused = false
-                    onEditingChanged(false)
-                }
+            NumberTextFieldNew(titleKey, number: $number, onEditingChanged: onEditingChanged)
         } else {
-            TextField(titleKey, text: Binding<String>(get: { () -> String in
-                guard let number = self.number else {
-                    return ""
-                }
-                return self.formatter.string(from: number) ?? ""
-            }, set: {
-                // make sure we never set nil
-                self.number = self.formatter.number(from: $0) ?? NSNumber(value: 0)
-            }), onEditingChanged: onEditingChanged)
-                .keyboardType(.numberPad)
+            NumberTextFieldOld(titleKey, number: $number, onEditingChanged: onEditingChanged)
         }
     }
 }
