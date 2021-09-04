@@ -131,6 +131,7 @@ struct DefaultTextField: View {
     }
     
     var body: some View {
+        #if swift(>=5.5)
         if #available(iOS 15, macOS 12, *) {
             TextField(titleKey, text: $text, prompt: Text(prompt))
         } else {
@@ -140,6 +141,13 @@ struct DefaultTextField: View {
                 TextField("", text: $text)
             }
         }
+        #else
+        HStack {
+            Text(titleKey)
+            Spacer()
+            TextField("", text: $text)
+        }
+        #endif
     }
 }
 

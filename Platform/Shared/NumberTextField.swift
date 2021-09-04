@@ -46,6 +46,7 @@ struct NumberTextFieldOld: View {
     }
 }
 
+#if swift(>=5.5)
 @available(iOS 15, macOS 12, *)
 struct NumberTextFieldNew: View {
     private var titleKey: LocalizedStringKey
@@ -77,6 +78,7 @@ struct NumberTextFieldNew: View {
             }
     }
 }
+#endif
 
 @available(iOS 13, macOS 11, *)
 struct NumberTextField: View {
@@ -91,14 +93,19 @@ struct NumberTextField: View {
     }
     
     var body: some View {
+        #if swift(>=5.5)
         if #available(iOS 15, macOS 12, *) {
             NumberTextFieldNew(titleKey, number: $number, onEditingChanged: onEditingChanged)
         } else {
             NumberTextFieldOld(titleKey, number: $number, onEditingChanged: onEditingChanged)
         }
+        #else
+        NumberTextFieldOld(titleKey, number: $number, onEditingChanged: onEditingChanged)
+        #endif
     }
 }
 
+#if swift(>=5.5)
 @available(iOS 15, macOS 12, *)
 extension NSNumber {
     struct StringFormatStyle: ParseableFormatStyle {
@@ -123,6 +130,7 @@ extension NSNumber {
         }
     }
 }
+#endif
 
 @available(iOS 13, macOS 11, *)
 struct NumberTextField_Previews: PreviewProvider {
