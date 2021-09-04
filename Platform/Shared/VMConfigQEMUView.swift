@@ -193,18 +193,24 @@ struct NewArgumentTextField: View {
     @State private var newArg: String = ""
     
     var body: some View {
-        #if swift(>=5.5)
-        if #available(iOS 15, macOS 12, *) {
-            TextField(text: $newArg, prompt: Text("New..."), label: { EmptyView() })
-                .onSubmit {
-                    addArg(editing: false)
-                }
-        } else {
+        Group {
+            #if swift(>=5.5)
+            if #available(iOS 15, macOS 12, *) {
+                TextField(text: $newArg, prompt: Text("New..."), label: { EmptyView() })
+                    .onSubmit {
+                        addArg(editing: false)
+                    }
+            } else {
+                TextField("New...", text: $newArg, onEditingChanged: addArg)
+            }
+            #else
             TextField("New...", text: $newArg, onEditingChanged: addArg)
+            #endif
+        }.onDisappear {
+            if newArg != "" {
+                addArg(editing: false)
+            }
         }
-        #else
-        TextField("New...", text: $newArg, onEditingChanged: addArg)
-        #endif
     }
     
     private func addArg(editing: Bool) {
