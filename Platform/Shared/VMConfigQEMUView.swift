@@ -24,7 +24,6 @@ struct VMConfigQEMUView: View {
     }
     
     @ObservedObject var config: UTMConfiguration
-    @State private var newArg: String = ""
     @State private var showExportLog: Bool = false
     @State private var showExportArgs: Bool = false
     @EnvironmentObject private var data: UTMData
@@ -64,7 +63,7 @@ struct VMConfigQEMUView: View {
                             TextField("", text: .constant(arg.string))
                         }.disabled(true)
                         CustomArguments(config: config)
-                        TextField("New...", text: $newArg, onEditingChanged: addArg)
+                        NewArgumentTextField(config: config)
                     }
                     #else
                     List {
@@ -72,7 +71,7 @@ struct VMConfigQEMUView: View {
                             Text(arg.string)
                         }.foregroundColor(.secondary)
                         CustomArguments(config: config)
-                        TextField("New...", text: $newArg, onEditingChanged: addArg)
+                        NewArgumentTextField(config: config)
                     }
                     #endif
                 }
@@ -99,16 +98,6 @@ struct VMConfigQEMUView: View {
         for offset in source {
             config.moveArgumentIndex(offset, to: destination)
         }
-    }
-    
-    private func addArg(editing: Bool) {
-        guard !editing else {
-            return
-        }
-        if newArg != "" {
-            config.newArgument(newArg)
-        }
-        newArg = ""
     }
     
     private func exportArgs() -> [String] {
@@ -150,11 +139,28 @@ struct CustomArguments: View {
                 config.updateArgument(at: i, withValue: $0)
             }
             HStack {
+                #if swift(>=5.5)
+                if #available(iOS 15, macOS 12, *) {
+                    TextField(text: argBinding, prompt: Text("Argument"), label: { EmptyView() })
+                        .onSubmit {
+                            if argBinding.wrappedValue == "" {
+                                config.removeArgument(at: i)
+                            }
+                        }
+                } else {
+                    TextField("Argument", text: argBinding, onEditingChanged: { editing in
+                        if !editing && argBinding.wrappedValue == "" {
+                            config.removeArgument(at: i)
+                        }
+                    })
+                }
+                #else
                 TextField("Argument", text: argBinding, onEditingChanged: { editing in
                     if !editing && argBinding.wrappedValue == "" {
                         config.removeArgument(at: i)
                     }
                 })
+                #endif
                 #if os(macOS)
                 Spacer()
                 if i != 0 {
@@ -178,6 +184,37 @@ struct CustomArguments: View {
         for offset in source {
             config.moveArgumentIndex(offset, to: destination)
         }
+    }
+}
+
+@available(iOS 14, macOS 11, *)
+struct NewArgumentTextField: View {
+    @ObservedObject var config: UTMConfiguration
+    @State private var newArg: String = ""
+    
+    var body: some View {
+        #if swift(>=5.5)
+        if #available(iOS 15, macOS 12, *) {
+            TextField(text: $newArg, prompt: Text("New..."), label: { EmptyView() })
+                .onSubmit {
+                    addArg(editing: false)
+                }
+        } else {
+            TextField("New...", text: $newArg, onEditingChanged: addArg)
+        }
+        #else
+        TextField("New...", text: $newArg, onEditingChanged: addArg)
+        #endif
+    }
+    
+    private func addArg(editing: Bool) {
+        guard !editing else {
+            return
+        }
+        if newArg != "" {
+            config.newArgument(newArg)
+        }
+        newArg = ""
     }
 }
 
