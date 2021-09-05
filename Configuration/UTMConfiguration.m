@@ -24,6 +24,7 @@
 #import "UTMConfiguration+Sharing.h"
 #import "UTMConfiguration+System.h"
 #import "UTM-Swift.h"
+#import <CommonCrypto/CommonDigest.h>
 #import <TargetConditionals.h>
 
 const NSString *const kUTMConfigSystemKey = @"System";
@@ -88,6 +89,13 @@ const NSInteger kCurrentConfigurationVersion = 2;
     return (NSDictionary *)_rootDict;
 }
 
+- (NSUUID *)legacyUuidFromName {
+    NSData *rawName = [self.name dataUsingEncoding:NSUTF8StringEncoding];
+    NSMutableData *hash = [NSMutableData dataWithLength:CC_SHA256_DIGEST_LENGTH];
+    CC_SHA256(rawName.bytes, (CC_LONG)rawName.length, hash.mutableBytes);
+    return [[NSUUID alloc] initWithUUIDBytes:hash.bytes];
+}
+
 - (NSURL *)socketUrlWithSuffix:(NSString *)suffix {
 #if TARGET_OS_IPHONE
     NSURL* parentDir = [[NSFileManager defaultManager] temporaryDirectory];
@@ -95,8 +103,8 @@ const NSInteger kCurrentConfigurationVersion = 2;
     NSURL* parentDir = [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:@OS_STRINGIFY(UTM_APP_GROUP)];
 #endif
     NSString *name = self.systemUUID;
-    if (name.length < 8) {
-        name = [NSUUID UUID].UUIDString;
+    if (!name) {
+        name = [self legacyUuidFromName].UUIDString;
     }
     NSString* ioFileName = [NSString stringWithFormat: @"%@.%@", name, suffix];
     NSURL* ioFile = [parentDir URLByAppendingPathComponent:ioFileName];
