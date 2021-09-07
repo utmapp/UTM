@@ -40,6 +40,7 @@
     } else {
         self.systemBootDevice = @"cd";
     }
+    self.systemBootUefi = YES;
     self.systemUUID = [[NSUUID UUID] UUIDString];
     self.displayCard = @"qxl-vga";
     self.displayUpscaler = @"linear";
@@ -74,6 +75,7 @@
         self.networkCard = @"rtl8139";
         self.shareClipboardEnabled = YES;
         self.displayCard = @"qxl-vga";
+        self.systemBootUefi = YES;
     } else if ([target isEqualToString:@"virt"] || [target hasPrefix:@"virt-"]) {
         self.soundCard = @"intel-hda";
         self.soundEnabled = YES;
@@ -81,11 +83,14 @@
         self.shareClipboardEnabled = YES;
         self.displayCard = @"virtio-ramfb";
         self.usb3Support = NO;
+        self.systemBootUefi = YES;
     } else if ([target isEqualToString:@"mac99"]) {
         self.soundCard = @"screamer";
         self.soundEnabled = YES;
     } else if ([target isEqualToString:@"isapc"]) {
         self.inputLegacy = YES; // no USB support
+    } else {
+        self.systemBootUefi = NO;
     }
     NSString *machineProp = [UTMConfiguration defaultMachinePropertiesForTarget:target];
     if (machineProp) {
