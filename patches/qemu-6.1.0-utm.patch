@@ -980,3 +980,203 @@ index f1103db64f..e616ac6f13 100644
 -- 
 2.28.0
 
+From 2b73a7937ddc83f4ec0bdbe16abf8453c07fb990 Mon Sep 17 00:00:00 2001
+From: osy <50960678+osy@users.noreply.github.com>
+Date: Tue, 7 Sep 2021 01:36:59 -0700
+Subject: [PATCH] virtio-ramfb: break out GL supported device
+
+This follows the same convention as other devices.
+---
+ hw/display/meson.build       | 11 +++++++-
+ hw/display/virtio-ramfb-gl.c | 50 ++++++++++++++++++++++++++++++++++++
+ hw/display/virtio-ramfb.c    | 36 +++-----------------------
+ hw/display/virtio-ramfb.h    | 28 ++++++++++++++++++++
+ 4 files changed, 92 insertions(+), 33 deletions(-)
+ create mode 100644 hw/display/virtio-ramfb-gl.c
+ create mode 100644 hw/display/virtio-ramfb.h
+
+diff --git a/hw/display/meson.build b/hw/display/meson.build
+index b3d1cccadc..cadfa1479d 100644
+--- a/hw/display/meson.build
++++ b/hw/display/meson.build
+@@ -58,7 +58,6 @@ if config_all_devices.has_key('CONFIG_VIRTIO_GPU')
+                     if_true: [files('virtio-gpu-base.c', 'virtio-gpu.c'), pixman])
+   virtio_gpu_ss.add(when: 'CONFIG_LINUX', if_true: files('virtio-gpu-udmabuf.c'))
+   virtio_gpu_ss.add(when: 'CONFIG_VHOST_USER_GPU', if_true: files('vhost-user-gpu.c'))
+-  virtio_gpu_ss.add(when: 'CONFIG_FW_CFG_DMA', if_true: files('virtio-ramfb.c'))
+   hw_display_modules += {'virtio-gpu': virtio_gpu_ss}
+ 
+   virtio_gpu_gl_ss = ss.source_set()
+@@ -67,6 +66,16 @@ if config_all_devices.has_key('CONFIG_VIRTIO_GPU')
+   hw_display_modules += {'virtio-gpu-gl': virtio_gpu_gl_ss}
+ endif
+ 
++if config_all_devices.has_key('CONFIG_FW_CFG_DMA')
++  virtio_ramfb_ss = ss.source_set()
++  virtio_ramfb_ss.add(when: 'CONFIG_FW_CFG_DMA', if_true: files('virtio-ramfb.c'))
++  hw_display_modules += {'virtio-ramfb': virtio_ramfb_ss}
++  virtio_ramfb_gl_ss = ss.source_set()
++  virtio_ramfb_gl_ss.add(when: ['CONFIG_FW_CFG_DMA', virgl, opengl],
++                       if_true: files('virtio-ramfb-gl.c'))
++  hw_display_modules += {'virtio-ramfb-gl': virtio_ramfb_gl_ss}
++endif
++
+ if config_all_devices.has_key('CONFIG_VIRTIO_PCI')
+   virtio_gpu_pci_ss = ss.source_set()
+   virtio_gpu_pci_ss.add(when: ['CONFIG_VIRTIO_GPU', 'CONFIG_VIRTIO_PCI'],
+diff --git a/hw/display/virtio-ramfb-gl.c b/hw/display/virtio-ramfb-gl.c
+new file mode 100644
+index 0000000000..19ddfd59de
+--- /dev/null
++++ b/hw/display/virtio-ramfb-gl.c
+@@ -0,0 +1,50 @@
++#include "qemu/osdep.h"
++#include "hw/pci/pci.h"
++#include "hw/qdev-properties.h"
++#include "hw/virtio/virtio-gpu.h"
++#include "hw/display/vga.h"
++#include "qapi/error.h"
++#include "qemu/module.h"
++#include "virtio-ramfb.h"
++#include "qom/object.h"
++
++#define TYPE_VIRTIO_RAMFB_GL "virtio-ramfb-gl"
++
++typedef struct VirtIORAMFBGL VirtIORAMFBGL;
++DECLARE_INSTANCE_CHECKER(VirtIORAMFBGL, VIRTIO_RAMFB_GL,
++                         TYPE_VIRTIO_RAMFB_GL)
++
++struct VirtIORAMFBGL {
++    VirtIORAMFBBase parent_obj;
++
++    VirtIOGPUGL   vdev;
++};
++
++static void virtio_ramfb_gl_inst_initfn(Object *obj)
++{
++    VirtIORAMFBGL *dev = VIRTIO_RAMFB_GL(obj);
++    
++    virtio_instance_init_common(obj, &dev->vdev, sizeof(dev->vdev),
++                                TYPE_VIRTIO_GPU_GL);
++    VIRTIO_RAMFB_BASE(dev)->vgpu = VIRTIO_GPU_BASE(&dev->vdev);
++}
++
++
++static VirtioPCIDeviceTypeInfo virtio_ramfb_gl_info = {
++    .generic_name  = TYPE_VIRTIO_RAMFB_GL,
++    .parent        = TYPE_VIRTIO_RAMFB_BASE,
++    .instance_size = sizeof(VirtIORAMFBGL),
++    .instance_init = virtio_ramfb_gl_inst_initfn,
++};
++module_obj(TYPE_VIRTIO_RAMFB_GL);
++
++static void virtio_ramfb_register_types(void)
++{
++    if (have_vga) {
++        virtio_pci_types_register(&virtio_ramfb_gl_info);
++    }
++}
++
++type_init(virtio_ramfb_register_types)
++
++module_dep("hw-display-virtio-ramfb");
+diff --git a/hw/display/virtio-ramfb.c b/hw/display/virtio-ramfb.c
+index 19a050ae5d..f7f7d23c8d 100644
+--- a/hw/display/virtio-ramfb.c
++++ b/hw/display/virtio-ramfb.c
+@@ -3,31 +3,10 @@
+ #include "hw/pci/pci.h"
+ #include "ui/console.h"
+ #include "hw/qdev-properties.h"
+-#include "hw/virtio/virtio-gpu-pci.h"
++#include "virtio-ramfb.h"
+ #include "qapi/error.h"
+-#include "hw/display/ramfb.h"
+ #include "qom/object.h"
+ 
+-/*
+- * virtio-ramfb-base: This extends VirtioPCIProxy.
+- */
+-#define TYPE_VIRTIO_RAMFB_BASE "virtio-ramfb-base"
+-OBJECT_DECLARE_TYPE(VirtIORAMFBBase, VirtIORAMFBBaseClass,
+-                    VIRTIO_RAMFB_BASE)
+-
+-struct VirtIORAMFBBase {
+-    VirtIOPCIProxy parent_obj;
+-
+-    VirtIOGPUBase *vgpu;
+-    RAMFBState    *ramfb;
+-};
+-
+-struct VirtIORAMFBBaseClass {
+-    VirtioPCIClass parent_class;
+-
+-    DeviceReset parent_reset;
+-};
+-
+ static int virtio_ramfb_get_flags(void *opaque)
+ {
+     VirtIORAMFBBase *vramfb = opaque;
+@@ -197,22 +176,15 @@ struct VirtIORAMFB {
+     VirtIORAMFBBase parent_obj;
+ 
+     VirtIOGPU     vdev;
+-    VirtIOGPUGL   vdevgl;
+ };
+ 
+ static void virtio_ramfb_inst_initfn(Object *obj)
+ {
+     VirtIORAMFB *dev = VIRTIO_RAMFB(obj);
+ 
+-    if (display_opengl) {
+-        virtio_instance_init_common(obj, &dev->vdevgl, sizeof(dev->vdevgl),
+-                                    TYPE_VIRTIO_GPU_GL);
+-        VIRTIO_RAMFB_BASE(dev)->vgpu = VIRTIO_GPU_BASE(&dev->vdevgl);
+-    } else {
+-        virtio_instance_init_common(obj, &dev->vdev, sizeof(dev->vdev),
+-                                    TYPE_VIRTIO_GPU);
+-        VIRTIO_RAMFB_BASE(dev)->vgpu = VIRTIO_GPU_BASE(&dev->vdev);
+-    }
++    virtio_instance_init_common(obj, &dev->vdev, sizeof(dev->vdev),
++                                TYPE_VIRTIO_GPU);
++    VIRTIO_RAMFB_BASE(dev)->vgpu = VIRTIO_GPU_BASE(&dev->vdev);
+ }
+ 
+ static VirtioPCIDeviceTypeInfo virtio_ramfb_info = {
+diff --git a/hw/display/virtio-ramfb.h b/hw/display/virtio-ramfb.h
+new file mode 100644
+index 0000000000..73bde4ba0e
+--- /dev/null
++++ b/hw/display/virtio-ramfb.h
+@@ -0,0 +1,28 @@
++#ifndef VIRTIO_RAMFB_H
++#define VIRTIO_RAMFB_H
++
++#include "hw/virtio/virtio-gpu-pci.h"
++#include "hw/display/ramfb.h"
++#include "qom/object.h"
++
++/*
++ * virtio-ramfb-base: This extends VirtioPCIProxy.
++ */
++#define TYPE_VIRTIO_RAMFB_BASE "virtio-ramfb-base"
++OBJECT_DECLARE_TYPE(VirtIORAMFBBase, VirtIORAMFBBaseClass,
++                    VIRTIO_RAMFB_BASE)
++
++struct VirtIORAMFBBase {
++    VirtIOPCIProxy parent_obj;
++
++    VirtIOGPUBase *vgpu;
++    RAMFBState    *ramfb;
++};
++
++struct VirtIORAMFBBaseClass {
++    VirtioPCIClass parent_class;
++
++    DeviceReset parent_reset;
++};
++
++#endif /* VIRTIO_RAMFB_H */
+-- 
+2.28.0
+
