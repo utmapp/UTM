@@ -35,6 +35,8 @@ typedef struct {
     NSInteger threads;
 } CPUCount;
 
+extern NSString *const kUTMErrorDomain;
+
 @interface UTMQemuSystem ()
 
 @property (nonatomic, readonly) NSURL *resourceURL;
@@ -42,7 +44,7 @@ typedef struct {
 @property (nonatomic, readonly) BOOL useHypervisor;
 @property (nonatomic, readonly) BOOL hasCustomBios;
 @property (nonatomic, readonly) BOOL usbSupported;
-@property (nonatomic, readonly) BOOL hasVirtio;
+@property (nonatomic, readonly) NSURL *efiVariablesURL;
 
 @end
 
@@ -169,12 +171,18 @@ static size_t sysctl_read(const char *name) {
         [self pushArgv:@"-global"];
         [self pushArgv:@"ICH9-LPC.disable_s3=1"]; // applies for pc-q35-* types
     }
-    if (self.hasVirtio) {
+    if (self.configuration.systemBootUefi) {
         NSString *name = [NSString stringWithFormat:@"edk2-%@-code.fd", arch];
         NSURL *path = [self.resourceURL URLByAppendingPathComponent:name];
         if (!self.hasCustomBios && [[NSFileManager defaultManager] fileExistsAtPath:path.path]) {
             [self pushArgv:@"-drive"];
-            [self pushArgv:[NSString stringWithFormat:@"if=pflash,format=raw,file=%@,readonly=on", path.path]]; // accessDataWithBookmark called already
+            [self pushArgv:[NSString stringWithFormat:@"if=pflash,format=raw,unit=0,file=%@,readonly=on", path.path]]; // accessDataWithBookmark called already
+            [self pushArgv:@"-drive"];
+            [self pushArgv:[NSString stringWithFormat:@"if=pflash,format=raw,unit=1,file=%@", self.efiVariablesURL.path]];
+            [self accessDataWithBookmark:[self.efiVariablesURL bookmarkDataWithOptions:0
+                                                        includingResourceValuesForKeys:nil
+                                                                         relativeToURL:nil
+                                                                                 error:nil]];
         }
     }
 }
@@ -549,9 +557,8 @@ static size_t sysctl_read(const char *name) {
     return ![self.configuration.systemTarget isEqualToString:@"isapc"];
 }
 
-- (BOOL)hasVirtio {
-    return [self.configuration.systemTarget hasPrefix:@"virt"] ||
-           (!self.configuration.displayConsoleOnly && [self.configuration.displayCard hasPrefix:@"virtio"]);
+- (NSURL *)efiVariablesURL {
+    return [[self.imgPath URLByAppendingPathComponent:[UTMConfiguration diskImagesDirectory]] URLByAppendingPathComponent:@"efi_vars.fd"];
 }
 
 - (NSString *)machineProperties {
@@ -692,7 +699,34 @@ static size_t sysctl_read(const char *name) {
     }
 }
 
+- (BOOL)createEfiVariablesIfNeededWithError:(NSError **)error {
+    NSString *arch = self.configuration.systemArchitecture;
+    NSFileManager *fileManager = NSFileManager.defaultManager;
+    NSURL *srcUrl = nil;
+    if (![fileManager fileExistsAtPath:self.efiVariablesURL.path]) {
+        if ([arch isEqualToString:@"arm"] || [arch isEqualToString:@"aarch64"]) {
+            srcUrl = [self.resourceURL URLByAppendingPathComponent:@"edk2-arm-vars.fd"];
+        } else if ([arch isEqualToString:@"i386"] || [arch isEqualToString:@"x86_64"]) {
+            srcUrl = [self.resourceURL URLByAppendingPathComponent:@"edk2-i386-vars.fd"];
+        } else {
+            if (error) {
+                *error = [NSError errorWithDomain:kUTMErrorDomain code:-1 userInfo:@{NSLocalizedDescriptionKey: NSLocalizedString(@"UEFI is not supported with this architecture.", "UTMQemuSystem")}];
+            }
+            return NO;
+        }
+        return [fileManager copyItemAtURL:srcUrl toURL:self.efiVariablesURL error:error];
+    }
+    return YES;
+}
+
 - (void)startWithCompletion:(void (^)(BOOL, NSString * _Nonnull))completion {
+    if (self.configuration.systemBootUefi) {
+        NSError *err;
+        if (![self createEfiVariablesIfNeededWithError:&err]) {
+            completion(NO, err.localizedDescription);
+            return;
+        }
+    }
     [self updateArgvWithUserOptions:YES];
     [self startQemu:self.configuration.systemArchitecture completion:completion];
 }
