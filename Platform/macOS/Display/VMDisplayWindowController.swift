@@ -181,6 +181,22 @@ extension VMDisplayWindowController: NSWindowDelegate {
         return [.autoHideToolbar, .autoHideMenuBar, .fullScreen]
     }
     
+    func windowShouldClose(_ sender: NSWindow) -> Bool {
+        let alert = NSAlert()
+        alert.alertStyle = .informational
+        alert.messageText = NSLocalizedString("Confirmation", comment: "VMDisplayWindowController")
+        alert.informativeText = NSLocalizedString("Closing this window will kill the VM.", comment: "VMDisplayMetalWindowController")
+        alert.addButton(withTitle: NSLocalizedString("OK", comment: "VMDisplayWindowController"))
+        alert.addButton(withTitle: NSLocalizedString("Cancel", comment: "VMDisplayWindowController"))
+        let response = alert.runModal()
+        switch response {
+        case .alertFirstButtonReturn:
+            return true
+        default:
+            return false
+        }
+    }
+    
     func windowWillClose(_ notification: Notification) {
         DispatchQueue.global(qos: .background).async {
             self.vm.quitVM(force: true)
