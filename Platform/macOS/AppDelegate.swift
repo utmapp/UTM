@@ -15,7 +15,27 @@
 //
 
 class AppDelegate: NSObject, NSApplicationDelegate {
+    var mainWindow: NSWindow?
+    
     func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
         true
+    }
+    
+    func applicationDidFinishLaunching(_ notification: Notification) {
+        if let window = NSApplication.shared.windows.first {
+            mainWindow = window
+            window.isExcludedFromWindowsMenu = true
+        }
+    }
+    
+    func applicationDockMenu(_ sender: NSApplication) -> NSMenu? {
+        let menu = NSMenu()
+        let utmItem = NSMenuItem(title: "UTM", action: #selector(mainWindowFront), keyEquivalent: "")
+        menu.addItem(utmItem)
+        return menu
+    }
+    
+    @objc func mainWindowFront() {
+        mainWindow?.makeKeyAndOrderFront(nil)
     }
 }

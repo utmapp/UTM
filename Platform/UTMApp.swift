@@ -26,7 +26,14 @@ struct UTMApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView().environmentObject(data)
-        }.commands { VMCommands() }
+        }.commands {
+            #if os(macOS)
+            // Since you can't make a ApplicationDelegateAdaptor a StateObject, we have to go the whole hog and pass the entire appDelegate.
+            VMCommands(appDelegate: appDelegate) 
+            #else
+            VMCommands()
+            #endif
+        }
         #if os(macOS)
         Settings {
             SettingsView()

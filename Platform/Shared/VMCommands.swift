@@ -19,6 +19,9 @@ import SwiftUI
 @available(iOS 14, macOS 11, *)
 struct VMCommands: Commands {
     @Environment(\.openURL) private var openURL
+    #if os(macOS)
+    var appDelegate: AppDelegate
+    #endif
     
     @CommandsBuilder
     var body: some Commands {
@@ -34,6 +37,15 @@ struct VMCommands: Commands {
         }
         SidebarCommands()
         ToolbarCommands()
+        #if os(macOS)
+        CommandGroup(replacing: .windowArrangement) {
+            Button {
+                appDelegate.mainWindow?.makeKeyAndOrderFront(nil)
+            } label: {
+                Text("UTM")
+            }
+        }
+        #endif
         CommandGroup(replacing: .help) {
             Button(action: { openLink("https://mac.getutm.app/gallery/") }, label: {
                 Text("Virtual Machine Gallery")
