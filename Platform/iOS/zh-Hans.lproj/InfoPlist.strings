@@ -1,0 +1,18 @@
+/* Bundle name */
+"CFBundleName" = "UTM SE";
+
+/* Privacy - Location Always and When In Use Usage Description */
+"NSLocationAlwaysAndWhenInUseUsageDescription" = "虚拟机后台运行需要使用定位服务。 位置数据永远不会离开设备。";
+
+/* Privacy - Location Always Usage Description */
+"NSLocationAlwaysUsageDescription" = "虚拟机后台运行需要使用定位服务。 位置数据永远不会离开设备。";
+
+/* Privacy - Location When In Use Usage Description */
+"NSLocationWhenInUseUsageDescription" = "虚拟机后台运行需要使用定位服务。 位置数据永远不会离开设备。";
+
+/* Privacy - Microphone Usage Description */
+"NSMicrophoneUsageDescription" = "虚拟机需要访问麦克风。";
+
+/* (No Comment) */
+"UTM virtual machine" = "UTM虚拟机";
+
