@@ -41,6 +41,11 @@ NS_AVAILABLE_IOS(13.4)
     if (@available(iOS 14.0, *)) {  //if ios 14.0 above, use CGMouse instead
         [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(mouseDidBecomeCurrent:) name:GCMouseDidBecomeCurrentNotification object:nil];
         [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(mouseDidStopBeingCurrent:) name:GCMouseDidStopBeingCurrentNotification object:nil];
+        GCMouse *current = GCMouse.current;
+        if (current) {
+            // send the current mouse if already connected
+            [NSNotificationCenter.defaultCenter postNotificationName:GCMouseDidBecomeCurrentNotification object:current];
+        }
     }
 }
 
@@ -56,6 +61,7 @@ NS_AVAILABLE_IOS(13.4)
         return;
     }
     mouse.mouseInput.mouseMovedHandler = ^(GCMouseInput * _Nonnull mouse, float deltaX, float deltaY) {
+        [self switchMouseType:VMMouseTypeRelative];
         [self.vmInput sendMouseMotion:self.mouseButtonDown point:CGPointMake(deltaX, -deltaY)];
     };
     mouse.mouseInput.leftButton.pressedChangedHandler = ^(GCControllerButtonInput * _Nonnull button, float value, BOOL pressed) {
@@ -72,7 +78,6 @@ NS_AVAILABLE_IOS(13.4)
         [self.vmInput sendMouseButton:kCSInputButtonMiddle pressed:pressed point:CGPointZero];
     };
     // no handler to the gcmouse scroll event, gestureScroll works fine.
-    [self switchMouseType:VMMouseTypeRelative];
     _mouseCaptured = YES;
     dispatch_async(dispatch_get_main_queue(), ^{
         [self setNeedsUpdateOfPrefersPointerLocked];

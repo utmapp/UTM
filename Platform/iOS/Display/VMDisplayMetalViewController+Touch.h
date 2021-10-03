@@ -29,7 +29,8 @@ typedef NS_ENUM(NSInteger, VMGestureType) {
 typedef NS_ENUM(NSInteger, VMMouseType) {
     VMMouseTypeRelative,
     VMMouseTypeAbsolute,
-    VMMouseTypeAbsoluteHideCursor
+    VMMouseTypeAbsoluteHideCursor,
+    VMMouseTypeMax
 };
 
 NS_ASSUME_NONNULL_BEGIN

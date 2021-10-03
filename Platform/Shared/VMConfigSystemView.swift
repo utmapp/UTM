@@ -21,15 +21,15 @@ struct VMConfigSystemView: View {
     let bytesInMib: UInt64 = 1024 * 1024
     let minMemoryMib = 32
     let baseUsageMib = 128
-    #if os(macOS)
     let warningThreshold = 0.9
-    #else
-    let warningThreshold = 0.4
-    #endif
     
     @ObservedObject var config: UTMQemuConfiguration
     @State private var showAdvanced: Bool = false
     @State private var warningMessage: String? = nil
+    
+    var supportsUefi: Bool {
+        ["arm", "aarch64", "i386", "x86_64"].contains(config.systemArchitecture ?? "")
+    }
     
     var body: some View {
         VStack {
@@ -39,6 +39,10 @@ struct VMConfigSystemView: View {
                     Text("Show Advanced Settings")
                 })
                 if showAdvanced {
+                    Section(header: Text("Tweaks")) {
+                        Toggle("UEFI Boot", isOn: $config.systemBootUefi)
+                            .disabled(!supportsUefi)
+                    }
                     Section(header: Text("CPU")) {
                         VMConfigStringPicker(selection: $config.systemCPU.animation(), label: EmptyView(), rawValues: UTMQemuConfiguration.supportedCpus(forArchitecture: config.systemArchitecture), displayValues: UTMQemuConfiguration.supportedCpus(forArchitecturePretty: config.systemArchitecture))
                     }
@@ -61,7 +65,15 @@ struct VMConfigSystemView: View {
                         }
                     }
                     Section(header: Text("QEMU Machine Properties")) {
+                        #if swift(>=5.5)
+                        if #available(iOS 15, macOS 12, *) {
+                            TextField("", text: $config.systemMachineProperties.bound, prompt: Text("None"))
+                        } else {
+                            TextField("None", text: $config.systemMachineProperties.bound)
+                        }
+                        #else
                         TextField("None", text: $config.systemMachineProperties.bound)
+                        #endif
                     }
                 }
             }
@@ -82,7 +94,13 @@ struct VMConfigSystemView: View {
             config.systemJitCacheSize = NSNumber(value: 0)
             return
         }
-        let totalDeviceMemory = ProcessInfo.processInfo.physicalMemory
+        var totalDeviceMemory = ProcessInfo.processInfo.physicalMemory
+        #if os(iOS)
+        let availableMemory = UInt64(os_proc_available_memory())
+        if availableMemory > 0 {
+            totalDeviceMemory = availableMemory
+        }
+        #endif
         let actualJitSizeMib = jitSizeMib == 0 ? memorySizeMib / 4 : jitSizeMib
         let jitMirrorMultiplier = jb_has_jit_entitlement() ? 1 : 2;
         let estMemoryUsage = UInt64(memorySizeMib + jitMirrorMultiplier*actualJitSizeMib + baseUsageMib) * bytesInMib

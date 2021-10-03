@@ -334,12 +334,14 @@ extension VMMetalView {
         CGWarpMouseCursorPosition(screenCenter ?? .zero)
         isMouseCaptured = true
         NSCursor.hide()
+        CGSSetGlobalHotKeyOperatingMode(CGSMainConnectionID(), .disable)
     }
     
     func releaseMouse() {
         CGAssociateMouseAndMouseCursorPosition(1)
         isMouseCaptured = false
         NSCursor.unhide()
+        CGSSetGlobalHotKeyOperatingMode(CGSMainConnectionID(), .enable)
     }
 }
 

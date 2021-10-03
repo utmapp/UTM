@@ -41,10 +41,12 @@ If you are developing QEMU and wish to pass in a custom path to QEMU, you can us
 You can build UTM with the script:
 
 ```
-./scripts/build_utm.sh -p macos -a ARCH -o /path/to/output/directory
+./scripts/build_utm.sh -t TEAMID -p macos -a ARCH -o /path/to/output/directory
 ```
 
 `ARCH` can be `x86_64` or `arm64` or `"arm64 x86_64"` (quotes are required) for a universal binary. The built artifact is an unsigned `.xcarchive` which you can use with the package tool (see below).
+
+`TEAMID` is optional and only used if you are going to sign it.
 
 ### Packaging
 
@@ -61,32 +63,26 @@ This builds `UTM.dmg` in `/path/to/output` which can be installed to `/Applicati
 #### Signed packages
 
 ```
-./scripts/package_mac.sh developer-id /path/to/UTM.xcarchive /path/to/output TEAM_ID PROFILE_UUID HELPER_PROFILE_UUID
+./scripts/package_mac.sh developer-id /path/to/UTM.xcarchive /path/to/output TEAM_ID PROFILE_UUID HELPER_PROFILE_UUID LAUNCHER_PROFILE_UUID
 ```
 
-To build a signed package, you need to be a registered Apple Developer. From the developer portal, create a certificate for "Developer ID Application" (and install it into your Keychain). Also create two provisioning profiles with that certificate with Hypervisor entitlements (you need to manually request these entitlements and be approved by Apple) for both UTM and QEMUHelper. `TEAM_ID` should be the same as in the certificate, `PROFILE_UUID` should be the UUID of the profile installed by Xcode (open the profile in Xcode), and `HELPER_PROFILE_UUID` is the UUID of a separate profile for the XPC helper.
+To build a signed package, you need to be a registered Apple Developer. From the developer portal, create a certificate for "Developer ID Application" (and install it into your Keychain). Also create three provisioning profiles with that certificate with Hypervisor entitlements (you need to manually request these entitlements and be approved by Apple) for UTM, QEMUHelper, and QEMULauncher. `TEAM_ID` should be the same as in the certificate, `PROFILE_UUID` should be the UUID of the profile installed by Xcode (open the profile in Xcode), and `HELPER_PROFILE_UUID` is the UUID of a separate profile for the XPC helper. `LAUNCHER_PROFILE_UUID` is the UUID of a profile for the launcher.
 
 Once properly signed, you can ask Apple to notarize the DMG.
 
 #### Mac App Store
 
 ```
-./scripts/package_mac.sh app-store /path/to/UTM.xcarchive /path/to/output TEAM_ID PROFILE_UUID HELPER_PROFILE_UUID
+./scripts/package_mac.sh app-store /path/to/UTM.xcarchive /path/to/output TEAM_ID PROFILE_UUID HELPER_PROFILE_UUID LAUNCHER_PROFILE_UUID
 ```
 
 Similar to the above but builds a `UTM.pkg` for submission to the Mac App Store. You need a certificate for "Apple Distribution" and a certificate for "Mac App Distribution" as well as a provisioning profile with the right entitlements.
 
 ### Xcode Development
 
-To build the Xcode project without a registered developer account, you will need to disable USB and bridged networking support.
+By default, Xcode will build UTM unsigned (lacking USB and bridged networking features).
 
-1. Open `Platform/macOS/macOS.entitlements` and delete the entry for `com.apple.vm.device-access`.
-2. Open `QEMUHelper/QEMUHelper.entitlements` and delete the entry for `com.apple.vm.networking`.
-3. In the project settings, select the "macOS" target and go to the "Signing & Capabilities" tab and check the box for "Disable Library Validation".
-4. Repeat for the "QEMUHelper" target.
-5. Repeat for the "QEMULauncher" target.
-
-You should now be able to run and debug UTM. If you have a registered developer account with access to Hypervisor entitlements, you should create a `CodeSigning.xcconfig` file with the proper values (see `CodeSigning.xcconfig.sample`). Otherwise, the build will default to ad-hoc signing.
+If you have a registered developer account with access to Hypervisor entitlements, you should create a `CodeSigning.xcconfig` file with the proper values (see `CodeSigning.xcconfig.sample`). Make sure to set `DEVELOPER_ACCOUNT_VM_ACCESS = YES`.
 
 Note that due to a macOS bug, you may get a crash when launching a VM with the debugger attached. The workaround is to start UTM with the debugger detached and attach the debugger with Debug -> Attach to Process after launching a VM. Once you do that, you can start additional VMs without any issues with the debugger.
 

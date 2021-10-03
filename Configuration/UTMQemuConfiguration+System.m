@@ -28,6 +28,7 @@ static const NSString *const kUTMConfigMemoryKey = @"Memory";
 static const NSString *const kUTMConfigCPUCountKey = @"CPUCount";
 static const NSString *const kUTMConfigTargetKey = @"Target";
 static const NSString *const kUTMConfigBootDeviceKey = @"BootDevice";
+static const NSString *const kUTMConfigBootUefiKey = @"BootUefi";
 static const NSString *const kUTMConfigJitCacheSizeKey = @"JITCacheSize";
 static const NSString *const kUTMConfigForceMulticoreKey = @"ForceMulticore";
 static const NSString *const kUTMConfigAddArgsKey = @"AddArgs";
@@ -82,6 +83,10 @@ static const NSString *const kUTMConfigUseHypervisorKey = @"UseHypervisor";
     // migrate global use hypervisor to per-vm
     if (![self.rootDict[kUTMConfigSystemKey] objectForKey:kUTMConfigUseHypervisorKey]) {
         self.useHypervisor = self.defaultUseHypervisor;
+    }
+    // Set UEFI boot to default on for virt* and off otherwise
+    if (self.rootDict[kUTMConfigSystemKey][kUTMConfigBootUefiKey] == nil) {
+        self.systemBootUefi = [self.systemTarget hasPrefix:@"virt"];
     }
 }
 
@@ -139,6 +144,15 @@ static const NSString *const kUTMConfigUseHypervisorKey = @"UseHypervisor";
 
 - (NSString *)systemBootDevice {
     return self.rootDict[kUTMConfigSystemKey][kUTMConfigBootDeviceKey];
+}
+
+- (void)setSystemBootUefi:(BOOL)systemBootUefi {
+    [self propertyWillChange];
+    self.rootDict[kUTMConfigSystemKey][kUTMConfigBootUefiKey] = @(systemBootUefi);
+}
+
+- (BOOL)systemBootUefi {
+    return [self.rootDict[kUTMConfigSystemKey][kUTMConfigBootUefiKey] boolValue];
 }
 
 - (NSNumber *)systemJitCacheSize {

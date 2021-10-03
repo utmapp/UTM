@@ -27,7 +27,6 @@ TARGETS = [
     Name("mipsel", "MIPS (Little Endian)"),
     Name("mips64", "MIPS64"),
     Name("mips64el", "MIPS64 (Little Endian)"),
-    Name("moxie", "Moxie"),
     Name("nios2", "NIOS2"),
     Name("or1k", "OpenRISC"),
     Name("ppc", "PowerPC"),
@@ -281,6 +280,13 @@ def generate(targets, cpus, cpuFlags, machines, displayCards, networkCards, soun
     output += '@end\n'
     return output
 
+def transformDisplayCards(displayCards):
+    def transform(item):
+        if item.name.endswith('-gl') or '-gl-' in item.name:
+            item = Device(item.name, item.bus, item.alias, item.desc + ' (GPU Supported)')
+        return item
+    return set(map(transform, displayCards))
+
 def main(argv):
     base = argv[1]
     allMachines = []
@@ -301,7 +307,8 @@ def main(argv):
         allMachines.append(Architecture(target.name, machines, default))
         devices = getDevices(target, path)
 
-        allDisplayCards.append(Architecture(target.name, devices["Display devices"], 0))
+        displayCards = transformDisplayCards(devices["Display devices"])
+        allDisplayCards.append(Architecture(target.name, displayCards, 0))
         allNetworkCards.append(Architecture(target.name, devices["Network devices"], 0))
         nonHdaDevices = [device for device in devices["Sound devices"] if device.bus != 'HDA']
         allSoundCards.append(Architecture(target.name, nonHdaDevices, 0))

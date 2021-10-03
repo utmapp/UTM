@@ -32,6 +32,8 @@ jobs:
             platform: ios
           - arch: x86_64
             platform: ios-tci
+          - arch: arm64
+            platform: ios_simulator # FIXME: enable when ANGLE supports it
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -39,13 +41,13 @@ jobs:
           submodules: recursive
       - name: Setup Xcode
         shell: bash
-        run: sudo xcode-select -switch /Applications/Xcode_13.0.app
+        run: sudo xcode-select -switch /Applications/Xcode_13.0_beta.app
       - name: Cache Sysroot
         id: cache-sysroot
         uses: actions/cache@v2
         with:
           path: sysroot-${{ matrix.platform }}-${{ matrix.arch }}
-          key: ${{ matrix.platform }}-${{ matrix.arch }}-${{ hashFiles('scripts/build_dependencies.sh') }}-${{ hashFiles('patches/**') }}
+          key: ${{ matrix.platform }}-${{ matrix.arch }}-${{ hashFiles('scripts/build_dependencies.sh') }}-${{ hashFiles('patches/**') }}-xcode-12
       - name: Setup Path
         shell: bash
         run: |
@@ -78,7 +80,7 @@ jobs:
           path: UTM.xcarchive.tgz
   build-universal:
     name: Build UTM (macOS Universal)
-    runs-on: macos-10.15
+    runs-on: macos-11
     needs: build
     if: github.event_name == 'release' || github.event.inputs.test_release == 'true'
     steps:
@@ -110,11 +112,13 @@ jobs:
           path: sysroot.tgz
       - name: Setup Xcode
         shell: bash
-        run: sudo xcode-select -switch /Applications/Xcode_13.0.app
+        run: sudo xcode-select -switch /Applications/Xcode_13.0_beta.app
       - name: Build UTM
         run: |
-          ./scripts/build_utm.sh -p macos -a "arm64 x86_64" -o UTM
+          ./scripts/build_utm.sh -t "$SIGNING_TEAM_ID" -p macos -a "arm64 x86_64" -o UTM
           tar cf UTM.xcarchive.tgz UTM.xcarchive
+        env:
+          SIGNING_TEAM_ID: ${{ secrets.SIGNING_TEAM_ID }}
       - name: Upload UTM
         uses: actions/upload-artifact@v2
         with:
@@ -122,7 +126,7 @@ jobs:
           path: UTM.xcarchive.tgz
   package-ipa:
     name: Package (iOS IPA)
-    runs-on: macos-10.15
+    runs-on: macos-11
     needs: build
     if: github.event_name == 'release' || github.event.inputs.test_release == 'true'
     steps:
@@ -138,6 +142,12 @@ jobs:
         run: |
           tar xf UTM.xcarchive.tgz
           ./scripts/package.sh ipa UTM.xcarchive .
+      - name: Upload Artifact
+        if: github.event_name != 'release'
+        uses: actions/upload-artifact@v2
+        with:
+          name: UTM-ipa
+          path: UTM.ipa
       - name: Upload Release Asset
         if: github.event_name == 'release'
         uses: actions/upload-release-asset@v1.0.2
@@ -158,7 +168,7 @@ jobs:
           event-type: new-release
   package-ipa-se:
     name: Package (iOS-TCI IPA)
-    runs-on: macos-10.15
+    runs-on: macos-11
     needs: build
     if: github.event_name == 'release' || github.event.inputs.test_release == 'true'
     steps:
@@ -174,6 +184,12 @@ jobs:
         run: |
           tar xf UTM.xcarchive.tgz
           ./scripts/package.sh ipa-se UTM.xcarchive .
+      - name: Upload Artifact
+        if: github.event_name != 'release'
+        uses: actions/upload-artifact@v2
+        with:
+          name: UTM-SE-ipa
+          path: UTM SE.ipa
       - name: Upload Release Asset
         if: github.event_name == 'release'
         uses: actions/upload-release-asset@v1.0.2
@@ -194,7 +210,7 @@ jobs:
           event-type: new-release
   package-deb:
     name: Package (iOS DEB)
-    runs-on: macos-10.15
+    runs-on: macos-11
     needs: build
     if: github.event_name == 'release' || github.event.inputs.test_release == 'true'
     steps:
@@ -210,6 +226,12 @@ jobs:
         run: |
           tar xf UTM.xcarchive.tgz
           ./scripts/package.sh deb UTM.xcarchive .
+      - name: Upload Artifact
+        if: github.event_name != 'release'
+        uses: actions/upload-artifact@v2
+        with:
+          name: UTM-deb
+          path: UTM.deb
       - name: Upload Release Asset
         if: github.event_name == 'release'
         uses: actions/upload-release-asset@v1.0.2
@@ -230,7 +252,7 @@ jobs:
           event-type: new-release
   package-mac:
     name: Package (macOS)
-    runs-on: macos-10.15
+    runs-on: macos-11
     needs: build-universal
     if: github.event_name == 'release' || github.event.inputs.test_release == 'true'
     steps:
@@ -272,6 +294,12 @@ jobs:
         env:
           NOTARIZE_USERNAME: ${{ secrets.SIGNING_USERNAME }}
           NOTARIZE_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
+      - name: Upload Artifact
+        if: github.event_name != 'release'
+        uses: actions/upload-artifact@v2
+        with:
+          name: UTM-dmg
+          path: UTM.dmg
       - name: Upload Release Asset
         if: github.event_name == 'release'
         uses: actions/upload-release-asset@v1.0.2

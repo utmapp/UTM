@@ -31,12 +31,14 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) CSUSBManager *usbManager;
 #endif
 @property (nonatomic, weak, nullable) id<CSConnectionDelegate> delegate;
-@property (nonatomic, copy) NSString *host;
-@property (nonatomic, copy) NSString *port;
+@property (nonatomic, nullable, copy) NSString *host;
+@property (nonatomic, nullable, copy) NSString *port;
+@property (nonatomic, nullable, copy) NSURL *unixSocketURL;
 @property (nonatomic, assign) BOOL audioEnabled;
 
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithHost:(NSString *)host port:(NSString *)port NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithUnixSocketFile:(NSURL *)socketFile NS_DESIGNATED_INITIALIZER;
 - (BOOL)connect;
 - (void)disconnect;
 

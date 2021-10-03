@@ -20,19 +20,23 @@
 
 @class UTMJSONStream;
 
+typedef void(^qemuManagerCompletionHandler_t)(BOOL, NSError * _Nullable);
+
 NS_ASSUME_NONNULL_BEGIN
 
 @interface UTMQemuManager : NSObject<UTMJSONStreamDelegate>
 
 @property (nonatomic, readonly) UTMJSONStream *jsonStream;
 @property (nonatomic, weak) id<UTMQemuManagerDelegate> delegate;
-@property (nonatomic, assign) int retries;
+@property (nonatomic, readonly) NSInteger retries;
 @property (nonatomic, readonly) BOOL isConnected;
 
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithPort:(NSInteger)port NS_DESIGNATED_INITIALIZER;
-- (void)connect;
+- (void)connectWithCompletion:(qemuManagerCompletionHandler_t)block retries:(NSInteger)retries;
+- (void)cancelConnectRetry;
 - (void)disconnect;
+- (BOOL)continueBootWithError:(NSError * _Nullable __autoreleasing *)error;
 
 - (void)vmPowerDownWithCompletion:(void (^ _Nullable)(NSError * _Nullable))completion;
 - (void)vmResetWithCompletion:(void (^ _Nullable)(NSError * _Nullable))completion;

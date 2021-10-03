@@ -12,6 +12,8 @@
 	<true/>
 	<key>com.apple.security.cs.allow-jit</key>
 	<true/>
+	<key>com.apple.security.cs.disable-library-validation</key>
+	<true/>
 	<key>com.apple.security.files.bookmarks.app-scope</key>
 	<true/>
 	<key>com.apple.security.hypervisor</key>
@@ -19,8 +21,6 @@
 	<key>com.apple.security.network.client</key>
 	<true/>
 	<key>com.apple.security.network.server</key>
-	<true/>
-	<key>com.apple.vm.networking</key>
 	<true/>
 </dict>
 </plist>

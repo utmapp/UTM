@@ -42,7 +42,7 @@ struct VMContextMenuModifier: ViewModifier {
                 Button {
                     confirmAction = .confirmStopVM
                 } label: {
-                    Label("Stop", systemImage: "stop.fill")
+                    Label("Stop…", systemImage: "stop.fill")
                 }
             } else {
                 Button {
@@ -59,13 +59,13 @@ struct VMContextMenuModifier: ViewModifier {
             Button {
                 confirmAction = .confirmCloneVM
             } label: {
-                Label("Clone", systemImage: "doc.on.doc")
+                Label("Clone…", systemImage: "doc.on.doc")
             }
             Divider()
             Button {
                 confirmAction = .confirmDeleteVM
             } label: {
-                Label("Delete", systemImage: "trash")
+                Label("Delete…", systemImage: "trash")
                     .foregroundColor(.red)
             }
         }

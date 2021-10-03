@@ -1,12 +1,15 @@
 #!/bin/sh
 
+# pkg-config
+PKG_CONFIG_SRC="https://pkgconfig.freedesktop.org/releases/pkg-config-0.29.2.tar.gz"
+
 # Source files for qemu
 FFI_SRC="https://sourceware.org/ftp/libffi/libffi-3.3.tar.gz"
 ICONV_SRC="https://ftp.gnu.org/gnu/libiconv/libiconv-1.16.tar.gz"
 GETTEXT_SRC="https://ftp.gnu.org/gnu/gettext/gettext-0.21.tar.gz"
 PNG_SRC="https://ftp.osuosl.org/pub/blfs/conglomeration/libpng/libpng-1.6.37.tar.xz"
 JPEG_TURBO_SRC="https://ftp.osuosl.org/pub/blfs/conglomeration/libjpeg-turbo/libjpeg-turbo-1.5.3.tar.gz"
-GLIB_SRC="https://download.gnome.org/sources/glib/2.55/glib-2.55.2.tar.xz"
+GLIB_SRC="https://download.gnome.org/sources/glib/2.69/glib-2.69.0.tar.xz"
 GPG_ERROR_SRC="https://www.gnupg.org/ftp/gcrypt/libgpg-error/libgpg-error-1.38.tar.gz"
 GCRYPT_SRC="https://www.gnupg.org/ftp/gcrypt/libgcrypt/libgcrypt-1.8.4.tar.gz"
 PIXMAN_SRC="https://www.cairographics.org/releases/pixman-0.38.0.tar.gz"
@@ -16,14 +19,24 @@ SPICE_PROTOCOL_SRC="https://www.spice-space.org/download/releases/spice-protocol
 SPICE_SERVER_SRC="https://www.spice-space.org/download/releases/spice-server/spice-0.14.1.tar.bz2"
 USB_SRC="https://github.com/libusb/libusb/releases/download/v1.0.24/libusb-1.0.24.tar.bz2"
 USBREDIR_SRC="https://www.spice-space.org/download/usbredir/usbredir-0.8.0.tar.bz2"
-QEMU_SRC="https://download.qemu.org/qemu-6.0.0.tar.xz"
+QEMU_SRC="https://github.com/utmapp/qemu/releases/download/v6.1.0-utm/qemu-6.1.0-utm.tar.bz2"
 
 # Source files for spice-client
 JSON_GLIB_SRC="https://ftp.gnome.org/pub/GNOME/sources/json-glib/1.2/json-glib-1.2.8.tar.xz"
-GST_SRC="https://gstreamer.freedesktop.org/src/gstreamer/gstreamer-1.15.2.tar.xz"
-GST_BASE_SRC="https://gstreamer.freedesktop.org/src/gst-plugins-base/gst-plugins-base-1.15.2.tar.xz"
-GST_GOOD_SRC="https://gstreamer.freedesktop.org/src/gst-plugins-good/gst-plugins-good-1.15.2.tar.xz"
+GST_SRC="https://gstreamer.freedesktop.org/src/gstreamer/gstreamer-1.19.1.tar.xz"
+GST_BASE_SRC="https://gstreamer.freedesktop.org/src/gst-plugins-base/gst-plugins-base-1.19.1.tar.xz"
+GST_GOOD_SRC="https://gstreamer.freedesktop.org/src/gst-plugins-good/gst-plugins-good-1.19.1.tar.xz"
 XML2_SRC="http://xmlsoft.org/sources/libxml2-2.9.10.tar.gz"
 SOUP_SRC="https://ftp.gnome.org/pub/GNOME/sources/libsoup/2.65/libsoup-2.65.1.tar.xz"
 PHODAV_SRC="http://ftp.gnome.org/pub/GNOME/sources/phodav/2.2/phodav-2.2.tar.xz"
 SPICE_CLIENT_SRC="https://www.spice-space.org/download/gtk/spice-gtk-0.36.tar.bz2"
+
+# Source files for GPU acceleration
+DEPOT_TOOLS_REPO="https://chromium.googlesource.com/chromium/tools/depot_tools.git"
+DEPOT_TOOLS_COMMIT="1cabb17575917b73ec2e270d4187656c20b1ab0c"
+ANGLE_REPO="https://github.com/utmapp/angle.git"
+ANGLE_COMMIT="c89da01e8e4d7c17ca00a2e3eafe02f4515c3960"
+EPOXY_REPO="https://github.com/utmapp/libepoxy.git"
+EPOXY_COMMIT="266d2290a437c655f7419e85af06bfbb73a720c4"
+VIRGLRENDERER_REPO="https://github.com/utmapp/virglrenderer.git"
+VIRGLRENDERER_COMMIT="e07cc2b5e320aab55b1295b66c83a59e0897a83e"

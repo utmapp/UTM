@@ -24,7 +24,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) NSURL *imgPath;
 @property (nonatomic, nullable) NSString *snapshot;
 @property (nonatomic) NSInteger qmpPort;
-@property (nonatomic) NSInteger spicePort;
 
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithConfiguration:(UTMQemuConfiguration *)configuration imgPath:(NSURL *)imgPath;
