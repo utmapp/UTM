@@ -80,15 +80,9 @@ Similar to the above but builds a `UTM.pkg` for submission to the Mac App Store.
 
 ### Xcode Development
 
-To build the Xcode project without a registered developer account, you will need to disable USB and bridged networking support.
+By default, Xcode will build UTM unsigned (lacking USB and bridged networking features).
 
-1. Open `Platform/macOS/macOS.entitlements` and delete the entry for `com.apple.vm.device-access`.
-2. Open `QEMUHelper/QEMUHelper.entitlements` and delete the entry for `com.apple.vm.networking`.
-3. In the project settings, select the "macOS" target and go to the "Signing & Capabilities" tab and check the box for "Disable Library Validation".
-4. Repeat for the "QEMUHelper" target.
-5. Repeat for the "QEMULauncher" target.
-
-You should now be able to run and debug UTM. If you have a registered developer account with access to Hypervisor entitlements, you should create a `CodeSigning.xcconfig` file with the proper values (see `CodeSigning.xcconfig.sample`). Otherwise, the build will default to ad-hoc signing.
+If you have a registered developer account with access to Hypervisor entitlements, you should create a `CodeSigning.xcconfig` file with the proper values (see `CodeSigning.xcconfig.sample`). Make sure to set `DEVELOPER_ACCOUNT_VM_ACCESS = YES`.
 
 Note that due to a macOS bug, you may get a crash when launching a VM with the debugger attached. The workaround is to start UTM with the debugger detached and attach the debugger with Debug -> Attach to Process after launching a VM. Once you do that, you can start additional VMs without any issues with the debugger.
 

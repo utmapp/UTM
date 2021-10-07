@@ -35,6 +35,8 @@ typedef struct {
     NSInteger threads;
 } CPUCount;
 
+extern NSString *const kUTMErrorDomain;
+
 @interface UTMQemuSystem ()
 
 @property (nonatomic, readonly) NSURL *resourceURL;
@@ -42,6 +44,7 @@ typedef struct {
 @property (nonatomic, readonly) BOOL useHypervisor;
 @property (nonatomic, readonly) BOOL hasCustomBios;
 @property (nonatomic, readonly) BOOL usbSupported;
+@property (nonatomic, readonly) NSURL *efiVariablesURL;
 
 @end
 
@@ -161,22 +164,25 @@ static size_t sysctl_read(const char *name) {
 }
 
 - (void)architectureSpecificConfiguration {
-    if ([self.configuration.systemArchitecture isEqualToString:@"x86_64"] ||
-        [self.configuration.systemArchitecture isEqualToString:@"i386"]) {
+    NSString *arch = self.configuration.systemArchitecture;
+    if ([arch isEqualToString:@"x86_64"] || [arch isEqualToString:@"i386"]) {
         [self pushArgv:@"-global"];
         [self pushArgv:@"PIIX4_PM.disable_s3=1"]; // applies for pc-i440fx-* types
         [self pushArgv:@"-global"];
         [self pushArgv:@"ICH9-LPC.disable_s3=1"]; // applies for pc-q35-* types
     }
-}
-
-- (void)targetSpecificConfiguration {
-    if ([self.configuration.systemTarget hasPrefix:@"virt"]) {
-        NSString *name = [NSString stringWithFormat:@"edk2-%@-code.fd", self.configuration.systemArchitecture];
+    if (self.configuration.systemBootUefi) {
+        NSString *name = [NSString stringWithFormat:@"edk2-%@-code.fd", arch];
         NSURL *path = [self.resourceURL URLByAppendingPathComponent:name];
         if (!self.hasCustomBios && [[NSFileManager defaultManager] fileExistsAtPath:path.path]) {
-            [self pushArgv:@"-bios"];
-            [self pushArgv:path.path]; // accessDataWithBookmark called already
+            [self pushArgv:@"-drive"];
+            [self pushArgv:[NSString stringWithFormat:@"if=pflash,format=raw,unit=0,file=%@,readonly=on", path.path]]; // accessDataWithBookmark called already
+            [self pushArgv:@"-drive"];
+            [self pushArgv:[NSString stringWithFormat:@"if=pflash,format=raw,unit=1,file=%@", self.efiVariablesURL.path]];
+            [self accessDataWithBookmark:[self.efiVariablesURL bookmarkDataWithOptions:0
+                                                        includingResourceValuesForKeys:nil
+                                                                         relativeToURL:nil
+                                                                                 error:nil]];
         }
     }
 }
@@ -249,10 +255,12 @@ static size_t sysctl_read(const char *name) {
     }
     if (self.configuration.soundEnabled && !forceDisableSound) {
         if ([self.configuration.soundCard isEqualToString:@"screamer"]) {
+#if !TARGET_OS_IPHONE
             // force CoreAudio backend for mac99 which only supports 44100 Hz
             [self pushArgv:@"-audiodev"];
             [self pushArgv:@"coreaudio,id=audio0"];
             // no device setting for screamer
+#endif
         } else {
             [self pushArgv:@"-device"];
             [self pushArgv:self.configuration.soundCard];
@@ -346,14 +354,17 @@ static size_t sysctl_read(const char *name) {
         [self pushArgv:@"-netdev"];
         NSString *device = @"user";
         NSMutableString *netstr;
+        BOOL hasPortForwarding = YES;
         if ([self.configuration.networkMode isEqualToString:@"shared"]) {
             device = @"vmnet-macos";
+            hasPortForwarding = NO;
             if (self.configuration.networkIsolate) {
                 netstr = [NSMutableString stringWithString:@"vmnet-macos,mode=host,id=net0"];
             } else {
                 netstr = [NSMutableString stringWithString:@"vmnet-macos,mode=shared,id=net0"];
             }
         } else if ([self.configuration.networkMode isEqualToString:@"bridged"]) {
+            hasPortForwarding = NO;
             netstr = [NSMutableString stringWithString:@"vmnet-macos,mode=bridged,id=net0"];
             if (self.configuration.networkBridgeInterface.length > 0) {
                 [netstr appendFormat:@",ifname=%@", self.configuration.networkBridgeInterface];
@@ -394,9 +405,11 @@ static size_t sysctl_read(const char *name) {
         if (self.configuration.networkDhcpDomain.length > 0) {
             [netstr appendFormat:@",domainname=%@", self.configuration.networkDhcpDomain];
         }
-        for (NSUInteger i = 0; i < [self.configuration countPortForwards]; i++) {
-            UTMConfigurationPortForward *portForward = [self.configuration portForwardForIndex:i];
-            [netstr appendFormat:@",hostfwd=%@:%@:%@-%@:%@", portForward.protocol, portForward.hostAddress, portForward.hostPort, portForward.guestAddress, portForward.guestPort];
+        if (hasPortForwarding) {
+            for (NSUInteger i = 0; i < [self.configuration countPortForwards]; i++) {
+                UTMConfigurationPortForward *portForward = [self.configuration portForwardForIndex:i];
+                [netstr appendFormat:@",hostfwd=%@:%@:%@-%@:%@", portForward.protocol, portForward.hostAddress, portForward.hostPort, portForward.guestAddress, portForward.guestPort];
+            }
         }
         [self pushArgv:netstr];
     } else {
@@ -544,6 +557,10 @@ static size_t sysctl_read(const char *name) {
     return ![self.configuration.systemTarget isEqualToString:@"isapc"];
 }
 
+- (NSURL *)efiVariablesURL {
+    return [[self.imgPath URLByAppendingPathComponent:[UTMConfiguration diskImagesDirectory]] URLByAppendingPathComponent:@"efi_vars.fd"];
+}
+
 - (NSString *)machineProperties {
     if (self.configuration.systemMachineProperties.length > 0) {
         return self.configuration.systemMachineProperties; // use specified properties
@@ -577,14 +594,9 @@ static size_t sysctl_read(const char *name) {
         [self pushArgv: @"chardev:term0"];
     } else {
         NSURL *spiceSocketURL = self.configuration.spiceSocketURL;
-        BOOL isGLOn = NO;
-        // ANGLE Metal backend only supported on iOS 13+
-        if (@available(iOS 13, *)) {
-            // GL supported devices have suffix GL and virtio-ramfb
-            isGLOn = [self.configuration.displayCard isEqualToString:@"virtio-ramfb"] ||
-                     [self.configuration.displayCard containsString:@"-gl-"] ||
-                     [self.configuration.displayCard hasSuffix:@"-gl"];
-        }
+        // GL supported devices have contains GL moniker
+        BOOL isGLOn = [self.configuration.displayCard containsString:@"-gl-"] ||
+                      [self.configuration.displayCard hasSuffix:@"-gl"];
         [self pushArgv:@"-spice"];
         [self pushArgv:[NSString stringWithFormat:@"unix=on,addr=%@,disable-ticketing=on,image-compression=off,playback-compression=off,streaming-video=off,gl=%@", spiceSocketURL.path, isGLOn ? @"on" : @"off"]];
         [self pushArgv:@"-device"];
@@ -603,7 +615,6 @@ static size_t sysctl_read(const char *name) {
     [self pushArgv:@"-accel"];
     [self pushArgv:[self tcgAccelProperties]];
     [self architectureSpecificConfiguration];
-    [self targetSpecificConfiguration];
     // legacy boot order; new bootindex uses drive ordering
     [self pushArgv:@"-boot"];
     if (self.configuration.systemBootDevice.length > 0 && ![self.configuration.systemBootDevice isEqualToString:@"hdd"]) {
@@ -688,7 +699,34 @@ static size_t sysctl_read(const char *name) {
     }
 }
 
+- (BOOL)createEfiVariablesIfNeededWithError:(NSError **)error {
+    NSString *arch = self.configuration.systemArchitecture;
+    NSFileManager *fileManager = NSFileManager.defaultManager;
+    NSURL *srcUrl = nil;
+    if (![fileManager fileExistsAtPath:self.efiVariablesURL.path]) {
+        if ([arch isEqualToString:@"arm"] || [arch isEqualToString:@"aarch64"]) {
+            srcUrl = [self.resourceURL URLByAppendingPathComponent:@"edk2-arm-vars.fd"];
+        } else if ([arch isEqualToString:@"i386"] || [arch isEqualToString:@"x86_64"]) {
+            srcUrl = [self.resourceURL URLByAppendingPathComponent:@"edk2-i386-vars.fd"];
+        } else {
+            if (error) {
+                *error = [NSError errorWithDomain:kUTMErrorDomain code:-1 userInfo:@{NSLocalizedDescriptionKey: NSLocalizedString(@"UEFI is not supported with this architecture.", "UTMQemuSystem")}];
+            }
+            return NO;
+        }
+        return [fileManager copyItemAtURL:srcUrl toURL:self.efiVariablesURL error:error];
+    }
+    return YES;
+}
+
 - (void)startWithCompletion:(void (^)(BOOL, NSString * _Nonnull))completion {
+    if (self.configuration.systemBootUefi) {
+        NSError *err;
+        if (![self createEfiVariablesIfNeededWithError:&err]) {
+            completion(NO, err.localizedDescription);
+            return;
+        }
+    }
     [self updateArgvWithUserOptions:YES];
     [self startQemu:self.configuration.systemArchitecture completion:completion];
 }

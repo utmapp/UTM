@@ -56,7 +56,10 @@ struct VMConfigNetworkView: View {
                         #endif
                     }
                     
-                    VMConfigNetworkPortForwardView(config: config)
+                    /// Bridged and shared networking doesn't support port forwarding
+                    if config.networkMode == "emulated" {
+                        VMConfigNetworkPortForwardView(config: config)
+                    }
                 }
             }
         }
@@ -90,68 +93,61 @@ struct IPConfigurationSection: View {
                 Text("Isolate Guest from Host")
             })
             Group {
-                HStack {
-                    Text("Guest Network")
-                    Spacer()
-                    TextField("10.0.2.0/24", text: $config.networkAddress.bound)
-                        .keyboardType(.asciiCapable)
-                }
-                HStack {
-                    Text("Guest Network (IPv6)")
-                    Spacer()
-                    TextField("fec0::/64", text: $config.networkAddressIPv6.bound)
-                        .keyboardType(.asciiCapable)
-                }
-                HStack {
-                    Text("Host Address")
-                    Spacer()
-                    TextField("10.0.2.2", text: $config.networkHost.bound)
-                        .keyboardType(.decimalPad)
-                }
-                HStack {
-                    Text("Host Address (IPv6)")
-                    Spacer()
-                    TextField("fec0::2", text: $config.networkHostIPv6.bound)
-                        .keyboardType(.asciiCapable)
-                }
-                HStack {
-                    Text("DHCP Start")
-                    Spacer()
-                    TextField("10.0.2.0.15", text: $config.networkDhcpStart.bound)
-                        .keyboardType(.decimalPad)
-                }
-                HStack {
-                    Text("DHCP Host")
-                    Spacer()
-                    TextField("", text: $config.networkDhcpHost.bound)
-                        .keyboardType(.asciiCapable)
-                }
-                HStack {
-                    Text("DHCP Domain Name")
-                    Spacer()
-                    TextField("", text: $config.networkDhcpDomain.bound)
-                        .keyboardType(.asciiCapable)
-                }
-                HStack {
-                    Text("DNS Server")
-                    Spacer()
-                    TextField("10.0.2.0.15", text: $config.networkDnsServer.bound)
-                        .keyboardType(.decimalPad)
-                }
-                HStack {
-                    Text("DNS Server (IPv6)")
-                    Spacer()
-                    TextField("fec0::3", text: $config.networkDnsServerIPv6.bound)
-                        .keyboardType(.asciiCapable)
-                }
-                HStack {
-                    Text("DNS Search Domains")
-                    Spacer()
-                    TextField("", text: $config.networkDnsSearch.bound)
-                        .keyboardType(.asciiCapable)
-                }
+                DefaultTextField("Guest Network", text: $config.networkAddress.bound, prompt: "10.0.2.0/24")
+                    .keyboardType(.asciiCapable)
+                DefaultTextField("Guest Network (IPv6)", text: $config.networkAddressIPv6.bound, prompt: "fec0::/64")
+                    .keyboardType(.asciiCapable)
+                DefaultTextField("Host Address", text: $config.networkHost.bound, prompt: "10.0.2.2")
+                    .keyboardType(.decimalPad)
+                DefaultTextField("Host Address (IPv6)", text: $config.networkHostIPv6.bound, prompt: "fec0::2")
+                    .keyboardType(.asciiCapable)
+                DefaultTextField("DHCP Start", text: $config.networkDhcpStart.bound, prompt: "10.0.2.0.15")
+                    .keyboardType(.decimalPad)
+                DefaultTextField("DHCP Host", text: $config.networkDhcpHost.bound)
+                    .keyboardType(.asciiCapable)
+                DefaultTextField("DHCP Domain Name", text: $config.networkDhcpDomain.bound)
+                    .keyboardType(.asciiCapable)
+                DefaultTextField("DNS Server", text: $config.networkDnsServer.bound, prompt: "10.0.2.0.15")
+                    .keyboardType(.decimalPad)
+                DefaultTextField("DNS Server (IPv6)", text: $config.networkDnsServerIPv6.bound, prompt: "fec0::3")
+                    .keyboardType(.asciiCapable)
+                DefaultTextField("DNS Search Domains", text: $config.networkDnsSearch.bound)
+                    .keyboardType(.asciiCapable)
             }
         }.disableAutocorrection(true)
+    }
+}
+
+@available(iOS 14, macOS 11, *)
+struct DefaultTextField: View {
+    private let titleKey: LocalizedStringKey
+    @Binding private var text: String
+    private let prompt: LocalizedStringKey
+    
+    init(_ titleKey: LocalizedStringKey, text: Binding<String>, prompt: LocalizedStringKey = "") {
+        self.titleKey = titleKey
+        self._text = text
+        self.prompt = prompt
+    }
+    
+    var body: some View {
+        #if swift(>=5.5)
+        if #available(iOS 15, macOS 12, *) {
+            TextField(titleKey, text: $text, prompt: Text(prompt))
+        } else {
+            HStack {
+                Text(titleKey)
+                Spacer()
+                TextField("", text: $text)
+            }
+        }
+        #else
+        HStack {
+            Text(titleKey)
+            Spacer()
+            TextField("", text: $text)
+        }
+        #endif
     }
 }
 

@@ -48,8 +48,18 @@
 @property (nonatomic, readwrite) BOOL hasGLDrawAck;
 @property (nonatomic) SpiceGlScanout scanout;
 
+// Non-GL Canvas
+@property (nonatomic) dispatch_semaphore_t canvasLock;
+@property (nonatomic) gint canvasFormat;
+@property (nonatomic) gint canvasStride;
+@property (nonatomic) const void *canvasData;
+@property (nonatomic) CGRect canvasArea;
+
+// Other Drawing
+@property (nonatomic) CGRect visibleArea;
+@property (nonatomic) CGPoint mouseGuest;
+
 // UTMRenderSource properties
-@property (nonatomic) dispatch_queue_t renderQueue;
 @property (nonatomic, nullable, readwrite) id<MTLTexture> canvasTexture;
 @property (nonatomic, nullable, readwrite) id<MTLTexture> glTexture;
 @property (nonatomic, nullable, readwrite) id<MTLTexture> cursorTexture;
@@ -60,16 +70,7 @@
 
 @end
 
-@implementation CSDisplayMetal {
-    //gint                    _mark;
-    gint                    _canvasFormat;
-    gint                    _canvasStride;
-    const void              *_canvasData;
-    CGRect                  _canvasArea;
-    CGRect                  _visibleArea;
-    GWeakRef                _overlay_weak_ref;
-    CGPoint                 _mouse_guest;
-}
+@implementation CSDisplayMetal
 
 #pragma mark - Display events
 
@@ -79,10 +80,12 @@ static void cs_primary_create(SpiceChannel *channel, gint format,
     CSDisplayMetal *self = (__bridge CSDisplayMetal *)data;
     
     g_assert(format == SPICE_SURFACE_FMT_32_xRGB || format == SPICE_SURFACE_FMT_16_555);
-    self->_canvasArea = CGRectMake(0, 0, width, height);
-    self->_canvasFormat = format;
-    self->_canvasStride = stride;
-    self->_canvasData = imgdata;
+    dispatch_semaphore_wait(self.canvasLock, DISPATCH_TIME_FOREVER);
+    self.canvasArea = CGRectMake(0, 0, width, height);
+    self.canvasFormat = format;
+    self.canvasStride = stride;
+    self.canvasData = imgdata;
+    dispatch_semaphore_signal(self.canvasLock);
     
     cs_update_monitor_area(channel, NULL, data);
 }
@@ -91,16 +94,18 @@ static void cs_primary_destroy(SpiceDisplayChannel *channel, gpointer data) {
     CSDisplayMetal *self = (__bridge CSDisplayMetal *)data;
     self.ready = NO;
     
-    self->_canvasArea = CGRectZero;
-    self->_canvasFormat = 0;
-    self->_canvasStride = 0;
-    self->_canvasData = NULL;
+    dispatch_semaphore_wait(self.canvasLock, DISPATCH_TIME_FOREVER);
+    self.canvasArea = CGRectZero;
+    self.canvasFormat = 0;
+    self.canvasStride = 0;
+    self.canvasData = NULL;
+    dispatch_semaphore_signal(self.canvasLock);
 }
 
 static void cs_invalidate(SpiceChannel *channel,
                        gint x, gint y, gint w, gint h, gpointer data) {
     CSDisplayMetal *self = (__bridge CSDisplayMetal *)data;
-    CGRect rect = CGRectIntersection(CGRectMake(x, y, w, h), self->_visibleArea);
+    CGRect rect = CGRectIntersection(CGRectMake(x, y, w, h), self.visibleArea);
     self.isGLEnabled = NO;
     if (!CGRectIsEmpty(rect)) {
         [self drawRegion:rect];
@@ -169,7 +174,7 @@ static void cs_update_monitor_area(SpiceChannel *channel, GParamSpec *pspec, gpo
 whole:
     g_clear_pointer(&monitors, g_array_unref);
     /* by display whole surface */
-    [self updateVisibleAreaWithRect:self->_canvasArea];
+    [self updateVisibleAreaWithRect:self.canvasArea];
     self.ready = YES;
 }
 
@@ -184,8 +189,7 @@ static void cs_update_mouse_mode(SpiceChannel *channel, gpointer data)
     DISPLAY_DEBUG(self, "mouse mode %u", mouse_mode);
     
     if (mouse_mode == SPICE_MOUSE_MODE_SERVER) {
-        self->_mouse_guest.x = -1;
-        self->_mouse_guest.y = -1;
+        self.mouseGuest = CGPointMake(-1, -1);
     }
 }
 
@@ -219,6 +223,7 @@ static void cs_cursor_set(SpiceCursorChannel *channel,
     [self drawCursor:cursor_shape->data];
     self.cursorHidden = NO;
     cs_cursor_invalidate(self);
+    g_boxed_free(SPICE_TYPE_CURSOR_SHAPE, cursor_shape);
 }
 
 static void cs_cursor_move(SpiceCursorChannel *channel, gint x, gint y, gpointer data)
@@ -227,8 +232,7 @@ static void cs_cursor_move(SpiceCursorChannel *channel, gint x, gint y, gpointer
     
     cs_cursor_invalidate(self); // old pointer buffer
     
-    self->_mouse_guest.x = x;
-    self->_mouse_guest.y = y;
+    self.mouseGuest = CGPointMake(x, y);
     
     cs_cursor_invalidate(self); // new pointer buffer
     
@@ -422,9 +426,10 @@ static void cs_channel_destroy(SpiceSession *s, SpiceChannel *channel, gpointer 
     CGImageRef img;
     CGColorSpaceRef colorSpaceRef = CGColorSpaceCreateDeviceRGB();
     
-    if (_canvasData) { // may be destroyed at this point
-        CGDataProviderRef dataProviderRef = CGDataProviderCreateWithData(NULL, _canvasData, _canvasStride * _canvasArea.size.height, nil);
-        img = CGImageCreate(_canvasArea.size.width, _canvasArea.size.height, 8, 32, _canvasStride, colorSpaceRef, kCGBitmapByteOrder32Little | kCGImageAlphaNoneSkipFirst, dataProviderRef, NULL, NO, kCGRenderingIntentDefault);
+    dispatch_semaphore_wait(self.canvasLock, DISPATCH_TIME_FOREVER);
+    if (self.canvasData) { // may be destroyed at this point
+        CGDataProviderRef dataProviderRef = CGDataProviderCreateWithData(NULL, self.canvasData, self.canvasStride * self.canvasArea.size.height, nil);
+        img = CGImageCreate(self.canvasArea.size.width, self.canvasArea.size.height, 8, 32, self.canvasStride, colorSpaceRef, kCGBitmapByteOrder32Little | kCGImageAlphaNoneSkipFirst, dataProviderRef, NULL, NO, kCGRenderingIntentDefault);
         CGDataProviderRelease(dataProviderRef);
     } else if (_glTexture) {
         // TODO: make screenshot from IOSurface
@@ -432,6 +437,7 @@ static void cs_channel_destroy(SpiceSession *s, SpiceChannel *channel, gpointer 
     } else {
         img = NULL;
     }
+    dispatch_semaphore_signal(self.canvasLock);
     
     CGColorSpaceRelease(colorSpaceRef);
     
@@ -463,8 +469,7 @@ static void cs_channel_destroy(SpiceSession *s, SpiceChannel *channel, gpointer 
         GList *list;
         GList *it;
         
-        dispatch_queue_attr_t qosAttribute = dispatch_queue_attr_make_with_qos_class(DISPATCH_QUEUE_SERIAL, QOS_CLASS_USER_INTERACTIVE, 0);
-        self.renderQueue = dispatch_queue_create("CSDisplayMetal render queue", qosAttribute);
+        self.canvasLock = dispatch_semaphore_create(1);
         self.viewportScale = 1.0f;
         self.viewportOrigin = CGPointMake(0, 0);
         self.channelID = channelID;
@@ -516,17 +521,17 @@ static void cs_channel_destroy(SpiceSession *s, SpiceChannel *channel, gpointer 
     if (self.isGLEnabled) {
         primary = CGRectMake(0, 0, self.scanout.width, self.scanout.height);
     } else {
-        primary = _canvasArea;
+        primary = self.canvasArea;
     }
     CGRect visible = CGRectIntersection(primary, rect);
     if (CGRectIsNull(visible)) {
         DISPLAY_DEBUG(self, "The monitor area is not intersecting primary surface");
         self.ready = NO;
-        _visibleArea = CGRectZero;
+        self.visibleArea = CGRectZero;
     } else {
-        _visibleArea = visible;
+        self.visibleArea = visible;
     }
-    self.displaySize = _visibleArea.size;
+    self.displaySize = self.visibleArea.size;
     [self rebuildDisplayVertices];
     if (!self.isGLEnabled) {
         [self rebuildCanvasTexture];
@@ -553,21 +558,22 @@ static void cs_channel_destroy(SpiceSession *s, SpiceChannel *channel, gpointer 
     textureDescriptor.pixelFormat = MTLPixelFormatBGRA8Unorm;
     textureDescriptor.width = self.scanout.width;
     textureDescriptor.height = self.scanout.height;
+    textureDescriptor.usage = MTLTextureUsageShaderRead;
     self.glTexture = [self.device newTextureWithDescriptor:textureDescriptor iosurface:iosurface plane:0];
     CFRelease(iosurface);
 }
 
 - (void)rebuildCanvasTexture {
-    if (CGRectIsEmpty(_canvasArea) || !self.device) {
+    if (CGRectIsEmpty(self.canvasArea) || !self.device) {
         return;
     }
     MTLTextureDescriptor *textureDescriptor = [[MTLTextureDescriptor alloc] init];
     // don't worry that that components are reversed, we fix it in shaders
-    textureDescriptor.pixelFormat = (_canvasFormat == SPICE_SURFACE_FMT_32_xRGB) ? MTLPixelFormatBGRA8Unorm : (MTLPixelFormat)43;// FIXME: MTLPixelFormatBGR5A1Unorm is supposed to be available.
-    textureDescriptor.width = _visibleArea.size.width;
-    textureDescriptor.height = _visibleArea.size.height;
+    textureDescriptor.pixelFormat = (self.canvasFormat == SPICE_SURFACE_FMT_32_xRGB) ? MTLPixelFormatBGRA8Unorm : (MTLPixelFormat)43;// FIXME: MTLPixelFormatBGR5A1Unorm is supposed to be available.
+    textureDescriptor.width = self.visibleArea.size.width;
+    textureDescriptor.height = self.visibleArea.size.height;
     self.canvasTexture = [self.device newTextureWithDescriptor:textureDescriptor];
-    [self drawRegion:_visibleArea];
+    [self drawRegion:self.visibleArea];
 }
 
 - (void)rebuildDisplayVertices {
@@ -575,13 +581,13 @@ static void cs_channel_destroy(SpiceSession *s, SpiceChannel *channel, gpointer 
     UTMVertex quadVertices[] =
     {
         // Pixel positions, Texture coordinates
-        { {  _visibleArea.size.width/2,   _visibleArea.size.height/2 },  { 1.f, 0.f } },
-        { { -_visibleArea.size.width/2,   _visibleArea.size.height/2 },  { 0.f, 0.f } },
-        { { -_visibleArea.size.width/2,  -_visibleArea.size.height/2 },  { 0.f, 1.f } },
+        { {  self.visibleArea.size.width/2,   self.visibleArea.size.height/2 },  { 1.f, 0.f } },
+        { { -self.visibleArea.size.width/2,   self.visibleArea.size.height/2 },  { 0.f, 0.f } },
+        { { -self.visibleArea.size.width/2,  -self.visibleArea.size.height/2 },  { 0.f, 1.f } },
         
-        { {  _visibleArea.size.width/2,   _visibleArea.size.height/2 },  { 1.f, 0.f } },
-        { { -_visibleArea.size.width/2,  -_visibleArea.size.height/2 },  { 0.f, 1.f } },
-        { {  _visibleArea.size.width/2,  -_visibleArea.size.height/2 },  { 1.f, 1.f } },
+        { {  self.visibleArea.size.width/2,   self.visibleArea.size.height/2 },  { 1.f, 0.f } },
+        { { -self.visibleArea.size.width/2,  -self.visibleArea.size.height/2 },  { 0.f, 1.f } },
+        { {  self.visibleArea.size.width/2,  -self.visibleArea.size.height/2 },  { 1.f, 1.f } },
     };
     
     // Create our vertex buffer, and initialize it with our quadVertices array
@@ -594,22 +600,20 @@ static void cs_channel_destroy(SpiceSession *s, SpiceChannel *channel, gpointer 
 }
 
 - (void)drawRegion:(CGRect)rect {
-    NSInteger pixelSize = (_canvasFormat == SPICE_SURFACE_FMT_32_xRGB) ? 4 : 2;
+    NSInteger pixelSize = (self.canvasFormat == SPICE_SURFACE_FMT_32_xRGB) ? 4 : 2;
     // create draw region
     MTLRegion region = {
-        { rect.origin.x-_visibleArea.origin.x, rect.origin.y-_visibleArea.origin.y, 0 }, // MTLOrigin
+        { rect.origin.x-self.visibleArea.origin.x, rect.origin.y-self.visibleArea.origin.y, 0 }, // MTLOrigin
         { rect.size.width, rect.size.height, 1} // MTLSize
     };
-    const void *canvasData = _canvasData;
-    gint canvasStride = _canvasStride;
-    if (canvasData) {
-        dispatch_async(self.renderQueue, ^{
-            [self.canvasTexture  replaceRegion:region
-                                   mipmapLevel:0
-                                     withBytes:(const char *)canvasData + (NSUInteger)(rect.origin.y*canvasStride + rect.origin.x*pixelSize)
-                                   bytesPerRow:canvasStride];
-        });
+    dispatch_semaphore_wait(self.canvasLock, DISPATCH_TIME_FOREVER);
+    if (self.canvasData) {
+        [self.canvasTexture  replaceRegion:region
+                               mipmapLevel:0
+                                 withBytes:(const char *)self.canvasData + (NSUInteger)(rect.origin.y*self.canvasStride + rect.origin.x*pixelSize)
+                               bytesPerRow:self.canvasStride];
     }
+    dispatch_semaphore_signal(self.canvasLock);
 }
 
 - (BOOL)visible {
@@ -694,12 +698,10 @@ static void cs_channel_destroy(SpiceSession *s, SpiceChannel *channel, gpointer 
         { 0, 0 }, // MTLOrigin
         { self.cursorSize.width, self.cursorSize.height, 1} // MTLSize
     };
-    dispatch_async(self.renderQueue, ^{
-        [self.cursorTexture replaceRegion:region
-                              mipmapLevel:0
-                                withBytes:buffer
-                              bytesPerRow:self.cursorSize.width*pixelSize];
-    });
+    [self.cursorTexture replaceRegion:region
+                          mipmapLevel:0
+                            withBytes:buffer
+                          bytesPerRow:self.cursorSize.width*pixelSize];
 }
 
 - (BOOL)cursorVisible {
@@ -707,7 +709,7 @@ static void cs_channel_destroy(SpiceSession *s, SpiceChannel *channel, gpointer 
 }
 
 - (CGPoint)cursorOrigin {
-    CGPoint point = _mouse_guest;
+    CGPoint point = self.mouseGuest;
     point.x -= self.displaySize.width/2;
     point.y -= self.displaySize.height/2;
     point.x *= self.viewportScale;
@@ -716,7 +718,7 @@ static void cs_channel_destroy(SpiceSession *s, SpiceChannel *channel, gpointer 
 }
 
 - (void)forceCursorPosition:(CGPoint)pos {
-    _mouse_guest = pos;
+    self.mouseGuest = pos;
 }
 
 @end

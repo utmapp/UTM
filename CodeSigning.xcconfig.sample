@@ -8,6 +8,12 @@ DEVELOPMENT_TEAM = XYZ0123456
 //   - com.myuniquename.QEMULauncher
 PRODUCT_BUNDLE_PREFIX = com.myuniquename
 
+// Set to YES if you have a valid paid Apple Developer account
+DEVELOPER_ACCOUNT_PAID = NO
+
+// Set to YES if you have access to VM entitlements in your account
+DEVELOPER_ACCOUNT_VM_ACCESS = NO
+
 // Name of the iOS development signing certificate, you probably do not need
 // to change this.
 CODE_SIGN_IDENTITY_IOS = Apple Development

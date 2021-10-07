@@ -84,6 +84,8 @@ If you have a paid Apple Developer account, you can find your Team ID at https:/
 
 If you have a free Apple Developer account, you need to generate a new signing certificate. To do so, follow the steps in [iOS App Signer][3] to create a new Xcode project and generate a provisioning profile. After saving the project, open `project.pbxproj` inside your newly created `.xcproj` and look for `DEVELOPMENT_TEAM`. Copy this value to `CodeSigning.xcconfig` and your unique identifier to `PRODUCT_BUNDLE_PREFIX`.
 
+Set `DEVELOPER_ACCOUNT_PAID = YES` if you used a paid Apple Developer account in order to automatically request the increased memory limit entitlement from Apple.
+
 ### Tethered Launch
 
 For JIT to work on the latest version of iOS, it must be launched through the debugger. You can do it from Xcode (and detach the debugger after launching) or you can follow [these instructions](TetheredLaunch.md) for an easier way.

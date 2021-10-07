@@ -22,7 +22,7 @@ on:
 jobs:
   build:
     name: Build UTM
-    runs-on: macos-10.15
+    runs-on: macos-11
     strategy:
       matrix:
         arch: [arm64, x86_64]
@@ -41,13 +41,13 @@ jobs:
           submodules: recursive
       - name: Setup Xcode
         shell: bash
-        run: sudo xcode-select -switch /Applications/Xcode_12.4.app
+        run: sudo xcode-select -switch /Applications/Xcode_12.5.1.app
       - name: Cache Sysroot
         id: cache-sysroot
         uses: actions/cache@v2
         with:
           path: sysroot-${{ matrix.platform }}-${{ matrix.arch }}
-          key: ${{ matrix.platform }}-${{ matrix.arch }}-${{ hashFiles('scripts/build_dependencies.sh') }}-${{ hashFiles('patches/**') }}
+          key: ${{ matrix.platform }}-${{ matrix.arch }}-${{ hashFiles('scripts/build_dependencies.sh') }}-${{ hashFiles('patches/**') }}-xcode-12
       - name: Setup Path
         shell: bash
         run: |
@@ -80,7 +80,7 @@ jobs:
           path: UTM.xcarchive.tgz
   build-universal:
     name: Build UTM (macOS Universal)
-    runs-on: macos-10.15
+    runs-on: macos-11
     needs: build
     if: github.event_name == 'release' || github.event.inputs.test_release == 'true'
     steps:
@@ -112,7 +112,7 @@ jobs:
           path: sysroot.tgz
       - name: Setup Xcode
         shell: bash
-        run: sudo xcode-select -switch /Applications/Xcode_12.4.app
+        run: sudo xcode-select -switch /Applications/Xcode_12.5.1.app
       - name: Build UTM
         run: |
           ./scripts/build_utm.sh -t "$SIGNING_TEAM_ID" -p macos -a "arm64 x86_64" -o UTM
@@ -126,7 +126,7 @@ jobs:
           path: UTM.xcarchive.tgz
   package-ipa:
     name: Package (iOS IPA)
-    runs-on: macos-10.15
+    runs-on: macos-11
     needs: build
     if: github.event_name == 'release' || github.event.inputs.test_release == 'true'
     steps:
@@ -168,7 +168,7 @@ jobs:
           event-type: new-release
   package-ipa-se:
     name: Package (iOS-TCI IPA)
-    runs-on: macos-10.15
+    runs-on: macos-11
     needs: build
     if: github.event_name == 'release' || github.event.inputs.test_release == 'true'
     steps:
@@ -210,7 +210,7 @@ jobs:
           event-type: new-release
   package-deb:
     name: Package (iOS DEB)
-    runs-on: macos-10.15
+    runs-on: macos-11
     needs: build
     if: github.event_name == 'release' || github.event.inputs.test_release == 'true'
     steps:
@@ -252,7 +252,7 @@ jobs:
           event-type: new-release
   package-mac:
     name: Package (macOS)
-    runs-on: macos-10.15
+    runs-on: macos-11
     needs: build-universal
     if: github.event_name == 'release' || github.event.inputs.test_release == 'true'
     steps:

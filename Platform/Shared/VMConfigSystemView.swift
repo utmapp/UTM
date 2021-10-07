@@ -21,15 +21,15 @@ struct VMConfigSystemView: View {
     let bytesInMib: UInt64 = 1024 * 1024
     let minMemoryMib = 32
     let baseUsageMib = 128
-    #if os(macOS)
     let warningThreshold = 0.9
-    #else
-    let warningThreshold = 0.4
-    #endif
     
     @ObservedObject var config: UTMConfiguration
     @State private var showAdvanced: Bool = false
     @State private var warningMessage: String? = nil
+    
+    var supportsUefi: Bool {
+        ["arm", "aarch64", "i386", "x86_64"].contains(config.systemArchitecture ?? "")
+    }
     
     var body: some View {
         VStack {
@@ -39,6 +39,10 @@ struct VMConfigSystemView: View {
                     Text("Show Advanced Settings")
                 })
                 if showAdvanced {
+                    Section(header: Text("Tweaks")) {
+                        Toggle("UEFI Boot", isOn: $config.systemBootUefi)
+                            .disabled(!supportsUefi)
+                    }
                     Section(header: Text("CPU")) {
                         VMConfigStringPicker(selection: $config.systemCPU.animation(), label: EmptyView(), rawValues: UTMConfiguration.supportedCpus(forArchitecture: config.systemArchitecture), displayValues: UTMConfiguration.supportedCpus(forArchitecturePretty: config.systemArchitecture))
                     }
@@ -61,7 +65,15 @@ struct VMConfigSystemView: View {
                         }
                     }
                     Section(header: Text("QEMU Machine Properties")) {
+                        #if swift(>=5.5)
+                        if #available(iOS 15, macOS 12, *) {
+                            TextField("", text: $config.systemMachineProperties.bound, prompt: Text("None"))
+                        } else {
+                            TextField("None", text: $config.systemMachineProperties.bound)
+                        }
+                        #else
                         TextField("None", text: $config.systemMachineProperties.bound)
+                        #endif
                     }
                 }
             }
@@ -82,7 +94,13 @@ struct VMConfigSystemView: View {
             config.systemJitCacheSize = NSNumber(value: 0)
             return
         }
-        let totalDeviceMemory = ProcessInfo.processInfo.physicalMemory
+        var totalDeviceMemory = ProcessInfo.processInfo.physicalMemory
+        #if os(iOS)
+        let availableMemory = UInt64(os_proc_available_memory())
+        if availableMemory > 0 {
+            totalDeviceMemory = availableMemory
+        }
+        #endif
         let actualJitSizeMib = jitSizeMib == 0 ? memorySizeMib / 4 : jitSizeMib
         let jitMirrorMultiplier = jb_has_jit_entitlement() ? 1 : 2;
         let estMemoryUsage = UInt64(memorySizeMib + jitMirrorMultiplier*actualJitSizeMib + baseUsageMib) * bytesInMib
@@ -105,23 +123,12 @@ struct VMConfigSystemView: View {
 
 @available(iOS 14, macOS 11, *)
 struct HardwareOptions: View {
-    let validMemoryValues = [32, 64, 128, 256, 512, 768, 1024, 1536, 2048, 3072, 4096, 6144, 8192, 10240, 12288, 14336, 16384, 32768]
-    
     @ObservedObject var config: UTMConfiguration
     let validateMemorySize: (Bool) -> Void
     @EnvironmentObject private var data: UTMData
-    @State private var memorySizeIndex: Float = 0
     @State private var warningMessage: String? = nil
     
     var body: some View {
-        let memorySizeIndexObserver = Binding<Float>(
-            get: {
-                return memorySizePickerIndex(size: config.systemMemory)
-            },
-            set: {
-                config.systemMemory = memorySize(pickerIndex: $0)
-            }
-        )
         Section(header: Text("Hardware")) {
             VMConfigStringPicker(selection: $config.systemArchitecture, label: Text("Architecture"), rawValues: UTMConfiguration.supportedArchitectures(), displayValues: UTMConfiguration.supportedArchitecturesPretty())
                 .onChange(of: config.systemArchitecture, perform: { value in
@@ -163,39 +170,8 @@ struct HardwareOptions: View {
                 .onChange(of: config.systemTarget, perform: { value in
                     config.loadDefaults(forTarget: value, architecture: config.systemArchitecture)
                 })
-            HStack {
-                Slider(value: memorySizeIndexObserver, in: 0...Float(validMemoryValues.count-1), step: 1) { start in
-                    if !start {
-                        validateMemorySize(false)
-                    }
-                } label: {
-                    Text("Memory")
-                }
-                NumberTextField("Size", number: $config.systemMemory, onEditingChanged: validateMemorySize)
-                    .frame(width: 50, height: nil)
-                Text("MB")
-            }
+            RAMSlider(systemMemory: $config.systemMemory, onValidate: validateMemorySize)
         }
-    }
-    
-    func memorySizePickerIndex(size: NSNumber?) -> Float {
-        guard let sizeUnwrap = size else {
-            return 0
-        }
-        for (i, s) in validMemoryValues.enumerated() {
-            if s >= Int(truncating: sizeUnwrap) {
-                return Float(i)
-            }
-        }
-        return Float(validMemoryValues.count - 1)
-    }
-    
-    func memorySize(pickerIndex: Float) -> NSNumber {
-        let i = Int(pickerIndex)
-        guard i >= 0 && i < validMemoryValues.count else {
-            return 0
-        }
-        return NSNumber(value: validMemoryValues[i])
     }
 }
 

@@ -210,7 +210,7 @@ class UTMData: ObservableObject {
     
     func discardChanges(forVM vm: UTMVirtualMachine? = nil) throws {
         let config: UTMConfiguration
-        if let vm = vm {
+        if let vm = vm, vm.path != nil {
             try vm.reloadConfiguration()
             config = vm.configuration
         } else {
