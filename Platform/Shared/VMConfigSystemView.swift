@@ -27,6 +27,10 @@ struct VMConfigSystemView: View {
     @State private var showAdvanced: Bool = false
     @State private var warningMessage: String? = nil
     
+    var supportsUefi: Bool {
+        ["arm", "aarch64", "i386", "x86_64"].contains(config.systemArchitecture ?? "")
+    }
+    
     var body: some View {
         VStack {
             Form {
@@ -35,6 +39,10 @@ struct VMConfigSystemView: View {
                     Text("Show Advanced Settings")
                 })
                 if showAdvanced {
+                    Section(header: Text("Tweaks")) {
+                        Toggle("UEFI Boot", isOn: $config.systemBootUefi)
+                            .disabled(!supportsUefi)
+                    }
                     Section(header: Text("CPU")) {
                         VMConfigStringPicker(selection: $config.systemCPU.animation(), label: EmptyView(), rawValues: UTMConfiguration.supportedCpus(forArchitecture: config.systemArchitecture), displayValues: UTMConfiguration.supportedCpus(forArchitecturePretty: config.systemArchitecture))
                     }

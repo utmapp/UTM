@@ -242,26 +242,6 @@
 		</dict>
 		<dict>
 			<key>Type</key>
-			<string>PSMultiValueSpecifier</string>
-			<key>Title</key>
-			<string>Touchpad/Mouse Input</string>
-			<key>Key</key>
-			<string>MouseIndirectType</string>
-			<key>DefaultValue</key>
-			<integer>1</integer>
-			<key>Titles</key>
-			<array>
-				<string>Drag cursor</string>
-				<string>Follow cursor</string>
-			</array>
-			<key>Values</key>
-			<array>
-				<integer>0</integer>
-				<integer>1</integer>
-			</array>
-		</dict>
-		<dict>
-			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 			<key>Title</key>
 			<string>Gamepad</string>

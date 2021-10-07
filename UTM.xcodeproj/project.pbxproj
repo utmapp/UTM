@@ -30,6 +30,19 @@
 		2CE8EB41257811E8000E2EBB /* UTMConfiguration+Defaults.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CE8EB40257811E8000E2EBB /* UTMConfiguration+Defaults.m */; };
 		2CE8EB42257811E8000E2EBB /* UTMConfiguration+Defaults.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CE8EB40257811E8000E2EBB /* UTMConfiguration+Defaults.m */; };
 		53A0BDD726D79FE40010EDC5 /* SavePanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53A0BDD426D79FE40010EDC5 /* SavePanel.swift */; };
+		83034C0726AB630F006B4BAF /* UTMPendingVMView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83034C0626AB630F006B4BAF /* UTMPendingVMView.swift */; };
+		83034C0826AB630F006B4BAF /* UTMPendingVMView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83034C0626AB630F006B4BAF /* UTMPendingVMView.swift */; };
+		83034C0926AB630F006B4BAF /* UTMPendingVMView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83034C0626AB630F006B4BAF /* UTMPendingVMView.swift */; };
+		835AA7B126AB7C85007A0411 /* UTMPendingVirtualMachine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 835AA7B026AB7C85007A0411 /* UTMPendingVirtualMachine.swift */; };
+		835AA7B226AB7C85007A0411 /* UTMPendingVirtualMachine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 835AA7B026AB7C85007A0411 /* UTMPendingVirtualMachine.swift */; };
+		835AA7B326AB7C85007A0411 /* UTMPendingVirtualMachine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 835AA7B026AB7C85007A0411 /* UTMPendingVirtualMachine.swift */; };
+		836A40D526AA2A03002068F8 /* Zip in Frameworks */ = {isa = PBXBuildFile; productRef = 836A40D426AA2A03002068F8 /* Zip */; };
+		836A40D726AA2A2C002068F8 /* Zip in Frameworks */ = {isa = PBXBuildFile; productRef = 836A40D626AA2A2C002068F8 /* Zip */; };
+		836A40D926AA2A30002068F8 /* Zip in Frameworks */ = {isa = PBXBuildFile; productRef = 836A40D826AA2A30002068F8 /* Zip */; };
+		83A004B926A8CC95001AC09E /* UTMImportFromWebTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83A004B826A8CC95001AC09E /* UTMImportFromWebTask.swift */; };
+		83A004BA26A8CC95001AC09E /* UTMImportFromWebTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83A004B826A8CC95001AC09E /* UTMImportFromWebTask.swift */; };
+		83A004BB26A8CC95001AC09E /* UTMImportFromWebTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83A004B826A8CC95001AC09E /* UTMImportFromWebTask.swift */; };
+		83C15C5F26CC441500ADFD45 /* KeyCodeMap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83C15C5E26CC441000ADFD45 /* KeyCodeMap.swift */; };
 		8401FD71269BEB2B00265F0D /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = CE6B240A25F1F3CE0020D43E /* main.c */; };
 		8401FD72269BEB3000265F0D /* Bootstrap.c in Sources */ = {isa = PBXBuildFile; fileRef = CE0DF17125A80B6300A51894 /* Bootstrap.c */; };
 		8401FD7A269BECE200265F0D /* QEMULauncher.app in Embed Launcher */ = {isa = PBXBuildFile; fileRef = 8401FD62269BE9C500265F0D /* QEMULauncher.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
@@ -1453,6 +1466,10 @@
 		52873FD9247F5B1B0063E4C8 /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		52873FDA247F5B1B0063E4C8 /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
 		53A0BDD426D79FE40010EDC5 /* SavePanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SavePanel.swift; sourceTree = "<group>"; };
+		83034C0626AB630F006B4BAF /* UTMPendingVMView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMPendingVMView.swift; sourceTree = "<group>"; };
+		835AA7B026AB7C85007A0411 /* UTMPendingVirtualMachine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMPendingVirtualMachine.swift; sourceTree = "<group>"; };
+		83A004B826A8CC95001AC09E /* UTMImportFromWebTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMImportFromWebTask.swift; sourceTree = "<group>"; };
+		83C15C5E26CC441000ADFD45 /* KeyCodeMap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyCodeMap.swift; sourceTree = "<group>"; };
 		83FBDD53242FA71900D2C5D7 /* VMDisplayMetalViewController+Pointer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "VMDisplayMetalViewController+Pointer.h"; sourceTree = "<group>"; };
 		83FBDD55242FA7BC00D2C5D7 /* VMDisplayMetalViewController+Pointer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "VMDisplayMetalViewController+Pointer.m"; sourceTree = "<group>"; };
 		8401FD62269BE9C500265F0D /* QEMULauncher.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = QEMULauncher.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -2118,6 +2135,7 @@
 				CE2D934F24AD46670059923A /* phodav-2.0.0.framework in Frameworks */,
 				CEA9059025FC6A1700801E7C /* usbredirparser.1.framework in Frameworks */,
 				CE0E9B87252FD06B0026E02B /* SwiftUI.framework in Frameworks */,
+				836A40D726AA2A2C002068F8 /* Zip in Frameworks */,
 				CE2D935024AD46670059923A /* gstcontroller-1.0.0.framework in Frameworks */,
 				CE2D935124AD46670059923A /* gstaudio-1.0.0.framework in Frameworks */,
 				CE2D935224AD46670059923A /* gpg-error.0.framework in Frameworks */,
@@ -2204,6 +2222,7 @@
 				CE03D08924D90F0700F76B84 /* glib-2.0.0.framework in Frameworks */,
 				CE0B6EC224AD677200FE012D /* libgstvideorate.a in Frameworks */,
 				CE0B6F0C24AD677200FE012D /* gstreamer-1.0.0.framework in Frameworks */,
+				836A40D526AA2A03002068F8 /* Zip in Frameworks */,
 				CEF83F89250094A400557D15 /* png16.16.framework in Frameworks */,
 				CE0B6F0224AD677200FE012D /* libgstjpeg.a in Frameworks */,
 				CE0B6EFC24AD677200FE012D /* libgstaudiotestsrc.a in Frameworks */,
@@ -2277,6 +2296,7 @@
 				CEA45F59263519B5002FA97D /* gstpbutils-1.0.0.framework in Frameworks */,
 				CEA45F5A263519B5002FA97D /* gstallocators-1.0.0.framework in Frameworks */,
 				CEA45F5B263519B5002FA97D /* gstcheck-1.0.0.framework in Frameworks */,
+				836A40D926AA2A30002068F8 /* Zip in Frameworks */,
 				CEA45F5C263519B5002FA97D /* iconv.2.framework in Frameworks */,
 				CEA45F5D263519B5002FA97D /* gstsdp-1.0.0.framework in Frameworks */,
 				CEA45F5E263519B5002FA97D /* ssl.1.1.framework in Frameworks */,
@@ -2458,6 +2478,7 @@
 				FFB02A8E266CB09C006CD71A /* InfoPlist.strings */,
 				CE2D953F24AD4F980059923A /* macOS.entitlements */,
 				CEF6F5EA26DDD60500BC434D /* macOS-unsigned.entitlements */,
+				83C15C5E26CC441000ADFD45 /* KeyCodeMap.swift */,
 			);
 			path = macOS;
 			sourceTree = "<group>";
@@ -2920,6 +2941,7 @@
 				CE0B6D8324AD5ADE00FE012D /* UTMScreenshot.h */,
 				CE0B6D8424AD5ADE00FE012D /* UTMScreenshot.m */,
 				CE020BB524B14F8400B44AB6 /* UTMVirtualMachineExtension.swift */,
+				835AA7B026AB7C85007A0411 /* UTMPendingVirtualMachine.swift */,
 			);
 			path = Managers;
 			sourceTree = "<group>";
@@ -3021,6 +3043,8 @@
 				CE2D954524AD4F980059923A /* VMRemovableDrivesView.swift */,
 				CE8813D424CD265700532628 /* VMShareFileModifier.swift */,
 				CE2D953824AD4F980059923A /* VMToolbarModifier.swift */,
+				83A004B826A8CC95001AC09E /* UTMImportFromWebTask.swift */,
+				83034C0626AB630F006B4BAF /* UTMPendingVMView.swift */,
 			);
 			path = Shared;
 			sourceTree = "<group>";
@@ -3164,6 +3188,7 @@
 			packageProductDependencies = (
 				CE020BA624AEDEF000B44AB6 /* Logging */,
 				CE93759824BB821F0074066F /* IQKeyboardManagerSwift */,
+				836A40D626AA2A2C002068F8 /* Zip */,
 			);
 			productName = UTM;
 			productReference = CE2D93BE24AD46670059923A /* UTM.app */;
@@ -3188,6 +3213,7 @@
 			name = macOS;
 			packageProductDependencies = (
 				CE020BA824AEDF3000B44AB6 /* Logging */,
+				836A40D426AA2A03002068F8 /* Zip */,
 			);
 			productName = UTM;
 			productReference = CE2D951C24AD48BE0059923A /* UTM.app */;
@@ -3229,6 +3255,7 @@
 			packageProductDependencies = (
 				CEA45E20263519B5002FA97D /* Logging */,
 				CEA45E22263519B5002FA97D /* IQKeyboardManagerSwift */,
+				836A40D826AA2A30002068F8 /* Zip */,
 			);
 			productName = UTM;
 			productReference = CEA45FB9263519B5002FA97D /* UTM SE.app */;
@@ -3296,6 +3323,7 @@
 			packageReferences = (
 				CE020BA524AEDEF000B44AB6 /* XCRemoteSwiftPackageReference "swift-log" */,
 				CE93759724BB821F0074066F /* XCRemoteSwiftPackageReference "IQKeyboardManager" */,
+				836A40D326AA2A03002068F8 /* XCRemoteSwiftPackageReference "Zip" */,
 			);
 			productRefGroup = CE550BCA225947990063E575 /* Products */;
 			projectDirPath = "";
@@ -3510,6 +3538,7 @@
 				CE2D928924AD46670059923A /* qapi-visit-machine-target.c in Sources */,
 				CE2D928A24AD46670059923A /* qapi-visit-qdev.c in Sources */,
 				CE2D955724AD4F980059923A /* VMConfigDisplayView.swift in Sources */,
+				83A004B926A8CC95001AC09E /* UTMImportFromWebTask.swift in Sources */,
 				CE2D928B24AD46670059923A /* qapi-visit-core.c in Sources */,
 				CE2D928C24AD46670059923A /* qapi-visit-rdma.c in Sources */,
 				CE2D928D24AD46670059923A /* qapi-types-trace.c in Sources */,
@@ -3553,6 +3582,7 @@
 				CEF83ECC24FB382B00557D15 /* UTMVirtualMachine+Terminal.m in Sources */,
 				CEB63A9224F46E6E00CAF323 /* VMConfigInputViewController.m in Sources */,
 				CE4EF2702506DBFD00E9D33B /* VMRemovableDrivesViewController.swift in Sources */,
+				83034C0726AB630F006B4BAF /* UTMPendingVMView.swift in Sources */,
 				CE2D92AA24AD46670059923A /* UTMSpiceIO.m in Sources */,
 				CE2D92AB24AD46670059923A /* qapi-events-machine-target.c in Sources */,
 				CE2D92AC24AD46670059923A /* qapi-types-misc.c in Sources */,
@@ -3580,6 +3610,7 @@
 				CE5076DB250AB55D00C26C19 /* VMDisplayMetalViewController+Pencil.m in Sources */,
 				CE2D92BA24AD46670059923A /* qapi-events-dump.c in Sources */,
 				CE2D92BB24AD46670059923A /* qapi-types-tpm.c in Sources */,
+				835AA7B126AB7C85007A0411 /* UTMPendingVirtualMachine.swift in Sources */,
 				CE2D92BC24AD46670059923A /* UTMConfiguration+Drives.m in Sources */,
 				CE2D92BD24AD46670059923A /* qapi-visit-char.c in Sources */,
 				CE2D92BE24AD46670059923A /* qapi-types-error.c in Sources */,
@@ -3734,6 +3765,7 @@
 				CE0B6D0024AD56AE00FE012D /* UTMVirtualMachine.m in Sources */,
 				CEB63A7B24F469E300CAF323 /* UTMJailbreak.m in Sources */,
 				CE0B6D0E24AD56E500FE012D /* UTMShaders.metal in Sources */,
+				83A004BB26A8CC95001AC09E /* UTMImportFromWebTask.swift in Sources */,
 				CE0B6D3924AD57FD00FE012D /* qapi-commands-job.c in Sources */,
 				CE0B6D3724AD57FD00FE012D /* qapi-events-block-core.c in Sources */,
 				CE0B6D5E24AD584D00FE012D /* qapi-visit-authz.c in Sources */,
@@ -3795,6 +3827,7 @@
 				CE0B6D4E24AD584C00FE012D /* qapi-types-tpm.c in Sources */,
 				CE0B6D7524AD584D00FE012D /* qapi-visit-ui.c in Sources */,
 				CE0B6D1824AD57FC00FE012D /* qapi-events-audio.c in Sources */,
+				835AA7B326AB7C85007A0411 /* UTMPendingVirtualMachine.swift in Sources */,
 				CE0B6D7224AD584D00FE012D /* qapi-types-crypto.c in Sources */,
 				CE0B6D8124AD584D00FE012D /* qapi-events.c in Sources */,
 				CED814EA24C79F070042F0F1 /* VMConfigDriveCreateView.swift in Sources */,
@@ -3804,6 +3837,7 @@
 				CE0B6D4024AD584C00FE012D /* qapi-types-rocker.c in Sources */,
 				CE0B6CEF24AD566D00FE012D /* CSDisplayMetal.m in Sources */,
 				CE0B6D6724AD584D00FE012D /* qapi-types-ui.c in Sources */,
+				83C15C5F26CC441500ADFD45 /* KeyCodeMap.swift in Sources */,
 				CE0B6D6824AD584D00FE012D /* qapi-visit-machine.c in Sources */,
 				CE0B6D4A24AD584C00FE012D /* qapi-types-error.c in Sources */,
 				CE0B6D2124AD57FC00FE012D /* qapi-commands-error.c in Sources */,
@@ -3938,6 +3972,7 @@
 				CE0B6D5D24AD584D00FE012D /* qapi-visit.c in Sources */,
 				CE0B6D1724AD57FC00FE012D /* qapi-commands-misc.c in Sources */,
 				CE0B6D2924AD57FC00FE012D /* qapi-commands-machine-target.c in Sources */,
+				83034C0926AB630F006B4BAF /* UTMPendingVMView.swift in Sources */,
 				CE0B6D7324AD584D00FE012D /* qapi-events-migration.c in Sources */,
 				CE020BA424AEDC7C00B44AB6 /* UTMData.swift in Sources */,
 				CE0B6D1A24AD57FC00FE012D /* qapi-commands-qdev.c in Sources */,
@@ -3974,6 +4009,7 @@
 				CEA45E2E263519B5002FA97D /* qapi-events-misc.c in Sources */,
 				CEA45E2F263519B5002FA97D /* VMConfigSystemArgumentsViewController.m in Sources */,
 				CEA45E30263519B5002FA97D /* WKWebView+Workarounds.m in Sources */,
+				83A004BA26A8CC95001AC09E /* UTMImportFromWebTask.swift in Sources */,
 				CEA45E31263519B5002FA97D /* qapi-visit-crypto.c in Sources */,
 				CEA45E32263519B5002FA97D /* qapi-visit-tpm.c in Sources */,
 				CEA45E34263519B5002FA97D /* UTMConfiguration+Defaults.m in Sources */,
@@ -4140,6 +4176,7 @@
 				CEA45ED5263519B5002FA97D /* qapi-events-transaction.c in Sources */,
 				CEA45ED6263519B5002FA97D /* VMConfigStringPicker.swift in Sources */,
 				CEA45ED7263519B5002FA97D /* qapi-commands-dump.c in Sources */,
+				83034C0826AB630F006B4BAF /* UTMPendingVMView.swift in Sources */,
 				CEA45ED8263519B5002FA97D /* VMKeyboardButton.m in Sources */,
 				CEA45ED9263519B5002FA97D /* qapi-commands-introspect.c in Sources */,
 				CEA45EDA263519B5002FA97D /* qapi-types-sockets.c in Sources */,
@@ -4172,6 +4209,7 @@
 				CEA45EF6263519B5002FA97D /* UTMConfiguration.m in Sources */,
 				CEA45EF7263519B5002FA97D /* UTMVirtualMachine+SPICE.m in Sources */,
 				CEA45EF8263519B5002FA97D /* VMDetailsView.swift in Sources */,
+				835AA7B226AB7C85007A0411 /* UTMPendingVirtualMachine.swift in Sources */,
 				CEA45EF9263519B5002FA97D /* VMDisplayMetalViewController.m in Sources */,
 				CEA45EFA263519B5002FA97D /* qapi-commands-misc.c in Sources */,
 				CEA45EFB263519B5002FA97D /* qapi-events-acpi.c in Sources */,
@@ -4860,6 +4898,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		836A40D326AA2A03002068F8 /* XCRemoteSwiftPackageReference "Zip" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/marmelroy/Zip.git";
+			requirement = {
+				kind = upToNextMinorVersion;
+				minimumVersion = 2.1.1;
+			};
+		};
 		CE020BA524AEDEF000B44AB6 /* XCRemoteSwiftPackageReference "swift-log" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/apple/swift-log";
@@ -4895,6 +4941,21 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		836A40D426AA2A03002068F8 /* Zip */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 836A40D326AA2A03002068F8 /* XCRemoteSwiftPackageReference "Zip" */;
+			productName = Zip;
+		};
+		836A40D626AA2A2C002068F8 /* Zip */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 836A40D326AA2A03002068F8 /* XCRemoteSwiftPackageReference "Zip" */;
+			productName = Zip;
+		};
+		836A40D826AA2A30002068F8 /* Zip */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 836A40D326AA2A03002068F8 /* XCRemoteSwiftPackageReference "Zip" */;
+			productName = Zip;
+		};
 		CE020BA624AEDEF000B44AB6 /* Logging */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = CE020BA524AEDEF000B44AB6 /* XCRemoteSwiftPackageReference "swift-log" */;

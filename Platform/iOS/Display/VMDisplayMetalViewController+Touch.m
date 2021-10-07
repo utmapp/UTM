@@ -148,7 +148,7 @@ const CGFloat kScrollResistance = 10.0f;
 
 - (VMMouseType)mouseTypeForSetting:(NSString *)key {
     NSInteger integer = [self integerForSetting:key];
-    if (integer < VMGestureTypeNone || integer >= VMGestureTypeMax) {
+    if (integer < VMMouseTypeRelative || integer >= VMMouseTypeMax) {
         return VMMouseTypeRelative;
     } else {
         return (VMMouseType)integer;
@@ -164,7 +164,7 @@ const CGFloat kScrollResistance = 10.0f;
 }
 
 - (VMMouseType)indirectMouseType {
-    return [self mouseTypeForSetting:@"MouseIndirectType"];
+    return VMMouseTypeRelative;
 }
 
 #pragma mark - Converting view points to VM display points
@@ -561,9 +561,16 @@ static CGFloat CGPointToPixel(CGFloat point) {
         case UITouchTypePencil: {
             return self.pencilMouseType;
         }
-        case UITouchTypeIndirect:
-        default: { // covers UITouchTypeIndirectPointer
+        case UITouchTypeIndirect: {
             return self.indirectMouseType;
+        }
+        default: {
+            if (@available(iOS 13.4, *)) {
+                if (type == UITouchTypeIndirectPointer) {
+                    return self.indirectMouseType;
+                }
+            }
+            return self.touchMouseType; // compatibility with future values
         }
     }
 }
@@ -583,7 +590,7 @@ static CGFloat CGPointToPixel(CGFloat point) {
 #pragma mark - Touch event handling
 
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
-    if (!_mouseCaptured && !self.vmConfiguration.inputLegacy) {
+    if (!self.vmConfiguration.inputLegacy) {
         for (UITouch *touch in [event touchesForView:self.mtkView]) {
             if (@available(iOS 14, *)) {
                 if (self.prefersPointerLocked && (touch.type == UITouchTypeIndirect || touch.type == UITouchTypeIndirectPointer)) {

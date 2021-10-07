@@ -15,6 +15,7 @@
 //
 
 import Foundation
+import Carbon.HIToolbox
 
 @available(macOS 11, *)
 extension UTMData {
@@ -47,6 +48,111 @@ extension UTMData {
         if let window = vmWindows[vm] {
             DispatchQueue.main.async {
                 window.close()
+            }
+        }
+    }
+    
+    func trySendTextSpice(vm: UTMVirtualMachine, text: String) {
+        guard text.count > 0 else { return }
+        if let vc = vmWindows[vm] as? VMDisplayMetalWindowController {
+            KeyCodeMap.createKeyMapIfNeeded()
+            
+            func sleep() {
+                Thread.sleep(forTimeInterval: 0.05)
+            }
+            func keyDown(keyCode: Int) {
+                if let scanCodes = KeyCodeMap.keyCodeToScanCodes[keyCode] {
+                    vc.keyDown(scanCode: Int(scanCodes.down))
+                    sleep()
+                }
+            }
+            func keyUp(keyCode: Int) {
+                /// Due to how Spice works we need to send keyUp for the .down scan code
+                /// instead of sending the key down for the scan code that indicates key up.
+                if let scanCodes = KeyCodeMap.keyCodeToScanCodes[keyCode] {
+                    vc.keyUp(scanCode: Int(scanCodes.down))
+                    sleep()
+                }
+            }
+            func press(keyCode: Int) {
+                keyDown(keyCode: keyCode)
+                keyUp(keyCode: keyCode)
+            }
+            
+            func simulateKeyPress(_ keyCodeDict: [String: Int]) {
+                /// Press modifier keys if necessary
+                let optionUsed = keyCodeDict["option"] == 1
+                if optionUsed {
+                    keyDown(keyCode: kVK_Option)
+                    sleep()
+                }
+                let shiftUsed = keyCodeDict["shift"] == 1
+                if shiftUsed {
+                    keyDown(keyCode: kVK_Shift)
+                    sleep()
+                }
+                let fnUsed = keyCodeDict["function"] == 1
+                if fnUsed {
+                    keyDown(keyCode: kVK_Function)
+                    sleep()
+                }
+                let ctrlUsed = keyCodeDict["control"] == 1
+                if ctrlUsed {
+                    keyDown(keyCode: kVK_Control)
+                    sleep()
+                }
+                let cmdUsed = keyCodeDict["command"] == 1
+                if cmdUsed {
+                    keyDown(keyCode: kVK_Command)
+                    sleep()
+                }
+                /// Press the key now
+                let keyCode = keyCodeDict["virtKeyCode"]!
+                press(keyCode: keyCode)
+                /// Release modifiers
+                if optionUsed {
+                    keyUp(keyCode: kVK_Option)
+                    sleep()
+                }
+                if shiftUsed {
+                    keyUp(keyCode: kVK_Shift)
+                    sleep()
+                }
+                if fnUsed {
+                    keyUp(keyCode: kVK_Function)
+                    sleep()
+                }
+                if ctrlUsed {
+                    keyUp(keyCode: kVK_Control)
+                    sleep()
+                }
+                if cmdUsed {
+                    keyUp(keyCode: kVK_Command)
+                    sleep()
+                }
+            }
+            DispatchQueue.global(qos: .userInitiated).async {
+                text.enumerated().forEach { stringItem in
+                    let char = stringItem.element
+                    /// drop unknown chars
+                    if let keyCodeDict = KeyCodeMap.characterToKeyCode(character: char) {
+                        simulateKeyPress(keyCodeDict)
+                    } else {
+                        logger.warning("SendText dropping unknown char: \(char)")
+                    }
+                }
+            }
+        }
+    }
+    
+    func tryClickAtPoint(vm: UTMVirtualMachine, point: CGPoint, button: CSInputButton) {
+        if let vc = vmWindows[vm] as? VMDisplayMetalWindowController {
+            vc.mouseMove(absolutePoint: point, button: [])
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.02) {
+                vc.mouseDown(button: button)
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.02) {
+                    vc.mouseUp(button: button)
+                }
             }
         }
     }
