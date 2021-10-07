@@ -58,6 +58,7 @@ extension UTMData {
         }
         
         let vc = self.createDisplay(vm: vm)
+        self.vmVC = vc
         window.rootViewController = vc
         window.makeKeyAndVisible()
         let options: UIView.AnimationOptions = .transitionCrossDissolve
@@ -71,6 +72,21 @@ extension UTMData {
             guard vm.deleteSaveVM() else {
                 throw NSLocalizedString("Failed to delete saved state.", comment: "UTMDataExtension")
             }
+        }
+    }
+    
+    func tryClickAtPoint(point: CGPoint, button: CSInputButton) {
+        if let vc = vmVC as? VMDisplayMetalViewController, let input = vc.vmInput {
+            input.sendMouseButton(button, pressed: true, point: point)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.02) {
+                input.sendMouseButton(button, pressed: false, point: point)
+            }
+        }
+    }
+    
+    func trySendTextSpice(_ text: String) {
+        if let vc = vmVC as? VMDisplayMetalViewController, let input = vc.vmInput {
+            vc.keyboardView?.insertText(text)
         }
     }
 }

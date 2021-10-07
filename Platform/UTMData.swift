@@ -15,6 +15,11 @@
 //
 
 import Foundation
+#if os(macOS)
+import AppKit
+#else
+import UIKit
+#endif
 
 @available(iOS 14, macOS 11, *)
 struct AlertMessage: Identifiable {
@@ -48,9 +53,12 @@ class UTMData: ObservableObject {
             defaults.set(paths, forKey: "VMList")
         }
     }
+    @Published private(set) var pendingVMs: [UTMPendingVirtualMachine]
     
     #if os(macOS)
     var vmWindows: [UTMVirtualMachine: VMDisplayWindowController] = [:]
+    #else
+    var vmVC: VMDisplayViewController?
     #endif
     
     var fileManager: FileManager {
@@ -71,6 +79,7 @@ class UTMData: ObservableObject {
         self.showNewVMSheet = false
         self.busy = false
         self.virtualMachines = []
+        self.pendingVMs = []
         if let files = defaults.array(forKey: "VMList") as? [String] {
             for file in files {
                 let url = documentsURL.appendingPathComponent(file, isDirectory: true)
@@ -315,6 +324,7 @@ class UTMData: ObservableObject {
         return [dstLogPath]
     }
     
+    // MARK: - Import and Download VMs
     func copyUTM(at: URL, to: URL, move: Bool = false) throws {
         if move {
             try fileManager.moveItem(at: at, to: to)
@@ -331,6 +341,7 @@ class UTMData: ObservableObject {
     }
     
     func importUTM(url: URL) throws {
+        guard url.isFileURL else { return }
         _ = url.startAccessingSecurityScopedResource()
         defer { url.stopAccessingSecurityScopedResource() }
         
@@ -359,6 +370,31 @@ class UTMData: ObservableObject {
             logger.info("copying to Documents")
             try copyUTM(at: url, to: dest)
         }
+    }
+    
+    func tryDownloadVM(_ components: URLComponents) {
+        if let urlParameter = components.queryItems?.first(where: { $0.name == "url" })?.value,
+           urlParameter.contains(".zip"), let url = URL(string: urlParameter) {
+            let task = UTMImportFromWebTask(data: self, url: url)
+            let pendingVM = task.startDownload()
+            /// wait a half second before showing the "pending VM" UI, in case of very small file
+            /// this prevents the UI from appearing and disappearing very quickly
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [self] in
+                if !task.isDone {
+                    pendingVMs.append(pendingVM)
+                }
+            }
+        }
+    }
+    
+    func removePendingVM(_ pendingVM: UTMPendingVirtualMachine) {
+        if let index = pendingVMs.firstIndex(of: pendingVM) {
+            pendingVMs.remove(at: index)
+        }
+    }
+    
+    func cancelPendingVM(_ pendingVM: UTMPendingVirtualMachine) {
+        pendingVM.cancel()
     }
     
     // MARK: - Disk drive functions
@@ -512,5 +548,63 @@ class UTMData: ObservableObject {
                 }
             }
         }
+    }
+    
+    // MARK: - Automation Features
+    
+    func trySendText(_ vm: UTMVirtualMachine, urlComponents components: URLComponents) {
+        guard let queryItems = components.queryItems else { return }
+        guard let text = queryItems.first(where: { $0.name == "text" })?.value else { return }
+        if vm.configuration.displayConsoleOnly {
+            vm.sendInput(text)
+        } else {
+            #if os(macOS)
+            trySendTextSpice(vm: vm, text: text)
+            #else
+            trySendTextSpice(text)
+            #endif
+        }
+    }
+    
+    func tryClickVM(_ vm: UTMVirtualMachine, urlComponents components: URLComponents) {
+        guard !vm.configuration.displayConsoleOnly else { return }
+        guard let queryItems = components.queryItems else { return }
+        /// Parse targeted position
+        var x: CGFloat? = nil
+        var y: CGFloat? = nil
+        let nf = NumberFormatter()
+        nf.allowsFloats = false
+        if let xStr = components.queryItems?.first(where: { item in
+            item.name == "x"
+        })?.value {
+            x = nf.number(from: xStr) as? CGFloat
+        }
+        if let yStr = components.queryItems?.first(where: { item in
+            item.name == "y"
+        })?.value {
+            y = nf.number(from: yStr) as? CGFloat
+        }
+        guard let xPos = x, let yPos = y else { return }
+        let point = CGPoint(x: xPos, y: yPos)
+        /// Parse which button should be clicked
+        var button: CSInputButton = .left
+        if let buttonStr = queryItems.first(where: { $0.name == "button"})?.value {
+            switch buttonStr {
+            case "middle":
+                button = .middle
+                break
+            case "right":
+                button = .right
+                break
+            default:
+                break
+            }
+        }
+        /// All parameters parsed, perform the click
+        #if os(macOS)
+        tryClickAtPoint(vm: vm, point: point, button: button)
+        #else
+        tryClickAtPoint(point: point, button: button)
+        #endif
     }
 }
