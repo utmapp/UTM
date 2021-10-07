@@ -91,7 +91,7 @@ struct VMToolbarModifier: ViewModifier {
                 }.help("Share selected VM")
                 .padding(.leading, padding)
                 .modifier(VMShareItemModifier(isPresented: $showSharePopup) {
-                    [vm.path!]
+                    .utmVm(vm.path!)
                 })
                 #if !os(macOS)
                 if bottom {

@@ -69,10 +69,6 @@ class UTMData: ObservableObject {
         fileManager.urls(for: .documentDirectory, in: .userDomainMask)[0]
     }
     
-    var tempURL: URL {
-        fileManager.temporaryDirectory
-    }
-    
     init() {
         let defaults = UserDefaults.standard
         self.showSettingsModal = false
@@ -309,19 +305,12 @@ class UTMData: ObservableObject {
     
     // MARK: - Export debug log
     
-    func exportDebugLog(forConfig: UTMConfiguration) throws -> [URL] {
-        guard let path = forConfig.existingPath else {
+    func exportDebugLog(for config: UTMConfiguration) throws -> VMShareItemModifier.ShareItem {
+        guard let path = config.existingPath else {
             throw NSLocalizedString("No log found!", comment: "UTMData")
         }
         let srcLogPath = path.appendingPathComponent(UTMConfiguration.debugLogName())
-        let dstLogPath = tempURL.appendingPathComponent(UTMConfiguration.debugLogName())
-        
-        if fileManager.fileExists(atPath: dstLogPath.path) {
-            try fileManager.removeItem(at: dstLogPath)
-        }
-        try fileManager.copyItem(at: srcLogPath, to: dstLogPath)
-        
-        return [dstLogPath]
+        return .debugLog(srcLogPath)
     }
     
     // MARK: - Import and Download VMs
