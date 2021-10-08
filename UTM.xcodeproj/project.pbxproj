@@ -32,6 +32,7 @@
 		8401FD71269BEB2B00265F0D /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = CE6B240A25F1F3CE0020D43E /* main.c */; };
 		8401FD72269BEB3000265F0D /* Bootstrap.c in Sources */ = {isa = PBXBuildFile; fileRef = CE0DF17125A80B6300A51894 /* Bootstrap.c */; };
 		8401FD7A269BECE200265F0D /* QEMULauncher.app in Embed Launcher */ = {isa = PBXBuildFile; fileRef = 8401FD62269BE9C500265F0D /* QEMULauncher.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		B3A6E0EC26D84DAF00E2B005 /* AltKit in Frameworks */ = {isa = PBXBuildFile; productRef = B3A6E0EB26D84DAF00E2B005 /* AltKit */; };
 		CE020BA324AEDC7C00B44AB6 /* UTMData.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE020BA224AEDC7C00B44AB6 /* UTMData.swift */; };
 		CE020BA424AEDC7C00B44AB6 /* UTMData.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE020BA224AEDC7C00B44AB6 /* UTMData.swift */; };
 		CE020BA724AEDEF000B44AB6 /* Logging in Frameworks */ = {isa = PBXBuildFile; productRef = CE020BA624AEDEF000B44AB6 /* Logging */; };
@@ -2095,6 +2096,7 @@
 				CE2D933724AD46670059923A /* libgstplayback.a in Frameworks */,
 				CE2D933824AD46670059923A /* libgstadder.a in Frameworks */,
 				CE2D933A24AD46670059923A /* libgstaudiorate.a in Frameworks */,
+				B3A6E0EC26D84DAF00E2B005 /* AltKit in Frameworks */,
 				CE2D933B24AD46670059923A /* libgstvideofilter.a in Frameworks */,
 				CE2D933C24AD46670059923A /* libgstapp.a in Frameworks */,
 				CE2D933D24AD46670059923A /* libgstgio.a in Frameworks */,
@@ -3164,6 +3166,7 @@
 			packageProductDependencies = (
 				CE020BA624AEDEF000B44AB6 /* Logging */,
 				CE93759824BB821F0074066F /* IQKeyboardManagerSwift */,
+                B3A6E0EB26D84DAF00E2B005 /* AltKit */,
 			);
 			productName = UTM;
 			productReference = CE2D93BE24AD46670059923A /* UTM.app */;
@@ -3296,6 +3299,7 @@
 			packageReferences = (
 				CE020BA524AEDEF000B44AB6 /* XCRemoteSwiftPackageReference "swift-log" */,
 				CE93759724BB821F0074066F /* XCRemoteSwiftPackageReference "IQKeyboardManager" */,
+				B3A6E0EA26D84DAF00E2B005 /* XCRemoteSwiftPackageReference "AltKit" */,
 			);
 			productRefGroup = CE550BCA225947990063E575 /* Products */;
 			projectDirPath = "";
@@ -4860,6 +4864,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		B3A6E0EA26D84DAF00E2B005 /* XCRemoteSwiftPackageReference "AltKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Provenance-Emu/AltKit.git";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
 		CE020BA524AEDEF000B44AB6 /* XCRemoteSwiftPackageReference "swift-log" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/apple/swift-log";
@@ -4895,7 +4907,12 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		CE020BA624AEDEF000B44AB6 /* Logging */ = {
+		B3A6E0EB26D84DAF00E2B005 /* AltKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = B3A6E0EA26D84DAF00E2B005 /* XCRemoteSwiftPackageReference "AltKit" */;
+			productName = AltKit;
+		};
+        CE020BA624AEDEF000B44AB6 /* Logging */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = CE020BA524AEDEF000B44AB6 /* XCRemoteSwiftPackageReference "swift-log" */;
 			productName = Logging;
