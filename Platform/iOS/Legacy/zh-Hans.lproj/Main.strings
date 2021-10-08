@@ -31,14 +31,23 @@
 /* Class = "UILabel"; text = "Full Graphics"; ObjectID = "3Jg-sa-a1s"; */
 "3Jg-sa-a1s.text" = "图形界面";
 
+/* Class = "UITextField"; placeholder = "10.0.2.0.15"; ObjectID = "4dt-SP-XL1"; */
+"4dt-SP-XL1.placeholder" = "10.0.2.0.15";
+
 /* Class = "UILabel"; text = "Theme"; ObjectID = "4tC-xd-0a7"; */
 "4tC-xd-0a7.text" = "主题";
+
+/* Class = "UILabel"; text = "Default"; ObjectID = "4UG-gS-O4i"; */
+"4UG-gS-O4i.text" = "默认";
 
 /* Class = "UILabel"; text = "Title"; ObjectID = "4Xf-3m-yzE"; */
 "4Xf-3m-yzE.text" = "标题";
 
 /* Class = "UILabel"; text = "Enable Directory Sharing"; ObjectID = "5Ae-Pr-d2U"; */
 "5Ae-Pr-d2U.text" = "开启共享目录";
+
+/* Class = "UITextField"; placeholder = "fec0::3"; ObjectID = "5AX-Tr-D6a"; */
+"5AX-Tr-D6a.placeholder" = "fec0::3";
 
 /* Class = "UILabel"; text = "DHCP Start"; ObjectID = "5O8-6K-mxz"; */
 "5O8-6K-mxz.text" = "DHCP开始地址";
@@ -73,8 +82,14 @@
 /* Class = "UILabel"; text = "Architecture"; ObjectID = "9Nu-pG-ywd"; */
 "9Nu-pG-ywd.text" = "架构";
 
+/* Class = "UILabel"; text = "Device"; ObjectID = "49o-9F-Gw7"; */
+"49o-9F-Gw7.text" = "设备";
+
 /* Class = "UINavigationItem"; title = "Select Image"; ObjectID = "340-Mu-Hwt"; */
 "340-Mu-Hwt.title" = "选择镜像";
+
+/* Class = "UILabel"; text = "12"; ObjectID = "734-u9-PNx"; */
+"734-u9-PNx.text" = "12";
 
 /* Class = "UILabel"; text = "Name"; ObjectID = "a1E-lK-5Yg"; */
 "a1E-lK-5Yg.text" = "Name";
@@ -90,6 +105,9 @@
 
 /* Class = "UILabel"; text = "Enabled"; ObjectID = "aHx-sa-LGi"; */
 "aHx-sa-LGi.text" = "开启";
+
+/* Class = "UITextField"; placeholder = "stty cols $COLS rows $ROWS\\n"; ObjectID = "aIM-IA-HSe"; */
+"aIM-IA-HSe.placeholder" = "stty cols $COLS rows $ROWS\\n";
 
 /* Class = "UITableViewSection"; headerTitle = "Boot"; ObjectID = "aje-ee-mJi"; */
 "aje-ee-mJi.headerTitle" = "启动";
@@ -169,6 +187,9 @@
 /* Class = "UILabel"; text = "Total RAM"; ObjectID = "ETs-n1-aUr"; */
 "ETs-n1-aUr.text" = "可用内存";
 
+/* Class = "UILabel"; text = "rtl8139"; ObjectID = "exK-JR-7gh"; */
+"exK-JR-7gh.text" = "rtl8139";
+
 /* Class = "UITableViewSection"; headerTitle = "Advanced"; ObjectID = "F7q-42-AmC"; */
 "F7q-42-AmC.headerTitle" = "高级选项";
 
@@ -208,6 +229,9 @@
 /* Class = "UITableViewSection"; headerTitle = "Additional Options"; ObjectID = "hjJ-kU-VR1"; */
 "hjJ-kU-VR1.headerTitle" = "更多设置";
 
+/* Class = "UIBarButtonItem"; title = "Item"; ObjectID = "Hlx-Yq-UZR"; */
+"Hlx-Yq-UZR.title" = "项目";
+
 /* Class = "UILabel"; text = "Memory"; ObjectID = "HRc-mq-43y"; */
 "HRc-mq-43y.text" = "内存";
 
@@ -232,8 +256,14 @@
 /* Class = "UITextField"; placeholder = "Default"; ObjectID = "Jk5-aT-3ap"; */
 "Jk5-aT-3ap.placeholder" = "默认大小";
 
+/* Class = "UILabel"; text = "ac97"; ObjectID = "Jp2-wl-rfZ"; */
+"Jp2-wl-rfZ.text" = "ac97";
+
 /* Class = "UILabel"; text = "Sharing"; ObjectID = "jv0-6r-NAJ"; */
 "jv0-6r-NAJ.text" = "共享";
+
+/* Class = "UILabel"; text = "Removable"; ObjectID = "K1N-PB-wfm"; */
+"K1N-PB-wfm.text" = "可移动的";
 
 /* Class = "UILabel"; text = "Default"; ObjectID = "KFq-K6-6KS"; */
 "KFq-K6-6KS.text" = "默认";
@@ -358,6 +388,9 @@
 /* Class = "UILabel"; text = "System"; ObjectID = "riB-R9-dTb"; */
 "riB-R9-dTb.text" = "系统";
 
+/* Class = "UITextField"; placeholder = "10.0.2.2"; ObjectID = "RTg-tj-6ja"; */
+"RTg-tj-6ja.placeholder" = "10.0.2.2";
+
 /* Class = "UITableViewSection"; footerTitle = "PS/2 has higher compatibility with older operating systems but does not support custom cursor settings."; ObjectID = "Rtj-zp-arL"; */
 "Rtj-zp-arL.footerTitle" = "PS / 2与较旧的操作系统具有更高的兼容性，但不支持自定义光标设置。";
 
@@ -369,6 +402,12 @@
 
 /* Class = "UITableViewSection"; headerTitle = "Image"; ObjectID = "SCF-Z9-xBk"; */
 "SCF-Z9-xBk.headerTitle" = "镜像";
+
+/* Class = "UITableViewSection"; footerTitle = "For i386/x86_64, use qxl-vga. For virt systems use virtio-ramfb."; ObjectID = "SNE-dA-z6i"; */
+"SNE-dA-z6i.footerTitle" = "对于 i386/x86_64，使用 qxl-vga。 对于 virt 系统，请使用 virtio-ramfb。";
+
+/* Class = "UITableViewSection"; headerTitle = "Display Card"; ObjectID = "SNE-dA-z6i"; */
+"SNE-dA-z6i.headerTitle" = "显卡";
 
 /* Class = "UITableViewSection"; footerTitle = "For most non-ARM targets, all CPUs will be emulated by a single CPU by default. Set 0 to use maximum supported number of CPU."; ObjectID = "spp-Cv-g7X"; */
 "spp-Cv-g7X.footerTitle" = "对于大多数非ARM架构的系统，默认情况下多CPU将由单个CPU模拟。当您设置内存过大时，可能会导致虚拟机无法启动。";
@@ -406,8 +445,14 @@
 /* Class = "UITextField"; placeholder = "QEMU Args"; ObjectID = "upL-Oh-a3A"; */
 "upL-Oh-a3A.placeholder" = "QEMU参数";
 
+/* Class = "UITextField"; placeholder = "fec0::/64"; ObjectID = "UuB-XR-fJS"; */
+"UuB-XR-fJS.placeholder" = "fec0::/64";
+
 /* Class = "UILabel"; text = "0"; ObjectID = "uy0-gI-CBW"; */
 "uy0-gI-CBW.text" = "0";
+
+/* Class = "UITextField"; placeholder = "fec0::2"; ObjectID = "V2H-Ti-2Wa"; */
+"V2H-Ti-2Wa.placeholder" = "fec0::2";
 
 /* Class = "UILabel"; text = "Default"; ObjectID = "vJY-9c-oS6"; */
 "vJY-9c-oS6.text" = "默认";
@@ -441,6 +486,9 @@
 
 /* Class = "UILabel"; text = "Additional QEMU Arguments"; ObjectID = "wvt-Dh-tQm"; */
 "wvt-Dh-tQm.text" = "其他QEMU参数";
+
+/* Class = "UILabel"; text = "0.0"; ObjectID = "x96-L4-Oag"; */
+"x96-L4-Oag.text" = "0.0";
 
 /* Class = "UILabel"; text = "System"; ObjectID = "XhT-dg-bb9"; */
 "XhT-dg-bb9.text" = "CPU";

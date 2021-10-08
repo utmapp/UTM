@@ -20,7 +20,7 @@ protocol VMMetalViewInputDelegate: class {
     func mouseDown(button: CSInputButton)
     func mouseUp(button: CSInputButton)
     func mouseScroll(dy: CGFloat, button: CSInputButton)
-    func keyDown(keyCode: Int)
-    func keyUp(keyCode: Int)
+    func keyDown(scanCode: Int)
+    func keyUp(scanCode: Int)
     func requestReleaseCapture()
 }

@@ -45,13 +45,13 @@ struct VMConfigQEMUView: View {
                     })
                     Button("Export Debug Log") {
                         showExportLog.toggle()
-                    }.modifier(VMShareItemModifier(isPresented: $showExportLog, items: exportDebugLog))
+                    }.modifier(VMShareItemModifier(isPresented: $showExportLog, makeShareItem: exportDebugLog))
                     .disabled(!logExists)
                 }
                 Section(header: Text("QEMU Arguments")) {
                     Button("Export QEMU Command") {
                         showExportArgs.toggle()
-                    }.modifier(VMShareItemModifier(isPresented: $showExportArgs, items: exportArgs))
+                    }.modifier(VMShareItemModifier(isPresented: $showExportArgs, makeShareItem: exportArgs))
                     Toggle(isOn: $config.ignoreAllConfiguration.animation(), label: {
                         Text("Advanced: Bypass configuration and manually specify arguments")
                     })
@@ -80,11 +80,11 @@ struct VMConfigQEMUView: View {
         }
     }
     
-    private func exportDebugLog() -> [URL] {
-        if let result = try? data.exportDebugLog(forConfig: config) {
+    private func exportDebugLog() -> VMShareItemModifier.ShareItem? {
+        if let result = try? data.exportDebugLog(for: config) {
             return result
         } else {
-            return [] // TODO: implement error handling
+            return nil // TODO: implement error handling
         }
     }
     
@@ -100,7 +100,7 @@ struct VMConfigQEMUView: View {
         }
     }
     
-    private func exportArgs() -> [String] {
+    private func exportArgs() -> VMShareItemModifier.ShareItem {
         let existingPath = config.existingPath ?? URL(fileURLWithPath: "Images")
         let qemuSystem = UTMQemuSystem(configuration: config, imgPath: existingPath)
         qemuSystem.updateArgv(withUserOptions: true)
@@ -112,7 +112,7 @@ struct VMConfigQEMUView: View {
                 argString += " \(arg)"
             }
         }
-        return [argString]
+        return .qemuCommand(argString)
     }
     
     private func arguments(from list: [String]) -> [Argument] {

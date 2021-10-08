@@ -26,6 +26,11 @@ struct UTMApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView().environmentObject(data)
+                .onAppear {
+                    #if os(macOS)
+                    appDelegate.data = data
+                    #endif
+                }
         }.commands { VMCommands() }
         #if os(macOS)
         Settings {

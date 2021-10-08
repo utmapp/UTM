@@ -398,18 +398,18 @@ extension VMDisplayMetalWindowController: VMMetalViewInputDelegate {
         }
     }
     
-    func keyDown(keyCode: Int) {
-        if (keyCode & 0xFF) == 0x1D { // Ctrl
+    func keyDown(scanCode: Int) {
+        if (scanCode & 0xFF) == 0x1D { // Ctrl
             ctrlKeyDown = true
         }
-        sendExtendedKey(.press, keyCode: keyCode)
+        sendExtendedKey(.press, keyCode: scanCode)
     }
     
-    func keyUp(keyCode: Int) {
-        if (keyCode & 0xFF) == 0x1D { // Ctrl
+    func keyUp(scanCode: Int) {
+        if (scanCode & 0xFF) == 0x1D { // Ctrl
             ctrlKeyDown = false
         }
-        sendExtendedKey(.release, keyCode: keyCode)
+        sendExtendedKey(.release, keyCode: scanCode)
     }
     
     func requestReleaseCapture() {
@@ -417,7 +417,7 @@ extension VMDisplayMetalWindowController: VMMetalViewInputDelegate {
     }
     
     private func handleCaptureKeys(for event: NSEvent) -> Bool {
-        // if captured we route all keyevents to view, even Cmd+Q and Cmd+W
+        // if captured we route all keyevents to view
         if let metalView = metalView, metalView.isMouseCaptured {
             if event.type == .keyDown {
                 metalView.keyDown(with: event)
@@ -426,27 +426,8 @@ extension VMDisplayMetalWindowController: VMMetalViewInputDelegate {
             }
             return true
         }
-        // otherwise, we confirm Cmd+Q and Cmd+W
-        if event.modifierFlags.contains(.command) && event.type == .keyDown {
-            if event.keyCode == kVK_ANSI_Q {
-                showConfirmAlert(NSLocalizedString("Quitting UTM will kill all running VMs.", comment: "VMDisplayMetalWindowController")) {
-                    NSApp.terminate(self)
-                }
-                return true
-            } else if event.keyCode == kVK_ANSI_W {
-                if vm.state == .vmStarted {
-                    showConfirmAlert(NSLocalizedString("Closing this window will kill the VM.", comment: "VMDisplayMetalWindowController")) {
-                        DispatchQueue.global(qos: .background).async {
-                            self.vm.quitVM()
-                        }
-                    }
-                } else if vm.state == .vmStopped || vm.state == .vmError {
-                    return false // we can close the window
-                } else {
-                    return true // do not close window when in progress
-                }
-            }
-        } else if event.modifierFlags.contains(.command) && event.type == .keyUp {
+        
+        if event.modifierFlags.contains(.command) && event.type == .keyUp {
             // for some reason, macOS doesn't like to send Cmd+KeyUp
             metalView.keyUp(with: event)
             return true
