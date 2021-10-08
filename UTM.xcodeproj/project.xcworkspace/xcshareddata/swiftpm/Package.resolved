@@ -3,10 +3,10 @@
     "pins": [
       {
         "package": "AltKit",
-        "repositoryURL": "https://github.com/Provenance-Emu/AltKit.git",
+        "repositoryURL": "https://github.com/Provenance-Emu/AltKit/",
         "state": {
-          "branch": "main",
-          "revision": "23bee561948f7ede8c499a0bd2ba3a2ae1ba1112",
+          "branch": "iOS11",
+          "revision": "104e039ae8d0a24f573350df5e057c538839dc95",
           "version": null
         }
       },
@@ -26,6 +26,15 @@
           "branch": null,
           "revision": "5d66f7ba25daf4f94100e7022febf3c75e37a6c7",
           "version": "1.4.2"
+        }
+      },
+      {
+        "package": "Zip",
+        "repositoryURL": "https://github.com/marmelroy/Zip.git",
+        "state": {
+          "branch": null,
+          "revision": "bd19d974e8a38cc8d3a88c90c8a107386c3b8ccf",
+          "version": "2.1.1"
         }
       }
     ]
