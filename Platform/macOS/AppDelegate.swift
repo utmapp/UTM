@@ -15,7 +15,39 @@
 //
 
 class AppDelegate: NSObject, NSApplicationDelegate {
+    var data: UTMData?
+    
     func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
         true
+    }
+    
+    func applicationShouldTerminate(_ sender: NSApplication) -> NSApplication.TerminateReply {
+        guard let data = data else {
+            return .terminateNow
+        }
+
+        let vmList = data.vmWindows.keys
+        if vmList.contains(where: { $0.state == .vmStarted }) { // There is at least 1 running VM
+            DispatchQueue.main.async {
+                let alert = NSAlert()
+                alert.alertStyle = .informational
+                alert.messageText = NSLocalizedString("Confirmation", comment: "VMDisplayWindowController")
+                alert.informativeText = NSLocalizedString("Quitting UTM will kill all running VMs.", comment: "VMDisplayMetalWindowController")
+                alert.addButton(withTitle: NSLocalizedString("OK", comment: "VMDisplayWindowController"))
+                alert.addButton(withTitle: NSLocalizedString("Cancel", comment: "VMDisplayWindowController"))
+                let response = alert.runModal()
+                switch response {
+                case .alertFirstButtonReturn:
+                    NSApplication.shared.reply(toApplicationShouldTerminate: true)
+                default:
+                    NSApplication.shared.reply(toApplicationShouldTerminate: false)
+                }
+            }
+            return .terminateLater
+        } else if vmList.allSatisfy({ $0.state == .vmStopped || $0.state == .vmError }) { // All VMs are stopped or in an error state
+            return .terminateNow
+        } else { // There could be some VMs in other states (starting, pausing, etc.)
+            return .terminateCancel
+        }
     }
 }
