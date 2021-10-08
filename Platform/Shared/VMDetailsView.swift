@@ -77,13 +77,27 @@ struct VMDetailsView: View {
                     }.padding([.leading, .trailing, .bottom])
                 }
             }.labelStyle(DetailsLabelStyle())
-            .navigationTitle(vm.configuration.name)
+            .modifier(VMOptionalNavigationTitleModifier(vm: vm))
             .modifier(VMToolbarModifier(vm: vm, bottom: !regularScreenSizeClass))
             .sheet(isPresented: $data.showSettingsModal) {
                 VMSettingsView(vm: vm, config: vm.configuration)
                     .environmentObject(data)
             }
         }
+    }
+}
+
+/// Returns just the content under macOS but adds the title on iOS. #3099
+@available(iOS 14, macOS 11, *)
+private struct VMOptionalNavigationTitleModifier: ViewModifier {
+    let vm: UTMVirtualMachine
+    
+    func body(content: Content) -> some View {
+        #if os(macOS)
+        return content.navigationSubtitle(vm.configuration.name)
+        #else
+        return content.navigationTitle(vm.configuration.name)
+        #endif
     }
 }
 
