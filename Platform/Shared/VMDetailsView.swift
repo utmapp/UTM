@@ -93,7 +93,7 @@ private struct VMOptionalNavigationTitleModifier: ViewModifier {
     
     func body(content: Content) -> some View {
         #if os(macOS)
-        return content
+        return content.navigationSubtitle(vm.configuration.name)
         #else
         return content.navigationTitle(vm.configuration.name)
         #endif
