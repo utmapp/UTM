@@ -302,6 +302,11 @@ extension VMDisplayMetalWindowController {
     func windowDidExitFullScreen(_ notification: Notification) {
         isFullScreen = false
     }
+    
+    override func windowDidResignKey(_ notification: Notification) {
+        NSCursor.unhide()
+        super.windowDidResignKey(notification)
+    }
 }
 
 // MARK: - Input events
