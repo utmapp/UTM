@@ -41,6 +41,7 @@ class VMDisplayTerminalWindowController: VMDisplayWindowController {
         webView.autoresizingMask = [.width, .height]
         webView.setValue(false, forKey: "drawsBackground")
         displayView.addSubview(webView)
+        window!.recalculateKeyViewLoop()
         
         // load terminal.html
         guard let resourceURL = Bundle.main.resourceURL else {

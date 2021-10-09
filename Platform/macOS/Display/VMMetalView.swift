@@ -20,6 +20,7 @@ class VMMetalView: MTKView {
     weak var inputDelegate: VMMetalViewInputDelegate?
     private var wholeTrackingArea: NSTrackingArea?
     private var lastModifiers = NSEvent.ModifierFlags()
+    private var lastKeyDown: Int?
     private(set) var isMouseCaptured = false
     private(set) var isFirstResponder = false
     private(set) var isMouseInWindow = false
@@ -46,6 +47,9 @@ class VMMetalView: MTKView {
     
     override func resignFirstResponder() -> Bool {
         isFirstResponder = false
+        if let lastKeyDown = lastKeyDown {
+            inputDelegate?.keyUp(scanCode: lastKeyDown)
+        }
         return super.resignFirstResponder()
     }
     
@@ -99,12 +103,20 @@ class VMMetalView: MTKView {
     override func keyDown(with event: NSEvent) {
         guard !event.isARepeat else { return }
         logger.trace("key down: \(event.keyCode)")
-        inputDelegate?.keyDown(scanCode: getScanCodeForEvent(event))
+        lastKeyDown = getScanCodeForEvent(event)
+        inputDelegate?.keyDown(scanCode: lastKeyDown!)
+        if !isMouseCaptured {
+            super.keyDown(with: event)
+        }
     }
     
     override func keyUp(with event: NSEvent) {
         logger.trace("key up: \(event.keyCode)")
+        lastKeyDown = nil
         inputDelegate?.keyUp(scanCode: getScanCodeForEvent(event))
+        if !isMouseCaptured {
+            super.keyUp(with: event)
+        }
     }
     
     override func flagsChanged(with event: NSEvent) {
@@ -120,6 +132,9 @@ class VMMetalView: MTKView {
         sendModifiers(lastModifiers.subtracting(modifiers), press: false)
         sendModifiers(modifiers.subtracting(lastModifiers), press: true)
         lastModifiers = modifiers
+        if !isMouseCaptured {
+            super.flagsChanged(with: event)
+        }
     }
     
     private func sendModifiers(_ modifier: NSEvent.ModifierFlags, press: Bool) {

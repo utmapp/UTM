@@ -60,6 +60,7 @@ class VMDisplayMetalWindowController: VMDisplayWindowController {
             return
         }
         displayView.addSubview(metalView)
+        window!.recalculateKeyViewLoop()
         renderer = UTMRenderer.init(metalKitView: metalView)
         guard let renderer = self.renderer else {
             showErrorAlert(NSLocalizedString("Internal error.", comment: "VMDisplayMetalWindowController"))
@@ -422,7 +423,7 @@ extension VMDisplayMetalWindowController: VMMetalViewInputDelegate {
         if event.modifierFlags.contains(.command) && event.type == .keyUp {
             // for some reason, macOS doesn't like to send Cmd+KeyUp
             metalView.keyUp(with: event)
-            return true
+            return false
         }
         return false
     }
