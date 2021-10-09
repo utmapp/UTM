@@ -45,6 +45,7 @@ extern NSString *const kUTMErrorDomain;
 @property (nonatomic, readonly) BOOL hasCustomBios;
 @property (nonatomic, readonly) BOOL usbSupported;
 @property (nonatomic, readonly) NSURL *efiVariablesURL;
+@property (nonatomic, readonly) BOOL isGLOn;
 
 @end
 
@@ -245,15 +246,7 @@ static size_t sysctl_read(const char *name) {
 }
 
 - (void)argsForSound {
-    // < macOS 11.3 we use fork() which is buggy and things are broken
-    BOOL forceDisableSound = NO;
-    if (@available(macOS 11.3, *)) {
-    } else {
-        if (self.configuration.displayConsoleOnly) {
-            forceDisableSound = YES;
-        }
-    }
-    if (self.configuration.soundEnabled && !forceDisableSound) {
+    if (self.configuration.soundEnabled) {
         if ([self.configuration.soundCard isEqualToString:@"screamer"]) {
 #if !TARGET_OS_IPHONE
             // force CoreAudio backend for mac99 which only supports 44100 Hz
@@ -568,6 +561,12 @@ static size_t sysctl_read(const char *name) {
     return @"";
 }
 
+- (BOOL)isGLOn {
+    // GL supported devices have contains GL moniker
+    return [self.configuration.displayCard containsString:@"-gl-"] ||
+           [self.configuration.displayCard hasSuffix:@"-gl"];
+}
+
 - (void)argsRequired {
     [self clearArgv];
     [self pushArgv:@"-L"];
@@ -594,11 +593,8 @@ static size_t sysctl_read(const char *name) {
         [self pushArgv: @"chardev:term0"];
     } else {
         NSURL *spiceSocketURL = self.configuration.spiceSocketURL;
-        // GL supported devices have contains GL moniker
-        BOOL isGLOn = [self.configuration.displayCard containsString:@"-gl-"] ||
-                      [self.configuration.displayCard hasSuffix:@"-gl"];
         [self pushArgv:@"-spice"];
-        [self pushArgv:[NSString stringWithFormat:@"unix=on,addr=%@,disable-ticketing=on,image-compression=off,playback-compression=off,streaming-video=off,gl=%@", spiceSocketURL.path, isGLOn ? @"on" : @"off"]];
+        [self pushArgv:[NSString stringWithFormat:@"unix=on,addr=%@,disable-ticketing=on,image-compression=off,playback-compression=off,streaming-video=off,gl=%@", spiceSocketURL.path, self.isGLOn ? @"on" : @"off"]];
         [self pushArgv:@"-device"];
         [self pushArgv:self.configuration.displayCard];
     }
@@ -719,13 +715,33 @@ static size_t sysctl_read(const char *name) {
     return YES;
 }
 
+- (BOOL)validateOSSupportWithError:(NSError **)error {
+    if (@available(macOS 11.3, *)) {
+        return YES;
+    } else {
+        if (self.configuration.soundEnabled && self.configuration.displayConsoleOnly) {
+            *error = [NSError errorWithDomain:kUTMErrorDomain code:-1 userInfo:@{NSLocalizedDescriptionKey: NSLocalizedString(@"This version of macOS does not support audio in console mode. Please change the VM configuration or upgrade macOS.", "UTMQemuSystem")}];
+            return NO;
+        }
+        if (self.isGLOn && !self.configuration.displayConsoleOnly) {
+            *error = [NSError errorWithDomain:kUTMErrorDomain code:-1 userInfo:@{NSLocalizedDescriptionKey: NSLocalizedString(@"This version of macOS does not support GPU acceleration. Please change the VM configuration or upgrade macOS.", "UTMQemuSystem")}];
+            return NO;
+        }
+    }
+    return YES;
+}
+
 - (void)startWithCompletion:(void (^)(BOOL, NSString * _Nonnull))completion {
+    NSError *err;
     if (self.configuration.systemBootUefi) {
-        NSError *err;
         if (![self createEfiVariablesIfNeededWithError:&err]) {
             completion(NO, err.localizedDescription);
             return;
         }
+    }
+    if (![self validateOSSupportWithError:&err]) {
+        completion(NO, err.localizedDescription);
+        return;
     }
     [self updateArgvWithUserOptions:YES];
     [self startQemu:self.configuration.systemArchitecture completion:completion];
