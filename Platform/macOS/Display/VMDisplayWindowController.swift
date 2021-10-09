@@ -126,6 +126,7 @@ class VMDisplayWindowController: NSWindowController {
         sharedFolderToolbarItem.isEnabled = vm.hasShareDirectoryEnabled
         usbToolbarItem.isEnabled = vm.hasUsbRedirection
         window!.title = vmConfiguration!.name
+        window!.makeFirstResponder(displayView.subviews.first)
     }
     
     func enterSuspended(isBusy busy: Bool) {
@@ -149,6 +150,7 @@ class VMDisplayWindowController: NSWindowController {
         drivesToolbarItem.isEnabled = false
         sharedFolderToolbarItem.isEnabled = false
         usbToolbarItem.isEnabled = false
+        window!.makeFirstResponder(nil)
     }
     
     // MARK: - Alert
@@ -202,6 +204,18 @@ extension VMDisplayWindowController: NSWindowDelegate {
             self.vm.quitVM(force: true)
         }
         onClose?(notification)
+    }
+    
+    func windowDidBecomeKey(_ notification: Notification) {
+        if let window = self.window {
+            _ = window.makeFirstResponder(displayView.subviews.first)
+        }
+    }
+    
+    func windowDidResignKey(_ notification: Notification) {
+        if let window = self.window {
+            _ = window.makeFirstResponder(nil)
+        }
     }
 }
 

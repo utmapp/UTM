@@ -111,8 +111,11 @@ class VMMetalView: MTKView {
         let modifiers = event.modifierFlags
         logger.trace("modifers: \(modifiers)")
         if modifiers.isSuperset(of: [.option, .control]) {
-            logger.trace("release cursor")
-            inputDelegate?.requestReleaseCapture()
+            if isMouseCaptured {
+                inputDelegate?.releaseMouse()
+            } else {
+                inputDelegate?.captureMouse()
+            }
         }
         sendModifiers(lastModifiers.subtracting(modifiers), press: false)
         sendModifiers(modifiers.subtracting(lastModifiers), press: true)
@@ -217,6 +220,7 @@ extension VMMetalView {
     }
     
     func captureMouse() {
+        logger.trace("capture cursor")
         CGAssociateMouseAndMouseCursorPosition(0)
         CGWarpMouseCursorPosition(screenCenter ?? .zero)
         isMouseCaptured = true
@@ -225,6 +229,7 @@ extension VMMetalView {
     }
     
     func releaseMouse() {
+        logger.trace("release cursor")
         CGAssociateMouseAndMouseCursorPosition(1)
         isMouseCaptured = false
         NSCursor.unhide()

@@ -302,23 +302,11 @@ extension VMDisplayMetalWindowController {
     func windowDidExitFullScreen(_ notification: Notification) {
         isFullScreen = false
     }
-    
-    func windowDidBecomeKey(_ notification: Notification) {
-        if let window = self.window {
-            _ = window.makeFirstResponder(metalView)
-        }
-    }
-    
-    func windowDidResignKey(_ notification: Notification) {
-        if let window = self.window {
-            _ = window.makeFirstResponder(nil)
-        }
-    }
 }
 
 // MARK: - Input events
 extension VMDisplayMetalWindowController: VMMetalViewInputDelegate {
-    private func captureMouse() {
+    func captureMouse() {
         let action = { () -> Void in
             self.vm.requestInputTablet(false)
             self.metalView?.captureMouse()
@@ -341,7 +329,7 @@ extension VMDisplayMetalWindowController: VMMetalViewInputDelegate {
         }
     }
     
-    private func releaseMouse() {
+    func releaseMouse() {
         vm.requestInputTablet(true)
         metalView?.releaseMouse()
         self.window?.subtitle = ""
@@ -413,10 +401,6 @@ extension VMDisplayMetalWindowController: VMMetalViewInputDelegate {
             ctrlKeyDown = false
         }
         sendExtendedKey(.release, keyCode: scanCode)
-    }
-    
-    func requestReleaseCapture() {
-        releaseMouse()
     }
     
     private func handleCaptureKeys(for event: NSEvent) -> Bool {
