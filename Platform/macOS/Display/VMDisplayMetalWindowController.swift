@@ -322,6 +322,7 @@ extension VMDisplayMetalWindowController: VMMetalViewInputDelegate {
         let action = { () -> Void in
             self.vm.requestInputTablet(false)
             self.metalView?.captureMouse()
+            self.window?.subtitle = NSLocalizedString("Press ⌃+⌥ to release cursor", comment: "VMDisplayMetalWindowController")
         }
         if isCursorCaptureAlertShown {
             let alert = NSAlert()
@@ -342,6 +343,7 @@ extension VMDisplayMetalWindowController: VMMetalViewInputDelegate {
     private func releaseMouse() {
         vm.requestInputTablet(true)
         metalView?.releaseMouse()
+        self.window?.subtitle = ""
     }
     
     func mouseMove(absolutePoint: CGPoint, button: CSInputButton) {
