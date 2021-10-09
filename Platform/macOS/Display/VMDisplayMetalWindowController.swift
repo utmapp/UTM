@@ -323,6 +323,7 @@ extension VMDisplayMetalWindowController: VMMetalViewInputDelegate {
             self.vm.requestInputTablet(false)
             self.metalView?.captureMouse()
             self.window?.subtitle = NSLocalizedString("Press ⌃+⌥ to release cursor", comment: "VMDisplayMetalWindowController")
+            self.window?.makeFirstResponder(self.metalView)
         }
         if isCursorCaptureAlertShown {
             let alert = NSAlert()
