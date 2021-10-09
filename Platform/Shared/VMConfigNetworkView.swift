@@ -44,6 +44,13 @@ struct VMConfigNetworkView: View {
                 }.disabled(UTMConfiguration.supportedNetworkCards(forArchitecture: config.systemArchitecture)?.isEmpty ?? true)
                 
                 if config.networkEnabled {
+                    HStack {
+                        DefaultTextField("MAC Address", text: $config.networkCardMac.bound, prompt: "00:00:00:00:00:00")
+                        Button("Random") {
+                            config.networkCardMac = UTMConfiguration.generateMacAddress()
+                        }
+                    }
+                    
                     Toggle(isOn: $showAdvanced.animation(), label: {
                         Text("Show Advanced Settings")
                     })
