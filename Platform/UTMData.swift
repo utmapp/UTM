@@ -77,7 +77,7 @@ class UTMData: ObservableObject {
         self.virtualMachines = []
         self.pendingVMs = []
         if let files = defaults.array(forKey: "VMList") as? [String] {
-            for file in files {
+            for file in files.uniqued() {
                 let url = documentsURL.appendingPathComponent(file, isDirectory: true)
                 if let vm = UTMVirtualMachine(url: url) {
                     self.virtualMachines.append(vm)
