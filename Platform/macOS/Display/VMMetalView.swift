@@ -40,7 +40,7 @@ class VMMetalView: MTKView {
     override func becomeFirstResponder() -> Bool {
         isFirstResponder = true
         if isMouseInWindow {
-            NSCursor.hide()
+            NSCursor.tryHide()
         }
         return super.becomeFirstResponder()
     }
@@ -59,7 +59,7 @@ class VMMetalView: MTKView {
         if let oldTrackingArea = wholeTrackingArea {
             logger.debug("remove old tracking area: \(oldTrackingArea.rect)")
             removeTrackingArea(oldTrackingArea)
-            NSCursor.unhide()
+            NSCursor.tryUnhide()
         }
         wholeTrackingArea = trackingArea
         addTrackingArea(trackingArea)
@@ -70,14 +70,14 @@ class VMMetalView: MTKView {
         logger.debug("mouse entered (first responder: \(isFirstResponder))")
         isMouseInWindow = true
         if isFirstResponder {
-            NSCursor.hide()
+            NSCursor.tryHide()
         }
     }
     
     override func mouseExited(with event: NSEvent) {
         logger.debug("mouse exited")
         isMouseInWindow = false
-        NSCursor.unhide()
+        NSCursor.tryUnhide()
     }
     
     override func mouseDown(with event: NSEvent) {
@@ -247,7 +247,7 @@ extension VMMetalView {
         CGAssociateMouseAndMouseCursorPosition(0)
         CGWarpMouseCursorPosition(screenCenter ?? .zero)
         isMouseCaptured = true
-        NSCursor.hide()
+        NSCursor.tryHide()
         CGSSetGlobalHotKeyOperatingMode(CGSMainConnectionID(), .disable)
     }
     
@@ -255,7 +255,7 @@ extension VMMetalView {
         logger.trace("release cursor")
         CGAssociateMouseAndMouseCursorPosition(1)
         isMouseCaptured = false
-        NSCursor.unhide()
+        NSCursor.tryUnhide()
         CGSSetGlobalHotKeyOperatingMode(CGSMainConnectionID(), .enable)
     }
 }
@@ -283,6 +283,24 @@ extension VMMetalView: NSAccessibilityGroup {
     
     override func isAccessibilityEnabled() -> Bool {
         true
+    }
+}
+
+private extension NSCursor {
+    private static var isCursorHidden: Bool = false
+    
+    static func tryHide() {
+        if !NSCursor.isCursorHidden {
+            NSCursor.hide()
+            NSCursor.isCursorHidden = true
+        }
+    }
+    
+    static func tryUnhide() {
+        if NSCursor.isCursorHidden {
+            NSCursor.unhide()
+            NSCursor.isCursorHidden = false
+        }
     }
 }
 
