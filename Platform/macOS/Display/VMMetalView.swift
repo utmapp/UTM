@@ -260,6 +260,32 @@ extension VMMetalView {
     }
 }
 
+extension VMMetalView: NSAccessibilityGroup {
+    override func accessibilityRole() -> NSAccessibility.Role? {
+        .group
+    }
+    
+    override func accessibilityRoleDescription() -> String? {
+        NSLocalizedString("Capture Input", comment: "VMMetalView")
+    }
+    
+    override func accessibilityLabel() -> String? {
+        NSLocalizedString("Virtual Machine", comment: "VMMetalView")
+    }
+    
+    override func accessibilityHelp() -> String? {
+        NSLocalizedString("To capture input or to release the capture, press Command and Option at the same time.", comment: "VMMetalView")
+    }
+    
+    override func isAccessibilityElement() -> Bool {
+        true
+    }
+    
+    override func isAccessibilityEnabled() -> Bool {
+        true
+    }
+}
+
 private extension Int {
     func inputButtons() -> CSInputButton {
         var pressed = CSInputButton()
