@@ -422,10 +422,12 @@ static size_t sysctl_read(const char *name) {
         }
         [self pushArgv:@"-device"];
         [self pushArgv:@"usb-tablet,bus=usb-bus.0"];
-        [self pushArgv:@"-device"];
-        [self pushArgv:@"usb-mouse,bus=usb-bus.0"];
-        [self pushArgv:@"-device"];
-        [self pushArgv:@"usb-kbd,bus=usb-bus.0"];
+        if (![self.configuration.systemTarget hasPrefix:@"pc"] && ![self.configuration.systemTarget hasPrefix:@"q35"]) {
+            [self pushArgv:@"-device"];
+            [self pushArgv:@"usb-mouse,bus=usb-bus.0"];
+            [self pushArgv:@"-device"];
+            [self pushArgv:@"usb-kbd,bus=usb-bus.0"];
+        }
     }
 #if !defined(WITH_QEMU_TCI)
     NSInteger maxDevices = [self.configuration.usbRedirectionMaximumDevices integerValue];
