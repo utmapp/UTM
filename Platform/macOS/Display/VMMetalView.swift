@@ -50,6 +50,10 @@ class VMMetalView: MTKView {
         if let lastKeyDown = lastKeyDown {
             inputDelegate?.keyUp(scanCode: lastKeyDown)
         }
+        if lastModifiers.containsSpecialKeys {
+            sendModifiers(lastModifiers, press: false)
+            lastModifiers = []
+        }
         return super.resignFirstResponder()
     }
     
@@ -105,7 +109,7 @@ class VMMetalView: MTKView {
         logger.trace("key down: \(event.keyCode)")
         lastKeyDown = getScanCodeForEvent(event)
         inputDelegate?.keyDown(scanCode: lastKeyDown!)
-        if !isMouseCaptured {
+        if !isMouseCaptured && lastModifiers.containsSpecialKeys {
             super.keyDown(with: event)
         }
     }
@@ -301,6 +305,12 @@ private extension NSCursor {
             NSCursor.unhide()
             NSCursor.isCursorHidden = false
         }
+    }
+}
+
+private extension NSEvent.ModifierFlags {
+    var containsSpecialKeys: Bool {
+        !self.isDisjoint(with: [.capsLock, .command, .control, .function, .option, .shift])
     }
 }
 
