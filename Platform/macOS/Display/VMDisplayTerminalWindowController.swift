@@ -150,9 +150,11 @@ extension VMDisplayTerminalWindowController: UTMTerminalDelegate {
         }
         dataString = dataString + "]"
         let jsString = "writeData(new Uint8Array(\(dataString)));"
-        webView.evaluateJavaScript(jsString) { (_, err) in
-            if let error = err {
-                logger.error("JS evaluation failed: \(error)")
+        DispatchQueue.main.async {
+            self.webView.evaluateJavaScript(jsString) { (_, err) in
+                if let error = err {
+                    logger.error("JS evaluation failed: \(error)")
+                }
             }
         }
     }
