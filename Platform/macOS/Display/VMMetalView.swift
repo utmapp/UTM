@@ -259,7 +259,9 @@ extension VMMetalView {
         logger.trace("release cursor")
         CGAssociateMouseAndMouseCursorPosition(1)
         isMouseCaptured = false
-        NSCursor.tryUnhide()
+        if !isMouseInWindow {
+            NSCursor.tryUnhide()
+        }
         CGSSetGlobalHotKeyOperatingMode(CGSMainConnectionID(), .enable)
     }
 }
