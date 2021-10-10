@@ -141,7 +141,7 @@
                             </connections>
                         </button>
                     </toolbarItem>
-                    <toolbarItem implicitItemIdentifier="E86439F7-239E-4570-B1FE-FFF2B4BA3F10" label="Capture Mouse" paletteLabel="Capture Mouse" toolTip="Capture mouse cursor (⌃+⌥ to release)" image="cursorarrow.rays" catalog="system" sizingBehavior="auto" id="FN7-zs-mWC">
+                    <toolbarItem implicitItemIdentifier="E86439F7-239E-4570-B1FE-FFF2B4BA3F10" label="Capture Mouse" paletteLabel="Capture Mouse" toolTip="Capture mouse cursor" image="cursorarrow.rays" catalog="system" sizingBehavior="auto" id="FN7-zs-mWC">
                         <button key="view" verticalHuggingPriority="750" id="Ge3-wo-FzQ">
                             <rect key="frame" x="30" y="14" width="28" height="23"/>
                             <autoresizingMask key="autoresizingMask"/>

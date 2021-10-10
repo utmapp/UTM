@@ -122,11 +122,19 @@ class VMMetalView: MTKView {
     override func flagsChanged(with event: NSEvent) {
         let modifiers = event.modifierFlags
         logger.trace("modifers: \(modifiers)")
-        if modifiers.isSuperset(of: [.option, .control]) {
-            if isMouseCaptured {
-                inputDelegate?.releaseMouse()
+        if let shouldUseCmdOptForCapture = inputDelegate?.shouldUseCmdOptForCapture {
+            let captureKeyPressed: Bool
+            if shouldUseCmdOptForCapture {
+                captureKeyPressed = modifiers.isSuperset(of: [.command, .option])
             } else {
-                inputDelegate?.captureMouse()
+                captureKeyPressed = modifiers.isSuperset(of: [.control, .option])
+            }
+            if captureKeyPressed {
+                if isMouseCaptured {
+                    inputDelegate!.releaseMouse()
+                } else {
+                    inputDelegate!.captureMouse()
+                }
             }
         }
         sendModifiers(lastModifiers.subtracting(modifiers), press: false)

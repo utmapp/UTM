@@ -45,6 +45,7 @@ class VMDisplayMetalWindowController: VMDisplayWindowController {
     @Setting("DisplayFixed") private var isDisplayFixed: Bool = false
     @Setting("CtrlRightClick") private var isCtrlRightClick: Bool = false
     @Setting("NoUsbPrompt") private var isNoUsbPrompt: Bool = false
+    @Setting("AlternativeCaptureKey") private var isAlternativeCaptureKey: Bool = false
     private var settingObservations = [NSKeyValueObservation]()
     
     // MARK: - Init
@@ -312,17 +313,21 @@ extension VMDisplayMetalWindowController {
 
 // MARK: - Input events
 extension VMDisplayMetalWindowController: VMMetalViewInputDelegate {
+    var shouldUseCmdOptForCapture: Bool {
+        isAlternativeCaptureKey || NSWorkspace.shared.isVoiceOverEnabled
+    }
+    
     func captureMouse() {
         let action = { () -> Void in
             self.vm.requestInputTablet(false)
             self.metalView?.captureMouse()
-            self.window?.subtitle = NSLocalizedString("Press ⌃+⌥ to release cursor", comment: "VMDisplayMetalWindowController")
+            self.window?.subtitle = NSLocalizedString("Press \(self.shouldUseCmdOptForCapture ? "⌘+⌥" : "⌃+⌥") to release cursor", comment: "VMDisplayMetalWindowController")
             self.window?.makeFirstResponder(self.metalView)
         }
         if isCursorCaptureAlertShown {
             let alert = NSAlert()
             alert.messageText = NSLocalizedString("Captured mouse", comment: "VMDisplayMetalWindowController")
-            alert.informativeText = NSLocalizedString("To release the mouse cursor, press ⌃+⌥ (Ctrl+Opt or Ctrl+Alt) at the same time.", comment: "VMDisplayMetalWindowController")
+            alert.informativeText = NSLocalizedString("To release the mouse cursor, press \(self.shouldUseCmdOptForCapture ? "⌘+⌥ (Cmd+Opt)" : "⌃+⌥ (Ctrl+Opt)") at the same time.", comment: "VMDisplayMetalWindowController")
             alert.showsSuppressionButton = true
             alert.beginSheetModal(for: window!) { _ in
                 if alert.suppressionButton?.state ?? .off == .on {
