@@ -146,6 +146,7 @@ class VMDisplayMetalWindowController: VMDisplayWindowController {
 extension VMDisplayMetalWindowController: UTMSpiceIODelegate {
     func spiceDidChange(_ input: CSInput) {
         vmInput = input
+        vm.requestInputTablet(!(metalView?.isMouseCaptured ?? false))
     }
     
     func spiceDidCreateDisplay(_ display: CSDisplayMetal) {
