@@ -361,9 +361,10 @@ void qmp_rpc_call(CFDictionaryRef args, CFDictionaryRef *ret, Error **err, void 
             error_free(qerr);
         }
         if (info) {
-            for (MouseInfoList *list = info; list->next; list = list->next) {
+            for (MouseInfoList *list = info; list; list = list->next) {
                 if (list->value->absolute == absolute) {
                     index = list->value->index;
+                    break;
                 }
             }
             qapi_free_MouseInfoList(info);
