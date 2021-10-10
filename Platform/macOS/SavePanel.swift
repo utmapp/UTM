@@ -55,7 +55,7 @@ struct SavePanel: NSViewRepresentable {
             // Calling savePanel.begin with the appropriate completion handlers
             switch shareItem {
             case .debugLog(let sourceUrl), .utmVm(let sourceUrl):
-                savePanel.begin { result in
+                savePanel.beginSheetModal(for: nsView.window!) { result in
                     if result == .OK {
                         if let destUrl = savePanel.url {
                             do {
@@ -76,7 +76,7 @@ struct SavePanel: NSViewRepresentable {
                     }
                 }
             case .qemuCommand(let command):
-                savePanel.begin { result in
+                savePanel.beginSheetModal(for: nsView.window!) { result in
                     if result == .OK {
                         if let destUrl = savePanel.url {
                             do {
