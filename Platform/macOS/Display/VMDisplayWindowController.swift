@@ -193,13 +193,15 @@ extension VMDisplayWindowController: NSWindowDelegate {
         alert.informativeText = NSLocalizedString("Closing this window will kill the VM.", comment: "VMDisplayMetalWindowController")
         alert.addButton(withTitle: NSLocalizedString("OK", comment: "VMDisplayWindowController"))
         alert.addButton(withTitle: NSLocalizedString("Cancel", comment: "VMDisplayWindowController"))
-        let response = alert.runModal()
-        switch response {
-        case .alertFirstButtonReturn:
-            return true
-        default:
-            return false
+        alert.beginSheetModal(for: sender) { response in
+            switch response {
+            case .alertFirstButtonReturn:
+                sender.close()
+            default:
+                return
+            }
         }
+        return false
     }
     
     func windowWillClose(_ notification: Notification) {
