@@ -307,6 +307,7 @@ extension VMDisplayMetalWindowController {
     
     override func windowDidResignKey(_ notification: Notification) {
         NSCursor.unhide()
+        releaseMouse()
         super.windowDidResignKey(notification)
     }
 }
