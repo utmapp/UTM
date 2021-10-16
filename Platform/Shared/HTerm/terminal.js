@@ -17,8 +17,7 @@ function sendTerminalSize(columns, rows) {
 
 function writeData(data) {
     const term = window.term;
-    const str = String.fromCharCode.apply(null, data);
-    term.io.print(str);
+    term.io.writeUTF8(data);
 }
 
 function focusTerminal() {
