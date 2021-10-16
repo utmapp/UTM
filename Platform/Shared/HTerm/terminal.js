@@ -172,7 +172,7 @@ function detectGestures(e) {
 
 // Setup
 
-function terminalSetup() {
+function setupHterm() {
     const term = new hterm.Terminal();
     
     term.onTerminalReady = function() {
@@ -222,6 +222,7 @@ function setCursorBlink(blink) {
     term.getPrefs().set('cursor-blink', blink);
 }
 
-window.onload = function() {
-    lib.init(terminalSetup);
+window.onload = async function() {
+    await lib.init();
+    setupHterm();
 };
