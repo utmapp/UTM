@@ -173,7 +173,10 @@ private struct IconSelect: View {
     private let gridLayout = [GridItem(.adaptive(minimum: 60))]
     private var icons: [URL] {
         let paths = Bundle.main.paths(forResourcesOfType: "png", inDirectory: "Icons")
-        return paths.map({ URL(fileURLWithPath: $0) })
+        let urls = paths.map({ URL(fileURLWithPath: $0) })
+        return urls.sorted { urlA, urlB in
+            urlA.lastPathComponent < urlB.lastPathComponent
+        }
     }
     
     #if os(macOS)
