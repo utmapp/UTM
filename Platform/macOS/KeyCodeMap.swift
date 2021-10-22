@@ -263,7 +263,9 @@ class KeyCodeMap {
         kVK_JIS_Underscore:     .t((down: 0x73, up: 0xf3)),
         kVK_JIS_KeypadComma:    .t((down: 0x5c, up: 0xdc)),
         kVK_JIS_Eisu:           .t((down: 0x73, up: 0xf3)),
-        kVK_JIS_Kana:           .t((down: 0x70, up: 0xf0))
+        kVK_JIS_Kana:           .t((down: 0x70, up: 0xf0)),
+        /* The Function key doesn't have a scan code */
+        kVK_Function:           .t((down: 0x00, up: 0x00))
     ]
 }
 
