@@ -226,9 +226,22 @@ class KeyCodeMap {
         // Number pad left, center, right not available in Carbon
         kVK_ANSI_KeypadPlus:    .t((down: 0x4e, up: 0xce)),
         // Number pad end, down, pgDown, insert not available in Carbon
-        kVK_ANSI_KeypadClear:   .t((down: 0x53, up: 0xd3)), /// in IBM this is numpad delete key, so we send that
+        kVK_ANSI_KeypadClear:   .t((down: 0x45, up: 0xC5)), /// in IBM this is num lock, so we send that
         kVK_ANSI_KeypadDivide:  .t((down: 0xe052, up: 0xb5)),
         kVK_ANSI_KeypadEnter:   .t((down: 0xe01c, up: 0x9c)),
+        kVK_ANSI_Keypad0:       .t((down: 0x52, up: 0xD2)),
+        kVK_ANSI_Keypad1:       .t((down: 0x4F, up: 0xCF)),
+        kVK_ANSI_Keypad2:       .t((down: 0x50, up: 0xD0)),
+        kVK_ANSI_Keypad3:       .t((down: 0x51, up: 0xD1)),
+        kVK_ANSI_Keypad4:       .t((down: 0x4B, up: 0xCB)),
+        kVK_ANSI_Keypad5:       .t((down: 0x4C, up: 0xCC)),
+        kVK_ANSI_Keypad6:       .t((down: 0x4D, up: 0xCD)),
+        kVK_ANSI_Keypad7:       .t((down: 0x47, up: 0xC7)),
+        kVK_ANSI_Keypad8:       .t((down: 0x48, up: 0xC8)),
+        kVK_ANSI_Keypad9:       .t((down: 0x49, up: 0xC9)),
+        kVK_ANSI_KeypadDecimal: .t((down: 0x53, up: 0xD3)),
+        kVK_ANSI_KeypadEquals:  .t((down: 0x00, up: 0x00)), /// Not found on IBM
+        kVK_ANSI_KeypadMultiply:.t((down: 0x37, up: 0xB7)),
         kVK_F11:                .t((down: 0x57, up: 0xd7)),
         kVK_F12:                .t((down: 0x58, up: 0xd8)),
         // Insert not available in Carbon
@@ -264,8 +277,9 @@ class KeyCodeMap {
         kVK_JIS_KeypadComma:    .t((down: 0x5c, up: 0xdc)),
         kVK_JIS_Eisu:           .t((down: 0x73, up: 0xf3)),
         kVK_JIS_Kana:           .t((down: 0x70, up: 0xf0)),
-        /* The Function key doesn't have a scan code */
-        kVK_Function:           .t((down: 0x00, up: 0x00))
+        /* The Function and help keys doesn't have a scan code */
+        kVK_Function:           .t((down: 0x00, up: 0x00)),
+        kVK_Help:               .t((down: 0x00, up: 0x00))
     ]
 }
 
