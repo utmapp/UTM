@@ -25,11 +25,28 @@ class VMMetalView: MTKView {
     private(set) var isFirstResponder = false
     private(set) var isMouseInWindow = false
     
+    /// On ISO keyboards we have to switch `kVK_ISO_Section` and `kVK_ANSI_Grave`
+    /// from: https://chromium.googlesource.com/chromium/src/+/lkgr/ui/events/keycodes/keyboard_code_conversion_mac.mm
+    private func convertToCurrentLayout(for keycode: Int) -> Int {
+        guard KBGetLayoutType(Int16(LMGetKbdType())) == kKeyboardISO else {
+            return keycode
+        }
+        switch keycode {
+        case kVK_ISO_Section:
+            return kVK_ANSI_Grave
+        case kVK_ANSI_Grave:
+            return kVK_ISO_Section
+        default:
+            return keycode
+        }
+    }
+    
     /// Returns the scan code for the key code in the `event`, or `0` if scan code is unknown.
     private func getScanCodeForEvent(_ event: NSEvent) -> Int {
         if event.type == .keyDown || event.type == .keyUp {
+            let keycode = convertToCurrentLayout(for: Int(event.keyCode))
             /// see KeyCodeMap file for explaination why the .down scan code is used for both key down and up
-            return Int(KeyCodeMap.keyCodeToScanCodes[Int(event.keyCode)]?.down ?? 0)
+            return Int(KeyCodeMap.keyCodeToScanCodes[keycode]?.down ?? 0)
         } else {
             return 0
         }

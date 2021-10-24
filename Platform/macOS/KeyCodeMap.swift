@@ -260,7 +260,7 @@ class KeyCodeMap {
         /* Additional non-IBM keys */
         kVK_Command:            .t((down: 0xe05b, up: 0xdb)),
         kVK_RightCommand:       .t((down: 0xe05c, up: 0xdc)),
-        kVK_ISO_Section:        .t((down: 0x00, up: 0x80)),
+        kVK_ISO_Section:        .t((down: 0x56, up: 0xD6)),
         kVK_VolumeUp:           .t((down: 0xe030, up: 0xb0)),
         kVK_VolumeDown:         .t((down: 0xe02e, up: 0xae)),
         kVK_Mute:               .t((down: 0xE020, up: 0xa0)),
