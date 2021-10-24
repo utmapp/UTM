@@ -25,8 +25,8 @@
 
 - (void)loadDefaults {
     self.systemArchitecture = @"x86_64";
-    self.systemCPU = @"default";
     self.systemTarget = @"q35";
+    [self loadDefaultsForTarget:@"q35" architecture:@"x86_64"];
     self.systemMemory = @512;
     if (@available(iOS 14, *)) {
         // use bootindex on new UI
@@ -34,9 +34,7 @@
     } else {
         self.systemBootDevice = @"cd";
     }
-    self.systemBootUefi = YES;
     self.systemUUID = [[NSUUID UUID] UUIDString];
-    self.displayCard = @"virtio-vga-gl";
     self.displayUpscaler = @"linear";
     self.displayDownscaler = @"linear";
     self.consoleFont = @"Menlo";
@@ -51,11 +49,7 @@
 #else
     self.networkMode = @"emulated";
 #endif
-    self.soundEnabled = YES;
-    self.soundCard = @"AC97";
-    self.networkCard = @"rtl8139";
     self.networkCardMac = [UTMConfiguration generateMacAddress];
-    self.shareClipboardEnabled = YES;
     self.usbRedirectionMaximumDevices = @3;
     self.name = [NSUUID UUID].UUIDString;
     self.existingPath = nil;
@@ -122,6 +116,8 @@
         return @"cortex-a72";
     } else if ([architecture isEqualToString:@"arm"]) {
         return @"cortex-a15";
+    } else if ([target hasPrefix:@"pc"] || [target hasPrefix:@"q35"]) {
+        return @"Skylake-Client";
     } else {
         return @"default";
     }
