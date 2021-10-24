@@ -158,16 +158,18 @@ class VMMetalView: MTKView {
                 inputDelegate?.keyUp(scanCode: sc)
             }
         }
-        if modifier.contains(.command) {
-            let sc = Int(KeyCodeMap.keyCodeToScanCodes[kVK_Command]!.down)
+        if !modifier.isDisjoint(with: [.command, .leftCommand, .rightCommand]) {
+            let vk = modifier.contains(.rightCommand) ? kVK_RightCommand : kVK_Command
+            let sc = Int(KeyCodeMap.keyCodeToScanCodes[vk]!.down)
             if press {
                 inputDelegate?.keyDown(scanCode: sc)
             } else {
                 inputDelegate?.keyUp(scanCode: sc)
             }
         }
-        if modifier.contains(.control) {
-            let sc = Int(KeyCodeMap.keyCodeToScanCodes[kVK_Control]!.down)
+        if !modifier.isDisjoint(with: [.control, .leftControl, .rightControl]) {
+            let vk = modifier.contains(.rightControl) ? kVK_RightControl : kVK_Control
+            let sc = Int(KeyCodeMap.keyCodeToScanCodes[vk]!.down)
             if press {
                 inputDelegate?.keyDown(scanCode: sc)
             } else {
@@ -182,16 +184,18 @@ class VMMetalView: MTKView {
                 inputDelegate?.keyUp(scanCode: sc)
             }
         }
-        if modifier.contains(.option) {
-            let sc = Int(KeyCodeMap.keyCodeToScanCodes[kVK_Option]!.down)
+        if !modifier.isDisjoint(with: [.option, .leftOption, .rightOption]) {
+            let vk = modifier.contains(.rightOption) ? kVK_RightOption : kVK_Option
+            let sc = Int(KeyCodeMap.keyCodeToScanCodes[vk]!.down)
             if press {
                 inputDelegate?.keyDown(scanCode: sc)
             } else {
                 inputDelegate?.keyUp(scanCode: sc)
             }
         }
-        if modifier.contains(.shift) {
-            let sc = Int(KeyCodeMap.keyCodeToScanCodes[kVK_Shift]!.down)
+        if !modifier.isDisjoint(with: [.shift, .leftShift, .rightShift]) {
+            let vk = modifier.contains(.rightShift) ? kVK_RightShift : kVK_Shift
+            let sc = Int(KeyCodeMap.keyCodeToScanCodes[vk]!.down)
             if press {
                 inputDelegate?.keyDown(scanCode: sc)
             } else {
@@ -329,5 +333,39 @@ private extension Int {
             pressed.formUnion(.middle)
         }
         return pressed
+    }
+}
+
+private extension NSEvent.ModifierFlags {
+    static var leftCommand: NSEvent.ModifierFlags {
+        NSEvent.ModifierFlags(rawValue: 0x10)
+    }
+    
+    static var rightCommand: NSEvent.ModifierFlags {
+        NSEvent.ModifierFlags(rawValue: 0x8)
+    }
+    
+    static var leftControl: NSEvent.ModifierFlags {
+        NSEvent.ModifierFlags(rawValue: 0x1)
+    }
+    
+    static var rightControl: NSEvent.ModifierFlags {
+        NSEvent.ModifierFlags(rawValue: 0x2000)
+    }
+    
+    static var leftOption: NSEvent.ModifierFlags {
+        NSEvent.ModifierFlags(rawValue: 0x40)
+    }
+    
+    static var rightOption: NSEvent.ModifierFlags {
+        NSEvent.ModifierFlags(rawValue: 0x20)
+    }
+    
+    static var leftShift: NSEvent.ModifierFlags {
+        NSEvent.ModifierFlags(rawValue: 0x2)
+    }
+    
+    static var rightShift: NSEvent.ModifierFlags {
+        NSEvent.ModifierFlags(rawValue: 0x4)
     }
 }
