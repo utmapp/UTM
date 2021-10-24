@@ -227,7 +227,7 @@ class KeyCodeMap {
         kVK_ANSI_KeypadPlus:    .t((down: 0x4e, up: 0xce)),
         // Number pad end, down, pgDown, insert not available in Carbon
         kVK_ANSI_KeypadClear:   .t((down: 0x45, up: 0xC5)), /// in IBM this is num lock, so we send that
-        kVK_ANSI_KeypadDivide:  .t((down: 0xe052, up: 0xb5)),
+        kVK_ANSI_KeypadDivide:  .t((down: 0xe035, up: 0xb5)),
         kVK_ANSI_KeypadEnter:   .t((down: 0xe01c, up: 0x9c)),
         kVK_ANSI_Keypad0:       .t((down: 0x52, up: 0xD2)),
         kVK_ANSI_Keypad1:       .t((down: 0x4F, up: 0xCF)),
