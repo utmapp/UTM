@@ -450,7 +450,7 @@ static void cs_channel_destroy(SpiceSession *s, SpiceChannel *channel, gpointer 
         CGImageRelease(img);
         return [[UTMScreenshot alloc] initWithImage:uiimg];
     } else {
-        return UTMScreenshot.none;
+        return nil;
     }
 }
 

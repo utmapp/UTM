@@ -110,13 +110,13 @@ struct Screenshot: View {
         ZStack {
             Rectangle()
                 .fill(Color.black)
-            if vm.screenshot?.image != nil {
+            if vm.screenshot != nil {
                 #if os(macOS)
-                Image(nsImage: vm.screenshot!.image!)
+                Image(nsImage: vm.screenshot!.image)
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                 #else
-                Image(uiImage: vm.screenshot!.image!)
+                Image(uiImage: vm.screenshot!.image)
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                 #endif

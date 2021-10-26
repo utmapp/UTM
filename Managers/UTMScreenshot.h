@@ -25,12 +25,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface UTMScreenshot : NSObject
 
-@property (class, nonatomic, readonly) UTMScreenshot *none;
-
 #if TARGET_OS_IPHONE
-@property (nonatomic, readonly, nullable) UIImage *image;
+@property (nonatomic, readonly) UIImage *image;
 #else
-@property (nonatomic, readonly, nullable) NSImage *image;
+@property (nonatomic, readonly) NSImage *image;
 #endif
 
 - (instancetype)init NS_DESIGNATED_INITIALIZER;
