@@ -14,6 +14,7 @@
 // limitations under the License.
 //
 
+@import CoreImage;
 #import "TargetConditionals.h"
 #import "UTMScreenshot.h"
 #import "UTMShaderTypes.h"
@@ -431,9 +432,11 @@ static void cs_channel_destroy(SpiceSession *s, SpiceChannel *channel, gpointer 
         CGDataProviderRef dataProviderRef = CGDataProviderCreateWithData(NULL, self.canvasData, self.canvasStride * self.canvasArea.size.height, nil);
         img = CGImageCreate(self.canvasArea.size.width, self.canvasArea.size.height, 8, 32, self.canvasStride, colorSpaceRef, kCGBitmapByteOrder32Little | kCGImageAlphaNoneSkipFirst, dataProviderRef, NULL, NO, kCGRenderingIntentDefault);
         CGDataProviderRelease(dataProviderRef);
-    } else if (_glTexture) {
-        // TODO: make screenshot from IOSurface
-        img = NULL;
+    } else if (self.glTexture) {
+        CIImage *ciimage = [[CIImage alloc] initWithMTLTexture:self.glTexture options:nil];
+        CIImage *flipped = [ciimage imageByApplyingOrientation:kCGImagePropertyOrientationDownMirrored];
+        CIContext *cictx = [CIContext context];
+        img = [cictx createCGImage:flipped fromRect:flipped.extent];
     } else {
         img = NULL;
     }
