@@ -355,11 +355,11 @@ private extension Int {
 
 private extension NSEvent.ModifierFlags {
     static var leftCommand: NSEvent.ModifierFlags {
-        NSEvent.ModifierFlags(rawValue: 0x10)
+        NSEvent.ModifierFlags(rawValue: 0x8)
     }
     
     static var rightCommand: NSEvent.ModifierFlags {
-        NSEvent.ModifierFlags(rawValue: 0x8)
+        NSEvent.ModifierFlags(rawValue: 0x10)
     }
     
     static var leftControl: NSEvent.ModifierFlags {
@@ -371,11 +371,11 @@ private extension NSEvent.ModifierFlags {
     }
     
     static var leftOption: NSEvent.ModifierFlags {
-        NSEvent.ModifierFlags(rawValue: 0x40)
+        NSEvent.ModifierFlags(rawValue: 0x20)
     }
     
     static var rightOption: NSEvent.ModifierFlags {
-        NSEvent.ModifierFlags(rawValue: 0x20)
+        NSEvent.ModifierFlags(rawValue: 0x40)
     }
     
     static var leftShift: NSEvent.ModifierFlags {
