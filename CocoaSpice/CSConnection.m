@@ -39,6 +39,7 @@ static void cs_main_channel_event(SpiceChannel *channel, SpiceChannelEvent event
 {
     CSConnection *self = (__bridge CSConnection *)data;
     const GError *error = NULL;
+    NSString *genericMsg = NSLocalizedString(@"An error occurred trying to connect to SPICE.", @"CSConnection");
     
     switch (event) {
         case SPICE_CHANNEL_OPENED:
@@ -62,7 +63,7 @@ static void cs_main_channel_event(SpiceChannel *channel, SpiceChannelEvent event
             if (error) {
                 g_message("channel error: %s", error->message);
             }
-            [self.delegate spiceError:self err:(error ? [NSString stringWithUTF8String:error->message] : nil)];
+            [self.delegate spiceError:self err:(error ? [NSString stringWithUTF8String:error->message] : genericMsg)];
             break;
         default:
             /* TODO: more sophisticated error handling */
