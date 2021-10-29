@@ -39,7 +39,9 @@ struct SavePanel: NSViewRepresentable {
             
             // Initializing the SavePanel and setting it's properties
             let savePanel = NSSavePanel()
-            savePanel.directoryURL = URL(fileURLWithPath: "/Users/\(NSUserName())/Downloads")
+            if let downloadsUrl = FileManager.default.urls(for: .downloadsDirectory, in: .userDomainMask).first {
+                savePanel.directoryURL = downloadsUrl
+            }
             
             switch shareItem {
             case .debugLog:
