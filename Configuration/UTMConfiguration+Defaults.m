@@ -162,7 +162,7 @@
     return nil;
 }
 
-+ (NSString *)defaultDriveInterfaceForTarget:(NSString *)target type:(UTMDiskImageType)type {
++ (NSString *)defaultDriveInterfaceForTarget:(NSString *)target architecture:(NSString *)architecture type:(UTMDiskImageType)type {
     if ([target isEqualToString:@"virt"] || [target hasPrefix:@"virt-"]) {
         if (type == UTMDiskImageTypeCD) {
             return @"usb";

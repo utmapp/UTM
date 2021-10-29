@@ -416,8 +416,8 @@ class UTMData: ObservableObject {
         DispatchQueue.main.async {
             let name = self.newDefaultDriveName(for: config)
             let interface: String
-            if let target = config.systemTarget {
-                interface = UTMConfiguration.defaultDriveInterface(forTarget: target, type: imageType)
+            if let target = config.systemTarget, let architecture = config.systemArchitecture {
+                interface = UTMConfiguration.defaultDriveInterface(forTarget: target, architecture: architecture, type: imageType)
             } else {
                 interface = "none"
             }
