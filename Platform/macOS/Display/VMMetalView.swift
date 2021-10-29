@@ -126,18 +126,12 @@ class VMMetalView: MTKView {
         logger.trace("key down: \(event.keyCode)")
         lastKeyDown = getScanCodeForEvent(event)
         inputDelegate?.keyDown(scanCode: lastKeyDown!)
-        if !isMouseCaptured && lastModifiers.containsSpecialKeys {
-            super.keyDown(with: event)
-        }
     }
     
     override func keyUp(with event: NSEvent) {
         logger.trace("key up: \(event.keyCode)")
         lastKeyDown = nil
         inputDelegate?.keyUp(scanCode: getScanCodeForEvent(event))
-        if !isMouseCaptured {
-            super.keyUp(with: event)
-        }
     }
     
     override func flagsChanged(with event: NSEvent) {
