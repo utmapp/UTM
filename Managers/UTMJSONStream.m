@@ -204,7 +204,11 @@ enum ParserState {
             uint8_t buf[kMaxBufferSize];
             NSInteger res;
             @synchronized (self) {
-                NSAssert(aStream == self.inputStream, @"Invalid stream");
+                NSStream *inputStream = self.inputStream;
+                if (!inputStream) {
+                    return; // stream is closing
+                }
+                NSAssert(aStream == inputStream, @"Invalid stream");
                 res = [self.inputStream read:buf maxLength:kMaxBufferSize];
                 if (res > 0) {
                     [self.data appendBytes:buf length:res];
