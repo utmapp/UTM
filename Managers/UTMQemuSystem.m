@@ -46,6 +46,7 @@ extern NSString *const kUTMErrorDomain;
 @property (nonatomic, readonly) BOOL usbSupported;
 @property (nonatomic, readonly) NSURL *efiVariablesURL;
 @property (nonatomic, readonly) BOOL isGLOn;
+@property (nonatomic, readonly) BOOL isSparc;
 
 @end
 
@@ -195,12 +196,18 @@ static size_t sysctl_read(const char *name) {
         [self pushArgv:@"-device"];
         [self pushArgv:[NSString stringWithFormat:@"%@,bus=ide.%lu,drive=%@,bootindex=%lu", removable ? @"ide-cd" : @"ide-hd", busindex++, identifier, bootindex++]];
     } else if ([interface isEqualToString:@"scsi"]) {
-        if (busindex == 0) {
-            [self pushArgv:@"-device"];
-            [self pushArgv:@"lsi53c895a,id=scsi0"];
+        NSString *bus;
+        if (self.isSparc) {
+            bus = @"scsi";
+        } else {
+            bus = @"scsi0";
+            if (busindex == 0) {
+                [self pushArgv:@"-device"];
+                [self pushArgv:@"lsi53c895a,id=scsi0"];
+            }
         }
         [self pushArgv:@"-device"];
-        [self pushArgv:[NSString stringWithFormat:@"%@,bus=scsi0.0,channel=0,scsi-id=%lu,drive=%@,bootindex=%lu", removable ? @"scsi-cd" : @"scsi-hd", busindex++, identifier, bootindex++]];
+        [self pushArgv:[NSString stringWithFormat:@"%@,bus=%@.0,channel=0,scsi-id=%lu,drive=%@,bootindex=%lu", removable ? @"scsi-cd" : @"scsi-hd", bus, busindex++, identifier, bootindex++]];
     } else if ([interface isEqualToString:@"virtio"]) {
         [self pushArgv:@"-device"];
         [self pushArgv:[NSString stringWithFormat:@"%@,drive=%@,bootindex=%lu", [self.configuration.systemArchitecture isEqualToString:@"s390x"] ? @"virtio-blk-ccw" : @"virtio-blk-pci", identifier, bootindex++]];
@@ -342,8 +349,13 @@ static size_t sysctl_read(const char *name) {
 
 - (void)argsForNetwork {
     if (self.configuration.networkEnabled) {
-        [self pushArgv:@"-device"];
-        [self pushArgv:[NSString stringWithFormat:@"%@,mac=%@,netdev=net0", self.configuration.networkCard, self.configuration.networkCardMac]];
+        if (self.isSparc) {
+            [self pushArgv:@"-net"];
+            [self pushArgv:[NSString stringWithFormat:@"nic,model=lance,macaddr=%@,netdev=net0", self.configuration.networkCardMac]];
+        } else {
+            [self pushArgv:@"-device"];
+            [self pushArgv:[NSString stringWithFormat:@"%@,mac=%@,netdev=net0", self.configuration.networkCard, self.configuration.networkCardMac]];
+        }
         [self pushArgv:@"-netdev"];
         NSString *device = @"user";
         NSMutableString *netstr;
@@ -549,7 +561,18 @@ static size_t sysctl_read(const char *name) {
 }
 
 - (BOOL)usbSupported {
-    return ![self.configuration.systemTarget isEqualToString:@"isapc"];
+    NSString *arch = self.configuration.systemArchitecture;
+    NSString *target = self.configuration.systemTarget;
+    if ([target isEqualToString:@"isapc"]) {
+        return NO;
+    }
+    if ([arch isEqualToString:@"s390x"]) {
+        return NO;
+    }
+    if ([arch hasPrefix:@"sparc"]) {
+        return NO;
+    }
+    return YES;
 }
 
 - (NSURL *)efiVariablesURL {
@@ -569,6 +592,10 @@ static size_t sysctl_read(const char *name) {
            [self.configuration.displayCard hasSuffix:@"-gl"];
 }
 
+- (BOOL)isSparc {
+    return [self.configuration.systemArchitecture isEqualToString:@"sparc"];
+}
+
 - (void)argsRequired {
     [self clearArgv];
     [self pushArgv:@"-L"];
@@ -580,11 +607,18 @@ static size_t sysctl_read(const char *name) {
     [self pushArgv:@"-S"]; // startup stopped
     [self pushArgv:@"-qmp"];
     [self pushArgv:[NSString stringWithFormat:@"tcp:127.0.0.1:%lu,server,nowait", self.qmpPort]];
-    // prevent QEMU default devices, which leads to duplicate CD drive (fix #2538)
-    // see https://github.com/qemu/qemu/blob/6005ee07c380cbde44292f5f6c96e7daa70f4f7d/docs/qdev-device-use.txt#L382
-    [self pushArgv:@"-nodefaults"];
-    [self pushArgv:@"-vga"];
-    [self pushArgv:@"none"];// -vga none, avoid adding duplicate graphics cards
+    if (self.isSparc) { // SPARC uses -vga
+        if (!self.configuration.displayConsoleOnly) {
+            [self pushArgv:@"-vga"];
+            [self pushArgv:self.configuration.displayCard];
+        }
+    } else { // disable -vga and other default devices
+        // prevent QEMU default devices, which leads to duplicate CD drive (fix #2538)
+        // see https://github.com/qemu/qemu/blob/6005ee07c380cbde44292f5f6c96e7daa70f4f7d/docs/qdev-device-use.txt#L382
+        [self pushArgv:@"-nodefaults"];
+        [self pushArgv:@"-vga"];
+        [self pushArgv:@"none"];// -vga none, avoid adding duplicate graphics cards
+    }
     if (self.configuration.displayConsoleOnly) {
         [self pushArgv:@"-nographic"];
         // terminal character device
@@ -597,8 +631,10 @@ static size_t sysctl_read(const char *name) {
         NSURL *spiceSocketURL = self.configuration.spiceSocketURL;
         [self pushArgv:@"-spice"];
         [self pushArgv:[NSString stringWithFormat:@"unix=on,addr=%@,disable-ticketing=on,image-compression=off,playback-compression=off,streaming-video=off,gl=%@", spiceSocketURL.path, self.isGLOn ? @"on" : @"off"]];
-        [self pushArgv:@"-device"];
-        [self pushArgv:self.configuration.displayCard];
+        if (!self.isSparc) { // SPARC uses -vga (above)
+            [self pushArgv:@"-device"];
+            [self pushArgv:self.configuration.displayCard];
+        }
     }
 }
 

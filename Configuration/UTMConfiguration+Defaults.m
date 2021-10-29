@@ -169,6 +169,8 @@
         } else {
             return @"virtio";
         }
+    } else if ([architecture hasPrefix:@"sparc"]) {
+        return @"scsi";
     }
     return @"ide";
 }
