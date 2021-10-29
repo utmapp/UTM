@@ -64,6 +64,7 @@ class VMMetalView: MTKView {
     
     override func resignFirstResponder() -> Bool {
         isFirstResponder = false
+        NSCursor.tryUnhide()
         if let lastKeyDown = lastKeyDown {
             inputDelegate?.keyUp(scanCode: lastKeyDown)
         }
