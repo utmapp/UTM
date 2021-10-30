@@ -216,7 +216,10 @@ static size_t sysctl_read(const char *name) {
         [self pushArgv:[NSString stringWithFormat:@"nvme,drive=%@,serial=%@,bootindex=%lu", identifier, identifier, bootindex++]];
     } else if ([interface isEqualToString:@"usb"]) {
         [self pushArgv:@"-device"];
-        [self pushArgv:[NSString stringWithFormat:@"usb-storage,drive=%@,removable=%@,bootindex=%lu", identifier, removable ? @"true" : @"false", bootindex++]];
+        /// use usb 3 bus for virt system, unless using legacy input setting (this mirrors the code in argsForUsb)
+        bool useUSB3 = !self.configuration.inputLegacy && [self.configuration.systemTarget hasPrefix:@"virt"];
+        NSString *bus = useUSB3 ? @",bus=usb-bus.0" : @"";
+        [self pushArgv:[NSString stringWithFormat:@"usb-storage,drive=%@,removable=%@,bootindex=%lu%@", identifier, removable ? @"true" : @"false", bootindex++, bus]];
     } else if ([interface isEqualToString:@"floppy"] && [self.configuration.systemTarget hasPrefix:@"q35"]) {
         [self pushArgv:@"-device"];
         [self pushArgv:[NSString stringWithFormat:@"isa-fdc,id=fdc%lu,bootindexA=%lu", busindex, bootindex++]];
