@@ -46,12 +46,13 @@ class UTMImportFromWebTask: NSObject, URLSessionDelegate, URLSessionDownloadDele
                 try fileManager.removeItem(at: downloadedZip)
             }
             try fileManager.moveItem(at: location, to: downloadedZip)
-            let unzippedURL = try Zip.quickUnzipFile(downloadedZip)
+            let unzippedPath = tempDir.appendingPathComponent(originalFilename.replacingOccurrences(of: ".zip", with: ""))
+            try Zip.unzipFile(downloadedZip, destination: unzippedPath, overwrite: true, password: nil)
             /// remove the downloaded ZIP file
             try fileManager.removeItem(at: downloadedZip)
-            handleUnzipped(unzippedURL)
+            handleUnzipped(unzippedPath)
             /// remove unzipped file
-            try FileManager.default.removeItem(at: unzippedURL)
+            try FileManager.default.removeItem(at: unzippedPath)
         } catch {
             logger.error(Logger.Message(stringLiteral: error.localizedDescription))
             try? fileManager.removeItem(at: downloadedZip)
