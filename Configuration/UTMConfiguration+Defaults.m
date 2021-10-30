@@ -138,6 +138,7 @@
     } else if ([target isEqualToString:@"isapc"]) {
         self.inputLegacy = YES; // no USB support
     } else {
+        self.shareClipboardEnabled = NO;
         self.systemBootUefi = NO;
     }
     NSString *machineProp = [UTMConfiguration defaultMachinePropertiesForTarget:target];
