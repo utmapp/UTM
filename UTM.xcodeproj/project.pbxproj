@@ -2478,11 +2478,11 @@
 				CE2D953E24AD4F980059923A /* VMConfigNetworkPortForwardView.swift */,
 				CE2D953D24AD4F980059923A /* VMSettingsView.swift */,
 				53A0BDD426D79FE40010EDC5 /* SavePanel.swift */,
+				83C15C5E26CC441000ADFD45 /* KeyCodeMap.swift */,
 				CE2D954124AD4F980059923A /* Info.plist */,
 				FFB02A8E266CB09C006CD71A /* InfoPlist.strings */,
 				CE2D953F24AD4F980059923A /* macOS.entitlements */,
 				CEF6F5EA26DDD60500BC434D /* macOS-unsigned.entitlements */,
-				83C15C5E26CC441000ADFD45 /* KeyCodeMap.swift */,
 			);
 			path = macOS;
 			sourceTree = "<group>";
@@ -2909,6 +2909,7 @@
 				CE6EDCE0241DA0E900A719DC /* UTMLogging.h */,
 				CE6EDCE1241DA0E900A719DC /* UTMLogging.m */,
 				CEDF83F8258AE24E0030E4AC /* UTMPasteboard.swift */,
+				835AA7B026AB7C85007A0411 /* UTMPendingVirtualMachine.swift */,
 				CEF83ED124FDEA9400557D15 /* UTMPortAllocator.h */,
 				CEF83ED224FDEA9400557D15 /* UTMPortAllocator.m */,
 				2C6D9E122571AFE5003298E6 /* UTMQcow2.h */,
@@ -2945,7 +2946,6 @@
 				CE0B6D8324AD5ADE00FE012D /* UTMScreenshot.h */,
 				CE0B6D8424AD5ADE00FE012D /* UTMScreenshot.m */,
 				CE020BB524B14F8400B44AB6 /* UTMVirtualMachineExtension.swift */,
-				835AA7B026AB7C85007A0411 /* UTMPendingVirtualMachine.swift */,
 			);
 			path = Managers;
 			sourceTree = "<group>";

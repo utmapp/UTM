@@ -468,6 +468,35 @@ class UTMData: ObservableObject {
         }
     }
     
+    // MARK: - Import Disk Image from External Drive
+    func importDriveFromExternal(_ image: URL, for config: UTMConfiguration) throws {
+        _ = image.startAccessingSecurityScopedResource()
+        defer { image.stopAccessingSecurityScopedResource() }
+
+        let path = image.lastPathComponent
+
+        // Save the Bookmark to the Images directory
+        let bookmark = try! image.bookmarkData()
+        let imagesPath = config.imagesPath
+        let dstPath = imagesPath.appendingPathComponent(path).appendingPathExtension("bookmark")
+        if !fileManager.fileExists(atPath: imagesPath.path) {
+            try fileManager.createDirectory(at: imagesPath, withIntermediateDirectories: false, attributes: nil)
+        }
+        try! bookmark.write(to: dstPath)
+
+        let imageType: UTMDiskImageType = image.pathExtension.lowercased() == "iso" ? .CD : .disk
+        DispatchQueue.main.async {
+            let name = self.newDefaultDriveName(for: config)
+            let interface: String
+            if let target = config.systemTarget, let architecture = config.systemArchitecture {
+                interface = UTMConfiguration.defaultDriveInterface(forTarget: target, architecture: architecture, type: imageType)
+            } else {
+                interface = "none"
+            }
+            config.newDrive(name, path: path, type: imageType, interface: interface, bookmark: true)
+        }
+    }
+
     // MARK: - Networking
     
     func enableNetworking() {

@@ -29,11 +29,16 @@ struct VMConfigDrivesView: View {
             HStack {
                 Spacer()
                 Button(action: { importDrivePresented.toggle() }, label: {
-                    Label("Import Drive", systemImage: "square.and.arrow.down").labelStyle(TitleOnlyLabelStyle())
+                    Text("Import Drive")
                 })
                 .fileImporter(isPresented: $importDrivePresented, allowedContentTypes: [.item], onCompletion: importDrive)
+                Button {
+                    importDriveFromExternal()
+                } label: {
+                    Text("Import Drive from External Disk")
+                }
                 Button(action: { newDrivePopover.toggle() }, label: {
-                    Label("New Drive", systemImage: "plus").labelStyle(TitleOnlyLabelStyle())
+                    Text("New Drive")
                 })
                 .onChange(of: newDrivePopover, perform: { showPopover in
                     if showPopover {
@@ -82,6 +87,19 @@ struct VMConfigDrivesView: View {
         }
     }
     
+    private func importDriveFromExternal() {
+        let openPanel = NSOpenPanel()
+        openPanel.directoryURL = URL(fileURLWithPath: "/Volumes")
+        openPanel.message = "Choose a Disk Image from an External Drive to import:"
+        openPanel.begin { result in
+            if result == .OK {
+                if let imageUrl = openPanel.url {
+                    try! data.importDriveFromExternal(imageUrl, for: config)
+                }
+            }
+        }
+    }
+
     private func addNewDrive(_ newDrive: VMDriveImage) {
         newDrivePopover = false // hide popover
         data.busyWork {

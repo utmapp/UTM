@@ -39,6 +39,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)recoverOrphanedDrives;
 
 - (NSInteger)newDrive:(NSString *)name path:(NSString *)path type:(UTMDiskImageType)type interface:(NSString *)interface;
+- (NSInteger)newDrive:(NSString *)name path:(NSString *)path type:(UTMDiskImageType)type interface:(NSString *)interface bookmark:(BOOL)isBookmark;
 - (NSInteger)newRemovableDrive:(NSString *)name type:(UTMDiskImageType)type interface:(NSString *)interface;
 - (nullable NSString *)driveNameForIndex:(NSInteger)index;
 - (void)setDriveName:(NSString *)name forIndex:(NSInteger)index;
@@ -50,6 +51,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setDriveImageType:(UTMDiskImageType)type forIndex:(NSInteger)index;
 - (BOOL)driveRemovableForIndex:(NSInteger)index;
 - (void)setDriveRemovable:(BOOL)isRemovable forIndex:(NSInteger)index;
+- (BOOL)driveBookmarkForIndex:(NSInteger)index;
+- (void)setDriveBookmark:(BOOL)isBookmark forIndex:(NSInteger)index;
 - (void)moveDriveIndex:(NSInteger)index to:(NSInteger)newIndex;
 - (void)removeDriveAtIndex:(NSInteger)index;
 

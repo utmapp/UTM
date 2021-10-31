@@ -25,6 +25,7 @@ static const NSString *const kUTMConfigImagePathKey = @"ImagePath";
 static const NSString *const kUTMConfigImageTypeKey = @"ImageType";
 static const NSString *const kUTMConfigInterfaceTypeKey = @"InterfaceType";
 static const NSString *const kUTMConfigRemovableKey = @"Removable";
+static const NSString *const kUTMConfigBookmarkKey = @"Bookmark";
 static const NSString *const kUTMConfigCdromKey = @"Cdrom";
 
 @interface UTMConfiguration ()
@@ -116,13 +117,18 @@ static const NSString *const kUTMConfigCdromKey = @"Cdrom";
 }
 
 - (NSInteger)newDrive:(NSString *)name path:(NSString *)path type:(UTMDiskImageType)type interface:(NSString *)interface {
+    return [self newDrive:name path:path type:type interface:interface bookmark:NO];
+}
+
+- (NSInteger)newDrive:(NSString *)name path:(NSString *)path type:(UTMDiskImageType)type interface:(NSString *)interface bookmark:(BOOL)isBookmark {
     NSInteger index = [self countDrives];
     NSString *strType = [UTMConfiguration supportedImageTypes][type];
     NSMutableDictionary *drive = [[NSMutableDictionary alloc] initWithDictionary:@{
         kUTMConfigDriveNameKey: name,
         kUTMConfigImagePathKey: path,
         kUTMConfigImageTypeKey: strType,
-        kUTMConfigInterfaceTypeKey: interface
+        kUTMConfigInterfaceTypeKey: interface,
+        kUTMConfigBookmarkKey: @(isBookmark)
     }];
     [self propertyWillChange];
     [self.rootDict[kUTMConfigDrivesKey] addObject:drive];
@@ -214,6 +220,19 @@ static const NSString *const kUTMConfigCdromKey = @"Cdrom";
     if (isRemovable) {
         [self.rootDict[kUTMConfigDrivesKey][index] removeObjectForKey:kUTMConfigImagePathKey];
     }
+    [self propertyWillChange];
+}
+
+- (BOOL)driveBookmarkForIndex:(NSInteger)index {
+    if (index >= self.countDrives) {
+        return NO;
+    } else {
+        return [self.rootDict[kUTMConfigDrivesKey][index][kUTMConfigBookmarkKey] boolValue];
+    }
+}
+
+- (void)setDriveBookmark:(BOOL)isBookmark forIndex:(NSInteger)index {
+    self.rootDict[kUTMConfigDrivesKey][index][kUTMConfigBookmarkKey] = @(isBookmark);
     [self propertyWillChange];
 }
 

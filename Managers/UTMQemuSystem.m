@@ -281,6 +281,7 @@ static size_t sysctl_read(const char *name) {
         NSString *path = [self.configuration driveImagePathForIndex:i];
         UTMDiskImageType type = [self.configuration driveImageTypeForIndex:i];
         BOOL hasImage = ![self.configuration driveRemovableForIndex:i] && path;
+        BOOL isBookmark = [self.configuration driveBookmarkForIndex:i];
         NSURL *fullPathURL;
         
         if (hasImage) {
@@ -289,10 +290,21 @@ static size_t sysctl_read(const char *name) {
             } else {
                 fullPathURL = [[self.imgPath URLByAppendingPathComponent:[UTMConfiguration diskImagesDirectory]] URLByAppendingPathComponent:[self.configuration driveImagePathForIndex:i]];
             }
-            [self accessDataWithBookmark:[fullPathURL bookmarkDataWithOptions:0
-                                               includingResourceValuesForKeys:nil
-                                                                relativeToURL:nil
-                                                                        error:nil]];
+            if (isBookmark) {
+                fullPathURL = [fullPathURL URLByAppendingPathExtension:@"bookmark"];
+                NSData *bookmark = [[NSData alloc] initWithContentsOfURL:fullPathURL];
+                fullPathURL = [[NSURL alloc] initByResolvingBookmarkData:bookmark
+                                                                 options:0
+                                                           relativeToURL:nil
+                                                     bookmarkDataIsStale:nil
+                                                                   error:nil];
+                [self accessDataWithBookmark:bookmark];
+            } else {
+                [self accessDataWithBookmark:[fullPathURL bookmarkDataWithOptions:0
+                                                   includingResourceValuesForKeys:nil
+                                                                    relativeToURL:nil
+                                                                            error:nil]];
+            }
         }
         
         switch (type) {
