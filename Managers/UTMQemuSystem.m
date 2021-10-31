@@ -291,7 +291,6 @@ static size_t sysctl_read(const char *name) {
                 fullPathURL = [[self.imgPath URLByAppendingPathComponent:[UTMConfiguration diskImagesDirectory]] URLByAppendingPathComponent:[self.configuration driveImagePathForIndex:i]];
             }
             if (isBookmark) {
-                fullPathURL = [fullPathURL URLByAppendingPathExtension:@"bookmark"];
                 NSData *bookmark = [[NSData alloc] initWithContentsOfURL:fullPathURL];
                 fullPathURL = [[NSURL alloc] initByResolvingBookmarkData:bookmark
                                                                  options:0
@@ -300,6 +299,7 @@ static size_t sysctl_read(const char *name) {
                                                                    error:nil];
                 if (!fullPathURL) {
                     // TODO: Some error alert like `Cannot access disk image from external drive. Is the drive plugged in?`
+                    NSLog(@"Couldn't get fullPathURL");
                 }
                 [self accessDataWithBookmark:bookmark];
             } else {

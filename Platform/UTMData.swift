@@ -468,7 +468,8 @@ class UTMData: ObservableObject {
         }
     }
     
-    // MARK: - Import Disk Image from External Drive
+    // MARK: - External Drive Disk Image Functions
+
     func importDriveFromExternal(_ image: URL, for config: UTMConfiguration) throws {
         _ = image.startAccessingSecurityScopedResource()
         defer { image.stopAccessingSecurityScopedResource() }
@@ -507,6 +508,31 @@ class UTMData: ObservableObject {
                 interface = "none"
             }
             config.newDrive(name, path: path, type: imageType, interface: interface, bookmark: true)
+        }
+    }
+
+    func moveDriveToExternal(at index: Int, url dstUrl: URL, for config: UTMConfiguration) throws {
+        // Move the Disk image to dstUrl
+        guard let srcPath = config.driveImagePath(for: index) else {
+            return
+        }
+        let srcUrl = URL(fileURLWithPath: srcPath, relativeTo: config.imagesPath)
+        do {
+            if fileManager.fileExists(atPath: dstUrl.path) {
+                try fileManager.removeItem(at: dstUrl)
+            }
+            try fileManager.copyItem(at: srcUrl, to: dstUrl)
+            try fileManager.removeItem(at: srcUrl)
+            config.removeDrive(at: index)
+        } catch {
+            throw NSLocalizedString("Failed to move drive to external disk: \(error.localizedDescription)", comment: "UTMData")
+        }
+
+        // Now import the drive from the external disk
+        do {
+            try importDriveFromExternal(dstUrl, for: config)
+        } catch {
+            throw NSLocalizedString("Failed to import drive back from external disk: \(error.localizedDescription)", comment: "UTMData")
         }
     }
 

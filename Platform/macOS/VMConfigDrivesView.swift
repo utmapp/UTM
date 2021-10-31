@@ -124,6 +124,13 @@ struct DriveCard: View {
                     Button(action: deleteDrive, label: {
                         Label("Delete", systemImage: "trash").labelStyle(IconOnlyLabelStyle()).foregroundColor(.red)
                     })
+                    if !config.driveBookmark(for: index) {
+                        Button {
+                            moveDriveToExternal()
+                        } label: {
+                            Text("Move drive to external disk")
+                        }.padding(.leading, 20)
+                    }
                     Spacer()
                     if index != 0 {
                         Button(action: moveDriveUp, label: {
@@ -140,6 +147,22 @@ struct DriveCard: View {
         }
     }
     
+    func moveDriveToExternal() {
+        let savePanel = NSSavePanel()
+        savePanel.directoryURL = URL(fileURLWithPath: "/Volumes")
+        savePanel.title = "Select a location on an external disk to move the drive to:"
+        savePanel.nameFieldStringValue = config.driveName(for: index) ?? "drive"
+        savePanel.begin { result in
+            if result == .OK {
+                if let dstUrl = savePanel.url {
+                    data.busyWork {
+                        try data.moveDriveToExternal(at: index, url: dstUrl, for: config)
+                    }
+                }
+            }
+        }
+    }
+
     func deleteDrive() {
         data.busyWork {
             try data.removeDrive(at: index, for: config)
