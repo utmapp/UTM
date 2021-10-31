@@ -42,7 +42,7 @@ struct VMConfigDriveDetailsView: View {
             config.setDriveRemovable($0, for: index)
         }
         self._name = Binding<String?> {
-            return config.driveImagePath(for: index)
+            return config.driveImagePath(for: index)?.replacingOccurrences(of: ".bookmark", with: " (external)")
         } set: {
             if let name = $0 {
                 config.setImagePath(name, for: index)

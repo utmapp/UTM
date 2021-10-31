@@ -473,7 +473,7 @@ class UTMData: ObservableObject {
         _ = image.startAccessingSecurityScopedResource()
         defer { image.stopAccessingSecurityScopedResource() }
 
-        let path = image.lastPathComponent
+        let path = image.appendingPathExtension("bookmark").lastPathComponent
 
         var isDir: ObjCBool = false
         guard fileManager.fileExists(atPath: image.path, isDirectory: &isDir), !isDir.boolValue else {
@@ -488,7 +488,7 @@ class UTMData: ObservableObject {
         do {
             let bookmark = try image.bookmarkData()
             let imagesPath = config.imagesPath
-            let dstPath = imagesPath.appendingPathComponent(path).appendingPathExtension("bookmark")
+            let dstPath = imagesPath.appendingPathComponent(path)
             if !fileManager.fileExists(atPath: imagesPath.path) {
                 try fileManager.createDirectory(at: imagesPath, withIntermediateDirectories: false, attributes: nil)
             }
