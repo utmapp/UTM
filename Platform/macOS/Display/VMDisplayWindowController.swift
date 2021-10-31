@@ -286,6 +286,7 @@ extension VMDisplayWindowController: UTMVirtualMachineDelegate {
         for drive in drives {
             let item = NSMenuItem()
             item.title = drive.label
+                .replacingOccurrences(of: ".bookmark", with: " (external)")
             if drive.status == .fixed {
                 item.isEnabled = false
             } else {

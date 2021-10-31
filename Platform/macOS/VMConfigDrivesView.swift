@@ -49,10 +49,15 @@ struct VMConfigDrivesView: View {
                     VStack {
                         VMConfigDriveCreateView(target: config.systemTarget, architecture: config.systemArchitecture, driveImage: newDrive)
                         HStack {
+                            if !newDrive.removable {
+                                Button { addNewDriveToExternal(newDrive) } label: {
+                                    Text("Create to External Disk")
+                                }
+                            }
                             Spacer()
-                            Button(action: { addNewDrive(newDrive) }, label: {
+                            Button { addNewDrive(newDrive) } label: {
                                 Text("Create")
-                            })
+                            }
                         }
                     }.padding()
                 }
@@ -102,6 +107,13 @@ struct VMConfigDrivesView: View {
         }
     }
 
+    private func addNewDriveToExternal(_ newDrive: VMDriveImage) {
+        newDrivePopover = false // hide popover
+        data.busyWork {
+            try data.createDriveToExternal(newDrive, for: config)
+        }
+    }
+
     private func addNewDrive(_ newDrive: VMDriveImage) {
         newDrivePopover = false // hide popover
         data.busyWork {
@@ -124,7 +136,7 @@ struct DriveCard: View {
                     Button(action: deleteDrive, label: {
                         Label("Delete", systemImage: "trash").labelStyle(IconOnlyLabelStyle()).foregroundColor(.red)
                     })
-                    if !config.driveBookmark(for: index) {
+                    if !config.driveBookmark(for: index) && !config.driveRemovable(for: index) {
                         Button {
                             moveDriveToExternal()
                         } label: {
@@ -153,11 +165,9 @@ struct DriveCard: View {
         savePanel.title = "Select a location on an external disk to move the drive to:"
         savePanel.nameFieldStringValue = config.driveName(for: index) ?? "drive"
         savePanel.begin { result in
-            if result == .OK {
-                if let dstUrl = savePanel.url {
-                    data.busyWork {
-                        try data.moveDriveToExternal(at: index, url: dstUrl, for: config)
-                    }
+            if result == .OK, let dstUrl = savePanel.url {
+                data.busyWork {
+                    try data.moveDriveToExternal(at: index, url: dstUrl, for: config)
                 }
             }
         }

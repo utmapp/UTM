@@ -99,6 +99,7 @@ extension UTType {
     static let UTM = UTType(exportedAs: "utm")
     
     static let appleLog = UTType(filenameExtension: "log")!
+    static let qcow2 = UTType(filenameExtension: "qcow2")!
 }
 
 extension Sequence where Element: Hashable {

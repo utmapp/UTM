@@ -470,7 +470,7 @@ class UTMData: ObservableObject {
     
     // MARK: - External Drive Disk Image Functions
 
-    func importDriveFromExternal(_ image: URL, for config: UTMConfiguration) throws {
+    func importDriveFromExternal(_ image: URL, for config: UTMConfiguration, interface: String? = nil) throws {
         _ = image.startAccessingSecurityScopedResource()
         defer { image.stopAccessingSecurityScopedResource() }
 
@@ -501,13 +501,15 @@ class UTMData: ObservableObject {
         let imageType: UTMDiskImageType = image.pathExtension.lowercased() == "iso" ? .CD : .disk
         DispatchQueue.main.async {
             let name = self.newDefaultDriveName(for: config)
-            let interface: String
-            if let target = config.systemTarget, let architecture = config.systemArchitecture {
-                interface = UTMConfiguration.defaultDriveInterface(forTarget: target, architecture: architecture, type: imageType)
+            let driveInterface: String
+            if let interface = interface {
+                driveInterface = interface
+            } else if let target = config.systemTarget, let architecture = config.systemArchitecture {
+                driveInterface = UTMConfiguration.defaultDriveInterface(forTarget: target, architecture: architecture, type: imageType)
             } else {
-                interface = "none"
+                driveInterface = "none"
             }
-            config.newDrive(name, path: path, type: imageType, interface: interface, bookmark: true)
+            config.newDrive(name, path: path, type: imageType, interface: driveInterface, bookmark: true)
         }
     }
 
@@ -534,6 +536,43 @@ class UTMData: ObservableObject {
         } catch {
             throw NSLocalizedString("Failed to import drive back from external disk: \(error.localizedDescription)", comment: "UTMData")
         }
+    }
+
+    func createDriveToExternal(_ drive: VMDriveImage, for config: UTMConfiguration) throws {
+        #if os(macOS)
+        guard !drive.removable else {
+            return // Should never happen
+        }
+        guard drive.size > 0 else {
+            throw NSLocalizedString("Invalid drive size.", comment: "UTMData")
+        }
+
+        DispatchQueue.main.async {
+            let savePanel = NSSavePanel()
+            savePanel.directoryURL = URL(fileURLWithPath: "/Volumes")
+            savePanel.title = "Select a location on an external disk to create the new drive:"
+            savePanel.nameFieldStringValue = "drive"
+            savePanel.allowedContentTypes = [.qcow2]
+            savePanel.begin { result in
+                if result == .OK, let dstUrl = savePanel.url {
+                    // create drive
+                    if !GenerateDefaultQcow2File(dstUrl as CFURL, drive.size) {
+                        // Can't throw from inside closure
+                        let error = NSLocalizedString("Disk creation failed.", comment: "UTMData")
+                        logger.error("\(error)")
+                        self.alertMessage = AlertMessage(error.localizedDescription)
+                    }
+
+                    do {
+                        try self.importDriveFromExternal(dstUrl, for: config, interface: drive.interface)
+                    } catch {
+                        logger.error("Error importing drive from external: \(error)")
+                        self.alertMessage = AlertMessage("Error importing drive from external: \(error.localizedDescription)")
+                    }
+                }
+            }
+        }
+        #endif
     }
 
     // MARK: - Networking
