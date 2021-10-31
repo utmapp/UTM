@@ -298,6 +298,9 @@ static size_t sysctl_read(const char *name) {
                                                            relativeToURL:nil
                                                      bookmarkDataIsStale:nil
                                                                    error:nil];
+                if (!fullPathURL) {
+                    // TODO: Some error alert like `Cannot access disk image from external drive. Is the drive plugged in?`
+                }
                 [self accessDataWithBookmark:bookmark];
             } else {
                 [self accessDataWithBookmark:[fullPathURL bookmarkDataWithOptions:0

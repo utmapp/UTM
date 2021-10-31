@@ -475,14 +475,27 @@ class UTMData: ObservableObject {
 
         let path = image.lastPathComponent
 
-        // Save the Bookmark to the Images directory
-        let bookmark = try! image.bookmarkData()
-        let imagesPath = config.imagesPath
-        let dstPath = imagesPath.appendingPathComponent(path).appendingPathExtension("bookmark")
-        if !fileManager.fileExists(atPath: imagesPath.path) {
-            try fileManager.createDirectory(at: imagesPath, withIntermediateDirectories: false, attributes: nil)
+        var isDir: ObjCBool = false
+        guard fileManager.fileExists(atPath: image.path, isDirectory: &isDir), !isDir.boolValue else {
+            if image.pathExtension == "utm" {
+                throw NSLocalizedString("You cannot import a .utm package as a disk image. Did you mean to open the package with UTM?", comment: "UTMData")
+            } else {
+                throw NSLocalizedString("You cannot import a directory as a disk image.", comment: "UTMData")
+            }
         }
-        try! bookmark.write(to: dstPath)
+
+        // Save the Bookmark to the Images directory
+        do {
+            let bookmark = try image.bookmarkData()
+            let imagesPath = config.imagesPath
+            let dstPath = imagesPath.appendingPathComponent(path).appendingPathExtension("bookmark")
+            if !fileManager.fileExists(atPath: imagesPath.path) {
+                try fileManager.createDirectory(at: imagesPath, withIntermediateDirectories: false, attributes: nil)
+            }
+            try bookmark.write(to: dstPath)
+        } catch {
+            throw NSLocalizedString("Failed to create disk image bookmark: \(error.localizedDescription)", comment: "UTMData")
+        }
 
         let imageType: UTMDiskImageType = image.pathExtension.lowercased() == "iso" ? .CD : .disk
         DispatchQueue.main.async {

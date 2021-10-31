@@ -94,7 +94,9 @@ struct VMConfigDrivesView: View {
         openPanel.begin { result in
             if result == .OK {
                 if let imageUrl = openPanel.url {
-                    try! data.importDriveFromExternal(imageUrl, for: config)
+                    data.busyWork {
+                        try data.importDriveFromExternal(imageUrl, for: config)
+                    }
                 }
             }
         }
