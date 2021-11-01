@@ -16,7 +16,7 @@
 
 import Foundation
 import Logging
-import Zip
+import ZIPFoundation
 
 /// Downloads a ZIPped UTM file from the web, unzips it and imports it as a UTM virtual machine.
 @available(iOS 14, macOS 11, *)
@@ -41,21 +41,31 @@ class UTMImportFromWebTask: NSObject, URLSessionDelegate, URLSessionDownloadDele
         let tempDir = fileManager.temporaryDirectory
         let originalFilename = downloadTask.originalRequest!.url!.lastPathComponent
         let downloadedZip = tempDir.appendingPathComponent(originalFilename)
+        var fileURL: URL? = nil
         do {
             if fileManager.fileExists(atPath: downloadedZip.absoluteString) {
                 try fileManager.removeItem(at: downloadedZip)
             }
             try fileManager.moveItem(at: location, to: downloadedZip)
-            let unzippedPath = tempDir.appendingPathComponent(originalFilename.replacingOccurrences(of: ".zip", with: ""))
-            try Zip.unzipFile(downloadedZip, destination: unzippedPath, overwrite: true, password: nil)
+            let utmURL = try partialUnzipOnlyUtmVM(zipFileURL: downloadedZip, destinationFolder: data.documentsURL, fileManager: fileManager)
+            /// set the url so we know, if it fails after this step the UTM in the ZIP is corrupted
+            fileURL = utmURL
             /// remove the downloaded ZIP file
             try fileManager.removeItem(at: downloadedZip)
-            handleUnzipped(unzippedPath)
-            /// remove unzipped file
-            try FileManager.default.removeItem(at: unzippedPath)
+            /// load the downloaded VM into the UI
+            try self.data.readUTMFromURL(fileURL: utmURL)
         } catch {
             logger.error(Logger.Message(stringLiteral: error.localizedDescription))
-            try? fileManager.removeItem(at: downloadedZip)
+            DispatchQueue.main.async {
+                self.data.alertMessage = AlertMessage(error.localizedDescription)
+            }
+            if let fileURL = fileURL {
+                /// remove imported UTM, as it is corrupted
+                try? fileManager.removeItem(at: fileURL)
+            } else {
+                /// failed earlier
+                try? fileManager.removeItem(at: downloadedZip)
+            }
         }
         /// remove downloading VM View Model
         DispatchQueue.main.async { [self] in
@@ -65,8 +75,52 @@ class UTMImportFromWebTask: NSObject, URLSessionDelegate, URLSessionDownloadDele
         }
     }
     
+    private func partialUnzipOnlyUtmVM(zipFileURL: URL, destinationFolder: URL, fileManager: FileManager) throws -> URL {
+        let utmFileEnding = ".utm"
+        let utmDirectoryEnding = "\(utmFileEnding)/"
+        if let archive = Archive(url: zipFileURL, accessMode: .read),
+           /// find the UTM directory and its contents
+           let utmFolderInZip = archive.first(where: { $0.path.hasSuffix(utmDirectoryEnding) }) {
+            /// get the UTM package filename
+            let originalFileName = URL(fileURLWithPath: utmFolderInZip.path).lastPathComponent
+            var destinationUtmDirectory = originalFileName
+            /// check if the UTM already exists
+            var duplicateIndex = 1
+            var exists = false
+            repeat {
+                exists = data.virtualMachines.contains(where: {
+                    return $0.path != nil && $0.path!.lastPathComponent == destinationUtmDirectory
+                })
+                if exists {
+                    destinationUtmDirectory = originalFileName.replacingOccurrences(of: utmFileEnding, with: " (\(duplicateIndex))\(utmFileEnding)")
+                    duplicateIndex += 1
+                }
+            } while exists
+            /// got destination folder name
+            let destinationURL = destinationFolder.appendingPathComponent(destinationUtmDirectory, isDirectory: true)
+            /// create the .utm directory
+            try fileManager.createDirectory(at: destinationURL, withIntermediateDirectories: false)
+            /// get and extract all files contained in the UTM directory, except the `__MACOSX` folder
+            let containedFiles = archive.filter({ $0.path.contains(utmDirectoryEnding) && !$0.path.hasSuffix(utmDirectoryEnding) && !$0.path.contains("__MACOSX") })
+            for file in containedFiles {
+                let relativePath = file.path.replacingOccurrences(of: utmFolderInZip.path, with: "")
+                let isDirectory = file.path.hasSuffix("/")
+                _ = try archive.extract(file, to: destinationURL.appendingPathComponent(relativePath, isDirectory: isDirectory))
+            }
+            return destinationURL
+        } else {
+            throw UnzipNoUTMFileError()
+        }
+    }
+    
+    private class UnzipNoUTMFileError: Error {
+        var localizedDescription: String {
+            NSLocalizedString("There is no UTM file in the downloaded ZIP archive.", comment: "Error shown when importing a ZIP file from web that doesn't contain a UTM Virtual Machine.")
+        }
+    }
+    
     /// received when the download progresses
-    func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didWriteData bytesWritten: Int64, totalBytesWritten: Int64, totalBytesExpectedToWrite: Int64) {
+    internal func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didWriteData bytesWritten: Int64, totalBytesWritten: Int64, totalBytesExpectedToWrite: Int64) {
         DispatchQueue.main.async { [self] in
             guard pendingVM != nil else { return }
             let progress = Float(totalBytesWritten) / Float(totalBytesExpectedToWrite)
@@ -109,24 +163,6 @@ class UTMImportFromWebTask: NSObject, URLSessionDelegate, URLSessionDownloadDele
         }
     }
     
-    /// Call on background queue
-    private func handleUnzipped(_ unzippedFolder: URL) {
-        do {
-            let path = unzippedFolder.path
-            /// try to find .utm file in unzipped folder
-            if let utmFilename = try FileManager.default.contentsOfDirectory(atPath: path).first(where: { $0.hasSuffix(".utm") }) {
-                /// got filename
-                let utmURL = URL(fileURLWithPath: path).appendingPathComponent(utmFilename, isDirectory: false)
-                try self.data.importUTM(url: utmURL)
-            } else {
-                /// utm file not in folder
-                logger.error("No UTM file in extracted ZIP")
-            }
-        } catch {
-            logger.error(Logger.Message(stringLiteral: error.localizedDescription))
-        }
-    }
-    
     /// Downloads a ZIP-compressed file from the provided URL and imports the UTM file inside, if there is one.
     func startDownload() -> UTMPendingVirtualMachine {
         /// begin the download
@@ -147,7 +183,7 @@ class UTMImportFromWebTask: NSObject, URLSessionDelegate, URLSessionDownloadDele
     /// Cancels the network request, if any.
     /// Cancelling the file operations that occur after the download has finished is not supported.
     func cancel() {
-        guard !isDone && !downloadTask.progress.isFinished else { return }
+        guard !isDone && downloadTask != nil && !downloadTask.progress.isFinished else { return }
         downloadTask.cancel()
         downloadTask = nil
     }

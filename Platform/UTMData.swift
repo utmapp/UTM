@@ -320,7 +320,11 @@ class UTMData: ObservableObject {
         } else {
             try fileManager.copyItem(at: at, to: to)
         }
-        guard let vm = UTMVirtualMachine(url: to) else {
+    }
+    
+    /// Attempts to read from the URL and appends the VM to the list of virtual machines.
+    func readUTMFromURL(fileURL: URL) throws {
+        guard let vm = UTMVirtualMachine(url: fileURL) else {
             throw NSLocalizedString("Failed to parse imported VM.", comment: "UTMData")
         }
         DispatchQueue.main.async {
@@ -355,9 +359,11 @@ class UTMData: ObservableObject {
         } else if (fileBasePath.resolvingSymlinksInPath().path == documentsURL.appendingPathComponent("Inbox", isDirectory: true).path) {
             logger.info("moving from Inbox")
             try copyUTM(at: url, to: dest, move: true)
+            try readUTMFromURL(fileURL: dest)
         } else {
             logger.info("copying to Documents")
             try copyUTM(at: url, to: dest)
+            try readUTMFromURL(fileURL: dest)
         }
     }
     
