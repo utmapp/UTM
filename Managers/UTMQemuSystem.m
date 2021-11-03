@@ -535,7 +535,8 @@ static size_t sysctl_read(const char *name) {
 
 - (BOOL)useOnlyPcores {
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    return [defaults boolForKey:@"UseOnlyPcores"];
+    BOOL isUnset = ![defaults objectForKey:@"UseOnlyPcores"];
+    return isUnset || [defaults boolForKey:@"UseOnlyPcores"];
 }
 
 - (BOOL)hasCustomBios {
