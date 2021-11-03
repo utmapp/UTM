@@ -44,6 +44,13 @@ struct VMConfigNetworkView: View {
                 }.disabled(UTMQemuConfiguration.supportedNetworkCards(forArchitecture: config.systemArchitecture)?.isEmpty ?? true)
                 
                 if config.networkEnabled {
+                    HStack {
+                        DefaultTextField("MAC Address", text: $config.networkCardMac.bound, prompt: "00:00:00:00:00:00")
+                        Button("Random") {
+                            config.networkCardMac = UTMQemuConfiguration.generateMacAddress()
+                        }
+                    }
+                    
                     Toggle(isOn: $showAdvanced.animation(), label: {
                         Text("Show Advanced Settings")
                     })
@@ -101,13 +108,13 @@ struct IPConfigurationSection: View {
                     .keyboardType(.decimalPad)
                 DefaultTextField("Host Address (IPv6)", text: $config.networkHostIPv6.bound, prompt: "fec0::2")
                     .keyboardType(.asciiCapable)
-                DefaultTextField("DHCP Start", text: $config.networkDhcpStart.bound, prompt: "10.0.2.0.15")
+                DefaultTextField("DHCP Start", text: $config.networkDhcpStart.bound, prompt: "10.0.2.15")
                     .keyboardType(.decimalPad)
                 DefaultTextField("DHCP Host", text: $config.networkDhcpHost.bound)
                     .keyboardType(.asciiCapable)
                 DefaultTextField("DHCP Domain Name", text: $config.networkDhcpDomain.bound)
                     .keyboardType(.asciiCapable)
-                DefaultTextField("DNS Server", text: $config.networkDnsServer.bound, prompt: "10.0.2.0.15")
+                DefaultTextField("DNS Server", text: $config.networkDnsServer.bound, prompt: "10.0.2.3")
                     .keyboardType(.decimalPad)
                 DefaultTextField("DNS Server (IPv6)", text: $config.networkDnsServerIPv6.bound, prompt: "fec0::3")
                     .keyboardType(.asciiCapable)

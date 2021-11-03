@@ -45,6 +45,14 @@ struct ContentView: View {
                         .modifier(VMContextMenuModifier(vm: vm))
                 }.onMove(perform: data.move)
                 .onDelete(perform: delete)
+                
+                if data.pendingVMs.count > 0 {
+                    Section(header: Text("Pending")) {
+                        ForEach(data.pendingVMs, id: \.name) { vm in
+                            UTMPendingVMView(vm: vm)
+                        }.onDelete(perform: cancel)
+                    }.transition(.opacity)
+                }
             }.optionalSidebarFrame()
             .listStyle(SidebarListStyle())
             .navigationTitle(productName)
@@ -70,7 +78,7 @@ struct ContentView: View {
         }.overlay(data.showSettingsModal ? AnyView(EmptyView()) : AnyView(BusyOverlay()))
         .optionalWindowFrame()
         .disabled(data.busy && !data.showNewVMSheet && !data.showSettingsModal)
-        .onOpenURL(perform: importUTM)
+        .onOpenURL(perform: handleURL)
         .handlesExternalEvents(preferring: ["*"], allowing: ["*"])
         .onReceive(NSNotification.NewVirtualMachine) { _ in
             data.newVM()
@@ -110,6 +118,23 @@ struct ContentView: View {
         }
     }
     
+    private func cancel(indexSet: IndexSet) {
+        let selected = data.pendingVMs[indexSet]
+        for vm in selected {
+            data.cancelPendingVM(vm)
+        }
+    }
+    
+    private func handleURL(url: URL) {
+        if url.isFileURL {
+            importUTM(url: url)
+        } else if let components = URLComponents(url: url, resolvingAgainstBaseURL: false),
+                  let scheme = components.scheme,
+                  scheme.lowercased() == "utm" {
+            handleUTMURL(with: components)
+        }
+    }
+    
     private func importUTM(url: URL) {
         guard url.isFileURL else {
             return // ignore
@@ -123,6 +148,67 @@ struct ContentView: View {
         data.busyWork {
             let url = try result.get()
             try data.importUTM(url: url)
+        }
+    }
+    
+    private func handleUTMURL(with components: URLComponents) {
+        func findVM() -> UTMVirtualMachine? {
+            if let vmName = components.queryItems?.first(where: { $0.name == "name" })?.value {
+                return data.virtualMachines.first(where: { $0.title == vmName })
+            } else {
+                return nil
+            }
+        }
+        
+        if let action = components.host {
+            switch action {
+            case "start":
+                if let vm = findVM(), vm.state == .vmStopped {
+                    data.run(vm: vm)
+                }
+                break
+            case "stop":
+                if let vm = findVM(), vm.state == .vmStarted {
+                    vm.quitVM(force: true)
+                    try? data.stop(vm: vm)
+                }
+                break
+            case "restart":
+                if let vm = findVM(), vm.state == .vmStarted {
+                    DispatchQueue.global(qos: .background).async {
+                        vm.resetVM()
+                    }
+                }
+                break
+            case "pause":
+                if let vm = findVM(), vm.state == .vmStarted {
+                    DispatchQueue.global(qos: .background).async {
+                        vm.pauseVM()
+                    }
+                }
+            case "resume":
+                if let vm = findVM(), vm.state == .vmPaused {
+                    DispatchQueue.global(qos: .background).async {
+                        vm.resumeVM()
+                    }
+                }
+                break
+            case "sendText":
+                if let vm = findVM(), vm.state == .vmStarted {
+                    data.trySendText(vm, urlComponents: components)
+                }
+                break
+            case "click":
+                if let vm = findVM(), vm.state == .vmStarted {
+                    data.tryClickVM(vm, urlComponents: components)
+                }
+                break
+            case "downloadVM":
+                data.tryDownloadVM(components)
+                break
+            default:
+                return
+            }
         }
     }
 }

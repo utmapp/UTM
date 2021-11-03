@@ -301,7 +301,7 @@ class VMWizardState: ObservableObject {
         config.useHypervisor = useVirtualization
         config.shareDirectoryReadOnly = sharingReadOnly
         if !isSkipBootImage && bootImageURL != nil {
-            config.newRemovableDrive("cdrom0", type: .CD, interface: UTMQemuConfiguration.defaultDriveInterface(forTarget: systemTarget, type: .CD))
+            config.newRemovableDrive("cdrom0", type: .CD, interface: UTMQemuConfiguration.defaultDriveInterface(forTarget: systemTarget, architecture: systemArchitecture, type: .CD))
         }
         switch operatingSystem {
         case .Other:
@@ -316,7 +316,7 @@ class VMWizardState: ObservableObject {
                     config.newDrive("initrd", path: linuxInitialRamdiskURL.lastPathComponent, type: .initrd, interface: "")
                 }
                 if let linuxRootImageURL = linuxRootImageURL {
-                    config.newDrive("root", path: linuxRootImageURL.lastPathComponent, type: .disk, interface: UTMQemuConfiguration.defaultDriveInterface(forTarget: systemTarget, type: .disk))
+                    config.newDrive("root", path: linuxRootImageURL.lastPathComponent, type: .disk, interface: UTMQemuConfiguration.defaultDriveInterface(forTarget: systemTarget, architecture: systemArchitecture, type: .disk))
                 }
                 if linuxBootArguments.count > 0 {
                     config.newArgument("-append")
@@ -330,7 +330,7 @@ class VMWizardState: ObservableObject {
             }
         }
         if windowsBootVhdx == nil {
-            config.newDrive("drive0", path: "data.qcow2", type: .disk, interface: UTMQemuConfiguration.defaultDriveInterface(forTarget: systemTarget, type: .disk))
+            config.newDrive("drive0", path: "data.qcow2", type: .disk, interface: UTMQemuConfiguration.defaultDriveInterface(forTarget: systemTarget, architecture: systemArchitecture, type: .disk))
         }
         return config
     }

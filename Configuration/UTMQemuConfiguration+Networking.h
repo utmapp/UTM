@@ -40,6 +40,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, nullable, copy) NSString *networkDnsSearch;
 @property (nonatomic, readonly) NSInteger countPortForwards;
 
++ (NSString *)generateMacAddress;
 - (void)migrateNetworkConfigurationIfNecessary;
 
 - (NSInteger)newPortForward:(UTMQemuConfigurationPortForward *)argument;

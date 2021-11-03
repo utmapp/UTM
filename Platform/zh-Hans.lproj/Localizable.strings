@@ -1,14 +1,20 @@
+/* No comment provided by engineer. */
+"-" = "-";
+
+/* A removable drive that has no image file inserted. */
+"(empty)" = "(empty)";
+
+/* No comment provided by engineer. */
+"0.0.0.0" = "0.0.0.0";
+
+/* No comment provided by engineer. */
+"127.0.0.1" = "127.0.0.1";
+
 /* VMConfigDriveCreateViewController */
-"A file already exists for this name, if you proceed, it will be replaced." = "已存在同名的项目，如果您继续操作，正在创建的项目将会替换原有的同名项目。";
+"A file already exists for this name, if you proceed, it will be replaced." = "已存在同名的项目，如果您继续操作，正在创建的项目将会替换原有的同名项目";
 
-/* No comment provided by engineer. */
-"Do you want to duplicate this VM and all its data?" = "是否要复制该虚拟机及其所有数据?";
-
-/* No comment provided by engineer. */
-"Do you want to delete this VM and all its data?" = "是否删除该虚拟机及其所有数据?";
-
-/* No comment provided by engineer. */
-"Do you want to force stop this VM and lose all unsaved data?" = "是否要强制关闭该虚拟机并丢失所有未保存的数据?";
+/* VMListViewController */
+"A VM already exists with this name." = "已存在使用此名称的 VM";
 
 /* No comment provided by engineer. */
 "Acceleration" = "加速";
@@ -62,10 +68,13 @@
 "BIOS" = "BIOS";
 
 /* No comment provided by engineer. */
-"Blinking Cursor" = "Blinking Cursor";
+"Blinking Cursor" = "闪烁光标";
+
+/* UTMConfiguration */
+"Bridged (Advanced)" = "桥接（高级）";
 
 /* No comment provided by engineer. */
-"Browse" = "浏览";
+"Bridged Interface" = "桥接接口";
 
 /* VMConfigSharingViewController */
 "Browse..." = "浏览";
@@ -79,6 +88,9 @@
 /* VMConfigDriveCreateViewController */
 "Cannot create directory for disk image." = "无法为磁盘映像创建目录。";
 
+/* VMDisplayTerminalWindowController */
+"Cannot find bundle resources." = "找不到绑定的资源";
+
 /* VMListViewController */
 "Cannot find VM." = "未能找到VM";
 
@@ -91,14 +103,11 @@
 /* Configuration boot device */
 "CD/DVD" = "CD/DVD";
 
-/* UTMQemuConfiguration */
-"CD/DVD Image" = "CD/DVD 镜像";
+/* UTMConfiguration */
+"CD/DVD (ISO) Image" = "CD/DVD (ISO) 镜像";
 
 /* VMRemovableDrivesViewController */
 "Change" = "变化";
-
-/* No comment provided by engineer. */
-"Clear" = "清除";
 
 /* No comment provided by engineer. */
 "Clipboard Sharing" = "剪贴板共享";
@@ -106,11 +115,17 @@
 /* Clone context menu */
 "Clone" = "复制";
 
+/* VMDisplayMetalWindowController */
+"Closing this window will kill the VM." = "关闭此窗口将终止 VM";
+
 /* No comment provided by engineer. */
 "Command to send when resizing the console. Placeholder $COLS is the number of columns and $ROWS is the number of rows." = "调整控制台大小时要发送的命令。占位符 $COLS 是列数， $ROWS 是行数。";
 
 /* UTMVirtualMachine */
 "Config format incorrect." = "配置格式不正确。";
+
+/* VMDisplayMetalWindowController */
+"Confirm" = "确认";
 
 /* No comment provided by engineer. */
 "Confirm Delete" = "确认删除";
@@ -122,22 +137,16 @@
 "Console Only" = "仅限控制台";
 
 /* No comment provided by engineer. */
-"CPU Count" = "CPU核心数";
+"Cores" = "核心数量";
+
+/* No comment provided by engineer. */
+"CPU" = "CPU";
 
 /* No comment provided by engineer. */
 "CPU Cores" = "CPU核心数";
 
 /* No comment provided by engineer. */
-"Boot Options" = "启动选项";
-
-/* No comment provided by engineer. */
-"These settings are unavailable in console display mode" = "这些设置在控制台视图下不可用";
-
-/* No comment provided by engineer. */
-"Default" = "默认";
-
-/* No comment provided by engineer. */
-"Blinking Cursor" = "闪烁光标";
+"CPU Flags" = "CPU Flags";
 
 /* Create button */
 "Create" = "创建";
@@ -151,22 +160,10 @@
 /* No comment provided by engineer. */
 "Debug Logging" = "调试日志记录";
 
-/* No comment provided by engineer. */
-"Default" = "默认";
-
 /* Delete button
    Delete context menu
    VMConfigDirectoryPickerViewController */
 "Delete" = "删除";
-
-/* No comment provided by engineer. */
-"Do you want to duplicate this VM and all its data?" = "是否要复制该虚拟机及其所有数据?";
-
-/* No comment provided by engineer. */
-"Do you want to delete this VM and all its data?" = "是否删除该虚拟机及其所有数据?";
-
-/* No comment provided by engineer. */
-"Do you want to force stop this VM and lose all unsaved data?" = "是否要关闭该虚拟机并丢失所有未保存的数据?";
 
 /* VMConfigDrivesViewController */
 "Delete Data" = "删除数据";
@@ -174,38 +171,36 @@
 /* Delete VM overlay */
 "Deleting %@..." = "正在删除 %@...";
 
-/* No comment provided by engineer. */
-"DHCP Domain Name" = "DHCP域名";
-
-/* No comment provided by engineer. */
-"DHCP Host" = "DHCP服务器";
-
-/* No comment provided by engineer. */
-"DHCP Start" = "起始DHCP";
-
 /* VMConfigDirectoryPickerViewController */
 "Directory Name" = "目录名称";
 
 /* VMDisplayTerminalViewController */
 "Disable this bar in Settings -> General -> Keyboards -> Shortcuts" = "在 设置 -> 通用 -> 键盘 -> 快捷键 中禁用此栏";
 
-/* VMConfigDriveCreateViewController */
+/* UTMData
+   VMConfigDriveCreateViewController */
 "Disk creation failed." = "磁盘镜像创建失败";
 
 /* UTMQemuConfiguration */
 "Disk Image" = "磁盘镜像";
 
-/* No comment provided by engineer. */
-"DNS Search Domains" = "DNS搜索域";
+/* VMDisplayMetalWindowController */
+"Do Not Show Again" = "不再显示";
 
 /* No comment provided by engineer. */
-"DNS Server" = "DNS服务器(IPv4)";
-
-/* No comment provided by engineer. */
-"DNS Server (IPv6)" = "DNS服务器(IPv6)";
+"Do not show prompt when USB device is plugged in" = "插入 USB 设备时不显示提示";
 
 /* VMConfigDrivesViewController */
 "Do you want to also delete the disk image data? If yes, the data will be lost. Otherwise, you can create a new drive with the existing data." = "您是否还要删除磁盘映像数据?如果是，数据将丢失。否则，您可以使用现有数据创建一个新驱动器。";
+
+/* No comment provided by engineer. */
+"Do you want to delete this VM and all its data?" = "是否删除该虚拟机及其所有数据?";
+
+/* No comment provided by engineer. */
+"Do you want to duplicate this VM and all its data?" = "是否要复制该虚拟机及其所有数据?";
+
+/* No comment provided by engineer. */
+"Do you want to force stop this VM and lose all unsaved data?" = "您是否想强制停止此VM并丢失所有未保存的数据?";
 
 /* VMConfigDirectoryPickerViewController
    VMConfigPortForwardingViewController */
@@ -224,7 +219,16 @@
 "Emulated Audio Card" = "模拟声卡";
 
 /* No comment provided by engineer. */
+"Emulated Display Card" = "模拟显卡";
+
+/* No comment provided by engineer. */
 "Emulated Network Card" = "模拟网卡";
+
+/* UTMConfiguration */
+"Emulated VLAN" = "模拟VLAN";
+
+/* No comment provided by engineer. */
+"en0" = "en0";
 
 /* No comment provided by engineer. */
 "Enable Clipboard Sharing" = "剪贴板共享";
@@ -244,8 +248,14 @@
 /* VMConfigDriveCreateViewController */
 "Error renaming file" = "重命名失败";
 
+/* UTMVirtualMachine */
+"Error trying to restore removable drives: %@" = "尝试还原可移动驱动器时出错：%@";
+
+/* UTMVirtualMachine */
+"Error trying to start shared directory: %@" = "尝试启动共享目录时出错：%@";
+
 /* UTMVirtualMachine+Drives */
-"Failed create bookmark." = "创建书签失败。";
+"Failed create bookmark." = "创建书签失败";
 
 /* UTMVirtualMachine+Drives */
 "Failed to access drive image path." = "无法访问驱动器映像路径";
@@ -258,6 +268,9 @@
 
 /* UTMSpiceIO */
 "Failed to connect to SPICE server." = "无法连接到SPICE服务器";
+
+/* UTMDataExtension */
+"Failed to delete saved state." = "无法删除保存的状态";
 
 /* VMRemovableDrivesViewController */
 "Failed to get VM object." = "无法获取VM对象";
@@ -287,25 +300,19 @@
 "Force Multicore" = "强制多核";
 
 /* No comment provided by engineer. */
+"Force slower emulation even when hypervisor is available" = "即使程序可用，也只能强制执行较慢的仿真";
+
+/* No comment provided by engineer. */
 "Full Graphics" = "完整图形";
 
 /* No comment provided by engineer. */
 "Gesture and Cursor Settings" = "更多图形和光标设置";
 
 /* No comment provided by engineer. */
-"Go to Gallery" = "转到图库";
-
-/* No comment provided by engineer. */
 "Guest Address" = "客户机地址";
 
 /* VMConfigPortForwardingViewController */
 "Guest address (optional)" = "客户机地址(可选)";
-
-/* No comment provided by engineer. */
-"Guest Network" = "客户机网络";
-
-/* No comment provided by engineer. */
-"Guest Network (IPv6)" = "客户机网络(IPv6)";
 
 /* UTMQemuManager */
 "Guest panic" = "Guest panic";
@@ -322,14 +329,17 @@
 /* No comment provided by engineer. */
 "Hardware" = "硬件";
 
+/* No comment provided by engineer. */
+"Hide Unused Flags..." = "隐藏未使用的Flags...";
+
 /* VMDisplayViewController */
 "Hint: To show the toolbar again, use a three-finger swipe down on the screen." = "提示：要再次显示工具栏，请使用三指在屏幕从上向下滑动。";
 
 /* No comment provided by engineer. */
-"Host Address" = "主机地址";
+"Hold Control (⌃) for right click" = "按住 Control (⌃) 并进行右键单击";
 
 /* No comment provided by engineer. */
-"Host Address (IPv6)" = "主机地址(IPv6)";
+"Host Address" = "主机地址";
 
 /* VMConfigPortForwardingViewController */
 "Host address (optional)" = "主机地址(可选)";
@@ -349,8 +359,14 @@
 /* Import button */
 "Import" = "导入";
 
+/* No comment provided by engineer. */
+"Import Virtual Machine..." = "导入虚拟机...";
+
 /* Save VM overlay */
 "Importing %@..." = "导入 %@...";
+
+/* No comment provided by engineer. */
+"Input" = "输入";
 
 /* No comment provided by engineer. */
 "Interface" = "接口";
@@ -412,7 +428,10 @@
 /* No comment provided by engineer. */
 "Legacy (PS/2) Mode" = "输入(PS/2)模式";
 
-/* UTMQemuConfiguration */
+/* No comment provided by engineer. */
+"License" = "许可";
+
+/* UTMConfiguration */
 "Linear" = "线性";
 
 /* UTMQemuConfiguration */
@@ -429,6 +448,9 @@
 
 /* UTMQemuManager */
 "Manager being deallocated, killing pending RPC." = "正在释放管理器，正在终止挂起的RPC。";
+
+/* No comment provided by engineer. */
+"Maximum Shared USB Devices" = "最大的共享 USB 设备数量";
 
 /* No comment provided by engineer. */
 "MB" = "MB";
@@ -455,13 +477,16 @@
 "Nearest Neighbor" = "近邻取样";
 
 /* No comment provided by engineer. */
+"Network Mode" = "网络模式";
+
+/* No comment provided by engineer. */
 "New" = "新建";
 
 /* VMConfigPortForwardingViewController */
 "New port forward" = "新建端口转发";
 
 /* No comment provided by engineer. */
-"New VM" = "新建VM";
+"New Virtual Machine" = "新建虚拟机";
 
 /* Clone VM name prompt message */
 "New VM name" = "输入新的虚拟机的名字";
@@ -489,11 +514,17 @@
 /* UTMData */
 "No log found!" = "找不到日志！";
 
+/* VMDisplayMetalWindowController */
+"No USB devices detected." = "未检测到 USB 设备";
+
 /* UTMDrive */
 "none" = "空";
 
+/* UTMConfiguration */
+"None" = "无";
+
 /* No comment provided by engineer. */
-"None" = "空";
+"Note: Boot order is as listed." = "注意：启动顺序如列表所列顺序";
 
 /* No comment provided by engineer. */
 "Note: select the path to share from the main screen." = "注意：请从主屏幕选取文件共享的路径。";
@@ -532,11 +563,21 @@
 /* VMDisplayWindowController */
 "Querying drives status..." = "正在查询驱动器状态...";
 
+/* VMDisplayMetalWindowController */
+"Querying USB devices..." = "正在查询 USB 设备...";
+
+/* VMDisplayMetalWindowController */
+"Quitting UTM will kill all running VMs." = "退出 UTM 将终止所有正在运行的 VM";
+
 /* No comment provided by engineer. */
 "Read Only" = "只读";
 
 /* No comment provided by engineer. */
 "Removable" = "可扩展";
+
+/* VMConfigDrivesView
+   VMConfigDrivesViewController */
+"Removable Drive" = "可移动驱动器";
 
 /* No comment provided by engineer. */
 "Requires SPICE guest agent tools to be installed." = "需要安装SPICE代理工具。";
@@ -558,9 +599,6 @@
 
 /* VMDisplayViewController */
 "Running low on memory! UTM might soon be killed by iOS. You can prevent this by decreasing the amount of memory and/or JIT cache assigned to this VM" = "内存不足！ UTM可能很快会被iOS强制终止 您可以通过减少给该虚拟机分配的内存或JIT缓存来防止这种情况。";
-
-/* No comment provided by engineer. */
-"Running qemu-img more than once is unimplemented. Restart the app to create another disk." = "同时运行多个虚拟机的功能还未完成，请点左上角X重新启动UTM后再试。";
 
 /* No comment provided by engineer. */
 "Save" = "保存";
@@ -592,6 +630,9 @@
 /* No comment provided by engineer. */
 "Shared Directory" = "共享目录";
 
+/* UTMConfiguration */
+"Shared Network" = "共享网络";
+
 /* VMConfigSharingViewController */
 "Shared path has moved. Please re-choose." = "共享目录已被移动，请重新选择。";
 
@@ -602,13 +643,19 @@
 "Show Advanced Settings" = "高级设置";
 
 /* No comment provided by engineer. */
+"Show All Flags..." = "显示所有Flags...";
+
+/* No comment provided by engineer. */
 "Size" = "大小";
 
 /* No comment provided by engineer. */
-"Start from Scratch" = "从头开始";
+"Stop" = "终止";
 
 /* No comment provided by engineer. */
 "Style" = "方式";
+
+/* No comment provided by engineer. */
+"Support" = "支持";
 
 /* No comment provided by engineer. */
 "System" = "系统";
@@ -625,17 +672,23 @@
 /* No comment provided by engineer. */
 "The Last Tab" = "最后一个选项卡";
 
+/* No comment provided by engineer. */
+"The selected architecture is unsupported in this version of UTM." = "此版本的 UTM 不支持所选架构";
+
 /* VMConfigSystemViewController */
 "The total memory usage is close to your device's limit. iOS will kill the VM if it consumes too much memory." = "此内存接近您的设备可用内存极限。消耗过大内存的虚拟机会被iOS系统强制终止。";
 
 /* No comment provided by engineer. */
 "Theme" = "主题";
 
+/* No comment provided by engineer. */
+"These settings are unavailable in console display mode." = "这些设置在控制台显示模式下不可用";
+
 /* VMDisplayWindowController */
 "This may corrupt the VM and any unsaved changes will be lost. To quit safely, shut down from the guest." = "这可能会损坏虚拟机，任何未保存的更改都将丢失。为了安全退出，请关闭来宾账户。";
 
-/* UTMVirtualMachine+Drives */
-"This version of UTM does not allow file access outside of UTM's Documents directory." = "此版本的UTM不允许访问UTM文档目录之外的文件。";
+/* No comment provided by engineer. */
+"This virtual machine has been deleted." = "此虚拟机已被删除";
 
 /* VMDisplayWindowController */
 "This will reset the VM and any unsaved state will be lost." = "这将重置虚拟机，任何未保存的更改都将丢失。";
@@ -647,7 +700,7 @@
 "To release the mouse cursor, press ⌃+⌥ (Ctrl+Opt or Ctrl+Alt) at the same time." = "要释放鼠标光标，请同时按⌃+⌥（Ctrl+Opt或Ctrl+Alt）。";
 
 /* No comment provided by engineer. */
-"Try to use hardware hypervisor when available" = "如果可用，请尝试使用硬件管理程序";
+"Tweaks" = "调整";
 
 /* No comment provided by engineer. */
 "Type" = "格式";
@@ -655,11 +708,38 @@
 /* VMConfigPortForwardingViewController */
 "UDP Forward" = "UDP";
 
-/* UTMQemuConfigurationExtension */
+/* UTMQemuSystem */
+"UEFI is not supported with this architecture." = "此架构不支持 UEFI。";
+
+/* UTMConfigurationExtension */
 "Unknown" = "未知";
 
 /* No comment provided by engineer. */
 "Upscaling" = "粗化";
+
+/* No comment provided by engineer. */
+"USB" = "USB";
+
+/* No comment provided by engineer. */
+"USB 3.0 (XHCI) Support" = "USB 3.0 (XHCI) 支持";
+
+/* VMDisplayMetalWindowController */
+"USB Device" = "USB设备";
+
+/* No comment provided by engineer. */
+"USB not supported in console display mode." = "控制台显示模式不支持 USB";
+
+/* No comment provided by engineer. */
+"USB not supported in this build of UTM." = "此版本的UTM不支持USB";
+
+/* No comment provided by engineer. */
+"USB Sharing" = "USB共享";
+
+/* No comment provided by engineer. */
+"Use only performance cores by default" = "默认情况下仅使用性能核心";
+
+/* No comment provided by engineer. */
+"Virtual Machine Gallery" = "虚拟机库";
 
 /* No comment provided by engineer. */
 "VM display size is fixed" = "VM显示大小是固定的";
@@ -676,6 +756,12 @@
 /* Startup message */
 "Welcome to UTM! Due to a bug in iOS, if you force kill this app, the system will be unstable and you cannot launch UTM again until you reboot. The recommended way to terminate this app is the button on the top left." = "欢迎使用UTM！因为iOS的一个Bug，如果您强制关闭UTM，系统将变得不稳定，您必须重新启动您的设备才能再次使用UTM。我们建议点击左上方的按钮来退出UTM。";
 
+/* VMDisplayMetalWindowController */
+"Would you like to connect '(usbDevice.name ?? usbDevice.description)' to this virtual machine?" = "您想将'(usbDevice.name ?? usbDevice.description)'连接到此虚拟机吗？";
+
+/* VMDisplayMetalWindowController */
+"Would you like to connect '%@' to this virtual machine?" = "要将“%@”连接到此虚拟机吗？";
+
 /* VMConfigDrivePickerViewController */
 "Would you like to import an existing disk image or create a new one?" = "您想导入一个磁盘镜像还是创建新的空白磁盘镜像？";
 
@@ -687,13 +773,21 @@
 /* No comment provided by engineer. */
 "You can download an existing VM configuration for popular operating systems from the UTM gallery or start from scratch." = "您可以从UTM库下载流行操作系统的现有VM配置，也可以从头开始。";
 
+/* UTMData
+   VMConfigDrivePickerViewController */
+"You cannot import a .utm package as a drive. Did you mean to open the package with UTM?" = "您不能将 .utm 文件作为驱动器导入。 你的意思是用UTM 打开此文件吗？";
+
+/* UTMData
+   VMConfigDrivePickerViewController */
+"You cannot import a directory as a drive." = "您不能将目录作为驱动器导入";
+
 /* VMConfigDriveDetailsViewController */
 "You must select a disk image." = "必须选择磁盘。";
 
 /* VMDisplayViewController */
 "You must terminate the running VM before you can import a new VM." = "必须先终止正在运行的虚拟机，然后才能导入新的虚拟机。";
 
-/* No comment provided by engineer. */
+/* ContentView */
 "Your version of iOS does not support running VMs while unmodified. You must either run UTM while jailbroken or with a remote debugger attached." = "您的iOS版本不支持在未越狱的情况下运行虚拟机。您必须在越狱时运行UTM，或者附加远程调试器。";
 
 /* No comment provided by engineer. */

@@ -189,11 +189,13 @@ NSString* const kVMSendTerminalSizeHandler = @"UTMSendTerminalSize";
     [dataString appendString:@"]"];
     //UTMLog(@"Array: %@", dataString);
     NSString* jsString = [NSString stringWithFormat: @"writeData(new Uint8Array(%@));", dataString];
-    [_webView evaluateJavaScript: jsString completionHandler:^(id _Nullable _, NSError * _Nullable error) {
-        if (error != nil) {
-            UTMLog(@"JS evaluation failed: %@", [error localizedDescription]);
-        }
-    }];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [_webView evaluateJavaScript: jsString completionHandler:^(id _Nullable _, NSError * _Nullable error) {
+            if (error != nil) {
+                UTMLog(@"JS evaluation failed: %@", [error localizedDescription]);
+            }
+        }];
+    });
 }
 
 #pragma mark - State transition

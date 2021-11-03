@@ -86,21 +86,15 @@ enum ParserState {
             assert(self.inputStream == nil && self.outputStream == nil);
             return;
         }
-        CFReadStreamRef readStream = (CFReadStreamRef)CFBridgingRetain(self.inputStream);
-        CFWriteStreamRef writeStream = (CFWriteStreamRef)CFBridgingRetain(self.outputStream);
-        self.inputStream = nil;
-        self.outputStream = nil;
         self.inputStream.delegate = nil;
         self.outputStream.delegate = nil;
+        [self.inputStream close];
+        [self.outputStream close];
+        CFReadStreamSetDispatchQueue((__bridge CFReadStreamRef)self.inputStream, NULL);
+        CFWriteStreamSetDispatchQueue((__bridge CFWriteStreamRef)self.outputStream, NULL);
+        self.inputStream = nil;
+        self.outputStream = nil;
         self.data = nil;
-        CFReadStreamSetDispatchQueue(readStream, NULL);
-        CFWriteStreamSetDispatchQueue(writeStream, NULL);
-        CFReadStreamClose(readStream);
-        CFWriteStreamClose(writeStream);
-        dispatch_async(self.streamQueue, ^{
-            CFRelease(readStream);
-            CFRelease(writeStream);
-        });
     }
 }
 
@@ -199,20 +193,26 @@ enum ParserState {
 }
 
 - (void)stream:(NSStream *)aStream handleEvent:(NSStreamEvent)eventCode {
+    NSInputStream *inputStream = self.inputStream;
+    @synchronized (self) {
+        if (!inputStream) {
+            return; // stream closing
+        }
+    }
     switch (eventCode) {
         case NSStreamEventHasBytesAvailable: {
             uint8_t buf[kMaxBufferSize];
             NSInteger res;
             @synchronized (self) {
-                NSAssert(aStream == self.inputStream, @"Invalid stream");
-                res = [self.inputStream read:buf maxLength:kMaxBufferSize];
+                NSAssert(aStream == inputStream, @"Invalid stream");
+                res = [inputStream read:buf maxLength:kMaxBufferSize];
                 if (res > 0) {
                     [self.data appendBytes:buf length:res];
                     while (self.parsedBytes < [self.data length]) {
                         [self parseData];
                     }
                 } else if (res < 0) {
-                    [self.delegate jsonStream:self seenError:[self.inputStream streamError]];
+                    [self.delegate jsonStream:self seenError:[inputStream streamError]];
                 }
             }
             break;
@@ -227,7 +227,7 @@ enum ParserState {
         }
         case NSStreamEventOpenCompleted: {
             UTMLog(@"Connected to stream %p", aStream);
-            [self.delegate jsonStream:self connected:(aStream == self.inputStream)];
+            [self.delegate jsonStream:self connected:(aStream == inputStream)];
             break;
         }
         default: {

@@ -48,7 +48,7 @@ struct VMConfigDrivesButtons<Config: ObservableObject & UTMConfigurable>: View {
             .onChange(of: newDrivePopover, perform: { showPopover in
                 if showPopover {
                     if let qemuConfig = config as? UTMQemuConfiguration {
-                    newQemuDrive.reset(forSystemTarget: qemuConfig.systemTarget, removable: false)
+                        newQemuDrive.reset(forSystemTarget: qemuConfig.systemTarget, architecture: qemuConfig.systemArchitecture, removable: false)
                     } else if let _ = config as? UTMAppleConfiguration {
                         newAppleDriveSize = 10240
                     }
@@ -57,7 +57,7 @@ struct VMConfigDrivesButtons<Config: ObservableObject & UTMConfigurable>: View {
             .popover(isPresented: $newDrivePopover, arrowEdge: .top) {
                 VStack {
                     if let qemuConfig = config as? UTMQemuConfiguration {
-                        VMConfigDriveCreateView(target: qemuConfig.systemTarget, driveImage: newQemuDrive)
+                        VMConfigDriveCreateView(target: qemuConfig.systemTarget, architecture: qemuConfig.systemArchitecture, driveImage: newQemuDrive)
                     } else if #available(macOS 12, *), let _ = config as? UTMAppleConfiguration {
                         VMConfigAppleDriveCreateView(driveSize: $newAppleDriveSize)
                     }

@@ -41,6 +41,7 @@ class VMDisplayTerminalWindowController: VMDisplayWindowController {
         webView.autoresizingMask = [.width, .height]
         webView.setValue(false, forKey: "drawsBackground")
         displayView.addSubview(webView)
+        window!.recalculateKeyViewLoop()
         
         // load terminal.html
         guard let resourceURL = Bundle.main.resourceURL else {
@@ -149,9 +150,11 @@ extension VMDisplayTerminalWindowController: UTMTerminalDelegate {
         }
         dataString = dataString + "]"
         let jsString = "writeData(new Uint8Array(\(dataString)));"
-        webView.evaluateJavaScript(jsString) { (_, err) in
-            if let error = err {
-                logger.error("JS evaluation failed: \(error)")
+        DispatchQueue.main.async {
+            self.webView.evaluateJavaScript(jsString) { (_, err) in
+                if let error = err {
+                    logger.error("JS evaluation failed: \(error)")
+                }
             }
         }
     }

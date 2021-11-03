@@ -56,6 +56,9 @@ DEFAULTS = {
 }
 
 AUDIO_SCREAMER = Device('screamer', 'macio', '', 'Screamer (Mac99 only)')
+DISPLAY_TCX = Device('tcx', 'none', '', 'Sun TCX')
+DISPLAY_CG3 = Device('cg3', 'none', '', 'Sun cgthree')
+NETWORK_LANCE = Device('lance', 'none', '', 'Lance (Am7990)')
 
 ADD_DEVICES = {
     "ppc": {
@@ -66,6 +69,15 @@ ADD_DEVICES = {
     "ppc64": {
         "Sound devices": set([
             AUDIO_SCREAMER
+        ])
+    },
+    "sparc": {
+        "Display devices": set([
+            DISPLAY_TCX,
+            DISPLAY_CG3
+        ]),
+        "Network devices": set([
+            NETWORK_LANCE
         ])
     },
 }

@@ -45,6 +45,8 @@ extern NSString *const kUTMErrorDomain;
 @property (nonatomic, readonly) BOOL hasCustomBios;
 @property (nonatomic, readonly) BOOL usbSupported;
 @property (nonatomic, readonly) NSURL *efiVariablesURL;
+@property (nonatomic, readonly) BOOL isGLOn;
+@property (nonatomic, readonly) BOOL isSparc;
 
 @end
 
@@ -194,12 +196,18 @@ static size_t sysctl_read(const char *name) {
         [self pushArgv:@"-device"];
         [self pushArgv:[NSString stringWithFormat:@"%@,bus=ide.%lu,drive=%@,bootindex=%lu", removable ? @"ide-cd" : @"ide-hd", busindex++, identifier, bootindex++]];
     } else if ([interface isEqualToString:@"scsi"]) {
-        if (busindex == 0) {
-            [self pushArgv:@"-device"];
-            [self pushArgv:@"lsi53c895a,id=scsi0"];
+        NSString *bus;
+        if (self.isSparc) {
+            bus = @"scsi";
+        } else {
+            bus = @"scsi0";
+            if (busindex == 0) {
+                [self pushArgv:@"-device"];
+                [self pushArgv:@"lsi53c895a,id=scsi0"];
+            }
         }
         [self pushArgv:@"-device"];
-        [self pushArgv:[NSString stringWithFormat:@"%@,bus=scsi0.0,channel=0,scsi-id=%lu,drive=%@,bootindex=%lu", removable ? @"scsi-cd" : @"scsi-hd", busindex++, identifier, bootindex++]];
+        [self pushArgv:[NSString stringWithFormat:@"%@,bus=%@.0,channel=0,scsi-id=%lu,drive=%@,bootindex=%lu", removable ? @"scsi-cd" : @"scsi-hd", bus, busindex++, identifier, bootindex++]];
     } else if ([interface isEqualToString:@"virtio"]) {
         [self pushArgv:@"-device"];
         [self pushArgv:[NSString stringWithFormat:@"%@,drive=%@,bootindex=%lu", [self.configuration.systemArchitecture isEqualToString:@"s390x"] ? @"virtio-blk-ccw" : @"virtio-blk-pci", identifier, bootindex++]];
@@ -208,7 +216,10 @@ static size_t sysctl_read(const char *name) {
         [self pushArgv:[NSString stringWithFormat:@"nvme,drive=%@,serial=%@,bootindex=%lu", identifier, identifier, bootindex++]];
     } else if ([interface isEqualToString:@"usb"]) {
         [self pushArgv:@"-device"];
-        [self pushArgv:[NSString stringWithFormat:@"usb-storage,drive=%@,removable=%@,bootindex=%lu", identifier, removable ? @"true" : @"false", bootindex++]];
+        /// use usb 3 bus for virt system, unless using legacy input setting (this mirrors the code in argsForUsb)
+        bool useUSB3 = !self.configuration.inputLegacy && [self.configuration.systemTarget hasPrefix:@"virt"];
+        NSString *bus = useUSB3 ? @",bus=usb-bus.0" : @"";
+        [self pushArgv:[NSString stringWithFormat:@"usb-storage,drive=%@,removable=%@,bootindex=%lu%@", identifier, removable ? @"true" : @"false", bootindex++, bus]];
     } else if ([interface isEqualToString:@"floppy"] && [self.configuration.systemTarget hasPrefix:@"q35"]) {
         [self pushArgv:@"-device"];
         [self pushArgv:[NSString stringWithFormat:@"isa-fdc,id=fdc%lu,bootindexA=%lu", busindex, bootindex++]];
@@ -245,15 +256,7 @@ static size_t sysctl_read(const char *name) {
 }
 
 - (void)argsForSound {
-    // < macOS 11.3 we use fork() which is buggy and things are broken
-    BOOL forceDisableSound = NO;
-    if (@available(macOS 11.3, *)) {
-    } else {
-        if (self.configuration.displayConsoleOnly) {
-            forceDisableSound = YES;
-        }
-    }
-    if (self.configuration.soundEnabled && !forceDisableSound) {
+    if (self.configuration.soundEnabled) {
         if ([self.configuration.soundCard isEqualToString:@"screamer"]) {
 #if !TARGET_OS_IPHONE
             // force CoreAudio backend for mac99 which only supports 44100 Hz
@@ -297,7 +300,7 @@ static size_t sysctl_read(const char *name) {
             case UTMDiskImageTypeCD: {
                 NSString *interface = [self.configuration driveInterfaceTypeForIndex:i];
                 BOOL removable = (type == UTMDiskImageTypeCD) || [self.configuration driveRemovableForIndex:i];
-                NSString *identifier = [NSString stringWithFormat:@"drive%lu", i];
+                NSString *identifier = [self.configuration driveNameForIndex:i];
                 NSString *realInterface = [self expandDriveInterface:interface identifier:identifier removable:removable busInterfaceMap:busInterfaceMap];
                 NSString *drive;
                 [self pushArgv:@"-drive"];
@@ -349,8 +352,13 @@ static size_t sysctl_read(const char *name) {
 
 - (void)argsForNetwork {
     if (self.configuration.networkEnabled) {
-        [self pushArgv:@"-device"];
-        [self pushArgv:[NSString stringWithFormat:@"%@,mac=%@,netdev=net0", self.configuration.networkCard, self.configuration.networkCardMac]];
+        if (self.isSparc) {
+            [self pushArgv:@"-net"];
+            [self pushArgv:[NSString stringWithFormat:@"nic,model=lance,macaddr=%@,netdev=net0", self.configuration.networkCardMac]];
+        } else {
+            [self pushArgv:@"-device"];
+            [self pushArgv:[NSString stringWithFormat:@"%@,mac=%@,netdev=net0", self.configuration.networkCard, self.configuration.networkCardMac]];
+        }
         [self pushArgv:@"-netdev"];
         NSString *device = @"user";
         NSMutableString *netstr;
@@ -429,10 +437,12 @@ static size_t sysctl_read(const char *name) {
         }
         [self pushArgv:@"-device"];
         [self pushArgv:@"usb-tablet,bus=usb-bus.0"];
-        [self pushArgv:@"-device"];
-        [self pushArgv:@"usb-mouse,bus=usb-bus.0"];
-        [self pushArgv:@"-device"];
-        [self pushArgv:@"usb-kbd,bus=usb-bus.0"];
+        if (![self.configuration.systemTarget hasPrefix:@"pc"] && ![self.configuration.systemTarget hasPrefix:@"q35"]) {
+            [self pushArgv:@"-device"];
+            [self pushArgv:@"usb-mouse,bus=usb-bus.0"];
+            [self pushArgv:@"-device"];
+            [self pushArgv:@"usb-kbd,bus=usb-bus.0"];
+        }
     }
 #if !defined(WITH_QEMU_TCI)
     NSInteger maxDevices = [self.configuration.usbRedirectionMaximumDevices integerValue];
@@ -545,7 +555,18 @@ static size_t sysctl_read(const char *name) {
 }
 
 - (BOOL)usbSupported {
-    return ![self.configuration.systemTarget isEqualToString:@"isapc"];
+    NSString *arch = self.configuration.systemArchitecture;
+    NSString *target = self.configuration.systemTarget;
+    if ([target isEqualToString:@"isapc"]) {
+        return NO;
+    }
+    if ([arch isEqualToString:@"s390x"]) {
+        return NO;
+    }
+    if ([arch hasPrefix:@"sparc"]) {
+        return NO;
+    }
+    return YES;
 }
 
 - (NSURL *)efiVariablesURL {
@@ -559,6 +580,16 @@ static size_t sysctl_read(const char *name) {
     return @"";
 }
 
+- (BOOL)isGLOn {
+    // GL supported devices have contains GL moniker
+    return [self.configuration.displayCard containsString:@"-gl-"] ||
+           [self.configuration.displayCard hasSuffix:@"-gl"];
+}
+
+- (BOOL)isSparc {
+    return [self.configuration.systemArchitecture isEqualToString:@"sparc"];
+}
+
 - (void)argsRequired {
     [self clearArgv];
     [self pushArgv:@"-L"];
@@ -570,11 +601,18 @@ static size_t sysctl_read(const char *name) {
     [self pushArgv:@"-S"]; // startup stopped
     [self pushArgv:@"-qmp"];
     [self pushArgv:[NSString stringWithFormat:@"tcp:127.0.0.1:%lu,server,nowait", self.qmpPort]];
-    // prevent QEMU default devices, which leads to duplicate CD drive (fix #2538)
-    // see https://github.com/qemu/qemu/blob/6005ee07c380cbde44292f5f6c96e7daa70f4f7d/docs/qdev-device-use.txt#L382
-    [self pushArgv:@"-nodefaults"];
-    [self pushArgv:@"-vga"];
-    [self pushArgv:@"none"];// -vga none, avoid adding duplicate graphics cards
+    if (self.isSparc) { // SPARC uses -vga
+        if (!self.configuration.displayConsoleOnly) {
+            [self pushArgv:@"-vga"];
+            [self pushArgv:self.configuration.displayCard];
+        }
+    } else { // disable -vga and other default devices
+        // prevent QEMU default devices, which leads to duplicate CD drive (fix #2538)
+        // see https://github.com/qemu/qemu/blob/6005ee07c380cbde44292f5f6c96e7daa70f4f7d/docs/qdev-device-use.txt#L382
+        [self pushArgv:@"-nodefaults"];
+        [self pushArgv:@"-vga"];
+        [self pushArgv:@"none"];// -vga none, avoid adding duplicate graphics cards
+    }
     if (self.configuration.displayConsoleOnly) {
         [self pushArgv:@"-nographic"];
         // terminal character device
@@ -585,13 +623,12 @@ static size_t sysctl_read(const char *name) {
         [self pushArgv: @"chardev:term0"];
     } else {
         NSURL *spiceSocketURL = self.configuration.spiceSocketURL;
-        // GL supported devices have contains GL moniker
-        BOOL isGLOn = [self.configuration.displayCard containsString:@"-gl-"] ||
-                      [self.configuration.displayCard hasSuffix:@"-gl"];
         [self pushArgv:@"-spice"];
-        [self pushArgv:[NSString stringWithFormat:@"unix=on,addr=%@,disable-ticketing=on,image-compression=off,playback-compression=off,streaming-video=off,gl=%@", spiceSocketURL.path, isGLOn ? @"on" : @"off"]];
-        [self pushArgv:@"-device"];
-        [self pushArgv:self.configuration.displayCard];
+        [self pushArgv:[NSString stringWithFormat:@"unix=on,addr=%@,disable-ticketing=on,image-compression=off,playback-compression=off,streaming-video=off,gl=%@", spiceSocketURL.path, self.isGLOn ? @"on" : @"off"]];
+        if (!self.isSparc) { // SPARC uses -vga (above)
+            [self pushArgv:@"-device"];
+            [self pushArgv:self.configuration.displayCard];
+        }
     }
 }
 
@@ -710,13 +747,33 @@ static size_t sysctl_read(const char *name) {
     return YES;
 }
 
+- (BOOL)validateOSSupportWithError:(NSError **)error {
+    if (@available(macOS 11.3, *)) {
+        return YES;
+    } else {
+        if (self.configuration.soundEnabled && self.configuration.displayConsoleOnly) {
+            *error = [NSError errorWithDomain:kUTMErrorDomain code:-1 userInfo:@{NSLocalizedDescriptionKey: NSLocalizedString(@"This version of macOS does not support audio in console mode. Please change the VM configuration or upgrade macOS.", "UTMQemuSystem")}];
+            return NO;
+        }
+        if (self.isGLOn && !self.configuration.displayConsoleOnly) {
+            *error = [NSError errorWithDomain:kUTMErrorDomain code:-1 userInfo:@{NSLocalizedDescriptionKey: NSLocalizedString(@"This version of macOS does not support GPU acceleration. Please change the VM configuration or upgrade macOS.", "UTMQemuSystem")}];
+            return NO;
+        }
+    }
+    return YES;
+}
+
 - (void)startWithCompletion:(void (^)(BOOL, NSString * _Nonnull))completion {
+    NSError *err;
     if (self.configuration.systemBootUefi) {
-        NSError *err;
         if (![self createEfiVariablesIfNeededWithError:&err]) {
             completion(NO, err.localizedDescription);
             return;
         }
+    }
+    if (![self validateOSSupportWithError:&err]) {
+        completion(NO, err.localizedDescription);
+        return;
     }
     [self updateArgvWithUserOptions:YES];
     [self startQemu:self.configuration.systemArchitecture completion:completion];

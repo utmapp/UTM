@@ -24,7 +24,6 @@ struct VMToolbarModifier: ViewModifier {
     @State private var showSharePopup = false
     @State private var confirmAction: ConfirmAction?
     @EnvironmentObject private var data: UTMData
-    @Environment(\.presentationMode) private var presentationMode: Binding<PresentationMode>
     
     #if os(macOS)
     let destructiveButtonColor: Color = .primary
@@ -84,7 +83,7 @@ struct VMToolbarModifier: ViewModifier {
                 }.help("Share selected VM")
                 .padding(.leading, padding)
                 .modifier(VMShareItemModifier(isPresented: $showSharePopup) {
-                    [vm.path!]
+                    .utmVm(vm.path!)
                 })
                 #if !os(macOS)
                 if bottom {
@@ -124,7 +123,7 @@ struct VMToolbarModifier: ViewModifier {
             }
         }
         .modifier(VMConfirmActionModifier(vm: vm, confirmAction: $confirmAction) {
-            presentationMode.wrappedValue.dismiss()
+            
         })
     }
 }

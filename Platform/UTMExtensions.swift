@@ -97,6 +97,15 @@ extension View {
 extension UTType {
     // SwiftUI BUG: exportedAs: "com.utmapp.utm" doesn't work
     static let UTM = UTType(exportedAs: "utm")
+    
+    static let appleLog = UTType(filenameExtension: "log")!
+}
+
+extension Sequence where Element: Hashable {
+    func uniqued() -> [Element] {
+        var set = Set<Element>()
+        return filter { set.insert($0).inserted }
+    }
 }
 
 #if !os(macOS)

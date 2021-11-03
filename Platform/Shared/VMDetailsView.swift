@@ -55,14 +55,13 @@ struct VMDetailsView: View {
                 if regularScreenSizeClass && !notes.isEmpty {
                     HStack(alignment: .top) {
                         Details(vm: vm, sizeLabel: sizeLabel)
-                            .padding()
                             .frame(maxWidth: .infinity)
                         Text(notes)
                             .font(.body)
+                            .frame(maxWidth: .infinity, alignment: .topLeading)
                             .fixedSize(horizontal: false, vertical: true)
-                            .padding()
-                            .frame(maxWidth: .infinity)
-                    }
+                            .padding([.leading, .trailing])
+                    }.padding([.leading, .trailing])
                     if #available(macOS 12, *), let appleVM = vm as? UTMAppleVirtualMachine {
                         VMAppleRemovableDrivesView(vm: appleVM, config: appleVM.appleConfig)
                             .padding([.leading, .trailing, .bottom])
@@ -86,7 +85,7 @@ struct VMDetailsView: View {
                     }.padding([.leading, .trailing, .bottom])
                 }
             }.labelStyle(DetailsLabelStyle())
-            .navigationTitle(vm.title)
+            .modifier(VMOptionalNavigationTitleModifier(vm: vm))
             .modifier(VMToolbarModifier(vm: vm, bottom: !regularScreenSizeClass))
             .sheet(isPresented: $data.showSettingsModal) {
                 if #available(macOS 12, *), let appleVM = vm as? UTMAppleVirtualMachine {
@@ -101,6 +100,20 @@ struct VMDetailsView: View {
     }
 }
 
+/// Returns just the content under macOS but adds the title on iOS. #3099
+@available(iOS 14, macOS 11, *)
+private struct VMOptionalNavigationTitleModifier: ViewModifier {
+    let vm: UTMVirtualMachine
+    
+    func body(content: Content) -> some View {
+        #if os(macOS)
+        return content.navigationSubtitle(vm.title)
+        #else
+        return content.navigationTitle(vm.title)
+        #endif
+    }
+}
+
 @available(iOS 14, macOS 11, *)
 struct Screenshot: View {
     let vm: UTMVirtualMachine
@@ -111,13 +124,13 @@ struct Screenshot: View {
         ZStack {
             Rectangle()
                 .fill(Color.black)
-            if vm.screenshot?.image != nil {
+            if vm.screenshot != nil {
                 #if os(macOS)
-                Image(nsImage: vm.screenshot!.image!)
+                Image(nsImage: vm.screenshot!.image)
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                 #else
-                Image(uiImage: vm.screenshot!.image!)
+                Image(uiImage: vm.screenshot!.image)
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                 #endif

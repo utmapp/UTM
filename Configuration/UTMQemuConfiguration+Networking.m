@@ -61,7 +61,7 @@ static const NSString *const kUTMConfigNetworkPortForwardGuestPortKey = @"GuestP
     }
     // Generate MAC if missing
     if (!self.networkCardMac) {
-        self.networkCardMac = [self generateMacAddress];
+        self.networkCardMac = [UTMQemuConfiguration generateMacAddress];
     }
     // default network mode
     if ([self.rootDict[kUTMConfigNetworkingKey] objectForKey:kUTMConfigNetworkEnabledKey]) {
@@ -72,7 +72,7 @@ static const NSString *const kUTMConfigNetworkPortForwardGuestPortKey = @"GuestP
 
 #pragma mark - Generate MAC
 
-- (NSString *)generateMacAddress {
++ (NSString *)generateMacAddress {
     uint8_t bytes[6];
     
     for (int i = 0; i < 6; i++) {

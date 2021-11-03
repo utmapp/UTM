@@ -74,7 +74,7 @@ struct VMConfigDrivesView: View {
         )
         .fileImporter(isPresented: $importDrivePresented, allowedContentTypes: [.item], onCompletion: importDrive)
         .sheet(isPresented: $createDriveVisible) {
-            CreateDrive(target: config.systemTarget, onDismiss: newDrive)
+            CreateDrive(target: config.systemTarget, architecture: config.systemArchitecture, onDismiss: newDrive)
         }
         .actionSheet(item: $attemptDelete) { offsets in
             ActionSheet(title: Text("Confirm Delete"), message: Text("Are you sure you want to permanently delete this disk image?"), buttons: [.cancel(), .destructive(Text("Delete")) {
@@ -127,18 +127,20 @@ struct VMConfigDrivesView: View {
 @available(iOS 14, *)
 private struct CreateDrive: View {
     let target: String?
+    let architecture: String?
     let onDismiss: (VMDriveImage) -> Void
     @StateObject private var driveImage = VMDriveImage()
     @Environment(\.presentationMode) private var presentationMode: Binding<PresentationMode>
     
-    init(target: String?, onDismiss: @escaping (VMDriveImage) -> Void) {
+    init(target: String?, architecture: String?, onDismiss: @escaping (VMDriveImage) -> Void) {
         self.target = target
+        self.architecture = architecture
         self.onDismiss = onDismiss
     }
     
     var body: some View {
         NavigationView {
-            VMConfigDriveCreateView(target: target, driveImage: driveImage)
+            VMConfigDriveCreateView(target: target, architecture: architecture, driveImage: driveImage)
                 .navigationBarItems(leading: Button(action: cancel, label: {
                     Text("Cancel")
                 }), trailing: Button(action: done, label: {
@@ -146,7 +148,7 @@ private struct CreateDrive: View {
                 }))
         }.navigationViewStyle(StackNavigationViewStyle())
         .onAppear {
-            driveImage.reset(forSystemTarget: target, removable: false)
+            driveImage.reset(forSystemTarget: target, architecture: architecture, removable: false)
         }
     }
     
@@ -169,7 +171,7 @@ struct VMConfigDrivesView_Previews: PreviewProvider {
     static var previews: some View {
         Group {
             VMConfigDrivesView(config: config)
-            CreateDrive(target: nil) { _ in
+            CreateDrive(target: nil, architecture: nil) { _ in
                 
             }
         }.onAppear {

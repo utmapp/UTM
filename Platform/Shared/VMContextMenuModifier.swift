@@ -70,7 +70,7 @@ struct VMContextMenuModifier: ViewModifier {
             }
         }
         .modifier(VMShareItemModifier(isPresented: $showSharePopup) {
-            [vm.path!]
+            .utmVm(vm.path!)
         })
         .modifier(VMConfirmActionModifier(vm: vm, confirmAction: $confirmAction) {
             

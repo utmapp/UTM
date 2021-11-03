@@ -15,12 +15,14 @@
 //
 
 protocol VMMetalViewInputDelegate: class {
+    var shouldUseCmdOptForCapture: Bool { get }
     func mouseMove(absolutePoint: CGPoint, button: CSInputButton)
     func mouseMove(relativePoint: CGPoint, button: CSInputButton)
     func mouseDown(button: CSInputButton)
     func mouseUp(button: CSInputButton)
     func mouseScroll(dy: CGFloat, button: CSInputButton)
-    func keyDown(keyCode: Int)
-    func keyUp(keyCode: Int)
-    func requestReleaseCapture()
+    func keyDown(scanCode: Int)
+    func keyUp(scanCode: Int)
+    func captureMouse()
+    func releaseMouse()
 }

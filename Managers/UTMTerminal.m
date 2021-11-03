@@ -161,9 +161,7 @@ dispatch_io_t createInputIO(NSURL* url, dispatch_queue_t queue) {
         size_t estimated = dispatch_source_get_data(source);
         NSData* bytesRead = [self evaluateChangesForDescriptor: fd estimatedSize: estimated];
         if (bytesRead != nil) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [[self delegate] terminal: self didReceiveData: bytesRead];
-            });
+            [[self delegate] terminal: self didReceiveData: bytesRead];
         }
     });
     dispatch_source_set_cancel_handler(source, ^{

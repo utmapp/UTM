@@ -49,7 +49,7 @@
         [self showImagePathCell:!self.removable animated:NO];
     } else {
         self.imageType = UTMDiskImageTypeDisk;
-        self.driveInterfaceType = [UTMQemuConfiguration defaultDriveInterfaceForTarget:self.configuration.systemTarget type:UTMDiskImageTypeDisk];
+        self.driveInterfaceType = [UTMQemuConfiguration defaultDriveInterfaceForTarget:self.configuration.systemTarget architecture:self.configuration.systemArchitecture type:UTMDiskImageTypeDisk];
     }
     if (self.imageType == UTMDiskImageTypeDisk || self.imageType == UTMDiskImageTypeCD) {
         [self showDriveTypeOptions:YES animated:NO];
@@ -104,7 +104,7 @@
 - (void)imageTypeChanged {
     if (self.imageType == UTMDiskImageTypeDisk || self.imageType == UTMDiskImageTypeCD) {
         if (self.driveInterfaceType.length == 0) {
-            self.driveInterfaceType = [UTMQemuConfiguration defaultDriveInterfaceForTarget:self.configuration.systemTarget type:self.imageType];
+            self.driveInterfaceType = [UTMQemuConfiguration defaultDriveInterfaceForTarget:self.configuration.systemTarget architecture:self.configuration.systemArchitecture type:self.imageType];
         }
         [self showDriveTypeOptions:YES animated:NO];
     } else {

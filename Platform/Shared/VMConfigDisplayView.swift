@@ -22,8 +22,10 @@ struct VMConfigDisplayView: View {
     
     #if os(macOS)
     let displayTypePickerStyle = RadioGroupPickerStyle()
+    let horizontalPaddingAmount: CGFloat? = nil
     #else
     let displayTypePickerStyle = DefaultPickerStyle()
+    let horizontalPaddingAmount: CGFloat? = 0
     #endif
     
     var body: some View {
@@ -51,7 +53,8 @@ struct VMConfigDisplayView: View {
                         VMConfigStringPicker(selection: $config.displayCard, label: Text("Emulated Display Card"), rawValues: UTMQemuConfiguration.supportedDisplayCards(forArchitecture: config.systemArchitecture), displayValues: UTMQemuConfiguration.supportedDisplayCards(forArchitecturePretty: config.systemArchitecture))
                     }
                     
-                    Section(header: Text("Resolution"), footer: Text("Requires SPICE guest agent tools to be installed. Retina Mode is recommended only if the guest OS supports HiDPI.").padding(.bottom)) {
+                    // https://stackoverflow.com/a/59277022/15603854
+                    Section(header: Text("Resolution"), footer: Text("Requires SPICE guest agent tools to be installed. Retina Mode is recommended only if the guest OS supports HiDPI.").fixedSize(horizontal: false, vertical: true).padding(.bottom)) {
                         Toggle(isOn: $config.displayFitScreen, label: {
                             Text("Fit To Screen")
                         })
@@ -67,6 +70,7 @@ struct VMConfigDisplayView: View {
                 }
             }
         }.disableAutocorrection(true)
+        .padding(.horizontal, horizontalPaddingAmount)
     }
 }
 
