@@ -72,9 +72,9 @@
 
 - (void)loadSoundDefaultsForTarget:(nullable NSString *)target architecture:(nullable NSString *)architecture {
     NSString *card = nil;
-    if ([target hasPrefix:@"pc"] || [target hasPrefix:@"q35"]) {
+    if ([target hasPrefix:@"pc"]) {
         card = @"AC97";
-    } else if ([target isEqualToString:@"virt"] || [target hasPrefix:@"virt-"]) {
+    } else if ([target hasPrefix:@"q35"] || [target isEqualToString:@"virt"] || [target hasPrefix:@"virt-"]) {
         card = @"intel-hda";
     } else if ([target isEqualToString:@"mac99"]) {
         card = @"screamer";
@@ -91,7 +91,7 @@
         return;
     }
     self.soundCard = card;
-    self.soundEnabled = NO;
+    self.soundEnabled = YES;
 }
 
 - (void)loadNetworkDefaultsForTarget:(nullable NSString *)target architecture:(nullable NSString *)architecture {
