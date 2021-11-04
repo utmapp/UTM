@@ -104,7 +104,9 @@ fake_sign() {
 	mkdir -p "$_output"
 	cp -a "$_input" "$_output/"
 	find "$_output" -type f \( -path '*/Frameworks/*.framework/*' -and -not -name 'Info.plist' \) -exec ldid -S \{\} \;
-	ldid -S${_fakeent} "$_output/Applications/$_name.app/$_name"
+	mv "$_output/Applications/$_name.app/$_name" "$_output/Applications/$_name.app/com.utmapp.UTM"
+	ldid -S${_fakeent} "$_output/Applications/$_name.app/com.utmapp.UTM"
+	mv "$_output/Applications/$_name.app/com.utmapp.UTM" "$_output/Applications/$_name.app/$_name"
 }
 
 create_deb() {
