@@ -215,7 +215,7 @@ static matrix_float4x4 matrix_scale_translate(CGFloat scale, CGPoint translate)
         if (source.cursorVisible) {
             // Next render the cursor
             bool hasAlpha = YES;
-            bool isInverted = YES;
+            bool isInverted = source.cursorInverted;
             matrix_float4x4 transform = matrix_scale_translate(source.viewportScale,
                                                                CGPointMake(source.viewportOrigin.x +
                                                                            source.cursorOrigin.x,

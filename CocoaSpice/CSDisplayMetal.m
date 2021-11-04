@@ -720,6 +720,10 @@ static void cs_channel_destroy(SpiceSession *s, SpiceChannel *channel, gpointer 
     return point;
 }
 
+- (BOOL)cursorInverted {
+    return !self.isGLEnabled;
+}
+
 - (void)forceCursorPosition:(CGPoint)pos {
     self.mouseGuest = pos;
 }

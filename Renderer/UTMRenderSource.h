@@ -32,6 +32,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) NSUInteger cursorNumVertices;
 @property (nonatomic, nullable, readonly) id<MTLBuffer> displayVertices;
 @property (nonatomic, nullable, readonly) id<MTLBuffer> cursorVertices;
+@property (nonatomic, readonly) BOOL cursorInverted;
 
 - (void)rendererFrameHasRendered;
 
