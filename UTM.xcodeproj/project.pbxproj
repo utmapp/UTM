@@ -4926,8 +4926,8 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/hackiftekhar/IQKeyboardManager.git";
 			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 6.5.5;
+				kind = exactVersion;
+				version = 6.5.6;
 			};
 		};
 		CEA45E21263519B5002FA97D /* XCRemoteSwiftPackageReference "swift-log" */ = {
