@@ -96,8 +96,10 @@
 
 - (void)loadNetworkDefaultsForTarget:(nullable NSString *)target architecture:(nullable NSString *)architecture {
     NSString *card = nil;
-    if ([target hasPrefix:@"pc"] || [target hasPrefix:@"q35"]) {
+    if ([target hasPrefix:@"pc"]) {
         card = @"rtl8139";
+    } else if ([target hasPrefix:@"q35"]) {
+        card = @"e1000";
     } else if ([target isEqualToString:@"virt"] || [target hasPrefix:@"virt-"]) {
         card = @"virtio-net-pci";
     } else if (architecture) {
