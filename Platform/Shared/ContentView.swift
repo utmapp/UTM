@@ -115,7 +115,11 @@ struct ContentView: View {
             #if !WITH_QEMU_TCI
             if !Main.jitAvailable {
                 data.busyWork {
+                    #if canImport(AltKit)
+                    try data.startAltJIT()
+                    #else
                     throw NSLocalizedString("Your version of iOS does not support running VMs while unmodified. You must either run UTM while jailbroken or with a remote debugger attached.", comment: "ContentView")
+                    #endif
                 }
             }
             #endif
