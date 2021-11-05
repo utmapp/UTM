@@ -4922,9 +4922,9 @@
 		};
 		B329049A270FE136002707AC /* XCRemoteSwiftPackageReference "AltKit" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/Provenance-Emu/AltKit/";
+			repositoryURL = "https://github.com/utmapp/AltKit.git";
 			requirement = {
-				branch = iOS11;
+				branch = main;
 				kind = branch;
 			};
 		};
