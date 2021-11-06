@@ -183,8 +183,6 @@
         return @"cortex-a72";
     } else if ([architecture isEqualToString:@"arm"]) {
         return @"cortex-a15";
-    } else if ([target hasPrefix:@"pc"] || [target hasPrefix:@"q35"]) {
-        return @"Skylake-Client";
     } else {
         return @"default";
     }
