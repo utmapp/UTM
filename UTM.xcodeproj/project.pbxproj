@@ -46,6 +46,8 @@
 		8401FD71269BEB2B00265F0D /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = CE6B240A25F1F3CE0020D43E /* main.c */; };
 		8401FD72269BEB3000265F0D /* Bootstrap.c in Sources */ = {isa = PBXBuildFile; fileRef = CE0DF17125A80B6300A51894 /* Bootstrap.c */; };
 		8401FD7A269BECE200265F0D /* QEMULauncher.app in Embed Launcher */ = {isa = PBXBuildFile; fileRef = 8401FD62269BE9C500265F0D /* QEMULauncher.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		B329049C270FE136002707AC /* AltKit in Frameworks */ = {isa = PBXBuildFile; productRef = B329049B270FE136002707AC /* AltKit */; };
+		B3DDF57226E9BBA300CE47F0 /* AltKit in Frameworks */ = {isa = PBXBuildFile; productRef = B3DDF57126E9BBA300CE47F0 /* AltKit */; };
 		CE020BA324AEDC7C00B44AB6 /* UTMData.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE020BA224AEDC7C00B44AB6 /* UTMData.swift */; };
 		CE020BA424AEDC7C00B44AB6 /* UTMData.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE020BA224AEDC7C00B44AB6 /* UTMData.swift */; };
 		CE020BA724AEDEF000B44AB6 /* Logging in Frameworks */ = {isa = PBXBuildFile; productRef = CE020BA624AEDEF000B44AB6 /* Logging */; };
@@ -2116,6 +2118,7 @@
 				CE2D933724AD46670059923A /* libgstplayback.a in Frameworks */,
 				CE2D933824AD46670059923A /* libgstadder.a in Frameworks */,
 				CE2D933A24AD46670059923A /* libgstaudiorate.a in Frameworks */,
+				B3DDF57226E9BBA300CE47F0 /* AltKit in Frameworks */,
 				CE2D933B24AD46670059923A /* libgstvideofilter.a in Frameworks */,
 				CE2D933C24AD46670059923A /* libgstapp.a in Frameworks */,
 				CE2D933D24AD46670059923A /* libgstgio.a in Frameworks */,
@@ -2130,6 +2133,7 @@
 				CE2D934524AD46670059923A /* gthread-2.0.0.framework in Frameworks */,
 				CE2D934624AD46670059923A /* gstrtp-1.0.0.framework in Frameworks */,
 				CE2D934724AD46670059923A /* gstriff-1.0.0.framework in Frameworks */,
+				B329049C270FE136002707AC /* AltKit in Frameworks */,
 				CEA9058F25FC6A1400801E7C /* usbredirhost.1.framework in Frameworks */,
 				CE2D934924AD46670059923A /* gstreamer-1.0.0.framework in Frameworks */,
 				CE2D934B24AD46670059923A /* json-glib-1.0.0.framework in Frameworks */,
@@ -3193,6 +3197,7 @@
 				CE020BA624AEDEF000B44AB6 /* Logging */,
 				CE93759824BB821F0074066F /* IQKeyboardManagerSwift */,
 				83993291272F68550059355F /* ZIPFoundation */,
+				B329049B270FE136002707AC /* AltKit */,
 			);
 			productName = UTM;
 			productReference = CE2D93BE24AD46670059923A /* UTM.app */;
@@ -3328,6 +3333,7 @@
 				CE020BA524AEDEF000B44AB6 /* XCRemoteSwiftPackageReference "swift-log" */,
 				CE93759724BB821F0074066F /* XCRemoteSwiftPackageReference "IQKeyboardManager" */,
 				8399328E272F4A400059355F /* XCRemoteSwiftPackageReference "ZIPFoundation" */,
+				B329049A270FE136002707AC /* XCRemoteSwiftPackageReference "AltKit" */,
 			);
 			productRefGroup = CE550BCA225947990063E575 /* Products */;
 			projectDirPath = "";
@@ -4914,6 +4920,14 @@
 				minimumVersion = 0.9.9;
 			};
 		};
+		B329049A270FE136002707AC /* XCRemoteSwiftPackageReference "AltKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/utmapp/AltKit.git";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
 		CE020BA524AEDEF000B44AB6 /* XCRemoteSwiftPackageReference "swift-log" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/apple/swift-log";
@@ -4943,7 +4957,7 @@
 			repositoryURL = "https://github.com/hackiftekhar/IQKeyboardManager.git";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 6.5.5;
+				minimumVersion = 6.5.6;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
@@ -4963,6 +4977,16 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 8399328E272F4A400059355F /* XCRemoteSwiftPackageReference "ZIPFoundation" */;
 			productName = ZIPFoundation;
+		};
+		B329049B270FE136002707AC /* AltKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = B329049A270FE136002707AC /* XCRemoteSwiftPackageReference "AltKit" */;
+			productName = AltKit;
+		};
+		B3DDF57126E9BBA300CE47F0 /* AltKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = B3DDF57026E9BBA300CE47F0 /* XCRemoteSwiftPackageReference "AltKit" */;
+			productName = AltKit;
 		};
 		CE020BA624AEDEF000B44AB6 /* Logging */ = {
 			isa = XCSwiftPackageProductDependency;
