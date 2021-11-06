@@ -20,15 +20,33 @@ class VMMetalView: MTKView {
     weak var inputDelegate: VMMetalViewInputDelegate?
     private var wholeTrackingArea: NSTrackingArea?
     private var lastModifiers = NSEvent.ModifierFlags()
+    private var lastKeyDown: Int?
     private(set) var isMouseCaptured = false
     private(set) var isFirstResponder = false
     private(set) var isMouseInWindow = false
     
+    /// On ISO keyboards we have to switch `kVK_ISO_Section` and `kVK_ANSI_Grave`
+    /// from: https://chromium.googlesource.com/chromium/src/+/lkgr/ui/events/keycodes/keyboard_code_conversion_mac.mm
+    private func convertToCurrentLayout(for keycode: Int) -> Int {
+        guard KBGetLayoutType(Int16(LMGetKbdType())) == kKeyboardISO else {
+            return keycode
+        }
+        switch keycode {
+        case kVK_ISO_Section:
+            return kVK_ANSI_Grave
+        case kVK_ANSI_Grave:
+            return kVK_ISO_Section
+        default:
+            return keycode
+        }
+    }
+    
     /// Returns the scan code for the key code in the `event`, or `0` if scan code is unknown.
     private func getScanCodeForEvent(_ event: NSEvent) -> Int {
         if event.type == .keyDown || event.type == .keyUp {
+            let keycode = convertToCurrentLayout(for: Int(event.keyCode))
             /// see KeyCodeMap file for explaination why the .down scan code is used for both key down and up
-            return Int(KeyCodeMap.keyCodeToScanCodes[Int(event.keyCode)]?.down ?? 0)
+            return Int(KeyCodeMap.keyCodeToScanCodes[keycode]?.down ?? 0)
         } else {
             return 0
         }
@@ -39,13 +57,21 @@ class VMMetalView: MTKView {
     override func becomeFirstResponder() -> Bool {
         isFirstResponder = true
         if isMouseInWindow {
-            NSCursor.hide()
+            NSCursor.tryHide()
         }
         return super.becomeFirstResponder()
     }
     
     override func resignFirstResponder() -> Bool {
         isFirstResponder = false
+        NSCursor.tryUnhide()
+        if let lastKeyDown = lastKeyDown {
+            inputDelegate?.keyUp(scanCode: lastKeyDown)
+        }
+        if lastModifiers.containsSpecialKeys {
+            sendModifiers(lastModifiers, press: false)
+            lastModifiers = []
+        }
         return super.resignFirstResponder()
     }
     
@@ -55,7 +81,7 @@ class VMMetalView: MTKView {
         if let oldTrackingArea = wholeTrackingArea {
             logger.debug("remove old tracking area: \(oldTrackingArea.rect)")
             removeTrackingArea(oldTrackingArea)
-            NSCursor.unhide()
+            NSCursor.tryUnhide()
         }
         wholeTrackingArea = trackingArea
         addTrackingArea(trackingArea)
@@ -66,14 +92,14 @@ class VMMetalView: MTKView {
         logger.debug("mouse entered (first responder: \(isFirstResponder))")
         isMouseInWindow = true
         if isFirstResponder {
-            NSCursor.hide()
+            NSCursor.tryHide()
         }
     }
     
     override func mouseExited(with event: NSEvent) {
         logger.debug("mouse exited")
         isMouseInWindow = false
-        NSCursor.unhide()
+        NSCursor.tryUnhide()
     }
     
     override func mouseDown(with event: NSEvent) {
@@ -99,24 +125,40 @@ class VMMetalView: MTKView {
     override func keyDown(with event: NSEvent) {
         guard !event.isARepeat else { return }
         logger.trace("key down: \(event.keyCode)")
-        inputDelegate?.keyDown(scanCode: getScanCodeForEvent(event))
+        lastKeyDown = getScanCodeForEvent(event)
+        inputDelegate?.keyDown(scanCode: lastKeyDown!)
     }
     
     override func keyUp(with event: NSEvent) {
         logger.trace("key up: \(event.keyCode)")
+        lastKeyDown = nil
         inputDelegate?.keyUp(scanCode: getScanCodeForEvent(event))
     }
     
     override func flagsChanged(with event: NSEvent) {
         let modifiers = event.modifierFlags
         logger.trace("modifers: \(modifiers)")
-        if modifiers.isSuperset(of: [.option, .control]) {
-            logger.trace("release cursor")
-            inputDelegate?.requestReleaseCapture()
+        if let shouldUseCmdOptForCapture = inputDelegate?.shouldUseCmdOptForCapture {
+            let captureKeyPressed: Bool
+            if shouldUseCmdOptForCapture {
+                captureKeyPressed = modifiers.isSuperset(of: [.command, .option])
+            } else {
+                captureKeyPressed = modifiers.isSuperset(of: [.control, .option])
+            }
+            if captureKeyPressed {
+                if isMouseCaptured {
+                    inputDelegate!.releaseMouse()
+                } else {
+                    inputDelegate!.captureMouse()
+                }
+            }
         }
         sendModifiers(lastModifiers.subtracting(modifiers), press: false)
         sendModifiers(modifiers.subtracting(lastModifiers), press: true)
         lastModifiers = modifiers
+        if !isMouseCaptured {
+            super.flagsChanged(with: event)
+        }
     }
     
     private func sendModifiers(_ modifier: NSEvent.ModifierFlags, press: Bool) {
@@ -128,16 +170,18 @@ class VMMetalView: MTKView {
                 inputDelegate?.keyUp(scanCode: sc)
             }
         }
-        if modifier.contains(.command) {
-            let sc = Int(KeyCodeMap.keyCodeToScanCodes[kVK_Command]!.down)
+        if !modifier.isDisjoint(with: [.command, .leftCommand, .rightCommand]) {
+            let vk = modifier.contains(.rightCommand) ? kVK_RightCommand : kVK_Command
+            let sc = Int(KeyCodeMap.keyCodeToScanCodes[vk]!.down)
             if press {
                 inputDelegate?.keyDown(scanCode: sc)
             } else {
                 inputDelegate?.keyUp(scanCode: sc)
             }
         }
-        if modifier.contains(.control) {
-            let sc = Int(KeyCodeMap.keyCodeToScanCodes[kVK_Control]!.down)
+        if !modifier.isDisjoint(with: [.control, .leftControl, .rightControl]) {
+            let vk = modifier.contains(.rightControl) ? kVK_RightControl : kVK_Control
+            let sc = Int(KeyCodeMap.keyCodeToScanCodes[vk]!.down)
             if press {
                 inputDelegate?.keyDown(scanCode: sc)
             } else {
@@ -152,16 +196,18 @@ class VMMetalView: MTKView {
                 inputDelegate?.keyUp(scanCode: sc)
             }
         }
-        if modifier.contains(.option) {
-            let sc = Int(KeyCodeMap.keyCodeToScanCodes[kVK_Option]!.down)
+        if !modifier.isDisjoint(with: [.option, .leftOption, .rightOption]) {
+            let vk = modifier.contains(.rightOption) ? kVK_RightOption : kVK_Option
+            let sc = Int(KeyCodeMap.keyCodeToScanCodes[vk]!.down)
             if press {
                 inputDelegate?.keyDown(scanCode: sc)
             } else {
                 inputDelegate?.keyUp(scanCode: sc)
             }
         }
-        if modifier.contains(.shift) {
-            let sc = Int(KeyCodeMap.keyCodeToScanCodes[kVK_Shift]!.down)
+        if !modifier.isDisjoint(with: [.shift, .leftShift, .rightShift]) {
+            let vk = modifier.contains(.rightShift) ? kVK_RightShift : kVK_Shift
+            let sc = Int(KeyCodeMap.keyCodeToScanCodes[vk]!.down)
             if press {
                 inputDelegate?.keyDown(scanCode: sc)
             } else {
@@ -217,18 +263,72 @@ extension VMMetalView {
     }
     
     func captureMouse() {
+        logger.trace("capture cursor")
         CGAssociateMouseAndMouseCursorPosition(0)
         CGWarpMouseCursorPosition(screenCenter ?? .zero)
         isMouseCaptured = true
-        NSCursor.hide()
+        NSCursor.tryHide()
         CGSSetGlobalHotKeyOperatingMode(CGSMainConnectionID(), .disable)
     }
     
     func releaseMouse() {
+        logger.trace("release cursor")
         CGAssociateMouseAndMouseCursorPosition(1)
         isMouseCaptured = false
-        NSCursor.unhide()
+        if !isMouseInWindow {
+            NSCursor.tryUnhide()
+        }
         CGSSetGlobalHotKeyOperatingMode(CGSMainConnectionID(), .enable)
+    }
+}
+
+extension VMMetalView: NSAccessibilityGroup {
+    override func accessibilityRole() -> NSAccessibility.Role? {
+        .group
+    }
+    
+    override func accessibilityRoleDescription() -> String? {
+        NSLocalizedString("Capture Input", comment: "VMMetalView")
+    }
+    
+    override func accessibilityLabel() -> String? {
+        NSLocalizedString("Virtual Machine", comment: "VMMetalView")
+    }
+    
+    override func accessibilityHelp() -> String? {
+        NSLocalizedString("To capture input or to release the capture, press Command and Option at the same time.", comment: "VMMetalView")
+    }
+    
+    override func isAccessibilityElement() -> Bool {
+        true
+    }
+    
+    override func isAccessibilityEnabled() -> Bool {
+        true
+    }
+}
+
+private extension NSCursor {
+    private static var isCursorHidden: Bool = false
+    
+    static func tryHide() {
+        if !NSCursor.isCursorHidden {
+            NSCursor.hide()
+            NSCursor.isCursorHidden = true
+        }
+    }
+    
+    static func tryUnhide() {
+        if NSCursor.isCursorHidden {
+            NSCursor.unhide()
+            NSCursor.isCursorHidden = false
+        }
+    }
+}
+
+private extension NSEvent.ModifierFlags {
+    var containsSpecialKeys: Bool {
+        !self.isDisjoint(with: [.capsLock, .command, .control, .function, .option, .shift])
     }
 }
 
@@ -245,5 +345,39 @@ private extension Int {
             pressed.formUnion(.middle)
         }
         return pressed
+    }
+}
+
+private extension NSEvent.ModifierFlags {
+    static var leftCommand: NSEvent.ModifierFlags {
+        NSEvent.ModifierFlags(rawValue: 0x8)
+    }
+    
+    static var rightCommand: NSEvent.ModifierFlags {
+        NSEvent.ModifierFlags(rawValue: 0x10)
+    }
+    
+    static var leftControl: NSEvent.ModifierFlags {
+        NSEvent.ModifierFlags(rawValue: 0x1)
+    }
+    
+    static var rightControl: NSEvent.ModifierFlags {
+        NSEvent.ModifierFlags(rawValue: 0x2000)
+    }
+    
+    static var leftOption: NSEvent.ModifierFlags {
+        NSEvent.ModifierFlags(rawValue: 0x20)
+    }
+    
+    static var rightOption: NSEvent.ModifierFlags {
+        NSEvent.ModifierFlags(rawValue: 0x40)
+    }
+    
+    static var leftShift: NSEvent.ModifierFlags {
+        NSEvent.ModifierFlags(rawValue: 0x2)
+    }
+    
+    static var rightShift: NSEvent.ModifierFlags {
+        NSEvent.ModifierFlags(rawValue: 0x4)
     }
 }

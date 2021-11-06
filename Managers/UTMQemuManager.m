@@ -109,17 +109,19 @@ static void utm_migration_pass_handler(int64_t pass, void *ctx) {
     
 }
 
+typedef void(^rpcCompletionHandler_t)(NSDictionary *, NSError *);
+
 @interface UTMQemuManager ()
 
 @property (nonatomic, readwrite) BOOL isConnected;
 @property (nonatomic, readwrite) NSInteger retries;
 @property (nonatomic, nullable) qemuManagerCompletionHandler_t completionCallback;
+@property (nonatomic, nullable) rpcCompletionHandler_t rpcCallback;
 
 @end
 
 @implementation UTMQemuManager {
     UTMJSONStream *_jsonStream;
-    void (^_rpc_finish)(NSDictionary *, NSError *);
     dispatch_semaphore_t _cmd_lock;
 }
 
@@ -128,20 +130,24 @@ void qmp_rpc_call(CFDictionaryRef args, CFDictionaryRef *ret, Error **err, void 
     dispatch_semaphore_t rpc_sema = dispatch_semaphore_create(0);
     __block NSDictionary *dict;
     __block NSError *nserr;
+    __weak typeof(self) _self = self;
     dispatch_semaphore_wait(self->_cmd_lock, DISPATCH_TIME_FOREVER);
-    self->_rpc_finish = ^(NSDictionary *ret_dict, NSError *ret_err){
+    self.rpcCallback = ^(NSDictionary *ret_dict, NSError *ret_err){
         dispatch_semaphore_t rpc_sema_copy = rpc_sema;
         NSCAssert(ret_dict || ret_err, @"Both dict and err are null");
         nserr = ret_err;
         dict = ret_dict;
-        self->_rpc_finish = nil;
+        _self.rpcCallback = nil;
         dispatch_semaphore_signal(rpc_sema_copy); // copy to avoid race condition
     };
-    if (![self.jsonStream sendDictionary:(__bridge NSDictionary *)args]) {
-        self->_rpc_finish(nil, [NSError errorWithDomain:kUTMErrorDomain code:-1 userInfo:@{NSLocalizedDescriptionKey: NSLocalizedString(@"No connection for RPC.", "UTMQemuManager")}]);
+    if (![self.jsonStream sendDictionary:(__bridge NSDictionary *)args] && self.rpcCallback) {
+        self.rpcCallback(nil, [NSError errorWithDomain:kUTMErrorDomain code:-1 userInfo:@{NSLocalizedDescriptionKey: NSLocalizedString(@"No connection for RPC.", "UTMQemuManager")}]);
     }
     if (dispatch_semaphore_wait(rpc_sema, dispatch_time(DISPATCH_TIME_NOW, kRPCTimeout)) != 0) {
-        self->_rpc_finish = nil;
+        // possible race between this timeout and the callback being triggered
+        self.rpcCallback = ^(NSDictionary *ret_dict, NSError *ret_err){
+            _self.rpcCallback = nil;
+        };
         nserr = [NSError errorWithDomain:kUTMErrorDomain code:-1 userInfo:@{NSLocalizedDescriptionKey: NSLocalizedString(@"Timed out waiting for RPC.", "UTMQemuManager")}];
     }
     if (ret) {
@@ -168,8 +174,8 @@ void qmp_rpc_call(CFDictionaryRef args, CFDictionaryRef *ret, Error **err, void 
 }
 
 - (void)dealloc {
-    if (_rpc_finish) {
-        _rpc_finish(nil, [NSError errorWithDomain:kUTMErrorDomain code:-1 userInfo:@{NSLocalizedDescriptionKey: NSLocalizedString(@"Manager being deallocated, killing pending RPC.", "UTMQemuManager")}]);
+    if (self.rpcCallback) {
+        self.rpcCallback(nil, [NSError errorWithDomain:kUTMErrorDomain code:-1 userInfo:@{NSLocalizedDescriptionKey: NSLocalizedString(@"Manager being deallocated, killing pending RPC.", "UTMQemuManager")}]);
     }
 }
 
@@ -195,8 +201,8 @@ void qmp_rpc_call(CFDictionaryRef args, CFDictionaryRef *ret, Error **err, void 
 
 - (void)jsonStream:(UTMJSONStream *)stream seenError:(NSError *)error {
     UTMLog(@"QMP stream error seen: %@", error);
-    if (_rpc_finish) {
-        _rpc_finish(nil, error);
+    if (self.rpcCallback) {
+        self.rpcCallback(nil, error);
     }
     [self disconnect];
     if (!self.isConnected && self.retries > 0) {
@@ -214,15 +220,15 @@ void qmp_rpc_call(CFDictionaryRef args, CFDictionaryRef *ret, Error **err, void 
 - (void)jsonStream:(UTMJSONStream *)stream receivedDictionary:(NSDictionary *)dict {
     [dict enumerateKeysAndObjectsUsingBlock:^(id key, id val, BOOL *stop) {
         if ([key isEqualToString:@"return"]) {
-            if (self->_rpc_finish) {
-                self->_rpc_finish(dict, nil);
+            if (self.rpcCallback) {
+                self.rpcCallback(dict, nil);
             } else {
                 UTMLog(@"Got unexpected 'return' response: %@", dict);
             }
             *stop = YES;
         } else if ([key isEqualToString:@"error"]) {
-            if (self->_rpc_finish) {
-                self->_rpc_finish(nil, [NSError errorWithDomain:kUTMErrorDomain code:-1 userInfo:@{NSLocalizedDescriptionKey: dict[@"error"][@"desc"]}]);
+            if (self.rpcCallback) {
+                self.rpcCallback(nil, [NSError errorWithDomain:kUTMErrorDomain code:-1 userInfo:@{NSLocalizedDescriptionKey: dict[@"error"][@"desc"]}]);
             } else {
                 UTMLog(@"Got unexpected 'error' response: %@", dict);
             }
@@ -361,9 +367,10 @@ void qmp_rpc_call(CFDictionaryRef args, CFDictionaryRef *ret, Error **err, void 
             error_free(qerr);
         }
         if (info) {
-            for (MouseInfoList *list = info; list->next; list = list->next) {
+            for (MouseInfoList *list = info; list; list = list->next) {
                 if (list->value->absolute == absolute) {
                     index = list->value->index;
+                    break;
                 }
             }
             qapi_free_MouseInfoList(info);

@@ -228,3 +228,29 @@ index ca8a4e7f..8265f15e 100644
 -- 
 2.28.0
 
+From 3977c49109906b9ab26950e301a5ad684c36a57d Mon Sep 17 00:00:00 2001
+From: osy <50960678+osy@users.noreply.github.com>
+Date: Tue, 2 Nov 2021 12:56:54 -0700
+Subject: [PATCH] reds: always send monitors config
+
+Windows VDagent needs this to apply the resolution changes.
+---
+ server/reds.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/server/reds.c b/server/reds.c
+index f1e19b87..2fa2cfae 100644
+--- a/server/reds.c
++++ b/server/reds.c
+@@ -1182,7 +1182,7 @@ void reds_on_main_agent_data(RedsState *reds, MainChannelClient *mcc, const void
+         return;
+     case AGENT_MSG_FILTER_MONITORS_CONFIG:
+         reds_on_main_agent_monitors_config(reds, mcc, message, size);
+-        return;
++        break;
+     case AGENT_MSG_FILTER_PROTO_ERROR:
+         red_channel_client_shutdown(RED_CHANNEL_CLIENT(mcc));
+         return;
+-- 
+2.28.0
+

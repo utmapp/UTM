@@ -35,16 +35,23 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 alert.informativeText = NSLocalizedString("Quitting UTM will kill all running VMs.", comment: "VMDisplayMetalWindowController")
                 alert.addButton(withTitle: NSLocalizedString("OK", comment: "VMDisplayWindowController"))
                 alert.addButton(withTitle: NSLocalizedString("Cancel", comment: "VMDisplayWindowController"))
-                let response = alert.runModal()
-                switch response {
-                case .alertFirstButtonReturn:
-                    NSApplication.shared.reply(toApplicationShouldTerminate: true)
-                default:
-                    NSApplication.shared.reply(toApplicationShouldTerminate: false)
+                let confirm = { (response: NSApplication.ModalResponse) in
+                    switch response {
+                    case .alertFirstButtonReturn:
+                        NSApplication.shared.reply(toApplicationShouldTerminate: true)
+                    default:
+                        NSApplication.shared.reply(toApplicationShouldTerminate: false)
+                    }
+                }
+                if let window = sender.keyWindow {
+                    alert.beginSheetModal(for: window, completionHandler: confirm)
+                } else {
+                    let response = alert.runModal()
+                    confirm(response)
                 }
             }
             return .terminateLater
-        } else if vmList.allSatisfy({ $0.state == .vmStopped || $0.state == .vmError }) { // All VMs are stopped or in an error state
+        } else if vmList.allSatisfy({ $0.state == .vmStopped || $0.state == .vmSuspended || $0.state == .vmError }) { // All VMs are stopped or in an error state
             return .terminateNow
         } else { // There could be some VMs in other states (starting, pausing, etc.)
             return .terminateCancel

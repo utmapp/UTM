@@ -85,7 +85,8 @@ vertexShader(uint vertexID [[ vertex_id ]],
 fragment float4
 samplingShader(RasterizerData in [[stage_in]],
                texture2d<half> colorTexture [[ texture(UTMTextureIndexBaseColor) ]],
-               sampler textureSampler [[ sampler(UTMSamplerIndexTexture) ]])
+               sampler textureSampler [[ sampler(UTMSamplerIndexTexture) ]],
+               constant bool *isInverted [[ buffer(UTMFragmentBufferIndexIsInverted) ]])
 {
     // Sample the texture to obtain a color
     half4 colorSample = colorTexture.sample(textureSampler, in.textureCoordinate);
@@ -95,7 +96,7 @@ samplingShader(RasterizerData in [[stage_in]],
         colorSample.a = 0xff;
     }
 
-    // We return the color of the texture inverted
-    return float4(colorSample);
+    // We return the color of the texture inverted when requested
+    return float4(*isInverted ? colorSample.bgra : colorSample);
 }
 

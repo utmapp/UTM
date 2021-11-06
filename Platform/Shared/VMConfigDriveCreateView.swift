@@ -20,6 +20,7 @@ import SwiftUI
 struct VMConfigDriveCreateView: View {
     private let mibToGib = 1024
     let target: String?
+    let architecture: String?
     let minSizeMib = 1
     
     @ObservedObject var driveImage: VMDriveImage
@@ -30,7 +31,7 @@ struct VMConfigDriveCreateView: View {
             Toggle(isOn: $driveImage.removable.animation(), label: {
                 Text("Removable")
             }).onChange(of: driveImage.removable) { removable in
-                driveImage.reset(forSystemTarget: target, removable: removable)
+                driveImage.reset(forSystemTarget: target, architecture: architecture, removable: removable)
             }
             VMConfigStringPicker(selection: $driveImage.interface, label: Text("Interface"), rawValues: UTMConfiguration.supportedDriveInterfaces(), displayValues: UTMConfiguration.supportedDriveInterfacesPretty())
             if !driveImage.removable {
@@ -83,6 +84,6 @@ struct VMConfigDriveCreateView_Previews: PreviewProvider {
     @StateObject static private var driveImage = VMDriveImage()
     
     static var previews: some View {
-        VMConfigDriveCreateView(target: nil, driveImage: driveImage)
+        VMConfigDriveCreateView(target: nil, architecture: nil, driveImage: driveImage)
     }
 }

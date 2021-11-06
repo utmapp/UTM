@@ -73,8 +73,11 @@ struct ContentView: View {
                 #endif
             }
             .sheet(isPresented: $data.showNewVMSheet, onDismiss: {
-                //FIXME: SwiftUI bug this is never called on macOS
+                // on older versions of macOS this doesn't work so we keep it iOS only
+                #if !os(macOS)
                 newConfiguration.resetDefaults()
+                try? data.discardChanges()
+                #endif
             }, content: {
                 VMSettingsView(vm: nil, config: newConfiguration)
                     .environmentObject(data)
@@ -83,10 +86,13 @@ struct ContentView: View {
                     }
             })
             .onChange(of: data.showNewVMSheet) { value in
-                //FIXME: this doesn't always work on iOS
+                // on older versions of iOS this doesn't work so we keep it macOS only
+                #if os(macOS)
                 if !value {
                     newConfiguration.resetDefaults()
+                    try? data.discardChanges()
                 }
+                #endif
             }
             VMPlaceholderView()
         }.overlay(data.showSettingsModal ? AnyView(EmptyView()) : AnyView(BusyOverlay()))

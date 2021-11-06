@@ -23,7 +23,8 @@ struct SettingsView: View {
     @AppStorage("NoHypervisor") var isNoHypervisor = false
     @AppStorage("CtrlRightClick") var isCtrlRightClick = false
     @AppStorage("NoUsbPrompt") var isNoUsbPrompt = false
-    @AppStorage("UseOnlyPcores") var isUseOnlyPcores = false
+    @AppStorage("UseOnlyPcores") var isUseOnlyPcores = true
+    @AppStorage("AlternativeCaptureKey") var isAlternativeCaptureKey = false
     
     var body: some View {
         Form {
@@ -47,6 +48,9 @@ struct SettingsView: View {
                 Toggle(isOn: $isCtrlRightClick, label: {
                     Text("Hold Control (⌃) for right click")
                 })
+                Toggle(isOn: $isAlternativeCaptureKey, label: {
+                    Text("Use Command+Opt (⌘+⌥) for input capture/release")
+                })
             }
             Section(header: Text("USB")) {
                 Toggle(isOn: $isNoUsbPrompt, label: {
@@ -66,6 +70,7 @@ extension UserDefaults {
     @objc dynamic var CtrlRightClick: Bool { false }
     @objc dynamic var NoUsbPrompt: Bool { false }
     @objc dynamic var UseOnlyPcores: Bool { false }
+    @objc dynamic var AlternativeCaptureKey: Bool { false }
 }
 
 @available(macOS 11, *)

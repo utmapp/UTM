@@ -33,9 +33,15 @@ struct SavePanel: NSViewRepresentable {
                 return
             }
             
+            guard let window = nsView.window else {
+                return
+            }
+            
             // Initializing the SavePanel and setting it's properties
             let savePanel = NSSavePanel()
-            savePanel.directoryURL = URL(fileURLWithPath: "/Users/\(NSUserName())/Downloads")
+            if let downloadsUrl = FileManager.default.urls(for: .downloadsDirectory, in: .userDomainMask).first {
+                savePanel.directoryURL = downloadsUrl
+            }
             
             switch shareItem {
             case .debugLog:
@@ -55,7 +61,7 @@ struct SavePanel: NSViewRepresentable {
             // Calling savePanel.begin with the appropriate completion handlers
             switch shareItem {
             case .debugLog(let sourceUrl), .utmVm(let sourceUrl):
-                savePanel.begin { result in
+                savePanel.beginSheetModal(for: window) { result in
                     if result == .OK {
                         if let destUrl = savePanel.url {
                             do {
@@ -70,28 +76,30 @@ struct SavePanel: NSViewRepresentable {
                                 
                                 _ = try fileManager.replaceItemAt(destUrl, withItemAt: tempUrl)
                             } catch {
-                                data.alertMessage = AlertMessage(error.localizedDescription)
+                                DispatchQueue.main.async {
+                                    data.alertMessage = AlertMessage(error.localizedDescription)
+                                }
                             }
                         }
                     }
                 }
             case .qemuCommand(let command):
-                savePanel.begin { result in
+                savePanel.beginSheetModal(for: window) { result in
                     if result == .OK {
                         if let destUrl = savePanel.url {
                             do {
                                 try command.write(to: destUrl, atomically: true, encoding: .utf8)
                             } catch {
-                                data.alertMessage = AlertMessage(error.localizedDescription)
+                                DispatchQueue.main.async {
+                                    data.alertMessage = AlertMessage(error.localizedDescription)
+                                }
                             }
                         }
                     }
                 }
             }
 
-            DispatchQueue.main.async {
-                isPresented = false
-            }
+            isPresented = false
         }
     }
 }

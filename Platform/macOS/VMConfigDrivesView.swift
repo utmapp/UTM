@@ -37,12 +37,12 @@ struct VMConfigDrivesView: View {
                 })
                 .onChange(of: newDrivePopover, perform: { showPopover in
                     if showPopover {
-                        newDrive.reset(forSystemTarget: config.systemTarget, removable: false)
+                        newDrive.reset(forSystemTarget: config.systemTarget, architecture: config.systemArchitecture, removable: false)
                     }
                 })
                 .popover(isPresented: $newDrivePopover, arrowEdge: .bottom) {
                     VStack {
-                        VMConfigDriveCreateView(target: config.systemTarget, driveImage: newDrive)
+                        VMConfigDriveCreateView(target: config.systemTarget, architecture: config.systemArchitecture, driveImage: newDrive)
                         HStack {
                             Spacer()
                             Button(action: { addNewDrive(newDrive) }, label: {

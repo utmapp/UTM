@@ -101,6 +101,13 @@ extension UTType {
     static let appleLog = UTType(filenameExtension: "log")!
 }
 
+extension Sequence where Element: Hashable {
+    func uniqued() -> [Element] {
+        var set = Set<Element>()
+        return filter { set.insert($0).inserted }
+    }
+}
+
 #if !os(macOS)
 extension UIView {
     /// Adds constraints to this `UIView` instances `superview` object to make sure this always has the same size as the superview.

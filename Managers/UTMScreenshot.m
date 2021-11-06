@@ -19,15 +19,6 @@
 
 @implementation UTMScreenshot
 
-+ (UTMScreenshot *)none {
-    static dispatch_once_t pred = 0;
-    static id _sharedObject = nil;
-    dispatch_once(&pred, ^{
-        _sharedObject = [[self alloc] init];
-    });
-    return _sharedObject;
-}
-
 - (instancetype)init {
     return [super init];
 }

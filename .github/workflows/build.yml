@@ -41,13 +41,13 @@ jobs:
           submodules: recursive
       - name: Setup Xcode
         shell: bash
-        run: sudo xcode-select -switch /Applications/Xcode_12.5.1.app
+        run: sudo xcode-select -switch /Applications/Xcode_13.1.app
       - name: Cache Sysroot
         id: cache-sysroot
         uses: actions/cache@v2
         with:
           path: sysroot-${{ matrix.platform }}-${{ matrix.arch }}
-          key: ${{ matrix.platform }}-${{ matrix.arch }}-${{ hashFiles('scripts/build_dependencies.sh') }}-${{ hashFiles('patches/**') }}-xcode-12
+          key: ${{ matrix.platform }}-${{ matrix.arch }}-${{ hashFiles('scripts/build_dependencies.sh') }}-${{ hashFiles('patches/**') }}
       - name: Setup Path
         shell: bash
         run: |
@@ -112,7 +112,7 @@ jobs:
           path: sysroot.tgz
       - name: Setup Xcode
         shell: bash
-        run: sudo xcode-select -switch /Applications/Xcode_12.5.1.app
+        run: sudo xcode-select -switch /Applications/Xcode_13.1.app
       - name: Build UTM
         run: |
           ./scripts/build_utm.sh -t "$SIGNING_TEAM_ID" -p macos -a "arm64 x86_64" -o UTM

@@ -126,6 +126,7 @@ class VMDisplayWindowController: NSWindowController {
         sharedFolderToolbarItem.isEnabled = vm.hasShareDirectoryEnabled
         usbToolbarItem.isEnabled = vm.hasUsbRedirection
         window!.title = vmConfiguration!.name
+        window!.makeFirstResponder(displayView.subviews.first)
     }
     
     func enterSuspended(isBusy busy: Bool) {
@@ -149,6 +150,7 @@ class VMDisplayWindowController: NSWindowController {
         drivesToolbarItem.isEnabled = false
         sharedFolderToolbarItem.isEnabled = false
         usbToolbarItem.isEnabled = false
+        window!.makeFirstResponder(nil)
     }
     
     // MARK: - Alert
@@ -182,19 +184,24 @@ extension VMDisplayWindowController: NSWindowDelegate {
     }
     
     func windowShouldClose(_ sender: NSWindow) -> Bool {
+        guard vm.state != .vmStopped && vm.state != .vmSuspended && vm.state != .vmError else {
+            return true
+        }
         let alert = NSAlert()
         alert.alertStyle = .informational
         alert.messageText = NSLocalizedString("Confirmation", comment: "VMDisplayWindowController")
         alert.informativeText = NSLocalizedString("Closing this window will kill the VM.", comment: "VMDisplayMetalWindowController")
         alert.addButton(withTitle: NSLocalizedString("OK", comment: "VMDisplayWindowController"))
         alert.addButton(withTitle: NSLocalizedString("Cancel", comment: "VMDisplayWindowController"))
-        let response = alert.runModal()
-        switch response {
-        case .alertFirstButtonReturn:
-            return true
-        default:
-            return false
+        alert.beginSheetModal(for: sender) { response in
+            switch response {
+            case .alertFirstButtonReturn:
+                sender.close()
+            default:
+                return
+            }
         }
+        return false
     }
     
     func windowWillClose(_ notification: Notification) {
@@ -202,6 +209,18 @@ extension VMDisplayWindowController: NSWindowDelegate {
             self.vm.quitVM(force: true)
         }
         onClose?(notification)
+    }
+    
+    func windowDidBecomeKey(_ notification: Notification) {
+        if let window = self.window {
+            _ = window.makeFirstResponder(displayView.subviews.first)
+        }
+    }
+    
+    func windowDidResignKey(_ notification: Notification) {
+        if let window = self.window {
+            _ = window.makeFirstResponder(nil)
+        }
     }
 }
 

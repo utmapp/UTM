@@ -45,6 +45,7 @@ class VMDisplayMetalWindowController: VMDisplayWindowController {
     @Setting("DisplayFixed") private var isDisplayFixed: Bool = false
     @Setting("CtrlRightClick") private var isCtrlRightClick: Bool = false
     @Setting("NoUsbPrompt") private var isNoUsbPrompt: Bool = false
+    @Setting("AlternativeCaptureKey") private var isAlternativeCaptureKey: Bool = false
     private var settingObservations = [NSKeyValueObservation]()
     
     // MARK: - Init
@@ -60,6 +61,7 @@ class VMDisplayMetalWindowController: VMDisplayWindowController {
             return
         }
         displayView.addSubview(metalView)
+        window!.recalculateKeyViewLoop()
         renderer = UTMRenderer.init(metalKitView: metalView)
         guard let renderer = self.renderer else {
             showErrorAlert(NSLocalizedString("Internal error.", comment: "VMDisplayMetalWindowController"))
@@ -144,6 +146,7 @@ class VMDisplayMetalWindowController: VMDisplayWindowController {
 extension VMDisplayMetalWindowController: UTMSpiceIODelegate {
     func spiceDidChange(_ input: CSInput) {
         vmInput = input
+        vm.requestInputTablet(!(metalView?.isMouseCaptured ?? false))
     }
     
     func spiceDidCreateDisplay(_ display: CSDisplayMetal) {
@@ -303,30 +306,29 @@ extension VMDisplayMetalWindowController {
         isFullScreen = false
     }
     
-    func windowDidBecomeKey(_ notification: Notification) {
-        if let window = self.window {
-            _ = window.makeFirstResponder(metalView)
-        }
-    }
-    
-    func windowDidResignKey(_ notification: Notification) {
-        if let window = self.window {
-            _ = window.makeFirstResponder(nil)
-        }
+    override func windowDidResignKey(_ notification: Notification) {
+        releaseMouse()
+        super.windowDidResignKey(notification)
     }
 }
 
 // MARK: - Input events
 extension VMDisplayMetalWindowController: VMMetalViewInputDelegate {
-    private func captureMouse() {
+    var shouldUseCmdOptForCapture: Bool {
+        isAlternativeCaptureKey || NSWorkspace.shared.isVoiceOverEnabled
+    }
+    
+    func captureMouse() {
         let action = { () -> Void in
             self.vm.requestInputTablet(false)
             self.metalView?.captureMouse()
+            self.window?.subtitle = NSLocalizedString("Press \(self.shouldUseCmdOptForCapture ? "⌘+⌥" : "⌃+⌥") to release cursor", comment: "VMDisplayMetalWindowController")
+            self.window?.makeFirstResponder(self.metalView)
         }
         if isCursorCaptureAlertShown {
             let alert = NSAlert()
             alert.messageText = NSLocalizedString("Captured mouse", comment: "VMDisplayMetalWindowController")
-            alert.informativeText = NSLocalizedString("To release the mouse cursor, press ⌃+⌥ (Ctrl+Opt or Ctrl+Alt) at the same time.", comment: "VMDisplayMetalWindowController")
+            alert.informativeText = NSLocalizedString("To release the mouse cursor, press \(self.shouldUseCmdOptForCapture ? "⌘+⌥ (Cmd+Opt)" : "⌃+⌥ (Ctrl+Opt)") at the same time.", comment: "VMDisplayMetalWindowController")
             alert.showsSuppressionButton = true
             alert.beginSheetModal(for: window!) { _ in
                 if alert.suppressionButton?.state ?? .off == .on {
@@ -339,9 +341,10 @@ extension VMDisplayMetalWindowController: VMMetalViewInputDelegate {
         }
     }
     
-    private func releaseMouse() {
+    func releaseMouse() {
         vm.requestInputTablet(true)
         metalView?.releaseMouse()
+        self.window?.subtitle = ""
     }
     
     func mouseMove(absolutePoint: CGPoint, button: CSInputButton) {
@@ -412,10 +415,6 @@ extension VMDisplayMetalWindowController: VMMetalViewInputDelegate {
         sendExtendedKey(.release, keyCode: scanCode)
     }
     
-    func requestReleaseCapture() {
-        releaseMouse()
-    }
-    
     private func handleCaptureKeys(for event: NSEvent) -> Bool {
         // if captured we route all keyevents to view
         if let metalView = metalView, metalView.isMouseCaptured {
@@ -430,7 +429,7 @@ extension VMDisplayMetalWindowController: VMMetalViewInputDelegate {
         if event.modifierFlags.contains(.command) && event.type == .keyUp {
             // for some reason, macOS doesn't like to send Cmd+KeyUp
             metalView.keyUp(with: event)
-            return true
+            return false
         }
         return false
     }

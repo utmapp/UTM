@@ -77,7 +77,7 @@ class UTMData: ObservableObject {
         self.virtualMachines = []
         self.pendingVMs = []
         if let files = defaults.array(forKey: "VMList") as? [String] {
-            for file in files {
+            for file in files.uniqued() {
                 let url = documentsURL.appendingPathComponent(file, isDirectory: true)
                 if let vm = UTMVirtualMachine(url: url) {
                     self.virtualMachines.append(vm)
@@ -320,7 +320,11 @@ class UTMData: ObservableObject {
         } else {
             try fileManager.copyItem(at: at, to: to)
         }
-        guard let vm = UTMVirtualMachine(url: to) else {
+    }
+    
+    /// Attempts to read from the URL and appends the VM to the list of virtual machines.
+    func readUTMFromURL(fileURL: URL) throws {
+        guard let vm = UTMVirtualMachine(url: fileURL) else {
             throw NSLocalizedString("Failed to parse imported VM.", comment: "UTMData")
         }
         DispatchQueue.main.async {
@@ -355,9 +359,11 @@ class UTMData: ObservableObject {
         } else if (fileBasePath.resolvingSymlinksInPath().path == documentsURL.appendingPathComponent("Inbox", isDirectory: true).path) {
             logger.info("moving from Inbox")
             try copyUTM(at: url, to: dest, move: true)
+            try readUTMFromURL(fileURL: dest)
         } else {
             logger.info("copying to Documents")
             try copyUTM(at: url, to: dest)
+            try readUTMFromURL(fileURL: dest)
         }
     }
     
@@ -416,8 +422,8 @@ class UTMData: ObservableObject {
         DispatchQueue.main.async {
             let name = self.newDefaultDriveName(for: config)
             let interface: String
-            if let target = config.systemTarget {
-                interface = UTMConfiguration.defaultDriveInterface(forTarget: target, type: imageType)
+            if let target = config.systemTarget, let architecture = config.systemArchitecture {
+                interface = UTMConfiguration.defaultDriveInterface(forTarget: target, architecture: architecture, type: imageType)
             } else {
                 interface = "none"
             }

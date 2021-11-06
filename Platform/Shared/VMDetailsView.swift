@@ -55,14 +55,13 @@ struct VMDetailsView: View {
                 if regularScreenSizeClass && !notes.isEmpty {
                     HStack(alignment: .top) {
                         Details(config: vm.configuration, sessionConfig: vm.viewState, sizeLabel: sizeLabel)
-                            .padding()
                             .frame(maxWidth: .infinity)
                         Text(notes)
                             .font(.body)
+                            .frame(maxWidth: .infinity, alignment: .topLeading)
                             .fixedSize(horizontal: false, vertical: true)
-                            .padding()
-                            .frame(maxWidth: .infinity)
-                    }
+                            .padding([.leading, .trailing])
+                    }.padding([.leading, .trailing])
                     VMRemovableDrivesView(vm: vm)
                         .padding([.leading, .trailing, .bottom])
                 } else {
@@ -111,13 +110,13 @@ struct Screenshot: View {
         ZStack {
             Rectangle()
                 .fill(Color.black)
-            if vm.screenshot?.image != nil {
+            if vm.screenshot != nil {
                 #if os(macOS)
-                Image(nsImage: vm.screenshot!.image!)
+                Image(nsImage: vm.screenshot!.image)
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                 #else
-                Image(uiImage: vm.screenshot!.image!)
+                Image(uiImage: vm.screenshot!.image)
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                 #endif
