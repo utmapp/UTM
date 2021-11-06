@@ -4952,6 +4952,14 @@
 				minimumVersion = 1.2.0;
 			};
 		};
+		CEA45E23263519B5002FA97D /* XCRemoteSwiftPackageReference "IQKeyboardManager" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/hackiftekhar/IQKeyboardManager.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 6.5.6;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -4999,6 +5007,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = CEA45E21263519B5002FA97D /* XCRemoteSwiftPackageReference "swift-log" */;
 			productName = Logging;
+		};
+		CEA45E22263519B5002FA97D /* IQKeyboardManagerSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = CEA45E23263519B5002FA97D /* XCRemoteSwiftPackageReference "IQKeyboardManager" */;
+			productName = IQKeyboardManagerSwift;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
