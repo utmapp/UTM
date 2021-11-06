@@ -72,8 +72,11 @@ class UTMData: ObservableObject {
         fileManager.urls(for: .documentDirectory, in: .userDomainMask)[0]
     }
     
+    private var busyQueue: DispatchQueue
+    
     init() {
         let defaults = UserDefaults.standard
+        self.busyQueue = DispatchQueue(label: "UTM Busy Queue", qos: .userInitiated)
         self.showSettingsModal = false
         self.showNewVMSheet = false
         self.busy = false
@@ -528,10 +531,10 @@ class UTMData: ObservableObject {
     }
     
     func busyWork(_ work: @escaping () throws -> Void) {
-        DispatchQueue.main.async {
-            self.busy = true
-        }
-        DispatchQueue.global(qos: .userInitiated).async {
+        busyQueue.async {
+            DispatchQueue.main.async {
+                self.busy = true
+            }
             defer {
                 DispatchQueue.main.async {
                     self.busy = false
