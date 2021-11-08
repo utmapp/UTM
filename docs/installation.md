@@ -14,3 +14,5 @@ Visit [the AltStore website](https://altstore.io), download the Altserver instal
 
 When done, go to Apps sections and click the plus.
 Select the IPA you have downloaded, and you are done! Enjoy your Virtual machines!
+## Others
+Create a PR changing this file with the way in any format you want, and you are done!
