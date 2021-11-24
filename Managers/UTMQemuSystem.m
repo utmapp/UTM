@@ -310,9 +310,10 @@ static size_t sysctl_read(const char *name) {
                 BOOL removable = (type == UTMDiskImageTypeCD) || [self.configuration driveRemovableForIndex:i];
                 NSString *identifier = [self.configuration driveNameForIndex:i];
                 NSString *realInterface = [self expandDriveInterface:interface identifier:identifier removable:removable busInterfaceMap:busInterfaceMap];
+                BOOL floppy = [realInterface containsString:@"floppy"];
                 NSString *drive;
                 [self pushArgv:@"-drive"];
-                drive = [NSString stringWithFormat:@"if=%@,media=%@,id=%@", realInterface, removable ? @"cdrom" : @"disk", identifier];
+                drive = [NSString stringWithFormat:@"if=%@,media=%@,id=%@", realInterface, (removable && !floppy) ? @"cdrom" : @"disk", identifier];
                 if (hasImage) {
                     drive = [NSString stringWithFormat:@"%@,file=%@,cache=writethrough", drive, fullPathURL.path];
                 }
