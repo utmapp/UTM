@@ -171,6 +171,7 @@ static matrix_float4x4 matrix_scale_translate(CGFloat scale, CGPoint translate)
         // Render the screen first
         
         bool hasAlpha = NO;
+        bool isInverted = NO;
         matrix_float4x4 transform = matrix_scale_translate(source.viewportScale,
                                                            source.viewportOrigin);
 
@@ -200,6 +201,10 @@ static matrix_float4x4 matrix_scale_translate(CGFloat scale, CGPoint translate)
         
         [renderEncoder setFragmentSamplerState:_sampler
                                        atIndex:UTMSamplerIndexTexture];
+        
+        [renderEncoder setFragmentBytes:&isInverted
+                                 length:sizeof(isInverted)
+                                atIndex:UTMFragmentBufferIndexIsInverted];
 
         // Draw the vertices of our triangles
         [renderEncoder drawPrimitives:MTLPrimitiveTypeTriangle
@@ -210,6 +215,7 @@ static matrix_float4x4 matrix_scale_translate(CGFloat scale, CGPoint translate)
         if (source.cursorVisible) {
             // Next render the cursor
             bool hasAlpha = YES;
+            bool isInverted = source.cursorInverted;
             matrix_float4x4 transform = matrix_scale_translate(source.viewportScale,
                                                                CGPointMake(source.viewportOrigin.x +
                                                                            source.cursorOrigin.x,
@@ -231,6 +237,9 @@ static matrix_float4x4 matrix_scale_translate(CGFloat scale, CGPoint translate)
                                       atIndex:UTMTextureIndexBaseColor];
             [renderEncoder setFragmentSamplerState:_sampler
                                            atIndex:UTMSamplerIndexTexture];
+            [renderEncoder setFragmentBytes:&isInverted
+                                     length:sizeof(isInverted)
+                                    atIndex:UTMFragmentBufferIndexIsInverted];
             [renderEncoder drawPrimitives:MTLPrimitiveTypeTriangle
                               vertexStart:0
                               vertexCount:source.cursorNumVertices];

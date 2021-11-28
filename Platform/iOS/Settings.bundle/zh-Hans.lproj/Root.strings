@@ -145,3 +145,10 @@
 /* (No Comment) */
 "Up" = "上方向键";
 
+"Disable screen dimming when idle" = "闲置时不自动锁定屏幕";
+
+"Do not show prompt when USB device is plugged in" = "USB 设备插入时不弹出提示";
+
+"Idle" = "闲置时";
+
+"Devices" = "设备";

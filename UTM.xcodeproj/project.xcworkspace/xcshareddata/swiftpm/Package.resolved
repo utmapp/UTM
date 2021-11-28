@@ -1,0 +1,43 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "AltKit",
+        "repositoryURL": "https://github.com/utmapp/AltKit.git",
+        "state": {
+          "branch": "main",
+          "revision": "71ec1d505cbb7cb53dc16c7c98cb94c93953f3ff",
+          "version": null
+        }
+      },
+      {
+        "package": "IQKeyboardManagerSwift",
+        "repositoryURL": "https://github.com/hackiftekhar/IQKeyboardManager.git",
+        "state": {
+          "branch": null,
+          "revision": "4dc6bc7d1c9747bd0c261c8c055903f9fdef91f7",
+          "version": "6.5.6"
+        }
+      },
+      {
+        "package": "swift-log",
+        "repositoryURL": "https://github.com/apple/swift-log",
+        "state": {
+          "branch": null,
+          "revision": "5d66f7ba25daf4f94100e7022febf3c75e37a6c7",
+          "version": "1.4.2"
+        }
+      },
+      {
+        "package": "ZIPFoundation",
+        "repositoryURL": "https://github.com/weichsel/ZIPFoundation.git",
+        "state": {
+          "branch": null,
+          "revision": "cf10bbff6ac3b873e97b36b9784c79866a051a8e",
+          "version": "0.9.12"
+        }
+      }
+    ]
+  },
+  "version": 1
+}

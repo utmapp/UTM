@@ -36,9 +36,9 @@
 		835AA7B126AB7C85007A0411 /* UTMPendingVirtualMachine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 835AA7B026AB7C85007A0411 /* UTMPendingVirtualMachine.swift */; };
 		835AA7B226AB7C85007A0411 /* UTMPendingVirtualMachine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 835AA7B026AB7C85007A0411 /* UTMPendingVirtualMachine.swift */; };
 		835AA7B326AB7C85007A0411 /* UTMPendingVirtualMachine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 835AA7B026AB7C85007A0411 /* UTMPendingVirtualMachine.swift */; };
-		836A40D526AA2A03002068F8 /* Zip in Frameworks */ = {isa = PBXBuildFile; productRef = 836A40D426AA2A03002068F8 /* Zip */; };
-		836A40D726AA2A2C002068F8 /* Zip in Frameworks */ = {isa = PBXBuildFile; productRef = 836A40D626AA2A2C002068F8 /* Zip */; };
-		836A40D926AA2A30002068F8 /* Zip in Frameworks */ = {isa = PBXBuildFile; productRef = 836A40D826AA2A30002068F8 /* Zip */; };
+		83993290272F4A400059355F /* ZIPFoundation in Frameworks */ = {isa = PBXBuildFile; productRef = 8399328F272F4A400059355F /* ZIPFoundation */; };
+		83993292272F68550059355F /* ZIPFoundation in Frameworks */ = {isa = PBXBuildFile; productRef = 83993291272F68550059355F /* ZIPFoundation */; };
+		83993294272F685F0059355F /* ZIPFoundation in Frameworks */ = {isa = PBXBuildFile; productRef = 83993293272F685F0059355F /* ZIPFoundation */; };
 		83A004B926A8CC95001AC09E /* UTMImportFromWebTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83A004B826A8CC95001AC09E /* UTMImportFromWebTask.swift */; };
 		83A004BA26A8CC95001AC09E /* UTMImportFromWebTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83A004B826A8CC95001AC09E /* UTMImportFromWebTask.swift */; };
 		83A004BB26A8CC95001AC09E /* UTMImportFromWebTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83A004B826A8CC95001AC09E /* UTMImportFromWebTask.swift */; };
@@ -69,6 +69,8 @@
 		84FCABBA268CE05E0036196C /* UTMQemuVirtualMachine.m in Sources */ = {isa = PBXBuildFile; fileRef = 84FCABB9268CE05E0036196C /* UTMQemuVirtualMachine.m */; };
 		84FCABBB268CE05E0036196C /* UTMQemuVirtualMachine.m in Sources */ = {isa = PBXBuildFile; fileRef = 84FCABB9268CE05E0036196C /* UTMQemuVirtualMachine.m */; };
 		84FCABBC268CE05E0036196C /* UTMQemuVirtualMachine.m in Sources */ = {isa = PBXBuildFile; fileRef = 84FCABB9268CE05E0036196C /* UTMQemuVirtualMachine.m */; };
+		B329049C270FE136002707AC /* AltKit in Frameworks */ = {isa = PBXBuildFile; productRef = B329049B270FE136002707AC /* AltKit */; };
+		B3DDF57226E9BBA300CE47F0 /* AltKit in Frameworks */ = {isa = PBXBuildFile; productRef = B3DDF57126E9BBA300CE47F0 /* AltKit */; };
 		CE020BA324AEDC7C00B44AB6 /* UTMData.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE020BA224AEDC7C00B44AB6 /* UTMData.swift */; };
 		CE020BA424AEDC7C00B44AB6 /* UTMData.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE020BA224AEDC7C00B44AB6 /* UTMData.swift */; };
 		CE020BA724AEDEF000B44AB6 /* Logging in Frameworks */ = {isa = PBXBuildFile; productRef = CE020BA624AEDEF000B44AB6 /* Logging */; };
@@ -2212,6 +2214,7 @@
 				CE2D933724AD46670059923A /* libgstplayback.a in Frameworks */,
 				CE2D933824AD46670059923A /* libgstadder.a in Frameworks */,
 				CE2D933A24AD46670059923A /* libgstaudiorate.a in Frameworks */,
+				B3DDF57226E9BBA300CE47F0 /* AltKit in Frameworks */,
 				CE2D933B24AD46670059923A /* libgstvideofilter.a in Frameworks */,
 				CE2D933C24AD46670059923A /* libgstapp.a in Frameworks */,
 				CE2D933D24AD46670059923A /* libgstgio.a in Frameworks */,
@@ -2220,11 +2223,13 @@
 				CE2D934024AD46670059923A /* libgstosxaudio.a in Frameworks */,
 				CE2D934124AD46670059923A /* gmodule-2.0.0.framework in Frameworks */,
 				CE2D934224AD46670059923A /* jpeg.62.framework in Frameworks */,
+				83993292272F68550059355F /* ZIPFoundation in Frameworks */,
 				CE2D934324AD46670059923A /* intl.8.framework in Frameworks */,
 				CE2D934424AD46670059923A /* gstapp-1.0.0.framework in Frameworks */,
 				CE2D934524AD46670059923A /* gthread-2.0.0.framework in Frameworks */,
 				CE2D934624AD46670059923A /* gstrtp-1.0.0.framework in Frameworks */,
 				CE2D934724AD46670059923A /* gstriff-1.0.0.framework in Frameworks */,
+				B329049C270FE136002707AC /* AltKit in Frameworks */,
 				CEA9058F25FC6A1400801E7C /* usbredirhost.1.framework in Frameworks */,
 				CE2D934924AD46670059923A /* gstreamer-1.0.0.framework in Frameworks */,
 				CE2D934B24AD46670059923A /* json-glib-1.0.0.framework in Frameworks */,
@@ -2235,7 +2240,6 @@
 				CE2D934F24AD46670059923A /* phodav-2.0.0.framework in Frameworks */,
 				CEA9059025FC6A1700801E7C /* usbredirparser.1.framework in Frameworks */,
 				CE0E9B87252FD06B0026E02B /* SwiftUI.framework in Frameworks */,
-				836A40D726AA2A2C002068F8 /* Zip in Frameworks */,
 				CE2D935024AD46670059923A /* gstcontroller-1.0.0.framework in Frameworks */,
 				CE2D935124AD46670059923A /* gstaudio-1.0.0.framework in Frameworks */,
 				CE2D935224AD46670059923A /* gpg-error.0.framework in Frameworks */,
@@ -2322,12 +2326,12 @@
 				CE03D08924D90F0700F76B84 /* glib-2.0.0.framework in Frameworks */,
 				CE0B6EC224AD677200FE012D /* libgstvideorate.a in Frameworks */,
 				CE0B6F0C24AD677200FE012D /* gstreamer-1.0.0.framework in Frameworks */,
-				836A40D526AA2A03002068F8 /* Zip in Frameworks */,
 				CEF83F89250094A400557D15 /* png16.16.framework in Frameworks */,
 				CE0B6F0224AD677200FE012D /* libgstjpeg.a in Frameworks */,
 				CE0B6EFC24AD677200FE012D /* libgstaudiotestsrc.a in Frameworks */,
 				CE0B6EF824AD677200FE012D /* gstsdp-1.0.0.framework in Frameworks */,
 				CE0B6EEA24AD677200FE012D /* libgstcoreelements.a in Frameworks */,
+				83993290272F4A400059355F /* ZIPFoundation in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2396,12 +2400,12 @@
 				CEA45F59263519B5002FA97D /* gstpbutils-1.0.0.framework in Frameworks */,
 				CEA45F5A263519B5002FA97D /* gstallocators-1.0.0.framework in Frameworks */,
 				CEA45F5B263519B5002FA97D /* gstcheck-1.0.0.framework in Frameworks */,
-				836A40D926AA2A30002068F8 /* Zip in Frameworks */,
 				CEA45F5C263519B5002FA97D /* iconv.2.framework in Frameworks */,
 				CEA45F5D263519B5002FA97D /* gstsdp-1.0.0.framework in Frameworks */,
 				CEA45F5E263519B5002FA97D /* ssl.1.1.framework in Frameworks */,
 				CEA45F5F263519B5002FA97D /* spice-server.1.framework in Frameworks */,
 				CEA45F60263519B5002FA97D /* pixman-1.0.framework in Frameworks */,
+				83993294272F685F0059355F /* ZIPFoundation in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3330,7 +3334,8 @@
 			packageProductDependencies = (
 				CE020BA624AEDEF000B44AB6 /* Logging */,
 				CE93759824BB821F0074066F /* IQKeyboardManagerSwift */,
-				836A40D626AA2A2C002068F8 /* Zip */,
+				83993291272F68550059355F /* ZIPFoundation */,
+				B329049B270FE136002707AC /* AltKit */,
 			);
 			productName = UTM;
 			productReference = CE2D93BE24AD46670059923A /* UTM.app */;
@@ -3355,7 +3360,7 @@
 			name = macOS;
 			packageProductDependencies = (
 				CE020BA824AEDF3000B44AB6 /* Logging */,
-				836A40D426AA2A03002068F8 /* Zip */,
+				8399328F272F4A400059355F /* ZIPFoundation */,
 			);
 			productName = UTM;
 			productReference = CE2D951C24AD48BE0059923A /* UTM.app */;
@@ -3397,7 +3402,7 @@
 			packageProductDependencies = (
 				CEA45E20263519B5002FA97D /* Logging */,
 				CEA45E22263519B5002FA97D /* IQKeyboardManagerSwift */,
-				836A40D826AA2A30002068F8 /* Zip */,
+				83993293272F685F0059355F /* ZIPFoundation */,
 			);
 			productName = UTM;
 			productReference = CEA45FB9263519B5002FA97D /* UTM SE.app */;
@@ -3465,7 +3470,8 @@
 			packageReferences = (
 				CE020BA524AEDEF000B44AB6 /* XCRemoteSwiftPackageReference "swift-log" */,
 				CE93759724BB821F0074066F /* XCRemoteSwiftPackageReference "IQKeyboardManager" */,
-				836A40D326AA2A03002068F8 /* XCRemoteSwiftPackageReference "Zip" */,
+				8399328E272F4A400059355F /* XCRemoteSwiftPackageReference "ZIPFoundation" */,
+				B329049A270FE136002707AC /* XCRemoteSwiftPackageReference "AltKit" */,
 			);
 			productRefGroup = CE550BCA225947990063E575 /* Products */;
 			projectDirPath = "";
@@ -5107,12 +5113,20 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		836A40D326AA2A03002068F8 /* XCRemoteSwiftPackageReference "Zip" */ = {
+		8399328E272F4A400059355F /* XCRemoteSwiftPackageReference "ZIPFoundation" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/marmelroy/Zip.git";
+			repositoryURL = "https://github.com/weichsel/ZIPFoundation.git";
 			requirement = {
-				kind = upToNextMinorVersion;
-				minimumVersion = 2.1.1;
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.9.9;
+			};
+		};
+		B329049A270FE136002707AC /* XCRemoteSwiftPackageReference "AltKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/utmapp/AltKit.git";
+			requirement = {
+				branch = main;
+				kind = branch;
 			};
 		};
 		CE020BA524AEDEF000B44AB6 /* XCRemoteSwiftPackageReference "swift-log" */ = {
@@ -5127,8 +5141,8 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/hackiftekhar/IQKeyboardManager.git";
 			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 6.5.5;
+				kind = exactVersion;
+				version = 6.5.6;
 			};
 		};
 		CEA45E21263519B5002FA97D /* XCRemoteSwiftPackageReference "swift-log" */ = {
@@ -5144,26 +5158,36 @@
 			repositoryURL = "https://github.com/hackiftekhar/IQKeyboardManager.git";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 6.5.5;
+				minimumVersion = 6.5.6;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		836A40D426AA2A03002068F8 /* Zip */ = {
+		8399328F272F4A400059355F /* ZIPFoundation */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 836A40D326AA2A03002068F8 /* XCRemoteSwiftPackageReference "Zip" */;
-			productName = Zip;
+			package = 8399328E272F4A400059355F /* XCRemoteSwiftPackageReference "ZIPFoundation" */;
+			productName = ZIPFoundation;
 		};
-		836A40D626AA2A2C002068F8 /* Zip */ = {
+		83993291272F68550059355F /* ZIPFoundation */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 836A40D326AA2A03002068F8 /* XCRemoteSwiftPackageReference "Zip" */;
-			productName = Zip;
+			package = 8399328E272F4A400059355F /* XCRemoteSwiftPackageReference "ZIPFoundation" */;
+			productName = ZIPFoundation;
 		};
-		836A40D826AA2A30002068F8 /* Zip */ = {
+		83993293272F685F0059355F /* ZIPFoundation */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 836A40D326AA2A03002068F8 /* XCRemoteSwiftPackageReference "Zip" */;
-			productName = Zip;
+			package = 8399328E272F4A400059355F /* XCRemoteSwiftPackageReference "ZIPFoundation" */;
+			productName = ZIPFoundation;
+		};
+		B329049B270FE136002707AC /* AltKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = B329049A270FE136002707AC /* XCRemoteSwiftPackageReference "AltKit" */;
+			productName = AltKit;
+		};
+		B3DDF57126E9BBA300CE47F0 /* AltKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = B3DDF57026E9BBA300CE47F0 /* XCRemoteSwiftPackageReference "AltKit" */;
+			productName = AltKit;
 		};
 		CE020BA624AEDEF000B44AB6 /* Logging */ = {
 			isa = XCSwiftPackageProductDependency;

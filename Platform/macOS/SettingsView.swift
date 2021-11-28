@@ -23,7 +23,7 @@ struct SettingsView: View {
     @AppStorage("NoHypervisor") var isNoHypervisor = false
     @AppStorage("CtrlRightClick") var isCtrlRightClick = false
     @AppStorage("NoUsbPrompt") var isNoUsbPrompt = false
-    @AppStorage("UseOnlyPcores") var isUseOnlyPcores = false
+    @AppStorage("UseOnlyPcores") var isUseOnlyPcores = true
     @AppStorage("AlternativeCaptureKey") var isAlternativeCaptureKey = false
     
     var body: some View {

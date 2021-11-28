@@ -2,6 +2,8 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>ALTDeviceID</key>
+	<string>None</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDocumentTypes</key>
@@ -57,6 +59,12 @@
 		<key>NSAllowsArbitraryLoads</key>
 		<true/>
 	</dict>
+	<key>NSBonjourServices</key>
+	<array>
+		<string>_altserver._tcp</string>
+	</array>
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>UTM uses the local network to find and communicate with AltServer.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>VM background access requires location services. Location data will never leave the device.</string>
 	<key>NSLocationAlwaysUsageDescription</key>

@@ -20,6 +20,9 @@ import AppKit
 #else
 import UIKit
 #endif
+#if canImport(AltKit)
+import AltKit
+#endif
 
 @available(iOS 14, macOS 11, *)
 struct AlertMessage: Identifiable {
@@ -71,8 +74,11 @@ class UTMData: ObservableObject {
         fileManager.urls(for: .documentDirectory, in: .userDomainMask)[0]
     }
     
+    private var busyQueue: DispatchQueue
+    
     init() {
         let defaults = UserDefaults.standard
+        self.busyQueue = DispatchQueue(label: "UTM Busy Queue", qos: .userInitiated)
         self.showSettingsModal = false
         self.showNewVMSheet = false
         self.busy = false
@@ -336,7 +342,11 @@ class UTMData: ObservableObject {
         } else {
             try fileManager.copyItem(at: at, to: to)
         }
-        guard let vm = UTMVirtualMachine(url: to) else {
+    }
+    
+    /// Attempts to read from the URL and appends the VM to the list of virtual machines.
+    func readUTMFromURL(fileURL: URL) throws {
+        guard let vm = UTMVirtualMachine(url: fileURL) else {
             throw NSLocalizedString("Failed to parse imported VM.", comment: "UTMData")
         }
         DispatchQueue.main.async {
@@ -371,9 +381,11 @@ class UTMData: ObservableObject {
         } else if (fileBasePath.resolvingSymlinksInPath().path == documentsURL.appendingPathComponent("Inbox", isDirectory: true).path) {
             logger.info("moving from Inbox")
             try copyUTM(at: url, to: dest, move: true)
+            try readUTMFromURL(fileURL: dest)
         } else {
             logger.info("copying to Documents")
             try copyUTM(at: url, to: dest)
+            try readUTMFromURL(fileURL: dest)
         }
     }
     
@@ -566,10 +578,10 @@ class UTMData: ObservableObject {
     }
     
     func busyWork(_ work: @escaping () throws -> Void) {
-        DispatchQueue.main.async {
-            self.busy = true
-        }
-        DispatchQueue.global(qos: .userInitiated).async {
+        busyQueue.async {
+            DispatchQueue.main.async {
+                self.busy = true
+            }
             defer {
                 DispatchQueue.main.async {
                     self.busy = false
@@ -668,4 +680,47 @@ class UTMData: ObservableObject {
         tryClickAtPoint(point: point, button: button)
         #endif
     }
+
+    // MARK: - AltKit
+    
+#if canImport(AltKit)
+    func startAltJIT() throws {
+        let event = DispatchSemaphore(value: 0)
+        var connectError: Error?
+        DispatchQueue.main.async {
+            ServerManager.shared.autoconnect { result in
+                switch result
+                {
+                case .failure(let error):
+                    logger.error("Could not auto-connect to server. \(error.localizedDescription)")
+                    connectError = error
+                    event.signal()
+                case .success(let connection):
+                    connection.enableUnsignedCodeExecution { result in
+                        switch result
+                        {
+                        case .failure(let error):
+                            logger.error("Could not enable JIT compilation. \(error.localizedDescription)")
+                            connectError = error
+                        case .success:
+                            logger.debug("Successfully enabled JIT compilation!")
+                        }
+                        
+                        connection.disconnect()
+                        event.signal()
+                    }
+                }
+            }
+            ServerManager.shared.startDiscovering()
+        }
+        defer {
+            ServerManager.shared.stopDiscovering()
+        }
+        if event.wait(timeout: .now() + 10) == .timedOut {
+            throw NSLocalizedString("Cannot find AltServer for JIT enable. You cannot run VMs until JIT is enabled.", comment: "UTMData")
+        } else if let error = connectError {
+            throw NSLocalizedString("AltJIT error: \(error.localizedDescription)", comment: "UTMData")
+        }
+    }
+#endif
 }

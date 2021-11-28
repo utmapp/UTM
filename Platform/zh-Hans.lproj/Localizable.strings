@@ -543,7 +543,7 @@
 "Play" = "继续";
 
 /* No comment provided by engineer. */
-"Port Forward" = "更多";
+"Port Forward" = "端口转发";
 
 /* No comment provided by engineer. */
 "Protocol" = "协议";
@@ -573,7 +573,7 @@
 "Read Only" = "只读";
 
 /* No comment provided by engineer. */
-"Removable" = "可扩展";
+"Removable" = "可移动";
 
 /* VMConfigDrivesView
    VMConfigDrivesViewController */
@@ -788,7 +788,7 @@
 "You must terminate the running VM before you can import a new VM." = "必须先终止正在运行的虚拟机，然后才能导入新的虚拟机。";
 
 /* ContentView */
-"Your version of iOS does not support running VMs while unmodified. You must either run UTM while jailbroken or with a remote debugger attached." = "您的iOS版本不支持在未越狱的情况下运行虚拟机。您必须在越狱时运行UTM，或者附加远程调试器。";
+"Your version of iOS does not support running VMs while unmodified. You must either run UTM while jailbroken or with a remote debugger attached." = "您的iOS版本不支持在未越狱的情况下运行虚拟机。您必须在越狱时运行UTM，或者附加调试器（使用 Jitterbug 或 Xcode）。";
 
 /* No comment provided by engineer. */
 "Information" = "基本信息";
@@ -876,3 +876,6 @@
 
 /* No comment provided by engineer. */
 "Export QEMU Command" = "导出QEMU命令";
+
+/* No comment provided by engineer. */
+"Random" = "随机生成";

@@ -28,14 +28,17 @@ fi
 MODE=$1
 INPUT=$2
 OUTPUT=$3
+BUNDLE_ID=
 
 case $MODE in
 deb | ipa | signedipa )
 	NAME="UTM"
+	BUNDLE_ID="com.utmapp.UTM"
 	INPUT_APP="$INPUT/Products/Applications/UTM.app"
 	;;
 ipa-se )
 	NAME="UTM SE"
+	BUNDLE_ID="com.utmapp.UTM-SE"
 	INPUT_APP="$INPUT/Products/Applications/UTM SE.app"
 	;;
 * )
@@ -76,7 +79,7 @@ itunes_sign() {
 	<string>development</string>
 	<key>provisioningProfiles</key>
 	<dict>
-		<key>com.utmapp.UTM</key>
+		<key>${BUNDLE_ID}</key>
 		<string>${PROFILE_NAME}</string>
 	</dict>
 	<key>signingStyle</key>
@@ -97,14 +100,15 @@ EOL
 
 fake_sign() {
 	local _name=$1
-	local _input=$2
-	local _output=$3
-	local _fakeent=$4
+	local _bundle_id=$2
+	local _input=$3
+	local _output=$4
+	local _fakeent=$5
 
 	mkdir -p "$_output"
 	cp -a "$_input" "$_output/"
-	find "$_output" -type f \( -path '*/Frameworks/*.framework/*' -and -not -name 'Info.plist' \) -exec ldid -S \{\} \;
-	ldid -S${_fakeent} "$_output/Applications/$_name.app/$_name"
+	find "$_output" -type d -path '*/Frameworks/*.framework' -exec ldid -S \{\} \;
+	ldid -S${_fakeent} -I${_bundle_id} "$_output/Applications/$_name.app/$_name"
 }
 
 create_deb() {
@@ -145,21 +149,22 @@ EOL
 	strip "$DEB_TMP/DEBIAN/prerm"
 	ldid -S"$BASEDIR/deb/prerm.xml" "$DEB_TMP/DEBIAN/prerm"
 	mkdir -p "$IPA_PATH"
-	create_fake_ipa "UTM" "$INPUT" "$IPA_PATH" "$FAKEENT"
+	create_fake_ipa "UTM" "com.utmapp.UTM" "$INPUT" "$IPA_PATH" "$FAKEENT"
 	dpkg-deb -b -Zgzip -z9 "$DEB_TMP" "$OUTPUT/UTM.deb"
 	rm -r "$DEB_TMP"
 }
 
 create_fake_ipa() {
 	local NAME=$1
-	local INPUT=$2
-	local OUTPUT=$3
-	local FAKEENT=$4
+	local BUNDLE_ID=$2
+	local INPUT=$3
+	local OUTPUT=$4
+	local FAKEENT=$5
 
 	pwd="$(pwd)"
 	mkdir -p "$OUTPUT"
 	rm -rf "$OUTPUT/Applications" "$OUTPUT/Payload" "$OUTPUT/UTM.ipa"
-	fake_sign "$NAME" "$INPUT/Products/Applications" "$OUTPUT" "$FAKEENT"
+	fake_sign "$NAME" "$BUNDLE_ID" "$INPUT/Products/Applications" "$OUTPUT" "$FAKEENT"
 	mv "$OUTPUT/Applications" "$OUTPUT/Payload"
 	cd "$OUTPUT"
 	zip -r "$NAME.ipa" "Payload" -x "._*" -x ".DS_Store" -x "__MACOSX"
@@ -226,7 +231,7 @@ ipa )
 </dict>
 </plist>
 EOL
-	create_fake_ipa "$NAME" "$INPUT" "$OUTPUT" "$FAKEENT"
+	create_fake_ipa "$NAME" "$BUNDLE_ID" "$INPUT" "$OUTPUT" "$FAKEENT"
 	rm "$FAKEENT"
 	;;
 ipa-se )
@@ -241,9 +246,9 @@ ipa-se )
 </dict>
 </plist>
 EOL
-	create_fake_ipa "$NAME" "$INPUT" "$OUTPUT" "$FAKEENT"
+	create_fake_ipa "$NAME" "$BUNDLE_ID" "$INPUT" "$OUTPUT" "$FAKEENT"
 	;;
 signedipa )
-	itunes_sign "$INPUT" "$OUTPUT" $4 $5
+	itunes_sign "$INPUT" "$OUTPUT" $5 $6
 	;;
 esac

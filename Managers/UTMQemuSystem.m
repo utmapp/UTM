@@ -235,9 +235,11 @@ static size_t sysctl_read(const char *name) {
 
 - (void)argsForCpu {
     if ([self.configuration.systemCPU isEqualToString:@"default"] && self.useHypervisor) {
-        // if default and not hypervisor, we don't pass any -cpu argument
+        // if default and not hypervisor, we don't pass any -cpu argument for x86 and use host for ARM
+#if !defined(__x86_64__)
         [self pushArgv:@"-cpu"];
         [self pushArgv:@"host"];
+#endif
     } else if (self.configuration.systemCPU.length > 0 && ![self.configuration.systemCPU isEqualToString:@"default"]) {
         NSString *cpu = self.configuration.systemCPU;
         for (NSString *flag in self.configuration.systemCPUFlags) {
@@ -526,7 +528,8 @@ static size_t sysctl_read(const char *name) {
 
 - (BOOL)useOnlyPcores {
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    return [defaults boolForKey:@"UseOnlyPcores"];
+    BOOL isUnset = ![defaults objectForKey:@"UseOnlyPcores"];
+    return isUnset || [defaults boolForKey:@"UseOnlyPcores"];
 }
 
 - (BOOL)hasCustomBios {
