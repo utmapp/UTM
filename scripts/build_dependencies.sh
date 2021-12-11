@@ -727,6 +727,7 @@ export CXXFLAGS
 export LDFLAGS
 export MAKEFLAGS
 
+brew install glib
 check_env
 
 if [ ! -f "$BUILD_DIR/BUILD_SUCCESS" ]; then
