@@ -26,7 +26,7 @@ struct VMWizardSummaryView: View {
         #if arch(arm64)
         if wizardState.operatingSystem == .Windows && wizardState.useVirtualization {
             if let attributes = try? wizardState.bootImageURL?.resourceValues(forKeys: [.fileSizeKey]), let fileSize = attributes.fileSize {
-                size = fileSize
+                size = Int64(fileSize)
             }
         }
         #endif

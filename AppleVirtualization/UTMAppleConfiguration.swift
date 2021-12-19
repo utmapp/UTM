@@ -538,9 +538,12 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
         }
         #if arch(arm64)
         if #available(macOS 12, *), macPlatform != nil {
-            let auxStorageURL = supportURL.appendingPathComponent("AuxiliaryStorage")
+            let auxStorageURL = dataURL.appendingPathComponent("AuxiliaryStorage")
             if !fileManager.fileExists(atPath: auxStorageURL.path) {
-                _ = try VZMacAuxiliaryStorage(creatingStorageAt: auxStorageURL, hardwareModel: macPlatform!.hardwareModel, options: 0)
+                guard let hwModel = VZMacHardwareModel(dataRepresentation: macPlatform!.hardwareModel) else {
+                    throw ConfigError.hardwareModelInvalid
+                }
+                _ = try VZMacAuxiliaryStorage(creatingStorageAt: auxStorageURL, hardwareModel: hwModel, options: [])
                 macPlatform!.auxiliaryStorageURL = auxStorageURL
             }
             urls.append(auxStorageURL)
@@ -986,6 +989,7 @@ fileprivate enum ConfigError: Error {
     case invalidDataURL
     case kernelNotSpecified
     case customIconInvalid
+    case hardwareModelInvalid
 }
 
 fileprivate extension CodingUserInfoKey {

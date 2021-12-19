@@ -71,6 +71,7 @@ class VMWizardState: ObservableObject {
     }
     @Published var operatingSystem: VMWizardOS = .Other
     #if os(macOS) && arch(arm64)
+    @available(macOS 12, *)
     @Published var macPlatform: MacPlatform?
     @Published var macRecoveryIpswURL: URL?
     #endif
@@ -146,11 +147,13 @@ class VMWizardState: ObservableObject {
             nextPage = .hardware
         case .macOSBoot:
             #if os(macOS) && arch(arm64)
-            guard macPlatform != nil && macRecoveryIpswURL != nil else {
-                alertMessage = AlertMessage(NSLocalizedString("Please select an IPSW file.", comment: "VMWizardState"))
-                return
+            if #available(macOS 12, *) {
+                guard macPlatform != nil && macRecoveryIpswURL != nil else {
+                    alertMessage = AlertMessage(NSLocalizedString("Please select an IPSW file.", comment: "VMWizardState"))
+                    return
+                }
+                nextPage = .hardware
             }
-            nextPage = .hardware
             #endif
         case .linuxBoot:
             if useLinuxKernel {
@@ -258,9 +261,11 @@ class VMWizardState: ObservableObject {
         case .macOS:
             config.icon = "mac"
             #if os(macOS) && arch(arm64)
-            config.bootLoader = try! Bootloader(for: .macOS)
-            config.macRecoveryIpswURL = macRecoveryIpswURL
-            config.macPlatform = macPlatform
+            if #available(macOS 12, *) {
+                config.bootLoader = try! Bootloader(for: .macOS)
+                config.macRecoveryIpswURL = macRecoveryIpswURL
+                config.macPlatform = macPlatform
+            }
             #endif
         case .Linux:
             config.icon = "linux"
