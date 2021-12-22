@@ -32,16 +32,12 @@ class VMDisplayWindowController: NSWindowController {
     @IBOutlet weak var sharedFolderToolbarItem: NSToolbarItem!
     @IBOutlet weak var resizeConsoleToolbarItem: NSToolbarItem!
     
-    var vm: UTMQemuVirtualMachine!
+    var vm: UTMVirtualMachine!
     var onClose: ((Notification) -> Void)?
     var vmMessage: String?
     var vmConfiguration: UTMConfigurable?
     var toolbarVisible: Bool = false // ignored
     var keyboardVisible: Bool = false // ignored
-    
-    var vmQemuConfig: UTMQemuConfiguration? {
-        vmConfiguration as? UTMQemuConfiguration
-    }
     
     override var windowNibName: NSNib.Name? {
         "VMDisplayWindow"
@@ -51,7 +47,7 @@ class VMDisplayWindowController: NSWindowController {
         self
     }
     
-    convenience init(vm: UTMQemuVirtualMachine, onClose: ((Notification) -> Void)?) {
+    convenience init(vm: UTMVirtualMachine, onClose: ((Notification) -> Void)?) {
         self.init(window: nil)
         self.vm = vm
         self.onClose = onClose
@@ -84,7 +80,7 @@ class VMDisplayWindowController: NSWindowController {
         } else if vm.state == .vmStopped {
             DispatchQueue.global(qos: .userInitiated).async {
                 if self.vm.startVM() {
-                    self.vm.ioDelegate = self
+                    self.virtualMachineHasStarted(self.vm)
                 }
             }
         } else {
@@ -109,7 +105,31 @@ class VMDisplayWindowController: NSWindowController {
     @IBAction dynamic func usbButtonPressed(_ sender: Any) {
     }
     
+    @IBAction dynamic func drivesButtonPressed(_ sender: Any) {
+    }
+    
+    @IBAction dynamic func sharedFolderButtonPressed(_ sender: Any) {
+    }
+    
     // MARK: - UI states
+    
+    override func windowDidLoad() {
+        window!.recalculateKeyViewLoop()
+        
+        if vm.state == .vmStopped || vm.state == .vmSuspended {
+            enterSuspended(isBusy: false)
+            DispatchQueue.global(qos: .userInitiated).async {
+                if self.vm.startVM() {
+                    self.virtualMachineHasStarted(self.vm)
+                }
+            }
+        } else {
+            enterLive()
+            virtualMachineHasStarted(vm)
+        }
+        
+        super.windowDidLoad()
+    }
     
     func enterLive() {
         overlayView.isHidden = true
@@ -117,17 +137,9 @@ class VMDisplayWindowController: NSWindowController {
         let pauseDescription = NSLocalizedString("Pause", comment: "VMDisplayWindowController")
         startPauseToolbarItem.image = NSImage(systemSymbolName: "pause", accessibilityDescription: pauseDescription)
         startPauseToolbarItem.label = pauseDescription
-        if !vmQemuConfig!.useHypervisor {
-            // currently HVF doesn't support suspending
-            startPauseToolbarItem.isEnabled = true
-        }
         stopToolbarItem.isEnabled = true
         captureMouseToolbarItem.isEnabled = true
         resizeConsoleToolbarItem.isEnabled = true
-        drivesToolbarItem.isEnabled = vmQemuConfig!.countDrives > 0
-        sharedFolderToolbarItem.isEnabled = vm.hasShareDirectoryEnabled
-        usbToolbarItem.isEnabled = vm.hasUsbRedirection
-        window!.title = vmQemuConfig!.name
         window!.makeFirstResponder(displayView.subviews.first)
     }
     
@@ -177,6 +189,10 @@ class VMDisplayWindowController: NSWindowController {
                 handler?()
             }
         }
+    }
+    
+    internal func virtualMachineHasStarted(_ vm: UTMVirtualMachine) {
+        
     }
 }
 
@@ -252,144 +268,6 @@ extension VMDisplayWindowController: UTMVirtualMachineDelegate {
             enterLive()
         @unknown default:
             break
-        }
-    }
-}
-
-// MARK: - Removable drives
-
-@objc extension VMDisplayWindowController {
-    @IBAction func drivesButtonPressed(_ sender: Any) {
-        let menu = NSMenu()
-        menu.autoenablesItems = false
-        let item = NSMenuItem()
-        item.title = NSLocalizedString("Querying drives status...", comment: "VMDisplayWindowController")
-        item.isEnabled = false
-        menu.addItem(item)
-        DispatchQueue.global(qos: .userInitiated).async {
-            let drives = self.vm.drives
-            DispatchQueue.main.async {
-                self.updateDrivesMenu(menu, drives: drives)
-            }
-        }
-        if let event = NSApplication.shared.currentEvent {
-            NSMenu.popUpContextMenu(menu, with: event, for: sender as! NSView)
-        }
-    }
-    
-    func updateDrivesMenu(_ menu: NSMenu, drives: [UTMDrive]) {
-        menu.removeAllItems()
-        if drives.count == 0 {
-            let item = NSMenuItem()
-            item.title = NSLocalizedString("No drives connected.", comment: "VMDisplayWindowController")
-            item.isEnabled = false
-            menu.addItem(item)
-        }
-        for drive in drives {
-            let item = NSMenuItem()
-            item.title = drive.label
-            if drive.status == .fixed {
-                item.isEnabled = false
-            } else {
-                let submenu = NSMenu()
-                submenu.autoenablesItems = false
-                let eject = NSMenuItem(title: NSLocalizedString("Eject", comment: "VMDisplayWindowController"),
-                                       action: #selector(ejectDrive),
-                                       keyEquivalent: "")
-                eject.target = self
-                eject.tag = drive.index
-                eject.isEnabled = drive.status != .ejected
-                submenu.addItem(eject)
-                let change = NSMenuItem(title: NSLocalizedString("Change", comment: "VMDisplayWindowController"),
-                                        action: #selector(changeDriveImage),
-                                        keyEquivalent: "")
-                change.target = self
-                change.tag = drive.index
-                change.isEnabled = true
-                submenu.addItem(change)
-                item.submenu = submenu
-            }
-            menu.addItem(item)
-        }
-        menu.update()
-    }
-    
-    func ejectDrive(sender: AnyObject) {
-        guard let menu = sender as? NSMenuItem else {
-            logger.error("wrong sender for ejectDrive")
-            return
-        }
-        let drive = vm.drives[menu.tag]
-        DispatchQueue.global(qos: .background).async {
-            do {
-                try self.vm.ejectDrive(drive, force: false)
-            } catch {
-                DispatchQueue.main.async {
-                    self.showErrorAlert(error.localizedDescription)
-                }
-            }
-        }
-    }
-    
-    func openDriveImage(forDrive drive: UTMDrive) {
-        let openPanel = NSOpenPanel()
-        openPanel.title = NSLocalizedString("Select Drive Image", comment: "VMDisplayWindowController")
-        openPanel.allowedContentTypes = [.data]
-        openPanel.beginSheetModal(for: window!) { response in
-            guard response == .OK else {
-                return
-            }
-            guard let url = openPanel.url else {
-                logger.debug("no file selected")
-                return
-            }
-            DispatchQueue.global(qos: .background).async {
-                do {
-                    try self.vm.changeMedium(for: drive, url: url)
-                } catch {
-                    DispatchQueue.main.async {
-                        self.showErrorAlert(error.localizedDescription)
-                    }
-                }
-            }
-        }
-    }
-    
-    func changeDriveImage(sender: AnyObject) {
-        guard let menu = sender as? NSMenuItem else {
-            logger.error("wrong sender for ejectDrive")
-            return
-        }
-        let drive = vm.drives[menu.tag]
-        openDriveImage(forDrive: drive)
-    }
-}
-
-// MARK: - Shared folders
-
-extension VMDisplayWindowController {
-    @IBAction func sharedFolderButtonPressed(_ sender: Any) {
-        let openPanel = NSOpenPanel()
-        openPanel.title = NSLocalizedString("Select Shared Folder", comment: "VMDisplayWindowController")
-        openPanel.canChooseDirectories = true
-        openPanel.canChooseFiles = false
-        openPanel.beginSheetModal(for: window!) { response in
-            guard response == .OK else {
-                return
-            }
-            guard let url = openPanel.url else {
-                logger.debug("no directory selected")
-                return
-            }
-            DispatchQueue.global(qos: .background).async {
-                do {
-                    try self.vm.changeSharedDirectory(url)
-                } catch {
-                    DispatchQueue.main.async {
-                        self.showErrorAlert(error.localizedDescription)
-                    }
-                }
-            }
         }
     }
 }

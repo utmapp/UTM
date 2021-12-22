@@ -26,11 +26,22 @@ extension UTMData {
                 self.vmWindows.removeValue(forKey: vm)
                 window = nil
             }
-            let qvm = vm as! UTMQemuVirtualMachine
-            if qvm.qemuConfig.displayConsoleOnly {
-                window = VMDisplayTerminalWindowController(vm: qvm, onClose: close)
-            } else {
-                window = VMDisplayMetalWindowController(vm: qvm, onClose: close)
+            #if arch(arm64)
+            if #available(macOS 12, *), let avm = vm as? UTMAppleVirtualMachine {
+                window = VMDisplayAppleWindowController(vm: avm, onClose: close)
+            }
+            #endif
+            if let qvm = vm as? UTMQemuVirtualMachine {
+                if qvm.qemuConfig.displayConsoleOnly {
+                    window = VMDisplayTerminalWindowController(vm: qvm, onClose: close)
+                } else {
+                    window = VMDisplayMetalWindowController(vm: qvm, onClose: close)
+                }
+            }
+            if window == nil {
+                DispatchQueue.main.async {
+                    self.alertMessage = AlertMessage(NSLocalizedString("This virtual machine cannot be run on this machine.", comment: "UTMDataExtension"))
+                }
             }
         }
         if let unwrappedWindow = window {

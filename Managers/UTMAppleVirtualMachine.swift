@@ -14,6 +14,9 @@
 // limitations under the License.
 //
 
+import Virtualization
+
+@available(iOS, unavailable, message: "Apple Virtualization not available on iOS")
 @available(macOS 12, *)
 @objc class UTMAppleVirtualMachine: UTMVirtualMachine {
     var appleConfig: UTMAppleConfiguration! {
@@ -58,6 +61,14 @@
         return ByteCountFormatter.string(fromByteCount: Int64(appleConfig.memorySize), countStyle: .memory)
     }
     
+    private let vmQueue = DispatchQueue(label: "VZVirtualMachineQueue", qos: .userInteractive)
+    
+    lazy private(set) var apple: VZVirtualMachine = {
+        let vm = VZVirtualMachine(configuration: self.appleConfig.apple, queue: vmQueue)
+        vm.delegate = self
+        return vm
+    }()
+    
     override static func isAppleVM(forPath path: URL) -> Bool {
         do {
             _ = try UTMAppleConfiguration.load(from: path)
@@ -94,5 +105,111 @@
         } else {
             path = savePath
         }
+    }
+    
+    override func startVM() -> Bool {
+        guard state == .vmStopped || state == .vmSuspended else {
+            return false
+        }
+        changeState(.vmStarting)
+        vmQueue.async {
+            self.apple.start { result in
+                switch result {
+                case .failure(let error):
+                    self.errorTriggered(error.localizedDescription)
+                case .success:
+                    self.changeState(.vmStarted)
+                }
+            }
+        }
+        return true
+    }
+    
+    override func quitVM(force: Bool) -> Bool {
+        guard state == .vmStarted else {
+            return false
+        }
+        changeState(.vmStopping)
+        if force {
+            vmQueue.async {
+                self.apple.stop { error in
+                    if let error = error {
+                        self.errorTriggered(error.localizedDescription)
+                    } else {
+                        self.changeState(.vmStopped)
+                    }
+                }
+            }
+        } else {
+            vmQueue.async {
+                do {
+                    try self.apple.requestStop()
+                } catch {
+                    self.errorTriggered(error.localizedDescription)
+                }
+            }
+        }
+        return true
+    }
+    
+    override func resetVM() -> Bool {
+        // FIXME: implement this
+        return false
+    }
+    
+    override func pauseVM() -> Bool {
+        guard state == .vmStarted else {
+            return false
+        }
+        changeState(.vmPausing)
+        vmQueue.async {
+            self.apple.pause { result in
+                switch result {
+                case .failure(let error):
+                    self.errorTriggered(error.localizedDescription)
+                case .success:
+                    self.changeState(.vmPaused)
+                }
+            }
+        }
+        return true
+    }
+    
+    override func saveVM() -> Bool {
+        // FIXME: implement this
+        return false
+    }
+    
+    override func deleteSaveVM() -> Bool {
+        // FIXME: implement this
+        return false
+    }
+    
+    override func resumeVM() -> Bool {
+        guard state == .vmPaused else {
+            return false
+        }
+        vmQueue.async {
+            self.apple.resume { result in
+                switch result {
+                case .failure(let error):
+                    self.errorTriggered(error.localizedDescription)
+                case .success:
+                    self.changeState(.vmStarted)
+                }
+            }
+        }
+        return true
+    }
+}
+
+@available(macOS 12, *)
+extension UTMAppleVirtualMachine: VZVirtualMachineDelegate {
+    func guestDidStop(_ virtualMachine: VZVirtualMachine) {
+        changeState(.vmStopped)
+    }
+    
+    func virtualMachine(_ virtualMachine: VZVirtualMachine, didStopWithError error: Error) {
+        errorTriggered(error.localizedDescription)
     }
 }

@@ -66,6 +66,8 @@
 		84C60FBD268289EF00B58C00 /* VMDisplayViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CE72B4AC2463579D00716A11 /* VMDisplayViewController.m */; };
 		84C60FBF2682BDA800B58C00 /* VMToolbarActions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C60FBE2682BDA800B58C00 /* VMToolbarActions.swift */; };
 		84C60FC02682BDA800B58C00 /* VMToolbarActions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C60FBE2682BDA800B58C00 /* VMToolbarActions.swift */; };
+		84F746B9276FF40900A20C87 /* VMDisplayAppleWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F746B8276FF40900A20C87 /* VMDisplayAppleWindowController.swift */; };
+		84F746BB276FF70700A20C87 /* VMDisplayQemuDisplayController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F746BA276FF70700A20C87 /* VMDisplayQemuDisplayController.swift */; };
 		84FCABBA268CE05E0036196C /* UTMQemuVirtualMachine.m in Sources */ = {isa = PBXBuildFile; fileRef = 84FCABB9268CE05E0036196C /* UTMQemuVirtualMachine.m */; };
 		84FCABBB268CE05E0036196C /* UTMQemuVirtualMachine.m in Sources */ = {isa = PBXBuildFile; fileRef = 84FCABB9268CE05E0036196C /* UTMQemuVirtualMachine.m */; };
 		84FCABBC268CE05E0036196C /* UTMQemuVirtualMachine.m in Sources */ = {isa = PBXBuildFile; fileRef = 84FCABB9268CE05E0036196C /* UTMQemuVirtualMachine.m */; };
@@ -1554,6 +1556,8 @@
 		84C60FB62681A41B00B58C00 /* VMToolbarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMToolbarView.swift; sourceTree = "<group>"; };
 		84C60FB9268269D700B58C00 /* VMDisplayViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMDisplayViewController.swift; sourceTree = "<group>"; };
 		84C60FBE2682BDA800B58C00 /* VMToolbarActions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMToolbarActions.swift; sourceTree = "<group>"; };
+		84F746B8276FF40900A20C87 /* VMDisplayAppleWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMDisplayAppleWindowController.swift; sourceTree = "<group>"; };
+		84F746BA276FF70700A20C87 /* VMDisplayQemuDisplayController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMDisplayQemuDisplayController.swift; sourceTree = "<group>"; };
 		84FCABB8268CE05E0036196C /* UTMQemuVirtualMachine.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UTMQemuVirtualMachine.h; sourceTree = "<group>"; };
 		84FCABB9268CE05E0036196C /* UTMQemuVirtualMachine.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UTMQemuVirtualMachine.m; sourceTree = "<group>"; };
 		84FCABBD268CE4080036196C /* UTMVirtualMachine-Private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UTMVirtualMachine-Private.h"; sourceTree = "<group>"; };
@@ -2432,7 +2436,9 @@
 			children = (
 				CE0FE12724D3B08B0086CEF0 /* VMDisplayWindow.xib */,
 				CE612AC524D3B50700FA6300 /* VMDisplayWindowController.swift */,
+				84F746B8276FF40900A20C87 /* VMDisplayAppleWindowController.swift */,
 				CEBDA1D424D69DB20010B5EC /* VMDisplayMetalWindowController.swift */,
+				84F746BA276FF70700A20C87 /* VMDisplayQemuDisplayController.swift */,
 				2C6D9E02256EE454003298E6 /* VMDisplayTerminalWindowController.swift */,
 				CE03D0D124DCF4B600F76B84 /* VMMetalView.swift */,
 				CE03D0D324DCF6DD00F76B84 /* VMMetalViewInputDelegate.swift */,
@@ -4038,6 +4044,7 @@
 				CE0B6D2624AD57FC00FE012D /* qapi-commands-run-state.c in Sources */,
 				CE2D957624AD4F990059923A /* VMConfigInputView.swift in Sources */,
 				CE0B6D2724AD57FC00FE012D /* qapi-commands-tpm.c in Sources */,
+				84F746B9276FF40900A20C87 /* VMDisplayAppleWindowController.swift in Sources */,
 				CE2D958E24AD4F990059923A /* UTMApp.swift in Sources */,
 				CE0B6D3C24AD584C00FE012D /* qapi-events-run-state.c in Sources */,
 				CE0B6CF324AD568400FE012D /* UTMQemuConfiguration.m in Sources */,
@@ -4077,6 +4084,7 @@
 				CE0B6CF524AD568400FE012D /* UTMQemuConfiguration+Miscellaneous.m in Sources */,
 				CE0B6CFB24AD568400FE012D /* UTMQemuConfiguration+Networking.m in Sources */,
 				84C584E5268F8C65000FCABF /* VMAppleSettingsView.swift in Sources */,
+				84F746BB276FF70700A20C87 /* VMDisplayQemuDisplayController.swift in Sources */,
 				CE772AB425C8B7B500E4E379 /* VMCommands.swift in Sources */,
 				CE2D958424AD4F990059923A /* VMConfigNetworkView.swift in Sources */,
 				CE0B6D3424AD57FC00FE012D /* qapi-commands-rdma.c in Sources */,

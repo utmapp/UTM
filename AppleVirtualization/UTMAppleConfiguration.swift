@@ -17,6 +17,7 @@
 import Foundation
 import Virtualization
 
+@available(iOS, unavailable, message: "Apple Virtualization not available on iOS")
 @available(macOS 11, *)
 final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
     private let currentVersion = 3

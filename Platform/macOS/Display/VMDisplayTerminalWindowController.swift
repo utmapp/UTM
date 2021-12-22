@@ -25,13 +25,12 @@ private enum JSCommand: String {
     case sendTerminalSize = "UTMSendTerminalSize"
 }
 
-class VMDisplayTerminalWindowController: VMDisplayWindowController {
+class VMDisplayTerminalWindowController: VMDisplayQemuWindowController {
     var webView: WKWebView!
     private var columns: Int?
     private var rows: Int?
 
     override func windowDidLoad() {
-        super.windowDidLoad()
         let webConfig = WKWebViewConfiguration()
         webConfig.userContentController.add(self, name: JSCommand.sendInput.rawValue)
         webConfig.userContentController.add(self, name: JSCommand.debug.rawValue)
@@ -41,7 +40,6 @@ class VMDisplayTerminalWindowController: VMDisplayWindowController {
         webView.autoresizingMask = [.width, .height]
         webView.setValue(false, forKey: "drawsBackground")
         displayView.addSubview(webView)
-        window!.recalculateKeyViewLoop()
         
         // load terminal.html
         guard let resourceURL = Bundle.main.resourceURL else {
@@ -53,17 +51,7 @@ class VMDisplayTerminalWindowController: VMDisplayWindowController {
         webView.navigationDelegate = self
         self.webView.loadFileURL(indexFile, allowingReadAccessTo: resourceURL)
         
-        if vm.state == .vmStopped || vm.state == .vmSuspended {
-            enterSuspended(isBusy: false)
-            DispatchQueue.global(qos: .userInitiated).async {
-                if self.vm.startVM() {
-                    self.vm.ioDelegate = self
-                }
-            }
-        } else {
-            enterLive()
-            vm.ioDelegate = self
-        }
+        super.windowDidLoad()
     }
     
     override func enterLive() {
@@ -86,7 +74,7 @@ class VMDisplayTerminalWindowController: VMDisplayWindowController {
             .replacingOccurrences(of: "$COLS", with: String(columns))
             .replacingOccurrences(of: "$ROWS", with: String(rows))
             .replacingOccurrences(of: "\\n", with: "\n")
-        vm.sendInput(cmd)
+        qemuVM.sendInput(cmd)
     }
 }
 
@@ -126,7 +114,7 @@ extension VMDisplayTerminalWindowController: WKScriptMessageHandler {
                 logger.error("Body is not of string type")
                 return
             }
-            vm.sendInput(body)
+            qemuVM.sendInput(body)
         case .debug:
             logger.debug("JS debug: \(message.body)")
         case .sendGesture:
