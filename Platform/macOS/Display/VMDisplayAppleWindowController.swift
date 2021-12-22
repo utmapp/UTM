@@ -31,6 +31,7 @@ class VMDisplayAppleWindowController: VMDisplayWindowController {
     override func windowDidLoad() {
         appleView = VZVirtualMachineView()
         appleView.virtualMachine = appleVM.apple
+        appleView.capturesSystemKeys = true
         displayView.addSubview(appleView)
         NSLayoutConstraint.activate(appleView.constraintsForAnchoringTo(boundsOf: displayView))
         window!.recalculateKeyViewLoop()
@@ -38,6 +39,7 @@ class VMDisplayAppleWindowController: VMDisplayWindowController {
     }
     
     override func enterLive() {
+        captureMouseToolbarItem.isEnabled = false
         drivesToolbarItem.isEnabled = false
         usbToolbarItem.isEnabled = false
         restartToolbarItem.isEnabled = false // FIXME: enable this
