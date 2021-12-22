@@ -29,10 +29,10 @@ class VMDisplayAppleWindowController: VMDisplayWindowController {
     }
     
     override func windowDidLoad() {
-        appleView = VZVirtualMachineView(frame: displayView.bounds)
+        appleView = VZVirtualMachineView()
         appleView.virtualMachine = appleVM.apple
-        appleView.autoresizingMask = [.width, .height]
         displayView.addSubview(appleView)
+        NSLayoutConstraint.activate(appleView.constraintsForAnchoringTo(boundsOf: displayView))
         window!.recalculateKeyViewLoop()
         super.windowDidLoad()
     }
@@ -43,6 +43,37 @@ class VMDisplayAppleWindowController: VMDisplayWindowController {
         restartToolbarItem.isEnabled = false // FIXME: enable this
         resizeConsoleToolbarItem.isEnabled = false
         sharedFolderToolbarItem.isEnabled = false
+        updateWindowFrame()
         super.enterLive()
+    }
+    
+    func updateWindowFrame() {
+        guard let window = window else {
+            return
+        }
+        guard let primaryDisplay = appleConfig.displays.first else {
+            return //FIXME: add multiple displays
+        }
+        let size = CGSize(width: primaryDisplay.widthInPixels, height: primaryDisplay.heightInPixels)
+        let frame = window.frameRect(forContentRect: CGRect(origin: .zero, size: size))
+        window.contentAspectRatio = size
+        window.minSize = NSSize(width: 400, height: 400)
+        window.setFrame(frame, display: false, animate: true)
+    }
+}
+
+// https://www.avanderlee.com/swift/auto-layout-programmatically/
+fileprivate extension NSView {
+    /// Returns a collection of constraints to anchor the bounds of the current view to the given view.
+    ///
+    /// - Parameter view: The view to anchor to.
+    /// - Returns: The layout constraints needed for this constraint.
+    func constraintsForAnchoringTo(boundsOf view: NSView) -> [NSLayoutConstraint] {
+        return [
+            topAnchor.constraint(equalTo: view.topAnchor),
+            leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            view.bottomAnchor.constraint(equalTo: bottomAnchor),
+            view.trailingAnchor.constraint(equalTo: trailingAnchor)
+        ]
     }
 }
