@@ -476,10 +476,10 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
         existingDataURLs += try saveIcon(to: dataURL)
         existingDataURLs += try saveBootloader(to: dataURL)
         existingDataURLs += try saveImportedDrives(to: dataURL)
-        // cleanup any files before creating new drives
-        try cleanupAllFiles(at: dataURL, notIncluding: existingDataURLs)
         // create new drives
         existingDataURLs += try createNewDrives(at: dataURL)
+        // cleanup any files before creating new drives
+        try cleanupAllFiles(at: dataURL, notIncluding: existingDataURLs)
         // create config.plist
         let encoder = PropertyListEncoder()
         let settingsData = try encoder.encode(self)
@@ -581,10 +581,21 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
     }
     
     private func createNewDrives(at dataURL: URL) throws -> [URL] {
+        let fileManager = FileManager.default
         var urls = [URL]()
         for i in diskImages.indices {
             if diskImages[i].imageURL == nil {
-                // TODO: implement new drive creation
+                let newUrl = dataURL.appendingPathComponent("disk\(i).img")
+                guard fileManager.createFile(atPath: newUrl.path, contents: nil, attributes: nil) else {
+                    throw ConfigError.cannotCreateDiskImage
+                }
+                let handle = try FileHandle(forWritingTo: newUrl)
+                try handle.truncate(atOffset: UInt64(diskImages[i].sizeBytes))
+                try handle.close()
+                DispatchQueue.main.async {
+                    self.diskImages[i].imageURL = newUrl
+                }
+                urls.append(newUrl)
             }
         }
         return urls
@@ -852,8 +863,12 @@ struct DiskImage: Codable, Hashable, Identifiable {
         hashValue
     }
     
+    var sizeBytes: Int64 {
+        Int64(sizeMib) * Int64(bytesInMib)
+    }
+    
     var sizeString: String {
-        ByteCountFormatter.string(fromByteCount: Int64(sizeMib) * Int64(bytesInMib), countStyle: .file)
+        ByteCountFormatter.string(fromByteCount: sizeBytes, countStyle: .file)
     }
     
     init(newSize: Int) {
@@ -993,6 +1008,7 @@ fileprivate enum ConfigError: Error {
     case kernelNotSpecified
     case customIconInvalid
     case hardwareModelInvalid
+    case cannotCreateDiskImage
 }
 
 fileprivate extension CodingUserInfoKey {
