@@ -558,9 +558,8 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
         for i in diskImages.indices {
             if !diskImages[i].isExternal, let imageURL = diskImages[i].imageURL {
                 let newUrl = try copyItemIfChanged(from: imageURL, to: dataURL)
-                DispatchQueue.main.async {
-                    self.diskImages[i].imageURL = newUrl
-                }
+                // FIXME: cannot modify state outside of main thread
+                diskImages[i].imageURL = newUrl
                 urls.append(newUrl)
             }
         }
@@ -592,9 +591,8 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
                 let handle = try FileHandle(forWritingTo: newUrl)
                 try handle.truncate(atOffset: UInt64(diskImages[i].sizeBytes))
                 try handle.close()
-                DispatchQueue.main.async {
-                    self.diskImages[i].imageURL = newUrl
-                }
+                // FIXME: cannot modify state outside of main thread
+                diskImages[i].imageURL = newUrl
                 urls.append(newUrl)
             }
         }
