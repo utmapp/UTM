@@ -80,17 +80,19 @@ struct VMConfigDrivesButtons<Config: ObservableObject & UTMConfigurable>: View {
                     }
                 }.padding()
             }
-            if let index = selectedDriveIndex, index != 0 {
+            if let index = selectedDriveIndex {
                 Button {
                     deleteDrive(atIndex: index)
                 } label: {
                     Label("Delete Drive", systemImage: "externaldrive.badge.plus")
                 }.help("Delete this drive.")
-                Button {
-                    moveDriveUp(fromIndex: index)
-                } label: {
-                    Label("Move Up", systemImage: "chevron.up")
-                }.help("Make boot order priority higher.")
+                if index != 0 {
+                    Button {
+                        moveDriveUp(fromIndex: index)
+                    } label: {
+                        Label("Move Up", systemImage: "chevron.up")
+                    }.help("Make boot order priority higher.")
+                }
                 if index != countDrives - 1 {
                     Button {
                         moveDriveDown(fromIndex: index)
@@ -107,7 +109,9 @@ struct VMConfigDrivesButtons<Config: ObservableObject & UTMConfigurable>: View {
             if let qemuConfig = config as? UTMQemuConfiguration {
                 try data.removeDrive(at: index, for: qemuConfig)
             } else if let appleConfig = config as? UTMAppleConfiguration {
-                appleConfig.diskImages.remove(at: index)
+                DispatchQueue.main.async {
+                    appleConfig.diskImages.remove(at: index)
+                }
             }
         }
     }

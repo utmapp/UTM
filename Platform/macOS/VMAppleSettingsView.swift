@@ -20,6 +20,7 @@ import SwiftUI
 struct VMAppleSettingsView: View {
     let vm: UTMVirtualMachine?
     @ObservedObject var config: UTMAppleConfiguration
+    @Binding var selectedDriveIndex: Int?
     
     @State private var infoActive: Bool = true
     
@@ -44,7 +45,7 @@ struct VMAppleSettingsView: View {
         }
         Section(header: Text("Drives")) {
             ForEach($config.diskImages) { $diskImage in
-                NavigationLink(destination: VMConfigAppleDriveDetailsView(diskImage: $diskImage).scrollable()) {
+                NavigationLink(destination: VMConfigAppleDriveDetailsView(diskImage: $diskImage).scrollable(), tag: config.diskImages.firstIndex(of: diskImage)!, selection: $selectedDriveIndex) {
                     Label("\(diskImage.sizeString) Image", systemImage: "externaldrive")
                 }
             }.onMove { indicies, dest in
@@ -58,6 +59,6 @@ struct VMAppleSettingsView: View {
 struct VMAppleSettingsView_Previews: PreviewProvider {
     @StateObject static var config = UTMAppleConfiguration()
     static var previews: some View {
-        VMAppleSettingsView(vm: nil, config: config)
+        VMAppleSettingsView(vm: nil, config: config, selectedDriveIndex: .constant(nil))
     }
 }

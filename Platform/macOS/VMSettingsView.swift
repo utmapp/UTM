@@ -32,7 +32,7 @@ struct VMSettingsView<Config: ObservableObject & UTMConfigurable>: View {
                 if let qemuConfig = config as? UTMQemuConfiguration {
                     VMQEMUSettingsView(vm: vm, config: qemuConfig, selectedDriveIndex: $selectedDriveIndex)
                 } else if #available(macOS 12, *), let appleConfig = config as? UTMAppleConfiguration {
-                    VMAppleSettingsView(vm: vm, config: appleConfig)
+                    VMAppleSettingsView(vm: vm, config: appleConfig, selectedDriveIndex: $selectedDriveIndex)
                 }
             }.listStyle(SidebarListStyle())
         }.frame(minWidth: 800, minHeight: 400)
