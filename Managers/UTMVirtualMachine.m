@@ -136,9 +136,9 @@ NSString *const kUTMBundleScreenshotFilename = @"screenshot.png";
     self = [self init];
     if (self) {
         self.parentPath = dstUrl;
+        self.viewState = [[UTMViewState alloc] init];
         self.config = configuration;
         self.config.selectedCustomIconPath = configuration.selectedCustomIconPath;
-        self.viewState = [[UTMViewState alloc] init];
         self.config = configuration;
     }
     return self;
