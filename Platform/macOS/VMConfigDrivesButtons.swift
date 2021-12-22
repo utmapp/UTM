@@ -105,14 +105,18 @@ struct VMConfigDrivesButtons<Config: ObservableObject & UTMConfigurable>: View {
     }
     
     func deleteDrive(atIndex index: Int) {
-        data.busyWork {
+        withAnimation {
             if let qemuConfig = config as? UTMQemuConfiguration {
-                try data.removeDrive(at: index, for: qemuConfig)
+                data.busyWork {
+                    try data.removeDrive(at: index, for: qemuConfig)
+                }
             } else if let appleConfig = config as? UTMAppleConfiguration {
-                DispatchQueue.main.async {
+                // FIXME: SwiftUI BUG: if this is the last item it doesn't disappear even though selectedDriveIndex is set to nil
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                     appleConfig.diskImages.remove(at: index)
                 }
             }
+            selectedDriveIndex = nil
         }
     }
     
