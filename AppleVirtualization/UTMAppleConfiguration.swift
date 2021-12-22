@@ -558,7 +558,9 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
         for i in diskImages.indices {
             if !diskImages[i].isExternal, let imageURL = diskImages[i].imageURL {
                 let newUrl = try copyItemIfChanged(from: imageURL, to: dataURL)
-                diskImages[i].imageURL = newUrl
+                DispatchQueue.main.async {
+                    self.diskImages[i].imageURL = newUrl
+                }
                 urls.append(newUrl)
             }
         }
