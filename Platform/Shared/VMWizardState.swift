@@ -292,6 +292,15 @@ class VMWizardState: ObservableObject {
         if #available(macOS 12, *), let sharingDirectoryURL = sharingDirectoryURL {
             config.sharedDirectories = [SharedDirectory(directoryURL: sharingDirectoryURL, isReadOnly: sharingReadOnly)]
         }
+        // some meaningful defaults
+        if #available(macOS 12, *) {
+            config.displays = [Display(for: .init(width: 1920, height: 1200), isHidpi: true)]
+            config.isAudioEnabled = true
+            config.isKeyboardEnabled = true
+            config.isPointingEnabled = true
+        }
+        config.isBalloonEnabled = true
+        config.isEntropyEnabled = true
         return config
     }
     #endif
