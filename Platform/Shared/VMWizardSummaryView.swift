@@ -94,6 +94,7 @@ struct VMWizardSummaryView: View {
         Group {
             TextField("Name", text: $wizardState.name.bound)
             Toggle("Open VM Settings", isOn: $wizardState.isOpenSettingsAfterCreation)
+                .disabled(wizardState.isPendingIPSWDownload)
         }
     }
     

@@ -26,7 +26,7 @@ struct VMWizardOSMacView: View {
         VStack {
             Text("macOS")
                 .font(.largeTitle)
-            Text("To install macOS, you need to download a recovery IPSW. (Tip: You can search online for \"m1 mac ipsw\".) Only macOS 12.0 and up are supported.")
+            Text("To install macOS, you need to download a recovery IPSW. If you do not select an existing IPSW, the latest macOS IPSW will be downloaded from Apple.")
                 .padding()
             #if arch(arm64)
             if let selected = wizardState.macRecoveryIpswURL {
@@ -34,10 +34,18 @@ struct VMWizardOSMacView: View {
                     .font(.caption)
             }
             #endif
-            Button {
-                isFileImporterPresented.toggle()
-            } label: {
-                Text("Browse")
+            HStack {
+                Button {
+                    isFileImporterPresented.toggle()
+                } label: {
+                    Text("Browse")
+                }
+                Button {
+                    wizardState.macRecoveryIpswURL = nil
+                    wizardState.macPlatform = nil
+                } label: {
+                    Text("Clear")
+                }
             }.disabled(wizardState.isBusy)
             .buttonStyle(BrowseButtonStyle())
             if wizardState.isBusy {

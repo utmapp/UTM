@@ -253,6 +253,29 @@ class UTMData: ObservableObject {
         }
     }
     
+    #if os(macOS) && arch(arm64)
+    @available(macOS 12, *)
+    func createPendingIPSWDownload(config: UTMAppleConfiguration) {
+        let task = UTMDownloadIPSWTask(data: self, name: config.name, url: config.macRecoveryIpswURL!) { ipswFileUrl in
+            DispatchQueue.main.async {
+                config.macRecoveryIpswURL = ipswFileUrl
+                self.busyWork {
+                    try self.create(config: config) { vm in
+                        self.selectedVM = vm
+                    }
+                }
+            }
+        }
+        let pendingVM = task.startDownload()
+        DispatchQueue.main.async {
+            self.pendingVMs.append(pendingVM)
+            if task.isDone {
+                self.removePendingVM(pendingVM)
+            }
+        }
+    }
+    #endif
+    
     func move(fromOffsets: IndexSet, toOffset: Int) {
         DispatchQueue.main.async {
             self.virtualMachines.move(fromOffsets: fromOffsets, toOffset: toOffset)

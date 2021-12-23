@@ -20,7 +20,7 @@ import ZIPFoundation
 
 /// Downloads a ZIPped UTM file from the web, unzips it and imports it as a UTM virtual machine.
 @available(iOS 14, macOS 11, *)
-class UTMImportFromWebTask: NSObject, URLSessionDelegate, URLSessionDownloadDelegate {
+class UTMImportFromWebTask: NSObject, UTMDownloadable, URLSessionDelegate, URLSessionDownloadDelegate {
     let data: UTMData
     let url: URL
     private var downloadTask: URLSessionTask!
@@ -176,7 +176,7 @@ class UTMImportFromWebTask: NSObject, URLSessionDelegate, URLSessionDownloadDele
         if let index = filename.range(of: ".zip", options: [])?.lowerBound {
             nameWithoutZIP = String(filename[..<index])
         }
-        pendingVM = UTMPendingVirtualMachine(name: nameWithoutZIP, importTask: self)
+        pendingVM = UTMPendingVirtualMachine(name: nameWithoutZIP, task: self)
         return pendingVM
     }
     

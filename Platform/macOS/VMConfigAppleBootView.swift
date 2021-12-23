@@ -77,7 +77,7 @@ struct VMConfigAppleBootView: View {
                 case .kernel:
                     return Alert(title: Text("Please select an uncompressed Linux kernel image."), dismissButton: okay)
                 case .ipsw:
-                    return Alert(title: Text("Please select a macOS recovery IPSW."), dismissButton: okay)
+                    return Alert(title: Text("Please select a macOS recovery IPSW if you would like to re-install macOS."), primaryButton: okay, secondaryButton: .cancel())
                 default:
                     return Alert(title: Text("Select a file."), dismissButton: okay)
                 }

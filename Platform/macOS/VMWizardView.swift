@@ -84,6 +84,12 @@ struct VMWizardView: View {
                             presentationMode.wrappedValue.dismiss()
                             data.busyWork {
                                 let config = try wizardState.generateConfig()
+                                #if arch(arm64)
+                                if #available(macOS 12, *), wizardState.isPendingIPSWDownload {
+                                    data.createPendingIPSWDownload(config: config as! UTMAppleConfiguration)
+                                    return
+                                }
+                                #endif
                                 try data.create(config: config) { vm in
                                     data.selectedVM = vm
                                     if wizardState.isOpenSettingsAfterCreation {

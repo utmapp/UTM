@@ -16,6 +16,7 @@
 
 import Foundation
 import SwiftUI
+import Virtualization
 
 enum VMWizardPage: Int, Identifiable {
     var id: Int {
@@ -115,6 +116,20 @@ class VMWizardState: ObservableObject {
         }
     }
     
+    #if os(macOS) && arch(arm64)
+    var isPendingIPSWDownload: Bool {
+        guard #available(macOS 12, *), operatingSystem == .macOS else {
+            return false
+        }
+        guard let url = macRecoveryIpswURL else {
+            return false
+        }
+        return !url.isFileURL
+    }
+    #else
+    let isPendingIPSWDownload: Bool = false
+    #endif
+    
     var slideIn: AnyTransition {
         .asymmetric(insertion: .move(edge: .trailing), removal: .opacity)
     }
@@ -148,9 +163,8 @@ class VMWizardState: ObservableObject {
         case .macOSBoot:
             #if os(macOS) && arch(arm64)
             if #available(macOS 12, *) {
-                guard macPlatform != nil && macRecoveryIpswURL != nil else {
-                    alertMessage = AlertMessage(NSLocalizedString("Please select an IPSW file.", comment: "VMWizardState"))
-                    return
+                if macPlatform == nil || macRecoveryIpswURL == nil {
+                    fetchLatestPlatform()
                 }
                 nextPage = .hardware
             }
@@ -303,6 +317,29 @@ class VMWizardState: ObservableObject {
         config.isEntropyEnabled = true
         return config
     }
+    
+    #if arch(arm64)
+    @available(macOS 12, *)
+    private func fetchLatestPlatform() {
+        VZMacOSRestoreImage.fetchLatestSupported { result in
+            switch result {
+            case .success(let restoreImage):
+                DispatchQueue.main.async {
+                    if let hardwareModel = restoreImage.mostFeaturefulSupportedConfiguration?.hardwareModel {
+                        self.macPlatform = MacPlatform(newHardware: hardwareModel)
+                        self.macRecoveryIpswURL = restoreImage.url
+                    } else {
+                        self.alertMessage = AlertMessage(NSLocalizedString("Failed to get latest macOS version from Apple.", comment: "VMWizardState"))
+                    }
+                }
+            case .failure(let error):
+                DispatchQueue.main.async {
+                    self.alertMessage = AlertMessage(error.localizedDescription)
+                }
+            }
+        }
+    }
+    #endif
     #endif
     
     private func generateQemuConfig() throws -> UTMQemuConfiguration {
