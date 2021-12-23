@@ -35,7 +35,13 @@ class VMDisplayAppleWindowController: VMDisplayWindowController {
         displayView.addSubview(appleView)
         NSLayoutConstraint.activate(appleView.constraintsForAnchoringTo(boundsOf: displayView))
         window!.recalculateKeyViewLoop()
+        shouldAutoStartVM = appleConfig.macRecoveryIpswURL == nil
         super.windowDidLoad()
+        if let ipswUrl = appleConfig.macRecoveryIpswURL {
+            showConfirmAlert(NSLocalizedString("Would you like to install macOS? If an existing operating system is already installed on the primary drive of this VM, then it will be erased.", comment: "VMDisplayAppleWindowController")) {
+                _ = self.appleVM.installVM(with: ipswUrl)
+            }
+        }
     }
     
     override func enterLive() {

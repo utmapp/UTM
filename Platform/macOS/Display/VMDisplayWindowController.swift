@@ -32,6 +32,7 @@ class VMDisplayWindowController: NSWindowController {
     @IBOutlet weak var sharedFolderToolbarItem: NSToolbarItem!
     @IBOutlet weak var resizeConsoleToolbarItem: NSToolbarItem!
     
+    var shouldAutoStartVM: Bool = true
     var vm: UTMVirtualMachine!
     var onClose: ((Notification) -> Void)?
     var vmMessage: String?
@@ -118,9 +119,11 @@ class VMDisplayWindowController: NSWindowController {
         
         if vm.state == .vmStopped || vm.state == .vmSuspended {
             enterSuspended(isBusy: false)
-            DispatchQueue.global(qos: .userInitiated).async {
-                if self.vm.startVM() {
-                    self.virtualMachineHasStarted(self.vm)
+            if shouldAutoStartVM {
+                DispatchQueue.global(qos: .userInitiated).async {
+                    if self.vm.startVM() {
+                        self.virtualMachineHasStarted(self.vm)
+                    }
                 }
             }
         } else {

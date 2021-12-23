@@ -201,6 +201,31 @@ import Virtualization
         }
         return true
     }
+    
+    func installVM(with ipswUrl: URL) -> Bool {
+        guard state == .vmStopped else {
+            return false
+        }
+        changeState(.vmStarting)
+        #if os(macOS) && arch(arm64)
+        vmQueue.async {
+            let installer = VZMacOSInstaller(virtualMachine: self.apple, restoringFromImageAt: ipswUrl)
+            installer.install { result in
+                switch result {
+                case .failure(let error):
+                    self.errorTriggered(error.localizedDescription)
+                case .success:
+                    self.changeState(.vmStopped)
+                    _ = self.startVM()
+                }
+            }
+        }
+        return true
+        #else
+        changeState(.vmStopped)
+        return false
+        #endif
+    }
 }
 
 @available(macOS 12, *)
