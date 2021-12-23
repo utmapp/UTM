@@ -57,4 +57,21 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             return .terminateCancel
         }
     }
+    
+    func applicationWillTerminate(_ notification: Notification) {
+        /// Clean up caches
+        let fileManager = FileManager.default
+        guard let cacheUrl = fileManager.urls(for: .cachesDirectory, in: .userDomainMask).first else {
+            return
+        }
+        guard let urls = try? fileManager.contentsOfDirectory(at: cacheUrl, includingPropertiesForKeys: nil, options: []) else {
+            return
+        }
+        for url in urls {
+            var isDirectory: ObjCBool = false
+            if fileManager.fileExists(atPath: url.path, isDirectory: &isDirectory) && !isDirectory.boolValue {
+                try? fileManager.removeItem(at: url)
+            }
+        }
+    }
 }

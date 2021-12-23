@@ -30,6 +30,14 @@ class UTMDownloadIPSWTask: NSObject, UTMDownloadable, URLSessionDelegate, URLSes
     private var restoreImage: Any?
     private(set) var isDone: Bool = false
     
+    private var fileManager: FileManager {
+        FileManager.default
+    }
+    
+    private var cacheUrl: URL {
+        fileManager.urls(for: .cachesDirectory, in: .userDomainMask).first!
+    }
+    
     init(data: UTMData, name: String, url: URL, onSuccess: @escaping (URL) -> Void) {
         self.data = data
         self.name = name
@@ -39,6 +47,19 @@ class UTMDownloadIPSWTask: NSObject, UTMDownloadable, URLSessionDelegate, URLSes
     
     internal func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
         self.downloadTask = nil
+        let cacheIpsw = cacheUrl.appendingPathComponent(url.lastPathComponent)
+        do {
+            if fileManager.fileExists(atPath: cacheIpsw.path) {
+                try fileManager.removeItem(at: cacheIpsw)
+            }
+            try fileManager.moveItem(at: location, to: cacheIpsw)
+            success(with: cacheIpsw)
+        } catch {
+            fail(with: error.localizedDescription)
+        }
+    }
+    
+    internal func success(with location: URL) {
         DispatchQueue.main.async { [self] in
             pendingVM.setDownloadProgress(1)
         }
@@ -87,9 +108,14 @@ class UTMDownloadIPSWTask: NSObject, UTMDownloadable, URLSessionDelegate, URLSes
     /// Downloads a ZIP-compressed file from the provided URL and imports the UTM file inside, if there is one.
     func startDownload() -> UTMPendingVirtualMachine {
         pendingVM = UTMPendingVirtualMachine(name: name, task: self)
-        let session = URLSession(configuration: .default, delegate: self, delegateQueue: nil)
-        downloadTask = session.downloadTask(with: url)
-        downloadTask.resume()
+        let cacheIpsw = cacheUrl.appendingPathComponent(url.lastPathComponent)
+        if fileManager.fileExists(atPath: cacheIpsw.path) {
+            success(with: cacheIpsw)
+        } else {
+            let session = URLSession(configuration: .default, delegate: self, delegateQueue: nil)
+            downloadTask = session.downloadTask(with: url)
+            downloadTask.resume()
+        }
         return pendingVM
     }
     
