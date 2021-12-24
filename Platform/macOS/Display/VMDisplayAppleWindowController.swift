@@ -83,17 +83,20 @@ class VMDisplayAppleWindowController: VMDisplayWindowController {
 @available(macOS 12, *)
 extension VMDisplayAppleWindowController {
     func didFinishInstallation() {
-        isInstalling = false
-        // delete IPSW setting
-        appleConfig.macRecoveryIpswURL = nil
-        do {
-            try appleVM.saveUTM()
-        } catch {
-            showErrorAlert(error.localizedDescription)
-        }
-        // start VM
-        if vm.startVM() {
-            didStartVirtualMachine(vm)
+        DispatchQueue.main.async {
+            self.isInstalling = false
+            // delete IPSW setting
+            self.enterSuspended(isBusy: true)
+            self.appleConfig.macRecoveryIpswURL = nil
+            do {
+                try self.appleVM.saveUTM()
+            } catch {
+                self.showErrorAlert(error.localizedDescription)
+            }
+            // start VM
+            if self.vm.startVM() {
+                self.didStartVirtualMachine(self.vm)
+            }
         }
     }
     
