@@ -69,6 +69,8 @@ import Virtualization
         return vm
     }()
     
+    private var progressObserver: NSKeyValueObservation?
+    
     override static func isAppleVM(forPath path: URL) -> Bool {
         do {
             _ = try UTMAppleConfiguration.load(from: path)
@@ -210,14 +212,17 @@ import Virtualization
         #if os(macOS) && arch(arm64)
         vmQueue.async {
             let installer = VZMacOSInstaller(virtualMachine: self.apple, restoringFromImageAt: ipswUrl)
+            self.progressObserver = installer.progress.observe(\.fractionCompleted, options: [.initial, .new]) { progress, change in
+                self.delegate?.virtualMachine?(self, installationProgress: progress.fractionCompleted)
+            }
             installer.install { result in
                 switch result {
                 case .failure(let error):
                     self.errorTriggered(error.localizedDescription)
                 case .success:
-                    self.changeState(.vmStopped)
-                    _ = self.startVM()
+                    self.changeState(.vmStarted)
                 }
+                self.progressObserver = nil
             }
         }
         return true

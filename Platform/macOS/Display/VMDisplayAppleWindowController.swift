@@ -51,6 +51,7 @@ class VMDisplayAppleWindowController: VMDisplayWindowController {
         restartToolbarItem.isEnabled = false // FIXME: enable this
         resizeConsoleToolbarItem.isEnabled = false
         sharedFolderToolbarItem.isEnabled = false
+        window!.title = appleConfig.name
         updateWindowFrame()
         super.enterLive()
     }
@@ -67,6 +68,16 @@ class VMDisplayAppleWindowController: VMDisplayWindowController {
         window.contentAspectRatio = size
         window.minSize = NSSize(width: 400, height: 400)
         window.setFrame(frame, display: false, animate: true)
+    }
+    
+    func virtualMachine(_ vm: UTMVirtualMachine, installationProgress completed: Double) {
+        DispatchQueue.main.async {
+            if completed >= 1 {
+                self.window!.subtitle = ""
+            } else {
+                self.window!.subtitle = NSLocalizedString("Installation: \(Int(completed * 100))%", comment: "VMDisplayAppleWindowController")
+            }
+        }
     }
 }
 

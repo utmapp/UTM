@@ -44,6 +44,9 @@ typedef NS_ENUM(NSUInteger, UTMVMState) {
 
 - (void)virtualMachine:(UTMVirtualMachine *)vm transitionToState:(UTMVMState)state;
 
+@optional
+- (void)virtualMachine:(UTMVirtualMachine *)vm installationProgress:(double)completed;
+
 @end
 
 NS_ASSUME_NONNULL_END
