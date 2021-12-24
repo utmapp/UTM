@@ -19,6 +19,7 @@ import Virtualization
 @available(macOS 12, *)
 class VMDisplayAppleWindowController: VMDisplayWindowController {
     var appleView: VZVirtualMachineView!
+    var isInstalling: Bool = false
     
     var appleVM: UTMAppleVirtualMachine! {
         vm as? UTMAppleVirtualMachine
@@ -39,6 +40,7 @@ class VMDisplayAppleWindowController: VMDisplayWindowController {
         super.windowDidLoad()
         if let ipswUrl = appleConfig.macRecoveryIpswURL {
             showConfirmAlert(NSLocalizedString("Would you like to install macOS? If an existing operating system is already installed on the primary drive of this VM, then it will be erased.", comment: "VMDisplayAppleWindowController")) {
+                self.isInstalling = true
                 _ = self.appleVM.installVM(with: ipswUrl)
             }
         }
@@ -56,6 +58,13 @@ class VMDisplayAppleWindowController: VMDisplayWindowController {
         super.enterLive()
     }
     
+    override func virtualMachine(_ vm: UTMVirtualMachine, transitionTo state: UTMVMState) {
+        super.virtualMachine(vm, transitionTo: state)
+        if state == .vmStopped && isInstalling {
+            didFinishInstallation()
+        }
+    }
+    
     func updateWindowFrame() {
         guard let window = window else {
             return
@@ -68,6 +77,24 @@ class VMDisplayAppleWindowController: VMDisplayWindowController {
         window.contentAspectRatio = size
         window.minSize = NSSize(width: 400, height: 400)
         window.setFrame(frame, display: false, animate: true)
+    }
+}
+
+@available(macOS 12, *)
+extension VMDisplayAppleWindowController {
+    func didFinishInstallation() {
+        isInstalling = false
+        // delete IPSW setting
+        appleConfig.macRecoveryIpswURL = nil
+        do {
+            try appleVM.saveUTM()
+        } catch {
+            showErrorAlert(error.localizedDescription)
+        }
+        // start VM
+        if vm.startVM() {
+            virtualMachineHasStarted(vm)
+        }
     }
     
     func virtualMachine(_ vm: UTMVirtualMachine, installationProgress completed: Double) {
