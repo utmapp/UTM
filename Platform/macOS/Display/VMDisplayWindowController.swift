@@ -81,7 +81,7 @@ class VMDisplayWindowController: NSWindowController {
         } else if vm.state == .vmStopped {
             DispatchQueue.global(qos: .userInitiated).async {
                 if self.vm.startVM() {
-                    self.virtualMachineHasStarted(self.vm)
+                    self.didStartVirtualMachine(self.vm)
                 }
             }
         } else {
@@ -122,13 +122,13 @@ class VMDisplayWindowController: NSWindowController {
             if shouldAutoStartVM {
                 DispatchQueue.global(qos: .userInitiated).async {
                     if self.vm.startVM() {
-                        self.virtualMachineHasStarted(self.vm)
+                        self.didStartVirtualMachine(self.vm)
                     }
                 }
             }
         } else {
             enterLive()
-            virtualMachineHasStarted(vm)
+            didStartVirtualMachine(vm)
         }
         
         super.windowDidLoad()
@@ -194,7 +194,7 @@ class VMDisplayWindowController: NSWindowController {
         }
     }
     
-    internal func virtualMachineHasStarted(_ vm: UTMVirtualMachine) {
+    internal func didStartVirtualMachine(_ vm: UTMVirtualMachine) {
         
     }
 }

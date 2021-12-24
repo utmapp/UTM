@@ -35,7 +35,7 @@ class VMDisplayQemuWindowController: VMDisplayWindowController {
         super.enterLive()
     }
     
-    override internal func virtualMachineHasStarted(_ vm: UTMVirtualMachine) {
+    override internal func didStartVirtualMachine(_ vm: UTMVirtualMachine) {
         qemuVM.ioDelegate = self
     }
 }

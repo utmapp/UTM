@@ -93,7 +93,7 @@ extension VMDisplayAppleWindowController {
         }
         // start VM
         if vm.startVM() {
-            virtualMachineHasStarted(vm)
+            didStartVirtualMachine(vm)
         }
     }
     
