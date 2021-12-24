@@ -343,7 +343,6 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
         case memorySize
         case bootLoader
         case macPlatform
-        case macRecoveryIpswBookmark
         case networkDevices
         case displays
         case diskImages
@@ -383,10 +382,6 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
             #if arch(arm64)
             macPlatform = try values.decodeIfPresent(MacPlatform.self, forKey: .macPlatform)
             #endif
-            if let recoveryIpswBookmark = try values.decodeIfPresent(Data.self, forKey: .macRecoveryIpswBookmark) {
-                var stale: Bool = false
-                macRecoveryIpswURL = try? URL(resolvingBookmarkData: recoveryIpswBookmark, options: .withSecurityScope, bookmarkDataIsStale: &stale)
-            }
             displays = try values.decode([Display].self, forKey: .displays)
             sharedDirectories = try values.decode([SharedDirectory].self, forKey: .sharedDirectories)
             isAudioEnabled = try values.decode(Bool.self, forKey: .isAudioEnabled)
@@ -425,12 +420,6 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
             #if arch(arm64)
             try container.encodeIfPresent(macPlatform, forKey: .macPlatform)
             #endif
-            _ = macRecoveryIpswURL?.startAccessingSecurityScopedResource()
-            defer {
-                macRecoveryIpswURL?.stopAccessingSecurityScopedResource()
-            }
-            let recoveryIpswBookmark = try macRecoveryIpswURL?.bookmarkData(options: .withSecurityScope)
-            try container.encodeIfPresent(recoveryIpswBookmark, forKey: .macRecoveryIpswBookmark)
             try container.encode(displays, forKey: .displays)
             try container.encode(sharedDirectories, forKey: .sharedDirectories)
             try container.encode(isAudioEnabled, forKey: .isAudioEnabled)

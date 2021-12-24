@@ -106,16 +106,22 @@ struct VMConfigAppleBootView: View {
                     TextField("Boot arguments", text: $config.linuxCommandLine)
                 }
             } else if operatingSystem == .macOS {
+                #if arch(arm64)
                 Section(header: Text("macOS Settings")) {
                     HStack {
                         TextField("IPSW Image", text: .constant(config.macRecoveryIpswURL?.lastPathComponent ?? ""))
                             .disabled(true)
+                        Button("Clear") {
+                            config.macPlatform = nil
+                            config.macRecoveryIpswURL = nil
+                        }
                         Button("Browse") {
                             importBootloaderSelection = .ipsw
                             importFileShown = true
                         }
                     }
                 }
+                #endif
             }
         }.onAppear {
             operatingSystem = currentOperatingSystem
