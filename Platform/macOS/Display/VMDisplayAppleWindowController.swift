@@ -73,10 +73,14 @@ class VMDisplayAppleWindowController: VMDisplayWindowController {
             return //FIXME: add multiple displays
         }
         let size = CGSize(width: primaryDisplay.widthInPixels, height: primaryDisplay.heightInPixels)
-        let frame = window.frameRect(forContentRect: CGRect(origin: .zero, size: size))
+        let frame = window.frameRect(forContentRect: CGRect(origin: window.frame.origin, size: size))
         window.contentAspectRatio = size
         window.minSize = NSSize(width: 400, height: 400)
         window.setFrame(frame, display: false, animate: true)
+    }
+    
+    override func resizeConsoleButtonPressed(_ sender: Any) {
+        updateWindowFrame()
     }
 }
 
