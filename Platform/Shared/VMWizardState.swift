@@ -97,7 +97,7 @@ class VMWizardState: ObservableObject {
     @Published var systemMemory: UInt64 = 512 * 1048576
     @Published var storageSizeGib: Int = 8
     #endif
-    @Published var systemCpuCount: Int = 1
+    @Published var systemCpuCount: Int = 4
     @Published var sharingDirectoryURL: URL?
     @Published var sharingReadOnly: Bool = false
     @Published var name: String?
@@ -315,6 +315,7 @@ class VMWizardState: ObservableObject {
         }
         config.isBalloonEnabled = true
         config.isEntropyEnabled = true
+        config.networkDevices = [Network(newInterfaceForMode: .Shared)]
         return config
     }
     

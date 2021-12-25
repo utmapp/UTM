@@ -452,6 +452,8 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
     
     func save(to packageURL: URL) throws {
         let fileManager = FileManager.default
+        // validate
+        try apple.validate()
         // create package directory
         if !fileManager.fileExists(atPath: packageURL.path) {
             try fileManager.createDirectory(at: packageURL, withIntermediateDirectories: false)
