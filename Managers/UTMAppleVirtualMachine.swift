@@ -19,6 +19,8 @@ import Virtualization
 @available(iOS, unavailable, message: "Apple Virtualization not available on iOS")
 @available(macOS 12, *)
 @objc class UTMAppleVirtualMachine: UTMVirtualMachine {
+    private let quitTimeoutSeconds = DispatchTimeInterval.seconds(30)
+    
     var appleConfig: UTMAppleConfiguration! {
         config as? UTMAppleConfiguration
     }
@@ -143,13 +145,18 @@ import Virtualization
                 }
             }
         } else {
+            let forceQuit = DispatchWorkItem {
+                _ = self.quitVM(force: true)
+            }
             vmQueue.async {
+                forceQuit.cancel()
                 do {
                     try self.apple.requestStop()
                 } catch {
                     self.errorTriggered(error.localizedDescription)
                 }
             }
+            vmQueue.asyncAfter(deadline: .now() + quitTimeoutSeconds, execute: forceQuit)
         }
         return true
     }
