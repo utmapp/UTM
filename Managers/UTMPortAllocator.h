@@ -20,7 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface UTMPortAllocator : NSObject
 
-+ (UTMPortAllocator *)sharedInstance;
+@property (class, nonatomic) NS_SWIFT_NAME(shared) UTMPortAllocator *sharedInstance;
 
 - (instancetype)init NS_UNAVAILABLE;
 - (NSInteger)allocatePort;
