@@ -494,6 +494,7 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
             if fileManager.contentsEqual(atPath: sourceURL.path, andPath: destURL.path) {
                 return destURL
             }
+            try fileManager.removeItem(at: destURL)
         }
         try fileManager.copyItem(at: sourceURL, to: destURL)
         return destURL
