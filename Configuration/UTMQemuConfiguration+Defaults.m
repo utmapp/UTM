@@ -42,7 +42,7 @@
         self.systemBootDevice = @"cd";
     }
     self.systemUUID = [[NSUUID UUID] UUIDString];
-    self.displayUpscaler = @"linear";
+    self.displayUpscaler = @"nearest";
     self.displayDownscaler = @"linear";
     self.consoleFont = @"Menlo";
     self.consoleFontSize = @12;
