@@ -56,6 +56,8 @@
 	<string>public.app-category.business</string>
 	<key>LSMinimumSystemVersion</key>
 	<string>$(MACOSX_DEPLOYMENT_TARGET)</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Allow access to allow VMs to use the Microphone.</string>
 	<key>UTExportedTypeDeclarations</key>
 	<array>
 		<dict>

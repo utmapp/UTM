@@ -23,6 +23,7 @@ import UIKit
 #if canImport(AltKit)
 import AltKit
 #endif
+import AVFoundation
 
 @available(iOS 14, macOS 11, *)
 struct AlertMessage: Identifiable {
@@ -179,6 +180,14 @@ class UTMData: ObservableObject {
     
     func save(vm: UTMVirtualMachine) throws {
         do {
+            #if os(macOS)
+            if vm.configuration.soundCard?.contains("hda") ?? false {
+                /// get mic permisison
+                AVCaptureDevice.requestAccess(for: .audio) { access in
+                    print(access)
+                }
+            }
+            #endif
             let oldPath = vm.path
             try vm.saveUTM()
             let newPath = vm.path
