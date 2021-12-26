@@ -280,20 +280,7 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
         }
     }
     
-    var isSerialEnabled: Bool {
-        get {
-            !apple.serialPorts.isEmpty
-        }
-        
-        set {
-            objectWillChange.send()
-            if newValue {
-                apple.serialPorts = [VZVirtioConsoleDeviceSerialPortConfiguration()]
-            } else {
-                apple.serialPorts = []
-            }
-        }
-    }
+    @Published var isSerialEnabled: Bool
     
     @available(macOS 12, *)
     var isKeyboardEnabled: Bool {
@@ -362,6 +349,7 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
         consoleCursorBlink = true
         version = currentVersion
         isAppleVirtualization = true
+        isSerialEnabled = false
         memorySize = 4 * 1024 * 1024 * 1024
         cpuCount = 4
     }

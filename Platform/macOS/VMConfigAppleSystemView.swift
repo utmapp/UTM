@@ -70,6 +70,7 @@ struct VMConfigAppleSystemView: View {
                     Toggle("Enable Entropy Device", isOn: $config.isEntropyEnabled)
                     Toggle("Enable Keyboard", isOn: $config.isKeyboardEnabled)
                     Toggle("Enable Pointer", isOn: $config.isPointingEnabled)
+                    Toggle("Enable Serial", isOn: $config.isSerialEnabled)
                 }
             }
         }

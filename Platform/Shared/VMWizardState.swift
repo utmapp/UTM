@@ -316,6 +316,7 @@ class VMWizardState: ObservableObject {
         config.isBalloonEnabled = true
         config.isEntropyEnabled = true
         config.networkDevices = [Network(newInterfaceForMode: .Shared)]
+        config.isSerialEnabled = operatingSystem == .Linux
         return config
     }
     

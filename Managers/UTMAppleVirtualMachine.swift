@@ -69,6 +69,14 @@ import Virtualization
     
     private var progressObserver: NSKeyValueObservation?
     
+    @Published private(set) var ttyName: String?
+    
+    private var masterTtyHandle: FileHandle?
+    // we have to hold on to this before if nobody else has the PTY open, then write() returns EIO
+    // and Virtualization.framework automatically closes it... We should never read from this handle
+    // or anyone else with the PTY open will not get the data.
+    private var slaveTtyHandle: FileHandle?
+    
     override static func isAppleVM(forPath path: URL) -> Bool {
         do {
             _ = try UTMAppleConfiguration.load(from: path)
@@ -112,7 +120,9 @@ import Virtualization
             return false
         }
         changeState(.vmStarting)
-        createAppleVM()
+        guard createAppleVM() else {
+            return false
+        }
         vmQueue.async {
             self.apple.start { result in
                 switch result {
@@ -203,9 +213,27 @@ import Virtualization
         return true
     }
     
-    private func createAppleVM() {
-        apple = VZVirtualMachine(configuration: self.appleConfig.apple, queue: vmQueue)
+    private func createAppleVM() -> Bool {
+        if appleConfig.isSerialEnabled {
+            do {
+                let (fd, sfd, name) = try createPty()
+                masterTtyHandle = FileHandle(fileDescriptor: fd, closeOnDealloc: false)
+                slaveTtyHandle = FileHandle(fileDescriptor: sfd, closeOnDealloc: false)
+                let attachment = VZFileHandleSerialPortAttachment(fileHandleForReading: masterTtyHandle!, fileHandleForWriting: masterTtyHandle!)
+                let serialConfig = VZVirtioConsoleDeviceSerialPortConfiguration()
+                serialConfig.attachment = attachment
+                appleConfig.apple.serialPorts = [serialConfig]
+                DispatchQueue.main.async {
+                    self.ttyName = name
+                }
+            } catch {
+                errorTriggered(error.localizedDescription)
+                return false
+            }
+        }
+        apple = VZVirtualMachine(configuration: appleConfig.apple, queue: vmQueue)
         apple.delegate = self
+        return true
     }
     
     func installVM(with ipswUrl: URL) -> Bool {
@@ -213,7 +241,9 @@ import Virtualization
             return false
         }
         changeState(.vmStarting)
-        createAppleVM()
+        guard createAppleVM() else {
+            return false
+        }
         #if os(macOS) && arch(arm64)
         vmQueue.async {
             let installer = VZMacOSInstaller(virtualMachine: self.apple, restoringFromImageAt: ipswUrl)
@@ -238,7 +268,7 @@ import Virtualization
     }
     
     // taken from https://github.com/evansm7/vftool/blob/main/vftool/main.m
-    private func createPty() throws -> (Int32, String) {
+    private func createPty() throws -> (Int32, Int32, String) {
         let errMsg = NSLocalizedString("Cannot create virtual terminal.", comment: "UTMAppleVirtualMachine")
         var mfd: Int32 = -1
         var sfd: Int32 = -1
@@ -259,7 +289,6 @@ import Virtualization
             logger.error("tcsetattr failed: \(errno)")
             throw errMsg
         }
-        close(sfd)
         
         let f = fcntl(mfd, F_GETFL)
         guard fcntl(mfd, F_SETFL, f | O_NONBLOCK) >= 0 else {
@@ -270,20 +299,7 @@ import Virtualization
         let name = String(cString: cname)
         logger.info("fd \(mfd) connected to \(name)")
         
-        /*
-        DispatchQueue.global(qos: .utility).async {
-            // Causes a HUP:
-            close(sfd)
-            // Poll for the HUP to go away:
-            var pfd = pollfd(fd: mfd, events: Int16(POLLHUP), revents: 0)
-            repeat {
-                poll(&pfd, 1, 1000)
-            } while ((pfd.revents & Int16(POLLHUP)) != 0)
-            logger.info("deletected tty connection")
-        }
-         */
-        
-        return (mfd, name)
+        return (mfd, sfd, name)
     }
 }
 
@@ -291,6 +307,13 @@ import Virtualization
 extension UTMAppleVirtualMachine: VZVirtualMachineDelegate {
     func guestDidStop(_ virtualMachine: VZVirtualMachine) {
         apple = nil
+        try? masterTtyHandle?.close()
+        masterTtyHandle = nil
+        try? slaveTtyHandle?.close()
+        slaveTtyHandle = nil
+        DispatchQueue.main.async {
+            self.ttyName = nil
+        }
         changeState(.vmStopped)
     }
     

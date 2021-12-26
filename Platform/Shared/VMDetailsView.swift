@@ -186,6 +186,15 @@ struct Details: View {
                 Text(sizeLabel)
                     .foregroundColor(.secondary)
             }
+            if #available(macOS 12, *), let appleVM = vm as? UTMAppleVirtualMachine {
+                HStack {
+                    plainLabel("Serial", systemImage: "phone.connection")
+                    Spacer()
+                    Text(appleVM.ttyName ?? "Inactive")
+                        .foregroundColor(.secondary)
+                        .textSelection(.enabled)
+                }
+            }
         }.lineLimit(1)
         .truncationMode(.tail)
     }
