@@ -130,32 +130,25 @@ import Virtualization
         guard state == .vmStarted else {
             return false
         }
-        changeState(.vmStopping)
         if force {
+            changeState(.vmStopping)
             vmQueue.async {
                 self.apple.stop { error in
                     if let error = error {
                         self.errorTriggered(error.localizedDescription)
                     } else {
-                        self.apple = nil
-                        self.changeState(.vmStopped)
+                        self.guestDidStop(self.apple)
                     }
                 }
             }
         } else {
-            let forceQuit = DispatchWorkItem {
-                _ = self.quitVM(force: true)
-            }
             vmQueue.async {
-                forceQuit.cancel()
                 do {
                     try self.apple.requestStop()
                 } catch {
                     self.errorTriggered(error.localizedDescription)
                 }
-                self.apple = nil
             }
-            vmQueue.asyncAfter(deadline: .now() + quitTimeoutSeconds, execute: forceQuit)
         }
         return true
     }
@@ -243,11 +236,61 @@ import Virtualization
         return false
         #endif
     }
+    
+    // taken from https://github.com/evansm7/vftool/blob/main/vftool/main.m
+    private func createPty() throws -> (Int32, String) {
+        let errMsg = NSLocalizedString("Cannot create virtual terminal.", comment: "UTMAppleVirtualMachine")
+        var mfd: Int32 = -1
+        var sfd: Int32 = -1
+        var cname = [CChar](repeating: 0, count: Int(PATH_MAX))
+        var tos = termios()
+        guard openpty(&mfd, &sfd, &cname, nil, nil) >= 0 else {
+            logger.error("openpty failed: \(errno)")
+            throw errMsg
+        }
+        
+        guard tcgetattr(mfd, &tos) >= 0 else {
+            logger.error("tcgetattr failed: \(errno)")
+            throw errMsg
+        }
+        
+        cfmakeraw(&tos)
+        guard tcsetattr(mfd, TCSAFLUSH, &tos) >= 0 else {
+            logger.error("tcsetattr failed: \(errno)")
+            throw errMsg
+        }
+        close(sfd)
+        
+        let f = fcntl(mfd, F_GETFL)
+        guard fcntl(mfd, F_SETFL, f | O_NONBLOCK) >= 0 else {
+            logger.error("fnctl failed: \(errno)")
+            throw errMsg
+        }
+        
+        let name = String(cString: cname)
+        logger.info("fd \(mfd) connected to \(name)")
+        
+        /*
+        DispatchQueue.global(qos: .utility).async {
+            // Causes a HUP:
+            close(sfd)
+            // Poll for the HUP to go away:
+            var pfd = pollfd(fd: mfd, events: Int16(POLLHUP), revents: 0)
+            repeat {
+                poll(&pfd, 1, 1000)
+            } while ((pfd.revents & Int16(POLLHUP)) != 0)
+            logger.info("deletected tty connection")
+        }
+         */
+        
+        return (mfd, name)
+    }
 }
 
 @available(macOS 12, *)
 extension UTMAppleVirtualMachine: VZVirtualMachineDelegate {
     func guestDidStop(_ virtualMachine: VZVirtualMachine) {
+        apple = nil
         changeState(.vmStopped)
     }
     

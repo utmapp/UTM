@@ -47,6 +47,7 @@ class VMDisplayAppleWindowController: VMDisplayWindowController {
     
     override func enterLive() {
         appleView.virtualMachine = appleVM.apple
+        isPowerForce = false
         captureMouseToolbarItem.isEnabled = false
         drivesToolbarItem.isEnabled = false
         usbToolbarItem.isEnabled = false
@@ -59,7 +60,10 @@ class VMDisplayAppleWindowController: VMDisplayWindowController {
     }
     
     override func enterSuspended(isBusy busy: Bool) {
-        appleView.virtualMachine = nil
+        if !busy {
+            appleView.virtualMachine = nil
+        }
+        isPowerForce = true
         super.enterSuspended(isBusy: busy)
     }
     
@@ -82,6 +86,17 @@ class VMDisplayAppleWindowController: VMDisplayWindowController {
         window.contentAspectRatio = size
         window.minSize = NSSize(width: 400, height: 400)
         window.setFrame(frame, display: false, animate: true)
+    }
+    
+    override func stopButtonPressed(_ sender: Any) {
+        if isPowerForce {
+            super.stopButtonPressed(sender)
+        } else {
+            if !appleVM.quitVM(force: false) {
+                super.stopButtonPressed(sender)
+            }
+            isPowerForce = true
+        }
     }
     
     override func resizeConsoleButtonPressed(_ sender: Any) {

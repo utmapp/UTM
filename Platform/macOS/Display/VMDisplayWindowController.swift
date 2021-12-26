@@ -32,6 +32,7 @@ class VMDisplayWindowController: NSWindowController {
     @IBOutlet weak var sharedFolderToolbarItem: NSToolbarItem!
     @IBOutlet weak var resizeConsoleToolbarItem: NSToolbarItem!
     
+    var isPowerForce: Bool = false
     var shouldAutoStartVM: Bool = true
     var vm: UTMVirtualMachine!
     var onClose: ((Notification) -> Void)?
@@ -58,7 +59,7 @@ class VMDisplayWindowController: NSWindowController {
     @IBAction func stopButtonPressed(_ sender: Any) {
         showConfirmAlert(NSLocalizedString("This may corrupt the VM and any unsaved changes will be lost. To quit safely, shut down from the guest.", comment: "VMDisplayWindowController")) {
             DispatchQueue.global(qos: .background).async {
-                self.vm.quitVM()
+                self.vm.quitVM(force: self.isPowerForce)
             }
         }
     }
