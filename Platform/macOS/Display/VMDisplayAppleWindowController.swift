@@ -31,7 +31,6 @@ class VMDisplayAppleWindowController: VMDisplayWindowController {
     
     override func windowDidLoad() {
         appleView = VZVirtualMachineView()
-        appleView.virtualMachine = appleVM.apple
         appleView.capturesSystemKeys = true
         displayView.addSubview(appleView)
         NSLayoutConstraint.activate(appleView.constraintsForAnchoringTo(boundsOf: displayView))
@@ -47,6 +46,7 @@ class VMDisplayAppleWindowController: VMDisplayWindowController {
     }
     
     override func enterLive() {
+        appleView.virtualMachine = appleVM.apple
         captureMouseToolbarItem.isEnabled = false
         drivesToolbarItem.isEnabled = false
         usbToolbarItem.isEnabled = false
@@ -56,6 +56,11 @@ class VMDisplayAppleWindowController: VMDisplayWindowController {
         window!.title = appleConfig.name
         updateWindowFrame()
         super.enterLive()
+    }
+    
+    override func enterSuspended(isBusy busy: Bool) {
+        appleView.virtualMachine = nil
+        super.enterSuspended(isBusy: busy)
     }
     
     override func virtualMachine(_ vm: UTMVirtualMachine, transitionTo state: UTMVMState) {

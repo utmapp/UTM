@@ -65,11 +65,7 @@ import Virtualization
     
     private let vmQueue = DispatchQueue(label: "VZVirtualMachineQueue", qos: .userInteractive)
     
-    lazy private(set) var apple: VZVirtualMachine = {
-        let vm = VZVirtualMachine(configuration: self.appleConfig.apple, queue: vmQueue)
-        vm.delegate = self
-        return vm
-    }()
+    private(set) var apple: VZVirtualMachine!
     
     private var progressObserver: NSKeyValueObservation?
     
@@ -116,6 +112,7 @@ import Virtualization
             return false
         }
         changeState(.vmStarting)
+        createAppleVM()
         vmQueue.async {
             self.apple.start { result in
                 switch result {
@@ -140,6 +137,7 @@ import Virtualization
                     if let error = error {
                         self.errorTriggered(error.localizedDescription)
                     } else {
+                        self.apple = nil
                         self.changeState(.vmStopped)
                     }
                 }
@@ -155,6 +153,7 @@ import Virtualization
                 } catch {
                     self.errorTriggered(error.localizedDescription)
                 }
+                self.apple = nil
             }
             vmQueue.asyncAfter(deadline: .now() + quitTimeoutSeconds, execute: forceQuit)
         }
@@ -211,11 +210,17 @@ import Virtualization
         return true
     }
     
+    private func createAppleVM() {
+        apple = VZVirtualMachine(configuration: self.appleConfig.apple, queue: vmQueue)
+        apple.delegate = self
+    }
+    
     func installVM(with ipswUrl: URL) -> Bool {
         guard state == .vmStopped else {
             return false
         }
         changeState(.vmStarting)
+        createAppleVM()
         #if os(macOS) && arch(arm64)
         vmQueue.async {
             let installer = VZMacOSInstaller(virtualMachine: self.apple, restoringFromImageAt: ipswUrl)
