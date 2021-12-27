@@ -172,7 +172,6 @@ struct VMAppleRemovableDrivesView: View {
         data.busyWorkAsync {
             let url = try result.get()
             binding.wrappedValue.directoryURL = url
-            try vm.saveUTM()
         }
     }
     
@@ -181,7 +180,6 @@ struct VMAppleRemovableDrivesView: View {
             let url = try result.get()
             let sharedDirectory = SharedDirectory(directoryURL: url)
             config.sharedDirectories.append(sharedDirectory)
-            try vm.saveUTM()
         }
     }
     
@@ -190,7 +188,6 @@ struct VMAppleRemovableDrivesView: View {
             config.sharedDirectories.removeAll { existing in
                 existing == sharedDirectory
             }
-            try vm.saveUTM()
         }
     }
     
@@ -198,7 +195,6 @@ struct VMAppleRemovableDrivesView: View {
         data.busyWorkAsync {
             let url = try result.get()
             binding.wrappedValue.imageURL = url
-            try vm.saveUTM()
         }
     }
     
@@ -207,7 +203,6 @@ struct VMAppleRemovableDrivesView: View {
             let url = try result.get()
             let diskImage = DiskImage(importImage: url, isReadOnly: false, isExternal: true)
             config.diskImages.append(diskImage)
-            try vm.saveUTM()
         }
     }
     
@@ -216,7 +211,6 @@ struct VMAppleRemovableDrivesView: View {
             config.diskImages.removeAll { existing in
                 existing == diskImage
             }
-            try vm.saveUTM()
         }
     }
 }

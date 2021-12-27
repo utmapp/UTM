@@ -187,9 +187,7 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
     var sharedDirectories: [SharedDirectory] {
         get {
             let fsConfig = apple.directorySharingDevices.first as? VZVirtioFileSystemDeviceConfiguration
-            if let single = fsConfig?.share as? VZSingleDirectoryShare {
-                return [SharedDirectory(from: single.directory)]
-            } else if let multi = fsConfig?.share as? VZMultipleDirectoryShare {
+            if let multi = fsConfig?.share as? VZMultipleDirectoryShare {
                 return multi.directories.values.map { directory in
                     SharedDirectory(from: directory)
                 }
@@ -200,15 +198,11 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
         
         set {
             objectWillChange.send()
-            let fsConfig = VZVirtioFileSystemDeviceConfiguration(tag: "Share")
+            let fsConfig = VZVirtioFileSystemDeviceConfiguration(tag: "share")
             let vzSharedDirectories = newValue.compactMap { sharedDirectory in
                 sharedDirectory.vzSharedDirectory()
             }
-            if vzSharedDirectories.count == 1 {
-                let single = VZSingleDirectoryShare(directory: vzSharedDirectories[0])
-                fsConfig.share = single
-                apple.directorySharingDevices = [fsConfig]
-            } else if vzSharedDirectories.count > 1 {
+            if vzSharedDirectories.count > 0 {
                 let directories = vzSharedDirectories.reduce(into: [String: VZSharedDirectory]()) { (dict, share) in
                     let lastPathComponent = share.url.lastPathComponent
                     var name = lastPathComponent
@@ -333,7 +327,6 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
         case networkDevices
         case displays
         case diskImages
-        case sharedDirectories
         case isAudioEnabled
         case isBalloonEnabled
         case isEntropyEnabled
@@ -371,7 +364,6 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
             macPlatform = try values.decodeIfPresent(MacPlatform.self, forKey: .macPlatform)
             #endif
             displays = try values.decode([Display].self, forKey: .displays)
-            sharedDirectories = try values.decode([SharedDirectory].self, forKey: .sharedDirectories)
             isAudioEnabled = try values.decode(Bool.self, forKey: .isAudioEnabled)
             isKeyboardEnabled = try values.decode(Bool.self, forKey: .isKeyboardEnabled)
             isPointingEnabled = try values.decode(Bool.self, forKey: .isPointingEnabled)
@@ -409,12 +401,11 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
             try container.encodeIfPresent(macPlatform, forKey: .macPlatform)
             #endif
             try container.encode(displays, forKey: .displays)
-            try container.encode(sharedDirectories, forKey: .sharedDirectories)
             try container.encode(isAudioEnabled, forKey: .isAudioEnabled)
             try container.encode(isKeyboardEnabled, forKey: .isKeyboardEnabled)
             try container.encode(isPointingEnabled, forKey: .isPointingEnabled)
         }
-        try container.encode(diskImages, forKey: .diskImages)
+        try container.encode(diskImages.filter({ !$0.isExternal }), forKey: .diskImages)
         try container.encode(isBalloonEnabled, forKey: .isBalloonEnabled)
         try container.encode(isEntropyEnabled, forKey: .isEntropyEnabled)
         try container.encode(isSerialEnabled, forKey: .isSerialEnabled)
