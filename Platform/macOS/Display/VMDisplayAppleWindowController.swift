@@ -76,7 +76,7 @@ class VMDisplayAppleWindowController: VMDisplayWindowController {
         drivesToolbarItem.isEnabled = false
         usbToolbarItem.isEnabled = false
         restartToolbarItem.isEnabled = false // FIXME: enable this
-        sharedFolderToolbarItem.isEnabled = false
+        sharedFolderToolbarItem.isEnabled = true
     }
     
     override func enterSuspended(isBusy busy: Bool) {
@@ -141,6 +141,107 @@ class VMDisplayAppleWindowController: VMDisplayWindowController {
             appleVM.serialPort?.writeResizeCommand(cmd, columns: cols, rows: rows)
         } else {
             updateWindowFrame()
+        }
+    }
+    
+    @IBAction override func sharedFolderButtonPressed(_ sender: Any) {
+        let menu = NSMenu()
+        for i in appleConfig.sharedDirectories.indices {
+            let item = NSMenuItem()
+            let sharedDirectory = appleConfig.sharedDirectories[i]
+            guard let name = sharedDirectory.directoryURL?.lastPathComponent else {
+                continue
+            }
+            item.title = name
+            let submenu = NSMenu()
+            let ro = NSMenuItem(title: NSLocalizedString("Read Only", comment: "VMDisplayAppleController"),
+                                   action: #selector(flipReadOnlyShare),
+                                   keyEquivalent: "")
+            ro.target = self
+            ro.tag = i
+            ro.state = sharedDirectory.isReadOnly ? .on : .off
+            submenu.addItem(ro)
+            let change = NSMenuItem(title: NSLocalizedString("Change...", comment: "VMDisplayAppleController"),
+                                   action: #selector(changeShare),
+                                   keyEquivalent: "")
+            change.target = self
+            change.tag = i
+            submenu.addItem(change)
+            let remove = NSMenuItem(title: NSLocalizedString("Remove...", comment: "VMDisplayAppleController"),
+                                   action: #selector(removeShare),
+                                   keyEquivalent: "")
+            remove.target = self
+            remove.tag = i
+            submenu.addItem(remove)
+            item.submenu = submenu
+            menu.addItem(item)
+        }
+        let add = NSMenuItem(title: NSLocalizedString("Add...", comment: "VMDisplayAppleController"),
+                               action: #selector(addShare),
+                               keyEquivalent: "")
+        add.target = self
+        menu.addItem(add)
+        if let event = NSApplication.shared.currentEvent {
+            NSMenu.popUpContextMenu(menu, with: event, for: sender as! NSView)
+        }
+    }
+}
+
+@available(macOS 12, *)
+extension VMDisplayAppleWindowController {
+    @objc func addShare(sender: AnyObject) {
+        pickShare { url in
+            let sharedDirectory = SharedDirectory(directoryURL: url)
+            self.appleConfig.sharedDirectories.append(sharedDirectory)
+        }
+    }
+    
+    @objc func changeShare(sender: AnyObject) {
+        guard let menu = sender as? NSMenuItem else {
+            logger.error("wrong sender for changeShare")
+            return
+        }
+        let i = menu.tag
+        let isReadOnly = appleConfig.sharedDirectories[i].isReadOnly
+        pickShare { url in
+            let sharedDirectory = SharedDirectory(directoryURL: url, isReadOnly: isReadOnly)
+            self.appleConfig.sharedDirectories[i] = sharedDirectory
+        }
+    }
+    
+    @objc func flipReadOnlyShare(sender: AnyObject) {
+        guard let menu = sender as? NSMenuItem else {
+            logger.error("wrong sender for changeShare")
+            return
+        }
+        let i = menu.tag
+        let isReadOnly = appleConfig.sharedDirectories[i].isReadOnly
+        appleConfig.sharedDirectories[i].isReadOnly = !isReadOnly
+    }
+    
+    @objc func removeShare(sender: AnyObject) {
+        guard let menu = sender as? NSMenuItem else {
+            logger.error("wrong sender for removeShare")
+            return
+        }
+        let i = menu.tag
+        appleConfig.sharedDirectories.remove(at: i)
+    }
+    
+    func pickShare(_ onComplete: @escaping (URL) -> Void) {
+        let openPanel = NSOpenPanel()
+        openPanel.title = NSLocalizedString("Select Shared Folder", comment: "VMDisplayAppleWindowController")
+        openPanel.canChooseDirectories = true
+        openPanel.canChooseFiles = false
+        openPanel.beginSheetModal(for: window!) { response in
+            guard response == .OK else {
+                return
+            }
+            guard let url = openPanel.url else {
+                logger.debug("no directory selected")
+                return
+            }
+            onComplete(url)
         }
     }
 }
