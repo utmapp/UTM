@@ -14,11 +14,19 @@
 // limitations under the License.
 //
 
+import Combine
+import SwiftTerm
 import Virtualization
 
 @available(macOS 12, *)
 class VMDisplayAppleWindowController: VMDisplayWindowController {
-    var appleView: VZVirtualMachineView!
+    var mainView: NSView?
+    var appleView: VZVirtualMachineView? {
+        mainView as? VZVirtualMachineView
+    }
+    var terminalView: TerminalView? {
+        mainView as? TerminalView
+    }
     var isInstalling: Bool = false
     
     var appleVM: UTMAppleVirtualMachine! {
@@ -29,11 +37,22 @@ class VMDisplayAppleWindowController: VMDisplayWindowController {
         vmConfiguration as? UTMAppleConfiguration
     }
     
+    private var cancellable: AnyCancellable?
+    
     override func windowDidLoad() {
-        appleView = VZVirtualMachineView()
-        appleView.capturesSystemKeys = true
-        displayView.addSubview(appleView)
-        NSLayoutConstraint.activate(appleView.constraintsForAnchoringTo(boundsOf: displayView))
+        if appleConfig.isConsoleDisplay {
+            mainView = TerminalView()
+            terminalView!.terminalDelegate = self
+            cancellable = appleVM.$serialPort.sink { [weak self] serialPort in
+                serialPort?.delegate = self
+            }
+        } else {
+            mainView = VZVirtualMachineView()
+            appleView!.capturesSystemKeys = true
+        }
+        mainView!.translatesAutoresizingMaskIntoConstraints = false
+        displayView.addSubview(mainView!)
+        NSLayoutConstraint.activate(mainView!.constraintsForAnchoringTo(boundsOf: displayView))
         window!.recalculateKeyViewLoop()
         shouldAutoStartVM = appleConfig.macRecoveryIpswURL == nil
         super.windowDidLoad()
@@ -46,7 +65,9 @@ class VMDisplayAppleWindowController: VMDisplayWindowController {
     }
     
     override func enterLive() {
-        appleView.virtualMachine = appleVM.apple
+        if let appleView = appleView {
+            appleView.virtualMachine = appleVM.apple
+        }
         isPowerForce = false
         captureMouseToolbarItem.isEnabled = false
         drivesToolbarItem.isEnabled = false
@@ -60,7 +81,7 @@ class VMDisplayAppleWindowController: VMDisplayWindowController {
     }
     
     override func enterSuspended(isBusy busy: Bool) {
-        if !busy {
+        if !busy, let appleView = appleView {
             appleView.virtualMachine = nil
         }
         isPowerForce = true
@@ -78,14 +99,28 @@ class VMDisplayAppleWindowController: VMDisplayWindowController {
         guard let window = window else {
             return
         }
-        guard let primaryDisplay = appleConfig.displays.first else {
-            return //FIXME: add multiple displays
+        if let terminalView = terminalView {
+            if let fontSize = appleConfig.consoleFontSize?.intValue {
+                //FIXME: support changing font
+                let orig = terminalView.font
+                let new = NSFont(descriptor: orig.fontDescriptor, size: CGFloat(fontSize)) ?? orig
+                terminalView.font = new
+            }
+            terminalView.getTerminal().resize(cols: 80, rows: 24)
+            let size = window.frameRect(forContentRect: terminalView.getOptimalFrameSize()).size
+            let frame = CGRect(origin: window.frame.origin, size: size)
+            window.minSize = size
+            window.setFrame(frame, display: false, animate: true)
+        } else {
+            guard let primaryDisplay = appleConfig.displays.first else {
+                return //FIXME: add multiple displays
+            }
+            let size = CGSize(width: primaryDisplay.widthInPixels, height: primaryDisplay.heightInPixels)
+            let frame = window.frameRect(forContentRect: CGRect(origin: window.frame.origin, size: size))
+            window.contentAspectRatio = size
+            window.minSize = NSSize(width: 400, height: 400)
+            window.setFrame(frame, display: false, animate: true)
         }
-        let size = CGSize(width: primaryDisplay.widthInPixels, height: primaryDisplay.heightInPixels)
-        let frame = window.frameRect(forContentRect: CGRect(origin: window.frame.origin, size: size))
-        window.contentAspectRatio = size
-        window.minSize = NSSize(width: 400, height: 400)
-        window.setFrame(frame, display: false, animate: true)
     }
     
     override func stopButtonPressed(_ sender: Any) {
@@ -100,7 +135,14 @@ class VMDisplayAppleWindowController: VMDisplayWindowController {
     }
     
     override func resizeConsoleButtonPressed(_ sender: Any) {
-        updateWindowFrame()
+        if let terminalView = terminalView {
+            let cmd = appleConfig.consoleResizeCommand
+            let cols = terminalView.getTerminal().cols
+            let rows = terminalView.getTerminal().rows
+            appleVM.serialPort?.writeResizeCommand(cmd, columns: cols, rows: rows)
+        } else {
+            updateWindowFrame()
+        }
     }
 }
 
@@ -125,6 +167,37 @@ extension VMDisplayAppleWindowController {
                 self.window!.subtitle = ""
             } else {
                 self.window!.subtitle = NSLocalizedString("Installation: \(Int(completed * 100))%", comment: "VMDisplayAppleWindowController")
+            }
+        }
+    }
+}
+
+@available(macOS 12, *)
+extension VMDisplayAppleWindowController: TerminalViewDelegate, UTMSerialPortDelegate {
+    func sizeChanged(source: TerminalView, newCols: Int, newRows: Int) {
+    }
+    
+    func setTerminalTitle(source: TerminalView, title: String) {
+        window!.subtitle = title
+    }
+    
+    func hostCurrentDirectoryUpdate(source: TerminalView, directory: String?) {
+    }
+    
+    func send(source: TerminalView, data: ArraySlice<UInt8>) {
+        if let serialPort = appleVM.serialPort {
+            serialPort.write(data: Data(data))
+        }
+    }
+    
+    func scrolled(source: TerminalView, position: Double) {
+    }
+    
+    func serialPort(_ serialPort: UTMSerialPort, didRecieveData data: Data) {
+        if let terminalView = terminalView {
+            let arr = [UInt8](data)[...]
+            DispatchQueue.main.async {
+                terminalView.feed(byteArray: arr)
             }
         }
     }

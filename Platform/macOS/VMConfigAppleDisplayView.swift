@@ -104,13 +104,27 @@ struct VMConfigAppleDisplayView: View {
     
     var body: some View {
         Form {
-            Picker("Resolution", selection: displayResolution) {
-                ForEach(resolutions) { item in
-                    Text(item.name)
-                        .tag(item.resolution)
+            Picker("Display Mode", selection: $config.isConsoleDisplay) {
+                Text("Console Mode")
+                    .tag(true)
+                Text("Full Graphics")
+                    .tag(false)
+            }.onChange(of: config.isConsoleDisplay) { newValue in
+                if newValue {
+                    config.isSerialEnabled = true
                 }
             }
-            Toggle("HiDPI (Retina)", isOn: isHidpi)
+            if config.isConsoleDisplay {
+                VMConfigDisplayConsoleView(config: config)
+            } else {
+                Picker("Resolution", selection: displayResolution) {
+                    ForEach(resolutions) { item in
+                        Text(item.name)
+                            .tag(item.resolution)
+                    }
+                }
+                Toggle("HiDPI (Retina)", isOn: isHidpi)
+            }
         }
     }
 }

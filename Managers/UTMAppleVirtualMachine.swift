@@ -69,13 +69,7 @@ import Virtualization
     
     private var progressObserver: NSKeyValueObservation?
     
-    @Published private(set) var ttyName: String?
-    
-    private var masterTtyHandle: FileHandle?
-    // we have to hold on to this before if nobody else has the PTY open, then write() returns EIO
-    // and Virtualization.framework automatically closes it... We should never read from this handle
-    // or anyone else with the PTY open will not get the data.
-    private var slaveTtyHandle: FileHandle?
+    @Published private(set) var serialPort: UTMSerialPort?
     
     override static func isAppleVM(forPath path: URL) -> Bool {
         do {
@@ -217,14 +211,14 @@ import Virtualization
         if appleConfig.isSerialEnabled {
             do {
                 let (fd, sfd, name) = try createPty()
-                masterTtyHandle = FileHandle(fileDescriptor: fd, closeOnDealloc: false)
-                slaveTtyHandle = FileHandle(fileDescriptor: sfd, closeOnDealloc: false)
-                let attachment = VZFileHandleSerialPortAttachment(fileHandleForReading: masterTtyHandle!, fileHandleForWriting: masterTtyHandle!)
+                let terminalTtyHandle = FileHandle(fileDescriptor: fd, closeOnDealloc: false)
+                let slaveTtyHandle = FileHandle(fileDescriptor: sfd, closeOnDealloc: false)
+                let attachment = VZFileHandleSerialPortAttachment(fileHandleForReading: terminalTtyHandle, fileHandleForWriting: terminalTtyHandle)
                 let serialConfig = VZVirtioConsoleDeviceSerialPortConfiguration()
                 serialConfig.attachment = attachment
                 appleConfig.apple.serialPorts = [serialConfig]
                 DispatchQueue.main.async {
-                    self.ttyName = name
+                    self.serialPort = UTMSerialPort(portNamed: name, readFileHandle: slaveTtyHandle, writeFileHandle: slaveTtyHandle, terminalFileHandle: terminalTtyHandle)
                 }
             } catch {
                 errorTriggered(error.localizedDescription)
@@ -307,12 +301,9 @@ import Virtualization
 extension UTMAppleVirtualMachine: VZVirtualMachineDelegate {
     func guestDidStop(_ virtualMachine: VZVirtualMachine) {
         apple = nil
-        try? masterTtyHandle?.close()
-        masterTtyHandle = nil
-        try? slaveTtyHandle?.close()
-        slaveTtyHandle = nil
+        serialPort?.close()
         DispatchQueue.main.async {
-            self.ttyName = nil
+            self.serialPort = nil
         }
         changeState(.vmStopped)
     }

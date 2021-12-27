@@ -275,6 +275,7 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
     }
     
     @Published var isSerialEnabled: Bool
+    @Published var isConsoleDisplay: Bool
     
     @available(macOS 12, *)
     var isKeyboardEnabled: Bool {
@@ -331,6 +332,7 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
         case isBalloonEnabled
         case isEntropyEnabled
         case isSerialEnabled
+        case isConsoleDisplay
         case isKeyboardEnabled
         case isPointingEnabled
     }
@@ -343,6 +345,7 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
         version = currentVersion
         isAppleVirtualization = true
         isSerialEnabled = false
+        isConsoleDisplay = false
         memorySize = 4 * 1024 * 1024 * 1024
         cpuCount = 4
     }
@@ -372,6 +375,7 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
         isBalloonEnabled = try values.decode(Bool.self, forKey: .isBalloonEnabled)
         isEntropyEnabled = try values.decode(Bool.self, forKey: .isEntropyEnabled)
         isSerialEnabled = try values.decode(Bool.self, forKey: .isSerialEnabled)
+        isConsoleDisplay = try values.decode(Bool.self, forKey: .isConsoleDisplay)
         name = try values.decode(String.self, forKey: .name)
         icon = try values.decodeIfPresent(String.self, forKey: .icon)
         iconCustom = try values.decode(Bool.self, forKey: .iconCustom)
@@ -409,6 +413,7 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
         try container.encode(isBalloonEnabled, forKey: .isBalloonEnabled)
         try container.encode(isEntropyEnabled, forKey: .isEntropyEnabled)
         try container.encode(isSerialEnabled, forKey: .isSerialEnabled)
+        try container.encode(isConsoleDisplay, forKey: .isConsoleDisplay)
         try container.encode(name, forKey: .name)
         try container.encodeIfPresent(icon, forKey: .icon)
         try container.encode(iconCustom, forKey: .iconCustom)

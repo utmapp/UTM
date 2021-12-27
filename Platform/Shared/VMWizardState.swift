@@ -317,6 +317,7 @@ class VMWizardState: ObservableObject {
         config.isEntropyEnabled = true
         config.networkDevices = [Network(newInterfaceForMode: .Shared)]
         config.isSerialEnabled = operatingSystem == .Linux
+        config.isConsoleDisplay = operatingSystem == .Linux
         return config
     }
     

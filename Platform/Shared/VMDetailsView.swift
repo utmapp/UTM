@@ -190,7 +190,7 @@ struct Details: View {
                 HStack {
                     plainLabel("Serial", systemImage: "phone.connection")
                     Spacer()
-                    Text(appleVM.ttyName ?? "Inactive")
+                    Text(appleVM.serialPort?.name ?? "Inactive")
                         .foregroundColor(.secondary)
                         .textSelection(.enabled)
                 }
