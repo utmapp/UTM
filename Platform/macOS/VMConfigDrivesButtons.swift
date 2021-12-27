@@ -136,7 +136,7 @@ struct VMConfigDrivesButtons<Config: ObservableObject & UTMConfigurable>: View {
             if let qemuConfig = config as? UTMQemuConfiguration {
                 qemuConfig.moveDrive(index, to: index + 1)
             } else if let appleConfig = config as? UTMAppleConfiguration {
-                appleConfig.diskImages.move(fromOffsets: IndexSet(integer: index), toOffset: index + 1)
+                appleConfig.diskImages.move(fromOffsets: IndexSet(integer: index), toOffset: index + 2)
             }
             selectedDriveIndex = index + 1
         }
