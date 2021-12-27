@@ -161,8 +161,27 @@ import Virtualization
     }
     
     override func resetVM() -> Bool {
-        // FIXME: implement this
-        return false
+        guard state == .vmStarted || state == .vmPaused else {
+            return false
+        }
+        changeState(.vmStopping)
+        vmQueue.async {
+            self.apple.stop { error in
+                if let error = error {
+                    self.errorTriggered(error.localizedDescription)
+                } else {
+                    self.apple.start { result in
+                        switch result {
+                        case .failure(let error):
+                            self.errorTriggered(error.localizedDescription)
+                        case .success:
+                            self.changeState(.vmStarted)
+                        }
+                    }
+                }
+            }
+        }
+        return true
     }
     
     override func pauseVM() -> Bool {
@@ -185,12 +204,12 @@ import Virtualization
     
     override func saveVM() -> Bool {
         // FIXME: implement this
-        return false
+        return true
     }
     
     override func deleteSaveVM() -> Bool {
         // FIXME: implement this
-        return false
+        return true
     }
     
     override func resumeVM() -> Bool {

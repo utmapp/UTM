@@ -81,6 +81,7 @@ class VMDisplayAppleWindowController: VMDisplayWindowController {
         captureMouseToolbarItem.isEnabled = false
         drivesToolbarItem.isEnabled = false
         usbToolbarItem.isEnabled = false
+        startPauseToolbarItem.isEnabled = true
         sharedFolderToolbarItem.isEnabled = appleConfig.bootLoader?.operatingSystem == .Linux
     }
     
