@@ -5143,10 +5143,10 @@
 		};
 		B329049A270FE136002707AC /* XCRemoteSwiftPackageReference "AltKit" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/utmapp/AltKit.git";
+			repositoryURL = "https://github.com/rileytestut/AltKit.git";
 			requirement = {
-				branch = main;
-				kind = branch;
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.0.2;
 			};
 		};
 		CE020BA524AEDEF000B44AB6 /* XCRemoteSwiftPackageReference "swift-log" */ = {
@@ -5206,7 +5206,6 @@
 		};
 		B3DDF57126E9BBA300CE47F0 /* AltKit */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = B3DDF57026E9BBA300CE47F0 /* XCRemoteSwiftPackageReference "AltKit" */;
 			productName = AltKit;
 		};
 		CE020BA624AEDEF000B44AB6 /* Logging */ = {
