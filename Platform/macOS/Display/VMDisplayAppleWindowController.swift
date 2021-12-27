@@ -69,15 +69,14 @@ class VMDisplayAppleWindowController: VMDisplayWindowController {
             appleView.virtualMachine = appleVM.apple
         }
         isPowerForce = false
+        window!.title = appleConfig.name
+        updateWindowFrame()
+        super.enterLive()
         captureMouseToolbarItem.isEnabled = false
         drivesToolbarItem.isEnabled = false
         usbToolbarItem.isEnabled = false
         restartToolbarItem.isEnabled = false // FIXME: enable this
-        resizeConsoleToolbarItem.isEnabled = false
         sharedFolderToolbarItem.isEnabled = false
-        window!.title = appleConfig.name
-        updateWindowFrame()
-        super.enterLive()
     }
     
     override func enterSuspended(isBusy busy: Bool) {
