@@ -183,44 +183,7 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
         }
     }
     
-    @available(macOS 12, *)
-    var sharedDirectories: [SharedDirectory] {
-        get {
-            let fsConfig = apple.directorySharingDevices.first as? VZVirtioFileSystemDeviceConfiguration
-            if let multi = fsConfig?.share as? VZMultipleDirectoryShare {
-                return multi.directories.values.map { directory in
-                    SharedDirectory(from: directory)
-                }
-            } else {
-                return []
-            }
-        }
-        
-        set {
-            objectWillChange.send()
-            let fsConfig = VZVirtioFileSystemDeviceConfiguration(tag: "share")
-            let vzSharedDirectories = newValue.compactMap { sharedDirectory in
-                sharedDirectory.vzSharedDirectory()
-            }
-            if vzSharedDirectories.count > 0 {
-                let directories = vzSharedDirectories.reduce(into: [String: VZSharedDirectory]()) { (dict, share) in
-                    let lastPathComponent = share.url.lastPathComponent
-                    var name = lastPathComponent
-                    var i = 2
-                    while dict.keys.contains(name) {
-                        name = "\(lastPathComponent) (\(i))"
-                        i += 1
-                    }
-                    dict[name] = share
-                }
-                let multi = VZMultipleDirectoryShare(directories: directories)
-                fsConfig.share = multi
-                apple.directorySharingDevices = [fsConfig]
-            } else {
-                apple.directorySharingDevices = []
-            }
-        }
-    }
+    @Published var sharedDirectories: [SharedDirectory]
     
     @available(macOS 12, *)
     var isAudioEnabled: Bool {
@@ -343,6 +306,7 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
         iconCustom = false
         consoleCursorBlink = true
         version = currentVersion
+        sharedDirectories = []
         isAppleVirtualization = true
         isSerialEnabled = false
         isConsoleDisplay = false
@@ -916,7 +880,6 @@ struct DiskImage: Codable, Hashable, Identifiable {
     }
 }
 
-@available(macOS 12, *)
 struct SharedDirectory: Codable, Hashable, Identifiable {
     var directoryURL: URL?
     var isReadOnly: Bool
@@ -935,6 +898,7 @@ struct SharedDirectory: Codable, Hashable, Identifiable {
         self.isReadOnly = isReadOnly
     }
     
+    @available(macOS 12, *)
     init(from config: VZSharedDirectory) {
         self.isReadOnly = config.isReadOnly
         self.directoryURL = config.url
@@ -967,6 +931,7 @@ struct SharedDirectory: Codable, Hashable, Identifiable {
         directoryURL.hash(into: &hasher)
     }
     
+    @available(macOS 12, *)
     func vzSharedDirectory() -> VZSharedDirectory? {
         if let directoryURL = directoryURL {
             return VZSharedDirectory(url: directoryURL, readOnly: isReadOnly)

@@ -14,6 +14,7 @@
 // limitations under the License.
 //
 
+import Combine
 import Virtualization
 
 @available(iOS, unavailable, message: "Apple Virtualization not available on iOS")
@@ -70,6 +71,8 @@ import Virtualization
     private var progressObserver: NSKeyValueObservation?
     
     @Published private(set) var serialPort: UTMSerialPort?
+    
+    private var sharedDirectoriesChanged: AnyCancellable?
     
     override static func isAppleVM(forPath path: URL) -> Bool {
         do {
@@ -225,8 +228,17 @@ import Virtualization
                 return false
             }
         }
+        let fsConfig = VZVirtioFileSystemDeviceConfiguration(tag: "share")
+        fsConfig.share = makeDirectoryShare(from: appleConfig.sharedDirectories)
+        appleConfig.apple.directorySharingDevices = [fsConfig]
         apple = VZVirtualMachine(configuration: appleConfig.apple, queue: vmQueue)
         apple.delegate = self
+        sharedDirectoriesChanged = appleConfig.$sharedDirectories.sink { [weak self] newShares in
+            guard let fsConfig = self?.apple?.directorySharingDevices.first as? VZVirtioFileSystemDevice else {
+                return
+            }
+            fsConfig.share = self?.makeDirectoryShare(from: newShares)
+        }
         return true
     }
     
@@ -295,12 +307,30 @@ import Virtualization
         
         return (mfd, sfd, name)
     }
+    
+    private func makeDirectoryShare(from sharedDirectories: [SharedDirectory]) -> VZDirectoryShare {
+        let vzSharedDirectories = sharedDirectories.compactMap { sharedDirectory in
+            sharedDirectory.vzSharedDirectory()
+        }
+        let directories = vzSharedDirectories.reduce(into: [String: VZSharedDirectory]()) { (dict, share) in
+            let lastPathComponent = share.url.lastPathComponent
+            var name = lastPathComponent
+            var i = 2
+            while dict.keys.contains(name) {
+                name = "\(lastPathComponent) (\(i))"
+                i += 1
+            }
+            dict[name] = share
+        }
+        return VZMultipleDirectoryShare(directories: directories)
+    }
 }
 
 @available(macOS 12, *)
 extension UTMAppleVirtualMachine: VZVirtualMachineDelegate {
     func guestDidStop(_ virtualMachine: VZVirtualMachine) {
         apple = nil
+        sharedDirectoriesChanged = nil
         serialPort?.close()
         DispatchQueue.main.async {
             self.serialPort = nil
