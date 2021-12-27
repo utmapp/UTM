@@ -39,6 +39,12 @@ class VMDisplayAppleWindowController: VMDisplayWindowController {
     
     private var cancellable: AnyCancellable?
     
+    private var isSharePathAlertShownOnce = false
+    
+    // MARK: - User preferences
+    
+    @Setting("SharePathAlertShown") private var isSharePathAlertShownPersistent: Bool = false
+    
     override func windowDidLoad() {
         if appleConfig.isConsoleDisplay {
             mainView = TerminalView()
@@ -75,8 +81,7 @@ class VMDisplayAppleWindowController: VMDisplayWindowController {
         captureMouseToolbarItem.isEnabled = false
         drivesToolbarItem.isEnabled = false
         usbToolbarItem.isEnabled = false
-        restartToolbarItem.isEnabled = false // FIXME: enable this
-        sharedFolderToolbarItem.isEnabled = true
+        sharedFolderToolbarItem.isEnabled = appleConfig.bootLoader?.operatingSystem == .Linux
     }
     
     override func enterSuspended(isBusy busy: Bool) {
@@ -145,6 +150,26 @@ class VMDisplayAppleWindowController: VMDisplayWindowController {
     }
     
     @IBAction override func sharedFolderButtonPressed(_ sender: Any) {
+        if !isSharePathAlertShownOnce && !isSharePathAlertShownPersistent {
+            let alert = NSAlert()
+            alert.messageText = NSLocalizedString("Directory sharing", comment: "VMDisplayAppleWindowController")
+            alert.informativeText = NSLocalizedString("To access the shared directory, the guest OS must have Virtiofs drivers installed. You can then run `sudo mount -t virtiofs share /path/to/share` to mount to the share path.", comment: "VMDisplayAppleWindowController")
+            alert.showsSuppressionButton = true
+            alert.beginSheetModal(for: window!) { _ in
+                if alert.suppressionButton?.state ?? .off == .on {
+                    self.isSharePathAlertShownPersistent = true
+                }
+                self.isSharePathAlertShownOnce = true
+            }
+        } else {
+            openShareMenu(sender)
+        }
+    }
+}
+
+@available(macOS 12, *)
+extension VMDisplayAppleWindowController {
+    func openShareMenu(_ sender: Any) {
         let menu = NSMenu()
         for i in appleConfig.sharedDirectories.indices {
             let item = NSMenuItem()
@@ -185,10 +210,7 @@ class VMDisplayAppleWindowController: VMDisplayWindowController {
             NSMenu.popUpContextMenu(menu, with: event, for: sender as! NSView)
         }
     }
-}
-
-@available(macOS 12, *)
-extension VMDisplayAppleWindowController {
+    
     @objc func addShare(sender: AnyObject) {
         pickShare { url in
             let sharedDirectory = SharedDirectory(directoryURL: url)
