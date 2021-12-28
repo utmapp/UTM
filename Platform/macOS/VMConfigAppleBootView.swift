@@ -17,7 +17,7 @@
 import Virtualization
 import SwiftUI
 
-@available(macOS 12, *)
+@available(macOS 11, *)
 struct VMConfigAppleBootView: View {
     private enum BootloaderSelection: Int, Identifiable {
         var id: Int {
@@ -44,9 +44,14 @@ struct VMConfigAppleBootView: View {
             Picker("Operating System", selection: $operatingSystem) {
                 Text("None")
                     .tag(nil as Bootloader.OperatingSystem?)
-                ForEach(Bootloader.OperatingSystem.allCases) { os in
-                    Text(os.rawValue)
-                        .tag(os as Bootloader.OperatingSystem?)
+                if #available(macOS 12, *) {
+                    ForEach(Bootloader.OperatingSystem.allCases) { os in
+                        Text(os.rawValue)
+                            .tag(os as Bootloader.OperatingSystem?)
+                    }
+                } else {
+                    Text("Linux")
+                        .tag(Bootloader.OperatingSystem.Linux)
                 }
             }.onChange(of: operatingSystem) { newValue in
                 guard newValue != currentOperatingSystem else {
@@ -54,10 +59,12 @@ struct VMConfigAppleBootView: View {
                 }
                 guard newValue != nil else {
                     config.bootLoader = nil
-                    config.macRecoveryIpswURL = nil
-                    #if arch(arm64)
-                    config.macPlatform = nil
-                    #endif
+                    if #available(macOS 12, *) {
+                        config.macRecoveryIpswURL = nil
+                        #if arch(arm64)
+                        config.macPlatform = nil
+                        #endif
+                    }
                     return
                 }
                 if newValue == .Linux {
@@ -77,7 +84,7 @@ struct VMConfigAppleBootView: View {
                 case .kernel:
                     return Alert(title: Text("Please select an uncompressed Linux kernel image."), dismissButton: okay)
                 case .ipsw:
-                    return Alert(title: Text("Please select a macOS recovery IPSW if you would like to re-install macOS."), primaryButton: okay, secondaryButton: .cancel())
+                    return Alert(title: Text("Please select a macOS recovery IPSW."), primaryButton: okay, secondaryButton: .cancel())
                 default:
                     return Alert(title: Text("Select a file."), dismissButton: okay)
                 }
@@ -105,14 +112,13 @@ struct VMConfigAppleBootView: View {
                     }
                     TextField("Boot arguments", text: $config.linuxCommandLine)
                 }
-            } else if operatingSystem == .macOS {
+            } else if #available(macOS 12, *), operatingSystem == .macOS {
                 #if arch(arm64)
                 Section(header: Text("macOS Settings")) {
                     HStack {
-                        TextField("IPSW Image", text: .constant(config.macRecoveryIpswURL?.lastPathComponent ?? ""))
+                        TextField("IPSW Install Image", text: .constant(config.macRecoveryIpswURL?.lastPathComponent ?? ""))
                             .disabled(true)
                         Button("Clear") {
-                            config.macPlatform = nil
                             config.macRecoveryIpswURL = nil
                         }
                         Button("Browse") {
@@ -137,15 +143,17 @@ struct VMConfigAppleBootView: View {
             let url = try result.get()
             switch selection {
             case .ipsw:
-                #if arch(arm64)
-                let image = try await VZMacOSRestoreImage.image(from: url)
-                guard let model = image.mostFeaturefulSupportedConfiguration?.hardwareModel else {
-                    throw NSLocalizedString("Your machine does not support running this IPSW.", comment: "VMConfigAppleBootView")
+                if #available(macOS 12, *) {
+                    #if arch(arm64)
+                    let image = try await VZMacOSRestoreImage.image(from: url)
+                    guard let model = image.mostFeaturefulSupportedConfiguration?.hardwareModel else {
+                        throw NSLocalizedString("Your machine does not support running this IPSW.", comment: "VMConfigAppleBootView")
+                    }
+                    config.macPlatform = MacPlatform(newHardware: model)
+                    config.macRecoveryIpswURL = url
+                    config.bootLoader = try Bootloader(for: .macOS)
+                    #endif
                 }
-                config.macPlatform = MacPlatform(newHardware: model)
-                config.macRecoveryIpswURL = url
-                config.bootLoader = try Bootloader(for: .macOS)
-                #endif
             case .kernel:
                 config.bootLoader = try Bootloader(for: .Linux, linuxKernelURL: url)
             case .ramdisk:

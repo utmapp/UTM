@@ -25,12 +25,14 @@ struct VMWizardOSView: View {
             Text("Operating System")
                 .font(.largeTitle)
             #if os(macOS) && arch(arm64)
-            Button {
-                wizardState.operatingSystem = .macOS
-                wizardState.useAppleVirtualization = true
-                wizardState.next()
-            } label: {
-                OperatingSystem(imageName: "mac", name: "macOS 12+")
+            if #available(macOS 12, *) {
+                Button {
+                    wizardState.operatingSystem = .macOS
+                    wizardState.useAppleVirtualization = true
+                    wizardState.next()
+                } label: {
+                    OperatingSystem(imageName: "mac", name: "macOS 12+")
+                }
             }
             #endif
             Button {

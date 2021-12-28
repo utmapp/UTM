@@ -18,12 +18,15 @@ import Combine
 import SwiftTerm
 import Virtualization
 
-@available(macOS 12, *)
+@available(macOS 11, *)
 class VMDisplayAppleWindowController: VMDisplayWindowController {
     var mainView: NSView?
+    
+    @available(macOS 12, *)
     var appleView: VZVirtualMachineView? {
         mainView as? VZVirtualMachineView
     }
+    
     var terminalView: TerminalView? {
         mainView as? TerminalView
     }
@@ -52,17 +55,22 @@ class VMDisplayAppleWindowController: VMDisplayWindowController {
             cancellable = appleVM.$serialPort.sink { [weak self] serialPort in
                 serialPort?.delegate = self
             }
-        } else {
+        } else if #available(macOS 12, *) {
             mainView = VZVirtualMachineView()
             appleView!.capturesSystemKeys = true
+        } else {
+            mainView = NSView()
+            showErrorAlert(NSLocalizedString("This version of macOS does not support running this virtual machine.", comment: "VMDisplayAppleController"))
         }
         mainView!.translatesAutoresizingMaskIntoConstraints = false
         displayView.addSubview(mainView!)
         NSLayoutConstraint.activate(mainView!.constraintsForAnchoringTo(boundsOf: displayView))
         window!.recalculateKeyViewLoop()
-        shouldAutoStartVM = appleConfig.macRecoveryIpswURL == nil
+        if #available(macOS 12, *) {
+            shouldAutoStartVM = appleConfig.macRecoveryIpswURL == nil
+        }
         super.windowDidLoad()
-        if let ipswUrl = appleConfig.macRecoveryIpswURL {
+        if #available(macOS 12, *), let ipswUrl = appleConfig.macRecoveryIpswURL {
             showConfirmAlert(NSLocalizedString("Would you like to install macOS? If an existing operating system is already installed on the primary drive of this VM, then it will be erased.", comment: "VMDisplayAppleWindowController")) {
                 self.isInstalling = true
                 _ = self.appleVM.installVM(with: ipswUrl)
@@ -71,10 +79,9 @@ class VMDisplayAppleWindowController: VMDisplayWindowController {
     }
     
     override func enterLive() {
-        if let appleView = appleView {
+        if #available(macOS 12, *), let appleView = appleView {
             appleView.virtualMachine = appleVM.apple
         }
-        isPowerForce = false
         window!.title = appleConfig.name
         updateWindowFrame()
         super.enterLive()
@@ -83,10 +90,17 @@ class VMDisplayAppleWindowController: VMDisplayWindowController {
         usbToolbarItem.isEnabled = false
         startPauseToolbarItem.isEnabled = true
         sharedFolderToolbarItem.isEnabled = appleConfig.bootLoader?.operatingSystem == .Linux
+        if #available(macOS 12, *) {
+            isPowerForce = false
+        } else {
+            // stop() not available on macOS 11 for some reason
+            restartToolbarItem.isEnabled = false
+            isPowerForce = true
+        }
     }
     
     override func enterSuspended(isBusy busy: Bool) {
-        if !busy, let appleView = appleView {
+        if !busy, #available(macOS 12, *), let appleView = appleView {
             appleView.virtualMachine = nil
         }
         isPowerForce = true
@@ -95,7 +109,7 @@ class VMDisplayAppleWindowController: VMDisplayWindowController {
     
     override func virtualMachine(_ vm: UTMVirtualMachine, transitionTo state: UTMVMState) {
         super.virtualMachine(vm, transitionTo: state)
-        if state == .vmStopped && isInstalling {
+        if #available(macOS 12, *), state == .vmStopped && isInstalling {
             didFinishInstallation()
         }
     }
@@ -116,7 +130,7 @@ class VMDisplayAppleWindowController: VMDisplayWindowController {
             let frame = CGRect(origin: window.frame.origin, size: size)
             window.minSize = size
             window.setFrame(frame, display: false, animate: true)
-        } else {
+        } else if #available(macOS 12, *) {
             guard let primaryDisplay = appleConfig.displays.first else {
                 return //FIXME: add multiple displays
             }
@@ -168,7 +182,7 @@ class VMDisplayAppleWindowController: VMDisplayWindowController {
     }
 }
 
-@available(macOS 12, *)
+@available(macOS 11, *)
 extension VMDisplayAppleWindowController {
     func openShareMenu(_ sender: Any) {
         let menu = NSMenu()
@@ -295,7 +309,7 @@ extension VMDisplayAppleWindowController {
     }
 }
 
-@available(macOS 12, *)
+@available(macOS 11, *)
 extension VMDisplayAppleWindowController: TerminalViewDelegate, UTMSerialPortDelegate {
     func sizeChanged(source: TerminalView, newCols: Int, newRows: Int) {
     }

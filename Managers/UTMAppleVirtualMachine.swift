@@ -18,7 +18,7 @@ import Combine
 import Virtualization
 
 @available(iOS, unavailable, message: "Apple Virtualization not available on iOS")
-@available(macOS 12, *)
+@available(macOS 11, *)
 @objc class UTMAppleVirtualMachine: UTMVirtualMachine {
     private let quitTimeoutSeconds = DispatchTimeInterval.seconds(30)
     
@@ -141,7 +141,7 @@ import Virtualization
         guard state == .vmStarted else {
             return false
         }
-        if force {
+        if force, #available(macOS 12, *) {
             changeState(.vmStopping)
             vmQueue.async {
                 self.apple.stop { error in
@@ -165,6 +165,9 @@ import Virtualization
     }
     
     override func resetVM() -> Bool {
+        guard #available(macOS 12, *) else {
+            return false
+        }
         guard state == .vmStarted || state == .vmPaused else {
             return false
         }
@@ -251,20 +254,23 @@ import Virtualization
                 return false
             }
         }
-        let fsConfig = VZVirtioFileSystemDeviceConfiguration(tag: "share")
-        fsConfig.share = makeDirectoryShare(from: appleConfig.sharedDirectories)
-        appleConfig.apple.directorySharingDevices = [fsConfig]
+        if #available(macOS 12, *) {
+            let fsConfig = VZVirtioFileSystemDeviceConfiguration(tag: "share")
+            fsConfig.share = makeDirectoryShare(from: appleConfig.sharedDirectories)
+            appleConfig.apple.directorySharingDevices = [fsConfig]
+            sharedDirectoriesChanged = appleConfig.$sharedDirectories.sink { [weak self] newShares in
+                guard let fsConfig = self?.apple?.directorySharingDevices.first as? VZVirtioFileSystemDevice else {
+                    return
+                }
+                fsConfig.share = self?.makeDirectoryShare(from: newShares)
+            }
+        }
         apple = VZVirtualMachine(configuration: appleConfig.apple, queue: vmQueue)
         apple.delegate = self
-        sharedDirectoriesChanged = appleConfig.$sharedDirectories.sink { [weak self] newShares in
-            guard let fsConfig = self?.apple?.directorySharingDevices.first as? VZVirtioFileSystemDevice else {
-                return
-            }
-            fsConfig.share = self?.makeDirectoryShare(from: newShares)
-        }
         return true
     }
     
+    @available(macOS 12, *)
     func installVM(with ipswUrl: URL) -> Bool {
         guard state == .vmStopped else {
             return false
@@ -331,6 +337,7 @@ import Virtualization
         return (mfd, sfd, name)
     }
     
+    @available(macOS 12, *)
     private func makeDirectoryShare(from sharedDirectories: [SharedDirectory]) -> VZDirectoryShare {
         let vzSharedDirectories = sharedDirectories.compactMap { sharedDirectory in
             sharedDirectory.vzSharedDirectory()
@@ -349,7 +356,7 @@ import Virtualization
     }
 }
 
-@available(macOS 12, *)
+@available(macOS 11, *)
 extension UTMAppleVirtualMachine: VZVirtualMachineDelegate {
     func guestDidStop(_ virtualMachine: VZVirtualMachine) {
         apple = nil
