@@ -29,6 +29,8 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
     
     @Published var name: String
     
+    @Published var architecture: String
+    
     @Published var existingPath: URL?
     
     @Published var selectedCustomIconPath: URL?
@@ -276,6 +278,7 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
         case version
         case isAppleVirtualization
         case name
+        case architecture
         case icon
         case iconCustom
         case notes
@@ -303,6 +306,13 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
     init() {
         apple = VZVirtualMachineConfiguration()
         name = ""
+        #if arch(arm64)
+        architecture = "aarch64"
+        #elseif arch(x86_64)
+        architecture = "x86_64"
+        #else
+        #error("Unsupported architecture.")
+        #endif
         iconCustom = false
         consoleCursorBlink = true
         version = currentVersion
@@ -318,6 +328,9 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
         self.init()
         let values = try decoder.container(keyedBy: CodingKeys.self)
         version = try values.decode(Int.self, forKey: .version)
+        if version > currentVersion {
+            throw ConfigError.versionTooHigh
+        }
         isAppleVirtualization = try values.decode(Bool.self, forKey: .isAppleVirtualization)
         guard isAppleVirtualization else {
             throw ConfigError.notAppleConfiguration
@@ -329,11 +342,19 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
         if #available(macOS 12, *) {
             #if arch(arm64)
             macPlatform = try values.decodeIfPresent(MacPlatform.self, forKey: .macPlatform)
+            #else
+            guard !values.contains(.macPlatform) else {
+                throw ConfigError.platformUnsupported
+            }
             #endif
             displays = try values.decode([Display].self, forKey: .displays)
             isAudioEnabled = try values.decode(Bool.self, forKey: .isAudioEnabled)
             isKeyboardEnabled = try values.decode(Bool.self, forKey: .isKeyboardEnabled)
             isPointingEnabled = try values.decode(Bool.self, forKey: .isPointingEnabled)
+        } else {
+            guard !values.contains(.macPlatform) else {
+                throw ConfigError.platformUnsupported
+            }
         }
         diskImages = try values.decode([DiskImage].self, forKey: .diskImages)
         isBalloonEnabled = try values.decode(Bool.self, forKey: .isBalloonEnabled)
@@ -341,6 +362,7 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
         isSerialEnabled = try values.decode(Bool.self, forKey: .isSerialEnabled)
         isConsoleDisplay = try values.decode(Bool.self, forKey: .isConsoleDisplay)
         name = try values.decode(String.self, forKey: .name)
+        architecture = try values.decode(String.self, forKey: .architecture)
         icon = try values.decodeIfPresent(String.self, forKey: .icon)
         iconCustom = try values.decode(Bool.self, forKey: .iconCustom)
         notes = try values.decodeIfPresent(String.self, forKey: .notes)
@@ -379,6 +401,7 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
         try container.encode(isSerialEnabled, forKey: .isSerialEnabled)
         try container.encode(isConsoleDisplay, forKey: .isConsoleDisplay)
         try container.encode(name, forKey: .name)
+        try container.encode(architecture, forKey: .architecture)
         try container.encodeIfPresent(icon, forKey: .icon)
         try container.encode(iconCustom, forKey: .iconCustom)
         try container.encodeIfPresent(notes, forKey: .notes)
@@ -942,6 +965,8 @@ struct SharedDirectory: Codable, Hashable, Identifiable {
 }
 
 fileprivate enum ConfigError: Error {
+    case versionTooHigh
+    case platformUnsupported
     case notAppleConfiguration
     case invalidDataURL
     case kernelNotSpecified

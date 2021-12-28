@@ -401,7 +401,12 @@ class UTMData: ObservableObject {
             } else {
                 logger.error("cannot find existing vm")
             }
-        } else if (fileBasePath.resolvingSymlinksInPath().path == documentsURL.appendingPathComponent("Inbox", isDirectory: true).path) {
+        }
+        // check if VM is valid
+        guard let _ = UTMVirtualMachine(url: url) else {
+            throw NSLocalizedString("Cannot import this VM. Either the configuration is invalid, created in a newer version of UTM, or on a platform that is incompatible with this version of UTM.", comment: "UTMData")
+        }
+        if (fileBasePath.resolvingSymlinksInPath().path == documentsURL.appendingPathComponent("Inbox", isDirectory: true).path) {
             logger.info("moving from Inbox")
             try copyUTM(at: url, to: dest, move: true)
             try readUTMFromURL(fileURL: dest)

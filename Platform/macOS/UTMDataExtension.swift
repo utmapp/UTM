@@ -26,11 +26,11 @@ extension UTMData {
                 self.vmWindows.removeValue(forKey: vm)
                 window = nil
             }
-            #if arch(arm64)
             if #available(macOS 12, *), let avm = vm as? UTMAppleVirtualMachine {
-                window = VMDisplayAppleWindowController(vm: avm, onClose: close)
+                if avm.systemArchitecture == UTMAppleVirtualMachine.currentArchitecture {
+                    window = VMDisplayAppleWindowController(vm: avm, onClose: close)
+                }
             }
-            #endif
             if let qvm = vm as? UTMQemuVirtualMachine {
                 if qvm.qemuConfig.displayConsoleOnly {
                     window = VMDisplayTerminalWindowController(vm: qvm, onClose: close)

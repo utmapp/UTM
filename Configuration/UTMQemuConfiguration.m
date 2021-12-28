@@ -41,6 +41,8 @@ const NSString *const kUTMConfigVersionKey = @"ConfigurationVersion";
 
 const NSInteger kCurrentConfigurationVersion = 2;
 
+const NSString *const kUTMConfigAppleVirtualizationKey = @"isAppleVirtualization";
+
 @interface UTMQemuConfiguration ()
 
 @property (nonatomic, readonly) NSMutableDictionary *rootDict;
@@ -93,7 +95,9 @@ const NSInteger kCurrentConfigurationVersion = 2;
 - (instancetype)initWithDictionary:(NSDictionary *)dictionary name:(NSString *)name path:(NSURL *)path {
     self = [super init];
     if (self) {
-        [self reloadConfigurationWithDictionary:dictionary name:name path:path];
+        if (![self reloadConfigurationWithDictionary:dictionary name:name path:path]) {
+            return nil;
+        }
     }
     return self;
 }
@@ -152,13 +156,20 @@ const NSInteger kCurrentConfigurationVersion = 2;
     [self loadDefaults];
 }
 
-- (void)reloadConfigurationWithDictionary:(NSDictionary *)dictionary name:(NSString *)name path:(NSURL *)path {
+- (BOOL)reloadConfigurationWithDictionary:(NSDictionary *)dictionary name:(NSString *)name path:(NSURL *)path {
+    if ([dictionary[kUTMConfigAppleVirtualizationKey] boolValue]) {
+        return NO; // do not parse Apple config
+    }
+    if ([dictionary[kUTMConfigVersionKey] intValue] > kCurrentConfigurationVersion) {
+        return NO; // do not parse if version is too high
+    }
     [self propertyWillChange];
     _rootDict = CFBridgingRelease(CFPropertyListCreateDeepCopy(kCFAllocatorDefault, (__bridge CFDictionaryRef)dictionary, kCFPropertyListMutableContainers));
     self.name = name;
     self.existingPath = path;
     self.selectedCustomIconPath = nil;
     [self migrateConfigurationIfNecessary];
+    return YES;
 }
 
 #pragma mark - NSCopying

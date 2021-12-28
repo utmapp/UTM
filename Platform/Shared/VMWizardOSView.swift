@@ -24,6 +24,7 @@ struct VMWizardOSView: View {
         VStack {
             Text("Operating System")
                 .font(.largeTitle)
+            #if os(macOS) && arch(arm64)
             Button {
                 wizardState.operatingSystem = .macOS
                 wizardState.useAppleVirtualization = true
@@ -31,6 +32,7 @@ struct VMWizardOSView: View {
             } label: {
                 OperatingSystem(imageName: "mac", name: "macOS 12+")
             }
+            #endif
             Button {
                 wizardState.operatingSystem = .Windows
                 wizardState.useAppleVirtualization = false

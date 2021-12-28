@@ -20,6 +20,14 @@ import SwiftUI
 struct VMWizardStartView: View {
     @ObservedObject var wizardState: VMWizardState
     
+    var isVirtualizationSupported: Bool {
+        #if os(macOS)
+        true
+        #else
+        false
+        #endif
+    }
+    
     var body: some View {
         VStack {
             Text("I want to...")
@@ -34,7 +42,7 @@ struct VMWizardStartView: View {
                     Text("Faster, but can only run the native CPU architecture.")
                         .font(.caption)
                 }
-            }
+            }.disabled(isVirtualizationSupported)
             Button {
                 wizardState.useVirtualization = false
                 wizardState.next()

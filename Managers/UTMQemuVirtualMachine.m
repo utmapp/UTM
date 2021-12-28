@@ -100,11 +100,11 @@ NSString *const kSuspendSnapshotName = @"suspend";
     }
     if (reload) {
         NSAssert(self.qemuConfig != nil, @"Trying to reload when no configuration is loaded.");
-        [self.qemuConfig reloadConfigurationWithDictionary:plist name:name path:self.path];
+        return [self.qemuConfig reloadConfigurationWithDictionary:plist name:name path:self.path];
     } else {
         self.config = [[UTMQemuConfiguration alloc] initWithDictionary:plist name:name path:self.path];
+        return self.config != nil;
     }
-    return YES;
 }
 
 - (BOOL)saveConfigurationWithError:(NSError * _Nullable __autoreleasing *)err {

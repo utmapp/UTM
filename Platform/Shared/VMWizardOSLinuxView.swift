@@ -33,10 +33,12 @@ struct VMWizardOSLinuxView: View {
         VStack {
             Text("Linux")
                 .font(.largeTitle)
+            #if os(macOS)
             if wizardState.useVirtualization {
                 Toggle("Use Apple Virtualization", isOn: $wizardState.useAppleVirtualization)
                     .help("If set, use Apple's virtualization engine. Otherwise, use QEMU's virtualization engine.")
             }
+            #endif
             Toggle("Boot from kernel image", isOn: $wizardState.useLinuxKernel)
                 .help("If set, boot directly from a raw kernel image and initrd. Otherwise, boot from a supported ISO.")
                 .disabled(wizardState.useAppleVirtualization)

@@ -79,20 +79,24 @@ NSString *const kUTMBundleScreenshotFilename = @"screenshot.png";
 }
 
 + (nullable UTMVirtualMachine *)virtualMachineWithURL:(NSURL *)url {
+#if TARGET_OS_OSX
     if (@available(macOS 12, *)) {
         if ([UTMAppleVirtualMachine isAppleVMForPath:url]) {
             return [[UTMAppleVirtualMachine alloc] initWithURL:url];
         }
     }
+#endif
     return [[UTMQemuVirtualMachine alloc] initWithURL:url];
 }
 
 + (UTMVirtualMachine *)virtualMachineWithConfiguration:(id<UTMConfigurable>)configuration withDestinationURL:(NSURL *)dstUrl {
+#if TARGET_OS_OSX
     if (@available(macOS 12, *)) {
         if (configuration.isAppleVirtualization) {
             return [[UTMAppleVirtualMachine alloc] initWithConfiguration:configuration withDestinationURL:dstUrl];
         }
     }
+#endif
     return [[UTMQemuVirtualMachine alloc] initWithConfiguration:configuration withDestinationURL:dstUrl];
 }
 

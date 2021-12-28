@@ -51,12 +51,16 @@ import Virtualization
     }
     
     override var systemArchitecture: String {
+        appleConfig.architecture
+    }
+    
+    class var currentArchitecture: String {
         #if arch(arm64)
         "aarch64"
         #elseif arch(x86_64)
         "x86_64"
         #else
-        "Unknown"
+        #error("Unsupported architecture.")
         #endif
     }
     
