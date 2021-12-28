@@ -3461,7 +3461,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 1200;
-				LastUpgradeCheck = 1020;
+				LastUpgradeCheck = 1320;
 				ORGANIZATIONNAME = osy;
 				TargetAttributes = {
 					8401FD61269BE9C500265F0D = {
@@ -3798,7 +3798,6 @@
 				CE2D92BB24AD46670059923A /* qapi-types-tpm.c in Sources */,
 				CE2D92BC24AD46670059923A /* UTMQemuConfiguration+Drives.m in Sources */,
 				835AA7B126AB7C85007A0411 /* UTMPendingVirtualMachine.swift in Sources */,
-				CE2D92BC24AD46670059923A /* UTMQemuConfiguration+Drives.m in Sources */,
 				CE2D92BD24AD46670059923A /* qapi-visit-char.c in Sources */,
 				CE2D92BE24AD46670059923A /* qapi-types-error.c in Sources */,
 				CE2D92BF24AD46670059923A /* qapi-commands-authz.c in Sources */,
@@ -4809,6 +4808,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -4887,6 +4887,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -4926,6 +4927,7 @@
 				MTL_FAST_MATH = YES;
 				QUOTED_SYSROOT_DIR = "\"$(SYSROOT_DIR)\"";
 				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
 				SYSROOT_DIR = "sysroot-$(PLATFORM_DISPLAY_NAME:identifier)$(PLATFORM_SUFFIX)-$(ARCHS:identifier)";
 				VALIDATE_PRODUCT = YES;
 			};
@@ -4934,7 +4936,7 @@
 		CE9A353626533A52005077CF /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_IDENTITY = "$(CODE_SIGN_IDENTITY_IOS:default=Apple Development)";
+				CODE_SIGN_IDENTITY = "";
 				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
@@ -4956,7 +4958,7 @@
 		CE9A353726533A52005077CF /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_IDENTITY = "$(CODE_SIGN_IDENTITY_IOS:default=Apple Development)";
+				CODE_SIGN_IDENTITY = "";
 				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
