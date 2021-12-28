@@ -1,0 +1,25 @@
+From e5dc299701df7189685d322cb709649ce3c9c81d Mon Sep 17 00:00:00 2001
+From: Albert Astals Cid <aacid@kde.org>
+Date: Sun, 7 Nov 2021 00:22:21 +0100
+Subject: [PATCH] Fix link to pcre-8.37.tar.bz2
+
+ftp.pcre.org FTP site is no longer available
+---
+ subprojects/libpcre.wrap | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/subprojects/libpcre.wrap b/subprojects/libpcre.wrap
+index ecae8ae8a..065d22246 100644
+--- a/subprojects/libpcre.wrap
++++ b/subprojects/libpcre.wrap
+@@ -1,6 +1,6 @@
+ [wrap-file]
+ directory = pcre-8.37
+-source_url = https://ftp.pcre.org/pub/pcre/pcre-8.37.tar.bz2
++source_url = https://sourceforge.net/projects/pcre/files/pcre/8.37/pcre-8.37.tar.bz2
+ source_filename = pcre-8.37.tar.bz2
+ source_hash = 51679ea8006ce31379fb0860e46dd86665d864b5020fc9cd19e71260eef4789d
+ patch_filename = pcre_8.37-2_patch.zip
+-- 
+2.32.0 (Apple Git-132)
+
