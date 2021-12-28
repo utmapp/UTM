@@ -4,6 +4,7 @@ on:
     branches:
       - 'master'
       - 'dev'
+      - 'dev-monterey'
     tags-ignore:
       - '**'
     paths-ignore:
@@ -41,7 +42,7 @@ jobs:
           submodules: recursive
       - name: Setup Xcode
         shell: bash
-        run: sudo xcode-select -switch /Applications/Xcode_13.1.app
+        run: sudo xcode-select -switch /Applications/Xcode_13.2.1.app
       - name: Cache Sysroot
         id: cache-sysroot
         uses: actions/cache@v2
@@ -112,7 +113,7 @@ jobs:
           path: sysroot.tgz
       - name: Setup Xcode
         shell: bash
-        run: sudo xcode-select -switch /Applications/Xcode_13.1.app
+        run: sudo xcode-select -switch /Applications/Xcode_13.2.1.app
       - name: Build UTM
         run: |
           ./scripts/build_utm.sh -t "$SIGNING_TEAM_ID" -p macos -a "arm64 x86_64" -o UTM
