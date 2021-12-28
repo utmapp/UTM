@@ -36,6 +36,7 @@ fileprivate struct WizardWrapper: View {
     @ObservedObject var wizardState: VMWizardState
     @State private var nextPage: VMWizardPage?
     @Environment(\.presentationMode) private var presentationMode: Binding<PresentationMode>
+    @EnvironmentObject private var data: UTMData
     
     var body: some View {
         VStack {

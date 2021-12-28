@@ -62,6 +62,7 @@ struct VMDetailsView: View {
                             .fixedSize(horizontal: false, vertical: true)
                             .padding([.leading, .trailing])
                     }.padding([.leading, .trailing])
+                    #if os(macOS)
                     if #available(macOS 12, *), let appleVM = vm as? UTMAppleVirtualMachine {
                         VMAppleRemovableDrivesView(vm: appleVM, config: appleVM.appleConfig)
                             .padding([.leading, .trailing, .bottom])
@@ -69,6 +70,10 @@ struct VMDetailsView: View {
                         VMRemovableDrivesView(vm: vm as! UTMQemuVirtualMachine)
                             .padding([.leading, .trailing, .bottom])
                     }
+                    #else
+                    VMRemovableDrivesView(vm: vm as! UTMQemuVirtualMachine)
+                        .padding([.leading, .trailing, .bottom])
+                    #endif
                 } else {
                     VStack {
                         Details(vm: vm, sizeLabel: sizeLabel)
@@ -77,17 +82,22 @@ struct VMDetailsView: View {
                                 .font(.body)
                                 .fixedSize(horizontal: false, vertical: true)
                         }
+                        #if os(macOS)
                         if #available(macOS 12, *), let appleVM = vm as? UTMAppleVirtualMachine {
                             VMAppleRemovableDrivesView(vm: appleVM, config: appleVM.appleConfig)
                         } else if let qemuVM = vm as? UTMQemuVirtualMachine {
                             VMRemovableDrivesView(vm: qemuVM)
                         }
+                        #else
+                        VMRemovableDrivesView(vm: vm as! UTMQemuVirtualMachine)
+                        #endif
                     }.padding([.leading, .trailing, .bottom])
                 }
             }.labelStyle(DetailsLabelStyle())
             .modifier(VMOptionalNavigationTitleModifier(vm: vm))
             .modifier(VMToolbarModifier(vm: vm, bottom: !regularScreenSizeClass))
             .sheet(isPresented: $data.showSettingsModal) {
+                #if os(macOS)
                 if #available(macOS 12, *), let appleVM = vm as? UTMAppleVirtualMachine {
                     VMSettingsView(vm: appleVM, config: appleVM.appleConfig)
                         .environmentObject(data)
@@ -95,6 +105,10 @@ struct VMDetailsView: View {
                     VMSettingsView(vm: qemuVM, config: qemuVM.qemuConfig)
                         .environmentObject(data)
                 }
+                #else
+                VMSettingsView(vm: vm as! UTMQemuVirtualMachine, config: vm.config as! UTMQemuConfiguration)
+                    .environmentObject(data)
+                #endif
             }
         }
     }
@@ -186,6 +200,7 @@ struct Details: View {
                 Text(sizeLabel)
                     .foregroundColor(.secondary)
             }
+            #if os(macOS)
             if #available(macOS 12, *), let appleVM = vm as? UTMAppleVirtualMachine {
                 HStack {
                     plainLabel("Serial", systemImage: "phone.connection")
@@ -195,6 +210,7 @@ struct Details: View {
                         .textSelection(.enabled)
                 }
             }
+            #endif
         }.lineLimit(1)
         .truncationMode(.tail)
     }

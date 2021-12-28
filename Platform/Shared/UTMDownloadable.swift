@@ -14,6 +14,7 @@
 // limitations under the License.
 //
 
+@available(iOS 14, macOS 11, *)
 protocol UTMDownloadable {
     var url: URL { get }
     var isDone: Bool { get }

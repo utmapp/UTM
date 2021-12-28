@@ -48,13 +48,23 @@ private let kVMDefaultResizeCmd = "stty cols $COLS rows $ROWS\\n"
     }
     
     public func write(data: Data) {
-        try! writeFileHandle.write(contentsOf: data)
+        if #available(iOS 13.4, macOS 10.15, *) {
+            try! writeFileHandle.write(contentsOf: data)
+        } else {
+            writeFileHandle.write(data)
+        }
     }
     
     public func close() {
-        try? readFileHandle.close()
-        try? writeFileHandle.close()
-        try? terminalFileHandle?.close()
+        if #available(iOS 13, macOS 10.15, *) {
+            try? readFileHandle.close()
+            try? writeFileHandle.close()
+            try? terminalFileHandle?.close()
+        } else {
+            readFileHandle.closeFile()
+            writeFileHandle.closeFile()
+            terminalFileHandle?.closeFile()
+        }
     }
     
     public func writeResizeCommand(_ command: String?, columns: Int, rows: Int) {

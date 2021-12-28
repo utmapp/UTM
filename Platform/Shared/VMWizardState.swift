@@ -16,7 +16,9 @@
 
 import Foundation
 import SwiftUI
+#if canImport(Virtualization)
 import Virtualization
+#endif
 
 enum VMWizardPage: Int, Identifiable {
     var id: Int {

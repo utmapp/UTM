@@ -17,7 +17,7 @@
 @objc class VMRemovableDrivesViewController: UIViewController {
     @IBOutlet weak var doneButton: UIButton!
     @IBOutlet weak var tableView: UITableView!
-    @objc weak var vm: UTMVirtualMachine?
+    @objc weak var vm: UTMQemuVirtualMachine?
     fileprivate var drives: [UTMDrive]?
     fileprivate var selectedDrive: UTMDrive?
     

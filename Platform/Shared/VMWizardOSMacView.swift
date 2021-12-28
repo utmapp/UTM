@@ -33,7 +33,6 @@ struct VMWizardOSMacView: View {
                 Text(selected.lastPathComponent)
                     .font(.caption)
             }
-            #endif
             HStack {
                 Button {
                     isFileImporterPresented.toggle()
@@ -48,6 +47,7 @@ struct VMWizardOSMacView: View {
                 }
             }.disabled(wizardState.isBusy)
             .buttonStyle(BrowseButtonStyle())
+            #endif
             if wizardState.isBusy {
                 BigWhiteSpinner()
             }
