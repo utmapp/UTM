@@ -57,9 +57,9 @@
 - (void)loadDisplayDefaultsForTarget:(nullable NSString *)target architecture:(nullable NSString *)architecture {
     NSString *card = nil;
     if ([target hasPrefix:@"pc"] || [target hasPrefix:@"q35"]) {
-        card = @"virtio-vga-gl";
+        card = @"virtio-vga";
     } else if ([target isEqualToString:@"virt"] || [target hasPrefix:@"virt-"]) {
-        card = @"virtio-ramfb-gl";
+        card = @"virtio-ramfb";
     } else if (architecture) {
         NSArray<NSString *> *cards = [UTMQemuConfiguration supportedDisplayCardsForArchitecture:architecture];
         NSString *first = cards.firstObject;
