@@ -15,6 +15,9 @@
 //
 
 import SwiftUI
+#if canImport(Virtualization)
+import Virtualization
+#endif
 
 @available(iOS 14, macOS 11, *)
 struct VMWizardStartView: View {
@@ -22,7 +25,7 @@ struct VMWizardStartView: View {
     
     var isVirtualizationSupported: Bool {
         #if os(macOS)
-        true
+        VZVirtualMachine.isSupported && !processIsTranslated()
         #else
         false
         #endif
@@ -42,7 +45,7 @@ struct VMWizardStartView: View {
                     Text("Faster, but can only run the native CPU architecture.")
                         .font(.caption)
                 }
-            }.disabled(isVirtualizationSupported)
+            }.disabled(!isVirtualizationSupported)
             Button {
                 wizardState.useVirtualization = false
                 wizardState.next()
@@ -57,6 +60,18 @@ struct VMWizardStartView: View {
             Link("Download prebuilt from UTM Gallery...", destination: URL(string: "https://mac.getutm.app/gallery/")!)
                 .buttonStyle(BorderlessButtonStyle())
         }.buttonStyle(BigButtonStyle(width: 320, height: 100))
+    }
+    
+    private func processIsTranslated() -> Bool {
+        let key = "sysctl.proc_translated"
+        var ret = Int32(0)
+        var size: Int = 0
+        sysctlbyname(key, nil, &size, nil, 0)
+        let result = sysctlbyname(key, &ret, &size, nil, 0)
+        if result == -1 {
+            return false
+        }
+        return ret != 0
     }
 }
 
