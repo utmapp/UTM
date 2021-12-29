@@ -97,6 +97,9 @@ struct VMWizardHardwareView: View {
                     .frame(width: 50)
                     .multilineTextAlignment(.trailing)
             }
+            if !wizardState.useAppleVirtualization && wizardState.operatingSystem == .Linux {
+                Toggle("Enable hardware OpenGL acceleration (experimental)", isOn: $wizardState.isGLEnabled)
+            }
             Spacer()
         }.onAppear {
             if wizardState.systemArchitecture == nil {

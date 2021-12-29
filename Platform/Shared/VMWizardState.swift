@@ -100,6 +100,7 @@ class VMWizardState: ObservableObject {
     @Published var storageSizeGib: Int = 8
     #endif
     @Published var systemCpuCount: Int = 4
+    @Published var isGLEnabled: Bool = false
     @Published var sharingDirectoryURL: URL?
     @Published var sharingReadOnly: Bool = false
     @Published var name: String?
@@ -370,6 +371,13 @@ class VMWizardState: ObservableObject {
         config.systemCPUCount = NSNumber(value: systemCpuCount)
         config.useHypervisor = useVirtualization
         config.shareDirectoryReadOnly = sharingReadOnly
+        if isGLEnabled, let displayCard = config.displayCard {
+            let newCard = displayCard + "-gl"
+            let allCards = UTMQemuConfiguration.supportedDisplayCards(forArchitecture: systemArchitecture)!
+            if allCards.contains(newCard) {
+                config.displayCard = newCard
+            }
+        }
         if !isSkipBootImage && bootImageURL != nil {
             config.newRemovableDrive("cdrom0", type: .CD, interface: UTMQemuConfiguration.defaultDriveInterface(forTarget: systemTarget, architecture: systemArchitecture, type: .CD))
         }
