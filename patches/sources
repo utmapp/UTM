@@ -19,7 +19,7 @@ SPICE_PROTOCOL_SRC="https://www.spice-space.org/download/releases/spice-protocol
 SPICE_SERVER_SRC="https://www.spice-space.org/download/releases/spice-server/spice-0.14.1.tar.bz2"
 USB_SRC="https://github.com/libusb/libusb/releases/download/v1.0.24/libusb-1.0.24.tar.bz2"
 USBREDIR_SRC="https://www.spice-space.org/download/usbredir/usbredir-0.8.0.tar.bz2"
-QEMU_SRC="https://github.com/utmapp/qemu/releases/download/v6.1.0-utm/qemu-6.1.0-utm.tar.bz2"
+QEMU_SRC="https://github.com/utmapp/qemu/releases/download/v6.2.0-utm/qemu-6.2.0-utm.tar.bz2"
 
 # Source files for spice-client
 JSON_GLIB_SRC="https://ftp.gnome.org/pub/GNOME/sources/json-glib/1.2/json-glib-1.2.8.tar.xz"
