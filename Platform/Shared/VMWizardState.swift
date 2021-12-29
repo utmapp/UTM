@@ -196,6 +196,19 @@ class VMWizardState: ObservableObject {
                     alertMessage = AlertMessage(NSLocalizedString("Please select a system to emulate.", comment: "VMWizardState"))
                     return
                 }
+            } else {
+                #if arch(arm64)
+                systemArchitecture = "aarch64"
+                #elseif arch(x86_64)
+                systemArchitecture = "x86_64"
+                #else
+                #error("Unsupported architecture.")
+                #endif
+            }
+            if systemTarget == nil {
+                let index = UTMQemuConfiguration.defaultTargetIndex(forArchitecture: systemArchitecture)
+                let targets = UTMQemuConfiguration.supportedTargets(forArchitecture: systemArchitecture)
+                systemTarget = targets?[index]
             }
             nextPage = .drives
             #if arch(arm64)
@@ -352,6 +365,7 @@ class VMWizardState: ObservableObject {
         config.name = name!
         config.systemArchitecture = systemArchitecture
         config.systemTarget = systemTarget
+        config.loadDefaults(forTarget: systemTarget, architecture: systemArchitecture)
         config.systemMemory = NSNumber(value: systemMemory / UInt64(bytesInMib))
         config.systemCPUCount = NSNumber(value: systemCpuCount)
         config.useHypervisor = useVirtualization
