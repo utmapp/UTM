@@ -378,8 +378,11 @@ class VMWizardState: ObservableObject {
                 config.displayCard = newCard
             }
         }
-        if !isSkipBootImage && bootImageURL != nil {
+        let generateRemovableDrive: () -> Void = { [self] in
             config.newRemovableDrive("cdrom0", type: .CD, interface: UTMQemuConfiguration.defaultDriveInterface(forTarget: systemTarget, architecture: systemArchitecture, type: .CD))
+        }
+        if !isSkipBootImage && bootImageURL != nil {
+            generateRemovableDrive()
         }
         switch operatingSystem {
         case .Other:
@@ -405,10 +408,17 @@ class VMWizardState: ObservableObject {
             config.icon = "windows"
             if let windowsBootVhdx = windowsBootVhdx {
                 config.newDrive("drive0", path: windowsBootVhdx.lastPathComponent, type: .disk, interface: "nvme")
+                generateRemovableDrive() // order matters here
             }
         }
         if windowsBootVhdx == nil {
-            config.newDrive("drive0", path: "data.qcow2", type: .disk, interface: UTMQemuConfiguration.defaultDriveInterface(forTarget: systemTarget, architecture: systemArchitecture, type: .disk))
+            let interface: String
+            if operatingSystem == .Windows {
+                interface = "nvme"
+            } else {
+                interface = UTMQemuConfiguration.defaultDriveInterface(forTarget: systemTarget, architecture: systemArchitecture, type: .disk)
+            }
+            config.newDrive("drive0", path: "data.qcow2", type: .disk, interface: interface)
         }
         return config
     }

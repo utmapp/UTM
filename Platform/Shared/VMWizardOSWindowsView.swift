@@ -27,13 +27,15 @@ struct VMWizardOSWindowsView: View {
             Text("Windows")
                 .font(.largeTitle)
             if useVhdx {
-                Link("Download Windows 10 for ARM64 Preview", destination: URL(string: "https://www.microsoft.com/en-us/software-download/windowsinsiderpreviewARM64")!)
+                Link("Download Windows 11 for ARM64 Preview VHDX", destination: URL(string: "https://www.microsoft.com/en-us/software-download/windowsinsiderpreviewARM64")!)
                 Text("Boot VHDX Image:")
                     .padding(.top)
             } else {
+                Link("Generate Windows Installer ISO", destination: URL(string: "https://uupdump.net/")!)
                 Text("Boot ISO Image:")
                     .padding(.top)
             }
+            Toggle("Import VHDX Image", isOn: $useVhdx)
             Text((useVhdx ? wizardState.windowsBootVhdx?.lastPathComponent : wizardState.bootImageURL?.lastPathComponent) ?? " ")
                 .font(.caption)
             Button {
@@ -48,9 +50,13 @@ struct VMWizardOSWindowsView: View {
             Spacer()
         }.fileImporter(isPresented: $isFileImporterPresented, allowedContentTypes: [.data], onCompletion: processImage)
         .onAppear {
-            #if arch(arm64)
-            useVhdx = wizardState.useVirtualization
-            #endif
+            if wizardState.windowsBootVhdx != nil {
+                useVhdx = true
+            } else {
+                #if arch(arm64)
+                useVhdx = wizardState.useVirtualization
+                #endif
+            }
         }
     }
     
