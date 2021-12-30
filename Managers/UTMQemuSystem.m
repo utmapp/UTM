@@ -41,7 +41,6 @@ extern NSString *const kUTMErrorDomain;
 
 @property (nonatomic, readonly) NSURL *resourceURL;
 @property (nonatomic, readonly) CPUCount emulatedCpuCount;
-@property (nonatomic, readonly) BOOL useHypervisor;
 @property (nonatomic, readonly) BOOL hasCustomBios;
 @property (nonatomic, readonly) BOOL usbSupported;
 @property (nonatomic, readonly) NSURL *efiVariablesURL;
@@ -234,14 +233,21 @@ static size_t sysctl_read(const char *name) {
 }
 
 - (void)argsForCpu {
-    if ([self.configuration.systemCPU isEqualToString:@"default"] && self.useHypervisor) {
+    NSString *cpu = self.configuration.systemCPU;
+    if ([cpu isEqualToString:@"default"]) {
         // if default and not hypervisor, we don't pass any -cpu argument for x86 and use host for ARM
-#if !defined(__x86_64__)
-        [self pushArgv:@"-cpu"];
-        [self pushArgv:@"host"];
-#endif
-    } else if (self.configuration.systemCPU.length > 0 && ![self.configuration.systemCPU isEqualToString:@"default"]) {
-        NSString *cpu = self.configuration.systemCPU;
+        if (self.configuration.useHypervisor) {
+            [self pushArgv:@"-cpu"];
+            [self pushArgv:@"host"];
+        } else if ([self.configuration.systemArchitecture isEqualToString:@"aarch64"]) {
+            // ARM64 QEMU does not support "-cpu default" so we hard code a sensible default
+            cpu = @"cortex-a72";
+        } else if ([self.configuration.systemArchitecture isEqualToString:@"arm"]) {
+            // ARM64 QEMU does not support "-cpu default" so we hard code a sensible default
+            cpu = @"cortex-a15";
+        }
+    }
+    if (cpu.length > 0 && ![cpu isEqualToString:@"default"]) {
         for (NSString *flag in self.configuration.systemCPUFlags) {
             unichar prefix = [flag characterAtIndex:0];
             if (prefix != '-' && prefix != '+') {

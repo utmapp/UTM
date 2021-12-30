@@ -67,7 +67,7 @@ static const NSString *const kUTMConfigUseHypervisorKey = @"UseHypervisor";
     }
     // Default CPU
     if ([self.rootDict[kUTMConfigSystemKey][kUTMConfigCPUKey] length] == 0) {
-        self.rootDict[kUTMConfigSystemKey][kUTMConfigCPUKey] = [UTMQemuConfiguration defaultCPUForTarget:self.systemTarget architecture:self.systemArchitecture];
+        self.rootDict[kUTMConfigSystemKey][kUTMConfigCPUKey] = @"default";
     }
     // Older versions hard codes properties
     if ([self.version integerValue] < 2) {

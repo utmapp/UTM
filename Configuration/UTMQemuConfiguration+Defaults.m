@@ -156,9 +156,7 @@
     } else if (self.systemMachineProperties) {
         self.systemMachineProperties = @"";
     }
-    if (target && architecture) {
-        self.systemCPU = [UTMQemuConfiguration defaultCPUForTarget:target architecture:architecture];
-    }
+    self.systemCPU = @"default";
 }
 
 + (nullable NSString *)defaultMachinePropertiesForTarget:(nullable NSString *)target {
@@ -183,16 +181,6 @@
         return @"scsi";
     }
     return @"ide";
-}
-
-+ (NSString *)defaultCPUForTarget:(NSString *)target architecture:(NSString *)architecture {
-    if ([architecture isEqualToString:@"aarch64"]) {
-        return @"cortex-a72";
-    } else if ([architecture isEqualToString:@"arm"]) {
-        return @"cortex-a15";
-    } else {
-        return @"default";
-    }
 }
 
 @end
