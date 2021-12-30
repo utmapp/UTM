@@ -84,3 +84,50 @@ index a669b45..0583e5b 100644
 -- 
 2.28.0
 
+From 0d24c5332f79f11d412c32ce351e32a16a609df2 Mon Sep 17 00:00:00 2001
+From: Alexander Graf <agraf@csgraf.de>
+Date: Thu, 30 Dec 2021 11:41:18 +0100
+Subject: [PATCH] HACK: hvf: arm: Always treat SMC as enabled conduit
+
+The Windows 10 and 11 for ARM boot code implicitly assumes that SMC is a valid
+SMCCC conduit to call for an OEM SMCCC call.
+
+This patch forces HVF to treat SMC as an always active conduit, even when the
+user has configured HVC. That way, the OEM SMCCC call gets handled as an
+unimplemented SMCCC function (return -1) rather than an invalid conduit (inject
+undefined instruction exception) which crashes Windows.
+
+With this patch applied, I can successfully boot Windows for ARM Insider
+Previews.
+
+Signed-off-by: Alexander Graf <agraf@csgraf.de>
+---
+ target/arm/hvf/hvf.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/target/arm/hvf/hvf.c b/target/arm/hvf/hvf.c
+index 0dc96560d3..b940b3d365 100644
+--- a/target/arm/hvf/hvf.c
++++ b/target/arm/hvf/hvf.c
+@@ -61,6 +61,8 @@
+ #define TMR_CTL_IMASK   (1 << 1)
+ #define TMR_CTL_ISTATUS (1 << 2)
+ 
++static const bool windows_workaround_enabled = true;
++
+ static void hvf_wfi(CPUState *cpu);
+ 
+ typedef struct HVFVTimer {
+@@ -1218,7 +1220,8 @@ int hvf_vcpu_exec(CPUState *cpu)
+         break;
+     case EC_AA64_SMC:
+         cpu_synchronize_state(cpu);
+-        if (arm_cpu->psci_conduit == QEMU_PSCI_CONDUIT_SMC) {
++        if (windows_workaround_enabled ||
++            arm_cpu->psci_conduit == QEMU_PSCI_CONDUIT_SMC) {
+             advance_pc = true;
+ 
+             if (!hvf_handle_psci_call(cpu)) {
+-- 
+2.32.0 (Apple Git-132)
+
