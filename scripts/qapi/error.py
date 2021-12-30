@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 #
-# QAPI error classes
-#
 # Copyright (c) 2017-2019 Red Hat Inc.
 #
 # Authors:
@@ -11,15 +9,36 @@
 # This work is licensed under the terms of the GNU GPL, version 2.
 # See the COPYING file in the top-level directory.
 
+"""
+QAPI error classes
+
+Common error classes used throughout the package.  Additional errors may
+be defined in other modules.  At present, `QAPIParseError` is defined in
+parser.py.
+"""
+
+from typing import Optional
+
+from .source import QAPISourceInfo
+
 
 class QAPIError(Exception):
-    def __init__(self, info, col, msg):
-        Exception.__init__(self)
-        self.info = info
-        self.col = col
-        self.msg = msg
+    """Base class for all exceptions from the QAPI package."""
 
-    def __str__(self):
+
+class QAPISourceError(QAPIError):
+    """Error class for all exceptions identifying a source location."""
+    def __init__(self,
+                 info: Optional[QAPISourceInfo],
+                 msg: str,
+                 col: Optional[int] = None):
+        super().__init__()
+        self.info = info
+        self.msg = msg
+        self.col = col
+
+    def __str__(self) -> str:
+        assert self.info is not None
         loc = str(self.info)
         if self.col is not None:
             assert self.info.line is not None
@@ -27,17 +46,5 @@ class QAPIError(Exception):
         return loc + ': ' + self.msg
 
 
-class QAPIParseError(QAPIError):
-    def __init__(self, parser, msg):
-        col = 1
-        for ch in parser.src[parser.line_pos:parser.pos]:
-            if ch == '\t':
-                col = (col + 7) % 8 + 1
-            else:
-                col += 1
-        super().__init__(parser.info, col, msg)
-
-
-class QAPISemError(QAPIError):
-    def __init__(self, info, msg):
-        super().__init__(info, None, msg)
+class QAPISemError(QAPISourceError):
+    """Error class for semantic QAPI errors."""

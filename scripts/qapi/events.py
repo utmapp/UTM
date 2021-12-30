@@ -16,7 +16,7 @@ See the COPYING file in the top-level directory.
 
 from typing import List
 
-from .common import c_enum_const, c_name, mcgen, gen_if, gen_endif
+from .common import c_enum_const, c_name, mcgen
 from .gen import QAPISchemaModularCVisitor, build_params, ifcontext
 from .schema import (
     QAPISchema,
@@ -154,7 +154,7 @@ void %(name)s(const char *event, CFDictionaryRef data, void *ctx)
                 event_enum=event_enum_name, name=name)
 
     for event in events:
-        ret += gen_if(event[0])
+        ret += event[0].gen_if()
         ret += mcgen('''
         case %(enum_name)s:
             if (qapi_enum_handler_registry_data.%(handler_name)s) {
@@ -163,7 +163,7 @@ void %(name)s(const char *event, CFDictionaryRef data, void *ctx)
             break;
 ''',
                 enum_name=event[1], event_name=event[2], handler_name=event[3])
-        ret += gen_endif(event[0])
+        ret += event[0].gen_endif()
 
     ret += mcgen('''
     }
@@ -179,12 +179,12 @@ typedef struct {
 ''')
 
     for event in events:
-        ret += gen_if(event[0])
+        ret += event[0].gen_if()
         ret += mcgen('''
     %(handler_name)s %(handler_name)s;
 ''',
                 handler_name=event[3])
-        ret += gen_endif(event[0])
+        ret += event[0].gen_endif()
 
     ret += mcgen('''
 } qapi_enum_handler_registry;
