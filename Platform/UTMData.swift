@@ -242,6 +242,9 @@ class UTMData: ObservableObject {
     }
     
     func create(config: UTMConfigurable, onCompletion: @escaping (UTMVirtualMachine) -> Void = { _ in }) throws {
+        guard !virtualMachines.contains(where: { $0.config.name == config.name }) else {
+            throw NSLocalizedString("An existing virtual machine already exists with this name.", comment: "UTMData")
+        }
         let vm = UTMVirtualMachine(configuration: config, withDestinationURL: documentsURL)
         try save(vm: vm)
         if let qemuVM = vm as? UTMQemuVirtualMachine {
