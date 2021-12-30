@@ -43,7 +43,7 @@ class UTMImportFromWebTask: NSObject, UTMDownloadable, URLSessionDelegate, URLSe
         let downloadedZip = tempDir.appendingPathComponent(originalFilename)
         var fileURL: URL? = nil
         do {
-            if fileManager.fileExists(atPath: downloadedZip.absoluteString) {
+            if fileManager.fileExists(atPath: downloadedZip.path) {
                 try fileManager.removeItem(at: downloadedZip)
             }
             try fileManager.moveItem(at: location, to: downloadedZip)
@@ -105,7 +105,7 @@ class UTMImportFromWebTask: NSObject, UTMDownloadable, URLSessionDelegate, URLSe
             for file in containedFiles {
                 let relativePath = file.path.replacingOccurrences(of: utmFolderInZip.path, with: "")
                 let isDirectory = file.path.hasSuffix("/")
-                _ = try archive.extract(file, to: destinationURL.appendingPathComponent(relativePath, isDirectory: isDirectory))
+                _ = try archive.extract(file, to: destinationURL.appendingPathComponent(relativePath, isDirectory: isDirectory), skipCRC32: true)
             }
             return destinationURL
         } else {
