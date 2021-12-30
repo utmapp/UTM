@@ -70,7 +70,7 @@ class VMDisplayWindowController: NSWindowController {
                 self.vm.pauseVM()
                 guard self.vm.saveVM() else {
                     DispatchQueue.main.async {
-                        self.showErrorAlert(NSLocalizedString("Failed to save VM state. Do you have at least one read-write drive attached that supports snapshots?", comment: "VMDisplayWindowController"))
+                        self.showErrorAlert(NSLocalizedString("Failed to save VM snapshot. Usually this means at least one device does not support snapshots.", comment: "VMDisplayWindowController"))
                     }
                     return
                 }

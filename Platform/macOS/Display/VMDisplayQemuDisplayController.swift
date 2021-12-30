@@ -24,10 +24,13 @@ class VMDisplayQemuWindowController: VMDisplayWindowController {
     }
     
     override func enterLive() {
-        if !vmQemuConfig.useHypervisor {
-            // currently HVF doesn't support suspending
-            startPauseToolbarItem.isEnabled = true
+        startPauseToolbarItem.isEnabled = true
+        #if arch(x86_64)
+        if vmQemuConfig.useHypervisor {
+            // currently x86_64 HVF doesn't support suspending
+            startPauseToolbarItem.isEnabled = false
         }
+        #endif
         drivesToolbarItem.isEnabled = vmQemuConfig.countDrives > 0
         sharedFolderToolbarItem.isEnabled = qemuVM.hasShareDirectoryEnabled
         usbToolbarItem.isEnabled = qemuVM.hasUsbRedirection

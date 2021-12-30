@@ -214,7 +214,7 @@ import SwiftUI
                 viewController.vm.pauseVM()
                 if !viewController.vm.saveVM() {
                     DispatchQueue.main.async {
-                        viewController.showAlert(NSLocalizedString("Failed to save VM state. Do you have at least one read-write drive attached that supports snapshots?", comment: "VMDisplayViewController"), actions: nil, completion: nil)
+                        viewController.showAlert(NSLocalizedString("Failed to save VM snapshot. Usually this means at least one device does not support snapshots.", comment: "VMDisplayViewController"), actions: nil, completion: nil)
                     }
                 }
             } else if viewController.vm.state == .vmPaused {
