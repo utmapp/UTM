@@ -591,7 +591,7 @@ static CGFloat CGPointToPixel(CGFloat point) {
 
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
     if (!self.vmQemuConfig.inputLegacy) {
-        for (UITouch *touch in [event touchesForView:self.mtkView]) {
+        for (UITouch *touch in touches) {
             if (@available(iOS 14, *)) {
                 if (self.prefersPointerLocked && (touch.type == UITouchTypeIndirect || touch.type == UITouchTypeIndirectPointer)) {
                     continue; // skip indirect touches if we are capturing mouse input
@@ -634,7 +634,7 @@ static CGFloat CGPointToPixel(CGFloat point) {
 - (void)touchesMoved:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
     // move cursor in client mode, in server mode we handle in gesturePan
     if (!self.vmQemuConfig.inputLegacy && !self.vmInput.serverModeCursor) {
-        for (UITouch *touch in [event touchesForView:self.mtkView]) {
+        for (UITouch *touch in touches) {
             [_cursor updateMovement:[touch locationInView:self.mtkView]];
             break; // handle single touch
         }
