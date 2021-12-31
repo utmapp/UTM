@@ -33,8 +33,6 @@ jobs:
             platform: ios
           - arch: x86_64
             platform: ios-tci
-          - arch: arm64
-            platform: ios_simulator # FIXME: enable when ANGLE supports it
     steps:
       - name: Checkout
         uses: actions/checkout@v2
