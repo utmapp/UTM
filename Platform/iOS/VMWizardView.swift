@@ -19,10 +19,13 @@ import SwiftUI
 @available(iOS 14, *)
 struct VMWizardView: View {
     @StateObject var wizardState = VMWizardState()
+    @Environment(\.presentationMode) private var presentationMode: Binding<PresentationMode>
     
     var body: some View {
         NavigationView {
-            WizardWrapper(page: .start, wizardState: wizardState)
+            WizardWrapper(page: .start, wizardState: wizardState) {
+                presentationMode.wrappedValue.dismiss()
+            }
         }.navigationViewStyle(StackNavigationViewStyle())
         .alert(item: $wizardState.alertMessage) { msg in
             Alert(title: Text(msg.message))
@@ -35,7 +38,7 @@ fileprivate struct WizardWrapper: View {
     let page: VMWizardPage
     @ObservedObject var wizardState: VMWizardState
     @State private var nextPage: VMWizardPage?
-    @Environment(\.presentationMode) private var presentationMode: Binding<PresentationMode>
+    let onDismiss: () -> Void
     @EnvironmentObject private var data: UTMData
     
     var body: some View {
@@ -62,15 +65,15 @@ fileprivate struct WizardWrapper: View {
             case .summary:
                 VMWizardSummaryView(wizardState: wizardState)
             }
-            NavigationLink(destination: WizardWrapper(page: .start, wizardState: wizardState), tag: .start, selection: $nextPage) {}
-            NavigationLink(destination: WizardWrapper(page: .operatingSystem, wizardState: wizardState), tag: .operatingSystem, selection: $nextPage) {}
-            NavigationLink(destination: WizardWrapper(page: .linuxBoot, wizardState: wizardState), tag: .linuxBoot, selection: $nextPage) {}
-            NavigationLink(destination: WizardWrapper(page: .windowsBoot, wizardState: wizardState), tag: .windowsBoot, selection: $nextPage) {}
-            NavigationLink(destination: WizardWrapper(page: .otherBoot, wizardState: wizardState), tag: .otherBoot, selection: $nextPage) {}
-            NavigationLink(destination: WizardWrapper(page: .hardware, wizardState: wizardState), tag: .hardware, selection: $nextPage) {}
-            NavigationLink(destination: WizardWrapper(page: .drives, wizardState: wizardState), tag: .drives, selection: $nextPage) {}
-            NavigationLink(destination: WizardWrapper(page: .sharing, wizardState: wizardState), tag: .sharing, selection: $nextPage) {}
-            NavigationLink(destination: WizardWrapper(page: .summary, wizardState: wizardState), tag: .summary, selection: $nextPage) {}
+            NavigationLink(destination: WizardWrapper(page: .start, wizardState: wizardState, onDismiss: onDismiss), tag: .start, selection: $nextPage) {}
+            NavigationLink(destination: WizardWrapper(page: .operatingSystem, wizardState: wizardState, onDismiss: onDismiss), tag: .operatingSystem, selection: $nextPage) {}
+            NavigationLink(destination: WizardWrapper(page: .linuxBoot, wizardState: wizardState, onDismiss: onDismiss), tag: .linuxBoot, selection: $nextPage) {}
+            NavigationLink(destination: WizardWrapper(page: .windowsBoot, wizardState: wizardState, onDismiss: onDismiss), tag: .windowsBoot, selection: $nextPage) {}
+            NavigationLink(destination: WizardWrapper(page: .otherBoot, wizardState: wizardState, onDismiss: onDismiss), tag: .otherBoot, selection: $nextPage) {}
+            NavigationLink(destination: WizardWrapper(page: .hardware, wizardState: wizardState, onDismiss: onDismiss), tag: .hardware, selection: $nextPage) {}
+            NavigationLink(destination: WizardWrapper(page: .drives, wizardState: wizardState, onDismiss: onDismiss), tag: .drives, selection: $nextPage) {}
+            NavigationLink(destination: WizardWrapper(page: .sharing, wizardState: wizardState, onDismiss: onDismiss), tag: .sharing, selection: $nextPage) {}
+            NavigationLink(destination: WizardWrapper(page: .summary, wizardState: wizardState, onDismiss: onDismiss), tag: .summary, selection: $nextPage) {}
         }
         .textFieldStyle(RoundedBorderTextFieldStyle())
         .pickerStyle(MenuPickerStyle())
@@ -78,7 +81,7 @@ fileprivate struct WizardWrapper: View {
             ToolbarItem(placement: .navigationBarLeading) {
                 if wizardState.currentPage == .start {
                     Button("Close") {
-                        presentationMode.wrappedValue.dismiss()
+                        onDismiss()
                     }
                 }
             }
@@ -89,7 +92,7 @@ fileprivate struct WizardWrapper: View {
                     }
                 } else if wizardState.currentPage == .summary {
                     Button("Save") {
-                        presentationMode.wrappedValue.dismiss()
+                        onDismiss()
                         data.busyWork {
                             let config = try wizardState.generateConfig()
                             try data.create(config: config) { vm in
