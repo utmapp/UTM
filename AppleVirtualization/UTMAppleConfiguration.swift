@@ -423,8 +423,7 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
     
     func save(to packageURL: URL) throws {
         let fileManager = FileManager.default
-        // validate
-        try apple.validate()
+
         // create package directory
         if !fileManager.fileExists(atPath: packageURL.path) {
             try fileManager.createDirectory(at: packageURL, withIntermediateDirectories: false)
@@ -437,6 +436,10 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
         var existingDataURLs = [URL]()
         existingDataURLs += try saveIcon(to: dataURL)
         existingDataURLs += try saveBootloader(to: dataURL)
+
+        // validate
+        try apple.validate()
+
         existingDataURLs += try saveImportedDrives(to: dataURL)
         // create new drives
         existingDataURLs += try createNewDrives(at: dataURL)
