@@ -159,11 +159,11 @@ static NSString *kAllKeys = @"`1234567890-=qwertyuiop[]\\asdfghjkl;'zxcvbnm,./ \
         return nil;
     }
     
-    if (_keyCommands != nil)
-        return _keyCommands;
+    if (self.mutableKeyCommands != nil)
+        return self.mutableKeyCommands;
     NSArray<NSString *> *specialKeys = @[UIKeyInputEscape, UIKeyInputUpArrow, UIKeyInputDownArrow,
                                          UIKeyInputLeftArrow, UIKeyInputRightArrow];
-    _keyCommands = [NSMutableArray new];
+    self.mutableKeyCommands = [NSMutableArray new];
     for (int i = 0; i < 32; i++) {
         NSInteger modifier = 0;
         if (i & 1) {
@@ -183,18 +183,18 @@ static NSString *kAllKeys = @"`1234567890-=qwertyuiop[]\\asdfghjkl;'zxcvbnm,./ \
         }
         // add all normal keys
         [kAllKeys enumerateSubstringsInRange:NSMakeRange(0, kAllKeys.length) options:NSStringEnumerationByComposedCharacterSequences usingBlock:^(NSString * _Nullable substring, NSRange substringRange, NSRange enclosingRange, BOOL * _Nonnull stop) {
-            [self addKey:substring toCommands:self->_keyCommands withModifiers:modifier];
+            [self addKey:substring toCommands:self.mutableKeyCommands withModifiers:modifier];
         }];
         // add special keys
         for (NSString *key in specialKeys) {
-            [self addKey:key toCommands:_keyCommands withModifiers:modifier];
+            [self addKey:key toCommands:self.mutableKeyCommands withModifiers:modifier];
         }
         // add just modifier keys
         if (modifier) {
-            [self addKey:@"" toCommands:_keyCommands withModifiers:modifier];
+            [self addKey:@"" toCommands:self.mutableKeyCommands withModifiers:modifier];
         }
     }
-    return _keyCommands;
+    return self.mutableKeyCommands;
 }
 
 - (void)addKey:(NSString *)key toCommands:(NSMutableArray<UIKeyCommand *> *)commands withModifiers:(UIKeyModifierFlags)modifiers {

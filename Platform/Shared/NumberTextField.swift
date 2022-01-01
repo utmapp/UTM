@@ -92,6 +92,15 @@ struct NumberTextField: View {
         self.onEditingChanged = onEditingChanged
     }
     
+    init(_ titleKey: LocalizedStringKey, number: Binding<Int>, onEditingChanged: @escaping (Bool) -> Void = { _ in }) {
+        let nsnumber = Binding<NSNumber?> {
+            return NSNumber(value: number.wrappedValue)
+        } set: { newValue in
+            number.wrappedValue = newValue?.intValue ?? 0
+        }
+        self.init(titleKey, number: nsnumber, onEditingChanged: onEditingChanged)
+    }
+    
     var body: some View {
         #if swift(>=5.5)
         if #available(iOS 15, macOS 12, *) {

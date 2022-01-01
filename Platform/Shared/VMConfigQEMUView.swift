@@ -23,7 +23,7 @@ struct VMConfigQEMUView: View {
         let string: String
     }
     
-    @ObservedObject var config: UTMConfiguration
+    @ObservedObject var config: UTMQemuConfiguration
     @State private var showExportLog: Bool = false
     @State private var showExportArgs: Bool = false
     @EnvironmentObject private var data: UTMData
@@ -32,13 +32,18 @@ struct VMConfigQEMUView: View {
         guard let path = config.existingPath else {
             return false
         }
-        let logPath = path.appendingPathComponent(UTMConfiguration.debugLogName())
+        let logPath = path.appendingPathComponent(UTMQemuConfiguration.debugLogName())
         return FileManager.default.fileExists(atPath: logPath.path)
     }
     
     var body: some View {
         VStack {
             Form {
+                Section(header: Text("Hypervisor")) {
+                    Toggle(isOn: $config.useHypervisor, label: {
+                        Text("Use Hypervisor")
+                    }).disabled(!config.isTargetArchitectureMatchHost)
+                }
                 Section(header: Text("Logging")) {
                     Toggle(isOn: $config.debugLogEnabled, label: {
                         Text("Debug Logging")
@@ -124,7 +129,7 @@ struct VMConfigQEMUView: View {
 
 @available(iOS 14, macOS 11, *)
 struct CustomArguments: View {
-    @ObservedObject var config: UTMConfiguration
+    @ObservedObject var config: UTMQemuConfiguration
     
     var body: some View {
         ForEach(0..<config.countArguments, id: \.self) { i in
@@ -189,7 +194,7 @@ struct CustomArguments: View {
 
 @available(iOS 14, macOS 11, *)
 struct NewArgumentTextField: View {
-    @ObservedObject var config: UTMConfiguration
+    @ObservedObject var config: UTMQemuConfiguration
     @State private var newArg: String = ""
     
     var body: some View {
@@ -226,7 +231,7 @@ struct NewArgumentTextField: View {
 
 @available(iOS 14, macOS 11, *)
 struct VMConfigQEMUView_Previews: PreviewProvider {
-    @ObservedObject static private var config = UTMConfiguration()
+    @ObservedObject static private var config = UTMQemuConfiguration()
     
     static var previews: some View {
         VMConfigQEMUView(config: config)

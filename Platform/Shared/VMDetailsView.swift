@@ -18,7 +18,7 @@ import SwiftUI
 
 @available(iOS 14, macOS 11, *)
 struct VMDetailsView: View {
-    let vm: UTMVirtualMachine
+    @ObservedObject var vm: UTMVirtualMachine
     @EnvironmentObject private var data: UTMData
     @Environment(\.presentationMode) private var presentationMode: Binding<PresentationMode>
     #if !os(macOS)
@@ -51,10 +51,10 @@ struct VMDetailsView: View {
         } else {
             ScrollView {
                 Screenshot(vm: vm, large: regularScreenSizeClass)
-                let notes = vm.configuration.notes ?? ""
+                let notes = vm.notes ?? ""
                 if regularScreenSizeClass && !notes.isEmpty {
                     HStack(alignment: .top) {
-                        Details(config: vm.configuration, sessionConfig: vm.viewState, sizeLabel: sizeLabel)
+                        Details(vm: vm, sizeLabel: sizeLabel)
                             .frame(maxWidth: .infinity)
                         Text(notes)
                             .font(.body)
@@ -62,25 +62,53 @@ struct VMDetailsView: View {
                             .fixedSize(horizontal: false, vertical: true)
                             .padding([.leading, .trailing])
                     }.padding([.leading, .trailing])
-                    VMRemovableDrivesView(vm: vm)
+                    #if os(macOS)
+                    if #available(macOS 12, *), let appleVM = vm as? UTMAppleVirtualMachine {
+                        VMAppleRemovableDrivesView(vm: appleVM, config: appleVM.appleConfig)
+                            .padding([.leading, .trailing, .bottom])
+                    } else {
+                        VMRemovableDrivesView(vm: vm as! UTMQemuVirtualMachine)
+                            .padding([.leading, .trailing, .bottom])
+                    }
+                    #else
+                    VMRemovableDrivesView(vm: vm as! UTMQemuVirtualMachine)
                         .padding([.leading, .trailing, .bottom])
+                    #endif
                 } else {
                     VStack {
-                        Details(config: vm.configuration, sessionConfig: vm.viewState, sizeLabel: sizeLabel)
+                        Details(vm: vm, sizeLabel: sizeLabel)
                         if !notes.isEmpty {
                             Text(notes)
                                 .font(.body)
                                 .fixedSize(horizontal: false, vertical: true)
                         }
-                        VMRemovableDrivesView(vm: vm)
+                        #if os(macOS)
+                        if #available(macOS 12, *), let appleVM = vm as? UTMAppleVirtualMachine {
+                            VMAppleRemovableDrivesView(vm: appleVM, config: appleVM.appleConfig)
+                        } else if let qemuVM = vm as? UTMQemuVirtualMachine {
+                            VMRemovableDrivesView(vm: qemuVM)
+                        }
+                        #else
+                        VMRemovableDrivesView(vm: vm as! UTMQemuVirtualMachine)
+                        #endif
                     }.padding([.leading, .trailing, .bottom])
                 }
             }.labelStyle(DetailsLabelStyle())
             .modifier(VMOptionalNavigationTitleModifier(vm: vm))
             .modifier(VMToolbarModifier(vm: vm, bottom: !regularScreenSizeClass))
             .sheet(isPresented: $data.showSettingsModal) {
-                VMSettingsView(vm: vm, config: vm.configuration)
+                #if os(macOS)
+                if #available(macOS 12, *), let appleVM = vm as? UTMAppleVirtualMachine {
+                    VMSettingsView(vm: appleVM, config: appleVM.appleConfig)
+                        .environmentObject(data)
+                } else if let qemuVM = vm as? UTMQemuVirtualMachine {
+                    VMSettingsView(vm: qemuVM, config: qemuVM.qemuConfig)
+                        .environmentObject(data)
+                }
+                #else
+                VMSettingsView(vm: vm as! UTMQemuVirtualMachine, config: vm.config as! UTMQemuConfiguration)
                     .environmentObject(data)
+                #endif
             }
         }
     }
@@ -93,9 +121,9 @@ private struct VMOptionalNavigationTitleModifier: ViewModifier {
     
     func body(content: Content) -> some View {
         #if os(macOS)
-        return content.navigationSubtitle(vm.configuration.name)
+        return content.navigationSubtitle(vm.title)
         #else
-        return content.navigationTitle(vm.configuration.name)
+        return content.navigationTitle(vm.title)
         #endif
     }
 }
@@ -136,8 +164,7 @@ struct Screenshot: View {
 
 @available(iOS 14, macOS 11, *)
 struct Details: View {
-    @ObservedObject var config: UTMConfiguration
-    @ObservedObject var sessionConfig: UTMViewState
+    @ObservedObject var vm: UTMVirtualMachine
     let sizeLabel: String
     @EnvironmentObject private var data: UTMData
     
@@ -146,25 +173,25 @@ struct Details: View {
             HStack {
                 plainLabel("Status", systemImage: "info.circle")
                 Spacer()
-                Text(sessionConfig.active ? "Running" : (sessionConfig.suspended ? "Suspended" : "Not running"))
+                Text(vm.viewState.active ? "Running" : (vm.viewState.suspended ? "Suspended" : "Not running"))
                     .foregroundColor(.secondary)
             }
             HStack {
                 plainLabel("Architecture", systemImage: "cpu")
                 Spacer()
-                Text(config.systemArchitecturePretty)
+                Text(vm.systemArchitecture)
                     .foregroundColor(.secondary)
             }
             HStack {
                 plainLabel("Machine", systemImage: "desktopcomputer")
                 Spacer()
-                Text(config.systemTargetPretty)
+                Text(vm.systemTarget)
                     .foregroundColor(.secondary)
             }
             HStack {
                 plainLabel("Memory", systemImage: "memorychip")
                 Spacer()
-                Text(config.systemMemoryPretty)
+                Text(vm.systemMemory)
                     .foregroundColor(.secondary)
             }
             HStack {
@@ -173,6 +200,17 @@ struct Details: View {
                 Text(sizeLabel)
                     .foregroundColor(.secondary)
             }
+            #if os(macOS)
+            if #available(macOS 12, *), let appleVM = vm as? UTMAppleVirtualMachine {
+                HStack {
+                    plainLabel("Serial", systemImage: "phone.connection")
+                    Spacer()
+                    Text(appleVM.serialPort?.name ?? "Inactive")
+                        .foregroundColor(.secondary)
+                        .textSelection(.enabled)
+                }
+            }
+            #endif
         }.lineLimit(1)
         .truncationMode(.tail)
     }
@@ -206,7 +244,7 @@ struct DetailsLabelStyle: LabelStyle {
 
 @available(iOS 14, macOS 11, *)
 struct VMDetailsView_Previews: PreviewProvider {
-    @State static private var config = UTMConfiguration()
+    @State static private var config = UTMQemuConfiguration()
     
     static var previews: some View {
         VMDetailsView(vm: UTMVirtualMachine(configuration: config, withDestinationURL: URL(fileURLWithPath: "")))

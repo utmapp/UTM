@@ -64,8 +64,8 @@ typedef struct Visitor Visitor;
 #define trace_visit_type_any(...)
 #define trace_visit_type_null(...)
 #define trace_visit_type_enum(...)
-#define trace_visit_deprecated_accept(...)
-#define trace_visit_deprecated(...)
+#define trace_visit_policy_reject(...)
+#define trace_visit_policy_skip(...)
 
 void qmp_rpc_call(CFDictionaryRef args, CFDictionaryRef *ret, Error **err, void *ctx);
 

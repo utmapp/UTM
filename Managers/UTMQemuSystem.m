@@ -18,15 +18,15 @@
 #import <sys/sysctl.h>
 #import <TargetConditionals.h>
 #import "UTMQemuSystem.h"
-#import "UTMConfiguration.h"
-#import "UTMConfiguration+Constants.h"
-#import "UTMConfiguration+Display.h"
-#import "UTMConfiguration+Drives.h"
-#import "UTMConfiguration+Miscellaneous.h"
-#import "UTMConfiguration+Networking.h"
-#import "UTMConfiguration+Sharing.h"
-#import "UTMConfiguration+System.h"
-#import "UTMConfigurationPortForward.h"
+#import "UTMQemuConfiguration.h"
+#import "UTMQemuConfiguration+Constants.h"
+#import "UTMQemuConfiguration+Display.h"
+#import "UTMQemuConfiguration+Drives.h"
+#import "UTMQemuConfiguration+Miscellaneous.h"
+#import "UTMQemuConfiguration+Networking.h"
+#import "UTMQemuConfiguration+Sharing.h"
+#import "UTMQemuConfiguration+System.h"
+#import "UTMQemuConfigurationPortForward.h"
 #import "UTMJailbreak.h"
 #import "UTMLogging.h"
 
@@ -41,7 +41,6 @@ extern NSString *const kUTMErrorDomain;
 
 @property (nonatomic, readonly) NSURL *resourceURL;
 @property (nonatomic, readonly) CPUCount emulatedCpuCount;
-@property (nonatomic, readonly) BOOL useHypervisor;
 @property (nonatomic, readonly) BOOL hasCustomBios;
 @property (nonatomic, readonly) BOOL usbSupported;
 @property (nonatomic, readonly) NSURL *efiVariablesURL;
@@ -89,7 +88,7 @@ static size_t sysctl_read(const char *name) {
     return ncpu;
 }
 
-- (instancetype)initWithConfiguration:(UTMConfiguration *)configuration imgPath:(nonnull NSURL *)imgPath {
+- (instancetype)initWithConfiguration:(UTMQemuConfiguration *)configuration imgPath:(nonnull NSURL *)imgPath {
     self = [self init];
     if (self) {
         self.configuration = configuration;
@@ -234,14 +233,21 @@ static size_t sysctl_read(const char *name) {
 }
 
 - (void)argsForCpu {
-    if ([self.configuration.systemCPU isEqualToString:@"default"] && self.useHypervisor) {
+    NSString *cpu = self.configuration.systemCPU;
+    if ([cpu isEqualToString:@"default"]) {
         // if default and not hypervisor, we don't pass any -cpu argument for x86 and use host for ARM
-#if !defined(__x86_64__)
-        [self pushArgv:@"-cpu"];
-        [self pushArgv:@"host"];
-#endif
-    } else if (self.configuration.systemCPU.length > 0 && ![self.configuration.systemCPU isEqualToString:@"default"]) {
-        NSString *cpu = self.configuration.systemCPU;
+        if (self.configuration.useHypervisor) {
+            [self pushArgv:@"-cpu"];
+            [self pushArgv:@"host"];
+        } else if ([self.configuration.systemArchitecture isEqualToString:@"aarch64"]) {
+            // ARM64 QEMU does not support "-cpu default" so we hard code a sensible default
+            cpu = @"cortex-a72";
+        } else if ([self.configuration.systemArchitecture isEqualToString:@"arm"]) {
+            // ARM64 QEMU does not support "-cpu default" so we hard code a sensible default
+            cpu = @"cortex-a15";
+        }
+    }
+    if (cpu.length > 0 && ![cpu isEqualToString:@"default"]) {
         for (NSString *flag in self.configuration.systemCPUFlags) {
             unichar prefix = [flag characterAtIndex:0];
             if (prefix != '-' && prefix != '+') {
@@ -289,7 +295,7 @@ static size_t sysctl_read(const char *name) {
             if ([path characterAtIndex:0] == '/') {
                 fullPathURL = [NSURL fileURLWithPath:path isDirectory:NO];
             } else {
-                fullPathURL = [[self.imgPath URLByAppendingPathComponent:[UTMConfiguration diskImagesDirectory]] URLByAppendingPathComponent:[self.configuration driveImagePathForIndex:i]];
+                fullPathURL = [[self.imgPath URLByAppendingPathComponent:[UTMQemuConfiguration diskImagesDirectory]] URLByAppendingPathComponent:[self.configuration driveImagePathForIndex:i]];
             }
             [self accessDataWithBookmark:[fullPathURL bookmarkDataWithOptions:0
                                                includingResourceValuesForKeys:nil
@@ -417,7 +423,7 @@ static size_t sysctl_read(const char *name) {
         }
         if (hasPortForwarding) {
             for (NSUInteger i = 0; i < [self.configuration countPortForwards]; i++) {
-                UTMConfigurationPortForward *portForward = [self.configuration portForwardForIndex:i];
+                UTMQemuConfigurationPortForward *portForward = [self.configuration portForwardForIndex:i];
                 [netstr appendFormat:@",hostfwd=%@:%@:%@-%@:%@", portForward.protocol, portForward.hostAddress, portForward.hostPort, portForward.guestAddress, portForward.guestPort];
             }
         }
@@ -526,15 +532,6 @@ static size_t sysctl_read(const char *name) {
     return accel;
 }
 
-- (BOOL)useHypervisor {
-#if TARGET_OS_IPHONE
-    return NO;
-#else
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    return self.configuration.isTargetArchitectureMatchHost && ![defaults boolForKey:@"NoHypervisor"];
-#endif
-}
-
 - (BOOL)useOnlyPcores {
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     BOOL isUnset = ![defaults objectForKey:@"UseOnlyPcores"];
@@ -582,7 +579,7 @@ static size_t sysctl_read(const char *name) {
 }
 
 - (NSURL *)efiVariablesURL {
-    return [[self.imgPath URLByAppendingPathComponent:[UTMConfiguration diskImagesDirectory]] URLByAppendingPathComponent:@"efi_vars.fd"];
+    return [[self.imgPath URLByAppendingPathComponent:[UTMQemuConfiguration diskImagesDirectory]] URLByAppendingPathComponent:@"efi_vars.fd"];
 }
 
 - (NSString *)machineProperties {
@@ -648,7 +645,7 @@ static size_t sysctl_read(const char *name) {
     [self argsForCpu];
     [self pushArgv:@"-machine"];
     [self pushArgv:[NSString stringWithFormat:@"%@,%@", self.configuration.systemTarget, [self machineProperties]]];
-    if (self.useHypervisor) {
+    if (self.configuration.useHypervisor) {
         [self pushArgv:@"-accel"];
         [self pushArgv:@"hvf"];
     }

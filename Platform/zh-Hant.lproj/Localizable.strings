@@ -479,7 +479,7 @@
 /* No comment provided by engineer. */
 "License" = "授權條款";
 
-/* UTMConfiguration */
+/* UTMQemuConfiguration */
 "Linear" = "線性";
 
 /* UTMConfiguration */
@@ -521,7 +521,7 @@
 /* VMConfigInfoView */
 "Name is an invalid filename." = "名稱不是有效檔名。";
 
-/* UTMConfiguration */
+/* UTMQemuConfiguration */
 "Nearest Neighbor" = "近鄰取樣";
 
 /* No comment provided by engineer. */

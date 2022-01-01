@@ -405,6 +405,10 @@ build_angle () {
         TARGET_CPU="x64"
         ;;
     esac
+    # FIXME: remove this hack to get iOS simulator to build on newer Xcode (crbug.com/1223481)
+    if [ "$PLATFORM" == "ios_simulator" ]; then
+        sed -i.old 's/assert(xcode_version_int == 1300)//g' "build/config/ios/BUILD.gn"
+    fi
     gn gen "--args=is_debug=false angle_build_all=false angle_enable_metal=true $IOS_BUILD_ARGS target_os=\"$TARGET_OS\" target_cpu=\"$TARGET_CPU\"" utm_build
     ninja -C utm_build -j $NCPU
     if [ "$TARGET_OS" == "ios" ]; then
@@ -414,8 +418,9 @@ build_angle () {
         cp -a "utm_build/libEGL.dylib" "$PREFIX/lib/libEGL.dylib"
         cp -a "utm_build/libGLESv2.dylib" "$PREFIX/lib/libGLESv2.dylib"
     fi
-    install_name_tool -id "$PREFIX/lib/libEGL.dylib" "$PREFIX/lib/libEGL.dylib"
-    install_name_tool -id "$PREFIX/lib/libGLESv2.dylib" "$PREFIX/lib/libGLESv2.dylib"
+    # -headerpad_max_install_names is broken and these still fail on long paths so we just make sure they run at the end with a short path
+    #install_name_tool -id "$PREFIX/lib/libEGL.dylib" "$PREFIX/lib/libEGL.dylib"
+    #install_name_tool -id "$PREFIX/lib/libGLESv2.dylib" "$PREFIX/lib/libGLESv2.dylib"
     rsync -a "include/" "$PREFIX/include"
     cd "$pwd"
     export PATH=$OLD_PATH
@@ -459,7 +464,7 @@ build_qemu () {
 }
 
 build_spice_client () {
-    meson_build "$QEMU_DIR/subprojects/libucontext" -Ddefault_library=static -Dtests=false -Dfreestanding=true
+    meson_build "$QEMU_DIR/subprojects/libucontext" -Ddefault_library=static -Dfreestanding=true
     build $JSON_GLIB_SRC
     meson_build $GST_SRC -Dtests=disabled -Ddefault_library=both -Dregistry=false
     meson_build $GST_BASE_SRC -Dtests=disabled -Ddefault_library=both
@@ -631,7 +636,7 @@ ios* )
     case $PLATFORM in
     *-tci )
         if [ "$ARCH" == "arm64" ]; then
-            TCI_BUILD_FLAGS="--enable-tcg-tcti --target-list=aarch64-softmmu,arm-softmmu,i386-softmmu,ppc-softmmu,ppc64-softmmu,riscv32-softmmu,riscv64-softmmu,x86_64-softmmu"
+            TCI_BUILD_FLAGS="--enable-tcg-threaded-interpreter --target-list=aarch64-softmmu,arm-softmmu,i386-softmmu,ppc-softmmu,ppc64-softmmu,riscv32-softmmu,riscv64-softmmu,x86_64-softmmu"
         else
             TCI_BUILD_FLAGS="--enable-tcg-interpreter"
         fi
@@ -642,7 +647,7 @@ ios* )
         PLATFORM_FAMILY_NAME="$PLATFORM_FAMILY_PREFIX"
         ;;
     esac
-    QEMU_PLATFORM_BUILD_FLAGS="--disable-debug-info --enable-shared-lib --disable-hvf --disable-cocoa --disable-slirp-smbd --with-coroutine=libucontext $TCI_BUILD_FLAGS"
+    QEMU_PLATFORM_BUILD_FLAGS="--disable-debug-info --enable-shared-lib --disable-hvf --disable-cocoa --disable-coreaudio --disable-slirp-smbd --enable-ucontext --with-coroutine=libucontext $TCI_BUILD_FLAGS"
     ;;
 macos )
     if [ -z "$SDKMINVER" ]; then

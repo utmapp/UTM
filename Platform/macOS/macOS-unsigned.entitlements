@@ -16,5 +16,7 @@
 	<true/>
 	<key>com.apple.security.network.client</key>
 	<true/>
+	<key>com.apple.security.virtualization</key>
+	<true/>
 </dict>
 </plist>

@@ -18,16 +18,14 @@
 #import "CSInput.h"
 #import "UTMVirtualMachineDelegate.h"
 
-@class UTMVirtualMachine;
+@class UTMQemuConfiguration;
+@class UTMQemuVirtualMachine;
 @class VMKeyboardButton;
 @class VMRemovableDrivesViewController;
+@class VMToolbarActions;
 @class VMUSBDevicesViewController;
 
-NS_ASSUME_NONNULL_BEGIN
-
-@interface VMDisplayViewController : UIViewController<UTMVirtualMachineDelegate> {
-    NSMutableArray<UIKeyCommand *> *_keyCommands;
-}
+@interface VMDisplayViewController : UIViewController<UTMVirtualMachineDelegate>
 
 @property (weak, nonatomic) IBOutlet UIView *displayView;
 @property (strong, nonatomic) IBOutlet UIInputView *inputAccessoryView;
@@ -44,29 +42,21 @@ NS_ASSUME_NONNULL_BEGIN
 @property (weak, nonatomic) IBOutlet UIButton *resumeBigButton;
 @property (strong, nonatomic) IBOutletCollection(VMKeyboardButton) NSArray *customKeyModifierButtons;
 
+@property (nonatomic, readonly) UTMQemuConfiguration *vmQemuConfig;
+@property (nonatomic) VMToolbarActions *toolbar;
+@property (nonatomic) UIViewController *floatingToolbarViewController;
 @property (nonatomic) VMRemovableDrivesViewController *removableDrivesViewController;
 @property (nonatomic) VMUSBDevicesViewController *usbDevicesViewController;
 
-@property (nonatomic, readonly) BOOL largeScreen;
+@property (nonatomic) BOOL hasAutoSave;
 @property (nonatomic, readwrite) BOOL prefersStatusBarHidden;
-@property (nonatomic, readonly) BOOL autosaveBackground;
-@property (nonatomic, readonly) BOOL autosaveLowMemory;
-@property (nonatomic, readonly) BOOL runInBackground;
-@property (nonatomic, strong) UTMVirtualMachine *vm;
+@property (nonatomic, strong) UTMQemuVirtualMachine *vm;
+
+@property (nonatomic, strong) NSMutableArray<UIKeyCommand *> *mutableKeyCommands;
+
+@property (nonatomic, strong) NSMutableArray<NSObject *> *notifications;
 
 - (BOOL)inputViewIsFirstResponder;
 - (void)updateKeyboardAccessoryFrame;
-- (void)terminateApplication;
-
-- (IBAction)changeDisplayZoom:(UIButton *)sender;
-- (IBAction)pauseResumePressed:(UIButton *)sender;
-- (IBAction)powerPressed:(UIButton *)sender;
-- (IBAction)restartPressed:(UIButton *)sender;
-- (IBAction)showKeyboardButton:(UIButton *)sender;
-- (IBAction)hideToolbarButton:(UIButton *)sender;
-- (IBAction)drivesPressed:(UIButton *)sender;
-- (IBAction)usbPressed:(UIButton *)sender;
 
 @end
-
-NS_ASSUME_NONNULL_END

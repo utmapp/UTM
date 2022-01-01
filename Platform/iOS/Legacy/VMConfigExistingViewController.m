@@ -16,8 +16,8 @@
 
 #import "VMConfigExistingViewController.h"
 #import "UIViewController+Extensions.h"
-#import "UTMConfiguration.h"
-#import "UTMConfiguration+Constants.h"
+#import "UTMQemuConfiguration.h"
+#import "UTMQemuConfiguration+Constants.h"
 #import "VMConfigTextField.h"
 
 @interface VMConfigExistingViewController ()
@@ -68,13 +68,13 @@
 - (void)exportLog {
     NSURL *path;
     if (self.configuration.existingPath) {
-        path = [self.configuration.existingPath URLByAppendingPathComponent:[UTMConfiguration debugLogName]];
+        path = [self.configuration.existingPath URLByAppendingPathComponent:[UTMQemuConfiguration debugLogName]];
     }
     if (![[NSFileManager defaultManager] fileExistsAtPath:path.path]) {
         [self showAlert:NSLocalizedString(@"No debug log found!", @"VMConfigExistingViewController") actions:nil completion:nil];
     } else {
         NSError *err;
-        NSURL *temp = [NSURL fileURLWithPathComponents:@[NSTemporaryDirectory(), [UTMConfiguration debugLogName]]];
+        NSURL *temp = [NSURL fileURLWithPathComponents:@[NSTemporaryDirectory(), [UTMQemuConfiguration debugLogName]]];
         [[NSFileManager defaultManager] removeItemAtURL:temp error:nil];
         if ([[NSFileManager defaultManager] copyItemAtURL:path toURL:temp error:&err]) {
             UIActivityViewController *activityViewController = [[UIActivityViewController alloc] initWithActivityItems:@[temp] applicationActivities:nil];

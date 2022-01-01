@@ -18,7 +18,7 @@ import SwiftUI
 
 @available(iOS 14, macOS 11, *)
 struct VMConfigNetworkView: View {
-    @ObservedObject var config: UTMConfiguration
+    @ObservedObject var config: UTMQemuConfiguration
     @State private var showAdvanced: Bool = false
     
     var body: some View {
@@ -39,15 +39,15 @@ struct VMConfigNetworkView: View {
                     })
                     #endif
                     if config.networkEnabled {
-                        VMConfigStringPicker(selection: $config.networkCard, label: Text("Emulated Network Card"), rawValues: UTMConfiguration.supportedNetworkCards(forArchitecture: config.systemArchitecture), displayValues: UTMConfiguration.supportedNetworkCards(forArchitecturePretty: config.systemArchitecture))
+                        VMConfigStringPicker(selection: $config.networkCard, label: Text("Emulated Network Card"), rawValues: UTMQemuConfiguration.supportedNetworkCards(forArchitecture: config.systemArchitecture), displayValues: UTMQemuConfiguration.supportedNetworkCards(forArchitecturePretty: config.systemArchitecture))
                     }
-                }.disabled(UTMConfiguration.supportedNetworkCards(forArchitecture: config.systemArchitecture)?.isEmpty ?? true)
+                }.disabled(UTMQemuConfiguration.supportedNetworkCards(forArchitecture: config.systemArchitecture)?.isEmpty ?? true)
                 
                 if config.networkEnabled {
                     HStack {
                         DefaultTextField("MAC Address", text: $config.networkCardMac.bound, prompt: "00:00:00:00:00:00")
                         Button("Random") {
-                            config.networkCardMac = UTMConfiguration.generateMacAddress()
+                            config.networkCardMac = UTMQemuConfiguration.generateMacAddress()
                         }
                     }
                     
@@ -75,10 +75,10 @@ struct VMConfigNetworkView: View {
 
 @available(iOS 14, macOS 11, *)
 struct NetworkModeSection: View {
-    @ObservedObject var config: UTMConfiguration
+    @ObservedObject var config: UTMQemuConfiguration
     
     var body: some View {
-        VMConfigStringPicker(selection: $config.networkMode, label: Text("Network Mode"), rawValues: UTMConfiguration.supportedNetworkModes(), displayValues: UTMConfiguration.supportedNetworkModesPretty())
+        VMConfigStringPicker(selection: $config.networkMode, label: Text("Network Mode"), rawValues: UTMQemuConfiguration.supportedNetworkModes(), displayValues: UTMQemuConfiguration.supportedNetworkModesPretty())
         if config.networkMode == "bridged" {
             HStack {
                 Text("Bridged Interface")
@@ -92,7 +92,7 @@ struct NetworkModeSection: View {
 
 @available(iOS 14, macOS 11, *)
 struct IPConfigurationSection: View {
-    @ObservedObject var config: UTMConfiguration
+    @ObservedObject var config: UTMQemuConfiguration
     
     var body: some View {
         Section(header: Text("IP Configuration"), footer: EmptyView().padding(.bottom)) {
@@ -160,7 +160,7 @@ struct DefaultTextField: View {
 
 @available(iOS 14, macOS 11, *)
 struct VMConfigNetworkingView_Previews: PreviewProvider {
-    @State static private var config = UTMConfiguration()
+    @State static private var config = UTMQemuConfiguration()
     
     static var previews: some View {
         VMConfigNetworkView(config: config)

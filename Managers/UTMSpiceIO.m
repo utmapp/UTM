@@ -15,9 +15,9 @@
 //
 
 #import "UTMSpiceIO.h"
-#import "UTMConfiguration.h"
-#import "UTMConfiguration+Miscellaneous.h"
-#import "UTMConfiguration+Sharing.h"
+#import "UTMQemuConfiguration.h"
+#import "UTMQemuConfiguration+Miscellaneous.h"
+#import "UTMQemuConfiguration+Sharing.h"
 #import "UTMLogging.h"
 #import "UTMViewState.h"
 #import "CocoaSpice.h"
@@ -44,7 +44,7 @@ extern NSString *const kUTMErrorDomain;
 
 @implementation UTMSpiceIO
 
-- (instancetype)initWithConfiguration:(UTMConfiguration *)configuration {
+- (instancetype)initWithConfiguration:(UTMQemuConfiguration *)configuration {
     if (self = [super init]) {
         _configuration = configuration;
     }

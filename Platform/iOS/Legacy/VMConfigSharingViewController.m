@@ -17,8 +17,8 @@
 #import <MobileCoreServices/MobileCoreServices.h>
 #import "UIViewController+Extensions.h"
 #import "VMConfigSharingViewController.h"
-#import "UTMConfiguration.h"
-#import "UTMConfiguration+Sharing.h"
+#import "UTMQemuConfiguration.h"
+#import "UTMQemuConfiguration+Sharing.h"
 #import "UTMLogging.h"
 #import "VMConfigSwitch.h"
 #import "VMConfigDirectoryPickerViewController.h"

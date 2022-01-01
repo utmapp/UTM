@@ -10,7 +10,6 @@
 # See the COPYING file in the top-level directory.
 
 import copy
-import sys
 from typing import List, Optional, TypeVar
 
 
@@ -32,10 +31,9 @@ class QAPISchemaPragma:
 class QAPISourceInfo:
     T = TypeVar('T', bound='QAPISourceInfo')
 
-    def __init__(self, fname: str, line: int,
-                 parent: Optional['QAPISourceInfo']):
+    def __init__(self, fname: str, parent: Optional['QAPISourceInfo']):
         self.fname = fname
-        self.line = line
+        self.line = 1
         self.parent = parent
         self.pragma: QAPISchemaPragma = (
             parent.pragma if parent else QAPISchemaPragma()
@@ -53,12 +51,7 @@ class QAPISourceInfo:
         return info
 
     def loc(self) -> str:
-        if self.fname is None:
-            return sys.argv[0]
-        ret = self.fname
-        if self.line is not None:
-            ret += ':%d' % self.line
-        return ret
+        return f"{self.fname}:{self.line}"
 
     def in_defn(self) -> str:
         if self.defn_name:

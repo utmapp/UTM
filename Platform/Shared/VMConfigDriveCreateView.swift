@@ -33,7 +33,7 @@ struct VMConfigDriveCreateView: View {
             }).onChange(of: driveImage.removable) { removable in
                 driveImage.reset(forSystemTarget: target, architecture: architecture, removable: removable)
             }
-            VMConfigStringPicker(selection: $driveImage.interface, label: Text("Interface"), rawValues: UTMConfiguration.supportedDriveInterfaces(), displayValues: UTMConfiguration.supportedDriveInterfacesPretty())
+            VMConfigStringPicker(selection: $driveImage.interface, label: Text("Interface"), rawValues: UTMQemuConfiguration.supportedDriveInterfaces(), displayValues: UTMQemuConfiguration.supportedDriveInterfacesPretty())
             if !driveImage.removable {
                 HStack {
                     Text("Size")

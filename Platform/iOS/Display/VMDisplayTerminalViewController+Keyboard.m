@@ -14,12 +14,13 @@
 // limitations under the License.
 //
 
-#import "UTMVirtualMachine+Terminal.h"
+#import "UTMQemuVirtualMachine+Terminal.h"
 #import "UTMLogging.h"
 #import "VMDisplayTerminalViewController+Keyboard.h"
 #import "VMKeyboardButton.h"
 #import "VMKeyboardView.h"
 #import "WKWebView+Workarounds.h"
+#import "UTM-Swift.h"
 
 @implementation VMDisplayTerminalViewController (Keyboard)
 

@@ -19,7 +19,7 @@ import SwiftUI
 @available(iOS 14, *)
 struct VMSettingsView: View {
     let vm: UTMVirtualMachine?
-    @ObservedObject var config: UTMConfiguration
+    @ObservedObject var config: UTMQemuConfiguration
     
     @EnvironmentObject private var data: UTMData
     @Environment(\.presentationMode) private var presentationMode: Binding<PresentationMode>
@@ -136,7 +136,7 @@ struct RoundRectIconLabelStyle: LabelStyle {
 
 @available(iOS 14, *)
 struct VMSettingsView_Previews: PreviewProvider {
-    @State static private var config = UTMConfiguration()
+    @State static private var config = UTMQemuConfiguration()
     
     static var previews: some View {
         VMSettingsView(vm: nil, config: config)

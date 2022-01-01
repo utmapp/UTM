@@ -15,8 +15,8 @@
 //
 
 #import "VMConfigDrivePickerViewController.h"
-#import "UTMConfiguration.h"
-#import "UTMConfiguration+Constants.h"
+#import "UTMQemuConfiguration.h"
+#import "UTMQemuConfiguration+Constants.h"
 #import "VMConfigDriveCreateViewController.h"
 
 @interface VMConfigDrivePickerViewController ()
@@ -42,9 +42,9 @@
 
 - (void)refreshViewFromConfiguration {
     if (self.configuration.existingPath) {
-        self.imagesPath = [self.configuration.existingPath URLByAppendingPathComponent:[UTMConfiguration diskImagesDirectory] isDirectory:YES];
+        self.imagesPath = [self.configuration.existingPath URLByAppendingPathComponent:[UTMQemuConfiguration diskImagesDirectory] isDirectory:YES];
     } else {
-        self.imagesPath = [[NSFileManager defaultManager].temporaryDirectory URLByAppendingPathComponent:[UTMConfiguration diskImagesDirectory] isDirectory:YES];
+        self.imagesPath = [[NSFileManager defaultManager].temporaryDirectory URLByAppendingPathComponent:[UTMQemuConfiguration diskImagesDirectory] isDirectory:YES];
     }
 }
 

@@ -15,11 +15,11 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "UTMConfigurationDelegate.h"
+#import "UTMQemuConfigurationDelegate.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface VMConfigDrivePickerViewController : UITableViewController<UTMConfigurationDelegate, UIDocumentPickerDelegate>
+@interface VMConfigDrivePickerViewController : UITableViewController<UTMQemuConfigurationDelegate, UIDocumentPickerDelegate>
 
 @property (nonatomic, strong) NSURL *imagesPath;
 @property (weak, nonatomic) IBOutlet UIBarButtonItem *addButtonItem;

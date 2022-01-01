@@ -12,7 +12,14 @@
 # See the COPYING file in the top-level directory.
 
 import re
-from typing import Optional, Sequence
+from typing import (
+    Any,
+    Dict,
+    Match,
+    Optional,
+    Sequence,
+    Union,
+)
 
 
 #: Magic string that gets removed along with all space to its right.
@@ -125,9 +132,6 @@ class Indentation:
     def __init__(self, initial: int = 0) -> None:
         self._level = initial
 
-    def __int__(self) -> int:
-        return self._level
-
     def __repr__(self) -> str:
         return "{}({:d})".format(type(self).__name__, self._level)
 
@@ -135,19 +139,13 @@ class Indentation:
         """Return the current indentation as a string of spaces."""
         return ' ' * self._level
 
-    def __bool__(self) -> bool:
-        """True when there is a non-zero indentation."""
-        return bool(self._level)
-
     def increase(self, amount: int = 4) -> None:
         """Increase the indentation level by ``amount``, default 4."""
         self._level += amount
 
     def decrease(self, amount: int = 4) -> None:
         """Decrease the indentation level by ``amount``, default 4."""
-        if self._level < amount:
-            raise ArithmeticError(
-                f"Can't remove {amount:d} spaces from {self!r}")
+        assert amount <= self._level
         self._level -= amount
 
 
@@ -162,8 +160,9 @@ def cgen(code: str, **kwds: object) -> str:
     Obey `indent`, and strip `EATSPACE`.
     """
     raw = code % kwds
-    if indent:
-        raw = re.sub(r'^(?!(#|$))', str(indent), raw, flags=re.MULTILINE)
+    pfx = str(indent)
+    if pfx:
+        raw = re.sub(r'^(?!(#|$))', pfx, raw, flags=re.MULTILINE)
     return re.sub(re.escape(EATSPACE) + r' *', '', raw)
 
 
@@ -194,19 +193,59 @@ def guardend(name: str) -> str:
                  name=c_fname(name).upper())
 
 
-def gen_if(ifcond: Sequence[str]) -> str:
-    ret = ''
-    for ifc in ifcond:
-        ret += mcgen('''
+def gen_ifcond(ifcond: Optional[Union[str, Dict[str, Any]]],
+               cond_fmt: str, not_fmt: str,
+               all_operator: str, any_operator: str) -> str:
+
+    def do_gen(ifcond: Union[str, Dict[str, Any]],
+               need_parens: bool) -> str:
+        if isinstance(ifcond, str):
+            return cond_fmt % ifcond
+        assert isinstance(ifcond, dict) and len(ifcond) == 1
+        if 'not' in ifcond:
+            return not_fmt % do_gen(ifcond['not'], True)
+        if 'all' in ifcond:
+            gen = gen_infix(all_operator, ifcond['all'])
+        else:
+            gen = gen_infix(any_operator, ifcond['any'])
+        if need_parens:
+            gen = '(' + gen + ')'
+        return gen
+
+    def gen_infix(operator: str, operands: Sequence[Any]) -> str:
+        return operator.join([do_gen(o, True) for o in operands])
+
+    if not ifcond:
+        return ''
+    return do_gen(ifcond, False)
+
+
+def cgen_ifcond(ifcond: Optional[Union[str, Dict[str, Any]]]) -> str:
+    return gen_ifcond(ifcond, 'defined(%s)', '!%s', ' && ', ' || ')
+
+
+def docgen_ifcond(ifcond: Optional[Union[str, Dict[str, Any]]]) -> str:
+    # TODO Doc generated for conditions needs polish
+    return gen_ifcond(ifcond, '%s', 'not %s', ' and ', ' or ')
+
+
+def gen_if(cond: str) -> str:
+    if not cond:
+        return ''
+    return mcgen('''
 #if %(cond)s
-''', cond=ifc)
-    return ret
+''', cond=cond)
 
 
-def gen_endif(ifcond: Sequence[str]) -> str:
-    ret = ''
-    for ifc in reversed(ifcond):
-        ret += mcgen('''
+def gen_endif(cond: str) -> str:
+    if not cond:
+        return ''
+    return mcgen('''
 #endif /* %(cond)s */
-''', cond=ifc)
-    return ret
+''', cond=cond)
+
+
+def must_match(pattern: str, string: str) -> Match[str]:
+    match = re.match(pattern, string)
+    assert match is not None
+    return match
