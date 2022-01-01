@@ -46,6 +46,10 @@ struct VMWizardStartView: View {
                         .font(.caption)
                 }
             }.disabled(!isVirtualizationSupported)
+            if !isVirtualizationSupported {
+                Text("Virtualization is not supported on your system.")
+                    .font(.footnote)
+            }
             Button {
                 wizardState.useVirtualization = false
                 wizardState.next()
