@@ -237,8 +237,10 @@ static size_t sysctl_read(const char *name) {
     if ([cpu isEqualToString:@"default"]) {
         // if default and not hypervisor, we don't pass any -cpu argument for x86 and use host for ARM
         if (self.configuration.useHypervisor) {
+#if !defined(__x86_64__)
             [self pushArgv:@"-cpu"];
             [self pushArgv:@"host"];
+#endif
         } else if ([self.configuration.systemArchitecture isEqualToString:@"aarch64"]) {
             // ARM64 QEMU does not support "-cpu default" so we hard code a sensible default
             cpu = @"cortex-a72";
