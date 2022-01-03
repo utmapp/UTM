@@ -8,11 +8,11 @@ This is the main entry point for generating C code from the QAPI schema.
 """
 
 import argparse
-import re
 import sys
 from typing import Optional
 
 from .commands import gen_commands
+from .common import must_match
 from .error import QAPIError
 from .events import gen_events
 #from .introspect import gen_introspect
@@ -22,9 +22,7 @@ from .visit import gen_visit
 
 
 def invalid_prefix_char(prefix: str) -> Optional[str]:
-    match = re.match(r'([A-Za-z_.-][A-Za-z0-9_.-]*)?', prefix)
-    # match cannot be None, but mypy cannot infer that.
-    assert match is not None
+    match = must_match(r'([A-Za-z_.-][A-Za-z0-9_.-]*)?', prefix)
     if match.end() != len(prefix):
         return prefix[match.end()]
     return None

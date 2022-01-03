@@ -16,7 +16,7 @@
 
 import Carbon.HIToolbox
 
-class VMDisplayMetalWindowController: VMDisplayWindowController {
+class VMDisplayMetalWindowController: VMDisplayQemuWindowController {
     var metalView: VMMetalView!
     var renderer: UTMRenderer?
     
@@ -51,7 +51,6 @@ class VMDisplayMetalWindowController: VMDisplayWindowController {
     // MARK: - Init
     
     override func windowDidLoad() {
-        super.windowDidLoad()
         metalView = VMMetalView(frame: displayView.bounds)
         metalView.autoresizingMask = [.width, .height]
         metalView.device = MTLCreateSystemDefaultDevice()
@@ -61,7 +60,6 @@ class VMDisplayMetalWindowController: VMDisplayWindowController {
             return
         }
         displayView.addSubview(metalView)
-        window!.recalculateKeyViewLoop()
         renderer = UTMRenderer.init(metalKitView: metalView)
         guard let renderer = self.renderer else {
             showErrorAlert(NSLocalizedString("Internal error.", comment: "VMDisplayMetalWindowController"))
@@ -69,7 +67,7 @@ class VMDisplayMetalWindowController: VMDisplayWindowController {
             return
         }
         renderer.mtkView(metalView, drawableSizeWillChange: metalView.drawableSize)
-        renderer.changeUpscaler(vmConfiguration?.displayUpscalerValue ?? .linear, downscaler: vmConfiguration?.displayDownscalerValue ?? .linear)
+        renderer.changeUpscaler(vmQemuConfig?.displayUpscalerValue ?? .linear, downscaler: vmQemuConfig?.displayDownscalerValue ?? .linear)
         metalView.delegate = renderer
         metalView.inputDelegate = self
         
@@ -80,17 +78,7 @@ class VMDisplayMetalWindowController: VMDisplayWindowController {
             self.displaySizeDidChange(size: self.displaySize)
         })
         
-        if vm.state == .vmStopped || vm.state == .vmSuspended {
-            enterSuspended(isBusy: false)
-            DispatchQueue.global(qos: .userInitiated).async {
-                if self.vm.startVM() {
-                    self.vm.ioDelegate = self
-                }
-            }
-        } else {
-            enterLive()
-            vm.ioDelegate = self
-        }
+        super.windowDidLoad()
     }
     
     override func enterLive() {
@@ -100,7 +88,7 @@ class VMDisplayMetalWindowController: VMDisplayWindowController {
             guard let size = change.newValue else { return }
             self.displaySizeDidChange(size: size)
         }
-        if vmConfiguration!.shareClipboardEnabled {
+        if vmQemuConfig!.shareClipboardEnabled {
             UTMPasteboard.general.requestPollingMode(forHashable: self) // start clipboard polling
         }
         // monitor Cmd+Q and Cmd+W and capture them if needed
@@ -121,7 +109,7 @@ class VMDisplayMetalWindowController: VMDisplayWindowController {
             screenshotView.image = vm.screenshot?.image
             screenshotView.isHidden = false
         }
-        if vmConfiguration!.shareClipboardEnabled {
+        if vmQemuConfig!.shareClipboardEnabled {
             UTMPasteboard.general.releasePollingMode(forHashable: self) // stop clipboard polling
         }
         if vm.state == .vmStopped {
@@ -146,7 +134,7 @@ class VMDisplayMetalWindowController: VMDisplayWindowController {
 extension VMDisplayMetalWindowController: UTMSpiceIODelegate {
     func spiceDidChange(_ input: CSInput) {
         vmInput = input
-        vm.requestInputTablet(!(metalView?.isMouseCaptured ?? false))
+        qemuVM.requestInputTablet(!(metalView?.isMouseCaptured ?? false))
     }
     
     func spiceDidCreateDisplay(_ display: CSDisplayMetal) {
@@ -320,7 +308,7 @@ extension VMDisplayMetalWindowController: VMMetalViewInputDelegate {
     
     func captureMouse() {
         let action = { () -> Void in
-            self.vm.requestInputTablet(false)
+            self.qemuVM.requestInputTablet(false)
             self.metalView?.captureMouse()
             self.window?.subtitle = NSLocalizedString("Press \(self.shouldUseCmdOptForCapture ? "⌘+⌥" : "⌃+⌥") to release cursor", comment: "VMDisplayMetalWindowController")
             self.window?.makeFirstResponder(self.metalView)
@@ -342,7 +330,7 @@ extension VMDisplayMetalWindowController: VMMetalViewInputDelegate {
     }
     
     func releaseMouse() {
-        vm.requestInputTablet(true)
+        qemuVM.requestInputTablet(true)
         metalView?.releaseMouse()
         self.window?.subtitle = ""
     }
@@ -385,7 +373,7 @@ extension VMDisplayMetalWindowController: VMMetalViewInputDelegate {
     
     func mouseScroll(dy: CGFloat, button: CSInputButton) {
         var scrollDy = dy
-        if vmConfiguration?.inputScrollInvert ?? false {
+        if vmQemuConfig?.inputScrollInvert ?? false {
             scrollDy = -scrollDy
         }
         vmInput?.sendMouseScroll(.smooth, button: button, dy: dy)

@@ -16,13 +16,14 @@
 
 #import "VMDisplayTerminalViewController.h"
 #import "VMDisplayTerminalViewController+Keyboard.h"
-#import "UTMConfiguration.h"
-#import "UTMConfiguration+Display.h"
+#import "UTMQemuConfiguration.h"
+#import "UTMQemuConfiguration+Display.h"
 #import "UTMLogging.h"
-#import "UTMVirtualMachine.h"
-#import "UTMVirtualMachine+Terminal.h"
+#import "UTMQemuVirtualMachine.h"
+#import "UTMQemuVirtualMachine+Terminal.h"
 #import "UIViewController+Extensions.h"
 #import "WKWebView+Workarounds.h"
+#import "UTM-Swift.h"
 
 NSString *const kVMDefaultResizeCmd = @"stty cols $COLS rows $ROWS\\n";
 
@@ -39,6 +40,14 @@ NSString* const kVMSendTerminalSizeHandler = @"UTMSendTerminalSize";
     // gestures
     UISwipeGestureRecognizer *_swipeUp;
     UISwipeGestureRecognizer *_swipeDown;
+}
+
+- (void)setupSubviews {
+    self.webView = [[WKWebView alloc] initWithFrame:CGRectZero];
+    self.webView.opaque = NO;
+    [self.view insertSubview:self.webView atIndex:0];
+    [self.webView bindFrameToSuperviewBounds];
+    [self createToolbarIn:self.webView];
 }
 
 - (void)viewDidLoad {
@@ -85,10 +94,10 @@ NSString* const kVMSendTerminalSizeHandler = @"UTMSendTerminalSize";
 }
 
 - (void)updateSettings {
-    [_webView evaluateJavaScript:[NSString stringWithFormat:@"changeFont('%@', %ld);", self.vmConfiguration.consoleFont, self.vmConfiguration.consoleFontSize.integerValue] completionHandler:^(id _Nullable _, NSError * _Nullable error) {
+    [_webView evaluateJavaScript:[NSString stringWithFormat:@"changeFont('%@', %ld);", self.vmQemuConfig.consoleFont, self.vmQemuConfig.consoleFontSize.integerValue] completionHandler:^(id _Nullable _, NSError * _Nullable error) {
         UTMLog(@"changeFont error: %@", error);
     }];
-    [_webView evaluateJavaScript:[NSString stringWithFormat:@"setCursorBlink(%@);", self.vmConfiguration.consoleCursorBlink ? @"true" : @"false"] completionHandler:^(id _Nullable _, NSError * _Nullable error) {
+    [_webView evaluateJavaScript:[NSString stringWithFormat:@"setCursorBlink(%@);", self.vmQemuConfig.consoleCursorBlink ? @"true" : @"false"] completionHandler:^(id _Nullable _, NSError * _Nullable error) {
         UTMLog(@"setCursorBlink error: %@", error);
     }];
 }
@@ -122,7 +131,7 @@ NSString* const kVMSendTerminalSizeHandler = @"UTMSendTerminalSize";
 #pragma mark - Resize console
 
 - (void)changeDisplayZoom:(UIButton *)sender {
-    NSString *cmd = self.vmConfiguration.consoleResizeCommand;
+    NSString *cmd = self.vmQemuConfig.consoleResizeCommand;
     if (cmd.length == 0) {
         cmd = kVMDefaultResizeCmd;
     }
@@ -189,27 +198,16 @@ NSString* const kVMSendTerminalSizeHandler = @"UTMSendTerminalSize";
     });
 }
 
-#pragma mark - UTMVirtualMachineDelegate
+#pragma mark - State transition
 
-- (void)virtualMachine:(UTMVirtualMachine *)vm transitionToState:(UTMVMState)state {
-    [super virtualMachine:vm transitionToState:state];
-    
-    switch (state) {
-        case kVMPausing:
-        case kVMStopping:
-        case kVMStarting:
-        case kVMResuming: {
-            self.webView.userInteractionEnabled = NO;
-            break;
-        }
-        case kVMStarted: {
-            self.webView.userInteractionEnabled = YES;
-            break;
-        }
-        default: {
-            break;
-        }
-    }
+- (void)enterSuspendedWithIsBusy:(BOOL)busy {
+    [super enterSuspendedWithIsBusy:busy];
+    self.webView.userInteractionEnabled = NO;
+}
+
+- (void)enterLive {
+    [super enterLive];
+    self.webView.userInteractionEnabled = YES;
 }
 
 @end

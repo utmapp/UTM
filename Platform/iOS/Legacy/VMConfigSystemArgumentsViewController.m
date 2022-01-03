@@ -16,7 +16,7 @@
 
 #import "VMConfigSystemArgumentsViewController.h"
 #import "VMConfigDriveDetailViewController.h"
-#import "UTMConfiguration+System.h"
+#import "UTMQemuConfiguration+System.h"
 
 @interface VMConfigSystemArgumentsViewController ()
 

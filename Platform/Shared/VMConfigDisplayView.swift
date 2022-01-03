@@ -18,7 +18,7 @@ import SwiftUI
 
 @available(iOS 14, macOS 11, *)
 struct VMConfigDisplayView: View {
-    @ObservedObject var config: UTMConfiguration
+    @ObservedObject var config: UTMQemuConfiguration
     
     #if os(macOS)
     let displayTypePickerStyle = RadioGroupPickerStyle()
@@ -35,7 +35,7 @@ struct VMConfigDisplayView: View {
                     Text("Full Graphics").tag(false)
                     Text("Console Only").tag(true)
                 }.pickerStyle(displayTypePickerStyle)
-                .disabled(UTMConfiguration.supportedDisplayCards(forArchitecture: config.systemArchitecture)?.isEmpty ?? true)
+                .disabled(UTMQemuConfiguration.supportedDisplayCards(forArchitecture: config.systemArchitecture)?.isEmpty ?? true)
                 .onChange(of: config.displayConsoleOnly) { newConsoleOnly in
                     if newConsoleOnly {
                         if config.shareClipboardEnabled {
@@ -47,34 +47,10 @@ struct VMConfigDisplayView: View {
                     }
                 }
                 if config.displayConsoleOnly {
-                    let fontSizeObserver = Binding<Int> {
-                        Int(truncating: config.consoleFontSize ?? 1)
-                    } set: {
-                        config.consoleFontSize = NSNumber(value: $0)
-                    }
-
-                    Section(header: Text("Style"), footer: EmptyView().padding(.bottom)) {
-                        VMConfigStringPicker(selection: $config.consoleTheme, label: Text("Theme"), rawValues: UTMConfiguration.supportedConsoleThemes(), displayValues: UTMConfiguration.supportedConsoleThemes())
-                        VMConfigStringPicker(selection: $config.consoleFont, label: Text("Font"), rawValues: UTMConfiguration.supportedConsoleFonts(), displayValues: UTMConfiguration.supportedConsoleFonts())
-                        HStack {
-                            Stepper(value: fontSizeObserver, in: 1...72) {
-                                    Text("Font Size")
-                            }
-                            NumberTextField("", number: $config.consoleFontSize)
-                                .frame(width: 50)
-                                .multilineTextAlignment(.trailing)
-                        }
-                        Toggle(isOn: $config.consoleCursorBlink, label: {
-                            Text("Blinking Cursor")
-                        })
-                    }
-                    
-                    Section(header: Text("Resize Console Command"), footer: Text("Command to send when resizing the console. Placeholder $COLS is the number of columns and $ROWS is the number of rows.")) {
-                        TextField("stty cols $COLS rows $ROWS\n", text: $config.consoleResizeCommand.bound)
-                    }
+                    VMConfigDisplayConsoleView(config: config)
                 } else {
                     Section(header: Text("Hardware"), footer: EmptyView().padding(.bottom)) {
-                        VMConfigStringPicker(selection: $config.displayCard, label: Text("Emulated Display Card"), rawValues: UTMConfiguration.supportedDisplayCards(forArchitecture: config.systemArchitecture), displayValues: UTMConfiguration.supportedDisplayCards(forArchitecturePretty: config.systemArchitecture))
+                        VMConfigStringPicker(selection: $config.displayCard, label: Text("Emulated Display Card"), rawValues: UTMQemuConfiguration.supportedDisplayCards(forArchitecture: config.systemArchitecture), displayValues: UTMQemuConfiguration.supportedDisplayCards(forArchitecturePretty: config.systemArchitecture))
                     }
                     
                     // https://stackoverflow.com/a/59277022/15603854
@@ -88,8 +64,8 @@ struct VMConfigDisplayView: View {
                     }
                     
                     Section(header: Text("Scaling"), footer: EmptyView().padding(.bottom)) {
-                        VMConfigStringPicker(selection: $config.displayUpscaler, label: Text("Upscaling"), rawValues: UTMConfiguration.supportedScalers(), displayValues: UTMConfiguration.supportedScalersPretty())
-                        VMConfigStringPicker(selection: $config.displayDownscaler, label: Text("Downscaling"), rawValues: UTMConfiguration.supportedScalers(), displayValues: UTMConfiguration.supportedScalersPretty())
+                        VMConfigStringPicker(selection: $config.displayUpscaler, label: Text("Upscaling"), rawValues: UTMQemuConfiguration.supportedScalers(), displayValues: UTMQemuConfiguration.supportedScalersPretty())
+                        VMConfigStringPicker(selection: $config.displayDownscaler, label: Text("Downscaling"), rawValues: UTMQemuConfiguration.supportedScalers(), displayValues: UTMQemuConfiguration.supportedScalersPretty())
                     }
                 }
             }
@@ -100,7 +76,7 @@ struct VMConfigDisplayView: View {
 
 @available(iOS 14, macOS 11, *)
 struct VMConfigDisplayView_Previews: PreviewProvider {
-    @ObservedObject static private var config = UTMConfiguration()
+    @ObservedObject static private var config = UTMQemuConfiguration()
     
     static var previews: some View {
         VMConfigDisplayView(config: config)

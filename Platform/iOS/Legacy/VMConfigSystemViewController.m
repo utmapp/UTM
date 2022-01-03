@@ -19,8 +19,8 @@
 #import <sys/sysctl.h>
 #import "UIViewController+Extensions.h"
 #import "VMConfigSystemViewController.h"
-#import "UTMConfiguration+Constants.h"
-#import "UTMConfiguration+System.h"
+#import "UTMQemuConfiguration+Constants.h"
+#import "UTMQemuConfiguration+System.h"
 #import "UTMJailbreak.h"
 #import "UTMLogging.h"
 #import "VMConfigPickerView.h"
@@ -66,7 +66,7 @@ const float kMemoryWarningThreshold = 0.8;
 
 - (void)pickerCell:(VMConfigTogglePickerCell *)cell showPicker:(BOOL)visible animated:(BOOL)animated {
     if (visible && cell.picker == self.targetPicker) {
-        NSUInteger index = [[UTMConfiguration supportedTargetsForArchitecture:self.configuration.systemArchitecture] indexOfObject:cell.detailTextLabel.text];
+        NSUInteger index = [[UTMQemuConfiguration supportedTargetsForArchitecture:self.configuration.systemArchitecture] indexOfObject:cell.detailTextLabel.text];
         if (index != NSNotFound) {
             [cell.picker selectRow:index inComponent:0 animated:NO];
         }
@@ -77,7 +77,7 @@ const float kMemoryWarningThreshold = 0.8;
 - (NSInteger)pickerView:(nonnull UIPickerView *)pickerView numberOfRowsInComponent:(NSInteger)component {
     NSAssert(component == 0, @"Invalid component");
     if (pickerView == self.targetPicker) {
-        return [UTMConfiguration supportedTargetsForArchitecture:self.configuration.systemArchitecture].count;
+        return [UTMQemuConfiguration supportedTargetsForArchitecture:self.configuration.systemArchitecture].count;
     } else {
         return [super pickerView:pickerView numberOfRowsInComponent:component];
     }
@@ -86,7 +86,7 @@ const float kMemoryWarningThreshold = 0.8;
 - (NSString *)pickerView:(UIPickerView *)pickerView titleForRow:(NSInteger)row forComponent:(NSInteger)component {
     NSAssert(component == 0, @"Invalid component");
     if (pickerView == self.targetPicker) {
-        return [UTMConfiguration supportedTargetsForArchitecturePretty:self.configuration.systemArchitecture][row];
+        return [UTMQemuConfiguration supportedTargetsForArchitecturePretty:self.configuration.systemArchitecture][row];
     } else {
         return [super pickerView:pickerView titleForRow:row forComponent:component];
     }
@@ -99,7 +99,7 @@ const float kMemoryWarningThreshold = 0.8;
         [super pickerView:pickerView didSelectRow:row inComponent:component];
         // refresh system picker with default target
         if (![prev isEqualToString:self.configuration.systemArchitecture]) {
-            NSInteger index = [UTMConfiguration defaultTargetIndexForArchitecture:self.configuration.systemArchitecture];
+            NSInteger index = [UTMQemuConfiguration defaultTargetIndexForArchitecture:self.configuration.systemArchitecture];
             [self.targetPicker reloadAllComponents];
             [self.targetPicker selectRow:index inComponent:0 animated:YES];
             [self pickerView:self.targetPicker didSelectRow:index inComponent:0];
@@ -107,7 +107,7 @@ const float kMemoryWarningThreshold = 0.8;
     } else if (pickerView == self.targetPicker) {
         NSAssert([pickerView isKindOfClass:[VMConfigPickerView class]], @"Invalid picker");
         VMConfigPickerView *vmPicker = (VMConfigPickerView *)pickerView;
-        NSString *selected = [UTMConfiguration supportedTargetsForArchitecture:self.configuration.systemArchitecture][row];
+        NSString *selected = [UTMQemuConfiguration supportedTargetsForArchitecture:self.configuration.systemArchitecture][row];
         [self.configuration setValue:selected forKey:vmPicker.selectedOptionCell.configurationPath];
         vmPicker.selectedOptionCell.detailTextLabel.text = selected;
     } else {

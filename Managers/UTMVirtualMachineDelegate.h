@@ -16,8 +16,8 @@
 
 #import "UTMRenderSource.h"
 
+@protocol UTMConfigurable;
 @class UTMVirtualMachine;
-@class UTMConfiguration;
 @class CSDisplayMetal;
 @class CSInput;
 
@@ -38,11 +38,14 @@ typedef NS_ENUM(NSUInteger, UTMVMState) {
 @protocol UTMVirtualMachineDelegate <NSObject>
 
 @property (nonatomic, nullable, copy) NSString *vmMessage;
-@property (nonatomic, weak) UTMConfiguration *vmConfiguration;
+@property (nonatomic, weak) id<UTMConfigurable> vmConfiguration;
 @property (nonatomic, assign) BOOL toolbarVisible;
 @property (nonatomic, assign) BOOL keyboardVisible;
 
 - (void)virtualMachine:(UTMVirtualMachine *)vm transitionToState:(UTMVMState)state;
+
+@optional
+- (void)virtualMachine:(UTMVirtualMachine *)vm installationProgress:(double)completed;
 
 @end
 

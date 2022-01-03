@@ -60,17 +60,19 @@ NS_ASSUME_NONNULL_BEGIN
     UIImpactFeedbackGenerator *_resizeFeedbackGenerator;
 }
 
-@property (weak, nonatomic) IBOutlet MTKView *mtkView;
-@property (weak, nonatomic) IBOutlet UIImageView *placeholderImageView;
-@property (weak, nonatomic) IBOutlet VMKeyboardView *keyboardView;
+@property (nonatomic) IBOutlet MTKView *mtkView;
+@property (nonatomic) IBOutlet UIImageView *placeholderImageView;
+@property (nonatomic) IBOutlet VMKeyboardView *keyboardView;
 
 @property (weak, nonatomic) CSInput *vmInput;
 @property (weak, nonatomic) CSDisplayMetal *vmDisplay;
 
-@property (nonatomic, assign) BOOL lastDisplayChangeResize;
 @property (nonatomic, readonly) BOOL serverModeCursor;
 
+- (void)setupSubviews;
 - (void)sendExtendedKey:(CSInputKey)type code:(int)code;
+- (void)resetDisplay;
+- (void)resizeDisplayToFit;
 
 @end
 

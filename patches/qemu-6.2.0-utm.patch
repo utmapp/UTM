@@ -1,0 +1,133 @@
+From ed5db9693bc028ea1c98bfd084bff588eb182554 Mon Sep 17 00:00:00 2001
+From: osy <50960678+osy@users.noreply.github.com>
+Date: Mon, 23 Aug 2021 19:57:38 -0700
+Subject: [PATCH] resolv: fix memory leak when using libresolv
+
+---
+ src/subprojects/libslirp/slirp.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/subprojects/libslirp/src/slirp.c b/subprojects/libslirp/src/slirp.c
+index 5d60cb5..05e2bb0 100644
+--- a/subprojects/libslirp/src/slirp.c
++++ b/subprojects/libslirp/src/slirp.c
+@@ -182,7 +182,7 @@ static int get_dns_addr_libresolv(int af, void *pdns_addr, void *cached_addr,
+         }
+     }
+ 
+-    res_nclose(&state);
++    res_ndestroy(&state);
+     if (!found)
+         return -1;
+     return 0;
+-- 
+2.28.0
+
+From cec8d31d7a48c216e83e3505c41d9ac1aa493159 Mon Sep 17 00:00:00 2001
+From: osy <50960678+osy@users.noreply.github.com>
+Date: Sun, 26 Sep 2021 15:36:00 -0700
+Subject: [PATCH] resolv: fix IPv6 resolution on Darwin
+
+res_sockaddr_union() has a field for IPv4 and a field for IPv6. When we
+used `&servers[i].sin.sin_addr`, it does not return the right address
+for IPv6.
+---
+ src/slirp.c | 18 ++++++++++++------
+ 1 file changed, 12 insertions(+), 6 deletions(-)
+
+diff --git a/subprojects/libslirp/src/slirp.c b/subprojects/libslirp/src/slirp.c
+index a669b45..0583e5b 100644
+--- a/subprojects/libslirp/src/slirp.c
++++ b/subprojects/libslirp/src/slirp.c
+@@ -143,6 +143,10 @@ static int get_dns_addr_libresolv(int af, void *pdns_addr, void *cached_addr,
+     union res_sockaddr_union servers[NI_MAXSERV];
+     int count;
+     int found;
++    void *addr;
++
++    // we only support IPv4 and IPv4, we assume it's one or the other
++    assert(af == AF_INET || af == AF_INET6);
+ 
+     if (res_ninit(&state) != 0) {
+         return -1;
+@@ -155,11 +159,16 @@ static int get_dns_addr_libresolv(int af, void *pdns_addr, void *cached_addr,
+         if (af == servers[i].sin.sin_family) {
+             found++;
+         }
++        if (af == AF_INET) {
++            addr = &servers[i].sin.sin_addr;
++        } else { // af == AF_INET6
++            addr = &servers[i].sin6.sin6_addr;
++        }
+ 
+         // we use the first found entry
+         if (found == 1) {
+-            memcpy(pdns_addr, &servers[i].sin.sin_addr, addrlen);
+-            memcpy(cached_addr, &servers[i].sin.sin_addr, addrlen);
++            memcpy(pdns_addr, addr, addrlen);
++            memcpy(cached_addr, addr, addrlen);
+             if (scope_id) {
+                 *scope_id = 0;
+             }
+@@ -171,10 +180,7 @@ static int get_dns_addr_libresolv(int af, void *pdns_addr, void *cached_addr,
+             break;
+         } else if (slirp_debug & DBG_MISC) {
+             char s[INET6_ADDRSTRLEN];
+-            const char *res = inet_ntop(servers[i].sin.sin_family,
+-                                        &servers[i].sin.sin_addr,
+-                                        s,
+-                                        sizeof(s));
++            const char *res = inet_ntop(af, addr, s, sizeof(s));
+             if (!res) {
+                 res = "  (string conversion error)";
+             }
+-- 
+2.28.0
+
+From 0d24c5332f79f11d412c32ce351e32a16a609df2 Mon Sep 17 00:00:00 2001
+From: Alexander Graf <agraf@csgraf.de>
+Date: Thu, 30 Dec 2021 11:41:18 +0100
+Subject: [PATCH] HACK: hvf: arm: Always treat SMC as enabled conduit
+
+The Windows 10 and 11 for ARM boot code implicitly assumes that SMC is a valid
+SMCCC conduit to call for an OEM SMCCC call.
+
+This patch forces HVF to treat SMC as an always active conduit, even when the
+user has configured HVC. That way, the OEM SMCCC call gets handled as an
+unimplemented SMCCC function (return -1) rather than an invalid conduit (inject
+undefined instruction exception) which crashes Windows.
+
+With this patch applied, I can successfully boot Windows for ARM Insider
+Previews.
+
+Signed-off-by: Alexander Graf <agraf@csgraf.de>
+---
+ target/arm/hvf/hvf.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/target/arm/hvf/hvf.c b/target/arm/hvf/hvf.c
+index 0dc96560d3..b940b3d365 100644
+--- a/target/arm/hvf/hvf.c
++++ b/target/arm/hvf/hvf.c
+@@ -61,6 +61,8 @@
+ #define TMR_CTL_IMASK   (1 << 1)
+ #define TMR_CTL_ISTATUS (1 << 2)
+ 
++static const bool windows_workaround_enabled = true;
++
+ static void hvf_wfi(CPUState *cpu);
+ 
+ typedef struct HVFVTimer {
+@@ -1218,7 +1220,8 @@ int hvf_vcpu_exec(CPUState *cpu)
+         break;
+     case EC_AA64_SMC:
+         cpu_synchronize_state(cpu);
+-        if (arm_cpu->psci_conduit == QEMU_PSCI_CONDUIT_SMC) {
++        if (windows_workaround_enabled ||
++            arm_cpu->psci_conduit == QEMU_PSCI_CONDUIT_SMC) {
+             advance_pc = true;
+ 
+             if (!hvf_handle_psci_call(cpu)) {
+-- 
+2.32.0 (Apple Git-132)
+

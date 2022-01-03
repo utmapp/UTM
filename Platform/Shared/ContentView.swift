@@ -27,7 +27,6 @@ let productName = "UTM"
 
 @available(iOS 14, macOS 11, *)
 struct ContentView: View {
-    @StateObject private var newConfiguration = UTMConfiguration()
     @State private var editMode = false
     @EnvironmentObject private var data: UTMData
     @State private var newPopupPresented = false
@@ -57,7 +56,7 @@ struct ContentView: View {
             }.optionalSidebarFrame()
             .listStyle(SidebarListStyle())
             .navigationTitle(productName)
-            .navigationOptionalSubtitle(data.selectedVM?.configuration.name ?? "")
+            .navigationOptionalSubtitle(data.selectedVM?.title ?? "")
             .toolbar {
                 #if os(macOS)
                 ToolbarItem(placement: .navigation) {
@@ -72,27 +71,8 @@ struct ContentView: View {
                 }
                 #endif
             }
-            .sheet(isPresented: $data.showNewVMSheet, onDismiss: {
-                // on older versions of macOS this doesn't work so we keep it iOS only
-                #if !os(macOS)
-                newConfiguration.resetDefaults()
-                try? data.discardChanges()
-                #endif
-            }, content: {
-                VMSettingsView(vm: nil, config: newConfiguration)
-                    .environmentObject(data)
-                    .onAppear {
-                        newConfiguration.name = data.newDefaultVMName()
-                    }
-            })
-            .onChange(of: data.showNewVMSheet) { value in
-                // on older versions of iOS this doesn't work so we keep it macOS only
-                #if os(macOS)
-                if !value {
-                    newConfiguration.resetDefaults()
-                    try? data.discardChanges()
-                }
-                #endif
+            .sheet(isPresented: $data.showNewVMSheet) {
+                VMWizardView()
             }
             VMPlaceholderView()
         }.overlay(data.showSettingsModal ? AnyView(EmptyView()) : AnyView(BusyOverlay()))
@@ -127,32 +107,11 @@ struct ContentView: View {
         }
     }
     
-    #if os(macOS)
-    private var newButton: some View {
-        Button(action: { newPopupPresented.toggle() }, label: {
-            Label("New VM", systemImage: "plus").labelStyle(IconOnlyLabelStyle())
-        })
-        .help("New VM")
-        .popover(isPresented: $newPopupPresented, arrowEdge: .bottom) {
-            VStack {
-                Text("You can download an existing VM configuration for popular operating systems from the UTM gallery or start from scratch.")
-                Spacer()
-                Link("Go To Gallery", destination: URL(string: "https://getutm.app/gallery/")!)
-                Button("Start from Scratch") {
-                    data.newVM()
-                }
-            }.frame(width: 200, height: 150)
-            .padding()
-        }
-    }
-    #else
-    // BUG: iOS cannot show actionSheet from toolbar
     private var newButton: some View {
         Button(action: { data.newVM() }, label: {
             Label("New VM", systemImage: "plus").labelStyle(IconOnlyLabelStyle())
         })
     }
-    #endif
     
     private func delete(indexSet: IndexSet) {
         let selected = data.virtualMachines[indexSet]
@@ -199,7 +158,7 @@ struct ContentView: View {
     private func handleUTMURL(with components: URLComponents) {
         func findVM() -> UTMVirtualMachine? {
             if let vmName = components.queryItems?.first(where: { $0.name == "name" })?.value {
-                return data.virtualMachines.first(where: { $0.configuration.name == vmName })
+                return data.virtualMachines.first(where: { $0.title == vmName })
             } else {
                 return nil
             }

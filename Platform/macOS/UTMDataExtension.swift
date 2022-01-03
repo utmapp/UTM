@@ -26,10 +26,22 @@ extension UTMData {
                 self.vmWindows.removeValue(forKey: vm)
                 window = nil
             }
-            if vm.configuration.displayConsoleOnly {
-                window = VMDisplayTerminalWindowController(vm: vm, onClose: close)
-            } else {
-                window = VMDisplayMetalWindowController(vm: vm, onClose: close)
+            if let avm = vm as? UTMAppleVirtualMachine {
+                if avm.systemArchitecture == UTMAppleVirtualMachine.currentArchitecture {
+                    window = VMDisplayAppleWindowController(vm: avm, onClose: close)
+                }
+            }
+            if let qvm = vm as? UTMQemuVirtualMachine {
+                if qvm.qemuConfig.displayConsoleOnly {
+                    window = VMDisplayTerminalWindowController(vm: qvm, onClose: close)
+                } else {
+                    window = VMDisplayMetalWindowController(vm: qvm, onClose: close)
+                }
+            }
+            if window == nil {
+                DispatchQueue.main.async {
+                    self.alertMessage = AlertMessage(NSLocalizedString("This virtual machine cannot be run on this machine.", comment: "UTMDataExtension"))
+                }
             }
         }
         if let unwrappedWindow = window {
@@ -52,7 +64,7 @@ extension UTMData {
         }
     }
     
-    func trySendTextSpice(vm: UTMVirtualMachine, text: String) {
+    func trySendTextSpice(vm: UTMQemuVirtualMachine, text: String) {
         guard text.count > 0 else { return }
         if let vc = vmWindows[vm] as? VMDisplayMetalWindowController {
             KeyCodeMap.createKeyMapIfNeeded()
@@ -145,7 +157,7 @@ extension UTMData {
         }
     }
     
-    func tryClickAtPoint(vm: UTMVirtualMachine, point: CGPoint, button: CSInputButton) {
+    func tryClickAtPoint(vm: UTMQemuVirtualMachine, point: CGPoint, button: CSInputButton) {
         if let vc = vmWindows[vm] as? VMDisplayMetalWindowController {
             vc.mouseMove(absolutePoint: point, button: [])
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.02) {

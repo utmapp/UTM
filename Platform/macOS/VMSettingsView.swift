@@ -17,53 +17,40 @@
 import SwiftUI
 
 @available(macOS 11, *)
-struct VMSettingsView: View {
+struct VMSettingsView<Config: ObservableObject & UTMConfigurable>: View {
     let vm: UTMVirtualMachine?
-    @ObservedObject var config: UTMConfiguration
+    let config: Config
     
     @EnvironmentObject private var data: UTMData
     @Environment(\.presentationMode) private var presentationMode: Binding<PresentationMode>
     
+    @State private var selectedDriveIndex: Int?
+    
     var body: some View {
-        ToolbarTabView {
-            PreferencePane(label: "Information", systemImage: "info.circle", cancel: cancel, save: save) {
-                VMConfigInfoView(config: config)
-                    .environmentObject(data)
-            }
-            PreferencePane(label: "System", systemImage: "cpu", cancel: cancel, save: save) {
-                VMConfigSystemView(config: config)
-                    .environmentObject(data)
-            }
-            PreferencePane(label: "QEMU", systemImage: "shippingbox", cancel: cancel, save: save) {
-                VMConfigQEMUView(config: config)
-                    .environmentObject(data)
-            }
-            PreferencePane(label: "Drives", systemImage: "internaldrive", cancel: cancel, save: save) {
-                VMConfigDrivesView(config: config)
-                    .environmentObject(data)
-            }
-            PreferencePane(label: "Display", systemImage: "rectangle.on.rectangle", cancel: cancel, save: save) {
-                VMConfigDisplayView(config: config)
-                    .environmentObject(data)
-            }
-            PreferencePane(label: "Input", systemImage: "keyboard", cancel: cancel, save: save) {
-                VMConfigInputView(config: config)
-                    .environmentObject(data)
-            }
-            PreferencePane(label: "Network", systemImage: "network", cancel: cancel, save: save) {
-                VMConfigNetworkView(config: config)
-                    .environmentObject(data)
-            }
-            PreferencePane(label: "Sound", systemImage: "speaker.wave.2", cancel: cancel, save: save) {
-                VMConfigSoundView(config: config)
-                    .environmentObject(data)
-            }
-            PreferencePane(label: "Sharing", systemImage: "person.crop.circle.fill", cancel: cancel, save: save) {
-                VMConfigSharingView(config: config)
-                    .environmentObject(data)
-            }
+        NavigationView {
+            List {
+                if let qemuConfig = config as? UTMQemuConfiguration {
+                    VMQEMUSettingsView(vm: vm, config: qemuConfig, selectedDriveIndex: $selectedDriveIndex)
+                } else if #available(macOS 12, *), let appleConfig = config as? UTMAppleConfiguration {
+                    VMAppleSettingsView(vm: vm, config: appleConfig, selectedDriveIndex: $selectedDriveIndex)
+                }
+            }.listStyle(SidebarListStyle())
         }.frame(minWidth: 800, minHeight: 400)
-        .disabled(data.busy)
+        .toolbar {
+            ToolbarItemGroup(placement: .automatic) {
+                VMConfigDrivesButtons(vm: vm, config: config, selectedDriveIndex: $selectedDriveIndex)
+            }
+            ToolbarItemGroup(placement: .cancellationAction) {
+                Button(action: cancel) {
+                    Text("Cancel")
+                }
+            }
+            ToolbarItemGroup(placement: .confirmationAction) {
+                Button(action: save) {
+                    Text("Save")
+                }
+            }
+        }.disabled(data.busy)
         .overlay(BusyOverlay())
     }
     
@@ -87,43 +74,25 @@ struct VMSettingsView: View {
 }
 
 @available(macOS 11, *)
-struct PreferencePane<Content: View>: View {
-    let label: LocalizedStringKey
-    let systemImage: String
-    let cancel: () -> Void // HACK: NSHostingView doesn't get presentationMode
-    let save: () -> Void
-    let content: Content
-    
-    init(label: LocalizedStringKey, systemImage: String, cancel: @escaping () -> Void, save: @escaping () -> Void, content: () -> Content) {
-        self.label = label
-        self.systemImage = systemImage
-        self.cancel = cancel
-        self.save = save
-        self.content = content()
+struct ScrollableViewModifier: ViewModifier {
+    func body(content: Content) -> some View {
+        ScrollView {
+            content.padding()
+            .frame(maxWidth: .infinity)
+        }
     }
-    
-    var body: some View {
-        VStack {
-            ScrollView {
-                content.padding()
-            }
-            Divider()
-            HStack {
-                Spacer()
-                Button(action: cancel) {
-                    Text("Cancel")
-                }.keyboardShortcut(.cancelAction)
-                Button(action: save) {
-                    Text("Save")
-                }.keyboardShortcut("S", modifiers: .command)
-            }.padding([.bottom, .trailing])
-        }.toolbarTabItem(label, systemImage: systemImage)
+}
+
+@available(macOS 11, *)
+extension View {
+    func scrollable() -> some View {
+        self.modifier(ScrollableViewModifier())
     }
 }
 
 @available(macOS 11, *)
 struct VMSettingsView_Previews: PreviewProvider {
-    @State static private var config = UTMConfiguration()
+    @State static private var config = UTMQemuConfiguration()
     
     static var previews: some View {
         VMSettingsView(vm: nil, config: config)

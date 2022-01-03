@@ -18,7 +18,7 @@ import SwiftUI
 
 @available(iOS 14, macOS 11, *)
 struct VMConfigDriveDetailsView: View {
-    @ObservedObject private var config: UTMConfiguration
+    @ObservedObject private var config: UTMQemuConfiguration
     @Binding private var removable: Bool
     @Binding private var name: String?
     @Binding private var imageTypeString: String?
@@ -34,7 +34,7 @@ struct VMConfigDriveDetailsView: View {
         }
     }
     
-    init(config: UTMConfiguration, index: Int) {
+    init(config: UTMQemuConfiguration, index: Int) {
         self.config = config // for observing updates
         self._removable = Binding<Bool> {
             return config.driveRemovable(for: index)
@@ -76,9 +76,9 @@ struct VMConfigDriveDetailsView: View {
                         .multilineTextAlignment(.trailing)
                 }
             }
-            VMConfigStringPicker(selection: $imageTypeString, label: Text("Image Type"), rawValues: UTMConfiguration.supportedImageTypes(), displayValues: UTMConfiguration.supportedImageTypesPretty())
+            VMConfigStringPicker(selection: $imageTypeString, label: Text("Image Type"), rawValues: UTMQemuConfiguration.supportedImageTypes(), displayValues: UTMQemuConfiguration.supportedImageTypesPretty())
             if imageType == .disk || imageType == .CD {
-                VMConfigStringPicker(selection: $interface, label: Text("Interface"), rawValues: UTMConfiguration.supportedDriveInterfaces(), displayValues: UTMConfiguration.supportedDriveInterfacesPretty())
+                VMConfigStringPicker(selection: $interface, label: Text("Interface"), rawValues: UTMQemuConfiguration.supportedDriveInterfaces(), displayValues: UTMQemuConfiguration.supportedDriveInterfacesPretty())
             }
         }
     }

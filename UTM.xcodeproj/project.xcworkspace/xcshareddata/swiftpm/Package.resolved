@@ -3,11 +3,11 @@
     "pins": [
       {
         "package": "AltKit",
-        "repositoryURL": "https://github.com/utmapp/AltKit.git",
+        "repositoryURL": "https://github.com/rileytestut/AltKit.git",
         "state": {
-          "branch": "main",
-          "revision": "71ec1d505cbb7cb53dc16c7c98cb94c93953f3ff",
-          "version": null
+          "branch": null,
+          "revision": "f799f60ef6fa8b9676b4102b7dfa169fb40b6c92",
+          "version": "0.0.2"
         }
       },
       {
@@ -26,6 +26,15 @@
           "branch": null,
           "revision": "5d66f7ba25daf4f94100e7022febf3c75e37a6c7",
           "version": "1.4.2"
+        }
+      },
+      {
+        "package": "SwiftTerm",
+        "repositoryURL": "https://github.com/migueldeicaza/SwiftTerm.git",
+        "state": {
+          "branch": null,
+          "revision": "70a3af884c24dff9f1beeda04e889b5591f04f3c",
+          "version": "1.0.7"
         }
       },
       {

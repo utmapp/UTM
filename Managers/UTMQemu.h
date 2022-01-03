@@ -19,7 +19,7 @@
 
 typedef void * _Nullable (* _Nonnull UTMQemuThreadEntry)(void * _Nullable args);
 
-@class UTMConfiguration;
+@class UTMQemuConfiguration;
 @class UTMLogging;
 
 NS_ASSUME_NONNULL_BEGIN

@@ -20,7 +20,7 @@ import ZIPFoundation
 
 /// Downloads a ZIPped UTM file from the web, unzips it and imports it as a UTM virtual machine.
 @available(iOS 14, macOS 11, *)
-class UTMImportFromWebTask: NSObject, URLSessionDelegate, URLSessionDownloadDelegate {
+class UTMImportFromWebTask: NSObject, UTMDownloadable, URLSessionDelegate, URLSessionDownloadDelegate {
     let data: UTMData
     let url: URL
     private var downloadTask: URLSessionTask!
@@ -43,7 +43,7 @@ class UTMImportFromWebTask: NSObject, URLSessionDelegate, URLSessionDownloadDele
         let downloadedZip = tempDir.appendingPathComponent(originalFilename)
         var fileURL: URL? = nil
         do {
-            if fileManager.fileExists(atPath: downloadedZip.absoluteString) {
+            if fileManager.fileExists(atPath: downloadedZip.path) {
                 try fileManager.removeItem(at: downloadedZip)
             }
             try fileManager.moveItem(at: location, to: downloadedZip)
@@ -105,7 +105,7 @@ class UTMImportFromWebTask: NSObject, URLSessionDelegate, URLSessionDownloadDele
             for file in containedFiles {
                 let relativePath = file.path.replacingOccurrences(of: utmFolderInZip.path, with: "")
                 let isDirectory = file.path.hasSuffix("/")
-                _ = try archive.extract(file, to: destinationURL.appendingPathComponent(relativePath, isDirectory: isDirectory))
+                _ = try archive.extract(file, to: destinationURL.appendingPathComponent(relativePath, isDirectory: isDirectory), skipCRC32: true)
             }
             return destinationURL
         } else {
@@ -176,7 +176,7 @@ class UTMImportFromWebTask: NSObject, URLSessionDelegate, URLSessionDownloadDele
         if let index = filename.range(of: ".zip", options: [])?.lowerBound {
             nameWithoutZIP = String(filename[..<index])
         }
-        pendingVM = UTMPendingVirtualMachine(name: nameWithoutZIP, importTask: self)
+        pendingVM = UTMPendingVirtualMachine(name: nameWithoutZIP, task: self)
         return pendingVM
     }
     

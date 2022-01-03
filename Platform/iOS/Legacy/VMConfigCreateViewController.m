@@ -15,7 +15,7 @@
 //
 
 #import "VMConfigCreateViewController.h"
-#import "UTMConfiguration.h"
+#import "UTMQemuConfiguration.h"
 #import "VMConfigTextField.h"
 
 @interface VMConfigCreateViewController ()

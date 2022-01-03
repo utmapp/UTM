@@ -19,34 +19,31 @@ import Foundation
 /// A Virtual Machine that has not finished downloading.
 @available(iOS 14, macOS 11, *)
 class UTMPendingVirtualMachine: Equatable, Identifiable, ObservableObject {
-    internal init(name: String, importTask: UTMImportFromWebTask) {
-        self.url = importTask.url
+    internal init(name: String, task: UTMDownloadable) {
         self.name = name
-        self.cancel = importTask.cancel
+        self.cancel = task.cancel
     }
     
     #if DEBUG
     /// init for SwiftUI Preview
     internal init(name: String) {
-        self.url = URL(string: "https://getutm.app")!
         self.name = name
         self.downloadProgress = 0.41
         self.cancel = {}
     }
     #endif
     
-    private let downloadStartDate = Date() /// used for identifying separate downloads of the same VM
-    private var url: URL
+    private var uuid = UUID()
     let name: String
     @Published private(set) var downloadProgress: CGFloat = 0
     let cancel: () -> ()
     
     static func == (lhs: UTMPendingVirtualMachine, rhs: UTMPendingVirtualMachine) -> Bool {
-        lhs.url == rhs.url
+        lhs.uuid == rhs.uuid
     }
     
-    var id: String {
-        url.absoluteString + downloadStartDate.description
+    var id: UUID {
+        uuid
     }
     
     public func setDownloadProgress(_ progress: Float) {

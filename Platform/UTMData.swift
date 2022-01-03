@@ -58,6 +58,8 @@ class UTMData: ObservableObject {
     }
     @Published private(set) var pendingVMs: [UTMPendingVirtualMachine]
     
+    private var selectedDiskImagesCache: [String: URL]
+    
     #if os(macOS)
     var vmWindows: [UTMVirtualMachine: VMDisplayWindowController] = [:]
     #else
@@ -81,6 +83,7 @@ class UTMData: ObservableObject {
         self.showNewVMSheet = false
         self.busy = false
         self.virtualMachines = []
+        self.selectedDiskImagesCache = [:]
         self.pendingVMs = []
         if let files = defaults.array(forKey: "VMList") as? [String] {
             for file in files.uniqued() {
@@ -142,7 +145,7 @@ class UTMData: ObservableObject {
         return ProcessInfo.processInfo.globallyUniqueString
     }
     
-    func newDefaultDrivePath(type: UTMDiskImageType, forConfig: UTMConfiguration) -> String {
+    func newDefaultDrivePath(type: UTMDiskImageType, forConfig: UTMQemuConfiguration) -> String {
         let nameForId = { (i: Int) in "\(type.description)-\(i).qcow2" }
         for i in 0..<1000 {
             let name = nameForId(i)
@@ -154,7 +157,7 @@ class UTMData: ObservableObject {
         return UUID().uuidString
     }
     
-    func newDefaultDriveName(for config: UTMConfiguration) -> String {
+    func newDefaultDriveName(for config: UTMQemuConfiguration) -> String {
         let nameForId = { (i: Int) in "drive\(i)" }
         for i in 0..<1000 {
             let name = nameForId(i)
@@ -181,6 +184,9 @@ class UTMData: ObservableObject {
         do {
             let oldPath = vm.path
             try vm.saveUTM()
+            if let qemuVM = vm as? UTMQemuVirtualMachine {
+                try commitDiskImages(for: qemuVM)
+            }
             let newPath = vm.path
             // change the saved path
             if oldPath?.path != newPath?.path {
@@ -211,13 +217,17 @@ class UTMData: ObservableObject {
     }
     
     func discardChanges(forVM vm: UTMVirtualMachine? = nil) throws {
-        let config: UTMConfiguration
+        let config: UTMQemuConfiguration
         if let vm = vm, vm.path != nil {
             try vm.reloadConfiguration()
-            config = vm.configuration
+            guard let qemuConfig = vm.config as? UTMQemuConfiguration else {
+                // FIXME: non-qemu orphaned drives
+                return
+            }
+            config = qemuConfig
         } else {
             // create a tmp empty config so we can get orphanedDrives for tmp path
-            config = UTMConfiguration()
+            config = UTMQemuConfiguration()
         }
         // delete orphaned drives
         guard let orphanedDrives = config.orphanedDrives else {
@@ -231,13 +241,43 @@ class UTMData: ObservableObject {
         }
     }
     
-    func create(config: UTMConfiguration) throws {
+    func create(config: UTMConfigurable, onCompletion: @escaping (UTMVirtualMachine) -> Void = { _ in }) throws {
+        guard !virtualMachines.contains(where: { $0.config.name == config.name }) else {
+            throw NSLocalizedString("An existing virtual machine already exists with this name.", comment: "UTMData")
+        }
         let vm = UTMVirtualMachine(configuration: config, withDestinationURL: documentsURL)
         try save(vm: vm)
+        if let qemuVM = vm as? UTMQemuVirtualMachine {
+            try commitDiskImages(for: qemuVM)
+        }
         DispatchQueue.main.async {
             self.virtualMachines.append(vm)
+            onCompletion(vm)
         }
     }
+    
+    #if os(macOS) && arch(arm64)
+    @available(macOS 12, *)
+    func createPendingIPSWDownload(config: UTMAppleConfiguration) {
+        let task = UTMDownloadIPSWTask(data: self, name: config.name, url: config.macRecoveryIpswURL!) { ipswFileUrl in
+            DispatchQueue.main.async {
+                config.macRecoveryIpswURL = ipswFileUrl
+                self.busyWork {
+                    try self.create(config: config) { vm in
+                        self.selectedVM = vm
+                    }
+                }
+            }
+        }
+        let pendingVM = task.startDownload()
+        DispatchQueue.main.async {
+            self.pendingVMs.append(pendingVM)
+            if task.isDone {
+                self.removePendingVM(pendingVM)
+            }
+        }
+    }
+    #endif
     
     func move(fromOffsets: IndexSet, toOffset: Int) {
         DispatchQueue.main.async {
@@ -260,7 +300,7 @@ class UTMData: ObservableObject {
     }
     
     func clone(vm: UTMVirtualMachine) throws {
-        let newName = newDefaultVMName(base: vm.configuration.name)
+        let newName = newDefaultVMName(base: vm.title)
         let newPath = UTMVirtualMachine.virtualMachinePath(newName, inParentURL: documentsURL)
         
         try fileManager.copyItem(at: vm.path!, to: newPath)
@@ -283,7 +323,9 @@ class UTMData: ObservableObject {
     func edit(vm: UTMVirtualMachine) {
         DispatchQueue.main.async {
             // show orphans for proper removal
-            vm.configuration.recoverOrphanedDrives()
+            if let config = vm.config as? UTMQemuConfiguration {
+                config.recoverOrphanedDrives()
+            }
             self.selectedVM = vm
             self.showSettingsModal = true
             self.showNewVMSheet = false
@@ -311,11 +353,11 @@ class UTMData: ObservableObject {
     
     // MARK: - Export debug log
     
-    func exportDebugLog(for config: UTMConfiguration) throws -> VMShareItemModifier.ShareItem {
+    func exportDebugLog(for config: UTMQemuConfiguration) throws -> VMShareItemModifier.ShareItem {
         guard let path = config.existingPath else {
             throw NSLocalizedString("No log found!", comment: "UTMData")
         }
-        let srcLogPath = path.appendingPathComponent(UTMConfiguration.debugLogName())
+        let srcLogPath = path.appendingPathComponent(UTMQemuConfiguration.debugLogName())
         return .debugLog(srcLogPath)
     }
     
@@ -362,7 +404,12 @@ class UTMData: ObservableObject {
             } else {
                 logger.error("cannot find existing vm")
             }
-        } else if (fileBasePath.resolvingSymlinksInPath().path == documentsURL.appendingPathComponent("Inbox", isDirectory: true).path) {
+        }
+        // check if VM is valid
+        guard let _ = UTMVirtualMachine(url: url) else {
+            throw NSLocalizedString("Cannot import this VM. Either the configuration is invalid, created in a newer version of UTM, or on a platform that is incompatible with this version of UTM.", comment: "UTMData")
+        }
+        if (fileBasePath.resolvingSymlinksInPath().path == documentsURL.appendingPathComponent("Inbox", isDirectory: true).path) {
             logger.info("moving from Inbox")
             try copyUTM(at: url, to: dest, move: true)
             try readUTMFromURL(fileURL: dest)
@@ -400,7 +447,7 @@ class UTMData: ObservableObject {
     
     // MARK: - Disk drive functions
     
-    func importDrive(_ drive: URL, for config: UTMConfiguration, copy: Bool = true) throws {
+    func importDrive(_ drive: URL, for config: UTMQemuConfiguration, imageType: UTMDiskImageType, on interface: String, copy: Bool) throws {
         _ = drive.startAccessingSecurityScopedResource()
         defer { drive.stopAccessingSecurityScopedResource() }
         
@@ -414,7 +461,6 @@ class UTMData: ObservableObject {
         }
         
         let path = drive.lastPathComponent
-        let imageType: UTMDiskImageType = drive.pathExtension.lowercased() == "iso" ? .CD : .disk
         let imagesPath = config.imagesPath
         let dstPath = imagesPath.appendingPathComponent(path)
         if !fileManager.fileExists(atPath: imagesPath.path) {
@@ -429,7 +475,7 @@ class UTMData: ObservableObject {
             let name = self.newDefaultDriveName(for: config)
             let interface: String
             if let target = config.systemTarget, let architecture = config.systemArchitecture {
-                interface = UTMConfiguration.defaultDriveInterface(forTarget: target, architecture: architecture, type: imageType)
+                interface = UTMQemuConfiguration.defaultDriveInterface(forTarget: target, architecture: architecture, type: imageType)
             } else {
                 interface = "none"
             }
@@ -437,9 +483,21 @@ class UTMData: ObservableObject {
         }
     }
     
-    func createDrive(_ drive: VMDriveImage, for config: UTMConfiguration) throws {
+    func importDrive(_ drive: URL, for config: UTMQemuConfiguration, copy: Bool = true) throws {
+        let imageType: UTMDiskImageType = drive.pathExtension.lowercased() == "iso" ? .CD : .disk
+        let interface: String
+        if let target = config.systemTarget, let arch = config.systemArchitecture {
+            interface = UTMQemuConfiguration.defaultDriveInterface(forTarget: target, architecture: arch, type: imageType)
+        } else {
+            interface = "none"
+        }
+        try importDrive(drive, for: config, imageType: imageType, on: interface, copy: copy)
+    }
+    
+    func createDrive(_ drive: VMDriveImage, for config: UTMQemuConfiguration, with driveImage: URL? = nil) throws {
         var path: String = ""
         if !drive.removable {
+            assert(driveImage == nil, "Cannot call createDrive with a driveImage!")
             guard drive.size > 0 else {
                 throw NSLocalizedString("Invalid drive size.", comment: "UTMData")
             }
@@ -456,8 +514,11 @@ class UTMData: ObservableObject {
             }
         }
         
+        let name = self.newDefaultDriveName(for: config)
+        if let url = driveImage {
+            selectedDiskImagesCache[name] = url
+        }
         DispatchQueue.main.async {
-            let name = self.newDefaultDriveName(for: config)
             let interface = drive.interface ?? "none"
             if drive.removable {
                 config.newRemovableDrive(name, type: drive.imageType, interface: interface)
@@ -467,16 +528,33 @@ class UTMData: ObservableObject {
         }
     }
     
-    func removeDrive(at index: Int, for config: UTMConfiguration) throws {
+    func removeDrive(at index: Int, for config: UTMQemuConfiguration) throws {
         if let path = config.driveImagePath(for: index) {
             let fullPath = config.imagesPath.appendingPathComponent(path);
             if fileManager.fileExists(atPath: fullPath.path) {
                 try fileManager.removeItem(at: fullPath)
             }
         }
-        
+        if let name = config.driveName(for: index) {
+            selectedDiskImagesCache.removeValue(forKey: name)
+        }
         DispatchQueue.main.async {
             config.removeDrive(at: index)
+        }
+    }
+    
+    private func commitDiskImages(for vm: UTMQemuVirtualMachine) throws {
+        let drives = vm.drives
+        defer {
+            selectedDiskImagesCache.removeAll()
+        }
+        try selectedDiskImagesCache.forEach { name, url in
+            let drive = drives.first { drive in
+                drive.name == name
+            }
+            if let drive = drive {
+                try vm.changeMedium(for: drive, url: url)
+            }
         }
     }
     
@@ -491,7 +569,7 @@ class UTMData: ObservableObject {
     
     private func recreate(vm: UTMVirtualMachine) {
         guard let path = vm.path else {
-            logger.error("Attempting to refresh unsaved VM \(vm.configuration.name)")
+            logger.error("Attempting to refresh unsaved VM \(vm.title)")
             return
         }
         guard let newVM = UTMVirtualMachine(url: path) else {
@@ -551,16 +629,39 @@ class UTMData: ObservableObject {
         }
     }
     
+    #if swift(>=5.5)
+    func busyWorkAsync(_ work: @escaping () async throws -> Void) {
+        Task(priority: .userInitiated) {
+            DispatchQueue.main.async {
+                self.busy = true
+            }
+            defer {
+                DispatchQueue.main.async {
+                    self.busy = false
+                }
+            }
+            do {
+                try await work()
+            } catch {
+                logger.error("\(error)")
+                DispatchQueue.main.async {
+                    self.alertMessage = AlertMessage(error.localizedDescription)
+                }
+            }
+        }
+    }
+    #endif
     // MARK: - Automation Features
     
     func trySendText(_ vm: UTMVirtualMachine, urlComponents components: URLComponents) {
+        guard let qemuVm = vm as? UTMQemuVirtualMachine else { return } // FIXME: implement for Apple VM
         guard let queryItems = components.queryItems else { return }
         guard let text = queryItems.first(where: { $0.name == "text" })?.value else { return }
-        if vm.configuration.displayConsoleOnly {
-            vm.sendInput(text)
+        if qemuVm.qemuConfig.displayConsoleOnly {
+            qemuVm.sendInput(text)
         } else {
             #if os(macOS)
-            trySendTextSpice(vm: vm, text: text)
+            trySendTextSpice(vm: qemuVm, text: text)
             #else
             trySendTextSpice(text)
             #endif
@@ -568,7 +669,8 @@ class UTMData: ObservableObject {
     }
     
     func tryClickVM(_ vm: UTMVirtualMachine, urlComponents components: URLComponents) {
-        guard !vm.configuration.displayConsoleOnly else { return }
+        guard let qemuVm = vm as? UTMQemuVirtualMachine else { return } // FIXME: implement for Apple VM
+        guard !qemuVm.qemuConfig.displayConsoleOnly else { return }
         guard let queryItems = components.queryItems else { return }
         /// Parse targeted position
         var x: CGFloat? = nil
@@ -603,7 +705,7 @@ class UTMData: ObservableObject {
         }
         /// All parameters parsed, perform the click
         #if os(macOS)
-        tryClickAtPoint(vm: vm, point: point, button: button)
+        tryClickAtPoint(vm: qemuVm, point: point, button: button)
         #else
         tryClickAtPoint(point: point, button: button)
         #endif

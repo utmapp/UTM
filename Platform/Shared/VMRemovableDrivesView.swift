@@ -18,10 +18,8 @@ import SwiftUI
 
 @available(iOS 14, macOS 11, *)
 struct VMRemovableDrivesView: View {
-    let vm: UTMVirtualMachine
+    @ObservedObject var vm: UTMQemuVirtualMachine
     @EnvironmentObject private var data: UTMData
-    @ObservedObject private var config: UTMConfiguration
-    @ObservedObject private var sessionConfig: UTMViewState
     @State private var shareDirectoryFileImportPresented: Bool = false
     @State private var diskImageFileImportPresented: Bool = false
     /// Explanation see "SwiftUI FileImporter modal bug" in the `body`
@@ -32,18 +30,12 @@ struct VMRemovableDrivesView: View {
         FileManager.default
     }
     
-    init(vm: UTMVirtualMachine) {
-        self.vm = vm
-        self.config = vm.configuration
-        self.sessionConfig = vm.viewState
-    }
-    
     var body: some View {
         Group {
-            if config.shareDirectoryEnabled {
+            if vm.hasShareDirectoryEnabled {
                 HStack {
                     // Is a shared directory set?
-                    let hasSharedDir = sessionConfig.sharedDirectoryPath != nil
+                    let hasSharedDir = vm.viewState.sharedDirectoryPath != nil
                     // Browse/Clear menu
                     Menu {
                         // Browse button
@@ -59,9 +51,9 @@ struct VMRemovableDrivesView: View {
                     } label: {
                         Label { Text("Shared Directory") } icon: {
                             Image(systemName: hasSharedDir ? "externaldrive.fill.badge.person.crop" : "externaldrive.badge.person.crop") }
-                    }.disabled(sessionConfig.suspended)
+                    }.disabled(vm.viewState.suspended)
                     Spacer()
-                    SharedPath(path: sessionConfig.sharedDirectoryPath)
+                    SharedPath(path: vm.viewState.sharedDirectoryPath)
                 }.fileImporter(isPresented: $shareDirectoryFileImportPresented, allowedContentTypes: [.folder], onCompletion: selectShareDirectory)
             }
             ForEach(vm.drives.filter { $0.status != .fixed }) { drive in
@@ -105,7 +97,7 @@ struct VMRemovableDrivesView: View {
                         }
                     } label: {
                         DriveLabel(drive: drive)
-                    }.disabled(sessionConfig.suspended)
+                    }.disabled(vm.viewState.suspended)
                     Spacer()
                     // Disk image path, or (empty)
                     Text(pathFor(drive))
@@ -140,7 +132,7 @@ struct VMRemovableDrivesView: View {
     }
     
     private func pathFor(_ drive: UTMDrive) -> String {
-        let path = sessionConfig.path(forRemovableDrive: drive.name ?? "") ?? ""
+        let path = vm.viewState.path(forRemovableDrive: drive.name ?? "") ?? ""
         if path.count > 0 {
             let url = URL(fileURLWithPath: path)
             return url.lastPathComponent
@@ -198,10 +190,10 @@ struct VMRemovableDrivesView: View {
 
 @available(iOS 14, macOS 11, *)
 struct VMRemovableDrivesView_Previews: PreviewProvider {
-    @State static private var config = UTMConfiguration()
+    @State static private var config = UTMQemuConfiguration()
     
     static var previews: some View {
-        VMRemovableDrivesView(vm: UTMVirtualMachine(configuration: config, withDestinationURL: URL(fileURLWithPath: "")))
+        VMRemovableDrivesView(vm: UTMVirtualMachine(configuration: config, withDestinationURL: URL(fileURLWithPath: "")) as! UTMQemuVirtualMachine)
         .onAppear {
             config.shareDirectoryEnabled = true
             config.newDrive("", path: "", type: .disk, interface: "ide")

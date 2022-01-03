@@ -15,7 +15,7 @@
 //
 
 #import "VMConfigInputViewController.h"
-#import "UTMConfiguration.h"
+#import "UTMQemuConfiguration.h"
 
 @interface VMConfigInputViewController ()
 

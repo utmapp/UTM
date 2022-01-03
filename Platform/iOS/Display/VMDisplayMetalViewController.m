@@ -25,8 +25,8 @@
 #import "UTMRenderer.h"
 #import "UTMVirtualMachine.h"
 #import "UTMQemuManager.h"
-#import "UTMConfiguration.h"
-#import "UTMConfiguration+Display.h"
+#import "UTMQemuConfiguration.h"
+#import "UTMQemuConfiguration+Display.h"
 #import "UTMLogging.h"
 #import "CSDisplayMetal.h"
 #import "UTMScreenshot.h"
@@ -34,6 +34,19 @@
 
 @implementation VMDisplayMetalViewController {
     UTMRenderer *_renderer;
+}
+
+- (void)setupSubviews {
+    self.keyboardView = [[VMKeyboardView alloc] initWithFrame:CGRectZero];
+    self.placeholderImageView = [[UIImageView alloc] initWithFrame:CGRectZero];
+    self.mtkView = [[MTKView alloc] initWithFrame:CGRectZero];
+    self.keyboardView.delegate = self;
+    [self.view insertSubview:self.keyboardView atIndex:0];
+    [self.view insertSubview:self.placeholderImageView atIndex:1];
+    [self.placeholderImageView bindFrameToSuperviewBounds];
+    [self.view insertSubview:self.mtkView atIndex:2];
+    [self.mtkView bindFrameToSuperviewBounds];
+    [self createToolbarIn:self.mtkView];
 }
 
 - (BOOL)serverModeCursor {
@@ -62,8 +75,8 @@
     // Initialize our renderer with the view size
     [_renderer mtkView:self.mtkView drawableSizeWillChange:self.mtkView.drawableSize];
     
-    [_renderer changeUpscaler:self.vmConfiguration.displayUpscalerValue
-                   downscaler:self.vmConfiguration.displayDownscalerValue];
+    [_renderer changeUpscaler:self.vmQemuConfig.displayUpscalerValue
+                   downscaler:self.vmQemuConfig.displayDownscalerValue];
     
     self.mtkView.delegate = _renderer;
     
@@ -83,6 +96,13 @@
     }
 }
 
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    if (!self.toolbar.hasLegacyToolbar) {
+        self.prefersStatusBarHidden = YES;
+    }
+}
+
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     if (self.vm.state == kVMStopped || self.vm.state == kVMSuspended) {
@@ -97,41 +117,34 @@
     [self displayResize:size];
 }
 
-- (void)virtualMachine:(UTMVirtualMachine *)vm transitionToState:(UTMVMState)state {
-    [super virtualMachine:vm transitionToState:state];
-    switch (state) {
-        case kVMStopped:
-        case kVMPaused:
-        case kVMSuspended: {
-            [UIView transitionWithView:self.view duration:0.5 options:UIViewAnimationOptionTransitionCrossDissolve animations:^{
-                self.placeholderImageView.hidden = NO;
-                self.placeholderImageView.image = self.vm.screenshot.image;
-                self.mtkView.hidden = YES;
-            } completion:nil];
-            if (self.vmConfiguration.shareClipboardEnabled) {
-                [[UTMPasteboard generalPasteboard] releasePollingModeForObject:self];
-            }
+- (void)enterSuspendedWithIsBusy:(BOOL)busy {
+    [super enterSuspendedWithIsBusy:busy];
+    if (!busy) {
+        [UIView transitionWithView:self.view duration:0.5 options:UIViewAnimationOptionTransitionCrossDissolve animations:^{
+            self.placeholderImageView.hidden = NO;
+            self.placeholderImageView.image = self.vm.screenshot.image;
+            self.mtkView.hidden = YES;
+        } completion:nil];
+        if (self.vmQemuConfig.shareClipboardEnabled) {
+            [[UTMPasteboard generalPasteboard] releasePollingModeForObject:self];
+        }
 #if !defined(WITH_QEMU_TCI)
-            if (state == kVMStopped) {
-                [self.usbDevicesViewController clearDevices];
-            }
+        if (self.vm.state == kVMStopped) {
+            [self.usbDevicesViewController clearDevices];
+        }
 #endif
-            break;
-        }
-        case kVMStarted: {
-            [UIView transitionWithView:self.view duration:0.5 options:UIViewAnimationOptionTransitionCrossDissolve animations:^{
-                self.placeholderImageView.hidden = YES;
-                self.mtkView.hidden = NO;
-            } completion:nil];
-            [self displayResize:self.view.bounds.size];
-            if (self.vmConfiguration.shareClipboardEnabled) {
-                [[UTMPasteboard generalPasteboard] requestPollingModeForObject:self];
-            }
-            break;
-        }
-        default: {
-            break;
-        }
+    }
+}
+
+- (void)enterLive {
+    [super enterLive];
+    [UIView transitionWithView:self.view duration:0.5 options:UIViewAnimationOptionTransitionCrossDissolve animations:^{
+        self.placeholderImageView.hidden = YES;
+        self.mtkView.hidden = NO;
+    } completion:nil];
+    [self displayResize:self.view.bounds.size];
+    if (self.vmQemuConfig.shareClipboardEnabled) {
+        [[UTMPasteboard generalPasteboard] requestPollingModeForObject:self];
     }
 }
 
@@ -157,15 +170,6 @@
 
 #pragma mark - Toolbar actions
 
-- (void)setLastDisplayChangeResize:(BOOL)lastDisplayChangeResize {
-    _lastDisplayChangeResize = lastDisplayChangeResize;
-    if (lastDisplayChangeResize) {
-        [self.zoomButton setImage:[UIImage imageNamed:@"Toolbar Minimize"] forState:UIControlStateNormal];
-    } else {
-        [self.zoomButton setImage:[UIImage imageNamed:@"Toolbar Maximize"] forState:UIControlStateNormal];
-    }
-}
-
 - (void)resizeDisplayToFit {
     CGSize viewSize = self.mtkView.drawableSize;
     CGSize displaySize = self.vmDisplay.displaySize;
@@ -179,21 +183,12 @@
     self.vmDisplay.viewportOrigin = CGPointMake(0, 0);
 }
 
-- (IBAction)changeDisplayZoom:(UIButton *)sender {
-    if (self.lastDisplayChangeResize) {
-        [self resetDisplay];
-    } else {
-        [self resizeDisplayToFit];
-    }
-    self.lastDisplayChangeResize = !self.lastDisplayChangeResize;
-}
-
 #pragma mark - Resizing
 
 - (void)displayResize:(CGSize)size {
     UTMLog(@"resizing to (%f, %f)", size.width, size.height);
     CGRect bounds = CGRectMake(0, 0, size.width, size.height);
-    if (self.vmConfiguration.displayRetina) {
+    if (self.vmQemuConfig.displayRetina) {
         CGFloat scale = [UIScreen mainScreen].scale;
         CGAffineTransform transform = CGAffineTransformMakeScale(scale, scale);
         bounds = CGRectApplyAffineTransform(bounds, transform);
