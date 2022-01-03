@@ -144,7 +144,7 @@
 "Cannot import this VM. Either the configuration is invalid, created in a newer version of UTM, or on a platform that is incompatible with this version of UTM." = "無法匯入本虛擬機。可能是設定檔無效、建立本虛擬機的 UTM 版本較新，或者是在不相容本 UTM 版本的平台上建立。";
 
 /* UTMVirtualMachine+Sharing */
-"Cannot start shared directory before SPICE starts." = "在 SPICE 啟動前無法啟動「共用檔案夾」。";
+"Cannot start shared directory before SPICE starts." = "在 SPICE 啟動前無法啟動「共享檔案夾」。";
 
 /* Configuration boot device */
 "CD/DVD" = "CD/DVD";
@@ -159,7 +159,7 @@
 "Clear" = "清除";
 
 /* No comment provided by engineer. */
-"Clipboard Sharing" = "剪貼簿共用";
+"Clipboard Sharing" = "剪貼簿共享";
 
 /* Clone context menu */
 "Clone" = "複製";
@@ -344,10 +344,10 @@
 "en0" = "en0";
 
 /* No comment provided by engineer. */
-"Enable Clipboard Sharing" = "啟用剪貼簿共用";
+"Enable Clipboard Sharing" = "啟用剪貼簿共享";
 
 /* No comment provided by engineer. */
-"Enable Directory Sharing" = "啟用檔案夾共用";
+"Enable Directory Sharing" = "啟用檔案夾共享";
 
 /* No comment provided by engineer. */
 "Enable hardware OpenGL acceleration (experimental)" = "啟用 OpenGL 硬體加速（實驗性功能）";
@@ -368,7 +368,7 @@
 "Error trying to restore removable drives: %@" = "嘗試復原可卸除式磁碟機時發生錯誤：%@";
 
 /* UTMVirtualMachine */
-"Error trying to start shared directory: %@" = "嘗試啟動共用檔案夾時發生錯誤：%@";
+"Error trying to start shared directory: %@" = "嘗試啟動共享檔案夾時發生錯誤：%@";
 
 /* No comment provided by engineer. */
 "Export Debug Log" = "匯出除錯日誌";
@@ -512,7 +512,7 @@
 "Icon" = "圖示";
 
 /* No comment provided by engineer. */
-"If set, boot directly from a raw kernel image and initrd. Otherwise, boot from a supported ISO." = "設定後便會直接從原始內核映像檔或 initrd 開機，否則從支援的 ISO 開機。";
+"If set, boot directly from a raw kernel image and initrd. Otherwise, boot from a supported ISO." = "設定後便會直接從原始內核映像檔或 initrd 開機；未設定則從支援的 ISO 開機。";
 
 /* No comment provided by engineer. */
 "Image Type" = "映像檔類型";
@@ -539,7 +539,7 @@
 "Information" = "資訊";
 
 /* No comment provided by engineer. */
-"Initial Ramdisk" = "初始 ramdisk";
+"Initial Ramdisk" = "初始 Ramdisk";
 
 /* No comment provided by engineer. */
 "Input" = "輸入";
@@ -647,7 +647,7 @@
 "Manager being deallocated, killing pending RPC." = "管理器正在被取消配置 (deallocated)，強制中止等待中 RPC。";
 
 /* No comment provided by engineer. */
-"Maximum Shared USB Devices" = "最大共用 USB 裝置";
+"Maximum Shared USB Devices" = "最大共享 USB 裝置";
 
 /* No comment provided by engineer. */
 "MB" = "MB";
@@ -730,7 +730,7 @@
 "Note: Boot order is as listed." = "注意：開機順序即為列表排序。";
 
 /* No comment provided by engineer. */
-"Note: select the path to share from the main screen." = "注意：請在主畫面選擇要共用的路徑。";
+"Note: select the path to share from the main screen." = "注意：請在主畫面選擇要共享的路徑。";
 
 /* No comment provided by engineer. */
 "Notes" = "備註";
@@ -882,19 +882,19 @@
 "Share selected VM" = "分享選取虛擬機";
 
 /* No comment provided by engineer. */
-"Shared Directory" = "共用檔案夾";
+"Shared Directory" = "共享檔案夾";
 
 /* UTMQemuConfiguration */
-"Shared Network" = "共用網路";
+"Shared Network" = "共享網路";
 
 /* VMConfigSharingViewController */
-"Shared path has moved. Please re-choose." = "共用路徑被移動。請重新選擇。";
+"Shared path has moved. Please re-choose." = "共享路徑被移動。請重新選擇。";
 
 /* VMConfigSharingViewController */
-"Shared path is no longer valid. Please re-choose." = "共用路徑已失效。請重新選擇。";
+"Shared path is no longer valid. Please re-choose." = "共享路徑已失效。請重新選擇。";
 
 /* No comment provided by engineer. */
-"Sharing" = "共用";
+"Sharing" = "共享";
 
 /* No comment provided by engineer. */
 "Show Advanced Settings" = "顯示進階設定";
@@ -1020,7 +1020,7 @@
 "USB not supported in this build of UTM." = "本 UTM 組建不支援 USB。";
 
 /* No comment provided by engineer. */
-"USB Sharing" = "USB 共用";
+"USB Sharing" = "USB 共享";
 
 /* No comment provided by engineer. */
 "Use Hypervisor" = "使用 Hypervisor";
@@ -1041,7 +1041,7 @@
 "Virtualize" = "虛擬化";
 
 /* UTMVirtualMachine+Sharing */
-"VM frontend does not support shared directories." = "虛擬機前端不支援共用檔案夾。";
+"VM frontend does not support shared directories." = "虛擬機前端不支援共享檔案夾。";
 
 /* VMConfigSystemViewController */
 "Warning: iOS will kill apps that use more than 80% of the device's total memory." = "警告：iOS 會強制關閉佔裝置總記憶體 80% 大小的 App。";
