@@ -1086,3 +1086,20 @@
 /* No comment provided by engineer. */
 "Zoom" = "縮放";
 
+/* Manually added: Common > Button */
+"Back" = "返回";
+
+/* Manually added: Create a New Virtual Machine > macOS  */
+"To install macOS, you need to download a recovery IPSW. If you do not select an existing IPSW, the latest macOS IPSW will be downloaded from Apple." = "要安裝 macOS，您需要下載復原 IPSW。如果您這裡沒有選擇 IPSW，UTM 將會從 Apple 下載最新的 macOS IPSW。";
+
+/* Manually added: Create a New Virtual Machine > Virtualization > Linux */
+"Use Apple Virtualization" = "使用 Apple 的虛擬化技術";
+
+/* Manually added: Configuration > Drive */
+"Delete Drive" = "刪除磁碟機";
+
+/* Manually added: Configuration > Drive */
+"Move Up" = "上移";
+
+/* Manually added: Configuration > Drive */
+"Move Down" = "下移";
