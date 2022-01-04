@@ -936,3 +936,6 @@
 "Boot" = "启动";
 "Share Directory" = "文件共享";
 "Directory" = "路径";
+
+//Alt JIT
+"Cannot find AltServer for JIT enable. You cannot run VMs until JIT is enabled." = "未找到开启 JIT 的AltServer。您无法在缺失 JIT 的情况下运行虚拟机。（请使用 AltJIT 或者 Jitterbug）";
