@@ -1103,3 +1103,6 @@
 
 /* Manually added: Configuration > Drive */
 "Move Down" = "下移";
+
+/* Manually added: VM's Context Menu */
+"Show in Finder" = "在 Finder 中顯示";
