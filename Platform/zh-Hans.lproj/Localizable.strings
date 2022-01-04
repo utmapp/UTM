@@ -103,6 +103,8 @@
 /* Configuration boot device */
 "CD/DVD" = "CD/DVD";
 
+"(empty)" = "未装载";
+
 /* UTMConfiguration */
 "CD/DVD (ISO) Image" = "CD/DVD (ISO) 镜像";
 
