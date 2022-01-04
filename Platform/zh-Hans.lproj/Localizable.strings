@@ -95,7 +95,7 @@
 "Cannot find VM." = "未能找到VM";
 
 /* UTMVirtualMachine+Sharing */
-"Cannot start shared directory before SPICE starts." = "SPICE启动之前无法启动共享目录。";
+"Cannot start shared directory before SPICE starts." = "SPICE启动之前无法启动文件共享。";
 
 /* VMDisplayMetalWindowController */
 "Captured mouse" = "捕获的鼠标";
@@ -252,7 +252,7 @@
 "Error trying to restore removable drives: %@" = "尝试还原可移动驱动器时出错：%@";
 
 /* UTMVirtualMachine */
-"Error trying to start shared directory: %@" = "尝试启动共享目录时出错：%@";
+"Error trying to start shared directory: %@" = "尝试启动文件共享时出错：%@";
 
 /* UTMVirtualMachine+Drives */
 "Failed create bookmark." = "创建书签失败";
@@ -628,16 +628,16 @@
 "Share" = "共享";
 
 /* No comment provided by engineer. */
-"Shared Directory" = "共享目录";
+"Shared Directory" = "文件共享";
 
 /* UTMConfiguration */
 "Shared Network" = "共享网络";
 
 /* VMConfigSharingViewController */
-"Shared path has moved. Please re-choose." = "共享目录已被移动，请重新选择。";
+"Shared path has moved. Please re-choose." = "原有文件共享路径已被移动，请重新选择。";
 
 /* VMConfigSharingViewController */
-"Shared path is no longer valid. Please re-choose." = "共享目录已经失效， 请重新选择。";
+"Shared path is no longer valid. Please re-choose." = "原有文件共享路径已经失效， 请重新选择。";
 
 /* No comment provided by engineer. */
 "Show Advanced Settings" = "高级设置";
@@ -745,7 +745,7 @@
 "VM display size is fixed" = "VM显示大小是固定的";
 
 /* UTMVirtualMachine+Sharing */
-"VM frontend does not support shared directories." = "VM前端不支持共享目录。";
+"VM frontend does not support shared directories." = "VM前端不支持文件共享。";
 
 /* VMConfigSystemViewController */
 "Warning: iOS will kill apps that use more than 80% of the device's total memory." = "警告：iOS会强制关闭使用设备总内存80％以上的应用。";
@@ -879,3 +879,60 @@
 
 /* No comment provided by engineer. */
 "Random" = "随机生成";
+
+//OS Guide
+"I want to..." = "我想...";
+"Virtualize" = "虚拟化";
+"Faster, but can only run the native CPU architecture." = "更快，但只适用于运行与本机CPU架构相同的虚拟机";
+"Virtualization is not supported on your system." = "您的操作系统不支持虚拟化";
+"Emulate" = "模拟";
+"Slower, but can run other CPU architectures." = "更慢，但虚拟机的CPU架构不受限制";
+"Download prebuilt from UTM Gallery..." = "从UTM库下载预配置文件（可能需要手动导入安装镜像）";
+"Close" = "关闭";
+"Next" = "下一步";
+"Generate Windows Installer ISO" = "获取 Windows 安装光盘";
+"Boot ISO Image:" = "启动光盘镜像:";
+"Boot VHDX Image:" = "启动 VHDX 磁盘镜像:";
+"Import VHDX Image" = "导入VHDX 磁盘镜像";
+"Browse" = "浏览文件";
+"Clear" = "清除";
+"Download Windows 11 for ARM64 Preview VHDX" = "下载 Windows 11 ARM64 开发者预览版镜像文件";
+"Use Apple Virtualization" = "使用 Apple 虚拟化";
+"If set, use Apple's virtualization engine. Otherwise, use QEMU's virtualization engine." = "如果启用此选项，将使用 Apple 提供的虚拟化引擎；否则使用 QEMU 提供的虚拟化引擎。";
+"Boot from kernel image" = "从内核镜像启动";
+"If set, boot directly from a raw kernel image and initrd. Otherwise, boot from a supported ISO." = "如果启用此选项，将直接从内核(kernel)镜像和初始RAM磁盘(initrd)启动。";
+"Linux kernel (required):" = "Linux 内核(必须):";
+"Linux initial ramdisk:" = "Linux 初始RAM磁盘(initrd):";
+"Linux Root FS Image:" = "Linux Root FS 镜像:";
+"Boot Arguments" = "启动参数";
+"Download Ubuntu Server for ARM" = "下载 Ubuntu Server for ARM";
+"Download Ubuntu Desktop" = "下载 Ubuntu Desktop";
+"Skip ISO boot (advanced)" = "跳过 ISO 启动（高级）";
+//VMWizardState.swift
+"Please select an uncompressed Linux kernel image." = "请选择未压缩的Linux内核镜像";
+"Please select a macOS recovery IPSW." = "请选择 macOS 恢复文件（IPSW）";
+"Ramdisk (optional)" = "Ram磁盘(可选)";
+"macOS Settings" = "macOS 设置";
+"IPSW Install Image" = "IPSW 安装镜像";
+"Your machine does not support running this IPSW." = "您的设备不支持运行此 IPSW 安装镜像。";
+"Please select a boot image." = "请选择启动镜像。";
+"Please select a kernel file." = "请选择内核镜像。";
+"Please select a system to emulate." = "请选择用于模拟的系统。";
+"Unsupported architecture." = "不支持的架构。";
+"Failed to get latest macOS version from Apple." = "无法从 Apple 服务器获取最新的 macOS 版本。";
+"macOS is not supported with QEMU." = "macOS 不支持使用 QEMU。";
+"Unavailable for this platform." = "此平台不可用。";
+"Disk creation failed." = "创建磁盘失败。";
+//Storage
+"Storage" = "存储器";
+"Specify the size of the drive where data will be stored into." = "指定用于存储数据的磁盘驱动器最大容量";
+
+//Share Directory
+"Optionally select a directory to make accessible inside the VM. Note that support for shared directories varies by the guest operating system and may require additional guest drivers to be installed. See UTM support pages for more details." = "（可选）选择一个路径，以便在虚拟机内部访问。 请注意，对文件共享的支持因操作系统而异，并且可能需要安装额外的驱动程序。 有关更多详细信息，请参阅 UTM 支持页面。";
+"Read only share?" = "只读";
+
+//Summary
+"Summary" = "总结";
+"Boot" = "启动";
+"Share Directory" = "文件共享";
+"Directory" = "路径";
