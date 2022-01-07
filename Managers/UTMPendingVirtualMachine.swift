@@ -22,20 +22,30 @@ class UTMPendingVirtualMachine: Equatable, Identifiable, ObservableObject {
     internal init(name: String, task: UTMDownloadable) {
         self.name = name
         self.cancel = task.cancel
+        dateFormatter = DateComponentsFormatter()
+        dateFormatter.allowedUnits = [.second, .minute, .hour]
+        dateFormatter.unitsStyle = .abbreviated
     }
     
     #if DEBUG
     /// init for SwiftUI Preview
     internal init(name: String) {
+        dateFormatter = DateComponentsFormatter()
+        dateFormatter.allowedUnits = [.second, .minute, .hour]
+        dateFormatter.unitsStyle = .abbreviated
         self.name = name
         self.downloadProgress = 0.41
         self.cancel = {}
     }
     #endif
     
+    let downloadStart = Date()
+    private let dateFormatter: DateComponentsFormatter
+    private var lastETAUpdate = Date()
     private var uuid = UUID()
     let name: String
     @Published private(set) var downloadProgress: CGFloat = 0
+    @Published private(set) var estimatedTimeRemaining: String? = nil
     let cancel: () -> ()
     
     static func == (lhs: UTMPendingVirtualMachine, rhs: UTMPendingVirtualMachine) -> Bool {
@@ -49,5 +59,28 @@ class UTMPendingVirtualMachine: Equatable, Identifiable, ObservableObject {
     public func setDownloadProgress(_ progress: Float) {
         objectWillChange.send()
         downloadProgress = CGFloat(progress)
+        updateETAStringIfNeeded(progress)
+    }
+    
+    private func updateETAStringIfNeeded(_ progress: Float) {
+        /// only update the ETA string every full second, otherwise the UI is too busy
+        guard lastETAUpdate.timeIntervalSinceNow < -1 else {
+            return
+        }
+        if progress > 0.999 {
+            estimatedTimeRemaining = nil
+            return
+        }
+        lastETAUpdate = Date()
+        let elapsed = Float(-downloadStart.timeIntervalSinceNow)
+        let estimatedTotalTime = elapsed / progress
+        let estimatedTimeRemaining = estimatedTotalTime - elapsed
+        let secondsRemaining = TimeInterval(estimatedTimeRemaining).rounded()
+        guard let etaString = dateFormatter.string(from: secondsRemaining) else {
+            self.estimatedTimeRemaining = nil
+            return
+        }
+        let localizedFormatString = NSLocalizedString("%@ remaining", comment: "Format string for remaining time until a download finishes")
+        self.estimatedTimeRemaining = String(format: localizedFormatString, etaString)
     }
 }

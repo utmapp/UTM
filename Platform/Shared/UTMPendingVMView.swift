@@ -46,8 +46,9 @@ struct UTMPendingVMView: View {
                     .overlay(
                         MinimalProgressView(fractionCompleted: vm.downloadProgress)
                     )
+                Text(vm.estimatedTimeRemaining ?? " ")
+                    .font(.caption)
             }
-            .frame(maxHeight: 30)
             .foregroundColor(.gray)
         }
         .overlay(
@@ -84,6 +85,7 @@ struct MinimalProgressView: View {
                 RoundedRectangle(cornerRadius: frame.size.height/5)
                     .fill(Color.accentColor)
                     .frame(width: frame.size.width * fractionCompleted, height: frame.size.height/3)
+                    .offset(y: frame.size.height/3)
             }
         }
         .frame(maxWidth: .infinity)
