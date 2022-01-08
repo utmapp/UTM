@@ -72,6 +72,9 @@ class UTMImportFromWebTask: NSObject, UTMDownloadable, URLSessionDelegate, URLSe
             data.removePendingVM(pendingVM)
             pendingVM = nil
             isDone = true
+#if os(macOS)
+            NSApplication.shared.requestUserAttention(.informationalRequest)
+#endif
         }
     }
     
