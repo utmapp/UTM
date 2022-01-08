@@ -640,6 +640,10 @@ static size_t sysctl_read(const char *name) {
             [self pushArgv:@"-device"];
             [self pushArgv:self.configuration.displayCard];
         }
+        if (self.configuration.systemBootUefi) {
+            [self pushArgv:@"-device"];
+            [self pushArgv:@"virtio-rng-pci"];
+        }
     }
 }
 
