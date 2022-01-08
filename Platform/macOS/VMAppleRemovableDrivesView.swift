@@ -16,7 +16,6 @@
 
 import SwiftUI
 
-@available(macOS 12, *)
 struct VMAppleRemovableDrivesView: View {
     private enum SelectType {
         case sharedDirectory
@@ -215,7 +214,6 @@ struct VMAppleRemovableDrivesView: View {
     }
 }
 
-@available(macOS 12, *)
 struct VMAppleRemovableDrivesView_Previews: PreviewProvider {
     @StateObject static var vm = UTMAppleVirtualMachine()
     @StateObject static var config = UTMAppleConfiguration()

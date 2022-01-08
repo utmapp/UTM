@@ -16,7 +16,6 @@
 
 import SwiftUI
 
-@available(macOS 12, *)
 struct VMConfigAppleDriveDetailsView: View {
     @Binding var diskImage: DiskImage
     
@@ -29,7 +28,6 @@ struct VMConfigAppleDriveDetailsView: View {
     }
 }
 
-@available(macOS 12, *)
 struct VMConfigAppleDriveDetailsView_Previews: PreviewProvider {
     static var previews: some View {
         VMConfigAppleDriveDetailsView(diskImage: .constant(DiskImage(newSize: 100)))

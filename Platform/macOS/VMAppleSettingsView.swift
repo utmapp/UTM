@@ -16,7 +16,6 @@
 
 import SwiftUI
 
-@available(macOS 12, *)
 struct VMAppleSettingsView: View {
     let vm: UTMVirtualMachine?
     @ObservedObject var config: UTMAppleConfiguration
@@ -32,16 +31,20 @@ struct VMAppleSettingsView: View {
             Label("System", systemImage: "cpu")
         }
         NavigationLink(destination: VMConfigAppleBootView(config: config).scrollable()) {
-            Label("Boot", systemImage: "power.circle")
+            Label("Boot", systemImage: "power")
         }
-        NavigationLink(destination: VMConfigAppleDisplayView(config: config).scrollable()) {
-            Label("Display", systemImage: "rectangle.on.rectangle")
+        if #available(macOS 12, *) {
+            NavigationLink(destination: VMConfigAppleDisplayView(config: config).scrollable()) {
+                Label("Display", systemImage: "rectangle.on.rectangle")
+            }
         }
         NavigationLink(destination: VMConfigAppleNetworkingView(config: config).scrollable()) {
             Label("Network", systemImage: "network")
         }
-        NavigationLink(destination: VMConfigAppleSharingView(config: config).scrollable()) {
-            Label("Sharing", systemImage: "person.crop.circle.fill")
+        if #available(macOS 12, *) {
+            NavigationLink(destination: VMConfigAppleSharingView(config: config).scrollable()) {
+                Label("Sharing", systemImage: "person.crop.circle.fill")
+            }
         }
         Section(header: Text("Drives")) {
             ForEach($config.diskImages) { $diskImage in
@@ -55,7 +58,6 @@ struct VMAppleSettingsView: View {
     }
 }
 
-@available(macOS 12, *)
 struct VMAppleSettingsView_Previews: PreviewProvider {
     @StateObject static var config = UTMAppleConfiguration()
     static var previews: some View {

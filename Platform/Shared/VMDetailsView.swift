@@ -63,7 +63,7 @@ struct VMDetailsView: View {
                             .padding([.leading, .trailing])
                     }.padding([.leading, .trailing])
                     #if os(macOS)
-                    if #available(macOS 12, *), let appleVM = vm as? UTMAppleVirtualMachine {
+                    if let appleVM = vm as? UTMAppleVirtualMachine {
                         VMAppleRemovableDrivesView(vm: appleVM, config: appleVM.appleConfig)
                             .padding([.leading, .trailing, .bottom])
                     } else {
@@ -83,7 +83,7 @@ struct VMDetailsView: View {
                                 .fixedSize(horizontal: false, vertical: true)
                         }
                         #if os(macOS)
-                        if #available(macOS 12, *), let appleVM = vm as? UTMAppleVirtualMachine {
+                        if let appleVM = vm as? UTMAppleVirtualMachine {
                             VMAppleRemovableDrivesView(vm: appleVM, config: appleVM.appleConfig)
                         } else if let qemuVM = vm as? UTMQemuVirtualMachine {
                             VMRemovableDrivesView(vm: qemuVM)
@@ -98,7 +98,7 @@ struct VMDetailsView: View {
             .modifier(VMToolbarModifier(vm: vm, bottom: !regularScreenSizeClass))
             .sheet(isPresented: $data.showSettingsModal) {
                 #if os(macOS)
-                if #available(macOS 12, *), let appleVM = vm as? UTMAppleVirtualMachine {
+                if let appleVM = vm as? UTMAppleVirtualMachine {
                     VMSettingsView(vm: appleVM, config: appleVM.appleConfig)
                         .environmentObject(data)
                 } else if let qemuVM = vm as? UTMQemuVirtualMachine {
@@ -201,13 +201,18 @@ struct Details: View {
                     .foregroundColor(.secondary)
             }
             #if os(macOS)
-            if #available(macOS 12, *), let appleVM = vm as? UTMAppleVirtualMachine {
+            if let appleVM = vm as? UTMAppleVirtualMachine {
                 HStack {
                     plainLabel("Serial", systemImage: "phone.connection")
                     Spacer()
-                    Text(appleVM.serialPort?.name ?? "Inactive")
-                        .foregroundColor(.secondary)
-                        .textSelection(.enabled)
+                    if #available(macOS 12, *) {
+                        Text(appleVM.serialPort?.name ?? "Inactive")
+                            .foregroundColor(.secondary)
+                            .textSelection(.enabled)
+                    } else {
+                        Text(appleVM.serialPort?.name ?? "Inactive")
+                            .foregroundColor(.secondary)
+                    }
                 }
             }
             #endif

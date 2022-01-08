@@ -17,7 +17,6 @@
 import SwiftUI
 import Virtualization
 
-@available(macOS 12, *)
 struct VMConfigAppleNetworkingView: View {
     @ObservedObject var config: UTMAppleConfiguration
     @EnvironmentObject private var data: UTMData
@@ -118,7 +117,6 @@ struct VMConfigAppleNetworkingView: View {
     }
 }
 
-@available(macOS 12, *)
 struct VMConfigAppleNetworkingView_Previews: PreviewProvider {
     @State static private var config = UTMAppleConfiguration()
     

@@ -16,7 +16,6 @@
 
 import SwiftUI
 
-@available(macOS 12, *)
 struct VMConfigAppleDriveCreateView: View {
     private let mibToGib = 1024
     let minSizeMib = 1
@@ -67,7 +66,6 @@ struct VMConfigAppleDriveCreateView: View {
     }
 }
 
-@available(macOS 12, *)
 struct VMConfigAppleDriveCreateView_Previews: PreviewProvider {
     static var previews: some View {
         VMConfigAppleDriveCreateView(driveSize: .constant(100))

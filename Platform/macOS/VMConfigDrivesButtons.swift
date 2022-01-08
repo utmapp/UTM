@@ -58,7 +58,7 @@ struct VMConfigDrivesButtons<Config: ObservableObject & UTMConfigurable>: View {
                 VStack {
                     if let qemuConfig = config as? UTMQemuConfiguration {
                         VMConfigDriveCreateView(target: qemuConfig.systemTarget, architecture: qemuConfig.systemArchitecture, driveImage: newQemuDrive)
-                    } else if #available(macOS 12, *), let _ = config as? UTMAppleConfiguration {
+                    } else if let _ = config as? UTMAppleConfiguration {
                         VMConfigAppleDriveCreateView(driveSize: $newAppleDriveSize)
                     }
                     HStack {

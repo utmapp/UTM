@@ -26,6 +26,7 @@ struct VMConfigAppleBootView: View {
         case kernel
         case ramdisk
         case ipsw
+        case unsupported
     }
     
     @ObservedObject var config: UTMAppleConfiguration
@@ -44,14 +45,9 @@ struct VMConfigAppleBootView: View {
             Picker("Operating System", selection: $operatingSystem) {
                 Text("None")
                     .tag(nil as Bootloader.OperatingSystem?)
-                if #available(macOS 12, *) {
-                    ForEach(Bootloader.OperatingSystem.allCases) { os in
-                        Text(os.rawValue)
-                            .tag(os as Bootloader.OperatingSystem?)
-                    }
-                } else {
-                    Text("Linux")
-                        .tag(Bootloader.OperatingSystem.Linux)
+                ForEach(Bootloader.OperatingSystem.allCases) { os in
+                    Text(os.rawValue)
+                        .tag(os as Bootloader.OperatingSystem?)
                 }
             }.onChange(of: operatingSystem) { newValue in
                 guard newValue != currentOperatingSystem else {
@@ -70,7 +66,11 @@ struct VMConfigAppleBootView: View {
                 if newValue == .Linux {
                     alertBootloaderSelection = .kernel
                 } else if newValue == .macOS {
-                    alertBootloaderSelection = .ipsw
+                    if #available(macOS 12, *) {
+                        alertBootloaderSelection = .ipsw
+                    } else {
+                        alertBootloaderSelection = .unsupported
+                    }
                 }
                 // don't change display until AFTER file selected
                 importBootloaderSelection = nil
@@ -85,6 +85,8 @@ struct VMConfigAppleBootView: View {
                     return Alert(title: Text("Please select an uncompressed Linux kernel image."), dismissButton: okay)
                 case .ipsw:
                     return Alert(title: Text("Please select a macOS recovery IPSW."), primaryButton: okay, secondaryButton: .cancel())
+                case .unsupported:
+                    return Alert(title: Text("This operating system is unsupported on your machine."))
                 default:
                     return Alert(title: Text("Select a file."), dismissButton: okay)
                 }
@@ -158,6 +160,8 @@ struct VMConfigAppleBootView: View {
                 config.bootLoader = try Bootloader(for: .Linux, linuxKernelURL: url)
             case .ramdisk:
                 config.bootLoader!.linuxInitialRamdiskURL = url
+            case .unsupported:
+                break
             }
             operatingSystem = currentOperatingSystem
         }

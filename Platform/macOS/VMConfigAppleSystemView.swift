@@ -17,7 +17,6 @@
 import SwiftUI
 import Virtualization
 
-@available(macOS 12, *)
 struct VMConfigAppleSystemView: View {
     
     @ObservedObject var config: UTMAppleConfiguration
@@ -65,19 +64,20 @@ struct VMConfigAppleSystemView: View {
             Toggle("Show Advanced Settings", isOn: $isAdvanced)
             if isAdvanced {
                 Section(header: Text("Advanced Settings")) {
-                    Toggle("Enable Sound", isOn: $config.isAudioEnabled)
                     Toggle("Enable Balloon Device", isOn: $config.isBalloonEnabled)
                     Toggle("Enable Entropy Device", isOn: $config.isEntropyEnabled)
-                    Toggle("Enable Keyboard", isOn: $config.isKeyboardEnabled)
-                    Toggle("Enable Pointer", isOn: $config.isPointingEnabled)
                     Toggle("Enable Serial", isOn: $config.isSerialEnabled)
+                    if #available(macOS 12, *) {
+                        Toggle("Enable Sound", isOn: $config.isAudioEnabled)
+                        Toggle("Enable Keyboard", isOn: $config.isKeyboardEnabled)
+                        Toggle("Enable Pointer", isOn: $config.isPointingEnabled)
+                    }
                 }
             }
         }
     }
 }
 
-@available(macOS 12, *)
 struct VMConfigAppleSystemView_Previews: PreviewProvider {
     @State static private var config = UTMAppleConfiguration()
     
