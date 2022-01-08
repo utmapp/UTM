@@ -195,6 +195,8 @@ deb )
 	<true/>
 	<key>com.apple.developer.kernel.increased-memory-limit</key>
 	<true/>
+	<key>com.apple.developer.kernel.extended-virtual-addressing</key>
+	<true/>
 </dict>
 </plist>
 EOL
@@ -211,6 +213,8 @@ ipa )
 	<key>get-task-allow</key>
 	<true/>
 	<key>com.apple.developer.kernel.increased-memory-limit</key>
+	<true/>
+	<key>com.apple.developer.kernel.extended-virtual-addressing</key>
 	<true/>
 	<!-- https://siguza.github.io/psychicpaper/ -->
 	<!---><!-->
@@ -242,6 +246,8 @@ ipa-se )
 <plist version="1.0">
 <dict>
 	<key>com.apple.developer.kernel.increased-memory-limit</key>
+	<true/>
+	<key>com.apple.developer.kernel.extended-virtual-addressing</key>
 	<true/>
 </dict>
 </plist>
