@@ -2975,7 +2975,6 @@
 		CE550BC0225947990063E575 = {
 			isa = PBXGroup;
 			children = (
-				FF490790278361780041E4B1 /* QEMULauncher-InfoPlist.strings */,
 				CE50A41F2637BB200050430F /* Build.xcconfig */,
 				CE258ACC22715F8300E5A333 /* README.md */,
 				84C584DD268E9597000FCABF /* AppleVirtualization */,
@@ -3123,6 +3122,7 @@
 				CEF6F5EC26DDD65700BC434D /* QEMULauncher-unsigned.entitlements */,
 				CE6B240A25F1F3CE0020D43E /* main.c */,
 				CE6B240F25F1F43A0020D43E /* Info.plist */,
+				FF490790278361780041E4B1 /* QEMULauncher-InfoPlist.strings */,
 			);
 			path = QEMULauncher;
 			sourceTree = "<group>";
