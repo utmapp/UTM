@@ -150,6 +150,10 @@
         self.systemBootUefi = NO;
     }
     self.useHypervisor = self.defaultUseHypervisor;
+    // override hypervisor setting for older PC targets
+    if ([target hasPrefix:@"pc"]) {
+        self.useHypervisor = NO;
+    }
     NSString *machineProp = [UTMQemuConfiguration defaultMachinePropertiesForTarget:target];
     if (machineProp) {
         self.systemMachineProperties = machineProp;
