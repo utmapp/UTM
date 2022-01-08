@@ -270,6 +270,7 @@
         UTMQemuVirtualMachine *vm = (UTMQemuVirtualMachine*) sender;
         metalView.vm = vm;
         vm.delegate = metalView;
+        [metalView setupSubviews];
         [metalView virtualMachine:vm transitionToState:vm.state];
     } else if ([[segue identifier] isEqualToString:@"startVMConsole"]) {
         NSAssert([segue.destinationViewController isKindOfClass:[VMDisplayTerminalViewController class]], @"Destination not a terminal view");
@@ -277,6 +278,7 @@
         UTMQemuVirtualMachine *vm = (UTMQemuVirtualMachine*) sender;
         terminalView.vm = vm;
         vm.delegate = terminalView;
+        [terminalView setupSubviews];
     }
 }
 
