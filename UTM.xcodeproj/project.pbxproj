@@ -63,6 +63,7 @@
 		8469CACF277D345700BA5601 /* qapi-visit-compat.c in Sources */ = {isa = PBXBuildFile; fileRef = 8469CACD277D345700BA5601 /* qapi-visit-compat.c */; };
 		8469CAD0277D345700BA5601 /* qapi-visit-compat.c in Sources */ = {isa = PBXBuildFile; fileRef = 8469CACD277D345700BA5601 /* qapi-visit-compat.c */; };
 		8469CAD1277D345700BA5601 /* qapi-visit-compat.c in Sources */ = {isa = PBXBuildFile; fileRef = 8469CACD277D345700BA5601 /* qapi-visit-compat.c */; };
+		848308D5278A1F2200E3E474 /* Virtualization.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 848308D4278A1F2200E3E474 /* Virtualization.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		848F71E6277A2466006A0240 /* SwiftTerm in Frameworks */ = {isa = PBXBuildFile; productRef = 848F71E5277A2466006A0240 /* SwiftTerm */; };
 		848F71E8277A2A4E006A0240 /* UTMSerialPort.swift in Sources */ = {isa = PBXBuildFile; fileRef = 848F71E7277A2A4E006A0240 /* UTMSerialPort.swift */; };
 		848F71E9277A2A4E006A0240 /* UTMSerialPort.swift in Sources */ = {isa = PBXBuildFile; fileRef = 848F71E7277A2A4E006A0240 /* UTMSerialPort.swift */; };
@@ -1570,6 +1571,7 @@
 		8469CAC9277D301300BA5601 /* qapi-types-compat.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-types-compat.c"; path = "$(SYSROOT_DIR)/qapi/qapi-types-compat.c"; sourceTree = SOURCE_ROOT; };
 		8469CACD277D345700BA5601 /* qapi-visit-compat.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-visit-compat.c"; path = "$(SYSROOT_DIR)/qapi/qapi-visit-compat.c"; sourceTree = SOURCE_ROOT; };
 		8469CACE277D345700BA5601 /* qapi-visit-compat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-visit-compat.h"; path = "$(SYSROOT_DIR)/qapi/qapi-visit-compat.h"; sourceTree = SOURCE_ROOT; };
+		848308D4278A1F2200E3E474 /* Virtualization.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Virtualization.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX12.1.sdk/System/Library/Frameworks/Virtualization.framework; sourceTree = DEVELOPER_DIR; };
 		848F71E7277A2A4E006A0240 /* UTMSerialPort.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMSerialPort.swift; sourceTree = "<group>"; };
 		848F71EB277A2F47006A0240 /* UTMSerialPortDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMSerialPortDelegate.swift; sourceTree = "<group>"; };
 		84A381A9268CB30C0048EE4D /* VMConfigDrivesButtons.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMConfigDrivesButtons.swift; sourceTree = "<group>"; };
@@ -2316,6 +2318,7 @@
 				CEF83F872500948800557D15 /* gpg-error.0.framework in Frameworks */,
 				CE0B6ED324AD677200FE012D /* libgstvideoconvert.a in Frameworks */,
 				CE0B6F0124AD677200FE012D /* libgsttypefindfunctions.a in Frameworks */,
+				848308D5278A1F2200E3E474 /* Virtualization.framework in Frameworks */,
 				CE0B6EE124AD677200FE012D /* gstrtsp-1.0.0.framework in Frameworks */,
 				848F71E6277A2466006A0240 /* SwiftTerm in Frameworks */,
 				CE03D08824D90F0700F76B84 /* gio-2.0.0.framework in Frameworks */,
@@ -2489,6 +2492,7 @@
 		CE2D63D622653C7300FC7E63 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				848308D4278A1F2200E3E474 /* Virtualization.framework */,
 				CE5451A426AF5F0F008594E5 /* EGL.framework */,
 				CE5451A226AF5F0F008594E5 /* epoxy.0.framework */,
 				CE5451A326AF5F0F008594E5 /* GLESv2.framework */,
