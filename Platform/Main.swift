@@ -76,6 +76,14 @@ class Main {
                     logger.debug("registerDefaultsFromSettingsBundle: (\(key), \(value)) \(type(of: value))")
                 }
             }
+            
+            // register version numbers
+            if let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] {
+                userDefaults.set(version, forKey: "LastBootedVersion")
+            }
+            if let build = Bundle.main.infoDictionary?["CFBundleVersion"] {
+                userDefaults.set(build, forKey: "LastBootedBuild")
+            }
 
             userDefaults.register(defaults: defaultsToRegister)
         } else {

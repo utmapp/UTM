@@ -2630,6 +2630,32 @@
 			<key>MaximumValue</key>
 			<integer>100</integer>
 		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+			<key>Title</key>
+			<string>About</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSTitleValueSpecifier</string>
+			<key>Title</key>
+			<string>Version</string>
+			<key>Key</key>
+			<string>LastBootedVersion</string>
+			<key>DefaultValue</key>
+			<string>0.0</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSTitleValueSpecifier</string>
+			<key>Title</key>
+			<string>Build</string>
+			<key>Key</key>
+			<string>LastBootedBuild</string>
+			<key>DefaultValue</key>
+			<string>0</string>
+		</dict>
 	</array>
 </dict>
 </plist>
