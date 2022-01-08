@@ -61,7 +61,7 @@ jobs:
           ./scripts/build_dependencies.sh -p ${{ matrix.platform }} -a ${{ matrix.arch }}
       - name: Compress Sysroot
         if: steps.cache-sysroot.outputs.cache-hit != 'true' || github.event_name == 'release' || github.event.inputs.test_release == 'true'
-        run: tar cf sysroot.tgz sysroot*
+        run: tar -acf sysroot.tgz sysroot*
       - name: Upload Sysroot
         if: steps.cache-sysroot.outputs.cache-hit != 'true' || github.event_name == 'release' || github.event.inputs.test_release == 'true'
         uses: actions/upload-artifact@v2
@@ -71,7 +71,7 @@ jobs:
       - name: Build UTM
         run: |
           ./scripts/build_utm.sh -p ${{ matrix.platform }} -a ${{ matrix.arch }} -o UTM
-          tar cf UTM.xcarchive.tgz UTM.xcarchive
+          tar -acf UTM.xcarchive.tgz UTM.xcarchive
       - name: Upload UTM
         uses: actions/upload-artifact@v2
         with:
@@ -99,11 +99,11 @@ jobs:
           path: Sysroot-2
       - name: Pack Universal Sysroot
         run: |
-          tar xf Sysroot-1/sysroot.tgz
-          tar xf Sysroot-2/sysroot.tgz
+          tar -xf Sysroot-1/sysroot.tgz
+          tar -xf Sysroot-2/sysroot.tgz
           ./scripts/pack_dependencies.sh . macos arm64 x86_64
       - name: Compress Sysroot
-        run: tar cf sysroot.tgz sysroot-macOS-arm64_x86_64
+        run: tar -acf sysroot.tgz sysroot-macOS-arm64_x86_64
       - name: Upload Sysroot
         uses: actions/upload-artifact@v2
         with:
@@ -115,7 +115,7 @@ jobs:
       - name: Build UTM
         run: |
           ./scripts/build_utm.sh -t "$SIGNING_TEAM_ID" -p macos -a "arm64 x86_64" -o UTM
-          tar cf UTM.xcarchive.tgz UTM.xcarchive
+          tar -acf UTM.xcarchive.tgz UTM.xcarchive
         env:
           SIGNING_TEAM_ID: ${{ secrets.SIGNING_TEAM_ID }}
       - name: Upload UTM
@@ -139,7 +139,7 @@ jobs:
         run: brew install ldid
       - name: Fakesign IPA
         run: |
-          tar xf UTM.xcarchive.tgz
+          tar -xf UTM.xcarchive.tgz
           ./scripts/package.sh ipa UTM.xcarchive .
       - name: Upload Artifact
         if: github.event_name != 'release'
@@ -181,7 +181,7 @@ jobs:
         run: brew install ldid
       - name: Fakesign IPA
         run: |
-          tar xf UTM.xcarchive.tgz
+          tar -xf UTM.xcarchive.tgz
           ./scripts/package.sh ipa-se UTM.xcarchive .
       - name: Upload Artifact
         if: github.event_name != 'release'
@@ -223,7 +223,7 @@ jobs:
         run: brew install ldid dpkg
       - name: Fakesign IPA
         run: |
-          tar xf UTM.xcarchive.tgz
+          tar -xf UTM.xcarchive.tgz
           ./scripts/package.sh deb UTM.xcarchive .
       - name: Upload Artifact
         if: github.event_name != 'release'
@@ -281,7 +281,7 @@ jobs:
           name: UTM-macos-universal
       - name: Package for Release
         run: |
-          tar xf UTM.xcarchive.tgz
+          tar -xf UTM.xcarchive.tgz
           ./scripts/package_mac.sh developer-id UTM.xcarchive . "$SIGNING_TEAM_ID" "$PROFILE_UUID" "$HELPER_PROFILE_UUID" "$LAUNCHER_PROFILE_UUID"
         env:
           SIGNING_TEAM_ID: ${{ secrets.SIGNING_TEAM_ID }}
