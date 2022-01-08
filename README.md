@@ -54,8 +54,13 @@ UTM is also available for macOS: https://mac.getutm.app/
 
 UTM is distributed under the permissive Apache 2.0 license. However, it uses several (L)GPL components. Most are dynamically linked but the gstreamer plugins are statically linked and parts of the code are taken from qemu. Please be aware of this if you intend on redistributing this application.
 
-Some icons made by [Freepik](https://www.freepik.com) from [www.flaticon.com](https://www.flaticon.com/).  
-UTM uses [ZIP Foundation](https://github.com/weichsel/ZIPFoundation), which is released under the MIT License.
+Some icons made by [Freepik](https://www.freepik.com) from [www.flaticon.com](https://www.flaticon.com/).
+
+Additionally, UTM frontend depends on the following MIT License components:
+
+* [IQKeyboardManager](https://github.com/hackiftekhar/IQKeyboardManager)
+* [SwiftTerm](https://github.com/migueldeicaza/SwiftTerm)
+* [ZIP Foundation](https://github.com/weichsel/ZIPFoundation)
   
   [1]: https://github.com/utmapp/UTM/actions?query=event%3Arelease+workflow%3ABuild
   [2]: screen.png
