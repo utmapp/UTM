@@ -217,7 +217,7 @@ struct Details: View {
     
     private func plainLabel(_ text: String, systemImage: String) -> some View {
         return Label {
-            Text(text)
+            Text(LocalizedStringKey(text))
         } icon: {
             Image(systemName: systemImage).foregroundColor(.primary)
         }
