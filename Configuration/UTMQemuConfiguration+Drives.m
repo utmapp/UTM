@@ -104,7 +104,7 @@ static const NSString *const kUTMConfigCdromKey = @"Cdrom";
 - (void)recoverOrphanedDrives {
     NSArray<NSString *> *orphans = self.orphanedDrives;
     for (NSInteger i = 0; i < orphans.count; i++) {
-        NSString *name = [NSUUID UUID].UUIDString;
+        NSString *name = [NSString stringWithFormat:@"drive%@", [[NSUUID UUID] UUIDString]];
         [self newDrive:name path:orphans[i] type:UTMDiskImageTypeNone interface:@""];
     }
 }
