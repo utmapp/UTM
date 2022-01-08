@@ -418,6 +418,10 @@ build_angle () {
         cp -a "utm_build/libEGL.dylib" "$PREFIX/lib/libEGL.dylib"
         cp -a "utm_build/libGLESv2.dylib" "$PREFIX/lib/libGLESv2.dylib"
     fi
+    # FIXME: above
+    if [ "$PLATFORM" == "ios_simulator" ]; then
+        mv "build/config/ios/BUILD.gn.old" "build/config/ios/BUILD.gn"
+    fi
     # -headerpad_max_install_names is broken and these still fail on long paths so we just make sure they run at the end with a short path
     #install_name_tool -id "$PREFIX/lib/libEGL.dylib" "$PREFIX/lib/libEGL.dylib"
     #install_name_tool -id "$PREFIX/lib/libGLESv2.dylib" "$PREFIX/lib/libGLESv2.dylib"
