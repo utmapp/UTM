@@ -20,6 +20,11 @@ UTM is a full featured system emulator and virtual machine host for iOS and macO
 * Frontend designed from scratch for macOS 11 and iOS 11+ using the latest and greatest APIs
 * Create, manage, run VMs directly from your device
 
+## Additional macOS Features
+
+* Hardware accelerated virtualization using Hypervisor.framework and QEMU
+* Boot macOS guests with Virtualization.framework on macOS 12+
+
 ## UTM SE
 
 UTM/QEMU requires dynamic code generation (JIT) for maximum performance. JIT on iOS devices require either a jailbroken device, or one of the various workarounds found for specific versions of iOS (see "Install" for more details).
