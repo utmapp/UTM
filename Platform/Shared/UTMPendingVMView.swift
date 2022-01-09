@@ -19,9 +19,10 @@ import SwiftUI
 @available(iOS 14, macOS 11, *)
 struct UTMPendingVMView: View {
     @ObservedObject var vm: UTMPendingVirtualMachine
-    #if os(macOS)
+    @State private var showingDetails = false
+#if os(macOS)
     @State private var showCancelButton = false
-    #endif
+#endif
     
     var body: some View {
         HStack(alignment: .center) {
@@ -51,10 +52,15 @@ struct UTMPendingVMView: View {
             }
             .foregroundColor(.gray)
         }
+        .onTapGesture(perform: toggleDetailsPopup)
+        .popover(isPresented: $showingDetails) {
+            UTMPendingVMDetailsView(vm: vm)
+        }
+        /// macOS gets an on-hover cancel button
+#if os(macOS)
         .overlay(
             HStack {
                 Spacer()
-                #if os(macOS)
                 if showCancelButton {
                     Button(action: {
                         vm.cancel()
@@ -62,16 +68,18 @@ struct UTMPendingVMView: View {
                         Image(systemName: "xmark.circle")
                             .accessibility(label: Text("Cancel download"))
                     })
-                    .clipShape(Circle())
+                        .clipShape(Circle())
                 }
-                #endif
             }
         )
         .onHover(perform: { hovering in
-            #if os(macOS)
             self.showCancelButton = hovering
-            #endif
         })
+#endif
+    }
+    
+    private func toggleDetailsPopup() {
+        showingDetails.toggle()
     }
 }
 
