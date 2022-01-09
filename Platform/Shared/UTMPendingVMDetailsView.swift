@@ -20,37 +20,42 @@ import SwiftUI
 struct UTMPendingVMDetailsView: View {
     @ObservedObject var vm: UTMPendingVirtualMachine
     
-    var body: some View {
-        VStack(alignment: .leading) {
-            if let estimatedSize = vm.estimatedDownloadSize {
-                HStack(spacing: 0) {
-                    Text("Total Download Size: ")
-                    Text(estimatedSize)
-                }
+    private var downloadProgress: String {
+        get {
+            if let currentSize = vm.downloadedSize, let estimatedSize = vm.estimatedDownloadSize {
+                let estimatedSpeed = vm.estimatedDownloadSpeed ?? NSLocalizedString("Extracting…", comment: "Word for decompressing a compressed folder")
+                let formatString = NSLocalizedString("%1$@ of %2$@ (%3$@)", comment: "Format string for download progress and speed, e. g. 5 MB of 6 GB (200 kbit/s)")
+                return String(format: formatString, currentSize, estimatedSize, estimatedSpeed)
+            } else {
+                return NSLocalizedString("Preparing…", comment: "A download process is about to begin.")
             }
-            if let estimatedSpeed = vm.estimatedDownloadSpeed {
-                HStack(spacing: 0) {
-                    Text("Download Speed: ")
-                    Text(estimatedSpeed)
-                }
-            }
-            VStack(alignment: .center) {
-                if #available(iOS 15, macOS 12.0, *) {
-                    Button(role: .cancel, action: vm.cancel) {
-                        Label("Cancel Download", systemImage: "xmark.circle")
-                    }
-                    .buttonStyle(.borderedProminent)
-                    .tint(.red)
-                } else {
-                    Button(action: vm.cancel) {
-                        Label("Cancel Download", systemImage: "xmark.circle")
-                    }
-                    .foregroundColor(.red)
-                }
-            }
-            .frame(maxWidth: .infinity)
         }
-        .padding()
+    }
+    
+    var body: some View {
+        VStack(alignment: .center) {
+            Text(downloadProgress)
+                .lineLimit(1)
+                .padding(.top)
+            
+            if #available(iOS 15, macOS 12.0, *) {
+                Button(role: .cancel, action: vm.cancel) {
+                    Label("Cancel Download", systemImage: "xmark.circle")
+                }
+                .buttonStyle(.borderedProminent)
+                .tint(.red)
+                .disabled(vm.estimatedDownloadSpeed == nil)
+                .padding([.bottom, .leading, .trailing])
+            } else {
+                Button(action: vm.cancel) {
+                    Label("Cancel Download", systemImage: "xmark.circle")
+                }
+                .foregroundColor(.red)
+                .disabled(vm.estimatedDownloadSpeed == nil)
+                .padding([.bottom, .leading, .trailing])
+            }
+        }
+        .frame(minWidth: 230, maxWidth: .infinity)
     }
 }
 

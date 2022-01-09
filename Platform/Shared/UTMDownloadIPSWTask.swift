@@ -61,7 +61,7 @@ class UTMDownloadIPSWTask: NSObject, UTMDownloadable, URLSessionDelegate, URLSes
     
     internal func success(with location: URL) {
         DispatchQueue.main.async { [self] in
-            pendingVM.setDownloadProgress(1)
+            pendingVM.setDownloadFinishedNowExtracting()
         }
         onSuccess(location)
         /// remove downloading VM View Model

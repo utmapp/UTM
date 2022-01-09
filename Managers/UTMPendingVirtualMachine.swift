@@ -46,11 +46,17 @@ class UTMPendingVirtualMachine: Equatable, Identifiable, ObservableObject {
     private var bytesWrittenSinceLastDownloadSpeedUpdate: Int64 = 0
     private var uuid = UUID()
     let name: String
+    let cancel: () -> ()
+    
+    // TODO: Refactor to avoid non-optional optionals.
+    // There should be a state enum or something to represent the steps of the pending VM progress
+    @Published private(set) var downloadedSize: String? = nil
     @Published private(set) var estimatedDownloadSize: String? = nil
+    /// if `nil`, either the download has not started or has finished and it is currently extracting.
+    /// Can not cancel if currently extracting.
     @Published private(set) var estimatedDownloadSpeed: String? = nil
     @Published private(set) var downloadProgress: CGFloat = 0
     @Published private(set) var estimatedTimeRemaining: String? = nil
-    let cancel: () -> ()
     
     static func == (lhs: UTMPendingVirtualMachine, rhs: UTMPendingVirtualMachine) -> Bool {
         lhs.uuid == rhs.uuid
@@ -58,11 +64,6 @@ class UTMPendingVirtualMachine: Equatable, Identifiable, ObservableObject {
     
     var id: UUID {
         uuid
-    }
-    
-    public func setEstimatedDownloadSize(_ size: Int64) {
-        objectWillChange.send()
-        estimatedDownloadSize = ByteCountFormatter.string(fromByteCount: size, countStyle: .file)
     }
     
     private func updateETAStringIfNeeded(_ progress: Float) {
@@ -87,7 +88,7 @@ class UTMPendingVirtualMachine: Equatable, Identifiable, ObservableObject {
         self.estimatedTimeRemaining = String(format: localizedFormatString, etaString)
     }
     
-    private func updateDownloadSpeed(for newBytesWritten: Int64) {
+    private func updateDownloadStats(for newBytesWritten: Int64, currentTotal totalBytesWritten: Int64, estimatedTotal totalBytesExpectedToWrite: Int64) {
         bytesWrittenSinceLastDownloadSpeedUpdate += newBytesWritten
         /// only update the download speed string every full second, otherwise the UI is too busy
         let elapsed = -lastDownloadSpeedUpdate.timeIntervalSinceNow
@@ -101,6 +102,9 @@ class UTMPendingVirtualMachine: Equatable, Identifiable, ObservableObject {
         let speedFormat = NSLocalizedString("%@ / s",
                                             comment: "Format string for the 'per second' part of a download speed.")
         estimatedDownloadSpeed = String(format: speedFormat, bytesString)
+        /// sizes
+        downloadedSize = ByteCountFormatter.string(fromByteCount: totalBytesWritten, countStyle: .file)
+        estimatedDownloadSize = ByteCountFormatter.string(fromByteCount: totalBytesExpectedToWrite, countStyle: .file)
     }
     
     public func setDownloadProgress(new newBytesWritten: Int64, currentTotal totalBytesWritten: Int64, estimatedTotal totalBytesExpectedToWrite: Int64) {
@@ -108,12 +112,14 @@ class UTMPendingVirtualMachine: Equatable, Identifiable, ObservableObject {
         let progress = Float(totalBytesWritten) / Float(totalBytesExpectedToWrite)
         downloadProgress = CGFloat(progress)
         updateETAStringIfNeeded(progress)
-        setEstimatedDownloadSize(totalBytesExpectedToWrite)
-        updateDownloadSpeed(for: newBytesWritten)
+        updateDownloadStats(for: newBytesWritten, currentTotal: totalBytesWritten, estimatedTotal: totalBytesExpectedToWrite)
     }
     
-    public func setDownloadProgress(_ progress: Float) {
+    public func setDownloadFinishedNowExtracting() {
         objectWillChange.send()
-        downloadProgress = CGFloat(progress)
+        downloadProgress = 1
+        downloadedSize = estimatedDownloadSize
+        estimatedDownloadSpeed = nil
+        estimatedTimeRemaining = nil
     }
 }

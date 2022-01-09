@@ -35,7 +35,7 @@ class UTMImportFromWebTask: NSObject, UTMDownloadable, URLSessionDelegate, URLSe
     internal func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
         self.downloadTask = nil
         DispatchQueue.main.async { [self] in
-            pendingVM.setDownloadProgress(1)
+            pendingVM.setDownloadFinishedNowExtracting()
         }
         let fileManager = FileManager.default
         let tempDir = fileManager.temporaryDirectory
