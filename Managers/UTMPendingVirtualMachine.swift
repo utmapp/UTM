@@ -42,8 +42,12 @@ class UTMPendingVirtualMachine: Equatable, Identifiable, ObservableObject {
     let downloadStart = Date()
     private let dateFormatter: DateComponentsFormatter
     private var lastETAUpdate = Date()
+    private var lastDownloadSpeedUpdate = Date()
+    private var bytesWrittenSinceLastDownloadSpeedUpdate: Int64 = 0
     private var uuid = UUID()
     let name: String
+    @Published private(set) var estimatedDownloadSize: String? = nil
+    @Published private(set) var estimatedDownloadSpeed: String? = nil
     @Published private(set) var downloadProgress: CGFloat = 0
     @Published private(set) var estimatedTimeRemaining: String? = nil
     let cancel: () -> ()
@@ -56,10 +60,9 @@ class UTMPendingVirtualMachine: Equatable, Identifiable, ObservableObject {
         uuid
     }
     
-    public func setDownloadProgress(_ progress: Float) {
+    public func setEstimatedDownloadSize(_ size: Int64) {
         objectWillChange.send()
-        downloadProgress = CGFloat(progress)
-        updateETAStringIfNeeded(progress)
+        estimatedDownloadSize = ByteCountFormatter.string(fromByteCount: size, countStyle: .file)
     }
     
     private func updateETAStringIfNeeded(_ progress: Float) {
@@ -82,5 +85,35 @@ class UTMPendingVirtualMachine: Equatable, Identifiable, ObservableObject {
         }
         let localizedFormatString = NSLocalizedString("%@ remaining", comment: "Format string for remaining time until a download finishes")
         self.estimatedTimeRemaining = String(format: localizedFormatString, etaString)
+    }
+    
+    private func updateDownloadSpeed(for newBytesWritten: Int64) {
+        bytesWrittenSinceLastDownloadSpeedUpdate += newBytesWritten
+        /// only update the download speed string every full second, otherwise the UI is too busy
+        let elapsed = -lastDownloadSpeedUpdate.timeIntervalSinceNow
+        guard elapsed > 1 else {
+            return
+        }
+        lastDownloadSpeedUpdate = Date()
+        let bytesPerSecond = bytesWrittenSinceLastDownloadSpeedUpdate
+        bytesWrittenSinceLastDownloadSpeedUpdate = 0
+        let bytesString = ByteCountFormatter.string(fromByteCount: bytesPerSecond, countStyle: .file)
+        let speedFormat = NSLocalizedString("%@ / s",
+                                            comment: "Format string for the 'per second' part of a download speed.")
+        estimatedDownloadSpeed = String(format: speedFormat, bytesString)
+    }
+    
+    public func setDownloadProgress(new newBytesWritten: Int64, currentTotal totalBytesWritten: Int64, estimatedTotal totalBytesExpectedToWrite: Int64) {
+        objectWillChange.send()
+        let progress = Float(totalBytesWritten) / Float(totalBytesExpectedToWrite)
+        downloadProgress = CGFloat(progress)
+        updateETAStringIfNeeded(progress)
+        setEstimatedDownloadSize(totalBytesExpectedToWrite)
+        updateDownloadSpeed(for: newBytesWritten)
+    }
+    
+    public func setDownloadProgress(_ progress: Float) {
+        objectWillChange.send()
+        downloadProgress = CGFloat(progress)
     }
 }

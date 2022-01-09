@@ -126,8 +126,9 @@ class UTMImportFromWebTask: NSObject, UTMDownloadable, URLSessionDelegate, URLSe
     internal func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didWriteData bytesWritten: Int64, totalBytesWritten: Int64, totalBytesExpectedToWrite: Int64) {
         DispatchQueue.main.async { [self] in
             guard pendingVM != nil else { return }
-            let progress = Float(totalBytesWritten) / Float(totalBytesExpectedToWrite)
-            pendingVM.setDownloadProgress(progress)
+            pendingVM.setDownloadProgress(new: bytesWritten,
+                                          currentTotal: totalBytesWritten,
+                                          estimatedTotal: totalBytesExpectedToWrite)
         }
     }
     
