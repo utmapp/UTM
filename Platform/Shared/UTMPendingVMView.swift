@@ -41,37 +41,30 @@ struct UTMPendingVMView: View {
             VStack(alignment: .leading) {
                 Text(vm.name)
                     .font(.headline)
-                Text(" ") /// to create a seamless layout with the ProgressView like a next line of text
-                    .font(.subheadline)
-                    .frame(maxWidth: .infinity)
-                    .overlay(
-                        MinimalProgressView(fractionCompleted: vm.downloadProgress)
-                    )
+                MinimalProgressView(fractionCompleted: vm.downloadProgress)
                 Text(vm.estimatedTimeRemaining ?? " ")
                     .font(.caption)
             }
             .foregroundColor(.gray)
+            
+#if os(macOS)
+            /// macOS gets an on-hover cancel button
+            Button(action: {
+                vm.cancel()
+            }, label: {
+                Image(systemName: "xmark.circle")
+                    .accessibility(label: Text("Cancel download"))
+            })
+                .clipShape(Circle())
+                .disabled(!showCancelButton)
+                .opacity(showCancelButton ? 1 : 0)
+#endif
         }
         .onTapGesture(perform: toggleDetailsPopup)
         .popover(isPresented: $showingDetails) {
             UTMPendingVMDetailsView(vm: vm)
         }
-        /// macOS gets an on-hover cancel button
 #if os(macOS)
-        .overlay(
-            HStack {
-                Spacer()
-                if showCancelButton {
-                    Button(action: {
-                        vm.cancel()
-                    }, label: {
-                        Image(systemName: "xmark.circle")
-                            .accessibility(label: Text("Cancel download"))
-                    })
-                        .clipShape(Circle())
-                }
-            }
-        )
         .onHover(perform: { hovering in
             self.showCancelButton = hovering
         })
@@ -87,17 +80,31 @@ struct UTMPendingVMView: View {
 struct MinimalProgressView: View {
     let fractionCompleted: CGFloat
     
+    private var accessibilityLabel: String {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .percent
+        formatter.allowsFloats = false
+        let label = formatter.string(from: NSNumber(value: fractionCompleted)) ?? ""
+        return label
+    }
+    
     var body: some View {
-        ZStack {
-            GeometryReader { frame in
-                RoundedRectangle(cornerRadius: frame.size.height/5)
-                    .fill(Color.accentColor)
-                    .frame(width: frame.size.width * fractionCompleted, height: frame.size.height/3)
-                    .offset(y: frame.size.height/3)
-            }
-        }
-        .frame(maxWidth: .infinity)
-        .padding(1)
+        Text(" ") /// to create a seamless layout with the rest of the text
+            .font(.subheadline)
+            .frame(maxWidth: .infinity)
+            .overlay(
+                GeometryReader { frame in
+                    RoundedRectangle(cornerRadius: frame.size.height/5)
+                        .fill(Color.secondary)
+                        .frame(width: frame.size.width, height: frame.size.height/3)
+                        .offset(y: frame.size.height/3)
+                    RoundedRectangle(cornerRadius: frame.size.height/5)
+                        .fill(Color.accentColor)
+                        .frame(width: frame.size.width * fractionCompleted, height: frame.size.height/3)
+                        .offset(y: frame.size.height/3)
+                }
+            )
+            .accessibilityLabel(accessibilityLabel)
     }
 }
 
