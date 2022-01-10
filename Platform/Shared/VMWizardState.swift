@@ -217,6 +217,9 @@ class VMWizardState: ObservableObject {
                 nextPage = .sharing
             }
             #endif
+            if operatingSystem == .Linux && linuxRootImageURL != nil {
+                nextPage = .sharing
+            }
         case .drives:
             nextPage = .sharing
         case .sharing:
