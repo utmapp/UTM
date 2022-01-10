@@ -192,19 +192,6 @@ struct VMConfigDrivesButtons<Config: ObservableObject & UTMConfigurable>: View {
         }
     }
     
-    private func browseImage(result: Result<URL, Error>) {
-        let qemuConfig = config as! UTMQemuConfiguration
-        data.busyWork {
-            switch result {
-            case .success(let url):
-                try data.importDrive(url, for: qemuConfig, imageType: newQemuDrive.imageType, on: newQemuDrive.interface!, copy: true)
-                break
-            case .failure(let err):
-                throw err
-            }
-        }
-    }
-    
     private func addNewDrive(_ newDrive: VMDriveImage) {
         newDrivePopover = false // hide popover
         data.busyWork {
