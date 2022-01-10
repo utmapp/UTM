@@ -178,14 +178,14 @@
     }];
 }
 
-- (void)startQemu:(nonnull NSString *)arch completion:(void(^)(BOOL,NSString *))completion {
+- (void)startQemu:(nonnull NSString *)name completion:(void(^)(BOOL,NSString *))completion {
     [self printArgv];
 #if TARGET_OS_IPHONE
     NSString *base = @"";
 #else
     NSString *base = @"Versions/A/";
 #endif
-    NSString *dylib = [NSString stringWithFormat:@"qemu-%@-softmmu.framework/%@qemu-%@-softmmu", arch, base, arch];
+    NSString *dylib = [NSString stringWithFormat:@"%@.framework/%@%@", name, base, name];
     if (_connection) {
         [self startQemuRemote:dylib completion:completion];
     } else {

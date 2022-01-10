@@ -792,7 +792,8 @@ static size_t sysctl_read(const char *name) {
         return;
     }
     [self updateArgvWithUserOptions:YES];
-    [self startQemu:self.configuration.systemArchitecture completion:completion];
+    NSString *name = [NSString stringWithFormat:@"qemu-%@-softmmu", self.configuration.systemArchitecture];
+    [self startQemu:name completion:completion];
 }
 
 @end

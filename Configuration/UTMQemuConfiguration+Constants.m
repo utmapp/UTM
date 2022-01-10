@@ -232,4 +232,17 @@
     ];
 }
 
++ (BOOL)shouldConvertQcow2ForInterface:(NSString *)interface {
+    if ([interface isEqualToString:@"floppy"]) {
+        return NO;
+    }
+    if ([interface isEqualToString:@"pflash"]) {
+        return NO;
+    }
+    if ([interface isEqualToString:@"none"]) {
+        return NO;
+    }
+    return YES;
+}
+
 @end

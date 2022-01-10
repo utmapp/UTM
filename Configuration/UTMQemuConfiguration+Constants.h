@@ -56,6 +56,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (nullable NSArray<NSString *>*)supportedNetworkCardsForArchitecturePretty:(nullable NSString *)architecture;
 + (nullable NSArray<NSString *>*)supportedSoundCardsForArchitecture:(nullable NSString *)architecture;
 + (nullable NSArray<NSString *>*)supportedSoundCardsForArchitecturePretty:(nullable NSString *)architecture;
++ (BOOL)shouldConvertQcow2ForInterface:(NSString *)interface;
 
 @end
 

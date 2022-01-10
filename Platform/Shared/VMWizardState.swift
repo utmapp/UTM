@@ -416,7 +416,7 @@ class VMWizardState: ObservableObject {
         case .Windows:
             config.icon = "windows"
             if let windowsBootVhdx = windowsBootVhdx {
-                config.newDrive("drive0", path: windowsBootVhdx.lastPathComponent, type: .disk, interface: mainDriveInterface)
+                config.newDrive("drive0", path: destinationFilename(forVhdx: windowsBootVhdx), type: .disk, interface: mainDriveInterface)
                 generateRemovableDrive() // order matters here
             }
         }
@@ -472,13 +472,29 @@ class VMWizardState: ObservableObject {
             }
         }
         if let windowsBootVhdx = windowsBootVhdx {
+            #if os(macOS)
+            let destQcow2 = dataUrl.appendingPathComponent(destinationFilename(forVhdx: windowsBootVhdx))
+            try UTMQemuImage.convert(from: windowsBootVhdx, toQcow2: destQcow2)
+            #else
             try copyItem(from: windowsBootVhdx, to: dataUrl)
+            #endif
         } else {
             let dstPath = dataUrl.appendingPathComponent("data.qcow2")
             if !GenerateDefaultQcow2File(dstPath as CFURL, storageSizeGib * bytesInGib / bytesInMib) {
                 throw NSLocalizedString("Disk creation failed.", comment: "VMWizardState")
             }
         }
+    }
+    
+    private func destinationFilename(forVhdx url: URL) -> String {
+        #if os(macOS)
+        var destQcow2 = url
+        destQcow2.deletePathExtension()
+        destQcow2.appendPathExtension("qcow2")
+        return destQcow2.lastPathComponent
+        #else
+        return url.lastPathComponent
+        #endif
     }
     
     func busyWork(_ work: @escaping () throws -> Void) {

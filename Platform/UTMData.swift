@@ -460,14 +460,25 @@ class UTMData: ObservableObject {
             }
         }
         
-        let path = drive.lastPathComponent
+        var path = drive.lastPathComponent
         let imagesPath = config.imagesPath
-        let dstPath = imagesPath.appendingPathComponent(path)
+        var dstPath = imagesPath.appendingPathComponent(path)
         if !fileManager.fileExists(atPath: imagesPath.path) {
             try fileManager.createDirectory(at: imagesPath, withIntermediateDirectories: false, attributes: nil)
         }
         if copy {
+            #if os(macOS)
+            if UTMQemuConfiguration.shouldConvertQcow2(forInterface: interface) {
+                dstPath.deletePathExtension()
+                dstPath.appendPathExtension("qcow2")
+                path = dstPath.lastPathComponent
+                try UTMQemuImage.convert(from: drive, toQcow2: dstPath)
+            } else {
+                try fileManager.copyItem(at: drive, to: dstPath)
+            }
+            #else
             try fileManager.copyItem(at: drive, to: dstPath)
+            #endif
         } else {
             try fileManager.moveItem(at: drive, to: dstPath)
         }

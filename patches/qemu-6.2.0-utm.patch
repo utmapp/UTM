@@ -131,3 +131,30 @@ index 0dc96560d3..b940b3d365 100644
 -- 
 2.32.0 (Apple Git-132)
 
+From cc24c9b7cbeae33b651e17819e447b9280119b19 Mon Sep 17 00:00:00 2001
+From: osy <50960678+osy@users.noreply.github.com>
+Date: Mon, 10 Jan 2022 15:35:44 -0800
+Subject: [PATCH] meson: build qemu-img as shared library
+
+---
+ meson.build | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/meson.build b/meson.build
+index c016541ad8..7bba4a7a43 100644
+--- a/meson.build
++++ b/meson.build
+@@ -3072,6 +3072,10 @@ if xkbcommon.found()
+ endif
+ 
+ if have_tools
++  if config_all.has_key('CONFIG_SHARED_LIBRARY_BUILD')
++    qemu_img_lib = shared_library('qemu-img', [files('qemu-img.c'), hxdep],
++             dependencies: [authz, block, crypto, io, qom, qemuutil], install: true)
++  endif
+   qemu_img = executable('qemu-img', [files('qemu-img.c'), hxdep],
+              dependencies: [authz, block, crypto, io, qom, qemuutil], install: true)
+   qemu_io = executable('qemu-io', files('qemu-io.c'),
+-- 
+2.32.0 (Apple Git-132)
+

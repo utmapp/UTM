@@ -23,6 +23,7 @@
 #include <unistd.h>
 
 typedef struct {
+    int (*main)(int, const char *[]);
     int (*qemu_init)(int, const char *[], const char *[]);
     void (*qemu_main_loop)(void);
     void (*qemu_cleanup)(void);
@@ -56,10 +57,11 @@ static int loadQemu(const char *dylibPath, qemu_main_t *funcs) {
         fprintf(stderr, "Error loading %s: %s\n", dylibPath, dlerror());
         return -1;
     }
+    funcs->main = dlsym(dlctx, "main");
     funcs->qemu_init = dlsym(dlctx, "qemu_init");
     funcs->qemu_main_loop = dlsym(dlctx, "qemu_main_loop");
     funcs->qemu_cleanup = dlsym(dlctx, "qemu_cleanup");
-    if (funcs->qemu_init == NULL || funcs->qemu_main_loop == NULL || funcs->qemu_cleanup == NULL) {
+    if (funcs->main == NULL && (funcs->qemu_init == NULL || funcs->qemu_main_loop == NULL || funcs->qemu_cleanup == NULL)) {
         fprintf(stderr, "Error resolving %s: %s\n", dylibPath, dlerror());
         return -1;
     }
@@ -68,12 +70,18 @@ static int loadQemu(const char *dylibPath, qemu_main_t *funcs) {
 
 static void __attribute__((noreturn)) runQemu(qemu_main_t *funcs, int argc, const char **argv) {
     const char *envp[] = { NULL };
-    funcs->qemu_init(argc, argv, envp);
+    if (funcs->qemu_init) {
+        funcs->qemu_init(argc, argv, envp);
+    }
     pthread_t thread;
     pthread_create(&thread, NULL, WatchForParentTermination, NULL);
     pthread_detach(thread);
-    funcs->qemu_main_loop();
-    funcs->qemu_cleanup();
+    if (funcs->main) {
+        funcs->main(argc, argv);
+    } else {
+        funcs->qemu_main_loop();
+        funcs->qemu_cleanup();
+    }
     exit(0);
 }
 
