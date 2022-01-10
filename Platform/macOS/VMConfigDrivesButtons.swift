@@ -80,26 +80,47 @@ struct VMConfigDrivesButtons<Config: ObservableObject & UTMConfigurable>: View {
                     }
                 }.padding()
             }
-            if let index = selectedDriveIndex {
+            if #available(macOS 12, *) {
+                if let index = selectedDriveIndex {
+                    Button {
+                        deleteDrive(atIndex: index)
+                    } label: {
+                        Label("Delete Drive", systemImage: "externaldrive.badge.plus")
+                    }.help("Delete this drive.")
+                    if index != 0 {
+                        Button {
+                            moveDriveUp(fromIndex: index)
+                        } label: {
+                            Label("Move Up", systemImage: "chevron.up")
+                        }.help("Make boot order priority higher.")
+                    }
+                    if index != countDrives - 1 {
+                        Button {
+                            moveDriveDown(fromIndex: index)
+                        } label: {
+                            Label("Move Down", systemImage: "chevron.down")
+                        }.help("Make boot order priority lower.")
+                    }
+                }
+            } else { // SwiftUI BUG: macOS 11 doesn't support the conditional views above
                 Button {
-                    deleteDrive(atIndex: index)
+                    deleteDrive(atIndex: selectedDriveIndex!)
                 } label: {
                     Label("Delete Drive", systemImage: "externaldrive.badge.plus")
                 }.help("Delete this drive.")
-                if index != 0 {
-                    Button {
-                        moveDriveUp(fromIndex: index)
-                    } label: {
-                        Label("Move Up", systemImage: "chevron.up")
-                    }.help("Make boot order priority higher.")
-                }
-                if index != countDrives - 1 {
-                    Button {
-                        moveDriveDown(fromIndex: index)
-                    } label: {
-                        Label("Move Down", systemImage: "chevron.down")
-                    }.help("Make boot order priority lower.")
-                }
+                .disabled(selectedDriveIndex == nil)
+                Button {
+                    moveDriveUp(fromIndex: selectedDriveIndex!)
+                } label: {
+                    Label("Move Up", systemImage: "chevron.up")
+                }.help("Make boot order priority higher.")
+                .disabled(selectedDriveIndex == nil || selectedDriveIndex == 0)
+                Button {
+                    moveDriveDown(fromIndex: selectedDriveIndex!)
+                } label: {
+                    Label("Move Down", systemImage: "chevron.down")
+                }.help("Make boot order priority lower.")
+                .disabled(selectedDriveIndex == nil || selectedDriveIndex == countDrives - 1)
             }
         }.labelStyle(TitleOnlyLabelStyle())
     }
