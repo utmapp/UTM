@@ -473,12 +473,6 @@ class UTMData: ObservableObject {
         }
         DispatchQueue.main.async {
             let name = self.newDefaultDriveName(for: config)
-            let interface: String
-            if let target = config.systemTarget, let architecture = config.systemArchitecture {
-                interface = UTMQemuConfiguration.defaultDriveInterface(forTarget: target, architecture: architecture, type: imageType)
-            } else {
-                interface = "none"
-            }
             config.newDrive(name, path: path, type: imageType, interface: interface)
         }
     }
