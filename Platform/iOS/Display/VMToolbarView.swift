@@ -64,7 +64,7 @@ struct VMToolbarView: View {
     }
     
     private var toolbarToggleOpacity: Double {
-        if isCollapsed {
+        if isCollapsed && !isMoving {
             if !state.isUserInteracting {
                 return 0
             } else if isIdle {
@@ -150,6 +150,7 @@ struct VMToolbarView: View {
                             isMoving = false
                             dragPosition = position(for: geometry)
                         }
+                        resetIdle()
                     }
             )
             .onChange(of: state.isRunning) { running in
