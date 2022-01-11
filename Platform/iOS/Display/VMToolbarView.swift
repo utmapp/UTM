@@ -68,7 +68,7 @@ struct VMToolbarView: View {
             if !state.isUserInteracting {
                 return 0
             } else if isIdle {
-                return 0.2
+                return 0.4
             } else {
                 return 1
             }

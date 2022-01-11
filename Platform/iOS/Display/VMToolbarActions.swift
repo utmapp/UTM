@@ -128,6 +128,16 @@ import SwiftUI
         }
     }
     
+    private func setIsUserInteracting(_ value: Bool) {
+        if #available(iOS 14, *), !UIAccessibility.isReduceMotionEnabled {
+            withAnimation {
+                self.isUserInteracting = value
+            }
+        } else {
+            self.isUserInteracting = value
+        }
+    }
+    
     func assertUserInteraction() {
         guard !hasLegacyToolbar else {
             return
@@ -135,16 +145,10 @@ import SwiftUI
         if let task = longIdleTask {
             task.cancel()
         }
-        isUserInteracting = true
+        setIsUserInteracting(true)
         longIdleTask = DispatchWorkItem {
             self.longIdleTask = nil
-            if #available(iOS 14, *), !UIAccessibility.isReduceMotionEnabled {
-                withAnimation {
-                    self.isUserInteracting = false
-                }
-            } else {
-                self.isUserInteracting = false
-            }
+            self.setIsUserInteracting(false)
         }
         DispatchQueue.main.asyncAfter(deadline: .now() + 15, execute: longIdleTask!)
     }
