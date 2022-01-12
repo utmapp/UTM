@@ -90,13 +90,11 @@ class UTMDownloadIPSWTask: NSObject, UTMDownloadable, URLSessionDelegate, URLSes
             let error = error as NSError
             if error.code == NSURLErrorCancelled {
                 /// download was cancelled normally
+                fail(with: nil)
             } else {
                 /// other error
                 fail(with: error.localizedDescription)
             }
-            isDone = true
-            data.removePendingVM(pendingVM)
-            pendingVM = nil
         }
     }
     
@@ -128,16 +126,18 @@ class UTMDownloadIPSWTask: NSObject, UTMDownloadable, URLSessionDelegate, URLSes
         downloadTask = nil
     }
     
-    internal func fail(with errorMessage: String) {
-        self.pendingVM = nil
+    internal func fail(with errorMessage: String?) {
         let pendingVM = pendingVM
+        self.pendingVM = nil
         DispatchQueue.main.async {
-            logger.error("\(errorMessage)")
             self.isDone = true
             if pendingVM != nil {
                 self.data.removePendingVM(pendingVM!)
             }
-            self.data.alertMessage = AlertMessage(errorMessage)
+            if let errorMessage = errorMessage {
+                logger.error("\(errorMessage)")
+                self.data.alertMessage = AlertMessage(errorMessage)
+            }
         }
     }
 }
