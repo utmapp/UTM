@@ -15,7 +15,6 @@
 //
 
 import SwiftUI
-import UniformTypeIdentifiers
 
 @available(macOS 11, *)
 struct SavePanel: NSViewRepresentable {
@@ -37,7 +36,7 @@ struct SavePanel: NSViewRepresentable {
                 return
             }
             
-            // Initializing the SavePanel and setting it's properties
+            // Initializing the SavePanel and setting its properties
             let savePanel = NSSavePanel()
             if let downloadsUrl = FileManager.default.urls(for: .downloadsDirectory, in: .userDomainMask).first {
                 savePanel.directoryURL = downloadsUrl
