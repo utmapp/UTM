@@ -50,13 +50,13 @@ struct VMConfigQEMUView: View {
                     })
                     Button("Export Debug Log") {
                         showExportLog.toggle()
-                    }.modifier(VMShareItemModifier(isPresented: $showExportLog, makeShareItem: exportDebugLog))
+                    }.modifier(VMShareItemModifier(isPresented: $showExportLog, shareItem: exportDebugLog()))
                     .disabled(!logExists)
                 }
                 Section(header: Text("QEMU Arguments")) {
                     Button("Export QEMU Command") {
                         showExportArgs.toggle()
-                    }.modifier(VMShareItemModifier(isPresented: $showExportArgs, makeShareItem: exportArgs))
+                    }.modifier(VMShareItemModifier(isPresented: $showExportArgs, shareItem: exportArgs()))
                     Toggle(isOn: $config.ignoreAllConfiguration.animation(), label: {
                         Text("Advanced: Bypass configuration and manually specify arguments")
                     })
