@@ -35,7 +35,7 @@ class UTMImportFromWebTask: NSObject, UTMDownloadable, URLSessionDelegate, URLSe
     internal func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
         self.downloadTask = nil
         DispatchQueue.main.async { [self] in
-            pendingVM.setDownloadProgress(1)
+            pendingVM.setDownloadFinishedNowExtracting()
         }
         let fileManager = FileManager.default
         let tempDir = fileManager.temporaryDirectory
@@ -72,6 +72,9 @@ class UTMImportFromWebTask: NSObject, UTMDownloadable, URLSessionDelegate, URLSe
             data.removePendingVM(pendingVM)
             pendingVM = nil
             isDone = true
+#if os(macOS)
+            NSApplication.shared.requestUserAttention(.informationalRequest)
+#endif
         }
     }
     
@@ -123,8 +126,9 @@ class UTMImportFromWebTask: NSObject, UTMDownloadable, URLSessionDelegate, URLSe
     internal func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didWriteData bytesWritten: Int64, totalBytesWritten: Int64, totalBytesExpectedToWrite: Int64) {
         DispatchQueue.main.async { [self] in
             guard pendingVM != nil else { return }
-            let progress = Float(totalBytesWritten) / Float(totalBytesExpectedToWrite)
-            pendingVM.setDownloadProgress(progress)
+            pendingVM.setDownloadProgress(new: bytesWritten,
+                                          currentTotal: totalBytesWritten,
+                                          estimatedTotal: totalBytesExpectedToWrite)
         }
     }
     

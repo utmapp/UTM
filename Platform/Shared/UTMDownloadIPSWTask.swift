@@ -61,7 +61,7 @@ class UTMDownloadIPSWTask: NSObject, UTMDownloadable, URLSessionDelegate, URLSes
     
     internal func success(with location: URL) {
         DispatchQueue.main.async { [self] in
-            pendingVM.setDownloadProgress(1)
+            pendingVM.setDownloadFinishedNowExtracting()
         }
         onSuccess(location)
         /// remove downloading VM View Model
@@ -76,8 +76,9 @@ class UTMDownloadIPSWTask: NSObject, UTMDownloadable, URLSessionDelegate, URLSes
     internal func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didWriteData bytesWritten: Int64, totalBytesWritten: Int64, totalBytesExpectedToWrite: Int64) {
         DispatchQueue.main.async { [self] in
             guard pendingVM != nil else { return }
-            let progress = Float(totalBytesWritten) / Float(totalBytesExpectedToWrite)
-            pendingVM.setDownloadProgress(progress)
+            pendingVM.setDownloadProgress(new: bytesWritten,
+                                          currentTotal: totalBytesWritten,
+                                          estimatedTotal: totalBytesExpectedToWrite)
         }
     }
     
@@ -89,13 +90,11 @@ class UTMDownloadIPSWTask: NSObject, UTMDownloadable, URLSessionDelegate, URLSes
             let error = error as NSError
             if error.code == NSURLErrorCancelled {
                 /// download was cancelled normally
+                fail(with: nil)
             } else {
                 /// other error
                 fail(with: error.localizedDescription)
             }
-            isDone = true
-            data.removePendingVM(pendingVM)
-            pendingVM = nil
         }
     }
     
@@ -127,16 +126,18 @@ class UTMDownloadIPSWTask: NSObject, UTMDownloadable, URLSessionDelegate, URLSes
         downloadTask = nil
     }
     
-    internal func fail(with errorMessage: String) {
-        self.pendingVM = nil
+    internal func fail(with errorMessage: String?) {
         let pendingVM = pendingVM
+        self.pendingVM = nil
         DispatchQueue.main.async {
-            logger.error("\(errorMessage)")
             self.isDone = true
             if pendingVM != nil {
                 self.data.removePendingVM(pendingVM!)
             }
-            self.data.alertMessage = AlertMessage(errorMessage)
+            if let errorMessage = errorMessage {
+                logger.error("\(errorMessage)")
+                self.data.alertMessage = AlertMessage(errorMessage)
+            }
         }
     }
 }
