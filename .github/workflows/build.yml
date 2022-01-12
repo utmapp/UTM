@@ -275,6 +275,8 @@ jobs:
           HELPER_PROFILE_UUID: ${{ secrets.HELPER_PROFILE_UUID }}
           LAUNCHER_PROFILE_DATA: ${{ secrets.LAUNCHER_PROFILE_DATA }}
           LAUNCHER_PROFILE_UUID: ${{ secrets.LAUNCHER_PROFILE_UUID }}
+      - name: Install appdmg
+        run: npm install -g appdmg
       - name: Download Artifact
         uses: actions/download-artifact@v2
         with:

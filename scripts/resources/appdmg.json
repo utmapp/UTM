@@ -1,0 +1,13 @@
+{
+  "title": "UTM",
+  "icon": "UTM-drive.icns",
+  "background": "dmg-background.png",
+  "format": "UDZO",
+  "window": {
+    "size": { "width": 660, "height": 400 }
+  },
+  "contents": [
+    { "x": 480, "y": 170, "type": "link", "path": "/Applications" },
+    { "x": 180, "y": 170, "type": "file", "path": "/tmp/signed/UTM.app" }
+  ]
+}
