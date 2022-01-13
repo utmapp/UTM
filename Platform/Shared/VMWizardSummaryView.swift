@@ -119,6 +119,9 @@ struct VMWizardSummaryView: View {
         Group {
             TextField("Operating System", text: .constant(wizardState.operatingSystem.rawValue))
             Toggle("Skip Boot Image", isOn: $wizardState.isSkipBootImage)
+            if !wizardState.isSkipBootImage {
+                TextField("Boot Image", text: .constant(wizardState.bootImageURL?.path ?? ""))
+            }
             switch wizardState.operatingSystem {
             case .macOS:
                 #if os(macOS) && arch(arm64)
@@ -132,9 +135,7 @@ struct VMWizardSummaryView: View {
                 TextField("Root Image", text: .constant(wizardState.linuxRootImageURL?.path ?? ""))
                 TextField("Boot Arguments", text: $wizardState.linuxBootArguments)
             case .Windows, .Other:
-                if !wizardState.isSkipBootImage {
-                    TextField("Boot Image", text: .constant(wizardState.bootImageURL?.path ?? ""))
-                } else if let windowsBootVhdx = wizardState.windowsBootVhdx {
+                if let windowsBootVhdx = wizardState.windowsBootVhdx {
                     TextField("Disk Image", text: .constant(windowsBootVhdx.path))
                 }
             }
