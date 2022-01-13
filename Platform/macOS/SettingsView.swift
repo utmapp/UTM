@@ -18,6 +18,7 @@ import SwiftUI
 
 @available(macOS 11, *)
 struct SettingsView: View {
+    @AppStorage("TerminateAfterLastWindowClosed") var isTerminateAfterLastWindowClosed = false
     @AppStorage("AlwaysNativeResolution") var isAlwaysNativeResolution = false
     @AppStorage("DisplayFixed") var isVMDisplayFixed = false
     @AppStorage("NoHypervisor") var isNoHypervisor = false
@@ -28,6 +29,11 @@ struct SettingsView: View {
     
     var body: some View {
         Form {
+            Section(header: Text("Application")) {
+                Toggle(isOn: $isTerminateAfterLastWindowClosed, label: {
+                    Text("Terminate when last window is closed and all VMs are shut down")
+                })
+            }
             Section(header: Text("Scaling")) {
                 Toggle(isOn: $isAlwaysNativeResolution, label: {
                     Text("Always use native (HiDPI) resolution")
@@ -63,6 +69,7 @@ struct SettingsView: View {
 }
 
 extension UserDefaults {
+    @objc dynamic var TerminateAfterLastWindowClosed: Bool { false }
     @objc dynamic var NoCursorCaptureAlert: Bool { false }
     @objc dynamic var AlwaysNativeResolution: Bool { false }
     @objc dynamic var DisplayFixed: Bool { false }
