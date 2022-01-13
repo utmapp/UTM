@@ -289,6 +289,7 @@ class VMWizardState: ObservableObject {
         if !isSkipBootImage, let bootImageURL = bootImageURL {
             config.diskImages.append(DiskImage(importImage: bootImageURL, isReadOnly: true, isExternal: true))
         }
+        var isSkipDiskCreate = false
         switch operatingSystem {
         case .Other:
             break
@@ -311,6 +312,7 @@ class VMWizardState: ObservableObject {
                 config.bootLoader = bootloader
                 if let linuxRootImageURL = linuxRootImageURL {
                     config.diskImages.append(DiskImage(importImage: linuxRootImageURL))
+                    isSkipDiskCreate = true
                 }
             }
             #endif
@@ -318,9 +320,10 @@ class VMWizardState: ObservableObject {
             config.icon = "windows"
             if let windowsBootVhdx = windowsBootVhdx {
                 config.diskImages.append(DiskImage(importImage: windowsBootVhdx, isReadOnly: false, isExternal: false))
+                isSkipDiskCreate = true
             }
         }
-        if windowsBootVhdx == nil {
+        if !isSkipDiskCreate {
             config.diskImages.append(DiskImage(newSize: storageSizeGib * bytesInGib / bytesInMib))
         }
         if #available(macOS 12, *), let sharingDirectoryURL = sharingDirectoryURL {
@@ -407,7 +410,7 @@ class VMWizardState: ObservableObject {
                     config.newDrive("initrd", path: linuxInitialRamdiskURL.lastPathComponent, type: .initrd, interface: "")
                 }
                 if let linuxRootImageURL = linuxRootImageURL {
-                    config.newDrive("root", path: linuxRootImageURL.lastPathComponent, type: .disk, interface: UTMQemuConfiguration.defaultDriveInterface(forTarget: systemTarget, architecture: systemArchitecture, type: .disk))
+                    config.newDrive("root", path: destinationFilename(forExisting: linuxRootImageURL), type: .disk, interface: mainDriveInterface)
                 }
                 if linuxBootArguments.count > 0 {
                     config.newArgument("-append")
@@ -417,7 +420,7 @@ class VMWizardState: ObservableObject {
         case .Windows:
             config.icon = "windows"
             if let windowsBootVhdx = windowsBootVhdx {
-                config.newDrive("drive0", path: destinationFilename(forVhdx: windowsBootVhdx), type: .disk, interface: mainDriveInterface)
+                config.newDrive("drive0", path: destinationFilename(forExisting: windowsBootVhdx), type: .disk, interface: mainDriveInterface)
                 generateRemovableDrive() // order matters here
             }
         }
@@ -463,21 +466,22 @@ class VMWizardState: ObservableObject {
             try vm.changeMedium(for: drive, url: bootImageURL)
         }
         let dataUrl = vm.qemuConfig.imagesPath
+        var existingImage: URL? = nil
         if operatingSystem == .Linux && useLinuxKernel {
             try copyItem(from: linuxKernelURL!, to: dataUrl)
             if let linuxInitialRamdiskURL = linuxInitialRamdiskURL {
                 try copyItem(from: linuxInitialRamdiskURL, to: dataUrl)
             }
-            if let linuxRootImageURL = linuxRootImageURL {
-                try copyItem(from: linuxRootImageURL, to: dataUrl)
-            }
+            existingImage = linuxRootImageURL
+        } else if operatingSystem == .Windows {
+            existingImage = windowsBootVhdx
         }
-        if let windowsBootVhdx = windowsBootVhdx {
+        if let existingImage = existingImage {
             #if os(macOS)
-            let destQcow2 = dataUrl.appendingPathComponent(destinationFilename(forVhdx: windowsBootVhdx))
-            try UTMQemuImage.convert(from: windowsBootVhdx, toQcow2: destQcow2)
+            let destQcow2 = dataUrl.appendingPathComponent(destinationFilename(forExisting: existingImage))
+            try UTMQemuImage.convert(from: existingImage, toQcow2: destQcow2)
             #else
-            try copyItem(from: windowsBootVhdx, to: dataUrl)
+            try copyItem(from: existingImage, to: dataUrl)
             #endif
         } else {
             let dstPath = dataUrl.appendingPathComponent("data.qcow2")
@@ -487,7 +491,7 @@ class VMWizardState: ObservableObject {
         }
     }
     
-    private func destinationFilename(forVhdx url: URL) -> String {
+    private func destinationFilename(forExisting url: URL) -> String {
         #if os(macOS)
         var destQcow2 = url
         destQcow2.deletePathExtension()
