@@ -43,57 +43,81 @@ struct VMWizardOSLinuxView: View {
                 .help("If set, boot directly from a raw kernel image and initrd. Otherwise, boot from a supported ISO.")
                 .disabled(wizardState.useAppleVirtualization)
             if wizardState.useLinuxKernel {
-                Text("Linux kernel (required):")
-                    .padding(.top)
-                Text(wizardState.linuxKernelURL?.lastPathComponent ?? " ")
-                    .font(.caption)
-                Button {
-                    selectImage = .kernel
-                    isFileImporterPresented.toggle()
-                } label: {
-                    Text("Browse")
-                }.disabled(wizardState.isBusy)
-                .buttonStyle(BrowseButtonStyle())
-                
-                Text("Linux initial ramdisk:")
-                    .padding(.top)
-                Text(wizardState.linuxInitialRamdiskURL?.lastPathComponent ?? " ")
-                    .font(.caption)
-                HStack {
-                    Button {
-                        selectImage = .initialRamdisk
-                        isFileImporterPresented.toggle()
-                    } label: {
-                        Text("Browse")
-                    }
-                    Button {
-                        wizardState.linuxInitialRamdiskURL = nil
-                    } label: {
-                        Text("Clear")
-                    }
-                }.disabled(wizardState.isBusy)
-                .buttonStyle(BrowseButtonStyle())
-                
-                Text("Linux Root FS Image:")
-                    .padding(.top)
-                Text(wizardState.linuxRootImageURL?.lastPathComponent ?? " ")
-                    .font(.caption)
-                HStack {
-                    Button {
-                        selectImage = .rootImage
-                        isFileImporterPresented.toggle()
-                    } label: {
-                        Text("Browse")
-                    }
-                    Button {
-                        wizardState.linuxRootImageURL = nil
-                    } label: {
-                        Text("Clear")
-                    }
-                }.disabled(wizardState.isBusy)
-                .buttonStyle(BrowseButtonStyle())
-                
-                TextField("Boot Arguments", text: $wizardState.linuxBootArguments)
+                ScrollView {
+                    Group {
+                        Text("Linux kernel (required):")
+                            .padding(.top)
+                        Text(wizardState.linuxKernelURL?.lastPathComponent ?? " ")
+                            .font(.caption)
+                        Button {
+                            selectImage = .kernel
+                            isFileImporterPresented.toggle()
+                        } label: {
+                            Text("Browse")
+                        }
+                        
+                        Text("Linux initial ramdisk (optional):")
+                            .padding(.top)
+                        Text(wizardState.linuxInitialRamdiskURL?.lastPathComponent ?? " ")
+                            .font(.caption)
+                        HStack {
+                            Button {
+                                selectImage = .initialRamdisk
+                                isFileImporterPresented.toggle()
+                            } label: {
+                                Text("Browse")
+                            }
+                            Button {
+                                wizardState.linuxInitialRamdiskURL = nil
+                            } label: {
+                                Text("Clear")
+                            }
+                        }
+                    }.disabled(wizardState.isBusy)
+                    .buttonStyle(BrowseButtonStyle())
+                     
+                    Group{
+                        Text("Linux Root FS Image (optional):")
+                            .padding(.top)
+                        Text(wizardState.linuxRootImageURL?.lastPathComponent ?? " ")
+                            .font(.caption)
+                        HStack {
+                            Button {
+                                selectImage = .rootImage
+                                isFileImporterPresented.toggle()
+                            } label: {
+                                Text("Browse")
+                            }
+                            Button {
+                                wizardState.linuxRootImageURL = nil
+                            } label: {
+                                Text("Clear")
+                            }
+                        }
+                        
+                        Text("Boot ISO Image (optional):")
+                            .padding(.top)
+                        Text(wizardState.bootImageURL?.lastPathComponent ?? " ")
+                            .font(.caption)
+                        HStack {
+                            Button {
+                                selectImage = .bootImage
+                                isFileImporterPresented.toggle()
+                            } label: {
+                                Text("Browse")
+                            }
+                            Button {
+                                wizardState.bootImageURL = nil
+                                wizardState.isSkipBootImage = true
+                            } label: {
+                                Text("Clear")
+                            }
+                        }
+                    }.disabled(wizardState.isBusy)
+                    .buttonStyle(BrowseButtonStyle())
+                    
+                    TextField("Boot Arguments", text: $wizardState.linuxBootArguments)
+                }
             } else {
                 #if arch(arm64)
                 Link("Download Ubuntu Server for ARM", destination: URL(string: "https://ubuntu.com/download/server/arm")!)
@@ -128,8 +152,6 @@ struct VMWizardOSLinuxView: View {
                 switch selectImage {
                 case .kernel:
                     wizardState.linuxKernelURL = url
-                    wizardState.isSkipBootImage = true
-                    wizardState.bootImageURL = nil
                 case .initialRamdisk:
                     wizardState.linuxInitialRamdiskURL = url
                 case .rootImage:
@@ -137,7 +159,6 @@ struct VMWizardOSLinuxView: View {
                 case .bootImage:
                     wizardState.bootImageURL = url
                     wizardState.isSkipBootImage = false
-                    wizardState.linuxKernelURL = nil
                 }
             }
         }

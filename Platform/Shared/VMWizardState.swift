@@ -83,6 +83,7 @@ class VMWizardState: ObservableObject {
     @Published var useLinuxKernel: Bool = false {
         didSet {
             isSkipBootImage = useLinuxKernel
+            bootImageURL = nil
         }
     }
     @Published var linuxKernelURL: URL?
@@ -286,7 +287,7 @@ class VMWizardState: ObservableObject {
         config.memorySize = systemMemory
         config.cpuCount = systemCpuCount
         if !isSkipBootImage, let bootImageURL = bootImageURL {
-            config.diskImages.append(DiskImage(importImage: bootImageURL, isReadOnly: false, isExternal: true))
+            config.diskImages.append(DiskImage(importImage: bootImageURL, isReadOnly: true, isExternal: true))
         }
         switch operatingSystem {
         case .Other:
@@ -316,7 +317,7 @@ class VMWizardState: ObservableObject {
         case .Windows:
             config.icon = "windows"
             if let windowsBootVhdx = windowsBootVhdx {
-                config.diskImages.append(DiskImage(importImage: windowsBootVhdx, isReadOnly: false, isExternal: true))
+                config.diskImages.append(DiskImage(importImage: windowsBootVhdx, isReadOnly: false, isExternal: false))
             }
         }
         if windowsBootVhdx == nil {
