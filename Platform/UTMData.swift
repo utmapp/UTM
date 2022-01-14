@@ -447,7 +447,7 @@ class UTMData: ObservableObject {
     
     // MARK: - Disk drive functions
     
-    func importDrive(_ drive: URL, for config: UTMQemuConfiguration, imageType: UTMDiskImageType, on interface: String, copy: Bool) throws {
+    func importDrive(_ drive: URL, for config: UTMQemuConfiguration, imageType: UTMDiskImageType, on interface: String, copy: Bool, reference: Bool, newIndexCompletion: ((Int) -> Void)?) throws {
         _ = drive.startAccessingSecurityScopedResource()
         defer { drive.stopAccessingSecurityScopedResource() }
         
@@ -479,12 +479,18 @@ class UTMData: ObservableObject {
             #else
             try fileManager.copyItem(at: drive, to: dstPath)
             #endif
+        } else if reference {
+            dstPath.appendPathExtension("reference")
+            try drive.bookmarkData().write(to: dstPath)
+            
+            path.append(".reference")
         } else {
             try fileManager.moveItem(at: drive, to: dstPath)
         }
         DispatchQueue.main.async {
             let name = self.newDefaultDriveName(for: config)
-            config.newDrive(name, path: path, type: imageType, interface: interface)
+            let index = config.newDrive(name, path: path, type: imageType, interface: interface, reference: reference)
+            newIndexCompletion?(index)
         }
     }
     
@@ -496,7 +502,7 @@ class UTMData: ObservableObject {
         } else {
             interface = "none"
         }
-        try importDrive(drive, for: config, imageType: imageType, on: interface, copy: copy)
+        try importDrive(drive, for: config, imageType: imageType, on: interface, copy: copy, reference: false, newIndexCompletion: nil)
     }
     
     func createDrive(_ drive: VMDriveImage, for config: UTMQemuConfiguration, with driveImage: URL? = nil) throws {
@@ -545,6 +551,34 @@ class UTMData: ObservableObject {
         }
         DispatchQueue.main.async {
             config.removeDrive(at: index)
+        }
+    }
+    
+    func moveDriveToExternal(at index: Int, to dest: URL, for config: UTMQemuConfiguration) throws {
+        // Get details about the drive (it's deleted when moving to the external disk)
+        let imageType = config.driveImageType(for: index)
+        let interface = config.driveInterfaceType(for: index) ?? "none"
+        
+        // Move the drive to dest
+        guard let srcPath = config.driveImagePath(for: index) else {
+            return
+        }
+        let src = URL(fileURLWithPath: srcPath, relativeTo: config.imagesPath)
+        do {
+            if fileManager.fileExists(atPath: dest.path) {
+                try fileManager.removeItem(at: dest)
+            }
+            try fileManager.copyItem(at: src, to: dest)
+            try fileManager.removeItem(at: src)
+            config.removeDrive(at: index)
+        } catch {
+            throw "\(NSLocalizedString("Failed to move drive to external disk: ", comment: "UTMData"))\(error.localizedDescription)"
+        }
+        
+        try importDrive(dest, for: config, imageType: imageType, on: interface, copy: false, reference: true) { newIndex in
+            // When importing a new drive, it goes to the end of the list.
+            // This will move it to the index it was before moving it to the external disk.
+            config.moveDrive(newIndex, to: index)
         }
     }
     

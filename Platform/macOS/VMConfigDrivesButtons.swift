@@ -85,7 +85,7 @@ struct VMConfigDrivesButtons<Config: ObservableObject & UTMConfigurable>: View {
                     Button {
                         deleteDrive(atIndex: index)
                     } label: {
-                        Label("Delete Drive", systemImage: "externaldrive.badge.plus")
+                        Label("Delete Drive", systemImage: "externaldrive.badge.xmark")
                     }.help("Delete this drive.")
                     if index != 0 {
                         Button {
@@ -101,12 +101,19 @@ struct VMConfigDrivesButtons<Config: ObservableObject & UTMConfigurable>: View {
                             Label("Move Down", systemImage: "chevron.down")
                         }.help("Make boot order priority lower.")
                     }
+                    if config is UTMQemuConfiguration {
+                        Button {
+                            moveToExternal(atIndex: index)
+                        } label: {
+                            Label("Move to External Disk", systemImage: "externaldrive.badge.plus")
+                        }.help("Move drive to an external disk (to save space)")
+                    }
                 }
             } else { // SwiftUI BUG: macOS 11 doesn't support the conditional views above
                 Button {
                     deleteDrive(atIndex: selectedDriveIndex!)
                 } label: {
-                    Label("Delete Drive", systemImage: "externaldrive.badge.plus")
+                    Label("Delete Drive", systemImage: "externaldrive.badge.xmark")
                 }.help("Delete this drive.")
                 .disabled(selectedDriveIndex == nil)
                 Button {
@@ -121,6 +128,12 @@ struct VMConfigDrivesButtons<Config: ObservableObject & UTMConfigurable>: View {
                     Label("Move Down", systemImage: "chevron.down")
                 }.help("Make boot order priority lower.")
                 .disabled(selectedDriveIndex == nil || selectedDriveIndex == countDrives - 1)
+                Button {
+                    moveToExternal(atIndex: selectedDriveIndex!)
+                } label: {
+                    Label("Move to External Disk", systemImage: "externaldrive.badge.plus")
+                }.help("Move drive to an external disk (to save space)")
+                .disabled(selectedDriveIndex == nil || !(config is UTMQemuConfiguration))
             }
         }.labelStyle(TitleOnlyLabelStyle())
     }
@@ -171,7 +184,7 @@ struct VMConfigDrivesButtons<Config: ObservableObject & UTMConfigurable>: View {
                     if newQemuDrive.removable {
                         try data.createDrive(newQemuDrive, for: qemuConfig, with: url)
                     } else {
-                        try data.importDrive(url, for: qemuConfig, imageType: newQemuDrive.imageType, on: newQemuDrive.interface!, copy: true)
+                        try data.importDrive(url, for: qemuConfig, imageType: newQemuDrive.imageType, on: newQemuDrive.interface!, copy: true, reference: false, newIndexCompletion: nil)
                     }
                 } else if let appleConfig = config as? UTMAppleConfiguration {
                     let name = url.lastPathComponent
@@ -201,6 +214,26 @@ struct VMConfigDrivesButtons<Config: ObservableObject & UTMConfigurable>: View {
                 let image = DiskImage(newSize: newAppleDriveSize)
                 DispatchQueue.main.async {
                     appleConfig.diskImages.append(image)
+                }
+            }
+        }
+    }
+    
+    private func moveToExternal(atIndex index: Int) {
+        // This function should not be called with config not being UTMQemuConfiguration
+        precondition(config is UTMQemuConfiguration)
+        let qemuConfig = config as! UTMQemuConfiguration
+        
+        let savePanel = NSSavePanel()
+        savePanel.directoryURL = URL(fileURLWithPath: "/Volumes")
+        savePanel.title = "Select a location on an external disk to move the drive to:"
+        savePanel.nameFieldStringValue = qemuConfig.driveName(for: index) ?? "drive"
+        savePanel.begin { result in
+            if result == .OK {
+                if let dest = savePanel.url {
+                    data.busyWork {
+                        try data.moveDriveToExternal(at: index, to: dest, for: qemuConfig)
+                    }
                 }
             }
         }
