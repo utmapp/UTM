@@ -331,7 +331,7 @@ class VMWizardState: ObservableObject {
         }
         // some meaningful defaults
         if #available(macOS 12, *) {
-            config.displays = [Display(for: .init(width: 1920, height: 1200), isHidpi: true)]
+            config.displays = [Display(for: .init(width: 1920, height: 1200), isHidpi: false)]
             config.isAudioEnabled = true
             config.isKeyboardEnabled = true
             config.isPointingEnabled = true
