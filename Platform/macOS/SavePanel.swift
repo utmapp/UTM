@@ -97,8 +97,10 @@ struct SavePanel: NSViewRepresentable {
                     }
                 }
             }
-
-            isPresented = false
+            
+            DispatchQueue.main.async {
+                isPresented = false
+            }
         }
     }
 }
