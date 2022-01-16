@@ -63,7 +63,7 @@ struct SavePanel: NSViewRepresentable {
                 savePanel.beginSheetModal(for: window) { result in
                     if result == .OK {
                         if let destUrl = savePanel.url {
-                            do {
+                            data.busyWork {
                                 let fileManager = FileManager.default
                                 
                                 // All this mess is because FileManager.replaceItemAt deletes the source item
@@ -74,10 +74,6 @@ struct SavePanel: NSViewRepresentable {
                                 try fileManager.copyItem(at: sourceUrl, to: tempUrl)
                                 
                                 _ = try fileManager.replaceItemAt(destUrl, withItemAt: tempUrl)
-                            } catch {
-                                DispatchQueue.main.async {
-                                    data.alertMessage = AlertMessage(error.localizedDescription)
-                                }
                             }
                         }
                     }
@@ -86,12 +82,8 @@ struct SavePanel: NSViewRepresentable {
                 savePanel.beginSheetModal(for: window) { result in
                     if result == .OK {
                         if let destUrl = savePanel.url {
-                            do {
+                            data.busyWork {
                                 try command.write(to: destUrl, atomically: true, encoding: .utf8)
-                            } catch {
-                                DispatchQueue.main.async {
-                                    data.alertMessage = AlertMessage(error.localizedDescription)
-                                }
                             }
                         }
                     }
