@@ -2465,14 +2465,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		84C584DD268E9597000FCABF /* AppleVirtualization */ = {
-			isa = PBXGroup;
-			children = (
-				84C584DE268E95B3000FCABF /* UTMAppleConfiguration.swift */,
-			);
-			path = AppleVirtualization;
-			sourceTree = "<group>";
-		};
 		CE1BD9FA24F4825C0022A468 /* Display */ = {
 			isa = PBXGroup;
 			children = (
@@ -2680,6 +2672,7 @@
 			isa = PBXGroup;
 			children = (
 				84C584D7268E5349000FCABF /* UTMConfigurable.h */,
+				84C584DE268E95B3000FCABF /* UTMAppleConfiguration.swift */,
 				CE31C243225E553500A965DD /* UTMQemuConfiguration.h */,
 				CE31C244225E555600A965DD /* UTMQemuConfiguration.m */,
 				CE5425352437DDE900E520F7 /* UTMQemuConfiguration+Constants.h */,
@@ -2993,7 +2986,6 @@
 			children = (
 				CE50A41F2637BB200050430F /* Build.xcconfig */,
 				CE258ACC22715F8300E5A333 /* README.md */,
-				84C584DD268E9597000FCABF /* AppleVirtualization */,
 				CE4AA1462262FB58002E4A54 /* CocoaSpice */,
 				CE31C242225E543A00A965DD /* Configuration */,
 				CEFE75D8228933870050ABCC /* gstreamer */,
