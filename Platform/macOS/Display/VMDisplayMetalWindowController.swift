@@ -41,7 +41,6 @@ class VMDisplayMetalWindowController: VMDisplayQemuWindowController {
     // MARK: - User preferences
     
     @Setting("NoCursorCaptureAlert") private var isCursorCaptureAlertShown: Bool = false
-    @Setting("AlwaysNativeResolution") private var isAlwaysNativeResolution: Bool = false
     @Setting("DisplayFixed") private var isDisplayFixed: Bool = false
     @Setting("CtrlRightClick") private var isCtrlRightClick: Bool = false
     @Setting("NoUsbPrompt") private var isNoUsbPrompt: Bool = false
@@ -71,9 +70,6 @@ class VMDisplayMetalWindowController: VMDisplayQemuWindowController {
         metalView.delegate = renderer
         metalView.inputDelegate = self
         
-        settingObservations.append(UserDefaults.standard.observe(\.AlwaysNativeResolution, options: .new) { (defaults, change) in
-            self.displaySizeDidChange(size: self.displaySize)
-        })
         settingObservations.append(UserDefaults.standard.observe(\.DisplayFixed, options: .new) { (defaults, change) in
             self.displaySizeDidChange(size: self.displaySize)
         })
@@ -206,9 +202,9 @@ extension VMDisplayMetalWindowController {
         guard let window = window else { return }
         guard let vmDisplay = vmDisplay else { return }
         let currentScreenScale = window.screen?.backingScaleFactor ?? 1.0
-        let nativeScale = isAlwaysNativeResolution ? 1.0 : currentScreenScale
+        let nativeScale = vmQemuConfig.displayRetina ? 1.0 : currentScreenScale
         // change optional scale if needed
-        if isDisplaySizeDynamic || isDisplayFixed || (!isAlwaysNativeResolution && vmDisplay.viewportScale < currentScreenScale) {
+        if isDisplaySizeDynamic || isDisplayFixed || (!vmQemuConfig.displayRetina && vmDisplay.viewportScale < currentScreenScale) {
             vmDisplay.viewportScale = nativeScale
         }
         let minScaledSize = CGSize(width: size.width * nativeScale / currentScreenScale, height: size.height * nativeScale / currentScreenScale)
@@ -249,9 +245,9 @@ extension VMDisplayMetalWindowController {
     fileprivate func updateGuestResolution(for window: NSWindow, frameSize: NSSize) -> NSSize {
         guard let vmDisplay = self.vmDisplay else { return frameSize }
         let currentScreenScale = window.screen?.backingScaleFactor ?? 1.0
-        let nativeScale = isAlwaysNativeResolution ? currentScreenScale : 1.0
+        let nativeScale = vmQemuConfig.displayRetina ? currentScreenScale : 1.0
         let targetSize = window.contentRect(forFrameRect: CGRect(origin: .zero, size: frameSize)).size
-        let targetSizeScaled = isAlwaysNativeResolution ? targetSize.applying(CGAffineTransform(scaleX: nativeScale, y: nativeScale)) : targetSize
+        let targetSizeScaled = vmQemuConfig.displayRetina ? targetSize.applying(CGAffineTransform(scaleX: nativeScale, y: nativeScale)) : targetSize
         logger.debug("Requesting resolution: (\(targetSizeScaled.width), \(targetSizeScaled.height))")
         let bounds = CGRect(origin: .zero, size: targetSizeScaled)
         vmDisplay.requestResolution(bounds)

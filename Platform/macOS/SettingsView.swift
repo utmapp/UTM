@@ -19,7 +19,6 @@ import SwiftUI
 @available(macOS 11, *)
 struct SettingsView: View {
     @AppStorage("TerminateAfterLastWindowClosed") var isTerminateAfterLastWindowClosed = false
-    @AppStorage("AlwaysNativeResolution") var isAlwaysNativeResolution = false
     @AppStorage("DisplayFixed") var isVMDisplayFixed = false
     @AppStorage("NoHypervisor") var isNoHypervisor = false
     @AppStorage("CtrlRightClick") var isCtrlRightClick = false
@@ -34,12 +33,9 @@ struct SettingsView: View {
                     Text("Terminate when last window is closed and all VMs are shut down")
                 })
             }
-            Section(header: Text("Scaling")) {
-                Toggle(isOn: $isAlwaysNativeResolution, label: {
-                    Text("Always use native (HiDPI) resolution")
-                })
+            Section(header: Text("Display")) {
                 Toggle(isOn: $isVMDisplayFixed, label: {
-                    Text("VM display size is fixed")
+                    Text("VM display size is fixed (no zoom)")
                 })
             }
             Section(header: Text("Default VM Configuration")) {
@@ -71,7 +67,6 @@ struct SettingsView: View {
 extension UserDefaults {
     @objc dynamic var TerminateAfterLastWindowClosed: Bool { false }
     @objc dynamic var NoCursorCaptureAlert: Bool { false }
-    @objc dynamic var AlwaysNativeResolution: Bool { false }
     @objc dynamic var DisplayFixed: Bool { false }
     @objc dynamic var NoHypervisor: Bool { false }
     @objc dynamic var CtrlRightClick: Bool { false }
