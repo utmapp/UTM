@@ -34,14 +34,6 @@ import Virtualization
         systemTarget
     }
     
-    override var icon: URL? {
-        if appleConfig.iconCustom {
-            return appleConfig.existingCustomIconURL
-        } else {
-            return appleConfig.existingIconURL
-        }
-    }
-    
     override var notes: String? {
         appleConfig.notes
     }

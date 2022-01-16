@@ -66,14 +66,6 @@ public extension UTMQemuVirtualMachine {
         self.systemTarget
     }
     
-    override var icon: URL? {
-        if qemuConfig.iconCustom {
-            return qemuConfig.existingCustomIconURL
-        } else {
-            return qemuConfig.existingIconURL
-        }
-    }
-    
     override var notes: String? {
         qemuConfig.notes
     }

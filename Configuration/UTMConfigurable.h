@@ -21,7 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol UTMConfigurable
 
 @property (nonatomic, copy) NSString *name;
-@property (nonatomic, nullable, copy) NSURL *existingPath;
+@property (nonatomic, nullable, readonly) NSURL *iconUrl;
 @property (nonatomic, nullable, copy) NSURL *selectedCustomIconPath;
 @property (nonatomic, nullable, copy) NSString *icon;
 @property (nonatomic, assign) BOOL iconCustom;

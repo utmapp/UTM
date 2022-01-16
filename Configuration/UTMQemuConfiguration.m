@@ -70,6 +70,24 @@ const NSString *const kUTMConfigAppleVirtualizationKey = @"isAppleVirtualization
     _selectedCustomIconPath = selectedCustomIconPath;
 }
 
+- (NSURL *)iconUrl {
+    if (self.iconCustom) {
+        if (self.selectedCustomIconPath != nil) {
+            return self.selectedCustomIconPath;
+        } else if (self.icon == nil) {
+            return nil;
+        } else {
+            return [self.existingPath URLByAppendingPathComponent:self.icon];
+        }
+    } else {
+        if (self.icon == nil) {
+            return nil;
+        } else {
+            return [[NSBundle mainBundle] URLForResource:self.icon withExtension:@"png" subdirectory:@"Icons"];
+        }
+    }
+}
+
 #pragma mark - Migration
 
 - (void)migrateConfigurationIfNecessary {

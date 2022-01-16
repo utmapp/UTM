@@ -31,7 +31,7 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
     
     @Published var architecture: String
     
-    @Published var existingPath: URL?
+    @Published var iconBasePath: URL?
     
     @Published var selectedCustomIconPath: URL?
     
@@ -50,6 +50,26 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
     @Published var consoleCursorBlink: Bool
     
     @Published var consoleResizeCommand: String?
+    
+    var iconUrl: URL? {
+        if self.iconCustom {
+            if let current = self.selectedCustomIconPath {
+                return current // if we just selected a path
+            }
+            guard let icon = self.icon else {
+                return nil
+            }
+            guard let base = self.iconBasePath?.appendingPathComponent("Data") else {
+                return nil
+            }
+            return base.appendingPathComponent(icon) // from saved config
+        } else {
+            guard let icon = self.icon else {
+                return nil
+            }
+            return Bundle.main.url(forResource: icon, withExtension: "png", subdirectory: "Icons")
+        }
+    }
     
     var cpuCount: Int {
         get {
@@ -418,7 +438,9 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
         let configData = try Data(contentsOf: configURL)
         let decoder = PropertyListDecoder()
         decoder.userInfo = [.dataURL: dataURL]
-        return try decoder.decode(UTMAppleConfiguration.self, from: configData)
+        let config = try decoder.decode(UTMAppleConfiguration.self, from: configData)
+        config.iconBasePath = packageURL
+        return config
     }
     
     func save(to packageURL: URL) throws {
@@ -478,6 +500,7 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
         // save new icon
         if iconCustom {
             if let iconURL = selectedCustomIconPath {
+                // FIXME: cannot modify state outside of main thread
                 icon = iconURL.lastPathComponent
                 return [try copyItemIfChanged(from: iconURL, to: dataURL)]
             } else if let existingName = icon {

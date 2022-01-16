@@ -75,7 +75,7 @@ struct VMConfigInfoView<Config: ObservableObject & UTMConfigurable>: View {
                     case .custom:
                         #if os(macOS)
                         Button(action: { imageSelectVisible.toggle() }, label: {
-                            IconPreview(url: config.existingCustomIconURL)
+                            IconPreview(url: config.iconUrl)
                         }).fileImporter(isPresented: $imageSelectVisible, allowedContentTypes: [.image]) { result in
                             switch result {
                             case .success(let url):
@@ -86,14 +86,14 @@ struct VMConfigInfoView<Config: ObservableObject & UTMConfigurable>: View {
                         }.buttonStyle(PlainButtonStyle())
                         #else
                         Button(action: { imageSelectVisible.toggle() }, label: {
-                            IconPreview(url: config.existingCustomIconURL)
+                            IconPreview(url: config.iconUrl)
                         }).popover(isPresented: $imageSelectVisible, arrowEdge: .bottom) {
                             ImagePicker(onImageSelected: imageCustomSelected)
                         }.buttonStyle(PlainButtonStyle())
                         #endif
                     case .operatingSystem:
                         Button(action: { imageSelectVisible.toggle() }, label: {
-                            IconPreview(url: config.existingIconURL)
+                            IconPreview(url: config.iconUrl)
                         }).popover(isPresented: $imageSelectVisible, arrowEdge: .bottom) {
                             IconSelect(onIconSelected: imageSelected)
                         }.buttonStyle(PlainButtonStyle())
@@ -105,7 +105,7 @@ struct VMConfigInfoView<Config: ObservableObject & UTMConfigurable>: View {
         }.onAppear {
             if config.iconCustom {
                 iconStyle = .custom
-            } else if config.existingIconURL != nil {
+            } else if config.iconUrl != nil {
                 iconStyle = .operatingSystem
             }
         }.alert(item: $warningMessage) { warning in

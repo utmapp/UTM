@@ -66,6 +66,10 @@ NSString *const kUTMBundleScreenshotFilename = @"screenshot.png";
     self.anyCancellable = [self subscribeToConfiguration];
 }
 
+- (NSURL *)icon {
+    return self.config.iconUrl;
+}
+
 + (BOOL)URLisVirtualMachine:(NSURL *)url {
     return [url.pathExtension isEqualToString:kUTMBundleExtension];
 }
