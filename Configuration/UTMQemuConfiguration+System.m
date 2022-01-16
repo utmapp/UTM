@@ -29,6 +29,7 @@ static const NSString *const kUTMConfigCPUCountKey = @"CPUCount";
 static const NSString *const kUTMConfigTargetKey = @"Target";
 static const NSString *const kUTMConfigBootDeviceKey = @"BootDevice";
 static const NSString *const kUTMConfigBootUefiKey = @"BootUefi";
+static const NSString *const kUTMConfigRngEnabledKey = @"RngEnabled";
 static const NSString *const kUTMConfigJitCacheSizeKey = @"JITCacheSize";
 static const NSString *const kUTMConfigForceMulticoreKey = @"ForceMulticore";
 static const NSString *const kUTMConfigAddArgsKey = @"AddArgs";
@@ -87,6 +88,10 @@ static const NSString *const kUTMConfigUseHypervisorKey = @"UseHypervisor";
     // Set UEFI boot to default on for virt* and off otherwise
     if (self.rootDict[kUTMConfigSystemKey][kUTMConfigBootUefiKey] == nil) {
         self.systemBootUefi = [self.systemTarget hasPrefix:@"virt"];
+    }
+    // Set RNG enabled default for pc* and virt*
+    if (self.rootDict[kUTMConfigSystemKey][kUTMConfigRngEnabledKey] == nil) {
+        self.systemRngEnabled = [self.systemTarget hasPrefix:@"pc"] || [self.systemTarget hasPrefix:@"q35"] || [self.systemTarget hasPrefix:@"virt"];
     }
 }
 
@@ -153,6 +158,15 @@ static const NSString *const kUTMConfigUseHypervisorKey = @"UseHypervisor";
 
 - (BOOL)systemBootUefi {
     return [self.rootDict[kUTMConfigSystemKey][kUTMConfigBootUefiKey] boolValue];
+}
+
+- (void)setSystemRngEnabled:(BOOL)systemRngEnabled {
+    [self propertyWillChange];
+    self.rootDict[kUTMConfigSystemKey][kUTMConfigRngEnabledKey] = @(systemRngEnabled);
+}
+
+- (BOOL)systemRngEnabled {
+    return [self.rootDict[kUTMConfigSystemKey][kUTMConfigRngEnabledKey] boolValue];
 }
 
 - (NSNumber *)systemJitCacheSize {

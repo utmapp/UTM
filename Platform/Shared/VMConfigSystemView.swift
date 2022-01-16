@@ -42,6 +42,7 @@ struct VMConfigSystemView: View {
                     Section(header: Text("Tweaks")) {
                         Toggle("UEFI Boot", isOn: $config.systemBootUefi)
                             .disabled(!supportsUefi)
+                        Toggle("RNG Device", isOn: $config.systemRngEnabled)
                     }
                     Section(header: Text("CPU")) {
                         VMConfigStringPicker(selection: $config.systemCPU.animation(), label: EmptyView(), rawValues: UTMQemuConfiguration.supportedCpus(forArchitecture: config.systemArchitecture), displayValues: UTMQemuConfiguration.supportedCpus(forArchitecturePretty: config.systemArchitecture))

@@ -139,15 +139,18 @@
     if ([target hasPrefix:@"pc"] || [target hasPrefix:@"q35"]) {
         self.shareClipboardEnabled = YES;
         self.systemBootUefi = YES;
+        self.systemRngEnabled = YES;
     } else if ([target isEqualToString:@"virt"] || [target hasPrefix:@"virt-"]) {
         self.shareClipboardEnabled = YES;
         self.usb3Support = NO;
         self.systemBootUefi = YES;
+        self.systemRngEnabled = YES;
     } else if ([target isEqualToString:@"isapc"]) {
         self.inputLegacy = YES; // no USB support
     } else {
         self.shareClipboardEnabled = NO;
         self.systemBootUefi = NO;
+        self.systemRngEnabled = NO;
     }
     self.useHypervisor = self.defaultUseHypervisor;
     // override hypervisor setting for older PC targets
