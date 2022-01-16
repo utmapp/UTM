@@ -54,18 +54,20 @@ struct VMConfigDisplayView: View {
                     }
                     
                     // https://stackoverflow.com/a/59277022/15603854
-                    Section(header: Text("Resolution"), footer: Text("Requires SPICE guest agent tools to be installed. Retina Mode is recommended only if the guest OS supports HiDPI.").fixedSize(horizontal: false, vertical: true).padding(.bottom)) {
+                    #if !os(macOS)
+                    Section(header: Text("Auto Resolution"), footer: Text("Requires SPICE guest agent tools to be installed.").fixedSize(horizontal: false, vertical: true).padding(.bottom)) {
                         Toggle(isOn: $config.displayFitScreen, label: {
-                            Text("Fit To Screen")
-                        })
-                        Toggle(isOn: $config.displayRetina, label: {
-                            Text("Retina Mode")
+                            Text("Resize display to screen size automatically")
                         })
                     }
+                    #endif
                     
                     Section(header: Text("Scaling"), footer: EmptyView().padding(.bottom)) {
                         VMConfigStringPicker(selection: $config.displayUpscaler, label: Text("Upscaling"), rawValues: UTMQemuConfiguration.supportedScalers(), displayValues: UTMQemuConfiguration.supportedScalersPretty())
                         VMConfigStringPicker(selection: $config.displayDownscaler, label: Text("Downscaling"), rawValues: UTMQemuConfiguration.supportedScalers(), displayValues: UTMQemuConfiguration.supportedScalersPretty())
+                        Toggle(isOn: $config.displayRetina, label: {
+                            Text("Retina Mode")
+                        })
                     }
                 }
             }
