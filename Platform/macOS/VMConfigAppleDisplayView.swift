@@ -83,8 +83,6 @@ struct VMConfigAppleDisplayView: View {
         }
     }
     
-    /*
-    // not currently supported by Apple's VZVirtualMachineView
     private var isHidpi: Binding<Bool> {
         Binding<Bool> {
             if let display = config.displays.first {
@@ -103,7 +101,6 @@ struct VMConfigAppleDisplayView: View {
             config.displays = [newDisplay]
         }
     }
-     */
     
     var body: some View {
         Form {
@@ -126,7 +123,7 @@ struct VMConfigAppleDisplayView: View {
                             .tag(item.resolution)
                     }
                 }
-                //Toggle("HiDPI (Retina)", isOn: isHidpi)
+                Toggle("HiDPI (Retina)", isOn: isHidpi)
             }
         }
     }
