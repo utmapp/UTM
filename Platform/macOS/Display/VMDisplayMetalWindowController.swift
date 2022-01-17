@@ -368,11 +368,9 @@ extension VMDisplayMetalWindowController: VMMetalViewInputDelegate {
     }
     
     func mouseScroll(dy: CGFloat, button: CSInputButton) {
-        var scrollDy = dy
-        if vmQemuConfig?.inputScrollInvert ?? false {
-            scrollDy = -scrollDy
-        }
-        vmInput?.sendMouseScroll(.smooth, button: button, dy: dy)
+        let scrollInvert = vmQemuConfig?.inputScrollInvert ?? false
+        let scrollDy = scrollInvert ? -dy : dy
+        vmInput?.sendMouseScroll(.smooth, button: button, dy: scrollDy)
     }
     
     private func sendExtendedKey(_ button: CSInputKey, keyCode: Int) {
