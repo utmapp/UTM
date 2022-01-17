@@ -138,10 +138,12 @@
     [self loadNetworkDefaultsForTarget:target architecture:architecture];
     if ([target hasPrefix:@"pc"] || [target hasPrefix:@"q35"]) {
         self.shareClipboardEnabled = YES;
+        self.shareDirectoryEnabled = YES;
         self.systemBootUefi = YES;
         self.systemRngEnabled = YES;
     } else if ([target isEqualToString:@"virt"] || [target hasPrefix:@"virt-"]) {
         self.shareClipboardEnabled = YES;
+        self.shareDirectoryEnabled = YES;
         self.usb3Support = NO;
         self.systemBootUefi = YES;
         self.systemRngEnabled = YES;
@@ -149,6 +151,7 @@
         self.inputLegacy = YES; // no USB support
     } else {
         self.shareClipboardEnabled = NO;
+        self.shareDirectoryEnabled = NO;
         self.systemBootUefi = NO;
         self.systemRngEnabled = NO;
     }
