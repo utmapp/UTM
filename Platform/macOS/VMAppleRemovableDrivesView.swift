@@ -96,10 +96,12 @@ struct VMAppleRemovableDrivesView: View {
             }
             HStack {
                 Spacer()
-                Button("New Shared Directory...") {
-                    selectType = .sharedDirectory
-                    selectedSharedDirectoryBinding = nil
-                    showFileImporter()
+                if #available(macOS 12, *) {
+                    Button("New Shared Directory...") {
+                        selectType = .sharedDirectory
+                        selectedSharedDirectoryBinding = nil
+                        showFileImporter()
+                    }
                 }
                 Button("New External Drive...") {
                     selectType = .diskImage

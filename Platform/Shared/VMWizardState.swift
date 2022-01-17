@@ -220,9 +220,21 @@ class VMWizardState: ObservableObject {
             #endif
             if operatingSystem == .Linux && linuxRootImageURL != nil {
                 nextPage = .sharing
+                if useAppleVirtualization {
+                    if #available(macOS 12, *) {
+                    } else {
+                        nextPage = .summary
+                    }
+                }
             }
         case .drives:
             nextPage = .sharing
+            if useAppleVirtualization {
+                if #available(macOS 12, *) {
+                } else {
+                    nextPage = .summary
+                }
+            }
         case .sharing:
             nextPage = .summary
         case .summary:

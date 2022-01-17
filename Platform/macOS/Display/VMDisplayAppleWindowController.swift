@@ -89,12 +89,13 @@ class VMDisplayAppleWindowController: VMDisplayWindowController {
         drivesToolbarItem.isEnabled = false
         usbToolbarItem.isEnabled = false
         startPauseToolbarItem.isEnabled = true
-        sharedFolderToolbarItem.isEnabled = appleConfig.bootLoader?.operatingSystem == .Linux
         if #available(macOS 12, *) {
             isPowerForce = false
+            sharedFolderToolbarItem.isEnabled = appleConfig.bootLoader?.operatingSystem == .Linux
         } else {
             // stop() not available on macOS 11 for some reason
             restartToolbarItem.isEnabled = false
+            sharedFolderToolbarItem.isEnabled = false
             isPowerForce = true
         }
     }
@@ -165,6 +166,9 @@ class VMDisplayAppleWindowController: VMDisplayWindowController {
     }
     
     @IBAction override func sharedFolderButtonPressed(_ sender: Any) {
+        guard #available(macOS 12, *) else {
+            return
+        }
         if !isSharePathAlertShownOnce && !isSharePathAlertShownPersistent {
             let alert = NSAlert()
             alert.messageText = NSLocalizedString("Directory sharing", comment: "VMDisplayAppleWindowController")
@@ -182,7 +186,7 @@ class VMDisplayAppleWindowController: VMDisplayWindowController {
     }
 }
 
-@available(macOS 11, *)
+@available(macOS 12, *)
 extension VMDisplayAppleWindowController {
     func openShareMenu(_ sender: Any) {
         let menu = NSMenu()
