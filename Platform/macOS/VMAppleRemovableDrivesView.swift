@@ -96,7 +96,7 @@ struct VMAppleRemovableDrivesView: View {
             }
             HStack {
                 Spacer()
-                if #available(macOS 12, *) {
+                if #available(macOS 12, *), config.bootLoader?.operatingSystem == .Linux {
                     Button("New Shared Directory...") {
                         selectType = .sharedDirectory
                         selectedSharedDirectoryBinding = nil

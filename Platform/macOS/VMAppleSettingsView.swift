@@ -41,7 +41,7 @@ struct VMAppleSettingsView: View {
         NavigationLink(destination: VMConfigAppleNetworkingView(config: config).scrollable()) {
             Label("Network", systemImage: "network")
         }
-        if #available(macOS 12, *) {
+        if #available(macOS 12, *), config.bootLoader?.operatingSystem == .Linux {
             NavigationLink(destination: VMConfigAppleSharingView(config: config).scrollable()) {
                 Label("Sharing", systemImage: "person.crop.circle.fill")
             }

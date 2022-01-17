@@ -231,6 +231,9 @@ class VMWizardState: ObservableObject {
             nextPage = .sharing
             if useAppleVirtualization {
                 if #available(macOS 12, *) {
+                    if operatingSystem != .Linux {
+                        nextPage = .summary // only support linux currently
+                    }
                 } else {
                     nextPage = .summary
                 }
