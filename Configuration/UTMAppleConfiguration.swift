@@ -469,6 +469,7 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
         try cleanupAllFiles(at: dataURL, notIncluding: existingDataURLs)
         // create config.plist
         let encoder = PropertyListEncoder()
+        encoder.outputFormat = .xml
         let settingsData = try encoder.encode(self)
         try settingsData.write(to: packageURL.appendingPathComponent(kUTMBundleConfigFilename))
     }
