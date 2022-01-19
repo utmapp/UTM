@@ -233,6 +233,7 @@ static const NSString *const kUTMConfigCdromKey = @"Cdrom";
     NSArray<NSString *> *interfaces = [UTMQemuConfiguration supportedDriveInterfaces];
     NSArray<NSString *> *interfacesPretty = [UTMQemuConfiguration supportedDriveInterfacesPretty];
     NSString *interface = [self driveInterfaceTypeForIndex:index];
+    NSString *path = [self driveImagePathForIndex:index];
     NSInteger interfaceIndex = NSNotFound;
     if (interface) {
         interfaceIndex = [interfaces indexOfObjectPassingTest:^(NSString * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
@@ -242,7 +243,11 @@ static const NSString *const kUTMConfigCdromKey = @"Cdrom";
     if (interfaceIndex == NSNotFound) {
         interfaceIndex = interfacesPretty.count - 1;
     }
-    return [NSString stringWithFormat:NSLocalizedString(@"%@ Drive", @"UTMQemuConfiguration+Drives"), interfacesPretty[interfaceIndex]];
+    if ((interface.length == 0 || [interface isEqualToString:@"none"]) && [path isEqualToString:UTMQemuConfiguration.efiVariablesFileName]) {
+        return NSLocalizedString(@"EFI Variables", "UTMQemuConfiguration+Drives");
+    } else {
+        return [NSString stringWithFormat:NSLocalizedString(@"%@ Drive", @"UTMQemuConfiguration+Drives"), interfacesPretty[interfaceIndex]];
+    }
 }
 
 @end

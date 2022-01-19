@@ -582,7 +582,7 @@ static size_t sysctl_read(const char *name) {
 }
 
 - (NSURL *)efiVariablesURL {
-    return [[self.imgPath URLByAppendingPathComponent:[UTMQemuConfiguration diskImagesDirectory]] URLByAppendingPathComponent:@"efi_vars.fd"];
+    return [[self.imgPath URLByAppendingPathComponent:[UTMQemuConfiguration diskImagesDirectory]] URLByAppendingPathComponent:UTMQemuConfiguration.efiVariablesFileName];
 }
 
 - (NSString *)machineProperties {

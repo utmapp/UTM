@@ -22,6 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (NSString *)diskImagesDirectory;
 + (NSString *)debugLogName;
+@property (class, nonatomic, readonly) NSString *efiVariablesFileName;
 
 + (NSArray<NSString *>*)supportedOptions:(NSString *)key pretty:(BOOL)pretty;
 + (NSArray<NSString *>*)supportedBootDevicesPretty;

@@ -30,6 +30,10 @@
     return @"debug.log";
 }
 
++ (NSString *)efiVariablesFileName {
+    return @"efi_vars.fd";
+}
+
 #pragma mark - Constant supported values
 
 + (NSArray<NSString *>*)supportedOptions:(NSString *)key pretty:(BOOL)pretty {
