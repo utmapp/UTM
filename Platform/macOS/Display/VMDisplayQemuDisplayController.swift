@@ -73,6 +73,9 @@ class VMDisplayQemuWindowController: VMDisplayWindowController {
             menu.addItem(item)
         }
         for drive in drives {
+            if drive.imageType != .disk && drive.imageType != .CD && drive.status == .fixed {
+                continue // skip non-disks
+            }
             let item = NSMenuItem()
             item.title = drive.label
             if drive.status == .fixed {
