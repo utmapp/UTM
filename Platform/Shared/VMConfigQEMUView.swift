@@ -32,7 +32,7 @@ struct VMConfigQEMUView: View {
         guard let path = config.existingPath else {
             return false
         }
-        let logPath = path.appendingPathComponent(UTMQemuConfiguration.debugLogName())
+        let logPath = path.appendingPathComponent(UTMQemuConfiguration.debugLogName)
         return FileManager.default.fileExists(atPath: logPath.path)
     }
     

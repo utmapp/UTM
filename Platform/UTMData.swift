@@ -357,7 +357,7 @@ class UTMData: ObservableObject {
         guard let path = config.existingPath else {
             throw NSLocalizedString("No log found!", comment: "UTMData")
         }
-        let srcLogPath = path.appendingPathComponent(UTMQemuConfiguration.debugLogName())
+        let srcLogPath = path.appendingPathComponent(UTMQemuConfiguration.debugLogName)
         return .debugLog(srcLogPath)
     }
     
