@@ -27,7 +27,7 @@ UTM是一个功能齐全的iOS虚拟机。简而言之，它允许你在iPhone�
 
 ### 简单的
 
-获取依赖项的推荐方法是使用[Github操作生成的构件][4].查找最新的版本构建并从arm64构建(用于iOS)或x86_64构建(用于Mac上的iOS模拟器)下载Sysroot工件。然后将Sysroot解压到UTM的根目录.然后就可以打开`UTM.xcodeproj`,选择您的签名证书，然后从Xcode运行并编译安装UTM。
+获取依赖项的推荐方法是使用[GitHub操作生成的构件][4].查找最新的版本构建并从arm64构建(用于iOS)或x86_64构建(用于Mac上的iOS模拟器)下载Sysroot工件。然后将Sysroot解压到UTM的根目录.然后就可以打开`UTM.xcodeproj`,选择您的签名证书，然后从Xcode运行并编译安装UTM。
 
 ### 高级的
 
@@ -48,13 +48,13 @@ UTM是一个功能齐全的iOS虚拟机。简而言之，它允许你在iPhone�
 * 要在Intel平台上建立依赖关系，请运行 `./scripts/build_dependencies.sh -p macos -a x86_64`
 * 要建立对苹果arm平台的依赖，请运行 `./scripts/build_dependencies.sh -p macos -a arm64`
 
-您也可以从Github下载预构建的依赖项。
+您也可以从GitHub下载预构建的依赖项。
 
 ## 签名(iOS)
 
 如果使用Xcode进行构建，则应该自动完成签名。由于iOS签名的错误导致不支持iOS 13.3.1。您可以使用低于或高于13.3.1的任何版本。
 
-在Github [Release][3]页面的`ipa`是伪签名。如果您越狱了，您不需要签名它，您可以直接使用越狱软件Filza进行安装。
+在GitHub [Release][3]页面的`ipa`是伪签名。如果您越狱了，您不需要签名它，您可以直接使用越狱软件Filza进行安装。
 如果您想要为备用设备签名正式版，有多种方法。推荐使用[iOS App Signer][2]。注意，许多“在线”签名服务(如AppCake)都存在一些已知的问题，而且它们与UTM不兼容。如果在试图启动VM虚拟机时发生崩溃（如闪退），那么您的签名证书是无效的。
 >译者注：据反馈，使用` i4Tools(即爱思助手) `生成的开发者证书签名的ipa也大概率无法正常使用
 
@@ -63,7 +63,7 @@ UTM是一个功能齐全的iOS虚拟机。简而言之，它允许你在iPhone�
 
 ### 签名开发版
 
-如果你想要给一个` xcarchive `签名，例如从[Github Actions][1]中编译Build，你可以使用以下命令:
+如果你想要给一个` xcarchive `签名，例如从[GitHub Actions][1]中编译Build，你可以使用以下命令:
 
 ```
 ./scripts/package.sh signedipa UTM.xcarchive outputPath PROFILE_NAME TEAM_ID

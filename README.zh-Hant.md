@@ -28,7 +28,7 @@ UTM是一個功能齊全的iOS虛擬機主機。簡而言之，它允許你在iP
 
 ### 簡單的
 
-獲取依賴項的推薦方法是使用[Github操作生成的構件][4].查找最新的版本構建並從arm64構建(用於iOS)或x86_64構建(用於Mac上的iOS模擬器)下載Sysroot工件。然後將Sysroot解壓到UTM的根目錄.然後就可以打開`UTM.xcodeproj`,選擇您的簽名證書，然後從Xcode運行並編譯安裝UTM。
+獲取依賴項的推薦方法是使用[GitHub操作生成的構件][4].查找最新的版本構建並從arm64構建(用於iOS)或x86_64構建(用於Mac上的iOS模擬器)下載Sysroot工件。然後將Sysroot解壓到UTM的根目錄.然後就可以打開`UTM.xcodeproj`,選擇您的簽名證書，然後從Xcode運行並編譯安裝UTM。
 
 ### 高級的
 
@@ -54,7 +54,7 @@ UTM是一個功能齊全的iOS虛擬機主機。簡而言之，它允許你在iP
 
 ### 簽名開發
 
-如果你想要簽署一個xcarchive，例如從[Github Actions][1]中編譯構建，你可以使用以下命令:
+如果你想要簽署一個xcarchive，例如從[GitHub Actions][1]中編譯構建，你可以使用以下命令:
 
 ```
 ./scripts/package.sh signedipa UTM.xcarchive outputPath PROFILE_NAME TEAM_ID

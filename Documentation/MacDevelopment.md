@@ -13,7 +13,7 @@ Alternatively, run `git submodule update --init --recursive` after cloning if yo
 
 ## Dependencies
 
-The easy way is to get the prebuilt dependences from [Github Actions][1]. Pick the latest release and download all of the `Sysroot-macos-*` artifacts. You need to be logged in to Github to download artifacts. If you only intend to run locally, it is alright to just download the sysroot for your architecture.
+The easy way is to get the prebuilt dependences from [GitHub Actions][1]. Pick the latest release and download all of the `Sysroot-macos-*` artifacts. You need to be logged in to GitHub to download artifacts. If you only intend to run locally, it is alright to just download the sysroot for your architecture.
 
 ### Building Dependencies (Advanced)
 
@@ -50,7 +50,7 @@ You can build UTM with the script:
 
 ### Packaging
 
-Artifacts built with `build_utm.sh` (includes Github Actions artifacts) must be re-signed before it can be used. To properly use all features, you must be a paid Apple Developer with access to a provisioning profile with the Hypervisor entitlements. However, non-registered developers can build "unsigned" packages which lack certain features (such as USB and network bridging support).
+Artifacts built with `build_utm.sh` (includes GitHub Actions artifacts) must be re-signed before it can be used. To properly use all features, you must be a paid Apple Developer with access to a provisioning profile with the Hypervisor entitlements. However, non-registered developers can build "unsigned" packages which lack certain features (such as USB and network bridging support).
 
 #### Unsigned packages
 
