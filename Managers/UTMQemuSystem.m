@@ -442,7 +442,7 @@ static size_t sysctl_read(const char *name) {
     if (!self.configuration.inputLegacy) {
         if ([self.configuration.systemTarget hasPrefix:@"virt"]) {
             [self pushArgv:@"-device"];
-            [self pushArgv:@"qemu-xhci,id=usb-bus"];
+            [self pushArgv:@"nec-usb-xhci,id=usb-bus"];
         } else {
             [self pushArgv:@"-usb"];
         }
