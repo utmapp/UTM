@@ -1,0 +1,12 @@
+diff -Naur a/configure b/configure
+--- a/configure	2017-03-18 06:35:39.000000000 -0700
++++ b/configure	2022-01-20 18:35:29.000000000 -0800
+@@ -7868,8 +7868,6 @@
+       case ${MACOSX_DEPLOYMENT_TARGET-10.0},$host in
+ 	10.0,*86*-darwin8*|10.0,*-darwin[91]*)
+ 	  _lt_dar_allow_undefined='$wl-undefined ${wl}dynamic_lookup' ;;
+-	10.[012][,.]*)
+-	  _lt_dar_allow_undefined='$wl-flat_namespace $wl-undefined ${wl}suppress' ;;
+ 	10.*)
+ 	  _lt_dar_allow_undefined='$wl-undefined ${wl}dynamic_lookup' ;;
+       esac
