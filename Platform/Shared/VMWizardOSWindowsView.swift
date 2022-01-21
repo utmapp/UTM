@@ -48,6 +48,9 @@ struct VMWizardOSWindowsView: View {
                 BigWhiteSpinner()
             }
             Spacer()
+            if #available(iOS 15, macOS 12, *) {
+                Text(try! AttributedString(markdown: "Hint: For the best Windows experience, make sure to download and install the latest [SPICE tools and QEMU drivers](https://mac.getutm.app/support/)."))
+            }
         }.fileImporter(isPresented: $isFileImporterPresented, allowedContentTypes: [.data], onCompletion: processImage)
         .onAppear {
             if wizardState.windowsBootVhdx != nil {
