@@ -13,7 +13,7 @@ Alternatively, run `git submodule update --init --recursive` after cloning if yo
 
 ## Dependencies
 
-The easy way is to get the prebuilt dependences from [Github Actions][1]. Pick the latest release and download the `Sysroot-*` artifact for the targets you wish to develop on. You need to be logged in to Github to download artifacts.
+The easy way is to get the prebuilt dependences from [GitHub Actions][1]. Pick the latest release and download the `Sysroot-*` artifact for the targets you wish to develop on. You need to be logged in to GitHub to download artifacts.
 
 |              | Intel                      | Apple Silicon             |
 |--------------|----------------------------|---------------------------|
@@ -48,7 +48,7 @@ The built artifact is an unsigned `.xcarchive` which you can use with the packag
 
 ### Packaging
 
-Artifacts built with `build_utm.sh` (includes Github Actions artifacts) must be re-signed before it can be used. For stock iOS devices, you can sign with either a free developer account or a paid developer account. Free accounts have a 7 day expire time and must be re-signed every 7 days. For jailbroken iOS devices, you can generate a DEB which is fake-signed.
+Artifacts built with `build_utm.sh` (includes GitHub Actions artifacts) must be re-signed before it can be used. For stock iOS devices, you can sign with either a free developer account or a paid developer account. Free accounts have a 7 day expire time and must be re-signed every 7 days. For jailbroken iOS devices, you can generate a DEB which is fake-signed.
 
 #### Stock signed IPA
 
