@@ -327,8 +327,11 @@ class UTMData: ObservableObject {
                 config.recoverOrphanedDrives()
             }
             self.selectedVM = vm
-            self.showSettingsModal = true
             self.showNewVMSheet = false
+            // SwiftUI bug: cannot show modal at the same time as changing selected VM or it breaks
+            DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(1)) {
+                self.showSettingsModal = true
+            }
         }
     }
     
