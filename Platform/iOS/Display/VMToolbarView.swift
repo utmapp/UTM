@@ -174,8 +174,7 @@ struct VMToolbarView: View {
     }
     
     private func position(for geometry: GeometryProxy) -> CGPoint {
-        let offset: CGFloat =
-        (horizontalSizeClass == .compact || verticalSizeClass == .compact) ? 24 : 32
+        let offset: CGFloat = 48
         guard !isMoving else {
             return dragPosition
         }
