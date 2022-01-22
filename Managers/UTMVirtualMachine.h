@@ -51,6 +51,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)resetVM;
 - (BOOL)pauseVM;
 - (BOOL)saveVM;
+- (BOOL)saveVMInBackground:(BOOL)background NS_SWIFT_NAME(saveVM(inBackground:));
 - (BOOL)deleteSaveVM;
 - (BOOL)resumeVM;
 

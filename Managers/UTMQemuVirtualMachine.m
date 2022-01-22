@@ -302,7 +302,6 @@ NSString *const kSuspendSnapshotName = @"suspend";
             self.busy = YES;
         }
     }
-    self.viewState.suspended = NO;
     [self syncViewState];
     if (!force) {
         [self changeState:kVMStopping];
@@ -408,7 +407,7 @@ NSString *const kSuspendSnapshotName = @"suspend";
     return success;
 }
 
-- (BOOL)saveVM {
+- (BOOL)saveVMInBackground:(BOOL)background {
     @synchronized (self) {
         if (self.busy || (self.state != kVMPaused && self.state != kVMStarted)) {
             return NO;
@@ -440,7 +439,12 @@ NSString *const kSuspendSnapshotName = @"suspend";
         [self saveViewState];
         [self saveScreenshot];
     }
-    [self changeState:state];
+    if (!success || background) {
+        // restore original state
+        [self changeState:state];
+    } else {
+        [self changeState:kVMSuspended];
+    }
     self.busy = NO;
     return success;
 }

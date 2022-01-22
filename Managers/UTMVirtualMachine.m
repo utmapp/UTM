@@ -197,7 +197,7 @@ NSString *const kUTMBundleScreenshotFilename = @"screenshot.png";
 }
 
 - (BOOL)quitVM {
-    return [self quitVMForce:false];
+    return [self quitVMForce:NO];
 }
 
 - (BOOL)quitVMForce:(BOOL)force {
@@ -213,6 +213,10 @@ NSString *const kUTMBundleScreenshotFilename = @"screenshot.png";
 }
 
 - (BOOL)saveVM {
+    return [self saveVMInBackground:NO];
+}
+
+- (BOOL)saveVMInBackground:(BOOL)background {
     notImplemented;
 }
 

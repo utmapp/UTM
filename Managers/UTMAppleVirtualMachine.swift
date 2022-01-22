@@ -201,7 +201,7 @@ import Virtualization
         return true
     }
     
-    override func saveVM() -> Bool {
+    override func saveVM(inBackground: Bool) -> Bool {
         // FIXME: implement this
         return true
     }

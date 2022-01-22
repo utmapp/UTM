@@ -145,7 +145,7 @@ public extension VMDisplayViewController {
         if autosaveLowMemory {
             logger.info("Saving VM state on low memory warning.")
             DispatchQueue.global(qos: .background).async {
-                self.vm.saveVM()
+                self.vm.saveVM(inBackground: true)
             }
         }
         
@@ -267,7 +267,7 @@ extension VMDisplayViewController {
                 task = .invalid
             }
             DispatchQueue.global(qos: .default).async {
-                self.vm.saveVM()
+                self.vm.saveVM(inBackground: true)
                 self.hasAutoSave = true
                 logger.info("Save snapshot complete")
                 UIApplication.shared.endBackgroundTask(task)
