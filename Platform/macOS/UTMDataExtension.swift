@@ -54,9 +54,12 @@ extension UTMData {
     }
     
     func stop(vm: UTMVirtualMachine) throws {
-        guard vm.deleteSaveVM() else {
-            throw NSLocalizedString("Failed to delete saved state.", comment: "UTMDataExtension")
+        if vm.viewState.suspended {
+            guard vm.deleteSaveVM() else {
+                throw NSLocalizedString("Failed to delete saved state.", comment: "UTMDataExtension")
+            }
         }
+        vm.quitVM(force: true)
         if let window = vmWindows[vm] {
             DispatchQueue.main.async {
                 window.close()
