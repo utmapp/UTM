@@ -59,9 +59,7 @@ class VMDisplayQemuWindowController: VMDisplayWindowController {
                 self.updateDrivesMenu(menu, drives: drives)
             }
         }
-        if let event = NSApplication.shared.currentEvent {
-            NSMenu.popUpContextMenu(menu, with: event, for: sender as! NSView)
-        }
+        menu.popUp(positioning: nil, at: NSEvent.mouseLocation, in: nil)
     }
     
     func updateDrivesMenu(_ menu: NSMenu, drives: [UTMDrive]) {
