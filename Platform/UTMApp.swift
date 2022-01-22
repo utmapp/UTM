@@ -31,7 +31,11 @@ struct UTMApp: App {
                     appDelegate.data = data
                     #endif
                 }
-        }.commands { VMCommands() }
+        }.commands {
+            #if os(macOS)
+            VMCommands()
+            #endif
+        }
         #if os(macOS)
         Settings {
             SettingsView()
