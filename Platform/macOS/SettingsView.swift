@@ -18,7 +18,7 @@ import SwiftUI
 
 @available(macOS 11, *)
 struct SettingsView: View {
-    @AppStorage("TerminateAfterLastWindowClosed") var isTerminateAfterLastWindowClosed = false
+    @AppStorage("KeepRunningAfterLastWindowClosed") var isKeepRunningAfterLastWindowClosed = false
     @AppStorage("DisplayFixed") var isVMDisplayFixed = false
     @AppStorage("NoHypervisor") var isNoHypervisor = false
     @AppStorage("CtrlRightClick") var isCtrlRightClick = false
@@ -29,8 +29,8 @@ struct SettingsView: View {
     var body: some View {
         Form {
             Section(header: Text("Application")) {
-                Toggle(isOn: $isTerminateAfterLastWindowClosed, label: {
-                    Text("Terminate when last window is closed and all VMs are shut down")
+                Toggle(isOn: $isKeepRunningAfterLastWindowClosed, label: {
+                    Text("Keep UTM running after last window is closed and all VMs are shut down")
                 })
             }
             Section(header: Text("Display")) {
@@ -65,7 +65,7 @@ struct SettingsView: View {
 }
 
 extension UserDefaults {
-    @objc dynamic var TerminateAfterLastWindowClosed: Bool { false }
+    @objc dynamic var KeepRunningAfterLastWindowClosed: Bool { false }
     @objc dynamic var NoCursorCaptureAlert: Bool { false }
     @objc dynamic var DisplayFixed: Bool { false }
     @objc dynamic var NoHypervisor: Bool { false }

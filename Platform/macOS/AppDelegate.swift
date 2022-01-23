@@ -17,10 +17,10 @@
 class AppDelegate: NSObject, NSApplicationDelegate {
     var data: UTMData?
     
-    @Setting("TerminateAfterLastWindowClosed") private var isTerminateAfterLastWindowClosed: Bool = false
+    @Setting("KeepRunningAfterLastWindowClosed") private var isKeepRunningAfterLastWindowClosed: Bool = false
     
     func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
-        isTerminateAfterLastWindowClosed // FIXME: check if any VMs are running once we support headless VMs
+        !isKeepRunningAfterLastWindowClosed // FIXME: check if any VMs are running once we support headless VMs
     }
     
     func applicationShouldTerminate(_ sender: NSApplication) -> NSApplication.TerminateReply {
