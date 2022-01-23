@@ -43,6 +43,7 @@ struct NumberTextFieldOld: View {
             self.number = self.formatter.number(from: $0) ?? NSNumber(value: 0)
         }), onEditingChanged: onEditingChanged)
             .keyboardType(.numberPad)
+            .multilineTextAlignment(.trailing)
     }
 }
 
@@ -76,6 +77,7 @@ struct NumberTextFieldNew: View {
                 focused = false
                 onEditingChanged(false)
             }
+            .multilineTextAlignment(.trailing)
     }
 }
 #endif

@@ -22,27 +22,38 @@ struct VMWizardOSOtherView: View {
     @State private var isFileImporterPresented: Bool = false
     
     var body: some View {
-        VStack {
-            Text("Boot Image")
-                .font(.largeTitle)
-            Toggle("Skip ISO boot (advanced)", isOn: $wizardState.isSkipBootImage)
+#if os(macOS)
+        Text("Other")
+            .font(.largeTitle)
+#endif
+        List {
             if !wizardState.isSkipBootImage {
-                Text("Boot ISO Image:")
-                    .padding(.top)
-                Text(wizardState.bootImageURL?.lastPathComponent ?? " ")
-                    .font(.caption)
-                Button {
-                    isFileImporterPresented.toggle()
-                } label: {
-                    Text("Browse")
-                }.disabled(wizardState.isBusy)
-                .buttonStyle(BrowseButtonStyle())
-                if wizardState.isBusy {
-                    BigWhiteSpinner()
+                Section {
+                    Text("Boot ISO Image:")
+                    Text(wizardState.bootImageURL?.lastPathComponent ?? "Empty")
+                        .font(.caption)
+                    Button {
+                        isFileImporterPresented.toggle()
+                    } label: {
+                        Text("Browse")
+                    }
+                    .disabled(wizardState.isBusy)
+                    .padding(.leading, 1)
+                    if wizardState.isBusy {
+                        BigWhiteSpinner()
+                    }
+                } header: {
+                    Text("File Imported")
                 }
             }
-            Spacer()
-        }.fileImporter(isPresented: $isFileImporterPresented, allowedContentTypes: [.data], onCompletion: processImage)
+            Section {
+                Toggle("Skip ISO boot", isOn: $wizardState.isSkipBootImage)
+            } header: {
+                Text("Advanced")
+            }
+        }
+        .navigationTitle(Text("Other"))
+        .fileImporter(isPresented: $isFileImporterPresented, allowedContentTypes: [.data], onCompletion: processImage)
     }
     
     private func processImage(_ result: Result<URL, Error>) {

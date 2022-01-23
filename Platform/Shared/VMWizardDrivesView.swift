@@ -21,21 +21,30 @@ struct VMWizardDrivesView: View {
     @ObservedObject var wizardState: VMWizardState
     
     var body: some View {
-        VStack {
-            Text("Storage")
-                .font(.largeTitle)
-            Text("Specify the size of the drive where data will be stored into.")
-                .padding()
-            HStack {
-                NumberTextField("", number: $wizardState.storageSizeGib, onEditingChanged: { _ in
-                    if wizardState.storageSizeGib < 1 {
-                        wizardState.storageSizeGib = 1
-                    }
-                }).frame(maxWidth: 50)
-                Text("GB")
+#if os(macOS)
+        Text("Storage")
+            .font(.largeTitle)
+#endif
+        List {
+            Section {
+                HStack {
+                    Text("Specify the size of the drive where data will be stored into.")
+                    Spacer()
+                    NumberTextField("", number: $wizardState.storageSizeGib, onEditingChanged: { _ in
+                        if wizardState.storageSizeGib < 1 {
+                            wizardState.storageSizeGib = 1
+                        }
+                    })
+                        .textFieldStyle(.roundedBorder)
+                        .frame(maxWidth: 50)
+                    Text("GB")
+                }
+            } header: {
+                Text("Size")
             }
-            Spacer()
+            
         }
+        .navigationTitle(Text("Storage"))
     }
 }
 

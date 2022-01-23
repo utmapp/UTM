@@ -56,52 +56,75 @@ struct VMWizardHardwareView: View {
     }
     
     var body: some View {
-        VStack {
-            Text("Hardware")
-                .font(.largeTitle)
+#if os(macOS)
+        Text("Hardware")
+            .font(.largeTitle)
+#endif
+        List {
             if !wizardState.useVirtualization {
-                VMConfigStringPicker(selection: $wizardState.systemArchitecture, label: Text("Architecture"), rawValues: UTMQemuConfiguration.supportedArchitectures(), displayValues: UTMQemuConfiguration.supportedArchitecturesPretty())
-                    .onChange(of: wizardState.systemArchitecture) { newValue in
-                        let targets = UTMQemuConfiguration.supportedTargets(forArchitecture: newValue)
-                        let index = UTMQemuConfiguration.defaultTargetIndex(forArchitecture: newValue)
-                        wizardState.systemTarget = targets![index]
-                    }
-                #if !os(macOS)
-                Text(wizardState.systemArchitecture ?? " ")
-                    .font(.caption)
-                #endif
-                VMConfigStringPicker(selection: $wizardState.systemTarget, label: Text("System"), rawValues: UTMQemuConfiguration.supportedTargets(forArchitecture: wizardState.systemArchitecture), displayValues: UTMQemuConfiguration.supportedTargets(forArchitecturePretty: wizardState.systemArchitecture))
-                #if !os(macOS)
-                Text(wizardState.systemTarget ?? " ")
-                    .font(.caption)
-                #endif
-            }
-            RAMSlider(systemMemory: $wizardState.systemMemory) { _ in
-                if wizardState.systemMemory < minMemory {
-                    wizardState.systemMemory = minMemory
-                } else if wizardState.systemMemory > maxMemory {
-                    wizardState.systemMemory = maxMemory
+                Section {
+                    VMConfigStringPicker(selection: $wizardState.systemArchitecture, label: Text(""), rawValues: UTMQemuConfiguration.supportedArchitectures(), displayValues: UTMQemuConfiguration.supportedArchitecturesPretty())
+                        .onChange(of: wizardState.systemArchitecture) { newValue in
+                            let targets = UTMQemuConfiguration.supportedTargets(forArchitecture: newValue)
+                            let index = UTMQemuConfiguration.defaultTargetIndex(forArchitecture: newValue)
+                            wizardState.systemTarget = targets![index]
+                        }
+                } header: {
+                    Text("Architecture")
                 }
-            }
-            HStack {
-                Stepper(value: $wizardState.systemCpuCount, in: minCores...maxCores) {
-                    Text("CPU Cores")
+                
+                Section {
+                    VMConfigStringPicker(selection: $wizardState.systemTarget, label: Text(""), rawValues: UTMQemuConfiguration.supportedTargets(forArchitecture: wizardState.systemArchitecture), displayValues: UTMQemuConfiguration.supportedTargets(forArchitecturePretty: wizardState.systemArchitecture))
+                } header: {
+                    Text("System")
                 }
-                NumberTextField("", number: $wizardState.systemCpuCount, onEditingChanged: { _ in
-                    if wizardState.systemCpuCount < minCores {
-                        wizardState.systemCpuCount = minCores
-                    } else if wizardState.systemCpuCount > maxCores {
-                        wizardState.systemCpuCount = maxCores
-                    }
-                })
-                    .frame(width: 50)
-                    .multilineTextAlignment(.trailing)
+
             }
+            Section {
+                RAMSlider(systemMemory: $wizardState.systemMemory) { _ in
+                    if wizardState.systemMemory < minMemory {
+                        wizardState.systemMemory = minMemory
+                    } else if wizardState.systemMemory > maxMemory {
+                        wizardState.systemMemory = maxMemory
+                    }
+                }
+            } header: {
+                Text("Memory")
+            }
+            
+            Section {
+                HStack {
+                    Stepper(value: $wizardState.systemCpuCount, in: minCores...maxCores) {
+                        Text("CPU Cores")
+                    }
+                    NumberTextField("", number: $wizardState.systemCpuCount, onEditingChanged: { _ in
+                        if wizardState.systemCpuCount < minCores {
+                            wizardState.systemCpuCount = minCores
+                        } else if wizardState.systemCpuCount > maxCores {
+                            wizardState.systemCpuCount = maxCores
+                        }
+                    })
+                        .frame(width: 50)
+                        .multilineTextAlignment(.trailing)
+                }
+            } header: {
+                Text("CPU")
+            }
+            
+            
+            
             if !wizardState.useAppleVirtualization && wizardState.operatingSystem == .Linux {
-                Toggle("Enable hardware OpenGL acceleration (experimental)", isOn: $wizardState.isGLEnabled)
+                Section {
+                    Toggle("Enable hardware OpenGL acceleration (experimental)", isOn: $wizardState.isGLEnabled)
+                } header: {
+                    Text("Hardware OpenGL Acceleration")
+                }
+                
             }
-            Spacer()
-        }.onAppear {
+        }
+        .navigationTitle(Text("Hardware"))
+        .textFieldStyle(.roundedBorder)
+        .onAppear {
             if wizardState.systemArchitecture == nil {
                 wizardState.systemArchitecture = "x86_64"
             }

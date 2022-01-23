@@ -19,44 +19,63 @@ import SwiftUI
 @available(iOS 14, macOS 11, *)
 struct VMWizardOSView: View {
     @ObservedObject var wizardState: VMWizardState
-    
     var body: some View {
-        VStack {
-            Text("Operating System")
-                .font(.largeTitle)
-            #if os(macOS) && arch(arm64)
-            if #available(macOS 12, *), wizardState.useVirtualization {
+#if os(macOS)
+        Text("Operation System")
+            .font(.largeTitle)
+#endif
+        List {
+            Section {
+                #if os(macOS) && arch(arm64)
+                if #available(macOS 12, *), wizardState.useVirtualization {
+                    Button {
+                        wizardState.operatingSystem = .macOS
+                        wizardState.useAppleVirtualization = true
+                        wizardState.next()
+                    } label: {
+                        OperatingSystem(imageName: "mac", name: "macOS 12+")
+                    }
+                }
+                #endif
                 Button {
-                    wizardState.operatingSystem = .macOS
-                    wizardState.useAppleVirtualization = true
+                    wizardState.operatingSystem = .Windows
+                    wizardState.useAppleVirtualization = false
                     wizardState.next()
                 } label: {
-                    OperatingSystem(imageName: "mac", name: "macOS 12+")
+                    OperatingSystem(imageName: "windows", name: "Windows")
                 }
+                Button {
+                    wizardState.operatingSystem = .Linux
+                    wizardState.next()
+                } label: {
+                    OperatingSystem(imageName: "linux", name: "Linux")
+                }
+            } header: {
+                Text("Preconfigured")
             }
-            #endif
-            Button {
-                wizardState.operatingSystem = .Windows
-                wizardState.useAppleVirtualization = false
-                wizardState.next()
-            } label: {
-                OperatingSystem(imageName: "windows", name: "Windows")
+            Section {
+                Button {
+                    wizardState.operatingSystem = .Other
+                    wizardState.useAppleVirtualization = false
+                    wizardState.next()
+                } label: {
+                    HStack {
+                        Image(systemName: "gearshape")
+                            .resizable()
+                            .frame(width: 30.0, height: 30.0)
+                            .aspectRatio(contentMode: .fit)
+                        Text("Other")
+                            .font(.title)
+                    }
+                    .padding()
+                }
+            } header: {
+                Text("Custom")
             }
-            Button {
-                wizardState.operatingSystem = .Linux
-                wizardState.next()
-            } label: {
-                OperatingSystem(imageName: "linux", name: "Linux")
-            }
-            Button {
-                wizardState.operatingSystem = .Other
-                wizardState.useAppleVirtualization = false
-                wizardState.next()
-            } label: {
-                Text("Other")
-                    .font(.title)
-            }
-        }.buttonStyle(BigButtonStyle(width: 320, height: 50))
+
+        }
+        .navigationTitle(Text("Operation System"))
+        .buttonStyle(InListButtonStyle())
     }
 }
 
@@ -70,15 +89,15 @@ struct OperatingSystem: View {
         return URL(fileURLWithPath: path)
     }
     
-    #if os(macOS)
+#if os(macOS)
     private var icon: Image {
         Image(nsImage: NSImage(byReferencing: imageURL))
     }
-    #else
+#else
     private var icon: Image {
         Image(uiImage: UIImage(contentsOfURL: imageURL)!)
     }
-    #endif
+#endif
     
     var body: some View {
         HStack {
@@ -89,6 +108,7 @@ struct OperatingSystem: View {
             Text(name)
                 .font(.title)
         }
+        .padding()
     }
 }
 

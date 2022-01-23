@@ -70,12 +70,10 @@ struct RAMSlider: View {
                         validateMemorySize(false)
                     }
                 } label: {
-                    Text("Memory")
+                    Text("")
                 }
-                GeometryReader { geo in
-                    NumberTextField("Size", number: $systemMemory, onEditingChanged: validateMemorySize)
-                        .position(x: 20, y: geo.size.height / 2)
-                }.frame(width: 50)
+                NumberTextField("Size", number: $systemMemory, onEditingChanged: validateMemorySize)
+                    .frame(width: 80)
                 Text("MB")
             }
         } else {
@@ -85,10 +83,10 @@ struct RAMSlider: View {
                         validateMemorySize(false)
                     }
                 } label: {
-                    Text("Memory")
+                    Text("")
                 }
                 NumberTextField("Size", number: $systemMemory, onEditingChanged: validateMemorySize)
-                    .frame(width: 50, height: nil)
+                    .frame(width: 80, height: nil)
                 Text("MB")
             }
         }

@@ -32,38 +32,71 @@ struct VMWizardStartView: View {
     }
     
     var body: some View {
-        VStack {
-            Text("I want to...")
-                .font(.largeTitle)
-            Button {
-                wizardState.useVirtualization = true
-                wizardState.next()
-            } label: {
-                VStack {
-                    Text("Virtualize")
-                        .font(.title)
-                    Text("Faster, but can only run the native CPU architecture.")
-                        .font(.caption)
+        #if os(macOS)
+        Text("Start")
+            .font(.largeTitle)
+        #endif
+        List {
+            Section {
+                Button {
+                    wizardState.useVirtualization = true
+                    wizardState.next()
+                } label: {
+                    HStack {
+                        Image(systemName: "hare")
+                            .font(.title)
+                        VStack(alignment: .leading, spacing: 10) {
+                            Text("Virtualize")
+                                .font(.title)
+                            Text("Faster, but can only run the native CPU architecture.")
+                                .font(.caption)
+                        }
+                        Spacer()
+                    }
+                    .padding()
                 }
-            }.disabled(!isVirtualizationSupported)
-            if !isVirtualizationSupported {
-                Text("Virtualization is not supported on your system.")
-                    .font(.footnote)
-            }
-            Button {
-                wizardState.useVirtualization = false
-                wizardState.next()
-            } label: {
-                VStack {
-                    Text("Emulate")
-                        .font(.title)
-                    Text("Slower, but can run other CPU architectures.")
-                        .font(.caption)
+                .disabled(!isVirtualizationSupported)
+                .buttonStyle(InListButtonStyle())
+                
+                Button {
+                    wizardState.useVirtualization = false
+                    wizardState.next()
+                } label: {
+                    HStack {
+                        Image(systemName: "tortoise")
+                            .font(.title)
+                        VStack(alignment: .leading, spacing: 10) {
+                            Text("Emulate")
+                                .font(.title)
+                            Text("Slower, but can run other CPU architectures.")
+                                .font(.caption)
+                        }
+                        Spacer()
+                    }
+                    .padding()
+                }
+                .buttonStyle(InListButtonStyle())
+                
+            } header: {
+                Text("Custom")
+            } footer: {
+                if !isVirtualizationSupported {
+                    Text("Virtualization is not supported on your system.")
                 }
             }
-            Link("Download prebuilt from UTM Gallery...", destination: URL(string: "https://mac.getutm.app/gallery/")!)
-                .buttonStyle(BorderlessButtonStyle())
-        }.buttonStyle(BigButtonStyle(width: 320, height: 100))
+            Section {
+                Link(destination: URL(string: "https://mac.getutm.app/gallery/")!) {
+                    HStack {
+                        Image(systemName: "arrow.down.doc")
+                        Text("Download prebuilt from UTM Gallery...")
+                    }
+                }
+            } header: {
+                Text("Prebuilt")
+            }
+
+        }
+        .navigationTitle(Text("Start"))
     }
     
     private func processIsTranslated() -> Bool {

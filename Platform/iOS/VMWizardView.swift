@@ -45,23 +45,23 @@ fileprivate struct WizardWrapper: View {
         VStack {
             switch page {
             case .start:
-                VMWizardStartView(wizardState: wizardState).padding()
+                VMWizardStartView(wizardState: wizardState)
             case .operatingSystem:
-                VMWizardOSView(wizardState: wizardState).padding()
+                VMWizardOSView(wizardState: wizardState)
             case .macOSBoot:
                 EmptyView()
             case .linuxBoot:
-                VMWizardOSLinuxView(wizardState: wizardState).padding()
+                VMWizardOSLinuxView(wizardState: wizardState)
             case .windowsBoot:
-                VMWizardOSWindowsView(wizardState: wizardState).padding()
+                VMWizardOSWindowsView(wizardState: wizardState)
             case .otherBoot:
-                VMWizardOSOtherView(wizardState: wizardState).padding()
+                VMWizardOSOtherView(wizardState: wizardState)
             case .hardware:
-                VMWizardHardwareView(wizardState: wizardState).padding()
+                VMWizardHardwareView(wizardState: wizardState)
             case .drives:
-                VMWizardDrivesView(wizardState: wizardState).padding()
+                VMWizardDrivesView(wizardState: wizardState)
             case .sharing:
-                VMWizardSharingView(wizardState: wizardState).padding()
+                VMWizardSharingView(wizardState: wizardState)
             case .summary:
                 VMWizardSummaryView(wizardState: wizardState)
             }

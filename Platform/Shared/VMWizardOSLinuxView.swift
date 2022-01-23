@@ -30,119 +30,205 @@ struct VMWizardOSLinuxView: View {
     @State private var selectImage: SelectImage = .kernel
     
     var body: some View {
-        VStack {
-            Text("Linux")
-                .font(.largeTitle)
-            #if os(macOS)
-            if wizardState.useVirtualization {
-                Toggle("Use Apple Virtualization", isOn: $wizardState.useAppleVirtualization)
-                    .help("If set, use Apple's virtualization engine. Otherwise, use QEMU's virtualization engine.")
+#if os(macOS)
+        Text("Linux")
+            .font(.largeTitle)
+#endif
+        List {
+#if os(macOS)
+            Section {
+                if wizardState.useVirtualization {
+                    Toggle("Use Apple Virtualization", isOn: $wizardState.useAppleVirtualization)
+                }
+            } header: {
+                Text("Virtualization Engine")
+            } footer: {
+                Text("If set, use Apple's virtualization engine. Otherwise, use QEMU's virtualization engine.")
             }
-            #endif
-            Toggle("Boot from kernel image", isOn: $wizardState.useLinuxKernel)
-                .help("If set, boot directly from a raw kernel image and initrd. Otherwise, boot from a supported ISO.")
-                .disabled(wizardState.useAppleVirtualization)
+#endif
+            
+            Section {
+                Toggle("Boot from kernel image", isOn: $wizardState.useLinuxKernel)
+                    .help("If set, boot directly from a raw kernel image and initrd. Otherwise, boot from a supported ISO.")
+                    .disabled(wizardState.useAppleVirtualization)
+                if !wizardState.useLinuxKernel {
+#if arch(arm64)
+                Link("Download Ubuntu Server for ARM", destination: URL(string: "https://ubuntu.com/download/server/arm")!)
+                    .buttonStyle(BorderlessButtonStyle())
+#else
+                Link("Download Ubuntu Desktop", destination: URL(string: "https://ubuntu.com/download/desktop")!)
+                    .buttonStyle(BorderlessButtonStyle())
+#endif
+                }
+            } header: {
+                Text("Boot Image Type")
+            }
+            
             if wizardState.useLinuxKernel {
-                ScrollView {
-                    Group {
-                        Text("Linux kernel (required):")
-                            .padding(.top)
-                        Text(wizardState.linuxKernelURL?.lastPathComponent ?? " ")
-                            .font(.caption)
+                
+                Section {
+                    Text(wizardState.linuxKernelURL?.lastPathComponent ?? "Empty")
+                        .font(.caption)
+                    Button {
+                        selectImage = .kernel
+                        isFileImporterPresented.toggle()
+                    } label: {
+                        Text("Browse")
+                    }
+                    .padding(.leading, 1)
+                } header: {
+                    Text("Linux kernel (required):")
+                }
+                
+                Section {
+                    Text(wizardState.linuxInitialRamdiskURL?.lastPathComponent ?? "Empty")
+                        .font(.caption)
+#if os(macOS)
+                    HStack {
                         Button {
-                            selectImage = .kernel
+                            selectImage = .initialRamdisk
                             isFileImporterPresented.toggle()
                         } label: {
                             Text("Browse")
                         }
-                        
-                        Text("Linux initial ramdisk (optional):")
-                            .padding(.top)
-                        Text(wizardState.linuxInitialRamdiskURL?.lastPathComponent ?? " ")
-                            .font(.caption)
-                        HStack {
-                            Button {
-                                selectImage = .initialRamdisk
-                                isFileImporterPresented.toggle()
-                            } label: {
-                                Text("Browse")
-                            }
-                            Button {
-                                wizardState.linuxInitialRamdiskURL = nil
-                            } label: {
-                                Text("Clear")
-                            }
+                        .disabled(wizardState.isBusy)
+                        .padding(.leading, 1)
+                        Button {
+                            wizardState.linuxInitialRamdiskURL = nil
+                        } label: {
+                            Text("Clear")
                         }
-                    }.disabled(wizardState.isBusy)
-                    .buttonStyle(BrowseButtonStyle())
-                     
-                    Group{
-                        Text("Linux Root FS Image (optional):")
-                            .padding(.top)
-                        Text(wizardState.linuxRootImageURL?.lastPathComponent ?? " ")
-                            .font(.caption)
-                        HStack {
-                            Button {
-                                selectImage = .rootImage
-                                isFileImporterPresented.toggle()
-                            } label: {
-                                Text("Browse")
-                            }
-                            Button {
-                                wizardState.linuxRootImageURL = nil
-                            } label: {
-                                Text("Clear")
-                            }
-                        }
-                        
-                        Text("Boot ISO Image (optional):")
-                            .padding(.top)
-                        Text(wizardState.bootImageURL?.lastPathComponent ?? " ")
-                            .font(.caption)
-                        HStack {
-                            Button {
-                                selectImage = .bootImage
-                                isFileImporterPresented.toggle()
-                            } label: {
-                                Text("Browse")
-                            }
-                            Button {
-                                wizardState.bootImageURL = nil
-                                wizardState.isSkipBootImage = true
-                            } label: {
-                                Text("Clear")
-                            }
-                        }
-                    }.disabled(wizardState.isBusy)
-                    .buttonStyle(BrowseButtonStyle())
+                        .padding(.leading, 1)
+                    }
+#else
+                    Button {
+                        selectImage = .initialRamdisk
+                        isFileImporterPresented.toggle()
+                    } label: {
+                        Text("Browse")
+                    }
+                    .disabled(wizardState.isBusy)
+                    .padding(.leading, 1)
+                    Button {
+                        wizardState.linuxInitialRamdiskURL = nil
+                    } label: {
+                        Text("Clear")
+                    }
+                    .padding(.leading, 1)
+#endif
                     
+                } header: {
+                    Text("Linux initial ramdisk (optional):")
+                }
+                
+                Section {
+                    Text(wizardState.linuxRootImageURL?.lastPathComponent ?? "Empty")
+                        .font(.caption)
+#if os(macOS)
+                    HStack {
+                        Button {
+                            selectImage = .rootImage
+                            isFileImporterPresented.toggle()
+                        } label: {
+                            Text("Browse")
+                        }
+                        Button {
+                            wizardState.linuxRootImageURL = nil
+                        } label: {
+                            Text("Clear")
+                        }
+                    }
+#else
+                    Button {
+                        selectImage = .rootImage
+                        isFileImporterPresented.toggle()
+                    } label: {
+                        Text("Browse")
+                    }
+                    Button {
+                        wizardState.linuxRootImageURL = nil
+                    } label: {
+                        Text("Clear")
+                    }
+#endif
+                    
+                } header: {
+                    Text("Linux Root FS Image (optional):")
+                }
+                
+                Section {
+                    Text(wizardState.bootImageURL?.lastPathComponent ?? "Empty")
+                        .font(.caption)
+#if os(macOS)
+                    HStack {
+                        Button {
+                            selectImage = .bootImage
+                            isFileImporterPresented.toggle()
+                        } label: {
+                            Text("Browse")
+                        }
+                        .disabled(wizardState.isBusy)
+                        .padding(.leading, 1)
+                        Button {
+                            wizardState.bootImageURL = nil
+                            wizardState.isSkipBootImage = true
+                        } label: {
+                            Text("Clear")
+                        }
+                        .disabled(wizardState.isBusy)
+                        .padding(.leading, 1)
+                    }
+#else
+                    Button {
+                        selectImage = .bootImage
+                        isFileImporterPresented.toggle()
+                    } label: {
+                        Text("Browse")
+                    }
+                    .disabled(wizardState.isBusy)
+                    .padding(.leading, 1)
+                    Button {
+                        wizardState.bootImageURL = nil
+                        wizardState.isSkipBootImage = true
+                    } label: {
+                        Text("Clear")
+                    }
+                    .disabled(wizardState.isBusy)
+                    .padding(.leading, 1)
+#endif
+                    
+                } header: {
+                    Text("Boot ISO Image (optional):")
+                }
+                
+                Section {
                     TextField("Boot Arguments", text: $wizardState.linuxBootArguments)
+                } header: {
+                    Text("Boot Arguments")
                 }
             } else {
-                #if arch(arm64)
-                Link("Download Ubuntu Server for ARM", destination: URL(string: "https://ubuntu.com/download/server/arm")!)
-                    .buttonStyle(BorderlessButtonStyle())
-                #else
-                Link("Download Ubuntu Desktop", destination: URL(string: "https://ubuntu.com/download/desktop")!)
-                    .buttonStyle(BorderlessButtonStyle())
-                #endif
-                Text("Boot ISO Image:")
-                    .padding(.top)
-                Text(wizardState.bootImageURL?.lastPathComponent ?? " ")
-                    .font(.caption)
-                Button {
-                    selectImage = .bootImage
-                    isFileImporterPresented.toggle()
-                } label: {
-                    Text("Browse")
-                }.disabled(wizardState.isBusy)
-                .buttonStyle(BrowseButtonStyle())
+                Section {
+                    Text("Boot ISO Image:")
+                    Text(wizardState.bootImageURL?.lastPathComponent ?? "Empty")
+                        .font(.caption)
+                    Button {
+                        selectImage = .bootImage
+                        isFileImporterPresented.toggle()
+                    } label: {
+                        Text("Browse")
+                    }.disabled(wizardState.isBusy)
+                } header: {
+                    Text("File Imported")
+                }
             }
             if wizardState.isBusy {
                 BigWhiteSpinner()
             }
-            Spacer()
-        }.fileImporter(isPresented: $isFileImporterPresented, allowedContentTypes: [.data], onCompletion: processImage)
+            
+            
+        }
+        .navigationTitle(Text("Linux"))
+        .fileImporter(isPresented: $isFileImporterPresented, allowedContentTypes: [.data], onCompletion: processImage)
     }
     
     private func processImage(_ result: Result<URL, Error>) {

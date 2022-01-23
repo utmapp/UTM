@@ -23,44 +23,67 @@ struct VMWizardOSWindowsView: View {
     @State private var useVhdx: Bool = false
     
     var body: some View {
-        VStack {
-            Text("Windows")
-                .font(.largeTitle)
-            if useVhdx {
-                Link("Download Windows 11 for ARM64 Preview VHDX", destination: URL(string: "https://www.microsoft.com/en-us/software-download/windowsinsiderpreviewARM64")!)
-                Text("Boot VHDX Image:")
-                    .padding(.top)
-            } else {
-                Link("Generate Windows Installer ISO", destination: URL(string: "https://uupdump.net/")!)
-                Text("Boot ISO Image:")
-                    .padding(.top)
+#if os(macOS)
+        Text("Windows")
+            .font(.largeTitle)
+#endif
+        List {
+            Section {
+                Toggle("Import VHDX Image", isOn: $useVhdx)
+                if useVhdx {
+                    Link("Download Windows 11 for ARM64 Preview VHDX", destination: URL(string: "https://www.microsoft.com/en-us/software-download/windowsinsiderpreviewARM64")!)
+                } else {
+                    Link("Generate Windows Installer ISO", destination: URL(string: "https://uupdump.net/")!)
+                }
+            } header: {
+                Text("Image File Type")
             }
-            Toggle("Import VHDX Image", isOn: $useVhdx)
-            Text((useVhdx ? wizardState.windowsBootVhdx?.lastPathComponent : wizardState.bootImageURL?.lastPathComponent) ?? " ")
-                .font(.caption)
-            Button {
-                isFileImporterPresented.toggle()
-            } label: {
-                Text("Browse")
-            }.disabled(wizardState.isBusy)
-            .buttonStyle(BrowseButtonStyle())
-            if wizardState.isBusy {
-                BigWhiteSpinner()
+            .onAppear {
+                if wizardState.windowsBootVhdx != nil {
+                    useVhdx = true
+                } else {
+    #if arch(arm64)
+                    useVhdx = wizardState.useVirtualization
+    #endif
+                }
             }
-            Spacer()
-            if #available(iOS 15, macOS 12, *) {
-                Text(try! AttributedString(markdown: "Hint: For the best Windows experience, make sure to download and install the latest [SPICE tools and QEMU drivers](https://mac.getutm.app/support/)."))
+            
+            Section {
+                Toggle("UEFI Boot", isOn: $wizardState.systemBootUefi)
+            } footer: {
+                Text("Some older systems do not support UEFI boot, such as Windows 7 and below.")
             }
-        }.fileImporter(isPresented: $isFileImporterPresented, allowedContentTypes: [.data], onCompletion: processImage)
-        .onAppear {
-            if wizardState.windowsBootVhdx != nil {
-                useVhdx = true
-            } else {
-                #if arch(arm64)
-                useVhdx = wizardState.useVirtualization
-                #endif
+            
+            Section {
+                if useVhdx {
+                    Text("Boot VHDX Image:")
+                    
+                } else {
+                    Text("Boot ISO Image:")
+                }
+                Text((useVhdx ? wizardState.windowsBootVhdx?.lastPathComponent : wizardState.bootImageURL?.lastPathComponent) ?? "Empty")
+                    .font(.caption)
+                Button {
+                    isFileImporterPresented.toggle()
+                } label: {
+                    Text("Browse")
+                }
+                .disabled(wizardState.isBusy)
+                .padding(.leading, 1)
+                
+                if wizardState.isBusy {
+                    BigWhiteSpinner()
+                }
+            } header: {
+                Text("File Imported")
+            } footer: {
+                if #available(iOS 15, macOS 12, *) {
+                    Text(try! AttributedString(markdown: "Hint: For the best Windows experience, make sure to download and install the latest [SPICE tools and QEMU drivers](https://mac.getutm.app/support/)."))
+                }
             }
         }
+        .navigationTitle(Text("Windows"))
+        .fileImporter(isPresented: $isFileImporterPresented, allowedContentTypes: [.data], onCompletion: processImage)
     }
     
     private func processImage(_ result: Result<URL, Error>) {

@@ -60,7 +60,6 @@ struct VMWizardView: View {
             }
         }.padding()
             .frame(width: 450, height: 450)
-            .background(Color(NSColor.windowBackgroundColor))
             .toolbar {
                 ToolbarItem(placement: .automatic) {
                     Button("Close") {

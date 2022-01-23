@@ -58,6 +58,7 @@ class VMWizardState: ObservableObject {
     @Published var nextPageBinding: Binding<VMWizardPage?> = .constant(nil)
     @Published var alertMessage: AlertMessage?
     @Published var isBusy: Bool = false
+    @Published var systemBootUefi: Bool = true
     @Published var useVirtualization: Bool = false {
         didSet {
             if !useVirtualization {
@@ -393,6 +394,7 @@ class VMWizardState: ObservableObject {
         config.systemCPUCount = NSNumber(value: systemCpuCount)
         config.useHypervisor = useVirtualization
         config.shareDirectoryReadOnly = sharingReadOnly
+        config.systemBootUefi = systemBootUefi
         if isGLEnabled, let displayCard = config.displayCard {
             let newCard = displayCard + "-gl"
             let allCards = UTMQemuConfiguration.supportedDisplayCards(forArchitecture: systemArchitecture)!
