@@ -21,7 +21,7 @@ struct VMWizardOSView: View {
     @ObservedObject var wizardState: VMWizardState
     var body: some View {
 #if os(macOS)
-        Text("Operation System")
+        Text("Operating System")
             .font(.largeTitle)
 #endif
         List {
@@ -74,7 +74,7 @@ struct VMWizardOSView: View {
             }
 
         }
-        .navigationTitle(Text("Operation System"))
+        .navigationTitle(Text("Operating System"))
         .buttonStyle(InListButtonStyle())
     }
 }
