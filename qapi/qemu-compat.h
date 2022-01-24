@@ -71,6 +71,7 @@ void qmp_rpc_call(CFDictionaryRef args, CFDictionaryRef *ret, Error **err, void 
 
 // TODO: make this match with qemu build
 #define CONFIG_SPICE 1
+#define CONFIG_VNC 1
 #define TARGET_I386 1
 
 #define GCC_FMT_ATTR(n, m)
