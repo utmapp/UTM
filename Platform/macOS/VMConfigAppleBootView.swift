@@ -164,6 +164,16 @@ struct VMConfigAppleBootView: View {
                 break
             }
             operatingSystem = currentOperatingSystem
+            switch operatingSystem {
+            case .macOS:
+                config.isConsoleDisplay = false
+                config.isSerialEnabled = false
+            case .Linux:
+                config.isConsoleDisplay = true
+                config.isSerialEnabled = true
+            default:
+                break
+            }
         }
     }
 }

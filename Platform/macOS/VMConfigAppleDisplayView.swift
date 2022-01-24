@@ -105,10 +105,14 @@ struct VMConfigAppleDisplayView: View {
     var body: some View {
         Form {
             Picker("Display Mode", selection: $config.isConsoleDisplay) {
-                Text("Console Mode")
-                    .tag(true)
-                Text("Full Graphics")
-                    .tag(false)
+                if config.bootLoader?.operatingSystem == .Linux {
+                    Text("Console Mode")
+                        .tag(true)
+                }
+                if config.bootLoader?.operatingSystem == .macOS {
+                    Text("Full Graphics")
+                        .tag(false)
+                }
             }.onChange(of: config.isConsoleDisplay) { newValue in
                 if newValue {
                     config.isSerialEnabled = true
