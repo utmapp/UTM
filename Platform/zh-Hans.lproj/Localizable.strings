@@ -957,7 +957,7 @@
 
 "AUTO RESOLUTION" = "自动调整"
 
-"Resize display to screen size automatically" = "自动调整屏幕尺寸"
+"Resize display to screen size automatically" = "自动调整屏幕尺寸";
 
 //Settings
 "DEVICES" = "设备";
@@ -983,4 +983,4 @@
 
 //QEMU
 
-"Use Hypervisor" = "使用Hypervisor"
+"Use Hypervisor" = "使用Hypervisor";
