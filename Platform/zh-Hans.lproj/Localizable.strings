@@ -973,6 +973,6 @@
 
 //System
 
-"UEFI Boot" = "UEFI启动"
+"UEFI Boot" = "UEFI启动";
 
-"RNG Device" = "RNG设备"
+"RNG Device" = "RNG设备";
