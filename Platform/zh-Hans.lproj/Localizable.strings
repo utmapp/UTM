@@ -955,6 +955,10 @@
 //Display
 "Emulated Display Card" = "虚拟显卡";
 
+"AUTO RESOLUTION" = "自动调整"
+
+"Resize display to screen size automatically" = "自动调整屏幕尺寸"
+
 //Settings
 "DEVICES" = "设备";
 
