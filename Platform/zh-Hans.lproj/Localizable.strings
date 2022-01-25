@@ -574,12 +574,9 @@
 /* No comment provided by engineer. */
 "Read Only" = "只读";
 
-/* No comment provided by engineer. */
-"Removable" = "可移动";
-
 /* VMConfigDrivesView
    VMConfigDrivesViewController */
-"Removable Drive" = "可移动驱动器";
+"Removable Drive" = "可移除驱动器";
 
 /* No comment provided by engineer. */
 "Requires SPICE guest agent tools to be installed." = "需要安装SPICE代理工具。";
@@ -597,7 +594,7 @@
 "Resolution" = "分辨率";
 
 /* No comment provided by engineer. */
-"Retina Mode" = "视网膜模式";
+"Retina Mode" = "可视模式";
 
 /* VMDisplayViewController */
 "Running low on memory! UTM might soon be killed by iOS. You can prevent this by decreasing the amount of memory and/or JIT cache assigned to this VM" = "内存不足！ UTM可能很快会被iOS强制终止 您可以通过减少给该虚拟机分配的内存或JIT缓存来防止这种情况。";
@@ -618,7 +615,7 @@
 "Select Shared Folder" = "选择共享文件夹";
 
 /* No comment provided by engineer. */
-"Selected:" = "选择:";
+"Selected:" = "已选择:";
 
 /* No comment provided by engineer. */
 "Set to 0 for default which is 1/4 of the allocated Memory size. This is in addition to the host memory!" = "默认设置为0，即分配内存大小的1/4。主机内存除外。";
@@ -705,10 +702,10 @@
 "Tweaks" = "调整";
 
 /* No comment provided by engineer. */
-"Type" = "格式";
+"Type" = "类型";
 
 /* VMConfigPortForwardingViewController */
-"UDP Forward" = "UDP";
+"UDP Forward" = "UDP转发";
 
 /* UTMQemuSystem */
 "UEFI is not supported with this architecture." = "此架构不支持 UEFI。";
@@ -941,3 +938,38 @@
 
 //Alt JIT
 "Cannot find AltServer for JIT enable. You cannot run VMs until JIT is enabled." = "未找到开启 JIT 的AltServer。您无法在缺失 JIT 的情况下运行虚拟机。（请使用 AltJIT 或者 Jitterbug）";
+
+//VM Page
+"Status" = "状态"
+
+"Architecture" = "架构"
+
+"Machine" = "系统"
+
+"Memory" = "内存"
+
+"Size" = "大小"
+
+//Drive
+"Note: Boot order is as listed." = "注意: 下面列表顺序即为启动顺序."
+
+"Removable" = "可移除"
+
+//Display
+"Emulated Display Card" = "虚拟显卡"
+
+//Settings
+"DEVICES" = "设备"
+
+"Disable screen dimming when idle" = "在idle模式下禁用屏幕亮度调节"
+
+"Do not show prompt when USB device is plugged in" = "插入USB设备时不要显示提示"
+
+//Sharing
+"USB not supported in this build of UTM." = "此版本的UTM不支持USB共享"
+
+"USB SHARING" = "USB共享"
+
+"USB 3.0 (XHCI) Support" = "支持 USB 3.0 (XHCI)"
+
+"Maximum Shared USB Devices" = "最大共享USB设备数"
