@@ -859,7 +859,7 @@
 "Stop" = "终止";
 
 /* No comment provided by engineer. */
-"Do you want to force stop this VM and lose all unsaved data?" = "您是否想强制停止此VM并丢失所有未保存的数据?";
+"Do you want to force stop this VM and lose all unsaved data?" = "您是否想强制停止此VM并放弃所有未保存的数据?";
 
 /* No comment provided by engineer. */
 "Export Debug Log" = "导出日志";
@@ -868,7 +868,7 @@
 "Boot Order" = "启动顺序";
 
 /* No comment provided by engineer. */
-"Cannot allocate memory" = "无法分配内存(可能是内存过大)";
+"Cannot allocate memory" = "无法分配内存(可能是设置内存过大)";
 
 /* No comment provided by engineer. */
 "Export QEMU Command" = "导出QEMU命令";
@@ -879,10 +879,10 @@
 //OS Guide
 "I want to..." = "我想...";
 "Virtualize" = "虚拟化";
-"Faster, but can only run the native CPU architecture." = "更快，但只适用于运行与本机CPU架构相同的虚拟机";
+"Faster, but can only run the native CPU architecture." = "速度更快，但只适用于运行与本机CPU架构相同的虚拟机";
 "Virtualization is not supported on your system." = "您的操作系统不支持虚拟化";
 "Emulate" = "模拟";
-"Slower, but can run other CPU architectures." = "更慢，但虚拟机的CPU架构不受限制";
+"Slower, but can run other CPU architectures." = "速度较慢，但虚拟机的CPU架构不受限制";
 "Download prebuilt from UTM Gallery..." = "从UTM库下载预配置文件（可能需要手动导入安装镜像）";
 "Close" = "关闭";
 "Next" = "下一步";
