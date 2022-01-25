@@ -976,3 +976,7 @@
 "UEFI Boot" = "UEFI启动";
 
 "RNG Device" = "RNG设备";
+
+//QEMU
+
+"Use Hypervisor" = "使用Hypervisor"
