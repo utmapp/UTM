@@ -79,10 +79,7 @@
 /* VMConfigSharingViewController */
 "Browse..." = "浏览";
 
-/* Cancel button
-   VMConfigDirectoryPickerViewController
-   VMConfigPortForwardingViewController
-   VMRemovableDrivesViewController */
+/* No comment provided by engineer. */
 "Cancel" = "取消";
 
 /* VMConfigDriveCreateViewController */
@@ -940,36 +937,42 @@
 "Cannot find AltServer for JIT enable. You cannot run VMs until JIT is enabled." = "未找到开启 JIT 的AltServer。您无法在缺失 JIT 的情况下运行虚拟机。（请使用 AltJIT 或者 Jitterbug）";
 
 //VM Page
-"Status" = "状态"
+"Status" = "状态";
 
-"Architecture" = "架构"
+"Architecture" = "架构";
 
-"Machine" = "系统"
+"Machine" = "系统";
 
-"Memory" = "内存"
+"Memory" = "内存";
 
-"Size" = "大小"
+"Size" = "大小";
 
 //Drive
-"Note: Boot order is as listed." = "注意: 下面列表顺序即为启动顺序."
+"Note: Boot order is as listed." = "注意: 下面列表顺序即为启动顺序.";
 
-"Removable" = "可移除"
+"Removable" = "可移除";
 
 //Display
-"Emulated Display Card" = "虚拟显卡"
+"Emulated Display Card" = "虚拟显卡";
 
 //Settings
-"DEVICES" = "设备"
+"DEVICES" = "设备";
 
-"Disable screen dimming when idle" = "在idle模式下禁用屏幕亮度调节"
+"Disable screen dimming when idle" = "在idle模式下禁用屏幕亮度调节";
 
-"Do not show prompt when USB device is plugged in" = "插入USB设备时不要显示提示"
+"Do not show prompt when USB device is plugged in" = "插入USB设备时不要显示提示";
 
 //Sharing
-"USB not supported in this build of UTM." = "此版本的UTM不支持USB共享"
+"USB not supported in this build of UTM." = "此版本的UTM不支持USB共享";
 
-"USB SHARING" = "USB共享"
+"USB SHARING" = "USB共享";
 
-"USB 3.0 (XHCI) Support" = "支持 USB 3.0 (XHCI)"
+"USB 3.0 (XHCI) Support" = "支持 USB 3.0 (XHCI)";
 
-"Maximum Shared USB Devices" = "最大共享USB设备数"
+"Maximum Shared USB Devices" = "最大共享USB设备数";
+
+//System
+
+"UEFI Boot" = "UEFI启动"
+
+"RNG Device" = "RNG设备"
