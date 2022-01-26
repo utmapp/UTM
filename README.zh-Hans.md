@@ -90,6 +90,14 @@ UTM是一个功能齐全的iOS虚拟机。简而言之，它允许你在iPhone�
 
 UTM是在Apache 2.0许可下发布的。但是，它使用了几个(L)GPL组件。大多数插件是动态链接的，但gstreamer插件是静态链接的，部分代码来自qemu。如果您打算重新分发此应用程序，请注意这一点。
 
+一些图标使用 [Freepik](https://www.freepik.com) 从 [www.flaticon.com](https://www.flaticon.com/) 制作.
+
+另外, UTM还使用了以下MIT许可的组件:
+
+ * [IQKeyboardManager](https://github.com/hackiftekhar/IQKeyboardManager)
+ * [SwiftTerm](https://github.com/migueldeicaza/SwiftTerm)
+ * [ZIP Foundation](https://github.com/weichsel/ZIPFoundation)
+
 [1]: https://github.com/utmapp/UTM/actions?query=event%3Arelease+workflow%3ABuild
 [2]: https://dantheman827.github.io/ios-app-signer/
 [3]: https://github.com/utmapp/UTM/releases
