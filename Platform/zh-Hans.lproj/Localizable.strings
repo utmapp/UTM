@@ -984,3 +984,10 @@
 //QEMU
 
 "Use Hypervisor" = "使用Hypervisor";
+
+//VM Creating Page
+"Open VM Settings" = "打开VM设置";
+
+"Use Virtualization" = "使用虚拟化";
+
+"Skip Boot Image" = "跳过启动镜像";
