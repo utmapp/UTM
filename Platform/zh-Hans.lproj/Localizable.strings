@@ -991,3 +991,8 @@
 "Use Virtualization" = "使用虚拟化";
 
 "Skip Boot Image" = "跳过启动镜像";
+
+//VM List
+"Clone..." = "复制";
+
+"Delete..." = "删除";
