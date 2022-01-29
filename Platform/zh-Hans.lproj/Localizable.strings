@@ -136,7 +136,7 @@
 "Console Only" = "仅限控制台";
 
 /* No comment provided by engineer. */
-"Cores" = "核心数量";
+"Cores" = "核心";
 
 /* No comment provided by engineer. */
 "CPU" = "CPU";
@@ -817,16 +817,16 @@
 "Create a New Virtual Machine" = "新建一个虚拟机";
 
 /* No comment provided by engineer. */
-"User Guide" = "使用说明 ";
+"User Guide" = "使用指导 ";
 
 /* No comment provided by engineer. */
 "Browse UTM Gallery" = "访问UTM镜像库";
 
 /* No comment provided by engineer. */
-"Generic" = "默认";
+"Generic" = "普通";
 
 /* No comment provided by engineer. */
-"Operating System" = "操作系统图标";
+"Operating System" = "操作系统";
 
 /* No comment provided by engineer. */
 "Custom" = "自定义";
@@ -996,3 +996,5 @@
 "Clone..." = "复制";
 
 "Delete..." = "删除";
+
+"Other" = "其它"
