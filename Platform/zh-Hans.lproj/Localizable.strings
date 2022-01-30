@@ -230,10 +230,10 @@
 "en0" = "en0";
 
 /* No comment provided by engineer. */
-"Enable Clipboard Sharing" = "剪贴板共享";
+"Enable Clipboard Sharing" = "启用剪贴板共享";
 
 /* No comment provided by engineer. */
-"Enable Directory Sharing" = "目录共享";
+"Enable Directory Sharing" = "启用目录共享";
 
 /* No comment provided by engineer. */
 "Enabled" = "启用";
@@ -618,7 +618,7 @@
 "Set to 0 for default which is 1/4 of the allocated Memory size. This is in addition to the host memory!" = "默认设置为0，即分配内存大小的1/4。主机内存除外";
 
 /* No comment provided by engineer. */
-"Set to 0 to use maximum supported CPUs. Force multicore might result in incorrect emulation." = "设置为0以使用最大支持的CPU。强制多核可能导致不正确的模拟";
+"Set to 0 to use maximum supported CPUs. Force multicore might result in incorrect emulation." = "设置为0以使用最大支持的CPU。强制多核可能导致虚拟错误";
 
 /* Share context menu */
 "Share" = "共享";
@@ -636,7 +636,7 @@
 "Shared path is no longer valid. Please re-choose." = "原有文件共享路径已经失效， 请重新选择";
 
 /* No comment provided by engineer. */
-"Show Advanced Settings" = "高级设置";
+"Show Advanced Settings" = "显示高级设置";
 
 /* No comment provided by engineer. */
 "Show All Flags..." = "显示所有Flags...";
@@ -889,7 +889,7 @@
 "Generate Windows Installer ISO" = "获取 Windows 安装光盘";
 "Boot ISO Image:" = "启动光盘镜像:";
 "Boot VHDX Image:" = "启动 VHDX 磁盘镜像:";
-"Import VHDX Image" = "导入VHDX 磁盘镜像";
+"Import VHDX Image" = "导入 VHDX 磁盘镜像";
 "Browse" = "浏览文件";
 "Clear" = "清除";
 "Download Windows 11 for ARM64 Preview VHDX" = "下载 Windows 11 ARM64 开发者预览版镜像文件";
@@ -938,63 +938,96 @@
 
 //VM Page
 "Status" = "状态";
-
 "Architecture" = "架构";
-
 "Machine" = "系统";
-
 "Memory" = "内存";
-
 "Size" = "大小";
 
 //Drive
 "Note: Boot order is as listed." = "注意: 下面列表顺序即为启动顺序.";
-
 "Removable" = "可移除";
 
 //Display
 "Emulated Display Card" = "虚拟显卡";
-
 "AUTO RESOLUTION" = "自动调整";
-
 "Resize display to screen size automatically" = "自动调整屏幕尺寸";
 
 //Settings
 "DEVICES" = "设备";
-
 "Disable screen dimming when idle" = "在idle模式下禁用屏幕亮度调节";
-
 "Do not show prompt when USB device is plugged in" = "插入USB设备时不要显示提示";
 
 //Sharing
 "USB not supported in this build of UTM." = "此版本的UTM不支持USB共享";
-
 "USB SHARING" = "USB共享";
-
 "USB 3.0 (XHCI) Support" = "支持 USB 3.0 (XHCI)";
-
 "Maximum Shared USB Devices" = "最大共享USB设备数";
 
 //System
-
 "UEFI Boot" = "UEFI启动";
-
 "RNG Device" = "RNG设备";
 
 //QEMU
-
 "Use Hypervisor" = "使用Hypervisor";
 
 //VM Creating Page
 "Open VM Settings" = "打开VM设置";
-
 "Use Virtualization" = "使用虚拟化";
-
 "Skip Boot Image" = "跳过启动镜像";
 
 //VM List
 "Clone..." = "复制";
-
 "Delete..." = "删除";
+"Other" = "其它";
 
-"Other" = "其它"
+//VMConfigNetworkView
+"MAC Address" = "MAC 地址";
+
+//VMContextMenuModifier
+"Show in Finder" = "在访达中显示";
+"Stop…" = "终止";
+
+//VMDetailsView
+"Serial" = "串行端口";
+
+//VMRemovableDriveView
+"A removable drive that has no image file inserted." = "没有插入镜像文件的可移动驱动器";
+
+//VMToolbarModifier
+"Delete selected VM" = "删除选择的虚拟机";
+"Clone selected VM" = "复制选择的虚拟机";
+"Share selected VM" = "共享选择的虚拟机";
+"Stop selected VM" = "终止选择的虚拟机";
+"Run selected VM" = "运行选择的虚拟机";
+"Edit selected VM" = "编辑选择的虚拟机";
+
+//VMWizardHardwareView
+"Enable hardware OpenGL acceleration (experimental)" = "启用硬件 OpenGL 加速 (实验功能)";
+
+//VMWizardOSLinuxView
+"Linux initial ramdisk (optional):" = "Linux 初始RAM磁盘 (可选):";
+"Linux Root FS Image (optional):" = "Linux Root FS 镜像 (可选):";
+"Boot ISO Image (optional):" = "启动 ISO 镜像 (可选)";
+
+//VMWizardOSMacView
+"To install macOS, you need to download a recovery IPSW. If you do not select an existing IPSW, the latest macOS IPSW will be downloaded from Apple." = "要安装 macOS，您需要下载恢复 IPSW 文件。如果您不选择现有的 IPSW，将从 Apple 下载最新的 macOS IPSW";
+
+//UTMDownloadIPSWTask
+"Apple Virtualization not available on iOS" = "iOS 不支持 Apple 的虚拟化";
+
+//UTMImportFromWebTask
+"There is no UTM file in the downloaded ZIP archive." = "下载的 ZIP 存档中没有 UTM 文件"
+
+//UTMPendingVMView
+"Cancel download" = "取消下载";
+"Extracting…" = "提取...";
+"Preparing…" = "准备...";
+
+//MacOS View
+
+"Back" = "返回";
+"New Drive" = "新建硬盘";
+"Delete Drive" = "删除硬盘";
+"IDE Drive" = "IDE 硬盘";
+"Boot Image" = "启动镜像";
+"Hint: For the best Windows experience, make sure to download and install the latest [SPICE tools and QEMU drivers](https://mac.getutm.app/support/)." = "提示：为获得最佳 Windows 体验，请确保下载并安装最新的 [SPICE 工具 和 QEMU 驱动程序](https://mac.getutm.app/support/)"
