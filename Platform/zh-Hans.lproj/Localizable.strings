@@ -1016,7 +1016,7 @@
 "Apple Virtualization not available on iOS" = "iOS 不支持 Apple 的虚拟化";
 
 //UTMImportFromWebTask
-"There is no UTM file in the downloaded ZIP archive." = "下载的 ZIP 存档中没有 UTM 文件"
+"There is no UTM file in the downloaded ZIP archive." = "下载的 ZIP 存档中没有 UTM 文件";
 
 //UTMPendingVMView
 "Cancel download" = "取消下载";
@@ -1030,4 +1030,4 @@
 "Delete Drive" = "删除硬盘";
 "IDE Drive" = "IDE 硬盘";
 "Boot Image" = "启动镜像";
-"Hint: For the best Windows experience, make sure to download and install the latest [SPICE tools and QEMU drivers](https://mac.getutm.app/support/)." = "提示：为获得最佳 Windows 体验，请确保下载并安装最新的 [SPICE 工具 和 QEMU 驱动程序](https://mac.getutm.app/support/)"
+"Hint: For the best Windows experience, make sure to download and install the latest [SPICE tools and QEMU drivers](https://mac.getutm.app/support/)." = "提示：为获得最佳 Windows 体验，请确保下载并安装最新的 [SPICE 工具 和 QEMU 驱动程序](https://mac.getutm.app/support/)";
