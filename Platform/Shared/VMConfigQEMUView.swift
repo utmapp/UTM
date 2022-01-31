@@ -58,7 +58,7 @@ struct VMConfigQEMUView: View {
                         showExportArgs.toggle()
                     }.modifier(VMShareItemModifier(isPresented: $showExportArgs, shareItem: exportArgs()))
                     Toggle(isOn: $config.ignoreAllConfiguration.animation(), label: {
-                        Text("Advanced: Bypass configuration and manually specify arguments")
+                        Text("Do not generate any arguments based on current configuration")
                     })
                     let qemuSystem = UTMQemuSystem(configuration: config, imgPath: URL(fileURLWithPath: "Images"))
                     let fixedArgs = arguments(from: qemuSystem.argv)
