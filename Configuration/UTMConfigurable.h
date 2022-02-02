@@ -15,7 +15,13 @@
 //
 
 #import <Foundation/Foundation.h>
+#if TARGET_OS_OSX
 #import <AppKit/AppKit.h>
+#define PlatformColor NSColor
+#else
+#import <UIKit/UIKit.h>
+#define PlatformColor UIColor
+#endif
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -31,8 +37,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, nullable, copy) NSString *consoleTheme;
 // TODO: Maybe use CGColor (But hard to handle)
-@property (nonatomic, nullable, copy) NSColor *consoleTextColor;
-@property (nonatomic, nullable, copy) NSColor *consoleBackgroundColor;
+@property (nonatomic, nullable, copy) PlatformColor *consoleTextColor;
+@property (nonatomic, nullable, copy) PlatformColor *consoleBackgroundColor;
 @property (nonatomic, nullable, copy) NSString *consoleFont;
 @property (nonatomic, nullable, copy) NSNumber *consoleFontSize;
 @property (nonatomic, assign) BOOL consoleCursorBlink;

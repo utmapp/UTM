@@ -57,10 +57,10 @@ const NSString *const kUTMConfigDisplayCardKey = @"DisplayCard";
         self.consoleTheme = @"Default";
     }
     if (self.consoleTextColor == nil) {
-        self.consoleTextColor = [NSColor whiteColor];
+        self.consoleTextColor = [PlatformColor whiteColor];
     }
     if (self.consoleBackgroundColor == nil) {
-        self.consoleBackgroundColor = [NSColor blackColor];
+        self.consoleBackgroundColor = [PlatformColor blackColor];
     }
     if (self.consoleFontSize.integerValue == 0) {
         self.consoleFontSize = @12;
@@ -148,26 +148,26 @@ const NSString *const kUTMConfigDisplayCardKey = @"DisplayCard";
     return self.rootDict[kUTMConfigDisplayKey][kUTMConfigConsoleThemeKey];
 }
 
-- (void)setConsoleTextColor:(NSColor *)consoleTextColor {
+- (void)setConsoleTextColor:(PlatformColor *)consoleTextColor {
     [self propertyWillChange];
     NSData *colorData = [NSKeyedArchiver archivedDataWithRootObject:consoleTextColor requiringSecureCoding:YES error:nil];
     self.rootDict[kUTMConfigDisplayKey][kUTMConfigConsoleTextColorKey] = colorData;
 }
 
-- (NSColor *)consoleTextColor {
+- (PlatformColor *)consoleTextColor {
     NSData *colorData = self.rootDict[kUTMConfigDisplayKey][kUTMConfigConsoleTextColorKey];
-    return [NSKeyedUnarchiver unarchivedObjectOfClass:[NSColor class] fromData:colorData error:nil];
+    return [NSKeyedUnarchiver unarchivedObjectOfClass:[PlatformColor class] fromData:colorData error:nil];
 }
 
-- (void)setConsoleBackgroundColor:(NSColor *)consoleBackgroundColor {
+- (void)setConsoleBackgroundColor:(PlatformColor *)consoleBackgroundColor {
     [self propertyWillChange];
     NSData *colorData = [NSKeyedArchiver archivedDataWithRootObject:consoleBackgroundColor requiringSecureCoding:YES error:nil];
     self.rootDict[kUTMConfigDisplayKey][kUTMConfigConsoleBackgroundColorKey] = colorData;
 }
 
-- (NSColor *)consoleBackgroundColor {
+- (PlatformColor *)consoleBackgroundColor {
     NSData *colorData = self.rootDict[kUTMConfigDisplayKey][kUTMConfigConsoleBackgroundColorKey];
-    return [NSKeyedUnarchiver unarchivedObjectOfClass:[NSColor class] fromData:colorData error:nil];
+    return [NSKeyedUnarchiver unarchivedObjectOfClass:[PlatformColor class] fromData:colorData error:nil];
 }
 
 - (void)setConsoleFont:(NSString *)consoleFont {

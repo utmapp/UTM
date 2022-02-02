@@ -136,6 +136,19 @@ extension UIImage {
         }
     }
 }
+
+extension UIColor {
+    @objc var hexString: String? {
+        guard let rgbColor = self.cgColor.converted(to: .init(name: CGColorSpace.sRGB)!, intent: .defaultIntent, options: nil),
+              let components = rgbColor.components else {
+            return nil
+        }
+        let red = Int(round(components[0] * 0xFF))
+        let green = Int(round(components[1] * 0xFF))
+        let blue = Int(round(components[2] * 0xFF))
+        return String(format: "#%02X%02X%02X", red, green, blue)
+    }
+}
 #endif
 
 #if os(macOS)

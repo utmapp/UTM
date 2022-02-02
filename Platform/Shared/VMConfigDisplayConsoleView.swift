@@ -20,18 +20,24 @@ import SwiftUI
 struct VMConfigDisplayConsoleView<Config: ObservableObject & UTMConfigurable>: View {
     @ObservedObject var config: Config
     
+    #if os(macOS)
+    typealias PlatformColor = NSColor
+    #else
+    typealias PlatformColor = UIColor
+    #endif
+    
     private var textColor: Binding<Color> {
         Binding<Color> {
             Color(config.consoleTextColor ?? .white)
         } set: { newValue in
-            config.consoleTextColor = NSColor(newValue)
+            config.consoleTextColor = PlatformColor(newValue)
         }
     }
     private var backgroundColor: Binding<Color> {
         Binding<Color> {
             Color(config.consoleBackgroundColor ?? .black)
         } set: { newValue in
-            config.consoleBackgroundColor = NSColor(newValue)
+            config.consoleBackgroundColor = PlatformColor(newValue)
         }
     }
         
