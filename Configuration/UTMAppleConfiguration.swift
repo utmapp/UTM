@@ -402,11 +402,7 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
         consoleBackgroundColor = NSColor(hexString: consoleBackgroundColorString ?? "")
         consoleFont = try values.decodeIfPresent(String.self, forKey: .consoleFont)
         let fontSize = try values.decodeIfPresent(Int.self, forKey: .consoleFontSize)
-        if let fontSize = fontSize {
-            consoleFontSize = NSNumber(value: fontSize)
-        } else {
-            consoleFontSize = nil
-        }
+        consoleFontSize = NSNumber(value: fontSize ?? 12)
         consoleCursorBlink = try values.decode(Bool.self, forKey: .consoleCursorBlink)
         consoleResizeCommand = try values.decodeIfPresent(String.self, forKey: .consoleResizeCommand)
     }
