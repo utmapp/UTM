@@ -17,6 +17,8 @@
 #import <TargetConditionals.h>
 #if !TARGET_OS_OSX
 #import <UIKit/UIKit.h>
+#else
+#import <AppKit/AppKit.h>
 #endif
 #import "UTMQemuConfiguration+Constants.h"
 
@@ -214,7 +216,16 @@
 }
 #else
 + (NSArray<NSString *>*)supportedConsoleFonts {
-    return @[];
+    static NSMutableArray<NSString *> *fonts;
+    if (!fonts) {
+        fonts = [NSMutableArray new];
+        for (NSString *fontName in [NSFontManager.sharedFontManager availableFontNamesWithTraits:NSFixedPitchFontMask]) {
+            NSFont *font = [NSFont fontWithName:fontName size:1];
+            NSString *fontDisplayName = font.displayName;
+            [fonts addObject:fontDisplayName];
+        }
+    }
+    return fonts;
 }
 #endif
 
