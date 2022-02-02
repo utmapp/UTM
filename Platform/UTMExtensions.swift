@@ -192,6 +192,27 @@ extension NSColor {
         let blue = Int(round(rgbColor.blueComponent * 0xFF))
         return String(format: "#%02X%02X%02X", red, green, blue)
     }
+    
+    convenience init?(hexString hex: String) {
+        if hex.count != 7 { // The '#' included
+            return nil
+        }
+            
+        let hexColor = String(hex.dropFirst())
+        
+        let scanner = Scanner(string: hexColor)
+        var hexNumber: UInt64 = 0
+        
+        if !scanner.scanHexInt64(&hexNumber) {
+            return nil
+        }
+        
+        let r = CGFloat((hexNumber & 0xff0000) >> 16) / 255
+        let g = CGFloat((hexNumber & 0x00ff00) >> 8) / 255
+        let b = CGFloat(hexNumber & 0x0000ff) / 255
+        
+        self.init(red: r, green: g, blue: b, alpha: 1)
+    }
 }
 
 @propertyWrapper

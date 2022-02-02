@@ -127,6 +127,11 @@ class VMDisplayAppleWindowController: VMDisplayWindowController {
                 let new = NSFont(descriptor: orig.fontDescriptor, size: CGFloat(fontSize)) ?? orig
                 terminalView.font = new
             }
+            if let consoleTextColor = appleConfig.consoleTextColor,
+               let consoleBackgroundColor = appleConfig.consoleBackgroundColor {
+                terminalView.nativeForegroundColor = consoleTextColor
+                terminalView.nativeBackgroundColor = consoleBackgroundColor
+            }
             terminalView.getTerminal().resize(cols: 80, rows: 24)
             let size = window.frameRect(forContentRect: terminalView.getOptimalFrameSize()).size
             let frame = CGRect(origin: window.frame.origin, size: size)

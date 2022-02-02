@@ -309,6 +309,8 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
         case iconCustom
         case notes
         case consoleTheme
+        case consoleTextColor
+        case consoleBackgroundColor
         case consoleFont
         case consoleFontSize
         case consoleCursorBlink
@@ -394,6 +396,10 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
         iconCustom = try values.decode(Bool.self, forKey: .iconCustom)
         notes = try values.decodeIfPresent(String.self, forKey: .notes)
         consoleTheme = try values.decodeIfPresent(String.self, forKey: .consoleTheme)
+        let consoleTextColorString = try values.decodeIfPresent(String.self, forKey: .consoleTextColor)
+        consoleTextColor = NSColor(hexString: consoleTextColorString ?? "")
+        let consoleBackgroundColorString = try values.decodeIfPresent(String.self, forKey: .consoleBackgroundColor)
+        consoleBackgroundColor = NSColor(hexString: consoleBackgroundColorString ?? "")
         consoleFont = try values.decodeIfPresent(String.self, forKey: .consoleFont)
         let fontSize = try values.decodeIfPresent(Int.self, forKey: .consoleFontSize)
         if let fontSize = fontSize {
@@ -433,6 +439,8 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
         try container.encode(iconCustom, forKey: .iconCustom)
         try container.encodeIfPresent(notes, forKey: .notes)
         try container.encodeIfPresent(consoleTheme, forKey: .consoleTheme)
+        try container.encodeIfPresent(consoleTextColor?.hexString, forKey: .consoleTextColor)
+        try container.encodeIfPresent(consoleBackgroundColor?.hexString, forKey: .consoleBackgroundColor)
         try container.encodeIfPresent(consoleFont, forKey: .consoleFont)
         try container.encodeIfPresent(consoleFontSize?.intValue, forKey: .consoleFontSize)
         try container.encode(consoleCursorBlink, forKey: .consoleCursorBlink)
