@@ -210,6 +210,12 @@ function setupHterm() {
     window.term = term;
 };
 
+function changeColor(foregroundColor, backgroundColor) {
+    const term = new hterm.Terminal();
+    term.getPrefs().set('foreground-color', foregroundColor)
+    term.getPrefs().set('background-color', backgroundColor)
+}
+
 function changeFont(fontFamily, fontSize) {
     const term = new hterm.Terminal();
     term.getPrefs().set('font-family', fontFamily);

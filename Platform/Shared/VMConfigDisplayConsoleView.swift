@@ -20,6 +20,21 @@ import SwiftUI
 struct VMConfigDisplayConsoleView<Config: ObservableObject & UTMConfigurable>: View {
     @ObservedObject var config: Config
     
+    private var textColor: Binding<Color> {
+        Binding<Color> {
+            Color(config.consoleTextColor ?? .white)
+        } set: { newValue in
+            config.consoleTextColor = NSColor(newValue)
+        }
+    }
+    private var backgroundColor: Binding<Color> {
+        Binding<Color> {
+            Color(config.consoleBackgroundColor ?? .black)
+        } set: { newValue in
+            config.consoleBackgroundColor = NSColor(newValue)
+        }
+    }
+        
     var body: some View {
         let fontSizeObserver = Binding<Int> {
             Int(truncating: config.consoleFontSize ?? 1)
@@ -28,6 +43,8 @@ struct VMConfigDisplayConsoleView<Config: ObservableObject & UTMConfigurable>: V
         }
         Section(header: Text("Style"), footer: EmptyView().padding(.bottom)) {
             VMConfigStringPicker(selection: $config.consoleTheme, label: Text("Theme"), rawValues: UTMQemuConfiguration.supportedConsoleThemes(), displayValues: UTMQemuConfiguration.supportedConsoleThemes())
+            ColorPicker("Text Color", selection: textColor)
+            ColorPicker("Background Color", selection: backgroundColor)
             VMConfigStringPicker(selection: $config.consoleFont, label: Text("Font"), rawValues: UTMQemuConfiguration.supportedConsoleFonts(), displayValues: UTMQemuConfiguration.supportedConsoleFonts())
             HStack {
                 Stepper(value: fontSizeObserver, in: 1...72) {

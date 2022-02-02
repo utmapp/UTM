@@ -169,6 +169,18 @@ extension NSImage {
     }
 }
 
+extension NSColor {
+    var hexString: String? {
+        guard let rgbColor = self.usingColorSpace(.sRGB) else {
+            return nil
+        }
+        let red = Int(round(rgbColor.redComponent * 0xFF))
+        let green = Int(round(rgbColor.greenComponent * 0xFF))
+        let blue = Int(round(rgbColor.blueComponent * 0xFF))
+        return String(format: "#%02X%02X%02X", red, green, blue)
+    }
+}
+
 @propertyWrapper
 struct Setting<T> {
     private(set) var keyName: String

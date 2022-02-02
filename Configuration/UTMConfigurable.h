@@ -15,6 +15,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <AppKit/AppKit.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -29,6 +30,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, nullable, copy) NSString *notes;
 
 @property (nonatomic, nullable, copy) NSString *consoleTheme;
+// TODO: Maybe use CGColor (But hard to handle)
+@property (nonatomic, nullable, copy) NSColor *consoleTextColor;
+@property (nonatomic, nullable, copy) NSColor *consoleBackgroundColor;
 @property (nonatomic, nullable, copy) NSString *consoleFont;
 @property (nonatomic, nullable, copy) NSNumber *consoleFontSize;
 @property (nonatomic, assign) BOOL consoleCursorBlink;

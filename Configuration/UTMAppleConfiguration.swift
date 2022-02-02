@@ -45,6 +45,10 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
     
     @Published var consoleTheme: String?
     
+    @Published var consoleTextColor: NSColor?
+    
+    @Published var consoleBackgroundColor: NSColor?
+    
     @Published var consoleFont: String?
     
     @Published var consoleFontSize: NSNumber?

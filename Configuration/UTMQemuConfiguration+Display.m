@@ -25,6 +25,8 @@ const NSString *const kUTMConfigDisplayRetinaKey = @"DisplayRetina";
 const NSString *const kUTMConfigDisplayUpscalerKey = @"DisplayUpscaler";
 const NSString *const kUTMConfigDisplayDownscalerKey = @"DisplayDownscaler";
 const NSString *const kUTMConfigConsoleThemeKey = @"ConsoleTheme";
+const NSString *const kUTMConfigConsoleTextColorKey = @"ConsoleTextColor";
+const NSString *const kUTMConfigConsoleBackgroundColorKey = @"ConsoleBackgroundColor";
 const NSString *const kUTMConfigConsoleFontKey = @"ConsoleFont";
 const NSString *const kUTMConfigConsoleFontSizeKey = @"ConsoleFontSize";
 const NSString *const kUTMConfigConsoleBlinkKey = @"ConsoleBlink";
@@ -53,6 +55,12 @@ const NSString *const kUTMConfigDisplayCardKey = @"DisplayCard";
     }
     if (self.consoleTheme.length == 0) {
         self.consoleTheme = @"Default";
+    }
+    if (self.consoleTextColor == nil) {
+        self.consoleTextColor = [NSColor whiteColor];
+    }
+    if (self.consoleBackgroundColor == nil) {
+        self.consoleBackgroundColor = [NSColor blackColor];
     }
     if (self.consoleFontSize.integerValue == 0) {
         self.consoleFontSize = @12;
@@ -138,6 +146,28 @@ const NSString *const kUTMConfigDisplayCardKey = @"DisplayCard";
 
 - (NSString *)consoleTheme {
     return self.rootDict[kUTMConfigDisplayKey][kUTMConfigConsoleThemeKey];
+}
+
+- (void)setConsoleTextColor:(NSColor *)consoleTextColor {
+    [self propertyWillChange];
+    NSData *colorData = [NSKeyedArchiver archivedDataWithRootObject:consoleTextColor requiringSecureCoding:YES error:nil];
+    self.rootDict[kUTMConfigDisplayKey][kUTMConfigConsoleTextColorKey] = colorData;
+}
+
+- (NSColor *)consoleTextColor {
+    NSData *colorData = self.rootDict[kUTMConfigDisplayKey][kUTMConfigConsoleTextColorKey];
+    return [NSKeyedUnarchiver unarchivedObjectOfClass:[NSColor class] fromData:colorData error:nil];
+}
+
+- (void)setConsoleBackgroundColor:(NSColor *)consoleBackgroundColor {
+    [self propertyWillChange];
+    NSData *colorData = [NSKeyedArchiver archivedDataWithRootObject:consoleBackgroundColor requiringSecureCoding:YES error:nil];
+    self.rootDict[kUTMConfigDisplayKey][kUTMConfigConsoleBackgroundColorKey] = colorData;
+}
+
+- (NSColor *)consoleBackgroundColor {
+    NSData *colorData = self.rootDict[kUTMConfigDisplayKey][kUTMConfigConsoleBackgroundColorKey];
+    return [NSKeyedUnarchiver unarchivedObjectOfClass:[NSColor class] fromData:colorData error:nil];
 }
 
 - (void)setConsoleFont:(NSString *)consoleFont {
