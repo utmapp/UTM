@@ -122,10 +122,16 @@ class VMDisplayAppleWindowController: VMDisplayWindowController {
         }
         if let terminalView = terminalView {
             if let fontSize = appleConfig.consoleFontSize?.intValue {
-                //FIXME: support changing font
-                let orig = terminalView.font
-                let new = NSFont(descriptor: orig.fontDescriptor, size: CGFloat(fontSize)) ?? orig
-                terminalView.font = new
+                if let fontName = appleConfig.consoleFont,
+                   fontName != "" {
+                    let orig = terminalView.font
+                    let new = NSFont(name: fontName, size: CGFloat(fontSize)) ?? orig
+                    terminalView.font = new
+                } else {
+                    let orig = terminalView.font
+                    let new = NSFont(descriptor: orig.fontDescriptor, size: CGFloat(fontSize)) ?? orig
+                    terminalView.font = new
+                }
             }
             if let consoleTextColor = appleConfig.consoleTextColor,
                let consoleBackgroundColor = appleConfig.consoleBackgroundColor {
