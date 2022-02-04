@@ -969,6 +969,7 @@
 
 //QEMU
 "Use Hypervisor" = "使用Hypervisor";
+"Do not generate any arguments based on current configuration" = "不要根据当前配置生成任何参数";
 
 //VM Creating Page
 "Open VM Settings" = "打开VM设置";
@@ -1024,7 +1025,6 @@
 "Preparing…" = "准备...";
 
 //MacOS View
-
 "Back" = "返回";
 "New Drive" = "新建硬盘";
 "Delete Drive" = "删除硬盘";
