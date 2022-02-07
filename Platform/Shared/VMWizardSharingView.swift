@@ -22,34 +22,65 @@ struct VMWizardSharingView: View {
     @State private var isFileImporterPresented: Bool = false
     
     var body: some View {
-        VStack {
-            Text("Shared Directory")
-                .font(.largeTitle)
-            Text("Optionally select a directory to make accessible inside the VM. Note that support for shared directories varies by the guest operating system and may require additional guest drivers to be installed. See UTM support pages for more details.")
-                .padding()
-            Text(wizardState.sharingDirectoryURL?.lastPathComponent ?? " ")
-                .font(.caption)
-            HStack {
+#if os(macOS)
+        Text("Shared Directory")
+            .font(.largeTitle)
+#endif
+        List {
+            Section {
+                HStack {
+                    Text("Directory")
+                    Spacer()
+                    Text(wizardState.sharingDirectoryURL?.lastPathComponent ?? "Empty")
+                        .font(.caption)
+                }
+                if !wizardState.useAppleVirtualization {
+                    Toggle("Read only share?", isOn: $wizardState.sharingReadOnly)
+                }
+            } header: {
+                Text("Directory Selected")
+            }
+            Section {
+#if os(macOS)
+                HStack {
+                    Button {
+                        isFileImporterPresented.toggle()
+                    } label: {
+                        Text("Browse")
+                    }
+                    .disabled(wizardState.isBusy)
+                    Button {
+                        wizardState.sharingDirectoryURL = nil
+                    } label: {
+                        Text("Clear")
+                    }
+                    .disabled(wizardState.isBusy)
+                }
+                .padding(.leading, 1)
+#else
                 Button {
                     isFileImporterPresented.toggle()
                 } label: {
                     Text("Browse")
                 }
+                .disabled(wizardState.isBusy)
                 Button {
                     wizardState.sharingDirectoryURL = nil
                 } label: {
                     Text("Clear")
                 }
-            }.disabled(wizardState.isBusy)
-            .buttonStyle(BrowseButtonStyle())
-            if !wizardState.useAppleVirtualization {
-                Toggle("Read only share?", isOn: $wizardState.sharingReadOnly)
+                .disabled(wizardState.isBusy)
+#endif
+                
+                if wizardState.isBusy {
+                    BigWhiteSpinner()
+                }
+            } footer: {
+                Text("Optionally select a directory to make accessible inside the VM. Note that support for shared directories varies by the guest operating system and may require additional guest drivers to be installed. See UTM support pages for more details.")
             }
-            if wizardState.isBusy {
-                BigWhiteSpinner()
-            }
-            Spacer()
-        }.fileImporter(isPresented: $isFileImporterPresented, allowedContentTypes: [.folder], onCompletion: processDirectory)
+        }
+        .navigationTitle(Text("Shared Directory"))
+        .fileImporter(isPresented: $isFileImporterPresented, allowedContentTypes: [.folder], onCompletion: processDirectory)
     }
     
     private func processDirectory(_ result: Result<URL, Error>) {

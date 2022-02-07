@@ -23,36 +23,43 @@ struct VMWizardOSMacView: View {
     @State private var isFileImporterPresented: Bool = false
     
     var body: some View {
-        VStack {
-            Text("macOS")
-                .font(.largeTitle)
-            Text("To install macOS, you need to download a recovery IPSW. If you do not select an existing IPSW, the latest macOS IPSW will be downloaded from Apple.")
-                .padding()
-            #if arch(arm64)
-            if let selected = wizardState.macRecoveryIpswURL {
-                Text(selected.lastPathComponent)
-                    .font(.caption)
-            }
-            HStack {
-                Button {
-                    isFileImporterPresented.toggle()
-                } label: {
-                    Text("Browse")
+#if os(macOS)
+        Text("macOS")
+            .font(.largeTitle)
+#endif
+        List {
+            Section {
+                Text("To install macOS, you need to download a recovery IPSW. If you do not select an existing IPSW, the latest macOS IPSW will be downloaded from Apple.")
+                    .padding()
+                #if arch(arm64)
+                if let selected = wizardState.macRecoveryIpswURL {
+                    Text(selected.lastPathComponent)
+                        .font(.caption)
                 }
-                Button {
-                    wizardState.macRecoveryIpswURL = nil
-                    wizardState.macPlatform = nil
-                } label: {
-                    Text("Clear")
+                HStack {
+                    Button {
+                        isFileImporterPresented.toggle()
+                    } label: {
+                        Text("Browse")
+                    }
+                    Button {
+                        wizardState.macRecoveryIpswURL = nil
+                        wizardState.macPlatform = nil
+                    } label: {
+                        Text("Clear")
+                    }
+                }.disabled(wizardState.isBusy)
+                .buttonStyle(BrowseButtonStyle())
+                #endif
+                if wizardState.isBusy {
+                    BigWhiteSpinner()
                 }
-            }.disabled(wizardState.isBusy)
-            .buttonStyle(BrowseButtonStyle())
-            #endif
-            if wizardState.isBusy {
-                BigWhiteSpinner()
+                Spacer()
+            } header: {
+                Text("Import IPSW")
             }
-            Spacer()
-        }.fileImporter(isPresented: $isFileImporterPresented, allowedContentTypes: [.data], onCompletion: processIpsw)
+        }
+        .fileImporter(isPresented: $isFileImporterPresented, allowedContentTypes: [.data], onCompletion: processIpsw)
     }
     
     private func processIpsw(_ result: Result<URL, Error>) {

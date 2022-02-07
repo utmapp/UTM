@@ -78,7 +78,9 @@ struct VMWizardSummaryView: View {
                 }
             }.textFieldStyle(DefaultTextFieldStyle())
             #endif
-        }.onAppear {
+        }
+        .navigationTitle(Text("Summary"))
+        .onAppear {
             if wizardState.name == nil {
                 let os = wizardState.operatingSystem
                 if os == .Other {
