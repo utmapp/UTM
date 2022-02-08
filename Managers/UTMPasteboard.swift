@@ -14,7 +14,6 @@
 // limitations under the License.
 //
 
-import CocoaSpice
 #if canImport(UIKit)
 import UIKit
 import MobileCoreServices
@@ -26,6 +25,11 @@ typealias SystemPasteboard = NSPasteboard
 typealias SystemPasteboardType = NSPasteboard.PasteboardType
 #else
 #error("Neither UIKit nor AppKit found!")
+#endif
+#if WITH_QEMU_TCI
+import CocoaSpiceNoUsb
+#else
+import CocoaSpice
 #endif
 
 @objc class UTMPasteboard: NSObject, CSPasteboardDelegate {

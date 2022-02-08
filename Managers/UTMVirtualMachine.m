@@ -22,7 +22,11 @@
 #import "UTMLogging.h"
 #import "UTMViewState.h"
 #import "UTM-Swift.h"
+#if defined(WITH_QEMU_TCI)
+@import CocoaSpiceNoUsb;
+#else
 @import CocoaSpice;
+#endif
 
 NSString *const kUTMErrorDomain = @"com.utmapp.utm";
 NSString *const kUTMBundleConfigFilename = @"config.plist";

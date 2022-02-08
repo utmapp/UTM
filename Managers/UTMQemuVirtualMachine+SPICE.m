@@ -14,7 +14,6 @@
 // limitations under the License.
 //
 
-@import CocoaSpice;
 #import <TargetConditionals.h>
 #import "UTMQemuVirtualMachine+SPICE.h"
 #import "UTMQemuConfiguration+Display.h"
@@ -24,6 +23,11 @@
 #import "UTMSpiceIO.h"
 #import "UTMViewState.h"
 #import "UTMJailbreak.h"
+#if defined(WITH_QEMU_TCI)
+@import CocoaSpiceNoUsb;
+#else
+@import CocoaSpice;
+#endif
 
 extern NSString *const kUTMErrorDomain;
 

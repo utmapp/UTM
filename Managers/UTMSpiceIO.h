@@ -15,9 +15,13 @@
 //
 
 #import <Foundation/Foundation.h>
-@import CocoaSpice;
 #import "UTMInputOutput.h"
 #import "UTMSpiceIODelegate.h"
+#if defined(WITH_QEMU_TCI)
+@import CocoaSpiceNoUsb;
+#else
+@import CocoaSpice;
+#endif
 
 @class UTMQemuConfiguration;
 
