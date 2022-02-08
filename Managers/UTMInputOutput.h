@@ -16,7 +16,7 @@
 
 #import <Foundation/Foundation.h>
 
-@class UTMScreenshot;
+@class CSScreenshot;
 @class UTMViewState;
 
 typedef void(^ioConnectCompletionHandler_t)(BOOL, NSError * _Nullable);
@@ -30,7 +30,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)startWithError:(NSError **)err;
 - (void)connectWithCompletion:(ioConnectCompletionHandler_t)block;
 - (void)disconnect;
-- (UTMScreenshot* _Nullable)screenshot;
+- (CSScreenshot* _Nullable)screenshot;
 - (void)syncViewState:(UTMViewState *)viewState;
 - (void)restoreViewState:(UTMViewState *)viewState;
 

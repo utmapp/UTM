@@ -16,13 +16,11 @@
 
 #import <Foundation/Foundation.h>
 #import "UTMVirtualMachineDelegate.h"
-#import "CSConnectionDelegate.h"
-#import "UTMRenderSource.h"
 #import "UTMInputOutput.h"
 
 @protocol UTMConfigurable;
 @class UTMLogging;
-@class UTMScreenshot;
+@class CSScreenshot;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -33,7 +31,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly, copy) id<UTMConfigurable> config;
 @property (nonatomic, readonly) UTMViewState *viewState;
 @property (nonatomic, assign, readonly) UTMVMState state;
-@property (nonatomic, readonly, nullable) UTMScreenshot *screenshot;
+@property (nonatomic, readonly, nullable) CSScreenshot *screenshot;
 
 + (BOOL)URLisVirtualMachine:(NSURL *)url NS_SWIFT_NAME(isVirtualMachine(url:));
 + (NSString *)virtualMachineName:(NSURL *)url;

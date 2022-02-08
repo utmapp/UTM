@@ -63,9 +63,9 @@ extension UTMData {
     
     func tryClickAtPoint(point: CGPoint, button: CSInputButton) {
         if let vc = vmVC as? VMDisplayMetalViewController, let input = vc.vmInput {
-            input.sendMouseButton(button, pressed: true, point: point)
+            input.sendMouseButton(button, pressed: true)
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.02) {
-                input.sendMouseButton(button, pressed: false, point: point)
+                input.sendMouseButton(button, pressed: false)
             }
         }
     }

@@ -15,14 +15,11 @@
 //
 
 #import <Foundation/Foundation.h>
+@import CocoaSpice;
 #import "UTMInputOutput.h"
-#import "CSConnectionDelegate.h"
 #import "UTMSpiceIODelegate.h"
 
 @class UTMQemuConfiguration;
-@class CSDisplayMetal;
-@class CSInput;
-@class CSUSBManager;
 
 NS_ASSUME_NONNULL_BEGIN
 

@@ -11,6 +11,15 @@
         }
       },
       {
+        "package": "CocoaSpice",
+        "repositoryURL": "https://github.com/utmapp/CocoaSpice.git",
+        "state": {
+          "branch": "main",
+          "revision": "ece15eb5ac2458136b1a1bb11b1364a30f378b7d",
+          "version": null
+        }
+      },
+      {
         "package": "IQKeyboardManagerSwift",
         "repositoryURL": "https://github.com/hackiftekhar/IQKeyboardManager.git",
         "state": {

@@ -20,7 +20,7 @@
 #import "UTMQemuConfiguration+Sharing.h"
 #import "UTMLogging.h"
 #import "UTMViewState.h"
-#import "CocoaSpice.h"
+#import "UTM-Swift.h"
 
 extern BOOL isPortAvailable(NSInteger port); // from UTMPortAllocator
 extern NSString *const kUTMErrorDomain;
@@ -63,6 +63,7 @@ extern NSString *const kUTMErrorDomain;
             self.spiceConnection.delegate = self;
             self.spiceConnection.audioEnabled = _configuration.soundEnabled;
             self.spiceConnection.session.shareClipboard = _configuration.shareClipboardEnabled;
+            self.spiceConnection.session.pasteboardDelegate = [UTMPasteboard generalPasteboard];
         }
     }
 }
@@ -119,7 +120,7 @@ extern NSString *const kUTMErrorDomain;
 #endif
 }
 
-- (UTMScreenshot *)screenshot {
+- (CSScreenshot *)screenshot {
     return [self.primaryDisplay screenshot];
 }
 
@@ -176,7 +177,7 @@ extern NSString *const kUTMErrorDomain;
 - (void)spiceDisplayCreated:(CSConnection *)connection display:(CSDisplayMetal *)display {
     NSAssert(connection == self.spiceConnection, @"Unknown connection");
     [self.delegate spiceDidCreateDisplay:display];
-    if (display.channelID == 0 && display.monitorID == 0) {
+    if (display.isPrimaryDisplay) {
         self.primaryDisplay = display;
     }
 }

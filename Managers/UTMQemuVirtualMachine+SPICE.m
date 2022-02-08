@@ -14,9 +14,9 @@
 // limitations under the License.
 //
 
+@import CocoaSpice;
 #import <TargetConditionals.h>
 #import "UTMQemuVirtualMachine+SPICE.h"
-#import "CocoaSpice.h"
 #import "UTMQemuConfiguration+Display.h"
 #import "UTMQemuConfiguration+Sharing.h"
 #import "UTMLogging.h"

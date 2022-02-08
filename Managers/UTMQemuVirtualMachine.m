@@ -31,7 +31,6 @@
 #import "UTMTerminalIO.h"
 #import "UTMSpiceIO.h"
 #import "UTMLogging.h"
-#import "UTMScreenshot.h"
 #import "UTMPortAllocator.h"
 #import "qapi-events.h"
 

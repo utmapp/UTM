@@ -22,18 +22,17 @@
 #import "VMDisplayMetalViewController+Gamepad.h"
 #import "VMDisplayMetalViewController+USB.h"
 #import "VMKeyboardView.h"
-#import "UTMRenderer.h"
 #import "UTMVirtualMachine.h"
 #import "UTMQemuManager.h"
 #import "UTMQemuConfiguration.h"
 #import "UTMQemuConfiguration+Display.h"
 #import "UTMLogging.h"
 #import "CSDisplayMetal.h"
-#import "UTMScreenshot.h"
 #import "UTM-Swift.h"
+@import CocoaSpiceRenderer;
 
 @implementation VMDisplayMetalViewController {
-    UTMRenderer *_renderer;
+    CSRenderer *_renderer;
 }
 
 - (void)setupSubviews {
@@ -66,7 +65,7 @@
         return;
     }
     
-    _renderer = [[UTMRenderer alloc] initWithMetalKitView:self.mtkView];
+    _renderer = [[CSRenderer alloc] initWithMetalKitView:self.mtkView];
     if (!_renderer) {
         UTMLog(@"Renderer failed initialization");
         return;
@@ -203,7 +202,7 @@
 }
 
 - (void)spiceDidCreateDisplay:(CSDisplayMetal *)display {
-    if (display.channelID == 0 && display.monitorID == 0) {
+    if (display.isPrimaryDisplay) {
         self.vmDisplay = display;
         _renderer.source = display;
     }

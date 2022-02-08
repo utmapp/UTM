@@ -14,6 +14,7 @@
 // limitations under the License.
 //
 
+import CocoaSpice
 #if canImport(UIKit)
 import UIKit
 import MobileCoreServices
@@ -27,24 +28,7 @@ typealias SystemPasteboardType = NSPasteboard.PasteboardType
 #error("Neither UIKit nor AppKit found!")
 #endif
 
-@objc class UTMPasteboard: NSObject {
-    @objc(UTMPasteboardType) enum PasteboardType: Int {
-        case URL
-        case bmp
-        case fileURL
-        case font
-        case html
-        case jpg
-        case pdf
-        case png
-        case rtf
-        case rtfd
-        case sound
-        case string
-        case tabularText
-        case tiff
-    }
-    
+@objc class UTMPasteboard: NSObject, CSPasteboardDelegate {
     @objc(generalPasteboard)
     static let general = UTMPasteboard(for: SystemPasteboard.general)
     
@@ -87,9 +71,9 @@ typealias SystemPasteboardType = NSPasteboard.PasteboardType
         let newCount = systemPasteboard.changeCount
         if newCount > changeCount {
             if hasContents() {
-                NotificationCenter.default.post(name: .pasteboardChangedNotification, object: self)
+                NotificationCenter.default.post(name: .csPasteboardChanged, object: self)
             } else {
-                NotificationCenter.default.post(name: .pasteboardRemovedNotification, object: self)
+                NotificationCenter.default.post(name: .csPasteboardRemoved, object: self)
             }
         }
         changeCount = newCount
@@ -97,9 +81,7 @@ typealias SystemPasteboardType = NSPasteboard.PasteboardType
 }
 
 #if canImport(UIKit)
-extension UTMPasteboard.PasteboardType: RawRepresentable {
-    typealias RawValue = String
-    
+extension CSPasteboardType {
     init?(rawValue: String) {
         let cfValue = rawValue as CFString
         switch cfValue {
@@ -141,6 +123,8 @@ extension UTMPasteboard.PasteboardType: RawRepresentable {
         case .string: return kUTTypeUTF8PlainText as String
         case .tabularText: return kUTTypeUTF8TabSeparatedText as String
         case .tiff: return kUTTypeTIFF as String
+        @unknown default:
+            return kUTTypeUTF8PlainText as String
         }
     }
 }
@@ -155,43 +139,41 @@ extension UTMPasteboard.PasteboardType: RawRepresentable {
         systemPasteboard.items = []
     }
     
-    func setData(_ data: Data, forType dataType: PasteboardType) {
+    func setData(_ data: Data, for type: CSPasteboardType) {
         clearContents()
         changeCount += 1
-        systemPasteboard.setData(data, forPasteboardType: dataType.rawValue)
+        systemPasteboard.setData(data, forPasteboardType: type.rawValue)
     }
     
-    func data(forType dataType: PasteboardType) -> Data? {
-        return systemPasteboard.data(forPasteboardType: dataType.rawValue)
+    func data(for type: CSPasteboardType) -> Data? {
+        return systemPasteboard.data(forPasteboardType: type.rawValue)
     }
     
-    func setString(_ string: String, forType dataType: PasteboardType) {
+    func setString(_ string: String, for type: CSPasteboardType) {
         clearContents()
         changeCount += 1
-        systemPasteboard.setValue(string, forPasteboardType: dataType.rawValue)
+        systemPasteboard.setValue(string, forPasteboardType: type.rawValue)
     }
     
     func setString(_ string: String) {
-        setString(string, forType: .string)
+        setString(string, for: .string)
     }
     
-    func string(forType dataType: PasteboardType) -> String? {
-        return systemPasteboard.value(forPasteboardType: dataType.rawValue) as? String
+    func string(for type: CSPasteboardType) -> String? {
+        return systemPasteboard.value(forPasteboardType: type.rawValue) as? String
     }
     
     func string() -> String? {
-        return string(forType: .string)
+        return string(for: .string)
     }
     
-    func canReadItem(forType dataType: PasteboardType) -> Bool {
+    func canReadItem(for type: CSPasteboardType) -> Bool {
         let types = systemPasteboard.types
-        return types.contains(dataType.rawValue)
+        return types.contains(type.rawValue)
     }
 }
 #elseif canImport(AppKit)
-extension UTMPasteboard.PasteboardType: RawRepresentable {
-    typealias RawValue = NSPasteboard.PasteboardType
-    
+extension CSPasteboardType {
     init?(rawValue: NSPasteboard.PasteboardType) {
         switch rawValue {
         case .URL: self = .URL
@@ -226,6 +208,8 @@ extension UTMPasteboard.PasteboardType: RawRepresentable {
         case .string: return .string
         case .tabularText: return .tabularText
         case .tiff: return .tiff
+        @unknown default:
+            return .string
         }
     }
 }
@@ -244,49 +228,39 @@ extension UTMPasteboard.PasteboardType: RawRepresentable {
         _ = systemPasteboard.clearContents()
     }
     
-    func setData(_ data: Data, forType dataType: PasteboardType) {
+    func setData(_ data: Data, for type: CSPasteboardType) {
         clearContents()
         changeCount += 1
-        _ = systemPasteboard.setData(data, forType: dataType.rawValue)
+        _ = systemPasteboard.setData(data, forType: type.rawValue)
     }
     
-    func data(forType dataType: PasteboardType) -> Data? {
-        return systemPasteboard.data(forType: dataType.rawValue)
+    func data(for type: CSPasteboardType) -> Data? {
+        return systemPasteboard.data(forType: type.rawValue)
     }
     
-    func setString(_ string: String, forType dataType: PasteboardType) {
+    func setString(_ string: String, for type: CSPasteboardType) {
         clearContents()
         changeCount += 1
-        _ = systemPasteboard.setString(string, forType: dataType.rawValue)
+        _ = systemPasteboard.setString(string, forType: type.rawValue)
     }
     
     func setString(_ string: String) {
-        setString(string, forType: .string)
+        setString(string, for: .string)
     }
     
-    func string(forType dataType: PasteboardType) -> String? {
-        return systemPasteboard.string(forType: dataType.rawValue)
+    func string(for type: CSPasteboardType) -> String? {
+        return systemPasteboard.string(forType: type.rawValue)
     }
     
     func string() -> String? {
-        return string(forType: .string)
+        return string(for: .string)
     }
     
-    func canReadItem(forType dataType: PasteboardType) -> Bool {
+    func canReadItem(for type: CSPasteboardType) -> Bool {
         guard let types = systemPasteboard.types else {
             return false
         }
-        return types.contains(dataType.rawValue)
+        return types.contains(type.rawValue)
     }
 }
 #endif
-
-extension NSNotification.Name {
-    public static let pasteboardChangedNotification: NSNotification.Name = .init(rawValue: "utmPasteboardChangedNotification")
-    public static let pasteboardRemovedNotification: NSNotification.Name = .init(rawValue: "utmPasteboardRemovedNotification")
-}
-
-@objc extension UTMPasteboard {
-    public static let changedNotification = NSNotification.Name.pasteboardChangedNotification
-    public static let removedNotification = NSNotification.Name.pasteboardRemovedNotification
-}

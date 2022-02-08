@@ -23,7 +23,6 @@
 #import "UIViewController+Extensions.h"
 #import "VMDisplayMetalViewController.h"
 #import "VMDisplayTerminalViewController.h"
-#import "UTMScreenshot.h"
 #import "UTMJailbreak.h"
 
 @import SafariServices;

@@ -15,10 +15,11 @@
 //
 
 import Carbon.HIToolbox
+import CocoaSpiceRenderer
 
 class VMDisplayMetalWindowController: VMDisplayQemuWindowController {
     var metalView: VMMetalView!
-    var renderer: UTMRenderer?
+    var renderer: CSRenderer?
     
     @objc fileprivate dynamic weak var vmDisplay: CSDisplayMetal?
     @objc fileprivate weak var vmInput: CSInput?
@@ -59,7 +60,7 @@ class VMDisplayMetalWindowController: VMDisplayQemuWindowController {
             return
         }
         displayView.addSubview(metalView)
-        renderer = UTMRenderer.init(metalKitView: metalView)
+        renderer = CSRenderer.init(metalKitView: metalView)
         guard let renderer = self.renderer else {
             showErrorAlert(NSLocalizedString("Internal error.", comment: "VMDisplayMetalWindowController"))
             logger.critical("Failed to create renderer.")
@@ -134,7 +135,7 @@ extension VMDisplayMetalWindowController: UTMSpiceIODelegate {
     }
     
     func spiceDidCreateDisplay(_ display: CSDisplayMetal) {
-        if display.channelID == 0 && display.monitorID == 0 {
+        if display.isPrimaryDisplay {
             vmDisplay = display
             renderer!.source = vmDisplay
         }
@@ -360,11 +361,11 @@ extension VMDisplayMetalWindowController: VMMetalViewInputDelegate {
     }
     
     func mouseDown(button: CSInputButton) {
-        vmInput?.sendMouseButton(modifyMouseButton(button), pressed: true, point: .zero)
+        vmInput?.sendMouseButton(modifyMouseButton(button), pressed: true)
     }
     
     func mouseUp(button: CSInputButton) {
-        vmInput?.sendMouseButton(modifyMouseButton(button), pressed: false, point: .zero)
+        vmInput?.sendMouseButton(modifyMouseButton(button), pressed: false)
     }
     
     func mouseScroll(dy: CGFloat, button: CSInputButton) {

@@ -66,16 +66,16 @@ NS_AVAILABLE_IOS(13.4)
     };
     mouse.mouseInput.leftButton.pressedChangedHandler = ^(GCControllerButtonInput * _Nonnull button, float value, BOOL pressed) {
         self->_mouseLeftDown = pressed;
-        [self.vmInput sendMouseButton:kCSInputButtonLeft pressed:pressed point:CGPointZero];
+        [self.vmInput sendMouseButton:kCSInputButtonLeft pressed:pressed];
     };
     mouse.mouseInput.rightButton.pressedChangedHandler = ^(GCControllerButtonInput * _Nonnull button, float value, BOOL pressed) {
         self->_mouseRightDown = pressed;
-        [self.vmInput sendMouseButton:kCSInputButtonRight pressed:pressed point:CGPointZero];
+        [self.vmInput sendMouseButton:kCSInputButtonRight pressed:pressed];
 
     };
     mouse.mouseInput.middleButton.pressedChangedHandler = ^(GCControllerButtonInput * _Nonnull button, float value, BOOL pressed) {
         self->_mouseMiddleDown = pressed;
-        [self.vmInput sendMouseButton:kCSInputButtonMiddle pressed:pressed point:CGPointZero];
+        [self.vmInput sendMouseButton:kCSInputButtonMiddle pressed:pressed];
     };
     // no handler to the gcmouse scroll event, gestureScroll works fine.
     _mouseCaptured = YES;

@@ -369,12 +369,12 @@ static CGFloat CGPointToPixel(CGFloat point) {
     if (!self.serverModeCursor) {
         _cursor.center = location;
     }
-    [self.vmInput sendMouseButton:button pressed:YES point:CGPointZero];
+    [self.vmInput sendMouseButton:button pressed:YES];
     [self onDelay:0.05f action:^{
         self->_mouseLeftDown = NO;
         self->_mouseRightDown = NO;
         self->_mouseMiddleDown = NO;
-        [self.vmInput sendMouseButton:button pressed:NO point:CGPointZero];
+        [self.vmInput sendMouseButton:button pressed:NO];
     }];
     [_clickFeedbackGenerator selectionChanged];
 }
@@ -391,12 +391,12 @@ static CGFloat CGPointToPixel(CGFloat point) {
         if (middle) {
             _mouseMiddleDown = YES;
         }
-        [self.vmInput sendMouseButton:self.mouseButtonDown pressed:YES point:CGPointZero];
+        [self.vmInput sendMouseButton:self.mouseButtonDown pressed:YES];
     } else if (state == UIGestureRecognizerStateEnded) {
         _mouseLeftDown = NO;
         _mouseRightDown = NO;
         _mouseMiddleDown = NO;
-        [self.vmInput sendMouseButton:self.mouseButtonDown pressed:NO point:CGPointZero];
+        [self.vmInput sendMouseButton:self.mouseButtonDown pressed:NO];
     }
 }
 

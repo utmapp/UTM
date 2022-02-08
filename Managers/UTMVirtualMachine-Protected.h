@@ -16,6 +16,8 @@
 
 #import "UTMVirtualMachine.h"
 
+@class CSScreenshot;
+
 NS_ASSUME_NONNULL_BEGIN
 
 extern NSString *const kUTMBundleConfigFilename;
@@ -34,7 +36,7 @@ extern NSString *const kUTMBundleConfigFilename;
 
 @property (nonatomic, readwrite, nullable) NSURL *path;
 @property (nonatomic, readwrite, copy) id<UTMConfigurable> config;
-@property (nonatomic, readwrite, nullable) UTMScreenshot *screenshot;
+@property (nonatomic, readwrite, nullable) CSScreenshot *screenshot;
 
 + (BOOL)isAppleVMForPath:(NSURL *)path;
 - (NSURL *)packageURLForName:(NSString *)name;

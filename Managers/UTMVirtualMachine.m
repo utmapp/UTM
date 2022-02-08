@@ -20,9 +20,9 @@
 #import "UTMConfigurable.h"
 #import "UTMQemuConfiguration+Constants.h"
 #import "UTMLogging.h"
-#import "UTMScreenshot.h"
 #import "UTMViewState.h"
 #import "UTM-Swift.h"
+@import CocoaSpice;
 
 NSString *const kUTMErrorDomain = @"com.utmapp.utm";
 NSString *const kUTMBundleConfigFilename = @"config.plist";
@@ -49,7 +49,7 @@ NSString *const kUTMBundleScreenshotFilename = @"screenshot.png";
     _state = state;
 }
 
-- (void)setScreenshot:(UTMScreenshot *)screenshot {
+- (void)setScreenshot:(CSScreenshot *)screenshot {
     [self propertyWillChange];
     _screenshot = screenshot;
 }
@@ -301,7 +301,7 @@ NSString *const kUTMBundleScreenshotFilename = @"screenshot.png";
 
 - (void)loadScreenshot {
     NSURL *url = [self.path URLByAppendingPathComponent:kUTMBundleScreenshotFilename];
-    self.screenshot = [[UTMScreenshot alloc] initWithContentsOfURL:url];
+    self.screenshot = [[CSScreenshot alloc] initWithContentsOfURL:url];
 }
 
 - (void)saveScreenshot {
