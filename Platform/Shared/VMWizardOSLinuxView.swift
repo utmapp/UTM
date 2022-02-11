@@ -43,7 +43,7 @@ struct VMWizardOSLinuxView: View {
             } header: {
                 Text("Virtualization Engine")
             } footer: {
-                Text("If set, use Apple's virtualization engine. Otherwise, use QEMU's virtualization engine.")
+                Text("If set, use Apple's virtualization engine. Otherwise, use QEMU's virtualization engine (recommended).")
             }
 #endif
             
