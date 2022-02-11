@@ -80,7 +80,15 @@ import Virtualization
     }
     
     override func loadConfiguration(withReload reload: Bool) throws {
-        config = try UTMAppleConfiguration.load(from: path!)
+        let newConfig = try UTMAppleConfiguration.load(from: path!)
+        if let oldConfig = config as? UTMAppleConfiguration {
+            // copy non-persistent values over
+            newConfig.sharedDirectories = oldConfig.sharedDirectories
+            if #available(macOS 12, *) {
+                newConfig.macRecoveryIpswURL = oldConfig.macRecoveryIpswURL
+            }
+        }
+        config = newConfig
     }
     
     override func saveUTM() throws {
