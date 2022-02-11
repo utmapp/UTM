@@ -51,6 +51,9 @@
     if (self = [super init]) {
         _argv = [argv mutableCopy];
         _urls = [NSMutableArray<NSURL *> array];
+        if (![self setupXpc]) {
+            return nil;
+        }
     }
     return self;
 }
@@ -62,12 +65,14 @@
 #pragma mark - Methods
 
 - (BOOL)setupXpc {
-#if !TARGET_OS_IPHONE // only supported on macOS
+#if TARGET_OS_IPHONE
+    return YES;
+#else // only supported on macOS
     _connection = [[NSXPCConnection alloc] initWithServiceName:@"com.utmapp.QEMUHelper"];
     _connection.remoteObjectInterface = [NSXPCInterface interfaceWithProtocol:@protocol(QEMUHelperProtocol)];
     [_connection resume];
-#endif
     return _connection != nil;
+#endif
 }
 
 - (void)pushArgv:(nullable NSString *)arg {

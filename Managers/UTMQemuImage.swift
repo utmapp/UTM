@@ -25,9 +25,6 @@ import Foundation
         let qemuImg = UTMQemuImage()
         let srcBookmark = try url.bookmarkData()
         let dstBookmark = try dest.deletingLastPathComponent().bookmarkData()
-        guard qemuImg.setupXpc() else {
-            throw NSLocalizedString("Error starting qemu-img", comment: "UTMQemuImage")
-        }
         qemuImg.pushArgv("convert")
         if compressed {
             qemuImg.pushArgv("-c")

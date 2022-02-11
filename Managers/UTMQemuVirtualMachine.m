@@ -219,9 +219,6 @@ NSString *const kSuspendSnapshotName = @"suspend";
     if (!self.system) {
         self.system = [[UTMQemuSystem alloc] initWithConfiguration:self.qemuConfig imgPath:self.path];
         self.system.logging = self.logging;
-#if !TARGET_OS_IPHONE
-        [self.system setupXpc];
-#endif
         self.system.qmpPort = [[UTMPortAllocator sharedInstance] allocatePort];
         _qemu = [[UTMQemuManager alloc] initWithPort:self.system.qmpPort];
         _qemu.delegate = self;

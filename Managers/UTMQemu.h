@@ -37,7 +37,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)init;
 - (instancetype)initWithArgv:(NSArray<NSString *> *)argv NS_DESIGNATED_INITIALIZER;
-- (BOOL)setupXpc;
 - (void)pushArgv:(nullable NSString *)arg;
 - (void)clearArgv;
 - (void)startQemu:(nonnull NSString *)name completion:(void(^)(BOOL,NSString *))completion;
