@@ -535,8 +535,8 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
                     throw ConfigError.hardwareModelInvalid
                 }
                 _ = try VZMacAuxiliaryStorage(creatingStorageAt: auxStorageURL, hardwareModel: hwModel, options: [])
-                macPlatform!.auxiliaryStorageURL = auxStorageURL
             }
+            macPlatform!.auxiliaryStorageURL = auxStorageURL
             urls.append(auxStorageURL)
         }
         #endif
