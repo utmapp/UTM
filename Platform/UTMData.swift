@@ -39,6 +39,10 @@ struct AlertMessage: Identifiable {
 @available(iOS 14, macOS 11, *)
 class UTMData: ObservableObject {
     
+    static var defaultStorageUrl: URL {
+        FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+    }
+    
     @Published var showSettingsModal: Bool
     @Published var showNewVMSheet: Bool
     @Published var alertMessage: AlertMessage?
@@ -71,7 +75,7 @@ class UTMData: ObservableObject {
     }
     
     var documentsURL: URL {
-        fileManager.urls(for: .documentDirectory, in: .userDomainMask)[0]
+        UTMData.defaultStorageUrl
     }
     
     private var busyQueue: DispatchQueue
@@ -256,25 +260,29 @@ class UTMData: ObservableObject {
         }
     }
     
+    @MainActor func addNewVM(_ vm: UTMVirtualMachine) {
+        virtualMachines.append(vm)
+        selectedVM = vm
+    }
+    
     #if os(macOS) && arch(arm64)
     @available(macOS 12, *)
     func createPendingIPSWDownload(config: UTMAppleConfiguration) {
-        let task = UTMDownloadIPSWTask(data: self, name: config.name, url: config.macRecoveryIpswURL!) { ipswFileUrl in
-            DispatchQueue.main.async {
-                config.macRecoveryIpswURL = ipswFileUrl
-                self.busyWork {
-                    try self.create(config: config) { vm in
-                        self.selectedVM = vm
-                    }
+        Task {
+            let task = UTMDownloadIPSWTask(for: config)
+            do {
+                guard !virtualMachines.contains(where: { $0.config.name == config.name }) else {
+                    throw NSLocalizedString("An existing virtual machine already exists with this name.", comment: "UTMData")
                 }
+                await addPendingVM(task.pendingVM)
+                if let vm = try await task.download() {
+                    try save(vm: vm)
+                    await addNewVM(vm)
+                }
+            } catch {
+                await showErrorAlert(message: error.localizedDescription)
             }
-        }
-        let pendingVM = task.startDownload()
-        DispatchQueue.main.async {
-            self.pendingVMs.append(pendingVM)
-            if task.isDone {
-                self.removePendingVM(pendingVM)
-            }
+            await removePendingVM(task.pendingVM)
         }
     }
     #endif
@@ -373,18 +381,7 @@ class UTMData: ObservableObject {
         }
     }
     
-    /// Attempts to read from the URL and appends the VM to the list of virtual machines.
-    func readUTMFromURL(fileURL: URL) throws {
-        guard let vm = UTMVirtualMachine(url: fileURL) else {
-            throw NSLocalizedString("Failed to parse imported VM.", comment: "UTMData")
-        }
-        DispatchQueue.main.async {
-            self.virtualMachines.append(vm)
-            self.selectedVM = vm
-        }
-    }
-    
-    func importUTM(url: URL) throws {
+    func importUTM(url: URL) async throws {
         guard url.isFileURL else { return }
         _ = url.startAccessingSecurityScopedResource()
         defer { url.stopAccessingSecurityScopedResource() }
@@ -412,36 +409,54 @@ class UTMData: ObservableObject {
         guard let _ = UTMVirtualMachine(url: url) else {
             throw NSLocalizedString("Cannot import this VM. Either the configuration is invalid, created in a newer version of UTM, or on a platform that is incompatible with this version of UTM.", comment: "UTMData")
         }
+        let vm: UTMVirtualMachine?
         if (fileBasePath.resolvingSymlinksInPath().path == documentsURL.appendingPathComponent("Inbox", isDirectory: true).path) {
             logger.info("moving from Inbox")
             try copyUTM(at: url, to: dest, move: true)
-            try readUTMFromURL(fileURL: dest)
+            vm = UTMVirtualMachine(url: dest)
         } else {
+            #if os(macOS) // default behaviour on macOS is to import as shortcut
+            logger.info("loading as a shortcut")
+            vm = UTMVirtualMachine(url: url)
+            vm?.isShortcut = true
+            try await vm?.accessShortcut()
+            #else
             logger.info("copying to Documents")
             try copyUTM(at: url, to: dest)
-            try readUTMFromURL(fileURL: dest)
+            vm = UTMVirtualMachine(url: dest)
+            #endif
         }
+        guard let vm = vm else {
+            throw NSLocalizedString("Failed to parse imported VM.", comment: "UTMData")
+        }
+        await addNewVM(vm)
     }
     
     func tryDownloadVM(_ components: URLComponents) {
-        if let urlParameter = components.queryItems?.first(where: { $0.name == "url" })?.value,
-           urlParameter.contains(".zip"), let url = URL(string: urlParameter) {
-            let task = UTMImportFromWebTask(data: self, url: url)
-            let pendingVM = task.startDownload()
-            /// wait a half second before showing the "pending VM" UI, in case of very small file
-            /// this prevents the UI from appearing and disappearing very quickly
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [self] in
-                if !task.isDone {
-                    pendingVMs.append(pendingVM)
+        guard let urlParameter = components.queryItems?.first(where: { $0.name == "url" })?.value,
+           urlParameter.contains(".zip"), let url = URL(string: urlParameter) else {
+               return
+        }
+        Task {
+            let task = UTMDownloadVMTask(for: url)
+            do {
+                await addPendingVM(task.pendingVM)
+                if let vm = try await task.download() {
+                    await addNewVM(vm)
                 }
+            } catch {
+                await showErrorAlert(message: error.localizedDescription)
             }
+            await removePendingVM(task.pendingVM)
         }
     }
     
-    func removePendingVM(_ pendingVM: UTMPendingVirtualMachine) {
-        if let index = pendingVMs.firstIndex(of: pendingVM) {
-            pendingVMs.remove(at: index)
-        }
+    @MainActor func addPendingVM(_ pendingVM: UTMPendingVirtualMachine) {
+        pendingVMs.append(pendingVM)
+    }
+    
+    @MainActor func removePendingVM(_ pendingVM: UTMPendingVirtualMachine) {
+        pendingVMs.removeAll(where: { $0.id == pendingVM.id })
     }
     
     func cancelPendingVM(_ pendingVM: UTMPendingVirtualMachine) {
@@ -659,6 +674,10 @@ class UTMData: ObservableObject {
         }
     }
     #endif
+    
+    @MainActor private func showErrorAlert(message: String) {
+        alertMessage = AlertMessage(message)
+    }
     // MARK: - Automation Features
     
     func trySendText(_ vm: UTMVirtualMachine, urlComponents components: URLComponents) {

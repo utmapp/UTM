@@ -143,15 +143,15 @@ struct ContentView: View {
         guard url.isFileURL else {
             return // ignore
         }
-        data.busyWork {
-            try data.importUTM(url: url)
+        data.busyWorkAsync {
+            try await data.importUTM(url: url)
         }
     }
     
     private func selectImportedUTM(result: Result<URL, Error>) {
-        data.busyWork {
+        data.busyWorkAsync {
             let url = try result.get()
-            try data.importUTM(url: url)
+            try await data.importUTM(url: url)
         }
     }
     

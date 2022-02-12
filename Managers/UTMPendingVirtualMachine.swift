@@ -18,10 +18,10 @@ import Foundation
 
 /// A Virtual Machine that has not finished downloading.
 @available(iOS 14, macOS 11, *)
-class UTMPendingVirtualMachine: Equatable, Identifiable, ObservableObject {
-    internal init(name: String, task: UTMDownloadable) {
+@MainActor class UTMPendingVirtualMachine: Equatable, Identifiable, ObservableObject {
+    internal init(name: String, onCancel: @escaping () -> ()) {
         self.name = name
-        self.cancel = task.cancel
+        self.cancel = onCancel
         dateFormatter = DateComponentsFormatter()
         dateFormatter.allowedUnits = [.second, .minute, .hour]
         dateFormatter.unitsStyle = .abbreviated
@@ -44,7 +44,7 @@ class UTMPendingVirtualMachine: Equatable, Identifiable, ObservableObject {
     private var lastETAUpdate = Date()
     private var lastDownloadSpeedUpdate = Date()
     private var bytesWrittenSinceLastDownloadSpeedUpdate: Int64 = 0
-    private var uuid = UUID()
+    nonisolated private let uuid = UUID()
     let name: String
     let cancel: () -> ()
     
@@ -58,11 +58,11 @@ class UTMPendingVirtualMachine: Equatable, Identifiable, ObservableObject {
     @Published private(set) var downloadProgress: CGFloat = 0
     @Published private(set) var estimatedTimeRemaining: String? = nil
     
-    static func == (lhs: UTMPendingVirtualMachine, rhs: UTMPendingVirtualMachine) -> Bool {
+    nonisolated static func == (lhs: UTMPendingVirtualMachine, rhs: UTMPendingVirtualMachine) -> Bool {
         lhs.uuid == rhs.uuid
     }
     
-    var id: UUID {
+    nonisolated var id: UUID {
         uuid
     }
     
@@ -115,11 +115,19 @@ class UTMPendingVirtualMachine: Equatable, Identifiable, ObservableObject {
         updateDownloadStats(for: newBytesWritten, currentTotal: totalBytesWritten, estimatedTotal: totalBytesExpectedToWrite)
     }
     
-    public func setDownloadFinishedNowExtracting() {
+    func resetProgress(to progress: CGFloat) {
         objectWillChange.send()
-        downloadProgress = 1
+        downloadProgress = progress
         downloadedSize = estimatedDownloadSize
         estimatedDownloadSpeed = nil
         estimatedTimeRemaining = nil
+    }
+    
+    public func setDownloadStarting() {
+        resetProgress(to: 0)
+    }
+    
+    public func setDownloadFinishedNowProcessing() {
+        resetProgress(to: 1)
     }
 }

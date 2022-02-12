@@ -1,5 +1,5 @@
 //
-// Copyright © 2021 osy. All rights reserved.
+// Copyright © 2022 osy. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,124 +20,25 @@ import Virtualization
 /// Downloads an IPSW from the web and adds it to the VM.
 @available(iOS, unavailable, message: "Apple Virtualization not available on iOS")
 @available(macOS 12, *)
-class UTMDownloadIPSWTask: NSObject, UTMDownloadable, URLSessionDelegate, URLSessionDownloadDelegate {
-    let data: UTMData
-    let name: String
-    let url: URL
-    let onSuccess: (URL) -> Void
-    private var downloadTask: URLSessionTask!
-    private var pendingVM: UTMPendingVirtualMachine!
-    private var restoreImage: Any?
-    private(set) var isDone: Bool = false
-    
-    private var fileManager: FileManager {
-        FileManager.default
-    }
+class UTMDownloadIPSWTask: UTMDownloadTask {
+    let config: UTMAppleConfiguration
     
     private var cacheUrl: URL {
         fileManager.urls(for: .cachesDirectory, in: .userDomainMask).first!
     }
     
-    init(data: UTMData, name: String, url: URL, onSuccess: @escaping (URL) -> Void) {
-        self.data = data
-        self.name = name
-        self.url = url
-        self.onSuccess = onSuccess
+    init(for config: UTMAppleConfiguration) {
+        self.config = config
+        super.init(for: config.macRecoveryIpswURL!, named: config.name)
     }
     
-    internal func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
-        self.downloadTask = nil
-        let cacheIpsw = cacheUrl.appendingPathComponent(url.lastPathComponent)
-        do {
-            if fileManager.fileExists(atPath: cacheIpsw.path) {
-                try fileManager.removeItem(at: cacheIpsw)
-            }
-            try fileManager.moveItem(at: location, to: cacheIpsw)
-            success(with: cacheIpsw)
-        } catch {
-            fail(with: error.localizedDescription)
-        }
-    }
-    
-    internal func success(with location: URL) {
-        DispatchQueue.main.async { [self] in
-            pendingVM.setDownloadFinishedNowExtracting()
-        }
-        onSuccess(location)
-        /// remove downloading VM View Model
-        DispatchQueue.main.async { [self] in
-            isDone = true
-            data.removePendingVM(pendingVM)
-            pendingVM = nil
-        }
-    }
-    
-    /// received when the download progresses
-    internal func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didWriteData bytesWritten: Int64, totalBytesWritten: Int64, totalBytesExpectedToWrite: Int64) {
-        DispatchQueue.main.async { [self] in
-            guard pendingVM != nil else { return }
-            pendingVM.setDownloadProgress(new: bytesWritten,
-                                          currentTotal: totalBytesWritten,
-                                          estimatedTotal: totalBytesExpectedToWrite)
-        }
-    }
-    
-    /// when the session ends with an error, it could be cancelled or an actual error
-    internal func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
-        /// make sure the session didn't already finish
-        guard pendingVM != nil else { return }
-        if let error = error {
-            let error = error as NSError
-            if error.code == NSURLErrorCancelled {
-                /// download was cancelled normally
-                fail(with: nil)
-            } else {
-                /// other error
-                fail(with: error.localizedDescription)
-            }
-        }
-    }
-    
-    internal func urlSession(_ session: URLSession, didBecomeInvalidWithError error: Error?) {
-        if let error = error {
-            fail(with: error.localizedDescription)
-        }
-    }
-    
-    /// Downloads a ZIP-compressed file from the provided URL and imports the UTM file inside, if there is one.
-    func startDownload() -> UTMPendingVirtualMachine {
-        pendingVM = UTMPendingVirtualMachine(name: name, task: self)
+    override func processCompletedDownload(at location: URL) async throws -> UTMVirtualMachine {
         let cacheIpsw = cacheUrl.appendingPathComponent(url.lastPathComponent)
         if fileManager.fileExists(atPath: cacheIpsw.path) {
-            success(with: cacheIpsw)
-        } else {
-            let session = URLSession(configuration: .default, delegate: self, delegateQueue: nil)
-            downloadTask = session.downloadTask(with: url)
-            downloadTask.resume()
+            try fileManager.removeItem(at: cacheIpsw)
         }
-        return pendingVM
-    }
-    
-    /// Cancels the network request, if any.
-    /// Cancelling the file operations that occur after the download has finished is not supported.
-    func cancel() {
-        guard downloadTask != nil && !downloadTask.progress.isFinished else { return }
-        downloadTask.cancel()
-        downloadTask = nil
-    }
-    
-    internal func fail(with errorMessage: String?) {
-        let pendingVM = pendingVM
-        self.pendingVM = nil
-        DispatchQueue.main.async {
-            self.isDone = true
-            if pendingVM != nil {
-                self.data.removePendingVM(pendingVM!)
-            }
-            if let errorMessage = errorMessage {
-                logger.error("\(errorMessage)")
-                self.data.alertMessage = AlertMessage(errorMessage)
-            }
-        }
+        try fileManager.moveItem(at: location, to: cacheIpsw)
+        config.macRecoveryIpswURL = cacheIpsw
+        return UTMVirtualMachine(configuration: config, withDestinationURL: UTMData.defaultStorageUrl)
     }
 }
