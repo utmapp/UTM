@@ -238,7 +238,13 @@ extern NSString *const kUTMErrorDomain;
     if (bookmarkPath) {
         [service stopAccessingPath:bookmarkPath]; // in case old path is still accessed
     }
+    // This is a real ugly hack that's needed because NSXPCConnection does not hold a reference `completion` which means
+    // `service` gets freed by ARC. We work around this by forcing a retain on `service` and a release on the callback.
+    // THIS COULD LEAD TO MEMORY LEAKS but I see no better workaround that isn't just as hacky.
+    void *ctx = (__bridge_retained void *)service;
     [service accessDataWithBookmark:bookmark securityScoped:existing completion:^(BOOL success, NSData *newBookmark, NSString *newPath) {
+        UTMQemu *service = (__bridge_transfer UTMQemu *)ctx;
+        (void)service;
         if (success) {
             self.viewState.shortcutBookmark = newBookmark;
             self.viewState.shortcutBookmarkPath = newPath;
