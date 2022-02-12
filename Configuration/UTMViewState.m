@@ -27,6 +27,8 @@ const NSString *const kUTMViewStateShowKeyboardKey = @"ShowKeyboard";
 const NSString *const kUTMViewStateSuspendedKey = @"Suspended";
 const NSString *const kUTMViewStateSharedDirectoryKey = @"SharedDirectory";
 const NSString *const kUTMViewStateSharedDirectoryPathKey = @"SharedDirectoryPath";
+const NSString *const kUTMViewStateShortcutBookmarkKey = @"ShortcutBookmark";
+const NSString *const kUTMViewStateShortcutBookmarkPathKey = @"ShortcutBookmarkPath";
 const NSString *const kUTMViewStateRemovableDrivesKey = @"RemovableDrives";
 const NSString *const kUTMViewStateRemovableDrivesPathKey = @"RemovableDrivesPath";
 
@@ -165,6 +167,32 @@ const NSString *const kUTMViewStateRemovableDrivesPathKey = @"RemovableDrivesPat
         _rootDict[kUTMViewStateSharedDirectoryPathKey] = sharedDirectoryPath;
     } else {
         [_rootDict removeObjectForKey:kUTMViewStateSharedDirectoryPathKey];
+    }
+}
+
+- (NSData *)shortcutBookmark {
+    return _rootDict[kUTMViewStateSharedDirectoryKey];
+}
+
+- (void)setShortcutBookmark:(NSData *)shortcutBookmark {
+    [self propertyWillChange];
+    if (shortcutBookmark) {
+        _rootDict[kUTMViewStateShortcutBookmarkKey] = shortcutBookmark;
+    } else {
+        [_rootDict removeObjectForKey:kUTMViewStateShortcutBookmarkKey];
+    }
+}
+
+- (NSString *)shortcutBookmarkPath {
+    return _rootDict[kUTMViewStateShortcutBookmarkPathKey];
+}
+
+- (void)setShortcutBookmarkPath:(NSString *)shortcutBookmarkPath {
+    [self propertyWillChange];
+    if (shortcutBookmarkPath) {
+        _rootDict[kUTMViewStateShortcutBookmarkPathKey] = shortcutBookmarkPath;
+    } else {
+        [_rootDict removeObjectForKey:kUTMViewStateShortcutBookmarkPathKey];
     }
 }
 

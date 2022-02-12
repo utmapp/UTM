@@ -27,6 +27,8 @@ NS_ASSUME_NONNULL_BEGIN
 @interface UTMVirtualMachine : NSObject
 
 @property (nonatomic, readonly, nullable) NSURL *path;
+@property (nonatomic) BOOL isShortcut;
+@property (nonatomic, readonly, nullable) NSData *bookmark;
 @property (nonatomic, weak, nullable) id<UTMVirtualMachineDelegate> delegate;
 @property (nonatomic, readonly, copy) id<UTMConfigurable> config;
 @property (nonatomic, readonly) UTMViewState *viewState;
@@ -38,10 +40,13 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSURL *)virtualMachinePath:(NSString *)name inParentURL:(NSURL *)parent;
 
 + (nullable UTMVirtualMachine *)virtualMachineWithURL:(NSURL *)url;
++ (nullable UTMVirtualMachine *)virtualMachineWithBookmark:(NSData *)bookmark;
 + (UTMVirtualMachine *)virtualMachineWithConfiguration:(id<UTMConfigurable>)configuration withDestinationURL:(NSURL *)dstUrl;
 
 - (BOOL)reloadConfigurationWithError:(NSError * _Nullable *)err;
 - (BOOL)saveUTMWithError:(NSError * _Nullable *)err;
+
+- (void)accessShortcutWithCompletion:(void (^ _Nullable)(BOOL, NSError * _Nullable))completion;
 
 - (BOOL)startVM;
 - (BOOL)quitVM;

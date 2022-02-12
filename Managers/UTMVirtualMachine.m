@@ -83,6 +83,32 @@ const NSURLBookmarkResolutionOptions kUTMBookmarkResolutionOptions = NSURLBookma
     return self.config.iconUrl;
 }
 
+- (void)setIsShortcut:(BOOL)isShortcut {
+    [self propertyWillChange];
+    _isShortcut = isShortcut;
+    self.config.isRenameDisabled = isShortcut;
+}
+
+- (NSData *)bookmark {
+    if (self.isShortcut) {
+        NSData *bookmark = [self.path bookmarkDataWithOptions:kUTMBookmarkCreationOptions
+                               includingResourceValuesForKeys:nil
+                                                relativeToURL:nil
+                                                        error:nil];
+        return bookmark;
+    } else {
+        return nil;
+    }
+}
+
+- (void)setPath:(NSURL *)path {
+    if (_path) {
+        [_path stopAccessingSecurityScopedResource];
+    }
+    _path = path;
+    [path startAccessingSecurityScopedResource];
+}
+
 + (BOOL)URLisVirtualMachine:(NSURL *)url {
     return [url.pathExtension isEqualToString:kUTMBundleExtension];
 }
@@ -104,6 +130,20 @@ const NSURLBookmarkResolutionOptions kUTMBookmarkResolutionOptions = NSURLBookma
     }
 #endif
     return [[UTMQemuVirtualMachine alloc] initWithURL:url];
+}
+
++ (UTMVirtualMachine *)virtualMachineWithBookmark:(NSData *)bookmark {
+    BOOL stale;
+    NSURL *url = [NSURL URLByResolvingBookmarkData:bookmark
+                                            options:kUTMBookmarkResolutionOptions
+                                      relativeToURL:nil
+                                bookmarkDataIsStale:&stale
+                                              error:nil];
+    if (!url) {
+        return nil;
+    }
+    UTMVirtualMachine *vm = [UTMVirtualMachine virtualMachineWithURL:url];
+    return vm;
 }
 
 + (UTMVirtualMachine *)virtualMachineWithConfiguration:(id<UTMConfigurable>)configuration withDestinationURL:(NSURL *)dstUrl {
@@ -159,10 +199,12 @@ const NSURLBookmarkResolutionOptions kUTMBookmarkResolutionOptions = NSURLBookma
         self.parentPath = dstUrl;
         self.viewState = [[UTMViewState alloc] init];
         self.config = configuration;
-        self.config.selectedCustomIconPath = configuration.selectedCustomIconPath;
-        self.config = configuration;
     }
     return self;
+}
+
+- (void)dealloc {
+    [self.path stopAccessingSecurityScopedResource];
 }
 
 - (void)changeState:(UTMVMState)state {
@@ -202,6 +244,10 @@ const NSURLBookmarkResolutionOptions kUTMBookmarkResolutionOptions = NSURLBookma
 }
 
 - (BOOL)saveUTMWithError:(NSError * _Nullable *)err {
+    notImplemented;
+}
+
+- (void)accessShortcutWithCompletion:(void (^)(BOOL, NSError * _Nullable))completion {
     notImplemented;
 }
 

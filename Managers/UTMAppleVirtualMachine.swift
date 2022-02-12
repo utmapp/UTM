@@ -111,9 +111,13 @@ import Virtualization
         if let existingPath = path, existingPath.lastPathComponent != newPath.lastPathComponent {
             try fileManager.moveItem(at: existingPath, to: newPath)
             path = newPath
-        } else {
+        } else if path == nil {
             path = savePath
         }
+    }
+    
+    override func accessShortcut() async throws -> Bool {
+        return true // FIXME: Apple VM doesn't support saving bookmarks
     }
     
     override func startVM() -> Bool {

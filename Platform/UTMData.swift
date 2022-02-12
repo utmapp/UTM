@@ -51,13 +51,10 @@ class UTMData: ObservableObject {
     @Published private(set) var virtualMachines: [UTMVirtualMachine] {
         didSet {
             let defaults = UserDefaults.standard
-            var paths = [String]()
-            virtualMachines.forEach({ vm in
-                if let path = vm.path {
-                    paths.append(path.lastPathComponent)
-                }
-            })
-            defaults.set(paths, forKey: "VMList")
+            let bookmarks = virtualMachines.compactMap { vm in
+                vm.bookmark
+            }
+            defaults.set(bookmarks, forKey: "VMList")
         }
     }
     @Published private(set) var pendingVMs: [UTMPendingVirtualMachine]
@@ -89,14 +86,32 @@ class UTMData: ObservableObject {
         self.virtualMachines = []
         self.selectedDiskImagesCache = [:]
         self.pendingVMs = []
+        var virtualMachines = [UTMVirtualMachine]()
+        // legacy path list
         if let files = defaults.array(forKey: "VMList") as? [String] {
             for file in files.uniqued() {
                 let url = documentsURL.appendingPathComponent(file, isDirectory: true)
                 if let vm = UTMVirtualMachine(url: url) {
-                    self.virtualMachines.append(vm)
+                    virtualMachines.append(vm)
                 }
             }
         }
+        // bookmark list
+        if let bookmarks = defaults.array(forKey: "VMList") as? [Data] {
+            let documentsURL = self.documentsURL.standardizedFileURL
+            for bookmark in bookmarks {
+                if let vm = UTMVirtualMachine(bookmark: bookmark) {
+                    let parentUrl = vm.path!.deletingLastPathComponent().standardizedFileURL
+                    if parentUrl != documentsURL {
+                        vm.isShortcut = true
+                    }
+                    if !virtualMachines.contains(where: { $0.path!.standardizedFileURL == vm.path!.standardizedFileURL }) {
+                        virtualMachines.append(vm)
+                    }
+                }
+            }
+        }
+        self.virtualMachines = virtualMachines
         self.selectedVM = nil
     }
     
@@ -107,7 +122,7 @@ class UTMData: ObservableObject {
             let files = try fileManager.contentsOfDirectory(at: documentsURL, includingPropertiesForKeys: [.isDirectoryKey], options: .skipsHiddenFiles)
             let newFiles = files.filter { newFile in
                 !virtualMachines.contains { existingVM in
-                    existingVM.path?.lastPathComponent == newFile.lastPathComponent
+                    existingVM.path?.standardizedFileURL == newFile.standardizedFileURL
                 }
             }
             for file in newFiles {

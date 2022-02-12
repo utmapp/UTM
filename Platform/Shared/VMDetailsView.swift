@@ -170,6 +170,14 @@ struct Details: View {
     
     var body: some View {
         VStack {
+            if vm.isShortcut {
+                HStack {
+                    plainLabel("Path", systemImage: "folder")
+                    Spacer()
+                    Text(vm.path!.path)
+                        .foregroundColor(.secondary)
+                }
+            }
             HStack {
                 plainLabel("Status", systemImage: "info.circle")
                 Spacer()

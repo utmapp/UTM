@@ -34,6 +34,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) BOOL active;
 @property (nonatomic, copy, nullable) NSData *sharedDirectory;
 @property (nonatomic, copy, nullable) NSString *sharedDirectoryPath;
+@property (nonatomic, copy, nullable) NSData *shortcutBookmark;
+@property (nonatomic, copy, nullable) NSString *shortcutBookmarkPath;
 
 - (instancetype)init NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithDictionary:(NSDictionary *)dictionary NS_DESIGNATED_INITIALIZER;

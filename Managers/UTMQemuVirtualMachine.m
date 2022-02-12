@@ -40,6 +40,7 @@ const int64_t kStopTimeout = (int64_t)30*NSEC_PER_SEC;
 extern NSString *const kUTMBundleConfigFilename;
 NSString *const kSuspendSnapshotName = @"suspend";
 
+extern NSString *const kUTMErrorDomain;
 
 @interface UTMQemuVirtualMachine ()
 
@@ -183,6 +184,8 @@ NSString *const kSuspendSnapshotName = @"suspend";
         if (![fileManager moveItemAtURL:self.qemuConfig.existingPath toURL:url error:err]) {
             return NO;
         }
+    } else {
+        url = self.qemuConfig.existingPath;
     }
     // save icon
     if (![self saveIconWithError:err]) {
@@ -199,6 +202,51 @@ NSString *const kSuspendSnapshotName = @"suspend";
     self.qemuConfig.existingPath = url;
     self.path = url;
     return YES;
+}
+
+#pragma mark - Shortcut access
+
+- (void)accessShortcutWithCompletion:(void (^ _Nullable)(BOOL, NSError * _Nullable))completion {
+    NSAssert(self.path != nil, @"VM must be existing in the filesystem!");
+    if (!completion) {
+        // default handler
+        completion = ^(BOOL success, NSError *error){};
+    }
+    if (!self.isShortcut) {
+        completion(YES, nil); // not needed
+        return;
+    }
+    UTMQemu *service = self.system;
+    if (!service) {
+        service = [UTMQemu new]; // VM has not started yet, we create a temporary process
+    }
+    NSData *bookmark = self.viewState.shortcutBookmark;
+    NSString *bookmarkPath = self.viewState.shortcutBookmarkPath;
+    BOOL existing = bookmark != nil;
+    if (!existing) {
+        // create temporary bookmark
+        NSError *err;
+        bookmark = [self.path bookmarkDataWithOptions:0
+                       includingResourceValuesForKeys:nil
+                                        relativeToURL:nil
+                                                error:&err];
+        if (!bookmark) {
+            completion(NO, err);
+            return;
+        }
+    }
+    if (bookmarkPath) {
+        [service stopAccessingPath:bookmarkPath]; // in case old path is still accessed
+    }
+    [service accessDataWithBookmark:bookmark securityScoped:existing completion:^(BOOL success, NSData *newBookmark, NSString *newPath) {
+        if (success) {
+            self.viewState.shortcutBookmark = newBookmark;
+            self.viewState.shortcutBookmarkPath = newPath;
+            completion(YES, nil);
+        } else {
+            completion(NO, [NSError errorWithDomain:kUTMErrorDomain code:-1 userInfo:@{NSLocalizedDescriptionKey: NSLocalizedString(@"Failed to access data from shortcut.", "UTMQemuVirtualMachine")}]);
+        }
+    }];
 }
 
 #pragma mark - VM actions
@@ -228,6 +276,10 @@ NSString *const kSuspendSnapshotName = @"suspend";
         [self errorTriggered:NSLocalizedString(@"Internal error starting VM.", @"UTMVirtualMachine")];
         self.busy = NO;
         return NO;
+    }
+    
+    if (self.isShortcut) {
+        [self accessShortcutWithCompletion:nil];
     }
     
     if (!_ioService) {

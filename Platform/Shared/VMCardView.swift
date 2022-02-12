@@ -31,7 +31,15 @@ struct VMCardView: View {
     
     var body: some View {
         HStack {
-            Logo(logo: PlatformImage(contentsOfURL: vm.icon))
+            if vm.isShortcut {
+                Logo(logo: PlatformImage(contentsOfURL: vm.icon))
+                        .overlay(Image(systemName: "arrowshape.turn.up.forward.fill")
+                                    .resizable()
+                                    .frame(width: 8, height: 8)
+                                    .aspectRatio(contentMode: .fit), alignment: .bottomLeading)
+            } else {
+                Logo(logo: PlatformImage(contentsOfURL: vm.icon))
+            }
             VStack(alignment: .leading) {
                 Text(vm.title)
                     .font(.headline)
