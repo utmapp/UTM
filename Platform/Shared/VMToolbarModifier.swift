@@ -27,11 +27,9 @@ struct VMToolbarModifier: ViewModifier {
     @State private var shareItem: VMShareItemModifier.ShareItem?
     
     #if os(macOS)
-    let destructiveButtonColor: Color = .primary
     let buttonPlacement: ToolbarItemPlacement = .automatic
     let padding: CGFloat = 0
     #else
-    let destructiveButtonColor: Color = .red
     var buttonPlacement: ToolbarItemPlacement {
         if bottom {
             return .bottomBar
@@ -52,20 +50,18 @@ struct VMToolbarModifier: ViewModifier {
         content.toolbar {
             ToolbarItemGroup(placement: buttonPlacement) {
                 if vm.isShortcut {
-                    Button {
+                    DestructiveButton {
                         confirmAction = .confirmDeleteShortcut
                     } label: {
                         Label("Remove", systemImage: "trash")
-                            .foregroundColor(destructiveButtonColor)
                             .labelStyle(IconOnlyLabelStyle())
                     }.help("Remove selected shortcut")
                     .padding(.leading, padding)
                 } else {
-                    Button {
+                    DestructiveButton {
                         confirmAction = .confirmDeleteVM
                     } label: {
                         Label("Delete", systemImage: "trash")
-                            .foregroundColor(destructiveButtonColor)
                             .labelStyle(IconOnlyLabelStyle())
                     }.help("Delete selected VM")
                     .padding(.leading, padding)

@@ -74,18 +74,16 @@ struct VMContextMenuModifier: ViewModifier {
             }
             Divider()
             if vm.isShortcut {
-                Button {
+                DestructiveButton {
                     confirmAction = .confirmDeleteShortcut
                 } label: {
                     Label("Remove…", systemImage: "trash")
-                        .foregroundColor(.red)
                 }
             } else {
-                Button {
+                DestructiveButton {
                     confirmAction = .confirmDeleteVM
                 } label: {
                     Label("Delete…", systemImage: "trash")
-                        .foregroundColor(.red)
                 }
             }
         }
