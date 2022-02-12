@@ -360,7 +360,9 @@ const NSURLBookmarkResolutionOptions kUTMBookmarkResolutionOptions = NSURLBookma
 
 - (void)loadScreenshot {
     NSURL *url = [self.path URLByAppendingPathComponent:kUTMBundleScreenshotFilename];
-    self.screenshot = [[CSScreenshot alloc] initWithContentsOfURL:url];
+    if ([[NSFileManager defaultManager] fileExistsAtPath:url.path]) {
+        self.screenshot = [[CSScreenshot alloc] initWithContentsOfURL:url];
+    }
 }
 
 - (void)saveScreenshot {
