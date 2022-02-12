@@ -14,7 +14,6 @@
 // limitations under the License.
 //
 
-#import <TargetConditionals.h>
 #import "UTMQemuVirtualMachine+SPICE.h"
 #import "UTMQemuConfiguration+Display.h"
 #import "UTMQemuConfiguration+Sharing.h"
@@ -31,13 +30,8 @@
 
 extern NSString *const kUTMErrorDomain;
 
-#if TARGET_OS_IPHONE
-static const NSURLBookmarkCreationOptions kBookmarkCreationOptions = NSURLBookmarkCreationMinimalBookmark;
-static const NSURLBookmarkResolutionOptions kBookmarkResolutionOptions = 0;
-#else
-static const NSURLBookmarkCreationOptions kBookmarkCreationOptions = NSURLBookmarkCreationWithSecurityScope;
-static const NSURLBookmarkResolutionOptions kBookmarkResolutionOptions = NSURLBookmarkResolutionWithSecurityScope;
-#endif
+extern const NSURLBookmarkCreationOptions kUTMBookmarkCreationOptions;
+extern const NSURLBookmarkResolutionOptions kUTMBookmarkResolutionOptions;
 
 @interface UTMQemuVirtualMachine ()
 
@@ -68,7 +62,7 @@ static const NSURLBookmarkResolutionOptions kBookmarkResolutionOptions = NSURLBo
 
 - (BOOL)saveSharedDirectory:(NSURL *)url error:(NSError * _Nullable __autoreleasing *)error {
     [url startAccessingSecurityScopedResource];
-    NSData *bookmark = [url bookmarkDataWithOptions:kBookmarkCreationOptions
+    NSData *bookmark = [url bookmarkDataWithOptions:kUTMBookmarkCreationOptions
                      includingResourceValuesForKeys:nil
                                       relativeToURL:nil
                                               error:error];
@@ -130,7 +124,7 @@ static const NSURLBookmarkResolutionOptions kBookmarkResolutionOptions = NSURLBo
     if (bookmark) {
         BOOL stale;
         NSURL *shareURL = [NSURL URLByResolvingBookmarkData:bookmark
-                                                    options:kBookmarkResolutionOptions
+                                                    options:kUTMBookmarkResolutionOptions
                                               relativeToURL:nil
                                         bookmarkDataIsStale:&stale
                                                       error:error];

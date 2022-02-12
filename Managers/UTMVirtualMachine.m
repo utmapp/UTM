@@ -14,6 +14,7 @@
 // limitations under the License.
 //
 
+#import <TargetConditionals.h>
 #import "UTMVirtualMachine.h"
 #import "UTMVirtualMachine-Private.h"
 #import "UTMQemuVirtualMachine.h"
@@ -33,6 +34,14 @@ NSString *const kUTMBundleConfigFilename = @"config.plist";
 NSString *const kUTMBundleExtension = @"utm";
 NSString *const kUTMBundleViewFilename = @"view.plist";
 NSString *const kUTMBundleScreenshotFilename = @"screenshot.png";
+
+#if TARGET_OS_IPHONE
+const NSURLBookmarkCreationOptions kUTMBookmarkCreationOptions = NSURLBookmarkCreationMinimalBookmark;
+const NSURLBookmarkResolutionOptions kUTMBookmarkResolutionOptions = 0;
+#else
+const NSURLBookmarkCreationOptions kUTMBookmarkCreationOptions = NSURLBookmarkCreationWithSecurityScope;
+const NSURLBookmarkResolutionOptions kUTMBookmarkResolutionOptions = NSURLBookmarkResolutionWithSecurityScope;
+#endif
 
 @interface UTMVirtualMachine ()
 
