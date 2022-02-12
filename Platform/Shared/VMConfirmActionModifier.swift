@@ -21,6 +21,7 @@ enum ConfirmAction: Int, Identifiable {
     case confirmDeleteVM
     case confirmDeleteShortcut
     case confirmStopVM
+    case confirmMoveVM
     
     var id: Int { rawValue }
 }
@@ -61,6 +62,10 @@ struct VMConfirmActionModifier: ViewModifier {
                     data.busyWork {
                         try data.stop(vm: vm)
                     }
+                    onConfirm()
+                })
+            case .confirmMoveVM:
+                return Alert(title: Text("Do you want to move this VM to another location? This will copy the data to the new location, delete the data from the original location, and then create a shortcut."), primaryButton: .cancel(), secondaryButton: .destructive(Text("Confirm")) {
                     onConfirm()
                 })
             }

@@ -361,17 +361,34 @@ class UTMData: ObservableObject {
     }
     
     func clone(vm: UTMVirtualMachine) async throws {
-        let newName = newDefaultVMName(base: vm.title)
+        let newName: String = newDefaultVMName(base: vm.title)
         let newPath = UTMVirtualMachine.virtualMachinePath(newName, inParentURL: documentsURL)
         
         try fileManager.copyItem(at: vm.path!, to: newPath)
         guard let newVM = UTMVirtualMachine(url: newPath) else {
             throw NSLocalizedString("Failed to clone VM.", comment: "UTMData")
         }
-        
-        DispatchQueue.main.async {
-            self.virtualMachines.append(newVM)
+        await addNew(vm: newVM)
+    }
+    
+    func copy(vm: UTMVirtualMachine, to url: URL) throws {
+        let sourceUrl = vm.path!
+        if fileManager.fileExists(atPath: url.path) {
+            try fileManager.removeItem(at: url)
         }
+        try fileManager.copyItem(at: sourceUrl, to: url)
+    }
+    
+    func move(vm: UTMVirtualMachine, to url: URL) async throws {
+        try copy(vm: vm, to: url)
+        guard let newVM = UTMVirtualMachine(url: url) else {
+            throw NSLocalizedString("Unable to add a shortcut to the new location.", comment: "UTMData")
+        }
+        newVM.isShortcut = true
+        try await newVM.accessShortcut()
+        
+        try await delete(vm: vm)
+        await addNew(vm: newVM)
     }
     
     func newVM() {

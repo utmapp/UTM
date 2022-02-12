@@ -40,13 +40,16 @@ struct VMShareItemModifier: ViewModifier {
     
     enum ShareItem {
         case debugLog(URL)
-        case utmVm(URL)
+        case utmCopy(UTMVirtualMachine)
+        case utmMove(UTMVirtualMachine)
         case qemuCommand(String)
         
         func toActivityItem() -> Any {
             switch self {
-            case .debugLog(let url), .utmVm(let url):
+            case .debugLog(let url):
                 return url
+            case .utmCopy(let vm), .utmMove(let vm):
+                return vm.path!
             case .qemuCommand(let command):
                 return command
             }

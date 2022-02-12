@@ -22,6 +22,7 @@ struct VMContextMenuModifier: ViewModifier {
     @EnvironmentObject private var data: UTMData
     @State private var showSharePopup = false
     @State private var confirmAction: ConfirmAction?
+    @State private var shareItem: VMShareItemModifier.ShareItem?
     
     func body(content: Content) -> some View {
         content.contextMenu {
@@ -52,10 +53,20 @@ struct VMContextMenuModifier: ViewModifier {
                 }
             }
             Button {
+                shareItem = .utmCopy(vm)
                 showSharePopup.toggle()
             } label: {
-                Label("Share", systemImage: "square.and.arrow.up")
+                Label("Share…", systemImage: "square.and.arrow.up")
             }
+            #if os(macOS)
+            if !vm.isShortcut {
+                Button {
+                    confirmAction = .confirmMoveVM
+                } label: {
+                    Label("Move…", systemImage: "arrow.down.doc")
+                }
+            }
+            #endif
             Button {
                 confirmAction = .confirmCloneVM
             } label: {
@@ -78,9 +89,12 @@ struct VMContextMenuModifier: ViewModifier {
                 }
             }
         }
-        .modifier(VMShareItemModifier(isPresented: $showSharePopup, shareItem: .utmVm(vm.path!)))
+        .modifier(VMShareItemModifier(isPresented: $showSharePopup, shareItem: shareItem))
         .modifier(VMConfirmActionModifier(vm: vm, confirmAction: $confirmAction) {
-            
+            if confirmAction == .confirmMoveVM {
+                shareItem = .utmMove(vm)
+                showSharePopup.toggle()
+            }
         })
     }
 }

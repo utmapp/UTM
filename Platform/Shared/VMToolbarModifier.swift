@@ -24,6 +24,7 @@ struct VMToolbarModifier: ViewModifier {
     @State private var showSharePopup = false
     @State private var confirmAction: ConfirmAction?
     @EnvironmentObject private var data: UTMData
+    @State private var shareItem: VMShareItemModifier.ShareItem?
     
     #if os(macOS)
     let destructiveButtonColor: Color = .primary
@@ -86,14 +87,25 @@ struct VMToolbarModifier: ViewModifier {
                     Spacer()
                 }
                 #endif
+                #if os(macOS)
+                if !vm.isShortcut {
+                    Button {
+                        confirmAction = .confirmMoveVM
+                    } label: {
+                        Label("Move", systemImage: "arrow.down.doc")
+                            .labelStyle(IconOnlyLabelStyle())
+                    }.help("Move selected VM")
+                    .padding(.leading, padding)
+                }
+                #endif
                 Button {
+                    shareItem = .utmCopy(vm)
                     showSharePopup.toggle()
                 } label: {
                     Label("Share", systemImage: "square.and.arrow.up")
                         .labelStyle(IconOnlyLabelStyle())
                 }.help("Share selected VM")
                 .padding(.leading, padding)
-                .modifier(VMShareItemModifier(isPresented: $showSharePopup, shareItem: .utmVm(vm.path!)))
                 #if !os(macOS)
                 if bottom {
                     Spacer()
@@ -131,8 +143,12 @@ struct VMToolbarModifier: ViewModifier {
                 .padding(.leading, padding)
             }
         }
+        .modifier(VMShareItemModifier(isPresented: $showSharePopup, shareItem: shareItem))
         .modifier(VMConfirmActionModifier(vm: vm, confirmAction: $confirmAction) {
-            
+            if confirmAction == .confirmMoveVM {
+                shareItem = .utmMove(vm)
+                showSharePopup.toggle()
+            }
         })
     }
 }

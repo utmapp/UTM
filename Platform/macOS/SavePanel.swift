@@ -47,9 +47,9 @@ struct SavePanel: NSViewRepresentable {
                 savePanel.title = "Select where to save debug log:"
                 savePanel.nameFieldStringValue = "debug"
                 savePanel.allowedContentTypes = [.appleLog]
-            case let .utmVm(sourceUrl):
+            case .utmCopy(let vm), .utmMove(let vm):
                 savePanel.title = "Select where to save UTM Virtual Machine:"
-                savePanel.nameFieldStringValue = sourceUrl.deletingPathExtension().lastPathComponent
+                savePanel.nameFieldStringValue = vm.path!.lastPathComponent
                 savePanel.allowedContentTypes = [.UTM]
             case .qemuCommand:
                 savePanel.title = "Select where to export QEMU command:"
@@ -59,7 +59,7 @@ struct SavePanel: NSViewRepresentable {
             
             // Calling savePanel.begin with the appropriate completion handlers
             switch shareItem {
-            case .debugLog(let sourceUrl), .utmVm(let sourceUrl):
+            case .debugLog(let sourceUrl):
                 savePanel.beginSheetModal(for: window) { result in
                     if result == .OK {
                         if let destUrl = savePanel.url {
@@ -74,6 +74,20 @@ struct SavePanel: NSViewRepresentable {
                                 try fileManager.copyItem(at: sourceUrl, to: tempUrl)
                                 
                                 _ = try fileManager.replaceItemAt(destUrl, withItemAt: tempUrl)
+                            }
+                        }
+                    }
+                }
+            case .utmCopy(let vm), .utmMove(let vm):
+                savePanel.beginSheetModal(for: window) { result in
+                    if result == .OK {
+                        if let destUrl = savePanel.url {
+                            data.busyWorkAsync {
+                                if case .utmMove(_) = shareItem {
+                                    try await data.move(vm: vm, to: destUrl)
+                                } else {
+                                    try data.copy(vm: vm, to: destUrl)
+                                }
                             }
                         }
                     }
