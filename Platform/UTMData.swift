@@ -389,6 +389,11 @@ class UTMData: ObservableObject {
         
         try await delete(vm: vm)
         await addNew(vm: newVM)
+        #if os(macOS)
+        if let _ = newVM as? UTMAppleVirtualMachine {
+            throw NSLocalizedString("Shortcuts to Apple virtual machines cannot be stored. You must open the .utm bundle from Finder each time UTM is launched.", comment: "UTMData")
+        }
+        #endif
     }
     
     func newVM() {
