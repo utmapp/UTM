@@ -354,15 +354,13 @@ class UTMData: ObservableObject {
         }
     }
     
-    func delete(vm: UTMVirtualMachine) throws {
+    func delete(vm: UTMVirtualMachine) async throws {
         try fileManager.removeItem(at: vm.path!)
         
-        Task {
-            await remove(vm: vm)
-        }
+        await remove(vm: vm)
     }
     
-    func clone(vm: UTMVirtualMachine) throws {
+    func clone(vm: UTMVirtualMachine) async throws {
         let newName = newDefaultVMName(base: vm.title)
         let newPath = UTMVirtualMachine.virtualMachinePath(newName, inParentURL: documentsURL)
         

@@ -116,8 +116,8 @@ struct ContentView: View {
     private func delete(indexSet: IndexSet) {
         let selected = data.virtualMachines[indexSet]
         for vm in selected {
-            data.busyWork {
-                try data.delete(vm: vm)
+            data.busyWorkAsync {
+                try await data.delete(vm: vm)
             }
         }
     }

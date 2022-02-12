@@ -37,15 +37,15 @@ struct VMConfirmActionModifier: ViewModifier {
             switch action {
             case .confirmCloneVM:
                 return Alert(title: Text("Do you want to duplicate this VM and all its data?"), primaryButton: .cancel(), secondaryButton: .default(Text("Yes")) {
-                    data.busyWork {
-                        try data.clone(vm: vm)
+                    data.busyWorkAsync {
+                        try await data.clone(vm: vm)
                     }
                     onConfirm()
                 })
             case .confirmDeleteVM:
                 return Alert(title: Text("Do you want to delete this VM and all its data?"), primaryButton: .cancel(), secondaryButton: .destructive(Text("Delete")) {
-                    data.busyWork {
-                        try data.delete(vm: vm)
+                    data.busyWorkAsync {
+                        try await data.delete(vm: vm)
                     }
                     onConfirm()
                 })

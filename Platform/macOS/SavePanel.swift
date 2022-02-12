@@ -63,7 +63,7 @@ struct SavePanel: NSViewRepresentable {
                 savePanel.beginSheetModal(for: window) { result in
                     if result == .OK {
                         if let destUrl = savePanel.url {
-                            data.busyWork {
+                            data.busyWorkAsync {
                                 let fileManager = FileManager.default
                                 
                                 // All this mess is because FileManager.replaceItemAt deletes the source item
