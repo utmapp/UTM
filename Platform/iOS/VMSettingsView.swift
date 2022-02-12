@@ -111,7 +111,7 @@ struct VMSettingsView: View {
     func cancel() {
         presentationMode.wrappedValue.dismiss()
         data.busyWork {
-            try data.discardChanges(forVM: self.vm)
+            try data.discardChanges(for: self.vm)
         }
     }
 }

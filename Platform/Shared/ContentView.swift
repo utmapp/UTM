@@ -43,7 +43,7 @@ struct ContentView: View {
                         selection: $data.selectedVM,
                         label: { VMCardView(vm: vm) })
                         .modifier(VMContextMenuModifier(vm: vm))
-                }.onMove(perform: data.move)
+                }.onMove(perform: data.listMove)
                 .onDelete(perform: delete)
                 
                 if data.pendingVMs.count > 0 {
@@ -86,11 +86,11 @@ struct ContentView: View {
             importSheetPresented = true
         }.fileImporter(isPresented: $importSheetPresented, allowedContentTypes: [.UTM], onCompletion: selectImportedUTM)
         .onAppear {
-            data.refresh()
+            data.listRefresh()
             #if os(macOS)
             NSWindow.allowsAutomaticWindowTabbing = false
             #else
-            data.enableNetworking()
+            data.triggeriOSNetworkAccessPrompt()
             IQKeyboardManager.shared.enable = true
             #if !WITH_QEMU_TCI
             if !Main.jitAvailable {
@@ -125,7 +125,7 @@ struct ContentView: View {
     private func cancel(indexSet: IndexSet) {
         let selected = data.pendingVMs[indexSet]
         for vm in selected {
-            data.cancelPendingVM(vm)
+            data.cancelDownload(for: vm)
         }
     }
     
@@ -144,14 +144,14 @@ struct ContentView: View {
             return // ignore
         }
         data.busyWorkAsync {
-            try await data.importUTM(url: url)
+            try await data.importUTM(from: url)
         }
     }
     
     private func selectImportedUTM(result: Result<URL, Error>) {
         data.busyWorkAsync {
             let url = try result.get()
-            try await data.importUTM(url: url)
+            try await data.importUTM(from: url)
         }
     }
     
@@ -199,16 +199,16 @@ struct ContentView: View {
                 break
             case "sendText":
                 if let vm = findVM(), vm.state == .vmStarted {
-                    data.trySendText(vm, urlComponents: components)
+                    data.automationSendText(to: vm, urlComponents: components)
                 }
                 break
             case "click":
                 if let vm = findVM(), vm.state == .vmStarted {
-                    data.tryClickVM(vm, urlComponents: components)
+                    data.automationSendMouse(to: vm, urlComponents: components)
                 }
                 break
             case "downloadVM":
-                data.tryDownloadVM(components)
+                data.downloadUTMZip(from: components)
                 break
             default:
                 return

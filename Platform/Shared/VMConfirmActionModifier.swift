@@ -53,7 +53,7 @@ struct VMConfirmActionModifier: ViewModifier {
             case .confirmDeleteShortcut:
                 return Alert(title: Text("Do you want to remove this shortcut? The data will not be deleted."), primaryButton: .cancel(), secondaryButton: .destructive(Text("Remove")) {
                     data.busyWorkAsync {
-                        data.remove(vm: vm)
+                        data.listRemove(vm: vm)
                     }
                     onConfirm()
                 })

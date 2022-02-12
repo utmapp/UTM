@@ -86,11 +86,11 @@ struct VMConfigQEMUView: View {
     }
     
     private func exportDebugLog() -> VMShareItemModifier.ShareItem? {
-        if let result = try? data.exportDebugLog(for: config) {
-            return result
-        } else {
-            return nil // TODO: implement error handling
+        guard let path = config.existingPath else {
+            return nil
         }
+        let srcLogPath = path.appendingPathComponent(UTMQemuConfiguration.debugLogName)
+        return .debugLog(srcLogPath)
     }
     
     private func deleteArg(offsets: IndexSet) {
