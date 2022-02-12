@@ -58,6 +58,7 @@ struct VMConfigInfoView<Config: ObservableObject & UTMConfigurable>: View {
                 Section(header: Text("Name"), footer: EmptyView().padding(.bottom)) {
                     TextField("Name", text: $config.name, onEditingChanged: validateName)
                         .keyboardType(.asciiCapable)
+                        .disabled(config.isRenameDisabled)
                 }
                 Section(header: Text("Notes"), footer: EmptyView().padding(.bottom)) {
                     TextEditor(text: $config.notes.bound)

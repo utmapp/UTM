@@ -27,6 +27,8 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
     
     @Published var isAppleVirtualization: Bool
     
+    @Published var isRenameDisabled: Bool
+    
     @Published var name: String
     
     @Published var architecture: String
@@ -325,6 +327,7 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
     
     init() {
         apple = VZVirtualMachineConfiguration()
+        isRenameDisabled = false
         name = ""
         #if arch(arm64)
         architecture = "aarch64"

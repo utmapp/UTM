@@ -20,6 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @protocol UTMConfigurable
 
+@property (nonatomic, assign) BOOL isRenameDisabled;
 @property (nonatomic, copy) NSString *name;
 @property (nonatomic, nullable, readonly) NSURL *iconUrl;
 @property (nonatomic, nullable, copy) NSURL *selectedCustomIconPath;
