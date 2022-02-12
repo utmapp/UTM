@@ -443,7 +443,7 @@ class UTMData: ObservableObject {
     }
     
     // MARK: - Import and Download VMs
-    func copyUTM(at: URL, to: URL, move: Bool = false) throws {
+    private func copyUTM(at: URL, to: URL, move: Bool = false) throws {
         if move {
             try fileManager.moveItem(at: at, to: to)
         } else {
