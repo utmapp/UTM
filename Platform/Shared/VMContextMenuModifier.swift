@@ -64,7 +64,7 @@ struct VMContextMenuModifier: ViewModifier {
                     confirmAction = .confirmMoveVM
                 } label: {
                     Label("Move…", systemImage: "arrow.down.doc")
-                }
+                }.disabled(vm.viewState.suspended || vm.viewState.active)
             }
             #endif
             Button {
@@ -78,13 +78,13 @@ struct VMContextMenuModifier: ViewModifier {
                     confirmAction = .confirmDeleteShortcut
                 } label: {
                     Label("Remove…", systemImage: "trash")
-                }
+                }.disabled(vm.viewState.suspended || vm.viewState.active)
             } else {
                 DestructiveButton {
                     confirmAction = .confirmDeleteVM
                 } label: {
                     Label("Delete…", systemImage: "trash")
-                }
+                }.disabled(vm.viewState.suspended || vm.viewState.active)
             }
         }
         .modifier(VMShareItemModifier(isPresented: $showSharePopup, shareItem: shareItem))

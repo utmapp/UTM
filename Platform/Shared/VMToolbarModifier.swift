@@ -56,6 +56,7 @@ struct VMToolbarModifier: ViewModifier {
                         Label("Remove", systemImage: "trash")
                             .labelStyle(IconOnlyLabelStyle())
                     }.help("Remove selected shortcut")
+                    .disabled(vm.viewState.suspended || vm.viewState.active)
                     .padding(.leading, padding)
                 } else {
                     DestructiveButton {
@@ -64,6 +65,7 @@ struct VMToolbarModifier: ViewModifier {
                         Label("Delete", systemImage: "trash")
                             .labelStyle(IconOnlyLabelStyle())
                     }.help("Delete selected VM")
+                    .disabled(vm.viewState.suspended || vm.viewState.active)
                     .padding(.leading, padding)
                 }
                 #if !os(macOS)
@@ -91,6 +93,7 @@ struct VMToolbarModifier: ViewModifier {
                         Label("Move", systemImage: "arrow.down.doc")
                             .labelStyle(IconOnlyLabelStyle())
                     }.help("Move selected VM")
+                    .disabled(vm.viewState.suspended || vm.viewState.active)
                     .padding(.leading, padding)
                 }
                 #endif
