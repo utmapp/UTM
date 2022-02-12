@@ -46,13 +46,20 @@ class UTMData: ObservableObject {
     @Published var showSettingsModal: Bool
     @Published var showNewVMSheet: Bool
     @Published var alertMessage: AlertMessage?
-    @Published var busy: Bool
-    @Published var selectedVM: UTMVirtualMachine?
+    @MainActor @Published var busy: Bool
+    @MainActor @Published var selectedVM: UTMVirtualMachine?
     @Published private(set) var virtualMachines: [UTMVirtualMachine] {
         didSet {
             let defaults = UserDefaults.standard
-            let bookmarks = virtualMachines.compactMap { vm in
-                vm.bookmark
+            let bookmarks = virtualMachines.compactMap { vm -> Data? in
+                #if os(macOS)
+                if let appleVM = vm as? UTMAppleVirtualMachine {
+                    if appleVM.isShortcut {
+                        return nil // FIXME: Apple VMs do not support shortcuts
+                    }
+                }
+                #endif
+                return vm.bookmark
             }
             defaults.set(bookmarks, forKey: "VMList")
         }
@@ -77,6 +84,7 @@ class UTMData: ObservableObject {
     
     private var busyQueue: DispatchQueue
     
+    @MainActor
     init() {
         let defaults = UserDefaults.standard
         self.busyQueue = DispatchQueue(label: "UTM Busy Queue", qos: .userInitiated)
@@ -275,10 +283,48 @@ class UTMData: ObservableObject {
         }
     }
     
-    @MainActor func addNewVM(_ vm: UTMVirtualMachine) {
+    // MARK: - View state modifiers
+    
+    @MainActor private func addNew(vm: UTMVirtualMachine) {
         virtualMachines.append(vm)
+        select(vm: vm)
+    }
+    
+    @MainActor public func select(vm: UTMVirtualMachine) {
         selectedVM = vm
     }
+    
+    @MainActor public func remove(vm: UTMVirtualMachine) {
+        if let index = virtualMachines.firstIndex(of: vm) {
+            virtualMachines.remove(at: index)
+        }
+        if vm == selectedVM {
+            selectedVM = nil
+        }
+        vm.viewState.deleted = true // alert views to update
+    }
+    
+    @MainActor private func addNew(pendingVM: UTMPendingVirtualMachine) {
+        pendingVMs.append(pendingVM)
+    }
+    
+    @MainActor private func remove(pendingVM: UTMPendingVirtualMachine) {
+        pendingVMs.removeAll(where: { $0.id == pendingVM.id })
+    }
+    
+    public func cancelPendingVM(_ pendingVM: UTMPendingVirtualMachine) {
+        pendingVM.cancel()
+    }
+    
+    @MainActor private func setBusyIndicator(_ busy: Bool) {
+        self.busy = busy
+    }
+    
+    @MainActor private func showErrorAlert(message: String) {
+        alertMessage = AlertMessage(message)
+    }
+    
+    // MARK: - File operations
     
     #if os(macOS) && arch(arm64)
     @available(macOS 12, *)
@@ -289,15 +335,15 @@ class UTMData: ObservableObject {
                 guard !virtualMachines.contains(where: { $0.config.name == config.name }) else {
                     throw NSLocalizedString("An existing virtual machine already exists with this name.", comment: "UTMData")
                 }
-                await addPendingVM(task.pendingVM)
+                await addNew(pendingVM: task.pendingVM)
                 if let vm = try await task.download() {
                     try save(vm: vm)
-                    await addNewVM(vm)
+                    await addNew(vm: vm)
                 }
             } catch {
                 await showErrorAlert(message: error.localizedDescription)
             }
-            await removePendingVM(task.pendingVM)
+            await remove(pendingVM: task.pendingVM)
         }
     }
     #endif
@@ -311,14 +357,8 @@ class UTMData: ObservableObject {
     func delete(vm: UTMVirtualMachine) throws {
         try fileManager.removeItem(at: vm.path!)
         
-        DispatchQueue.main.async {
-            if let index = self.virtualMachines.firstIndex(of: vm) {
-                self.virtualMachines.remove(at: index)
-            }
-            if vm == self.selectedVM {
-                self.selectedVM = nil
-            }
-            vm.viewState.deleted = true // alert views to update
+        Task {
+            await remove(vm: vm)
         }
     }
     
@@ -405,20 +445,15 @@ class UTMData: ObservableObject {
         let fileBasePath = url.deletingLastPathComponent()
         let fileName = url.lastPathComponent
         let dest = documentsURL.appendingPathComponent(fileName, isDirectory: true)
-        if dest.resolvingSymlinksInPath().path == url.resolvingSymlinksInPath().path {
-            if let vm = virtualMachines.first(where: { vm -> Bool in
-                guard let vmPath = vm.path else {
-                    return false
-                }
-                return vmPath.lastPathComponent == fileName
-            }) {
-                logger.info("found existing vm!")
-                DispatchQueue.main.async {
-                    self.selectedVM = vm
-                }
-            } else {
-                logger.error("cannot find existing vm")
+        if let vm = virtualMachines.first(where: { vm -> Bool in
+            guard let vmPath = vm.path else {
+                return false
             }
+            return vmPath.standardizedFileURL == url.standardizedFileURL
+        }) {
+            logger.info("found existing vm!")
+            await select(vm: vm)
+            return
         }
         // check if VM is valid
         guard let _ = UTMVirtualMachine(url: url) else {
@@ -444,7 +479,7 @@ class UTMData: ObservableObject {
         guard let vm = vm else {
             throw NSLocalizedString("Failed to parse imported VM.", comment: "UTMData")
         }
-        await addNewVM(vm)
+        await addNew(vm: vm)
     }
     
     func tryDownloadVM(_ components: URLComponents) {
@@ -455,27 +490,15 @@ class UTMData: ObservableObject {
         Task {
             let task = UTMDownloadVMTask(for: url)
             do {
-                await addPendingVM(task.pendingVM)
+                await addNew(pendingVM: task.pendingVM)
                 if let vm = try await task.download() {
-                    await addNewVM(vm)
+                    await addNew(vm: vm)
                 }
             } catch {
                 await showErrorAlert(message: error.localizedDescription)
             }
-            await removePendingVM(task.pendingVM)
+            await remove(pendingVM: task.pendingVM)
         }
-    }
-    
-    @MainActor func addPendingVM(_ pendingVM: UTMPendingVirtualMachine) {
-        pendingVMs.append(pendingVM)
-    }
-    
-    @MainActor func removePendingVM(_ pendingVM: UTMPendingVirtualMachine) {
-        pendingVMs.removeAll(where: { $0.id == pendingVM.id })
-    }
-    
-    func cancelPendingVM(_ pendingVM: UTMPendingVirtualMachine) {
-        pendingVM.cancel()
     }
     
     // MARK: - Disk drive functions
@@ -670,29 +693,17 @@ class UTMData: ObservableObject {
     #if swift(>=5.5)
     func busyWorkAsync(_ work: @escaping () async throws -> Void) {
         Task(priority: .userInitiated) {
-            DispatchQueue.main.async {
-                self.busy = true
-            }
-            defer {
-                DispatchQueue.main.async {
-                    self.busy = false
-                }
-            }
+            await setBusyIndicator(true)
             do {
                 try await work()
             } catch {
                 logger.error("\(error)")
-                DispatchQueue.main.async {
-                    self.alertMessage = AlertMessage(error.localizedDescription)
-                }
+                await showErrorAlert(message: error.localizedDescription)
             }
+            await setBusyIndicator(false)
         }
     }
     #endif
-    
-    @MainActor private func showErrorAlert(message: String) {
-        alertMessage = AlertMessage(message)
-    }
     // MARK: - Automation Features
     
     func trySendText(_ vm: UTMVirtualMachine, urlComponents components: URLComponents) {
