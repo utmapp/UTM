@@ -42,7 +42,7 @@ struct VMDetailsView: View {
                 Spacer()
                 HStack {
                     Spacer()
-                    Text("This virtual machine has been deleted.")
+                    Text("This virtual machine has been removed.")
                         .font(.headline)
                     Spacer()
                 }

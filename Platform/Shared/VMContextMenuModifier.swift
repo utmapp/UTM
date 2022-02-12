@@ -62,11 +62,20 @@ struct VMContextMenuModifier: ViewModifier {
                 Label("Clone…", systemImage: "doc.on.doc")
             }
             Divider()
-            Button {
-                confirmAction = .confirmDeleteVM
-            } label: {
-                Label("Delete…", systemImage: "trash")
-                    .foregroundColor(.red)
+            if vm.isShortcut {
+                Button {
+                    confirmAction = .confirmDeleteShortcut
+                } label: {
+                    Label("Remove…", systemImage: "trash")
+                        .foregroundColor(.red)
+                }
+            } else {
+                Button {
+                    confirmAction = .confirmDeleteVM
+                } label: {
+                    Label("Delete…", systemImage: "trash")
+                        .foregroundColor(.red)
+                }
             }
         }
         .modifier(VMShareItemModifier(isPresented: $showSharePopup, shareItem: .utmVm(vm.path!)))

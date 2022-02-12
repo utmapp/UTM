@@ -50,14 +50,25 @@ struct VMToolbarModifier: ViewModifier {
     func body(content: Content) -> some View {
         content.toolbar {
             ToolbarItemGroup(placement: buttonPlacement) {
-                Button {
-                    confirmAction = .confirmDeleteVM
-                } label: {
-                    Label("Delete", systemImage: "trash")
-                        .foregroundColor(destructiveButtonColor)
-                        .labelStyle(IconOnlyLabelStyle())
-                }.help("Delete selected VM")
-                .padding(.leading, padding)
+                if vm.isShortcut {
+                    Button {
+                        confirmAction = .confirmDeleteShortcut
+                    } label: {
+                        Label("Remove", systemImage: "trash")
+                            .foregroundColor(destructiveButtonColor)
+                            .labelStyle(IconOnlyLabelStyle())
+                    }.help("Remove selected shortcut")
+                    .padding(.leading, padding)
+                } else {
+                    Button {
+                        confirmAction = .confirmDeleteVM
+                    } label: {
+                        Label("Delete", systemImage: "trash")
+                            .foregroundColor(destructiveButtonColor)
+                            .labelStyle(IconOnlyLabelStyle())
+                    }.help("Delete selected VM")
+                    .padding(.leading, padding)
+                }
                 #if !os(macOS)
                 if bottom {
                     Spacer()

@@ -19,6 +19,7 @@ import SwiftUI
 enum ConfirmAction: Int, Identifiable {
     case confirmCloneVM
     case confirmDeleteVM
+    case confirmDeleteShortcut
     case confirmStopVM
     
     var id: Int { rawValue }
@@ -45,6 +46,13 @@ struct VMConfirmActionModifier: ViewModifier {
                 return Alert(title: Text("Do you want to delete this VM and all its data?"), primaryButton: .cancel(), secondaryButton: .destructive(Text("Delete")) {
                     data.busyWork {
                         try data.delete(vm: vm)
+                    }
+                    onConfirm()
+                })
+            case .confirmDeleteShortcut:
+                return Alert(title: Text("Do you want to remove this shortcut? The data will not be deleted."), primaryButton: .cancel(), secondaryButton: .destructive(Text("Remove")) {
+                    data.busyWorkAsync {
+                        data.remove(vm: vm)
                     }
                     onConfirm()
                 })
