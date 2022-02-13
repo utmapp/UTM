@@ -121,19 +121,27 @@ class VMDisplayWindowController: NSWindowController {
         
         if vm.state == .vmStopped || vm.state == .vmSuspended {
             enterSuspended(isBusy: false)
-            if shouldAutoStartVM {
-                DispatchQueue.global(qos: .userInitiated).async {
-                    if self.vm.startVM() {
-                        self.didStartVirtualMachine(self.vm)
-                    }
-                }
-            }
         } else {
             enterLive()
             didStartVirtualMachine(vm)
         }
         
         super.windowDidLoad()
+    }
+    
+    public func requestAutoStart() {
+        guard shouldAutoStartVM else {
+            return
+        }
+        DispatchQueue.global(qos: .userInitiated).async {
+            if (self.vm.state == .vmStopped || self.vm.state == .vmSuspended) {
+                if self.vm.startVM() {
+                    self.didStartVirtualMachine(self.vm)
+                }
+            } else if (self.vm.state == .vmPaused) {
+                self.vm.resumeVM()
+            }
+        }
     }
     
     func enterLive() {

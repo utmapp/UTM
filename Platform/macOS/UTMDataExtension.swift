@@ -48,6 +48,7 @@ extension UTMData {
             vmWindows[vm] = unwrappedWindow
             unwrappedWindow.showWindow(nil)
             unwrappedWindow.window!.makeMain()
+            unwrappedWindow.requestAutoStart()
         } else {
             logger.critical("Failed to create window controller.")
         }
