@@ -446,7 +446,7 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
         return config
     }
     
-    func save(to packageURL: URL) throws {
+    func save(to packageURL: URL) async throws {
         let fileManager = FileManager.default
 
         // create package directory
@@ -459,15 +459,15 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
             try fileManager.createDirectory(at: dataURL, withIntermediateDirectories: false)
         }
         var existingDataURLs = [URL]()
-        existingDataURLs += try saveIcon(to: dataURL)
-        existingDataURLs += try saveBootloader(to: dataURL)
+        existingDataURLs += try await saveIcon(to: dataURL)
+        existingDataURLs += try await saveBootloader(to: dataURL)
 
         // validate
         try apple.validate()
 
-        existingDataURLs += try saveImportedDrives(to: dataURL)
+        existingDataURLs += try await saveImportedDrives(to: dataURL)
         // create new drives
-        existingDataURLs += try createNewDrives(at: dataURL)
+        existingDataURLs += try await createNewDrives(at: dataURL)
         // cleanup any files before creating new drives
         try cleanupAllFiles(at: dataURL, notIncluding: existingDataURLs)
         // create config.plist
@@ -500,12 +500,13 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
         return destURL
     }
     
-    private func saveIcon(to dataURL: URL) throws -> [URL] {
+    private func saveIcon(to dataURL: URL) async throws -> [URL] {
         // save new icon
         if iconCustom {
             if let iconURL = selectedCustomIconPath {
-                // FIXME: cannot modify state outside of main thread
-                icon = iconURL.lastPathComponent
+                await MainActor.run {
+                    icon = iconURL.lastPathComponent
+                }
                 return [try copyItemIfChanged(from: iconURL, to: dataURL)]
             } else if let existingName = icon {
                 return [dataURL.appendingPathComponent(existingName)]
@@ -516,17 +517,23 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
         return []
     }
     
-    private func saveBootloader(to dataURL: URL) throws -> [URL] {
+    private func saveBootloader(to dataURL: URL) async throws -> [URL] {
         let fileManager = FileManager.default
         var urls = [URL]()
         if bootLoader != nil && bootLoader!.operatingSystem == .Linux {
             guard let linuxKernelURL = bootLoader!.linuxKernelURL else {
                 throw ConfigError.kernelNotSpecified
             }
-            bootLoader!.linuxKernelURL = try copyItemIfChanged(from: linuxKernelURL, to: dataURL)
+            let kernelUrl = try copyItemIfChanged(from: linuxKernelURL, to: dataURL)
+            await MainActor.run {
+                bootLoader!.linuxKernelURL = kernelUrl
+            }
             urls.append(bootLoader!.linuxKernelURL!)
             if let linuxInitialRamdiskURL = bootLoader!.linuxInitialRamdiskURL {
-                bootLoader!.linuxInitialRamdiskURL = try copyItemIfChanged(from: linuxInitialRamdiskURL, to: dataURL)
+                let ramdiskUrl = try copyItemIfChanged(from: linuxInitialRamdiskURL, to: dataURL)
+                await MainActor.run {
+                    bootLoader!.linuxInitialRamdiskURL = ramdiskUrl
+                }
                 urls.append(bootLoader!.linuxInitialRamdiskURL!)
             }
         }
@@ -539,20 +546,23 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
                 }
                 _ = try VZMacAuxiliaryStorage(creatingStorageAt: auxStorageURL, hardwareModel: hwModel, options: [])
             }
-            macPlatform!.auxiliaryStorageURL = auxStorageURL
+            await MainActor.run {
+                macPlatform!.auxiliaryStorageURL = auxStorageURL
+            }
             urls.append(auxStorageURL)
         }
         #endif
         return urls
     }
     
-    private func saveImportedDrives(to dataURL: URL) throws -> [URL] {
+    private func saveImportedDrives(to dataURL: URL) async throws -> [URL] {
         var urls = [URL]()
         for i in diskImages.indices {
             if !diskImages[i].isExternal, let imageURL = diskImages[i].imageURL {
                 let newUrl = try copyItemIfChanged(from: imageURL, to: dataURL)
-                // FIXME: cannot modify state outside of main thread
-                diskImages[i].imageURL = newUrl
+                await MainActor.run {
+                    diskImages[i].imageURL = newUrl
+                }
                 urls.append(newUrl)
             }
         }
@@ -572,7 +582,7 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
         }
     }
     
-    private func createNewDrives(at dataURL: URL) throws -> [URL] {
+    private func createNewDrives(at dataURL: URL) async throws -> [URL] {
         let fileManager = FileManager.default
         var urls = [URL]()
         for i in diskImages.indices {
@@ -584,8 +594,9 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
                 let handle = try FileHandle(forWritingTo: newUrl)
                 try handle.truncate(atOffset: UInt64(diskImages[i].sizeBytes))
                 try handle.close()
-                // FIXME: cannot modify state outside of main thread
-                diskImages[i].imageURL = newUrl
+                await MainActor.run {
+                    diskImages[i].imageURL = newUrl
+                }
                 urls.append(newUrl)
             }
         }

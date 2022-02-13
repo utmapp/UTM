@@ -91,7 +91,7 @@ import Virtualization
         config = newConfig
     }
     
-    override func saveUTM() throws {
+    override func saveUTM() async throws {
         let fileManager = FileManager.default
         let newPath = packageURL(forName: appleConfig.name)
         let savePath: URL
@@ -101,7 +101,7 @@ import Virtualization
             savePath = newPath
         }
         do {
-            try appleConfig.save(to: savePath)
+            try await appleConfig.save(to: savePath)
         } catch {
             if let reload = try? UTMAppleConfiguration.load(from: savePath) {
                 config = reload

@@ -239,7 +239,7 @@ const NSURLBookmarkResolutionOptions kUTMBookmarkResolutionOptions = NSURLBookma
     notImplemented;
 }
 
-- (BOOL)saveUTMWithError:(NSError * _Nullable *)err {
+- (void)saveUTMWithCompletion:(void (^)(NSError * _Nullable))completion {
     notImplemented;
 }
 

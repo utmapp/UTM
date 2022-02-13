@@ -330,7 +330,7 @@ class UTMData: ObservableObject {
     /// - Parameter vm: VM to save
     func save(vm: UTMVirtualMachine) async throws {
         do {
-            try vm.saveUTM()
+            try await vm.saveUTM()
             if let qemuVM = vm as? UTMQemuVirtualMachine {
                 try commitRemovableDriveImages(for: qemuVM)
             }

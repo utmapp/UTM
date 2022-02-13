@@ -173,35 +173,41 @@ extern NSString *const kUTMErrorDomain;
     return YES;
 }
 
-- (BOOL)saveUTMWithError:(NSError * _Nullable *)err {
+- (void)saveUTMWithCompletion:(void (^)(NSError * _Nullable))completion {
     NSFileManager *fileManager = [NSFileManager defaultManager];
     NSURL *url = [self packageURLForName:self.qemuConfig.name];
+    NSError *err;
     if (!self.qemuConfig.existingPath) { // new package
-        if (![fileManager createDirectoryAtURL:url withIntermediateDirectories:YES attributes:nil error:err]) {
-            return NO;
+        if (![fileManager createDirectoryAtURL:url withIntermediateDirectories:YES attributes:nil error:&err]) {
+            completion(err);
+            return;
         }
     } else if (![self.qemuConfig.existingPath.URLByStandardizingPath isEqual:url.URLByStandardizingPath]) { // rename if needed
-        if (![fileManager moveItemAtURL:self.qemuConfig.existingPath toURL:url error:err]) {
-            return NO;
+        if (![fileManager moveItemAtURL:self.qemuConfig.existingPath toURL:url error:&err]) {
+            completion(err);
+            return;
         }
     } else {
         url = self.qemuConfig.existingPath;
     }
     // save icon
-    if (![self saveIconWithError:err]) {
-        return NO;
+    if (![self saveIconWithError:&err]) {
+        completion(err);
+        return;
     }
     // save config
-    if (![self saveConfigurationWithError:err]) {
-        return NO;
+    if (![self saveConfigurationWithError:&err]) {
+        completion(err);
+        return;
     }
     // create disk images directory
-    if (![self saveDisksWithError:err]) {
-        return NO;
+    if (![self saveDisksWithError:&err]) {
+        completion(err);
+        return;
     }
     self.qemuConfig.existingPath = url;
     self.path = url;
-    return YES;
+    completion(nil);
 }
 
 #pragma mark - Shortcut access

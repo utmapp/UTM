@@ -408,7 +408,6 @@
     NSAssert([sender.sourceViewController conformsToProtocol:@protocol(UTMQemuConfigurationDelegate)], @"Invalid source for unwind");
     id<UTMQemuConfigurationDelegate> source = (id<UTMQemuConfigurationDelegate>)sender.sourceViewController;
     dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), ^{
-        NSError *err;
         [self workStartedWhenVisible:[NSString stringWithFormat:NSLocalizedString(@"Saving %@...", @"Save VM overlay"), source.configuration.name]];
         UTMQemuVirtualMachine *vm;
         if (self.modifyingVM.qemuConfig == source.configuration) {
@@ -416,8 +415,9 @@
         } else {
             vm = (UTMQemuVirtualMachine *)[UTMVirtualMachine virtualMachineWithConfiguration:source.configuration withDestinationURL:self.documentsPath];
         }
-        [vm saveUTMWithError:&err];
-        [self workCompletedWhenVisible:err.localizedDescription];
+        [vm saveUTMWithCompletion:^(NSError *err) {
+            [self workCompletedWhenVisible:err.localizedDescription];
+        }];
     });
 }
 

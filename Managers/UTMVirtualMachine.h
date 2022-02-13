@@ -44,7 +44,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (UTMVirtualMachine *)virtualMachineWithConfiguration:(id<UTMConfigurable>)configuration withDestinationURL:(NSURL *)dstUrl;
 
 - (BOOL)reloadConfigurationWithError:(NSError * _Nullable *)err;
-- (BOOL)saveUTMWithError:(NSError * _Nullable *)err;
+- (void)saveUTMWithCompletion:(void (^)(NSError * _Nullable))completion;
 
 - (void)accessShortcutWithCompletion:(void (^ _Nullable)(BOOL, NSError * _Nullable))completion;
 
