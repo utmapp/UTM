@@ -43,7 +43,7 @@ struct ContentView: View {
                         selection: $data.selectedVM,
                         label: { VMCardView(vm: vm) })
                         .modifier(VMContextMenuModifier(vm: vm))
-                }.onMove(perform: data.listMove)
+                }.onMove(perform: move)
                 .onDelete(perform: delete)
                 
                 if data.pendingVMs.count > 0 {
@@ -86,7 +86,9 @@ struct ContentView: View {
             importSheetPresented = true
         }.fileImporter(isPresented: $importSheetPresented, allowedContentTypes: [.UTM], onCompletion: selectImportedUTM)
         .onAppear {
-            data.listRefresh()
+            Task {
+                await data.listRefresh()
+            }
             #if os(macOS)
             NSWindow.allowsAutomaticWindowTabbing = false
             #else
@@ -113,6 +115,10 @@ struct ContentView: View {
         })
     }
     
+    private func move(fromOffsets: IndexSet, toOffset: Int) {
+        data.listMove(fromOffsets: fromOffsets, toOffset: toOffset)
+    }
+    
     private func delete(indexSet: IndexSet) {
         let selected = data.virtualMachines[indexSet]
         for vm in selected {
@@ -130,22 +136,22 @@ struct ContentView: View {
     }
     
     private func handleURL(url: URL) {
-        if url.isFileURL {
-            importUTM(url: url)
-        } else if let components = URLComponents(url: url, resolvingAgainstBaseURL: false),
-                  let scheme = components.scheme,
-                  scheme.lowercased() == "utm" {
-            handleUTMURL(with: components)
+        data.busyWorkAsync {
+            if url.isFileURL {
+                try await importUTM(url: url)
+            } else if let components = URLComponents(url: url, resolvingAgainstBaseURL: false),
+                      let scheme = components.scheme,
+                      scheme.lowercased() == "utm" {
+                try await handleUTMURL(with: components)
+            }
         }
     }
     
-    private func importUTM(url: URL) {
+    private func importUTM(url: URL) async throws {
         guard url.isFileURL else {
             return // ignore
         }
-        data.busyWorkAsync {
-            try await data.importUTM(from: url)
-        }
+        try await data.importUTM(from: url)
     }
     
     private func selectImportedUTM(result: Result<URL, Error>) {
@@ -155,10 +161,10 @@ struct ContentView: View {
         }
     }
     
-    private func handleUTMURL(with components: URLComponents) {
-        func findVM() -> UTMVirtualMachine? {
+    private func handleUTMURL(with components: URLComponents) async throws {
+        func findVM() async -> UTMVirtualMachine? {
             if let vmName = components.queryItems?.first(where: { $0.name == "name" })?.value {
-                return data.virtualMachines.first(where: { $0.title == vmName })
+                return await data.virtualMachines.first(where: { $0.title == vmName })
             } else {
                 return nil
             }
@@ -167,43 +173,43 @@ struct ContentView: View {
         if let action = components.host {
             switch action {
             case "start":
-                if let vm = findVM(), vm.state == .vmStopped {
+                if let vm = await findVM(), vm.state == .vmStopped {
                     data.run(vm: vm)
                 }
                 break
             case "stop":
-                if let vm = findVM(), vm.state == .vmStarted {
+                if let vm = await findVM(), vm.state == .vmStarted {
                     vm.quitVM(force: true)
                     try? data.stop(vm: vm)
                 }
                 break
             case "restart":
-                if let vm = findVM(), vm.state == .vmStarted {
+                if let vm = await findVM(), vm.state == .vmStarted {
                     DispatchQueue.global(qos: .background).async {
                         vm.resetVM()
                     }
                 }
                 break
             case "pause":
-                if let vm = findVM(), vm.state == .vmStarted {
+                if let vm = await findVM(), vm.state == .vmStarted {
                     DispatchQueue.global(qos: .background).async {
                         vm.pauseVM()
                     }
                 }
             case "resume":
-                if let vm = findVM(), vm.state == .vmPaused {
+                if let vm = await findVM(), vm.state == .vmPaused {
                     DispatchQueue.global(qos: .background).async {
                         vm.resumeVM()
                     }
                 }
                 break
             case "sendText":
-                if let vm = findVM(), vm.state == .vmStarted {
+                if let vm = await findVM(), vm.state == .vmStarted {
                     data.automationSendText(to: vm, urlComponents: components)
                 }
                 break
             case "click":
-                if let vm = findVM(), vm.state == .vmStarted {
+                if let vm = await findVM(), vm.state == .vmStarted {
                     data.automationSendMouse(to: vm, urlComponents: components)
                 }
                 break

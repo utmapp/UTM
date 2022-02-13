@@ -99,11 +99,11 @@ struct VMSettingsView: View {
     
     func save() {
         presentationMode.wrappedValue.dismiss()
-        data.busyWork {
+        data.busyWorkAsync {
             if let existing = self.vm {
-                try data.save(vm: existing)
+                try await data.save(vm: existing)
             } else {
-                try data.create(config: self.config)
+                _ = try await data.create(config: self.config)
             }
         }
     }

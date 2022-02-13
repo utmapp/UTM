@@ -81,7 +81,7 @@ struct VMWizardView: View {
                     } else if wizardState.currentPage == .summary {
                         Button("Save") {
                             presentationMode.wrappedValue.dismiss()
-                            data.busyWork {
+                            data.busyWorkAsync {
                                 let config = try wizardState.generateConfig()
                                 #if arch(arm64)
                                 if #available(macOS 12, *), wizardState.isPendingIPSWDownload {
@@ -89,15 +89,13 @@ struct VMWizardView: View {
                                     return
                                 }
                                 #endif
-                                try data.create(config: config) { vm in
-                                    data.selectedVM = vm
-                                    if wizardState.isOpenSettingsAfterCreation {
-                                        data.showSettingsModal = true
-                                    }
-                                    if let qemuVm = vm as? UTMQemuVirtualMachine {
-                                        data.busyWork {
-                                            try wizardState.qemuPostCreate(with: qemuVm)
-                                        }
+                                let vm = try await data.create(config: config)
+                                if wizardState.isOpenSettingsAfterCreation {
+                                    data.showSettingsModal = true
+                                }
+                                if let qemuVm = vm as? UTMQemuVirtualMachine {
+                                    data.busyWork {
+                                        try wizardState.qemuPostCreate(with: qemuVm)
                                     }
                                 }
                             }

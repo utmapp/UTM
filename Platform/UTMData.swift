@@ -45,13 +45,13 @@ class UTMData: ObservableObject {
     }
     
     /// View: show VM settings
-    @Published var showSettingsModal: Bool
+    @MainActor @Published var showSettingsModal: Bool
     
     /// View: show new VM wizard
-    @Published var showNewVMSheet: Bool
+    @MainActor @Published var showNewVMSheet: Bool
     
     /// View: show an alert message
-    @Published var alertMessage: AlertMessage?
+    @MainActor @Published var alertMessage: AlertMessage?
     
     /// View: show busy spinner
     @MainActor @Published var busy: Bool
@@ -60,14 +60,14 @@ class UTMData: ObservableObject {
     @MainActor @Published var selectedVM: UTMVirtualMachine?
     
     /// View: all VMs listed, we save a bookmark to each when array is modified
-    @Published private(set) var virtualMachines: [UTMVirtualMachine] {
+    @MainActor @Published private(set) var virtualMachines: [UTMVirtualMachine] {
         didSet {
             listSaveToDefaults()
         }
     }
     
     /// View: all pending VMs listed (ZIP and IPSW downloads)
-    @Published private(set) var pendingVMs: [UTMPendingVirtualMachine]
+    @MainActor @Published private(set) var pendingVMs: [UTMPendingVirtualMachine]
     
     /// Temporary storage for QEMU removable drives settings
     private var qemuRemovableDrivesCache: [String: URL]
@@ -111,13 +111,13 @@ class UTMData: ObservableObject {
     /// Re-loads UTM bundles from default path
     ///
     /// This removes stale entries (deleted/not accessible) and duplicate entries
-    func listRefresh() {
+    func listRefresh() async {
         // remove stale vm
-        var list = virtualMachines.filter { (vm: UTMVirtualMachine) in vm.path != nil && fileManager.fileExists(atPath: vm.path!.path) }
+        var list = await virtualMachines.filter { (vm: UTMVirtualMachine) in vm.path != nil && fileManager.fileExists(atPath: vm.path!.path) }
         do {
             let files = try fileManager.contentsOfDirectory(at: documentsURL, includingPropertiesForKeys: [.isDirectoryKey], options: .skipsHiddenFiles)
             let newFiles = files.filter { newFile in
-                !virtualMachines.contains { existingVM in
+                !list.contains { existingVM in
                     existingVM.path?.standardizedFileURL == newFile.standardizedFileURL
                 }
             }
@@ -138,16 +138,13 @@ class UTMData: ObservableObject {
         } catch {
             logger.error("\(error.localizedDescription)")
         }
-        if virtualMachines != list {
-            DispatchQueue.main.async {
-                //self.objectWillChange.send()
-                self.virtualMachines = list
-            }
+        if await virtualMachines != list {
+            await listReplace(with: list)
         }
     }
     
     /// Load VM list (and order) from persistent storage
-    private func listLoadFromDefaults() {
+    @MainActor private func listLoadFromDefaults() {
         let defaults = UserDefaults.standard
         // legacy path list
         if let files = defaults.array(forKey: "VMList") as? [String] {
@@ -171,7 +168,7 @@ class UTMData: ObservableObject {
     }
     
     /// Save VM list (and order) to persistent storage
-    private func listSaveToDefaults() {
+    @MainActor private func listSaveToDefaults() {
         let defaults = UserDefaults.standard
         let bookmarks = virtualMachines.compactMap { vm -> Data? in
             #if os(macOS)
@@ -184,6 +181,10 @@ class UTMData: ObservableObject {
             return vm.bookmark
         }
         defaults.set(bookmarks, forKey: "VMList")
+    }
+    
+    @MainActor private func listReplace(with vms: [UTMVirtualMachine]) {
+        virtualMachines = vms
     }
     
     /// Add VM to list
@@ -227,27 +228,22 @@ class UTMData: ObservableObject {
     /// - Parameters:
     ///   - fromOffsets: Offsets from move from
     ///   - toOffset: Offsets to move to
-    func listMove(fromOffsets: IndexSet, toOffset: Int) {
-        DispatchQueue.main.async {
-            self.virtualMachines.move(fromOffsets: fromOffsets, toOffset: toOffset)
-        }
+    @MainActor func listMove(fromOffsets: IndexSet, toOffset: Int) {
+        virtualMachines.move(fromOffsets: fromOffsets, toOffset: toOffset)
     }
     
     /// Discard and create a new list item
     /// - Parameter vm: VM to discard
     /// - Parameter newVM: VM to replace with
-    private func listRecreate(vm: UTMVirtualMachine, with newVM: UTMVirtualMachine) {
-        DispatchQueue.main.async {
-            //self.objectWillChange.send()
-            if let index = self.virtualMachines.firstIndex(of: vm) {
-                self.virtualMachines.remove(at: index)
-                self.virtualMachines.insert(newVM, at: index)
-            } else {
-                self.virtualMachines.insert(newVM, at: 0)
-            }
-            if self.selectedVM == vm {
-                self.selectedVM = newVM
-            }
+    @MainActor private func listRecreate(vm: UTMVirtualMachine, with newVM: UTMVirtualMachine) {
+        if let index = virtualMachines.firstIndex(of: vm) {
+            virtualMachines.remove(at: index)
+            virtualMachines.insert(newVM, at: index)
+        } else {
+            virtualMachines.insert(newVM, at: 0)
+        }
+        if selectedVM == vm {
+            selectedVM = newVM
         }
     }
     
@@ -330,7 +326,7 @@ class UTMData: ObservableObject {
     
     /// Save an existing VM to disk
     /// - Parameter vm: VM to save
-    func save(vm: UTMVirtualMachine) throws {
+    func save(vm: UTMVirtualMachine) async throws {
         do {
             try vm.saveUTM()
             if let qemuVM = vm as? UTMQemuVirtualMachine {
@@ -350,7 +346,7 @@ class UTMData: ObservableObject {
                     logger.debug("Cannot create new object for \(path.path)")
                     return
                 }
-                listRecreate(vm: vm, with: newVM)
+                await listRecreate(vm: vm, with: newVM)
             }
             throw error
         }
@@ -386,20 +382,17 @@ class UTMData: ObservableObject {
     /// Save a new VM to disk
     /// - Parameters:
     ///   - config: New VM configuration
-    ///   - onCompletion: Completion handler
-    func create(config: UTMConfigurable, onCompletion: @escaping (UTMVirtualMachine) -> Void = { _ in }) throws {
-        guard !virtualMachines.contains(where: { $0.config.name == config.name }) else {
+    func create(config: UTMConfigurable) async throws -> UTMVirtualMachine {
+        guard await !virtualMachines.contains(where: { $0.config.name == config.name }) else {
             throw NSLocalizedString("An existing virtual machine already exists with this name.", comment: "UTMData")
         }
         let vm = UTMVirtualMachine(configuration: config, withDestinationURL: documentsURL)
-        try save(vm: vm)
+        try await save(vm: vm)
         if let qemuVM = vm as? UTMQemuVirtualMachine {
             try commitRemovableDriveImages(for: qemuVM)
         }
-        DispatchQueue.main.async {
-            self.virtualMachines.append(vm)
-            onCompletion(vm)
-        }
+        await listAdd(vm: vm)
+        return vm
     }
     
     /// Delete a VM from disk
@@ -458,18 +451,16 @@ class UTMData: ObservableObject {
     
     /// Open settings modal
     /// - Parameter vm: VM to edit settings
-    func edit(vm: UTMVirtualMachine) {
-        DispatchQueue.main.async {
-            // show orphans for proper removal
-            if let config = vm.config as? UTMQemuConfiguration {
-                config.recoverOrphanedDrives()
-            }
-            self.selectedVM = vm
-            self.showNewVMSheet = false
-            // SwiftUI bug: cannot show modal at the same time as changing selected VM or it breaks
-            DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(1)) {
-                self.showSettingsModal = true
-            }
+    @MainActor func edit(vm: UTMVirtualMachine) {
+        // show orphans for proper removal
+        if let config = vm.config as? UTMQemuConfiguration {
+            config.recoverOrphanedDrives()
+        }
+        selectedVM = vm
+        showNewVMSheet = false
+        // SwiftUI bug: cannot show modal at the same time as changing selected VM or it breaks
+        DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(1)) {
+            self.showSettingsModal = true
         }
     }
     
@@ -513,7 +504,7 @@ class UTMData: ObservableObject {
         let fileBasePath = url.deletingLastPathComponent()
         let fileName = url.lastPathComponent
         let dest = documentsURL.appendingPathComponent(fileName, isDirectory: true)
-        if let vm = virtualMachines.first(where: { vm -> Bool in
+        if let vm = await virtualMachines.first(where: { vm -> Bool in
             guard let vmPath = vm.path else {
                 return false
             }
@@ -568,12 +559,12 @@ class UTMData: ObservableObject {
         Task {
             let task = UTMDownloadIPSWTask(for: config)
             do {
-                guard !virtualMachines.contains(where: { $0.config.name == config.name }) else {
+                guard await !virtualMachines.contains(where: { $0.config.name == config.name }) else {
                     throw NSLocalizedString("An existing virtual machine already exists with this name.", comment: "UTMData")
                 }
                 await listAdd(pendingVM: task.pendingVM)
                 if let vm = try await task.download() {
-                    try save(vm: vm)
+                    try await save(vm: vm)
                     await listAdd(vm: vm)
                 }
             } catch {
