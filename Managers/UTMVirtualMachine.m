@@ -43,9 +43,12 @@ const NSURLBookmarkCreationOptions kUTMBookmarkCreationOptions = NSURLBookmarkCr
 const NSURLBookmarkResolutionOptions kUTMBookmarkResolutionOptions = NSURLBookmarkResolutionWithSecurityScope;
 #endif
 
+const dispatch_time_t kScreenshotPeriodSeconds = 60 * NSEC_PER_SEC;
+
 @interface UTMVirtualMachine ()
 
 @property (nonatomic) NSArray *anyCancellable;
+@property (nonatomic, nullable) void (^screenshotTimerHandler)(void);
 
 @end
 
@@ -203,12 +206,33 @@ const NSURLBookmarkResolutionOptions kUTMBookmarkResolutionOptions = NSURLBookma
     [self.path stopAccessingSecurityScopedResource];
 }
 
+- (void)startScreenshotTimer {
+    if (self.screenshotTimerHandler) {
+        return; // already started
+    }
+    typeof(self) __weak weakSelf = self;
+    self.screenshotTimerHandler = ^{
+        typeof(weakSelf) _self = weakSelf;
+        if (!_self) {
+            return;
+        }
+        if (_self.state == kVMStarted) {
+            [_self updateScreenshot];
+        }
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, kScreenshotPeriodSeconds), dispatch_get_main_queue(), _self.screenshotTimerHandler);
+    };
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, kScreenshotPeriodSeconds), dispatch_get_main_queue(), self.screenshotTimerHandler);
+}
+
 - (void)changeState:(UTMVMState)state {
     @synchronized (self) {
         self.state = state;
         dispatch_async(dispatch_get_main_queue(), ^{
             [self.delegate virtualMachine:self transitionToState:state];
         });
+    }
+    if (state == kVMStarted) {
+        [self startScreenshotTimer];
     }
     self.viewState.active = (state == kVMStarted);
     self.viewState.busy = (state == kVMPausing || state == kVMResuming || state == kVMStarting || state == kVMStopping);
@@ -373,6 +397,10 @@ const NSURLBookmarkResolutionOptions kUTMBookmarkResolutionOptions = NSURLBookma
     NSURL *url = [self.path URLByAppendingPathComponent:kUTMBundleScreenshotFilename];
     [[NSFileManager defaultManager] removeItemAtURL:url error:nil];
     self.screenshot = nil;
+}
+
+- (void)updateScreenshot {
+    return; // handled by subclass
 }
 
 @end

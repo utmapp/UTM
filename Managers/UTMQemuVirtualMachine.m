@@ -438,6 +438,9 @@ extern NSString *const kUTMErrorDomain;
     }
     [self syncViewState];
     [self changeState:kVMPausing];
+    dispatch_sync(dispatch_get_main_queue(), ^{
+        [self updateScreenshot];
+    });
     [self saveScreenshot];
     __block BOOL success = YES;
     dispatch_semaphore_t suspend_sema = dispatch_semaphore_create(0);
@@ -656,9 +659,8 @@ extern NSString *const kUTMErrorDomain;
 
 #pragma mark - Screenshot
 
-- (void)saveScreenshot {
+- (void)updateScreenshot {
     self.screenshot = [self.ioService screenshot];
-    [super saveScreenshot];
 }
 
 @end

@@ -48,6 +48,7 @@ extern NSString *const kUTMBundleConfigFilename;
 - (void)loadScreenshot;
 - (void)saveScreenshot;
 - (void)deleteScreenshot;
+- (void)updateScreenshot;
 
 @end
 

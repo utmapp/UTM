@@ -204,7 +204,7 @@ import Virtualization
         changeState(.vmPausing)
         vmQueue.async {
             DispatchQueue.main.sync {
-                self.screenshot = self.screenshotDelegate?.screenshot
+                self.updateScreenshot()
             }
             self.saveScreenshot()
             self.apple.pause { result in
@@ -244,6 +244,10 @@ import Virtualization
             }
         }
         return true
+    }
+    
+    override func updateScreenshot() {
+        screenshot = screenshotDelegate?.screenshot
     }
     
     private func createAppleVM() -> Bool {
