@@ -90,15 +90,11 @@ const NSURLBookmarkResolutionOptions kUTMBookmarkResolutionOptions = NSURLBookma
 }
 
 - (NSData *)bookmark {
-    if (self.isShortcut) {
-        NSData *bookmark = [self.path bookmarkDataWithOptions:kUTMBookmarkCreationOptions
-                               includingResourceValuesForKeys:nil
-                                                relativeToURL:nil
-                                                        error:nil];
-        return bookmark;
-    } else {
-        return nil;
-    }
+    NSData *bookmark = [self.path bookmarkDataWithOptions:kUTMBookmarkCreationOptions
+                           includingResourceValuesForKeys:nil
+                                            relativeToURL:nil
+                                                    error:nil];
+    return bookmark;
 }
 
 - (void)setPath:(NSURL *)path {

@@ -149,32 +149,25 @@ class UTMData: ObservableObject {
     /// Load VM list (and order) from persistent storage
     private func listLoadFromDefaults() {
         let defaults = UserDefaults.standard
-        var virtualMachines = [UTMVirtualMachine]()
         // legacy path list
         if let files = defaults.array(forKey: "VMList") as? [String] {
-            for file in files.uniqued() {
+            virtualMachines = files.uniqued().compactMap({ file in
                 let url = documentsURL.appendingPathComponent(file, isDirectory: true)
-                if let vm = UTMVirtualMachine(url: url) {
-                    virtualMachines.append(vm)
-                }
-            }
+                return UTMVirtualMachine(url: url)
+            })
         }
         // bookmark list
         if let bookmarks = defaults.array(forKey: "VMList") as? [Data] {
             let documentsURL = self.documentsURL.standardizedFileURL
-            for bookmark in bookmarks {
-                if let vm = UTMVirtualMachine(bookmark: bookmark) {
-                    let parentUrl = vm.path!.deletingLastPathComponent().standardizedFileURL
-                    if parentUrl != documentsURL {
-                        vm.isShortcut = true
-                    }
-                    if !virtualMachines.contains(where: { $0.path!.standardizedFileURL == vm.path!.standardizedFileURL }) {
-                        virtualMachines.append(vm)
-                    }
+            virtualMachines = bookmarks.compactMap { bookmark in
+                let vm = UTMVirtualMachine(bookmark: bookmark)
+                let parentUrl = vm?.path!.deletingLastPathComponent().standardizedFileURL
+                if parentUrl != documentsURL {
+                    vm?.isShortcut = true
                 }
+                return vm
             }
         }
-        self.virtualMachines = virtualMachines
     }
     
     /// Save VM list (and order) to persistent storage
@@ -339,27 +332,9 @@ class UTMData: ObservableObject {
     /// - Parameter vm: VM to save
     func save(vm: UTMVirtualMachine) throws {
         do {
-            let oldPath = vm.path
             try vm.saveUTM()
             if let qemuVM = vm as? UTMQemuVirtualMachine {
                 try commitRemovableDriveImages(for: qemuVM)
-            }
-            let newPath = vm.path
-            // change the saved path
-            if oldPath?.path != newPath?.path {
-                guard let oldName = oldPath?.lastPathComponent else {
-                    return
-                }
-                guard let newName = newPath?.lastPathComponent else {
-                    return
-                }
-                let defaults = UserDefaults.standard
-                if var files = defaults.array(forKey: "VMList") as? [String] {
-                    if let index = files.firstIndex(of: oldName) {
-                        files[index] = newName
-                        defaults.set(files, forKey: "VMList")
-                    }
-                }
             }
         } catch {
             // refresh the VM object as it is now stale
