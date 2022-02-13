@@ -701,7 +701,7 @@ static size_t sysctl_read(const char *name) {
     if (self.configuration.systemArguments.count != 0) {
         NSArray *addArgs = self.configuration.systemArguments;
         // Splits all spaces into their own, except when between quotes.
-        NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"(\"[^\"]+\"|\\+|\\S+)" options:0 error:nil];
+        NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"((?:[^\"\\s]*\"[^\"]*\"[^\"\\s]*)+|[^\"\\s]+)" options:0 error:nil];
         
         for (NSString *arg in addArgs) {
             // No need to operate on empty arguments.
@@ -717,9 +717,7 @@ static size_t sysctl_read(const char *name) {
             for (NSTextCheckingResult *match in splitArgsArray) {
                 NSRange matchRange = [match rangeAtIndex:1];
                 NSString *argFragment = [arg substringWithRange:matchRange];
-                if ([argFragment hasPrefix:@"\""] && [argFragment hasSuffix:@"\""]) {
-                    argFragment = [argFragment substringWithRange:NSMakeRange(1, argFragment.length-2)];
-                }
+                argFragment = [argFragment stringByReplacingOccurrencesOfString:@"\"" withString:@""];
                 [self pushArgv:argFragment];
             }
         }
