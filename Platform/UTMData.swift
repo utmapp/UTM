@@ -795,15 +795,15 @@ class UTMData: ObservableObject {
     /// Execute a task with spinning progress indicator (Swift concurrency version)
     /// - Parameter work: Function to execute
     func busyWorkAsync(_ work: @escaping () async throws -> Void) {
-        Task(priority: .userInitiated) {
-            await setBusyIndicator(true)
+        Task.detached(priority: .userInitiated) {
+            await self.setBusyIndicator(true)
             do {
                 try await work()
             } catch {
                 logger.error("\(error)")
-                await showErrorAlert(message: error.localizedDescription)
+                await self.showErrorAlert(message: error.localizedDescription)
             }
-            await setBusyIndicator(false)
+            await self.setBusyIndicator(false)
         }
     }
     
