@@ -39,11 +39,13 @@ struct VMConfigQEMUView: View {
     var body: some View {
         VStack {
             Form {
+                #if os(macOS)
                 Section(header: Text("Hypervisor")) {
                     Toggle(isOn: $config.useHypervisor, label: {
                         Text("Use Hypervisor")
                     }).disabled(!config.isTargetArchitectureMatchHost)
                 }
+                #endif
                 Section(header: Text("Logging")) {
                     Toggle(isOn: $config.debugLogEnabled, label: {
                         Text("Debug Logging")
