@@ -37,9 +37,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)restoreViewState;
 - (void)loadViewState;
 - (void)saveViewState;
-- (void)loadScreenshot;
-- (void)saveScreenshot;
-- (void)deleteScreenshot;
 
 @end
 

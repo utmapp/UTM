@@ -65,6 +65,7 @@ class VMDisplayAppleWindowController: VMDisplayWindowController {
         mainView!.translatesAutoresizingMaskIntoConstraints = false
         displayView.addSubview(mainView!)
         NSLayoutConstraint.activate(mainView!.constraintsForAnchoringTo(boundsOf: displayView))
+        appleVM.screenshotDelegate = self
         window!.recalculateKeyViewLoop()
         if #available(macOS 12, *) {
             shouldAutoStartVM = appleConfig.macRecoveryIpswURL == nil
@@ -342,6 +343,17 @@ extension VMDisplayAppleWindowController: TerminalViewDelegate, UTMSerialPortDel
     }
 }
 
+@available(macOS 11, *)
+extension VMDisplayAppleWindowController: UTMScreenshotProvider {
+    var screenshot: CSScreenshot? {
+        if let image = mainView?.image() {
+            return CSScreenshot(image: image)
+        } else {
+            return nil
+        }
+    }
+}
+
 // https://www.avanderlee.com/swift/auto-layout-programmatically/
 fileprivate extension NSView {
     /// Returns a collection of constraints to anchor the bounds of the current view to the given view.
@@ -355,5 +367,17 @@ fileprivate extension NSView {
             view.bottomAnchor.constraint(equalTo: bottomAnchor),
             view.trailingAnchor.constraint(equalTo: trailingAnchor)
         ]
+    }
+}
+
+// https://stackoverflow.com/a/41387514/13914748
+fileprivate extension NSView {
+    /// Get `NSImage` representation of the view.
+    ///
+    /// - Returns: `NSImage` of view
+    func image() -> NSImage {
+        let imageRepresentation = bitmapImageRepForCachingDisplay(in: bounds)!
+        cacheDisplay(in: bounds, to: imageRepresentation)
+        return NSImage(cgImage: imageRepresentation.cgImage!, size: bounds.size)
     }
 }

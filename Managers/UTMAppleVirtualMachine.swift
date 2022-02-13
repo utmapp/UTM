@@ -70,6 +70,8 @@ import Virtualization
     
     private var sharedDirectoriesChanged: AnyCancellable?
     
+    weak var screenshotDelegate: UTMScreenshotProvider?
+    
     override static func isAppleVM(forPath path: URL) -> Bool {
         do {
             _ = try UTMAppleConfiguration.load(from: path)
@@ -201,6 +203,10 @@ import Virtualization
         }
         changeState(.vmPausing)
         vmQueue.async {
+            DispatchQueue.main.sync {
+                self.screenshot = self.screenshotDelegate?.screenshot
+            }
+            self.saveScreenshot()
             self.apple.pause { result in
                 switch result {
                 case .failure(let error):
@@ -375,4 +381,8 @@ extension UTMAppleVirtualMachine: VZVirtualMachineDelegate {
     func virtualMachine(_ virtualMachine: VZVirtualMachine, didStopWithError error: Error) {
         errorTriggered(error.localizedDescription)
     }
+}
+
+protocol UTMScreenshotProvider: AnyObject {
+    var screenshot: CSScreenshot? { get }
 }

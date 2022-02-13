@@ -45,6 +45,10 @@ extern NSString *const kUTMBundleConfigFilename;
 
 - (BOOL)loadConfigurationWithReload:(BOOL)reload error:(NSError * _Nullable __autoreleasing *)err;
 
+- (void)loadScreenshot;
+- (void)saveScreenshot;
+- (void)deleteScreenshot;
+
 @end
 
 NS_ASSUME_NONNULL_END
