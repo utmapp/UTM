@@ -211,6 +211,7 @@ const NSURLBookmarkResolutionOptions kUTMBookmarkResolutionOptions = NSURLBookma
         });
     }
     self.viewState.active = (state == kVMStarted);
+    self.viewState.busy = (state == kVMPausing || state == kVMResuming || state == kVMStarting || state == kVMStopping);
 }
 
 - (NSURL *)packageURLForName:(NSString *)name {

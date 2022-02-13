@@ -130,7 +130,7 @@ private struct VMOptionalNavigationTitleModifier: ViewModifier {
 
 @available(iOS 14, macOS 11, *)
 struct Screenshot: View {
-    let vm: UTMVirtualMachine
+    @ObservedObject var vm: UTMVirtualMachine
     let large: Bool
     @EnvironmentObject private var data: UTMData
     
@@ -152,12 +152,16 @@ struct Screenshot: View {
             Rectangle()
                 .fill(Color(red: 230/255, green: 229/255, blue: 235/255))
                 .blendMode(.hardLight)
-            Button(action: { data.run(vm: vm) }, label: {
-                Label("Run", systemImage: "play.circle.fill")
-                    .labelStyle(IconOnlyLabelStyle())
-                    .font(Font.system(size: 96))
-                    .foregroundColor(Color.black)
-            }).buttonStyle(PlainButtonStyle())
+            if vm.viewState.busy {
+                BigWhiteSpinner()
+            } else if !vm.viewState.active {
+                Button(action: { data.run(vm: vm) }, label: {
+                    Label("Run", systemImage: "play.circle.fill")
+                        .labelStyle(IconOnlyLabelStyle())
+                        .font(Font.system(size: 96))
+                        .foregroundColor(Color.black)
+                }).buttonStyle(PlainButtonStyle())
+            }
         }.aspectRatio(CGSize(width: 16, height: 9), contentMode: large ? .fill : .fit)
     }
 }

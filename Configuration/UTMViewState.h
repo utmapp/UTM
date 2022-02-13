@@ -32,6 +32,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) BOOL suspended;
 @property (nonatomic, assign) BOOL deleted;
 @property (nonatomic, assign) BOOL active;
+@property (nonatomic, assign) BOOL busy;
 @property (nonatomic, copy, nullable) NSData *sharedDirectory;
 @property (nonatomic, copy, nullable) NSString *sharedDirectoryPath;
 @property (nonatomic, copy, nullable) NSData *shortcutBookmark;
