@@ -94,15 +94,13 @@ fileprivate struct WizardWrapper: View {
                     Button("Save") {
                         onDismiss()
                         data.busyWorkAsync {
-                            let config = try wizardState.generateConfig()
+                            let config = try await wizardState.generateConfig()
                             let vm = try await data.create(config: config)
-                            if wizardState.isOpenSettingsAfterCreation {
-                                data.showSettingsModal = true
+                            if await wizardState.isOpenSettingsAfterCreation {
+                                await data.showSettingsForCurrentVM()
                             }
                             if let qemuVm = vm as? UTMQemuVirtualMachine {
-                                data.busyWork {
-                                    try wizardState.qemuPostCreate(with: qemuVm)
-                                }
+                                try await wizardState.qemuPostCreate(with: qemuVm)
                             }
                         }
                     }

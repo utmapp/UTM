@@ -48,12 +48,14 @@ struct VMConfigAppleSharingView: View {
             }.fileImporter(isPresented: $isImporterPresented, allowedContentTypes: [.folder]) { result in
                 data.busyWorkAsync {
                     let url = try result.get()
-                    if config.sharedDirectories.contains(where: { existing in
+                    if await config.sharedDirectories.contains(where: { existing in
                         url == existing.directoryURL
                     }) {
                         throw NSLocalizedString("This directory is already being shared.", comment: "VMConfigAppleSharingView")
                     }
-                    config.sharedDirectories.append(SharedDirectory(directoryURL: url, isReadOnly: isAddReadOnly))
+                    await MainActor.run {
+                        config.sharedDirectories.append(SharedDirectory(directoryURL: url, isReadOnly: isAddReadOnly))
+                    }
                 }
             }
             HStack {

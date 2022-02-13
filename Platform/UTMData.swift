@@ -315,11 +315,13 @@ class UTMData: ObservableObject {
         alertMessage = AlertMessage(message)
     }
     
-    func newVM() {
-        DispatchQueue.main.async {
-            self.showSettingsModal = false
-            self.showNewVMSheet = true
-        }
+    @MainActor func newVM() {
+        showSettingsModal = false
+        showNewVMSheet = true
+    }
+    
+    @MainActor func showSettingsForCurrentVM() {
+        showSettingsModal = true
     }
     
     // MARK: - VM operations
@@ -794,7 +796,7 @@ class UTMData: ObservableObject {
     
     /// Execute a task with spinning progress indicator (Swift concurrency version)
     /// - Parameter work: Function to execute
-    func busyWorkAsync(_ work: @escaping () async throws -> Void) {
+    func busyWorkAsync(_ work: @escaping @Sendable () async throws -> Void) {
         Task.detached(priority: .userInitiated) {
             await self.setBusyIndicator(true)
             do {

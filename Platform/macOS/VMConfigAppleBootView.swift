@@ -143,37 +143,39 @@ struct VMConfigAppleBootView: View {
         }
         data.busyWorkAsync {
             let url = try result.get()
-            switch selection {
-            case .ipsw:
-                if #available(macOS 12, *) {
-                    #if arch(arm64)
-                    let image = try await VZMacOSRestoreImage.image(from: url)
-                    guard let model = image.mostFeaturefulSupportedConfiguration?.hardwareModel else {
-                        throw NSLocalizedString("Your machine does not support running this IPSW.", comment: "VMConfigAppleBootView")
+            try await Task { @MainActor in
+                switch selection {
+                case .ipsw:
+                    if #available(macOS 12, *) {
+                        #if arch(arm64)
+                        let image = try await VZMacOSRestoreImage.image(from: url)
+                        guard let model = image.mostFeaturefulSupportedConfiguration?.hardwareModel else {
+                            throw NSLocalizedString("Your machine does not support running this IPSW.", comment: "VMConfigAppleBootView")
+                        }
+                        config.macPlatform = MacPlatform(newHardware: model)
+                        config.macRecoveryIpswURL = url
+                        config.bootLoader = try Bootloader(for: .macOS)
+                        #endif
                     }
-                    config.macPlatform = MacPlatform(newHardware: model)
-                    config.macRecoveryIpswURL = url
-                    config.bootLoader = try Bootloader(for: .macOS)
-                    #endif
+                case .kernel:
+                    config.bootLoader = try Bootloader(for: .Linux, linuxKernelURL: url)
+                case .ramdisk:
+                    config.bootLoader!.linuxInitialRamdiskURL = url
+                case .unsupported:
+                    break
                 }
-            case .kernel:
-                config.bootLoader = try Bootloader(for: .Linux, linuxKernelURL: url)
-            case .ramdisk:
-                config.bootLoader!.linuxInitialRamdiskURL = url
-            case .unsupported:
-                break
-            }
-            operatingSystem = currentOperatingSystem
-            switch operatingSystem {
-            case .macOS:
-                config.isConsoleDisplay = false
-                config.isSerialEnabled = false
-            case .Linux:
-                config.isConsoleDisplay = true
-                config.isSerialEnabled = true
-            default:
-                break
-            }
+                operatingSystem = currentOperatingSystem
+                switch operatingSystem {
+                case .macOS:
+                    config.isConsoleDisplay = false
+                    config.isSerialEnabled = false
+                case .Linux:
+                    config.isConsoleDisplay = true
+                    config.isSerialEnabled = true
+                default:
+                    break
+                }
+            }.value
         }
     }
 }

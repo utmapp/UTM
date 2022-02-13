@@ -86,7 +86,7 @@ struct SavePanel: NSViewRepresentable {
                                 if case .utmMove(_) = shareItem {
                                     try await data.move(vm: vm, to: destUrl)
                                 } else {
-                                    try data.export(vm: vm, to: destUrl)
+                                    try await data.export(vm: vm, to: destUrl)
                                 }
                             }
                         }

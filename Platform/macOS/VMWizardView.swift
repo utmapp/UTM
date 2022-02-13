@@ -82,21 +82,19 @@ struct VMWizardView: View {
                         Button("Save") {
                             presentationMode.wrappedValue.dismiss()
                             data.busyWorkAsync {
-                                let config = try wizardState.generateConfig()
+                                let config = try await wizardState.generateConfig()
                                 #if arch(arm64)
-                                if #available(macOS 12, *), wizardState.isPendingIPSWDownload {
-                                    data.downloadIPSW(using: config as! UTMAppleConfiguration)
+                                if #available(macOS 12, *), await wizardState.isPendingIPSWDownload {
+                                    await data.downloadIPSW(using: config as! UTMAppleConfiguration)
                                     return
                                 }
                                 #endif
                                 let vm = try await data.create(config: config)
-                                if wizardState.isOpenSettingsAfterCreation {
-                                    data.showSettingsModal = true
+                                if await wizardState.isOpenSettingsAfterCreation {
+                                    await data.showSettingsForCurrentVM()
                                 }
                                 if let qemuVm = vm as? UTMQemuVirtualMachine {
-                                    data.busyWork {
-                                        try wizardState.qemuPostCreate(with: qemuVm)
-                                    }
+                                    try await wizardState.qemuPostCreate(with: qemuVm)
                                 }
                             }
                         }

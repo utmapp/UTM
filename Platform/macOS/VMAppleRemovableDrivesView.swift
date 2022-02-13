@@ -180,15 +180,15 @@ struct VMAppleRemovableDrivesView: View {
         data.busyWorkAsync {
             let url = try result.get()
             let sharedDirectory = SharedDirectory(directoryURL: url)
-            config.sharedDirectories.append(sharedDirectory)
+            await MainActor.run {
+                config.sharedDirectories.append(sharedDirectory)
+            }
         }
     }
     
     private func deleteShareDirectory(_ sharedDirectory: SharedDirectory) {
-        data.busyWorkAsync {
-            config.sharedDirectories.removeAll { existing in
-                existing == sharedDirectory
-            }
+        config.sharedDirectories.removeAll { existing in
+            existing == sharedDirectory
         }
     }
     
@@ -203,15 +203,15 @@ struct VMAppleRemovableDrivesView: View {
         data.busyWorkAsync {
             let url = try result.get()
             let diskImage = DiskImage(importImage: url, isReadOnly: false, isExternal: true)
-            config.diskImages.append(diskImage)
+            await MainActor.run {
+                config.diskImages.append(diskImage)
+            }
         }
     }
     
     private func deleteRemovableImage(_ diskImage: DiskImage) {
-        data.busyWorkAsync {
-            config.diskImages.removeAll { existing in
-                existing == diskImage
-            }
+        config.diskImages.removeAll { existing in
+            existing == diskImage
         }
     }
 }
