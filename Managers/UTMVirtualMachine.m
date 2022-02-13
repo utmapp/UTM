@@ -48,6 +48,7 @@ const dispatch_time_t kScreenshotPeriodSeconds = 60 * NSEC_PER_SEC;
 @interface UTMVirtualMachine ()
 
 @property (nonatomic) NSArray *anyCancellable;
+@property (nonatomic, readonly) BOOL isScreenshotSaveEnabled;
 @property (nonatomic, nullable) void (^screenshotTimerHandler)(void);
 
 @end
@@ -379,6 +380,11 @@ const dispatch_time_t kScreenshotPeriodSeconds = 60 * NSEC_PER_SEC;
 
 #pragma mark - Screenshot
 
+- (BOOL)isScreenshotSaveEnabled {
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    return ![defaults boolForKey:@"NoSaveScreenshot"];
+}
+
 - (void)loadScreenshot {
     NSURL *url = [self.path URLByAppendingPathComponent:kUTMBundleScreenshotFilename];
     if ([[NSFileManager defaultManager] fileExistsAtPath:url.path]) {
@@ -388,7 +394,7 @@ const dispatch_time_t kScreenshotPeriodSeconds = 60 * NSEC_PER_SEC;
 
 - (void)saveScreenshot {
     NSURL *url = [self.path URLByAppendingPathComponent:kUTMBundleScreenshotFilename];
-    if (self.screenshot) {
+    if (self.isScreenshotSaveEnabled && self.screenshot) {
         [self.screenshot writeToURL:url atomically:NO];
     }
 }

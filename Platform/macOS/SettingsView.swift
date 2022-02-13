@@ -25,6 +25,7 @@ struct SettingsView: View {
     @AppStorage("NoUsbPrompt") var isNoUsbPrompt = false
     @AppStorage("UseOnlyPcores") var isUseOnlyPcores = true
     @AppStorage("AlternativeCaptureKey") var isAlternativeCaptureKey = false
+    @AppStorage("NoSaveScreenshot") var isNoSaveScreenshot = false
     
     var body: some View {
         Form {
@@ -37,6 +38,9 @@ struct SettingsView: View {
                 Toggle(isOn: $isVMDisplayFixed, label: {
                     Text("VM display size is fixed (no zoom)")
                 })
+                Toggle(isOn: $isNoSaveScreenshot) {
+                    Text("Do not save VM screenshot to disk")
+                }
             }
             Section(header: Text("Default VM Configuration")) {
                 Toggle(isOn: $isNoHypervisor, label: {
@@ -73,6 +77,7 @@ extension UserDefaults {
     @objc dynamic var NoUsbPrompt: Bool { false }
     @objc dynamic var UseOnlyPcores: Bool { false }
     @objc dynamic var AlternativeCaptureKey: Bool { false }
+    @objc dynamic var NoSaveScreenshot: Bool { false }
 }
 
 @available(macOS 11, *)
