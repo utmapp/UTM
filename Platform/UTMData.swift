@@ -557,44 +557,46 @@ class UTMData: ObservableObject {
     /// Create a new VM using configuration and downloaded IPSW
     /// - Parameter config: Apple VM configuration
     @available(macOS 12, *)
-    func downloadIPSW(using config: UTMAppleConfiguration) {
+    @MainActor func downloadIPSW(using config: UTMAppleConfiguration) {
+        let task = UTMDownloadIPSWTask(for: config)
+        guard !virtualMachines.contains(where: { $0.config.name == config.name }) else {
+            showErrorAlert(message: NSLocalizedString("An existing virtual machine already exists with this name.", comment: "UTMData"))
+            return
+        }
+        listAdd(pendingVM: task.pendingVM)
         Task {
-            let task = UTMDownloadIPSWTask(for: config)
             do {
-                guard await !virtualMachines.contains(where: { $0.config.name == config.name }) else {
-                    throw NSLocalizedString("An existing virtual machine already exists with this name.", comment: "UTMData")
-                }
-                await listAdd(pendingVM: task.pendingVM)
                 if let vm = try await task.download() {
-                    try await save(vm: vm)
-                    await listAdd(vm: vm)
+                    try await self.save(vm: vm)
+                    listAdd(vm: vm)
                 }
             } catch {
-                await showErrorAlert(message: error.localizedDescription)
+                showErrorAlert(message: error.localizedDescription)
             }
-            await listRemove(pendingVM: task.pendingVM)
+            listRemove(pendingVM: task.pendingVM)
         }
     }
     #endif
-    
+
     /// Create a new VM by downloading a .zip and extracting it
     /// - Parameter components: Download URL components
-    func downloadUTMZip(from components: URLComponents) {
+    @MainActor func downloadUTMZip(from components: URLComponents) {
         guard let urlParameter = components.queryItems?.first(where: { $0.name == "url" })?.value,
            urlParameter.contains(".zip"), let url = URL(string: urlParameter) else {
+               showErrorAlert(message: NSLocalizedString("Failed to parse download URL.", comment: "UTMData"))
                return
         }
+        let task = UTMDownloadVMTask(for: url)
+        listAdd(pendingVM: task.pendingVM)
         Task {
-            let task = UTMDownloadVMTask(for: url)
             do {
-                await listAdd(pendingVM: task.pendingVM)
                 if let vm = try await task.download() {
-                    await listAdd(vm: vm)
+                    listAdd(vm: vm)
                 }
             } catch {
-                await showErrorAlert(message: error.localizedDescription)
+                showErrorAlert(message: error.localizedDescription)
             }
-            await listRemove(pendingVM: task.pendingVM)
+            listRemove(pendingVM: task.pendingVM)
         }
     }
     

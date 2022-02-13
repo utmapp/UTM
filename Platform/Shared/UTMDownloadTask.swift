@@ -137,7 +137,7 @@ class UTMDownloadTask: NSObject, URLSessionDelegate, URLSessionDownloadDelegate 
     func download() async throws -> UTMVirtualMachine? {
         /// begin the download
         let session = URLSession(configuration: .ephemeral, delegate: self, delegateQueue: nil)
-        downloadTask = Task {
+        downloadTask = Task.detached { [self] in
             let sessionDownload = session.downloadTask(with: url)
             await pendingVM.setDownloadStarting()
             return try await withCheckedThrowingContinuation({ continuation in
