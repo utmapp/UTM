@@ -102,7 +102,7 @@
     return YES;
 }
 
-- (void)startDylibThread:(nonnull NSString *)dylib completion:(void(^)(BOOL,NSString *))completion {
+- (void)startDylibThread:(nonnull NSString *)dylib completion:(void(^)(BOOL,NSString * _Nullable))completion {
     void *dlctx;
     __block pthread_t qemu_thread;
     pthread_attr_t qosAttribute;
@@ -157,7 +157,7 @@
     });
 }
 
-- (void)startQemuRemote:(nonnull NSString *)name completion:(void(^)(BOOL,NSString *))completion {
+- (void)startQemuRemote:(nonnull NSString *)name completion:(void(^)(BOOL,NSString * _Nullable))completion {
     NSError *error;
     NSData *libBookmark = [self.libraryURL bookmarkDataWithOptions:0
                                     includingResourceValuesForKeys:nil
@@ -183,7 +183,7 @@
     }];
 }
 
-- (void)startQemu:(nonnull NSString *)name completion:(void(^)(BOOL,NSString *))completion {
+- (void)startQemu:(nonnull NSString *)name completion:(void(^)(BOOL,NSString * _Nullable))completion {
     [self printArgv];
 #if TARGET_OS_IPHONE
     NSString *base = @"";

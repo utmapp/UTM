@@ -84,10 +84,10 @@ struct VMConfigDrivesView: View {
     }
     
     private func importDrive(result: Result<URL, Error>) {
-        data.busyWork {
+        data.busyWorkAsync {
             switch result {
             case .success(let url):
-                try data.importDrive(url, for: config)
+                try await data.importDrive(url, for: config)
                 break
             case .failure(let err):
                 throw err
@@ -96,15 +96,15 @@ struct VMConfigDrivesView: View {
     }
     
     private func newDrive(driveImage: VMDriveImage) {
-        data.busyWork {
-            try data.createDrive(driveImage, for: config)
+        data.busyWorkAsync {
+            try await data.createDrive(driveImage, for: config)
         }
     }
     
     private func deleteDrives(offsets: IndexSet) {
-        data.busyWork {
+        data.busyWorkAsync {
             for offset in offsets {
-                try data.removeDrive(at: offset, for: config)
+                try await data.removeDrive(at: offset, for: config)
             }
         }
     }

@@ -70,11 +70,13 @@ struct VMWizardOSMacView: View {
             guard let model = image.mostFeaturefulSupportedConfiguration?.hardwareModel else {
                 throw NSLocalizedString("Your machine does not support running this IPSW.", comment: "VMWizardOSMacView")
             }
-            wizardState.macPlatform = MacPlatform(newHardware: model)
-            wizardState.macRecoveryIpswURL = url
-            wizardState.isSkipBootImage = true
-            wizardState.bootImageURL = nil
-            wizardState.next()
+            await MainActor.run {
+                wizardState.macPlatform = MacPlatform(newHardware: model)
+                wizardState.macRecoveryIpswURL = url
+                wizardState.isSkipBootImage = true
+                wizardState.bootImageURL = nil
+                wizardState.next()
+            }
             #else
             throw NSLocalizedString("macOS guests are only supported on ARM64 devices.", comment: "VMWizardOSMacView")
             #endif

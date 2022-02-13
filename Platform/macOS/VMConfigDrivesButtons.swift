@@ -128,8 +128,8 @@ struct VMConfigDrivesButtons<Config: ObservableObject & UTMConfigurable>: View {
     func deleteDrive(atIndex index: Int) {
         withAnimation {
             if let qemuConfig = config as? UTMQemuConfiguration {
-                data.busyWork {
-                    try data.removeDrive(at: index, for: qemuConfig)
+                data.busyWorkAsync {
+                    try await data.removeDrive(at: index, for: qemuConfig)
                 }
             } else if let appleConfig = config as? UTMAppleConfiguration {
                 // FIXME: SwiftUI BUG: if this is the last item it doesn't disappear even though selectedDriveIndex is set to nil
@@ -164,16 +164,16 @@ struct VMConfigDrivesButtons<Config: ObservableObject & UTMConfigurable>: View {
     }
     
     private func importDrive(result: Result<URL, Error>) {
-        data.busyWork {
+        data.busyWorkAsync {
             switch result {
             case .success(let url):
-                if let qemuConfig = config as? UTMQemuConfiguration {
-                    if newQemuDrive.removable {
-                        try data.createDrive(newQemuDrive, for: qemuConfig, with: url)
+                if let qemuConfig = await config as? UTMQemuConfiguration {
+                    if await newQemuDrive.removable {
+                        try await data.createDrive(newQemuDrive, for: qemuConfig, with: url)
                     } else {
-                        try data.importDrive(url, for: qemuConfig, imageType: newQemuDrive.imageType, on: newQemuDrive.interface!, copy: true)
+                        try await data.importDrive(url, for: qemuConfig, imageType: newQemuDrive.imageType, on: newQemuDrive.interface!, copy: true)
                     }
-                } else if let appleConfig = config as? UTMAppleConfiguration {
+                } else if let appleConfig = await config as? UTMAppleConfiguration {
                     let name = url.lastPathComponent
                     if appleConfig.diskImages.contains(where: { image in
                         image.imageURL?.lastPathComponent == name
@@ -194,11 +194,11 @@ struct VMConfigDrivesButtons<Config: ObservableObject & UTMConfigurable>: View {
     
     private func addNewDrive(_ newDrive: VMDriveImage) {
         newDrivePopover = false // hide popover
-        data.busyWork {
-            if let qemuConfig = config as? UTMQemuConfiguration {
-                try data.createDrive(newDrive, for: qemuConfig)
-            } else if let appleConfig = config as? UTMAppleConfiguration {
-                let image = DiskImage(newSize: newAppleDriveSize)
+        data.busyWorkAsync {
+            if let qemuConfig = await config as? UTMQemuConfiguration {
+                try await data.createDrive(newDrive, for: qemuConfig)
+            } else if let appleConfig = await config as? UTMAppleConfiguration {
+                let image = await DiskImage(newSize: newAppleDriveSize)
                 DispatchQueue.main.async {
                     appleConfig.diskImages.append(image)
                 }

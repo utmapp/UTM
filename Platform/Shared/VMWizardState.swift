@@ -49,7 +49,7 @@ enum VMWizardOS: String, Identifiable {
 }
 
 @available(iOS 14, macOS 11, *)
-class VMWizardState: ObservableObject {
+@MainActor class VMWizardState: ObservableObject {
     let bytesInMib = 1048576
     let bytesInGib = 1073741824
     
@@ -459,20 +459,23 @@ class VMWizardState: ObservableObject {
         }
     }
     
-    private func copyItem(from url: URL, to destination: URL) throws {
-        let fileManager = FileManager.default
-        _ = url.startAccessingSecurityScopedResource()
-        defer {
-            url.stopAccessingSecurityScopedResource()
+    private nonisolated func copyItem(from url: URL, to destination: URL) async throws {
+        let task = Task.detached {
+            let fileManager = FileManager.default
+            _ = url.startAccessingSecurityScopedResource()
+            defer {
+                url.stopAccessingSecurityScopedResource()
+            }
+            if !fileManager.fileExists(atPath: destination.path) {
+                try fileManager.createDirectory(at: destination, withIntermediateDirectories: false, attributes: nil)
+            }
+            let dstUrl = destination.appendingPathComponent(url.lastPathComponent)
+            try fileManager.copyItem(at: url, to: dstUrl)
         }
-        if !fileManager.fileExists(atPath: destination.path) {
-            try fileManager.createDirectory(at: destination, withIntermediateDirectories: false, attributes: nil)
-        }
-        let dstUrl = destination.appendingPathComponent(url.lastPathComponent)
-        try fileManager.copyItem(at: url, to: dstUrl)
+        try await task.value
     }
     
-    func qemuPostCreate(with vm: UTMQemuVirtualMachine) throws {
+    func qemuPostCreate(with vm: UTMQemuVirtualMachine) async throws {
         if let sharingDirectoryURL = sharingDirectoryURL {
             try vm.changeSharedDirectory(sharingDirectoryURL)
         }
@@ -485,9 +488,9 @@ class VMWizardState: ObservableObject {
         let dataUrl = vm.qemuConfig.imagesPath
         var existingImage: URL? = nil
         if operatingSystem == .Linux && useLinuxKernel {
-            try copyItem(from: linuxKernelURL!, to: dataUrl)
+            try await copyItem(from: linuxKernelURL!, to: dataUrl)
             if let linuxInitialRamdiskURL = linuxInitialRamdiskURL {
-                try copyItem(from: linuxInitialRamdiskURL, to: dataUrl)
+                try await copyItem(from: linuxInitialRamdiskURL, to: dataUrl)
             }
             existingImage = linuxRootImageURL
         } else if operatingSystem == .Windows {
@@ -496,15 +499,18 @@ class VMWizardState: ObservableObject {
         if let existingImage = existingImage {
             #if os(macOS)
             let destQcow2 = dataUrl.appendingPathComponent(destinationFilename(forExisting: existingImage))
-            try UTMQemuImage.convert(from: existingImage, toQcow2: destQcow2)
+            try await UTMQemuImage.convert(from: existingImage, toQcow2: destQcow2)
             #else
-            try copyItem(from: existingImage, to: dataUrl)
+            try await copyItem(from: existingImage, to: dataUrl)
             #endif
         } else {
             let dstPath = dataUrl.appendingPathComponent("data.qcow2")
-            if !GenerateDefaultQcow2File(dstPath as CFURL, storageSizeGib * bytesInGib / bytesInMib) {
-                throw NSLocalizedString("Disk creation failed.", comment: "VMWizardState")
-            }
+            try await Task.detached { [self] in
+                let size = await storageSizeGib * bytesInGib / bytesInMib
+                if !GenerateDefaultQcow2File(dstPath as CFURL, size) {
+                    throw NSLocalizedString("Disk creation failed.", comment: "VMWizardState")
+                }
+            }.value
         }
     }
     
@@ -519,48 +525,18 @@ class VMWizardState: ObservableObject {
         #endif
     }
     
-    func busyWork(_ work: @escaping () throws -> Void) {
-        DispatchQueue.main.async {
-            self.isBusy = true
-        }
-        DispatchQueue.global(qos: .userInitiated).async {
-            defer {
-                DispatchQueue.main.async {
-                    self.isBusy = false
-                }
-            }
-            do {
-                try work()
-            } catch {
-                logger.error("\(error)")
-                DispatchQueue.main.async {
-                    self.alertMessage = AlertMessage(error.localizedDescription)
-                }
-            }
-        }
-    }
-    
-    #if swift(>=5.5)
-    @available(iOS 15, macOS 12, *)
-    func busyWorkAsync(_ work: @escaping () async throws -> Void) {
-        Task(priority: .userInitiated) {
-            DispatchQueue.main.async {
-                self.isBusy = true
-            }
-            defer {
-                DispatchQueue.main.async {
-                    self.isBusy = false
-                }
-            }
+    /// Execute a task with spinning progress indicator (Swift concurrency version)
+    /// - Parameter work: Function to execute
+    func busyWorkAsync(_ work: @escaping @Sendable () async throws -> Void) {
+        Task.detached(priority: .userInitiated) {
+            await MainActor.run { self.isBusy = true }
             do {
                 try await work()
             } catch {
                 logger.error("\(error)")
-                DispatchQueue.main.async {
-                    self.alertMessage = AlertMessage(error.localizedDescription)
-                }
+                await MainActor.run { self.alertMessage = AlertMessage(error.localizedDescription) }
             }
+            await MainActor.run { self.isBusy = false }
         }
     }
-    #endif
 }

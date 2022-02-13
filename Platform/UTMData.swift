@@ -613,7 +613,7 @@ class UTMData: ObservableObject {
     ///   - imageType: Disk image type
     ///   - interface: Interface to add to
     ///   - copy: Make a copy of the file (if false, file will be moved)
-    func importDrive(_ drive: URL, for config: UTMQemuConfiguration, imageType: UTMDiskImageType, on interface: String, copy: Bool) throws {
+    func importDrive(_ drive: URL, for config: UTMQemuConfiguration, imageType: UTMDiskImageType, on interface: String, copy: Bool) async throws {
         _ = drive.startAccessingSecurityScopedResource()
         defer { drive.stopAccessingSecurityScopedResource() }
         
@@ -638,7 +638,7 @@ class UTMData: ObservableObject {
                 dstPath.deletePathExtension()
                 dstPath.appendPathExtension("qcow2")
                 path = dstPath.lastPathComponent
-                try UTMQemuImage.convert(from: drive, toQcow2: dstPath)
+                try await UTMQemuImage.convert(from: drive, toQcow2: dstPath)
             } else {
                 try fileManager.copyItem(at: drive, to: dstPath)
             }
@@ -648,13 +648,14 @@ class UTMData: ObservableObject {
         } else {
             try fileManager.moveItem(at: drive, to: dstPath)
         }
-        DispatchQueue.main.async {
+        let newPath = path
+        await MainActor.run {
             let name = self.newDefaultDriveName(for: config)
-            config.newDrive(name, path: path, type: imageType, interface: interface)
+            config.newDrive(name, path: newPath, type: imageType, interface: interface)
         }
     }
     
-    func importDrive(_ drive: URL, for config: UTMQemuConfiguration, copy: Bool = true) throws {
+    func importDrive(_ drive: URL, for config: UTMQemuConfiguration, copy: Bool = true) async throws {
         let imageType: UTMDiskImageType = drive.pathExtension.lowercased() == "iso" ? .CD : .disk
         let interface: String
         if let target = config.systemTarget, let arch = config.systemArchitecture {
@@ -662,7 +663,7 @@ class UTMData: ObservableObject {
         } else {
             interface = "none"
         }
-        try importDrive(drive, for: config, imageType: imageType, on: interface, copy: copy)
+        try await importDrive(drive, for: config, imageType: imageType, on: interface, copy: copy)
     }
     
     /// Create a new QCOW2 disk image
@@ -670,7 +671,7 @@ class UTMData: ObservableObject {
     ///   - drive: Create parameters
     ///   - config: QEMU configuration to add to
     ///   - driveImage: Disk image type
-    func createDrive(_ drive: VMDriveImage, for config: UTMQemuConfiguration, with driveImage: URL? = nil) throws {
+    func createDrive(_ drive: VMDriveImage, for config: UTMQemuConfiguration, with driveImage: URL? = nil) async throws {
         var path: String = ""
         if !drive.removable {
             assert(driveImage == nil, "Cannot call createDrive with a driveImage!")
@@ -685,21 +686,24 @@ class UTMData: ObservableObject {
             }
             
             // create drive
-            if !GenerateDefaultQcow2File(dstPath as CFURL, drive.size) {
-                throw NSLocalizedString("Disk creation failed.", comment: "UTMData")
-            }
+            try await Task.detached {
+                if !GenerateDefaultQcow2File(dstPath as CFURL, drive.size) {
+                    throw NSLocalizedString("Disk creation failed.", comment: "UTMData")
+                }
+            }.value
         }
         
         let name = self.newDefaultDriveName(for: config)
         if let url = driveImage {
             qemuRemovableDrivesCache[name] = url
         }
-        DispatchQueue.main.async {
+        let newPath = path
+        await MainActor.run {
             let interface = drive.interface ?? "none"
             if drive.removable {
                 config.newRemovableDrive(name, type: drive.imageType, interface: interface)
             } else {
-                config.newDrive(name, path: path, type: drive.imageType, interface: interface)
+                config.newDrive(name, path: newPath, type: drive.imageType, interface: interface)
             }
         }
     }
@@ -708,7 +712,7 @@ class UTMData: ObservableObject {
     /// - Parameters:
     ///   - index: Index of drive in configuration
     ///   - config: QEMU configuration
-    func removeDrive(at index: Int, for config: UTMQemuConfiguration) throws {
+    func removeDrive(at index: Int, for config: UTMQemuConfiguration) async throws {
         if let path = config.driveImagePath(for: index) {
             let fullPath = config.imagesPath.appendingPathComponent(path);
             if fileManager.fileExists(atPath: fullPath.path) {
@@ -718,7 +722,7 @@ class UTMData: ObservableObject {
         if let name = config.driveName(for: index) {
             qemuRemovableDrivesCache.removeValue(forKey: name)
         }
-        DispatchQueue.main.async {
+        await MainActor.run {
             config.removeDrive(at: index)
         }
     }

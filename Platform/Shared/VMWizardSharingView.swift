@@ -84,9 +84,9 @@ struct VMWizardSharingView: View {
     }
     
     private func processDirectory(_ result: Result<URL, Error>) {
-        wizardState.busyWork {
+        wizardState.busyWorkAsync {
             let url = try result.get()
-            DispatchQueue.main.async {
+            await MainActor.run {
                 wizardState.sharingDirectoryURL = url
             }
         }

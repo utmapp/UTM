@@ -16,12 +16,13 @@
 
 import Foundation
 
+@available(iOS 13, macOS 11, *)
 @objc class UTMQemuImage: UTMQemu {
     private init() {
         super.init(argv: [])
     }
     
-    static func convert(from url: URL, toQcow2 dest: URL, withCompression compressed: Bool = false) throws {
+    static func convert(from url: URL, toQcow2 dest: URL, withCompression compressed: Bool = false) async throws {
         let qemuImg = UTMQemuImage()
         let srcBookmark = try url.bookmarkData()
         let dstBookmark = try dest.deletingLastPathComponent().bookmarkData()
@@ -37,17 +38,11 @@ import Foundation
         qemuImg.pushArgv(dest.path)
         let logging = UTMLogging()
         qemuImg.logging = logging
-        let completed = DispatchSemaphore(value: 0)
-        var errorMessage: String? = nil
-        qemuImg.start("qemu-img") { success, message in
-            if !success {
-                errorMessage = message
+        try await Task.detached {
+            let (success, message) = await qemuImg.start("qemu-img")
+            if !success, let message = message {
+                throw message
             }
-            completed.signal()
-        }
-        completed.wait()
-        if let errorMessage = errorMessage {
-            throw errorMessage
-        }
+        }.value
     }
 }

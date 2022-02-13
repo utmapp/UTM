@@ -57,9 +57,9 @@ struct VMWizardOSOtherView: View {
     }
     
     private func processImage(_ result: Result<URL, Error>) {
-        wizardState.busyWork {
+        wizardState.busyWorkAsync {
             let url = try result.get()
-            DispatchQueue.main.async {
+            await MainActor.run {
                 wizardState.bootImageURL = url
             }
         }
