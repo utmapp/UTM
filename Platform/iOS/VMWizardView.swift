@@ -75,6 +75,7 @@ fileprivate struct WizardWrapper: View {
             NavigationLink(destination: WizardWrapper(page: .sharing, wizardState: wizardState, onDismiss: onDismiss), tag: .sharing, selection: $nextPage) {}
             NavigationLink(destination: WizardWrapper(page: .summary, wizardState: wizardState, onDismiss: onDismiss), tag: .summary, selection: $nextPage) {}
         }
+        .listStyle(.insetGrouped) // needed for iOS 14
         .textFieldStyle(RoundedBorderTextFieldStyle())
         .pickerStyle(MenuPickerStyle())
         .toolbar {

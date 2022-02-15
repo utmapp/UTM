@@ -28,7 +28,7 @@ struct InListButtonStyle: ButtonStyle {
         let foregroundDisabledColor = Color(NSColor.disabledControlTextColor)
         let foregroundPressedColor = Color(NSColor.selectedControlColor)
         #else
-        let defaultColor = Color(UIColor.secondarySystemBackground)
+        let defaultColor = Color(UIColor.systemBackground)
         let pressedColor = Color(UIColor.systemFill)
         let foregroundColor = Color(UIColor.label)
         let foregroundDisabledColor = Color(UIColor.systemGray)

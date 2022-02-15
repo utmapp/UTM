@@ -30,22 +30,32 @@ struct VMConfigStringPicker<Label> : View where Label : View {
         self.displayValues = displayValues ?? []
     }
     
+    private var picker: some View {
+        Picker(selection: $selection, label: label) {
+            ForEach(displayValues) { displayValue in
+                Text(displayValue).tag(rawValue(for: displayValue))
+            }
+        }
+    }
+    
     var body: some View {
-        let binding = Binding<Int>(
-            get: {
-                guard let selection = self.selection else {
-                    return 0
-                }
-                return self.rawValues.firstIndex(where: { $0.caseInsensitiveCompare(selection) == .orderedSame }) ?? 0
-            },
-            set: {
-                self.selection = self.rawValues[$0]
-            }
-        )
-        return Picker(selection: binding, label: self.label) {
-            ForEach(self.displayValues.indices, id: \.self) { index in
-                Text(self.displayValues[index]).tag(index)
-            }
+        #if os(macOS)
+        picker
+        #else
+        if #available(iOS 15, *) {
+            picker.pickerStyle(.menu)
+        } else {
+            // iOS 14 doesn't support .menu with many options
+            picker.pickerStyle(.wheel)
+        }
+        #endif
+    }
+    
+    private func rawValue(for displayValue: String) -> String? {
+        if let index = displayValues.firstIndex(of: displayValue) {
+            return rawValues[index]
+        } else {
+            return nil
         }
     }
 }
