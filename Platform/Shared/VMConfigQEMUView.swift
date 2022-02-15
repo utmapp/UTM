@@ -172,7 +172,7 @@ struct CustomArguments: View {
                 Spacer()
                 if i != 0 {
                     Button(action: { config.moveArgumentIndex(i, to: i-1) }, label: {
-                        Label("Move Up", systemImage: "arrow.up").labelStyle(IconOnlyLabelStyle())
+                        Label("Move Up", systemImage: "arrow.up").labelStyle(.iconOnly)
                     })
                 }
                 #endif

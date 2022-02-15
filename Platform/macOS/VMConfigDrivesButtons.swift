@@ -122,7 +122,7 @@ struct VMConfigDrivesButtons<Config: ObservableObject & UTMConfigurable>: View {
                 }.help("Make boot order priority lower.")
                 .disabled(selectedDriveIndex == nil || selectedDriveIndex == countDrives - 1)
             }
-        }.labelStyle(TitleOnlyLabelStyle())
+        }.labelStyle(.titleOnly)
     }
     
     func deleteDrive(atIndex index: Int) {

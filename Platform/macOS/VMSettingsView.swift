@@ -34,7 +34,7 @@ struct VMSettingsView<Config: ObservableObject & UTMConfigurable>: View {
                 } else if let appleConfig = config as? UTMAppleConfiguration {
                     VMAppleSettingsView(vm: vm, config: appleConfig, selectedDriveIndex: $selectedDriveIndex)
                 }
-            }.listStyle(SidebarListStyle())
+            }.listStyle(.sidebar)
         }.frame(minWidth: 800, minHeight: 400)
         .toolbar {
             ToolbarItemGroup(placement: .automatic) {

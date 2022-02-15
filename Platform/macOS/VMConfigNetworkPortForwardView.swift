@@ -49,7 +49,7 @@ struct VMConfigNetworkPortForwardView: View {
 
                     Button(action: { editingNewPortBinding.wrappedValue = true }, label: {
                         Text(verbatim: "\(configPort.guestAddress):\(configPort.guestPort!) ➡️ \(configPort.hostAddress):\(configPort.hostPort!)")
-                    }).buttonStyle(BorderedButtonStyle())
+                    }).buttonStyle(.bordered)
                     .popover(isPresented: editingNewPortBinding, arrowEdge: .bottom) {
                         PortForwardEdit(config: config, index: index).padding()
                             .frame(width: 250)

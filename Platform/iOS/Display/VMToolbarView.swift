@@ -117,7 +117,7 @@ struct VMToolbarView: View {
                 } label: {
                     Label("Keyboard", systemImage: "keyboard")
                 }.offset(offset(for: 1))
-            }.buttonStyle(ToolbarButtonStyle())
+            }.buttonStyle(.toolbar)
             .disabled(state.isBusy)
             .opacity(isCollapsed ? 0 : 1)
             .position(position(for: geometry))
@@ -131,7 +131,7 @@ struct VMToolbarView: View {
                 }
             } label: {
                 Label("Hide", systemImage: isCollapsed ? nameOfHideIcon : nameOfShowIcon)
-            }.buttonStyle(ToolbarButtonStyle())
+            }.buttonStyle(.toolbar)
             .opacity(toolbarToggleOpacity)
             .modifier(Shake(shake: shake))
             .position(position(for: geometry))
@@ -249,7 +249,7 @@ struct ToolbarButtonStyle: ButtonStyle {
                 .opacity(configuration.isPressed ? 0.8 : 0.7)
                 .blur(radius: 0.1)
             configuration.label
-                .labelStyle(IconOnlyLabelStyle())
+                .labelStyle(.iconOnly)
                 .foregroundColor(configuration.isPressed ? .secondary : .white)
                 .opacity(0.75)
         }.frame(width: size, height: size)
@@ -274,6 +274,13 @@ struct Shake: GeometryEffect {
         ProjectionTransform(CGAffineTransform(translationX:
             amount * sin(animatableData * .pi * CGFloat(shakesPerUnit)),
             y: 0))
+    }
+}
+
+@available(iOS 14, *)
+extension ButtonStyle where Self == ToolbarButtonStyle {
+    static var toolbar: ToolbarButtonStyle {
+        ToolbarButtonStyle()
     }
 }
 

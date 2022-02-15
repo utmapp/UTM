@@ -32,25 +32,25 @@ struct VMSettingsView: View {
                         destination: VMConfigInfoView(config: config).navigationTitle("Information"),
                         label: {
                             Label("Information", systemImage: "info.circle")
-                                .labelStyle(RoundRectIconLabelStyle())
+                                .labelStyle(.roundRectIcon)
                         })
                     NavigationLink(
                         destination: VMConfigSystemView(config: config).navigationTitle("System"),
                         label: {
                             Label("System", systemImage: "cpu")
-                                .labelStyle(RoundRectIconLabelStyle())
+                                .labelStyle(.roundRectIcon)
                         })
                     NavigationLink(
                         destination: VMConfigQEMUView(config: config).navigationTitle("QEMU"),
                         label: {
                             Label("QEMU", systemImage: "shippingbox")
-                                .labelStyle(RoundRectIconLabelStyle())
+                                .labelStyle(.roundRectIcon)
                         })
                     NavigationLink(
                         destination: VMConfigDrivesView(config: config).navigationTitle("Drives"),
                         label: {
                             Label("Drives", systemImage: "internaldrive")
-                                .labelStyle(RoundRectIconLabelStyle())
+                                .labelStyle(.roundRectIcon)
                         })
                     NavigationLink(
                         destination: VMConfigDisplayView(config: config).navigationTitle("Display"),
@@ -85,7 +85,7 @@ struct VMSettingsView: View {
                 }
             }
             .navigationTitle("Settings")
-            .navigationViewStyle(StackNavigationViewStyle())
+            .navigationViewStyle(.stack)
             .navigationBarItems(leading: Button(action: cancel, label: {
                 Text("Cancel")
             }), trailing: HStack {
@@ -131,6 +131,13 @@ struct RoundRectIconLabelStyle: LabelStyle {
                     configuration.icon.foregroundColor(.white)
                 }
             })
+    }
+}
+
+@available(iOS 14, *)
+extension LabelStyle where Self == RoundRectIconLabelStyle {
+    static var roundRectIcon: RoundRectIconLabelStyle {
+        RoundRectIconLabelStyle()
     }
 }
 

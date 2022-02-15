@@ -54,10 +54,10 @@ struct VMWizardOSLinuxView: View {
                 if !wizardState.useLinuxKernel {
 #if arch(arm64)
                 Link("Download Ubuntu Server for ARM", destination: URL(string: "https://ubuntu.com/download/server/arm")!)
-                    .buttonStyle(BorderlessButtonStyle())
+                    .buttonStyle(.borderless)
 #else
                 Link("Download Ubuntu Desktop", destination: URL(string: "https://ubuntu.com/download/desktop")!)
-                    .buttonStyle(BorderlessButtonStyle())
+                    .buttonStyle(.borderless)
 #endif
                 }
             } header: {

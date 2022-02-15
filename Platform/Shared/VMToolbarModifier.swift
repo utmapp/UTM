@@ -54,7 +54,7 @@ struct VMToolbarModifier: ViewModifier {
                         confirmAction = .confirmDeleteShortcut
                     } label: {
                         Label("Remove", systemImage: "trash")
-                            .labelStyle(IconOnlyLabelStyle())
+                            .labelStyle(.iconOnly)
                     }.help("Remove selected shortcut")
                     .disabled(vm.viewState.suspended || vm.viewState.active)
                     .padding(.leading, padding)
@@ -63,7 +63,7 @@ struct VMToolbarModifier: ViewModifier {
                         confirmAction = .confirmDeleteVM
                     } label: {
                         Label("Delete", systemImage: "trash")
-                            .labelStyle(IconOnlyLabelStyle())
+                            .labelStyle(.iconOnly)
                     }.help("Delete selected VM")
                     .disabled(vm.viewState.suspended || vm.viewState.active)
                     .padding(.leading, padding)
@@ -77,7 +77,7 @@ struct VMToolbarModifier: ViewModifier {
                     confirmAction = .confirmCloneVM
                 } label: {
                     Label("Clone", systemImage: "doc.on.doc")
-                        .labelStyle(IconOnlyLabelStyle())
+                        .labelStyle(.iconOnly)
                 }.help("Clone selected VM")
                 .padding(.leading, padding)
                 #if !os(macOS)
@@ -91,7 +91,7 @@ struct VMToolbarModifier: ViewModifier {
                         confirmAction = .confirmMoveVM
                     } label: {
                         Label("Move", systemImage: "arrow.down.doc")
-                            .labelStyle(IconOnlyLabelStyle())
+                            .labelStyle(.iconOnly)
                     }.help("Move selected VM")
                     .disabled(vm.viewState.suspended || vm.viewState.active)
                     .padding(.leading, padding)
@@ -102,7 +102,7 @@ struct VMToolbarModifier: ViewModifier {
                     showSharePopup.toggle()
                 } label: {
                     Label("Share", systemImage: "square.and.arrow.up")
-                        .labelStyle(IconOnlyLabelStyle())
+                        .labelStyle(.iconOnly)
                 }.help("Share selected VM")
                 .padding(.leading, padding)
                 #if !os(macOS)
@@ -115,7 +115,7 @@ struct VMToolbarModifier: ViewModifier {
                         confirmAction = .confirmStopVM
                     } label: {
                         Label("Stop", systemImage: "stop.fill")
-                            .labelStyle(IconOnlyLabelStyle())
+                            .labelStyle(.iconOnly)
                     }.help("Stop selected VM")
                     .padding(.leading, padding)
                 } else {
@@ -123,7 +123,7 @@ struct VMToolbarModifier: ViewModifier {
                         data.run(vm: data.selectedVM!)
                     } label: {
                         Label("Run", systemImage: "play.fill")
-                            .labelStyle(IconOnlyLabelStyle())
+                            .labelStyle(.iconOnly)
                     }.help("Run selected VM")
                     .padding(.leading, padding)
                 }
@@ -136,7 +136,7 @@ struct VMToolbarModifier: ViewModifier {
                     data.edit(vm: vm)
                 } label: {
                     Label("Edit", systemImage: "slider.horizontal.3")
-                        .labelStyle(IconOnlyLabelStyle())
+                        .labelStyle(.iconOnly)
                 }.help("Edit selected VM")
                 .disabled(vm.viewState.suspended || vm.viewState.active)
                 .padding(.leading, padding)

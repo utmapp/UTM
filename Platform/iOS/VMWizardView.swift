@@ -26,7 +26,7 @@ struct VMWizardView: View {
             WizardWrapper(page: .start, wizardState: wizardState) {
                 presentationMode.wrappedValue.dismiss()
             }
-        }.navigationViewStyle(StackNavigationViewStyle())
+        }.navigationViewStyle(.stack)
         .alert(item: $wizardState.alertMessage) { msg in
             Alert(title: Text(msg.message))
         }
@@ -76,8 +76,7 @@ fileprivate struct WizardWrapper: View {
             NavigationLink(destination: WizardWrapper(page: .summary, wizardState: wizardState, onDismiss: onDismiss), tag: .summary, selection: $nextPage) {}
         }
         .listStyle(.insetGrouped) // needed for iOS 14
-        .textFieldStyle(RoundedBorderTextFieldStyle())
-        .pickerStyle(MenuPickerStyle())
+        .textFieldStyle(.roundedBorder)
         .toolbar {
             ToolbarItem(placement: .navigationBarLeading) {
                 if wizardState.currentPage == .start {

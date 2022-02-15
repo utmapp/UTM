@@ -65,10 +65,10 @@ struct VMConfigDrivesView: View {
             HStack {
                 EditButton().padding(.trailing, 10)
                 Button(action: { importDrivePresented.toggle() }, label: {
-                    Label("Import Drive", systemImage: "square.and.arrow.down").labelStyle(IconOnlyLabelStyle())
+                    Label("Import Drive", systemImage: "square.and.arrow.down").labelStyle(.iconOnly)
                 }).padding(.trailing, 10)
                 Button(action: { createDriveVisible.toggle() }, label: {
-                    Label("New Drive", systemImage: "plus").labelStyle(IconOnlyLabelStyle())
+                    Label("New Drive", systemImage: "plus").labelStyle(.iconOnly)
                 })
             }
         )
@@ -146,7 +146,7 @@ private struct CreateDrive: View {
                 }), trailing: Button(action: done, label: {
                     Text("Done")
                 }))
-        }.navigationViewStyle(StackNavigationViewStyle())
+        }.navigationViewStyle(.stack)
         .onAppear {
             driveImage.reset(forSystemTarget: target, architecture: architecture, removable: false)
         }

@@ -64,3 +64,10 @@ struct InListButtonStyle: ButtonStyle {
         InListButtonView(configuration: configuration)
     }
 }
+
+@available(iOS 14, macOS 11, *)
+extension ButtonStyle where Self == InListButtonStyle {
+    static var inList: InListButtonStyle {
+        InListButtonStyle()
+    }
+}

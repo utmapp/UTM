@@ -76,7 +76,7 @@ struct VMWizardSummaryView: View {
                     sharing
                         .disabled(true)
                 }
-            }.textFieldStyle(DefaultTextFieldStyle())
+            }.textFieldStyle(.automatic)
             #endif
         }
         .navigationTitle(Text("Summary"))

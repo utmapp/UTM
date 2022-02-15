@@ -75,7 +75,7 @@ struct VMWizardOSView: View {
 
         }
         .navigationTitle(Text("Operating System"))
-        .buttonStyle(InListButtonStyle())
+        .buttonStyle(.inList)
     }
 }
 

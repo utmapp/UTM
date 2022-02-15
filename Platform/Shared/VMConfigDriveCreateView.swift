@@ -47,7 +47,7 @@ struct VMConfigDriveCreateView: View {
                     Button(action: { isGiB.toggle() }, label: {
                         Text(isGiB ? "GB" : "MB")
                             .foregroundColor(.blue)
-                    }).buttonStyle(PlainButtonStyle())
+                    }).buttonStyle(.plain)
                 }
             }
         }

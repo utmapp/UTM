@@ -54,7 +54,7 @@ struct ContentView: View {
                     }.transition(.opacity)
                 }
             }.optionalSidebarFrame()
-            .listStyle(SidebarListStyle())
+            .listStyle(.sidebar)
             .navigationTitle(productName)
             .navigationOptionalSubtitle(data.selectedVM?.title ?? "")
             .toolbar {
@@ -111,7 +111,7 @@ struct ContentView: View {
     
     private var newButton: some View {
         Button(action: { data.newVM() }, label: {
-            Label("New VM", systemImage: "plus").labelStyle(IconOnlyLabelStyle())
+            Label("New VM", systemImage: "plus").labelStyle(.iconOnly)
         })
     }
     

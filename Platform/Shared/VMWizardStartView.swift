@@ -56,7 +56,7 @@ struct VMWizardStartView: View {
                     .padding()
                 }
                 .disabled(!isVirtualizationSupported)
-                .buttonStyle(InListButtonStyle())
+                .buttonStyle(.inList)
                 
                 Button {
                     wizardState.useVirtualization = false
@@ -75,7 +75,7 @@ struct VMWizardStartView: View {
                     }
                     .padding()
                 }
-                .buttonStyle(InListButtonStyle())
+                .buttonStyle(.inList)
                 
             } header: {
                 Text("Custom")

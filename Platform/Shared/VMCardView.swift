@@ -54,10 +54,10 @@ struct VMCardView: View {
                 Label("Run", systemImage: "play.circle")
                     .font(.largeTitle)
                     .foregroundColor(buttonColor)
-                    .labelStyle(IconOnlyLabelStyle())
+                    .labelStyle(.iconOnly)
             }
         }.padding([.top, .bottom], 10)
-        .buttonStyle(PlainButtonStyle())
+        .buttonStyle(.plain)
     }
 }
 

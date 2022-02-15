@@ -84,20 +84,20 @@ struct VMConfigInfoView<Config: ObservableObject & UTMConfigurable>: View {
                             case .failure:
                                 break
                             }
-                        }.buttonStyle(PlainButtonStyle())
+                        }.buttonStyle(.plain)
                         #else
                         Button(action: { imageSelectVisible.toggle() }, label: {
                             IconPreview(url: config.iconUrl)
                         }).popover(isPresented: $imageSelectVisible, arrowEdge: .bottom) {
                             ImagePicker(onImageSelected: imageCustomSelected)
-                        }.buttonStyle(PlainButtonStyle())
+                        }.buttonStyle(.plain)
                         #endif
                     case .operatingSystem:
                         Button(action: { imageSelectVisible.toggle() }, label: {
                             IconPreview(url: config.iconUrl)
                         }).popover(isPresented: $imageSelectVisible, arrowEdge: .bottom) {
                             IconSelect(onIconSelected: imageSelected)
-                        }.buttonStyle(PlainButtonStyle())
+                        }.buttonStyle(.plain)
                     default:
                         EmptyView()
                     }
@@ -227,7 +227,7 @@ private struct IconSelect: View {
             ForEach(icons, id: \.self) { icon in
                 Button(action: { onIconSelected(icon) }, label: {
                     Logo(logo: PlatformImage(contentsOfURL: icon))
-                }).buttonStyle(PlainButtonStyle())
+                }).buttonStyle(.plain)
             }
         }.modifier(IconSelectModifier())
     }

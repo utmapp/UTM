@@ -157,10 +157,10 @@ struct Screenshot: View {
             } else if !vm.viewState.active {
                 Button(action: { data.run(vm: vm) }, label: {
                     Label("Run", systemImage: "play.circle.fill")
-                        .labelStyle(IconOnlyLabelStyle())
+                        .labelStyle(.iconOnly)
                         .font(Font.system(size: 96))
                         .foregroundColor(Color.black)
-                }).buttonStyle(PlainButtonStyle())
+                }).buttonStyle(.plain)
             }
         }.aspectRatio(CGSize(width: 16, height: 9), contentMode: large ? .fill : .fit)
     }
