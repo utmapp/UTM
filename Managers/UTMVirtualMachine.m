@@ -222,37 +222,111 @@ const dispatch_time_t kScreenshotPeriodSeconds = 60 * NSEC_PER_SEC;
 }
 
 - (void)changeState:(UTMVMState)state {
-    @synchronized (self) {
+    dispatch_sync(dispatch_get_main_queue(), ^{
         self.state = state;
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self.delegate virtualMachine:self transitionToState:state];
-        });
-    }
+        self.viewState.active = (state == kVMStarted);
+        self.viewState.busy = (state == kVMPausing || state == kVMResuming || state == kVMStarting || state == kVMStopping);
+        [self.delegate virtualMachine:self transitionToState:state];
+    });
     if (state == kVMStarted) {
         [self startScreenshotTimer];
     }
-    self.viewState.active = (state == kVMStarted);
-    self.viewState.busy = (state == kVMPausing || state == kVMResuming || state == kVMStarting || state == kVMStopping);
 }
 
 - (NSURL *)packageURLForName:(NSString *)name {
     return [[self.parentPath URLByAppendingPathComponent:name] URLByAppendingPathExtension:kUTMBundleExtension];
 }
 
-- (void)errorTriggered:(nullable NSString *)msg {
-    if (self.state != kVMStopped && self.state != kVMError) {
-        self.viewState.suspended = NO;
-        [self saveViewState];
-        [self quitVMForce:true];
-    }
-    if (self.state != kVMError) { // don't stack errors
-        self.delegate.vmMessage = msg;
-        [self changeState:kVMError];
-    }
+- (NSError *)errorGeneric {
+    return [self errorWithMessage:NSLocalizedString(@"An internal error has occurred.", "UTMVirtualMachine")];
+}
+
+- (NSError *)errorWithMessage:(nullable NSString *)message {
+    return [NSError errorWithDomain:kUTMErrorDomain code:-1 userInfo:@{NSLocalizedDescriptionKey: message}];
 }
 
 - (BOOL)reloadConfigurationWithError:(NSError * _Nullable *)err {
     return [self loadConfigurationWithReload:YES error:err];
+}
+
+- (void)startVM {
+    [self startVMWithCompletion:^(NSError *error) {
+        if (error) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self.delegate virtualMachine:self didErrorWithMessage:error.localizedDescription];
+            });
+        }
+    }];
+}
+
+- (void)quitVM {
+    [self quitVMWithCompletion:^(NSError *error) {
+        if (error) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self.delegate virtualMachine:self didErrorWithMessage:error.localizedDescription];
+            });
+        }
+    }];
+}
+
+- (void)requestVmStopForce:(BOOL)force {
+    [self quitVMForce:force completion:^(NSError *error) {
+        if (error) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self.delegate virtualMachine:self didErrorWithMessage:error.localizedDescription];
+            });
+        }
+    }];
+}
+
+- (void)resetVM {
+    [self resetVMWithCompletion:^(NSError *error) {
+        if (error) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self.delegate virtualMachine:self didErrorWithMessage:error.localizedDescription];
+            });
+        }
+    }];
+}
+
+- (void)pauseVM {
+    [self pauseVMWithCompletion:^(NSError *error) {
+        if (error) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self.delegate virtualMachine:self didErrorWithMessage:error.localizedDescription];
+            });
+        }
+    }];
+}
+
+- (void)saveVM {
+    [self saveVMWithCompletion:^(NSError *error) {
+        if (error) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self.delegate virtualMachine:self didErrorWithMessage:error.localizedDescription];
+            });
+        }
+    }];
+}
+
+- (void)deleteSaveVM {
+    [self deleteSaveVMWithCompletion:^(NSError *error) {
+        if (error) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self.delegate virtualMachine:self didErrorWithMessage:error.localizedDescription];
+            });
+        }
+    }];
+}
+
+- (void)resumeVM {
+    [self resumeVMWithCompletion:^(NSError *error) {
+        if (error) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self.delegate virtualMachine:self didErrorWithMessage:error.localizedDescription];
+            });
+        }
+    }];
 }
 
 #define notImplemented @throw [NSException exceptionWithName:NSInvalidArgumentException reason:[NSString stringWithFormat:@"%s must be overridden in a subclass.", __PRETTY_FUNCTION__] userInfo:nil]
@@ -265,39 +339,39 @@ const dispatch_time_t kScreenshotPeriodSeconds = 60 * NSEC_PER_SEC;
     notImplemented;
 }
 
-- (void)accessShortcutWithCompletion:(void (^)(BOOL, NSError * _Nullable))completion {
+- (void)accessShortcutWithCompletion:(void (^)(NSError * _Nullable))completion {
     notImplemented;
 }
 
-- (BOOL)startVM {
+- (void)startVMWithCompletion:(void (^)(NSError * _Nullable))completion {
     notImplemented;
 }
 
-- (BOOL)quitVM {
-    return [self quitVMForce:NO];
+- (void)quitVMWithCompletion:(void (^)(NSError * _Nullable))completion {
+    return [self quitVMForce:NO completion:completion];
 }
 
-- (BOOL)quitVMForce:(BOOL)force {
+- (void)quitVMForce:(BOOL)force completion:(nonnull void (^)(NSError * _Nullable))completion {
     notImplemented;
 }
 
-- (BOOL)resetVM {
+- (void)resetVMWithCompletion:(void (^)(NSError * _Nullable))completion {
     notImplemented;
 }
 
-- (BOOL)pauseVM {
+- (void)pauseVMWithCompletion:(void (^)(NSError * _Nullable))completion {
     notImplemented;
 }
 
-- (BOOL)saveVM {
+- (void)saveVMWithCompletion:(void (^)(NSError * _Nullable))completion {
     notImplemented;
 }
 
-- (BOOL)deleteSaveVM {
+- (void)deleteSaveVMWithCompletion:(void (^)(NSError * _Nullable))completion {
     notImplemented;
 }
 
-- (BOOL)resumeVM {
+- (void)resumeVMWithCompletion:(void (^)(NSError * _Nullable))completion {
     notImplemented;
 }
 
@@ -349,10 +423,8 @@ const dispatch_time_t kScreenshotPeriodSeconds = 60 * NSEC_PER_SEC;
 }
 
 - (void)restoreViewState {
-    dispatch_async(dispatch_get_main_queue(), ^{
-        self.delegate.toolbarVisible = self.viewState.showToolbar;
-        self.delegate.keyboardVisible = self.viewState.showKeyboard;
-    });
+    self.delegate.toolbarVisible = self.viewState.showToolbar;
+    self.delegate.keyboardVisible = self.viewState.showKeyboard;
 }
 
 - (void)loadViewState {

@@ -268,7 +268,6 @@
         VMDisplayMetalViewController *metalView = (VMDisplayMetalViewController *)segue.destinationViewController;
         UTMQemuVirtualMachine *vm = (UTMQemuVirtualMachine*) sender;
         metalView.vm = vm;
-        vm.delegate = metalView;
         [metalView setupSubviews];
         [metalView virtualMachine:vm transitionToState:vm.state];
     } else if ([[segue identifier] isEqualToString:@"startVMConsole"]) {
@@ -276,7 +275,6 @@
         VMDisplayTerminalViewController *terminalView = (VMDisplayTerminalViewController *)segue.destinationViewController;
         UTMQemuVirtualMachine *vm = (UTMQemuVirtualMachine*) sender;
         terminalView.vm = vm;
-        vm.delegate = terminalView;
         [terminalView setupSubviews];
     }
 }

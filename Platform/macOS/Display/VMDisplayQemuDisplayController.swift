@@ -24,6 +24,7 @@ class VMDisplayQemuWindowController: VMDisplayWindowController {
     }
     
     override func enterLive() {
+        qemuVM.ioDelegate = self
         startPauseToolbarItem.isEnabled = true
         #if arch(x86_64)
         if vmQemuConfig.useHypervisor {
@@ -36,10 +37,6 @@ class VMDisplayQemuWindowController: VMDisplayWindowController {
         usbToolbarItem.isEnabled = qemuVM.hasUsbRedirection
         window!.title = vmQemuConfig.name
         super.enterLive()
-    }
-    
-    override internal func didStartVirtualMachine(_ vm: UTMVirtualMachine) {
-        qemuVM.ioDelegate = self
     }
 }
 

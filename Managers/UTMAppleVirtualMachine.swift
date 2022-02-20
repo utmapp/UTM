@@ -118,154 +118,138 @@ import Virtualization
         }
     }
     
-    override func accessShortcut() async throws -> Bool {
-        return true // FIXME: Apple VM doesn't support saving bookmarks
+    override func accessShortcut() async throws {
+        // FIXME: Apple VM doesn't support saving bookmarks
     }
     
-    override func startVM() -> Bool {
+    override func startVM() async throws {
         guard state == .vmStopped else {
-            return false
+            return
         }
         changeState(.vmStarting)
-        guard createAppleVM() else {
-            return false
-        }
-        vmQueue.async {
-            self.apple.start { result in
-                switch result {
-                case .failure(let error):
-                    self.errorTriggered(error.localizedDescription)
-                case .success:
-                    self.changeState(.vmStarted)
+        try createAppleVM()
+        try await withCheckedThrowingContinuation { continuation in
+            vmQueue.async {
+                self.apple.start { result in
+                    continuation.resume(with: result)
                 }
             }
         }
-        return true
+        changeState(.vmStarted)
     }
     
-    override func quitVM(force: Bool) -> Bool {
+    override func quitVM(force: Bool) async throws {
         guard state == .vmStarted else {
-            return false
+            return
         }
         if force, #available(macOS 12, *) {
             changeState(.vmStopping)
-            vmQueue.async {
-                self.apple.stop { error in
-                    if let error = error {
-                        self.errorTriggered(error.localizedDescription)
-                    } else {
-                        self.guestDidStop(self.apple)
+            try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
+                vmQueue.async {
+                    self.apple.stop { error in
+                        if let error = error {
+                            continuation.resume(throwing: error)
+                        } else {
+                            self.guestDidStop(self.apple)
+                            continuation.resume()
+                        }
                     }
                 }
             }
         } else {
-            vmQueue.async {
-                do {
-                    try self.apple.requestStop()
-                } catch {
-                    self.errorTriggered(error.localizedDescription)
+            try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
+                vmQueue.async {
+                    do {
+                        try self.apple.requestStop()
+                        continuation.resume()
+                    } catch {
+                        continuation.resume(throwing: error)
+                    }
                 }
             }
         }
-        return true
     }
     
-    override func resetVM() -> Bool {
+    override func resetVM() async throws {
         guard #available(macOS 12, *) else {
-            return false
+            return
         }
         guard state == .vmStarted || state == .vmPaused else {
-            return false
+            return
         }
         changeState(.vmStopping)
-        vmQueue.async {
-            self.apple.stop { error in
-                if let error = error {
-                    self.errorTriggered(error.localizedDescription)
-                } else {
-                    self.apple.start { result in
-                        switch result {
-                        case .failure(let error):
-                            self.errorTriggered(error.localizedDescription)
-                        case .success:
-                            self.changeState(.vmStarted)
+        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
+            vmQueue.async {
+                self.apple.stop { error in
+                    if let error = error {
+                        continuation.resume(throwing: error)
+                    } else {
+                        self.apple.start { result in
+                            continuation.resume(with: result)
                         }
                     }
                 }
             }
         }
-        return true
+        changeState(.vmStarted)
     }
     
-    override func pauseVM() -> Bool {
+    override func pauseVM() async throws {
         guard state == .vmStarted else {
-            return false
+            return
         }
         changeState(.vmPausing)
-        vmQueue.async {
-            DispatchQueue.main.sync {
-                self.updateScreenshot()
-            }
-            self.saveScreenshot()
-            self.apple.pause { result in
-                switch result {
-                case .failure(let error):
-                    self.errorTriggered(error.localizedDescription)
-                case .success:
-                    self.changeState(.vmPaused)
+        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
+            vmQueue.async {
+                DispatchQueue.main.sync {
+                    self.updateScreenshot()
+                }
+                self.saveScreenshot()
+                self.apple.pause { result in
+                    continuation.resume(with: result)
                 }
             }
         }
-        return true
+        changeState(.vmPaused)
     }
     
-    override func saveVM() -> Bool {
+    override func saveVM() async throws {
         // FIXME: implement this
-        return true
     }
     
-    override func deleteSaveVM() -> Bool {
+    override func deleteSaveVM() async throws {
         // FIXME: implement this
-        return true
     }
     
-    override func resumeVM() -> Bool {
+    override func resumeVM() async throws {
         guard state == .vmPaused else {
-            return false
+            return
         }
-        vmQueue.async {
-            self.apple.resume { result in
-                switch result {
-                case .failure(let error):
-                    self.errorTriggered(error.localizedDescription)
-                case .success:
-                    self.changeState(.vmStarted)
+        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
+            vmQueue.async {
+                self.apple.resume { result in
+                    continuation.resume(with: result)
                 }
             }
         }
-        return true
+        changeState(.vmStarted)
     }
     
     override func updateScreenshot() {
         screenshot = screenshotDelegate?.screenshot
     }
     
-    private func createAppleVM() -> Bool {
+    private func createAppleVM() throws {
         if appleConfig.isSerialEnabled {
-            do {
-                let (fd, sfd, name) = try createPty()
-                let terminalTtyHandle = FileHandle(fileDescriptor: fd, closeOnDealloc: false)
-                let slaveTtyHandle = FileHandle(fileDescriptor: sfd, closeOnDealloc: false)
-                let attachment = VZFileHandleSerialPortAttachment(fileHandleForReading: terminalTtyHandle, fileHandleForWriting: terminalTtyHandle)
-                let serialConfig = VZVirtioConsoleDeviceSerialPortConfiguration()
-                serialConfig.attachment = attachment
-                appleConfig.apple.serialPorts = [serialConfig]
-                DispatchQueue.main.async {
-                    self.serialPort = UTMSerialPort(portNamed: name, readFileHandle: slaveTtyHandle, writeFileHandle: slaveTtyHandle, terminalFileHandle: terminalTtyHandle)
-                }
-            } catch {
-                errorTriggered(error.localizedDescription)
-                return false
+            let (fd, sfd, name) = try createPty()
+            let terminalTtyHandle = FileHandle(fileDescriptor: fd, closeOnDealloc: false)
+            let slaveTtyHandle = FileHandle(fileDescriptor: sfd, closeOnDealloc: false)
+            let attachment = VZFileHandleSerialPortAttachment(fileHandleForReading: terminalTtyHandle, fileHandleForWriting: terminalTtyHandle)
+            let serialConfig = VZVirtioConsoleDeviceSerialPortConfiguration()
+            serialConfig.attachment = attachment
+            appleConfig.apple.serialPorts = [serialConfig]
+            DispatchQueue.main.async {
+                self.serialPort = UTMSerialPort(portNamed: name, readFileHandle: slaveTtyHandle, writeFileHandle: slaveTtyHandle, terminalFileHandle: terminalTtyHandle)
             }
         }
         if #available(macOS 12, *) {
@@ -281,39 +265,45 @@ import Virtualization
         }
         apple = VZVirtualMachine(configuration: appleConfig.apple, queue: vmQueue)
         apple.delegate = self
-        return true
     }
     
     @available(macOS 12, *)
-    func installVM(with ipswUrl: URL) -> Bool {
+    func installVM(with ipswUrl: URL) async throws {
         guard state == .vmStopped else {
-            return false
+            return
         }
         changeState(.vmStarting)
-        guard createAppleVM() else {
-            return false
-        }
+        try createAppleVM()
         #if os(macOS) && arch(arm64)
-        vmQueue.async {
-            let installer = VZMacOSInstaller(virtualMachine: self.apple, restoringFromImageAt: ipswUrl)
-            self.progressObserver = installer.progress.observe(\.fractionCompleted, options: [.initial, .new]) { progress, change in
-                self.delegate?.virtualMachine?(self, installationProgress: progress.fractionCompleted)
-            }
-            installer.install { result in
-                switch result {
-                case .failure(let error):
-                    self.errorTriggered(error.localizedDescription)
-                case .success:
-                    self.changeState(.vmStarted)
+        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
+            vmQueue.async {
+                let installer = VZMacOSInstaller(virtualMachine: self.apple, restoringFromImageAt: ipswUrl)
+                self.progressObserver = installer.progress.observe(\.fractionCompleted, options: [.initial, .new]) { progress, change in
+                    self.delegate?.virtualMachine?(self, installationProgress: progress.fractionCompleted)
                 }
-                self.progressObserver = nil
+                installer.install { result in
+                    continuation.resume(with: result)
+                }
             }
         }
-        return true
+        changeState(.vmStarted)
+        progressObserver = nil
         #else
         changeState(.vmStopped)
-        return false
         #endif
+    }
+    
+    @available(macOS 12, *)
+    func requestInstallVM(with ipswUrl: URL) {
+        Task {
+            do {
+                try await installVM(with: ipswUrl)
+            } catch {
+                await MainActor.run {
+                    delegate?.virtualMachine(self, didErrorWithMessage: error.localizedDescription)
+                }
+            }
+        }
     }
     
     // taken from https://github.com/evansm7/vftool/blob/main/vftool/main.m
@@ -383,7 +373,10 @@ extension UTMAppleVirtualMachine: VZVirtualMachineDelegate {
     }
     
     func virtualMachine(_ virtualMachine: VZVirtualMachine, didStopWithError error: Error) {
-        errorTriggered(error.localizedDescription)
+        guestDidStop(virtualMachine)
+        DispatchQueue.main.async {
+            self.delegate?.virtualMachine(self, didErrorWithMessage: error.localizedDescription)
+        }
     }
 }
 

@@ -23,7 +23,6 @@
 
 @synthesize prefersStatusBarHidden = _prefersStatusBarHidden;
 @synthesize vmConfiguration;
-@synthesize vmMessage;
 @synthesize keyboardVisible = _keyboardVisible;
 @synthesize toolbarVisible = _toolbarVisible;
 
@@ -68,15 +67,6 @@
         [self terminateApplication];
     }
     switch (state) {
-        case kVMError: {
-            [self.placeholderIndicator stopAnimating];
-            self.resumeBigButton.hidden = YES;
-            NSString *msg = self.vmMessage ? self.vmMessage : NSLocalizedString(@"An internal error has occured. UTM will terminate.", @"VMDisplayViewController");
-            [self showAlert:msg actions:nil completion:^(UIAlertAction *action){
-                [self terminateApplication];
-            }];
-            break;
-        }
         case kVMStopped:
         case kVMPaused: {
             [self enterSuspendedWithIsBusy:NO];
@@ -95,6 +85,16 @@
             break;
         }
     }
+}
+
+- (void)virtualMachine:(UTMVirtualMachine *)vm didErrorWithMessage:(NSString *)message {
+    [self.placeholderIndicator stopAnimating];
+    self.resumeBigButton.hidden = YES;
+    [self showAlert:message actions:nil completion:^(UIAlertAction *action){
+        if (vm.state != kVMStarted && vm.state != kVMPaused) {
+            [self terminateApplication];
+        }
+    }];
 }
 
 @end

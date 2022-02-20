@@ -85,7 +85,9 @@ extern NSString *const kUTMErrorDomain;
         [self.spice spiceSetDebug:YES];
 #endif
         if (![self.spice spiceStart]) {
-            // error
+            if (err) {
+                *err = [NSError errorWithDomain:kUTMErrorDomain code:-1 userInfo:@{NSLocalizedDescriptionKey: NSLocalizedString(@"Failed to start SPICE client.", "UTMSpiceIO")}];
+            }
             return NO;
         }
     }

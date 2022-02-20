@@ -36,6 +36,7 @@
 }
 
 - (void)setupSubviews {
+    self.vm.delegate = self;
     self.keyboardView = [[VMKeyboardView alloc] initWithFrame:CGRectZero];
     self.placeholderImageView = [[UIImageView alloc] initWithFrame:CGRectZero];
     self.mtkView = [[MTKView alloc] initWithFrame:CGRectZero];
@@ -105,9 +106,7 @@
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     if (self.vm.state == kVMStopped) {
-        if ([self.vm startVM]) {
-            self.vm.ioDelegate = self;
-        }
+        [self.vm startVM];
     }
 }
 
@@ -137,6 +136,7 @@
 
 - (void)enterLive {
     [super enterLive];
+    self.vm.ioDelegate = self;
     [UIView transitionWithView:self.view duration:0.5 options:UIViewAnimationOptionTransitionCrossDissolve animations:^{
         self.placeholderImageView.hidden = YES;
         self.mtkView.hidden = NO;

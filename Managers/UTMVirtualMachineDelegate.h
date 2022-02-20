@@ -23,7 +23,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 typedef NS_ENUM(NSUInteger, UTMVMState) {
     kVMStopped,
-    kVMError,
     kVMStarting,
     kVMStarted,
     kVMPausing,
@@ -34,12 +33,23 @@ typedef NS_ENUM(NSUInteger, UTMVMState) {
 
 @protocol UTMVirtualMachineDelegate <NSObject>
 
-@property (nonatomic, nullable, copy) NSString *vmMessage;
 @property (nonatomic, weak) id<UTMConfigurable> vmConfiguration;
 @property (nonatomic, assign) BOOL toolbarVisible;
 @property (nonatomic, assign) BOOL keyboardVisible;
 
+/// Called when VM state changes
+///
+/// Will always be called from the main thread.
+/// @param vm Virtual machine
+/// @param state New state
 - (void)virtualMachine:(UTMVirtualMachine *)vm transitionToState:(UTMVMState)state;
+
+/// Called when VM errors
+///
+/// Will always be called from the main thread.
+/// @param vm Virtual machine
+/// @param message Localized error message when supported, English message otherwise
+- (void)virtualMachine:(UTMVirtualMachine *)vm didErrorWithMessage:(NSString *)message;
 
 @optional
 - (void)virtualMachine:(UTMVirtualMachine *)vm installationProgress:(double)completed;

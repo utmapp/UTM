@@ -60,7 +60,7 @@ class VMDisplayWindowController: NSWindowController {
         showConfirmAlert(NSLocalizedString("This may corrupt the VM and any unsaved changes will be lost. To quit safely, shut down from the guest.", comment: "VMDisplayWindowController")) {
             DispatchQueue.global(qos: .background).async {
                 self.vm.deleteSaveVM()
-                self.vm.quitVM(force: self.isPowerForce)
+                self.vm.requestVmStop(force: self.isPowerForce)
             }
         }
     }
@@ -69,12 +69,8 @@ class VMDisplayWindowController: NSWindowController {
         if vm.state == .vmStarted {
             DispatchQueue.global(qos: .background).async {
                 self.vm.pauseVM()
-                guard self.vm.saveVM() else {
-                    DispatchQueue.main.async {
-                        self.showErrorAlert(NSLocalizedString("Failed to save VM snapshot. Usually this means at least one device does not support snapshots.", comment: "VMDisplayWindowController"))
-                    }
-                    return
-                }
+                self.vm.saveVM()
+                return
             }
         } else if vm.state == .vmPaused {
             DispatchQueue.global(qos: .background).async {
@@ -82,9 +78,7 @@ class VMDisplayWindowController: NSWindowController {
             }
         } else if vm.state == .vmStopped {
             DispatchQueue.global(qos: .userInitiated).async {
-                if self.vm.startVM() {
-                    self.didStartVirtualMachine(self.vm)
-                }
+                self.vm.startVM()
             }
         } else {
             logger.error("Invalid state \(vm.state)")
@@ -123,7 +117,6 @@ class VMDisplayWindowController: NSWindowController {
             enterSuspended(isBusy: false)
         } else {
             enterLive()
-            didStartVirtualMachine(vm)
         }
         
         super.windowDidLoad()
@@ -135,9 +128,7 @@ class VMDisplayWindowController: NSWindowController {
         }
         DispatchQueue.global(qos: .userInitiated).async {
             if (self.vm.state == .vmStopped) {
-                if self.vm.startVM() {
-                    self.didStartVirtualMachine(self.vm)
-                }
+                self.vm.startVM()
             } else if (self.vm.state == .vmPaused) {
                 self.vm.resumeVM()
             }
@@ -203,10 +194,6 @@ class VMDisplayWindowController: NSWindowController {
             }
         }
     }
-    
-    internal func didStartVirtualMachine(_ vm: UTMVirtualMachine) {
-        
-    }
 }
 
 extension VMDisplayWindowController: NSWindowDelegate {
@@ -215,7 +202,7 @@ extension VMDisplayWindowController: NSWindowDelegate {
     }
     
     func windowShouldClose(_ sender: NSWindow) -> Bool {
-        guard vm.state != .vmStopped && vm.state != .vmError else {
+        guard vm.state != .vmStopped else {
             return true
         }
         let alert = NSAlert()
@@ -237,7 +224,7 @@ extension VMDisplayWindowController: NSWindowDelegate {
     
     func windowWillClose(_ notification: Notification) {
         DispatchQueue.global(qos: .background).async {
-            self.vm.quitVM(force: true)
+            self.vm.requestVmStop(force: true)
         }
         onClose?(notification)
     }
@@ -268,11 +255,6 @@ extension VMDisplayWindowController: NSToolbarItemValidation {
 extension VMDisplayWindowController: UTMVirtualMachineDelegate {
     func virtualMachine(_ vm: UTMVirtualMachine, transitionTo state: UTMVMState) {
         switch state {
-        case .vmError:
-            let message = vmMessage ?? NSLocalizedString("An internal error has occured.", comment: "VMDisplayWindowController")
-            showErrorAlert(message) { _ in
-                self.close()
-            }
         case .vmStopped, .vmPaused:
             enterSuspended(isBusy: false)
         case .vmPausing, .vmStopping, .vmStarting, .vmResuming:
@@ -281,6 +263,14 @@ extension VMDisplayWindowController: UTMVirtualMachineDelegate {
             enterLive()
         @unknown default:
             break
+        }
+    }
+    
+    func virtualMachine(_ vm: UTMVirtualMachine, didErrorWithMessage message: String) {
+        showErrorAlert(message) { _ in
+            if vm.state != .vmStarted && vm.state != .vmPaused {
+                self.close()
+            }
         }
     }
 }

@@ -23,7 +23,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) NSURL *parentPath;
 @property (nonatomic, readwrite) UTMViewState *viewState;
 @property (nonatomic) UTMLogging *logging;
-@property (nonatomic, readwrite) BOOL busy;
 @property (nonatomic, assign, readwrite) UTMVMState state;
 
 - (instancetype)init;

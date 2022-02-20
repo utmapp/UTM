@@ -74,7 +74,7 @@ class VMDisplayAppleWindowController: VMDisplayWindowController {
         if #available(macOS 12, *), let ipswUrl = appleConfig.macRecoveryIpswURL {
             showConfirmAlert(NSLocalizedString("Would you like to install macOS? If an existing operating system is already installed on the primary drive of this VM, then it will be erased.", comment: "VMDisplayAppleWindowController")) {
                 self.isInstalling = true
-                _ = self.appleVM.installVM(with: ipswUrl)
+                self.appleVM.requestInstallVM(with: ipswUrl)
             }
         }
     }
@@ -148,9 +148,7 @@ class VMDisplayAppleWindowController: VMDisplayWindowController {
         if isPowerForce {
             super.stopButtonPressed(sender)
         } else {
-            if !appleVM.quitVM(force: false) {
-                super.stopButtonPressed(sender)
-            }
+            appleVM.requestVmStop(force: false)
             isPowerForce = true
         }
     }
@@ -295,9 +293,7 @@ extension VMDisplayAppleWindowController {
             self.enterSuspended(isBusy: true)
             self.appleConfig.macRecoveryIpswURL = nil
             // start VM
-            if self.vm.startVM() {
-                self.didStartVirtualMachine(self.vm)
-            }
+            self.vm.startVM()
         }
     }
     

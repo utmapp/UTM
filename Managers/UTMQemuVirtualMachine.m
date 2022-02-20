@@ -40,20 +40,19 @@ const int64_t kStopTimeout = (int64_t)30*NSEC_PER_SEC;
 extern NSString *const kUTMBundleConfigFilename;
 NSString *const kSuspendSnapshotName = @"suspend";
 
-extern NSString *const kUTMErrorDomain;
-
 @interface UTMQemuVirtualMachine ()
 
 @property (nonatomic, readonly) UTMQemuManager *qemu;
 @property (nonatomic, readwrite, nullable) UTMQemuSystem *system;
 @property (nonatomic, readonly, nullable) id<UTMInputOutput> ioService;
+@property (nonatomic) dispatch_queue_t vmOperations;
+@property (nonatomic, nullable) dispatch_semaphore_t qemuWillQuitEvent;
+@property (nonatomic, nullable) dispatch_semaphore_t qemuDidExitEvent;
+@property (nonatomic, nullable) dispatch_semaphore_t qemuDidConnectEvent;
 
 @end
 
-@implementation UTMQemuVirtualMachine {
-    dispatch_semaphore_t _will_quit_sema;
-    dispatch_semaphore_t _qemu_exit_sema;
-}
+@implementation UTMQemuVirtualMachine
 
 - (UTMQemuConfiguration *)qemuConfig {
     return (UTMQemuConfiguration *)self.config;
@@ -82,8 +81,10 @@ extern NSString *const kUTMErrorDomain;
 - (instancetype)init {
     self = [super init];
     if (self) {
-        _will_quit_sema = dispatch_semaphore_create(0);
-        _qemu_exit_sema = dispatch_semaphore_create(0);
+        self.qemuWillQuitEvent = dispatch_semaphore_create(0);
+        self.qemuDidExitEvent = dispatch_semaphore_create(0);
+        self.qemuDidConnectEvent = dispatch_semaphore_create(0);
+        self.vmOperations = dispatch_queue_create("com.utmapp.UTM.VMOperations", DISPATCH_QUEUE_SERIAL);
     }
     return self;
 }
@@ -212,14 +213,14 @@ extern NSString *const kUTMErrorDomain;
 
 #pragma mark - Shortcut access
 
-- (void)accessShortcutWithCompletion:(void (^ _Nullable)(BOOL, NSError * _Nullable))completion {
+- (void)accessShortcutWithCompletion:(void (^ _Nullable)(NSError * _Nullable))completion {
     NSAssert(self.path != nil, @"VM must be existing in the filesystem!");
     if (!completion) {
         // default handler
-        completion = ^(BOOL success, NSError *error){};
+        completion = ^(NSError *error){};
     }
     if (!self.isShortcut) {
-        completion(YES, nil); // not needed
+        completion(nil); // not needed
         return;
     }
     UTMQemu *service = self.system;
@@ -237,7 +238,7 @@ extern NSString *const kUTMErrorDomain;
                                         relativeToURL:nil
                                                 error:&err];
         if (!bookmark) {
-            completion(NO, err);
+            completion(err);
             return;
         }
     }
@@ -249,22 +250,19 @@ extern NSString *const kUTMErrorDomain;
         if (success) {
             self.viewState.shortcutBookmark = newBookmark;
             self.viewState.shortcutBookmarkPath = newPath;
-            completion(YES, nil);
+            completion(nil);
         } else {
-            completion(NO, [NSError errorWithDomain:kUTMErrorDomain code:-1 userInfo:@{NSLocalizedDescriptionKey: NSLocalizedString(@"Failed to access data from shortcut.", "UTMQemuVirtualMachine")}]);
+            completion([self errorWithMessage:NSLocalizedString(@"Failed to access data from shortcut.", @"UTMQemuVirtualMachine")]);
         }
     }];
 }
 
 #pragma mark - VM actions
 
-- (BOOL)startVM {
-    @synchronized (self) {
-        if (self.busy || self.state != kVMStopped) {
-            return NO; // already started
-        } else {
-            self.busy = YES;
-        }
+- (void)_startVMWithCompletion:(void (^)(NSError * _Nullable))completion {
+    if (self.state != kVMStopped) {
+        completion([self errorGeneric]);
+        return;
     }
     // start logging
     if (self.qemuConfig.debugLogEnabled) {
@@ -280,84 +278,134 @@ extern NSString *const kUTMErrorDomain;
     }
 
     if (!self.system) {
-        [self errorTriggered:NSLocalizedString(@"Internal error starting VM.", @"UTMVirtualMachine")];
-        self.busy = NO;
-        return NO;
+        completion([self errorGeneric]);
+        return;
     }
     
     if (self.isShortcut) {
-        [self accessShortcutWithCompletion:nil];
+        __block NSError *accessErr = nil;
+        dispatch_semaphore_t accessCompleteEvent = dispatch_semaphore_create(0);
+        [self accessShortcutWithCompletion:^(NSError *err){
+            accessErr = err;
+            dispatch_semaphore_signal(accessCompleteEvent);
+        }];
+        dispatch_semaphore_wait(accessCompleteEvent, DISPATCH_TIME_FOREVER);
+        if (accessErr) {
+            completion(accessErr);
+            return;
+        }
     }
     
     if (!_ioService) {
         _ioService = [self inputOutputService];
     }
     
-    self.delegate.vmMessage = nil;
     [self changeState:kVMStarting];
     
-    BOOL ioStatus = [_ioService startWithError: nil];
-    if (!ioStatus) {
-        [self errorTriggered:NSLocalizedString(@"Internal error starting main loop.", @"UTMVirtualMachine")];
-        self.busy = NO;
-        return NO;
+    NSError *spiceError;
+    if (![_ioService startWithError:&spiceError]) {
+        completion(spiceError);
+        return;
     }
     if (self.viewState.suspended) {
         self.system.snapshot = kSuspendSnapshotName;
     }
-    // start QEMU
+    // start QEMU (this can be in parallel with QMP connect below)
+    __weak typeof(self) weakSelf = self;
     [self.system startWithCompletion:^(BOOL success, NSString *msg){
-        if (!success) {
-            self.busy = NO;
-            [self errorTriggered:msg];
+        typeof(self) _self = weakSelf;
+        if (!_self) {
+            return; // outlived class
         }
-        dispatch_semaphore_signal(self->_qemu_exit_sema);
+        if (!success) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [_self.delegate virtualMachine:_self didErrorWithMessage:msg];
+            });
+        }
+        dispatch_semaphore_signal(_self.qemuDidExitEvent);
+        [_self quitVMForce:YES completion:^(NSError *error){}];
     }];
     // connect to QMP
     [self.qemu connectWithCompletion:^(BOOL success, NSError *error) {
         if (!success) {
             UTMLog(@"Failed to connect to QMP: %@", error);
-            self.busy = NO;
-            [self errorTriggered:error.localizedDescription];
+            completion(error);
+            return;
+        }
+        // wait for QMP to connect
+        if (dispatch_semaphore_wait(self.qemuDidConnectEvent, dispatch_time(DISPATCH_TIME_NOW, kStopTimeout)) != 0) {
+            UTMLog(@"Timed out waiting for connect event");
+            completion([self errorGeneric]);
+            return;
+        }
+        NSError *err;
+        NSString *errMsg;
+        if (!self.qemuConfig.displayConsoleOnly) {
+            if (![self startSharedDirectoryWithError:&err]) {
+                errMsg = [NSString stringWithFormat:NSLocalizedString(@"Error trying to start shared directory: %@", @"UTMVirtualMachine"), err.localizedDescription];
+                completion([self errorWithMessage:errMsg]);
+                return;
+            }
+        }
+        if (![self restoreRemovableDrivesFromBookmarksWithError:&err]) {
+            errMsg = [NSString stringWithFormat:NSLocalizedString(@"Error trying to restore removable drives: %@", @"UTMVirtualMachine"), err.localizedDescription];
+            completion([self errorWithMessage:errMsg]);
             return;
         }
         // start SPICE client
         [self.ioService connectWithCompletion:^(BOOL success, NSError *error) {
             if (!success) {
                 UTMLog(@"Failed to connect to SPICE: %@", error);
-                self.busy = NO;
-                [self errorTriggered:error.localizedDescription];
+                completion(error);
                 return;
             }
             // continue VM boot
             if (![self.qemu continueBootWithError:&error]) {
                 UTMLog(@"Failed to boot: %@", error);
-                self.busy = NO;
-                [self errorTriggered:error.localizedDescription];
+                completion(error);
                 return;
             }
             assert(self.qemu.isConnected);
             assert(self.ioService.isConnected);
             [self changeState:kVMStarted];
-            [self restoreViewState];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self restoreViewState];
+            });
             if (self.viewState.suspended) {
-                [self deleteSaveVM];
+                [self _deleteSaveVMWithCompletion:completion];
+            } else {
+                completion(nil); // everything successful
             }
-            self.busy = NO;
         }];
     } retries:kQMPMaxConnectionTries];
-    return YES;
 }
 
-- (BOOL)quitVMForce:(BOOL)force {
-    @synchronized (self) {
-        if (!force && (self.busy || self.state != kVMStarted)) {
-            return NO; // already stopping
-        } else {
-            self.busy = YES;
-        }
+- (void)startVMWithCompletion:(void (^)(NSError * _Nullable))completion {
+    dispatch_async(self.vmOperations, ^{
+        [self _startVMWithCompletion:^(NSError *err){
+            if (err) { // delete suspend state on error
+                dispatch_sync(dispatch_get_main_queue(), ^{
+                    self.viewState.suspended = NO;
+                });
+                [self saveViewState];
+            }
+            completion(err);
+        }];
+    });
+}
+
+- (void)_quitVMForce:(BOOL)force completion:(void (^)(NSError * _Nullable))completion {
+    if (self.state == kVMStopped) {
+        completion(nil);
+        return;
     }
-    [self syncViewState];
+    if (!force && self.state != kVMStarted) {
+        completion([self errorGeneric]);
+        return;
+    }
+    dispatch_sync(dispatch_get_main_queue(), ^{
+        [self syncViewState];
+    });
     if (!force) {
         [self changeState:kVMStopping];
     }
@@ -366,7 +414,7 @@ extern NSString *const kUTMErrorDomain;
     
     [self.qemu cancelConnectRetry];
     [_qemu vmQuitWithCompletion:nil];
-    if (force || dispatch_semaphore_wait(_will_quit_sema, dispatch_time(DISPATCH_TIME_NOW, kStopTimeout)) != 0) {
+    if (force || dispatch_semaphore_wait(self.qemuWillQuitEvent, dispatch_time(DISPATCH_TIME_NOW, kStopTimeout)) != 0) {
         UTMLog(@"Stop operation timeout or force quit");
     }
     [_qemu disconnect];
@@ -375,7 +423,7 @@ extern NSString *const kUTMErrorDomain;
     [_ioService disconnect];
     _ioService = nil;
     
-    if (force || dispatch_semaphore_wait(_qemu_exit_sema, dispatch_time(DISPATCH_TIME_NOW, kStopTimeout)) != 0) {
+    if (force || dispatch_semaphore_wait(self.qemuDidExitEvent, dispatch_time(DISPATCH_TIME_NOW, kStopTimeout)) != 0) {
         UTMLog(@"Exit operation timeout or force quit");
     }
     [self.system stopQemu];
@@ -387,179 +435,209 @@ extern NSString *const kUTMErrorDomain;
     [self changeState:kVMStopped];
     // stop logging
     [self.logging endLog];
-    self.busy = NO;
-    return YES;
 }
 
-- (BOOL)resetVM {
-    @synchronized (self) {
-        if (self.busy || (self.state != kVMStarted && self.state != kVMPaused)) {
-            return NO; // already stopping
-        } else {
-            self.busy = YES;
-        }
+- (void)quitVMForce:(BOOL)force completion:(void (^)(NSError * _Nullable))completion {
+    dispatch_async(self.vmOperations, ^{
+        [self _quitVMForce:force completion:completion];
+    });
+}
+
+- (void)_resetVMWithCompletion:(void (^)(NSError * _Nullable))completion {
+    if (self.state != kVMStarted && self.state != kVMPaused) {
+        completion([self errorGeneric]);
+        return;
     }
-    [self syncViewState];
+    dispatch_sync(dispatch_get_main_queue(), ^{
+        [self syncViewState];
+    });
     [self changeState:kVMStopping];
     if (self.viewState.suspended) {
-        [self deleteSaveVM];
+        [self _deleteSaveVMWithCompletion:^(NSError *error) {}];
     }
     [self saveViewState];
-    __block BOOL success = YES;
-    dispatch_semaphore_t reset_sema = dispatch_semaphore_create(0);
+    __block NSError *resetError = nil;
+    dispatch_semaphore_t resetTriggeredEvent = dispatch_semaphore_create(0);
     [_qemu vmResetWithCompletion:^(NSError *err) {
         UTMLog(@"reset callback: err? %@", err);
         if (err) {
             UTMLog(@"error: %@", err);
-            success = NO;
+            resetError = err;
         }
-        dispatch_semaphore_signal(reset_sema);
+        dispatch_semaphore_signal(resetTriggeredEvent);
     }];
-    if (dispatch_semaphore_wait(reset_sema, dispatch_time(DISPATCH_TIME_NOW, kStopTimeout)) != 0) {
+    if (dispatch_semaphore_wait(resetTriggeredEvent, dispatch_time(DISPATCH_TIME_NOW, kStopTimeout)) != 0) {
         UTMLog(@"Reset operation timeout");
-        success = NO;
+        resetError = [self errorGeneric];;
     }
-    if (success) {
+    if (!resetError) {
         [self changeState:kVMStarted];
     } else {
-        [self changeState:kVMError];
+        [self changeState:kVMStopped];
     }
-    self.busy = NO;
-    return success;
+    completion(resetError);
 }
 
-- (BOOL)pauseVM {
-    @synchronized (self) {
-        if (self.busy || self.state != kVMStarted) {
-            return NO; // already stopping
-        } else {
-            self.busy = YES;
-        }
+- (void)resetVMWithCompletion:(void (^)(NSError * _Nullable))completion {
+    dispatch_async(self.vmOperations, ^{
+        [self _resetVMWithCompletion:completion];
+    });
+}
+
+- (void)_pauseVMWithCompletion:(void (^)(NSError * _Nullable))completion {
+    if (self.state != kVMStarted) {
+        completion([self errorGeneric]);
+        return;
     }
-    [self syncViewState];
+    dispatch_sync(dispatch_get_main_queue(), ^{
+        [self syncViewState];
+    });
     [self changeState:kVMPausing];
     dispatch_sync(dispatch_get_main_queue(), ^{
         [self updateScreenshot];
     });
     [self saveScreenshot];
-    __block BOOL success = YES;
-    dispatch_semaphore_t suspend_sema = dispatch_semaphore_create(0);
+    __block NSError *suspendError = nil;
+    dispatch_semaphore_t suspendTriggeredEvent = dispatch_semaphore_create(0);
     [_qemu vmStopWithCompletion:^(NSError * err) {
         UTMLog(@"stop callback: err? %@", err);
         if (err) {
             UTMLog(@"error: %@", err);
-            success = NO;
+            suspendError = err;
         }
-        dispatch_semaphore_signal(suspend_sema);
+        dispatch_semaphore_signal(suspendTriggeredEvent);
     }];
-    if (dispatch_semaphore_wait(suspend_sema, dispatch_time(DISPATCH_TIME_NOW, kStopTimeout)) != 0) {
+    if (dispatch_semaphore_wait(suspendTriggeredEvent, dispatch_time(DISPATCH_TIME_NOW, kStopTimeout)) != 0) {
         UTMLog(@"Stop operation timeout");
-        success = NO;
+        suspendError = [self errorGeneric];
     }
-    if (success) {
+    if (!suspendError) {
         [self changeState:kVMPaused];
     } else {
-        [self changeState:kVMError];
+        [self changeState:kVMStopped];
     }
-    self.busy = NO;
-    return success;
+    completion(suspendError);
 }
 
-- (BOOL)saveVM {
-    @synchronized (self) {
-        if (self.busy || (self.state != kVMPaused && self.state != kVMStarted)) {
-            return NO;
-        } else {
-            self.busy = YES;
-        }
+- (void)pauseVMWithCompletion:(void (^)(NSError * _Nullable))completion {
+    dispatch_async(self.vmOperations, ^{
+        [self _pauseVMWithCompletion:completion];
+    });
+}
+
+- (void)_saveVMWithCompletion:(void (^)(NSError * _Nullable))completion {
+    if (self.state != kVMPaused && self.state != kVMStarted) {
+        completion([self errorGeneric]);
+        return;
     }
-    __block BOOL success = YES;
-    dispatch_semaphore_t save_sema = dispatch_semaphore_create(0);
+    __block NSError *saveError = nil;
+    dispatch_semaphore_t saveTriggeredEvent = dispatch_semaphore_create(0);
     [_qemu vmSaveWithCompletion:^(NSString *result, NSError *err) {
         UTMLog(@"save callback: %@", result);
         if (err) {
             UTMLog(@"error: %@", err);
-            success = NO;
+            saveError = err;
         } else if ([result localizedCaseInsensitiveContainsString:@"Error"]) {
             UTMLog(@"save result: %@", result);
-            success = NO; // error message
+            saveError = [self errorWithMessage:result]; // error message
         }
-        dispatch_semaphore_signal(save_sema);
+        if (saveError) {
+            // replace error with detailed message
+            NSString *newMsg = [NSString stringWithFormat:NSLocalizedString(@"Failed to save VM snapshot. Usually this means at least one device does not support snapshots. %@", @"UTMQemuVirtualMachine"), saveError.localizedDescription];
+            saveError = [self errorWithMessage:newMsg];
+        }
+        dispatch_semaphore_signal(saveTriggeredEvent);
     } snapshotName:kSuspendSnapshotName];
-    if (dispatch_semaphore_wait(save_sema, dispatch_time(DISPATCH_TIME_NOW, kStopTimeout)) != 0) {
+    if (dispatch_semaphore_wait(saveTriggeredEvent, dispatch_time(DISPATCH_TIME_NOW, kStopTimeout)) != 0) {
         UTMLog(@"Save operation timeout");
-        success = NO;
-    } else if (success) {
+        saveError = [self errorGeneric];
+    } else if (!saveError) {
         UTMLog(@"Save completed");
         self.viewState.suspended = YES;
         [self saveViewState];
         [self saveScreenshot];
     }
-    self.busy = NO;
-    return success;
+    completion(saveError);
 }
 
-- (BOOL)deleteSaveVM {
-    __block BOOL success = YES;
+- (void)saveVMWithCompletion:(void (^)(NSError * _Nullable))completion {
+    dispatch_async(self.vmOperations, ^{
+        [self _saveVMWithCompletion:completion];
+    });
+}
+
+- (void)_deleteSaveVMWithCompletion:(void (^)(NSError * _Nullable))completion {
+    __block NSError *deleteError = nil;
     if (self.qemu) { // if QEMU is running
-        dispatch_semaphore_t save_sema = dispatch_semaphore_create(0);
+        dispatch_semaphore_t deleteTriggeredEvent = dispatch_semaphore_create(0);
         [_qemu vmDeleteSaveWithCompletion:^(NSString *result, NSError *err) {
             UTMLog(@"delete save callback: %@", result);
             if (err) {
                 UTMLog(@"error: %@", err);
-                success = NO;
+                deleteError = err;
             } else if ([result localizedCaseInsensitiveContainsString:@"Error"]) {
                 UTMLog(@"save result: %@", result);
-                success = NO; // error message
+                deleteError = [self errorWithMessage:result]; // error message
             }
-            dispatch_semaphore_signal(save_sema);
+            dispatch_semaphore_signal(deleteTriggeredEvent);
         } snapshotName:kSuspendSnapshotName];
-        if (dispatch_semaphore_wait(save_sema, dispatch_time(DISPATCH_TIME_NOW, kStopTimeout)) != 0) {
+        if (dispatch_semaphore_wait(deleteTriggeredEvent, dispatch_time(DISPATCH_TIME_NOW, kStopTimeout)) != 0) {
             UTMLog(@"Delete save operation timeout");
-            success = NO;
+            deleteError = [self errorGeneric];
         } else {
             UTMLog(@"Delete save completed");
         }
     } // otherwise we mark as deleted
     self.viewState.suspended = NO;
     [self saveViewState];
-    return success;
+    completion(deleteError);
 }
 
-- (BOOL)resumeVM {
-    @synchronized (self) {
-        if (self.busy || self.state != kVMPaused) {
-            return NO;
-        } else {
-            self.busy = YES;
-        }
+- (void)deleteSaveVMWithCompletion:(void (^)(NSError * _Nullable))completion {
+    dispatch_async(self.vmOperations, ^{
+        [self _deleteSaveVMWithCompletion:completion];
+    });
+}
+
+- (void)_resumeVMWithCompletion:(void (^)(NSError * _Nullable))completion {
+    if (self.state != kVMPaused) {
+        completion([self errorGeneric]);
+        return;
     }
     [self changeState:kVMResuming];
-    __block BOOL success = YES;
-    dispatch_semaphore_t resume_sema = dispatch_semaphore_create(0);
+    __block NSError *resumeError = nil;
+    dispatch_semaphore_t resumeTriggeredEvent = dispatch_semaphore_create(0);
     [_qemu vmResumeWithCompletion:^(NSError *err) {
         UTMLog(@"resume callback: err? %@", err);
         if (err) {
             UTMLog(@"error: %@", err);
-            success = NO;
+            resumeError = err;
         }
-        dispatch_semaphore_signal(resume_sema);
+        dispatch_semaphore_signal(resumeTriggeredEvent);
     }];
-    if (dispatch_semaphore_wait(resume_sema, dispatch_time(DISPATCH_TIME_NOW, kStopTimeout)) != 0) {
+    if (dispatch_semaphore_wait(resumeTriggeredEvent, dispatch_time(DISPATCH_TIME_NOW, kStopTimeout)) != 0) {
         UTMLog(@"Resume operation timeout");
-        success = NO;
+        resumeError = [self errorGeneric];
     }
-    if (success) {
+    if (!resumeError) {
         [self changeState:kVMStarted];
-        [self restoreViewState];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self restoreViewState];
+        });
     } else {
-        [self changeState:kVMError];
+        [self changeState:kVMStopped];
     }
     if (self.viewState.suspended) {
-        [self deleteSaveVM];
+        [self _deleteSaveVMWithCompletion:^(NSError *error){}];
+    } else {
+        completion(nil);
     }
-    self.busy = NO;
-    return success;
+}
+
+- (void)resumeVMWithCompletion:(void (^)(NSError * _Nullable))completion {
+    dispatch_async(self.vmOperations, ^{
+        [self _resumeVMWithCompletion:completion];
+    });
 }
 
 - (UTMDisplayType)supportedDisplayType {
@@ -602,39 +680,22 @@ extern NSString *const kUTMErrorDomain;
 
 - (void)qemuWillQuit:(UTMQemuManager *)manager guest:(BOOL)guest reason:(ShutdownCause)reason {
     UTMLog(@"qemuWillQuit, reason = %s", ShutdownCause_str(reason));
-    dispatch_semaphore_signal(_will_quit_sema);
-    if (!self.busy) {
-        [self quitVM];
-    }
+    dispatch_semaphore_signal(self.qemuWillQuitEvent);
+    [self quitVMWithCompletion:^(NSError *error) {}]; // trigger quit
 }
 
 - (void)qemuError:(UTMQemuManager *)manager error:(NSString *)error {
     UTMLog(@"qemuError: %@", error);
-    dispatch_async(dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0), ^{
-        [self errorTriggered:error];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self.delegate virtualMachine:self didErrorWithMessage:error];
     });
+    [self quitVMForce:YES completion:^(NSError *error) {}];
 }
 
 // this is called right before we execute qmp_cont so we can setup additional option
 - (void)qemuQmpDidConnect:(UTMQemuManager *)manager {
     UTMLog(@"qemuQmpDidConnect");
-    __autoreleasing NSError *err = nil;
-    NSString *errMsg = nil;
-    if (!self.qemuConfig.displayConsoleOnly) {
-        if (![self startSharedDirectoryWithError:&err]) {
-            errMsg = [NSString stringWithFormat:NSLocalizedString(@"Error trying to start shared directory: %@", @"UTMVirtualMachine"), err.localizedDescription];
-            UTMLog(@"%@", errMsg);
-        }
-    }
-    if (!err && ![self restoreRemovableDrivesFromBookmarksWithError:&err]) {
-        errMsg = [NSString stringWithFormat:NSLocalizedString(@"Error trying to restore removable drives: %@", @"UTMVirtualMachine"), err.localizedDescription];
-        UTMLog(@"%@", errMsg);
-    }
-    if (errMsg) {
-        dispatch_async(dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0), ^{
-            [self errorTriggered:errMsg];
-        });
-    }
+    dispatch_semaphore_signal(self.qemuDidConnectEvent);
 }
 
 #pragma mark - View State

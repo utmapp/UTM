@@ -43,6 +43,7 @@ NSString* const kVMSendTerminalSizeHandler = @"UTMSendTerminalSize";
 }
 
 - (void)setupSubviews {
+    self.vm.delegate = self;
     self.webView = [[WKWebView alloc] initWithFrame:CGRectZero];
     self.webView.opaque = NO;
     [self.view insertSubview:self.webView atIndex:0];
@@ -79,9 +80,7 @@ NSString* const kVMSendTerminalSizeHandler = @"UTMSendTerminalSize";
     [super viewWillAppear: animated];
 
     if (self.vm.state == kVMStopped) {
-        if ([self.vm startVM]) {
-            self.vm.ioDelegate = self;
-        }
+        [self.vm startVM];
     }
 }
 
@@ -207,6 +206,7 @@ NSString* const kVMSendTerminalSizeHandler = @"UTMSendTerminalSize";
 
 - (void)enterLive {
     [super enterLive];
+    self.vm.ioDelegate = self;
     self.webView.userInteractionEnabled = YES;
 }
 

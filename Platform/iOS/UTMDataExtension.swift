@@ -22,14 +22,12 @@ extension UTMData {
         let qvm = vm as! UTMQemuVirtualMachine
         if qvm.qemuConfig.displayConsoleOnly {
             let vc = VMDisplayTerminalViewController()
-            vm.delegate = vc
             vc.vm = qvm
             vc.setupSubviews()
             vc.virtualMachine(vm, transitionTo: vm.state)
             return vc
         } else {
             let vc = VMDisplayMetalViewController()
-            vm.delegate = vc
             vc.vm = qvm
             vc.setupSubviews()
             vc.virtualMachine(vm, transitionTo: vm.state)
@@ -55,9 +53,7 @@ extension UTMData {
     
     func stop(vm: UTMVirtualMachine) throws {
         if vm.viewState.suspended {
-            guard vm.deleteSaveVM() else {
-                throw NSLocalizedString("Failed to delete saved state.", comment: "UTMDataExtension")
-            }
+            vm.deleteSaveVM()
         }
     }
     

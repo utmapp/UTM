@@ -216,11 +216,7 @@ import SwiftUI
         DispatchQueue.global(qos: .background).async {
             if viewController.vm.state == .vmStarted {
                 viewController.vm.pauseVM()
-                if !viewController.vm.saveVM() {
-                    DispatchQueue.main.async {
-                        viewController.showAlert(NSLocalizedString("Failed to save VM snapshot. Usually this means at least one device does not support snapshots.", comment: "VMDisplayViewController"), actions: nil, completion: nil)
-                    }
-                }
+                viewController.vm.saveVM()
             } else if viewController.vm.state == .vmPaused {
                 viewController.vm.resumeVM()
             }

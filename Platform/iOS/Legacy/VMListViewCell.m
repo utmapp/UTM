@@ -22,7 +22,6 @@
     [[self screenButton] setImage:image forState:UIControlStateNormal];
     switch (state) {
         case kVMStopped:
-        case kVMError:
         default: {
             [[self statusIndicator] stopAnimating];
             [[self screenBlurEffect] setHidden:NO];

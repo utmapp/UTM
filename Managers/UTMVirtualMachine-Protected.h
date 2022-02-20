@@ -41,7 +41,8 @@ extern NSString *const kUTMBundleConfigFilename;
 + (BOOL)isAppleVMForPath:(NSURL *)path;
 - (NSURL *)packageURLForName:(NSString *)name;
 - (void)changeState:(UTMVMState)state;
-- (void)errorTriggered:(nullable NSString *)msg;
+- (NSError *)errorGeneric;
+- (NSError *)errorWithMessage:(nullable NSString *)message;
 
 - (BOOL)loadConfigurationWithReload:(BOOL)reload error:(NSError * _Nullable __autoreleasing *)err;
 
