@@ -260,7 +260,7 @@ extern NSString *const kUTMErrorDomain;
 
 - (BOOL)startVM {
     @synchronized (self) {
-        if (self.busy || (self.state != kVMStopped && self.state != kVMSuspended)) {
+        if (self.busy || self.state != kVMStopped) {
             return NO; // already started
         } else {
             self.busy = YES;
@@ -465,7 +465,7 @@ extern NSString *const kUTMErrorDomain;
     return success;
 }
 
-- (BOOL)saveVMInBackground:(BOOL)background {
+- (BOOL)saveVM {
     @synchronized (self) {
         if (self.busy || (self.state != kVMPaused && self.state != kVMStarted)) {
             return NO;
@@ -473,8 +473,6 @@ extern NSString *const kUTMErrorDomain;
             self.busy = YES;
         }
     }
-    UTMVMState state = self.state;
-    [self changeState:kVMPausing];
     __block BOOL success = YES;
     dispatch_semaphore_t save_sema = dispatch_semaphore_create(0);
     [_qemu vmSaveWithCompletion:^(NSString *result, NSError *err) {
@@ -496,12 +494,6 @@ extern NSString *const kUTMErrorDomain;
         self.viewState.suspended = YES;
         [self saveViewState];
         [self saveScreenshot];
-    }
-    if (!success || background) {
-        // restore original state
-        [self changeState:state];
-    } else {
-        [self changeState:kVMSuspended];
     }
     self.busy = NO;
     return success;

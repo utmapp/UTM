@@ -119,7 +119,7 @@ class VMDisplayWindowController: NSWindowController {
     override func windowDidLoad() {
         window!.recalculateKeyViewLoop()
         
-        if vm.state == .vmStopped || vm.state == .vmSuspended {
+        if vm.state == .vmStopped {
             enterSuspended(isBusy: false)
         } else {
             enterLive()
@@ -134,7 +134,7 @@ class VMDisplayWindowController: NSWindowController {
             return
         }
         DispatchQueue.global(qos: .userInitiated).async {
-            if (self.vm.state == .vmStopped || self.vm.state == .vmSuspended) {
+            if (self.vm.state == .vmStopped) {
                 if self.vm.startVM() {
                     self.didStartVirtualMachine(self.vm)
                 }
@@ -215,7 +215,7 @@ extension VMDisplayWindowController: NSWindowDelegate {
     }
     
     func windowShouldClose(_ sender: NSWindow) -> Bool {
-        guard vm.state != .vmStopped && vm.state != .vmSuspended && vm.state != .vmError else {
+        guard vm.state != .vmStopped && vm.state != .vmError else {
             return true
         }
         let alert = NSAlert()
@@ -273,7 +273,7 @@ extension VMDisplayWindowController: UTMVirtualMachineDelegate {
             showErrorAlert(message) { _ in
                 self.close()
             }
-        case .vmStopped, .vmPaused, .vmSuspended:
+        case .vmStopped, .vmPaused:
             enterSuspended(isBusy: false)
         case .vmPausing, .vmStopping, .vmStarting, .vmResuming:
             enterSuspended(isBusy: true)

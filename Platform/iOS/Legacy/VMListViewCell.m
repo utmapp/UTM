@@ -44,7 +44,6 @@
             [[self playButton] setImage:nil forState:UIControlStateNormal];
             break;
         }
-        case kVMSuspended:
         case kVMPaused: {
             [[self statusIndicator] stopAnimating];
             [[self screenBlurEffect] setHidden:NO];

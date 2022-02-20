@@ -53,7 +53,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 }
             }
             return .terminateLater
-        } else if vmList.allSatisfy({ $0.state == .vmStopped || $0.state == .vmSuspended || $0.state == .vmError }) { // All VMs are stopped or in an error state
+        } else if vmList.allSatisfy({ $0.state == .vmStopped || $0.state == .vmError }) { // All VMs are stopped or in an error state
             return .terminateNow
         } else { // There could be some VMs in other states (starting, pausing, etc.)
             return .terminateCancel

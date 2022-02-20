@@ -78,8 +78,7 @@
             break;
         }
         case kVMStopped:
-        case kVMPaused:
-        case kVMSuspended: {
+        case kVMPaused: {
             [self enterSuspendedWithIsBusy:NO];
             break;
         }

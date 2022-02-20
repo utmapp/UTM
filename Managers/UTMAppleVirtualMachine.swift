@@ -123,7 +123,7 @@ import Virtualization
     }
     
     override func startVM() -> Bool {
-        guard state == .vmStopped || state == .vmSuspended else {
+        guard state == .vmStopped else {
             return false
         }
         changeState(.vmStarting)
@@ -219,7 +219,7 @@ import Virtualization
         return true
     }
     
-    override func saveVM(inBackground: Bool) -> Bool {
+    override func saveVM() -> Bool {
         // FIXME: implement this
         return true
     }

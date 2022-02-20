@@ -184,11 +184,7 @@ const dispatch_time_t kScreenshotPeriodSeconds = 60 * NSEC_PER_SEC;
             return self;
         }
         [self loadScreenshot];
-        if (self.viewState.suspended) {
-            self.state = kVMSuspended;
-        } else {
-            self.state = kVMStopped;
-        }
+        self.state = kVMStopped;
     }
     return self;
 }
@@ -294,10 +290,6 @@ const dispatch_time_t kScreenshotPeriodSeconds = 60 * NSEC_PER_SEC;
 }
 
 - (BOOL)saveVM {
-    return [self saveVMInBackground:NO];
-}
-
-- (BOOL)saveVMInBackground:(BOOL)background {
     notImplemented;
 }
 
