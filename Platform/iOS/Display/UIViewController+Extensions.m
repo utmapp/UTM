@@ -16,6 +16,18 @@
 
 #import "UIViewController+Extensions.h"
 
+@interface UIAlertControllerNoKeyboardWorkaround : UIAlertController
+
+@end
+
+@implementation UIAlertControllerNoKeyboardWorkaround
+
+- (BOOL)canBecomeFirstResponder {
+    return NO;
+}
+
+@end
+
 @implementation UIViewController (Extensions)
 
 - (void)onDelay:(float)delay action:(void (^)(void))block {
@@ -31,7 +43,7 @@
 }
 
 - (void)showAlert:(NSString *)msg actions:(nullable NSArray<UIAlertAction *> *)actions completion:(nullable void (^)(UIAlertAction *action))completion {
-    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"" message:msg preferredStyle:UIAlertControllerStyleAlert];
+    UIAlertController *alert = [UIAlertControllerNoKeyboardWorkaround alertControllerWithTitle:@"" message:msg preferredStyle:UIAlertControllerStyleAlert];
     if (!actions) {
         UIAlertAction *okay = [UIAlertAction actionWithTitle:NSLocalizedString(@"OK", @"OK Button") style:UIAlertActionStyleDefault handler:completion];
         [alert addAction:okay];
