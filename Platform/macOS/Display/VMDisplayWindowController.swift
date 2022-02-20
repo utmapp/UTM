@@ -59,7 +59,7 @@ class VMDisplayWindowController: NSWindowController {
     @IBAction func stopButtonPressed(_ sender: Any) {
         showConfirmAlert(NSLocalizedString("This may corrupt the VM and any unsaved changes will be lost. To quit safely, shut down from the guest.", comment: "VMDisplayWindowController")) {
             DispatchQueue.global(qos: .background).async {
-                self.vm.deleteSaveVM()
+                self.vm.requestVmDeleteState()
                 self.vm.requestVmStop(force: self.isPowerForce)
             }
         }
@@ -68,17 +68,17 @@ class VMDisplayWindowController: NSWindowController {
     @IBAction func startPauseButtonPressed(_ sender: Any) {
         if vm.state == .vmStarted {
             DispatchQueue.global(qos: .background).async {
-                self.vm.pauseVM()
-                self.vm.saveVM()
+                self.vm.requestVmPause()
+                self.vm.requestVmSaveState()
                 return
             }
         } else if vm.state == .vmPaused {
             DispatchQueue.global(qos: .background).async {
-                self.vm.resumeVM()
+                self.vm.requestVmResume()
             }
         } else if vm.state == .vmStopped {
             DispatchQueue.global(qos: .userInitiated).async {
-                self.vm.startVM()
+                self.vm.requestVmStart()
             }
         } else {
             logger.error("Invalid state \(vm.state)")
@@ -88,7 +88,7 @@ class VMDisplayWindowController: NSWindowController {
     @IBAction func restartButtonPressed(_ sender: Any) {
         showConfirmAlert(NSLocalizedString("This will reset the VM and any unsaved state will be lost.", comment: "VMDisplayWindowController")) {
             DispatchQueue.global(qos: .background).async {
-                self.vm.resetVM()
+                self.vm.requestVmReset()
             }
         }
     }
@@ -128,9 +128,9 @@ class VMDisplayWindowController: NSWindowController {
         }
         DispatchQueue.global(qos: .userInitiated).async {
             if (self.vm.state == .vmStopped) {
-                self.vm.startVM()
+                self.vm.requestVmStart()
             } else if (self.vm.state == .vmPaused) {
-                self.vm.resumeVM()
+                self.vm.requestVmResume()
             }
         }
     }

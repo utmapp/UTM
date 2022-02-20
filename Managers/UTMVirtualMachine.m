@@ -249,8 +249,8 @@ const dispatch_time_t kScreenshotPeriodSeconds = 60 * NSEC_PER_SEC;
     return [self loadConfigurationWithReload:YES error:err];
 }
 
-- (void)startVM {
-    [self startVMWithCompletion:^(NSError *error) {
+- (void)requestVmStart {
+    [self vmStartWithCompletion:^(NSError *error) {
         if (error) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 [self.delegate virtualMachine:self didErrorWithMessage:error.localizedDescription];
@@ -259,8 +259,8 @@ const dispatch_time_t kScreenshotPeriodSeconds = 60 * NSEC_PER_SEC;
     }];
 }
 
-- (void)quitVM {
-    [self quitVMWithCompletion:^(NSError *error) {
+- (void)requestVmStop {
+    [self vmStopWithCompletion:^(NSError *error) {
         if (error) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 [self.delegate virtualMachine:self didErrorWithMessage:error.localizedDescription];
@@ -270,7 +270,7 @@ const dispatch_time_t kScreenshotPeriodSeconds = 60 * NSEC_PER_SEC;
 }
 
 - (void)requestVmStopForce:(BOOL)force {
-    [self quitVMForce:force completion:^(NSError *error) {
+    [self vmStopForce:force completion:^(NSError *error) {
         if (error) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 [self.delegate virtualMachine:self didErrorWithMessage:error.localizedDescription];
@@ -279,8 +279,8 @@ const dispatch_time_t kScreenshotPeriodSeconds = 60 * NSEC_PER_SEC;
     }];
 }
 
-- (void)resetVM {
-    [self resetVMWithCompletion:^(NSError *error) {
+- (void)requestVmReset {
+    [self vmResetWithCompletion:^(NSError *error) {
         if (error) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 [self.delegate virtualMachine:self didErrorWithMessage:error.localizedDescription];
@@ -289,8 +289,8 @@ const dispatch_time_t kScreenshotPeriodSeconds = 60 * NSEC_PER_SEC;
     }];
 }
 
-- (void)pauseVM {
-    [self pauseVMWithCompletion:^(NSError *error) {
+- (void)requestVmPause {
+    [self vmPauseWithCompletion:^(NSError *error) {
         if (error) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 [self.delegate virtualMachine:self didErrorWithMessage:error.localizedDescription];
@@ -299,8 +299,8 @@ const dispatch_time_t kScreenshotPeriodSeconds = 60 * NSEC_PER_SEC;
     }];
 }
 
-- (void)saveVM {
-    [self saveVMWithCompletion:^(NSError *error) {
+- (void)requestVmSaveState {
+    [self vmSaveStateWithCompletion:^(NSError *error) {
         if (error) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 [self.delegate virtualMachine:self didErrorWithMessage:error.localizedDescription];
@@ -309,8 +309,8 @@ const dispatch_time_t kScreenshotPeriodSeconds = 60 * NSEC_PER_SEC;
     }];
 }
 
-- (void)deleteSaveVM {
-    [self deleteSaveVMWithCompletion:^(NSError *error) {
+- (void)requestVmDeleteState {
+    [self vmDeleteStateWithCompletion:^(NSError *error) {
         if (error) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 [self.delegate virtualMachine:self didErrorWithMessage:error.localizedDescription];
@@ -319,8 +319,8 @@ const dispatch_time_t kScreenshotPeriodSeconds = 60 * NSEC_PER_SEC;
     }];
 }
 
-- (void)resumeVM {
-    [self resumeVMWithCompletion:^(NSError *error) {
+- (void)requestVmResume {
+    [self vmResumeWithCompletion:^(NSError *error) {
         if (error) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 [self.delegate virtualMachine:self didErrorWithMessage:error.localizedDescription];
@@ -343,35 +343,35 @@ const dispatch_time_t kScreenshotPeriodSeconds = 60 * NSEC_PER_SEC;
     notImplemented;
 }
 
-- (void)startVMWithCompletion:(void (^)(NSError * _Nullable))completion {
+- (void)vmStartWithCompletion:(void (^)(NSError * _Nullable))completion {
     notImplemented;
 }
 
-- (void)quitVMWithCompletion:(void (^)(NSError * _Nullable))completion {
-    return [self quitVMForce:NO completion:completion];
+- (void)vmStopWithCompletion:(void (^)(NSError * _Nullable))completion {
+    return [self vmStopForce:NO completion:completion];
 }
 
-- (void)quitVMForce:(BOOL)force completion:(nonnull void (^)(NSError * _Nullable))completion {
+- (void)vmStopForce:(BOOL)force completion:(nonnull void (^)(NSError * _Nullable))completion {
     notImplemented;
 }
 
-- (void)resetVMWithCompletion:(void (^)(NSError * _Nullable))completion {
+- (void)vmResetWithCompletion:(void (^)(NSError * _Nullable))completion {
     notImplemented;
 }
 
-- (void)pauseVMWithCompletion:(void (^)(NSError * _Nullable))completion {
+- (void)vmPauseWithCompletion:(void (^)(NSError * _Nullable))completion {
     notImplemented;
 }
 
-- (void)saveVMWithCompletion:(void (^)(NSError * _Nullable))completion {
+- (void)vmSaveStateWithCompletion:(void (^)(NSError * _Nullable))completion {
     notImplemented;
 }
 
-- (void)deleteSaveVMWithCompletion:(void (^)(NSError * _Nullable))completion {
+- (void)vmDeleteStateWithCompletion:(void (^)(NSError * _Nullable))completion {
     notImplemented;
 }
 
-- (void)resumeVMWithCompletion:(void (^)(NSError * _Nullable))completion {
+- (void)vmResumeWithCompletion:(void (^)(NSError * _Nullable))completion {
     notImplemented;
 }
 

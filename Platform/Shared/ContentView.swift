@@ -186,20 +186,20 @@ struct ContentView: View {
             case "restart":
                 if let vm = await findVM(), vm.state == .vmStarted {
                     DispatchQueue.global(qos: .background).async {
-                        vm.resetVM()
+                        vm.requestVmReset()
                     }
                 }
                 break
             case "pause":
                 if let vm = await findVM(), vm.state == .vmStarted {
                     DispatchQueue.global(qos: .background).async {
-                        vm.pauseVM()
+                        vm.requestVmPause()
                     }
                 }
             case "resume":
                 if let vm = await findVM(), vm.state == .vmPaused {
                     DispatchQueue.global(qos: .background).async {
-                        vm.resumeVM()
+                        vm.requestVmResume()
                     }
                 }
                 break

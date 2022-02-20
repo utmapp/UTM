@@ -286,7 +286,7 @@ void qmp_rpc_call(CFDictionaryRef args, CFDictionaryRef *ret, Error **err, void 
     }
 }
 
-- (void)vmPowerCommand:(NSString *)command completion:(void (^ _Nullable)(NSError * _Nullable))completion {
+- (void)qmpPowerCommand:(NSString *)command completion:(void (^ _Nullable)(NSError * _Nullable))completion {
     dispatch_async(dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0), ^{
         Error *qerr = NULL;
         NSError *err;
@@ -304,7 +304,7 @@ void qmp_rpc_call(CFDictionaryRef args, CFDictionaryRef *ret, Error **err, void 
     });
 }
 
-- (void)vmHmpCommand:(NSString *)cmd completion:(void (^)(NSString * _Nullable, NSError * _Nullable))completion {
+- (void)qmpHmpCommand:(NSString *)cmd completion:(void (^)(NSString * _Nullable, NSError * _Nullable))completion {
     dispatch_async(dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0), ^{
         Error *qerr = NULL;
         NSError *err;
@@ -325,34 +325,34 @@ void qmp_rpc_call(CFDictionaryRef args, CFDictionaryRef *ret, Error **err, void 
     });
 }
 
-- (void)vmPowerDownWithCompletion:(void (^ _Nullable)(NSError * _Nullable))completion {
-    [self vmPowerCommand:@"system_powerdown" completion:completion];
+- (void)qemuPowerDownWithCompletion:(void (^ _Nullable)(NSError * _Nullable))completion {
+    [self qmpPowerCommand:@"system_powerdown" completion:completion];
 }
 
-- (void)vmResetWithCompletion:(void (^ _Nullable)(NSError * _Nullable))completion {
-    [self vmPowerCommand:@"system_reset" completion:completion];
+- (void)qemuResetWithCompletion:(void (^ _Nullable)(NSError * _Nullable))completion {
+    [self qmpPowerCommand:@"system_reset" completion:completion];
 }
 
-- (void)vmStopWithCompletion:(void (^ _Nullable)(NSError * _Nullable))completion {
-    [self vmPowerCommand:@"stop" completion:completion];
+- (void)qemuStopWithCompletion:(void (^ _Nullable)(NSError * _Nullable))completion {
+    [self qmpPowerCommand:@"stop" completion:completion];
 }
 
-- (void)vmResumeWithCompletion:(void (^ _Nullable)(NSError * _Nullable))completion {
-    [self vmPowerCommand:@"cont" completion:completion];
+- (void)qemuResumeWithCompletion:(void (^ _Nullable)(NSError * _Nullable))completion {
+    [self qmpPowerCommand:@"cont" completion:completion];
 }
 
-- (void)vmQuitWithCompletion:(void (^ _Nullable)(NSError * _Nullable))completion {
-    [self vmPowerCommand:@"quit" completion:completion];
+- (void)qemuQuitWithCompletion:(void (^ _Nullable)(NSError * _Nullable))completion {
+    [self qmpPowerCommand:@"quit" completion:completion];
 }
 
-- (void)vmSaveWithCompletion:(void (^)(NSString * _Nullable, NSError * _Nullable))completion snapshotName:(NSString *)name {
+- (void)qemuSaveStateWithCompletion:(void (^)(NSString * _Nullable, NSError * _Nullable))completion snapshotName:(NSString *)name {
     NSString *cmd = [NSString stringWithFormat:@"savevm %@", name];
-    [self vmHmpCommand:cmd completion:completion];
+    [self qmpHmpCommand:cmd completion:completion];
 }
 
-- (void)vmDeleteSaveWithCompletion:(void (^)(NSString * _Nullable, NSError * _Nullable))completion snapshotName:(NSString *)name {
+- (void)qemuDeleteStateWithCompletion:(void (^)(NSString * _Nullable, NSError * _Nullable))completion snapshotName:(NSString *)name {
     NSString *cmd = [NSString stringWithFormat:@"delvm %@", name];
-    [self vmHmpCommand:cmd completion:completion];
+    [self qmpHmpCommand:cmd completion:completion];
 }
 
 - (void)mouseIndexForAbsolute:(BOOL)absolute withCompletion:(void (^)(int64_t, NSError * _Nullable))completion {
@@ -383,7 +383,7 @@ void qmp_rpc_call(CFDictionaryRef args, CFDictionaryRef *ret, Error **err, void 
 
 - (void)mouseSelect:(int64_t)index withCompletion:(void (^)(NSString * _Nullable, NSError * _Nullable))completion {
     NSString *cmd = [NSString stringWithFormat:@"mouse_set %lld", index];
-    [self vmHmpCommand:cmd completion:completion];
+    [self qmpHmpCommand:cmd completion:completion];
 }
 
 @end

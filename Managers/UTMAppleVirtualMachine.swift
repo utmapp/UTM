@@ -122,7 +122,7 @@ import Virtualization
         // FIXME: Apple VM doesn't support saving bookmarks
     }
     
-    override func startVM() async throws {
+    override func vmStart() async throws {
         guard state == .vmStopped else {
             return
         }
@@ -138,7 +138,7 @@ import Virtualization
         changeState(.vmStarted)
     }
     
-    override func quitVM(force: Bool) async throws {
+    override func vmStop(force: Bool) async throws {
         guard state == .vmStarted else {
             return
         }
@@ -170,7 +170,7 @@ import Virtualization
         }
     }
     
-    override func resetVM() async throws {
+    override func vmReset() async throws {
         guard #available(macOS 12, *) else {
             return
         }
@@ -194,7 +194,7 @@ import Virtualization
         changeState(.vmStarted)
     }
     
-    override func pauseVM() async throws {
+    override func vmPause() async throws {
         guard state == .vmStarted else {
             return
         }
@@ -213,15 +213,15 @@ import Virtualization
         changeState(.vmPaused)
     }
     
-    override func saveVM() async throws {
+    override func vmSaveState() async throws {
         // FIXME: implement this
     }
     
-    override func deleteSaveVM() async throws {
+    override func vmDeleteState() async throws {
         // FIXME: implement this
     }
     
-    override func resumeVM() async throws {
+    override func vmResume() async throws {
         guard state == .vmPaused else {
             return
         }

@@ -48,22 +48,22 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)accessShortcutWithCompletion:(void (^ _Nullable)(NSError * _Nullable))completion;
 
-- (void)startVM;
-- (void)startVMWithCompletion:(void (^)(NSError * _Nullable))completion;
-- (void)quitVM;
-- (void)quitVMWithCompletion:(void (^)(NSError * _Nullable))completion;
+- (void)requestVmStart;
+- (void)vmStartWithCompletion:(void (^)(NSError * _Nullable))completion;
+- (void)requestVmStop;
+- (void)vmStopWithCompletion:(void (^)(NSError * _Nullable))completion;
 - (void)requestVmStopForce:(BOOL)force NS_SWIFT_NAME(requestVmStop(force:));
-- (void)quitVMForce:(BOOL)force completion:(void (^)(NSError * _Nullable))completion NS_SWIFT_NAME(quitVM(force:completion:));
-- (void)resetVM;
-- (void)resetVMWithCompletion:(void (^)(NSError * _Nullable))completion;
-- (void)pauseVM;
-- (void)pauseVMWithCompletion:(void (^)(NSError * _Nullable))completion;
-- (void)saveVM;
-- (void)saveVMWithCompletion:(void (^)(NSError * _Nullable))completion;
-- (void)deleteSaveVM;
-- (void)deleteSaveVMWithCompletion:(void (^)(NSError * _Nullable))completion;
-- (void)resumeVM;
-- (void)resumeVMWithCompletion:(void (^)(NSError * _Nullable))completion;
+- (void)vmStopForce:(BOOL)force completion:(void (^)(NSError * _Nullable))completion NS_SWIFT_NAME(vmStop(force:completion:));
+- (void)requestVmReset;
+- (void)vmResetWithCompletion:(void (^)(NSError * _Nullable))completion;
+- (void)requestVmPause;
+- (void)vmPauseWithCompletion:(void (^)(NSError * _Nullable))completion;
+- (void)requestVmSaveState;
+- (void)vmSaveStateWithCompletion:(void (^)(NSError * _Nullable))completion;
+- (void)requestVmDeleteState;
+- (void)vmDeleteStateWithCompletion:(void (^)(NSError * _Nullable))completion;
+- (void)requestVmResume;
+- (void)vmResumeWithCompletion:(void (^)(NSError * _Nullable))completion;
 
 @end
 

@@ -215,10 +215,10 @@ import SwiftUI
         }
         DispatchQueue.global(qos: .background).async {
             if viewController.vm.state == .vmStarted {
-                viewController.vm.pauseVM()
-                viewController.vm.saveVM()
+                viewController.vm.requestVmPause()
+                viewController.vm.requestVmSaveState()
             } else if viewController.vm.state == .vmPaused {
-                viewController.vm.resumeVM()
+                viewController.vm.requestVmResume()
             }
         }
     }
@@ -230,8 +230,8 @@ import SwiftUI
         if viewController.vm.state == .vmStarted {
             let yes = UIAlertAction(title: NSLocalizedString("Yes", comment: "VMDisplayViewController"), style: .destructive) { action in
                 DispatchQueue.global(qos: .background).async {
-                    viewController.vm.deleteSaveVM()
-                    viewController.vm.quitVM()
+                    viewController.vm.requestVmDeleteState()
+                    viewController.vm.requestVmStop()
                     viewController.terminateApplication()
                 }
             }
@@ -252,7 +252,7 @@ import SwiftUI
         }
         let yes = UIAlertAction(title: NSLocalizedString("Yes", comment: "VMDisplayViewController"), style: .destructive) { action in
             DispatchQueue.global(qos: .background).async {
-                viewController.vm.resetVM()
+                viewController.vm.requestVmReset()
             }
         }
         let no = UIAlertAction(title: NSLocalizedString("No", comment: "VMDisplayViewController"), style: .cancel, handler: nil)

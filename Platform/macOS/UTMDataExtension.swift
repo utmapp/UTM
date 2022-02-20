@@ -56,7 +56,7 @@ extension UTMData {
     
     func stop(vm: UTMVirtualMachine) throws {
         if vm.viewState.suspended {
-            vm.deleteSaveVM()
+            vm.requestVmDeleteState()
         }
         vm.requestVmStop(force: true)
         if let window = vmWindows[vm] {

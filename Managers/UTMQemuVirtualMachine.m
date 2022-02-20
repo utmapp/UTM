@@ -259,7 +259,7 @@ NSString *const kSuspendSnapshotName = @"suspend";
 
 #pragma mark - VM actions
 
-- (void)_startVMWithCompletion:(void (^)(NSError * _Nullable))completion {
+- (void)_vmStartWithCompletion:(void (^)(NSError * _Nullable))completion {
     if (self.state != kVMStopped) {
         completion([self errorGeneric]);
         return;
@@ -323,7 +323,7 @@ NSString *const kSuspendSnapshotName = @"suspend";
             });
         }
         dispatch_semaphore_signal(_self.qemuDidExitEvent);
-        [_self quitVMForce:YES completion:^(NSError *error){}];
+        [_self vmStopForce:YES completion:^(NSError *error){}];
     }];
     // connect to QMP
     [self.qemu connectWithCompletion:^(BOOL success, NSError *error) {
@@ -372,7 +372,7 @@ NSString *const kSuspendSnapshotName = @"suspend";
                 [self restoreViewState];
             });
             if (self.viewState.suspended) {
-                [self _deleteSaveVMWithCompletion:completion];
+                [self _vmDeleteStateWithCompletion:completion];
             } else {
                 completion(nil); // everything successful
             }
@@ -380,9 +380,9 @@ NSString *const kSuspendSnapshotName = @"suspend";
     } retries:kQMPMaxConnectionTries];
 }
 
-- (void)startVMWithCompletion:(void (^)(NSError * _Nullable))completion {
+- (void)vmStartWithCompletion:(void (^)(NSError * _Nullable))completion {
     dispatch_async(self.vmOperations, ^{
-        [self _startVMWithCompletion:^(NSError *err){
+        [self _vmStartWithCompletion:^(NSError *err){
             if (err) { // delete suspend state on error
                 dispatch_sync(dispatch_get_main_queue(), ^{
                     self.viewState.suspended = NO;
@@ -394,7 +394,7 @@ NSString *const kSuspendSnapshotName = @"suspend";
     });
 }
 
-- (void)_quitVMForce:(BOOL)force completion:(void (^)(NSError * _Nullable))completion {
+- (void)_vmStopForce:(BOOL)force completion:(void (^)(NSError * _Nullable))completion {
     if (self.state == kVMStopped) {
         completion(nil);
         return;
@@ -413,7 +413,7 @@ NSString *const kSuspendSnapshotName = @"suspend";
     [self saveViewState];
     
     [self.qemu cancelConnectRetry];
-    [_qemu vmQuitWithCompletion:nil];
+    [_qemu qemuQuitWithCompletion:nil];
     if (force || dispatch_semaphore_wait(self.qemuWillQuitEvent, dispatch_time(DISPATCH_TIME_NOW, kStopTimeout)) != 0) {
         UTMLog(@"Stop operation timeout or force quit");
     }
@@ -437,13 +437,13 @@ NSString *const kSuspendSnapshotName = @"suspend";
     [self.logging endLog];
 }
 
-- (void)quitVMForce:(BOOL)force completion:(void (^)(NSError * _Nullable))completion {
+- (void)vmStopForce:(BOOL)force completion:(void (^)(NSError * _Nullable))completion {
     dispatch_async(self.vmOperations, ^{
-        [self _quitVMForce:force completion:completion];
+        [self _vmStopForce:force completion:completion];
     });
 }
 
-- (void)_resetVMWithCompletion:(void (^)(NSError * _Nullable))completion {
+- (void)_vmResetWithCompletion:(void (^)(NSError * _Nullable))completion {
     if (self.state != kVMStarted && self.state != kVMPaused) {
         completion([self errorGeneric]);
         return;
@@ -453,12 +453,12 @@ NSString *const kSuspendSnapshotName = @"suspend";
     });
     [self changeState:kVMStopping];
     if (self.viewState.suspended) {
-        [self _deleteSaveVMWithCompletion:^(NSError *error) {}];
+        [self _vmDeleteStateWithCompletion:^(NSError *error) {}];
     }
     [self saveViewState];
     __block NSError *resetError = nil;
     dispatch_semaphore_t resetTriggeredEvent = dispatch_semaphore_create(0);
-    [_qemu vmResetWithCompletion:^(NSError *err) {
+    [_qemu qemuResetWithCompletion:^(NSError *err) {
         UTMLog(@"reset callback: err? %@", err);
         if (err) {
             UTMLog(@"error: %@", err);
@@ -478,13 +478,13 @@ NSString *const kSuspendSnapshotName = @"suspend";
     completion(resetError);
 }
 
-- (void)resetVMWithCompletion:(void (^)(NSError * _Nullable))completion {
+- (void)vmResetWithCompletion:(void (^)(NSError * _Nullable))completion {
     dispatch_async(self.vmOperations, ^{
-        [self _resetVMWithCompletion:completion];
+        [self _vmResetWithCompletion:completion];
     });
 }
 
-- (void)_pauseVMWithCompletion:(void (^)(NSError * _Nullable))completion {
+- (void)_vmPauseWithCompletion:(void (^)(NSError * _Nullable))completion {
     if (self.state != kVMStarted) {
         completion([self errorGeneric]);
         return;
@@ -499,7 +499,7 @@ NSString *const kSuspendSnapshotName = @"suspend";
     [self saveScreenshot];
     __block NSError *suspendError = nil;
     dispatch_semaphore_t suspendTriggeredEvent = dispatch_semaphore_create(0);
-    [_qemu vmStopWithCompletion:^(NSError * err) {
+    [_qemu qemuStopWithCompletion:^(NSError * err) {
         UTMLog(@"stop callback: err? %@", err);
         if (err) {
             UTMLog(@"error: %@", err);
@@ -519,20 +519,20 @@ NSString *const kSuspendSnapshotName = @"suspend";
     completion(suspendError);
 }
 
-- (void)pauseVMWithCompletion:(void (^)(NSError * _Nullable))completion {
+- (void)vmPauseWithCompletion:(void (^)(NSError * _Nullable))completion {
     dispatch_async(self.vmOperations, ^{
-        [self _pauseVMWithCompletion:completion];
+        [self _vmPauseWithCompletion:completion];
     });
 }
 
-- (void)_saveVMWithCompletion:(void (^)(NSError * _Nullable))completion {
+- (void)_vmSaveStateWithCompletion:(void (^)(NSError * _Nullable))completion {
     if (self.state != kVMPaused && self.state != kVMStarted) {
         completion([self errorGeneric]);
         return;
     }
     __block NSError *saveError = nil;
     dispatch_semaphore_t saveTriggeredEvent = dispatch_semaphore_create(0);
-    [_qemu vmSaveWithCompletion:^(NSString *result, NSError *err) {
+    [_qemu qemuSaveStateWithCompletion:^(NSString *result, NSError *err) {
         UTMLog(@"save callback: %@", result);
         if (err) {
             UTMLog(@"error: %@", err);
@@ -560,17 +560,17 @@ NSString *const kSuspendSnapshotName = @"suspend";
     completion(saveError);
 }
 
-- (void)saveVMWithCompletion:(void (^)(NSError * _Nullable))completion {
+- (void)vmSaveStateWithCompletion:(void (^)(NSError * _Nullable))completion {
     dispatch_async(self.vmOperations, ^{
-        [self _saveVMWithCompletion:completion];
+        [self _vmSaveStateWithCompletion:completion];
     });
 }
 
-- (void)_deleteSaveVMWithCompletion:(void (^)(NSError * _Nullable))completion {
+- (void)_vmDeleteStateWithCompletion:(void (^)(NSError * _Nullable))completion {
     __block NSError *deleteError = nil;
     if (self.qemu) { // if QEMU is running
         dispatch_semaphore_t deleteTriggeredEvent = dispatch_semaphore_create(0);
-        [_qemu vmDeleteSaveWithCompletion:^(NSString *result, NSError *err) {
+        [_qemu qemuDeleteStateWithCompletion:^(NSString *result, NSError *err) {
             UTMLog(@"delete save callback: %@", result);
             if (err) {
                 UTMLog(@"error: %@", err);
@@ -593,13 +593,13 @@ NSString *const kSuspendSnapshotName = @"suspend";
     completion(deleteError);
 }
 
-- (void)deleteSaveVMWithCompletion:(void (^)(NSError * _Nullable))completion {
+- (void)vmDeleteStateWithCompletion:(void (^)(NSError * _Nullable))completion {
     dispatch_async(self.vmOperations, ^{
-        [self _deleteSaveVMWithCompletion:completion];
+        [self _vmDeleteStateWithCompletion:completion];
     });
 }
 
-- (void)_resumeVMWithCompletion:(void (^)(NSError * _Nullable))completion {
+- (void)_vmResumeWithCompletion:(void (^)(NSError * _Nullable))completion {
     if (self.state != kVMPaused) {
         completion([self errorGeneric]);
         return;
@@ -607,7 +607,7 @@ NSString *const kSuspendSnapshotName = @"suspend";
     [self changeState:kVMResuming];
     __block NSError *resumeError = nil;
     dispatch_semaphore_t resumeTriggeredEvent = dispatch_semaphore_create(0);
-    [_qemu vmResumeWithCompletion:^(NSError *err) {
+    [_qemu qemuResumeWithCompletion:^(NSError *err) {
         UTMLog(@"resume callback: err? %@", err);
         if (err) {
             UTMLog(@"error: %@", err);
@@ -628,15 +628,15 @@ NSString *const kSuspendSnapshotName = @"suspend";
         [self changeState:kVMStopped];
     }
     if (self.viewState.suspended) {
-        [self _deleteSaveVMWithCompletion:^(NSError *error){}];
+        [self _vmDeleteStateWithCompletion:^(NSError *error){}];
     } else {
         completion(nil);
     }
 }
 
-- (void)resumeVMWithCompletion:(void (^)(NSError * _Nullable))completion {
+- (void)vmResumeWithCompletion:(void (^)(NSError * _Nullable))completion {
     dispatch_async(self.vmOperations, ^{
-        [self _resumeVMWithCompletion:completion];
+        [self _vmResumeWithCompletion:completion];
     });
 }
 
@@ -681,7 +681,7 @@ NSString *const kSuspendSnapshotName = @"suspend";
 - (void)qemuWillQuit:(UTMQemuManager *)manager guest:(BOOL)guest reason:(ShutdownCause)reason {
     UTMLog(@"qemuWillQuit, reason = %s", ShutdownCause_str(reason));
     dispatch_semaphore_signal(self.qemuWillQuitEvent);
-    [self quitVMWithCompletion:^(NSError *error) {}]; // trigger quit
+    [self vmStopWithCompletion:^(NSError *error) {}]; // trigger quit
 }
 
 - (void)qemuError:(UTMQemuManager *)manager error:(NSString *)error {
@@ -689,7 +689,7 @@ NSString *const kSuspendSnapshotName = @"suspend";
     dispatch_async(dispatch_get_main_queue(), ^{
         [self.delegate virtualMachine:self didErrorWithMessage:error];
     });
-    [self quitVMForce:YES completion:^(NSError *error) {}];
+    [self vmStopForce:YES completion:^(NSError *error) {}];
 }
 
 // this is called right before we execute qmp_cont so we can setup additional option

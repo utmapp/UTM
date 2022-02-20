@@ -80,7 +80,7 @@ NSString* const kVMSendTerminalSizeHandler = @"UTMSendTerminalSize";
     [super viewWillAppear: animated];
 
     if (self.vm.state == kVMStopped) {
-        [self.vm startVM];
+        [self.vm requestVmStart];
     }
 }
 

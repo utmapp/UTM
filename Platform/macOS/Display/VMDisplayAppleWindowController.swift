@@ -293,7 +293,7 @@ extension VMDisplayAppleWindowController {
             self.enterSuspended(isBusy: true)
             self.appleConfig.macRecoveryIpswURL = nil
             // start VM
-            self.vm.startVM()
+            self.vm.requestVmStart()
         }
     }
     

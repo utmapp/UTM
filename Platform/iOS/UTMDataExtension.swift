@@ -53,7 +53,7 @@ extension UTMData {
     
     func stop(vm: UTMVirtualMachine) throws {
         if vm.viewState.suspended {
-            vm.deleteSaveVM()
+            vm.requestVmDeleteState()
         }
     }
     

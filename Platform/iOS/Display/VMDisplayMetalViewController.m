@@ -106,7 +106,7 @@
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     if (self.vm.state == kVMStopped) {
-        [self.vm startVM];
+        [self.vm requestVmStart];
     }
 }
 
