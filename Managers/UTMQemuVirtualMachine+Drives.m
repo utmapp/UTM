@@ -127,6 +127,8 @@ extern NSString *const kUTMErrorDomain;
 
 - (BOOL)restoreRemovableDrivesFromBookmarksWithError:(NSError * _Nullable __autoreleasing *)error {
     NSArray<UTMDrive *> *drives = self.drives;
+    BOOL ret = YES;
+    BOOL viewStateChanged = NO;
     for (UTMDrive *drive in drives) {
         BOOL persistent = NO;
         NSData *bookmark = [self.viewState bookmarkForRemovableDrive:drive.name persistent:&persistent];
@@ -135,12 +137,17 @@ extern NSString *const kUTMErrorDomain;
             if (drive.status == UTMDriveStatusFixed) {
                 UTMLog(@"%@ is no longer removable, removing bookmark", drive.name);
                 [self.viewState removeBookmarkForRemovableDrive:drive.name];
+                viewStateChanged = YES;
                 continue;
             }
             if (![self changeMediumForDriveInternal:drive bookmark:bookmark securityScoped:persistent error:error]) {
 #if TARGET_OS_IPHONE
                 UTMLog(@"failed to change %@ image", drive.name);
-                return NO;
+                // remove the bad bookmark
+                [self.viewState removeBookmarkForRemovableDrive:drive.name];
+                viewStateChanged = YES;
+                ret = NO;
+                break;
 #else
                 // On macOS, at this point it is possible that a disk image was chosen while the VM was powered down.
                 // This results in an invalid bookmark so we need to re-run changeMediumForDrive.
@@ -150,16 +157,21 @@ extern NSString *const kUTMErrorDomain;
                     NSURL* url = [NSURL fileURLWithPath:path];
                     if (![self changeMediumForDrive:drive url:url error:error]) {
                         UTMLog(@"failed to change %@ image to %@", drive.name, path);
-                        return NO;
+                        // remove the bad bookmark
+                        [self.viewState removeBookmarkForRemovableDrive:drive.name];
+                        viewStateChanged = YES;
+                        ret = NO;
+                        break;
                     }
-                } else {
-                    continue;
                 }
 #endif
             }
         }
     }
-    return YES;
+    if (viewStateChanged) {
+        [self saveViewState];
+    }
+    return ret;
 }
 
 @end

@@ -142,6 +142,8 @@ extern const NSURLBookmarkResolutionOptions kUTMBookmarkResolutionOptions;
             UTMLog(@"Ignoring error on legacy shared directory");
             return YES;
         } else {
+            // clear the broken bookmark
+            [self clearSharedDirectory];
             return NO;
         }
     }
