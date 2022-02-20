@@ -36,10 +36,6 @@ class VMDisplayWindowController: NSWindowController {
     var shouldAutoStartVM: Bool = true
     var vm: UTMVirtualMachine!
     var onClose: ((Notification) -> Void)?
-    var vmMessage: String?
-    var vmConfiguration: UTMConfigurable?
-    var toolbarVisible: Bool = false // ignored
-    var keyboardVisible: Bool = false // ignored
     
     override var windowNibName: NSNib.Name? {
         "VMDisplayWindow"

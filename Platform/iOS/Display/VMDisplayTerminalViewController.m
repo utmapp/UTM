@@ -144,16 +144,16 @@ NSString* const kVMSendTerminalSizeHandler = @"UTMSendTerminalSize";
 
 - (void)handleGestureFromJs:(NSString *)gesture {
     if ([gesture isEqualToString:@"threeSwipeUp"]) {
-        if (self.toolbarVisible) {
-            self.toolbarVisible = NO;
+        if (self.toolbar.hasLegacyToolbar && self.toolbar.isLegacyToolbarVisible) {
+            [self.toolbar showLegacyToolbar];
         } else if (!self.keyboardVisible) {
             self.keyboardVisible = YES;
         }
     } else if ([gesture isEqualToString:@"threeSwipeDown"]) {
         if (self.keyboardVisible) {
             self.keyboardVisible = NO;
-        } else if (!self.toolbarVisible) {
-            self.toolbarVisible = YES;
+        } else if (self.toolbar.hasLegacyToolbar && !self.toolbar.isLegacyToolbarVisible) {
+            [self.toolbar hideLegacyToolbar];
         }
     }
 }

@@ -27,6 +27,7 @@
 #import "UTMLogging.h"
 #import "UTMQemuVirtualMachine.h"
 #import "UTMQemuVirtualMachine+SPICE.h"
+#import "UTM-Swift.h"
 
 const CGFloat kScrollSpeedReduction = 100.0f;
 const CGFloat kCursorResistance = 50.0f;
@@ -434,8 +435,8 @@ static CGFloat CGPointToPixel(CGFloat point) {
 
 - (IBAction)gestureSwipeUp:(UISwipeGestureRecognizer *)sender {
     if (sender.state == UIGestureRecognizerStateEnded) {
-        if (self.toolbarVisible) {
-            self.toolbarVisible = NO;
+        if (self.toolbar.hasLegacyToolbar && self.toolbar.isLegacyToolbarVisible) {
+            [self.toolbar hideLegacyToolbar];
         } else if (!self.keyboardVisible) {
             self.keyboardVisible = YES;
         }
@@ -446,8 +447,8 @@ static CGFloat CGPointToPixel(CGFloat point) {
     if (sender.state == UIGestureRecognizerStateEnded) {
         if (self.keyboardVisible) {
             self.keyboardVisible = NO;
-        } else if (!self.toolbarVisible) {
-            self.toolbarVisible = YES;
+        } else if (self.toolbar.hasLegacyToolbar && !self.toolbar.isLegacyToolbarVisible) {
+            [self.toolbar showLegacyToolbar];
         }
     }
 }

@@ -33,10 +33,6 @@ typedef NS_ENUM(NSUInteger, UTMVMState) {
 
 @protocol UTMVirtualMachineDelegate <NSObject>
 
-@property (nonatomic, weak) id<UTMConfigurable> vmConfiguration;
-@property (nonatomic, assign) BOOL toolbarVisible;
-@property (nonatomic, assign) BOOL keyboardVisible;
-
 /// Called when VM state changes
 ///
 /// Will always be called from the main thread.

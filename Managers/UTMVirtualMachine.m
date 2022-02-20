@@ -55,12 +55,6 @@ const dispatch_time_t kScreenshotPeriodSeconds = 60 * NSEC_PER_SEC;
 
 @implementation UTMVirtualMachine
 
-- (void)setDelegate:(id<UTMVirtualMachineDelegate>)delegate {
-    _delegate = delegate;
-    _delegate.vmConfiguration = self.config;
-    [self restoreViewState];
-}
-
 - (void)setState:(UTMVMState)state {
     [self propertyWillChange];
     _state = state;
@@ -416,16 +410,6 @@ const dispatch_time_t kScreenshotPeriodSeconds = 60 * NSEC_PER_SEC;
 }
 
 #pragma mark - View State
-
-- (void)syncViewState {
-    self.viewState.showToolbar = self.delegate.toolbarVisible;
-    self.viewState.showKeyboard = self.delegate.keyboardVisible;
-}
-
-- (void)restoreViewState {
-    self.delegate.toolbarVisible = self.viewState.showToolbar;
-    self.delegate.keyboardVisible = self.viewState.showKeyboard;
-}
 
 - (void)loadViewState {
     NSDictionary *plist = [self loadPlist:[self.path URLByAppendingPathComponent:kUTMBundleViewFilename] withError:nil];

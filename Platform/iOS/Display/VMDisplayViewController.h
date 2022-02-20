@@ -50,6 +50,7 @@
 
 @property (nonatomic) BOOL hasAutoSave;
 @property (nonatomic, readwrite) BOOL prefersStatusBarHidden;
+@property (nonatomic) BOOL keyboardVisible;
 @property (nonatomic, strong) UTMQemuVirtualMachine *vm;
 
 @property (nonatomic, strong) NSMutableArray<UIKeyCommand *> *mutableKeyCommands;

@@ -20,7 +20,7 @@ class VMDisplayQemuWindowController: VMDisplayWindowController {
     }
     
     var vmQemuConfig: UTMQemuConfiguration! {
-        vmConfiguration as? UTMQemuConfiguration
+        vm?.config as? UTMQemuConfiguration
     }
     
     override func enterLive() {

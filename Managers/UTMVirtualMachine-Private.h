@@ -32,8 +32,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)loadConfigurationWithReload:(BOOL)reload error:(NSError * _Nullable __autoreleasing *)err;
 - (NSDictionary *)loadPlist:(NSURL *)path withError:(NSError **)err;
 - (BOOL)savePlist:(NSURL *)path dict:(NSDictionary *)dict withError:(NSError **)err;
-- (void)syncViewState;
-- (void)restoreViewState;
 - (void)loadViewState;
 - (void)saveViewState;
 

@@ -31,6 +31,8 @@ import SwiftUI
         }
     }
     
+    @objc private(set) var isLegacyToolbarVisible: Bool = false
+    
     private(set) var lastDisplayChangeResize: Bool = false {
         willSet {
             optionalObjectWillChange()
@@ -93,10 +95,7 @@ import SwiftUI
         }
     }
     
-    @objc func hide() {
-        guard hasLegacyToolbar else {
-            return
-        }
+    @objc func hideLegacyToolbar() {
         guard let viewController = self.viewController else {
             return
         }
@@ -110,12 +109,10 @@ import SwiftUI
                 UserDefaults.standard.set(true, forKey: "HasShownHideToolbarAlert")
             }
         }
+        isLegacyToolbarVisible = false
     }
     
-    @objc func show() {
-        guard hasLegacyToolbar else {
-            return
-        }
+    @objc func showLegacyToolbar() {
         guard let viewController = self.viewController else {
             return
         }
@@ -126,6 +123,7 @@ import SwiftUI
             }
         } completion: { _ in
         }
+        isLegacyToolbarVisible = true
     }
     
     private func setIsUserInteracting(_ value: Bool) {
@@ -166,7 +164,9 @@ import SwiftUI
             viewController.pauseResumeButton.isEnabled = false
             viewController.powerExitButton.setImage(UIImage(named: "Toolbar Exit")!, for: .normal)
         } else {
-            viewController.toolbarVisible = true
+            if hasLegacyToolbar {
+                showLegacyToolbar()
+            }
             viewController.pauseResumeButton.isEnabled = true
             viewController.pauseResumeButton.setImage(UIImage(named: "Toolbar Start")!, for: .normal)
             viewController.powerExitButton.setImage(UIImage(named: "Toolbar Exit")!, for: .normal)
@@ -267,10 +267,10 @@ import SwiftUI
     }
     
     @objc func hideToolbarPressed() {
-        guard let viewController = self.viewController else {
+        guard hasLegacyToolbar else {
             return
         }
-        viewController.toolbarVisible = false
+        hideLegacyToolbar()
     }
     
     @objc func drivesPressed() {

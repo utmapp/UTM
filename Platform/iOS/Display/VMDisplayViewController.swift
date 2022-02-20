@@ -72,15 +72,15 @@ public extension VMDisplayViewController {
             childView.bindFrameToSuperviewBounds()
             addChild(floatingToolbarViewController)
             floatingToolbarViewController.didMove(toParent: self)
+        } else {
+            // always show legacy toolbar on start
+            toolbar.showLegacyToolbar()
         }
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         loadDisplayViewFromNib()
-        
-        // view state and observers
-        toolbarVisible = true
         
         if largeScreen {
             prefersStatusBarHidden = true
@@ -121,6 +121,11 @@ public extension VMDisplayViewController {
         notifications.add(nc.addObserver(forName: .UTMImport, object: nil, queue: .main) { _ in
             _self?.handleImportUTM()
         })
+        
+        // restore keyboard state
+        if UserDefaults.standard.bool(forKey: "LastKeyboardVisible") {
+            keyboardVisible = true
+        }
     }
     
     override func viewWillDisappear(_ animated: Bool) {

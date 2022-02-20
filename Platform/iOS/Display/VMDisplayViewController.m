@@ -22,12 +22,10 @@
 #pragma mark - Properties
 
 @synthesize prefersStatusBarHidden = _prefersStatusBarHidden;
-@synthesize vmConfiguration;
 @synthesize keyboardVisible = _keyboardVisible;
-@synthesize toolbarVisible = _toolbarVisible;
 
 - (UTMQemuConfiguration *)vmQemuConfig {
-    return (UTMQemuConfiguration *)vmConfiguration;
+    return (UTMQemuConfiguration *)self.vm.config;
 }
 
 - (BOOL)prefersHomeIndicatorAutoHidden {
@@ -43,13 +41,11 @@
     [self setNeedsStatusBarAppearanceUpdate];
 }
 
-- (void)setToolbarVisible:(BOOL)toolbarVisible {
-    if (toolbarVisible) {
-        [self.toolbar show];
-    } else {
-        [self.toolbar hide];
+- (void)setKeyboardVisible:(BOOL)keyboardVisible {
+    if (_keyboardVisible != keyboardVisible) {
+        [[NSUserDefaults standardUserDefaults] setBool:keyboardVisible forKey:@"LastKeyboardVisible"];
     }
-    _toolbarVisible = toolbarVisible;
+    _keyboardVisible = keyboardVisible;
 }
 
 #pragma mark - View handling

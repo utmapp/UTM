@@ -58,6 +58,11 @@ NSString *const kSuspendSnapshotName = @"suspend";
     return (UTMQemuConfiguration *)self.config;
 }
 
+- (void)setDelegate:(id<UTMVirtualMachineDelegate>)delegate {
+    [super setDelegate:delegate];
+    [self.ioService restoreViewState:self.viewState];
+}
+
 - (id)ioDelegate {
     if ([self.ioService isKindOfClass:[UTMSpiceIO class]]) {
         return ((UTMSpiceIO *)self.ioService).delegate;
@@ -369,7 +374,7 @@ NSString *const kSuspendSnapshotName = @"suspend";
             assert(self.ioService.isConnected);
             [self changeState:kVMStarted];
             dispatch_async(dispatch_get_main_queue(), ^{
-                [self restoreViewState];
+                [self.ioService restoreViewState:self.viewState];
             });
             if (self.viewState.suspended) {
                 [self _vmDeleteStateWithCompletion:completion];
@@ -404,7 +409,7 @@ NSString *const kSuspendSnapshotName = @"suspend";
         return;
     }
     dispatch_sync(dispatch_get_main_queue(), ^{
-        [self syncViewState];
+        [self.ioService syncViewState:self.viewState];
     });
     if (!force) {
         [self changeState:kVMStopping];
@@ -449,7 +454,7 @@ NSString *const kSuspendSnapshotName = @"suspend";
         return;
     }
     dispatch_sync(dispatch_get_main_queue(), ^{
-        [self syncViewState];
+        [self.ioService syncViewState:self.viewState];
     });
     [self changeState:kVMStopping];
     if (self.viewState.suspended) {
@@ -490,7 +495,7 @@ NSString *const kSuspendSnapshotName = @"suspend";
         return;
     }
     dispatch_sync(dispatch_get_main_queue(), ^{
-        [self syncViewState];
+        [self.ioService syncViewState:self.viewState];
     });
     [self changeState:kVMPausing];
     dispatch_sync(dispatch_get_main_queue(), ^{
@@ -622,7 +627,7 @@ NSString *const kSuspendSnapshotName = @"suspend";
     if (!resumeError) {
         [self changeState:kVMStarted];
         dispatch_async(dispatch_get_main_queue(), ^{
-            [self restoreViewState];
+            [self.ioService restoreViewState:self.viewState];
         });
     } else {
         [self changeState:kVMStopped];
@@ -696,18 +701,6 @@ NSString *const kSuspendSnapshotName = @"suspend";
 - (void)qemuQmpDidConnect:(UTMQemuManager *)manager {
     UTMLog(@"qemuQmpDidConnect");
     dispatch_semaphore_signal(self.qemuDidConnectEvent);
-}
-
-#pragma mark - View State
-
-- (void)syncViewState {
-    [self.ioService syncViewState:self.viewState];
-    [super syncViewState];
-}
-
-- (void)restoreViewState {
-    [self.ioService restoreViewState:self.viewState];
-    [super restoreViewState];
 }
 
 #pragma mark - Screenshot
