@@ -165,7 +165,11 @@ const CGFloat kScrollResistance = 10.0f;
 }
 
 - (VMMouseType)indirectMouseType {
-    return VMMouseTypeRelative;
+    if (@available(iOS 14.0, *)) {
+        return VMMouseTypeRelative;
+    } else {
+        return VMMouseTypeAbsolute; // legacy iOS 13.4 mouse handling requires absolute
+    }
 }
 
 #pragma mark - Converting view points to VM display points
