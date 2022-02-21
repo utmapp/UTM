@@ -51,7 +51,7 @@ struct VMRemovableDrivesView: View {
                     } label: {
                         Label { Text("Shared Directory") } icon: {
                             Image(systemName: hasSharedDir ? "externaldrive.fill.badge.person.crop" : "externaldrive.badge.person.crop") }
-                    }.disabled(vm.viewState.suspended)
+                    }.disabled(vm.viewState.hasSaveState)
                     Spacer()
                     SharedPath(path: vm.viewState.sharedDirectoryPath)
                 }.fileImporter(isPresented: $shareDirectoryFileImportPresented, allowedContentTypes: [.folder], onCompletion: selectShareDirectory)
@@ -97,7 +97,7 @@ struct VMRemovableDrivesView: View {
                         }
                     } label: {
                         DriveLabel(drive: drive)
-                    }.disabled(vm.viewState.suspended)
+                    }.disabled(vm.viewState.hasSaveState)
                     Spacer()
                     // Disk image path, or (empty)
                     Text(pathFor(drive))

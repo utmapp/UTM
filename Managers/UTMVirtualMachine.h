@@ -31,9 +31,12 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly, nullable) NSURL *path;
 
 /// True if the .utm is loaded outside of the default storage
+///
+/// This property is observable and must only be accessed on the main thread. 
 @property (nonatomic) BOOL isShortcut;
 
 /// Bookmark data of the .utm bundle (can be inside or outside storage)
+///
 /// This is nil if a bookmark cannot be created for any reason (such as access denied)
 @property (nonatomic, readonly, nullable) NSData *bookmark;
 
@@ -41,17 +44,42 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, weak, nullable) id<UTMVirtualMachineDelegate> delegate;
 
 /// Configuration for this VM
+///
+/// This property is observable and must only be accessed on the main thread.
 @property (nonatomic, readonly) id<UTMConfigurable> config;
 
 /// Additional configuration on a short lived, per-host basis
-/// This includes display size, bookmarks to removable drives, etc
+///
+/// This includes display size, bookmarks to removable drives, etc.
+/// This property is observable and must only be accessed on the main thread.
 @property (nonatomic, readonly) UTMViewState *viewState;
 
 /// Current VM state, can observe this property for state changes or use the delegate
+///
+/// This property is observable and must only be accessed on the main thread.
 @property (nonatomic, assign, readonly) UTMVMState state;
 
 /// If non-null, is the most recent screenshot image of the running VM
+///
+/// This property is observable and must only be accessed on the main thread.
 @property (nonatomic, readonly, nullable) CSScreenshot *screenshot;
+
+/// Display VM as "deleted" for UI elements
+///
+/// This is a workaround for SwiftUI bugs not hiding deleted elements.
+/// This property is observable and must only be accessed on the main thread.
+@property (nonatomic) BOOL isDeleted;
+
+/// Display VM as "busy" for UI elements
+///
+/// This is shorthand for checking if the `state` is one of the busy ones.
+/// This property is observable and must only be accessed on the main thread.
+@property (nonatomic, readonly) BOOL isBusy;
+
+/// Checks if a save state exists
+///
+/// This property is observable and must only be accessed on the main thread.
+@property (nonatomic, readonly) BOOL hasSaveState;
 
 /// Checks if a file URL is a .utm bundle
 /// @param url File URL

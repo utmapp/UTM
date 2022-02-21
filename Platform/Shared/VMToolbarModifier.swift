@@ -56,7 +56,7 @@ struct VMToolbarModifier: ViewModifier {
                         Label("Remove", systemImage: "trash")
                             .labelStyle(.iconOnly)
                     }.help("Remove selected shortcut")
-                    .disabled(vm.viewState.suspended || vm.viewState.active)
+                    .disabled(vm.state != .vmStopped)
                     .padding(.leading, padding)
                 } else {
                     DestructiveButton {
@@ -65,7 +65,7 @@ struct VMToolbarModifier: ViewModifier {
                         Label("Delete", systemImage: "trash")
                             .labelStyle(.iconOnly)
                     }.help("Delete selected VM")
-                    .disabled(vm.viewState.suspended || vm.viewState.active)
+                    .disabled(vm.state != .vmStopped)
                     .padding(.leading, padding)
                 }
                 #if !os(macOS)
@@ -93,7 +93,7 @@ struct VMToolbarModifier: ViewModifier {
                         Label("Move", systemImage: "arrow.down.doc")
                             .labelStyle(.iconOnly)
                     }.help("Move selected VM")
-                    .disabled(vm.viewState.suspended || vm.viewState.active)
+                    .disabled(vm.state != .vmStopped)
                     .padding(.leading, padding)
                 }
                 #endif
@@ -110,7 +110,7 @@ struct VMToolbarModifier: ViewModifier {
                     Spacer()
                 }
                 #endif
-                if vm.viewState.suspended || vm.viewState.active {
+                if vm.viewState.hasSaveState || vm.state != .vmStopped {
                     Button {
                         confirmAction = .confirmStopVM
                     } label: {
@@ -138,7 +138,7 @@ struct VMToolbarModifier: ViewModifier {
                     Label("Edit", systemImage: "slider.horizontal.3")
                         .labelStyle(.iconOnly)
                 }.help("Edit selected VM")
-                .disabled(vm.viewState.suspended || vm.viewState.active)
+                .disabled(vm.viewState.hasSaveState || vm.state != .vmStopped)
                 .padding(.leading, padding)
             }
         }

@@ -37,7 +37,7 @@ struct VMDetailsView: View {
     }
     
     var body: some View {
-        if vm.viewState.deleted {
+        if vm.isDeleted {
             VStack {
                 Spacer()
                 HStack {
@@ -152,9 +152,9 @@ struct Screenshot: View {
             Rectangle()
                 .fill(Color(red: 230/255, green: 229/255, blue: 235/255))
                 .blendMode(.hardLight)
-            if vm.viewState.busy {
+            if vm.isBusy {
                 BigWhiteSpinner()
-            } else if !vm.viewState.active {
+            } else if vm.state == .vmStopped {
                 Button(action: { data.run(vm: vm) }, label: {
                     Label("Run", systemImage: "play.circle.fill")
                         .labelStyle(.iconOnly)
@@ -185,7 +185,7 @@ struct Details: View {
             HStack {
                 plainLabel("Status", systemImage: "info.circle")
                 Spacer()
-                Text(vm.viewState.active ? "Running" : (vm.viewState.suspended ? "Suspended" : "Not running"))
+                Text(vm.stateLabel)
                     .foregroundColor(.secondary)
             }
             HStack {

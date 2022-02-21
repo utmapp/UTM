@@ -25,25 +25,44 @@ extern NSString *const kUTMBundleConfigFilename;
 @interface UTMVirtualMachine ()
 
 /// Display title for UI elements
+///
+/// This property is observable and must only be accessed on the main thread. 
 @property (nonatomic, readonly) NSString *detailsTitleLabel;
 
 /// Display subtitle for UI elements
+///
+/// This property is observable and must only be accessed on the main thread.
 @property (nonatomic, readonly) NSString *detailsSubtitleLabel;
 
 /// Display icon path for UI elements
+///
+/// This property is observable and must only be accessed on the main thread.
 @property (nonatomic, nullable, readonly) NSURL *detailsIconUrl;
 
 /// Display user-specified notes for UI elements
+///
+/// This property is observable and must only be accessed on the main thread.
 @property (nonatomic, nullable, readonly) NSString *detailsNotes;
 
 /// Display VM target system for UI elements
+///
+/// This property is observable and must only be accessed on the main thread.
 @property (nonatomic, readonly) NSString *detailsSystemTargetLabel;
 
 /// Display VM architecture for UI elements
+///
+/// This property is observable and must only be accessed on the main thread.
 @property (nonatomic, readonly) NSString *detailsSystemArchitectureLabel;
 
 /// Display RAM (formatted) for UI elements
+///
+/// This property is observable and must only be accessed on the main thread.
 @property (nonatomic, readonly) NSString *detailsSystemMemoryLabel;
+
+/// Display current VM state as a string for UI elements
+///
+/// This property is observable and must only be accessed on the main thread.
+@property (nonatomic, readonly) NSString *stateLabel;
 
 @property (nonatomic, readwrite, nullable) NSURL *path;
 @property (nonatomic, readwrite, copy) id<UTMConfigurable> config;

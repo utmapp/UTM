@@ -198,7 +198,7 @@ extension VMDisplayWindowController: NSWindowDelegate {
     }
     
     func windowShouldClose(_ sender: NSWindow) -> Bool {
-        guard vm.state != .vmStopped else {
+        guard !(vm.state == .vmStopped || (vm.state == .vmPaused && vm.hasSaveState)) else {
             return true
         }
         let alert = NSAlert()

@@ -38,8 +38,8 @@ struct VMContextMenuModifier: ViewModifier {
                 data.edit(vm: vm)
             } label: {
                 Label("Edit", systemImage: "slider.horizontal.3")
-            }.disabled(vm.viewState.suspended || vm.viewState.active)
-            if vm.viewState.suspended || vm.viewState.active {
+            }.disabled(vm.viewState.hasSaveState || vm.state != .vmStopped)
+            if vm.viewState.hasSaveState || vm.state != .vmStopped {
                 Button {
                     confirmAction = .confirmStopVM
                 } label: {
@@ -64,7 +64,7 @@ struct VMContextMenuModifier: ViewModifier {
                     confirmAction = .confirmMoveVM
                 } label: {
                     Label("Move…", systemImage: "arrow.down.doc")
-                }.disabled(vm.viewState.suspended || vm.viewState.active)
+                }.disabled(vm.state != .vmStopped)
             }
             #endif
             Button {
@@ -78,13 +78,13 @@ struct VMContextMenuModifier: ViewModifier {
                     confirmAction = .confirmDeleteShortcut
                 } label: {
                     Label("Remove", systemImage: "trash")
-                }.disabled(vm.viewState.suspended || vm.viewState.active)
+                }.disabled(vm.state != .vmStopped)
             } else {
                 DestructiveButton {
                     confirmAction = .confirmDeleteVM
                 } label: {
                     Label("Delete", systemImage: "trash")
-                }.disabled(vm.viewState.suspended || vm.viewState.active)
+                }.disabled(vm.state != .vmStopped)
             }
         }
         .modifier(VMShareItemModifier(isPresented: $showSharePopup, shareItem: shareItem))

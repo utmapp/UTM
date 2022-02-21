@@ -55,6 +55,8 @@ const dispatch_time_t kScreenshotPeriodSeconds = 60 * NSEC_PER_SEC;
 
 @implementation UTMVirtualMachine
 
+// MARK: - Observable properties
+
 - (void)setState:(UTMVMState)state {
     [self propertyWillChange];
     _state = state;
@@ -87,6 +89,38 @@ const dispatch_time_t kScreenshotPeriodSeconds = 60 * NSEC_PER_SEC;
     self.config.isRenameDisabled = isShortcut;
 }
 
+- (void)setIsDeleted:(BOOL)isDeleted {
+    [self propertyWillChange];
+    _isDeleted = isDeleted;
+}
+
+- (BOOL)isBusy {
+    return (_state == kVMPausing || _state == kVMResuming || _state == kVMStarting || _state == kVMStopping);
+}
+
+- (NSString *)stateLabel {
+    switch (_state) {
+        case kVMStopped:
+            if (self.viewState.hasSaveState) {
+                return NSLocalizedString(@"Suspended", "UTMVirtualMachine");
+            } else {
+                return NSLocalizedString(@"Stopped", "UTMVirtualMachine");
+            }
+        case kVMStarting: return NSLocalizedString(@"Starting", "UTMVirtualMachine");
+        case kVMStarted: return NSLocalizedString(@"Started", "UTMVirtualMachine");
+        case kVMPausing: return NSLocalizedString(@"Pausing", "UTMVirtualMachine");
+        case kVMPaused: return NSLocalizedString(@"Paused", "UTMVirtualMachine");
+        case kVMResuming: return NSLocalizedString(@"Resuming", "UTMVirtualMachine");
+        case kVMStopping: return NSLocalizedString(@"Stopping", "UTMVirtualMachine");
+    }
+}
+
+- (BOOL)hasSaveState {
+    return self.viewState.hasSaveState;
+}
+
+// MARK: - Other properties
+
 - (NSData *)bookmark {
     NSData *bookmark = [self.path bookmarkDataWithOptions:kUTMBookmarkCreationOptions
                            includingResourceValuesForKeys:nil
@@ -102,6 +136,8 @@ const dispatch_time_t kScreenshotPeriodSeconds = 60 * NSEC_PER_SEC;
     _path = path;
     [path startAccessingSecurityScopedResource];
 }
+
+// MARK: - Constructors
 
 + (BOOL)URLisVirtualMachine:(NSURL *)url {
     return [url.pathExtension isEqualToString:kUTMBundleExtension];
@@ -218,8 +254,6 @@ const dispatch_time_t kScreenshotPeriodSeconds = 60 * NSEC_PER_SEC;
 - (void)changeState:(UTMVMState)state {
     dispatch_sync(dispatch_get_main_queue(), ^{
         self.state = state;
-        self.viewState.active = (state == kVMStarted);
-        self.viewState.busy = (state == kVMPausing || state == kVMResuming || state == kVMStarting || state == kVMStopping);
         [self.delegate virtualMachine:self didTransitionToState:state];
     });
     if (state == kVMStarted) {

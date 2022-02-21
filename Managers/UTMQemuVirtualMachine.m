@@ -312,7 +312,7 @@ NSString *const kSuspendSnapshotName = @"suspend";
         completion(spiceError);
         return;
     }
-    if (self.viewState.suspended) {
+    if (self.viewState.hasSaveState) {
         self.system.snapshot = kSuspendSnapshotName;
     }
     // start QEMU (this can be in parallel with QMP connect below)
@@ -376,7 +376,7 @@ NSString *const kSuspendSnapshotName = @"suspend";
             dispatch_async(dispatch_get_main_queue(), ^{
                 [self.ioService restoreViewState:self.viewState];
             });
-            if (self.viewState.suspended) {
+            if (self.viewState.hasSaveState) {
                 [self _vmDeleteStateWithCompletion:completion];
             } else {
                 completion(nil); // everything successful
@@ -390,7 +390,7 @@ NSString *const kSuspendSnapshotName = @"suspend";
         [self _vmStartWithCompletion:^(NSError *err){
             if (err) { // delete suspend state on error
                 dispatch_sync(dispatch_get_main_queue(), ^{
-                    self.viewState.suspended = NO;
+                    self.viewState.hasSaveState = NO;
                 });
                 [self saveViewState];
             }
@@ -457,7 +457,7 @@ NSString *const kSuspendSnapshotName = @"suspend";
         [self.ioService syncViewState:self.viewState];
     });
     [self changeState:kVMStopping];
-    if (self.viewState.suspended) {
+    if (self.viewState.hasSaveState) {
         [self _vmDeleteStateWithCompletion:^(NSError *error) {}];
     }
     [self saveViewState];
@@ -558,7 +558,7 @@ NSString *const kSuspendSnapshotName = @"suspend";
         saveError = [self errorGeneric];
     } else if (!saveError) {
         UTMLog(@"Save completed");
-        self.viewState.suspended = YES;
+        self.viewState.hasSaveState = YES;
         [self saveViewState];
         [self saveScreenshot];
     }
@@ -593,7 +593,7 @@ NSString *const kSuspendSnapshotName = @"suspend";
             UTMLog(@"Delete save completed");
         }
     } // otherwise we mark as deleted
-    self.viewState.suspended = NO;
+    self.viewState.hasSaveState = NO;
     [self saveViewState];
     completion(deleteError);
 }
@@ -632,7 +632,7 @@ NSString *const kSuspendSnapshotName = @"suspend";
     } else {
         [self changeState:kVMStopped];
     }
-    if (self.viewState.suspended) {
+    if (self.viewState.hasSaveState) {
         [self _vmDeleteStateWithCompletion:^(NSError *error){}];
     } else {
         completion(nil);

@@ -97,46 +97,13 @@ const NSString *const kUTMViewStateRemovableDrivesPathKey = @"RemovableDrivesPat
     _rootDict[kUTMViewStateDisplaySizeHeightKey] = @(displaySizeHeight);
 }
 
-- (BOOL)showToolbar {
-    return [_rootDict[kUTMViewStateShowToolbarKey] boolValue];
-}
-
-- (void)setShowToolbar:(BOOL)showToolbar {
-    [self propertyWillChange];
-    _rootDict[kUTMViewStateShowToolbarKey] = @(showToolbar);
-}
-
-- (BOOL)showKeyboard {
-    return [_rootDict[kUTMViewStateShowKeyboardKey] boolValue];
-}
-
-- (void)setShowKeyboard:(BOOL)showKeyboard {
-    [self propertyWillChange];
-    _rootDict[kUTMViewStateShowKeyboardKey] = @(showKeyboard);
-}
-
-- (BOOL)suspended {
+- (BOOL)hasSaveState {
     return [_rootDict[kUTMViewStateSuspendedKey] boolValue];
 }
 
-- (void)setSuspended:(BOOL)suspended {
+- (void)setHasSaveState:(BOOL)hasSaveState {
     [self propertyWillChange];
-    _rootDict[kUTMViewStateSuspendedKey] = @(suspended);
-}
-
-- (void)setDeleted:(BOOL)deleted {
-    [self propertyWillChange];
-    _deleted = deleted;
-}
-
-- (void)setActive:(BOOL)active {
-    [self propertyWillChange];
-    _active = active;
-}
-
-- (void)setBusy:(BOOL)busy {
-    [self propertyWillChange];
-    _busy = busy;
+    _rootDict[kUTMViewStateSuspendedKey] = @(hasSaveState);
 }
 
 - (NSData *)sharedDirectory {
@@ -251,8 +218,6 @@ const NSString *const kUTMViewStateRemovableDrivesPathKey = @"RemovableDrivesPat
         self.displayOriginY = 0;
         self.displaySizeWidth = 0;
         self.displaySizeHeight = 0;
-        self.showKeyboard = NO;
-        self.showToolbar = YES;
     }
     return self;
 }

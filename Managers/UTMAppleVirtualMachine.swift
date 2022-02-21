@@ -60,6 +60,10 @@ import Virtualization
         return ByteCountFormatter.string(fromByteCount: Int64(appleConfig.memorySize), countStyle: .memory)
     }
     
+    override var hasSaveState: Bool {
+        false
+    }
+    
     private let vmQueue = DispatchQueue(label: "VZVirtualMachineQueue", qos: .userInteractive)
     
     private(set) var apple: VZVirtualMachine!

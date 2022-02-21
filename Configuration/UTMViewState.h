@@ -27,12 +27,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) double displayOriginY;
 @property (nonatomic, assign) double displaySizeWidth;
 @property (nonatomic, assign) double displaySizeHeight;
-@property (nonatomic, assign) BOOL showToolbar;
-@property (nonatomic, assign) BOOL showKeyboard;
-@property (nonatomic, assign) BOOL suspended;
-@property (nonatomic, assign) BOOL deleted;
-@property (nonatomic, assign) BOOL active;
-@property (nonatomic, assign) BOOL busy;
+@property (nonatomic, assign) BOOL hasSaveState;
 @property (nonatomic, copy, nullable) NSData *sharedDirectory;
 @property (nonatomic, copy, nullable) NSString *sharedDirectoryPath;
 @property (nonatomic, copy, nullable) NSData *shortcutBookmark;

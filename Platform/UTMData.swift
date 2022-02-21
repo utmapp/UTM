@@ -209,7 +209,7 @@ class UTMData: ObservableObject {
         if vm == selectedVM {
             selectedVM = nil
         }
-        vm.viewState.deleted = true // alert views to update
+        vm.isDeleted = true // alert views to update
     }
     
     /// Add pending VM to list
