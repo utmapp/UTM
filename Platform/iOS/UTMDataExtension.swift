@@ -24,13 +24,13 @@ extension UTMData {
             let vc = VMDisplayTerminalViewController()
             vc.vm = qvm
             vc.setupSubviews()
-            vc.virtualMachine(vm, transitionTo: vm.state)
+            vc.virtualMachine(vm, didTransitionTo: vm.state)
             return vc
         } else {
             let vc = VMDisplayMetalViewController()
             vc.vm = qvm
             vc.setupSubviews()
-            vc.virtualMachine(vm, transitionTo: vm.state)
+            vc.virtualMachine(vm, didTransitionTo: vm.state)
             return vc
         }
     }

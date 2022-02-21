@@ -20,19 +20,37 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface UTMVirtualMachine ()
 
+/// Parent directory where the .utm bundle resides, may not be accessible if this is a shortcut
 @property (nonatomic, strong) NSURL *parentPath;
+
 @property (nonatomic, readwrite) UTMViewState *viewState;
+
+/// Reference to logger for VM stdout/stderr
 @property (nonatomic) UTMLogging *logging;
+
 @property (nonatomic, assign, readwrite) UTMVMState state;
 
-- (instancetype)init;
+- (instancetype)init NS_UNAVAILABLE;
 - (nullable instancetype)initWithURL:(NSURL *)url;
 - (instancetype)initWithConfiguration:(id<UTMConfigurable>)configuration withDestinationURL:(NSURL *)dstUrl;
 
-- (BOOL)loadConfigurationWithReload:(BOOL)reload error:(NSError * _Nullable __autoreleasing *)err;
+/// Load a plist into a NSDictionary representation
+/// @param path Path to plist
+/// @param err Error thrown if failed
+/// @returns A dictionary on success, nil on failure and `err` contains the thrown error
 - (NSDictionary *)loadPlist:(NSURL *)path withError:(NSError **)err;
+
+/// Saves a plist to disk
+/// @param path Path to save to
+/// @param dict Dictionary to convert to plist
+/// @param err Error thrown if failed
+/// @returns true if successful, otherwise `err` contains the thrown error
 - (BOOL)savePlist:(NSURL *)path dict:(NSDictionary *)dict withError:(NSError **)err;
+
+/// (Re)loads the view state from disk
 - (void)loadViewState;
+
+/// Saves the current view state to disk
 - (void)saveViewState;
 
 @end

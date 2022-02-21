@@ -249,7 +249,7 @@ extension VMDisplayWindowController: NSToolbarItemValidation {
 // MARK: - VM Delegate
 
 extension VMDisplayWindowController: UTMVirtualMachineDelegate {
-    func virtualMachine(_ vm: UTMVirtualMachine, transitionTo state: UTMVMState) {
+    func virtualMachine(_ vm: UTMVirtualMachine, didTransitionTo state: UTMVMState) {
         switch state {
         case .vmStopped, .vmPaused:
             enterSuspended(isBusy: false)

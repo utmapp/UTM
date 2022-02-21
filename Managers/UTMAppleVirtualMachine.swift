@@ -279,7 +279,7 @@ import Virtualization
             vmQueue.async {
                 let installer = VZMacOSInstaller(virtualMachine: self.apple, restoringFromImageAt: ipswUrl)
                 self.progressObserver = installer.progress.observe(\.fractionCompleted, options: [.initial, .new]) { progress, change in
-                    self.delegate?.virtualMachine?(self, installationProgress: progress.fractionCompleted)
+                    self.delegate?.virtualMachine?(self, didUpdateInstallationProgress: progress.fractionCompleted)
                 }
                 installer.install { result in
                     continuation.resume(with: result)

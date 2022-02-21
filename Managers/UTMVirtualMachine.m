@@ -220,7 +220,7 @@ const dispatch_time_t kScreenshotPeriodSeconds = 60 * NSEC_PER_SEC;
         self.state = state;
         self.viewState.active = (state == kVMStarted);
         self.viewState.busy = (state == kVMPausing || state == kVMResuming || state == kVMStarting || state == kVMStopping);
-        [self.delegate virtualMachine:self transitionToState:state];
+        [self.delegate virtualMachine:self didTransitionToState:state];
     });
     if (state == kVMStarted) {
         [self startScreenshotTimer];

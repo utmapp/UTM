@@ -109,8 +109,8 @@ class VMDisplayAppleWindowController: VMDisplayWindowController {
         super.enterSuspended(isBusy: busy)
     }
     
-    override func virtualMachine(_ vm: UTMVirtualMachine, transitionTo state: UTMVMState) {
-        super.virtualMachine(vm, transitionTo: state)
+    override func virtualMachine(_ vm: UTMVirtualMachine, didTransitionTo state: UTMVMState) {
+        super.virtualMachine(vm, didTransitionTo: state)
         if #available(macOS 12, *), state == .vmStopped && isInstalling {
             didFinishInstallation()
         }
@@ -297,12 +297,12 @@ extension VMDisplayAppleWindowController {
         }
     }
     
-    func virtualMachine(_ vm: UTMVirtualMachine, installationProgress completed: Double) {
+    func virtualMachine(_ vm: UTMVirtualMachine, didUpdateInstallationProgress progress: Double) {
         DispatchQueue.main.async {
-            if completed >= 1 {
+            if progress >= 1 {
                 self.window!.subtitle = ""
             } else {
-                self.window!.subtitle = NSLocalizedString("Installation: \(Int(completed * 100))%", comment: "VMDisplayAppleWindowController")
+                self.window!.subtitle = NSLocalizedString("Installation: \(Int(progress * 100))%", comment: "VMDisplayAppleWindowController")
             }
         }
     }

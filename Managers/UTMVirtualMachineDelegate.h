@@ -21,6 +21,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+/// VM operation states
 typedef NS_ENUM(NSUInteger, UTMVMState) {
     kVMStopped,
     kVMStarting,
@@ -31,6 +32,7 @@ typedef NS_ENUM(NSUInteger, UTMVMState) {
     kVMStopping
 };
 
+/// Handles UTM VM events
 @protocol UTMVirtualMachineDelegate <NSObject>
 
 /// Called when VM state changes
@@ -38,7 +40,7 @@ typedef NS_ENUM(NSUInteger, UTMVMState) {
 /// Will always be called from the main thread.
 /// @param vm Virtual machine
 /// @param state New state
-- (void)virtualMachine:(UTMVirtualMachine *)vm transitionToState:(UTMVMState)state;
+- (void)virtualMachine:(UTMVirtualMachine *)vm didTransitionToState:(UTMVMState)state;
 
 /// Called when VM errors
 ///
@@ -48,7 +50,11 @@ typedef NS_ENUM(NSUInteger, UTMVMState) {
 - (void)virtualMachine:(UTMVirtualMachine *)vm didErrorWithMessage:(NSString *)message;
 
 @optional
-- (void)virtualMachine:(UTMVirtualMachine *)vm installationProgress:(double)completed;
+
+/// Called when VM installation updates progress
+/// @param vm Virtual machine
+/// @param progress Number between 0.0 and 1.0 indiciating installation progress
+- (void)virtualMachine:(UTMVirtualMachine *)vm didUpdateInstallationProgress:(double)progress;
 
 @end
 

@@ -38,17 +38,45 @@ extern NSString *const kUTMBundleConfigFilename;
 @property (nonatomic, readwrite, copy) id<UTMConfigurable> config;
 @property (nonatomic, readwrite, nullable) CSScreenshot *screenshot;
 
+/// Checks if a given path contains an Apple VM
+/// @param path Path to check
+/// @returns true if `path` is valid and points to an Apple UTM VM
 + (BOOL)isAppleVMForPath:(NSURL *)path;
+
+/// Get a URL for a .utm package
+/// @param name Name of package
+/// @returns URL of the package that may not exist
 - (NSURL *)packageURLForName:(NSString *)name;
+
+/// Updates the internal state and view state
+/// @param state New state
 - (void)changeState:(UTMVMState)state;
+
+/// Creates an error with a generic message
+/// @returns Generic UTM error
 - (NSError *)errorGeneric;
+
+/// Creates an error with a specified message
+/// @param message Localized message if possible
+/// @returns UTM error with the localized description set to `message`
 - (NSError *)errorWithMessage:(nullable NSString *)message;
 
+/// Reload configuration from disk
+/// @param reload Attempt to re-use the existing config object
+/// @param err Error thrown if failed
+/// @returns true if successful, otherwise `err` contains the thrown error
 - (BOOL)loadConfigurationWithReload:(BOOL)reload error:(NSError * _Nullable __autoreleasing *)err;
 
+/// Load screenshot from disk
 - (void)loadScreenshot;
+
+/// Save screenshot to disk
 - (void)saveScreenshot;
+
+/// Delete existing screenshot on disk
 - (void)deleteScreenshot;
+
+/// Overridden by subclass to provide an update to `self.screenshot`
 - (void)updateScreenshot;
 
 @end

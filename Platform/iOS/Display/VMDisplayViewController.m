@@ -57,7 +57,7 @@
 - (void)updateKeyboardAccessoryFrame {
 }
 
-- (void)virtualMachine:(UTMVirtualMachine *)vm transitionToState:(UTMVMState)state {
+- (void)virtualMachine:(UTMVirtualMachine *)vm didTransitionToState:(UTMVMState)state {
     static BOOL hasStartedOnce = NO;
     if (hasStartedOnce && state == kVMStopped) {
         [self terminateApplication];
