@@ -58,19 +58,19 @@ extension UTMVirtualMachine: ObservableObject {
 }
 
 public extension UTMQemuVirtualMachine {
-    override var title: String {
+    override var detailsTitleLabel: String {
         qemuConfig.name
     }
     
-    override var subtitle: String {
-        self.systemTarget
+    override var detailsSubtitleLabel: String {
+        self.detailsSystemTargetLabel
     }
     
-    override var notes: String? {
+    override var detailsNotes: String? {
         qemuConfig.notes
     }
     
-    override var systemTarget: String {
+    override var detailsSystemTargetLabel: String {
         guard let arch = qemuConfig.systemArchitecture else {
             return ""
         }
@@ -89,7 +89,7 @@ public extension UTMQemuVirtualMachine {
         return prettyTargets[index]
     }
     
-    override var systemArchitecture: String {
+    override var detailsSystemArchitectureLabel: String {
         let archs = UTMQemuConfiguration.supportedArchitectures()
         let prettyArchs = UTMQemuConfiguration.supportedArchitecturesPretty()
         guard let arch = qemuConfig.systemArchitecture else {
@@ -101,7 +101,7 @@ public extension UTMQemuVirtualMachine {
         return prettyArchs[index]
     }
     
-    override var systemMemory: String {
+    override var detailsSystemMemoryLabel: String {
         guard let memory = qemuConfig.systemMemory else {
             return NSLocalizedString("Unknown", comment: "UTMVirtualMachineExtension")
         }

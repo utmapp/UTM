@@ -24,15 +24,26 @@ extern NSString *const kUTMBundleConfigFilename;
 
 @interface UTMVirtualMachine ()
 
-@property (nonatomic, readonly) NSString *title;
-@property (nonatomic, readonly) NSString *subtitle;
+/// Display title for UI elements
+@property (nonatomic, readonly) NSString *detailsTitleLabel;
 
-@property (nonatomic, nullable, readonly) NSURL *icon;
-@property (nonatomic, nullable, readonly) NSString *notes;
+/// Display subtitle for UI elements
+@property (nonatomic, readonly) NSString *detailsSubtitleLabel;
 
-@property (nonatomic, readonly) NSString *systemTarget;
-@property (nonatomic, readonly) NSString *systemArchitecture;
-@property (nonatomic, readonly) NSString *systemMemory;
+/// Display icon path for UI elements
+@property (nonatomic, nullable, readonly) NSURL *detailsIconUrl;
+
+/// Display user-specified notes for UI elements
+@property (nonatomic, nullable, readonly) NSString *detailsNotes;
+
+/// Display VM target system for UI elements
+@property (nonatomic, readonly) NSString *detailsSystemTargetLabel;
+
+/// Display VM architecture for UI elements
+@property (nonatomic, readonly) NSString *detailsSystemArchitectureLabel;
+
+/// Display RAM (formatted) for UI elements
+@property (nonatomic, readonly) NSString *detailsSystemMemoryLabel;
 
 @property (nonatomic, readwrite, nullable) NSURL *path;
 @property (nonatomic, readwrite, copy) id<UTMConfigurable> config;

@@ -26,23 +26,23 @@ import Virtualization
         config as? UTMAppleConfiguration
     }
     
-    override var title: String {
+    override var detailsTitleLabel: String {
         appleConfig.name
     }
     
-    override var subtitle: String {
-        systemTarget
+    override var detailsSubtitleLabel: String {
+        detailsSystemTargetLabel
     }
     
-    override var notes: String? {
+    override var detailsNotes: String? {
         appleConfig.notes
     }
     
-    override var systemTarget: String {
+    override var detailsSystemTargetLabel: String {
         appleConfig.bootLoader?.operatingSystem.rawValue ?? ""
     }
     
-    override var systemArchitecture: String {
+    override var detailsSystemArchitectureLabel: String {
         appleConfig.architecture
     }
     
@@ -56,7 +56,7 @@ import Virtualization
         #endif
     }
     
-    override var systemMemory: String {
+    override var detailsSystemMemoryLabel: String {
         return ByteCountFormatter.string(fromByteCount: Int64(appleConfig.memorySize), countStyle: .memory)
     }
     

@@ -27,7 +27,7 @@ extension UTMData {
                 window = nil
             }
             if let avm = vm as? UTMAppleVirtualMachine {
-                if avm.systemArchitecture == UTMAppleVirtualMachine.currentArchitecture {
+                if avm.appleConfig.architecture == UTMAppleVirtualMachine.currentArchitecture {
                     window = VMDisplayAppleWindowController(vm: avm, onClose: close)
                 }
             }

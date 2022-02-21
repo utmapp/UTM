@@ -51,7 +51,7 @@ struct VMDetailsView: View {
         } else {
             ScrollView {
                 Screenshot(vm: vm, large: regularScreenSizeClass)
-                let notes = vm.notes ?? ""
+                let notes = vm.detailsNotes ?? ""
                 if regularScreenSizeClass && !notes.isEmpty {
                     HStack(alignment: .top) {
                         Details(vm: vm, sizeLabel: sizeLabel)
@@ -121,9 +121,9 @@ private struct VMOptionalNavigationTitleModifier: ViewModifier {
     
     func body(content: Content) -> some View {
         #if os(macOS)
-        return content.navigationSubtitle(vm.title)
+        return content.navigationSubtitle(vm.detailsTitleLabel)
         #else
-        return content.navigationTitle(vm.title)
+        return content.navigationTitle(vm.detailsTitleLabel)
         #endif
     }
 }
@@ -191,19 +191,19 @@ struct Details: View {
             HStack {
                 plainLabel("Architecture", systemImage: "cpu")
                 Spacer()
-                Text(vm.systemArchitecture)
+                Text(vm.detailsSystemArchitectureLabel)
                     .foregroundColor(.secondary)
             }
             HStack {
                 plainLabel("Machine", systemImage: "desktopcomputer")
                 Spacer()
-                Text(vm.systemTarget)
+                Text(vm.detailsSystemTargetLabel)
                     .foregroundColor(.secondary)
             }
             HStack {
                 plainLabel("Memory", systemImage: "memorychip")
                 Spacer()
-                Text(vm.systemMemory)
+                Text(vm.detailsSystemMemoryLabel)
                     .foregroundColor(.secondary)
             }
             HStack {

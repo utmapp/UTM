@@ -32,18 +32,18 @@ struct VMCardView: View {
     var body: some View {
         HStack {
             if vm.isShortcut {
-                Logo(logo: PlatformImage(contentsOfURL: vm.icon))
+                Logo(logo: PlatformImage(contentsOfURL: vm.detailsIconUrl))
                         .overlay(Image(systemName: "arrowshape.turn.up.forward.fill")
                                     .resizable()
                                     .frame(width: 8, height: 8)
                                     .aspectRatio(contentMode: .fit), alignment: .bottomLeading)
             } else {
-                Logo(logo: PlatformImage(contentsOfURL: vm.icon))
+                Logo(logo: PlatformImage(contentsOfURL: vm.detailsIconUrl))
             }
             VStack(alignment: .leading) {
-                Text(vm.title)
+                Text(vm.detailsTitleLabel)
                     .font(.headline)
-                Text(vm.subtitle)
+                Text(vm.detailsSubtitleLabel)
                     .font(.subheadline)
             }.lineLimit(1)
             .truncationMode(.tail)

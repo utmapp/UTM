@@ -56,7 +56,7 @@ struct ContentView: View {
             }.optionalSidebarFrame()
             .listStyle(.sidebar)
             .navigationTitle(productName)
-            .navigationOptionalSubtitle(data.selectedVM?.title ?? "")
+            .navigationOptionalSubtitle(data.selectedVM?.detailsTitleLabel ?? "")
             .toolbar {
                 #if os(macOS)
                 ToolbarItem(placement: .navigation) {
@@ -164,7 +164,7 @@ struct ContentView: View {
     private func handleUTMURL(with components: URLComponents) async throws {
         func findVM() async -> UTMVirtualMachine? {
             if let vmName = components.queryItems?.first(where: { $0.name == "name" })?.value {
-                return await data.virtualMachines.first(where: { $0.title == vmName })
+                return await data.virtualMachines.first(where: { $0.detailsTitleLabel == vmName })
             } else {
                 return nil
             }
