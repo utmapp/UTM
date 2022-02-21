@@ -77,7 +77,7 @@ const dispatch_time_t kScreenshotPeriodSeconds = 60 * NSEC_PER_SEC;
     self.anyCancellable = [self subscribeToConfiguration];
 }
 
-- (NSURL *)icon {
+- (NSURL *)detailsIconUrl {
     return self.config.iconUrl;
 }
 
