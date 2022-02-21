@@ -43,7 +43,7 @@ struct VMContextMenuModifier: ViewModifier {
                 Button {
                     confirmAction = .confirmStopVM
                 } label: {
-                    Label("Stop…", systemImage: "stop.fill")
+                    Label("Stop", systemImage: "stop.fill")
                 }
             } else {
                 Button {
@@ -77,13 +77,13 @@ struct VMContextMenuModifier: ViewModifier {
                 DestructiveButton {
                     confirmAction = .confirmDeleteShortcut
                 } label: {
-                    Label("Remove…", systemImage: "trash")
+                    Label("Remove", systemImage: "trash")
                 }.disabled(vm.viewState.suspended || vm.viewState.active)
             } else {
                 DestructiveButton {
                     confirmAction = .confirmDeleteVM
                 } label: {
-                    Label("Delete…", systemImage: "trash")
+                    Label("Delete", systemImage: "trash")
                 }.disabled(vm.viewState.suspended || vm.viewState.active)
             }
         }
