@@ -163,7 +163,7 @@ struct HardwareOptions: View {
                         }
                     }
                 })
-            if !data.isSupported(systemArchitecture: config.systemArchitecture) {
+            if !UTMQemuVirtualMachine.isSupported(systemArchitecture: config.systemArchitecture) {
                 Text("The selected architecture is unsupported in this version of UTM.")
                     .foregroundColor(.red)
             }

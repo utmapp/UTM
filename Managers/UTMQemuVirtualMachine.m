@@ -32,6 +32,7 @@
 #import "UTMSpiceIO.h"
 #import "UTMLogging.h"
 #import "UTMPortAllocator.h"
+#import "UTM-Swift.h"
 #import "qapi-events.h"
 
 const int kQMPMaxConnectionTries = 30; // qemu needs to start spice server first
@@ -267,6 +268,11 @@ NSString *const kSuspendSnapshotName = @"suspend";
 - (void)_vmStartWithCompletion:(void (^)(NSError * _Nullable))completion {
     if (self.state != kVMStopped) {
         completion([self errorGeneric]);
+        return;
+    }
+    // check if we can actually start this VM
+    if (![UTMQemuVirtualMachine isSupportedWithSystemArchitecture:self.qemuConfig.systemArchitecture]) {
+        completion([self errorWithMessage:NSLocalizedString(@"This build of UTM does not support emulating the architecture of this VM.", @"UTMQemuVirtualMachine")]);
         return;
     }
     // start logging

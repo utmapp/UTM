@@ -111,6 +111,27 @@ public extension UTMQemuVirtualMachine {
             return String(format: "%d MB", memory.intValue)
         }
     }
+    
+    /// Check if a QEMU target is supported
+    /// - Parameter systemArchitecture: QEMU architecture
+    /// - Returns: true if UTM is compiled with the supporting binaries
+    @objc static func isSupported(systemArchitecture: String?) -> Bool {
+        guard let arch = systemArchitecture else {
+            return true // ignore this
+        }
+        let bundleURL = Bundle.main.bundleURL
+        #if os(macOS)
+        let contentsURL = bundleURL.appendingPathComponent("Contents", isDirectory: true)
+        let base = "Versions/A/"
+        #else
+        let contentsURL = bundleURL
+        let base = ""
+        #endif
+        let frameworksURL = contentsURL.appendingPathComponent("Frameworks", isDirectory: true)
+        let framework = frameworksURL.appendingPathComponent("qemu-" + arch + "-softmmu.framework/" + base + "qemu-" + arch + "-softmmu", isDirectory: false)
+        logger.error("\(framework.path)")
+        return FileManager.default.fileExists(atPath: framework.path)
+    }
 }
 
 extension UTMDrive: Identifiable {
