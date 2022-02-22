@@ -14,6 +14,7 @@
 // limitations under the License.
 //
 
+#import <TargetConditionals.h>
 #import "UTMQemuConfiguration+Display.h"
 #import "UTM-Swift.h"
 
@@ -51,7 +52,17 @@ const NSString *const kUTMConfigDisplayCardKey = @"DisplayCard";
         self.displayDownscaler = @"linear";
     }
     if (self.consoleFont.length == 0) {
-        self.consoleFont = @"Menlo";
+        self.consoleFont = @"Menlo-Regular";
+    } else if (![[UTMQemuConfiguration supportedConsoleFonts] containsObject:self.consoleFont]) {
+        // migrate to new fully-formed name
+#if TARGET_OS_OSX
+        NSFont *font = [NSFont fontWithName:self.consoleFont size:1];
+#else
+        UIFont *font = [UIFont fontWithName:self.consoleFont size:1];
+#endif
+        if (font) {
+            self.consoleFont = font.fontName;
+        }
     }
     if (self.consoleTheme.length == 0) {
         self.consoleTheme = @"Default";
