@@ -28,16 +28,26 @@ struct VMConfigDisplayConsoleView<Config: ObservableObject & UTMConfigurable>: V
     
     private var textColor: Binding<Color> {
         Binding<Color> {
-            Color(config.consoleTextColor ?? .white)
+            if let consoleTextColor = config.consoleTextColor,
+               let color = Color(hexString: consoleTextColor) {
+                return color
+            } else {
+                return Color.white
+            }
         } set: { newValue in
-            config.consoleTextColor = PlatformColor(newValue)
+            config.consoleTextColor = PlatformColor(newValue).hexString
         }
     }
     private var backgroundColor: Binding<Color> {
         Binding<Color> {
-            Color(config.consoleBackgroundColor ?? .black)
+            if let consoleBackgroundColor = config.consoleBackgroundColor,
+               let color = Color(hexString: consoleBackgroundColor) {
+                return color
+            } else {
+                return Color.black
+            }
         } set: { newValue in
-            config.consoleBackgroundColor = PlatformColor(newValue)
+            config.consoleBackgroundColor = PlatformColor(newValue).hexString
         }
     }
         

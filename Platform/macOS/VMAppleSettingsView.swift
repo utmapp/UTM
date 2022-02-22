@@ -38,7 +38,7 @@ struct VMAppleSettingsView: View {
                 Label("Display", systemImage: "rectangle.on.rectangle")
             }
         } else {
-            NavigationLink(destination: VMConfigDisplayConsoleView(config: config).scrollable()) {
+            NavigationLink(destination: Form { VMConfigDisplayConsoleView(config: config) }.scrollable()) {
                 Label("Display", systemImage: "rectangle.on.rectangle")
             }
         }

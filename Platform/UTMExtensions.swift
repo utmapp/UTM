@@ -108,6 +108,30 @@ extension Sequence where Element: Hashable {
     }
 }
 
+@available(iOS 14, macOS 11, *)
+extension Color {
+    init?(hexString hex: String) {
+        if hex.count != 7 { // The '#' included
+            return nil
+        }
+            
+        let hexColor = String(hex.dropFirst())
+        
+        let scanner = Scanner(string: hexColor)
+        var hexNumber: UInt64 = 0
+        
+        if !scanner.scanHexInt64(&hexNumber) {
+            return nil
+        }
+        
+        let r = CGFloat((hexNumber & 0xff0000) >> 16) / 255
+        let g = CGFloat((hexNumber & 0x00ff00) >> 8) / 255
+        let b = CGFloat(hexNumber & 0x0000ff) / 255
+        
+        self.init(.sRGB, red: r, green: g, blue: b, opacity: 1.0)
+    }
+}
+
 #if !os(macOS)
 @objc extension UIView {
     /// Adds constraints to this `UIView` instances `superview` object to make sure this always has the same size as the superview.
@@ -191,27 +215,6 @@ extension NSColor {
         let green = Int(round(rgbColor.greenComponent * 0xFF))
         let blue = Int(round(rgbColor.blueComponent * 0xFF))
         return String(format: "#%02X%02X%02X", red, green, blue)
-    }
-    
-    convenience init?(hexString hex: String) {
-        if hex.count != 7 { // The '#' included
-            return nil
-        }
-            
-        let hexColor = String(hex.dropFirst())
-        
-        let scanner = Scanner(string: hexColor)
-        var hexNumber: UInt64 = 0
-        
-        if !scanner.scanHexInt64(&hexNumber) {
-            return nil
-        }
-        
-        let r = CGFloat((hexNumber & 0xff0000) >> 16) / 255
-        let g = CGFloat((hexNumber & 0x00ff00) >> 8) / 255
-        let b = CGFloat(hexNumber & 0x0000ff) / 255
-        
-        self.init(red: r, green: g, blue: b, alpha: 1)
     }
 }
 

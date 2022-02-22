@@ -16,6 +16,7 @@
 
 import Combine
 import SwiftTerm
+import SwiftUI
 import Virtualization
 
 @available(macOS 11, *)
@@ -134,9 +135,11 @@ class VMDisplayAppleWindowController: VMDisplayWindowController {
                 }
             }
             if let consoleTextColor = appleConfig.consoleTextColor,
-               let consoleBackgroundColor = appleConfig.consoleBackgroundColor {
-                terminalView.nativeForegroundColor = consoleTextColor
-                terminalView.nativeBackgroundColor = consoleBackgroundColor
+               let textColor = Color(hexString: consoleTextColor),
+               let consoleBackgroundColor = appleConfig.consoleBackgroundColor,
+               let backgroundColor = Color(hexString: consoleBackgroundColor) {
+                terminalView.nativeForegroundColor = NSColor(textColor)
+                terminalView.nativeBackgroundColor = NSColor(backgroundColor)
             }
             terminalView.getTerminal().resize(cols: 80, rows: 24)
             let size = window.frameRect(forContentRect: terminalView.getOptimalFrameSize()).size

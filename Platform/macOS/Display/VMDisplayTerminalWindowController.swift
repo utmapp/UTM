@@ -85,11 +85,8 @@ extension VMDisplayTerminalWindowController: WKNavigationDelegate {
     
     func updateSettings() {
         if let consoleTextColor = vmQemuConfig?.consoleTextColor,
-           let consoleBackgroundColor = vmQemuConfig?.consoleBackgroundColor,
-           // TODO: Should use default colors, or keep it as if let?
-           let consoleTextColorString = consoleTextColor.hexString,
-           let consoleBackgroundColorString = consoleBackgroundColor.hexString {
-            webView.evaluateJavaScript("changeColor('\(consoleTextColorString)', '\(consoleBackgroundColorString)');") { (_, err) in
+           let consoleBackgroundColor = vmQemuConfig?.consoleBackgroundColor {
+            webView.evaluateJavaScript("changeColor('\(consoleTextColor)', '\(consoleBackgroundColor)');") { (_, err) in
                 if let error = err {
                     logger.error("changeColor error: \(error)")
                 }

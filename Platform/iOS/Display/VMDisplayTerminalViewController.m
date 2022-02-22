@@ -93,7 +93,7 @@ NSString* const kVMSendTerminalSizeHandler = @"UTMSendTerminalSize";
 }
 
 - (void)updateSettings {
-    [_webView evaluateJavaScript:[NSString stringWithFormat:@"changeColor('%@', '%@');", self.vmQemuConfig.consoleTextColor.hexString, self.vmQemuConfig.consoleBackgroundColor.hexString] completionHandler:^(id _Nullable _, NSError * _Nullable error) {
+    [_webView evaluateJavaScript:[NSString stringWithFormat:@"changeColor('%@', '%@');", self.vmQemuConfig.consoleTextColor, self.vmQemuConfig.consoleBackgroundColor] completionHandler:^(id _Nullable _, NSError * _Nullable error) {
         UTMLog(@"changeColor error: %@", error);
     }];
     [_webView evaluateJavaScript:[NSString stringWithFormat:@"changeFont('%@', %ld);", self.vmQemuConfig.consoleFont, self.vmQemuConfig.consoleFontSize.integerValue] completionHandler:^(id _Nullable _, NSError * _Nullable error) {
