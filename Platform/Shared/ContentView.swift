@@ -161,7 +161,7 @@ struct ContentView: View {
         }
     }
     
-    private func handleUTMURL(with components: URLComponents) async throws {
+    @MainActor private func handleUTMURL(with components: URLComponents) async throws {
         func findVM() async -> UTMVirtualMachine? {
             if let vmName = components.queryItems?.first(where: { $0.name == "name" })?.value {
                 return await data.virtualMachines.first(where: { $0.detailsTitleLabel == vmName })
