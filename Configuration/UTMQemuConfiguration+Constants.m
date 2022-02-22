@@ -17,6 +17,8 @@
 #import <TargetConditionals.h>
 #if !TARGET_OS_OSX
 #import <UIKit/UIKit.h>
+#else
+#import <AppKit/AppKit.h>
 #endif
 #import "UTMQemuConfiguration+Constants.h"
 
@@ -206,15 +208,59 @@
         for (NSString *family in UIFont.familyNames) {
             UIFont *font = [UIFont fontWithName:family size:1];
             if (font.fontDescriptor.symbolicTraits & UIFontDescriptorTraitMonoSpace) {
-                [families addObject:family];
+                [families addObjectsFromArray:[UIFont fontNamesForFamilyName:family]];
             }
         }
     }
     return families;
 }
+
++ (NSArray<NSString *>*)supportedConsoleFontsPretty {
+    static NSMutableArray<NSString *> *fonts;
+    if (!fonts) {
+        fonts = [NSMutableArray new];
+        for (NSString *fontName in [UTMQemuConfiguration supportedConsoleFonts]) {
+            UIFont *font = [UIFont fontWithName:fontName size:1];
+            UIFontDescriptorSymbolicTraits traits = font.fontDescriptor.symbolicTraits;
+            NSString *description;
+            if ((traits & (UIFontDescriptorTraitItalic | UIFontDescriptorTraitBold)) ==
+                (UIFontDescriptorTraitItalic | UIFontDescriptorTraitBold)) {
+                description = NSLocalizedString(@"Italic, Bold", @"UTMQemuConfiguration+Constants");
+            } else if ((traits & UIFontDescriptorTraitItalic) != 0) {
+                description = NSLocalizedString(@"Italic", @"UTMQemuConfiguration+Constants");
+            } else if ((traits & UIFontDescriptorTraitBold) != 0) {
+                description = NSLocalizedString(@"Bold", @"UTMQemuConfiguration+Constants");
+            } else {
+                description = NSLocalizedString(@"Regular", @"UTMQemuConfiguration+Constants");
+            }
+            NSString *label = [NSString stringWithFormat:@"%@ (%@)", font.familyName, description];
+            [fonts addObject:label];
+        }
+    }
+    return fonts;
+}
 #else
 + (NSArray<NSString *>*)supportedConsoleFonts {
-    return @[];
+    static NSMutableArray<NSString *> *fonts;
+    if (!fonts) {
+        fonts = [NSMutableArray new];
+        for (NSString *fontName in [NSFontManager.sharedFontManager availableFontNamesWithTraits:NSFixedPitchFontMask]) {
+            [fonts addObject:fontName];
+        }
+    }
+    return fonts;
+}
+
++ (NSArray<NSString *>*)supportedConsoleFontsPretty {
+    static NSMutableArray<NSString *> *fonts;
+    if (!fonts) {
+        fonts = [NSMutableArray new];
+        for (NSString *fontName in [UTMQemuConfiguration supportedConsoleFonts]) {
+            NSFont *font = [NSFont fontWithName:fontName size:1];
+            [fonts addObject:font.displayName];
+        }
+    }
+    return fonts;
 }
 #endif
 

@@ -16,6 +16,7 @@
 
 import Combine
 import SwiftTerm
+import SwiftUI
 import Virtualization
 
 @available(macOS 11, *)
@@ -122,10 +123,23 @@ class VMDisplayAppleWindowController: VMDisplayWindowController {
         }
         if let terminalView = terminalView {
             if let fontSize = appleConfig.consoleFontSize?.intValue {
-                //FIXME: support changing font
-                let orig = terminalView.font
-                let new = NSFont(descriptor: orig.fontDescriptor, size: CGFloat(fontSize)) ?? orig
-                terminalView.font = new
+                if let fontName = appleConfig.consoleFont,
+                   fontName != "" {
+                    let orig = terminalView.font
+                    let new = NSFont(name: fontName, size: CGFloat(fontSize)) ?? orig
+                    terminalView.font = new
+                } else {
+                    let orig = terminalView.font
+                    let new = NSFont(descriptor: orig.fontDescriptor, size: CGFloat(fontSize)) ?? orig
+                    terminalView.font = new
+                }
+            }
+            if let consoleTextColor = appleConfig.consoleTextColor,
+               let textColor = Color(hexString: consoleTextColor),
+               let consoleBackgroundColor = appleConfig.consoleBackgroundColor,
+               let backgroundColor = Color(hexString: consoleBackgroundColor) {
+                terminalView.nativeForegroundColor = NSColor(textColor)
+                terminalView.nativeBackgroundColor = NSColor(backgroundColor)
             }
             terminalView.getTerminal().resize(cols: 80, rows: 24)
             let size = window.frameRect(forContentRect: terminalView.getOptimalFrameSize()).size

@@ -14,6 +14,7 @@
 // limitations under the License.
 //
 
+#import <TargetConditionals.h>
 #import "UTMQemuConfiguration+Display.h"
 #import "UTM-Swift.h"
 
@@ -25,6 +26,8 @@ const NSString *const kUTMConfigDisplayRetinaKey = @"DisplayRetina";
 const NSString *const kUTMConfigDisplayUpscalerKey = @"DisplayUpscaler";
 const NSString *const kUTMConfigDisplayDownscalerKey = @"DisplayDownscaler";
 const NSString *const kUTMConfigConsoleThemeKey = @"ConsoleTheme";
+const NSString *const kUTMConfigConsoleTextColorKey = @"ConsoleTextColor";
+const NSString *const kUTMConfigConsoleBackgroundColorKey = @"ConsoleBackgroundColor";
 const NSString *const kUTMConfigConsoleFontKey = @"ConsoleFont";
 const NSString *const kUTMConfigConsoleFontSizeKey = @"ConsoleFontSize";
 const NSString *const kUTMConfigConsoleBlinkKey = @"ConsoleBlink";
@@ -49,10 +52,26 @@ const NSString *const kUTMConfigDisplayCardKey = @"DisplayCard";
         self.displayDownscaler = @"linear";
     }
     if (self.consoleFont.length == 0) {
-        self.consoleFont = @"Menlo";
+        self.consoleFont = @"Menlo-Regular";
+    } else if (![[UTMQemuConfiguration supportedConsoleFonts] containsObject:self.consoleFont]) {
+        // migrate to new fully-formed name
+#if TARGET_OS_OSX
+        NSFont *font = [NSFont fontWithName:self.consoleFont size:1];
+#else
+        UIFont *font = [UIFont fontWithName:self.consoleFont size:1];
+#endif
+        if (font) {
+            self.consoleFont = font.fontName;
+        }
     }
     if (self.consoleTheme.length == 0) {
         self.consoleTheme = @"Default";
+    }
+    if (self.consoleTextColor == nil) {
+        self.consoleTextColor = @"#ffffff";
+    }
+    if (self.consoleBackgroundColor == nil) {
+        self.consoleBackgroundColor = @"#000000";
     }
     if (self.consoleFontSize.integerValue == 0) {
         self.consoleFontSize = @12;
@@ -138,6 +157,24 @@ const NSString *const kUTMConfigDisplayCardKey = @"DisplayCard";
 
 - (NSString *)consoleTheme {
     return self.rootDict[kUTMConfigDisplayKey][kUTMConfigConsoleThemeKey];
+}
+
+- (void)setConsoleTextColor:(NSString *)consoleTextColor {
+    [self propertyWillChange];
+    self.rootDict[kUTMConfigDisplayKey][kUTMConfigConsoleTextColorKey] = consoleTextColor;
+}
+
+- (NSString *)consoleTextColor {
+    return self.rootDict[kUTMConfigDisplayKey][kUTMConfigConsoleTextColorKey];
+}
+
+- (void)setConsoleBackgroundColor:(NSString *)consoleBackgroundColor {
+    [self propertyWillChange];
+    self.rootDict[kUTMConfigDisplayKey][kUTMConfigConsoleBackgroundColorKey] = consoleBackgroundColor;
+}
+
+- (NSString *)consoleBackgroundColor {
+    return self.rootDict[kUTMConfigDisplayKey][kUTMConfigConsoleBackgroundColorKey];
 }
 
 - (void)setConsoleFont:(NSString *)consoleFont {

@@ -45,6 +45,10 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
     
     @Published var consoleTheme: String?
     
+    @Published var consoleTextColor: String?
+    
+    @Published var consoleBackgroundColor: String?
+    
     @Published var consoleFont: String?
     
     @Published var consoleFontSize: NSNumber?
@@ -305,6 +309,8 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
         case iconCustom
         case notes
         case consoleTheme
+        case consoleTextColor
+        case consoleBackgroundColor
         case consoleFont
         case consoleFontSize
         case consoleCursorBlink
@@ -390,13 +396,11 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
         iconCustom = try values.decode(Bool.self, forKey: .iconCustom)
         notes = try values.decodeIfPresent(String.self, forKey: .notes)
         consoleTheme = try values.decodeIfPresent(String.self, forKey: .consoleTheme)
+        consoleTextColor = try values.decodeIfPresent(String.self, forKey: .consoleTextColor)
+        consoleBackgroundColor = try values.decodeIfPresent(String.self, forKey: .consoleBackgroundColor)
         consoleFont = try values.decodeIfPresent(String.self, forKey: .consoleFont)
         let fontSize = try values.decodeIfPresent(Int.self, forKey: .consoleFontSize)
-        if let fontSize = fontSize {
-            consoleFontSize = NSNumber(value: fontSize)
-        } else {
-            consoleFontSize = nil
-        }
+        consoleFontSize = NSNumber(value: fontSize ?? 12)
         consoleCursorBlink = try values.decode(Bool.self, forKey: .consoleCursorBlink)
         consoleResizeCommand = try values.decodeIfPresent(String.self, forKey: .consoleResizeCommand)
     }
@@ -429,6 +433,8 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
         try container.encode(iconCustom, forKey: .iconCustom)
         try container.encodeIfPresent(notes, forKey: .notes)
         try container.encodeIfPresent(consoleTheme, forKey: .consoleTheme)
+        try container.encodeIfPresent(consoleTextColor, forKey: .consoleTextColor)
+        try container.encodeIfPresent(consoleBackgroundColor, forKey: .consoleBackgroundColor)
         try container.encodeIfPresent(consoleFont, forKey: .consoleFont)
         try container.encodeIfPresent(consoleFontSize?.intValue, forKey: .consoleFontSize)
         try container.encode(consoleCursorBlink, forKey: .consoleCursorBlink)

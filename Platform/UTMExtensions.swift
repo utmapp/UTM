@@ -108,6 +108,30 @@ extension Sequence where Element: Hashable {
     }
 }
 
+@available(iOS 14, macOS 11, *)
+extension Color {
+    init?(hexString hex: String) {
+        if hex.count != 7 { // The '#' included
+            return nil
+        }
+            
+        let hexColor = String(hex.dropFirst())
+        
+        let scanner = Scanner(string: hexColor)
+        var hexNumber: UInt64 = 0
+        
+        if !scanner.scanHexInt64(&hexNumber) {
+            return nil
+        }
+        
+        let r = CGFloat((hexNumber & 0xff0000) >> 16) / 255
+        let g = CGFloat((hexNumber & 0x00ff00) >> 8) / 255
+        let b = CGFloat(hexNumber & 0x0000ff) / 255
+        
+        self.init(.sRGB, red: r, green: g, blue: b, opacity: 1.0)
+    }
+}
+
 #if !os(macOS)
 @objc extension UIView {
     /// Adds constraints to this `UIView` instances `superview` object to make sure this always has the same size as the superview.
@@ -134,6 +158,19 @@ extension UIImage {
         } else {
             return nil
         }
+    }
+}
+
+extension UIColor {
+    @objc var hexString: String? {
+        guard let rgbColor = self.cgColor.converted(to: .init(name: CGColorSpace.sRGB)!, intent: .defaultIntent, options: nil),
+              let components = rgbColor.components else {
+            return nil
+        }
+        let red = Int(round(components[0] * 0xFF))
+        let green = Int(round(components[1] * 0xFF))
+        let blue = Int(round(components[2] * 0xFF))
+        return String(format: "#%02X%02X%02X", red, green, blue)
     }
 }
 #endif
@@ -166,6 +203,18 @@ extension NSImage {
         } else {
             return nil
         }
+    }
+}
+
+extension NSColor {
+    var hexString: String? {
+        guard let rgbColor = self.usingColorSpace(.sRGB) else {
+            return nil
+        }
+        let red = Int(round(rgbColor.redComponent * 0xFF))
+        let green = Int(round(rgbColor.greenComponent * 0xFF))
+        let blue = Int(round(rgbColor.blueComponent * 0xFF))
+        return String(format: "#%02X%02X%02X", red, green, blue)
     }
 }
 

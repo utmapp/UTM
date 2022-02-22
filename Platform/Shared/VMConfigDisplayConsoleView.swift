@@ -20,6 +20,37 @@ import SwiftUI
 struct VMConfigDisplayConsoleView<Config: ObservableObject & UTMConfigurable>: View {
     @ObservedObject var config: Config
     
+    #if os(macOS)
+    typealias PlatformColor = NSColor
+    #else
+    typealias PlatformColor = UIColor
+    #endif
+    
+    private var textColor: Binding<Color> {
+        Binding<Color> {
+            if let consoleTextColor = config.consoleTextColor,
+               let color = Color(hexString: consoleTextColor) {
+                return color
+            } else {
+                return Color.white
+            }
+        } set: { newValue in
+            config.consoleTextColor = PlatformColor(newValue).hexString
+        }
+    }
+    private var backgroundColor: Binding<Color> {
+        Binding<Color> {
+            if let consoleBackgroundColor = config.consoleBackgroundColor,
+               let color = Color(hexString: consoleBackgroundColor) {
+                return color
+            } else {
+                return Color.black
+            }
+        } set: { newValue in
+            config.consoleBackgroundColor = PlatformColor(newValue).hexString
+        }
+    }
+        
     var body: some View {
         let fontSizeObserver = Binding<Int> {
             Int(truncating: config.consoleFontSize ?? 1)
@@ -28,7 +59,9 @@ struct VMConfigDisplayConsoleView<Config: ObservableObject & UTMConfigurable>: V
         }
         Section(header: Text("Style"), footer: EmptyView().padding(.bottom)) {
             VMConfigStringPicker(selection: $config.consoleTheme, label: Text("Theme"), rawValues: UTMQemuConfiguration.supportedConsoleThemes(), displayValues: UTMQemuConfiguration.supportedConsoleThemes())
-            VMConfigStringPicker(selection: $config.consoleFont, label: Text("Font"), rawValues: UTMQemuConfiguration.supportedConsoleFonts(), displayValues: UTMQemuConfiguration.supportedConsoleFonts())
+            ColorPicker("Text Color", selection: textColor)
+            ColorPicker("Background Color", selection: backgroundColor)
+            VMConfigStringPicker(selection: $config.consoleFont, label: Text("Font"), rawValues: UTMQemuConfiguration.supportedConsoleFonts(), displayValues: UTMQemuConfiguration.supportedConsoleFontsPretty())
             HStack {
                 Stepper(value: fontSizeObserver, in: 1...72) {
                         Text("Font Size")

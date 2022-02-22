@@ -29,6 +29,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, nullable, copy) NSString *notes;
 
 @property (nonatomic, nullable, copy) NSString *consoleTheme;
+@property (nonatomic, nullable, copy) NSString *consoleTextColor;
+@property (nonatomic, nullable, copy) NSString *consoleBackgroundColor;
 @property (nonatomic, nullable, copy) NSString *consoleFont;
 @property (nonatomic, nullable, copy) NSNumber *consoleFontSize;
 @property (nonatomic, assign) BOOL consoleCursorBlink;
