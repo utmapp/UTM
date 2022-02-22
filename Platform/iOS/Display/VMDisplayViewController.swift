@@ -149,8 +149,8 @@ public extension VMDisplayViewController {
         
         if autosaveLowMemory {
             logger.info("Saving VM state on low memory warning.")
-            DispatchQueue.global(qos: .background).async {
-                self.vm.requestVmSaveState()
+            vm.vmSaveState { _ in
+                // ignore error
             }
         }
         
@@ -271,10 +271,13 @@ extension VMDisplayViewController {
                 UIApplication.shared.endBackgroundTask(task)
                 task = .invalid
             }
-            DispatchQueue.global(qos: .default).async {
-                self.vm.requestVmSaveState()
-                self.hasAutoSave = true
-                logger.info("Save snapshot complete")
+            vm.vmSaveState { error in
+                if let error = error {
+                    logger.error("error saving snapshot: \(error)")
+                } else {
+                    self.hasAutoSave = true
+                    logger.info("Save snapshot complete")
+                }
                 UIApplication.shared.endBackgroundTask(task)
                 task = .invalid
             }
