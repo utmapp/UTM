@@ -34,8 +34,9 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSArray<NSString *>*)supportedDriveInterfacesPretty;
 + (NSArray<NSString *>*)supportedScalersPretty;
 + (NSArray<NSString *>*)supportedScalers;
-+ (NSArray<NSString *>*)supportedConsoleThemes API_AVAILABLE(ios(11));
-+ (NSArray<NSString *>*)supportedConsoleFonts API_AVAILABLE(ios(11));
++ (NSArray<NSString *>*)supportedConsoleThemes;
++ (NSArray<NSString *>*)supportedConsoleFonts;
++ (NSArray<NSString *>*)supportedConsoleFontsPretty;
 + (NSArray<NSString *>*)supportedNetworkModes;
 + (NSArray<NSString *>*)supportedNetworkModesPretty;
 

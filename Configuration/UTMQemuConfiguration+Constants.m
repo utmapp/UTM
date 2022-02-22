@@ -214,15 +214,50 @@
     }
     return families;
 }
+
++ (NSArray<NSString *>*)supportedConsoleFontsPretty {
+    static NSMutableArray<NSString *> *fonts;
+    if (!fonts) {
+        fonts = [NSMutableArray new];
+        for (NSString *fontName in [UTMQemuConfiguration supportedConsoleFonts]) {
+            UIFont *font = [UIFont fontWithName:fontName size:1];
+            UIFontDescriptorSymbolicTraits traits = font.fontDescriptor.symbolicTraits;
+            NSString *description;
+            if ((traits & (UIFontDescriptorTraitItalic | UIFontDescriptorTraitBold)) ==
+                (UIFontDescriptorTraitItalic | UIFontDescriptorTraitBold)) {
+                description = NSLocalizedString(@"Italic, Bold", @"UTMQemuConfiguration+Constants");
+            } else if ((traits & UIFontDescriptorTraitItalic) != 0) {
+                description = NSLocalizedString(@"Italic", @"UTMQemuConfiguration+Constants");
+            } else if ((traits & UIFontDescriptorTraitBold) != 0) {
+                description = NSLocalizedString(@"Bold", @"UTMQemuConfiguration+Constants");
+            } else {
+                description = NSLocalizedString(@"Regular", @"UTMQemuConfiguration+Constants");
+            }
+            NSString *label = [NSString stringWithFormat:@"%@ (%@)", font.familyName, description];
+            [fonts addObject:label];
+        }
+    }
+    return fonts;
+}
 #else
 + (NSArray<NSString *>*)supportedConsoleFonts {
     static NSMutableArray<NSString *> *fonts;
     if (!fonts) {
         fonts = [NSMutableArray new];
         for (NSString *fontName in [NSFontManager.sharedFontManager availableFontNamesWithTraits:NSFixedPitchFontMask]) {
+            [fonts addObject:fontName];
+        }
+    }
+    return fonts;
+}
+
++ (NSArray<NSString *>*)supportedConsoleFontsPretty {
+    static NSMutableArray<NSString *> *fonts;
+    if (!fonts) {
+        fonts = [NSMutableArray new];
+        for (NSString *fontName in [UTMQemuConfiguration supportedConsoleFonts]) {
             NSFont *font = [NSFont fontWithName:fontName size:1];
-            NSString *fontDisplayName = font.displayName;
-            [fonts addObject:fontDisplayName];
+            [fonts addObject:font.displayName];
         }
     }
     return fonts;
