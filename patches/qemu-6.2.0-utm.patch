@@ -158,3 +158,86 @@ index c016541ad8..7bba4a7a43 100644
 -- 
 2.32.0 (Apple Git-132)
 
+From 6409730ff961a6251c858a135198b27fc3370c78 Mon Sep 17 00:00:00 2001
+From: osy <50960678+osy@users.noreply.github.com>
+Date: Mon, 21 Feb 2022 18:04:32 -0800
+Subject: [PATCH] spice-display: reduce race in sending IOSurface
+
+There is a kernel bug detailed in
+https://github.com/utmapp/UTM/issues/2743#issuecomment-1047175257
+which results in a race whenever IOSurfaceGetID/IOSurfaceLookup is used.
+As a result, we need a way to "indicate" to the receiver that the
+surface id in the pipe is now stale and should not be used. To do this
+we send POLLHUP to poll() by closing the write FD when the surface is
+about to be deallocated.
+
+Note this does not fix the race completely as there is still a small
+chance that the race happens between the close() and the CFRelease() but
+the chance of that is small and the whole FD passing surface ID system
+is a hack anyways that should be replaced with a proper set of SPICE
+APIs one day...
+---
+ include/ui/spice-display.h |  1 +
+ ui/spice-display.c         | 18 ++++++++++++++++--
+ 2 files changed, 17 insertions(+), 2 deletions(-)
+
+diff --git a/include/ui/spice-display.h b/include/ui/spice-display.h
+index b2f6570706..b93d9ccb59 100644
+--- a/include/ui/spice-display.h
++++ b/include/ui/spice-display.h
+@@ -137,6 +137,7 @@ struct SimpleSpiceDisplay {
+ #endif
+ #if defined(CONFIG_IOSURFACE)
+     IOSurfaceRef iosurface;
++    int surface_send_fd;
+ #endif
+ #if defined(CONFIG_ANGLE)
+     EGLSurface esurface;
+diff --git a/ui/spice-display.c b/ui/spice-display.c
+index a6afc87be8..bfadf686ae 100644
+--- a/ui/spice-display.c
++++ b/ui/spice-display.c
+@@ -890,6 +890,13 @@ static void spice_iosurface_destroy(SimpleSpiceDisplay *ssd)
+     qemu_egl_destroy_surface(ssd->esurface);
+     ssd->esurface = EGL_NO_SURFACE;
+ #endif
++    if (ssd->surface_send_fd > -1) {
++        // this sends POLLHUP and indicates that any unread data is stale
++        // and should not be used
++        close(ssd->surface_send_fd);
++        ssd->surface_send_fd = -1;
++    }
++    // FIXME: still a tiny race with the close() above
+     CFRelease(ssd->iosurface);
+     ssd->iosurface = NULL;
+ }
+@@ -922,10 +929,16 @@ static int spice_iosurface_create_fd(SimpleSpiceDisplay *ssd, int *fourcc)
+         error_report("spice_iosurface_create_fd: failed to create pipe");
+         return -1;
+     }
++    if (ssd->surface_send_fd > -1) {
++        close(ssd->surface_send_fd);
++    }
++    // we keep the write end of the pipe open for the lifetime of this surface
++    // when we close it, POLLHUP will be seen by the other side and know that
++    // the surface ID is stale and should not be used
++    ssd->surface_send_fd = fds[1];
+     *fourcc = 'BGRA';
+     surfaceid = IOSurfaceGetID(ssd->iosurface);
+-    write(fds[1], &surfaceid, sizeof(surfaceid));
+-    close(fds[1]);
++    write(ssd->surface_send_fd, &surfaceid, sizeof(surfaceid));
+     return fds[0];
+ }
+ 
+@@ -1381,6 +1394,7 @@ static void qemu_spice_display_init_one(QemuConsole *con)
+         ssd->have_scanout = false;
+ #if defined(CONFIG_IOSURFACE)
+         ssd->iosurface = NULL;
++        ssd->surface_send_fd = -1;
+ #endif
+ #if defined(CONFIG_ANGLE)
+         ssd->esurface = EGL_NO_SURFACE;
+-- 
+2.32.0 (Apple Git-132)
+
