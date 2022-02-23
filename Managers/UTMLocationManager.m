@@ -43,8 +43,6 @@
 }
 
 - (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations {
-    CLLocation *mostRecentLocation = locations.lastObject;
-    UTMLog(@"Current location: %@ %@", @(mostRecentLocation.coordinate.latitude), @(mostRecentLocation.coordinate.longitude));
 }
 
 - (void)startUpdatingLocation {
