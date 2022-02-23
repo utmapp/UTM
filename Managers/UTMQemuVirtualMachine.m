@@ -337,58 +337,83 @@ NSString *const kSuspendSnapshotName = @"suspend";
         [_self vmStopForce:YES completion:^(NSError *error){}];
     }];
     // connect to QMP
+    __block NSError *callbackError = nil;
+    dispatch_semaphore_t qmpSocketConnectEvent = dispatch_semaphore_create(0);
     [self.qemu connectWithCompletion:^(BOOL success, NSError *error) {
         if (!success) {
             UTMLog(@"Failed to connect to QMP: %@", error);
-            completion(error);
-            return;
+            callbackError = error;
         }
-        // wait for QMP to connect
-        if (dispatch_semaphore_wait(self.qemuDidConnectEvent, dispatch_time(DISPATCH_TIME_NOW, kStopTimeout)) != 0) {
-            UTMLog(@"Timed out waiting for connect event");
-            completion([self errorGeneric]);
-            return;
-        }
-        NSError *err;
-        NSString *errMsg;
-        if (!self.qemuConfig.displayConsoleOnly) {
-            if (![self startSharedDirectoryWithError:&err]) {
-                errMsg = [NSString stringWithFormat:NSLocalizedString(@"Error trying to start shared directory: %@", @"UTMVirtualMachine"), err.localizedDescription];
-                completion([self errorWithMessage:errMsg]);
-                return;
-            }
-        }
-        if (![self restoreRemovableDrivesFromBookmarksWithError:&err]) {
-            errMsg = [NSString stringWithFormat:NSLocalizedString(@"Error trying to restore removable drives: %@", @"UTMVirtualMachine"), err.localizedDescription];
+        dispatch_semaphore_signal(qmpSocketConnectEvent);
+    } retries:kQMPMaxConnectionTries];
+    // wait for socket to connect
+    if (dispatch_semaphore_wait(qmpSocketConnectEvent, dispatch_time(DISPATCH_TIME_NOW, kStopTimeout)) != 0) {
+        UTMLog(@"Timed out waiting for socket connect event");
+        completion([self errorGeneric]);
+        return;
+    }
+    if (callbackError) {
+        completion(callbackError);
+        return;
+    }
+    // wait for QMP to connect
+    if (dispatch_semaphore_wait(self.qemuDidConnectEvent, dispatch_time(DISPATCH_TIME_NOW, kStopTimeout)) != 0) {
+        UTMLog(@"Timed out waiting for QMP connect event");
+        completion([self errorGeneric]);
+        return;
+    }
+    NSError *err;
+    NSString *errMsg;
+    if (!self.qemuConfig.displayConsoleOnly) {
+        if (![self startSharedDirectoryWithError:&err]) {
+            errMsg = [NSString stringWithFormat:NSLocalizedString(@"Error trying to start shared directory: %@", @"UTMVirtualMachine"), err.localizedDescription];
             completion([self errorWithMessage:errMsg]);
             return;
         }
-        // start SPICE client
-        [self.ioService connectWithCompletion:^(BOOL success, NSError *error) {
-            if (!success) {
-                UTMLog(@"Failed to connect to SPICE: %@", error);
-                completion(error);
-                return;
-            }
-            // continue VM boot
-            if (![self.qemu continueBootWithError:&error]) {
-                UTMLog(@"Failed to boot: %@", error);
-                completion(error);
-                return;
-            }
-            assert(self.qemu.isConnected);
-            assert(self.ioService.isConnected);
-            [self changeState:kVMStarted];
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [self.ioService restoreViewState:self.viewState];
-            });
-            if (self.viewState.hasSaveState) {
-                [self _vmDeleteStateWithCompletion:completion];
-            } else {
-                completion(nil); // everything successful
-            }
+    }
+    if (![self restoreRemovableDrivesFromBookmarksWithError:&err]) {
+        errMsg = [NSString stringWithFormat:NSLocalizedString(@"Error trying to restore removable drives: %@", @"UTMVirtualMachine"), err.localizedDescription];
+        completion([self errorWithMessage:errMsg]);
+        return;
+    }
+    // start SPICE client
+    dispatch_semaphore_t spiceConnectEvent = dispatch_semaphore_create(0);
+    [self.ioService connectWithCompletion:^(BOOL success, NSError *error) {
+        if (!success) {
+            UTMLog(@"Failed to connect to SPICE: %@", error);
+            callbackError = error;
+        }
+        dispatch_semaphore_signal(spiceConnectEvent);
+    }];
+    if (dispatch_semaphore_wait(spiceConnectEvent, dispatch_time(DISPATCH_TIME_NOW, kStopTimeout)) != 0) {
+        UTMLog(@"Timed out waiting for SPICE connect event");
+        completion([self errorGeneric]);
+        return;
+    }
+    if (callbackError) {
+        completion(callbackError);
+        return;
+    }
+    // continue VM boot
+    if (![self.qemu continueBootWithError:&err]) {
+        UTMLog(@"Failed to boot: %@", err);
+        completion(err);
+        return;
+    }
+    assert(self.qemu.isConnected);
+    assert(self.ioService.isConnected);
+    [self changeState:kVMStarted];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self.ioService restoreViewState:self.viewState];
+    });
+    if (self.viewState.hasSaveState) {
+        [self _vmDeleteStateWithCompletion:^(NSError *error){
+            // ignore error
+            completion(nil);
         }];
-    } retries:kQMPMaxConnectionTries];
+    } else {
+        completion(nil); // everything successful
+    }
 }
 
 - (void)vmStartWithCompletion:(void (^)(NSError * _Nullable))completion {
