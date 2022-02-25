@@ -132,6 +132,19 @@ extension Color {
     }
 }
 
+extension CGColor {
+    var hexString: String? {
+        guard let rgbColor = self.converted(to: .init(name: CGColorSpace.sRGB)!, intent: .defaultIntent, options: nil),
+              let components = rgbColor.components else {
+            return nil
+        }
+        let red = Int(round(components[0] * 0xFF))
+        let green = Int(round(components[1] * 0xFF))
+        let blue = Int(round(components[2] * 0xFF))
+        return String(format: "#%02X%02X%02X", red, green, blue)
+    }
+}
+
 #if !os(macOS)
 @objc extension UIView {
     /// Adds constraints to this `UIView` instances `superview` object to make sure this always has the same size as the superview.
@@ -158,19 +171,6 @@ extension UIImage {
         } else {
             return nil
         }
-    }
-}
-
-extension UIColor {
-    @objc var hexString: String? {
-        guard let rgbColor = self.cgColor.converted(to: .init(name: CGColorSpace.sRGB)!, intent: .defaultIntent, options: nil),
-              let components = rgbColor.components else {
-            return nil
-        }
-        let red = Int(round(components[0] * 0xFF))
-        let green = Int(round(components[1] * 0xFF))
-        let blue = Int(round(components[2] * 0xFF))
-        return String(format: "#%02X%02X%02X", red, green, blue)
     }
 }
 #endif
@@ -203,18 +203,6 @@ extension NSImage {
         } else {
             return nil
         }
-    }
-}
-
-extension NSColor {
-    var hexString: String? {
-        guard let rgbColor = self.usingColorSpace(.sRGB) else {
-            return nil
-        }
-        let red = Int(round(rgbColor.redComponent * 0xFF))
-        let green = Int(round(rgbColor.greenComponent * 0xFF))
-        let blue = Int(round(rgbColor.blueComponent * 0xFF))
-        return String(format: "#%02X%02X%02X", red, green, blue)
     }
 }
 
