@@ -128,13 +128,21 @@ extension Color {
         let g = CGFloat((hexNumber & 0x00ff00) >> 8) / 255
         let b = CGFloat(hexNumber & 0x0000ff) / 255
         
-        self.init(.sRGB, red: r, green: g, blue: b, opacity: 1.0)
+        self.init(.displayP3, red: r, green: g, blue: b, opacity: 1.0)
     }
 }
 
 extension CGColor {
     var hexString: String? {
-        guard let rgbColor = self.converted(to: .init(name: CGColorSpace.sRGB)!, intent: .defaultIntent, options: nil),
+        hexString(for: .init(name: CGColorSpace.displayP3)!)
+    }
+    
+    var sRGBhexString: String? {
+        hexString(for: .init(name: CGColorSpace.sRGB)!)
+    }
+    
+    private func hexString(for colorSpace: CGColorSpace) -> String? {
+        guard let rgbColor = self.converted(to: colorSpace, intent: .defaultIntent, options: nil),
               let components = rgbColor.components else {
             return nil
         }
@@ -171,6 +179,37 @@ extension UIImage {
         } else {
             return nil
         }
+    }
+}
+
+// Only used in hterm support
+@objc extension UIColor {
+    convenience init?(hexString hex: String?) {
+        guard let hex = hex else {
+            return nil
+        }
+        if hex.count != 7 { // The '#' included
+            return nil
+        }
+            
+        let hexColor = String(hex.dropFirst())
+        
+        let scanner = Scanner(string: hexColor)
+        var hexNumber: UInt64 = 0
+        
+        if !scanner.scanHexInt64(&hexNumber) {
+            return nil
+        }
+        
+        let r = CGFloat((hexNumber & 0xff0000) >> 16) / 255
+        let g = CGFloat((hexNumber & 0x00ff00) >> 8) / 255
+        let b = CGFloat(hexNumber & 0x0000ff) / 255
+        
+        self.init(displayP3Red: r, green: g, blue: b, alpha: 1.0)
+    }
+    
+    var sRGBhexString: String? {
+        cgColor.sRGBhexString
     }
 }
 #endif

@@ -14,6 +14,7 @@
 // limitations under the License.
 //
 
+import SwiftUI
 import WebKit
 
 private let kVMDefaultResizeCmd = "stty cols $COLS rows $ROWS\\n"
@@ -85,8 +86,10 @@ extension VMDisplayTerminalWindowController: WKNavigationDelegate {
     
     func updateSettings() {
         if let consoleTextColor = vmQemuConfig?.consoleTextColor,
-           let consoleBackgroundColor = vmQemuConfig?.consoleBackgroundColor {
-            webView.evaluateJavaScript("changeColor('\(consoleTextColor)', '\(consoleBackgroundColor)');") { (_, err) in
+           let srgbConsoleTextColor = Color(hexString: consoleTextColor)?.cgColor?.sRGBhexString,
+           let consoleBackgroundColor = vmQemuConfig?.consoleBackgroundColor,
+           let srgbConsoleBackgroundColor = Color(hexString: consoleBackgroundColor)?.cgColor?.sRGBhexString {
+            webView.evaluateJavaScript("changeColor('\(srgbConsoleTextColor)', '\(srgbConsoleBackgroundColor)');") { (_, err) in
                 if let error = err {
                     logger.error("changeColor error: \(error)")
                 }
