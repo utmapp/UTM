@@ -171,7 +171,7 @@ struct VMConfigDrivesButtons<Config: ObservableObject & UTMConfigurable>: View {
                     if await newQemuDrive.removable {
                         try await data.createDrive(newQemuDrive, for: qemuConfig, with: url)
                     } else {
-                        try await data.importDrive(url, for: qemuConfig, imageType: newQemuDrive.imageType, on: newQemuDrive.interface!, copy: true)
+                        try await data.importDrive(url, for: qemuConfig, imageType: newQemuDrive.imageType, on: newQemuDrive.interface!, raw: newQemuDrive.isRawImage, copy: true)
                     }
                 } else if let appleConfig = await config as? UTMAppleConfiguration {
                     let name = url.lastPathComponent

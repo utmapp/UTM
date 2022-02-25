@@ -264,13 +264,14 @@ class UTMData: ObservableObject {
         return ProcessInfo.processInfo.globallyUniqueString
     }
     
-    /// Generate a unique QCOW2 drive name for QEMU
+    /// Generate a unique drive name for QEMU
     /// - Parameters:
     ///   - type: Image type
+    ///   - ext: Image extension
     ///   - forConfig: UTM QEMU configuration that will hold this drive
     /// - Returns: Unique name for a non-existing item in the .utm data path
-    private func newDefaultDrivePath(type: UTMDiskImageType, forConfig: UTMQemuConfiguration) -> String {
-        let nameForId = { (i: Int) in "\(type.description)-\(i).qcow2" }
+    private func newDefaultDrivePath(type: UTMDiskImageType, extension ext: String, forConfig: UTMQemuConfiguration) -> String {
+        let nameForId = { (i: Int) in "\(type.description)-\(i).\(ext)" }
         for i in 0..<1000 {
             let name = nameForId(i)
             let file = forConfig.imagesPath.appendingPathComponent(name)
@@ -614,8 +615,9 @@ class UTMData: ObservableObject {
     ///   - config: QEMU configuration to add to
     ///   - imageType: Disk image type
     ///   - interface: Interface to add to
+    ///   - raw: If false, convert to QCOW2
     ///   - copy: Make a copy of the file (if false, file will be moved)
-    func importDrive(_ drive: URL, for config: UTMQemuConfiguration, imageType: UTMDiskImageType, on interface: String, copy: Bool) async throws {
+    func importDrive(_ drive: URL, for config: UTMQemuConfiguration, imageType: UTMDiskImageType, on interface: String, raw: Bool, copy: Bool) async throws {
         _ = drive.startAccessingSecurityScopedResource()
         defer { drive.stopAccessingSecurityScopedResource() }
         
@@ -636,7 +638,7 @@ class UTMData: ObservableObject {
         }
         if copy {
             #if os(macOS)
-            if UTMQemuConfiguration.shouldConvertQcow2(forInterface: interface) {
+            if !raw {
                 dstPath.deletePathExtension()
                 dstPath.appendPathExtension("qcow2")
                 path = dstPath.lastPathComponent
@@ -645,6 +647,7 @@ class UTMData: ObservableObject {
                 try fileManager.copyItem(at: drive, to: dstPath)
             }
             #else
+            assert(raw) // currently do not support QCOW2 conversion
             try fileManager.copyItem(at: drive, to: dstPath)
             #endif
         } else {
@@ -665,7 +668,7 @@ class UTMData: ObservableObject {
         } else {
             interface = "none"
         }
-        try await importDrive(drive, for: config, imageType: imageType, on: interface, copy: copy)
+        try await importDrive(drive, for: config, imageType: imageType, on: interface, raw: true, copy: copy)
     }
     
     /// Create a new QCOW2 disk image
@@ -680,7 +683,7 @@ class UTMData: ObservableObject {
             guard drive.size > 0 else {
                 throw NSLocalizedString("Invalid drive size.", comment: "UTMData")
             }
-            path = newDefaultDrivePath(type: drive.imageType, forConfig: config)
+            path = newDefaultDrivePath(type: drive.imageType, extension: drive.isRawImage ? "raw" : "qcow2", forConfig: config)
             let imagesPath = config.imagesPath
             let dstPath = imagesPath.appendingPathComponent(path)
             if !fileManager.fileExists(atPath: imagesPath.path) {
@@ -689,7 +692,9 @@ class UTMData: ObservableObject {
             
             // create drive
             try await Task.detached {
-                if !GenerateDefaultQcow2File(dstPath as CFURL, drive.size) {
+                if drive.isRawImage {
+                    try self.generateNewRawDrive(at: dstPath, sizeInMib: drive.size)
+                } else if !GenerateDefaultQcow2File(dstPath as CFURL, drive.size) {
                     throw NSLocalizedString("Disk creation failed.", comment: "UTMData")
                 }
             }.value
@@ -746,6 +751,20 @@ class UTMData: ObservableObject {
                 try vm.changeMedium(for: drive, url: url)
             }
         }
+    }
+    
+    /// Create a new raw disk image
+    /// - Parameters:
+    ///   - url: Destination of the drive image
+    ///   - sizeInMib: Size of the drive image in MiB
+    private func generateNewRawDrive(at url: URL, sizeInMib: Int) throws {
+        let bytesInMib = 1048576
+        guard fileManager.createFile(atPath: url.path, contents: nil, attributes: nil) else {
+            throw NSLocalizedString("Cannot create disk iamge.", comment: "UTMData")
+        }
+        let handle = try FileHandle(forWritingTo: url)
+        try handle.truncate(atOffset: UInt64(sizeInMib * bytesInMib))
+        try handle.close()
     }
     
     // MARK: - Other utility functions

@@ -51,6 +51,9 @@ struct VMConfigDriveCreateView: View {
                             .foregroundColor(.blue)
                     }).buttonStyle(.plain)
                 }
+                Toggle(isOn: $driveImage.isRawImage) {
+                    Text("Raw Image")
+                }.help(Text("Advanced. If checked, a raw disk image is used. Raw disk image does not support snapshots and will not dynamically expand in size."))
             }
         }
     }
