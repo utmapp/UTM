@@ -63,10 +63,4 @@
     return nil;
 }
 
-- (void)syncViewState:(UTMViewState *)viewState {
-}
-
-- (void)restoreViewState:(UTMViewState *)viewState {
-}
-
 @end

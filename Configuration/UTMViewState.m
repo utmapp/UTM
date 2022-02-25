@@ -20,8 +20,6 @@
 const NSString *const kUTMViewStateDisplayScaleKey = @"DisplayScale";
 const NSString *const kUTMViewStateDisplayOriginXKey = @"DisplayOriginX";
 const NSString *const kUTMViewStateDisplayOriginYKey = @"DisplayOriginY";
-const NSString *const kUTMViewStateDisplaySizeWidthKey = @"DisplaySizeWidth";
-const NSString *const kUTMViewStateDisplaySizeHeightKey = @"DisplaySizeHeight";
 const NSString *const kUTMViewStateShowToolbarKey = @"ShowToolbar";
 const NSString *const kUTMViewStateShowKeyboardKey = @"ShowKeyboard";
 const NSString *const kUTMViewStateSuspendedKey = @"Suspended";
@@ -77,24 +75,6 @@ const NSString *const kUTMViewStateRemovableDrivesPathKey = @"RemovableDrivesPat
 - (void)setDisplayOriginY:(double)displayOriginY {
     [self propertyWillChange];
     _rootDict[kUTMViewStateDisplayOriginYKey] = @(displayOriginY);
-}
-
-- (double)displaySizeWidth {
-    return [_rootDict[kUTMViewStateDisplaySizeWidthKey] doubleValue];
-}
-
-- (void)setDisplaySizeWidth:(double)displaySizeWidth {
-    [self propertyWillChange];
-    _rootDict[kUTMViewStateDisplaySizeWidthKey] = @(displaySizeWidth);
-}
-
-- (double)displaySizeHeight {
-    return [_rootDict[kUTMViewStateDisplaySizeHeightKey] doubleValue];
-}
-
-- (void)setDisplaySizeHeight:(double)displaySizeHeight {
-    [self propertyWillChange];
-    _rootDict[kUTMViewStateDisplaySizeHeightKey] = @(displaySizeHeight);
 }
 
 - (BOOL)hasSaveState {
@@ -216,8 +196,6 @@ const NSString *const kUTMViewStateRemovableDrivesPathKey = @"RemovableDrivesPat
         self.displayScale = 1.0;
         self.displayOriginX = 0;
         self.displayOriginY = 0;
-        self.displaySizeWidth = 0;
-        self.displaySizeHeight = 0;
     }
     return self;
 }

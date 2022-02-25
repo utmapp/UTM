@@ -58,12 +58,13 @@ extension UTMData {
         if vm.viewState.hasSaveState {
             vm.requestVmDeleteState()
         }
-        vm.requestVmStop(force: true)
-        if let window = vmWindows[vm] {
-            DispatchQueue.main.async {
-                window.close()
+        vm.vmStop(force: true, completion: { _ in
+            if let window = self.vmWindows[vm] {
+                DispatchQueue.main.async {
+                    window.close()
+                }
             }
-        }
+        })
     }
     
     func trySendTextSpice(vm: UTMQemuVirtualMachine, text: String) {

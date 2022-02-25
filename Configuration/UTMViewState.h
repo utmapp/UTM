@@ -25,8 +25,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) double displayScale;
 @property (nonatomic, assign) double displayOriginX;
 @property (nonatomic, assign) double displayOriginY;
-@property (nonatomic, assign) double displaySizeWidth;
-@property (nonatomic, assign) double displaySizeHeight;
 @property (nonatomic, assign) BOOL hasSaveState;
 @property (nonatomic, copy, nullable) NSData *sharedDirectory;
 @property (nonatomic, copy, nullable) NSString *sharedDirectoryPath;

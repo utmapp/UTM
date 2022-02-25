@@ -59,11 +59,6 @@ NSString *const kSuspendSnapshotName = @"suspend";
     return (UTMQemuConfiguration *)self.config;
 }
 
-- (void)setDelegate:(id<UTMVirtualMachineDelegate>)delegate {
-    [super setDelegate:delegate];
-    [self.ioService restoreViewState:self.viewState];
-}
-
 - (id)ioDelegate {
     if ([self.ioService isKindOfClass:[UTMSpiceIO class]]) {
         return ((UTMSpiceIO *)self.ioService).delegate;
@@ -403,9 +398,6 @@ NSString *const kSuspendSnapshotName = @"suspend";
     assert(self.qemu.isConnected);
     assert(self.ioService.isConnected);
     [self changeState:kVMStarted];
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self.ioService restoreViewState:self.viewState];
-    });
     if (self.viewState.hasSaveState) {
         [self _vmDeleteStateWithCompletion:^(NSError *error){
             // ignore error
@@ -439,9 +431,6 @@ NSString *const kSuspendSnapshotName = @"suspend";
         completion([self errorGeneric]);
         return;
     }
-    dispatch_sync(dispatch_get_main_queue(), ^{
-        [self.ioService syncViewState:self.viewState];
-    });
     if (!force) {
         [self changeState:kVMStopping];
     }
@@ -484,9 +473,6 @@ NSString *const kSuspendSnapshotName = @"suspend";
         completion([self errorGeneric]);
         return;
     }
-    dispatch_sync(dispatch_get_main_queue(), ^{
-        [self.ioService syncViewState:self.viewState];
-    });
     [self changeState:kVMStopping];
     if (self.viewState.hasSaveState) {
         [self _vmDeleteStateWithCompletion:^(NSError *error) {}];
@@ -525,9 +511,6 @@ NSString *const kSuspendSnapshotName = @"suspend";
         completion([self errorGeneric]);
         return;
     }
-    dispatch_sync(dispatch_get_main_queue(), ^{
-        [self.ioService syncViewState:self.viewState];
-    });
     [self changeState:kVMPausing];
     dispatch_sync(dispatch_get_main_queue(), ^{
         [self updateScreenshot];
@@ -657,9 +640,6 @@ NSString *const kSuspendSnapshotName = @"suspend";
     }
     if (!resumeError) {
         [self changeState:kVMStarted];
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self.ioService restoreViewState:self.viewState];
-        });
     } else {
         [self changeState:kVMStopped];
     }

@@ -126,24 +126,6 @@ extern NSString *const kUTMErrorDomain;
     return [self.primaryDisplay screenshot];
 }
 
-- (void)syncViewState:(UTMViewState *)viewState {
-    viewState.displayOriginX = self.primaryDisplay.viewportOrigin.x;
-    viewState.displayOriginY = self.primaryDisplay.viewportOrigin.y;
-    viewState.displaySizeWidth = self.primaryDisplay.displaySize.width;
-    viewState.displaySizeHeight = self.primaryDisplay.displaySize.height;
-    viewState.displayScale = self.primaryDisplay.viewportScale;
-}
-
-- (void)restoreViewState:(UTMViewState *)viewState {
-    self.primaryDisplay.viewportOrigin = CGPointMake(viewState.displayOriginX, viewState.displayOriginY);
-    self.primaryDisplay.displaySize = CGSizeMake(viewState.displaySizeWidth, viewState.displaySizeHeight);
-    if (viewState.displayScale) { // cannot be zero
-        self.primaryDisplay.viewportScale = viewState.displayScale;
-    } else {
-        self.primaryDisplay.viewportScale = 1.0; // default value
-    }
-}
-
 #pragma mark - CSConnectionDelegate
 
 - (void)spiceConnected:(CSConnection *)connection {

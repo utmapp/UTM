@@ -229,9 +229,8 @@ import SwiftUI
         }
         if viewController.vm.state == .vmStarted {
             let yes = UIAlertAction(title: NSLocalizedString("Yes", comment: "VMDisplayViewController"), style: .destructive) { action in
-                DispatchQueue.global(qos: .background).async {
-                    viewController.vm.requestVmDeleteState()
-                    viewController.vm.requestVmStop()
+                viewController.vm.requestVmDeleteState()
+                viewController.vm.vmStop { _ in
                     viewController.terminateApplication()
                 }
             }

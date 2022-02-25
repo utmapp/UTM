@@ -31,8 +31,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)connectWithCompletion:(ioConnectCompletionHandler_t)block;
 - (void)disconnect;
 - (CSScreenshot* _Nullable)screenshot;
-- (void)syncViewState:(UTMViewState *)viewState;
-- (void)restoreViewState:(UTMViewState *)viewState;
 
 @end
 

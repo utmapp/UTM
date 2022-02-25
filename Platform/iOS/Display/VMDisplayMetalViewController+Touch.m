@@ -296,6 +296,9 @@ static CGFloat CGPointToPixel(CGFloat point) {
         viewport.x = CGPointToPixel(translation.x) + _lastTwoPanOrigin.x;
         viewport.y = CGPointToPixel(translation.y) + _lastTwoPanOrigin.y;
         self.vmDisplay.viewportOrigin = [self clipDisplayToView:viewport];
+        // persist this change in viewState
+        self.vm.viewState.displayOriginX = self.vmDisplay.viewportOrigin.x;
+        self.vm.viewState.displayOriginY = self.vmDisplay.viewportOrigin.y;
     }
     if (sender.state == UIGestureRecognizerStateEnded) {
         // TODO: decelerate
@@ -433,6 +436,8 @@ static CGFloat CGPointToPixel(CGFloat point) {
     if (sender.state == UIGestureRecognizerStateEnded && (self.twoFingerPanType == VMGestureTypeMoveScreen || self.threeFingerPanType == VMGestureTypeMoveScreen)) {
         NSAssert(sender.scale > 0, @"sender.scale cannot be 0");
         self.vmDisplay.viewportScale *= sender.scale;
+        // persist this change in viewState
+        self.vm.viewState.displayScale = self.vmDisplay.viewportScale;
         sender.scale = 1.0;
     }
 }

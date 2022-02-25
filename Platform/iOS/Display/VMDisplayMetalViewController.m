@@ -175,11 +175,19 @@
     CGSize scaled = CGSizeMake(viewSize.width / displaySize.width, viewSize.height / displaySize.height);
     self.vmDisplay.viewportScale = MIN(scaled.width, scaled.height);
     self.vmDisplay.viewportOrigin = CGPointMake(0, 0);
+    // persist this change in viewState
+    self.vm.viewState.displayScale = self.vmDisplay.viewportScale;
+    self.vm.viewState.displayOriginX = 0;
+    self.vm.viewState.displayOriginY = 0;
 }
 
 - (void)resetDisplay {
     self.vmDisplay.viewportScale = 1.0;
     self.vmDisplay.viewportOrigin = CGPointMake(0, 0);
+    // persist this change in viewState
+    self.vm.viewState.displayScale = 1.0;
+    self.vm.viewState.displayOriginX = 0;
+    self.vm.viewState.displayOriginY = 0;
 }
 
 #pragma mark - Resizing
@@ -205,6 +213,12 @@
     if (display.isPrimaryDisplay) {
         self.vmDisplay = display;
         _renderer.source = display;
+        // restore last size
+        display.viewportOrigin = CGPointMake(self.vm.viewState.displayOriginX, self.vm.viewState.displayOriginY);
+        double displayScale = self.vm.viewState.displayScale;
+        if (displayScale) { // cannot be zero
+            display.viewportScale = displayScale;
+        }
     }
 }
 
