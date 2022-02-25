@@ -32,6 +32,7 @@ struct VMConfigAppleDriveCreateView: View {
                     driveSize = convertToMib(fromSize: $0?.intValue ?? 0)
                 }), onEditingChanged: validateSize)
                     .multilineTextAlignment(.trailing)
+                    .help(Text("The amount of storage to allocate for this image. An empty file of this size will be stored with the VM."))
                 Button(action: { isGiB.toggle() }, label: {
                     Text(isGiB ? "GB" : "MB")
                         .foregroundColor(.blue)
