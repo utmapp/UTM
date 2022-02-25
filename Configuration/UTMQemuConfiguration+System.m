@@ -36,6 +36,7 @@ static const NSString *const kUTMConfigAddArgsKey = @"AddArgs";
 static const NSString *const kUTMConfigSystemUUIDKey = @"SystemUUID";
 static const NSString *const kUTMConfigMachinePropertiesKey = @"MachineProperties";
 static const NSString *const kUTMConfigUseHypervisorKey = @"UseHypervisor";
+static const NSString *const kUTMConfigRTCUseLocalTimeKey = @"RTCUseLocalTime";
 
 @interface UTMQemuConfiguration ()
 
@@ -92,6 +93,9 @@ static const NSString *const kUTMConfigUseHypervisorKey = @"UseHypervisor";
     // Set RNG enabled default for pc* and virt*
     if (self.rootDict[kUTMConfigSystemKey][kUTMConfigRngEnabledKey] == nil) {
         self.systemRngEnabled = [self.systemTarget hasPrefix:@"pc"] || [self.systemTarget hasPrefix:@"q35"] || [self.systemTarget hasPrefix:@"virt"];
+    }
+    if (self.rootDict[kUTMConfigSystemKey][kUTMConfigRTCUseLocalTimeKey] == nil) {
+        self.rtcUseLocalTime = YES; // used to be default, now only for Windows
     }
 }
 
@@ -212,6 +216,15 @@ static const NSString *const kUTMConfigUseHypervisorKey = @"UseHypervisor";
 - (void)setUseHypervisor:(BOOL)useHypervisor {
     [self propertyWillChange];
     self.rootDict[kUTMConfigSystemKey][kUTMConfigUseHypervisorKey] = @(useHypervisor);
+}
+
+- (BOOL)rtcUseLocalTime {
+    return [self.rootDict[kUTMConfigSystemKey][kUTMConfigRTCUseLocalTimeKey] boolValue];
+}
+
+- (void)setRtcUseLocalTime:(BOOL)rtcUseLocalTime {
+    [self propertyWillChange];
+    self.rootDict[kUTMConfigSystemKey][kUTMConfigRTCUseLocalTimeKey] = @(rtcUseLocalTime);
 }
 
 #pragma mark - Additional arguments array handling

@@ -692,9 +692,11 @@ static size_t sysctl_read(const char *name) {
         [self pushArgv:self.configuration.systemUUID];
     }
     
-    // fix windows time issues
-    [self pushArgv:@"-rtc"];
-    [self pushArgv:@"base=localtime"];
+    if (self.configuration.rtcUseLocalTime) {
+        // fix windows time issues
+        [self pushArgv:@"-rtc"];
+        [self pushArgv:@"base=localtime"];
+    }
 }
     
 - (void)argsFromUser {

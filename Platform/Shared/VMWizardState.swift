@@ -402,6 +402,7 @@ enum VMWizardOS: String, Identifiable {
             }
         case .Windows:
             config.icon = "windows"
+            config.rtcUseLocalTime = true
             if let windowsBootVhdx = windowsBootVhdx {
                 config.newDrive("drive0", path: destinationFilename(forExisting: windowsBootVhdx), type: .disk, interface: mainDriveInterface)
                 generateRemovableDrive() // order matters here

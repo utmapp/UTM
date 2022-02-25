@@ -38,6 +38,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) BOOL useHypervisor;
 @property (nonatomic, readonly) BOOL isTargetArchitectureMatchHost;
 @property (nonatomic, readonly) BOOL defaultUseHypervisor;
+@property (nonatomic, assign) BOOL rtcUseLocalTime;
 
 - (void)migrateSystemConfigurationIfNecessary;
 

@@ -39,13 +39,16 @@ struct VMConfigQEMUView: View {
     var body: some View {
         VStack {
             Form {
-                #if os(macOS)
-                Section(header: Text("Hypervisor")) {
+                Section(header: Text("Tweaks")) {
+                    #if os(macOS)
                     Toggle(isOn: $config.useHypervisor, label: {
                         Text("Use Hypervisor")
                     }).disabled(!config.isTargetArchitectureMatchHost)
+                    #endif
+                    Toggle(isOn: $config.rtcUseLocalTime, label: {
+                        Text("Use local time for base clock")
+                    }).help(Text("If checked, use local time for RTC which is required for Windows. Otherwise, use UTC clock."))
                 }
-                #endif
                 Section(header: Text("Logging")) {
                     Toggle(isOn: $config.debugLogEnabled, label: {
                         Text("Debug Logging")
