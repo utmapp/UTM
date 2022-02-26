@@ -16,6 +16,7 @@
 
 import SwiftUI
 
+@available(iOS 14, macOS 11, *)
 struct UTMUnavailableVMView: View {
     @ObservedObject var wrappedVM: UTMWrappedVirtualMachine
     @EnvironmentObject private var data: UTMData
@@ -70,6 +71,7 @@ fileprivate struct WrappedVMDetailsView: View {
     }
 }
 
+@available(iOS 14, macOS 11, *)
 struct UTMUnavailableVMView_Previews: PreviewProvider {
     static var previews: some View {
         UTMUnavailableVMView(wrappedVM: UTMWrappedVirtualMachine(bookmark: Data(), name: "Wrapped VM", path: URL(fileURLWithPath: "/")))

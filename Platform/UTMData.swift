@@ -176,12 +176,16 @@ class UTMData: ObservableObject {
                     wrappedVM = UTMWrappedVirtualMachine(from: dict)
                 }
                 if let vm = wrappedVM?.unwrap() {
+                    #if os(macOS)
                     // FIXME: we do not support Apple VM shortcuts because we cannot access the drives
                     if let appleVM = vm as? UTMAppleVirtualMachine, appleVM.isShortcut {
                         return nil
                     } else {
                         return vm
                     }
+                    #else
+                    return vm
+                    #endif
                 } else {
                     return wrappedVM
                 }

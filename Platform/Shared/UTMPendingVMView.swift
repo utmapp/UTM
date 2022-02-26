@@ -76,7 +76,7 @@ fileprivate struct PendingVMDetailsView: View {
 @available(iOS 14, macOS 11, *)
 struct UTMProgressView_Previews: PreviewProvider {
     static var previews: some View {
-        UTMPendingVMView(vm: UTMPendingVirtualMachine(name: ""))
+        UTMPendingVMView(vm: UTMPendingVirtualMachine(name: "", onCancel: {}))
             .frame(width: 350, height: 100)
     }
 }
