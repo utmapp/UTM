@@ -19,96 +19,60 @@ import SwiftUI
 @available(iOS 14, macOS 11, *)
 struct UTMPendingVMView: View {
     @ObservedObject var vm: UTMPendingVirtualMachine
-    @State private var showingDetails = false
-#if os(macOS)
-    @State private var showCancelButton = false
-#endif
     
     var body: some View {
-        HStack(alignment: .center) {
-            /// Computer with download symbol on its screen
-            Image(systemName: "desktopcomputer")
-                .resizable()
-                .frame(width: 30.0, height: 30.0)
-                .aspectRatio(contentMode: .fit)
-                .overlay(
-                    Image(systemName: "arrow.down.circle.fill")
-                        .font(Font.caption.weight(Font.Weight.medium))
-                        .offset(y: -5)
-                )
-                .foregroundColor(.gray)
-            
-            VStack(alignment: .leading) {
-                Text(vm.name)
-                    .font(.headline)
-                MinimalProgressView(fractionCompleted: vm.downloadProgress)
-                Text(vm.estimatedTimeRemaining ?? " ")
-                    .font(.caption)
-            }
-            .foregroundColor(.gray)
-            
-#if os(macOS)
-            /// macOS gets an on-hover cancel button
-            Button(action: {
-                vm.cancel()
-            }, label: {
-                Image(systemName: "xmark.circle")
-                    .accessibility(label: Text("Cancel download"))
-            })
-                .clipShape(Circle())
-                .disabled(!showCancelButton)
-                .opacity(showCancelButton ? 1 : 0)
-#endif
-        }
-        .onTapGesture(perform: toggleDetailsPopup)
-        .popover(isPresented: $showingDetails) {
-            UTMPendingVMDetailsView(vm: vm)
-        }
-#if os(macOS)
-        .onHover(perform: { hovering in
-            self.showCancelButton = hovering
-        })
-#endif
-    }
-    
-    private func toggleDetailsPopup() {
-        showingDetails.toggle()
+        UTMPlaceholderVMView(title: vm.name,
+                             subtitle: vm.estimatedTimeRemaining ?? " ",
+                             progress: vm.downloadProgress,
+                             imageOverlaySystemName: "arrow.down.circle.fill",
+                             popover: { PendingVMDetailsView(vm: vm) },
+                             onRemove: vm.cancel)
     }
 }
 
 @available(iOS 14, macOS 11, *)
-struct MinimalProgressView: View {
-    let fractionCompleted: CGFloat
+fileprivate struct PendingVMDetailsView: View {
+    @ObservedObject var vm: UTMPendingVirtualMachine
     
-    private var accessibilityLabel: String {
-        let formatter = NumberFormatter()
-        formatter.numberStyle = .percent
-        formatter.allowsFloats = false
-        let label = formatter.string(from: NSNumber(value: fractionCompleted)) ?? ""
-        return label
+    private var downloadProgress: String {
+        get {
+            if let currentSize = vm.downloadedSize, let estimatedSize = vm.estimatedDownloadSize {
+                let estimatedSpeed = vm.estimatedDownloadSpeed ?? NSLocalizedString("Extracting…", comment: "Word for decompressing a compressed folder")
+                let formatString = NSLocalizedString("%1$@ of %2$@ (%3$@)", comment: "Format string for download progress and speed, e. g. 5 MB of 6 GB (200 kbit/s)")
+                return String(format: formatString, currentSize, estimatedSize, estimatedSpeed)
+            } else {
+                return NSLocalizedString("Preparing…", comment: "A download process is about to begin.")
+            }
+        }
     }
     
     var body: some View {
-        Text(" ") /// to create a seamless layout with the rest of the text
-            .font(.subheadline)
-            .frame(maxWidth: .infinity)
-            .overlay(
-                GeometryReader { frame in
-                    RoundedRectangle(cornerRadius: frame.size.height/5)
-                        .fill(Color.secondary)
-                        .frame(width: frame.size.width, height: frame.size.height/3)
-                        .offset(y: frame.size.height/3)
-                    RoundedRectangle(cornerRadius: frame.size.height/5)
-                        .fill(Color.accentColor)
-                        .frame(width: frame.size.width * fractionCompleted, height: frame.size.height/3)
-                        .offset(y: frame.size.height/3)
+        VStack(alignment: .center) {
+            Text(downloadProgress)
+                .lineLimit(1)
+                .padding(.top)
+            
+            if #available(iOS 15, macOS 12.0, *) {
+                Button(role: .cancel, action: vm.cancel) {
+                    Label("Cancel Download", systemImage: "xmark.circle")
                 }
-            )
-            .accessibilityLabel(accessibilityLabel)
+                .buttonStyle(.borderedProminent)
+                .tint(.red)
+                .disabled(vm.estimatedDownloadSpeed == nil)
+                .padding([.bottom, .leading, .trailing])
+            } else {
+                Button(action: vm.cancel) {
+                    Label("Cancel Download", systemImage: "xmark.circle")
+                }
+                .foregroundColor(.red)
+                .disabled(vm.estimatedDownloadSpeed == nil)
+                .padding([.bottom, .leading, .trailing])
+            }
+        }
+        .frame(minWidth: 230, maxWidth: .infinity)
     }
 }
 
-#if DEBUG
 @available(iOS 14, macOS 11, *)
 struct UTMProgressView_Previews: PreviewProvider {
     static var previews: some View {
@@ -116,4 +80,3 @@ struct UTMProgressView_Previews: PreviewProvider {
             .frame(width: 350, height: 100)
     }
 }
-#endif

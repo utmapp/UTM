@@ -38,7 +38,7 @@ struct ContentView: View {
             List {
                 ForEach(data.virtualMachines) { vm in
                     if let wrappedVM = vm as? UTMWrappedVirtualMachine {
-                        UTMPlaceholderVMView(wrappedVM: wrappedVM)
+                        UTMUnavailableVMView(wrappedVM: wrappedVM)
                     } else {
                         NavigationLink(
                             destination: VMDetailsView(vm: vm),

@@ -17,18 +17,109 @@
 import SwiftUI
 
 @available(iOS 14, macOS 11, *)
-struct UTMPlaceholderVMView: View {
-    @ObservedObject var wrappedVM: UTMWrappedVirtualMachine
-    @EnvironmentObject private var data: UTMData
+struct UTMPlaceholderVMView<Content>: View where Content: View {
+    let title: String
+    let subtitle: String
+    let progress: CGFloat?
+    let imageOverlaySystemName: String
+    let popover: () -> Content
+    let onRemove: () -> Void
+    
+    @State private var showingDetails = false
+#if os(macOS)
+    @State private var showRemoveButton = false
+#endif
     
     var body: some View {
-        Text("Unavailable VM") // FIXME: remove placeholder
+        HStack(alignment: .center) {
+            /// Computer with download symbol on its screen
+            Image(systemName: "desktopcomputer")
+                .resizable()
+                .frame(width: 30.0, height: 30.0)
+                .aspectRatio(contentMode: .fit)
+                .overlay(
+                    Image(systemName: imageOverlaySystemName)
+                        .font(Font.caption.weight(Font.Weight.medium))
+                        .offset(y: -5)
+                )
+                .foregroundColor(.gray)
+            
+            VStack(alignment: .leading) {
+                Text(title)
+                    .font(.headline)
+                if let progress = progress {
+                    MinimalProgressView(fractionCompleted: progress)
+                }
+                Text(subtitle)
+                    .font(.caption)
+            }
+            .foregroundColor(.gray)
+            
+#if os(macOS)
+            Spacer()
+            /// macOS gets an on-hover cancel button
+            Button(action: onRemove, label: {
+                Image(systemName: "xmark.circle")
+                    .accessibility(label: Text("Remove"))
+            })
+                .clipShape(Circle())
+                .disabled(!showRemoveButton)
+                .opacity(showRemoveButton ? 1 : 0)
+#endif
+        }.padding([.top, .bottom], 10)
+        .onTapGesture(perform: toggleDetailsPopup)
+        .popover(isPresented: $showingDetails, content: popover)
+#if os(macOS)
+        .onHover(perform: { hovering in
+            self.showRemoveButton = hovering
+        })
+#endif
+    }
+    
+    private func toggleDetailsPopup() {
+        showingDetails.toggle()
+    }
+}
+
+@available(iOS 14, macOS 11, *)
+struct MinimalProgressView: View {
+    let fractionCompleted: CGFloat
+    
+    private var accessibilityLabel: String {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .percent
+        formatter.allowsFloats = false
+        let label = formatter.string(from: NSNumber(value: fractionCompleted)) ?? ""
+        return label
+    }
+    
+    var body: some View {
+        Text(" ") /// to create a seamless layout with the rest of the text
+            .font(.subheadline)
+            .frame(maxWidth: .infinity)
+            .overlay(
+                GeometryReader { frame in
+                    RoundedRectangle(cornerRadius: frame.size.height/5)
+                        .fill(Color.secondary)
+                        .frame(width: frame.size.width, height: frame.size.height/3)
+                        .offset(y: frame.size.height/3)
+                    RoundedRectangle(cornerRadius: frame.size.height/5)
+                        .fill(Color.accentColor)
+                        .frame(width: frame.size.width * fractionCompleted, height: frame.size.height/3)
+                        .offset(y: frame.size.height/3)
+                }
+            )
+            .accessibilityLabel(accessibilityLabel)
     }
 }
 
 @available(iOS 14, macOS 11, *)
 struct UTMPlaceholderVMView_Previews: PreviewProvider {
     static var previews: some View {
-        UTMPlaceholderVMView(wrappedVM: UTMWrappedVirtualMachine(bookmark: Data(), name: "Wrapped", path: URL(fileURLWithPath: "/path")))
+        UTMPlaceholderVMView(title: "Title", subtitle: "Subtitle", progress: nil, imageOverlaySystemName: "arrow.down.circle.fill", popover: {
+            EmptyView()
+        }, onRemove: {
+            
+        }).frame(width: 350, height: 100)
     }
 }

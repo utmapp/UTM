@@ -430,7 +430,10 @@ class UTMData: ObservableObject {
     /// - Parameter vm: VM to delete
     /// - Returns: Index of item removed in VM list or nil if not in list
     func delete(vm: UTMVirtualMachine) async throws -> Int? {
-        try fileManager.removeItem(at: vm.path!)
+        if let _ = vm as? UTMWrappedVirtualMachine {
+        } else {
+            try fileManager.removeItem(at: vm.path!)
+        }
         
         return await listRemove(vm: vm)
     }

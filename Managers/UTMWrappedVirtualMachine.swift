@@ -26,26 +26,6 @@ import Foundation
         NSLocalizedString("Unavailable", comment: "UTMUnavailableVirtualMachine")
     }
     
-    override var detailsNotes: String? {
-        ""
-    }
-    
-    override var detailsSystemTargetLabel: String {
-        ""
-    }
-    
-    override var detailsSystemArchitectureLabel: String {
-        ""
-    }
-    
-    override var detailsSystemMemoryLabel: String {
-        ""
-    }
-    
-    override var hasSaveState: Bool {
-        false
-    }
-    
     override var bookmark: Data? {
         _bookmark
     }
