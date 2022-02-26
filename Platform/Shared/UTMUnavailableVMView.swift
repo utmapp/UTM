@@ -39,9 +39,15 @@ fileprivate struct WrappedVMDetailsView: View {
     let path: String
     let onRemove: () -> Void
     
+    /// Check if the path in this wrapped VM is accessible
+    var isAccessible: Bool {
+        FileManager.default.fileExists(atPath: path)
+    }
+    
     var body: some View {
         VStack(alignment: .center) {
-            Text("This virtual machine cannot be found at: \(path)")
+            Text(isAccessible ? "This virtual machine must be re-added to UTM by opening it with Finder. You can find it at the path: \(path)"
+                 : "This virtual machine cannot be found at: \(path)")
                 .lineLimit(nil)
                 .padding()
             

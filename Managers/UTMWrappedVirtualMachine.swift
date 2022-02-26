@@ -58,6 +58,7 @@ import Foundation
         _path = path
         super.init()
         self.path = path
+        self.config = UTMWrappedVirtualMachineConfiguration()
     }
     
     /// Create a new wrapped UTM VM from an existing UTM VM
@@ -105,4 +106,37 @@ import Foundation
         }
         return vm
     }
+}
+
+/// Dummy config since UTMVirtualMachine requires it
+fileprivate final class UTMWrappedVirtualMachineConfiguration: UTMConfigurable {
+    var isRenameDisabled: Bool = false
+    
+    var name: String = UUID().uuidString
+    
+    var iconUrl: URL?
+    
+    var selectedCustomIconPath: URL?
+    
+    var icon: String?
+    
+    var iconCustom: Bool = false
+    
+    var notes: String?
+    
+    var consoleTheme: String?
+    
+    var consoleTextColor: String?
+    
+    var consoleBackgroundColor: String?
+    
+    var consoleFont: String?
+    
+    var consoleFontSize: NSNumber?
+    
+    var consoleCursorBlink: Bool = false
+    
+    var consoleResizeCommand: String?
+    
+    var isAppleVirtualization: Bool = false
 }

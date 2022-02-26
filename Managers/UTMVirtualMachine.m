@@ -178,7 +178,7 @@ const dispatch_time_t kScreenshotPeriodSeconds = 60 * NSEC_PER_SEC;
     }
     UTMVirtualMachine *vm = [UTMVirtualMachine virtualMachineWithURL:url];
     if (!stale) {
-        vm->_bookmark = bookmark;
+        vm.bookmark = bookmark;
     }
     return vm;
 }
@@ -206,6 +206,7 @@ const dispatch_time_t kScreenshotPeriodSeconds = 60 * NSEC_PER_SEC;
 #else
         self.logging = [UTMLogging new];
 #endif
+        self.viewState = [UTMViewState new]; // dummy
     }
     return self;
 }

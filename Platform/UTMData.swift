@@ -176,7 +176,12 @@ class UTMData: ObservableObject {
                     wrappedVM = UTMWrappedVirtualMachine(from: dict)
                 }
                 if let vm = wrappedVM?.unwrap() {
-                    return vm
+                    // FIXME: we do not support Apple VM shortcuts because we cannot access the drives
+                    if let appleVM = vm as? UTMAppleVirtualMachine, appleVM.isShortcut {
+                        return nil
+                    } else {
+                        return vm
+                    }
                 } else {
                     return wrappedVM
                 }
@@ -414,7 +419,7 @@ class UTMData: ObservableObject {
     /// - Parameters:
     ///   - config: New VM configuration
     func create(config: UTMConfigurable) async throws -> UTMVirtualMachine {
-        guard await !virtualMachines.contains(where: { $0.config.name == config.name }) else {
+        guard await !virtualMachines.contains(where: { !$0.isShortcut && $0.config.name == config.name }) else {
             throw NSLocalizedString("An existing virtual machine already exists with this name.", comment: "UTMData")
         }
         let vm = UTMVirtualMachine(configuration: config, withDestinationURL: documentsURL)
@@ -550,7 +555,17 @@ class UTMData: ObservableObject {
             return vmPath.standardizedFileURL == url.standardizedFileURL
         }) {
             logger.info("found existing vm!")
-            await listSelect(vm: vm)
+            if let wrappedVM = vm as? UTMWrappedVirtualMachine {
+                logger.info("existing vm is wrapped")
+                if let unwrappedVM = wrappedVM.unwrap() {
+                    let index = await listRemove(vm: wrappedVM)
+                    await listAdd(vm: unwrappedVM, at: index)
+                    await listSelect(vm: unwrappedVM)
+                }
+            } else {
+                logger.info("existing vm is not wrapped")
+                await listSelect(vm: vm)
+            }
             return
         }
         // check if VM is valid
@@ -596,7 +611,7 @@ class UTMData: ObservableObject {
     @available(macOS 12, *)
     @MainActor func downloadIPSW(using config: UTMAppleConfiguration) {
         let task = UTMDownloadIPSWTask(for: config)
-        guard !virtualMachines.contains(where: { $0.config.name == config.name }) else {
+        guard !virtualMachines.contains(where: { !$0.isShortcut && $0.config.name == config.name }) else {
             showErrorAlert(message: NSLocalizedString("An existing virtual machine already exists with this name.", comment: "UTMData"))
             return
         }

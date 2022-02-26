@@ -25,6 +25,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readwrite) UTMViewState *viewState;
 
+@property (nonatomic, readwrite, nullable) NSData *bookmark;
+
 /// Reference to logger for VM stdout/stderr
 @property (nonatomic) UTMLogging *logging;
 
