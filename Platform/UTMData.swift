@@ -218,7 +218,7 @@ class UTMData: ObservableObject {
     /// Remove a VM from list
     /// - Parameter vm: VM to remove
     /// - Returns: Index of item removed or nil if already removed
-    @MainActor public func listRemove(vm: UTMVirtualMachine) -> Int? {
+    @MainActor @discardableResult public func listRemove(vm: UTMVirtualMachine) -> Int? {
         let index = virtualMachines.firstIndex(of: vm)
         if let index = index {
             virtualMachines.remove(at: index)
@@ -244,7 +244,7 @@ class UTMData: ObservableObject {
     /// Remove pending VM from list
     /// - Parameter pendingVM: Pending VM to remove
     /// - Returns: Index of item removed or nil if already removed
-    @MainActor private func listRemove(pendingVM: UTMPendingVirtualMachine) -> Int? {
+    @MainActor @discardableResult private func listRemove(pendingVM: UTMPendingVirtualMachine) -> Int? {
         let index = pendingVMs.firstIndex(where: { $0.id == pendingVM.id })
         if let index = index {
             pendingVMs.remove(at: index)
@@ -429,7 +429,7 @@ class UTMData: ObservableObject {
     /// Delete a VM from disk
     /// - Parameter vm: VM to delete
     /// - Returns: Index of item removed in VM list or nil if not in list
-    func delete(vm: UTMVirtualMachine) async throws -> Int? {
+    @discardableResult func delete(vm: UTMVirtualMachine) async throws -> Int? {
         if let _ = vm as? UTMWrappedVirtualMachine {
         } else {
             try fileManager.removeItem(at: vm.path!)
