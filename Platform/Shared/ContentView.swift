@@ -88,7 +88,7 @@ struct ContentView: View {
             data.newVM()
         }.onReceive(NSNotification.ImportVirtualMachine) { _ in
             importSheetPresented = true
-        }.fileImporter(isPresented: $importSheetPresented, allowedContentTypes: [.UTM], onCompletion: selectImportedUTM)
+        }.fileImporter(isPresented: $importSheetPresented, allowedContentTypes: [.UTM], allowsMultipleSelection: true, onCompletion: selectImportedUTM)
         .onAppear {
             Task {
                 await data.listRefresh()
@@ -158,10 +158,12 @@ struct ContentView: View {
         try await data.importUTM(from: url)
     }
     
-    private func selectImportedUTM(result: Result<URL, Error>) {
+    private func selectImportedUTM(result: Result<[URL], Error>) {
         data.busyWorkAsync {
-            let url = try result.get()
-            try await data.importUTM(from: url)
+            let urls = try result.get()
+            for url in urls {
+                try await data.importUTM(from: url)
+            }
         }
     }
     
