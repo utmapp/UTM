@@ -189,8 +189,13 @@ class UTMData: ObservableObject {
     
     /// Add VM to list
     /// - Parameter vm: VM to add
-    @MainActor private func listAdd(vm: UTMVirtualMachine) {
-        virtualMachines.append(vm)
+    /// - Parameter at: Optional index to add to, otherwise will be added to the end
+    @MainActor private func listAdd(vm: UTMVirtualMachine, at index: Int? = nil) {
+        if let index = index {
+            virtualMachines.insert(vm, at: index)
+        } else {
+            virtualMachines.append(vm)
+        }
         listSelect(vm: vm)
     }
     
@@ -202,26 +207,39 @@ class UTMData: ObservableObject {
     
     /// Remove a VM from list
     /// - Parameter vm: VM to remove
-    @MainActor public func listRemove(vm: UTMVirtualMachine) {
-        if let index = virtualMachines.firstIndex(of: vm) {
+    /// - Returns: Index of item removed or nil if already removed
+    @MainActor public func listRemove(vm: UTMVirtualMachine) -> Int? {
+        let index = virtualMachines.firstIndex(of: vm)
+        if let index = index {
             virtualMachines.remove(at: index)
         }
         if vm == selectedVM {
             selectedVM = nil
         }
         vm.isDeleted = true // alert views to update
+        return index
     }
     
     /// Add pending VM to list
     /// - Parameter pendingVM: Pending VM to add
-    @MainActor private func listAdd(pendingVM: UTMPendingVirtualMachine) {
-        pendingVMs.append(pendingVM)
+    /// - Parameter at: Optional index to add to, otherwise will be added to the end
+    @MainActor private func listAdd(pendingVM: UTMPendingVirtualMachine, at index: Int? = nil) {
+        if let index = index {
+            pendingVMs.insert(pendingVM, at: index)
+        } else {
+            pendingVMs.append(pendingVM)
+        }
     }
     
     /// Remove pending VM from list
     /// - Parameter pendingVM: Pending VM to remove
-    @MainActor private func listRemove(pendingVM: UTMPendingVirtualMachine) {
-        pendingVMs.removeAll(where: { $0.id == pendingVM.id })
+    /// - Returns: Index of item removed or nil if already removed
+    @MainActor private func listRemove(pendingVM: UTMPendingVirtualMachine) -> Int? {
+        let index = pendingVMs.firstIndex(where: { $0.id == pendingVM.id })
+        if let index = index {
+            pendingVMs.remove(at: index)
+        }
+        return index
     }
     
     /// Move items in VM list
@@ -400,10 +418,11 @@ class UTMData: ObservableObject {
     
     /// Delete a VM from disk
     /// - Parameter vm: VM to delete
-    func delete(vm: UTMVirtualMachine) async throws {
+    /// - Returns: Index of item removed in VM list or nil if not in list
+    func delete(vm: UTMVirtualMachine) async throws -> Int? {
         try fileManager.removeItem(at: vm.path!)
         
-        await listRemove(vm: vm)
+        return await listRemove(vm: vm)
     }
     
     /// Save a copy of the VM and all data to default storage location
@@ -416,7 +435,11 @@ class UTMData: ObservableObject {
         guard let newVM = UTMVirtualMachine(url: newPath) else {
             throw NSLocalizedString("Failed to clone VM.", comment: "UTMData")
         }
-        await listAdd(vm: newVM)
+        var index = await virtualMachines.firstIndex(of: vm)
+        if index != nil {
+            index! += 1
+        }
+        await listAdd(vm: newVM, at: index)
     }
     
     /// Save a copy of the VM and all data to arbitary location
@@ -443,8 +466,8 @@ class UTMData: ObservableObject {
         newVM.isShortcut = true
         try await newVM.accessShortcut()
         
-        try await delete(vm: vm)
-        await listAdd(vm: newVM)
+        let index = try await delete(vm: vm)
+        await listAdd(vm: newVM, at: index)
         #if os(macOS)
         if let _ = newVM as? UTMAppleVirtualMachine {
             throw NSLocalizedString("Shortcuts to Apple virtual machines cannot be stored. You must open the .utm bundle from Finder each time UTM is launched.", comment: "UTMData")
