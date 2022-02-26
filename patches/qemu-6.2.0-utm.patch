@@ -241,3 +241,50 @@ index a6afc87be8..bfadf686ae 100644
 -- 
 2.32.0 (Apple Git-132)
 
+From fc43b65e0613ea629b64571db63fc17975fa173e Mon Sep 17 00:00:00 2001
+From: osy <50960678+osy@users.noreply.github.com>
+Date: Fri, 25 Feb 2022 23:57:19 -0800
+Subject: [PATCH] rcu: do not register constructor thread if shared library
+
+On iOS 15, the constructor can run on a new thread that is destroyed
+after construction is finished in dyld. When this happens the TLS gets
+freed and causes use-after-free when QEMU is built in shared library
+mode. This moves the rcu_register_thread() call to qemu_init()
+---
+ softmmu/vl.c | 4 ++++
+ util/rcu.c   | 3 +++
+ 2 files changed, 7 insertions(+)
+
+diff --git a/softmmu/vl.c b/softmmu/vl.c
+index 620a1f1367..fce310a1aa 100644
+--- a/softmmu/vl.c
++++ b/softmmu/vl.c
+@@ -2773,6 +2773,10 @@ void qemu_init(int argc, char **argv, char **envp)
+     bool userconfig = true;
+     FILE *vmstate_dump_file = NULL;
+ 
++    /* in non-library builds this is done in a constructor */
++#ifdef CONFIG_SHARED_LIBRARY_BUILD
++    rcu_register_thread();
++#endif
+     qemu_add_opts(&qemu_drive_opts);
+     qemu_add_drive_opts(&qemu_legacy_drive_opts);
+     qemu_add_drive_opts(&qemu_common_drive_opts);
+diff --git a/util/rcu.c b/util/rcu.c
+index c91da9f137..60fbf94401 100644
+--- a/util/rcu.c
++++ b/util/rcu.c
+@@ -398,7 +398,10 @@ static void rcu_init_complete(void)
+     qemu_thread_create(&thread, "call_rcu", call_rcu_thread,
+                        NULL, QEMU_THREAD_DETACHED);
+ 
++    /* TLS not available in shared library */
++#ifndef CONFIG_SHARED_LIBRARY_BUILD
+     rcu_register_thread();
++#endif
+ }
+ 
+ static int atfork_depth = 1;
+-- 
+2.32.0 (Apple Git-132)
+
