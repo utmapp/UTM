@@ -55,6 +55,8 @@ const dispatch_time_t kScreenshotPeriodSeconds = 60 * NSEC_PER_SEC;
 
 @implementation UTMVirtualMachine
 
+@synthesize bookmark = _bookmark;
+
 // MARK: - Observable properties
 
 - (void)setState:(UTMVMState)state {
@@ -122,11 +124,13 @@ const dispatch_time_t kScreenshotPeriodSeconds = 60 * NSEC_PER_SEC;
 // MARK: - Other properties
 
 - (NSData *)bookmark {
-    NSData *bookmark = [self.path bookmarkDataWithOptions:kUTMBookmarkCreationOptions
-                           includingResourceValuesForKeys:nil
-                                            relativeToURL:nil
-                                                    error:nil];
-    return bookmark;
+    if (!_bookmark) {
+        _bookmark = [self.path bookmarkDataWithOptions:kUTMBookmarkCreationOptions
+                        includingResourceValuesForKeys:nil
+                                         relativeToURL:nil
+                                                 error:nil];
+    }
+    return _bookmark;
 }
 
 - (void)setPath:(NSURL *)path {
@@ -173,6 +177,9 @@ const dispatch_time_t kScreenshotPeriodSeconds = 60 * NSEC_PER_SEC;
         return nil;
     }
     UTMVirtualMachine *vm = [UTMVirtualMachine virtualMachineWithURL:url];
+    if (!stale) {
+        vm->_bookmark = bookmark;
+    }
     return vm;
 }
 

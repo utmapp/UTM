@@ -37,12 +37,16 @@ struct ContentView: View {
         NavigationView {
             List {
                 ForEach(data.virtualMachines) { vm in
-                    NavigationLink(
-                        destination: VMDetailsView(vm: vm),
-                        tag: vm,
-                        selection: $data.selectedVM,
-                        label: { VMCardView(vm: vm) })
-                        .modifier(VMContextMenuModifier(vm: vm))
+                    if let wrappedVM = vm as? UTMWrappedVirtualMachine {
+                        UTMPlaceholderVMView(wrappedVM: wrappedVM)
+                    } else {
+                        NavigationLink(
+                            destination: VMDetailsView(vm: vm),
+                            tag: vm,
+                            selection: $data.selectedVM,
+                            label: { VMCardView(vm: vm) })
+                            .modifier(VMContextMenuModifier(vm: vm))
+                    }
                 }.onMove(perform: move)
                 .onDelete(perform: delete)
                 

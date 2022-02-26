@@ -112,10 +112,22 @@ class UTMData: ObservableObject {
     ///
     /// This removes stale entries (deleted/not accessible) and duplicate entries
     func listRefresh() async {
-        // remove stale vm
-        var list = await virtualMachines.filter { (vm: UTMVirtualMachine) in vm.path != nil && fileManager.fileExists(atPath: vm.path!.path) }
+        // wrap stale VMs
+        var list = await virtualMachines
+        for i in list.indices.reversed() {
+            let vm = list[i]
+            if !fileManager.fileExists(atPath: vm.path!.path) {
+                if let wrappedVM = UTMWrappedVirtualMachine(placeholderFor: vm) {
+                    list[i] = wrappedVM
+                } else {
+                    // we cannot even make a placeholder, then remove the element
+                    list.remove(at: i)
+                }
+            }
+        }
+        // now look for and add new VMs in default storage
         do {
-            let files = try fileManager.contentsOfDirectory(at: documentsURL, includingPropertiesForKeys: [.isDirectoryKey], options: .skipsHiddenFiles)
+            let files = try fileManager.contentsOfDirectory(at: UTMData.defaultStorageUrl, includingPropertiesForKeys: [.isDirectoryKey], options: .skipsHiddenFiles)
             let newFiles = files.filter { newFile in
                 !list.contains { existingVM in
                     existingVM.path?.standardizedFileURL == newFile.standardizedFileURL
@@ -138,6 +150,7 @@ class UTMData: ObservableObject {
         } catch {
             logger.error("\(error.localizedDescription)")
         }
+        // replace the VM list with our new one
         if await virtualMachines != list {
             await listReplace(with: list)
         }
@@ -154,15 +167,19 @@ class UTMData: ObservableObject {
             })
         }
         // bookmark list
-        if let bookmarks = defaults.array(forKey: "VMList") as? [Data] {
-            let documentsURL = self.documentsURL.standardizedFileURL
-            virtualMachines = bookmarks.compactMap { bookmark in
-                let vm = UTMVirtualMachine(bookmark: bookmark)
-                let parentUrl = vm?.path!.deletingLastPathComponent().standardizedFileURL
-                if parentUrl != documentsURL {
-                    vm?.isShortcut = true
+        if let list = defaults.array(forKey: "VMList") {
+            virtualMachines = list.compactMap { item in
+                var wrappedVM: UTMWrappedVirtualMachine?
+                if let bookmark = item as? Data {
+                    wrappedVM = UTMWrappedVirtualMachine(bookmark: bookmark)
+                } else if let dict = item as? [String: Any] {
+                    wrappedVM = UTMWrappedVirtualMachine(from: dict)
                 }
-                return vm
+                if let vm = wrappedVM?.unwrap() {
+                    return vm
+                } else {
+                    return wrappedVM
+                }
             }
         }
     }
@@ -170,17 +187,10 @@ class UTMData: ObservableObject {
     /// Save VM list (and order) to persistent storage
     @MainActor private func listSaveToDefaults() {
         let defaults = UserDefaults.standard
-        let bookmarks = virtualMachines.compactMap { vm -> Data? in
-            #if os(macOS)
-            if let appleVM = vm as? UTMAppleVirtualMachine {
-                if appleVM.isShortcut {
-                    return nil // FIXME: Apple VMs do not support shortcuts
-                }
-            }
-            #endif
-            return vm.bookmark
+        let wrappedVMs = virtualMachines.compactMap { vm -> [String: Any]? in
+            UTMWrappedVirtualMachine(placeholderFor: vm)?.serialized
         }
-        defaults.set(bookmarks, forKey: "VMList")
+        defaults.set(wrappedVMs, forKey: "VMList")
     }
     
     @MainActor private func listReplace(with vms: [UTMVirtualMachine]) {
