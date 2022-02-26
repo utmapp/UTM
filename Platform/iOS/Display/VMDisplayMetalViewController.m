@@ -214,11 +214,18 @@
         self.vmDisplay = display;
         _renderer.source = display;
         // restore last size
-        display.viewportOrigin = CGPointMake(self.vm.viewState.displayOriginX, self.vm.viewState.displayOriginY);
+        CGPoint displayOrigin = CGPointMake(self.vm.viewState.displayOriginX, self.vm.viewState.displayOriginY);
+        display.viewportOrigin = displayOrigin;
         double displayScale = self.vm.viewState.displayScale;
         if (displayScale) { // cannot be zero
             display.viewportScale = displayScale;
         }
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (displayScale != 1.0 || !CGPointEqualToPoint(displayOrigin, CGPointZero)) {
+                // make the zoom button zoom out
+                self.toolbar.isViewportChanged = YES;
+            }
+        });
     }
 }
 

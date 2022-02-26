@@ -98,7 +98,7 @@ struct VMToolbarView: View {
                 Button {
                     state.changeDisplayZoomPressed()
                 } label: {
-                    Label("Zoom", systemImage: state.lastDisplayChangeResize ? "arrow.down.right.and.arrow.up.left" : "arrow.up.left.and.arrow.down.right")
+                    Label("Zoom", systemImage: state.isViewportChanged ? "arrow.down.right.and.arrow.up.left" : "arrow.up.left.and.arrow.down.right")
                 }.offset(offset(for: 4))
                 if state.isUsbSupported {
                     Button {

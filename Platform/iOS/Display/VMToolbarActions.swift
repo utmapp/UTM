@@ -33,7 +33,7 @@ import SwiftUI
     
     @objc private(set) var isLegacyToolbarVisible: Bool = false
     
-    private(set) var lastDisplayChangeResize: Bool = false {
+    @objc var isViewportChanged: Bool = false {
         willSet {
             optionalObjectWillChange()
         }
@@ -45,7 +45,7 @@ import SwiftUI
             guard hasLegacyToolbar else {
                 return
             }
-            if (lastDisplayChangeResize) {
+            if (isViewportChanged) {
                 viewController.zoomButton.setImage(UIImage(named: "Toolbar Minimize"), for: .normal)
             } else {
                 viewController.zoomButton.setImage(UIImage(named: "Toolbar Maximize"), for: .normal)
@@ -201,12 +201,12 @@ import SwiftUI
         guard let viewController = self.viewController as? VMDisplayMetalViewController else {
             return
         }
-        if self.lastDisplayChangeResize {
+        if self.isViewportChanged {
             viewController.resetDisplay()
         } else {
             viewController.resizeDisplayToFit()
         }
-        self.lastDisplayChangeResize = !self.lastDisplayChangeResize;
+        self.isViewportChanged = !self.isViewportChanged;
     }
     
     @objc func pauseResumePressed() {
