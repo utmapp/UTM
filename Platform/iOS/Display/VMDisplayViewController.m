@@ -85,7 +85,6 @@
 
 - (void)virtualMachine:(UTMVirtualMachine *)vm didErrorWithMessage:(NSString *)message {
     [self.placeholderIndicator stopAnimating];
-    self.resumeBigButton.hidden = YES;
     [self showAlert:message actions:nil completion:^(UIAlertAction *action){
         if (vm.state != kVMStarted && vm.state != kVMPaused) {
             [self terminateApplication];
