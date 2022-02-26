@@ -18,6 +18,12 @@
 #import "VMDisplayMetalViewController+Touch.h"
 #import "CSDisplayMetal.h"
 
+@interface VMCursor ()
+
+@property (nonatomic, readonly) CGFloat cursorSpeedMultiplier;
+
+@end
+
 @implementation VMCursor {
     CGPoint _start;
     CGPoint _lastCenter;
@@ -29,6 +35,17 @@
 @synthesize bounds;
 
 @synthesize transform;
+
+
+- (CGFloat)cursorSpeedMultiplier {
+    NSInteger multiplier = [[NSUserDefaults standardUserDefaults] integerForKey:@"DragCursorSpeed"];
+    CGFloat fraction = multiplier / 100.0f;
+    if (fraction > 0) {
+        return fraction;
+    } else {
+        return 1.0f;
+    }
+}
 
 - (id)init {
     if (self = [super init]) {
@@ -58,7 +75,8 @@
 
 - (void)setCenter:(CGPoint)center {
     if (_controller.serverModeCursor) {
-        CGPoint diff = CGPointMake(center.x - _lastCenter.x, center.y - _lastCenter.y);
+        CGPoint diff = CGPointMake((center.x - _lastCenter.x) * self.cursorSpeedMultiplier,
+                                   (center.y - _lastCenter.y) * self.cursorSpeedMultiplier);
         [_controller moveMouseRelative:diff];
     } else {
         [_controller moveMouseAbsolute:center];
