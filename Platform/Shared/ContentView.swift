@@ -30,7 +30,7 @@ struct ContentView: View {
     @State private var editMode = false
     @EnvironmentObject private var data: UTMData
     @State private var newPopupPresented = false
-    @State private var importSheetPresented = false
+    @State private var openSheetPresented = false
     @Environment(\.openURL) var openURL
     
     var body: some View {
@@ -86,9 +86,9 @@ struct ContentView: View {
         .handlesExternalEvents(preferring: ["*"], allowing: ["*"])
         .onReceive(NSNotification.NewVirtualMachine) { _ in
             data.newVM()
-        }.onReceive(NSNotification.ImportVirtualMachine) { _ in
-            importSheetPresented = true
-        }.fileImporter(isPresented: $importSheetPresented, allowedContentTypes: [.UTM], allowsMultipleSelection: true, onCompletion: selectImportedUTM)
+        }.onReceive(NSNotification.OpenVirtualMachine) { _ in
+            openSheetPresented = true
+        }.fileImporter(isPresented: $openSheetPresented, allowedContentTypes: [.UTM], allowsMultipleSelection: true, onCompletion: selectImportedUTM)
         .onAppear {
             Task {
                 await data.listRefresh()

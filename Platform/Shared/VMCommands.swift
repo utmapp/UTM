@@ -24,13 +24,11 @@ struct VMCommands: Commands {
     var body: some Commands {
         CommandGroup(replacing: .newItem) {
             Button(action: { NotificationCenter.default.post(name: NSNotification.NewVirtualMachine, object: nil) }, label: {
-                Text("New Virtual Machine")
+                Text("New...")
             }).keyboardShortcut(KeyEquivalent("n"))
-        }
-        CommandGroup(replacing: .importExport) {
-            Button(action: { NotificationCenter.default.post(name: NSNotification.ImportVirtualMachine, object: nil) }, label: {
-                Text("Import Virtual Machine...")
-            })
+            Button(action: { NotificationCenter.default.post(name: NSNotification.OpenVirtualMachine, object: nil) }, label: {
+                Text("Open...")
+            }).keyboardShortcut(KeyEquivalent("o"))
         }
         SidebarCommands()
         ToolbarCommands()
@@ -54,5 +52,5 @@ struct VMCommands: Commands {
 
 extension NSNotification {
     static let NewVirtualMachine = NSNotification.Name("NewVirtualMachine")
-    static let ImportVirtualMachine = NSNotification.Name("ImportVirtualMachine")
+    static let OpenVirtualMachine = NSNotification.Name("OpenVirtualMachine")
 }
