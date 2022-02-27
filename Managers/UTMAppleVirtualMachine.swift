@@ -127,6 +127,9 @@ import Virtualization
         if let existingPath = path, existingPath.lastPathComponent != newPath.lastPathComponent {
             try fileManager.moveItem(at: existingPath, to: newPath)
             path = newPath
+            if let reload = try? UTMAppleConfiguration.load(from: newPath) {
+                config = reload
+            }
         } else if path == nil {
             path = savePath
         }
