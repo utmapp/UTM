@@ -193,7 +193,7 @@ const NSString *const kUTMConfigAppleVirtualizationKey = @"isAppleVirtualization
 #pragma mark - NSCopying
 
 - (id)copyWithZone:(NSZone *)zone {
-    return [[UTMQemuConfiguration alloc] initWithDictionary:_rootDict name:self.name path:self.existingPath];
+    return [[UTMQemuConfiguration alloc] initWithDictionary:_rootDict name:self.name path:nil];
 }
 
 #pragma mark - Settings

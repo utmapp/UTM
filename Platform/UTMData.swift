@@ -512,6 +512,29 @@ class UTMData: ObservableObject {
         }
     }
     
+    /// Copy configuration but not data from existing VM to a new VM
+    /// - Parameter vm: Existing VM to copy configuration from
+    @MainActor func template(vm: UTMVirtualMachine) async throws {
+        let copy = try await Task.detached { () -> UTMConfigurable in
+            if let qemuConfig = vm.config as? UTMQemuConfiguration {
+                let copy = qemuConfig.copy() as! UTMQemuConfiguration
+                copy.systemUUID = UUID().uuidString // re-generate UUID
+                for _ in 0..<copy.countDrives {
+                    copy.removeDrive(at: 0) // remove existing drives
+                }
+                return copy
+            }
+            throw NSLocalizedString("This virtual machine does not support templating.", comment: "UTMData")
+        }.value
+        copy.name = newDefaultVMName(base: copy.name)
+        if vm.config.iconCustom {
+            // save copy of custom icon
+            copy.selectedCustomIconPath = vm.config.iconUrl
+        }
+        _ = try await create(config: copy)
+        showSettingsForCurrentVM()
+    }
+    
     // MARK: - File I/O related
     
     /// Calculate total size of VM and data

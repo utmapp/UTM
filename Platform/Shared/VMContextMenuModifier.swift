@@ -72,6 +72,13 @@ struct VMContextMenuModifier: ViewModifier {
             } label: {
                 Label("Clone…", systemImage: "doc.on.doc")
             }
+            Button {
+                data.busyWorkAsync {
+                    try await data.template(vm: vm)
+                }
+            } label: {
+                Label("New from template…", systemImage: "doc.on.clipboard")
+            }
             Divider()
             if vm.isShortcut {
                 DestructiveButton {
