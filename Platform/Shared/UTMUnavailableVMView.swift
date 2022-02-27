@@ -67,7 +67,9 @@ fileprivate struct WrappedVMDetailsView: View {
                 .padding([.bottom, .leading, .trailing])
             }
         }
+        #if os(macOS)
         .frame(width: 230)
+        #endif
     }
 }
 
