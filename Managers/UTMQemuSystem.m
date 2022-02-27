@@ -439,22 +439,21 @@ static size_t sysctl_read(const char *name) {
 
 - (void)argsForUsb {
     // set up USB input devices unless user requested legacy (QEMU default PS/2 input)
-    if (!self.configuration.inputLegacy) {
-        if ([self.configuration.systemTarget hasPrefix:@"virt"]) {
-            [self pushArgv:@"-device"];
-            [self pushArgv:@"nec-usb-xhci,id=usb-bus"];
-        } else {
-            [self pushArgv:@"-usb"];
-        }
-        [self pushArgv:@"-device"];
-        [self pushArgv:@"usb-tablet,bus=usb-bus.0"];
-        if (![self.configuration.systemTarget hasPrefix:@"pc"] && ![self.configuration.systemTarget hasPrefix:@"q35"]) {
-            [self pushArgv:@"-device"];
-            [self pushArgv:@"usb-mouse,bus=usb-bus.0"];
-            [self pushArgv:@"-device"];
-            [self pushArgv:@"usb-kbd,bus=usb-bus.0"];
-        }
+    if (self.configuration.inputLegacy) {
+        return; // no USB in legacy input mode
     }
+    if ([self.configuration.systemTarget hasPrefix:@"virt"]) {
+        [self pushArgv:@"-device"];
+        [self pushArgv:@"nec-usb-xhci,id=usb-bus"];
+    } else {
+        [self pushArgv:@"-usb"];
+    }
+    [self pushArgv:@"-device"];
+    [self pushArgv:@"usb-tablet,bus=usb-bus.0"];
+    [self pushArgv:@"-device"];
+    [self pushArgv:@"usb-mouse,bus=usb-bus.0"];
+    [self pushArgv:@"-device"];
+    [self pushArgv:@"usb-kbd,bus=usb-bus.0"];
 #if !defined(WITH_QEMU_TCI)
     NSInteger maxDevices = [self.configuration.usbRedirectionMaximumDevices integerValue];
     if (self.configuration.usb3Support) {
@@ -586,10 +585,17 @@ static size_t sysctl_read(const char *name) {
 }
 
 - (NSString *)machineProperties {
+    NSString *properties = @"";
     if (self.configuration.systemMachineProperties.length > 0) {
-        return self.configuration.systemMachineProperties; // use specified properties
+        properties = self.configuration.systemMachineProperties; // use specified properties
     }
-    return @"";
+    if ([self.configuration.systemTarget hasPrefix:@"pc"] || [self.configuration.systemTarget hasPrefix:@"q35"]) {
+        // disable PS/2 emulation if we are not legacy input
+        if (!self.configuration.inputLegacy && ![properties containsString:@"i8042="]) {
+            properties = [NSString stringWithFormat:@"%@%@%@", properties, properties.length > 0 ? @"," : @"", @"i8042=off"];
+        }
+    }
+    return properties;
 }
 
 - (BOOL)isGLOn {

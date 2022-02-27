@@ -20,14 +20,79 @@ import SwiftUI
 struct VMConfigInputView: View {
     @ObservedObject var config: UTMQemuConfiguration
     
+    private var usbSupport: Binding<UsbSupport> {
+        Binding {
+            if config.inputLegacy {
+                return UsbSupport.off
+            } else if config.usb3Support {
+                return UsbSupport.usb3
+            } else {
+                return UsbSupport.usb2
+            }
+        } set: { support in
+            config.inputLegacy = support == .off
+            config.usb3Support = support == .usb3
+        }
+    }
+    
+    private var sharingEnabled: Binding<Bool> {
+        Binding {
+            config.usbRedirectionMaximumDevices != 0
+        } set: { enabled in
+            if enabled {
+                config.usbRedirectionMaximumDevices = 3
+            } else {
+                config.usbRedirectionMaximumDevices = 0
+            }
+        }
+    }
+    
+    private var maxUsbShared: Binding<Int> {
+        Binding {
+            Int(truncating: config.usbRedirectionMaximumDevices ?? 0)
+        } set: {
+            config.usbRedirectionMaximumDevices = NSNumber(value: $0)
+        }
+    }
+    
     var body: some View {
         VStack {
             Form {
-                Section(header: Text("Legacy"), footer: Text("PS/2 has higher compatibility with older operating systems but does not support custom cursor settings.").padding(.bottom)) {
-                    Toggle(isOn: $config.inputLegacy, label: {
-                        Text("Legacy (PS/2) Mode")
-                    })
+                Section(header: Text("USB"), footer: Text("If enabled, the default input devices will be emulated on the USB bus.").padding(.bottom)) {
+                    Picker("USB Support", selection: usbSupport) {
+                        Text("Off").tag(UsbSupport.off)
+                        Text("USB 2.0").tag(UsbSupport.usb2)
+                        Text("USB 3.0 (XHCI)").tag(UsbSupport.usb3)
+                    }
                 }
+                
+                #if !WITH_QEMU_TCI
+                if !config.inputLegacy {
+                    Section(header: Text("USB Sharing"), footer: EmptyView().padding(.bottom)) {
+                        if !jb_has_usb_entitlement() {
+                            Text("USB sharing not supported in this build of UTM.")
+                        } else if config.displayConsoleOnly {
+                            Text("USB sharing not supported in console display mode.")
+                        }
+                        Toggle(isOn: sharingEnabled) {
+                            Text("Share USB devices from host")
+                        }
+                        let maxUsbObserver = Binding<Int> {
+                            Int(truncating: config.usbRedirectionMaximumDevices ?? 0)
+                        } set: {
+                            config.usbRedirectionMaximumDevices = NSNumber(value: $0)
+                        }
+                        HStack {
+                            Stepper(value: maxUsbObserver, in: 0...64) {
+                                Text("Maximum Shared USB Devices")
+                            }
+                            NumberTextField("", number: $config.usbRedirectionMaximumDevices, onEditingChanged: validateMaxUsb)
+                                .frame(width: 50)
+                                .multilineTextAlignment(.trailing)
+                        }
+                    }.disabled(!jb_has_usb_entitlement() || config.displayConsoleOnly)
+                }
+                #endif
                 
                 Section(header: Text("Mouse Wheel"), footer: EmptyView().padding(.bottom)) {
                     Toggle(isOn: $config.inputScrollInvert, label: {
@@ -38,6 +103,31 @@ struct VMConfigInputView: View {
                 GestureSettingsSection()
             }
         }
+    }
+    
+    private func validateMaxUsb(editing: Bool) {
+        guard !editing else {
+            return
+        }
+        guard let maxUsb = config.usbRedirectionMaximumDevices?.intValue else {
+            config.usbRedirectionMaximumDevices = 3
+            return
+        }
+        if maxUsb < 0 {
+            config.usbRedirectionMaximumDevices = 0
+        } else if maxUsb > 64 {
+            config.usbRedirectionMaximumDevices = 64
+        }
+    }
+}
+
+fileprivate enum UsbSupport: Int, Identifiable {
+    case off
+    case usb2
+    case usb3
+    
+    var id: Int {
+        self.rawValue
     }
 }
 
