@@ -117,7 +117,7 @@ struct VMDetailsView: View {
 /// Returns just the content under macOS but adds the title on iOS. #3099
 @available(iOS 14, macOS 11, *)
 private struct VMOptionalNavigationTitleModifier: ViewModifier {
-    let vm: UTMVirtualMachine
+    @ObservedObject var vm: UTMVirtualMachine
     
     func body(content: Content) -> some View {
         #if os(macOS)

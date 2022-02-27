@@ -22,6 +22,14 @@ import Virtualization
 @objc class UTMAppleVirtualMachine: UTMVirtualMachine {
     private let quitTimeoutSeconds = DispatchTimeInterval.seconds(30)
     
+    override var config: UTMConfigurable {
+        didSet {
+            configChanged = appleConfig.objectWillChange.sink { [weak self] in
+                self?.objectWillChange.send()
+            }
+        }
+    }
+    
     var appleConfig: UTMAppleConfiguration! {
         config as? UTMAppleConfiguration
     }
@@ -73,6 +81,8 @@ import Virtualization
     @Published private(set) var serialPort: UTMSerialPort?
     
     private var sharedDirectoriesChanged: AnyCancellable?
+    
+    private var configChanged: AnyCancellable?
     
     weak var screenshotDelegate: UTMScreenshotProvider?
     
