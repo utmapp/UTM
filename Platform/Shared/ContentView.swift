@@ -87,8 +87,12 @@ struct ContentView: View {
         .onReceive(NSNotification.NewVirtualMachine) { _ in
             data.newVM()
         }.onReceive(NSNotification.OpenVirtualMachine) { _ in
-            openSheetPresented = true
-        }.fileImporter(isPresented: $openSheetPresented, allowedContentTypes: [.UTM], allowsMultipleSelection: true, onCompletion: selectImportedUTM)
+            data.showNewVMSheet = false
+            // FIXME: SwiftUI bug on iOS requires this wait
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.02) {
+                openSheetPresented = true
+            }
+        }.fileImporter(isPresented: $openSheetPresented, allowedContentTypes: [.UTM, .UTMextension], allowsMultipleSelection: true, onCompletion: selectImportedUTM)
         .onAppear {
             Task {
                 await data.listRefresh()

@@ -85,14 +85,27 @@ struct VMWizardStartView: View {
                 }
             }
             Section {
+                Button {
+                    NotificationCenter.default.post(name: NSNotification.OpenVirtualMachine, object: nil)
+                } label: {
+                    Label {
+                        Text("Open...")
+                    } icon: {
+                        Image(systemName: "doc")
+                    }
+                }
+                #if os(macOS)
+                .buttonStyle(.link)
+                #endif
                 Link(destination: URL(string: "https://mac.getutm.app/gallery/")!) {
-                    HStack {
-                        Image(systemName: "arrow.down.doc")
+                    Label {
                         Text("Download prebuilt from UTM Gallery...")
+                    } icon: {
+                        Image(systemName: "arrow.down.doc")
                     }
                 }
             } header: {
-                Text("Prebuilt")
+                Text("Existing")
             }
 
         }

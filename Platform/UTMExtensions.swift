@@ -95,8 +95,10 @@ extension View {
 
 @available(iOS 14, macOS 11, *)
 extension UTType {
-    // SwiftUI BUG: exportedAs: "com.utmapp.utm" doesn't work
-    static let UTM = UTType(exportedAs: "utm")
+    static let UTM = UTType(exportedAs: "com.utmapp.utm")
+    
+    // SwiftUI BUG: exportedAs: "com.utmapp.utm" doesn't work on macOS and older iOS
+    static let UTMextension = UTType(exportedAs: "utm")
     
     static let appleLog = UTType(filenameExtension: "log")!
 }

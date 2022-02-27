@@ -543,7 +543,7 @@ class UTMData: ObservableObject {
     /// Otherwise we create a shortcut (default for macOS) or a copy (default for iOS)
     /// - Parameter url: File URL to read from
     /// - Parameter asShortcut: Create a shortcut rather than a copy
-    func importUTM(from url: URL, asShortcut: Bool) async throws {
+    func importUTM(from url: URL, asShortcut: Bool = true) async throws {
         guard url.isFileURL else { return }
         _ = url.startAccessingSecurityScopedResource()
         defer { url.stopAccessingSecurityScopedResource() }
@@ -596,16 +596,6 @@ class UTMData: ObservableObject {
         }
         await listAdd(vm: vm)
     }
-    
-    #if os(macOS)
-    func importUTM(from url: URL) async throws {
-        try await importUTM(from: url, asShortcut: true)
-    }
-    #else
-    func importUTM(from url: URL) async throws {
-        try await importUTM(from: url, asShortcut: false)
-    }
-    #endif
     
     // MARK: - Downloading VMs
     
