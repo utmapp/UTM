@@ -126,11 +126,7 @@ import Virtualization
         // FIXME: Apple VM doesn't support saving bookmarks
     }
     
-    override func vmStart() async throws {
-        guard state == .vmStopped else {
-            return
-        }
-        changeState(.vmStarting)
+    private func _vmStart() async throws {
         try createAppleVM()
         try await withCheckedThrowingContinuation { continuation in
             vmQueue.async {
@@ -139,15 +135,24 @@ import Virtualization
                 }
             }
         }
-        changeState(.vmStarted)
     }
     
-    override func vmStop(force: Bool) async throws {
-        guard state == .vmStarted else {
+    override func vmStart() async throws {
+        guard state == .vmStopped else {
             return
         }
+        changeState(.vmStarting)
+        do {
+            try await _vmStart()
+            changeState(.vmStarted)
+        } catch {
+            changeState(.vmStopped)
+            throw error
+        }
+    }
+    
+    private func _vmStop(force: Bool) async throws {
         if force, #available(macOS 12, *) {
-            changeState(.vmStopping)
             try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
                 vmQueue.async {
                     self.apple.stop { error in
@@ -174,14 +179,24 @@ import Virtualization
         }
     }
     
-    override func vmReset() async throws {
-        guard #available(macOS 12, *) else {
-            return
-        }
-        guard state == .vmStarted || state == .vmPaused else {
+    override func vmStop(force: Bool) async throws {
+        guard state == .vmStarted else {
             return
         }
         changeState(.vmStopping)
+        do {
+            try await _vmStop(force: force)
+            changeState(.vmStopped)
+        } catch {
+            changeState(.vmStopped)
+            throw error
+        }
+    }
+    
+    private func _vmReset() async throws {
+        guard #available(macOS 12, *) else {
+            return
+        }
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
             vmQueue.async {
                 self.apple.stop { error in
@@ -195,14 +210,23 @@ import Virtualization
                 }
             }
         }
-        changeState(.vmStarted)
     }
     
-    override func vmPause() async throws {
-        guard state == .vmStarted else {
+    override func vmReset() async throws {
+        guard state == .vmStarted || state == .vmPaused else {
             return
         }
-        changeState(.vmPausing)
+        changeState(.vmStopping)
+        do {
+            try await _vmReset()
+            changeState(.vmStarted)
+        } catch {
+            changeState(.vmStopped)
+            throw error
+        }
+    }
+    
+    private func _vmPause() async throws {
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
             vmQueue.async {
                 DispatchQueue.main.sync {
@@ -214,7 +238,17 @@ import Virtualization
                 }
             }
         }
-        changeState(.vmPaused)
+    }
+    
+    override func vmPause() async throws {
+        changeState(.vmPausing)
+        do {
+            try await _vmPause()
+            changeState(.vmPaused)
+        } catch {
+            changeState(.vmStopped)
+            throw error
+        }
     }
     
     override func vmSaveState() async throws {
@@ -225,10 +259,7 @@ import Virtualization
         // FIXME: implement this
     }
     
-    override func vmResume() async throws {
-        guard state == .vmPaused else {
-            return
-        }
+    private func _vmResume() async throws {
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
             vmQueue.async {
                 self.apple.resume { result in
@@ -236,7 +267,20 @@ import Virtualization
                 }
             }
         }
-        changeState(.vmStarted)
+    }
+    
+    override func vmResume() async throws {
+        guard state == .vmPaused else {
+            return
+        }
+        changeState(.vmResuming)
+        do {
+            try await _vmResume()
+            changeState(.vmStarted)
+        } catch {
+            changeState(.vmStopped)
+            throw error
+        }
     }
     
     override func updateScreenshot() {

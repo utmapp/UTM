@@ -261,10 +261,6 @@ NSString *const kSuspendSnapshotName = @"suspend";
 #pragma mark - VM actions
 
 - (void)_vmStartWithCompletion:(void (^)(NSError * _Nullable))completion {
-    if (self.state != kVMStopped) {
-        completion([self errorGeneric]);
-        return;
-    }
     // check if we can actually start this VM
     if (![UTMQemuVirtualMachine isSupportedWithSystemArchitecture:self.qemuConfig.systemArchitecture]) {
         completion([self errorWithMessage:NSLocalizedString(@"This build of UTM does not support emulating the architecture of this VM.", @"UTMQemuVirtualMachine")]);
@@ -305,8 +301,6 @@ NSString *const kSuspendSnapshotName = @"suspend";
     if (!_ioService) {
         _ioService = [self inputOutputService];
     }
-    
-    [self changeState:kVMStarting];
     
     NSError *spiceError;
     if (![_ioService startWithError:&spiceError]) {
@@ -397,7 +391,6 @@ NSString *const kSuspendSnapshotName = @"suspend";
     }
     assert(self.qemu.isConnected);
     assert(self.ioService.isConnected);
-    [self changeState:kVMStarted];
     if (self.viewState.hasSaveState) {
         [self _vmDeleteStateWithCompletion:^(NSError *error){
             // ignore error
@@ -410,12 +403,20 @@ NSString *const kSuspendSnapshotName = @"suspend";
 
 - (void)vmStartWithCompletion:(void (^)(NSError * _Nullable))completion {
     dispatch_async(self.vmOperations, ^{
+        if (self.state != kVMStopped) {
+            completion([self errorGeneric]);
+            return;
+        }
+        [self changeState:kVMStarting];
         [self _vmStartWithCompletion:^(NSError *err){
             if (err) { // delete suspend state on error
                 dispatch_sync(dispatch_get_main_queue(), ^{
                     self.viewState.hasSaveState = NO;
                 });
                 [self saveViewState];
+                [self changeState:kVMStopped];
+            } else {
+                [self changeState:kVMStarted];
             }
             completion(err);
         }];
@@ -423,17 +424,6 @@ NSString *const kSuspendSnapshotName = @"suspend";
 }
 
 - (void)_vmStopForce:(BOOL)force completion:(void (^)(NSError * _Nullable))completion {
-    if (self.state == kVMStopped) {
-        completion(nil);
-        return;
-    }
-    if (!force && self.state != kVMStarted) {
-        completion([self errorGeneric]);
-        return;
-    }
-    if (!force) {
-        [self changeState:kVMStopping];
-    }
     // save view settings early to win exit race
     [self saveViewState];
     
@@ -457,23 +447,31 @@ NSString *const kSuspendSnapshotName = @"suspend";
         self.system.qmpPort = 0;
     }
     self.system = nil;
-    [self changeState:kVMStopped];
     // stop logging
     [self.logging endLog];
 }
 
 - (void)vmStopForce:(BOOL)force completion:(void (^)(NSError * _Nullable))completion {
     dispatch_async(self.vmOperations, ^{
-        [self _vmStopForce:force completion:completion];
+        if (self.state == kVMStopped) {
+            completion(nil);
+            return;
+        }
+        if (!force && self.state != kVMStarted) {
+            completion([self errorGeneric]);
+            return;
+        }
+        if (!force) {
+            [self changeState:kVMStopping];
+        }
+        [self _vmStopForce:force completion:^(NSError *err){
+            [self changeState:kVMStopped];
+            completion(err);
+        }];
     });
 }
 
 - (void)_vmResetWithCompletion:(void (^)(NSError * _Nullable))completion {
-    if (self.state != kVMStarted && self.state != kVMPaused) {
-        completion([self errorGeneric]);
-        return;
-    }
-    [self changeState:kVMStopping];
     if (self.viewState.hasSaveState) {
         [self _vmDeleteStateWithCompletion:^(NSError *error) {}];
     }
@@ -492,26 +490,28 @@ NSString *const kSuspendSnapshotName = @"suspend";
         UTMLog(@"Reset operation timeout");
         resetError = [self errorGeneric];;
     }
-    if (!resetError) {
-        [self changeState:kVMStarted];
-    } else {
-        [self changeState:kVMStopped];
-    }
     completion(resetError);
 }
 
 - (void)vmResetWithCompletion:(void (^)(NSError * _Nullable))completion {
     dispatch_async(self.vmOperations, ^{
-        [self _vmResetWithCompletion:completion];
+        if (self.state != kVMStarted && self.state != kVMPaused) {
+            completion([self errorGeneric]);
+            return;
+        }
+        [self changeState:kVMStopping];
+        [self _vmResetWithCompletion:^(NSError *err){
+            if (!err) {
+                [self changeState:kVMStarted];
+            } else {
+                [self changeState:kVMStopped];
+            }
+            completion(err);
+        }];
     });
 }
 
 - (void)_vmPauseWithCompletion:(void (^)(NSError * _Nullable))completion {
-    if (self.state != kVMStarted) {
-        completion([self errorGeneric]);
-        return;
-    }
-    [self changeState:kVMPausing];
     dispatch_sync(dispatch_get_main_queue(), ^{
         [self updateScreenshot];
     });
@@ -530,25 +530,28 @@ NSString *const kSuspendSnapshotName = @"suspend";
         UTMLog(@"Stop operation timeout");
         suspendError = [self errorGeneric];
     }
-    if (!suspendError) {
-        [self changeState:kVMPaused];
-    } else {
-        [self changeState:kVMStopped];
-    }
     completion(suspendError);
 }
 
 - (void)vmPauseWithCompletion:(void (^)(NSError * _Nullable))completion {
     dispatch_async(self.vmOperations, ^{
-        [self _vmPauseWithCompletion:completion];
+        if (self.state != kVMStarted) {
+            completion([self errorGeneric]);
+            return;
+        }
+        [self changeState:kVMPausing];
+        [self _vmPauseWithCompletion:^(NSError *err){
+            if (!err) {
+                [self changeState:kVMPaused];
+            } else {
+                [self changeState:kVMStopped];
+            }
+            completion(err);
+        }];
     });
 }
 
 - (void)_vmSaveStateWithCompletion:(void (^)(NSError * _Nullable))completion {
-    if (self.state != kVMPaused && self.state != kVMStarted) {
-        completion([self errorGeneric]);
-        return;
-    }
     __block NSError *saveError = nil;
     dispatch_semaphore_t saveTriggeredEvent = dispatch_semaphore_create(0);
     [_qemu qemuSaveStateWithCompletion:^(NSString *result, NSError *err) {
@@ -581,6 +584,10 @@ NSString *const kSuspendSnapshotName = @"suspend";
 
 - (void)vmSaveStateWithCompletion:(void (^)(NSError * _Nullable))completion {
     dispatch_async(self.vmOperations, ^{
+        if (self.state != kVMPaused && self.state != kVMStarted) {
+            completion([self errorGeneric]);
+            return;
+        }
         [self _vmSaveStateWithCompletion:completion];
     });
 }
@@ -619,11 +626,6 @@ NSString *const kSuspendSnapshotName = @"suspend";
 }
 
 - (void)_vmResumeWithCompletion:(void (^)(NSError * _Nullable))completion {
-    if (self.state != kVMPaused) {
-        completion([self errorGeneric]);
-        return;
-    }
-    [self changeState:kVMResuming];
     __block NSError *resumeError = nil;
     dispatch_semaphore_t resumeTriggeredEvent = dispatch_semaphore_create(0);
     [_qemu qemuResumeWithCompletion:^(NSError *err) {
@@ -638,11 +640,6 @@ NSString *const kSuspendSnapshotName = @"suspend";
         UTMLog(@"Resume operation timeout");
         resumeError = [self errorGeneric];
     }
-    if (!resumeError) {
-        [self changeState:kVMStarted];
-    } else {
-        [self changeState:kVMStopped];
-    }
     if (self.viewState.hasSaveState) {
         [self _vmDeleteStateWithCompletion:^(NSError *error){}];
     } else {
@@ -652,7 +649,19 @@ NSString *const kSuspendSnapshotName = @"suspend";
 
 - (void)vmResumeWithCompletion:(void (^)(NSError * _Nullable))completion {
     dispatch_async(self.vmOperations, ^{
-        [self _vmResumeWithCompletion:completion];
+        if (self.state != kVMPaused) {
+            completion([self errorGeneric]);
+            return;
+        }
+        [self changeState:kVMResuming];
+        [self _vmResumeWithCompletion:^(NSError *err){
+            if (!err) {
+                [self changeState:kVMStarted];
+            } else {
+                [self changeState:kVMStopped];
+            }
+            completion(err);
+        }];
     });
 }
 
