@@ -215,7 +215,6 @@ class UTMData: ObservableObject {
         } else {
             virtualMachines.append(vm)
         }
-        listSelect(vm: vm)
     }
     
     /// Select VM in list
@@ -267,21 +266,6 @@ class UTMData: ObservableObject {
     ///   - toOffset: Offsets to move to
     @MainActor func listMove(fromOffsets: IndexSet, toOffset: Int) {
         virtualMachines.move(fromOffsets: fromOffsets, toOffset: toOffset)
-    }
-    
-    /// Discard and create a new list item
-    /// - Parameter vm: VM to discard
-    /// - Parameter newVM: VM to replace with
-    @MainActor private func listRecreate(vm: UTMVirtualMachine, with newVM: UTMVirtualMachine) {
-        if let index = virtualMachines.firstIndex(of: vm) {
-            virtualMachines.remove(at: index)
-            virtualMachines.insert(newVM, at: index)
-        } else {
-            virtualMachines.insert(newVM, at: 0)
-        }
-        if selectedVM == vm {
-            selectedVM = newVM
-        }
     }
     
     // MARK: - New name
@@ -386,7 +370,9 @@ class UTMData: ObservableObject {
                     logger.debug("Cannot create new object for \(path.path)")
                     return
                 }
-                await listRecreate(vm: vm, with: newVM)
+                let index = await listRemove(vm: vm)
+                await listAdd(vm: newVM, at: index)
+                await listSelect(vm: newVM)
             }
             throw error
         }
@@ -432,6 +418,7 @@ class UTMData: ObservableObject {
             try commitRemovableDriveImages(for: qemuVM)
         }
         await listAdd(vm: vm)
+        await listSelect(vm: vm)
         return vm
     }
     
@@ -462,6 +449,7 @@ class UTMData: ObservableObject {
             index! += 1
         }
         await listAdd(vm: newVM, at: index)
+        await listSelect(vm: newVM)
     }
     
     /// Save a copy of the VM and all data to arbitary location
@@ -488,8 +476,12 @@ class UTMData: ObservableObject {
         newVM.isShortcut = true
         try await newVM.accessShortcut()
         
+        let oldSelected = await selectedVM
         let index = try await delete(vm: vm)
         await listAdd(vm: newVM, at: index)
+        if oldSelected == vm {
+            await listSelect(vm: newVM)
+        }
         #if os(macOS)
         if let _ = newVM as? UTMAppleVirtualMachine {
             throw NSLocalizedString("Shortcuts to Apple virtual machines cannot be stored. You must open the .utm bundle from Finder each time UTM is launched.", comment: "UTMData")
@@ -618,6 +610,7 @@ class UTMData: ObservableObject {
             throw NSLocalizedString("Failed to parse imported VM.", comment: "UTMData")
         }
         await listAdd(vm: vm)
+        await listSelect(vm: vm)
     }
     
     // MARK: - Downloading VMs

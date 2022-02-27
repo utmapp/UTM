@@ -18,7 +18,9 @@ import Foundation
 
 extension UTMVirtualMachine: Identifiable {
     public var id: String {
-        if self.path != nil {
+        if self.bookmark != nil {
+            return bookmark!.base64EncodedString()
+        } else if self.path != nil {
             return self.path!.path // path if we're an existing VM
         } else if let uuid = (self.config as? UTMQemuConfiguration)?.systemUUID {
             return uuid
