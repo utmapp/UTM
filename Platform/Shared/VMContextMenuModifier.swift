@@ -31,7 +31,7 @@ struct VMContextMenuModifier: ViewModifier {
                 NSWorkspace.shared.activateFileViewerSelecting([vm.path!])
             } label: {
                 Label("Show in Finder", systemImage: "folder")
-            }
+            }.help("Reveal where the VM is stored.")
             Divider()
             #endif
             Button {
@@ -39,25 +39,26 @@ struct VMContextMenuModifier: ViewModifier {
             } label: {
                 Label("Edit", systemImage: "slider.horizontal.3")
             }.disabled(vm.viewState.hasSaveState || vm.state != .vmStopped)
+            .help("Modify settings for this VM.")
             if vm.viewState.hasSaveState || vm.state != .vmStopped {
                 Button {
                     confirmAction = .confirmStopVM
                 } label: {
                     Label("Stop", systemImage: "stop.fill")
-                }
+                }.help("Stop the running VM.")
             } else {
                 Button {
                     data.run(vm: vm)
                 } label: {
                     Label("Run", systemImage: "play.fill")
-                }
+                }.help("Run the VM in the foreground.")
             }
             Button {
                 shareItem = .utmCopy(vm)
                 showSharePopup.toggle()
             } label: {
                 Label("Share…", systemImage: "square.and.arrow.up")
-            }
+            }.help("Share a copy of this VM and all its data.")
             #if os(macOS)
             if !vm.isShortcut {
                 Button {
@@ -65,20 +66,21 @@ struct VMContextMenuModifier: ViewModifier {
                 } label: {
                     Label("Move…", systemImage: "arrow.down.doc")
                 }.disabled(vm.state != .vmStopped)
+                .help("Move this VM from internal storage to elsewhere.")
             }
             #endif
             Button {
                 confirmAction = .confirmCloneVM
             } label: {
                 Label("Clone…", systemImage: "doc.on.doc")
-            }
+            }.help("Duplicate this VM along with all its data.")
             Button {
                 data.busyWorkAsync {
                     try await data.template(vm: vm)
                 }
             } label: {
                 Label("New from template…", systemImage: "doc.on.clipboard")
-            }
+            }.help("Create a new VM with the same configuration as this one but without any data.")
             Divider()
             if vm.isShortcut {
                 DestructiveButton {
@@ -86,12 +88,14 @@ struct VMContextMenuModifier: ViewModifier {
                 } label: {
                     Label("Remove", systemImage: "trash")
                 }.disabled(vm.state != .vmStopped)
+                .help("Delete this shortcut. The underlying data will not be deleted.")
             } else {
                 DestructiveButton {
                     confirmAction = .confirmDeleteVM
                 } label: {
                     Label("Delete", systemImage: "trash")
                 }.disabled(vm.state != .vmStopped)
+                .help("Delete this VM and all its data.")
             }
         }
         .modifier(VMShareItemModifier(isPresented: $showSharePopup, shareItem: shareItem))

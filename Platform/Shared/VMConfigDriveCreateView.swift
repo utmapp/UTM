@@ -32,9 +32,9 @@ struct VMConfigDriveCreateView: View {
                 Text("Removable")
             }).onChange(of: driveImage.removable) { removable in
                 driveImage.reset(forSystemTarget: target, architecture: architecture, removable: removable)
-            }.help(Text("If checked, no drive image will be stored with the VM. Instead you can mount/unmount image while the VM is running."))
+            }.help("If checked, no drive image will be stored with the VM. Instead you can mount/unmount image while the VM is running.")
             VMConfigStringPicker(selection: $driveImage.interface, label: Text("Interface"), rawValues: UTMQemuConfiguration.supportedDriveInterfaces(), displayValues: UTMQemuConfiguration.supportedDriveInterfacesPretty())
-                .help(Text("Hardware interface on the guest used to mount this image. Different operating systems support different interfaces. The default will be the most common interface."))
+                .help("Hardware interface on the guest used to mount this image. Different operating systems support different interfaces. The default will be the most common interface.")
             if !driveImage.removable {
                 HStack {
                     Text("Size")
@@ -45,7 +45,7 @@ struct VMConfigDriveCreateView: View {
                         driveImage.size = convertToMib(fromSize: $0?.intValue ?? 0)
                     }), onEditingChanged: validateSize)
                         .multilineTextAlignment(.trailing)
-                        .help(Text("The amount of storage to allocate for this image. Ignored if importing an image. If this is a raw image, then an empty file of this size will be stored with the VM. Otherwise, the disk image will dynamically expand up to this size."))
+                        .help("The amount of storage to allocate for this image. Ignored if importing an image. If this is a raw image, then an empty file of this size will be stored with the VM. Otherwise, the disk image will dynamically expand up to this size.")
                     Button(action: { isGiB.toggle() }, label: {
                         Text(isGiB ? "GB" : "MB")
                             .foregroundColor(.blue)
@@ -53,7 +53,7 @@ struct VMConfigDriveCreateView: View {
                 }
                 Toggle(isOn: $driveImage.isRawImage) {
                     Text("Raw Image")
-                }.help(Text("Advanced. If checked, a raw disk image is used. Raw disk image does not support snapshots and will not dynamically expand in size."))
+                }.help("Advanced. If checked, a raw disk image is used. Raw disk image does not support snapshots and will not dynamically expand in size.")
             }
         }
     }

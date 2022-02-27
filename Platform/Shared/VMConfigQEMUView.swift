@@ -47,7 +47,7 @@ struct VMConfigQEMUView: View {
                     #endif
                     Toggle(isOn: $config.rtcUseLocalTime, label: {
                         Text("Use local time for base clock")
-                    }).help(Text("If checked, use local time for RTC which is required for Windows. Otherwise, use UTC clock."))
+                    }).help("If checked, use local time for RTC which is required for Windows. Otherwise, use UTC clock.")
                 }
                 Section(header: Text("Logging")) {
                     Toggle(isOn: $config.debugLogEnabled, label: {
