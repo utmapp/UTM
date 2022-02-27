@@ -135,18 +135,16 @@ error:
 
 - (void)logToFile:(NSURL *)path {
     [self endLog];
-    self.fileOutputStream = [NSOutputStream outputStreamWithURL:path append:NO];
-    [self.fileOutputStream open];
-    __weak typeof(self) weakSelf = self;
+    NSOutputStream *stream = [NSOutputStream outputStreamWithURL:path append:NO];
+    [stream open];
+    __weak typeof(stream) weakStream = stream;
     atexit_b(^{
-        typeof(self) _self = weakSelf;
-        if (_self) {
-            NSStreamStatus status = _self.fileOutputStream.streamStatus;
-            if (status == NSStreamStatusOpen || status == NSStreamStatusWriting) {
-                [_self.fileOutputStream close];
-            }
+        NSStreamStatus status = weakStream.streamStatus;
+        if (status == NSStreamStatusOpen || status == NSStreamStatusWriting) {
+            [weakStream close];
         }
     });
+    self.fileOutputStream = stream;
 }
 
 - (void)endLog {
