@@ -25,18 +25,6 @@ struct RAMSlider: View {
     @Binding var systemMemory: NSNumber?
     @State private var memorySizeIndex: Float = 0
     
-    #if os(macOS)
-    var useMontereyWorkaround: Bool {
-        if #available(macOS 12, *) {
-            return true
-        } else {
-            return false
-        }
-    }
-    #else
-    let useMontereyWorkaround = false
-    #endif
-    
     var memorySizeIndexObserver: Binding<Float> {
         Binding<Float>(
             get: {
@@ -63,7 +51,7 @@ struct RAMSlider: View {
     }
     
     var body: some View {
-        if useMontereyWorkaround {
+        GeometryReader { geo in
             HStack {
                 Slider(value: memorySizeIndexObserver, in: 0...Float(validMemoryValues.count-1), step: 1) { start in
                     if !start {
@@ -76,20 +64,7 @@ struct RAMSlider: View {
                     .frame(width: 80)
                 Text("MB")
             }
-        } else {
-            HStack {
-                Slider(value: memorySizeIndexObserver, in: 0...Float(validMemoryValues.count-1), step: 1) { start in
-                    if !start {
-                        validateMemorySize(false)
-                    }
-                } label: {
-                    Text("")
-                }
-                NumberTextField("", number: $systemMemory, prompt: "Size", onEditingChanged: validateMemorySize)
-                    .frame(width: 80, height: nil)
-                Text("MB")
-            }
-        }
+        }.frame(height: 30)
     }
     
     func memorySizePickerIndex(size: NSNumber?) -> Float {
