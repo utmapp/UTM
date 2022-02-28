@@ -48,7 +48,7 @@ struct VMConfigSystemView: View {
                         VMConfigStringPicker("", selection: $config.systemCPU.animation(), rawValues: UTMQemuConfiguration.supportedCpus(forArchitecture: config.systemArchitecture), displayValues: UTMQemuConfiguration.supportedCpus(forArchitecturePretty: config.systemArchitecture))
                     }
                     CPUFlagsOptions(config: config)
-                    Section(header: Text("CPU Cores"), footer: Text("Set to 0 to use maximum supported CPUs. Force multicore might result in incorrect emulation.").padding(.bottom)) {
+                    DetailedSection("CPU Cores", description: "Set to 0 to use maximum supported CPUs. Force multicore might result in incorrect emulation.") {
                         HStack {
                             NumberTextField("", number: $config.systemCPUCount, prompt: "Default", onEditingChanged: validateCpuCount)
                                 .multilineTextAlignment(.trailing)
@@ -58,14 +58,14 @@ struct VMConfigSystemView: View {
                             Text("Force Multicore")
                         })
                     }
-                    Section(header: Text("JIT Cache"), footer: Text("Set to 0 for default which is 1/4 of the allocated Memory size. This is in addition to the host memory!").padding(.bottom)) {
+                    DetailedSection("JIT Cache", description: "Set to 0 for default which is 1/4 of the allocated Memory size. This is in addition to the host memory!") {
                         HStack {
                             NumberTextField("", number: $config.systemJitCacheSize, prompt: "Default", onEditingChanged: validateMemorySize)
                                 .multilineTextAlignment(.trailing)
                             Text("MB")
                         }
                     }
-                    Section(header: Text("QEMU Machine Properties")) {
+                    DetailedSection("QEMU Machine Properties") {
                         DefaultTextField("", text: $config.systemMachineProperties.bound, prompt: "None")
                     }
                 }

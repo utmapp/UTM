@@ -49,20 +49,20 @@ struct VMConfigDisplayView: View {
                 if config.displayConsoleOnly {
                     VMConfigDisplayConsoleView(config: config)
                 } else {
-                    Section(header: Text("Hardware"), footer: EmptyView().padding(.bottom)) {
+                    Section(header: Text("Hardware")) {
                         VMConfigStringPicker("Emulated Display Card", selection: $config.displayCard, rawValues: UTMQemuConfiguration.supportedDisplayCards(forArchitecture: config.systemArchitecture), displayValues: UTMQemuConfiguration.supportedDisplayCards(forArchitecturePretty: config.systemArchitecture))
                     }
                     
                     // https://stackoverflow.com/a/59277022/15603854
                     #if !os(macOS)
-                    Section(header: Text("Auto Resolution"), footer: Text("Requires SPICE guest agent tools to be installed.").fixedSize(horizontal: false, vertical: true).padding(.bottom)) {
+                    DetailedSection("Auto Resolution", description: "Requires SPICE guest agent tools to be installed.") {
                         Toggle(isOn: $config.displayFitScreen, label: {
                             Text("Resize display to screen size automatically")
                         })
                     }
                     #endif
                     
-                    Section(header: Text("Scaling"), footer: EmptyView().padding(.bottom)) {
+                    Section(header: Text("Scaling")) {
                         VMConfigStringPicker("Upscaling", selection: $config.displayUpscaler, rawValues: UTMQemuConfiguration.supportedScalers(), displayValues: UTMQemuConfiguration.supportedScalersPretty())
                         VMConfigStringPicker("Downscaling", selection: $config.displayDownscaler, rawValues: UTMQemuConfiguration.supportedScalers(), displayValues: UTMQemuConfiguration.supportedScalersPretty())
                         Toggle(isOn: $config.displayRetina, label: {

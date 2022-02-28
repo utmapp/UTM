@@ -23,7 +23,7 @@ struct VMConfigSoundView: View {
     var body: some View {
         VStack {
             Form {
-                Section(header: Text("Hardware"), footer: EmptyView().padding(.bottom)) {
+                Section(header: Text("Hardware")) {
                     Toggle(isOn: $config.soundEnabled.animation(), label: {
                         Text("Enabled")
                     })

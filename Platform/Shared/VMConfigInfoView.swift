@@ -55,16 +55,16 @@ struct VMConfigInfoView<Config: ObservableObject & UTMConfigurable>: View {
                     }
                 }
 
-                Section(header: Text("Name"), footer: EmptyView().padding(.bottom)) {
+                Section(header: Text("Name")) {
                     TextField("Name", text: $config.name, onEditingChanged: validateName)
                         .keyboardType(.asciiCapable)
                         .disabled(config.isRenameDisabled)
                 }
-                Section(header: Text("Notes"), footer: EmptyView().padding(.bottom)) {
+                Section(header: Text("Notes")) {
                     TextEditor(text: $config.notes.bound)
                         .frame(minHeight: 200)
                 }
-                Section(header: Text("Icon"), footer: EmptyView().padding(.bottom)) {
+                Section(header: Text("Icon")) {
                     DefaultPicker("Style", selection: style.animation()) {
                         ForEach(IconStyle.allCases, id: \.id) { value in
                             Text(value.localizedName)

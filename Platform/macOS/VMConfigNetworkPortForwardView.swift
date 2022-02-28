@@ -33,7 +33,7 @@ struct VMConfigNetworkPortForwardView: View {
                     PortForwardEdit(config: config).padding()
                         .frame(width: 250)
                 }
-            }, footer: EmptyView().padding(.bottom)) {
+            }) {
             VStack {
                 ForEach(0..<config.countPortForwards, id: \.self) { index in
                     let configPort = config.portForward(for: index)!

@@ -48,10 +48,8 @@ struct VMWizardOSWindowsView: View {
                 }
             }
             
-            Section {
+            DetailedSection("", description: "Some older systems do not support UEFI boot, such as Windows 7 and below.") {
                 Toggle("UEFI Boot", isOn: $wizardState.systemBootUefi)
-            } footer: {
-                Text("Some older systems do not support UEFI boot, such as Windows 7 and below.")
             }
             
             Section {

@@ -27,13 +27,13 @@ struct VMConfigSharingView: View {
                     Text("These settings are unavailable in console display mode.")
                 }
                 
-                Section(header: Text("Clipboard Sharing"), footer: Text("Requires SPICE guest agent tools to be installed.").padding(.bottom)) {
+                DetailedSection("Clipboard Sharing", description: "Requires SPICE guest agent tools to be installed.") {
                     Toggle(isOn: $config.shareClipboardEnabled, label: {
                         Text("Enable Clipboard Sharing")
                     })
                 }
                 
-                Section(header: Text("Shared Directory"), footer: Text("Requires SPICE WebDAV service to be installed.").padding(.bottom)) {
+                DetailedSection("Shared Directory", description: "Requires SPICE WebDAV service to be installed.") {
                     Toggle(isOn: $config.shareDirectoryEnabled.animation(), label: {
                         Text("Enable Directory Sharing")
                     }).onChange(of: config.shareDirectoryEnabled, perform: { _ in

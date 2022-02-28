@@ -24,7 +24,7 @@ struct VMConfigNetworkView: View {
     var body: some View {
         VStack {
             Form {
-                Section(header: Text("Hardware"), footer: EmptyView().padding(.bottom)) {
+                Section(header: Text("Hardware")) {
                     #if os(macOS)
                     if #available(macOS 11.3, *) { // requires macOS 11.3 inherited sandbox fix
                         NetworkModeSection(config: config)
@@ -91,7 +91,7 @@ struct IPConfigurationSection: View {
     @ObservedObject var config: UTMQemuConfiguration
     
     var body: some View {
-        Section(header: Text("IP Configuration"), footer: EmptyView().padding(.bottom)) {
+        Section(header: Text("IP Configuration")) {
             Toggle(isOn: $config.networkIsolate, label: {
                 Text("Isolate Guest from Host")
             })

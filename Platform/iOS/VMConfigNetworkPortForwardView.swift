@@ -21,7 +21,7 @@ struct VMConfigNetworkPortForwardView: View {
     @ObservedObject var config: UTMQemuConfiguration
     
     var body: some View {
-        Section(header: HStack { Text("Port Forward") }, footer: EmptyView().padding(.bottom)) {
+        Section(header: Text("Port Forward")) {
             List {
                 ForEach(0..<config.countPortForwards, id: \.self) { index in
                     let configPort = config.portForward(for: index)!

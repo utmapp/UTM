@@ -51,7 +51,7 @@ struct VMConfigDisplayConsoleView<Config: ObservableObject & UTMConfigurable>: V
         } set: {
             config.consoleFontSize = NSNumber(value: $0)
         }
-        Section(header: Text("Style"), footer: EmptyView().padding(.bottom)) {
+        Section(header: Text("Style")) {
             VMConfigStringPicker("Theme", selection: $config.consoleTheme, rawValues: UTMQemuConfiguration.supportedConsoleThemes(), displayValues: UTMQemuConfiguration.supportedConsoleThemes())
             ColorPicker("Text Color", selection: textColor)
             ColorPicker("Background Color", selection: backgroundColor)
@@ -69,7 +69,7 @@ struct VMConfigDisplayConsoleView<Config: ObservableObject & UTMConfigurable>: V
             })
         }
         
-        Section(header: Text("Resize Console Command"), footer: Text("Command to send when resizing the console. Placeholder $COLS is the number of columns and $ROWS is the number of rows.")) {
+        DetailedSection("Resize Console Command", description: "Command to send when resizing the console. Placeholder $COLS is the number of columns and $ROWS is the number of rows.") {
             DefaultTextField("", text: $config.consoleResizeCommand.bound, prompt: "stty cols $COLS rows $ROWS\n")
         }
     }

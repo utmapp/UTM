@@ -58,7 +58,7 @@ struct VMConfigInputView: View {
     var body: some View {
         VStack {
             Form {
-                Section(header: Text("USB"), footer: Text("If enabled, the default input devices will be emulated on the USB bus.").padding(.bottom)) {
+                DetailedSection("USB", description: "If enabled, the default input devices will be emulated on the USB bus.") {
                     DefaultPicker("USB Support", selection: usbSupport) {
                         Text("Off").tag(UsbSupport.off)
                         Text("USB 2.0").tag(UsbSupport.usb2)
@@ -68,7 +68,7 @@ struct VMConfigInputView: View {
                 
                 #if !WITH_QEMU_TCI
                 if !config.inputLegacy {
-                    Section(header: Text("USB Sharing"), footer: EmptyView().padding(.bottom)) {
+                    Section(header: Text("USB Sharing")) {
                         if !jb_has_usb_entitlement() {
                             Text("USB sharing not supported in this build of UTM.")
                         } else if config.displayConsoleOnly {
@@ -94,7 +94,7 @@ struct VMConfigInputView: View {
                 }
                 #endif
                 
-                Section(header: Text("Mouse Wheel"), footer: EmptyView().padding(.bottom)) {
+                Section(header: Text("Mouse Wheel")) {
                     Toggle(isOn: $config.inputScrollInvert, label: {
                         Text("Invert Mouse Scroll")
                     })
@@ -142,7 +142,7 @@ struct GestureSettingsSection: View {
 @available(iOS 14, *)
 struct GestureSettingsSection: View {
     var body: some View {
-        Section(header: Text("Additional Settings"), footer: EmptyView().padding(.bottom)) {
+        Section(header: Text("Additional Settings")) {
             Button(action: {
                 UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!, options: [:], completionHandler: nil)
             }, label: {
