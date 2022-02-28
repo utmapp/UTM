@@ -29,31 +29,57 @@ struct VMRemovableDrivesView: View {
     var fileManager: FileManager {
         FileManager.default
     }
-    
+
+
+    // Is a shared directory set?
+    private var hasSharedDir: Bool { vm.viewState.sharedDirectoryPath != nil }
+
+    @ViewBuilder private var shareMenuActions: some View {
+        Button(action: { shareDirectoryFileImportPresented.toggle() }) {
+            Label("Browse", systemImage: "doc.badge.plus")
+        }
+        if hasSharedDir {
+            Button(action: clearShareDirectory) {
+                Label("Clear", systemImage: "eject")
+            }
+        }
+    }
+
     var body: some View {
+        let title = Label {
+            Text("Shared Directory")
+        } icon: {
+            Image(systemName: hasSharedDir ? "externaldrive.fill.badge.person.crop" : "externaldrive.badge.person.crop")
+                #if os(macOS)
+                .foregroundColor(.primary)
+                #endif
+        }
+
+
         Group {
             if vm.hasShareDirectoryEnabled {
                 HStack {
-                    // Is a shared directory set?
-                    let hasSharedDir = vm.viewState.sharedDirectoryPath != nil
-                    // Browse/Clear menu
+                    #if os(iOS)
                     Menu {
-                        // Browse button
-                        Button(action: { shareDirectoryFileImportPresented.toggle() }, label: {
-                            Label("Browse", systemImage: "doc.badge.plus")
-                        })
-                        if hasSharedDir {
-                            // Clear button
-                            Button(action: clearShareDirectory, label: {
-                                Label("Clear", systemImage: "eject")
-                            })
-                        }
+                        shareMenuActions
                     } label: {
-                        Label { Text("Shared Directory") } icon: {
-                            Image(systemName: hasSharedDir ? "externaldrive.fill.badge.person.crop" : "externaldrive.badge.person.crop") }
+                        title
                     }.disabled(vm.viewState.hasSaveState)
                     Spacer()
                     SharedPath(path: vm.viewState.sharedDirectoryPath)
+                    #else
+                    title
+                    Spacer()
+                    if hasSharedDir {
+                        Menu {
+                            shareMenuActions
+                        } label: {
+                            SharedPath(path: vm.viewState.sharedDirectoryPath)
+                        }.fixedSize()
+                    } else {
+                        Button("Browse…", action: { shareDirectoryFileImportPresented.toggle() })
+                    }
+                    #endif
                 }.fileImporter(isPresented: $shareDirectoryFileImportPresented, allowedContentTypes: [.folder], onCompletion: selectShareDirectory)
             }
             ForEach(vm.drives.filter { $0.status != .fixed }) { drive in
