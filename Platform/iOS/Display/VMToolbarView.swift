@@ -239,7 +239,14 @@ struct ToolbarButtonStyle: ButtonStyle {
     @Environment(\.verticalSizeClass) private var verticalSizeClass
     
     private var size: CGFloat {
-        (horizontalSizeClass == .compact || verticalSizeClass == .compact) ? 32 : 48
+        if #available(iOS 15, *) {
+            return (horizontalSizeClass == .compact || verticalSizeClass == .compact) ? 32 : 48
+        } else {
+            // workaround bug in iOS 14 where @Environment is not inherited in ButtonStyle
+            let horizontalSizeClass = UITraitCollection.current.horizontalSizeClass
+            let verticalSizeClass = UITraitCollection.current.verticalSizeClass
+            return (horizontalSizeClass == .compact || verticalSizeClass == .compact) ? 32 : 48
+        }
     }
     
     func makeBody(configuration: Configuration) -> some View {
