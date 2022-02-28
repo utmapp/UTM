@@ -34,41 +34,36 @@ struct VMConfigInfoView<Config: ObservableObject & UTMConfigurable>: View {
     @State private var warningMessage: String? = nil
     
     var body: some View {
-        VStack {
+        VStack(alignment: .leading, spacing: 16) {
+            #if os(macOS)
+            HStack {
+                Text("Name").frame(width: 50, alignment: .trailing)
+                nameField
+            }
+            HStack(alignment: .top) {
+                Text("Notes").frame(width: 50, alignment: .trailing)
+                notesField
+            }
+            HStack {
+                Text("Icon").frame(width: 50, alignment: .trailing)
+                iconSelector
+                    .aspectRatio(1, contentMode: .fill)
+                iconStylePicker
+            }
+            #else
             Form {
-                #if os(macOS)
-                let nameHeader = EmptyView()
-                #else
-                let nameHeader = Text("Name")
-                #endif
-                Section(header: nameHeader) {
-                    TextField("Name", text: $config.name, onEditingChanged: validateName)
-                        .keyboardType(.asciiCapable)
-                        .disabled(config.isRenameDisabled)
+                Section(header: Text("Name")) {
+                    nameField
                 }
                 Section(header: Text("Notes")) {
-                    TextEditor(text: $config.notes.bound)
-                        #if os(macOS)
-                        .border(Color.primary, width: 0.5)
-                        #endif
-                        .frame(minHeight: 200)
+                    notesField
                 }
-                #if os(macOS)
-                let iconHeader = EmptyView()
-                #else
-                let iconHeader = Text("Icon")
-                #endif
-                Section(header: iconHeader, footer: EmptyView().padding(.bottom)) {
-                    #if os(macOS)
-                    HStack {
-                        icon
-                        Spacer()
-                    }
-                    #else
-                    icon
-                    #endif
+                Section(header: Text("Icon")) {
+                    iconStylePicker
+                    iconSelector
                 }
             }
+            #endif
         }.onAppear {
             if config.iconCustom {
                 iconStyle = .custom
@@ -80,8 +75,19 @@ struct VMConfigInfoView<Config: ObservableObject & UTMConfigurable>: View {
         }.disableAutocorrection(true)
     }
 
+    private var nameField: some View {
+        TextField("Name", text: $config.name, onEditingChanged: validateName)
+            .keyboardType(.asciiCapable)
+            .disabled(config.isRenameDisabled)
+    }
+
+    private var notesField: some View {
+        TextEditor(text: $config.notes.bound)
+            .frame(minHeight: 200)
+    }
+
     @ViewBuilder
-    private var icon: some View {
+    private var iconStylePicker: some View {
         let style = Binding<IconStyle> {
             return iconStyle
         } set: {
@@ -101,12 +107,7 @@ struct VMConfigInfoView<Config: ObservableObject & UTMConfigurable>: View {
             }
         }
 
-        #if os(macOS)
-        let label = Text("Icon")
-        #else
-        let label = Text("Style")
-        #endif
-        Picker(selection: style.animation(), label: label) {
+        Picker(selection: style.animation(), label: Text("Style")) {
             ForEach(IconStyle.allCases, id: \.id) { value in
                 Text(value.localizedName)
                     .tag(value)
@@ -114,8 +115,12 @@ struct VMConfigInfoView<Config: ObservableObject & UTMConfigurable>: View {
         }
         #if os(macOS)
         .pickerStyle(.radioGroup)
+        .labelsHidden()
         #endif
+    }
 
+    @ViewBuilder
+    private var iconSelector: some View {
         switch iconStyle {
         case .custom:
             #if os(macOS)
@@ -144,8 +149,11 @@ struct VMConfigInfoView<Config: ObservableObject & UTMConfigurable>: View {
             }.buttonStyle(.plain)
         default:
             #if os(macOS)
-            IconPreview(url: config.iconUrl)
-                .accentColor(.secondary)
+            Image(systemName: "desktopcomputer")
+                .resizable()
+                .frame(width: 30.0, height: 30.0)
+                .padding()
+                .foregroundColor(Color(NSColor.disabledControlTextColor))
             #else
             EmptyView()
             #endif
@@ -198,10 +206,14 @@ private struct IconPreview: View {
     
     var body: some View {
         HStack {
+            #if !os(macOS)
             Spacer()
+            #endif
             Logo(logo: PlatformImage(contentsOfURL: url))
                 .padding()
+            #if !os(macOS)
             Spacer()
+            #endif
         }
     }
 }
