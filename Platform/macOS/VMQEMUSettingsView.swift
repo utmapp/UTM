@@ -27,12 +27,14 @@ struct VMQEMUSettingsView: View {
         NavigationLink(destination: VMConfigInfoView(config: config).scrollable(), isActive: $infoActive) {
             Label("Information", systemImage: "info.circle")
         }
-        NavigationLink(destination: VMConfigSystemView(config: config).scrollable()) {
-            Label("System", systemImage: "cpu")
-        }
-        NavigationLink(destination: VMConfigAdvancedSystemView(config: config).scrollable()) {
-            Label("Advanced", systemImage: "wrench.and.screwdriver")
-                .padding(.leading)
+        Group {
+            NavigationLink(destination: VMConfigSystemView(config: config).scrollable()) {
+                Label("System", systemImage: "cpu")
+            }
+            NavigationLink(destination: VMConfigAdvancedSystemView(config: config).scrollable()) {
+                Label("Advanced", systemImage: "wrench.and.screwdriver")
+                    .padding(.leading)
+            }
         }
         NavigationLink(destination: VMConfigQEMUView(config: config).scrollable()) {
             Label("QEMU", systemImage: "shippingbox")
@@ -43,8 +45,14 @@ struct VMQEMUSettingsView: View {
         NavigationLink(destination: VMConfigInputView(config: config).scrollable()) {
             Label("Input", systemImage: "keyboard")
         }
-        NavigationLink(destination: VMConfigNetworkView(config: config).scrollable()) {
-            Label("Network", systemImage: "network")
+        Group {
+            NavigationLink(destination: VMConfigNetworkView(config: config).scrollable()) {
+                Label("Network", systemImage: "network")
+            }
+            NavigationLink(destination: VMConfigAdvancedNetworkView(config: config).scrollable()) {
+                Label("Advanced", systemImage: "wrench.and.screwdriver")
+                    .padding(.leading)
+            }
         }
         NavigationLink(destination: VMConfigSoundView(config: config).scrollable()) {
             Label("Sound", systemImage: "speaker.wave.2")

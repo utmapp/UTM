@@ -123,6 +123,9 @@
 		85EC516027CC8635004A51DE /* VMConfigAdvancedSystemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85EC515F27CC8635004A51DE /* VMConfigAdvancedSystemView.swift */; };
 		85EC516127CC8635004A51DE /* VMConfigAdvancedSystemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85EC515F27CC8635004A51DE /* VMConfigAdvancedSystemView.swift */; };
 		85EC516227CC8635004A51DE /* VMConfigAdvancedSystemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85EC515F27CC8635004A51DE /* VMConfigAdvancedSystemView.swift */; };
+		85EC516427CC8D0F004A51DE /* VMConfigAdvancedNetworkView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85EC516327CC8C98004A51DE /* VMConfigAdvancedNetworkView.swift */; };
+		85EC516527CC8D0F004A51DE /* VMConfigAdvancedNetworkView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85EC516327CC8C98004A51DE /* VMConfigAdvancedNetworkView.swift */; };
+		85EC516627CC8D10004A51DE /* VMConfigAdvancedNetworkView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85EC516327CC8C98004A51DE /* VMConfigAdvancedNetworkView.swift */; };
 		B329049C270FE136002707AC /* AltKit in Frameworks */ = {isa = PBXBuildFile; productRef = B329049B270FE136002707AC /* AltKit */; };
 		B3DDF57226E9BBA300CE47F0 /* AltKit in Frameworks */ = {isa = PBXBuildFile; productRef = B3DDF57126E9BBA300CE47F0 /* AltKit */; };
 		CE020BA324AEDC7C00B44AB6 /* UTMData.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE020BA224AEDC7C00B44AB6 /* UTMData.swift */; };
@@ -1601,6 +1604,7 @@
 		84FCABB9268CE05E0036196C /* UTMQemuVirtualMachine.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UTMQemuVirtualMachine.m; sourceTree = "<group>"; };
 		84FCABBD268CE4080036196C /* UTMVirtualMachine-Private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UTMVirtualMachine-Private.h"; sourceTree = "<group>"; };
 		85EC515F27CC8635004A51DE /* VMConfigAdvancedSystemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMConfigAdvancedSystemView.swift; sourceTree = "<group>"; };
+		85EC516327CC8C98004A51DE /* VMConfigAdvancedNetworkView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMConfigAdvancedNetworkView.swift; sourceTree = "<group>"; };
 		C03453AD2709E35100AD51AD /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
 		C03453AE2709E35100AD51AD /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
 		C03453AF2709E35100AD51AD /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
@@ -3153,6 +3157,7 @@
 				CED814EB24C7C2850042F0F1 /* VMConfigInfoView.swift */,
 				CE2D954824AD4F980059923A /* VMConfigInputView.swift */,
 				CE2D955024AD4F980059923A /* VMConfigNetworkView.swift */,
+				85EC516327CC8C98004A51DE /* VMConfigAdvancedNetworkView.swift */,
 				CE2D955224AD4F980059923A /* VMConfigPortForwardForm.swift */,
 				CE2D953924AD4F980059923A /* VMConfigQEMUView.swift */,
 				CE2D954724AD4F980059923A /* VMConfigSharingView.swift */,
@@ -3682,6 +3687,7 @@
 				CEF0306126A2AFDF00667B63 /* VMWizardOSWindowsView.swift in Sources */,
 				83A004B926A8CC95001AC09E /* UTMDownloadTask.swift in Sources */,
 				CE2D928B24AD46670059923A /* qapi-visit-core.c in Sources */,
+				85EC516427CC8D0F004A51DE /* VMConfigAdvancedNetworkView.swift in Sources */,
 				CE2D928C24AD46670059923A /* qapi-visit-rdma.c in Sources */,
 				CE2D928D24AD46670059923A /* qapi-types-trace.c in Sources */,
 				CE2D928E24AD46670059923A /* UTMQemuConfiguration+Miscellaneous.m in Sources */,
@@ -3933,6 +3939,7 @@
 				CE0B6D0624AD56AE00FE012D /* UTMTerminalIO.m in Sources */,
 				2C6D9E03256EE454003298E6 /* VMDisplayTerminalWindowController.swift in Sources */,
 				CE6D21DD2553A6ED001D29C5 /* VMConfirmActionModifier.swift in Sources */,
+				85EC516627CC8D10004A51DE /* VMConfigAdvancedNetworkView.swift in Sources */,
 				CE020BB724B14F8400B44AB6 /* UTMVirtualMachineExtension.swift in Sources */,
 				CE0B6D4424AD584C00FE012D /* qapi-visit-block.c in Sources */,
 				CE0B6D4C24AD584C00FE012D /* qapi-types-misc.c in Sources */,
@@ -4307,6 +4314,7 @@
 				CEA45E8D263519B5002FA97D /* qapi-events-qdev.c in Sources */,
 				CEA45E8F263519B5002FA97D /* VMContextMenuModifier.swift in Sources */,
 				CEA45E90263519B5002FA97D /* VMListViewController.m in Sources */,
+				85EC516527CC8D0F004A51DE /* VMConfigAdvancedNetworkView.swift in Sources */,
 				CEA45E91263519B5002FA97D /* VMDisplayMetalViewController+Pencil.m in Sources */,
 				CEA45E92263519B5002FA97D /* qapi-events-dump.c in Sources */,
 				CEA45E93263519B5002FA97D /* qapi-types-tpm.c in Sources */,
