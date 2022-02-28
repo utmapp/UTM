@@ -20,6 +20,7 @@ struct VMQEMUSettingsView: View {
     let vm: UTMVirtualMachine?
     @ObservedObject var config: UTMQemuConfiguration
     @Binding var selectedDriveIndex: Int?
+    @EnvironmentObject private var data: UTMData
 
     @State private var infoActive: Bool = true
     
@@ -62,7 +63,7 @@ struct VMQEMUSettingsView: View {
         }
         Section(header: Text("Drives")) {
             ForEach(0..<config.countDrives, id: \.self) { index in
-                NavigationLink(destination: VMConfigDriveDetailsView(config: config, index: index).scrollable(), tag: index, selection: $selectedDriveIndex) {
+                NavigationLink(destination: VMConfigDriveDetailsView(config: config, index: index, onDelete: { deleteDrive(atIndex: index) }).scrollable(), tag: index, selection: $selectedDriveIndex) {
                     Label(config.driveLabel(for: index), systemImage: "externaldrive")
                 }
             }.onMove(perform: moveDrives)
@@ -70,7 +71,17 @@ struct VMQEMUSettingsView: View {
                 .buttonStyle(.link)
         }
     }
-    
+
+    func deleteDrive(atIndex index: Int) {
+        withAnimation {
+            data.busyWorkAsync {
+                try await data.removeDrive(at: index, for: config)
+            }
+            selectedDriveIndex = nil
+        }
+    }
+
+
     func moveDrives(from source: IndexSet, to destination: Int) {
         for offset in source {
             let realDestination: Int

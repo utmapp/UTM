@@ -120,7 +120,6 @@ struct VMConfigDrivesButtons<Config: ObservableObject & UTMConfigurable>: View {
     @ObservedObject var config: Config
     @Binding var selectedDriveIndex: Int?
     
-    @EnvironmentObject private var data: UTMData
     @StateObject private var newQemuDrive: VMDriveImage = VMDriveImage()
     @State private var newAppleDriveSize: Int = 0
     @State private var importDrivePresented: Bool = false
@@ -139,11 +138,6 @@ struct VMConfigDrivesButtons<Config: ObservableObject & UTMConfigurable>: View {
         Group {
             if #available(macOS 12, *) {
                 if let index = selectedDriveIndex {
-                    Button {
-                        deleteDrive(atIndex: index)
-                    } label: {
-                        Label("Delete Drive", systemImage: "externaldrive.badge.plus")
-                    }.help("Delete this drive.")
                     if index != 0 {
                         Button {
                             moveDriveUp(fromIndex: index)
@@ -161,12 +155,6 @@ struct VMConfigDrivesButtons<Config: ObservableObject & UTMConfigurable>: View {
                 }
             } else { // SwiftUI BUG: macOS 11 doesn't support the conditional views above
                 Button {
-                    deleteDrive(atIndex: selectedDriveIndex!)
-                } label: {
-                    Label("Delete Drive", systemImage: "externaldrive.badge.plus")
-                }.help("Delete this drive.")
-                .disabled(selectedDriveIndex == nil)
-                Button {
                     moveDriveUp(fromIndex: selectedDriveIndex!)
                 } label: {
                     Label("Move Up", systemImage: "chevron.up")
@@ -180,22 +168,6 @@ struct VMConfigDrivesButtons<Config: ObservableObject & UTMConfigurable>: View {
                 .disabled(selectedDriveIndex == nil || selectedDriveIndex == countDrives - 1)
             }
         }.labelStyle(.titleOnly)
-    }
-    
-    func deleteDrive(atIndex index: Int) {
-        withAnimation {
-            if let qemuConfig = config as? UTMQemuConfiguration {
-                data.busyWorkAsync {
-                    try await data.removeDrive(at: index, for: qemuConfig)
-                }
-            } else if let appleConfig = config as? UTMAppleConfiguration {
-                // FIXME: SwiftUI BUG: if this is the last item it doesn't disappear even though selectedDriveIndex is set to nil
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                    appleConfig.diskImages.remove(at: index)
-                }
-            }
-            selectedDriveIndex = nil
-        }
     }
     
     func moveDriveUp(fromIndex index: Int) {
