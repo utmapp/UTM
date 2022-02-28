@@ -21,46 +21,63 @@ struct VMWizardView: View {
     @StateObject var wizardState = VMWizardState()
     @Environment(\.presentationMode) private var presentationMode: Binding<PresentationMode>
     @EnvironmentObject private var data: UTMData
-    
+
+    var sidebarBinding: Binding<VMWizardPage?> {
+        Binding(get: { wizardState.currentPage }, set: { newValue in
+            if let newValue = newValue {
+                wizardState.currentPage = newValue
+            }
+        })
+    }
+
     var body: some View {
-        Group {
-            switch wizardState.currentPage {
-            case .start:
-                VMWizardStartView(wizardState: wizardState)
-                    .transition(wizardState.slide)
-            case .operatingSystem:
-                VMWizardOSView(wizardState: wizardState)
-                    .transition(wizardState.slide)
-            case .otherBoot:
-                VMWizardOSOtherView(wizardState: wizardState)
-                    .transition(wizardState.slide)
-            case .macOSBoot:
-                if #available(macOS 12, *) {
-                    VMWizardOSMacView(wizardState: wizardState)
+        NavigationView {
+            List(selection: sidebarBinding) {
+                Label("Start", systemImage: "1.circle")
+                    .tag(VMWizardPage.start)
+                Label("Operating System", systemImage: "gearshape.2")
+                    .disabled(wizardState.currentPage == .start)
+                    .tag(VMWizardPage.operatingSystem)
+            }.frame(width: 170)
+            VStack {
+                switch wizardState.currentPage {
+                case .start:
+                    VMWizardStartView(wizardState: wizardState)
+                        .transition(wizardState.slide)
+                case .operatingSystem:
+                    VMWizardOSView(wizardState: wizardState)
+                        .transition(wizardState.slide)
+                case .otherBoot:
+                    VMWizardOSOtherView(wizardState: wizardState)
+                        .transition(wizardState.slide)
+                case .macOSBoot:
+                    if #available(macOS 12, *) {
+                        VMWizardOSMacView(wizardState: wizardState)
+                            .transition(wizardState.slide)
+                    }
+                case .linuxBoot:
+                    VMWizardOSLinuxView(wizardState: wizardState)
+                        .transition(wizardState.slide)
+                case .windowsBoot:
+                    VMWizardOSWindowsView(wizardState: wizardState)
+                        .transition(wizardState.slide)
+                case .hardware:
+                    VMWizardHardwareView(wizardState: wizardState)
+                        .transition(wizardState.slide)
+                case .drives:
+                    VMWizardDrivesView(wizardState: wizardState)
+                        .transition(wizardState.slide)
+                case .sharing:
+                    VMWizardSharingView(wizardState: wizardState)
+                        .transition(wizardState.slide)
+                case .summary:
+                    VMWizardSummaryView(wizardState: wizardState)
                         .transition(wizardState.slide)
                 }
-            case .linuxBoot:
-                VMWizardOSLinuxView(wizardState: wizardState)
-                    .transition(wizardState.slide)
-            case .windowsBoot:
-                VMWizardOSWindowsView(wizardState: wizardState)
-                    .transition(wizardState.slide)
-            case .hardware:
-                VMWizardHardwareView(wizardState: wizardState)
-                    .transition(wizardState.slide)
-            case .drives:
-                VMWizardDrivesView(wizardState: wizardState)
-                    .transition(wizardState.slide)
-            case .sharing:
-                VMWizardSharingView(wizardState: wizardState)
-                    .transition(wizardState.slide)
-            case .summary:
-                VMWizardSummaryView(wizardState: wizardState)
-                    .transition(wizardState.slide)
             }
+            .padding(.top)
         }
-        .padding(.top)
-        .frame(width: 450, height: 450)
+        .frame(width: 600, height: 450)
         .toolbar {
             ToolbarItem(placement: .automatic) {
                 Button("Close") {
