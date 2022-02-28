@@ -16,58 +16,23 @@
 
 import SwiftUI
 
-@available(iOS 14, macOS 11, *)
-struct VMConfigSystemView: View {
-    let bytesInMib: UInt64 = 1024 * 1024
-    let minMemoryMib = 32
-    let baseUsageMib = 128
-    let warningThreshold = 0.9
-    
-    @ObservedObject var config: UTMQemuConfiguration
-    @State private var warningMessage: String? = nil
-    
-    var body: some View {
-        VStack {
-            Form {
-                HardwareOptions(config: config, validateMemorySize: validateMemorySize)
-                Section(header: Text("CPU")) {
-                    VMConfigStringPicker("", selection: $config.systemCPU.animation(), rawValues: UTMQemuConfiguration.supportedCpus(forArchitecture: config.systemArchitecture), displayValues: UTMQemuConfiguration.supportedCpus(forArchitecturePretty: config.systemArchitecture))
-                }
-                CPUFlagsOptions(config: config)
-                DetailedSection("CPU Cores", description: "Force multicore may improve speed of emulation but also might result in unstable and incorrect emulation.") {
-                    HStack {
-                        NumberTextField("", number: $config.systemCPUCount, prompt: "Default", onEditingChanged: validateCpuCount)
-                            .multilineTextAlignment(.trailing)
-                        Text("Cores")
-                    }
-                    Toggle(isOn: $config.systemForceMulticore, label: {
-                        Text("Force Multicore")
-                    })
-                }
-                DetailedSection("JIT Cache", description: "Default is 1/4 of the RAM size (above). The JIT cache size is additive to the RAM size in the total memory usage!") {
-                    HStack {
-                        NumberTextField("", number: $config.systemJitCacheSize, prompt: "Default", onEditingChanged: validateMemorySize)
-                            .multilineTextAlignment(.trailing)
-                        Text("MB")
-                    }
-                }
-            }
-        }.alert(item: $warningMessage) { warning in
-            Alert(title: Text(warning))
-        }.disableAutocorrection(true)
-    }
-    
-    func validateMemorySize(editing: Bool) {
+private let bytesInMib: UInt64 = 1024 * 1024
+private let minMemoryMib = 32
+private let baseUsageMib = 128
+private let warningThreshold = 0.9
+
+extension UTMQemuConfiguration {
+    func validateMemorySize(editing: Bool) -> String? {
         guard !editing else {
-            return
+            return nil
         }
-        guard let memorySizeMib = config.systemMemory?.intValue, memorySizeMib >= minMemoryMib else {
-            config.systemMemory = NSNumber(value: minMemoryMib)
-            return
+        guard let memorySizeMib = systemMemory?.intValue, memorySizeMib >= minMemoryMib else {
+            systemMemory = NSNumber(value: minMemoryMib)
+            return nil
         }
-        guard let jitSizeMib = config.systemJitCacheSize?.intValue, jitSizeMib >= 0 else {
-            config.systemJitCacheSize = NSNumber(value: 0)
-            return
+        guard let jitSizeMib = systemJitCacheSize?.intValue, jitSizeMib >= 0 else {
+            systemJitCacheSize = NSNumber(value: 0)
+            return nil
         }
         var totalDeviceMemory = ProcessInfo.processInfo.physicalMemory
         #if os(iOS)
@@ -81,28 +46,45 @@ struct VMConfigSystemView: View {
         let estMemoryUsage = UInt64(memorySizeMib + jitMirrorMultiplier*actualJitSizeMib + baseUsageMib) * bytesInMib
         if Double(estMemoryUsage) > Double(totalDeviceMemory) * warningThreshold {
             let format = NSLocalizedString("Allocating too much memory will crash the VM. Your device has %llu MB of memory and the estimated usage is %llu MB.", comment: "VMConfigSystemView")
-            warningMessage = String(format: format, totalDeviceMemory / bytesInMib, estMemoryUsage / bytesInMib)
+            return String(format: format, totalDeviceMemory / bytesInMib, estMemoryUsage / bytesInMib)
         }
+        return nil
     }
-    
-    func validateCpuCount(editing: Bool) {
-        guard !editing else {
-            return
-        }
-        guard let cpuCount = config.systemCPUCount?.intValue, cpuCount >= 0 else {
-            config.systemCPUCount = NSNumber(value: 0)
-            return
-        }
+
+}
+
+@available(iOS 14, macOS 11, *)
+struct VMConfigSystemView: View {    
+    @ObservedObject var config: UTMQemuConfiguration
+    @State private var showAdvanced = false
+
+    var body: some View {
+        VStack {
+            Form {
+                HardwareOptions(config: config)
+                #if os(iOS)
+                Toggle(isOn: $showAdvanced.animation(), label: {
+                    Text("Show Advanced Settings")
+                })
+                if showAdvanced {
+                    VMConfigAdvancedSystemOptions(config: config, validateMemorySize: validateMemorySize)
+                }
+                #endif
+            }
+        }.disableAutocorrection(true)
     }
 }
 
 @available(iOS 14, macOS 11, *)
 struct HardwareOptions: View {
     @ObservedObject var config: UTMQemuConfiguration
-    let validateMemorySize: (Bool) -> Void
     @EnvironmentObject private var data: UTMData
     @State private var warningMessage: String? = nil
-    
+
+    private func validateMemorySize(editing: Bool)  {
+        warningMessage = config.validateMemorySize(editing: editing)
+    }
+
     var body: some View {
         Section(header: Text("Hardware")) {
             VMConfigStringPicker("Architecture", selection: $config.systemArchitecture, rawValues: UTMQemuConfiguration.supportedArchitectures(), displayValues: UTMQemuConfiguration.supportedArchitecturesPretty())
@@ -146,80 +128,9 @@ struct HardwareOptions: View {
                     config.loadDefaults(forTarget: value, architecture: config.systemArchitecture)
                 })
             RAMSlider(systemMemory: $config.systemMemory, onValidate: validateMemorySize)
+        }.alert(item: $warningMessage) { warning in
+            Alert(title: Text(warning))
         }
-    }
-}
-
-@available(iOS 14, macOS 11, *)
-struct CPUFlagsOptions: View {
-    @ObservedObject var config: UTMQemuConfiguration
-    @State private var showAllFlags: Bool = false
-    
-    var body: some View {
-        let allFlags = UTMQemuConfiguration.supportedCpuFlags(forArchitecture: config.systemArchitecture) ?? []
-        let activeFlags = config.systemCPUFlags ?? []
-        if config.systemCPU != "default" && allFlags.count > 0 {
-            Section(header: Text("CPU Flags")) {
-                if showAllFlags || activeFlags.count > 0 {
-                    OptionsList {
-                        ForEach(allFlags) { flag in
-                            let isFlagOn = Binding<Bool> { () -> Bool in
-                                activeFlags.contains(flag)
-                            } set: { isOn in
-                                if isOn {
-                                    config.newCPUFlag(flag)
-                                } else {
-                                    config.removeCPUFlag(flag)
-                                }
-                            }
-                            if showAllFlags || isFlagOn.wrappedValue {
-                                Toggle(isOn: isFlagOn, label: {
-                                    Text(flag)
-                                })
-                            }
-                        }
-                    }
-                }
-                Button {
-                    showAllFlags.toggle()
-                } label: {
-                    if (showAllFlags) {
-                        Text("Hide Unused Flags...")
-                    } else {
-                        Text("Show All Flags...")
-                    }
-                }
-
-            }
-        }
-    }
-}
-
-@available(iOS 14, macOS 11, *)
-struct OptionsList<Content>: View where Content: View {
-    private var columns: [GridItem] = [
-        GridItem(.fixed(150), spacing: 16),
-        GridItem(.fixed(150), spacing: 16),
-        GridItem(.fixed(150), spacing: 16),
-        GridItem(.fixed(150), spacing: 16)
-    ]
-    
-    var content: () -> Content
-    
-    init(content: @escaping () -> Content) {
-        self.content = content
-    }
-    
-    var body: some View {
-        #if os(macOS)
-        LazyVGrid(columns: columns, alignment: .leading) {
-            content()
-        }
-        #else
-        LazyVStack {
-            content()
-        }
-        #endif
     }
 }
 

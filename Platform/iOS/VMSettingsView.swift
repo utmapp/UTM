@@ -23,7 +23,7 @@ struct VMSettingsView: View {
     
     @EnvironmentObject private var data: UTMData
     @Environment(\.presentationMode) private var presentationMode: Binding<PresentationMode>
-    
+
     var body: some View {
         NavigationView {
             Form {

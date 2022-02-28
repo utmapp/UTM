@@ -20,7 +20,7 @@ struct VMQEMUSettingsView: View {
     let vm: UTMVirtualMachine?
     @ObservedObject var config: UTMQemuConfiguration
     @Binding var selectedDriveIndex: Int?
-    
+
     @State private var infoActive: Bool = true
     
     var body: some View {
@@ -29,6 +29,10 @@ struct VMQEMUSettingsView: View {
         }
         NavigationLink(destination: VMConfigSystemView(config: config).scrollable()) {
             Label("System", systemImage: "cpu")
+        }
+        NavigationLink(destination: VMConfigAdvancedSystemView(config: config).scrollable()) {
+            Label("Advanced", systemImage: "wrench.and.screwdriver")
+                .padding(.leading)
         }
         NavigationLink(destination: VMConfigQEMUView(config: config).scrollable()) {
             Label("QEMU", systemImage: "shippingbox")
