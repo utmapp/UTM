@@ -59,7 +59,7 @@ struct VMQEMUSettingsView: View {
             Label("Sound", systemImage: "speaker.wave.2")
         }
         NavigationLink(destination: VMConfigSharingView(config: config).scrollable()) {
-            Label("Sharing", systemImage: "person.crop.circle.fill")
+            Label("Sharing", systemImage: "person.crop.circle")
         }
         Section(header: Text("Drives")) {
             ForEach(0..<config.countDrives, id: \.self) { index in

@@ -47,7 +47,7 @@ struct VMAppleSettingsView: View {
         }
         if #available(macOS 12, *), config.bootLoader?.operatingSystem == .Linux {
             NavigationLink(destination: VMConfigAppleSharingView(config: config).scrollable()) {
-                Label("Sharing", systemImage: "person.crop.circle.fill")
+                Label("Sharing", systemImage: "person.crop.circle")
             }
         }
         Section(header: Text("Drives")) {
