@@ -50,24 +50,13 @@ struct VMRemovableDrivesView: View {
             Text("Shared Directory")
         } icon: {
             Image(systemName: hasSharedDir ? "externaldrive.fill.badge.person.crop" : "externaldrive.badge.person.crop")
-                #if os(macOS)
                 .foregroundColor(.primary)
-                #endif
         }
 
 
         Group {
             if vm.hasShareDirectoryEnabled {
                 HStack {
-                    #if os(iOS)
-                    Menu {
-                        shareMenuActions
-                    } label: {
-                        title
-                    }.disabled(vm.viewState.hasSaveState)
-                    Spacer()
-                    SharedPath(path: vm.viewState.sharedDirectoryPath)
-                    #else
                     title
                     Spacer()
                     if hasSharedDir {
@@ -79,7 +68,6 @@ struct VMRemovableDrivesView: View {
                     } else {
                         Button("Browse…", action: { shareDirectoryFileImportPresented.toggle() })
                     }
-                    #endif
                 }.fileImporter(isPresented: $shareDirectoryFileImportPresented, allowedContentTypes: [.folder], onCompletion: selectShareDirectory)
             }
             ForEach(vm.drives.filter { $0.status != .fixed }) { drive in
@@ -146,10 +134,14 @@ struct VMRemovableDrivesView: View {
         var body: some View {
             if let path = path {
                 let url = URL(fileURLWithPath: path)
-                Text(url.lastPathComponent)
-                    .truncationMode(.head)
-                    .lineLimit(1)
-                    .foregroundColor(.secondary)
+                HStack {
+                    Text(url.lastPathComponent)
+                        .truncationMode(.head)
+                        .lineLimit(1)
+                    #if os(iOS)
+                    Image(systemName: "chevron.down")
+                    #endif
+                }
             } else {
                 Text("(empty)")
                     .foregroundColor(.secondary)

@@ -21,6 +21,7 @@ private let minMemoryMib = 32
 private let baseUsageMib = 128
 private let warningThreshold = 0.9
 
+@available(iOS 13.0, *)
 extension UTMQemuConfiguration {
     func validateMemorySize(editing: Bool) -> String? {
         guard !editing else {
@@ -67,7 +68,7 @@ struct VMConfigSystemView: View {
                     Text("Show Advanced Settings")
                 })
                 if showAdvanced {
-                    VMConfigAdvancedSystemOptions(config: config, validateMemorySize: validateMemorySize)
+                    VMConfigAdvancedSystemOptions(config: config)
                 }
                 #endif
             }

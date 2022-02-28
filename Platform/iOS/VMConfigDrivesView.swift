@@ -40,7 +40,7 @@ struct VMConfigDrivesView: View {
                             let imageType = config.driveImageType(for: index)
                             let interfaceType = config.driveInterfaceType(for: index) ?? ""
                             NavigationLink(
-                                destination: VMConfigDriveDetailsView(config: config, index: index), label: {
+                                destination: VMConfigDriveDetailsView(config: config, index: index, onDelete: nil), label: {
                                     VStack(alignment: .leading) {
                                         Text(displayName)
                                             .lineLimit(1)
