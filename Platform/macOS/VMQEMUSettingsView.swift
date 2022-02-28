@@ -66,6 +66,8 @@ struct VMQEMUSettingsView: View {
                     Label(config.driveLabel(for: index), systemImage: "externaldrive")
                 }
             }.onMove(perform: moveDrives)
+            VMConfigNewDriveButton(vm: vm, config: config)
+                .buttonStyle(.link)
         }
     }
     

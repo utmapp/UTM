@@ -58,6 +58,8 @@ struct VMAppleSettingsView: View {
             }.onMove { indicies, dest in
                 config.diskImages.move(fromOffsets: indicies, toOffset: dest)
             }
+            VMConfigNewDriveButton(vm: vm, config: config)
+                .buttonStyle(.link)
         }
     }
 }
