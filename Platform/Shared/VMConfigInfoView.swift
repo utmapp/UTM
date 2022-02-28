@@ -36,26 +36,12 @@ struct VMConfigInfoView<Config: ObservableObject & UTMConfigurable>: View {
     var body: some View {
         VStack {
             Form {
-                let style = Binding<IconStyle> {
-                    return iconStyle
-                } set: {
-                    iconStyle = $0
-                    switch iconStyle {
-                    case .generic:
-                        config.icon = ""
-                        config.selectedCustomIconPath = nil
-                        break
-                    case .operatingSystem:
-                        config.iconCustom = false
-                        config.selectedCustomIconPath = nil
-                        break
-                    case .custom:
-                        config.iconCustom = true
-                        break
-                    }
-                }
-
-                Section(header: Text("Name")) {
+                #if os(macOS)
+                let nameHeader = EmptyView()
+                #else
+                let nameHeader = Text("Name")
+                #endif
+                Section(header: nameHeader) {
                     TextField("Name", text: $config.name, onEditingChanged: validateName)
                         .keyboardType(.asciiCapable)
                         .disabled(config.isRenameDisabled)
@@ -67,43 +53,20 @@ struct VMConfigInfoView<Config: ObservableObject & UTMConfigurable>: View {
                         #endif
                         .frame(minHeight: 200)
                 }
-                Section(header: Text("Icon")) {
-                    DefaultPicker("Style", selection: style.animation()) {
-                        ForEach(IconStyle.allCases, id: \.id) { value in
-                            Text(value.localizedName)
-                                .tag(value)
-                        }
+                #if os(macOS)
+                let iconHeader = EmptyView()
+                #else
+                let iconHeader = Text("Icon")
+                #endif
+                Section(header: iconHeader, footer: EmptyView().padding(.bottom)) {
+                    #if os(macOS)
+                    HStack {
+                        icon
+                        Spacer()
                     }
-                    
-                    switch iconStyle {
-                    case .custom:
-                        #if os(macOS)
-                        Button(action: { imageSelectVisible.toggle() }, label: {
-                            IconPreview(url: config.iconUrl)
-                        }).fileImporter(isPresented: $imageSelectVisible, allowedContentTypes: [.image]) { result in
-                            switch result {
-                            case .success(let url):
-                                imageCustomSelected(url: url)
-                            case .failure:
-                                break
-                            }
-                        }.buttonStyle(.plain)
-                        #else
-                        Button(action: { imageSelectVisible.toggle() }, label: {
-                            IconPreview(url: config.iconUrl)
-                        }).popover(isPresented: $imageSelectVisible, arrowEdge: .bottom) {
-                            ImagePicker(onImageSelected: imageCustomSelected)
-                        }.buttonStyle(.plain)
-                        #endif
-                    case .operatingSystem:
-                        Button(action: { imageSelectVisible.toggle() }, label: {
-                            IconPreview(url: config.iconUrl)
-                        }).popover(isPresented: $imageSelectVisible, arrowEdge: .bottom) {
-                            IconSelect(onIconSelected: imageSelected)
-                        }.buttonStyle(.plain)
-                    default:
-                        EmptyView()
-                    }
+                    #else
+                    icon
+                    #endif
                 }
             }
         }.onAppear {
@@ -115,6 +78,78 @@ struct VMConfigInfoView<Config: ObservableObject & UTMConfigurable>: View {
         }.alert(item: $warningMessage) { warning in
             Alert(title: Text(warning))
         }.disableAutocorrection(true)
+    }
+
+    @ViewBuilder
+    private var icon: some View {
+        let style = Binding<IconStyle> {
+            return iconStyle
+        } set: {
+            iconStyle = $0
+            switch iconStyle {
+            case .generic:
+                config.icon = ""
+                config.selectedCustomIconPath = nil
+                break
+            case .operatingSystem:
+                config.iconCustom = false
+                config.selectedCustomIconPath = nil
+                break
+            case .custom:
+                config.iconCustom = true
+                break
+            }
+        }
+
+        #if os(macOS)
+        let label = Text("Icon")
+        #else
+        let label = Text("Style")
+        #endif
+        Picker(selection: style.animation(), label: label) {
+            ForEach(IconStyle.allCases, id: \.id) { value in
+                Text(value.localizedName)
+                    .tag(value)
+            }
+        }
+        #if os(macOS)
+        .pickerStyle(.radioGroup)
+        #endif
+
+        switch iconStyle {
+        case .custom:
+            #if os(macOS)
+            Button(action: { imageSelectVisible.toggle() }, label: {
+                IconPreview(url: config.iconUrl)
+            }).fileImporter(isPresented: $imageSelectVisible, allowedContentTypes: [.image]) { result in
+                switch result {
+                case .success(let url):
+                    imageCustomSelected(url: url)
+                case .failure:
+                    break
+                }
+            }.buttonStyle(.plain)
+            #else
+            Button(action: { imageSelectVisible.toggle() }, label: {
+                IconPreview(url: config.iconUrl)
+            }).popover(isPresented: $imageSelectVisible, arrowEdge: .bottom) {
+                ImagePicker(onImageSelected: imageCustomSelected)
+            }.buttonStyle(.plain)
+            #endif
+        case .operatingSystem:
+            Button(action: { imageSelectVisible.toggle() }, label: {
+                IconPreview(url: config.iconUrl)
+            }).popover(isPresented: $imageSelectVisible, arrowEdge: .bottom) {
+                IconSelect(onIconSelected: imageSelected)
+            }.buttonStyle(.plain)
+        default:
+            #if os(macOS)
+            IconPreview(url: config.iconUrl)
+                .accentColor(.secondary)
+            #else
+            EmptyView()
+            #endif
+        }
     }
     
     private func validateName(editing: Bool) {
