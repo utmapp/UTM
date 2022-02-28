@@ -70,7 +70,7 @@ struct VMConfigDisplayConsoleView<Config: ObservableObject & UTMConfigurable>: V
         }
         
         Section(header: Text("Resize Console Command"), footer: Text("Command to send when resizing the console. Placeholder $COLS is the number of columns and $ROWS is the number of rows.")) {
-            TextField("stty cols $COLS rows $ROWS\n", text: $config.consoleResizeCommand.bound)
+            DefaultTextField("", text: $config.consoleResizeCommand.bound, prompt: "stty cols $COLS rows $ROWS\n")
         }
     }
 }

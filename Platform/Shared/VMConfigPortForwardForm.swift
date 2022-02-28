@@ -22,32 +22,13 @@ struct VMConfigPortForwardForm: View {
     
     var body: some View {
         Group {
-            HStack {
-                VMConfigStringPicker(selection: $configPort.protocol, label: Text("Protocol"), rawValues: ["tcp", "udp"], displayValues: ["TCP", "UDP"])
-            }
-            HStack {
-                Text("Guest Address")
-                Spacer()
-                TextField("0.0.0.0", text: $configPort.guestAddress)
-                    .keyboardType(.decimalPad)
-            }
-            HStack {
-                Text("Guest Port")
-                Spacer()
-                NumberTextField("1234", number: $configPort.guestPort)
-            }
-            HStack {
-                Text("Host Address")
-                Spacer()
-                TextField("127.0.0.1", text: $configPort.hostAddress)
-                    .keyboardType(.decimalPad)
-            }
-            HStack {
-                Text("Host Port")
-                Spacer()
-                NumberTextField("1234", number: $configPort.hostPort)
-            }
+            VMConfigStringPicker(selection: $configPort.protocol, label: Text("Protocol"), rawValues: ["tcp", "udp"], displayValues: ["TCP", "UDP"])
+            DefaultTextField("Guest Address", text: $configPort.guestAddress, prompt: "10.0.2.15")
+            NumberTextField("Guest Port", number: $configPort.guestPort, prompt: "1234")
+            DefaultTextField("Host Address", text: $configPort.hostAddress, prompt: "127.0.0.1")
+            NumberTextField("Host Port", number: $configPort.hostPort, prompt: "1234")
         }.disableAutocorrection(true)
+        .keyboardType(.decimalPad)
     }
 }
 

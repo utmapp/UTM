@@ -50,7 +50,7 @@ struct VMConfigSystemView: View {
                     CPUFlagsOptions(config: config)
                     Section(header: Text("CPU Cores"), footer: Text("Set to 0 to use maximum supported CPUs. Force multicore might result in incorrect emulation.").padding(.bottom)) {
                         HStack {
-                            NumberTextField("Default", number: $config.systemCPUCount, onEditingChanged: validateCpuCount)
+                            NumberTextField("", number: $config.systemCPUCount, prompt: "Default", onEditingChanged: validateCpuCount)
                                 .multilineTextAlignment(.trailing)
                             Text("Cores")
                         }
@@ -60,21 +60,13 @@ struct VMConfigSystemView: View {
                     }
                     Section(header: Text("JIT Cache"), footer: Text("Set to 0 for default which is 1/4 of the allocated Memory size. This is in addition to the host memory!").padding(.bottom)) {
                         HStack {
-                            NumberTextField("Default", number: $config.systemJitCacheSize, onEditingChanged: validateMemorySize)
+                            NumberTextField("", number: $config.systemJitCacheSize, prompt: "Default", onEditingChanged: validateMemorySize)
                                 .multilineTextAlignment(.trailing)
                             Text("MB")
                         }
                     }
                     Section(header: Text("QEMU Machine Properties")) {
-                        #if swift(>=5.5)
-                        if #available(iOS 15, macOS 12, *) {
-                            TextField("", text: $config.systemMachineProperties.bound, prompt: Text("None"))
-                        } else {
-                            TextField("None", text: $config.systemMachineProperties.bound)
-                        }
-                        #else
-                        TextField("None", text: $config.systemMachineProperties.bound)
-                        #endif
+                        DefaultTextField("", text: $config.systemMachineProperties.bound, prompt: "None")
                     }
                 }
             }

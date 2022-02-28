@@ -67,6 +67,9 @@
 		8469CACF277D345700BA5601 /* qapi-visit-compat.c in Sources */ = {isa = PBXBuildFile; fileRef = 8469CACD277D345700BA5601 /* qapi-visit-compat.c */; };
 		8469CAD0277D345700BA5601 /* qapi-visit-compat.c in Sources */ = {isa = PBXBuildFile; fileRef = 8469CACD277D345700BA5601 /* qapi-visit-compat.c */; };
 		8469CAD1277D345700BA5601 /* qapi-visit-compat.c in Sources */ = {isa = PBXBuildFile; fileRef = 8469CACD277D345700BA5601 /* qapi-visit-compat.c */; };
+		8471770627CC974F00D3A50B /* DefaultTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8471770527CC974F00D3A50B /* DefaultTextField.swift */; };
+		8471770727CC974F00D3A50B /* DefaultTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8471770527CC974F00D3A50B /* DefaultTextField.swift */; };
+		8471770827CC974F00D3A50B /* DefaultTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8471770527CC974F00D3A50B /* DefaultTextField.swift */; };
 		848308D5278A1F2200E3E474 /* Virtualization.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 848308D4278A1F2200E3E474 /* Virtualization.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		848F71E6277A2466006A0240 /* SwiftTerm in Frameworks */ = {isa = PBXBuildFile; productRef = 848F71E5277A2466006A0240 /* SwiftTerm */; };
 		848F71E8277A2A4E006A0240 /* UTMSerialPort.swift in Sources */ = {isa = PBXBuildFile; fileRef = 848F71E7277A2A4E006A0240 /* UTMSerialPort.swift */; };
@@ -1562,6 +1565,7 @@
 		8469CAC9277D301300BA5601 /* qapi-types-compat.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-types-compat.c"; path = "$(SYSROOT_DIR)/qapi/qapi-types-compat.c"; sourceTree = SOURCE_ROOT; };
 		8469CACD277D345700BA5601 /* qapi-visit-compat.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-visit-compat.c"; path = "$(SYSROOT_DIR)/qapi/qapi-visit-compat.c"; sourceTree = SOURCE_ROOT; };
 		8469CACE277D345700BA5601 /* qapi-visit-compat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-visit-compat.h"; path = "$(SYSROOT_DIR)/qapi/qapi-visit-compat.h"; sourceTree = SOURCE_ROOT; };
+		8471770527CC974F00D3A50B /* DefaultTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultTextField.swift; sourceTree = "<group>"; };
 		848308D4278A1F2200E3E474 /* Virtualization.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Virtualization.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX12.1.sdk/System/Library/Frameworks/Virtualization.framework; sourceTree = DEVELOPER_DIR; };
 		848F71E7277A2A4E006A0240 /* UTMSerialPort.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMSerialPort.swift; sourceTree = "<group>"; };
 		848F71EB277A2F47006A0240 /* UTMSerialPortDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMSerialPortDelegate.swift; sourceTree = "<group>"; };
@@ -3123,6 +3127,7 @@
 				CEF0304D26A2AFBE00667B63 /* BigWhiteSpinner.swift */,
 				CE7D972B24B2B17D0080CB69 /* BusyOverlay.swift */,
 				CE772AAB25C8B0F600E4E379 /* ContentView.swift */,
+				8471770527CC974F00D3A50B /* DefaultTextField.swift */,
 				CED234EC254796E500ED0A57 /* NumberTextField.swift */,
 				CE19392526DCB093005CEC17 /* RAMSlider.swift */,
 				CE2D954324AD4F980059923A /* VMCardView.swift */,
@@ -3863,6 +3868,7 @@
 				CE2D930C24AD46670059923A /* qapi-commands-ui.c in Sources */,
 				CE2D930D24AD46670059923A /* qapi-events-authz.c in Sources */,
 				CE2D930E24AD46670059923A /* qapi-commands-block-core.c in Sources */,
+				8471770627CC974F00D3A50B /* DefaultTextField.swift in Sources */,
 				CE2D930F24AD46670059923A /* qapi-types-authz.c in Sources */,
 				CE2D931024AD46670059923A /* qapi-types-qdev.c in Sources */,
 				CEB63A8624F46E6E00CAF323 /* VMConfigSystemViewController.m in Sources */,
@@ -3931,6 +3937,7 @@
 				CE0B6D6B24AD584D00FE012D /* qapi-types-rdma.c in Sources */,
 				CE0B6D3324AD57FC00FE012D /* qapi-events-block.c in Sources */,
 				CEBE820926A4C74E007AAB12 /* VMWizardSharingView.swift in Sources */,
+				8471770827CC974F00D3A50B /* DefaultTextField.swift in Sources */,
 				8469CACC277D301300BA5601 /* qapi-types-compat.c in Sources */,
 				CE0B6D4D24AD584C00FE012D /* qapi-types-block.c in Sources */,
 				CE03D0D224DCF4B600F76B84 /* VMMetalView.swift in Sources */,
@@ -4221,6 +4228,7 @@
 				CEA45E5A263519B5002FA97D /* VMConfigSystemView.swift in Sources */,
 				CEA45E5B263519B5002FA97D /* VMShareFileModifier.swift in Sources */,
 				CEA45E5C263519B5002FA97D /* cf-input-visitor.c in Sources */,
+				8471770727CC974F00D3A50B /* DefaultTextField.swift in Sources */,
 				CEA45E5D263519B5002FA97D /* qapi-commands-char.c in Sources */,
 				CEA45E5E263519B5002FA97D /* qapi-visit-migration.c in Sources */,
 				CEA45E5F263519B5002FA97D /* qapi-commands-error.c in Sources */,

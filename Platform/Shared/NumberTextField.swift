@@ -20,103 +20,114 @@ import SwiftUI
 struct NumberTextFieldOld: View {
     private var titleKey: LocalizedStringKey
     @Binding private var number: NSNumber?
+    private var promptKey: LocalizedStringKey
     private var onEditingChanged: (Bool) -> Void
     private let formatter: NumberFormatter
     
-    init(_ titleKey: LocalizedStringKey, number: Binding<NSNumber?>, onEditingChanged: @escaping (Bool) -> Void = { _ in }) {
+    init(_ titleKey: LocalizedStringKey, number: Binding<NSNumber?>, prompt: LocalizedStringKey, onEditingChanged: @escaping (Bool) -> Void = { _ in }) {
         self.titleKey = titleKey
         self._number = number
         self.onEditingChanged = onEditingChanged
         self.formatter = NumberFormatter()
         self.formatter.usesGroupingSeparator = false
         self.formatter.usesSignificantDigits = false
+        self.promptKey = prompt
     }
     
     var body: some View {
-        TextField(titleKey, text: Binding<String>(get: { () -> String in
-            guard let number = self.number else {
-                return ""
-            }
-            return self.formatter.string(from: number) ?? ""
-        }, set: {
-            // make sure we never set nil
-            self.number = self.formatter.number(from: $0) ?? NSNumber(value: 0)
-        }), onEditingChanged: onEditingChanged)
-            .keyboardType(.numberPad)
-            .multilineTextAlignment(.trailing)
+        HStack {
+            Text(titleKey)
+            Spacer()
+            TextField(promptKey, text: Binding<String>(get: { () -> String in
+                guard let number = self.number else {
+                    return ""
+                }
+                return self.formatter.string(from: number) ?? ""
+            }, set: {
+                // make sure we never set nil
+                self.number = self.formatter.number(from: $0) ?? NSNumber(value: 0)
+            }), onEditingChanged: onEditingChanged)
+                .keyboardType(.numberPad)
+                .multilineTextAlignment(.trailing)
+        }
     }
 }
 
-#if swift(>=5.5)
 @available(iOS 15, macOS 12, *)
 struct NumberTextFieldNew: View {
     private var titleKey: LocalizedStringKey
     @Binding private var number: NSNumber?
+    private var promptKey: LocalizedStringKey
     private var onEditingChanged: (Bool) -> Void
     
     // Due to FB9581726 we cannot make `focused` available only on newer APIs.
     // Therefore we have to mark the availability on the entire struct.
     @FocusState private var focused: Bool
     
-    init(_ titleKey: LocalizedStringKey, number: Binding<NSNumber?>, onEditingChanged: @escaping (Bool) -> Void = { _ in }) {
+    init(_ titleKey: LocalizedStringKey, number: Binding<NSNumber?>, prompt: LocalizedStringKey, onEditingChanged: @escaping (Bool) -> Void = { _ in }) {
         self.titleKey = titleKey
         self._number = number
         self.onEditingChanged = onEditingChanged
+        self.promptKey = prompt
     }
     
     var body: some View {
-        TextField(value: $number, format: NSNumber.StringFormatStyle(), prompt: Text(titleKey), label: {
-            EmptyView()
-        })
-            .keyboardType(.numberPad)
-            .focused($focused)
-            .onChange(of: number) { _ in
-                onEditingChanged(focused)
+        Group {
+            #if os(macOS)
+            TextField(titleKey, value: $number, format: NSNumber.StringFormatStyle(), prompt: Text(promptKey))
+                .focused($focused)
+            #else
+            HStack {
+                Text(titleKey)
+                Spacer()
+                TextField(titleKey, value: $number, format: NSNumber.StringFormatStyle(), prompt: Text(promptKey))
+                    .focused($focused)
             }
-            .onSubmit {
-                focused = false
-                onEditingChanged(false)
-            }
-            .multilineTextAlignment(.trailing)
+            #endif
+        }.keyboardType(.numberPad)
+        .onChange(of: number) { _ in
+            onEditingChanged(focused)
+        }
+        .onSubmit {
+            focused = false
+            onEditingChanged(false)
+        }
+        .multilineTextAlignment(.trailing)
     }
 }
-#endif
 
 @available(iOS 13, macOS 11, *)
 struct NumberTextField: View {
     private var titleKey: LocalizedStringKey
     @Binding private var number: NSNumber?
+    private var promptKey: LocalizedStringKey
     private var onEditingChanged: (Bool) -> Void
     
-    init(_ titleKey: LocalizedStringKey, number: Binding<NSNumber?>, onEditingChanged: @escaping (Bool) -> Void = { _ in }) {
+    init(_ titleKey: LocalizedStringKey, number: Binding<NSNumber?>, prompt: LocalizedStringKey = "", onEditingChanged: @escaping (Bool) -> Void = { _ in }) {
         self.titleKey = titleKey
         self._number = number
         self.onEditingChanged = onEditingChanged
+        self.promptKey = prompt
     }
     
-    init(_ titleKey: LocalizedStringKey, number: Binding<Int>, onEditingChanged: @escaping (Bool) -> Void = { _ in }) {
+    init(_ titleKey: LocalizedStringKey, number: Binding<Int>, prompt: LocalizedStringKey = "", onEditingChanged: @escaping (Bool) -> Void = { _ in }) {
         let nsnumber = Binding<NSNumber?> {
             return NSNumber(value: number.wrappedValue)
         } set: { newValue in
             number.wrappedValue = newValue?.intValue ?? 0
         }
-        self.init(titleKey, number: nsnumber, onEditingChanged: onEditingChanged)
+        self.init(titleKey, number: nsnumber, prompt: prompt, onEditingChanged: onEditingChanged)
     }
     
     var body: some View {
-        #if swift(>=5.5)
         if #available(iOS 15, macOS 12, *) {
-            NumberTextFieldNew(titleKey, number: $number, onEditingChanged: onEditingChanged)
+            NumberTextFieldNew(titleKey, number: $number, prompt: promptKey, onEditingChanged: onEditingChanged)
         } else {
-            NumberTextFieldOld(titleKey, number: $number, onEditingChanged: onEditingChanged)
+            NumberTextFieldOld(titleKey, number: $number, prompt: promptKey, onEditingChanged: onEditingChanged)
         }
-        #else
-        NumberTextFieldOld(titleKey, number: $number, onEditingChanged: onEditingChanged)
-        #endif
     }
 }
 
-#if swift(>=5.5)
 @available(iOS 15, macOS 12, *)
 extension NSNumber {
     struct StringFormatStyle: ParseableFormatStyle {
@@ -141,7 +152,6 @@ extension NSNumber {
         }
     }
 }
-#endif
 
 @available(iOS 13, macOS 11, *)
 struct NumberTextField_Previews: PreviewProvider {

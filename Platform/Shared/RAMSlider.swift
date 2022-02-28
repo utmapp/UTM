@@ -72,7 +72,7 @@ struct RAMSlider: View {
                 } label: {
                     Text("")
                 }
-                NumberTextField("Size", number: $systemMemory, onEditingChanged: validateMemorySize)
+                NumberTextField("", number: $systemMemory, prompt: "Size", onEditingChanged: validateMemorySize)
                     .frame(width: 80)
                 Text("MB")
             }
@@ -85,7 +85,7 @@ struct RAMSlider: View {
                 } label: {
                     Text("")
                 }
-                NumberTextField("Size", number: $systemMemory, onEditingChanged: validateMemorySize)
+                NumberTextField("", number: $systemMemory, prompt: "Size", onEditingChanged: validateMemorySize)
                     .frame(width: 80, height: nil)
                 Text("MB")
             }

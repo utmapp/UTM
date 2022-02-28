@@ -80,12 +80,8 @@ struct NetworkModeSection: View {
     var body: some View {
         VMConfigStringPicker(selection: $config.networkMode, label: Text("Network Mode"), rawValues: UTMQemuConfiguration.supportedNetworkModes(), displayValues: UTMQemuConfiguration.supportedNetworkModesPretty())
         if config.networkMode == "bridged" {
-            HStack {
-                Text("Bridged Interface")
-                Spacer()
-                TextField("en0", text: $config.networkBridgeInterface.bound)
-                    .keyboardType(.asciiCapable)
-            }
+            DefaultTextField("Bridged Interface", text: $config.networkBridgeInterface.bound, prompt: "en0")
+                .keyboardType(.asciiCapable)
         }
     }
 }
@@ -122,39 +118,6 @@ struct IPConfigurationSection: View {
                     .keyboardType(.asciiCapable)
             }
         }.disableAutocorrection(true)
-    }
-}
-
-@available(iOS 14, macOS 11, *)
-struct DefaultTextField: View {
-    private let titleKey: LocalizedStringKey
-    @Binding private var text: String
-    private let prompt: LocalizedStringKey
-    
-    init(_ titleKey: LocalizedStringKey, text: Binding<String>, prompt: LocalizedStringKey = "") {
-        self.titleKey = titleKey
-        self._text = text
-        self.prompt = prompt
-    }
-    
-    var body: some View {
-        #if swift(>=5.5)
-        if #available(iOS 15, macOS 12, *) {
-            TextField(titleKey, text: $text, prompt: Text(prompt))
-        } else {
-            HStack {
-                Text(titleKey)
-                Spacer()
-                TextField("", text: $text)
-            }
-        }
-        #else
-        HStack {
-            Text(titleKey)
-            Spacer()
-            TextField("", text: $text)
-        }
-        #endif
     }
 }
 

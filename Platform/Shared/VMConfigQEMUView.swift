@@ -149,28 +149,11 @@ struct CustomArguments: View {
                 config.updateArgument(at: i, withValue: $0)
             }
             HStack {
-                #if swift(>=5.5)
-                if #available(iOS 15, macOS 12, *) {
-                    TextField(text: argBinding, prompt: Text("Argument"), label: { EmptyView() })
-                        .onSubmit {
-                            if argBinding.wrappedValue == "" {
-                                config.removeArgument(at: i)
-                            }
-                        }
-                } else {
-                    TextField("Argument", text: argBinding, onEditingChanged: { editing in
-                        if !editing && argBinding.wrappedValue == "" {
-                            config.removeArgument(at: i)
-                        }
-                    })
-                }
-                #else
-                TextField("Argument", text: argBinding, onEditingChanged: { editing in
+                DefaultTextField("", text: argBinding, prompt: "(Delete)", onEditingChanged: { editing in
                     if !editing && argBinding.wrappedValue == "" {
                         config.removeArgument(at: i)
                     }
                 })
-                #endif
                 #if os(macOS)
                 Spacer()
                 if i != 0 {
@@ -204,18 +187,7 @@ struct NewArgumentTextField: View {
     
     var body: some View {
         Group {
-            #if swift(>=5.5)
-            if #available(iOS 15, macOS 12, *) {
-                TextField(text: $newArg, prompt: Text("New..."), label: { EmptyView() })
-                    .onSubmit {
-                        addArg(editing: false)
-                    }
-            } else {
-                TextField("New...", text: $newArg, onEditingChanged: addArg)
-            }
-            #else
-            TextField("New...", text: $newArg, onEditingChanged: addArg)
-            #endif
+            DefaultTextField("", text: $newArg, prompt: "New...", onEditingChanged: addArg)
         }.onDisappear {
             if newArg != "" {
                 addArg(editing: false)
