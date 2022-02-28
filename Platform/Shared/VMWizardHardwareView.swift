@@ -127,6 +127,7 @@ struct VMWizardHardwareView: View {
         .onAppear {
             if wizardState.systemArchitecture == nil {
                 wizardState.systemArchitecture = "x86_64"
+                wizardState.systemTarget = "q35"
             }
         }
     }
