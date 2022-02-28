@@ -17,38 +17,25 @@
 import SwiftUI
 
 @available(iOS 14, macOS 11, *)
-struct VMConfigStringPicker<Label> : View where Label : View {
-    @Binding var selection: String?
-    var label: Label
-    var rawValues: [String]
-    var displayValues: [String]
+struct VMConfigStringPicker: View {
+    private let selection: Binding<String?>
+    private let titleKey: LocalizedStringKey
+    private let rawValues: [String]
+    private let displayValues: [String]
     
-    init(selection: Binding<String?>, label: Label, rawValues: [String]?, displayValues: [String]?) {
-        self._selection = selection
-        self.label = label
+    init(_ titleKey: LocalizedStringKey, selection: Binding<String?>, rawValues: [String]?, displayValues: [String]?) {
+        self.selection = selection
+        self.titleKey = titleKey
         self.rawValues = rawValues ?? []
         self.displayValues = displayValues ?? []
     }
     
-    private var picker: some View {
-        Picker(selection: $selection, label: label) {
+    var body: some View {
+        DefaultPicker(titleKey, selection: selection) {
             ForEach(displayValues) { displayValue in
                 Text(displayValue).tag(rawValue(for: displayValue))
             }
         }
-    }
-    
-    var body: some View {
-        #if os(macOS)
-        picker
-        #else
-        if #available(iOS 15, *) {
-            picker.pickerStyle(.menu)
-        } else {
-            // iOS 14 doesn't support .menu with many options
-            picker.pickerStyle(.wheel)
-        }
-        #endif
     }
     
     private func rawValue(for displayValue: String) -> String? {
@@ -71,7 +58,7 @@ struct VMConfigStringPickerView_Previews: PreviewProvider {
                 Spacer()
                 Text(selected ?? "none")
             }
-            VMConfigStringPicker(selection: $selected, label: Text("Test"), rawValues: ["a", "b", "c"], displayValues: ["A", "B", "C"])
+            VMConfigStringPicker("Text", selection: $selected, rawValues: ["a", "b", "c"], displayValues: ["A", "B", "C"])
         }
     }
 }

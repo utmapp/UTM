@@ -65,7 +65,7 @@ struct VMConfigInfoView<Config: ObservableObject & UTMConfigurable>: View {
                         .frame(minHeight: 200)
                 }
                 Section(header: Text("Icon"), footer: EmptyView().padding(.bottom)) {
-                    Picker(selection: style.animation(), label: Text("Style")) {
+                    DefaultPicker("Style", selection: style.animation()) {
                         ForEach(IconStyle.allCases, id: \.id) { value in
                             Text(value.localizedName)
                                 .tag(value)

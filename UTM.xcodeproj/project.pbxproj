@@ -70,6 +70,9 @@
 		8471770627CC974F00D3A50B /* DefaultTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8471770527CC974F00D3A50B /* DefaultTextField.swift */; };
 		8471770727CC974F00D3A50B /* DefaultTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8471770527CC974F00D3A50B /* DefaultTextField.swift */; };
 		8471770827CC974F00D3A50B /* DefaultTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8471770527CC974F00D3A50B /* DefaultTextField.swift */; };
+		8471770A27CCA60600D3A50B /* DefaultPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8471770927CCA60600D3A50B /* DefaultPicker.swift */; };
+		8471770B27CCA60600D3A50B /* DefaultPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8471770927CCA60600D3A50B /* DefaultPicker.swift */; };
+		8471770C27CCA60600D3A50B /* DefaultPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8471770927CCA60600D3A50B /* DefaultPicker.swift */; };
 		848308D5278A1F2200E3E474 /* Virtualization.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 848308D4278A1F2200E3E474 /* Virtualization.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		848F71E6277A2466006A0240 /* SwiftTerm in Frameworks */ = {isa = PBXBuildFile; productRef = 848F71E5277A2466006A0240 /* SwiftTerm */; };
 		848F71E8277A2A4E006A0240 /* UTMSerialPort.swift in Sources */ = {isa = PBXBuildFile; fileRef = 848F71E7277A2A4E006A0240 /* UTMSerialPort.swift */; };
@@ -1566,6 +1569,7 @@
 		8469CACD277D345700BA5601 /* qapi-visit-compat.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-visit-compat.c"; path = "$(SYSROOT_DIR)/qapi/qapi-visit-compat.c"; sourceTree = SOURCE_ROOT; };
 		8469CACE277D345700BA5601 /* qapi-visit-compat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-visit-compat.h"; path = "$(SYSROOT_DIR)/qapi/qapi-visit-compat.h"; sourceTree = SOURCE_ROOT; };
 		8471770527CC974F00D3A50B /* DefaultTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultTextField.swift; sourceTree = "<group>"; };
+		8471770927CCA60600D3A50B /* DefaultPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultPicker.swift; sourceTree = "<group>"; };
 		848308D4278A1F2200E3E474 /* Virtualization.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Virtualization.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX12.1.sdk/System/Library/Frameworks/Virtualization.framework; sourceTree = DEVELOPER_DIR; };
 		848F71E7277A2A4E006A0240 /* UTMSerialPort.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMSerialPort.swift; sourceTree = "<group>"; };
 		848F71EB277A2F47006A0240 /* UTMSerialPortDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMSerialPortDelegate.swift; sourceTree = "<group>"; };
@@ -3127,6 +3131,7 @@
 				CEF0304D26A2AFBE00667B63 /* BigWhiteSpinner.swift */,
 				CE7D972B24B2B17D0080CB69 /* BusyOverlay.swift */,
 				CE772AAB25C8B0F600E4E379 /* ContentView.swift */,
+				8471770927CCA60600D3A50B /* DefaultPicker.swift */,
 				8471770527CC974F00D3A50B /* DefaultTextField.swift */,
 				CED234EC254796E500ED0A57 /* NumberTextField.swift */,
 				CE19392526DCB093005CEC17 /* RAMSlider.swift */,
@@ -3843,6 +3848,7 @@
 				CE2D957124AD4F990059923A /* UTMExtensions.swift in Sources */,
 				CEB63A8724F46E6E00CAF323 /* VMConfigDrivesViewController.m in Sources */,
 				CE020BA324AEDC7C00B44AB6 /* UTMData.swift in Sources */,
+				8471770A27CCA60600D3A50B /* DefaultPicker.swift in Sources */,
 				CE2D92FE24AD46670059923A /* qapi-events-migration.c in Sources */,
 				CE2D92FF24AD46670059923A /* qapi-commands.c in Sources */,
 				CE2D930024AD46670059923A /* qapi-commands-audio.c in Sources */,
@@ -4153,6 +4159,7 @@
 				CE0B6D5324AD584C00FE012D /* qapi-types-transaction.c in Sources */,
 				CE0B6D7424AD584D00FE012D /* qapi-visit-misc.c in Sources */,
 				CE0B6D3624AD57FC00FE012D /* qapi-commands-common.c in Sources */,
+				8471770C27CCA60600D3A50B /* DefaultPicker.swift in Sources */,
 				CEBE820526A4C1B5007AAB12 /* VMWizardDrivesView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -4177,6 +4184,7 @@
 				CEA45E29263519B5002FA97D /* qapi-visit-block-export.c in Sources */,
 				CEA45E2A263519B5002FA97D /* qapi-events-char.c in Sources */,
 				CEA45E2B263519B5002FA97D /* qapi-events-error.c in Sources */,
+				8471770B27CCA60600D3A50B /* DefaultPicker.swift in Sources */,
 				CEA45E2C263519B5002FA97D /* qapi-visit-block.c in Sources */,
 				CEA45E2D263519B5002FA97D /* StaticDataTableViewController.m in Sources */,
 				CE65BABF26A4D8DD0001BD6B /* VMConfigDisplayConsoleView.swift in Sources */,

@@ -22,7 +22,7 @@ struct VMConfigPortForwardForm: View {
     
     var body: some View {
         Group {
-            VMConfigStringPicker(selection: $configPort.protocol, label: Text("Protocol"), rawValues: ["tcp", "udp"], displayValues: ["TCP", "UDP"])
+            VMConfigStringPicker("Protocol", selection: $configPort.protocol, rawValues: ["tcp", "udp"], displayValues: ["TCP", "UDP"])
             DefaultTextField("Guest Address", text: $configPort.guestAddress, prompt: "10.0.2.15")
             NumberTextField("Guest Port", number: $configPort.guestPort, prompt: "1234")
             DefaultTextField("Host Address", text: $configPort.hostAddress, prompt: "127.0.0.1")

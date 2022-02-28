@@ -42,7 +42,7 @@ struct VMConfigAppleBootView: View {
     
     var body: some View {
         Form {
-            Picker("Operating System", selection: $operatingSystem) {
+            DefaultPicker("Operating System", selection: $operatingSystem) {
                 Text("None")
                     .tag(nil as Bootloader.OperatingSystem?)
                 ForEach(Bootloader.OperatingSystem.allCases) { os in

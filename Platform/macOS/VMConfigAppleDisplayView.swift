@@ -143,7 +143,7 @@ struct VMConfigAppleDisplayView: View {
     
     var body: some View {
         Form {
-            Picker("Display Mode", selection: $config.isConsoleDisplay) {
+            DefaultPicker("Display Mode", selection: $config.isConsoleDisplay) {
                 if config.bootLoader?.operatingSystem == .Linux {
                     Text("Console Mode")
                         .tag(true)
@@ -160,7 +160,7 @@ struct VMConfigAppleDisplayView: View {
             if config.isConsoleDisplay {
                 VMConfigDisplayConsoleView(config: config)
             } else {
-                Picker("Resolution", selection: displayResolution) {
+                DefaultPicker("Resolution", selection: displayResolution) {
                     ForEach(resolutions) { item in
                         Text(item.name)
                             .tag(item.resolution)

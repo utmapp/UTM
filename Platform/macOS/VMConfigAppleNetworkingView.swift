@@ -67,7 +67,7 @@ struct VMConfigAppleNetworkingView: View {
     
     var body: some View {
         Form {
-            Picker("Network Mode", selection: networkMode) {
+            DefaultPicker("Network Mode", selection: networkMode) {
                 Text("None")
                     .tag(nil as Network.NetworkMode?)
                 ForEach(Network.NetworkMode.allCases) { mode in
@@ -89,7 +89,7 @@ struct VMConfigAppleNetworkingView: View {
             }
             if networkMode.wrappedValue == .Bridged {
                 Section(header: Text("Bridged Settings")) {
-                    Picker("Interface", selection: bridgeInterfaceIdentifier) {
+                    DefaultPicker("Interface", selection: bridgeInterfaceIdentifier) {
                         ForEach(VZBridgedNetworkInterface.networkInterfaces, id: \.identifier) { interface in
                             Text(interface.identifier)
                                 .tag(interface.identifier as String?)

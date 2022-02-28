@@ -28,7 +28,7 @@ struct VMConfigSoundView: View {
                         Text("Enabled")
                     })
                     if config.soundEnabled {
-                        VMConfigStringPicker(selection: $config.soundCard, label: Text("Emulated Audio Card"), rawValues: UTMQemuConfiguration.supportedSoundCards(forArchitecture: config.systemArchitecture), displayValues: UTMQemuConfiguration.supportedSoundCards(forArchitecturePretty: config.systemArchitecture))
+                        VMConfigStringPicker("Emulated Audio Card", selection: $config.soundCard, rawValues: UTMQemuConfiguration.supportedSoundCards(forArchitecture: config.systemArchitecture), displayValues: UTMQemuConfiguration.supportedSoundCards(forArchitecturePretty: config.systemArchitecture))
                     }
                 }.disabled(UTMQemuConfiguration.supportedSoundCards(forArchitecture: config.systemArchitecture)?.isEmpty ?? true)
             }

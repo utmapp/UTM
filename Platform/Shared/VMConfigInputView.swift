@@ -59,7 +59,7 @@ struct VMConfigInputView: View {
         VStack {
             Form {
                 Section(header: Text("USB"), footer: Text("If enabled, the default input devices will be emulated on the USB bus.").padding(.bottom)) {
-                    Picker("USB Support", selection: usbSupport) {
+                    DefaultPicker("USB Support", selection: usbSupport) {
                         Text("Off").tag(UsbSupport.off)
                         Text("USB 2.0").tag(UsbSupport.usb2)
                         Text("USB 3.0 (XHCI)").tag(UsbSupport.usb3)

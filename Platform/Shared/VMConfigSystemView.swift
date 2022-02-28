@@ -45,7 +45,7 @@ struct VMConfigSystemView: View {
                         Toggle("RNG Device", isOn: $config.systemRngEnabled)
                     }
                     Section(header: Text("CPU")) {
-                        VMConfigStringPicker(selection: $config.systemCPU.animation(), label: EmptyView(), rawValues: UTMQemuConfiguration.supportedCpus(forArchitecture: config.systemArchitecture), displayValues: UTMQemuConfiguration.supportedCpus(forArchitecturePretty: config.systemArchitecture))
+                        VMConfigStringPicker("", selection: $config.systemCPU.animation(), rawValues: UTMQemuConfiguration.supportedCpus(forArchitecture: config.systemArchitecture), displayValues: UTMQemuConfiguration.supportedCpus(forArchitecturePretty: config.systemArchitecture))
                     }
                     CPUFlagsOptions(config: config)
                     Section(header: Text("CPU Cores"), footer: Text("Set to 0 to use maximum supported CPUs. Force multicore might result in incorrect emulation.").padding(.bottom)) {
@@ -123,7 +123,7 @@ struct HardwareOptions: View {
     
     var body: some View {
         Section(header: Text("Hardware")) {
-            VMConfigStringPicker(selection: $config.systemArchitecture, label: Text("Architecture"), rawValues: UTMQemuConfiguration.supportedArchitectures(), displayValues: UTMQemuConfiguration.supportedArchitecturesPretty())
+            VMConfigStringPicker("Architecture", selection: $config.systemArchitecture, rawValues: UTMQemuConfiguration.supportedArchitectures(), displayValues: UTMQemuConfiguration.supportedArchitecturesPretty())
                 .onChange(of: config.systemArchitecture, perform: { value in
                     guard let arch = value else {
                         return
@@ -159,7 +159,7 @@ struct HardwareOptions: View {
                 Text("The selected architecture is unsupported in this version of UTM.")
                     .foregroundColor(.red)
             }
-            VMConfigStringPicker(selection: $config.systemTarget, label: Text("System"), rawValues: UTMQemuConfiguration.supportedTargets(forArchitecture: config.systemArchitecture), displayValues: UTMQemuConfiguration.supportedTargets(forArchitecturePretty: config.systemArchitecture))
+            VMConfigStringPicker("System", selection: $config.systemTarget, rawValues: UTMQemuConfiguration.supportedTargets(forArchitecture: config.systemArchitecture), displayValues: UTMQemuConfiguration.supportedTargets(forArchitecturePretty: config.systemArchitecture))
                 .onChange(of: config.systemTarget, perform: { value in
                     config.loadDefaults(forTarget: value, architecture: config.systemArchitecture)
                 })

@@ -39,7 +39,7 @@ struct VMConfigNetworkView: View {
                     })
                     #endif
                     if config.networkEnabled {
-                        VMConfigStringPicker(selection: $config.networkCard, label: Text("Emulated Network Card"), rawValues: UTMQemuConfiguration.supportedNetworkCards(forArchitecture: config.systemArchitecture), displayValues: UTMQemuConfiguration.supportedNetworkCards(forArchitecturePretty: config.systemArchitecture))
+                        VMConfigStringPicker("Emulated Network Card", selection: $config.networkCard, rawValues: UTMQemuConfiguration.supportedNetworkCards(forArchitecture: config.systemArchitecture), displayValues: UTMQemuConfiguration.supportedNetworkCards(forArchitecturePretty: config.systemArchitecture))
                     }
                 }.disabled(UTMQemuConfiguration.supportedNetworkCards(forArchitecture: config.systemArchitecture)?.isEmpty ?? true)
                 
@@ -78,7 +78,7 @@ struct NetworkModeSection: View {
     @ObservedObject var config: UTMQemuConfiguration
     
     var body: some View {
-        VMConfigStringPicker(selection: $config.networkMode, label: Text("Network Mode"), rawValues: UTMQemuConfiguration.supportedNetworkModes(), displayValues: UTMQemuConfiguration.supportedNetworkModesPretty())
+        VMConfigStringPicker("Network Mode", selection: $config.networkMode, rawValues: UTMQemuConfiguration.supportedNetworkModes(), displayValues: UTMQemuConfiguration.supportedNetworkModesPretty())
         if config.networkMode == "bridged" {
             DefaultTextField("Bridged Interface", text: $config.networkBridgeInterface.bound, prompt: "en0")
                 .keyboardType(.asciiCapable)

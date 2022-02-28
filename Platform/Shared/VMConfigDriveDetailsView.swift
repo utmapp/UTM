@@ -76,9 +76,9 @@ struct VMConfigDriveDetailsView: View {
                         .multilineTextAlignment(.trailing)
                 }
             }
-            VMConfigStringPicker(selection: $imageTypeString, label: Text("Image Type"), rawValues: UTMQemuConfiguration.supportedImageTypes(), displayValues: UTMQemuConfiguration.supportedImageTypesPretty())
+            VMConfigStringPicker("Image Type", selection: $imageTypeString, rawValues: UTMQemuConfiguration.supportedImageTypes(), displayValues: UTMQemuConfiguration.supportedImageTypesPretty())
             if imageType == .disk || imageType == .CD {
-                VMConfigStringPicker(selection: $interface, label: Text("Interface"), rawValues: UTMQemuConfiguration.supportedDriveInterfaces(), displayValues: UTMQemuConfiguration.supportedDriveInterfacesPretty())
+                VMConfigStringPicker("Interface", selection: $interface, rawValues: UTMQemuConfiguration.supportedDriveInterfaces(), displayValues: UTMQemuConfiguration.supportedDriveInterfacesPretty())
             }
         }
     }

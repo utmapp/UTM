@@ -31,7 +31,7 @@ struct VMConfigDisplayView: View {
     var body: some View {
         VStack {
             Form {
-                Picker(selection: $config.displayConsoleOnly.animation(), label: Text("Type")) {
+                DefaultPicker("Type", selection: $config.displayConsoleOnly.animation()) {
                     Text("Full Graphics").tag(false)
                     Text("Console Only").tag(true)
                 }.pickerStyle(displayTypePickerStyle)
@@ -50,7 +50,7 @@ struct VMConfigDisplayView: View {
                     VMConfigDisplayConsoleView(config: config)
                 } else {
                     Section(header: Text("Hardware"), footer: EmptyView().padding(.bottom)) {
-                        VMConfigStringPicker(selection: $config.displayCard, label: Text("Emulated Display Card"), rawValues: UTMQemuConfiguration.supportedDisplayCards(forArchitecture: config.systemArchitecture), displayValues: UTMQemuConfiguration.supportedDisplayCards(forArchitecturePretty: config.systemArchitecture))
+                        VMConfigStringPicker("Emulated Display Card", selection: $config.displayCard, rawValues: UTMQemuConfiguration.supportedDisplayCards(forArchitecture: config.systemArchitecture), displayValues: UTMQemuConfiguration.supportedDisplayCards(forArchitecturePretty: config.systemArchitecture))
                     }
                     
                     // https://stackoverflow.com/a/59277022/15603854
@@ -63,8 +63,8 @@ struct VMConfigDisplayView: View {
                     #endif
                     
                     Section(header: Text("Scaling"), footer: EmptyView().padding(.bottom)) {
-                        VMConfigStringPicker(selection: $config.displayUpscaler, label: Text("Upscaling"), rawValues: UTMQemuConfiguration.supportedScalers(), displayValues: UTMQemuConfiguration.supportedScalersPretty())
-                        VMConfigStringPicker(selection: $config.displayDownscaler, label: Text("Downscaling"), rawValues: UTMQemuConfiguration.supportedScalers(), displayValues: UTMQemuConfiguration.supportedScalersPretty())
+                        VMConfigStringPicker("Upscaling", selection: $config.displayUpscaler, rawValues: UTMQemuConfiguration.supportedScalers(), displayValues: UTMQemuConfiguration.supportedScalersPretty())
+                        VMConfigStringPicker("Downscaling", selection: $config.displayDownscaler, rawValues: UTMQemuConfiguration.supportedScalers(), displayValues: UTMQemuConfiguration.supportedScalersPretty())
                         Toggle(isOn: $config.displayRetina, label: {
                             Text("Retina Mode")
                         })

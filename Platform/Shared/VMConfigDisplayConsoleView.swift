@@ -52,10 +52,10 @@ struct VMConfigDisplayConsoleView<Config: ObservableObject & UTMConfigurable>: V
             config.consoleFontSize = NSNumber(value: $0)
         }
         Section(header: Text("Style"), footer: EmptyView().padding(.bottom)) {
-            VMConfigStringPicker(selection: $config.consoleTheme, label: Text("Theme"), rawValues: UTMQemuConfiguration.supportedConsoleThemes(), displayValues: UTMQemuConfiguration.supportedConsoleThemes())
+            VMConfigStringPicker("Theme", selection: $config.consoleTheme, rawValues: UTMQemuConfiguration.supportedConsoleThemes(), displayValues: UTMQemuConfiguration.supportedConsoleThemes())
             ColorPicker("Text Color", selection: textColor)
             ColorPicker("Background Color", selection: backgroundColor)
-            VMConfigStringPicker(selection: $config.consoleFont, label: Text("Font"), rawValues: UTMQemuConfiguration.supportedConsoleFonts(), displayValues: UTMQemuConfiguration.supportedConsoleFontsPretty())
+            VMConfigStringPicker("Font", selection: $config.consoleFont, rawValues: UTMQemuConfiguration.supportedConsoleFonts(), displayValues: UTMQemuConfiguration.supportedConsoleFontsPretty())
             HStack {
                 Stepper(value: fontSizeObserver, in: 1...72) {
                         Text("Font Size")
