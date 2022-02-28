@@ -3346,6 +3346,8 @@
 			buildRules = (
 			);
 			dependencies = (
+				85EC515C27CC74AA004A51DE /* PBXTargetDependency */,
+				85EC515E27CC74AA004A51DE /* PBXTargetDependency */,
 				CEBDA1E424D8BDDB0010B5EC /* PBXTargetDependency */,
 			);
 			name = macOS;
@@ -4496,6 +4498,14 @@
 			target = 8401FD61269BE9C500265F0D /* QEMULauncher */;
 			targetProxy = 8401FD7B269BECF200265F0D /* PBXContainerItemProxy */;
 		};
+		85EC515C27CC74AA004A51DE /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			productRef = 85EC515B27CC74AA004A51DE /* Logging */;
+		};
+		85EC515E27CC74AA004A51DE /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			productRef = 85EC515D27CC74AA004A51DE /* SwiftTerm */;
+		};
 		CE9A353326533A52005077CF /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = CE9A352C26533A51005077CF /* JailbreakInterposer */;
@@ -5238,6 +5248,16 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 84B36D1C27B3261E00C22685 /* XCRemoteSwiftPackageReference "CocoaSpice" */;
 			productName = CocoaSpice;
+		};
+		85EC515B27CC74AA004A51DE /* Logging */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = CE020BA524AEDEF000B44AB6 /* XCRemoteSwiftPackageReference "swift-log" */;
+			productName = Logging;
+		};
+		85EC515D27CC74AA004A51DE /* SwiftTerm */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 848F71E4277A2466006A0240 /* XCRemoteSwiftPackageReference "SwiftTerm" */;
+			productName = SwiftTerm;
 		};
 		B329049B270FE136002707AC /* AltKit */ = {
 			isa = XCSwiftPackageProductDependency;
