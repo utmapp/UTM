@@ -33,6 +33,7 @@ struct VMShareItemModifier: ViewModifier {
         content.popover(isPresented: $isPresented) {
             if let shareItem = shareItem?.toActivityItem() {
                 ActivityView(activityItems: [shareItem as Any])
+                    .ignoresSafeArea()
             }
         }
     }
