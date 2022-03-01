@@ -152,11 +152,14 @@ private struct CreateDrive: View {
     var body: some View {
         NavigationView {
             VMConfigDriveCreateView(target: target, architecture: architecture, driveImage: driveImage)
-                .navigationBarItems(leading: Button(action: cancel, label: {
-                    Text("Cancel")
-                }), trailing: Button(action: done, label: {
-                    Text("Done")
-                }))
+                .toolbar {
+                    ToolbarItem(placement: .cancellationAction) {
+                        Button("Cancel", action: cancel)
+                    }
+                    ToolbarItem(placement: .confirmationAction) {
+                        Button("Done", action: done)
+                    }
+                }
         }.navigationViewStyle(.stack)
         .onAppear {
             driveImage.reset(forSystemTarget: target, architecture: architecture, removable: false)

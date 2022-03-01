@@ -37,8 +37,10 @@ struct VMConfigDriveCreateView: View {
                 .help("Hardware interface on the guest used to mount this image. Different operating systems support different interfaces. The default will be the most common interface.")
             if !driveImage.removable {
                 HStack {
+                    #if os(macOS)
                     Text("Size")
                     Spacer()
+                    #endif
                     NumberTextField("Size", number: Binding<NSNumber?>(get: {
                         NSNumber(value: convertToDisplay(fromSizeMib: driveImage.size))
                     }, set: {
