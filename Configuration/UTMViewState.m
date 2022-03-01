@@ -113,7 +113,7 @@ const NSString *const kUTMViewStateRemovableDrivesPathKey = @"RemovableDrivesPat
 }
 
 - (NSData *)shortcutBookmark {
-    return _rootDict[kUTMViewStateSharedDirectoryKey];
+    return _rootDict[kUTMViewStateShortcutBookmarkKey];
 }
 
 - (void)setShortcutBookmark:(NSData *)shortcutBookmark {
