@@ -28,14 +28,8 @@ struct VMQEMUSettingsView: View {
         NavigationLink(destination: VMConfigInfoView(config: config).scrollable(), isActive: $infoActive) {
             Label("Information", systemImage: "info.circle")
         }
-        Group {
-            NavigationLink(destination: VMConfigSystemView(config: config).scrollable()) {
-                Label("System", systemImage: "cpu")
-            }
-            NavigationLink(destination: VMConfigAdvancedSystemView(config: config).scrollable()) {
-                Label("Advanced", systemImage: "wrench.and.screwdriver")
-                    .padding(.leading)
-            }
+        NavigationLink(destination: VMConfigSystemView(config: config).scrollable()) {
+            Label("System", systemImage: "cpu")
         }
         NavigationLink(destination: VMConfigQEMUView(config: config).scrollable()) {
             Label("QEMU", systemImage: "shippingbox")
