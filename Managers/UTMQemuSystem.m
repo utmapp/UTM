@@ -585,14 +585,21 @@ static size_t sysctl_read(const char *name) {
 }
 
 - (NSString *)machineProperties {
+    NSString *target = self.configuration.systemTarget;
     NSString *properties = @"";
     if (self.configuration.systemMachineProperties.length > 0) {
         properties = self.configuration.systemMachineProperties; // use specified properties
     }
-    if ([self.configuration.systemTarget hasPrefix:@"pc"] || [self.configuration.systemTarget hasPrefix:@"q35"]) {
+    if ([target hasPrefix:@"pc"] || [target hasPrefix:@"q35"]) {
         // disable PS/2 emulation if we are not legacy input
         if (!self.configuration.inputLegacy && ![properties containsString:@"i8042="]) {
             properties = [NSString stringWithFormat:@"%@%@%@", properties, properties.length > 0 ? @"," : @"", @"i8042=off"];
+        }
+    }
+    // required to boot Windows ARM on TCG
+    if ([target hasPrefix:@"virt"] && [self.configuration.systemArchitecture isEqualToString:@"aarch64"] && !self.configuration.useHypervisor) {
+        if (!self.configuration.inputLegacy && ![properties containsString:@"virtualization="]) {
+            properties = [NSString stringWithFormat:@"%@%@%@", properties, properties.length > 0 ? @"," : @"", @"virtualization=on"];
         }
     }
     return properties;
