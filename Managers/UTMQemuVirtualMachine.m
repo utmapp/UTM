@@ -312,16 +312,21 @@ NSString *const kSuspendSnapshotName = @"suspend";
     }
     // start QEMU (this can be in parallel with QMP connect below)
     __weak typeof(self) weakSelf = self;
+    __block NSError *qemuStartError = nil;
     [self.system startWithCompletion:^(BOOL success, NSString *msg){
         typeof(self) _self = weakSelf;
         if (!_self) {
             return; // outlived class
         }
         if (!success) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [_self.delegate virtualMachine:_self didErrorWithMessage:msg];
-            });
+            qemuStartError = [_self errorWithMessage:msg];
+            if (_self.qemu.isConnected) { // we are NOT in vmStart, so pass error to delegate
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [_self.delegate virtualMachine:_self didErrorWithMessage:msg];
+                });
+            }
         }
+        [_self.qemu cancelConnectRetry]; // if we ARE in vmStart, this lets it progress
         dispatch_semaphore_signal(_self.qemuDidExitEvent);
         [_self vmStopForce:YES completion:^(NSError *error){}];
     }];
@@ -341,10 +346,15 @@ NSString *const kSuspendSnapshotName = @"suspend";
         completion([self errorGeneric]);
         return;
     }
+    if (qemuStartError) {
+        completion(qemuStartError);
+        return;
+    }
     if (callbackError) {
         completion(callbackError);
         return;
     }
+    assert(self.qemu.isConnected);
     // wait for QMP to connect
     if (dispatch_semaphore_wait(self.qemuDidConnectEvent, dispatch_time(DISPATCH_TIME_NOW, kStopTimeout)) != 0) {
         UTMLog(@"Timed out waiting for QMP connect event");
@@ -389,7 +399,6 @@ NSString *const kSuspendSnapshotName = @"suspend";
         completion(err);
         return;
     }
-    assert(self.qemu.isConnected);
     assert(self.ioService.isConnected);
     if (self.viewState.hasSaveState) {
         [self _vmDeleteStateWithCompletion:^(NSError *error){
