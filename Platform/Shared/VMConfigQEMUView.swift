@@ -36,19 +36,13 @@ struct VMConfigQEMUView: View {
         return FileManager.default.fileExists(atPath: logPath.path)
     }
     
+    private var supportsUefi: Bool {
+        ["arm", "aarch64", "i386", "x86_64"].contains(config.systemArchitecture ?? "")
+    }
+    
     var body: some View {
         VStack {
             Form {
-                Section(header: Text("Tweaks")) {
-                    #if os(macOS)
-                    Toggle(isOn: $config.useHypervisor, label: {
-                        Text("Use Hypervisor")
-                    }).disabled(!config.isTargetArchitectureMatchHost)
-                    #endif
-                    Toggle(isOn: $config.rtcUseLocalTime, label: {
-                        Text("Use local time for base clock")
-                    }).help("If checked, use local time for RTC which is required for Windows. Otherwise, use UTC clock.")
-                }
                 Section(header: Text("Logging")) {
                     Toggle(isOn: $config.debugLogEnabled, label: {
                         Text("Debug Logging")
@@ -57,6 +51,23 @@ struct VMConfigQEMUView: View {
                         showExportLog.toggle()
                     }.modifier(VMShareItemModifier(isPresented: $showExportLog, shareItem: exportDebugLog()))
                     .disabled(!logExists)
+                }
+                DetailedSection("Tweaks", description: "These are advanced settings affecting QEMU which should be kept default unless you are running into issues.") {
+                    Toggle("UEFI Boot", isOn: $config.systemBootUefi)
+                        .disabled(!supportsUefi)
+                        .help("Should be off for older operating systems such as Windows 7 or lower.")
+                    Toggle("RNG Device", isOn: $config.systemRngEnabled)
+                        .help("Should be on always unless the guest cannot boot because of this.")
+                    #if os(macOS)
+                    Toggle("Use Hypervisor", isOn: $config.useHypervisor)
+                        .disabled(!config.isTargetArchitectureMatchHost)
+                        .help("Only available if host architecture matches the target. Otherwise, TCG emulation is used.")
+                    #endif
+                    Toggle("Use local time for base clock", isOn: $config.rtcUseLocalTime)
+                        .help("If checked, use local time for RTC which is required for Windows. Otherwise, use UTC clock.")
+                }
+                DetailedSection("QEMU Machine Properties", description: "This is appended to the -machine argument.") {
+                    DefaultTextField("", text: $config.systemMachineProperties.bound, prompt: "Default")
                 }
                 Section(header: Text("QEMU Arguments")) {
                     Button("Export QEMU Command") {

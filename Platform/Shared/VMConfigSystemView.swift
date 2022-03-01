@@ -24,49 +24,31 @@ struct VMConfigSystemView: View {
     let warningThreshold = 0.9
     
     @ObservedObject var config: UTMQemuConfiguration
-    @State private var showAdvanced: Bool = false
     @State private var warningMessage: String? = nil
-    
-    var supportsUefi: Bool {
-        ["arm", "aarch64", "i386", "x86_64"].contains(config.systemArchitecture ?? "")
-    }
     
     var body: some View {
         VStack {
             Form {
                 HardwareOptions(config: config, validateMemorySize: validateMemorySize)
-                Toggle(isOn: $showAdvanced.animation(), label: {
-                    Text("Show Advanced Settings")
-                })
-                if showAdvanced {
-                    Section(header: Text("Tweaks")) {
-                        Toggle("UEFI Boot", isOn: $config.systemBootUefi)
-                            .disabled(!supportsUefi)
-                        Toggle("RNG Device", isOn: $config.systemRngEnabled)
+                Section(header: Text("CPU")) {
+                    VMConfigStringPicker("", selection: $config.systemCPU.animation(), rawValues: UTMQemuConfiguration.supportedCpus(forArchitecture: config.systemArchitecture), displayValues: UTMQemuConfiguration.supportedCpus(forArchitecturePretty: config.systemArchitecture))
+                }
+                CPUFlagsOptions(config: config)
+                DetailedSection("CPU Cores", description: "Force multicore may improve speed of emulation but also might result in unstable and incorrect emulation.") {
+                    HStack {
+                        NumberTextField("", number: $config.systemCPUCount, prompt: "Default", onEditingChanged: validateCpuCount)
+                            .multilineTextAlignment(.trailing)
+                        Text("Cores")
                     }
-                    Section(header: Text("CPU")) {
-                        VMConfigStringPicker("", selection: $config.systemCPU.animation(), rawValues: UTMQemuConfiguration.supportedCpus(forArchitecture: config.systemArchitecture), displayValues: UTMQemuConfiguration.supportedCpus(forArchitecturePretty: config.systemArchitecture))
-                    }
-                    CPUFlagsOptions(config: config)
-                    DetailedSection("CPU Cores", description: "Set to 0 to use maximum supported CPUs. Force multicore might result in incorrect emulation.") {
-                        HStack {
-                            NumberTextField("", number: $config.systemCPUCount, prompt: "Default", onEditingChanged: validateCpuCount)
-                                .multilineTextAlignment(.trailing)
-                            Text("Cores")
-                        }
-                        Toggle(isOn: $config.systemForceMulticore, label: {
-                            Text("Force Multicore")
-                        })
-                    }
-                    DetailedSection("JIT Cache", description: "Set to 0 for default which is 1/4 of the allocated Memory size. This is in addition to the host memory!") {
-                        HStack {
-                            NumberTextField("", number: $config.systemJitCacheSize, prompt: "Default", onEditingChanged: validateMemorySize)
-                                .multilineTextAlignment(.trailing)
-                            Text("MB")
-                        }
-                    }
-                    DetailedSection("QEMU Machine Properties") {
-                        DefaultTextField("", text: $config.systemMachineProperties.bound, prompt: "None")
+                    Toggle(isOn: $config.systemForceMulticore, label: {
+                        Text("Force Multicore")
+                    })
+                }
+                DetailedSection("JIT Cache", description: "Default is 1/4 of the RAM size (above). The JIT cache size is additive to the RAM size in the total memory usage!") {
+                    HStack {
+                        NumberTextField("", number: $config.systemJitCacheSize, prompt: "Default", onEditingChanged: validateMemorySize)
+                            .multilineTextAlignment(.trailing)
+                        Text("MB")
                     }
                 }
             }
