@@ -38,7 +38,7 @@ struct VMWizardStartView: View {
         #endif
         List {
             Section {
-                Button {
+                let virtButton = Button {
                     wizardState.useVirtualization = true
                     wizardState.next()
                 } label: {
@@ -56,8 +56,17 @@ struct VMWizardStartView: View {
                     .padding()
                 }
                 .disabled(!isVirtualizationSupported)
-                .buttonStyle(.inList)
-                
+                #if os(iOS)
+                if #available(iOS 15, *) {
+                    virtButton
+                } else {
+                    virtButton
+                        .opacity(isVirtualizationSupported ? 1 : 0.5)
+                }
+                #else
+                virtButton
+                #endif
+
                 Button {
                     wizardState.useVirtualization = false
                     wizardState.next()
