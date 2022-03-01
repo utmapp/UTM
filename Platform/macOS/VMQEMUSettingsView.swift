@@ -45,7 +45,7 @@ struct VMQEMUSettingsView: View {
                 Label("Network", systemImage: "network")
             }
             NavigationLink(destination: VMConfigAdvancedNetworkView(config: config).scrollable()) {
-                Label("Advanced", systemImage: "wrench.and.screwdriver")
+                Label("IP Configuration", systemImage: "mappin.circle")
                     .padding(.leading)
             }
         }

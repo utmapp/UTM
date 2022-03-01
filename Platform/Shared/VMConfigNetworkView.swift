@@ -57,7 +57,9 @@ struct VMConfigNetworkView: View {
                     })
 
                     if showAdvanced {
-                        IPConfigurationSection(config: config).multilineTextAlignment(.trailing)
+                        Section(header: Text("IP Configuration")) {
+                            IPConfigurationSection(config: config).multilineTextAlignment(.trailing)
+                        }
                     }
                     #endif
 
