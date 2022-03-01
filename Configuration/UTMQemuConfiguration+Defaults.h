@@ -23,7 +23,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)loadDefaults;
 - (void)loadDefaultsForTarget:(nullable NSString *)target architecture:(nullable NSString *)architecture;
-+ (nullable NSString *)defaultMachinePropertiesForTarget:(nullable NSString *)target;
 + (NSString *)defaultDriveInterfaceForTarget:(nullable NSString *)target architecture:(nullable NSString *)architecture type:(UTMDiskImageType)type;
 + (NSString *)defaultCPUForTarget:(NSString *)target architecture:(NSString *)architecture;
 

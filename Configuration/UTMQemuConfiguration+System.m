@@ -71,13 +71,6 @@ static const NSString *const kUTMConfigRTCUseLocalTimeKey = @"RTCUseLocalTime";
     if ([self.rootDict[kUTMConfigSystemKey][kUTMConfigCPUKey] length] == 0) {
         self.rootDict[kUTMConfigSystemKey][kUTMConfigCPUKey] = @"default";
     }
-    // Older versions hard codes properties
-    if ([self.version integerValue] < 2) {
-        NSString *machineProp = [UTMQemuConfiguration defaultMachinePropertiesForTarget:self.systemTarget];
-        if (machineProp && self.systemMachineProperties.length == 0) {
-            self.systemMachineProperties = machineProp;
-        }
-    }
     // iOS 14 uses bootindex and systemBootDevice is deprecated
     if (@available(iOS 14, *)) {
         self.systemBootDevice = @"";

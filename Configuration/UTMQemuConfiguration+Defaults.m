@@ -160,24 +160,7 @@
     if ([target hasPrefix:@"pc"]) {
         self.useHypervisor = NO;
     }
-    NSString *machineProp = [UTMQemuConfiguration defaultMachinePropertiesForTarget:target];
-    if (machineProp) {
-        self.systemMachineProperties = machineProp;
-    } else if (self.systemMachineProperties) {
-        self.systemMachineProperties = @"";
-    }
     self.systemCPU = @"default";
-}
-
-+ (nullable NSString *)defaultMachinePropertiesForTarget:(nullable NSString *)target {
-    if ([target hasPrefix:@"pc"] || [target hasPrefix:@"q35"]) {
-        return @"vmport=off";
-    } else if ([target isEqualToString:@"virt"] || [target hasPrefix:@"virt-"]) {
-        return @"highmem=off";
-    } else if ([target isEqualToString:@"mac99"]) {
-        return @"via=pmu";
-    }
-    return nil;
 }
 
 + (NSString *)defaultDriveInterfaceForTarget:(NSString *)target architecture:(NSString *)architecture type:(UTMDiskImageType)type {

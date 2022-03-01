@@ -584,23 +584,41 @@ static size_t sysctl_read(const char *name) {
     return [[self.imgPath URLByAppendingPathComponent:[UTMQemuConfiguration diskImagesDirectory]] URLByAppendingPathComponent:UTMQemuConfiguration.efiVariablesFileName];
 }
 
+/// Set either name=value or does nothing if name= is already in `properties`
+/// @param name Name of property to set
+/// @param value Default value
+/// @param properties Current properties
+/// @returns `properties` unmodified if name is already set, otherwise name=value will be appended
+- (NSString *)appendDefaultPropertyName:(NSString *)name value:(NSString *)value toProperties:(NSString *)properties {
+    if (![properties containsString:[name stringByAppendingString:@"="]]) {
+        properties = [NSString stringWithFormat:@"%@%@%@=%@", properties, properties.length > 0 ? @"," : @"", name, value];
+    }
+    return properties;
+}
+
 - (NSString *)machineProperties {
     NSString *target = self.configuration.systemTarget;
+    NSString *architecture = self.configuration.systemArchitecture;
     NSString *properties = @"";
     if (self.configuration.systemMachineProperties.length > 0) {
         properties = self.configuration.systemMachineProperties; // use specified properties
     }
-    if ([target hasPrefix:@"pc"] || [target hasPrefix:@"q35"]) {
+    if (([target hasPrefix:@"pc"] || [target hasPrefix:@"q35"])) {
+        properties = [self appendDefaultPropertyName:@"vmport" value:@"off" toProperties:properties];
         // disable PS/2 emulation if we are not legacy input
-        if (!self.configuration.inputLegacy && ![properties containsString:@"i8042="]) {
-            properties = [NSString stringWithFormat:@"%@%@%@", properties, properties.length > 0 ? @"," : @"", @"i8042=off"];
+        if (!self.configuration.inputLegacy) {
+            properties = [self appendDefaultPropertyName:@"i8042" value:@"off" toProperties:properties];
         }
     }
-    // required to boot Windows ARM on TCG
-    if ([target hasPrefix:@"virt"] && [self.configuration.systemArchitecture isEqualToString:@"aarch64"] && !self.configuration.useHypervisor) {
-        if (!self.configuration.inputLegacy && ![properties containsString:@"virtualization="]) {
-            properties = [NSString stringWithFormat:@"%@%@%@", properties, properties.length > 0 ? @"," : @"", @"virtualization=on"];
+    if ([target isEqualToString:@"virt"] || [target hasPrefix:@"virt-"]) {
+        properties = [self appendDefaultPropertyName:@"highmem" value:@"off" toProperties:properties];
+        // required to boot Windows ARM on TCG
+        if ([architecture isEqualToString:@"aarch64"] && !self.configuration.useHypervisor) {
+            properties = [self appendDefaultPropertyName:@"virtualization" value:@"on" toProperties:properties];
         }
+    }
+    if ([target isEqualToString:@"mac99"]) {
+        properties = [self appendDefaultPropertyName:@"via" value:@"pmu" toProperties:properties];
     }
     return properties;
 }
