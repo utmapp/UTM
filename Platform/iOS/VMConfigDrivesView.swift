@@ -27,12 +27,12 @@ struct VMConfigDrivesView: View {
     @EnvironmentObject private var data: UTMData
     
     var body: some View {
+        let bootOrder = Text("Note: Boot order is as listed.")
         Group {
             if config.countDrives == 0 {
                 Text("No drives added.").font(.headline)
             } else {
-                Text("Note: Boot order is as listed.")
-                Form {
+                let form = Form {
                     List {
                         ForEach(0..<config.countDrives, id: \.self) { index in
                             let fileName = config.driveImagePath(for: index) ?? ""
@@ -59,6 +59,17 @@ struct VMConfigDrivesView: View {
                         .onMove(perform: moveDrives)
                     }
                 }
+
+                #if os(iOS)
+                form.toolbar {
+                    ToolbarItem(placement: .status) {
+                        bootOrder
+                    }
+                }
+                #else
+                bootOrder
+                form
+                #endif
             }
         }
         .navigationBarItems(trailing:
