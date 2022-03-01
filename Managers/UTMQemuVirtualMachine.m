@@ -251,6 +251,7 @@ NSString *const kSuspendSnapshotName = @"suspend";
         if (success) {
             self.viewState.shortcutBookmark = newBookmark;
             self.viewState.shortcutBookmarkPath = newPath;
+            [self saveViewState];
             completion(nil);
         } else {
             completion([self errorWithMessage:NSLocalizedString(@"Failed to access data from shortcut.", @"UTMQemuVirtualMachine")]);
