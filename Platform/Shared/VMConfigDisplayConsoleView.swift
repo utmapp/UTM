@@ -60,7 +60,7 @@ struct VMConfigDisplayConsoleView<Config: ObservableObject & UTMConfigurable>: V
                 Stepper(value: fontSizeObserver, in: 1...72) {
                         Text("Font Size")
                 }
-                NumberTextField("", number: $config.consoleFontSize)
+                NumberTextField("", number: $config.consoleFontSize, prompt: "12")
                     .frame(width: 50)
                     .multilineTextAlignment(.trailing)
             }

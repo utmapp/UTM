@@ -97,14 +97,17 @@ struct VMWizardHardwareView: View {
                     Stepper(value: $wizardState.systemCpuCount, in: minCores...maxCores) {
                         Text("CPU Cores")
                     }
-                    NumberTextField("", number: $wizardState.systemCpuCount, onEditingChanged: { _ in
+                    NumberTextField("", number: $wizardState.systemCpuCount, prompt: "Default", onEditingChanged: { _ in
+                        guard wizardState.systemCpuCount != 0  else {
+                            return
+                        }
                         if wizardState.systemCpuCount < minCores {
                             wizardState.systemCpuCount = minCores
                         } else if wizardState.systemCpuCount > maxCores {
                             wizardState.systemCpuCount = maxCores
                         }
                     })
-                        .frame(width: 50)
+                        .frame(width: 80)
                         .multilineTextAlignment(.trailing)
                 }
             } header: {

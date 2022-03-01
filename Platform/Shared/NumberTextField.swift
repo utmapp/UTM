@@ -39,10 +39,10 @@ struct NumberTextFieldOld: View {
             Text(titleKey)
             Spacer()
             TextField(promptKey, text: Binding<String>(get: { () -> String in
-                guard let number = self.number else {
+                guard let number = number, let string = formatter.string(from: number) else {
                     return ""
                 }
-                return self.formatter.string(from: number) ?? ""
+                return number.intValue == 0 ? "" : string
             }, set: {
                 // make sure we never set nil
                 self.number = self.formatter.number(from: $0) ?? NSNumber(value: 0)
@@ -103,14 +103,14 @@ struct NumberTextField: View {
     private var promptKey: LocalizedStringKey
     private var onEditingChanged: (Bool) -> Void
     
-    init(_ titleKey: LocalizedStringKey, number: Binding<NSNumber?>, prompt: LocalizedStringKey = "", onEditingChanged: @escaping (Bool) -> Void = { _ in }) {
+    init(_ titleKey: LocalizedStringKey, number: Binding<NSNumber?>, prompt: LocalizedStringKey = "0", onEditingChanged: @escaping (Bool) -> Void = { _ in }) {
         self.titleKey = titleKey
         self._number = number
         self.onEditingChanged = onEditingChanged
         self.promptKey = prompt
     }
     
-    init(_ titleKey: LocalizedStringKey, number: Binding<Int>, prompt: LocalizedStringKey = "", onEditingChanged: @escaping (Bool) -> Void = { _ in }) {
+    init(_ titleKey: LocalizedStringKey, number: Binding<Int>, prompt: LocalizedStringKey = "0", onEditingChanged: @escaping (Bool) -> Void = { _ in }) {
         let nsnumber = Binding<NSNumber?> {
             return NSNumber(value: number.wrappedValue)
         } set: { newValue in
@@ -139,7 +139,8 @@ extension NSNumber {
             let formatter = NumberFormatter()
             formatter.usesGroupingSeparator = false
             formatter.usesSignificantDigits = false
-            return formatter.string(from: value) ?? ""
+            let string = formatter.string(from: value) ?? ""
+            return value.intValue == 0 ? "" : string
         }
     }
     

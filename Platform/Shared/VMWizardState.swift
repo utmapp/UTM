@@ -102,7 +102,7 @@ enum VMWizardOS: String, Identifiable {
     @Published var systemMemory: UInt64 = 512 * 1048576
     @Published var storageSizeGib: Int = 8
     #endif
-    @Published var systemCpuCount: Int = 4
+    @Published var systemCpuCount: Int = 0
     @Published var isGLEnabled: Bool = false
     @Published var sharingDirectoryURL: URL?
     @Published var sharingReadOnly: Bool = false

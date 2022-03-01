@@ -44,14 +44,17 @@ struct VMConfigAppleSystemView: View {
                 Stepper(value: $config.cpuCount, in: minCores...maxCores) {
                     Text("CPU Cores")
                 }
-                NumberTextField("", number: $config.cpuCount, onEditingChanged: { _ in
+                NumberTextField("", number: $config.cpuCount, prompt: "Default", onEditingChanged: { _ in
+                    guard config.cpuCount != 0 else {
+                        return
+                    }
                     if config.cpuCount < minCores {
                         config.cpuCount = minCores
                     } else if config.cpuCount > maxCores {
                         config.cpuCount = maxCores
                     }
                 })
-                    .frame(width: 50)
+                    .frame(width: 80)
                     .multilineTextAlignment(.trailing)
             }
             RAMSlider(systemMemory: $config.memorySize) { _ in
