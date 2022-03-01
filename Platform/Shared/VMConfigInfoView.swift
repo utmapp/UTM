@@ -62,6 +62,9 @@ struct VMConfigInfoView<Config: ObservableObject & UTMConfigurable>: View {
                 }
                 Section(header: Text("Notes")) {
                     TextEditor(text: $config.notes.bound)
+                        #if os(macOS)
+                        .border(Color.primary, width: 0.5)
+                        #endif
                         .frame(minHeight: 200)
                 }
                 Section(header: Text("Icon")) {
