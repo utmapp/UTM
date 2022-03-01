@@ -31,7 +31,7 @@ struct VMConfigSystemView: View {
             Form {
                 HardwareOptions(config: config, validateMemorySize: validateMemorySize)
                 Section(header: Text("CPU")) {
-                    VMConfigStringPicker("", selection: $config.systemCPU.animation(), rawValues: UTMQemuConfiguration.supportedCpus(forArchitecture: config.systemArchitecture), displayValues: UTMQemuConfiguration.supportedCpus(forArchitecturePretty: config.systemArchitecture))
+                    VMConfigStringPicker(selection: $config.systemCPU.animation(), rawValues: UTMQemuConfiguration.supportedCpus(forArchitecture: config.systemArchitecture), displayValues: UTMQemuConfiguration.supportedCpus(forArchitecturePretty: config.systemArchitecture))
                 }
                 CPUFlagsOptions(config: config)
                 DetailedSection("CPU Cores", description: "Force multicore may improve speed of emulation but also might result in unstable and incorrect emulation.") {
