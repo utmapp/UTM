@@ -458,6 +458,7 @@ NSString *const kSuspendSnapshotName = @"suspend";
     self.system = nil;
     // stop logging
     [self.logging endLog];
+    completion(nil);
 }
 
 - (void)vmStopForce:(BOOL)force completion:(void (^)(NSError * _Nullable))completion {
