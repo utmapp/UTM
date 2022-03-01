@@ -79,12 +79,20 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
     
     var cpuCount: Int {
         get {
-            apple.cpuCount
+            if apple.cpuCount == UTMAppleConfiguration.defaultCoreCount {
+                return 0
+            } else {
+                return apple.cpuCount
+            }
         }
         
         set {
             objectWillChange.send()
-            apple.cpuCount = newValue
+            if newValue == 0 {
+                apple.cpuCount = UTMAppleConfiguration.defaultCoreCount
+            } else {
+                apple.cpuCount = newValue
+            }
         }
     }
     
@@ -1025,5 +1033,26 @@ fileprivate enum ConfigError: Error {
 fileprivate extension CodingUserInfoKey {
     static var dataURL: CodingUserInfoKey {
         return CodingUserInfoKey(rawValue: "dataURL")!
+    }
+}
+
+fileprivate extension UTMAppleConfiguration {
+    static var defaultCoreCount: Int {
+        let cores = Int(sysctlIntRead("hw.physicalcpu"))
+        let pcores = Int(sysctlIntRead("hw.perflevel0.physicalcpu"))
+        return useOnlyPcores ? pcores : cores
+    }
+    
+    private static var useOnlyPcores: Bool {
+        let defaults = UserDefaults.standard
+        let isUnset = defaults.object(forKey: "UseOnlyPcores") == nil
+        return isUnset || defaults.bool(forKey: "UseOnlyPcores")
+    }
+    
+    private static func sysctlIntRead(_ name: String) -> UInt64 {
+        var value: UInt64 = 0
+        var size = MemoryLayout<UInt64>.size
+        sysctlbyname(name, &value, &size, nil, 0)
+        return value
     }
 }
