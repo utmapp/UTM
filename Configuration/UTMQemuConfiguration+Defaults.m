@@ -155,6 +155,13 @@
         self.systemBootUefi = NO;
         self.systemRngEnabled = NO;
     }
+    if (![architecture isEqualToString:@"arm"] &&
+        ![architecture isEqualToString:@"aarch64"] &&
+        ![architecture isEqualToString:@"i386"] &&
+        ![architecture isEqualToString:@"x86_64"]) {
+        // disable UEFI on unsupported architectures
+        self.systemBootUefi = NO;
+    }
     self.useHypervisor = self.defaultUseHypervisor;
     // override hypervisor setting for older PC targets
     if ([target hasPrefix:@"pc"]) {
