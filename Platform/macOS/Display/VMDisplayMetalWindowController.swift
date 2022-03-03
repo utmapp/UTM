@@ -14,7 +14,6 @@
 // limitations under the License.
 //
 
-import Carbon.HIToolbox
 import CocoaSpiceRenderer
 
 class VMDisplayMetalWindowController: VMDisplayQemuWindowController {
@@ -89,8 +88,8 @@ class VMDisplayMetalWindowController: VMDisplayQemuWindowController {
             UTMPasteboard.general.requestPollingMode(forHashable: self) // start clipboard polling
         }
         // monitor Cmd+Q and Cmd+W and capture them if needed
-        localEventMonitor = NSEvent.addLocalMonitorForEvents(matching: [.keyDown, .keyUp]) { event in
-            if !self.handleCaptureKeys(for: event) {
+        localEventMonitor = NSEvent.addLocalMonitorForEvents(matching: [.keyDown, .keyUp]) { [weak self] event in
+            if let self = self, !self.handleCaptureKeys(for: event) {
                 return event
             } else {
                 return nil
