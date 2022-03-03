@@ -36,8 +36,8 @@ struct VMWizardOSLinuxView: View {
 #endif
         List {
 #if os(macOS)
-            DetailedSection("Virtualization Engine", description: "If set, use Apple's virtualization engine. Otherwise, use QEMU's virtualization engine (recommended).") {
-                if wizardState.useVirtualization {
+            if wizardState.useVirtualization {
+                DetailedSection("Virtualization Engine", description: "Apple Virtualization is experimental and only for advanced use cases. Leave unchecked to use QEMU, which is recommended.") {
                     Toggle("Use Apple Virtualization", isOn: $wizardState.useAppleVirtualization)
                 }
             }
