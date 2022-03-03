@@ -35,8 +35,9 @@ struct VMWizardSummaryView: View {
     
     var coreDescription: String {
         let cores = wizardState.systemCpuCount
+        let def = NSLocalizedString("Default", comment: "VMWizardSummaryView")
         let suffix = cores == 1 ? NSLocalizedString("Core", comment: "VMWizardSummaryView") : NSLocalizedString("Cores", comment: "VMWizardSummaryView")
-        return "\(cores) \(suffix)"
+        return "\(cores == 0 ? def : String(cores)) \(suffix)"
     }
     
     var body: some View {
