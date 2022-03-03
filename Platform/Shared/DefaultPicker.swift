@@ -30,7 +30,7 @@ struct DefaultPicker<SelectionValue, Content>: View where SelectionValue: Hashab
     
     var body: some View {
         #if os(macOS)
-        Picker(titleKey, selection: selection) {
+        Picker(titleKey ?? "", selection: selection) {
             content
         }
         #else
