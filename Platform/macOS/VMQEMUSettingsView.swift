@@ -20,7 +20,8 @@ struct VMQEMUSettingsView: View {
     let vm: UTMVirtualMachine?
     @ObservedObject var config: UTMQemuConfiguration
     @Binding var selectedDriveIndex: Int?
-    
+    @EnvironmentObject private var data: UTMData
+
     @State private var infoActive: Bool = true
     
     var body: some View {
@@ -39,24 +40,42 @@ struct VMQEMUSettingsView: View {
         NavigationLink(destination: VMConfigInputView(config: config).scrollable()) {
             Label("Input", systemImage: "keyboard")
         }
-        NavigationLink(destination: VMConfigNetworkView(config: config).scrollable()) {
-            Label("Network", systemImage: "network")
+        Group {
+            NavigationLink(destination: VMConfigNetworkView(config: config).scrollable()) {
+                Label("Network", systemImage: "network")
+            }
+            NavigationLink(destination: VMConfigAdvancedNetworkView(config: config).scrollable()) {
+                Label("IP Configuration", systemImage: "mappin.circle")
+                    .padding(.leading)
+            }
         }
         NavigationLink(destination: VMConfigSoundView(config: config).scrollable()) {
             Label("Sound", systemImage: "speaker.wave.2")
         }
         NavigationLink(destination: VMConfigSharingView(config: config).scrollable()) {
-            Label("Sharing", systemImage: "person.crop.circle.fill")
+            Label("Sharing", systemImage: "person.crop.circle")
         }
         Section(header: Text("Drives")) {
             ForEach(0..<config.countDrives, id: \.self) { index in
-                NavigationLink(destination: VMConfigDriveDetailsView(config: config, index: index).scrollable(), tag: index, selection: $selectedDriveIndex) {
+                NavigationLink(destination: VMConfigDriveDetailsView(config: config, index: index, onDelete: { deleteDrive(atIndex: index) }).scrollable(), tag: index, selection: $selectedDriveIndex) {
                     Label(config.driveLabel(for: index), systemImage: "externaldrive")
                 }
             }.onMove(perform: moveDrives)
+            VMConfigNewDriveButton(vm: vm, config: config)
+                .buttonStyle(.link)
         }
     }
-    
+
+    func deleteDrive(atIndex index: Int) {
+        withAnimation {
+            data.busyWorkAsync {
+                try await data.removeDrive(at: index, for: config)
+            }
+            selectedDriveIndex = nil
+        }
+    }
+
+
     func moveDrives(from source: IndexSet, to destination: Int) {
         for offset in source {
             let realDestination: Int

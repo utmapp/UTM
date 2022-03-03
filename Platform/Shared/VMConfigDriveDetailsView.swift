@@ -23,6 +23,7 @@ struct VMConfigDriveDetailsView: View {
     @Binding private var name: String?
     @Binding private var imageTypeString: String?
     @Binding private var interface: String?
+    let onDelete: (() -> Void)?
     
     var imageType: UTMDiskImageType {
         get {
@@ -34,7 +35,8 @@ struct VMConfigDriveDetailsView: View {
         }
     }
     
-    init(config: UTMQemuConfiguration, index: Int) {
+    init(config: UTMQemuConfiguration, index: Int, onDelete: (() -> Void)?) {
+        self.onDelete = onDelete
         self.config = config // for observing updates
         self._removable = Binding<Bool> {
             return config.driveRemovable(for: index)
@@ -79,6 +81,13 @@ struct VMConfigDriveDetailsView: View {
             VMConfigStringPicker("Image Type", selection: $imageTypeString, rawValues: UTMQemuConfiguration.supportedImageTypes(), displayValues: UTMQemuConfiguration.supportedImageTypesPretty())
             if imageType == .disk || imageType == .CD {
                 VMConfigStringPicker("Interface", selection: $interface, rawValues: UTMQemuConfiguration.supportedDriveInterfaces(), displayValues: UTMQemuConfiguration.supportedDriveInterfacesPretty())
+            }
+
+            if let onDelete = onDelete {
+                Button(action: onDelete) {
+                    Label("Delete Drive", systemImage: "externaldrive.badge.minus")
+                        .foregroundColor(.red)
+                }.help("Delete this drive.")
             }
         }
     }

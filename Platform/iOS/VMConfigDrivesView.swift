@@ -27,12 +27,12 @@ struct VMConfigDrivesView: View {
     @EnvironmentObject private var data: UTMData
     
     var body: some View {
+        let bootOrder = Text("Note: Boot order is as listed.")
         Group {
             if config.countDrives == 0 {
                 Text("No drives added.").font(.headline)
             } else {
-                Text("Note: Boot order is as listed.")
-                Form {
+                let form = Form {
                     List {
                         ForEach(0..<config.countDrives, id: \.self) { index in
                             let fileName = config.driveImagePath(for: index) ?? ""
@@ -40,7 +40,7 @@ struct VMConfigDrivesView: View {
                             let imageType = config.driveImageType(for: index)
                             let interfaceType = config.driveInterfaceType(for: index) ?? ""
                             NavigationLink(
-                                destination: VMConfigDriveDetailsView(config: config, index: index), label: {
+                                destination: VMConfigDriveDetailsView(config: config, index: index, onDelete: nil), label: {
                                     VStack(alignment: .leading) {
                                         Text(displayName)
                                             .lineLimit(1)
@@ -59,6 +59,17 @@ struct VMConfigDrivesView: View {
                         .onMove(perform: moveDrives)
                     }
                 }
+
+                #if os(iOS)
+                form.toolbar {
+                    ToolbarItem(placement: .status) {
+                        bootOrder
+                    }
+                }
+                #else
+                bootOrder
+                form
+                #endif
             }
         }
         .navigationBarItems(trailing:
@@ -141,11 +152,14 @@ private struct CreateDrive: View {
     var body: some View {
         NavigationView {
             VMConfigDriveCreateView(target: target, architecture: architecture, driveImage: driveImage)
-                .navigationBarItems(leading: Button(action: cancel, label: {
-                    Text("Cancel")
-                }), trailing: Button(action: done, label: {
-                    Text("Done")
-                }))
+                .toolbar {
+                    ToolbarItem(placement: .cancellationAction) {
+                        Button("Cancel", action: cancel)
+                    }
+                    ToolbarItem(placement: .confirmationAction) {
+                        Button("Done", action: done)
+                    }
+                }
         }.navigationViewStyle(.stack)
         .onAppear {
             driveImage.reset(forSystemTarget: target, architecture: architecture, removable: false)

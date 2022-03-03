@@ -16,153 +16,60 @@
 
 import SwiftUI
 
-struct VMConfigDrivesButtons<Config: ObservableObject & UTMConfigurable>: View {
+struct VMConfigNewDriveButton<Config: ObservableObject & UTMConfigurable>: View {
     let vm: UTMVirtualMachine?
     @ObservedObject var config: Config
-    @Binding var selectedDriveIndex: Int?
-    
     @EnvironmentObject private var data: UTMData
     @State private var newDrivePopover: Bool = false
     @StateObject private var newQemuDrive: VMDriveImage = VMDriveImage()
     @State private var newAppleDriveSize: Int = 0
     @State private var importDrivePresented: Bool = false
-    
-    var countDrives: Int {
-        if let qemuConfig = config as? UTMQemuConfiguration {
-            return qemuConfig.countDrives
-        } else if let appleConfig = config as? UTMAppleConfiguration {
-            return appleConfig.diskImages.count
-        } else {
-            return 0
-        }
-    }
-    
+
     var body: some View {
-        Group {
-            Button {
-                newDrivePopover.toggle()
-            } label: {
-                Label("New Drive", systemImage: "externaldrive.badge.plus")
-            }.help("Add a new drive.")
-            .fileImporter(isPresented: $importDrivePresented, allowedContentTypes: [.item], onCompletion: importDrive)
-            .onChange(of: newDrivePopover, perform: { showPopover in
-                if showPopover {
-                    if let qemuConfig = config as? UTMQemuConfiguration {
-                        newQemuDrive.reset(forSystemTarget: qemuConfig.systemTarget, architecture: qemuConfig.systemArchitecture, removable: false)
-                    } else if let _ = config as? UTMAppleConfiguration {
-                        newAppleDriveSize = 10240
-                    }
+        Button {
+            newDrivePopover.toggle()
+        } label: {
+            Label("New Drive", systemImage: "externaldrive.badge.plus")
+        }
+        .help("Add a new drive.")
+        .fileImporter(isPresented: $importDrivePresented, allowedContentTypes: [.item], onCompletion: importDrive)
+        .onChange(of: newDrivePopover, perform: { showPopover in
+            if showPopover {
+                if let qemuConfig = config as? UTMQemuConfiguration {
+                    newQemuDrive.reset(forSystemTarget: qemuConfig.systemTarget, architecture: qemuConfig.systemArchitecture, removable: false)
+                } else if let _ = config as? UTMAppleConfiguration {
+                    newAppleDriveSize = 10240
                 }
-            })
-            .popover(isPresented: $newDrivePopover, arrowEdge: .top) {
-                VStack {
-                    if let qemuConfig = config as? UTMQemuConfiguration {
-                        VMConfigDriveCreateView(target: qemuConfig.systemTarget, architecture: qemuConfig.systemArchitecture, driveImage: newQemuDrive)
-                    } else if let _ = config as? UTMAppleConfiguration {
-                        VMConfigAppleDriveCreateView(driveSize: $newAppleDriveSize)
-                    }
-                    HStack {
-                        Spacer()
-                        Button(action: { importDrivePresented.toggle() }, label: {
-                            if let _ = config as? UTMQemuConfiguration {
-                                if newQemuDrive.removable {
-                                    Text("Browse")
-                                } else {
-                                    Text("Import")
-                                }
+            }
+        })
+        .popover(isPresented: $newDrivePopover, arrowEdge: .top) {
+            VStack {
+                if let qemuConfig = config as? UTMQemuConfiguration {
+                    VMConfigDriveCreateView(target: qemuConfig.systemTarget, architecture: qemuConfig.systemArchitecture, driveImage: newQemuDrive)
+                } else if let _ = config as? UTMAppleConfiguration {
+                    VMConfigAppleDriveCreateView(driveSize: $newAppleDriveSize)
+                }
+                HStack {
+                    Spacer()
+                    Button(action: { importDrivePresented.toggle() }, label: {
+                        if let _ = config as? UTMQemuConfiguration {
+                            if newQemuDrive.removable {
+                                Text("Browse")
                             } else {
                                 Text("Import")
                             }
-                        }).help("Select an existing disk image.")
-                        Button(action: { addNewDrive(newQemuDrive) }, label: {
-                            Text("Create")
-                        }).help("Create an empty drive.")
-                    }
-                }.padding()
-            }
-            if #available(macOS 12, *) {
-                if let index = selectedDriveIndex {
-                    Button {
-                        deleteDrive(atIndex: index)
-                    } label: {
-                        Label("Delete Drive", systemImage: "externaldrive.badge.plus")
-                    }.help("Delete this drive.")
-                    if index != 0 {
-                        Button {
-                            moveDriveUp(fromIndex: index)
-                        } label: {
-                            Label("Move Up", systemImage: "chevron.up")
-                        }.help("Make boot order priority higher.")
-                    }
-                    if index != countDrives - 1 {
-                        Button {
-                            moveDriveDown(fromIndex: index)
-                        } label: {
-                            Label("Move Down", systemImage: "chevron.down")
-                        }.help("Make boot order priority lower.")
-                    }
+                        } else {
+                            Text("Import")
+                        }
+                    }).help("Select an existing disk image.")
+                    Button(action: { addNewDrive(newQemuDrive) }, label: {
+                        Text("Create")
+                    }).help("Create an empty drive.")
                 }
-            } else { // SwiftUI BUG: macOS 11 doesn't support the conditional views above
-                Button {
-                    deleteDrive(atIndex: selectedDriveIndex!)
-                } label: {
-                    Label("Delete Drive", systemImage: "externaldrive.badge.plus")
-                }.help("Delete this drive.")
-                .disabled(selectedDriveIndex == nil)
-                Button {
-                    moveDriveUp(fromIndex: selectedDriveIndex!)
-                } label: {
-                    Label("Move Up", systemImage: "chevron.up")
-                }.help("Make boot order priority higher.")
-                .disabled(selectedDriveIndex == nil || selectedDriveIndex == 0)
-                Button {
-                    moveDriveDown(fromIndex: selectedDriveIndex!)
-                } label: {
-                    Label("Move Down", systemImage: "chevron.down")
-                }.help("Make boot order priority lower.")
-                .disabled(selectedDriveIndex == nil || selectedDriveIndex == countDrives - 1)
-            }
-        }.labelStyle(.titleOnly)
-    }
-    
-    func deleteDrive(atIndex index: Int) {
-        withAnimation {
-            if let qemuConfig = config as? UTMQemuConfiguration {
-                data.busyWorkAsync {
-                    try await data.removeDrive(at: index, for: qemuConfig)
-                }
-            } else if let appleConfig = config as? UTMAppleConfiguration {
-                // FIXME: SwiftUI BUG: if this is the last item it doesn't disappear even though selectedDriveIndex is set to nil
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                    appleConfig.diskImages.remove(at: index)
-                }
-            }
-            selectedDriveIndex = nil
+            }.padding()
         }
     }
-    
-    func moveDriveUp(fromIndex index: Int) {
-        withAnimation {
-            if let qemuConfig = config as? UTMQemuConfiguration {
-                qemuConfig.moveDrive(index, to: index - 1)
-            } else if let appleConfig = config as? UTMAppleConfiguration {
-                appleConfig.diskImages.move(fromOffsets: IndexSet(integer: index), toOffset: index - 1)
-            }
-            selectedDriveIndex = index - 1
-        }
-    }
-    
-    func moveDriveDown(fromIndex index: Int) {
-        withAnimation {
-            if let qemuConfig = config as? UTMQemuConfiguration {
-                qemuConfig.moveDrive(index, to: index + 1)
-            } else if let appleConfig = config as? UTMAppleConfiguration {
-                appleConfig.diskImages.move(fromOffsets: IndexSet(integer: index), toOffset: index + 2)
-            }
-            selectedDriveIndex = index + 1
-        }
-    }
-    
+
     private func importDrive(result: Result<URL, Error>) {
         data.busyWorkAsync {
             switch result {
@@ -191,7 +98,7 @@ struct VMConfigDrivesButtons<Config: ObservableObject & UTMConfigurable>: View {
             }
         }
     }
-    
+
     private func addNewDrive(_ newDrive: VMDriveImage) {
         newDrivePopover = false // hide popover
         data.busyWorkAsync {
@@ -203,6 +110,85 @@ struct VMConfigDrivesButtons<Config: ObservableObject & UTMConfigurable>: View {
                     appleConfig.diskImages.append(image)
                 }
             }
+        }
+    }
+}
+
+
+struct VMConfigDrivesButtons<Config: ObservableObject & UTMConfigurable>: View {
+    let vm: UTMVirtualMachine?
+    @ObservedObject var config: Config
+    @Binding var selectedDriveIndex: Int?
+    
+    @StateObject private var newQemuDrive: VMDriveImage = VMDriveImage()
+    @State private var newAppleDriveSize: Int = 0
+    @State private var importDrivePresented: Bool = false
+    
+    var countDrives: Int {
+        if let qemuConfig = config as? UTMQemuConfiguration {
+            return qemuConfig.countDrives
+        } else if let appleConfig = config as? UTMAppleConfiguration {
+            return appleConfig.diskImages.count
+        } else {
+            return 0
+        }
+    }
+    
+    var body: some View {
+        Group {
+            if #available(macOS 12, *) {
+                if let index = selectedDriveIndex {
+                    if index != 0 {
+                        Button {
+                            moveDriveUp(fromIndex: index)
+                        } label: {
+                            Label("Move Up", systemImage: "chevron.up")
+                        }.help("Make boot order priority higher.")
+                    }
+                    if index != countDrives - 1 {
+                        Button {
+                            moveDriveDown(fromIndex: index)
+                        } label: {
+                            Label("Move Down", systemImage: "chevron.down")
+                        }.help("Make boot order priority lower.")
+                    }
+                }
+            } else { // SwiftUI BUG: macOS 11 doesn't support the conditional views above
+                Button {
+                    moveDriveUp(fromIndex: selectedDriveIndex!)
+                } label: {
+                    Label("Move Up", systemImage: "chevron.up")
+                }.help("Make boot order priority higher.")
+                .disabled(selectedDriveIndex == nil || selectedDriveIndex == 0)
+                Button {
+                    moveDriveDown(fromIndex: selectedDriveIndex!)
+                } label: {
+                    Label("Move Down", systemImage: "chevron.down")
+                }.help("Make boot order priority lower.")
+                .disabled(selectedDriveIndex == nil || selectedDriveIndex == countDrives - 1)
+            }
+        }.labelStyle(.titleOnly)
+    }
+    
+    func moveDriveUp(fromIndex index: Int) {
+        withAnimation {
+            if let qemuConfig = config as? UTMQemuConfiguration {
+                qemuConfig.moveDrive(index, to: index - 1)
+            } else if let appleConfig = config as? UTMAppleConfiguration {
+                appleConfig.diskImages.move(fromOffsets: IndexSet(integer: index), toOffset: index - 1)
+            }
+            selectedDriveIndex = index - 1
+        }
+    }
+    
+    func moveDriveDown(fromIndex index: Int) {
+        withAnimation {
+            if let qemuConfig = config as? UTMQemuConfiguration {
+                qemuConfig.moveDrive(index, to: index + 1)
+            } else if let appleConfig = config as? UTMAppleConfiguration {
+                appleConfig.diskImages.move(fromOffsets: IndexSet(integer: index), toOffset: index + 2)
+            }
+            selectedDriveIndex = index + 1
         }
     }
 }

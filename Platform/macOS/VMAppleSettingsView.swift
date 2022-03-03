@@ -47,17 +47,33 @@ struct VMAppleSettingsView: View {
         }
         if #available(macOS 12, *), config.bootLoader?.operatingSystem == .Linux {
             NavigationLink(destination: VMConfigAppleSharingView(config: config).scrollable()) {
-                Label("Sharing", systemImage: "person.crop.circle.fill")
+                Label("Sharing", systemImage: "person.crop.circle")
             }
         }
         Section(header: Text("Drives")) {
             ForEach($config.diskImages) { $diskImage in
-                NavigationLink(destination: VMConfigAppleDriveDetailsView(diskImage: $diskImage).scrollable(), tag: config.diskImages.firstIndex(of: diskImage)!, selection: $selectedDriveIndex) {
+                NavigationLink(destination: VMConfigAppleDriveDetailsView(diskImage: $diskImage, onDelete: {
+                    if let index = config.diskImages.firstIndex(of: diskImage) {
+                        deleteDrive(atIndex: index)
+                    }
+                }).scrollable(), tag: config.diskImages.firstIndex(of: diskImage)!, selection: $selectedDriveIndex) {
                     Label("\(diskImage.sizeString) Image", systemImage: "externaldrive")
                 }
             }.onMove { indicies, dest in
                 config.diskImages.move(fromOffsets: indicies, toOffset: dest)
             }
+            VMConfigNewDriveButton(vm: vm, config: config)
+                .buttonStyle(.link)
+        }
+    }
+
+    func deleteDrive(atIndex index: Int) {
+        withAnimation {
+            // FIXME: SwiftUI BUG: if this is the last item it doesn't disappear even though selectedDriveIndex is set to nil
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                config.diskImages.remove(at: index)
+            }
+            selectedDriveIndex = nil
         }
     }
 }

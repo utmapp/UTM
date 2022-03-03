@@ -50,19 +50,19 @@ struct VMConfigNetworkView: View {
                             config.networkCardMac = UTMQemuConfiguration.generateMacAddress()
                         }
                     }
-                    
+
+                    #if os(iOS)
                     Toggle(isOn: $showAdvanced.animation(), label: {
                         Text("Show Advanced Settings")
                     })
-                    
+
                     if showAdvanced {
-                        #if os(macOS)
-                        IPConfigurationSection(config: config)
-                        #else
-                        IPConfigurationSection(config: config).multilineTextAlignment(.trailing)
-                        #endif
+                        Section(header: Text("IP Configuration")) {
+                            IPConfigurationSection(config: config).multilineTextAlignment(.trailing)
+                        }
                     }
-                    
+                    #endif
+
                     /// Bridged and shared networking doesn't support port forwarding
                     if config.networkMode == "emulated" {
                         VMConfigNetworkPortForwardView(config: config)
@@ -83,41 +83,6 @@ struct NetworkModeSection: View {
             DefaultTextField("Bridged Interface", text: $config.networkBridgeInterface.bound, prompt: "en0")
                 .keyboardType(.asciiCapable)
         }
-    }
-}
-
-@available(iOS 14, macOS 11, *)
-struct IPConfigurationSection: View {
-    @ObservedObject var config: UTMQemuConfiguration
-    
-    var body: some View {
-        Section(header: Text("IP Configuration")) {
-            Toggle(isOn: $config.networkIsolate, label: {
-                Text("Isolate Guest from Host")
-            })
-            Group {
-                DefaultTextField("Guest Network", text: $config.networkAddress.bound, prompt: "10.0.2.0/24")
-                    .keyboardType(.asciiCapable)
-                DefaultTextField("Guest Network (IPv6)", text: $config.networkAddressIPv6.bound, prompt: "fec0::/64")
-                    .keyboardType(.asciiCapable)
-                DefaultTextField("Host Address", text: $config.networkHost.bound, prompt: "10.0.2.2")
-                    .keyboardType(.decimalPad)
-                DefaultTextField("Host Address (IPv6)", text: $config.networkHostIPv6.bound, prompt: "fec0::2")
-                    .keyboardType(.asciiCapable)
-                DefaultTextField("DHCP Start", text: $config.networkDhcpStart.bound, prompt: "10.0.2.15")
-                    .keyboardType(.decimalPad)
-                DefaultTextField("DHCP Host", text: $config.networkDhcpHost.bound)
-                    .keyboardType(.asciiCapable)
-                DefaultTextField("DHCP Domain Name", text: $config.networkDhcpDomain.bound)
-                    .keyboardType(.asciiCapable)
-                DefaultTextField("DNS Server", text: $config.networkDnsServer.bound, prompt: "10.0.2.3")
-                    .keyboardType(.decimalPad)
-                DefaultTextField("DNS Server (IPv6)", text: $config.networkDnsServerIPv6.bound, prompt: "fec0::3")
-                    .keyboardType(.asciiCapable)
-                DefaultTextField("DNS Search Domains", text: $config.networkDnsSearch.bound)
-                    .keyboardType(.asciiCapable)
-            }
-        }.disableAutocorrection(true)
     }
 }
 

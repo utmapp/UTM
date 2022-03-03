@@ -19,11 +19,11 @@ import SwiftUI
 @available(iOS 14, macOS 11, *)
 struct VMConfigStringPicker: View {
     private let selection: Binding<String?>
-    private let titleKey: LocalizedStringKey
+    private let titleKey: LocalizedStringKey?
     private let rawValues: [String]
     private let displayValues: [String]
     
-    init(_ titleKey: LocalizedStringKey, selection: Binding<String?>, rawValues: [String]?, displayValues: [String]?) {
+    init(_ titleKey: LocalizedStringKey? = nil, selection: Binding<String?>, rawValues: [String]?, displayValues: [String]?) {
         self.selection = selection
         self.titleKey = titleKey
         self.rawValues = rawValues ?? []

@@ -79,7 +79,7 @@ struct VMSettingsView: View {
                     NavigationLink(
                         destination: VMConfigSharingView(config: config).navigationTitle("Sharing"),
                         label: {
-                            Label("Sharing", systemImage: "person.crop.circle.fill")
+                            Label("Sharing", systemImage: "person.crop.circle")
                                 .labelStyle(RoundRectIconLabelStyle(color: .yellow))
                         })
                 }

@@ -56,14 +56,14 @@ struct VMWizardHardwareView: View {
     }
     
     var body: some View {
-#if os(macOS)
+        #if os(macOS)
         Text("Hardware")
             .font(.largeTitle)
-#endif
+        #endif
         List {
             if !wizardState.useVirtualization {
                 Section {
-                    VMConfigStringPicker("", selection: $wizardState.systemArchitecture, rawValues: UTMQemuConfiguration.supportedArchitectures(), displayValues: UTMQemuConfiguration.supportedArchitecturesPretty())
+                    VMConfigStringPicker(selection: $wizardState.systemArchitecture, rawValues: UTMQemuConfiguration.supportedArchitectures(), displayValues: UTMQemuConfiguration.supportedArchitecturesPretty())
                         .onChange(of: wizardState.systemArchitecture) { newValue in
                             let targets = UTMQemuConfiguration.supportedTargets(forArchitecture: newValue)
                             let index = UTMQemuConfiguration.defaultTargetIndex(forArchitecture: newValue)
@@ -74,7 +74,7 @@ struct VMWizardHardwareView: View {
                 }
                 
                 Section {
-                    VMConfigStringPicker("", selection: $wizardState.systemTarget, rawValues: UTMQemuConfiguration.supportedTargets(forArchitecture: wizardState.systemArchitecture), displayValues: UTMQemuConfiguration.supportedTargets(forArchitecturePretty: wizardState.systemArchitecture))
+                    VMConfigStringPicker(selection: $wizardState.systemTarget, rawValues: UTMQemuConfiguration.supportedTargets(forArchitecture: wizardState.systemArchitecture), displayValues: UTMQemuConfiguration.supportedTargets(forArchitecturePretty: wizardState.systemArchitecture))
                 } header: {
                     Text("System")
                 }

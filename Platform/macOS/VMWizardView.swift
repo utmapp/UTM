@@ -58,51 +58,52 @@ struct VMWizardView: View {
                 VMWizardSummaryView(wizardState: wizardState)
                     .transition(wizardState.slide)
             }
-        }.padding()
-            .frame(width: 450, height: 450)
-            .toolbar {
-                ToolbarItem(placement: .automatic) {
-                    Button("Close") {
+        }
+        .padding(.top)
+        .frame(width: 450, height: 450)
+        .toolbar {
+            ToolbarItem(placement: .automatic) {
+                Button("Close") {
+                    presentationMode.wrappedValue.dismiss()
+                }
+            }
+            ToolbarItem(placement: .cancellationAction) {
+                if wizardState.currentPage != .start {
+                    Button("Back") {
+                        wizardState.back()
+                    }
+                }
+            }
+            ToolbarItem(placement: .confirmationAction) {
+                if wizardState.hasNextButton {
+                    Button("Next") {
+                        wizardState.next()
+                    }
+                } else if wizardState.currentPage == .summary {
+                    Button("Save") {
                         presentationMode.wrappedValue.dismiss()
-                    }
-                }
-                ToolbarItem(placement: .cancellationAction) {
-                    if wizardState.currentPage != .start {
-                        Button("Back") {
-                            wizardState.back()
-                        }
-                    }
-                }
-                ToolbarItem(placement: .confirmationAction) {
-                    if wizardState.hasNextButton {
-                        Button("Next") {
-                            wizardState.next()
-                        }
-                    } else if wizardState.currentPage == .summary {
-                        Button("Save") {
-                            presentationMode.wrappedValue.dismiss()
-                            data.busyWorkAsync {
-                                let config = try await wizardState.generateConfig()
-                                #if arch(arm64)
-                                if #available(macOS 12, *), await wizardState.isPendingIPSWDownload {
-                                    await data.downloadIPSW(using: config as! UTMAppleConfiguration)
-                                    return
-                                }
-                                #endif
-                                let vm = try await data.create(config: config)
-                                if await wizardState.isOpenSettingsAfterCreation {
-                                    await data.showSettingsForCurrentVM()
-                                }
-                                if let qemuVm = vm as? UTMQemuVirtualMachine {
-                                    try await wizardState.qemuPostCreate(with: qemuVm)
-                                }
+                        data.busyWorkAsync {
+                            let config = try await wizardState.generateConfig()
+                            #if arch(arm64)
+                            if #available(macOS 12, *), await wizardState.isPendingIPSWDownload {
+                                await data.downloadIPSW(using: config as! UTMAppleConfiguration)
+                                return
+                            }
+                            #endif
+                            let vm = try await data.create(config: config)
+                            if await wizardState.isOpenSettingsAfterCreation {
+                                await data.showSettingsForCurrentVM()
+                            }
+                            if let qemuVm = vm as? UTMQemuVirtualMachine {
+                                try await wizardState.qemuPostCreate(with: qemuVm)
                             }
                         }
                     }
                 }
-            }.alert(item: $wizardState.alertMessage) { msg in
-                Alert(title: Text(msg.message))
             }
+        }.alert(item: $wizardState.alertMessage) { msg in
+            Alert(title: Text(msg.message))
+        }
     }
 }
 

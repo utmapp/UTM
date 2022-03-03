@@ -34,78 +34,36 @@ struct VMConfigInfoView<Config: ObservableObject & UTMConfigurable>: View {
     @State private var warningMessage: String? = nil
     
     var body: some View {
-        VStack {
+        VStack(alignment: .leading, spacing: 16) {
+            #if os(macOS)
+            HStack {
+                Text("Name").frame(width: 50, alignment: .trailing)
+                nameField
+            }
+            HStack(alignment: .top) {
+                Text("Notes").frame(width: 50, alignment: .trailing)
+                notesField
+            }
+            HStack {
+                Text("Icon").frame(width: 50, alignment: .trailing)
+                iconSelector
+                    .aspectRatio(1, contentMode: .fill)
+                iconStylePicker
+            }
+            #else
             Form {
-                let style = Binding<IconStyle> {
-                    return iconStyle
-                } set: {
-                    iconStyle = $0
-                    switch iconStyle {
-                    case .generic:
-                        config.icon = ""
-                        config.selectedCustomIconPath = nil
-                        break
-                    case .operatingSystem:
-                        config.iconCustom = false
-                        config.selectedCustomIconPath = nil
-                        break
-                    case .custom:
-                        config.iconCustom = true
-                        break
-                    }
-                }
-
                 Section(header: Text("Name")) {
-                    TextField("Name", text: $config.name, onEditingChanged: validateName)
-                        .keyboardType(.asciiCapable)
-                        .disabled(config.isRenameDisabled)
+                    nameField
                 }
                 Section(header: Text("Notes")) {
-                    TextEditor(text: $config.notes.bound)
-                        #if os(macOS)
-                        .border(Color.primary, width: 0.5)
-                        #endif
-                        .frame(minHeight: 200)
+                    notesField
                 }
                 Section(header: Text("Icon")) {
-                    DefaultPicker("Style", selection: style.animation()) {
-                        ForEach(IconStyle.allCases, id: \.id) { value in
-                            Text(value.localizedName)
-                                .tag(value)
-                        }
-                    }
-                    
-                    switch iconStyle {
-                    case .custom:
-                        #if os(macOS)
-                        Button(action: { imageSelectVisible.toggle() }, label: {
-                            IconPreview(url: config.iconUrl)
-                        }).fileImporter(isPresented: $imageSelectVisible, allowedContentTypes: [.image]) { result in
-                            switch result {
-                            case .success(let url):
-                                imageCustomSelected(url: url)
-                            case .failure:
-                                break
-                            }
-                        }.buttonStyle(.plain)
-                        #else
-                        Button(action: { imageSelectVisible.toggle() }, label: {
-                            IconPreview(url: config.iconUrl)
-                        }).popover(isPresented: $imageSelectVisible, arrowEdge: .bottom) {
-                            ImagePicker(onImageSelected: imageCustomSelected)
-                        }.buttonStyle(.plain)
-                        #endif
-                    case .operatingSystem:
-                        Button(action: { imageSelectVisible.toggle() }, label: {
-                            IconPreview(url: config.iconUrl)
-                        }).popover(isPresented: $imageSelectVisible, arrowEdge: .bottom) {
-                            IconSelect(onIconSelected: imageSelected)
-                        }.buttonStyle(.plain)
-                    default:
-                        EmptyView()
-                    }
+                    iconStylePicker
+                    iconSelector
                 }
             }
+            #endif
         }.onAppear {
             if config.iconCustom {
                 iconStyle = .custom
@@ -115,6 +73,91 @@ struct VMConfigInfoView<Config: ObservableObject & UTMConfigurable>: View {
         }.alert(item: $warningMessage) { warning in
             Alert(title: Text(warning))
         }.disableAutocorrection(true)
+    }
+
+    private var nameField: some View {
+        TextField("Name", text: $config.name, onEditingChanged: validateName)
+            .keyboardType(.asciiCapable)
+            .disabled(config.isRenameDisabled)
+    }
+
+    private var notesField: some View {
+        TextEditor(text: $config.notes.bound)
+            .frame(minHeight: 200)
+    }
+
+    @ViewBuilder
+    private var iconStylePicker: some View {
+        let style = Binding<IconStyle> {
+            return iconStyle
+        } set: {
+            iconStyle = $0
+            switch iconStyle {
+            case .generic:
+                config.icon = ""
+                config.selectedCustomIconPath = nil
+                break
+            case .operatingSystem:
+                config.iconCustom = false
+                config.selectedCustomIconPath = nil
+                break
+            case .custom:
+                config.iconCustom = true
+                break
+            }
+        }
+
+        Picker(selection: style.animation(), label: Text("Style")) {
+            ForEach(IconStyle.allCases, id: \.id) { value in
+                Text(value.localizedName)
+                    .tag(value)
+            }
+        }
+        #if os(macOS)
+        .pickerStyle(.radioGroup)
+        .labelsHidden()
+        #endif
+    }
+
+    @ViewBuilder
+    private var iconSelector: some View {
+        switch iconStyle {
+        case .custom:
+            #if os(macOS)
+            Button(action: { imageSelectVisible.toggle() }, label: {
+                IconPreview(url: config.iconUrl)
+            }).fileImporter(isPresented: $imageSelectVisible, allowedContentTypes: [.image]) { result in
+                switch result {
+                case .success(let url):
+                    imageCustomSelected(url: url)
+                case .failure:
+                    break
+                }
+            }.buttonStyle(.plain)
+            #else
+            Button(action: { imageSelectVisible.toggle() }, label: {
+                IconPreview(url: config.iconUrl)
+            }).popover(isPresented: $imageSelectVisible, arrowEdge: .bottom) {
+                ImagePicker(onImageSelected: imageCustomSelected)
+            }.buttonStyle(.plain)
+            #endif
+        case .operatingSystem:
+            Button(action: { imageSelectVisible.toggle() }, label: {
+                IconPreview(url: config.iconUrl)
+            }).popover(isPresented: $imageSelectVisible, arrowEdge: .bottom) {
+                IconSelect(onIconSelected: imageSelected)
+            }.buttonStyle(.plain)
+        default:
+            #if os(macOS)
+            Image(systemName: "desktopcomputer")
+                .resizable()
+                .frame(width: 30.0, height: 30.0)
+                .padding()
+                .foregroundColor(Color(NSColor.disabledControlTextColor))
+            #else
+            EmptyView()
+            #endif
+        }
     }
     
     private func validateName(editing: Bool) {
@@ -163,10 +206,14 @@ private struct IconPreview: View {
     
     var body: some View {
         HStack {
+            #if !os(macOS)
             Spacer()
+            #endif
             Logo(logo: PlatformImage(contentsOfURL: url))
                 .padding()
+            #if !os(macOS)
             Spacer()
+            #endif
         }
     }
 }

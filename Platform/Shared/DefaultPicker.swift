@@ -18,11 +18,11 @@ import SwiftUI
 
 @available(iOS 14, macOS 11, *)
 struct DefaultPicker<SelectionValue, Content>: View where SelectionValue: Hashable, Content: View {
-    private let titleKey: LocalizedStringKey
+    private let titleKey: LocalizedStringKey?
     private let selection: Binding<SelectionValue>
     private let content: Content
     
-    init(_ titleKey: LocalizedStringKey, selection: Binding<SelectionValue>, @ViewBuilder content: () -> Content) {
+    init(_ titleKey: LocalizedStringKey? = nil, selection: Binding<SelectionValue>, @ViewBuilder content: () -> Content) {
         self.titleKey = titleKey
         self.selection = selection
         self.content = content()
@@ -30,21 +30,25 @@ struct DefaultPicker<SelectionValue, Content>: View where SelectionValue: Hashab
     
     var body: some View {
         #if os(macOS)
-        Picker(titleKey, selection: selection) {
+        Picker(titleKey ?? "", selection: selection) {
             content
         }
         #else
         if #available(iOS 15, *) {
             HStack {
-                Text(titleKey)
-                Spacer()
-                Picker("", selection: selection) {
+                let picker = Picker("", selection: selection) {
                     content
-                }.pickerStyle(.menu)
-                .frame(maxWidth: 150, alignment: .trailing) // HACK: SwiftUI bug
+                }
+                if let titleKey = titleKey {
+                    Text(titleKey)
+                    Spacer()
+                    picker
+                } else {
+                    picker
+                }
             }
         } else {
-            Picker(titleKey, selection: selection) {
+            Picker(titleKey ?? "", selection: selection) {
                 content
             }.pickerStyle(.automatic)
         }

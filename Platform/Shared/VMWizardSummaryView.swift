@@ -79,6 +79,9 @@ struct VMWizardSummaryView: View {
             }.textFieldStyle(.automatic)
             #endif
         }
+        #if os(macOS)
+        .padding([.horizontal, .bottom])
+        #endif
         .navigationTitle(Text("Summary"))
         .onAppear {
             if wizardState.name == nil {

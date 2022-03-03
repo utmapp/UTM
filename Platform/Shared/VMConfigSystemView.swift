@@ -16,13 +16,13 @@
 
 import SwiftUI
 
+private let bytesInMib: UInt64 = 1024 * 1024
+private let minMemoryMib = 32
+private let baseUsageMib = 128
+private let warningThreshold = 0.9
+
 @available(iOS 14, macOS 11, *)
 struct VMConfigSystemView: View {
-    let bytesInMib: UInt64 = 1024 * 1024
-    let minMemoryMib = 32
-    let baseUsageMib = 128
-    let warningThreshold = 0.9
-    
     @ObservedObject var config: UTMQemuConfiguration
     @State private var warningMessage: String? = nil
     
@@ -31,7 +31,7 @@ struct VMConfigSystemView: View {
             Form {
                 HardwareOptions(config: config, validateMemorySize: validateMemorySize)
                 Section(header: Text("CPU")) {
-                    VMConfigStringPicker("", selection: $config.systemCPU.animation(), rawValues: UTMQemuConfiguration.supportedCpus(forArchitecture: config.systemArchitecture), displayValues: UTMQemuConfiguration.supportedCpus(forArchitecturePretty: config.systemArchitecture))
+                    VMConfigStringPicker(selection: $config.systemCPU.animation(), rawValues: UTMQemuConfiguration.supportedCpus(forArchitecture: config.systemArchitecture), displayValues: UTMQemuConfiguration.supportedCpus(forArchitecturePretty: config.systemArchitecture))
                 }
                 CPUFlagsOptions(config: config)
                 DetailedSection("CPU Cores", description: "Force multicore may improve speed of emulation but also might result in unstable and incorrect emulation.") {
@@ -84,7 +84,7 @@ struct VMConfigSystemView: View {
             warningMessage = String(format: format, totalDeviceMemory / bytesInMib, estMemoryUsage / bytesInMib)
         }
     }
-    
+
     func validateCpuCount(editing: Bool) {
         guard !editing else {
             return
