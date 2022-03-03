@@ -343,7 +343,14 @@ class UTMData: ObservableObject {
     }
     
     @MainActor func showSettingsForCurrentVM() {
+        #if os(iOS)
+        // SwiftUI bug: cannot show modal at the same time as changing selected VM or it breaks
+        DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) {
+            self.showSettingsModal = true
+        }
+        #else
         showSettingsModal = true
+        #endif
     }
     
     // MARK: - VM operations
@@ -496,12 +503,9 @@ class UTMData: ObservableObject {
         if let config = vm.config as? UTMQemuConfiguration {
             config.recoverOrphanedDrives()
         }
-        selectedVM = vm
+        listSelect(vm: vm)
         showNewVMSheet = false
-        // SwiftUI bug: cannot show modal at the same time as changing selected VM or it breaks
-        DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(1)) {
-            self.showSettingsModal = true
-        }
+        showSettingsForCurrentVM()
     }
     
     /// Copy configuration but not data from existing VM to a new VM

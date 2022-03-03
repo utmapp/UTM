@@ -96,12 +96,14 @@ fileprivate struct WizardWrapper: View {
                         data.busyWorkAsync {
                             let config = try await wizardState.generateConfig()
                             let vm = try await data.create(config: config)
-                            if await wizardState.isOpenSettingsAfterCreation {
-                                await data.showSettingsForCurrentVM()
-                            }
                             if let qemuVm = vm as? UTMQemuVirtualMachine {
                                 try await wizardState.qemuPostCreate(with: qemuVm)
                             }
+                            /* // SwiftUI is broken here
+                            if await wizardState.isOpenSettingsAfterCreation {
+                                await data.showSettingsForCurrentVM()
+                            }
+                             */
                         }
                     }
                 }

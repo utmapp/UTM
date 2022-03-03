@@ -91,11 +91,11 @@ struct VMWizardView: View {
                             }
                             #endif
                             let vm = try await data.create(config: config)
-                            if await wizardState.isOpenSettingsAfterCreation {
-                                await data.showSettingsForCurrentVM()
-                            }
                             if let qemuVm = vm as? UTMQemuVirtualMachine {
                                 try await wizardState.qemuPostCreate(with: qemuVm)
+                            }
+                            if await wizardState.isOpenSettingsAfterCreation {
+                                await data.showSettingsForCurrentVM()
                             }
                         }
                     }

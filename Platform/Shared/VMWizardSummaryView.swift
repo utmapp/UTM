@@ -98,8 +98,10 @@ struct VMWizardSummaryView: View {
     var info: some View {
         Group {
             TextField("Name", text: $wizardState.name.bound)
+            #if os(macOS)
             Toggle("Open VM Settings", isOn: $wizardState.isOpenSettingsAfterCreation)
                 .disabled(wizardState.isPendingIPSWDownload)
+            #endif
         }
     }
     
