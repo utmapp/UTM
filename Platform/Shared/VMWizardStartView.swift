@@ -55,6 +55,7 @@ struct VMWizardStartView: View {
                     }
                     .padding()
                 }
+                .buttonStyle(.inList)
                 .disabled(!isVirtualizationSupported)
                 #if os(iOS)
                 if #available(iOS 15, *) {
