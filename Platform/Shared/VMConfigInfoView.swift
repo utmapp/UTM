@@ -83,6 +83,9 @@ struct VMConfigInfoView<Config: ObservableObject & UTMConfigurable>: View {
 
     private var notesField: some View {
         TextEditor(text: $config.notes.bound)
+            #if os(macOS)
+            .border(Color.primary, width: 0.5)
+            #endif
             .frame(minHeight: 200)
     }
 
