@@ -179,7 +179,7 @@ static size_t sysctl_read(const char *name) {
             [self pushArgv:@"-drive"];
             [self pushArgv:[NSString stringWithFormat:@"if=pflash,format=raw,unit=0,file=%@,readonly=on", path.path]]; // accessDataWithBookmark called already
             [self pushArgv:@"-drive"];
-            [self pushArgv:[NSString stringWithFormat:@"if=pflash,format=raw,unit=1,file=%@", self.efiVariablesURL.path]];
+            [self pushArgv:[NSString stringWithFormat:@"if=pflash,unit=1,file=%@", self.efiVariablesURL.path]];
             [self accessDataWithBookmark:[self.efiVariablesURL bookmarkDataWithOptions:0
                                                         includingResourceValuesForKeys:nil
                                                                          relativeToURL:nil
