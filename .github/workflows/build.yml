@@ -311,3 +311,55 @@ jobs:
           asset_path: UTM.dmg
           asset_name: UTM.dmg
           asset_content_type: application/octet-stream
+  submit-mac:
+    name: Submit (macOS)
+    runs-on: macos-11
+    needs: build-universal
+    if: github.event_name == 'release' || github.event.inputs.test_release == 'true'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Import signing certificate into keychain
+        uses: apple-actions/import-codesign-certs@v1
+        with:
+          p12-file-base64: ${{ secrets.SIGNING_CERTIFICATE_P12_DATA }}
+          p12-password: ${{ secrets.SIGNING_CERTIFICATE_PASSWORD }}
+      - name: Install Provisioning Profiles
+        run: |
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+          echo $PROFILE_DATA | base64 --decode -o ~/Library/MobileDevice/Provisioning\ Profiles/$PROFILE_UUID.provisionprofile
+          echo $HELPER_PROFILE_DATA | base64 --decode -o ~/Library/MobileDevice/Provisioning\ Profiles/$HELPER_PROFILE_UUID.provisionprofile
+          echo $LAUNCHER_PROFILE_DATA | base64 --decode -o ~/Library/MobileDevice/Provisioning\ Profiles/$LAUNCHER_PROFILE_UUID.provisionprofile
+        env:
+          PROFILE_DATA: ${{ secrets.APP_STORE_PROFILE_DATA }}
+          PROFILE_UUID: ${{ secrets.APP_STORE_PROFILE_UUID }}
+          HELPER_PROFILE_DATA: ${{ secrets.APP_STORE_HELPER_PROFILE_DATA }}
+          HELPER_PROFILE_UUID: ${{ secrets.APP_STORE_HELPER_PROFILE_UUID }}
+          LAUNCHER_PROFILE_DATA: ${{ secrets.APP_STORE_LAUNCHER_PROFILE_DATA }}
+          LAUNCHER_PROFILE_UUID: ${{ secrets.APP_STORE_LAUNCHER_PROFILE_UUID }}
+      - name: Download Artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: UTM-macos-universal
+      - name: Package for App Store
+        run: |
+          tar -xf UTM.xcarchive.tgz
+          ./scripts/package_mac.sh app-store UTM.xcarchive . "$SIGNING_TEAM_ID" "$PROFILE_UUID" "$HELPER_PROFILE_UUID" "$LAUNCHER_PROFILE_UUID"
+        env:
+          SIGNING_TEAM_ID: ${{ secrets.SIGNING_TEAM_ID }}
+          PROFILE_UUID: ${{ secrets.APP_STORE_PROFILE_UUID }}
+          HELPER_PROFILE_UUID: ${{ secrets.APP_STORE_HELPER_PROFILE_UUID }}
+          LAUNCHER_PROFILE_UUID: ${{ secrets.APP_STORE_LAUNCHER_PROFILE_UUID }}
+      - name: Upload Artifact
+        if: github.event_name != 'release'
+        uses: actions/upload-artifact@v2
+        with:
+          name: UTM-pkg
+          path: UTM.pkg
+      - name: Upload app to App Store Connect
+        if: github.event_name == 'release'
+        run: |
+          xcrun altool --upload-app -t macos -f "UTM.pkg" -u "$SUBMIT_USERNAME" -p "$SUBMIT_PASSWORD"
+        env:
+          SUBMIT_USERNAME: ${{ secrets.SIGNING_USERNAME }}
+          SUBMIT_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
