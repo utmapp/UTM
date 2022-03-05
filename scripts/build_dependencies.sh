@@ -53,7 +53,14 @@ usage () {
     exit 1
 }
 
+python_module_test () {
+    python3 -c "import $1"
+}
+
 check_env () {
+    command -v python3 >/dev/null 2>&1 || { echo >&2 "${RED}You must install 'python3' on your host machine.${NC}"; exit 1; }
+    python_module_test six >/dev/null 2>&1 || { echo >&2 "${RED}'six' not found in your Python 3 installation.${NC}"; exit 1; }
+    python_module_test pyparsing >/dev/null 2>&1 || { echo >&2 "${RED}'pyparsing' not found in your Python 3 installation.${NC}"; exit 1; }
     command -v gmake >/dev/null 2>&1 || { echo >&2 "${RED}You must install GNU make on your host machine (and link it to 'gmake').${NC}"; exit 1; }
     command -v meson >/dev/null 2>&1 || { echo >&2 "${RED}You must install 'meson' on your host machine.${NC}"; exit 1; }
     command -v msgfmt >/dev/null 2>&1 || { echo >&2 "${RED}You must install 'gettext' on your host machine.\n\t'msgfmt' needs to be in your \$PATH as well.${NC}"; exit 1; }
