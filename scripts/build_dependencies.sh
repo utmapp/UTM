@@ -457,7 +457,7 @@ build_qemu_dependencies () {
     # USB support
     if [ -z "$SKIP_USB_BUILD" ]; then
         build $USB_SRC
-        build $USBREDIR_SRC
+        meson_build $USBREDIR_SRC
     fi
     # GPU support
     build_angle
