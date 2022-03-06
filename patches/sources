@@ -22,13 +22,13 @@ USBREDIR_SRC="https://www.spice-space.org/download/usbredir/usbredir-0.8.0.tar.b
 QEMU_SRC="https://github.com/utmapp/qemu/releases/download/v6.2.0-utm/qemu-6.2.0-utm.tar.bz2"
 
 # Source files for spice-client
-JSON_GLIB_SRC="https://ftp.gnome.org/pub/GNOME/sources/json-glib/1.2/json-glib-1.2.8.tar.xz"
+JSON_GLIB_SRC="https://download.gnome.org/sources/json-glib/1.6/json-glib-1.6.6.tar.xz"
 GST_SRC="https://gstreamer.freedesktop.org/src/gstreamer/gstreamer-1.19.1.tar.xz"
 GST_BASE_SRC="https://gstreamer.freedesktop.org/src/gst-plugins-base/gst-plugins-base-1.19.1.tar.xz"
 GST_GOOD_SRC="https://gstreamer.freedesktop.org/src/gst-plugins-good/gst-plugins-good-1.19.1.tar.xz"
-XML2_SRC="http://xmlsoft.org/sources/libxml2-2.9.10.tar.gz"
-SOUP_SRC="https://ftp.gnome.org/pub/GNOME/sources/libsoup/2.65/libsoup-2.65.1.tar.xz"
-PHODAV_SRC="http://ftp.gnome.org/pub/GNOME/sources/phodav/2.2/phodav-2.2.tar.xz"
+XML2_SRC="http://xmlsoft.org/sources/libxml2-2.9.12.tar.gz"
+SOUP_SRC="https://ftp.gnome.org/pub/GNOME/sources/libsoup/2.74/libsoup-2.74.2.tar.xz"
+PHODAV_SRC="http://ftp.gnome.org/pub/GNOME/sources/phodav/2.5/phodav-2.5.tar.xz"
 SPICE_CLIENT_SRC="https://www.spice-space.org/download/gtk/spice-gtk-0.40.tar.xz"
 
 # Source files for GPU acceleration

@@ -479,10 +479,10 @@ build_qemu () {
 
 build_spice_client () {
     meson_build "$QEMU_DIR/subprojects/libucontext" -Ddefault_library=static -Dfreestanding=true
-    build $JSON_GLIB_SRC
+    meson_build $JSON_GLIB_SRC -Dintrospection=disabled
     build $XML2_SRC --enable-shared=no --without-python
-    build $SOUP_SRC --without-gnome --without-krb5-config --enable-shared=no --disable-tls-check
-    build $PHODAV_SRC
+    meson_build $SOUP_SRC --default-library static -Dsysprof=disabled -Dtls_check=false -Dintrospection=disabled
+    meson_build $PHODAV_SRC
     meson_build $SPICE_CLIENT_SRC -Dcoroutine=libucontext -Dusb-cd=disabled
 }
 
