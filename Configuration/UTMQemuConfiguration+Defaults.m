@@ -136,9 +136,25 @@
     [self loadDisplayDefaultsForTarget:target architecture:architecture];
     [self loadSoundDefaultsForTarget:target architecture:architecture];
     [self loadNetworkDefaultsForTarget:target architecture:architecture];
+    // first set the defaults
+    self.inputLegacy = NO;
+    self.forcePs2Controller = NO;
+    self.shareClipboardEnabled = NO;
+    self.shareDirectoryEnabled = NO;
+    self.usb3Support = NO;
+    self.systemBootUefi = NO;
+    self.systemRngEnabled = NO;
+    self.useHypervisor = self.defaultUseHypervisor;
+    self.systemCPU = @"default";
+    // override based on target
+    if ([target hasPrefix:@"pc"]) {
+        // override hypervisor setting for older PC targets
+        self.useHypervisor = NO;
+    }
     if ([target hasPrefix:@"pc"] || [target hasPrefix:@"q35"]) {
         self.shareClipboardEnabled = YES;
         self.shareDirectoryEnabled = YES;
+        self.usb3Support = NO; // older OS like Windows 7 do not support it
         if (@available(iOS 14, *)) {
             self.systemBootUefi = YES;
         } else {
@@ -150,31 +166,12 @@
     } else if ([target isEqualToString:@"virt"] || [target hasPrefix:@"virt-"]) {
         self.shareClipboardEnabled = YES;
         self.shareDirectoryEnabled = YES;
-        self.usb3Support = NO;
+        self.usb3Support = YES;
         self.systemBootUefi = YES;
         self.systemRngEnabled = YES;
     } else if ([target isEqualToString:@"isapc"]) {
         self.inputLegacy = YES; // no USB support
-    } else {
-        self.shareClipboardEnabled = NO;
-        self.shareDirectoryEnabled = NO;
-        self.systemBootUefi = NO;
-        self.systemRngEnabled = NO;
     }
-    if (![architecture isEqualToString:@"arm"] &&
-        ![architecture isEqualToString:@"aarch64"] &&
-        ![architecture isEqualToString:@"i386"] &&
-        ![architecture isEqualToString:@"x86_64"]) {
-        // disable UEFI on unsupported architectures
-        self.systemBootUefi = NO;
-    }
-    self.useHypervisor = self.defaultUseHypervisor;
-    // override hypervisor setting for older PC targets
-    if ([target hasPrefix:@"pc"]) {
-        self.useHypervisor = NO;
-    }
-    self.systemCPU = @"default";
-    self.forcePs2Controller = NO;
 }
 
 + (NSString *)defaultDriveInterfaceForTarget:(NSString *)target architecture:(NSString *)architecture type:(UTMDiskImageType)type {
