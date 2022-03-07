@@ -541,10 +541,6 @@ class UTMData: ObservableObject {
             logger.error("invalid path for vm")
             return 0
         }
-        _ = path.startAccessingSecurityScopedResource()
-        defer {
-            path.stopAccessingSecurityScopedResource()
-        }
         guard let enumerator = fileManager.enumerator(at: path, includingPropertiesForKeys: [.totalFileSizeKey]) else {
             logger.error("failed to create enumerator for \(path)")
             return 0

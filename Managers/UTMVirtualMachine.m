@@ -50,6 +50,7 @@ const dispatch_time_t kScreenshotPeriodSeconds = 60 * NSEC_PER_SEC;
 @property (nonatomic) NSArray *anyCancellable;
 @property (nonatomic, readonly) BOOL isScreenshotSaveEnabled;
 @property (nonatomic, nullable) void (^screenshotTimerHandler)(void);
+@property (nonatomic) BOOL isScopedAccess;
 
 @end
 
@@ -134,11 +135,11 @@ const dispatch_time_t kScreenshotPeriodSeconds = 60 * NSEC_PER_SEC;
 }
 
 - (void)setPath:(NSURL *)path {
-    if (_path) {
+    if (_path && self.isScopedAccess) {
         [_path stopAccessingSecurityScopedResource];
     }
     _path = path;
-    [path startAccessingSecurityScopedResource];
+    self.isScopedAccess = [path startAccessingSecurityScopedResource];
 }
 
 // MARK: - Constructors
@@ -238,7 +239,9 @@ const dispatch_time_t kScreenshotPeriodSeconds = 60 * NSEC_PER_SEC;
 }
 
 - (void)dealloc {
-    [self.path stopAccessingSecurityScopedResource];
+    if (self.isScopedAccess) {
+        [self.path stopAccessingSecurityScopedResource];
+    }
 }
 
 - (void)startScreenshotTimer {
