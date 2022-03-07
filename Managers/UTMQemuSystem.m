@@ -605,8 +605,8 @@ static size_t sysctl_read(const char *name) {
     }
     if (([target hasPrefix:@"pc"] || [target hasPrefix:@"q35"])) {
         properties = [self appendDefaultPropertyName:@"vmport" value:@"off" toProperties:properties];
-        // disable PS/2 emulation if we are not legacy input
-        if (!self.configuration.inputLegacy) {
+        // disable PS/2 emulation if we are not legacy input and it's not explicitly enabled
+        if (!self.configuration.inputLegacy && !self.configuration.forcePs2Controller) {
             properties = [self appendDefaultPropertyName:@"i8042" value:@"off" toProperties:properties];
         }
     }

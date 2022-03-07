@@ -39,6 +39,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) BOOL isTargetArchitectureMatchHost;
 @property (nonatomic, readonly) BOOL defaultUseHypervisor;
 @property (nonatomic, assign) BOOL rtcUseLocalTime;
+@property (nonatomic, assign) BOOL forcePs2Controller;
 
 - (void)migrateSystemConfigurationIfNecessary;
 

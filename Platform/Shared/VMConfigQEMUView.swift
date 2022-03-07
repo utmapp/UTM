@@ -40,6 +40,14 @@ struct VMConfigQEMUView: View {
         ["arm", "aarch64", "i386", "x86_64"].contains(config.systemArchitecture ?? "")
     }
     
+    private var supportsPs2: Bool {
+        if let target = config.systemTarget, target.starts(with: "pc") || target.starts(with: "q35") {
+            return true
+        } else {
+            return false
+        }
+    }
+    
     var body: some View {
         VStack {
             Form {
@@ -65,6 +73,9 @@ struct VMConfigQEMUView: View {
                     #endif
                     Toggle("Use local time for base clock", isOn: $config.rtcUseLocalTime)
                         .help("If checked, use local time for RTC which is required for Windows. Otherwise, use UTC clock.")
+                    Toggle("Force PS/2 controller", isOn: $config.forcePs2Controller)
+                        .disabled(!supportsPs2)
+                        .help("Instantiate PS/2 controller even when USB input is supported. Required for older Windows.")
                 }
                 DetailedSection("QEMU Machine Properties", description: "This is appended to the -machine argument.") {
                     DefaultTextField("", text: $config.systemMachineProperties.bound, prompt: "Default")

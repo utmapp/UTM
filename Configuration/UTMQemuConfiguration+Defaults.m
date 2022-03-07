@@ -168,6 +168,7 @@
         self.useHypervisor = NO;
     }
     self.systemCPU = @"default";
+    self.forcePs2Controller = NO;
 }
 
 + (NSString *)defaultDriveInterfaceForTarget:(NSString *)target architecture:(NSString *)architecture type:(UTMDiskImageType)type {

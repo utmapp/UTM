@@ -37,6 +37,7 @@ static const NSString *const kUTMConfigSystemUUIDKey = @"SystemUUID";
 static const NSString *const kUTMConfigMachinePropertiesKey = @"MachineProperties";
 static const NSString *const kUTMConfigUseHypervisorKey = @"UseHypervisor";
 static const NSString *const kUTMConfigRTCUseLocalTimeKey = @"RTCUseLocalTime";
+static const NSString *const kUTMConfigForcePs2ControllerKey = @"ForcePS2Controller";
 
 @interface UTMQemuConfiguration ()
 
@@ -89,6 +90,10 @@ static const NSString *const kUTMConfigRTCUseLocalTimeKey = @"RTCUseLocalTime";
     }
     if (self.rootDict[kUTMConfigSystemKey][kUTMConfigRTCUseLocalTimeKey] == nil) {
         self.rtcUseLocalTime = YES; // used to be default, now only for Windows
+    }
+    // PS/2 controller used to always be enabled by default for pc/q35
+    if (self.rootDict[kUTMConfigSystemKey][kUTMConfigForcePs2ControllerKey] == nil) {
+        self.forcePs2Controller = [self.systemTarget hasPrefix:@"pc"] || [self.systemTarget hasPrefix:@"q35"];
     }
 }
 
@@ -218,6 +223,15 @@ static const NSString *const kUTMConfigRTCUseLocalTimeKey = @"RTCUseLocalTime";
 - (void)setRtcUseLocalTime:(BOOL)rtcUseLocalTime {
     [self propertyWillChange];
     self.rootDict[kUTMConfigSystemKey][kUTMConfigRTCUseLocalTimeKey] = @(rtcUseLocalTime);
+}
+
+- (BOOL)forcePs2Controller {
+    return [self.rootDict[kUTMConfigSystemKey][kUTMConfigForcePs2ControllerKey] boolValue];
+}
+
+- (void)setForcePs2Controller:(BOOL)forcePs2Controller {
+    [self propertyWillChange];
+    self.rootDict[kUTMConfigSystemKey][kUTMConfigForcePs2ControllerKey] = @(forcePs2Controller);
 }
 
 #pragma mark - Additional arguments array handling
