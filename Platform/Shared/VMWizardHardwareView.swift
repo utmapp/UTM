@@ -65,9 +65,11 @@ struct VMWizardHardwareView: View {
                 Section {
                     VMConfigStringPicker(selection: $wizardState.systemArchitecture, rawValues: UTMQemuConfiguration.supportedArchitectures(), displayValues: UTMQemuConfiguration.supportedArchitecturesPretty())
                         .onChange(of: wizardState.systemArchitecture) { newValue in
-                            let targets = UTMQemuConfiguration.supportedTargets(forArchitecture: newValue)
-                            let index = UTMQemuConfiguration.defaultTargetIndex(forArchitecture: newValue)
-                            wizardState.systemTarget = targets![index]
+                            if let newValue = newValue {
+                                wizardState.systemTarget = defaultTarget(for: newValue)
+                            } else {
+                                wizardState.systemTarget = nil
+                            }
                         }
                 } header: {
                     Text("Architecture")
@@ -129,8 +131,20 @@ struct VMWizardHardwareView: View {
         .textFieldStyle(.roundedBorder)
         .onAppear {
             if wizardState.systemArchitecture == nil {
-                wizardState.systemArchitecture = "x86_64"
-                wizardState.systemTarget = "q35"
+                if wizardState.useVirtualization {
+                    #if arch(arm64)
+                    wizardState.systemArchitecture = "aarch64"
+                    #elseif arch(x86_64)
+                    wizardState.systemArchitecture = "x86_64"
+                    #else
+                    #error("Unsupported architecture.")
+                    #endif
+                } else {
+                    wizardState.systemArchitecture = "x86_64"
+                }
+            }
+            if wizardState.systemTarget == nil {
+                wizardState.systemTarget = defaultTarget(for: wizardState.systemArchitecture!)
             }
         }
     }
@@ -140,6 +154,12 @@ struct VMWizardHardwareView: View {
         var size = MemoryLayout<UInt64>.size
         sysctlbyname(name, &value, &size, nil, 0)
         return value
+    }
+    
+    private func defaultTarget(for architecture: String) -> String {
+        let targets = UTMQemuConfiguration.supportedTargets(forArchitecture: architecture)
+        let index = UTMQemuConfiguration.defaultTargetIndex(forArchitecture: architecture)
+        return targets![index]
     }
 }
 

@@ -200,19 +200,6 @@ enum VMWizardOS: String, Identifiable {
                     alertMessage = AlertMessage(NSLocalizedString("Please select a system to emulate.", comment: "VMWizardState"))
                     return
                 }
-            } else {
-                #if arch(arm64)
-                systemArchitecture = "aarch64"
-                #elseif arch(x86_64)
-                systemArchitecture = "x86_64"
-                #else
-                #error("Unsupported architecture.")
-                #endif
-            }
-            if systemTarget == nil {
-                let index = UTMQemuConfiguration.defaultTargetIndex(forArchitecture: systemArchitecture)
-                let targets = UTMQemuConfiguration.supportedTargets(forArchitecture: systemArchitecture)
-                systemTarget = targets?[index]
             }
             nextPage = .drives
             #if arch(arm64)
