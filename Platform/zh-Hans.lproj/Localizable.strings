@@ -1055,3 +1055,13 @@
 "Existing" = "导入UTM文档";
 "Advanced" = "高级";
 "Skip ISO boot" = "暂不导入光盘镜像";
+
+//VM Status
+"Stopped" = "已停止";
+"Suspended" = "已挂起";
+"Starting" = "启动中";
+"Started" = "运行中";
+"Pausing" = "暂停中";
+"Paused" = "已暂停";
+"Resuming" = "恢复中";
+"Stopping" = "停止中";
