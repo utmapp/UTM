@@ -579,7 +579,7 @@
 "Requires SPICE guest agent tools to be installed." = "需要安装SPICE代理工具";
 
 /* No comment provided by engineer. */
-"Requires SPICE guest agent tools to be installed. Retina Mode is recommended only if the guest OS supports HiDPI." = "需要安装SPICE来宾代理工具。只有当来宾操作系统支持HiDPI时，才建议使用Retina模式";
+"Requires SPICE guest agent tools to be installed. Retina Mode is recommended only if the guest OS supports HiDPI." = "需要安装Spice guest tool。只有当来宾操作系统支持HiDPI时，才建议使用高分辨率模式";
 
 /* No comment provided by engineer. */
 "Requires SPICE WebDAV service to be installed." = "需要安装SPICE WebDAV服务";
@@ -591,7 +591,7 @@
 "Resolution" = "分辨率";
 
 /* No comment provided by engineer. */
-"Retina Mode" = "可视模式";
+"Retina Mode" = "高分辨率模式";
 
 /* VMDisplayViewController */
 "Running low on memory! UTM might soon be killed by iOS. You can prevent this by decreasing the amount of memory and/or JIT cache assigned to this VM" = "内存不足！ UTM可能很快会被iOS强制终止 您可以通过减少给该虚拟机分配的内存或JIT缓存来防止这种情况";
@@ -859,7 +859,7 @@
 "Stop" = "终止";
 
 /* No comment provided by engineer. */
-"Do you want to force stop this VM and lose all unsaved data?" = "您是否想强制停止此VM并放弃所有未保存的数据?";
+"Do you want to force stop this VM and lose all unsaved data?" = "您是否想强制停止此虚拟机并放弃所有未保存的数据?";
 
 /* No comment provided by engineer. */
 "Export Debug Log" = "导出日志";
@@ -944,7 +944,7 @@
 "Size" = "大小";
 
 //Drive
-"Note: Boot order is as listed." = "注意: 下面列表顺序即为启动顺序.";
+"Note: Boot order is as listed." = "注意: 列表顺序即为启动顺序.";
 "Removable" = "可移除";
 
 //Display
@@ -954,7 +954,7 @@
 
 //Settings
 "Devices" = "设备";
-"Disable screen dimming when idle" = "在idle模式下禁用屏幕亮度调节";
+"Disable screen dimming when idle" = "闲置时不自动锁屏";
 "Do not show prompt when USB device is plugged in" = "插入USB设备时不要显示提示";
 
 "USB not supported in this build of UTM." = "此版本的UTM不支持USB共享";
