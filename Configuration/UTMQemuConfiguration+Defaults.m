@@ -139,7 +139,13 @@
     if ([target hasPrefix:@"pc"] || [target hasPrefix:@"q35"]) {
         self.shareClipboardEnabled = YES;
         self.shareDirectoryEnabled = YES;
-        self.systemBootUefi = YES;
+        if (@available(iOS 14, *)) {
+            self.systemBootUefi = YES;
+        } else {
+            // iOS 13 and below do not have the option to set UEFI in the settings view
+            // so we retain the legacy behaviour of disabling UEFI
+            self.systemBootUefi = NO;
+        }
         self.systemRngEnabled = YES;
     } else if ([target isEqualToString:@"virt"] || [target hasPrefix:@"virt-"]) {
         self.shareClipboardEnabled = YES;
