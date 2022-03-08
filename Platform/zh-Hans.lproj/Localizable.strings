@@ -880,7 +880,7 @@
 "I want to..." = "我想...";
 "Virtualize" = "虚拟化";
 "Faster, but can only run the native CPU architecture." = "速度更快，但只适用于运行与本机CPU架构相同的虚拟机";
-"Virtualization is not supported on your system." = "您的操作系统不支持虚拟化";
+"Virtualization is not supported on your system." = "您的操作系统不支持虚拟化，原因是苹果未向iOS系统提供虚拟化支持。";
 "Emulate" = "模拟";
 "Slower, but can run other CPU architectures." = "速度较慢，但虚拟机的CPU架构不受限制";
 "Download prebuilt from UTM Gallery..." = "从UTM库下载预配置文件（可能需要手动导入安装镜像）";
@@ -949,27 +949,36 @@
 
 //Display
 "Emulated Display Card" = "虚拟显卡";
-"AUTO RESOLUTION" = "自动调整";
+"Auto Resolution" = "自动调整";
 "Resize display to screen size automatically" = "自动调整屏幕尺寸";
 
 //Settings
-"DEVICES" = "设备";
+"Devices" = "设备";
 "Disable screen dimming when idle" = "在idle模式下禁用屏幕亮度调节";
 "Do not show prompt when USB device is plugged in" = "插入USB设备时不要显示提示";
 
-//Sharing
 "USB not supported in this build of UTM." = "此版本的UTM不支持USB共享";
 "USB SHARING" = "USB共享";
 "USB 3.0 (XHCI) Support" = "支持 USB 3.0 (XHCI)";
 "Maximum Shared USB Devices" = "最大共享USB设备数";
+"USB Support" = "USB支持选项";
+"If enabled, the default input devices will be emulated on the USB bus." = "如果启用，默认输入设备将在USB总线上模拟。";
+"USB sharing not supported in this build of UTM." = "此UTM版本不支持USB共享。（需要越狱）";
+"Share USB devices from host" = "连接本机的USB设备至虚拟机";
 
 //System
 "UEFI Boot" = "UEFI启动";
 "RNG Device" = "RNG设备";
+"Default is 1/4 of the RAM size (above). The JIT cache size is additive to the RAM size in the total memory usage!" = "默认为上面设置内存大小的1/4。虚拟机在此设备上总占用内存为JIT缓存与上方设置的内存之和。";
+"Force multicore may improve speed of emulation but also might result in unstable and incorrect emulation." = "强制多核可能提升模拟的速度，但也可能导致虚拟机运行不稳定和出现模拟错误。";
 
 //QEMU
 "Use Hypervisor" = "使用Hypervisor";
 "Do not generate any arguments based on current configuration" = "不要根据当前配置生成任何参数";
+"Use local time for base clock" = "使用本地时间作为基准时钟。";
+"These are advanced settings affecting QEMU which should be kept default unless you are running into issues." = "这些选项是高级设置，会直接影响QEMU的行为。如非遇到问题，您不应该更改此处的设置。";
+"Force PS/2 controller" = "强制使用PS/2控制器";
+"This is appended to the -machine argument." = "这里是添加至 -machine 后面的参数";
 
 //VM Creating Page
 "Open VM Settings" = "打开VM设置";
@@ -1033,6 +1042,7 @@
 "Hint: For the best Windows experience, make sure to download and install the latest [SPICE tools and QEMU drivers](https://mac.getutm.app/support/)." = "提示：为获得最佳 Windows 体验，请确保下载并安装最新的 [SPICE 工具 和 QEMU 驱动程序](https://mac.getutm.app/support/)";
 
 //WizardUI
+"Start" = "开始";
 "Specify the size of the drive where data will be stored into." = "指定存储驱动器的大小";
 "Hardware OpenGL Acceleration" = "OpenGL硬件加速";
 "Virtualization Engine" = "虚拟引擎";
@@ -1041,3 +1051,7 @@
 "Preconfigured" = "预配置";
 "Prebuilt" = "预构建";
 "Some older systems do not support UEFI boot, such as Windows 7 and below." = "一些古老的操作系统不支持UEFI启动,比如Windows7及之前的操作系统";
+"Open..." = "从本地导入";
+"Existing" = "导入UTM文档";
+"Advanced" = "高级";
+"Skip ISO boot" = "暂不导入光盘镜像";
