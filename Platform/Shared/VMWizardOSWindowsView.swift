@@ -76,7 +76,7 @@ struct VMWizardOSWindowsView: View {
                 Text("File Imported")
             } footer: {
                 if #available(iOS 15, macOS 12, *) {
-                    Text(try! AttributedString(markdown: "Hint: For the best Windows experience, make sure to download and install the latest [SPICE tools and QEMU drivers](https://mac.getutm.app/support/)."))
+                    Text("Hint: For the best Windows experience, make sure to download and install the latest [SPICE tools and QEMU drivers](https://mac.getutm.app/support/).")
                 }
             }
         }
