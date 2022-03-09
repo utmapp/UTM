@@ -246,9 +246,9 @@ build_pkg_config() {
         env -i ./configure --prefix="$PREFIX" --bindir="$PREFIX/host/bin" --with-internal-glib $@
     fi
     echo "${GREEN}Building ${NAME}...${NC}"
-    make "$MAKEFLAGS"
+    make -j$NCPU
     echo "${GREEN}Installing ${NAME}...${NC}"
-    make "$MAKEFLAGS" install
+    make install
     cd "$pwd"
 
     export PATH="$PREFIX/host/bin:$PATH"
@@ -322,9 +322,9 @@ build_openssl() {
         ./Configure $OPENSSL_CROSS no-dso no-hw no-engine --prefix="$PREFIX" $@
     fi
     echo "${GREEN}Building ${NAME}...${NC}"
-    make "$MAKEFLAGS"
+    make -j$NCPU
     echo "${GREEN}Installing ${NAME}...${NC}"
-    make "$MAKEFLAGS" install
+    make install
     cd "$pwd"
 }
 
@@ -342,9 +342,9 @@ build () {
         ./configure --prefix="$PREFIX" --host="$CHOST" $@
     fi
     echo "${GREEN}Building ${NAME}...${NC}"
-    make "$MAKEFLAGS"
+    make -j$NCPU
     echo "${GREEN}Installing ${NAME}...${NC}"
-    make "$MAKEFLAGS" install
+    make install
     cd "$pwd"
 }
 
@@ -371,7 +371,7 @@ meson_build () {
         meson utm_build --prefix="$PREFIX" --buildtype=plain --cross-file "$MESON_CROSS" "$@"
     fi
     echo "${GREEN}Building ${NAME}...${NC}"
-    meson compile -C utm_build
+    meson compile -C utm_build -j $NCPU
     echo "${GREEN}Installing ${NAME}...${NC}"
     meson install -C utm_build
     cd "$pwd"
@@ -471,9 +471,9 @@ build_qemu () {
     echo "${GREEN}Configuring QEMU...${NC}"
     ./configure --prefix="$PREFIX" --host="$CHOST" --cross-prefix="" $@
     echo "${GREEN}Building QEMU...${NC}"
-    gmake "$MAKEFLAGS"
+    gmake -j$NCPU
     echo "${GREEN}Installing QEMU...${NC}"
-    gmake "$MAKEFLAGS" install
+    gmake install
     cd "$pwd"
 }
 
@@ -736,12 +736,10 @@ CFLAGS="$CFLAGS -arch $ARCH -isysroot $SDKROOT -I$PREFIX/include $CFLAGS_MINVER 
 CPPFLAGS="$CPPFLAGS -arch $ARCH -isysroot $SDKROOT -I$PREFIX/include $CFLAGS_MINVER $CFLAGS_TARGET"
 CXXFLAGS="$CXXFLAGS -arch $ARCH -isysroot $SDKROOT -I$PREFIX/include $CFLAGS_MINVER $CFLAGS_TARGET"
 LDFLAGS="$LDFLAGS -arch $ARCH -isysroot $SDKROOT -L$PREFIX/lib $CFLAGS_MINVER $CFLAGS_TARGET"
-MAKEFLAGS="-j$NCPU"
 export CFLAGS
 export CPPFLAGS
 export CXXFLAGS
 export LDFLAGS
-export MAKEFLAGS
 
 check_env
 
