@@ -130,18 +130,18 @@ struct VMWizardHardwareView: View {
         .navigationTitle(Text("Hardware"))
         .textFieldStyle(.roundedBorder)
         .onAppear {
+            if wizardState.useVirtualization {
+                #if arch(arm64)
+                wizardState.systemArchitecture = "aarch64"
+                #elseif arch(x86_64)
+                wizardState.systemArchitecture = "x86_64"
+                #else
+                #error("Unsupported architecture.")
+                #endif
+                wizardState.systemTarget = nil
+            }
             if wizardState.systemArchitecture == nil {
-                if wizardState.useVirtualization {
-                    #if arch(arm64)
-                    wizardState.systemArchitecture = "aarch64"
-                    #elseif arch(x86_64)
-                    wizardState.systemArchitecture = "x86_64"
-                    #else
-                    #error("Unsupported architecture.")
-                    #endif
-                } else {
-                    wizardState.systemArchitecture = "x86_64"
-                }
+                wizardState.systemArchitecture = "x86_64"
             }
             if wizardState.systemTarget == nil {
                 wizardState.systemTarget = defaultTarget(for: wizardState.systemArchitecture!)
