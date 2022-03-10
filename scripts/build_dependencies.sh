@@ -382,7 +382,7 @@ build_angle () {
     export PATH="$(realpath "$BUILD_DIR/depot_tools.git"):$OLD_PATH"
     pwd="$(pwd)"
     cd "$BUILD_DIR/angle.git"
-    DEPOT_TOOLS_UPDATE=0 python2 scripts/bootstrap.py
+    DEPOT_TOOLS_UPDATE=0 python3 scripts/bootstrap.py
     DEPOT_TOOLS_UPDATE=0 gclient sync
     case $PLATFORM in
     ios* )
