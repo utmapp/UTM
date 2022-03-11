@@ -53,15 +53,6 @@ struct VMConfigDisplayView: View {
                         VMConfigStringPicker("Emulated Display Card", selection: $config.displayCard, rawValues: UTMQemuConfiguration.supportedDisplayCards(forArchitecture: config.systemArchitecture), displayValues: UTMQemuConfiguration.supportedDisplayCards(forArchitecturePretty: config.systemArchitecture))
                     }
                     
-                    // https://stackoverflow.com/a/59277022/15603854
-                    #if !os(macOS)
-                    DetailedSection("Auto Resolution", description: "Requires SPICE guest agent tools to be installed.") {
-                        Toggle(isOn: $config.displayFitScreen, label: {
-                            Text("Resize display to screen size automatically")
-                        })
-                    }
-                    #endif
-                    
                     Section(header: Text("Scaling")) {
                         VMConfigStringPicker("Upscaling", selection: $config.displayUpscaler, rawValues: UTMQemuConfiguration.supportedScalers(), displayValues: UTMQemuConfiguration.supportedScalersPretty())
                         VMConfigStringPicker("Downscaling", selection: $config.displayDownscaler, rawValues: UTMQemuConfiguration.supportedScalers(), displayValues: UTMQemuConfiguration.supportedScalersPretty())
