@@ -90,6 +90,8 @@ struct VMToolbarView: View {
                 } label: {
                     Label(state.isRunning ? "Pause" : "Play", systemImage: state.isRunning ? "pause" : "play")
                 }.offset(offset(for: 6))
+                .disabled(state.isRunningAsSnapshot)
+                .opacity(state.isRunningAsSnapshot ? 0.5 : 1.0)
                 Button {
                     state.restartPressed()
                 } label: {

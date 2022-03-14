@@ -299,6 +299,15 @@ NSString *const kSuspendSnapshotName = @"suspend";
         }
     }
     
+    if (self.isRunningAsSnapshot) {
+        self.system.runAsSnapshot = self.isRunningAsSnapshot;
+    } else {
+        // Loading save states isn't possible when -snapshot is used
+        if (self.viewState.hasSaveState) {
+            self.system.snapshot = kSuspendSnapshotName;
+        }
+    }
+    
     if (!_ioService) {
         _ioService = [self inputOutputService];
     }
@@ -307,9 +316,6 @@ NSString *const kSuspendSnapshotName = @"suspend";
     if (![_ioService startWithError:&spiceError]) {
         completion(spiceError);
         return;
-    }
-    if (self.viewState.hasSaveState) {
-        self.system.snapshot = kSuspendSnapshotName;
     }
     // start QEMU (this can be in parallel with QMP connect below)
     __weak typeof(self) weakSelf = self;

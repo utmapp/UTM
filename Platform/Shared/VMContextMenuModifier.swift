@@ -47,11 +47,22 @@ struct VMContextMenuModifier: ViewModifier {
                     Label("Stop", systemImage: "stop.fill")
                 }.help("Stop the running VM.")
             } else {
+                Divider()
+                
                 Button {
                     data.run(vm: vm)
                 } label: {
                     Label("Run", systemImage: "play.fill")
                 }.help("Run the VM in the foreground.")
+                
+                Button {
+                    vm.isRunningAsSnapshot = true
+                    data.run(vm: vm)
+                } label: {
+                    Label("Run without saving changes", systemImage: "play.fill")
+                }.help("Run the VM in the foreground, without saving data changes to disk.")
+                
+                Divider()
             }
             Button {
                 shareItem = .utmCopy(vm)

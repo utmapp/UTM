@@ -101,6 +101,11 @@ const dispatch_time_t kScreenshotPeriodSeconds = 60 * NSEC_PER_SEC;
     return (_state == kVMPausing || _state == kVMResuming || _state == kVMStarting || _state == kVMStopping);
 }
 
+- (void)setIsRunningAsSnapshot:(BOOL)isNextRunAsSnapshot {
+    [self propertyWillChange];
+    _isRunningAsSnapshot = isNextRunAsSnapshot;
+}
+
 - (NSString *)stateLabel {
     switch (_state) {
         case kVMStopped:
@@ -269,6 +274,9 @@ const dispatch_time_t kScreenshotPeriodSeconds = 60 * NSEC_PER_SEC;
     });
     if (state == kVMStarted) {
         [self startScreenshotTimer];
+    }
+    if (state == kVMStopped) {
+        [self setIsRunningAsSnapshot:NO];
     }
 }
 

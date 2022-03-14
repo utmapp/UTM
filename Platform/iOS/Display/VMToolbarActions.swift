@@ -89,6 +89,13 @@ import SwiftUI
         }
     }
     
+    var isRunningAsSnapshot: Bool {
+        guard let viewController = viewController else {
+            return false
+        }
+        return viewController.vm.isRunningAsSnapshot
+    }
+    
     private func optionalObjectWillChange() {
         if #available(iOS 14, *) {
             self.objectWillChange.send()

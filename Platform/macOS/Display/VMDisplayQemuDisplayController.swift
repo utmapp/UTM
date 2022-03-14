@@ -32,10 +32,18 @@ class VMDisplayQemuWindowController: VMDisplayWindowController {
             startPauseToolbarItem.isEnabled = false
         }
         #endif
+        if qemuVM.isRunningAsSnapshot {
+            startPauseToolbarItem.isEnabled = false
+            startPauseToolbarItem.toolTip = "\(startPauseToolbarItem.toolTip ?? "")\n(Disabled due to running without saving changes)"
+        }
         drivesToolbarItem.isEnabled = vmQemuConfig.countDrives > 0
         sharedFolderToolbarItem.isEnabled = qemuVM.hasShareDirectoryEnabled
         usbToolbarItem.isEnabled = qemuVM.hasUsbRedirection
-        window!.title = vmQemuConfig.name
+        if qemuVM.isRunningAsSnapshot {
+            window!.title = "\(vmQemuConfig.name) • (Running without saving changes)"
+        } else {
+            window!.title = vmQemuConfig.name
+        }
         super.enterLive()
     }
 }

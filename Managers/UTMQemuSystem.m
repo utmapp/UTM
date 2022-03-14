@@ -728,6 +728,10 @@ static size_t sysctl_read(const char *name) {
         [self pushArgv:@"-rtc"];
         [self pushArgv:@"base=localtime"];
     }
+    
+    if (self.runAsSnapshot) {
+        [self pushArgv:@"-snapshot"];
+    }
 }
     
 - (void)argsFromUser {
