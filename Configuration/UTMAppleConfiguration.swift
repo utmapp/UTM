@@ -864,6 +864,7 @@ struct DiskImage: Codable, Hashable, Identifiable {
     var sizeMib: Int
     var isReadOnly: Bool
     var isExternal: Bool
+    var runAsSnapshot: Bool
     var imageURL: URL?
     private var uuid = UUID() // for identifiable
     
@@ -871,6 +872,7 @@ struct DiskImage: Codable, Hashable, Identifiable {
         case sizeMib
         case isReadOnly
         case isExternal
+        case runAsSnapshot
         case imagePath
         case imageBookmark
     }
@@ -891,12 +893,14 @@ struct DiskImage: Codable, Hashable, Identifiable {
         sizeMib = newSize
         isReadOnly = false
         isExternal = false
+        runAsSnapshot = false
     }
     
-    init(importImage url: URL, isReadOnly: Bool = false, isExternal: Bool = false) {
+    init(importImage url: URL, isReadOnly: Bool = false, isExternal: Bool = false, runAsSnapshot: Bool = false) {
         self.imageURL = url
         self.isReadOnly = isReadOnly
         self.isExternal = isExternal
+        self.runAsSnapshot = runAsSnapshot
         if let attributes = try? url.resourceValues(forKeys: [.fileSizeKey]), let fileSize = attributes.fileSize {
             sizeMib = fileSize / bytesInMib
         } else {
@@ -912,6 +916,7 @@ struct DiskImage: Codable, Hashable, Identifiable {
         sizeMib = try container.decode(Int.self, forKey: .sizeMib)
         isReadOnly = try container.decode(Bool.self, forKey: .isReadOnly)
         isExternal = try container.decode(Bool.self, forKey: .isExternal)
+        runAsSnapshot = try container.decode(Bool.self, forKey: .runAsSnapshot)
         if !isExternal, let imagePath = try container.decodeIfPresent(String.self, forKey: .imagePath) {
             imageURL = dataURL.appendingPathComponent(imagePath)
         } else if let bookmark = try container.decodeIfPresent(Data.self, forKey: .imageBookmark) {
@@ -925,6 +930,7 @@ struct DiskImage: Codable, Hashable, Identifiable {
         try container.encode(sizeMib, forKey: .sizeMib)
         try container.encode(isReadOnly, forKey: .isReadOnly)
         try container.encode(isExternal, forKey: .isExternal)
+        try container.encode(runAsSnapshot, forKey: .runAsSnapshot)
         if !isExternal {
             try container.encodeIfPresent(imageURL?.lastPathComponent, forKey: .imagePath)
         } else {
@@ -942,6 +948,7 @@ struct DiskImage: Codable, Hashable, Identifiable {
     }
     
     func vzDiskImage() throws -> VZDiskImageStorageDeviceAttachment? {
+        // @TODO : Support runAsSnapshot logic
         if let imageURL = imageURL {
             return try VZDiskImageStorageDeviceAttachment(url: imageURL, readOnly: isReadOnly)
         } else {
