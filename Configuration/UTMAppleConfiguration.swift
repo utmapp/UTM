@@ -620,7 +620,7 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
     func resetDriveSnapShot() throws {
         for i in diskImages.indices {
             if( diskImages[i].runAsSnapshot ) {
-                diskImages[i].resetDriveSnapShot()
+                try diskImages[i].resetDriveSnapShot()
             }
         }
     }
@@ -955,9 +955,9 @@ struct DiskImage: Codable, Hashable, Identifiable {
         }
     }
     
-    func snapshotURL() {
+    func snapshotURL() throws -> URL {
         let snapshotURL = imageURL
-        snapshotURL.appendingPathComponent(".snapshot")
+        snapshotURL = try snapshotURL.appendingPathComponent(".snapshot")
         return snapshotURL
     }
 
