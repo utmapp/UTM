@@ -323,6 +323,8 @@ import Virtualization
                 }
                 fsConfig.share = self?.makeDirectoryShare(from: newShares)
             }
+
+            try appleConfig.resetDriveSnapShot()
         }
         apple = VZVirtualMachine(configuration: appleConfig.apple, queue: vmQueue)
         apple.delegate = self

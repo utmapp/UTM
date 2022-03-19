@@ -616,6 +616,14 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
         }
         return urls
     }
+
+    func resetDriveSnapShot() throws {
+        for i in diskImages.indices {
+            if( diskImages[i].runAsSnapshot ) {
+                diskImages[i].resetDriveSnapShot()
+            }
+        }
+    }
 }
 
 struct Bootloader: Codable {
@@ -947,8 +955,29 @@ struct DiskImage: Codable, Hashable, Identifiable {
         }
     }
     
+    func snapshotURL() {
+        let snapshotURL = imageURL
+        snapshotURL.appendingPathComponent(".snapshot")
+        return snapshotURL
+    }
+
+    func deleteDriveSnapShot() throws {
+        FileManager.default.removeItem( self.snapshotURL() )
+    }
+
+    func resetDriveSnapShot() throws {
+        let snapshotURL = try self.snapshotURL();
+        FileManager.default.removeItem( snapshotURL )
+        try FileManager.default.copyItem( imageURL, snapshotURL )
+    }
+
     func vzDiskImage() throws -> VZDiskImageStorageDeviceAttachment? {
-        // @TODO : Support runAsSnapshot logic
+        if runAsSnapshot, let snapshotURL = try self.snapshotURL() {
+            return try VZDiskImageStorageDeviceAttachment(url: snapshotURL, readOnly: isReadOnly)
+        } else {
+            return nil
+        }
+
         if let imageURL = imageURL {
             return try VZDiskImageStorageDeviceAttachment(url: imageURL, readOnly: isReadOnly)
         } else {
