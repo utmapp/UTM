@@ -617,6 +617,15 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
         return urls
     }
 
+    /// Remove the snapshot URL image, this can be done as part of VM cleanup
+    func cleanupDriveSnapShot() {
+        for i in diskImages.indices {
+            diskImages[i].cleanupDriveSnapShot()
+        }
+    }
+
+    /// Perform a snapshot clone of the current image URL to the snapshot URL
+    /// this is required for the snapshotURL image to "work"
     func resetDriveSnapShot() throws {
         for i in diskImages.indices {
             if( diskImages[i].runAsSnapshot ) {
@@ -955,22 +964,30 @@ struct DiskImage: Codable, Hashable, Identifiable {
         }
     }
     
+    /// Returns the snapshot equivalent URL for the current image
+    /// Does not actually prepare the snapshot (this is done via resetDriveSnapShot)
     func snapshotURL() throws -> URL {
         let snapshotURL = imageURL
         snapshotURL = try snapshotURL.appendingPathComponent(".snapshot")
         return snapshotURL
     }
 
-    func deleteDriveSnapShot() throws {
+    /// Remove the snapshot URL image, this can be done as part of VM cleanup
+    func cleanupDriveSnapShot() {
+        /// this is intentionally allowed to fail, as the file may not exists
         FileManager.default.removeItem( self.snapshotURL() )
     }
 
+    /// Perform a snapshot clone of the current image URL to the snapshot URL
+    /// this is required for the snapshotURL image to "work"
     func resetDriveSnapShot() throws {
         let snapshotURL = try self.snapshotURL();
         FileManager.default.removeItem( snapshotURL )
         try FileManager.default.copyItem( imageURL, snapshotURL )
     }
 
+    /// Return the VZDiskImageStorageDeviceAttachment using the snapshotURL if runAsSnapshot is enabled
+    /// else returns using the imageURL if its configured.
     func vzDiskImage() throws -> VZDiskImageStorageDeviceAttachment? {
         if runAsSnapshot, let snapshotURL = try self.snapshotURL() {
             return try VZDiskImageStorageDeviceAttachment(url: snapshotURL, readOnly: isReadOnly)
