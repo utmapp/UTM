@@ -618,7 +618,7 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
     }
 
     /// Remove the snapshot URL image, this can be done as part of VM cleanup
-    func cleanupDriveSnapShot() {
+    func cleanupDriveSnapShot() throws {
         for i in diskImages.indices {
             diskImages[i].cleanupDriveSnapShot()
         }
@@ -973,7 +973,7 @@ struct DiskImage: Codable, Hashable, Identifiable {
     }
 
     /// Remove the snapshot URL image, this can be done as part of VM cleanup
-    func cleanupDriveSnapShot() {
+    func cleanupDriveSnapShot() throws {
         if let snapshotURL = try snapshotURL() {
             // this is intentionally allowed to return false, as the file may not exists
             try FileManager.default.removeItem( at: snapshotURL )
@@ -989,7 +989,7 @@ struct DiskImage: Codable, Hashable, Identifiable {
         // and make a copy of the provided imageURL
         if let snapshotURL = try snapshotURL() {
             // lets actually perform the path copy
-            try FileManager.default.copyItem( atPath: imageURL, toPath: snapshotURL )
+            try FileManager.default.copyItem( at: imageURL, to: snapshotURL )
         }
     }
 
