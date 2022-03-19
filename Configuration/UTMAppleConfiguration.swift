@@ -976,9 +976,7 @@ struct DiskImage: Codable, Hashable, Identifiable {
     func cleanupDriveSnapShot() {
         if let snapshotURL = snapshotURL() {
             // this is intentionally allowed to return false, as the file may not exists
-            if try? FileManager.default.removeItem( at: snapshotURL ) {
-                // does nothing
-            }
+            try FileManager.default.removeItem( at: snapshotURL )
         }
     }
 
@@ -989,7 +987,7 @@ struct DiskImage: Codable, Hashable, Identifiable {
         cleanupDriveSnapShot()
 
         // and make a copy of the provided imageURL
-        if let snapshotURL = snapshotURL() {
+        if try let snapshotURL = snapshotURL() {
             // lets actually perform the path copy
             try FileManager.default.copyItem( atPath: imageURL, toPath: snapshotURL )
         }
@@ -998,7 +996,7 @@ struct DiskImage: Codable, Hashable, Identifiable {
     /// Return the VZDiskImageStorageDeviceAttachment using the snapshotURL if runAsSnapshot is enabled
     /// else returns using the imageURL if its configured.
     func vzDiskImage() throws -> VZDiskImageStorageDeviceAttachment? {
-        if runAsSnapshot, let snapshotURL = snapshotURL() {
+        if runAsSnapshot, try let snapshotURL = snapshotURL() {
             return try VZDiskImageStorageDeviceAttachment(url: snapshotURL, readOnly: isReadOnly)
         } else {
             return nil
