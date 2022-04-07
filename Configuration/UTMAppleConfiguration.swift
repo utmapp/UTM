@@ -987,7 +987,7 @@ struct DiskImage: Codable, Hashable, Identifiable {
         // and make a copy of the provided imageURL
         if let snapshotURL = try snapshotURL(), let imageURL = imageURL {
             // lets setup the snapshot file 
-            // (currently i have no idea if this optimizes when under APFS)
+            // AFAICT this does a shallow copy on APFS drives
             try FileManager.default.copyItem(at: imageURL, to: snapshotURL)
         }
     }
