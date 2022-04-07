@@ -618,18 +618,18 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
     }
 
     /// Remove the snapshot URL image, this can be done as part of VM cleanup
-    func cleanupDriveSnapShot() throws {
+    func cleanupDriveSnapshot() throws {
         for i in diskImages.indices {
-            try diskImages[i].cleanupDriveSnapShot()
+            try diskImages[i].cleanupDriveSnapshot()
         }
     }
 
     /// Perform a snapshot clone of the current image URL to the snapshot URL
     /// this is required for the snapshotURL image to "work"
-    func setupDriveSnapShot() throws {
+    func setupDriveSnapshot() throws {
         for i in diskImages.indices {
             if( diskImages[i].runAsSnapshot ) {
-                try diskImages[i].setupDriveSnapShot()
+                try diskImages[i].setupDriveSnapshot()
             }
         }
     }
@@ -965,7 +965,7 @@ struct DiskImage: Codable, Hashable, Identifiable {
     }
     
     /// Returns the snapshot equivalent URL for the current image
-    /// Does not actually prepare the snapshot (this is done via setupDriveSnapShot)
+    /// Does not actually prepare the snapshot (this is done via setupDriveSnapshot)
     func snapshotURL() throws -> URL? {
         var snapshotURL = imageURL
         snapshotURL = snapshotURL?.appendingPathComponent(".snapshot")
@@ -973,7 +973,7 @@ struct DiskImage: Codable, Hashable, Identifiable {
     }
 
     /// Remove the snapshot URL image, this can be done as part of VM cleanup
-    func cleanupDriveSnapShot() throws {
+    func cleanupDriveSnapshot() throws {
         if let snapshotURL = try snapshotURL() {
             // this is intentionally allowed to return false, as the file may not exists
             try FileManager.default.removeItem( at: snapshotURL )
@@ -982,9 +982,9 @@ struct DiskImage: Codable, Hashable, Identifiable {
 
     /// Perform a snapshot clone of the current image URL to the snapshot URL
     /// this is required for the snapshotURL image to "work"
-    func setupDriveSnapShot() throws {
+    func setupDriveSnapshot() throws {
         // Perform any needed cleanup first
-        try cleanupDriveSnapShot()
+        try cleanupDriveSnapshot()
 
         // and make a copy of the provided imageURL
         if let snapshotURL = try snapshotURL(), let imageURL = imageURL {
