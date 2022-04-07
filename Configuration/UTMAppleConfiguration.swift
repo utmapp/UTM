@@ -973,8 +973,8 @@ struct DiskImage: Codable, Hashable, Identifiable {
     /// Remove the snapshot URL image, this can be done as part of VM cleanup
     func cleanupDriveSnapshot() throws {
         if let snapshotURL = try snapshotURL() {
-            // this is intentionally allowed to return false, as the file may not exists
-            try FileManager.default.removeItem( at: snapshotURL )
+            // The file may not exists, if so nothing happens
+            try FileManager.default.removeItem(at: snapshotURL)
         }
     }
 
@@ -988,7 +988,7 @@ struct DiskImage: Codable, Hashable, Identifiable {
         if let snapshotURL = try snapshotURL(), let imageURL = imageURL {
             // lets setup the snapshot file 
             // (currently i have no idea if this optimizes when under APFS)
-            try FileManager.default.copyItem( at: imageURL, to: snapshotURL )
+            try FileManager.default.copyItem(at: imageURL, to: snapshotURL)
         }
     }
 
