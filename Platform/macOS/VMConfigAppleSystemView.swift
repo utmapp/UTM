@@ -77,7 +77,7 @@ struct VMConfigAppleSystemView: View {
                     }
 
                     // System wide --snapshot toggle, if enabled this would be set as "true" on all drives
-                    Toggle("Enable 'Run using a snapshot' on all drives", isOn: $config.runAsSnapshot)
+                    Toggle("Enable 'Run using a snapshot' on all drives", isOn: $config.isRunAsSnapshot)
                 }
             }
         }
