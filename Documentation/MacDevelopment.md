@@ -28,15 +28,17 @@ If you want to build the dependencies yourself, it is highly recommended that yo
     - `brew install bison`
     - `brew install gettext`
 
-    > Alternatively you can try the following, if you do not wish to permenantly modify you "$PATH"
+    > Alternatively you can use the following, if you do not wish to permenantly modify you "$PATH" profile
     >    - `export PATH=/opt/homebrew/opt/bison/bin:/opt/homebrew/opt/gettext/bin:$PATH`
     >    - `export PATH=/usr/local/opt/bison/bin:/usr/local/opt/gettext/bin:$PATH`
 
-4. Run either of the following, for the respective ARCH you intend to support
+4. Run either of the following (or both), for the respective ARCH you intend to support
     - `./scripts/build_dependencies.sh -p macos -a arm64`
     - `./scripts/build_dependencies.sh -p macos -a x86_64`
 
-    > Note if you encounter a `'six'` or `'pyparsing' not found in your Python 3 installation` on macOS Monterey. You may need to run the following install command `python3.9 -m pip install --ignore-installed six pyparsing`
+    > Note if you encounter a `'six'` or `'pyparsing' not found in your Python 3 installation` on macOS Monterey. You may need to run the following install command 
+    > - `python3 -m pip install --ignore-installed six pyparsing`
+    > - `python3.9 -m pip install --ignore-installed six pyparsing`
 
 If you want to build universal binaries, you need to run `build_dependencies.sh` for both `arm64` and `x86_64` and then run
 
