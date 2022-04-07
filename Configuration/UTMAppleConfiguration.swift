@@ -633,6 +633,12 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
     /// this is required for the snapshotURL image to "work"
     func setupDriveSnapshot() throws {
         for i in diskImages.indices {
+            // Apply --snapshot on all volumes if its configured systemwide
+            if self.isRunAsSnapshot {
+                diskImages[i].runAsSnapshot = true
+            }
+
+            // Setup the --snapshot on a per drive level
             if diskImages[i].runAsSnapshot {
                 try diskImages[i].setupDriveSnapshot()
             }
