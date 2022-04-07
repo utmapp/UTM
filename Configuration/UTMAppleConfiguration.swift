@@ -628,7 +628,7 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
     /// this is required for the snapshotURL image to "work"
     func setupDriveSnapshot() throws {
         for i in diskImages.indices {
-            if( diskImages[i].runAsSnapshot ) {
+            if diskImages[i].runAsSnapshot {
                 try diskImages[i].setupDriveSnapshot()
             }
         }
@@ -967,9 +967,7 @@ struct DiskImage: Codable, Hashable, Identifiable {
     /// Returns the snapshot equivalent URL for the current image
     /// Does not actually prepare the snapshot (this is done via setupDriveSnapshot)
     func snapshotURL() throws -> URL? {
-        var snapshotURL = imageURL
-        snapshotURL = snapshotURL?.appendingPathComponent(".snapshot")
-        return snapshotURL
+        return imageURL?.appendingPathComponent(".snapshot")
     }
 
     /// Remove the snapshot URL image, this can be done as part of VM cleanup
