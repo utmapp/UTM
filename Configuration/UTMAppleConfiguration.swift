@@ -275,6 +275,7 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
     
     @Published var isSerialEnabled: Bool
     @Published var isConsoleDisplay: Bool
+    @Published var isRunAsSnapshot: Bool
     
     @available(macOS 12, *)
     var isKeyboardEnabled: Bool {
@@ -337,6 +338,7 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
         case isConsoleDisplay
         case isKeyboardEnabled
         case isPointingEnabled
+        case isRunAsSnapshot
     }
     
     init() {
@@ -357,6 +359,7 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
         isAppleVirtualization = true
         isSerialEnabled = false
         isConsoleDisplay = false
+        isRunAsSnapshot = false
         memorySize = 4 * 1024 * 1024 * 1024
         cpuCount = 4
     }
@@ -398,6 +401,7 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
         isEntropyEnabled = try values.decode(Bool.self, forKey: .isEntropyEnabled)
         isSerialEnabled = try values.decode(Bool.self, forKey: .isSerialEnabled)
         isConsoleDisplay = try values.decode(Bool.self, forKey: .isConsoleDisplay)
+        isRunAsSnapshot = try values.decode(Bool.self, forKey: .isRunAsSnapshot)
         name = try values.decode(String.self, forKey: .name)
         architecture = try values.decode(String.self, forKey: .architecture)
         icon = try values.decodeIfPresent(String.self, forKey: .icon)
@@ -435,6 +439,7 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
         try container.encode(isEntropyEnabled, forKey: .isEntropyEnabled)
         try container.encode(isSerialEnabled, forKey: .isSerialEnabled)
         try container.encode(isConsoleDisplay, forKey: .isConsoleDisplay)
+        try container.encode(isRunAsSnapshot, forKey: .isRunAsSnapshot)
         try container.encode(name, forKey: .name)
         try container.encode(architecture, forKey: .architecture)
         try container.encodeIfPresent(icon, forKey: .icon)
