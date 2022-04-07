@@ -1,0 +1,551 @@
+From c74ae160e3ac6d726fd312ba36f5ca4bfed0eb9c Mon Sep 17 00:00:00 2001
+From: Frediano Ziglio <fziglio@redhat.com>
+Date: Wed, 15 Apr 2020 13:36:13 +0100
+Subject: [PATCH 01/10] Fix compatibility with MSG_NOSIGNAL and Darwin
+
+Darwin does not have MSG_NOSIGNAL but allows to set a SO_NOSIGPIPE
+option to disable sending SIGPIPE writing to closed socket.
+Note that *BSD has the SO_NOSIGPIPE option but does not affect all
+write calls so instead continue to use MSG_NOSIGNAL instead on
+that systems.
+
+Signed-off-by: Frediano Ziglio <fziglio@redhat.com>
+---
+ server/net-utils.c  | 12 ++++++++++++
+ server/net-utils.h  |  1 +
+ server/reds.c       |  1 +
+ server/sys-socket.h |  4 ++++
+ 4 files changed, 18 insertions(+)
+
+diff --git a/server/net-utils.c b/server/net-utils.c
+index 144bfd8f..78b94886 100644
+--- a/server/net-utils.c
++++ b/server/net-utils.c
+@@ -150,3 +150,15 @@ int red_socket_get_no_delay(int fd)
+ 
+     return delay_val;
+ }
++
++/**
++ * red_socket_set_nosigpipe
++ * @fd: a socket file descriptor
++ */
++void red_socket_set_nosigpipe(int fd, bool enable)
++{
++#if defined(SO_NOSIGPIPE) && defined(__APPLE__)
++    int val = !!enable;
++    setsockopt(fd, SOL_SOCKET, SO_NOSIGPIPE, (const void *) &val, sizeof(val));
++#endif
++}
+diff --git a/server/net-utils.h b/server/net-utils.h
+index f95d689a..b93ec0ab 100644
+--- a/server/net-utils.h
++++ b/server/net-utils.h
+@@ -24,5 +24,6 @@ bool red_socket_set_keepalive(int fd, bool enable, int timeout);
+ bool red_socket_set_no_delay(int fd, bool no_delay);
+ int red_socket_get_no_delay(int fd);
+ bool red_socket_set_non_blocking(int fd, bool non_blocking);
++void red_socket_set_nosigpipe(int fd, bool enable);
+ 
+ #endif /* RED_NET_UTILS_H_ */
+diff --git a/server/reds.c b/server/reds.c
+index ee8cf387..d91b32b0 100644
+--- a/server/reds.c
++++ b/server/reds.c
+@@ -2458,6 +2458,7 @@ static RedLinkInfo *reds_init_client_connection(RedsState *reds, int socket)
+     }
+ 
+     red_socket_set_keepalive(socket, TRUE, KEEPALIVE_TIMEOUT);
++    red_socket_set_nosigpipe(socket, true);
+ 
+     link = g_new0(RedLinkInfo, 1);
+     link->reds = reds;
+diff --git a/server/sys-socket.h b/server/sys-socket.h
+index 3a3b7878..2935cfb5 100644
+--- a/server/sys-socket.h
++++ b/server/sys-socket.h
+@@ -139,4 +139,8 @@ int socket_newpair(int type, int protocol, int sv[2]);
+ #define socketpair(family, type, protocol, sv) socket_newpair(type, protocol, sv)
+ #endif
+ 
++#if defined(SO_NOSIGPIPE) && defined(__APPLE__)
++#define MSG_NOSIGNAL 0
++#endif
++
+ #endif // RED_SYS_SOCKET_H_
+-- 
+2.32.0 (Apple Git-132)
+
+From c3ca9e8db128fb8e9fa033f8f1aabb96514f6f94 Mon Sep 17 00:00:00 2001
+From: Frediano Ziglio <fziglio@redhat.com>
+Date: Wed, 15 Apr 2020 14:30:37 +0100
+Subject: [PATCH 02/10] Fix compatibility with pthread_setname_np and Darwin
+
+On Darwin pthread_setname_np accepts only an argument and
+set current thread name.
+
+Signed-off-by: Frediano Ziglio <fziglio@redhat.com>
+---
+ server/red-worker.c | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/server/red-worker.c b/server/red-worker.c
+index 12a8e739..2f07337e 100644
+--- a/server/red-worker.c
++++ b/server/red-worker.c
+@@ -1120,6 +1120,9 @@ static void *red_worker_main(void *arg)
+     RedWorker *worker = arg;
+ 
+     spice_debug("begin");
++#if defined(__APPLE__)
++    pthread_setname_np("SPICE Worker");
++#endif
+     SPICE_VERIFY(MAX_PIPE_SIZE > WIDE_CLIENT_ACK_WINDOW &&
+            MAX_PIPE_SIZE > NARROW_CLIENT_ACK_WINDOW); //ensure wakeup by ack message
+ 
+@@ -1159,7 +1162,9 @@ bool red_worker_run(RedWorker *worker)
+ #ifndef _WIN32
+     pthread_sigmask(SIG_SETMASK, &curr_sig_mask, NULL);
+ #endif
++#if !defined(__APPLE__)
+     pthread_setname_np(worker->thread, "SPICE Worker");
++#endif
+ 
+     return r == 0;
+ }
+-- 
+2.32.0 (Apple Git-132)
+
+From d728111a51c8c08806e78c3b0d46d92a048b865a Mon Sep 17 00:00:00 2001
+From: Frediano Ziglio <fziglio@redhat.com>
+Date: Wed, 15 Apr 2020 14:35:10 +0100
+Subject: [PATCH 03/10] Fix compatibility with mremap and Darwin
+
+Darwin does not have mremap. Use munmap+mmap instead.
+That code is not in a hot path, number of nodes do not change very
+often.
+
+Signed-off-by: Frediano Ziglio <fziglio@redhat.com>
+---
+ tools/reds_stat.c | 7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
+
+diff --git a/tools/reds_stat.c b/tools/reds_stat.c
+index deffec1b..7d35c45b 100644
+--- a/tools/reds_stat.c
++++ b/tools/reds_stat.c
+@@ -86,7 +86,6 @@ int main(int argc, char **argv)
+     pid_t kvm_pid = 0;
+     uint32_t num_of_nodes = 0;
+     size_t shm_size;
+-    size_t shm_old_size;
+     int shm_name_len;
+     int ret = EXIT_FAILURE;
+     int fd;
+@@ -142,11 +141,11 @@ int main(int argc, char **argv)
+         printf("spice statistics\n\n");
+         if (num_of_nodes != reds_stat->num_of_nodes) {
+             num_of_nodes = reds_stat->num_of_nodes;
+-            shm_old_size = shm_size;
++            munmap(reds_stat, shm_size);
+             shm_size = header_size + num_of_nodes * sizeof(SpiceStatNode);
+-            reds_stat = mremap(reds_stat, shm_old_size, shm_size, MREMAP_MAYMOVE);
++            reds_stat = (SpiceStat *)mmap(NULL, shm_size, PROT_READ, MAP_SHARED, fd, 0);
+             if (reds_stat == (SpiceStat *)MAP_FAILED) {
+-                perror("mremap");
++                perror("mmap");
+                 goto error;
+             }
+             reds_nodes = (SpiceStatNode *)((char *) reds_stat + header_size);
+-- 
+2.32.0 (Apple Git-132)
+
+From 20e058fd9ba28892adffc8d2ade809b698577756 Mon Sep 17 00:00:00 2001
+From: Frediano Ziglio <fziglio@redhat.com>
+Date: Wed, 15 Apr 2020 20:47:05 +0100
+Subject: [PATCH 04/10] Fix compatibility with TCP_KEEPIDLE and Darwin
+
+Darwin uses for the same setting the TCP_KEEPALIVE option.
+Use TCP_KEEPALIVE instead of TCP_KEEPIDLE for Darwin.
+
+Signed-off-by: Frediano Ziglio <fziglio@redhat.com>
+---
+ server/net-utils.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/server/net-utils.c b/server/net-utils.c
+index 78b94886..32ceb3b8 100644
+--- a/server/net-utils.c
++++ b/server/net-utils.c
+@@ -35,6 +35,10 @@
+ #include "net-utils.h"
+ #include "sys-socket.h"
+ 
++#if !defined(TCP_KEEPIDLE) && defined(TCP_KEEPALIVE) && defined(__APPLE__)
++#define TCP_KEEPIDLE TCP_KEEPALIVE
++#endif
++
+ /**
+  * red_socket_set_keepalive:
+  * @fd: a socket file descriptor
+@@ -57,7 +61,7 @@ bool red_socket_set_keepalive(int fd, bool enable, int timeout)
+         return true;
+     }
+ 
+-#ifdef HAVE_TCP_KEEPIDLE
++#ifdef TCP_KEEPIDLE
+     if (setsockopt(fd, IPPROTO_TCP, TCP_KEEPIDLE, &timeout, sizeof(timeout)) == -1) {
+         if (errno != ENOTSUP) {
+             g_warning("setsockopt for keepalive timeout failed, %s", strerror(errno));
+-- 
+2.32.0 (Apple Git-132)
+
+From eb21efe8e5d6fa2cc893b1f7fec356fd06834d30 Mon Sep 17 00:00:00 2001
+From: Frediano Ziglio <fziglio@redhat.com>
+Date: Wed, 15 Apr 2020 20:50:56 +0100
+Subject: [PATCH 05/10] Fix compatibility with ENOTSUP and Darwin
+
+Darwin uses also the constant EOPNOTSUPP for the same reasons.
+In some versions EOPNOTSUPP is defined as ENOTSUP.
+Check both values, not only ENOTSUP.
+
+Signed-off-by: Frediano Ziglio <fziglio@redhat.com>
+---
+ server/net-utils.c | 12 +++++++++---
+ 1 file changed, 9 insertions(+), 3 deletions(-)
+
+diff --git a/server/net-utils.c b/server/net-utils.c
+index 32ceb3b8..f0aecc3d 100644
+--- a/server/net-utils.c
++++ b/server/net-utils.c
+@@ -39,6 +39,12 @@
+ #define TCP_KEEPIDLE TCP_KEEPALIVE
+ #endif
+ 
++#if defined(EOPNOTSUPP) && EOPNOTSUPP != ENOTSUP
++#define NOTSUP_ERROR(err) ((err) == ENOTSUP || (err) == EOPNOTSUPP)
++#else
++#define NOTSUP_ERROR(err) ((err) == ENOTSUP)
++#endif
++
+ /**
+  * red_socket_set_keepalive:
+  * @fd: a socket file descriptor
+@@ -51,7 +57,7 @@ bool red_socket_set_keepalive(int fd, bool enable, int timeout)
+     int keepalive = !!enable;
+ 
+     if (setsockopt(fd, SOL_SOCKET, SO_KEEPALIVE, &keepalive, sizeof(keepalive)) == -1) {
+-        if (errno != ENOTSUP) {
++        if (!NOTSUP_ERROR(errno)) {
+             g_warning("setsockopt for keepalive failed, %s", strerror(errno));
+             return false;
+         }
+@@ -63,7 +69,7 @@ bool red_socket_set_keepalive(int fd, bool enable, int timeout)
+ 
+ #ifdef TCP_KEEPIDLE
+     if (setsockopt(fd, IPPROTO_TCP, TCP_KEEPIDLE, &timeout, sizeof(timeout)) == -1) {
+-        if (errno != ENOTSUP) {
++        if (!NOTSUP_ERROR(errno)) {
+             g_warning("setsockopt for keepalive timeout failed, %s", strerror(errno));
+             return false;
+         }
+@@ -86,7 +92,7 @@ bool red_socket_set_no_delay(int fd, bool no_delay)
+ 
+     if (setsockopt(fd, IPPROTO_TCP, TCP_NODELAY,
+                    &optval, sizeof(optval)) != 0) {
+-        if (errno != ENOTSUP && errno != ENOPROTOOPT) {
++        if (!NOTSUP_ERROR(errno) && errno != ENOPROTOOPT) {
+             spice_warning("setsockopt failed, %s", strerror(errno));
+             return false;
+         }
+-- 
+2.32.0 (Apple Git-132)
+
+From f93264cb497ea3ab45d35ab3e03546d1cdaa1600 Mon Sep 17 00:00:00 2001
+From: Frediano Ziglio <fziglio@redhat.com>
+Date: Wed, 15 Apr 2020 21:15:34 +0100
+Subject: [PATCH 06/10] Fix compatibility with TCP sockets and Darwin
+
+Using socket pairs and trying to set a TCP level option on the
+socket setsockopt returns EINVAL error and not ENOTSUP as
+expected.
+Check this case and handle as ENOTSUP (ignoring it).
+
+Signed-off-by: Frediano Ziglio <fziglio@redhat.com>
+---
+ server/net-utils.c | 26 +++++++++++++++++++++++---
+ 1 file changed, 23 insertions(+), 3 deletions(-)
+
+diff --git a/server/net-utils.c b/server/net-utils.c
+index f0aecc3d..e9778e73 100644
+--- a/server/net-utils.c
++++ b/server/net-utils.c
+@@ -45,6 +45,25 @@
+ #define NOTSUP_ERROR(err) ((err) == ENOTSUP)
+ #endif
+ 
++static inline bool
++darwin_einval_on_unix_socket(int fd, int err)
++{
++#if defined(__APPLE__)
++    if (err == EINVAL) {
++        union {
++            struct sockaddr sa;
++            char buf[1024];
++        } addr;
++        socklen_t len = sizeof(addr);
++
++        if (getsockname(fd, &addr.sa, &len) == 0 && addr.sa.sa_family == AF_UNIX) {
++            return true;
++        }
++    }
++#endif
++    return false;
++}
++
+ /**
+  * red_socket_set_keepalive:
+  * @fd: a socket file descriptor
+@@ -57,7 +76,7 @@ bool red_socket_set_keepalive(int fd, bool enable, int timeout)
+     int keepalive = !!enable;
+ 
+     if (setsockopt(fd, SOL_SOCKET, SO_KEEPALIVE, &keepalive, sizeof(keepalive)) == -1) {
+-        if (!NOTSUP_ERROR(errno)) {
++        if (!NOTSUP_ERROR(errno) && !darwin_einval_on_unix_socket(fd, errno)) {
+             g_warning("setsockopt for keepalive failed, %s", strerror(errno));
+             return false;
+         }
+@@ -69,7 +88,7 @@ bool red_socket_set_keepalive(int fd, bool enable, int timeout)
+ 
+ #ifdef TCP_KEEPIDLE
+     if (setsockopt(fd, IPPROTO_TCP, TCP_KEEPIDLE, &timeout, sizeof(timeout)) == -1) {
+-        if (!NOTSUP_ERROR(errno)) {
++        if (!NOTSUP_ERROR(errno) && !darwin_einval_on_unix_socket(fd, errno)) {
+             g_warning("setsockopt for keepalive timeout failed, %s", strerror(errno));
+             return false;
+         }
+@@ -92,7 +111,8 @@ bool red_socket_set_no_delay(int fd, bool no_delay)
+ 
+     if (setsockopt(fd, IPPROTO_TCP, TCP_NODELAY,
+                    &optval, sizeof(optval)) != 0) {
+-        if (!NOTSUP_ERROR(errno) && errno != ENOPROTOOPT) {
++        if (!NOTSUP_ERROR(errno) && errno != ENOPROTOOPT &&
++            !darwin_einval_on_unix_socket(fd, errno)) {
+             spice_warning("setsockopt failed, %s", strerror(errno));
+             return false;
+         }
+-- 
+2.32.0 (Apple Git-132)
+
+From 2e6271dbbab76e3868a6cee1c9a800d87ccd30a1 Mon Sep 17 00:00:00 2001
+From: osy <osy@turing.llc>
+Date: Fri, 4 Mar 2022 19:17:58 -0800
+Subject: [PATCH 07/10] red-stream: disable socket_set_cork() on Darwin
+
+TCP_NOPUSH is broken and cannot be used.
+---
+ server/red-stream.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/server/red-stream.c b/server/red-stream.c
+index 2c13aa2f..77d44c9a 100644
+--- a/server/red-stream.c
++++ b/server/red-stream.c
+@@ -42,7 +42,7 @@
+ #include "websocket.h"
+ 
+ // compatibility for *BSD systems
+-#if !defined(TCP_CORK) && !defined(_WIN32)
++#if !defined(TCP_CORK) && !defined(_WIN32) && !defined(__APPLE__)
+ #define TCP_CORK TCP_NOPUSH
+ #endif
+ 
+@@ -105,7 +105,8 @@ struct RedStreamPrivate {
+     SpiceCoreInterfaceInternal *core;
+ };
+ 
+-#ifndef _WIN32
++// TCP_NOPUSH is broken on Darwin
++#if !defined(_WIN32) && !defined(__APPLE__)
+ /**
+  * Set TCP_CORK on socket
+  */
+-- 
+2.32.0 (Apple Git-132)
+
+From 740fb04a95ff2a5aebd67f488e7d6f19b62fe3c1 Mon Sep 17 00:00:00 2001
+From: osy <osy@turing.llc>
+Date: Fri, 4 Mar 2022 19:20:06 -0800
+Subject: [PATCH 08/10] meson: fix build on Darwin
+
+---
+ meson.build              | 4 +++-
+ server/tests/meson.build | 6 +++++-
+ tools/meson.build        | 2 +-
+ 3 files changed, 9 insertions(+), 3 deletions(-)
+
+diff --git a/meson.build b/meson.build
+index f8f89798..6d0a35a1 100644
+--- a/meson.build
++++ b/meson.build
+@@ -102,7 +102,9 @@ foreach dep : ['libjpeg', 'zlib']
+   spice_server_deps += dependency(dep)
+ endforeach
+ 
+-if host_machine.system() != 'windows'
++if host_machine.system() in ['darwin', 'ios']
++  # librt and libm not required
++elif host_machine.system() != 'windows'
+   foreach dep : ['librt', 'libm']
+     spice_server_deps += compiler.find_library(dep)
+   endforeach
+diff --git a/server/tests/meson.build b/server/tests/meson.build
+index 09ba0f22..7e1bbf73 100644
+--- a/server/tests/meson.build
++++ b/server/tests/meson.build
+@@ -72,8 +72,12 @@ if host_machine.system() != 'windows'
+   tests += [
+     ['test-stream', true],
+     ['test-stat-file', true],
+-    ['test-websocket', false],
+   ]
++  if host_machine.system() not in ['darwin', 'ios']
++    tests += [
++      ['test-websocket', false],
++    ]
++  endif
+ endif
+ 
+ if spice_server_has_gstreamer
+diff --git a/tools/meson.build b/tools/meson.build
+index 8ec2cc91..4962f63d 100644
+--- a/tools/meson.build
++++ b/tools/meson.build
+@@ -1,4 +1,4 @@
+-if host_machine.system() != 'windows'
++if host_machine.system() not in ['ios', 'windows']
+   executable('reds_stat', 'reds_stat.c',
+              install : false,
+              include_directories : spice_server_include,
+-- 
+2.32.0 (Apple Git-132)
+
+From a411fbcb321347356a78126e923bd49aa91381df Mon Sep 17 00:00:00 2001
+From: osy <osy@turing.llc>
+Date: Fri, 4 Mar 2022 19:23:44 -0800
+Subject: [PATCH 09/10] reds: always send monitors config
+
+When the Windows VDagent sees a new monitor config, it will trigger a
+refresh of the display resolution. This is needed when the device driver
+does not have the capability to see the resolution change directly from
+QEMU (for example VirtIO GPU) and depends on VDagent to see the change.
+---
+ server/reds.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/server/reds.c b/server/reds.c
+index d91b32b0..9513b5cf 100644
+--- a/server/reds.c
++++ b/server/reds.c
+@@ -1256,7 +1256,7 @@ void reds_on_main_agent_data(RedsState *reds, MainChannelClient *mcc, const void
+         return;
+     case AGENT_MSG_FILTER_MONITORS_CONFIG:
+         reds_on_main_agent_monitors_config(reds, mcc, message, size);
+-        return;
++        break;
+     case AGENT_MSG_FILTER_PROTO_ERROR:
+         red_channel_client_shutdown(RED_CHANNEL_CLIENT(mcc));
+         return;
+-- 
+2.32.0 (Apple Git-132)
+
+From e32a7ea61569b7771f0ef655fba86f6d23d53d31 Mon Sep 17 00:00:00 2001
+From: osy <osy@turing.llc>
+Date: Fri, 4 Mar 2022 20:09:34 -0800
+Subject: [PATCH 10/10] gstreamer-encoder: work without Orc
+
+If Orc is missing, GStreamer will still work.
+---
+ meson.build                |  6 +++++-
+ server/gstreamer-encoder.c | 11 +++++++++++
+ 2 files changed, 16 insertions(+), 1 deletion(-)
+
+diff --git a/meson.build b/meson.build
+index 6d0a35a1..f8ad4f07 100644
+--- a/meson.build
++++ b/meson.build
+@@ -134,7 +134,11 @@ if spice_server_gst_version != 'no'
+     dep = '@0@-@1@'.format(dep, spice_server_gst_version)
+     spice_server_deps += dependency(dep)
+   endforeach
+-  spice_server_deps += dependency('orc-0.4')
++  orc_dep = dependency('orc-0.4', required : false)
++  if orc_dep.found()
++    spice_server_deps += orc_dep
++    spice_server_config_data.set('HAVE_GST_ORC', '1')
++  endif
+ 
+   gst_def = 'HAVE_GSTREAMER'
+   if spice_server_gst_version == '1.0'
+diff --git a/server/gstreamer-encoder.c b/server/gstreamer-encoder.c
+index 3ca04d7a..238463f2 100644
+--- a/server/gstreamer-encoder.c
++++ b/server/gstreamer-encoder.c
+@@ -25,7 +25,9 @@
+ #include <gst/app/gstappsrc.h>
+ #include <gst/app/gstappsink.h>
+ #include <gst/video/video.h>
++#ifdef HAVE_GST_ORC
+ #include <orc/orcprogram.h>
++#endif
+ 
+ #include "red-common.h"
+ #include "video-encoder.h"
+@@ -1705,6 +1707,7 @@ static void spice_gst_encoder_get_stats(VideoEncoder *video_encoder,
+     }
+ }
+ 
++#ifdef HAVE_GST_ORC
+ /* Check if ORC library can work.
+  * ORC library is used quite extensively by GStreamer
+  * to generate code dynamically. If ORC cannot work, GStreamer
+@@ -1728,6 +1731,14 @@ static bool orc_check(void)
+     }
+     return orc_dynamic_code_ok;
+ }
++#else // HAVE_GST_ORC
++/* If we don't have Orc, GStreamer will still work
++ */
++static bool orc_check(void)
++{
++    return true;
++}
++#endif
+ 
+ VideoEncoder *gstreamer_encoder_new(SpiceVideoCodecType codec_type,
+                                     uint64_t starting_bit_rate,
+-- 
+2.32.0 (Apple Git-132)
+
+--- a/subprojects/spice-common/meson.build	2022-03-04 19:26:32.000000000 -0800
++++ b/subprojects/spice-common/meson.build	2022-03-04 19:26:03.000000000 -0800
+@@ -14,7 +14,9 @@
+                               '-Wall',
+                               '-Wextra',
+                               '-Werror',
+-                              '-Wno-unused-parameter']
++                              '-Wno-unused-parameter',
++                              '-Wno-unused-function',
++                              '-Wno-deprecated-declarations']
+ 
+ if get_option('alignment-checks')
+   spice_common_global_cflags += ['-DSPICE_DEBUG_ALIGNMENT']
+@@ -137,7 +139,7 @@
+ if get_option('python-checks')
+   foreach module : ['six', 'pyparsing']
+     message('Checking for python module @0@'.format(module))
+-    cmd = run_command(python, '-m', module)
++    cmd = run_command(python, '-c', 'import @0@'.format(module))
+     if cmd.returncode() != 0
+       error('Python module @0@ not found'.format(module))
+     endif

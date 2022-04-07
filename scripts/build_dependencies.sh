@@ -53,7 +53,14 @@ usage () {
     exit 1
 }
 
+python_module_test () {
+    python3 -c "import $1"
+}
+
 check_env () {
+    command -v python3 >/dev/null 2>&1 || { echo >&2 "${RED}You must install 'python3' on your host machine.${NC}"; exit 1; }
+    python_module_test six >/dev/null 2>&1 || { echo >&2 "${RED}'six' not found in your Python 3 installation.${NC}"; exit 1; }
+    python_module_test pyparsing >/dev/null 2>&1 || { echo >&2 "${RED}'pyparsing' not found in your Python 3 installation.${NC}"; exit 1; }
     command -v gmake >/dev/null 2>&1 || { echo >&2 "${RED}You must install GNU make on your host machine (and link it to 'gmake').${NC}"; exit 1; }
     command -v meson >/dev/null 2>&1 || { echo >&2 "${RED}You must install 'meson' on your host machine.${NC}"; exit 1; }
     command -v msgfmt >/dev/null 2>&1 || { echo >&2 "${RED}You must install 'gettext' on your host machine.\n\t'msgfmt' needs to be in your \$PATH as well.${NC}"; exit 1; }
@@ -239,9 +246,9 @@ build_pkg_config() {
         env -i ./configure --prefix="$PREFIX" --bindir="$PREFIX/host/bin" --with-internal-glib $@
     fi
     echo "${GREEN}Building ${NAME}...${NC}"
-    make "$MAKEFLAGS"
+    make -j$NCPU
     echo "${GREEN}Installing ${NAME}...${NC}"
-    make "$MAKEFLAGS" install
+    make install
     cd "$pwd"
 
     export PATH="$PREFIX/host/bin:$PATH"
@@ -315,9 +322,9 @@ build_openssl() {
         ./Configure $OPENSSL_CROSS no-dso no-hw no-engine --prefix="$PREFIX" $@
     fi
     echo "${GREEN}Building ${NAME}...${NC}"
-    make "$MAKEFLAGS"
+    make -j$NCPU
     echo "${GREEN}Installing ${NAME}...${NC}"
-    make "$MAKEFLAGS" install
+    make install
     cd "$pwd"
 }
 
@@ -335,9 +342,9 @@ build () {
         ./configure --prefix="$PREFIX" --host="$CHOST" $@
     fi
     echo "${GREEN}Building ${NAME}...${NC}"
-    make "$MAKEFLAGS"
+    make -j$NCPU
     echo "${GREEN}Installing ${NAME}...${NC}"
-    make "$MAKEFLAGS" install
+    make install
     cd "$pwd"
 }
 
@@ -364,7 +371,7 @@ meson_build () {
         meson utm_build --prefix="$PREFIX" --buildtype=plain --cross-file "$MESON_CROSS" "$@"
     fi
     echo "${GREEN}Building ${NAME}...${NC}"
-    meson compile -C utm_build
+    meson compile -C utm_build -j $NCPU
     echo "${GREEN}Installing ${NAME}...${NC}"
     meson install -C utm_build
     cd "$pwd"
@@ -375,7 +382,7 @@ build_angle () {
     export PATH="$(realpath "$BUILD_DIR/depot_tools.git"):$OLD_PATH"
     pwd="$(pwd)"
     cd "$BUILD_DIR/angle.git"
-    DEPOT_TOOLS_UPDATE=0 python2 scripts/bootstrap.py
+    DEPOT_TOOLS_UPDATE=0 python3 scripts/bootstrap.py
     DEPOT_TOOLS_UPDATE=0 gclient sync
     case $PLATFORM in
     ios* )
@@ -442,12 +449,15 @@ build_qemu_dependencies () {
     build $PIXMAN_SRC
     build_openssl $OPENSSL_SRC
     build $OPUS_SRC
-    build $SPICE_PROTOCOL_SRC
-    build $SPICE_SERVER_SRC
+    meson_build $GST_SRC -Dtests=disabled -Ddefault_library=both -Dregistry=false
+    meson_build $GST_BASE_SRC -Dtests=disabled -Ddefault_library=both
+    meson_build $GST_GOOD_SRC -Dtests=disabled -Ddefault_library=both
+    meson_build $SPICE_PROTOCOL_SRC
+    meson_build $SPICE_SERVER_SRC -Dlz4=false -Dsasl=false
     # USB support
     if [ -z "$SKIP_USB_BUILD" ]; then
         build $USB_SRC
-        build $USBREDIR_SRC
+        meson_build $USBREDIR_SRC
     fi
     # GPU support
     build_angle
@@ -461,22 +471,19 @@ build_qemu () {
     echo "${GREEN}Configuring QEMU...${NC}"
     ./configure --prefix="$PREFIX" --host="$CHOST" --cross-prefix="" $@
     echo "${GREEN}Building QEMU...${NC}"
-    gmake "$MAKEFLAGS"
+    gmake -j$NCPU
     echo "${GREEN}Installing QEMU...${NC}"
-    gmake "$MAKEFLAGS" install
+    gmake install
     cd "$pwd"
 }
 
 build_spice_client () {
     meson_build "$QEMU_DIR/subprojects/libucontext" -Ddefault_library=static -Dfreestanding=true
-    build $JSON_GLIB_SRC
-    meson_build $GST_SRC -Dtests=disabled -Ddefault_library=both -Dregistry=false
-    meson_build $GST_BASE_SRC -Dtests=disabled -Ddefault_library=both
-    meson_build $GST_GOOD_SRC -Dtests=disabled -Ddefault_library=both
+    meson_build $JSON_GLIB_SRC -Dintrospection=disabled
     build $XML2_SRC --enable-shared=no --without-python
-    build $SOUP_SRC --without-gnome --without-krb5-config --enable-shared=no --disable-tls-check
-    build $PHODAV_SRC
-    build $SPICE_CLIENT_SRC --with-gtk=no
+    meson_build $SOUP_SRC --default-library static -Dsysprof=disabled -Dtls_check=false -Dintrospection=disabled
+    meson_build $PHODAV_SRC
+    meson_build $SPICE_CLIENT_SRC -Dcoroutine=libucontext -Dusb-cd=disabled
 }
 
 fixup () {
@@ -729,12 +736,10 @@ CFLAGS="$CFLAGS -arch $ARCH -isysroot $SDKROOT -I$PREFIX/include $CFLAGS_MINVER 
 CPPFLAGS="$CPPFLAGS -arch $ARCH -isysroot $SDKROOT -I$PREFIX/include $CFLAGS_MINVER $CFLAGS_TARGET"
 CXXFLAGS="$CXXFLAGS -arch $ARCH -isysroot $SDKROOT -I$PREFIX/include $CFLAGS_MINVER $CFLAGS_TARGET"
 LDFLAGS="$LDFLAGS -arch $ARCH -isysroot $SDKROOT -L$PREFIX/lib $CFLAGS_MINVER $CFLAGS_TARGET"
-MAKEFLAGS="-j$NCPU"
 export CFLAGS
 export CPPFLAGS
 export CXXFLAGS
 export LDFLAGS
-export MAKEFLAGS
 
 check_env
 

@@ -50,13 +50,14 @@ jobs:
       - name: Setup Path
         shell: bash
         run: |
-          echo "/usr/local/opt/gettext/bin" >> $GITHUB_PATH
           echo "/usr/local/opt/bison/bin" >> $GITHUB_PATH
       - name: Build Sysroot
         if: steps.cache-sysroot.outputs.cache-hit != 'true'
         run: |
           brew uninstall cmake
-          brew install bison pkg-config nasm make meson glib
+          brew install bison pkg-config nasm make meson glib python3
+          brew unlink python && brew link python@3.10
+          pip3 install six pyparsing
           rm -f /usr/local/lib/pkgconfig/*.pc
           ./scripts/build_dependencies.sh -p ${{ matrix.platform }} -a ${{ matrix.arch }}
       - name: Compress Sysroot
