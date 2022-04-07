@@ -626,10 +626,10 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
 
     /// Perform a snapshot clone of the current image URL to the snapshot URL
     /// this is required for the snapshotURL image to "work"
-    func resetDriveSnapShot() throws {
+    func setupDriveSnapShot() throws {
         for i in diskImages.indices {
             if( diskImages[i].runAsSnapshot ) {
-                try diskImages[i].resetDriveSnapShot()
+                try diskImages[i].setupDriveSnapShot()
             }
         }
     }
@@ -965,7 +965,7 @@ struct DiskImage: Codable, Hashable, Identifiable {
     }
     
     /// Returns the snapshot equivalent URL for the current image
-    /// Does not actually prepare the snapshot (this is done via resetDriveSnapShot)
+    /// Does not actually prepare the snapshot (this is done via setupDriveSnapShot)
     func snapshotURL() throws -> URL? {
         var snapshotURL = imageURL
         snapshotURL = snapshotURL?.appendingPathComponent(".snapshot")
@@ -982,7 +982,7 @@ struct DiskImage: Codable, Hashable, Identifiable {
 
     /// Perform a snapshot clone of the current image URL to the snapshot URL
     /// this is required for the snapshotURL image to "work"
-    func resetDriveSnapShot() throws {
+    func setupDriveSnapShot() throws {
         // Perform any needed cleanup first
         try cleanupDriveSnapShot()
 

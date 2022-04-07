@@ -332,7 +332,7 @@ import Virtualization
         }
 
         // This perform any reset's needed for the "--snapshot" feature (if its in use)
-        try appleConfig.resetDriveSnapShot()
+        try appleConfig.setupDriveSnapShot()
 
         apple = VZVirtualMachine(configuration: appleConfig.apple, queue: vmQueue)
         apple.delegate = self
