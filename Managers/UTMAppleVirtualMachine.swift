@@ -190,6 +190,12 @@ import Virtualization
                 }
             }
         }
+
+
+        // This perform any cleanup for the "--snapshot" feature, 
+        // if it was initialized previously
+        try appleConfig.cleanupDriveSnapShot()
+
     }
     
     override func vmStop(force: Bool) async throws {
@@ -323,9 +329,11 @@ import Virtualization
                 }
                 fsConfig.share = self?.makeDirectoryShare(from: newShares)
             }
-
-            try appleConfig.resetDriveSnapShot()
         }
+
+        // This perform any reset's needed for the "--snapshot" feature (if its in use)
+        try appleConfig.resetDriveSnapShot()
+
         apple = VZVirtualMachine(configuration: appleConfig.apple, queue: vmQueue)
         apple.delegate = self
     }
