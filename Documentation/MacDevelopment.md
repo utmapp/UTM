@@ -20,12 +20,23 @@ The easy way is to get the prebuilt dependences from [GitHub Actions][1]. Pick t
 If you want to build the dependencies yourself, it is highly recommended that you start with a fresh macOS VM. This is because some of the dependencies attempt to use `/usr/local/lib` even though the architecture does not match. Certain installed packages like `libusb`, `gawk`, and `cmake` will break the build.
 
 1. Install Xcode with its command line tools (`xcode-select --install`) and [Homebrew][1]
+
 2. Install the following build prerequisites
-    `brew install bison pkg-config gettext glib libgpg-error nasm make meson`
-   Make sure to add `bison` and `gettext` to your `$PATH` environment variable!
-	`export PATH=/usr/local/opt/bison/bin:/usr/local/opt/gettext/bin:$PATH`
-3. Run `./scripts/build_dependencies.sh -p macos -a ARCH` where `ARCH` is either `arm64` or `x86_64`.
-   - Note if you encounter a 'six' or 'pyparsing' not found in your Python 3 installation, on macOS Monterey. You may need to run the following install command `python3.9 -m pip install --ignore-installed six pyparsing`. Avoid installing pipx via brew as it adds to the confusion.
+    - `brew install pkg-config gettext glib libgpg-error nasm make meson`
+
+3. Install the additional build prerequesites, and follow the homebrew instructions on adding them to your "$PATH" when given one by one
+    - `brew install bison`
+    - `brew install gettext`
+
+    > Alternatively you can try the following, if you do not wish to permenantly modify you "$PATH"
+    >    - `export PATH=/opt/homebrew/opt/bison/bin:/opt/homebrew/opt/gettext/bin:$PATH`
+    >    - `export PATH=/usr/local/opt/bison/bin:/usr/local/opt/gettext/bin:$PATH`
+
+4. Run either of the following, for the respective ARCH you intend to support
+    - `./scripts/build_dependencies.sh -p macos -a arm64`
+    - `./scripts/build_dependencies.sh -p macos -a x86_64`
+
+    > Note if you encounter a `'six'` or `'pyparsing' not found in your Python 3 installation` on macOS Monterey. You may need to run the following install command `python3.9 -m pip install --ignore-installed six pyparsing`
 
 If you want to build universal binaries, you need to run `build_dependencies.sh` for both `arm64` and `x86_64` and then run
 
