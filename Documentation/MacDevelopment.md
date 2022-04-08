@@ -11,34 +11,30 @@ git clone --recursive https://github.com/utmapp/UTM.git
 
 Alternatively, run `git submodule update --init --recursive` after cloning if you did not do a recursive clone.
 
-## Dependencies
+## Downloading PreBuilt SysRoot Dependencies
 
-The easy way is to get the prebuilt dependences from [GitHub Actions][1]. Pick the latest release and download all of the `Sysroot-macos-*` artifacts. You need to be logged in to GitHub to download artifacts. If you only intend to run locally, it is alright to just download the sysroot for your architecture.
+The easiest way is to get the prebuilt dependences from Github.
 
-### Building Dependencies (Advanced)
+- Find the list of [release builds here][1]. 
+- Pick the latest release and download all of the `Sysroot-macos-*` artifacts for the architecture you will need (you will need to be signed in to a github account). If you only intend to run locally, it is alright to just download the sysroot for your architecture.
+- Unpack them into the UTM project folder. You should have a "folder" per architecture (see screenshot for an example)
+
+![Example of prebuilt sysroot](./imgs/prebuilt-sysroot.png)
+
+### Building SysRoot Dependencies (Advanced)
+
+| This is optional, and is only necessary if you changed stuff with Qemu or the patches.
 
 If you want to build the dependencies yourself, it is highly recommended that you start with a fresh macOS VM. This is because some of the dependencies attempt to use `/usr/local/lib` even though the architecture does not match. Certain installed packages like `libusb`, `gawk`, and `cmake` will break the build.
 
-1. Install Xcode with its command line tools (`xcode-select --install`) and [Homebrew][1]
+If you want to build the dependencies yourself, it is highly recommended that you start with a fresh macOS VM. This is because some of the dependencies attempt to use `/usr/local/lib` even though the architecture does not match. Certain installed packages like `libusb`, `gawk`, and `cmake` will break the build.
 
+1. Install Xcode command line and [Homebrew][1]
 2. Install the following build prerequisites
-    - `brew install pkg-config gettext glib libgpg-error nasm make meson`
-
-3. Install the additional build prerequesites, and follow the homebrew instructions on adding them to your "$PATH" when given one by one
-    - `brew install bison`
-    - `brew install gettext`
-
-    > Alternatively you can use the following, if you do not wish to permenantly modify you "$PATH" profile
-    >    - `export PATH=/opt/homebrew/opt/bison/bin:/opt/homebrew/opt/gettext/bin:$PATH`
-    >    - `export PATH=/usr/local/opt/bison/bin:/usr/local/opt/gettext/bin:$PATH`
-
-4. Run either of the following (or both), for the respective ARCH you intend to support
-    - `./scripts/build_dependencies.sh -p macos -a arm64`
-    - `./scripts/build_dependencies.sh -p macos -a x86_64`
-
-    > Note if you encounter a `'six'` or `'pyparsing' not found in your Python 3 installation` on macOS Monterey. You may need to run the following install command 
-    > - `python3 -m pip install --ignore-installed six pyparsing`
-    > - `python3.9 -m pip install --ignore-installed six pyparsing`
+    `brew install bison pkg-config gettext glib libgpg-error nasm make meson`
+   Make sure to add `bison` and `gettext` to your `$PATH` environment variable!
+	`export PATH=/usr/local/opt/bison/bin:/usr/local/opt/gettext/bin:$PATH`
+3. Run `./scripts/build_dependencies.sh -p macos -a ARCH` where `ARCH` is either `arm64` or `x86_64`.
 
 If you want to build universal binaries, you need to run `build_dependencies.sh` for both `arm64` and `x86_64` and then run
 
