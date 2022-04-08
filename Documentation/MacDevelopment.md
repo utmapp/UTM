@@ -16,16 +16,14 @@ Alternatively, run `git submodule update --init --recursive` after cloning if yo
 The easiest way is to get the prebuilt dependences from Github.
 
 - Find the list of [release builds here][1]. 
-- Pick the latest release and download all of the `Sysroot-macos-*` artifacts for the architecture you will need (you will need to be signed in to a github account). If you only intend to run locally, it is alright to just download the sysroot for your architecture.
-- Unpack them into the UTM project folder. You should have a "folder" per architecture (see screenshot for an example)
+- Pick the latest release and download all of the `Sysroot-macos-*` artifacts for the architecture you will need (you will need to be signed in to a github account). If you only intend to run locally, it is alright to just download the sysroot for your traget architecture.
+- Unpack them into the UTM project folder. You should have a "folder" configured per architecture (see screenshot for an example)
 
 ![Example of prebuilt sysroot](./imgs/prebuilt-sysroot.png)
 
 ### Building SysRoot Dependencies (Advanced)
 
 | This is optional, and is only necessary if you changed stuff with Qemu or the patches.
-
-If you want to build the dependencies yourself, it is highly recommended that you start with a fresh macOS VM. This is because some of the dependencies attempt to use `/usr/local/lib` even though the architecture does not match. Certain installed packages like `libusb`, `gawk`, and `cmake` will break the build.
 
 If you want to build the dependencies yourself, it is highly recommended that you start with a fresh macOS VM. This is because some of the dependencies attempt to use `/usr/local/lib` even though the architecture does not match. Certain installed packages like `libusb`, `gawk`, and `cmake` will break the build.
 
