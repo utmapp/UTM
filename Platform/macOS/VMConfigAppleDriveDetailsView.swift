@@ -25,6 +25,7 @@ struct VMConfigAppleDriveDetailsView: View {
             TextField("Name", text: .constant(diskImage.imageURL?.lastPathComponent ?? NSLocalizedString("(New Drive)", comment: "VMConfigAppleDriveDetailsView")))
                 .disabled(true)
             Toggle("Read Only?", isOn: $diskImage.isReadOnly)
+            Toggle("Run using a snapshot? (similar to qemu --snapshot)", isOn: $diskImage.isRunAsSnapshot)
             Button(action: onDelete) {
                 Label("Delete Drive", systemImage: "externaldrive.badge.minus")
                     .foregroundColor(.red)
