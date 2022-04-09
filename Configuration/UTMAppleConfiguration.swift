@@ -621,6 +621,14 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
         }
         return urls
     }
+
+    /// Remove the snapshot URL image's that were previously genereated, 
+    /// this should be done as part of a VM cleanup.
+    func cleanupDriveSnapshot() throws {
+        for i in diskImages.indices {
+            try diskImages[i].cleanupDriveSnapshot()
+        }
+    }
 }
 
 struct Bootloader: Codable {
@@ -955,6 +963,20 @@ struct DiskImage: Codable, Hashable, Identifiable {
         }
     }
     
+    /// Returns the snapshot equivalent URL for the current image
+    /// Does not actually prepare the snapshot (this is done via setupDriveSnapshot)
+    func snapshotURL() throws -> URL? {
+        return imageURL?.appendingPathComponent(".snapshot")
+    }
+
+    /// Remove the snapshot URL image, this can be done as part of VM cleanup
+    func cleanupDriveSnapshot() throws {
+        if let snapshotURL = try snapshotURL() {
+            // The file may not exists, if so nothing should happens
+            try FileManager.default.removeItem(at: snapshotURL)
+        }
+    }
+
     func vzDiskImage() throws -> VZDiskImageStorageDeviceAttachment? {
         if let imageURL = imageURL {
             return try VZDiskImageStorageDeviceAttachment(url: imageURL, readOnly: isReadOnly)

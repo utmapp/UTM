@@ -190,6 +190,10 @@ import Virtualization
                 }
             }
         }
+
+        // This perform any cleanup for the "--snapshot" feature, 
+        // if it was initialized previously
+        try appleConfig.cleanupDriveSnapshot()
     }
     
     override func vmStop(force: Bool) async throws {
