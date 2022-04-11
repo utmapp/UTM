@@ -629,6 +629,26 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
             try diskImages[i].cleanupDriveSnapshot()
         }
     }
+
+    /// Perform a snapshot clone of the current image URL to the snapshot URL
+    /// this is required for the snapshotURL image to "work"
+    ///
+    /// This is only done if the provided parm, or system config is true
+    /// 
+    /// The "runAsSnapshot" is meant to be used with the 
+    /// "runAsSnapshot" context menu feature, which would perform   
+    /// the snapshot run "on demand" without config change
+    func setupDriveSnapshot(runAsSnapshot: Bool = false) throws {
+        var runAsSnapshot = runAsSnapshot
+        if isRunAsSnapshot {
+            runAsSnapshot = true
+        }
+
+        for i in diskImages.indices {
+            // Setup the --snapshot on a per drive level
+            try diskImages[i].setupDriveSnapshot(runAsSnapshot: runAsSnapshot)
+        }
+    }
 }
 
 struct Bootloader: Codable {
@@ -966,7 +986,7 @@ struct DiskImage: Codable, Hashable, Identifiable {
     /// Returns the snapshot equivalent URL for the current image
     /// Does not actually prepare the snapshot (this is done via setupDriveSnapshot)
     func snapshotURL() throws -> URL? {
-        return imageURL?.appendingPathComponent(".snapshot")
+        return imageURL?.appendingPathExtension("snapshot.img")
     }
 
     /// Remove the snapshot URL image, this can be done as part of VM cleanup
@@ -977,12 +997,39 @@ struct DiskImage: Codable, Hashable, Identifiable {
         }
     }
 
-    func vzDiskImage() throws -> VZDiskImageStorageDeviceAttachment? {
-        if let imageURL = imageURL {
-            return try VZDiskImageStorageDeviceAttachment(url: imageURL, readOnly: isReadOnly)
-        } else {
-            return nil
+    /// Perform a snapshot clone of the current image URL to the snapshot URL
+    /// this is required for the snapshotURL image to "work"
+    ///
+    /// This is only done if the provided parm, or drive config is true
+    func setupDriveSnapshot(runAsSnapshot: Bool = false) throws {
+        // does nothing if runAsSnapshot is false
+        if runAsSnapshot == false && isRunAsSnapshot == false {
+            return
         }
+
+        // Make a copy of the provided imageURL, as snapshot
+        if let snapshotURL = try snapshotURL(), let imageURL = imageURL {
+            // lets setup the snapshot file 
+            // AFAICT this does a shallow copy on APFS drives
+            try FileManager.default.copyItem(at: imageURL, to: snapshotURL)
+        }
+    }
+
+    /// Return the vzDiskImage, if either the runAsSnapshot or
+    /// the isRunAsSnapshot drive config is true, return using the snapshot URL instead
+    func vzDiskImage(runAsSnapshot: Bool = false) throws -> VZDiskImageStorageDeviceAttachment? { 
+        if runAsSnapshot == true || isRunAsSnapshot == true {
+            // Assume the usage of snapshot URL
+            if let snapshotURL = try snapshotURL() {
+                return try VZDiskImageStorageDeviceAttachment(url: snapshotURL, readOnly: isReadOnly)
+            }
+        } else {
+            // Assume standard (non-snapshot) behaviour
+            if let imageURL = imageURL {
+                return try VZDiskImageStorageDeviceAttachment(url: imageURL, readOnly: isReadOnly)
+            }
+        }
+        return nil
     }
     
     func hash(into hasher: inout Hasher) {

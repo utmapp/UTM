@@ -328,6 +328,16 @@ import Virtualization
                 fsConfig.share = self?.makeDirectoryShare(from: newShares)
             }
         }
+
+        // This perform any reset's needed for the 
+        // "--snapshot" feature (if its in use)
+        // 
+        // The "runAsSnapshot" is meant to be used with the 
+        // "runAsSnapshot" context menu feature, which would perform   
+        // the snapshot run "on demand" without config change
+        // - when said context menu feature is implemented.
+        try appleConfig.setupDriveSnapshot(runAsSnapshot: false)
+
         apple = VZVirtualMachine(configuration: appleConfig.apple, queue: vmQueue)
         apple.delegate = self
     }
