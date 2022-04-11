@@ -639,15 +639,29 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
     /// "runAsSnapshot" context menu feature, which would perform   
     /// the snapshot run "on demand" without config change
     func setupDriveSnapshot(runAsSnapshot: Bool = false) throws {
+        // Seems like there is edge cases where cleanup didn't occur (hard crash/force close)
+        // So we should always perform a full cleanup, before setup
+        try cleanupDriveSnapshot()
+
+        // Logic to detrimine if runAsSnapshot should be assumed
         var runAsSnapshot = runAsSnapshot
         if isRunAsSnapshot {
             runAsSnapshot = true
         }
 
+        // Perform snapshots on a per drive level
         for i in diskImages.indices {
             // Setup the --snapshot on a per drive level
             try diskImages[i].setupDriveSnapshot(runAsSnapshot: runAsSnapshot)
         }
+
+        // Seems like this needs to be reinit? So that config changes properlly applies
+        apple.storageDevices = diskImages.compactMap({ diskImage in
+            guard let attachment = try? diskImage.vzDiskImage(runAsSnapshot: runAsSnapshot) else {
+                return nil
+            }
+            return VZVirtioBlockDeviceConfiguration(attachment: attachment)
+        })
     }
 }
 
@@ -993,7 +1007,10 @@ struct DiskImage: Codable, Hashable, Identifiable {
     func cleanupDriveSnapshot() throws {
         if let snapshotURL = try snapshotURL() {
             // The file may not exists, if so nothing should happens
-            try FileManager.default.removeItem(at: snapshotURL)
+            //
+            // apperantly despite documentation saying it will return false.
+            // it will return with an error if removal fails (does not exist,etc)
+            try? FileManager.default.removeItem(at: snapshotURL)
         }
     }
 
