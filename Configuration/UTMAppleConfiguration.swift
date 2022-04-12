@@ -1010,6 +1010,8 @@ struct DiskImage: Codable, Hashable, Identifiable {
             //
             // apperantly despite documentation saying it will return false.
             // it will return with an error if removal fails (does not exist,etc)
+            //
+            // try? surpresses and ignores the error
             try? FileManager.default.removeItem(at: snapshotURL)
         }
     }
