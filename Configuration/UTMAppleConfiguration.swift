@@ -1006,9 +1006,8 @@ struct DiskImage: Codable, Hashable, Identifiable {
     /// Remove the snapshot URL image, this can be done as part of VM cleanup
     func cleanupDriveSnapshot() throws {
         if let snapshotURL = try snapshotURL() {
-            // The file may not exists, if so nothing should happens
-            //
-            // apperantly despite documentation saying it will return false.
+            // The file may not exists, if so nothing should happens. Also,
+            // despite documentation saying "removeItem" will return false.
             // it will return with an error if removal fails (does not exist,etc)
             //
             // try? surpresses and ignores the error
