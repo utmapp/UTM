@@ -612,7 +612,9 @@ static size_t sysctl_read(const char *name) {
         }
     }
     if ([target isEqualToString:@"virt"] || [target hasPrefix:@"virt-"]) {
-        properties = [self appendDefaultPropertyName:@"highmem" value:@"off" toProperties:properties];
+        if (![architecture hasPrefix:@"riscv"]) {
+            properties = [self appendDefaultPropertyName:@"highmem" value:@"off" toProperties:properties];
+        }
         // required to boot Windows ARM on TCG
         if ([architecture isEqualToString:@"aarch64"] && !self.configuration.useHypervisor) {
             properties = [self appendDefaultPropertyName:@"virtualization" value:@"on" toProperties:properties];
