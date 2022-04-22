@@ -133,6 +133,7 @@ struct VMToolbarModifier: ViewModifier {
                 }
                 #endif
                 Button {
+                    data.close(vm: vm) // close window
                     data.edit(vm: vm)
                 } label: {
                     Label("Edit", systemImage: "slider.horizontal.3")
