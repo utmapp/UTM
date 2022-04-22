@@ -269,6 +269,7 @@
         @"none",
         @"emulated",
         @"shared",
+        @"host",
         @"bridged",
     ];
 }
@@ -278,6 +279,7 @@
         NSLocalizedString(@"None", "UTMQemuConfiguration"),
         NSLocalizedString(@"Emulated VLAN", "UTMQemuConfiguration"),
         NSLocalizedString(@"Shared Network", "UTMQemuConfiguration"),
+        NSLocalizedString(@"Host Only", "UTMQemuConfiguration"),
         NSLocalizedString(@"Bridged (Advanced)", "UTMQemuConfiguration"),
     ];
 }

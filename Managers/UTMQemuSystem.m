@@ -371,26 +371,27 @@ static size_t sysctl_read(const char *name) {
             [self pushArgv:[NSString stringWithFormat:@"%@,mac=%@,netdev=net0", self.configuration.networkCard, self.configuration.networkCardMac]];
         }
         [self pushArgv:@"-netdev"];
-        NSString *device = @"user";
         NSMutableString *netstr;
-        BOOL hasPortForwarding = YES;
+        BOOL useVMnet = NO;
         if ([self.configuration.networkMode isEqualToString:@"shared"]) {
-            device = @"vmnet-macos";
-            hasPortForwarding = NO;
-            if (self.configuration.networkIsolate) {
-                netstr = [NSMutableString stringWithString:@"vmnet-macos,mode=host,id=net0"];
-            } else {
-                netstr = [NSMutableString stringWithString:@"vmnet-macos,mode=shared,id=net0"];
-            }
+            useVMnet = YES;
+            netstr = [NSMutableString stringWithString:@"vmnet-shared,id=net0"];
         } else if ([self.configuration.networkMode isEqualToString:@"bridged"]) {
-            hasPortForwarding = NO;
-            netstr = [NSMutableString stringWithString:@"vmnet-macos,mode=bridged,id=net0"];
+            useVMnet = YES;
+            netstr = [NSMutableString stringWithString:@"vmnet-bridged,id=net0"];
             if (self.configuration.networkBridgeInterface.length > 0) {
                 [netstr appendFormat:@",ifname=%@", self.configuration.networkBridgeInterface];
             }
+        } else if ([self.configuration.networkMode isEqualToString:@"host"]) {
+            useVMnet = YES;
+            netstr = [NSMutableString stringWithString:@"vmnet-host,id=net0"];
         } else {
             netstr = [NSMutableString stringWithString:@"user,id=net0"];
-            if (self.configuration.networkIsolate) {
+        }
+        if (self.configuration.networkIsolate) {
+            if (useVMnet) {
+                [netstr appendString:@",isolated=on"];
+            } else {
                 [netstr appendString:@",restrict=on"];
             }
         }
@@ -424,7 +425,7 @@ static size_t sysctl_read(const char *name) {
         if (self.configuration.networkDhcpDomain.length > 0) {
             [netstr appendFormat:@",domainname=%@", self.configuration.networkDhcpDomain];
         }
-        if (hasPortForwarding) {
+        if (!useVMnet) {
             for (NSUInteger i = 0; i < [self.configuration countPortForwards]; i++) {
                 UTMQemuConfigurationPortForward *portForward = [self.configuration portForwardForIndex:i];
                 [netstr appendFormat:@",hostfwd=%@:%@:%@-%@:%@", portForward.protocol, portForward.hostAddress, portForward.hostPort, portForward.guestAddress, portForward.guestPort];
