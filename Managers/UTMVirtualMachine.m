@@ -350,11 +350,13 @@ const dispatch_time_t kScreenshotPeriodSeconds = 60 * NSEC_PER_SEC;
 
 - (void)requestVmDeleteState {
     [self vmDeleteStateWithCompletion:^(NSError *error) {
+        /* we don't care about errors in this context
         if (error) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 [self.delegate virtualMachine:self didErrorWithMessage:error.localizedDescription];
             });
         }
+         */
     }];
 }
 
