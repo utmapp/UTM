@@ -20,7 +20,7 @@ import AppKit
 #else
 import UIKit
 #endif
-#if canImport(AltKit)
+#if canImport(AltKit) && !WITH_QEMU_TCI
 import AltKit
 #endif
 
@@ -948,7 +948,7 @@ class UTMData: ObservableObject {
 
     // MARK: - AltKit
     
-#if canImport(AltKit)
+#if canImport(AltKit) && !WITH_QEMU_TCI
     /// Find and run AltJIT to enable JIT
     func startAltJIT() throws {
         let event = DispatchSemaphore(value: 0)
