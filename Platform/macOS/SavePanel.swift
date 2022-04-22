@@ -58,54 +58,56 @@ struct SavePanel: NSViewRepresentable {
             }
             
             // Calling savePanel.begin with the appropriate completion handlers
-            switch shareItem {
-            case .debugLog(let sourceUrl):
-                savePanel.beginSheetModal(for: window) { result in
-                    if result == .OK {
-                        if let destUrl = savePanel.url {
-                            data.busyWorkAsync {
-                                let fileManager = FileManager.default
-                                
-                                // All this mess is because FileManager.replaceItemAt deletes the source item
-                                let tempUrl = fileManager.temporaryDirectory.appendingPathComponent(sourceUrl.lastPathComponent)
-                                if fileManager.fileExists(atPath: tempUrl.path) {
-                                    try fileManager.removeItem(at: tempUrl)
-                                }
-                                try fileManager.copyItem(at: sourceUrl, to: tempUrl)
-                                
-                                _ = try fileManager.replaceItemAt(destUrl, withItemAt: tempUrl)
-                            }
-                        }
-                    }
-                }
-            case .utmCopy(let vm), .utmMove(let vm):
-                savePanel.beginSheetModal(for: window) { result in
-                    if result == .OK {
-                        if let destUrl = savePanel.url {
-                            data.busyWorkAsync {
-                                if case .utmMove(_) = shareItem {
-                                    try await data.move(vm: vm, to: destUrl)
-                                } else {
-                                    try await data.export(vm: vm, to: destUrl)
+            // SwiftUI BUG: if we don't wait, there is a crash due to an access issue
+            DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) {
+                switch shareItem {
+                case .debugLog(let sourceUrl):
+                    savePanel.beginSheetModal(for: window) { result in
+                        if result == .OK {
+                            if let destUrl = savePanel.url {
+                                data.busyWorkAsync {
+                                    let fileManager = FileManager.default
+                                    
+                                    // All this mess is because FileManager.replaceItemAt deletes the source item
+                                    let tempUrl = fileManager.temporaryDirectory.appendingPathComponent(sourceUrl.lastPathComponent)
+                                    if fileManager.fileExists(atPath: tempUrl.path) {
+                                        try fileManager.removeItem(at: tempUrl)
+                                    }
+                                    try fileManager.copyItem(at: sourceUrl, to: tempUrl)
+                                    
+                                    _ = try fileManager.replaceItemAt(destUrl, withItemAt: tempUrl)
                                 }
                             }
                         }
+                        isPresented = false
                     }
-                }
-            case .qemuCommand(let command):
-                savePanel.beginSheetModal(for: window) { result in
-                    if result == .OK {
-                        if let destUrl = savePanel.url {
-                            data.busyWork {
-                                try command.write(to: destUrl, atomically: true, encoding: .utf8)
+                case .utmCopy(let vm), .utmMove(let vm):
+                    savePanel.beginSheetModal(for: window) { result in
+                        if result == .OK {
+                            if let destUrl = savePanel.url {
+                                data.busyWorkAsync {
+                                    if case .utmMove(_) = shareItem {
+                                        try await data.move(vm: vm, to: destUrl)
+                                    } else {
+                                        try await data.export(vm: vm, to: destUrl)
+                                    }
+                                }
                             }
                         }
+                        isPresented = false
+                    }
+                case .qemuCommand(let command):
+                    savePanel.beginSheetModal(for: window) { result in
+                        if result == .OK {
+                            if let destUrl = savePanel.url {
+                                data.busyWork {
+                                    try command.write(to: destUrl, atomically: true, encoding: .utf8)
+                                }
+                            }
+                        }
+                        isPresented = false
                     }
                 }
-            }
-            
-            DispatchQueue.main.async {
-                isPresented = false
             }
         }
     }
