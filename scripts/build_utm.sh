@@ -89,7 +89,7 @@ xcodebuild archive -archivePath "$OUTPUT" -scheme "$SCHEME" -sdk "$SDK" $ARCH_AR
 BUILT_PATH=$(find $OUTPUT.xcarchive -name '*.app' -type d | head -1)
 # remove unsupported architectures to address < iOS 15 crash
 find "$BUILT_PATH" -type f -path '*/Frameworks/*.dylib' | while read FILE; do lipo -info $FILE | grep "Non-fat file" > /dev/null || lipo -thin $ARCH $FILE -output $FILE; done
-find "$BUILT_PATH" -type f -path '*/Frameworks/*.framework/*' ! -name "Info.plist" | while read FILE; do lipo -info $FILE | grep "Non-fat file" > /dev/null || lipo -thin $ARCH $FILE -output $FILE; done
+find "$BUILT_PATH" -type f -path '*/Frameworks/*.framework/*' -maxdepth 0 ! -name "Info.plist" | while read FILE; do lipo -info $FILE | grep "Non-fat file" > /dev/null || lipo -thin $ARCH $FILE -output $FILE; done
 find "$BUILT_PATH" -type d -path '*/Frameworks/*.framework' -exec codesign --force --sign - --timestamp=none \{\} \;
 if [ "$PLATFORM" == "macos" ]; then
     # always build with vm entitlements, package_mac.sh can strip it later
