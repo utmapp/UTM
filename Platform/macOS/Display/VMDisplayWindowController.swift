@@ -63,19 +63,11 @@ class VMDisplayWindowController: NSWindowController {
     @IBAction func startPauseButtonPressed(_ sender: Any) {
         enterSuspended(isBusy: true) // early indicator
         if vm.state == .vmStarted {
-            DispatchQueue.global(qos: .background).async {
-                self.vm.requestVmPause()
-                self.vm.requestVmSaveState()
-                return
-            }
+            vm.requestVmPause(save: true)
         } else if vm.state == .vmPaused {
-            DispatchQueue.global(qos: .background).async {
-                self.vm.requestVmResume()
-            }
+            vm.requestVmResume()
         } else if vm.state == .vmStopped {
-            DispatchQueue.global(qos: .userInitiated).async {
-                self.vm.requestVmStart()
-            }
+            vm.requestVmStart()
         } else {
             logger.error("Invalid state \(vm.state)")
         }

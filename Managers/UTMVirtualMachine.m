@@ -328,8 +328,8 @@ const dispatch_time_t kScreenshotPeriodSeconds = 60 * NSEC_PER_SEC;
     }];
 }
 
-- (void)requestVmPause {
-    [self vmPauseWithCompletion:^(NSError *error) {
+- (void)requestVmPauseSave:(BOOL)save {
+    [self vmPauseSave:save completion:^(NSError *error) {
         if (error) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 [self.delegate virtualMachine:self didErrorWithMessage:error.localizedDescription];
@@ -400,7 +400,7 @@ const dispatch_time_t kScreenshotPeriodSeconds = 60 * NSEC_PER_SEC;
     notImplemented;
 }
 
-- (void)vmPauseWithCompletion:(void (^)(NSError * _Nullable))completion {
+- (void)vmPauseSave:(BOOL)save completion:(void (^)(NSError * _Nullable))completion {
     notImplemented;
 }
 

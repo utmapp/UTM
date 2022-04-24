@@ -215,8 +215,7 @@ import SwiftUI
         }
         if viewController.vm.state == .vmStarted {
             viewController.enterSuspended(isBusy: true) // early indicator
-            viewController.vm.requestVmPause()
-            viewController.vm.requestVmSaveState()
+            viewController.vm.requestVmPause(save: true)
         } else if viewController.vm.state == .vmPaused {
             viewController.enterSuspended(isBusy: true) // early indicator
             viewController.vm.requestVmResume()

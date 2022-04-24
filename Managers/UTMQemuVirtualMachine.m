@@ -544,7 +544,7 @@ NSString *const kSuspendSnapshotName = @"suspend";
     completion(suspendError);
 }
 
-- (void)vmPauseWithCompletion:(void (^)(NSError * _Nullable))completion {
+- (void)vmPauseSave:(BOOL)save completion:(void (^)(NSError * _Nullable))completion {
     dispatch_async(self.vmOperations, ^{
         if (self.state != kVMStarted) {
             completion([self errorGeneric]);
@@ -553,7 +553,10 @@ NSString *const kSuspendSnapshotName = @"suspend";
         [self changeState:kVMPausing];
         [self _vmPauseWithCompletion:^(NSError *err){
             if (!err) {
-                [self changeState:kVMPaused];
+                [self _vmSaveStateWithCompletion:^(NSError *err) {
+                    [self changeState:kVMPaused];
+                    completion(err);
+                }];
             } else {
                 [self changeState:kVMStopped];
             }
