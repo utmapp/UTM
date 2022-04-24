@@ -652,7 +652,9 @@ NSString *const kSuspendSnapshotName = @"suspend";
         resumeError = [self errorGeneric];
     }
     if (self.viewState.hasSaveState) {
-        [self _vmDeleteStateWithCompletion:^(NSError *error){}];
+        [self _vmDeleteStateWithCompletion:^(NSError *error){
+            completion(nil);
+        }];
     } else {
         completion(nil);
     }
