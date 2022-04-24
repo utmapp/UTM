@@ -23,7 +23,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, weak, readonly) NSDictionary *dictRepresentation;
 @property (nonatomic, nullable, copy) NSNumber *version;
-
+@property (nonatomic, assign) BOOL isScreenshotEnabled;
 @property (nonatomic, assign) BOOL isRenameDisabled;
 @property (nonatomic, copy) NSString *name;
 @property (nonatomic, nullable, copy) NSURL *existingPath;

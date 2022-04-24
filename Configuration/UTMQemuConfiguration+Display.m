@@ -195,9 +195,6 @@ const NSString *const kUTMConfigDisplayCardKey = @"DisplayCard";
     return [self.rootDict[kUTMConfigDisplayKey][kUTMConfigConsoleBlinkKey] boolValue];
 }
 
-- (BOOL)isScreenshotEnabled {
-    return [self.rootDict[kUTMConfigDisplayKey][kUTMConfigIsScreenshotsEnabled] boolValue];
-}
 - (void)setConsoleResizeCommand:(NSString *)consoleResizeCommand {
     [self propertyWillChange];
     self.rootDict[kUTMConfigDisplayKey][kUTMConfigConsoleResizeCommandKey] = consoleResizeCommand;

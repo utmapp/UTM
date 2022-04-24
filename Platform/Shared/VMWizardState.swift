@@ -308,6 +308,7 @@ enum VMWizardOS: String, Identifiable {
         config.isBalloonEnabled = true
         config.isEntropyEnabled = true
         config.networkDevices = [Network(newInterfaceForMode: .Shared)]
+        config.isScreenshotEnabled = true
         config.isSerialEnabled = operatingSystem == .Linux
         config.isConsoleDisplay = operatingSystem == .Linux
         return config

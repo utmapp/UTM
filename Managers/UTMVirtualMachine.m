@@ -483,6 +483,9 @@ const dispatch_time_t kScreenshotPeriodSeconds = 60 * NSEC_PER_SEC;
 - (void)loadScreenshot {
     NSURL *url = [self.path URLByAppendingPathComponent:kUTMBundleScreenshotFilename];
     if ([[NSFileManager defaultManager] fileExistsAtPath:url.path]) {
+        if (!self.config.isScreenshotEnabled) {
+            [self deleteScreenshot];
+        }
         self.screenshot = [[CSScreenshot alloc] initWithContentsOfURL:url];
     }
 }

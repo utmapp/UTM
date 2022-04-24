@@ -50,6 +50,11 @@ struct VMConfigInfoView<Config: ObservableObject & UTMConfigurable>: View {
                     .aspectRatio(1, contentMode: .fill)
                 iconStylePicker
             }
+            HStack {
+                Section(header: Text("Screenshots")) {
+                    Toggle("Enable Previews", isOn: $config.isScreenshotEnabled)
+                }
+            }
             #else
             Form {
                 Section(header: Text("Name")) {
@@ -62,9 +67,7 @@ struct VMConfigInfoView<Config: ObservableObject & UTMConfigurable>: View {
                     iconStylePicker
                     iconSelector
                 }
-                Section(header: Text("Screenshots")) {
-                    
-                }
+                
             }
             #endif
         }.onAppear {
@@ -78,10 +81,6 @@ struct VMConfigInfoView<Config: ObservableObject & UTMConfigurable>: View {
         }.disableAutocorrection(true)
     }
     
-    
-    private var screenshotsField: some View {
-        Toggle("Enable Screenshots", isOn: $config.isScreenshotEnabled)
-    }
     private var nameField: some View {
         TextField("Name", text: $config.name, onEditingChanged: validateName)
             .keyboardType(.asciiCapable)

@@ -52,6 +52,7 @@
     self.name = [NSUUID UUID].UUIDString;
     self.existingPath = nil;
     self.selectedCustomIconPath = nil;
+    self.isScreenshotEnabled = YES;
 }
 
 - (void)loadDisplayDefaultsForTarget:(nullable NSString *)target architecture:(nullable NSString *)architecture {

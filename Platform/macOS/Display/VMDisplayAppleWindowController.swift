@@ -362,13 +362,7 @@ extension VMDisplayAppleWindowController: UTMScreenshotProvider {
             return nil
         }
     }
-    
-//    func checkVMScreenShotEnabled() {
-//        let fileManager = FileManager.default
-//        if appleConfig. {
-//            fileManager.removeItem(atPath: mainView?.image().filePath)
-//        }
-//    }
+
 }
 
 // https://www.avanderlee.com/swift/auto-layout-programmatically/

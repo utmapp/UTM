@@ -58,6 +58,7 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
     @Published var consoleResizeCommand: String?
     
     @Published var isScreenshotEnabled: Bool
+//    @Published var isScreenshotEnabled: Bool
     
     var iconUrl: URL? {
         if self.iconCustom {
@@ -260,17 +261,6 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
         }
     }
     
-    var isScreenshotsEnabled: Bool {
-        get {
-            isScreenshotEnabled
-        }
-        set {
-            objectWillChange.send()
-            if newValue {
-                isScreenshotEnabled = newValue
-            }
-        }
-    }
     
     var isEntropyEnabled: Bool {
         get {
@@ -289,6 +279,7 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
     
     @Published var isSerialEnabled: Bool
     @Published var isConsoleDisplay: Bool
+
     
     @available(macOS 12, *)
     var isKeyboardEnabled: Bool {
@@ -342,13 +333,13 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
         case bootLoader
         case macPlatform
         case networkDevices
-        case isScreenshotsEnabled
         case displays
         case diskImages
         case isAudioEnabled
         case isBalloonEnabled
         case isEntropyEnabled
         case isSerialEnabled
+        case isScreenshotEnabled
         case isConsoleDisplay
         case isKeyboardEnabled
         case isPointingEnabled
@@ -413,7 +404,7 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
         isBalloonEnabled = try values.decode(Bool.self, forKey: .isBalloonEnabled)
         isEntropyEnabled = try values.decode(Bool.self, forKey: .isEntropyEnabled)
         isSerialEnabled = try values.decode(Bool.self, forKey: .isSerialEnabled)
-        isScreenshotEnabled = try values.decode(Bool.self, forKey: .isScreenshotsEnabled)
+        isScreenshotEnabled = try values.decode(Bool.self, forKey: .isScreenshotEnabled)
         isConsoleDisplay = try values.decode(Bool.self, forKey: .isConsoleDisplay)
         name = try values.decode(String.self, forKey: .name)
         architecture = try values.decode(String.self, forKey: .architecture)
@@ -464,6 +455,7 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
         try container.encodeIfPresent(consoleFontSize?.intValue, forKey: .consoleFontSize)
         try container.encode(consoleCursorBlink, forKey: .consoleCursorBlink)
         try container.encodeIfPresent(consoleResizeCommand, forKey: .consoleResizeCommand)
+        try container.encode(isScreenshotEnabled, forKey: .isScreenshotEnabled)
     }
     
     static func load(from packageURL: URL) throws -> UTMAppleConfiguration {

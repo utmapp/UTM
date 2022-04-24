@@ -38,6 +38,7 @@ const NSString *const kUTMConfigDrivesKey = @"Drives";
 const NSString *const kUTMConfigDebugKey = @"Debug";
 const NSString *const kUTMConfigInfoKey = @"Info";
 const NSString *const kUTMConfigVersionKey = @"ConfigurationVersion";
+const NSString *const kUTMScreenshotsEnabled = @"ScreenshotsEnabled";
 
 const NSInteger kCurrentConfigurationVersion = 2;
 
@@ -211,4 +212,13 @@ const NSString *const kUTMConfigAppleVirtualizationKey = @"isAppleVirtualization
     return NO;
 }
 
+
+- (BOOL) isScreenshotEnabled {
+    return [self.rootDict[kUTMConfigSharingKey][kUTMScreenshotsEnabled] boolValue]; 
+}
+
+- (void)setIsScreenshotEnabled:(BOOL)isScreenshotEnabled {
+    [self propertyWillChange];
+    self.rootDict[kUTMConfigSharingKey][kUTMScreenshotsEnabled] = @(isScreenshotEnabled);
+}
 @end
