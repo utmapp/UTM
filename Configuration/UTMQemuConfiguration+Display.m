@@ -30,6 +30,7 @@ const NSString *const kUTMConfigConsoleBackgroundColorKey = @"ConsoleBackgroundC
 const NSString *const kUTMConfigConsoleFontKey = @"ConsoleFont";
 const NSString *const kUTMConfigConsoleFontSizeKey = @"ConsoleFontSize";
 const NSString *const kUTMConfigConsoleBlinkKey = @"ConsoleBlink";
+const NSString *const kUTMConfigIsScreenshotsEnabled = @"ScreenshotsEnabled";
 const NSString *const kUTMConfigConsoleResizeCommandKey = @"ConsoleResizeCommand";
 const NSString *const kUTMConfigDisplayCardKey = @"DisplayCard";
 
@@ -194,6 +195,9 @@ const NSString *const kUTMConfigDisplayCardKey = @"DisplayCard";
     return [self.rootDict[kUTMConfigDisplayKey][kUTMConfigConsoleBlinkKey] boolValue];
 }
 
+- (BOOL)isScreenshotEnabled {
+    return [self.rootDict[kUTMConfigDisplayKey][kUTMConfigIsScreenshotsEnabled] boolValue];
+}
 - (void)setConsoleResizeCommand:(NSString *)consoleResizeCommand {
     [self propertyWillChange];
     self.rootDict[kUTMConfigDisplayKey][kUTMConfigConsoleResizeCommandKey] = consoleResizeCommand;

@@ -62,6 +62,9 @@ struct VMConfigInfoView<Config: ObservableObject & UTMConfigurable>: View {
                     iconStylePicker
                     iconSelector
                 }
+                Section(header: Text("Screenshots")) {
+                    
+                }
             }
             #endif
         }.onAppear {
@@ -74,7 +77,11 @@ struct VMConfigInfoView<Config: ObservableObject & UTMConfigurable>: View {
             Alert(title: Text(warning))
         }.disableAutocorrection(true)
     }
-
+    
+    
+    private var screenshotsField: some View {
+        Toggle("Enable Screenshots", isOn: $config.isScreenshotEnabled)
+    }
     private var nameField: some View {
         TextField("Name", text: $config.name, onEditingChanged: validateName)
             .keyboardType(.asciiCapable)

@@ -110,6 +110,8 @@ import Foundation
 
 /// Dummy config since UTMVirtualMachine requires it
 fileprivate final class UTMWrappedVirtualMachineConfiguration: UTMConfigurable {
+    var isScreenshotEnabled: Bool = true
+    
     var isRenameDisabled: Bool = false
     
     var name: String = UUID().uuidString

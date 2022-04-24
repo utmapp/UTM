@@ -443,4 +443,5 @@ extension UTMAppleVirtualMachine: VZVirtualMachineDelegate {
 
 protocol UTMScreenshotProvider: AnyObject {
     var screenshot: CSScreenshot? { get }
+//    func checkVMScreenShotEnabled()
 }

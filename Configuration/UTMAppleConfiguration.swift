@@ -57,6 +57,8 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
     
     @Published var consoleResizeCommand: String?
     
+    @Published var isScreenshotEnabled: Bool
+    
     var iconUrl: URL? {
         if self.iconCustom {
             if let current = self.selectedCustomIconPath {
@@ -258,6 +260,18 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
         }
     }
     
+    var isScreenshotsEnabled: Bool {
+        get {
+            isScreenshotEnabled
+        }
+        set {
+            objectWillChange.send()
+            if newValue {
+                isScreenshotEnabled = newValue
+            }
+        }
+    }
+    
     var isEntropyEnabled: Bool {
         get {
             !apple.entropyDevices.isEmpty
@@ -328,6 +342,7 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
         case bootLoader
         case macPlatform
         case networkDevices
+        case isScreenshotsEnabled
         case displays
         case diskImages
         case isAudioEnabled
@@ -356,6 +371,7 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
         sharedDirectories = []
         isAppleVirtualization = true
         isSerialEnabled = false
+        isScreenshotEnabled = true
         isConsoleDisplay = false
         memorySize = 4 * 1024 * 1024 * 1024
         cpuCount = 4
@@ -397,6 +413,7 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
         isBalloonEnabled = try values.decode(Bool.self, forKey: .isBalloonEnabled)
         isEntropyEnabled = try values.decode(Bool.self, forKey: .isEntropyEnabled)
         isSerialEnabled = try values.decode(Bool.self, forKey: .isSerialEnabled)
+        isScreenshotEnabled = try values.decode(Bool.self, forKey: .isScreenshotsEnabled)
         isConsoleDisplay = try values.decode(Bool.self, forKey: .isConsoleDisplay)
         name = try values.decode(String.self, forKey: .name)
         architecture = try values.decode(String.self, forKey: .architecture)

@@ -69,6 +69,7 @@ struct VMConfigDisplayView: View {
                         Toggle(isOn: $config.displayRetina, label: {
                             Text("Retina Mode")
                         })
+                        
                     }
                 }
             }
