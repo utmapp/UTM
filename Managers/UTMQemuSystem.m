@@ -317,7 +317,7 @@ static size_t sysctl_read(const char *name) {
                 [self pushArgv:@"-drive"];
                 drive = [NSString stringWithFormat:@"if=%@,media=%@,id=%@", realInterface, (removable && !floppy) ? @"cdrom" : @"disk", identifier];
                 if (hasImage) {
-                    drive = [NSString stringWithFormat:@"%@,file=%@,cache=writethrough", drive, fullPathURL.path];
+                    drive = [NSString stringWithFormat:@"%@,file=%@", drive, fullPathURL.path];
                 }
                 [self pushArgv:drive];
                 break;
