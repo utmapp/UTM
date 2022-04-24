@@ -248,6 +248,10 @@ const dispatch_time_t kScreenshotPeriodSeconds = 60 * NSEC_PER_SEC;
     if (self.screenshotTimerHandler) {
         return; // already started
     }
+    // delete existing screenshot if required
+    if (!self.isScreenshotSaveEnabled) {
+        [self deleteScreenshot];
+    }
     typeof(self) __weak weakSelf = self;
     self.screenshotTimerHandler = ^{
         typeof(weakSelf) _self = weakSelf;
