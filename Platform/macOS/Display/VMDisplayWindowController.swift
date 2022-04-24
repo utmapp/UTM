@@ -54,14 +54,14 @@ class VMDisplayWindowController: NSWindowController {
     
     @IBAction func stopButtonPressed(_ sender: Any) {
         showConfirmAlert(NSLocalizedString("This may corrupt the VM and any unsaved changes will be lost. To quit safely, shut down from the guest.", comment: "VMDisplayWindowController")) {
-            DispatchQueue.global(qos: .background).async {
-                self.vm.requestVmDeleteState()
-                self.vm.requestVmStop(force: self.isPowerForce)
-            }
+            self.enterSuspended(isBusy: true) // early indicator
+            self.vm.requestVmDeleteState()
+            self.vm.requestVmStop(force: self.isPowerForce)
         }
     }
     
     @IBAction func startPauseButtonPressed(_ sender: Any) {
+        enterSuspended(isBusy: true) // early indicator
         if vm.state == .vmStarted {
             DispatchQueue.global(qos: .background).async {
                 self.vm.requestVmPause()
@@ -138,6 +138,7 @@ class VMDisplayWindowController: NSWindowController {
         startPauseToolbarItem.image = NSImage(systemSymbolName: "pause", accessibilityDescription: pauseDescription)
         startPauseToolbarItem.label = pauseDescription
         stopToolbarItem.isEnabled = true
+        restartToolbarItem.isEnabled = true
         captureMouseToolbarItem.isEnabled = true
         resizeConsoleToolbarItem.isEnabled = true
         window!.makeFirstResponder(displayView.subviews.first)
@@ -146,18 +147,21 @@ class VMDisplayWindowController: NSWindowController {
     func enterSuspended(isBusy busy: Bool) {
         overlayView.isHidden = false
         let playDescription = NSLocalizedString("Play", comment: "VMDisplayWindowController")
+        let stopped = vm.state == .vmStopped
         startPauseToolbarItem.image = NSImage(systemSymbolName: "play.fill", accessibilityDescription: playDescription)
         startPauseToolbarItem.label = playDescription
         if busy {
             activityIndicator.startAnimation(self)
             startPauseToolbarItem.isEnabled = false
             stopToolbarItem.isEnabled = false
+            restartToolbarItem.isEnabled = false
             startButton.isHidden = true
         } else {
             activityIndicator.stopAnimation(self)
             startPauseToolbarItem.isEnabled = true
-            stopToolbarItem.isEnabled = true
             startButton.isHidden = false
+            stopToolbarItem.isEnabled = !stopped
+            restartToolbarItem.isEnabled = !stopped
         }
         captureMouseToolbarItem.isEnabled = false
         resizeConsoleToolbarItem.isEnabled = false
