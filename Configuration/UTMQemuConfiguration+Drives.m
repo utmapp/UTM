@@ -47,6 +47,20 @@ static const NSString *const kUTMConfigCdromKey = @"Cdrom";
 
 #pragma mark - Migration
 
+static BOOL ValidQemuIdentifier(NSString *name) {
+    NSCharacterSet *chset = [NSCharacterSet characterSetWithCharactersInString:@"0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-._"];
+    for (int i = 0; i < name.length; i++) {
+        unichar ch = [name characterAtIndex:i];
+        if (![chset characterIsMember:ch]) {
+            return NO;
+        }
+        if (i == 0 && !isalpha(ch)) {
+            return NO;
+        }
+    }
+    return YES;
+}
+
 - (void)migrateDriveConfigurationIfNecessary {
     // Migrate Cdrom => ImageType
     [self.rootDict[kUTMConfigDrivesKey] enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
@@ -60,14 +74,15 @@ static const NSString *const kUTMConfigCdromKey = @"Cdrom";
         }
     }];
     // add drive name
-    BOOL hasEmpty = NO;
+    BOOL hasInvalid = NO;
     for (NSInteger i = 0; i < self.countDrives; i++) {
-        if ([self driveNameForIndex:i] == nil) {
-            hasEmpty = YES;
+        NSString *name = [self driveNameForIndex:i];
+        if (name == nil || !ValidQemuIdentifier(name)) {
+            hasInvalid = YES;
             break;
         }
     }
-    if (hasEmpty) { // reset all names if any are empty
+    if (hasInvalid) { // reset all names if any are empty
         for (NSInteger i = 0; i < self.countDrives; i++) {
             [self setDriveName:[NSString stringWithFormat:@"drive%ld", i] forIndex:i];
         }
