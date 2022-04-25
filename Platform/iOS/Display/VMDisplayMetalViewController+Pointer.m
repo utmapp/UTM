@@ -62,7 +62,7 @@ NS_AVAILABLE_IOS(13.4)
     }
     mouse.mouseInput.mouseMovedHandler = ^(GCMouseInput * _Nonnull mouse, float deltaX, float deltaY) {
         [self switchMouseType:VMMouseTypeRelative];
-        [self.vmInput sendMouseMotion:self.mouseButtonDown point:CGPointMake(deltaX, -deltaY)];
+        [self.vmInput sendMouseMotion:self.mouseButtonDown relativePoint:CGPointMake(deltaX, -deltaY)];
     };
     mouse.mouseInput.leftButton.pressedChangedHandler = ^(GCControllerButtonInput * _Nonnull button, float value, BOOL pressed) {
         self->_mouseLeftDown = pressed;
