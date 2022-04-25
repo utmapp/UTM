@@ -50,6 +50,7 @@ NSString *const kSuspendSnapshotName = @"suspend";
 @property (nonatomic, nullable) dispatch_semaphore_t qemuWillQuitEvent;
 @property (nonatomic, nullable) dispatch_semaphore_t qemuDidExitEvent;
 @property (nonatomic, nullable) dispatch_semaphore_t qemuDidConnectEvent;
+@property (nonatomic) BOOL changeCursorRequestInProgress;
 
 @end
 

@@ -130,7 +130,6 @@ class VMDisplayMetalWindowController: VMDisplayQemuWindowController {
 extension VMDisplayMetalWindowController: UTMSpiceIODelegate {
     func spiceDidChange(_ input: CSInput) {
         vmInput = input
-        qemuVM.requestInputTablet(!(metalView?.isMouseCaptured ?? false))
     }
     
     func spiceDidCreateDisplay(_ display: CSDisplayMetal) {
@@ -333,6 +332,11 @@ extension VMDisplayMetalWindowController: VMMetalViewInputDelegate {
     
     func mouseMove(absolutePoint: CGPoint, button: CSInputButton) {
         guard let window = self.window else { return }
+        guard let vmInput = vmInput, !vmInput.serverModeCursor else {
+            logger.trace("requesting client mode cursor")
+            qemuVM.requestInputTablet(true)
+            return
+        }
         let currentScreenScale = window.screen?.backingScaleFactor ?? 1.0
         let viewportScale = vmDisplay?.viewportScale ?? 1.0
         let frameSize = metalView.frame.size
@@ -340,13 +344,18 @@ extension VMDisplayMetalWindowController: VMMetalViewInputDelegate {
         let newY = (frameSize.height - absolutePoint.y) * currentScreenScale / viewportScale
         let point = CGPoint(x: newX, y: newY)
         logger.trace("move cursor: cocoa (\(absolutePoint.x), \(absolutePoint.y)), native (\(newX), \(newY))")
-        vmInput?.sendMousePosition(button, absolutePoint: point)
+        vmInput.sendMousePosition(button, absolutePoint: point)
         vmDisplay?.forceCursorPosition(point) // required to show cursor on screen
     }
     
     func mouseMove(relativePoint: CGPoint, button: CSInputButton) {
+        guard let vmInput = vmInput, vmInput.serverModeCursor else {
+            logger.trace("requesting server mode cursor")
+            qemuVM.requestInputTablet(false)
+            return
+        }
         let translated = CGPoint(x: relativePoint.x, y: -relativePoint.y)
-        vmInput?.sendMouseMotion(button, relativePoint: translated)
+        vmInput.sendMouseMotion(button, relativePoint: translated)
     }
     
     private func modifyMouseButton(_ button: CSInputButton) -> CSInputButton {
