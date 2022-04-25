@@ -1,59 +1,61 @@
 {
-  "pins" : [
-    {
-      "identity" : "altkit",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/rileytestut/AltKit.git",
-      "state" : {
-        "revision" : "f799f60ef6fa8b9676b4102b7dfa169fb40b6c92",
-        "version" : "0.0.2"
+  "object": {
+    "pins": [
+      {
+        "package": "AltKit",
+        "repositoryURL": "https://github.com/rileytestut/AltKit.git",
+        "state": {
+          "branch": null,
+          "revision": "f799f60ef6fa8b9676b4102b7dfa169fb40b6c92",
+          "version": "0.0.2"
+        }
+      },
+      {
+        "package": "CocoaSpice",
+        "repositoryURL": "https://github.com/utmapp/CocoaSpice.git",
+        "state": {
+          "branch": "main",
+          "revision": "f3a40a89d5b94f21e4366d48c1d7b4af1b3ba9f4",
+          "version": null
+        }
+      },
+      {
+        "package": "IQKeyboardManagerSwift",
+        "repositoryURL": "https://github.com/hackiftekhar/IQKeyboardManager.git",
+        "state": {
+          "branch": null,
+          "revision": "4dc6bc7d1c9747bd0c261c8c055903f9fdef91f7",
+          "version": "6.5.6"
+        }
+      },
+      {
+        "package": "swift-log",
+        "repositoryURL": "https://github.com/apple/swift-log",
+        "state": {
+          "branch": null,
+          "revision": "5d66f7ba25daf4f94100e7022febf3c75e37a6c7",
+          "version": "1.4.2"
+        }
+      },
+      {
+        "package": "SwiftTerm",
+        "repositoryURL": "https://github.com/migueldeicaza/SwiftTerm.git",
+        "state": {
+          "branch": null,
+          "revision": "70a3af884c24dff9f1beeda04e889b5591f04f3c",
+          "version": "1.0.7"
+        }
+      },
+      {
+        "package": "ZIPFoundation",
+        "repositoryURL": "https://github.com/weichsel/ZIPFoundation.git",
+        "state": {
+          "branch": null,
+          "revision": "7254c74b49cec2cb81520523ba993c671f71b066",
+          "version": "0.9.14"
+        }
       }
-    },
-    {
-      "identity" : "cocoaspice",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/utmapp/CocoaSpice.git",
-      "state" : {
-        "branch" : "main",
-        "revision" : "f3a40a89d5b94f21e4366d48c1d7b4af1b3ba9f4"
-      }
-    },
-    {
-      "identity" : "iqkeyboardmanager",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/hackiftekhar/IQKeyboardManager.git",
-      "state" : {
-        "revision" : "4dc6bc7d1c9747bd0c261c8c055903f9fdef91f7",
-        "version" : "6.5.6"
-      }
-    },
-    {
-      "identity" : "swift-log",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/apple/swift-log",
-      "state" : {
-        "revision" : "5d66f7ba25daf4f94100e7022febf3c75e37a6c7",
-        "version" : "1.4.2"
-      }
-    },
-    {
-      "identity" : "swiftterm",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/migueldeicaza/SwiftTerm.git",
-      "state" : {
-        "revision" : "70a3af884c24dff9f1beeda04e889b5591f04f3c",
-        "version" : "1.0.7"
-      }
-    },
-    {
-      "identity" : "zipfoundation",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/weichsel/ZIPFoundation.git",
-      "state" : {
-        "revision" : "7254c74b49cec2cb81520523ba993c671f71b066",
-        "version" : "0.9.14"
-      }
-    }
-  ],
-  "version" : 2
+    ]
+  },
+  "version": 1
 }
