@@ -77,6 +77,17 @@ NS_AVAILABLE_IOS(13.4)
         self->_mouseMiddleDown = pressed;
         [self.vmInput sendMouseButton:kCSInputButtonMiddle pressed:pressed];
     };
+    for (int i = 0; i < MIN(4, mouse.mouseInput.auxiliaryButtons.count); i++) {
+        mouse.mouseInput.auxiliaryButtons[i].pressedChangedHandler = ^(GCControllerButtonInput * _Nonnull button, float value, BOOL pressed) {
+            switch (i) {
+                case 0: [self.vmInput sendMouseButton:kCSInputButtonUp pressed:pressed]; break;
+                case 1: [self.vmInput sendMouseButton:kCSInputButtonDown pressed:pressed]; break;
+                case 2: [self.vmInput sendMouseButton:kCSInputButtonSide pressed:pressed]; break;
+                case 3: [self.vmInput sendMouseButton:kCSInputButtonExtra pressed:pressed]; break;
+                default: break;
+            }
+        };
+    }
     // no handler to the gcmouse scroll event, gestureScroll works fine.
     _mouseCaptured = YES;
     dispatch_async(dispatch_get_main_queue(), ^{
@@ -91,6 +102,9 @@ NS_AVAILABLE_IOS(13.4)
     mouse.mouseInput.leftButton.pressedChangedHandler = nil;
     mouse.mouseInput.rightButton.pressedChangedHandler = nil;
     mouse.mouseInput.middleButton.pressedChangedHandler = nil;
+    for (int i = 0; i < MIN(4, mouse.mouseInput.auxiliaryButtons.count); i++) {
+        mouse.mouseInput.auxiliaryButtons[i].pressedChangedHandler = nil;
+    }
     _mouseCaptured = NO;
     dispatch_async(dispatch_get_main_queue(), ^{
         [self setNeedsUpdateOfPrefersPointerLocked];
