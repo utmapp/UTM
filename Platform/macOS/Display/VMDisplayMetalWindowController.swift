@@ -490,7 +490,20 @@ extension VMDisplayMetalWindowController: CSUSBManagerDelegate {
     }
 }
 
+/// These devices cannot be captured as enforced by macOS. Capturing results in an error. App Store Review requests that we block out the option.
+let usbBlockList = [
+    (0x05ac, 0x8102), // Apple Touch Bar Backlight
+    (0x05ac, 0x8103), // Apple Headset
+    (0x05ac, 0x8233), // Apple T2 Controller
+    (0x05ac, 0x8262), // Apple Ambient Light Sensor
+    (0x05ac, 0x8263),
+    (0x05ac, 0x8302), // Apple Touch Bar Display
+    (0x05ac, 0x8514), // Apple FaceTime HD Camera (Built-in)
+    (0x05ac, 0x8600), // Apple iBridge
+]
+
 extension VMDisplayMetalWindowController {
+    
     @IBAction override func usbButtonPressed(_ sender: Any) {
         let menu = NSMenu()
         menu.autoenablesItems = false
@@ -522,7 +535,8 @@ extension VMDisplayMetalWindowController {
             let isConnected = vmUsbManager?.isUsbDeviceConnected(device) ?? false
             let isConnectedToSelf = connectedUsbDevices.contains(device)
             item.title = device.name ?? device.description
-            item.isEnabled = canRedirect && (isConnectedToSelf || !isConnected);
+            let blocked = usbBlockList.contains { (usbVid, usbPid) in usbVid == device.usbVendorId && usbPid == device.usbProductId }
+            item.isEnabled = !blocked && canRedirect && (isConnectedToSelf || !isConnected)
             item.state = isConnectedToSelf ? .on : .off;
             item.tag = i
             item.target = self
