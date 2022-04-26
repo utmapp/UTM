@@ -130,7 +130,6 @@ class VMDisplayMetalWindowController: VMDisplayQemuWindowController {
 extension VMDisplayMetalWindowController: UTMSpiceIODelegate {
     func spiceDidChange(_ input: CSInput) {
         vmInput = input
-        qemuVM.requestInputTablet(!(metalView?.isMouseCaptured ?? false))
     }
     
     func spiceDidCreateDisplay(_ display: CSDisplayMetal) {
@@ -333,6 +332,11 @@ extension VMDisplayMetalWindowController: VMMetalViewInputDelegate {
     
     func mouseMove(absolutePoint: CGPoint, button: CSInputButton) {
         guard let window = self.window else { return }
+        guard let vmInput = vmInput, !vmInput.serverModeCursor else {
+            logger.trace("requesting client mode cursor")
+            qemuVM.requestInputTablet(true)
+            return
+        }
         let currentScreenScale = window.screen?.backingScaleFactor ?? 1.0
         let viewportScale = vmDisplay?.viewportScale ?? 1.0
         let frameSize = metalView.frame.size
@@ -340,13 +344,18 @@ extension VMDisplayMetalWindowController: VMMetalViewInputDelegate {
         let newY = (frameSize.height - absolutePoint.y) * currentScreenScale / viewportScale
         let point = CGPoint(x: newX, y: newY)
         logger.trace("move cursor: cocoa (\(absolutePoint.x), \(absolutePoint.y)), native (\(newX), \(newY))")
-        vmInput?.sendMouseMotion(button, point: point)
+        vmInput.sendMousePosition(button, absolutePoint: point)
         vmDisplay?.forceCursorPosition(point) // required to show cursor on screen
     }
     
     func mouseMove(relativePoint: CGPoint, button: CSInputButton) {
+        guard let vmInput = vmInput, vmInput.serverModeCursor else {
+            logger.trace("requesting server mode cursor")
+            qemuVM.requestInputTablet(false)
+            return
+        }
         let translated = CGPoint(x: relativePoint.x, y: -relativePoint.y)
-        vmInput?.sendMouseMotion(button, point: translated)
+        vmInput.sendMouseMotion(button, relativePoint: translated)
     }
     
     private func modifyMouseButton(_ button: CSInputButton) -> CSInputButton {
@@ -481,7 +490,20 @@ extension VMDisplayMetalWindowController: CSUSBManagerDelegate {
     }
 }
 
+/// These devices cannot be captured as enforced by macOS. Capturing results in an error. App Store Review requests that we block out the option.
+let usbBlockList = [
+    (0x05ac, 0x8102), // Apple Touch Bar Backlight
+    (0x05ac, 0x8103), // Apple Headset
+    (0x05ac, 0x8233), // Apple T2 Controller
+    (0x05ac, 0x8262), // Apple Ambient Light Sensor
+    (0x05ac, 0x8263),
+    (0x05ac, 0x8302), // Apple Touch Bar Display
+    (0x05ac, 0x8514), // Apple FaceTime HD Camera (Built-in)
+    (0x05ac, 0x8600), // Apple iBridge
+]
+
 extension VMDisplayMetalWindowController {
+    
     @IBAction override func usbButtonPressed(_ sender: Any) {
         let menu = NSMenu()
         menu.autoenablesItems = false
@@ -513,7 +535,8 @@ extension VMDisplayMetalWindowController {
             let isConnected = vmUsbManager?.isUsbDeviceConnected(device) ?? false
             let isConnectedToSelf = connectedUsbDevices.contains(device)
             item.title = device.name ?? device.description
-            item.isEnabled = canRedirect && (isConnectedToSelf || !isConnected);
+            let blocked = usbBlockList.contains { (usbVid, usbPid) in usbVid == device.usbVendorId && usbPid == device.usbProductId }
+            item.isEnabled = !blocked && canRedirect && (isConnectedToSelf || !isConnected)
             item.state = isConnectedToSelf ? .on : .off;
             item.tag = i
             item.target = self

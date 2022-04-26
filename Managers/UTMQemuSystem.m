@@ -317,7 +317,7 @@ static size_t sysctl_read(const char *name) {
                 [self pushArgv:@"-drive"];
                 drive = [NSString stringWithFormat:@"if=%@,media=%@,id=%@", realInterface, (removable && !floppy) ? @"cdrom" : @"disk", identifier];
                 if (hasImage) {
-                    drive = [NSString stringWithFormat:@"%@,file=%@,cache=writethrough", drive, fullPathURL.path];
+                    drive = [NSString stringWithFormat:@"%@,file=%@,discard=unmap,detect-zeroes=unmap", drive, fullPathURL.path];
                 }
                 [self pushArgv:drive];
                 break;
@@ -612,7 +612,6 @@ static size_t sysctl_read(const char *name) {
         }
     }
     if ([target isEqualToString:@"virt"] || [target hasPrefix:@"virt-"]) {
-        properties = [self appendDefaultPropertyName:@"highmem" value:@"off" toProperties:properties];
         // required to boot Windows ARM on TCG
         if ([architecture isEqualToString:@"aarch64"] && !self.configuration.useHypervisor) {
             properties = [self appendDefaultPropertyName:@"virtualization" value:@"on" toProperties:properties];
@@ -673,10 +672,6 @@ static size_t sysctl_read(const char *name) {
             [self pushArgv:@"-device"];
             [self pushArgv:self.configuration.displayCard];
         }
-        if (self.configuration.systemRngEnabled) {
-            [self pushArgv:@"-device"];
-            [self pushArgv:@"virtio-rng-pci"];
-        }
     }
 }
 
@@ -728,6 +723,11 @@ static size_t sysctl_read(const char *name) {
         // fix windows time issues
         [self pushArgv:@"-rtc"];
         [self pushArgv:@"base=localtime"];
+    }
+    
+    if (self.configuration.systemRngEnabled) {
+        [self pushArgv:@"-device"];
+        [self pushArgv:@"virtio-rng-pci"];
     }
 }
     

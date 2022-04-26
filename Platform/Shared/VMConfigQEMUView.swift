@@ -90,7 +90,7 @@ struct VMConfigQEMUView: View {
                     let qemuSystem = UTMQemuSystem(configuration: config, imgPath: URL(fileURLWithPath: "Images"))
                     let fixedArgs = arguments(from: qemuSystem.argv)
                     #if os(macOS)
-                    LazyVStack {
+                    VStack {
                         ForEach(fixedArgs) { arg in
                             TextField("", text: .constant(arg.string))
                         }.disabled(true)

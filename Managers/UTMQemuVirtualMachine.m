@@ -50,6 +50,7 @@ NSString *const kSuspendSnapshotName = @"suspend";
 @property (nonatomic, nullable) dispatch_semaphore_t qemuWillQuitEvent;
 @property (nonatomic, nullable) dispatch_semaphore_t qemuDidExitEvent;
 @property (nonatomic, nullable) dispatch_semaphore_t qemuDidConnectEvent;
+@property (nonatomic) BOOL changeCursorRequestInProgress;
 
 @end
 
@@ -544,7 +545,7 @@ NSString *const kSuspendSnapshotName = @"suspend";
     completion(suspendError);
 }
 
-- (void)vmPauseWithCompletion:(void (^)(NSError * _Nullable))completion {
+- (void)vmPauseSave:(BOOL)save completion:(void (^)(NSError * _Nullable))completion {
     dispatch_async(self.vmOperations, ^{
         if (self.state != kVMStarted) {
             completion([self errorGeneric]);
@@ -553,7 +554,10 @@ NSString *const kSuspendSnapshotName = @"suspend";
         [self changeState:kVMPausing];
         [self _vmPauseWithCompletion:^(NSError *err){
             if (!err) {
-                [self changeState:kVMPaused];
+                [self _vmSaveStateWithCompletion:^(NSError *err) {
+                    [self changeState:kVMPaused];
+                    completion(err);
+                }];
             } else {
                 [self changeState:kVMStopped];
             }
@@ -652,7 +656,9 @@ NSString *const kSuspendSnapshotName = @"suspend";
         resumeError = [self errorGeneric];
     }
     if (self.viewState.hasSaveState) {
-        [self _vmDeleteStateWithCompletion:^(NSError *error){}];
+        [self _vmDeleteStateWithCompletion:^(NSError *error){
+            completion(nil);
+        }];
     } else {
         completion(nil);
     }
