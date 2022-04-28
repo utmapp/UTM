@@ -88,8 +88,8 @@ fi
 xcodebuild archive -archivePath "$OUTPUT" -scheme "$SCHEME" -sdk "$SDK" $ARCH_ARGS -configuration Release CODE_SIGNING_ALLOWED=NO $TEAM_IDENTIFIER_PREFIX
 BUILT_PATH=$(find $OUTPUT.xcarchive -name '*.app' -type d | head -1)
 # remove unsupported architectures to address < iOS 15 crash
-find "$BUILT_PATH" -type f -path '*/Frameworks/*.dylib' | while read FILE; do lipo -info "$FILE" | grep "Architectures in the fat file" > /dev/null && lipo -thin $ARCH "$FILE" -output "$FILE"; done
-find "$BUILT_PATH" -type f -path '*/Frameworks/*.framework/*' ! -name "Info.plist" ! -name "CodeResources" | while read FILE; do lipo -info "$FILE" | grep "Architectures in the fat file" > /dev/null && lipo -thin $ARCH "$FILE" -output "$FILE"; done
+find "$BUILT_PATH" -type f -path '*/Frameworks/*.dylib' | while read FILE; do if [[ $(lipo -info "$FILE") =~ "Architectures in the fat file" ]] then lipo -thin $ARCH "$FILE" -output "$FILE"; fi; done
+find "$BUILT_PATH" -type f -path '*/Frameworks/*.framework/*' ! -name "Info.plist" ! -name "CodeResources" | while read FILE; do if [[ $(file "$FILE") =~ Mach-O ]] then if [[ $(lipo -info "$FILE") =~ "Architectures in the fat file" ]] then lipo -thin $ARCH "$FILE" -output "$FILE"; fi; fi; done
 find "$BUILT_PATH" -type d -path '*/Frameworks/*.framework' -exec codesign --force --sign - --timestamp=none \{\} \;
 if [ "$PLATFORM" == "macos" ]; then
     # always build with vm entitlements, package_mac.sh can strip it later
