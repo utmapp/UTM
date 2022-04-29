@@ -87,21 +87,21 @@ fi
 
 xcodebuild archive -archivePath "$OUTPUT" -scheme "$SCHEME" -sdk "$SDK" $ARCH_ARGS -configuration Release CODE_SIGNING_ALLOWED=NO $TEAM_IDENTIFIER_PREFIX
 BUILT_PATH=$(find $OUTPUT.xcarchive -name '*.app' -type d | head -1)
-# Only retain the target architecture to address < iOS 15 crash
+# Only retain the target architecture to address < iOS 15 crash & save disk space
 if [[ ! $PLATFORM =~ simulator ]]; then
-    for FILE in "$BUILT_PATH"/Frameworks/*.dylib; do
+    find "$BUILT_PATH" -type f -path '*/Frameworks/*.dylib' | while read FILE; do
         if [[ $(lipo -info "$FILE") =~ "Architectures in the fat file" ]]; then
             lipo -thin $ARCH "$FILE" -output "$FILE"
         fi
     done
-    for FRAMEWORK in "$BUILT_PATH"/Frameworks/*.framework; do
+    find "$BUILT_PATH" -type d -path '*/Frameworks/*.framework' | while read FRAMEWORK; do
         FILE="${FRAMEWORK}"/$(basename "${FRAMEWORK%.*}")
         if [[ $(lipo -info "$FILE") =~ "Architectures in the fat file" ]]; then
             lipo -thin $ARCH "$FILE" -output "$FILE"
         fi
     done
 fi
-codesign --force --sign - --timestamp=none "$BUILT_PATH"/Frameworks/*.framework
+find "$BUILT_PATH" -type d -path '*/Frameworks/*.framework' -exec codesign --force --sign - --timestamp=none \{\} \;
 if [ "$PLATFORM" == "macos" ]; then
     # always build with vm entitlements, package_mac.sh can strip it later
     # this way we can import into Xcode and re-sign from there
