@@ -84,3 +84,34 @@ index a669b45..0583e5b 100644
 -- 
 2.28.0
 
+From 25dfefc810e7580422e2ee6470bcaad235b13e1f Mon Sep 17 00:00:00 2001
+From: osy <50960678+osy@users.noreply.github.com>
+Date: Fri, 29 Apr 2022 10:35:13 -0700
+Subject: [PATCH] hw/arm/virt: revert old behaviour of highmem=off
+
+On < macOS 12.4, a kernel panic is triggered for highmem=on and an error
+is shown for highmem=off. We workaround this by inhibiting the error so
+older versions of macOS can still use highmem=off.
+---
+ hw/arm/virt.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/hw/arm/virt.c b/hw/arm/virt.c
+index d2e5ecd234..c30a13b5e1 100644
+--- a/hw/arm/virt.c
++++ b/hw/arm/virt.c
+@@ -1690,7 +1690,11 @@ static void virt_set_memmap(VirtMachineState *vms, int pa_bits)
+      * irrespective of the underlying capabilities of the HW.
+      */
+     if (!vms->highmem) {
++#ifdef CONFIG_DARWIN
++        pa_bits = 36;
++#else
+         pa_bits = 32;
++#endif
+     }
+ 
+     /*
+-- 
+2.28.0
+

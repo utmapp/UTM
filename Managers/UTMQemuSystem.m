@@ -612,6 +612,12 @@ static size_t sysctl_read(const char *name) {
         }
     }
     if ([target isEqualToString:@"virt"] || [target hasPrefix:@"virt-"]) {
+        if (@available(macOS 12.4, iOS 15.5, *)) {
+            // default highmem value is fine here
+        } else {
+            // a kernel panic is triggered on M1 Max if highmem=on and running < macOS 12.4
+            properties = [self appendDefaultPropertyName:@"highmem" value:@"off" toProperties:properties];
+        }
         // required to boot Windows ARM on TCG
         if ([architecture isEqualToString:@"aarch64"] && !self.configuration.useHypervisor) {
             properties = [self appendDefaultPropertyName:@"virtualization" value:@"on" toProperties:properties];
