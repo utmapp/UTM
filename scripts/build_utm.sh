@@ -97,7 +97,7 @@ if [[ ! $PLATFORM =~ simulator ]]; then
     for FRAMEWORK in "$BUILT_PATH"/Frameworks/*.framework; do
         FILE="${FRAMEWORK}"/$(basename "${FRAMEWORK%.*}")
         if [[ $(lipo -info "$FILE") =~ "Architectures in the fat file" ]]; then
-            lipo -thin arm64 "$FILE" -output "$FILE"
+            lipo -thin $ARCH "$FILE" -output "$FILE"
         fi
     done
 fi
