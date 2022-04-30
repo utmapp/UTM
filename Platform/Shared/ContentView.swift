@@ -36,6 +36,10 @@ struct ContentView: View {
     var body: some View {
         NavigationView {
             List {
+                NavigationLink(destination: CompatibleUTMTemplates()) {
+                    CardView()
+                }
+                Divider()
                 ForEach(data.virtualMachines) { vm in
                     if let wrappedVM = vm as? UTMWrappedVirtualMachine {
                         UTMUnavailableVMView(wrappedVM: wrappedVM)

@@ -61,6 +61,33 @@ struct VMCardView: View {
     }
 }
 
+@available(iOS 14, macOS 11, *)
+struct CardView: View {
+    @EnvironmentObject private var data: UTMData
+    
+    #if os(macOS)
+    let buttonColor: Color = .black
+    typealias PlatformImage = NSImage
+    #else
+    let buttonColor: Color = .accentColor
+    typealias PlatformImage = UIImage
+    #endif
+    
+    var body: some View {
+        HStack {
+            Logo(logo: PlatformImage(systemSymbolName: "arrow.down.app", accessibilityDescription: nil)!)
+            VStack(alignment: .leading) {
+                Text("Browse UTM Templates")
+                    .font(.headline)
+                Text("Prebuilt templates for UTM")
+                    .font(.subheadline)
+            }.lineLimit(1)
+            .truncationMode(.tail)
+        }.padding([.top, .bottom], 10)
+        .buttonStyle(.plain)
+    }
+}
+
 #if os(macOS)
 @available(macOS 11, *)
 struct Logo: View {

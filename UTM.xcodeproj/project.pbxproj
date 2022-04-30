@@ -33,6 +33,10 @@
 		4B224B9E279D4D8100B63CFF /* InListButtonStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B224B9C279D4D8100B63CFF /* InListButtonStyle.swift */; };
 		4B224B9F279D4D8100B63CFF /* InListButtonStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B224B9C279D4D8100B63CFF /* InListButtonStyle.swift */; };
 		53A0BDD726D79FE40010EDC5 /* SavePanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53A0BDD426D79FE40010EDC5 /* SavePanel.swift */; };
+		68DC1EEB281D88C8004ABF92 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68DC1EE7281D88C8004ABF92 /* HomeView.swift */; };
+		68DC1EEC281D88C8004ABF92 /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68DC1EE8281D88C8004ABF92 /* MainView.swift */; };
+		68DC1EED281D88C8004ABF92 /* DetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68DC1EE9281D88C8004ABF92 /* DetailView.swift */; };
+		68DC1EEE281D88C8004ABF92 /* VM.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68DC1EEA281D88C8004ABF92 /* VM.swift */; };
 		83034C0726AB630F006B4BAF /* UTMPendingVMView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83034C0626AB630F006B4BAF /* UTMPendingVMView.swift */; };
 		83034C0826AB630F006B4BAF /* UTMPendingVMView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83034C0626AB630F006B4BAF /* UTMPendingVMView.swift */; };
 		83034C0926AB630F006B4BAF /* UTMPendingVMView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83034C0626AB630F006B4BAF /* UTMPendingVMView.swift */; };
@@ -1553,6 +1557,10 @@
 		52873FD9247F5B1B0063E4C8 /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		52873FDA247F5B1B0063E4C8 /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
 		53A0BDD426D79FE40010EDC5 /* SavePanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SavePanel.swift; sourceTree = "<group>"; };
+		68DC1EE7281D88C8004ABF92 /* HomeView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
+		68DC1EE8281D88C8004ABF92 /* MainView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
+		68DC1EE9281D88C8004ABF92 /* DetailView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DetailView.swift; sourceTree = "<group>"; };
+		68DC1EEA281D88C8004ABF92 /* VM.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VM.swift; sourceTree = "<group>"; };
 		83034C0626AB630F006B4BAF /* UTMPendingVMView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMPendingVMView.swift; sourceTree = "<group>"; };
 		835AA7B026AB7C85007A0411 /* UTMPendingVirtualMachine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMPendingVirtualMachine.swift; sourceTree = "<group>"; };
 		83A004B826A8CC95001AC09E /* UTMDownloadTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMDownloadTask.swift; sourceTree = "<group>"; };
@@ -2441,6 +2449,17 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		68DC1EE6281D88BA004ABF92 /* UTM Templates */ = {
+			isa = PBXGroup;
+			children = (
+				68DC1EE9281D88C8004ABF92 /* DetailView.swift */,
+				68DC1EE7281D88C8004ABF92 /* HomeView.swift */,
+				68DC1EE8281D88C8004ABF92 /* MainView.swift */,
+				68DC1EEA281D88C8004ABF92 /* VM.swift */,
+			);
+			path = "UTM Templates";
+			sourceTree = "<group>";
+		};
 		CE1BD9FA24F4825C0022A468 /* Display */ = {
 			isa = PBXGroup;
 			children = (
@@ -3132,6 +3151,7 @@
 		CEB63A9624F47C1200CAF323 /* Shared */ = {
 			isa = PBXGroup;
 			children = (
+				68DC1EE6281D88BA004ABF92 /* UTM Templates */,
 				E28394B7240C2191006742E2 /* HTerm */,
 				CEF0304C26A2AFBE00667B63 /* BigButtonStyle.swift */,
 				84B36D2827B790BE00C22685 /* DestructiveButton.swift */,
@@ -3952,6 +3972,7 @@
 				CE0B6D2F24AD57FC00FE012D /* qapi-events-char.c in Sources */,
 				CE0B6D6A24AD584D00FE012D /* qapi-types-migration.c in Sources */,
 				CE0B6D6E24AD584D00FE012D /* qapi-types-audio.c in Sources */,
+				68DC1EEC281D88C8004ABF92 /* MainView.swift in Sources */,
 				CE0B6D2B24AD57FC00FE012D /* qapi-events-error.c in Sources */,
 				CE2D957224AD4F990059923A /* UTMExtensions.swift in Sources */,
 				CE0B6D6524AD584D00FE012D /* qapi-visit-job.c in Sources */,
@@ -4001,6 +4022,7 @@
 				CEF0306926A2AFDF00667B63 /* VMWizardOSMacView.swift in Sources */,
 				CE0B6D8124AD584D00FE012D /* qapi-events.c in Sources */,
 				CED814EA24C79F070042F0F1 /* VMConfigDriveCreateView.swift in Sources */,
+				68DC1EEB281D88C8004ABF92 /* HomeView.swift in Sources */,
 				CE0B6D5524AD584C00FE012D /* qapi-types-common.c in Sources */,
 				CE0B6D6324AD584D00FE012D /* qapi-events-qdev.c in Sources */,
 				CE0B6D4F24AD584C00FE012D /* qapi-visit-qdev.c in Sources */,
@@ -4011,6 +4033,7 @@
 				CE0B6D6824AD584D00FE012D /* qapi-visit-machine.c in Sources */,
 				CE0B6D4A24AD584C00FE012D /* qapi-types-error.c in Sources */,
 				CE0B6D2124AD57FC00FE012D /* qapi-commands-error.c in Sources */,
+				68DC1EED281D88C8004ABF92 /* DetailView.swift in Sources */,
 				CE2D956A24AD4F990059923A /* VMPlaceholderView.swift in Sources */,
 				CE0B6D5924AD584C00FE012D /* qapi-visit-run-state.c in Sources */,
 				CE0B6CF424AD568400FE012D /* UTMQemuConfiguration+Constants.m in Sources */,
@@ -4177,6 +4200,7 @@
 				CE0B6D3624AD57FC00FE012D /* qapi-commands-common.c in Sources */,
 				8471770C27CCA60600D3A50B /* DefaultPicker.swift in Sources */,
 				CEBE820526A4C1B5007AAB12 /* VMWizardDrivesView.swift in Sources */,
+				68DC1EEE281D88C8004ABF92 /* VM.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

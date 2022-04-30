@@ -16,10 +16,23 @@
 
 import SwiftUI
 
+struct CompatibleUTMTemplates: View {
+    var body: some View {
+        if #available(macOS 12.0, *) {
+            MainView()
+        }
+        else {
+            Text("Please upgrade to macOS 12.0 Monterey to use UTM Templates")
+        }
+    }
+}
+
 @available(iOS 14, macOS 11, *)
 struct VMPlaceholderView: View {
     @EnvironmentObject private var data: UTMData
     @Environment(\.openURL) private var openURL
+    
+    @State var browsingTemplates = false
     
     var body: some View {
         VStack {
@@ -33,6 +46,14 @@ struct VMPlaceholderView: View {
                 TileButton(titleKey: "Browse UTM Gallery", systemImage: "arrow.down.circle") {
                     openURL(URL(string: "https://mac.getutm.app/gallery/")!)
                 }
+                
+//                NavigationLink(destination: CompatibleUTMTemplates()) {
+//                    Tile(titleKey: "Browse UTM Templates", systemImage: "arrow.down.app")
+//                }
+//                .buttonStyle(BigButtonStyle(width: 150, height: 150))
+//                .sheet(isPresented: $browsingTemplates) {
+//                    CompatibleUTMTemplates()
+//                }
             }
             HStack {
                 /// Link to Mac sites on all platforms because they are more up to date
@@ -48,7 +69,18 @@ struct VMPlaceholderView: View {
 }
 
 @available(iOS 14, macOS 11, *)
-private struct TileButton: View {
+struct Tile: View {
+    let titleKey: LocalizedStringKey
+    let systemImage: String
+    
+    var body: some View {
+        Label(titleKey, systemImage: systemImage)
+            .labelStyle(TileLabelStyle())
+    }
+}
+
+@available(iOS 14, macOS 11, *)
+struct TileButton: View {
     let titleKey: LocalizedStringKey
     let systemImage: String
     let action: () -> Void
@@ -63,7 +95,7 @@ private struct TileButton: View {
 
 
 @available(iOS 14, macOS 11, *)
-private struct TileLabelStyle: LabelStyle {
+struct TileLabelStyle: LabelStyle {
     func makeBody(configuration: Configuration) -> some View {
         VStack {
             configuration.icon
