@@ -55,7 +55,7 @@ class UTMDownloadVMTask: UTMDownloadTask {
             if let vm = UTMVirtualMachine(url: utmURL) {
                 return vm
             } else {
-                throw CreateUTMFailed()
+                return UTMVirtualMachine(url: URL(string: utmURL.absoluteString + ".utm.zip")!)!
             }
         } catch {
             logger.error(Logger.Message(stringLiteral: error.localizedDescription))
