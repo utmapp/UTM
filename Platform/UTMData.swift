@@ -680,7 +680,7 @@ class UTMData: ObservableObject {
     /// - Parameter components: Download URL components
     @MainActor func downloadUTMZip(from components: URLComponents) {
         guard let urlParameter = components.queryItems?.first(where: { $0.name == "url" })?.value,
-           urlParameter.contains(".zip"), let url = URL(string: urlParameter) else {
+           let url = URL(string: urlParameter) else {
                showErrorAlert(message: NSLocalizedString("Failed to parse download URL.", comment: "UTMData"))
                return
         }
