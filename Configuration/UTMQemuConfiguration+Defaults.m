@@ -141,6 +141,7 @@
     self.forcePs2Controller = NO;
     self.shareClipboardEnabled = NO;
     self.shareDirectoryEnabled = NO;
+    self.displayFitScreen = NO;
     self.usb3Support = NO;
     self.systemBootUefi = NO;
     self.systemRngEnabled = NO;
@@ -154,6 +155,7 @@
     if ([target hasPrefix:@"pc"] || [target hasPrefix:@"q35"]) {
         self.shareClipboardEnabled = YES;
         self.shareDirectoryEnabled = YES;
+        self.displayFitScreen = YES;
         self.usb3Support = NO; // older OS like Windows 7 do not support it
         if (@available(iOS 14, *)) {
             self.systemBootUefi = YES;
@@ -166,6 +168,7 @@
     } else if ([target isEqualToString:@"virt"] || [target hasPrefix:@"virt-"]) {
         self.shareClipboardEnabled = YES;
         self.shareDirectoryEnabled = YES;
+        self.displayFitScreen = YES;
         self.usb3Support = YES;
         self.systemBootUefi = YES;
         self.systemRngEnabled = YES;

@@ -85,6 +85,10 @@ const NSString *const kUTMConfigDisplayCardKey = @"DisplayCard";
             self.displayCard = @"VGA";
         }
     }
+    if (self.rootDict[kUTMConfigDisplayKey][kUTMConfigDisplayFitScreenKey] == nil) {
+        // automatically enable fit-screen if other SPICE features are used
+        self.displayFitScreen = self.shareClipboardEnabled || self.shareDirectoryEnabled;
+    }
 }
 
 #pragma mark - Display settings

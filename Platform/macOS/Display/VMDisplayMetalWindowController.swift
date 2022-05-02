@@ -165,6 +165,9 @@ extension VMDisplayMetalWindowController: UTMSpiceIODelegate {
     }
     
     func spiceDynamicResolutionSupportDidChange(_ supported: Bool) {
+        guard vmQemuConfig.displayFitScreen else {
+            return
+        }
         if isDisplaySizeDynamic != supported {
             displaySizeDidChange(size: displaySize)
             DispatchQueue.main.async {
