@@ -48,16 +48,25 @@ struct VMCardView: View {
             }.lineLimit(1)
             .truncationMode(.tail)
             Spacer()
-            Button {
-                data.run(vm: vm)
-            } label: {
-                Label("Run", systemImage: "play.circle")
-                    .font(.largeTitle)
-                    .foregroundColor(buttonColor)
-                    .labelStyle(.iconOnly)
+            if vm.state == .vmStopped {
+                Button {
+                    data.run(vm: vm)
+                } label: {
+                    Label("Run", systemImage: "play.circle")
+                        .font(.largeTitle)
+                        .foregroundColor(buttonColor)
+                        .labelStyle(.iconOnly)
+                }
+            } else if vm.isBusy {
+                BigWhiteSpinner()
             }
         }.padding([.top, .bottom], 10)
         .buttonStyle(.plain)
+        #if os(macOS)
+        .onDoubleClick {
+            data.run(vm: vm)
+        }
+        #endif
     }
 }
 

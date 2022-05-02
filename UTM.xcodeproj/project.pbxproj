@@ -1119,6 +1119,7 @@
 		CEA905C92603DA0D00801E7C /* VMDisplayMetalViewController+USB.m in Sources */ = {isa = PBXBuildFile; fileRef = CEA905C82603DA0D00801E7C /* VMDisplayMetalViewController+USB.m */; };
 		CEA905CD2603DBFB00801E7C /* VMUSBDevicesView.xib in Resources */ = {isa = PBXBuildFile; fileRef = CEA905CC2603DBFB00801E7C /* VMUSBDevicesView.xib */; };
 		CEA905D82603DC5300801E7C /* VMUSBDevicesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEA905D72603DC5300801E7C /* VMUSBDevicesViewController.swift */; };
+		CEB20EEA282053320033EFB5 /* DoubleClickHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEB20EE9282053320033EFB5 /* DoubleClickHandler.swift */; };
 		CEB63A7624F4654400CAF323 /* Main.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEB63A7524F4654400CAF323 /* Main.swift */; };
 		CEB63A7724F4654400CAF323 /* Main.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEB63A7524F4654400CAF323 /* Main.swift */; };
 		CEB63A7A24F469E300CAF323 /* UTMJailbreak.m in Sources */ = {isa = PBXBuildFile; fileRef = CEB63A7924F469E300CAF323 /* UTMJailbreak.m */; };
@@ -2100,6 +2101,7 @@
 		CEA905C82603DA0D00801E7C /* VMDisplayMetalViewController+USB.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "VMDisplayMetalViewController+USB.m"; sourceTree = "<group>"; };
 		CEA905CC2603DBFB00801E7C /* VMUSBDevicesView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = VMUSBDevicesView.xib; sourceTree = "<group>"; };
 		CEA905D72603DC5300801E7C /* VMUSBDevicesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMUSBDevicesViewController.swift; sourceTree = "<group>"; };
+		CEB20EE9282053320033EFB5 /* DoubleClickHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DoubleClickHandler.swift; sourceTree = "<group>"; };
 		CEB63A7524F4654400CAF323 /* Main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Main.swift; sourceTree = "<group>"; };
 		CEB63A7824F468BA00CAF323 /* UTMJailbreak.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UTMJailbreak.h; sourceTree = "<group>"; };
 		CEB63A7924F469E300CAF323 /* UTMJailbreak.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UTMJailbreak.m; sourceTree = "<group>"; };
@@ -2583,6 +2585,7 @@
 			children = (
 				CE1BD9FA24F4825C0022A468 /* Display */,
 				CEECE13B25E47D9500A2AAB8 /* AppDelegate.swift */,
+				CEB20EE9282053320033EFB5 /* DoubleClickHandler.swift */,
 				CEEC811A24E48EC600ACB0B3 /* SettingsView.swift */,
 				CEBBF1A624B5730F00C15049 /* UTMDataExtension.swift */,
 				CE93759524BB7E9F0074066F /* UTMTabViewController.swift */,
@@ -4086,6 +4089,7 @@
 				CE0B6CF624AD568400FE012D /* UTMQemuConfiguration+Drives.m in Sources */,
 				CE0B6D4324AD584C00FE012D /* qapi-types.c in Sources */,
 				CE0B6D0824AD56C300FE012D /* qapi-visit-core.c in Sources */,
+				CEB20EEA282053320033EFB5 /* DoubleClickHandler.swift in Sources */,
 				CE0B6D2024AD57FC00FE012D /* qapi-commands-dump.c in Sources */,
 				CE0B6D5224AD584C00FE012D /* qapi-visit-sockets.c in Sources */,
 				CE0B6D7F24AD584D00FE012D /* qapi-events-qom.c in Sources */,
