@@ -88,34 +88,36 @@ struct VMConfigDriveDetailsView: View {
                 VMConfigStringPicker("Interface", selection: $interface, rawValues: UTMQemuConfiguration.supportedDriveInterfaces(), displayValues: UTMQemuConfiguration.supportedDriveInterfacesPretty())
             }
 
-            if let onDelete = onDelete {
-                Button(action: onDelete) {
-                    Label("Delete Drive", systemImage: "externaldrive.badge.minus")
-                        .foregroundColor(.red)
-                }.help("Delete this drive.")
-            }
-            
-            #if os(macOS)
-            if let name = name, let imageUrl = config.imagesPath.appendingPathComponent(name), FileManager.default.fileExists(atPath: imageUrl.path) {
-                if #available(macOS 12, *) {
-                    Button(action: { isConfirmConvertShown.toggle() }) {
-                        Label("Reclaim Space", systemImage: "arrow.3.trianglepath")
-                    }.help(helpMessage)
-                    .alert(confirmMessage, isPresented: $isConfirmConvertShown) {
-                        Button("Cancel", role: .cancel) {}
-                        Button("Reclaim", role: .destructive) { reclaimSpace(for: imageUrl, withCompression: false) }
-                        Button("Reclaim and Compress", role: .destructive) { reclaimSpace(for: imageUrl, withCompression: true) }
-                    }
-                } else {
-                    Button(action: { isConfirmConvertShown.toggle() }) {
-                        Label("Reclaim Space", systemImage: "arrow.3.trianglepath")
-                    }.help(helpMessage)
-                    .alert(isPresented: $isConfirmConvertShown) {
-                        Alert(title: Text(confirmMessage), primaryButton: .cancel(), secondaryButton: .destructive(Text("Reclaim")) { reclaimSpace(for: imageUrl, withCompression: false) })
+            HStack {
+                if let onDelete = onDelete {
+                    Button(action: onDelete) {
+                        Label("Delete Drive", systemImage: "externaldrive.badge.minus")
+                            .foregroundColor(.red)
+                    }.help("Delete this drive.")
+                }
+                
+                #if os(macOS)
+                if let name = name, let imageUrl = config.imagesPath.appendingPathComponent(name), FileManager.default.fileExists(atPath: imageUrl.path) {
+                    if #available(macOS 12, *) {
+                        Button(action: { isConfirmConvertShown.toggle() }) {
+                            Label("Reclaim Space", systemImage: "arrow.3.trianglepath")
+                        }.help(helpMessage)
+                        .alert(confirmMessage, isPresented: $isConfirmConvertShown) {
+                            Button("Cancel", role: .cancel) {}
+                            Button("Reclaim", role: .destructive) { reclaimSpace(for: imageUrl, withCompression: false) }
+                            Button("Reclaim and Compress", role: .destructive) { reclaimSpace(for: imageUrl, withCompression: true) }
+                        }
+                    } else {
+                        Button(action: { isConfirmConvertShown.toggle() }) {
+                            Label("Reclaim Space", systemImage: "arrow.3.trianglepath")
+                        }.help(helpMessage)
+                        .alert(isPresented: $isConfirmConvertShown) {
+                            Alert(title: Text(confirmMessage), primaryButton: .cancel(), secondaryButton: .destructive(Text("Reclaim")) { reclaimSpace(for: imageUrl, withCompression: false) })
+                        }
                     }
                 }
+                #endif
             }
-            #endif
         }
     }
     
