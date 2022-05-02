@@ -33,6 +33,7 @@ class VMDisplayMetalWindowController: VMDisplayQemuWindowController {
     private var cancelResize: DispatchWorkItem?
     
     private var localEventMonitor: Any? = nil
+    private var globalEventMonitor: Any? = nil
     private var ctrlKeyDown: Bool = false
     
     private var allUsbDevices: [CSUSBDevice] = []
@@ -95,6 +96,13 @@ class VMDisplayMetalWindowController: VMDisplayQemuWindowController {
                 return nil
             }
         }
+        // monitor caps lock
+        globalEventMonitor = NSEvent.addGlobalMonitorForEvents(matching: [.flagsChanged]) { [weak self] event in
+            if let self = self {
+                // sync caps lock while window is outside focus
+                self.syncCapsLock(with: event.modifierFlags)
+            }
+        }
         super.enterLive()
         resizeConsoleToolbarItem.isEnabled = false // disable item
     }
@@ -115,6 +123,10 @@ class VMDisplayMetalWindowController: VMDisplayQemuWindowController {
         if let localEventMonitor = self.localEventMonitor {
             NSEvent.removeMonitor(localEventMonitor)
             self.localEventMonitor = nil
+        }
+        if let globalEventMonitor = globalEventMonitor {
+            NSEvent.removeMonitor(globalEventMonitor)
+            self.globalEventMonitor = nil
         }
         releaseMouse()
         displaySizeObserver = nil
@@ -307,6 +319,7 @@ extension VMDisplayMetalWindowController: VMMetalViewInputDelegate {
             self.metalView?.captureMouse()
             self.window?.subtitle = NSLocalizedString("Press \(self.shouldUseCmdOptForCapture ? "⌘+⌥" : "⌃+⌥") to release cursor", comment: "VMDisplayMetalWindowController")
             self.window?.makeFirstResponder(self.metalView)
+            self.syncCapsLock()
         }
         if isCursorCaptureAlertShown {
             let alert = NSAlert()
@@ -325,6 +338,7 @@ extension VMDisplayMetalWindowController: VMMetalViewInputDelegate {
     }
     
     func releaseMouse() {
+        syncCapsLock()
         qemuVM.requestInputTablet(true)
         metalView?.releaseMouse()
         self.window?.subtitle = ""
@@ -423,6 +437,28 @@ extension VMDisplayMetalWindowController: VMMetalViewInputDelegate {
             return false
         }
         return false
+    }
+    
+    /// Syncs the host caps lock state with the guest
+    /// - Parameter modifier: An NSEvent modifier, or nil to get the current system state
+    func syncCapsLock(with modifier: NSEvent.ModifierFlags? = nil) {
+        guard let vmInput = vmInput else {
+            return
+        }
+        let capsLock: Bool
+        if let modifier = modifier {
+            capsLock = modifier.contains(.capsLock)
+        } else {
+            let status = CGEventSource.flagsState(.hidSystemState)
+            capsLock = status.contains(.maskAlphaShift)
+        }
+        var locks = vmInput.keyLock
+        if capsLock {
+            locks.update(with: .caps)
+        } else {
+            locks.subtract(.caps)
+        }
+        vmInput.keyLock = locks
     }
 }
 

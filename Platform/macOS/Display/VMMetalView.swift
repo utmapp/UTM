@@ -179,6 +179,7 @@ class VMMetalView: MTKView {
         }
         sendModifiers(lastModifiers.subtracting(modifiers), press: false)
         sendModifiers(modifiers.subtracting(lastModifiers), press: true)
+        inputDelegate?.syncCapsLock(with: modifiers)
         lastModifiers = modifiers
         if !isMouseCaptured {
             super.flagsChanged(with: event)
@@ -186,14 +187,7 @@ class VMMetalView: MTKView {
     }
     
     private func sendModifiers(_ modifier: NSEvent.ModifierFlags, press: Bool) {
-        if modifier.contains(.capsLock) {
-            let sc = Int(KeyCodeMap.keyCodeToScanCodes[kVK_CapsLock]!.down)
-            if press {
-                inputDelegate?.keyDown(scanCode: sc)
-            } else {
-                inputDelegate?.keyUp(scanCode: sc)
-            }
-        }
+        // skip .capsLock which is handled as a special case in the delegate
         if !modifier.isDisjoint(with: [.command, .leftCommand, .rightCommand]) {
             let vk = modifier.contains(.rightCommand) ? kVK_RightCommand : kVK_Command
             let sc = Int(KeyCodeMap.keyCodeToScanCodes[vk]!.down)
