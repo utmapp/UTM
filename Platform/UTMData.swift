@@ -72,6 +72,9 @@ class UTMData: ObservableObject {
     /// Temporary storage for QEMU removable drives settings
     private var qemuRemovableDrivesCache: [String: URL]
     
+    /// Temporary storage for QEMU imported and created drives that haven't been saved yet
+    private var qemuUnsavedImages: [URL]
+    
     #if os(macOS)
     /// View controller for every VM currently active
     var vmWindows: [UTMVirtualMachine: VMDisplayWindowController] = [:]
@@ -101,6 +104,7 @@ class UTMData: ObservableObject {
         self.busy = false
         self.virtualMachines = []
         self.qemuRemovableDrivesCache = [:]
+        self.qemuUnsavedImages = []
         self.pendingVMs = []
         self.selectedVM = nil
         listLoadFromDefaults()
@@ -383,6 +387,7 @@ class UTMData: ObservableObject {
             try await vm.saveUTM()
             if let qemuVM = vm as? UTMQemuVirtualMachine {
                 try commitRemovableDriveImages(for: qemuVM)
+                qemuUnsavedImages.removeAll()
             }
         } catch {
             // refresh the VM object as it is now stale
@@ -421,16 +426,11 @@ class UTMData: ObservableObject {
             // create a tmp empty config so we can get orphanedDrives for tmp path
             config = UTMQemuConfiguration()
         }
-        // delete orphaned drives
-        guard let orphanedDrives = config.orphanedDrives else {
-            return
+        // delete unsaved drives
+        for url in qemuUnsavedImages {
+            try? fileManager.removeItem(at: url)
         }
-        for name in orphanedDrives {
-            let imagesPath = config.imagesPath
-            let orphanPath = imagesPath.appendingPathComponent(name)
-            logger.debug("Removing orphaned drive '\(name)'")
-            try fileManager.removeItem(at: orphanPath)
-        }
+        qemuUnsavedImages.removeAll()
     }
     
     /// Save a new VM to disk
@@ -718,7 +718,7 @@ class UTMData: ObservableObject {
         
         let imagesPath = config.imagesPath
         var filename = newImportedImage(at: imagesPath, filename: drive.lastPathComponent)
-        let dstPath = imagesPath.appendingPathComponent(filename)
+        var dstPath = imagesPath.appendingPathComponent(filename)
         if !fileManager.fileExists(atPath: imagesPath.path) {
             try fileManager.createDirectory(at: imagesPath, withIntermediateDirectories: false, attributes: nil)
         }
@@ -726,7 +726,8 @@ class UTMData: ObservableObject {
             #if os(macOS)
             if !raw {
                 filename = newImportedImage(at: imagesPath, filename: drive.lastPathComponent, withExtension: "qcow2")
-                try await UTMQemuImage.convert(from: drive, toQcow2: imagesPath.appendingPathComponent(filename))
+                dstPath = imagesPath.appendingPathComponent(filename)
+                try await UTMQemuImage.convert(from: drive, toQcow2: dstPath)
             } else {
                 try fileManager.copyItem(at: drive, to: dstPath)
             }
@@ -737,6 +738,7 @@ class UTMData: ObservableObject {
         } else {
             try fileManager.moveItem(at: drive, to: dstPath)
         }
+        qemuUnsavedImages.append(dstPath)
         let newPath = filename
         await MainActor.run {
             let name = self.newDefaultDriveName(for: config)
@@ -782,6 +784,8 @@ class UTMData: ObservableObject {
                     throw NSLocalizedString("Disk creation failed.", comment: "UTMData")
                 }
             }.value
+            
+            qemuUnsavedImages.append(dstPath)
         }
         
         let name = self.newDefaultDriveName(for: config)
@@ -806,6 +810,7 @@ class UTMData: ObservableObject {
     func removeDrive(at index: Int, for config: UTMQemuConfiguration) async throws {
         if let path = config.driveImagePath(for: index) {
             let fullPath = config.imagesPath.appendingPathComponent(path);
+            qemuUnsavedImages.removeAll(where: { $0 == fullPath })
             if fileManager.fileExists(atPath: fullPath.path) {
                 try fileManager.removeItem(at: fullPath)
             }
