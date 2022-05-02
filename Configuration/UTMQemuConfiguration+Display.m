@@ -21,6 +21,7 @@
 extern const NSString *const kUTMConfigDisplayKey;
 
 const NSString *const kUTMConfigConsoleOnlyKey = @"ConsoleOnly";
+const NSString *const kUTMConfigDisplayFitScreenKey = @"DisplayFitScreen";
 const NSString *const kUTMConfigDisplayRetinaKey = @"DisplayRetina";
 const NSString *const kUTMConfigDisplayUpscalerKey = @"DisplayUpscaler";
 const NSString *const kUTMConfigDisplayDownscalerKey = @"DisplayDownscaler";
@@ -84,6 +85,10 @@ const NSString *const kUTMConfigDisplayCardKey = @"DisplayCard";
             self.displayCard = @"VGA";
         }
     }
+    if (self.rootDict[kUTMConfigDisplayKey][kUTMConfigDisplayFitScreenKey] == nil) {
+        // automatically enable fit-screen if other SPICE features are used
+        self.displayFitScreen = self.shareClipboardEnabled || self.shareDirectoryEnabled;
+    }
 }
 
 #pragma mark - Display settings
@@ -95,6 +100,15 @@ const NSString *const kUTMConfigDisplayCardKey = @"DisplayCard";
 
 - (BOOL)displayConsoleOnly {
     return [self.rootDict[kUTMConfigDisplayKey][kUTMConfigConsoleOnlyKey] boolValue];
+}
+
+- (void)setDisplayFitScreen:(BOOL)displayFitScreen {
+    [self propertyWillChange];
+    self.rootDict[kUTMConfigDisplayKey][kUTMConfigDisplayFitScreenKey] = @(displayFitScreen);
+}
+
+- (BOOL)displayFitScreen {
+    return [self.rootDict[kUTMConfigDisplayKey][kUTMConfigDisplayFitScreenKey] boolValue];
 }
 
 - (void)setDisplayRetina:(BOOL)displayRetina {

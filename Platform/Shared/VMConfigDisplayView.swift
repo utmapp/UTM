@@ -54,7 +54,7 @@ struct VMConfigDisplayView: View {
                     }
                     
                     DetailedSection("Auto Resolution", description: "Requires SPICE guest agent tools to be installed.") {
-                        Toggle(isOn: $config.shareClipboardEnabled, label: { // share with clipboard setting
+                        Toggle(isOn: $config.displayFitScreen, label: {
                             #if os(macOS)
                             Text("Resize display to window size automatically")
                             #else

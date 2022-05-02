@@ -317,7 +317,7 @@ static size_t sysctl_read(const char *name) {
                 [self pushArgv:@"-drive"];
                 drive = [NSString stringWithFormat:@"if=%@,media=%@,id=%@", realInterface, (removable && !floppy) ? @"cdrom" : @"disk", identifier];
                 if (hasImage) {
-                    drive = [NSString stringWithFormat:@"%@,file=%@,cache=writethrough", drive, fullPathURL.path];
+                    drive = [NSString stringWithFormat:@"%@,file=%@,discard=unmap,detect-zeroes=unmap", drive, fullPathURL.path];
                 }
                 [self pushArgv:drive];
                 break;
@@ -493,12 +493,12 @@ static size_t sysctl_read(const char *name) {
         return; // no SPICE for console only
     }
     
-    if (self.configuration.shareClipboardEnabled || self.configuration.shareDirectoryEnabled) {
+    if (self.configuration.shareClipboardEnabled || self.configuration.shareDirectoryEnabled || self.configuration.displayFitScreen) {
         [self pushArgv:@"-device"];
         [self pushArgv:@"virtio-serial"];
     }
     
-    if (self.configuration.shareClipboardEnabled) {
+    if (self.configuration.shareClipboardEnabled || self.configuration.displayFitScreen) {
         [self pushArgv:@"-device"];
         [self pushArgv:@"virtserialport,chardev=vdagent,name=com.redhat.spice.0"];
         [self pushArgv:@"-chardev"];
@@ -611,8 +611,11 @@ static size_t sysctl_read(const char *name) {
             properties = [self appendDefaultPropertyName:@"i8042" value:@"off" toProperties:properties];
         }
     }
-    if ([target isEqualToString:@"virt"] || [target hasPrefix:@"virt-"]) {
-        if (![architecture hasPrefix:@"riscv"]) {
+    if (([target isEqualToString:@"virt"] || [target hasPrefix:@"virt-"]) && ![architecture hasPrefix:@"riscv"]) {
+        if (@available(macOS 12.4, iOS 15.5, *)) {
+            // default highmem value is fine here
+        } else {
+            // a kernel panic is triggered on M1 Max if highmem=on and running < macOS 12.4
             properties = [self appendDefaultPropertyName:@"highmem" value:@"off" toProperties:properties];
         }
         // required to boot Windows ARM on TCG
@@ -675,10 +678,6 @@ static size_t sysctl_read(const char *name) {
             [self pushArgv:@"-device"];
             [self pushArgv:self.configuration.displayCard];
         }
-        if (self.configuration.systemRngEnabled) {
-            [self pushArgv:@"-device"];
-            [self pushArgv:@"virtio-rng-pci"];
-        }
     }
 }
 
@@ -730,6 +729,11 @@ static size_t sysctl_read(const char *name) {
         // fix windows time issues
         [self pushArgv:@"-rtc"];
         [self pushArgv:@"base=localtime"];
+    }
+    
+    if (self.configuration.systemRngEnabled) {
+        [self pushArgv:@"-device"];
+        [self pushArgv:@"virtio-rng-pci"];
     }
 }
     

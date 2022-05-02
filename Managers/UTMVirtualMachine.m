@@ -248,6 +248,10 @@ const dispatch_time_t kScreenshotPeriodSeconds = 60 * NSEC_PER_SEC;
     if (self.screenshotTimerHandler) {
         return; // already started
     }
+    // delete existing screenshot if required
+    if (!self.isScreenshotSaveEnabled) {
+        [self deleteScreenshot];
+    }
     typeof(self) __weak weakSelf = self;
     self.screenshotTimerHandler = ^{
         typeof(weakSelf) _self = weakSelf;
@@ -328,8 +332,8 @@ const dispatch_time_t kScreenshotPeriodSeconds = 60 * NSEC_PER_SEC;
     }];
 }
 
-- (void)requestVmPause {
-    [self vmPauseWithCompletion:^(NSError *error) {
+- (void)requestVmPauseSave:(BOOL)save {
+    [self vmPauseSave:save completion:^(NSError *error) {
         if (error) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 [self.delegate virtualMachine:self didErrorWithMessage:error.localizedDescription];
@@ -350,11 +354,13 @@ const dispatch_time_t kScreenshotPeriodSeconds = 60 * NSEC_PER_SEC;
 
 - (void)requestVmDeleteState {
     [self vmDeleteStateWithCompletion:^(NSError *error) {
+        /* we don't care about errors in this context
         if (error) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 [self.delegate virtualMachine:self didErrorWithMessage:error.localizedDescription];
             });
         }
+         */
     }];
 }
 
@@ -398,7 +404,7 @@ const dispatch_time_t kScreenshotPeriodSeconds = 60 * NSEC_PER_SEC;
     notImplemented;
 }
 
-- (void)vmPauseWithCompletion:(void (^)(NSError * _Nullable))completion {
+- (void)vmPauseSave:(BOOL)save completion:(void (^)(NSError * _Nullable))completion {
     notImplemented;
 }
 
