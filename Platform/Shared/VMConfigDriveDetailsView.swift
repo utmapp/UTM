@@ -87,6 +87,10 @@ struct VMConfigDriveDetailsView: View {
             if imageType == .disk || imageType == .CD {
                 VMConfigStringPicker("Interface", selection: $interface, rawValues: UTMQemuConfiguration.supportedDriveInterfaces(), displayValues: UTMQemuConfiguration.supportedDriveInterfacesPretty())
             }
+            
+            if let name = name, let imageUrl = config.imagesPath.appendingPathComponent(name), let fileSize = data.computeSize(for: imageUrl) {
+                DefaultTextField("Size", text: .constant(ByteCountFormatter.string(fromByteCount: fileSize, countStyle: .file))).disabled(true)
+            }
 
             HStack {
                 if let onDelete = onDelete {

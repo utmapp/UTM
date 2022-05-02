@@ -576,6 +576,17 @@ class UTMData: ObservableObject {
         return total
     }
     
+    /// Calculate size of a single file URL
+    /// - Parameter url: File URL
+    /// - Returns: Size in bytes
+    func computeSize(for url: URL) -> Int64 {
+        if let resourceValues = try? url.resourceValues(forKeys: [.totalFileSizeKey]), let size = resourceValues.totalFileSize {
+            return Int64(size)
+        } else {
+            return 0
+        }
+    }
+    
     /// Handles UTM file URLs
     ///
     /// If .utm is already in the list, select it
