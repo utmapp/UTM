@@ -327,6 +327,27 @@ class UTMData: ObservableObject {
         return UUID().uuidString
     }
     
+    /// Generate a filename for an imported file, avoiding duplicate names
+    /// - Parameters:
+    ///   - imagesUrl: Destination directory to test for file existance
+    ///   - filename: The filename of the existing image being imported
+    ///   - withExtension: Optionally change the file extension
+    /// - Returns: Unique filename that is not used in the imagesUrl
+    func newImportedImage(at imagesUrl: URL, filename: String, withExtension: String? = nil) -> String {
+        let baseUrl = imagesUrl.appendingPathComponent(filename)
+        let name = baseUrl.deletingPathExtension().lastPathComponent
+        let ext = withExtension ?? baseUrl.pathExtension
+        let strFromInt = { (i: Int) in i == 1 ? "" : "-\(i)" }
+        for i in 1..<1000 {
+            let attempt = "\(name)\(strFromInt(i))"
+            let attemptUrl = imagesUrl.appendingPathComponent(attempt).appendingPathExtension(ext)
+            if !fileManager.fileExists(atPath: attemptUrl.path) {
+                return attemptUrl.lastPathComponent
+            }
+        }
+        return UUID().uuidString
+    }
+    
     // MARK: - Other view states
     
     @MainActor private func setBusyIndicator(_ busy: Bool) {
@@ -695,19 +716,17 @@ class UTMData: ObservableObject {
             }
         }
         
-        var path = drive.lastPathComponent
         let imagesPath = config.imagesPath
-        var dstPath = imagesPath.appendingPathComponent(path)
+        var filename = newImportedImage(at: imagesPath, filename: drive.lastPathComponent)
+        let dstPath = imagesPath.appendingPathComponent(filename)
         if !fileManager.fileExists(atPath: imagesPath.path) {
             try fileManager.createDirectory(at: imagesPath, withIntermediateDirectories: false, attributes: nil)
         }
         if copy {
             #if os(macOS)
             if !raw {
-                dstPath.deletePathExtension()
-                dstPath.appendPathExtension("qcow2")
-                path = dstPath.lastPathComponent
-                try await UTMQemuImage.convert(from: drive, toQcow2: dstPath)
+                filename = newImportedImage(at: imagesPath, filename: drive.lastPathComponent, withExtension: "qcow2")
+                try await UTMQemuImage.convert(from: drive, toQcow2: imagesPath.appendingPathComponent(filename))
             } else {
                 try fileManager.copyItem(at: drive, to: dstPath)
             }
@@ -718,7 +737,7 @@ class UTMData: ObservableObject {
         } else {
             try fileManager.moveItem(at: drive, to: dstPath)
         }
-        let newPath = path
+        let newPath = filename
         await MainActor.run {
             let name = self.newDefaultDriveName(for: config)
             config.newDrive(name, path: newPath, type: imageType, interface: interface)
