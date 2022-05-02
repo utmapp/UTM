@@ -611,7 +611,7 @@ static size_t sysctl_read(const char *name) {
             properties = [self appendDefaultPropertyName:@"i8042" value:@"off" toProperties:properties];
         }
     }
-    if ([target isEqualToString:@"virt"] || [target hasPrefix:@"virt-"]) {
+    if (([target isEqualToString:@"virt"] || [target hasPrefix:@"virt-"]) && ![architecture hasPrefix:@"riscv"]) {
         if (@available(macOS 12.4, iOS 15.5, *)) {
             // default highmem value is fine here
         } else {
