@@ -856,6 +856,28 @@ class UTMData: ObservableObject {
         try handle.close()
     }
     
+    #if os(macOS)
+    /// Reclaim empty space in a file by (re)-converting it to QCOW2
+    ///
+    /// This will overwrite driveUrl with the converted file on success!
+    /// - Parameter driveUrl: Original drive to convert
+    /// - Parameter isCompressed: Compress existing data
+    func reclaimSpace(for driveUrl: URL, withCompression isCompressed: Bool = false) async throws {
+        let baseUrl = driveUrl.deletingLastPathComponent()
+        let filename = driveUrl.lastPathComponent
+        let newName = newImportedImage(at: baseUrl, filename: filename, withExtension: "qcow2")
+        let dstUrl = baseUrl.appendingPathComponent(newName)
+        try await UTMQemuImage.convert(from: driveUrl, toQcow2: dstUrl, withCompression: isCompressed)
+        do {
+            try fileManager.replaceItem(at: driveUrl, withItemAt: dstUrl, backupItemName: nil, resultingItemURL: nil)
+        } catch {
+            // on failure delete the converted file
+            try? fileManager.removeItem(at: dstUrl)
+            throw error
+        }
+    }
+    #endif
+    
     // MARK: - Other utility functions
     
     /// In some regions, iOS will prompt the user for network access

@@ -18,12 +18,17 @@ import SwiftUI
 
 @available(iOS 14, macOS 11, *)
 struct VMConfigDriveDetailsView: View {
+    @EnvironmentObject private var data: UTMData
     @ObservedObject private var config: UTMQemuConfiguration
     @Binding private var removable: Bool
     @Binding private var name: String?
     @Binding private var imageTypeString: String?
     @Binding private var interface: String?
     let onDelete: (() -> Void)?
+    
+    let helpMessage: LocalizedStringKey = "Reclaim disk space by re-converting the disk image."
+    let confirmMessage: LocalizedStringKey = "Would you like to re-convert this disk image to reclaim unused space? Note this will require enough temporary space to perform the conversion. You are strongly encouraged to back-up this VM before proceeding."
+    @State private var isConfirmConvertShown: Bool = false
     
     var imageType: UTMDiskImageType {
         get {
@@ -89,6 +94,36 @@ struct VMConfigDriveDetailsView: View {
                         .foregroundColor(.red)
                 }.help("Delete this drive.")
             }
+            
+            #if os(macOS)
+            if let name = name, let imageUrl = config.imagesPath.appendingPathComponent(name), FileManager.default.fileExists(atPath: imageUrl.path) {
+                if #available(macOS 12, *) {
+                    Button(action: { isConfirmConvertShown.toggle() }) {
+                        Label("Reclaim Space", systemImage: "arrow.3.trianglepath")
+                    }.help(helpMessage)
+                    .alert(confirmMessage, isPresented: $isConfirmConvertShown) {
+                        Button("Cancel", role: .cancel) {}
+                        Button("Reclaim", role: .destructive) { reclaimSpace(for: imageUrl, withCompression: false) }
+                        Button("Reclaim and Compress", role: .destructive) { reclaimSpace(for: imageUrl, withCompression: true) }
+                    }
+                } else {
+                    Button(action: { isConfirmConvertShown.toggle() }) {
+                        Label("Reclaim Space", systemImage: "arrow.3.trianglepath")
+                    }.help(helpMessage)
+                    .alert(isPresented: $isConfirmConvertShown) {
+                        Alert(title: Text(confirmMessage), primaryButton: .cancel(), secondaryButton: .destructive(Text("Reclaim")) { reclaimSpace(for: imageUrl, withCompression: false) })
+                    }
+                }
+            }
+            #endif
         }
     }
+    
+    #if os(macOS)
+    private func reclaimSpace(for driveUrl: URL, withCompression isCompressed: Bool) {
+        data.busyWorkAsync {
+            try await data.reclaimSpace(for: driveUrl, withCompression: isCompressed)
+        }
+    }
+    #endif
 }
