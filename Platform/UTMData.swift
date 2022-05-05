@@ -1006,6 +1006,17 @@ class UTMData: ObservableObject {
     // MARK: - AltKit
     
 #if canImport(AltKit) && !WITH_QEMU_TCI
+    /// Detect if we are installed from AltStore and can use AltJIT
+    var isAltServerCompatible: Bool {
+        guard let _ = Bundle.main.infoDictionary?["ALTServerID"] else {
+            return false
+        }
+        guard let _ = Bundle.main.infoDictionary?["ALTDeviceID"] else {
+            return false
+        }
+        return true
+    }
+    
     /// Find and run AltJIT to enable JIT
     func startAltJIT() throws {
         let event = DispatchSemaphore(value: 0)
