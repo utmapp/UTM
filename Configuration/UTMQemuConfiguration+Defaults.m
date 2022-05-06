@@ -165,7 +165,8 @@
             self.systemBootUefi = NO;
         }
         self.systemRngEnabled = YES;
-    } else if ([target isEqualToString:@"virt"] || [target hasPrefix:@"virt-"]) {
+    } else if (([architecture isEqualToString:@"arm"] || [architecture isEqualToString:@"aarch64"]) &&
+               ([target isEqualToString:@"virt"] || [target hasPrefix:@"virt-"])) {
         self.shareClipboardEnabled = YES;
         self.shareDirectoryEnabled = YES;
         self.displayFitScreen = YES;

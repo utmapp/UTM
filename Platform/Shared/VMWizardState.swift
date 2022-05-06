@@ -347,7 +347,10 @@ enum VMWizardOS: String, Identifiable {
         config.systemCPUCount = NSNumber(value: systemCpuCount)
         config.useHypervisor = useVirtualization
         config.shareDirectoryReadOnly = sharingReadOnly
-        config.systemBootUefi = systemBootUefi
+        if operatingSystem == .Windows {
+            // only change UEFI settings for Windows
+            config.systemBootUefi = systemBootUefi
+        }
         if isGLEnabled, let displayCard = config.displayCard {
             let newCard = displayCard + "-gl"
             let allCards = UTMQemuConfiguration.supportedDisplayCards(forArchitecture: systemArchitecture)!
