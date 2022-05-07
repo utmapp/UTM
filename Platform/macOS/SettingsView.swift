@@ -25,6 +25,7 @@ struct SettingsView: View {
     @AppStorage("NoUsbPrompt") var isNoUsbPrompt = false
     @AppStorage("UseOnlyPcores") var isUseOnlyPcores = true
     @AppStorage("AlternativeCaptureKey") var isAlternativeCaptureKey = false
+    @AppStorage("IsCapsLockKey") var isCapsLockKey = false
     @AppStorage("NoSaveScreenshot") var isNoSaveScreenshot = false
     
     var body: some View {
@@ -57,6 +58,9 @@ struct SettingsView: View {
                 Toggle(isOn: $isAlternativeCaptureKey, label: {
                     Text("Use Command+Opt (⌘+⌥) for input capture/release")
                 })
+                Toggle(isOn: $isCapsLockKey, label: {
+                    Text("Caps Lock (⇪) is treated as a key")
+                }).help("If enabled, caps lock will be handled like other keys. If disabled, it is treated as a toggle that is synchronized with the host.")
             }
             Section(header: Text("USB")) {
                 Toggle(isOn: $isNoUsbPrompt, label: {
@@ -77,6 +81,7 @@ extension UserDefaults {
     @objc dynamic var NoUsbPrompt: Bool { false }
     @objc dynamic var UseOnlyPcores: Bool { false }
     @objc dynamic var AlternativeCaptureKey: Bool { false }
+    @objc dynamic var IsCapsLockKey: Bool { false }
     @objc dynamic var NoSaveScreenshot: Bool { false }
 }
 

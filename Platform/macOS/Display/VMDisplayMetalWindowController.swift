@@ -46,6 +46,7 @@ class VMDisplayMetalWindowController: VMDisplayQemuWindowController {
     @Setting("CtrlRightClick") private var isCtrlRightClick: Bool = false
     @Setting("NoUsbPrompt") private var isNoUsbPrompt: Bool = false
     @Setting("AlternativeCaptureKey") private var isAlternativeCaptureKey: Bool = false
+    @Setting("IsCapsLockKey") private var isCapsLockKey: Bool = false
     private var settingObservations = [NSKeyValueObservation]()
     
     // MARK: - Init
@@ -413,12 +414,18 @@ extension VMDisplayMetalWindowController: VMMetalViewInputDelegate {
         if (scanCode & 0xFF) == 0x1D { // Ctrl
             ctrlKeyDown = true
         }
+        if !isCapsLockKey && (scanCode & 0xFF) == 0x3A { // Caps Lock
+            return
+        }
         sendExtendedKey(.press, keyCode: scanCode)
     }
     
     func keyUp(scanCode: Int) {
         if (scanCode & 0xFF) == 0x1D { // Ctrl
             ctrlKeyDown = false
+        }
+        if !isCapsLockKey && (scanCode & 0xFF) == 0x3A { // Caps Lock
+            return
         }
         sendExtendedKey(.release, keyCode: scanCode)
     }
@@ -445,6 +452,10 @@ extension VMDisplayMetalWindowController: VMMetalViewInputDelegate {
     /// Syncs the host caps lock state with the guest
     /// - Parameter modifier: An NSEvent modifier, or nil to get the current system state
     func syncCapsLock(with modifier: NSEvent.ModifierFlags? = nil) {
+        guard !isCapsLockKey else {
+            // ignore sync if user disabled it
+            return
+        }
         guard let vmInput = vmInput else {
             return
         }
