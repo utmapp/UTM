@@ -37,6 +37,7 @@ extern const NSURLBookmarkResolutionOptions kUTMBookmarkResolutionOptions;
 
 @property (nonatomic, readonly, nullable) UTMQemuManager *qemu;
 @property (nonatomic, readonly, nullable) id<UTMInputOutput> ioService;
+@property (nonatomic) BOOL changeCursorRequestInProgress;
 
 - (void)saveViewState;
 
@@ -153,9 +154,18 @@ extern const NSURLBookmarkResolutionOptions kUTMBookmarkResolutionOptions;
 #pragma mark - Input device switching
 
 - (void)requestInputTablet:(BOOL)tablet {
-    [self.qemu mouseIndexForAbsolute:tablet withCompletion:^(int64_t index, NSError *err) {
+    UTMQemuManager *qemu;
+    @synchronized (self) {
+        qemu = self.qemu;
+        if (self.changeCursorRequestInProgress || !qemu) {
+            return;
+        }
+        self.changeCursorRequestInProgress = YES;
+    }
+    [qemu mouseIndexForAbsolute:tablet withCompletion:^(int64_t index, NSError *err) {
         if (err) {
             UTMLog(@"error finding index: %@", err);
+            self.changeCursorRequestInProgress = NO;
         } else {
             UTMLog(@"found index:%lld absolute:%d", index, tablet);
             [self.qemu mouseSelect:index withCompletion:^(NSString *res, NSError *err) {
@@ -169,6 +179,7 @@ extern const NSURLBookmarkResolutionOptions kUTMBookmarkResolutionOptions;
                         UTMLog(@"failed to get SPICE manager: %@", err);
                     }
                 }
+                self.changeCursorRequestInProgress = NO;
             }];
         }
     }];

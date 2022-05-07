@@ -187,13 +187,15 @@ NS_ASSUME_NONNULL_BEGIN
 /// Pauses the VM
 ///
 /// Any error will be passed to the `delegate`
-- (void)requestVmPause;
+/// @param save Save VM state.
+- (void)requestVmPauseSave:(BOOL)save NS_SWIFT_NAME(requestVmPause(save:));
 
 /// Pauses the VM
 ///
+/// @param save Save VM state.
 /// @param completion Handler always will be called on completion
 /// @returns Any error thrown will be non-null passed to the `completion` handler
-- (void)vmPauseWithCompletion:(void (^)(NSError * _Nullable))completion;
+- (void)vmPauseSave:(BOOL)save completion:(void (^)(NSError * _Nullable))completion NS_SWIFT_NAME(vmPause(save:completion:));
 
 /// Saves the current VM state
 ///

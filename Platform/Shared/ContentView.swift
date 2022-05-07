@@ -105,11 +105,16 @@ struct ContentView: View {
             #if !WITH_QEMU_TCI
             if !Main.jitAvailable {
                 data.busyWork {
+                    var showMessage = true
                     #if canImport(AltKit)
-                    try data.startAltJIT()
-                    #else
-                    throw NSLocalizedString("Your version of iOS does not support running VMs while unmodified. You must either run UTM while jailbroken or with a remote debugger attached.", comment: "ContentView")
+                    if data.isAltServerCompatible {
+                        showMessage = false
+                        try data.startAltJIT()
+                    }
                     #endif
+                    if showMessage {
+                        throw NSLocalizedString("Your version of iOS does not support running VMs while unmodified. You must either run UTM while jailbroken or with a remote debugger attached. See https://getutm.app/install/ for more details.", comment: "ContentView")
+                    }
                 }
             }
             #endif
@@ -195,22 +200,16 @@ struct ContentView: View {
                 break
             case "restart":
                 if let vm = await findVM(), vm.state == .vmStarted {
-                    DispatchQueue.global(qos: .background).async {
-                        vm.requestVmReset()
-                    }
+                    vm.requestVmReset()
                 }
                 break
             case "pause":
                 if let vm = await findVM(), vm.state == .vmStarted {
-                    DispatchQueue.global(qos: .background).async {
-                        vm.requestVmPause()
-                    }
+                    vm.requestVmPause(save: true)
                 }
             case "resume":
                 if let vm = await findVM(), vm.state == .vmPaused {
-                    DispatchQueue.global(qos: .background).async {
-                        vm.requestVmResume()
-                    }
+                    vm.requestVmResume()
                 }
                 break
             case "sendText":

@@ -520,6 +520,38 @@
                             </tableViewSection>
                             <tableViewSection headerTitle="Resolution" footerTitle="Requires SPICE guest agent tools to be installed. Retina Mode is recommended only if the guest OS supports HiDPI." id="2ao-Lx-lcQ">
                                 <cells>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" id="I3e-zw-jAD">
+                                        <rect key="frame" x="0.0" y="206.66666412353516" width="375" height="44"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="I3e-zw-jAD" id="3s4-Ke-929">
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Fit to Screen" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="DSd-aZ-Qka">
+                                                    <rect key="frame" x="16" y="11.666666666666664" width="97" height="21"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                                <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Ohs-OI-Wjl" customClass="VMConfigSwitch">
+                                                    <rect key="frame" x="310" y="6.6666666666666679" width="51" height="31.000000000000004"/>
+                                                    <userDefinedRuntimeAttributes>
+                                                        <userDefinedRuntimeAttribute type="string" keyPath="configurationPath" value="displayFitScreen"/>
+                                                    </userDefinedRuntimeAttributes>
+                                                    <connections>
+                                                        <action selector="configSwitchChanged:" destination="fRW-Bh-0Dk" eventType="valueChanged" id="WQO-xV-SED"/>
+                                                    </connections>
+                                                </switch>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstItem="DSd-aZ-Qka" firstAttribute="leading" secondItem="3s4-Ke-929" secondAttribute="leadingMargin" id="Alh-Qy-gv5"/>
+                                                <constraint firstItem="DSd-aZ-Qka" firstAttribute="centerY" secondItem="3s4-Ke-929" secondAttribute="centerY" id="W5L-jB-GUx"/>
+                                                <constraint firstItem="Ohs-OI-Wjl" firstAttribute="trailing" secondItem="3s4-Ke-929" secondAttribute="trailingMargin" id="mOx-ma-JnO"/>
+                                                <constraint firstItem="Ohs-OI-Wjl" firstAttribute="centerY" secondItem="3s4-Ke-929" secondAttribute="centerY" id="q3Y-Ih-Px4"/>
+                                                <constraint firstItem="Ohs-OI-Wjl" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="DSd-aZ-Qka" secondAttribute="trailing" constant="8" symbolic="YES" id="rnK-OQ-RXN"/>
+                                            </constraints>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" id="uLK-yj-IDI">
                                         <rect key="frame" x="0.0" y="250.66666412353516" width="375" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
@@ -980,6 +1012,7 @@
                         <outlet property="fontSizeStepper" destination="eBG-y2-ZJj" id="2jm-7o-82z"/>
                         <outlet property="graphicsTypeConsoleCell" destination="2qy-IZ-c5L" id="YZC-vi-yEW"/>
                         <outlet property="graphicsTypeFullCell" destination="osW-lA-u2m" id="L3u-9j-n10"/>
+                        <outletCollection property="configControls" destination="Ohs-OI-Wjl" id="yah-6c-Pov"/>
                         <outletCollection property="configControls" destination="7Ur-f8-0fb" id="xan-11-bBg"/>
                         <outletCollection property="configControls" destination="XBc-Sh-yEQ" id="Etn-lq-6gE"/>
                         <outletCollection property="configPickerToggles" destination="XBc-Sh-yEQ" id="vfZ-Ci-G0c"/>
@@ -990,6 +1023,7 @@
                         <outletCollection property="configControls" destination="IOR-N0-AYL" id="ydU-TG-14T"/>
                         <outletCollection property="configPickerToggles" destination="IOR-N0-AYL" id="f8G-Zo-rAo"/>
                         <outletCollection property="configControls" destination="7S9-65-YzY" id="pjV-FK-7NY"/>
+                        <outletCollection property="fullDisplayCells" destination="I3e-zw-jAD" id="RWW-6R-3Ju"/>
                         <outletCollection property="fullDisplayCells" destination="uLK-yj-IDI" id="sYe-4n-PSG"/>
                         <outletCollection property="fullDisplayCells" destination="XBc-Sh-yEQ" id="MfE-kY-lBl"/>
                         <outletCollection property="fullDisplayCells" destination="t8e-vC-aWB" id="9Cz-dy-Lh4"/>

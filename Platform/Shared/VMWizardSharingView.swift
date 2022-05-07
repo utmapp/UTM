@@ -35,7 +35,7 @@ struct VMWizardSharingView: View {
                         .font(.caption)
                 }
                 if !wizardState.useAppleVirtualization {
-                    Toggle("Read only share?", isOn: $wizardState.sharingReadOnly)
+                    Toggle("Share is read only", isOn: $wizardState.sharingReadOnly)
                 }
             } header: {
                 Text("Directory Selected")
@@ -46,7 +46,7 @@ struct VMWizardSharingView: View {
                     Button {
                         isFileImporterPresented.toggle()
                     } label: {
-                        Text("Browse")
+                        Text("Browse…")
                     }
                     .disabled(wizardState.isBusy)
                     Button {
@@ -61,7 +61,7 @@ struct VMWizardSharingView: View {
                 Button {
                     isFileImporterPresented.toggle()
                 } label: {
-                    Text("Browse")
+                    Text("Browse…")
                 }
                 .disabled(wizardState.isBusy)
                 Button {

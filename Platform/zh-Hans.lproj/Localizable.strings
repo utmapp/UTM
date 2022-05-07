@@ -77,7 +77,7 @@
 "Bridged Interface" = "桥接接口";
 
 /* VMConfigSharingViewController */
-"Browse..." = "浏览";
+"Browse…" = "浏览";
 
 /* No comment provided by engineer. */
 "Cancel" = "取消";
@@ -356,7 +356,7 @@
 "Image Type" = "格式";
 
 /* Import button */
-"Import" = "导入";
+"Import…" = "导入";
 
 /* No comment provided by engineer. */
 "Import Virtual Machine..." = "导入虚拟机...";
@@ -885,7 +885,7 @@
 "Slower, but can run other CPU architectures." = "速度较慢，但虚拟机的CPU架构不受限制";
 "Download prebuilt from UTM Gallery..." = "从UTM库下载预配置文件（可能需要手动导入安装镜像）";
 "Close" = "关闭";
-"Next" = "下一步";
+"Continue" = "下一步";
 "Generate Windows Installer ISO" = "获取 Windows 安装光盘";
 "Boot ISO Image:" = "启动光盘镜像:";
 "Boot VHDX Image:" = "启动 VHDX 磁盘镜像:";
@@ -925,7 +925,7 @@
 
 //Share Directory
 "Optionally select a directory to make accessible inside the VM. Note that support for shared directories varies by the guest operating system and may require additional guest drivers to be installed. See UTM support pages for more details." = "（可选）选择一个路径，以便在虚拟机内部访问。 请注意，对文件共享的支持因操作系统而异，并且可能需要安装额外的驱动程序。 有关更多详细信息，请参阅 UTM 支持页面";
-"Read only share?" = "只读";
+"Share is read only" = "只读";
 
 //Summary
 "Summary" = "总结";
@@ -1034,7 +1034,7 @@
 "Preparing…" = "准备...";
 
 //MacOS View
-"Back" = "返回";
+"Go Back" = "返回";
 "New Drive" = "新建硬盘";
 "Delete Drive" = "删除硬盘";
 "IDE Drive" = "IDE 硬盘";

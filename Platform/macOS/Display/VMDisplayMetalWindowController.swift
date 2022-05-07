@@ -33,6 +33,7 @@ class VMDisplayMetalWindowController: VMDisplayQemuWindowController {
     private var cancelResize: DispatchWorkItem?
     
     private var localEventMonitor: Any? = nil
+    private var globalEventMonitor: Any? = nil
     private var ctrlKeyDown: Bool = false
     
     private var allUsbDevices: [CSUSBDevice] = []
@@ -45,6 +46,7 @@ class VMDisplayMetalWindowController: VMDisplayQemuWindowController {
     @Setting("CtrlRightClick") private var isCtrlRightClick: Bool = false
     @Setting("NoUsbPrompt") private var isNoUsbPrompt: Bool = false
     @Setting("AlternativeCaptureKey") private var isAlternativeCaptureKey: Bool = false
+    @Setting("IsCapsLockKey") private var isCapsLockKey: Bool = false
     private var settingObservations = [NSKeyValueObservation]()
     
     // MARK: - Init
@@ -95,6 +97,13 @@ class VMDisplayMetalWindowController: VMDisplayQemuWindowController {
                 return nil
             }
         }
+        // monitor caps lock
+        globalEventMonitor = NSEvent.addGlobalMonitorForEvents(matching: [.flagsChanged]) { [weak self] event in
+            if let self = self {
+                // sync caps lock while window is outside focus
+                self.syncCapsLock(with: event.modifierFlags)
+            }
+        }
         super.enterLive()
         resizeConsoleToolbarItem.isEnabled = false // disable item
     }
@@ -116,6 +125,10 @@ class VMDisplayMetalWindowController: VMDisplayQemuWindowController {
             NSEvent.removeMonitor(localEventMonitor)
             self.localEventMonitor = nil
         }
+        if let globalEventMonitor = globalEventMonitor {
+            NSEvent.removeMonitor(globalEventMonitor)
+            self.globalEventMonitor = nil
+        }
         releaseMouse()
         displaySizeObserver = nil
         super.enterSuspended(isBusy: busy)
@@ -130,7 +143,6 @@ class VMDisplayMetalWindowController: VMDisplayQemuWindowController {
 extension VMDisplayMetalWindowController: UTMSpiceIODelegate {
     func spiceDidChange(_ input: CSInput) {
         vmInput = input
-        qemuVM.requestInputTablet(!(metalView?.isMouseCaptured ?? false))
     }
     
     func spiceDidCreateDisplay(_ display: CSDisplayMetal) {
@@ -154,6 +166,9 @@ extension VMDisplayMetalWindowController: UTMSpiceIODelegate {
     }
     
     func spiceDynamicResolutionSupportDidChange(_ supported: Bool) {
+        guard vmQemuConfig.displayFitScreen else {
+            return
+        }
         if isDisplaySizeDynamic != supported {
             displaySizeDidChange(size: displaySize)
             DispatchQueue.main.async {
@@ -308,6 +323,7 @@ extension VMDisplayMetalWindowController: VMMetalViewInputDelegate {
             self.metalView?.captureMouse()
             self.window?.subtitle = NSLocalizedString("Press \(self.shouldUseCmdOptForCapture ? "⌘+⌥" : "⌃+⌥") to release cursor", comment: "VMDisplayMetalWindowController")
             self.window?.makeFirstResponder(self.metalView)
+            self.syncCapsLock()
         }
         if isCursorCaptureAlertShown {
             let alert = NSAlert()
@@ -326,6 +342,7 @@ extension VMDisplayMetalWindowController: VMMetalViewInputDelegate {
     }
     
     func releaseMouse() {
+        syncCapsLock()
         qemuVM.requestInputTablet(true)
         metalView?.releaseMouse()
         self.window?.subtitle = ""
@@ -333,6 +350,11 @@ extension VMDisplayMetalWindowController: VMMetalViewInputDelegate {
     
     func mouseMove(absolutePoint: CGPoint, button: CSInputButton) {
         guard let window = self.window else { return }
+        guard let vmInput = vmInput, !vmInput.serverModeCursor else {
+            logger.trace("requesting client mode cursor")
+            qemuVM.requestInputTablet(true)
+            return
+        }
         let currentScreenScale = window.screen?.backingScaleFactor ?? 1.0
         let viewportScale = vmDisplay?.viewportScale ?? 1.0
         let frameSize = metalView.frame.size
@@ -340,13 +362,18 @@ extension VMDisplayMetalWindowController: VMMetalViewInputDelegate {
         let newY = (frameSize.height - absolutePoint.y) * currentScreenScale / viewportScale
         let point = CGPoint(x: newX, y: newY)
         logger.trace("move cursor: cocoa (\(absolutePoint.x), \(absolutePoint.y)), native (\(newX), \(newY))")
-        vmInput?.sendMouseMotion(button, point: point)
+        vmInput.sendMousePosition(button, absolutePoint: point)
         vmDisplay?.forceCursorPosition(point) // required to show cursor on screen
     }
     
     func mouseMove(relativePoint: CGPoint, button: CSInputButton) {
+        guard let vmInput = vmInput, vmInput.serverModeCursor else {
+            logger.trace("requesting server mode cursor")
+            qemuVM.requestInputTablet(false)
+            return
+        }
         let translated = CGPoint(x: relativePoint.x, y: -relativePoint.y)
-        vmInput?.sendMouseMotion(button, point: translated)
+        vmInput.sendMouseMotion(button, relativePoint: translated)
     }
     
     private func modifyMouseButton(_ button: CSInputButton) -> CSInputButton {
@@ -387,12 +414,18 @@ extension VMDisplayMetalWindowController: VMMetalViewInputDelegate {
         if (scanCode & 0xFF) == 0x1D { // Ctrl
             ctrlKeyDown = true
         }
+        if !isCapsLockKey && (scanCode & 0xFF) == 0x3A { // Caps Lock
+            return
+        }
         sendExtendedKey(.press, keyCode: scanCode)
     }
     
     func keyUp(scanCode: Int) {
         if (scanCode & 0xFF) == 0x1D { // Ctrl
             ctrlKeyDown = false
+        }
+        if !isCapsLockKey && (scanCode & 0xFF) == 0x3A { // Caps Lock
+            return
         }
         sendExtendedKey(.release, keyCode: scanCode)
     }
@@ -414,6 +447,32 @@ extension VMDisplayMetalWindowController: VMMetalViewInputDelegate {
             return false
         }
         return false
+    }
+    
+    /// Syncs the host caps lock state with the guest
+    /// - Parameter modifier: An NSEvent modifier, or nil to get the current system state
+    func syncCapsLock(with modifier: NSEvent.ModifierFlags? = nil) {
+        guard !isCapsLockKey else {
+            // ignore sync if user disabled it
+            return
+        }
+        guard let vmInput = vmInput else {
+            return
+        }
+        let capsLock: Bool
+        if let modifier = modifier {
+            capsLock = modifier.contains(.capsLock)
+        } else {
+            let status = CGEventSource.flagsState(.hidSystemState)
+            capsLock = status.contains(.maskAlphaShift)
+        }
+        var locks = vmInput.keyLock
+        if capsLock {
+            locks.update(with: .caps)
+        } else {
+            locks.subtract(.caps)
+        }
+        vmInput.keyLock = locks
     }
 }
 
@@ -481,7 +540,20 @@ extension VMDisplayMetalWindowController: CSUSBManagerDelegate {
     }
 }
 
+/// These devices cannot be captured as enforced by macOS. Capturing results in an error. App Store Review requests that we block out the option.
+let usbBlockList = [
+    (0x05ac, 0x8102), // Apple Touch Bar Backlight
+    (0x05ac, 0x8103), // Apple Headset
+    (0x05ac, 0x8233), // Apple T2 Controller
+    (0x05ac, 0x8262), // Apple Ambient Light Sensor
+    (0x05ac, 0x8263),
+    (0x05ac, 0x8302), // Apple Touch Bar Display
+    (0x05ac, 0x8514), // Apple FaceTime HD Camera (Built-in)
+    (0x05ac, 0x8600), // Apple iBridge
+]
+
 extension VMDisplayMetalWindowController {
+    
     @IBAction override func usbButtonPressed(_ sender: Any) {
         let menu = NSMenu()
         menu.autoenablesItems = false
@@ -513,7 +585,8 @@ extension VMDisplayMetalWindowController {
             let isConnected = vmUsbManager?.isUsbDeviceConnected(device) ?? false
             let isConnectedToSelf = connectedUsbDevices.contains(device)
             item.title = device.name ?? device.description
-            item.isEnabled = canRedirect && (isConnectedToSelf || !isConnected);
+            let blocked = usbBlockList.contains { (usbVid, usbPid) in usbVid == device.usbVendorId && usbPid == device.usbProductId }
+            item.isEnabled = !blocked && canRedirect && (isConnectedToSelf || !isConnected)
             item.state = isConnectedToSelf ? .on : .off;
             item.tag = i
             item.target = self

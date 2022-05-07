@@ -112,6 +112,18 @@ class VMMetalView: MTKView {
         inputDelegate?.mouseDown(button: .right)
     }
     
+    override func otherMouseDown(with event: NSEvent) {
+        logger.trace("other mouse down: \(event.buttonNumber)")
+        switch event.buttonNumber {
+        case 2: inputDelegate?.mouseDown(button: .middle)
+        case 3: inputDelegate?.mouseDown(button: .up)
+        case 4: inputDelegate?.mouseDown(button: .down)
+        case 5: inputDelegate?.mouseDown(button: .side)
+        case 6: inputDelegate?.mouseDown(button: .extra)
+        default: break
+        }
+    }
+    
     override func mouseUp(with event: NSEvent) {
         logger.trace("mouse up: \(event.buttonNumber)")
         inputDelegate?.mouseUp(button: .left)
@@ -120,6 +132,18 @@ class VMMetalView: MTKView {
     override func rightMouseUp(with event: NSEvent) {
         logger.trace("right mouse up: \(event.buttonNumber)")
         inputDelegate?.mouseUp(button: .right)
+    }
+    
+    override func otherMouseUp(with event: NSEvent) {
+        logger.trace("other mouse up: \(event.buttonNumber)")
+        switch event.buttonNumber {
+        case 2: inputDelegate?.mouseUp(button: .middle)
+        case 3: inputDelegate?.mouseUp(button: .up)
+        case 4: inputDelegate?.mouseUp(button: .down)
+        case 5: inputDelegate?.mouseUp(button: .side)
+        case 6: inputDelegate?.mouseUp(button: .extra)
+        default: break
+        }
     }
     
     override func keyDown(with event: NSEvent) {
@@ -155,6 +179,7 @@ class VMMetalView: MTKView {
         }
         sendModifiers(lastModifiers.subtracting(modifiers), press: false)
         sendModifiers(modifiers.subtracting(lastModifiers), press: true)
+        inputDelegate?.syncCapsLock(with: modifiers)
         lastModifiers = modifiers
         if !isMouseCaptured {
             super.flagsChanged(with: event)

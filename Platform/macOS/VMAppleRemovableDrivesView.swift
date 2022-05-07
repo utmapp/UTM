@@ -46,7 +46,7 @@ struct VMAppleRemovableDrivesView: View {
                             selectedSharedDirectoryBinding = $sharedDirectory
                             showFileImporter()
                         }, label: {
-                            Label("Browse", systemImage: "doc.badge.plus")
+                            Label("Browse…", systemImage: "doc.badge.plus")
                         })
                         if hasSharedDir {
                             // Clear button
@@ -75,7 +75,7 @@ struct VMAppleRemovableDrivesView: View {
                                 selectedDiskImageBinding = $diskImage
                                 showFileImporter()
                             }, label: {
-                                Label("Browse", systemImage: "doc.badge.plus")
+                                Label("Browse…", systemImage: "doc.badge.plus")
                             })
                             // Eject button
                             if diskImage.isExternal && diskImage.imageURL != nil {

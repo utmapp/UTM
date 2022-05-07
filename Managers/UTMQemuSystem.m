@@ -317,7 +317,7 @@ static size_t sysctl_read(const char *name) {
                 [self pushArgv:@"-drive"];
                 drive = [NSString stringWithFormat:@"if=%@,media=%@,id=%@", realInterface, (removable && !floppy) ? @"cdrom" : @"disk", identifier];
                 if (hasImage) {
-                    drive = [NSString stringWithFormat:@"%@,file=%@,cache=writethrough", drive, fullPathURL.path];
+                    drive = [NSString stringWithFormat:@"%@,file=%@,discard=unmap,detect-zeroes=unmap", drive, fullPathURL.path];
                 }
                 [self pushArgv:drive];
                 break;
@@ -371,26 +371,27 @@ static size_t sysctl_read(const char *name) {
             [self pushArgv:[NSString stringWithFormat:@"%@,mac=%@,netdev=net0", self.configuration.networkCard, self.configuration.networkCardMac]];
         }
         [self pushArgv:@"-netdev"];
-        NSString *device = @"user";
         NSMutableString *netstr;
-        BOOL hasPortForwarding = YES;
+        BOOL useVMnet = NO;
         if ([self.configuration.networkMode isEqualToString:@"shared"]) {
-            device = @"vmnet-macos";
-            hasPortForwarding = NO;
-            if (self.configuration.networkIsolate) {
-                netstr = [NSMutableString stringWithString:@"vmnet-macos,mode=host,id=net0"];
-            } else {
-                netstr = [NSMutableString stringWithString:@"vmnet-macos,mode=shared,id=net0"];
-            }
+            useVMnet = YES;
+            netstr = [NSMutableString stringWithString:@"vmnet-shared,id=net0"];
         } else if ([self.configuration.networkMode isEqualToString:@"bridged"]) {
-            hasPortForwarding = NO;
-            netstr = [NSMutableString stringWithString:@"vmnet-macos,mode=bridged,id=net0"];
+            useVMnet = YES;
+            netstr = [NSMutableString stringWithString:@"vmnet-bridged,id=net0"];
             if (self.configuration.networkBridgeInterface.length > 0) {
                 [netstr appendFormat:@",ifname=%@", self.configuration.networkBridgeInterface];
             }
+        } else if ([self.configuration.networkMode isEqualToString:@"host"]) {
+            useVMnet = YES;
+            netstr = [NSMutableString stringWithString:@"vmnet-host,id=net0"];
         } else {
             netstr = [NSMutableString stringWithString:@"user,id=net0"];
-            if (self.configuration.networkIsolate) {
+        }
+        if (self.configuration.networkIsolate) {
+            if (useVMnet) {
+                [netstr appendString:@",isolated=on"];
+            } else {
                 [netstr appendString:@",restrict=on"];
             }
         }
@@ -424,7 +425,7 @@ static size_t sysctl_read(const char *name) {
         if (self.configuration.networkDhcpDomain.length > 0) {
             [netstr appendFormat:@",domainname=%@", self.configuration.networkDhcpDomain];
         }
-        if (hasPortForwarding) {
+        if (!useVMnet) {
             for (NSUInteger i = 0; i < [self.configuration countPortForwards]; i++) {
                 UTMQemuConfigurationPortForward *portForward = [self.configuration portForwardForIndex:i];
                 [netstr appendFormat:@",hostfwd=%@:%@:%@-%@:%@", portForward.protocol, portForward.hostAddress, portForward.hostPort, portForward.guestAddress, portForward.guestPort];
@@ -492,12 +493,12 @@ static size_t sysctl_read(const char *name) {
         return; // no SPICE for console only
     }
     
-    if (self.configuration.shareClipboardEnabled || self.configuration.shareDirectoryEnabled) {
+    if (self.configuration.shareClipboardEnabled || self.configuration.shareDirectoryEnabled || self.configuration.displayFitScreen) {
         [self pushArgv:@"-device"];
         [self pushArgv:@"virtio-serial"];
     }
     
-    if (self.configuration.shareClipboardEnabled) {
+    if (self.configuration.shareClipboardEnabled || self.configuration.displayFitScreen) {
         [self pushArgv:@"-device"];
         [self pushArgv:@"virtserialport,chardev=vdagent,name=com.redhat.spice.0"];
         [self pushArgv:@"-chardev"];
@@ -610,8 +611,13 @@ static size_t sysctl_read(const char *name) {
             properties = [self appendDefaultPropertyName:@"i8042" value:@"off" toProperties:properties];
         }
     }
-    if ([target isEqualToString:@"virt"] || [target hasPrefix:@"virt-"]) {
-        properties = [self appendDefaultPropertyName:@"highmem" value:@"off" toProperties:properties];
+    if (([target isEqualToString:@"virt"] || [target hasPrefix:@"virt-"]) && ![architecture hasPrefix:@"riscv"]) {
+        if (@available(macOS 12.4, iOS 15.5, *)) {
+            // default highmem value is fine here
+        } else {
+            // a kernel panic is triggered on M1 Max if highmem=on and running < macOS 12.4
+            properties = [self appendDefaultPropertyName:@"highmem" value:@"off" toProperties:properties];
+        }
         // required to boot Windows ARM on TCG
         if ([architecture isEqualToString:@"aarch64"] && !self.configuration.useHypervisor) {
             properties = [self appendDefaultPropertyName:@"virtualization" value:@"on" toProperties:properties];
@@ -672,10 +678,6 @@ static size_t sysctl_read(const char *name) {
             [self pushArgv:@"-device"];
             [self pushArgv:self.configuration.displayCard];
         }
-        if (self.configuration.systemRngEnabled) {
-            [self pushArgv:@"-device"];
-            [self pushArgv:@"virtio-rng-pci"];
-        }
     }
 }
 
@@ -727,6 +729,11 @@ static size_t sysctl_read(const char *name) {
         // fix windows time issues
         [self pushArgv:@"-rtc"];
         [self pushArgv:@"base=localtime"];
+    }
+    
+    if (self.configuration.systemRngEnabled) {
+        [self pushArgv:@"-device"];
+        [self pushArgv:@"virtio-rng-pci"];
     }
     
     if (self.runAsSnapshot) {

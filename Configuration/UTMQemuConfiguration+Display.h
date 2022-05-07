@@ -22,6 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface UTMQemuConfiguration (Display)
 
 @property (nonatomic, assign) BOOL displayConsoleOnly;
+@property (nonatomic, assign) BOOL displayFitScreen;
 @property (nonatomic, assign) BOOL displayRetina;
 @property (nonatomic, nullable, copy) NSString *displayUpscaler;
 @property (nonatomic, readonly) MTLSamplerMinMagFilter displayUpscalerValue;

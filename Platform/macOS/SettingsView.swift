@@ -25,6 +25,7 @@ struct SettingsView: View {
     @AppStorage("NoUsbPrompt") var isNoUsbPrompt = false
     @AppStorage("UseOnlyPcores") var isUseOnlyPcores = true
     @AppStorage("AlternativeCaptureKey") var isAlternativeCaptureKey = false
+    @AppStorage("IsCapsLockKey") var isCapsLockKey = false
     @AppStorage("NoSaveScreenshot") var isNoSaveScreenshot = false
     
     var body: some View {
@@ -36,27 +37,30 @@ struct SettingsView: View {
             }
             Section(header: Text("Display")) {
                 Toggle(isOn: $isVMDisplayFixed, label: {
-                    Text("VM display size is fixed (no zoom)")
-                })
+                    Text("VM display size is fixed")
+                }).help("If enabled, resizing of the VM window will not be allowed.")
                 Toggle(isOn: $isNoSaveScreenshot) {
                     Text("Do not save VM screenshot to disk")
-                }
+                }.help("If enabled, any existing screenshot will be deleted the next time the VM is started.")
             }
             Section(header: Text("Default VM Configuration")) {
                 Toggle(isOn: $isNoHypervisor, label: {
                     Text("Force slower emulation by default (deprecated: now configured per-VM)")
-                })
+                }).help("This option should not be used and will be removed in a future release.")
                 Toggle(isOn: $isUseOnlyPcores, label: {
                     Text("Use only performance cores by default (deprecated: now configured per-VM)")
-                })
+                }).help("This option should not be used and will be removed in a future release.")
             }
             Section(header: Text("Input")) {
                 Toggle(isOn: $isCtrlRightClick, label: {
                     Text("Hold Control (⌃) for right click")
                 })
                 Toggle(isOn: $isAlternativeCaptureKey, label: {
-                    Text("Use Command+Opt (⌘+⌥) for input capture/release")
-                })
+                    Text("Use Command+Option (⌘+⌥) for input capture/release")
+                }).help("If disabled, the default combination Control+Option (⌃+⌥) will be used.")
+                Toggle(isOn: $isCapsLockKey, label: {
+                    Text("Caps Lock (⇪) is treated as a key")
+                }).help("If enabled, caps lock will be handled like other keys. If disabled, it is treated as a toggle that is synchronized with the host.")
             }
             Section(header: Text("USB")) {
                 Toggle(isOn: $isNoUsbPrompt, label: {
@@ -77,6 +81,7 @@ extension UserDefaults {
     @objc dynamic var NoUsbPrompt: Bool { false }
     @objc dynamic var UseOnlyPcores: Bool { false }
     @objc dynamic var AlternativeCaptureKey: Bool { false }
+    @objc dynamic var IsCapsLockKey: Bool { false }
     @objc dynamic var NoSaveScreenshot: Bool { false }
 }
 

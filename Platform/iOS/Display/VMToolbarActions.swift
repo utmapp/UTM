@@ -220,13 +220,12 @@ import SwiftUI
         guard let viewController = self.viewController else {
             return
         }
-        DispatchQueue.global(qos: .background).async {
-            if viewController.vm.state == .vmStarted {
-                viewController.vm.requestVmPause()
-                viewController.vm.requestVmSaveState()
-            } else if viewController.vm.state == .vmPaused {
-                viewController.vm.requestVmResume()
-            }
+        if viewController.vm.state == .vmStarted {
+            viewController.enterSuspended(isBusy: true) // early indicator
+            viewController.vm.requestVmPause(save: true)
+        } else if viewController.vm.state == .vmPaused {
+            viewController.enterSuspended(isBusy: true) // early indicator
+            viewController.vm.requestVmResume()
         }
     }
     
@@ -236,6 +235,7 @@ import SwiftUI
         }
         if viewController.vm.state == .vmStarted {
             let yes = UIAlertAction(title: NSLocalizedString("Yes", comment: "VMDisplayViewController"), style: .destructive) { action in
+                viewController.enterSuspended(isBusy: true) // early indicator
                 viewController.vm.requestVmDeleteState()
                 viewController.vm.vmStop { _ in
                     viewController.terminateApplication()

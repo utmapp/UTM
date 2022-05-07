@@ -253,7 +253,7 @@ import Virtualization
         }
     }
     
-    override func vmPause() async throws {
+    override func vmPause(save: Bool) async throws {
         changeState(.vmPausing)
         do {
             try await _vmPause()

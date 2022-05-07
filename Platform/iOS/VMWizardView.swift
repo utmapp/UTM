@@ -80,14 +80,14 @@ fileprivate struct WizardWrapper: View {
         .toolbar {
             ToolbarItem(placement: .navigationBarLeading) {
                 if wizardState.currentPage == .start {
-                    Button("Close") {
+                    Button("Cancel") {
                         onDismiss()
                     }
                 }
             }
             ToolbarItem(placement: .navigationBarTrailing) {
                 if wizardState.hasNextButton {
-                    Button("Next") {
+                    Button("Continue") {
                         wizardState.next()
                     }
                 } else if wizardState.currentPage == .summary {

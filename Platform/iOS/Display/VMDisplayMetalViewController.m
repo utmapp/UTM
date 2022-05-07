@@ -112,7 +112,9 @@
 
 - (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator {
     [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
-    [self displayResize:size];
+    if (self.vmQemuConfig.displayFitScreen) {
+        [self displayResize:size];
+    }
 }
 
 - (void)enterSuspendedWithIsBusy:(BOOL)busy {
@@ -141,7 +143,9 @@
         self.placeholderImageView.hidden = YES;
         self.mtkView.hidden = NO;
     } completion:nil];
-    [self displayResize:self.view.bounds.size];
+    if (self.vmQemuConfig.displayFitScreen) {
+        [self displayResize:self.view.bounds.size];
+    }
     if (self.vmQemuConfig.shareClipboardEnabled) {
         [[UTMPasteboard generalPasteboard] requestPollingModeForObject:self];
     }

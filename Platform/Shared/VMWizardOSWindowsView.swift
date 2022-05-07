@@ -39,12 +39,15 @@ struct VMWizardOSWindowsView: View {
                 Text("Image File Type")
             }
             .onAppear {
-                if wizardState.windowsBootVhdx != nil {
-                    useVhdx = true
-                } else {
-    #if arch(arm64)
-                    useVhdx = wizardState.useVirtualization
-    #endif
+                // SwiftUI bug: on macOS 11, onAppear() is called every time the check box is clicked
+                if #available(iOS 15, macOS 12, *) {
+                    if wizardState.windowsBootVhdx != nil {
+                        useVhdx = true
+                    } else {
+                        #if arch(arm64)
+                        useVhdx = wizardState.useVirtualization
+                        #endif
+                    }
                 }
             }
             
@@ -64,7 +67,7 @@ struct VMWizardOSWindowsView: View {
                 Button {
                     isFileImporterPresented.toggle()
                 } label: {
-                    Text("Browse")
+                    Text("Browse…")
                 }
                 .disabled(wizardState.isBusy)
                 .padding(.leading, 1)
