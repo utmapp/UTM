@@ -23,6 +23,14 @@ class VMDisplayQemuWindowController: VMDisplayWindowController {
         vm?.config as? UTMQemuConfiguration
     }
     
+    var defaultSubtitle: String {
+        if qemuVM.isRunningAsSnapshot {
+            return NSLocalizedString("Disposable Mode", comment: "VMDisplayQemuDisplayController")
+        } else {
+            return ""
+        }
+    }
+    
     override func enterLive() {
         qemuVM.ioDelegate = self
         startPauseToolbarItem.isEnabled = true
@@ -34,16 +42,13 @@ class VMDisplayQemuWindowController: VMDisplayWindowController {
         #endif
         if qemuVM.isRunningAsSnapshot {
             startPauseToolbarItem.isEnabled = false
-            startPauseToolbarItem.toolTip = "\(startPauseToolbarItem.toolTip ?? "")\n(Disabled due to running without saving changes)"
+            startPauseToolbarItem.toolTip = NSLocalizedString("Disabled when running without saving changes.", comment: "VMDisplayQemuDisplayController")
         }
         drivesToolbarItem.isEnabled = vmQemuConfig.countDrives > 0
         sharedFolderToolbarItem.isEnabled = qemuVM.hasShareDirectoryEnabled
         usbToolbarItem.isEnabled = qemuVM.hasUsbRedirection
-        if qemuVM.isRunningAsSnapshot {
-            window!.title = "\(vmQemuConfig.name) • (Running without saving changes)"
-        } else {
-            window!.title = vmQemuConfig.name
-        }
+        window!.title = vmQemuConfig.name
+        window!.subtitle = defaultSubtitle
         super.enterLive()
     }
 }

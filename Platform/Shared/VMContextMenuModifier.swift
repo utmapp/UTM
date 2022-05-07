@@ -60,7 +60,7 @@ struct VMContextMenuModifier: ViewModifier {
                     vm.isRunningAsSnapshot = true
                     data.run(vm: vm)
                 } label: {
-                    Label("Run without saving changes", systemImage: "play.fill")
+                    Label("Run without saving changes", systemImage: "play")
                 }.help("Run the VM in the foreground, without saving data changes to disk.")
                 
                 Divider()
