@@ -560,14 +560,19 @@ NSString *const kSuspendSnapshotName = @"suspend";
         [self changeState:kVMPausing];
         [self _vmPauseWithCompletion:^(NSError *err){
             if (!err) {
-                [self _vmSaveStateWithCompletion:^(NSError *err) {
+                if (save) {
+                    [self _vmSaveStateWithCompletion:^(NSError *err) {
+                        [self changeState:kVMPaused];
+                        completion(err);
+                    }];
+                } else {
                     [self changeState:kVMPaused];
                     completion(err);
-                }];
+                }
             } else {
                 [self changeState:kVMStopped];
+                completion(err);
             }
-            completion(err);
         }];
     });
 }
