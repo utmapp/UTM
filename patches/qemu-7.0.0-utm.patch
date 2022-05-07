@@ -115,3 +115,33 @@ index d2e5ecd234..c30a13b5e1 100644
 -- 
 2.28.0
 
+From 12d182898a4866e4be418e2abac286b497cfa1b2 Mon Sep 17 00:00:00 2001
+From: osy <50960678+osy@users.noreply.github.com>
+Date: Fri, 6 May 2022 20:57:37 -0700
+Subject: [PATCH] usbredir: avoid queuing hello packet on snapshot restore
+
+When launching QEMU with "-loadvm", usbredir_create_parser() should avoid
+setting up the hello packet (just as with "-incoming". On the latest version
+of libusbredir, usbredirparser_unserialize() will return error if the parser
+is not "pristine."
+---
+ hw/usb/redirect.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/hw/usb/redirect.c b/hw/usb/redirect.c
+index 8692ea2561..d45165fe6b 100644
+--- a/hw/usb/redirect.c
++++ b/hw/usb/redirect.c
+@@ -1280,7 +1280,8 @@ static void usbredir_create_parser(USBRedirDevice *dev)
+     }
+ #endif
+ 
+-    if (runstate_check(RUN_STATE_INMIGRATE)) {
++    if (runstate_check(RUN_STATE_INMIGRATE) ||
++        runstate_check(RUN_STATE_PRELAUNCH)) {
+         flags |= usbredirparser_fl_no_hello;
+     }
+     usbredirparser_init(dev->parser, VERSION, caps, USB_REDIR_CAPS_SIZE,
+-- 
+2.28.0
+
