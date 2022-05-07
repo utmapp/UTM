@@ -89,13 +89,6 @@ import SwiftUI
         }
     }
     
-    var isRunningAsSnapshot: Bool {
-        guard let viewController = viewController else {
-            return false
-        }
-        return viewController.vm.isRunningAsSnapshot
-    }
-    
     private func optionalObjectWillChange() {
         if #available(iOS 14, *) {
             self.objectWillChange.send()
@@ -220,9 +213,10 @@ import SwiftUI
         guard let viewController = self.viewController else {
             return
         }
+        let shouldSaveState = !viewController.vm.isRunningAsSnapshot
         if viewController.vm.state == .vmStarted {
             viewController.enterSuspended(isBusy: true) // early indicator
-            viewController.vm.requestVmPause(save: true)
+            viewController.vm.requestVmPause(save: shouldSaveState)
         } else if viewController.vm.state == .vmPaused {
             viewController.enterSuspended(isBusy: true) // early indicator
             viewController.vm.requestVmResume()

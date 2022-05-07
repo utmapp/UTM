@@ -31,6 +31,10 @@ class VMDisplayQemuWindowController: VMDisplayWindowController {
         }
     }
     
+    override var shouldSaveOnPause: Bool {
+        !qemuVM.isRunningAsSnapshot
+    }
+    
     override func enterLive() {
         qemuVM.ioDelegate = self
         startPauseToolbarItem.isEnabled = true
@@ -40,10 +44,6 @@ class VMDisplayQemuWindowController: VMDisplayWindowController {
             startPauseToolbarItem.isEnabled = false
         }
         #endif
-        if qemuVM.isRunningAsSnapshot {
-            startPauseToolbarItem.isEnabled = false
-            startPauseToolbarItem.toolTip = NSLocalizedString("Disabled when running without saving changes.", comment: "VMDisplayQemuDisplayController")
-        }
         drivesToolbarItem.isEnabled = vmQemuConfig.countDrives > 0
         sharedFolderToolbarItem.isEnabled = qemuVM.hasShareDirectoryEnabled
         usbToolbarItem.isEnabled = qemuVM.hasUsbRedirection
