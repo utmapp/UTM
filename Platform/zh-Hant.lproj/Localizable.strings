@@ -119,7 +119,7 @@
 "Browse UTM Gallery" = "瀏覽 UTM 資源庫";
 
 /* VMConfigSharingViewController */
-"Browse..." = "瀏覽⋯";
+"Browse…" = "瀏覽⋯";
 
 /* Cancel button
    VMConfigDirectoryPickerViewController
@@ -518,7 +518,7 @@
 "Image Type" = "映像檔類型";
 
 /* Import button */
-"Import" = "匯入";
+"Import…" = "匯入⋯";
 
 /* No comment provided by engineer. */
 "Import Drive" = "匯入磁碟機";
@@ -698,7 +698,7 @@
 "New..." = "新增⋯";
 
 /* No comment provided by engineer. */
-"Next" = "下一步";
+"Continue" = "下一步";
 
 /* No button
    VMDisplayViewController
@@ -806,7 +806,7 @@
 "Read Only" = "唯讀";
 
 /* No comment provided by engineer. */
-"Read only share?" = "是否要唯讀共享？";
+"Share is read only" = "是否要唯讀共享？";
 
 /* No comment provided by engineer. */
 "Removable" = "可卸除式";
@@ -1087,7 +1087,7 @@
 "Zoom" = "縮放";
 
 /* Manually added: Common > Button */
-"Back" = "返回";
+"Go Back" = "返回";
 
 /* Manually added: Create a New Virtual Machine > macOS  */
 "To install macOS, you need to download a recovery IPSW. If you do not select an existing IPSW, the latest macOS IPSW will be downloaded from Apple." = "要安裝 macOS，您需要下載復原 IPSW。如果您這裡沒有選擇 IPSW，UTM 將會從 Apple 下載最新的 macOS IPSW。";

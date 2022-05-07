@@ -63,20 +63,26 @@ struct VMWizardView: View {
         .frame(width: 450, height: 450)
         .toolbar {
             ToolbarItem(placement: .automatic) {
-                Button("Close") {
-                    presentationMode.wrappedValue.dismiss()
+                if wizardState.currentPage != .start {
+                    Button("Cancel") {
+                        presentationMode.wrappedValue.dismiss()
+                    }
                 }
             }
             ToolbarItem(placement: .cancellationAction) {
                 if wizardState.currentPage != .start {
-                    Button("Back") {
+                    Button("Go Back") {
                         wizardState.back()
+                    }
+                } else {
+                    Button("Cancel") {
+                        presentationMode.wrappedValue.dismiss()
                     }
                 }
             }
             ToolbarItem(placement: .confirmationAction) {
                 if wizardState.hasNextButton {
-                    Button("Next") {
+                    Button("Continue") {
                         wizardState.next()
                     }
                 } else if wizardState.currentPage == .summary {

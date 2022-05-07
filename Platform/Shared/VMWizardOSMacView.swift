@@ -40,7 +40,7 @@ struct VMWizardOSMacView: View {
                     Button {
                         isFileImporterPresented.toggle()
                     } label: {
-                        Text("Browse")
+                        Text("Browse…")
                     }
                     Button {
                         wizardState.macRecoveryIpswURL = nil

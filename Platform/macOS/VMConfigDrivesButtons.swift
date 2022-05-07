@@ -54,12 +54,12 @@ struct VMConfigNewDriveButton<Config: ObservableObject & UTMConfigurable>: View 
                     Button(action: { importDrivePresented.toggle() }, label: {
                         if let _ = config as? UTMQemuConfiguration {
                             if newQemuDrive.removable {
-                                Text("Browse")
+                                Text("Browse…")
                             } else {
-                                Text("Import")
+                                Text("Import…")
                             }
                         } else {
-                            Text("Import")
+                            Text("Import…")
                         }
                     }).help("Select an existing disk image.")
                     Button(action: { addNewDrive(newQemuDrive) }, label: {

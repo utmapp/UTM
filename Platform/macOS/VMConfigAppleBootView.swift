@@ -96,7 +96,7 @@ struct VMConfigAppleBootView: View {
                     HStack {
                         TextField("Kernel Image", text: .constant(config.bootLoader?.linuxKernelURL?.lastPathComponent ?? ""))
                             .disabled(true)
-                        Button("Browse") {
+                        Button("Browse…") {
                             importBootloaderSelection = .kernel
                             importFileShown = true
                         }
@@ -107,7 +107,7 @@ struct VMConfigAppleBootView: View {
                         Button("Clear") {
                             config.bootLoader?.linuxInitialRamdiskURL = nil
                         }
-                        Button("Browse") {
+                        Button("Browse…") {
                             importBootloaderSelection = .ramdisk
                             importFileShown = true
                         }
@@ -123,7 +123,7 @@ struct VMConfigAppleBootView: View {
                         Button("Clear") {
                             config.macRecoveryIpswURL = nil
                         }
-                        Button("Browse") {
+                        Button("Browse…") {
                             importBootloaderSelection = .ipsw
                             importFileShown = true
                         }

@@ -69,7 +69,7 @@ struct VMWizardOSLinuxView: View {
                         selectImage = .kernel
                         isFileImporterPresented.toggle()
                     } label: {
-                        Text("Browse")
+                        Text("Browse…")
                     }
                     .padding(.leading, 1)
                 } header: {
@@ -85,7 +85,7 @@ struct VMWizardOSLinuxView: View {
                             selectImage = .initialRamdisk
                             isFileImporterPresented.toggle()
                         } label: {
-                            Text("Browse")
+                            Text("Browse…")
                         }
                         .disabled(wizardState.isBusy)
                         .padding(.leading, 1)
@@ -101,7 +101,7 @@ struct VMWizardOSLinuxView: View {
                         selectImage = .initialRamdisk
                         isFileImporterPresented.toggle()
                     } label: {
-                        Text("Browse")
+                        Text("Browse…")
                     }
                     .disabled(wizardState.isBusy)
                     .padding(.leading, 1)
@@ -126,7 +126,7 @@ struct VMWizardOSLinuxView: View {
                             selectImage = .rootImage
                             isFileImporterPresented.toggle()
                         } label: {
-                            Text("Browse")
+                            Text("Browse…")
                         }
                         Button {
                             wizardState.linuxRootImageURL = nil
@@ -139,7 +139,7 @@ struct VMWizardOSLinuxView: View {
                         selectImage = .rootImage
                         isFileImporterPresented.toggle()
                     } label: {
-                        Text("Browse")
+                        Text("Browse…")
                     }
                     Button {
                         wizardState.linuxRootImageURL = nil
@@ -161,7 +161,7 @@ struct VMWizardOSLinuxView: View {
                             selectImage = .bootImage
                             isFileImporterPresented.toggle()
                         } label: {
-                            Text("Browse")
+                            Text("Browse…")
                         }
                         .disabled(wizardState.isBusy)
                         .padding(.leading, 1)
@@ -179,7 +179,7 @@ struct VMWizardOSLinuxView: View {
                         selectImage = .bootImage
                         isFileImporterPresented.toggle()
                     } label: {
-                        Text("Browse")
+                        Text("Browse…")
                     }
                     .disabled(wizardState.isBusy)
                     .padding(.leading, 1)
@@ -211,7 +211,7 @@ struct VMWizardOSLinuxView: View {
                         selectImage = .bootImage
                         isFileImporterPresented.toggle()
                     } label: {
-                        Text("Browse")
+                        Text("Browse…")
                     }.disabled(wizardState.isBusy)
                 } header: {
                     Text("File Imported")

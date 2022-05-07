@@ -36,7 +36,7 @@ struct VMRemovableDrivesView: View {
 
     @ViewBuilder private var shareMenuActions: some View {
         Button(action: { shareDirectoryFileImportPresented.toggle() }) {
-            Label("Browse", systemImage: "doc.badge.plus")
+            Label("Browse…", systemImage: "doc.badge.plus")
         }
         if hasSharedDir {
             Button(action: clearShareDirectory) {
@@ -92,7 +92,7 @@ struct VMRemovableDrivesView: View {
                                 diskImageFileImportPresented = true
                             }
                         }, label: {
-                            Label("Browse", systemImage: "doc.badge.plus")
+                            Label("Browse…", systemImage: "doc.badge.plus")
                         })
                         .onChange(of: workaroundFileImporterBug) { doWorkaround in
                             /// Explanation see "SwiftUI FileImporter modal bug" above

@@ -59,7 +59,7 @@
 "Browse" = "선택";
 
 /* VMConfigSharingViewController */
-"Browse..." = "탐색...";
+"Browse…" = "탐색";
 
 /* Cancel button
    VMConfigDirectoryPickerViewController
@@ -314,7 +314,7 @@
 "Image Type" = "이미지 종류";
 
 /* Import button */
-"Import" = "추가";
+"Import…" = "추가";
 
 /* Save VM overlay */
 "Importing %@..." = "%@ 추가중...";

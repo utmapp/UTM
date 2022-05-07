@@ -42,7 +42,7 @@
 - (void)showShareDirectoryOptions:(BOOL)visible animated:(BOOL)animated {
     [self cells:self.directorySharingCells setHidden:!visible];
     if (self.configuration.shareDirectoryName.length == 0) {
-        self.selectDirectoryCell.detailTextLabel.text = NSLocalizedString(@"Browse...", @"VMConfigSharingViewController");
+        self.selectDirectoryCell.detailTextLabel.text = NSLocalizedString(@"Browse…", @"VMConfigSharingViewController");
     }
     [self reloadDataAnimated:animated];
 }

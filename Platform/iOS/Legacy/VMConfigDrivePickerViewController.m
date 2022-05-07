@@ -195,7 +195,7 @@
 
 - (IBAction)addButton:(UIBarButtonItem *)sender {
     UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil message:NSLocalizedString(@"Would you like to import an existing disk image or create a new one?", @"VMConfigDrivePickerViewController") preferredStyle:UIAlertControllerStyleActionSheet];
-    UIAlertAction *import = [UIAlertAction actionWithTitle:NSLocalizedString(@"Import", @"Import button") style:UIAlertActionStyleDefault handler:^(UIAlertAction *action){
+    UIAlertAction *import = [UIAlertAction actionWithTitle:NSLocalizedString(@"Import…", @"Import button") style:UIAlertActionStyleDefault handler:^(UIAlertAction *action){
         UIDocumentPickerViewController *picker = [[UIDocumentPickerViewController alloc] initWithDocumentTypes:@[@"public.item"] inMode:UIDocumentPickerModeImport];
         picker.delegate = self;
         picker.modalPresentationStyle = UIModalPresentationFormSheet;

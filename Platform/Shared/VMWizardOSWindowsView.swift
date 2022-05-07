@@ -67,7 +67,7 @@ struct VMWizardOSWindowsView: View {
                 Button {
                     isFileImporterPresented.toggle()
                 } label: {
-                    Text("Browse")
+                    Text("Browse…")
                 }
                 .disabled(wizardState.isBusy)
                 .padding(.leading, 1)
