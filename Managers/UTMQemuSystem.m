@@ -735,6 +735,10 @@ static size_t sysctl_read(const char *name) {
         [self pushArgv:@"-device"];
         [self pushArgv:@"virtio-rng-pci"];
     }
+    
+    if (self.runAsSnapshot) {
+        [self pushArgv:@"-snapshot"];
+    }
 }
     
 - (void)argsFromUser {

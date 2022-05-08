@@ -29,7 +29,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
 
         let vmList = data.vmWindows.keys
-        if vmList.contains(where: { $0.state == .vmStarted }) { // There is at least 1 running VM
+        if vmList.contains(where: { $0.state == .vmStarted || ($0.state == .vmPaused && !$0.hasSaveState) }) { // There is at least 1 running VM
             DispatchQueue.main.async {
                 let alert = NSAlert()
                 alert.alertStyle = .informational
@@ -53,7 +53,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 }
             }
             return .terminateLater
-        } else if vmList.allSatisfy({ $0.state == .vmStopped || ($0.state == .vmPaused && $0.hasSaveState) }) { // All VMs are stopped or suspended
+        } else if vmList.allSatisfy({ $0.state == .vmStopped || $0.state == .vmPaused }) { // All VMs are stopped or suspended
             return .terminateNow
         } else { // There could be some VMs in other states (starting, pausing, etc.)
             return .terminateCancel

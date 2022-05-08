@@ -23,6 +23,18 @@ class VMDisplayQemuWindowController: VMDisplayWindowController {
         vm?.config as? UTMQemuConfiguration
     }
     
+    var defaultSubtitle: String {
+        if qemuVM.isRunningAsSnapshot {
+            return NSLocalizedString("Disposable Mode", comment: "VMDisplayQemuDisplayController")
+        } else {
+            return ""
+        }
+    }
+    
+    override var shouldSaveOnPause: Bool {
+        !qemuVM.isRunningAsSnapshot
+    }
+    
     override func enterLive() {
         qemuVM.ioDelegate = self
         startPauseToolbarItem.isEnabled = true
@@ -36,6 +48,7 @@ class VMDisplayQemuWindowController: VMDisplayWindowController {
         sharedFolderToolbarItem.isEnabled = qemuVM.hasShareDirectoryEnabled
         usbToolbarItem.isEnabled = qemuVM.hasUsbRedirection
         window!.title = vmQemuConfig.name
+        window!.subtitle = defaultSubtitle
         super.enterLive()
     }
 }

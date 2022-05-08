@@ -345,7 +345,7 @@ extension VMDisplayMetalWindowController: VMMetalViewInputDelegate {
         syncCapsLock()
         qemuVM.requestInputTablet(true)
         metalView?.releaseMouse()
-        self.window?.subtitle = ""
+        self.window?.subtitle = defaultSubtitle
     }
     
     func mouseMove(absolutePoint: CGPoint, button: CSInputButton) {

@@ -34,6 +34,7 @@ class VMDisplayWindowController: NSWindowController {
     
     var isPowerForce: Bool = false
     var shouldAutoStartVM: Bool = true
+    var shouldSaveOnPause: Bool { true }
     var vm: UTMVirtualMachine!
     var onClose: ((Notification) -> Void)?
     
@@ -63,7 +64,7 @@ class VMDisplayWindowController: NSWindowController {
     @IBAction func startPauseButtonPressed(_ sender: Any) {
         enterSuspended(isBusy: true) // early indicator
         if vm.state == .vmStarted {
-            vm.requestVmPause(save: true)
+            vm.requestVmPause(save: shouldSaveOnPause)
         } else if vm.state == .vmPaused {
             vm.requestVmResume()
         } else if vm.state == .vmStopped {

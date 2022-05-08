@@ -76,6 +76,14 @@ NS_ASSUME_NONNULL_BEGIN
 /// This property is observable and must only be accessed on the main thread.
 @property (nonatomic, readonly) BOOL isBusy;
 
+/// Whether the next start of this VM should have the -snapshot flag set
+///
+/// This will be passed to UTMQemuSystem,
+/// and will be cleared when the VM stops or has an error.
+///
+/// This property is observable and must only be accessed on the main thread.
+@property (nonatomic) BOOL isRunningAsSnapshot;
+
 /// Checks if a save state exists
 ///
 /// This property is observable and must only be accessed on the main thread.

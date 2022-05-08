@@ -205,7 +205,13 @@ struct ContentView: View {
                 break
             case "pause":
                 if let vm = await findVM(), vm.state == .vmStarted {
-                    vm.requestVmPause(save: true)
+                    let shouldSaveOnPause: Bool
+                    if let vm = vm as? UTMQemuVirtualMachine {
+                        shouldSaveOnPause = !vm.isRunningAsSnapshot
+                    } else {
+                        shouldSaveOnPause = true
+                    }
+                    vm.requestVmPause(save: shouldSaveOnPause)
                 }
             case "resume":
                 if let vm = await findVM(), vm.state == .vmPaused {
