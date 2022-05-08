@@ -325,4 +325,14 @@ static int API_AVAILABLE(ios(13.4)) hidToPs2(UIKeyboardHIDUsage hidCode) {
     }
 }
 
+#pragma mark - VoiceOver Esc Key workaround
+
+- (BOOL)accessibilityPerformEscape {
+    [self sendExtendedKey:kCSInputKeyPress code:0x01];
+    [self onDelay:0.05f action:^{
+        [self sendExtendedKey:kCSInputKeyRelease code:0x01];
+    }];
+    return YES;
+}
+
 @end
