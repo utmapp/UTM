@@ -117,6 +117,14 @@ class VMDisplayAppleWindowController: VMDisplayWindowController {
         }
     }
     
+    @available(macOS 12, *)
+    private func windowSize(for display: Display) -> CGSize {
+        let currentScreenScale = window?.screen?.backingScaleFactor ?? 1.0
+        let useHidpi = display.pixelsPerInch >= 226
+        let scale = useHidpi ? currentScreenScale : 1.0
+        return CGSize(width: CGFloat(display.widthInPixels) / scale, height: CGFloat(display.heightInPixels) / scale)
+    }
+    
     func updateWindowFrame() {
         guard let window = window else {
             return
@@ -150,7 +158,7 @@ class VMDisplayAppleWindowController: VMDisplayWindowController {
             guard let primaryDisplay = appleConfig.displays.first else {
                 return //FIXME: add multiple displays
             }
-            let size = CGSize(width: primaryDisplay.widthInPixels, height: primaryDisplay.heightInPixels)
+            let size = windowSize(for: primaryDisplay)
             let frame = window.frameRect(forContentRect: CGRect(origin: window.frame.origin, size: size))
             window.contentAspectRatio = size
             window.minSize = NSSize(width: 400, height: 400)
