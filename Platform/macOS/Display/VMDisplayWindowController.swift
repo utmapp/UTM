@@ -191,7 +191,7 @@ class VMDisplayWindowController: NSWindowController {
 
 extension VMDisplayWindowController: NSWindowDelegate {
     func window(_ window: NSWindow, willUseFullScreenPresentationOptions proposedOptions: NSApplication.PresentationOptions = []) -> NSApplication.PresentationOptions {
-        return [.autoHideToolbar, .autoHideMenuBar, .fullScreen]
+        return proposedOptions.union([.autoHideToolbar])
     }
     
     func windowShouldClose(_ sender: NSWindow) -> Bool {
