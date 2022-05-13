@@ -379,9 +379,11 @@ static size_t sysctl_read(const char *name) {
         } else if ([self.configuration.networkMode isEqualToString:@"bridged"]) {
             useVMnet = YES;
             netstr = [NSMutableString stringWithString:@"vmnet-bridged,id=net0"];
-            if (self.configuration.networkBridgeInterface.length > 0) {
-                [netstr appendFormat:@",ifname=%@", self.configuration.networkBridgeInterface];
+            NSString *interface = self.configuration.networkBridgeInterface;
+            if (!interface) {
+                interface = @"en0";
             }
+            [netstr appendFormat:@",ifname=%@", interface];
         } else if ([self.configuration.networkMode isEqualToString:@"host"]) {
             useVMnet = YES;
             netstr = [NSMutableString stringWithString:@"vmnet-host,id=net0"];
