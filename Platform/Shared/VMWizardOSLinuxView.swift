@@ -73,7 +73,7 @@ struct VMWizardOSLinuxView: View {
                     }
                     .padding(.leading, 1)
                 } header: {
-                    Text("Linux kernel (required):")
+                    Text("\(wizardState.useAppleVirtualization ? "Uncompressed " : "")Linux kernel (required):")
                 }
                 
                 Section {
@@ -114,7 +114,7 @@ struct VMWizardOSLinuxView: View {
 #endif
                     
                 } header: {
-                    Text("Linux initial ramdisk (optional):")
+                    Text("\(wizardState.useAppleVirtualization ? "Uncompressed " : "")Linux initial ramdisk (optional):")
                 }
                 
                 Section {
