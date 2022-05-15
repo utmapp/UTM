@@ -74,6 +74,10 @@ const CGFloat kScrollResistance = 10.0f;
     _tap.delegate = self;
     _tap.allowedTouchTypes = @[ @(UITouchTypeDirect) ];
     _tap.cancelsTouchesInView = NO;
+    _tapPencil = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(gestureTapPencil:)];
+    _tapPencil.delegate = self;
+    _tapPencil.allowedTouchTypes = @[ @(UITouchTypePencil) ];
+    _tapPencil.cancelsTouchesInView = NO;
     _twoTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(gestureTwoTap:)];
     _twoTap.numberOfTouchesRequired = 2;
     _twoTap.delegate = self;
@@ -91,6 +95,7 @@ const CGFloat kScrollResistance = 10.0f;
     [self.mtkView addGestureRecognizer:_twoPan];
     [self.mtkView addGestureRecognizer:_threePan];
     [self.mtkView addGestureRecognizer:_tap];
+    [self.mtkView addGestureRecognizer:_tapPencil];
     [self.mtkView addGestureRecognizer:_twoTap];
     [self.mtkView addGestureRecognizer:_longPress];
     [self.mtkView addGestureRecognizer:_pinch];
@@ -417,6 +422,23 @@ static CGFloat CGPointToPixel(CGFloat point) {
     }
 }
 
+- (IBAction)gestureTapPencil:(UITapGestureRecognizer *)sender {
+    if (sender.state == UIGestureRecognizerStateEnded &&
+        self.serverModeCursor) { // otherwise we handle in touchesBegan
+        
+        CSInputButton button = kCSInputButtonLeft;
+        
+        if (@available(iOS 12.1, *)) {
+            if (_pencilForceRightClickOnce) {
+                button = kCSInputButtonRight;
+                _pencilForceRightClickOnce = false;
+            }
+        }
+        
+        [self mouseClick:button location:[sender locationInView:sender.view]];
+    }
+}
+
 - (IBAction)gestureTwoTap:(UITapGestureRecognizer *)sender {
     if (sender.state == UIGestureRecognizerStateEnded &&
         self.twoFingerTapType == VMGestureTypeRightClick) {
@@ -502,7 +524,13 @@ static CGFloat CGPointToPixel(CGFloat point) {
     if (gestureRecognizer == _tap && otherGestureRecognizer == _twoTap) {
         return YES;
     }
+    if (gestureRecognizer == _tapPencil && otherGestureRecognizer == _twoTap) {
+        return YES;
+    }
     if (gestureRecognizer == _longPress && otherGestureRecognizer == _tap) {
+        return YES;
+    }
+    if (gestureRecognizer == _longPress && otherGestureRecognizer == _tapPencil) {
         return YES;
     }
     if (gestureRecognizer == _longPress && otherGestureRecognizer == _twoTap) {
