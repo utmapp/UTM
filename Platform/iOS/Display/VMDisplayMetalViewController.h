@@ -48,6 +48,7 @@ NS_ASSUME_NONNULL_BEGIN
     UIPanGestureRecognizer *_twoPan;
     UIPanGestureRecognizer *_threePan;
     UITapGestureRecognizer *_tap;
+    UITapGestureRecognizer *_tapPencil;
     UITapGestureRecognizer *_twoTap;
     UILongPressGestureRecognizer *_longPress;
     UIPinchGestureRecognizer *_pinch;
