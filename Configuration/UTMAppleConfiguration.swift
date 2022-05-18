@@ -384,10 +384,10 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
                 throw ConfigError.platformUnsupported
             }
             #endif
-            displays = try values.decode([Display].self, forKey: .displays)
-            isAudioEnabled = try values.decode(Bool.self, forKey: .isAudioEnabled)
-            isKeyboardEnabled = try values.decode(Bool.self, forKey: .isKeyboardEnabled)
-            isPointingEnabled = try values.decode(Bool.self, forKey: .isPointingEnabled)
+            displays = try values.decodeIfPresent([Display].self, forKey: .displays) ?? []
+            isAudioEnabled = try values.decodeIfPresent(Bool.self, forKey: .isAudioEnabled) ?? false
+            isKeyboardEnabled = try values.decodeIfPresent(Bool.self, forKey: .isKeyboardEnabled) ?? false
+            isPointingEnabled = try values.decodeIfPresent(Bool.self, forKey: .isPointingEnabled) ?? false
         } else {
             guard !values.contains(.macPlatform) else {
                 throw ConfigError.platformUnsupported
