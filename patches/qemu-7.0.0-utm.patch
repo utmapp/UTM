@@ -145,3 +145,224 @@ index 8692ea2561..d45165fe6b 100644
 -- 
 2.28.0
 
+From 6626058f225c9c6a402f9ac6f90aa0b7e94d175c Mon Sep 17 00:00:00 2001
+From: osy <50960678+osy@users.noreply.github.com>
+Date: Tue, 17 May 2022 19:33:01 -0700
+Subject: [PATCH] net/vmnet: use availability check at runtime
+
+MAC_OS_X_VERSION_MIN_REQUIRED is set at compile time so this means that when
+we target an older macOS version, it disables the newer features. With a
+runtime check, we can selectively disable newer API features.
+---
+ net/vmnet-bridged.m | 29 ++++++++++---------
+ net/vmnet-common.m  |  2 +-
+ net/vmnet-host.c    | 70 +++++++++++++++++++++------------------------
+ net/vmnet-shared.c  | 32 ++++++++++-----------
+ 4 files changed, 65 insertions(+), 68 deletions(-)
+
+diff --git a/net/vmnet-bridged.m b/net/vmnet-bridged.m
+index 46d2282863..239d4e64c8 100644
+--- a/net/vmnet-bridged.m
++++ b/net/vmnet-bridged.m
+@@ -88,15 +88,16 @@ static bool validate_options(const Netdev *netdev, Error **errp)
+         return false;
+     }
+ 
+-#if !defined(MAC_OS_VERSION_11_0) || \
+-    MAC_OS_X_VERSION_MIN_REQUIRED < MAC_OS_VERSION_11_0
+-    if (options->has_isolated) {
+-        error_setg(errp,
+-                   "vmnet-bridged.isolated feature is "
+-                   "unavailable: outdated vmnet.framework API");
+-        return false;
++    if (__builtin_available(macOS 11, *)) {
++        // clang requires a true branch
++    } else {
++        if (options->has_isolated) {
++            error_setg(errp,
++                       "vmnet-bridged.isolated feature is "
++                       "unavailable: outdated vmnet.framework API");
++            return false;
++        }
+     }
+-#endif
+     return true;
+ }
+ 
+@@ -115,12 +116,12 @@ static xpc_object_t build_if_desc(const Netdev *netdev)
+                               vmnet_shared_interface_name_key,
+                               options->ifname);
+ 
+-#if defined(MAC_OS_VERSION_11_0) && \
+-    MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_VERSION_11_0
+-    xpc_dictionary_set_bool(if_desc,
+-                            vmnet_enable_isolation_key,
+-                            options->isolated);
+-#endif
++    if (__builtin_available(macOS 11, *)) {
++        xpc_dictionary_set_bool(if_desc,
++                                vmnet_enable_isolation_key,
++                                options->isolated);
++    }
++
+     return if_desc;
+ }
+ 
+diff --git a/net/vmnet-common.m b/net/vmnet-common.m
+index 2cb60b9ddd..ed376483b9 100644
+--- a/net/vmnet-common.m
++++ b/net/vmnet-common.m
+@@ -47,7 +47,7 @@
+     case VMNET_TOO_MANY_PACKETS:
+         return "packet count exceeds limit";
+ #if defined(MAC_OS_VERSION_11_0) && \
+-    MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_VERSION_11_0
++    MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_VERSION_11_0
+     case VMNET_SHARING_SERVICE_BUSY:
+         return "conflict, sharing service is in use";
+ #endif
+diff --git a/net/vmnet-host.c b/net/vmnet-host.c
+index 05f8d78864..400b670a96 100644
+--- a/net/vmnet-host.c
++++ b/net/vmnet-host.c
+@@ -22,31 +22,29 @@ static bool validate_options(const Netdev *netdev, Error **errp)
+ {
+     const NetdevVmnetHostOptions *options = &(netdev->u.vmnet_host);
+ 
+-#if defined(MAC_OS_VERSION_11_0) && \
+-    MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_VERSION_11_0
+-
+-    QemuUUID net_uuid;
+-    if (options->has_net_uuid &&
+-        qemu_uuid_parse(options->net_uuid, &net_uuid) < 0) {
+-        error_setg(errp, "Invalid UUID provided in 'net-uuid'");
+-        return false;
+-    }
+-#else
+-    if (options->has_isolated) {
+-        error_setg(errp,
+-                   "vmnet-host.isolated feature is "
+-                   "unavailable: outdated vmnet.framework API");
+-        return false;
++    if (__builtin_available(macOS 11, *)) {
++        QemuUUID net_uuid;
++        if (options->has_net_uuid &&
++            qemu_uuid_parse(options->net_uuid, &net_uuid) < 0) {
++            error_setg(errp, "Invalid UUID provided in 'net-uuid'");
++            return false;
++        }
++    } else {
++        if (options->has_isolated) {
++            error_setg(errp,
++                       "vmnet-host.isolated feature is "
++                       "unavailable: outdated vmnet.framework API");
++            return false;
++        }
++
++        if (options->has_net_uuid) {
++            error_setg(errp,
++                       "vmnet-host.net-uuid feature is "
++                       "unavailable: outdated vmnet.framework API");
++            return false;
++        }
+     }
+ 
+-    if (options->has_net_uuid) {
+-        error_setg(errp,
+-                   "vmnet-host.net-uuid feature is "
+-                   "unavailable: outdated vmnet.framework API");
+-        return false;
+-    }
+-#endif
+-
+     if ((options->has_start_address ||
+          options->has_end_address ||
+          options->has_subnet_mask) &&
+@@ -71,21 +69,19 @@ static xpc_object_t build_if_desc(const Netdev *netdev)
+                               vmnet_operation_mode_key,
+                               VMNET_HOST_MODE);
+ 
+-#if defined(MAC_OS_VERSION_11_0) && \
+-    MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_VERSION_11_0
+-
+-    xpc_dictionary_set_bool(if_desc,
+-                            vmnet_enable_isolation_key,
+-                            options->isolated);
+-
+-    QemuUUID net_uuid;
+-    if (options->has_net_uuid) {
+-        qemu_uuid_parse(options->net_uuid, &net_uuid);
+-        xpc_dictionary_set_uuid(if_desc,
+-                                vmnet_network_identifier_key,
+-                                net_uuid.data);
++    if (__builtin_available(macOS 11, *)) {
++        xpc_dictionary_set_bool(if_desc,
++                                vmnet_enable_isolation_key,
++                                options->isolated);
++
++        QemuUUID net_uuid;
++        if (options->has_net_uuid) {
++            qemu_uuid_parse(options->net_uuid, &net_uuid);
++            xpc_dictionary_set_uuid(if_desc,
++                                    vmnet_network_identifier_key,
++                                    net_uuid.data);
++        }
+     }
+-#endif
+ 
+     if (options->has_start_address) {
+         xpc_dictionary_set_string(if_desc,
+diff --git a/net/vmnet-shared.c b/net/vmnet-shared.c
+index 18cadc72bd..c39baf9a32 100644
+--- a/net/vmnet-shared.c
++++ b/net/vmnet-shared.c
+@@ -21,15 +21,16 @@ static bool validate_options(const Netdev *netdev, Error **errp)
+ {
+     const NetdevVmnetSharedOptions *options = &(netdev->u.vmnet_shared);
+ 
+-#if !defined(MAC_OS_VERSION_11_0) || \
+-    MAC_OS_X_VERSION_MIN_REQUIRED < MAC_OS_VERSION_11_0
+-    if (options->has_isolated) {
+-        error_setg(errp,
+-                   "vmnet-shared.isolated feature is "
+-                   "unavailable: outdated vmnet.framework API");
+-        return false;
++    if (__builtin_available(macOS 11, *)) {
++        // clang requires a true branch
++    } else {
++        if (options->has_isolated) {
++            error_setg(errp,
++                       "vmnet-shared.isolated feature is "
++                       "unavailable: outdated vmnet.framework API");
++            return false;
++        }
+     }
+-#endif
+ 
+     if ((options->has_start_address ||
+          options->has_end_address ||
+@@ -76,14 +77,13 @@ static xpc_object_t build_if_desc(const Netdev *netdev)
+                                   options->subnet_mask);
+     }
+ 
+-#if defined(MAC_OS_VERSION_11_0) && \
+-    MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_VERSION_11_0
+-    xpc_dictionary_set_bool(
+-        if_desc,
+-        vmnet_enable_isolation_key,
+-        options->isolated
+-    );
+-#endif
++    if (__builtin_available(macOS 11, *)) {
++        xpc_dictionary_set_bool(
++            if_desc,
++            vmnet_enable_isolation_key,
++            options->isolated
++        );
++    }
+ 
+     return if_desc;
+ }
+-- 
+2.32.0 (Apple Git-132)
+
