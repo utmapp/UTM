@@ -27,8 +27,12 @@ struct VMDetailsView: View {
     private var regularScreenSizeClass: Bool {
         horizontalSizeClass == .regular
     }
+    private let workaroundScrollbarBug: Bool = false
     #else
     private let regularScreenSizeClass: Bool = true
+    private var workaroundScrollbarBug: Bool {
+        NSScroller.preferredScrollerStyle == .legacy
+    }
     #endif
     
     private var sizeLabel: String {
@@ -49,7 +53,7 @@ struct VMDetailsView: View {
                 Spacer()
             }
         } else {
-            ScrollView {
+            ScrollView(.vertical, showsIndicators: !workaroundScrollbarBug) {
                 Screenshot(vm: vm, large: regularScreenSizeClass)
                 let notes = vm.detailsNotes ?? ""
                 if regularScreenSizeClass && !notes.isEmpty {
