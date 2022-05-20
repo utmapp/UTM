@@ -483,7 +483,7 @@ build_spice_client () {
     build $XML2_SRC --enable-shared=no --without-python
     meson_build $SOUP_SRC --default-library static -Dsysprof=disabled -Dtls_check=false -Dintrospection=disabled
     meson_build $PHODAV_SRC
-    meson_build $SPICE_CLIENT_SRC -Dcoroutine=libucontext -Dusb-cd=disabled
+    meson_build $SPICE_CLIENT_SRC -Dcoroutine=libucontext -Dphysical-cd=disabled
 }
 
 fixup () {

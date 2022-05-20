@@ -1,7 +1,7 @@
 From 2f16f6d4b0d6dde0d1d518f61c01f5f972caa008 Mon Sep 17 00:00:00 2001
 From: osy <osy@turing.llc>
 Date: Fri, 4 Mar 2022 13:15:16 -0800
-Subject: [PATCH 1/5] meson: move cairo dependency to GTK build only
+Subject: [PATCH 1/8] meson: move cairo dependency to GTK build only
 
 Cairo is only used in SpiceDisplay which is part of the GTK client. If
 we are building the GLib only client, it should be optional.
@@ -39,7 +39,7 @@ index 11173fd..ecc9d6d 100644
 From 312a1fc6cf4a8d839639dce411107537e1791045 Mon Sep 17 00:00:00 2001
 From: osy <osy@turing.llc>
 Date: Fri, 4 Mar 2022 15:52:48 -0800
-Subject: [PATCH 2/5] coroutine: add support for libucontext
+Subject: [PATCH 2/8] coroutine: add support for libucontext
 
 libucontext is a lightweight implementation of ucontext for platforms
 that do not have a built-in implementation. This allows us to use the
@@ -128,7 +128,7 @@ index a9dfc57..961779f 100644
 From fb47817a4963a6e64d76bccb562cf5dbe2f628c1 Mon Sep 17 00:00:00 2001
 From: osy <osy@turing.llc>
 Date: Fri, 4 Mar 2022 16:35:26 -0800
-Subject: [PATCH 3/5] spice-util: support for non-default GMainContext
+Subject: [PATCH 3/8] spice-util: support for non-default GMainContext
 
 When spice-gtk is used in an application with its own GMainContext, the
 wrong context will be used leading to various issues.
@@ -392,7 +392,7 @@ index 421b4b0..e161c83 100644
 From a02df4084ff43c5796f1ead29ab9d67da48dff1e Mon Sep 17 00:00:00 2001
 From: osy <osy@turing.llc>
 Date: Fri, 4 Mar 2022 16:44:20 -0800
-Subject: [PATCH 4/5] spice-gtk: user specified GMainContext for events
+Subject: [PATCH 4/8] spice-gtk: user specified GMainContext for events
 
 Following the previous commit, this replaces all GLib calls that
 implicitly uses the default main context with versions that can use the
@@ -1027,115 +1027,311 @@ index e26b939..6054f3e 100644
 -- 
 2.32.0 (Apple Git-132)
 
-From d43ef94e21f4ea5d4c34684dd4af06ee52ddbc74 Mon Sep 17 00:00:00 2001
+From d24779edda0a889937131818b13e4f57a68a8169 Mon Sep 17 00:00:00 2001
 From: osy <osy@turing.llc>
 Date: Fri, 4 Mar 2022 21:23:51 -0800
-Subject: [PATCH 5/5] usb-device-cd: option to disable CD emulation
+Subject: [PATCH 5/8] usb-device-cd: option to disable physical CD
 
 On iOS, there is no "sys/disk.h" header and cannot build the CD
 emulation code. This should not prevent the rest of USB redirection from
 working.
 ---
- meson.build              | 10 ++++++++++
- meson_options.txt        |  4 ++++
- src/meson.build          |  7 ++++++-
- src/usb-device-manager.c |  2 +-
- tests/meson.build        |  2 +-
- 5 files changed, 22 insertions(+), 3 deletions(-)
+ meson.build         |  8 ++++++++
+ meson_options.txt   |  4 ++++
+ src/usb-device-cd.c | 36 +++++++++++++++++++++++++++++++++++-
+ 3 files changed, 47 insertions(+), 1 deletion(-)
 
 diff --git a/meson.build b/meson.build
-index 29615b1..457aec8 100644
+index 29615b1..8c06666 100644
 --- a/meson.build
 +++ b/meson.build
-@@ -217,6 +217,7 @@ summary_info += {'builtin-mjpeg': get_option('builtin-mjpeg')}
- 
- # usbredir
- spice_gtk_has_usbredir = false
-+spice_gtk_has_usb_cd = get_option('usb-cd').enabled()
- usbredir_version = '0.7.1'
- usbredir_version_info = '>= @0@'.format(usbredir_version)
- d1 = dependency('libusbredirparser-0.5', version: usbredir_version_info, required : get_option('usbredir'))
-@@ -228,11 +229,20 @@ if d1.found() and d2.found() and d3.found()
+@@ -228,11 +228,19 @@ if d1.found() and d2.found() and d3.found()
      spice_glib_deps += [d1, d2, d3]
      spice_gtk_config_data.set('USE_USBREDIR', '1')
      spice_gtk_has_usbredir = true
-+    spice_gtk_has_usb_cd = get_option('usb-cd').allowed()
-+    if spice_gtk_has_usb_cd
-+      spice_gtk_config_data.set('USE_USB_CD', '1')
++    if get_option('physical-cd').allowed()
++      spice_gtk_config_data.set('HAVE_PHYSICAL_CD', '1')
 +    endif
    else
      warning('USB redirection disabled on big endian machine as ' +
              'usbredir only support little endian')
    endif
  endif
-+summary_info += {'usb-cd': spice_gtk_has_usb_cd}
++summary_info += {'physical-cd': get_option('physical-cd')}
 +
-+if spice_gtk_has_usb_cd and not spice_gtk_has_usbredir
-+  error('USB CD cannot be enabled without USB redirection support!')
++if get_option('physical-cd').enabled() and not spice_gtk_has_usbredir
++  error('Physical CD support cannot be enabled without USB redirection support!')
 +endif
  
  d = dependency('libcap-ng', required : get_option('libcap-ng'))
  summary_info += {'libcap-ng': d.found()}
 diff --git a/meson_options.txt b/meson_options.txt
-index 5acfc9a..0849a84 100644
+index 5acfc9a..557ef6a 100644
 --- a/meson_options.txt
 +++ b/meson_options.txt
 @@ -19,6 +19,10 @@ option('usbredir',
      type : 'feature',
      description : 'Enable usbredir support')
  
-+option('usb-cd',
++option('physical-cd',
 +    type : 'feature',
-+    description : 'Enable usb-cd emulation')
++    description : 'Enable support of physical CD drives')
 +
  option('libcap-ng',
         type : 'feature',
         description: 'Enable libcap-ng support for the USB acl helper')
-diff --git a/src/meson.build b/src/meson.build
-index 961779f..0b32124 100644
---- a/src/meson.build
-+++ b/src/meson.build
-@@ -159,8 +159,13 @@ if spice_gtk_has_usbredir
-     'usbutil.c',
-     'usbutil.h',
-     'usb-backend.c',
--    'usb-emulation.h',
-     'usb-backend.h',
-+  ]
-+endif
+diff --git a/src/usb-device-cd.c b/src/usb-device-cd.c
+index 2bfeb3a..41d2e13 100644
+--- a/src/usb-device-cd.c
++++ b/src/usb-device-cd.c
+@@ -32,11 +32,14 @@
+ 
+ #ifdef G_OS_WIN32
+ #include <windows.h>
++#ifdef HAVE_PHYSICAL_CD
+ #include <ntddcdrm.h>
+ #include <ntddmmc.h>
++#endif // HAVE_PHYSICAL_CD
+ #else
+ #include <sys/stat.h>
+ #include <sys/ioctl.h>
++#ifdef HAVE_PHYSICAL_CD
+ #ifdef __APPLE__
+ #include <sys/disk.h>
+ #include <fcntl.h>
+@@ -44,6 +47,7 @@
+ #include <linux/fs.h>
+ #include <linux/cdrom.h>
+ #endif
++#endif // HAVE_PHYSICAL_CD
+ #endif
+ 
+ #include "usb-emulation.h"
+@@ -120,6 +124,7 @@ static int cd_device_open_stream(SpiceCdLU *unit, const char *filename)
+     }
+ 
+     struct stat file_stat = { 0 };
++#ifdef HAVE_PHYSICAL_CD
+     if (fstat(fd, &file_stat) || file_stat.st_size == 0) {
+         file_stat.st_size = 0;
+         unit->device = 1;
+@@ -138,6 +143,12 @@ static int cd_device_open_stream(SpiceCdLU *unit, const char *filename)
+         }
+ #endif
+     }
++#else // HAVE_PHYSICAL_CD
++    if (fstat(fd, &file_stat) != 0) {
++        SPICE_DEBUG("%s: can't run stat on %s", __FUNCTION__, unit->filename);
++        return -1;
++    }
++#endif
+     unit->size = file_stat.st_size;
+     close(fd);
+     if (unit->size) {
+@@ -153,6 +164,8 @@ static int cd_device_open_stream(SpiceCdLU *unit, const char *filename)
+     return 0;
+ }
+ 
++#if defined HAVE_PHYSICAL_CD
 +
-+if spice_gtk_has_usb_cd
-+  spice_client_glib_sources += [
-+    'usb-emulation.h',
-     'usb-device-cd.c',
-     'usb-device-cd.h',
-     'cd-scsi.c',
-diff --git a/src/usb-device-manager.c b/src/usb-device-manager.c
-index c7e1431..8029892 100644
---- a/src/usb-device-manager.c
-+++ b/src/usb-device-manager.c
-@@ -1479,7 +1479,7 @@ spice_usb_device_manager_create_shared_cd_device(SpiceUsbDeviceManager *manager,
-                                                  gchar *filename,
-                                                  GError **err)
+ static int cd_device_load(SpiceCdLU *unit, gboolean load)
  {
--#ifdef USE_USBREDIR
-+#if defined(USE_USBREDIR) && defined(USE_USB_CD)
-     SpiceUsbDeviceManagerPrivate *priv = manager->priv;
+     int error;
+@@ -214,7 +227,11 @@ static int cd_device_check(SpiceCdLU *unit)
+     return error;
+ }
  
-     CdEmulationParams cd_params = {
-diff --git a/tests/meson.build b/tests/meson.build
-index 8dccb42..9248aea 100644
---- a/tests/meson.build
-+++ b/tests/meson.build
-@@ -10,7 +10,7 @@ if spice_gtk_has_phodav
-   tests_sources += 'pipe.c'
- endif
+-#else
++#endif // HAVE_PHYSICAL_CD
++
++#else // G_OS_WIN32
++
++#ifdef HAVE_PHYSICAL_CD
  
--if spice_gtk_has_usbredir
-+if spice_gtk_has_usb_cd
-   tests_sources += 'cd-emu.c'
- endif
+ static gboolean is_device_name(const char *filename)
+ {
+@@ -261,6 +278,8 @@ static gboolean check_device(HANDLE h)
+                            &ret, NULL);
+ }
  
++#endif // HAVE_PHYSICAL_CD
++
+ static int cd_device_open_stream(SpiceCdLU *unit, const char *filename)
+ {
+     HANDLE h;
+@@ -275,8 +294,10 @@ static int cd_device_open_stream(SpiceCdLU *unit, const char *filename)
+     }
+     if (!filename) {
+         // reopening the stream on existing file name
++#if defined HAVE_PHYSICAL_CD
+     } else if (is_device_name(filename)) {
+         unit->filename = g_strdup_printf("\\\\.\\%s", filename);
++#endif
+     } else {
+         unit->filename = g_strdup(filename);
+     }
+@@ -287,6 +308,7 @@ static int cd_device_open_stream(SpiceCdLU *unit, const char *filename)
+     }
+ 
+     LARGE_INTEGER size = { 0 };
++#if defined HAVE_PHYSICAL_CD
+     if (!GetFileSizeEx(h, &size)) {
+         uint64_t buffer[256];
+         uint32_t res;
+@@ -304,6 +326,12 @@ static int cd_device_open_stream(SpiceCdLU *unit, const char *filename)
+                 __FUNCTION__, unit->filename, res);
+         }
+     }
++#else
++    if (!GetFileSizeEx(h, &size)) {
++        SPICE_DEBUG("%s: can't get file size for %s", __FUNCTION__, unit->filename);
++        return -1;
++    }
++#endif
+     unit->size = size.QuadPart;
+     CloseHandle(h);
+     if (unit->size) {
+@@ -318,6 +346,8 @@ static int cd_device_open_stream(SpiceCdLU *unit, const char *filename)
+     return 0;
+ }
+ 
++#ifdef HAVE_PHYSICAL_CD
++
+ static int cd_device_load(SpiceCdLU *unit, gboolean load)
+ {
+     int error = 0;
+@@ -363,6 +393,8 @@ static int cd_device_check(SpiceCdLU *unit)
+     return error;
+ }
+ 
++#endif // HAVE_PHYSICAL_CD
++
+ #endif
+ 
+ static gboolean open_stream(SpiceCdLU *unit, const char *filename)
+@@ -380,6 +412,7 @@ static void close_stream(SpiceCdLU *unit)
+ static gboolean load_lun(UsbCd *d, int unit, gboolean load)
+ {
+     gboolean b = TRUE;
++#ifdef HAVE_PHYSICAL_CD
+     if (load && d->units[unit].device) {
+         // there is one possible problem in case our backend is the
+         // local CD device and it is ejected
+@@ -389,6 +422,7 @@ static gboolean load_lun(UsbCd *d, int unit, gboolean load)
+             return FALSE;
+         }
+     }
++#endif
+ 
+     if (load) {
+         CdScsiMediaParameters media_params = { 0 };
+-- 
+2.32.0 (Apple Git-132)
+
+From 7b572d38a2d4a32ecdd683cc4672abd00dcc07ff Mon Sep 17 00:00:00 2001
+From: osy <osy@turing.llc>
+Date: Sun, 6 Mar 2022 18:49:34 -0800
+Subject: [PATCH 6/8] gitlab-ci: test disable physical cd
+
+---
+ .gitlab-ci.yml | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/.gitlab-ci.yml b/.gitlab-ci.yml
+index 3d4f533..cdd6575 100644
+--- a/.gitlab-ci.yml
++++ b/.gitlab-ci.yml
+@@ -36,7 +36,7 @@ fedora:
+     - ninja -C build-spice-protocol install
+ 
+   script:
+-    - meson --buildtype=release build-default --werror
++    - meson --buildtype=release build-default --werror -Dphysical-cd=disabled
+     # Meson does not update submodules recursively
+     - git submodule update --init --recursive
+     # this fix an issue with Meson dist
+@@ -68,6 +68,6 @@ windows:
+   script:
+     - cd $CI_PROJECT_DIR
+     - mkdir build-win64 && cd build-win64
+-    - mingw64-meson --buildtype=release -Dgtk_doc=disabled --werror
++    - mingw64-meson --buildtype=release -Dgtk_doc=disabled --werror -Dphysical-cd=disabled
+     - ninja install
+     - (cd tests && DISPLAY= WINEPATH=/usr/x86_64-w64-mingw32/sys-root/mingw/bin wine test-coroutine.exe)
+-- 
+2.32.0 (Apple Git-132)
+
+From 6069f4abaf26dadb2159ec67e7b362e2485d3652 Mon Sep 17 00:00:00 2001
+From: osy <osy@turing.llc>
+Date: Sun, 6 Mar 2022 18:55:14 -0800
+Subject: [PATCH 7/8] fix windows
+
+---
+ src/usb-device-cd.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
+
+diff --git a/src/usb-device-cd.c b/src/usb-device-cd.c
+index 41d2e13..d0cac30 100644
+--- a/src/usb-device-cd.c
++++ b/src/usb-device-cd.c
+@@ -231,8 +231,6 @@ static int cd_device_check(SpiceCdLU *unit)
+ 
+ #else // G_OS_WIN32
+ 
+-#ifdef HAVE_PHYSICAL_CD
+-
+ static gboolean is_device_name(const char *filename)
+ {
+     return g_ascii_isalpha(filename[0]) && filename[1] == ':' &&
+@@ -253,6 +251,8 @@ static HANDLE open_file(const char *filename)
+     return h;
+ }
+ 
++#ifdef HAVE_PHYSICAL_CD
++
+ static uint32_t ioctl_out(HANDLE h, uint32_t code, void *out_buffer, uint32_t out_size)
+ {
+     uint32_t error;
+@@ -294,10 +294,8 @@ static int cd_device_open_stream(SpiceCdLU *unit, const char *filename)
+     }
+     if (!filename) {
+         // reopening the stream on existing file name
+-#if defined HAVE_PHYSICAL_CD
+     } else if (is_device_name(filename)) {
+         unit->filename = g_strdup_printf("\\\\.\\%s", filename);
+-#endif
+     } else {
+         unit->filename = g_strdup(filename);
+     }
+-- 
+2.32.0 (Apple Git-132)
+
+From 394ec4a8d5f1c4df2c21c335a64627ebe31e03b1 Mon Sep 17 00:00:00 2001
+From: osy <osy@turing.llc>
+Date: Fri, 20 May 2022 08:53:53 -0700
+Subject: [PATCH 8/8] usb-backend: remove incorrect logic for detecting root
+ hub
+
+There are valid devices (on Darwin) with address 0x1 that were ignored.
+---
+ src/usb-backend.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
+
+diff --git a/src/usb-backend.c b/src/usb-backend.c
+index 930ae4e..7c2df7f 100644
+--- a/src/usb-backend.c
++++ b/src/usb-backend.c
+@@ -121,9 +121,7 @@ static gboolean fill_usb_info(SpiceUsbDevice *dev)
+     UsbDeviceInformation *info = &dev->device_info;
+     get_usb_device_info_from_libusb_device(info, dev->libusb_device);
+ 
+-    if (info->address == 0xff || /* root hub (HCD) */
+-        info->address <= 1 || /* root hub or bad address */
+-        (info->class == LIBUSB_CLASS_HUB) /*hub*/) {
++    if (info->class == LIBUSB_CLASS_HUB) /*hub*/ {
+         return FALSE;
+     }
+     return TRUE;
 -- 
 2.32.0 (Apple Git-132)
 
