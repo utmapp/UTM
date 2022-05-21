@@ -23,7 +23,7 @@ on:
 jobs:
   build:
     name: Build UTM
-    runs-on: macos-11
+    runs-on: macos-12
     strategy:
       matrix:
         arch: [arm64, x86_64]
@@ -40,7 +40,7 @@ jobs:
           submodules: recursive
       - name: Setup Xcode
         shell: bash
-        run: sudo xcode-select -switch /Applications/Xcode_13.2.1.app
+        run: sudo xcode-select -switch /Applications/Xcode_13.4.app
       - name: Cache Sysroot
         id: cache-sysroot
         uses: actions/cache@v2
@@ -80,7 +80,7 @@ jobs:
           path: UTM.xcarchive.tgz
   build-universal:
     name: Build UTM (macOS Universal)
-    runs-on: macos-11
+    runs-on: macos-12
     needs: build
     if: github.event_name == 'release' || github.event.inputs.test_release == 'true'
     steps:
@@ -112,7 +112,7 @@ jobs:
           path: sysroot.tgz
       - name: Setup Xcode
         shell: bash
-        run: sudo xcode-select -switch /Applications/Xcode_13.2.1.app
+        run: sudo xcode-select -switch /Applications/Xcode_13.4.app
       - name: Build UTM
         run: |
           ./scripts/build_utm.sh -t "$SIGNING_TEAM_ID" -p macos -a "arm64 x86_64" -o UTM
@@ -126,7 +126,7 @@ jobs:
           path: UTM.xcarchive.tgz
   package-ipa:
     name: Package (iOS IPA)
-    runs-on: macos-11
+    runs-on: macos-12
     needs: build
     if: github.event_name == 'release' || github.event.inputs.test_release == 'true'
     steps:
@@ -168,7 +168,7 @@ jobs:
           event-type: new-release
   package-ipa-se:
     name: Package (iOS-TCI IPA)
-    runs-on: macos-11
+    runs-on: macos-12
     needs: build
     if: github.event_name == 'release' || github.event.inputs.test_release == 'true'
     steps:
@@ -210,7 +210,7 @@ jobs:
           event-type: new-release
   package-deb:
     name: Package (iOS DEB)
-    runs-on: macos-11
+    runs-on: macos-12
     needs: build
     if: github.event_name == 'release' || github.event.inputs.test_release == 'true'
     steps:
@@ -252,7 +252,7 @@ jobs:
           event-type: new-release
   package-mac:
     name: Package (macOS)
-    runs-on: macos-11
+    runs-on: macos-12
     needs: build-universal
     if: github.event_name == 'release' || github.event.inputs.test_release == 'true'
     steps:
@@ -314,7 +314,7 @@ jobs:
           asset_content_type: application/octet-stream
   submit-mac:
     name: Submit (macOS)
-    runs-on: macos-11
+    runs-on: macos-12
     needs: build-universal
     if: github.event_name == 'release' || github.event.inputs.test_release == 'true'
     steps:
