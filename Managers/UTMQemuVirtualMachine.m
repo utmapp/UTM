@@ -35,7 +35,6 @@
 #import "UTM-Swift.h"
 #import "qapi-events.h"
 
-const int kQMPMaxConnectionTries = 30; // qemu needs to start spice server first
 const int64_t kStopTimeout = (int64_t)30*NSEC_PER_SEC;
 
 extern NSString *const kUTMBundleConfigFilename;
@@ -43,7 +42,7 @@ NSString *const kSuspendSnapshotName = @"suspend";
 
 @interface UTMQemuVirtualMachine ()
 
-@property (nonatomic, readonly) UTMQemuManager *qemu;
+@property (nonatomic, readwrite, nullable) UTMQemuManager *qemu;
 @property (nonatomic, readwrite, nullable) UTMQemuSystem *system;
 @property (nonatomic, readonly, nullable) id<UTMInputOutput> ioService;
 @property (nonatomic) dispatch_queue_t vmOperations;
@@ -276,9 +275,6 @@ NSString *const kSuspendSnapshotName = @"suspend";
     if (!self.system) {
         self.system = [[UTMQemuSystem alloc] initWithConfiguration:self.qemuConfig imgPath:self.path];
         self.system.logging = self.logging;
-        self.system.qmpPort = [[UTMPortAllocator sharedInstance] allocatePort];
-        _qemu = [[UTMQemuManager alloc] initWithPort:self.system.qmpPort];
-        _qemu.delegate = self;
     }
 
     if (!self.system) {
@@ -318,9 +314,10 @@ NSString *const kSuspendSnapshotName = @"suspend";
         completion(spiceError);
         return;
     }
-    // start QEMU (this can be in parallel with QMP connect below)
+    // start QEMU (this can be in parallel with SPICE connect below)
     __weak typeof(self) weakSelf = self;
     __block NSError *qemuStartError = nil;
+    dispatch_semaphore_t spiceConnectOrErrorEvent = dispatch_semaphore_create(0);
     [self.system startWithCompletion:^(BOOL success, NSString *msg){
         typeof(self) _self = weakSelf;
         if (!_self) {
@@ -328,29 +325,34 @@ NSString *const kSuspendSnapshotName = @"suspend";
         }
         if (!success) {
             qemuStartError = [_self errorWithMessage:msg];
+            dispatch_semaphore_signal(spiceConnectOrErrorEvent);
             if (_self.qemu.isConnected) { // we are NOT in vmStart, so pass error to delegate
                 dispatch_async(dispatch_get_main_queue(), ^{
                     [_self.delegate virtualMachine:_self didErrorWithMessage:msg];
                 });
             }
         }
-        [_self.qemu cancelConnectRetry]; // if we ARE in vmStart, this lets it progress
         dispatch_semaphore_signal(_self.qemuDidExitEvent);
         [_self vmStopForce:YES completion:^(NSError *error){}];
     }];
-    // connect to QMP
-    __block NSError *callbackError = nil;
-    dispatch_semaphore_t qmpSocketConnectEvent = dispatch_semaphore_create(0);
-    [self.qemu connectWithCompletion:^(BOOL success, NSError *error) {
-        if (!success) {
-            UTMLog(@"Failed to connect to QMP: %@", error);
-            callbackError = error;
+    __block BOOL spiceConnectFailed = NO; // failure could have no error message
+    __block NSError *spiceConnectError = nil;
+    NSError *err;
+    NSString *errMsg;
+    // start SPICE client
+    [self.ioService connectWithCompletion:^(UTMQemuManager *manager, NSError *error) {
+        if (manager) { // success
+            self.qemu = manager;
+            self.qemu.delegate = self;
+        } else { // give up
+            UTMLog(@"Failed to connect to SPICE: %@", error);
+            spiceConnectFailed = YES;
+            spiceConnectError = error;
         }
-        dispatch_semaphore_signal(qmpSocketConnectEvent);
-    } retries:kQMPMaxConnectionTries];
-    // wait for socket to connect
-    if (dispatch_semaphore_wait(qmpSocketConnectEvent, dispatch_time(DISPATCH_TIME_NOW, kStopTimeout)) != 0) {
-        UTMLog(@"Timed out waiting for socket connect event");
+        dispatch_semaphore_signal(spiceConnectOrErrorEvent);
+    }];
+    if (dispatch_semaphore_wait(spiceConnectOrErrorEvent, dispatch_time(DISPATCH_TIME_NOW, kStopTimeout)) != 0) {
+        UTMLog(@"Timed out waiting for SPICE connect event");
         completion([self errorGeneric]);
         return;
     }
@@ -358,19 +360,20 @@ NSString *const kSuspendSnapshotName = @"suspend";
         completion(qemuStartError);
         return;
     }
-    if (callbackError) {
-        completion(callbackError);
+    if (spiceConnectFailed) {
+        completion(spiceConnectError);
         return;
     }
-    assert(self.qemu.isConnected);
+    assert(self.ioService.isConnected);
     // wait for QMP to connect
     if (dispatch_semaphore_wait(self.qemuDidConnectEvent, dispatch_time(DISPATCH_TIME_NOW, kStopTimeout)) != 0) {
         UTMLog(@"Timed out waiting for QMP connect event");
         completion([self errorGeneric]);
         return;
     }
-    NSError *err;
-    NSString *errMsg;
+    assert(self.qemu);
+    assert(self.qemu.isConnected);
+    // set up SPICE sharing and removable drives
     if (!self.qemuConfig.displayConsoleOnly) {
         if (![self startSharedDirectoryWithError:&err]) {
             errMsg = [NSString stringWithFormat:NSLocalizedString(@"Error trying to start shared directory: %@", @"UTMVirtualMachine"), err.localizedDescription];
@@ -383,31 +386,12 @@ NSString *const kSuspendSnapshotName = @"suspend";
         completion([self errorWithMessage:errMsg]);
         return;
     }
-    // start SPICE client
-    dispatch_semaphore_t spiceConnectEvent = dispatch_semaphore_create(0);
-    [self.ioService connectWithCompletion:^(BOOL success, NSError *error) {
-        if (!success) {
-            UTMLog(@"Failed to connect to SPICE: %@", error);
-            callbackError = error;
-        }
-        dispatch_semaphore_signal(spiceConnectEvent);
-    }];
-    if (dispatch_semaphore_wait(spiceConnectEvent, dispatch_time(DISPATCH_TIME_NOW, kStopTimeout)) != 0) {
-        UTMLog(@"Timed out waiting for SPICE connect event");
-        completion([self errorGeneric]);
-        return;
-    }
-    if (callbackError) {
-        completion(callbackError);
-        return;
-    }
     // continue VM boot
     if (![self.qemu continueBootWithError:&err]) {
         UTMLog(@"Failed to boot: %@", err);
         completion(err);
         return;
     }
-    assert(self.ioService.isConnected);
     if (self.viewState.hasSaveState) {
         [self _vmDeleteStateWithCompletion:^(NSError *error){
             // ignore error
@@ -444,25 +428,18 @@ NSString *const kSuspendSnapshotName = @"suspend";
     // save view settings early to win exit race
     [self saveViewState];
     
-    [self.qemu cancelConnectRetry];
-    [_qemu qemuQuitWithCompletion:nil];
+    [self.qemu qemuQuitWithCompletion:nil];
     if (force || dispatch_semaphore_wait(self.qemuWillQuitEvent, dispatch_time(DISPATCH_TIME_NOW, kStopTimeout)) != 0) {
         UTMLog(@"Stop operation timeout or force quit");
     }
-    [_qemu disconnect];
-    _qemu.delegate = nil;
-    _qemu = nil;
-    [_ioService disconnect];
+    self.qemu.delegate = nil;
+    self.qemu = nil;
     _ioService = nil;
     
     if (force || dispatch_semaphore_wait(self.qemuDidExitEvent, dispatch_time(DISPATCH_TIME_NOW, kStopTimeout)) != 0) {
         UTMLog(@"Exit operation timeout or force quit");
     }
     [self.system stopQemu];
-    if (self.system.qmpPort) {
-        [[UTMPortAllocator sharedInstance] freePort:self.system.qmpPort];
-        self.system.qmpPort = 0;
-    }
     self.system = nil;
     // stop logging
     [self.logging endLog];
@@ -470,6 +447,9 @@ NSString *const kSuspendSnapshotName = @"suspend";
 }
 
 - (void)vmStopForce:(BOOL)force completion:(void (^)(NSError * _Nullable))completion {
+    if (force) {
+        [self.ioService disconnect]; // prevent deadlock force stopping during startup
+    }
     dispatch_async(self.vmOperations, ^{
         if (self.state == kVMStopped) {
             completion(nil);
@@ -496,7 +476,7 @@ NSString *const kSuspendSnapshotName = @"suspend";
     [self saveViewState];
     __block NSError *resetError = nil;
     dispatch_semaphore_t resetTriggeredEvent = dispatch_semaphore_create(0);
-    [_qemu qemuResetWithCompletion:^(NSError *err) {
+    [self.qemu qemuResetWithCompletion:^(NSError *err) {
         UTMLog(@"reset callback: err? %@", err);
         if (err) {
             UTMLog(@"error: %@", err);
@@ -536,7 +516,7 @@ NSString *const kSuspendSnapshotName = @"suspend";
     [self saveScreenshot];
     __block NSError *suspendError = nil;
     dispatch_semaphore_t suspendTriggeredEvent = dispatch_semaphore_create(0);
-    [_qemu qemuStopWithCompletion:^(NSError * err) {
+    [self.qemu qemuStopWithCompletion:^(NSError * err) {
         UTMLog(@"stop callback: err? %@", err);
         if (err) {
             UTMLog(@"error: %@", err);
@@ -580,7 +560,7 @@ NSString *const kSuspendSnapshotName = @"suspend";
 - (void)_vmSaveStateWithCompletion:(void (^)(NSError * _Nullable))completion {
     __block NSError *saveError = nil;
     dispatch_semaphore_t saveTriggeredEvent = dispatch_semaphore_create(0);
-    [_qemu qemuSaveStateWithCompletion:^(NSString *result, NSError *err) {
+    [self.qemu qemuSaveStateWithCompletion:^(NSString *result, NSError *err) {
         UTMLog(@"save callback: %@", result);
         if (err) {
             UTMLog(@"error: %@", err);
@@ -622,7 +602,7 @@ NSString *const kSuspendSnapshotName = @"suspend";
     __block NSError *deleteError = nil;
     if (self.qemu) { // if QEMU is running
         dispatch_semaphore_t deleteTriggeredEvent = dispatch_semaphore_create(0);
-        [_qemu qemuDeleteStateWithCompletion:^(NSString *result, NSError *err) {
+        [self.qemu qemuDeleteStateWithCompletion:^(NSString *result, NSError *err) {
             UTMLog(@"delete save callback: %@", result);
             if (err) {
                 UTMLog(@"error: %@", err);
@@ -654,7 +634,7 @@ NSString *const kSuspendSnapshotName = @"suspend";
 - (void)_vmResumeWithCompletion:(void (^)(NSError * _Nullable))completion {
     __block NSError *resumeError = nil;
     dispatch_semaphore_t resumeTriggeredEvent = dispatch_semaphore_create(0);
-    [_qemu qemuResumeWithCompletion:^(NSError *err) {
+    [self.qemu qemuResumeWithCompletion:^(NSError *err) {
         UTMLog(@"resume callback: err? %@", err);
         if (err) {
             UTMLog(@"error: %@", err);

@@ -23,7 +23,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) UTMQemuConfiguration *configuration;
 @property (nonatomic) NSURL *imgPath;
 @property (nonatomic, nullable) NSString *snapshot;
-@property (nonatomic) NSInteger qmpPort;
 @property (nonatomic) BOOL runAsSnapshot;
 
 - (instancetype)init NS_UNAVAILABLE;

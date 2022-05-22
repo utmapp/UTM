@@ -1,5 +1,5 @@
 //
-// Copyright © 2019 osy. All rights reserved.
+// Copyright © 2022 osy. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -29,9 +29,8 @@ enum ParserState {
 
 @interface UTMJSONStream ()
 
+@property (nonatomic, readwrite) CSPort *port;
 @property (nonatomic, nullable) NSMutableData *data;
-@property (nonatomic, nullable) NSInputStream *inputStream;
-@property (nonatomic, nullable) NSOutputStream *outputStream;
 @property (nonatomic, nullable) dispatch_queue_t streamQueue;
 @property (nonatomic) NSUInteger parsedBytes;
 @property (nonatomic) enum ParserState state;
@@ -41,61 +40,19 @@ enum ParserState {
 
 @implementation UTMJSONStream
 
-- (instancetype)initHost:(NSString *)host port:(NSInteger)port {
+- (void)setDelegate:(id<UTMJSONStreamDelegate>)delegate {
+    _delegate = delegate;
+    self.port.delegate = self; // consume any cached data
+}
+
+- (instancetype)initWithPort:(CSPort *)port {
     self = [super init];
     if (self) {
-        self.host = host;
-        self.port = port;
         self.streamQueue = dispatch_queue_create("com.utmapp.UTM.JSONStream", NULL);
+        self.port = port;
+        self.data = [NSMutableData data];
     }
     return self;
-}
-
-- (void)dealloc {
-    if (self.inputStream || self.outputStream) {
-        [self disconnect];
-    }
-}
-
-- (void)connect {
-    @synchronized (self) {
-        if (self.inputStream != nil || self.outputStream != nil) {
-            assert(self.inputStream != nil && self.outputStream != nil);
-            return;
-        }
-        CFReadStreamRef readStream;
-        CFWriteStreamRef writeStream;
-        CFStreamCreatePairWithSocketToHost(kCFAllocatorDefault, (__bridge CFStringRef)self.host, (UInt32)self.port, &readStream, &writeStream);
-        self.inputStream = CFBridgingRelease(readStream);
-        self.outputStream = CFBridgingRelease(writeStream);
-        self.data = [NSMutableData data];
-        self.parsedBytes = 0;
-        self.openCurlyCount = -1;
-        [self.inputStream setDelegate:self];
-        CFReadStreamSetDispatchQueue((__bridge CFReadStreamRef)self.inputStream, self.streamQueue);
-        [self.inputStream open];
-        [self.outputStream setDelegate:self];
-        CFWriteStreamSetDispatchQueue((__bridge CFWriteStreamRef)self.outputStream, self.streamQueue);
-        [self.outputStream open];
-    }
-}
-
-- (void)disconnect {
-    @synchronized (self) {
-        if (self.inputStream == nil || self.outputStream == nil) {
-            assert(self.inputStream == nil && self.outputStream == nil);
-            return;
-        }
-        self.inputStream.delegate = nil;
-        self.outputStream.delegate = nil;
-        [self.inputStream close];
-        [self.outputStream close];
-        CFReadStreamSetDispatchQueue((__bridge CFReadStreamRef)self.inputStream, NULL);
-        CFWriteStreamSetDispatchQueue((__bridge CFWriteStreamRef)self.outputStream, NULL);
-        self.inputStream = nil;
-        self.outputStream = nil;
-        self.data = nil;
-    }
 }
 
 - (void)parseData {
@@ -175,8 +132,9 @@ enum ParserState {
 }
 
 - (void)consumeJSONLength:(NSUInteger)length {
-    NSData *jsonData = [self.data subdataWithRange:NSMakeRange(0, length)];
-    self.data = [NSMutableData dataWithData:[self.data subdataWithRange:NSMakeRange(length, self.data.length - length)]];
+    NSRange range = NSMakeRange(0, length);
+    NSData *jsonData = [self.data subdataWithRange:range];
+    [self.data replaceBytesInRange:range withBytes:NULL length:0];
     self.parsedBytes = 0;
     self.openCurlyCount = -1;
     NSError *err;
@@ -192,63 +150,38 @@ enum ParserState {
     });
 }
 
-- (void)stream:(NSStream *)aStream handleEvent:(NSStreamEvent)eventCode {
-    NSInputStream *inputStream = self.inputStream;
-    @synchronized (self) {
-        if (!inputStream) {
-            return; // stream closing
-        }
-    }
-    switch (eventCode) {
-        case NSStreamEventHasBytesAvailable: {
-            uint8_t buf[kMaxBufferSize];
-            NSInteger res;
-            @synchronized (self) {
-                NSAssert(aStream == inputStream, @"Invalid stream");
-                res = [inputStream read:buf maxLength:kMaxBufferSize];
-                if (res > 0) {
-                    [self.data appendBytes:buf length:res];
-                    while (self.parsedBytes < [self.data length]) {
-                        [self parseData];
-                    }
-                } else if (res < 0) {
-                    [self.delegate jsonStream:self seenError:[inputStream streamError]];
-                }
-            }
-            break;
-        }
-        case NSStreamEventErrorOccurred: {
-            UTMLog(@"Stream error %@", [aStream streamError]);
-            [self.delegate jsonStream:self seenError:[aStream streamError]];
-        }
-        case NSStreamEventEndEncountered: {
-            [self disconnect];
-            break;
-        }
-        case NSStreamEventOpenCompleted: {
-            UTMLog(@"Connected to stream %p", aStream);
-            [self.delegate jsonStream:self connected:(aStream == inputStream)];
-            break;
-        }
-        default: {
-            break;
-        }
-    }
+- (void)portDidDisconect:(CSPort *)port {
+    assert(self.port == port);
+    [self.delegate jsonStream:self connected:NO];
 }
 
-- (BOOL)sendDictionary:(NSDictionary *)dict {
-    @synchronized (self) {
-        if (!self.outputStream || (self.outputStream.streamStatus != NSStreamStatusOpen && self.outputStream.streamStatus != NSStreamStatusWriting)) {
-            return NO;
+- (void)port:(CSPort *)port didError:(NSString *)error {
+    [self.delegate jsonStream:self seenError:[NSError errorWithDomain:kUTMErrorDomain code:-1 userInfo:@{NSLocalizedDescriptionKey: error}]];
+}
+
+- (void)port:(CSPort *)port didRecieveData:(NSData *)data {
+    assert(self.port == port);
+    [self.data appendData:data];
+    dispatch_async(self.streamQueue, ^{
+        while (self.parsedBytes < [self.data length]) {
+            [self parseData];
         }
-        UTMLog(@"Debug JSON send -> %@", dict);
-        NSError *err;
-        [NSJSONSerialization writeJSONObject:dict toStream:self.outputStream options:0 error:&err];
-        if (err) {
-            UTMLog(@"Error sending dict: %@", err);
-            return NO;
+    });
+}
+
+- (BOOL)sendDictionary:(NSDictionary *)dict error:(NSError * _Nullable *)error {
+    UTMLog(@"Debug JSON send -> %@", dict);
+    if (!self.port || !self.port.isOpen) {
+        if (error) {
+            *error = [NSError errorWithDomain:kUTMErrorDomain code:-1 userInfo:@{NSLocalizedDescriptionKey: NSLocalizedString(@"Port is not connected.", "UTMJSONStream")}];
         }
+        return NO;
     }
+    NSData *data = [NSJSONSerialization dataWithJSONObject:dict options:0 error:error];
+    if (!data) {
+        return NO;
+    }
+    [self.port writeData:data];
     return YES;
 }
 

@@ -18,8 +18,9 @@
 
 @class CSScreenshot;
 @class UTMViewState;
+@class UTMQemuManager;
 
-typedef void(^ioConnectCompletionHandler_t)(BOOL, NSError * _Nullable);
+typedef void(^ioConnectCompletionHandler_t)(UTMQemuManager *, NSError * _Nullable);
 
 NS_ASSUME_NONNULL_BEGIN
 

@@ -1,5 +1,5 @@
 //
-// Copyright © 2019 osy. All rights reserved.
+// Copyright © 2022 osy. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,8 +19,7 @@
 #import "UTMQemuManagerDelegate.h"
 
 @class UTMJSONStream;
-
-typedef void(^qemuManagerCompletionHandler_t)(BOOL, NSError * _Nullable);
+@class CSPort;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -28,14 +27,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readonly) UTMJSONStream *jsonStream;
 @property (nonatomic, weak) id<UTMQemuManagerDelegate> delegate;
-@property (nonatomic, readonly) NSInteger retries;
 @property (nonatomic, readonly) BOOL isConnected;
 
 - (instancetype)init NS_UNAVAILABLE;
-- (instancetype)initWithPort:(NSInteger)port NS_DESIGNATED_INITIALIZER;
-- (void)connectWithCompletion:(qemuManagerCompletionHandler_t)block retries:(NSInteger)retries;
-- (void)cancelConnectRetry;
-- (void)disconnect;
+- (instancetype)initWithPort:(CSPort *)port NS_DESIGNATED_INITIALIZER;
+
 - (BOOL)continueBootWithError:(NSError * _Nullable __autoreleasing *)error;
 
 - (void)qemuPowerDownWithCompletion:(void (^ _Nullable)(NSError * _Nullable))completion;

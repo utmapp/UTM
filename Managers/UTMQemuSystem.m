@@ -93,7 +93,6 @@ static size_t sysctl_read(const char *name) {
     if (self) {
         self.configuration = configuration;
         self.imgPath = imgPath;
-        self.qmpPort = 4444;
         self.entry = start_qemu;
     }
     return self;
@@ -650,8 +649,10 @@ static size_t sysctl_read(const char *name) {
                                                                      error:nil]];
     [self pushArgv:self.resourceURL.path];
     [self pushArgv:@"-S"]; // startup stopped
-    [self pushArgv:@"-qmp"];
-    [self pushArgv:[NSString stringWithFormat:@"tcp:127.0.0.1:%lu,server,nowait", self.qmpPort]];
+    [self pushArgv:@"-chardev"];
+    [self pushArgv:@"spiceport,id=org.qemu.monitor.qmp,name=org.qemu.monitor.qmp.0"];
+    [self pushArgv:@"-mon"];
+    [self pushArgv:@"chardev=org.qemu.monitor.qmp,mode=control"];
     if (self.isSparc) { // SPARC uses -vga
         if (!self.configuration.displayConsoleOnly) {
             [self pushArgv:@"-vga"];

@@ -1,5 +1,5 @@
 //
-// Copyright © 2019 osy. All rights reserved.
+// Copyright © 2022 osy. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -24,7 +24,6 @@
 
 extern NSString *const kUTMErrorDomain;
 const int64_t kRPCTimeout = (int64_t)10*NSEC_PER_SEC;
-const int64_t kRetryWait = (int64_t)1*NSEC_PER_SEC;
 
 static void utm_shutdown_handler(bool guest, ShutdownCause reason, void *ctx) {
     UTMQemuManager *self = (__bridge UTMQemuManager *)ctx;
@@ -114,16 +113,13 @@ typedef void(^rpcCompletionHandler_t)(NSDictionary *, NSError *);
 @interface UTMQemuManager ()
 
 @property (nonatomic, readwrite) BOOL isConnected;
-@property (nonatomic, readwrite) NSInteger retries;
-@property (nonatomic, nullable) qemuManagerCompletionHandler_t completionCallback;
 @property (nonatomic, nullable) rpcCompletionHandler_t rpcCallback;
+@property (nonatomic) UTMJSONStream *jsonStream;
+@property (nonatomic) dispatch_semaphore_t cmdLock;
 
 @end
 
-@implementation UTMQemuManager {
-    UTMJSONStream *_jsonStream;
-    dispatch_semaphore_t _cmd_lock;
-}
+@implementation UTMQemuManager
 
 void qmp_rpc_call(CFDictionaryRef args, CFDictionaryRef *ret, Error **err, void *ctx) {
     UTMQemuManager *self = (__bridge UTMQemuManager *)ctx;
@@ -131,17 +127,16 @@ void qmp_rpc_call(CFDictionaryRef args, CFDictionaryRef *ret, Error **err, void 
     __block NSDictionary *dict;
     __block NSError *nserr;
     __weak typeof(self) _self = self;
-    dispatch_semaphore_wait(self->_cmd_lock, DISPATCH_TIME_FOREVER);
+    dispatch_semaphore_wait(self.cmdLock, DISPATCH_TIME_FOREVER);
     self.rpcCallback = ^(NSDictionary *ret_dict, NSError *ret_err){
-        dispatch_semaphore_t rpc_sema_copy = rpc_sema;
         NSCAssert(ret_dict || ret_err, @"Both dict and err are null");
         nserr = ret_err;
         dict = ret_dict;
         _self.rpcCallback = nil;
-        dispatch_semaphore_signal(rpc_sema_copy); // copy to avoid race condition
+        dispatch_semaphore_signal(rpc_sema); // copy to avoid race condition
     };
-    if (![self.jsonStream sendDictionary:(__bridge NSDictionary *)args] && self.rpcCallback) {
-        self.rpcCallback(nil, [NSError errorWithDomain:kUTMErrorDomain code:-1 userInfo:@{NSLocalizedDescriptionKey: NSLocalizedString(@"No connection for RPC.", "UTMQemuManager")}]);
+    if (![self.jsonStream sendDictionary:(__bridge NSDictionary *)args error:&nserr] && self.rpcCallback) {
+        self.rpcCallback(nil, nserr);
     }
     if (dispatch_semaphore_wait(rpc_sema, dispatch_time(DISPATCH_TIME_NOW, kRPCTimeout)) != 0) {
         // possible race between this timeout and the callback being triggered
@@ -160,15 +155,15 @@ void qmp_rpc_call(CFDictionaryRef args, CFDictionaryRef *ret, Error **err, void 
         }
         UTMLog(@"RPC: %@", nserr);
     }
-    dispatch_semaphore_signal(self->_cmd_lock);
+    dispatch_semaphore_signal(self.cmdLock);
 }
 
-- (instancetype)initWithPort:(NSInteger)port {
+- (instancetype)initWithPort:(CSPort *)port {
     self = [super init];
     if (self) {
-        _jsonStream = [[UTMJSONStream alloc] initHost:@"127.0.0.1" port:port];
-        _jsonStream.delegate = self;
-        _cmd_lock = dispatch_semaphore_create(1);
+        self.jsonStream = [[UTMJSONStream alloc] initWithPort:port];
+        self.jsonStream.delegate = self;
+        self.cmdLock = dispatch_semaphore_create(1);
     }
     return self;
 }
@@ -179,41 +174,17 @@ void qmp_rpc_call(CFDictionaryRef args, CFDictionaryRef *ret, Error **err, void 
     }
 }
 
-- (void)connectWithCompletion:(qemuManagerCompletionHandler_t)block retries:(NSInteger)retries {
-    self.completionCallback = block;
-    self.retries = retries;
-    [_jsonStream connect];
-}
-
-- (void)cancelConnectRetry {
-    self.retries = 0;
-}
-
-- (void)disconnect {
-    self.isConnected = NO;
-    [_jsonStream disconnect];
-}
-
-- (void)jsonStream:(UTMJSONStream *)stream connected:(BOOL)readStream {
-    UTMLog(@"QMP connection successful! (readStream:%d)", readStream);
-    self.retries = 0; // connection was successful
+- (void)jsonStream:(UTMJSONStream *)stream connected:(BOOL)connected {
+    UTMLog(@"QMP %@", connected ? @"connected" : @"disconnected");
+    if (!connected) {
+        self.isConnected = NO;
+    }
 }
 
 - (void)jsonStream:(UTMJSONStream *)stream seenError:(NSError *)error {
     UTMLog(@"QMP stream error seen: %@", error);
     if (self.rpcCallback) {
         self.rpcCallback(nil, error);
-    }
-    [self disconnect];
-    if (!self.isConnected && self.retries > 0) {
-        self.retries--;
-        UTMLog(@"QMP connection failed, retries left: %ld", (long)self.retries);
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, kRetryWait), dispatch_get_main_queue(), ^{
-            [self->_jsonStream connect];
-        });
-    } else if (!self.isConnected && self.completionCallback) {
-        self.completionCallback(NO, error);
-        self.completionCallback = nil;
     }
 }
 
@@ -241,8 +212,11 @@ void qmp_rpc_call(CFDictionaryRef args, CFDictionaryRef *ret, Error **err, void 
             UTMLog(@"Got QMP handshake: %@", dict);
             NSError *error;
             BOOL success = [self qmpEnterCommandModeWithError:&error];
-            self.completionCallback(success, error);
-            self.completionCallback = nil;
+            if (success) {
+                [self.delegate qemuQmpDidConnect:self];
+            } else {
+                [self.delegate qemuError:self error:error.localizedDescription];
+            }
             *stop = YES;
         }
     }];
@@ -266,7 +240,6 @@ void qmp_rpc_call(CFDictionaryRef args, CFDictionaryRef *ret, Error **err, void 
         return NO;
     } else {
         self.isConnected = YES;
-        [self.delegate qemuQmpDidConnect:self];
         return YES;
     }
 }

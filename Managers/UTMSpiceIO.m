@@ -1,5 +1,5 @@
 //
-// Copyright © 2020 osy. All rights reserved.
+// Copyright © 2022 osy. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,11 +18,13 @@
 #import "UTMQemuConfiguration.h"
 #import "UTMQemuConfiguration+Miscellaneous.h"
 #import "UTMQemuConfiguration+Sharing.h"
+#import "UTMQemuManager.h"
 #import "UTMLogging.h"
 #import "UTMViewState.h"
 #import "UTM-Swift.h"
 
-extern BOOL isPortAvailable(NSInteger port); // from UTMPortAllocator
+const int kMaxSpiceStartAttempts = 15; // qemu needs to start spice server first
+const int64_t kSpiceStartRetryTimeout = (int64_t)1*NSEC_PER_SEC;
 extern NSString *const kUTMErrorDomain;
 
 @interface UTMSpiceIO ()
@@ -32,13 +34,15 @@ extern NSString *const kUTMErrorDomain;
 #if !defined(WITH_QEMU_TCI)
 @property (nonatomic, readwrite, nullable) CSUSBManager *primaryUsbManager;
 #endif
-@property (nonatomic, nullable) ioConnectCompletionHandler_t connectionCallback;
 @property (nonatomic, nullable) CSConnection *spiceConnection;
 @property (nonatomic, nullable) CSMain *spice;
 @property (nonatomic, nullable, copy) NSURL *sharedDirectory;
 @property (nonatomic) NSInteger port;
 @property (nonatomic) BOOL dynamicResolutionSupported;
 @property (nonatomic, readwrite) BOOL isConnected;
+@property (nonatomic) dispatch_queue_t connectQueue;
+@property (nonatomic, nullable) void (^connectAttemptCallback)(void);
+@property (nonatomic, nullable) void (^connectFinishedCallback)(UTMQemuManager *, CSConnectionError, NSError * _Nullable);
 
 @end
 
@@ -47,13 +51,10 @@ extern NSString *const kUTMErrorDomain;
 - (instancetype)initWithConfiguration:(UTMQemuConfiguration *)configuration {
     if (self = [super init]) {
         _configuration = configuration;
+        self.connectQueue = dispatch_queue_create("SPICE Connect Attempt", NULL);
     }
     
     return self;
-}
-
-- (void)dealloc {
-    [self disconnect];
 }
 
 - (void)initializeSpiceIfNeeded {
@@ -97,17 +98,43 @@ extern NSString *const kUTMErrorDomain;
 }
 
 - (void)connectWithCompletion:(ioConnectCompletionHandler_t)block {
-    @synchronized (self) {
-        self.connectionCallback = block;
-        if (![self.spiceConnection connect]) {
-            block(NO, [NSError errorWithDomain:kUTMErrorDomain code:-1 userInfo:@{NSLocalizedDescriptionKey: NSLocalizedString(@"Failed to connect to SPICE server.", "UTMSpiceIO")}]);
-            self.connectionCallback = nil;
-            return;
-        }
-    }
+    __weak typeof(self) weakSelf = self;
+    __block int attemptsLeft = kMaxSpiceStartAttempts;
+    dispatch_async(self.connectQueue, ^{
+        self.connectFinishedCallback = ^(UTMQemuManager *manager, CSConnectionError code, NSError *error) {
+            typeof(self) _self = weakSelf;
+            if (!_self) {
+                return;
+            }
+            if (manager) {
+                _self.connectAttemptCallback = nil;
+                block(manager, nil);
+            } else if (_self.connectAttemptCallback && code == kCSConnectionErrorConnect && attemptsLeft --> 0) {
+                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, kSpiceStartRetryTimeout), _self.connectQueue, _self.connectAttemptCallback);
+            } else {
+                _self.connectAttemptCallback = nil;
+                block(nil, error);
+            }
+        };
+        self.connectAttemptCallback = ^{
+            typeof(self) _self = weakSelf;
+            if (!_self) {
+                return;
+            }
+            if (![_self.spiceConnection connect]) {
+                _self.connectFinishedCallback(nil, 0, [NSError errorWithDomain:kUTMErrorDomain code:-1 userInfo:@{NSLocalizedDescriptionKey: NSLocalizedString(@"Internal error trying to connect to SPICE server.", "UTMSpiceIO")}]);
+            }
+        };
+        self.connectAttemptCallback();
+    });
 }
 
 - (void)disconnect {
+    dispatch_async(self.connectQueue, ^{
+        if (self.connectFinishedCallback) {
+            self.connectFinishedCallback(nil, 0, nil);
+        }
+    });
     @synchronized (self) {
         [self endSharingDirectory];
         [self.spiceConnection disconnect];
@@ -137,10 +164,6 @@ extern NSString *const kUTMErrorDomain;
     self.primaryUsbManager = connection.usbManager;
     [self.delegate spiceDidChangeUsbManager:connection.usbManager];
 #endif
-    if (self.connectionCallback) {
-        self.connectionCallback(YES, nil);
-        self.connectionCallback = nil;
-    }
 }
 
 - (void)spiceDisconnected:(CSConnection *)connection {
@@ -148,14 +171,15 @@ extern NSString *const kUTMErrorDomain;
     self.isConnected = NO;
 }
 
-- (void)spiceError:(CSConnection *)connection err:(NSString *)msg {
+- (void)spiceError:(CSConnection *)connection code:(CSConnectionError)code message:(nullable NSString *)message {
     NSAssert(connection == self.spiceConnection, @"Unknown connection");
     self.isConnected = NO;
-    if (self.connectionCallback) {
-        NSError *error = [NSError errorWithDomain:kUTMErrorDomain code:-1 userInfo:@{NSLocalizedDescriptionKey: msg}];
-        self.connectionCallback(NO, error);
-        self.connectionCallback = nil;
-    }
+    NSError *error = [NSError errorWithDomain:kUTMErrorDomain code:-code userInfo:@{NSLocalizedDescriptionKey: message}];
+    dispatch_async(self.connectQueue, ^{
+        if (self.connectFinishedCallback) {
+            self.connectFinishedCallback(nil, code, error);
+        }
+    });
 }
 
 - (void)spiceDisplayCreated:(CSConnection *)connection display:(CSDisplayMetal *)display {
@@ -177,6 +201,22 @@ extern NSString *const kUTMErrorDomain;
 
 - (void)spiceAgentDisconnected:(CSConnection *)connection {
     self.dynamicResolutionSupported = NO;
+}
+
+- (void)spiceForwardedPortOpened:(CSConnection *)connection port:(CSPort *)port {
+    if ([port.name isEqualToString:@"org.qemu.monitor.qmp.0"]) {
+        UTMQemuManager *manager = [[UTMQemuManager alloc] initWithPort:port];
+        dispatch_async(self.connectQueue, ^{
+            if (self.connectFinishedCallback) {
+                self.connectFinishedCallback(manager, 0, nil);
+            }
+        });
+    }
+}
+
+- (void)spiceForwardedPortClosed:(CSConnection *)connection port:(CSPort *)port {
+    if ([port.name isEqualToString:@"org.qemu.monitor.qmp.0"]) {
+    }
 }
 
 #pragma mark - Shared Directory

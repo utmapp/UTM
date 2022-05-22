@@ -22,7 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @protocol UTMJSONStreamDelegate <NSObject>
 
-- (void)jsonStream:(UTMJSONStream *)stream connected:(BOOL)readStream;
+- (void)jsonStream:(UTMJSONStream *)stream connected:(BOOL)connected;
 - (void)jsonStream:(UTMJSONStream *)stream receivedDictionary:(NSDictionary *)dict;
 - (void)jsonStream:(UTMJSONStream *)stream seenError:(NSError *)error;
 
