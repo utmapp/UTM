@@ -645,6 +645,9 @@ static size_t sysctl_read(const char *name) {
                                                                      error:nil]];
     [self pushArgv:self.resourceURL.path];
     [self pushArgv:@"-S"]; // startup stopped
+    NSURL *spiceSocketURL = self.configuration.spiceSocketURL;
+    [self pushArgv:@"-spice"];
+    [self pushArgv:[NSString stringWithFormat:@"unix=on,addr=%@,disable-ticketing=on,image-compression=off,playback-compression=off,streaming-video=off,gl=%@", spiceSocketURL.path, self.isGLOn ? @"on" : @"off"]];
     [self pushArgv:@"-chardev"];
     [self pushArgv:@"spiceport,id=org.qemu.monitor.qmp,name=org.qemu.monitor.qmp.0"];
     [self pushArgv:@"-mon"];
@@ -669,9 +672,6 @@ static size_t sysctl_read(const char *name) {
         [self pushArgv: @"-serial"];
         [self pushArgv: @"chardev:term0"];
     } else {
-        NSURL *spiceSocketURL = self.configuration.spiceSocketURL;
-        [self pushArgv:@"-spice"];
-        [self pushArgv:[NSString stringWithFormat:@"unix=on,addr=%@,disable-ticketing=on,image-compression=off,playback-compression=off,streaming-video=off,gl=%@", spiceSocketURL.path, self.isGLOn ? @"on" : @"off"]];
         if (!self.isSparc) { // SPARC uses -vga (above)
             [self pushArgv:@"-device"];
             [self pushArgv:self.configuration.displayCard];

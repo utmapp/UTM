@@ -99,7 +99,6 @@ class VMDisplayMetalWindowController: VMDisplayQemuWindowController {
                 self.syncCapsLock(with: event.modifierFlags)
             }
         }
-        qemuVM.ioDelegate = self
         super.enterLive()
         resizeConsoleToolbarItem.isEnabled = false // disable item
     }
