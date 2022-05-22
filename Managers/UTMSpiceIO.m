@@ -58,39 +58,29 @@ extern NSString *const kUTMErrorDomain;
 }
 
 - (void)initializeSpiceIfNeeded {
-    @synchronized (self) {
-        if (!self.spiceConnection) {
-            self.spiceConnection = [[CSConnection alloc] initWithUnixSocketFile:self.configuration.spiceSocketURL];
-            self.spiceConnection.delegate = self;
-            self.spiceConnection.audioEnabled = _configuration.soundEnabled;
-            self.spiceConnection.session.shareClipboard = _configuration.shareClipboardEnabled;
-            self.spiceConnection.session.pasteboardDelegate = [UTMPasteboard generalPasteboard];
-        }
-    }
-}
-
-- (BOOL)isSpiceInitialized {
-    @synchronized (self) {
-        return self.spice != nil && self.spiceConnection != nil;
+    if (!self.spiceConnection) {
+        self.spiceConnection = [[CSConnection alloc] initWithUnixSocketFile:self.configuration.spiceSocketURL];
+        self.spiceConnection.delegate = self;
+        self.spiceConnection.audioEnabled = _configuration.soundEnabled;
+        self.spiceConnection.session.shareClipboard = _configuration.shareClipboardEnabled;
+        self.spiceConnection.session.pasteboardDelegate = [UTMPasteboard generalPasteboard];
     }
 }
 
 #pragma mark - UTMInputOutput
 
 - (BOOL)startWithError:(NSError **)err {
-    @synchronized (self) {
-        if (!self.spice) {
-            self.spice = [CSMain sharedInstance];
-        }
+    if (!self.spice) {
+        self.spice = [CSMain sharedInstance];
+    }
 #ifdef SPICE_DEBUG_LOGGING
-        [self.spice spiceSetDebug:YES];
+    [self.spice spiceSetDebug:YES];
 #endif
-        if (![self.spice spiceStart]) {
-            if (err) {
-                *err = [NSError errorWithDomain:kUTMErrorDomain code:-1 userInfo:@{NSLocalizedDescriptionKey: NSLocalizedString(@"Failed to start SPICE client.", "UTMSpiceIO")}];
-            }
-            return NO;
+    if (![self.spice spiceStart]) {
+        if (err) {
+            *err = [NSError errorWithDomain:kUTMErrorDomain code:-1 userInfo:@{NSLocalizedDescriptionKey: NSLocalizedString(@"Failed to start SPICE client.", "UTMSpiceIO")}];
         }
+        return NO;
     }
     [self initializeSpiceIfNeeded];
     
@@ -135,13 +125,11 @@ extern NSString *const kUTMErrorDomain;
             self.connectFinishedCallback(nil, 0, nil);
         }
     });
-    @synchronized (self) {
-        [self endSharingDirectory];
-        [self.spiceConnection disconnect];
-        self.spiceConnection.delegate = nil;
-        self.spiceConnection = nil;
-        self.spice = nil;
-    }
+    [self endSharingDirectory];
+    [self.spiceConnection disconnect];
+    self.spiceConnection.delegate = nil;
+    self.spiceConnection = nil;
+    self.spice = nil;
     self.primaryDisplay = nil;
     self.primaryInput = nil;
 #if !defined(WITH_QEMU_TCI)
