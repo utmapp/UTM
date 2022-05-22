@@ -36,7 +36,7 @@ extern const NSURLBookmarkResolutionOptions kUTMBookmarkResolutionOptions;
 @interface UTMQemuVirtualMachine ()
 
 @property (nonatomic, readonly, nullable) UTMQemuManager *qemu;
-@property (nonatomic, readonly, nullable) id<UTMInputOutput> ioService;
+@property (nonatomic, readonly, nullable) UTMSpiceIO *ioService;
 @property (nonatomic) BOOL changeCursorRequestInProgress;
 
 - (void)saveViewState;

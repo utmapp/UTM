@@ -15,20 +15,18 @@
 //
 
 #import "UTMQemuVirtualMachine+Terminal.h"
-#import "UTMTerminalIO.h"
+#import "UTMSpiceIO.h"
 
 @interface UTMQemuVirtualMachine ()
 
-@property (nonatomic, readonly, nullable) id<UTMInputOutput> ioService;
+@property (nonatomic, readonly, nullable) UTMSpiceIO *ioService;
 
 @end
 
 @implementation UTMQemuVirtualMachine (Terminal)
 
 - (void)sendInput:(NSString *)inputStr {
-    NSAssert([self.ioService isKindOfClass:[UTMTerminalIO class]], @"Invalid ioService type '%@' should be UTMTerminalIO", NSStringFromClass([self.ioService class]));
-    UTMTerminal *terminal = ((UTMTerminalIO *)self.ioService).terminal;
-    [terminal sendInput:inputStr];
+    abort(); // FIXME: implement with SPICE port
 }
 
 @end

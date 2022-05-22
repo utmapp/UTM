@@ -16,6 +16,7 @@
 
 #import "UTMVirtualMachine.h"
 #import "UTMQemuManagerDelegate.h"
+#import "UTMSpiceIODelegate.h"
 
 @class UTMQemuConfiguration;
 
@@ -28,7 +29,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface UTMQemuVirtualMachine : UTMVirtualMachine<UTMQemuManagerDelegate>
 
-@property (nonatomic, weak, nullable) id ioDelegate;
+@property (nonatomic, weak, nullable) id<UTMSpiceIODelegate> ioDelegate;
 @property (nonatomic, readonly) UTMQemuConfiguration *qemuConfig;
 
 - (UTMDisplayType)supportedDisplayType;

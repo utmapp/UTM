@@ -67,7 +67,7 @@ extern NSString *const kUTMErrorDomain;
     }
 }
 
-#pragma mark - UTMInputOutput
+#pragma mark - Actions
 
 - (BOOL)startWithError:(NSError **)err {
     if (!self.spice) {

@@ -36,7 +36,6 @@ class VMDisplayQemuWindowController: VMDisplayWindowController {
     }
     
     override func enterLive() {
-        qemuVM.ioDelegate = self
         startPauseToolbarItem.isEnabled = true
         #if arch(x86_64)
         if vmQemuConfig.useHypervisor {

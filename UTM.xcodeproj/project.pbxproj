@@ -180,7 +180,6 @@
 		CE0B6D0224AD56AE00FE012D /* UTMQemu.m in Sources */ = {isa = PBXBuildFile; fileRef = CE9D197B226542FE00355E14 /* UTMQemu.m */; };
 		CE0B6D0324AD56AE00FE012D /* UTMTerminal.m in Sources */ = {isa = PBXBuildFile; fileRef = E28394B3240C20E0006742E2 /* UTMTerminal.m */; };
 		CE0B6D0424AD56AE00FE012D /* UTMSpiceIO.m in Sources */ = {isa = PBXBuildFile; fileRef = E2D64BC8241DB24B0034E0C6 /* UTMSpiceIO.m */; };
-		CE0B6D0624AD56AE00FE012D /* UTMTerminalIO.m in Sources */ = {isa = PBXBuildFile; fileRef = E2D64BCB241DB62A0034E0C6 /* UTMTerminalIO.m */; };
 		CE0B6D0724AD56AE00FE012D /* UTMQemuManager.m in Sources */ = {isa = PBXBuildFile; fileRef = CE36B280227668D1004A1435 /* UTMQemuManager.m */; };
 		CE0B6D0824AD56C300FE012D /* qapi-visit-core.c in Sources */ = {isa = PBXBuildFile; fileRef = CECC764F2273A7D50059B955 /* qapi-visit-core.c */; };
 		CE0B6D0924AD56C300FE012D /* cf-output-visitor.c in Sources */ = {isa = PBXBuildFile; fileRef = CECC76502273A7D50059B955 /* cf-output-visitor.c */; };
@@ -521,7 +520,6 @@
 		CE2D92FF24AD46670059923A /* qapi-commands.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C0D223FCEC03001177D6 /* qapi-commands.c */; };
 		CE2D930024AD46670059923A /* qapi-commands-audio.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C09D23FCEC00001177D6 /* qapi-commands-audio.c */; };
 		CE2D930124AD46670059923A /* qapi-events-common.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C0D723FCEC03001177D6 /* qapi-events-common.c */; };
-		CE2D930224AD46670059923A /* UTMTerminalIO.m in Sources */ = {isa = PBXBuildFile; fileRef = E2D64BCB241DB62A0034E0C6 /* UTMTerminalIO.m */; };
 		CE2D930324AD46670059923A /* qapi-events-crypto.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C11D23FCEC07001177D6 /* qapi-events-crypto.c */; };
 		CE2D930424AD46670059923A /* UTMQemuConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = CE31C244225E555600A965DD /* UTMQemuConfiguration.m */; };
 		CE2D930524AD46670059923A /* VMDisplayMetalViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5286EC94243748C3007E6CBC /* VMDisplayMetalViewController.m */; };
@@ -945,7 +943,6 @@
 		CEA45EF0263519B5002FA97D /* VMConfigTextField.m in Sources */ = {isa = PBXBuildFile; fileRef = CEBCAF4D243525DB00C2B423 /* VMConfigTextField.m */; };
 		CEA45EF1263519B5002FA97D /* VMListViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = CE550BE322596E790063E575 /* VMListViewCell.m */; };
 		CEA45EF2263519B5002FA97D /* qapi-events-common.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C0D723FCEC03001177D6 /* qapi-events-common.c */; };
-		CEA45EF3263519B5002FA97D /* UTMTerminalIO.m in Sources */ = {isa = PBXBuildFile; fileRef = E2D64BCB241DB62A0034E0C6 /* UTMTerminalIO.m */; };
 		CEA45EF4263519B5002FA97D /* VMConfigSoundView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE2D953A24AD4F980059923A /* VMConfigSoundView.swift */; };
 		CEA45EF5263519B5002FA97D /* qapi-events-crypto.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C11D23FCEC07001177D6 /* qapi-events-crypto.c */; };
 		CEA45EF6263519B5002FA97D /* UTMQemuConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = CE31C244225E555600A965DD /* UTMQemuConfiguration.m */; };
@@ -2188,11 +2185,8 @@
 		E28394C0240C268A006742E2 /* VMDisplayTerminalViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VMDisplayTerminalViewController.m; sourceTree = "<group>"; };
 		E2B0F9D02426E5510065DFBE /* WKWebView+Workarounds.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "WKWebView+Workarounds.h"; sourceTree = "<group>"; };
 		E2B0F9D12426E5510065DFBE /* WKWebView+Workarounds.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "WKWebView+Workarounds.m"; sourceTree = "<group>"; };
-		E2D64BC6241DB2260034E0C6 /* UTMInputOutput.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UTMInputOutput.h; sourceTree = "<group>"; };
 		E2D64BC7241DB24B0034E0C6 /* UTMSpiceIO.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UTMSpiceIO.h; sourceTree = "<group>"; };
 		E2D64BC8241DB24B0034E0C6 /* UTMSpiceIO.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UTMSpiceIO.m; sourceTree = "<group>"; };
-		E2D64BCA241DB62A0034E0C6 /* UTMTerminalIO.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UTMTerminalIO.h; sourceTree = "<group>"; };
-		E2D64BCB241DB62A0034E0C6 /* UTMTerminalIO.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UTMTerminalIO.m; sourceTree = "<group>"; };
 		E2D64BE0241EAEBE0034E0C6 /* UTMSpiceIODelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UTMSpiceIODelegate.h; sourceTree = "<group>"; };
 		FF490791278361780041E4B1 /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/QEMULauncher-InfoPlist.strings"; sourceTree = "<group>"; };
 		FFB02A8B266CB09C006CD71A /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
@@ -3039,12 +3033,9 @@
 				E28394B5240C20E1006742E2 /* UTMTerminal.h */,
 				E28394B3240C20E0006742E2 /* UTMTerminal.m */,
 				E28394B4240C20E1006742E2 /* UTMTerminalDelegate.h */,
-				E2D64BC6241DB2260034E0C6 /* UTMInputOutput.h */,
 				E2D64BC7241DB24B0034E0C6 /* UTMSpiceIO.h */,
 				E2D64BC8241DB24B0034E0C6 /* UTMSpiceIO.m */,
 				E2D64BE0241EAEBE0034E0C6 /* UTMSpiceIODelegate.h */,
-				E2D64BCA241DB62A0034E0C6 /* UTMTerminalIO.h */,
-				E2D64BCB241DB62A0034E0C6 /* UTMTerminalIO.m */,
 				CE059DC6243E9E3400338317 /* UTMLocationManager.h */,
 				CE059DC7243E9E3400338317 /* UTMLocationManager.m */,
 				CE020BB524B14F8400B44AB6 /* UTMVirtualMachineExtension.swift */,
@@ -3865,7 +3856,6 @@
 				CEB63A9524F4747900CAF323 /* VMListViewCell.m in Sources */,
 				848F71EC277A2F47006A0240 /* UTMSerialPortDelegate.swift in Sources */,
 				CE2D930124AD46670059923A /* qapi-events-common.c in Sources */,
-				CE2D930224AD46670059923A /* UTMTerminalIO.m in Sources */,
 				CE2D955D24AD4F990059923A /* VMConfigSoundView.swift in Sources */,
 				CE2D930324AD46670059923A /* qapi-events-crypto.c in Sources */,
 				CE2D930424AD46670059923A /* UTMQemuConfiguration.m in Sources */,
@@ -3927,7 +3917,6 @@
 				CE0B6D3724AD57FD00FE012D /* qapi-events-block-core.c in Sources */,
 				CE0B6D5E24AD584D00FE012D /* qapi-visit-authz.c in Sources */,
 				CE0B6D4624AD584C00FE012D /* qapi-events-rdma.c in Sources */,
-				CE0B6D0624AD56AE00FE012D /* UTMTerminalIO.m in Sources */,
 				2C6D9E03256EE454003298E6 /* VMDisplayTerminalWindowController.swift in Sources */,
 				CE6D21DD2553A6ED001D29C5 /* VMConfirmActionModifier.swift in Sources */,
 				85EC516627CC8D10004A51DE /* VMConfigAdvancedNetworkView.swift in Sources */,
@@ -4412,7 +4401,6 @@
 				CEF0304F26A2AFBF00667B63 /* BigButtonStyle.swift in Sources */,
 				CEA45EF2263519B5002FA97D /* qapi-events-common.c in Sources */,
 				84909A8E27CACD5C005605F1 /* UTMPlaceholderVMView.swift in Sources */,
-				CEA45EF3263519B5002FA97D /* UTMTerminalIO.m in Sources */,
 				CEA45EF4263519B5002FA97D /* VMConfigSoundView.swift in Sources */,
 				CEA45EF5263519B5002FA97D /* qapi-events-crypto.c in Sources */,
 				CEA45EF6263519B5002FA97D /* UTMQemuConfiguration.m in Sources */,

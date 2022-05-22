@@ -16,10 +16,10 @@
 
 #import <Foundation/Foundation.h>
 #import "UTMVirtualMachineDelegate.h"
-#import "UTMInputOutput.h"
 
 @protocol UTMConfigurable;
 @class UTMLogging;
+@class UTMViewState;
 @class CSScreenshot;
 
 NS_ASSUME_NONNULL_BEGIN

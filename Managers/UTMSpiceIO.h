@@ -15,7 +15,6 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "UTMInputOutput.h"
 #import "UTMSpiceIODelegate.h"
 #if defined(WITH_QEMU_TCI)
 @import CocoaSpiceNoUsb;
@@ -24,10 +23,13 @@
 #endif
 
 @class UTMQemuConfiguration;
+@class UTMQemuManager;
+
+typedef void (^ioConnectCompletionHandler_t)(UTMQemuManager * _Nullable, NSError * _Nullable);
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface UTMSpiceIO : NSObject<UTMInputOutput, CSConnectionDelegate>
+@interface UTMSpiceIO : NSObject<CSConnectionDelegate>
 
 @property (nonatomic, readonly, nonnull) UTMQemuConfiguration* configuration;
 @property (nonatomic, readonly, nullable) CSDisplayMetal *primaryDisplay;
@@ -37,10 +39,15 @@ NS_ASSUME_NONNULL_BEGIN
 #endif
 @property (nonatomic, weak, nullable) id<UTMSpiceIODelegate> delegate;
 @property (nonatomic, readonly) BOOL isConnected;
+@property (nonatomic, readonly, nullable) CSScreenshot *screenshot;
 
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithConfiguration: (UTMQemuConfiguration*) configuration NS_DESIGNATED_INITIALIZER;
 - (void)changeSharedDirectory:(NSURL *)url;
+
+- (BOOL)startWithError:(NSError **)err;
+- (void)connectWithCompletion:(ioConnectCompletionHandler_t)block;
+- (void)disconnect;
 
 @end
 

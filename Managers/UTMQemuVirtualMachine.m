@@ -28,7 +28,6 @@
 #import "UTMViewState.h"
 #import "UTMQemuManager.h"
 #import "UTMQemuSystem.h"
-#import "UTMTerminalIO.h"
 #import "UTMSpiceIO.h"
 #import "UTMLogging.h"
 #import "UTM-Swift.h"
@@ -43,7 +42,7 @@ NSString *const kSuspendSnapshotName = @"suspend";
 
 @property (nonatomic, readwrite, nullable) UTMQemuManager *qemu;
 @property (nonatomic, readwrite, nullable) UTMQemuSystem *system;
-@property (nonatomic, readonly, nullable) id<UTMInputOutput> ioService;
+@property (nonatomic, readwrite, nullable) UTMSpiceIO *ioService;
 @property (nonatomic) dispatch_queue_t vmOperations;
 @property (nonatomic, nullable) dispatch_semaphore_t qemuWillQuitEvent;
 @property (nonatomic, nullable) dispatch_semaphore_t qemuDidExitEvent;
@@ -58,24 +57,12 @@ NSString *const kSuspendSnapshotName = @"suspend";
     return (UTMQemuConfiguration *)self.config;
 }
 
-- (id)ioDelegate {
-    if ([self.ioService isKindOfClass:[UTMSpiceIO class]]) {
-        return ((UTMSpiceIO *)self.ioService).delegate;
-    } else if ([self.ioService isKindOfClass:[UTMTerminalIO class]]) {
-        return ((UTMTerminalIO *)self.ioService).terminal.delegate;
-    } else {
-        return nil;
-    }
+- (id<UTMSpiceIODelegate>)ioDelegate {
+    return self.ioService.delegate;
 }
 
-- (void)setIoDelegate:(id)ioDelegate {
-    if ([self.ioService isKindOfClass:[UTMSpiceIO class]]) {
-        ((UTMSpiceIO *)self.ioService).delegate = ioDelegate;
-    } else if ([self.ioService isKindOfClass:[UTMTerminalIO class]]) {
-        ((UTMTerminalIO *)self.ioService).terminal.delegate = ioDelegate;
-    } else if (self.state == kVMStarted) {
-        NSAssert(0, @"ioService class is invalid: %@", NSStringFromClass([self.ioService class]));
-    }
+- (void)setIoDelegate:(id<UTMSpiceIODelegate>)ioDelegate {
+    self.ioService.delegate = ioDelegate;
 }
 
 - (instancetype)init {
@@ -304,12 +291,12 @@ NSString *const kSuspendSnapshotName = @"suspend";
         }
     }
     
-    if (!_ioService) {
-        _ioService = [self inputOutputService];
+    if (!self.ioService) {
+        self.ioService = [[UTMSpiceIO alloc] initWithConfiguration:self.qemuConfig];
     }
     
     NSError *spiceError;
-    if (![_ioService startWithError:&spiceError]) {
+    if (![self.ioService startWithError:&spiceError]) {
         completion(spiceError);
         return;
     }
@@ -433,7 +420,7 @@ NSString *const kSuspendSnapshotName = @"suspend";
     }
     self.qemu.delegate = nil;
     self.qemu = nil;
-    _ioService = nil;
+    self.ioService = nil;
     
     if (force || dispatch_semaphore_wait(self.qemuDidExitEvent, dispatch_time(DISPATCH_TIME_NOW, kStopTimeout)) != 0) {
         UTMLog(@"Exit operation timeout or force quit");
@@ -677,14 +664,6 @@ NSString *const kSuspendSnapshotName = @"suspend";
         return UTMDisplayTypeConsole;
     } else {
         return UTMDisplayTypeFullGraphic;
-    }
-}
-
-- (id<UTMInputOutput>)inputOutputService {
-    if ([self supportedDisplayType] == UTMDisplayTypeConsole) {
-        return [[UTMTerminalIO alloc] initWithConfiguration:[self.qemuConfig copy]];
-    } else {
-        return [[UTMSpiceIO alloc] initWithConfiguration:[self.qemuConfig copy]];
     }
 }
 
