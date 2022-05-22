@@ -188,7 +188,7 @@ extern const NSURLBookmarkResolutionOptions kUTMBookmarkResolutionOptions;
 #pragma mark - USB redirection
 
 - (BOOL)hasUsbRedirection {
-    return jb_has_usb_entitlement() && !self.qemuConfig.displayConsoleOnly;
+    return jb_has_usb_entitlement();
 }
 
 @end
