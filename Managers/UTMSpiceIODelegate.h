@@ -18,6 +18,7 @@
 
 @class CSDisplayMetal;
 @class CSInput;
+@class CSPort;
 @class CSUSBManager;
 
 NS_ASSUME_NONNULL_BEGIN
@@ -27,6 +28,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)spiceDidChangeInput:(CSInput *)input;
 - (void)spiceDidCreateDisplay:(CSDisplayMetal *)display;
 - (void)spiceDidDestroyDisplay:(CSDisplayMetal *)display;
+- (void)spiceDidCreateSerial:(CSPort *)serial;
+- (void)spiceDidDestroySerial:(CSPort *)serial;
 #if !defined(WITH_QEMU_TCI)
 - (void)spiceDidChangeUsbManager:(CSUSBManager *)usbManager;
 #endif

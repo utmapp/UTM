@@ -148,10 +148,6 @@ const NSString *const kUTMConfigAppleVirtualizationKey = @"isAppleVirtualization
     return ioFile;
 }
 
-- (NSURL*)terminalInputOutputURL {
-    return [self socketUrlWithSuffix:@"terminal"];
-}
-
 - (NSURL*)spiceSocketURL {
     return [self socketUrlWithSuffix:@"spice"];
 }

@@ -490,10 +490,6 @@ static size_t sysctl_read(const char *name) {
 }
 
 - (void)argsForSharing {
-    if (self.configuration.displayConsoleOnly) {
-        return; // no SPICE for console only
-    }
-    
     if (self.configuration.shareClipboardEnabled || self.configuration.shareDirectoryEnabled || self.configuration.displayFitScreen) {
         [self pushArgv:@"-device"];
         [self pushArgv:@"virtio-serial"];
@@ -668,9 +664,8 @@ static size_t sysctl_read(const char *name) {
     if (self.configuration.displayConsoleOnly) {
         [self pushArgv:@"-nographic"];
         // terminal character device
-        NSURL* ioFile = [self.configuration terminalInputOutputURL];
         [self pushArgv: @"-chardev"];
-        [self pushArgv: [NSString stringWithFormat: @"pipe,id=term0,path=%@", ioFile.path]];
+        [self pushArgv: @"spiceport,id=term0,name=com.utmapp.terminal.0"];
         [self pushArgv: @"-serial"];
         [self pushArgv: @"chardev:term0"];
     } else {

@@ -29,8 +29,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, nullable, copy) NSURL *existingPath;
 @property (nonatomic, nullable, copy) NSURL *selectedCustomIconPath;
 
-
-@property (nonatomic, readonly) NSURL *terminalInputOutputURL;
 @property (nonatomic, readonly) NSURL *spiceSocketURL;
 
 - (void)migrateConfigurationIfNecessary;

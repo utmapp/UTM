@@ -180,6 +180,14 @@ extension VMDisplayMetalWindowController: UTMSpiceIODelegate {
         }
         isDisplaySizeDynamic = supported
     }
+    
+    func spiceDidCreateSerial(_ serial: CSPort) {
+        // FIXME: implement serial
+    }
+    
+    func spiceDidDestroySerial(_ serial: CSPort) {
+        // FIXME: implement serial
+    }
 }
     
 // MARK: - Screen management

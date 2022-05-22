@@ -34,6 +34,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly, nonnull) UTMQemuConfiguration* configuration;
 @property (nonatomic, readonly, nullable) CSDisplayMetal *primaryDisplay;
 @property (nonatomic, readonly, nullable) CSInput *primaryInput;
+@property (nonatomic, readonly, nullable) CSPort *primarySerial;
 #if !defined(WITH_QEMU_TCI)
 @property (nonatomic, readonly, nullable) CSUSBManager *primaryUsbManager;
 #endif

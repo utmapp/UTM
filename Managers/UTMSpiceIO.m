@@ -31,6 +31,7 @@ extern NSString *const kUTMErrorDomain;
 
 @property (nonatomic, readwrite, nullable) CSDisplayMetal *primaryDisplay;
 @property (nonatomic, readwrite, nullable) CSInput *primaryInput;
+@property (nonatomic, readwrite, nullable) CSPort *primarySerial;
 #if !defined(WITH_QEMU_TCI)
 @property (nonatomic, readwrite, nullable) CSUSBManager *primaryUsbManager;
 #endif
@@ -200,10 +201,18 @@ extern NSString *const kUTMErrorDomain;
             }
         });
     }
+    if ([port.name isEqualToString:@"com.utmapp.terminal.0"]) {
+        self.primarySerial = port;
+        [self.delegate spiceDidCreateSerial:port];
+    }
 }
 
 - (void)spiceForwardedPortClosed:(CSConnection *)connection port:(CSPort *)port {
     if ([port.name isEqualToString:@"org.qemu.monitor.qmp.0"]) {
+    }
+    if ([port.name isEqualToString:@"com.utmapp.terminal.0"]) {
+        self.primarySerial = port;
+        [self.delegate spiceDidDestroySerial:port];
     }
 }
 
@@ -248,6 +257,9 @@ extern NSString *const kUTMErrorDomain;
         if (display != self.primaryDisplay) {
             [self.delegate spiceDidCreateDisplay:display];
         }
+    }
+    if (self.primarySerial) {
+        [self.delegate spiceDidCreateSerial:self.primarySerial];
     }
 #if !defined(WITH_QEMU_TCI)
     if (self.primaryUsbManager) {
