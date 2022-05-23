@@ -142,6 +142,9 @@ public extension VMDisplayViewController {
             logger.info("Start location tracking to enable running in background")
             UTMLocationManager.sharedInstance().startUpdatingLocation()
         }
+        if vm.state == .vmStopped {
+            vm.requestVmStart()
+        }
     }
     
     override func didReceiveMemoryWarning() {
@@ -189,6 +192,7 @@ public extension VMDisplayViewController {
         }
         placeholderIndicator.stopAnimating()
         UIApplication.shared.isIdleTimerDisabled = disableIdleTimer
+        vm.ioDelegate = self
         toolbar.enterLive()
     }
     

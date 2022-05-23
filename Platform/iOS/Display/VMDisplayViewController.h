@@ -16,6 +16,7 @@
 
 #import <UIKit/UIKit.h>
 #import "CSInput.h"
+#import "UTMSpiceIODelegate.h"
 #import "UTMVirtualMachineDelegate.h"
 
 @class UTMQemuConfiguration;
@@ -25,7 +26,7 @@
 @class VMToolbarActions;
 @class VMUSBDevicesViewController;
 
-@interface VMDisplayViewController : UIViewController<UTMVirtualMachineDelegate>
+@interface VMDisplayViewController : UIViewController<UTMVirtualMachineDelegate, UTMSpiceIODelegate>
 
 @property (weak, nonatomic) IBOutlet UIView *displayView;
 @property (strong, nonatomic) IBOutlet UIInputView *inputAccessoryView;
@@ -57,6 +58,7 @@
 
 @property (nonatomic, strong) NSMutableArray<NSObject *> *notifications;
 
+- (void)setupSubviews;
 - (BOOL)inputViewIsFirstResponder;
 - (void)updateKeyboardAccessoryFrame;
 

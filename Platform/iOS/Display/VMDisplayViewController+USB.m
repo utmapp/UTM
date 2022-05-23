@@ -1,5 +1,5 @@
 //
-// Copyright © 2021 osy. All rights reserved.
+// Copyright © 2022 osy. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
 // limitations under the License.
 //
 
-#import "VMDisplayMetalViewController+USB.h"
+#import "VMDisplayViewController+USB.h"
 #import "CSUSBDevice.h"
 #import "UIViewController+Extensions.h"
 #import "UTMLogging.h"
@@ -26,7 +26,7 @@
 
 @end
 
-@implementation VMDisplayMetalViewController (USB)
+@implementation VMDisplayViewController (USB)
 
 - (BOOL)isNoUsbPrompt {
     return [self boolForSetting:@"NoUsbPrompt"];

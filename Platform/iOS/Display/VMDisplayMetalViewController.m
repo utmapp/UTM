@@ -20,7 +20,6 @@
 #import "VMDisplayMetalViewController+Pointer.h"
 #import "VMDisplayMetalViewController+Pencil.h"
 #import "VMDisplayMetalViewController+Gamepad.h"
-#import "VMDisplayMetalViewController+USB.h"
 #import "VMKeyboardView.h"
 #import "UTMVirtualMachine.h"
 #import "UTMQemuManager.h"
@@ -103,13 +102,6 @@
     }
 }
 
-- (void)viewDidAppear:(BOOL)animated {
-    [super viewDidAppear:animated];
-    if (self.vm.state == kVMStopped) {
-        [self.vm requestVmStart];
-    }
-}
-
 - (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator {
     [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
     if (self.vmQemuConfig.displayFitScreen) {
@@ -138,7 +130,6 @@
 
 - (void)enterLive {
     [super enterLive];
-    self.vm.ioDelegate = self;
     [UIView transitionWithView:self.view duration:0.5 options:UIViewAnimationOptionTransitionCrossDissolve animations:^{
         self.placeholderImageView.hidden = YES;
         self.mtkView.hidden = NO;
@@ -236,13 +227,5 @@
 - (void)spiceDidDestroyDisplay:(CSDisplayMetal *)display {
     // TODO: implement something here
 }
-
-#if !defined(WITH_QEMU_TCI)
-- (void)spiceDidChangeUsbManager:(CSUSBManager *)usbManager {
-    [self.usbDevicesViewController clearDevices];
-    self.usbDevicesViewController.vmUsbManager = usbManager;
-    usbManager.delegate = self;
-}
-#endif
 
 @end

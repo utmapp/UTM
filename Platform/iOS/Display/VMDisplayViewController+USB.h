@@ -1,5 +1,5 @@
 //
-// Copyright © 2021 osy. All rights reserved.
+// Copyright © 2022 osy. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,12 +14,12 @@
 // limitations under the License.
 //
 
-#import "VMDisplayMetalViewController.h"
+#import "VMDisplayViewController.h"
 #import "CSUSBManagerDelegate.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface VMDisplayMetalViewController (USB) <CSUSBManagerDelegate>
+@interface VMDisplayViewController (USB) <CSUSBManagerDelegate>
 
 @end
 

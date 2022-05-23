@@ -29,7 +29,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) NSNumber *columns;
 @property (nonatomic) NSNumber *rows;
 
-- (void)setupSubviews;
 
 @end
 

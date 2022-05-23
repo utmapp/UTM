@@ -16,9 +16,7 @@
 
 #import <UIKit/UIKit.h>
 #import "VMDisplayViewController.h"
-#import "UTMSpiceIODelegate.h"
 
-@class UTMSpiceIO;
 @class UTMVirtualMachine;
 @class VMCursor;
 @class VMScroll;
@@ -28,7 +26,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface VMDisplayMetalViewController : VMDisplayViewController<UTMSpiceIODelegate> {
+@interface VMDisplayMetalViewController : VMDisplayViewController {
     // cursor handling
     CGPoint _lastTwoPanOrigin;
     BOOL _mouseLeftDown;
@@ -70,7 +68,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readonly) BOOL serverModeCursor;
 
-- (void)setupSubviews;
 - (void)sendExtendedKey:(CSInputKey)type code:(int)code;
 - (void)resetDisplay;
 - (void)resizeDisplayToFit;

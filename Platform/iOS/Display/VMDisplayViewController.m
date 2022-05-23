@@ -15,6 +15,7 @@
 //
 
 #import "VMDisplayViewController.h"
+#import "VMDisplayViewController+USB.h"
 #import "UTM-Swift.h"
 
 @implementation VMDisplayViewController
@@ -49,6 +50,10 @@
 }
 
 #pragma mark - View handling
+
+- (void)setupSubviews {
+    // override by subclasses
+}
 
 - (BOOL)inputViewIsFirstResponder {
     return NO;
@@ -91,5 +96,30 @@
         }
     }];
 }
+
+#pragma mark - SPICE IO Delegates
+
+- (void)spiceDidChangeInput:(CSInput *)input {
+}
+
+- (void)spiceDidCreateDisplay:(CSDisplayMetal *)display {
+}
+
+- (void)spiceDidDestroyDisplay:(CSDisplayMetal *)display {
+}
+
+- (void)spiceDidCreateSerial:(CSPort *)serial {
+}
+
+- (void)spiceDidDestroySerial:(CSPort *)serial {
+}
+
+#if !defined(WITH_QEMU_TCI)
+- (void)spiceDidChangeUsbManager:(CSUSBManager *)usbManager {
+    [self.usbDevicesViewController clearDevices];
+    self.usbDevicesViewController.vmUsbManager = usbManager;
+    usbManager.delegate = self;
+}
+#endif
 
 @end
