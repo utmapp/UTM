@@ -73,6 +73,8 @@ extension UTMData {
     func trySendTextSpice(_ text: String) {
         if let vc = vmVC as? VMDisplayMetalViewController {
             vc.keyboardView.insertText(text)
+        } else if let vc = vmVC as? VMDisplayTerminalViewController {
+            vc.sendData(fromCmdString: text)
         }
     }
 }

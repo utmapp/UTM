@@ -98,4 +98,10 @@ extension VMDisplayTerminalWindowController: CSPortDelegate {
             }
         }
     }
+    
+    func defaultSerialWrite(data: Data) {
+        if let vmSerialPort = vmSerialPort {
+            vmSerialPort.write(data)
+        }
+    }
 }

@@ -945,15 +945,11 @@ class UTMData: ObservableObject {
         guard let qemuVm = vm as? UTMQemuVirtualMachine else { return } // FIXME: implement for Apple VM
         guard let queryItems = components.queryItems else { return }
         guard let text = queryItems.first(where: { $0.name == "text" })?.value else { return }
-        if qemuVm.qemuConfig.displayConsoleOnly {
-            qemuVm.sendInput(text)
-        } else {
-            #if os(macOS)
-            trySendTextSpice(vm: qemuVm, text: text)
-            #else
-            trySendTextSpice(text)
-            #endif
-        }
+        #if os(macOS)
+        trySendTextSpice(vm: qemuVm, text: text)
+        #else
+        trySendTextSpice(text)
+        #endif
     }
     
     /// Send mouse/tablet coordinates to VM

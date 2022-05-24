@@ -161,6 +161,12 @@ extension UTMData {
                     }
                 }
             }
+        } else if let vc = vmWindows[vm] as? VMDisplayTerminalWindowController {
+            if let data = text.data(using: .nonLossyASCII) {
+                vc.defaultSerialWrite(data: data)
+            } else {
+                logger.warning("failed to convert the text: '\(text)'")
+            }
         }
     }
     
