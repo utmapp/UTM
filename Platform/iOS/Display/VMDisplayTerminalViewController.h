@@ -16,12 +16,12 @@
 
 #import <UIKit/UIKit.h>
 #import <WebKit/WebKit.h>
-#import "UTMTerminalDelegate.h"
+#import <CocoaSpice.h>
 #import "VMDisplayViewController.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface VMDisplayTerminalViewController : VMDisplayViewController<UTMTerminalDelegate, WKScriptMessageHandler, UIGestureRecognizerDelegate, WKNavigationDelegate>
+@interface VMDisplayTerminalViewController : VMDisplayViewController<CSPortDelegate, WKScriptMessageHandler, UIGestureRecognizerDelegate, WKNavigationDelegate>
 
 @property (nonatomic) IBOutlet WKWebView *webView;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *webViewTopConstraint;
@@ -29,6 +29,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) NSNumber *columns;
 @property (nonatomic) NSNumber *rows;
 
+- (void)sendDataFromCmdString:(NSString *)cmdString;
 
 @end
 

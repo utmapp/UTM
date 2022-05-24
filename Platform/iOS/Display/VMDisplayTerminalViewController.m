@@ -20,7 +20,6 @@
 #import "UTMQemuConfiguration+Display.h"
 #import "UTMLogging.h"
 #import "UTMQemuVirtualMachine.h"
-#import "UTMQemuVirtualMachine+Terminal.h"
 #import "UIViewController+Extensions.h"
 #import "WKWebView+Workarounds.h"
 #import "UTM-Swift.h"
@@ -33,6 +32,8 @@ NSString* const kVMSendGestureHandler = @"UTMSendGesture";
 NSString* const kVMSendTerminalSizeHandler = @"UTMSendTerminalSize";
 
 @interface VMDisplayTerminalViewController ()
+
+@property (nonatomic, weak) CSPort *vmSerial;
 
 @end
 
@@ -81,6 +82,19 @@ NSString* const kVMSendTerminalSizeHandler = @"UTMSendTerminalSize";
 
     if (self.vm.state == kVMStopped) {
         [self.vm requestVmStart];
+    }
+}
+
+- (void)spiceDidCreateSerial:(CSPort *)serial {
+    if (self.vmSerial == nil) {
+        self.vmSerial = serial;
+        serial.delegate = self;
+    }
+}
+
+- (void)spiceDidDestroySerial:(CSPort *)serial {
+    if (self.vmSerial == serial) {
+        self.vmSerial = nil;
     }
 }
 
@@ -144,7 +158,7 @@ NSString* const kVMSendTerminalSizeHandler = @"UTMSendTerminalSize";
     cmd = [cmd stringByReplacingOccurrencesOfString:@"$COLS" withString:[self.columns stringValue]];
     cmd = [cmd stringByReplacingOccurrencesOfString:@"$ROWS" withString:[self.rows stringValue]];
     cmd = [cmd stringByReplacingOccurrencesOfString:@"\\n" withString:@"\n"];
-    [self.vm sendInput:cmd];
+    [self sendDataFromCmdString:cmd];
 }
 
 #pragma mark - Gestures
@@ -170,7 +184,7 @@ NSString* const kVMSendTerminalSizeHandler = @"UTMSendTerminalSize";
 - (void)userContentController:(WKUserContentController *)userContentController didReceiveScriptMessage:(WKScriptMessage *)message {
     if ([[message name] isEqualToString: kVMSendInputHandler]) {
         UTMLog(@"Received input from HTerm: %@", (NSString*) message.body);
-        [self.vm sendInput: (NSString*) message.body];
+        [self sendDataFromCmdString:(NSString *)message.body];
         [self resetModifierToggles];
     } else if ([[message name] isEqualToString: kVMDebugHandler]) {
         UTMLog(@"Debug message from HTerm: %@", (NSString*) message.body);
@@ -184,9 +198,14 @@ NSString* const kVMSendTerminalSizeHandler = @"UTMSendTerminalSize";
     }
 }
 
-#pragma mark - UTMTerminalDelegate
+#pragma mark - Send/recieve data
 
-- (void)terminal:(UTMTerminal *)terminal didReceiveData:(NSData *)data {
+- (void)sendDataFromCmdString:(NSString *)cmdString {
+    NSData *data = [cmdString dataUsingEncoding:NSUTF8StringEncoding];
+    [self.vmSerial writeData:data];
+}
+
+- (void)port:(CSPort *)port didRecieveData:(NSData *)data {
     NSMutableString* dataString = [NSMutableString stringWithString: @"["];
     const uint8_t* buf = (uint8_t*) [data bytes];
     for (size_t i = 0; i < [data length]; i++) {
@@ -204,6 +223,13 @@ NSString* const kVMSendTerminalSizeHandler = @"UTMSendTerminalSize";
     });
 }
 
+- (void)portDidDisconect:(CSPort *)port {
+}
+
+- (void)port:(CSPort *)port didError:(NSString *)error {
+    [self showAlert:error actions:nil completion:nil];
+}
+
 #pragma mark - State transition
 
 - (void)enterSuspendedWithIsBusy:(BOOL)busy {
@@ -213,7 +239,6 @@ NSString* const kVMSendTerminalSizeHandler = @"UTMSendTerminalSize";
 
 - (void)enterLive {
     [super enterLive];
-    self.vm.ioDelegate = self;
     self.webView.userInteractionEnabled = YES;
 }
 
