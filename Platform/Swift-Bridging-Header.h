@@ -39,10 +39,7 @@
 #include "UTMQemuVirtualMachine.h"
 #include "UTMQemuVirtualMachine+Drives.h"
 #include "UTMQemuVirtualMachine+SPICE.h"
-#include "UTMQemuVirtualMachine+Terminal.h"
 #include "UTMSpiceIO.h"
-#include "UTMTerminal.h"
-#include "UTMTerminalDelegate.h"
 #if TARGET_OS_IPHONE
 #include "AppDelegate.h"
 #include "UIViewController+Extensions.h"
