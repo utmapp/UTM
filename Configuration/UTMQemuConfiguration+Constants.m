@@ -47,7 +47,7 @@
         }
     } else if ([key isEqualToString:@"soundCards"]) {
         if (pretty) {
-            return [self supportedSoundCardsForArchitecture:@"x86_64"];
+            return [self supportedSoundCardsForArchitecturePretty:@"x86_64"];
         } else {
             return [self supportedSoundCardsForArchitecture:@"x86_64"];
         }
