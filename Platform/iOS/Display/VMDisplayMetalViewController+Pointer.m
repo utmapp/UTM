@@ -20,7 +20,7 @@
 #import "VMDisplayMetalViewController+Touch.h"
 #import "VMDisplayMetalViewController+Pointer.h"
 #import "VMCursor.h"
-#import "CSDisplayMetal.h"
+#import "CSDisplay.h"
 #import "VMScroll.h"
 #import "UTMQemuVirtualMachine.h"
 #import "UTMQemuVirtualMachine+SPICE.h"

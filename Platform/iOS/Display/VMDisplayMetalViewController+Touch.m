@@ -20,7 +20,7 @@
 #import "VMDisplayMetalViewController+Pencil.h"
 #import "VMCursor.h"
 #import "VMScroll.h"
-#import "CSDisplayMetal.h"
+#import "CSDisplay.h"
 #import "UTMQemuConfiguration.h"
 #import "UTMQemuConfiguration+Miscellaneous.h"
 #import "UTMSpiceIO.h"
@@ -353,7 +353,7 @@ static CGFloat CGPointToPixel(CGFloat point) {
     translated = [self clipCursorToDisplay:translated];
     if (!self.vmInput.serverModeCursor) {
         [self.vmInput sendMousePosition:self.mouseButtonDown absolutePoint:translated];
-        [self.vmDisplay forceCursorPosition:translated]; // required to show cursor on screen
+        [self.vmDisplay.cursor moveTo:translated]; // required to show cursor on screen
     } else {
         UTMLog(@"Warning: ignored mouse set (%f, %f) while mouse is in server mode", translated.x, translated.y);
     }
@@ -625,7 +625,7 @@ static CGFloat CGPointToPixel(CGFloat point) {
 - (BOOL)switchMouseType:(VMMouseType)type {
     BOOL shouldHideCursor = (type == VMMouseTypeAbsoluteHideCursor);
     BOOL shouldUseServerMouse = (type == VMMouseTypeRelative);
-    self.vmDisplay.inhibitCursor = shouldHideCursor;
+    self.vmDisplay.cursor.isInhibited = shouldHideCursor;
     if (shouldUseServerMouse != self.vmInput.serverModeCursor) {
         UTMLog(@"Switching mouse mode to server:%d for type:%ld", shouldUseServerMouse, type);
         [self.vm requestInputTablet:!shouldUseServerMouse];

@@ -19,7 +19,7 @@
 #import "VMScroll.h"
 #import "VMDisplayMetalViewController+Gamepad.h"
 #import "VMDisplayMetalViewController+Touch.h"
-#import "CSDisplayMetal.h"
+#import "CSDisplay.h"
 #import "UTMQemuConfiguration.h"
 #import "UTMQemuConfiguration+Constants.h"
 #import "UTMLogging.h"

@@ -16,7 +16,7 @@
 
 @protocol UTMConfigurable;
 @class UTMVirtualMachine;
-@class CSDisplayMetal;
+@class CSDisplay;
 @class CSInput;
 
 NS_ASSUME_NONNULL_BEGIN

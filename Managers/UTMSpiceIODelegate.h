@@ -16,7 +16,7 @@
 
 #import <Foundation/Foundation.h>
 
-@class CSDisplayMetal;
+@class CSDisplay;
 @class CSInput;
 @class CSPort;
 @class CSUSBManager;
@@ -25,13 +25,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 @protocol UTMSpiceIODelegate<NSObject>
 
-- (void)spiceDidChangeInput:(CSInput *)input;
-- (void)spiceDidCreateDisplay:(CSDisplayMetal *)display;
-- (void)spiceDidDestroyDisplay:(CSDisplayMetal *)display;
-- (void)spiceDidCreateSerial:(CSPort *)serial;
-- (void)spiceDidDestroySerial:(CSPort *)serial;
+- (void)spiceDidCreateInput:(CSInput *)input NS_SWIFT_NAME(spiceDidCreateInput(_:));
+- (void)spiceDidDestroyInput:(CSInput *)input NS_SWIFT_NAME(spiceDidDestroyInput(_:));
+- (void)spiceDidCreateDisplay:(CSDisplay *)display NS_SWIFT_NAME(spiceDidCreateDisplay(_:));
+- (void)spiceDidDestroyDisplay:(CSDisplay *)display NS_SWIFT_NAME(spiceDidDestroyDisplay(_:));
+- (void)spiceDidChangeDisplay:(CSDisplay *)display NS_SWIFT_NAME(spiceDidChangeDisplay(_:));
+- (void)spiceDidCreateSerial:(CSPort *)serial NS_SWIFT_NAME(spiceDidCreateSerial(_:));
+- (void)spiceDidDestroySerial:(CSPort *)serial NS_SWIFT_NAME(spiceDidDestroySerial(_:));
 #if !defined(WITH_QEMU_TCI)
-- (void)spiceDidChangeUsbManager:(CSUSBManager *)usbManager;
+- (void)spiceDidChangeUsbManager:(nullable CSUSBManager *)usbManager NS_SWIFT_NAME(spiceDidChangeUsbManager(_:));
 #endif
 
 @optional

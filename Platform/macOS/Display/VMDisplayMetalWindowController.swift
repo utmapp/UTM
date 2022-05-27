@@ -20,10 +20,9 @@ class VMDisplayMetalWindowController: VMDisplayQemuWindowController {
     var metalView: VMMetalView!
     var renderer: CSRenderer?
     
-    private weak var vmDisplay: CSDisplayMetal?
+    private weak var vmDisplay: CSDisplay?
     private weak var vmInput: CSInput?
     
-    private var displaySizeObserver: NSKeyValueObservation?
     private var displaySize: CGSize = .zero
     private var isDisplaySizeDynamic: Bool = false
     private var isFullScreen: Bool = false
@@ -77,10 +76,6 @@ class VMDisplayMetalWindowController: VMDisplayQemuWindowController {
     override func enterLive() {
         metalView.isHidden = false
         screenshotView.isHidden = true
-        displaySizeObserver = observe(\.vmDisplay!.displaySize, options: [.initial, .new]) { (_, change) in
-            guard let size = change.newValue else { return }
-            self.displaySizeDidChange(size: size)
-        }
         if vmQemuConfig!.shareClipboardEnabled {
             UTMPasteboard.general.requestPollingMode(forHashable: self) // start clipboard polling
         }
@@ -121,7 +116,6 @@ class VMDisplayMetalWindowController: VMDisplayQemuWindowController {
             self.globalEventMonitor = nil
         }
         releaseMouse()
-        displaySizeObserver = nil
         super.enterSuspended(isBusy: busy)
     }
     
@@ -132,19 +126,36 @@ class VMDisplayMetalWindowController: VMDisplayQemuWindowController {
 
 // MARK: - SPICE IO
 extension VMDisplayMetalWindowController {
-    override func spiceDidChange(_ input: CSInput) {
-        vmInput = input
-    }
-    
-    override func spiceDidCreateDisplay(_ display: CSDisplayMetal) {
-        if display.isPrimaryDisplay {
-            vmDisplay = display
-            renderer!.source = vmDisplay
+    override func spiceDidCreateInput(_ input: CSInput) {
+        if vmInput == nil {
+            vmInput = input
         }
     }
     
-    override func spiceDidDestroyDisplay(_ display: CSDisplayMetal) {
-        //TODO: implement something here
+    override func spiceDidDestroyInput(_ input: CSInput) {
+        if vmInput == input {
+            vmInput = nil
+        }
+    }
+    
+    override func spiceDidCreateDisplay(_ display: CSDisplay) {
+        if vmDisplay == nil && display.isPrimaryDisplay {
+            vmDisplay = display
+            renderer!.source = display
+        }
+    }
+    
+    override func spiceDidDestroyDisplay(_ display: CSDisplay) {
+        if vmDisplay == display {
+            vmDisplay = nil
+            renderer!.source = nil
+        }
+    }
+    
+    override func spiceDidChangeDisplay(_ display: CSDisplay) {
+        if vmDisplay == display {
+            displaySizeDidChange(size: display.displaySize)
+        }
     }
     
     override func spiceDynamicResolutionSupportDidChange(_ supported: Bool) {
@@ -345,7 +356,7 @@ extension VMDisplayMetalWindowController: VMMetalViewInputDelegate {
         let point = CGPoint(x: newX, y: newY)
         logger.trace("move cursor: cocoa (\(absolutePoint.x), \(absolutePoint.y)), native (\(newX), \(newY))")
         vmInput.sendMousePosition(button, absolutePoint: point)
-        vmDisplay?.forceCursorPosition(point) // required to show cursor on screen
+        vmDisplay?.cursor?.move(to: point) // required to show cursor on screen
     }
     
     func mouseMove(relativePoint: CGPoint, button: CSInputButton) {

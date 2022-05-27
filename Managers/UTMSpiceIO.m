@@ -29,7 +29,7 @@ extern NSString *const kUTMErrorDomain;
 
 @interface UTMSpiceIO ()
 
-@property (nonatomic, readwrite, nullable) CSDisplayMetal *primaryDisplay;
+@property (nonatomic, readwrite, nullable) CSDisplay *primaryDisplay;
 @property (nonatomic, readwrite, nullable) CSInput *primaryInput;
 @property (nonatomic, readwrite, nullable) CSPort *primarySerial;
 #if !defined(WITH_QEMU_TCI)
@@ -147,12 +147,24 @@ extern NSString *const kUTMErrorDomain;
 - (void)spiceConnected:(CSConnection *)connection {
     NSAssert(connection == self.spiceConnection, @"Unknown connection");
     self.isConnected = YES;
-    self.primaryInput = connection.input;
-    [self.delegate spiceDidChangeInput:connection.input];
 #if !defined(WITH_QEMU_TCI)
     self.primaryUsbManager = connection.usbManager;
     [self.delegate spiceDidChangeUsbManager:connection.usbManager];
 #endif
+}
+
+- (void)spiceInputAvailable:(CSConnection *)connection input:(CSInput *)input {
+    if (self.primaryInput == nil) {
+        self.primaryInput = input;
+        [self.delegate spiceDidCreateInput:input];
+    }
+}
+
+- (void)spiceInputUnavailable:(CSConnection *)connection input:(CSInput *)input {
+    if (self.primaryInput == input) {
+        self.primaryInput = nil;
+        [self.delegate spiceDidDestroyInput:input];
+    }
 }
 
 - (void)spiceDisconnected:(CSConnection *)connection {
@@ -171,15 +183,17 @@ extern NSString *const kUTMErrorDomain;
     });
 }
 
-- (void)spiceDisplayCreated:(CSConnection *)connection display:(CSDisplayMetal *)display {
+- (void)spiceDisplayCreatedOrUpdated:(CSConnection *)connection display:(CSDisplay *)display {
     NSAssert(connection == self.spiceConnection, @"Unknown connection");
-    [self.delegate spiceDidCreateDisplay:display];
-    if (display.isPrimaryDisplay) {
+    if (self.primaryDisplay == display) {
+        [self.delegate spiceDidChangeDisplay:display];
+    } else if (display.isPrimaryDisplay) {
         self.primaryDisplay = display;
+        [self.delegate spiceDidCreateDisplay:display];
     }
 }
 
-- (void)spiceDisplayDestroyed:(CSConnection *)connection display:(CSDisplayMetal *)display {
+- (void)spiceDisplayDestroyed:(CSConnection *)connection display:(CSDisplay *)display {
     NSAssert(connection == self.spiceConnection, @"Unknown connection");
     [self.delegate spiceDidDestroyDisplay:display];
 }
@@ -248,15 +262,10 @@ extern NSString *const kUTMErrorDomain;
     _delegate = delegate;
     // make sure to send initial data
     if (self.primaryInput) {
-        [self.delegate spiceDidChangeInput:self.primaryInput];
+        [self.delegate spiceDidCreateInput:self.primaryInput];
     }
     if (self.primaryDisplay) {
         [self.delegate spiceDidCreateDisplay:self.primaryDisplay];
-    }
-    for (CSDisplayMetal *display in self.spiceConnection.monitors) {
-        if (display != self.primaryDisplay) {
-            [self.delegate spiceDidCreateDisplay:display];
-        }
     }
     if (self.primarySerial) {
         [self.delegate spiceDidCreateSerial:self.primarySerial];

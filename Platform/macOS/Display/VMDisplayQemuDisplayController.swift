@@ -208,24 +208,34 @@ extension VMDisplayQemuWindowController {
 // MARK: - SPICE base implementation
 
 extension VMDisplayQemuWindowController: UTMSpiceIODelegate {
-    func spiceDidChange(_ input: CSInput) {
+    func spiceDidCreateInput(_ input: CSInput) {
         // Implemented in subclass
     }
     
-    func spiceDidCreateDisplay(_ display: CSDisplayMetal) {
+    func spiceDidDestroyInput(_ input: CSInput) {
         // Implemented in subclass
     }
     
-    func spiceDidDestroyDisplay(_ display: CSDisplayMetal) {
+    func spiceDidCreateDisplay(_ display: CSDisplay) {
         // Implemented in subclass
     }
     
-    func spiceDidChange(_ usbManager: CSUSBManager) {
+    func spiceDidChangeDisplay(_ display: CSDisplay) {
+        // Implemented in subclass
+    }
+    
+    func spiceDidDestroyDisplay(_ display: CSDisplay) {
+        // Implemented in subclass
+    }
+    
+    func spiceDidChangeUsbManager(_ usbManager: CSUSBManager?) {
         if usbManager != vmUsbManager {
             connectedUsbDevices.removeAll()
             allUsbDevices.removeAll()
             vmUsbManager = usbManager
-            usbManager.delegate = self
+            if let usbManager = usbManager {
+                usbManager.delegate = self
+            }
         }
     }
     

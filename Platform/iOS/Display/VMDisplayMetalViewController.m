@@ -26,7 +26,7 @@
 #import "UTMQemuConfiguration.h"
 #import "UTMQemuConfiguration+Display.h"
 #import "UTMLogging.h"
-#import "CSDisplayMetal.h"
+#import "CSDisplay.h"
 #import "UTM-Swift.h"
 @import CocoaSpiceRenderer;
 
@@ -200,12 +200,20 @@
 
 #pragma mark - SPICE IO Delegates
 
-- (void)spiceDidChangeInput:(CSInput *)input {
-    self.vmInput = input;
+- (void)spiceDidCreateInput:(CSInput *)input {
+    if (self.vmInput == nil) {
+        self.vmInput = input;
+    }
 }
 
-- (void)spiceDidCreateDisplay:(CSDisplayMetal *)display {
-    if (display.isPrimaryDisplay) {
+- (void)spiceDidDestroyInput:(CSInput *)input {
+    if (self.vmInput == input) {
+        self.vmInput = nil;
+    }
+}
+
+- (void)spiceDidCreateDisplay:(CSDisplay *)display {
+    if (self.vmDisplay == nil && display.isPrimaryDisplay) {
         self.vmDisplay = display;
         _renderer.source = display;
         // restore last size
@@ -224,8 +232,17 @@
     }
 }
 
-- (void)spiceDidDestroyDisplay:(CSDisplayMetal *)display {
-    // TODO: implement something here
+- (void)spiceDidDestroyDisplay:(CSDisplay *)display {
+    if (self.vmDisplay == display) {
+        self.vmDisplay = nil;
+        _renderer.source = nil;
+    }
+}
+
+- (void)spiceDidChangeDisplay:(CSDisplay *)display {
+    if (display == self.vmDisplay) {
+        
+    }
 }
 
 @end

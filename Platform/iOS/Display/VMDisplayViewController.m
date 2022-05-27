@@ -99,13 +99,19 @@
 
 #pragma mark - SPICE IO Delegates
 
-- (void)spiceDidChangeInput:(CSInput *)input {
+- (void)spiceDidCreateInput:(CSInput *)input {
 }
 
-- (void)spiceDidCreateDisplay:(CSDisplayMetal *)display {
+- (void)spiceDidDestroyInput:(CSInput *)input {
 }
 
-- (void)spiceDidDestroyDisplay:(CSDisplayMetal *)display {
+- (void)spiceDidCreateDisplay:(CSDisplay *)display {
+}
+
+- (void)spiceDidChangeDisplay:(CSDisplay *)display {
+}
+
+- (void)spiceDidDestroyDisplay:(CSDisplay *)display {
 }
 
 - (void)spiceDidCreateSerial:(CSPort *)serial {

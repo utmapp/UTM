@@ -64,7 +64,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) IBOutlet VMKeyboardView *keyboardView;
 
 @property (weak, nonatomic) CSInput *vmInput;
-@property (weak, nonatomic) CSDisplayMetal *vmDisplay;
+@property (weak, nonatomic) CSDisplay *vmDisplay;
 
 @property (nonatomic, readonly) BOOL serverModeCursor;
 
