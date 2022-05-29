@@ -15,10 +15,10 @@
 //
 
 #import "VMConfigDriveDetailViewController.h"
-#import "UTMQemuConfiguration.h"
-#import "UTMQemuConfiguration+Constants.h"
-#import "UTMQemuConfiguration+Defaults.h"
-#import "UTMQemuConfiguration+System.h"
+#import "UTMLegacyQemuConfiguration.h"
+#import "UTMLegacyQemuConfiguration+Constants.h"
+#import "UTMLegacyQemuConfiguration+Defaults.h"
+#import "UTMLegacyQemuConfiguration+System.h"
 #import "VMConfigDrivePickerViewController.h"
 #import "VMConfigPickerView.h"
 #import "VMConfigTogglePickerCell.h"
@@ -49,7 +49,7 @@
         [self showImagePathCell:!self.removable animated:NO];
     } else {
         self.imageType = UTMDiskImageTypeDisk;
-        self.driveInterfaceType = [UTMQemuConfiguration defaultDriveInterfaceForTarget:self.configuration.systemTarget architecture:self.configuration.systemArchitecture type:UTMDiskImageTypeDisk];
+        self.driveInterfaceType = [UTMLegacyQemuConfiguration defaultDriveInterfaceForTarget:self.configuration.systemTarget architecture:self.configuration.systemArchitecture type:UTMDiskImageTypeDisk];
     }
     if (self.imageType == UTMDiskImageTypeDisk || self.imageType == UTMDiskImageTypeCD) {
         [self showDriveTypeOptions:YES animated:NO];
@@ -76,7 +76,7 @@
     if (self.existing) {
         [self.configuration setDriveImageType:imageType forIndex:self.driveIndex];
     }
-    self.imageTypePickerCell.detailTextLabel.text = [UTMQemuConfiguration supportedImageTypes][imageType];
+    self.imageTypePickerCell.detailTextLabel.text = [UTMLegacyQemuConfiguration supportedImageTypes][imageType];
 }
 
 - (void)setDriveInterfaceType:(NSString *)driveInterfaceType {
@@ -104,7 +104,7 @@
 - (void)imageTypeChanged {
     if (self.imageType == UTMDiskImageTypeDisk || self.imageType == UTMDiskImageTypeCD) {
         if (self.driveInterfaceType.length == 0) {
-            self.driveInterfaceType = [UTMQemuConfiguration defaultDriveInterfaceForTarget:self.configuration.systemTarget architecture:self.configuration.systemArchitecture type:self.imageType];
+            self.driveInterfaceType = [UTMLegacyQemuConfiguration defaultDriveInterfaceForTarget:self.configuration.systemTarget architecture:self.configuration.systemArchitecture type:self.imageType];
         }
         [self showDriveTypeOptions:YES animated:NO];
     } else {
@@ -116,7 +116,7 @@
 - (void)pickerView:(UIPickerView *)pickerView didSelectRow:(NSInteger)row inComponent:(NSInteger)component {
     NSAssert(component == 0, @"Invalid component");
     if (pickerView == self.driveLocationPickerCell.picker) {
-        self.driveInterfaceType = [UTMQemuConfiguration supportedDriveInterfaces][row];
+        self.driveInterfaceType = [UTMLegacyQemuConfiguration supportedDriveInterfaces][row];
     } else if (pickerView == self.imageTypePickerCell.picker) {
         self.imageType = row;
         [self imageTypeChanged];
@@ -130,8 +130,8 @@
 // In a storyboard-based application, you will often want to do a little preparation before navigation
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
     if ([segue.identifier isEqualToString:@"selectDiskSegue"]) {
-        NSAssert([segue.destinationViewController conformsToProtocol:@protocol(UTMQemuConfigurationDelegate)], @"Invalid segue destination");
-        id<UTMQemuConfigurationDelegate> controller = (id<UTMQemuConfigurationDelegate>)segue.destinationViewController;
+        NSAssert([segue.destinationViewController conformsToProtocol:@protocol(UTMLegacyQemuConfigurationDelegate)], @"Invalid segue destination");
+        id<UTMLegacyQemuConfigurationDelegate> controller = (id<UTMLegacyQemuConfigurationDelegate>)segue.destinationViewController;
         controller.configuration = self.configuration;
     }
 }

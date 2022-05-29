@@ -18,7 +18,7 @@ import SwiftUI
 
 @available(iOS 14, macOS 11, *)
 struct VMConfigPortForwardForm: View {
-    @ObservedObject var configPort: UTMQemuConfigurationPortForward
+    @ObservedObject var configPort: UTMLegacyQemuConfigurationPortForward
     
     var body: some View {
         Group {
@@ -34,8 +34,8 @@ struct VMConfigPortForwardForm: View {
 
 @available(iOS 14, macOS 11, *)
 struct VMConfigPortForwardForm_Previews: PreviewProvider {
-    @State static private var config = UTMQemuConfiguration()
-    @State static private var configPort = UTMQemuConfigurationPortForward()
+    @State static private var config = UTMLegacyQemuConfiguration()
+    @State static private var configPort = UTMLegacyQemuConfigurationPortForward()
     
     static var previews: some View {
         VStack {
@@ -46,7 +46,7 @@ struct VMConfigPortForwardForm_Previews: PreviewProvider {
             }
         }.onAppear {
             if config.countPortForwards == 0 {
-                let newConfigPort = UTMQemuConfigurationPortForward()
+                let newConfigPort = UTMLegacyQemuConfigurationPortForward()
                 newConfigPort.protocol = "tcp"
                 newConfigPort.guestAddress = "1.2.3.4"
                 newConfigPort.guestPort = 1234

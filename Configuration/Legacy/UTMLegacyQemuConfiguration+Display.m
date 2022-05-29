@@ -15,7 +15,7 @@
 //
 
 #import <TargetConditionals.h>
-#import "UTMQemuConfiguration+Display.h"
+#import "UTMLegacyQemuConfiguration+Display.h"
 #import "UTM-Swift.h"
 
 extern const NSString *const kUTMConfigDisplayKey;
@@ -34,13 +34,13 @@ const NSString *const kUTMConfigConsoleBlinkKey = @"ConsoleBlink";
 const NSString *const kUTMConfigConsoleResizeCommandKey = @"ConsoleResizeCommand";
 const NSString *const kUTMConfigDisplayCardKey = @"DisplayCard";
 
-@interface UTMQemuConfiguration ()
+@interface UTMLegacyQemuConfiguration ()
 
 @property (nonatomic, readonly) NSMutableDictionary *rootDict;
 
 @end
 
-@implementation UTMQemuConfiguration (Display)
+@implementation UTMLegacyQemuConfiguration (Display)
 
 #pragma mark - Migration
 
@@ -53,7 +53,7 @@ const NSString *const kUTMConfigDisplayCardKey = @"DisplayCard";
     }
     if (self.consoleFont.length == 0) {
         self.consoleFont = @"Menlo-Regular";
-    } else if (![[UTMQemuConfiguration supportedConsoleFonts] containsObject:self.consoleFont]) {
+    } else if (![[UTMLegacyQemuConfiguration supportedConsoleFonts] containsObject:self.consoleFont]) {
         // migrate to new fully-formed name
 #if TARGET_OS_OSX
         NSFont *font = [NSFont fontWithName:self.consoleFont size:1];

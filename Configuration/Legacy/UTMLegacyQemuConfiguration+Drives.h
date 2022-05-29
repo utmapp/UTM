@@ -14,7 +14,7 @@
 // limitations under the License.
 //
 
-#import "UTMQemuConfiguration.h"
+#import "UTMLegacyQemuConfiguration.h"
 
 typedef NS_ENUM(NSInteger, UTMDiskImageType) {
     UTMDiskImageTypeNone,
@@ -29,7 +29,7 @@ typedef NS_ENUM(NSInteger, UTMDiskImageType) {
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface UTMQemuConfiguration (Drives)
+@interface UTMLegacyQemuConfiguration (Drives)
 
 @property (nonatomic, readonly) NSURL *imagesPath;
 @property (nonatomic, readonly) NSInteger countDrives;

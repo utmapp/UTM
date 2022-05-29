@@ -20,7 +20,7 @@ import SwiftUI
 
 @available(iOS 14, *)
 struct VMConfigDrivesView: View {
-    @ObservedObject var config: UTMQemuConfiguration
+    @ObservedObject var config: UTMLegacyQemuConfiguration
     @State private var createDriveVisible: Bool = false
     @State private var attemptDelete: IndexSet?
     @State private var importDrivePresented: Bool = false
@@ -180,7 +180,7 @@ private struct CreateDrive: View {
 
 @available(iOS 14, *)
 struct VMConfigDrivesView_Previews: PreviewProvider {
-    @ObservedObject static private var config = UTMQemuConfiguration()
+    @ObservedObject static private var config = UTMLegacyQemuConfiguration()
     
     static var previews: some View {
         Group {

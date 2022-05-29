@@ -14,21 +14,21 @@
 // limitations under the License.
 //
 
-#import "UTMQemuConfiguration+Constants.h"
-#import "UTMQemuConfiguration+Defaults.h"
-#import "UTMQemuConfiguration+Display.h"
-#import "UTMQemuConfiguration+Miscellaneous.h"
-#import "UTMQemuConfiguration+Networking.h"
-#import "UTMQemuConfiguration+Sharing.h"
-#import "UTMQemuConfiguration+System.h"
+#import "UTMLegacyQemuConfiguration+Constants.h"
+#import "UTMLegacyQemuConfiguration+Defaults.h"
+#import "UTMLegacyQemuConfiguration+Display.h"
+#import "UTMLegacyQemuConfiguration+Miscellaneous.h"
+#import "UTMLegacyQemuConfiguration+Networking.h"
+#import "UTMLegacyQemuConfiguration+Sharing.h"
+#import "UTMLegacyQemuConfiguration+System.h"
 
-@interface UTMQemuConfiguration ()
+@interface UTMLegacyQemuConfiguration ()
 
 - (NSString *)generateMacAddress;
 
 @end
 
-@implementation UTMQemuConfiguration (Defaults)
+@implementation UTMLegacyQemuConfiguration (Defaults)
 
 - (void)loadDefaults {
     self.systemArchitecture = @"x86_64";
@@ -47,7 +47,7 @@
     self.consoleFont = @"Menlo";
     self.consoleFontSize = @12;
     self.consoleTheme = @"Default";
-    self.networkCardMac = [UTMQemuConfiguration generateMacAddress];
+    self.networkCardMac = [UTMLegacyQemuConfiguration generateMacAddress];
     self.usbRedirectionMaximumDevices = @3;
     self.name = [NSUUID UUID].UUIDString;
     self.existingPath = nil;
@@ -61,7 +61,7 @@
     } else if ([target isEqualToString:@"virt"] || [target hasPrefix:@"virt-"]) {
         card = @"virtio-ramfb";
     } else if (architecture) {
-        NSArray<NSString *> *cards = [UTMQemuConfiguration supportedDisplayCardsForArchitecture:architecture];
+        NSArray<NSString *> *cards = [UTMLegacyQemuConfiguration supportedDisplayCardsForArchitecture:architecture];
         NSString *first = cards.firstObject;
         if (first) {
             card = first;
@@ -85,7 +85,7 @@
     } else if ([target isEqualToString:@"mac99"]) {
         card = @"screamer";
     } else if (architecture) {
-        NSArray<NSString *> *cards = [UTMQemuConfiguration supportedSoundCardsForArchitecture:architecture];
+        NSArray<NSString *> *cards = [UTMLegacyQemuConfiguration supportedSoundCardsForArchitecture:architecture];
         NSString *first = cards.firstObject;
         if (first) {
             card = first;
@@ -109,7 +109,7 @@
     } else if ([target isEqualToString:@"virt"] || [target hasPrefix:@"virt-"]) {
         card = @"virtio-net-pci";
     } else if (architecture) {
-        NSArray<NSString *> *cards = [UTMQemuConfiguration supportedNetworkCardsForArchitecture:architecture];
+        NSArray<NSString *> *cards = [UTMLegacyQemuConfiguration supportedNetworkCardsForArchitecture:architecture];
         NSString *first = cards.firstObject;
         if (first) {
             card = first;

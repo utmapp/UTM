@@ -110,7 +110,7 @@ struct VMDetailsView: View {
                         .environmentObject(data)
                 }
                 #else
-                VMSettingsView(vm: vm as! UTMQemuVirtualMachine, config: vm.config as! UTMQemuConfiguration)
+                VMSettingsView(vm: vm as! UTMQemuVirtualMachine, config: vm.config as! UTMLegacyQemuConfiguration)
                     .environmentObject(data)
                 #endif
             }
@@ -265,7 +265,7 @@ struct DetailsLabelStyle: LabelStyle {
 
 @available(iOS 14, macOS 11, *)
 struct VMDetailsView_Previews: PreviewProvider {
-    @State static private var config = UTMQemuConfiguration()
+    @State static private var config = UTMLegacyQemuConfiguration()
     
     static var previews: some View {
         VMDetailsView(vm: UTMVirtualMachine(configuration: config, withDestinationURL: URL(fileURLWithPath: "")))

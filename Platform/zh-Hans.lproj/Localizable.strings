@@ -64,7 +64,7 @@
 /* No comment provided by engineer. */
 "Argument" = "Argument";
 
-/* UTMQemuConfiguration */
+/* UTMLegacyQemuConfiguration */
 "BIOS" = "BIOS";
 
 /* No comment provided by engineer. */
@@ -180,7 +180,7 @@
    VMConfigDriveCreateViewController */
 "Disk creation failed." = "磁盘镜像创建失败";
 
-/* UTMQemuConfiguration */
+/* UTMLegacyQemuConfiguration */
 "Disk Image" = "磁盘镜像";
 
 /* VMDisplayMetalWindowController */
@@ -433,13 +433,13 @@
 /* UTMConfiguration */
 "Linear" = "线性";
 
-/* UTMQemuConfiguration */
+/* UTMLegacyQemuConfiguration */
 "Linux Device Tree Binary" = "Linux设备树二进制文件";
 
-/* UTMQemuConfiguration */
+/* UTMLegacyQemuConfiguration */
 "Linux Kernel" = "Linux内核";
 
-/* UTMQemuConfiguration */
+/* UTMLegacyQemuConfiguration */
 "Linux RAM Disk" = "Linux RAM 磁盘";
 
 /* No comment provided by engineer. */
@@ -472,7 +472,7 @@
 /* VMConfigInfoView */
 "Name is an invalid filename." = "名称是无效的文件名";
 
-/* UTMQemuConfiguration */
+/* UTMLegacyQemuConfiguration */
 "Nearest Neighbor" = "近邻取样";
 
 /* No comment provided by engineer. */

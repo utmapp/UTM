@@ -14,11 +14,11 @@
 // limitations under the License.
 //
 
-#import "UTMQemuConfiguration.h"
+#import "UTMLegacyQemuConfiguration.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface UTMQemuConfiguration (Constants)
+@interface UTMLegacyQemuConfiguration (Constants)
 
 @property (class, nonatomic, readonly) NSString *diskImagesDirectory;
 @property (class, nonatomic, readonly) NSString *debugLogName;
@@ -42,7 +42,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
-@interface UTMQemuConfiguration (ConstantsGenerated)
+@interface UTMLegacyQemuConfiguration (ConstantsGenerated)
 
 + (NSArray<NSString *>*)supportedArchitectures;
 + (NSArray<NSString *>*)supportedArchitecturesPretty;

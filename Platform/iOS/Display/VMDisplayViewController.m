@@ -25,8 +25,8 @@
 @synthesize prefersStatusBarHidden = _prefersStatusBarHidden;
 @synthesize keyboardVisible = _keyboardVisible;
 
-- (UTMQemuConfiguration *)vmQemuConfig {
-    return (UTMQemuConfiguration *)self.vm.config;
+- (UTMLegacyQemuConfiguration *)vmQemuConfig {
+    return (UTMLegacyQemuConfiguration *)self.vm.config;
 }
 
 - (BOOL)prefersHomeIndicatorAutoHidden {

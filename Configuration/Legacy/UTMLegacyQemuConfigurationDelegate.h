@@ -1,5 +1,5 @@
 //
-// Copyright © 2020 osy. All rights reserved.
+// Copyright © 2019 osy. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,15 +16,15 @@
 
 #import <Foundation/Foundation.h>
 
+@class UTMLegacyQemuConfiguration;
+
 NS_ASSUME_NONNULL_BEGIN
 
-@interface UTMQemuConfigurationPortForward : NSObject
+@protocol UTMLegacyQemuConfigurationDelegate <NSObject>
 
-@property (nonatomic, nullable) NSString *protocol;
-@property (nonatomic) NSString *hostAddress;
-@property (nonatomic, nullable) NSNumber *hostPort;
-@property (nonatomic) NSString *guestAddress;
-@property (nonatomic, nullable) NSNumber *guestPort;
+@required
+
+@property (nonatomic) UTMLegacyQemuConfiguration *configuration;
 
 @end
 

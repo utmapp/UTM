@@ -14,11 +14,11 @@
 // limitations under the License.
 //
 
-#import "UTMQemuConfiguration.h"
+#import "UTMLegacyQemuConfiguration.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface UTMQemuConfiguration (System)
+@interface UTMLegacyQemuConfiguration (System)
 
 @property (nonatomic, nullable, copy) NSString *systemArchitecture;
 @property (nonatomic, nullable, copy) NSString *systemCPU;

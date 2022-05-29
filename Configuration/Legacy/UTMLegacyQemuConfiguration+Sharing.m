@@ -14,8 +14,8 @@
 // limitations under the License.
 //
 
-#import "UTMQemuConfiguration+Sharing.h"
-#import "UTMQemuConfiguration+System.h"
+#import "UTMLegacyQemuConfiguration+Sharing.h"
+#import "UTMLegacyQemuConfiguration+System.h"
 #import "UTM-Swift.h"
 
 extern const NSString *const kUTMConfigSharingKey;
@@ -28,13 +28,13 @@ const NSString *const kUTMConfigDirectoryBookmarkKey = @"DirectoryBookmark";
 const NSString *const kUTMConfigUsb3SupportKey = @"Usb3Support";
 const NSString *const kUTMConfigUsbRedirectMaxKey = @"UsbRedirectMax";
 
-@interface UTMQemuConfiguration ()
+@interface UTMLegacyQemuConfiguration ()
 
 @property (nonatomic, readonly) NSMutableDictionary *rootDict;
 
 @end
 
-@implementation UTMQemuConfiguration (Sharing)
+@implementation UTMLegacyQemuConfiguration (Sharing)
 
 #pragma mark - Migration
 

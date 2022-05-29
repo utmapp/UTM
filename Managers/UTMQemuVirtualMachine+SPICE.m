@@ -15,8 +15,8 @@
 //
 
 #import "UTMQemuVirtualMachine+SPICE.h"
-#import "UTMQemuConfiguration+Display.h"
-#import "UTMQemuConfiguration+Sharing.h"
+#import "UTMLegacyQemuConfiguration+Display.h"
+#import "UTMLegacyQemuConfiguration+Sharing.h"
 #import "UTMLogging.h"
 #import "UTMQemuManager.h"
 #import "UTMSpiceIO.h"

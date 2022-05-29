@@ -14,12 +14,12 @@
 // limitations under the License.
 //
 
-#import "UTMQemuConfiguration.h"
+#import "UTMLegacyQemuConfiguration.h"
 @import Metal;
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface UTMQemuConfiguration (Display)
+@interface UTMLegacyQemuConfiguration (Display)
 
 @property (nonatomic, assign) BOOL displayConsoleOnly;
 @property (nonatomic, assign) BOOL displayFitScreen;

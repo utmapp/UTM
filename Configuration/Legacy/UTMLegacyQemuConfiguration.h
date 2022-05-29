@@ -19,7 +19,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface UTMQemuConfiguration : NSObject<NSCopying, UTMConfigurable>
+@interface UTMLegacyQemuConfiguration : NSObject<NSCopying, UTMConfigurable>
 
 @property (nonatomic, weak, readonly) NSDictionary *dictRepresentation;
 @property (nonatomic, nullable, copy) NSNumber *version;

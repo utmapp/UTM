@@ -208,7 +208,7 @@ struct VMRemovableDrivesView: View {
 
 @available(iOS 14, macOS 11, *)
 struct VMRemovableDrivesView_Previews: PreviewProvider {
-    @State static private var config = UTMQemuConfiguration()
+    @State static private var config = UTMLegacyQemuConfiguration()
     
     static var previews: some View {
         VMRemovableDrivesView(vm: UTMVirtualMachine(configuration: config, withDestinationURL: URL(fileURLWithPath: "")) as! UTMQemuVirtualMachine)

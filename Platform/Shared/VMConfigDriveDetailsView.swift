@@ -19,7 +19,7 @@ import SwiftUI
 @available(iOS 14, macOS 11, *)
 struct VMConfigDriveDetailsView: View {
     @EnvironmentObject private var data: UTMData
-    @ObservedObject private var config: UTMQemuConfiguration
+    @ObservedObject private var config: UTMLegacyQemuConfiguration
     @Binding private var removable: Bool
     @Binding private var name: String?
     @Binding private var imageTypeString: String?
@@ -40,7 +40,7 @@ struct VMConfigDriveDetailsView: View {
         }
     }
     
-    init(config: UTMQemuConfiguration, index: Int, onDelete: (() -> Void)?) {
+    init(config: UTMLegacyQemuConfiguration, index: Int, onDelete: (() -> Void)?) {
         self.onDelete = onDelete
         self.config = config // for observing updates
         self._removable = Binding<Bool> {
@@ -83,9 +83,9 @@ struct VMConfigDriveDetailsView: View {
                         .multilineTextAlignment(.trailing)
                 }
             }
-            VMConfigStringPicker("Image Type", selection: $imageTypeString, rawValues: UTMQemuConfiguration.supportedImageTypes(), displayValues: UTMQemuConfiguration.supportedImageTypesPretty())
+            VMConfigStringPicker("Image Type", selection: $imageTypeString, rawValues: UTMLegacyQemuConfiguration.supportedImageTypes(), displayValues: UTMLegacyQemuConfiguration.supportedImageTypesPretty())
             if imageType == .disk || imageType == .CD {
-                VMConfigStringPicker("Interface", selection: $interface, rawValues: UTMQemuConfiguration.supportedDriveInterfaces(), displayValues: UTMQemuConfiguration.supportedDriveInterfacesPretty())
+                VMConfigStringPicker("Interface", selection: $interface, rawValues: UTMLegacyQemuConfiguration.supportedDriveInterfaces(), displayValues: UTMLegacyQemuConfiguration.supportedDriveInterfacesPretty())
             }
             
             if let name = name, let imageUrl = config.imagesPath.appendingPathComponent(name), let fileSize = data.computeSize(for: imageUrl) {

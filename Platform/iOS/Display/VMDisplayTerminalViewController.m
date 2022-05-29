@@ -16,8 +16,8 @@
 
 #import "VMDisplayTerminalViewController.h"
 #import "VMDisplayTerminalViewController+Keyboard.h"
-#import "UTMQemuConfiguration.h"
-#import "UTMQemuConfiguration+Display.h"
+#import "UTMLegacyQemuConfiguration.h"
+#import "UTMLegacyQemuConfiguration+Display.h"
 #import "UTMLogging.h"
 #import "UTMQemuVirtualMachine.h"
 #import "UIViewController+Extensions.h"

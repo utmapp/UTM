@@ -14,13 +14,13 @@
 // limitations under the License.
 //
 
-#import "UTMQemuConfiguration.h"
+#import "UTMLegacyQemuConfiguration.h"
 
-@class UTMQemuConfigurationPortForward;
+@class UTMLegacyQemuConfigurationPortForward;
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface UTMQemuConfiguration (Networking)
+@interface UTMLegacyQemuConfiguration (Networking)
 
 @property (nonatomic, assign) BOOL networkEnabled;
 @property (nonatomic, assign) BOOL networkIsolate;
@@ -43,11 +43,11 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSString *)generateMacAddress;
 - (void)migrateNetworkConfigurationIfNecessary;
 
-- (NSInteger)newPortForward:(UTMQemuConfigurationPortForward *)argument;
-- (nullable UTMQemuConfigurationPortForward *)portForwardForIndex:(NSInteger)index;
-- (void)updatePortForwardAtIndex:(NSInteger)index withValue:(UTMQemuConfigurationPortForward *)argument;
+- (NSInteger)newPortForward:(UTMLegacyQemuConfigurationPortForward *)argument;
+- (nullable UTMLegacyQemuConfigurationPortForward *)portForwardForIndex:(NSInteger)index;
+- (void)updatePortForwardAtIndex:(NSInteger)index withValue:(UTMLegacyQemuConfigurationPortForward *)argument;
 - (void)removePortForwardAtIndex:(NSInteger)index;
-- (NSArray<UTMQemuConfigurationPortForward *> *)portForwards;
+- (NSArray<UTMLegacyQemuConfigurationPortForward *> *)portForwards;
 
 @end
 

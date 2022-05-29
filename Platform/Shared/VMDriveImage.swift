@@ -40,14 +40,14 @@ class VMDriveImage: ObservableObject {
             guard let newInterface = newInterface else {
                 return
             }
-            self.isRawImage = !UTMQemuConfiguration.shouldConvertQcow2(forInterface: newInterface)
+            self.isRawImage = !UTMLegacyQemuConfiguration.shouldConvertQcow2(forInterface: newInterface)
         })
     }
     
     func reset(forSystemTarget target: String?, architecture: String?, removable: Bool) {
         self.removable = removable
         self.imageType = removable ? .CD : .disk
-        self.interface = UTMQemuConfiguration.defaultDriveInterface(forTarget: target, architecture: architecture, type: imageType)
+        self.interface = UTMLegacyQemuConfiguration.defaultDriveInterface(forTarget: target, architecture: architecture, type: imageType)
         self.size = removable ? 0 : 10240
         self.isRawImage = false
     }

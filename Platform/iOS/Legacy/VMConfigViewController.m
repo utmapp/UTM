@@ -21,8 +21,8 @@
 #import "VMConfigSwitch.h"
 #import "VMConfigTextField.h"
 #import "VMConfigTogglePickerCell.h"
-#import "UTMQemuConfiguration.h"
-#import "UTMQemuConfiguration+Constants.h"
+#import "UTMLegacyQemuConfiguration.h"
+#import "UTMLegacyQemuConfiguration+Constants.h"
 #import "UTMLogging.h"
 
 void *kVMConfigViewControllerContext = &kVMConfigViewControllerContext;
@@ -52,8 +52,8 @@ void *kVMConfigViewControllerContext = &kVMConfigViewControllerContext;
 #pragma mark - Navigation
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    if ([segue.destinationViewController conformsToProtocol:@protocol(UTMQemuConfigurationDelegate)]) {
-        id<UTMQemuConfigurationDelegate> dst = (id<UTMQemuConfigurationDelegate>)segue.destinationViewController;
+    if ([segue.destinationViewController conformsToProtocol:@protocol(UTMLegacyQemuConfigurationDelegate)]) {
+        id<UTMLegacyQemuConfigurationDelegate> dst = (id<UTMLegacyQemuConfigurationDelegate>)segue.destinationViewController;
         dst.configuration = self.configuration;
     }
 }
@@ -105,7 +105,7 @@ void *kVMConfigViewControllerContext = &kVMConfigViewControllerContext;
 
 - (void)pickerCell:(VMConfigTogglePickerCell *)cell showPicker:(BOOL)visible animated:(BOOL)animated {
     if (visible) {
-        NSUInteger index = [[UTMQemuConfiguration supportedOptions:cell.picker.supportedOptionsPath pretty:NO] indexOfObject:cell.detailTextLabel.text];
+        NSUInteger index = [[UTMLegacyQemuConfiguration supportedOptions:cell.picker.supportedOptionsPath pretty:NO] indexOfObject:cell.detailTextLabel.text];
         if (index != NSNotFound) {
             [cell.picker selectRow:index inComponent:0 animated:NO];
         }
@@ -133,21 +133,21 @@ void *kVMConfigViewControllerContext = &kVMConfigViewControllerContext;
     NSAssert(component == 0, @"Invalid component");
     NSAssert([pickerView isKindOfClass:[VMConfigPickerView class]], @"Invalid picker");
     VMConfigPickerView *vmPicker = (VMConfigPickerView *)pickerView;
-    return [UTMQemuConfiguration supportedOptions:vmPicker.supportedOptionsPath pretty:NO].count;
+    return [UTMLegacyQemuConfiguration supportedOptions:vmPicker.supportedOptionsPath pretty:NO].count;
 }
 
 - (NSString *)pickerView:(UIPickerView *)pickerView titleForRow:(NSInteger)row forComponent:(NSInteger)component {
     NSAssert(component == 0, @"Invalid component");
     NSAssert([pickerView isKindOfClass:[VMConfigPickerView class]], @"Invalid picker");
     VMConfigPickerView *vmPicker = (VMConfigPickerView *)pickerView;
-    return [UTMQemuConfiguration supportedOptions:vmPicker.supportedOptionsPath pretty:YES][row];
+    return [UTMLegacyQemuConfiguration supportedOptions:vmPicker.supportedOptionsPath pretty:YES][row];
 }
 
 - (void)pickerView:(UIPickerView *)pickerView didSelectRow:(NSInteger)row inComponent:(NSInteger)component {
     NSAssert(component == 0, @"Invalid component");
     NSAssert([pickerView isKindOfClass:[VMConfigPickerView class]], @"Invalid picker");
     VMConfigPickerView *vmPicker = (VMConfigPickerView *)pickerView;
-    NSString *selected = [UTMQemuConfiguration supportedOptions:vmPicker.supportedOptionsPath pretty:NO][row];
+    NSString *selected = [UTMLegacyQemuConfiguration supportedOptions:vmPicker.supportedOptionsPath pretty:NO][row];
     [self.configuration setValue:selected forKey:vmPicker.selectedOptionCell.configurationPath];
     vmPicker.selectedOptionCell.detailTextLabel.text = selected;
 }

@@ -14,15 +14,15 @@
 // limitations under the License.
 //
 
-#import "UTMQemuConfiguration.h"
-#import "UTMQemuConfiguration+Constants.h"
-#import "UTMQemuConfiguration+Defaults.h"
-#import "UTMQemuConfiguration+Display.h"
-#import "UTMQemuConfiguration+Drives.h"
-#import "UTMQemuConfiguration+Miscellaneous.h"
-#import "UTMQemuConfiguration+Networking.h"
-#import "UTMQemuConfiguration+Sharing.h"
-#import "UTMQemuConfiguration+System.h"
+#import "UTMLegacyQemuConfiguration.h"
+#import "UTMLegacyQemuConfiguration+Constants.h"
+#import "UTMLegacyQemuConfiguration+Defaults.h"
+#import "UTMLegacyQemuConfiguration+Display.h"
+#import "UTMLegacyQemuConfiguration+Drives.h"
+#import "UTMLegacyQemuConfiguration+Miscellaneous.h"
+#import "UTMLegacyQemuConfiguration+Networking.h"
+#import "UTMLegacyQemuConfiguration+Sharing.h"
+#import "UTMLegacyQemuConfiguration+System.h"
 #import "UTM-Swift.h"
 #import <CommonCrypto/CommonDigest.h>
 #import <TargetConditionals.h>
@@ -43,13 +43,13 @@ const NSInteger kCurrentConfigurationVersion = 2;
 
 const NSString *const kUTMConfigAppleVirtualizationKey = @"isAppleVirtualization";
 
-@interface UTMQemuConfiguration ()
+@interface UTMLegacyQemuConfiguration ()
 
 @property (nonatomic, readonly) NSMutableDictionary *rootDict;
 
 @end
 
-@implementation UTMQemuConfiguration {
+@implementation UTMLegacyQemuConfiguration {
     NSMutableDictionary *_rootDict;
 }
 
@@ -189,7 +189,7 @@ const NSString *const kUTMConfigAppleVirtualizationKey = @"isAppleVirtualization
 #pragma mark - NSCopying
 
 - (id)copyWithZone:(NSZone *)zone {
-    return [[UTMQemuConfiguration alloc] initWithDictionary:_rootDict name:self.name path:nil];
+    return [[UTMLegacyQemuConfiguration alloc] initWithDictionary:_rootDict name:self.name path:nil];
 }
 
 #pragma mark - Settings

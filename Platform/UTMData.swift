@@ -295,7 +295,7 @@ class UTMData: ObservableObject {
     ///   - ext: Image extension
     ///   - forConfig: UTM QEMU configuration that will hold this drive
     /// - Returns: Unique name for a non-existing item in the .utm data path
-    private func newDefaultDrivePath(type: UTMDiskImageType, extension ext: String, forConfig: UTMQemuConfiguration) -> String {
+    private func newDefaultDrivePath(type: UTMDiskImageType, extension ext: String, forConfig: UTMLegacyQemuConfiguration) -> String {
         let nameForId = { (i: Int) in "\(type.description)-\(i).\(ext)" }
         for i in 0..<1000 {
             let name = nameForId(i)
@@ -310,7 +310,7 @@ class UTMData: ObservableObject {
     /// Generate a default drive name for QEMU
     /// - Parameter config: UTM QEMU configuration that will use the drive
     /// - Returns: Unique name for the new drive
-    private func newDefaultDriveName(for config: UTMQemuConfiguration) -> String {
+    private func newDefaultDriveName(for config: UTMLegacyQemuConfiguration) -> String {
         let nameForId = { (i: Int) in "drive\(i)" }
         for i in 0..<1000 {
             let name = nameForId(i)
@@ -414,17 +414,17 @@ class UTMData: ObservableObject {
     /// Discard changes to VM configuration
     /// - Parameter vm: VM configuration to discard
     func discardChanges(for vm: UTMVirtualMachine? = nil) throws {
-        let config: UTMQemuConfiguration
+        let config: UTMLegacyQemuConfiguration
         if let vm = vm, vm.path != nil {
             try vm.reloadConfiguration()
-            guard let qemuConfig = vm.config as? UTMQemuConfiguration else {
+            guard let qemuConfig = vm.config as? UTMLegacyQemuConfiguration else {
                 // FIXME: non-qemu orphaned drives
                 return
             }
             config = qemuConfig
         } else {
             // create a tmp empty config so we can get orphanedDrives for tmp path
-            config = UTMQemuConfiguration()
+            config = UTMLegacyQemuConfiguration()
         }
         // delete unsaved drives
         for url in qemuUnsavedImages {
@@ -521,7 +521,7 @@ class UTMData: ObservableObject {
     /// - Parameter vm: VM to edit settings
     @MainActor func edit(vm: UTMVirtualMachine) {
         // show orphans for proper removal
-        if let config = vm.config as? UTMQemuConfiguration {
+        if let config = vm.config as? UTMLegacyQemuConfiguration {
             config.recoverOrphanedDrives()
         }
         listSelect(vm: vm)
@@ -533,8 +533,8 @@ class UTMData: ObservableObject {
     /// - Parameter vm: Existing VM to copy configuration from
     @MainActor func template(vm: UTMVirtualMachine) async throws {
         let copy = try await Task.detached { () -> UTMConfigurable in
-            if let qemuConfig = vm.config as? UTMQemuConfiguration {
-                let copy = qemuConfig.copy() as! UTMQemuConfiguration
+            if let qemuConfig = vm.config as? UTMLegacyQemuConfiguration {
+                let copy = qemuConfig.copy() as! UTMLegacyQemuConfiguration
                 copy.systemUUID = UUID().uuidString // re-generate UUID
                 for _ in 0..<copy.countDrives {
                     copy.removeDrive(at: 0) // remove existing drives
@@ -714,7 +714,7 @@ class UTMData: ObservableObject {
     ///   - interface: Interface to add to
     ///   - raw: If false, convert to QCOW2
     ///   - copy: Make a copy of the file (if false, file will be moved)
-    func importDrive(_ drive: URL, for config: UTMQemuConfiguration, imageType: UTMDiskImageType, on interface: String, raw: Bool, copy: Bool) async throws {
+    func importDrive(_ drive: URL, for config: UTMLegacyQemuConfiguration, imageType: UTMDiskImageType, on interface: String, raw: Bool, copy: Bool) async throws {
         _ = drive.startAccessingSecurityScopedResource()
         defer { drive.stopAccessingSecurityScopedResource() }
         
@@ -757,11 +757,11 @@ class UTMData: ObservableObject {
         }
     }
     
-    func importDrive(_ drive: URL, for config: UTMQemuConfiguration, copy: Bool = true) async throws {
+    func importDrive(_ drive: URL, for config: UTMLegacyQemuConfiguration, copy: Bool = true) async throws {
         let imageType: UTMDiskImageType = drive.pathExtension.lowercased() == "iso" ? .CD : .disk
         let interface: String
         if let target = config.systemTarget, let arch = config.systemArchitecture {
-            interface = UTMQemuConfiguration.defaultDriveInterface(forTarget: target, architecture: arch, type: imageType)
+            interface = UTMLegacyQemuConfiguration.defaultDriveInterface(forTarget: target, architecture: arch, type: imageType)
         } else {
             interface = "none"
         }
@@ -773,7 +773,7 @@ class UTMData: ObservableObject {
     ///   - drive: Create parameters
     ///   - config: QEMU configuration to add to
     ///   - driveImage: Disk image type
-    func createDrive(_ drive: VMDriveImage, for config: UTMQemuConfiguration, with driveImage: URL? = nil) async throws {
+    func createDrive(_ drive: VMDriveImage, for config: UTMLegacyQemuConfiguration, with driveImage: URL? = nil) async throws {
         var path: String = ""
         if !drive.removable {
             assert(driveImage == nil, "Cannot call createDrive with a driveImage!")
@@ -818,7 +818,7 @@ class UTMData: ObservableObject {
     /// - Parameters:
     ///   - index: Index of drive in configuration
     ///   - config: QEMU configuration
-    func removeDrive(at index: Int, for config: UTMQemuConfiguration) async throws {
+    func removeDrive(at index: Int, for config: UTMLegacyQemuConfiguration) async throws {
         if let path = config.driveImagePath(for: index) {
             let fullPath = config.imagesPath.appendingPathComponent(path);
             qemuUnsavedImages.removeAll(where: { $0 == fullPath })

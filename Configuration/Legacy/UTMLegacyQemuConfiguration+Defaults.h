@@ -14,21 +14,17 @@
 // limitations under the License.
 //
 
-#import "UTMQemu.h"
+#import "UTMLegacyQemuConfiguration.h"
+#import "UTMLegacyQemuConfiguration+Drives.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface UTMQemuSystem : UTMQemu
+@interface UTMLegacyQemuConfiguration (Defaults)
 
-@property (nonatomic) UTMLegacyQemuConfiguration *configuration;
-@property (nonatomic) NSURL *imgPath;
-@property (nonatomic, nullable) NSString *snapshot;
-@property (nonatomic) BOOL runAsSnapshot;
-
-- (instancetype)init NS_UNAVAILABLE;
-- (instancetype)initWithConfiguration:(UTMLegacyQemuConfiguration *)configuration imgPath:(NSURL *)imgPath;
-- (void)updateArgvWithUserOptions:(BOOL)userOptions;
-- (void)startWithCompletion:(void(^)(BOOL, NSString *))completion;
+- (void)loadDefaults;
+- (void)loadDefaultsForTarget:(nullable NSString *)target architecture:(nullable NSString *)architecture;
++ (NSString *)defaultDriveInterfaceForTarget:(nullable NSString *)target architecture:(nullable NSString *)architecture type:(UTMDiskImageType)type;
++ (NSString *)defaultCPUForTarget:(NSString *)target architecture:(NSString *)architecture;
 
 @end
 

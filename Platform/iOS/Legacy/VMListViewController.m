@@ -17,8 +17,8 @@
 #import "VMListViewController.h"
 #import "AppDelegate.h"
 #import "VMListViewCell.h"
-#import "UTMQemuConfigurationDelegate.h"
-#import "UTMQemuConfiguration.h"
+#import "UTMLegacyQemuConfigurationDelegate.h"
+#import "UTMLegacyQemuConfiguration.h"
 #import "UTMQemuVirtualMachine.h"
 #import "UIViewController+Extensions.h"
 #import "VMDisplayMetalViewController.h"
@@ -250,8 +250,8 @@
     if ([segue.identifier isEqualToString:@"editVMConfig"]){
         NSAssert([segue.destinationViewController isKindOfClass:[UINavigationController class]], @"Destination not a navigation view");
         UINavigationController *navController = (UINavigationController *)segue.destinationViewController;
-        NSAssert([navController.topViewController conformsToProtocol:@protocol(UTMQemuConfigurationDelegate)], @"Invalid segue destination");
-        id<UTMQemuConfigurationDelegate> controller = (id<UTMQemuConfigurationDelegate>)navController.topViewController;
+        NSAssert([navController.topViewController conformsToProtocol:@protocol(UTMLegacyQemuConfigurationDelegate)], @"Invalid segue destination");
+        id<UTMLegacyQemuConfigurationDelegate> controller = (id<UTMLegacyQemuConfigurationDelegate>)navController.topViewController;
         NSAssert([sender isKindOfClass:[UIButton class]], @"Sender is not a UIButton");
         id cell = ((UIButton *)sender).superview.superview;
         self.modifyingVM = [self vmForCell:cell];
@@ -259,9 +259,9 @@
     } else if ([segue.identifier isEqualToString:@"newVM"]) {
         NSAssert([segue.destinationViewController isKindOfClass:[UINavigationController class]], @"Destination not a navigation view");
         UINavigationController *navController = (UINavigationController *)segue.destinationViewController;
-        NSAssert([navController.topViewController conformsToProtocol:@protocol(UTMQemuConfigurationDelegate)], @"Invalid segue destination");
-        id<UTMQemuConfigurationDelegate> controller = (id<UTMQemuConfigurationDelegate>)navController.topViewController;
-        controller.configuration = [[UTMQemuConfiguration alloc] init];
+        NSAssert([navController.topViewController conformsToProtocol:@protocol(UTMLegacyQemuConfigurationDelegate)], @"Invalid segue destination");
+        id<UTMLegacyQemuConfigurationDelegate> controller = (id<UTMLegacyQemuConfigurationDelegate>)navController.topViewController;
+        controller.configuration = [[UTMLegacyQemuConfiguration alloc] init];
         controller.configuration.name = [self createNewDefaultName];
     } else if ([segue.identifier isEqualToString:@"startVM"]) {
         NSAssert([segue.destinationViewController isKindOfClass:[VMDisplayMetalViewController class]], @"Destination not a metal view");
@@ -403,8 +403,8 @@
 #pragma mark - Actions
 
 - (IBAction)unwindToMainFromConfiguration:(UIStoryboardSegue*)sender {
-    NSAssert([sender.sourceViewController conformsToProtocol:@protocol(UTMQemuConfigurationDelegate)], @"Invalid source for unwind");
-    id<UTMQemuConfigurationDelegate> source = (id<UTMQemuConfigurationDelegate>)sender.sourceViewController;
+    NSAssert([sender.sourceViewController conformsToProtocol:@protocol(UTMLegacyQemuConfigurationDelegate)], @"Invalid source for unwind");
+    id<UTMLegacyQemuConfigurationDelegate> source = (id<UTMLegacyQemuConfigurationDelegate>)sender.sourceViewController;
     dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), ^{
         [self workStartedWhenVisible:[NSString stringWithFormat:NSLocalizedString(@"Saving %@...", @"Save VM overlay"), source.configuration.name]];
         UTMQemuVirtualMachine *vm;

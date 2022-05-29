@@ -15,18 +15,18 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "UTMQemuConfigurationDelegate.h"
+#import "UTMLegacyQemuConfigurationDelegate.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface VMConfigSystemArgumentsViewController : UITableViewController<UTMQemuConfigurationDelegate>
+@interface VMConfigSystemArgumentsViewController : UITableViewController<UTMLegacyQemuConfigurationDelegate>
 
 @property (weak, nonatomic) IBOutlet UIBarButtonItem *addButtonItem;
 @property (strong, nonatomic) IBOutlet UITableView *argTableView;
 
 @end
 
-@interface VMConfigSystemArgumentsTextCell : UITableViewCell<UTMQemuConfigurationDelegate>
+@interface VMConfigSystemArgumentsTextCell : UITableViewCell<UTMLegacyQemuConfigurationDelegate>
 @property (weak, nonatomic) IBOutlet UITextField *argTextItem;
 
 @end

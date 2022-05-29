@@ -15,8 +15,8 @@
 //
 
 #import "VMConfigPortForwardingViewController.h"
-#import "UTMQemuConfiguration+Networking.h"
-#import "UTMQemuConfigurationPortForward.h"
+#import "UTMLegacyQemuConfiguration+Networking.h"
+#import "UTMLegacyQemuConfigurationPortForward.h"
 
 @interface VMConfigPortForwardingViewController ()
 
@@ -54,7 +54,7 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     NSAssert(indexPath.section == 0, @"Invalid section");
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"portForwardCell" forIndexPath:indexPath];
-    UTMQemuConfigurationPortForward *portForward = [self.configuration portForwardForIndex:indexPath.row];
+    UTMLegacyQemuConfigurationPortForward *portForward = [self.configuration portForwardForIndex:indexPath.row];
     cell.textLabel.text = [NSString stringWithFormat:@"%@:%@ ➡️ %@:%@", portForward.hostAddress, portForward.hostPort, portForward.guestAddress, portForward.guestPort];
     cell.detailTextLabel.text = portForward.protocol;
     return cell;
@@ -71,7 +71,7 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     NSAssert(indexPath.section == 0, @"Invalid section");
-    UTMQemuConfigurationPortForward *portForward = [self.configuration portForwardForIndex:indexPath.row];
+    UTMLegacyQemuConfigurationPortForward *portForward = [self.configuration portForwardForIndex:indexPath.row];
     if (portForward) {
         [self createPortForwardFormTCP:[portForward.protocol isEqualToString:@"tcp"]
                               existing:portForward
@@ -86,7 +86,7 @@
     [self createPortForwardFormTCP:tcp existing:nil atIndex:0];
 }
 
-- (void)createPortForwardFormTCP:(BOOL)tcp existing:(nullable UTMQemuConfigurationPortForward *)existing atIndex:(NSUInteger)index {
+- (void)createPortForwardFormTCP:(BOOL)tcp existing:(nullable UTMLegacyQemuConfigurationPortForward *)existing atIndex:(NSUInteger)index {
     UIAlertController *alertController = [UIAlertController alertControllerWithTitle:tcp ? NSLocalizedString(@"TCP Forward", @"VMConfigPortForwardingViewController") : NSLocalizedString(@"UDP Forward", @"VMConfigPortForwardingViewController")
                                                                              message:nil
                                                                       preferredStyle:UIAlertControllerStyleAlert];
@@ -116,7 +116,7 @@
     [alertController addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"Done", @"VMConfigPortForwardingViewController")
                                                         style:UIAlertActionStyleDefault
                                                       handler:^(UIAlertAction * _Nonnull action) {
-        UTMQemuConfigurationPortForward *portForward = [[UTMQemuConfigurationPortForward alloc] init];
+        UTMLegacyQemuConfigurationPortForward *portForward = [[UTMLegacyQemuConfigurationPortForward alloc] init];
         portForward.protocol = tcp ? @"tcp" : @"udp";
         portForward.hostAddress = alertController.textFields[0].text;
         portForward.hostPort = @([alertController.textFields[1].text integerValue]);

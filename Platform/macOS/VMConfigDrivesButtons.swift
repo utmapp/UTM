@@ -35,7 +35,7 @@ struct VMConfigNewDriveButton<Config: ObservableObject & UTMConfigurable>: View 
         .fileImporter(isPresented: $importDrivePresented, allowedContentTypes: [.item], onCompletion: importDrive)
         .onChange(of: newDrivePopover, perform: { showPopover in
             if showPopover {
-                if let qemuConfig = config as? UTMQemuConfiguration {
+                if let qemuConfig = config as? UTMLegacyQemuConfiguration {
                     newQemuDrive.reset(forSystemTarget: qemuConfig.systemTarget, architecture: qemuConfig.systemArchitecture, removable: false)
                 } else if let _ = config as? UTMAppleConfiguration {
                     newAppleDriveSize = 10240
@@ -44,7 +44,7 @@ struct VMConfigNewDriveButton<Config: ObservableObject & UTMConfigurable>: View 
         })
         .popover(isPresented: $newDrivePopover, arrowEdge: .top) {
             VStack {
-                if let qemuConfig = config as? UTMQemuConfiguration {
+                if let qemuConfig = config as? UTMLegacyQemuConfiguration {
                     VMConfigDriveCreateView(target: qemuConfig.systemTarget, architecture: qemuConfig.systemArchitecture, driveImage: newQemuDrive)
                 } else if let _ = config as? UTMAppleConfiguration {
                     VMConfigAppleDriveCreateView(driveSize: $newAppleDriveSize)
@@ -52,7 +52,7 @@ struct VMConfigNewDriveButton<Config: ObservableObject & UTMConfigurable>: View 
                 HStack {
                     Spacer()
                     Button(action: { importDrivePresented.toggle() }, label: {
-                        if let _ = config as? UTMQemuConfiguration {
+                        if let _ = config as? UTMLegacyQemuConfiguration {
                             if newQemuDrive.removable {
                                 Text("Browse…")
                             } else {
@@ -74,7 +74,7 @@ struct VMConfigNewDriveButton<Config: ObservableObject & UTMConfigurable>: View 
         data.busyWorkAsync {
             switch result {
             case .success(let url):
-                if let qemuConfig = await config as? UTMQemuConfiguration {
+                if let qemuConfig = await config as? UTMLegacyQemuConfiguration {
                     if await newQemuDrive.removable {
                         try await data.createDrive(newQemuDrive, for: qemuConfig, with: url)
                     } else {
@@ -102,7 +102,7 @@ struct VMConfigNewDriveButton<Config: ObservableObject & UTMConfigurable>: View 
     private func addNewDrive(_ newDrive: VMDriveImage) {
         newDrivePopover = false // hide popover
         data.busyWorkAsync {
-            if let qemuConfig = await config as? UTMQemuConfiguration {
+            if let qemuConfig = await config as? UTMLegacyQemuConfiguration {
                 try await data.createDrive(newDrive, for: qemuConfig)
             } else if let appleConfig = await config as? UTMAppleConfiguration {
                 let image = await DiskImage(newSize: newAppleDriveSize)
@@ -125,7 +125,7 @@ struct VMConfigDrivesButtons<Config: ObservableObject & UTMConfigurable>: View {
     @State private var importDrivePresented: Bool = false
     
     var countDrives: Int {
-        if let qemuConfig = config as? UTMQemuConfiguration {
+        if let qemuConfig = config as? UTMLegacyQemuConfiguration {
             return qemuConfig.countDrives
         } else if let appleConfig = config as? UTMAppleConfiguration {
             return appleConfig.diskImages.count
@@ -172,7 +172,7 @@ struct VMConfigDrivesButtons<Config: ObservableObject & UTMConfigurable>: View {
     
     func moveDriveUp(fromIndex index: Int) {
         withAnimation {
-            if let qemuConfig = config as? UTMQemuConfiguration {
+            if let qemuConfig = config as? UTMLegacyQemuConfiguration {
                 qemuConfig.moveDrive(index, to: index - 1)
             } else if let appleConfig = config as? UTMAppleConfiguration {
                 appleConfig.diskImages.move(fromOffsets: IndexSet(integer: index), toOffset: index - 1)
@@ -183,7 +183,7 @@ struct VMConfigDrivesButtons<Config: ObservableObject & UTMConfigurable>: View {
     
     func moveDriveDown(fromIndex index: Int) {
         withAnimation {
-            if let qemuConfig = config as? UTMQemuConfiguration {
+            if let qemuConfig = config as? UTMLegacyQemuConfiguration {
                 qemuConfig.moveDrive(index, to: index + 1)
             } else if let appleConfig = config as? UTMAppleConfiguration {
                 appleConfig.diskImages.move(fromOffsets: IndexSet(integer: index), toOffset: index + 2)

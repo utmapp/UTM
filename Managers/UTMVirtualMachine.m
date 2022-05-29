@@ -19,7 +19,7 @@
 #import "UTMVirtualMachine-Private.h"
 #import "UTMQemuVirtualMachine.h"
 #import "UTMConfigurable.h"
-#import "UTMQemuConfiguration+Constants.h"
+#import "UTMLegacyQemuConfiguration+Constants.h"
 #import "UTMLogging.h"
 #import "UTMViewState.h"
 #import "UTM-Swift.h"

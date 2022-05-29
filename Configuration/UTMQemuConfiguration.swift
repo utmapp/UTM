@@ -1,5 +1,5 @@
 //
-// Copyright © 2019 osy. All rights reserved.
+// Copyright © 2022 osy. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,18 +14,4 @@
 // limitations under the License.
 //
 
-#import <Foundation/Foundation.h>
-
-@class UTMQemuConfiguration;
-
-NS_ASSUME_NONNULL_BEGIN
-
-@protocol UTMQemuConfigurationDelegate <NSObject>
-
-@required
-
-@property (nonatomic) UTMQemuConfiguration *configuration;
-
-@end
-
-NS_ASSUME_NONNULL_END
+import Foundation

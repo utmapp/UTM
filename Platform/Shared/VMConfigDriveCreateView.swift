@@ -33,7 +33,7 @@ struct VMConfigDriveCreateView: View {
             }).onChange(of: driveImage.removable) { removable in
                 driveImage.reset(forSystemTarget: target, architecture: architecture, removable: removable)
             }.help("If checked, no drive image will be stored with the VM. Instead you can mount/unmount image while the VM is running.")
-            VMConfigStringPicker("Interface", selection: $driveImage.interface, rawValues: UTMQemuConfiguration.supportedDriveInterfaces(), displayValues: UTMQemuConfiguration.supportedDriveInterfacesPretty())
+            VMConfigStringPicker("Interface", selection: $driveImage.interface, rawValues: UTMLegacyQemuConfiguration.supportedDriveInterfaces(), displayValues: UTMLegacyQemuConfiguration.supportedDriveInterfacesPretty())
                 .help("Hardware interface on the guest used to mount this image. Different operating systems support different interfaces. The default will be the most common interface.")
             if !driveImage.removable {
                 HStack {

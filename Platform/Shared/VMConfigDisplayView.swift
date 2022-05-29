@@ -18,7 +18,7 @@ import SwiftUI
 
 @available(iOS 14, macOS 11, *)
 struct VMConfigDisplayView: View {
-    @ObservedObject var config: UTMQemuConfiguration
+    @ObservedObject var config: UTMLegacyQemuConfiguration
     
     #if os(macOS)
     let displayTypePickerStyle = RadioGroupPickerStyle()
@@ -35,7 +35,7 @@ struct VMConfigDisplayView: View {
                     Text("Full Graphics").tag(false)
                     Text("Console Only").tag(true)
                 }.pickerStyle(displayTypePickerStyle)
-                .disabled(UTMQemuConfiguration.supportedDisplayCards(forArchitecture: config.systemArchitecture)?.isEmpty ?? true)
+                .disabled(UTMLegacyQemuConfiguration.supportedDisplayCards(forArchitecture: config.systemArchitecture)?.isEmpty ?? true)
                 .onChange(of: config.displayConsoleOnly) { newConsoleOnly in
                     if newConsoleOnly {
                         if config.shareClipboardEnabled {
@@ -50,7 +50,7 @@ struct VMConfigDisplayView: View {
                     VMConfigDisplayConsoleView(config: config)
                 } else {
                     Section(header: Text("Hardware")) {
-                        VMConfigStringPicker("Emulated Display Card", selection: $config.displayCard, rawValues: UTMQemuConfiguration.supportedDisplayCards(forArchitecture: config.systemArchitecture), displayValues: UTMQemuConfiguration.supportedDisplayCards(forArchitecturePretty: config.systemArchitecture))
+                        VMConfigStringPicker("Emulated Display Card", selection: $config.displayCard, rawValues: UTMLegacyQemuConfiguration.supportedDisplayCards(forArchitecture: config.systemArchitecture), displayValues: UTMLegacyQemuConfiguration.supportedDisplayCards(forArchitecturePretty: config.systemArchitecture))
                     }
                     
                     DetailedSection("Auto Resolution", description: "Requires SPICE guest agent tools to be installed.") {
@@ -64,8 +64,8 @@ struct VMConfigDisplayView: View {
                     }
                     
                     Section(header: Text("Scaling")) {
-                        VMConfigStringPicker("Upscaling", selection: $config.displayUpscaler, rawValues: UTMQemuConfiguration.supportedScalers(), displayValues: UTMQemuConfiguration.supportedScalersPretty())
-                        VMConfigStringPicker("Downscaling", selection: $config.displayDownscaler, rawValues: UTMQemuConfiguration.supportedScalers(), displayValues: UTMQemuConfiguration.supportedScalersPretty())
+                        VMConfigStringPicker("Upscaling", selection: $config.displayUpscaler, rawValues: UTMLegacyQemuConfiguration.supportedScalers(), displayValues: UTMLegacyQemuConfiguration.supportedScalersPretty())
+                        VMConfigStringPicker("Downscaling", selection: $config.displayDownscaler, rawValues: UTMLegacyQemuConfiguration.supportedScalers(), displayValues: UTMLegacyQemuConfiguration.supportedScalersPretty())
                         Toggle(isOn: $config.displayRetina, label: {
                             Text("Retina Mode")
                         })
@@ -79,7 +79,7 @@ struct VMConfigDisplayView: View {
 
 @available(iOS 14, macOS 11, *)
 struct VMConfigDisplayView_Previews: PreviewProvider {
-    @ObservedObject static private var config = UTMQemuConfiguration()
+    @ObservedObject static private var config = UTMLegacyQemuConfiguration()
     
     static var previews: some View {
         VMConfigDisplayView(config: config)

@@ -14,8 +14,8 @@
 // limitations under the License.
 //
 
-#import "UTMQemuConfiguration+Constants.h"
-#import "UTMQemuConfiguration+Drives.h"
+#import "UTMLegacyQemuConfiguration+Constants.h"
+#import "UTMLegacyQemuConfiguration+Drives.h"
 #import "UTM-Swift.h"
 
 extern const NSString *const kUTMConfigDrivesKey;
@@ -27,21 +27,21 @@ static const NSString *const kUTMConfigInterfaceTypeKey = @"InterfaceType";
 static const NSString *const kUTMConfigRemovableKey = @"Removable";
 static const NSString *const kUTMConfigCdromKey = @"Cdrom";
 
-@interface UTMQemuConfiguration ()
+@interface UTMLegacyQemuConfiguration ()
 
 @property (nonatomic, readonly) NSMutableDictionary *rootDict;
 
 @end
 
-@implementation UTMQemuConfiguration (Drives)
+@implementation UTMLegacyQemuConfiguration (Drives)
 
 #pragma mark - Images Path
 
 - (NSURL *)imagesPath {
     if (self.existingPath) {
-        return [self.existingPath URLByAppendingPathComponent:[UTMQemuConfiguration diskImagesDirectory] isDirectory:YES];
+        return [self.existingPath URLByAppendingPathComponent:[UTMLegacyQemuConfiguration diskImagesDirectory] isDirectory:YES];
     } else {
-        return [[NSFileManager defaultManager].temporaryDirectory URLByAppendingPathComponent:[UTMQemuConfiguration diskImagesDirectory] isDirectory:YES];
+        return [[NSFileManager defaultManager].temporaryDirectory URLByAppendingPathComponent:[UTMLegacyQemuConfiguration diskImagesDirectory] isDirectory:YES];
     }
 }
 
@@ -132,7 +132,7 @@ static BOOL ValidQemuIdentifier(NSString *name) {
 
 - (NSInteger)newDrive:(NSString *)name path:(NSString *)path type:(UTMDiskImageType)type interface:(NSString *)interface {
     NSInteger index = [self countDrives];
-    NSString *strType = [UTMQemuConfiguration supportedImageTypes][type];
+    NSString *strType = [UTMLegacyQemuConfiguration supportedImageTypes][type];
     NSMutableDictionary *drive = [[NSMutableDictionary alloc] initWithDictionary:@{
         kUTMConfigDriveNameKey: name,
         kUTMConfigImagePathKey: path,
@@ -146,7 +146,7 @@ static BOOL ValidQemuIdentifier(NSString *name) {
 
 - (NSInteger)newRemovableDrive:(NSString *)name type:(UTMDiskImageType)type interface:(NSString *)interface {
     NSInteger index = [self countDrives];
-    NSString *strType = [UTMQemuConfiguration supportedImageTypes][type];
+    NSString *strType = [UTMLegacyQemuConfiguration supportedImageTypes][type];
     NSMutableDictionary *drive = [[NSMutableDictionary alloc] initWithDictionary:@{
         kUTMConfigDriveNameKey: name,
         kUTMConfigRemovableKey: @(YES),
@@ -202,7 +202,7 @@ static BOOL ValidQemuIdentifier(NSString *name) {
         return UTMDiskImageTypeDisk;
     }
     NSString *strType = self.rootDict[kUTMConfigDrivesKey][index][kUTMConfigImageTypeKey];
-    NSInteger type = [[UTMQemuConfiguration supportedImageTypes] indexOfObject:strType];
+    NSInteger type = [[UTMLegacyQemuConfiguration supportedImageTypes] indexOfObject:strType];
     if (type == NSNotFound || type >= UTMDiskImageTypeMax) {
         return UTMDiskImageTypeDisk;
     } else {
@@ -211,7 +211,7 @@ static BOOL ValidQemuIdentifier(NSString *name) {
 }
 
 - (void)setDriveImageType:(UTMDiskImageType)type forIndex:(NSInteger)index {
-    NSString *strType = [UTMQemuConfiguration supportedImageTypes][type];
+    NSString *strType = [UTMLegacyQemuConfiguration supportedImageTypes][type];
     [self propertyWillChange];
     self.rootDict[kUTMConfigDrivesKey][index][kUTMConfigImageTypeKey] = strType;
 }
@@ -245,8 +245,8 @@ static BOOL ValidQemuIdentifier(NSString *name) {
 }
 
 - (NSString *)driveLabelForIndex:(NSInteger)index {
-    NSArray<NSString *> *interfaces = [UTMQemuConfiguration supportedDriveInterfaces];
-    NSArray<NSString *> *interfacesPretty = [UTMQemuConfiguration supportedDriveInterfacesPretty];
+    NSArray<NSString *> *interfaces = [UTMLegacyQemuConfiguration supportedDriveInterfaces];
+    NSArray<NSString *> *interfacesPretty = [UTMLegacyQemuConfiguration supportedDriveInterfacesPretty];
     NSString *interface = [self driveInterfaceTypeForIndex:index];
     NSString *path = [self driveImagePathForIndex:index];
     NSInteger interfaceIndex = NSNotFound;
@@ -258,10 +258,10 @@ static BOOL ValidQemuIdentifier(NSString *name) {
     if (interfaceIndex == NSNotFound) {
         interfaceIndex = interfacesPretty.count - 1;
     }
-    if ((interface.length == 0 || [interface isEqualToString:@"none"]) && [path isEqualToString:UTMQemuConfiguration.efiVariablesFileName]) {
-        return NSLocalizedString(@"EFI Variables", "UTMQemuConfiguration+Drives");
+    if ((interface.length == 0 || [interface isEqualToString:@"none"]) && [path isEqualToString:UTMLegacyQemuConfiguration.efiVariablesFileName]) {
+        return NSLocalizedString(@"EFI Variables", "UTMLegacyQemuConfiguration+Drives");
     } else {
-        return [NSString stringWithFormat:NSLocalizedString(@"%@ Drive", @"UTMQemuConfiguration+Drives"), interfacesPretty[interfaceIndex]];
+        return [NSString stringWithFormat:NSLocalizedString(@"%@ Drive", @"UTMLegacyQemuConfiguration+Drives"), interfacesPretty[interfaceIndex]];
     }
 }
 

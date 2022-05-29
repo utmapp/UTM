@@ -15,9 +15,9 @@
 //
 
 #import "UTMSpiceIO.h"
-#import "UTMQemuConfiguration.h"
-#import "UTMQemuConfiguration+Miscellaneous.h"
-#import "UTMQemuConfiguration+Sharing.h"
+#import "UTMLegacyQemuConfiguration.h"
+#import "UTMLegacyQemuConfiguration+Miscellaneous.h"
+#import "UTMLegacyQemuConfiguration+Sharing.h"
 #import "UTMQemuManager.h"
 #import "UTMLogging.h"
 #import "UTMViewState.h"
@@ -49,7 +49,7 @@ extern NSString *const kUTMErrorDomain;
 
 @implementation UTMSpiceIO
 
-- (instancetype)initWithConfiguration:(UTMQemuConfiguration *)configuration {
+- (instancetype)initWithConfiguration:(UTMLegacyQemuConfiguration *)configuration {
     if (self = [super init]) {
         _configuration = configuration;
         self.connectQueue = dispatch_queue_create("SPICE Connect Attempt", NULL);

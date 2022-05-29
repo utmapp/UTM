@@ -63,7 +63,7 @@ struct VMWizardHardwareView: View {
         List {
             if !wizardState.useVirtualization {
                 Section {
-                    VMConfigStringPicker(selection: $wizardState.systemArchitecture, rawValues: UTMQemuConfiguration.supportedArchitectures(), displayValues: UTMQemuConfiguration.supportedArchitecturesPretty())
+                    VMConfigStringPicker(selection: $wizardState.systemArchitecture, rawValues: UTMLegacyQemuConfiguration.supportedArchitectures(), displayValues: UTMLegacyQemuConfiguration.supportedArchitecturesPretty())
                         .onChange(of: wizardState.systemArchitecture) { newValue in
                             if let newValue = newValue {
                                 wizardState.systemTarget = defaultTarget(for: newValue)
@@ -76,7 +76,7 @@ struct VMWizardHardwareView: View {
                 }
                 
                 Section {
-                    VMConfigStringPicker(selection: $wizardState.systemTarget, rawValues: UTMQemuConfiguration.supportedTargets(forArchitecture: wizardState.systemArchitecture), displayValues: UTMQemuConfiguration.supportedTargets(forArchitecturePretty: wizardState.systemArchitecture))
+                    VMConfigStringPicker(selection: $wizardState.systemTarget, rawValues: UTMLegacyQemuConfiguration.supportedTargets(forArchitecture: wizardState.systemArchitecture), displayValues: UTMLegacyQemuConfiguration.supportedTargets(forArchitecturePretty: wizardState.systemArchitecture))
                 } header: {
                     Text("System")
                 }
@@ -157,8 +157,8 @@ struct VMWizardHardwareView: View {
     }
     
     private func defaultTarget(for architecture: String) -> String {
-        let targets = UTMQemuConfiguration.supportedTargets(forArchitecture: architecture)
-        let index = UTMQemuConfiguration.defaultTargetIndex(forArchitecture: architecture)
+        let targets = UTMLegacyQemuConfiguration.supportedTargets(forArchitecture: architecture)
+        let index = UTMLegacyQemuConfiguration.defaultTargetIndex(forArchitecture: architecture)
         return targets![index]
     }
 }

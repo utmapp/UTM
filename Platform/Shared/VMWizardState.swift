@@ -337,8 +337,8 @@ enum VMWizardOS: String, Identifiable {
     #endif
     #endif
     
-    private func generateQemuConfig() throws -> UTMQemuConfiguration {
-        let config = UTMQemuConfiguration()
+    private func generateQemuConfig() throws -> UTMLegacyQemuConfiguration {
+        let config = UTMLegacyQemuConfiguration()
         config.name = name!
         config.systemArchitecture = systemArchitecture
         config.systemTarget = systemTarget
@@ -353,19 +353,19 @@ enum VMWizardOS: String, Identifiable {
         }
         if isGLEnabled, let displayCard = config.displayCard {
             let newCard = displayCard + "-gl"
-            let allCards = UTMQemuConfiguration.supportedDisplayCards(forArchitecture: systemArchitecture)!
+            let allCards = UTMLegacyQemuConfiguration.supportedDisplayCards(forArchitecture: systemArchitecture)!
             if allCards.contains(newCard) {
                 config.displayCard = newCard
             }
         }
         let generateRemovableDrive: () -> Void = { [self] in
-            config.newRemovableDrive("cdrom0", type: .CD, interface: UTMQemuConfiguration.defaultDriveInterface(forTarget: systemTarget, architecture: systemArchitecture, type: .CD))
+            config.newRemovableDrive("cdrom0", type: .CD, interface: UTMLegacyQemuConfiguration.defaultDriveInterface(forTarget: systemTarget, architecture: systemArchitecture, type: .CD))
         }
         let mainDriveInterface: String
         if systemArchitecture == "aarch64" && operatingSystem == .Windows {
             mainDriveInterface = "nvme"
         } else {
-           mainDriveInterface = UTMQemuConfiguration.defaultDriveInterface(forTarget: systemTarget, architecture: systemArchitecture, type: .disk)
+           mainDriveInterface = UTMLegacyQemuConfiguration.defaultDriveInterface(forTarget: systemTarget, architecture: systemArchitecture, type: .disk)
         }
         if !isSkipBootImage && bootImageURL != nil {
             generateRemovableDrive()

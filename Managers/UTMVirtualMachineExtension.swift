@@ -22,7 +22,7 @@ extension UTMVirtualMachine: Identifiable {
             return bookmark!.base64EncodedString()
         } else if self.path != nil {
             return self.path!.path // path if we're an existing VM
-        } else if let uuid = (self.config as? UTMQemuConfiguration)?.systemUUID {
+        } else if let uuid = (self.config as? UTMLegacyQemuConfiguration)?.systemUUID {
             return uuid
         } else {
             return UUID().uuidString
@@ -43,7 +43,7 @@ extension UTMVirtualMachine: ObservableObject {
             s.append(viewState.objectWillChange.sink { [weak self] in
                 self?.objectWillChange.send()
             })
-            if let config = config as? UTMQemuConfiguration {
+            if let config = config as? UTMLegacyQemuConfiguration {
                 s.append(config.objectWillChange.sink { [weak self] in
                     self?.objectWillChange.send()
                 })
@@ -79,10 +79,10 @@ public extension UTMQemuVirtualMachine {
         guard let target = qemuConfig.systemTarget else {
             return ""
         }
-        guard let targets = UTMQemuConfiguration.supportedTargets(forArchitecture: arch) else {
+        guard let targets = UTMLegacyQemuConfiguration.supportedTargets(forArchitecture: arch) else {
             return ""
         }
-        guard let prettyTargets = UTMQemuConfiguration.supportedTargets(forArchitecturePretty: arch) else {
+        guard let prettyTargets = UTMLegacyQemuConfiguration.supportedTargets(forArchitecturePretty: arch) else {
             return ""
         }
         guard let index = targets.firstIndex(of: target) else {
@@ -92,8 +92,8 @@ public extension UTMQemuVirtualMachine {
     }
     
     override var detailsSystemArchitectureLabel: String {
-        let archs = UTMQemuConfiguration.supportedArchitectures()
-        let prettyArchs = UTMQemuConfiguration.supportedArchitecturesPretty()
+        let archs = UTMLegacyQemuConfiguration.supportedArchitectures()
+        let prettyArchs = UTMLegacyQemuConfiguration.supportedArchitecturesPretty()
         guard let arch = qemuConfig.systemArchitecture else {
             return ""
         }

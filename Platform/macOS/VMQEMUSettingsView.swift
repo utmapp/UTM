@@ -18,7 +18,7 @@ import SwiftUI
 
 struct VMQEMUSettingsView: View {
     let vm: UTMVirtualMachine?
-    @ObservedObject var config: UTMQemuConfiguration
+    @ObservedObject var config: UTMLegacyQemuConfiguration
     @Binding var selectedDriveIndex: Int?
     @EnvironmentObject private var data: UTMData
 
@@ -93,7 +93,7 @@ struct VMQEMUSettingsView: View {
 }
 
 struct VMQEMUSettingsView_Previews: PreviewProvider {
-    @State static private var config = UTMQemuConfiguration()
+    @State static private var config = UTMLegacyQemuConfiguration()
     
     static var previews: some View {
         VMQEMUSettingsView(vm: nil, config: config, selectedDriveIndex: .constant(0))

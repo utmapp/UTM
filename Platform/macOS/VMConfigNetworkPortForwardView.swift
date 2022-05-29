@@ -18,8 +18,8 @@ import SwiftUI
 
 @available(macOS 11, *)
 struct VMConfigNetworkPortForwardView: View {
-    @ObservedObject var config: UTMQemuConfiguration
-    @StateObject private var newConfigPort = UTMQemuConfigurationPortForward()
+    @ObservedObject var config: UTMLegacyQemuConfiguration
+    @StateObject private var newConfigPort = UTMLegacyQemuConfigurationPortForward()
     @State private var editingNewPort = false
     @State private var selectedIndex = 0
     
@@ -62,19 +62,19 @@ struct VMConfigNetworkPortForwardView: View {
 
 @available(macOS 11, *)
 struct PortForwardEdit: View {
-    @StateObject private var configPort: UTMQemuConfigurationPortForward
+    @StateObject private var configPort: UTMLegacyQemuConfigurationPortForward
     private let save: () -> Void
     private let delete: (() -> Void)?
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
     
-    init(config: UTMQemuConfiguration, index: Int? = nil) {
-        var configPort: UTMQemuConfigurationPortForward
+    init(config: UTMLegacyQemuConfiguration, index: Int? = nil) {
+        var configPort: UTMLegacyQemuConfigurationPortForward
         if let i = index {
             configPort = config.portForward(for: i)!
         } else {
-            configPort = UTMQemuConfigurationPortForward()
+            configPort = UTMLegacyQemuConfigurationPortForward()
         }
-        self._configPort = StateObject<UTMQemuConfigurationPortForward>(wrappedValue: configPort)
+        self._configPort = StateObject<UTMLegacyQemuConfigurationPortForward>(wrappedValue: configPort)
         save = {
             config.updatePortForward(at: index ?? config.countPortForwards, withValue: configPort)
         }
@@ -112,8 +112,8 @@ struct PortForwardEdit: View {
 
 @available(macOS 11, *)
 struct VMConfigNetworkPortForwardView_Previews: PreviewProvider {
-    @State static private var config = UTMQemuConfiguration()
-    @State static private var configPort = UTMQemuConfigurationPortForward()
+    @State static private var config = UTMLegacyQemuConfiguration()
+    @State static private var configPort = UTMLegacyQemuConfigurationPortForward()
     
     static var previews: some View {
         Group {
@@ -121,7 +121,7 @@ struct VMConfigNetworkPortForwardView_Previews: PreviewProvider {
                 VMConfigNetworkPortForwardView(config: config)
             }.onAppear {
                 if config.countPortForwards == 0 {
-                    let newConfigPort = UTMQemuConfigurationPortForward()
+                    let newConfigPort = UTMLegacyQemuConfigurationPortForward()
                     newConfigPort.protocol = "tcp"
                     newConfigPort.guestAddress = "1.2.3.4"
                     newConfigPort.guestPort = NSNumber(value: 1234)

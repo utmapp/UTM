@@ -16,8 +16,8 @@
 
 #import "VMConfigDrivesViewController.h"
 #import "VMConfigDriveDetailViewController.h"
-#import "UTMQemuConfiguration.h"
-#import "UTMQemuConfiguration+Constants.h"
+#import "UTMLegacyQemuConfiguration.h"
+#import "UTMLegacyQemuConfiguration+Constants.h"
 
 @interface VMConfigDrivesViewController ()
 
@@ -63,7 +63,7 @@
         cell.textLabel.text = [self.configuration driveImagePathForIndex:indexPath.row];
     }
     UTMDiskImageType type = [self.configuration driveImageTypeForIndex:indexPath.row];
-    NSString *typeStr = [UTMQemuConfiguration supportedImageTypesPretty][type];
+    NSString *typeStr = [UTMLegacyQemuConfiguration supportedImageTypesPretty][type];
     NSString *interface = [self.configuration driveInterfaceTypeForIndex:indexPath.row];
     cell.detailTextLabel.text = [NSString stringWithFormat:@"%@ - %@", typeStr, interface];
     
@@ -132,9 +132,9 @@
 - (void)promptDelete:(NSString *)name {
     NSURL *path;
     if (self.configuration.existingPath) {
-        path = [self.configuration.existingPath URLByAppendingPathComponent:[UTMQemuConfiguration diskImagesDirectory] isDirectory:YES];
+        path = [self.configuration.existingPath URLByAppendingPathComponent:[UTMLegacyQemuConfiguration diskImagesDirectory] isDirectory:YES];
     } else {
-        path = [[NSFileManager defaultManager].temporaryDirectory URLByAppendingPathComponent:[UTMQemuConfiguration diskImagesDirectory] isDirectory:YES];
+        path = [[NSFileManager defaultManager].temporaryDirectory URLByAppendingPathComponent:[UTMLegacyQemuConfiguration diskImagesDirectory] isDirectory:YES];
     }
     UIAlertController *alert = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Delete Data", @"VMConfigDrivesViewController") message:NSLocalizedString(@"Do you want to also delete the disk image data? If yes, the data will be lost. Otherwise, you can create a new drive with the existing data.", @"VMConfigDrivesViewController") preferredStyle:UIAlertControllerStyleAlert];
     UIAlertAction *delete = [UIAlertAction actionWithTitle:NSLocalizedString(@"Yes", @"Yes button") style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action){

@@ -24,8 +24,8 @@ class VMDisplayQemuWindowController: VMDisplayWindowController {
         vm as? UTMQemuVirtualMachine
     }
     
-    var vmQemuConfig: UTMQemuConfiguration! {
-        vm?.config as? UTMQemuConfiguration
+    var vmQemuConfig: UTMLegacyQemuConfiguration! {
+        vm?.config as? UTMLegacyQemuConfiguration
     }
     
     var defaultSubtitle: String {

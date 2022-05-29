@@ -16,7 +16,7 @@
 
 #import <UIKit/UIKit.h>
 #import "StaticDataTableViewController.h"
-#import "UTMQemuConfigurationDelegate.h"
+#import "UTMLegacyQemuConfigurationDelegate.h"
 
 @class VMConfigTextField;
 @class VMConfigStepper;
@@ -25,7 +25,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface VMConfigViewController : StaticDataTableViewController<UTMQemuConfigurationDelegate, UITextFieldDelegate, UIPickerViewDelegate, UIPickerViewDataSource>
+@interface VMConfigViewController : StaticDataTableViewController<UTMLegacyQemuConfigurationDelegate, UITextFieldDelegate, UIPickerViewDelegate, UIPickerViewDataSource>
 
 @property (nonatomic, strong) IBOutletCollection(UIView) NSArray *configControls;
 @property (nonatomic, strong) IBOutletCollection(VMConfigTogglePickerCell) NSArray *configPickerToggles;

@@ -52,10 +52,10 @@ struct VMConfigDisplayConsoleView<Config: ObservableObject & UTMConfigurable>: V
             config.consoleFontSize = NSNumber(value: $0)
         }
         Section(header: Text("Style")) {
-            VMConfigStringPicker("Theme", selection: $config.consoleTheme, rawValues: UTMQemuConfiguration.supportedConsoleThemes(), displayValues: UTMQemuConfiguration.supportedConsoleThemes())
+            VMConfigStringPicker("Theme", selection: $config.consoleTheme, rawValues: UTMLegacyQemuConfiguration.supportedConsoleThemes(), displayValues: UTMLegacyQemuConfiguration.supportedConsoleThemes())
             ColorPicker("Text Color", selection: textColor)
             ColorPicker("Background Color", selection: backgroundColor)
-            VMConfigStringPicker("Font", selection: $config.consoleFont, rawValues: UTMQemuConfiguration.supportedConsoleFonts(), displayValues: UTMQemuConfiguration.supportedConsoleFontsPretty())
+            VMConfigStringPicker("Font", selection: $config.consoleFont, rawValues: UTMLegacyQemuConfiguration.supportedConsoleFonts(), displayValues: UTMLegacyQemuConfiguration.supportedConsoleFontsPretty())
             HStack {
                 Stepper(value: fontSizeObserver, in: 1...72) {
                         Text("Font Size")
@@ -77,7 +77,7 @@ struct VMConfigDisplayConsoleView<Config: ObservableObject & UTMConfigurable>: V
 
 @available(iOS 14, macOS 11, *)
 struct VMConfigDisplayConsoleView_Previews: PreviewProvider {
-    @ObservedObject static private var config = UTMQemuConfiguration()
+    @ObservedObject static private var config = UTMLegacyQemuConfiguration()
     
     static var previews: some View {
         VMConfigDisplayConsoleView(config: config)

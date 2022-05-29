@@ -14,17 +14,21 @@
 // limitations under the License.
 //
 
-#import "UTMQemuConfiguration.h"
-#import "UTMQemuConfiguration+Drives.h"
+#import "UTMLegacyQemuConfiguration.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface UTMQemuConfiguration (Defaults)
+@interface UTMLegacyQemuConfiguration (Sharing)
 
-- (void)loadDefaults;
-- (void)loadDefaultsForTarget:(nullable NSString *)target architecture:(nullable NSString *)architecture;
-+ (NSString *)defaultDriveInterfaceForTarget:(nullable NSString *)target architecture:(nullable NSString *)architecture type:(UTMDiskImageType)type;
-+ (NSString *)defaultCPUForTarget:(NSString *)target architecture:(NSString *)architecture;
+@property (nonatomic, assign) BOOL shareClipboardEnabled;
+@property (nonatomic, assign) BOOL shareDirectoryEnabled;
+@property (nonatomic, assign) BOOL shareDirectoryReadOnly;
+@property (nonatomic, nullable, copy) NSString *shareDirectoryName;
+@property (nonatomic, nullable, copy) NSData *shareDirectoryBookmark;
+@property (nonatomic, assign) BOOL usb3Support;
+@property (nonatomic, nullable, copy) NSNumber *usbRedirectionMaximumDevices;
+
+- (void)migrateSharingConfigurationIfNecessary;
 
 @end
 

@@ -15,7 +15,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "UTMQemuConfiguration+Drives.h"
+#import "UTMLegacyQemuConfiguration+Drives.h"
 
 typedef NS_ENUM(NSInteger, UTMDriveStatus) {
     UTMDriveStatusFixed,

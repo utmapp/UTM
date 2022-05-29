@@ -16,7 +16,7 @@
 
 import Combine
 
-@objc extension UTMQemuConfiguration: ObservableObject {
+@objc extension UTMLegacyQemuConfiguration: ObservableObject {
     func propertyWillChange() -> Void {
         if #available(iOS 13, macOS 11, *) {
             DispatchQueue.main.async { self.objectWillChange.send() }
@@ -24,7 +24,7 @@ import Combine
     }
 }
 
-@objc extension UTMQemuConfigurationPortForward: ObservableObject {
+@objc extension UTMLegacyQemuConfigurationPortForward: ObservableObject {
     func propertyWillChange() -> Void {
         if #available(iOS 13, macOS 11, *) {
             DispatchQueue.main.async { self.objectWillChange.send() }
@@ -43,7 +43,7 @@ import Combine
 extension UTMDiskImageType: CustomStringConvertible {
     public var description: String {
         let index = rawValue
-        let imageTypeList = UTMQemuConfiguration.supportedImageTypes()
+        let imageTypeList = UTMLegacyQemuConfiguration.supportedImageTypes()
         if index >= 0 && index < imageTypeList.count {
             return imageTypeList[index]
         } else {
@@ -52,7 +52,7 @@ extension UTMDiskImageType: CustomStringConvertible {
     }
     
     static public func enumFromString(_ str: String?) -> UTMDiskImageType {
-        let imageTypeList = UTMQemuConfiguration.supportedImageTypes()
+        let imageTypeList = UTMLegacyQemuConfiguration.supportedImageTypes()
         guard let unwrapStr = str else {
             return UTMDiskImageType.disk
         }

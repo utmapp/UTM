@@ -29,7 +29,7 @@ struct VMSettingsView<Config: ObservableObject & UTMConfigurable>: View {
     var body: some View {
         NavigationView {
             List {
-                if let qemuConfig = config as? UTMQemuConfiguration {
+                if let qemuConfig = config as? UTMLegacyQemuConfiguration {
                     VMQEMUSettingsView(vm: vm, config: qemuConfig, selectedDriveIndex: $selectedDriveIndex)
                 } else if let appleConfig = config as? UTMAppleConfiguration {
                     VMAppleSettingsView(vm: vm, config: appleConfig, selectedDriveIndex: $selectedDriveIndex)
@@ -92,7 +92,7 @@ extension View {
 
 @available(macOS 11, *)
 struct VMSettingsView_Previews: PreviewProvider {
-    @State static private var config = UTMQemuConfiguration()
+    @State static private var config = UTMLegacyQemuConfiguration()
     
     static var previews: some View {
         VMSettingsView(vm: nil, config: config)

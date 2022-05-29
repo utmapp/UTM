@@ -19,7 +19,7 @@ import SwiftUI
 @available(iOS 14, *)
 struct VMSettingsView: View {
     let vm: UTMVirtualMachine?
-    @ObservedObject var config: UTMQemuConfiguration
+    @ObservedObject var config: UTMLegacyQemuConfiguration
     
     @EnvironmentObject private var data: UTMData
     @Environment(\.presentationMode) private var presentationMode: Binding<PresentationMode>
@@ -143,7 +143,7 @@ extension LabelStyle where Self == RoundRectIconLabelStyle {
 
 @available(iOS 14, *)
 struct VMSettingsView_Previews: PreviewProvider {
-    @State static private var config = UTMQemuConfiguration()
+    @State static private var config = UTMLegacyQemuConfiguration()
     
     static var previews: some View {
         VMSettingsView(vm: nil, config: config)

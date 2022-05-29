@@ -15,7 +15,7 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "UTMQemuConfiguration+Drives.h"
+#import "UTMLegacyQemuConfiguration+Drives.h"
 #import "VMConfigViewController.h"
 
 @class VMConfigTogglePickerCell;

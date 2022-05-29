@@ -14,21 +14,17 @@
 // limitations under the License.
 //
 
-#import "UTMQemuConfiguration.h"
+#import <Foundation/Foundation.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface UTMQemuConfiguration (Sharing)
+@interface UTMLegacyQemuConfigurationPortForward : NSObject
 
-@property (nonatomic, assign) BOOL shareClipboardEnabled;
-@property (nonatomic, assign) BOOL shareDirectoryEnabled;
-@property (nonatomic, assign) BOOL shareDirectoryReadOnly;
-@property (nonatomic, nullable, copy) NSString *shareDirectoryName;
-@property (nonatomic, nullable, copy) NSData *shareDirectoryBookmark;
-@property (nonatomic, assign) BOOL usb3Support;
-@property (nonatomic, nullable, copy) NSNumber *usbRedirectionMaximumDevices;
-
-- (void)migrateSharingConfigurationIfNecessary;
+@property (nonatomic, nullable) NSString *protocol;
+@property (nonatomic) NSString *hostAddress;
+@property (nonatomic, nullable) NSNumber *hostPort;
+@property (nonatomic) NSString *guestAddress;
+@property (nonatomic, nullable) NSNumber *guestPort;
 
 @end
 

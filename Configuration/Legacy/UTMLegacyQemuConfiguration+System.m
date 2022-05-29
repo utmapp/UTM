@@ -14,9 +14,9 @@
 // limitations under the License.
 //
 
-#import "UTMQemuConfiguration+Constants.h"
-#import "UTMQemuConfiguration+Defaults.h"
-#import "UTMQemuConfiguration+System.h"
+#import "UTMLegacyQemuConfiguration+Constants.h"
+#import "UTMLegacyQemuConfiguration+Defaults.h"
+#import "UTMLegacyQemuConfiguration+System.h"
 #import "UTM-Swift.h"
 
 extern const NSString *const kUTMConfigSystemKey;
@@ -39,13 +39,13 @@ static const NSString *const kUTMConfigUseHypervisorKey = @"UseHypervisor";
 static const NSString *const kUTMConfigRTCUseLocalTimeKey = @"RTCUseLocalTime";
 static const NSString *const kUTMConfigForcePs2ControllerKey = @"ForcePS2Controller";
 
-@interface UTMQemuConfiguration ()
+@interface UTMLegacyQemuConfiguration ()
 
 @property (nonatomic, readonly) NSMutableDictionary *rootDict;
 
 @end
 
-@implementation UTMQemuConfiguration (System)
+@implementation UTMLegacyQemuConfiguration (System)
 
 #pragma mark - Migration
 
@@ -59,14 +59,14 @@ static const NSString *const kUTMConfigForcePs2ControllerKey = @"ForcePS2Control
     }
     // Migrate default target
     if ([self.rootDict[kUTMConfigSystemKey][kUTMConfigTargetKey] length] == 0) {
-        NSInteger index = [UTMQemuConfiguration defaultTargetIndexForArchitecture:self.systemArchitecture];
-        self.rootDict[kUTMConfigSystemKey][kUTMConfigTargetKey] = [UTMQemuConfiguration supportedTargetsForArchitecture:self.systemArchitecture][index];
+        NSInteger index = [UTMLegacyQemuConfiguration defaultTargetIndexForArchitecture:self.systemArchitecture];
+        self.rootDict[kUTMConfigSystemKey][kUTMConfigTargetKey] = [UTMLegacyQemuConfiguration supportedTargetsForArchitecture:self.systemArchitecture][index];
     }
     // Fix issue with boot order
-    NSArray<NSString *> *bootPretty = [UTMQemuConfiguration supportedBootDevicesPretty];
+    NSArray<NSString *> *bootPretty = [UTMLegacyQemuConfiguration supportedBootDevicesPretty];
     if ([bootPretty containsObject:self.systemBootDevice]) {
         NSInteger index = [bootPretty indexOfObject:self.systemBootDevice];
-        self.systemBootDevice = [UTMQemuConfiguration supportedBootDevices][index];
+        self.systemBootDevice = [UTMLegacyQemuConfiguration supportedBootDevices][index];
     }
     // Default CPU
     if ([self.rootDict[kUTMConfigSystemKey][kUTMConfigCPUKey] length] == 0) {

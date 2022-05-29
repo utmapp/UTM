@@ -20,9 +20,9 @@
 #else
 #import <AppKit/AppKit.h>
 #endif
-#import "UTMQemuConfiguration+Constants.h"
+#import "UTMLegacyQemuConfiguration+Constants.h"
 
-@implementation UTMQemuConfiguration (Constants)
+@implementation UTMLegacyQemuConfiguration (Constants)
 
 + (NSString *)diskImagesDirectory {
     return @"Images";
@@ -109,13 +109,13 @@
 
 + (NSArray<NSString *>*)supportedImageTypesPretty {
     return @[
-             NSLocalizedString(@"None", "UTMQemuConfiguration"),
-             NSLocalizedString(@"Disk Image", "UTMQemuConfiguration"),
-             NSLocalizedString(@"CD/DVD (ISO) Image", "UTMQemuConfiguration"),
-             NSLocalizedString(@"BIOS", "UTMQemuConfiguration"),
-             NSLocalizedString(@"Linux Kernel", "UTMQemuConfiguration"),
-             NSLocalizedString(@"Linux RAM Disk", "UTMQemuConfiguration"),
-             NSLocalizedString(@"Linux Device Tree Binary", "UTMQemuConfiguration")
+             NSLocalizedString(@"None", "UTMLegacyQemuConfiguration"),
+             NSLocalizedString(@"Disk Image", "UTMLegacyQemuConfiguration"),
+             NSLocalizedString(@"CD/DVD (ISO) Image", "UTMLegacyQemuConfiguration"),
+             NSLocalizedString(@"BIOS", "UTMLegacyQemuConfiguration"),
+             NSLocalizedString(@"Linux Kernel", "UTMLegacyQemuConfiguration"),
+             NSLocalizedString(@"Linux RAM Disk", "UTMLegacyQemuConfiguration"),
+             NSLocalizedString(@"Linux Device Tree Binary", "UTMLegacyQemuConfiguration")
              ];
 }
 
@@ -182,8 +182,8 @@
 
 + (NSArray<NSString *>*)supportedScalersPretty {
     return @[
-        NSLocalizedString(@"Linear", "UTMQemuConfiguration"),
-        NSLocalizedString(@"Nearest Neighbor", "UTMQemuConfiguration"),
+        NSLocalizedString(@"Linear", "UTMLegacyQemuConfiguration"),
+        NSLocalizedString(@"Nearest Neighbor", "UTMLegacyQemuConfiguration"),
     ];
 }
 
@@ -219,19 +219,19 @@
     static NSMutableArray<NSString *> *fonts;
     if (!fonts) {
         fonts = [NSMutableArray new];
-        for (NSString *fontName in [UTMQemuConfiguration supportedConsoleFonts]) {
+        for (NSString *fontName in [UTMLegacyQemuConfiguration supportedConsoleFonts]) {
             UIFont *font = [UIFont fontWithName:fontName size:1];
             UIFontDescriptorSymbolicTraits traits = font.fontDescriptor.symbolicTraits;
             NSString *description;
             if ((traits & (UIFontDescriptorTraitItalic | UIFontDescriptorTraitBold)) ==
                 (UIFontDescriptorTraitItalic | UIFontDescriptorTraitBold)) {
-                description = NSLocalizedString(@"Italic, Bold", @"UTMQemuConfiguration+Constants");
+                description = NSLocalizedString(@"Italic, Bold", @"UTMLegacyQemuConfiguration+Constants");
             } else if ((traits & UIFontDescriptorTraitItalic) != 0) {
-                description = NSLocalizedString(@"Italic", @"UTMQemuConfiguration+Constants");
+                description = NSLocalizedString(@"Italic", @"UTMLegacyQemuConfiguration+Constants");
             } else if ((traits & UIFontDescriptorTraitBold) != 0) {
-                description = NSLocalizedString(@"Bold", @"UTMQemuConfiguration+Constants");
+                description = NSLocalizedString(@"Bold", @"UTMLegacyQemuConfiguration+Constants");
             } else {
-                description = NSLocalizedString(@"Regular", @"UTMQemuConfiguration+Constants");
+                description = NSLocalizedString(@"Regular", @"UTMLegacyQemuConfiguration+Constants");
             }
             NSString *label = [NSString stringWithFormat:@"%@ (%@)", font.familyName, description];
             [fonts addObject:label];
@@ -255,7 +255,7 @@
     static NSMutableArray<NSString *> *fonts;
     if (!fonts) {
         fonts = [NSMutableArray new];
-        for (NSString *fontName in [UTMQemuConfiguration supportedConsoleFonts]) {
+        for (NSString *fontName in [UTMLegacyQemuConfiguration supportedConsoleFonts]) {
             NSFont *font = [NSFont fontWithName:fontName size:1];
             [fonts addObject:font.displayName];
         }
@@ -276,11 +276,11 @@
 
 + (NSArray<NSString *> *)supportedNetworkModesPretty {
     return @[
-        NSLocalizedString(@"None", "UTMQemuConfiguration"),
-        NSLocalizedString(@"Emulated VLAN", "UTMQemuConfiguration"),
-        NSLocalizedString(@"Shared Network", "UTMQemuConfiguration"),
-        NSLocalizedString(@"Host Only", "UTMQemuConfiguration"),
-        NSLocalizedString(@"Bridged (Advanced)", "UTMQemuConfiguration"),
+        NSLocalizedString(@"None", "UTMLegacyQemuConfiguration"),
+        NSLocalizedString(@"Emulated VLAN", "UTMLegacyQemuConfiguration"),
+        NSLocalizedString(@"Shared Network", "UTMLegacyQemuConfiguration"),
+        NSLocalizedString(@"Host Only", "UTMLegacyQemuConfiguration"),
+        NSLocalizedString(@"Bridged (Advanced)", "UTMLegacyQemuConfiguration"),
     ];
 }
 

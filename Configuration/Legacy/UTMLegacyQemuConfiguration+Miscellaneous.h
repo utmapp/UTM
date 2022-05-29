@@ -14,11 +14,11 @@
 // limitations under the License.
 //
 
-#import "UTMQemuConfiguration.h"
+#import "UTMLegacyQemuConfiguration.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface UTMQemuConfiguration (Miscellaneous)
+@interface UTMLegacyQemuConfiguration (Miscellaneous)
 
 @property (nonatomic, assign) BOOL inputLegacy;
 @property (nonatomic, assign) BOOL inputScrollInvert;

@@ -18,15 +18,15 @@
 #import <sys/sysctl.h>
 #import <TargetConditionals.h>
 #import "UTMQemuSystem.h"
-#import "UTMQemuConfiguration.h"
-#import "UTMQemuConfiguration+Constants.h"
-#import "UTMQemuConfiguration+Display.h"
-#import "UTMQemuConfiguration+Drives.h"
-#import "UTMQemuConfiguration+Miscellaneous.h"
-#import "UTMQemuConfiguration+Networking.h"
-#import "UTMQemuConfiguration+Sharing.h"
-#import "UTMQemuConfiguration+System.h"
-#import "UTMQemuConfigurationPortForward.h"
+#import "UTMLegacyQemuConfiguration.h"
+#import "UTMLegacyQemuConfiguration+Constants.h"
+#import "UTMLegacyQemuConfiguration+Display.h"
+#import "UTMLegacyQemuConfiguration+Drives.h"
+#import "UTMLegacyQemuConfiguration+Miscellaneous.h"
+#import "UTMLegacyQemuConfiguration+Networking.h"
+#import "UTMLegacyQemuConfiguration+Sharing.h"
+#import "UTMLegacyQemuConfiguration+System.h"
+#import "UTMLegacyQemuConfigurationPortForward.h"
 #import "UTMJailbreak.h"
 #import "UTMLogging.h"
 
@@ -88,7 +88,7 @@ static size_t sysctl_read(const char *name) {
     return ncpu;
 }
 
-- (instancetype)initWithConfiguration:(UTMQemuConfiguration *)configuration imgPath:(nonnull NSURL *)imgPath {
+- (instancetype)initWithConfiguration:(UTMLegacyQemuConfiguration *)configuration imgPath:(nonnull NSURL *)imgPath {
     self = [self init];
     if (self) {
         self.configuration = configuration;
@@ -296,7 +296,7 @@ static size_t sysctl_read(const char *name) {
             if ([path characterAtIndex:0] == '/') {
                 fullPathURL = [NSURL fileURLWithPath:path isDirectory:NO];
             } else {
-                fullPathURL = [[self.imgPath URLByAppendingPathComponent:[UTMQemuConfiguration diskImagesDirectory]] URLByAppendingPathComponent:[self.configuration driveImagePathForIndex:i]];
+                fullPathURL = [[self.imgPath URLByAppendingPathComponent:[UTMLegacyQemuConfiguration diskImagesDirectory]] URLByAppendingPathComponent:[self.configuration driveImagePathForIndex:i]];
             }
             [self accessDataWithBookmark:[fullPathURL bookmarkDataWithOptions:0
                                                includingResourceValuesForKeys:nil
@@ -428,7 +428,7 @@ static size_t sysctl_read(const char *name) {
         }
         if (!useVMnet) {
             for (NSUInteger i = 0; i < [self.configuration countPortForwards]; i++) {
-                UTMQemuConfigurationPortForward *portForward = [self.configuration portForwardForIndex:i];
+                UTMLegacyQemuConfigurationPortForward *portForward = [self.configuration portForwardForIndex:i];
                 [netstr appendFormat:@",hostfwd=%@:%@:%@-%@:%@", portForward.protocol, portForward.hostAddress, portForward.hostPort, portForward.guestAddress, portForward.guestPort];
             }
         }
@@ -579,7 +579,7 @@ static size_t sysctl_read(const char *name) {
 }
 
 - (NSURL *)efiVariablesURL {
-    return [[self.imgPath URLByAppendingPathComponent:[UTMQemuConfiguration diskImagesDirectory]] URLByAppendingPathComponent:UTMQemuConfiguration.efiVariablesFileName];
+    return [[self.imgPath URLByAppendingPathComponent:[UTMLegacyQemuConfiguration diskImagesDirectory]] URLByAppendingPathComponent:UTMLegacyQemuConfiguration.efiVariablesFileName];
 }
 
 /// Set either name=value or does nothing if name= is already in `properties`

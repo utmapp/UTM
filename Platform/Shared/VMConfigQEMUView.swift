@@ -23,7 +23,7 @@ struct VMConfigQEMUView: View {
         let string: String
     }
     
-    @ObservedObject var config: UTMQemuConfiguration
+    @ObservedObject var config: UTMLegacyQemuConfiguration
     @State private var showExportLog: Bool = false
     @State private var showExportArgs: Bool = false
     @EnvironmentObject private var data: UTMData
@@ -32,7 +32,7 @@ struct VMConfigQEMUView: View {
         guard let path = config.existingPath else {
             return false
         }
-        let logPath = path.appendingPathComponent(UTMQemuConfiguration.debugLogName)
+        let logPath = path.appendingPathComponent(UTMLegacyQemuConfiguration.debugLogName)
         return FileManager.default.fileExists(atPath: logPath.path)
     }
     
@@ -116,7 +116,7 @@ struct VMConfigQEMUView: View {
         guard let path = config.existingPath else {
             return nil
         }
-        let srcLogPath = path.appendingPathComponent(UTMQemuConfiguration.debugLogName)
+        let srcLogPath = path.appendingPathComponent(UTMLegacyQemuConfiguration.debugLogName)
         return .debugLog(srcLogPath)
     }
     
@@ -156,7 +156,7 @@ struct VMConfigQEMUView: View {
 
 @available(iOS 14, macOS 11, *)
 struct CustomArguments: View {
-    @ObservedObject var config: UTMQemuConfiguration
+    @ObservedObject var config: UTMLegacyQemuConfiguration
     
     var body: some View {
         ForEach(0..<config.countArguments, id: \.self) { i in
@@ -204,7 +204,7 @@ struct CustomArguments: View {
 
 @available(iOS 14, macOS 11, *)
 struct NewArgumentTextField: View {
-    @ObservedObject var config: UTMQemuConfiguration
+    @ObservedObject var config: UTMLegacyQemuConfiguration
     @State private var newArg: String = ""
     
     var body: some View {
@@ -230,7 +230,7 @@ struct NewArgumentTextField: View {
 
 @available(iOS 14, macOS 11, *)
 struct VMConfigQEMUView_Previews: PreviewProvider {
-    @ObservedObject static private var config = UTMQemuConfiguration()
+    @ObservedObject static private var config = UTMLegacyQemuConfiguration()
     
     static var previews: some View {
         VMConfigQEMUView(config: config)

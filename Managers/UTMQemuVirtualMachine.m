@@ -20,11 +20,11 @@
 #import "UTMQemuVirtualMachine.h"
 #import "UTMQemuVirtualMachine+Drives.h"
 #import "UTMQemuVirtualMachine+SPICE.h"
-#import "UTMQemuConfiguration.h"
-#import "UTMQemuConfiguration+Constants.h"
-#import "UTMQemuConfiguration+Display.h"
-#import "UTMQemuConfiguration+Drives.h"
-#import "UTMQemuConfiguration+Miscellaneous.h"
+#import "UTMLegacyQemuConfiguration.h"
+#import "UTMLegacyQemuConfiguration+Constants.h"
+#import "UTMLegacyQemuConfiguration+Display.h"
+#import "UTMLegacyQemuConfiguration+Drives.h"
+#import "UTMLegacyQemuConfiguration+Miscellaneous.h"
 #import "UTMViewState.h"
 #import "UTMQemuManager.h"
 #import "UTMQemuSystem.h"
@@ -53,8 +53,8 @@ NSString *const kSuspendSnapshotName = @"suspend";
 
 @implementation UTMQemuVirtualMachine
 
-- (UTMQemuConfiguration *)qemuConfig {
-    return (UTMQemuConfiguration *)self.config;
+- (UTMLegacyQemuConfiguration *)qemuConfig {
+    return (UTMLegacyQemuConfiguration *)self.config;
 }
 
 - (id<UTMSpiceIODelegate>)ioDelegate {
@@ -90,7 +90,7 @@ NSString *const kSuspendSnapshotName = @"suspend";
         NSAssert(self.qemuConfig != nil, @"Trying to reload when no configuration is loaded.");
         return [self.qemuConfig reloadConfigurationWithDictionary:plist name:name path:self.path];
     } else {
-        self.config = [[UTMQemuConfiguration alloc] initWithDictionary:plist name:name path:self.path];
+        self.config = [[UTMLegacyQemuConfiguration alloc] initWithDictionary:plist name:name path:self.path];
         return self.config != nil;
     }
 }
@@ -134,8 +134,8 @@ NSString *const kSuspendSnapshotName = @"suspend";
     NSFileManager *fileManager = [NSFileManager defaultManager];
     NSURL *url = [self packageURLForName:self.qemuConfig.name];
     if (!self.qemuConfig.existingPath) {
-        NSURL *dstPath = [url URLByAppendingPathComponent:[UTMQemuConfiguration diskImagesDirectory] isDirectory:YES];
-        NSURL *tmpPath = [fileManager.temporaryDirectory URLByAppendingPathComponent:[UTMQemuConfiguration diskImagesDirectory] isDirectory:YES];
+        NSURL *dstPath = [url URLByAppendingPathComponent:[UTMLegacyQemuConfiguration diskImagesDirectory] isDirectory:YES];
+        NSURL *tmpPath = [fileManager.temporaryDirectory URLByAppendingPathComponent:[UTMLegacyQemuConfiguration diskImagesDirectory] isDirectory:YES];
         
         // create images directory
         if ([fileManager fileExistsAtPath:tmpPath.path]) {
@@ -255,7 +255,7 @@ NSString *const kSuspendSnapshotName = @"suspend";
     }
     // start logging
     if (self.qemuConfig.debugLogEnabled) {
-        [self.logging logToFile:[self.path URLByAppendingPathComponent:[UTMQemuConfiguration debugLogName]]];
+        [self.logging logToFile:[self.path URLByAppendingPathComponent:[UTMLegacyQemuConfiguration debugLogName]]];
     }
     
     if (!self.system) {

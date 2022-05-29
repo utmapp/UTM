@@ -16,9 +16,9 @@
 
 // !! THIS FILE IS GENERATED FROM const-gen.py, DO NOT MODIFY MANUALLY !!
 
-#import "UTMQemuConfiguration+Constants.h"
+#import "UTMLegacyQemuConfiguration+Constants.h"
 
-@implementation UTMQemuConfiguration (ConstantsGenerated)
+@implementation UTMLegacyQemuConfiguration (ConstantsGenerated)
 
 + (NSArray<NSString *>*)supportedArchitectures {
     return @[

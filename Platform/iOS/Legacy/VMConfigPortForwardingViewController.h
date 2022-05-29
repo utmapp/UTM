@@ -15,11 +15,11 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "UTMQemuConfigurationDelegate.h"
+#import "UTMLegacyQemuConfigurationDelegate.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface VMConfigPortForwardingViewController : UITableViewController<UTMQemuConfigurationDelegate>
+@interface VMConfigPortForwardingViewController : UITableViewController<UTMLegacyQemuConfigurationDelegate>
 
 @property (weak, nonatomic) IBOutlet UIBarButtonItem *addButtonItem;
 

@@ -19,7 +19,7 @@
 #import "UTMSpiceIODelegate.h"
 #import "UTMVirtualMachineDelegate.h"
 
-@class UTMQemuConfiguration;
+@class UTMLegacyQemuConfiguration;
 @class UTMQemuVirtualMachine;
 @class VMKeyboardButton;
 @class VMRemovableDrivesViewController;
@@ -43,7 +43,7 @@
 @property (weak, nonatomic) IBOutlet UIButton *resumeBigButton;
 @property (strong, nonatomic) IBOutletCollection(VMKeyboardButton) NSArray *customKeyModifierButtons;
 
-@property (nonatomic, readonly) UTMQemuConfiguration *vmQemuConfig;
+@property (nonatomic, readonly) UTMLegacyQemuConfiguration *vmQemuConfig;
 @property (nonatomic) VMToolbarActions *toolbar;
 @property (nonatomic) UIViewController *floatingToolbarViewController;
 @property (nonatomic) VMRemovableDrivesViewController *removableDrivesViewController;

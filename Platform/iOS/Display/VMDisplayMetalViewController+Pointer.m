@@ -14,8 +14,8 @@
 // limitations under the License.
 //
 
-#import "UTMQemuConfiguration.h"
-#import "UTMQemuConfiguration+Miscellaneous.h"
+#import "UTMLegacyQemuConfiguration.h"
+#import "UTMLegacyQemuConfiguration+Miscellaneous.h"
 #import "VMDisplayMetalViewController.h"
 #import "VMDisplayMetalViewController+Touch.h"
 #import "VMDisplayMetalViewController+Pointer.h"
