@@ -15,3 +15,53 @@
 //
 
 import Foundation
+
+/// Settings for a single display.
+@available(iOS 13, macOS 11, *)
+class UTMQemuConfigurationDisplay: Codable, Identifiable, ObservableObject {
+    /// Hardware card to emulate.
+    @Published var hardware: QEMUDisplayDevice = QEMUDisplayDevice_x86_64.virtio_vga
+    
+    /// If true, attempt to use SPICE guest agent to change the display resolution automatically.
+    @Published var isDynamicResolution: Bool = true
+    
+    /// Filter to use when upscaling.
+    @Published var upscalingFilter: QEMUScaler = .nearest
+    
+    /// Filter to use when downscaling.
+    @Published var downscalingFilter: QEMUScaler = .linear
+    
+    /// If true, use the true (retina) resolution of the display. Otherwise, use the percieved resolution.
+    @Published var isNativeResolution: Bool = false
+    
+    let id = UUID()
+    
+    enum CodingKeys: String, CodingKey {
+        case hardware = "Hardware"
+        case isDynamicResolution = "DynamicResolution"
+        case upscalingFilter = "UpscalingFilter"
+        case downscalingFilter = "DownscalingFilter"
+        case isNativeResolution = "NativeResolution"
+    }
+    
+    init() {
+    }
+    
+    required init(from decoder: Decoder) throws {
+        let values = try decoder.container(keyedBy: CodingKeys.self)
+        hardware = try values.decode(AnyQEMUConstant.self, forKey: .hardware)
+        isDynamicResolution = try values.decode(Bool.self, forKey: .isDynamicResolution)
+        upscalingFilter = try values.decode(QEMUScaler.self, forKey: .upscalingFilter)
+        downscalingFilter = try values.decode(QEMUScaler.self, forKey: .downscalingFilter)
+        isNativeResolution = try values.decode(Bool.self, forKey: .isNativeResolution)
+    }
+    
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(hardware.asAnyQEMUConstant(), forKey: .hardware)
+        try container.encode(isDynamicResolution, forKey: .isDynamicResolution)
+        try container.encode(upscalingFilter, forKey: .upscalingFilter)
+        try container.encode(downscalingFilter, forKey: .downscalingFilter)
+        try container.encode(isNativeResolution, forKey: .isNativeResolution)
+    }
+}

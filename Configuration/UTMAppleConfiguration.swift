@@ -1030,12 +1030,6 @@ fileprivate enum ConfigError: Error {
     case cannotCreateDiskImage
 }
 
-fileprivate extension CodingUserInfoKey {
-    static var dataURL: CodingUserInfoKey {
-        return CodingUserInfoKey(rawValue: "dataURL")!
-    }
-}
-
 fileprivate extension UTMAppleConfiguration {
     static var defaultCoreCount: Int {
         let cores = Int(sysctlIntRead("hw.physicalcpu"))

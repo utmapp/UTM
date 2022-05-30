@@ -15,3 +15,21 @@
 //
 
 import Foundation
+
+/// Represent a single port forward
+struct UTMQemuConfigurationPortForward: Codable {
+    /// Socket protocol
+    var `protocol`: QEMUNetworkProtocol = .tcp
+    
+    /// Host address (nil for any address).
+    var hostAddress: String?
+    
+    /// Host port to recieve connection.
+    var hostPort: Int = 0
+    
+    /// Guest address (nil for any address).
+    var guestAddress: String?
+    
+    /// Guest port where connection is coming from.
+    var guestPort: Int = 0
+}
