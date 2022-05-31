@@ -20,7 +20,7 @@ import Foundation
 @available(iOS 13, macOS 11, *)
 class UTMQemuConfigurationInput: Codable, ObservableObject {
     /// Level of USB support (disabled/2.0/3.0).
-    @Published var usbBusSupport: QEMUUSBBus = .disabled
+    @Published var usbBusSupport: QEMUUSBBus = .usb2_0
     
     /// If enabled, USB forwarding can be used (if supported by the host).
     @Published var hasUsbSharing: Bool = false
@@ -49,5 +49,22 @@ class UTMQemuConfigurationInput: Codable, ObservableObject {
         try container.encode(usbBusSupport, forKey: .usbBusSupport)
         try container.encode(hasUsbSharing, forKey: .hasUsbSharing)
         try container.encode(maximumUsbShare, forKey: .maximumUsbShare)
+    }
+}
+
+// MARK: - Default construction
+
+@available(iOS 13, macOS 11, *)
+extension UTMQemuConfigurationInput {
+    convenience init(forArchitecture architecture: QEMUArchitecture, target: QEMUTarget) {
+        self.init()
+        let rawTarget = target.rawValue
+        if rawTarget.hasPrefix("pc") || rawTarget.hasPrefix("q35") {
+            usbBusSupport = .usb3_0
+        } else if (architecture == .arm || architecture == .aarch64) && (rawTarget.hasPrefix("virt-") || rawTarget == "virt") {
+            usbBusSupport = .usb3_0
+        } else if rawTarget == "isapc" {
+            usbBusSupport = .disabled
+        }
     }
 }

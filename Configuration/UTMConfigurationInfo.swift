@@ -20,7 +20,7 @@ import Foundation
 @available(iOS 13, macOS 11, *)
 class UTMConfigurationInfo: Codable, ObservableObject {
     /// VM name displayed to user.
-    @Published var name: String = ""
+    @Published var name: String = NSLocalizedString("Virtual Machine", comment: "UTMConfigurationInfo")
     
     /// Base path of icon image. This property is not saved to file.
     @Published var dataURL: URL?
@@ -37,6 +37,9 @@ class UTMConfigurationInfo: Codable, ObservableObject {
     
     /// User specified notes to be displayed when the VM is selected.
     @Published var notes: String?
+    
+    /// Random identifier not accessible by the user.
+    @Published var uuid: UUID = UUID()
     
     /// Use this to get the file to display the icon.
     var iconUrl: URL? {
@@ -61,6 +64,7 @@ class UTMConfigurationInfo: Codable, ObservableObject {
         case icon = "Icon"
         case isIconCustom = "IconCustom"
         case notes = "Notes"
+        case uuid = "UUID"
     }
     
     init() {
@@ -72,6 +76,7 @@ class UTMConfigurationInfo: Codable, ObservableObject {
         icon = try values.decodeIfPresent(String.self, forKey: .icon)
         isIconCustom = try values.decode(Bool.self, forKey: .isIconCustom)
         notes = try values.decodeIfPresent(String.self, forKey: .notes)
+        uuid = try values.decode(UUID.self, forKey: .uuid)
         dataURL = decoder.userInfo[.dataURL] as? URL
     }
     
@@ -81,5 +86,6 @@ class UTMConfigurationInfo: Codable, ObservableObject {
         try container.encodeIfPresent(icon, forKey: .icon)
         try container.encode(isIconCustom, forKey: .isIconCustom)
         try container.encodeIfPresent(notes, forKey: .notes)
+        try container.encode(uuid, forKey: .uuid)
     }
 }

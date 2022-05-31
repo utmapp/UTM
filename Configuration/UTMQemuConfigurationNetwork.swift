@@ -141,3 +141,31 @@ class UTMQemuConfigurationNetwork: Codable, Identifiable, ObservableObject {
         }
     }
 }
+
+// MARK: - Default construction
+
+@available(iOS 13, macOS 11, *)
+extension UTMQemuConfigurationNetwork {
+    convenience init?(forArchitecture architecture: QEMUArchitecture, target: QEMUTarget) {
+        self.init()
+        let rawTarget = target.rawValue
+        if rawTarget.hasPrefix("pc") {
+            hardware = QEMUNetworkDevice_x86_64.rtl8139
+        } else if rawTarget.hasPrefix("q35") {
+            hardware = QEMUNetworkDevice_x86_64.e1000
+        } else if rawTarget.hasPrefix("virt-") || rawTarget == "virt" {
+            hardware = QEMUNetworkDevice_aarch64.virtio_net_pci
+        } else {
+            return nil
+        }
+        #if os(macOS)
+        if #available(macOS 11.3, *) {
+            mode = .shared
+        } else {
+            mode = .emulated
+        }
+        #else
+        mode = .emulated
+        #endif
+    }
+}

@@ -54,3 +54,20 @@ class UTMQemuConfigurationSharing: Codable, ObservableObject {
         try container.encode(hasClipboardSharing, forKey: .hasClipboardSharing)
     }
 }
+
+// MARK: - Default construction
+
+@available(iOS 13, macOS 11, *)
+extension UTMQemuConfigurationSharing {
+    convenience init(forArchitecture architecture: QEMUArchitecture, target: QEMUTarget) {
+        self.init()
+        let rawTarget = target.rawValue
+        if rawTarget.hasPrefix("pc") || rawTarget.hasPrefix("q35") {
+            directoryShareMode = .webdav
+            hasClipboardSharing = true
+        } else if (architecture == .arm || architecture == .aarch64) && (rawTarget.hasPrefix("virt-") || rawTarget == "virt") {
+            directoryShareMode = .webdav
+            hasClipboardSharing = true
+        }
+    }
+}

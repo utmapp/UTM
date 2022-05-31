@@ -27,7 +27,7 @@ class UTMQemuConfigurationSerial: Codable, Identifiable, ObservableObject {
     @Published var target: QEMUSerialTarget = .autoDevice
     
     /// Terminal settings for built-in mode.
-    @Published var terminal: UTMConfigurationTerminal?
+    @Published var terminal: UTMConfigurationTerminal? = .init()
     
     /// Hardware model to emulate (for manual mode).
     @Published var hardware: QEMUSerialDevice?

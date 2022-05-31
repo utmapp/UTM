@@ -65,3 +65,20 @@ class UTMQemuConfigurationDisplay: Codable, Identifiable, ObservableObject {
         try container.encode(isNativeResolution, forKey: .isNativeResolution)
     }
 }
+
+// MARK: - Default construction
+
+@available(iOS 13, macOS 11, *)
+extension UTMQemuConfigurationDisplay {
+    convenience init?(forArchitecture architecture: QEMUArchitecture, target: QEMUTarget) {
+        self.init()
+        let rawTarget = target.rawValue
+        if rawTarget.hasPrefix("pc") || rawTarget.hasPrefix("q35") {
+            hardware = QEMUDisplayDevice_x86_64.virtio_vga
+        } else if rawTarget.hasPrefix("virt-") || rawTarget == "virt" {
+            hardware = QEMUDisplayDevice_aarch64.virtio_ramfb
+        } else {
+            return nil
+        }
+    }
+}

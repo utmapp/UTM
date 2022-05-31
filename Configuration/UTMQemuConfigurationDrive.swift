@@ -77,3 +77,23 @@ class UTMQemuConfigurationDrive: Codable, Identifiable, ObservableObject {
         try container.encode(isRemovable, forKey: .isRemovable)
     }
 }
+
+// MARK: - Default interface
+
+@available(iOS 13, macOS 11, *)
+extension UTMQemuConfigurationDrive {
+    static func defaultInterface(forArchitecture architecture: QEMUArchitecture, target: QEMUTarget, imageType: QEMUDriveImageType) -> QEMUDriveInterface {
+        let rawTarget = target.rawValue
+        if rawTarget.hasPrefix("virt-") || rawTarget == "virt" {
+            if imageType == .cd {
+                return .usb
+            } else {
+                return .virtio
+            }
+        } else if architecture == .sparc || architecture == .sparc64 {
+            return .scsi
+        } else {
+            return .ide
+        }
+    }
+}

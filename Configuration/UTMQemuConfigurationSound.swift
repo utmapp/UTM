@@ -41,3 +41,22 @@ class UTMQemuConfigurationSound: Codable, Identifiable, ObservableObject {
         try container.encode(hardware.asAnyQEMUConstant(), forKey: .hardware)
     }
 }
+
+// MARK: - Default construction
+
+@available(iOS 13, macOS 11, *)
+extension UTMQemuConfigurationSound {
+    convenience init?(forArchitecture architecture: QEMUArchitecture, target: QEMUTarget) {
+        self.init()
+        let rawTarget = target.rawValue
+        if rawTarget.hasPrefix("pc") {
+            hardware = QEMUSoundDevice_x86_64.AC97
+        } else if rawTarget.hasPrefix("q35") || rawTarget.hasPrefix("virt-") || rawTarget == "virt" {
+            hardware = QEMUSoundDevice_x86_64.intel_hda
+        } else if rawTarget == "mac99" {
+            hardware = QEMUSoundDevice_ppc.screamer
+        } else {
+            return nil
+        }
+    }
+}

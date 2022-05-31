@@ -19,6 +19,9 @@ import Foundation
 /// Settings for a QEMU configuration
 @available(iOS 13, macOS 11, *)
 class UTMQemuConfiguration: Codable, ObservableObject {
+    private let oldestVersion = 3
+    private let currentVersion = 3
+    
     /// Basic information and icon
     @Published var information: UTMConfigurationInfo = .init()
     
@@ -60,10 +63,23 @@ class UTMQemuConfiguration: Codable, ObservableObject {
         case networks = "Network"
         case serials = "Serial"
         case sound = "Sound"
+        case backend = "Backend"
+        case configurationVersion = "ConfigurationVersion"
     }
     
     required init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
+        let backend = try values.decodeIfPresent(UTMBackend.self, forKey: .backend) ?? .qemu
+        guard backend == .qemu else {
+            throw QEMUConfigError.invalidBackend
+        }
+        let version = try values.decodeIfPresent(Int.self, forKey: .configurationVersion) ?? 0
+        guard version >= oldestVersion else {
+            throw QEMUConfigError.versionTooLow
+        }
+        guard version <= currentVersion else {
+            throw QEMUConfigError.versionTooHigh
+        }
         information = try values.decode(UTMConfigurationInfo.self, forKey: .information)
         system = try values.decode(UTMQemuConfigurationSystem.self, forKey: .system)
         qemu = try values.decode(UTMQemuConfigurationQEMU.self, forKey: .qemu)
@@ -88,6 +104,46 @@ class UTMQemuConfiguration: Codable, ObservableObject {
         try container.encode(networks, forKey: .networks)
         try container.encode(serials, forKey: .serials)
         try container.encode(sound, forKey: .sound)
+        try container.encode(UTMBackend.qemu, forKey: .backend)
+        try container.encode(currentVersion, forKey: .configurationVersion)
+    }
+}
+
+// MARK: - Defaults
+
+@available(iOS 13, macOS 11, *)
+extension UTMQemuConfiguration {
+    func reset(all: Bool = true) {
+        if all {
+            information = .init()
+            system = .init()
+            drives = []
+        }
+        qemu = .init()
+        input = .init()
+        sharing = .init()
+        displays = []
+        networks = []
+        serials = []
+        sound = []
+    }
+    
+    func reset(forArchitecture architecture: QEMUArchitecture, target: QEMUTarget) {
+        reset(all: false)
+        qemu = .init(forArchitecture: architecture, target: target)
+        input = .init(forArchitecture: architecture, target: target)
+        sharing = .init(forArchitecture: architecture, target: target)
+        if let display = UTMQemuConfigurationDisplay(forArchitecture: architecture, target: target) {
+            displays = [display]
+        } else {
+            serials = [UTMQemuConfigurationSerial()]
+        }
+        if let network = UTMQemuConfigurationNetwork(forArchitecture: architecture, target: target) {
+            networks = [network]
+        }
+        if let _sound = UTMQemuConfigurationSound(forArchitecture: architecture, target: target) {
+            sound = [_sound]
+        }
     }
 }
 
@@ -97,5 +153,28 @@ class UTMQemuConfiguration: Codable, ObservableObject {
 extension CodingUserInfoKey {
     static var dataURL: CodingUserInfoKey {
         return CodingUserInfoKey(rawValue: "dataURL")!
+    }
+}
+
+// MARK: Config parsing
+
+enum UTMBackend: String, CaseIterable, Codable {
+    case apple = "Apple"
+    case qemu = "QEMU"
+}
+
+enum QEMUConfigError: Error {
+    case versionTooLow
+    case versionTooHigh
+    case invalidBackend
+}
+
+extension QEMUConfigError: LocalizedError {
+    var errorDescription: String? {
+        switch self {
+        case .versionTooLow: return NSLocalizedString("This configuration is too old and is not supported.", comment: "UTMQemuConfiguration")
+        case .versionTooHigh: return NSLocalizedString("This configuration is saved with a newer version of UTM and is not compatible with this version.", comment: "UTMQemuConfiguration")
+        case .invalidBackend: return NSLocalizedString("The backend for this configuration is not supported.", comment: "UTMQemuConfiguration")
+        }
     }
 }

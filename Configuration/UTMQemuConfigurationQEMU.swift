@@ -93,3 +93,29 @@ class UTMQemuConfigurationQEMU: Codable, ObservableObject {
         try container.encode(additionalArguments, forKey: .additionalArguments)
     }
 }
+
+// MARK: - Default construction
+
+@available(iOS 13, macOS 11, *)
+extension UTMQemuConfigurationQEMU {
+    convenience init(forArchitecture architecture: QEMUArchitecture, target: QEMUTarget) {
+        self.init()
+        let rawTarget = target.rawValue
+        if rawTarget.hasPrefix("pc") || rawTarget.hasPrefix("q35") {
+            hasUefiBoot = true
+            hasRNGDevice = true
+        } else if (architecture == .arm || architecture == .aarch64) && (rawTarget.hasPrefix("virt-") || rawTarget == "virt") {
+            hasUefiBoot = true
+            hasRNGDevice = true
+        }
+        #if arch(arm64) && os(macOS)
+        if architecture == .aarch64 {
+            hasHypervisor = true
+        }
+        #elseif arch(x86_64) && os(macOS)
+        if architecture == .x86_64 {
+            hasHypervisor = true
+        }
+        #endif
+    }
+}
