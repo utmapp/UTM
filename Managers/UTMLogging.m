@@ -35,7 +35,6 @@ void UTMLog(NSString *format, ...) {
 
 @property (nonatomic, readwrite) NSPipe *standardOutput;
 @property (nonatomic, readwrite) NSPipe *standardError;
-@property (nonatomic, nullable) NSOutputStream *fileOutputStream;
 @property (nonatomic, nullable) NSFileHandle *originalStdoutWrite;
 @property (nonatomic, nullable) NSFileHandle *originalStderrWrite;
 

@@ -889,6 +889,18 @@ class UTMData: ObservableObject {
     }
     #endif
     
+    func driveSize(for driveUrl: URL) async -> Int64 {
+        let r = Task {
+            return try? await UTMQemuImage.size(image: driveUrl)
+        }
+        do { return await r.value ?? 0 } catch { return 0 }
+    }
+    
+    func resizeDrive(for driveUrl: URL, sizeInMib: Int) async throws {
+        let bytesinMib = 1048576
+        try await UTMQemuImage.resize(image: driveUrl, size: UInt64(sizeInMib * bytesinMib))
+    }
+    
     // MARK: - Other utility functions
     
     /// In some regions, iOS will prompt the user for network access

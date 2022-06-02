@@ -24,6 +24,7 @@
     NSMutableArray<NSString *> *_argv;
     NSMutableArray<NSURL *> *_urls;
     NSXPCConnection *_connection;
+    bool _printArgv;
 }
 
 #pragma mark - Properties
@@ -48,12 +49,17 @@
 }
 
 - (instancetype)initWithArgv:(NSArray<NSString *> *)argv {
+    return [self initWithArgv:argv printArgv:false];
+}
+
+- (instancetype)initWithArgv:(NSArray<NSString *> *)argv printArgv:(bool)printArgv {
     if (self = [super init]) {
         _argv = [argv mutableCopy];
         _urls = [NSMutableArray<NSURL *> array];
         if (![self setupXpc]) {
             return nil;
         }
+        _printArgv = printArgv;
     }
     return self;
 }
@@ -184,7 +190,7 @@
 }
 
 - (void)startQemu:(nonnull NSString *)name completion:(void(^)(BOOL,NSString * _Nullable))completion {
-    [self printArgv];
+    if (_printArgv) [self printArgv];
 #if TARGET_OS_IPHONE
     NSString *base = @"";
 #else
