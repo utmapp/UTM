@@ -104,15 +104,17 @@ struct ContentView: View {
             IQKeyboardManager.shared.enable = true
             #if !WITH_QEMU_TCI
             if !Main.jitAvailable {
-                data.busyWork {
-                    var showMessage = true
+                data.busyWorkAsync {
+                    var jitStreamerAttach = UserDefaults.standard.bool(forKey: "JitStreamerAttach")
                     #if canImport(AltKit)
-                    if data.isAltServerCompatible {
-                        showMessage = false
-                        try data.startAltJIT()
+                    if await data.isAltServerCompatible {
+                        jitStreamerAttach = false
+                        try await data.startAltJIT()
                     }
                     #endif
-                    if showMessage {
+                    if #available(iOS 15, *), jitStreamerAttach {
+                        try await data.jitStreamerAttach()
+                    } else {
                         throw NSLocalizedString("Your version of iOS does not support running VMs while unmodified. You must either run UTM while jailbroken or with a remote debugger attached. See https://getutm.app/install/ for more details.", comment: "ContentView")
                     }
                 }
