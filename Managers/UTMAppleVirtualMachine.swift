@@ -87,6 +87,10 @@ import Virtualization
     weak var screenshotDelegate: UTMScreenshotProvider?
     
     override static func isAppleVM(forPath path: URL) -> Bool {
+        _ = path.startAccessingSecurityScopedResource()
+        defer {
+            path.stopAccessingSecurityScopedResource()
+        }
         do {
             _ = try UTMAppleConfiguration.load(from: path)
             return true
@@ -136,7 +140,7 @@ import Virtualization
     }
     
     override func accessShortcut() async throws {
-        // FIXME: Apple VM doesn't support saving bookmarks
+        // not needed for Apple VMs
     }
     
     private func _vmStart() async throws {

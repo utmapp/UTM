@@ -180,16 +180,7 @@ class UTMData: ObservableObject {
                     wrappedVM = UTMWrappedVirtualMachine(from: dict)
                 }
                 if let vm = wrappedVM?.unwrap() {
-                    #if os(macOS)
-                    // FIXME: we do not support Apple VM shortcuts because we cannot access the drives
-                    if let appleVM = vm as? UTMAppleVirtualMachine, appleVM.isShortcut {
-                        return nil
-                    } else {
-                        return vm
-                    }
-                    #else
                     return vm
-                    #endif
                 } else {
                     return wrappedVM
                 }
@@ -510,11 +501,6 @@ class UTMData: ObservableObject {
         if oldSelected == vm {
             await listSelect(vm: newVM)
         }
-        #if os(macOS)
-        if let _ = newVM as? UTMAppleVirtualMachine {
-            throw NSLocalizedString("Shortcuts to Apple virtual machines cannot be stored. You must open the .utm bundle from Finder each time UTM is launched.", comment: "UTMData")
-        }
-        #endif
     }
     
     /// Open settings modal
