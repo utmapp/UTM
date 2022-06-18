@@ -87,3 +87,52 @@ class UTMQemuConfigurationSystem: Codable, ObservableObject {
         try container.encode(jitCacheSize, forKey: .jitCacheSize)
     }
 }
+
+// MARK: - Conversion of old config format
+
+@available(iOS 13, macOS 11, *)
+extension UTMQemuConfigurationSystem {
+    convenience init(migrating oldConfig: UTMLegacyQemuConfiguration) {
+        self.init()
+        if let archStr = oldConfig.systemArchitecture, let arch = QEMUArchitecture(rawValue: archStr) {
+            architecture = arch
+        }
+        if let targetStr = oldConfig.systemTarget {
+            target = AnyQEMUConstant(rawValue: targetStr)!
+        }
+        if let cpuStr = oldConfig.systemCPU {
+            cpu = AnyQEMUConstant(rawValue: cpuStr)!
+        }
+        if let cpuCountNum = oldConfig.systemCPUCount {
+            cpuCount = cpuCountNum.intValue
+        }
+        if let oldFlags = oldConfig.systemCPUFlags {
+            for oldFlag in oldFlags {
+                var newFlag = oldFlag
+                let isAdd: Bool
+                if oldFlag.starts(with: "-") {
+                    newFlag.removeFirst()
+                    isAdd = false
+                } else if oldFlag.starts(with: "+") {
+                    newFlag.removeFirst()
+                    isAdd = true
+                } else {
+                    isAdd = true
+                }
+                let flag = AnyQEMUConstant(rawValue: newFlag)!
+                if isAdd {
+                    cpuFlagsAdd.append(flag)
+                } else {
+                    cpuFlagsRemove.append(flag)
+                }
+            }
+        }
+        isForceMulticore = oldConfig.systemForceMulticore
+        if let memoryNum = oldConfig.systemMemory {
+            memorySize = memoryNum.intValue
+        }
+        if let jitCacheNum = oldConfig.systemJitCacheSize {
+            jitCacheSize = jitCacheNum.intValue
+        }
+    }
+}

@@ -33,3 +33,33 @@ struct UTMQemuConfigurationPortForward: Codable {
     /// Guest port where connection is coming from.
     var guestPort: Int = 0
 }
+
+// MARK: - Conversion of old config format
+
+@available(iOS 13, macOS 11, *)
+extension UTMQemuConfigurationPortForward {
+    init(migrating oldForward: UTMLegacyQemuConfigurationPortForward) {
+        self.init()
+        if let oldProtocol = convertProtocol(from: oldForward.protocol) {
+            `protocol` = oldProtocol
+        }
+        hostAddress = oldForward.hostAddress
+        if let portNum = oldForward.guestPort {
+            hostPort = portNum.intValue
+        }
+        guestAddress = oldForward.guestAddress
+        if let portNum = oldForward.guestPort {
+            guestPort = portNum.intValue
+        }
+    }
+    
+    private func convertProtocol(from str: String?) -> QEMUNetworkProtocol? {
+        if str == "tcp" {
+            return .tcp
+        } else if str == "udp" {
+            return .udp
+        } else {
+            return nil
+        }
+    }
+}

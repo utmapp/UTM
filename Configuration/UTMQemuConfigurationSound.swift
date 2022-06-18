@@ -65,3 +65,18 @@ extension UTMQemuConfigurationSound {
         }
     }
 }
+
+// MARK: - Conversion of old config format
+
+@available(iOS 13, macOS 11, *)
+extension UTMQemuConfigurationSound {
+    convenience init?(migrating oldConfig: UTMLegacyQemuConfiguration) {
+        self.init()
+        guard oldConfig.soundEnabled else {
+            return nil
+        }
+        if let hardwareStr = oldConfig.soundCard {
+            hardware = AnyQEMUConstant(rawValue: hardwareStr)!
+        }
+    }
+}

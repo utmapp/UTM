@@ -89,3 +89,36 @@ extension UTMQemuConfigurationDisplay {
         }
     }
 }
+
+// MARK: - Conversion of old config format
+
+@available(iOS 13, macOS 11, *)
+extension UTMQemuConfigurationDisplay {
+    convenience init?(migrating oldConfig: UTMLegacyQemuConfiguration) {
+        self.init()
+        guard !oldConfig.displayConsoleOnly else {
+            return nil
+        }
+        if let hardwareStr = oldConfig.displayCard {
+            hardware = AnyQEMUConstant(rawValue: hardwareStr)!
+        }
+        isDynamicResolution = oldConfig.displayFitScreen
+        isNativeResolution = oldConfig.displayRetina
+        if let upscaler = convertScaler(from: oldConfig.displayUpscaler) {
+            upscalingFilter = upscaler
+        }
+        if let downscaler = convertScaler(from: oldConfig.displayDownscaler) {
+            downscalingFilter = downscaler
+        }
+    }
+    
+    private func convertScaler(from str: String?) -> QEMUScaler? {
+        if str == "linear" {
+            return .linear
+        } else if str == "nearest" {
+            return .nearest
+        } else {
+            return nil
+        }
+    }
+}

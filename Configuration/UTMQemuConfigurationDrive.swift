@@ -97,3 +97,63 @@ extension UTMQemuConfigurationDrive {
         }
     }
 }
+
+// MARK: - Conversion of old config format
+
+@available(iOS 13, macOS 11, *)
+extension UTMQemuConfigurationDrive {
+    convenience init(migrating oldConfig: UTMLegacyQemuConfiguration, at index: Int) {
+        self.init()
+        imageName = oldConfig.driveName(for: index)
+        imageType = convertImageType(from: oldConfig.driveImageType(for: index))
+        interface = convertInterface(from: oldConfig.driveInterfaceType(for: index))
+        isRemovable = oldConfig.driveRemovable(for: index)
+    }
+    
+    private func convertImageType(from type: UTMDiskImageType) -> QEMUDriveImageType {
+        switch type {
+        case .none:
+            return .none
+        case .disk:
+            return .disk
+        case .CD:
+            return .cd
+        case .BIOS:
+            return .bios
+        case .kernel:
+            return .linuxKernel
+        case .initrd:
+            return .linuxInitrd
+        case .DTB:
+            return .linuxDtb
+        case .max:
+            return .none
+        @unknown default:
+            return .none
+        }
+    }
+    
+    private func convertInterface(from str: String?) -> QEMUDriveInterface {
+        if str == "ide" {
+            return .ide
+        } else if str == "scsi" {
+            return .scsi
+        } else if str == "sd" {
+            return .sd
+        } else if str == "mtd" {
+            return .mtd
+        } else if str == "floppy" {
+            return .floppy
+        } else if str == "pflash" {
+            return .pflash
+        } else if str == "virtio" {
+            return .virtio
+        } else if str == "nvme" {
+            return .nvme
+        } else if str == "usb" {
+            return .usb
+        } else {
+            return .none
+        }
+    }
+}

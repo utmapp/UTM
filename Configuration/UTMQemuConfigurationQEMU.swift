@@ -119,3 +119,22 @@ extension UTMQemuConfigurationQEMU {
         #endif
     }
 }
+
+// MARK: - Conversion of old config format
+
+@available(iOS 13, macOS 11, *)
+extension UTMQemuConfigurationQEMU {
+    convenience init(migrating oldConfig: UTMLegacyQemuConfiguration) {
+        self.init()
+        hasDebugLog = oldConfig.debugLogEnabled
+        hasUefiBoot = oldConfig.systemBootUefi
+        hasRNGDevice = oldConfig.systemRngEnabled
+        hasHypervisor = oldConfig.useHypervisor
+        hasRTCLocalTime = oldConfig.rtcUseLocalTime
+        hasPS2Controller = oldConfig.forcePs2Controller
+        machinePropertyOverride = oldConfig.systemMachineProperties
+        if let oldAddArgs = oldConfig.systemArguments {
+            additionalArguments = oldAddArgs
+        }
+    }
+}

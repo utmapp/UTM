@@ -67,6 +67,10 @@ class UTMQemuConfiguration: Codable, ObservableObject {
         case configurationVersion = "ConfigurationVersion"
     }
     
+    init() {
+        reset()
+    }
+    
     required init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         let backend = try values.decodeIfPresent(UTMBackend.self, forKey: .backend) ?? .qemu
@@ -142,6 +146,33 @@ extension UTMQemuConfiguration {
             networks = [network]
         }
         if let _sound = UTMQemuConfigurationSound(forArchitecture: architecture, target: target) {
+            sound = [_sound]
+        }
+    }
+}
+
+// MARK: - Conversion of old config format
+
+@available(iOS 13, macOS 11, *)
+extension UTMQemuConfiguration {
+    convenience init(migrating oldConfig: UTMLegacyQemuConfiguration) {
+        self.init()
+        information = .init(migrating: oldConfig)
+        system = .init(migrating: oldConfig)
+        qemu = .init(migrating: oldConfig)
+        input = .init(migrating: oldConfig)
+        sharing = .init(migrating: oldConfig)
+        if let display = UTMQemuConfigurationDisplay(migrating: oldConfig) {
+            displays = [display]
+        }
+        drives = (0..<oldConfig.countDrives).map({ i in UTMQemuConfigurationDrive(migrating: oldConfig, at: i) })
+        if let network = UTMQemuConfigurationNetwork(migrating: oldConfig) {
+            networks = [network]
+        }
+        if let serial = UTMQemuConfigurationSerial(migrating: oldConfig) {
+            serials = [serial]
+        }
+        if let _sound = UTMQemuConfigurationSound(migrating: oldConfig) {
             sound = [_sound]
         }
     }

@@ -74,3 +74,21 @@ class UTMConfigurationTerminal: Codable, Identifiable, ObservableObject {
         try container.encodeIfPresent(resizeCommand, forKey: .resizeCommand)
     }
 }
+
+// MARK: - Conversion of old config format
+
+@available(iOS 13, macOS 11, *)
+extension UTMConfigurationTerminal {
+    convenience init(migrating oldConfig: UTMLegacyQemuConfiguration) {
+        self.init()
+        foregroundColor = oldConfig.consoleTextColor
+        backgroundColor = oldConfig.consoleBackgroundColor
+        if let fontStr = oldConfig.consoleFont {
+            font = QEMUTerminalFont(rawValue: fontStr)
+        }
+        if let fontSizeNum = oldConfig.consoleFontSize {
+            fontSize = fontSizeNum.intValue
+        }
+        resizeCommand = oldConfig.consoleResizeCommand
+    }
+}

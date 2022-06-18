@@ -71,3 +71,17 @@ extension UTMQemuConfigurationSharing {
         }
     }
 }
+
+// MARK: - Conversion of old config format
+
+@available(iOS 13, macOS 11, *)
+extension UTMQemuConfigurationSharing {
+    convenience init(migrating oldConfig: UTMLegacyQemuConfiguration) {
+        self.init()
+        if oldConfig.shareDirectoryEnabled {
+            directoryShareMode = .webdav
+        }
+        isDirectoryShareReadOnly = oldConfig.shareDirectoryReadOnly
+        hasClipboardSharing = oldConfig.shareClipboardEnabled
+    }
+}

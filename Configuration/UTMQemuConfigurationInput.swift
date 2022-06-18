@@ -68,3 +68,23 @@ extension UTMQemuConfigurationInput {
         }
     }
 }
+
+// MARK: - Conversion of old config format
+
+@available(iOS 13, macOS 11, *)
+extension UTMQemuConfigurationInput {
+    convenience init(migrating oldConfig: UTMLegacyQemuConfiguration) {
+        self.init()
+        if oldConfig.inputLegacy {
+            usbBusSupport = .disabled
+        } else if oldConfig.usb3Support {
+            usbBusSupport = .usb3_0
+        } else {
+            usbBusSupport = .usb2_0
+        }
+        if let sharingNum = oldConfig.usbRedirectionMaximumDevices {
+            hasUsbSharing = true
+            maximumUsbShare = sharingNum.intValue
+        }
+    }
+}

@@ -89,3 +89,20 @@ class UTMConfigurationInfo: Codable, ObservableObject {
         try container.encode(uuid, forKey: .uuid)
     }
 }
+
+// MARK: - Conversion of old config format
+
+@available(iOS 13, macOS 11, *)
+extension UTMConfigurationInfo {
+    convenience init(migrating oldConfig: UTMLegacyQemuConfiguration) {
+        self.init()
+        name = oldConfig.name
+        notes = oldConfig.notes
+        if let uuidString = oldConfig.systemUUID, let uuid = UUID(uuidString: uuidString) {
+            self.uuid = uuid
+        }
+        isIconCustom = oldConfig.iconCustom
+        dataURL = oldConfig.existingPath
+        icon = oldConfig.icon
+    }
+}

@@ -92,3 +92,16 @@ extension UTMQemuConfigurationSerial {
         }
     }
 }
+
+// MARK: - Conversion of old config format
+
+@available(iOS 13, macOS 11, *)
+extension UTMQemuConfigurationSerial {
+    convenience init?(migrating oldConfig: UTMLegacyQemuConfiguration) {
+        self.init()
+        guard oldConfig.displayConsoleOnly else {
+            return nil
+        }
+        terminal = UTMConfigurationTerminal(migrating: oldConfig)
+    }
+}

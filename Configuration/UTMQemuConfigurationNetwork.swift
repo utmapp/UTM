@@ -174,3 +174,51 @@ extension UTMQemuConfigurationNetwork {
         #endif
     }
 }
+
+// MARK: - Conversion of old config format
+
+@available(iOS 13, macOS 11, *)
+extension UTMQemuConfigurationNetwork {
+    convenience init?(migrating oldConfig: UTMLegacyQemuConfiguration) {
+        self.init()
+        guard oldConfig.networkEnabled else {
+            return nil
+        }
+        guard let oldMode = convertMode(from: oldConfig.networkMode) else {
+            return nil
+        }
+        mode = oldMode
+        if let hardwareStr = oldConfig.networkCard {
+            hardware = AnyQEMUConstant(rawValue: hardwareStr)!
+        }
+        if let macString = oldConfig.networkCardMac {
+            macAddress = macString
+        }
+        isIsolateFromHost = oldConfig.networkIsolate
+        bridgeInterface = oldConfig.networkBridgeInterface
+        vlanGuestAddress = oldConfig.networkAddress
+        vlanGuestAddressIPv6 = oldConfig.networkAddressIPv6
+        vlanHostAddress = oldConfig.networkHost
+        vlanHostAddressIPv6 = oldConfig.networkHostIPv6
+        vlanDhcpStartAddress = oldConfig.networkDhcpStart
+        vlanDhcpDomain = oldConfig.networkDhcpDomain
+        vlanDnsServerAddress = oldConfig.networkDnsServer
+        vlanDnsServerAddressIPv6 = oldConfig.networkDnsServerIPv6
+        vlanDnsSearchDomain = oldConfig.networkDnsSearch
+        portForward = oldConfig.portForwards().map({ old in UTMQemuConfigurationPortForward(migrating: old) })
+    }
+    
+    private func convertMode(from str: String?) -> QEMUNetworkMode? {
+        if str == "emulated" {
+            return .emulated
+        } else if str == "shared" {
+            return .shared
+        } else if str == "host" {
+            return .host
+        } else if str == "bridged" {
+            return .bridged
+        } else {
+            return nil
+        }
+    }
+}
