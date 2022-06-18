@@ -78,7 +78,14 @@ extension UTMQemuConfigurationDisplay {
         } else if rawTarget.hasPrefix("virt-") || rawTarget == "virt" {
             hardware = QEMUDisplayDevice_aarch64.virtio_ramfb
         } else {
-            return nil
+            let cards = architecture.displayDeviceType.allRawValues
+            if cards.contains("VGA") {
+                hardware = AnyQEMUConstant(rawValue: "VGA")!
+            } else if let first = cards.first {
+                hardware = AnyQEMUConstant(rawValue: first)!
+            } else {
+                return nil
+            }
         }
     }
 }

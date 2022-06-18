@@ -56,7 +56,12 @@ extension UTMQemuConfigurationSound {
         } else if rawTarget == "mac99" {
             hardware = QEMUSoundDevice_ppc.screamer
         } else {
-            return nil
+            let cards = architecture.soundDeviceType.allRawValues
+            if let first = cards.first {
+                hardware = AnyQEMUConstant(rawValue: first)!
+            } else {
+                return nil
+            }
         }
     }
 }

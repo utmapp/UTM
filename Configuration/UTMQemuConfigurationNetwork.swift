@@ -156,7 +156,12 @@ extension UTMQemuConfigurationNetwork {
         } else if rawTarget.hasPrefix("virt-") || rawTarget == "virt" {
             hardware = QEMUNetworkDevice_aarch64.virtio_net_pci
         } else {
-            return nil
+            let cards = architecture.networkDeviceType.allRawValues
+            if let first = cards.first {
+                hardware = AnyQEMUConstant(rawValue: first)!
+            } else {
+                return nil
+            }
         }
         #if os(macOS)
         if #available(macOS 11.3, *) {

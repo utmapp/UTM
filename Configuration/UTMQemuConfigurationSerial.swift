@@ -80,3 +80,15 @@ class UTMQemuConfigurationSerial: Codable, Identifiable, ObservableObject {
         }
     }
 }
+
+// MARK: - Default construction
+
+@available(iOS 13, macOS 11, *)
+extension UTMQemuConfigurationSerial {
+    convenience init?(forArchitecture architecture: QEMUArchitecture, target: QEMUTarget) {
+        self.init()
+        guard architecture.displayDeviceType.allRawValues.isEmpty else {
+            return nil
+        }
+    }
+}
