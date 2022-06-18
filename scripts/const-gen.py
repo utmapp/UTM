@@ -158,12 +158,9 @@ def parseCpu(listing):
             desc = '{} ({})'.format(desc, name)
         return Name(name, desc)
     def parseSparcFlags(line):
-        if line.startswith('Default CPU feature flags'):
+        if line.startswith('Default CPU feature flags') or line.startswith('Available CPU feature flags'):
             flags = line.split(':')[1].strip()
-            return [Name('-' + flag, '-' + flag) for flag in flags.split(' ')]
-        elif line.startswith('Available CPU feature flags'):
-            flags = line.split(':')[1].strip()
-            return [Name('+' + flag, '+' + flag) for flag in flags.split(' ')]
+            return [Name(flag, flag) for flag in flags.split(' ')]
         elif line.startswith('Numerical features'):
             return []
         else:

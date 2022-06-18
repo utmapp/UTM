@@ -4533,73 +4533,73 @@ typealias QEMUCPUFlag_sh4 = AnyQEMUConstant
 typealias QEMUCPUFlag_sh4eb = AnyQEMUConstant
 
 enum QEMUCPUFlag_sparc: String, CaseIterable, QEMUCPUFlag {
-    case _cmt = "+cmt"
-    case _float128 = "+float128"
-    case _gl = "+gl"
-    case _hypv = "+hypv"
-    case _vis1 = "+vis1"
-    case _vis2 = "+vis2"
-    case _div = "-div"
-    case _float = "-float"
-    case _flush = "-flush"
-    case _fmul = "-fmul"
-    case _fsmuld = "-fsmuld"
-    case _fsqrt = "-fsqrt"
-    case _mul = "-mul"
-    case _swap = "-swap"
+    case cmt
+    case div
+    case float
+    case float128
+    case flush
+    case fmul
+    case fsmuld
+    case fsqrt
+    case gl
+    case hypv
+    case mul
+    case swap
+    case vis1
+    case vis2
 
     var prettyValue: String {
         switch self {
-        case ._cmt: return "+cmt"
-        case ._float128: return "+float128"
-        case ._gl: return "+gl"
-        case ._hypv: return "+hypv"
-        case ._vis1: return "+vis1"
-        case ._vis2: return "+vis2"
-        case ._div: return "-div"
-        case ._float: return "-float"
-        case ._flush: return "-flush"
-        case ._fmul: return "-fmul"
-        case ._fsmuld: return "-fsmuld"
-        case ._fsqrt: return "-fsqrt"
-        case ._mul: return "-mul"
-        case ._swap: return "-swap"
+        case .cmt: return "cmt"
+        case .div: return "div"
+        case .float: return "float"
+        case .float128: return "float128"
+        case .flush: return "flush"
+        case .fmul: return "fmul"
+        case .fsmuld: return "fsmuld"
+        case .fsqrt: return "fsqrt"
+        case .gl: return "gl"
+        case .hypv: return "hypv"
+        case .mul: return "mul"
+        case .swap: return "swap"
+        case .vis1: return "vis1"
+        case .vis2: return "vis2"
         }
     }
 }
 
 enum QEMUCPUFlag_sparc64: String, CaseIterable, QEMUCPUFlag {
-    case _cmt = "+cmt"
-    case _float128 = "+float128"
-    case _gl = "+gl"
-    case _hypv = "+hypv"
-    case _div = "-div"
-    case _float = "-float"
-    case _flush = "-flush"
-    case _fmul = "-fmul"
-    case _fsmuld = "-fsmuld"
-    case _fsqrt = "-fsqrt"
-    case _mul = "-mul"
-    case _swap = "-swap"
-    case _vis1 = "-vis1"
-    case _vis2 = "-vis2"
+    case cmt
+    case div
+    case float
+    case float128
+    case flush
+    case fmul
+    case fsmuld
+    case fsqrt
+    case gl
+    case hypv
+    case mul
+    case swap
+    case vis1
+    case vis2
 
     var prettyValue: String {
         switch self {
-        case ._cmt: return "+cmt"
-        case ._float128: return "+float128"
-        case ._gl: return "+gl"
-        case ._hypv: return "+hypv"
-        case ._div: return "-div"
-        case ._float: return "-float"
-        case ._flush: return "-flush"
-        case ._fmul: return "-fmul"
-        case ._fsmuld: return "-fsmuld"
-        case ._fsqrt: return "-fsqrt"
-        case ._mul: return "-mul"
-        case ._swap: return "-swap"
-        case ._vis1: return "-vis1"
-        case ._vis2: return "-vis2"
+        case .cmt: return "cmt"
+        case .div: return "div"
+        case .float: return "float"
+        case .float128: return "float128"
+        case .flush: return "flush"
+        case .fmul: return "fmul"
+        case .fsmuld: return "fsmuld"
+        case .fsqrt: return "fsqrt"
+        case .gl: return "gl"
+        case .hypv: return "hypv"
+        case .mul: return "mul"
+        case .swap: return "swap"
+        case .vis1: return "vis1"
+        case .vis2: return "vis2"
         }
     }
 }
