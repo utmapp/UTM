@@ -7,7 +7,11 @@
 
 UTM is a full featured system emulator and virtual machine host for iOS and macOS. It is based off of QEMU. In short, it allows you to run Windows, Linux, and more on your Mac, iPhone, and iPad. More information at https://getutm.app/ and https://mac.getutm.app/
 
-![Screenshot of UTM running on iPhone][2]
+<p align="center">
+  <img width="450px" alt="UTM running on an iPhone" src="screen.png">
+  <br>
+  <img width="450px" alt="UTM running on a MacBook" src="screenmac.png">
+</p>
 
 ## Features
 
