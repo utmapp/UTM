@@ -18,87 +18,43 @@ import SwiftUI
 
 @available(iOS 14, macOS 11, *)
 struct VMConfigInputView: View {
-    @ObservedObject var config: UTMLegacyQemuConfiguration
-    
-    private var usbSupport: Binding<UsbSupport> {
-        Binding {
-            if config.inputLegacy {
-                return UsbSupport.off
-            } else if config.usb3Support {
-                return UsbSupport.usb3
-            } else {
-                return UsbSupport.usb2
-            }
-        } set: { support in
-            config.inputLegacy = support == .off
-            config.usb3Support = support == .usb3
-        }
-    }
-    
-    private var sharingEnabled: Binding<Bool> {
-        Binding {
-            config.usbRedirectionMaximumDevices != 0
-        } set: { enabled in
-            if enabled {
-                config.usbRedirectionMaximumDevices = 3
-            } else {
-                config.usbRedirectionMaximumDevices = 0
-            }
-        }
-    }
-    
-    private var maxUsbShared: Binding<Int> {
-        Binding {
-            Int(truncating: config.usbRedirectionMaximumDevices ?? 0)
-        } set: {
-            config.usbRedirectionMaximumDevices = NSNumber(value: $0)
-        }
-    }
+    @ObservedObject var config: UTMQemuConfigurationInput
     
     var body: some View {
         VStack {
             Form {
                 DetailedSection("USB", description: "If enabled, the default input devices will be emulated on the USB bus.") {
-                    DefaultPicker("USB Support", selection: usbSupport) {
-                        Text("Off").tag(UsbSupport.off)
-                        Text("USB 2.0").tag(UsbSupport.usb2)
-                        Text("USB 3.0 (XHCI)").tag(UsbSupport.usb3)
-                    }
+                    VMConfigConstantPicker("USB Support", selection: $config.usbBusSupport)
                 }
                 
                 #if !WITH_QEMU_TCI
-                if !config.inputLegacy {
+                if config.usbBusSupport != .disabled {
                     Section(header: Text("USB Sharing")) {
                         if !jb_has_usb_entitlement() {
                             Text("USB sharing not supported in this build of UTM.")
-                        } else if config.displayConsoleOnly {
-                            Text("USB sharing not supported in console display mode.")
                         }
-                        Toggle(isOn: sharingEnabled) {
+                        Toggle(isOn: $config.hasUsbSharing) {
                             Text("Share USB devices from host")
                         }
-                        let maxUsbObserver = Binding<Int> {
-                            Int(truncating: config.usbRedirectionMaximumDevices ?? 0)
-                        } set: {
-                            config.usbRedirectionMaximumDevices = NSNumber(value: $0)
-                        }
                         HStack {
-                            Stepper(value: maxUsbObserver, in: 0...64) {
+                            Stepper(value: $config.maximumUsbShare, in: 0...64) {
                                 Text("Maximum Shared USB Devices")
                             }
-                            NumberTextField("", number: $config.usbRedirectionMaximumDevices, onEditingChanged: validateMaxUsb)
+                            NumberTextField("", number: $config.maximumUsbShare, onEditingChanged: validateMaxUsb)
                                 .frame(width: 50)
                                 .multilineTextAlignment(.trailing)
                         }
-                    }.disabled(!jb_has_usb_entitlement() || config.displayConsoleOnly)
+                    }.disabled(!jb_has_usb_entitlement())
                 }
                 #endif
                 
+                /* //FIXME: move to global setting
                 Section(header: Text("Mouse Wheel")) {
                     Toggle(isOn: $config.inputScrollInvert, label: {
                         Text("Invert Mouse Scroll")
                     })
                 }
+                 */
                 
                 GestureSettingsSection()
             }
@@ -109,14 +65,10 @@ struct VMConfigInputView: View {
         guard !editing else {
             return
         }
-        guard let maxUsb = config.usbRedirectionMaximumDevices?.intValue else {
-            config.usbRedirectionMaximumDevices = 3
-            return
-        }
-        if maxUsb < 0 {
-            config.usbRedirectionMaximumDevices = 0
-        } else if maxUsb > 64 {
-            config.usbRedirectionMaximumDevices = 64
+        if config.maximumUsbShare < 0 {
+            config.maximumUsbShare = 0
+        } else if config.maximumUsbShare > 64 {
+            config.maximumUsbShare = 64
         }
     }
 }
@@ -155,7 +107,7 @@ struct GestureSettingsSection: View {
 
 @available(iOS 14, macOS 11, *)
 struct VMConfigInputView_Previews: PreviewProvider {
-    @ObservedObject static private var config = UTMLegacyQemuConfiguration()
+    @ObservedObject static private var config = UTMQemuConfigurationInput()
     
     static var previews: some View {
         VMConfigInputView(config: config)

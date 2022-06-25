@@ -104,5 +104,6 @@ extension UTMConfigurationInfo {
         isIconCustom = oldConfig.iconCustom
         dataURL = oldConfig.existingPath
         icon = oldConfig.icon
+        dataURL = oldConfig.existingPath
     }
 }

@@ -249,7 +249,7 @@ NSString *const kSuspendSnapshotName = @"suspend";
 
 - (void)_vmStartWithCompletion:(void (^)(NSError * _Nullable))completion {
     // check if we can actually start this VM
-    if (![UTMQemuVirtualMachine isSupportedWithSystemArchitecture:self.qemuConfig.systemArchitecture]) {
+    if (!self.isSupported) {
         completion([self errorWithMessage:NSLocalizedString(@"This build of UTM does not support emulating the architecture of this VM.", @"UTMQemuVirtualMachine")]);
         return;
     }

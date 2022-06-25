@@ -18,41 +18,52 @@ import SwiftUI
 
 @available(iOS 14, macOS 11, *)
 struct VMConfigSharingView: View {
-    @ObservedObject var config: UTMLegacyQemuConfiguration
+    @ObservedObject var config: UTMQemuConfigurationSharing
+    @State private var isImporterPresented: Bool = false
+    @EnvironmentObject private var data: UTMData
     
     var body: some View {
         VStack {
             Form {
-                if config.displayConsoleOnly {
-                    Text("These settings are unavailable in console display mode.")
-                }
-                
                 DetailedSection("Clipboard Sharing", description: "Requires SPICE guest agent tools to be installed.") {
-                    Toggle(isOn: $config.shareClipboardEnabled, label: {
+                    Toggle(isOn: $config.hasClipboardSharing, label: {
                         Text("Enable Clipboard Sharing")
                     })
                 }
                 
-                DetailedSection("Shared Directory", description: "Requires SPICE WebDAV service to be installed.") {
-                    Toggle(isOn: $config.shareDirectoryEnabled.animation(), label: {
-                        Text("Enable Directory Sharing")
-                    }).onChange(of: config.shareDirectoryEnabled, perform: { _ in
-                        // remove legacy bookmark data
-                        config.shareDirectoryBookmark = nil
-                    })
-                    Toggle(isOn: $config.shareDirectoryReadOnly, label: {
-                        Text("Read Only")
-                    })
-                    Text("Note: select the path to share from the main screen.")
+                DetailedSection("Shared Directory") {
+                    VMConfigConstantPicker("Directory Share Mode", selection: $config.directoryShareMode)
+                    if config.directoryShareMode != .none {
+                        HStack {
+                            TextField("Path", text: .constant(config.directoryShareUrl?.path ?? ""))
+                                .disabled(true)
+                            Button("Clear") {
+                                config.directoryShareUrl = nil
+                            }
+                            Button("Browse…") {
+                                isImporterPresented.toggle()
+                            }
+                        }
+                        Toggle(isOn: $config.isDirectoryShareReadOnly, label: {
+                            Text("Read Only")
+                        })
+                    }
+                }.fileImporter(isPresented: $isImporterPresented, allowedContentTypes: [.folder]) { result in
+                    data.busyWorkAsync {
+                        let url = try result.get()
+                        await MainActor.run {
+                            config.directoryShareUrl = url
+                        }
+                    }
                 }
-            }.disabled(config.displayConsoleOnly)
+            }
         }
     }
 }
 
 @available(iOS 14, macOS 11, *)
 struct VMConfigSharingView_Previews: PreviewProvider {
-    @State static private var config = UTMLegacyQemuConfiguration()
+    @State static private var config = UTMQemuConfigurationSharing()
     
     static var previews: some View {
         VMConfigSharingView(config: config)

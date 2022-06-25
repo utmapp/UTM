@@ -261,7 +261,7 @@ def generateEnum(name, values, prettyValues, baseName='QEMUConstant', defaultVal
     output += '\n'
     if defaultValue:
         sanitized = sanitizeName(defaultValue)
-        output += f'    var `default`: {name} {{\n'
+        output += f'    static var `default`: {name} {{\n'
         output += f'        .{sanitized}\n'
         output += f'    }}\n'
         output += f'\n'

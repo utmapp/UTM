@@ -158,7 +158,9 @@ struct VMConfigAppleDisplayView: View {
                 }
             }
             if config.isConsoleDisplay {
+                /* //FIXME: Temporarily disabled during config rewrite.
                 VMConfigDisplayConsoleView(config: config)
+                 */
             } else {
                 DefaultPicker("Resolution", selection: displayResolution) {
                     ForEach(resolutions) { item in

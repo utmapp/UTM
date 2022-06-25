@@ -5258,7 +5258,7 @@ enum QEMUTarget_alpha: String, CaseIterable, QEMUTarget {
     case clipper
     case none
 
-    var `default`: QEMUTarget_alpha {
+    static var `default`: QEMUTarget_alpha {
         .clipper
     }
 
@@ -5370,7 +5370,7 @@ enum QEMUTarget_arm: String, CaseIterable, QEMUTarget {
     case cubieboard
     case none
 
-    var `default`: QEMUTarget_arm {
+    static var `default`: QEMUTarget_arm {
         .virt
     }
 
@@ -5583,7 +5583,7 @@ enum QEMUTarget_aarch64: String, CaseIterable, QEMUTarget {
     case cubieboard
     case none
 
-    var `default`: QEMUTarget_aarch64 {
+    static var `default`: QEMUTarget_aarch64 {
         .virt
     }
 
@@ -5707,7 +5707,7 @@ enum QEMUTarget_avr: String, CaseIterable, QEMUTarget {
     case arduino_uno = "arduino-uno"
     case none
 
-    var `default`: QEMUTarget_avr {
+    static var `default`: QEMUTarget_avr {
         .mega
     }
 
@@ -5730,7 +5730,7 @@ enum QEMUTarget_cris: String, CaseIterable, QEMUTarget {
     case axis_dev88 = "axis-dev88"
     case none
 
-    var `default`: QEMUTarget_cris {
+    static var `default`: QEMUTarget_cris {
         .axis_dev88
     }
 
@@ -5746,7 +5746,7 @@ enum QEMUTarget_hppa: String, CaseIterable, QEMUTarget {
     case hppa
     case none
 
-    var `default`: QEMUTarget_hppa {
+    static var `default`: QEMUTarget_hppa {
         .hppa
     }
 
@@ -5816,7 +5816,7 @@ enum QEMUTarget_i386: String, CaseIterable, QEMUTarget {
     case none
     case microvm
 
-    var `default`: QEMUTarget_i386 {
+    static var `default`: QEMUTarget_i386 {
         .q35
     }
 
@@ -5894,7 +5894,7 @@ enum QEMUTarget_m68k: String, CaseIterable, QEMUTarget {
     case virt_7_0 = "virt-7.0"
     case none
 
-    var `default`: QEMUTarget_m68k {
+    static var `default`: QEMUTarget_m68k {
         .mcf5208evb
     }
 
@@ -5920,7 +5920,7 @@ enum QEMUTarget_microblaze: String, CaseIterable, QEMUTarget {
     case xlnx_zynqmp_pmu = "xlnx-zynqmp-pmu"
     case none
 
-    var `default`: QEMUTarget_microblaze {
+    static var `default`: QEMUTarget_microblaze {
         .petalogix_s3adsp1800
     }
 
@@ -5940,7 +5940,7 @@ enum QEMUTarget_microblazeel: String, CaseIterable, QEMUTarget {
     case xlnx_zynqmp_pmu = "xlnx-zynqmp-pmu"
     case none
 
-    var `default`: QEMUTarget_microblazeel {
+    static var `default`: QEMUTarget_microblazeel {
         .petalogix_s3adsp1800
     }
 
@@ -5959,7 +5959,7 @@ enum QEMUTarget_mips: String, CaseIterable, QEMUTarget {
     case malta
     case none
 
-    var `default`: QEMUTarget_mips {
+    static var `default`: QEMUTarget_mips {
         .malta
     }
 
@@ -5977,7 +5977,7 @@ enum QEMUTarget_mipsel: String, CaseIterable, QEMUTarget {
     case malta
     case none
 
-    var `default`: QEMUTarget_mipsel {
+    static var `default`: QEMUTarget_mipsel {
         .malta
     }
 
@@ -5997,7 +5997,7 @@ enum QEMUTarget_mips64: String, CaseIterable, QEMUTarget {
     case malta
     case none
 
-    var `default`: QEMUTarget_mips64 {
+    static var `default`: QEMUTarget_mips64 {
         .malta
     }
 
@@ -6022,7 +6022,7 @@ enum QEMUTarget_mips64el: String, CaseIterable, QEMUTarget {
     case malta
     case none
 
-    var `default`: QEMUTarget_mips64el {
+    static var `default`: QEMUTarget_mips64el {
         .malta
     }
 
@@ -6045,7 +6045,7 @@ enum QEMUTarget_nios2: String, CaseIterable, QEMUTarget {
     case nios2_generic_nommu = "nios2-generic-nommu"
     case none
 
-    var `default`: QEMUTarget_nios2 {
+    static var `default`: QEMUTarget_nios2 {
         ._10m50_ghrd
     }
 
@@ -6062,7 +6062,7 @@ enum QEMUTarget_or1k: String, CaseIterable, QEMUTarget {
     case none
     case or1k_sim = "or1k-sim"
 
-    var `default`: QEMUTarget_or1k {
+    static var `default`: QEMUTarget_or1k {
         .or1k_sim
     }
 
@@ -6088,7 +6088,7 @@ enum QEMUTarget_ppc: String, CaseIterable, QEMUTarget {
     case ref405ep
     case taihu
 
-    var `default`: QEMUTarget_ppc {
+    static var `default`: QEMUTarget_ppc {
         .g3beige
     }
 
@@ -6154,7 +6154,7 @@ enum QEMUTarget_ppc64: String, CaseIterable, QEMUTarget {
     case ref405ep
     case taihu
 
-    var `default`: QEMUTarget_ppc64 {
+    static var `default`: QEMUTarget_ppc64 {
         .pseries_7_0
     }
 
@@ -6214,7 +6214,7 @@ enum QEMUTarget_riscv32: String, CaseIterable, QEMUTarget {
     case virt
     case none
 
-    var `default`: QEMUTarget_riscv32 {
+    static var `default`: QEMUTarget_riscv32 {
         .spike
     }
 
@@ -6239,7 +6239,7 @@ enum QEMUTarget_riscv64: String, CaseIterable, QEMUTarget {
     case virt
     case none
 
-    var `default`: QEMUTarget_riscv64 {
+    static var `default`: QEMUTarget_riscv64 {
         .spike
     }
 
@@ -6261,7 +6261,7 @@ enum QEMUTarget_rx: String, CaseIterable, QEMUTarget {
     case gdbsim_r5f562n7 = "gdbsim-r5f562n7"
     case gdbsim_r5f562n8 = "gdbsim-r5f562n8"
 
-    var `default`: QEMUTarget_rx {
+    static var `default`: QEMUTarget_rx {
         .gdbsim_r5f562n7
     }
 
@@ -6299,7 +6299,7 @@ enum QEMUTarget_s390x: String, CaseIterable, QEMUTarget {
     case s390_ccw_virtio_7_0 = "s390-ccw-virtio-7.0"
     case none
 
-    var `default`: QEMUTarget_s390x {
+    static var `default`: QEMUTarget_s390x {
         .s390_ccw_virtio_7_0
     }
 
@@ -6337,7 +6337,7 @@ enum QEMUTarget_sh4: String, CaseIterable, QEMUTarget {
     case r2d
     case shix
 
-    var `default`: QEMUTarget_sh4 {
+    static var `default`: QEMUTarget_sh4 {
         .shix
     }
 
@@ -6355,7 +6355,7 @@ enum QEMUTarget_sh4eb: String, CaseIterable, QEMUTarget {
     case r2d
     case shix
 
-    var `default`: QEMUTarget_sh4eb {
+    static var `default`: QEMUTarget_sh4eb {
         .shix
     }
 
@@ -6381,7 +6381,7 @@ enum QEMUTarget_sparc: String, CaseIterable, QEMUTarget {
     case Voyager
     case none
 
-    var `default`: QEMUTarget_sparc {
+    static var `default`: QEMUTarget_sparc {
         .SS_5
     }
 
@@ -6408,7 +6408,7 @@ enum QEMUTarget_sparc64: String, CaseIterable, QEMUTarget {
     case niagara
     case none
 
-    var `default`: QEMUTarget_sparc64 {
+    static var `default`: QEMUTarget_sparc64 {
         .sun4u
     }
 
@@ -6427,7 +6427,7 @@ enum QEMUTarget_tricore: String, CaseIterable, QEMUTarget {
     case tricore_testboard
     case none
 
-    var `default`: QEMUTarget_tricore {
+    static var `default`: QEMUTarget_tricore {
         .tricore_testboard
     }
 
@@ -6498,7 +6498,7 @@ enum QEMUTarget_x86_64: String, CaseIterable, QEMUTarget {
     case none
     case microvm
 
-    var `default`: QEMUTarget_x86_64 {
+    static var `default`: QEMUTarget_x86_64 {
         .q35
     }
 
@@ -6577,7 +6577,7 @@ enum QEMUTarget_xtensa: String, CaseIterable, QEMUTarget {
     case sim
     case virt
 
-    var `default`: QEMUTarget_xtensa {
+    static var `default`: QEMUTarget_xtensa {
         .sim
     }
 
@@ -6611,7 +6611,7 @@ enum QEMUTarget_xtensaeb: String, CaseIterable, QEMUTarget {
     case sim
     case virt
 
-    var `default`: QEMUTarget_xtensaeb {
+    static var `default`: QEMUTarget_xtensaeb {
         .sim
     }
 

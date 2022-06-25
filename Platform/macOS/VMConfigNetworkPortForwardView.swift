@@ -18,10 +18,9 @@ import SwiftUI
 
 @available(macOS 11, *)
 struct VMConfigNetworkPortForwardView: View {
-    @ObservedObject var config: UTMLegacyQemuConfiguration
-    @StateObject private var newConfigPort = UTMLegacyQemuConfigurationPortForward()
+    @ObservedObject var config: UTMQemuConfigurationNetwork
     @State private var editingNewPort = false
-    @State private var selectedIndex = 0
+    @State private var selectedPortForward: UTMQemuConfigurationPortForward?
     
     var body: some View {
         Section(header: HStack {
@@ -30,28 +29,17 @@ struct VMConfigNetworkPortForwardView: View {
                 Button(action: { editingNewPort = true }, label: {
                     Text("New")
                 }).popover(isPresented: $editingNewPort, arrowEdge: .bottom) {
-                    PortForwardEdit(config: config).padding()
+                    PortForwardEdit(config: config, forward: .init()).padding()
                         .frame(width: 250)
                 }
             }) {
             VStack {
-                ForEach(0..<config.countPortForwards, id: \.self) { index in
-                    let configPort = config.portForward(for: index)!
-                    let editingNewPortBinding = Binding<Bool> {
-                        selectedIndex == index
-                    } set: {
-                        if $0 {
-                            selectedIndex = index
-                        } else {
-                            selectedIndex = -1
-                        }
-                    }
-
-                    Button(action: { editingNewPortBinding.wrappedValue = true }, label: {
-                        Text(verbatim: "\(configPort.guestAddress):\(configPort.guestPort!) ➡️ \(configPort.hostAddress):\(configPort.hostPort!)")
+                ForEach(config.portForward) { forward in
+                    Button(action: { selectedPortForward = forward }, label: {
+                        Text(verbatim: "\(forward.guestAddress ?? ""):\(forward.guestPort) ➡️ \(forward.hostAddress ?? ""):\(forward.hostPort)")
                     }).buttonStyle(.bordered)
-                    .popover(isPresented: editingNewPortBinding, arrowEdge: .bottom) {
-                        PortForwardEdit(config: config, index: index).padding()
+                    .popover(item: $selectedPortForward, arrowEdge: .bottom) { item in
+                        PortForwardEdit(config: config, forward: forward).padding()
                             .frame(width: 250)
                     }
                 }
@@ -62,78 +50,66 @@ struct VMConfigNetworkPortForwardView: View {
 
 @available(macOS 11, *)
 struct PortForwardEdit: View {
-    @StateObject private var configPort: UTMLegacyQemuConfigurationPortForward
-    private let save: () -> Void
-    private let delete: (() -> Void)?
+    @ObservedObject var config: UTMQemuConfigurationNetwork
+    @State var forward: UTMQemuConfigurationPortForward
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
-    
-    init(config: UTMLegacyQemuConfiguration, index: Int? = nil) {
-        var configPort: UTMLegacyQemuConfigurationPortForward
-        if let i = index {
-            configPort = config.portForward(for: i)!
-        } else {
-            configPort = UTMLegacyQemuConfigurationPortForward()
-        }
-        self._configPort = StateObject<UTMLegacyQemuConfigurationPortForward>(wrappedValue: configPort)
-        save = {
-            config.updatePortForward(at: index ?? config.countPortForwards, withValue: configPort)
-        }
-        if let i = index {
-            delete = {
-                config.removePortForward(at: i)
-            }
-        } else {
-            delete = nil
-        }
-    }
     
     var body: some View {
         VStack {
-            VMConfigPortForwardForm(configPort: configPort).multilineTextAlignment(.trailing)
+            VMConfigPortForwardForm(forward: $forward).multilineTextAlignment(.trailing)
             HStack {
                 Spacer()
-                if let delete = self.delete {
-                    Button(action: { closePopup(after: delete) }, label: {
+                let index = config.portForward.firstIndex(of: forward)
+                if let index = index {
+                    Button(action: {
+                        config.portForward.remove(at: index)
+                        closePopup()
+                    }, label: {
                         Text("Delete")
                     })
                 }
-                Button(action: { closePopup(after: save) }, label: {
+                Button(action: {
+                    if let index = index {
+                        config.portForward[index] = forward
+                    } else {
+                        config.portForward.append(forward)
+                    }
+                    closePopup()
+                }, label: {
                     Text("Save")
-                }).disabled(configPort.guestPort?.intValue ?? 0 == 0 || configPort.hostPort?.intValue ?? 0 == 0)
+                }).disabled(forward.guestPort == 0 || forward.hostPort == 0)
             }
         }
     }
     
-    private func closePopup(after action: () -> Void) {
-        action()
+    private func closePopup() {
         self.presentationMode.wrappedValue.dismiss()
     }
 }
 
 @available(macOS 11, *)
 struct VMConfigNetworkPortForwardView_Previews: PreviewProvider {
-    @State static private var config = UTMLegacyQemuConfiguration()
-    @State static private var configPort = UTMLegacyQemuConfigurationPortForward()
+    @State static private var config = UTMQemuConfigurationNetwork()
     
     static var previews: some View {
         Group {
             Form {
                 VMConfigNetworkPortForwardView(config: config)
             }.onAppear {
-                if config.countPortForwards == 0 {
-                    let newConfigPort = UTMLegacyQemuConfigurationPortForward()
-                    newConfigPort.protocol = "tcp"
+                if config.portForward.count == 0 {
+                    var newConfigPort = UTMQemuConfigurationPortForward()
+                    newConfigPort.protocol = .tcp
                     newConfigPort.guestAddress = "1.2.3.4"
-                    newConfigPort.guestPort = NSNumber(value: 1234)
+                    newConfigPort.guestPort = 1234
                     newConfigPort.hostAddress = "4.3.2.1"
-                    newConfigPort.hostPort = NSNumber(value: 4321)
-                    config.newPortForward(newConfigPort)
-                    newConfigPort.protocol = "udp"
+                    newConfigPort.hostPort = 4321
+                    config.portForward.append(newConfigPort)
+                    newConfigPort.protocol = .udp
                     newConfigPort.guestAddress = ""
-                    newConfigPort.guestPort = NSNumber(value: 2222)
+                    newConfigPort.guestPort = 2222
                     newConfigPort.hostAddress = ""
-                    newConfigPort.hostPort = NSNumber(value: 3333)
-                    config.newPortForward(newConfigPort)
+                    newConfigPort.hostPort = 3333
+                    config.portForward.append(newConfigPort)
                 }
             }
         }

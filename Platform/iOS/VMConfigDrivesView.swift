@@ -20,35 +20,39 @@ import SwiftUI
 
 @available(iOS 14, *)
 struct VMConfigDrivesView: View {
-    @ObservedObject var config: UTMLegacyQemuConfiguration
+    @ObservedObject var config: UTMQemuConfiguration
     @State private var createDriveVisible: Bool = false
     @State private var attemptDelete: IndexSet?
     @State private var importDrivePresented: Bool = false
+    @State private var triggerRefresh: Bool = false
     @EnvironmentObject private var data: UTMData
     
     var body: some View {
-        let bootOrder = Text("Note: Boot order is as listed.")
         Group {
-            if config.countDrives == 0 {
+            if config.drives.count == 0 {
                 Text("No drives added.").font(.headline)
             } else {
-                let form = Form {
+                Form {
                     List {
-                        ForEach(0..<config.countDrives, id: \.self) { index in
-                            let fileName = config.driveImagePath(for: index) ?? ""
-                            let displayName = config.driveRemovable(for: index) ? NSLocalizedString("Removable Drive", comment: "VMConfigDrivesView") : fileName
-                            let imageType = config.driveImageType(for: index)
-                            let interfaceType = config.driveInterfaceType(for: index) ?? ""
+                        ForEach($config.drives) { $drive in
                             NavigationLink(
-                                destination: VMConfigDriveDetailsView(config: config, index: index, onDelete: nil), label: {
+                                destination: VMConfigDriveDetailsView(config: drive, triggerRefresh: $triggerRefresh, onDelete: nil), label: {
                                     VStack(alignment: .leading) {
-                                        Text(displayName)
-                                            .lineLimit(1)
+                                        if drive.isRemovable {
+                                            Text("Removable Drive")
+                                        } else if drive.imageName == QEMUPackageFileName.efiVariables.rawValue {
+                                            Text("EFI Variables")
+                                        } else if let imageName = drive.imageName {
+                                            Text(imageName)
+                                                .lineLimit(1)
+                                        } else {
+                                            Text("(new)")
+                                        }
                                         HStack {
-                                            Text(imageType.description).font(.caption)
-                                            if imageType == .disk || imageType == .CD {
+                                            Text(drive.imageType.prettyValue).font(.caption)
+                                            if drive.imageType == .disk || drive.imageType == .cd {
                                                 Text("-")
-                                                Text(interfaceType).font(.caption)
+                                                Text(drive.interface.prettyValue).font(.caption)
                                             }
                                         }
                                     }
@@ -58,18 +62,13 @@ struct VMConfigDrivesView: View {
                         }
                         .onMove(perform: moveDrives)
                     }
-                }
-
-                #if os(iOS)
-                form.toolbar {
+                }.toolbar {
                     ToolbarItem(placement: .status) {
-                        bootOrder
+                        Text("Note: Boot order is as listed.")
                     }
+                }.onChange(of: triggerRefresh) { _ in
+                    // HACK: we need edits of drive to trigger a redraw
                 }
-                #else
-                bootOrder
-                form
-                #endif
             }
         }
         .navigationBarItems(trailing:
@@ -85,7 +84,7 @@ struct VMConfigDrivesView: View {
         )
         .fileImporter(isPresented: $importDrivePresented, allowedContentTypes: [.item], onCompletion: importDrive)
         .sheet(isPresented: $createDriveVisible) {
-            CreateDrive(target: config.systemTarget, architecture: config.systemArchitecture, onDismiss: newDrive)
+            CreateDrive(system: config.system, onDismiss: newDrive)
         }
         .actionSheet(item: $attemptDelete) { offsets in
             ActionSheet(title: Text("Confirm Delete"), message: Text("Are you sure you want to permanently delete this disk image?"), buttons: [.cancel(), .destructive(Text("Delete")) {
@@ -98,7 +97,12 @@ struct VMConfigDrivesView: View {
         data.busyWorkAsync {
             switch result {
             case .success(let url):
-                try await data.importDrive(url, for: config)
+                await MainActor.run {
+                    let drive = UTMQemuConfigurationDrive()
+                    drive.reset(forArchitecture: config.system.architecture, target: config.system.target, isRemovable: true)
+                    drive.imageURL = url
+                    config.drives.append(drive)
+                }
                 break
             case .failure(let err):
                 throw err
@@ -106,30 +110,16 @@ struct VMConfigDrivesView: View {
         }
     }
     
-    private func newDrive(driveImage: VMDriveImage) {
-        data.busyWorkAsync {
-            try await data.createDrive(driveImage, for: config)
-        }
+    private func newDrive(drive: UTMQemuConfigurationDrive) {
+        config.drives.append(drive)
     }
     
     private func deleteDrives(offsets: IndexSet) {
-        data.busyWorkAsync {
-            for offset in offsets {
-                try await data.removeDrive(at: offset, for: config)
-            }
-        }
+        config.drives.remove(atOffsets: offsets)
     }
     
     private func moveDrives(source: IndexSet, destination: Int) {
-        for offset in source {
-            let realDestination: Int
-            if offset < destination {
-                realDestination = destination - 1
-            } else {
-                realDestination = destination
-            }
-            config.moveDrive(offset, to: realDestination)
-        }
+        config.drives.move(fromOffsets: source, toOffset: destination)
     }
 }
 
@@ -137,21 +127,14 @@ struct VMConfigDrivesView: View {
 
 @available(iOS 14, *)
 private struct CreateDrive: View {
-    let target: String?
-    let architecture: String?
-    let onDismiss: (VMDriveImage) -> Void
-    @StateObject private var driveImage = VMDriveImage()
+    @ObservedObject var system: UTMQemuConfigurationSystem
+    let onDismiss: (UTMQemuConfigurationDrive) -> Void
+    @StateObject private var config = UTMQemuConfigurationDrive()
     @Environment(\.presentationMode) private var presentationMode: Binding<PresentationMode>
-    
-    init(target: String?, architecture: String?, onDismiss: @escaping (VMDriveImage) -> Void) {
-        self.target = target
-        self.architecture = architecture
-        self.onDismiss = onDismiss
-    }
     
     var body: some View {
         NavigationView {
-            VMConfigDriveCreateView(target: target, architecture: architecture, driveImage: driveImage)
+            VMConfigDriveCreateView(config: config, system: system)
                 .toolbar {
                     ToolbarItem(placement: .cancellationAction) {
                         Button("Cancel", action: cancel)
@@ -162,7 +145,7 @@ private struct CreateDrive: View {
                 }
         }.navigationViewStyle(.stack)
         .onAppear {
-            driveImage.reset(forSystemTarget: target, architecture: architecture, removable: false)
+            config.reset(forArchitecture: system.architecture, target: system.target)
         }
     }
     
@@ -172,7 +155,7 @@ private struct CreateDrive: View {
     
     private func done() {
         presentationMode.wrappedValue.dismiss()
-        onDismiss(driveImage)
+        onDismiss(config)
     }
 }
 
@@ -180,18 +163,28 @@ private struct CreateDrive: View {
 
 @available(iOS 14, *)
 struct VMConfigDrivesView_Previews: PreviewProvider {
-    @ObservedObject static private var config = UTMLegacyQemuConfiguration()
+    @ObservedObject static private var config = UTMQemuConfiguration()
+    @ObservedObject static private var system = UTMQemuConfigurationSystem()
     
     static var previews: some View {
         Group {
             VMConfigDrivesView(config: config)
-            CreateDrive(target: nil, architecture: nil) { _ in
+            CreateDrive(system: system) { _ in
                 
             }
         }.onAppear {
-            if config.countDrives == 0 {
-                config.newDrive("", path: "test.img", type: .disk, interface: "ide")
-                config.newDrive("", path: "bios.bin", type: .BIOS, interface: "none")
+            if config.drives.count == 0 {
+                let drive = UTMQemuConfigurationDrive()
+                drive.reset(forArchitecture: .x86_64, target: QEMUTarget_x86_64.pc)
+                drive.imageName = "test.img"
+                drive.imageType = .disk
+                drive.interface = .ide
+                config.drives.append(drive.copy())
+                drive.reset(forArchitecture: .x86_64, target: QEMUTarget_x86_64.pc)
+                drive.imageName = "bios.bin"
+                drive.imageType = .bios
+                drive.interface = .none
+                config.drives.append(drive.copy())
             }
         }
     }

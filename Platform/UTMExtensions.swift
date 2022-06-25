@@ -37,6 +37,26 @@ extension Optional where Wrapped == String {
     }
 }
 
+extension Optional where Wrapped: FixedWidthInteger {
+    var _bound: Wrapped? {
+        get {
+            return self
+        }
+        set {
+            self = newValue
+        }
+    }
+    
+    public var bound: Wrapped {
+        get {
+            return _bound ?? 0
+        }
+        set {
+            _bound = newValue == 0 ? nil : newValue
+        }
+    }
+}
+
 @available(iOS 14, macOS 11, *)
 extension LocalizedStringKey {
     var localizedString: String {

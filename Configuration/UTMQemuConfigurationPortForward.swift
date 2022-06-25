@@ -17,7 +17,7 @@
 import Foundation
 
 /// Represent a single port forward
-struct UTMQemuConfigurationPortForward: Codable {
+struct UTMQemuConfigurationPortForward: Codable, Identifiable, Hashable {
     /// Socket protocol
     var `protocol`: QEMUNetworkProtocol = .tcp
     
@@ -32,6 +32,12 @@ struct UTMQemuConfigurationPortForward: Codable {
     
     /// Guest port where connection is coming from.
     var guestPort: Int = 0
+    
+    let id = UUID()
+    
+    func hash(into hasher: inout Hasher) {
+        id.hash(into: &hasher)
+    }
 }
 
 // MARK: - Conversion of old config format

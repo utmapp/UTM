@@ -117,10 +117,8 @@ public extension UTMQemuVirtualMachine {
     /// Check if a QEMU target is supported
     /// - Parameter systemArchitecture: QEMU architecture
     /// - Returns: true if UTM is compiled with the supporting binaries
-    @objc static func isSupported(systemArchitecture: String?) -> Bool {
-        guard let arch = systemArchitecture else {
-            return true // ignore this
-        }
+    internal static func isSupported(systemArchitecture: QEMUArchitecture) -> Bool {
+        let arch = systemArchitecture.rawValue
         let bundleURL = Bundle.main.bundleURL
         #if os(macOS)
         let contentsURL = bundleURL.appendingPathComponent("Contents", isDirectory: true)
@@ -133,6 +131,21 @@ public extension UTMQemuVirtualMachine {
         let framework = frameworksURL.appendingPathComponent("qemu-" + arch + "-softmmu.framework/" + base + "qemu-" + arch + "-softmmu", isDirectory: false)
         logger.error("\(framework.path)")
         return FileManager.default.fileExists(atPath: framework.path)
+    }
+    
+    /// Check if the current VM target is supported by the host
+    @available(iOS 13, *)
+    @objc var isSupported: Bool {
+        return UTMQemuVirtualMachine.isSupported(systemArchitecture: futureConfig.system.architecture)
+    }
+    
+    //FIXME: Rework after config rewrite.
+    @available(iOS 13, *)
+    internal var futureConfig: UTMQemuConfiguration {
+        if futureConfigStorage == nil {
+            futureConfigStorage = UTMQemuConfiguration(migrating: qemuConfig)
+        }
+        return futureConfigStorage as! UTMQemuConfiguration
     }
 }
 

@@ -19,6 +19,9 @@ import Foundation
 /// Tweaks and advanced QEMU settings.
 @available(iOS 13, macOS 11, *)
 class UTMQemuConfigurationQEMU: Codable, ObservableObject {
+    /// Base path of VM. This property is not saved to file.
+    @Published var dataURL: URL?
+    
     /// If true, write standard output to debug.log in the VM bundle.
     @Published var hasDebugLog: Bool = false
     
@@ -47,7 +50,7 @@ class UTMQemuConfigurationQEMU: Codable, ObservableObject {
     @Published var machinePropertyOverride: String?
     
     /// Additional QEMU arguments.
-    @Published var additionalArguments: [String] = []
+    @Published var additionalArguments: [QEMUArgument] = []
     
     enum CodingKeys: String, CodingKey {
         case hasDebugLog = "DebugLog"
@@ -76,7 +79,8 @@ class UTMQemuConfigurationQEMU: Codable, ObservableObject {
         hasRTCLocalTime = try values.decode(Bool.self, forKey: .hasRTCLocalTime)
         hasPS2Controller = try values.decode(Bool.self, forKey: .hasPS2Controller)
         machinePropertyOverride = try values.decodeIfPresent(String.self, forKey: .machinePropertyOverride)
-        additionalArguments = try values.decode([String].self, forKey: .additionalArguments)
+        additionalArguments = try values.decode([QEMUArgument].self, forKey: .additionalArguments)
+        dataURL = decoder.userInfo[.dataURL] as? URL
     }
     
     func encode(to encoder: Encoder) throws {
@@ -134,7 +138,8 @@ extension UTMQemuConfigurationQEMU {
         hasPS2Controller = oldConfig.forcePs2Controller
         machinePropertyOverride = oldConfig.systemMachineProperties
         if let oldAddArgs = oldConfig.systemArguments {
-            additionalArguments = oldAddArgs
+            additionalArguments = oldAddArgs.map({ QEMUArgument($0) })
         }
+        dataURL = oldConfig.existingPath
     }
 }

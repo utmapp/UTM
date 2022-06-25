@@ -27,8 +27,8 @@ private enum IconStyle: String, Identifiable, CaseIterable {
 }
 
 @available(iOS 14, macOS 11, *)
-struct VMConfigInfoView<Config: ObservableObject & UTMConfigurable>: View {
-    @ObservedObject var config: Config
+struct VMConfigInfoView: View {
+    @ObservedObject var config: UTMConfigurationInfo
     @State private var imageSelectVisible: Bool = false
     @State private var iconStyle: IconStyle = .generic
     @State private var warningMessage: String? = nil
@@ -65,7 +65,7 @@ struct VMConfigInfoView<Config: ObservableObject & UTMConfigurable>: View {
             }
             #endif
         }.onAppear {
-            if config.iconCustom {
+            if config.isIconCustom {
                 iconStyle = .custom
             } else if config.iconUrl != nil {
                 iconStyle = .operatingSystem
@@ -76,9 +76,8 @@ struct VMConfigInfoView<Config: ObservableObject & UTMConfigurable>: View {
     }
 
     private var nameField: some View {
-        TextField("Name", text: $config.name, onEditingChanged: validateName)
+        TextField("Name", text: $config.name)
             .keyboardType(.asciiCapable)
-            .disabled(config.isRenameDisabled)
     }
 
     private var notesField: some View {
@@ -101,11 +100,11 @@ struct VMConfigInfoView<Config: ObservableObject & UTMConfigurable>: View {
                 config.selectedCustomIconPath = nil
                 break
             case .operatingSystem:
-                config.iconCustom = false
+                config.isIconCustom = false
                 config.selectedCustomIconPath = nil
                 break
             case .custom:
-                config.iconCustom = true
+                config.isIconCustom = true
                 break
             }
         }
@@ -163,28 +162,10 @@ struct VMConfigInfoView<Config: ObservableObject & UTMConfigurable>: View {
         }
     }
     
-    private func validateName(editing: Bool) {
-        guard !editing else {
-            return
-        }
-        let fileManager = FileManager.default
-        let tempPath = fileManager.temporaryDirectory
-        let fakeFile = tempPath.appendingPathComponent(config.name)
-        if fileManager.createFile(atPath: fakeFile.path, contents: nil, attributes: nil) {
-            do {
-                try fileManager.removeItem(at: fakeFile)
-            } catch {
-                warningMessage = NSLocalizedString("Failed to check name.", comment: "VMConfigInfoView")
-            }
-        } else {
-            warningMessage = NSLocalizedString("Name is an invalid filename.", comment: "VMConfigInfoView")
-        }
-    }
-    
     private func imageCustomSelected(url: URL?) {
         if let imageURL = url {
             config.selectedCustomIconPath = imageURL
-            config.iconCustom = true
+            config.isIconCustom = true
         }
         imageSelectVisible = false
     }
@@ -192,7 +173,7 @@ struct VMConfigInfoView<Config: ObservableObject & UTMConfigurable>: View {
     private func imageSelected(url: URL) {
         let name = url.deletingPathExtension().lastPathComponent
         config.icon = name
-        config.iconCustom = false
+        config.isIconCustom = false
         imageSelectVisible = false
     }
 }
@@ -288,7 +269,7 @@ private struct IconSelect: View {
 
 @available(iOS 14, macOS 11, *)
 struct VMConfigInfoView_Previews: PreviewProvider {
-    @ObservedObject static private var config = UTMLegacyQemuConfiguration()
+    @ObservedObject static private var config = UTMConfigurationInfo()
     
     static var previews: some View {
         Group {

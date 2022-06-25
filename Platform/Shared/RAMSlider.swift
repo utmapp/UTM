@@ -50,6 +50,15 @@ struct RAMSlider: View {
         })
     }
     
+    init<T: FixedWidthInteger>(systemMemory: Binding<T>, onValidate: @escaping (Bool) -> Void = { _ in }) {
+        validateMemorySize = onValidate
+        _systemMemory = Binding<NSNumber?>(get: {
+            NSNumber(value: UInt64(systemMemory.wrappedValue))
+        }, set: { newValue in
+            systemMemory.wrappedValue = T(newValue?.uint64Value ?? 0)
+        })
+    }
+    
     var body: some View {
         GeometryReader { geo in
             HStack {

@@ -110,7 +110,8 @@ struct VMDetailsView: View {
                         .environmentObject(data)
                 }
                 #else
-                VMSettingsView(vm: vm as! UTMQemuVirtualMachine, config: vm.config as! UTMLegacyQemuConfiguration)
+                //FIXME: Rework after config rewrite.
+                VMSettingsView(vm: vm as! UTMQemuVirtualMachine, config: (vm as! UTMQemuVirtualMachine).futureConfig)
                     .environmentObject(data)
                 #endif
             }

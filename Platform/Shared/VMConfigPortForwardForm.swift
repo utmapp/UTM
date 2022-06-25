@@ -18,15 +18,15 @@ import SwiftUI
 
 @available(iOS 14, macOS 11, *)
 struct VMConfigPortForwardForm: View {
-    @ObservedObject var configPort: UTMLegacyQemuConfigurationPortForward
+    @Binding var forward: UTMQemuConfigurationPortForward
     
     var body: some View {
         Group {
-            VMConfigStringPicker("Protocol", selection: $configPort.protocol, rawValues: ["tcp", "udp"], displayValues: ["TCP", "UDP"])
-            DefaultTextField("Guest Address", text: $configPort.guestAddress, prompt: "10.0.2.15")
-            NumberTextField("Guest Port", number: $configPort.guestPort, prompt: "1234")
-            DefaultTextField("Host Address", text: $configPort.hostAddress, prompt: "127.0.0.1")
-            NumberTextField("Host Port", number: $configPort.hostPort, prompt: "1234")
+            VMConfigConstantPicker("Protocol", selection: $forward.protocol)
+            DefaultTextField("Guest Address", text: $forward.guestAddress.bound, prompt: "10.0.2.15")
+            NumberTextField("Guest Port", number: $forward.guestPort, prompt: "1234")
+            DefaultTextField("Host Address", text: $forward.hostAddress.bound, prompt: "127.0.0.1")
+            NumberTextField("Host Port", number: $forward.hostPort, prompt: "1234")
         }.disableAutocorrection(true)
         .keyboardType(.decimalPad)
     }
@@ -34,31 +34,14 @@ struct VMConfigPortForwardForm: View {
 
 @available(iOS 14, macOS 11, *)
 struct VMConfigPortForwardForm_Previews: PreviewProvider {
-    @State static private var config = UTMLegacyQemuConfiguration()
-    @State static private var configPort = UTMLegacyQemuConfigurationPortForward()
+    @State static private var forward = UTMQemuConfigurationPortForward()
     
     static var previews: some View {
         VStack {
             VStack {
                 Form {
-                    VMConfigPortForwardForm(configPort: configPort)
+                    VMConfigPortForwardForm(forward: $forward)
                 }
-            }
-        }.onAppear {
-            if config.countPortForwards == 0 {
-                let newConfigPort = UTMLegacyQemuConfigurationPortForward()
-                newConfigPort.protocol = "tcp"
-                newConfigPort.guestAddress = "1.2.3.4"
-                newConfigPort.guestPort = 1234
-                newConfigPort.hostAddress = "4.3.2.1"
-                newConfigPort.hostPort = 4321
-                config.newPortForward(newConfigPort)
-                newConfigPort.protocol = "udp"
-                newConfigPort.guestAddress = ""
-                newConfigPort.guestPort = 2222
-                newConfigPort.hostAddress = ""
-                newConfigPort.hostPort = 3333
-                config.newPortForward(newConfigPort)
             }
         }
     }

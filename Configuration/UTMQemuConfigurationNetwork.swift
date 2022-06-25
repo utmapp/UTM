@@ -20,7 +20,7 @@ import Foundation
 @available(iOS 13, macOS 11, *)
 class UTMQemuConfigurationNetwork: Codable, Identifiable, ObservableObject {
     /// Operating mode of this adapter
-    @Published var mode: QEMUNetworkMode = .shared
+    @Published var mode: QEMUNetworkMode = .emulated
     
     /// Hardware model to emulate.
     @Published var hardware: QEMUNetworkDevice = QEMUNetworkDevice_x86_64.e1000
@@ -125,9 +125,11 @@ class UTMQemuConfigurationNetwork: Codable, Identifiable, ObservableObject {
         try container.encode(macAddress, forKey: .macAddress)
         try container.encode(isIsolateFromHost, forKey: .isIsolateFromHost)
         try container.encode(portForward, forKey: .portForward)
+        #if os(macOS)
         if mode == .bridged {
             try container.encodeIfPresent(bridgeInterface, forKey: .bridgeInterface)
         }
+        #endif
         if mode == .emulated {
             try container.encodeIfPresent(vlanGuestAddress, forKey: .vlanGuestAddress)
             try container.encodeIfPresent(vlanGuestAddressIPv6, forKey: .vlanGuestAddressIPv6)
@@ -211,14 +213,16 @@ extension UTMQemuConfigurationNetwork {
     private func convertMode(from str: String?) -> QEMUNetworkMode? {
         if str == "emulated" {
             return .emulated
-        } else if str == "shared" {
+        }
+        #if os(macOS)
+        if str == "shared" {
             return .shared
         } else if str == "host" {
             return .host
         } else if str == "bridged" {
             return .bridged
-        } else {
-            return nil
         }
+        #endif
+        return nil
     }
 }

@@ -23,36 +23,47 @@ struct VMConfigQEMUView: View {
         let string: String
     }
     
-    @ObservedObject var config: UTMLegacyQemuConfiguration
+    @ObservedObject var config: UTMQemuConfigurationQEMU
+    @ObservedObject var system: UTMQemuConfigurationSystem
     @State private var showExportLog: Bool = false
     @State private var showExportArgs: Bool = false
     @EnvironmentObject private var data: UTMData
     
     private var logExists: Bool {
-        guard let path = config.existingPath else {
+        guard let path = config.dataURL else {
             return false
         }
-        let logPath = path.appendingPathComponent(UTMLegacyQemuConfiguration.debugLogName)
+        let logPath = path.appendingPathComponent(QEMUPackageFileName.debugLog.rawValue)
         return FileManager.default.fileExists(atPath: logPath.path)
     }
     
     private var supportsUefi: Bool {
-        ["arm", "aarch64", "i386", "x86_64"].contains(config.systemArchitecture ?? "")
+        [.arm, .aarch64, .i386, .x86_64].contains(system.architecture)
     }
     
     private var supportsPs2: Bool {
-        if let target = config.systemTarget, target.starts(with: "pc") || target.starts(with: "q35") {
+        if system.target.rawValue.starts(with: "pc") || system.target.rawValue.starts(with: "q35") {
             return true
         } else {
             return false
         }
     }
     
+    private var supportsHypervisor: Bool {
+        #if arch(arm64)
+        return system.architecture == .aarch64
+        #elseif arch(x86_64)
+        return system.architecture == .x86_64
+        #else
+        return false
+        #endif
+    }
+    
     var body: some View {
         VStack {
             Form {
                 Section(header: Text("Logging")) {
-                    Toggle(isOn: $config.debugLogEnabled, label: {
+                    Toggle(isOn: $config.hasDebugLog, label: {
                         Text("Debug Logging")
                     })
                     Button("Export Debug Log") {
@@ -61,47 +72,54 @@ struct VMConfigQEMUView: View {
                     .disabled(!logExists)
                 }
                 DetailedSection("Tweaks", description: "These are advanced settings affecting QEMU which should be kept default unless you are running into issues.") {
-                    Toggle("UEFI Boot", isOn: $config.systemBootUefi)
+                    Toggle("UEFI Boot", isOn: $config.hasUefiBoot)
                         .disabled(!supportsUefi)
                         .help("Should be off for older operating systems such as Windows 7 or lower.")
-                    Toggle("RNG Device", isOn: $config.systemRngEnabled)
+                    Toggle("RNG Device", isOn: $config.hasRNGDevice)
                         .help("Should be on always unless the guest cannot boot because of this.")
+                    Toggle("Balloon Device", isOn: $config.hasBalloonDevice)
+                        .help("Should be on always unless the guest cannot boot because of this.")
+                    Toggle("TPM Device", isOn: $config.hasTPMDevice)
+                        .help("This is required to boot Windows 11.")
                     #if os(macOS)
-                    Toggle("Use Hypervisor", isOn: $config.useHypervisor)
-                        .disabled(!config.isTargetArchitectureMatchHost)
+                    Toggle("Use Hypervisor", isOn: $config.hasHypervisor)
+                        .disabled(!supportsHypervisor)
                         .help("Only available if host architecture matches the target. Otherwise, TCG emulation is used.")
                     #endif
-                    Toggle("Use local time for base clock", isOn: $config.rtcUseLocalTime)
+                    Toggle("Use local time for base clock", isOn: $config.hasRTCLocalTime)
                         .help("If checked, use local time for RTC which is required for Windows. Otherwise, use UTC clock.")
-                    Toggle("Force PS/2 controller", isOn: $config.forcePs2Controller)
+                    Toggle("Force PS/2 controller", isOn: $config.hasPS2Controller)
                         .disabled(!supportsPs2)
                         .help("Instantiate PS/2 controller even when USB input is supported. Required for older Windows.")
                 }
                 DetailedSection("QEMU Machine Properties", description: "This is appended to the -machine argument.") {
-                    DefaultTextField("", text: $config.systemMachineProperties.bound, prompt: "Default")
+                    DefaultTextField("", text: $config.machinePropertyOverride.bound, prompt: "Default")
                 }
                 Section(header: Text("QEMU Arguments")) {
+                    /* //FIXME: Temporarily disabled during config rewrite.
                     Button("Export QEMU Command") {
                         showExportArgs.toggle()
                     }.modifier(VMShareItemModifier(isPresented: $showExportArgs, shareItem: exportArgs()))
-                    Toggle(isOn: $config.ignoreAllConfiguration.animation(), label: {
-                        Text("Do not generate any arguments based on current configuration")
-                    })
                     let qemuSystem = UTMQemuSystem(configuration: config, imgPath: URL(fileURLWithPath: "Images"))
                     let fixedArgs = arguments(from: qemuSystem.argv)
+                     */
                     #if os(macOS)
                     VStack {
+                        /* //FIXME: Temporarily disabled during config rewrite.
                         ForEach(fixedArgs) { arg in
                             TextField("", text: .constant(arg.string))
                         }.disabled(true)
+                         */
                         CustomArguments(config: config)
                         NewArgumentTextField(config: config)
                     }
                     #else
                     List {
+                        /* //FIXME: Temporarily disabled during config rewrite.
                         ForEach(fixedArgs) { arg in
                             Text(arg.string)
                         }.foregroundColor(.secondary)
+                         */
                         CustomArguments(config: config)
                         NewArgumentTextField(config: config)
                     }
@@ -113,25 +131,14 @@ struct VMConfigQEMUView: View {
     }
     
     private func exportDebugLog() -> VMShareItemModifier.ShareItem? {
-        guard let path = config.existingPath else {
+        guard let path = config.dataURL else {
             return nil
         }
         let srcLogPath = path.appendingPathComponent(UTMLegacyQemuConfiguration.debugLogName)
         return .debugLog(srcLogPath)
     }
     
-    private func deleteArg(offsets: IndexSet) {
-        for offset in offsets {
-            config.removeArgument(at: offset)
-        }
-    }
-    
-    private func moveArg(source: IndexSet, destination: Int) {
-        for offset in source {
-            config.moveArgumentIndex(offset, to: destination)
-        }
-    }
-    
+    /* //FIXME: Temporarily disabled during config rewrite.
     private func exportArgs() -> VMShareItemModifier.ShareItem {
         let existingPath = config.existingPath ?? URL(fileURLWithPath: "Images")
         let qemuSystem = UTMQemuSystem(configuration: config, imgPath: existingPath)
@@ -152,59 +159,45 @@ struct VMConfigQEMUView: View {
             Argument(id: i, string: list[i])
         }
     }
+     */
 }
 
 @available(iOS 14, macOS 11, *)
 struct CustomArguments: View {
-    @ObservedObject var config: UTMLegacyQemuConfiguration
+    @ObservedObject var config: UTMQemuConfigurationQEMU
     
     var body: some View {
-        ForEach(0..<config.countArguments, id: \.self) { i in
-            let argBinding = Binding<String> {
-                if i < config.countArguments {
-                    return config.argument(for: i) ?? ""
-                } else {
-                    // WA for a SwiftUI bug on macOS that uses old countArguments
-                    return ""
-                }
-            } set: {
-                config.updateArgument(at: i, withValue: $0)
-            }
+        ForEach($config.additionalArguments) { $arg in
+            let i = config.additionalArguments.firstIndex(of: arg) ?? 0
             HStack {
-                DefaultTextField("", text: argBinding, prompt: "(Delete)", onEditingChanged: { editing in
-                    if !editing && argBinding.wrappedValue == "" {
-                        config.removeArgument(at: i)
+                DefaultTextField("", text: $arg.string, prompt: "(Delete)", onEditingChanged: { editing in
+                    if !editing && arg.string == "" {
+                        config.additionalArguments.remove(at: i)
                     }
                 })
                 #if os(macOS)
                 Spacer()
                 if i != 0 {
-                    Button(action: { config.moveArgumentIndex(i, to: i-1) }, label: {
+                    Button(action: {
+                        config.additionalArguments.move(fromOffsets: IndexSet(integer: i), toOffset: i-1)
+                    }, label: {
                         Label("Move Up", systemImage: "arrow.up").labelStyle(.iconOnly)
                     })
                 }
                 #endif
             }
-        }.onDelete(perform: deleteArg)
-        .onMove(perform: moveArg)
-    }
-    
-    private func deleteArg(offsets: IndexSet) {
-        for offset in offsets {
-            config.removeArgument(at: offset)
+        }.onDelete { offsets in
+            config.additionalArguments.remove(atOffsets: offsets)
         }
-    }
-    
-    private func moveArg(source: IndexSet, destination: Int) {
-        for offset in source {
-            config.moveArgumentIndex(offset, to: destination)
+        .onMove { offsets, index in
+            config.additionalArguments.move(fromOffsets: offsets, toOffset: index)
         }
     }
 }
 
 @available(iOS 14, macOS 11, *)
 struct NewArgumentTextField: View {
-    @ObservedObject var config: UTMLegacyQemuConfiguration
+    @ObservedObject var config: UTMQemuConfigurationQEMU
     @State private var newArg: String = ""
     
     var body: some View {
@@ -222,7 +215,7 @@ struct NewArgumentTextField: View {
             return
         }
         if newArg != "" {
-            config.newArgument(newArg)
+            config.additionalArguments.append(QEMUArgument(newArg))
         }
         newArg = ""
     }
@@ -230,9 +223,10 @@ struct NewArgumentTextField: View {
 
 @available(iOS 14, macOS 11, *)
 struct VMConfigQEMUView_Previews: PreviewProvider {
-    @ObservedObject static private var config = UTMLegacyQemuConfiguration()
+    @ObservedObject static private var config = UTMQemuConfigurationQEMU()
+    @ObservedObject static private var system = UTMQemuConfigurationSystem()
     
     static var previews: some View {
-        VMConfigQEMUView(config: config)
+        VMConfigQEMUView(config: config, system: system)
     }
 }

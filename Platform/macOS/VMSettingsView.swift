@@ -29,8 +29,9 @@ struct VMSettingsView<Config: ObservableObject & UTMConfigurable>: View {
     var body: some View {
         NavigationView {
             List {
-                if let qemuConfig = config as? UTMLegacyQemuConfiguration {
-                    VMQEMUSettingsView(vm: vm, config: qemuConfig, selectedDriveIndex: $selectedDriveIndex)
+                if let qemuVM = vm as? UTMQemuVirtualMachine {
+                    //FIXME: Rework after config rewrite.
+                    VMQEMUSettingsView(config: qemuVM.futureConfig, selectedDriveIndex: $selectedDriveIndex)
                 } else if let appleConfig = config as? UTMAppleConfiguration {
                     VMAppleSettingsView(vm: vm, config: appleConfig, selectedDriveIndex: $selectedDriveIndex)
                 }
@@ -38,7 +39,10 @@ struct VMSettingsView<Config: ObservableObject & UTMConfigurable>: View {
         }.frame(minWidth: 800, minHeight: 400)
         .toolbar {
             ToolbarItemGroup(placement: .automatic) {
-                VMConfigDrivesButtons(vm: vm, config: config, selectedDriveIndex: $selectedDriveIndex)
+                if let qemuVM = vm as? UTMQemuVirtualMachine {
+                    //FIXME: Rework after config rewrite.
+                    VMConfigDrivesButtons(config: qemuVM.futureConfig, selectedDriveIndex: $selectedDriveIndex)
+                }
             }
             ToolbarItemGroup(placement: .cancellationAction) {
                 Button(action: cancel) {

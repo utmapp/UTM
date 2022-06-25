@@ -137,6 +137,7 @@ extension UTMQemuConfiguration {
         qemu = .init(forArchitecture: architecture, target: target)
         input = .init(forArchitecture: architecture, target: target)
         sharing = .init(forArchitecture: architecture, target: target)
+        system.cpu = architecture.cpuType.default
         if let display = UTMQemuConfigurationDisplay(forArchitecture: architecture, target: target) {
             displays = [display]
         } else {

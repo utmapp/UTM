@@ -31,6 +31,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, weak, nullable) id<UTMSpiceIODelegate> ioDelegate;
 @property (nonatomic, readonly) UTMLegacyQemuConfiguration *qemuConfig;
+@property (nonatomic, nullable) id futureConfigStorage; //FIXME: Rework after config rewrite.
 
 - (UTMDisplayType)supportedDisplayType;
 

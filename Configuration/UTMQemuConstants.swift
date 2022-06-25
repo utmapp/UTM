@@ -39,6 +39,30 @@ extension QEMUConstant where Self: CaseIterable, AllCases == [Self] {
     }
 }
 
+protocol QEMUDefaultConstant: QEMUConstant {
+    static var `default`: Self { get }
+}
+
+extension Optional where Wrapped: QEMUDefaultConstant {
+    var _bound: Wrapped? {
+        get {
+            return self
+        }
+        set {
+            self = newValue
+        }
+    }
+    
+    var bound: Wrapped {
+        get {
+            return _bound ?? Wrapped.default
+        }
+        set {
+            _bound = newValue
+        }
+    }
+}
+
 /// Type erasure for a QEMU constant useful for serialization/deserialization
 struct AnyQEMUConstant: QEMUConstant {
     static var allRawValues: [String] { [] }
@@ -64,19 +88,19 @@ extension QEMUConstant {
     }
 }
 
-// MARK: Enhanced type checking for generated constants
-
-protocol QEMUTarget: QEMUConstant {
-    var `default`: Self { get }
-}
-
-extension AnyQEMUConstant: QEMUTarget {
-    var `default`: AnyQEMUConstant {
-        self // no valid default
+extension AnyQEMUConstant: QEMUDefaultConstant {
+    static var `default`: AnyQEMUConstant {
+        AnyQEMUConstant(rawValue: "default")!
     }
 }
 
-protocol QEMUCPU: QEMUConstant {}
+// MARK: Enhanced type checking for generated constants
+
+protocol QEMUTarget: QEMUDefaultConstant {}
+
+extension AnyQEMUConstant: QEMUTarget {}
+
+protocol QEMUCPU: QEMUDefaultConstant {}
 
 extension AnyQEMUConstant: QEMUCPU {}
 
@@ -141,16 +165,20 @@ enum QEMUUSBBus: String, CaseIterable, QEMUConstant {
 
 enum QEMUNetworkMode: String, CaseIterable, QEMUConstant {
     case emulated = "Emulated"
+    #if os(macOS)
     case shared = "Shared"
     case host = "Host"
     case bridged = "Bridged"
+    #endif
     
     var prettyValue: String {
         switch self {
         case .emulated: return NSLocalizedString("Emulated VLAN", comment: "UTMQemuConstants")
+        #if os(macOS)
         case .shared: return NSLocalizedString("Shared Network", comment: "UTMQemuConstants")
         case .host: return NSLocalizedString("Host Only", comment: "UTMQemuConstants")
         case .bridged: return NSLocalizedString("Bridged (Advanced)", comment: "UTMQemuConstants")
+        #endif
         }
     }
 }
@@ -169,7 +197,7 @@ enum QEMUNetworkProtocol: String, CaseIterable, QEMUConstant {
 
 // MARK: Serial constants
 
-enum QEMUTerminalTheme: String, CaseIterable, QEMUConstant {
+enum QEMUTerminalTheme: String, CaseIterable, QEMUDefaultConstant {
     case `default` = "Default"
     
     var prettyValue: String {
@@ -337,4 +365,12 @@ enum QEMUFileShareMode: String, CaseIterable, QEMUConstant {
         case .virtfs: return NSLocalizedString("VirtFS (Recommended)", comment: "UTMQemuConstants")
         }
     }
+}
+
+// MARK: File names
+
+enum QEMUPackageFileName: String {
+    case images = "Images"
+    case debugLog = "debug.log"
+    case efiVariables = "efi_vars.fd"
 }
