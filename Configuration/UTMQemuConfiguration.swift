@@ -52,6 +52,9 @@ class UTMQemuConfiguration: Codable, ObservableObject {
     /// All audio devices
     @Published var sound: [UTMQemuConfigurationSound] = []
     
+    /// If set, points to the data directory for this configuration. Not saved.
+    var dataURL: URL?
+    
     enum CodingKeys: String, CodingKey {
         case information = "Information"
         case system = "System"
@@ -94,6 +97,7 @@ class UTMQemuConfiguration: Codable, ObservableObject {
         networks = try values.decode([UTMQemuConfigurationNetwork].self, forKey: .networks)
         serials = try values.decode([UTMQemuConfigurationSerial].self, forKey: .serials)
         sound = try values.decode([UTMQemuConfigurationSound].self, forKey: .sound)
+        dataURL = decoder.userInfo[.dataURL] as? URL
     }
     
     func encode(to encoder: Encoder) throws {

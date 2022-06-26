@@ -52,6 +52,12 @@ class UTMQemuConfigurationQEMU: Codable, ObservableObject {
     /// Additional QEMU arguments.
     @Published var additionalArguments: [QEMUArgument] = []
     
+    /// If set, attempt to boot from a snapshot with the following name. Not saved.
+    var snapshotName: String?
+    
+    /// If true, changes to the VM will not be committed to disk. Not saved.
+    var isDisposable: Bool = false
+    
     enum CodingKeys: String, CodingKey {
         case hasDebugLog = "DebugLog"
         case hasUefiBoot = "UEFIBoot"

@@ -37,7 +37,7 @@ struct VMQEMUSettingsView: View {
                 isResetConfig = false
             }
         }
-        NavigationLink(destination: VMConfigQEMUView(config: config.qemu, system: config.system).scrollable()) {
+        NavigationLink(destination: VMConfigQEMUView(config: config.qemu, system: config.system, fetchFixedArguments: { config.generatedArguments }).scrollable()) {
             Label("QEMU", systemImage: "shippingbox")
         }
         ForEach(config.displays) { display in

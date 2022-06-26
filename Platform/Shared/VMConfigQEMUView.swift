@@ -25,6 +25,7 @@ struct VMConfigQEMUView: View {
     
     @ObservedObject var config: UTMQemuConfigurationQEMU
     @ObservedObject var system: UTMQemuConfigurationSystem
+    let fetchFixedArguments: () -> [QEMUArgument]
     @State private var showExportLog: Bool = false
     @State private var showExportArgs: Bool = false
     @EnvironmentObject private var data: UTMData
@@ -96,30 +97,23 @@ struct VMConfigQEMUView: View {
                     DefaultTextField("", text: $config.machinePropertyOverride.bound, prompt: "Default")
                 }
                 Section(header: Text("QEMU Arguments")) {
-                    /* //FIXME: Temporarily disabled during config rewrite.
+                    let fixedArgs = fetchFixedArguments()
                     Button("Export QEMU Command") {
                         showExportArgs.toggle()
-                    }.modifier(VMShareItemModifier(isPresented: $showExportArgs, shareItem: exportArgs()))
-                    let qemuSystem = UTMQemuSystem(configuration: config, imgPath: URL(fileURLWithPath: "Images"))
-                    let fixedArgs = arguments(from: qemuSystem.argv)
-                     */
+                    }.modifier(VMShareItemModifier(isPresented: $showExportArgs, shareItem: exportArgs(fixedArgs)))
                     #if os(macOS)
                     VStack {
-                        /* //FIXME: Temporarily disabled during config rewrite.
                         ForEach(fixedArgs) { arg in
                             TextField("", text: .constant(arg.string))
                         }.disabled(true)
-                         */
                         CustomArguments(config: config)
                         NewArgumentTextField(config: config)
                     }
                     #else
                     List {
-                        /* //FIXME: Temporarily disabled during config rewrite.
                         ForEach(fixedArgs) { arg in
                             Text(arg.string)
                         }.foregroundColor(.secondary)
-                         */
                         CustomArguments(config: config)
                         NewArgumentTextField(config: config)
                     }
@@ -138,28 +132,20 @@ struct VMConfigQEMUView: View {
         return .debugLog(srcLogPath)
     }
     
-    /* //FIXME: Temporarily disabled during config rewrite.
-    private func exportArgs() -> VMShareItemModifier.ShareItem {
-        let existingPath = config.existingPath ?? URL(fileURLWithPath: "Images")
-        let qemuSystem = UTMQemuSystem(configuration: config, imgPath: existingPath)
-        qemuSystem.updateArgv(withUserOptions: true)
-        var argString = "qemu-system-\(config.systemArchitecture ?? "unknown")"
-        for arg in qemuSystem.argv {
-            if arg.contains(" ") {
-                argString += " \"\(arg)\""
+    private func exportArgs(_ args: [QEMUArgument]) -> VMShareItemModifier.ShareItem {
+        var argString = "qemu-system-\(system.architecture.rawValue)"
+        for arg in args {
+            if arg.string.contains(" ") {
+                argString += " \"\(arg.string)\""
             } else {
-                argString += " \(arg)"
+                argString += " \(arg.string)"
             }
+        }
+        for arg in config.additionalArguments {
+            argString += " \(arg.string)"
         }
         return .qemuCommand(argString)
     }
-    
-    private func arguments(from list: [String]) -> [Argument] {
-        list.indices.map { i in
-            Argument(id: i, string: list[i])
-        }
-    }
-     */
 }
 
 @available(iOS 14, macOS 11, *)
@@ -227,6 +213,6 @@ struct VMConfigQEMUView_Previews: PreviewProvider {
     @ObservedObject static private var system = UTMQemuConfigurationSystem()
     
     static var previews: some View {
-        VMConfigQEMUView(config: config, system: system)
+        VMConfigQEMUView(config: config, system: system, fetchFixedArguments: { [] })
     }
 }

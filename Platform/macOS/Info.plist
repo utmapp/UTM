@@ -81,5 +81,7 @@
 			</dict>
 		</dict>
 	</array>
+	<key>AppGroupIdentifier</key>
+	<string>$(TeamIdentifierPrefix)$(PRODUCT_BUNDLE_PREFIX:default=com.utmapp).UTM</string>
 </dict>
 </plist>
