@@ -37,8 +37,8 @@ class VMDisplayAppleWindowController: VMDisplayWindowController {
         vm as? UTMAppleVirtualMachine
     }
     
-    var appleConfig: UTMAppleConfiguration! {
-        vm?.config as? UTMAppleConfiguration
+    var appleConfig: UTMLegacyAppleConfiguration! {
+        vm?.config as? UTMLegacyAppleConfiguration
     }
     
     private var cancellable: AnyCancellable?

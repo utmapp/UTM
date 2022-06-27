@@ -83,7 +83,7 @@ struct VMConfigNewDriveButton: View {
                         let copy = newQemuDrive.copy()
                         config.drives.append(copy)
                     }
-                } else if let appleConfig = await config as? UTMAppleConfiguration {
+                } else if let appleConfig = await config as? UTMLegacyAppleConfiguration {
                     let name = url.lastPathComponent
                     if appleConfig.diskImages.contains(where: { image in
                         image.imageURL?.lastPathComponent == name
@@ -110,7 +110,7 @@ struct VMConfigNewDriveButton: View {
                     let copy = newQemuDrive.copy()
                     config.drives.append(copy)
                 }
-            } else if let appleConfig = await config as? UTMAppleConfiguration {
+            } else if let appleConfig = await config as? UTMLegacyAppleConfiguration {
                 let image = await DiskImage(newSize: newAppleDriveSize)
                 DispatchQueue.main.async {
                     appleConfig.diskImages.append(image)
@@ -132,7 +132,7 @@ struct VMConfigDrivesButtons: View {
     var countDrives: Int {
         if true { //FIXME: need to merge with apple config
             return config.drives.count
-        } else if let appleConfig = config as? UTMAppleConfiguration {
+        } else if let appleConfig = config as? UTMLegacyAppleConfiguration {
             return appleConfig.diskImages.count
         } else {
             return 0
@@ -179,7 +179,7 @@ struct VMConfigDrivesButtons: View {
         withAnimation {
             if true {  //FIXME: need to merge with apple config
                 config.drives.move(fromOffsets: IndexSet(integer: index), toOffset: index - 1)
-            } else if let appleConfig = config as? UTMAppleConfiguration {
+            } else if let appleConfig = config as? UTMLegacyAppleConfiguration {
                 appleConfig.diskImages.move(fromOffsets: IndexSet(integer: index), toOffset: index - 1)
             }
             selectedDriveIndex = index - 1
@@ -190,7 +190,7 @@ struct VMConfigDrivesButtons: View {
         withAnimation {
             if true { //FIXME: need to merge with apple config
                 config.drives.move(fromOffsets: IndexSet(integer: index), toOffset: index + 2)
-            } else if let appleConfig = config as? UTMAppleConfiguration {
+            } else if let appleConfig = config as? UTMLegacyAppleConfiguration {
                 appleConfig.diskImages.move(fromOffsets: IndexSet(integer: index), toOffset: index + 2)
             }
             selectedDriveIndex = index + 1

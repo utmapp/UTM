@@ -18,7 +18,7 @@ import SwiftUI
 import Virtualization
 
 struct VMConfigAppleNetworkingView: View {
-    @ObservedObject var config: UTMAppleConfiguration
+    @ObservedObject var config: UTMLegacyAppleConfiguration
     @EnvironmentObject private var data: UTMData
     @State private var newMacAddress: String?
     
@@ -118,7 +118,7 @@ struct VMConfigAppleNetworkingView: View {
 }
 
 struct VMConfigAppleNetworkingView_Previews: PreviewProvider {
-    @State static private var config = UTMAppleConfiguration()
+    @State static private var config = UTMLegacyAppleConfiguration()
     
     static var previews: some View {
         VMConfigAppleNetworkingView(config: config)

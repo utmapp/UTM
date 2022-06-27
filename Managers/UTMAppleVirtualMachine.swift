@@ -30,8 +30,8 @@ import Virtualization
         }
     }
     
-    var appleConfig: UTMAppleConfiguration! {
-        config as? UTMAppleConfiguration
+    var appleConfig: UTMLegacyAppleConfiguration! {
+        config as? UTMLegacyAppleConfiguration
     }
     
     override var detailsTitleLabel: String {
@@ -92,7 +92,7 @@ import Virtualization
             path.stopAccessingSecurityScopedResource()
         }
         do {
-            _ = try UTMAppleConfiguration.load(from: path)
+            _ = try UTMLegacyAppleConfiguration.load(from: path)
             return true
         } catch {
             return false
@@ -100,8 +100,8 @@ import Virtualization
     }
     
     override func loadConfiguration(withReload reload: Bool) throws {
-        let newConfig = try UTMAppleConfiguration.load(from: path!)
-        if let oldConfig = config as? UTMAppleConfiguration {
+        let newConfig = try UTMLegacyAppleConfiguration.load(from: path!)
+        if let oldConfig = config as? UTMLegacyAppleConfiguration {
             // copy non-persistent values over
             newConfig.sharedDirectories = oldConfig.sharedDirectories
             if #available(macOS 12, *) {
@@ -123,7 +123,7 @@ import Virtualization
         do {
             try await appleConfig.save(to: savePath)
         } catch {
-            if let reload = try? UTMAppleConfiguration.load(from: savePath) {
+            if let reload = try? UTMLegacyAppleConfiguration.load(from: savePath) {
                 config = reload
             }
             throw error
@@ -131,7 +131,7 @@ import Virtualization
         if let existingPath = path, existingPath.lastPathComponent != newPath.lastPathComponent {
             try fileManager.moveItem(at: existingPath, to: newPath)
             path = newPath
-            if let reload = try? UTMAppleConfiguration.load(from: newPath) {
+            if let reload = try? UTMLegacyAppleConfiguration.load(from: newPath) {
                 config = reload
             }
         } else if path == nil {

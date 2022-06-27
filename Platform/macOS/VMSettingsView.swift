@@ -32,7 +32,7 @@ struct VMSettingsView<Config: ObservableObject & UTMConfigurable>: View {
                 if let qemuVM = vm as? UTMQemuVirtualMachine {
                     //FIXME: Rework after config rewrite.
                     VMQEMUSettingsView(config: qemuVM.futureConfig, selectedDriveIndex: $selectedDriveIndex)
-                } else if let appleConfig = config as? UTMAppleConfiguration {
+                } else if let appleConfig = config as? UTMLegacyAppleConfiguration {
                     VMAppleSettingsView(vm: vm, config: appleConfig, selectedDriveIndex: $selectedDriveIndex)
                 }
             }.listStyle(.sidebar)

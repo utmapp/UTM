@@ -19,7 +19,7 @@ import Virtualization
 
 @available(iOS, unavailable, message: "Apple Virtualization not available on iOS")
 @available(macOS 11, *)
-final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
+final class UTMLegacyAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
     private let currentVersion = 3
     let apple: VZVirtualMachineConfiguration
     
@@ -79,7 +79,7 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
     
     var cpuCount: Int {
         get {
-            if apple.cpuCount == UTMAppleConfiguration.defaultCoreCount {
+            if apple.cpuCount == UTMLegacyAppleConfiguration.defaultCoreCount {
                 return 0
             } else {
                 return apple.cpuCount
@@ -89,7 +89,7 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
         set {
             objectWillChange.send()
             if newValue == 0 {
-                apple.cpuCount = UTMAppleConfiguration.defaultCoreCount
+                apple.cpuCount = UTMLegacyAppleConfiguration.defaultCoreCount
             } else {
                 apple.cpuCount = newValue
             }
@@ -449,13 +449,13 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
         try container.encodeIfPresent(consoleResizeCommand, forKey: .consoleResizeCommand)
     }
     
-    static func load(from packageURL: URL) throws -> UTMAppleConfiguration {
+    static func load(from packageURL: URL) throws -> UTMLegacyAppleConfiguration {
         let dataURL = packageURL.appendingPathComponent("Data")
         let configURL = packageURL.appendingPathComponent(kUTMBundleConfigFilename)
         let configData = try Data(contentsOf: configURL)
         let decoder = PropertyListDecoder()
         decoder.userInfo = [.dataURL: dataURL]
-        let config = try decoder.decode(UTMAppleConfiguration.self, from: configData)
+        let config = try decoder.decode(UTMLegacyAppleConfiguration.self, from: configData)
         config.iconBasePath = packageURL
         return config
     }
@@ -1030,7 +1030,7 @@ fileprivate enum ConfigError: Error {
     case cannotCreateDiskImage
 }
 
-fileprivate extension UTMAppleConfiguration {
+fileprivate extension UTMLegacyAppleConfiguration {
     static var defaultCoreCount: Int {
         let cores = Int(sysctlIntRead("hw.physicalcpu"))
         let pcores = Int(sysctlIntRead("hw.perflevel0.physicalcpu"))

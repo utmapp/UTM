@@ -19,7 +19,7 @@ import Virtualization
 
 struct VMConfigAppleSystemView: View {
     
-    @ObservedObject var config: UTMAppleConfiguration
+    @ObservedObject var config: UTMLegacyAppleConfiguration
     @State private var isAdvanced: Bool = false
     
     var minCores: Int {
@@ -82,7 +82,7 @@ struct VMConfigAppleSystemView: View {
 }
 
 struct VMConfigAppleSystemView_Previews: PreviewProvider {
-    @State static private var config = UTMAppleConfiguration()
+    @State static private var config = UTMLegacyAppleConfiguration()
     
     static var previews: some View {
         VMConfigAppleSystemView(config: config)

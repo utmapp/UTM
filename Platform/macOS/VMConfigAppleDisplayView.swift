@@ -100,7 +100,7 @@ struct VMConfigAppleDisplayView: View {
                         resolution: Display.Resolution(width: 5120, height: 2880)),
     ]
     
-    @ObservedObject var config: UTMAppleConfiguration
+    @ObservedObject var config: UTMLegacyAppleConfiguration
     
     private var displayResolution: Binding<Display.Resolution> {
         Binding<Display.Resolution> {
@@ -176,7 +176,7 @@ struct VMConfigAppleDisplayView: View {
 
 @available(macOS 12, *)
 struct VMConfigAppleDisplayView_Previews: PreviewProvider {
-    @State static private var config = UTMAppleConfiguration()
+    @State static private var config = UTMLegacyAppleConfiguration()
     
     static var previews: some View {
         VMConfigAppleDisplayView(config: config)

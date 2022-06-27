@@ -250,8 +250,8 @@ enum VMWizardOS: String, Identifiable {
     }
     
     #if os(macOS)
-    private func generateAppleConfig() throws -> UTMAppleConfiguration {
-        let config = UTMAppleConfiguration()
+    private func generateAppleConfig() throws -> UTMLegacyAppleConfiguration {
+        let config = UTMLegacyAppleConfiguration()
         config.name = name!
         config.memorySize = systemMemory
         config.cpuCount = systemCpuCount

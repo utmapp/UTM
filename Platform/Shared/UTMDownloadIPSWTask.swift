@@ -21,13 +21,13 @@ import Virtualization
 @available(iOS, unavailable, message: "Apple Virtualization not available on iOS")
 @available(macOS 12, *)
 class UTMDownloadIPSWTask: UTMDownloadTask {
-    let config: UTMAppleConfiguration
+    let config: UTMLegacyAppleConfiguration
     
     private var cacheUrl: URL {
         fileManager.urls(for: .cachesDirectory, in: .userDomainMask).first!
     }
     
-    init(for config: UTMAppleConfiguration) {
+    init(for config: UTMLegacyAppleConfiguration) {
         self.config = config
         super.init(for: config.macRecoveryIpswURL!, named: config.name)
     }

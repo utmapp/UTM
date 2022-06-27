@@ -29,7 +29,7 @@ struct VMConfigAppleBootView: View {
         case unsupported
     }
     
-    @ObservedObject var config: UTMAppleConfiguration
+    @ObservedObject var config: UTMLegacyAppleConfiguration
     @EnvironmentObject private var data: UTMData
     @State private var operatingSystem: Bootloader.OperatingSystem?
     @State private var alertBootloaderSelection: BootloaderSelection?
@@ -182,7 +182,7 @@ struct VMConfigAppleBootView: View {
 
 @available(macOS 12, *)
 struct VMConfigAppleBootView_Previews: PreviewProvider {
-    @State static private var config = UTMAppleConfiguration()
+    @State static private var config = UTMLegacyAppleConfiguration()
     
     static var previews: some View {
         VMConfigAppleSystemView(config: config)

@@ -641,7 +641,7 @@ class UTMData: ObservableObject {
     /// Create a new VM using configuration and downloaded IPSW
     /// - Parameter config: Apple VM configuration
     @available(macOS 12, *)
-    @MainActor func downloadIPSW(using config: UTMAppleConfiguration) {
+    @MainActor func downloadIPSW(using config: UTMLegacyAppleConfiguration) {
         let task = UTMDownloadIPSWTask(for: config)
         guard !virtualMachines.contains(where: { !$0.isShortcut && $0.config.name == config.name }) else {
             showErrorAlert(message: NSLocalizedString("An existing virtual machine already exists with this name.", comment: "UTMData"))

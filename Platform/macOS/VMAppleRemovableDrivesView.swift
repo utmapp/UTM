@@ -23,7 +23,7 @@ struct VMAppleRemovableDrivesView: View {
     }
     
     @ObservedObject var vm: UTMAppleVirtualMachine
-    @ObservedObject var config: UTMAppleConfiguration
+    @ObservedObject var config: UTMLegacyAppleConfiguration
     @EnvironmentObject private var data: UTMData
     @State private var fileImportPresented: Bool = false
     @State private var selectType: SelectType = .sharedDirectory
@@ -218,7 +218,7 @@ struct VMAppleRemovableDrivesView: View {
 
 struct VMAppleRemovableDrivesView_Previews: PreviewProvider {
     @StateObject static var vm = UTMAppleVirtualMachine()
-    @StateObject static var config = UTMAppleConfiguration()
+    @StateObject static var config = UTMLegacyAppleConfiguration()
     
     static var previews: some View {
         VMAppleRemovableDrivesView(vm: vm, config: config)

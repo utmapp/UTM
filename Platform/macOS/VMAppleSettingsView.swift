@@ -18,7 +18,7 @@ import SwiftUI
 
 struct VMAppleSettingsView: View {
     let vm: UTMVirtualMachine?
-    @ObservedObject var config: UTMAppleConfiguration
+    @ObservedObject var config: UTMLegacyAppleConfiguration
     @Binding var selectedDriveIndex: Int? //FIXME: change to drive object when unifed with Apple config
     
     @State private var infoActive: Bool = true
@@ -85,7 +85,7 @@ struct VMAppleSettingsView: View {
 }
 
 struct VMAppleSettingsView_Previews: PreviewProvider {
-    @StateObject static var config = UTMAppleConfiguration()
+    @StateObject static var config = UTMLegacyAppleConfiguration()
     static var previews: some View {
         VMAppleSettingsView(vm: nil, config: config, selectedDriveIndex: .constant(nil))
     }

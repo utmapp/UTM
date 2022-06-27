@@ -18,7 +18,7 @@ import SwiftUI
 
 @available(macOS 12, *)
 struct VMConfigAppleSharingView: View {
-    @ObservedObject var config: UTMAppleConfiguration
+    @ObservedObject var config: UTMLegacyAppleConfiguration
     @EnvironmentObject private var data: UTMData
     @State private var selected: SharedDirectory?
     @State private var isImporterPresented: Bool = false
@@ -68,7 +68,7 @@ struct VMConfigAppleSharingView: View {
 
 @available(macOS 12, *)
 struct VMConfigAppleSharingView_Previews: PreviewProvider {
-    @State static private var config = UTMAppleConfiguration()
+    @State static private var config = UTMLegacyAppleConfiguration()
     
     static var previews: some View {
         VMConfigAppleSharingView(config: config)

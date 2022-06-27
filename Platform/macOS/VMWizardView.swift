@@ -92,7 +92,7 @@ struct VMWizardView: View {
                             let config = try await wizardState.generateConfig()
                             #if arch(arm64)
                             if #available(macOS 12, *), await wizardState.isPendingIPSWDownload {
-                                await data.downloadIPSW(using: config as! UTMAppleConfiguration)
+                                await data.downloadIPSW(using: config as! UTMLegacyAppleConfiguration)
                                 return
                             }
                             #endif
