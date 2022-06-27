@@ -75,6 +75,7 @@ struct VMConfigAppleSystemView: View {
                         Toggle("Enable Keyboard", isOn: $config.isKeyboardEnabled)
                         Toggle("Enable Pointer", isOn: $config.isPointingEnabled)
                     }
+                    Toggle("Enable 'Run using a snapshot' on all drives", isOn: $config.isRunAsSnapshot)
                 }
             }
         }

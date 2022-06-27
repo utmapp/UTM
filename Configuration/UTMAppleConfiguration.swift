@@ -275,7 +275,8 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
     
     @Published var isSerialEnabled: Bool
     @Published var isConsoleDisplay: Bool
-    
+    @Published var isRunAsSnapshot: Bool
+
     @available(macOS 12, *)
     var isKeyboardEnabled: Bool {
         get {
@@ -335,6 +336,7 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
         case isEntropyEnabled
         case isSerialEnabled
         case isConsoleDisplay
+        case isRunAsSnapshot
         case isKeyboardEnabled
         case isPointingEnabled
     }
@@ -357,6 +359,7 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
         isAppleVirtualization = true
         isSerialEnabled = false
         isConsoleDisplay = false
+        isRunAsSnapshot = false
         memorySize = 4 * 1024 * 1024 * 1024
         cpuCount = 4
     }
@@ -398,6 +401,7 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
         isEntropyEnabled = try values.decode(Bool.self, forKey: .isEntropyEnabled)
         isSerialEnabled = try values.decode(Bool.self, forKey: .isSerialEnabled)
         isConsoleDisplay = try values.decode(Bool.self, forKey: .isConsoleDisplay)
+        isRunAsSnapshot = try values.decodeIfPresent(Bool.self, forKey: .isRunAsSnapshot) ?? false
         name = try values.decode(String.self, forKey: .name)
         architecture = try values.decode(String.self, forKey: .architecture)
         icon = try values.decodeIfPresent(String.self, forKey: .icon)
@@ -435,6 +439,7 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
         try container.encode(isEntropyEnabled, forKey: .isEntropyEnabled)
         try container.encode(isSerialEnabled, forKey: .isSerialEnabled)
         try container.encode(isConsoleDisplay, forKey: .isConsoleDisplay)
+        try container.encode(isRunAsSnapshot, forKey: .isRunAsSnapshot)
         try container.encode(name, forKey: .name)
         try container.encode(architecture, forKey: .architecture)
         try container.encodeIfPresent(icon, forKey: .icon)
@@ -615,6 +620,48 @@ final class UTMAppleConfiguration: UTMConfigurable, Codable, ObservableObject {
             }
         }
         return urls
+    }
+
+    /// Remove the snapshot URL image's that were previously genereated, 
+    /// this should be done as part of a VM cleanup.
+    func cleanupDriveSnapshot() throws {
+        for i in diskImages.indices {
+            try diskImages[i].cleanupDriveSnapshot()
+        }
+    }
+
+    /// Perform a snapshot clone of the current image URL to the snapshot URL
+    /// this is required for the snapshotURL image to "work"
+    ///
+    /// This is only done if the provided parm, or system config is true
+    /// 
+    /// The "runAsSnapshot" is meant to be used with the 
+    /// "runAsSnapshot" context menu feature, which would perform   
+    /// the snapshot run "on demand" without config change
+    func setupDriveSnapshot(runAsSnapshot: Bool = false) throws {
+        // Seems like there is edge cases where cleanup didn't occur (hard crash/force close)
+        // So we should always perform a full cleanup, before setup
+        try cleanupDriveSnapshot()
+
+        // Logic to detrimine if runAsSnapshot should be assumed
+        var runAsSnapshot = runAsSnapshot
+        if isRunAsSnapshot {
+            runAsSnapshot = true
+        }
+
+        // Perform snapshots on a per drive level
+        for i in diskImages.indices {
+            // Setup the --snapshot on a per drive level
+            try diskImages[i].setupDriveSnapshot(runAsSnapshot: runAsSnapshot)
+        }
+
+        // Seems like this needs to be reinit? So that config changes properlly applies
+        apple.storageDevices = diskImages.compactMap({ diskImage in
+            guard let attachment = try? diskImage.vzDiskImage(runAsSnapshot: runAsSnapshot) else {
+                return nil
+            }
+            return VZVirtioBlockDeviceConfiguration(attachment: attachment)
+        })
     }
 }
 
@@ -864,6 +911,7 @@ struct DiskImage: Codable, Hashable, Identifiable {
     var sizeMib: Int
     var isReadOnly: Bool
     var isExternal: Bool
+    var isRunAsSnapshot: Bool
     var imageURL: URL?
     private var uuid = UUID() // for identifiable
     
@@ -871,6 +919,7 @@ struct DiskImage: Codable, Hashable, Identifiable {
         case sizeMib
         case isReadOnly
         case isExternal
+        case isRunAsSnapshot
         case imagePath
         case imageBookmark
     }
@@ -891,12 +940,14 @@ struct DiskImage: Codable, Hashable, Identifiable {
         sizeMib = newSize
         isReadOnly = false
         isExternal = false
+        isRunAsSnapshot = false
     }
     
     init(importImage url: URL, isReadOnly: Bool = false, isExternal: Bool = false) {
         self.imageURL = url
         self.isReadOnly = isReadOnly
         self.isExternal = isExternal
+        self.isRunAsSnapshot = false
         if let attributes = try? url.resourceValues(forKeys: [.fileSizeKey]), let fileSize = attributes.fileSize {
             sizeMib = fileSize / bytesInMib
         } else {
@@ -912,6 +963,10 @@ struct DiskImage: Codable, Hashable, Identifiable {
         sizeMib = try container.decode(Int.self, forKey: .sizeMib)
         isReadOnly = try container.decode(Bool.self, forKey: .isReadOnly)
         isExternal = try container.decode(Bool.self, forKey: .isExternal)
+
+        // isRunAsSnapshot : is backwards compatible with older configs
+        isRunAsSnapshot = try container.decodeIfPresent(Bool.self, forKey: .isRunAsSnapshot) ?? false
+
         if !isExternal, let imagePath = try container.decodeIfPresent(String.self, forKey: .imagePath) {
             imageURL = dataURL.appendingPathComponent(imagePath)
         } else if let bookmark = try container.decodeIfPresent(Data.self, forKey: .imageBookmark) {
@@ -925,6 +980,7 @@ struct DiskImage: Codable, Hashable, Identifiable {
         try container.encode(sizeMib, forKey: .sizeMib)
         try container.encode(isReadOnly, forKey: .isReadOnly)
         try container.encode(isExternal, forKey: .isExternal)
+        try container.encode(isRunAsSnapshot, forKey: .isRunAsSnapshot)
         if !isExternal {
             try container.encodeIfPresent(imageURL?.lastPathComponent, forKey: .imagePath)
         } else {
@@ -941,12 +997,57 @@ struct DiskImage: Codable, Hashable, Identifiable {
         }
     }
     
-    func vzDiskImage() throws -> VZDiskImageStorageDeviceAttachment? {
-        if let imageURL = imageURL {
-            return try VZDiskImageStorageDeviceAttachment(url: imageURL, readOnly: isReadOnly)
-        } else {
-            return nil
+    /// Returns the snapshot equivalent URL for the current image
+    /// Does not actually prepare the snapshot (this is done via setupDriveSnapshot)
+    func snapshotURL() throws -> URL? {
+        return imageURL?.appendingPathExtension("snapshot.img")
+    }
+
+    /// Remove the snapshot URL image, this can be done as part of VM cleanup
+    func cleanupDriveSnapshot() throws {
+        if let snapshotURL = try snapshotURL() {
+            // The file may not exists, if so nothing should happens. Also,
+            // despite documentation saying "removeItem" will return false.
+            // it will return with an error if removal fails (does not exist,etc)
+            //
+            // try? surpresses and ignores the error
+            try? FileManager.default.removeItem(at: snapshotURL)
         }
+    }
+
+    /// Perform a snapshot clone of the current image URL to the snapshot URL
+    /// this is required for the snapshotURL image to "work"
+    ///
+    /// This is only done if the provided parm, or drive config is true
+    func setupDriveSnapshot(runAsSnapshot: Bool = false) throws {
+        // does nothing if runAsSnapshot is false
+        if runAsSnapshot == false && isRunAsSnapshot == false {
+            return
+        }
+
+        // Make a copy of the provided imageURL, as snapshot
+        if let snapshotURL = try snapshotURL(), let imageURL = imageURL {
+            // lets setup the snapshot file 
+            // AFAICT this does a shallow copy on APFS drives
+            try FileManager.default.copyItem(at: imageURL, to: snapshotURL)
+        }
+    }
+
+    /// Return the vzDiskImage, if either the runAsSnapshot or
+    /// the isRunAsSnapshot drive config is true, return using the snapshot URL instead
+    func vzDiskImage(runAsSnapshot: Bool = false) throws -> VZDiskImageStorageDeviceAttachment? { 
+        if runAsSnapshot == true || isRunAsSnapshot == true {
+            // Assume the usage of snapshot URL
+            if let snapshotURL = try snapshotURL() {
+                return try VZDiskImageStorageDeviceAttachment(url: snapshotURL, readOnly: isReadOnly)
+            }
+        } else {
+            // Assume standard (non-snapshot) behaviour
+            if let imageURL = imageURL {
+                return try VZDiskImageStorageDeviceAttachment(url: imageURL, readOnly: isReadOnly)
+            }
+        }
+        return nil
     }
     
     func hash(into hasher: inout Hasher) {
