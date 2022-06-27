@@ -415,6 +415,7 @@ build_angle () {
     # FIXME: remove this hack to get iOS simulator to build on newer Xcode (crbug.com/1223481)
     if [ "$PLATFORM" == "ios_simulator" ]; then
         sed -i.old 's/assert(xcode_version_int == 1300)//g' "build/config/ios/BUILD.gn"
+        sed -i.old2 's/13.0.0/13.1.6/g' "build/config/ios/BUILD.gn"
     fi
     gn gen "--args=is_debug=false angle_build_all=false angle_enable_metal=true $IOS_BUILD_ARGS target_os=\"$TARGET_OS\" target_cpu=\"$TARGET_CPU\"" utm_build
     ninja -C utm_build -j $NCPU
