@@ -68,15 +68,15 @@
 		841619B228431DA5000034B2 /* UTMQemuConfigurationQEMU.swift in Sources */ = {isa = PBXBuildFile; fileRef = 841619B128431DA5000034B2 /* UTMQemuConfigurationQEMU.swift */; };
 		841619B328431DA5000034B2 /* UTMQemuConfigurationQEMU.swift in Sources */ = {isa = PBXBuildFile; fileRef = 841619B128431DA5000034B2 /* UTMQemuConfigurationQEMU.swift */; };
 		841619B428431DA5000034B2 /* UTMQemuConfigurationQEMU.swift in Sources */ = {isa = PBXBuildFile; fileRef = 841619B128431DA5000034B2 /* UTMQemuConfigurationQEMU.swift */; };
-		841619B62843226B000034B2 /* UTMQemuConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 841619B52843226B000034B2 /* UTMQemuConstants.swift */; };
-		841619B72843226B000034B2 /* UTMQemuConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 841619B52843226B000034B2 /* UTMQemuConstants.swift */; };
-		841619B82843226B000034B2 /* UTMQemuConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 841619B52843226B000034B2 /* UTMQemuConstants.swift */; };
+		841619B62843226B000034B2 /* QEMUConstant.swift in Sources */ = {isa = PBXBuildFile; fileRef = 841619B52843226B000034B2 /* QEMUConstant.swift */; };
+		841619B72843226B000034B2 /* QEMUConstant.swift in Sources */ = {isa = PBXBuildFile; fileRef = 841619B52843226B000034B2 /* QEMUConstant.swift */; };
+		841619B82843226B000034B2 /* QEMUConstant.swift in Sources */ = {isa = PBXBuildFile; fileRef = 841619B52843226B000034B2 /* QEMUConstant.swift */; };
 		843BF82428441EAD0029D60D /* UTMQemuConfigurationDisplay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 843BF82328441EAD0029D60D /* UTMQemuConfigurationDisplay.swift */; };
 		843BF82528441EAD0029D60D /* UTMQemuConfigurationDisplay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 843BF82328441EAD0029D60D /* UTMQemuConfigurationDisplay.swift */; };
 		843BF82628441EAD0029D60D /* UTMQemuConfigurationDisplay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 843BF82328441EAD0029D60D /* UTMQemuConfigurationDisplay.swift */; };
-		843BF82828441FAF0029D60D /* UTMQemuConstantsGenerated.swift in Sources */ = {isa = PBXBuildFile; fileRef = 843BF82728441FAF0029D60D /* UTMQemuConstantsGenerated.swift */; };
-		843BF82928441FAF0029D60D /* UTMQemuConstantsGenerated.swift in Sources */ = {isa = PBXBuildFile; fileRef = 843BF82728441FAF0029D60D /* UTMQemuConstantsGenerated.swift */; };
-		843BF82A28441FAF0029D60D /* UTMQemuConstantsGenerated.swift in Sources */ = {isa = PBXBuildFile; fileRef = 843BF82728441FAF0029D60D /* UTMQemuConstantsGenerated.swift */; };
+		843BF82828441FAF0029D60D /* QEMUConstantGenerated.swift in Sources */ = {isa = PBXBuildFile; fileRef = 843BF82728441FAF0029D60D /* QEMUConstantGenerated.swift */; };
+		843BF82928441FAF0029D60D /* QEMUConstantGenerated.swift in Sources */ = {isa = PBXBuildFile; fileRef = 843BF82728441FAF0029D60D /* QEMUConstantGenerated.swift */; };
+		843BF82A28441FAF0029D60D /* QEMUConstantGenerated.swift in Sources */ = {isa = PBXBuildFile; fileRef = 843BF82728441FAF0029D60D /* QEMUConstantGenerated.swift */; };
 		843BF82C284482C10029D60D /* UTMQemuConfigurationInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = 843BF82B284482C10029D60D /* UTMQemuConfigurationInput.swift */; };
 		843BF82D284482C10029D60D /* UTMQemuConfigurationInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = 843BF82B284482C10029D60D /* UTMQemuConfigurationInput.swift */; };
 		843BF82E284482C10029D60D /* UTMQemuConfigurationInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = 843BF82B284482C10029D60D /* UTMQemuConfigurationInput.swift */; };
@@ -1623,9 +1623,9 @@
 		841619A9284315F9000034B2 /* UTMConfigurationInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMConfigurationInfo.swift; sourceTree = "<group>"; };
 		841619AD28431952000034B2 /* UTMQemuConfigurationSystem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMQemuConfigurationSystem.swift; sourceTree = "<group>"; };
 		841619B128431DA5000034B2 /* UTMQemuConfigurationQEMU.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMQemuConfigurationQEMU.swift; sourceTree = "<group>"; };
-		841619B52843226B000034B2 /* UTMQemuConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMQemuConstants.swift; sourceTree = "<group>"; };
+		841619B52843226B000034B2 /* QEMUConstant.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QEMUConstant.swift; sourceTree = "<group>"; };
 		843BF82328441EAD0029D60D /* UTMQemuConfigurationDisplay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMQemuConfigurationDisplay.swift; sourceTree = "<group>"; };
-		843BF82728441FAF0029D60D /* UTMQemuConstantsGenerated.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMQemuConstantsGenerated.swift; sourceTree = "<group>"; };
+		843BF82728441FAF0029D60D /* QEMUConstantGenerated.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QEMUConstantGenerated.swift; sourceTree = "<group>"; };
 		843BF82B284482C10029D60D /* UTMQemuConfigurationInput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMQemuConfigurationInput.swift; sourceTree = "<group>"; };
 		843BF82F2844853E0029D60D /* UTMQemuConfigurationNetwork.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMQemuConfigurationNetwork.swift; sourceTree = "<group>"; };
 		843BF83328450C0B0029D60D /* UTMQemuConfigurationSound.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMQemuConfigurationSound.swift; sourceTree = "<group>"; };
@@ -2735,8 +2735,6 @@
 				84C584DE268E95B3000FCABF /* UTMAppleConfiguration.swift */,
 				CE6EDCDD241C4A6800A719DC /* UTMViewState.h */,
 				CE6EDCDE241C4A6800A719DC /* UTMViewState.m */,
-				841619B52843226B000034B2 /* UTMQemuConstants.swift */,
-				843BF82728441FAF0029D60D /* UTMQemuConstantsGenerated.swift */,
 				841619A5284315C1000034B2 /* UTMQemuConfiguration.swift */,
 				848D99C328670F650055C215 /* UTMQemuConfiguration+Arguments.swift */,
 				841619A9284315F9000034B2 /* UTMConfigurationInfo.swift */,
@@ -2754,6 +2752,8 @@
 				841619AD28431952000034B2 /* UTMQemuConfigurationSystem.swift */,
 				848D99B3286300160055C215 /* QEMUArgument.swift */,
 				848D99BF2866D9CE0055C215 /* QEMUArgumentBuilder.swift */,
+				841619B52843226B000034B2 /* QEMUConstant.swift */,
+				843BF82728441FAF0029D60D /* QEMUConstantGenerated.swift */,
 			);
 			path = Configuration;
 			sourceTree = "<group>";
@@ -3919,7 +3919,7 @@
 				CE2D92E724AD46670059923A /* qapi-types-ui.c in Sources */,
 				CE2D92E824AD46670059923A /* qapi-types-dump.c in Sources */,
 				CE6D21DC2553A6ED001D29C5 /* VMConfirmActionModifier.swift in Sources */,
-				841619B62843226B000034B2 /* UTMQemuConstants.swift in Sources */,
+				841619B62843226B000034B2 /* QEMUConstant.swift in Sources */,
 				CE2D92E924AD46670059923A /* VMDisplayView.m in Sources */,
 				CE2D958724AD4F990059923A /* VMConfigPortForwardForm.swift in Sources */,
 				CE2D92EA24AD46670059923A /* qapi-types-machine-target.c in Sources */,
@@ -3933,7 +3933,7 @@
 				CE2D957724AD4F990059923A /* VMConfigStringPicker.swift in Sources */,
 				CEF0306A26A2AFDF00667B63 /* VMWizardStartView.swift in Sources */,
 				CE2D92F124AD46670059923A /* qapi-commands-dump.c in Sources */,
-				843BF82828441FAF0029D60D /* UTMQemuConstantsGenerated.swift in Sources */,
+				843BF82828441FAF0029D60D /* QEMUConstantGenerated.swift in Sources */,
 				CE2D92F224AD46670059923A /* VMKeyboardButton.m in Sources */,
 				CE2D92F324AD46670059923A /* qapi-commands-introspect.c in Sources */,
 				84B36D2527B704C200C22685 /* UTMDownloadVMTask.swift in Sources */,
@@ -4092,7 +4092,7 @@
 				CEF83EC324F9C9E100557D15 /* UTMDrive.m in Sources */,
 				CE0B6D5724AD584C00FE012D /* qapi-types-net.c in Sources */,
 				CE03D05324D90B4E00F76B84 /* UTMQemuSystem.m in Sources */,
-				841619B82843226B000034B2 /* UTMQemuConstants.swift in Sources */,
+				841619B82843226B000034B2 /* QEMUConstant.swift in Sources */,
 				CE8813DC24D1290600532628 /* UTMLegacyQemuConfiguration+ConstantsGenerated.m in Sources */,
 				84C584EB268FA6D1000FCABF /* VMConfigAppleSystemView.swift in Sources */,
 				CE0B6D0124AD56AE00FE012D /* UTMJSONStream.m in Sources */,
@@ -4275,7 +4275,7 @@
 				CE0B6D3E24AD584C00FE012D /* qapi-visit-crypto.c in Sources */,
 				CE0B6D6C24AD584D00FE012D /* qapi-visit-common.c in Sources */,
 				2CE8EAF42572E0D0000E2EBB /* qapi-events-acpi.c in Sources */,
-				843BF82A28441FAF0029D60D /* UTMQemuConstantsGenerated.swift in Sources */,
+				843BF82A28441FAF0029D60D /* QEMUConstantGenerated.swift in Sources */,
 				CE0B6D5124AD584C00FE012D /* qapi-visit-migration.c in Sources */,
 				2CE8EAEF2572E0C2000E2EBB /* qapi-events-block-export.c in Sources */,
 				CE0B6D5D24AD584D00FE012D /* qapi-visit.c in Sources */,
@@ -4414,7 +4414,7 @@
 				CEF0306B26A2AFDF00667B63 /* VMWizardStartView.swift in Sources */,
 				CEA45E7B263519B5002FA97D /* qapi-events-machine-target.c in Sources */,
 				CEA45E7C263519B5002FA97D /* qapi-types-misc.c in Sources */,
-				841619B72843226B000034B2 /* UTMQemuConstants.swift in Sources */,
+				841619B72843226B000034B2 /* QEMUConstant.swift in Sources */,
 				CEA45E7D263519B5002FA97D /* qapi-commands-qom.c in Sources */,
 				CEA45E7E263519B5002FA97D /* VMConfigDrivesView.swift in Sources */,
 				CEBE820C26A4C8E0007AAB12 /* VMWizardSummaryView.swift in Sources */,
@@ -4544,7 +4544,7 @@
 				CEA45EE9263519B5002FA97D /* qapi-builtin-types.c in Sources */,
 				CEA45EEA263519B5002FA97D /* UTMExtensions.swift in Sources */,
 				CEA45EEB263519B5002FA97D /* VMConfigDrivesViewController.m in Sources */,
-				843BF82928441FAF0029D60D /* UTMQemuConstantsGenerated.swift in Sources */,
+				843BF82928441FAF0029D60D /* QEMUConstantGenerated.swift in Sources */,
 				CEA45EEC263519B5002FA97D /* UTMData.swift in Sources */,
 				CEA45EED263519B5002FA97D /* qapi-events-migration.c in Sources */,
 				CEA45EEE263519B5002FA97D /* qapi-commands.c in Sources */,
