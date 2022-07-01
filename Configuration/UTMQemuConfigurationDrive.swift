@@ -121,7 +121,7 @@ struct UTMQemuConfigurationDrive: UTMConfigurationDrive {
     
     func clone() -> UTMQemuConfigurationDrive {
         var cloned = self
-        cloned.id = "drive\(UUID().uuidString)"
+        cloned.id = UUID().uuidString
         return cloned
     }
 }
@@ -156,7 +156,14 @@ extension UTMQemuConfigurationDrive {
         imageType = convertImageType(from: oldConfig.driveImageType(for: index))
         interface = convertInterface(from: oldConfig.driveInterfaceType(for: index))
         isExternal = oldConfig.driveRemovable(for: index)
-        id = oldConfig.driveName(for: index)!
+        var oldId = oldConfig.driveName(for: index) ?? UUID().uuidString
+        if oldId.hasPrefix("drive") {
+            oldId.removeFirst(5)
+        }
+        if oldId.isEmpty {
+            oldId = UUID().uuidString
+        }
+        id = oldId
         let dataURL = oldConfig.existingPath?.appendingPathComponent(QEMUPackageFileName.images.rawValue)
         if let imageName = imageName {
             imageURL = dataURL?.appendingPathComponent(imageName)

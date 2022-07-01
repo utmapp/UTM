@@ -68,20 +68,23 @@ extension UTMConfigurationDrive {
             self.imageName = newURL.lastPathComponent
             self.imageURL = newURL
             return [newURL]
-        } else {
-            guard let imageName = imageName else {
-                throw UTMConfigurationError.invalidDiskImageName
+        } else if imageName == nil {
+            let newName = "\(id).\(isRawImage ? "img" : "qcow2")"
+            let newURL = dataURL.appendingPathComponent(newName)
+            guard !fileManager.fileExists(atPath: newURL.path) else {
+                throw UTMConfigurationError.driveAlreadyExists
             }
-            let newURL = dataURL.appendingPathComponent(imageName)
-            if !fileManager.fileExists(atPath: newURL.path) {
-                if isRawImage {
-                    try await createRawImage(at: newURL, size: sizeMib)
-                } else {
-                    try await createQcow2Image(at: newURL, size: sizeMib)
-                }
+            if isRawImage {
+                try await createRawImage(at: newURL, size: sizeMib)
+            } else {
+                try await createQcow2Image(at: newURL, size: sizeMib)
             }
+            self.imageName = newName
             self.imageURL = newURL
             return [newURL]
+        } else {
+            let existingURL = dataURL.appendingPathComponent(imageName!)
+            return [existingURL]
         }
     }
     

@@ -51,7 +51,7 @@ enum UTMConfigurationError: Error {
     case invalidDataURL
     case invalidDriveConfiguration
     case customIconInvalid
-    case invalidDiskImageName
+    case driveAlreadyExists
     case cannotCreateDiskImage
 }
 

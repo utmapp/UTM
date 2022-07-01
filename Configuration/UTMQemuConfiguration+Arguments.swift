@@ -394,7 +394,7 @@ extension UTMQemuConfiguration {
             }
             "bus=ide.\(busindex)"
             busindex += 1
-            "drive=\(drive.id)"
+            "drive=drive\(drive.id)"
             "bootindex=\(bootindex)"
             bootindex += 1
             f()
@@ -417,7 +417,7 @@ extension UTMQemuConfiguration {
             "channel=0"
             "scsi-id=\(busindex)"
             busindex += 1
-            "drive=\(drive.id)"
+            "drive=drive\(drive.id)"
             "bootindex=\(bootindex)"
             bootindex += 1
             f()
@@ -428,14 +428,14 @@ extension UTMQemuConfiguration {
             } else {
                 "virtio-blk-pci"
             }
-            "drive=\(drive.id)"
+            "drive=drive\(drive.id)"
             "bootindex=\(bootindex)"
             bootindex += 1
             f()
         } else if drive.interface == .nvme {
             f("-device")
             "nvme"
-            "drive=\(drive.id)"
+            "drive=drive\(drive.id)"
             "serial=\(drive.id)"
             "bootindex=\(bootindex)"
             bootindex += 1
@@ -445,7 +445,7 @@ extension UTMQemuConfiguration {
             // use usb 3 bus for virt system, unless using legacy input setting (this mirrors the code in argsForUsb)
             let isUsb3 = input.usbBusSupport != .disabled && system.target.rawValue.hasPrefix("virt")
             "usb-storage"
-            "drive=\(drive.id)"
+            "drive=drive\(drive.id)"
             "removable=\(isRemovable)"
             "bootindex=\(bootindex)"
             bootindex += 1
@@ -466,7 +466,7 @@ extension UTMQemuConfiguration {
                 "unit=0"
                 "bus=fdc\(busindex).0"
                 busindex += 1
-                "drive=\(drive.id)"
+                "drive=drive\(drive.id)"
                 f()
             }
         } else {
@@ -481,7 +481,7 @@ extension UTMQemuConfiguration {
         } else {
             "media=disk"
         }
-        "id=\(drive.id)"
+        "id=drive\(drive.id)"
         if !drive.isExternal && drive.imageURL != nil {
             "file="
             drive.imageURL!

@@ -92,7 +92,7 @@ struct UTMAppleConfigurationDrive: UTMConfigurationDrive {
         try container.encode(isReadOnly, forKey: .isReadOnly)
         try container.encode(sizeMib, forKey: .sizeMib)
         if !isExternal {
-            try container.encodeIfPresent(imageURL?.lastPathComponent, forKey: .imageName)
+            try container.encodeIfPresent(imageName, forKey: .imageName)
         } else {
             var options = NSURL.BookmarkCreationOptions.withSecurityScope
             if isReadOnly {
