@@ -149,3 +149,32 @@ extension UTMQemuConfigurationQEMU {
         dataURL = oldConfig.existingPath
     }
 }
+
+// MARK: - Saving data
+
+@available(iOS 13, macOS 11, *)
+extension UTMQemuConfigurationQEMU {
+    @MainActor mutating func saveData(to dataURL: URL, for system: UTMQemuConfigurationSystem) async throws -> [URL] {
+        let fileManager = FileManager.default
+        // save EFI variables
+        let resourceURL = Bundle.main.url(forResource: "qemu", withExtension: nil)!
+        let templateVarsURL: URL
+        if system.architecture == .arm || system.architecture == .aarch64 {
+            templateVarsURL = resourceURL.appendingPathComponent("edk2-arm-vars.fd")
+        } else if system.architecture == .i386 || system.architecture == .x86_64 {
+            templateVarsURL = resourceURL.appendingPathComponent("edk2-i386-vars.fd")
+        } else {
+            throw UTMQemuConfigurationError.uefiNotSupported
+        }
+        if hasUefiBoot {
+            let varsURL = dataURL.appendingPathComponent(QEMUPackageFileName.efiVariables.rawValue)
+            if !fileManager.fileExists(atPath: varsURL.path) {
+                try await Task.detached {
+                    try fileManager.copyItem(at: templateVarsURL, to: varsURL)
+                }.value
+            }
+            return [varsURL]
+        }
+        return []
+    }
+}

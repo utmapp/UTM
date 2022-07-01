@@ -23,6 +23,7 @@ protocol UTMConfiguration: Codable, ObservableObject {
     var information: UTMConfigurationInfo { get }
     var dataURL: URL? { get }
     var backend: UTMBackend { get }
+    func prepareSave(for packageURL: URL) async throws
     func saveData(to dataURL: URL) async throws -> [URL]
 }
 
@@ -131,6 +132,8 @@ extension UTMConfiguration {
     func save(to packageURL: URL) async throws {
         let fileManager = FileManager.default
 
+        // let concrete class do any pre-processing
+        try await prepareSave(for: packageURL)
         // create package directory
         if !fileManager.fileExists(atPath: packageURL.path) {
             try fileManager.createDirectory(at: packageURL, withIntermediateDirectories: false)

@@ -121,6 +121,22 @@ final class UTMQemuConfiguration: UTMConfiguration {
     }
 }
 
+enum UTMQemuConfigurationError: Error {
+    case migrationFailed
+    case uefiNotSupported
+}
+
+extension UTMQemuConfigurationError: LocalizedError {
+    var errorDescription: String? {
+        switch self {
+        case .migrationFailed:
+            return NSLocalizedString("Failed to migrate configuration from a previous UTM version.", comment: "UTMQemuConfigurationError")
+        case .uefiNotSupported:
+            return NSLocalizedString("UEFI is not supported with this architecture.", comment: "UTMQemuConfigurationError")
+        }
+    }
+}
+
 // MARK: - Defaults
 
 @available(iOS 13, macOS 11, *)
@@ -192,14 +208,50 @@ extension UTMQemuConfiguration {
 
 @available(iOS 13, macOS 11, *)
 extension UTMQemuConfiguration {
+    @MainActor func prepareSave(for packageURL: URL) async throws {
+        guard isLegacy else {
+            return // nothing needed
+        }
+        // move Images to Data
+        let fileManager = FileManager.default
+        let imagesURL = packageURL.appendingPathComponent(QEMUPackageFileName.images.rawValue)
+        let dataURL = packageURL.appendingPathComponent(Self.dataDirectoryName)
+        guard !fileManager.fileExists(atPath: dataURL.path) && fileManager.fileExists(atPath: imagesURL.path) else {
+            throw UTMQemuConfigurationError.migrationFailed
+        }
+        try await Task.detached {
+            try fileManager.moveItem(at: imagesURL, to: dataURL)
+        }.value
+        // update any drives
+        for i in 0..<drives.count {
+            if !drives[i].isExternal, let oldImageURL = drives[i].imageURL {
+                drives[i].imageURL = dataURL.appendingPathComponent(oldImageURL.lastPathComponent)
+            }
+        }
+        // move icon
+        if information.isIconCustom, let oldIconURL = information.iconUrl {
+            let newIconURL = dataURL.appendingPathComponent(oldIconURL.lastPathComponent)
+            try await Task.detached {
+                try fileManager.moveItem(at: oldIconURL, to: newIconURL)
+            }.value
+        }
+        information.dataURL = dataURL
+        // move debug log
+        let oldLogURL = dataURL.appendingPathComponent(QEMUPackageFileName.debugLog.rawValue)
+        if fileManager.fileExists(atPath: oldLogURL.path) {
+            let newLogURL = dataURL.appendingPathComponent(oldLogURL.lastPathComponent)
+            try await Task.detached {
+                try fileManager.moveItem(at: oldLogURL, to: newLogURL)
+            }.value
+        }
+        qemu.dataURL = dataURL
+    }
+    
     func saveData(to dataURL: URL) async throws -> [URL] {
         var existingDataURLs = [URL]()
         
-        if isLegacy {
-            // FIXME: do migration of data
-        }
-        
         existingDataURLs += try await information.saveData(to: dataURL)
+        existingDataURLs += try await qemu.saveData(to: dataURL, for: system)
 
         for i in 0..<drives.count {
             existingDataURLs += try await drives[i].saveData(to: dataURL)
