@@ -41,7 +41,7 @@ struct VMSettingsView<Config: ObservableObject & UTMConfigurable>: View {
             ToolbarItemGroup(placement: .automatic) {
                 if let qemuVM = vm as? UTMQemuVirtualMachine {
                     //FIXME: Rework after config rewrite.
-                    VMConfigDrivesButtons(config: qemuVM.futureConfig, selectedDriveIndex: $selectedDriveIndex)
+                    VMConfigDrivesMoveButtons(config: qemuVM.futureConfig, selectedDriveIndex: $selectedDriveIndex)
                 }
             }
             ToolbarItemGroup(placement: .cancellationAction) {

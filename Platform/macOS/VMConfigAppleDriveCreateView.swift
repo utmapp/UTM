@@ -20,16 +20,16 @@ struct VMConfigAppleDriveCreateView: View {
     private let mibToGib = 1024
     let minSizeMib = 1
     
-    @Binding var driveSize: Int
+    @Binding var config: UTMAppleConfigurationDrive
     @State private var isGiB: Bool = true
     
     var body: some View {
         Form {
             HStack {
                 NumberTextField("Size", number: Binding<NSNumber?>(get: {
-                    NSNumber(value: convertToDisplay(fromSizeMib: driveSize))
+                    NSNumber(value: convertToDisplay(fromSizeMib: config.sizeMib))
                 }, set: {
-                    driveSize = convertToMib(fromSize: $0?.intValue ?? 0)
+                    config.sizeMib = convertToMib(fromSize: $0?.intValue ?? 0)
                 }), onEditingChanged: validateSize)
                     .multilineTextAlignment(.trailing)
                     .help("The amount of storage to allocate for this image. An empty file of this size will be stored with the VM.")
@@ -45,8 +45,8 @@ struct VMConfigAppleDriveCreateView: View {
         guard !editing else {
             return
         }
-        if driveSize < minSizeMib {
-            driveSize = minSizeMib
+        if config.sizeMib < minSizeMib {
+            config.sizeMib = minSizeMib
         }
     }
     
@@ -69,6 +69,6 @@ struct VMConfigAppleDriveCreateView: View {
 
 struct VMConfigAppleDriveCreateView_Previews: PreviewProvider {
     static var previews: some View {
-        VMConfigAppleDriveCreateView(driveSize: .constant(100))
+        VMConfigAppleDriveCreateView(config: .constant(.init(newSize: 1024)))
     }
 }

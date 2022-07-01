@@ -18,28 +18,28 @@ import Foundation
 
 /// Basic information about the VM only used in listing and presenting.
 @available(iOS 13, macOS 11, *)
-class UTMConfigurationInfo: Codable, ObservableObject {
+struct UTMConfigurationInfo: Codable {
     /// VM name displayed to user.
-    @Published var name: String = NSLocalizedString("Virtual Machine", comment: "UTMConfigurationInfo")
+    var name: String = NSLocalizedString("Virtual Machine", comment: "UTMConfigurationInfo")
     
     /// Base path of icon image. This property is not saved to file.
-    @Published var dataURL: URL?
+    var dataURL: URL?
     
     /// Full path to the custom icon image. File will be copied to VM bundle on save.
     /// This property is not saved to file.
-    @Published var selectedCustomIconPath: URL?
+    var selectedCustomIconPath: URL?
     
     /// Name of the icon.
-    @Published var icon: String?
+    var icon: String?
     
     /// If true, the icon is stored in the bundle. Otherwise, the icon is built-in.
-    @Published var isIconCustom: Bool = false
+    var isIconCustom: Bool = false
     
     /// User specified notes to be displayed when the VM is selected.
-    @Published var notes: String?
+    var notes: String?
     
     /// Random identifier not accessible by the user.
-    @Published var uuid: UUID = UUID()
+    var uuid: UUID = UUID()
     
     /// Use this to get the file to display the icon.
     var iconUrl: URL? {
@@ -70,7 +70,7 @@ class UTMConfigurationInfo: Codable, ObservableObject {
     init() {
     }
     
-    required init(from decoder: Decoder) throws {
+    init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         name = try values.decode(String.self, forKey: .name)
         icon = try values.decodeIfPresent(String.self, forKey: .icon)
@@ -94,7 +94,7 @@ class UTMConfigurationInfo: Codable, ObservableObject {
 
 @available(iOS 13, macOS 11, *)
 extension UTMConfigurationInfo {
-    convenience init(migrating oldConfig: UTMLegacyQemuConfiguration) {
+    init(migrating oldConfig: UTMLegacyQemuConfiguration) {
         self.init()
         name = oldConfig.name
         notes = oldConfig.notes
@@ -107,7 +107,7 @@ extension UTMConfigurationInfo {
     }
     
     #if os(macOS)
-    convenience init(migrating oldConfig: UTMLegacyAppleConfiguration, dataURL: URL) {
+    init(migrating oldConfig: UTMLegacyAppleConfiguration, dataURL: URL) {
         self.init()
         name = oldConfig.name
         notes = oldConfig.notes

@@ -18,68 +18,33 @@ import Foundation
 
 /// Settings for single disk device
 @available(iOS 13, macOS 11, *)
-class UTMConfigurationDrive: Codable, Hashable, Identifiable, ObservableObject {
-    static func == (lhs: UTMConfigurationDrive, rhs: UTMConfigurationDrive) -> Bool {
-        lhs.hashValue == rhs.hashValue
-    }
-    
+protocol UTMConfigurationDrive: Codable, Hashable, Identifiable {
     /// If not removable, this is the name of the file in the bundle.
-    @Published var imageName: String?
+    var imageName: String? { get }
     
     /// Size of the image when creating a new image (in MiB). Not saved.
-    @Published var sizeMib: Int = 0
+    var sizeMib: Int { get }
     
     /// If true, the drive image will be mounted as read-only.
-    @Published var isReadOnly: Bool = false
+    var isReadOnly: Bool { get }
     
     /// If true, the drive image will not be copied to the bundle.
-    @Published var isRemovable: Bool = false
+    var isRemovable: Bool { get }
     
     /// If valid, will point to the actual location of the drive image. Not saved.
-    @Published var imageURL: URL?
+    var imageURL: URL? { get set }
     
     /// Unique identifier for this drive
-    var id: String = ""
+    var id: String { get }
     
-    enum CodingKeys: String, CodingKey {
-        case imageName = "ImageName"
-        case isRemovable = "Removable"
-    }
-    
-    required init() {
-    }
-    
-    required init(from decoder: Decoder) throws {
-        let values = try decoder.container(keyedBy: CodingKeys.self)
-        imageName = try values.decodeIfPresent(String.self, forKey: .imageName)
-        isRemovable = try values.decode(Bool.self, forKey: .isRemovable)
-        if !isRemovable, let imageName = imageName, let dataURL = decoder.userInfo[.dataURL] as? URL {
-            imageURL = dataURL.appendingPathComponent(imageName)
-        }
-    }
-    
-    func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: CodingKeys.self)
-        if !isRemovable {
-            try container.encodeIfPresent(imageName, forKey: .imageName)
-        }
-        try container.encode(isRemovable, forKey: .isRemovable)
-    }
-    
-    func hash(into hasher: inout Hasher) {
-        imageName?.hash(into: &hasher)
-        isRemovable.hash(into: &hasher)
-        id.hash(into: &hasher)
-    }
-    
-    func copy() -> Self {
-        let copy = Self()
-        copy.imageName = imageName
-        copy.sizeMib = sizeMib
-        copy.isReadOnly = isReadOnly
-        copy.isRemovable = isRemovable
-        copy.imageURL = imageURL
-        copy.id = id
-        return copy
+    /// Create a new copy with a unique ID
+    /// - Returns: Copy
+    func clone() -> Self
+}
+
+@available(iOS 13, macOS 11, *)
+extension UTMConfigurationDrive {
+    static func == (lhs: Self, rhs: Self) -> Bool {
+        lhs.hashValue == rhs.hashValue
     }
 }

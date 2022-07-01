@@ -18,15 +18,15 @@ import Foundation
 
 /// Settings for input devices and USB.
 @available(iOS 13, macOS 11, *)
-class UTMQemuConfigurationInput: Codable, ObservableObject {
+struct UTMQemuConfigurationInput: Codable {
     /// Level of USB support (disabled/2.0/3.0).
-    @Published var usbBusSupport: QEMUUSBBus = .usb2_0
+    var usbBusSupport: QEMUUSBBus = .usb2_0
     
     /// If enabled, USB forwarding can be used (if supported by the host).
-    @Published var hasUsbSharing: Bool = false
+    var hasUsbSharing: Bool = false
     
     /// The maximum number of USB devices that can be forwarded concurrently.
-    @Published var maximumUsbShare: Int = 3
+    var maximumUsbShare: Int = 3
     
     enum CodingKeys: String, CodingKey {
         case usbBusSupport = "UsbBusSupport"
@@ -37,7 +37,7 @@ class UTMQemuConfigurationInput: Codable, ObservableObject {
     init() {
     }
     
-    required init(from decoder: Decoder) throws {
+    init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         usbBusSupport = try values.decode(QEMUUSBBus.self, forKey: .usbBusSupport)
         hasUsbSharing = try values.decode(Bool.self, forKey: .hasUsbSharing)
@@ -56,7 +56,7 @@ class UTMQemuConfigurationInput: Codable, ObservableObject {
 
 @available(iOS 13, macOS 11, *)
 extension UTMQemuConfigurationInput {
-    convenience init(forArchitecture architecture: QEMUArchitecture, target: QEMUTarget) {
+    init(forArchitecture architecture: QEMUArchitecture, target: QEMUTarget) {
         self.init()
         let rawTarget = target.rawValue
         if rawTarget.hasPrefix("pc") || rawTarget.hasPrefix("q35") {
@@ -73,7 +73,7 @@ extension UTMQemuConfigurationInput {
 
 @available(iOS 13, macOS 11, *)
 extension UTMQemuConfigurationInput {
-    convenience init(migrating oldConfig: UTMLegacyQemuConfiguration) {
+    init(migrating oldConfig: UTMLegacyQemuConfiguration) {
         self.init()
         if oldConfig.inputLegacy {
             usbBusSupport = .disabled

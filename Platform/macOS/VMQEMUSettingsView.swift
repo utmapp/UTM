@@ -23,13 +23,12 @@ struct VMQEMUSettingsView: View {
 
     @State private var infoActive: Bool = true
     @State private var isResetConfig: Bool = false
-    @State private var triggerRefresh: Bool = false
     
     var body: some View {
-        NavigationLink(destination: VMConfigInfoView(config: config.information).scrollable(), isActive: $infoActive) {
+        NavigationLink(destination: VMConfigInfoView(config: $config.information).scrollable(), isActive: $infoActive) {
             Label("Information", systemImage: "info.circle")
         }
-        NavigationLink(destination: VMConfigSystemView(config: config.system, isResetConfig: $isResetConfig).scrollable()) {
+        NavigationLink(destination: VMConfigSystemView(config: $config.system, isResetConfig: $isResetConfig).scrollable()) {
             Label("System", systemImage: "cpu")
         }.onChange(of: isResetConfig) { newValue in
             if newValue {
@@ -37,45 +36,45 @@ struct VMQEMUSettingsView: View {
                 isResetConfig = false
             }
         }
-        NavigationLink(destination: VMConfigQEMUView(config: config.qemu, system: config.system, fetchFixedArguments: { config.generatedArguments }).scrollable()) {
+        NavigationLink(destination: VMConfigQEMUView(config: $config.qemu, system: $config.system, fetchFixedArguments: { config.generatedArguments }).scrollable()) {
             Label("QEMU", systemImage: "shippingbox")
         }
-        ForEach(config.displays) { display in
-            NavigationLink(destination: VMConfigDisplayView(config: display, system: config.system).scrollable()) {
+        ForEach($config.displays) { $display in
+            NavigationLink(destination: VMConfigDisplayView(config: $display, system: $config.system).scrollable()) {
                 Label("Display", systemImage: "rectangle.on.rectangle")
             }
         }
-        ForEach(config.serials) { serial in
-            NavigationLink(destination: VMConfigSerialView(config: serial, system: config.system).scrollable()) {
+        ForEach($config.serials) { $serial in
+            NavigationLink(destination: VMConfigSerialView(config: $serial, system: $config.system).scrollable()) {
                 Label("Serial", systemImage: "cable.connector")
             }
         }
-        NavigationLink(destination: VMConfigInputView(config: config.input).scrollable()) {
+        NavigationLink(destination: VMConfigInputView(config: $config.input).scrollable()) {
             Label("Input", systemImage: "keyboard")
         }
-        ForEach(config.networks) { network in
+        ForEach($config.networks) { $network in
             Group {
-                NavigationLink(destination: VMConfigNetworkView(config: network, system: config.system).scrollable()) {
+                NavigationLink(destination: VMConfigNetworkView(config: $network, system: $config.system).scrollable()) {
                     Label("Network", systemImage: "network")
                 }
-                NavigationLink(destination: VMConfigAdvancedNetworkView(config: network).scrollable()) {
+                NavigationLink(destination: VMConfigAdvancedNetworkView(config: $network).scrollable()) {
                     Label("IP Configuration", systemImage: "mappin.circle")
                         .padding(.leading)
                 }
             }
         }
-        ForEach(config.sound) { sound in
-            NavigationLink(destination: VMConfigSoundView(config: sound, system: config.system).scrollable()) {
+        ForEach($config.sound) { $sound in
+            NavigationLink(destination: VMConfigSoundView(config: $sound, system: $config.system).scrollable()) {
                 Label("Sound", systemImage: "speaker.wave.2")
             }
         }
-        NavigationLink(destination: VMConfigSharingView(config: config.sharing).scrollable()) {
+        NavigationLink(destination: VMConfigSharingView(config: $config.sharing).scrollable()) {
             Label("Sharing", systemImage: "person.crop.circle")
         }
         Section(header: Text("Drives")) {
-            ForEach(config.drives) { drive in
+            ForEach($config.drives) { $drive in
                 let driveIndex = config.drives.firstIndex(of: drive)!
-                NavigationLink(destination: VMConfigDriveDetailsView(config: drive, triggerRefresh: $triggerRefresh, onDelete: {
+                NavigationLink(destination: VMConfigDriveDetailsView(config: $drive, onDelete: {
                     config.drives.removeAll(where: { $0 == drive })
                     selectedDriveIndex = nil
                 }).scrollable(), tag: driveIndex, selection: $selectedDriveIndex) {
@@ -84,10 +83,7 @@ struct VMQEMUSettingsView: View {
             }.onMove { offsets, index in
                 config.drives.move(fromOffsets: offsets, toOffset: index)
             }
-            VMConfigNewDriveButton(config: config, qemuSystem: config.system)
-                .buttonStyle(.link)
-        }.onChange(of: triggerRefresh) { _ in
-            // HACK: we need edits of drive to trigger a redraw
+            VMConfigNewDriveButton(drives: $config.drives, template: UTMQemuConfigurationDrive(forArchitecture: config.system.architecture, target: config.system.target))
         }
     }
     

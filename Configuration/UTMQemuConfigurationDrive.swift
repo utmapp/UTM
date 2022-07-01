@@ -18,37 +18,66 @@ import Foundation
 
 /// Settings for single QEMU disk device
 @available(iOS 13, macOS 11, *)
-class UTMQemuConfigurationDrive: UTMConfigurationDrive {
+struct UTMQemuConfigurationDrive: UTMConfigurationDrive {
+    /// If not removable, this is the name of the file in the bundle.
+    var imageName: String?
+    
+    /// Size of the image when creating a new image (in MiB). Not saved.
+    var sizeMib: Int = 0
+    
+    /// If true, the drive image will be mounted as read-only.
+    var isReadOnly: Bool = false
+    
+    /// If true, the drive image will not be copied to the bundle.
+    var isRemovable: Bool = false
+    
+    /// If valid, will point to the actual location of the drive image. Not saved.
+    var imageURL: URL?
+    
+    /// Unique identifier for this drive
+    private(set) var id: String = ""
+    
     /// Type of the image.
-    @Published var imageType: QEMUDriveImageType = .none
+    var imageType: QEMUDriveImageType = .none
     
     /// Interface of the image (only valid when type is CD/Disk).
-    @Published var interface: QEMUDriveInterface = .none
+    var interface: QEMUDriveInterface = .none
     
     /// If true, the created image will be raw format and not QCOW2. Not saved.
-    @Published var isRawImage: Bool = false
+    var isRawImage: Bool = false
+    
+    /// If initialized, returns a default interface for an image type. Not saved.
+    var defaultInterfaceForImageType: ((QEMUDriveImageType) -> QEMUDriveInterface)?
     
     enum CodingKeys: String, CodingKey {
+        case imageName = "ImageName"
+        case isRemovable = "Removable"
         case imageType = "ImageType"
         case interface = "Interface"
         case identifier = "Identifier"
     }
     
-    required init() {
-        super.init()
+    init() {
     }
     
-    required init(from decoder: Decoder) throws {
-        try super.init(from: decoder)
+    init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
+        imageName = try values.decodeIfPresent(String.self, forKey: .imageName)
+        isRemovable = try values.decode(Bool.self, forKey: .isRemovable)
+        if !isRemovable, let imageName = imageName, let dataURL = decoder.userInfo[.dataURL] as? URL {
+            imageURL = dataURL.appendingPathComponent(imageName)
+        }
         imageType = try values.decode(QEMUDriveImageType.self, forKey: .imageType)
         interface = try values.decode(QEMUDriveInterface.self, forKey: .interface)
         id = try values.decode(String.self, forKey: .identifier)
     }
     
-    override func encode(to encoder: Encoder) throws {
-        try super.encode(to: encoder)
+    func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
+        if !isRemovable {
+            try container.encodeIfPresent(imageName, forKey: .imageName)
+        }
+        try container.encode(isRemovable, forKey: .isRemovable)
         try container.encode(imageType, forKey: .imageType)
         if imageType == .cd || imageType == .disk {
             try container.encode(interface, forKey: .interface)
@@ -58,18 +87,20 @@ class UTMQemuConfigurationDrive: UTMConfigurationDrive {
         try container.encode(id, forKey: .identifier)
     }
     
-    override func hash(into hasher: inout Hasher) {
-        super.hash(into: &hasher)
+    func hash(into hasher: inout Hasher) {
+        imageName?.hash(into: &hasher)
+        sizeMib.hash(into: &hasher)
+        isReadOnly.hash(into: &hasher)
+        isRemovable.hash(into: &hasher)
+        id.hash(into: &hasher)
         imageType.hash(into: &hasher)
         interface.hash(into: &hasher)
     }
     
-    override func copy() -> Self {
-        let copy = super.copy()
-        copy.imageType = imageType
-        copy.interface = interface
-        copy.isRawImage = isRawImage
-        return copy
+    func clone() -> UTMQemuConfigurationDrive {
+        var cloned = self
+        cloned.id = "drive\(UUID().uuidString)"
+        return cloned
     }
 }
 
@@ -97,7 +128,7 @@ extension UTMQemuConfigurationDrive {
 
 @available(iOS 13, macOS 11, *)
 extension UTMQemuConfigurationDrive {
-    convenience init(migrating oldConfig: UTMLegacyQemuConfiguration, at index: Int) {
+    init(migrating oldConfig: UTMLegacyQemuConfiguration, at index: Int) {
         self.init()
         imageName = oldConfig.driveImagePath(for: index)
         imageType = convertImageType(from: oldConfig.driveImageType(for: index))
@@ -154,19 +185,20 @@ extension UTMQemuConfigurationDrive {
     }
 }
 
-// MARK: - Reset config
+// MARK: - New drive
 
 @available(iOS 13, macOS 11, *)
 extension UTMQemuConfigurationDrive {
-    func reset(forArchitecture architecture: QEMUArchitecture, target: QEMUTarget, isRemovable: Bool = false) {
+    init(forArchitecture architecture: QEMUArchitecture, target: QEMUTarget, isRemovable: Bool = false) {
         self.isRemovable = isRemovable
         self.imageType = isRemovable ? .cd : .disk
-        self.interface = Self.defaultInterface(forArchitecture: architecture, target: target, imageType: self.imageType)
         self.isRawImage = false
         self.imageName = nil
         self.sizeMib = 10240
         self.isReadOnly = false
         self.imageURL = nil
         self.id = "drive\(UUID().uuidString)"
+        self.defaultInterfaceForImageType = { Self.defaultInterface(forArchitecture: architecture, target: target, imageType: $0) }
+        self.interface = defaultInterfaceForImageType!(imageType)
     }
 }

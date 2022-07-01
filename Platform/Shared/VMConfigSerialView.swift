@@ -18,8 +18,8 @@ import SwiftUI
 
 @available(iOS 14, macOS 11, *)
 struct VMConfigSerialView: View {
-    @ObservedObject var config: UTMQemuConfigurationSerial
-    @ObservedObject var system: UTMQemuConfigurationSystem
+    @Binding var config: UTMQemuConfigurationSerial
+    @Binding var system: UTMQemuConfigurationSystem
     
     var body: some View {
         VStack {
@@ -40,8 +40,8 @@ struct VMConfigSerialView: View {
                     }
                 }
                 
-                if config.mode == .builtin, let terminal = config.terminal {
-                    VMConfigDisplayConsoleView(config: terminal)
+                if config.mode == .builtin {
+                    VMConfigDisplayConsoleView(config: $config.terminal.bound)
                 } else if config.mode == .tcpClient || config.mode == .tcpServer {
                     Section(header: Text("TCP")) {
                         if config.mode == .tcpClient {
@@ -61,10 +61,10 @@ struct VMConfigSerialView: View {
 
 @available(iOS 14, macOS 11, *)
 struct VMConfigSerialView_Previews: PreviewProvider {
-    @ObservedObject static private var config = UTMQemuConfigurationSerial()
-    @ObservedObject static private var system = UTMQemuConfigurationSystem()
+    @State static private var config = UTMQemuConfigurationSerial()
+    @State static private var system = UTMQemuConfigurationSystem()
     
     static var previews: some View {
-        VMConfigSerialView(config: config, system: system)
+        VMConfigSerialView(config: $config, system: $system)
     }
 }

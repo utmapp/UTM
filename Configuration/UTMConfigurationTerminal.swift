@@ -18,24 +18,24 @@ import Foundation
 
 /// Console mode settings.
 @available(iOS 13, macOS 11, *)
-class UTMConfigurationTerminal: Codable, Identifiable, ObservableObject {
+struct UTMConfigurationTerminal: Codable, Identifiable {
     /// Terminal color scheme. Mutually exclusive with foreground/background colors.
-    @Published var theme: QEMUTerminalTheme?
+    var theme: QEMUTerminalTheme?
     
     /// Terminal foreground color if a theme is not used.
-    @Published var foregroundColor: String? = "#ffffff"
+    var foregroundColor: String? = "#ffffff"
     
     /// Terminal background color if a theme is not used.
-    @Published var backgroundColor: String? = "#000000"
+    var backgroundColor: String? = "#000000"
     
     /// Terminal text font.
-    @Published var font: QEMUTerminalFont = .init(rawValue: "Menlo")
+    var font: QEMUTerminalFont = .init(rawValue: "Menlo")
     
     /// Terminal text font size.
-    @Published var fontSize: Int = 12
+    var fontSize: Int = 12
     
     /// Command to send when the console is resized.
-    @Published var resizeCommand: String?
+    var resizeCommand: String?
     
     let id = UUID()
     
@@ -51,7 +51,7 @@ class UTMConfigurationTerminal: Codable, Identifiable, ObservableObject {
     init() {
     }
     
-    required init(from decoder: Decoder) throws {
+    init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         theme = try values.decodeIfPresent(QEMUTerminalTheme.self, forKey: .theme)
         foregroundColor = try values.decodeIfPresent(String.self, forKey: .foregroundColor)
@@ -79,7 +79,7 @@ class UTMConfigurationTerminal: Codable, Identifiable, ObservableObject {
 
 @available(iOS 13, macOS 11, *)
 extension UTMConfigurationTerminal {
-    convenience init(migrating oldConfig: UTMLegacyQemuConfiguration) {
+    init(migrating oldConfig: UTMLegacyQemuConfiguration) {
         self.init()
         foregroundColor = oldConfig.consoleTextColor
         backgroundColor = oldConfig.consoleBackgroundColor
@@ -93,7 +93,7 @@ extension UTMConfigurationTerminal {
     }
     
     #if os(macOS)
-    convenience init(migrating oldConfig: UTMLegacyAppleConfiguration) {
+    init(migrating oldConfig: UTMLegacyAppleConfiguration) {
         self.init()
         foregroundColor = oldConfig.consoleTextColor
         backgroundColor = oldConfig.consoleBackgroundColor
@@ -106,4 +106,17 @@ extension UTMConfigurationTerminal {
         resizeCommand = oldConfig.consoleResizeCommand
     }
     #endif
+}
+
+// MARK: - For VMConfigDisplayConsoleView
+@available(iOS 13, macOS 11, *)
+extension Optional where Wrapped == UTMConfigurationTerminal {
+    var bound: Wrapped {
+        get {
+            return self ?? .init()
+        }
+        set {
+            self = newValue
+        }
+    }
 }

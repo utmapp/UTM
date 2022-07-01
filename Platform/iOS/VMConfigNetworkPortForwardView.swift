@@ -18,7 +18,7 @@ import SwiftUI
 
 @available(iOS 14, *)
 struct VMConfigNetworkPortForwardView: View {
-    @ObservedObject var config: UTMQemuConfigurationNetwork
+    @Binding var config: UTMQemuConfigurationNetwork
     
     var body: some View {
         Section(header: Text("Port Forward")) {
@@ -90,7 +90,7 @@ struct VMConfigNetworkPortForwardView_Previews: PreviewProvider {
     static var previews: some View {
         Group {
             Form {
-                VMConfigNetworkPortForwardView(config: config)
+                VMConfigNetworkPortForwardView(config: $config)
             }.onAppear {
                 if config.portForward.count == 0 {
                     var newConfigPort = UTMQemuConfigurationPortForward()

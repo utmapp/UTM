@@ -18,18 +18,18 @@ import Foundation
 
 /// Directory and clipboard sharing settings
 @available(iOS 13, macOS 11, *)
-class UTMQemuConfigurationSharing: Codable, ObservableObject {
+struct UTMQemuConfigurationSharing: Codable {
     /// SPICE or virtfs sharing.
-    @Published var directoryShareMode: QEMUFileShareMode = .none
+    var directoryShareMode: QEMUFileShareMode = .none
     
     /// Sharing should be read only
-    @Published var isDirectoryShareReadOnly: Bool = false
+    var isDirectoryShareReadOnly: Bool = false
     
     /// The directory to share. Not saved.
-    @Published var directoryShareUrl: URL?
+    var directoryShareUrl: URL?
     
     /// SPICE clipboard sharing.
-    @Published var hasClipboardSharing: Bool = false
+    var hasClipboardSharing: Bool = false
     
     enum CodingKeys: String, CodingKey {
         case directoryShareMode = "DirectoryShareMode"
@@ -40,7 +40,7 @@ class UTMQemuConfigurationSharing: Codable, ObservableObject {
     init() {
     }
     
-    required init(from decoder: Decoder) throws {
+    init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         directoryShareMode = try values.decode(QEMUFileShareMode.self, forKey: .directoryShareMode)
         isDirectoryShareReadOnly = try values.decode(Bool.self, forKey: .isDirectoryShareReadOnly)
@@ -59,7 +59,7 @@ class UTMQemuConfigurationSharing: Codable, ObservableObject {
 
 @available(iOS 13, macOS 11, *)
 extension UTMQemuConfigurationSharing {
-    convenience init(forArchitecture architecture: QEMUArchitecture, target: QEMUTarget) {
+    init(forArchitecture architecture: QEMUArchitecture, target: QEMUTarget) {
         self.init()
         let rawTarget = target.rawValue
         if rawTarget.hasPrefix("pc") || rawTarget.hasPrefix("q35") {
@@ -76,7 +76,7 @@ extension UTMQemuConfigurationSharing {
 
 @available(iOS 13, macOS 11, *)
 extension UTMQemuConfigurationSharing {
-    convenience init(migrating oldConfig: UTMLegacyQemuConfiguration) {
+    init(migrating oldConfig: UTMLegacyQemuConfiguration) {
         self.init()
         if oldConfig.shareDirectoryEnabled {
             directoryShareMode = .webdav

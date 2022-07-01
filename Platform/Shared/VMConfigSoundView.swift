@@ -18,8 +18,8 @@ import SwiftUI
 
 @available(iOS 14, macOS 11, *)
 struct VMConfigSoundView: View {
-    @ObservedObject var config: UTMQemuConfigurationSound
-    @ObservedObject var system: UTMQemuConfigurationSystem
+    @Binding var config: UTMQemuConfigurationSound
+    @Binding var system: UTMQemuConfigurationSystem
     
     var body: some View {
         VStack {
@@ -35,9 +35,9 @@ struct VMConfigSoundView: View {
 @available(iOS 14, macOS 11, *)
 struct VMConfigSoundView_Previews: PreviewProvider {
     @State static private var config = UTMQemuConfigurationSound()
-    @ObservedObject static private var system = UTMQemuConfigurationSystem()
+    @State static private var system = UTMQemuConfigurationSystem()
     
     static var previews: some View {
-        VMConfigSoundView(config: config, system: system)
+        VMConfigSoundView(config: $config, system: $system)
     }
 }

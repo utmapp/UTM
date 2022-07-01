@@ -21,8 +21,7 @@ struct VMConfigDriveCreateView: View {
     private let mibToGib = 1024
     let minSizeMib = 1
     
-    @ObservedObject var config: UTMQemuConfigurationDrive
-    @ObservedObject var system: UTMQemuConfigurationSystem
+    @Binding var config: UTMQemuConfigurationDrive
     @State private var isGiB: Bool = true
     
     var body: some View {
@@ -30,7 +29,10 @@ struct VMConfigDriveCreateView: View {
             Toggle(isOn: $config.isRemovable.animation(), label: {
                 Text("Removable")
             }).onChange(of: config.isRemovable) { removable in
-                config.interface = UTMQemuConfigurationDrive.defaultInterface(forArchitecture: system.architecture, target: system.target, imageType: config.imageType)
+                config.imageType = removable ? .cd : .disk
+                if let defaultInterfaceForImageType = config.defaultInterfaceForImageType {
+                    config.interface = defaultInterfaceForImageType(config.imageType)
+                }
             }.help("If checked, no drive image will be stored with the VM. Instead you can mount/unmount image while the VM is running.")
             VMConfigConstantPicker("Interface", selection: $config.interface)
                 .help("Hardware interface on the guest used to mount this image. Different operating systems support different interfaces. The default will be the most common interface.")
@@ -83,10 +85,9 @@ struct VMConfigDriveCreateView: View {
 
 @available(iOS 14, macOS 11, *)
 struct VMConfigDriveCreateView_Previews: PreviewProvider {
-    @StateObject static private var config = UTMQemuConfigurationDrive()
-    @StateObject static private var system = UTMQemuConfigurationSystem()
+    @State static private var config = UTMQemuConfigurationDrive()
     
     static var previews: some View {
-        VMConfigDriveCreateView(config: config, system: system)
+        VMConfigDriveCreateView(config: $config)
     }
 }

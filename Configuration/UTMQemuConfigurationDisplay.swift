@@ -18,21 +18,21 @@ import Foundation
 
 /// Settings for a single display.
 @available(iOS 13, macOS 11, *)
-class UTMQemuConfigurationDisplay: Codable, Identifiable, ObservableObject {
+struct UTMQemuConfigurationDisplay: Codable, Identifiable {
     /// Hardware card to emulate.
-    @Published var hardware: QEMUDisplayDevice = QEMUDisplayDevice_x86_64.virtio_vga
+    var hardware: QEMUDisplayDevice = QEMUDisplayDevice_x86_64.virtio_vga
     
     /// If true, attempt to use SPICE guest agent to change the display resolution automatically.
-    @Published var isDynamicResolution: Bool = true
+    var isDynamicResolution: Bool = true
     
     /// Filter to use when upscaling.
-    @Published var upscalingFilter: QEMUScaler = .nearest
+    var upscalingFilter: QEMUScaler = .nearest
     
     /// Filter to use when downscaling.
-    @Published var downscalingFilter: QEMUScaler = .linear
+    var downscalingFilter: QEMUScaler = .linear
     
     /// If true, use the true (retina) resolution of the display. Otherwise, use the percieved resolution.
-    @Published var isNativeResolution: Bool = false
+    var isNativeResolution: Bool = false
     
     let id = UUID()
     
@@ -47,7 +47,7 @@ class UTMQemuConfigurationDisplay: Codable, Identifiable, ObservableObject {
     init() {
     }
     
-    required init(from decoder: Decoder) throws {
+    init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         hardware = try values.decode(AnyQEMUConstant.self, forKey: .hardware)
         isDynamicResolution = try values.decode(Bool.self, forKey: .isDynamicResolution)
@@ -70,7 +70,7 @@ class UTMQemuConfigurationDisplay: Codable, Identifiable, ObservableObject {
 
 @available(iOS 13, macOS 11, *)
 extension UTMQemuConfigurationDisplay {
-    convenience init?(forArchitecture architecture: QEMUArchitecture, target: QEMUTarget) {
+    init?(forArchitecture architecture: QEMUArchitecture, target: QEMUTarget) {
         self.init()
         let rawTarget = target.rawValue
         if rawTarget.hasPrefix("pc") || rawTarget.hasPrefix("q35") {
@@ -94,7 +94,7 @@ extension UTMQemuConfigurationDisplay {
 
 @available(iOS 13, macOS 11, *)
 extension UTMQemuConfigurationDisplay {
-    convenience init?(migrating oldConfig: UTMLegacyQemuConfiguration) {
+    init?(migrating oldConfig: UTMLegacyQemuConfiguration) {
         self.init()
         guard !oldConfig.displayConsoleOnly else {
             return nil

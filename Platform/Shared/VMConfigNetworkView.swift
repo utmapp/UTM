@@ -18,8 +18,8 @@ import SwiftUI
 
 @available(iOS 14, macOS 11, *)
 struct VMConfigNetworkView: View {
-    @ObservedObject var config: UTMQemuConfigurationNetwork
-    @ObservedObject var system: UTMQemuConfigurationSystem
+    @Binding var config: UTMQemuConfigurationNetwork
+    @Binding var system: UTMQemuConfigurationSystem
     @State private var showAdvanced: Bool = false
     
     var body: some View {
@@ -50,14 +50,14 @@ struct VMConfigNetworkView: View {
 
                 if showAdvanced {
                     Section(header: Text("IP Configuration")) {
-                        IPConfigurationSection(config: config).multilineTextAlignment(.trailing)
+                        IPConfigurationSection(config: $config).multilineTextAlignment(.trailing)
                     }
                 }
                 #endif
 
                 /// Bridged and shared networking doesn't support port forwarding
                 if config.mode == .emulated {
-                    VMConfigNetworkPortForwardView(config: config)
+                    VMConfigNetworkPortForwardView(config: $config)
                 }
             }
         }
@@ -67,9 +67,9 @@ struct VMConfigNetworkView: View {
 @available(iOS 14, macOS 11, *)
 struct VMConfigNetworkingView_Previews: PreviewProvider {
     @State static private var config = UTMQemuConfigurationNetwork()
-    @ObservedObject static private var system = UTMQemuConfigurationSystem()
+    @State static private var system = UTMQemuConfigurationSystem()
     
     static var previews: some View {
-        VMConfigNetworkView(config: config, system: system)
+        VMConfigNetworkView(config: $config, system: $system)
     }
 }

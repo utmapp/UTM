@@ -20,8 +20,7 @@ private let bytesInMib: Int64 = 1024 * 1024
 
 @available(iOS 14, macOS 11, *)
 struct VMConfigDriveDetailsView: View {
-    @ObservedObject var config: UTMQemuConfigurationDrive
-    @Binding var triggerRefresh: Bool
+    @Binding var config: UTMQemuConfigurationDrive
     let onDelete: (() -> Void)?
     
     @EnvironmentObject private var data: UTMData
@@ -68,14 +67,8 @@ struct VMConfigDriveDetailsView: View {
                 }
             }
             VMConfigConstantPicker("Image Type", selection: $config.imageType)
-            .onChange(of: config.imageType) { _ in
-                triggerRefresh.toggle()
-            }
             if config.imageType == .disk || config.imageType == .cd {
                 VMConfigConstantPicker("Interface", selection: $config.interface)
-                .onChange(of: config.interface) { _ in
-                    triggerRefresh.toggle()
-                }
             }
             
             if let imageUrl = config.imageURL, let fileSize = data.computeSize(for: imageUrl) {

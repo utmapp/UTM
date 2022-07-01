@@ -19,12 +19,12 @@ import SwiftUI
 @available(macOS 11, *)
 @available(iOS, introduced: 14, unavailable)
 struct VMConfigAdvancedNetworkView: View {
-    @ObservedObject var config: UTMQemuConfigurationNetwork
+    @Binding var config: UTMQemuConfigurationNetwork
 
     var body: some View {
         ScrollView {
             Form {
-                IPConfigurationSection(config: config)
+                IPConfigurationSection(config: $config)
             }.padding()
         }
     }
@@ -32,7 +32,7 @@ struct VMConfigAdvancedNetworkView: View {
 
 @available(iOS 14, macOS 11, *)
 struct IPConfigurationSection: View {
-    @ObservedObject var config: UTMQemuConfigurationNetwork
+    @Binding var config: UTMQemuConfigurationNetwork
 
     var body: some View {
         Toggle(isOn: $config.isIsolateFromHost, label: {

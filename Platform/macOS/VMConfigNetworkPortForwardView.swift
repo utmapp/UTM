@@ -18,7 +18,7 @@ import SwiftUI
 
 @available(macOS 11, *)
 struct VMConfigNetworkPortForwardView: View {
-    @ObservedObject var config: UTMQemuConfigurationNetwork
+    @Binding var config: UTMQemuConfigurationNetwork
     @State private var editingNewPort = false
     @State private var selectedPortForward: UTMQemuConfigurationPortForward?
     
@@ -29,7 +29,7 @@ struct VMConfigNetworkPortForwardView: View {
                 Button(action: { editingNewPort = true }, label: {
                     Text("New")
                 }).popover(isPresented: $editingNewPort, arrowEdge: .bottom) {
-                    PortForwardEdit(config: config, forward: .init()).padding()
+                    PortForwardEdit(config: $config, forward: .init()).padding()
                         .frame(width: 250)
                 }
             }) {
@@ -39,7 +39,7 @@ struct VMConfigNetworkPortForwardView: View {
                         Text(verbatim: "\(forward.guestAddress ?? ""):\(forward.guestPort) ➡️ \(forward.hostAddress ?? ""):\(forward.hostPort)")
                     }).buttonStyle(.bordered)
                     .popover(item: $selectedPortForward, arrowEdge: .bottom) { item in
-                        PortForwardEdit(config: config, forward: forward).padding()
+                        PortForwardEdit(config: $config, forward: forward).padding()
                             .frame(width: 250)
                     }
                 }
@@ -50,7 +50,7 @@ struct VMConfigNetworkPortForwardView: View {
 
 @available(macOS 11, *)
 struct PortForwardEdit: View {
-    @ObservedObject var config: UTMQemuConfigurationNetwork
+    @Binding var config: UTMQemuConfigurationNetwork
     @State var forward: UTMQemuConfigurationPortForward
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
     
@@ -94,7 +94,7 @@ struct VMConfigNetworkPortForwardView_Previews: PreviewProvider {
     static var previews: some View {
         Group {
             Form {
-                VMConfigNetworkPortForwardView(config: config)
+                VMConfigNetworkPortForwardView(config: $config)
             }.onAppear {
                 if config.portForward.count == 0 {
                     var newConfigPort = UTMQemuConfigurationPortForward()

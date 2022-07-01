@@ -18,51 +18,51 @@ import Foundation
 
 /// Network settings for a single device.
 @available(iOS 13, macOS 11, *)
-class UTMQemuConfigurationNetwork: Codable, Identifiable, ObservableObject {
+struct UTMQemuConfigurationNetwork: Codable, Identifiable {
     /// Operating mode of this adapter
-    @Published var mode: QEMUNetworkMode = .emulated
+    var mode: QEMUNetworkMode = .emulated
     
     /// Hardware model to emulate.
-    @Published var hardware: QEMUNetworkDevice = QEMUNetworkDevice_x86_64.e1000
+    var hardware: QEMUNetworkDevice = QEMUNetworkDevice_x86_64.e1000
     
     /// Unique MAC address.
-    @Published var macAddress: String = UTMQemuConfigurationNetwork.randomMacAddress()
+    var macAddress: String = UTMQemuConfigurationNetwork.randomMacAddress()
     
     /// If true, will attempt to isolate the host in the guest VLAN.
-    @Published var isIsolateFromHost: Bool = false
+    var isIsolateFromHost: Bool = false
     
     /// List of forwarded ports.
-    @Published var portForward: [UTMQemuConfigurationPortForward] = []
+    var portForward: [UTMQemuConfigurationPortForward] = []
     
     /// In bridged mode this is the physical interface to bridge.
-    @Published var bridgeInterface: String?
+    var bridgeInterface: String?
     
     /// Guest IPv4 for emulated VLAN.
-    @Published var vlanGuestAddress: String?
+    var vlanGuestAddress: String?
     
     /// Guest IPv6 for emulated VLAN.
-    @Published var vlanGuestAddressIPv6: String?
+    var vlanGuestAddressIPv6: String?
     
     /// Host IPv4 for emulated VLAN.
-    @Published var vlanHostAddress: String?
+    var vlanHostAddress: String?
     
     /// Host IPv6 for emulated VLAN.
-    @Published var vlanHostAddressIPv6: String?
+    var vlanHostAddressIPv6: String?
     
     /// DHCP start address for emulated VLAN.
-    @Published var vlanDhcpStartAddress: String?
+    var vlanDhcpStartAddress: String?
     
     /// DHCP domain for emulated VLAN.
-    @Published var vlanDhcpDomain: String?
+    var vlanDhcpDomain: String?
     
     /// DNS server for emulated VLAN.
-    @Published var vlanDnsServerAddress: String?
+    var vlanDnsServerAddress: String?
     
     /// DNS server (IPv6) for emulated VLAN.
-    @Published var vlanDnsServerAddressIPv6: String?
+    var vlanDnsServerAddressIPv6: String?
     
     /// DNS search domain for emulated VLAN.
-    @Published var vlanDnsSearchDomain: String?
+    var vlanDnsSearchDomain: String?
     
     let id = UUID()
     
@@ -99,7 +99,7 @@ class UTMQemuConfigurationNetwork: Codable, Identifiable, ObservableObject {
     init() {
     }
     
-    required init(from decoder: Decoder) throws {
+    init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         mode = try values.decode(QEMUNetworkMode.self, forKey: .mode)
         hardware = try values.decode(AnyQEMUConstant.self, forKey: .hardware)
@@ -148,7 +148,7 @@ class UTMQemuConfigurationNetwork: Codable, Identifiable, ObservableObject {
 
 @available(iOS 13, macOS 11, *)
 extension UTMQemuConfigurationNetwork {
-    convenience init?(forArchitecture architecture: QEMUArchitecture, target: QEMUTarget) {
+    init?(forArchitecture architecture: QEMUArchitecture, target: QEMUTarget) {
         self.init()
         let rawTarget = target.rawValue
         if rawTarget.hasPrefix("pc") {
@@ -181,7 +181,7 @@ extension UTMQemuConfigurationNetwork {
 
 @available(iOS 13, macOS 11, *)
 extension UTMQemuConfigurationNetwork {
-    convenience init?(migrating oldConfig: UTMLegacyQemuConfiguration) {
+    init?(migrating oldConfig: UTMLegacyQemuConfiguration) {
         self.init()
         guard oldConfig.networkEnabled else {
             return nil

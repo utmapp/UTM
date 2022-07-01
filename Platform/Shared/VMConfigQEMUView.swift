@@ -23,8 +23,8 @@ struct VMConfigQEMUView: View {
         let string: String
     }
     
-    @ObservedObject var config: UTMQemuConfigurationQEMU
-    @ObservedObject var system: UTMQemuConfigurationSystem
+    @Binding var config: UTMQemuConfigurationQEMU
+    @Binding var system: UTMQemuConfigurationSystem
     let fetchFixedArguments: () -> [QEMUArgument]
     @State private var showExportLog: Bool = false
     @State private var showExportArgs: Bool = false
@@ -106,16 +106,16 @@ struct VMConfigQEMUView: View {
                         ForEach(fixedArgs) { arg in
                             TextField("", text: .constant(arg.string))
                         }.disabled(true)
-                        CustomArguments(config: config)
-                        NewArgumentTextField(config: config)
+                        CustomArguments(config: $config)
+                        NewArgumentTextField(config: $config)
                     }
                     #else
                     List {
                         ForEach(fixedArgs) { arg in
                             Text(arg.string)
                         }.foregroundColor(.secondary)
-                        CustomArguments(config: config)
-                        NewArgumentTextField(config: config)
+                        CustomArguments(config: $config)
+                        NewArgumentTextField(config: $config)
                     }
                     #endif
                 }
@@ -150,7 +150,7 @@ struct VMConfigQEMUView: View {
 
 @available(iOS 14, macOS 11, *)
 struct CustomArguments: View {
-    @ObservedObject var config: UTMQemuConfigurationQEMU
+    @Binding var config: UTMQemuConfigurationQEMU
     
     var body: some View {
         ForEach($config.additionalArguments) { $arg in
@@ -183,7 +183,7 @@ struct CustomArguments: View {
 
 @available(iOS 14, macOS 11, *)
 struct NewArgumentTextField: View {
-    @ObservedObject var config: UTMQemuConfigurationQEMU
+    @Binding var config: UTMQemuConfigurationQEMU
     @State private var newArg: String = ""
     
     var body: some View {
@@ -209,10 +209,10 @@ struct NewArgumentTextField: View {
 
 @available(iOS 14, macOS 11, *)
 struct VMConfigQEMUView_Previews: PreviewProvider {
-    @ObservedObject static private var config = UTMQemuConfigurationQEMU()
-    @ObservedObject static private var system = UTMQemuConfigurationSystem()
+    @State static private var config = UTMQemuConfigurationQEMU()
+    @State static private var system = UTMQemuConfigurationSystem()
     
     static var previews: some View {
-        VMConfigQEMUView(config: config, system: system, fetchFixedArguments: { [] })
+        VMConfigQEMUView(config: $config, system: $system, fetchFixedArguments: { [] })
     }
 }

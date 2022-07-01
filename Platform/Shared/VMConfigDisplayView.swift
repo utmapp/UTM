@@ -18,8 +18,8 @@ import SwiftUI
 
 @available(iOS 14, macOS 11, *)
 struct VMConfigDisplayView: View {
-    @ObservedObject var config: UTMQemuConfigurationDisplay
-    @ObservedObject var system: UTMQemuConfigurationSystem
+    @Binding var config: UTMQemuConfigurationDisplay
+    @Binding var system: UTMQemuConfigurationSystem
     
     var body: some View {
         VStack {
@@ -52,10 +52,10 @@ struct VMConfigDisplayView: View {
 
 @available(iOS 14, macOS 11, *)
 struct VMConfigDisplayView_Previews: PreviewProvider {
-    @ObservedObject static private var config = UTMQemuConfigurationDisplay()
-    @ObservedObject static private var system = UTMQemuConfigurationSystem()
+    @State static private var config = UTMQemuConfigurationDisplay()
+    @State static private var system = UTMQemuConfigurationSystem()
     
     static var previews: some View {
-        VMConfigDisplayView(config: config, system: system)
+        VMConfigDisplayView(config: $config, system: $system)
     }
 }

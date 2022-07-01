@@ -18,33 +18,33 @@ import Foundation
 
 /// Basic hardware settings.
 @available(iOS 13, macOS 11, *)
-class UTMQemuConfigurationSystem: Codable, ObservableObject {
+struct UTMQemuConfigurationSystem: Codable {
     /// The QEMU architecture to emulate.
-    @Published var architecture: QEMUArchitecture = .x86_64
+    var architecture: QEMUArchitecture = .x86_64
     
     /// The QEMU machine target to emulate.
-    @Published var target: QEMUTarget = QEMUTarget_x86_64.q35
+    var target: QEMUTarget = QEMUTarget_x86_64.q35
     
     /// The QEMU CPU to emulate. Note that `default` will use the default CPU for the architecture.
-    @Published var cpu: QEMUCPU = QEMUCPU_x86_64.default
+    var cpu: QEMUCPU = QEMUCPU_x86_64.default
     
     /// Optional list of CPU flags to add to the target CPU.
-    @Published var cpuFlagsAdd: [QEMUCPUFlag] = []
+    var cpuFlagsAdd: [QEMUCPUFlag] = []
     
     /// Optional list of CPU flags to remove from the defaults of the target CPU. Parsed after `cpuFlagsAdd`.
-    @Published var cpuFlagsRemove: [QEMUCPUFlag] = []
+    var cpuFlagsRemove: [QEMUCPUFlag] = []
     
     /// Number of CPU cores to emulate. Set to 0 to match the number of available cores on the host.
-    @Published var cpuCount: Int = 0
+    var cpuCount: Int = 0
     
     /// Set to true to force emulation on multiple cores even when the results may be incorrect.
-    @Published var isForceMulticore: Bool = false
+    var isForceMulticore: Bool = false
     
     /// The RAM of the guest in MiB.
-    @Published var memorySize: Int = 512
+    var memorySize: Int = 512
     
     /// The JIT cache (code cache) in MiB.
-    @Published var jitCacheSize: Int = 0
+    var jitCacheSize: Int = 0
     
     enum CodingKeys: String, CodingKey {
         case architecture = "Architecture"
@@ -61,7 +61,7 @@ class UTMQemuConfigurationSystem: Codable, ObservableObject {
     init() {
     }
     
-    required init(from decoder: Decoder) throws {
+    init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         architecture = try values.decode(QEMUArchitecture.self, forKey: .architecture)
         target = try values.decode(AnyQEMUConstant.self, forKey: .target)
@@ -92,7 +92,7 @@ class UTMQemuConfigurationSystem: Codable, ObservableObject {
 
 @available(iOS 13, macOS 11, *)
 extension UTMQemuConfigurationSystem {
-    convenience init(migrating oldConfig: UTMLegacyQemuConfiguration) {
+    init(migrating oldConfig: UTMLegacyQemuConfiguration) {
         self.init()
         if let archStr = oldConfig.systemArchitecture, let arch = QEMUArchitecture(rawValue: archStr) {
             architecture = arch

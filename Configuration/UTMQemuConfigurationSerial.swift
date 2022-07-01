@@ -19,24 +19,24 @@ import Combine
 
 /// Settings for single serial device
 @available(iOS 13, macOS 11, *)
-class UTMQemuConfigurationSerial: Codable, Identifiable, ObservableObject {
+struct UTMQemuConfigurationSerial: Codable, Identifiable {
     /// The back-end character device (host controlled).
-    @Published var mode: QEMUSerialMode = .builtin
+    var mode: QEMUSerialMode = .builtin
     
     /// The front-end serial port target (guest controlled).
-    @Published var target: QEMUSerialTarget = .autoDevice
+    var target: QEMUSerialTarget = .autoDevice
     
     /// Terminal settings for built-in mode.
-    @Published var terminal: UTMConfigurationTerminal? = .init()
+    var terminal: UTMConfigurationTerminal? = .init()
     
     /// Hardware model to emulate (for manual mode).
-    @Published var hardware: QEMUSerialDevice?
+    var hardware: QEMUSerialDevice?
     
     /// TCP server to connect to (for TCP client mode).
-    @Published var tcpHostAddress: String?
+    var tcpHostAddress: String?
     
     /// TCP port to listed on or connect to (for TCP client/server mode).
-    @Published var tcpPort: Int?
+    var tcpPort: Int?
     
     let id = UUID()
     
@@ -52,7 +52,7 @@ class UTMQemuConfigurationSerial: Codable, Identifiable, ObservableObject {
     init() {
     }
     
-    required init(from decoder: Decoder) throws {
+    init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         mode = try values.decode(QEMUSerialMode.self, forKey: .mode)
         target = try values.decode(QEMUSerialTarget.self, forKey: .target)
@@ -85,7 +85,7 @@ class UTMQemuConfigurationSerial: Codable, Identifiable, ObservableObject {
 
 @available(iOS 13, macOS 11, *)
 extension UTMQemuConfigurationSerial {
-    convenience init?(forArchitecture architecture: QEMUArchitecture, target: QEMUTarget) {
+    init?(forArchitecture architecture: QEMUArchitecture, target: QEMUTarget) {
         self.init()
         guard architecture.displayDeviceType.allRawValues.isEmpty else {
             return nil
@@ -97,7 +97,7 @@ extension UTMQemuConfigurationSerial {
 
 @available(iOS 13, macOS 11, *)
 extension UTMQemuConfigurationSerial {
-    convenience init?(migrating oldConfig: UTMLegacyQemuConfiguration) {
+    init?(migrating oldConfig: UTMLegacyQemuConfiguration) {
         self.init()
         guard oldConfig.displayConsoleOnly else {
             return nil

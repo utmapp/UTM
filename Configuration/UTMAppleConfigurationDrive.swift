@@ -19,7 +19,7 @@ import Virtualization
 
 @available(iOS, unavailable, message: "Apple Virtualization not available on iOS")
 @available(macOS 11, *)
-struct UTMAppleConfigurationDrive: Codable, Hashable, Identifiable {
+struct UTMAppleConfigurationDrive: UTMConfigurationDrive {
     private let bytesInMib = 1048576
     
     var sizeMib: Int
@@ -27,7 +27,15 @@ struct UTMAppleConfigurationDrive: Codable, Hashable, Identifiable {
     var isExternal: Bool
     var imageURL: URL?
     
-    let id = UUID()
+    private(set) var id = UUID().uuidString
+    
+    var imageName: String? {
+        imageURL?.lastPathComponent
+    }
+    
+    var isRemovable: Bool {
+        false
+    }
     
     private enum CodingKeys: String, CodingKey {
         case sizeMib = "SizeMib"
@@ -114,6 +122,12 @@ struct UTMAppleConfigurationDrive: Codable, Hashable, Identifiable {
         } else {
             id.hash(into: &hasher)
         }
+    }
+    
+    func clone() -> UTMAppleConfigurationDrive {
+        var cloned = self
+        cloned.id = UUID().uuidString
+        return cloned
     }
 }
 

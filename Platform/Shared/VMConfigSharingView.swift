@@ -18,7 +18,7 @@ import SwiftUI
 
 @available(iOS 14, macOS 11, *)
 struct VMConfigSharingView: View {
-    @ObservedObject var config: UTMQemuConfigurationSharing
+    @Binding var config: UTMQemuConfigurationSharing
     @State private var isImporterPresented: Bool = false
     @EnvironmentObject private var data: UTMData
     
@@ -66,6 +66,6 @@ struct VMConfigSharingView_Previews: PreviewProvider {
     @State static private var config = UTMQemuConfigurationSharing()
     
     static var previews: some View {
-        VMConfigSharingView(config: config)
+        VMConfigSharingView(config: $config)
     }
 }

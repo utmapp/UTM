@@ -36,7 +36,7 @@ struct VMConfigDrivesView: View {
                     List {
                         ForEach($config.drives) { $drive in
                             NavigationLink(
-                                destination: VMConfigDriveDetailsView(config: drive, triggerRefresh: $triggerRefresh, onDelete: nil), label: {
+                                destination: VMConfigDriveDetailsView(config: $drive, onDelete: nil), label: {
                                     VStack(alignment: .leading) {
                                         if drive.isRemovable {
                                             Text("Removable Drive")
@@ -84,7 +84,7 @@ struct VMConfigDrivesView: View {
         )
         .fileImporter(isPresented: $importDrivePresented, allowedContentTypes: [.item], onCompletion: importDrive)
         .sheet(isPresented: $createDriveVisible) {
-            CreateDrive(system: config.system, onDismiss: newDrive)
+            CreateDrive(newDrive: UTMQemuConfigurationDrive(forArchitecture: config.system.architecture, target: config.system.target), onDismiss: newDrive)
         }
         .actionSheet(item: $attemptDelete) { offsets in
             ActionSheet(title: Text("Confirm Delete"), message: Text("Are you sure you want to permanently delete this disk image?"), buttons: [.cancel(), .destructive(Text("Delete")) {
@@ -98,8 +98,7 @@ struct VMConfigDrivesView: View {
             switch result {
             case .success(let url):
                 await MainActor.run {
-                    let drive = UTMQemuConfigurationDrive()
-                    drive.reset(forArchitecture: config.system.architecture, target: config.system.target, isRemovable: true)
+                    var drive = UTMQemuConfigurationDrive(forArchitecture: config.system.architecture, target: config.system.target, isRemovable: true)
                     drive.imageURL = url
                     config.drives.append(drive)
                 }
@@ -127,14 +126,13 @@ struct VMConfigDrivesView: View {
 
 @available(iOS 14, *)
 private struct CreateDrive: View {
-    @ObservedObject var system: UTMQemuConfigurationSystem
+    @State var newDrive: UTMQemuConfigurationDrive
     let onDismiss: (UTMQemuConfigurationDrive) -> Void
-    @StateObject private var config = UTMQemuConfigurationDrive()
     @Environment(\.presentationMode) private var presentationMode: Binding<PresentationMode>
     
     var body: some View {
         NavigationView {
-            VMConfigDriveCreateView(config: config, system: system)
+            VMConfigDriveCreateView(config: $newDrive)
                 .toolbar {
                     ToolbarItem(placement: .cancellationAction) {
                         Button("Cancel", action: cancel)
@@ -144,9 +142,6 @@ private struct CreateDrive: View {
                     }
                 }
         }.navigationViewStyle(.stack)
-        .onAppear {
-            config.reset(forArchitecture: system.architecture, target: system.target)
-        }
     }
     
     private func cancel() {
@@ -155,7 +150,7 @@ private struct CreateDrive: View {
     
     private func done() {
         presentationMode.wrappedValue.dismiss()
-        onDismiss(config)
+        onDismiss(newDrive)
     }
 }
 
@@ -163,28 +158,26 @@ private struct CreateDrive: View {
 
 @available(iOS 14, *)
 struct VMConfigDrivesView_Previews: PreviewProvider {
-    @ObservedObject static private var config = UTMQemuConfiguration()
-    @ObservedObject static private var system = UTMQemuConfigurationSystem()
+    @StateObject static private var config = UTMQemuConfiguration()
     
     static var previews: some View {
         Group {
             VMConfigDrivesView(config: config)
-            CreateDrive(system: system) { _ in
+            CreateDrive(newDrive: UTMQemuConfigurationDrive()) { _ in
                 
             }
         }.onAppear {
             if config.drives.count == 0 {
-                let drive = UTMQemuConfigurationDrive()
-                drive.reset(forArchitecture: .x86_64, target: QEMUTarget_x86_64.pc)
+                var drive = UTMQemuConfigurationDrive(forArchitecture: .x86_64, target: QEMUTarget_x86_64.pc)
                 drive.imageName = "test.img"
                 drive.imageType = .disk
                 drive.interface = .ide
-                config.drives.append(drive.copy())
-                drive.reset(forArchitecture: .x86_64, target: QEMUTarget_x86_64.pc)
+                config.drives.append(drive)
+                drive = UTMQemuConfigurationDrive(forArchitecture: .x86_64, target: QEMUTarget_x86_64.pc)
                 drive.imageName = "bios.bin"
                 drive.imageType = .bios
                 drive.interface = .none
-                config.drives.append(drive.copy())
+                config.drives.append(drive)
             }
         }
     }

@@ -18,39 +18,39 @@ import Foundation
 
 /// Tweaks and advanced QEMU settings.
 @available(iOS 13, macOS 11, *)
-class UTMQemuConfigurationQEMU: Codable, ObservableObject {
+struct UTMQemuConfigurationQEMU: Codable {
     /// Base path of VM. This property is not saved to file.
-    @Published var dataURL: URL?
+    var dataURL: URL?
     
     /// If true, write standard output to debug.log in the VM bundle.
-    @Published var hasDebugLog: Bool = false
+    var hasDebugLog: Bool = false
     
     /// If true, use UEFI boot on supported architectures.
-    @Published var hasUefiBoot: Bool = false
+    var hasUefiBoot: Bool = false
     
     /// If true, create a virtio-rng device on supported targets.
-    @Published var hasRNGDevice: Bool = false
+    var hasRNGDevice: Bool = false
     
     /// If true, create a virtio-balloon device on supported targets.
-    @Published var hasBalloonDevice: Bool = false
+    var hasBalloonDevice: Bool = false
     
     /// If true, create a vTPM device with an emulated backend.
-    @Published var hasTPMDevice: Bool = false
+    var hasTPMDevice: Bool = false
     
     /// If true, use HVF hypervisor instead of TCG emulation.
-    @Published var hasHypervisor: Bool = false
+    var hasHypervisor: Bool = false
     
     /// If true, attempt to sync RTC with the local time.
-    @Published var hasRTCLocalTime: Bool = false
+    var hasRTCLocalTime: Bool = false
     
     /// If true, emulate a PS/2 controller instead of relying on USB emulation.
-    @Published var hasPS2Controller: Bool = false
+    var hasPS2Controller: Bool = false
     
     /// QEMU machine property that overrides the default property defined by UTM.
-    @Published var machinePropertyOverride: String?
+    var machinePropertyOverride: String?
     
     /// Additional QEMU arguments.
-    @Published var additionalArguments: [QEMUArgument] = []
+    var additionalArguments: [QEMUArgument] = []
     
     /// If set, attempt to boot from a snapshot with the following name. Not saved.
     var snapshotName: String?
@@ -74,7 +74,7 @@ class UTMQemuConfigurationQEMU: Codable, ObservableObject {
     init() {
     }
     
-    required init(from decoder: Decoder) throws {
+    init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         hasDebugLog = try values.decode(Bool.self, forKey: .hasDebugLog)
         hasUefiBoot = try values.decode(Bool.self, forKey: .hasUefiBoot)
@@ -108,7 +108,7 @@ class UTMQemuConfigurationQEMU: Codable, ObservableObject {
 
 @available(iOS 13, macOS 11, *)
 extension UTMQemuConfigurationQEMU {
-    convenience init(forArchitecture architecture: QEMUArchitecture, target: QEMUTarget) {
+    init(forArchitecture architecture: QEMUArchitecture, target: QEMUTarget) {
         self.init()
         let rawTarget = target.rawValue
         if rawTarget.hasPrefix("pc") || rawTarget.hasPrefix("q35") {
@@ -134,7 +134,7 @@ extension UTMQemuConfigurationQEMU {
 
 @available(iOS 13, macOS 11, *)
 extension UTMQemuConfigurationQEMU {
-    convenience init(migrating oldConfig: UTMLegacyQemuConfiguration) {
+    init(migrating oldConfig: UTMLegacyQemuConfiguration) {
         self.init()
         hasDebugLog = oldConfig.debugLogEnabled
         hasUefiBoot = oldConfig.systemBootUefi

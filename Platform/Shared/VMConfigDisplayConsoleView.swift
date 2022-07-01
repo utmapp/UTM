@@ -18,7 +18,7 @@ import SwiftUI
 
 @available(iOS 14, macOS 11, *)
 struct VMConfigDisplayConsoleView: View {
-    @ObservedObject var config: UTMConfigurationTerminal
+    @Binding var config: UTMConfigurationTerminal
     
     private var textColor: Binding<Color> {
         Binding<Color> {
@@ -69,9 +69,9 @@ struct VMConfigDisplayConsoleView: View {
 
 @available(iOS 14, macOS 11, *)
 struct VMConfigDisplayConsoleView_Previews: PreviewProvider {
-    @ObservedObject static private var config = UTMConfigurationTerminal()
+    @State static private var config = UTMConfigurationTerminal()
     
     static var previews: some View {
-        VMConfigDisplayConsoleView(config: config)
+        VMConfigDisplayConsoleView(config: $config)
     }
 }

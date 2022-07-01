@@ -18,9 +18,9 @@ import Foundation
 
 /// Settings for single audio device
 @available(iOS 13, macOS 11, *)
-class UTMQemuConfigurationSound: Codable, Identifiable, ObservableObject {
+struct UTMQemuConfigurationSound: Codable, Identifiable {
     /// Hardware model to emulate.
-    @Published var hardware: QEMUSoundDevice = QEMUSoundDevice_x86_64.AC97
+    var hardware: QEMUSoundDevice = QEMUSoundDevice_x86_64.AC97
     
     let id = UUID()
     
@@ -31,7 +31,7 @@ class UTMQemuConfigurationSound: Codable, Identifiable, ObservableObject {
     init() {
     }
     
-    required init(from decoder: Decoder) throws {
+    init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         hardware = try values.decode(AnyQEMUConstant.self, forKey: .hardware)
     }
@@ -46,7 +46,7 @@ class UTMQemuConfigurationSound: Codable, Identifiable, ObservableObject {
 
 @available(iOS 13, macOS 11, *)
 extension UTMQemuConfigurationSound {
-    convenience init?(forArchitecture architecture: QEMUArchitecture, target: QEMUTarget) {
+    init?(forArchitecture architecture: QEMUArchitecture, target: QEMUTarget) {
         self.init()
         let rawTarget = target.rawValue
         if rawTarget.hasPrefix("pc") {
@@ -70,7 +70,7 @@ extension UTMQemuConfigurationSound {
 
 @available(iOS 13, macOS 11, *)
 extension UTMQemuConfigurationSound {
-    convenience init?(migrating oldConfig: UTMLegacyQemuConfiguration) {
+    init?(migrating oldConfig: UTMLegacyQemuConfiguration) {
         self.init()
         guard oldConfig.soundEnabled else {
             return nil

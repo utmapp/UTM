@@ -23,7 +23,7 @@ private let warningThreshold = 0.9
 
 @available(iOS 14, macOS 11, *)
 struct VMConfigSystemView: View {
-    @ObservedObject var config: UTMQemuConfigurationSystem
+    @Binding var config: UTMQemuConfigurationSystem
     @Binding var isResetConfig: Bool
     @State private var warningMessage: WarningMessage? = nil
     
@@ -33,14 +33,14 @@ struct VMConfigSystemView: View {
     var body: some View {
         VStack {
             Form {
-                HardwareOptions(config: config, architecture: $architecture, target: $target, warningMessage: $warningMessage)
+                HardwareOptions(config: $config, architecture: $architecture, target: $target, warningMessage: $warningMessage)
                 RAMSlider(systemMemory: $config.memorySize, onValidate: validateMemorySize)
                 Section(header: Text("CPU")) {
                     VMConfigConstantPicker(selection: $config.cpu, type: config.architecture.cpuType)
                 }
-                CPUFlagsOptions(title: "Force Enable CPU Flags", config: config, flags: $config.cpuFlagsAdd)
+                CPUFlagsOptions(title: "Force Enable CPU Flags", config: $config, flags: $config.cpuFlagsAdd)
                     .help("If checked, the CPU flag will be enabled. Otherwise, the default value will be used.")
-                CPUFlagsOptions(title: "Force Disable CPU Flags", config: config, flags: $config.cpuFlagsRemove)
+                CPUFlagsOptions(title: "Force Disable CPU Flags", config: $config, flags: $config.cpuFlagsRemove)
                     .help("If checked, the CPU flag will be disabled. Otherwise, the default value will be used.")
                 DetailedSection("CPU Cores", description: "Force multicore may improve speed of emulation but also might result in unstable and incorrect emulation.") {
                     HStack {
@@ -156,7 +156,7 @@ private enum WarningMessage: Identifiable {
 
 @available(iOS 14, macOS 11, *)
 private struct HardwareOptions: View {
-    @ObservedObject var config: UTMQemuConfigurationSystem
+    @Binding var config: UTMQemuConfigurationSystem
     @Binding var architecture: QEMUArchitecture
     @Binding var target: QEMUTarget
     @Binding var warningMessage: WarningMessage?
@@ -197,7 +197,7 @@ private struct HardwareOptions: View {
 @available(iOS 14, macOS 11, *)
 struct CPUFlagsOptions: View {
     let title: LocalizedStringKey
-    @ObservedObject var config: UTMQemuConfigurationSystem
+    @Binding var config: UTMQemuConfigurationSystem
     @Binding var flags: [QEMUCPUFlag]
     @State private var showAllFlags: Bool = false
     
@@ -271,9 +271,9 @@ struct OptionsList<Content>: View where Content: View {
 
 @available(iOS 14, macOS 11, *)
 struct VMConfigSystemView_Previews: PreviewProvider {
-    @ObservedObject static private var config = UTMQemuConfigurationSystem()
+    @State static private var config = UTMQemuConfigurationSystem()
     
     static var previews: some View {
-        VMConfigSystemView(config: config, isResetConfig: .constant(false))
+        VMConfigSystemView(config: $config, isResetConfig: .constant(false))
     }
 }
