@@ -23,7 +23,7 @@ protocol UTMConfiguration: Codable, ObservableObject {
     var information: UTMConfigurationInfo { get }
     var dataURL: URL? { get }
     var backend: UTMBackend { get }
-    func saveData(to packageURL: URL) async throws -> [URL]
+    func saveData(to dataURL: URL) async throws -> [URL]
 }
 
 @available(iOS 13, macOS 11, *)
@@ -86,8 +86,10 @@ private final class UTMConfigurationStub: Decodable {
 
 @available(iOS 13, macOS 11, *)
 extension UTMConfiguration {
+    static var dataDirectoryName: String { "Data" }
+    
     static func load(from packageURL: URL) throws -> AnyObject { // FIXME: `any UTMConfiguration`
-        let dataURL = packageURL.appendingPathComponent("Data")
+        let dataURL = packageURL.appendingPathComponent(Self.dataDirectoryName)
         let configURL = packageURL.appendingPathComponent(kUTMBundleConfigFilename)
         let configData = try Data(contentsOf: configURL)
         let decoder = PropertyListDecoder()
@@ -134,12 +136,12 @@ extension UTMConfiguration {
             try fileManager.createDirectory(at: packageURL, withIntermediateDirectories: false)
         }
         // create data directory
-        let dataURL = packageURL.appendingPathComponent("Data")
+        let dataURL = packageURL.appendingPathComponent(Self.dataDirectoryName)
         if !fileManager.fileExists(atPath: dataURL.path) {
             try fileManager.createDirectory(at: dataURL, withIntermediateDirectories: false)
         }
         // save new and existing data
-        let existingDataURLs = try await saveData(to: packageURL)
+        let existingDataURLs = try await saveData(to: dataURL)
         // cleanup any extra unreferenced files
         try await Self.cleanupAllFiles(at: dataURL, notIncluding: existingDataURLs)
         // create config.plist

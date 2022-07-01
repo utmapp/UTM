@@ -177,14 +177,18 @@ extension UTMAppleConfiguration {
 @available(iOS, unavailable, message: "Apple Virtualization not available on iOS")
 @available(macOS 11, *)
 extension UTMAppleConfiguration {
-    func saveData(to packageURL: URL) async throws -> [URL] {
+    func prepareSave(for packageURL: URL) async throws {
+        // nothing needed
+    }
+    
+    func saveData(to dataURL: URL) async throws -> [URL] {
         var existingDataURLs = [URL]()
-        existingDataURLs += try await information.saveData(to: packageURL)
-        existingDataURLs += try await system.boot.saveData(to: packageURL)
+        existingDataURLs += try await information.saveData(to: dataURL)
+        existingDataURLs += try await system.boot.saveData(to: dataURL)
         
         #if arch(arm64)
         if #available(macOS 12, *), system.macPlatform != nil {
-            existingDataURLs += try await system.macPlatform!.saveData(to: packageURL)
+            existingDataURLs += try await system.macPlatform!.saveData(to: dataURL)
         }
         #endif
 
@@ -192,7 +196,7 @@ extension UTMAppleConfiguration {
         try appleVZConfiguration.validate()
 
         for i in 0..<drives.count {
-            existingDataURLs += try await drives[i].saveData(to: packageURL)
+            existingDataURLs += try await drives[i].saveData(to: dataURL)
         }
         
         return existingDataURLs

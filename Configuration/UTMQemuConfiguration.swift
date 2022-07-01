@@ -192,17 +192,17 @@ extension UTMQemuConfiguration {
 
 @available(iOS 13, macOS 11, *)
 extension UTMQemuConfiguration {
-    func saveData(to packageURL: URL) async throws -> [URL] {
+    func saveData(to dataURL: URL) async throws -> [URL] {
         var existingDataURLs = [URL]()
         
         if isLegacy {
             // FIXME: do migration of data
         }
         
-        existingDataURLs += try await information.saveData(to: packageURL)
+        existingDataURLs += try await information.saveData(to: dataURL)
 
         for i in 0..<drives.count {
-            existingDataURLs += try await drives[i].saveData(to: packageURL)
+            existingDataURLs += try await drives[i].saveData(to: dataURL)
         }
         
         return existingDataURLs
