@@ -104,6 +104,17 @@ extension UTMConfigurationInfo {
         isIconCustom = oldConfig.iconCustom
         dataURL = oldConfig.existingPath
         icon = oldConfig.icon
-        dataURL = oldConfig.existingPath
     }
+    
+    #if os(macOS)
+    convenience init(migrating oldConfig: UTMLegacyAppleConfiguration, dataURL: URL) {
+        self.init()
+        name = oldConfig.name
+        notes = oldConfig.notes
+        uuid = UUID()
+        isIconCustom = oldConfig.iconCustom
+        icon = oldConfig.icon
+        self.dataURL = dataURL
+    }
+    #endif
 }

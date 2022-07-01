@@ -122,6 +122,16 @@
 		8471772927CD3CAB00D3A50B /* DetailedSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8471772727CD3CAB00D3A50B /* DetailedSection.swift */; };
 		8471772A27CD3CAB00D3A50B /* DetailedSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8471772727CD3CAB00D3A50B /* DetailedSection.swift */; };
 		848308D5278A1F2200E3E474 /* Virtualization.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 848308D4278A1F2200E3E474 /* Virtualization.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
+		848A98B0286A0F74006F0550 /* UTMAppleConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 848A98AF286A0F74006F0550 /* UTMAppleConfiguration.swift */; };
+		848A98B2286A0FDE006F0550 /* UTMAppleConfigurationSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 848A98B1286A0FDE006F0550 /* UTMAppleConfigurationSystem.swift */; };
+		848A98B4286A1215006F0550 /* UTMAppleConfigurationDevices.swift in Sources */ = {isa = PBXBuildFile; fileRef = 848A98B3286A1215006F0550 /* UTMAppleConfigurationDevices.swift */; };
+		848A98B6286A142C006F0550 /* UTMAppleConfigurationSerial.swift in Sources */ = {isa = PBXBuildFile; fileRef = 848A98B5286A142C006F0550 /* UTMAppleConfigurationSerial.swift */; };
+		848A98B8286A1589006F0550 /* UTMAppleConfigurationDisplay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 848A98B7286A1589006F0550 /* UTMAppleConfigurationDisplay.swift */; };
+		848A98BA286A17A8006F0550 /* UTMAppleConfigurationNetwork.swift in Sources */ = {isa = PBXBuildFile; fileRef = 848A98B9286A17A8006F0550 /* UTMAppleConfigurationNetwork.swift */; };
+		848A98BC286A1930006F0550 /* UTMAppleConfigurationSharedDirectory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 848A98BB286A1930006F0550 /* UTMAppleConfigurationSharedDirectory.swift */; };
+		848A98BE286A1B62006F0550 /* UTMAppleConfigurationDrive.swift in Sources */ = {isa = PBXBuildFile; fileRef = 848A98BD286A1B62006F0550 /* UTMAppleConfigurationDrive.swift */; };
+		848A98C0286A20E3006F0550 /* UTMAppleConfigurationBoot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 848A98BF286A20E3006F0550 /* UTMAppleConfigurationBoot.swift */; };
+		848A98C2286A2257006F0550 /* UTMAppleConfigurationMacPlatform.swift in Sources */ = {isa = PBXBuildFile; fileRef = 848A98C1286A2257006F0550 /* UTMAppleConfigurationMacPlatform.swift */; };
 		848D99A8285DB5550055C215 /* VMConfigConstantPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 848D99A7285DB5550055C215 /* VMConfigConstantPicker.swift */; };
 		848D99A9285DB5550055C215 /* VMConfigConstantPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 848D99A7285DB5550055C215 /* VMConfigConstantPicker.swift */; };
 		848D99AA285DB5550055C215 /* VMConfigConstantPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 848D99A7285DB5550055C215 /* VMConfigConstantPicker.swift */; };
@@ -1645,6 +1655,16 @@
 		8471770927CCA60600D3A50B /* DefaultPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultPicker.swift; sourceTree = "<group>"; };
 		8471772727CD3CAB00D3A50B /* DetailedSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailedSection.swift; sourceTree = "<group>"; };
 		848308D4278A1F2200E3E474 /* Virtualization.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Virtualization.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX12.1.sdk/System/Library/Frameworks/Virtualization.framework; sourceTree = DEVELOPER_DIR; };
+		848A98AF286A0F74006F0550 /* UTMAppleConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMAppleConfiguration.swift; sourceTree = "<group>"; };
+		848A98B1286A0FDE006F0550 /* UTMAppleConfigurationSystem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMAppleConfigurationSystem.swift; sourceTree = "<group>"; };
+		848A98B3286A1215006F0550 /* UTMAppleConfigurationDevices.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMAppleConfigurationDevices.swift; sourceTree = "<group>"; };
+		848A98B5286A142C006F0550 /* UTMAppleConfigurationSerial.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMAppleConfigurationSerial.swift; sourceTree = "<group>"; };
+		848A98B7286A1589006F0550 /* UTMAppleConfigurationDisplay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMAppleConfigurationDisplay.swift; sourceTree = "<group>"; };
+		848A98B9286A17A8006F0550 /* UTMAppleConfigurationNetwork.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMAppleConfigurationNetwork.swift; sourceTree = "<group>"; };
+		848A98BB286A1930006F0550 /* UTMAppleConfigurationSharedDirectory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMAppleConfigurationSharedDirectory.swift; sourceTree = "<group>"; };
+		848A98BD286A1B62006F0550 /* UTMAppleConfigurationDrive.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMAppleConfigurationDrive.swift; sourceTree = "<group>"; };
+		848A98BF286A20E3006F0550 /* UTMAppleConfigurationBoot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMAppleConfigurationBoot.swift; sourceTree = "<group>"; };
+		848A98C1286A2257006F0550 /* UTMAppleConfigurationMacPlatform.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMAppleConfigurationMacPlatform.swift; sourceTree = "<group>"; };
 		848D99A7285DB5550055C215 /* VMConfigConstantPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMConfigConstantPicker.swift; sourceTree = "<group>"; };
 		848D99B3286300160055C215 /* QEMUArgument.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QEMUArgument.swift; sourceTree = "<group>"; };
 		848D99B728630A780055C215 /* VMConfigSerialView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMConfigSerialView.swift; sourceTree = "<group>"; };
@@ -2735,6 +2755,16 @@
 				84C584D7268E5349000FCABF /* UTMConfigurable.h */,
 				CE6EDCDD241C4A6800A719DC /* UTMViewState.h */,
 				CE6EDCDE241C4A6800A719DC /* UTMViewState.m */,
+				848A98AF286A0F74006F0550 /* UTMAppleConfiguration.swift */,
+				848A98BF286A20E3006F0550 /* UTMAppleConfigurationBoot.swift */,
+				848A98B1286A0FDE006F0550 /* UTMAppleConfigurationSystem.swift */,
+				848A98B3286A1215006F0550 /* UTMAppleConfigurationDevices.swift */,
+				848A98BB286A1930006F0550 /* UTMAppleConfigurationSharedDirectory.swift */,
+				848A98B7286A1589006F0550 /* UTMAppleConfigurationDisplay.swift */,
+				848A98BD286A1B62006F0550 /* UTMAppleConfigurationDrive.swift */,
+				848A98C1286A2257006F0550 /* UTMAppleConfigurationMacPlatform.swift */,
+				848A98B9286A17A8006F0550 /* UTMAppleConfigurationNetwork.swift */,
+				848A98B5286A142C006F0550 /* UTMAppleConfigurationSerial.swift */,
 				841619A5284315C1000034B2 /* UTMQemuConfiguration.swift */,
 				848D99C328670F650055C215 /* UTMQemuConfiguration+Arguments.swift */,
 				841619A9284315F9000034B2 /* UTMConfigurationInfo.swift */,
@@ -4031,6 +4061,7 @@
 				83A004BB26A8CC95001AC09E /* UTMDownloadTask.swift in Sources */,
 				CE0B6D3924AD57FD00FE012D /* qapi-commands-job.c in Sources */,
 				CE0B6D3724AD57FD00FE012D /* qapi-events-block-core.c in Sources */,
+				848A98B0286A0F74006F0550 /* UTMAppleConfiguration.swift in Sources */,
 				CE0B6D5E24AD584D00FE012D /* qapi-visit-authz.c in Sources */,
 				CE0B6D4624AD584C00FE012D /* qapi-events-rdma.c in Sources */,
 				2C6D9E03256EE454003298E6 /* VMDisplayTerminalWindowController.swift in Sources */,
@@ -4081,6 +4112,7 @@
 				CE0B6D4124AD584C00FE012D /* qapi-visit-transaction.c in Sources */,
 				CEF83EBF24F9C3BF00557D15 /* UTMQemuVirtualMachine+Drives.m in Sources */,
 				CE0B6D0B24AD56C300FE012D /* qapi-dealloc-visitor.c in Sources */,
+				848A98C2286A2257006F0550 /* UTMAppleConfigurationMacPlatform.swift in Sources */,
 				84B36D2B27B790BE00C22685 /* DestructiveButton.swift in Sources */,
 				CE0B6D5424AD584C00FE012D /* qapi-visit-trace.c in Sources */,
 				CE020BAC24AEE00000B44AB6 /* UTMLoggingSwift.swift in Sources */,
@@ -4095,6 +4127,7 @@
 				841619B82843226B000034B2 /* QEMUConstant.swift in Sources */,
 				CE8813DC24D1290600532628 /* UTMLegacyQemuConfiguration+ConstantsGenerated.m in Sources */,
 				84C584EB268FA6D1000FCABF /* VMConfigAppleSystemView.swift in Sources */,
+				848A98BC286A1930006F0550 /* UTMAppleConfigurationSharedDirectory.swift in Sources */,
 				CE0B6D0124AD56AE00FE012D /* UTMJSONStream.m in Sources */,
 				2CE8EB42257811E8000E2EBB /* UTMLegacyQemuConfiguration+Defaults.m in Sources */,
 				CE0B6D1924AD57FC00FE012D /* qapi-events-crypto.c in Sources */,
@@ -4111,6 +4144,7 @@
 				CED814EA24C79F070042F0F1 /* VMConfigDriveCreateView.swift in Sources */,
 				CE0B6D5524AD584C00FE012D /* qapi-types-common.c in Sources */,
 				CE0B6D6324AD584D00FE012D /* qapi-events-qdev.c in Sources */,
+				848A98B2286A0FDE006F0550 /* UTMAppleConfigurationSystem.swift in Sources */,
 				CE0B6D4F24AD584C00FE012D /* qapi-visit-qdev.c in Sources */,
 				CE0B6D4024AD584C00FE012D /* qapi-types-rocker.c in Sources */,
 				CE928C3126ACCDEA0099F293 /* VMAppleRemovableDrivesView.swift in Sources */,
@@ -4162,8 +4196,10 @@
 				CE0B6D4B24AD584C00FE012D /* qapi-visit-rocker.c in Sources */,
 				8443EFFC28456F3B00B2E6E2 /* UTMQemuConfigurationSharing.swift in Sources */,
 				CEFC6CDE24C25697003F6962 /* VMDriveImage.swift in Sources */,
+				848A98B8286A1589006F0550 /* UTMAppleConfigurationDisplay.swift in Sources */,
 				CE0B6D5F24AD584D00FE012D /* qapi-types-char.c in Sources */,
 				CE0B6D1324AD57FC00FE012D /* qapi-commands-qom.c in Sources */,
+				848A98BE286A1B62006F0550 /* UTMAppleConfigurationDrive.swift in Sources */,
 				CEF83EC824FB1B9300557D15 /* UTMQemuVirtualMachine+SPICE.m in Sources */,
 				CE93758924B930270074066F /* BusyOverlay.swift in Sources */,
 				CE0B6D2424AD57FC00FE012D /* qapi-commands-rocker.c in Sources */,
@@ -4254,13 +4290,16 @@
 				84C584E1268E95B3000FCABF /* UTMLegacyAppleConfiguration.swift in Sources */,
 				8401FDA6269D44E400265F0D /* VMConfigDisplayConsoleView.swift in Sources */,
 				CE0B6D1524AD57FC00FE012D /* qapi-commands-misc-target.c in Sources */,
+				848A98B6286A142C006F0550 /* UTMAppleConfigurationSerial.swift in Sources */,
 				CE2D956224AD4F990059923A /* VMSettingsView.swift in Sources */,
 				CE0B6D8224AD584D00FE012D /* qapi-types-block-core.c in Sources */,
 				2CE8EAFF2572E14D000E2EBB /* qapi-types-block-export.c in Sources */,
 				8453DCB6278CE5410037A0DA /* UTMQemuImage.swift in Sources */,
 				CEDF83FA258AE24E0030E4AC /* UTMPasteboard.swift in Sources */,
 				848F71EE277A2F47006A0240 /* UTMSerialPortDelegate.swift in Sources */,
+				848A98BA286A17A8006F0550 /* UTMAppleConfigurationNetwork.swift in Sources */,
 				CE0B6D1124AD57C700FE012D /* qapi-builtin-visit.c in Sources */,
+				848A98C0286A20E3006F0550 /* UTMAppleConfigurationBoot.swift in Sources */,
 				CE0B6D3F24AD584C00FE012D /* qapi-visit-qom.c in Sources */,
 				848D99B6286300160055C215 /* QEMUArgument.swift in Sources */,
 				CE2D958A24AD4F990059923A /* VMConfigSystemView.swift in Sources */,
@@ -4279,6 +4318,7 @@
 				CE0B6D5124AD584C00FE012D /* qapi-visit-migration.c in Sources */,
 				2CE8EAEF2572E0C2000E2EBB /* qapi-events-block-export.c in Sources */,
 				CE0B6D5D24AD584D00FE012D /* qapi-visit.c in Sources */,
+				848A98B4286A1215006F0550 /* UTMAppleConfigurationDevices.swift in Sources */,
 				CE0B6D1724AD57FC00FE012D /* qapi-commands-misc.c in Sources */,
 				843BF842284555E70029D60D /* UTMQemuConfigurationPortForward.swift in Sources */,
 				CE0B6D2924AD57FC00FE012D /* qapi-commands-machine-target.c in Sources */,

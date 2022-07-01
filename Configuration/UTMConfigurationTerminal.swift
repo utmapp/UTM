@@ -91,4 +91,19 @@ extension UTMConfigurationTerminal {
         }
         resizeCommand = oldConfig.consoleResizeCommand
     }
+    
+    #if os(macOS)
+    convenience init(migrating oldConfig: UTMLegacyAppleConfiguration) {
+        self.init()
+        foregroundColor = oldConfig.consoleTextColor
+        backgroundColor = oldConfig.consoleBackgroundColor
+        if let fontStr = oldConfig.consoleFont {
+            font = QEMUTerminalFont(rawValue: fontStr)
+        }
+        if let fontSizeNum = oldConfig.consoleFontSize {
+            fontSize = fontSizeNum.intValue
+        }
+        resizeCommand = oldConfig.consoleResizeCommand
+    }
+    #endif
 }
