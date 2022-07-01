@@ -18,10 +18,7 @@ import Foundation
 
 /// Settings for a QEMU configuration
 @available(iOS 13, macOS 11, *)
-class UTMQemuConfiguration: Codable, ObservableObject {
-    private let oldestVersion = 3
-    private let currentVersion = 3
-    
+final class UTMQemuConfiguration: UTMConfiguration {
     /// Basic information and icon
     @Published var information: UTMConfigurationInfo = .init()
     
@@ -52,8 +49,15 @@ class UTMQemuConfiguration: Codable, ObservableObject {
     /// All audio devices
     @Published var sound: [UTMQemuConfigurationSound] = []
     
+    /// True if configuration is migrated from a legacy config. Not saved.
+    private(set) var isLegacy: Bool = false
+    
     /// If set, points to the data directory for this configuration. Not saved.
     var dataURL: URL?
+    
+    var backend: UTMBackend {
+        .qemu
+    }
     
     enum CodingKeys: String, CodingKey {
         case information = "Information"
@@ -78,14 +82,14 @@ class UTMQemuConfiguration: Codable, ObservableObject {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         let backend = try values.decodeIfPresent(UTMBackend.self, forKey: .backend) ?? .qemu
         guard backend == .qemu else {
-            throw QEMUConfigError.invalidBackend
+            throw UTMConfigurationError.invalidBackend
         }
         let version = try values.decodeIfPresent(Int.self, forKey: .configurationVersion) ?? 0
-        guard version >= oldestVersion else {
-            throw QEMUConfigError.versionTooLow
+        guard version >= Self.oldestVersion else {
+            throw UTMConfigurationError.versionTooLow
         }
-        guard version <= currentVersion else {
-            throw QEMUConfigError.versionTooHigh
+        guard version <= Self.currentVersion else {
+            throw UTMConfigurationError.versionTooHigh
         }
         information = try values.decode(UTMConfigurationInfo.self, forKey: .information)
         system = try values.decode(UTMQemuConfigurationSystem.self, forKey: .system)
@@ -113,7 +117,7 @@ class UTMQemuConfiguration: Codable, ObservableObject {
         try container.encode(serials, forKey: .serials)
         try container.encode(sound, forKey: .sound)
         try container.encode(UTMBackend.qemu, forKey: .backend)
-        try container.encode(currentVersion, forKey: .configurationVersion)
+        try container.encode(Self.currentVersion, forKey: .configurationVersion)
     }
 }
 
@@ -162,6 +166,7 @@ extension UTMQemuConfiguration {
 extension UTMQemuConfiguration {
     convenience init(migrating oldConfig: UTMLegacyQemuConfiguration) {
         self.init()
+        isLegacy = true
         information = .init(migrating: oldConfig)
         system = .init(migrating: oldConfig)
         qemu = .init(migrating: oldConfig)
@@ -183,34 +188,23 @@ extension UTMQemuConfiguration {
     }
 }
 
-// MARK: UserInfo key constant
+// MARK: - Saving data
 
-// TODO: maybe move this elsewhere as it is shared by both backend configs
-extension CodingUserInfoKey {
-    static var dataURL: CodingUserInfoKey {
-        return CodingUserInfoKey(rawValue: "dataURL")!
-    }
-}
-
-// MARK: Config parsing
-
-enum UTMBackend: String, CaseIterable, Codable {
-    case apple = "Apple"
-    case qemu = "QEMU"
-}
-
-enum QEMUConfigError: Error {
-    case versionTooLow
-    case versionTooHigh
-    case invalidBackend
-}
-
-extension QEMUConfigError: LocalizedError {
-    var errorDescription: String? {
-        switch self {
-        case .versionTooLow: return NSLocalizedString("This configuration is too old and is not supported.", comment: "UTMQemuConfiguration")
-        case .versionTooHigh: return NSLocalizedString("This configuration is saved with a newer version of UTM and is not compatible with this version.", comment: "UTMQemuConfiguration")
-        case .invalidBackend: return NSLocalizedString("The backend for this configuration is not supported.", comment: "UTMQemuConfiguration")
+@available(iOS 13, macOS 11, *)
+extension UTMQemuConfiguration {
+    func saveData(to packageURL: URL) async throws -> [URL] {
+        var existingDataURLs = [URL]()
+        
+        if isLegacy {
+            // FIXME: do migration of data
         }
+        
+        existingDataURLs += try await information.saveData(to: packageURL)
+
+        for i in 0..<drives.count {
+            existingDataURLs += try await drives[i].saveData(to: packageURL)
+        }
+        
+        return existingDataURLs
     }
 }

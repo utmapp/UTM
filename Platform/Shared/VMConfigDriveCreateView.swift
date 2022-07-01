@@ -26,9 +26,9 @@ struct VMConfigDriveCreateView: View {
     
     var body: some View {
         Form {
-            Toggle(isOn: $config.isRemovable.animation(), label: {
+            Toggle(isOn: $config.isExternal.animation(), label: {
                 Text("Removable")
-            }).onChange(of: config.isRemovable) { removable in
+            }).onChange(of: config.isExternal) { removable in
                 config.imageType = removable ? .cd : .disk
                 if let defaultInterfaceForImageType = config.defaultInterfaceForImageType {
                     config.interface = defaultInterfaceForImageType(config.imageType)
@@ -36,7 +36,7 @@ struct VMConfigDriveCreateView: View {
             }.help("If checked, no drive image will be stored with the VM. Instead you can mount/unmount image while the VM is running.")
             VMConfigConstantPicker("Interface", selection: $config.interface)
                 .help("Hardware interface on the guest used to mount this image. Different operating systems support different interfaces. The default will be the most common interface.")
-            if !config.isRemovable {
+            if !config.isExternal {
                 HStack {
                     NumberTextField("Size", number: Binding<Int>(get: {
                         convertToDisplay(fromSizeMib: config.sizeMib)

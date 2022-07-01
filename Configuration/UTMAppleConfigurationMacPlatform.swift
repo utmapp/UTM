@@ -32,7 +32,7 @@ struct UTMAppleConfigurationMacPlatform: Codable {
     
     init(from decoder: Decoder) throws {
         guard let dataURL = decoder.userInfo[.dataURL] as? URL else {
-            throw UTMAppleConfigurationError.invalidDataURL
+            throw UTMConfigurationError.invalidDataURL
         }
         let container = try decoder.container(keyedBy: CodingKeys.self)
         hardwareModel = try container.decode(Data.self, forKey: .hardwareModel)
@@ -98,3 +98,23 @@ extension UTMAppleConfigurationMacPlatform {
 }
 #endif
 
+// MARK: - Saving data
+
+#if arch(arm64)
+@available(iOS, unavailable, message: "Apple Virtualization not available on iOS")
+@available(macOS 12, *)
+extension UTMAppleConfigurationMacPlatform {
+    @MainActor mutating func saveData(to dataURL: URL) async throws -> [URL] {
+        let fileManager = FileManager.default
+        let auxStorageURL = dataURL.appendingPathComponent("AuxiliaryStorage")
+        if !fileManager.fileExists(atPath: auxStorageURL.path) {
+            guard let hwModel = VZMacHardwareModel(dataRepresentation: hardwareModel) else {
+                throw UTMAppleConfigurationError.hardwareModelInvalid
+            }
+            _ = try VZMacAuxiliaryStorage(creatingStorageAt: auxStorageURL, hardwareModel: hwModel, options: [])
+        }
+        auxiliaryStorageURL = auxStorageURL
+        return [auxStorageURL]
+    }
+}
+#endif

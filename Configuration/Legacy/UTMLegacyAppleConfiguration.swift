@@ -370,7 +370,7 @@ final class UTMLegacyAppleConfiguration: UTMConfigurable, Codable, ObservableObj
         }
         isAppleVirtualization = try values.decode(Bool.self, forKey: .isAppleVirtualization)
         guard isAppleVirtualization else {
-            throw ConfigError.notAppleConfiguration
+            throw UTMAppleConfigurationError.notAppleConfiguration
         }
         cpuCount = try values.decode(Int.self, forKey: .cpuCount)
         memorySize = try values.decode(UInt64.self, forKey: .memorySize)

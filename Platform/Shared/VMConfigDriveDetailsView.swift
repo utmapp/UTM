@@ -32,10 +32,10 @@ struct VMConfigDriveDetailsView: View {
     
     var body: some View {
         Form {
-            Toggle(isOn: $config.isRemovable.animation(), label: {
+            Toggle(isOn: $config.isExternal.animation(), label: {
                 Text("Removable Drive")
             }).disabled(true)
-            if !config.isRemovable {
+            if !config.isExternal {
                 HStack {
                     Text("Name")
                     Spacer()

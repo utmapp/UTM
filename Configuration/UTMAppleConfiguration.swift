@@ -19,10 +19,7 @@ import Virtualization
 
 @available(iOS, unavailable, message: "Apple Virtualization not available on iOS")
 @available(macOS 11, *)
-final class UTMAppleConfiguration: Codable, ObservableObject {
-    private let oldestVersion = 3
-    private let currentVersion = 3
-    
+final class UTMAppleConfiguration: UTMConfiguration {
     /// Basic information and icon
     @Published var information: UTMConfigurationInfo = .init()
     
@@ -42,6 +39,10 @@ final class UTMAppleConfiguration: Codable, ObservableObject {
     
     /// If set, points to the data directory for this configuration. Not saved.
     var dataURL: URL?
+    
+    var backend: UTMBackend {
+        .apple
+    }
     
     enum CodingKeys: String, CodingKey {
         case information = "Information"
@@ -63,14 +64,14 @@ final class UTMAppleConfiguration: Codable, ObservableObject {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         let backend = try values.decodeIfPresent(UTMBackend.self, forKey: .backend) ?? .apple
         guard backend == .apple else {
-            throw QEMUConfigError.invalidBackend
+            throw UTMConfigurationError.invalidBackend
         }
         let version = try values.decodeIfPresent(Int.self, forKey: .configurationVersion) ?? 0
-        guard version >= oldestVersion else {
-            throw QEMUConfigError.versionTooLow
+        guard version >= Self.oldestVersion else {
+            throw UTMConfigurationError.versionTooLow
         }
-        guard version <= currentVersion else {
-            throw QEMUConfigError.versionTooHigh
+        guard version <= Self.currentVersion else {
+            throw UTMConfigurationError.versionTooHigh
         }
         information = try values.decode(UTMConfigurationInfo.self, forKey: .information)
         system = try values.decode(UTMAppleConfigurationSystem.self, forKey: .system)
@@ -93,20 +94,15 @@ final class UTMAppleConfiguration: Codable, ObservableObject {
         try container.encode(networks, forKey: .networks)
         try container.encode(serials, forKey: .serials)
         try container.encode(UTMBackend.apple, forKey: .backend)
-        try container.encode(currentVersion, forKey: .configurationVersion)
+        try container.encode(Self.currentVersion, forKey: .configurationVersion)
     }
 }
 
 enum UTMAppleConfigurationError: Error {
-    case versionTooHigh
-    case platformUnsupported
     case notAppleConfiguration
-    case invalidDataURL
+    case platformUnsupported
     case kernelNotSpecified
-    case customIconInvalid
     case hardwareModelInvalid
-    case cannotCreateDiskImage
-    case invalidDriveConfiguration
 }
 
 // MARK: - Conversion of old config format
@@ -173,5 +169,32 @@ extension UTMAppleConfiguration {
         }
         #endif
         return vzconfig
+    }
+}
+
+// MARK: - Saving data
+
+@available(iOS, unavailable, message: "Apple Virtualization not available on iOS")
+@available(macOS 11, *)
+extension UTMAppleConfiguration {
+    func saveData(to packageURL: URL) async throws -> [URL] {
+        var existingDataURLs = [URL]()
+        existingDataURLs += try await information.saveData(to: packageURL)
+        existingDataURLs += try await system.boot.saveData(to: packageURL)
+        
+        #if arch(arm64)
+        if #available(macOS 12, *), system.macPlatform != nil {
+            existingDataURLs += try await system.macPlatform!.saveData(to: packageURL)
+        }
+        #endif
+
+        // validate before we copy and create drive images
+        try appleVZConfiguration.validate()
+
+        for i in 0..<drives.count {
+            existingDataURLs += try await drives[i].saveData(to: packageURL)
+        }
+        
+        return existingDataURLs
     }
 }

@@ -21,6 +21,8 @@
 NS_ASSUME_NONNULL_BEGIN
 
 extern NSString *const kUTMBundleConfigFilename;
+extern const NSURLBookmarkCreationOptions kUTMBookmarkCreationOptions;
+extern const NSURLBookmarkResolutionOptions kUTMBookmarkResolutionOptions;
 
 @interface UTMVirtualMachine ()
 

@@ -26,15 +26,12 @@ struct UTMAppleConfigurationDrive: UTMConfigurationDrive {
     var isReadOnly: Bool
     var isExternal: Bool
     var imageURL: URL?
+    var imageName: String?
     
     private(set) var id = UUID().uuidString
     
-    var imageName: String? {
-        imageURL?.lastPathComponent
-    }
-    
-    var isRemovable: Bool {
-        false
+    var isRawImage: Bool {
+        true // always true for Apple VMs
     }
     
     private enum CodingKeys: String, CodingKey {
@@ -58,7 +55,7 @@ struct UTMAppleConfigurationDrive: UTMConfigurationDrive {
         isExternal = false
     }
     
-    init(importImage url: URL, isReadOnly: Bool = false, isExternal: Bool = false) {
+    init(existingURL url: URL, isReadOnly: Bool = false, isExternal: Bool = false) {
         self.imageURL = url
         self.isReadOnly = isReadOnly
         self.isExternal = isExternal
@@ -71,20 +68,22 @@ struct UTMAppleConfigurationDrive: UTMConfigurationDrive {
     
     init(from decoder: Decoder) throws {
         guard let dataURL = decoder.userInfo[.dataURL] as? URL else {
-            throw UTMAppleConfigurationError.invalidDataURL
+            throw UTMConfigurationError.invalidDataURL
         }
         let container = try decoder.container(keyedBy: CodingKeys.self)
         isReadOnly = try container.decode(Bool.self, forKey: .isReadOnly)
         sizeMib = try container.decode(Int.self, forKey: .sizeMib)
         if let imageName = try container.decodeIfPresent(String.self, forKey: .imageName) {
+            self.imageName = imageName
             imageURL = dataURL.appendingPathComponent(imageName)
             isExternal = false
         } else if let bookmark = try container.decodeIfPresent(Data.self, forKey: .bookmark) {
             var stale: Bool = false
             imageURL = try? URL(resolvingBookmarkData: bookmark, options: .withSecurityScope, bookmarkDataIsStale: &stale)
+            imageName = imageURL?.lastPathComponent
             isExternal = true
         } else {
-            throw UTMAppleConfigurationError.invalidDriveConfiguration
+            throw UTMConfigurationError.invalidDriveConfiguration
         }
     }
     

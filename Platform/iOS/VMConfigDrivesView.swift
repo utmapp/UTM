@@ -38,7 +38,7 @@ struct VMConfigDrivesView: View {
                             NavigationLink(
                                 destination: VMConfigDriveDetailsView(config: $drive, onDelete: nil), label: {
                                     VStack(alignment: .leading) {
-                                        if drive.isRemovable {
+                                        if drive.isExternal {
                                             Text("Removable Drive")
                                         } else if drive.imageName == QEMUPackageFileName.efiVariables.rawValue {
                                             Text("EFI Variables")
@@ -98,7 +98,7 @@ struct VMConfigDrivesView: View {
             switch result {
             case .success(let url):
                 await MainActor.run {
-                    var drive = UTMQemuConfigurationDrive(forArchitecture: config.system.architecture, target: config.system.target, isRemovable: true)
+                    var drive = UTMQemuConfigurationDrive(forArchitecture: config.system.architecture, target: config.system.target, isExternal: true)
                     drive.imageURL = url
                     config.drives.append(drive)
                 }

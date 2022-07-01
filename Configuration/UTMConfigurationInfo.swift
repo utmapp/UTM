@@ -118,3 +118,23 @@ extension UTMConfigurationInfo {
     }
     #endif
 }
+
+// MARK: - Saving data
+
+@available(iOS 13, macOS 11, *)
+extension UTMConfigurationInfo {
+    @MainActor mutating func saveData(to dataURL: URL) async throws -> [URL] {
+        // save new icon
+        if isIconCustom {
+            if let iconURL = selectedCustomIconPath {
+                icon = iconURL.lastPathComponent
+                return await [try UTMQemuConfiguration.copyItemIfChanged(from: iconURL, to: dataURL)]
+            } else if let existingName = icon {
+                return [dataURL.appendingPathComponent(existingName)]
+            } else {
+                throw UTMConfigurationError.customIconInvalid
+            }
+        }
+        return []
+    }
+}

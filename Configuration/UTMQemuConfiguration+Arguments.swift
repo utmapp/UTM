@@ -355,7 +355,7 @@ extension UTMQemuConfiguration {
     @QEMUArgumentBuilder private var drivesArguments: [QEMUArgument] {
         var busInterfaceMap: [String: Int] = [:]
         for drive in drives {
-            let hasImage = !drive.isRemovable && drive.imageURL != nil
+            let hasImage = !drive.isExternal && drive.imageURL != nil
             if drive.imageType == .disk || drive.imageType == .cd {
                 driveArgument(for: drive, busInterfaceMap: &busInterfaceMap)
             } else if hasImage {
@@ -381,7 +381,7 @@ extension UTMQemuConfiguration {
     }
     
     @QEMUArgumentBuilder private func driveArgument(for drive: UTMQemuConfigurationDrive, busInterfaceMap: inout [String: Int]) -> [QEMUArgument] {
-        let isRemovable = drive.imageType == .cd || drive.isRemovable
+        let isRemovable = drive.imageType == .cd || drive.isExternal
         var bootindex = busInterfaceMap["boot", default: 0]
         var busindex = busInterfaceMap[drive.interface.rawValue, default: 0]
         var realInterface = QEMUDriveInterface.none
@@ -482,7 +482,7 @@ extension UTMQemuConfiguration {
             "media=disk"
         }
         "id=\(drive.id)"
-        if !drive.isRemovable && drive.imageURL != nil {
+        if !drive.isExternal && drive.imageURL != nil {
             "file="
             drive.imageURL!
             "discard=unmap"

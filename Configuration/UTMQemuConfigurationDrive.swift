@@ -28,8 +28,8 @@ struct UTMQemuConfigurationDrive: UTMConfigurationDrive {
     /// If true, the drive image will be mounted as read-only.
     var isReadOnly: Bool = false
     
-    /// If true, the drive image will not be copied to the bundle.
-    var isRemovable: Bool = false
+    /// If true, a bookmark is stored in the package.
+    var isExternal: Bool = false
     
     /// If valid, will point to the actual location of the drive image. Not saved.
     var imageURL: URL?
@@ -51,7 +51,7 @@ struct UTMQemuConfigurationDrive: UTMConfigurationDrive {
     
     enum CodingKeys: String, CodingKey {
         case imageName = "ImageName"
-        case isRemovable = "Removable"
+        case bookmark = "Bookmark"
         case imageType = "ImageType"
         case interface = "Interface"
         case identifier = "Identifier"
@@ -61,11 +61,21 @@ struct UTMQemuConfigurationDrive: UTMConfigurationDrive {
     }
     
     init(from decoder: Decoder) throws {
+        guard let dataURL = decoder.userInfo[.dataURL] as? URL else {
+            throw UTMConfigurationError.invalidDataURL
+        }
         let values = try decoder.container(keyedBy: CodingKeys.self)
-        imageName = try values.decodeIfPresent(String.self, forKey: .imageName)
-        isRemovable = try values.decode(Bool.self, forKey: .isRemovable)
-        if !isRemovable, let imageName = imageName, let dataURL = decoder.userInfo[.dataURL] as? URL {
+        if let imageName = try values.decodeIfPresent(String.self, forKey: .imageName) {
+            self.imageName = imageName
             imageURL = dataURL.appendingPathComponent(imageName)
+            isExternal = false
+        } else if let bookmark = try values.decodeIfPresent(Data.self, forKey: .bookmark) {
+            var stale: Bool = false
+            imageURL = try? URL(resolvingBookmarkData: bookmark, options: kUTMBookmarkResolutionOptions, bookmarkDataIsStale: &stale)
+            imageName = imageURL?.lastPathComponent
+            isExternal = true
+        } else {
+            throw UTMConfigurationError.invalidDriveConfiguration
         }
         imageType = try values.decode(QEMUDriveImageType.self, forKey: .imageType)
         interface = try values.decode(QEMUDriveInterface.self, forKey: .interface)
@@ -74,10 +84,22 @@ struct UTMQemuConfigurationDrive: UTMConfigurationDrive {
     
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
-        if !isRemovable {
-            try container.encodeIfPresent(imageName, forKey: .imageName)
+        if !isExternal {
+            try container.encodeIfPresent(imageURL?.lastPathComponent, forKey: .imageName)
+        } else {
+            var options = kUTMBookmarkCreationOptions
+            #if os(macOS)
+            if isReadOnly {
+                options.insert(.securityScopeAllowOnlyReadAccess)
+            }
+            #endif
+            _ = imageURL?.startAccessingSecurityScopedResource()
+            defer {
+                imageURL?.stopAccessingSecurityScopedResource()
+            }
+            let bookmark = try imageURL?.bookmarkData(options: options)
+            try container.encodeIfPresent(bookmark, forKey: .bookmark)
         }
-        try container.encode(isRemovable, forKey: .isRemovable)
         try container.encode(imageType, forKey: .imageType)
         if imageType == .cd || imageType == .disk {
             try container.encode(interface, forKey: .interface)
@@ -91,7 +113,7 @@ struct UTMQemuConfigurationDrive: UTMConfigurationDrive {
         imageName?.hash(into: &hasher)
         sizeMib.hash(into: &hasher)
         isReadOnly.hash(into: &hasher)
-        isRemovable.hash(into: &hasher)
+        isExternal.hash(into: &hasher)
         id.hash(into: &hasher)
         imageType.hash(into: &hasher)
         interface.hash(into: &hasher)
@@ -133,8 +155,13 @@ extension UTMQemuConfigurationDrive {
         imageName = oldConfig.driveImagePath(for: index)
         imageType = convertImageType(from: oldConfig.driveImageType(for: index))
         interface = convertInterface(from: oldConfig.driveInterfaceType(for: index))
-        isRemovable = oldConfig.driveRemovable(for: index)
+        isExternal = oldConfig.driveRemovable(for: index)
         id = oldConfig.driveName(for: index)!
+        let dataURL = oldConfig.existingPath?.appendingPathComponent(QEMUPackageFileName.images.rawValue)
+        if let imageName = imageName {
+            imageURL = dataURL?.appendingPathComponent(imageName)
+        }
+        
     }
     
     private func convertImageType(from type: UTMDiskImageType) -> QEMUDriveImageType {
@@ -189,9 +216,9 @@ extension UTMQemuConfigurationDrive {
 
 @available(iOS 13, macOS 11, *)
 extension UTMQemuConfigurationDrive {
-    init(forArchitecture architecture: QEMUArchitecture, target: QEMUTarget, isRemovable: Bool = false) {
-        self.isRemovable = isRemovable
-        self.imageType = isRemovable ? .cd : .disk
+    init(forArchitecture architecture: QEMUArchitecture, target: QEMUTarget, isExternal: Bool = false) {
+        self.isExternal = isExternal
+        self.imageType = isExternal ? .cd : .disk
         self.isRawImage = false
         self.imageName = nil
         self.sizeMib = 10240

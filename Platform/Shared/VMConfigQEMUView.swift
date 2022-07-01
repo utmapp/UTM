@@ -128,7 +128,7 @@ struct VMConfigQEMUView: View {
         guard let path = config.dataURL else {
             return nil
         }
-        let srcLogPath = path.appendingPathComponent(UTMLegacyQemuConfiguration.debugLogName)
+        let srcLogPath = path.appendingPathComponent(QEMUPackageFileName.debugLog.rawValue)
         return .debugLog(srcLogPath)
     }
     

@@ -42,10 +42,18 @@ struct UTMAppleConfigurationBoot: Codable {
     
     init(from decoder: Decoder) throws {
         guard let dataURL = decoder.userInfo[.dataURL] as? URL else {
-            throw UTMAppleConfigurationError.invalidDataURL
+            throw UTMConfigurationError.invalidDataURL
         }
         let container = try decoder.container(keyedBy: CodingKeys.self)
         operatingSystem = try container.decode(OperatingSystem.self, forKey: .operatingSystem)
+        #if !arch(arm64)
+        if #available(macOS 12, *) {
+        } else {
+            guard operatingSystem != .macOS else {
+                throw UTMAppleConfigurationError.platformUnsupported
+            }
+        }
+        #endif
         if let linuxKernelPath = try container.decodeIfPresent(String.self, forKey: .linuxKernelPath) {
             linuxKernelURL = dataURL.appendingPathComponent(linuxKernelPath)
         }
@@ -114,5 +122,29 @@ extension UTMAppleConfigurationBoot {
         linuxKernelURL = oldBoot.linuxKernelURL
         linuxCommandLine = oldBoot.linuxCommandLine
         linuxInitialRamdiskURL = oldBoot.linuxInitialRamdiskURL
+    }
+}
+
+// MARK: - Saving data
+
+@available(iOS, unavailable, message: "Apple Virtualization not available on iOS")
+@available(macOS 11, *)
+extension UTMAppleConfigurationBoot {
+    @MainActor mutating func saveData(to dataURL: URL) async throws -> [URL] {
+        var urls = [URL]()
+        if operatingSystem == .linux {
+            guard let linuxKernelURL = linuxKernelURL else {
+                throw UTMAppleConfigurationError.kernelNotSpecified
+            }
+            let kernelUrl = try await UTMAppleConfiguration.copyItemIfChanged(from: linuxKernelURL, to: dataURL)
+            self.linuxKernelURL = kernelUrl
+            urls.append(kernelUrl)
+            if let linuxInitialRamdiskURL = linuxInitialRamdiskURL {
+                let ramdiskUrl = try await UTMAppleConfiguration.copyItemIfChanged(from: linuxInitialRamdiskURL, to: dataURL)
+                self.linuxInitialRamdiskURL = ramdiskUrl
+                urls.append(ramdiskUrl)
+            }
+        }
+        return urls
     }
 }
