@@ -48,15 +48,7 @@ class Main {
             logger.info("JIT: ptrace() hack failed")
             jitAvailable = false
         }
-        if #available(iOS 14, macOS 11, *) {
-            UTMApp.main()
-        } else {
-            #if os(macOS)
-            logger.critical("This version of macOS is not supported!")
-            #else
-            UIApplicationMain(CommandLine.argc, CommandLine.unsafeArgv, nil, NSStringFromClass(AppDelegate.self))
-            #endif
-        }
+        UTMApp.main()
     }
     
     // https://stackoverflow.com/a/44675628
