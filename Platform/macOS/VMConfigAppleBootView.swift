@@ -29,41 +29,28 @@ struct VMConfigAppleBootView: View {
         case unsupported
     }
     
-    @ObservedObject var config: UTMLegacyAppleConfiguration
+    @Binding var config: UTMAppleConfigurationSystem
     @EnvironmentObject private var data: UTMData
-    @State private var operatingSystem: Bootloader.OperatingSystem?
+    @State private var operatingSystem: UTMAppleConfigurationBoot.OperatingSystem = .none
     @State private var alertBootloaderSelection: BootloaderSelection?
     @State private var importBootloaderSelection: BootloaderSelection?
     @State private var importFileShown: Bool = false
     
-    private var currentOperatingSystem: Bootloader.OperatingSystem? {
-        config.bootLoader?.operatingSystem
+    private var currentOperatingSystem: UTMAppleConfigurationBoot.OperatingSystem {
+        config.boot.operatingSystem
     }
     
     var body: some View {
         Form {
-            DefaultPicker("Operating System", selection: $operatingSystem) {
-                Text("None")
-                    .tag(nil as Bootloader.OperatingSystem?)
-                ForEach(Bootloader.OperatingSystem.allCases) { os in
-                    Text(os.rawValue)
-                        .tag(os as Bootloader.OperatingSystem?)
-                }
-            }.onChange(of: operatingSystem) { newValue in
+            VMConfigConstantPicker("Operating System", selection: $operatingSystem)
+            .onAppear {
+                operatingSystem = currentOperatingSystem
+            }
+            .onChange(of: operatingSystem) { newValue in
                 guard newValue != currentOperatingSystem else {
                     return
                 }
-                guard newValue != nil else {
-                    config.bootLoader = nil
-                    if #available(macOS 12, *) {
-                        config.macRecoveryIpswURL = nil
-                        #if arch(arm64)
-                        config.macPlatform = nil
-                        #endif
-                    }
-                    return
-                }
-                if newValue == .Linux {
+                if newValue == .linux {
                     alertBootloaderSelection = .kernel
                 } else if newValue == .macOS {
                     if #available(macOS 12, *) {
@@ -71,6 +58,8 @@ struct VMConfigAppleBootView: View {
                     } else {
                         alertBootloaderSelection = .unsupported
                     }
+                } else {
+                    config.boot.operatingSystem = .none
                 }
                 // don't change display until AFTER file selected
                 importBootloaderSelection = nil
@@ -91,10 +80,10 @@ struct VMConfigAppleBootView: View {
                     return Alert(title: Text("Select a file."), dismissButton: okay)
                 }
             }.fileImporter(isPresented: $importFileShown, allowedContentTypes: [.data], onCompletion: selectImportedFile)
-            if operatingSystem == .Linux {
+            if operatingSystem == .linux {
                 Section(header: Text("Linux Settings")) {
                     HStack {
-                        TextField("Kernel Image", text: .constant(config.bootLoader?.linuxKernelURL?.lastPathComponent ?? ""))
+                        TextField("Kernel Image", text: .constant(config.boot.linuxKernelURL?.lastPathComponent ?? ""))
                             .disabled(true)
                         Button("Browse…") {
                             importBootloaderSelection = .kernel
@@ -102,17 +91,17 @@ struct VMConfigAppleBootView: View {
                         }
                     }
                     HStack {
-                        TextField("Ramdisk (optional)", text: .constant(config.bootLoader?.linuxInitialRamdiskURL?.lastPathComponent ?? ""))
+                        TextField("Ramdisk (optional)", text: .constant(config.boot.linuxInitialRamdiskURL?.lastPathComponent ?? ""))
                             .disabled(true)
                         Button("Clear") {
-                            config.bootLoader?.linuxInitialRamdiskURL = nil
+                            config.boot.linuxInitialRamdiskURL = nil
                         }
                         Button("Browse…") {
                             importBootloaderSelection = .ramdisk
                             importFileShown = true
                         }
                     }
-                    TextField("Boot arguments", text: $config.linuxCommandLine)
+                    TextField("Boot arguments", text: $config.boot.linuxCommandLine.bound)
                 }
             } else if #available(macOS 12, *), operatingSystem == .macOS {
                 #if arch(arm64)
@@ -152,29 +141,20 @@ struct VMConfigAppleBootView: View {
                         guard let model = image.mostFeaturefulSupportedConfiguration?.hardwareModel else {
                             throw NSLocalizedString("Your machine does not support running this IPSW.", comment: "VMConfigAppleBootView")
                         }
-                        config.macPlatform = MacPlatform(newHardware: model)
+                        config.macPlatform = UTMAppleConfigurationMacPlatform(newHardware: model)
+                        config.boot.operatingSystem = .macOS
                         config.macRecoveryIpswURL = url
-                        config.bootLoader = try Bootloader(for: .macOS)
                         #endif
                     }
                 case .kernel:
-                    config.bootLoader = try Bootloader(for: .Linux, linuxKernelURL: url)
+                    config.boot.operatingSystem = .linux
+                    config.boot.linuxKernelURL = url
                 case .ramdisk:
-                    config.bootLoader!.linuxInitialRamdiskURL = url
+                    config.boot.linuxInitialRamdiskURL = url
                 case .unsupported:
                     break
                 }
                 operatingSystem = currentOperatingSystem
-                switch operatingSystem {
-                case .macOS:
-                    config.isConsoleDisplay = false
-                    config.isSerialEnabled = false
-                case .Linux:
-                    config.isConsoleDisplay = true
-                    config.isSerialEnabled = true
-                default:
-                    break
-                }
             }.value
         }
     }
@@ -182,9 +162,9 @@ struct VMConfigAppleBootView: View {
 
 @available(macOS 12, *)
 struct VMConfigAppleBootView_Previews: PreviewProvider {
-    @State static private var config = UTMLegacyAppleConfiguration()
+    @State static private var config = UTMAppleConfigurationSystem()
     
     static var previews: some View {
-        VMConfigAppleSystemView(config: config)
+        VMConfigAppleBootView(config: $config)
     }
 }

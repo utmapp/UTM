@@ -34,6 +34,11 @@ import Virtualization
         config as? UTMLegacyAppleConfiguration
     }
     
+    //FIXME: temporary usage for config rewrite
+    lazy var futureConfig: UTMAppleConfiguration = {
+        UTMAppleConfiguration(migrating: appleConfig, dataURL: path!)
+    }()
+    
     override var detailsTitleLabel: String {
         appleConfig.name
     }

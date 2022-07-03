@@ -18,78 +18,29 @@ import SwiftUI
 import Virtualization
 
 struct VMConfigAppleNetworkingView: View {
-    @ObservedObject var config: UTMLegacyAppleConfiguration
+    @Binding var config: UTMAppleConfigurationNetwork
     @EnvironmentObject private var data: UTMData
     @State private var newMacAddress: String?
     
-    private var networkMode: Binding<Network.NetworkMode?> {
-        Binding<Network.NetworkMode?> {
-            config.networkDevices.first?.networkMode
-        } set: { newValue in
-            if let mode = newValue {
-                var newNetwork: Network
-                if let network = config.networkDevices.first {
-                    newNetwork = network
-                    newNetwork.networkMode = mode
-                } else {
-                    newNetwork = Network(newInterfaceForMode: mode)
-                }
-                config.networkDevices = [newNetwork]
-            } else {
-                config.networkDevices = []
-            }
-        }
-    }
-    
-    private var macAddress: Binding<String> {
-        Binding<String> {
-            if let newMacAddress = newMacAddress {
-                return newMacAddress
-            } else if !config.networkDevices.isEmpty {
-                return config.networkDevices[0].macAddress
-            } else {
-                return ""
-            }
-        } set: { newValue in
-            newMacAddress = newValue
-        }
-    }
-    
-    private var bridgeInterfaceIdentifier: Binding<String> {
-        Binding<String> {
-            config.networkDevices.first?.bridgeInterfaceIdentifier ?? ""
-        } set: { newValue in
-            if !config.networkDevices.isEmpty {
-                config.networkDevices[0].bridgeInterfaceIdentifier = newValue
-            }
-        }
-    }
-    
     var body: some View {
         Form {
-            DefaultPicker("Network Mode", selection: networkMode) {
-                Text("None")
-                    .tag(nil as Network.NetworkMode?)
-                ForEach(Network.NetworkMode.allCases) { mode in
-                    Text(mode.rawValue)
-                        .tag(mode as Network.NetworkMode?)
+            VMConfigConstantPicker("Network Mode", selection: $config.mode)
+            HStack {
+                TextField("MAC Address", text: $newMacAddress.bound, onCommit: {
+                    commitMacAddress()
+                })
+                .onAppear {
+                    newMacAddress = config.macAddress
+                }
+                Button("Random") {
+                    let random = VZMACAddress.randomLocallyAdministered().string
+                    newMacAddress = random
+                    commitMacAddress()
                 }
             }
-            if let _ = networkMode.wrappedValue {
-                HStack {
-                    TextField("MAC Address", text: macAddress, onCommit: {
-                        commitMacAddress()
-                    })
-                    Button("Random") {
-                        let random = VZMACAddress.randomLocallyAdministered().string
-                        newMacAddress = random
-                        commitMacAddress()
-                    }
-                }
-            }
-            if networkMode.wrappedValue == .Bridged {
+            if config.mode == .bridged {
                 Section(header: Text("Bridged Settings")) {
-                    DefaultPicker("Interface", selection: bridgeInterfaceIdentifier) {
+                    DefaultPicker("Interface", selection: $config.bridgeInterface.bound) {
                         ForEach(VZBridgedNetworkInterface.networkInterfaces, id: \.identifier) { interface in
                             Text(interface.identifier)
                                 .tag(interface.identifier as String?)
@@ -104,11 +55,8 @@ struct VMConfigAppleNetworkingView: View {
         guard let macAddress = newMacAddress else {
             return
         }
-        newMacAddress = nil
         if let _ = VZMACAddress(string: macAddress) {
-            if !config.networkDevices.isEmpty {
-                config.networkDevices[0].macAddress = macAddress
-            }
+            config.macAddress = macAddress
         } else {
             data.busyWork {
                 throw NSLocalizedString("Invalid MAC address.", comment: "VMConfigAppleNetworkingView")
@@ -118,9 +66,9 @@ struct VMConfigAppleNetworkingView: View {
 }
 
 struct VMConfigAppleNetworkingView_Previews: PreviewProvider {
-    @State static private var config = UTMLegacyAppleConfiguration()
+    @State static private var config = UTMAppleConfigurationNetwork()
     
     static var previews: some View {
-        VMConfigAppleNetworkingView(config: config)
+        VMConfigAppleNetworkingView(config: $config)
     }
 }

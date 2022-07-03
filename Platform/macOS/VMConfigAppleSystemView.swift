@@ -18,9 +18,9 @@ import SwiftUI
 import Virtualization
 
 struct VMConfigAppleSystemView: View {
+    private let bytesInMib = UInt64(1048576)
     
-    @ObservedObject var config: UTMLegacyAppleConfiguration
-    @State private var isAdvanced: Bool = false
+    @Binding var config: UTMAppleConfigurationSystem
     
     var minCores: Int {
         VZVirtualMachineConfiguration.minimumAllowedCPUCount
@@ -30,12 +30,12 @@ struct VMConfigAppleSystemView: View {
         VZVirtualMachineConfiguration.maximumAllowedCPUCount
     }
     
-    var minMemory: UInt64 {
-        VZVirtualMachineConfiguration.minimumAllowedMemorySize
+    var minMemory: Int {
+        Int(VZVirtualMachineConfiguration.minimumAllowedMemorySize / bytesInMib)
     }
     
-    var maxMemory: UInt64 {
-        VZVirtualMachineConfiguration.maximumAllowedMemorySize
+    var maxMemory: Int {
+        Int(VZVirtualMachineConfiguration.maximumAllowedMemorySize / bytesInMib)
     }
     
     var body: some View {
@@ -64,27 +64,14 @@ struct VMConfigAppleSystemView: View {
                     config.memorySize = maxMemory
                 }
             }
-            Toggle("Show Advanced Settings", isOn: $isAdvanced)
-            if isAdvanced {
-                Section(header: Text("Advanced Settings")) {
-                    Toggle("Enable Balloon Device", isOn: $config.isBalloonEnabled)
-                    Toggle("Enable Entropy Device", isOn: $config.isEntropyEnabled)
-                    Toggle("Enable Serial", isOn: $config.isSerialEnabled)
-                    if #available(macOS 12, *) {
-                        Toggle("Enable Sound", isOn: $config.isAudioEnabled)
-                        Toggle("Enable Keyboard", isOn: $config.isKeyboardEnabled)
-                        Toggle("Enable Pointer", isOn: $config.isPointingEnabled)
-                    }
-                }
-            }
         }
     }
 }
 
 struct VMConfigAppleSystemView_Previews: PreviewProvider {
-    @State static private var config = UTMLegacyAppleConfiguration()
+    @State static private var config = UTMAppleConfigurationSystem()
     
     static var previews: some View {
-        VMConfigAppleSystemView(config: config)
+        VMConfigAppleSystemView(config: $config)
     }
 }

@@ -20,9 +20,16 @@ import Virtualization
 @available(iOS, unavailable, message: "Apple Virtualization not available on iOS")
 @available(macOS 11, *)
 struct UTMAppleConfigurationNetwork: Codable, Identifiable {
-    enum NetworkMode: String, Codable {
+    enum NetworkMode: String, CaseIterable, QEMUConstant {
         case shared = "Shared"
         case bridged = "Bridged"
+        
+        var prettyValue: String {
+            switch self {
+            case .shared: return NSLocalizedString("Shared Network", comment: "UTMAppleConfigurationNetwork")
+            case .bridged: return NSLocalizedString("Bridged (Advanced)", comment: "UTMAppleConfigurationNetwork")
+            }
+        }
     }
     
     var mode: NetworkMode = .shared

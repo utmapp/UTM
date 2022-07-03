@@ -26,10 +26,10 @@ struct VMConfigAppleDriveCreateView: View {
     var body: some View {
         Form {
             HStack {
-                NumberTextField("Size", number: Binding<NSNumber?>(get: {
-                    NSNumber(value: convertToDisplay(fromSizeMib: config.sizeMib))
+                NumberTextField("Size", number: Binding<Int>(get: {
+                    convertToDisplay(fromSizeMib: config.sizeMib)
                 }, set: {
-                    config.sizeMib = convertToMib(fromSize: $0?.intValue ?? 0)
+                    config.sizeMib = convertToMib(fromSize: $0)
                 }), onEditingChanged: validateSize)
                     .multilineTextAlignment(.trailing)
                     .help("The amount of storage to allocate for this image. An empty file of this size will be stored with the VM.")

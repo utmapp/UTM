@@ -72,6 +72,7 @@ struct VMConfigNewDriveButton<Drive: UTMConfigurationDrive>: View {
     }
 
     private func importDrive(result: Result<URL, Error>) {
+        var drive = newDrive
         data.busyWorkAsync {
             switch result {
             case .success(let url):
@@ -82,8 +83,8 @@ struct VMConfigNewDriveButton<Drive: UTMConfigurationDrive>: View {
                     throw NSLocalizedString("An image already exists with that name.", comment: "VMConfigDrivesButton")
                 }
                 DispatchQueue.main.async {
-                    newDrive.imageURL = url
-                    drives.append(newDrive)
+                    drive.imageURL = url
+                    drives.append(drive)
                 }
                 break
             case .failure(let err):
@@ -103,19 +104,9 @@ struct VMConfigNewDriveButton<Drive: UTMConfigurationDrive>: View {
 }
 
 
-struct VMConfigDrivesMoveButtons: View {
-    @ObservedObject var config: UTMQemuConfiguration
+struct VMConfigDrivesMoveButtons<Drive: UTMConfigurationDrive>: View {
+    @Binding var drives: [Drive]
     @Binding var selectedDriveIndex: Int?
-    
-    var countDrives: Int {
-        if true { //FIXME: need to merge with apple config
-            return config.drives.count
-        } else if let appleConfig = config as? UTMLegacyAppleConfiguration {
-            return appleConfig.diskImages.count
-        } else {
-            return 0
-        }
-    }
     
     var body: some View {
         Group {
@@ -128,7 +119,7 @@ struct VMConfigDrivesMoveButtons: View {
                             Label("Move Up", systemImage: "chevron.up")
                         }.help("Make boot order priority higher.")
                     }
-                    if index != countDrives - 1 {
+                    if index != drives.count - 1 {
                         Button {
                             moveDriveDown(fromIndex: index)
                         } label: {
@@ -148,29 +139,21 @@ struct VMConfigDrivesMoveButtons: View {
                 } label: {
                     Label("Move Down", systemImage: "chevron.down")
                 }.help("Make boot order priority lower.")
-                .disabled(selectedDriveIndex == nil || selectedDriveIndex == countDrives - 1)
+                    .disabled(selectedDriveIndex == nil || selectedDriveIndex == drives.count - 1)
             }
         }.labelStyle(.titleOnly)
     }
     
     func moveDriveUp(fromIndex index: Int) {
         withAnimation {
-            if true {  //FIXME: need to merge with apple config
-                config.drives.move(fromOffsets: IndexSet(integer: index), toOffset: index - 1)
-            } else if let appleConfig = config as? UTMLegacyAppleConfiguration {
-                appleConfig.diskImages.move(fromOffsets: IndexSet(integer: index), toOffset: index - 1)
-            }
+            drives.move(fromOffsets: IndexSet(integer: index), toOffset: index - 1)
             selectedDriveIndex = index - 1
         }
     }
     
     func moveDriveDown(fromIndex index: Int) {
         withAnimation {
-            if true { //FIXME: need to merge with apple config
-                config.drives.move(fromOffsets: IndexSet(integer: index), toOffset: index + 2)
-            } else if let appleConfig = config as? UTMLegacyAppleConfiguration {
-                appleConfig.diskImages.move(fromOffsets: IndexSet(integer: index), toOffset: index + 2)
-            }
+            drives.move(fromOffsets: IndexSet(integer: index), toOffset: index + 2)
             selectedDriveIndex = index + 1
         }
     }

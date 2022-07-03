@@ -39,7 +39,7 @@ struct VMConfigDriveDetailsView: View {
                 HStack {
                     Text("Name")
                     Spacer()
-                    if let imageName = config.imageName {
+                    if let imageName = config.imageURL?.lastPathComponent ?? config.imageName {
                         Text(imageName)
                             .lineLimit(1)
                             .multilineTextAlignment(.trailing)

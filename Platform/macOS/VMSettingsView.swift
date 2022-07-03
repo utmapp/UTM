@@ -32,8 +32,9 @@ struct VMSettingsView<Config: ObservableObject & UTMConfigurable>: View {
                 if let qemuVM = vm as? UTMQemuVirtualMachine {
                     //FIXME: Rework after config rewrite.
                     VMQEMUSettingsView(config: qemuVM.futureConfig, selectedDriveIndex: $selectedDriveIndex)
-                } else if let appleConfig = config as? UTMLegacyAppleConfiguration {
-                    VMAppleSettingsView(vm: vm, config: appleConfig, selectedDriveIndex: $selectedDriveIndex)
+                } else if let appleVM = vm as? UTMAppleVirtualMachine {
+                    //FIXME: Rework after config rewrite.
+                    VMAppleSettingsView(config: appleVM.futureConfig, selectedDriveIndex: $selectedDriveIndex)
                 }
             }.listStyle(.sidebar)
         }.frame(minWidth: 800, minHeight: 400)
@@ -41,7 +42,20 @@ struct VMSettingsView<Config: ObservableObject & UTMConfigurable>: View {
             ToolbarItemGroup(placement: .automatic) {
                 if let qemuVM = vm as? UTMQemuVirtualMachine {
                     //FIXME: Rework after config rewrite.
-                    VMConfigDrivesMoveButtons(config: qemuVM.futureConfig, selectedDriveIndex: $selectedDriveIndex)
+                    let drives = Binding {
+                        qemuVM.futureConfig.drives
+                    } set: {
+                        qemuVM.futureConfig.drives = $0
+                    }
+                    VMConfigDrivesMoveButtons(drives: drives, selectedDriveIndex: $selectedDriveIndex)
+                } else if let appleVM = vm as? UTMAppleVirtualMachine {
+                    //FIXME: Rework after config rewrite.
+                    let drives = Binding {
+                        appleVM.futureConfig.drives
+                    } set: {
+                        appleVM.futureConfig.drives = $0
+                    }
+                    VMConfigDrivesMoveButtons(drives: drives, selectedDriveIndex: $selectedDriveIndex)
                 }
             }
             ToolbarItemGroup(placement: .cancellationAction) {

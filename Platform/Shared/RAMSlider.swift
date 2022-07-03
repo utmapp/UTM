@@ -18,7 +18,6 @@ import SwiftUI
 
 @available(iOS 14, macOS 11, *)
 struct RAMSlider: View {
-    static let bytesInMib: UInt64 = 1024 * 1024
     let validMemoryValues = [32, 64, 128, 256, 512, 768, 1024, 1536, 2048, 3072, 4096, 6144, 8192, 10240, 12288, 14336, 16384, 32768]
     
     let validateMemorySize: (Bool) -> Void
@@ -39,15 +38,6 @@ struct RAMSlider: View {
     init(systemMemory: Binding<NSNumber?>, onValidate: @escaping (Bool) -> Void = { _ in }) {
         validateMemorySize = onValidate
         _systemMemory = systemMemory
-    }
-    
-    init(systemMemory: Binding<UInt64>, onValidate: @escaping (Bool) -> Void = { _ in }) {
-        validateMemorySize = onValidate
-        _systemMemory = Binding<NSNumber?>(get: {
-            NSNumber(value: systemMemory.wrappedValue / RAMSlider.bytesInMib)
-        }, set: { newValue in
-            systemMemory.wrappedValue = (newValue?.uint64Value ?? 0) * RAMSlider.bytesInMib
-        })
     }
     
     init<T: FixedWidthInteger>(systemMemory: Binding<T>, onValidate: @escaping (Bool) -> Void = { _ in }) {

@@ -20,12 +20,18 @@ import Virtualization
 @available(iOS, unavailable, message: "Apple Virtualization not available on iOS")
 @available(macOS 11, *)
 struct UTMAppleConfigurationBoot: Codable {
-    enum OperatingSystem: String, CaseIterable, Identifiable, Codable {
-        var id: String {
-            rawValue
-        }
+    enum OperatingSystem: String, CaseIterable, QEMUConstant {
+        case none = "None"
         case linux = "Linux"
         case macOS = "macOS"
+        
+        var prettyValue: String {
+            switch self {
+            case .none: return NSLocalizedString("None", comment: "UTMAppleConfigurationBoot")
+            case .linux: return NSLocalizedString("Linux", comment: "UTMAppleConfigurationBoot")
+            case .macOS: return NSLocalizedString("macOS", comment: "UTMAppleConfigurationBoot")
+            }
+        }
     }
     
     var operatingSystem: OperatingSystem
@@ -81,13 +87,17 @@ struct UTMAppleConfigurationBoot: Codable {
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(operatingSystem, forKey: .operatingSystem)
-        try container.encodeIfPresent(linuxKernelURL?.lastPathComponent, forKey: .linuxKernelPath)
-        try container.encodeIfPresent(linuxCommandLine, forKey: .linuxCommandLine)
-        try container.encodeIfPresent(linuxInitialRamdiskURL?.lastPathComponent, forKey: .linuxInitialRamdiskPath)
+        if operatingSystem == .linux {
+            try container.encodeIfPresent(linuxKernelURL?.lastPathComponent, forKey: .linuxKernelPath)
+            try container.encodeIfPresent(linuxCommandLine, forKey: .linuxCommandLine)
+            try container.encodeIfPresent(linuxInitialRamdiskURL?.lastPathComponent, forKey: .linuxInitialRamdiskPath)
+        }
     }
     
     func vzBootloader() -> VZBootLoader? {
         switch operatingSystem {
+        case .none:
+            return nil
         case .linux:
             guard let linuxKernelURL = linuxKernelURL else {
                 return nil

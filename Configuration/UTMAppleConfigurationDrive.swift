@@ -116,11 +116,11 @@ struct UTMAppleConfigurationDrive: UTMConfigurationDrive {
     }
     
     func hash(into hasher: inout Hasher) {
-        if let imageURL = imageURL {
-            imageURL.lastPathComponent.hash(into: &hasher)
-        } else {
-            id.hash(into: &hasher)
-        }
+        imageName?.hash(into: &hasher)
+        sizeMib.hash(into: &hasher)
+        isReadOnly.hash(into: &hasher)
+        isExternal.hash(into: &hasher)
+        id.hash(into: &hasher)
     }
     
     func clone() -> UTMAppleConfigurationDrive {

@@ -21,10 +21,18 @@ import Virtualization
 @available(iOS, unavailable, message: "Apple Virtualization not available on iOS")
 @available(macOS 11, *)
 struct UTMAppleConfigurationDevices: Codable {
-    enum PointerDevice: String, Codable {
+    enum PointerDevice: String, CaseIterable, QEMUConstant {
         case disabled = "Disabled"
         case mouse = "Mouse"
         case trackpad = "Trackpad"
+        
+        var prettyValue: String {
+            switch self {
+            case .disabled: return NSLocalizedString("Disabled", comment: "UTMAppleConfigurationDevices")
+            case .mouse: return NSLocalizedString("Mouse", comment: "UTMAppleConfigurationDevices")
+            case .trackpad: return NSLocalizedString("Trackpad", comment: "UTMAppleConfigurationDevices")
+            }
+        }
     }
     
     var hasAudio: Bool = true

@@ -20,9 +20,16 @@ import Virtualization
 @available(iOS, unavailable, message: "Apple Virtualization not available on iOS")
 @available(macOS 11, *)
 struct UTMAppleConfigurationSerial: Codable, Identifiable {
-    enum SerialMode: String, Codable {
+    enum SerialMode: String, CaseIterable, QEMUConstant {
         case builtin = "Terminal"
         case ptty = "Ptty"
+        
+        var prettyValue: String {
+            switch self {
+            case .builtin: return NSLocalizedString("Built-in Terminal", comment: "UTMAppleConfigurationTerminal")
+            case .ptty: return NSLocalizedString("Pseudo-TTY Device", comment: "UTMAppleConfigurationTerminal")
+            }
+        }
     }
     
     var mode: SerialMode = .builtin

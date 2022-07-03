@@ -21,6 +21,8 @@ import Virtualization
 @available(iOS, unavailable, message: "Apple Virtualization not available on iOS")
 @available(macOS 11, *)
 struct UTMAppleConfigurationSystem: Codable {
+    private let bytesInMib = UInt64(1048576)
+    
     /// Number of CPU cores to emulate. Set to 0 to match the number of available cores on the host.
     var cpuCount: Int = 0
     
@@ -71,7 +73,7 @@ extension UTMAppleConfigurationSystem {
     init(migrating oldConfig: UTMLegacyAppleConfiguration) {
         self.init()
         cpuCount = oldConfig.cpuCount
-        memorySize = Int(oldConfig.memorySize)
+        memorySize = Int(oldConfig.memorySize / bytesInMib)
         if let oldBoot = oldConfig.bootLoader {
             boot = UTMAppleConfigurationBoot(migrating: oldBoot)
         }
@@ -93,7 +95,7 @@ extension UTMAppleConfigurationSystem {
 extension UTMAppleConfigurationSystem {
     func fillVZConfiguration(_ vzconfig: VZVirtualMachineConfiguration) {
         vzconfig.cpuCount = cpuCount
-        vzconfig.memorySize = UInt64(memorySize)
+        vzconfig.memorySize = UInt64(memorySize) * bytesInMib
         vzconfig.bootLoader = boot.vzBootloader()
         #if arch(arm64)
         if #available(macOS 12, *), let macPlatform = macPlatform {
