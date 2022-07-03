@@ -16,7 +16,6 @@
 
 import SwiftUI
 
-@available(iOS 14, macOS 11, *)
 struct VMConfigDriveCreateView: View {
     private let mibToGib = 1024
     let minSizeMib = 1
@@ -83,7 +82,6 @@ struct VMConfigDriveCreateView: View {
     }
 }
 
-@available(iOS 14, macOS 11, *)
 struct VMConfigDriveCreateView_Previews: PreviewProvider {
     @State static private var config = UTMQemuConfigurationDrive()
     

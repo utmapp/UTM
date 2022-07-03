@@ -16,7 +16,6 @@
 
 import SwiftUI
 
-@available(iOS 14, *)
 struct VMToolbarView: View {
     @AppStorage("ToolbarIsCollapsed") private var isCollapsed: Bool = true
     @AppStorage("ToolbarLocation") private var location: ToolbarLocation = .topRight
@@ -233,7 +232,6 @@ enum ToolbarLocation: Int {
     case bottomLeft
 }
 
-@available(iOS 14, *)
 struct ToolbarButtonStyle: ButtonStyle {
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @Environment(\.verticalSizeClass) private var verticalSizeClass
@@ -267,7 +265,6 @@ struct ToolbarButtonStyle: ButtonStyle {
 }
 
 // https://www.objc.io/blog/2019/10/01/swiftui-shake-animation/
-@available(iOS 14, *)
 struct Shake: GeometryEffect {
     var amount: CGFloat = 8
     var shakesPerUnit = 3
@@ -284,14 +281,12 @@ struct Shake: GeometryEffect {
     }
 }
 
-@available(iOS 14, *)
 extension ButtonStyle where Self == ToolbarButtonStyle {
     static var toolbar: ToolbarButtonStyle {
         ToolbarButtonStyle()
     }
 }
 
-@available(iOS 14, *)
 struct VMToolbarView_Previews: PreviewProvider {
     static var previews: some View {
         VMToolbarView(state: VMToolbarActions(with: VMDisplayViewController()))

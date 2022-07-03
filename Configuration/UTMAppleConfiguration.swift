@@ -107,7 +107,6 @@ enum UTMAppleConfigurationError: Error {
 
 // MARK: - Conversion of old config format
 
-@available(iOS 13, macOS 11, *)
 extension UTMAppleConfiguration {
     convenience init(migrating oldConfig: UTMLegacyAppleConfiguration, dataURL: URL) {
         self.init()

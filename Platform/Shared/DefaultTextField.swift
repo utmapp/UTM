@@ -16,7 +16,6 @@
 
 import SwiftUI
 
-@available(iOS 14, macOS 11, *)
 struct DefaultTextField: View {
     private let titleKey: LocalizedStringKey
     private let text: Binding<String>
@@ -78,7 +77,6 @@ struct DefaultTextFieldNew: View {
     }
 }
 
-@available(iOS 14, macOS 11, *)
 struct DefaultTextField_Previews: PreviewProvider {
     static var previews: some View {
         DefaultTextField("Test", text: .constant("Value"), prompt: "Prompt")

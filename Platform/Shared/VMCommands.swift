@@ -16,7 +16,6 @@
 
 import SwiftUI
 
-@available(iOS 14, macOS 11, *)
 struct VMCommands: Commands {
     @Environment(\.openURL) private var openURL
     

@@ -17,7 +17,6 @@
 import Foundation
 
 /// Settings for single audio device
-@available(iOS 13, macOS 11, *)
 struct UTMQemuConfigurationSound: Codable, Identifiable {
     /// Hardware model to emulate.
     var hardware: QEMUSoundDevice = QEMUSoundDevice_x86_64.AC97
@@ -44,7 +43,6 @@ struct UTMQemuConfigurationSound: Codable, Identifiable {
 
 // MARK: - Default construction
 
-@available(iOS 13, macOS 11, *)
 extension UTMQemuConfigurationSound {
     init?(forArchitecture architecture: QEMUArchitecture, target: QEMUTarget) {
         self.init()
@@ -68,7 +66,6 @@ extension UTMQemuConfigurationSound {
 
 // MARK: - Conversion of old config format
 
-@available(iOS 13, macOS 11, *)
 extension UTMQemuConfigurationSound {
     init?(migrating oldConfig: UTMLegacyQemuConfiguration) {
         self.init()

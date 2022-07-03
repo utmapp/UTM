@@ -16,7 +16,6 @@
 
 import SwiftUI
 
-@available(iOS 14, macOS 11, *)
 struct VMPlaceholderView: View {
     @EnvironmentObject private var data: UTMData
     @Environment(\.openURL) private var openURL
@@ -47,7 +46,6 @@ struct VMPlaceholderView: View {
     }
 }
 
-@available(iOS 14, macOS 11, *)
 private struct TileButton: View {
     let titleKey: LocalizedStringKey
     let systemImage: String
@@ -62,7 +60,6 @@ private struct TileButton: View {
 }
 
 
-@available(iOS 14, macOS 11, *)
 private struct TileLabelStyle: LabelStyle {
     func makeBody(configuration: Configuration) -> some View {
         VStack {
@@ -75,7 +72,6 @@ private struct TileLabelStyle: LabelStyle {
     }
 }
 
-@available(iOS 14, macOS 11, *)
 struct VMPlaceholderView_Previews: PreviewProvider {
     static var previews: some View {
         VMPlaceholderView()

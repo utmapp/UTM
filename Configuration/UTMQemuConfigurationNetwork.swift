@@ -17,7 +17,6 @@
 import Foundation
 
 /// Network settings for a single device.
-@available(iOS 13, macOS 11, *)
 struct UTMQemuConfigurationNetwork: Codable, Identifiable {
     /// Operating mode of this adapter
     var mode: QEMUNetworkMode = .emulated
@@ -146,7 +145,6 @@ struct UTMQemuConfigurationNetwork: Codable, Identifiable {
 
 // MARK: - Default construction
 
-@available(iOS 13, macOS 11, *)
 extension UTMQemuConfigurationNetwork {
     init?(forArchitecture architecture: QEMUArchitecture, target: QEMUTarget) {
         self.init()
@@ -179,7 +177,6 @@ extension UTMQemuConfigurationNetwork {
 
 // MARK: - Conversion of old config format
 
-@available(iOS 13, macOS 11, *)
 extension UTMQemuConfigurationNetwork {
     init?(migrating oldConfig: UTMLegacyQemuConfiguration) {
         self.init()

@@ -16,7 +16,6 @@
 
 import Foundation
 
-@available(iOS 13, macOS 11, *)
 struct QEMUArgument: Hashable, Identifiable, Codable {
     /// Argument string passed to QEMU
     var string: String
@@ -48,7 +47,6 @@ struct QEMUArgument: Hashable, Identifiable, Codable {
     }
 }
 
-@available(iOS 13, macOS 11, *)
 struct QEMUArgumentFragment: Hashable {
     /// String representing this fragment
     var string: String

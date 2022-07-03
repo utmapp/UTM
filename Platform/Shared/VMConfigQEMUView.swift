@@ -16,7 +16,6 @@
 
 import SwiftUI
 
-@available(iOS 14, macOS 11, *)
 struct VMConfigQEMUView: View {
     private struct Argument: Identifiable {
         let id: Int
@@ -148,7 +147,6 @@ struct VMConfigQEMUView: View {
     }
 }
 
-@available(iOS 14, macOS 11, *)
 struct CustomArguments: View {
     @Binding var config: UTMQemuConfigurationQEMU
     
@@ -181,7 +179,6 @@ struct CustomArguments: View {
     }
 }
 
-@available(iOS 14, macOS 11, *)
 struct NewArgumentTextField: View {
     @Binding var config: UTMQemuConfigurationQEMU
     @State private var newArg: String = ""
@@ -207,7 +204,6 @@ struct NewArgumentTextField: View {
     }
 }
 
-@available(iOS 14, macOS 11, *)
 struct VMConfigQEMUView_Previews: PreviewProvider {
     @State static private var config = UTMQemuConfigurationQEMU()
     @State static private var system = UTMQemuConfigurationSystem()

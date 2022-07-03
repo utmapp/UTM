@@ -48,7 +48,6 @@ enum VMWizardOS: String, Identifiable {
     case Windows
 }
 
-@available(iOS 14, macOS 11, *)
 @MainActor class VMWizardState: ObservableObject {
     let bytesInMib = 1048576
     let bytesInGib = 1073741824

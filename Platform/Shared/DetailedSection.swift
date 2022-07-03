@@ -16,7 +16,6 @@
 
 import SwiftUI
 
-@available(iOS 14, macOS 11, *)
 struct DetailedSection<Content>: View where Content: View {
     private let titleKey: LocalizedStringKey
     private let description: LocalizedStringKey
@@ -43,7 +42,6 @@ struct DetailedSection<Content>: View where Content: View {
     }
 }
 
-@available(iOS 14, macOS 11, *)
 struct DetailedSection_Previews: PreviewProvider {
     static var previews: some View {
         DetailedSection("Section", description: "Description") {

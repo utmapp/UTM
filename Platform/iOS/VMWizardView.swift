@@ -16,7 +16,6 @@
 
 import SwiftUI
 
-@available(iOS 14, *)
 struct VMWizardView: View {
     @StateObject var wizardState = VMWizardState()
     @Environment(\.presentationMode) private var presentationMode: Binding<PresentationMode>
@@ -33,7 +32,6 @@ struct VMWizardView: View {
     }
 }
 
-@available(iOS 14, *)
 fileprivate struct WizardWrapper: View {
     let page: VMWizardPage
     @ObservedObject var wizardState: VMWizardState
@@ -122,7 +120,6 @@ fileprivate struct WizardWrapper: View {
     }
 }
 
-@available(iOS 14, *)
 struct VMWizardView_Previews: PreviewProvider {
     static var previews: some View {
         VMWizardView()

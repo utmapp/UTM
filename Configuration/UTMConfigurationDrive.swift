@@ -17,7 +17,6 @@
 import Foundation
 
 /// Settings for single disk device
-@available(iOS 13, macOS 11, *)
 protocol UTMConfigurationDrive: Codable, Hashable, Identifiable {
     /// If not removable, this is the name of the file in the bundle.
     var imageName: String? { get set }
@@ -45,7 +44,6 @@ protocol UTMConfigurationDrive: Codable, Hashable, Identifiable {
     func clone() -> Self
 }
 
-@available(iOS 13, macOS 11, *)
 extension UTMConfigurationDrive {
     static func == (lhs: Self, rhs: Self) -> Bool {
         lhs.hashValue == rhs.hashValue
@@ -54,7 +52,6 @@ extension UTMConfigurationDrive {
 
 // MARK: - Saving data
 
-@available(iOS 13, macOS 11, *)
 extension UTMConfigurationDrive {
     private var bytesInMib: UInt64 { 1048576 }
     

@@ -16,7 +16,6 @@
 
 import Combine
 
-@available(iOS 14, macOS 11, *)
 class VMDriveImage: ObservableObject {
     @Published var size: Int = 10240
     @Published var removable: Bool = false

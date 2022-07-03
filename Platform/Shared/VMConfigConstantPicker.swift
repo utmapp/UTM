@@ -16,7 +16,6 @@
 
 import SwiftUI
 
-@available(iOS 14, macOS 11, *)
 struct VMConfigConstantPicker<T: QEMUConstant>: View {
     @Binding private var stringSelection: String
     private let titleKey: LocalizedStringKey?
@@ -56,7 +55,6 @@ struct VMConfigConstantPicker<T: QEMUConstant>: View {
     }
 }
 
-@available(iOS 14, macOS 11, *)
 struct VMConfigConstantPicker_Previews: PreviewProvider {
     @State static private var fixedType: QEMUArchitecture = .aarch64
     @State static private var dynamicType: QEMUCPU = QEMUCPU_aarch64.default

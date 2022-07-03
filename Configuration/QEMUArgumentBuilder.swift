@@ -17,7 +17,6 @@
 import Foundation
 
 @resultBuilder
-@available(iOS 13, macOS 11, *)
 struct QEMUArgumentBuilder {
     static func buildBlock(_ components: [QEMUArgumentFragment]...) -> [QEMUArgumentFragment] {
         let merged = components.flatMap { $0 }

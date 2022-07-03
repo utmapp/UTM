@@ -17,7 +17,6 @@
 import Foundation
 
 /// Tweaks and advanced QEMU settings.
-@available(iOS 13, macOS 11, *)
 struct UTMQemuConfigurationQEMU: Codable {
     /// Base path of VM. This property is not saved to file.
     var dataURL: URL?
@@ -106,7 +105,6 @@ struct UTMQemuConfigurationQEMU: Codable {
 
 // MARK: - Default construction
 
-@available(iOS 13, macOS 11, *)
 extension UTMQemuConfigurationQEMU {
     init(forArchitecture architecture: QEMUArchitecture, target: QEMUTarget) {
         self.init()
@@ -132,7 +130,6 @@ extension UTMQemuConfigurationQEMU {
 
 // MARK: - Conversion of old config format
 
-@available(iOS 13, macOS 11, *)
 extension UTMQemuConfigurationQEMU {
     init(migrating oldConfig: UTMLegacyQemuConfiguration) {
         self.init()
@@ -152,7 +149,6 @@ extension UTMQemuConfigurationQEMU {
 
 // MARK: - Saving data
 
-@available(iOS 13, macOS 11, *)
 extension UTMQemuConfigurationQEMU {
     @MainActor mutating func saveData(to dataURL: URL, for system: UTMQemuConfigurationSystem) async throws -> [URL] {
         let fileManager = FileManager.default

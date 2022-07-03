@@ -18,7 +18,6 @@ import SwiftUI
 
 private let bytesInMib: Int64 = 1024 * 1024
 
-@available(iOS 14, macOS 11, *)
 struct VMConfigDriveDetailsView: View {
     @Binding var config: UTMQemuConfigurationDrive
     let onDelete: (() -> Void)?

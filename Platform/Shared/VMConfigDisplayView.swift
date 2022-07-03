@@ -16,7 +16,6 @@
 
 import SwiftUI
 
-@available(iOS 14, macOS 11, *)
 struct VMConfigDisplayView: View {
     @Binding var config: UTMQemuConfigurationDisplay
     @Binding var system: UTMQemuConfigurationSystem
@@ -50,7 +49,6 @@ struct VMConfigDisplayView: View {
     }
 }
 
-@available(iOS 14, macOS 11, *)
 struct VMConfigDisplayView_Previews: PreviewProvider {
     @State static private var config = UTMQemuConfigurationDisplay()
     @State static private var system = UTMQemuConfigurationSystem()

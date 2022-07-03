@@ -16,7 +16,6 @@
 
 import SwiftUI
 
-@available(iOS 14, macOS 11, *)
 private enum IconStyle: String, Identifiable, CaseIterable {
     case generic = "Generic"
     case operatingSystem = "Operating System"
@@ -26,7 +25,6 @@ private enum IconStyle: String, Identifiable, CaseIterable {
     var id: String { rawValue }
 }
 
-@available(iOS 14, macOS 11, *)
 struct VMConfigInfoView: View {
     @Binding var config: UTMConfigurationInfo
     @State private var imageSelectVisible: Bool = false
@@ -178,7 +176,6 @@ struct VMConfigInfoView: View {
     }
 }
 
-@available(iOS 14, macOS 11, *)
 private struct IconPreview: View {
     let url: URL?
     
@@ -202,7 +199,6 @@ private struct IconPreview: View {
     }
 }
 
-@available(iOS 14, macOS 11, *)
 private struct IconSelect: View {
     let onIconSelected: (URL) -> Void
     private let gridLayout = [GridItem(.adaptive(minimum: 60))]
@@ -267,7 +263,6 @@ private struct IconSelect: View {
     }
 }
 
-@available(iOS 14, macOS 11, *)
 struct VMConfigInfoView_Previews: PreviewProvider {
     @State static private var config = UTMConfigurationInfo()
     

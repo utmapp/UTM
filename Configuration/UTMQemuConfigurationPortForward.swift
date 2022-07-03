@@ -42,7 +42,6 @@ struct UTMQemuConfigurationPortForward: Codable, Identifiable, Hashable {
 
 // MARK: - Conversion of old config format
 
-@available(iOS 13, macOS 11, *)
 extension UTMQemuConfigurationPortForward {
     init(migrating oldForward: UTMLegacyQemuConfigurationPortForward) {
         self.init()

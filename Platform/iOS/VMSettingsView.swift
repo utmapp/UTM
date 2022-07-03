@@ -16,7 +16,6 @@
 
 import SwiftUI
 
-@available(iOS 14, *)
 struct VMSettingsView: View {
     let vm: UTMVirtualMachine?
     @ObservedObject var config: UTMQemuConfiguration
@@ -141,7 +140,6 @@ struct VMSettingsView: View {
     }
 }
 
-@available(iOS 14, *)
 struct RoundRectIconLabelStyle: LabelStyle {
     var color: Color = .blue
     
@@ -159,14 +157,12 @@ struct RoundRectIconLabelStyle: LabelStyle {
     }
 }
 
-@available(iOS 14, *)
 extension LabelStyle where Self == RoundRectIconLabelStyle {
     static var roundRectIcon: RoundRectIconLabelStyle {
         RoundRectIconLabelStyle()
     }
 }
 
-@available(iOS 14, *)
 struct VMSettingsView_Previews: PreviewProvider {
     @State static private var config = UTMQemuConfiguration()
     

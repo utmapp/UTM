@@ -17,7 +17,6 @@
 import Foundation
 
 /// Settings for a QEMU configuration
-@available(iOS 13, macOS 11, *)
 final class UTMQemuConfiguration: UTMConfiguration {
     /// Basic information and icon
     @Published var information: UTMConfigurationInfo = .init()
@@ -139,7 +138,6 @@ extension UTMQemuConfigurationError: LocalizedError {
 
 // MARK: - Defaults
 
-@available(iOS 13, macOS 11, *)
 extension UTMQemuConfiguration {
     func reset(all: Bool = true) {
         if all {
@@ -178,7 +176,6 @@ extension UTMQemuConfiguration {
 
 // MARK: - Conversion of old config format
 
-@available(iOS 13, macOS 11, *)
 extension UTMQemuConfiguration {
     convenience init(migrating oldConfig: UTMLegacyQemuConfiguration) {
         self.init()
@@ -206,7 +203,6 @@ extension UTMQemuConfiguration {
 
 // MARK: - Saving data
 
-@available(iOS 13, macOS 11, *)
 extension UTMQemuConfiguration {
     @MainActor func prepareSave(for packageURL: URL) async throws {
         guard isLegacy else {

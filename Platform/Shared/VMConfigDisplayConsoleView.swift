@@ -16,7 +16,6 @@
 
 import SwiftUI
 
-@available(iOS 14, macOS 11, *)
 struct VMConfigDisplayConsoleView: View {
     @Binding var config: UTMConfigurationTerminal
     
@@ -67,7 +66,6 @@ struct VMConfigDisplayConsoleView: View {
     }
 }
 
-@available(iOS 14, macOS 11, *)
 struct VMConfigDisplayConsoleView_Previews: PreviewProvider {
     @State static private var config = UTMConfigurationTerminal()
     

@@ -16,7 +16,6 @@
 
 import SwiftUI
 
-@available(iOS 14, macOS 11, *)
 struct DestructiveButton<Label>: View where Label : View {
     private let action: () -> Void
     private let label: Label
@@ -47,7 +46,6 @@ struct DestructiveButton<Label>: View where Label : View {
     }
 }
 
-@available(iOS 14, macOS 11, *)
 struct DestructiveButton_Previews: PreviewProvider {
     static var previews: some View {
         DestructiveButton {

@@ -16,7 +16,6 @@
 
 import SwiftUI
 
-@available(iOS 14, macOS 11, *)
 struct BusyOverlay: View {
     @EnvironmentObject private var data: UTMData
     
@@ -38,7 +37,6 @@ struct BusyOverlay: View {
     }
 }
 
-@available(iOS 14, macOS 11, *)
 struct BusyOverlay_Previews: PreviewProvider {
     static var previews: some View {
         BusyOverlay()

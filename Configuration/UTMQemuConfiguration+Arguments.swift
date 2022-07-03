@@ -17,7 +17,6 @@
 import Foundation
 
 /// Build QEMU arguments from config
-@available(iOS 13, macOS 11, *)
 extension UTMQemuConfiguration {
     /// Helper function to generate a final argument
     /// - Parameter string: Argument fragment

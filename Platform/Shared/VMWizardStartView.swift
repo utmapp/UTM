@@ -19,7 +19,6 @@ import SwiftUI
 import Virtualization
 #endif
 
-@available(iOS 14, macOS 11, *)
 struct VMWizardStartView: View {
     @ObservedObject var wizardState: VMWizardState
     
@@ -135,7 +134,6 @@ struct VMWizardStartView: View {
     }
 }
 
-@available(iOS 14, macOS 11, *)
 struct VMWizardStartView_Previews: PreviewProvider {
     @StateObject static var wizardState = VMWizardState()
     

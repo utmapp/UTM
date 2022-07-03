@@ -16,7 +16,6 @@
 
 import SwiftUI
 
-@available(iOS 14, macOS 11, *)
 struct VMWizardSummaryView: View {
     @ObservedObject var wizardState: VMWizardState
     @EnvironmentObject private var data: UTMData
@@ -161,7 +160,6 @@ struct VMWizardSummaryView: View {
     }
 }
 
-@available(iOS 14, macOS 11, *)
 struct VMWizardSummaryView_Previews: PreviewProvider {
     @StateObject static var wizardState = VMWizardState()
     

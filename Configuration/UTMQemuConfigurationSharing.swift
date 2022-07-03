@@ -17,7 +17,6 @@
 import Foundation
 
 /// Directory and clipboard sharing settings
-@available(iOS 13, macOS 11, *)
 struct UTMQemuConfigurationSharing: Codable {
     /// SPICE or virtfs sharing.
     var directoryShareMode: QEMUFileShareMode = .none
@@ -57,7 +56,6 @@ struct UTMQemuConfigurationSharing: Codable {
 
 // MARK: - Default construction
 
-@available(iOS 13, macOS 11, *)
 extension UTMQemuConfigurationSharing {
     init(forArchitecture architecture: QEMUArchitecture, target: QEMUTarget) {
         self.init()
@@ -74,7 +72,6 @@ extension UTMQemuConfigurationSharing {
 
 // MARK: - Conversion of old config format
 
-@available(iOS 13, macOS 11, *)
 extension UTMQemuConfigurationSharing {
     init(migrating oldConfig: UTMLegacyQemuConfiguration) {
         self.init()

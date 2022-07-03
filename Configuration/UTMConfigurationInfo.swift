@@ -17,7 +17,6 @@
 import Foundation
 
 /// Basic information about the VM only used in listing and presenting.
-@available(iOS 13, macOS 11, *)
 struct UTMConfigurationInfo: Codable {
     /// VM name displayed to user.
     var name: String = NSLocalizedString("Virtual Machine", comment: "UTMConfigurationInfo")
@@ -92,7 +91,6 @@ struct UTMConfigurationInfo: Codable {
 
 // MARK: - Conversion of old config format
 
-@available(iOS 13, macOS 11, *)
 extension UTMConfigurationInfo {
     init(migrating oldConfig: UTMLegacyQemuConfiguration) {
         self.init()
@@ -121,7 +119,6 @@ extension UTMConfigurationInfo {
 
 // MARK: - Saving data
 
-@available(iOS 13, macOS 11, *)
 extension UTMConfigurationInfo {
     @MainActor mutating func saveData(to dataURL: URL) async throws -> [URL] {
         // save new icon

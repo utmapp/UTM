@@ -17,7 +17,6 @@
 import Foundation
 
 /// Console mode settings.
-@available(iOS 13, macOS 11, *)
 struct UTMConfigurationTerminal: Codable, Identifiable {
     /// Terminal color scheme. Mutually exclusive with foreground/background colors.
     var theme: QEMUTerminalTheme?
@@ -77,7 +76,6 @@ struct UTMConfigurationTerminal: Codable, Identifiable {
 
 // MARK: - Conversion of old config format
 
-@available(iOS 13, macOS 11, *)
 extension UTMConfigurationTerminal {
     init(migrating oldConfig: UTMLegacyQemuConfiguration) {
         self.init()
@@ -109,7 +107,6 @@ extension UTMConfigurationTerminal {
 }
 
 // MARK: - For VMConfigDisplayConsoleView
-@available(iOS 13, macOS 11, *)
 extension Optional where Wrapped == UTMConfigurationTerminal {
     var bound: Wrapped {
         get {

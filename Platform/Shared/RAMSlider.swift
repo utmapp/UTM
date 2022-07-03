@@ -16,7 +16,6 @@
 
 import SwiftUI
 
-@available(iOS 14, macOS 11, *)
 struct RAMSlider: View {
     let validMemoryValues = [32, 64, 128, 256, 512, 768, 1024, 1536, 2048, 3072, 4096, 6144, 8192, 10240, 12288, 14336, 16384, 32768]
     
@@ -87,7 +86,6 @@ struct RAMSlider: View {
     }
 }
 
-@available(iOS 14, macOS 11, *)
 struct RAMSlider_Previews: PreviewProvider {
     static var previews: some View {
         RAMSlider(systemMemory: .constant(1024)) { _ in

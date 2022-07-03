@@ -30,7 +30,6 @@ extension UTMVirtualMachine: Identifiable {
     }
 }
 
-@available(iOS 13, macOS 11, *)
 extension UTMVirtualMachine: ObservableObject {
     
 }

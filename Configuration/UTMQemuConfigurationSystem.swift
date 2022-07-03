@@ -17,7 +17,6 @@
 import Foundation
 
 /// Basic hardware settings.
-@available(iOS 13, macOS 11, *)
 struct UTMQemuConfigurationSystem: Codable {
     /// The QEMU architecture to emulate.
     var architecture: QEMUArchitecture = .x86_64
@@ -90,7 +89,6 @@ struct UTMQemuConfigurationSystem: Codable {
 
 // MARK: - Conversion of old config format
 
-@available(iOS 13, macOS 11, *)
 extension UTMQemuConfigurationSystem {
     init(migrating oldConfig: UTMLegacyQemuConfiguration) {
         self.init()

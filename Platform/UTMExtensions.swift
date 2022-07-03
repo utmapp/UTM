@@ -57,7 +57,6 @@ extension Optional where Wrapped: FixedWidthInteger {
     }
 }
 
-@available(iOS 14, macOS 11, *)
 extension LocalizedStringKey {
     var localizedString: String {
         let mirror = Mirror(reflecting: self)
@@ -101,7 +100,6 @@ extension Array {
     }
 }
 
-@available(iOS 13, macOS 11, *)
 extension View {
     func onReceive(_ name: Notification.Name,
                    center: NotificationCenter = .default,
@@ -113,7 +111,6 @@ extension View {
     }
 }
 
-@available(iOS 14, macOS 11, *)
 extension UTType {
     static let UTM = UTType(exportedAs: "com.utmapp.utm")
     
@@ -130,7 +127,6 @@ extension Sequence where Element: Hashable {
     }
 }
 
-@available(iOS 14, macOS 11, *)
 extension Color {
     init?(hexString hex: String) {
         if hex.count != 7 { // The '#' included

@@ -16,7 +16,6 @@
 
 import Foundation
 
-@available(iOS 13, macOS 11, *)
 protocol UTMConfiguration: Codable, ObservableObject {
     static var oldestVersion: Int { get }
     static var currentVersion: Int { get }
@@ -27,7 +26,6 @@ protocol UTMConfiguration: Codable, ObservableObject {
     func saveData(to dataURL: URL) async throws -> [URL]
 }
 
-@available(iOS 13, macOS 11, *)
 extension UTMConfiguration {
     static var oldestVersion: Int { 4 }
     static var currentVersion: Int { 4 }
@@ -85,7 +83,6 @@ private final class UTMConfigurationStub: Decodable {
     }
 }
 
-@available(iOS 13, macOS 11, *)
 extension UTMConfiguration {
     static var dataDirectoryName: String { "Data" }
     

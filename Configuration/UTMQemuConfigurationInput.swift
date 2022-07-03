@@ -17,7 +17,6 @@
 import Foundation
 
 /// Settings for input devices and USB.
-@available(iOS 13, macOS 11, *)
 struct UTMQemuConfigurationInput: Codable {
     /// Level of USB support (disabled/2.0/3.0).
     var usbBusSupport: QEMUUSBBus = .usb2_0
@@ -54,7 +53,6 @@ struct UTMQemuConfigurationInput: Codable {
 
 // MARK: - Default construction
 
-@available(iOS 13, macOS 11, *)
 extension UTMQemuConfigurationInput {
     init(forArchitecture architecture: QEMUArchitecture, target: QEMUTarget) {
         self.init()
@@ -71,7 +69,6 @@ extension UTMQemuConfigurationInput {
 
 // MARK: - Conversion of old config format
 
-@available(iOS 13, macOS 11, *)
 extension UTMQemuConfigurationInput {
     init(migrating oldConfig: UTMLegacyQemuConfiguration) {
         self.init()

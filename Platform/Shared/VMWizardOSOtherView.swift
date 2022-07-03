@@ -16,7 +16,6 @@
 
 import SwiftUI
 
-@available(iOS 14, macOS 11, *)
 struct VMWizardOSOtherView: View {
     @ObservedObject var wizardState: VMWizardState
     @State private var isFileImporterPresented: Bool = false
@@ -66,7 +65,6 @@ struct VMWizardOSOtherView: View {
     }
 }
 
-@available(iOS 14, macOS 11, *)
 struct VMWizardOSOtherView_Previews: PreviewProvider {
     @StateObject static var wizardState = VMWizardState()
     

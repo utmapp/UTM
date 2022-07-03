@@ -16,7 +16,6 @@
 
 import SwiftUI
 
-@available(iOS 14, macOS 11, *)
 struct VMShareItemModifier: ViewModifier {
     @Binding var isPresented: Bool
     let shareItem: ShareItem?

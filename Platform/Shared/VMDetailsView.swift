@@ -16,7 +16,6 @@
 
 import SwiftUI
 
-@available(iOS 14, macOS 11, *)
 struct VMDetailsView: View {
     @ObservedObject var vm: UTMVirtualMachine
     @EnvironmentObject private var data: UTMData
@@ -120,7 +119,6 @@ struct VMDetailsView: View {
 }
 
 /// Returns just the content under macOS but adds the title on iOS. #3099
-@available(iOS 14, macOS 11, *)
 private struct VMOptionalNavigationTitleModifier: ViewModifier {
     @ObservedObject var vm: UTMVirtualMachine
     
@@ -133,7 +131,6 @@ private struct VMOptionalNavigationTitleModifier: ViewModifier {
     }
 }
 
-@available(iOS 14, macOS 11, *)
 struct Screenshot: View {
     @ObservedObject var vm: UTMVirtualMachine
     let large: Bool
@@ -171,7 +168,6 @@ struct Screenshot: View {
     }
 }
 
-@available(iOS 14, macOS 11, *)
 struct Details: View {
     @ObservedObject var vm: UTMVirtualMachine
     let sizeLabel: String
@@ -246,7 +242,6 @@ struct Details: View {
     }
 }
 
-@available(iOS 14, macOS 11, *)
 struct DetailsLabelStyle: LabelStyle {
     var color: Color = .accentColor
     
@@ -264,7 +259,6 @@ struct DetailsLabelStyle: LabelStyle {
     }
 }
 
-@available(iOS 14, macOS 11, *)
 struct VMDetailsView_Previews: PreviewProvider {
     @State static private var config = UTMLegacyQemuConfiguration()
     

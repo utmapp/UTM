@@ -16,7 +16,6 @@
 
 import SwiftUI
 
-@available(iOS 14, macOS 11, *)
 struct VMWizardOSLinuxView: View {
     private enum SelectImage {
         case kernel
@@ -247,7 +246,6 @@ struct VMWizardOSLinuxView: View {
     }
 }
 
-@available(iOS 14, macOS 11, *)
 struct VMWizardOSLinuxView_Previews: PreviewProvider {
     @StateObject static var wizardState = VMWizardState()
     

@@ -24,7 +24,6 @@ import UIKit
 import AltKit
 #endif
 
-@available(iOS 14, macOS 11, *)
 struct AlertMessage: Identifiable {
     var message: String
     public var id: String {
@@ -36,7 +35,6 @@ struct AlertMessage: Identifiable {
     }
 }
 
-@available(iOS 14, macOS 11, *)
 class UTMData: ObservableObject {
     
     /// Sandbox location for storing .utm bundles

@@ -30,7 +30,6 @@ struct VMConfigAdvancedNetworkView: View {
     }
 }
 
-@available(iOS 14, macOS 11, *)
 struct IPConfigurationSection: View {
     @Binding var config: UTMQemuConfigurationNetwork
 

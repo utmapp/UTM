@@ -16,7 +16,6 @@
 
 import SwiftUI
 
-@available(iOS 14, macOS 11, *)
 struct VMConfigInputView: View {
     @Binding var config: UTMQemuConfigurationInput
     
@@ -91,7 +90,6 @@ struct GestureSettingsSection: View {
     }
 }
 #else
-@available(iOS 14, *)
 struct GestureSettingsSection: View {
     var body: some View {
         Section(header: Text("Additional Settings")) {
@@ -105,7 +103,6 @@ struct GestureSettingsSection: View {
 }
 #endif
 
-@available(iOS 14, macOS 11, *)
 struct VMConfigInputView_Previews: PreviewProvider {
     @State static private var config = UTMQemuConfigurationInput()
     

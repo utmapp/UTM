@@ -18,7 +18,6 @@ import Foundation
 import Logging
 
 /// Downloads a file and creates a pending VM placeholder.
-@available(iOS 14, macOS 11, *)
 class UTMDownloadTask: NSObject, URLSessionDelegate, URLSessionDownloadDelegate {
     let url: URL
     let name: String

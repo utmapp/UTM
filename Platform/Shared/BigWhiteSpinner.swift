@@ -30,7 +30,6 @@ struct BigWhiteSpinner: NSViewRepresentable {
     }
 }
 #else // iOS
-@available(iOS 14, *)
 struct BigWhiteSpinner: UIViewRepresentable {
     func makeUIView(context: Context) -> UIActivityIndicatorView {
         let view = UIActivityIndicatorView(style: .large)
@@ -44,7 +43,6 @@ struct BigWhiteSpinner: UIViewRepresentable {
 }
 #endif
 
-@available(iOS 14, macOS 11, *)
 struct BigWhiteSpinner_Previews: PreviewProvider {
     static var previews: some View {
         BigWhiteSpinner()

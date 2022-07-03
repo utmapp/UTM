@@ -19,7 +19,6 @@ import Logging
 import ZIPFoundation
 
 /// Downloads a VM and creates a pending VM placeholder.
-@available(iOS 14, macOS 11, *)
 class UTMDownloadVMTask: UTMDownloadTask {
     init(for url: URL) {
         super.init(for: url, named: UTMDownloadVMTask.name(for: url))

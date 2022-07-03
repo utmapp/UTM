@@ -16,7 +16,6 @@
 
 import Foundation
 
-@available(iOS 13, macOS 11, *)
 @objc class UTMQemuImage: UTMQemu {
     private init() {
         super.init(argv: [])

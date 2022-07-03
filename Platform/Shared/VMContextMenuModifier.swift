@@ -16,7 +16,6 @@
 
 import SwiftUI
 
-@available(iOS 14, macOS 11, *)
 struct VMContextMenuModifier: ViewModifier {
     @ObservedObject var vm: UTMVirtualMachine
     @EnvironmentObject private var data: UTMData

@@ -18,7 +18,6 @@ import Foundation
 import Combine
 
 /// Settings for single serial device
-@available(iOS 13, macOS 11, *)
 struct UTMQemuConfigurationSerial: Codable, Identifiable {
     /// The back-end character device (host controlled).
     var mode: QEMUSerialMode = .builtin
@@ -83,7 +82,6 @@ struct UTMQemuConfigurationSerial: Codable, Identifiable {
 
 // MARK: - Default construction
 
-@available(iOS 13, macOS 11, *)
 extension UTMQemuConfigurationSerial {
     init?(forArchitecture architecture: QEMUArchitecture, target: QEMUTarget) {
         self.init()
@@ -95,7 +93,6 @@ extension UTMQemuConfigurationSerial {
 
 // MARK: - Conversion of old config format
 
-@available(iOS 13, macOS 11, *)
 extension UTMQemuConfigurationSerial {
     init?(migrating oldConfig: UTMLegacyQemuConfiguration) {
         self.init()

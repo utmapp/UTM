@@ -17,7 +17,6 @@
 import Foundation
 
 /// A Virtual Machine that has not finished downloading.
-@available(iOS 14, macOS 11, *)
 @MainActor class UTMPendingVirtualMachine: Equatable, Identifiable, ObservableObject {
     internal init(name: String, onCancel: @escaping () -> ()) {
         self.name = name

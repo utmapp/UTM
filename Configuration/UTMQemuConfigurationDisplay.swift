@@ -17,7 +17,6 @@
 import Foundation
 
 /// Settings for a single display.
-@available(iOS 13, macOS 11, *)
 struct UTMQemuConfigurationDisplay: Codable, Identifiable {
     /// Hardware card to emulate.
     var hardware: QEMUDisplayDevice = QEMUDisplayDevice_x86_64.virtio_vga
@@ -68,7 +67,6 @@ struct UTMQemuConfigurationDisplay: Codable, Identifiable {
 
 // MARK: - Default construction
 
-@available(iOS 13, macOS 11, *)
 extension UTMQemuConfigurationDisplay {
     init?(forArchitecture architecture: QEMUArchitecture, target: QEMUTarget) {
         self.init()
@@ -92,7 +90,6 @@ extension UTMQemuConfigurationDisplay {
 
 // MARK: - Conversion of old config format
 
-@available(iOS 13, macOS 11, *)
 extension UTMQemuConfigurationDisplay {
     init?(migrating oldConfig: UTMLegacyQemuConfiguration) {
         self.init()

@@ -21,7 +21,6 @@ private let minMemoryMib = 32
 private let baseUsageMib = 128
 private let warningThreshold = 0.9
 
-@available(iOS 14, macOS 11, *)
 struct VMConfigSystemView: View {
     @Binding var config: UTMQemuConfigurationSystem
     @Binding var isResetConfig: Bool
@@ -120,7 +119,6 @@ struct VMConfigSystemView: View {
     }
 }
 
-@available(iOS 14, macOS 11, *)
 private enum WarningMessage: Identifiable {
     case overallocatedRam(totalMib: UInt64, estimatedMib: UInt64)
     case resetSystem
@@ -154,7 +152,6 @@ private enum WarningMessage: Identifiable {
     }
 }
 
-@available(iOS 14, macOS 11, *)
 private struct HardwareOptions: View {
     @Binding var config: UTMQemuConfigurationSystem
     @Binding var architecture: QEMUArchitecture
@@ -194,7 +191,6 @@ private struct HardwareOptions: View {
     }
 }
 
-@available(iOS 14, macOS 11, *)
 struct CPUFlagsOptions: View {
     let title: LocalizedStringKey
     @Binding var config: UTMQemuConfigurationSystem
@@ -241,7 +237,6 @@ struct CPUFlagsOptions: View {
     }
 }
 
-@available(iOS 14, macOS 11, *)
 struct OptionsList<Content>: View where Content: View {
     private var columns: [GridItem] = [
         GridItem(.fixed(150), spacing: 16),
@@ -269,7 +264,6 @@ struct OptionsList<Content>: View where Content: View {
     }
 }
 
-@available(iOS 14, macOS 11, *)
 struct VMConfigSystemView_Previews: PreviewProvider {
     @State static private var config = UTMQemuConfigurationSystem()
     

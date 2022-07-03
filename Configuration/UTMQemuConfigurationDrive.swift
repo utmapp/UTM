@@ -17,7 +17,6 @@
 import Foundation
 
 /// Settings for single QEMU disk device
-@available(iOS 13, macOS 11, *)
 struct UTMQemuConfigurationDrive: UTMConfigurationDrive {
     /// If not removable, this is the name of the file in the bundle.
     var imageName: String?
@@ -128,7 +127,6 @@ struct UTMQemuConfigurationDrive: UTMConfigurationDrive {
 
 // MARK: - Default interface
 
-@available(iOS 13, macOS 11, *)
 extension UTMQemuConfigurationDrive {
     static func defaultInterface(forArchitecture architecture: QEMUArchitecture, target: QEMUTarget, imageType: QEMUDriveImageType) -> QEMUDriveInterface {
         let rawTarget = target.rawValue
@@ -148,7 +146,6 @@ extension UTMQemuConfigurationDrive {
 
 // MARK: - Conversion of old config format
 
-@available(iOS 13, macOS 11, *)
 extension UTMQemuConfigurationDrive {
     init(migrating oldConfig: UTMLegacyQemuConfiguration, at index: Int) {
         self.init()
@@ -221,7 +218,6 @@ extension UTMQemuConfigurationDrive {
 
 // MARK: - New drive
 
-@available(iOS 13, macOS 11, *)
 extension UTMQemuConfigurationDrive {
     init(forArchitecture architecture: QEMUArchitecture, target: QEMUTarget, isExternal: Bool = false) {
         self.isExternal = isExternal
