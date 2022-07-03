@@ -164,11 +164,7 @@ extension UTMQemuConfigurationNetwork {
             }
         }
         #if os(macOS)
-        if #available(macOS 11.3, *) {
-            mode = .shared
-        } else {
-            mode = .emulated
-        }
+        mode = .shared
         #else
         mode = .emulated
         #endif

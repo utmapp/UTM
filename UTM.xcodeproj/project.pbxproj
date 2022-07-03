@@ -435,7 +435,6 @@
 		CE0B6F2F24AD67BE00FE012D /* json-glib-1.0.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63E222653C7400FC7E63 /* json-glib-1.0.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CE0B6F3124AD67C100FE012D /* phodav-2.0.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE059DC0243BD67100338317 /* phodav-2.0.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CE0B6F5424AD67FA00FE012D /* spice-client-glib-2.0.8.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63FE22653C7500FC7E63 /* spice-client-glib-2.0.8.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CE0DF17225A80B6300A51894 /* Bootstrap.c in Sources */ = {isa = PBXBuildFile; fileRef = CE0DF17125A80B6300A51894 /* Bootstrap.c */; };
 		CE0DF19425A83C1700A51894 /* qemu-aarch64-softmmu.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63FD22653C7500FC7E63 /* qemu-aarch64-softmmu.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CE0DF19525A83C1700A51894 /* qemu-alpha-softmmu.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D641322653C7500FC7E63 /* qemu-alpha-softmmu.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CE0DF19625A83C1700A51894 /* qemu-arm-softmmu.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D640722653C7500FC7E63 /* qemu-arm-softmmu.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
@@ -3028,6 +3027,8 @@
 			children = (
 				CE6B241025F1F4B30020D43E /* QEMULauncher.entitlements */,
 				CEF6F5EC26DDD65700BC434D /* QEMULauncher-unsigned.entitlements */,
+				CE0DF17025A80B6300A51894 /* Bootstrap.h */,
+				CE0DF17125A80B6300A51894 /* Bootstrap.c */,
 				CE6B240A25F1F3CE0020D43E /* main.c */,
 				CE6B240F25F1F43A0020D43E /* Info.plist */,
 				FF490790278361780041E4B1 /* QEMULauncher-InfoPlist.strings */,
@@ -3161,8 +3162,6 @@
 			children = (
 				CE03D0D024D9A62B00F76B84 /* QEMUHelper.entitlements */,
 				CEF6F5EB26DDD63100BC434D /* QEMUHelper-unsigned.entitlements */,
-				CE0DF17025A80B6300A51894 /* Bootstrap.h */,
-				CE0DF17125A80B6300A51894 /* Bootstrap.c */,
 				CEBDA1DC24D8BDDA0010B5EC /* QEMUHelperProtocol.h */,
 				CEBDA1DD24D8BDDB0010B5EC /* QEMUHelper.h */,
 				CEBDA1DE24D8BDDB0010B5EC /* QEMUHelper.m */,
@@ -4429,7 +4428,6 @@
 			files = (
 				CEBDA1E124D8BDDB0010B5EC /* main.m in Sources */,
 				CEBDA1DF24D8BDDB0010B5EC /* QEMUHelper.m in Sources */,
-				CE0DF17225A80B6300A51894 /* Bootstrap.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

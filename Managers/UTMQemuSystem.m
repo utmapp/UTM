@@ -803,22 +803,6 @@ static size_t sysctl_read(const char *name) {
     return YES;
 }
 
-- (BOOL)validateOSSupportWithError:(NSError **)error {
-    if (@available(macOS 11.3, *)) {
-        return YES;
-    } else {
-        if (self.configuration.soundEnabled && self.configuration.displayConsoleOnly) {
-            *error = [NSError errorWithDomain:kUTMErrorDomain code:-1 userInfo:@{NSLocalizedDescriptionKey: NSLocalizedString(@"This version of macOS does not support audio in console mode. Please change the VM configuration or upgrade macOS.", "UTMQemuSystem")}];
-            return NO;
-        }
-        if (self.isGLOn && !self.configuration.displayConsoleOnly) {
-            *error = [NSError errorWithDomain:kUTMErrorDomain code:-1 userInfo:@{NSLocalizedDescriptionKey: NSLocalizedString(@"This version of macOS does not support GPU acceleration. Please change the VM configuration or upgrade macOS.", "UTMQemuSystem")}];
-            return NO;
-        }
-    }
-    return YES;
-}
-
 - (void)startWithCompletion:(void (^)(BOOL, NSString * _Nonnull))completion {
     NSError *err;
     if (self.configuration.systemBootUefi) {
@@ -826,10 +810,6 @@ static size_t sysctl_read(const char *name) {
             completion(NO, err.localizedDescription);
             return;
         }
-    }
-    if (![self validateOSSupportWithError:&err]) {
-        completion(NO, err.localizedDescription);
-        return;
     }
     [self updateArgvWithUserOptions:YES];
     NSString *name = [NSString stringWithFormat:@"qemu-%@-softmmu", self.configuration.systemArchitecture];
