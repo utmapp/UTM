@@ -55,13 +55,15 @@ struct VMContextMenuModifier: ViewModifier {
                 } label: {
                     Label("Run", systemImage: "play.fill")
                 }.help("Run the VM in the foreground.")
-                
-                Button {
-                    vm.isRunningAsSnapshot = true
-                    data.run(vm: vm)
-                } label: {
-                    Label("Run without saving changes", systemImage: "play")
-                }.help("Run the VM in the foreground, without saving data changes to disk.")
+
+                if !vm.config.isAppleVirtualization {
+                    Button {
+                        vm.isRunningAsSnapshot = true
+                        data.run(vm: vm)
+                    } label: {
+                        Label("Run without saving changes", systemImage: "play")
+                    }.help("Run the VM in the foreground, without saving data changes to disk.")
+                }
                 
                 Divider()
             }
