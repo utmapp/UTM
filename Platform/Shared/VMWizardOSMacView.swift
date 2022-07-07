@@ -59,7 +59,7 @@ struct VMWizardOSMacView: View {
                 Text("Import IPSW")
             }
         }
-        .fileImporter(isPresented: $isFileImporterPresented, allowedContentTypes: [.data], onCompletion: processIpsw)
+        .fileImporter(isPresented: $isFileImporterPresented, allowedContentTypes: [.ipsw], onCompletion: processIpsw)
     }
     
     private func processIpsw(_ result: Result<URL, Error>) {

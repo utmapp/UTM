@@ -90,7 +90,10 @@ struct VMConfigAppleBootView: View {
                 default:
                     return Alert(title: Text("Select a file."), dismissButton: okay)
                 }
-            }.fileImporter(isPresented: $importFileShown, allowedContentTypes: [.data], onCompletion: selectImportedFile)
+            }.fileImporter(isPresented: $importFileShown,
+                           allowedContentTypes: [importBootloaderSelection == .ipsw ? .ipsw : .data],
+                           onCompletion: selectImportedFile)
+
             if operatingSystem == .Linux {
                 Section(header: Text("Linux Settings")) {
                     HStack {
