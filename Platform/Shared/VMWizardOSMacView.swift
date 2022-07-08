@@ -20,8 +20,8 @@ import Virtualization
 @available(macOS 12, *)
 struct VMWizardOSMacView: View {
     @ObservedObject var wizardState: VMWizardState
-    @State private var isFileImporterPresented: Bool = false
-    
+    @State private var isFileImporterPresented = false
+
     var body: some View {
 #if os(macOS)
         Text("macOS")
@@ -30,7 +30,11 @@ struct VMWizardOSMacView: View {
         List {
             Section {
                 Text("To install macOS, you need to download a recovery IPSW. If you do not select an existing IPSW, the latest macOS IPSW will be downloaded from Apple.")
-                    .padding()
+                Spacer()
+
+                Text("Drag and drop IPSW file here").foregroundColor(.secondary)
+                Spacer()
+
                 #if arch(arm64)
                 if let selected = wizardState.macRecoveryIpswURL {
                     Text(selected.lastPathComponent)
@@ -60,6 +64,7 @@ struct VMWizardOSMacView: View {
             }
         }
         .fileImporter(isPresented: $isFileImporterPresented, allowedContentTypes: [.data], onCompletion: processIpsw)
+        .onDrop(of: [.fileURL], delegate: self)
     }
     
     private func processIpsw(_ result: Result<URL, Error>) {
@@ -81,6 +86,44 @@ struct VMWizardOSMacView: View {
             throw NSLocalizedString("macOS guests are only supported on ARM64 devices.", comment: "VMWizardOSMacView")
             #endif
         }
+    }
+}
+
+@available(macOS 12, *)
+extension VMWizardOSMacView: DropDelegate {
+
+    func validateDrop(info: DropInfo) -> Bool {
+        urlFrom(info: info) != nil
+    }
+
+    func performDrop(info: DropInfo) -> Bool {
+        guard let url = urlFrom(info: info) else { return false }
+
+        processIpsw(.success(url))
+        return true
+    }
+
+    private func urlFrom(info: DropInfo) -> URL? {
+        let providers = info.itemProviders(for: [.fileURL])
+        guard providers.count == 1,
+              let first = providers.first
+            else { return nil }
+
+        var validURL: URL?
+
+        let group = DispatchGroup()
+        group.enter()
+
+        _ = first.loadObject(ofClass: URL.self) { url, _ in
+            if url?.pathExtension == "ipsw" {
+                validURL = url
+            }
+            group.leave()
+        }
+
+        group.wait()
+
+        return validURL
     }
 }
 
