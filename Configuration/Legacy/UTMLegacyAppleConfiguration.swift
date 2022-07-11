@@ -1034,13 +1034,7 @@ fileprivate extension UTMLegacyAppleConfiguration {
     static var defaultCoreCount: Int {
         let cores = Int(sysctlIntRead("hw.physicalcpu"))
         let pcores = Int(sysctlIntRead("hw.perflevel0.physicalcpu"))
-        return useOnlyPcores ? pcores : cores
-    }
-    
-    private static var useOnlyPcores: Bool {
-        let defaults = UserDefaults.standard
-        let isUnset = defaults.object(forKey: "UseOnlyPcores") == nil
-        return isUnset || defaults.bool(forKey: "UseOnlyPcores")
+        return pcores > 0 ? pcores : cores
     }
     
     private static func sysctlIntRead(_ name: String) -> UInt64 {

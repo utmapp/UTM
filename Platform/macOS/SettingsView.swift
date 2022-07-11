@@ -20,10 +20,8 @@ import SwiftUI
 struct SettingsView: View {
     @AppStorage("KeepRunningAfterLastWindowClosed") var isKeepRunningAfterLastWindowClosed = false
     @AppStorage("DisplayFixed") var isVMDisplayFixed = false
-    @AppStorage("NoHypervisor") var isNoHypervisor = false
     @AppStorage("CtrlRightClick") var isCtrlRightClick = false
     @AppStorage("NoUsbPrompt") var isNoUsbPrompt = false
-    @AppStorage("UseOnlyPcores") var isUseOnlyPcores = true
     @AppStorage("AlternativeCaptureKey") var isAlternativeCaptureKey = false
     @AppStorage("IsCapsLockKey") var isCapsLockKey = false
     @AppStorage("NoSaveScreenshot") var isNoSaveScreenshot = false
@@ -43,14 +41,6 @@ struct SettingsView: View {
                 Toggle(isOn: $isNoSaveScreenshot) {
                     Text("Do not save VM screenshot to disk")
                 }.help("If enabled, any existing screenshot will be deleted the next time the VM is started.")
-            }
-            Section(header: Text("Default VM Configuration")) {
-                Toggle(isOn: $isNoHypervisor, label: {
-                    Text("Force slower emulation by default (deprecated: now configured per-VM)")
-                }).help("This option should not be used and will be removed in a future release.")
-                Toggle(isOn: $isUseOnlyPcores, label: {
-                    Text("Use only performance cores by default (deprecated: now configured per-VM)")
-                }).help("This option should not be used and will be removed in a future release.")
             }
             Section(header: Text("Input")) {
                 Toggle(isOn: $isCtrlRightClick, label: {
@@ -80,10 +70,8 @@ extension UserDefaults {
     @objc dynamic var KeepRunningAfterLastWindowClosed: Bool { false }
     @objc dynamic var NoCursorCaptureAlert: Bool { false }
     @objc dynamic var DisplayFixed: Bool { false }
-    @objc dynamic var NoHypervisor: Bool { false }
     @objc dynamic var CtrlRightClick: Bool { false }
     @objc dynamic var NoUsbPrompt: Bool { false }
-    @objc dynamic var UseOnlyPcores: Bool { false }
     @objc dynamic var AlternativeCaptureKey: Bool { false }
     @objc dynamic var IsCapsLockKey: Bool { false }
     @objc dynamic var NoSaveScreenshot: Bool { false }

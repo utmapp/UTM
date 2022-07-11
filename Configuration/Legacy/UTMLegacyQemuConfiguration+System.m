@@ -321,7 +321,7 @@ static const NSString *const kUTMConfigForcePs2ControllerKey = @"ForcePS2Control
     return NO;
 #else
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    return self.isTargetArchitectureMatchHost && ![defaults boolForKey:@"NoHypervisor"];
+    return self.isTargetArchitectureMatchHost;
 #endif
 }
 
