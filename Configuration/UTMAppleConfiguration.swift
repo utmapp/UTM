@@ -88,6 +88,7 @@ final class UTMAppleConfiguration: UTMConfiguration {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(information, forKey: .information)
         try container.encode(system, forKey: .system)
+        try container.encode(devices, forKey: .devices)
         try container.encode(sharedDirectories, forKey: .sharedDirectories)
         try container.encode(displays, forKey: .displays)
         try container.encode(drives, forKey: .drives)
