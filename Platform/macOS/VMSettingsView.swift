@@ -17,9 +17,9 @@
 import SwiftUI
 
 @available(macOS 11, *)
-struct VMSettingsView<Config: ObservableObject & UTMConfigurable>: View {
+struct VMSettingsView<Config: UTMConfiguration>: View {
     let vm: UTMVirtualMachine?
-    let config: Config
+    @ObservedObject var config: Config
     
     @EnvironmentObject private var data: UTMData
     @Environment(\.presentationMode) private var presentationMode: Binding<PresentationMode>
@@ -29,34 +29,16 @@ struct VMSettingsView<Config: ObservableObject & UTMConfigurable>: View {
     var body: some View {
         NavigationView {
             List {
-                if let qemuVM = vm as? UTMQemuVirtualMachine {
-                    //FIXME: Rework after config rewrite.
-                    VMQEMUSettingsView(config: qemuVM.futureConfig, selectedDriveIndex: $selectedDriveIndex)
-                } else if let appleVM = vm as? UTMAppleVirtualMachine {
-                    //FIXME: Rework after config rewrite.
-                    VMAppleSettingsView(config: appleVM.futureConfig, selectedDriveIndex: $selectedDriveIndex)
+                if config is UTMQemuConfiguration {
+                    VMQEMUSettingsView(config: config as! UTMQemuConfiguration, selectedDriveIndex: $selectedDriveIndex)
+                } else if config is UTMAppleConfiguration {
+                    VMAppleSettingsView(config: config as! UTMAppleConfiguration, selectedDriveIndex: $selectedDriveIndex)
                 }
             }.listStyle(.sidebar)
         }.frame(minWidth: 800, minHeight: 400)
         .toolbar {
             ToolbarItemGroup(placement: .automatic) {
-                if let qemuVM = vm as? UTMQemuVirtualMachine {
-                    //FIXME: Rework after config rewrite.
-                    let drives = Binding {
-                        qemuVM.futureConfig.drives
-                    } set: {
-                        qemuVM.futureConfig.drives = $0
-                    }
-                    VMConfigDrivesMoveButtons(drives: drives, selectedDriveIndex: $selectedDriveIndex)
-                } else if let appleVM = vm as? UTMAppleVirtualMachine {
-                    //FIXME: Rework after config rewrite.
-                    let drives = Binding {
-                        appleVM.futureConfig.drives
-                    } set: {
-                        appleVM.futureConfig.drives = $0
-                    }
-                    VMConfigDrivesMoveButtons(drives: drives, selectedDriveIndex: $selectedDriveIndex)
-                }
+                VMConfigDrivesMoveButtons(drives: $config.drives, selectedDriveIndex: $selectedDriveIndex)
             }
             ToolbarItemGroup(placement: .cancellationAction) {
                 Button(action: cancel) {
@@ -110,7 +92,7 @@ extension View {
 
 @available(macOS 11, *)
 struct VMSettingsView_Previews: PreviewProvider {
-    @State static private var config = UTMLegacyQemuConfiguration()
+    @State static private var config = UTMQemuConfiguration()
     
     static var previews: some View {
         VMSettingsView(vm: nil, config: config)

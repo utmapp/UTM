@@ -17,9 +17,11 @@
 import Foundation
 
 protocol UTMConfiguration: Codable, ObservableObject {
+    associatedtype Drive: UTMConfigurationDrive
     static var oldestVersion: Int { get }
     static var currentVersion: Int { get }
     var information: UTMConfigurationInfo { get }
+    var drives: [Drive] { get set }
     var dataURL: URL? { get }
     var backend: UTMBackend { get }
     func prepareSave(for packageURL: URL) async throws
