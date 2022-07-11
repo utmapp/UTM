@@ -109,7 +109,13 @@ extension UTMAppleConfigurationSystem {
 @available(macOS 11, *)
 extension UTMAppleConfigurationSystem {
     func fillVZConfiguration(_ vzconfig: VZVirtualMachineConfiguration) {
-        vzconfig.cpuCount = cpuCount
+        if cpuCount > 0 {
+            vzconfig.cpuCount = cpuCount
+        } else {
+            let hostPcorePhysicalCpu = Int(Self.sysctlIntRead("hw.perflevel0.physicalcpu"))
+            let hostPhysicalCpu = Int(Self.sysctlIntRead("hw.physicalcpu"))
+            vzconfig.cpuCount = hostPcorePhysicalCpu > 0 ? hostPcorePhysicalCpu : hostPhysicalCpu
+        }
         vzconfig.memorySize = UInt64(memorySize) * bytesInMib
         vzconfig.bootLoader = boot.vzBootloader()
         #if arch(arm64)
@@ -119,5 +125,12 @@ extension UTMAppleConfigurationSystem {
             }
         }
         #endif
+    }
+    
+    private static func sysctlIntRead(_ name: String) -> UInt64 {
+        var value: UInt64 = 0
+        var size = MemoryLayout<UInt64>.size
+        sysctlbyname(name, &value, &size, nil, 0)
+        return value
     }
 }
