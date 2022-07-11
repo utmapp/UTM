@@ -62,7 +62,7 @@ final class UTMAppleConfiguration: UTMConfiguration {
     
     required init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
-        let backend = try values.decodeIfPresent(UTMBackend.self, forKey: .backend) ?? .apple
+        let backend = try values.decodeIfPresent(UTMBackend.self, forKey: .backend) ?? .unknown
         guard backend == .apple else {
             throw UTMConfigurationError.invalidBackend
         }

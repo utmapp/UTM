@@ -364,12 +364,12 @@ final class UTMLegacyAppleConfiguration: UTMConfigurable, Codable, ObservableObj
     required convenience init(from decoder: Decoder) throws {
         self.init()
         let values = try decoder.container(keyedBy: CodingKeys.self)
-        version = try values.decode(Int.self, forKey: .version)
+        version = try values.decodeIfPresent(Int.self, forKey: .version) ?? 0
         if version > currentVersion {
             throw ConfigError.versionTooHigh
         }
-        isAppleVirtualization = try values.decode(Bool.self, forKey: .isAppleVirtualization)
-        guard isAppleVirtualization else {
+        isAppleVirtualization = try values.decodeIfPresent(Bool.self, forKey: .isAppleVirtualization) ?? false
+        guard version > 0 && isAppleVirtualization else {
             throw UTMAppleConfigurationError.notAppleConfiguration
         }
         cpuCount = try values.decode(Int.self, forKey: .cpuCount)
