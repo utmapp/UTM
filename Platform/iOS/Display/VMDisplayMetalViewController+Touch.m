@@ -21,8 +21,6 @@
 #import "VMCursor.h"
 #import "VMScroll.h"
 #import "CSDisplay.h"
-#import "UTMLegacyQemuConfiguration.h"
-#import "UTMLegacyQemuConfiguration+Miscellaneous.h"
 #import "UTMSpiceIO.h"
 #import "UTMLogging.h"
 #import "UTMQemuVirtualMachine.h"
@@ -641,7 +639,7 @@ static CGFloat CGPointToPixel(CGFloat point) {
 #pragma mark - Touch event handling
 
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
-    if (!self.vmQemuConfig.inputLegacy) {
+    if (!self.vmQemuConfig.qemuInputLegacy) {
         for (UITouch *touch in touches) {
             if (@available(iOS 14, *)) {
                 if (self.prefersPointerLocked && (touch.type == UITouchTypeIndirect || touch.type == UITouchTypeIndirectPointer)) {
@@ -684,7 +682,7 @@ static CGFloat CGPointToPixel(CGFloat point) {
 
 - (void)touchesMoved:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
     // move cursor in client mode, in server mode we handle in gesturePan
-    if (!self.vmQemuConfig.inputLegacy && !self.vmInput.serverModeCursor) {
+    if (!self.vmQemuConfig.qemuInputLegacy && !self.vmInput.serverModeCursor) {
         for (UITouch *touch in touches) {
             [_cursor updateMovement:[touch locationInView:self.mtkView]];
             break; // handle single touch
@@ -695,7 +693,7 @@ static CGFloat CGPointToPixel(CGFloat point) {
 
 - (void)touchesCancelled:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
     // release click in client mode, in server mode we handle in gesturePan
-    if (!self.vmQemuConfig.inputLegacy && !self.vmInput.serverModeCursor) {
+    if (!self.vmQemuConfig.qemuInputLegacy && !self.vmInput.serverModeCursor) {
         [self dragCursor:UIGestureRecognizerStateEnded primary:YES secondary:YES middle:YES];
     }
     [super touchesCancelled:touches withEvent:event];
@@ -703,7 +701,7 @@ static CGFloat CGPointToPixel(CGFloat point) {
 
 - (void)touchesEnded:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
     // release click in client mode, in server mode we handle in gesturePan
-    if (!self.vmQemuConfig.inputLegacy && !self.vmInput.serverModeCursor) {
+    if (!self.vmQemuConfig.qemuInputLegacy && !self.vmInput.serverModeCursor) {
         [self dragCursor:UIGestureRecognizerStateEnded primary:YES secondary:YES middle:YES];
     }
     [super touchesEnded:touches withEvent:event];

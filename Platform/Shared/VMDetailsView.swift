@@ -100,18 +100,15 @@ struct VMDetailsView: View {
             .modifier(VMOptionalNavigationTitleModifier(vm: vm))
             .modifier(VMToolbarModifier(vm: vm, bottom: !regularScreenSizeClass))
             .sheet(isPresented: $data.showSettingsModal) {
-                #if os(macOS)
-                if let appleVM = vm as? UTMAppleVirtualMachine {
-                    VMSettingsView(vm: appleVM, config: appleVM.appleConfig)
-                        .environmentObject(data)
-                } else if let qemuVM = vm as? UTMQemuVirtualMachine {
-                    VMSettingsView(vm: qemuVM, config: qemuVM.qemuConfig)
+                if let qemuConfig = vm.config.qemuConfig {
+                    VMSettingsView(vm: vm, config: qemuConfig)
                         .environmentObject(data)
                 }
-                #else
-                //FIXME: Rework after config rewrite.
-                VMSettingsView(vm: vm as! UTMQemuVirtualMachine, config: (vm as! UTMQemuVirtualMachine).futureConfig)
-                    .environmentObject(data)
+                #if os(macOS)
+                if let appleConfig = vm.config.appleConfig {
+                    VMSettingsView(vm: vm, config: appleConfig)
+                        .environmentObject(data)
+                }
                 #endif
             }
         }
@@ -179,7 +176,7 @@ struct Details: View {
                 HStack {
                     plainLabel("Path", systemImage: "folder")
                     Spacer()
-                    Text(vm.path!.path)
+                    Text(vm.path.path)
                         .foregroundColor(.secondary)
                 }
             }
@@ -260,15 +257,20 @@ struct DetailsLabelStyle: LabelStyle {
 }
 
 struct VMDetailsView_Previews: PreviewProvider {
-    @State static private var config = UTMLegacyQemuConfiguration()
+    @State static private var config = UTMQemuConfiguration()
     
     static var previews: some View {
-        VMDetailsView(vm: UTMVirtualMachine(configuration: config, withDestinationURL: URL(fileURLWithPath: "")))
+        VMDetailsView(vm: UTMVirtualMachine(newConfig: config, destinationURL: URL(fileURLWithPath: "")))
         .onAppear {
-            config.shareDirectoryEnabled = true
-            config.newDrive("", path: "", type: .disk, interface: "ide")
-            config.newDrive("", path: "", type: .disk, interface: "sata")
-            config.newDrive("", path: "", type: .CD, interface: "ide")
+            config.sharing.directoryShareMode = .webdav
+            var drive = UTMQemuConfigurationDrive()
+            drive.imageType = .disk
+            drive.interface = .ide
+            config.drives.append(drive)
+            drive.interface = .scsi
+            config.drives.append(drive)
+            drive.imageType = .cd
+            config.drives.append(drive)
         }
     }
 }

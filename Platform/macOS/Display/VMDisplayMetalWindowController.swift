@@ -63,7 +63,7 @@ class VMDisplayMetalWindowController: VMDisplayQemuWindowController {
             return
         }
         renderer.mtkView(metalView, drawableSizeWillChange: metalView.drawableSize)
-        renderer.changeUpscaler(vmQemuConfig?.displayUpscalerValue ?? .linear, downscaler: vmQemuConfig?.displayDownscalerValue ?? .linear)
+        renderer.changeUpscaler(vmQemuConfig?.displays.first?.upscalingFilter.metalSamplerMinMagFilter ?? .linear, downscaler: vmQemuConfig?.displays.first?.downscalingFilter.metalSamplerMinMagFilter ?? .linear)
         metalView.delegate = renderer
         metalView.inputDelegate = self
         
@@ -77,7 +77,7 @@ class VMDisplayMetalWindowController: VMDisplayQemuWindowController {
     override func enterLive() {
         metalView.isHidden = false
         screenshotView.isHidden = true
-        if vmQemuConfig!.shareClipboardEnabled {
+        if vmQemuConfig!.sharing.hasClipboardSharing {
             UTMPasteboard.general.requestPollingMode(forHashable: self) // start clipboard polling
         }
         // monitor Cmd+Q and Cmd+W and capture them if needed
@@ -105,7 +105,7 @@ class VMDisplayMetalWindowController: VMDisplayQemuWindowController {
             screenshotView.image = vm.screenshot?.image
             screenshotView.isHidden = false
         }
-        if vmQemuConfig!.shareClipboardEnabled {
+        if vmQemuConfig!.sharing.hasClipboardSharing {
             UTMPasteboard.general.releasePollingMode(forHashable: self) // stop clipboard polling
         }
         if let localEventMonitor = self.localEventMonitor {
@@ -160,7 +160,7 @@ extension VMDisplayMetalWindowController {
     }
     
     override func spiceDynamicResolutionSupportDidChange(_ supported: Bool) {
-        guard vmQemuConfig.displayFitScreen else {
+        guard vmQemuConfig.displays.first!.isDynamicResolution else {
             return
         }
         if isDisplaySizeDynamic != supported {
@@ -211,9 +211,9 @@ extension VMDisplayMetalWindowController {
         guard let window = window else { return }
         guard let vmDisplay = vmDisplay else { return }
         let currentScreenScale = window.screen?.backingScaleFactor ?? 1.0
-        let nativeScale = vmQemuConfig.displayRetina ? 1.0 : currentScreenScale
+        let nativeScale = vmQemuConfig.displays.first!.isNativeResolution ? 1.0 : currentScreenScale
         // change optional scale if needed
-        if isDisplaySizeDynamic || isDisplayFixed || (!vmQemuConfig.displayRetina && vmDisplay.viewportScale < currentScreenScale) {
+        if isDisplaySizeDynamic || isDisplayFixed || (!vmQemuConfig.displays.first!.isNativeResolution && vmDisplay.viewportScale < currentScreenScale) {
             vmDisplay.viewportScale = nativeScale
         }
         let minScaledSize = CGSize(width: size.width * nativeScale / currentScreenScale, height: size.height * nativeScale / currentScreenScale)
@@ -254,9 +254,9 @@ extension VMDisplayMetalWindowController {
     fileprivate func updateGuestResolution(for window: NSWindow, frameSize: NSSize) -> NSSize {
         guard let vmDisplay = self.vmDisplay else { return frameSize }
         let currentScreenScale = window.screen?.backingScaleFactor ?? 1.0
-        let nativeScale = vmQemuConfig.displayRetina ? currentScreenScale : 1.0
+        let nativeScale = vmQemuConfig.displays.first!.isNativeResolution ? currentScreenScale : 1.0
         let targetSize = window.contentRect(forFrameRect: CGRect(origin: .zero, size: frameSize)).size
-        let targetSizeScaled = vmQemuConfig.displayRetina ? targetSize.applying(CGAffineTransform(scaleX: nativeScale, y: nativeScale)) : targetSize
+        let targetSizeScaled = vmQemuConfig.displays.first!.isNativeResolution ? targetSize.applying(CGAffineTransform(scaleX: nativeScale, y: nativeScale)) : targetSize
         logger.debug("Requesting resolution: (\(targetSizeScaled.width), \(targetSizeScaled.height))")
         let bounds = CGRect(origin: .zero, size: targetSizeScaled)
         vmDisplay.requestResolution(bounds)

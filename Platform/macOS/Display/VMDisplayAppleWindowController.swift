@@ -37,8 +37,8 @@ class VMDisplayAppleWindowController: VMDisplayWindowController {
         vm as? UTMAppleVirtualMachine
     }
     
-    var appleConfig: UTMLegacyAppleConfiguration! {
-        vm?.config as? UTMLegacyAppleConfiguration
+    var appleConfig: UTMAppleConfiguration! {
+        vm?.config.appleConfig
     }
     
     private var cancellable: AnyCancellable?
@@ -50,7 +50,7 @@ class VMDisplayAppleWindowController: VMDisplayWindowController {
     @Setting("SharePathAlertShown") private var isSharePathAlertShownPersistent: Bool = false
     
     override func windowDidLoad() {
-        if appleConfig.isConsoleDisplay {
+        if !appleConfig.serials.isEmpty {
             mainView = TerminalView()
             terminalView!.terminalDelegate = self
             cancellable = appleVM.$serialPort.sink { [weak self] serialPort in
@@ -69,10 +69,10 @@ class VMDisplayAppleWindowController: VMDisplayWindowController {
         appleVM.screenshotDelegate = self
         window!.recalculateKeyViewLoop()
         if #available(macOS 12, *) {
-            shouldAutoStartVM = appleConfig.macRecoveryIpswURL == nil
+            shouldAutoStartVM = appleConfig.system.macRecoveryIpswURL == nil
         }
         super.windowDidLoad()
-        if #available(macOS 12, *), let ipswUrl = appleConfig.macRecoveryIpswURL {
+        if #available(macOS 12, *), let ipswUrl = appleConfig.system.macRecoveryIpswURL {
             showConfirmAlert(NSLocalizedString("Would you like to install macOS? If an existing operating system is already installed on the primary drive of this VM, then it will be erased.", comment: "VMDisplayAppleWindowController")) {
                 self.isInstalling = true
                 self.appleVM.requestInstallVM(with: ipswUrl)
@@ -84,7 +84,7 @@ class VMDisplayAppleWindowController: VMDisplayWindowController {
         if #available(macOS 12, *), let appleView = appleView {
             appleView.virtualMachine = appleVM.apple
         }
-        window!.title = appleConfig.name
+        window!.title = appleConfig.information.name
         updateWindowFrame()
         super.enterLive()
         captureMouseToolbarItem.isEnabled = false
@@ -93,7 +93,7 @@ class VMDisplayAppleWindowController: VMDisplayWindowController {
         startPauseToolbarItem.isEnabled = true
         if #available(macOS 12, *) {
             isPowerForce = false
-            sharedFolderToolbarItem.isEnabled = appleConfig.bootLoader?.operatingSystem == .Linux
+            sharedFolderToolbarItem.isEnabled = appleConfig.system.boot.operatingSystem == .linux
         } else {
             // stop() not available on macOS 11 for some reason
             restartToolbarItem.isEnabled = false
@@ -118,7 +118,7 @@ class VMDisplayAppleWindowController: VMDisplayWindowController {
     }
     
     @available(macOS 12, *)
-    private func windowSize(for display: Display) -> CGSize {
+    private func windowSize(for display: UTMAppleConfigurationDisplay) -> CGSize {
         let currentScreenScale = window?.screen?.backingScaleFactor ?? 1.0
         let useHidpi = display.pixelsPerInch >= 226
         let scale = useHidpi ? currentScreenScale : 1.0
@@ -130,21 +130,20 @@ class VMDisplayAppleWindowController: VMDisplayWindowController {
             return
         }
         if let terminalView = terminalView {
-            if let fontSize = appleConfig.consoleFontSize?.intValue {
-                if let fontName = appleConfig.consoleFont,
-                   fontName != "" {
-                    let orig = terminalView.font
-                    let new = NSFont(name: fontName, size: CGFloat(fontSize)) ?? orig
-                    terminalView.font = new
-                } else {
-                    let orig = terminalView.font
-                    let new = NSFont(descriptor: orig.fontDescriptor, size: CGFloat(fontSize)) ?? orig
-                    terminalView.font = new
-                }
+            let fontSize = appleConfig.serials.first!.terminal!.fontSize
+            let fontName = appleConfig.serials.first!.terminal!.font.rawValue
+            if fontName != "" {
+                let orig = terminalView.font
+                let new = NSFont(name: fontName, size: CGFloat(fontSize)) ?? orig
+                terminalView.font = new
+            } else {
+                let orig = terminalView.font
+                let new = NSFont(descriptor: orig.fontDescriptor, size: CGFloat(fontSize)) ?? orig
+                terminalView.font = new
             }
-            if let consoleTextColor = appleConfig.consoleTextColor,
+            if let consoleTextColor = appleConfig.serials.first!.terminal!.foregroundColor,
                let textColor = Color(hexString: consoleTextColor),
-               let consoleBackgroundColor = appleConfig.consoleBackgroundColor,
+               let consoleBackgroundColor = appleConfig.serials.first!.terminal!.backgroundColor,
                let backgroundColor = Color(hexString: consoleBackgroundColor) {
                 terminalView.nativeForegroundColor = NSColor(textColor)
                 terminalView.nativeBackgroundColor = NSColor(backgroundColor)
@@ -177,7 +176,7 @@ class VMDisplayAppleWindowController: VMDisplayWindowController {
     
     override func resizeConsoleButtonPressed(_ sender: Any) {
         if let terminalView = terminalView {
-            let cmd = appleConfig.consoleResizeCommand
+            let cmd = appleConfig.serials.first!.terminal!.resizeCommand
             let cols = terminalView.getTerminal().cols
             let rows = terminalView.getTerminal().rows
             appleVM.serialPort?.writeResizeCommand(cmd, columns: cols, rows: rows)
@@ -251,7 +250,7 @@ extension VMDisplayAppleWindowController {
     
     @objc func addShare(sender: AnyObject) {
         pickShare { url in
-            let sharedDirectory = SharedDirectory(directoryURL: url)
+            let sharedDirectory = UTMAppleConfigurationSharedDirectory(directoryURL: url)
             self.appleConfig.sharedDirectories.append(sharedDirectory)
         }
     }
@@ -264,7 +263,7 @@ extension VMDisplayAppleWindowController {
         let i = menu.tag
         let isReadOnly = appleConfig.sharedDirectories[i].isReadOnly
         pickShare { url in
-            let sharedDirectory = SharedDirectory(directoryURL: url, isReadOnly: isReadOnly)
+            let sharedDirectory = UTMAppleConfigurationSharedDirectory(directoryURL: url, isReadOnly: isReadOnly)
             self.appleConfig.sharedDirectories[i] = sharedDirectory
         }
     }
@@ -313,7 +312,7 @@ extension VMDisplayAppleWindowController {
             self.isInstalling = false
             // delete IPSW setting
             self.enterSuspended(isBusy: true)
-            self.appleConfig.macRecoveryIpswURL = nil
+            self.appleConfig.system.macRecoveryIpswURL = nil
             // start VM
             self.vm.requestVmStart()
         }

@@ -44,12 +44,12 @@
 #pragma mark - Construction
 
 - (instancetype)init {
-    return [self initWithArgv:[NSArray<NSString *> array]];
+    return [self initWithArguments:[NSArray<NSString *> array]];
 }
 
-- (instancetype)initWithArgv:(NSArray<NSString *> *)argv {
+- (instancetype)initWithArguments:(NSArray<NSString *> *)arguments {
     if (self = [super init]) {
-        _argv = [argv mutableCopy];
+        _argv = [arguments mutableCopy];
         _urls = [NSMutableArray<NSURL *> array];
         if (![self setupXpc]) {
             return nil;

@@ -18,22 +18,11 @@
 #import "UTMQemuManagerDelegate.h"
 #import "UTMSpiceIODelegate.h"
 
-@class UTMLegacyQemuConfiguration;
-
-typedef NS_ENUM(NSInteger, UTMDisplayType) {
-    UTMDisplayTypeFullGraphic,
-    UTMDisplayTypeConsole
-};
-
 NS_ASSUME_NONNULL_BEGIN
 
 @interface UTMQemuVirtualMachine : UTMVirtualMachine<UTMQemuManagerDelegate>
 
 @property (nonatomic, weak, nullable) id<UTMSpiceIODelegate> ioDelegate;
-@property (nonatomic, readonly) UTMLegacyQemuConfiguration *qemuConfig;
-@property (nonatomic, nullable) id futureConfigStorage; //FIXME: Rework after config rewrite.
-
-- (UTMDisplayType)supportedDisplayType;
 
 @end
 

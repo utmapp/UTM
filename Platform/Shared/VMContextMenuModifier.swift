@@ -27,7 +27,7 @@ struct VMContextMenuModifier: ViewModifier {
         content.contextMenu {
             #if os(macOS)
             Button {
-                NSWorkspace.shared.activateFileViewerSelecting([vm.path!])
+                NSWorkspace.shared.activateFileViewerSelecting([vm.path])
             } label: {
                 Label("Show in Finder", systemImage: "folder")
             }.help("Reveal where the VM is stored.")

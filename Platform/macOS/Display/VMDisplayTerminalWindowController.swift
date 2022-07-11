@@ -38,7 +38,7 @@ class VMDisplayTerminalWindowController: VMDisplayQemuWindowController {
     override func resizeConsoleButtonPressed(_ sender: Any) {
         let cols = terminalView.getTerminal().cols
         let rows = terminalView.getTerminal().rows
-        let template = vmQemuConfig?.consoleResizeCommand ?? kVMDefaultResizeCmd
+        let template = vmQemuConfig?.serials.first?.terminal?.resizeCommand ?? kVMDefaultResizeCmd
         let cmd = template
             .replacingOccurrences(of: "$COLS", with: String(cols))
             .replacingOccurrences(of: "$ROWS", with: String(rows))

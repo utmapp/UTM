@@ -18,8 +18,6 @@
 #import "UTMVirtualMachine.h"
 #import "UTMVirtualMachine-Private.h"
 #import "UTMQemuVirtualMachine.h"
-#import "UTMConfigurable.h"
-#import "UTMLegacyQemuConfiguration+Constants.h"
 #import "UTMLogging.h"
 #import "UTMViewState.h"
 #import "UTM-Swift.h"
@@ -76,20 +74,19 @@ const dispatch_time_t kScreenshotPeriodSeconds = 60 * NSEC_PER_SEC;
     self.anyCancellable = [self subscribeToConfiguration];
 }
 
-- (void)setConfig:(id<UTMConfigurable>)config {
+- (void)setConfig:(UTMConfigurationWrapper *)config {
     [self propertyWillChange];
     _config = config;
     self.anyCancellable = [self subscribeToConfiguration];
 }
 
 - (NSURL *)detailsIconUrl {
-    return self.config.iconUrl;
+    return self.config.iconURL;
 }
 
 - (void)setIsShortcut:(BOOL)isShortcut {
     [self propertyWillChange];
     _isShortcut = isShortcut;
-    self.config.isRenameDisabled = isShortcut;
 }
 
 - (void)setIsDeleted:(BOOL)isDeleted {
@@ -162,14 +159,14 @@ const dispatch_time_t kScreenshotPeriodSeconds = 60 * NSEC_PER_SEC;
 }
 
 + (nullable UTMVirtualMachine *)virtualMachineWithURL:(NSURL *)url {
-#if TARGET_OS_OSX
-    if (@available(macOS 11, *)) {
-        if ([UTMAppleVirtualMachine isAppleVMForPath:url]) {
-            return [[UTMAppleVirtualMachine alloc] initWithURL:url];
-        }
+    [url startAccessingSecurityScopedResource];
+    UTMConfigurationWrapper *config = [[UTMConfigurationWrapper alloc] initFrom:url];
+    [url stopAccessingSecurityScopedResource];
+    if (config) {
+        return [UTMVirtualMachine virtualMachineWithConfiguration:config packageURL:url];
+    } else {
+        return nil;
     }
-#endif
-    return [[UTMQemuVirtualMachine alloc] initWithURL:url];
 }
 
 + (UTMVirtualMachine *)virtualMachineWithBookmark:(NSData *)bookmark {
@@ -189,19 +186,15 @@ const dispatch_time_t kScreenshotPeriodSeconds = 60 * NSEC_PER_SEC;
     return vm;
 }
 
-+ (UTMVirtualMachine *)virtualMachineWithConfiguration:(id<UTMConfigurable>)configuration withDestinationURL:(NSURL *)dstUrl {
++ (UTMVirtualMachine *)virtualMachineWithConfiguration:(UTMConfigurationWrapper *)configuration packageURL:(nonnull NSURL *)packageURL {
 #if TARGET_OS_OSX
     if (@available(macOS 11, *)) {
         if (configuration.isAppleVirtualization) {
-            return [[UTMAppleVirtualMachine alloc] initWithConfiguration:configuration withDestinationURL:dstUrl];
+            return [[UTMAppleVirtualMachine alloc] initWithConfiguration:configuration packageURL:packageURL];
         }
     }
 #endif
-    return [[UTMQemuVirtualMachine alloc] initWithConfiguration:configuration withDestinationURL:dstUrl];
-}
-
-+ (BOOL)isAppleVMForPath:(NSURL *)path {
-    return NO;
+    return [[UTMQemuVirtualMachine alloc] initWithConfiguration:configuration packageURL:packageURL];
 }
 
 - (instancetype)init {
@@ -212,33 +205,19 @@ const dispatch_time_t kScreenshotPeriodSeconds = 60 * NSEC_PER_SEC;
 #else
         self.logging = [UTMLogging new];
 #endif
-        self.viewState = [UTMViewState new]; // dummy
+        _viewState = [[UTMViewState alloc] init];
     }
     return self;
 }
 
-- (nullable instancetype)initWithURL:(NSURL *)url {
+- (instancetype)initWithConfiguration:(UTMConfigurationWrapper *)configuration packageURL:(NSURL *)packageURL {
     self = [self init];
     if (self) {
-        self.path = url;
-        self.parentPath = url.URLByDeletingLastPathComponent;
+        self.config = configuration;
+        self.path = packageURL;
         [self loadViewState];
-        if (![self loadConfigurationWithReload:NO error:nil]) {
-            self = nil;
-            return self;
-        }
         [self loadScreenshot];
         self.state = kVMStopped;
-    }
-    return self;
-}
-
-- (instancetype)initWithConfiguration:(id<UTMConfigurable>)configuration withDestinationURL:(NSURL *)dstUrl {
-    self = [self init];
-    if (self) {
-        self.parentPath = dstUrl;
-        self.viewState = [[UTMViewState alloc] init];
-        self.config = configuration;
     }
     return self;
 }
@@ -284,20 +263,12 @@ const dispatch_time_t kScreenshotPeriodSeconds = 60 * NSEC_PER_SEC;
     }
 }
 
-- (NSURL *)packageURLForName:(NSString *)name {
-    return [[self.parentPath URLByAppendingPathComponent:name] URLByAppendingPathExtension:kUTMBundleExtension];
-}
-
 - (NSError *)errorGeneric {
     return [self errorWithMessage:NSLocalizedString(@"An internal error has occurred.", "UTMVirtualMachine")];
 }
 
 - (NSError *)errorWithMessage:(nullable NSString *)message {
     return [NSError errorWithDomain:kUTMErrorDomain code:-1 userInfo:@{NSLocalizedDescriptionKey: message}];
-}
-
-- (BOOL)reloadConfigurationWithError:(NSError * _Nullable *)err {
-    return [self loadConfigurationWithReload:YES error:err];
 }
 
 - (void)requestVmStart {
@@ -383,14 +354,6 @@ const dispatch_time_t kScreenshotPeriodSeconds = 60 * NSEC_PER_SEC;
 }
 
 #define notImplemented @throw [NSException exceptionWithName:NSInvalidArgumentException reason:[NSString stringWithFormat:@"%s must be overridden in a subclass.", __PRETTY_FUNCTION__] userInfo:nil]
-
-- (BOOL)loadConfigurationWithReload:(BOOL)reload error:(NSError * _Nullable __autoreleasing *)err {
-    notImplemented;
-}
-
-- (void)saveUTMWithCompletion:(void (^)(NSError * _Nullable))completion {
-    notImplemented;
-}
 
 - (void)accessShortcutWithCompletion:(void (^)(NSError * _Nullable))completion {
     notImplemented;

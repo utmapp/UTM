@@ -19,18 +19,20 @@ import Foundation
 extension UTMData {
     private func createDisplay(vm: UTMVirtualMachine) -> VMDisplayViewController {
         let qvm = vm as! UTMQemuVirtualMachine
-        if qvm.qemuConfig.displayConsoleOnly {
+        if qvm.config.qemuConfig?.serials.first?.terminal != nil {
             let vc = VMDisplayTerminalViewController()
             vc.vm = qvm
             vc.setupSubviews()
             vc.virtualMachine(vm, didTransitionTo: vm.state)
             return vc
-        } else {
+        } else if qvm.config.qemuConfig?.displays.first != nil {
             let vc = VMDisplayMetalViewController()
             vc.vm = qvm
             vc.setupSubviews()
             vc.virtualMachine(vm, didTransitionTo: vm.state)
             return vc
+        } else {
+            fatalError()
         }
     }
     

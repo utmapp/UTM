@@ -49,7 +49,7 @@ struct VMShareItemModifier: ViewModifier {
             case .debugLog(let url):
                 return url
             case .utmCopy(let vm), .utmMove(let vm):
-                return vm.path!
+                return vm.path
             case .qemuCommand(let command):
                 return command
             }

@@ -34,34 +34,9 @@ extern NSString *const kUTMErrorDomain;
 
 @implementation UTMQemuVirtualMachine (Drives)
 
-- (NSArray<UTMDrive *> *)drives {
-    NSInteger count = self.qemuConfig.countDrives;
-    id drives = [NSMutableArray<UTMDrive *> arrayWithCapacity:count];
-    for (NSInteger i = 0; i < count; i++) {
-        UTMDrive *drive = [UTMDrive new];
-        drive.index = i;
-        drive.imageType = [self.qemuConfig driveImageTypeForIndex:i];
-        drive.interface = [self.qemuConfig driveInterfaceTypeForIndex:i];
-        drive.name = [self.qemuConfig driveNameForIndex:i];
-        if ([self.qemuConfig driveRemovableForIndex:i]) {
-            // removable drive -> path stored only in viewState
-            NSString *path = [self.viewState pathForRemovableDrive:drive.name];
-            if (path.length > 0) {
-                drive.status = UTMDriveStatusInserted;
-                drive.path = path;
-            } else {
-                drive.status = UTMDriveStatusEjected;
-                drive.path = nil;
-            }
-        } else {
-            // fixed drive -> path stored in configuration
-            drive.status = UTMDriveStatusFixed;
-            drive.path = [self.qemuConfig driveImagePathForIndex:i];
-        }
-        [drives addObject:drive];
-    }
-    return drives;
-}
+@dynamic drives;
+// implemented in UTMVirtualMachineExtension.swift
+// FIXME: unify with UTMQemuConfigurationDrive after rewrite
 
 - (BOOL)ejectDrive:(UTMDrive *)drive force:(BOOL)force error:(NSError * _Nullable __autoreleasing *)error {
     NSString *oldPath = [self.viewState pathForRemovableDrive:drive.name];

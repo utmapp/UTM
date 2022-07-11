@@ -23,8 +23,6 @@
 #import "VMKeyboardView.h"
 #import "UTMVirtualMachine.h"
 #import "UTMQemuManager.h"
-#import "UTMLegacyQemuConfiguration.h"
-#import "UTMLegacyQemuConfiguration+Display.h"
 #import "UTMLogging.h"
 #import "CSDisplay.h"
 #import "UTM-Swift.h"
@@ -74,8 +72,8 @@
     // Initialize our renderer with the view size
     [_renderer mtkView:self.mtkView drawableSizeWillChange:self.mtkView.drawableSize];
     
-    [_renderer changeUpscaler:self.vmQemuConfig.displayUpscalerValue
-                   downscaler:self.vmQemuConfig.displayDownscalerValue];
+    [_renderer changeUpscaler:self.vmQemuConfig.qemuDisplayUpscaler
+                   downscaler:self.vmQemuConfig.qemuDisplayDownscaler];
     
     self.mtkView.delegate = _renderer;
     
@@ -104,7 +102,7 @@
 
 - (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator {
     [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
-    if (self.vmQemuConfig.displayFitScreen) {
+    if (self.vmQemuConfig.qemuDisplayIsDynamicResolution) {
         [self displayResize:size];
     }
 }
@@ -117,7 +115,7 @@
             self.placeholderImageView.image = self.vm.screenshot.image;
             self.mtkView.hidden = YES;
         } completion:nil];
-        if (self.vmQemuConfig.shareClipboardEnabled) {
+        if (self.vmQemuConfig.qemuHasClipboardSharing) {
             [[UTMPasteboard generalPasteboard] releasePollingModeForObject:self];
         }
 #if !defined(WITH_QEMU_TCI)
@@ -134,10 +132,10 @@
         self.placeholderImageView.hidden = YES;
         self.mtkView.hidden = NO;
     } completion:nil];
-    if (self.vmQemuConfig.displayFitScreen) {
+    if (self.vmQemuConfig.qemuDisplayIsDynamicResolution) {
         [self displayResize:self.view.bounds.size];
     }
-    if (self.vmQemuConfig.shareClipboardEnabled) {
+    if (self.vmQemuConfig.qemuHasClipboardSharing) {
         [[UTMPasteboard generalPasteboard] requestPollingModeForObject:self];
     }
 }
@@ -190,7 +188,7 @@
 - (void)displayResize:(CGSize)size {
     UTMLog(@"resizing to (%f, %f)", size.width, size.height);
     CGRect bounds = CGRectMake(0, 0, size.width, size.height);
-    if (self.vmQemuConfig.displayRetina) {
+    if (self.vmQemuConfig.qemuDisplayIsNativeResolution) {
         CGFloat scale = [UIScreen mainScreen].scale;
         CGAffineTransform transform = CGAffineTransformMakeScale(scale, scale);
         bounds = CGRectApplyAffineTransform(bounds, transform);

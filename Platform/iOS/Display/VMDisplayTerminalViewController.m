@@ -16,8 +16,6 @@
 
 #import "VMDisplayTerminalViewController.h"
 #import "VMDisplayTerminalViewController+Keyboard.h"
-#import "UTMLegacyQemuConfiguration.h"
-#import "UTMLegacyQemuConfiguration+Display.h"
 #import "UTMLogging.h"
 #import "UTMQemuVirtualMachine.h"
 #import "UIViewController+Extensions.h"
@@ -107,17 +105,17 @@ NSString* const kVMSendTerminalSizeHandler = @"UTMSendTerminalSize";
 }
 
 - (void)updateSettings {
-    UIColor *backgroundColor = [[UIColor alloc] initWithHexString:self.vmQemuConfig.consoleBackgroundColor];
+    UIColor *backgroundColor = [[UIColor alloc] initWithHexString:self.vmQemuConfig.qemuConsoleBackgroundColor];
     NSString *backgroundColorString = backgroundColor.sRGBhexString;
-    UIColor *textColor = [[UIColor alloc] initWithHexString:self.vmQemuConfig.consoleTextColor];
+    UIColor *textColor = [[UIColor alloc] initWithHexString:self.vmQemuConfig.qemuConsoleForegroundColor];
     NSString *textColorString = textColor.sRGBhexString;
     [_webView evaluateJavaScript:[NSString stringWithFormat:@"changeColor('%@', '%@');", textColorString, backgroundColorString] completionHandler:^(id _Nullable _, NSError * _Nullable error) {
         UTMLog(@"changeColor error: %@", error);
     }];
-    [_webView evaluateJavaScript:[NSString stringWithFormat:@"changeFont('%@', %ld);", self.vmQemuConfig.consoleFont, self.vmQemuConfig.consoleFontSize.integerValue] completionHandler:^(id _Nullable _, NSError * _Nullable error) {
+    [_webView evaluateJavaScript:[NSString stringWithFormat:@"changeFont('%@', %ld);", self.vmQemuConfig.qemuConsoleFont, self.vmQemuConfig.qemuConsoleFontSize] completionHandler:^(id _Nullable _, NSError * _Nullable error) {
         UTMLog(@"changeFont error: %@", error);
     }];
-    [_webView evaluateJavaScript:[NSString stringWithFormat:@"setCursorBlink(%@);", self.vmQemuConfig.consoleCursorBlink ? @"true" : @"false"] completionHandler:^(id _Nullable _, NSError * _Nullable error) {
+    [_webView evaluateJavaScript:[NSString stringWithFormat:@"setCursorBlink(%@);", @"true"] completionHandler:^(id _Nullable _, NSError * _Nullable error) {
         UTMLog(@"setCursorBlink error: %@", error);
     }];
 }
@@ -151,7 +149,7 @@ NSString* const kVMSendTerminalSizeHandler = @"UTMSendTerminalSize";
 #pragma mark - Resize console
 
 - (void)changeDisplayZoom:(UIButton *)sender {
-    NSString *cmd = self.vmQemuConfig.consoleResizeCommand;
+    NSString *cmd = self.vmQemuConfig.qemuConsoleResizeCommand;
     if (cmd.length == 0) {
         cmd = kVMDefaultResizeCmd;
     }

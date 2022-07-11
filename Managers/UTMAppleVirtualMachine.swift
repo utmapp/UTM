@@ -22,25 +22,12 @@ import Virtualization
 @objc class UTMAppleVirtualMachine: UTMVirtualMachine {
     private let quitTimeoutSeconds = DispatchTimeInterval.seconds(30)
     
-    override var config: UTMConfigurable {
-        didSet {
-            configChanged = appleConfig.objectWillChange.sink { [weak self] in
-                self?.objectWillChange.send()
-            }
-        }
+    var appleConfig: UTMAppleConfiguration {
+        config.appleConfig!
     }
-    
-    var appleConfig: UTMLegacyAppleConfiguration! {
-        config as? UTMLegacyAppleConfiguration
-    }
-    
-    //FIXME: temporary usage for config rewrite
-    lazy var futureConfig: UTMAppleConfiguration = {
-        UTMAppleConfiguration(migrating: appleConfig, dataURL: path!)
-    }()
     
     override var detailsTitleLabel: String {
-        appleConfig.name
+        appleConfig.information.name
     }
     
     override var detailsSubtitleLabel: String {
@@ -48,29 +35,20 @@ import Virtualization
     }
     
     override var detailsNotes: String? {
-        appleConfig.notes
+        appleConfig.information.notes
     }
     
     override var detailsSystemTargetLabel: String {
-        appleConfig.bootLoader?.operatingSystem.rawValue ?? ""
+        appleConfig.system.boot.operatingSystem.rawValue
     }
     
     override var detailsSystemArchitectureLabel: String {
-        appleConfig.architecture
-    }
-    
-    class var currentArchitecture: String {
-        #if arch(arm64)
-        "aarch64"
-        #elseif arch(x86_64)
-        "x86_64"
-        #else
-        #error("Unsupported architecture.")
-        #endif
+        appleConfig.system.architecture
     }
     
     override var detailsSystemMemoryLabel: String {
-        return ByteCountFormatter.string(fromByteCount: Int64(appleConfig.memorySize), countStyle: .memory)
+        let bytesInMib = Int64(1048576)
+        return ByteCountFormatter.string(fromByteCount: Int64(appleConfig.system.memorySize) * bytesInMib, countStyle: .memory)
     }
     
     override var hasSaveState: Bool {
@@ -87,61 +65,17 @@ import Virtualization
     
     private var sharedDirectoriesChanged: AnyCancellable?
     
-    private var configChanged: AnyCancellable?
-    
     weak var screenshotDelegate: UTMScreenshotProvider?
     
-    override static func isAppleVM(forPath path: URL) -> Bool {
-        _ = path.startAccessingSecurityScopedResource()
-        defer {
-            path.stopAccessingSecurityScopedResource()
+    override func reloadConfiguration() throws {
+        let newConfig = try UTMAppleConfiguration.load(from: path) as! UTMAppleConfiguration
+        let oldConfig = appleConfig
+        // copy non-persistent values over
+        newConfig.sharedDirectories = oldConfig.sharedDirectories
+        if #available(macOS 12, *) {
+            newConfig.system.macRecoveryIpswURL = oldConfig.system.macRecoveryIpswURL
         }
-        do {
-            _ = try UTMLegacyAppleConfiguration.load(from: path)
-            return true
-        } catch {
-            return false
-        }
-    }
-    
-    override func loadConfiguration(withReload reload: Bool) throws {
-        let newConfig = try UTMLegacyAppleConfiguration.load(from: path!)
-        if let oldConfig = config as? UTMLegacyAppleConfiguration {
-            // copy non-persistent values over
-            newConfig.sharedDirectories = oldConfig.sharedDirectories
-            if #available(macOS 12, *) {
-                newConfig.macRecoveryIpswURL = oldConfig.macRecoveryIpswURL
-            }
-        }
-        config = newConfig
-    }
-    
-    override func saveUTM() async throws {
-        let fileManager = FileManager.default
-        let newPath = packageURL(forName: appleConfig.name)
-        let savePath: URL
-        if let existingPath = path {
-            savePath = existingPath
-        } else {
-            savePath = newPath
-        }
-        do {
-            try await appleConfig.save(to: savePath)
-        } catch {
-            if let reload = try? UTMLegacyAppleConfiguration.load(from: savePath) {
-                config = reload
-            }
-            throw error
-        }
-        if let existingPath = path, existingPath.lastPathComponent != newPath.lastPathComponent {
-            try fileManager.moveItem(at: existingPath, to: newPath)
-            path = newPath
-            if let reload = try? UTMLegacyAppleConfiguration.load(from: newPath) {
-                config = reload
-            }
-        } else if path == nil {
-            path = savePath
-        }
+        config = UTMConfigurationWrapper(wrapping: newConfig)
     }
     
     override func accessShortcut() async throws {
@@ -310,30 +244,19 @@ import Virtualization
     }
     
     private func createAppleVM() throws {
-        if appleConfig.isSerialEnabled {
+        //FIXME: support multiple serial ports
+        if !appleConfig.serials.isEmpty {
             let (fd, sfd, name) = try createPty()
             let terminalTtyHandle = FileHandle(fileDescriptor: fd, closeOnDealloc: false)
             let slaveTtyHandle = FileHandle(fileDescriptor: sfd, closeOnDealloc: false)
-            let attachment = VZFileHandleSerialPortAttachment(fileHandleForReading: terminalTtyHandle, fileHandleForWriting: terminalTtyHandle)
-            let serialConfig = VZVirtioConsoleDeviceSerialPortConfiguration()
-            serialConfig.attachment = attachment
-            appleConfig.apple.serialPorts = [serialConfig]
+            appleConfig.serials[0].fileHandleForReading = terminalTtyHandle
+            appleConfig.serials[0].fileHandleForWriting = terminalTtyHandle
             DispatchQueue.main.async {
                 self.serialPort = UTMSerialPort(portNamed: name, readFileHandle: slaveTtyHandle, writeFileHandle: slaveTtyHandle, terminalFileHandle: terminalTtyHandle)
             }
         }
-        if #available(macOS 12, *) {
-            let fsConfig = VZVirtioFileSystemDeviceConfiguration(tag: "share")
-            fsConfig.share = makeDirectoryShare(from: appleConfig.sharedDirectories)
-            appleConfig.apple.directorySharingDevices = [fsConfig]
-            sharedDirectoriesChanged = appleConfig.$sharedDirectories.sink { [weak self] newShares in
-                guard let fsConfig = self?.apple?.directorySharingDevices.first as? VZVirtioFileSystemDevice else {
-                    return
-                }
-                fsConfig.share = self?.makeDirectoryShare(from: newShares)
-            }
-        }
-        apple = VZVirtualMachine(configuration: appleConfig.apple, queue: vmQueue)
+        let vzConfig = appleConfig.appleVZConfiguration
+        apple = VZVirtualMachine(configuration: vzConfig, queue: vmQueue)
         apple.delegate = self
     }
     

@@ -25,7 +25,7 @@ struct UTMUnavailableVMView: View {
                              subtitle: wrappedVM.detailsSubtitleLabel,
                              progress: nil,
                              imageOverlaySystemName: "questionmark.circle.fill",
-                             popover: { WrappedVMDetailsView(path: wrappedVM.path!.path, onRemove: remove) },
+                             popover: { WrappedVMDetailsView(path: wrappedVM.path.path, onRemove: remove) },
                              onRemove: remove)
     }
     

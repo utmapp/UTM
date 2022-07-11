@@ -67,12 +67,6 @@ class UTMData: ObservableObject {
     /// View: all pending VMs listed (ZIP and IPSW downloads)
     @MainActor @Published private(set) var pendingVMs: [UTMPendingVirtualMachine]
     
-    /// Temporary storage for QEMU removable drives settings
-    private var qemuRemovableDrivesCache: [String: URL]
-    
-    /// Temporary storage for QEMU imported and created drives that haven't been saved yet
-    private var qemuUnsavedImages: [URL]
-    
     #if os(macOS)
     /// View controller for every VM currently active
     var vmWindows: [UTMVirtualMachine: VMDisplayWindowController] = [:]
@@ -101,8 +95,6 @@ class UTMData: ObservableObject {
         self.showNewVMSheet = false
         self.busy = false
         self.virtualMachines = []
-        self.qemuRemovableDrivesCache = [:]
-        self.qemuUnsavedImages = []
         self.pendingVMs = []
         self.selectedVM = nil
         listLoadFromDefaults()
@@ -118,7 +110,7 @@ class UTMData: ObservableObject {
         var list = await virtualMachines
         for i in list.indices.reversed() {
             let vm = list[i]
-            if !fileManager.fileExists(atPath: vm.path!.path) {
+            if !fileManager.fileExists(atPath: vm.path.path) {
                 if let wrappedVM = UTMWrappedVirtualMachine(placeholderFor: vm) {
                     list[i] = wrappedVM
                 } else {
@@ -132,7 +124,7 @@ class UTMData: ObservableObject {
             let files = try fileManager.contentsOfDirectory(at: UTMData.defaultStorageUrl, includingPropertiesForKeys: [.isDirectoryKey], options: .skipsHiddenFiles)
             let newFiles = files.filter { newFile in
                 !list.contains { existingVM in
-                    existingVM.path?.standardizedFileURL == newFile.standardizedFileURL
+                    existingVM.path.standardizedFileURL == newFile.standardizedFileURL
                 }
             }
             for file in newFiles {
@@ -278,48 +270,6 @@ class UTMData: ObservableObject {
         return ProcessInfo.processInfo.globallyUniqueString
     }
     
-    /// Generate a unique drive name for QEMU
-    /// - Parameters:
-    ///   - type: Image type
-    ///   - ext: Image extension
-    ///   - forConfig: UTM QEMU configuration that will hold this drive
-    /// - Returns: Unique name for a non-existing item in the .utm data path
-    private func newDefaultDrivePath(type: UTMDiskImageType, extension ext: String, forConfig: UTMLegacyQemuConfiguration) -> String {
-        let nameForId = { (i: Int) in "\(type.description)-\(i).\(ext)" }
-        for i in 0..<1000 {
-            let name = nameForId(i)
-            let file = forConfig.imagesPath.appendingPathComponent(name)
-            if !fileManager.fileExists(atPath: file.path) {
-                return name
-            }
-        }
-        return UUID().uuidString
-    }
-    
-    /// Generate a default drive name for QEMU
-    /// - Parameter config: UTM QEMU configuration that will use the drive
-    /// - Returns: Unique name for the new drive
-    private func newDefaultDriveName(for config: UTMLegacyQemuConfiguration) -> String {
-        let nameForId = { (i: Int) in "drive\(i)" }
-        for i in 0..<1000 {
-            let name = nameForId(i)
-            var free: Bool = true
-            for j in 0..<config.countDrives {
-                guard let taken = config.driveName(for: j) else {
-                    continue
-                }
-                if taken == name {
-                    free = false
-                    break
-                }
-            }
-            if free {
-                return name
-            }
-        }
-        return UUID().uuidString
-    }
-    
     /// Generate a filename for an imported file, avoiding duplicate names
     /// - Parameters:
     ///   - imagesUrl: Destination directory to test for file existance
@@ -374,20 +324,13 @@ class UTMData: ObservableObject {
     func save(vm: UTMVirtualMachine) async throws {
         do {
             try await vm.saveUTM()
-            if let qemuVM = vm as? UTMQemuVirtualMachine {
-                try commitRemovableDriveImages(for: qemuVM)
-                qemuUnsavedImages.removeAll()
-            }
         } catch {
             // refresh the VM object as it is now stale
             do {
                 try discardChanges(for: vm)
             } catch {
                 // if we can't discard changes, recreate the VM from scratch
-                guard let path = vm.path else {
-                    logger.error("Attempting to refresh unsaved VM \(vm.detailsTitleLabel)")
-                    return
-                }
+                let path = vm.path
                 guard let newVM = UTMVirtualMachine(url: path) else {
                     logger.debug("Cannot create new object for \(path.path)")
                     return
@@ -403,37 +346,20 @@ class UTMData: ObservableObject {
     /// Discard changes to VM configuration
     /// - Parameter vm: VM configuration to discard
     func discardChanges(for vm: UTMVirtualMachine? = nil) throws {
-        let config: UTMLegacyQemuConfiguration
-        if let vm = vm, vm.path != nil {
+        if let vm = vm {
             try vm.reloadConfiguration()
-            guard let qemuConfig = vm.config as? UTMLegacyQemuConfiguration else {
-                // FIXME: non-qemu orphaned drives
-                return
-            }
-            config = qemuConfig
-        } else {
-            // create a tmp empty config so we can get orphanedDrives for tmp path
-            config = UTMLegacyQemuConfiguration()
         }
-        // delete unsaved drives
-        for url in qemuUnsavedImages {
-            try? fileManager.removeItem(at: url)
-        }
-        qemuUnsavedImages.removeAll()
     }
     
     /// Save a new VM to disk
     /// - Parameters:
     ///   - config: New VM configuration
-    func create(config: UTMConfigurable) async throws -> UTMVirtualMachine {
-        guard await !virtualMachines.contains(where: { !$0.isShortcut && $0.config.name == config.name }) else {
+    func create<Config: UTMConfiguration>(config: Config) async throws -> UTMVirtualMachine {
+        guard await !virtualMachines.contains(where: { !$0.isShortcut && $0.config.name == config.information.name }) else {
             throw NSLocalizedString("An existing virtual machine already exists with this name.", comment: "UTMData")
         }
-        let vm = UTMVirtualMachine(configuration: config, withDestinationURL: documentsURL)
+        let vm = UTMVirtualMachine(newConfig: config, destinationURL: Self.defaultStorageUrl)
         try await save(vm: vm)
-        if let qemuVM = vm as? UTMQemuVirtualMachine {
-            try commitRemovableDriveImages(for: qemuVM)
-        }
         await listAdd(vm: vm)
         await listSelect(vm: vm)
         return vm
@@ -445,7 +371,7 @@ class UTMData: ObservableObject {
     @discardableResult func delete(vm: UTMVirtualMachine) async throws -> Int? {
         if let _ = vm as? UTMWrappedVirtualMachine {
         } else {
-            try fileManager.removeItem(at: vm.path!)
+            try fileManager.removeItem(at: vm.path)
         }
         
         return await listRemove(vm: vm)
@@ -457,7 +383,7 @@ class UTMData: ObservableObject {
         let newName: String = newDefaultVMName(base: vm.detailsTitleLabel)
         let newPath = UTMVirtualMachine.virtualMachinePath(newName, inParentURL: documentsURL)
         
-        try fileManager.copyItem(at: vm.path!, to: newPath)
+        try fileManager.copyItem(at: vm.path, to: newPath)
         guard let newVM = UTMVirtualMachine(url: newPath) else {
             throw NSLocalizedString("Failed to clone VM.", comment: "UTMData")
         }
@@ -474,7 +400,7 @@ class UTMData: ObservableObject {
     ///   - vm: VM to copy
     ///   - url: Location to copy to (must be writable)
     func export(vm: UTMVirtualMachine, to url: URL) throws {
-        let sourceUrl = vm.path!
+        let sourceUrl = vm.path
         if fileManager.fileExists(atPath: url.path) {
             try fileManager.removeItem(at: url)
         }
@@ -504,10 +430,6 @@ class UTMData: ObservableObject {
     /// Open settings modal
     /// - Parameter vm: VM to edit settings
     @MainActor func edit(vm: UTMVirtualMachine) {
-        // show orphans for proper removal
-        if let config = vm.config as? UTMLegacyQemuConfiguration {
-            config.recoverOrphanedDrives()
-        }
         listSelect(vm: vm)
         showNewVMSheet = false
         showSettingsForCurrentVM()
@@ -516,23 +438,21 @@ class UTMData: ObservableObject {
     /// Copy configuration but not data from existing VM to a new VM
     /// - Parameter vm: Existing VM to copy configuration from
     @MainActor func template(vm: UTMVirtualMachine) async throws {
-        let copy = try await Task.detached { () -> UTMConfigurable in
-            if let qemuConfig = vm.config as? UTMLegacyQemuConfiguration {
-                let copy = qemuConfig.copy() as! UTMLegacyQemuConfiguration
-                copy.systemUUID = UUID().uuidString // re-generate UUID
-                for _ in 0..<copy.countDrives {
-                    copy.removeDrive(at: 0) // remove existing drives
-                }
-                return copy
-            }
-            throw NSLocalizedString("This virtual machine does not support templating.", comment: "UTMData")
-        }.value
-        copy.name = newDefaultVMName(base: copy.name)
-        if vm.config.iconCustom {
-            // save copy of custom icon
-            copy.selectedCustomIconPath = vm.config.iconUrl
+        let copy = try UTMQemuConfiguration.load(from: vm.path)
+        #if !os(macOS)
+        typealias UTMAppleConfiguration = UTMQemuConfiguration
+        #endif
+        if let copy = copy as? UTMQemuConfiguration {
+            copy.information.name = self.newDefaultVMName(base: copy.information.name)
+            copy.drives = []
+            _ = try await create(config: copy)
+        } else if let copy = copy as? UTMAppleConfiguration {
+            copy.information.name = self.newDefaultVMName(base: copy.information.name)
+            copy.drives = []
+            _ = try await create(config: copy)
+        } else {
+            fatalError()
         }
-        _ = try await create(config: copy)
         showSettingsForCurrentVM()
     }
     
@@ -542,10 +462,7 @@ class UTMData: ObservableObject {
     /// - Parameter vm: VM to calculate size
     /// - Returns: Size in bytes
     func computeSize(for vm: UTMVirtualMachine) -> Int64 {
-        guard let path = vm.path else {
-            logger.error("invalid path for vm")
-            return 0
-        }
+        let path = vm.path
         guard let enumerator = fileManager.enumerator(at: path, includingPropertiesForKeys: [.totalFileSizeKey]) else {
             logger.error("failed to create enumerator for \(path)")
             return 0
@@ -588,10 +505,7 @@ class UTMData: ObservableObject {
         let fileName = url.lastPathComponent
         let dest = documentsURL.appendingPathComponent(fileName, isDirectory: true)
         if let vm = await virtualMachines.first(where: { vm -> Bool in
-            guard let vmPath = vm.path else {
-                return false
-            }
-            return vmPath.standardizedFileURL == url.standardizedFileURL
+            return vm.path.standardizedFileURL == url.standardizedFileURL
         }) {
             logger.info("found existing vm!")
             if let wrappedVM = vm as? UTMWrappedVirtualMachine {
@@ -639,9 +553,9 @@ class UTMData: ObservableObject {
     /// Create a new VM using configuration and downloaded IPSW
     /// - Parameter config: Apple VM configuration
     @available(macOS 12, *)
-    @MainActor func downloadIPSW(using config: UTMLegacyAppleConfiguration) {
+    @MainActor func downloadIPSW(using config: UTMAppleConfiguration) {
         let task = UTMDownloadIPSWTask(for: config)
-        guard !virtualMachines.contains(where: { !$0.isShortcut && $0.config.name == config.name }) else {
+        guard !virtualMachines.contains(where: { !$0.isShortcut && $0.config.name == config.information.name }) else {
             showErrorAlert(message: NSLocalizedString("An existing virtual machine already exists with this name.", comment: "UTMData"))
             return
         }
@@ -688,168 +602,7 @@ class UTMData: ObservableObject {
         pendingVM.cancel()
     }
     
-    // MARK: - QEMU Disk drive I/O handling
-    
-    /// Import an existing drive image
-    /// - Parameters:
-    ///   - drive: File URL to drive
-    ///   - config: QEMU configuration to add to
-    ///   - imageType: Disk image type
-    ///   - interface: Interface to add to
-    ///   - raw: If false, convert to QCOW2
-    ///   - copy: Make a copy of the file (if false, file will be moved)
-    func importDrive(_ drive: URL, for config: UTMLegacyQemuConfiguration, imageType: UTMDiskImageType, on interface: String, raw: Bool, copy: Bool) async throws {
-        _ = drive.startAccessingSecurityScopedResource()
-        defer { drive.stopAccessingSecurityScopedResource() }
-        
-        var isDir: ObjCBool = false
-        guard fileManager.fileExists(atPath: drive.path, isDirectory: &isDir), !isDir.boolValue else {
-            if drive.pathExtension == "utm" {
-                throw NSLocalizedString("You cannot import a .utm package as a drive. Did you mean to open the package with UTM?", comment: "UTMData")
-            } else {
-                throw NSLocalizedString("You cannot import a directory as a drive.", comment: "UTMData")
-            }
-        }
-        
-        let imagesPath = config.imagesPath
-        var filename = newImportedImage(at: imagesPath, filename: drive.lastPathComponent)
-        var dstPath = imagesPath.appendingPathComponent(filename)
-        if !fileManager.fileExists(atPath: imagesPath.path) {
-            try fileManager.createDirectory(at: imagesPath, withIntermediateDirectories: false, attributes: nil)
-        }
-        if copy {
-            #if os(macOS)
-            if !raw {
-                filename = newImportedImage(at: imagesPath, filename: drive.lastPathComponent, withExtension: "qcow2")
-                dstPath = imagesPath.appendingPathComponent(filename)
-                try await UTMQemuImage.convert(from: drive, toQcow2: dstPath)
-            } else {
-                try fileManager.copyItem(at: drive, to: dstPath)
-            }
-            #else
-            assert(raw) // currently do not support QCOW2 conversion
-            try fileManager.copyItem(at: drive, to: dstPath)
-            #endif
-        } else {
-            try fileManager.moveItem(at: drive, to: dstPath)
-        }
-        qemuUnsavedImages.append(dstPath)
-        let newPath = filename
-        await MainActor.run {
-            let name = self.newDefaultDriveName(for: config)
-            config.newDrive(name, path: newPath, type: imageType, interface: interface)
-        }
-    }
-    
-    func importDrive(_ drive: URL, for config: UTMLegacyQemuConfiguration, copy: Bool = true) async throws {
-        let imageType: UTMDiskImageType = drive.pathExtension.lowercased() == "iso" ? .CD : .disk
-        let interface: String
-        if let target = config.systemTarget, let arch = config.systemArchitecture {
-            interface = UTMLegacyQemuConfiguration.defaultDriveInterface(forTarget: target, architecture: arch, type: imageType)
-        } else {
-            interface = "none"
-        }
-        try await importDrive(drive, for: config, imageType: imageType, on: interface, raw: true, copy: copy)
-    }
-    
-    /// Create a new QCOW2 disk image
-    /// - Parameters:
-    ///   - drive: Create parameters
-    ///   - config: QEMU configuration to add to
-    ///   - driveImage: Disk image type
-    func createDrive(_ drive: VMDriveImage, for config: UTMLegacyQemuConfiguration, with driveImage: URL? = nil) async throws {
-        var path: String = ""
-        if !drive.removable {
-            assert(driveImage == nil, "Cannot call createDrive with a driveImage!")
-            guard drive.size > 0 else {
-                throw NSLocalizedString("Invalid drive size.", comment: "UTMData")
-            }
-            path = newDefaultDrivePath(type: drive.imageType, extension: drive.isRawImage ? "raw" : "qcow2", forConfig: config)
-            let imagesPath = config.imagesPath
-            let dstPath = imagesPath.appendingPathComponent(path)
-            if !fileManager.fileExists(atPath: imagesPath.path) {
-                try fileManager.createDirectory(at: imagesPath, withIntermediateDirectories: false, attributes: nil)
-            }
-            
-            // create drive
-            try await Task.detached {
-                if drive.isRawImage {
-                    try self.generateNewRawDrive(at: dstPath, sizeInMib: drive.size)
-                } else if !GenerateDefaultQcow2File(dstPath as CFURL, drive.size) {
-                    throw NSLocalizedString("Disk creation failed.", comment: "UTMData")
-                }
-            }.value
-            
-            qemuUnsavedImages.append(dstPath)
-        }
-        
-        let name = self.newDefaultDriveName(for: config)
-        if let url = driveImage {
-            qemuRemovableDrivesCache[name] = url
-        }
-        let newPath = path
-        await MainActor.run {
-            let interface = drive.interface ?? "none"
-            if drive.removable {
-                config.newRemovableDrive(name, type: drive.imageType, interface: interface)
-            } else {
-                config.newDrive(name, path: newPath, type: drive.imageType, interface: interface)
-            }
-        }
-    }
-    
-    /// Delete a drive image data and settings from a QEMU configuration
-    /// - Parameters:
-    ///   - index: Index of drive in configuration
-    ///   - config: QEMU configuration
-    func removeDrive(at index: Int, for config: UTMLegacyQemuConfiguration) async throws {
-        if let path = config.driveImagePath(for: index) {
-            let fullPath = config.imagesPath.appendingPathComponent(path);
-            qemuUnsavedImages.removeAll(where: { $0 == fullPath })
-            if fileManager.fileExists(atPath: fullPath.path) {
-                try fileManager.removeItem(at: fullPath)
-            }
-        }
-        if let name = config.driveName(for: index) {
-            qemuRemovableDrivesCache.removeValue(forKey: name)
-        }
-        await MainActor.run {
-            config.removeDrive(at: index)
-        }
-    }
-    
-    /// Perform removable drive changes for cached items
-    ///
-    /// We do not store removable drive bookmarks in config.plist so we cache the removable drives until the VM is saved.
-    /// - Parameter vm: QEMU VM that will take the cached images
-    private func commitRemovableDriveImages(for vm: UTMQemuVirtualMachine) throws {
-        let drives = vm.drives
-        defer {
-            qemuRemovableDrivesCache.removeAll()
-        }
-        try qemuRemovableDrivesCache.forEach { name, url in
-            let drive = drives.first { drive in
-                drive.name == name
-            }
-            if let drive = drive {
-                try vm.changeMedium(for: drive, url: url)
-            }
-        }
-    }
-    
-    /// Create a new raw disk image
-    /// - Parameters:
-    ///   - url: Destination of the drive image
-    ///   - sizeInMib: Size of the drive image in MiB
-    private func generateNewRawDrive(at url: URL, sizeInMib: Int) throws {
-        let bytesInMib = 1048576
-        guard fileManager.createFile(atPath: url.path, contents: nil, attributes: nil) else {
-            throw NSLocalizedString("Cannot create disk iamge.", comment: "UTMData")
-        }
-        let handle = try FileHandle(forWritingTo: url)
-        try handle.truncate(atOffset: UInt64(sizeInMib * bytesInMib))
-        try handle.close()
-    }
+    // MARK: - Reclaim space
     
     #if os(macOS)
     /// Reclaim empty space in a file by (re)-converting it to QCOW2
@@ -942,7 +695,7 @@ class UTMData: ObservableObject {
     ///   - components: Data (see UTM Wiki for details)
     func automationSendMouse(to vm: UTMVirtualMachine, urlComponents components: URLComponents) {
         guard let qemuVm = vm as? UTMQemuVirtualMachine else { return } // FIXME: implement for Apple VM
-        guard !qemuVm.qemuConfig.displayConsoleOnly else { return }
+        guard qemuVm.config.qemuHasDisplay else { return }
         guard let queryItems = components.queryItems else { return }
         /// Parse targeted position
         var x: CGFloat? = nil

@@ -441,7 +441,8 @@ enum VMWizardOS: String, Identifiable {
         if let drive = drive, let bootImageURL = bootImageURL {
             try vm.changeMedium(for: drive, url: bootImageURL)
         }
-        let dataUrl = vm.qemuConfig.imagesPath
+        //FIXME: rewrite config for wizard
+        let dataUrl = vm.config.qemuConfig!.dataURL!
         var existingImage: URL? = nil
         if operatingSystem == .Linux && useLinuxKernel {
             try await copyItem(from: linuxKernelURL!, to: dataUrl)

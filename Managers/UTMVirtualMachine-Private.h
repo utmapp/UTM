@@ -20,9 +20,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface UTMVirtualMachine ()
 
-/// Parent directory where the .utm bundle resides, may not be accessible if this is a shortcut
-@property (nonatomic, strong) NSURL *parentPath;
-
 @property (nonatomic, readwrite) UTMViewState *viewState;
 
 @property (nonatomic, readwrite, nullable) NSData *bookmark;
@@ -33,8 +30,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign, readwrite) UTMVMState state;
 
 - (instancetype)init NS_UNAVAILABLE;
-- (nullable instancetype)initWithURL:(NSURL *)url;
-- (instancetype)initWithConfiguration:(id<UTMConfigurable>)configuration withDestinationURL:(NSURL *)dstUrl;
+- (instancetype)initWithConfiguration:(UTMConfigurationWrapper *)configuration packageURL:(NSURL *)packageURL;
 
 /// Load a plist into a NSDictionary representation
 /// @param path Path to plist

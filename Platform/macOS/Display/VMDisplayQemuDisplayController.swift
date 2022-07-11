@@ -24,8 +24,8 @@ class VMDisplayQemuWindowController: VMDisplayWindowController {
         vm as? UTMQemuVirtualMachine
     }
     
-    var vmQemuConfig: UTMLegacyQemuConfiguration! {
-        vm?.config as? UTMLegacyQemuConfiguration
+    var vmQemuConfig: UTMQemuConfiguration! {
+        vm?.config.qemuConfig
     }
     
     var defaultSubtitle: String {
@@ -44,15 +44,15 @@ class VMDisplayQemuWindowController: VMDisplayWindowController {
         qemuVM.ioDelegate = self
         startPauseToolbarItem.isEnabled = true
         #if arch(x86_64)
-        if vmQemuConfig.useHypervisor {
+        if vmQemuConfig.qemu.hasHypervisor {
             // currently x86_64 HVF doesn't support suspending
             startPauseToolbarItem.isEnabled = false
         }
         #endif
-        drivesToolbarItem.isEnabled = vmQemuConfig.countDrives > 0
+        drivesToolbarItem.isEnabled = vmQemuConfig.drives.count > 0
         sharedFolderToolbarItem.isEnabled = qemuVM.hasShareDirectoryEnabled
         usbToolbarItem.isEnabled = qemuVM.hasUsbRedirection
-        window!.title = vmQemuConfig.name
+        window!.title = vmQemuConfig.information.name
         window!.subtitle = defaultSubtitle
         super.enterLive()
     }

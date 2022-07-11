@@ -206,15 +206,20 @@ struct VMRemovableDrivesView: View {
 }
 
 struct VMRemovableDrivesView_Previews: PreviewProvider {
-    @State static private var config = UTMLegacyQemuConfiguration()
+    @State static private var config = UTMQemuConfiguration()
     
     static var previews: some View {
-        VMRemovableDrivesView(vm: UTMVirtualMachine(configuration: config, withDestinationURL: URL(fileURLWithPath: "")) as! UTMQemuVirtualMachine)
+        VMDetailsView(vm: UTMVirtualMachine(newConfig: config, destinationURL: URL(fileURLWithPath: "")))
         .onAppear {
-            config.shareDirectoryEnabled = true
-            config.newDrive("", path: "", type: .disk, interface: "ide")
-            config.newDrive("", path: "", type: .disk, interface: "sata")
-            config.newDrive("", path: "", type: .CD, interface: "ide")
+            config.sharing.directoryShareMode = .webdav
+            var drive = UTMQemuConfigurationDrive()
+            drive.imageType = .disk
+            drive.interface = .ide
+            config.drives.append(drive)
+            drive.interface = .scsi
+            config.drives.append(drive)
+            drive.imageType = .cd
+            config.drives.append(drive)
         }
     }
 }

@@ -21,15 +21,15 @@ import Virtualization
 @available(iOS, unavailable, message: "Apple Virtualization not available on iOS")
 @available(macOS 12, *)
 class UTMDownloadIPSWTask: UTMDownloadTask {
-    let config: UTMLegacyAppleConfiguration
+    let config: UTMAppleConfiguration
     
     private var cacheUrl: URL {
         fileManager.urls(for: .cachesDirectory, in: .userDomainMask).first!
     }
     
-    init(for config: UTMLegacyAppleConfiguration) {
+    init(for config: UTMAppleConfiguration) {
         self.config = config
-        super.init(for: config.macRecoveryIpswURL!, named: config.name)
+        super.init(for: config.system.macRecoveryIpswURL!, named: config.information.name)
     }
     
     override func processCompletedDownload(at location: URL) async throws -> UTMVirtualMachine {
@@ -38,7 +38,7 @@ class UTMDownloadIPSWTask: UTMDownloadTask {
             try fileManager.removeItem(at: cacheIpsw)
         }
         try fileManager.moveItem(at: location, to: cacheIpsw)
-        config.macRecoveryIpswURL = cacheIpsw
-        return UTMVirtualMachine(configuration: config, withDestinationURL: UTMData.defaultStorageUrl)
+        config.system.macRecoveryIpswURL = cacheIpsw
+        return UTMVirtualMachine(newConfig: config, destinationURL: UTMData.defaultStorageUrl)
     }
 }

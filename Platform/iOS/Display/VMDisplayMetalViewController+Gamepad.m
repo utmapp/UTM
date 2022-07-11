@@ -20,8 +20,6 @@
 #import "VMDisplayMetalViewController+Gamepad.h"
 #import "VMDisplayMetalViewController+Touch.h"
 #import "CSDisplay.h"
-#import "UTMLegacyQemuConfiguration.h"
-#import "UTMLegacyQemuConfiguration+Constants.h"
 #import "UTMLogging.h"
 
 const CGFloat kThumbstickSpeedMultiplier = 1000; // in points per second

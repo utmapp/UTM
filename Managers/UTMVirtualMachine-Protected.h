@@ -66,19 +66,9 @@ extern const NSURLBookmarkResolutionOptions kUTMBookmarkResolutionOptions;
 /// This property is observable and must only be accessed on the main thread.
 @property (nonatomic, readonly) NSString *stateLabel;
 
-@property (nonatomic, readwrite, nullable) NSURL *path;
-@property (nonatomic, readwrite, copy) id<UTMConfigurable> config;
+@property (nonatomic, readwrite) NSURL *path;
+@property (nonatomic, readwrite, copy) UTMConfigurationWrapper *config;
 @property (nonatomic, readwrite, nullable) CSScreenshot *screenshot;
-
-/// Checks if a given path contains an Apple VM
-/// @param path Path to check
-/// @returns true if `path` is valid and points to an Apple UTM VM
-+ (BOOL)isAppleVMForPath:(NSURL *)path;
-
-/// Get a URL for a .utm package
-/// @param name Name of package
-/// @returns URL of the package that may not exist
-- (NSURL *)packageURLForName:(NSString *)name;
 
 /// Updates the internal state and view state
 /// @param state New state
@@ -92,12 +82,6 @@ extern const NSURLBookmarkResolutionOptions kUTMBookmarkResolutionOptions;
 /// @param message Localized message if possible
 /// @returns UTM error with the localized description set to `message`
 - (NSError *)errorWithMessage:(nullable NSString *)message;
-
-/// Reload configuration from disk
-/// @param reload Attempt to re-use the existing config object
-/// @param err Error thrown if failed
-/// @returns true if successful, otherwise `err` contains the thrown error
-- (BOOL)loadConfigurationWithReload:(BOOL)reload error:(NSError * _Nullable __autoreleasing *)err;
 
 /// Load screenshot from disk
 - (void)loadScreenshot;

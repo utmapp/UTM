@@ -27,15 +27,19 @@ extension UTMData {
                 window = nil
             }
             if let avm = vm as? UTMAppleVirtualMachine {
-                if avm.appleConfig.architecture == UTMAppleVirtualMachine.currentArchitecture {
-                    window = VMDisplayAppleWindowController(vm: avm, onClose: close)
+                if avm.appleConfig.system.architecture == UTMAppleConfigurationSystem.currentArchitecture {
+                    if avm.appleConfig.displays.count > 0 ||
+                        (avm.appleConfig.serials.count > 0 && avm.appleConfig.serials.first!.mode == .builtin) {
+                        window = VMDisplayAppleWindowController(vm: avm, onClose: close)
+                    }
                 }
             }
             if let qvm = vm as? UTMQemuVirtualMachine {
-                if qvm.qemuConfig.displayConsoleOnly {
-                    window = VMDisplayTerminalWindowController(vm: qvm, onClose: close)
-                } else {
+                // FIXME: multiple display support
+                if qvm.config.qemuHasDisplay {
                     window = VMDisplayMetalWindowController(vm: qvm, onClose: close)
+                } else {
+                    window = VMDisplayTerminalWindowController(vm: qvm, onClose: close)
                 }
             }
             if window == nil {

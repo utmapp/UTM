@@ -18,7 +18,7 @@ import Foundation
 
 @objc class UTMQemuImage: UTMQemu {
     private init() {
-        super.init(argv: [])
+        super.init(arguments: [])
     }
     
     static func convert(from url: URL, toQcow2 dest: URL, withCompression compressed: Bool = false) async throws {

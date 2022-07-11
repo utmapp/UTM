@@ -20,11 +20,6 @@
 #import "UTMQemuVirtualMachine.h"
 #import "UTMQemuVirtualMachine+Drives.h"
 #import "UTMQemuVirtualMachine+SPICE.h"
-#import "UTMLegacyQemuConfiguration.h"
-#import "UTMLegacyQemuConfiguration+Constants.h"
-#import "UTMLegacyQemuConfiguration+Display.h"
-#import "UTMLegacyQemuConfiguration+Drives.h"
-#import "UTMLegacyQemuConfiguration+Miscellaneous.h"
 #import "UTMViewState.h"
 #import "UTMQemuManager.h"
 #import "UTMQemuSystem.h"
@@ -53,10 +48,6 @@ NSString *const kSuspendSnapshotName = @"suspend";
 
 @implementation UTMQemuVirtualMachine
 
-- (UTMLegacyQemuConfiguration *)qemuConfig {
-    return (UTMLegacyQemuConfiguration *)self.config;
-}
-
 - (id<UTMSpiceIODelegate>)ioDelegate {
     return self.ioService.delegate;
 }
@@ -74,128 +65,6 @@ NSString *const kSuspendSnapshotName = @"suspend";
         self.vmOperations = dispatch_queue_create("com.utmapp.UTM.VMOperations", DISPATCH_QUEUE_SERIAL);
     }
     return self;
-}
-
-#pragma mark - Configuration
-
-- (BOOL)loadConfigurationWithReload:(BOOL)reload error:(NSError * _Nullable __autoreleasing *)err {
-    NSAssert(self.path != nil, @"Cannot load configuration on an unsaved VM.");
-    NSString *name = [UTMVirtualMachine virtualMachineName:self.path];
-    NSDictionary *plist = [self loadPlist:[self.path URLByAppendingPathComponent:kUTMBundleConfigFilename] withError:err];
-    if (!plist) {
-        UTMLog(@"Failed to parse config for %@, error: %@", self.path, err ? *err : nil);
-        return NO;
-    }
-    if (reload) {
-        NSAssert(self.qemuConfig != nil, @"Trying to reload when no configuration is loaded.");
-        return [self.qemuConfig reloadConfigurationWithDictionary:plist name:name path:self.path];
-    } else {
-        self.config = [[UTMLegacyQemuConfiguration alloc] initWithDictionary:plist name:name path:self.path];
-        return self.config != nil;
-    }
-}
-
-- (BOOL)saveConfigurationWithError:(NSError * _Nullable __autoreleasing *)err {
-    NSURL *url = [self packageURLForName:self.qemuConfig.name];
-    if (![self savePlist:[url URLByAppendingPathComponent:kUTMBundleConfigFilename]
-                    dict:self.qemuConfig.dictRepresentation
-               withError:err]) {
-        return NO;
-    }
-    return YES;
-}
-
-- (BOOL)saveIconWithError:(NSError * _Nullable __autoreleasing *)err {
-    NSFileManager *fileManager = [NSFileManager defaultManager];
-    NSURL *url = [self packageURLForName:self.qemuConfig.name];
-    if (self.qemuConfig.iconCustom && self.qemuConfig.selectedCustomIconPath) {
-        if (self.qemuConfig.icon != nil) {
-            NSURL *oldIconPath = [url URLByAppendingPathComponent:self.qemuConfig.icon];
-            // delete old icon
-            if ([fileManager fileExistsAtPath:oldIconPath.path]) {
-                [fileManager removeItemAtURL:oldIconPath error:nil]; // Ignore error
-            }
-        }
-        NSString *newIcon = self.qemuConfig.selectedCustomIconPath.lastPathComponent;
-        NSURL *newIconPath = [url URLByAppendingPathComponent:newIcon];
-        
-        // copy new icon
-        if (![fileManager copyItemAtURL:self.qemuConfig.selectedCustomIconPath toURL:newIconPath error:err]) {
-            return NO;
-        }
-        // commit icon
-        self.qemuConfig.icon = newIcon;
-        self.qemuConfig.selectedCustomIconPath = nil;
-    }
-    return YES;
-}
-
-- (BOOL)saveDisksWithError:(NSError * _Nullable __autoreleasing *)err {
-    NSFileManager *fileManager = [NSFileManager defaultManager];
-    NSURL *url = [self packageURLForName:self.qemuConfig.name];
-    if (!self.qemuConfig.existingPath) {
-        NSURL *dstPath = [url URLByAppendingPathComponent:[UTMLegacyQemuConfiguration diskImagesDirectory] isDirectory:YES];
-        NSURL *tmpPath = [fileManager.temporaryDirectory URLByAppendingPathComponent:[UTMLegacyQemuConfiguration diskImagesDirectory] isDirectory:YES];
-        
-        // create images directory
-        if ([fileManager fileExistsAtPath:tmpPath.path]) {
-            // delete any orphaned images
-            NSArray<NSString *> *orphans = self.qemuConfig.orphanedDrives;
-            for (NSInteger i = 0; i < orphans.count; i++) {
-                NSURL *orphanPath = [tmpPath URLByAppendingPathComponent:orphans[i]];
-                UTMLog(@"Deleting orphaned image '%@'", orphans[i]);
-                if (![fileManager removeItemAtURL:orphanPath error:nil]) {
-                    UTMLog(@"Ignoring error deleting orphaned image");
-                }
-            }
-            // move remaining drives to VM package
-            if (![fileManager moveItemAtURL:tmpPath toURL:dstPath error:err]) {
-                return NO;
-            }
-        } else if (![fileManager fileExistsAtPath:dstPath.path]) {
-            if (![fileManager createDirectoryAtURL:dstPath withIntermediateDirectories:NO attributes:nil error:err]) {
-                return NO;
-            }
-        }
-    }
-    return YES;
-}
-
-- (void)saveUTMWithCompletion:(void (^)(NSError * _Nullable))completion {
-    NSFileManager *fileManager = [NSFileManager defaultManager];
-    NSURL *url = [self packageURLForName:self.qemuConfig.name];
-    NSError *err;
-    if (!self.qemuConfig.existingPath) { // new package
-        if (![fileManager createDirectoryAtURL:url withIntermediateDirectories:YES attributes:nil error:&err]) {
-            completion(err);
-            return;
-        }
-    } else if (![self.qemuConfig.existingPath.URLByStandardizingPath isEqual:url.URLByStandardizingPath]) { // rename if needed
-        if (![fileManager moveItemAtURL:self.qemuConfig.existingPath toURL:url error:&err]) {
-            completion(err);
-            return;
-        }
-    } else {
-        url = self.qemuConfig.existingPath;
-    }
-    // save icon
-    if (![self saveIconWithError:&err]) {
-        completion(err);
-        return;
-    }
-    // save config
-    if (![self saveConfigurationWithError:&err]) {
-        completion(err);
-        return;
-    }
-    // create disk images directory
-    if (![self saveDisksWithError:&err]) {
-        completion(err);
-        return;
-    }
-    self.qemuConfig.existingPath = url;
-    self.path = url;
-    completion(nil);
 }
 
 #pragma mark - Shortcut access
@@ -254,14 +123,24 @@ NSString *const kSuspendSnapshotName = @"suspend";
         return;
     }
     // start logging
-    if (self.qemuConfig.debugLogEnabled) {
-        [self.logging logToFile:[self.path URLByAppendingPathComponent:[UTMLegacyQemuConfiguration debugLogName]]];
+    if (self.config.qemuHasDebugLog) {
+        [self.logging logToFile:self.config.qemuDebugLogURL];
     }
     
-    if (!self.system) {
-        self.system = [[UTMQemuSystem alloc] initWithConfiguration:self.qemuConfig imgPath:self.path];
-        self.system.logging = self.logging;
+    if (self.isRunningAsSnapshot) {
+        self.config.qemuIsDisposable = self.isRunningAsSnapshot;
+    } else {
+        // Loading save states isn't possible when -snapshot is used
+        if (self.viewState.hasSaveState) {
+            self.config.qemuSnapshotName = kSuspendSnapshotName;
+        }
     }
+    
+    NSArray<NSString *> *arguments = self.config.qemuArguments;
+    NSArray<NSURL *> *resources = self.config.qemuResources;
+    self.system = [[UTMQemuSystem alloc] initWithArguments:arguments architecture:self.config.qemuArchitecture];
+    self.system.resources = resources;
+    self.system.logging = self.logging;
 
     if (!self.system) {
         completion([self errorGeneric]);
@@ -282,22 +161,23 @@ NSString *const kSuspendSnapshotName = @"suspend";
         }
     }
     
-    if (self.isRunningAsSnapshot) {
-        self.system.runAsSnapshot = self.isRunningAsSnapshot;
-    } else {
-        // Loading save states isn't possible when -snapshot is used
-        if (self.viewState.hasSaveState) {
-            self.system.snapshot = kSuspendSnapshotName;
-        }
-    }
-    
-    if (!self.ioService) {
-        self.ioService = [[UTMSpiceIO alloc] initWithConfiguration:self.qemuConfig];
-    }
+    self.ioService = [[UTMSpiceIO alloc] initWithConfiguration:self.config];
     
     NSError *spiceError;
     if (![self.ioService startWithError:&spiceError]) {
         completion(spiceError);
+        return;
+    }
+    // create EFI variables for legacy config
+    // this is ugly code and should be removed when legacy config support is removed
+    dispatch_semaphore_t ensureEfiVarsEvent = dispatch_semaphore_create(0);
+    __block NSError *ensureEfiVarsError = nil;
+    [self.config qemuEnsureEfiVarsAvailableWithCompletion:^(NSError * _Nullable error) {
+        ensureEfiVarsError = error;
+        dispatch_semaphore_signal(ensureEfiVarsEvent);
+    }];
+    if (ensureEfiVarsError) {
+        completion(ensureEfiVarsError);
         return;
     }
     // start QEMU (this can be in parallel with SPICE connect below)
@@ -360,12 +240,10 @@ NSString *const kSuspendSnapshotName = @"suspend";
     assert(self.qemu);
     assert(self.qemu.isConnected);
     // set up SPICE sharing and removable drives
-    if (!self.qemuConfig.displayConsoleOnly) {
-        if (![self startSharedDirectoryWithError:&err]) {
-            errMsg = [NSString stringWithFormat:NSLocalizedString(@"Error trying to start shared directory: %@", @"UTMVirtualMachine"), err.localizedDescription];
-            completion([self errorWithMessage:errMsg]);
-            return;
-        }
+    if (![self startSharedDirectoryWithError:&err]) {
+        errMsg = [NSString stringWithFormat:NSLocalizedString(@"Error trying to start shared directory: %@", @"UTMVirtualMachine"), err.localizedDescription];
+        completion([self errorWithMessage:errMsg]);
+        return;
     }
     if (![self restoreRemovableDrivesFromBookmarksWithError:&err]) {
         errMsg = [NSString stringWithFormat:NSLocalizedString(@"Error trying to restore removable drives: %@", @"UTMVirtualMachine"), err.localizedDescription];
@@ -657,14 +535,6 @@ NSString *const kSuspendSnapshotName = @"suspend";
             completion(err);
         }];
     });
-}
-
-- (UTMDisplayType)supportedDisplayType {
-    if ([self.qemuConfig displayConsoleOnly]) {
-        return UTMDisplayTypeConsole;
-    } else {
-        return UTMDisplayTypeFullGraphic;
-    }
 }
 
 #pragma mark - Qemu manager delegate

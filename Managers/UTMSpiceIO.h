@@ -22,7 +22,7 @@
 @import CocoaSpice;
 #endif
 
-@class UTMLegacyQemuConfiguration;
+@class UTMConfigurationWrapper;
 @class UTMQemuManager;
 
 typedef void (^ioConnectCompletionHandler_t)(UTMQemuManager * _Nullable, NSError * _Nullable);
@@ -31,7 +31,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface UTMSpiceIO : NSObject<CSConnectionDelegate>
 
-@property (nonatomic, readonly, nonnull) UTMLegacyQemuConfiguration* configuration;
+@property (nonatomic, readonly, nonnull) UTMConfigurationWrapper* configuration;
 @property (nonatomic, readonly, nullable) CSDisplay *primaryDisplay;
 @property (nonatomic, readonly, nullable) CSInput *primaryInput;
 @property (nonatomic, readonly, nullable) CSPort *primarySerial;
@@ -43,7 +43,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly, nullable) CSScreenshot *screenshot;
 
 - (instancetype)init NS_UNAVAILABLE;
-- (instancetype)initWithConfiguration: (UTMLegacyQemuConfiguration*) configuration NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithConfiguration:(UTMConfigurationWrapper *)configuration NS_DESIGNATED_INITIALIZER;
 - (void)changeSharedDirectory:(NSURL *)url;
 
 - (BOOL)startWithError:(NSError **)err;

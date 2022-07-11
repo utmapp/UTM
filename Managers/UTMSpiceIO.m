@@ -15,9 +15,6 @@
 //
 
 #import "UTMSpiceIO.h"
-#import "UTMLegacyQemuConfiguration.h"
-#import "UTMLegacyQemuConfiguration+Miscellaneous.h"
-#import "UTMLegacyQemuConfiguration+Sharing.h"
 #import "UTMQemuManager.h"
 #import "UTMLogging.h"
 #import "UTMViewState.h"
@@ -29,6 +26,7 @@ extern NSString *const kUTMErrorDomain;
 
 @interface UTMSpiceIO ()
 
+@property (nonatomic, readwrite, nonnull) UTMConfigurationWrapper* configuration;
 @property (nonatomic, readwrite, nullable) CSDisplay *primaryDisplay;
 @property (nonatomic, readwrite, nullable) CSInput *primaryInput;
 @property (nonatomic, readwrite, nullable) CSPort *primarySerial;
@@ -49,9 +47,9 @@ extern NSString *const kUTMErrorDomain;
 
 @implementation UTMSpiceIO
 
-- (instancetype)initWithConfiguration:(UTMLegacyQemuConfiguration *)configuration {
+- (instancetype)initWithConfiguration:(UTMConfigurationWrapper *)configuration {
     if (self = [super init]) {
-        _configuration = configuration;
+        self.configuration = configuration;
         self.connectQueue = dispatch_queue_create("SPICE Connect Attempt", NULL);
     }
     
@@ -60,10 +58,10 @@ extern NSString *const kUTMErrorDomain;
 
 - (void)initializeSpiceIfNeeded {
     if (!self.spiceConnection) {
-        self.spiceConnection = [[CSConnection alloc] initWithUnixSocketFile:self.configuration.spiceSocketURL];
+        self.spiceConnection = [[CSConnection alloc] initWithUnixSocketFile:self.configuration.qemuSpiceSocketURL];
         self.spiceConnection.delegate = self;
-        self.spiceConnection.audioEnabled = _configuration.soundEnabled;
-        self.spiceConnection.session.shareClipboard = _configuration.shareClipboardEnabled;
+        self.spiceConnection.audioEnabled = _configuration.qemuHasAudio;
+        self.spiceConnection.session.shareClipboard = _configuration.qemuHasClipboardSharing;
         self.spiceConnection.session.pasteboardDelegate = [UTMPasteboard generalPasteboard];
     }
 }
@@ -244,7 +242,7 @@ extern NSString *const kUTMErrorDomain;
     if (self.sharedDirectory) {
         UTMLog(@"setting share directory to %@", self.sharedDirectory.path);
         [self.sharedDirectory startAccessingSecurityScopedResource];
-        [self.spiceConnection.session setSharedDirectory:self.sharedDirectory.path readOnly:self.configuration.shareDirectoryReadOnly];
+        [self.spiceConnection.session setSharedDirectory:self.sharedDirectory.path readOnly:self.configuration.qemuIsDirectoryShareReadOnly];
     }
 }
 

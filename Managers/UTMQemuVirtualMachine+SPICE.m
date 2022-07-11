@@ -15,13 +15,12 @@
 //
 
 #import "UTMQemuVirtualMachine+SPICE.h"
-#import "UTMLegacyQemuConfiguration+Display.h"
-#import "UTMLegacyQemuConfiguration+Sharing.h"
 #import "UTMLogging.h"
 #import "UTMQemuManager.h"
 #import "UTMSpiceIO.h"
 #import "UTMViewState.h"
 #import "UTMJailbreak.h"
+#import "UTM-Swift.h"
 #if defined(WITH_QEMU_TCI)
 @import CocoaSpiceNoUsb;
 #else
@@ -58,7 +57,7 @@ extern const NSURLBookmarkResolutionOptions kUTMBookmarkResolutionOptions;
 #pragma mark - Shared Directory
 
 - (BOOL)hasShareDirectoryEnabled {
-    return self.qemuConfig.shareDirectoryEnabled && !self.qemuConfig.displayConsoleOnly;
+    return self.config.qemuHasWebdavSharing;
 }
 
 - (BOOL)saveSharedDirectory:(NSURL *)url error:(NSError * _Nullable __autoreleasing *)error {
@@ -104,7 +103,7 @@ extern const NSURLBookmarkResolutionOptions kUTMBookmarkResolutionOptions;
         }
         return NO;
     }
-    if (!self.qemuConfig.shareDirectoryEnabled) {
+    if (!self.config.qemuHasWebdavSharing) {
         return YES;
     }
     UTMSpiceIO *spiceIO = [self spiceIoWithError:error];
@@ -117,10 +116,6 @@ extern const NSURLBookmarkResolutionOptions kUTMBookmarkResolutionOptions;
     if (self.viewState.sharedDirectory) {
         UTMLog(@"found shared directory bookmark");
         bookmark = self.viewState.sharedDirectory;
-    } else if (self.qemuConfig.shareDirectoryBookmark) {
-        UTMLog(@"found shared directory bookmark (legacy)");
-        bookmark = self.qemuConfig.shareDirectoryBookmark;
-        legacy = YES;
     }
     if (bookmark) {
         BOOL stale;
