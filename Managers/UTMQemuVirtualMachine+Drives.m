@@ -20,6 +20,7 @@
 #import "UTMDrive.h"
 #import "UTMQemu.h"
 #import "UTMQemuManager+BlockDevices.h"
+#import "UTM-Swift.h"
 
 extern NSString *const kUTMErrorDomain;
 
@@ -33,10 +34,6 @@ extern NSString *const kUTMErrorDomain;
 @end
 
 @implementation UTMQemuVirtualMachine (Drives)
-
-@dynamic drives;
-// implemented in UTMVirtualMachineExtension.swift
-// FIXME: unify with UTMQemuConfigurationDrive after rewrite
 
 - (BOOL)ejectDrive:(UTMDrive *)drive force:(BOOL)force error:(NSError * _Nullable __autoreleasing *)error {
     NSString *oldPath = [self.viewState pathForRemovableDrive:drive.name];
