@@ -65,7 +65,7 @@ struct VMConfigInfoView: View {
         }.onAppear {
             if config.isIconCustom {
                 iconStyle = .custom
-            } else if config.iconUrl != nil {
+            } else if config.iconURL != nil {
                 iconStyle = .operatingSystem
             }
         }.alert(item: $warningMessage) { warning in
@@ -92,19 +92,8 @@ struct VMConfigInfoView: View {
             return iconStyle
         } set: {
             iconStyle = $0
-            switch iconStyle {
-            case .generic:
-                config.icon = ""
-                config.selectedCustomIconPath = nil
-                break
-            case .operatingSystem:
-                config.isIconCustom = false
-                config.selectedCustomIconPath = nil
-                break
-            case .custom:
-                config.isIconCustom = true
-                break
-            }
+            config.isIconCustom = false
+            config.iconURL = nil
         }
 
         Picker(selection: style.animation(), label: Text("Style")) {
@@ -125,7 +114,7 @@ struct VMConfigInfoView: View {
         case .custom:
             #if os(macOS)
             Button(action: { imageSelectVisible.toggle() }, label: {
-                IconPreview(url: config.iconUrl)
+                IconPreview(url: config.iconURL)
             }).fileImporter(isPresented: $imageSelectVisible, allowedContentTypes: [.image]) { result in
                 switch result {
                 case .success(let url):
@@ -136,14 +125,14 @@ struct VMConfigInfoView: View {
             }.buttonStyle(.plain)
             #else
             Button(action: { imageSelectVisible.toggle() }, label: {
-                IconPreview(url: config.iconUrl)
+                IconPreview(url: config.iconURL)
             }).popover(isPresented: $imageSelectVisible, arrowEdge: .bottom) {
                 ImagePicker(onImageSelected: imageCustomSelected)
             }.buttonStyle(.plain)
             #endif
         case .operatingSystem:
             Button(action: { imageSelectVisible.toggle() }, label: {
-                IconPreview(url: config.iconUrl)
+                IconPreview(url: config.iconURL)
             }).popover(isPresented: $imageSelectVisible, arrowEdge: .bottom) {
                 IconSelect(onIconSelected: imageSelected)
             }.buttonStyle(.plain)
@@ -162,7 +151,7 @@ struct VMConfigInfoView: View {
     
     private func imageCustomSelected(url: URL?) {
         if let imageURL = url {
-            config.selectedCustomIconPath = imageURL
+            config.iconURL = imageURL
             config.isIconCustom = true
         }
         imageSelectVisible = false
@@ -170,7 +159,7 @@ struct VMConfigInfoView: View {
     
     private func imageSelected(url: URL) {
         let name = url.deletingPathExtension().lastPathComponent
-        config.icon = name
+        config.iconURL = UTMConfigurationInfo.builtinIcon(named: name)
         config.isIconCustom = false
         imageSelectVisible = false
     }

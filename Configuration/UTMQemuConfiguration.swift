@@ -225,13 +225,12 @@ extension UTMQemuConfiguration {
             }
         }
         // move icon
-        if information.isIconCustom, let oldIconURL = information.iconUrl {
+        if information.isIconCustom, let oldIconURL = information.iconURL {
             let newIconURL = dataURL.appendingPathComponent(oldIconURL.lastPathComponent)
             try await Task.detached {
                 try fileManager.moveItem(at: oldIconURL, to: newIconURL)
             }.value
         }
-        information.dataURL = dataURL
         // move debug log
         let oldLogURL = dataURL.appendingPathComponent(QEMUPackageFileName.debugLog.rawValue)
         if fileManager.fileExists(atPath: oldLogURL.path) {

@@ -21,15 +21,8 @@ struct UTMConfigurationInfo: Codable {
     /// VM name displayed to user.
     var name: String = NSLocalizedString("Virtual Machine", comment: "UTMConfigurationInfo")
     
-    /// Base path of icon image. This property is not saved to file.
-    var dataURL: URL?
-    
-    /// Full path to the custom icon image. File will be copied to VM bundle on save.
-    /// This property is not saved to file.
-    var selectedCustomIconPath: URL?
-    
-    /// Name of the icon.
-    var icon: String?
+    /// Path to the icon.
+    var iconURL: URL?
     
     /// If true, the icon is stored in the bundle. Otherwise, the icon is built-in.
     var isIconCustom: Bool = false
@@ -39,24 +32,6 @@ struct UTMConfigurationInfo: Codable {
     
     /// Random identifier not accessible by the user.
     var uuid: UUID = UUID()
-    
-    /// Use this to get the file to display the icon.
-    var iconUrl: URL? {
-        if self.isIconCustom {
-            if let current = self.selectedCustomIconPath {
-                return current // if we just selected a path
-            }
-            guard let icon = self.icon else {
-                return nil
-            }
-            return dataURL?.appendingPathComponent(icon) // from saved config
-        } else {
-            guard let icon = self.icon else {
-                return nil
-            }
-            return Bundle.main.url(forResource: icon, withExtension: "png", subdirectory: "Icons")
-        }
-    }
     
     enum CodingKeys: String, CodingKey {
         case name = "Name"
@@ -72,20 +47,35 @@ struct UTMConfigurationInfo: Codable {
     init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         name = try values.decode(String.self, forKey: .name)
-        icon = try values.decodeIfPresent(String.self, forKey: .icon)
         isIconCustom = try values.decode(Bool.self, forKey: .isIconCustom)
+        if isIconCustom {
+            guard let dataURL = decoder.userInfo[.dataURL] as? URL else {
+                throw UTMConfigurationError.invalidDataURL
+            }
+            let iconName = try values.decode(String.self, forKey: .icon)
+            iconURL = dataURL.appendingPathComponent(iconName)
+        } else if let iconName = try values.decodeIfPresent(String.self, forKey: .icon) {
+            iconURL = Self.builtinIcon(named: iconName)
+        }
         notes = try values.decodeIfPresent(String.self, forKey: .notes)
         uuid = try values.decode(UUID.self, forKey: .uuid)
-        dataURL = decoder.userInfo[.dataURL] as? URL
     }
     
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(name, forKey: .name)
-        try container.encodeIfPresent(icon, forKey: .icon)
         try container.encode(isIconCustom, forKey: .isIconCustom)
+        if isIconCustom {
+            try container.encode(iconURL!.lastPathComponent, forKey: .icon)
+        } else if let name = iconURL?.deletingPathExtension().lastPathComponent {
+            try container.encode(name, forKey: .icon)
+        }
         try container.encodeIfPresent(notes, forKey: .notes)
         try container.encode(uuid, forKey: .uuid)
+    }
+    
+    static func builtinIcon(named name: String) -> URL? {
+        Bundle.main.url(forResource: name, withExtension: "png", subdirectory: "Icons")
     }
 }
 
@@ -100,8 +90,16 @@ extension UTMConfigurationInfo {
             self.uuid = uuid
         }
         isIconCustom = oldConfig.iconCustom
-        dataURL = oldConfig.existingPath
-        icon = oldConfig.icon
+        if isIconCustom {
+            if let name = oldConfig.icon, let dataURL = oldConfig.existingPath {
+                iconURL = dataURL.appendingPathComponent(name)
+            } else {
+                isIconCustom = false
+            }
+        }
+        if let name = oldConfig.icon {
+            iconURL = Self.builtinIcon(named: name)
+        }
     }
     
     #if os(macOS)
@@ -111,8 +109,16 @@ extension UTMConfigurationInfo {
         notes = oldConfig.notes
         uuid = UUID()
         isIconCustom = oldConfig.iconCustom
-        icon = oldConfig.icon
-        self.dataURL = dataURL
+        if isIconCustom {
+            if let name = oldConfig.icon {
+                iconURL = dataURL.appendingPathComponent(name)
+            } else {
+                isIconCustom = false
+            }
+        }
+        if let name = oldConfig.icon {
+            iconURL = Self.builtinIcon(named: name)
+        }
     }
     #endif
 }
@@ -122,15 +128,8 @@ extension UTMConfigurationInfo {
 extension UTMConfigurationInfo {
     @MainActor mutating func saveData(to dataURL: URL) async throws -> [URL] {
         // save new icon
-        if isIconCustom {
-            if let iconURL = selectedCustomIconPath {
-                icon = iconURL.lastPathComponent
-                return await [try UTMQemuConfiguration.copyItemIfChanged(from: iconURL, to: dataURL)]
-            } else if let existingName = icon {
-                return [dataURL.appendingPathComponent(existingName)]
-            } else {
-                throw UTMConfigurationError.customIconInvalid
-            }
+        if isIconCustom, let iconURL = iconURL {
+            return await [try UTMQemuConfiguration.copyItemIfChanged(from: iconURL, to: dataURL)]
         }
         return []
     }
