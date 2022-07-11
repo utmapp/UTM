@@ -41,6 +41,7 @@ class VMDisplayMetalWindowController: VMDisplayQemuWindowController {
     @Setting("CtrlRightClick") private var isCtrlRightClick: Bool = false
     @Setting("AlternativeCaptureKey") private var isAlternativeCaptureKey: Bool = false
     @Setting("IsCapsLockKey") private var isCapsLockKey: Bool = false
+    @Setting("InvertScroll") private var isInvertScroll: Bool = false
     private var settingObservations = [NSKeyValueObservation]()
     
     // MARK: - Init
@@ -388,8 +389,7 @@ extension VMDisplayMetalWindowController: VMMetalViewInputDelegate {
     }
     
     func mouseScroll(dy: CGFloat, button: CSInputButton) {
-        let scrollInvert = vmQemuConfig?.inputScrollInvert ?? false
-        let scrollDy = scrollInvert ? -dy : dy
+        let scrollDy = isInvertScroll ? -dy : dy
         vmInput?.sendMouseScroll(.smooth, button: button, dy: scrollDy)
     }
     

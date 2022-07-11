@@ -27,6 +27,7 @@ struct SettingsView: View {
     @AppStorage("AlternativeCaptureKey") var isAlternativeCaptureKey = false
     @AppStorage("IsCapsLockKey") var isCapsLockKey = false
     @AppStorage("NoSaveScreenshot") var isNoSaveScreenshot = false
+    @AppStorage("InvertScroll") var isInvertScroll = false
     
     var body: some View {
         Form {
@@ -61,6 +62,9 @@ struct SettingsView: View {
                 Toggle(isOn: $isCapsLockKey, label: {
                     Text("Caps Lock (⇪) is treated as a key")
                 }).help("If enabled, caps lock will be handled like other keys. If disabled, it is treated as a toggle that is synchronized with the host.")
+                Toggle(isOn: $isInvertScroll, label: {
+                    Text("Invert scrolling")
+                }).help("If enabled, scroll whell input will be inverted.")
             }
             Section(header: Text("USB")) {
                 Toggle(isOn: $isNoUsbPrompt, label: {
@@ -83,6 +87,7 @@ extension UserDefaults {
     @objc dynamic var AlternativeCaptureKey: Bool { false }
     @objc dynamic var IsCapsLockKey: Bool { false }
     @objc dynamic var NoSaveScreenshot: Bool { false }
+    @objc dynamic var InvertScroll: Bool { false }
 }
 
 @available(macOS 11, *)

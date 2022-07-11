@@ -123,6 +123,10 @@ const CGFloat kScrollResistance = 10.0f;
 
 #pragma mark - Properties from settings
 
+- (BOOL)isInvertScroll {
+    return [self boolForSetting:@"InvertScroll"];
+}
+
 - (VMGestureType)gestureTypeForSetting:(NSString *)key {
     NSInteger integer = [self integerForSetting:key];
     if (integer < VMGestureTypeNone || integer >= VMGestureTypeMax) {
@@ -373,7 +377,7 @@ static CGFloat CGPointToPixel(CGFloat point) {
 
 - (CGPoint)moveMouseScroll:(CGPoint)translation {
     translation.y = CGPointToPixel(translation.y) / kScrollSpeedReduction;
-    if (self.vmQemuConfig.inputScrollInvert) {
+    if (self.isInvertScroll) {
         translation.y = -translation.y;
     }
     [self.vmInput sendMouseScroll:kCSInputScrollSmooth button:self.mouseButtonDown dy:translation.y];
