@@ -23,6 +23,18 @@ import Virtualization
 struct UTMAppleConfigurationSystem: Codable {
     private let bytesInMib = UInt64(1048576)
     
+    static var currentArchitecture: String {
+        #if arch(arm64)
+        "aarch64"
+        #elseif arch(x86_64)
+        "x86_64"
+        #else
+        #error("Unsupported architecture.")
+        #endif
+    }
+    
+    var architecture: String = Self.currentArchitecture
+    
     /// Number of CPU cores to emulate. Set to 0 to match the number of available cores on the host.
     var cpuCount: Int = 0
     
@@ -37,6 +49,7 @@ struct UTMAppleConfigurationSystem: Codable {
     var macPlatform: UTMAppleConfigurationMacPlatform?
     
     enum CodingKeys: String, CodingKey {
+        case architecture = "Architecture"
         case cpuCount = "CPUCount"
         case memorySize = "MemorySize"
         case boot = "Boot"
@@ -48,6 +61,7 @@ struct UTMAppleConfigurationSystem: Codable {
     
     init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
+        architecture = try values.decode(String.self, forKey: .architecture)
         cpuCount = try values.decode(Int.self, forKey: .cpuCount)
         memorySize = try values.decode(Int.self, forKey: .memorySize)
         boot = try values.decode(UTMAppleConfigurationBoot.self, forKey: .boot)
@@ -56,6 +70,7 @@ struct UTMAppleConfigurationSystem: Codable {
     
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(architecture, forKey: .architecture)
         try container.encode(cpuCount, forKey: .cpuCount)
         try container.encode(memorySize, forKey: .memorySize)
         try container.encode(boot, forKey: .boot)
