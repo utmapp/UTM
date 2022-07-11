@@ -133,25 +133,6 @@ const NSString *const kUTMConfigAppleVirtualizationKey = @"isAppleVirtualization
     return [[NSUUID alloc] initWithUUIDBytes:hash.bytes];
 }
 
-- (NSURL *)socketUrlWithSuffix:(NSString *)suffix {
-#if TARGET_OS_IPHONE
-    NSURL* parentDir = [[NSFileManager defaultManager] temporaryDirectory];
-#else
-    NSURL* parentDir = [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:@OS_STRINGIFY(UTM_APP_GROUP)];
-#endif
-    NSString *name = self.systemUUID;
-    if (!name) {
-        name = [self legacyUuidFromName].UUIDString;
-    }
-    NSString* ioFileName = [NSString stringWithFormat: @"%@.%@", name, suffix];
-    NSURL* ioFile = [parentDir URLByAppendingPathComponent:ioFileName];
-    return ioFile;
-}
-
-- (NSURL*)spiceSocketURL {
-    return [self socketUrlWithSuffix:@"spice"];
-}
-
 - (void)resetDefaults {
     [self propertyWillChange];
     _rootDict = [@{

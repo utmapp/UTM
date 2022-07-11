@@ -4,10 +4,6 @@
 <dict>
 	<key>com.apple.security.app-sandbox</key>
 	<true/>
-	<key>com.apple.security.application-groups</key>
-	<array>
-		<string>$(TeamIdentifierPrefix)$(PRODUCT_BUNDLE_PREFIX:default=com.utmapp).UTM</string>
-	</array>
 	<key>com.apple.security.device.usb</key>
 	<true/>
 	<key>com.apple.security.cs.disable-library-validation</key>
@@ -16,6 +12,10 @@
 	<true/>
 	<key>com.apple.security.network.client</key>
 	<true/>
+	<key>com.apple.security.temporary-exception.sbpl</key>
+	<array>
+		<string>(allow network-outbound)</string>
+	</array>
 	<key>com.apple.security.virtualization</key>
 	<true/>
 </dict>

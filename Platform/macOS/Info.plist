@@ -83,5 +83,7 @@
 	</array>
 	<key>AppGroupIdentifier</key>
 	<string>$(TeamIdentifierPrefix)$(PRODUCT_BUNDLE_PREFIX:default=com.utmapp).UTM</string>
+	<key>HelperIdentifier</key>
+	<string>$(PRODUCT_BUNDLE_PREFIX:default=com.utmapp).QEMUHelper</string>
 </dict>
 </plist>

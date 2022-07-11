@@ -68,7 +68,11 @@
 #if TARGET_OS_IPHONE
     return YES;
 #else // only supported on macOS
-    _connection = [[NSXPCConnection alloc] initWithServiceName:@"com.utmapp.QEMUHelper"];
+    NSString *helperIdentifier = NSBundle.mainBundle.infoDictionary[@"HelperIdentifier"];
+    if (!helperIdentifier) {
+        helperIdentifier = @"com.utmapp.QEMUHelper";
+    }
+    _connection = [[NSXPCConnection alloc] initWithServiceName:helperIdentifier];
     _connection.remoteObjectInterface = [NSXPCInterface interfaceWithProtocol:@protocol(QEMUHelperProtocol)];
     [_connection resume];
     return _connection != nil;

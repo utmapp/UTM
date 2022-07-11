@@ -31,7 +31,14 @@ extension UTMQemuConfiguration {
         let parentURL = FileManager.default.temporaryDirectory
         #else
         let appGroup = Bundle.main.infoDictionary?["AppGroupIdentifier"] as? String
-        var parentURL: URL = FileManager.default.temporaryDirectory
+        let helper = Bundle.main.infoDictionary?["HelperIdentifier"] as? String
+        // default to unsigned sandbox path
+        var parentURL: URL = FileManager.default.homeDirectoryForCurrentUser
+        parentURL.deleteLastPathComponent()
+        parentURL.deleteLastPathComponent()
+        parentURL.appendPathComponent(helper ?? "com.utmapp.QEMUHelper")
+        parentURL.appendPathComponent("Data")
+        parentURL.appendPathComponent("tmp")
         if let appGroup = appGroup {
             if let containerURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: appGroup) {
                 parentURL = containerURL
