@@ -18,8 +18,8 @@ import Foundation
 
 /// Tweaks and advanced QEMU settings.
 struct UTMQemuConfigurationQEMU: Codable {
-    /// Base path of VM. This property is not saved to file.
-    var dataURL: URL?
+    /// Where to store the debug log. File may not exist yet. This property is not saved to file.
+    var debugLogURL: URL?
     
     /// If true, write standard output to debug.log in the VM bundle.
     var hasDebugLog: Bool = false
@@ -85,7 +85,9 @@ struct UTMQemuConfigurationQEMU: Codable {
         hasPS2Controller = try values.decode(Bool.self, forKey: .hasPS2Controller)
         machinePropertyOverride = try values.decodeIfPresent(String.self, forKey: .machinePropertyOverride)
         additionalArguments = try values.decode([QEMUArgument].self, forKey: .additionalArguments)
-        dataURL = decoder.userInfo[.dataURL] as? URL
+        if let dataURL = decoder.userInfo[.dataURL] as? URL {
+            debugLogURL = dataURL.appendingPathComponent(QEMUPackageFileName.debugLog.rawValue)
+        }
     }
     
     func encode(to encoder: Encoder) throws {
@@ -143,7 +145,7 @@ extension UTMQemuConfigurationQEMU {
         if let oldAddArgs = oldConfig.systemArguments {
             additionalArguments = oldAddArgs.map({ QEMUArgument($0) })
         }
-        dataURL = oldConfig.existingPath
+        debugLogURL = oldConfig.existingPath?.appendingPathComponent(QEMUPackageFileName.debugLog.rawValue)
     }
 }
 

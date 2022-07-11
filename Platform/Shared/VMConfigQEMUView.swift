@@ -30,11 +30,10 @@ struct VMConfigQEMUView: View {
     @EnvironmentObject private var data: UTMData
     
     private var logExists: Bool {
-        guard let path = config.dataURL else {
+        guard let debugLogURL = config.debugLogURL else {
             return false
         }
-        let logPath = path.appendingPathComponent(QEMUPackageFileName.debugLog.rawValue)
-        return FileManager.default.fileExists(atPath: logPath.path)
+        return FileManager.default.fileExists(atPath: debugLogURL.path)
     }
     
     private var supportsUefi: Bool {
@@ -124,10 +123,9 @@ struct VMConfigQEMUView: View {
     }
     
     private func exportDebugLog() -> VMShareItemModifier.ShareItem? {
-        guard let path = config.dataURL else {
+        guard let srcLogPath = config.debugLogURL else {
             return nil
         }
-        let srcLogPath = path.appendingPathComponent(QEMUPackageFileName.debugLog.rawValue)
         return .debugLog(srcLogPath)
     }
     

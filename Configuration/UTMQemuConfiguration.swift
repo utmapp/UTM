@@ -189,6 +189,10 @@ extension UTMQemuConfiguration {
             displays = [display]
         }
         drives = (0..<oldConfig.countDrives).map({ i in UTMQemuConfigurationDrive(migrating: oldConfig, at: i) })
+        // remove efi_vars which is no longer stored as a drive
+        drives.removeAll { drive in
+            drive.imageName == QEMUPackageFileName.efiVariables.rawValue
+        }
         if let network = UTMQemuConfigurationNetwork(migrating: oldConfig) {
             networks = [network]
         }
@@ -198,6 +202,7 @@ extension UTMQemuConfiguration {
         if let _sound = UTMQemuConfigurationSound(migrating: oldConfig) {
             sound = [_sound]
         }
+        dataURL = oldConfig.existingPath?.appendingPathComponent(UTMLegacyQemuConfiguration.diskImagesDirectory)
     }
 }
 
@@ -239,7 +244,8 @@ extension UTMQemuConfiguration {
                 try fileManager.moveItem(at: oldLogURL, to: newLogURL)
             }.value
         }
-        qemu.dataURL = dataURL
+        // update data URL
+        self.dataURL = dataURL
     }
     
     func saveData(to dataURL: URL) async throws -> [URL] {
