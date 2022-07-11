@@ -58,6 +58,7 @@ extension UTMQemuConfiguration {
     @QEMUArgumentBuilder var generatedArguments: [QEMUArgument] {
         f("-L")
         resourceURL
+        f()
         f("-S") // startup stopped
         displayArguments
         cpuArguments
@@ -481,7 +482,22 @@ extension UTMQemuConfiguration {
         busInterfaceMap["boot"] = bootindex
         busInterfaceMap[drive.interface.rawValue] = busindex
         f("-drive")
-        "if=\(realInterface.rawValue)"
+        switch realInterface {
+        case .ide:
+            "if=ide"
+        case .scsi:
+            "if=scsi"
+        case .sd:
+            "if=sd"
+        case .mtd:
+            "if=mtd"
+        case .floppy:
+            "if=floppy"
+        case .pflash:
+            "if=pflash"
+        default:
+            "if=none"
+        }
         if isRemovable && drive.interface != .floppy {
             "media=cdrom"
         } else {
