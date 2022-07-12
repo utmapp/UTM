@@ -15,28 +15,19 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "UTMConfigurable.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface UTMLegacyQemuConfiguration : NSObject<NSCopying, UTMConfigurable>
+@interface UTMLegacyQemuConfiguration : NSObject
 
-@property (nonatomic, weak, readonly) NSDictionary *dictRepresentation;
 @property (nonatomic, nullable, copy) NSNumber *version;
 
-@property (nonatomic, assign) BOOL isRenameDisabled;
 @property (nonatomic, copy) NSString *name;
 @property (nonatomic, nullable, copy) NSURL *existingPath;
 @property (nonatomic, nullable, copy) NSURL *selectedCustomIconPath;
 
-@property (nonatomic, readonly) NSURL *spiceSocketURL;
-
-- (void)migrateConfigurationIfNecessary;
-- (instancetype)init NS_DESIGNATED_INITIALIZER;
+- (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithDictionary:(NSDictionary *)dictionary name:(NSString *)name path:(NSURL *)path NS_DESIGNATED_INITIALIZER;
-
-- (void)resetDefaults;
-- (BOOL)reloadConfigurationWithDictionary:(NSDictionary *)dictionary name:(NSString *)name path:(NSURL *)path;
 
 @end
 

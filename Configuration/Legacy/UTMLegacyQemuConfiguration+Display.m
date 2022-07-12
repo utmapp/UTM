@@ -15,8 +15,15 @@
 //
 
 #import <TargetConditionals.h>
+#if !TARGET_OS_OSX
+#import <UIKit/UIKit.h>
+#else
+#import <AppKit/AppKit.h>
+#endif
+#import "UTMLegacyQemuConfiguration+Constants.h""
 #import "UTMLegacyQemuConfiguration+Display.h"
-#import "UTM-Swift.h"
+#import "UTMLegacyQemuConfiguration+Sharing.h"
+#import "UTMLegacyQemuConfiguration+System.h"
 
 extern const NSString *const kUTMConfigDisplayKey;
 
@@ -94,7 +101,6 @@ const NSString *const kUTMConfigDisplayCardKey = @"DisplayCard";
 #pragma mark - Display settings
 
 - (void)setDisplayConsoleOnly:(BOOL)displayConsoleOnly {
-    [self propertyWillChange];
     self.rootDict[kUTMConfigDisplayKey][kUTMConfigConsoleOnlyKey] = @(displayConsoleOnly);
 }
 
@@ -103,7 +109,6 @@ const NSString *const kUTMConfigDisplayCardKey = @"DisplayCard";
 }
 
 - (void)setDisplayFitScreen:(BOOL)displayFitScreen {
-    [self propertyWillChange];
     self.rootDict[kUTMConfigDisplayKey][kUTMConfigDisplayFitScreenKey] = @(displayFitScreen);
 }
 
@@ -112,7 +117,6 @@ const NSString *const kUTMConfigDisplayCardKey = @"DisplayCard";
 }
 
 - (void)setDisplayRetina:(BOOL)displayRetina {
-    [self propertyWillChange];
     self.rootDict[kUTMConfigDisplayKey][kUTMConfigDisplayRetinaKey] = @(displayRetina);
 }
 
@@ -121,7 +125,6 @@ const NSString *const kUTMConfigDisplayCardKey = @"DisplayCard";
 }
 
 - (void)setDisplayUpscaler:(NSString *)displayUpscaler {
-    [self propertyWillChange];
     self.rootDict[kUTMConfigDisplayKey][kUTMConfigDisplayUpscalerKey] = displayUpscaler;
 }
 
@@ -138,7 +141,6 @@ const NSString *const kUTMConfigDisplayCardKey = @"DisplayCard";
 }
 
 - (void)setDisplayDownscaler:(NSString *)displayDownscaler {
-    [self propertyWillChange];
     self.rootDict[kUTMConfigDisplayKey][kUTMConfigDisplayDownscalerKey] = displayDownscaler;
 }
 
@@ -155,7 +157,6 @@ const NSString *const kUTMConfigDisplayCardKey = @"DisplayCard";
 }
 
 - (void)setConsoleTheme:(NSString *)consoleTheme {
-    [self propertyWillChange];
     self.rootDict[kUTMConfigDisplayKey][kUTMConfigConsoleThemeKey] = consoleTheme;
 }
 
@@ -164,7 +165,6 @@ const NSString *const kUTMConfigDisplayCardKey = @"DisplayCard";
 }
 
 - (void)setConsoleTextColor:(NSString *)consoleTextColor {
-    [self propertyWillChange];
     self.rootDict[kUTMConfigDisplayKey][kUTMConfigConsoleTextColorKey] = consoleTextColor;
 }
 
@@ -173,7 +173,6 @@ const NSString *const kUTMConfigDisplayCardKey = @"DisplayCard";
 }
 
 - (void)setConsoleBackgroundColor:(NSString *)consoleBackgroundColor {
-    [self propertyWillChange];
     self.rootDict[kUTMConfigDisplayKey][kUTMConfigConsoleBackgroundColorKey] = consoleBackgroundColor;
 }
 
@@ -182,7 +181,6 @@ const NSString *const kUTMConfigDisplayCardKey = @"DisplayCard";
 }
 
 - (void)setConsoleFont:(NSString *)consoleFont {
-    [self propertyWillChange];
     self.rootDict[kUTMConfigDisplayKey][kUTMConfigConsoleFontKey] = consoleFont;
 }
 
@@ -191,7 +189,6 @@ const NSString *const kUTMConfigDisplayCardKey = @"DisplayCard";
 }
 
 - (void)setConsoleFontSize:(NSNumber *)consoleFontSize {
-    [self propertyWillChange];
     self.rootDict[kUTMConfigDisplayKey][kUTMConfigConsoleFontSizeKey] = consoleFontSize;
 }
 
@@ -200,7 +197,6 @@ const NSString *const kUTMConfigDisplayCardKey = @"DisplayCard";
 }
 
 - (void)setConsoleCursorBlink:(BOOL)consoleCursorBlink {
-    [self propertyWillChange];
     self.rootDict[kUTMConfigDisplayKey][kUTMConfigConsoleBlinkKey] = @(consoleCursorBlink);
 }
 
@@ -209,7 +205,6 @@ const NSString *const kUTMConfigDisplayCardKey = @"DisplayCard";
 }
 
 - (void)setConsoleResizeCommand:(NSString *)consoleResizeCommand {
-    [self propertyWillChange];
     self.rootDict[kUTMConfigDisplayKey][kUTMConfigConsoleResizeCommandKey] = consoleResizeCommand;
 }
 
@@ -218,7 +213,6 @@ const NSString *const kUTMConfigDisplayCardKey = @"DisplayCard";
 }
 
 - (void)setDisplayCard:(NSString *)displayCard {
-    [self propertyWillChange];
     self.rootDict[kUTMConfigDisplayKey][kUTMConfigDisplayCardKey] = displayCard;
 }
 

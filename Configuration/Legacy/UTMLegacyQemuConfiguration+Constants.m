@@ -28,68 +28,8 @@
     return @"Images";
 }
 
-+ (NSString *)debugLogName {
-    return @"debug.log";
-}
-
-+ (NSString *)efiVariablesFileName {
-    return @"efi_vars.fd";
-}
-
 #pragma mark - Constant supported values
 
-+ (NSArray<NSString *>*)supportedOptions:(NSString *)key pretty:(BOOL)pretty {
-    if ([key isEqualToString:@"networkCards"]) {
-        if (pretty) {
-            return [self supportedNetworkCardsForArchitecturePretty:@"x86_64"];
-        } else {
-            return [self supportedNetworkCardsForArchitecture:@"x86_64"];
-        }
-    } else if ([key isEqualToString:@"soundCards"]) {
-        if (pretty) {
-            return [self supportedSoundCardsForArchitecture:@"x86_64"];
-        } else {
-            return [self supportedSoundCardsForArchitecture:@"x86_64"];
-        }
-    } else if ([key isEqualToString:@"architectures"]) {
-        if (pretty) {
-            return [self supportedArchitecturesPretty];
-        } else {
-            return [self supportedArchitectures];
-        }
-    } else if ([key isEqualToString:@"bootDevices"]) {
-        if (pretty) {
-            return [self supportedBootDevicesPretty];
-        } else {
-            return [self supportedBootDevices];
-        }
-    } else if ([key isEqualToString:@"imageTypes"]) {
-        if (pretty) {
-            return [self supportedImageTypesPretty];
-        } else {
-            return [self supportedImageTypes];
-        }
-    } else if ([key isEqualToString:@"driveInterfaces"]) {
-        return [self supportedDriveInterfaces];
-    } else if ([key isEqualToString:@"scalers"]) {
-        if (pretty) {
-            return [self supportedScalersPretty];
-        } else {
-            return [self supportedScalers];
-        }
-    } else if ([key isEqualToString:@"consoleThemes"]) {
-        return [self supportedConsoleThemes];
-    } else if ([key isEqualToString:@"consoleFonts"]) {
-        return [self supportedConsoleFonts];
-    } else if ([key isEqualToString:@"displayCard"]) {
-        if (pretty) {
-            return [self supportedDisplayCardsForArchitecturePretty:@"x86_64"];
-        } else {
-            return [self supportedDisplayCardsForArchitecture:@"x86_64"];
-        }
-    }
-    return @[];
-}
 
 + (NSArray<NSString *>*)supportedBootDevicesPretty {
     return @[
@@ -131,75 +71,6 @@
              ];
 }
 
-+ (NSArray<NSString *>*)supportedResolutions {
-    return @[
-             @"320x240",
-             @"640x480",
-             @"800x600",
-             @"1024x600",
-             @"1136x640",
-             @"1280x720",
-             @"1334x750",
-             @"1280x800",
-             @"1280x1024",
-             @"1920x1080",
-             @"2436x1125",
-             @"2048x1536",
-             @"2560x1440",
-             @"2732x2048"
-             ];
-}
-
-+ (NSArray<NSString *>*)supportedDriveInterfaces {
-    return @[
-             @"ide",
-             @"scsi",
-             @"sd",
-             @"mtd",
-             @"floppy",
-             @"pflash",
-             @"virtio",
-             @"nvme",
-             @"usb",
-             @"none"
-             ];
-}
-
-+ (NSArray<NSString *>*)supportedDriveInterfacesPretty {
-    return @[
-             @"IDE",
-             @"SCSI",
-             @"SD Card",
-             @"MTD (NAND/NOR)",
-             @"Floppy",
-             @"PC System Flash",
-             @"VirtIO",
-             @"NVMe",
-             @"USB",
-             @"None (Advanced)"
-             ];
-}
-
-+ (NSArray<NSString *>*)supportedScalersPretty {
-    return @[
-        NSLocalizedString(@"Linear", "UTMLegacyQemuConfiguration"),
-        NSLocalizedString(@"Nearest Neighbor", "UTMLegacyQemuConfiguration"),
-    ];
-}
-
-+ (NSArray<NSString *>*)supportedScalers {
-    return @[
-        @"linear",
-        @"nearest",
-    ];
-}
-
-+ (NSArray<NSString *>*)supportedConsoleThemes {
-    return @[
-        @"Default"
-    ];
-}
-
 #if !TARGET_OS_OSX
 + (NSArray<NSString *>*)supportedConsoleFonts {
     static NSMutableArray<NSString *> *families;
@@ -214,31 +85,6 @@
     }
     return families;
 }
-
-+ (NSArray<NSString *>*)supportedConsoleFontsPretty {
-    static NSMutableArray<NSString *> *fonts;
-    if (!fonts) {
-        fonts = [NSMutableArray new];
-        for (NSString *fontName in [UTMLegacyQemuConfiguration supportedConsoleFonts]) {
-            UIFont *font = [UIFont fontWithName:fontName size:1];
-            UIFontDescriptorSymbolicTraits traits = font.fontDescriptor.symbolicTraits;
-            NSString *description;
-            if ((traits & (UIFontDescriptorTraitItalic | UIFontDescriptorTraitBold)) ==
-                (UIFontDescriptorTraitItalic | UIFontDescriptorTraitBold)) {
-                description = NSLocalizedString(@"Italic, Bold", @"UTMLegacyQemuConfiguration+Constants");
-            } else if ((traits & UIFontDescriptorTraitItalic) != 0) {
-                description = NSLocalizedString(@"Italic", @"UTMLegacyQemuConfiguration+Constants");
-            } else if ((traits & UIFontDescriptorTraitBold) != 0) {
-                description = NSLocalizedString(@"Bold", @"UTMLegacyQemuConfiguration+Constants");
-            } else {
-                description = NSLocalizedString(@"Regular", @"UTMLegacyQemuConfiguration+Constants");
-            }
-            NSString *label = [NSString stringWithFormat:@"%@ (%@)", font.familyName, description];
-            [fonts addObject:label];
-        }
-    }
-    return fonts;
-}
 #else
 + (NSArray<NSString *>*)supportedConsoleFonts {
     static NSMutableArray<NSString *> *fonts;
@@ -250,51 +96,43 @@
     }
     return fonts;
 }
-
-+ (NSArray<NSString *>*)supportedConsoleFontsPretty {
-    static NSMutableArray<NSString *> *fonts;
-    if (!fonts) {
-        fonts = [NSMutableArray new];
-        for (NSString *fontName in [UTMLegacyQemuConfiguration supportedConsoleFonts]) {
-            NSFont *font = [NSFont fontWithName:fontName size:1];
-            [fonts addObject:font.displayName];
-        }
-    }
-    return fonts;
-}
 #endif
 
-+ (NSArray<NSString *> *)supportedNetworkModes {
-    return @[
-        @"none",
-        @"emulated",
-        @"shared",
-        @"host",
-        @"bridged",
-    ];
-}
+#pragma mark - Previously generated constants
 
-+ (NSArray<NSString *> *)supportedNetworkModesPretty {
-    return @[
-        NSLocalizedString(@"None", "UTMLegacyQemuConfiguration"),
-        NSLocalizedString(@"Emulated VLAN", "UTMLegacyQemuConfiguration"),
-        NSLocalizedString(@"Shared Network", "UTMLegacyQemuConfiguration"),
-        NSLocalizedString(@"Host Only", "UTMLegacyQemuConfiguration"),
-        NSLocalizedString(@"Bridged (Advanced)", "UTMLegacyQemuConfiguration"),
-    ];
-}
-
-+ (BOOL)shouldConvertQcow2ForInterface:(NSString *)interface {
-    if ([interface isEqualToString:@"floppy"]) {
-        return NO;
-    }
-    if ([interface isEqualToString:@"pflash"]) {
-        return NO;
-    }
-    if ([interface isEqualToString:@"none"]) {
-        return NO;
-    }
-    return YES;
++ (NSString *)defaultTargetForArchitecture:(NSString *)architecture {
+    return @{
+        @"alpha": @"clipper",
+        @"arm": @"virt",
+        @"aarch64": @"virt",
+        @"avr": @"mega",
+        @"cris": @"axis-dev88",
+        @"hppa": @"hppa",
+        @"i386": @"q35",
+        @"m68k": @"mcf5208evb",
+        @"microblaze": @"petalogix-s3adsp1800",
+        @"microblazeel": @"petalogix-s3adsp1800",
+        @"mips": @"malta",
+        @"mipsel": @"malta",
+        @"mips64": @"malta",
+        @"mips64el": @"malta",
+        @"nios2": @"10m50-ghrd",
+        @"or1k": @"or1k-sim",
+        @"ppc": @"g3beige",
+        @"ppc64": @"pseries",
+        @"riscv32": @"spike",
+        @"riscv64": @"spike",
+        @"rx": @"gdbsim-r5f562n7",
+        @"s390x": @"s390-ccw-virtio",
+        @"sh4": @"shix",
+        @"sh4eb": @"shix",
+        @"sparc": @"SS-5",
+        @"sparc64": @"sun4u",
+        @"tricore": @"tricore_testboard",
+        @"x86_64": @"q35",
+        @"xtensa": @"sim",
+        @"xtensaeb": @"sim",
+    }[architecture];
 }
 
 @end

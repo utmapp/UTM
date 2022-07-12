@@ -30,6 +30,14 @@ extension UTMVirtualMachine: ObservableObject {
     
 }
 
+@objc extension UTMViewState: ObservableObject {
+    func propertyWillChange() -> Void {
+        if #available(iOS 13, macOS 11, *) {
+            DispatchQueue.main.async { self.objectWillChange.send() }
+        }
+    }
+}
+
 @objc extension UTMVirtualMachine {
     fileprivate static let gibInMib = 1024
     func subscribeToConfiguration() -> [AnyObject] {

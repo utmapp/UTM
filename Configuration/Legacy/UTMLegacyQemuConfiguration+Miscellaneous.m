@@ -14,9 +14,7 @@
 // limitations under the License.
 //
 
-#import "UTMLegacyQemuConfiguration+Constants.h"
 #import "UTMLegacyQemuConfiguration+Miscellaneous.h"
-#import "UTM-Swift.h"
 
 extern const NSString *const kUTMConfigInputKey;
 extern const NSString *const kUTMConfigSoundKey;
@@ -74,7 +72,6 @@ const NSString *const kUTMConfigNotesKey = @"Notes";
 #pragma mark - Other properties
 
 - (void)setInputLegacy:(BOOL)inputDirect {
-    [self propertyWillChange];
     self.rootDict[kUTMConfigInputKey][kUTMConfigInputLegacyKey] = @(inputDirect);
 }
 
@@ -83,7 +80,6 @@ const NSString *const kUTMConfigNotesKey = @"Notes";
 }
 
 - (void)setInputScrollInvert:(BOOL)inputScrollInvert {
-    [self propertyWillChange];
     self.rootDict[kUTMConfigInputKey][kUTMConfigInputInvertScrollKey] = @(inputScrollInvert);
 }
 
@@ -92,7 +88,6 @@ const NSString *const kUTMConfigNotesKey = @"Notes";
 }
 
 - (void)setSoundEnabled:(BOOL)soundEnabled {
-    [self propertyWillChange];
     self.rootDict[kUTMConfigSoundKey][kUTMConfigSoundEnabledKey] = @(soundEnabled);
 }
 
@@ -101,7 +96,6 @@ const NSString *const kUTMConfigNotesKey = @"Notes";
 }
 
 - (void)setSoundCard:(NSString *)soundCard {
-    [self propertyWillChange];
     self.rootDict[kUTMConfigSoundKey][kUTMConfigSoundCardDeviceKey] = soundCard;
 }
 
@@ -114,7 +108,6 @@ const NSString *const kUTMConfigNotesKey = @"Notes";
 }
 
 - (void)setDebugLogEnabled:(BOOL)debugLogEnabled {
-    [self propertyWillChange];
     self.rootDict[kUTMConfigDebugKey][kUTMConfigDebugLogKey] = @(debugLogEnabled);
 }
 
@@ -123,12 +116,10 @@ const NSString *const kUTMConfigNotesKey = @"Notes";
 }
 
 - (void)setIgnoreAllConfiguration:(BOOL)ignoreAllConfiguration {
-    [self propertyWillChange];
     self.rootDict[kUTMConfigDebugKey][kUTMConfigIgnoreAllConfigurationKey] = @(ignoreAllConfiguration);
 }
 
 - (void)setIcon:(NSString *)icon {
-    [self propertyWillChange];
     self.rootDict[kUTMConfigInfoKey][kUTMConfigIconKey] = icon;
 }
 
@@ -137,7 +128,6 @@ const NSString *const kUTMConfigNotesKey = @"Notes";
 }
 
 - (void)setIconCustom:(BOOL)iconCustom {
-    [self propertyWillChange];
     self.rootDict[kUTMConfigInfoKey][kUTMConfigIconCustomKey] = @(iconCustom);
 }
 
@@ -146,7 +136,6 @@ const NSString *const kUTMConfigNotesKey = @"Notes";
 }
 
 - (void)setNotes:(NSString *)notes {
-    [self propertyWillChange];
     self.rootDict[kUTMConfigInfoKey][kUTMConfigNotesKey] = notes;
 }
 

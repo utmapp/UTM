@@ -15,9 +15,7 @@
 //
 
 #import "UTMLegacyQemuConfiguration+Constants.h"
-#import "UTMLegacyQemuConfiguration+Defaults.h"
 #import "UTMLegacyQemuConfiguration+System.h"
-#import "UTM-Swift.h"
 
 extern const NSString *const kUTMConfigSystemKey;
 
@@ -59,8 +57,7 @@ static const NSString *const kUTMConfigForcePs2ControllerKey = @"ForcePS2Control
     }
     // Migrate default target
     if ([self.rootDict[kUTMConfigSystemKey][kUTMConfigTargetKey] length] == 0) {
-        NSInteger index = [UTMLegacyQemuConfiguration defaultTargetIndexForArchitecture:self.systemArchitecture];
-        self.rootDict[kUTMConfigSystemKey][kUTMConfigTargetKey] = [UTMLegacyQemuConfiguration supportedTargetsForArchitecture:self.systemArchitecture][index];
+        self.rootDict[kUTMConfigSystemKey][kUTMConfigTargetKey] = [UTMLegacyQemuConfiguration defaultTargetForArchitecture:self.systemArchitecture];
     }
     // Fix issue with boot order
     NSArray<NSString *> *bootPretty = [UTMLegacyQemuConfiguration supportedBootDevicesPretty];
@@ -100,7 +97,6 @@ static const NSString *const kUTMConfigForcePs2ControllerKey = @"ForcePS2Control
 #pragma mark - System Properties
 
 - (void)setSystemArchitecture:(NSString *)systemArchitecture {
-    [self propertyWillChange];
     self.rootDict[kUTMConfigSystemKey][kUTMConfigArchitectureKey] = systemArchitecture;
 }
 
@@ -109,7 +105,6 @@ static const NSString *const kUTMConfigForcePs2ControllerKey = @"ForcePS2Control
 }
 
 - (void)setSystemCPU:(NSString *)systemCPU {
-    [self propertyWillChange];
     self.rootDict[kUTMConfigSystemKey][kUTMConfigCPUKey] = systemCPU;
 }
 
@@ -118,7 +113,6 @@ static const NSString *const kUTMConfigForcePs2ControllerKey = @"ForcePS2Control
 }
 
 - (void)setSystemMemory:(NSNumber *)systemMemory {
-    [self propertyWillChange];
     self.rootDict[kUTMConfigSystemKey][kUTMConfigMemoryKey] = systemMemory;
 }
 
@@ -127,7 +121,6 @@ static const NSString *const kUTMConfigForcePs2ControllerKey = @"ForcePS2Control
 }
 
 - (void)setSystemCPUCount:(NSNumber *)systemCPUCount {
-    [self propertyWillChange];
     self.rootDict[kUTMConfigSystemKey][kUTMConfigCPUCountKey] = systemCPUCount;
 }
 
@@ -136,7 +129,6 @@ static const NSString *const kUTMConfigForcePs2ControllerKey = @"ForcePS2Control
 }
 
 - (void)setSystemTarget:(NSString *)systemTarget {
-    [self propertyWillChange];
     self.rootDict[kUTMConfigSystemKey][kUTMConfigTargetKey] = systemTarget;
 }
 
@@ -145,7 +137,6 @@ static const NSString *const kUTMConfigForcePs2ControllerKey = @"ForcePS2Control
 }
 
 - (void)setSystemBootDevice:(NSString *)systemBootDevice {
-    [self propertyWillChange];
     self.rootDict[kUTMConfigSystemKey][kUTMConfigBootDeviceKey] = systemBootDevice;
 }
 
@@ -154,7 +145,6 @@ static const NSString *const kUTMConfigForcePs2ControllerKey = @"ForcePS2Control
 }
 
 - (void)setSystemBootUefi:(BOOL)systemBootUefi {
-    [self propertyWillChange];
     self.rootDict[kUTMConfigSystemKey][kUTMConfigBootUefiKey] = @(systemBootUefi);
 }
 
@@ -163,7 +153,6 @@ static const NSString *const kUTMConfigForcePs2ControllerKey = @"ForcePS2Control
 }
 
 - (void)setSystemRngEnabled:(BOOL)systemRngEnabled {
-    [self propertyWillChange];
     self.rootDict[kUTMConfigSystemKey][kUTMConfigRngEnabledKey] = @(systemRngEnabled);
 }
 
@@ -176,7 +165,6 @@ static const NSString *const kUTMConfigForcePs2ControllerKey = @"ForcePS2Control
 }
 
 - (void)setSystemJitCacheSize:(NSNumber *)systemJitCacheSize {
-    [self propertyWillChange];
     self.rootDict[kUTMConfigSystemKey][kUTMConfigJitCacheSizeKey] = systemJitCacheSize;
 }
 
@@ -185,7 +173,6 @@ static const NSString *const kUTMConfigForcePs2ControllerKey = @"ForcePS2Control
 }
 
 - (void)setSystemForceMulticore:(BOOL)systemForceMulticore {
-    [self propertyWillChange];
     self.rootDict[kUTMConfigSystemKey][kUTMConfigForceMulticoreKey] = @(systemForceMulticore);
 }
 
@@ -194,7 +181,6 @@ static const NSString *const kUTMConfigForcePs2ControllerKey = @"ForcePS2Control
 }
 
 - (void)setSystemUUID:(NSString *)systemUUID {
-    [self propertyWillChange];
     self.rootDict[kUTMConfigSystemKey][kUTMConfigSystemUUIDKey] = systemUUID;
 }
 
@@ -203,7 +189,6 @@ static const NSString *const kUTMConfigForcePs2ControllerKey = @"ForcePS2Control
 }
 
 - (void)setSystemMachineProperties:(NSString *)systemMachineProperties {
-    [self propertyWillChange];
     self.rootDict[kUTMConfigSystemKey][kUTMConfigMachinePropertiesKey] = systemMachineProperties;
 }
 
@@ -212,7 +197,6 @@ static const NSString *const kUTMConfigForcePs2ControllerKey = @"ForcePS2Control
 }
 
 - (void)setUseHypervisor:(BOOL)useHypervisor {
-    [self propertyWillChange];
     self.rootDict[kUTMConfigSystemKey][kUTMConfigUseHypervisorKey] = @(useHypervisor);
 }
 
@@ -221,7 +205,6 @@ static const NSString *const kUTMConfigForcePs2ControllerKey = @"ForcePS2Control
 }
 
 - (void)setRtcUseLocalTime:(BOOL)rtcUseLocalTime {
-    [self propertyWillChange];
     self.rootDict[kUTMConfigSystemKey][kUTMConfigRTCUseLocalTimeKey] = @(rtcUseLocalTime);
 }
 
@@ -230,7 +213,6 @@ static const NSString *const kUTMConfigForcePs2ControllerKey = @"ForcePS2Control
 }
 
 - (void)setForcePs2Controller:(BOOL)forcePs2Controller {
-    [self propertyWillChange];
     self.rootDict[kUTMConfigSystemKey][kUTMConfigForcePs2ControllerKey] = @(forcePs2Controller);
 }
 
@@ -244,7 +226,6 @@ static const NSString *const kUTMConfigForcePs2ControllerKey = @"ForcePS2Control
     if (![self.rootDict[kUTMConfigSystemKey][kUTMConfigAddArgsKey] isKindOfClass:[NSMutableArray class]]) {
         self.rootDict[kUTMConfigSystemKey][kUTMConfigAddArgsKey] = [NSMutableArray array];
     }
-    [self propertyWillChange];
     NSInteger index = [self countArguments];
     self.rootDict[kUTMConfigSystemKey][kUTMConfigAddArgsKey][index] = argument;
     
@@ -256,19 +237,16 @@ static const NSString *const kUTMConfigForcePs2ControllerKey = @"ForcePS2Control
 }
 
 - (void)updateArgumentAtIndex:(NSInteger)index withValue:(NSString*)argument {
-    [self propertyWillChange];
     self.rootDict[kUTMConfigSystemKey][kUTMConfigAddArgsKey][index] = argument;
 }
 
 - (void)moveArgumentIndex:(NSInteger)index to:(NSInteger)newIndex {
     NSString *arg = self.rootDict[kUTMConfigSystemKey][kUTMConfigAddArgsKey][index];
-    [self propertyWillChange];
     [self.rootDict[kUTMConfigSystemKey][kUTMConfigAddArgsKey] removeObjectAtIndex:index];
     [self.rootDict[kUTMConfigSystemKey][kUTMConfigAddArgsKey] insertObject:arg atIndex:newIndex];
 }
 
 - (void)removeArgumentAtIndex:(NSInteger)index {
-    [self propertyWillChange];
     [self.rootDict[kUTMConfigSystemKey][kUTMConfigAddArgsKey] removeObjectAtIndex:index];
 }
 
@@ -293,14 +271,12 @@ static const NSString *const kUTMConfigForcePs2ControllerKey = @"ForcePS2Control
     if (index != NSNotFound) {
         return (NSInteger)index;
     }
-    [self propertyWillChange];
     [flags addObject:CPUFlag];
     return flags.count - 1;
 }
 
 - (void)removeCPUFlag:(NSString *)CPUFlag {
     NSMutableArray<NSString *> *flags = self.rootDict[kUTMConfigSystemKey][kUTMConfigCPUFlagsKey];
-    [self propertyWillChange];
     [flags removeObject:CPUFlag];
 }
 
@@ -320,7 +296,6 @@ static const NSString *const kUTMConfigForcePs2ControllerKey = @"ForcePS2Control
 #if TARGET_OS_IPHONE
     return NO;
 #else
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     return self.isTargetArchitectureMatchHost;
 #endif
 }

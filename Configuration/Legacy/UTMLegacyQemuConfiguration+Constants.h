@@ -21,44 +21,13 @@ NS_ASSUME_NONNULL_BEGIN
 @interface UTMLegacyQemuConfiguration (Constants)
 
 @property (class, nonatomic, readonly) NSString *diskImagesDirectory;
-@property (class, nonatomic, readonly) NSString *debugLogName;
-@property (class, nonatomic, readonly) NSString *efiVariablesFileName;
 
-+ (NSArray<NSString *>*)supportedOptions:(NSString *)key pretty:(BOOL)pretty;
 + (NSArray<NSString *>*)supportedBootDevicesPretty;
 + (NSArray<NSString *>*)supportedBootDevices;
 + (NSArray<NSString *>*)supportedImageTypesPretty;
 + (NSArray<NSString *>*)supportedImageTypes;
-+ (NSArray<NSString *>*)supportedResolutions;
-+ (NSArray<NSString *>*)supportedDriveInterfaces;
-+ (NSArray<NSString *>*)supportedDriveInterfacesPretty;
-+ (NSArray<NSString *>*)supportedScalersPretty;
-+ (NSArray<NSString *>*)supportedScalers;
-+ (NSArray<NSString *>*)supportedConsoleThemes;
 + (NSArray<NSString *>*)supportedConsoleFonts;
-+ (NSArray<NSString *>*)supportedConsoleFontsPretty;
-+ (NSArray<NSString *>*)supportedNetworkModes;
-+ (NSArray<NSString *>*)supportedNetworkModesPretty;
-
-@end
-
-@interface UTMLegacyQemuConfiguration (ConstantsGenerated)
-
-+ (NSArray<NSString *>*)supportedArchitectures;
-+ (NSArray<NSString *>*)supportedArchitecturesPretty;
-+ (nullable NSArray<NSString *>*)supportedCpusForArchitecture:(nullable NSString *)architecture;
-+ (nullable NSArray<NSString *>*)supportedCpusForArchitecturePretty:(nullable NSString *)architecture;
-+ (nullable NSArray<NSString *>*)supportedCpuFlagsForArchitecture:(nullable NSString *)architecture;
-+ (nullable NSArray<NSString *>*)supportedTargetsForArchitecture:(nullable NSString *)architecture;
-+ (nullable NSArray<NSString *>*)supportedTargetsForArchitecturePretty:(nullable NSString *)architecture;
-+ (NSInteger)defaultTargetIndexForArchitecture:(nullable NSString *)architecture;
-+ (nullable NSArray<NSString *>*)supportedDisplayCardsForArchitecture:(nullable NSString *)architecture;
-+ (nullable NSArray<NSString *>*)supportedDisplayCardsForArchitecturePretty:(nullable NSString *)architecture;
-+ (nullable NSArray<NSString *>*)supportedNetworkCardsForArchitecture:(nullable NSString *)architecture;
-+ (nullable NSArray<NSString *>*)supportedNetworkCardsForArchitecturePretty:(nullable NSString *)architecture;
-+ (nullable NSArray<NSString *>*)supportedSoundCardsForArchitecture:(nullable NSString *)architecture;
-+ (nullable NSArray<NSString *>*)supportedSoundCardsForArchitecturePretty:(nullable NSString *)architecture;
-+ (BOOL)shouldConvertQcow2ForInterface:(NSString *)interface;
++ (NSString *)defaultTargetForArchitecture:(NSString *)architecture;
 
 @end
 

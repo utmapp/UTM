@@ -16,7 +16,6 @@
 
 #import "UTMLegacyQemuConfiguration+Sharing.h"
 #import "UTMLegacyQemuConfiguration+System.h"
-#import "UTM-Swift.h"
 
 extern const NSString *const kUTMConfigSharingKey;
 
@@ -56,7 +55,6 @@ const NSString *const kUTMConfigUsbRedirectMaxKey = @"UsbRedirectMax";
 }
 
 - (void)setShareClipboardEnabled:(BOOL)shareClipboardEnabled {
-    [self propertyWillChange];
     self.rootDict[kUTMConfigSharingKey][kUTMConfigChipboardSharingKey] = @(shareClipboardEnabled);
 }
 
@@ -65,7 +63,6 @@ const NSString *const kUTMConfigUsbRedirectMaxKey = @"UsbRedirectMax";
 }
 
 - (void)setShareDirectoryEnabled:(BOOL)shareDirectoryEnabled {
-    [self propertyWillChange];
     self.rootDict[kUTMConfigSharingKey][kUTMConfigDirectorySharingKey] = @(shareDirectoryEnabled);
 }
 
@@ -74,7 +71,6 @@ const NSString *const kUTMConfigUsbRedirectMaxKey = @"UsbRedirectMax";
 }
 
 - (void)setShareDirectoryReadOnly:(BOOL)shareDirectoryReadOnly {
-    [self propertyWillChange];
     self.rootDict[kUTMConfigSharingKey][kUTMConfigDirectoryReadOnlyKey] = @(shareDirectoryReadOnly);
 }
 
@@ -83,7 +79,6 @@ const NSString *const kUTMConfigUsbRedirectMaxKey = @"UsbRedirectMax";
 }
 
 - (void)setShareDirectoryName:(NSString *)shareDirectoryName {
-    [self propertyWillChange];
     self.rootDict[kUTMConfigSharingKey][kUTMConfigDirectoryNameKey] = shareDirectoryName;
 }
 
@@ -92,7 +87,6 @@ const NSString *const kUTMConfigUsbRedirectMaxKey = @"UsbRedirectMax";
 }
 
 - (void)setShareDirectoryBookmark:(NSData *)shareDirectoryBookmark {
-    [self propertyWillChange];
     if (!shareDirectoryBookmark) {
         [self.rootDict[kUTMConfigSharingKey] removeObjectForKey:kUTMConfigDirectoryBookmarkKey];
     } else {
@@ -101,7 +95,6 @@ const NSString *const kUTMConfigUsbRedirectMaxKey = @"UsbRedirectMax";
 }
 
 - (void)setUsb3Support:(BOOL)usb3Support {
-    [self propertyWillChange];
     self.rootDict[kUTMConfigSharingKey][kUTMConfigUsb3SupportKey] = @(usb3Support);
 }
 
@@ -114,7 +107,6 @@ const NSString *const kUTMConfigUsbRedirectMaxKey = @"UsbRedirectMax";
 }
 
 - (void)setUsbRedirectionMaximumDevices:(NSNumber *)usbRedirectionMaximumDevices {
-    [self propertyWillChange];
     self.rootDict[kUTMConfigSharingKey][kUTMConfigUsbRedirectMaxKey] = usbRedirectionMaximumDevices;
 }
 

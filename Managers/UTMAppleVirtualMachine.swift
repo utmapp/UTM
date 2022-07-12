@@ -333,24 +333,6 @@ import Virtualization
         
         return (mfd, sfd, name)
     }
-    
-    @available(macOS 12, *)
-    private func makeDirectoryShare(from sharedDirectories: [SharedDirectory]) -> VZDirectoryShare {
-        let vzSharedDirectories = sharedDirectories.compactMap { sharedDirectory in
-            sharedDirectory.vzSharedDirectory()
-        }
-        let directories = vzSharedDirectories.reduce(into: [String: VZSharedDirectory]()) { (dict, share) in
-            let lastPathComponent = share.url.lastPathComponent
-            var name = lastPathComponent
-            var i = 2
-            while dict.keys.contains(name) {
-                name = "\(lastPathComponent) (\(i))"
-                i += 1
-            }
-            dict[name] = share
-        }
-        return VZMultipleDirectoryShare(directories: directories)
-    }
 }
 
 @available(macOS 11, *)

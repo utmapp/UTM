@@ -15,16 +15,12 @@
 //
 
 #import "UTMLegacyQemuConfiguration.h"
-#import "UTMLegacyQemuConfiguration+Constants.h"
-#import "UTMLegacyQemuConfiguration+Defaults.h"
 #import "UTMLegacyQemuConfiguration+Display.h"
 #import "UTMLegacyQemuConfiguration+Drives.h"
 #import "UTMLegacyQemuConfiguration+Miscellaneous.h"
 #import "UTMLegacyQemuConfiguration+Networking.h"
 #import "UTMLegacyQemuConfiguration+Sharing.h"
 #import "UTMLegacyQemuConfiguration+System.h"
-#import "UTM-Swift.h"
-#import <CommonCrypto/CommonDigest.h>
 #import <TargetConditionals.h>
 
 const NSString *const kUTMConfigSystemKey = @"System";
@@ -56,17 +52,14 @@ const NSString *const kUTMConfigAppleVirtualizationKey = @"isAppleVirtualization
 @synthesize rootDict = _rootDict;
 
 - (void)setName:(NSString *)name {
-    [self propertyWillChange];
     _name = name;
 }
 
 - (void)setExistingPath:(NSURL *)existingPath {
-    [self propertyWillChange];
     _existingPath = existingPath;
 }
 
 - (void)setSelectedCustomIconPath:(NSURL *)selectedCustomIconPath {
-    [self propertyWillChange];
     _selectedCustomIconPath = selectedCustomIconPath;
 }
 
@@ -102,14 +95,6 @@ const NSString *const kUTMConfigAppleVirtualizationKey = @"isAppleVirtualization
 
 #pragma mark - Initialization
 
-- (instancetype)init {
-    self = [super init];
-    if (self) {
-        [self resetDefaults];
-    }
-    return self;
-}
-
 - (instancetype)initWithDictionary:(NSDictionary *)dictionary name:(NSString *)name path:(NSURL *)path {
     self = [super init];
     if (self) {
@@ -122,35 +107,6 @@ const NSString *const kUTMConfigAppleVirtualizationKey = @"isAppleVirtualization
 
 #pragma mark - Dictionary representation
 
-- (NSDictionary *)dictRepresentation {
-    return (NSDictionary *)_rootDict;
-}
-
-- (NSUUID *)legacyUuidFromName {
-    NSData *rawName = [self.name dataUsingEncoding:NSUTF8StringEncoding];
-    NSMutableData *hash = [NSMutableData dataWithLength:CC_SHA256_DIGEST_LENGTH];
-    CC_SHA256(rawName.bytes, (CC_LONG)rawName.length, hash.mutableBytes);
-    return [[NSUUID alloc] initWithUUIDBytes:hash.bytes];
-}
-
-- (void)resetDefaults {
-    [self propertyWillChange];
-    _rootDict = [@{
-        kUTMConfigSystemKey: [NSMutableDictionary new],
-        kUTMConfigDisplayKey: [NSMutableDictionary new],
-        kUTMConfigInputKey: [NSMutableDictionary new],
-        kUTMConfigNetworkingKey: [NSMutableDictionary new],
-        kUTMConfigPrintingKey: [NSMutableDictionary new],
-        kUTMConfigSoundKey: [NSMutableDictionary new],
-        kUTMConfigSharingKey: [NSMutableDictionary new],
-        kUTMConfigDrivesKey: [NSMutableArray new],
-        kUTMConfigDebugKey: [NSMutableDictionary new],
-        kUTMConfigInfoKey: [NSMutableDictionary new],
-    } mutableCopy];
-    self.version = @(kCurrentConfigurationVersion);
-    [self loadDefaults];
-}
-
 - (BOOL)reloadConfigurationWithDictionary:(NSDictionary *)dictionary name:(NSString *)name path:(NSURL *)path {
     if ([dictionary[kUTMConfigAppleVirtualizationKey] boolValue]) {
         return NO; // do not parse Apple config
@@ -158,7 +114,6 @@ const NSString *const kUTMConfigAppleVirtualizationKey = @"isAppleVirtualization
     if ([dictionary[kUTMConfigVersionKey] intValue] > kCurrentConfigurationVersion) {
         return NO; // do not parse if version is too high
     }
-    [self propertyWillChange];
     _rootDict = CFBridgingRelease(CFPropertyListCreateDeepCopy(kCFAllocatorDefault, (__bridge CFDictionaryRef)dictionary, kCFPropertyListMutableContainers));
     self.name = name;
     self.existingPath = path;
@@ -167,25 +122,14 @@ const NSString *const kUTMConfigAppleVirtualizationKey = @"isAppleVirtualization
     return YES;
 }
 
-#pragma mark - NSCopying
-
-- (id)copyWithZone:(NSZone *)zone {
-    return [[UTMLegacyQemuConfiguration alloc] initWithDictionary:_rootDict name:self.name path:nil];
-}
-
 #pragma mark - Settings
 
 - (void)setVersion:(NSNumber *)version {
-    [self propertyWillChange];
     self.rootDict[kUTMConfigVersionKey] = version;
 }
 
 - (NSNumber *)version {
     return self.rootDict[kUTMConfigVersionKey];
-}
-
-- (BOOL)isAppleVirtualization {
-    return NO;
 }
 
 @end
