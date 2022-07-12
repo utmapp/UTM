@@ -230,6 +230,7 @@ extension UTMQemuConfiguration {
             try await Task.detached {
                 try fileManager.moveItem(at: oldIconURL, to: newIconURL)
             }.value
+            information.iconURL = newIconURL
         }
         // move debug log
         let oldLogURL = dataURL.appendingPathComponent(QEMUPackageFileName.debugLog.rawValue)

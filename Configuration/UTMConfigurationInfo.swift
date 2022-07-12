@@ -129,7 +129,9 @@ extension UTMConfigurationInfo {
     @MainActor mutating func saveData(to dataURL: URL) async throws -> [URL] {
         // save new icon
         if isIconCustom, let iconURL = iconURL {
-            return await [try UTMQemuConfiguration.copyItemIfChanged(from: iconURL, to: dataURL)]
+            let newIconURL = try await UTMQemuConfiguration.copyItemIfChanged(from: iconURL, to: dataURL)
+            self.iconURL = newIconURL
+            return [newIconURL]
         }
         return []
     }
