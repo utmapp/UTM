@@ -51,7 +51,7 @@ enum UTMConfigurationError: Error {
     case invalidDataURL
     case invalidDriveConfiguration
     case customIconInvalid
-    case driveAlreadyExists
+    case driveAlreadyExists(URL)
     case cannotCreateDiskImage
 }
 
@@ -61,6 +61,7 @@ extension UTMConfigurationError: LocalizedError {
         case .versionTooLow: return NSLocalizedString("This configuration is too old and is not supported.", comment: "UTMConfiguration")
         case .versionTooHigh: return NSLocalizedString("This configuration is saved with a newer version of UTM and is not compatible with this version.", comment: "UTMConfiguration")
         case .invalidBackend: return NSLocalizedString("The backend for this configuration is not supported.", comment: "UTMConfiguration")
+        case .driveAlreadyExists(let url): return NSLocalizedString("The drive '\(url.lastPathComponent)' already exists and cannot be created.", comment: "UTMConfiguration")
         default: return NSLocalizedString("An internal error has occurred.", comment: "UTMConfiguration")
         }
     }
@@ -152,7 +153,13 @@ extension UTMConfiguration {
         try settingsData.write(to: packageURL.appendingPathComponent(kUTMBundleConfigFilename))
     }
     
-    static func copyItemIfChanged(from sourceURL: URL, to destFolderURL: URL) async throws -> URL {
+    /// Check if a file has changed and if so, copy the new file to the bundle
+    /// - Parameters:
+    ///   - sourceURL: File to copy
+    ///   - destFolderURL: Destination in bundle's data directory
+    ///   - customCopy: If non-nil, a custom copy function is invoked
+    /// - Returns: URL of the updated item in the bundle
+    static func copyItemIfChanged(from sourceURL: URL, to destFolderURL: URL, customCopy: ((_ sourceURL: URL, _ destURL: URL) async throws -> URL)? = nil) async throws -> URL {
         _ = sourceURL.startAccessingSecurityScopedResource()
         defer {
             sourceURL.stopAccessingSecurityScopedResource()
@@ -171,8 +178,14 @@ extension UTMConfiguration {
             }
             try fileManager.removeItem(at: destURL)
         }
-        try fileManager.copyItem(at: sourceURL, to: destURL)
-        return destURL
+        if let customCopy = customCopy {
+            return try await customCopy(sourceURL, destURL)
+        } else {
+            try await Task.detached {
+                try fileManager.copyItem(at: sourceURL, to: destURL)
+            }.value
+            return destURL
+        }
     }
     
     private static func cleanupAllFiles(at dataURL: URL, notIncluding urls: [URL]) async throws {

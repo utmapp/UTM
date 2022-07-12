@@ -37,7 +37,12 @@ struct UTMQemuConfigurationDrive: UTMConfigurationDrive {
     private(set) var id: String = ""
     
     /// Type of the image.
-    var imageType: QEMUDriveImageType = .none
+    var imageType: QEMUDriveImageType = .none {
+        didSet {
+            // default disk images to qcow2
+            isRawImage = imageType != .disk
+        }
+    }
     
     /// Interface of the image (only valid when type is CD/Disk).
     var interface: QEMUDriveInterface = .none

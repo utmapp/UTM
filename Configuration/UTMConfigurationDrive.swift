@@ -61,7 +61,11 @@ extension UTMConfigurationDrive {
         }
         let fileManager = FileManager.default
         if let imageURL = imageURL {
+            #if os(macOS)
+            let newURL = try await UTMQemuConfiguration.copyItemIfChanged(from: imageURL, to: dataURL, customCopy: isRawImage ? nil : convertQcow2Image)
+            #else
             let newURL = try await UTMQemuConfiguration.copyItemIfChanged(from: imageURL, to: dataURL)
+            #endif
             self.imageName = newURL.lastPathComponent
             self.imageURL = newURL
             return [newURL]
@@ -69,7 +73,7 @@ extension UTMConfigurationDrive {
             let newName = "\(id).\(isRawImage ? "img" : "qcow2")"
             let newURL = dataURL.appendingPathComponent(newName)
             guard !fileManager.fileExists(atPath: newURL.path) else {
-                throw UTMConfigurationError.driveAlreadyExists
+                throw UTMConfigurationError.driveAlreadyExists(newURL)
             }
             if isRawImage {
                 try await createRawImage(at: newURL, size: sizeMib)
@@ -105,4 +109,16 @@ extension UTMConfigurationDrive {
             }
         }.value
     }
+    
+    #if os(macOS)
+    private func convertQcow2Image(at sourceURL: URL, to destURL: URL) async throws -> URL {
+        let fileManager = FileManager.default
+        let destQcow2 = destURL.deletingPathExtension().appendingPathExtension("qcow2")
+        guard !fileManager.fileExists(atPath: destQcow2.path) else {
+            throw UTMConfigurationError.driveAlreadyExists(destQcow2)
+        }
+        try await UTMQemuImage.convert(from: sourceURL, toQcow2: destQcow2)
+        return destQcow2
+    }
+    #endif
 }
