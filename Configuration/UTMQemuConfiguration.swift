@@ -51,9 +51,6 @@ final class UTMQemuConfiguration: UTMConfiguration {
     /// True if configuration is migrated from a legacy config. Not saved.
     private(set) var isLegacy: Bool = false
     
-    /// If set, points to the data directory for this configuration. Not saved.
-    var dataURL: URL?
-    
     var backend: UTMBackend {
         .qemu
     }
@@ -100,7 +97,6 @@ final class UTMQemuConfiguration: UTMConfiguration {
         networks = try values.decode([UTMQemuConfigurationNetwork].self, forKey: .networks)
         serials = try values.decode([UTMQemuConfigurationSerial].self, forKey: .serials)
         sound = try values.decode([UTMQemuConfigurationSound].self, forKey: .sound)
-        dataURL = decoder.userInfo[.dataURL] as? URL
     }
     
     func encode(to encoder: Encoder) throws {
@@ -202,7 +198,6 @@ extension UTMQemuConfiguration {
         if let _sound = UTMQemuConfigurationSound(migrating: oldConfig) {
             sound = [_sound]
         }
-        dataURL = oldConfig.existingPath?.appendingPathComponent(UTMLegacyQemuConfiguration.diskImagesDirectory)
     }
 }
 
@@ -243,9 +238,10 @@ extension UTMQemuConfiguration {
             try await Task.detached {
                 try fileManager.moveItem(at: oldLogURL, to: newLogURL)
             }.value
+            qemu.debugLogURL = newLogURL
         }
-        // update data URL
-        self.dataURL = dataURL
+        // move efi variables
+        qemu.efiVarsURL = nil // will be set at saveData
     }
     
     func saveData(to dataURL: URL) async throws -> [URL] {

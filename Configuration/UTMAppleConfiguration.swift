@@ -37,9 +37,6 @@ final class UTMAppleConfiguration: UTMConfiguration {
     
     @Published var serials: [UTMAppleConfigurationSerial] = []
     
-    /// If set, points to the data directory for this configuration. Not saved.
-    var dataURL: URL?
-    
     var backend: UTMBackend {
         .apple
     }
@@ -81,7 +78,6 @@ final class UTMAppleConfiguration: UTMConfiguration {
         drives = try values.decode([UTMAppleConfigurationDrive].self, forKey: .drives)
         networks = try values.decode([UTMAppleConfigurationNetwork].self, forKey: .networks)
         serials = try values.decode([UTMAppleConfigurationSerial].self, forKey: .serials)
-        dataURL = decoder.userInfo[.dataURL] as? URL
     }
     
     func encode(to encoder: Encoder) throws {
@@ -111,7 +107,6 @@ enum UTMAppleConfigurationError: Error {
 extension UTMAppleConfiguration {
     convenience init(migrating oldConfig: UTMLegacyAppleConfiguration, dataURL: URL) {
         self.init()
-        self.dataURL = dataURL
         information = .init(migrating: oldConfig, dataURL: dataURL)
         system = .init(migrating: oldConfig)
         devices = .init(migrating: oldConfig)

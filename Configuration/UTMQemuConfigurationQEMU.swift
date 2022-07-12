@@ -21,6 +21,9 @@ struct UTMQemuConfigurationQEMU: Codable {
     /// Where to store the debug log. File may not exist yet. This property is not saved to file.
     var debugLogURL: URL?
     
+    /// EFI variables if EFI boot is enabled. This property is not saved to file.
+    var efiVarsURL: URL?
+    
     /// If true, write standard output to debug.log in the VM bundle.
     var hasDebugLog: Bool = false
     
@@ -87,6 +90,7 @@ struct UTMQemuConfigurationQEMU: Codable {
         additionalArguments = try values.decode([QEMUArgument].self, forKey: .additionalArguments)
         if let dataURL = decoder.userInfo[.dataURL] as? URL {
             debugLogURL = dataURL.appendingPathComponent(QEMUPackageFileName.debugLog.rawValue)
+            efiVarsURL = dataURL.appendingPathComponent(QEMUPackageFileName.efiVariables.rawValue)
         }
     }
     
@@ -146,6 +150,7 @@ extension UTMQemuConfigurationQEMU {
             additionalArguments = oldAddArgs.map({ QEMUArgument($0) })
         }
         debugLogURL = oldConfig.existingPath?.appendingPathComponent(QEMUPackageFileName.debugLog.rawValue)
+        efiVarsURL = oldConfig.existingPath?.appendingPathComponent(QEMUPackageFileName.efiVariables.rawValue)
     }
 }
 
@@ -171,6 +176,7 @@ extension UTMQemuConfigurationQEMU {
                     try fileManager.copyItem(at: templateVarsURL, to: varsURL)
                 }.value
             }
+            efiVarsURL = varsURL
             return [varsURL]
         }
         return []

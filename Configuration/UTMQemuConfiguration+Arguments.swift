@@ -294,7 +294,7 @@ extension UTMQemuConfiguration {
         }
         if qemu.hasUefiBoot {
             let bios = resourceURL.appendingPathComponent("edk2-\(system.architecture.rawValue)-code.fd")
-            let vars = optDataURL.appendingPathComponent(QEMUPackageFileName.efiVariables.rawValue)
+            let vars = qemu.efiVarsURL ?? URL(fileURLWithPath: "/\(QEMUPackageFileName.efiVariables.rawValue)")
             if !hasCustomBios && FileManager.default.fileExists(atPath: bios.path) {
                 f("-drive")
                 "if=pflash"
@@ -328,10 +328,6 @@ extension UTMQemuConfiguration {
             }
         }
         return false
-    }
-    
-    private var optDataURL: URL {
-        dataURL ?? URL(fileURLWithPath: "/Data")
     }
     
     private var resourceURL: URL {

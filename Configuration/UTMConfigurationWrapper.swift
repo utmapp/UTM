@@ -315,7 +315,7 @@ import Foundation
     }
     
     @objc func qemuEnsureEfiVarsAvailable(completion: @escaping (Error?) -> Void) {
-        guard let qemuConfig = qemuConfig, let dataURL = qemuConfig.dataURL else {
+        guard let qemuConfig = qemuConfig, let efiVarsURL = qemuConfig.qemu.efiVarsURL else {
             completion(nil)
             return
         }
@@ -325,7 +325,7 @@ import Foundation
         }
         Task {
             do {
-                _ = try await qemuConfig.qemu.saveData(to: dataURL, for: qemuConfig.system)
+                _ = try await qemuConfig.qemu.saveData(to: efiVarsURL.deletingLastPathComponent(), for: qemuConfig.system)
                 completion(nil)
             } catch {
                 completion(error)
