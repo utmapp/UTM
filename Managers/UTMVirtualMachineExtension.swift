@@ -71,6 +71,7 @@ extension UTMVirtualMachine: ObservableObject {
         let newPath = existingPath.deletingLastPathComponent().appendingPathComponent(config.name).appendingPathExtension("utm")
         do {
             try await config.save(to: existingPath)
+            try updateViewStatePostSave()
         } catch {
             try? reloadConfiguration()
             throw error
@@ -82,6 +83,10 @@ extension UTMVirtualMachine: ObservableObject {
             path = newPath
             try reloadConfiguration()
         }
+    }
+    
+    func updateViewStatePostSave() throws {
+        // do nothing by default
     }
 }
 
@@ -166,6 +171,16 @@ public extension UTMQemuVirtualMachine {
             drives.append(drive)
         }
         return drives
+    }
+    
+    override func updateViewStatePostSave() throws {
+        //FIXME: remove this once we remove viewState
+        for drive in config.qemuConfig!.drives {
+            if drive.isExternal, let url = drive.imageURL {
+                let legacyDrive = drives.first(where: { $0.name == drive.id })
+                try changeMedium(for: legacyDrive!, url: url)
+            }
+        }
     }
 }
 

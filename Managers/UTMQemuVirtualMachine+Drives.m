@@ -85,7 +85,7 @@ extern NSString *const kUTMErrorDomain;
         if (success) {
             [self.viewState setBookmark:newBookmark path:path forRemovableDrive:drive.name persistent:YES];
             [self saveViewState];
-            success = [self.qemu changeMediumForDrive:drive.name path:path error:&qemuError];
+            success = [self.qemu changeMediumForDrive:[NSString stringWithFormat:@"drive%@", drive.name] path:path error:&qemuError];
         } else {
             qemuError = [NSError errorWithDomain:kUTMErrorDomain code:-1 userInfo:@{NSLocalizedDescriptionKey: NSLocalizedString(@"Failed to access drive image path.", "UTMVirtualMachine+Drives")}];
         }

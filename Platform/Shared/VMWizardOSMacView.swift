@@ -71,7 +71,7 @@ struct VMWizardOSMacView: View {
                 throw NSLocalizedString("Your machine does not support running this IPSW.", comment: "VMWizardOSMacView")
             }
             await MainActor.run {
-                wizardState.macPlatform = MacPlatform(newHardware: model)
+                wizardState.macPlatform = UTMAppleConfigurationMacPlatform(newHardware: model)
                 wizardState.macRecoveryIpswURL = url
                 wizardState.isSkipBootImage = true
                 wizardState.bootImageURL = nil

@@ -232,7 +232,7 @@ extension UTMQemuConfigurationDrive {
         self.sizeMib = 10240
         self.isReadOnly = false
         self.imageURL = nil
-        self.id = "drive\(UUID().uuidString)"
+        self.id = UUID().uuidString
         self.defaultInterfaceForImageType = { Self.defaultInterface(forArchitecture: architecture, target: target, imageType: $0) }
         self.interface = defaultInterfaceForImageType!(imageType)
     }

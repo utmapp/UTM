@@ -76,7 +76,7 @@ enum VMWizardOS: String, Identifiable {
     @Published var operatingSystem: VMWizardOS = .Other
     #if os(macOS) && arch(arm64)
     @available(macOS 12, *)
-    @Published var macPlatform: MacPlatform?
+    @Published var macPlatform: UTMAppleConfigurationMacPlatform?
     @Published var macRecoveryIpswURL: URL?
     #endif
     @Published var isSkipBootImage: Bool = false
@@ -92,13 +92,13 @@ enum VMWizardOS: String, Identifiable {
     @Published var linuxRootImageURL: URL?
     @Published var linuxBootArguments: String = ""
     @Published var windowsBootVhdx: URL?
-    @Published var systemArchitecture: String?
-    @Published var systemTarget: String?
+    @Published var systemArchitecture: QEMUArchitecture = .x86_64
+    @Published var systemTarget: QEMUTarget = QEMUTarget_x86_64.pc
     #if os(macOS)
-    @Published var systemMemory: UInt64 = 4096 * 1048576
+    @Published var systemMemoryMib: Int = 4096
     @Published var storageSizeGib: Int = 64
     #else
-    @Published var systemMemory: UInt64 = 512 * 1048576
+    @Published var systemMemoryMib: Int = 512
     @Published var storageSizeGib: Int = 8
     #endif
     @Published var systemCpuCount: Int = 0
@@ -123,7 +123,7 @@ enum VMWizardOS: String, Identifiable {
     
     #if os(macOS) && arch(arm64)
     var isPendingIPSWDownload: Bool {
-        guard #available(macOS 12, *), operatingSystem == .macOS else {
+        guard #available(macOS 12, *), useAppleVirtualization && operatingSystem == .macOS else {
             return false
         }
         guard let url = macRecoveryIpswURL else {
@@ -194,12 +194,6 @@ enum VMWizardOS: String, Identifiable {
             }
             nextPage = .hardware
         case .hardware:
-            if !useVirtualization {
-                guard systemArchitecture != nil && systemTarget != nil else {
-                    alertMessage = AlertMessage(NSLocalizedString("Please select a system to emulate.", comment: "VMWizardState"))
-                    return
-                }
-            }
             nextPage = .drives
             #if arch(arm64)
             if operatingSystem == .Windows && windowsBootVhdx != nil {
@@ -249,66 +243,69 @@ enum VMWizardOS: String, Identifiable {
     }
     
     #if os(macOS)
-    private func generateAppleConfig() throws -> UTMLegacyAppleConfiguration {
-        let config = UTMLegacyAppleConfiguration()
-        config.name = name!
-        config.memorySize = systemMemory
-        config.cpuCount = systemCpuCount
+    private func generateAppleConfig() throws -> UTMAppleConfiguration {
+        let config = UTMAppleConfiguration()
+        config.information.name = name!
+        config.system.memorySize = systemMemoryMib
+        config.system.cpuCount = systemCpuCount
         if !isSkipBootImage, let bootImageURL = bootImageURL {
-            config.diskImages.append(DiskImage(importImage: bootImageURL, isReadOnly: true, isExternal: true))
+            config.drives.append(UTMAppleConfigurationDrive(existingURL: bootImageURL, isReadOnly: true, isExternal: true))
         }
         var isSkipDiskCreate = false
         switch operatingSystem {
         case .Other:
             break
         case .macOS:
-            config.icon = "mac"
+            config.information.iconURL = UTMConfigurationInfo.builtinIcon(named: "mac")
             #if os(macOS) && arch(arm64)
             if #available(macOS 12, *) {
-                config.bootLoader = try! Bootloader(for: .macOS)
-                config.macRecoveryIpswURL = macRecoveryIpswURL
-                config.macPlatform = macPlatform
+                config.system.boot = try! UTMAppleConfigurationBoot(for: .macOS)
+                config.system.macRecoveryIpswURL = macRecoveryIpswURL
+                config.system.macPlatform = macPlatform
             }
             #endif
         case .Linux:
-            config.icon = "linux"
+            config.information.iconURL = UTMConfigurationInfo.builtinIcon(named: "linux")
             #if os(macOS)
             if useLinuxKernel {
-                var bootloader = try Bootloader(for: .Linux, linuxKernelURL: linuxKernelURL!)
+                var bootloader = try UTMAppleConfigurationBoot(for: .linux, linuxKernelURL: linuxKernelURL!)
                 bootloader.linuxInitialRamdiskURL = linuxInitialRamdiskURL
                 bootloader.linuxCommandLine = linuxBootArguments
-                config.bootLoader = bootloader
+                config.system.boot = bootloader
                 if let linuxRootImageURL = linuxRootImageURL {
-                    config.diskImages.append(DiskImage(importImage: linuxRootImageURL))
+                    config.drives.append(UTMAppleConfigurationDrive(existingURL: linuxRootImageURL))
                     isSkipDiskCreate = true
                 }
             }
             #endif
         case .Windows:
-            config.icon = "windows"
+            config.information.iconURL = UTMConfigurationInfo.builtinIcon(named: "windows")
             if let windowsBootVhdx = windowsBootVhdx {
-                config.diskImages.append(DiskImage(importImage: windowsBootVhdx, isReadOnly: false, isExternal: false))
+                config.drives.append(UTMAppleConfigurationDrive(existingURL: windowsBootVhdx, isReadOnly: false, isExternal: false))
                 isSkipDiskCreate = true
             }
         }
         if !isSkipDiskCreate {
-            config.diskImages.append(DiskImage(newSize: storageSizeGib * bytesInGib / bytesInMib))
+            config.drives.append(UTMAppleConfigurationDrive(newSize: storageSizeGib * bytesInGib / bytesInMib))
         }
         if #available(macOS 12, *), let sharingDirectoryURL = sharingDirectoryURL {
-            config.sharedDirectories = [SharedDirectory(directoryURL: sharingDirectoryURL, isReadOnly: sharingReadOnly)]
+            config.sharedDirectories = [UTMAppleConfigurationSharedDirectory(directoryURL: sharingDirectoryURL, isReadOnly: sharingReadOnly)]
         }
         // some meaningful defaults
         if #available(macOS 12, *) {
-            config.displays = [Display(for: .init(width: 1920, height: 1200), isHidpi: false)]
-            config.isAudioEnabled = true
-            config.isKeyboardEnabled = true
-            config.isPointingEnabled = true
+            config.displays = [UTMAppleConfigurationDisplay(width: 1920, height: 1200)]
+            config.devices.hasAudio = true
+            config.devices.hasKeyboard = true
+            config.devices.pointer = .mouse
         }
-        config.isBalloonEnabled = true
-        config.isEntropyEnabled = true
-        config.networkDevices = [Network(newInterfaceForMode: .Shared)]
-        config.isSerialEnabled = operatingSystem == .Linux
-        config.isConsoleDisplay = operatingSystem == .Linux
+        config.devices.hasBalloon = true
+        config.devices.hasEntropy = true
+        config.networks = [UTMAppleConfigurationNetwork()]
+        if #available(macOS 13, *) {
+            // FIXME: macOS 13 features
+        } else if operatingSystem == .Linux {
+            config.serials = [UTMAppleConfigurationSerial()]
+        }
         return config
     }
     
@@ -320,7 +317,7 @@ enum VMWizardOS: String, Identifiable {
             case .success(let restoreImage):
                 DispatchQueue.main.async {
                     if let hardwareModel = restoreImage.mostFeaturefulSupportedConfiguration?.hardwareModel {
-                        self.macPlatform = MacPlatform(newHardware: hardwareModel)
+                        self.macPlatform = UTMAppleConfigurationMacPlatform(newHardware: hardwareModel)
                         self.macRecoveryIpswURL = restoreImage.url
                     } else {
                         self.alertMessage = AlertMessage(NSLocalizedString("Failed to get latest macOS version from Apple.", comment: "VMWizardState"))
@@ -336,38 +333,37 @@ enum VMWizardOS: String, Identifiable {
     #endif
     #endif
     
-    private func generateQemuConfig() throws -> UTMLegacyQemuConfiguration {
-        let config = UTMLegacyQemuConfiguration()
-        config.name = name!
-        config.systemArchitecture = systemArchitecture
-        config.systemTarget = systemTarget
-        config.loadDefaults(forTarget: systemTarget, architecture: systemArchitecture)
-        config.systemMemory = NSNumber(value: systemMemory / UInt64(bytesInMib))
-        config.systemCPUCount = NSNumber(value: systemCpuCount)
-        config.useHypervisor = useVirtualization
-        config.shareDirectoryReadOnly = sharingReadOnly
+    private func generateQemuConfig() throws -> UTMQemuConfiguration {
+        let config = UTMQemuConfiguration()
+        config.information.name = name!
+        config.system.architecture = systemArchitecture
+        config.system.target = systemTarget
+        config.reset(forArchitecture: systemArchitecture, target: systemTarget)
+        config.system.memorySize = systemMemoryMib
+        config.system.cpuCount = systemCpuCount
+        config.qemu.hasHypervisor = useVirtualization
+        config.sharing.directoryShareMode = sharingReadOnly ? .webdav : .none
         if operatingSystem == .Windows {
             // only change UEFI settings for Windows
-            config.systemBootUefi = systemBootUefi
+            config.qemu.hasUefiBoot = systemBootUefi
         }
-        if isGLEnabled, let displayCard = config.displayCard {
-            let newCard = displayCard + "-gl"
-            let allCards = UTMLegacyQemuConfiguration.supportedDisplayCards(forArchitecture: systemArchitecture)!
-            if allCards.contains(newCard) {
-                config.displayCard = newCard
+        if isGLEnabled, let displayCard = config.displays.first?.hardware {
+            let newCard = displayCard.rawValue + "-gl"
+            let allCards = systemArchitecture.displayDeviceType.allRawValues
+            if allCards.contains(where: { $0 == newCard }) {
+                config.displays[0].hardware = AnyQEMUConstant(rawValue: newCard)!
             }
         }
-        let generateRemovableDrive: () -> Void = { [self] in
-            config.newRemovableDrive("cdrom0", type: .CD, interface: UTMLegacyQemuConfiguration.defaultDriveInterface(forTarget: systemTarget, architecture: systemArchitecture, type: .CD))
-        }
-        let mainDriveInterface: String
-        if systemArchitecture == "aarch64" && operatingSystem == .Windows {
-            mainDriveInterface = "nvme"
+        let mainDriveInterface: QEMUDriveInterface
+        if systemArchitecture == .aarch64 && operatingSystem == .Windows {
+            mainDriveInterface = .nvme
         } else {
-           mainDriveInterface = UTMLegacyQemuConfiguration.defaultDriveInterface(forTarget: systemTarget, architecture: systemArchitecture, type: .disk)
+            mainDriveInterface = UTMQemuConfigurationDrive.defaultInterface(forArchitecture: systemArchitecture, target: systemTarget, imageType: .disk)
         }
         if !isSkipBootImage && bootImageURL != nil {
-            generateRemovableDrive()
+            var bootDrive = UTMQemuConfigurationDrive(forArchitecture: systemArchitecture, target: systemTarget, isExternal: true)
+            bootDrive.imageURL = bootImageURL
+            config.drives.append(bootDrive)
         }
         switch operatingSystem {
         case .Other:
@@ -375,111 +371,66 @@ enum VMWizardOS: String, Identifiable {
         case .macOS:
             throw NSLocalizedString("macOS is not supported with QEMU.", comment: "VMWizardState")
         case .Linux:
-            config.icon = "linux"
+            config.information.iconURL = UTMConfigurationInfo.builtinIcon(named: "linux")
             if useLinuxKernel {
-                config.newDrive("kernel", path: linuxKernelURL!.lastPathComponent, type: .kernel, interface: "")
+                var kernel = UTMQemuConfigurationDrive()
+                kernel.imageURL = linuxKernelURL
+                kernel.imageType = .linuxKernel
+                config.drives.append(kernel)
                 if let linuxInitialRamdiskURL = linuxInitialRamdiskURL {
-                    config.newDrive("initrd", path: linuxInitialRamdiskURL.lastPathComponent, type: .initrd, interface: "")
+                    var initrd = UTMQemuConfigurationDrive()
+                    initrd.imageURL = linuxInitialRamdiskURL
+                    initrd.imageType = .linuxInitrd
+                    config.drives.append(initrd)
                 }
                 if let linuxRootImageURL = linuxRootImageURL {
-                    config.newDrive("root", path: destinationFilename(forExisting: linuxRootImageURL), type: .disk, interface: mainDriveInterface)
+                    var rootImage = UTMQemuConfigurationDrive()
+                    rootImage.imageURL = linuxRootImageURL
+                    rootImage.imageType = .disk
+                    rootImage.interface = mainDriveInterface
+                    config.drives.append(rootImage)
                 }
                 if linuxBootArguments.count > 0 {
-                    config.newArgument("-append")
-                    config.newArgument(linuxBootArguments)
+                    config.qemu.additionalArguments.append(QEMUArgument("-append"))
+                    config.qemu.additionalArguments.append(QEMUArgument(linuxBootArguments))
                 }
             }
         case .Windows:
-            config.icon = "windows"
-            config.rtcUseLocalTime = true
+            config.information.iconURL = UTMConfigurationInfo.builtinIcon(named: "windows")
+            config.qemu.hasRTCLocalTime = true
             if let windowsBootVhdx = windowsBootVhdx {
-                config.newDrive("drive0", path: destinationFilename(forExisting: windowsBootVhdx), type: .disk, interface: mainDriveInterface)
-                generateRemovableDrive() // order matters here
+                var rootImage = UTMQemuConfigurationDrive()
+                rootImage.imageURL = windowsBootVhdx
+                rootImage.imageType = .disk
+                rootImage.interface = mainDriveInterface
+                config.drives.append(rootImage)
+                let diskDrive = UTMQemuConfigurationDrive(forArchitecture: systemArchitecture, target: systemTarget, isExternal: true)
+                config.drives.append(diskDrive)
             }
         }
         if windowsBootVhdx == nil {
-            config.newDrive("drive0", path: "data.qcow2", type: .disk, interface: mainDriveInterface)
+            var diskImage = UTMQemuConfigurationDrive()
+            diskImage.sizeMib = storageSizeGib * bytesInGib / bytesInMib
+            diskImage.imageType = .disk
+            diskImage.interface = mainDriveInterface
+            config.drives.append(diskImage)
+        }
+        if let sharingDirectoryURL = sharingDirectoryURL {
+            config.sharing.directoryShareUrl = sharingDirectoryURL
         }
         return config
     }
     
-    func generateConfig() throws -> UTMConfigurable {
+    func generateConfig() throws -> UTMConfigurationWrapper {
         if useVirtualization && useAppleVirtualization {
             #if os(macOS)
-            return try generateAppleConfig()
+            return UTMConfigurationWrapper(wrapping: try generateAppleConfig())
             #else
             throw NSLocalizedString("Unavailable for this platform.", comment: "VMWizardState")
             #endif
         } else {
-            return try generateQemuConfig()
+            return UTMConfigurationWrapper(wrapping: try generateQemuConfig())
         }
-    }
-    
-    private nonisolated func copyItem(from url: URL, to destination: URL) async throws {
-        let task = Task.detached {
-            let fileManager = FileManager.default
-            _ = url.startAccessingSecurityScopedResource()
-            defer {
-                url.stopAccessingSecurityScopedResource()
-            }
-            if !fileManager.fileExists(atPath: destination.path) {
-                try fileManager.createDirectory(at: destination, withIntermediateDirectories: false, attributes: nil)
-            }
-            let dstUrl = destination.appendingPathComponent(url.lastPathComponent)
-            try fileManager.copyItem(at: url, to: dstUrl)
-        }
-        try await task.value
-    }
-    
-    func qemuPostCreate(with vm: UTMQemuVirtualMachine) async throws {
-        if let sharingDirectoryURL = sharingDirectoryURL {
-            try vm.changeSharedDirectory(sharingDirectoryURL)
-        }
-        let drive = vm.drives.first { drive in
-            drive.name == "cdrom0"
-        }
-        if let drive = drive, let bootImageURL = bootImageURL {
-            try vm.changeMedium(for: drive, url: bootImageURL)
-        }
-        //FIXME: rewrite config for wizard
-        let dataUrl = vm.config.qemuConfig!.dataURL!
-        var existingImage: URL? = nil
-        if operatingSystem == .Linux && useLinuxKernel {
-            try await copyItem(from: linuxKernelURL!, to: dataUrl)
-            if let linuxInitialRamdiskURL = linuxInitialRamdiskURL {
-                try await copyItem(from: linuxInitialRamdiskURL, to: dataUrl)
-            }
-            existingImage = linuxRootImageURL
-        } else if operatingSystem == .Windows {
-            existingImage = windowsBootVhdx
-        }
-        if let existingImage = existingImage {
-            #if os(macOS)
-            let destQcow2 = dataUrl.appendingPathComponent(destinationFilename(forExisting: existingImage))
-            try await UTMQemuImage.convert(from: existingImage, toQcow2: destQcow2)
-            #else
-            try await copyItem(from: existingImage, to: dataUrl)
-            #endif
-        } else {
-            let dstPath = dataUrl.appendingPathComponent("data.qcow2")
-            try await Task.detached { [self] in
-                let size = await storageSizeGib * bytesInGib / bytesInMib
-                if !GenerateDefaultQcow2File(dstPath as CFURL, size) {
-                    throw NSLocalizedString("Disk creation failed.", comment: "VMWizardState")
-                }
-            }.value
-        }
-    }
-    
-    private func destinationFilename(forExisting url: URL) -> String {
-        #if os(macOS)
-        var destQcow2 = url
-        destQcow2.deletePathExtension()
-        destQcow2.appendPathExtension("qcow2")
-        return destQcow2.lastPathComponent
-        #else
-        return url.lastPathComponent
-        #endif
     }
     
     /// Execute a task with spinning progress indicator (Swift concurrency version)

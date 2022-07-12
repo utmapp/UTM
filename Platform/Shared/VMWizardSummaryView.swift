@@ -110,10 +110,10 @@ struct VMWizardSummaryView: View {
             TextField("Engine", text: .constant(wizardState.useAppleVirtualization ? "Apple Virtualization" : "QEMU"))
             Toggle("Use Virtualization", isOn: $wizardState.useVirtualization)
             if !wizardState.useAppleVirtualization {
-                TextField("Architecture", text: $wizardState.systemArchitecture.bound)
-                TextField("System", text: $wizardState.systemTarget.bound)
+                TextField("Architecture", text: .constant(wizardState.systemArchitecture.prettyValue))
+                TextField("System", text: .constant(wizardState.systemTarget.prettyValue))
             }
-            TextField("RAM", text: .constant(ByteCountFormatter.string(fromByteCount: Int64(wizardState.systemMemory), countStyle: .memory)))
+            TextField("RAM", text: .constant(ByteCountFormatter.string(fromByteCount: Int64(wizardState.systemMemoryMib * wizardState.bytesInMib), countStyle: .memory)))
             TextField("CPU", text: .constant(coreDescription))
             TextField("Storage", text: .constant(storageDescription))
             if !wizardState.useAppleVirtualization && wizardState.operatingSystem == .Linux {
