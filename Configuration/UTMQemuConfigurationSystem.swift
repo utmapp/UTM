@@ -63,8 +63,8 @@ struct UTMQemuConfigurationSystem: Codable {
     init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         architecture = try values.decode(QEMUArchitecture.self, forKey: .architecture)
-        target = try values.decode(AnyQEMUConstant.self, forKey: .target)
-        cpu = try values.decode(AnyQEMUConstant.self, forKey: .cpu)
+        target = try values.decode(architecture.targetType, forKey: .target)
+        cpu = try values.decode(architecture.cpuType, forKey: .cpu)
         cpuFlagsAdd = try values.decode([AnyQEMUConstant].self, forKey: .cpuFlagsAdd)
         cpuFlagsRemove = try values.decode([AnyQEMUConstant].self, forKey: .cpuFlagsRemove)
         cpuCount = try values.decode(Int.self, forKey: .cpuCount)
