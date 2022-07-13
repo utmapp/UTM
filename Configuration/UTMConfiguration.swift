@@ -47,6 +47,7 @@ enum UTMBackend: String, CaseIterable, Codable {
 enum UTMConfigurationError: Error {
     case versionTooLow
     case versionTooHigh
+    case invalidConfigurationValue(String)
     case invalidBackend
     case invalidDataURL
     case invalidDriveConfiguration
@@ -60,6 +61,7 @@ extension UTMConfigurationError: LocalizedError {
         switch self {
         case .versionTooLow: return NSLocalizedString("This configuration is too old and is not supported.", comment: "UTMConfiguration")
         case .versionTooHigh: return NSLocalizedString("This configuration is saved with a newer version of UTM and is not compatible with this version.", comment: "UTMConfiguration")
+        case .invalidConfigurationValue(let value): return NSLocalizedString("An invalid value of '\(value)' is used in the configuration file.", comment: "UTMConfiguration")
         case .invalidBackend: return NSLocalizedString("The backend for this configuration is not supported.", comment: "UTMConfiguration")
         case .driveAlreadyExists(let url): return NSLocalizedString("The drive '\(url.lastPathComponent)' already exists and cannot be created.", comment: "UTMConfiguration")
         default: return NSLocalizedString("An internal error has occurred.", comment: "UTMConfiguration")

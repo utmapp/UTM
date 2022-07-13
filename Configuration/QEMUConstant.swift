@@ -39,6 +39,20 @@ extension QEMUConstant where Self: CaseIterable, AllCases == [Self] {
     }
 }
 
+extension QEMUConstant where Self: RawRepresentable, RawValue == String {
+    init(from decoder: Decoder) throws {
+        let rawValue = try String(from: decoder)
+        guard let representedValue = Self.init(rawValue: rawValue) else {
+            throw UTMConfigurationError.invalidConfigurationValue(rawValue)
+        }
+        self = representedValue
+    }
+    
+    func encode(to encoder: Encoder) throws {
+        try rawValue.encode(to: encoder)
+    }
+}
+
 protocol QEMUDefaultConstant: QEMUConstant {
     static var `default`: Self { get }
 }
@@ -64,7 +78,7 @@ extension Optional where Wrapped: QEMUDefaultConstant {
 }
 
 /// Type erasure for a QEMU constant useful for serialization/deserialization
-struct AnyQEMUConstant: QEMUConstant {
+struct AnyQEMUConstant: QEMUConstant, RawRepresentable {
     static var allRawValues: [String] { [] }
     
     static var allPrettyValues: [String] { [] }
