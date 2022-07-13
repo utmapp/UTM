@@ -39,7 +39,7 @@ extension UTMQemuConfiguration {
         parentURL.appendPathComponent(helper ?? "com.utmapp.QEMUHelper")
         parentURL.appendPathComponent("Data")
         parentURL.appendPathComponent("tmp")
-        if let appGroup = appGroup {
+        if let appGroup = appGroup, !appGroup.hasPrefix("invalid.") {
             if let containerURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: appGroup) {
                 parentURL = containerURL
             }
