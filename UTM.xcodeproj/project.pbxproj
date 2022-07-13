@@ -10,9 +10,6 @@
 		2C33B3A92566C9B100A954A6 /* VMContextMenuModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C33B3A82566C9B100A954A6 /* VMContextMenuModifier.swift */; };
 		2C33B3AA2566C9B100A954A6 /* VMContextMenuModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C33B3A82566C9B100A954A6 /* VMContextMenuModifier.swift */; };
 		2C6D9E03256EE454003298E6 /* VMDisplayTerminalWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C6D9E02256EE454003298E6 /* VMDisplayTerminalWindowController.swift */; };
-		2C6D9E06256F0646003298E6 /* hterm_all.js in Resources */ = {isa = PBXBuildFile; fileRef = E28394BD240C22F1006742E2 /* hterm_all.js */; };
-		2C6D9E07256F0646003298E6 /* terminal.html in Resources */ = {isa = PBXBuildFile; fileRef = E28394B8240C219F006742E2 /* terminal.html */; };
-		2C6D9E08256F0646003298E6 /* terminal.js in Resources */ = {isa = PBXBuildFile; fileRef = E28394B9240C219F006742E2 /* terminal.js */; };
 		2C6D9E142571AFE5003298E6 /* UTMQcow2.c in Sources */ = {isa = PBXBuildFile; fileRef = 2C6D9E132571AFE5003298E6 /* UTMQcow2.c */; };
 		2C6D9E152571AFE5003298E6 /* UTMQcow2.c in Sources */ = {isa = PBXBuildFile; fileRef = 2C6D9E132571AFE5003298E6 /* UTMQcow2.c */; };
 		2CE8EAEE2572E0C2000E2EBB /* qapi-events-block-export.c in Sources */ = {isa = PBXBuildFile; fileRef = 2CE8EAEC2572E0C2000E2EBB /* qapi-events-block-export.c */; };
@@ -677,13 +674,10 @@
 		CE2D936524AD46670059923A /* ssl.1.1.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D641722653C7500FC7E63 /* ssl.1.1.framework */; };
 		CE2D936624AD46670059923A /* spice-server.1.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D641822653C7500FC7E63 /* spice-server.1.framework */; };
 		CE2D936724AD46670059923A /* pixman-1.0.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D641922653C7600FC7E63 /* pixman-1.0.framework */; };
-		CE2D936A24AD46670059923A /* terminal.js in Resources */ = {isa = PBXBuildFile; fileRef = E28394B9240C219F006742E2 /* terminal.js */; };
 		CE2D936B24AD46670059923A /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 521F3EFB2414F73800130500 /* Localizable.strings */; };
 		CE2D936C24AD46670059923A /* qemu in Resources */ = {isa = PBXBuildFile; fileRef = CE9D18F72265410E00355E14 /* qemu */; };
 		CE2D936D24AD46670059923A /* VMDisplayView.xib in Resources */ = {isa = PBXBuildFile; fileRef = CE72B4A92463532B00716A11 /* VMDisplayView.xib */; };
-		CE2D937024AD46670059923A /* terminal.html in Resources */ = {isa = PBXBuildFile; fileRef = E28394B8240C219F006742E2 /* terminal.html */; };
 		CE2D937224AD46670059923A /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 5286EC91243748AC007E6CBC /* Settings.bundle */; };
-		CE2D937324AD46670059923A /* hterm_all.js in Resources */ = {isa = PBXBuildFile; fileRef = E28394BD240C22F1006742E2 /* hterm_all.js */; };
 		CE2D937624AD46670059923A /* gpg-error.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63F122653C7400FC7E63 /* gpg-error.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CE2D937724AD46670059923A /* qemu-mips64el-softmmu.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D640822653C7500FC7E63 /* qemu-mips64el-softmmu.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CE2D937824AD46670059923A /* gstcontroller-1.0.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63EE22653C7400FC7E63 /* gstcontroller-1.0.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
@@ -1082,15 +1076,12 @@
 		CEA45F5F263519B5002FA97D /* spice-server.1.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D641822653C7500FC7E63 /* spice-server.1.framework */; };
 		CEA45F60263519B5002FA97D /* pixman-1.0.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D641922653C7600FC7E63 /* pixman-1.0.framework */; };
 		CEA45F64263519B5002FA97D /* Icons in Resources */ = {isa = PBXBuildFile; fileRef = CE4698F824C8FBD9008C1BD6 /* Icons */; };
-		CEA45F66263519B5002FA97D /* terminal.js in Resources */ = {isa = PBXBuildFile; fileRef = E28394B9240C219F006742E2 /* terminal.js */; };
 		CEA45F67263519B5002FA97D /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 521F3EFB2414F73800130500 /* Localizable.strings */; };
 		CEA45F69263519B5002FA97D /* qemu in Resources */ = {isa = PBXBuildFile; fileRef = CE9D18F72265410E00355E14 /* qemu */; };
 		CEA45F6A263519B5002FA97D /* VMDisplayView.xib in Resources */ = {isa = PBXBuildFile; fileRef = CE72B4A92463532B00716A11 /* VMDisplayView.xib */; };
 		CEA45F6B263519B5002FA97D /* VMRemovableDrivesView.xib in Resources */ = {isa = PBXBuildFile; fileRef = CE4EF2712506DD7900E9D33B /* VMRemovableDrivesView.xib */; };
-		CEA45F6C263519B5002FA97D /* terminal.html in Resources */ = {isa = PBXBuildFile; fileRef = E28394B8240C219F006742E2 /* terminal.html */; };
 		CEA45F6D263519B5002FA97D /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 5286EC91243748AC007E6CBC /* Settings.bundle */; };
 		CEA45F6F263519B5002FA97D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CE550BD52259479D0063E575 /* Assets.xcassets */; };
-		CEA45F70263519B5002FA97D /* hterm_all.js in Resources */ = {isa = PBXBuildFile; fileRef = E28394BD240C22F1006742E2 /* hterm_all.js */; };
 		CEA45F72263519B5002FA97D /* gpg-error.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63F122653C7400FC7E63 /* gpg-error.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CEA45F74263519B5002FA97D /* gstcontroller-1.0.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63EE22653C7400FC7E63 /* gstcontroller-1.0.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CEA45F75263519B5002FA97D /* gstallocators-1.0.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D641122653C7500FC7E63 /* gstallocators-1.0.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
@@ -2153,9 +2144,6 @@
 		CEF83EC924FB1BB200557D15 /* UTMQemuVirtualMachine+SPICE.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UTMQemuVirtualMachine+SPICE.h"; sourceTree = "<group>"; };
 		E2151A57241451120008E6AC /* UIViewController+Extensions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UIViewController+Extensions.h"; sourceTree = "<group>"; };
 		E2151A58241451120008E6AC /* UIViewController+Extensions.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UIViewController+Extensions.m"; sourceTree = "<group>"; };
-		E28394B8240C219F006742E2 /* terminal.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = terminal.html; sourceTree = "<group>"; };
-		E28394B9240C219F006742E2 /* terminal.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = terminal.js; sourceTree = "<group>"; };
-		E28394BD240C22F1006742E2 /* hterm_all.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = hterm_all.js; path = libapps/hterm/dist/js/hterm_all.js; sourceTree = "<group>"; };
 		E28394BF240C268A006742E2 /* VMDisplayTerminalViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VMDisplayTerminalViewController.h; sourceTree = "<group>"; };
 		E28394C0240C268A006742E2 /* VMDisplayTerminalViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VMDisplayTerminalViewController.m; sourceTree = "<group>"; };
 		E2B0F9D02426E5510065DFBE /* WKWebView+Workarounds.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "WKWebView+Workarounds.h"; sourceTree = "<group>"; };
@@ -3078,7 +3066,6 @@
 		CEB63A9624F47C1200CAF323 /* Shared */ = {
 			isa = PBXGroup;
 			children = (
-				E28394B7240C2191006742E2 /* HTerm */,
 				CEF0304C26A2AFBE00667B63 /* BigButtonStyle.swift */,
 				84B36D2827B790BE00C22685 /* DestructiveButton.swift */,
 				8471772727CD3CAB00D3A50B /* DetailedSection.swift */,
@@ -3176,16 +3163,6 @@
 			path = qapi;
 			sourceTree = "<group>";
 		};
-		E28394B7240C2191006742E2 /* HTerm */ = {
-			isa = PBXGroup;
-			children = (
-				E28394BD240C22F1006742E2 /* hterm_all.js */,
-				E28394B8240C219F006742E2 /* terminal.html */,
-				E28394B9240C219F006742E2 /* terminal.js */,
-			);
-			path = HTerm;
-			sourceTree = "<group>";
-		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -3222,7 +3199,6 @@
 			buildPhases = (
 				CE2D926924AD46670059923A /* Sources */,
 				CE2D932B24AD46670059923A /* Frameworks */,
-				CE2D936824AD46670059923A /* ShellScript */,
 				CE2D936924AD46670059923A /* Resources */,
 				CE2D937524AD46670059923A /* Embed Libraries */,
 			);
@@ -3249,7 +3225,6 @@
 			buildPhases = (
 				CE2D951824AD48BE0059923A /* Sources */,
 				CE2D951924AD48BE0059923A /* Frameworks */,
-				CE0B6F5A24AE552F00FE012D /* ShellScript */,
 				CE2D951A24AD48BE0059923A /* Resources */,
 				CE0B6E6D24AD66CE00FE012D /* Embed Libraries */,
 				CEBDA1E924D8BDDB0010B5EC /* Embed XPC Services */,
@@ -3296,7 +3271,6 @@
 			buildPhases = (
 				CEA45E24263519B5002FA97D /* Sources */,
 				CEA45F23263519B5002FA97D /* Frameworks */,
-				CEA45F62263519B5002FA97D /* ShellScript */,
 				CEA45F63263519B5002FA97D /* Resources */,
 				CEA45F71263519B5002FA97D /* Embed Libraries */,
 			);
@@ -3411,16 +3385,13 @@
 			files = (
 				CE4698F924C8FBD9008C1BD6 /* Icons in Resources */,
 				FFB02A8C266CB09C006CD71A /* InfoPlist.strings in Resources */,
-				CE2D936A24AD46670059923A /* terminal.js in Resources */,
 				CE2D936B24AD46670059923A /* Localizable.strings in Resources */,
 				CEA905CD2603DBFB00801E7C /* VMUSBDevicesView.xib in Resources */,
 				CE2D936C24AD46670059923A /* qemu in Resources */,
 				CE2D936D24AD46670059923A /* VMDisplayView.xib in Resources */,
 				CE4EF2722506DD7900E9D33B /* VMRemovableDrivesView.xib in Resources */,
-				CE2D937024AD46670059923A /* terminal.html in Resources */,
 				CE2D937224AD46670059923A /* Settings.bundle in Resources */,
 				CE0B6CED24AD532A00FE012D /* Assets.xcassets in Resources */,
-				CE2D937324AD46670059923A /* hterm_all.js in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3428,9 +3399,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2C6D9E06256F0646003298E6 /* hterm_all.js in Resources */,
-				2C6D9E07256F0646003298E6 /* terminal.html in Resources */,
-				2C6D9E08256F0646003298E6 /* terminal.js in Resources */,
 				CE0B6CEC24AD532500FE012D /* Assets.xcassets in Resources */,
 				CEF83F262500901300557D15 /* qemu in Resources */,
 				CE4698FA24C8FBD9008C1BD6 /* Icons in Resources */,
@@ -3452,16 +3420,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				CEA45F64263519B5002FA97D /* Icons in Resources */,
-				CEA45F66263519B5002FA97D /* terminal.js in Resources */,
 				FFB02A8D266CB09C006CD71A /* InfoPlist.strings in Resources */,
 				CEA45F67263519B5002FA97D /* Localizable.strings in Resources */,
 				CEA45F69263519B5002FA97D /* qemu in Resources */,
 				CEA45F6A263519B5002FA97D /* VMDisplayView.xib in Resources */,
 				CEA45F6B263519B5002FA97D /* VMRemovableDrivesView.xib in Resources */,
-				CEA45F6C263519B5002FA97D /* terminal.html in Resources */,
 				CEA45F6D263519B5002FA97D /* Settings.bundle in Resources */,
 				CEA45F6F263519B5002FA97D /* Assets.xcassets in Resources */,
-				CEA45F70263519B5002FA97D /* hterm_all.js in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3475,66 +3440,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
-
-/* Begin PBXShellScriptBuildPhase section */
-		CE0B6F5A24AE552F00FE012D /* ShellScript */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${SRCROOT}/Views/HTerm/libapps/hterm",
-			);
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"${SRCROOT}/Views/HTerm/libapps/hterm/dist/js/hterm_all.js",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Platform/Shared/HTerm/libapps/hterm/bin/mkdist\"\n";
-		};
-		CE2D936824AD46670059923A /* ShellScript */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${SRCROOT}/Views/HTerm/libapps/hterm",
-			);
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"${SRCROOT}/Views/HTerm/libapps/hterm/dist/js/hterm_all.js",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Platform/Shared/HTerm/libapps/hterm/bin/mkdist\"\n";
-		};
-		CEA45F62263519B5002FA97D /* ShellScript */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${SRCROOT}/Views/HTerm/libapps/hterm",
-			);
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"${SRCROOT}/Views/HTerm/libapps/hterm/dist/js/hterm_all.js",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Platform/Shared/HTerm/libapps/hterm/bin/mkdist\"\n";
-		};
-/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		8401FD5E269BE9C500265F0D /* Sources */ = {
