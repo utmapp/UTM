@@ -183,7 +183,7 @@ struct NewArgumentTextField: View {
     
     var body: some View {
         Group {
-            DefaultTextField("", text: $newArg, prompt: "New...", onEditingChanged: addArg)
+            DefaultTextField("", text: $newArg, prompt: "New…", onEditingChanged: addArg)
         }.onDisappear {
             if newArg != "" {
                 addArg(editing: false)

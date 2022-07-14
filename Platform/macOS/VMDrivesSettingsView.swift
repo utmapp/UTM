@@ -62,7 +62,7 @@ struct VMDrivesSettingsView<Drive: UTMConfigurationDrive>: View {
         Button {
             newDrivePopover.toggle()
         } label: {
-            Label("New...", systemImage: "externaldrive.badge.plus")
+            Label("New…", systemImage: "externaldrive.badge.plus")
         }
         .buttonStyle(.link)
         .help("Add a new drive.")

@@ -107,13 +107,13 @@ struct VMAppleRemovableDrivesView: View {
             HStack {
                 Spacer()
                 if hasSharingFeatures {
-                    Button("New Shared Directory...") {
+                    Button("New Shared Directory…") {
                         selectType = .sharedDirectory
                         selectedSharedDirectoryBinding = nil
                         showFileImporter()
                     }
                 }
-                Button("New External Drive...") {
+                Button("New External Drive…") {
                     selectType = .diskImage
                     selectedDiskImageBinding = nil
                     showFileImporter()

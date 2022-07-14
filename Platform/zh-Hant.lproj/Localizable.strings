@@ -299,7 +299,7 @@
 "Done" = "完成";
 
 /* No comment provided by engineer. */
-"Download prebuilt from UTM Gallery..." = "從 UTM 資源庫下載預先建置好的機器⋯";
+"Download prebuilt from UTM Gallery…" = "從 UTM 資源庫下載預先建置好的機器⋯";
 
 /* No comment provided by engineer. */
 "Download Ubuntu Server for ARM" = "下載 Ubuntu Server for ARM";
@@ -482,7 +482,7 @@
 "Hide" = "隱藏";
 
 /* No comment provided by engineer. */
-"Hide Unused Flags..." = "隱藏無使用旗標⋯";
+"Hide Unused Flags…" = "隱藏無使用旗標⋯";
 
 /* VMDisplayViewController */
 "Hint: To show the toolbar again, use a three-finger swipe down on the screen." = "提示：若要再次顯示工具列，請使用三指在螢幕從上向下滑動。";
@@ -695,7 +695,7 @@
 "New VM name" = "新增 VM 名稱";
 
 /* No comment provided by engineer. */
-"New..." = "新增⋯";
+"New…" = "新增⋯";
 
 /* No comment provided by engineer. */
 "Continue" = "下一步";
@@ -900,7 +900,7 @@
 "Show Advanced Settings" = "顯示進階設定";
 
 /* No comment provided by engineer. */
-"Show All Flags..." = "顯示所有旗標⋯";
+"Show All Flags…" = "顯示所有旗標⋯";
 
 /* No comment provided by engineer. */
 "Size" = "大小";

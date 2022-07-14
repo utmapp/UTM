@@ -225,13 +225,13 @@ extension VMDisplayAppleWindowController {
             ro.tag = i
             ro.state = sharedDirectory.isReadOnly ? .on : .off
             submenu.addItem(ro)
-            let change = NSMenuItem(title: NSLocalizedString("Change...", comment: "VMDisplayAppleController"),
+            let change = NSMenuItem(title: NSLocalizedString("Change…", comment: "VMDisplayAppleController"),
                                    action: #selector(changeShare),
                                    keyEquivalent: "")
             change.target = self
             change.tag = i
             submenu.addItem(change)
-            let remove = NSMenuItem(title: NSLocalizedString("Remove...", comment: "VMDisplayAppleController"),
+            let remove = NSMenuItem(title: NSLocalizedString("Remove…", comment: "VMDisplayAppleController"),
                                    action: #selector(removeShare),
                                    keyEquivalent: "")
             remove.target = self
@@ -240,7 +240,7 @@ extension VMDisplayAppleWindowController {
             item.submenu = submenu
             menu.addItem(item)
         }
-        let add = NSMenuItem(title: NSLocalizedString("Add...", comment: "VMDisplayAppleController"),
+        let add = NSMenuItem(title: NSLocalizedString("Add…", comment: "VMDisplayAppleController"),
                                action: #selector(addShare),
                                keyEquivalent: "")
         add.target = self

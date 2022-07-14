@@ -23,10 +23,10 @@ struct VMCommands: Commands {
     var body: some Commands {
         CommandGroup(replacing: .newItem) {
             Button(action: { NotificationCenter.default.post(name: NSNotification.NewVirtualMachine, object: nil) }, label: {
-                Text("New...")
+                Text("New…")
             }).keyboardShortcut(KeyEquivalent("n"))
             Button(action: { NotificationCenter.default.post(name: NSNotification.OpenVirtualMachine, object: nil) }, label: {
-                Text("Open...")
+                Text("Open…")
             }).keyboardShortcut(KeyEquivalent("o"))
         }
         SidebarCommands()

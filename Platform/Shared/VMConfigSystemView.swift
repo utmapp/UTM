@@ -226,9 +226,9 @@ struct CPUFlagsOptions: View {
                     showAllFlags.toggle()
                 } label: {
                     if (showAllFlags) {
-                        Text("Hide Unused...")
+                        Text("Hide Unused…")
                     } else {
-                        Text("Show All...")
+                        Text("Show All…")
                     }
                 }
 
