@@ -16,7 +16,7 @@
 
 import SwiftUI
 
-struct VMConfigNewDriveButton<Drive: UTMConfigurationDrive>: View {
+struct VMDrivesSettingsView<Drive: UTMConfigurationDrive>: View {
     @Binding var drives: [Drive]
     let template: Drive
     @State var newDrive: Drive
@@ -31,10 +31,38 @@ struct VMConfigNewDriveButton<Drive: UTMConfigurationDrive>: View {
     }
 
     var body: some View {
+        ForEach($drives) { $drive in
+            let driveIndex = drives.firstIndex(of: drive)!
+            NavigationLink(destination: DriveDetailsView(config: $drive, onDelete: {
+                drives.removeAll(where: { $0 == drive })
+            }).scrollable()) {
+                Label(label(for: drive), systemImage: "externaldrive")
+            }.contextMenu {
+                DestructiveButton("Delete") {
+                    drives.removeAll(where: { $0 == drive })
+                }
+                if driveIndex != 0 {
+                    Button {
+                        drives.move(fromOffsets: IndexSet(integer: driveIndex), toOffset: driveIndex - 1)
+                    } label: {
+                        Label("Move Up", systemImage: "chevron.up")
+                    }
+                }
+                if driveIndex != drives.count - 1 {
+                    Button {
+                        drives.move(fromOffsets: IndexSet(integer: driveIndex), toOffset: driveIndex + 2)
+                    } label: {
+                        Label("Move Down", systemImage: "chevron.down")
+                    }
+                }
+            }
+        }.onMove { offsets, index in
+            drives.move(fromOffsets: offsets, toOffset: index)
+        }
         Button {
             newDrivePopover.toggle()
         } label: {
-            Label("New Drive", systemImage: "externaldrive.badge.plus")
+            Label("New...", systemImage: "externaldrive.badge.plus")
         }
         .buttonStyle(.link)
         .help("Add a new drive.")
@@ -70,6 +98,20 @@ struct VMConfigNewDriveButton<Drive: UTMConfigurationDrive>: View {
             }.padding()
         }
     }
+    
+    private func label(for drive: Drive) -> String {
+        if let qemuDrive = drive as? UTMQemuConfigurationDrive {
+            if qemuDrive.interface == .none && qemuDrive.imageName == QEMUPackageFileName.efiVariables.rawValue {
+                return NSLocalizedString("EFI Variables", comment: "VMDrivesSettingsView")
+            } else {
+                return NSLocalizedString("\(qemuDrive.interface.prettyValue) Drive", comment: "VMDrivesSettingsView")
+            }
+        } else if let appleDrive = drive as? UTMAppleConfigurationDrive {
+            return NSLocalizedString("\(appleDrive.sizeString) Image", comment: "VMDrivesSettingsView")
+        } else {
+            fatalError("Unsupported drive type.")
+        }
+    }
 
     private func importDrive(result: Result<URL, Error>) {
         var drive = newDrive
@@ -80,7 +122,7 @@ struct VMConfigNewDriveButton<Drive: UTMConfigurationDrive>: View {
                 if await drives.contains(where: { image in
                     image.imageURL?.lastPathComponent == name
                 }) {
-                    throw NSLocalizedString("An image already exists with that name.", comment: "VMConfigDrivesButton")
+                    throw NSLocalizedString("An image already exists with that name.", comment: "VMDrivesSettingsView")
                 }
                 DispatchQueue.main.async {
                     drive.imageURL = url
@@ -103,58 +145,17 @@ struct VMConfigNewDriveButton<Drive: UTMConfigurationDrive>: View {
     }
 }
 
-
-struct VMConfigDrivesMoveButtons<Drive: UTMConfigurationDrive>: View {
-    @Binding var drives: [Drive]
-    @Binding var selectedDriveIndex: Int?
+private struct DriveDetailsView<Drive: UTMConfigurationDrive>: View {
+    @Binding var config: Drive
+    let onDelete: () -> Void
     
     var body: some View {
-        Group {
-            if #available(macOS 12, *) {
-                if let index = selectedDriveIndex {
-                    if index != 0 {
-                        Button {
-                            moveDriveUp(fromIndex: index)
-                        } label: {
-                            Label("Move Up", systemImage: "chevron.up")
-                        }.help("Make boot order priority higher.")
-                    }
-                    if index != drives.count - 1 {
-                        Button {
-                            moveDriveDown(fromIndex: index)
-                        } label: {
-                            Label("Move Down", systemImage: "chevron.down")
-                        }.help("Make boot order priority lower.")
-                    }
-                }
-            } else { // SwiftUI BUG: macOS 11 doesn't support the conditional views above
-                Button {
-                    moveDriveUp(fromIndex: selectedDriveIndex!)
-                } label: {
-                    Label("Move Up", systemImage: "chevron.up")
-                }.help("Make boot order priority higher.")
-                .disabled(selectedDriveIndex == nil || selectedDriveIndex == 0)
-                Button {
-                    moveDriveDown(fromIndex: selectedDriveIndex!)
-                } label: {
-                    Label("Move Down", systemImage: "chevron.down")
-                }.help("Make boot order priority lower.")
-                    .disabled(selectedDriveIndex == nil || selectedDriveIndex == drives.count - 1)
-            }
-        }.labelStyle(.titleOnly)
-    }
-    
-    func moveDriveUp(fromIndex index: Int) {
-        withAnimation {
-            drives.move(fromOffsets: IndexSet(integer: index), toOffset: index - 1)
-            selectedDriveIndex = index - 1
-        }
-    }
-    
-    func moveDriveDown(fromIndex index: Int) {
-        withAnimation {
-            drives.move(fromOffsets: IndexSet(integer: index), toOffset: index + 2)
-            selectedDriveIndex = index + 1
+        if config is UTMQemuConfigurationDrive {
+            VMConfigDriveDetailsView(config: $config as Any as! Binding<UTMQemuConfigurationDrive>, onDelete: onDelete)
+        } else if config is UTMAppleConfigurationDrive {
+            VMConfigAppleDriveDetailsView(config: $config as Any as! Binding<UTMAppleConfigurationDrive>, onDelete: onDelete)
+        } else {
+            fatalError("Unsupported drive type.")
         }
     }
 }

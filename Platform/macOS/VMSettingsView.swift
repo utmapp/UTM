@@ -24,22 +24,17 @@ struct VMSettingsView<Config: UTMConfiguration>: View {
     @EnvironmentObject private var data: UTMData
     @Environment(\.presentationMode) private var presentationMode: Binding<PresentationMode>
     
-    @State private var selectedDriveIndex: Int?
-    
     var body: some View {
         NavigationView {
             List {
                 if config is UTMQemuConfiguration {
-                    VMQEMUSettingsView(config: config as! UTMQemuConfiguration, selectedDriveIndex: $selectedDriveIndex)
+                    VMQEMUSettingsView(config: config as! UTMQemuConfiguration)
                 } else if config is UTMAppleConfiguration {
-                    VMAppleSettingsView(config: config as! UTMAppleConfiguration, selectedDriveIndex: $selectedDriveIndex)
+                    VMAppleSettingsView(config: config as! UTMAppleConfiguration)
                 }
             }.listStyle(.sidebar)
         }.frame(minWidth: 800, minHeight: 400)
         .toolbar {
-            ToolbarItemGroup(placement: .automatic) {
-                VMConfigDrivesMoveButtons(drives: $config.drives, selectedDriveIndex: $selectedDriveIndex)
-            }
             ToolbarItemGroup(placement: .cancellationAction) {
                 Button(action: cancel) {
                     Text("Cancel")

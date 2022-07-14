@@ -169,7 +169,7 @@
 		84909A9127CADAE0005605F1 /* UTMUnavailableVMView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84909A9027CADAE0005605F1 /* UTMUnavailableVMView.swift */; };
 		84909A9227CADAE0005605F1 /* UTMUnavailableVMView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84909A9027CADAE0005605F1 /* UTMUnavailableVMView.swift */; };
 		84909A9327CADAE0005605F1 /* UTMUnavailableVMView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84909A9027CADAE0005605F1 /* UTMUnavailableVMView.swift */; };
-		84A381AA268CB30C0048EE4D /* VMConfigDrivesButtons.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A381A9268CB30C0048EE4D /* VMConfigDrivesButtons.swift */; };
+		84A381AA268CB30C0048EE4D /* VMDrivesSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A381A9268CB30C0048EE4D /* VMDrivesSettingsView.swift */; };
 		84B36D1E27B3264600C22685 /* CocoaSpice in Frameworks */ = {isa = PBXBuildFile; productRef = 84B36D1D27B3264600C22685 /* CocoaSpice */; };
 		84B36D2027B3264E00C22685 /* CocoaSpiceNoUsb in Frameworks */ = {isa = PBXBuildFile; productRef = 84B36D1F27B3264E00C22685 /* CocoaSpiceNoUsb */; };
 		84B36D2227B3265400C22685 /* CocoaSpice in Frameworks */ = {isa = PBXBuildFile; productRef = 84B36D2127B3265400C22685 /* CocoaSpice */; };
@@ -1606,7 +1606,7 @@
 		84909A8827CABA54005605F1 /* UTMWrappedVirtualMachine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMWrappedVirtualMachine.swift; sourceTree = "<group>"; };
 		84909A8C27CACD5C005605F1 /* UTMPlaceholderVMView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMPlaceholderVMView.swift; sourceTree = "<group>"; };
 		84909A9027CADAE0005605F1 /* UTMUnavailableVMView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMUnavailableVMView.swift; sourceTree = "<group>"; };
-		84A381A9268CB30C0048EE4D /* VMConfigDrivesButtons.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMConfigDrivesButtons.swift; sourceTree = "<group>"; };
+		84A381A9268CB30C0048EE4D /* VMDrivesSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMDrivesSettingsView.swift; sourceTree = "<group>"; };
 		84B36D2427B704C200C22685 /* UTMDownloadVMTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMDownloadVMTask.swift; sourceTree = "<group>"; };
 		84B36D2827B790BE00C22685 /* DestructiveButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DestructiveButton.swift; sourceTree = "<group>"; };
 		84C584DC268E70F1000FCABF /* UTMVirtualMachine-Protected.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UTMVirtualMachine-Protected.h"; sourceTree = "<group>"; };
@@ -2576,8 +2576,8 @@
 				848A98C928720CFB006F0550 /* VMConfigAppleSerialView.swift */,
 				8401FDA7269D4A4100265F0D /* VMConfigAppleSharingView.swift */,
 				84C584EA268FA6D1000FCABF /* VMConfigAppleSystemView.swift */,
-				84A381A9268CB30C0048EE4D /* VMConfigDrivesButtons.swift */,
 				CE2D953E24AD4F980059923A /* VMConfigNetworkPortForwardView.swift */,
+				84A381A9268CB30C0048EE4D /* VMDrivesSettingsView.swift */,
 				CE928C3026ACCDEA0099F293 /* VMAppleRemovableDrivesView.swift */,
 				84C584E4268F8C65000FCABF /* VMAppleSettingsView.swift */,
 				84C584E2268F8AE7000FCABF /* VMQEMUSettingsView.swift */,
@@ -3946,7 +3946,7 @@
 				CED814ED24C7C2850042F0F1 /* VMConfigInfoView.swift in Sources */,
 				2CE8EB0A2572E173000E2EBB /* qapi-visit-block-export.c in Sources */,
 				2CE8EB052572E166000E2EBB /* qapi-visit-acpi.c in Sources */,
-				84A381AA268CB30C0048EE4D /* VMConfigDrivesButtons.swift in Sources */,
+				84A381AA268CB30C0048EE4D /* VMDrivesSettingsView.swift in Sources */,
 				CEF0305D26A2AFDF00667B63 /* VMWizardOSOtherView.swift in Sources */,
 				CE0B6D2D24AD57FC00FE012D /* qapi-commands-machine.c in Sources */,
 				CE0B6D2824AD57FC00FE012D /* qapi-emit-events.c in Sources */,

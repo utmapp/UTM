@@ -18,7 +18,6 @@ import SwiftUI
 
 struct VMAppleSettingsView: View {
     @ObservedObject var config: UTMAppleConfiguration
-    @Binding var selectedDriveIndex: Int?
     
     @State private var infoActive: Bool = true
     
@@ -70,29 +69,7 @@ struct VMAppleSettingsView: View {
             }
         }
         Section(header: Text("Drives")) {
-            ForEach($config.drives) { $drive in
-                let index = config.drives.firstIndex(of: drive)
-                NavigationLink(destination: VMConfigAppleDriveDetailsView(config: $drive, onDelete: {
-                    if let index = index {
-                        deleteDrive(atIndex: index)
-                    }
-                }).scrollable(), tag: index!, selection: $selectedDriveIndex) {
-                    Label("\(drive.sizeString) Image", systemImage: "externaldrive")
-                }
-            }.onMove { indicies, dest in
-                config.drives.move(fromOffsets: indicies, toOffset: dest)
-            }
-            VMConfigNewDriveButton(drives: $config.drives, template: UTMAppleConfigurationDrive(newSize: 10240))
-        }
-    }
-
-    func deleteDrive(atIndex index: Int) {
-        withAnimation {
-            // FIXME: SwiftUI BUG: if this is the last item it doesn't disappear even though selectedDriveIndex is set to nil
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                config.drives.remove(at: index)
-            }
-            selectedDriveIndex = nil
+            VMDrivesSettingsView(drives: $config.drives, template: UTMAppleConfigurationDrive(newSize: 10240))
         }
     }
 }
@@ -100,6 +77,6 @@ struct VMAppleSettingsView: View {
 struct VMAppleSettingsView_Previews: PreviewProvider {
     @StateObject static var config = UTMAppleConfiguration()
     static var previews: some View {
-        VMAppleSettingsView(config: config, selectedDriveIndex: .constant(nil))
+        VMAppleSettingsView(config: config)
     }
 }

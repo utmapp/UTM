@@ -18,7 +18,6 @@ import SwiftUI
 
 struct VMQEMUSettingsView: View {
     @ObservedObject var config: UTMQemuConfiguration
-    @Binding var selectedDriveIndex: Int?
     @EnvironmentObject private var data: UTMData
 
     @State private var infoActive: Bool = true
@@ -72,26 +71,7 @@ struct VMQEMUSettingsView: View {
             Label("Sharing", systemImage: "person.crop.circle")
         }
         Section(header: Text("Drives")) {
-            ForEach($config.drives) { $drive in
-                let driveIndex = config.drives.firstIndex(of: drive)!
-                NavigationLink(destination: VMConfigDriveDetailsView(config: $drive, onDelete: {
-                    config.drives.removeAll(where: { $0 == drive })
-                    selectedDriveIndex = nil
-                }).scrollable(), tag: driveIndex, selection: $selectedDriveIndex) {
-                    Label(label(for: drive), systemImage: "externaldrive")
-                }
-            }.onMove { offsets, index in
-                config.drives.move(fromOffsets: offsets, toOffset: index)
-            }
-            VMConfigNewDriveButton(drives: $config.drives, template: UTMQemuConfigurationDrive(forArchitecture: config.system.architecture, target: config.system.target))
-        }
-    }
-    
-    private func label(for drive: UTMQemuConfigurationDrive) -> String {
-        if drive.interface == .none && drive.imageName == QEMUPackageFileName.efiVariables.rawValue {
-            return NSLocalizedString("EFI Variables", comment: "VMQEMUSettingsView")
-        } else {
-            return NSLocalizedString("\(drive.interface.prettyValue) Drive", comment: "VMQEMUSettingsView")
+            VMDrivesSettingsView(drives: $config.drives, template: UTMQemuConfigurationDrive(forArchitecture: config.system.architecture, target: config.system.target))
         }
     }
 }
@@ -100,6 +80,6 @@ struct VMQEMUSettingsView_Previews: PreviewProvider {
     @State static private var config = UTMQemuConfiguration()
     
     static var previews: some View {
-        VMQEMUSettingsView(config: config, selectedDriveIndex: .constant(0))
+        VMQEMUSettingsView(config: config)
     }
 }
