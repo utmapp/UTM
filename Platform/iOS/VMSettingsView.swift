@@ -61,60 +61,66 @@ struct VMSettingsView: View {
                             Label("Drives", systemImage: "internaldrive")
                                 .labelStyle(.roundRectIcon)
                         })
-                    ForEach($config.displays) { $display in
-                        NavigationLink(
-                            destination: VMConfigDisplayView(config: $display, system: $config.system).navigationTitle("Display"),
-                            label: {
-                                Label("Display", systemImage: "rectangle.on.rectangle")
-                                    .labelStyle(RoundRectIconLabelStyle(color: .green))
-                            })
-                    }
-                    ForEach($config.serials) { $serial in
-                        NavigationLink(
-                            destination: VMConfigSerialView(config: $serial, system: $config.system).navigationTitle("Serial"),
-                            label: {
-                                Label("Serial", systemImage: "cable.connector")
-                                    .labelStyle(RoundRectIconLabelStyle(color: .green))
-                            })
-                    }
                     NavigationLink(
                         destination: VMConfigInputView(config: $config.input).navigationTitle("Input"),
                         label: {
                             Label("Input", systemImage: "keyboard")
                                 .labelStyle(RoundRectIconLabelStyle(color: .green))
                         })
-                    ForEach($config.networks) { $network in
-                        NavigationLink(
-                            destination: VMConfigNetworkView(config: $network, system: $config.system).navigationTitle("Network"),
-                            label: {
-                                Label("Network", systemImage: "network")
-                                    .labelStyle(RoundRectIconLabelStyle(color: .green))
-                            })
-                    }
-                    ForEach($config.sound) { $sound in
-                        NavigationLink(
-                            destination: VMConfigSoundView(config: $sound, system: $config.system).navigationTitle("Sound"),
-                            label: {
-                                Label("Sound", systemImage: "speaker.wave.2")
-                                    .labelStyle(RoundRectIconLabelStyle(color: .green))
-                            })
-                    }
                     NavigationLink(
                         destination: VMConfigSharingView(config: $config.sharing).navigationTitle("Sharing"),
                         label: {
                             Label("Sharing", systemImage: "person.crop.circle")
                                 .labelStyle(RoundRectIconLabelStyle(color: .yellow))
                         })
+                    Section(header: Text("Devices")) {
+                        ForEach($config.displays) { $display in
+                            NavigationLink(destination: VMConfigDisplayView(config: $display, system: $config.system).navigationTitle("Display")) {
+                                    Label("Display", systemImage: "rectangle.on.rectangle")
+                                        .labelStyle(RoundRectIconLabelStyle(color: .green))
+                                }
+                        }.onDelete { offsets in
+                            config.displays.remove(atOffsets: offsets)
+                        }
+                        ForEach($config.serials) { $serial in
+                            NavigationLink(destination: VMConfigSerialView(config: $serial, system: $config.system).navigationTitle("Serial")) {
+                                    Label("Serial", systemImage: "cable.connector")
+                                        .labelStyle(RoundRectIconLabelStyle(color: .green))
+                                }
+                        }.onDelete { offsets in
+                            config.serials.remove(atOffsets: offsets)
+                        }
+                        ForEach($config.networks) { $network in
+                            NavigationLink(destination: VMConfigNetworkView(config: $network, system: $config.system).navigationTitle("Network")) {
+                                    Label("Network", systemImage: "network")
+                                        .labelStyle(RoundRectIconLabelStyle(color: .green))
+                                }
+                        }.onDelete { offsets in
+                            config.networks.remove(atOffsets: offsets)
+                        }
+                        ForEach($config.sound) { $sound in
+                            NavigationLink(destination: VMConfigSoundView(config: $sound, system: $config.system).navigationTitle("Sound")) {
+                                    Label("Sound", systemImage: "speaker.wave.2")
+                                        .labelStyle(RoundRectIconLabelStyle(color: .green))
+                                }
+                        }.onDelete { offsets in
+                            config.sound.remove(atOffsets: offsets)
+                        }
+                    }
                 }
             }
             .navigationTitle("Settings")
             .navigationViewStyle(.stack)
-            .navigationBarItems(leading: Button(action: cancel, label: {
-                Text("Cancel")
-            }), trailing: HStack {
-                Button(action: save, label: {
+            .navigationBarItems(leading: HStack {
+                VMSettingsAddDeviceMenuView(config: config)
+                EditButton()
+            }, trailing: HStack {
+                Button(action: cancel) {
+                    Text("Cancel")
+                }
+                Button(action: save) {
                     Text("Save")
-                })
+                }
             })
         }.disabled(data.busy)
         .overlay(BusyOverlay())

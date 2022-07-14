@@ -179,6 +179,9 @@
 		84B36D2927B790BE00C22685 /* DestructiveButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84B36D2827B790BE00C22685 /* DestructiveButton.swift */; };
 		84B36D2A27B790BE00C22685 /* DestructiveButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84B36D2827B790BE00C22685 /* DestructiveButton.swift */; };
 		84B36D2B27B790BE00C22685 /* DestructiveButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84B36D2827B790BE00C22685 /* DestructiveButton.swift */; };
+		84C4D9022880CA8A00EC3B2B /* VMSettingsAddDeviceMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C4D9012880CA8A00EC3B2B /* VMSettingsAddDeviceMenuView.swift */; };
+		84C4D9032880CA8A00EC3B2B /* VMSettingsAddDeviceMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C4D9012880CA8A00EC3B2B /* VMSettingsAddDeviceMenuView.swift */; };
+		84C4D9042880CA8A00EC3B2B /* VMSettingsAddDeviceMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C4D9012880CA8A00EC3B2B /* VMSettingsAddDeviceMenuView.swift */; };
 		84C584E1268E95B3000FCABF /* UTMLegacyAppleConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C584DE268E95B3000FCABF /* UTMLegacyAppleConfiguration.swift */; };
 		84C584E3268F8AE7000FCABF /* VMQEMUSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C584E2268F8AE7000FCABF /* VMQEMUSettingsView.swift */; };
 		84C584E5268F8C65000FCABF /* VMAppleSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C584E4268F8C65000FCABF /* VMAppleSettingsView.swift */; };
@@ -1609,6 +1612,7 @@
 		84A381A9268CB30C0048EE4D /* VMDrivesSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMDrivesSettingsView.swift; sourceTree = "<group>"; };
 		84B36D2427B704C200C22685 /* UTMDownloadVMTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMDownloadVMTask.swift; sourceTree = "<group>"; };
 		84B36D2827B790BE00C22685 /* DestructiveButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DestructiveButton.swift; sourceTree = "<group>"; };
+		84C4D9012880CA8A00EC3B2B /* VMSettingsAddDeviceMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMSettingsAddDeviceMenuView.swift; sourceTree = "<group>"; };
 		84C584DC268E70F1000FCABF /* UTMVirtualMachine-Protected.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UTMVirtualMachine-Protected.h"; sourceTree = "<group>"; };
 		84C584DE268E95B3000FCABF /* UTMLegacyAppleConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMLegacyAppleConfiguration.swift; sourceTree = "<group>"; };
 		84C584E2268F8AE7000FCABF /* VMQEMUSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMQEMUSettingsView.swift; sourceTree = "<group>"; };
@@ -3100,6 +3104,7 @@
 				CE2D954B24AD4F980059923A /* VMDetailsView.swift */,
 				CE2D954224AD4F980059923A /* VMPlaceholderView.swift */,
 				CE2D954524AD4F980059923A /* VMRemovableDrivesView.swift */,
+				84C4D9012880CA8A00EC3B2B /* VMSettingsAddDeviceMenuView.swift */,
 				CE8813D424CD265700532628 /* VMShareFileModifier.swift */,
 				CE2D953824AD4F980059923A /* VMToolbarModifier.swift */,
 				CEBE820226A4C1B5007AAB12 /* VMWizardDrivesView.swift */,
@@ -3457,6 +3462,7 @@
 			files = (
 				CE2D926A24AD46670059923A /* VMDisplayMetalViewController+Pointer.h in Sources */,
 				CE2D926B24AD46670059923A /* qapi-types-rocker.c in Sources */,
+				84C4D9022880CA8A00EC3B2B /* VMSettingsAddDeviceMenuView.swift in Sources */,
 				CE2D956F24AD4F990059923A /* VMRemovableDrivesView.swift in Sources */,
 				CE2D926E24AD46670059923A /* qapi-commands-crypto.c in Sources */,
 				2CE8EB092572E173000E2EBB /* qapi-visit-block-export.c in Sources */,
@@ -4009,6 +4015,7 @@
 				CE0B6D2E24AD57FC00FE012D /* qapi-commands-migration.c in Sources */,
 				CE0B6D5324AD584C00FE012D /* qapi-types-transaction.c in Sources */,
 				CE0B6D7424AD584D00FE012D /* qapi-visit-misc.c in Sources */,
+				84C4D9042880CA8A00EC3B2B /* VMSettingsAddDeviceMenuView.swift in Sources */,
 				CE0B6D3624AD57FC00FE012D /* qapi-commands-common.c in Sources */,
 				8471770C27CCA60600D3A50B /* DefaultPicker.swift in Sources */,
 				CEBE820526A4C1B5007AAB12 /* VMWizardDrivesView.swift in Sources */,
@@ -4083,6 +4090,7 @@
 				CEA45E55263519B5002FA97D /* qapi-types-net.c in Sources */,
 				CEA45E56263519B5002FA97D /* qapi-types-rdma.c in Sources */,
 				CEA45E57263519B5002FA97D /* ImagePicker.swift in Sources */,
+				84C4D9032880CA8A00EC3B2B /* VMSettingsAddDeviceMenuView.swift in Sources */,
 				CEA45E58263519B5002FA97D /* qapi-commands-rocker.c in Sources */,
 				CEA45E5A263519B5002FA97D /* VMConfigSystemView.swift in Sources */,
 				CEA45E5B263519B5002FA97D /* VMShareFileModifier.swift in Sources */,

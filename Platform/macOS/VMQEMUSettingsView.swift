@@ -22,6 +22,7 @@ struct VMQEMUSettingsView: View {
 
     @State private var infoActive: Bool = true
     @State private var isResetConfig: Bool = false
+    @State private var isNewDriveShown: Bool = false
     
     var body: some View {
         NavigationLink(destination: VMConfigInfoView(config: $config.information).scrollable(), isActive: $infoActive) {
@@ -38,37 +39,50 @@ struct VMQEMUSettingsView: View {
         NavigationLink(destination: VMConfigQEMUView(config: $config.qemu, system: $config.system, fetchFixedArguments: { config.generatedArguments }).scrollable()) {
             Label("QEMU", systemImage: "shippingbox")
         }
-        ForEach($config.displays) { $display in
-            NavigationLink(destination: VMConfigDisplayView(config: $display, system: $config.system).scrollable()) {
-                Label("Display", systemImage: "rectangle.on.rectangle")
-            }
-        }
-        ForEach($config.serials) { $serial in
-            NavigationLink(destination: VMConfigSerialView(config: $serial, system: $config.system).scrollable()) {
-                Label("Serial", systemImage: "cable.connector")
-            }
-        }
         NavigationLink(destination: VMConfigInputView(config: $config.input).scrollable()) {
             Label("Input", systemImage: "keyboard")
         }
-        ForEach($config.networks) { $network in
-            Group {
-                NavigationLink(destination: VMConfigNetworkView(config: $network, system: $config.system).scrollable()) {
-                    Label("Network", systemImage: "network")
-                }
-                NavigationLink(destination: VMConfigAdvancedNetworkView(config: $network).scrollable()) {
-                    Label("IP Configuration", systemImage: "mappin.circle")
-                        .padding(.leading)
-                }
-            }
-        }
-        ForEach($config.sound) { $sound in
-            NavigationLink(destination: VMConfigSoundView(config: $sound, system: $config.system).scrollable()) {
-                Label("Sound", systemImage: "speaker.wave.2")
-            }
-        }
         NavigationLink(destination: VMConfigSharingView(config: $config.sharing).scrollable()) {
             Label("Sharing", systemImage: "person.crop.circle")
+        }
+        Section(header: Text("Devices")) {
+            ForEach($config.displays) { $display in
+                NavigationLink(destination: VMConfigDisplayView(config: $display, system: $config.system).scrollable()) {
+                    Label("Display", systemImage: "rectangle.on.rectangle")
+                }.contextMenu {
+                    DestructiveButton("Remove") {
+                        config.displays.removeAll(where: { $0.id == display.id })
+                    }
+                }
+            }
+            ForEach($config.serials) { $serial in
+                NavigationLink(destination: VMConfigSerialView(config: $serial, system: $config.system).scrollable()) {
+                    Label("Serial", systemImage: "cable.connector")
+                }.contextMenu {
+                    DestructiveButton("Remove") {
+                        config.serials.removeAll(where: { $0.id == serial.id })
+                    }
+                }
+            }
+            ForEach($config.networks) { $network in
+                NavigationLink(destination: VMConfigNetworkView(config: $network, system: $config.system).scrollable()) {
+                    Label("Network", systemImage: "network")
+                }.contextMenu {
+                    DestructiveButton("Remove") {
+                        config.networks.removeAll(where: { $0.id == network.id })
+                    }
+                }
+            }
+            ForEach($config.sound) { $sound in
+                NavigationLink(destination: VMConfigSoundView(config: $sound, system: $config.system).scrollable()) {
+                    Label("Sound", systemImage: "speaker.wave.2")
+                }.contextMenu {
+                    DestructiveButton("Remove") {
+                        config.sound.removeAll(where: { $0.id == sound.id })
+                    }
+                }
+            }
+            VMSettingsAddDeviceMenuView(config: config)
         }
         Section(header: Text("Drives")) {
             VMDrivesSettingsView(drives: $config.drives, template: UTMQemuConfigurationDrive(forArchitecture: config.system.architecture, target: config.system.target))
