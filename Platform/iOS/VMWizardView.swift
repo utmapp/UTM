@@ -93,16 +93,14 @@ fileprivate struct WizardWrapper: View {
                         onDismiss()
                         data.busyWorkAsync {
                             let config = try await wizardState.generateConfig()
-                            //FIXME: rewrite config for wizard
-                            //let vm = try await data.create(config: config)
-                            //if let qemuVm = vm as? UTMQemuVirtualMachine {
-                            //    try await wizardState.qemuPostCreate(with: qemuVm)
-                            //}
-                            /* // SwiftUI is broken here
+                            if let qemuConfig = config.qemuConfig {
+                                _ = try await data.create(config: qemuConfig)
+                            } else {
+                                fatalError("Invalid configuration type.")
+                            }
                             if await wizardState.isOpenSettingsAfterCreation {
                                 await data.showSettingsForCurrentVM()
                             }
-                             */
                         }
                     }
                 }

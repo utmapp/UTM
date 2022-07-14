@@ -17,7 +17,7 @@
 import SwiftUI
 
 struct VMSettingsView: View {
-    let vm: UTMVirtualMachine?
+    let vm: UTMVirtualMachine
     @ObservedObject var config: UTMQemuConfiguration
     
     @State private var isResetConfig: Bool = false
@@ -129,12 +129,7 @@ struct VMSettingsView: View {
     func save() {
         presentationMode.wrappedValue.dismiss()
         data.busyWorkAsync {
-            if let existing = self.vm {
-                try await data.save(vm: existing)
-            } else {
-                //FIXME: Temporarily disabled during config rewrite.
-                //_ = try await data.create(config: self.config)
-            }
+            try await data.save(vm: vm)
         }
     }
     
@@ -173,6 +168,6 @@ struct VMSettingsView_Previews: PreviewProvider {
     @State static private var config = UTMQemuConfiguration()
     
     static var previews: some View {
-        VMSettingsView(vm: nil, config: config)
+        VMSettingsView(vm: UTMVirtualMachine(), config: config)
     }
 }
