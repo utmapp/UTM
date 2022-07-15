@@ -20,6 +20,9 @@ struct VMConfigSerialView: View {
     @Binding var config: UTMQemuConfigurationSerial
     @Binding var system: UTMQemuConfigurationSystem
     
+    @State private var isUnsupportedAlertShown: Bool = false
+    @State private var hardware: QEMUSerialDevice = AnyQEMUConstant(rawValue: "")!
+    
     var body: some View {
         VStack {
             Form {
@@ -31,11 +34,30 @@ struct VMConfigSerialView: View {
                             }
                         }
                     VMConfigConstantPicker("Target", selection: $config.target)
+                        .onChange(of: config.target) { newValue in
+                            if newValue == .manualDevice && system.architecture.serialDeviceType.allRawValues.isEmpty {
+                                config.target = .autoDevice
+                                isUnsupportedAlertShown.toggle()
+                            }
+                        }
                 }
                 
                 if config.target == .manualDevice {
                     Section(header: Text("Hardware")) {
-                        VMConfigConstantPicker("Emulated Serial Device", selection: $config.hardware, type: system.architecture.serialDeviceType)
+                        VMConfigConstantPicker("Emulated Serial Device", selection: $hardware, type: system.architecture.serialDeviceType)
+                    }
+                    .onAppear {
+                        if let configHardware = config.hardware {
+                            hardware = configHardware
+                        }
+                    }
+                    .onChange(of: hardware.rawValue) { newValue in
+                        config.hardware = hardware
+                    }
+                    .onChange(of: config.hardware?.rawValue) { newValue in
+                        if let configHardware = config.hardware {
+                            hardware = configHardware
+                        }
                     }
                 }
                 
@@ -52,6 +74,9 @@ struct VMConfigSerialView: View {
                 }
             }
         }.disableAutocorrection(true)
+        .alert(isPresented: $isUnsupportedAlertShown) {
+            Alert(title: Text("The target does not support hardware emulated serial connections."))
+        }
         #if !os(macOS)
         .padding(.horizontal, 0)
         #endif

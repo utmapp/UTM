@@ -46,7 +46,7 @@ struct VMSettingsAddDeviceMenuView: View {
                 config.serials.append(UTMQemuConfigurationSerial())
             } label: {
                 Label("Serial", systemImage: "cable.connector")
-            }.disabled(config.system.architecture.serialDeviceType.allRawValues.isEmpty)
+            }.disabled(config.system.architecture.serialDeviceType.allRawValues.isEmpty && !config.serials.isEmpty)
             Button {
                 config.networks.append(UTMQemuConfigurationNetwork())
             } label: {
