@@ -18,6 +18,22 @@ import SwiftUI
 
 struct VMSettingsAddDeviceMenuView: View {
     @ObservedObject var config: UTMQemuConfiguration
+    @Binding var isCreateDriveShown: Bool
+    @Binding var isImportDriveShown: Bool
+    
+    init(config: UTMQemuConfiguration, isCreateDriveShown: Binding<Bool>? = nil, isImportDriveShown: Binding<Bool>? = nil) {
+        self.config = config
+        if let isCreateDriveShown = isCreateDriveShown {
+            _isCreateDriveShown = isCreateDriveShown
+        } else {
+            _isCreateDriveShown = .constant(false)
+        }
+        if let isImportDriveShown = isImportDriveShown {
+            _isImportDriveShown = isImportDriveShown
+        } else {
+            _isImportDriveShown = .constant(false)
+        }
+    }
     
     var body: some View {
         Menu {
@@ -41,6 +57,19 @@ struct VMSettingsAddDeviceMenuView: View {
             } label: {
                 Label("Sound", systemImage: "speaker.wave.2")
             }.disabled(config.system.architecture.soundDeviceType.allRawValues.isEmpty)
+            #if os(iOS)
+            Divider()
+            Button {
+                isImportDriveShown.toggle()
+            } label: {
+                Label("Import Drive", systemImage: "externaldrive")
+            }
+            Button {
+                isCreateDriveShown.toggle()
+            } label: {
+                Label("New Drive", systemImage: "externaldrive.badge.plus")
+            }
+            #endif
         } label: {
             Label("New…", systemImage: "plus")
         }.help("Add a new device.")

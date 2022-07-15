@@ -21,6 +21,8 @@ struct VMSettingsView: View {
     @ObservedObject var config: UTMQemuConfiguration
     
     @State private var isResetConfig: Bool = false
+    @State private var isCreateDriveShown: Bool = false
+    @State private var isImportDriveShown: Bool = false
     
     @EnvironmentObject private var data: UTMData
     @Environment(\.presentationMode) private var presentationMode: Binding<PresentationMode>
@@ -56,22 +58,16 @@ struct VMSettingsView: View {
                                 .labelStyle(.roundRectIcon)
                         })
                     NavigationLink(
-                        destination: VMConfigDrivesView(config: config).navigationTitle("Drives"),
-                        label: {
-                            Label("Drives", systemImage: "internaldrive")
-                                .labelStyle(.roundRectIcon)
-                        })
-                    NavigationLink(
                         destination: VMConfigInputView(config: $config.input).navigationTitle("Input"),
                         label: {
                             Label("Input", systemImage: "keyboard")
-                                .labelStyle(RoundRectIconLabelStyle(color: .green))
+                                .labelStyle(.roundRectIcon)
                         })
                     NavigationLink(
                         destination: VMConfigSharingView(config: $config.sharing).navigationTitle("Sharing"),
                         label: {
                             Label("Sharing", systemImage: "person.crop.circle")
-                                .labelStyle(RoundRectIconLabelStyle(color: .yellow))
+                                .labelStyle(.roundRectIcon)
                         })
                     Section(header: Text("Devices")) {
                         ForEach($config.displays) { $display in
@@ -107,12 +103,16 @@ struct VMSettingsView: View {
                             config.sound.remove(atOffsets: offsets)
                         }
                     }
+                    Section(header: Text("Drives")) {
+                        VMDrivesSettingsView(config: config, isCreateDriveShown: $isCreateDriveShown)
+                            .labelStyle(RoundRectIconLabelStyle(color: .yellow))
+                    }
                 }
             }
             .navigationTitle("Settings")
             .navigationViewStyle(.stack)
             .navigationBarItems(leading: HStack {
-                VMSettingsAddDeviceMenuView(config: config)
+                VMSettingsAddDeviceMenuView(config: config, isCreateDriveShown: $isCreateDriveShown, isImportDriveShown: $isImportDriveShown)
                 EditButton()
             }, trailing: HStack {
                 Button(action: cancel) {
@@ -122,6 +122,7 @@ struct VMSettingsView: View {
                     Text("Save")
                 }
             })
+            .fileImporter(isPresented: $isImportDriveShown, allowedContentTypes: [.item], onCompletion: importDrive)
         }.disabled(data.busy)
         .overlay(BusyOverlay())
     }
@@ -137,6 +138,22 @@ struct VMSettingsView: View {
         presentationMode.wrappedValue.dismiss()
         data.busyWork {
             try data.discardChanges(for: self.vm)
+        }
+    }
+    
+    private func importDrive(result: Result<URL, Error>) {
+        data.busyWorkAsync {
+            switch result {
+            case .success(let url):
+                await MainActor.run {
+                    var drive = UTMQemuConfigurationDrive(forArchitecture: config.system.architecture, target: config.system.target, isExternal: true)
+                    drive.imageURL = url
+                    config.drives.append(drive)
+                }
+                break
+            case .failure(let err):
+                throw err
+            }
         }
     }
 }
