@@ -162,6 +162,9 @@ private struct HardwareOptions: View {
     var body: some View {
         Section(header: Text("Hardware")) {
             VMConfigConstantPicker("Architecture", selection: $architecture)
+                .onAppear {
+                    architecture = config.architecture
+                }
                 .onChange(of: architecture) { newValue in
                     if newValue != config.architecture {
                         warningMessage = .resetSystem
@@ -177,6 +180,9 @@ private struct HardwareOptions: View {
                     .foregroundColor(.red)
             }
             VMConfigConstantPicker("System", selection: $target, type: config.architecture.targetType)
+                .onAppear {
+                    target = config.target
+                }
                 .onChange(of: target.rawValue) { newValue in
                     if newValue != config.target.rawValue {
                         warningMessage = .resetSystem
