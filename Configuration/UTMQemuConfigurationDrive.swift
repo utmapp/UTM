@@ -34,7 +34,7 @@ struct UTMQemuConfigurationDrive: UTMConfigurationDrive {
     var imageURL: URL?
     
     /// Unique identifier for this drive
-    private(set) var id: String = ""
+    private(set) var id: String = UUID().uuidString
     
     /// Type of the image.
     var imageType: QEMUDriveImageType = .none {
@@ -79,7 +79,7 @@ struct UTMQemuConfigurationDrive: UTMConfigurationDrive {
             imageName = imageURL?.lastPathComponent
             isExternal = true
         } else {
-            throw UTMConfigurationError.invalidDriveConfiguration
+            isExternal = true
         }
         imageType = try values.decode(QEMUDriveImageType.self, forKey: .imageType)
         interface = try values.decode(QEMUDriveInterface.self, forKey: .interface)
