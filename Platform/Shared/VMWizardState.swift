@@ -75,7 +75,6 @@ enum VMWizardOS: String, Identifiable {
     }
     @Published var operatingSystem: VMWizardOS = .Other
     #if os(macOS) && arch(arm64)
-    @available(macOS 12, *)
     @Published var macPlatform: UTMAppleConfigurationMacPlatform?
     @Published var macRecoveryIpswURL: URL?
     #endif
