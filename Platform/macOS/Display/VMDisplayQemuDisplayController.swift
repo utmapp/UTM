@@ -15,6 +15,7 @@
 //
 
 class VMDisplayQemuWindowController: VMDisplayWindowController {
+    private(set) var id: Int = 0
     private weak var vmUsbManager: CSUSBManager?
     private var allUsbDevices: [CSUSBDevice] = []
     private var connectedUsbDevices: [CSUSBDevice] = []
@@ -28,6 +29,10 @@ class VMDisplayQemuWindowController: VMDisplayWindowController {
         vm?.config.qemuConfig
     }
     
+    var defaultTitle: String {
+        vmQemuConfig.information.name
+    }
+    
     var defaultSubtitle: String {
         if qemuVM.isRunningAsSnapshot {
             return NSLocalizedString("Disposable Mode", comment: "VMDisplayQemuDisplayController")
@@ -36,12 +41,19 @@ class VMDisplayQemuWindowController: VMDisplayWindowController {
         }
     }
     
+    convenience init(vm: UTMQemuVirtualMachine, id: Int) {
+        self.init(vm: vm, onClose: nil)
+        self.id = id
+    }
+    
     override var shouldSaveOnPause: Bool {
         !qemuVM.isRunningAsSnapshot
     }
     
     override func enterLive() {
-        qemuVM.ioDelegate = self
+        if !isSecondary {
+            qemuVM.ioDelegate = self
+        }
         startPauseToolbarItem.isEnabled = true
         #if arch(x86_64)
         if vmQemuConfig.qemu.hasHypervisor {
@@ -52,7 +64,7 @@ class VMDisplayQemuWindowController: VMDisplayWindowController {
         drivesToolbarItem.isEnabled = vmQemuConfig.drives.count > 0
         sharedFolderToolbarItem.isEnabled = qemuVM.hasShareDirectoryEnabled
         usbToolbarItem.isEnabled = qemuVM.hasUsbRedirection
-        window!.title = vmQemuConfig.information.name
+        window!.title = defaultTitle
         window!.subtitle = defaultSubtitle
         super.enterLive()
     }
@@ -61,6 +73,9 @@ class VMDisplayQemuWindowController: VMDisplayWindowController {
         if vm.state == .vmStopped {
             connectedUsbDevices.removeAll()
             allUsbDevices.removeAll()
+            if isSecondary {
+                close()
+            }
         }
         super.enterSuspended(isBusy: busy)
     }
@@ -208,24 +223,59 @@ extension VMDisplayQemuWindowController {
 // MARK: - SPICE base implementation
 
 extension VMDisplayQemuWindowController: UTMSpiceIODelegate {
+    private func findSlotForSecondaryDisplay<T: VMDisplayQemuWindowController>(typed type: T.Type) -> (Int, Int) {
+        var id = self is T ? 1 : 0
+        var at = 0
+        for i in secondaryWindows.indices {
+            if let subwindow = secondaryWindows[i] as? T {
+                if subwindow.id == id {
+                    id += 1
+                    at = i+1
+                }
+            }
+        }
+        return (id, at)
+    }
+    
     func spiceDidCreateInput(_ input: CSInput) {
-        // Implemented in subclass
+        for subwindow in secondaryWindows {
+            (subwindow as! VMDisplayQemuWindowController).spiceDidCreateInput(input)
+        }
     }
     
     func spiceDidDestroyInput(_ input: CSInput) {
-        // Implemented in subclass
+        for subwindow in secondaryWindows {
+            (subwindow as! VMDisplayQemuWindowController).spiceDidDestroyInput(input)
+        }
     }
     
     func spiceDidCreateDisplay(_ display: CSDisplay) {
-        // Implemented in subclass
+        guard !isSecondary else {
+            return
+        }
+        guard let primary = self as? VMDisplayMetalWindowController else {
+            return
+        }
+        DispatchQueue.main.async {
+            let (id, offset) = self.findSlotForSecondaryDisplay(typed: VMDisplayMetalWindowController.self)
+            guard id < self.vmQemuConfig.displays.count else {
+                return
+            }
+            let secondary = VMDisplayMetalWindowController(secondaryFromDisplay: display, primary: primary, vm: self.qemuVM, id: id)
+            self.showSecondaryWindow(secondary, at: offset)
+        }
     }
     
     func spiceDidChangeDisplay(_ display: CSDisplay) {
-        // Implemented in subclass
+        for subwindow in secondaryWindows {
+            (subwindow as! VMDisplayQemuWindowController).spiceDidChangeDisplay(display)
+        }
     }
     
     func spiceDidDestroyDisplay(_ display: CSDisplay) {
-        // Implemented in subclass
+        for subwindow in secondaryWindows {
+            (subwindow as! VMDisplayQemuWindowController).spiceDidDestroyDisplay(display)
+        }
     }
     
     func spiceDidChangeUsbManager(_ usbManager: CSUSBManager?) {
@@ -237,18 +287,35 @@ extension VMDisplayQemuWindowController: UTMSpiceIODelegate {
                 usbManager.delegate = self
             }
         }
+        for subwindow in secondaryWindows {
+            (subwindow as! VMDisplayQemuWindowController).spiceDidChangeUsbManager(usbManager)
+        }
     }
     
     func spiceDynamicResolutionSupportDidChange(_ supported: Bool) {
-        // Implemented in subclass
+        for subwindow in secondaryWindows {
+            (subwindow as! VMDisplayQemuWindowController).spiceDynamicResolutionSupportDidChange(supported)
+        }
     }
     
     func spiceDidCreateSerial(_ serial: CSPort) {
-        // Implemented in subclass
+        guard !isSecondary else {
+            return
+        }
+        DispatchQueue.main.async {
+            let (id, offset) = self.findSlotForSecondaryDisplay(typed: VMDisplayTerminalWindowController.self)
+            guard id < self.vmQemuConfig.builtinSerials.count else {
+                return
+            }
+            let secondary = VMDisplayTerminalWindowController(secondaryFromSerialPort: serial, vm: self.qemuVM, id: id)
+            self.showSecondaryWindow(secondary, at: offset)
+        }
     }
     
     func spiceDidDestroySerial(_ serial: CSPort) {
-        // Implemented in subclass
+        for subwindow in secondaryWindows {
+            (subwindow as! VMDisplayQemuWindowController).spiceDidDestroySerial(serial)
+        }
     }
 }
 

@@ -35,11 +35,12 @@ extension UTMData {
                 }
             }
             if let qvm = vm as? UTMQemuVirtualMachine {
-                // FIXME: multiple display support
                 if qvm.config.qemuHasDisplay {
                     window = VMDisplayMetalWindowController(vm: qvm, onClose: close)
-                } else {
+                } else if qvm.config.qemuHasTerminal {
                     window = VMDisplayTerminalWindowController(vm: qvm, onClose: close)
+                } else {
+                    // FIXME: do headless
                 }
             }
             if window == nil {
@@ -50,6 +51,7 @@ extension UTMData {
         }
         if let unwrappedWindow = window {
             vmWindows[vm] = unwrappedWindow
+            vm.delegate = unwrappedWindow
             unwrappedWindow.showWindow(nil)
             unwrappedWindow.window!.makeMain()
             unwrappedWindow.requestAutoStart()

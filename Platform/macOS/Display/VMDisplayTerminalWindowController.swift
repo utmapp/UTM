@@ -20,13 +20,31 @@ private let kVMDefaultResizeCmd = "stty cols $COLS rows $ROWS\\n"
 
 class VMDisplayTerminalWindowController: VMDisplayQemuWindowController {
     private var terminalView: TerminalView!
-    private weak var vmSerialPort: CSPort?
+    private var vmSerialPort: CSPort?
+    
+    private var serialConfig: UTMQemuConfigurationSerial? {
+        vmQemuConfig?.builtinSerials[id]
+    }
+    
+    override var defaultTitle: String {
+        if isSecondary {
+            return NSLocalizedString("\(vmQemuConfig.information.name) (Terminal \(id+1))", comment: "VMDisplayTerminalWindowController")
+        } else {
+            return super.defaultTitle
+        }
+    }
+    
+    convenience init(secondaryFromSerialPort serialPort: CSPort, vm: UTMQemuVirtualMachine, id: Int) {
+        self.init(vm: vm, id: id)
+        self.vmSerialPort = serialPort
+    }
 
     override func windowDidLoad() {
         terminalView = TerminalView(frame: displayView.bounds)
         terminalView.terminalDelegate = self
         terminalView.autoresizingMask = [.width, .height]
         displayView.addSubview(terminalView)
+        vmSerialPort?.delegate = self // can be nil for primary window
         super.windowDidLoad()
     }
     
@@ -38,7 +56,7 @@ class VMDisplayTerminalWindowController: VMDisplayQemuWindowController {
     override func resizeConsoleButtonPressed(_ sender: Any) {
         let cols = terminalView.getTerminal().cols
         let rows = terminalView.getTerminal().rows
-        let template = vmQemuConfig?.serials.first?.terminal?.resizeCommand ?? kVMDefaultResizeCmd
+        let template = serialConfig?.terminal?.resizeCommand ?? kVMDefaultResizeCmd
         let cmd = template
             .replacingOccurrences(of: "$COLS", with: String(cols))
             .replacingOccurrences(of: "$ROWS", with: String(rows))
@@ -47,16 +65,25 @@ class VMDisplayTerminalWindowController: VMDisplayQemuWindowController {
     }
     
     override func spiceDidCreateSerial(_ serial: CSPort) {
-        if vmSerialPort == nil {
+        if !isSecondary, vmSerialPort == nil {
             vmSerialPort = serial
             serial.delegate = self
+        } else {
+            super.spiceDidCreateSerial(serial)
         }
     }
     
     override func spiceDidDestroySerial(_ serial: CSPort) {
         if vmSerialPort == serial {
+            if isSecondary {
+                DispatchQueue.main.async {
+                    self.close()
+                }
+            }
             serial.delegate = nil
             vmSerialPort = nil
+        } else {
+            super.spiceDidDestroySerial(serial)
         }
     }
 }

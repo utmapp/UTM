@@ -188,6 +188,8 @@ extern NSString *const kUTMErrorDomain;
     } else if (display.isPrimaryDisplay) {
         self.primaryDisplay = display;
         [self.delegate spiceDidCreateDisplay:display];
+    } else {
+        [self.delegate spiceDidCreateDisplay:display];
     }
 }
 
@@ -215,6 +217,8 @@ extern NSString *const kUTMErrorDomain;
     }
     if ([port.name isEqualToString:@"com.utmapp.terminal.0"]) {
         self.primarySerial = port;
+    }
+    if ([port.name hasPrefix:@"com.utmapp.terminal."]) {
         [self.delegate spiceDidCreateSerial:port];
     }
 }
@@ -224,6 +228,8 @@ extern NSString *const kUTMErrorDomain;
     }
     if ([port.name isEqualToString:@"com.utmapp.terminal.0"]) {
         self.primarySerial = port;
+    }
+    if ([port.name hasPrefix:@"com.utmapp.terminal."]) {
         [self.delegate spiceDidDestroySerial:port];
     }
 }
@@ -275,6 +281,14 @@ extern NSString *const kUTMErrorDomain;
 #endif
     if ([self.delegate respondsToSelector:@selector(spiceDynamicResolutionSupportDidChange:)]) {
         [self.delegate spiceDynamicResolutionSupportDidChange:self.dynamicResolutionSupported];
+    }
+    for (CSChannel *channel in self.spiceConnection.channels) {
+        if ([channel isKindOfClass:[CSDisplay class]] && channel != self.primaryDisplay) {
+            [self.delegate spiceDidCreateDisplay:(CSDisplay *)channel];
+        }
+        if ([channel isKindOfClass:[CSPort class]] && channel != self.primarySerial && ![((CSPort *)channel).name isEqualToString:@"org.qemu.monitor.qmp.0"]) {
+            [self.delegate spiceDidCreateSerial:(CSPort *)channel];
+        }
     }
 }
 

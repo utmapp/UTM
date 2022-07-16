@@ -61,6 +61,7 @@ extension UTMQemuConfiguration {
         f()
         f("-S") // startup stopped
         displayArguments
+        serialArguments
         cpuArguments
         machineArguments
         architectureArguments
@@ -106,7 +107,7 @@ extension UTMQemuConfiguration {
         f("-mon")
         f("chardev=org.qemu.monitor.qmp,mode=control")
         if isSparc {
-            if displays.isEmpty {
+            if !displays.isEmpty {
                 f("-vga")
                 displays[0].hardware
                 f()
@@ -118,32 +119,57 @@ extension UTMQemuConfiguration {
             f("-vga")
             f("none")
         }
-        if displays.isEmpty { // FIXME: implement serial from settings
+        if displays.isEmpty {
             f("-nographic")
-            // terminal character device
-            f("-chardev")
-            f("spiceport,id=term0,name=com.utmapp.terminal.0")
-            f("-serial")
-            f("chardev:term0")
-        } else {
-            if !isSparc { // SPARC uses -vga (above)
+        } else if !isSparc { // SPARC uses -vga (above)
+            for display in displays {
                 f("-device")
-                displays[0].hardware // FIXME: support multiple displays
+                display.hardware
                 f()
             }
         }
     }
     
     private var isGLOn: Bool {
-        //FIXME: support multiple displays
-        guard let display = displays.first else {
-            return false
+        displays.contains { display in
+            display.hardware.rawValue.contains("-gl-") || display.hardware.rawValue.hasSuffix("-gl")
         }
-        return display.hardware.rawValue.contains("-gl-") || display.hardware.rawValue.hasSuffix("-gl")
     }
     
     private var isSparc: Bool {
         system.architecture == .sparc || system.architecture == .sparc64
+    }
+    
+    @QEMUArgumentBuilder private var serialArguments: [QEMUArgument] {
+        for i in serials.indices {
+            f("-chardev")
+            switch serials[i].mode {
+            case .builtin:
+                f("spiceport,id=term\(i),name=com.utmapp.terminal.\(i)")
+            case .tcpClient:
+                f("socket,id=term\(i),port=\(serials[i].tcpPort!),host=\(serials[i].tcpHostAddress!),server=off")
+            case .tcpServer:
+                f("socket,id=term\(i),port=\(serials[i].tcpPort!),server=on")
+            #if os(macOS)
+            case .ptty:
+                f("pty,id=term\(i)")
+            #endif
+            }
+            switch serials[i].target {
+            case .autoDevice:
+                f("-serial")
+                f("chardev:term\(i)")
+            case .manualDevice:
+                f("-device")
+                f("\(serials[i].hardware!.rawValue),chardev=term\(i)")
+            case .monitor:
+                f("-mon")
+                f("chardev=term\(i),mode=readline")
+            case .gdb:
+                f("-gdb")
+                f("chardev:term\(i)")
+            }
+        }
     }
     
     @QEMUArgumentBuilder private var cpuArguments: [QEMUArgument] {

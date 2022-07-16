@@ -20,8 +20,8 @@ class VMDisplayMetalWindowController: VMDisplayQemuWindowController {
     var metalView: VMMetalView!
     var renderer: CSRenderer?
     
-    private weak var vmDisplay: CSDisplay?
-    private weak var vmInput: CSInput?
+    private var vmDisplay: CSDisplay?
+    private var vmInput: CSInput?
     
     private var displaySize: CGSize = .zero
     private var isDisplaySizeDynamic: Bool = false
@@ -34,6 +34,18 @@ class VMDisplayMetalWindowController: VMDisplayQemuWindowController {
     private var globalEventMonitor: Any? = nil
     private var ctrlKeyDown: Bool = false
     
+    private var displayConfig: UTMQemuConfigurationDisplay? {
+        vmQemuConfig?.displays[id]
+    }
+    
+    override var defaultTitle: String {
+        if isSecondary {
+            return NSLocalizedString("\(vmQemuConfig.information.name) (Display \(id+1))", comment: "VMDisplayMetalWindowController")
+        } else {
+            return super.defaultTitle
+        }
+    }
+    
     // MARK: - User preferences
     
     @Setting("NoCursorCaptureAlert") private var isCursorCaptureAlertShown: Bool = false
@@ -45,6 +57,12 @@ class VMDisplayMetalWindowController: VMDisplayQemuWindowController {
     private var settingObservations = [NSKeyValueObservation]()
     
     // MARK: - Init
+    
+    convenience init(secondaryFromDisplay display: CSDisplay, primary: VMDisplayMetalWindowController, vm: UTMQemuVirtualMachine, id: Int) {
+        self.init(vm: vm, id: id)
+        self.vmDisplay = display
+        self.vmInput = primary.vmInput
+    }
     
     override func windowDidLoad() {
         metalView = VMMetalView(frame: displayView.bounds)
@@ -63,7 +81,8 @@ class VMDisplayMetalWindowController: VMDisplayQemuWindowController {
             return
         }
         renderer.mtkView(metalView, drawableSizeWillChange: metalView.drawableSize)
-        renderer.changeUpscaler(vmQemuConfig?.displays.first?.upscalingFilter.metalSamplerMinMagFilter ?? .linear, downscaler: vmQemuConfig?.displays.first?.downscalingFilter.metalSamplerMinMagFilter ?? .linear)
+        renderer.changeUpscaler(displayConfig?.upscalingFilter.metalSamplerMinMagFilter ?? .linear, downscaler: displayConfig?.downscalingFilter.metalSamplerMinMagFilter ?? .linear)
+        renderer.source = vmDisplay // can be nil if primary
         metalView.delegate = renderer
         metalView.inputDelegate = self
         
@@ -131,36 +150,51 @@ extension VMDisplayMetalWindowController {
         if vmInput == nil {
             vmInput = input
         }
+        super.spiceDidCreateInput(input)
     }
     
     override func spiceDidDestroyInput(_ input: CSInput) {
         if vmInput == input {
             vmInput = nil
         }
+        super.spiceDidDestroyInput(input)
     }
     
     override func spiceDidCreateDisplay(_ display: CSDisplay) {
-        if vmDisplay == nil && display.isPrimaryDisplay {
+        if !isSecondary && vmDisplay == nil && display.isPrimaryDisplay {
             vmDisplay = display
             renderer!.source = display
+        } else {
+            super.spiceDidCreateDisplay(display)
         }
     }
     
     override func spiceDidDestroyDisplay(_ display: CSDisplay) {
         if vmDisplay == display {
-            vmDisplay = nil
-            renderer!.source = nil
+            if isSecondary {
+                DispatchQueue.main.async {
+                    self.close()
+                }
+            } else {
+                vmDisplay = nil
+                renderer!.source = nil
+            }
+        } else {
+            super.spiceDidDestroyDisplay(display)
         }
     }
     
     override func spiceDidChangeDisplay(_ display: CSDisplay) {
         if vmDisplay == display {
             displaySizeDidChange(size: display.displaySize)
+        } else {
+            super.spiceDidChangeDisplay(display)
         }
     }
     
     override func spiceDynamicResolutionSupportDidChange(_ supported: Bool) {
-        guard vmQemuConfig.displays.first!.isDynamicResolution else {
+        guard displayConfig!.isDynamicResolution else {
+            super.spiceDynamicResolutionSupportDidChange(supported)
             return
         }
         if isDisplaySizeDynamic != supported {
@@ -172,6 +206,7 @@ extension VMDisplayMetalWindowController {
             }
         }
         isDisplaySizeDynamic = supported
+        super.spiceDynamicResolutionSupportDidChange(supported)
     }
 }
     
@@ -211,9 +246,9 @@ extension VMDisplayMetalWindowController {
         guard let window = window else { return }
         guard let vmDisplay = vmDisplay else { return }
         let currentScreenScale = window.screen?.backingScaleFactor ?? 1.0
-        let nativeScale = vmQemuConfig.displays.first!.isNativeResolution ? 1.0 : currentScreenScale
+        let nativeScale = displayConfig!.isNativeResolution ? 1.0 : currentScreenScale
         // change optional scale if needed
-        if isDisplaySizeDynamic || isDisplayFixed || (!vmQemuConfig.displays.first!.isNativeResolution && vmDisplay.viewportScale < currentScreenScale) {
+        if isDisplaySizeDynamic || isDisplayFixed || (!displayConfig!.isNativeResolution && vmDisplay.viewportScale < currentScreenScale) {
             vmDisplay.viewportScale = nativeScale
         }
         let minScaledSize = CGSize(width: size.width * nativeScale / currentScreenScale, height: size.height * nativeScale / currentScreenScale)
@@ -254,9 +289,9 @@ extension VMDisplayMetalWindowController {
     fileprivate func updateGuestResolution(for window: NSWindow, frameSize: NSSize) -> NSSize {
         guard let vmDisplay = self.vmDisplay else { return frameSize }
         let currentScreenScale = window.screen?.backingScaleFactor ?? 1.0
-        let nativeScale = vmQemuConfig.displays.first!.isNativeResolution ? currentScreenScale : 1.0
+        let nativeScale = displayConfig!.isNativeResolution ? currentScreenScale : 1.0
         let targetSize = window.contentRect(forFrameRect: CGRect(origin: .zero, size: frameSize)).size
-        let targetSizeScaled = vmQemuConfig.displays.first!.isNativeResolution ? targetSize.applying(CGAffineTransform(scaleX: nativeScale, y: nativeScale)) : targetSize
+        let targetSizeScaled = displayConfig!.isNativeResolution ? targetSize.applying(CGAffineTransform(scaleX: nativeScale, y: nativeScale)) : targetSize
         logger.debug("Requesting resolution: (\(targetSizeScaled.width), \(targetSizeScaled.height))")
         let bounds = CGRect(origin: .zero, size: targetSizeScaled)
         vmDisplay.requestResolution(bounds)

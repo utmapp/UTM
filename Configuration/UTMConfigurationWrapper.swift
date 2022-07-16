@@ -186,6 +186,14 @@ import Foundation
         }
     }
     
+    @objc var qemuHasTerminal: Bool {
+        if wrappedValue is UTMQemuConfiguration {
+            return !qemuConfig!.builtinSerials.isEmpty
+        } else {
+            fatalError()
+        }
+    }
+    
     @objc var qemuDisplayUpscaler: MTLSamplerMinMagFilter {
         if wrappedValue is UTMQemuConfiguration {
             return qemuConfig!.displays.first!.upscalingFilter.metalSamplerMinMagFilter

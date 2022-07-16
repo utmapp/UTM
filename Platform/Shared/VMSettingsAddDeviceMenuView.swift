@@ -35,18 +35,26 @@ struct VMSettingsAddDeviceMenuView: View {
         }
     }
     
+    private var isAddDisplayEnabled: Bool {
+        if config.system.architecture == .sparc || config.system.architecture == .sparc64 {
+            return config.displays.count < 1
+        } else {
+            return !config.system.architecture.displayDeviceType.allRawValues.isEmpty
+        }
+    }
+    
     var body: some View {
         Menu {
             Button {
                 config.displays.append(UTMQemuConfigurationDisplay())
             } label: {
                 Label("Display", systemImage: "rectangle.on.rectangle")
-            }.disabled(config.system.architecture.displayDeviceType.allRawValues.isEmpty)
+            }.disabled(!isAddDisplayEnabled)
             Button {
                 config.serials.append(UTMQemuConfigurationSerial())
             } label: {
                 Label("Serial", systemImage: "cable.connector")
-            }.disabled(config.system.architecture.serialDeviceType.allRawValues.isEmpty && !config.serials.isEmpty)
+            }
             Button {
                 config.networks.append(UTMQemuConfigurationNetwork())
             } label: {
