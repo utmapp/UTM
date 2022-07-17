@@ -96,10 +96,10 @@ extension UTMQemuConfigurationSystem {
             architecture = arch
         }
         if let targetStr = oldConfig.systemTarget {
-            target = AnyQEMUConstant(rawValue: targetStr)!
+            target = architecture.targetType.init(rawValue: targetStr) ?? architecture.targetType.default
         }
         if let cpuStr = oldConfig.systemCPU {
-            cpu = AnyQEMUConstant(rawValue: cpuStr)!
+            cpu = architecture.cpuType.init(rawValue: cpuStr) ?? architecture.cpuType.default
         }
         if let cpuCountNum = oldConfig.systemCPUCount {
             cpuCount = cpuCountNum.intValue
