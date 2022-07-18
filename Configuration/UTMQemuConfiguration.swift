@@ -238,11 +238,15 @@ extension UTMQemuConfiguration {
             information.iconURL = newIconURL
         }
         // move debug log
-        let oldLogURL = dataURL.appendingPathComponent(QEMUPackageFileName.debugLog.rawValue)
-        if fileManager.fileExists(atPath: oldLogURL.path) {
+        if let oldLogURL = qemu.debugLogURL, fileManager.fileExists(atPath: oldLogURL.path) {
             let newLogURL = dataURL.appendingPathComponent(oldLogURL.lastPathComponent)
-            try await Task.detached {
-                try fileManager.moveItem(at: oldLogURL, to: newLogURL)
+            await Task.detached {
+                do {
+                    try fileManager.moveItem(at: oldLogURL, to: newLogURL)
+                } catch {
+                    // okay to fail
+                    try? fileManager.removeItem(at: oldLogURL)
+                }
             }.value
             qemu.debugLogURL = newLogURL
         }

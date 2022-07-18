@@ -150,7 +150,7 @@ extension UTMQemuConfigurationQEMU {
             additionalArguments = oldAddArgs.map({ QEMUArgument($0) })
         }
         debugLogURL = oldConfig.existingPath?.appendingPathComponent(QEMUPackageFileName.debugLog.rawValue)
-        efiVarsURL = oldConfig.existingPath?.appendingPathComponent(QEMUPackageFileName.efiVariables.rawValue)
+        efiVarsURL = oldConfig.existingPath?.appendingPathComponent(UTMLegacyQemuConfiguration.diskImagesDirectory).appendingPathComponent(QEMUPackageFileName.efiVariables.rawValue)
     }
 }
 
