@@ -238,6 +238,12 @@ NSString *const kSuspendSnapshotName = @"suspend";
         return;
     }
     assert(self.qemu);
+    // enter command mode
+    if (![self.qemu qmpEnterCommandModeWithError:&err]) {
+        UTMLog(@"Failed to enter command mode: %@", err);
+        completion(err);
+        return;
+    }
     assert(self.qemu.isConnected);
     // set up SPICE sharing and removable drives
     if (![self startSharedDirectoryWithError:&err]) {
