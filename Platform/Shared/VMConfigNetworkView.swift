@@ -42,7 +42,6 @@ struct VMConfigNetworkView: View {
                     }
                 }
 
-                #if os(iOS)
                 Toggle(isOn: $showAdvanced.animation(), label: {
                     Text("Show Advanced Settings")
                 })
@@ -52,7 +51,6 @@ struct VMConfigNetworkView: View {
                         IPConfigurationSection(config: $config).multilineTextAlignment(.trailing)
                     }
                 }
-                #endif
 
                 /// Bridged and shared networking doesn't support port forwarding
                 if config.mode == .emulated {
