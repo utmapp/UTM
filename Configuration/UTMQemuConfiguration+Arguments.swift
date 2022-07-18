@@ -583,81 +583,81 @@ extension UTMQemuConfiguration {
     }
     
     @QEMUArgumentBuilder private var networkArguments: [QEMUArgument] {
-        for network in networks {
+        for i in networks.indices {
             if isSparc {
                 f("-net")
                 "nic"
                 "model=lance"
-                "macaddr=\(network.macAddress)"
-                "netdev=net0"
+                "macaddr=\(networks[i].macAddress)"
+                "netdev=net\(i)"
                 f()
             } else {
                 f("-device")
-                network.hardware
-                "mac=\(network.macAddress)"
-                "netdev=net0"
+                networks[i].hardware
+                "mac=\(networks[i].macAddress)"
+                "netdev=net\(i)"
                 f()
             }
             f("-netdev")
             var useVMnet = false
             #if os(macOS)
-            if network.mode == .shared {
+            if networks[i].mode == .shared {
                 useVMnet = true
                 "vmnet-shared"
-                "id=net0"
-            } else if network.mode == .bridged {
+                "id=net\(i)"
+            } else if networks[i].mode == .bridged {
                 useVMnet = true
                 "vmnet-bridged"
-                "id=net0"
-                "ifname=\(network.bridgeInterface ?? "en0")"
-            } else if network.mode == .host {
+                "id=net\(i)"
+                "ifname=\(networks[i].bridgeInterface ?? "en0")"
+            } else if networks[i].mode == .host {
                 useVMnet = true
                 "vmnet-host"
-                "id=net0"
+                "id=net\(i)"
             } else {
                 "user"
-                "id=net0"
+                "id=net\(i)"
             }
             #else
             "user"
-            "id=net0"
+            "id=net\(i)"
             #endif
-            if network.isIsolateFromHost {
+            if networks[i].isIsolateFromHost {
                 if useVMnet {
                     "isolated=on"
                 } else {
                     "restrict=on"
                 }
             }
-            if let guestAddress = network.vlanGuestAddress {
+            if let guestAddress = networks[i].vlanGuestAddress {
                 "net=\(guestAddress)"
             }
-            if let hostAddress = network.vlanHostAddress {
+            if let hostAddress = networks[i].vlanHostAddress {
                 "host=\(hostAddress)"
             }
-            if let guestAddressIPv6 = network.vlanGuestAddressIPv6 {
+            if let guestAddressIPv6 = networks[i].vlanGuestAddressIPv6 {
                 "ipv6-net=\(guestAddressIPv6)"
             }
-            if let hostAddressIPv6 = network.vlanHostAddressIPv6 {
+            if let hostAddressIPv6 = networks[i].vlanHostAddressIPv6 {
                 "ipv6-host=\(hostAddressIPv6)"
             }
-            if let dhcpStartAddress = network.vlanDhcpStartAddress {
+            if let dhcpStartAddress = networks[i].vlanDhcpStartAddress {
                 "dhcpstart=\(dhcpStartAddress)"
             }
-            if let dnsServerAddress = network.vlanDnsServerAddress {
+            if let dnsServerAddress = networks[i].vlanDnsServerAddress {
                 "dns=\(dnsServerAddress)"
             }
-            if let dnsServerAddressIPv6 = network.vlanDnsServerAddressIPv6 {
+            if let dnsServerAddressIPv6 = networks[i].vlanDnsServerAddressIPv6 {
                 "ipv6-dns=\(dnsServerAddressIPv6)"
             }
-            if let dnsSearchDomain = network.vlanDnsSearchDomain {
+            if let dnsSearchDomain = networks[i].vlanDnsSearchDomain {
                 "dnssearch=\(dnsSearchDomain)"
             }
-            if let dhcpDomain = network.vlanDhcpDomain {
+            if let dhcpDomain = networks[i].vlanDhcpDomain {
                 "domainname=\(dhcpDomain)"
             }
             if !useVMnet {
-                for forward in network.portForward {
+                for forward in networks[i].portForward {
                     "hostfwd=\(forward.protocol.rawValue.lowercased()):\(forward.hostAddress ?? ""):\(forward.hostPort)-\(forward.guestAddress ?? ""):\(forward.guestPort)"
                 }
             }
