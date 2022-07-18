@@ -108,7 +108,7 @@
 - (void)spiceDidCreateDisplay:(CSDisplay *)display {
 }
 
-- (void)spiceDidChangeDisplay:(CSDisplay *)display {
+- (void)spiceDidUpdateDisplay:(CSDisplay *)display {
 }
 
 - (void)spiceDidDestroyDisplay:(CSDisplay *)display {

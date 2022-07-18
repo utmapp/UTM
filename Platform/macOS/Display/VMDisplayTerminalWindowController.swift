@@ -53,6 +53,13 @@ class VMDisplayTerminalWindowController: VMDisplayQemuWindowController {
         captureMouseToolbarItem.isEnabled = false
     }
     
+    override func enterSuspended(isBusy busy: Bool) {
+        if vm.state == .vmStopped {
+            vmSerialPort = nil
+        }
+        super.enterSuspended(isBusy: busy)
+    }
+    
     override func resizeConsoleButtonPressed(_ sender: Any) {
         let cols = terminalView.getTerminal().cols
         let rows = terminalView.getTerminal().rows

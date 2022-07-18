@@ -237,7 +237,7 @@
     }
 }
 
-- (void)spiceDidChangeDisplay:(CSDisplay *)display {
+- (void)spiceDidUpdateDisplay:(CSDisplay *)display {
     if (display == self.vmDisplay) {
         
     }

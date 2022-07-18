@@ -62,6 +62,7 @@ class VMDisplayMetalWindowController: VMDisplayQemuWindowController {
         self.init(vm: vm, id: id)
         self.vmDisplay = display
         self.vmInput = primary.vmInput
+        self.isDisplaySizeDynamic = primary.isDisplaySizeDynamic
     }
     
     override func windowDidLoad() {
@@ -114,6 +115,10 @@ class VMDisplayMetalWindowController: VMDisplayQemuWindowController {
                 self.syncCapsLock(with: event.modifierFlags)
             }
         }
+        // resize if we already have a vmDisplay
+        if let vmDisplay = vmDisplay {
+            displaySizeDidChange(size: vmDisplay.displaySize)
+        }
         super.enterLive()
         resizeConsoleToolbarItem.isEnabled = false // disable item
     }
@@ -123,6 +128,10 @@ class VMDisplayMetalWindowController: VMDisplayQemuWindowController {
             metalView.isHidden = true
             screenshotView.image = vm.screenshot?.image
             screenshotView.isHidden = false
+        }
+        if vm.state == .vmStopped {
+            vmDisplay = nil
+            vmInput = nil
         }
         if vmQemuConfig!.sharing.hasClipboardSharing {
             UTMPasteboard.general.releasePollingMode(forHashable: self) // stop clipboard polling
@@ -164,6 +173,7 @@ extension VMDisplayMetalWindowController {
         if !isSecondary && vmDisplay == nil && display.isPrimaryDisplay {
             vmDisplay = display
             renderer!.source = display
+            displaySizeDidChange(size: display.displaySize)
         } else {
             super.spiceDidCreateDisplay(display)
         }
@@ -184,11 +194,11 @@ extension VMDisplayMetalWindowController {
         }
     }
     
-    override func spiceDidChangeDisplay(_ display: CSDisplay) {
+    override func spiceDidUpdateDisplay(_ display: CSDisplay) {
         if vmDisplay == display {
             displaySizeDidChange(size: display.displaySize)
         } else {
-            super.spiceDidChangeDisplay(display)
+            super.spiceDidUpdateDisplay(display)
         }
     }
     
@@ -391,7 +401,7 @@ extension VMDisplayMetalWindowController: VMMetalViewInputDelegate {
         let newY = (frameSize.height - absolutePoint.y) * currentScreenScale / viewportScale
         let point = CGPoint(x: newX, y: newY)
         logger.trace("move cursor: cocoa (\(absolutePoint.x), \(absolutePoint.y)), native (\(newX), \(newY))")
-        vmInput.sendMousePosition(button, absolutePoint: point)
+        vmInput.sendMousePosition(button, absolutePoint: point, forMonitorID: vmDisplay?.monitorID ?? 0)
         vmDisplay?.cursor?.move(to: point) // required to show cursor on screen
     }
     
@@ -402,7 +412,7 @@ extension VMDisplayMetalWindowController: VMMetalViewInputDelegate {
             return
         }
         let translated = CGPoint(x: relativePoint.x, y: -relativePoint.y)
-        vmInput.sendMouseMotion(button, relativePoint: translated)
+        vmInput.sendMouseMotion(button, relativePoint: translated, forMonitorID: vmDisplay?.monitorID ?? 0)
     }
     
     private func modifyMouseButton(_ button: CSInputButton) -> CSInputButton {

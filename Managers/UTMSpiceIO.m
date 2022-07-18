@@ -28,8 +28,10 @@ extern NSString *const kUTMErrorDomain;
 
 @property (nonatomic, readwrite, nonnull) UTMConfigurationWrapper* configuration;
 @property (nonatomic, readwrite, nullable) CSDisplay *primaryDisplay;
+@property (nonatomic) NSMutableArray<CSDisplay *> *displays;
 @property (nonatomic, readwrite, nullable) CSInput *primaryInput;
 @property (nonatomic, readwrite, nullable) CSPort *primarySerial;
+@property (nonatomic) NSMutableArray<CSPort *> *serials;
 #if !defined(WITH_QEMU_TCI)
 @property (nonatomic, readwrite, nullable) CSUSBManager *primaryUsbManager;
 #endif
@@ -51,6 +53,8 @@ extern NSString *const kUTMErrorDomain;
     if (self = [super init]) {
         self.configuration = configuration;
         self.connectQueue = dispatch_queue_create("SPICE Connect Attempt", NULL);
+        self.displays = [NSMutableArray array];
+        self.serials = [NSMutableArray array];
     }
     
     return self;
@@ -130,7 +134,10 @@ extern NSString *const kUTMErrorDomain;
     self.spiceConnection = nil;
     self.spice = nil;
     self.primaryDisplay = nil;
+    [self.displays removeAllObjects];
     self.primaryInput = nil;
+    self.primarySerial = nil;
+    [self.serials removeAllObjects];
 #if !defined(WITH_QEMU_TCI)
     self.primaryUsbManager = nil;
 #endif
@@ -181,20 +188,23 @@ extern NSString *const kUTMErrorDomain;
     });
 }
 
-- (void)spiceDisplayCreatedOrUpdated:(CSConnection *)connection display:(CSDisplay *)display {
+- (void)spiceDisplayCreated:(CSConnection *)connection display:(CSDisplay *)display {
     NSAssert(connection == self.spiceConnection, @"Unknown connection");
-    if (self.primaryDisplay == display) {
-        [self.delegate spiceDidChangeDisplay:display];
-    } else if (display.isPrimaryDisplay) {
+    if (display.isPrimaryDisplay) {
         self.primaryDisplay = display;
-        [self.delegate spiceDidCreateDisplay:display];
-    } else {
-        [self.delegate spiceDidCreateDisplay:display];
     }
+    [self.displays addObject:display];
+    [self.delegate spiceDidCreateDisplay:display];
+}
+
+- (void)spiceDisplayUpdated:(CSConnection *)connection display:(CSDisplay *)display {
+    NSAssert(connection == self.spiceConnection, @"Unknown connection");
+    [self.delegate spiceDidUpdateDisplay:display];
 }
 
 - (void)spiceDisplayDestroyed:(CSConnection *)connection display:(CSDisplay *)display {
     NSAssert(connection == self.spiceConnection, @"Unknown connection");
+    [self.displays removeObject:display];
     [self.delegate spiceDidDestroyDisplay:display];
 }
 
@@ -219,6 +229,7 @@ extern NSString *const kUTMErrorDomain;
         self.primarySerial = port;
     }
     if ([port.name hasPrefix:@"com.utmapp.terminal."]) {
+        [self.serials addObject:port];
         [self.delegate spiceDidCreateSerial:port];
     }
 }
@@ -230,6 +241,7 @@ extern NSString *const kUTMErrorDomain;
         self.primarySerial = port;
     }
     if ([port.name hasPrefix:@"com.utmapp.terminal."]) {
+        [self.serials removeObject:port];
         [self.delegate spiceDidDestroySerial:port];
     }
 }
@@ -282,12 +294,14 @@ extern NSString *const kUTMErrorDomain;
     if ([self.delegate respondsToSelector:@selector(spiceDynamicResolutionSupportDidChange:)]) {
         [self.delegate spiceDynamicResolutionSupportDidChange:self.dynamicResolutionSupported];
     }
-    for (CSChannel *channel in self.spiceConnection.channels) {
-        if ([channel isKindOfClass:[CSDisplay class]] && channel != self.primaryDisplay) {
-            [self.delegate spiceDidCreateDisplay:(CSDisplay *)channel];
+    for (CSDisplay *display in self.displays) {
+        if (display != self.primaryDisplay) {
+            [self.delegate spiceDidCreateDisplay:display];
         }
-        if ([channel isKindOfClass:[CSPort class]] && channel != self.primarySerial && ![((CSPort *)channel).name isEqualToString:@"org.qemu.monitor.qmp.0"]) {
-            [self.delegate spiceDidCreateSerial:(CSPort *)channel];
+    }
+    for (CSPort *port in self.serials) {
+        if (port != self.primarySerial) {
+            [self.delegate spiceDidCreateSerial:port];
         }
     }
 }

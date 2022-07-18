@@ -266,9 +266,9 @@ extension VMDisplayQemuWindowController: UTMSpiceIODelegate {
         }
     }
     
-    func spiceDidChangeDisplay(_ display: CSDisplay) {
+    func spiceDidUpdateDisplay(_ display: CSDisplay) {
         for subwindow in secondaryWindows {
-            (subwindow as! VMDisplayQemuWindowController).spiceDidChangeDisplay(display)
+            (subwindow as! VMDisplayQemuWindowController).spiceDidUpdateDisplay(display)
         }
     }
     
