@@ -46,25 +46,29 @@ struct VMSettingsAddDeviceMenuView: View {
     var body: some View {
         Menu {
             Button {
-                config.displays.append(UTMQemuConfigurationDisplay())
+                let newDisplay = UTMQemuConfigurationDisplay(forArchitecture: config.system.architecture, target: config.system.target)
+                config.displays.append(newDisplay!)
             } label: {
                 Label("Display", systemImage: "rectangle.on.rectangle")
             }.disabled(!isAddDisplayEnabled)
             Button {
-                config.serials.append(UTMQemuConfigurationSerial())
+                let newSerial = UTMQemuConfigurationSerial(forArchitecture: config.system.architecture, target: config.system.target)
+                config.serials.append(newSerial!)
             } label: {
                 Label("Serial", systemImage: "cable.connector")
             }
             Button {
-                config.networks.append(UTMQemuConfigurationNetwork())
+                let newNetwork = UTMQemuConfigurationNetwork(forArchitecture: config.system.architecture, target: config.system.target)
+                config.networks.append(newNetwork!)
             } label: {
                 Label("Network", systemImage: "network")
             }.disabled(config.system.architecture.networkDeviceType.allRawValues.isEmpty)
             Button {
-                config.sound.append(UTMQemuConfigurationSound())
+                let newSound = UTMQemuConfigurationSound(forArchitecture: config.system.architecture, target: config.system.target)
+                config.sound.append(newSound!)
             } label: {
                 Label("Sound", systemImage: "speaker.wave.2")
-            }.disabled(config.system.architecture.soundDeviceType.allRawValues.isEmpty)
+            }.disabled(config.system.architecture.soundDeviceType.allRawValues.isEmpty || config.sound.count >= 1)
             #if os(iOS)
             Divider()
             Button {

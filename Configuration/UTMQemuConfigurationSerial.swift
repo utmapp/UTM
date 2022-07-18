@@ -85,9 +85,6 @@ struct UTMQemuConfigurationSerial: Codable, Identifiable {
 extension UTMQemuConfigurationSerial {
     init?(forArchitecture architecture: QEMUArchitecture, target: QEMUTarget) {
         self.init()
-        guard architecture.displayDeviceType.allRawValues.isEmpty else {
-            return nil
-        }
     }
 }
 
