@@ -63,19 +63,14 @@ public extension VMDisplayViewController {
         guard floatingToolbarViewController == nil else {
             return
         }
-        if #available(iOS 14, *) {
-            // create new toolbar
-            floatingToolbarViewController = UIHostingController(rootView: VMToolbarView(state: self.toolbar))
-            let childView = floatingToolbarViewController.view!
-            childView.backgroundColor = .clear
-            view.addSubview(childView)
-            childView.bindFrameToSuperviewBounds()
-            addChild(floatingToolbarViewController)
-            floatingToolbarViewController.didMove(toParent: self)
-        } else {
-            // always show legacy toolbar on start
-            toolbar.showLegacyToolbar()
-        }
+        // create new toolbar
+        floatingToolbarViewController = UIHostingController(rootView: VMToolbarView(state: self.toolbar))
+        let childView = floatingToolbarViewController.view!
+        childView.backgroundColor = .clear
+        view.addSubview(childView)
+        childView.bindFrameToSuperviewBounds()
+        addChild(floatingToolbarViewController)
+        floatingToolbarViewController.didMove(toParent: self)
     }
     
     override func viewDidLoad() {
@@ -212,41 +207,6 @@ public extension VMDisplayViewController {
             // exit app when app is in background
             exit(0);
         }
-    }
-}
-
-// MARK: - Toolbar actions
-@objc extension VMDisplayViewController {
-    @IBAction func changeDisplayZoom(_ sender: UIButton) {
-        toolbar.changeDisplayZoomPressed()
-    }
-    
-    @IBAction func pauseResumePressed(_ sender: UIButton) {
-        toolbar.pauseResumePressed()
-    }
-    
-    @IBAction func powerPressed(_ sender: UIButton) {
-        toolbar.powerPressed()
-    }
-    
-    @IBAction func restartPressed(_ sender: UIButton) {
-        toolbar.restartPressed()
-    }
-    
-    @IBAction func showKeyboardButton(_ sender: UIButton) {
-        toolbar.showKeyboardPressed()
-    }
-    
-    @IBAction func hideToolbarButton(_ sender: UIButton) {
-        toolbar.hideToolbarPressed()
-    }
-    
-    @IBAction func drivesPressed(_ sender: UIButton) {
-        toolbar.drivesPressed()
-    }
-    
-    @IBAction func usbPressed(_ sender: UIButton) {
-        toolbar.usbPressed()
     }
 }
 

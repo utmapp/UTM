@@ -35,49 +35,25 @@ import SwiftUI
     
     @objc var isViewportChanged: Bool = false {
         willSet {
-            optionalObjectWillChange()
-        }
-        
-        didSet {
-            guard let viewController = self.viewController as? VMDisplayMetalViewController else {
-                return
-            }
-            guard hasLegacyToolbar else {
-                return
-            }
-            if (isViewportChanged) {
-                viewController.zoomButton.setImage(UIImage(named: "Toolbar Minimize"), for: .normal)
-            } else {
-                viewController.zoomButton.setImage(UIImage(named: "Toolbar Maximize"), for: .normal)
-            }
+            objectWillChange.send()
         }
     }
     
     private(set) var isBusy: Bool = false {
         willSet {
-            optionalObjectWillChange()
+            objectWillChange.send()
         }
     }
     
     private(set) var isRunning: Bool = false {
         willSet {
-            optionalObjectWillChange()
+            objectWillChange.send()
         }
     }
     
     var isUsbSupported: Bool = false {
         willSet {
-            optionalObjectWillChange()
-        }
-        
-        didSet {
-            guard hasLegacyToolbar else {
-                return
-            }
-            guard let viewController = self.viewController else {
-                return
-            }
-            viewController.usbButton.isHidden = !isUsbSupported
+            objectWillChange.send()
         }
     }
     
@@ -85,49 +61,12 @@ import SwiftUI
     
     @objc var isUserInteracting: Bool = true {
         willSet {
-            optionalObjectWillChange()
+            objectWillChange.send()
         }
-    }
-    
-    private func optionalObjectWillChange() {
-        if #available(iOS 14, *) {
-            self.objectWillChange.send()
-        }
-    }
-    
-    @objc func hideLegacyToolbar() {
-        guard let viewController = self.viewController else {
-            return
-        }
-        UIView.transition(with: viewController.view, duration: 0.3, options: .transitionCrossDissolve) {
-            viewController.toolbarAccessoryView.isHidden = true
-            viewController.prefersStatusBarHidden = true
-        } completion: { _ in
-        }
-        if !viewController.bool(forSetting: "HasShownHideToolbarAlert") {
-            viewController.showAlert(NSLocalizedString("Hint: To show the toolbar again, use a three-finger swipe down on the screen.", comment: "VMDisplayViewController"), actions: nil) { action in
-                UserDefaults.standard.set(true, forKey: "HasShownHideToolbarAlert")
-            }
-        }
-        isLegacyToolbarVisible = false
-    }
-    
-    @objc func showLegacyToolbar() {
-        guard let viewController = self.viewController else {
-            return
-        }
-        UIView.transition(with: viewController.view, duration: 0.3, options: .transitionCrossDissolve) {
-            viewController.toolbarAccessoryView.isHidden = false
-            if !viewController.largeScreen {
-                viewController.prefersStatusBarHidden = false
-            }
-        } completion: { _ in
-        }
-        isLegacyToolbarVisible = true
     }
     
     private func setIsUserInteracting(_ value: Bool) {
-        if #available(iOS 14, *), !UIAccessibility.isReduceMotionEnabled {
+        if !UIAccessibility.isReduceMotionEnabled {
             withAnimation {
                 self.isUserInteracting = value
             }
@@ -137,9 +76,6 @@ import SwiftUI
     }
     
     func assertUserInteraction() {
-        guard !hasLegacyToolbar else {
-            return
-        }
         if let task = longIdleTask {
             task.cancel()
         }
@@ -154,47 +90,11 @@ import SwiftUI
     @objc func enterSuspended(isBusy busy: Bool) {
         isBusy = busy
         isRunning = false
-        guard hasLegacyToolbar else {
-            return
-        }
-        guard let viewController = self.viewController else {
-            return
-        }
-        if busy {
-            viewController.pauseResumeButton.isEnabled = false
-            viewController.powerExitButton.setImage(UIImage(named: "Toolbar Exit")!, for: .normal)
-        } else {
-            if hasLegacyToolbar {
-                showLegacyToolbar()
-            }
-            viewController.pauseResumeButton.isEnabled = true
-            viewController.pauseResumeButton.setImage(UIImage(named: "Toolbar Start")!, for: .normal)
-            viewController.powerExitButton.setImage(UIImage(named: "Toolbar Exit")!, for: .normal)
-        }
-        viewController.restartButton.isEnabled = false
-        viewController.zoomButton.isEnabled = false
-        viewController.keyboardButton.isEnabled = false
-        viewController.drivesButton.isEnabled = false
-        viewController.usbButton.isEnabled = false
     }
     
     @objc func enterLive() {
         isBusy = false
         isRunning = true
-        guard hasLegacyToolbar else {
-            return
-        }
-        guard let viewController = self.viewController else {
-            return
-        }
-        viewController.pauseResumeButton.isEnabled = true
-        viewController.restartButton.isEnabled = true
-        viewController.zoomButton.isEnabled = true
-        viewController.keyboardButton.isEnabled = true
-        viewController.drivesButton.isEnabled = true
-        viewController.usbButton.isEnabled = viewController.vm.hasUsbRedirection
-        viewController.pauseResumeButton.setImage(UIImage(named: "Toolbar Pause")!, for: .normal)
-        viewController.powerExitButton.setImage(UIImage(named: "Toolbar Power")!, for: .normal)
     }
     
     @objc func changeDisplayZoomPressed() {
@@ -264,13 +164,6 @@ import SwiftUI
             return
         }
         viewController.keyboardVisible = !viewController.keyboardVisible
-    }
-    
-    @objc func hideToolbarPressed() {
-        guard hasLegacyToolbar else {
-            return
-        }
-        hideLegacyToolbar()
     }
     
     @objc func drivesPressed() {

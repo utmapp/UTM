@@ -12,18 +12,10 @@
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="VMDisplayViewController">
             <connections>
                 <outlet property="displayView" destination="NOe-rz-jvy" id="T3M-rd-GYB"/>
-                <outlet property="drivesButton" destination="pvl-sJ-gEX" id="nh5-iv-uHh"/>
                 <outlet property="inputAccessoryView" destination="qdd-t1-YV9" id="bFg-sV-ulc"/>
-                <outlet property="keyboardButton" destination="wJL-Zb-gv1" id="UNI-QN-MI5"/>
-                <outlet property="pauseResumeButton" destination="f3q-Wp-4H1" id="iCI-1b-o7B"/>
                 <outlet property="placeholderIndicator" destination="18B-yK-cUi" id="ACc-pi-9qK"/>
                 <outlet property="placeholderView" destination="PK2-6H-Mm0" id="TaA-3O-Opc"/>
-                <outlet property="powerExitButton" destination="eU8-Ps-vxM" id="cZU-i2-f9n"/>
-                <outlet property="restartButton" destination="xt5-Fw-Nb9" id="1o8-4n-lvl"/>
                 <outlet property="resumeBigButton" destination="q8Q-UP-yRo" id="XJg-Mq-IBz"/>
-                <outlet property="toolbarAccessoryView" destination="FjS-ZA-duw" id="D8Q-Zf-eVY"/>
-                <outlet property="usbButton" destination="lhn-j4-i51" id="Mdz-XK-Ikr"/>
-                <outlet property="zoomButton" destination="aZW-jv-ozW" id="q9y-bK-xbD"/>
                 <outletCollection property="customKeyModifierButtons" destination="jxu-AQ-u8c" id="4En-WD-DQc"/>
                 <outletCollection property="customKeyModifierButtons" destination="bCv-uH-SSy" id="iDi-by-YwA"/>
                 <outletCollection property="customKeyModifierButtons" destination="Pjh-3m-tFX" id="pAf-wV-qLE"/>
@@ -84,159 +76,6 @@
                     </view>
                     <blurEffect style="dark"/>
                 </visualEffectView>
-                <visualEffectView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="FjS-ZA-duw" userLabel="Toolbar Accessory View">
-                    <rect key="frame" x="254" y="0.0" width="336" height="45"/>
-                    <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="1wu-bz-Xp2">
-                        <rect key="frame" x="0.0" y="0.0" width="336" height="45"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <visualEffectView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Ei8-fx-4c8">
-                                <rect key="frame" x="0.0" y="0.0" width="336" height="45"/>
-                                <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="Rze-tP-FG4">
-                                    <rect key="frame" x="0.0" y="0.0" width="336" height="45"/>
-                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                    <subviews>
-                                        <stackView opaque="NO" contentMode="scaleToFill" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="3GX-CD-ScP">
-                                            <rect key="frame" x="138" y="7" width="182" height="30"/>
-                                            <subviews>
-                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" pointerInteraction="YES" translatesAutoresizingMaskIntoConstraints="NO" id="aZW-jv-ozW">
-                                                    <rect key="frame" x="0.0" y="0.0" width="30" height="30"/>
-                                                    <accessibility key="accessibilityConfiguration" label="Zoom"/>
-                                                    <constraints>
-                                                        <constraint firstAttribute="height" constant="30" id="6eC-vm-bN5"/>
-                                                        <constraint firstAttribute="width" constant="30" id="JMv-0a-FyZ"/>
-                                                    </constraints>
-                                                    <inset key="imageEdgeInsets" minX="2" minY="2" maxX="2" maxY="2"/>
-                                                    <state key="normal" image="Toolbar Maximize"/>
-                                                    <connections>
-                                                        <action selector="changeDisplayZoom:" destination="-1" eventType="touchUpInside" id="7gK-dR-Iwb"/>
-                                                    </connections>
-                                                </button>
-                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" pointerInteraction="YES" translatesAutoresizingMaskIntoConstraints="NO" id="wJL-Zb-gv1">
-                                                    <rect key="frame" x="38" y="0.0" width="30" height="30"/>
-                                                    <accessibility key="accessibilityConfiguration" label="Keyboard"/>
-                                                    <constraints>
-                                                        <constraint firstAttribute="height" constant="30" id="4Lk-1x-l5L"/>
-                                                        <constraint firstAttribute="width" constant="30" id="Vua-QS-OdF"/>
-                                                    </constraints>
-                                                    <state key="normal" image="Toolbar Keyboard"/>
-                                                    <connections>
-                                                        <action selector="showKeyboardButton:" destination="-1" eventType="touchUpInside" id="ClZ-xo-syD"/>
-                                                    </connections>
-                                                </button>
-                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" pointerInteraction="YES" translatesAutoresizingMaskIntoConstraints="NO" id="lhn-j4-i51">
-                                                    <rect key="frame" x="76" y="0.0" width="30" height="30"/>
-                                                    <accessibility key="accessibilityConfiguration" label="Settings"/>
-                                                    <constraints>
-                                                        <constraint firstAttribute="height" constant="30" id="a3z-pY-gWm"/>
-                                                        <constraint firstAttribute="width" constant="30" id="pWn-tf-bcE"/>
-                                                    </constraints>
-                                                    <state key="normal" image="Toolbar USB"/>
-                                                    <connections>
-                                                        <action selector="usbPressed:" destination="-1" eventType="touchUpInside" id="ibi-6S-HUk"/>
-                                                    </connections>
-                                                </button>
-                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" pointerInteraction="YES" translatesAutoresizingMaskIntoConstraints="NO" id="pvl-sJ-gEX">
-                                                    <rect key="frame" x="114" y="0.0" width="30" height="30"/>
-                                                    <accessibility key="accessibilityConfiguration" label="Settings"/>
-                                                    <constraints>
-                                                        <constraint firstAttribute="height" constant="30" id="Sb4-jZ-q30"/>
-                                                        <constraint firstAttribute="width" constant="30" id="d0B-1d-7nz"/>
-                                                    </constraints>
-                                                    <state key="normal" image="Toolbar Disc"/>
-                                                    <connections>
-                                                        <action selector="drivesPressed:" destination="-1" eventType="touchUpInside" id="bDp-Sz-88C"/>
-                                                    </connections>
-                                                </button>
-                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" pointerInteraction="YES" translatesAutoresizingMaskIntoConstraints="NO" id="8HW-IX-DYi">
-                                                    <rect key="frame" x="152" y="0.0" width="30" height="30"/>
-                                                    <accessibility key="accessibilityConfiguration" label="Hide Toolbar"/>
-                                                    <constraints>
-                                                        <constraint firstAttribute="width" constant="30" id="aFe-qQ-jhy"/>
-                                                        <constraint firstAttribute="height" constant="30" id="rzD-bV-6vq"/>
-                                                    </constraints>
-                                                    <state key="normal" image="Toolbar Hide"/>
-                                                    <connections>
-                                                        <action selector="hideToolbarButton:" destination="-1" eventType="touchUpInside" id="wyM-4k-vJM"/>
-                                                    </connections>
-                                                </button>
-                                            </subviews>
-                                        </stackView>
-                                        <stackView opaque="NO" contentMode="scaleToFill" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="wuU-55-lVv">
-                                            <rect key="frame" x="16" y="7" width="106" height="30"/>
-                                            <subviews>
-                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" pointerInteraction="YES" translatesAutoresizingMaskIntoConstraints="NO" id="eU8-Ps-vxM">
-                                                    <rect key="frame" x="0.0" y="0.0" width="30" height="30"/>
-                                                    <accessibility key="accessibilityConfiguration" label="Power"/>
-                                                    <constraints>
-                                                        <constraint firstAttribute="width" constant="30" id="4CG-vd-UUB"/>
-                                                        <constraint firstAttribute="height" constant="30" id="Zut-8i-EV1"/>
-                                                    </constraints>
-                                                    <inset key="imageEdgeInsets" minX="2" minY="2" maxX="2" maxY="2"/>
-                                                    <state key="normal" image="Toolbar Power"/>
-                                                    <connections>
-                                                        <action selector="powerPressed:" destination="-1" eventType="touchUpInside" id="SHS-vV-uc3"/>
-                                                    </connections>
-                                                </button>
-                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" pointerInteraction="YES" translatesAutoresizingMaskIntoConstraints="NO" id="f3q-Wp-4H1">
-                                                    <rect key="frame" x="38" y="0.0" width="30" height="30"/>
-                                                    <accessibility key="accessibilityConfiguration" label="Pause"/>
-                                                    <constraints>
-                                                        <constraint firstAttribute="width" constant="30" id="Cg3-g2-vQq"/>
-                                                        <constraint firstAttribute="height" constant="30" id="gWU-a9-nVV"/>
-                                                    </constraints>
-                                                    <inset key="imageEdgeInsets" minX="4" minY="4" maxX="4" maxY="4"/>
-                                                    <state key="normal" image="Toolbar Pause"/>
-                                                    <connections>
-                                                        <action selector="pauseResumePressed:" destination="-1" eventType="touchUpInside" id="iIs-eB-HUv"/>
-                                                    </connections>
-                                                </button>
-                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" pointerInteraction="YES" translatesAutoresizingMaskIntoConstraints="NO" id="xt5-Fw-Nb9">
-                                                    <rect key="frame" x="76" y="0.0" width="30" height="30"/>
-                                                    <accessibility key="accessibilityConfiguration" label="Back"/>
-                                                    <constraints>
-                                                        <constraint firstAttribute="height" constant="30" id="ssf-XK-MoL"/>
-                                                        <constraint firstAttribute="width" constant="30" id="zut-4f-lGI"/>
-                                                    </constraints>
-                                                    <inset key="imageEdgeInsets" minX="4" minY="4" maxX="4" maxY="4"/>
-                                                    <state key="normal" image="Toolbar Restart"/>
-                                                    <connections>
-                                                        <action selector="restartPressed:" destination="-1" eventType="touchUpInside" id="STk-3y-5jX"/>
-                                                    </connections>
-                                                </button>
-                                            </subviews>
-                                        </stackView>
-                                    </subviews>
-                                    <constraints>
-                                        <constraint firstItem="wuU-55-lVv" firstAttribute="leading" secondItem="Rze-tP-FG4" secondAttribute="leading" constant="16" id="6lJ-mm-rgm"/>
-                                        <constraint firstAttribute="bottomMargin" secondItem="3GX-CD-ScP" secondAttribute="bottom" id="Cao-hu-DcZ"/>
-                                        <constraint firstAttribute="bottomMargin" secondItem="wuU-55-lVv" secondAttribute="bottom" id="IKe-0o-kav"/>
-                                        <constraint firstItem="3GX-CD-ScP" firstAttribute="leading" secondItem="wuU-55-lVv" secondAttribute="trailing" constant="16" id="Z77-jb-3SF"/>
-                                        <constraint firstAttribute="trailing" secondItem="3GX-CD-ScP" secondAttribute="trailing" constant="16" id="oJG-6X-4rf"/>
-                                    </constraints>
-                                    <variation key="heightClass=regular-widthClass=compact">
-                                        <mask key="constraints">
-                                            <exclude reference="Z77-jb-3SF"/>
-                                        </mask>
-                                    </variation>
-                                </view>
-                                <vibrancyEffect>
-                                    <blurEffect style="dark"/>
-                                </vibrancyEffect>
-                            </visualEffectView>
-                        </subviews>
-                        <constraints>
-                            <constraint firstAttribute="trailing" secondItem="Ei8-fx-4c8" secondAttribute="trailing" id="aDz-CT-KQq"/>
-                            <constraint firstItem="Ei8-fx-4c8" firstAttribute="top" secondItem="1wu-bz-Xp2" secondAttribute="top" id="aV4-PM-Vz3"/>
-                            <constraint firstAttribute="bottom" secondItem="Ei8-fx-4c8" secondAttribute="bottom" id="fRo-cU-VLf"/>
-                            <constraint firstItem="Ei8-fx-4c8" firstAttribute="leading" secondItem="1wu-bz-Xp2" secondAttribute="leading" id="oWz-tD-XfP"/>
-                        </constraints>
-                    </view>
-                    <constraints>
-                        <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="45" id="QMX-ff-Bpe"/>
-                    </constraints>
-                    <blurEffect style="light"/>
-                </visualEffectView>
             </subviews>
             <viewLayoutGuide key="safeArea" id="oBd-R5-iCm"/>
             <color key="tintColor" systemColor="lightTextColor"/>
@@ -244,13 +83,8 @@
             <constraints>
                 <constraint firstItem="PK2-6H-Mm0" firstAttribute="top" secondItem="NOe-rz-jvy" secondAttribute="top" id="5rg-Am-2Cw"/>
                 <constraint firstAttribute="trailing" secondItem="PK2-6H-Mm0" secondAttribute="trailing" id="66H-Mh-dzf"/>
-                <constraint firstItem="FjS-ZA-duw" firstAttribute="leading" secondItem="oBd-R5-iCm" secondAttribute="leading" priority="750" id="CWW-pG-AhJ"/>
                 <constraint firstItem="PK2-6H-Mm0" firstAttribute="leading" secondItem="NOe-rz-jvy" secondAttribute="leading" id="EGq-A5-jiU"/>
-                <constraint firstItem="FjS-ZA-duw" firstAttribute="trailing" secondItem="oBd-R5-iCm" secondAttribute="trailing" priority="750" id="Guz-ka-uBP"/>
-                <constraint firstItem="FjS-ZA-duw" firstAttribute="bottom" secondItem="oBd-R5-iCm" secondAttribute="top" constant="45" id="XeS-Xt-9u7"/>
                 <constraint firstAttribute="bottom" secondItem="PK2-6H-Mm0" secondAttribute="bottom" id="Z3s-eZ-Auc"/>
-                <constraint firstItem="FjS-ZA-duw" firstAttribute="centerX" secondItem="NOe-rz-jvy" secondAttribute="centerX" id="mto-cK-93P"/>
-                <constraint firstItem="FjS-ZA-duw" firstAttribute="top" secondItem="NOe-rz-jvy" secondAttribute="top" id="vRZ-KD-PIG"/>
             </constraints>
             <point key="canvasLocation" x="-55" y="217"/>
         </view>
@@ -1012,14 +846,6 @@
         <image name="Keyboard Hide" width="30" height="30"/>
         <image name="Keyboard Paste" width="30" height="30"/>
         <image name="Resume Icon" width="50" height="50"/>
-        <image name="Toolbar Disc" width="30" height="30"/>
-        <image name="Toolbar Hide" width="30" height="30"/>
-        <image name="Toolbar Keyboard" width="30" height="30"/>
-        <image name="Toolbar Maximize" width="30" height="30"/>
-        <image name="Toolbar Pause" width="30" height="30"/>
-        <image name="Toolbar Power" width="30" height="30"/>
-        <image name="Toolbar Restart" width="30" height="30"/>
-        <image name="Toolbar USB" width="30" height="30"/>
         <systemColor name="darkTextColor">
             <color white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>

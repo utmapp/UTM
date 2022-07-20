@@ -95,9 +95,7 @@
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-    if (!self.toolbar.hasLegacyToolbar) {
-        self.prefersStatusBarHidden = YES;
-    }
+    self.prefersStatusBarHidden = YES;
 }
 
 - (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator {

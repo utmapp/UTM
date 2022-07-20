@@ -477,9 +477,7 @@ static CGFloat CGPointToPixel(CGFloat point) {
 
 - (IBAction)gestureSwipeUp:(UISwipeGestureRecognizer *)sender {
     if (sender.state == UIGestureRecognizerStateEnded) {
-        if (self.toolbar.hasLegacyToolbar && self.toolbar.isLegacyToolbarVisible) {
-            [self.toolbar hideLegacyToolbar];
-        } else if (!self.keyboardVisible) {
+        if (!self.keyboardVisible) {
             self.keyboardVisible = YES;
         }
     }
@@ -489,8 +487,6 @@ static CGFloat CGPointToPixel(CGFloat point) {
     if (sender.state == UIGestureRecognizerStateEnded) {
         if (self.keyboardVisible) {
             self.keyboardVisible = NO;
-        } else if (self.toolbar.hasLegacyToolbar && !self.toolbar.isLegacyToolbarVisible) {
-            [self.toolbar showLegacyToolbar];
         }
     }
 }
