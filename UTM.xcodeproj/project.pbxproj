@@ -41,6 +41,8 @@
 		83A004BA26A8CC95001AC09E /* UTMDownloadTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83A004B826A8CC95001AC09E /* UTMDownloadTask.swift */; };
 		83A004BB26A8CC95001AC09E /* UTMDownloadTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83A004B826A8CC95001AC09E /* UTMDownloadTask.swift */; };
 		83C15C5F26CC441500ADFD45 /* KeyCodeMap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83C15C5E26CC441000ADFD45 /* KeyCodeMap.swift */; };
+		8401865A2887AFD50050AC51 /* SwiftTerm in Frameworks */ = {isa = PBXBuildFile; productRef = 840186592887AFD50050AC51 /* SwiftTerm */; };
+		8401865C2887AFDC0050AC51 /* SwiftTerm in Frameworks */ = {isa = PBXBuildFile; productRef = 8401865B2887AFDC0050AC51 /* SwiftTerm */; };
 		8401FD71269BEB2B00265F0D /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = CE6B240A25F1F3CE0020D43E /* main.c */; };
 		8401FD72269BEB3000265F0D /* Bootstrap.c in Sources */ = {isa = PBXBuildFile; fileRef = CE0DF17125A80B6300A51894 /* Bootstrap.c */; };
 		8401FD7A269BECE200265F0D /* QEMULauncher.app in Embed Launcher */ = {isa = PBXBuildFile; fileRef = 8401FD62269BE9C500265F0D /* QEMULauncher.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
@@ -2212,6 +2214,7 @@
 				CE2D934D24AD46670059923A /* gstnet-1.0.0.framework in Frameworks */,
 				CE2D934E24AD46670059923A /* gstbase-1.0.0.framework in Frameworks */,
 				CE020BA724AEDEF000B44AB6 /* Logging in Frameworks */,
+				8401865A2887AFD50050AC51 /* SwiftTerm in Frameworks */,
 				CE2D934F24AD46670059923A /* phodav-2.0.0.framework in Frameworks */,
 				CEA9059025FC6A1700801E7C /* usbredirparser.1.framework in Frameworks */,
 				CE0E9B87252FD06B0026E02B /* SwiftUI.framework in Frameworks */,
@@ -2329,6 +2332,7 @@
 				CEA45F25263519B5002FA97D /* libgstaudiotestsrc.a in Frameworks */,
 				CEA45F26263519B5002FA97D /* libgstvideoconvert.a in Frameworks */,
 				CEA45F27263519B5002FA97D /* libgstaudioconvert.a in Frameworks */,
+				8401865C2887AFDC0050AC51 /* SwiftTerm in Frameworks */,
 				CEA45F28263519B5002FA97D /* libgstvideoscale.a in Frameworks */,
 				CEA45F29263519B5002FA97D /* IQKeyboardManagerSwift in Frameworks */,
 				CEA45F2A263519B5002FA97D /* MetalKit.framework in Frameworks */,
@@ -3219,6 +3223,7 @@
 				83993291272F68550059355F /* ZIPFoundation */,
 				B329049B270FE136002707AC /* AltKit */,
 				84B36D1D27B3264600C22685 /* CocoaSpice */,
+				840186592887AFD50050AC51 /* SwiftTerm */,
 			);
 			productName = UTM;
 			productReference = CE2D93BE24AD46670059923A /* UTM.app */;
@@ -3289,6 +3294,7 @@
 				CEA45E22263519B5002FA97D /* IQKeyboardManagerSwift */,
 				83993293272F685F0059355F /* ZIPFoundation */,
 				84B36D1F27B3264E00C22685 /* CocoaSpiceNoUsb */,
+				8401865B2887AFDC0050AC51 /* SwiftTerm */,
 			);
 			productName = UTM;
 			productReference = CEA45FB9263519B5002FA97D /* UTM SE.app */;
@@ -4946,8 +4952,8 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/migueldeicaza/SwiftTerm.git";
 			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 1.0.0;
+				branch = main;
+				kind = branch;
 			};
 		};
 		84B36D1C27B3261E00C22685 /* XCRemoteSwiftPackageReference "CocoaSpice" */ = {
@@ -5015,6 +5021,16 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 8399328E272F4A400059355F /* XCRemoteSwiftPackageReference "ZIPFoundation" */;
 			productName = ZIPFoundation;
+		};
+		840186592887AFD50050AC51 /* SwiftTerm */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 848F71E4277A2466006A0240 /* XCRemoteSwiftPackageReference "SwiftTerm" */;
+			productName = SwiftTerm;
+		};
+		8401865B2887AFDC0050AC51 /* SwiftTerm */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 848F71E4277A2466006A0240 /* XCRemoteSwiftPackageReference "SwiftTerm" */;
+			productName = SwiftTerm;
 		};
 		848F71E5277A2466006A0240 /* SwiftTerm */ = {
 			isa = XCSwiftPackageProductDependency;
