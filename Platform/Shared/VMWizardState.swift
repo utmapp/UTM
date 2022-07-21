@@ -92,7 +92,7 @@ enum VMWizardOS: String, Identifiable {
     @Published var linuxBootArguments: String = ""
     @Published var windowsBootVhdx: URL?
     @Published var systemArchitecture: QEMUArchitecture = .x86_64
-    @Published var systemTarget: QEMUTarget = QEMUTarget_x86_64.pc
+    @Published var systemTarget: any QEMUTarget = QEMUTarget_x86_64.pc
     #if os(macOS)
     @Published var systemMemoryMib: Int = 4096
     @Published var storageSizeGib: Int = 64

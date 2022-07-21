@@ -16,12 +16,12 @@
 
 import SwiftUI
 
-struct VMConfigConstantPicker<T: QEMUConstant>: View {
+struct VMConfigConstantPicker: View {
     @Binding private var stringSelection: String
     private let titleKey: LocalizedStringKey?
-    private let type: QEMUConstant.Type
+    private let type: any QEMUConstant.Type
     
-    init(_ titleKey: LocalizedStringKey? = nil, selection: Binding<T>) {
+    init<T: QEMUConstant>(_ titleKey: LocalizedStringKey? = nil, selection: Binding<T>) {
         self._stringSelection = Binding(get: {
             selection.wrappedValue.rawValue
         }, set: { newValue in
@@ -31,11 +31,11 @@ struct VMConfigConstantPicker<T: QEMUConstant>: View {
         self.type = T.self
     }
     
-    init<S>(_ titleKey: LocalizedStringKey? = nil, selection: Binding<S>, type: QEMUConstant.Type) where T == AnyQEMUConstant {
+    init<S>(_ titleKey: LocalizedStringKey? = nil, selection: Binding<S>, type: any QEMUConstant.Type) {
         self._stringSelection = Binding(get: {
-            (selection.wrappedValue as! QEMUConstant).rawValue
+            (selection.wrappedValue as! any QEMUConstant).rawValue
         }, set: { newValue in
-            selection.wrappedValue = AnyQEMUConstant(rawValue: newValue) as! S
+            selection.wrappedValue = type.init(rawValue: newValue)! as! S
         })
         self.titleKey = titleKey
         self.type = type
@@ -57,7 +57,7 @@ struct VMConfigConstantPicker<T: QEMUConstant>: View {
 
 struct VMConfigConstantPicker_Previews: PreviewProvider {
     @State static private var fixedType: QEMUArchitecture = .aarch64
-    @State static private var dynamicType: QEMUCPU = QEMUCPU_aarch64.default
+    @State static private var dynamicType: any QEMUCPU = QEMUCPU_aarch64.default
     
     static var previews: some View {
         VStack {

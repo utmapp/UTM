@@ -20,7 +20,7 @@ import Metal
 // MARK: QEMUConstant protocol
 
 /// A QEMU constant is a enum that can be generated externally
-protocol QEMUConstant: Codable {
+protocol QEMUConstant: Codable, RawRepresentable, CaseIterable where RawValue == String, AllCases == [Self] {
     static var allRawValues: [String] { get }
     static var allPrettyValues: [String] { get }
     var prettyValue: String { get }
@@ -82,6 +82,8 @@ struct AnyQEMUConstant: QEMUConstant, RawRepresentable {
     static var allRawValues: [String] { [] }
     
     static var allPrettyValues: [String] { [] }
+    
+    static var allCases: [AnyQEMUConstant] { [] }
     
     var prettyValue: String { rawValue }
     
@@ -266,6 +268,10 @@ struct QEMUTerminalFont: QEMUConstant {
         }
     }()
     #endif
+    
+    static var allCases: [QEMUTerminalFont] {
+        Self.allRawValues.map { Self(rawValue: $0) }
+    }
     
     var prettyValue: String {
         guard let index = Self.allRawValues.firstIndex(of: rawValue) else {

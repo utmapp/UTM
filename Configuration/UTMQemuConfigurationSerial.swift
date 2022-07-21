@@ -29,7 +29,7 @@ struct UTMQemuConfigurationSerial: Codable, Identifiable {
     var terminal: UTMConfigurationTerminal? = .init()
     
     /// Hardware model to emulate (for manual mode).
-    var hardware: QEMUSerialDevice?
+    var hardware: (any QEMUSerialDevice)?
     
     /// TCP server to connect to (for TCP client mode).
     var tcpHostAddress: String?
@@ -83,7 +83,7 @@ struct UTMQemuConfigurationSerial: Codable, Identifiable {
 // MARK: - Default construction
 
 extension UTMQemuConfigurationSerial {
-    init?(forArchitecture architecture: QEMUArchitecture, target: QEMUTarget) {
+    init?(forArchitecture architecture: QEMUArchitecture, target: any QEMUTarget) {
         self.init()
     }
 }

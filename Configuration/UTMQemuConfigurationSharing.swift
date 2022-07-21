@@ -57,7 +57,7 @@ struct UTMQemuConfigurationSharing: Codable {
 // MARK: - Default construction
 
 extension UTMQemuConfigurationSharing {
-    init(forArchitecture architecture: QEMUArchitecture, target: QEMUTarget) {
+    init(forArchitecture architecture: QEMUArchitecture, target: any QEMUTarget) {
         self.init()
         let rawTarget = target.rawValue
         if rawTarget.hasPrefix("pc") || rawTarget.hasPrefix("q35") {

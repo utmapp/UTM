@@ -279,7 +279,7 @@ def generateEnum(name, values, prettyValues, baseName='QEMUConstant', defaultVal
 def generateArchitectureAtlas(architectures, types):
     output  = f'extension QEMUArchitecture {{\n'
     for k, v in types.items():
-        output += f'    var {v}: {k}.Type {{\n'
+        output += f'    var {v}: any {k}.Type {{\n'
         output += f'        switch self {{\n'
         for a in architectures:
             a = sanitizeName(a)

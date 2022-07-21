@@ -19,7 +19,7 @@ import Foundation
 /// Settings for a single display.
 struct UTMQemuConfigurationDisplay: Codable, Identifiable {
     /// Hardware card to emulate.
-    var hardware: QEMUDisplayDevice = QEMUDisplayDevice_x86_64.virtio_vga
+    var hardware: any QEMUDisplayDevice = QEMUDisplayDevice_x86_64.virtio_vga
     
     /// If true, attempt to use SPICE guest agent to change the display resolution automatically.
     var isDynamicResolution: Bool = true
@@ -68,7 +68,7 @@ struct UTMQemuConfigurationDisplay: Codable, Identifiable {
 // MARK: - Default construction
 
 extension UTMQemuConfigurationDisplay {
-    init?(forArchitecture architecture: QEMUArchitecture, target: QEMUTarget) {
+    init?(forArchitecture architecture: QEMUArchitecture, target: any QEMUTarget) {
         self.init()
         let rawTarget = target.rawValue
         if rawTarget.hasPrefix("pc") || rawTarget.hasPrefix("q35") {

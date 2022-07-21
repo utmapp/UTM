@@ -9653,7 +9653,7 @@ enum QEMUSerialDevice_xtensaeb: String, CaseIterable, QEMUSerialDevice {
 }
 
 extension QEMUArchitecture {
-    var cpuType: QEMUCPU.Type {
+    var cpuType: any QEMUCPU.Type {
         switch self {
         case .alpha: return QEMUCPU_alpha.self
         case .arm: return QEMUCPU_arm.self
@@ -9688,7 +9688,7 @@ extension QEMUArchitecture {
         }
     }
 
-    var cpuFlagType: QEMUCPUFlag.Type {
+    var cpuFlagType: any QEMUCPUFlag.Type {
         switch self {
         case .alpha: return QEMUCPUFlag_alpha.self
         case .arm: return QEMUCPUFlag_arm.self
@@ -9723,7 +9723,7 @@ extension QEMUArchitecture {
         }
     }
 
-    var targetType: QEMUTarget.Type {
+    var targetType: any QEMUTarget.Type {
         switch self {
         case .alpha: return QEMUTarget_alpha.self
         case .arm: return QEMUTarget_arm.self
@@ -9758,7 +9758,7 @@ extension QEMUArchitecture {
         }
     }
 
-    var displayDeviceType: QEMUDisplayDevice.Type {
+    var displayDeviceType: any QEMUDisplayDevice.Type {
         switch self {
         case .alpha: return QEMUDisplayDevice_alpha.self
         case .arm: return QEMUDisplayDevice_arm.self
@@ -9793,7 +9793,7 @@ extension QEMUArchitecture {
         }
     }
 
-    var networkDeviceType: QEMUNetworkDevice.Type {
+    var networkDeviceType: any QEMUNetworkDevice.Type {
         switch self {
         case .alpha: return QEMUNetworkDevice_alpha.self
         case .arm: return QEMUNetworkDevice_arm.self
@@ -9828,7 +9828,7 @@ extension QEMUArchitecture {
         }
     }
 
-    var soundDeviceType: QEMUSoundDevice.Type {
+    var soundDeviceType: any QEMUSoundDevice.Type {
         switch self {
         case .alpha: return QEMUSoundDevice_alpha.self
         case .arm: return QEMUSoundDevice_arm.self
@@ -9863,7 +9863,7 @@ extension QEMUArchitecture {
         }
     }
 
-    var serialDeviceType: QEMUSerialDevice.Type {
+    var serialDeviceType: any QEMUSerialDevice.Type {
         switch self {
         case .alpha: return QEMUSerialDevice_alpha.self
         case .arm: return QEMUSerialDevice_arm.self

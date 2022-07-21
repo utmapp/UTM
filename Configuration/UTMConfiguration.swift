@@ -90,7 +90,7 @@ private final class UTMConfigurationStub: Decodable {
 extension UTMConfiguration {
     static var dataDirectoryName: String { "Data" }
     
-    static func load(from packageURL: URL) throws -> AnyObject { // FIXME: `any UTMConfiguration`
+    static func load(from packageURL: URL) throws -> any UTMConfiguration {
         let dataURL = packageURL.appendingPathComponent(Self.dataDirectoryName)
         let configURL = packageURL.appendingPathComponent(kUTMBundleConfigFilename)
         let configData = try Data(contentsOf: configURL)

@@ -54,7 +54,7 @@ struct UTMQemuConfigurationInput: Codable {
 // MARK: - Default construction
 
 extension UTMQemuConfigurationInput {
-    init(forArchitecture architecture: QEMUArchitecture, target: QEMUTarget) {
+    init(forArchitecture architecture: QEMUArchitecture, target: any QEMUTarget) {
         self.init()
         let rawTarget = target.rawValue
         if rawTarget.hasPrefix("pc") || rawTarget.hasPrefix("q35") {

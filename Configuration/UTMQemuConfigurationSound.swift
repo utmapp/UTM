@@ -19,7 +19,7 @@ import Foundation
 /// Settings for single audio device
 struct UTMQemuConfigurationSound: Codable, Identifiable {
     /// Hardware model to emulate.
-    var hardware: QEMUSoundDevice = QEMUSoundDevice_x86_64.AC97
+    var hardware: any QEMUSoundDevice = QEMUSoundDevice_x86_64.AC97
     
     let id = UUID()
     
@@ -44,7 +44,7 @@ struct UTMQemuConfigurationSound: Codable, Identifiable {
 // MARK: - Default construction
 
 extension UTMQemuConfigurationSound {
-    init?(forArchitecture architecture: QEMUArchitecture, target: QEMUTarget) {
+    init?(forArchitecture architecture: QEMUArchitecture, target: any QEMUTarget) {
         self.init()
         let rawTarget = target.rawValue
         if rawTarget.hasPrefix("pc") {

@@ -155,7 +155,7 @@ extension UTMQemuConfiguration {
         sound = []
     }
     
-    func reset(forArchitecture architecture: QEMUArchitecture, target: QEMUTarget) {
+    func reset(forArchitecture architecture: QEMUArchitecture, target: any QEMUTarget) {
         reset(all: false)
         qemu = .init(forArchitecture: architecture, target: target)
         input = .init(forArchitecture: architecture, target: target)

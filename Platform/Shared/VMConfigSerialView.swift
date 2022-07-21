@@ -21,7 +21,7 @@ struct VMConfigSerialView: View {
     @Binding var system: UTMQemuConfigurationSystem
     
     @State private var isUnsupportedAlertShown: Bool = false
-    @State private var hardware: QEMUSerialDevice = AnyQEMUConstant(rawValue: "")!
+    @State private var hardware: any QEMUSerialDevice = AnyQEMUConstant(rawValue: "")!
     
     var body: some View {
         VStack {

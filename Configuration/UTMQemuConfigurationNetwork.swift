@@ -22,7 +22,7 @@ struct UTMQemuConfigurationNetwork: Codable, Identifiable {
     var mode: QEMUNetworkMode = .emulated
     
     /// Hardware model to emulate.
-    var hardware: QEMUNetworkDevice = QEMUNetworkDevice_x86_64.e1000
+    var hardware: any QEMUNetworkDevice = QEMUNetworkDevice_x86_64.e1000
     
     /// Unique MAC address.
     var macAddress: String = UTMQemuConfigurationNetwork.randomMacAddress()
@@ -146,7 +146,7 @@ struct UTMQemuConfigurationNetwork: Codable, Identifiable {
 // MARK: - Default construction
 
 extension UTMQemuConfigurationNetwork {
-    init?(forArchitecture architecture: QEMUArchitecture, target: QEMUTarget) {
+    init?(forArchitecture architecture: QEMUArchitecture, target: any QEMUTarget) {
         self.init()
         let rawTarget = target.rawValue
         if rawTarget.hasPrefix("pc") {

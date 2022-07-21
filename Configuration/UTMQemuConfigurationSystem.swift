@@ -22,16 +22,16 @@ struct UTMQemuConfigurationSystem: Codable {
     var architecture: QEMUArchitecture = .x86_64
     
     /// The QEMU machine target to emulate.
-    var target: QEMUTarget = QEMUTarget_x86_64.q35
+    var target: any QEMUTarget = QEMUTarget_x86_64.q35
     
     /// The QEMU CPU to emulate. Note that `default` will use the default CPU for the architecture.
-    var cpu: QEMUCPU = QEMUCPU_x86_64.default
+    var cpu: any QEMUCPU = QEMUCPU_x86_64.default
     
     /// Optional list of CPU flags to add to the target CPU.
-    var cpuFlagsAdd: [QEMUCPUFlag] = []
+    var cpuFlagsAdd: [any QEMUCPUFlag] = []
     
     /// Optional list of CPU flags to remove from the defaults of the target CPU. Parsed after `cpuFlagsAdd`.
-    var cpuFlagsRemove: [QEMUCPUFlag] = []
+    var cpuFlagsRemove: [any QEMUCPUFlag] = []
     
     /// Number of CPU cores to emulate. Set to 0 to match the number of available cores on the host.
     var cpuCount: Int = 0

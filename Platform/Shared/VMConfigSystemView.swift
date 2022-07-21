@@ -27,7 +27,7 @@ struct VMConfigSystemView: View {
     @State private var warningMessage: WarningMessage? = nil
     
     @State private var architecture: QEMUArchitecture = .x86_64
-    @State private var target: QEMUTarget = QEMUTarget_x86_64.pc
+    @State private var target: any QEMUTarget = QEMUTarget_x86_64.pc
     
     var body: some View {
         VStack {
@@ -155,7 +155,7 @@ private enum WarningMessage: Identifiable {
 private struct HardwareOptions: View {
     @Binding var config: UTMQemuConfigurationSystem
     @Binding var architecture: QEMUArchitecture
-    @Binding var target: QEMUTarget
+    @Binding var target: any QEMUTarget
     @Binding var warningMessage: WarningMessage?
     @EnvironmentObject private var data: UTMData
     
@@ -200,7 +200,7 @@ private struct HardwareOptions: View {
 struct CPUFlagsOptions: View {
     let title: LocalizedStringKey
     @Binding var config: UTMQemuConfigurationSystem
-    @Binding var flags: [QEMUCPUFlag]
+    @Binding var flags: [any QEMUCPUFlag]
     @State private var showAllFlags: Bool = false
     
     var body: some View {

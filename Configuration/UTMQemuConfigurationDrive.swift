@@ -133,7 +133,7 @@ struct UTMQemuConfigurationDrive: UTMConfigurationDrive {
 // MARK: - Default interface
 
 extension UTMQemuConfigurationDrive {
-    static func defaultInterface(forArchitecture architecture: QEMUArchitecture, target: QEMUTarget, imageType: QEMUDriveImageType) -> QEMUDriveInterface {
+    static func defaultInterface(forArchitecture architecture: QEMUArchitecture, target: any QEMUTarget, imageType: QEMUDriveImageType) -> QEMUDriveInterface {
         let rawTarget = target.rawValue
         if rawTarget.hasPrefix("virt-") || rawTarget == "virt" {
             if imageType == .cd {
@@ -224,7 +224,7 @@ extension UTMQemuConfigurationDrive {
 // MARK: - New drive
 
 extension UTMQemuConfigurationDrive {
-    init(forArchitecture architecture: QEMUArchitecture, target: QEMUTarget, isExternal: Bool = false) {
+    init(forArchitecture architecture: QEMUArchitecture, target: any QEMUTarget, isExternal: Bool = false) {
         self.isExternal = isExternal
         self.imageType = isExternal ? .cd : .disk
         self.isRawImage = false

@@ -51,7 +51,7 @@ struct QEMUArgumentBuilder {
         [.init(string)]
     }
     
-    static func buildExpression(_ constant: QEMUConstant) -> [QEMUArgumentFragment] {
+    static func buildExpression(_ constant: any QEMUConstant) -> [QEMUArgumentFragment] {
         [.init(constant.rawValue)]
     }
     
