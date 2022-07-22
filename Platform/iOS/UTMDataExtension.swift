@@ -20,9 +20,7 @@ extension UTMData {
     private func createDisplay(vm: UTMVirtualMachine) -> VMDisplayViewController {
         let qvm = vm as! UTMQemuVirtualMachine
         if qvm.config.qemuConfig?.serials.first?.terminal != nil {
-            let vc = VMDisplayTerminalViewController()
-            vc.vm = qvm
-            vc.setupSubviews()
+            let vc = VMDisplayTerminalViewController(vm: qvm)
             vc.virtualMachine(vm, didTransitionTo: vm.state)
             return vc
         } else if qvm.config.qemuConfig?.displays.first != nil {
@@ -75,7 +73,8 @@ extension UTMData {
         if let vc = vmVC as? VMDisplayMetalViewController {
             vc.keyboardView.insertText(text)
         } else if let vc = vmVC as? VMDisplayTerminalViewController {
-            vc.sendData(fromCmdString: text)
+            //FIXME: terminal rewrite
+            //vc.sendData(fromCmdString: text)
         }
     }
 }

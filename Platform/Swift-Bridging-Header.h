@@ -45,7 +45,6 @@
 #include "VMDisplayViewController.h"
 #include "VMDisplayMetalViewController.h"
 #include "VMDisplayMetalViewController+Keyboard.h"
-#include "VMDisplayTerminalViewController.h"
 #include "VMKeyboardButton.h"
 #include "VMKeyboardView.h"
 #elif TARGET_OS_OSX
