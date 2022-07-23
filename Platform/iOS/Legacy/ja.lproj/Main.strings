@@ -140,7 +140,7 @@
 "CRh-Zb-s8B.title" = "システム";
 
 /* Class = "UILabel"; text = "Upscaling"; ObjectID = "cU3-TI-v0c"; */
-"cU3-TI-v0c.text" = "拡大時";
+"cU3-TI-v0c.text" = "拡大";
 
 /* Class = "UILabel"; text = "Legacy (PS/2) Mode"; ObjectID = "d5G-2Y-589"; */
 "d5G-2Y-589.text" = "レガシー（PS/2）モード";
@@ -215,7 +215,7 @@
 "fZG-YK-q4O.text" = "ディスプレイ";
 
 /* Class = "UILabel"; text = "Downscaling"; ObjectID = "g1h-Bh-yRJ"; */
-"g1h-Bh-yRJ.text" = "降尺度(Downscaling)";
+"g1h-Bh-yRJ.text" = "縮小";
 
 /* Class = "UILabel"; text = "Subtitle"; ObjectID = "gTk-zy-Ibj"; */
 "gTk-zy-Ibj.text" = "サブタイトル";
