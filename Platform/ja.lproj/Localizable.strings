@@ -23,7 +23,7 @@
 "Additional Settings" = "その他の設定";
 
 /* No comment provided by engineer. */
-"Advanced: Bypass configuration and manually specify arguments" = "上級者向け: 構成をスキップして、手動で引数を指定します。";
+"Advanced: Bypass configuration and manually specify arguments" = "上級者向け: 構成をスキップして、手動で引数を指定します";
 
 /* VMConfigSystemView */
 "Allocating too much memory will crash the VM. Your device has %llu MB of memory and the estimated usage is %llu MB." = "メモリを過剰に割り当てると、仮想マシンがクラッシュします。お使いのデバイスは%1$llu MBのメモリを搭載しており、推定使用量は%2$llu MBです。";
@@ -615,7 +615,7 @@
 "Selected:" = "選択中:";
 
 /* No comment provided by engineer. */
-"Set to 0 for default which is 1/4 of the allocated Memory size. This is in addition to the host memory!" = "デフォルトでは0に設定され、割り当てられたメモリサイズの4分の1になります。これはホストメモリに追加されます！";
+"Set to 0 for default which is 1/4 of the allocated Memory size. This is in addition to the host memory!" = "デフォルトでは0に設定され、割り当てられたメモリサイズの4分の1になります。これはホストメモリに加算されます！";
 
 /* No comment provided by engineer. */
 "Set to 0 to use maximum supported CPUs. Force multicore might result in incorrect emulation." = "0に設定すると、対応している最大CPU数を使用します。マルチコアを強制すると、エミュレーションが正しく実行されない可能性があります。";
@@ -964,7 +964,7 @@
 //System
 "UEFI Boot" = "UEFI起動";
 "RNG Device" = "RNGデバイス";
-"Default is 1/4 of the RAM size (above). The JIT cache size is additive to the RAM size in the total memory usage!" = "デフォルトはRAMサイズの4分の1以上です。JITキャッシュサイズは合計メモリ使用量のRAMサイズに追加されます。";
+"Default is 1/4 of the RAM size (above). The JIT cache size is additive to the RAM size in the total memory usage!" = "デフォルトはRAMサイズの4分の1以上です。JITキャッシュサイズは合計メモリ使用量のRAMサイズに加算されます！";
 "Force multicore may improve speed of emulation but also might result in unstable and incorrect emulation." = "マルチコアを強制すると、エミュレーションの速度は向上しますが、エミュレーションが不安定になったり、正しく実行されなかったりする可能性があります。";
 
 //QEMU
