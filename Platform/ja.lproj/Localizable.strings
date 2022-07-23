@@ -127,7 +127,7 @@
 "Confirm" = "確認";
 
 /* No comment provided by engineer. */
-"Confirm Delete" = "確実に削除";
+"Confirm Delete" = "完全に削除";
 
 /* VMDisplayWindowController */
 "Confirmation" = "確認";
@@ -335,7 +335,7 @@
 "Hint: To show the toolbar again, use a three-finger swipe down on the screen." = "ヒント: ツールバーを再度表示するには、画面上で3本指のスワイプを使用します。";
 
 /* No comment provided by engineer. */
-"Hold Control (⌃) for right click" = "Control（⌃）を長押しして右クリック";
+"Hold Control (⌃) for right click" = "control（⌃）を押している間右クリック";
 
 /* No comment provided by engineer. */
 "Host Address" = "ホストアドレス";
