@@ -33,7 +33,7 @@
 "Touchpad/Mouse Input" = "タッチパッド/マウス入力";
 "Follow cursor" = "カーソルに従う";
 "Two Finger Swipe" = "2本指でスワイプ";
-"Mouse Wheel (per swipe)" = "マウススクロール（スワイプごとに）";
+"Mouse Wheel (per swipe)" = "マウスホイール（スワイプごとに）";
 "Menu" = "メニュー";
 "D-UP" = "上（十字キー）";
 "D-LEFT" = "左（十字キー）";
