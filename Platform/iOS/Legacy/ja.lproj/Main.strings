@@ -305,7 +305,7 @@
 "MAs-NR-G0n.text" = "MB";
 
 /* Class = "UITableViewSection"; footerTitle = "Default JIT Cache size is 1/4 of the allocated Memory size. This is in addition to the host memory! Force Multicore will allow multi-CPU emulation even if the memory model is not supported by QEMU (x86 on ARM for example). This could result in incorrect emulation."; ObjectID = "MGc-rW-PLa"; */
-"MGc-rW-PLa.footerTitle" = "デフォルトのJITキャッシュサイズは割り当てられたメモリサイズの4分の1です。これはホストメモリに追加されます！“マルチコアを強制”はQEMUが対応していないメモリモデル（例えばx86 on ARM）であってもマルチCPUエミュレーションを可能にします。エミュレーションが正しく実行されない可能性があります。";
+"MGc-rW-PLa.footerTitle" = "デフォルトのJITキャッシュサイズは割り当てられたメモリサイズの4分の1です。これはホストメモリに加算されます！“マルチコアを強制”はQEMUが対応していないメモリモデル（例えばx86 on ARM）であってもマルチCPUエミュレーションを可能にします。エミュレーションが正しく実行されない可能性があります。";
 
 /* Class = "UITableViewSection"; headerTitle = "QEMU"; ObjectID = "MGc-rW-PLa"; */
 "MGc-rW-PLa.headerTitle" = "QEMU";
