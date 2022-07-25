@@ -118,7 +118,7 @@
 "Closing this window will kill the VM." = "このウインドウを閉じると、仮想マシンを強制終了します。";
 
 /* No comment provided by engineer. */
-"Command to send when resizing the console. Placeholder $COLS is the number of columns and $ROWS is the number of rows." = "コンソールのサイズを変更するときに送信するコマンドです。プレースホルダの$COLSは列数、$ROWSは行数です。";
+"Command to send when resizing the console. Placeholder $COLS is the number of columns and $ROWS is the number of rows." = "コンソールのサイズを変更するときに送信するコマンドです。$COLSは列数、$ROWSは行数に置き換えられます。";
 
 /* UTMVirtualMachine */
 "Config format incorrect." = "構成フォーマットが正しくありません。";
