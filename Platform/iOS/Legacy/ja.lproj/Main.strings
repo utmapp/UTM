@@ -293,7 +293,7 @@
 "Llu-cx-Osx.text" = "有効";
 
 /* Class = "UITableViewSection"; footerTitle = "Command to send when resizing the console. Placeholder $COLS is the number of columns and $ROWS is the number of rows."; ObjectID = "LTq-Mi-VuJ"; */
-"LTq-Mi-VuJ.footerTitle" = "コンソールのサイズを変更するときに送信するコマンドです。プレースホルダの$COLSは列数、$ROWSは行数です。";
+"LTq-Mi-VuJ.footerTitle" = "コンソールのサイズを変更するときに送信するコマンドです。$COLSは列数、$ROWSは行数に置き換えられます。";
 
 /* Class = "UITableViewSection"; headerTitle = "Resize Console Command"; ObjectID = "LTq-Mi-VuJ"; */
 "LTq-Mi-VuJ.headerTitle" = "コンソールサイズ変更時のコマンド";
