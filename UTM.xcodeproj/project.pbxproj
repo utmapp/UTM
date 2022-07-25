@@ -492,7 +492,6 @@
 		CE2D927124AD46670059923A /* qapi-events-error.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C0F023FCEC04001177D6 /* qapi-events-error.c */; };
 		CE2D927224AD46670059923A /* qapi-visit-block.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C0A723FCEC01001177D6 /* qapi-visit-block.c */; };
 		CE2D927324AD46670059923A /* qapi-events-misc.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C11B23FCEC07001177D6 /* qapi-events-misc.c */; };
-		CE2D927424AD46670059923A /* WKWebView+Workarounds.m in Sources */ = {isa = PBXBuildFile; fileRef = E2B0F9D12426E5510065DFBE /* WKWebView+Workarounds.m */; };
 		CE2D927524AD46670059923A /* qapi-visit-crypto.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C0C223FCEC02001177D6 /* qapi-visit-crypto.c */; };
 		CE2D927624AD46670059923A /* qapi-visit-tpm.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C07F23FCEBFF001177D6 /* qapi-visit-tpm.c */; };
 		CE2D927724AD46670059923A /* qapi-visit-trace.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C0E523FCEC04001177D6 /* qapi-visit-trace.c */; };
@@ -838,7 +837,6 @@
 		CEA45E2B263519B5002FA97D /* qapi-events-error.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C0F023FCEC04001177D6 /* qapi-events-error.c */; };
 		CEA45E2C263519B5002FA97D /* qapi-visit-block.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C0A723FCEC01001177D6 /* qapi-visit-block.c */; };
 		CEA45E2E263519B5002FA97D /* qapi-events-misc.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C11B23FCEC07001177D6 /* qapi-events-misc.c */; };
-		CEA45E30263519B5002FA97D /* WKWebView+Workarounds.m in Sources */ = {isa = PBXBuildFile; fileRef = E2B0F9D12426E5510065DFBE /* WKWebView+Workarounds.m */; };
 		CEA45E31263519B5002FA97D /* qapi-visit-crypto.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C0C223FCEC02001177D6 /* qapi-visit-crypto.c */; };
 		CEA45E32263519B5002FA97D /* qapi-visit-tpm.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C07F23FCEBFF001177D6 /* qapi-visit-tpm.c */; };
 		CEA45E35263519B5002FA97D /* qapi-visit-trace.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C0E523FCEC04001177D6 /* qapi-visit-trace.c */; };
@@ -2165,8 +2163,6 @@
 		CEF83EC924FB1BB200557D15 /* UTMQemuVirtualMachine+SPICE.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UTMQemuVirtualMachine+SPICE.h"; sourceTree = "<group>"; };
 		E2151A57241451120008E6AC /* UIViewController+Extensions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UIViewController+Extensions.h"; sourceTree = "<group>"; };
 		E2151A58241451120008E6AC /* UIViewController+Extensions.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UIViewController+Extensions.m"; sourceTree = "<group>"; };
-		E2B0F9D02426E5510065DFBE /* WKWebView+Workarounds.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "WKWebView+Workarounds.h"; sourceTree = "<group>"; };
-		E2B0F9D12426E5510065DFBE /* WKWebView+Workarounds.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "WKWebView+Workarounds.m"; sourceTree = "<group>"; };
 		E2D64BC7241DB24B0034E0C6 /* UTMSpiceIO.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UTMSpiceIO.h; sourceTree = "<group>"; };
 		E2D64BC8241DB24B0034E0C6 /* UTMSpiceIO.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UTMSpiceIO.m; sourceTree = "<group>"; };
 		E2D64BE0241EAEBE0034E0C6 /* UTMSpiceIODelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UTMSpiceIODelegate.h; sourceTree = "<group>"; };
@@ -3072,8 +3068,6 @@
 				E2151A58241451120008E6AC /* UIViewController+Extensions.m */,
 				CEA905CC2603DBFB00801E7C /* VMUSBDevicesView.xib */,
 				CEA905D72603DC5300801E7C /* VMUSBDevicesViewController.swift */,
-				E2B0F9D02426E5510065DFBE /* WKWebView+Workarounds.h */,
-				E2B0F9D12426E5510065DFBE /* WKWebView+Workarounds.m */,
 			);
 			path = Display;
 			sourceTree = "<group>";
@@ -3497,7 +3491,6 @@
 				CE2D927224AD46670059923A /* qapi-visit-block.c in Sources */,
 				CE2D927324AD46670059923A /* qapi-events-misc.c in Sources */,
 				8443EFF22845641600B2E6E2 /* UTMQemuConfigurationDrive.swift in Sources */,
-				CE2D927424AD46670059923A /* WKWebView+Workarounds.m in Sources */,
 				CE2D927524AD46670059923A /* qapi-visit-crypto.c in Sources */,
 				CE2D927624AD46670059923A /* qapi-visit-tpm.c in Sources */,
 				8443EFFA28456F3B00B2E6E2 /* UTMQemuConfigurationSharing.swift in Sources */,
@@ -4078,7 +4071,6 @@
 				CE65BABF26A4D8DD0001BD6B /* VMConfigDisplayConsoleView.swift in Sources */,
 				CEA45E2E263519B5002FA97D /* qapi-events-misc.c in Sources */,
 				848F71ED277A2F47006A0240 /* UTMSerialPortDelegate.swift in Sources */,
-				CEA45E30263519B5002FA97D /* WKWebView+Workarounds.m in Sources */,
 				83A004BA26A8CC95001AC09E /* UTMDownloadTask.swift in Sources */,
 				CEA45E31263519B5002FA97D /* qapi-visit-crypto.c in Sources */,
 				8401868A288A44C20050AC51 /* VMWindowState.swift in Sources */,
