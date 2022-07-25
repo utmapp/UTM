@@ -92,6 +92,9 @@ struct UTMQemuConfigurationQEMU: Codable {
             debugLogURL = dataURL.appendingPathComponent(QEMUPackageFileName.debugLog.rawValue)
             efiVarsURL = dataURL.appendingPathComponent(QEMUPackageFileName.efiVariables.rawValue)
         }
+        #if os(iOS)
+        hasHypervisor = false // no hypervisor on iOS
+        #endif
     }
     
     func encode(to encoder: Encoder) throws {
