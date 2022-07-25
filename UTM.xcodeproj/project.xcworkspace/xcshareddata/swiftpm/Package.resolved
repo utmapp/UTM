@@ -46,6 +46,15 @@
       }
     },
     {
+      "identity" : "swiftui-visual-effects",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/lucasbrown/swiftui-visual-effects.git",
+      "state" : {
+        "revision" : "b26f8cebd55ff60ed8953768aa818dfb005b5838",
+        "version" : "1.0.3"
+      }
+    },
+    {
       "identity" : "zipfoundation",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/weichsel/ZIPFoundation.git",

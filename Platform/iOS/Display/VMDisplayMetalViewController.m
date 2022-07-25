@@ -32,18 +32,28 @@
     CSRenderer *_renderer;
 }
 
-- (void)setupSubviews {
-    self.vm.delegate = self;
+- (instancetype)initWithDisplay:(CSDisplay *)display input:(CSInput *)input {
+    if (self = [super initWithNibName:nil bundle:nil]) {
+        self.vmDisplay = display;
+        self.vmInput = input;
+    }
+    return self;
+}
+
+- (void)loadView {
+    [super loadView];
     self.keyboardView = [[VMKeyboardView alloc] initWithFrame:CGRectZero];
-    self.placeholderImageView = [[UIImageView alloc] initWithFrame:CGRectZero];
     self.mtkView = [[MTKView alloc] initWithFrame:CGRectZero];
     self.keyboardView.delegate = self;
     [self.view insertSubview:self.keyboardView atIndex:0];
-    [self.view insertSubview:self.placeholderImageView atIndex:1];
-    [self.placeholderImageView bindFrameToSuperviewBounds];
-    [self.view insertSubview:self.mtkView atIndex:2];
+    [self.view insertSubview:self.mtkView atIndex:1];
     [self.mtkView bindFrameToSuperviewBounds];
-    [self createToolbarIn:self.mtkView];
+    [self loadInputAccessory];
+}
+
+- (void)loadInputAccessory {
+    UINib *nib = [UINib nibWithNibName:@"VMDisplayView" bundle:nil];
+    [nib instantiateWithOwner:self options:nil];
 }
 
 - (BOOL)serverModeCursor {
@@ -72,10 +82,11 @@
     // Initialize our renderer with the view size
     [_renderer mtkView:self.mtkView drawableSizeWillChange:self.mtkView.drawableSize];
     
-    [_renderer changeUpscaler:self.vmQemuConfig.qemuDisplayUpscaler
-                   downscaler:self.vmQemuConfig.qemuDisplayDownscaler];
+    [_renderer changeUpscaler:self.delegate.qemuDisplayUpscaler
+                   downscaler:self.delegate.qemuDisplayDownscaler];
     
     self.mtkView.delegate = _renderer;
+    self.vmDisplay = self.vmDisplay; // reset renderer
     
     [self initTouch];
     [self initGamepad];
@@ -100,7 +111,10 @@
 
 - (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator {
     [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
-    if (self.vmQemuConfig.qemuDisplayIsDynamicResolution) {
+    [coordinator animateAlongsideTransition:nil completion:^(id<UIViewControllerTransitionCoordinatorContext>  _Nonnull context) {
+        self.delegate.displayViewSize = self.mtkView.drawableSize;
+    }];
+    if (self.delegate.qemuDisplayIsDynamicResolution) {
         [self displayResize:size];
     }
 }
@@ -108,16 +122,11 @@
 - (void)enterSuspendedWithIsBusy:(BOOL)busy {
     [super enterSuspendedWithIsBusy:busy];
     if (!busy) {
-        [UIView transitionWithView:self.view duration:0.5 options:UIViewAnimationOptionTransitionCrossDissolve animations:^{
-            self.placeholderImageView.hidden = NO;
-            self.placeholderImageView.image = self.vm.screenshot.image;
-            self.mtkView.hidden = YES;
-        } completion:nil];
-        if (self.vmQemuConfig.qemuHasClipboardSharing) {
+        if (self.delegate.qemuHasClipboardSharing) {
             [[UTMPasteboard generalPasteboard] releasePollingModeForObject:self];
         }
 #if !defined(WITH_QEMU_TCI)
-        if (self.vm.state == kVMStopped) {
+        if (self.delegate.vmState == kVMStopped) {
             [self.usbDevicesViewController clearDevices];
         }
 #endif
@@ -126,27 +135,25 @@
 
 - (void)enterLive {
     [super enterLive];
-    [UIView transitionWithView:self.view duration:0.5 options:UIViewAnimationOptionTransitionCrossDissolve animations:^{
-        self.placeholderImageView.hidden = YES;
-        self.mtkView.hidden = NO;
-    } completion:nil];
-    if (self.vmQemuConfig.qemuDisplayIsDynamicResolution) {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        self.delegate.displayViewSize = self.mtkView.drawableSize;
+    });
+    if (self.delegate.qemuDisplayIsDynamicResolution) {
         [self displayResize:self.view.bounds.size];
     }
-    if (self.vmQemuConfig.qemuHasClipboardSharing) {
+    if (self.delegate.qemuHasClipboardSharing) {
         [[UTMPasteboard generalPasteboard] requestPollingModeForObject:self];
     }
 }
 
 #pragma mark - Key handling
 
-- (void)setKeyboardVisible:(BOOL)keyboardVisible {
-    if (keyboardVisible) {
-        [self.keyboardView becomeFirstResponder];
-    } else {
-        [self.keyboardView resignFirstResponder];
-    }
-    [super setKeyboardVisible:keyboardVisible];
+- (void)showKeyboard {
+    [self.keyboardView becomeFirstResponder];
+}
+
+- (void)hideKeyboard {
+    [self.keyboardView resignFirstResponder];
 }
 
 - (void)sendExtendedKey:(CSInputKey)type code:(int)code {
@@ -167,18 +174,18 @@
     self.vmDisplay.viewportScale = MIN(scaled.width, scaled.height);
     self.vmDisplay.viewportOrigin = CGPointMake(0, 0);
     // persist this change in viewState
-    self.vm.viewState.displayScale = self.vmDisplay.viewportScale;
-    self.vm.viewState.displayOriginX = 0;
-    self.vm.viewState.displayOriginY = 0;
+    self.delegate.displayScale = self.vmDisplay.viewportScale;
+    self.delegate.displayOriginX = 0;
+    self.delegate.displayOriginY = 0;
 }
 
 - (void)resetDisplay {
     self.vmDisplay.viewportScale = 1.0;
     self.vmDisplay.viewportOrigin = CGPointMake(0, 0);
     // persist this change in viewState
-    self.vm.viewState.displayScale = 1.0;
-    self.vm.viewState.displayOriginX = 0;
-    self.vm.viewState.displayOriginY = 0;
+    self.delegate.displayScale = 1.0;
+    self.delegate.displayOriginX = 0;
+    self.delegate.displayOriginY = 0;
 }
 
 #pragma mark - Resizing
@@ -186,7 +193,7 @@
 - (void)displayResize:(CGSize)size {
     UTMLog(@"resizing to (%f, %f)", size.width, size.height);
     CGRect bounds = CGRectMake(0, 0, size.width, size.height);
-    if (self.vmQemuConfig.qemuDisplayIsNativeResolution) {
+    if (self.delegate.qemuDisplayIsNativeResolution) {
         CGFloat scale = [UIScreen mainScreen].scale;
         CGAffineTransform transform = CGAffineTransformMakeScale(scale, scale);
         bounds = CGRectApplyAffineTransform(bounds, transform);
@@ -194,50 +201,15 @@
     [self.vmDisplay requestResolution:bounds];
 }
 
-#pragma mark - SPICE IO Delegates
-
-- (void)spiceDidCreateInput:(CSInput *)input {
-    if (self.vmInput == nil) {
-        self.vmInput = input;
-    }
-}
-
-- (void)spiceDidDestroyInput:(CSInput *)input {
-    if (self.vmInput == input) {
-        self.vmInput = nil;
-    }
-}
-
-- (void)spiceDidCreateDisplay:(CSDisplay *)display {
-    if (self.vmDisplay == nil && display.isPrimaryDisplay) {
-        self.vmDisplay = display;
-        _renderer.source = display;
-        // restore last size
-        CGPoint displayOrigin = CGPointMake(self.vm.viewState.displayOriginX, self.vm.viewState.displayOriginY);
-        display.viewportOrigin = displayOrigin;
-        double displayScale = self.vm.viewState.displayScale;
-        if (displayScale) { // cannot be zero
-            display.viewportScale = displayScale;
-        }
-        dispatch_async(dispatch_get_main_queue(), ^{
-            if (displayScale != 1.0 || !CGPointEqualToPoint(displayOrigin, CGPointZero)) {
-                // make the zoom button zoom out
-                self.toolbar.isViewportChanged = YES;
-            }
-        });
-    }
-}
-
-- (void)spiceDidDestroyDisplay:(CSDisplay *)display {
-    if (self.vmDisplay == display) {
-        self.vmDisplay = nil;
-        _renderer.source = nil;
-    }
-}
-
-- (void)spiceDidUpdateDisplay:(CSDisplay *)display {
-    if (display == self.vmDisplay) {
-        
+- (void)setVmDisplay:(CSDisplay *)display {
+    _vmDisplay = display;
+    _renderer.source = display;
+    // restore last size
+    CGPoint displayOrigin = CGPointMake(self.delegate.displayOriginX, self.delegate.displayOriginY);
+    display.viewportOrigin = displayOrigin;
+    double displayScale = self.delegate.displayScale;
+    if (displayScale) { // cannot be zero
+        display.viewportScale = displayScale;
     }
 }
 

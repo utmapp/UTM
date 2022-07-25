@@ -60,13 +60,16 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 @property (nonatomic) IBOutlet MTKView *mtkView;
-@property (nonatomic) IBOutlet UIImageView *placeholderImageView;
 @property (nonatomic) IBOutlet VMKeyboardView *keyboardView;
 
-@property (weak, nonatomic) CSInput *vmInput;
-@property (weak, nonatomic) CSDisplay *vmDisplay;
+@property (nonatomic, nullable) CSInput *vmInput;
+@property (nonatomic) CSDisplay *vmDisplay;
 
 @property (nonatomic, readonly) BOOL serverModeCursor;
+
+- (instancetype)initWithCoder:(NSCoder *)coder NS_UNAVAILABLE;
+- (instancetype)initWithNibName:(nullable NSString *)nibNameOrNil bundle:(nullable NSBundle *)nibBundleOrNil NS_UNAVAILABLE;
+- (instancetype)initWithDisplay:(CSDisplay *)display input:(nullable CSInput *)input NS_DESIGNATED_INITIALIZER;
 
 - (void)sendExtendedKey:(CSInputKey)type code:(int)code;
 - (void)resetDisplay;

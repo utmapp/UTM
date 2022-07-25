@@ -126,7 +126,7 @@ NS_AVAILABLE_IOS(13.4)
 }
 
 - (BOOL)hasTouchpadPointer {
-    return !self.vmQemuConfig.qemuInputLegacy && !self.vmInput.serverModeCursor && self.indirectMouseType != VMMouseTypeRelative;
+    return !self.delegate.qemuInputLegacy && !self.vmInput.serverModeCursor && self.indirectMouseType != VMMouseTypeRelative;
 }
 
 - (UIPointerStyle *)pointerInteraction:(UIPointerInteraction *)interaction styleForRegion:(UIPointerRegion *)region {

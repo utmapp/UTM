@@ -27,8 +27,10 @@ struct VMToolbarView: View {
     
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @Environment(\.verticalSizeClass) private var verticalSizeClass
+    @EnvironmentObject private var session: VMSessionState
+    @StateObject private var longIdleTimeout = LongIdleTimeout()
     
-    @StateObject var state: VMToolbarActions
+    @Binding var state: VMWindowState
     
     private var spacing: CGFloat {
         let direction: CGFloat
@@ -63,8 +65,8 @@ struct VMToolbarView: View {
     }
     
     private var toolbarToggleOpacity: Double {
-        if isCollapsed && !isMoving {
-            if !state.isUserInteracting {
+        if !state.isBusy && state.isRunning && isCollapsed && !isMoving {
+            if !longIdleTimeout.isUserInteracting {
                 return 0
             } else if isIdle {
                 return 0.4
@@ -80,39 +82,48 @@ struct VMToolbarView: View {
         GeometryReader { geometry in
             Group {
                 Button {
-                    state.powerPressed()
+                    if session.vm.state == .vmStarted {
+                        state.alert = .powerDown
+                    } else {
+                        state.alert = .terminateApp
+                    }
                 } label: {
                     Label(state.isRunning ? "Power Off" : "Quit", systemImage: state.isRunning ? "power" : "xmark")
                 }.offset(offset(for: 7))
                 Button {
-                    state.pauseResumePressed()
+                    session.pauseResume()
                 } label: {
                     Label(state.isRunning ? "Pause" : "Play", systemImage: state.isRunning ? "pause" : "play")
                 }.offset(offset(for: 6))
                 Button {
-                    state.restartPressed()
+                    state.alert = .restart
                 } label: {
                     Label("Restart", systemImage: "restart")
                 }.offset(offset(for: 5))
                 Button {
-                    state.changeDisplayZoomPressed()
+                    if case .serial(_) = state.device {
+                        let template = session.qemuConfig.serials[state.configIndex].terminal?.resizeCommand
+                        state.toggleDisplayResize(command: template)
+                    } else {
+                        state.toggleDisplayResize()
+                    }
                 } label: {
                     Label("Zoom", systemImage: state.isViewportChanged ? "arrow.down.right.and.arrow.up.left" : "arrow.up.left.and.arrow.down.right")
                 }.offset(offset(for: 4))
-                if state.isUsbSupported {
+                if session.vm.hasUsbRedirection {
                     Button {
-                        state.usbPressed()
+                        state.isUSBMenuShown.toggle()
                     } label: {
                         Label("USB", image: "Toolbar USB")
                     }.offset(offset(for: 3))
                 }
                 Button {
-                    state.drivesPressed()
+                    state.isDrivesMenuShown.toggle()
                 } label: {
                     Label("Disk", systemImage: "opticaldisc")
                 }.offset(offset(for: 2))
                 Button {
-                    state.showKeyboardPressed()
+                    state.isKeyboardRequested = !state.isKeyboardShown
                 } label: {
                     Label("Keyboard", systemImage: "keyboard")
                 }.offset(offset(for: 1))
@@ -124,7 +135,7 @@ struct VMToolbarView: View {
             .animation(.default)
             Button {
                 resetIdle()
-                state.assertUserInteraction()
+                longIdleTimeout.assertUserInteraction()
                 withOptionalAnimation {
                     isCollapsed.toggle()
                 }
@@ -150,16 +161,20 @@ struct VMToolbarView: View {
                             dragPosition = position(for: geometry)
                         }
                         resetIdle()
+                        longIdleTimeout.assertUserInteraction()
                     }
             )
             .onChange(of: state.isRunning) { running in
                 resetIdle()
-                state.assertUserInteraction()
+                longIdleTimeout.assertUserInteraction()
                 if running && isCollapsed {
                     withOptionalAnimation(.easeInOut(duration: 1)) {
                         shake.toggle()
                     }
                 }
+            }
+            .onChange(of: state.isUserInteracting) { newValue in
+                longIdleTimeout.assertUserInteraction()
             }
         }
     }
@@ -203,7 +218,7 @@ struct VMToolbarView: View {
     
     private func offset(for index: Int) -> CGSize {
         var sub = 0
-        if !state.isUsbSupported && index >= 3 {
+        if !session.vm.hasUsbRedirection && index >= 3 {
             sub = 1
         }
         let x = isCollapsed ? 0 : -CGFloat(index-sub)*spacing
@@ -287,8 +302,38 @@ extension ButtonStyle where Self == ToolbarButtonStyle {
     }
 }
 
+@MainActor private class LongIdleTimeout: ObservableObject {
+    private var longIdleTask: DispatchWorkItem?
+    
+    @Published var isUserInteracting: Bool = true
+    
+    private func setIsUserInteracting(_ value: Bool) {
+        if !UIAccessibility.isReduceMotionEnabled {
+            withAnimation {
+                self.isUserInteracting = value
+            }
+        } else {
+            self.isUserInteracting = value
+        }
+    }
+    
+    func assertUserInteraction() {
+        if let task = longIdleTask {
+            task.cancel()
+        }
+        setIsUserInteracting(true)
+        longIdleTask = DispatchWorkItem {
+            self.longIdleTask = nil
+            self.setIsUserInteracting(false)
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 15, execute: longIdleTask!)
+    }
+}
+
 struct VMToolbarView_Previews: PreviewProvider {
+    @State static var state = VMWindowState()
+    
     static var previews: some View {
-        VMToolbarView(state: VMToolbarActions(with: VMDisplayViewController()))
+        VMToolbarView(state: $state)
     }
 }

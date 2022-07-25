@@ -19,6 +19,7 @@ import Foundation
 import AppKit
 #else
 import UIKit
+import SwiftUI
 #endif
 #if canImport(AltKit) && !WITH_QEMU_TCI
 import AltKit
@@ -72,7 +73,10 @@ class UTMData: ObservableObject {
     var vmWindows: [UTMVirtualMachine: VMDisplayWindowController] = [:]
     #else
     /// View controller for currently active VM
-    var vmVC: VMDisplayViewController?
+    var vmVC: Any?
+    
+    /// View state for active VM primary display
+    @State var vmPrimaryWindowState: VMWindowState?
     #endif
     
     /// Shortcut for accessing FileManager.default

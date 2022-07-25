@@ -15,32 +15,18 @@
 //
 
 import Foundation
+import SwiftUI
 
 extension UTMData {
-    private func createDisplay(vm: UTMVirtualMachine) -> VMDisplayViewController {
-        let qvm = vm as! UTMQemuVirtualMachine
-        if qvm.config.qemuConfig?.serials.first?.terminal != nil {
-            let vc = VMDisplayTerminalViewController(vm: qvm)
-            vc.virtualMachine(vm, didTransitionTo: vm.state)
-            return vc
-        } else if qvm.config.qemuConfig?.displays.first != nil {
-            let vc = VMDisplayMetalViewController()
-            vc.vm = qvm
-            vc.setupSubviews()
-            vc.virtualMachine(vm, didTransitionTo: vm.state)
-            return vc
-        } else {
-            fatalError()
-        }
-    }
-    
-    func run(vm: UTMVirtualMachine) {
+    @MainActor func run(vm: UTMVirtualMachine) {
         guard let window = UIApplication.shared.windows.filter({$0.isKeyWindow}).first else {
             logger.error("Cannot find key window")
             return
         }
         
-        let vc = self.createDisplay(vm: vm)
+        let session = VMSessionState(for: vm as! UTMQemuVirtualMachine)
+        let vmWindow = VMWindowView().environmentObject(session)
+        let vc = UIHostingController(rootView: vmWindow)
         self.vmVC = vc
         window.rootViewController = vc
         window.makeKeyAndVisible()
@@ -48,6 +34,7 @@ extension UTMData {
         let duration: TimeInterval = 0.3
 
         UIView.transition(with: window, duration: duration, options: options, animations: {}, completion: nil)
+        vm.requestVmStart()
     }
     
     func stop(vm: UTMVirtualMachine) throws {

@@ -42,14 +42,10 @@ private var memoryAlertOnce = false
 
 // MARK: - View Loading
 public extension VMDisplayViewController {
-    func loadDisplayViewFromNib() {
+    func loadViewsFromNib() {
         let nib = UINib(nibName: "VMDisplayView", bundle: nil)
         _ = nib.instantiate(withOwner: self, options: nil)
-        assert(self.displayView != nil, "Failed to load main view from VMDisplayView nib")
         assert(self.inputAccessoryView != nil, "Failed to load input view from VMDisplayView nib")
-        displayView.frame = view.bounds
-        displayView.autoresizingMask = [.flexibleHeight, .flexibleWidth]
-        view.addSubview(displayView)
         
         // set up other nibs
         removableDrivesViewController = VMRemovableDrivesViewController(nibName: "VMRemovableDrivesView", bundle: nil)
@@ -57,25 +53,10 @@ public extension VMDisplayViewController {
         usbDevicesViewController = VMUSBDevicesViewController(nibName: "VMUSBDevicesView", bundle: nil)
         #endif
     }
-    
-    @objc func createToolbar(in view: UIView) {
-        toolbar = VMToolbarActions(with: self)
-        guard floatingToolbarViewController == nil else {
-            return
-        }
-        // create new toolbar
-        floatingToolbarViewController = UIHostingController(rootView: VMToolbarView(state: self.toolbar))
-        let childView = floatingToolbarViewController.view!
-        childView.backgroundColor = .clear
-        view.addSubview(childView)
-        childView.bindFrameToSuperviewBounds()
-        addChild(floatingToolbarViewController)
-        floatingToolbarViewController.didMove(toParent: self)
-    }
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        loadDisplayViewFromNib()
+        loadViewsFromNib()
         
         if largeScreen {
             prefersStatusBarHidden = true
@@ -86,27 +67,9 @@ public extension VMDisplayViewController {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(true, animated: animated)
         
-        // remove legacy toolbar
-        if !toolbar.hasLegacyToolbar {
-            // remove legacy toolbar
-            toolbarAccessoryView.removeFromSuperview()
-        }
-        
-        // hide USB icon if not supported
-        toolbar.isUsbSupported = vm.hasUsbRedirection
-        
         let nc = NotificationCenter.default
         weak var _self = self
         notifications = NSMutableArray()
-        notifications.add(nc.addObserver(forName: UIResponder.keyboardDidShowNotification, object: nil, queue: .main) { _ in
-            _self?.keyboardDidShow()
-        })
-        notifications.add(nc.addObserver(forName: UIResponder.keyboardDidHideNotification, object: nil, queue: .main) { _ in
-            _self?.keyboardDidHide()
-        })
-        notifications.add(nc.addObserver(forName: UIResponder.keyboardDidChangeFrameNotification, object: nil, queue: .main) { _ in
-            _self?.keyboardDidChangeFrame()
-        })
         notifications.add(nc.addObserver(forName: UIApplication.didEnterBackgroundNotification, object: nil, queue: .main) { _ in
             _self?.handleEnteredBackground()
         })
@@ -116,11 +79,6 @@ public extension VMDisplayViewController {
         notifications.add(nc.addObserver(forName: .UTMImport, object: nil, queue: .main) { _ in
             _self?.handleImportUTM()
         })
-        
-        // restore keyboard state
-        if UserDefaults.standard.bool(forKey: "LastKeyboardVisible") {
-            keyboardVisible = true
-        }
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -137,9 +95,7 @@ public extension VMDisplayViewController {
             logger.info("Start location tracking to enable running in background")
             UTMLocationManager.sharedInstance().startUpdatingLocation()
         }
-        if vm.state == .vmStopped {
-            vm.requestVmStart()
-        }
+        delegate.displayDidAppear()
     }
     
     override func didReceiveMemoryWarning() {
@@ -147,7 +103,7 @@ public extension VMDisplayViewController {
         
         if autosaveLowMemory {
             logger.info("Saving VM state on low memory warning.")
-            vm.vmSaveState { _ in
+            delegate.vmSaveState { _ in
                 // ignore error
             }
         }
@@ -161,34 +117,13 @@ public extension VMDisplayViewController {
 
 @objc extension VMDisplayViewController {
     func enterSuspended(isBusy busy: Bool) {
-        if busy {
-            resumeBigButton.isHidden = true
-            placeholderView.isHidden = false
-            placeholderIndicator.startAnimating()
-        } else {
-            UIView.transition(with: view, duration: 0.5, options: .transitionCrossDissolve) {
-                self.placeholderView.isHidden = false
-                if self.vm.state == .vmPaused {
-                    self.resumeBigButton.isHidden = false
-                }
-            } completion: { _ in
-            }
-            placeholderIndicator.stopAnimating()
+        if !busy {
             UIApplication.shared.isIdleTimerDisabled = false
         }
-        toolbar.enterSuspended(isBusy: busy)
     }
     
     func enterLive() {
-        UIView.transition(with: view, duration: 0.5, options: .transitionCrossDissolve) {
-            self.placeholderView.isHidden = true
-            self.resumeBigButton.isHidden = true
-        } completion: { _ in
-        }
-        placeholderIndicator.stopAnimating()
         UIApplication.shared.isIdleTimerDisabled = disableIdleTimer
-        vm.ioDelegate = self
-        toolbar.enterLive()
     }
     
     private func suspend() {
@@ -215,7 +150,7 @@ public extension VMDisplayViewController {
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         for touch in touches {
             if touch.type == .direct {
-                toolbar.assertUserInteraction()
+                delegate.displayDidAssertUserInteraction()
                 break
             }
         }
@@ -227,7 +162,7 @@ public extension VMDisplayViewController {
 extension VMDisplayViewController {
     func handleEnteredBackground() {
         logger.info("Entering background")
-        if autosaveBackground && vm.state == .vmStarted {
+        if autosaveBackground && delegate.vmState == .vmStarted {
             logger.info("Saving snapshot")
             var task: UIBackgroundTaskIdentifier = .invalid
             task = UIApplication.shared.beginBackgroundTask {
@@ -235,7 +170,7 @@ extension VMDisplayViewController {
                 UIApplication.shared.endBackgroundTask(task)
                 task = .invalid
             }
-            vm.vmSaveState { error in
+            delegate.vmSaveState { error in
                 if let error = error {
                     logger.error("error saving snapshot: \(error)")
                 } else {
@@ -250,28 +185,33 @@ extension VMDisplayViewController {
     
     func handleEnteredForeground() {
         logger.info("Entering foreground!")
-        if (hasAutoSave && vm.state == .vmStarted) {
+        if (hasAutoSave && delegate.vmState == .vmStarted) {
             logger.info("Deleting snapshot")
             DispatchQueue.global(qos: .background).async {
-                self.vm.requestVmDeleteState()
+                self.delegate.requestVmDeleteState()
             }
         }
-    }
-    
-    func keyboardDidShow() {
-        keyboardVisible = true
-    }
-    
-    func keyboardDidHide() {
-        // workaround for notification when hw keyboard connected
-        keyboardVisible = inputViewIsFirstResponder()
-    }
-    
-    func keyboardDidChangeFrame() {
-        updateKeyboardAccessoryFrame()
     }
     
     func handleImportUTM() {
         showAlert(NSLocalizedString("You must terminate the running VM before you can import a new VM.", comment: "VMDisplayViewController"), actions: nil, completion: nil)
     }
+}
+
+// MARK: - Popup menus
+
+extension VMDisplayViewController {
+    func presentDrives(for vm: UTMQemuVirtualMachine) {
+        removableDrivesViewController.modalPresentationStyle = .pageSheet
+        removableDrivesViewController.vm = vm
+        present(removableDrivesViewController, animated: true, completion: nil)
+    }
+    
+    #if !WITH_QEMU_TCI
+    func presentUsb(for usbManager: CSUSBManager) {
+        usbDevicesViewController.modalPresentationStyle = .pageSheet
+        usbDevicesViewController.vmUsbManager = usbManager
+        present(usbDevicesViewController, animated: true, completion: nil)
+    }
+    #endif
 }

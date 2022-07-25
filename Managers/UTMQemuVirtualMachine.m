@@ -38,6 +38,7 @@ NSString *const kSuspendSnapshotName = @"suspend";
 @property (nonatomic, readwrite, nullable) UTMQemuManager *qemu;
 @property (nonatomic, readwrite, nullable) UTMQemuSystem *system;
 @property (nonatomic, readwrite, nullable) UTMSpiceIO *ioService;
+@property (nonatomic, weak) id<UTMSpiceIODelegate> ioServiceDelegate;
 @property (nonatomic) dispatch_queue_t vmOperations;
 @property (nonatomic, nullable) dispatch_semaphore_t qemuWillQuitEvent;
 @property (nonatomic, nullable) dispatch_semaphore_t qemuDidExitEvent;
@@ -49,11 +50,16 @@ NSString *const kSuspendSnapshotName = @"suspend";
 @implementation UTMQemuVirtualMachine
 
 - (id<UTMSpiceIODelegate>)ioDelegate {
-    return self.ioService.delegate;
+    return self.ioService ? self.ioService.delegate : self.ioServiceDelegate;
 }
 
 - (void)setIoDelegate:(id<UTMSpiceIODelegate>)ioDelegate {
-    self.ioService.delegate = ioDelegate;
+    if (self.ioService) {
+        self.ioService.delegate = ioDelegate;
+    } else {
+        // we haven't started the VM yet, save a copy
+        self.ioServiceDelegate = ioDelegate;
+    }
 }
 
 - (instancetype)init {
@@ -162,6 +168,8 @@ NSString *const kSuspendSnapshotName = @"suspend";
     }
     
     self.ioService = [[UTMSpiceIO alloc] initWithConfiguration:self.config];
+    self.ioService.delegate = self.ioServiceDelegate;
+    self.ioServiceDelegate = nil;
     
     NSError *spiceError;
     if (![self.ioService startWithError:&spiceError]) {

@@ -16,50 +16,34 @@
 
 #import <UIKit/UIKit.h>
 #import "CSInput.h"
-#import "UTMSpiceIODelegate.h"
-#import "UTMVirtualMachineDelegate.h"
 
-@class UTMConfigurationWrapper;
-@class UTMQemuVirtualMachine;
 @class VMKeyboardButton;
 @class VMRemovableDrivesViewController;
-@class VMToolbarActions;
 @class VMUSBDevicesViewController;
+@protocol VMDisplayViewControllerDelegate;
 
-@interface VMDisplayViewController : UIViewController<UTMVirtualMachineDelegate, UTMSpiceIODelegate>
+@interface VMDisplayViewController : UIViewController
 
 @property (weak, nonatomic) IBOutlet UIView *displayView;
 @property (strong, nonatomic) IBOutlet UIInputView *inputAccessoryView;
-@property (weak, nonatomic) IBOutlet UIView *toolbarAccessoryView;
-@property (weak, nonatomic) IBOutlet UIButton *powerExitButton;
-@property (weak, nonatomic) IBOutlet UIButton *pauseResumeButton;
-@property (weak, nonatomic) IBOutlet UIButton *restartButton;
-@property (weak, nonatomic) IBOutlet UIButton *zoomButton;
-@property (weak, nonatomic) IBOutlet UIButton *keyboardButton;
-@property (weak, nonatomic) IBOutlet UIButton *drivesButton;
-@property (weak, nonatomic) IBOutlet UIButton *usbButton;
 @property (weak, nonatomic) IBOutlet UIVisualEffectView *placeholderView;
 @property (weak, nonatomic) IBOutlet UIActivityIndicatorView *placeholderIndicator;
 @property (weak, nonatomic) IBOutlet UIButton *resumeBigButton;
 @property (strong, nonatomic) IBOutletCollection(VMKeyboardButton) NSArray *customKeyModifierButtons;
 
-@property (nonatomic, readonly) UTMConfigurationWrapper *vmQemuConfig;
-@property (nonatomic) VMToolbarActions *toolbar;
-@property (nonatomic) UIViewController *floatingToolbarViewController;
+@property (weak, nonatomic) id<VMDisplayViewControllerDelegate> delegate;
+
 @property (nonatomic) VMRemovableDrivesViewController *removableDrivesViewController;
 @property (nonatomic) VMUSBDevicesViewController *usbDevicesViewController;
 
 @property (nonatomic) BOOL hasAutoSave;
 @property (nonatomic, readwrite) BOOL prefersStatusBarHidden;
-@property (nonatomic) BOOL keyboardVisible;
-@property (nonatomic, strong) UTMQemuVirtualMachine *vm;
 
 @property (nonatomic, strong) NSMutableArray<UIKeyCommand *> *mutableKeyCommands;
 
 @property (nonatomic, strong) NSMutableArray<NSObject *> *notifications;
 
-- (void)setupSubviews;
-- (BOOL)inputViewIsFirstResponder;
-- (void)updateKeyboardAccessoryFrame;
+- (void)showKeyboard;
+- (void)hideKeyboard;
 
 @end

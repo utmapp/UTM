@@ -16,60 +16,144 @@
 
 import Foundation
 import SwiftTerm
-
-private let kVMDefaultResizeCmd = "stty cols $COLS rows $ROWS\\n"
+import SwiftUI
 
 @objc class VMDisplayTerminalViewController: VMDisplayViewController {
     private var terminalView: TerminalView!
-    private var vmSerialPort: CSPort?
+    private var vmSerialPort: CSPort
     
-    required init(vm: UTMQemuVirtualMachine, port: CSPort? = nil) {
-        super.init(nibName: nil, bundle: nil)
-        self.vm = vm
+    private var style: UTMConfigurationTerminal?
+    private var keyboardDelta: CGFloat = 0
+    
+    required init(port: CSPort, style: UTMConfigurationTerminal? = nil) {
         self.vmSerialPort = port
+        super.init(nibName: nil, bundle: nil)
+        port.delegate = self
+        self.style = style
     }
     
     required init?(coder: NSCoder) {
-        super.init(coder: coder)
+        return nil
     }
     
     override func loadView() {
         super.loadView()
-        vm.delegate = self;
-        terminalView = TerminalView(frame: .zero)
+        terminalView = TerminalView(frame: makeFrame (keyboardDelta: 0))
+        terminalView.terminalDelegate = self
         view.insertSubview(terminalView, at: 0)
-        terminalView.bindFrameToSuperviewBounds()
+        styleTerminal()
     }
     
-    // FIXME: connect this to toolbar action
-    func changeDisplayZoom(_ sender: UIButton) {
-        let cols = terminalView.getTerminal().cols
-        let rows = terminalView.getTerminal().rows
-        let template = vmQemuConfig.qemuConsoleResizeCommand ?? kVMDefaultResizeCmd
-        let cmd = template
-            .replacingOccurrences(of: "$COLS", with: String(cols))
-            .replacingOccurrences(of: "$ROWS", with: String(rows))
-            .replacingOccurrences(of: "\\n", with: "\n")
-        vmSerialPort?.write(cmd.data(using: .nonLossyASCII)!)
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        setupKeyboardMonitor()
     }
     
-    override func spiceDidCreateSerial(_ serial: CSPort) {
-        if vmSerialPort == nil {
-            vmSerialPort = serial
-            serial.delegate = self
+    override func enterLive() {
+        super.enterLive()
+        DispatchQueue.main.async {
+            let terminalSize = CGSize(width: self.terminalView.getTerminal().cols, height: self.terminalView.getTerminal().rows)
+            self.delegate.displayViewSize = terminalSize
         }
     }
     
-    override func spiceDidDestroySerial(_ serial: CSPort) {
-        if vmSerialPort == serial {
-            serial.delegate = nil
-            vmSerialPort = nil
+    override func showKeyboard() {
+        terminalView.becomeFirstResponder()
+    }
+    
+    override func hideKeyboard() {
+        _ = terminalView.resignFirstResponder()
+    }
+}
+
+// MARK: - Layout terminal
+extension VMDisplayTerminalViewController {
+    var useAutoLayout: Bool {
+        get { true }
+    }
+    
+    func makeFrame (keyboardDelta: CGFloat, _ fn: String = #function, _ ln: Int = #line) -> CGRect
+    {
+        if useAutoLayout {
+            return CGRect.zero
+        } else {
+            return CGRect (x: view.safeAreaInsets.left,
+                           y: view.safeAreaInsets.top,
+                           width: view.frame.width - view.safeAreaInsets.left - view.safeAreaInsets.right,
+                           height: view.frame.height - view.safeAreaInsets.top - keyboardDelta)
+        }
+    }
+    
+    func setupKeyboardMonitor ()
+    {
+        if #available(iOS 15.0, *), useAutoLayout {
+            terminalView.translatesAutoresizingMaskIntoConstraints = false
+            terminalView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor).isActive = true
+            terminalView.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
+            terminalView.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
+            
+            terminalView.keyboardLayoutGuide.topAnchor.constraint(equalTo: terminalView.bottomAnchor).isActive = true
+        } else {
+            NotificationCenter.default.addObserver(
+                self,
+                selector: #selector(keyboardWillShow),
+                name: UIWindow.keyboardWillShowNotification,
+                object: nil)
+            NotificationCenter.default.addObserver(
+                self,
+                selector: #selector(keyboardWillHide),
+                name: UIWindow.keyboardWillHideNotification,
+                object: nil)
+        }
+    }
+    
+    @objc private func keyboardWillShow(_ notification: NSNotification) {
+        guard let keyboardValue = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue else { return }
+        
+        let keyboardScreenEndFrame = keyboardValue.cgRectValue
+        let keyboardViewEndFrame = view.convert(keyboardScreenEndFrame, from: view.window)
+        keyboardDelta = keyboardViewEndFrame.height
+        terminalView.frame = makeFrame(keyboardDelta: keyboardViewEndFrame.height)
+    }
+    
+    @objc private func keyboardWillHide(_ notification: NSNotification) {
+        //let key = UIResponder.keyboardFrameBeginUserInfoKey
+        keyboardDelta = 0
+        terminalView.frame = makeFrame(keyboardDelta: 0)
+    }
+}
+
+// MARK: - Style terminal
+extension VMDisplayTerminalViewController {
+    private func styleTerminal() {
+        guard let style = style else {
+            return
+        }
+        let fontSize = style.fontSize
+        let fontName = style.font.rawValue
+        if fontName != "" {
+            let orig = terminalView.font
+            let new = UIFont(name: fontName, size: CGFloat(fontSize)) ?? orig
+            terminalView.font = new
+        } else {
+            let orig = terminalView.font
+            let new = UIFont(descriptor: orig.fontDescriptor, size: CGFloat(fontSize))
+            terminalView.font = new
+        }
+        if let consoleTextColor = style.foregroundColor,
+           let textColor = Color(hexString: consoleTextColor),
+           let consoleBackgroundColor = style.backgroundColor,
+           let backgroundColor = Color(hexString: consoleBackgroundColor) {
+            terminalView.nativeForegroundColor = UIColor(textColor)
+            terminalView.nativeBackgroundColor = UIColor(backgroundColor)
         }
     }
 }
 
+// MARK: - TerminalViewDelegate
 extension VMDisplayTerminalViewController: TerminalViewDelegate {
     func sizeChanged(source: TerminalView, newCols: Int, newRows: Int) {
+        delegate.displayViewSize = CGSize(width: newCols, height: newRows)
     }
     
     func setTerminalTitle(source: TerminalView, title: String) {
@@ -82,18 +166,19 @@ extension VMDisplayTerminalViewController: TerminalViewDelegate {
     }
     
     func send(source: TerminalView, data: ArraySlice<UInt8>) {
-        if let vmSerialPort = vmSerialPort {
-            vmSerialPort.write(Data(data))
-        }
+        delegate.displayDidAssertUserInteraction()
+        vmSerialPort.write(Data(data))
     }
     
     func scrolled(source: TerminalView, position: Double) {
+        delegate.displayDidAssertUserInteraction()
     }
     
     func bell(source: TerminalView) {
     }
 }
 
+// MARK: - CSPortDelegate
 extension VMDisplayTerminalViewController: CSPortDelegate {
     func portDidDisconect(_ port: CSPort) {
     }

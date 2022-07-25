@@ -1,5 +1,5 @@
 //
-// Copyright © 2020 osy. All rights reserved.
+// Copyright © 2022 osy. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,25 +16,18 @@
 
 import SwiftUI
 
-struct BusyOverlay: View {
-    @EnvironmentObject private var data: UTMData
-    
+struct BusyIndicator: View {
     var body: some View {
-        Group {
-            if data.busy {
-                BusyIndicator()
-            } else {
-                EmptyView()
-            }
-        }
-        .alert(item: $data.alertMessage) { alertMessage in
-            Alert(title: Text(alertMessage.message))
-        }
+        BigWhiteSpinner()
+            .frame(width: 100, height: 100, alignment: .center)
+            .foregroundColor(.white)
+            .background(Color.gray.opacity(0.5))
+            .clipShape(RoundedRectangle(cornerRadius: 25.0, style: .continuous))
     }
 }
 
-struct BusyOverlay_Previews: PreviewProvider {
+struct BusyIndicator_Previews: PreviewProvider {
     static var previews: some View {
-        BusyOverlay()
+        BusyIndicator()
     }
 }
