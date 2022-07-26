@@ -184,12 +184,6 @@ struct VMDisplayHostedView: UIViewControllerRepresentable {
                 }
             }
         }
-        if state.isDrivesMenuShown {
-            DispatchQueue.main.async {
-                uiViewController.presentDrives(for: session.vm)
-                state.isDrivesMenuShown = false
-            }
-        }
     }
     
     func makeCoordinator() -> Coordinator {

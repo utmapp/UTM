@@ -53,8 +53,6 @@ struct VMWindowState: Identifiable {
     
     var displayViewSize: CGSize = .zero
     
-    var isDrivesMenuShown: Bool = false
-    
     var isKeyboardRequested: Bool = false
     
     var isKeyboardShown: Bool = false

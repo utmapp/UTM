@@ -48,7 +48,6 @@ public extension VMDisplayViewController {
         assert(self.inputAccessoryView != nil, "Failed to load input view from VMDisplayView nib")
         
         // set up other nibs
-        removableDrivesViewController = VMRemovableDrivesViewController(nibName: "VMRemovableDrivesView", bundle: nil)
         #if !WITH_QEMU_TCI
         usbDevicesViewController = VMUSBDevicesViewController(nibName: "VMUSBDevicesView", bundle: nil)
         #endif
@@ -201,12 +200,6 @@ extension VMDisplayViewController {
 // MARK: - Popup menus
 
 extension VMDisplayViewController {
-    func presentDrives(for vm: UTMQemuVirtualMachine) {
-        removableDrivesViewController.modalPresentationStyle = .pageSheet
-        removableDrivesViewController.vm = vm
-        present(removableDrivesViewController, animated: true, completion: nil)
-    }
-    
     #if !WITH_QEMU_TCI
     func presentUsb(for usbManager: CSUSBManager) {
         usbDevicesViewController.modalPresentationStyle = .pageSheet

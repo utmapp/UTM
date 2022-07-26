@@ -801,8 +801,6 @@
 		CE2D959024AD50D50059923A /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 521F3EFB2414F73800130500 /* Localizable.strings */; };
 		CE4698F924C8FBD9008C1BD6 /* Icons in Resources */ = {isa = PBXBuildFile; fileRef = CE4698F824C8FBD9008C1BD6 /* Icons */; };
 		CE4698FA24C8FBD9008C1BD6 /* Icons in Resources */ = {isa = PBXBuildFile; fileRef = CE4698F824C8FBD9008C1BD6 /* Icons */; };
-		CE4EF2702506DBFD00E9D33B /* VMRemovableDrivesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE4EF26F2506DBFD00E9D33B /* VMRemovableDrivesViewController.swift */; };
-		CE4EF2722506DD7900E9D33B /* VMRemovableDrivesView.xib in Resources */ = {isa = PBXBuildFile; fileRef = CE4EF2712506DD7900E9D33B /* VMRemovableDrivesView.xib */; };
 		CE5076DB250AB55D00C26C19 /* VMDisplayMetalViewController+Pencil.m in Sources */ = {isa = PBXBuildFile; fileRef = CE5076DA250AB55D00C26C19 /* VMDisplayMetalViewController+Pencil.m */; };
 		CE5451A626AF5F0F008594E5 /* virglrenderer.1.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE5451A126AF5F0F008594E5 /* virglrenderer.1.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		CE5451A826AF5F10008594E5 /* epoxy.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE5451A226AF5F0F008594E5 /* epoxy.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -897,7 +895,6 @@
 		CEA45E73263519B5002FA97D /* qapi-commands-net.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C08F23FCEC00001177D6 /* qapi-commands-net.c */; };
 		CEA45E74263519B5002FA97D /* qapi-types-common.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C0C623FCEC02001177D6 /* qapi-types-common.c */; };
 		CEA45E75263519B5002FA97D /* qapi-types-transaction.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C13423FCEC08001177D6 /* qapi-types-transaction.c */; };
-		CEA45E79263519B5002FA97D /* VMRemovableDrivesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE4EF26F2506DBFD00E9D33B /* VMRemovableDrivesViewController.swift */; };
 		CEA45E7A263519B5002FA97D /* UTMSpiceIO.m in Sources */ = {isa = PBXBuildFile; fileRef = E2D64BC8241DB24B0034E0C6 /* UTMSpiceIO.m */; };
 		CEA45E7B263519B5002FA97D /* qapi-events-machine-target.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C13D23FCEC08001177D6 /* qapi-events-machine-target.c */; };
 		CEA45E7C263519B5002FA97D /* qapi-types-misc.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C12823FCEC07001177D6 /* qapi-types-misc.c */; };
@@ -1096,7 +1093,6 @@
 		CEA45F67263519B5002FA97D /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 521F3EFB2414F73800130500 /* Localizable.strings */; };
 		CEA45F69263519B5002FA97D /* qemu in Resources */ = {isa = PBXBuildFile; fileRef = CE9D18F72265410E00355E14 /* qemu */; };
 		CEA45F6A263519B5002FA97D /* VMDisplayView.xib in Resources */ = {isa = PBXBuildFile; fileRef = CE72B4A92463532B00716A11 /* VMDisplayView.xib */; };
-		CEA45F6B263519B5002FA97D /* VMRemovableDrivesView.xib in Resources */ = {isa = PBXBuildFile; fileRef = CE4EF2712506DD7900E9D33B /* VMRemovableDrivesView.xib */; };
 		CEA45F6D263519B5002FA97D /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 5286EC91243748AC007E6CBC /* Settings.bundle */; };
 		CEA45F6F263519B5002FA97D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CE550BD52259479D0063E575 /* Assets.xcassets */; };
 		CEA45F72263519B5002FA97D /* gpg-error.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63F122653C7400FC7E63 /* gpg-error.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
@@ -2026,8 +2022,6 @@
 		CE4507D1226A5BE200A28D22 /* VMKeyboardView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VMKeyboardView.m; sourceTree = "<group>"; };
 		CE4507D3226A5C9900A28D22 /* VMKeyboardViewDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VMKeyboardViewDelegate.h; sourceTree = "<group>"; };
 		CE4698F824C8FBD9008C1BD6 /* Icons */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Icons; sourceTree = "<group>"; };
-		CE4EF26F2506DBFD00E9D33B /* VMRemovableDrivesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMRemovableDrivesViewController.swift; sourceTree = "<group>"; };
-		CE4EF2712506DD7900E9D33B /* VMRemovableDrivesView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = VMRemovableDrivesView.xib; sourceTree = "<group>"; };
 		CE5076D9250AB55D00C26C19 /* VMDisplayMetalViewController+Pencil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "VMDisplayMetalViewController+Pencil.h"; sourceTree = "<group>"; };
 		CE5076DA250AB55D00C26C19 /* VMDisplayMetalViewController+Pencil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "VMDisplayMetalViewController+Pencil.m"; sourceTree = "<group>"; };
 		CE50A41F2637BB200050430F /* Build.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Build.xcconfig; sourceTree = "<group>"; };
@@ -3064,8 +3058,6 @@
 				5286EC8E2437488E007E6CBC /* VMDisplayMetalViewController+Gamepad.h */,
 				5286EC8F2437488E007E6CBC /* VMDisplayMetalViewController+Gamepad.m */,
 				8401865D2887B1620050AC51 /* VMDisplayTerminalViewController.swift */,
-				CE4EF2712506DD7900E9D33B /* VMRemovableDrivesView.xib */,
-				CE4EF26F2506DBFD00E9D33B /* VMRemovableDrivesViewController.swift */,
 				CEEB66442284B942002737B2 /* VMKeyboardButton.h */,
 				CEEB66452284B942002737B2 /* VMKeyboardButton.m */,
 				CE4507D0226A5BE200A28D22 /* VMKeyboardView.h */,
@@ -3421,7 +3413,6 @@
 				CEA905CD2603DBFB00801E7C /* VMUSBDevicesView.xib in Resources */,
 				CE2D936C24AD46670059923A /* qemu in Resources */,
 				CE2D936D24AD46670059923A /* VMDisplayView.xib in Resources */,
-				CE4EF2722506DD7900E9D33B /* VMRemovableDrivesView.xib in Resources */,
 				CE2D937224AD46670059923A /* Settings.bundle in Resources */,
 				CE0B6CED24AD532A00FE012D /* Assets.xcassets in Resources */,
 			);
@@ -3456,7 +3447,6 @@
 				CEA45F67263519B5002FA97D /* Localizable.strings in Resources */,
 				CEA45F69263519B5002FA97D /* qemu in Resources */,
 				CEA45F6A263519B5002FA97D /* VMDisplayView.xib in Resources */,
-				CEA45F6B263519B5002FA97D /* VMRemovableDrivesView.xib in Resources */,
 				CEA45F6D263519B5002FA97D /* Settings.bundle in Resources */,
 				CEA45F6F263519B5002FA97D /* Assets.xcassets in Resources */,
 			);
@@ -3582,7 +3572,6 @@
 				84B36D2927B790BE00C22685 /* DestructiveButton.swift in Sources */,
 				CE2D92A924AD46670059923A /* qapi-types-transaction.c in Sources */,
 				843BF83828451B380029D60D /* UTMConfigurationTerminal.swift in Sources */,
-				CE4EF2702506DBFD00E9D33B /* VMRemovableDrivesViewController.swift in Sources */,
 				84018683288A3B2E0050AC51 /* VMWindowView.swift in Sources */,
 				83034C0726AB630F006B4BAF /* UTMPendingVMView.swift in Sources */,
 				CE2D92AA24AD46670059923A /* UTMSpiceIO.m in Sources */,
@@ -4158,7 +4147,6 @@
 				CEA45E74263519B5002FA97D /* qapi-types-common.c in Sources */,
 				CEA45E75263519B5002FA97D /* qapi-types-transaction.c in Sources */,
 				848D99B5286300160055C215 /* QEMUArgument.swift in Sources */,
-				CEA45E79263519B5002FA97D /* VMRemovableDrivesViewController.swift in Sources */,
 				CEA45E7A263519B5002FA97D /* UTMSpiceIO.m in Sources */,
 				CEF0306B26A2AFDF00667B63 /* VMWizardStartView.swift in Sources */,
 				CEA45E7B263519B5002FA97D /* qapi-events-machine-target.c in Sources */,

@@ -18,7 +18,6 @@
 #import "CSInput.h"
 
 @class VMKeyboardButton;
-@class VMRemovableDrivesViewController;
 @class VMUSBDevicesViewController;
 @protocol VMDisplayViewControllerDelegate;
 
@@ -33,7 +32,6 @@
 
 @property (weak, nonatomic) id<VMDisplayViewControllerDelegate> delegate;
 
-@property (nonatomic) VMRemovableDrivesViewController *removableDrivesViewController;
 @property (nonatomic) VMUSBDevicesViewController *usbDevicesViewController;
 
 @property (nonatomic) BOOL hasAutoSave;
