@@ -83,7 +83,8 @@ extension VMWindowState {
         case powerDown
         case terminateApp
         case restart
-        case error
+        case nonfatalError
+        case fatalError
     }
 }
 

@@ -149,36 +149,39 @@ public extension UTMQemuVirtualMachine {
     }
     
     @objc var drives: [UTMDrive] {
-        let qemuDrives = config.qemuConfig!.drives
         var drives: [UTMDrive] = []
-        for i in 0..<qemuDrives.count {
-            let qemuDrive = qemuDrives[i]
-            let drive = UTMDrive()
-            drive.index = i
-            switch qemuDrive.imageType {
-            case .disk: drive.imageType = .disk
-            case .cd: drive.imageType = .CD
-            default: drive.imageType = .none // skip other types
-            }
-            drive.interface = qemuDrive.interface.rawValue
-            drive.name = qemuDrive.id
-            if qemuDrive.isExternal {
-                // removable drive -> path stored only in viewState
-                if let path = viewState.path(forRemovableDrive: qemuDrive.id) {
-                    drive.status = .inserted
-                    drive.path = path
-                } else {
-                    drive.status = .ejected
-                    drive.path = nil
-                }
-            } else {
-                // fixed drive -> path stored in configuration
-                drive.status = .fixed
-                drive.path = qemuDrive.imageURL?.lastPathComponent
-            }
-            drives.append(drive)
+        for i in 0..<config.qemuConfig!.drives.count {
+            drives.append(legacyDrive(at: i))
         }
         return drives
+    }
+    
+    func legacyDrive(at index: Int) -> UTMDrive {
+        let qemuDrive = config.qemuConfig!.drives[index]
+        let drive = UTMDrive()
+        drive.index = index
+        switch qemuDrive.imageType {
+        case .disk: drive.imageType = .disk
+        case .cd: drive.imageType = .CD
+        default: drive.imageType = .none // skip other types
+        }
+        drive.interface = qemuDrive.interface.rawValue
+        drive.name = qemuDrive.id
+        if qemuDrive.isExternal {
+            // removable drive -> path stored only in viewState
+            if let path = viewState.path(forRemovableDrive: qemuDrive.id) {
+                drive.status = .inserted
+                drive.path = path
+            } else {
+                drive.status = .ejected
+                drive.path = nil
+            }
+        } else {
+            // fixed drive -> path stored in configuration
+            drive.status = .fixed
+            drive.path = qemuDrive.imageURL?.lastPathComponent
+        }
+        return drive
     }
     
     override func updateViewStatePostSave() throws {

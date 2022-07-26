@@ -26,7 +26,9 @@ import Foundation
     
     @Published var vmState: UTMVMState = .vmStopped
     
-    @Published var vmError: String?
+    @Published var fatalError: String?
+    
+    @Published var nonfatalError: String?
     
     @Published var primaryInput: CSInput?
     
@@ -64,7 +66,7 @@ extension VMSessionState: UTMVirtualMachineDelegate {
     func virtualMachine(_ vm: UTMVirtualMachine, didErrorWithMessage message: String) {
         Task {
             await MainActor.run {
-                vmError = message
+                fatalError = message
             }
         }
     }

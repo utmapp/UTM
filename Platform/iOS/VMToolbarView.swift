@@ -117,17 +117,15 @@ struct VMToolbarView: View {
                         Label("USB", image: "Toolbar USB")
                     }.offset(offset(for: 3))
                 }
-                Button {
-                    state.isDrivesMenuShown.toggle()
-                } label: {
-                    Label("Disk", systemImage: "opticaldisc")
-                }.offset(offset(for: 2))
+                VMToolbarDriveMenuView()
+                .offset(offset(for: 2))
                 Button {
                     state.isKeyboardRequested = !state.isKeyboardShown
                 } label: {
                     Label("Keyboard", systemImage: "keyboard")
                 }.offset(offset(for: 1))
             }.buttonStyle(.toolbar)
+            .menuStyle(.toolbar)
             .disabled(state.isBusy)
             .opacity(isCollapsed ? 0 : 1)
             .position(position(for: geometry))
@@ -279,6 +277,38 @@ struct ToolbarButtonStyle: ButtonStyle {
     }
 }
 
+struct ToolbarMenuStyle: MenuStyle {
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+    @Environment(\.verticalSizeClass) private var verticalSizeClass
+    
+    private var size: CGFloat {
+        if #available(iOS 15, *) {
+            return (horizontalSizeClass == .compact || verticalSizeClass == .compact) ? 32 : 48
+        } else {
+            // workaround bug in iOS 14 where @Environment is not inherited in ButtonStyle
+            let horizontalSizeClass = UITraitCollection.current.horizontalSizeClass
+            let verticalSizeClass = UITraitCollection.current.verticalSizeClass
+            return (horizontalSizeClass == .compact || verticalSizeClass == .compact) ? 32 : 48
+        }
+    }
+    
+    func makeBody(configuration: Configuration) -> some View {
+        ZStack {
+            Circle()
+                .foregroundColor(.gray)
+                .opacity(0.7)
+                .blur(radius: 0.1)
+            Menu(configuration)
+                .labelStyle(.iconOnly)
+                .foregroundColor(.white)
+                .opacity(0.75)
+        }.frame(width: size, height: size)
+        .mask(Circle().frame(width: size-2, height: size-2))
+        .scaleEffect(1)
+        .hoverEffect(.lift)
+    }
+}
+
 // https://www.objc.io/blog/2019/10/01/swiftui-shake-animation/
 struct Shake: GeometryEffect {
     var amount: CGFloat = 8
@@ -299,6 +329,12 @@ struct Shake: GeometryEffect {
 extension ButtonStyle where Self == ToolbarButtonStyle {
     static var toolbar: ToolbarButtonStyle {
         ToolbarButtonStyle()
+    }
+}
+
+extension MenuStyle where Self == ToolbarMenuStyle {
+    static var toolbar: ToolbarMenuStyle {
+        ToolbarMenuStyle()
     }
 }
 

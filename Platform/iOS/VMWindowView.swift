@@ -111,10 +111,12 @@ struct VMWindowView: View {
                 return Alert(title: Text("Are you sure you want to reset this VM? Any unsaved changes will be lost."), primaryButton: .cancel(Text("No")), secondaryButton: .destructive(Text("Yes")) {
                     session.reset()
                 })
-            case .error:
-                return Alert(title: Text(session.vmError!), dismissButton: .cancel(Text("OK")) {
-                    session.vmError = nil
-                    session.terminateApplication()
+            case .nonfatalError, .fatalError:
+                return Alert(title: Text(session.nonfatalError!), dismissButton: .cancel(Text("OK")) {
+                    session.nonfatalError = nil
+                    if type == .fatalError {
+                        session.terminateApplication()
+                    }
                 })
             }
         })
@@ -140,9 +142,14 @@ struct VMWindowView: View {
                 }
             }
         }
-        .onChange(of: session.vmError) { newValue in
+        .onChange(of: session.nonfatalError) { newValue in
             if newValue != nil {
-                state.alert = .error
+                state.alert = .nonfatalError
+            }
+        }
+        .onChange(of: session.fatalError) { newValue in
+            if newValue != nil {
+                state.alert = .fatalError
             }
         }
         .onChange(of: session.vmState) { newValue in
