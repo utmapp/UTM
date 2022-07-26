@@ -18,7 +18,6 @@
 #import "CSInput.h"
 
 @class VMKeyboardButton;
-@class VMUSBDevicesViewController;
 @protocol VMDisplayViewControllerDelegate;
 
 @interface VMDisplayViewController : UIViewController
@@ -31,8 +30,6 @@
 @property (strong, nonatomic) IBOutletCollection(VMKeyboardButton) NSArray *customKeyModifierButtons;
 
 @property (weak, nonatomic) id<VMDisplayViewControllerDelegate> delegate;
-
-@property (nonatomic) VMUSBDevicesViewController *usbDevicesViewController;
 
 @property (nonatomic) BOOL hasAutoSave;
 @property (nonatomic, readwrite) BOOL prefersStatusBarHidden;

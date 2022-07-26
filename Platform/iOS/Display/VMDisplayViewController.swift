@@ -46,11 +46,6 @@ public extension VMDisplayViewController {
         let nib = UINib(nibName: "VMDisplayView", bundle: nil)
         _ = nib.instantiate(withOwner: self, options: nil)
         assert(self.inputAccessoryView != nil, "Failed to load input view from VMDisplayView nib")
-        
-        // set up other nibs
-        #if !WITH_QEMU_TCI
-        usbDevicesViewController = VMUSBDevicesViewController(nibName: "VMUSBDevicesView", bundle: nil)
-        #endif
     }
 
     override func viewDidLoad() {
@@ -195,16 +190,4 @@ extension VMDisplayViewController {
     func handleImportUTM() {
         showAlert(NSLocalizedString("You must terminate the running VM before you can import a new VM.", comment: "VMDisplayViewController"), actions: nil, completion: nil)
     }
-}
-
-// MARK: - Popup menus
-
-extension VMDisplayViewController {
-    #if !WITH_QEMU_TCI
-    func presentUsb(for usbManager: CSUSBManager) {
-        usbDevicesViewController.modalPresentationStyle = .pageSheet
-        usbDevicesViewController.vmUsbManager = usbManager
-        present(usbDevicesViewController, animated: true, completion: nil)
-    }
-    #endif
 }

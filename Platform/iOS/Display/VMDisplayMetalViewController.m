@@ -125,11 +125,6 @@
         if (self.delegate.qemuHasClipboardSharing) {
             [[UTMPasteboard generalPasteboard] releasePollingModeForObject:self];
         }
-#if !defined(WITH_QEMU_TCI)
-        if (self.delegate.vmState == kVMStopped) {
-            [self.usbDevicesViewController clearDevices];
-        }
-#endif
     }
 }
 

@@ -15,7 +15,6 @@
 //
 
 #import "VMDisplayViewController.h"
-#import "VMDisplayViewController+USB.h"
 #import "UTM-Swift.h"
 
 @implementation VMDisplayViewController

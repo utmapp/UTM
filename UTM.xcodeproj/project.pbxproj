@@ -1151,9 +1151,6 @@
 		CEA9059225FC6A3500801E7C /* usbredirparser.1.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CEA9058825FC69D100801E7C /* usbredirparser.1.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CEA9059525FC6A3A00801E7C /* usbredirhost.1.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CEA9058725FC69D100801E7C /* usbredirhost.1.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CEA9059625FC6A3B00801E7C /* usbredirparser.1.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CEA9058825FC69D100801E7C /* usbredirparser.1.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CEA905C92603DA0D00801E7C /* VMDisplayViewController+USB.m in Sources */ = {isa = PBXBuildFile; fileRef = CEA905C82603DA0D00801E7C /* VMDisplayViewController+USB.m */; };
-		CEA905CD2603DBFB00801E7C /* VMUSBDevicesView.xib in Resources */ = {isa = PBXBuildFile; fileRef = CEA905CC2603DBFB00801E7C /* VMUSBDevicesView.xib */; };
-		CEA905D82603DC5300801E7C /* VMUSBDevicesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEA905D72603DC5300801E7C /* VMUSBDevicesViewController.swift */; };
 		CEB20EEA282053320033EFB5 /* DoubleClickHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEB20EE9282053320033EFB5 /* DoubleClickHandler.swift */; };
 		CEB63A7624F4654400CAF323 /* Main.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEB63A7524F4654400CAF323 /* Main.swift */; };
 		CEB63A7724F4654400CAF323 /* Main.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEB63A7524F4654400CAF323 /* Main.swift */; };
@@ -2094,10 +2091,6 @@
 		CEA9053725F981E900801E7C /* usb-1.0.0.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = "usb-1.0.0.framework"; path = "$(SYSROOT_DIR)/Frameworks/usb-1.0.0.framework"; sourceTree = "<group>"; };
 		CEA9058725FC69D100801E7C /* usbredirhost.1.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = usbredirhost.1.framework; path = "$(SYSROOT_DIR)/Frameworks/usbredirhost.1.framework"; sourceTree = "<group>"; };
 		CEA9058825FC69D100801E7C /* usbredirparser.1.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = usbredirparser.1.framework; path = "$(SYSROOT_DIR)/Frameworks/usbredirparser.1.framework"; sourceTree = "<group>"; };
-		CEA905C72603DA0D00801E7C /* VMDisplayViewController+USB.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "VMDisplayViewController+USB.h"; sourceTree = "<group>"; };
-		CEA905C82603DA0D00801E7C /* VMDisplayViewController+USB.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "VMDisplayViewController+USB.m"; sourceTree = "<group>"; };
-		CEA905CC2603DBFB00801E7C /* VMUSBDevicesView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = VMUSBDevicesView.xib; sourceTree = "<group>"; };
-		CEA905D72603DC5300801E7C /* VMUSBDevicesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMUSBDevicesViewController.swift; sourceTree = "<group>"; };
 		CEB20EE9282053320033EFB5 /* DoubleClickHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DoubleClickHandler.swift; sourceTree = "<group>"; };
 		CEB63A7524F4654400CAF323 /* Main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Main.swift; sourceTree = "<group>"; };
 		CEB63A7824F468BA00CAF323 /* UTMJailbreak.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UTMJailbreak.h; sourceTree = "<group>"; };
@@ -3042,8 +3035,6 @@
 				84C60FB9268269D700B58C00 /* VMDisplayViewController.swift */,
 				CE72B4AB2463579D00716A11 /* VMDisplayViewController.h */,
 				CE72B4AC2463579D00716A11 /* VMDisplayViewController.m */,
-				CEA905C72603DA0D00801E7C /* VMDisplayViewController+USB.h */,
-				CEA905C82603DA0D00801E7C /* VMDisplayViewController+USB.m */,
 				8401868E288A50B90050AC51 /* VMDisplayViewControllerDelegate.swift */,
 				5286EC93243748C3007E6CBC /* VMDisplayMetalViewController.h */,
 				5286EC94243748C3007E6CBC /* VMDisplayMetalViewController.m */,
@@ -3065,8 +3056,6 @@
 				CE4507D3226A5C9900A28D22 /* VMKeyboardViewDelegate.h */,
 				E2151A57241451120008E6AC /* UIViewController+Extensions.h */,
 				E2151A58241451120008E6AC /* UIViewController+Extensions.m */,
-				CEA905CC2603DBFB00801E7C /* VMUSBDevicesView.xib */,
-				CEA905D72603DC5300801E7C /* VMUSBDevicesViewController.swift */,
 			);
 			path = Display;
 			sourceTree = "<group>";
@@ -3410,7 +3399,6 @@
 				CE4698F924C8FBD9008C1BD6 /* Icons in Resources */,
 				FFB02A8C266CB09C006CD71A /* InfoPlist.strings in Resources */,
 				CE2D936B24AD46670059923A /* Localizable.strings in Resources */,
-				CEA905CD2603DBFB00801E7C /* VMUSBDevicesView.xib in Resources */,
 				CE2D936C24AD46670059923A /* qemu in Resources */,
 				CE2D936D24AD46670059923A /* VMDisplayView.xib in Resources */,
 				CE2D937224AD46670059923A /* Settings.bundle in Resources */,
@@ -3496,7 +3484,6 @@
 				CE772AAC25C8B0F600E4E379 /* ContentView.swift in Sources */,
 				CE2D927924AD46670059923A /* qapi-visit-qom.c in Sources */,
 				CE2D927A24AD46670059923A /* UTMLegacyQemuConfiguration+System.m in Sources */,
-				CEA905D82603DC5300801E7C /* VMUSBDevicesViewController.swift in Sources */,
 				CE2D927B24AD46670059923A /* qapi-types-job.c in Sources */,
 				843BF8302844853E0029D60D /* UTMQemuConfigurationNetwork.swift in Sources */,
 				CE2D927C24AD46670059923A /* UTMQemu.m in Sources */,
@@ -3746,7 +3733,6 @@
 				843BF83428450C0B0029D60D /* UTMQemuConfigurationSound.swift in Sources */,
 				CE2D932224AD46670059923A /* VMScroll.m in Sources */,
 				CE2D957D24AD4F990059923A /* VMConfigNetworkPortForwardView.swift in Sources */,
-				CEA905C92603DA0D00801E7C /* VMDisplayViewController+USB.m in Sources */,
 				CE2D932524AD46670059923A /* qapi-types-char.c in Sources */,
 				CE2D932824AD46670059923A /* qapi-visit-audio.c in Sources */,
 				CE2D932924AD46670059923A /* qapi-builtin-visit.c in Sources */,
