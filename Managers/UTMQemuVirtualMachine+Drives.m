@@ -43,7 +43,7 @@ extern NSString *const kUTMErrorDomain;
     if (!self.qemu.isConnected) {
         return YES; // not running
     }
-    return [self.qemu ejectDrive:drive.name force:force error:error];
+    return [self.qemu ejectDrive:[NSString stringWithFormat:@"drive%@", drive.name] force:force error:error];
 }
 
 - (BOOL)changeMediumForDrive:(UTMDrive *)drive url:(NSURL *)url error:(NSError * _Nullable __autoreleasing *)error {
