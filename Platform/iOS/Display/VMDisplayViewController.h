@@ -22,19 +22,10 @@
 
 @interface VMDisplayViewController : UIViewController
 
-@property (weak, nonatomic) IBOutlet UIView *displayView;
-@property (strong, nonatomic) IBOutlet UIInputView *inputAccessoryView;
-@property (weak, nonatomic) IBOutlet UIVisualEffectView *placeholderView;
-@property (weak, nonatomic) IBOutlet UIActivityIndicatorView *placeholderIndicator;
-@property (weak, nonatomic) IBOutlet UIButton *resumeBigButton;
-@property (strong, nonatomic) IBOutletCollection(VMKeyboardButton) NSArray *customKeyModifierButtons;
-
 @property (weak, nonatomic) id<VMDisplayViewControllerDelegate> delegate;
 
 @property (nonatomic) BOOL hasAutoSave;
 @property (nonatomic, readwrite) BOOL prefersStatusBarHidden;
-
-@property (nonatomic, strong) NSMutableArray<UIKeyCommand *> *mutableKeyCommands;
 
 @property (nonatomic, strong) NSMutableArray<NSObject *> *notifications;
 

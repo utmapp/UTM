@@ -59,6 +59,9 @@ NS_ASSUME_NONNULL_BEGIN
     UIImpactFeedbackGenerator *_resizeFeedbackGenerator;
 }
 
+@property (strong, nonatomic) IBOutlet UIInputView *inputAccessoryView;
+@property (strong, nonatomic) IBOutletCollection(VMKeyboardButton) NSArray *customKeyModifierButtons;
+
 @property (nonatomic) IBOutlet MTKView *mtkView;
 @property (nonatomic) IBOutlet VMKeyboardView *keyboardView;
 
@@ -66,6 +69,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) CSDisplay *vmDisplay;
 
 @property (nonatomic, readonly) BOOL serverModeCursor;
+
+@property (nonatomic, strong) NSMutableArray<UIKeyCommand *> *mutableKeyCommands;
 
 - (instancetype)initWithCoder:(NSCoder *)coder NS_UNAVAILABLE;
 - (instancetype)initWithNibName:(nullable NSString *)nibNameOrNil bundle:(nullable NSBundle *)nibBundleOrNil NS_UNAVAILABLE;

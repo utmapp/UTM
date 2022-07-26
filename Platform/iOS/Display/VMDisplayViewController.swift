@@ -42,15 +42,8 @@ private var memoryAlertOnce = false
 
 // MARK: - View Loading
 public extension VMDisplayViewController {
-    func loadViewsFromNib() {
-        let nib = UINib(nibName: "VMDisplayView", bundle: nil)
-        _ = nib.instantiate(withOwner: self, options: nil)
-        assert(self.inputAccessoryView != nil, "Failed to load input view from VMDisplayView nib")
-    }
-
     override func viewDidLoad() {
         super.viewDidLoad()
-        loadViewsFromNib()
         
         if largeScreen {
             prefersStatusBarHidden = true

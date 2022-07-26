@@ -11,11 +11,7 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="VMDisplayViewController">
             <connections>
-                <outlet property="displayView" destination="NOe-rz-jvy" id="T3M-rd-GYB"/>
                 <outlet property="inputAccessoryView" destination="qdd-t1-YV9" id="bFg-sV-ulc"/>
-                <outlet property="placeholderIndicator" destination="18B-yK-cUi" id="ACc-pi-9qK"/>
-                <outlet property="placeholderView" destination="PK2-6H-Mm0" id="TaA-3O-Opc"/>
-                <outlet property="resumeBigButton" destination="q8Q-UP-yRo" id="XJg-Mq-IBz"/>
                 <outletCollection property="customKeyModifierButtons" destination="jxu-AQ-u8c" id="4En-WD-DQc"/>
                 <outletCollection property="customKeyModifierButtons" destination="bCv-uH-SSy" id="iDi-by-YwA"/>
                 <outletCollection property="customKeyModifierButtons" destination="Pjh-3m-tFX" id="pAf-wV-qLE"/>
@@ -23,71 +19,6 @@
             </connections>
         </placeholder>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
-        <view contentMode="scaleToFill" id="NOe-rz-jvy" customClass="VMDisplayView">
-            <rect key="frame" x="0.0" y="0.0" width="844" height="390"/>
-            <autoresizingMask key="autoresizingMask"/>
-            <subviews>
-                <visualEffectView opaque="NO" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" translatesAutoresizingMaskIntoConstraints="NO" id="PK2-6H-Mm0">
-                    <rect key="frame" x="0.0" y="0.0" width="844" height="390"/>
-                    <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="3zv-lo-2BB">
-                        <rect key="frame" x="0.0" y="0.0" width="844" height="390"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <visualEffectView opaque="NO" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" translatesAutoresizingMaskIntoConstraints="NO" id="AsK-xy-gZJ">
-                                <rect key="frame" x="0.0" y="0.0" width="844" height="390"/>
-                                <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="7J7-Z4-Ve2">
-                                    <rect key="frame" x="0.0" y="0.0" width="844" height="390"/>
-                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                    <subviews>
-                                        <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="large" translatesAutoresizingMaskIntoConstraints="NO" id="18B-yK-cUi">
-                                            <rect key="frame" x="397" y="170" width="50" height="50"/>
-                                            <constraints>
-                                                <constraint firstAttribute="width" constant="50" id="bb9-iz-6cD"/>
-                                                <constraint firstAttribute="height" constant="50" id="psn-10-jFZ"/>
-                                            </constraints>
-                                            <color key="color" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                        </activityIndicatorView>
-                                        <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" pointerInteraction="YES" translatesAutoresizingMaskIntoConstraints="NO" id="q8Q-UP-yRo">
-                                            <rect key="frame" x="397" y="170" width="50" height="50"/>
-                                            <state key="normal" image="Resume Icon"/>
-                                            <connections>
-                                                <action selector="pauseResumePressed:" destination="-1" eventType="touchUpInside" id="PZC-MN-K1m"/>
-                                            </connections>
-                                        </button>
-                                    </subviews>
-                                    <constraints>
-                                        <constraint firstItem="q8Q-UP-yRo" firstAttribute="centerY" secondItem="7J7-Z4-Ve2" secondAttribute="centerY" id="DDI-E5-sUq"/>
-                                        <constraint firstItem="18B-yK-cUi" firstAttribute="centerY" secondItem="7J7-Z4-Ve2" secondAttribute="centerY" id="T7X-Xg-s6v"/>
-                                        <constraint firstItem="18B-yK-cUi" firstAttribute="centerX" secondItem="7J7-Z4-Ve2" secondAttribute="centerX" id="cuw-3T-nN0"/>
-                                        <constraint firstItem="q8Q-UP-yRo" firstAttribute="centerX" secondItem="7J7-Z4-Ve2" secondAttribute="centerX" id="kXB-4W-OSY"/>
-                                    </constraints>
-                                </view>
-                                <vibrancyEffect>
-                                    <blurEffect style="dark"/>
-                                </vibrancyEffect>
-                            </visualEffectView>
-                        </subviews>
-                        <constraints>
-                            <constraint firstAttribute="trailing" secondItem="AsK-xy-gZJ" secondAttribute="trailing" id="0LK-hp-Sq7"/>
-                            <constraint firstItem="AsK-xy-gZJ" firstAttribute="leading" secondItem="3zv-lo-2BB" secondAttribute="leading" id="Mz6-yo-jMd"/>
-                            <constraint firstItem="AsK-xy-gZJ" firstAttribute="top" secondItem="3zv-lo-2BB" secondAttribute="top" id="fSw-gh-kKq"/>
-                            <constraint firstAttribute="bottom" secondItem="AsK-xy-gZJ" secondAttribute="bottom" id="iBD-jf-8Je"/>
-                        </constraints>
-                    </view>
-                    <blurEffect style="dark"/>
-                </visualEffectView>
-            </subviews>
-            <viewLayoutGuide key="safeArea" id="oBd-R5-iCm"/>
-            <color key="tintColor" systemColor="lightTextColor"/>
-            <gestureRecognizers/>
-            <constraints>
-                <constraint firstItem="PK2-6H-Mm0" firstAttribute="top" secondItem="NOe-rz-jvy" secondAttribute="top" id="5rg-Am-2Cw"/>
-                <constraint firstAttribute="trailing" secondItem="PK2-6H-Mm0" secondAttribute="trailing" id="66H-Mh-dzf"/>
-                <constraint firstItem="PK2-6H-Mm0" firstAttribute="leading" secondItem="NOe-rz-jvy" secondAttribute="leading" id="EGq-A5-jiU"/>
-                <constraint firstAttribute="bottom" secondItem="PK2-6H-Mm0" secondAttribute="bottom" id="Z3s-eZ-Auc"/>
-            </constraints>
-            <point key="canvasLocation" x="-55" y="217"/>
-        </view>
         <view contentMode="scaleToFill" id="qdd-t1-YV9" customClass="UIInputView">
             <rect key="frame" x="0.0" y="0.0" width="1000" height="68"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -845,12 +776,8 @@
     <resources>
         <image name="Keyboard Hide" width="30" height="30"/>
         <image name="Keyboard Paste" width="30" height="30"/>
-        <image name="Resume Icon" width="50" height="50"/>
         <systemColor name="darkTextColor">
             <color white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-        </systemColor>
-        <systemColor name="lightTextColor">
-            <color white="1" alpha="0.59999999999999998" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
         <systemColor name="secondaryLabelColor">
             <color red="0.23529411764705882" green="0.23529411764705882" blue="0.2627450980392157" alpha="0.59999999999999998" colorSpace="custom" customColorSpace="sRGB"/>
