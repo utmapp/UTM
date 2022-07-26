@@ -120,11 +120,12 @@ struct VMWindowView: View {
                     session.connectDevice(device)
                     #endif
                 })
-            case .nonfatalError, .fatalError:
-                return Alert(title: Text(session.nonfatalError!), dismissButton: .cancel(Text("OK")) {
-                    session.nonfatalError = nil
-                    if type == .fatalError {
+            case .nonfatalError(let message), .fatalError(let message):
+                return Alert(title: Text(message), dismissButton: .cancel(Text("OK")) {
+                    if case .fatalError(_) = type {
                         session.terminateApplication()
+                    } else {
+                        session.nonfatalError = nil
                     }
                 })
             }
@@ -157,13 +158,13 @@ struct VMWindowView: View {
             }
         }
         .onChange(of: session.nonfatalError) { newValue in
-            if newValue != nil {
-                state.alert = .nonfatalError
+            if let message = newValue {
+                state.alert = .nonfatalError(message)
             }
         }
         .onChange(of: session.fatalError) { newValue in
-            if newValue != nil {
-                state.alert = .fatalError
+            if let message = newValue {
+                state.alert = .fatalError(message)
             }
         }
         .onChange(of: session.vmState) { newValue in

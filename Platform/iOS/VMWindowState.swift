@@ -80,8 +80,8 @@ extension VMWindowState {
             case .terminateApp: return 1
             case .restart: return 2
             case .deviceConnected(_): return 3
-            case .nonfatalError: return 4
-            case .fatalError: return 5
+            case .nonfatalError(_): return 4
+            case .fatalError(_): return 5
             }
         }
         
@@ -93,8 +93,8 @@ extension VMWindowState {
         #else
         case deviceConnected(Any?)
         #endif
-        case nonfatalError
-        case fatalError
+        case nonfatalError(String)
+        case fatalError(String)
     }
 }
 
