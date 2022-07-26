@@ -111,11 +111,8 @@ struct VMToolbarView: View {
                     Label("Zoom", systemImage: state.isViewportChanged ? "arrow.down.right.and.arrow.up.left" : "arrow.up.left.and.arrow.down.right")
                 }.offset(offset(for: 4))
                 if session.vm.hasUsbRedirection {
-                    Button {
-                        state.isUSBMenuShown.toggle()
-                    } label: {
-                        Label("USB", image: "Toolbar USB")
-                    }.offset(offset(for: 3))
+                    VMToolbarUSBMenuView()
+                    .offset(offset(for: 3))
                 }
                 VMToolbarDriveMenuView()
                 .offset(offset(for: 2))

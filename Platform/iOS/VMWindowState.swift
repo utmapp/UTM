@@ -53,8 +53,6 @@ struct VMWindowState: Identifiable {
     
     var displayViewSize: CGSize = .zero
     
-    var isUSBMenuShown: Bool = false
-    
     var isDrivesMenuShown: Bool = false
     
     var isKeyboardRequested: Bool = false
@@ -76,13 +74,25 @@ struct VMWindowState: Identifiable {
 
 extension VMWindowState {
     enum Alert: Identifiable {
-        var id: Self {
-            self
+        var id: Int {
+            switch self {
+            case .powerDown: return 0
+            case .terminateApp: return 1
+            case .restart: return 2
+            case .deviceConnected(_): return 3
+            case .nonfatalError: return 4
+            case .fatalError: return 5
+            }
         }
         
         case powerDown
         case terminateApp
         case restart
+        #if !WITH_QEMU_TCI
+        case deviceConnected(CSUSBDevice)
+        #else
+        case deviceConnected(Any?)
+        #endif
         case nonfatalError
         case fatalError
     }

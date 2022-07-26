@@ -190,16 +190,6 @@ struct VMDisplayHostedView: UIViewControllerRepresentable {
                 state.isDrivesMenuShown = false
             }
         }
-        if state.isUSBMenuShown {
-            #if !WITH_QEMU_TCI
-            DispatchQueue.main.async {
-                if let usbManager = session.primaryUsbManager {
-                    uiViewController.presentUsb(for: usbManager)
-                }
-                state.isUSBMenuShown = false
-            }
-            #endif
-        }
     }
     
     func makeCoordinator() -> Coordinator {

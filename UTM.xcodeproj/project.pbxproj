@@ -84,6 +84,8 @@
 		841619B62843226B000034B2 /* QEMUConstant.swift in Sources */ = {isa = PBXBuildFile; fileRef = 841619B52843226B000034B2 /* QEMUConstant.swift */; };
 		841619B72843226B000034B2 /* QEMUConstant.swift in Sources */ = {isa = PBXBuildFile; fileRef = 841619B52843226B000034B2 /* QEMUConstant.swift */; };
 		841619B82843226B000034B2 /* QEMUConstant.swift in Sources */ = {isa = PBXBuildFile; fileRef = 841619B52843226B000034B2 /* QEMUConstant.swift */; };
+		84258C42288F806400C66366 /* VMToolbarUSBMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84258C41288F806400C66366 /* VMToolbarUSBMenuView.swift */; };
+		84258C43288F806400C66366 /* VMToolbarUSBMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84258C41288F806400C66366 /* VMToolbarUSBMenuView.swift */; };
 		843BF82428441EAD0029D60D /* UTMQemuConfigurationDisplay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 843BF82328441EAD0029D60D /* UTMQemuConfigurationDisplay.swift */; };
 		843BF82528441EAD0029D60D /* UTMQemuConfigurationDisplay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 843BF82328441EAD0029D60D /* UTMQemuConfigurationDisplay.swift */; };
 		843BF82628441EAD0029D60D /* UTMQemuConfigurationDisplay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 843BF82328441EAD0029D60D /* UTMQemuConfigurationDisplay.swift */; };
@@ -1581,6 +1583,7 @@
 		841619AD28431952000034B2 /* UTMQemuConfigurationSystem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMQemuConfigurationSystem.swift; sourceTree = "<group>"; };
 		841619B128431DA5000034B2 /* UTMQemuConfigurationQEMU.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMQemuConfigurationQEMU.swift; sourceTree = "<group>"; };
 		841619B52843226B000034B2 /* QEMUConstant.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QEMUConstant.swift; sourceTree = "<group>"; };
+		84258C41288F806400C66366 /* VMToolbarUSBMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMToolbarUSBMenuView.swift; sourceTree = "<group>"; };
 		843BF82328441EAD0029D60D /* UTMQemuConfigurationDisplay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMQemuConfigurationDisplay.swift; sourceTree = "<group>"; };
 		843BF82728441FAF0029D60D /* QEMUConstantGenerated.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QEMUConstantGenerated.swift; sourceTree = "<group>"; };
 		843BF82B284482C10029D60D /* UTMQemuConfigurationInput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMQemuConfigurationInput.swift; sourceTree = "<group>"; };
@@ -2630,6 +2633,7 @@
 				CE2D954C24AD4F980059923A /* VMSettingsView.swift */,
 				84C60FB62681A41B00B58C00 /* VMToolbarView.swift */,
 				84CF5DF4288F558400D01721 /* VMToolbarDriveMenuView.swift */,
+				84258C41288F806400C66366 /* VMToolbarUSBMenuView.swift */,
 				84018688288A44C20050AC51 /* VMWindowState.swift */,
 				84018682288A3B2E0050AC51 /* VMWindowView.swift */,
 				CEF0307026A2B04300667B63 /* VMWizardView.swift */,
@@ -3510,6 +3514,7 @@
 				CEBE820326A4C1B5007AAB12 /* VMWizardDrivesView.swift in Sources */,
 				84018689288A44C20050AC51 /* VMWindowState.swift in Sources */,
 				CE2D927F24AD46670059923A /* qapi-commands-machine-target.c in Sources */,
+				84258C42288F806400C66366 /* VMToolbarUSBMenuView.swift in Sources */,
 				CE2D928024AD46670059923A /* UTMLegacyQemuConfigurationPortForward.m in Sources */,
 				CE2D928124AD46670059923A /* qapi-events.c in Sources */,
 				CE2D928224AD46670059923A /* qapi-events-introspect.c in Sources */,
@@ -4275,6 +4280,7 @@
 				CEA45EE8263519B5002FA97D /* VMDisplayMetalViewController+Keyboard.m in Sources */,
 				CEA45EE9263519B5002FA97D /* qapi-builtin-types.c in Sources */,
 				CEA45EEA263519B5002FA97D /* UTMExtensions.swift in Sources */,
+				84258C43288F806400C66366 /* VMToolbarUSBMenuView.swift in Sources */,
 				843BF82928441FAF0029D60D /* QEMUConstantGenerated.swift in Sources */,
 				CEA45EEC263519B5002FA97D /* UTMData.swift in Sources */,
 				CEA45EED263519B5002FA97D /* qapi-events-migration.c in Sources */,

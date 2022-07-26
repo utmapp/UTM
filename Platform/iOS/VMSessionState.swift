@@ -33,10 +33,22 @@ import Foundation
     @Published var primaryInput: CSInput?
     
     #if !WITH_QEMU_TCI
-    @Published var primaryUsbManager: CSUSBManager?
+    private var primaryUsbManager: CSUSBManager?
+    
+    @Published var mostRecentConnectedDevice: CSUSBDevice?
+    
+    @Published var allUsbDevices: [CSUSBDevice] = []
+    
+    @Published var connectedUsbDevices: [CSUSBDevice] = []
     #else
-    let primaryUsbManager: Any? = nil
+    let mostRecentConnectedDevice: Any? = nil
+    
+    let allUsbDevices: [Any] = []
+    
+    let connectedUsbDevices: [Any] = []
     #endif
+    
+    @Published var isUsbBusy: Bool = false
     
     @Published var primaryDisplay: CSDisplay?
     
@@ -59,6 +71,9 @@ extension VMSessionState: UTMVirtualMachineDelegate {
         Task {
             await MainActor.run {
                 vmState = state
+                if state == .vmStopped {
+                    clearDevices()
+                }
             }
         }
     }
@@ -147,12 +162,96 @@ extension VMSessionState: UTMSpiceIODelegate {
     func spiceDidChangeUsbManager(_ usbManager: CSUSBManager?) {
         Task {
             await MainActor.run {
+                primaryUsbManager?.delegate = nil
                 primaryUsbManager = usbManager
+                usbManager?.delegate = self
             }
         }
     }
     #endif
 }
+
+#if !WITH_QEMU_TCI
+extension VMSessionState: CSUSBManagerDelegate {
+    func spiceUsbManager(_ usbManager: CSUSBManager, deviceError error: String, for device: CSUSBDevice) {
+        Task {
+            await MainActor.run {
+                nonfatalError = error
+            }
+        }
+    }
+    
+    func spiceUsbManager(_ usbManager: CSUSBManager, deviceAttached device: CSUSBDevice) {
+        Task {
+            await MainActor.run {
+                mostRecentConnectedDevice = device
+            }
+        }
+    }
+    
+    func spiceUsbManager(_ usbManager: CSUSBManager, deviceRemoved device: CSUSBDevice) {
+        Task {
+            await MainActor.run {
+                disconnectDevice(device)
+            }
+        }
+    }
+    
+    func refreshDevices() {
+        guard let usbManager = self.primaryUsbManager else {
+            logger.error("no usb manager connected")
+            return
+        }
+        isUsbBusy = true
+        Task.detached { [self] in
+            let devices = usbManager.usbDevices
+            await MainActor.run {
+                allUsbDevices = devices
+                isUsbBusy = false
+            }
+        }
+    }
+    
+    func connectDevice(_ usbDevice: CSUSBDevice) {
+        guard let usbManager = self.primaryUsbManager else {
+            logger.error("no usb manager connected")
+            return
+        }
+        isUsbBusy = true
+        Task.detached { [self] in
+            let (success, message) = await usbManager.connectUsbDevice(usbDevice)
+            await MainActor.run {
+                if success {
+                    self.connectedUsbDevices.append(usbDevice)
+                } else {
+                    nonfatalError = message
+                }
+                isUsbBusy = false
+            }
+        }
+    }
+    
+    func disconnectDevice(_ usbDevice: CSUSBDevice) {
+        guard let usbManager = self.primaryUsbManager else {
+            logger.error("no usb manager connected")
+            return
+        }
+        isUsbBusy = true
+        Task.detached { [self] in
+            await usbManager.disconnectUsbDevice(usbDevice)
+            await MainActor.run {
+                connectedUsbDevices.removeAll(where: { $0 == usbDevice })
+                isUsbBusy = false
+            }
+        }
+    }
+    
+    private func clearDevices() {
+        connectedUsbDevices.removeAll()
+        allUsbDevices.removeAll()
+    }
+}
+#endif
 
 extension VMSessionState {
     @objc private func suspend() {
