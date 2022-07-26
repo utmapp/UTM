@@ -245,67 +245,51 @@ enum ToolbarLocation: Int {
     case bottomLeft
 }
 
-struct ToolbarButtonStyle: ButtonStyle {
-    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
-    @Environment(\.verticalSizeClass) private var verticalSizeClass
+protocol ToolbarButtonBaseStyle<Label, Content> {
+    associatedtype Label: View
+    associatedtype Content: View
     
+    func makeBodyBase(label: Label, isPressed: Bool) -> Content
+}
+
+extension ToolbarButtonBaseStyle {
     private var size: CGFloat {
-        if #available(iOS 15, *) {
-            return (horizontalSizeClass == .compact || verticalSizeClass == .compact) ? 32 : 48
-        } else {
-            // workaround bug in iOS 14 where @Environment is not inherited in ButtonStyle
-            let horizontalSizeClass = UITraitCollection.current.horizontalSizeClass
-            let verticalSizeClass = UITraitCollection.current.verticalSizeClass
-            return (horizontalSizeClass == .compact || verticalSizeClass == .compact) ? 32 : 48
-        }
+        let horizontalSizeClass = UITraitCollection.current.horizontalSizeClass
+        let verticalSizeClass = UITraitCollection.current.verticalSizeClass
+        return (horizontalSizeClass == .compact || verticalSizeClass == .compact) ? 32 : 48
     }
     
-    func makeBody(configuration: Configuration) -> some View {
+    func makeBodyBase(label: Label, isPressed: Bool) -> some View {
         ZStack {
             Circle()
                 .foregroundColor(.gray)
-                .opacity(configuration.isPressed ? 0.8 : 0.7)
+                .opacity(isPressed ? 0.8 : 0.7)
                 .blur(radius: 0.1)
-            configuration.label
+            label
                 .labelStyle(.iconOnly)
-                .foregroundColor(configuration.isPressed ? .secondary : .white)
+                .foregroundColor(isPressed ? .secondary : .white)
                 .opacity(0.75)
         }.frame(width: size, height: size)
         .mask(Circle().frame(width: size-2, height: size-2))
-        .scaleEffect(configuration.isPressed ? 1.2 : 1)
+        .scaleEffect(isPressed ? 1.2 : 1)
         .hoverEffect(.lift)
     }
 }
 
-struct ToolbarMenuStyle: MenuStyle {
-    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
-    @Environment(\.verticalSizeClass) private var verticalSizeClass
-    
-    private var size: CGFloat {
-        if #available(iOS 15, *) {
-            return (horizontalSizeClass == .compact || verticalSizeClass == .compact) ? 32 : 48
-        } else {
-            // workaround bug in iOS 14 where @Environment is not inherited in ButtonStyle
-            let horizontalSizeClass = UITraitCollection.current.horizontalSizeClass
-            let verticalSizeClass = UITraitCollection.current.verticalSizeClass
-            return (horizontalSizeClass == .compact || verticalSizeClass == .compact) ? 32 : 48
-        }
-    }
+
+struct ToolbarButtonStyle: ButtonStyle, ToolbarButtonBaseStyle {
+    typealias Label = Configuration.Label
     
     func makeBody(configuration: Configuration) -> some View {
-        ZStack {
-            Circle()
-                .foregroundColor(.gray)
-                .opacity(0.7)
-                .blur(radius: 0.1)
-            Menu(configuration)
-                .labelStyle(.iconOnly)
-                .foregroundColor(.white)
-                .opacity(0.75)
-        }.frame(width: size, height: size)
-        .mask(Circle().frame(width: size-2, height: size-2))
-        .scaleEffect(1)
-        .hoverEffect(.lift)
+        return makeBodyBase(label: configuration.label, isPressed: configuration.isPressed)
+    }
+}
+
+struct ToolbarMenuStyle: MenuStyle, ToolbarButtonBaseStyle {
+    typealias Label = Menu<Configuration.Label, Configuration.Content>
+    
+    func makeBody(configuration: Configuration) -> some View {
+        return makeBodyBase(label: Menu(configuration), isPressed: false)
     }
 }
 
