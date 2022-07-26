@@ -39,7 +39,7 @@ struct VMWizardOSOtherView: View {
                     .disabled(wizardState.isBusy)
                     .padding(.leading, 1)
                     if wizardState.isBusy {
-                        BigWhiteSpinner()
+                        Spinner(size: .large)
                     }
                 } header: {
                     Text("File Imported")

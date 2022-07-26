@@ -52,7 +52,7 @@ struct VMWizardOSMacView: View {
                 .buttonStyle(BrowseButtonStyle())
                 #endif
                 if wizardState.isBusy {
-                    BigWhiteSpinner()
+                    Spinner(size: .large)
                 }
                 Spacer()
             } header: {

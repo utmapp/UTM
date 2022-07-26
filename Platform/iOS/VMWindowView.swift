@@ -71,7 +71,7 @@ struct VMWindowView: View {
                         HStack {
                             Spacer()
                             if state.isBusy {
-                                BigWhiteSpinner()
+                                Spinner(size: .large)
                             } else if session.vmState == .vmPaused {
                                 Button {
                                     session.vm.requestVmResume()

@@ -72,7 +72,7 @@ struct VMWizardOSWindowsView: View {
                 .padding(.leading, 1)
                 
                 if wizardState.isBusy {
-                    BigWhiteSpinner()
+                    Spinner(size: .large)
                 }
             } header: {
                 Text("File Imported")

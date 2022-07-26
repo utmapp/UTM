@@ -217,7 +217,7 @@ struct VMWizardOSLinuxView: View {
                 }
             }
             if wizardState.isBusy {
-                BigWhiteSpinner()
+                Spinner(size: .large)
             }
             
             

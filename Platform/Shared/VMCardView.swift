@@ -57,7 +57,7 @@ struct VMCardView: View {
                         .labelStyle(.iconOnly)
                 }
             } else if vm.isBusy {
-                BigWhiteSpinner()
+                Spinner(size: .large)
             }
         }.padding([.top, .bottom], 10)
         .buttonStyle(.plain)

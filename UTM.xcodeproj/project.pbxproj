@@ -1195,9 +1195,9 @@
 		CEF0304E26A2AFBE00667B63 /* BigButtonStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEF0304C26A2AFBE00667B63 /* BigButtonStyle.swift */; };
 		CEF0304F26A2AFBF00667B63 /* BigButtonStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEF0304C26A2AFBE00667B63 /* BigButtonStyle.swift */; };
 		CEF0305026A2AFBF00667B63 /* BigButtonStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEF0304C26A2AFBE00667B63 /* BigButtonStyle.swift */; };
-		CEF0305126A2AFBF00667B63 /* BigWhiteSpinner.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEF0304D26A2AFBE00667B63 /* BigWhiteSpinner.swift */; };
-		CEF0305226A2AFBF00667B63 /* BigWhiteSpinner.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEF0304D26A2AFBE00667B63 /* BigWhiteSpinner.swift */; };
-		CEF0305326A2AFBF00667B63 /* BigWhiteSpinner.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEF0304D26A2AFBE00667B63 /* BigWhiteSpinner.swift */; };
+		CEF0305126A2AFBF00667B63 /* Spinner.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEF0304D26A2AFBE00667B63 /* Spinner.swift */; };
+		CEF0305226A2AFBF00667B63 /* Spinner.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEF0304D26A2AFBE00667B63 /* Spinner.swift */; };
+		CEF0305326A2AFBF00667B63 /* Spinner.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEF0304D26A2AFBE00667B63 /* Spinner.swift */; };
 		CEF0305B26A2AFDF00667B63 /* VMWizardOSOtherView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEF0305426A2AFDD00667B63 /* VMWizardOSOtherView.swift */; };
 		CEF0305C26A2AFDF00667B63 /* VMWizardOSOtherView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEF0305426A2AFDD00667B63 /* VMWizardOSOtherView.swift */; };
 		CEF0305D26A2AFDF00667B63 /* VMWizardOSOtherView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEF0305426A2AFDD00667B63 /* VMWizardOSOtherView.swift */; };
@@ -2142,7 +2142,7 @@
 		CEECE13B25E47D9500A2AAB8 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		CEF0300526A25A6900667B63 /* VMWizardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMWizardView.swift; sourceTree = "<group>"; };
 		CEF0304C26A2AFBE00667B63 /* BigButtonStyle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BigButtonStyle.swift; sourceTree = "<group>"; };
-		CEF0304D26A2AFBE00667B63 /* BigWhiteSpinner.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BigWhiteSpinner.swift; sourceTree = "<group>"; };
+		CEF0304D26A2AFBE00667B63 /* Spinner.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Spinner.swift; sourceTree = "<group>"; };
 		CEF0305426A2AFDD00667B63 /* VMWizardOSOtherView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VMWizardOSOtherView.swift; sourceTree = "<group>"; };
 		CEF0305526A2AFDD00667B63 /* VMWizardState.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VMWizardState.swift; sourceTree = "<group>"; };
 		CEF0305626A2AFDD00667B63 /* VMWizardOSWindowsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VMWizardOSWindowsView.swift; sourceTree = "<group>"; };
@@ -3091,7 +3091,7 @@
 				84B36D2827B790BE00C22685 /* DestructiveButton.swift */,
 				8471772727CD3CAB00D3A50B /* DetailedSection.swift */,
 				4B224B9C279D4D8100B63CFF /* InListButtonStyle.swift */,
-				CEF0304D26A2AFBE00667B63 /* BigWhiteSpinner.swift */,
+				CEF0304D26A2AFBE00667B63 /* Spinner.swift */,
 				84018696288B71BF0050AC51 /* BusyIndicator.swift */,
 				CE7D972B24B2B17D0080CB69 /* BusyOverlay.swift */,
 				CE772AAB25C8B0F600E4E379 /* ContentView.swift */,
@@ -3543,7 +3543,7 @@
 				CE2D958924AD4F990059923A /* VMConfigSystemView.swift in Sources */,
 				CE8813D524CD265700532628 /* VMShareFileModifier.swift in Sources */,
 				843BF83C2845494C0029D60D /* UTMQemuConfigurationSerial.swift in Sources */,
-				CEF0305126A2AFBF00667B63 /* BigWhiteSpinner.swift in Sources */,
+				CEF0305126A2AFBF00667B63 /* Spinner.swift in Sources */,
 				CE2D929424AD46670059923A /* cf-input-visitor.c in Sources */,
 				CE2D929524AD46670059923A /* qapi-commands-char.c in Sources */,
 				CE2D929624AD46670059923A /* qapi-visit-migration.c in Sources */,
@@ -3814,7 +3814,7 @@
 				CE0B6D2C24AD57FC00FE012D /* qapi-commands-ui.c in Sources */,
 				CE0B6D2324AD57FC00FE012D /* qapi-commands-crypto.c in Sources */,
 				841619AC284315F9000034B2 /* UTMConfigurationInfo.swift in Sources */,
-				CEF0305326A2AFBF00667B63 /* BigWhiteSpinner.swift in Sources */,
+				CEF0305326A2AFBF00667B63 /* Spinner.swift in Sources */,
 				CE0B6CFA24AD568400FE012D /* UTMLegacyQemuConfiguration+System.m in Sources */,
 				CEBBF1A824B921F000C15049 /* VMDetailsView.swift in Sources */,
 				CE0B6D7E24AD584D00FE012D /* qapi-events-misc.c in Sources */,
@@ -4227,7 +4227,7 @@
 				CEA45EB9263519B5002FA97D /* VMCursor.m in Sources */,
 				CEA45EBA263519B5002FA97D /* VMConfigDriveDetailsView.swift in Sources */,
 				84B36D2627B704C200C22685 /* UTMDownloadVMTask.swift in Sources */,
-				CEF0305226A2AFBF00667B63 /* BigWhiteSpinner.swift in Sources */,
+				CEF0305226A2AFBF00667B63 /* Spinner.swift in Sources */,
 				CEA45EBC263519B5002FA97D /* qapi-events-tpm.c in Sources */,
 				CEA45EBD263519B5002FA97D /* UTMQemuSystem.m in Sources */,
 				CEA45EBE263519B5002FA97D /* NumberTextField.swift in Sources */,

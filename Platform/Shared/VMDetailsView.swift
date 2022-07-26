@@ -152,7 +152,7 @@ struct Screenshot: View {
                 .fill(Color(red: 230/255, green: 229/255, blue: 235/255))
                 .blendMode(.hardLight)
             if vm.isBusy {
-                BigWhiteSpinner()
+                Spinner(size: .large)
             } else if vm.state == .vmStopped {
                 Button(action: { data.run(vm: vm) }, label: {
                     Label("Run", systemImage: "play.circle.fill")
