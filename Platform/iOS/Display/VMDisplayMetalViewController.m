@@ -52,7 +52,7 @@
 }
 
 - (void)loadInputAccessory {
-    UINib *nib = [UINib nibWithNibName:@"VMDisplayView" bundle:nil];
+    UINib *nib = [UINib nibWithNibName:@"VMDisplayMetalViewInputAccessory" bundle:nil];
     [nib instantiateWithOwner:self options:nil];
 }
 

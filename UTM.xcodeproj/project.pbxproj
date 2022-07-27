@@ -695,7 +695,7 @@
 		CE2D936724AD46670059923A /* pixman-1.0.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D641922653C7600FC7E63 /* pixman-1.0.framework */; };
 		CE2D936B24AD46670059923A /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 521F3EFB2414F73800130500 /* Localizable.strings */; };
 		CE2D936C24AD46670059923A /* qemu in Resources */ = {isa = PBXBuildFile; fileRef = CE9D18F72265410E00355E14 /* qemu */; };
-		CE2D936D24AD46670059923A /* VMDisplayView.xib in Resources */ = {isa = PBXBuildFile; fileRef = CE72B4A92463532B00716A11 /* VMDisplayView.xib */; };
+		CE2D936D24AD46670059923A /* VMDisplayMetalViewInputAccessory.xib in Resources */ = {isa = PBXBuildFile; fileRef = CE72B4A92463532B00716A11 /* VMDisplayMetalViewInputAccessory.xib */; };
 		CE2D937224AD46670059923A /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 5286EC91243748AC007E6CBC /* Settings.bundle */; };
 		CE2D937624AD46670059923A /* gpg-error.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63F122653C7400FC7E63 /* gpg-error.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CE2D937724AD46670059923A /* qemu-mips64el-softmmu.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D640822653C7500FC7E63 /* qemu-mips64el-softmmu.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
@@ -1090,7 +1090,7 @@
 		CEA45F64263519B5002FA97D /* Icons in Resources */ = {isa = PBXBuildFile; fileRef = CE4698F824C8FBD9008C1BD6 /* Icons */; };
 		CEA45F67263519B5002FA97D /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 521F3EFB2414F73800130500 /* Localizable.strings */; };
 		CEA45F69263519B5002FA97D /* qemu in Resources */ = {isa = PBXBuildFile; fileRef = CE9D18F72265410E00355E14 /* qemu */; };
-		CEA45F6A263519B5002FA97D /* VMDisplayView.xib in Resources */ = {isa = PBXBuildFile; fileRef = CE72B4A92463532B00716A11 /* VMDisplayView.xib */; };
+		CEA45F6A263519B5002FA97D /* VMDisplayMetalViewInputAccessory.xib in Resources */ = {isa = PBXBuildFile; fileRef = CE72B4A92463532B00716A11 /* VMDisplayMetalViewInputAccessory.xib */; };
 		CEA45F6D263519B5002FA97D /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 5286EC91243748AC007E6CBC /* Settings.bundle */; };
 		CEA45F6F263519B5002FA97D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CE550BD52259479D0063E575 /* Assets.xcassets */; };
 		CEA45F72263519B5002FA97D /* gpg-error.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63F122653C7400FC7E63 /* gpg-error.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
@@ -2044,7 +2044,7 @@
 		CE6EDCDE241C4A6800A719DC /* UTMViewState.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UTMViewState.m; sourceTree = "<group>"; };
 		CE6EDCE0241DA0E900A719DC /* UTMLogging.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UTMLogging.h; sourceTree = "<group>"; };
 		CE6EDCE1241DA0E900A719DC /* UTMLogging.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UTMLogging.m; sourceTree = "<group>"; };
-		CE72B4A92463532B00716A11 /* VMDisplayView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = VMDisplayView.xib; sourceTree = "<group>"; };
+		CE72B4A92463532B00716A11 /* VMDisplayMetalViewInputAccessory.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = VMDisplayMetalViewInputAccessory.xib; sourceTree = "<group>"; };
 		CE72B4AB2463579D00716A11 /* VMDisplayViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VMDisplayViewController.h; sourceTree = "<group>"; };
 		CE72B4AC2463579D00716A11 /* VMDisplayViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VMDisplayViewController.m; sourceTree = "<group>"; };
 		CE772AAB25C8B0F600E4E379 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -3025,7 +3025,6 @@
 				CE3ADD692411C661002D6A5F /* VMCursor.m */,
 				CE20FAE62448D2BE0059AE11 /* VMScroll.h */,
 				CE20FAE72448D2BE0059AE11 /* VMScroll.m */,
-				CE72B4A92463532B00716A11 /* VMDisplayView.xib */,
 				84C60FB9268269D700B58C00 /* VMDisplayViewController.swift */,
 				CE72B4AB2463579D00716A11 /* VMDisplayViewController.h */,
 				CE72B4AC2463579D00716A11 /* VMDisplayViewController.m */,
@@ -3042,6 +3041,7 @@
 				CE056CA5242454100004B68A /* VMDisplayMetalViewController+Touch.m */,
 				5286EC8E2437488E007E6CBC /* VMDisplayMetalViewController+Gamepad.h */,
 				5286EC8F2437488E007E6CBC /* VMDisplayMetalViewController+Gamepad.m */,
+				CE72B4A92463532B00716A11 /* VMDisplayMetalViewInputAccessory.xib */,
 				8401865D2887B1620050AC51 /* VMDisplayTerminalViewController.swift */,
 				CEEB66442284B942002737B2 /* VMKeyboardButton.h */,
 				CEEB66452284B942002737B2 /* VMKeyboardButton.m */,
@@ -3394,7 +3394,7 @@
 				FFB02A8C266CB09C006CD71A /* InfoPlist.strings in Resources */,
 				CE2D936B24AD46670059923A /* Localizable.strings in Resources */,
 				CE2D936C24AD46670059923A /* qemu in Resources */,
-				CE2D936D24AD46670059923A /* VMDisplayView.xib in Resources */,
+				CE2D936D24AD46670059923A /* VMDisplayMetalViewInputAccessory.xib in Resources */,
 				CE2D937224AD46670059923A /* Settings.bundle in Resources */,
 				CE0B6CED24AD532A00FE012D /* Assets.xcassets in Resources */,
 			);
@@ -3428,7 +3428,7 @@
 				FFB02A8D266CB09C006CD71A /* InfoPlist.strings in Resources */,
 				CEA45F67263519B5002FA97D /* Localizable.strings in Resources */,
 				CEA45F69263519B5002FA97D /* qemu in Resources */,
-				CEA45F6A263519B5002FA97D /* VMDisplayView.xib in Resources */,
+				CEA45F6A263519B5002FA97D /* VMDisplayMetalViewInputAccessory.xib in Resources */,
 				CEA45F6D263519B5002FA97D /* Settings.bundle in Resources */,
 				CEA45F6F263519B5002FA97D /* Assets.xcassets in Resources */,
 			);
