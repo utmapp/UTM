@@ -29,14 +29,6 @@
     return self.keyboardView.isFirstResponder;
 }
 
-- (void)updateKeyboardAccessoryFrame {
-    if (self.inputAccessoryView.safeAreaInsets.bottom > 0) {
-        self.keyboardView.softKeyboardVisible = YES;
-    } else {
-        self.keyboardView.softKeyboardVisible = NO;
-    }
-}
-
 - (void)keyboardView:(nonnull VMKeyboardView *)keyboardView didPressKeyDown:(int)scancode {
     [self sendExtendedKey:kCSInputKeyPress code:scancode];
 }
