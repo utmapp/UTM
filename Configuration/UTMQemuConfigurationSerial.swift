@@ -37,6 +37,9 @@ struct UTMQemuConfigurationSerial: Codable, Identifiable {
     /// TCP port to listed on or connect to (for TCP client/server mode).
     var tcpPort: Int?
     
+    /// Applies only to TCP targets. If true, will wait for connection before starting VM.
+    var isWaitForConnection: Bool?
+    
     let id = UUID()
     
     enum CodingKeys: String, CodingKey {
@@ -46,6 +49,7 @@ struct UTMQemuConfigurationSerial: Codable, Identifiable {
         case hardware = "Hardware"
         case tcpHostAddress = "TcpHostAddress"
         case tcpPort = "TcpPort"
+        case isWaitForConnection = "WaitForConnection"
     }
     
     init() {
@@ -59,6 +63,7 @@ struct UTMQemuConfigurationSerial: Codable, Identifiable {
         hardware = try values.decodeIfPresent(AnyQEMUConstant.self, forKey: .hardware)
         tcpHostAddress = try values.decodeIfPresent(String.self, forKey: .tcpHostAddress)
         tcpPort = try values.decodeIfPresent(Int.self, forKey: .tcpPort)
+        isWaitForConnection = try values.decodeIfPresent(Bool.self, forKey: .isWaitForConnection)
     }
     
     func encode(to encoder: Encoder) throws {
@@ -72,8 +77,10 @@ struct UTMQemuConfigurationSerial: Codable, Identifiable {
         case .tcpClient:
             try container.encodeIfPresent(tcpHostAddress, forKey: .tcpHostAddress)
             try container.encodeIfPresent(tcpPort, forKey: .tcpPort)
+            try container.encodeIfPresent(isWaitForConnection, forKey: .isWaitForConnection)
         case .tcpServer:
             try container.encodeIfPresent(tcpPort, forKey: .tcpPort)
+            try container.encodeIfPresent(isWaitForConnection, forKey: .isWaitForConnection)
         default:
             break
         }

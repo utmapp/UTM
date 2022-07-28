@@ -40,6 +40,9 @@ struct VMConfigSerialView: View {
                                 isUnsupportedAlertShown.toggle()
                             }
                         }
+                    if config.mode == .tcpClient || config.mode == .tcpServer {
+                        Toggle("Wait for Connection", isOn: $config.isWaitForConnection.bound)
+                    }
                 }
                 
                 if config.target == .manualDevice {

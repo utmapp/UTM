@@ -290,6 +290,17 @@ import Foundation
         }
     }
     
+    @objc var qemuShouldWaitForeverForConnect: Bool {
+        if wrappedValue is UTMQemuConfiguration {
+            return qemuConfig!.serials.contains { serial in
+                (serial.mode == .tcpServer || serial.mode == .tcpServer) &&
+                serial.isWaitForConnection == true
+            }
+        } else {
+            fatalError()
+        }
+    }
+    
     init<Config: UTMConfiguration>(wrapping config: Config) {
         self.wrappedValue = config
     }

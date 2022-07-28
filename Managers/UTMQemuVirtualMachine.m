@@ -225,7 +225,7 @@ NSString *const kSuspendSnapshotName = @"suspend";
         }
         dispatch_semaphore_signal(spiceConnectOrErrorEvent);
     }];
-    if (dispatch_semaphore_wait(spiceConnectOrErrorEvent, dispatch_time(DISPATCH_TIME_NOW, kStopTimeout)) != 0) {
+    if (dispatch_semaphore_wait(spiceConnectOrErrorEvent, self.config.qemuShouldWaitForeverForConnect ? DISPATCH_TIME_FOREVER : dispatch_time(DISPATCH_TIME_NOW, kStopTimeout)) != 0) {
         UTMLog(@"Timed out waiting for SPICE connect event");
         completion([self errorGeneric]);
         return;

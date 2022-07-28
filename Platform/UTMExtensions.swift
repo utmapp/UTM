@@ -57,6 +57,26 @@ extension Optional where Wrapped: FixedWidthInteger {
     }
 }
 
+extension Optional where Wrapped == Bool {
+    var _bound: Wrapped? {
+        get {
+            return self
+        }
+        set {
+            self = newValue
+        }
+    }
+    
+    public var bound: Wrapped {
+        get {
+            return _bound ?? false
+        }
+        set {
+            _bound = newValue
+        }
+    }
+}
+
 extension LocalizedStringKey {
     var localizedString: String {
         let mirror = Mirror(reflecting: self)
