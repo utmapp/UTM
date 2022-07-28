@@ -63,9 +63,6 @@ public extension VMDisplayViewController {
         notifications.add(nc.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: .main) { _ in
             _self?.handleEnteredForeground()
         })
-        notifications.add(nc.addObserver(forName: .UTMImport, object: nil, queue: .main) { _ in
-            _self?.handleImportUTM()
-        })
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -178,9 +175,5 @@ extension VMDisplayViewController {
                 self.delegate.requestVmDeleteState()
             }
         }
-    }
-    
-    func handleImportUTM() {
-        showAlert(NSLocalizedString("You must terminate the running VM before you can import a new VM.", comment: "VMDisplayViewController"), actions: nil, completion: nil)
     }
 }
