@@ -23,7 +23,7 @@ class VMDisplayTerminalWindowController: VMDisplayQemuWindowController {
     private var vmSerialPort: CSPort?
     
     private var serialConfig: UTMQemuConfigurationSerial? {
-        vmQemuConfig?.builtinSerials[id]
+        vmQemuConfig?.serials[id]
     }
     
     override var defaultTitle: String {

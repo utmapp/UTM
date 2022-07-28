@@ -101,8 +101,8 @@ struct VMToolbarView: View {
                     Label("Restart", systemImage: "restart")
                 }.offset(offset(for: 5))
                 Button {
-                    if case .serial(_) = state.device {
-                        let template = session.qemuConfig.serials[state.configIndex].terminal?.resizeCommand
+                    if case .serial(_, _) = state.device {
+                        let template = session.qemuConfig.serials[state.device!.configIndex].terminal?.resizeCommand
                         state.toggleDisplayResize(command: template)
                     } else {
                         state.toggleDisplayResize()
@@ -170,6 +170,9 @@ struct VMToolbarView: View {
             }
             .onChange(of: state.isUserInteracting) { newValue in
                 longIdleTimeout.assertUserInteraction()
+                if state.isInteractive {
+                    session.activeWindow = state.id
+                }
             }
         }
     }

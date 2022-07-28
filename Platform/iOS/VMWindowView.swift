@@ -18,29 +18,11 @@ import SwiftUI
 import SwiftUIVisualEffects
 
 struct VMWindowView: View {
-    @State private var state: VMWindowState
+    @State private var state = VMWindowState()
     @EnvironmentObject private var session: VMSessionState
     
     private let keyboardDidShowNotification = NotificationCenter.default.publisher(for: UIResponder.keyboardDidShowNotification)
     private let keyboardDidHideNotification = NotificationCenter.default.publisher(for: UIResponder.keyboardDidHideNotification)
-    
-    init() {
-        _state = State(initialValue: VMWindowState())
-    }
-    
-    init(for display: CSDisplay, index: Int) {
-        self.init()
-        assert(index != 0)
-        state.device = .display(display)
-        state.configIndex = index
-    }
-    
-    init(for serial: CSPort, index: Int) {
-        self.init()
-        assert(index != 0)
-        state.device = .serial(serial)
-        state.configIndex = index
-    }
     
     private func withOptionalAnimation<Result>(_ animation: Animation? = .default, _ body: () throws -> Result) rethrows -> Result {
         if UIAccessibility.isReduceMotionEnabled {
@@ -55,9 +37,9 @@ struct VMWindowView: View {
             ZStack {
                 if let device = state.device {
                     switch device {
-                    case .display(_):
+                    case .display(_, _):
                         VMDisplayHostedView(vm: session.vm, device: device, state: $state)
-                    case .serial(_):
+                    case .serial(_, _):
                         VMDisplayHostedView(vm: session.vm, device: device, state: $state)
                     }
                 } else if !state.isBusy && state.isRunning {
@@ -95,7 +77,9 @@ struct VMWindowView: View {
                 }
             }.background(Color.black)
             .ignoresSafeArea()
-            VMToolbarView(state: $state)
+            if state.isInteractive {
+                VMToolbarView(state: $state)
+            }
         }
         .alert(item: $state.alert, content: { type in
             switch type {
@@ -130,40 +114,25 @@ struct VMWindowView: View {
                 })
             }
         })
-        .onChange(of: session.primaryDisplay) { newValue in
-            if state.configIndex == 0 && !session.qemuConfig.displays.isEmpty {
-                withOptionalAnimation {
-                    if let display = newValue {
-                        state.device = .display(display)
-                    } else {
-                        state.device = nil
-                    }
-                }
-            }
-        }
-        .onChange(of: session.primarySerial) { newValue in
-            if state.configIndex == 0 && session.qemuConfig.displays.isEmpty && !session.qemuConfig.builtinSerials.isEmpty {
-                withOptionalAnimation {
-                    if let serial = newValue {
-                        state.device = .serial(serial)
-                    } else {
-                        state.device = nil
-                    }
-                }
+        .onChange(of: session.windowDeviceMap) { windowDeviceMap in
+            if let device = windowDeviceMap[state.id] {
+                state.device = device
+            } else {
+                state.device = nil
             }
         }
         .onChange(of: session.mostRecentConnectedDevice) { newValue in
-            if let device = newValue {
+            if session.activeWindow == state.id, let device = newValue {
                 state.alert = .deviceConnected(device)
             }
         }
         .onChange(of: session.nonfatalError) { newValue in
-            if let message = newValue {
+            if session.activeWindow == state.id, let message = newValue {
                 state.alert = .nonfatalError(message)
             }
         }
         .onChange(of: session.fatalError) { newValue in
-            if let message = newValue {
+            if session.activeWindow == state.id, let message = newValue {
                 state.alert = .fatalError(message)
             }
         }
@@ -198,6 +167,12 @@ struct VMWindowView: View {
         .onReceive(keyboardDidHideNotification) { _ in
             state.isKeyboardShown = false
             state.isKeyboardRequested = false
+        }
+        .onAppear {
+            session.registerWindow(state.id)
+        }
+        .onDisappear {
+            session.removeWindow(state.id)
         }
     }
 }

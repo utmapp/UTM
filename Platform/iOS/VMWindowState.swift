@@ -18,16 +18,21 @@ import Foundation
 
 /// Represents the UI state for a single window
 struct VMWindowState: Identifiable {
-    enum Device {
-        case display(CSDisplay)
-        case serial(CSPort)
+    enum Device: Equatable {
+        case display(CSDisplay, Int)
+        case serial(CSPort, Int)
+        
+        var configIndex: Int {
+            switch self {
+            case .display(_, let index): return index
+            case .serial(_, let index): return index
+            }
+        }
     }
     
     let id = UUID()
     
     var device: Device?
-    
-    var configIndex: Int = 0
     
     private var shouldViewportChange: Bool {
         !(displayScale == 1.0 && displayOriginX == 0.0 && displayOriginY == 0.0)
@@ -66,6 +71,8 @@ struct VMWindowState: Identifiable {
     var isRunning: Bool = false
     
     var alert: Alert?
+    
+    var isInteractive: Bool = true
 }
 
 // MARK: - VM action alerts
@@ -137,13 +144,13 @@ extension VMWindowState {
     }
     
     mutating func toggleDisplayResize(command: String? = nil) {
-        if case let .display(display) = device {
+        if case let .display(display, _) = device {
             if isViewportChanged {
                 resetDisplay(display)
             } else {
                 resizeDisplayToFit(display)
             }
-        } else if case let .serial(serial) = device {
+        } else if case let .serial(serial, _) = device {
             resetConsole(serial)
             isViewportChanged = false
         }

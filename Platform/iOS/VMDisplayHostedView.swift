@@ -37,19 +37,19 @@ struct VMDisplayHostedView: UIViewControllerRepresentable {
         }
         
         var qemuDisplayUpscaler: MTLSamplerMinMagFilter {
-            vmConfig.displays[state.configIndex].upscalingFilter.metalSamplerMinMagFilter
+            vmConfig.displays[state.device!.configIndex].upscalingFilter.metalSamplerMinMagFilter
         }
         
         var qemuDisplayDownscaler: MTLSamplerMinMagFilter {
-            vmConfig.displays[state.configIndex].downscalingFilter.metalSamplerMinMagFilter
+            vmConfig.displays[state.device!.configIndex].downscalingFilter.metalSamplerMinMagFilter
         }
         
         var qemuDisplayIsDynamicResolution: Bool {
-            vmConfig.displays[state.configIndex].isDynamicResolution
+            vmConfig.displays[state.device!.configIndex].isDynamicResolution
         }
         
         var qemuDisplayIsNativeResolution: Bool {
-            vmConfig.displays[state.configIndex].isNativeResolution
+            vmConfig.displays[state.device!.configIndex].isNativeResolution
         }
         
         var qemuHasClipboardSharing: Bool {
@@ -57,7 +57,7 @@ struct VMDisplayHostedView: UIViewControllerRepresentable {
         }
         
         var qemuConsoleResizeCommand: String? {
-            vmConfig.serials[state.configIndex].terminal?.resizeCommand
+            vmConfig.serials[state.device!.configIndex].terminal?.resizeCommand
         }
         
         var isViewportChanged: Bool {
@@ -149,10 +149,10 @@ struct VMDisplayHostedView: UIViewControllerRepresentable {
     func makeUIViewController(context: Context) -> VMDisplayViewController {
         let vc: VMDisplayViewController
         switch device {
-        case .display(let display):
+        case .display(let display, _):
             vc = VMDisplayMetalViewController(display: display, input: session.primaryInput)
             vc.delegate = context.coordinator
-        case .serial(let serial):
+        case .serial(let serial, _):
             vc = VMDisplayTerminalViewController(port: serial)
             vc.delegate = context.coordinator
         }

@@ -50,13 +50,15 @@ import Foundation
     
     @Published var isUsbBusy: Bool = false
     
-    @Published var primaryDisplay: CSDisplay?
+    @Published var devices: [VMWindowState.Device] = []
     
-    @Published var otherDisplays: [CSDisplay] = []
+    @Published var windows: [UUID] = []
     
-    @Published var primarySerial: CSPort?
+    @Published var primaryWindow: UUID?
     
-    @Published var otherSerials: [CSPort] = []
+    @Published var activeWindow: UUID?
+    
+    @Published var windowDeviceMap: [UUID: VMWindowState.Device] = [:]
     
     init(for vm: UTMQemuVirtualMachine) {
         self.vm = vm
@@ -64,108 +66,142 @@ import Foundation
         vm.delegate = self
         vm.ioDelegate = self
     }
+    
+    func registerWindow(_ window: UUID) {
+        windows.append(window)
+        if primaryWindow == nil {
+            primaryWindow = window
+        }
+        if activeWindow == nil {
+            activeWindow = window
+        }
+    }
+    
+    func removeWindow(_ window: UUID) {
+        windows.removeAll { $0 == window }
+        if primaryWindow == window {
+            primaryWindow = windows.first
+        }
+        if activeWindow == window {
+            activeWindow = windows.first
+        }
+    }
 }
 
 extension VMSessionState: UTMVirtualMachineDelegate {
-    func virtualMachine(_ vm: UTMVirtualMachine, didTransitionTo state: UTMVMState) {
-        Task {
-            await MainActor.run {
-                vmState = state
-                if state == .vmStopped {
-                    clearDevices()
-                }
+    nonisolated func virtualMachine(_ vm: UTMVirtualMachine, didTransitionTo state: UTMVMState) {
+        Task { @MainActor in
+            vmState = state
+            if state == .vmStopped {
+                clearDevices()
             }
         }
     }
     
-    func virtualMachine(_ vm: UTMVirtualMachine, didErrorWithMessage message: String) {
-        Task {
-            await MainActor.run {
-                fatalError = message
-            }
+    nonisolated func virtualMachine(_ vm: UTMVirtualMachine, didErrorWithMessage message: String) {
+        Task { @MainActor in
+            fatalError = message
         }
     }
 }
 
 extension VMSessionState: UTMSpiceIODelegate {
-    func spiceDidCreateInput(_ input: CSInput) {
-        guard primaryInput == nil else {
-            return
+    nonisolated func spiceDidCreateInput(_ input: CSInput) {
+        Task { @MainActor in
+            guard primaryInput == nil else {
+                return
+            }
+            primaryInput = input
         }
-        Task {
-            await MainActor.run {
-                primaryInput = input
+    }
+    
+    nonisolated func spiceDidDestroyInput(_ input: CSInput) {
+        Task { @MainActor in
+            guard primaryInput == input else {
+                return
+            }
+            primaryInput = nil
+        }
+    }
+    
+    nonisolated func spiceDidCreateDisplay(_ display: CSDisplay) {
+        Task { @MainActor in
+            assert(display.monitorID < qemuConfig.displays.count)
+            let device = VMWindowState.Device.display(display, display.monitorID)
+            devices.append(device)
+            // associate with the next available window
+            for windowId in windows {
+                if windowDeviceMap[windowId] == nil {
+                    windowDeviceMap[windowId] = device
+                }
             }
         }
     }
     
-    func spiceDidDestroyInput(_ input: CSInput) {
-        guard primaryInput == input else {
-            return
-        }
-        Task {
-            await MainActor.run {
-                primaryInput = nil
+    nonisolated func spiceDidDestroyDisplay(_ display: CSDisplay) {
+        Task { @MainActor in
+            let device = VMWindowState.Device.display(display, display.monitorID)
+            devices.removeAll { $0 == device }
+            for windowId in windows {
+                if windowDeviceMap[windowId] == device {
+                    windowDeviceMap[windowId] = nil
+                }
             }
         }
     }
     
-    func spiceDidCreateDisplay(_ display: CSDisplay) {
-        guard display.isPrimaryDisplay else {
-            return
-        }
-        Task {
-            await MainActor.run {
-                primaryDisplay = display
-            }
-        }
-    }
-    
-    func spiceDidDestroyDisplay(_ display: CSDisplay) {
-        guard display == primaryDisplay else {
-            return
-        }
-        Task {
-            await MainActor.run {
-                primaryDisplay = nil
-            }
-        }
-    }
-    
-    func spiceDidUpdateDisplay(_ display: CSDisplay) {
+    nonisolated func spiceDidUpdateDisplay(_ display: CSDisplay) {
         // nothing to do
     }
     
-    func spiceDidCreateSerial(_ serial: CSPort) {
-        guard primarySerial == nil else {
-            return
+    nonisolated private func configIdForSerial(_ serial: CSPort) -> Int? {
+        let prefix = "com.utmapp.terminal."
+        guard serial.name?.hasPrefix(prefix) ?? false else {
+            return nil
         }
-        Task {
-            await MainActor.run {
-                primarySerial = serial
+        return Int(serial.name!.dropFirst(prefix.count))
+    }
+    
+    nonisolated func spiceDidCreateSerial(_ serial: CSPort) {
+        Task { @MainActor in
+            guard let id = configIdForSerial(serial) else {
+                logger.error("cannot setup window for serial '\(serial.name ?? "(null)")'")
+                return
+            }
+            let device = VMWindowState.Device.serial(serial, id)
+            assert(id < qemuConfig.serials.count)
+            assert(qemuConfig.serials[id].mode == .builtin && qemuConfig.serials[id].terminal != nil)
+            devices.append(device)
+            // associate with the next available window
+            for windowId in windows {
+                if windowDeviceMap[windowId] == nil {
+                    windowDeviceMap[windowId] = device
+                }
             }
         }
     }
     
-    func spiceDidDestroySerial(_ serial: CSPort) {
-        guard primarySerial == serial else {
-            return
-        }
-        Task {
-            await MainActor.run {
-                primarySerial = nil
+    nonisolated func spiceDidDestroySerial(_ serial: CSPort) {
+        Task { @MainActor in
+            guard let id = configIdForSerial(serial) else {
+                return
+            }
+            let device = VMWindowState.Device.serial(serial, id)
+            devices.removeAll { $0 == device }
+            for windowId in windows {
+                if windowDeviceMap[windowId] == device {
+                    windowDeviceMap[windowId] = nil
+                }
             }
         }
     }
     
     #if !WITH_QEMU_TCI
-    func spiceDidChangeUsbManager(_ usbManager: CSUSBManager?) {
-        Task {
-            await MainActor.run {
-                primaryUsbManager?.delegate = nil
-                primaryUsbManager = usbManager
-                usbManager?.delegate = self
-            }
+    nonisolated func spiceDidChangeUsbManager(_ usbManager: CSUSBManager?) {
+        Task { @MainActor in
+            primaryUsbManager?.delegate = nil
+            primaryUsbManager = usbManager
+            usbManager?.delegate = self
         }
     }
     #endif
@@ -173,27 +209,21 @@ extension VMSessionState: UTMSpiceIODelegate {
 
 #if !WITH_QEMU_TCI
 extension VMSessionState: CSUSBManagerDelegate {
-    func spiceUsbManager(_ usbManager: CSUSBManager, deviceError error: String, for device: CSUSBDevice) {
-        Task {
-            await MainActor.run {
-                nonfatalError = error
-            }
+    nonisolated func spiceUsbManager(_ usbManager: CSUSBManager, deviceError error: String, for device: CSUSBDevice) {
+        Task { @MainActor in
+            nonfatalError = error
         }
     }
     
-    func spiceUsbManager(_ usbManager: CSUSBManager, deviceAttached device: CSUSBDevice) {
-        Task {
-            await MainActor.run {
-                mostRecentConnectedDevice = device
-            }
+    nonisolated func spiceUsbManager(_ usbManager: CSUSBManager, deviceAttached device: CSUSBDevice) {
+        Task { @MainActor in
+            mostRecentConnectedDevice = device
         }
     }
     
-    func spiceUsbManager(_ usbManager: CSUSBManager, deviceRemoved device: CSUSBDevice) {
-        Task {
-            await MainActor.run {
-                disconnectDevice(device)
-            }
+    nonisolated func spiceUsbManager(_ usbManager: CSUSBManager, deviceRemoved device: CSUSBDevice) {
+        Task { @MainActor in
+            disconnectDevice(device)
         }
     }
     
