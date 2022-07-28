@@ -143,8 +143,10 @@ struct VMWindowView: View {
                     state.isBusy = false
                     state.isRunning = false
                 }
-                if newValue == .vmStopped {
-                    session.terminateApplication()
+                DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) {
+                    if session.vmState == .vmStopped && session.fatalError == nil {
+                        session.terminateApplication()
+                    }
                 }
             case .vmPausing, .vmStopping, .vmStarting, .vmResuming:
                 withOptionalAnimation {
