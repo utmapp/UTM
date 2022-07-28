@@ -223,18 +223,12 @@ extension VMDisplayQemuWindowController {
 // MARK: - SPICE base implementation
 
 extension VMDisplayQemuWindowController: UTMSpiceIODelegate {
-    private func findSlotForSecondaryDisplay<T: VMDisplayQemuWindowController>(typed type: T.Type) -> (Int, Int) {
-        var id = self is T ? 1 : 0
-        var at = 0
-        for i in secondaryWindows.indices {
-            if let subwindow = secondaryWindows[i] as? T {
-                if subwindow.id == id {
-                    id += 1
-                    at = i+1
-                }
-            }
+    private func configIdForSerial(_ serial: CSPort) -> Int? {
+        let prefix = "com.utmapp.terminal."
+        guard serial.name?.hasPrefix(prefix) ?? false else {
+            return nil
         }
-        return (id, at)
+        return Int(serial.name!.dropFirst(prefix.count))
     }
     
     func spiceDidCreateInput(_ input: CSInput) {
@@ -257,12 +251,12 @@ extension VMDisplayQemuWindowController: UTMSpiceIODelegate {
             return
         }
         DispatchQueue.main.async {
-            let (id, offset) = self.findSlotForSecondaryDisplay(typed: VMDisplayMetalWindowController.self)
+            let id = display.monitorID
             guard id < self.vmQemuConfig.displays.count else {
                 return
             }
             let secondary = VMDisplayMetalWindowController(secondaryFromDisplay: display, primary: primary, vm: self.qemuVM, id: id)
-            self.showSecondaryWindow(secondary, at: offset)
+            self.showSecondaryWindow(secondary)
         }
     }
     
@@ -303,12 +297,14 @@ extension VMDisplayQemuWindowController: UTMSpiceIODelegate {
             return
         }
         DispatchQueue.main.async {
-            let (id, offset) = self.findSlotForSecondaryDisplay(typed: VMDisplayTerminalWindowController.self)
-            guard id < self.vmQemuConfig.builtinSerials.count else {
+            guard let id = self.configIdForSerial(serial) else {
+                return
+            }
+            guard id < self.vmQemuConfig.serials.count else {
                 return
             }
             let secondary = VMDisplayTerminalWindowController(secondaryFromSerialPort: serial, vm: self.qemuVM, id: id)
-            self.showSecondaryWindow(secondary, at: offset)
+            self.showSecondaryWindow(secondary)
         }
     }
     

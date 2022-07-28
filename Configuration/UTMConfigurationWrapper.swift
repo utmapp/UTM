@@ -188,7 +188,7 @@ import Foundation
     
     @objc var qemuHasTerminal: Bool {
         if wrappedValue is UTMQemuConfiguration {
-            return !qemuConfig!.builtinSerials.isEmpty
+            return !(qemuConfig!.serials.filter { $0.mode == .builtin }).isEmpty
         } else {
             fatalError()
         }

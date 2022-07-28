@@ -45,11 +45,6 @@ final class UTMQemuConfiguration: UTMConfiguration {
     /// All serial ouputs
     @Published var serials: [UTMQemuConfigurationSerial] = []
     
-    /// Serial outputs that require a builtin Terminal window
-    var builtinSerials: [UTMQemuConfigurationSerial] {
-        serials.filter { $0.mode == .builtin }
-    }
-    
     /// All audio devices
     @Published var sound: [UTMQemuConfigurationSound] = []
     
