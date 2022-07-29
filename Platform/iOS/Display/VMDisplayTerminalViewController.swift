@@ -65,10 +65,12 @@ import SwiftUI
     }
     
     override func showKeyboard() {
+        super.showKeyboard()
         terminalView.becomeFirstResponder()
     }
     
     override func hideKeyboard() {
+        super.hideKeyboard()
         _ = terminalView.resignFirstResponder()
     }
 }

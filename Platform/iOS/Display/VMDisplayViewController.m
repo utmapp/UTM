@@ -37,11 +37,11 @@
 }
 
 - (void)showKeyboard {
-    // implement in subclass
+    [self.view.window makeKeyWindow];
 }
 
 - (void)hideKeyboard {
-    // implement in subclass
+    [self.view.window resignKeyWindow];
 }
 
 @end

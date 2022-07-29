@@ -144,10 +144,12 @@
 #pragma mark - Key handling
 
 - (void)showKeyboard {
+    [super showKeyboard];
     [self.keyboardView becomeFirstResponder];
 }
 
 - (void)hideKeyboard {
+    [super hideKeyboard];
     [self.keyboardView resignFirstResponder];
 }
 
