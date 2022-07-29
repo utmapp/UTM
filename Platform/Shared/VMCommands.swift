@@ -34,13 +34,13 @@ struct VMCommands: Commands {
         CommandGroup(replacing: .help) {
             Button(action: { openLink("https://mac.getutm.app/gallery/") }, label: {
                 Text("Virtual Machine Gallery")
-            })
+            }).keyboardShortcut(KeyEquivalent("1"), modifiers: [.command, .control])
             Button(action: { openLink("https://mac.getutm.app/support/") }, label: {
                 Text("Support")
-            })
+            }).keyboardShortcut(KeyEquivalent("2"), modifiers: [.command, .control])
             Button(action: { openLink("https://mac.getutm.app/licenses/") }, label: {
                 Text("License")
-            })
+            }).keyboardShortcut(KeyEquivalent("3"), modifiers: [.command, .control])
         }
     }
     
