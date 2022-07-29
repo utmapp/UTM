@@ -20,7 +20,14 @@ import SwiftUI
 
 @objc class VMDisplayTerminalViewController: VMDisplayViewController {
     private var terminalView: TerminalView!
-    private var vmSerialPort: CSPort
+    var vmSerialPort: CSPort {
+        willSet {
+            vmSerialPort.delegate = nil
+            newValue.delegate = self
+            terminalView.getTerminal().resetToInitialState()
+            terminalView.getTerminal().softReset()
+        }
+    }
     
     private var style: UTMConfigurationTerminal?
     private var keyboardDelta: CGFloat = 0

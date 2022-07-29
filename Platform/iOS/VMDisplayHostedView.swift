@@ -184,6 +184,22 @@ struct VMDisplayHostedView: UIViewControllerRepresentable {
                 }
             }
         }
+        switch state.device {
+        case .display(let display, _):
+            if let vc = uiViewController as? VMDisplayMetalViewController {
+                if vc.vmDisplay != display {
+                    vc.vmDisplay = display
+                }
+            }
+        case .serial(let serial, _):
+            if let vc = uiViewController as? VMDisplayTerminalViewController {
+                if vc.vmSerialPort != serial {
+                    vc.vmSerialPort = serial
+                }
+            }
+        default:
+            break
+        }
     }
     
     func makeCoordinator() -> Coordinator {

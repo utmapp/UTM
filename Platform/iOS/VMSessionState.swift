@@ -132,6 +132,10 @@ extension VMSessionState: UTMSpiceIODelegate {
             // associate with the next available window
             for windowId in windows {
                 if windowDeviceMap[windowId] == nil {
+                    if windowId == primaryWindow && !display.isPrimaryDisplay {
+                        // prefer the primary display for the primary window
+                        continue
+                    }
                     windowDeviceMap[windowId] = device
                 }
             }
@@ -175,6 +179,10 @@ extension VMSessionState: UTMSpiceIODelegate {
             // associate with the next available window
             for windowId in windows {
                 if windowDeviceMap[windowId] == nil {
+                    if windowId == primaryWindow && !qemuConfig.displays.isEmpty {
+                        // prefer a GUI display over console for primary if both are available
+                        continue
+                    }
                     windowDeviceMap[windowId] = device
                 }
             }

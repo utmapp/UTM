@@ -89,17 +89,17 @@ struct VMToolbarView: View {
                     }
                 } label: {
                     Label(state.isRunning ? "Power Off" : "Quit", systemImage: state.isRunning ? "power" : "xmark")
-                }.offset(offset(for: 7))
+                }.offset(offset(for: 8))
                 Button {
                     session.pauseResume()
                 } label: {
                     Label(state.isRunning ? "Pause" : "Play", systemImage: state.isRunning ? "pause" : "play")
-                }.offset(offset(for: 6))
+                }.offset(offset(for: 7))
                 Button {
                     state.alert = .restart
                 } label: {
                     Label("Restart", systemImage: "restart")
-                }.offset(offset(for: 5))
+                }.offset(offset(for: 6))
                 Button {
                     if case .serial(_, _) = state.device {
                         let template = session.qemuConfig.serials[state.device!.configIndex].terminal?.resizeCommand
@@ -109,12 +109,14 @@ struct VMToolbarView: View {
                     }
                 } label: {
                     Label("Zoom", systemImage: state.isViewportChanged ? "arrow.down.right.and.arrow.up.left" : "arrow.up.left.and.arrow.down.right")
-                }.offset(offset(for: 4))
+                }.offset(offset(for: 5))
                 if session.vm.hasUsbRedirection {
                     VMToolbarUSBMenuView()
-                    .offset(offset(for: 3))
+                    .offset(offset(for: 4))
                 }
                 VMToolbarDriveMenuView()
+                .offset(offset(for: 3))
+                VMToolbarDisplayMenuView(state: $state)
                 .offset(offset(for: 2))
                 Button {
                     state.isKeyboardRequested = !state.isKeyboardShown
@@ -216,7 +218,7 @@ struct VMToolbarView: View {
     
     private func offset(for index: Int) -> CGSize {
         var sub = 0
-        if !session.vm.hasUsbRedirection && index >= 3 {
+        if !session.vm.hasUsbRedirection && index >= 4 {
             sub = 1
         }
         let x = isCollapsed ? 0 : -CGFloat(index-sub)*spacing

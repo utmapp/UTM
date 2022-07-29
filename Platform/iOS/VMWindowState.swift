@@ -18,7 +18,7 @@ import Foundation
 
 /// Represents the UI state for a single window
 struct VMWindowState: Identifiable {
-    enum Device: Equatable {
+    enum Device: Identifiable, Hashable {
         case display(CSDisplay, Int)
         case serial(CSPort, Int)
         
@@ -27,6 +27,10 @@ struct VMWindowState: Identifiable {
             case .display(_, let index): return index
             case .serial(_, let index): return index
             }
+        }
+        
+        var id: Self {
+            self
         }
     }
     
