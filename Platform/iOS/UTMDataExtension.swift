@@ -19,21 +19,7 @@ import SwiftUI
 
 extension UTMData {
     @MainActor func run(vm: UTMVirtualMachine) {
-        guard let window = UIApplication.shared.windows.filter({$0.isKeyWindow}).first else {
-            logger.error("Cannot find key window")
-            return
-        }
-        
         let session = VMSessionState(for: vm as! UTMQemuVirtualMachine)
-        let vmWindow = VMWindowView().environmentObject(session)
-        let vc = UIHostingController(rootView: vmWindow)
-        self.vmVC = vc
-        window.rootViewController = vc
-        window.makeKeyAndVisible()
-        let options: UIView.AnimationOptions = .transitionCrossDissolve
-        let duration: TimeInterval = 0.3
-
-        UIView.transition(with: window, duration: duration, options: options, animations: {}, completion: nil)
         session.start()
     }
     

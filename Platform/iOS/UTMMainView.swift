@@ -49,12 +49,16 @@ struct UTMMainView: View {
         }
         .onReceive(vmSessionCreatedNotification) { output in
             let newSession = output.userInfo!["Session"] as! VMSessionState
-            session = newSession
+            withAnimation {
+                session = newSession
+            }
         }
         .onReceive(vmSessionEndedNotification) { output in
             let endedSession = output.userInfo!["Session"] as! VMSessionState
             if endedSession == session {
-                session = nil
+                withAnimation {
+                    session = nil
+                }
             }
         }
     }
