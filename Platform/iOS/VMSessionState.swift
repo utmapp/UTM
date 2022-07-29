@@ -72,12 +72,12 @@ import SwiftUI
         vm.ioDelegate = self
     }
     
-    func registerWindow(_ window: UUID) {
+    func registerWindow(_ window: UUID, isExternal: Bool = false) {
         windows.append(window)
-        if primaryWindow == nil {
+        if !isExternal, primaryWindow == nil {
             primaryWindow = window
         }
-        if activeWindow == nil {
+        if !isExternal, activeWindow == nil {
             activeWindow = window
         }
         assignDefaultDisplay(for: window)
@@ -122,14 +122,8 @@ extension VMSessionState: UTMVirtualMachineDelegate {
     nonisolated func virtualMachine(_ vm: UTMVirtualMachine, didTransitionTo state: UTMVMState) {
         Task { @MainActor in
             vmState = state
-            if state == .vmStarted {
-                Self.currentSession = self
-                NotificationCenter.default.post(name: .vmSessionCreated, object: nil, userInfo: ["Session": self])
-            }
             if state == .vmStopped {
                 clearDevices()
-                Self.currentSession = nil
-                NotificationCenter.default.post(name: .vmSessionEnded, object: nil, userInfo: ["Session": self])
             }
         }
     }
@@ -328,28 +322,37 @@ extension VMSessionState: CSUSBManagerDelegate {
 #endif
 
 extension VMSessionState {
+    func start() {
+        Self.currentSession = self
+        NotificationCenter.default.post(name: .vmSessionCreated, object: nil, userInfo: ["Session": self])
+        vm.requestVmStart()
+    }
+    
     @objc private func suspend() {
         // dummy function for selector
     }
     
-    func terminateApplication() {
-        DispatchQueue.main.async { [self] in
-            // animate to home screen
-            let app = UIApplication.shared
-            app.performSelector(onMainThread: #selector(suspend), with: nil, waitUntilDone: true)
-            
-            // wait 2 seconds while app is going background
-            Thread.sleep(forTimeInterval: 2)
-            
-            // exit app when app is in background
-            exit(0);
-        }
+    func stop() {
+        // tell other screens to shut down
+        Self.currentSession = nil
+        NotificationCenter.default.post(name: .vmSessionEnded, object: nil, userInfo: ["Session": self])
+        // animate to home screen
+        let app = UIApplication.shared
+        app.performSelector(onMainThread: #selector(suspend), with: nil, waitUntilDone: true)
+        
+        // wait 2 seconds while app is going background
+        Thread.sleep(forTimeInterval: 2)
+        
+        // exit app when app is in background
+        exit(0)
     }
     
     func powerDown() {
         vm.requestVmDeleteState()
         vm.vmStop { _ in
-            self.terminateApplication()
+            Task { @MainActor in
+                self.stop()
+            }
         }
     }
     

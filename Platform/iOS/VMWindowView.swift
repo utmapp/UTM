@@ -90,7 +90,7 @@ struct VMWindowView: View {
                 })
             case .terminateApp:
                 return Alert(title: Text("Are you sure you want to exit UTM?"), primaryButton: .cancel(Text("No")), secondaryButton: .destructive(Text("Yes")) {
-                    session.terminateApplication()
+                    session.stop()
                 })
             case .restart:
                 return Alert(title: Text("Are you sure you want to reset this VM? Any unsaved changes will be lost."), primaryButton: .cancel(Text("No")), secondaryButton: .destructive(Text("Yes")) {
@@ -108,7 +108,7 @@ struct VMWindowView: View {
             case .nonfatalError(let message), .fatalError(let message):
                 return Alert(title: Text(message), dismissButton: .cancel(Text("OK")) {
                     if case .fatalError(_) = type {
-                        session.terminateApplication()
+                        session.stop()
                     } else {
                         session.nonfatalError = nil
                     }
@@ -150,7 +150,7 @@ struct VMWindowView: View {
         }
         .onAppear {
             vmStateUpdated(session.vmState)
-            session.registerWindow(state.id)
+            session.registerWindow(state.id, isExternal: !isInteractive)
             if !isInteractive {
                 session.externalWindowBinding = $state
             }
@@ -172,7 +172,7 @@ struct VMWindowView: View {
             }
             DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) {
                 if session.vmState == .vmStopped && session.fatalError == nil {
-                    session.terminateApplication()
+                    session.stop()
                 }
             }
         case .vmPausing, .vmStopping, .vmStarting, .vmResuming:

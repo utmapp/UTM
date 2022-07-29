@@ -34,7 +34,7 @@ extension UTMData {
         let duration: TimeInterval = 0.3
 
         UIView.transition(with: window, duration: duration, options: options, animations: {}, completion: nil)
-        vm.requestVmStart()
+        session.start()
     }
     
     func stop(vm: UTMVirtualMachine) throws {
