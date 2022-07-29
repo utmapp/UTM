@@ -160,29 +160,6 @@
     [self.vmInput sendKey:type code:code];
 }
 
-#pragma mark - Toolbar actions
-
-- (void)resizeDisplayToFit {
-    CGSize viewSize = self.mtkView.drawableSize;
-    CGSize displaySize = self.vmDisplay.displaySize;
-    CGSize scaled = CGSizeMake(viewSize.width / displaySize.width, viewSize.height / displaySize.height);
-    self.vmDisplay.viewportScale = MIN(scaled.width, scaled.height);
-    self.vmDisplay.viewportOrigin = CGPointMake(0, 0);
-    // persist this change in viewState
-    self.delegate.displayScale = self.vmDisplay.viewportScale;
-    self.delegate.displayOriginX = 0;
-    self.delegate.displayOriginY = 0;
-}
-
-- (void)resetDisplay {
-    self.vmDisplay.viewportScale = 1.0;
-    self.vmDisplay.viewportOrigin = CGPointMake(0, 0);
-    // persist this change in viewState
-    self.delegate.displayScale = 1.0;
-    self.delegate.displayOriginX = 0;
-    self.delegate.displayOriginY = 0;
-}
-
 #pragma mark - Resizing
 
 - (void)displayResize:(CGSize)size {
@@ -199,12 +176,12 @@
 - (void)setVmDisplay:(CSDisplay *)display {
     _vmDisplay = display;
     _renderer.source = display;
-    // restore last size
-    CGPoint displayOrigin = CGPointMake(self.delegate.displayOriginX, self.delegate.displayOriginY);
-    display.viewportOrigin = displayOrigin;
-    double displayScale = self.delegate.displayScale;
-    if (displayScale) { // cannot be zero
-        display.viewportScale = displayScale;
+}
+
+- (void)setDisplayScaling:(CGFloat)scaling origin:(CGPoint)origin {
+    self.vmDisplay.viewportOrigin = origin;
+    if (scaling) { // cannot be zero
+        self.vmDisplay.viewportScale = scaling;
     }
 }
 

@@ -304,8 +304,7 @@ static CGFloat CGPointToPixel(CGFloat point) {
         viewport.y = CGPointToPixel(translation.y) + _lastTwoPanOrigin.y;
         self.vmDisplay.viewportOrigin = [self clipDisplayToView:viewport];
         // persist this change in viewState
-        self.delegate.displayOriginX = self.vmDisplay.viewportOrigin.x;
-        self.delegate.displayOriginY = self.vmDisplay.viewportOrigin.y;
+        self.delegate.displayOrigin = self.vmDisplay.viewportOrigin;
     }
     if (sender.state == UIGestureRecognizerStateEnded) {
         // TODO: decelerate

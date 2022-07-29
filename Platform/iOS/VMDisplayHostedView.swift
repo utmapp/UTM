@@ -70,27 +70,17 @@ struct VMDisplayHostedView: UIViewControllerRepresentable {
             }
         }
         
-        var displayOriginX: Float {
+        var displayOrigin: CGPoint {
             get {
-                state.displayOriginX
+                state.displayOrigin
             }
             
             set {
-                state.displayOriginX = newValue
+                state.displayOrigin = newValue
             }
         }
         
-        var displayOriginY: Float {
-            get {
-                state.displayOriginY
-            }
-            
-            set {
-                state.displayOriginY = newValue
-            }
-        }
-        
-        var displayScale: Float {
+        var displayScale: CGFloat {
             get {
                 state.displayScale
             }
@@ -150,8 +140,10 @@ struct VMDisplayHostedView: UIViewControllerRepresentable {
         let vc: VMDisplayViewController
         switch device {
         case .display(let display, _):
-            vc = VMDisplayMetalViewController(display: display, input: session.primaryInput)
-            vc.delegate = context.coordinator
+            let mvc = VMDisplayMetalViewController(display: display, input: session.primaryInput)
+            mvc.delegate = context.coordinator
+            mvc.setDisplayScaling(state.displayScale, origin: state.displayOrigin)
+            vc = mvc
         case .serial(let serial, _):
             vc = VMDisplayTerminalViewController(port: serial)
             vc.delegate = context.coordinator
@@ -189,6 +181,8 @@ struct VMDisplayHostedView: UIViewControllerRepresentable {
             if let vc = uiViewController as? VMDisplayMetalViewController {
                 if vc.vmDisplay != display {
                     vc.vmDisplay = display
+                    // some obscure SwiftUI error means we cannot refer to Coordinator's state binding
+                    vc.setDisplayScaling(state.displayScale, origin: state.displayOrigin)
                 }
             }
         case .serial(let serial, _):

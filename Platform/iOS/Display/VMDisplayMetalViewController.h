@@ -77,8 +77,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithDisplay:(CSDisplay *)display input:(nullable CSInput *)input NS_DESIGNATED_INITIALIZER;
 
 - (void)sendExtendedKey:(CSInputKey)type code:(int)code;
-- (void)resetDisplay;
-- (void)resizeDisplayToFit;
+- (void)setDisplayScaling:(CGFloat)scaling origin:(CGPoint)origin;
 
 @end
 

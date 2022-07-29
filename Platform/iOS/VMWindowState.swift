@@ -39,16 +39,16 @@ struct VMWindowState: Identifiable {
     var device: Device?
     
     private var shouldViewportChange: Bool {
-        !(displayScale == 1.0 && displayOriginX == 0.0 && displayOriginY == 0.0)
+        !(displayScale == 1.0 && displayOrigin == .zero)
     }
     
-    var displayScale: Float = 1.0 {
+    var displayScale: CGFloat = 1.0 {
         didSet {
             isViewportChanged = shouldViewportChange
         }
     }
     
-    var displayOriginX: Float = 0.0 {
+    var displayOrigin: CGPoint = CGPoint(x: 0, y: 0) {
         didSet {
             isViewportChanged = shouldViewportChange
         }
@@ -122,9 +122,8 @@ extension VMWindowState {
         display.viewportScale = viewportScale
         display.viewportOrigin = .zero
         // persist this change in viewState
-        displayScale = Float(viewportScale)
-        displayOriginX = 0;
-        displayOriginY = 0;
+        displayScale = viewportScale
+        displayOrigin = .zero
     }
     
     private mutating func resetDisplay(_ display: CSDisplay) {
@@ -132,8 +131,7 @@ extension VMWindowState {
         display.viewportOrigin = .zero
         // persist this change in viewState
         displayScale = 1.0
-        displayOriginX = 0
-        displayOriginY = 0
+        displayOrigin = .zero
     }
     
     private mutating func resetConsole(_ serial: CSPort, command: String? = nil) {

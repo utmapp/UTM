@@ -24,9 +24,8 @@ import Foundation
     var qemuDisplayIsDynamicResolution: Bool { get }
     var qemuDisplayIsNativeResolution: Bool { get }
     var qemuHasClipboardSharing: Bool { get }
-    var displayOriginX: Float { get set }
-    var displayOriginY: Float { get set }
-    var displayScale: Float { get set }
+    var displayOrigin: CGPoint { get set }
+    var displayScale: CGFloat { get set }
     var displayViewSize: CGSize { get set }
     
     func displayDidAssertUserInteraction()
