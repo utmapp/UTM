@@ -124,5 +124,22 @@
 			</dict>
 		</dict>
 	</array>
+	<key>UIApplicationSceneManifest</key>
+	<dict>
+		<key>UIApplicationSupportsMultipleScenes</key>
+		<true/>
+		<key>UISceneConfigurations</key>
+		<dict>
+			<key>UIWindowSceneSessionRoleExternalDisplay</key>
+			<array>
+				<dict>
+					<key>UISceneDelegateClassName</key>
+					<string>$(PRODUCT_MODULE_NAME).UTMExternalSceneDelegate</string>
+					<key>UISceneConfigurationName</key>
+					<string>External</string>
+				</dict>
+			</array>
+		</dict>
+	</dict>
 </dict>
 </plist>

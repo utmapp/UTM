@@ -18,6 +18,7 @@ import SwiftUI
 import SwiftUIVisualEffects
 
 struct VMWindowView: View {
+    @State var isInteractive = true
     @State private var state = VMWindowState()
     @EnvironmentObject private var session: VMSessionState
     
@@ -77,7 +78,7 @@ struct VMWindowView: View {
                 }
             }.background(Color.black)
             .ignoresSafeArea()
-            if state.isInteractive {
+            if isInteractive {
                 VMToolbarView(state: $state)
             }
         }
@@ -137,30 +138,7 @@ struct VMWindowView: View {
             }
         }
         .onChange(of: session.vmState) { newValue in
-            switch newValue {
-            case .vmStopped, .vmPaused:
-                withOptionalAnimation {
-                    state.isBusy = false
-                    state.isRunning = false
-                }
-                DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) {
-                    if session.vmState == .vmStopped && session.fatalError == nil {
-                        session.terminateApplication()
-                    }
-                }
-            case .vmPausing, .vmStopping, .vmStarting, .vmResuming:
-                withOptionalAnimation {
-                    state.isBusy = true
-                    state.isRunning = false
-                }
-            case .vmStarted:
-                withOptionalAnimation {
-                    state.isBusy = false
-                    state.isRunning = true
-                }
-            @unknown default:
-                break
-            }
+            vmStateUpdated(newValue)
         }
         .onReceive(keyboardDidShowNotification) { _ in
             state.isKeyboardShown = true
@@ -171,10 +149,38 @@ struct VMWindowView: View {
             state.isKeyboardRequested = false
         }
         .onAppear {
+            vmStateUpdated(session.vmState)
             session.registerWindow(state.id)
         }
         .onDisappear {
             session.removeWindow(state.id)
+        }
+    }
+    
+    private func vmStateUpdated(_ vmState: UTMVMState) {
+        switch vmState {
+        case .vmStopped, .vmPaused:
+            withOptionalAnimation {
+                state.isBusy = false
+                state.isRunning = false
+            }
+            DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) {
+                if session.vmState == .vmStopped && session.fatalError == nil {
+                    session.terminateApplication()
+                }
+            }
+        case .vmPausing, .vmStopping, .vmStarting, .vmResuming:
+            withOptionalAnimation {
+                state.isBusy = true
+                state.isRunning = false
+            }
+        case .vmStarted:
+            withOptionalAnimation {
+                state.isBusy = false
+                state.isRunning = true
+            }
+        @unknown default:
+            break
         }
     }
 }

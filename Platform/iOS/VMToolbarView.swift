@@ -172,9 +172,7 @@ struct VMToolbarView: View {
             }
             .onChange(of: state.isUserInteracting) { newValue in
                 longIdleTimeout.assertUserInteraction()
-                if state.isInteractive {
-                    session.activeWindow = state.id
-                }
+                session.activeWindow = state.id
             }
         }
     }

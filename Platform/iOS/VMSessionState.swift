@@ -18,6 +18,8 @@ import Foundation
 
 /// Represents the UI state for a single VM session.
 @MainActor class VMSessionState: NSObject, ObservableObject {
+    static private(set) var currentSession: VMSessionState?
+    
     let vm: UTMQemuVirtualMachine
     
     var qemuConfig: UTMQemuConfiguration! {
@@ -75,6 +77,7 @@ import Foundation
         if activeWindow == nil {
             activeWindow = window
         }
+        assignDefaultDisplay(for: window)
     }
     
     func removeWindow(_ window: UUID) {
@@ -85,6 +88,30 @@ import Foundation
         if activeWindow == window {
             activeWindow = windows.first
         }
+        windowDeviceMap.removeValue(forKey: window)
+    }
+    
+    private func assignDefaultDisplay(for window: UUID) {
+        // default first to next GUI, then to next serial
+        let filtered = devices.filter {
+            if case .display(_, _) = $0 {
+                return true
+            } else {
+                return false
+            }
+        }
+        for device in filtered {
+            if !windowDeviceMap.values.contains(device) {
+                windowDeviceMap[window] = device
+                return
+            }
+        }
+        for device in devices {
+            if !windowDeviceMap.values.contains(device) {
+                windowDeviceMap[window] = device
+                return
+            }
+        }
     }
 }
 
@@ -92,8 +119,14 @@ extension VMSessionState: UTMVirtualMachineDelegate {
     nonisolated func virtualMachine(_ vm: UTMVirtualMachine, didTransitionTo state: UTMVMState) {
         Task { @MainActor in
             vmState = state
+            if state == .vmStarted {
+                Self.currentSession = self
+                NotificationCenter.default.post(name: .vmSessionCreated, object: nil, userInfo: ["Session": self])
+            }
             if state == .vmStopped {
                 clearDevices()
+                Self.currentSession = nil
+                NotificationCenter.default.post(name: .vmSessionEnded, object: nil, userInfo: ["Session": self])
             }
         }
     }
@@ -329,4 +362,9 @@ extension VMSessionState {
     func reset() {
         vm.requestVmReset()
     }
+}
+
+extension Notification.Name {
+    static let vmSessionCreated = Self("VMSessionCreated")
+    static let vmSessionEnded = Self("VMSessionEnded")
 }

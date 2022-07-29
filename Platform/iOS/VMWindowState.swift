@@ -75,8 +75,6 @@ struct VMWindowState: Identifiable {
     var isRunning: Bool = false
     
     var alert: Alert?
-    
-    var isInteractive: Bool = true
 }
 
 // MARK: - VM action alerts
