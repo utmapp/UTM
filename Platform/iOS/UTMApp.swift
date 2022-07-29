@@ -1,5 +1,5 @@
 //
-// Copyright © 2020 osy. All rights reserved.
+// Copyright © 2022 osy. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,20 +17,11 @@
 import SwiftUI
 
 struct UTMApp: App {
-    @State var data = UTMData()
-    @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate: AppDelegate
-    
     var body: some Scene {
         WindowGroup {
-            ContentView().environmentObject(data)
-                .onAppear {
-                    appDelegate.data = data
-                }
+            UTMMainView()
         }.commands {
             VMCommands()
-        }
-        Settings {
-            SettingsView()
         }
     }
 }

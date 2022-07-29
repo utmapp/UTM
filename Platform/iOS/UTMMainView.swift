@@ -16,16 +16,26 @@
 
 import SwiftUI
 
-struct VMExternalWindowView: View {
+@MainActor
+struct UTMMainView: View {
+    let isInteractive: Bool
+    
+    @State private var data: UTMData = UTMData()
     @State private var session: VMSessionState?
     
     private let vmSessionCreatedNotification = NotificationCenter.default.publisher(for: .vmSessionCreated)
     private let vmSessionEndedNotification = NotificationCenter.default.publisher(for: .vmSessionEnded)
     
+    init(isInteractive: Bool = true) {
+        self.isInteractive = isInteractive
+    }
+    
     var body: some View {
         ZStack {
             if let session = session {
-                VMWindowView(isInteractive: false).environmentObject(session)
+                VMWindowView(isInteractive: isInteractive).environmentObject(session)
+            } else if isInteractive {
+                ContentView().environmentObject(data)
             } else {
                 VStack {
                     Text("Waiting for VM to connect to display...")
@@ -50,8 +60,8 @@ struct VMExternalWindowView: View {
     }
 }
 
-struct VMExternalWindowView_Previews: PreviewProvider {
+struct UTMMainView_Previews: PreviewProvider {
     static var previews: some View {
-        VMExternalWindowView()
+        UTMMainView()
     }
 }

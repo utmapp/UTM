@@ -57,6 +57,13 @@ struct VMToolbarDisplayMenuView: View {
                     Label("External Monitor", systemImage: "rectangle.on.rectangle")
                 }
             }
+            Divider()
+            Button {
+                UIApplication.shared.requestSceneSessionActivation(nil, userActivity: nil, options: nil, errorHandler: nil)
+            } label: {
+                Label("New Window…", systemImage: "plus.rectangle.on.rectangle")
+            }
+
         } label: {
             Label("Display", systemImage: "rectangle.on.rectangle")
         }.overlay(Badge(count: session.devices.count), alignment: .topTrailing)
