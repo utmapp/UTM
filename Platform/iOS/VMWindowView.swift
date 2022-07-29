@@ -122,6 +122,11 @@ struct VMWindowView: View {
                 state.device = nil
             }
         }
+        .onChange(of: state.device) { newDevice in
+            if session.windowDeviceMap[state.id] != newDevice {
+                session.windowDeviceMap[state.id] = newDevice
+            }
+        }
         .onChange(of: session.mostRecentConnectedDevice) { newValue in
             if session.activeWindow == state.id, let device = newValue {
                 state.alert = .deviceConnected(device)

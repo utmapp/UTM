@@ -24,6 +24,7 @@ struct VMToolbarDisplayMenuView: View {
         Menu {
             Menu {
                 Picker("", selection: $state.device) {
+                    Label("None", systemImage: "rectangle.dashed").tag(nil as VMWindowState.Device?)
                     ForEach(session.devices) { device in
                         switch device {
                         case .serial(_, let index):
@@ -44,11 +45,9 @@ struct VMToolbarDisplayMenuView: View {
                         Label("Zoom/Reset", systemImage: externalWindowBinding.isViewportChanged.wrappedValue ? "arrow.down.right.and.arrow.up.left" : "arrow.up.left.and.arrow.down.right")
                     }
                     Picker("", selection: externalWindowBinding.device) {
+                        Label("None", systemImage: "rectangle.dashed").tag(nil as VMWindowState.Device?)
                         ForEach(session.devices) { device in
-                            switch device {
-                            case .serial(_, let index):
-                                Label("Serial \(index): \(session.qemuConfig.serials[index].target.prettyValue)", systemImage: "cable.connector").tag(device as VMWindowState.Device?)
-                            case .display(_, let index):
+                            if case .display(_, let index) = device {
                                 Label("Display \(index): \(session.qemuConfig.displays[index].hardware.prettyValue)", systemImage: "display").tag(device as VMWindowState.Device?)
                             }
                         }

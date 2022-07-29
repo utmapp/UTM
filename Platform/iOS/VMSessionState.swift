@@ -80,7 +80,7 @@ import SwiftUI
         if !isExternal, activeWindow == nil {
             activeWindow = window
         }
-        assignDefaultDisplay(for: window)
+        assignDefaultDisplay(for: window, isExternal: isExternal)
     }
     
     func removeWindow(_ window: UUID) {
@@ -94,7 +94,7 @@ import SwiftUI
         windowDeviceMap.removeValue(forKey: window)
     }
     
-    private func assignDefaultDisplay(for window: UUID) {
+    private func assignDefaultDisplay(for window: UUID, isExternal: Bool) {
         // default first to next GUI, then to next serial
         let filtered = devices.filter {
             if case .display(_, _) = $0 {
@@ -108,6 +108,9 @@ import SwiftUI
                 windowDeviceMap[window] = device
                 return
             }
+        }
+        if isExternal {
+            return // no serial device for external display
         }
         for device in devices {
             if !windowDeviceMap.values.contains(device) {
