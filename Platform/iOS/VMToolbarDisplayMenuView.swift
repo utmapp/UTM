@@ -34,7 +34,28 @@ struct VMToolbarDisplayMenuView: View {
                     }
                 }
             } label: {
-                Label("Current Window", systemImage: "rectangle.fill.on.rectangle.fill")
+                Label("Current Window", systemImage: "rectangle.inset.filled.on.rectangle")
+            }
+            if let externalWindowBinding = session.externalWindowBinding {
+                Menu {
+                    Button {
+                        externalWindowBinding.wrappedValue.toggleDisplayResize()
+                    } label: {
+                        Label("Zoom/Reset", systemImage: externalWindowBinding.isViewportChanged.wrappedValue ? "arrow.down.right.and.arrow.up.left" : "arrow.up.left.and.arrow.down.right")
+                    }
+                    Picker("", selection: externalWindowBinding.device) {
+                        ForEach(session.devices) { device in
+                            switch device {
+                            case .serial(_, let index):
+                                Label("Serial \(index): \(session.qemuConfig.serials[index].target.prettyValue)", systemImage: "cable.connector").tag(device as VMWindowState.Device?)
+                            case .display(_, let index):
+                                Label("Display \(index): \(session.qemuConfig.displays[index].hardware.prettyValue)", systemImage: "display").tag(device as VMWindowState.Device?)
+                            }
+                        }
+                    }
+                } label: {
+                    Label("External Monitor", systemImage: "rectangle.on.rectangle")
+                }
             }
         } label: {
             Label("Display", systemImage: "rectangle.on.rectangle")

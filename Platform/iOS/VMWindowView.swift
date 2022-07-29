@@ -151,9 +151,15 @@ struct VMWindowView: View {
         .onAppear {
             vmStateUpdated(session.vmState)
             session.registerWindow(state.id)
+            if !isInteractive {
+                session.externalWindowBinding = $state
+            }
         }
         .onDisappear {
             session.removeWindow(state.id)
+            if !isInteractive {
+                session.externalWindowBinding = nil
+            }
         }
     }
     

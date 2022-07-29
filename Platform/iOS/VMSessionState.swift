@@ -15,6 +15,7 @@
 //
 
 import Foundation
+import SwiftUI
 
 /// Represents the UI state for a single VM session.
 @MainActor class VMSessionState: NSObject, ObservableObject {
@@ -61,6 +62,8 @@ import Foundation
     @Published var activeWindow: UUID?
     
     @Published var windowDeviceMap: [UUID: VMWindowState.Device] = [:]
+    
+    @Published var externalWindowBinding: Binding<VMWindowState>?
     
     init(for vm: UTMQemuVirtualMachine) {
         self.vm = vm
