@@ -216,6 +216,10 @@ extension VMSessionState: UTMSpiceIODelegate {
                         // prefer a GUI display over console for primary if both are available
                         continue
                     }
+                    if windowId == externalWindowBinding?.wrappedValue.id {
+                        // do not set serial with external display
+                        continue
+                    }
                     windowDeviceMap[windowId] = device
                 }
             }
