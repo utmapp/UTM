@@ -123,7 +123,7 @@ struct VMToolbarView: View {
                 } label: {
                     Label("Keyboard", systemImage: "keyboard")
                 }.offset(offset(for: 1))
-            }.buttonStyle(.toolbar)
+            }.buttonStyle(.toolbar(horizontalSizeClass: horizontalSizeClass, verticalSizeClass: verticalSizeClass))
             .menuStyle(.toolbar)
             .disabled(state.isBusy)
             .opacity(isCollapsed ? 0 : 1)
@@ -138,7 +138,7 @@ struct VMToolbarView: View {
                 }
             } label: {
                 Label("Hide", systemImage: isCollapsed ? nameOfHideIcon : nameOfShowIcon)
-            }.buttonStyle(.toolbar)
+            }.buttonStyle(.toolbar(horizontalSizeClass: horizontalSizeClass, verticalSizeClass: verticalSizeClass))
             .opacity(toolbarToggleOpacity)
             .modifier(Shake(shake: shake))
             .position(position(for: geometry))
@@ -249,14 +249,15 @@ protocol ToolbarButtonBaseStyle<Label, Content> {
     associatedtype Label: View
     associatedtype Content: View
     
+    var horizontalSizeClass: UserInterfaceSizeClass? { get }
+    var verticalSizeClass: UserInterfaceSizeClass? { get }
+    
     func makeBodyBase(label: Label, isPressed: Bool) -> Content
 }
 
 extension ToolbarButtonBaseStyle {
     private var size: CGFloat {
-        let horizontalSizeClass = UITraitCollection.current.horizontalSizeClass
-        let verticalSizeClass = UITraitCollection.current.verticalSizeClass
-        return (horizontalSizeClass == .compact || verticalSizeClass == .compact) ? 32 : 48
+        (horizontalSizeClass == .compact || verticalSizeClass == .compact) ? 32 : 48
     }
     
     func makeBodyBase(label: Label, isPressed: Bool) -> some View {
@@ -280,6 +281,25 @@ extension ToolbarButtonBaseStyle {
 struct ToolbarButtonStyle: ButtonStyle, ToolbarButtonBaseStyle {
     typealias Label = Configuration.Label
     
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClassEnvironment
+    @Environment(\.verticalSizeClass) private var verticalSizeClassEnvironment
+    
+    var horizontalSizeClass: UserInterfaceSizeClass?
+    var verticalSizeClass: UserInterfaceSizeClass?
+    
+    init(horizontalSizeClass: UserInterfaceSizeClass? = nil, verticalSizeClass: UserInterfaceSizeClass? = nil) {
+        if horizontalSizeClass != nil {
+            self.horizontalSizeClass = horizontalSizeClass
+        } else {
+            self.horizontalSizeClass = horizontalSizeClassEnvironment
+        }
+        if verticalSizeClass != nil {
+            self.verticalSizeClass = verticalSizeClass
+        } else {
+            self.verticalSizeClass = verticalSizeClassEnvironment
+        }
+    }
+    
     func makeBody(configuration: Configuration) -> some View {
         return makeBodyBase(label: configuration.label, isPressed: configuration.isPressed)
     }
@@ -287,6 +307,9 @@ struct ToolbarButtonStyle: ButtonStyle, ToolbarButtonBaseStyle {
 
 struct ToolbarMenuStyle: MenuStyle, ToolbarButtonBaseStyle {
     typealias Label = Menu<Configuration.Label, Configuration.Content>
+    
+    @Environment(\.horizontalSizeClass) internal var horizontalSizeClass
+    @Environment(\.verticalSizeClass) internal var verticalSizeClass
     
     func makeBody(configuration: Configuration) -> some View {
         return makeBodyBase(label: Menu(configuration), isPressed: false)
@@ -313,6 +336,11 @@ struct Shake: GeometryEffect {
 extension ButtonStyle where Self == ToolbarButtonStyle {
     static var toolbar: ToolbarButtonStyle {
         ToolbarButtonStyle()
+    }
+    
+    // this is needed to workaround a SwiftUI bug on < iOS 15
+    static func toolbar(horizontalSizeClass: UserInterfaceSizeClass?, verticalSizeClass: UserInterfaceSizeClass?) -> ToolbarButtonStyle {
+        ToolbarButtonStyle(horizontalSizeClass: horizontalSizeClass, verticalSizeClass: verticalSizeClass)
     }
 }
 

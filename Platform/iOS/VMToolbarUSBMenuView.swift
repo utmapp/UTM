@@ -34,7 +34,7 @@ struct VMToolbarUSBMenuView: View {
                             session.connectDevice(usbDevice)
                         }
                     } label: {
-                        Label(usbDevice.name ?? usbDevice.description, systemImage: connected ? "checkmark.circle.fill" : "")
+                        MenuLabel(usbDevice.name ?? usbDevice.description, systemImage: connected ? "checkmark.circle.fill" : "")
                     }
                 }
             }

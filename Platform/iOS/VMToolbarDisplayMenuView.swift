@@ -24,43 +24,43 @@ struct VMToolbarDisplayMenuView: View {
         Menu {
             Menu {
                 Picker("", selection: $state.device) {
-                    Label("None", systemImage: "rectangle.dashed").tag(nil as VMWindowState.Device?)
+                    MenuLabel("None", systemImage: "rectangle.dashed").tag(nil as VMWindowState.Device?)
                     ForEach(session.devices) { device in
                         switch device {
                         case .serial(_, let index):
-                            Label("Serial \(index): \(session.qemuConfig.serials[index].target.prettyValue)", systemImage: "cable.connector").tag(device as VMWindowState.Device?)
+                            MenuLabel("Serial \(index): \(session.qemuConfig.serials[index].target.prettyValue)", systemImage: "cable.connector").tag(device as VMWindowState.Device?)
                         case .display(_, let index):
-                            Label("Display \(index): \(session.qemuConfig.displays[index].hardware.prettyValue)", systemImage: "display").tag(device as VMWindowState.Device?)
+                            MenuLabel("Display \(index): \(session.qemuConfig.displays[index].hardware.prettyValue)", systemImage: "display").tag(device as VMWindowState.Device?)
                         }
                     }
                 }
             } label: {
-                Label("Current Window", systemImage: "rectangle.inset.filled.on.rectangle")
+                MenuLabel("Current Window", systemImage: "rectangle.inset.filled.on.rectangle")
             }
             if let externalWindowBinding = session.externalWindowBinding {
                 Menu {
                     Button {
                         externalWindowBinding.wrappedValue.toggleDisplayResize()
                     } label: {
-                        Label("Zoom/Reset", systemImage: externalWindowBinding.isViewportChanged.wrappedValue ? "arrow.down.right.and.arrow.up.left" : "arrow.up.left.and.arrow.down.right")
+                        MenuLabel("Zoom/Reset", systemImage: externalWindowBinding.isViewportChanged.wrappedValue ? "arrow.down.right.and.arrow.up.left" : "arrow.up.left.and.arrow.down.right")
                     }
                     Picker("", selection: externalWindowBinding.device) {
-                        Label("None", systemImage: "rectangle.dashed").tag(nil as VMWindowState.Device?)
+                        MenuLabel("None", systemImage: "rectangle.dashed").tag(nil as VMWindowState.Device?)
                         ForEach(session.devices) { device in
                             if case .display(_, let index) = device {
-                                Label("Display \(index): \(session.qemuConfig.displays[index].hardware.prettyValue)", systemImage: "display").tag(device as VMWindowState.Device?)
+                                MenuLabel("Display \(index): \(session.qemuConfig.displays[index].hardware.prettyValue)", systemImage: "display").tag(device as VMWindowState.Device?)
                             }
                         }
                     }
                 } label: {
-                    Label("External Monitor", systemImage: "rectangle.on.rectangle")
+                    MenuLabel("External Monitor", systemImage: "rectangle.on.rectangle")
                 }
             }
             Divider()
             Button {
                 UIApplication.shared.requestSceneSessionActivation(nil, userActivity: nil, options: nil, errorHandler: nil)
             } label: {
-                Label("New Window…", systemImage: "plus.rectangle.on.rectangle")
+                MenuLabel("New Window…", systemImage: "plus.rectangle.on.rectangle")
             }
 
         } label: {

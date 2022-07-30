@@ -31,20 +31,20 @@ struct VMToolbarDriveMenuView: View {
                             selectedDrive = legacyDrive
                             isFileImporterShown.toggle()
                         } label: {
-                            Label("Change…", systemImage: "opticaldisc")
+                            MenuLabel("Change…", systemImage: "opticaldisc")
                         }
                         Button {
                             ejectDriveImage(for: legacyDrive)
                         } label: {
-                            Label("Eject…", systemImage: "eject")
+                            MenuLabel("Eject…", systemImage: "eject")
                         }
                     } label: {
-                        Label(legacyDrive.label, systemImage: legacyDrive.status == .ejected ? "opticaldiscdrive" : "opticaldiscdrive.fill")
+                        MenuLabel(legacyDrive.label, systemImage: legacyDrive.status == .ejected ? "opticaldiscdrive" : "opticaldiscdrive.fill")
                     }
                 } else {
                     Button {
                     } label: {
-                        Label(legacyDrive.label, systemImage: "internaldrive")
+                        MenuLabel(legacyDrive.label, systemImage: "internaldrive")
                     }.disabled(true)
                 }
             }
