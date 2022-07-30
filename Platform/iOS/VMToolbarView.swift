@@ -65,7 +65,7 @@ struct VMToolbarView: View {
     }
     
     private var toolbarToggleOpacity: Double {
-        if !state.isBusy && state.isRunning && isCollapsed && !isMoving {
+        if state.device != nil && !state.isBusy && state.isRunning && isCollapsed && !isMoving {
             if !longIdleTimeout.isUserInteracting {
                 return 0
             } else if isIdle {

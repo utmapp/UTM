@@ -45,7 +45,7 @@ struct VMWindowView: View {
                     }
                 } else if !state.isBusy && state.isRunning {
                     // headless
-                    BusyIndicator()
+                    HeadlessView()
                 }
                 if state.isBusy || !state.isRunning {
                     BlurEffect().blurEffectStyle(.light)
@@ -82,6 +82,7 @@ struct VMWindowView: View {
                 VMToolbarView(state: $state)
             }
         }
+        .statusBarHidden(true)
         .alert(item: $state.alert, content: { type in
             switch type {
             case .powerDown:
@@ -192,6 +193,28 @@ struct VMWindowView: View {
             }
         @unknown default:
             break
+        }
+    }
+}
+
+private struct HeadlessView: View {
+    var body: some View {
+        ZStack {
+            BlurEffect().blurEffectStyle(.dark)
+            VStack {
+                Image(systemName: "rectangle.dashed")
+                    .font(.title)
+                Text("No output device is selected for this window.")
+                    .foregroundColor(.white)
+                    .font(.headline)
+                    .multilineTextAlignment(.center)
+            }.padding()
+                .frame(width: 200, height: 200, alignment: .center)
+                .foregroundColor(.white)
+                .background(Color.gray.opacity(0.5))
+                .clipShape(RoundedRectangle(cornerRadius: 25.0, style: .continuous))
+                .vibrancyEffect()
+                .vibrancyEffectStyle(.label)
         }
     }
 }
