@@ -28,6 +28,8 @@ import Foundation
         qemuImg.pushArgv("convert")
         if compressed {
             qemuImg.pushArgv("-c")
+            qemuImg.pushArgv("-o")
+            qemuImg.pushArgv("compression_type=zstd")
         }
         qemuImg.pushArgv("-O")
         qemuImg.pushArgv("qcow2")
