@@ -60,7 +60,7 @@ jobs:
         if: steps.cache-sysroot.outputs.cache-hit != 'true'
         run: |
           brew uninstall cmake
-          brew install bison pkg-config nasm make meson glib python3
+          brew install bison pkg-config nasm make meson glib-utils python3
           brew unlink python && brew link python@3.10
           pip3 install six pyparsing
           rm -f /usr/local/lib/pkgconfig/*.pc
