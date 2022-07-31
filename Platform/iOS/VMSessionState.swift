@@ -43,12 +43,6 @@ import SwiftUI
     @Published var allUsbDevices: [CSUSBDevice] = []
     
     @Published var connectedUsbDevices: [CSUSBDevice] = []
-    #else
-    let mostRecentConnectedDevice: Any? = nil
-    
-    let allUsbDevices: [Any] = []
-    
-    let connectedUsbDevices: [Any] = []
     #endif
     
     @Published var isUsbBusy: Bool = false
@@ -126,7 +120,9 @@ extension VMSessionState: UTMVirtualMachineDelegate {
         Task { @MainActor in
             vmState = state
             if state == .vmStopped {
+                #if !WITH_QEMU_TCI
                 clearDevices()
+                #endif
             }
         }
     }

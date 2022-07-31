@@ -86,7 +86,9 @@ extension VMWindowState {
             case .powerDown: return 0
             case .terminateApp: return 1
             case .restart: return 2
+            #if !WITH_QEMU_TCI
             case .deviceConnected(_): return 3
+            #endif
             case .nonfatalError(_): return 4
             case .fatalError(_): return 5
             }
@@ -97,8 +99,6 @@ extension VMWindowState {
         case restart
         #if !WITH_QEMU_TCI
         case deviceConnected(CSUSBDevice)
-        #else
-        case deviceConnected(Any?)
         #endif
         case nonfatalError(String)
         case fatalError(String)

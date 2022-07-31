@@ -97,15 +97,15 @@ struct VMWindowView: View {
                 return Alert(title: Text("Are you sure you want to reset this VM? Any unsaved changes will be lost."), primaryButton: .cancel(Text("No")), secondaryButton: .destructive(Text("Yes")) {
                     session.reset()
                 })
+            #if !WITH_QEMU_TCI
             case .deviceConnected(let device):
                 return Alert(title: Text("Would you like to connect '\(device.name ?? device.description)' to this virtual machine?"), primaryButton: .cancel(Text("No")) {
                     session.mostRecentConnectedDevice = nil
                 }, secondaryButton: .default(Text("Yes")) {
                     session.mostRecentConnectedDevice = nil
-                    #if !WITH_QEMU_TCI
                     session.connectDevice(device)
-                    #endif
                 })
+            #endif
             case .nonfatalError(let message), .fatalError(let message):
                 return Alert(title: Text(message), dismissButton: .cancel(Text("OK")) {
                     if case .fatalError(_) = type {
@@ -128,11 +128,13 @@ struct VMWindowView: View {
                 session.windowDeviceMap[state.id] = newDevice
             }
         }
+        #if !WITH_QEMU_TCI
         .onChange(of: session.mostRecentConnectedDevice) { newValue in
             if session.activeWindow == state.id, let device = newValue {
                 state.alert = .deviceConnected(device)
             }
         }
+        #endif
         .onChange(of: session.nonfatalError) { newValue in
             if session.activeWindow == state.id, let message = newValue {
                 state.alert = .nonfatalError(message)
