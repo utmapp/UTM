@@ -359,7 +359,7 @@ meson_build () {
         SRCDIR="$BUILD_DIR/$NAME"
         ;;
     esac
-    MESON_CROSS="$(realpath "$BUILD_DIR/meson.cross")"
+    MESON_CROSS="$(realpath "$BUILD_DIR")/meson.cross"
     if [ ! -f "$MESON_CROSS" ]; then
         generate_meson_cross "$MESON_CROSS"
     fi
