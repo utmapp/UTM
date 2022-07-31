@@ -22,7 +22,7 @@ on:
 
 env:
   BUILD_SYSROOT_XCODE_PATH: /Applications/Xcode_13.4.app
-  BUILD_PROJECT_XCODE_PATH: /Applications/Xcode_13.4.app
+  BUILD_PROJECT_XCODE_PATH: /Applications/Xcode-beta.app
 
 jobs:
   build-sysroot:
@@ -118,7 +118,7 @@ jobs:
           path: sysroot.tgz
   build-utm:
     name: Build UTM
-    runs-on: macos-12
+    runs-on: [self-hosted, macOS]
     needs: build-sysroot
     strategy:
       matrix:
@@ -159,7 +159,7 @@ jobs:
           path: UTM.xcarchive.tgz
   build-universal:
     name: Build UTM (Universal Mac)
-    runs-on: macos-12
+    runs-on: [self-hosted, macOS]
     needs: build-sysroot-universal
     steps:
       - name: Checkout
