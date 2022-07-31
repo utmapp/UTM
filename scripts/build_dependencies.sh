@@ -143,6 +143,7 @@ download_all () {
     download $SOUP_SRC
     download $PHODAV_SRC
     download $SPICE_CLIENT_SRC
+    download $ZSTD_SRC
     download $QEMU_SRC
     if [ -z "$SKIP_USB_BUILD" ]; then
         download $USB_SRC
@@ -450,6 +451,8 @@ build_qemu_dependencies () {
     build $PIXMAN_SRC
     build_openssl $OPENSSL_SRC
     build $OPUS_SRC
+    ZSTD_BASENAME="$(basename $ZSTD_SRC)"
+    meson_build "$BUILD_DIR/${ZSTD_BASENAME%.tar.*}/build/meson"
     meson_build $GST_SRC -Dtests=disabled -Ddefault_library=both -Dregistry=false
     meson_build $GST_BASE_SRC -Dtests=disabled -Ddefault_library=both
     meson_build $GST_GOOD_SRC -Dtests=disabled -Ddefault_library=both
