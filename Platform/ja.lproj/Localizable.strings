@@ -859,7 +859,7 @@
 "Do you want to force stop this VM and lose all unsaved data?" = "この仮想マシンを強制的に停止しますか? 保存していないデータはすべて失われます。";
 
 /* No comment provided by engineer. */
-"Export Debug Log" = "デバッグログを書き出し";
+"Export Debug Log" = "デバッグログを書き出す";
 
 /* No comment provided by engineer. */
 "Boot Order" = "起動順序";
