@@ -47,11 +47,10 @@ jobs:
         run: sudo xcode-select -switch ${{ env.BUILD_SYSROOT_XCODE_PATH }}
       - name: Cache Sysroot
         id: cache-sysroot
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: sysroot-${{ matrix.platform }}-${{ matrix.arch }}
           key: ${{ matrix.platform }}-${{ matrix.arch }}-${{ hashFiles('scripts/build_dependencies.sh') }}-${{ hashFiles('patches/**') }}
-          restore-keys: sysroot-${{ matrix.platform }}-${{ matrix.arch }}
       - name: Setup Path
         shell: bash
         run: |
@@ -79,30 +78,33 @@ jobs:
     runs-on: macos-12
     needs: build-sysroot
     steps:
-      - name: Cache Sysroot (arm64)
-        id: cache-sysroot-arm64
-        uses: actions/cache@v2
-        with:
-          path: sysroot-macos-arm64
-          key: sysroot-macos-arm64
-      - name: Cache Sysroot (x86_64)
-        id: cache-sysroot-x86_64
-        uses: actions/cache@v2
-        with:
-          path: sysroot-macos-x86_64
-          key: sysroot-macos-x86_64
-      - name: Check Cache
-        if: steps.cache-sysroot-arm64.outputs.cache-hit != 'true' || steps.cache-sysroot-x86_64.outputs.cache-hit != 'true'
-        uses: actions/github-script@v3
-        with:
-          script: core.setFailed('Cached sysroot not found!')
+      - name: Checkout
+        uses: actions/checkout@v2
       - name: Cache Sysroot (Universal Mac)
         id: cache-sysroot-universal
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: sysroot-macOS-arm64_x86_64
-          key: ${{ matrix.platform }}-${{ matrix.arch }}-${{ hashFiles('scripts/build_dependencies.sh') }}-${{ hashFiles('patches/**') }}
-          restore-keys: sysroot-universal
+          key: macos-universal-${{ hashFiles('scripts/build_dependencies.sh') }}-${{ hashFiles('patches/**') }}
+      - name: Cache Sysroot (arm64)
+        if: steps.cache-sysroot-universal.outputs.cache-hit != 'true'
+        id: cache-sysroot-arm64
+        uses: actions/cache@v3
+        with:
+          path: sysroot-macos-arm64
+          key: macos-arm64-${{ hashFiles('scripts/build_dependencies.sh') }}-${{ hashFiles('patches/**') }}
+      - name: Cache Sysroot (x86_64)
+        if: steps.cache-sysroot-universal.outputs.cache-hit != 'true'
+        id: cache-sysroot-x86_64
+        uses: actions/cache@v3
+        with:
+          path: sysroot-macos-x86_64
+          key: macos-x86_64-${{ hashFiles('scripts/build_dependencies.sh') }}-${{ hashFiles('patches/**') }}
+      - name: Check Cache
+        if: steps.cache-sysroot-universal.outputs.cache-hit != 'true' && (steps.cache-sysroot-arm64.outputs.cache-hit != 'true' || steps.cache-sysroot-x86_64.outputs.cache-hit != 'true')
+        uses: actions/github-script@v6
+        with:
+          script: core.setFailed('Cached sysroot not found!')
       - name: Pack Universal Sysroot
         if: steps.cache-sysroot-universal.outputs.cache-hit != 'true'
         run: |
@@ -136,13 +138,13 @@ jobs:
           submodules: recursive
       - name: Cache Sysroot
         id: cache-sysroot
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: sysroot-${{ matrix.platform }}-${{ matrix.arch }}
-          key: ${{ matrix.platform }}-${{ matrix.arch }}
+          key: ${{ matrix.platform }}-${{ matrix.arch }}-${{ hashFiles('scripts/build_dependencies.sh') }}-${{ hashFiles('patches/**') }}
       - name: Check Cache
         if: steps.cache-sysroot.outputs.cache-hit != 'true'
-        uses: actions/github-script@v3
+        uses: actions/github-script@v6
         with:
           script: core.setFailed('Cached sysroot not found!')
       - name: Setup Xcode
@@ -168,13 +170,13 @@ jobs:
           submodules: recursive
       - name: Cache Sysroot
         id: cache-sysroot
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: sysroot-macOS-arm64_x86_64
-          key: sysroot-universal
+          key: macos-universal-${{ hashFiles('scripts/build_dependencies.sh') }}-${{ hashFiles('patches/**') }}
       - name: Check Cache
         if: steps.cache-sysroot.outputs.cache-hit != 'true'
-        uses: actions/github-script@v3
+        uses: actions/github-script@v6
         with:
           script: core.setFailed('Cached sysroot not found!')
       - name: Setup Xcode
