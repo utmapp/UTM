@@ -64,7 +64,7 @@ extension UTMData {
         if vm.viewState.hasSaveState {
             vm.requestVmDeleteState()
         }
-        vm.vmStop(force: true, completion: { _ in
+        vm.vmStop(force: false, completion: { _ in
             self.close(vm: vm)
         })
     }
