@@ -196,9 +196,11 @@
 		84909A9327CADAE0005605F1 /* UTMUnavailableVMView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84909A9027CADAE0005605F1 /* UTMUnavailableVMView.swift */; };
 		84937EFF28960789003148F4 /* zstd.1.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 84937EFE28960789003148F4 /* zstd.1.framework */; };
 		84937F0028960789003148F4 /* zstd.1.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = 84937EFE28960789003148F4 /* zstd.1.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		84937F01289607E5003148F4 /* zstd.1.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 84937EFE28960789003148F4 /* zstd.1.framework */; };
-		84937F02289607E6003148F4 /* zstd.1.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 84937EFE28960789003148F4 /* zstd.1.framework */; };
 		84937F032897451C003148F4 /* VMToolbarDriveMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84CF5DF4288F558400D01721 /* VMToolbarDriveMenuView.swift */; };
+		84937F1D289767EC003148F4 /* zstd.1.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 84937EFE28960789003148F4 /* zstd.1.framework */; };
+		84937F1E289767EC003148F4 /* zstd.1.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = 84937EFE28960789003148F4 /* zstd.1.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		84937F1F289767F0003148F4 /* zstd.1.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 84937EFE28960789003148F4 /* zstd.1.framework */; };
+		84937F20289767F0003148F4 /* zstd.1.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = 84937EFE28960789003148F4 /* zstd.1.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		84A381AA268CB30C0048EE4D /* VMDrivesSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A381A9268CB30C0048EE4D /* VMDrivesSettingsView.swift */; };
 		84B36D1E27B3264600C22685 /* CocoaSpice in Frameworks */ = {isa = PBXBuildFile; productRef = 84B36D1D27B3264600C22685 /* CocoaSpice */; };
 		84B36D2027B3264E00C22685 /* CocoaSpiceNoUsb in Frameworks */ = {isa = PBXBuildFile; productRef = 84B36D1F27B3264E00C22685 /* CocoaSpiceNoUsb */; };
@@ -1417,6 +1419,7 @@
 				CE2D939D24AD46670059923A /* glib-2.0.0.framework in Embed Libraries */,
 				CE5451AC26AF5F10008594E5 /* EGL.framework in Embed Libraries */,
 				CE2D939E24AD46670059923A /* qemu-x86_64-softmmu.framework in Embed Libraries */,
+				84937F1E289767EC003148F4 /* zstd.1.framework in Embed Libraries */,
 				CE2D939F24AD46670059923A /* qemu-xtensaeb-softmmu.framework in Embed Libraries */,
 				CEA9054525F982CA00801E7C /* usb-1.0.0.framework in Embed Libraries */,
 				CE2D93A024AD46670059923A /* qemu-arm-softmmu.framework in Embed Libraries */,
@@ -1485,6 +1488,7 @@
 				CEA45F88263519B5002FA97D /* qemu-ppc-softmmu.framework in Embed Libraries */,
 				CEA45F89263519B5002FA97D /* phodav-2.0.0.framework in Embed Libraries */,
 				CEA45F8A263519B5002FA97D /* gthread-2.0.0.framework in Embed Libraries */,
+				84937F20289767F0003148F4 /* zstd.1.framework in Embed Libraries */,
 				CEA45F8B263519B5002FA97D /* qemu-aarch64-softmmu.framework in Embed Libraries */,
 				CEA45F8F263519B5002FA97D /* gobject-2.0.0.framework in Embed Libraries */,
 				CEA45F90263519B5002FA97D /* gmodule-2.0.0.framework in Embed Libraries */,
@@ -2215,7 +2219,7 @@
 				B3DDF57226E9BBA300CE47F0 /* AltKit in Frameworks */,
 				CE2D933B24AD46670059923A /* libgstvideofilter.a in Frameworks */,
 				84018695288B66370050AC51 /* SwiftUIVisualEffects in Frameworks */,
-				84937F02289607E6003148F4 /* zstd.1.framework in Frameworks */,
+				84937F1D289767EC003148F4 /* zstd.1.framework in Frameworks */,
 				CE2D933C24AD46670059923A /* libgstapp.a in Frameworks */,
 				CE2D933D24AD46670059923A /* libgstgio.a in Frameworks */,
 				CE2D933E24AD46670059923A /* libgsttypefindfunctions.a in Frameworks */,
@@ -2400,7 +2404,7 @@
 				CEA45F51263519B5002FA97D /* gstvideo-1.0.0.framework in Frameworks */,
 				CEA45F52263519B5002FA97D /* spice-client-glib-2.0.8.framework in Frameworks */,
 				CEA45F53263519B5002FA97D /* gstrtsp-1.0.0.framework in Frameworks */,
-				84937F01289607E5003148F4 /* zstd.1.framework in Frameworks */,
+				84937F1F289767F0003148F4 /* zstd.1.framework in Frameworks */,
 				CEA45F54263519B5002FA97D /* opus.0.framework in Frameworks */,
 				84B36D2027B3264E00C22685 /* CocoaSpiceNoUsb in Frameworks */,
 				CEA45F55263519B5002FA97D /* glib-2.0.0.framework in Frameworks */,
