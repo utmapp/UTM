@@ -1,0 +1,68 @@
+From 638a01381ea5ba8348138476bc88b338234cd858 Mon Sep 17 00:00:00 2001
+From: osy <osy@turing.llc>
+Date: Mon, 1 Aug 2022 13:20:20 -0700
+Subject: [PATCH] gstaudiobasesrc: reset clock when caps change
+
+This follows similar code from gstaudiobasesink. When the caps change, we
+need to reset the clock, otherwise a long period of silence will be
+recorded.
+---
+ gst-libs/gst/audio/gstaudiobasesrc.c | 21 +++++++++++++++------
+ 1 file changed, 15 insertions(+), 6 deletions(-)
+
+diff --git a/gst-libs/gst/audio/gstaudiobasesrc.c b/gst-libs/gst/audio/gstaudiobasesrc.c
+index a384e8eb3..6977f11e4 100644
+--- a/gst-libs/gst/audio/gstaudiobasesrc.c
++++ b/gst-libs/gst/audio/gstaudiobasesrc.c
+@@ -299,6 +299,14 @@ clock_disabled:
+   }
+ }
+ 
++static gboolean
++gst_audio_base_src_is_self_provided_clock (GstAudioBaseSrc * sink)
++{
++  return (sink->clock && GST_IS_AUDIO_CLOCK (sink->clock) &&
++      GST_AUDIO_CLOCK_CAST (sink->clock)->func ==
++      (GstAudioClockGetTimeFunc) gst_audio_base_src_get_time);
++}
++
+ static GstClockTime
+ gst_audio_base_src_get_time (GstClock * clock, GstAudioBaseSrc * src)
+ {
+@@ -555,6 +563,11 @@ gst_audio_base_src_setcaps (GstBaseSrc * bsrc, GstCaps * caps)
+   if (!gst_audio_ring_buffer_acquire (src->ringbuffer, spec))
+     goto acquire_error;
+ 
++  /* If we use our own clock, we need to adjust the offset since it will now
++   * restart from zero */
++  if (gst_audio_base_src_is_self_provided_clock (src))
++    gst_audio_clock_reset (GST_AUDIO_CLOCK (src->clock), 0);
++
+   /* calculate actual latency and buffer times */
+   spec->latency_time = spec->segsize * GST_MSECOND / (rate * bpf);
+   spec->buffer_time =
+@@ -1142,9 +1155,7 @@ gst_audio_base_src_change_state (GstElement * element,
+       /* Only post clock-provide messages if this is the clock that
+        * we've created. If the subclass has overridden it the subclass
+        * should post this messages whenever necessary */
+-      if (src->clock && GST_IS_AUDIO_CLOCK (src->clock) &&
+-          GST_AUDIO_CLOCK_CAST (src->clock)->func ==
+-          (GstAudioClockGetTimeFunc) gst_audio_base_src_get_time)
++      if (gst_audio_base_src_is_self_provided_clock (src))
+         gst_element_post_message (element,
+             gst_message_new_clock_provide (GST_OBJECT_CAST (element),
+                 src->clock, TRUE));
+@@ -1163,9 +1174,7 @@ gst_audio_base_src_change_state (GstElement * element,
+       /* Only post clock-lost messages if this is the clock that
+        * we've created. If the subclass has overridden it the subclass
+        * should post this messages whenever necessary */
+-      if (src->clock && GST_IS_AUDIO_CLOCK (src->clock) &&
+-          GST_AUDIO_CLOCK_CAST (src->clock)->func ==
+-          (GstAudioClockGetTimeFunc) gst_audio_base_src_get_time)
++      if (gst_audio_base_src_is_self_provided_clock (src))
+         gst_element_post_message (element,
+             gst_message_new_clock_lost (GST_OBJECT_CAST (element), src->clock));
+       gst_audio_ring_buffer_set_flushing (src->ringbuffer, TRUE);
+-- 
+2.28.0
+
