@@ -64,7 +64,7 @@
 		<string>_altserver._tcp</string>
 	</array>
 	<key>NSLocalNetworkUsageDescription</key>
-	<string>UTM uses the local network to find and communicate with AltServer.</string>
+	<string>The virtual machine may access the local network. UTM also uses the local network to communicate with AltServer.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>VM background access requires location services. Location data will never leave the device.</string>
 	<key>NSLocationAlwaysUsageDescription</key>
