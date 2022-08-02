@@ -328,6 +328,8 @@ NSString *const kSuspendSnapshotName = @"suspend";
     self.system = nil;
     // stop logging
     [self.logging endLog];
+    // clear ptty devices
+    [self.config qemuClearPttyPaths];
     completion(nil);
 }
 
@@ -607,6 +609,22 @@ NSString *const kSuspendSnapshotName = @"suspend";
 }
 
 - (void)logging:(UTMLogging *)logging didRecieveOutputLine:(NSString *)line {
+    if ([line hasPrefix:@"char device"]) {
+        [self parseCharDeviceLine:line];
+    }
+}
+
+- (void)parseCharDeviceLine:(NSString *)line {
+    const char *cline = line.UTF8String;
+    char devpath[PATH_MAX] = {0};
+    int term = -1;
+    if (sscanf(cline, "char device redirected to %s (label term%d)", devpath, &term) < 2) {
+        UTMLog(@"Cannot parse char device line: '%@'", line);
+        return;
+    } else {
+        UTMLog(@"Detected PTTY at '%s' for device %d", devpath, term);
+    }
+    [self.config qemuSetPttyDevicePath:[NSString stringWithUTF8String:devpath] for:term];
 }
 
 #pragma mark - Screenshot

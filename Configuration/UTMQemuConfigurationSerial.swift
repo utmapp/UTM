@@ -31,6 +31,9 @@ struct UTMQemuConfigurationSerial: Codable, Identifiable {
     /// Hardware model to emulate (for manual mode).
     var hardware: (any QEMUSerialDevice)?
     
+    /// Path to PTTY (determined after VM starts). Not saved.
+    var pttyDevice: URL?
+    
     /// TCP server to connect to (for TCP client mode).
     var tcpHostAddress: String?
     

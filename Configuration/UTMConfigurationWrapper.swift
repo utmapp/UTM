@@ -351,4 +351,30 @@ import Foundation
             }
         }
     }
+    
+    @objc func qemuSetPttyDevicePath(_ pttyDevicePath: String, for index: Int) {
+        guard let qemuConfig = qemuConfig else {
+            fatalError()
+        }
+        Task { @MainActor in
+            guard index >= 0 && index < qemuConfig.serials.count else {
+                logger.error("Serial device '\(pttyDevicePath)' out of bounds for index \(index)")
+                return
+            }
+            qemuConfig.serials[index].pttyDevice = URL(fileURLWithPath: pttyDevicePath)
+        }
+    }
+    
+    @objc func qemuClearPttyPaths() {
+        guard let qemuConfig = qemuConfig else {
+            fatalError()
+        }
+        Task { @MainActor in
+            for index in qemuConfig.serials.indices {
+                if qemuConfig.serials[index].pttyDevice != nil {
+                    qemuConfig.serials[index].pttyDevice = nil
+                }
+            }
+        }
+    }
 }
