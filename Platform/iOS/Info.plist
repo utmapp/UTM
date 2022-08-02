@@ -66,11 +66,11 @@
 	<key>NSLocalNetworkUsageDescription</key>
 	<string>The virtual machine may access the local network. UTM also uses the local network to communicate with AltServer.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>VM background access requires location services. Location data will never leave the device.</string>
+	<string>UTM requests location data periodically to ensure the system keeps the background process active. Location data will never leave the device.</string>
 	<key>NSLocationAlwaysUsageDescription</key>
-	<string>VM background access requires location services. Location data will never leave the device.</string>
+	<string>UTM requests location data periodically to ensure the system keeps the background process active. Location data will never leave the device.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>VM background access requires location services. Location data will never leave the device.</string>
+	<string>UTM requests location data periodically to ensure the system keeps the background process active. Location data will never leave the device.</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Permission is required for any virtual machine to record from the microphone.</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>

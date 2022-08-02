@@ -45,16 +45,22 @@
 - (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations {
 }
 
-- (void)startUpdatingLocation {
-    CLAuthorizationStatus status = [CLLocationManager authorizationStatus];
+- (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error {
+    UTMLog(@"Location manager failed with: %@", error);
+}
 
-    if (status == kCLAuthorizationStatusDenied) {
+- (void)locationManagerDidChangeAuthorization:(CLLocationManager *)manager {
+    if (manager.authorizationStatus == kCLAuthorizationStatusDenied) {
         UTMLog(@"Location services are disabled in settings.");
     } else {
-        [self.locationManager requestAlwaysAuthorization];
-        self.locationManager.allowsBackgroundLocationUpdates = YES;
-        [self.locationManager startUpdatingLocation];
+        [self startUpdatingLocation];
     }
+}
+
+- (void)startUpdatingLocation {
+    [self.locationManager requestAlwaysAuthorization];
+    self.locationManager.allowsBackgroundLocationUpdates = YES;
+    [self.locationManager startUpdatingLocation];
 }
 
 @end
