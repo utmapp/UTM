@@ -213,19 +213,40 @@ struct Details: View {
             #if os(macOS)
             if let appleVM = vm as? UTMAppleVirtualMachine {
                 HStack {
-                    plainLabel("Serial", systemImage: "phone.connection")
+                    plainLabel("Serial (TTY)", systemImage: "phone.connection")
                     Spacer()
-                    if #available(macOS 12, *) {
-                        Text(appleVM.serialPort?.name ?? "Inactive")
-                            .foregroundColor(.secondary)
-                            .textSelection(.enabled)
-                    } else {
-                        Text(appleVM.serialPort?.name ?? "Inactive")
-                            .foregroundColor(.secondary)
-                    }
+                    OptionalSelectableText(appleVM.serialPort?.name)
                 }
             }
             #endif
+            if let qemuConfig = vm.config.qemuConfig {
+                ForEach(qemuConfig.serials) { serial in
+                    if serial.mode == .tcpClient {
+                        HStack {
+                            plainLabel("Serial (Client)", systemImage: "network")
+                            Spacer()
+                            let address = "\(serial.tcpHostAddress ?? "example.com"):\(serial.tcpPort ?? 1234)"
+                            OptionalSelectableText(vm.state == .vmStarted ? address : nil)
+                        }
+                    } else if serial.mode == .tcpServer {
+                        HStack {
+                            plainLabel("Serial (Server)", systemImage: "network")
+                            Spacer()
+                            let address = "\(serial.tcpPort ?? 1234)"
+                            OptionalSelectableText(vm.state == .vmStarted ? address : nil)
+                        }
+                    }
+                    #if os(macOS)
+                    if serial.mode == .ptty {
+                        HStack {
+                            plainLabel("Serial (TTY)", systemImage: "phone.connection")
+                            Spacer()
+                            OptionalSelectableText(serial.pttyDevice?.path)
+                        }
+                    }
+                    #endif
+                }
+            }
         }.lineLimit(1)
         .truncationMode(.tail)
     }
@@ -253,6 +274,25 @@ struct DetailsLabelStyle: LabelStyle {
                     configuration.icon.foregroundColor(color)
                 }
             })
+    }
+}
+
+private struct OptionalSelectableText: View {
+    var content: String?
+    
+    init(_ content: String?) {
+        self.content = content
+    }
+    
+    var body: some View {
+        if #available(iOS 15, macOS 12, *) {
+            Text(content ?? NSLocalizedString("Inactive", comment: "VMDetailsView"))
+                .foregroundColor(.secondary)
+                .textSelection(.enabled)
+        } else {
+            Text(content ?? NSLocalizedString("Inactive", comment: "VMDetailsView"))
+                .foregroundColor(.secondary)
+        }
     }
 }
 
