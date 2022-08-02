@@ -154,7 +154,9 @@ struct CustomArguments: View {
             HStack {
                 DefaultTextField("", text: $arg.string, prompt: "(Delete)", onEditingChanged: { editing in
                     if !editing && arg.string == "" {
-                        config.additionalArguments.remove(at: i)
+                        DispatchQueue.main.async { // SwiftUI doesn't like removing in a ForEach binding
+                            config.additionalArguments.remove(at: i)
+                        }
                     }
                 })
                 #if os(macOS)
