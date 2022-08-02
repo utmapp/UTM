@@ -85,5 +85,7 @@
 	<string>$(TeamIdentifierPrefix:default=invalid.)$(PRODUCT_BUNDLE_PREFIX:default=com.utmapp).UTM</string>
 	<key>HelperIdentifier</key>
 	<string>$(PRODUCT_BUNDLE_PREFIX:default=com.utmapp).QEMUHelper</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Permission is required for any virtual machine to record from the microphone.</string>
 </dict>
 </plist>
