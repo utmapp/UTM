@@ -77,7 +77,6 @@ struct UTMQemuConfigurationSerial: Codable, Identifiable {
         case .tcpClient:
             try container.encodeIfPresent(tcpHostAddress, forKey: .tcpHostAddress)
             try container.encodeIfPresent(tcpPort, forKey: .tcpPort)
-            try container.encodeIfPresent(isWaitForConnection, forKey: .isWaitForConnection)
         case .tcpServer:
             try container.encodeIfPresent(tcpPort, forKey: .tcpPort)
             try container.encodeIfPresent(isWaitForConnection, forKey: .isWaitForConnection)
