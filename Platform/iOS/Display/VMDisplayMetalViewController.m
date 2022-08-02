@@ -109,6 +109,11 @@
     self.prefersStatusBarHidden = YES;
 }
 
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    self.delegate.displayViewSize = self.mtkView.drawableSize;
+}
+
 - (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator {
     [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
     [coordinator animateAlongsideTransition:nil completion:^(id<UIViewControllerTransitionCoordinatorContext>  _Nonnull context) {
@@ -130,9 +135,6 @@
 
 - (void)enterLive {
     [super enterLive];
-    dispatch_async(dispatch_get_main_queue(), ^{
-        self.delegate.displayViewSize = self.mtkView.drawableSize;
-    });
     if (self.delegate.qemuDisplayIsDynamicResolution) {
         [self displayResize:self.view.bounds.size];
     }
