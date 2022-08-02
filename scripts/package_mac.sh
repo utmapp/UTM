@@ -27,12 +27,12 @@ TEAM_ID=$4
 PROFILE_NAME=$5
 HELPER_PROFILE_NAME=$6
 LAUNCHER_PROFILE_NAME=$7
-OPTIONS="/tmp/options.plist"
-SIGNED="/tmp/signed"
-UTM_ENTITLEMENTS="/tmp/utm.entitlements"
-LAUNCHER_ENTITLEMENTS="/tmp/launcher.entitlements"
-HELPER_ENTITLEMENTS="/tmp/helper.entitlements"
-INPUT_COPY="/tmp/UTM.xcarchive"
+OPTIONS="/tmp/options.$$.plist"
+SIGNED="/tmp/signed.$$"
+UTM_ENTITLEMENTS="/tmp/utm.$$.entitlements"
+LAUNCHER_ENTITLEMENTS="/tmp/launcher.$$.entitlements"
+HELPER_ENTITLEMENTS="/tmp/helper.$$.entitlements"
+INPUT_COPY="/tmp/UTM.$$.xcarchive"
 PRODUCT_BUNDLE_PREFIX="com.utmapp"
 
 cat >"$OPTIONS" <<EOL
@@ -111,7 +111,11 @@ else
 	rm -f "$OUTPUT/UTM.dmg"
 	command -v appdmg >/dev/null 2>&1
 	if [ $? -eq 0 ]; then
-		appdmg "$BASEDIR/resources/appdmg.json" "$OUTPUT/UTM.dmg"
+		CONFIG="/tmp/appdmg.$$.json"
+		cp "$BASEDIR/resources/appdmg.json" "$CONFIG"
+		sed -i '' "s/\/tmp\/signed\/UTM.app/\/tmp\/signed.$$\/UTM.app/g" "$CONFIG"
+		appdmg "$CONFIG" "$OUTPUT/UTM.dmg"
+		rm "$CONFIG"
 	else
 		echo "appdmg not found, falling back to non-customized DMG creation"
 		hdiutil create -fs HFS+ -srcfolder "$SIGNED/UTM.app" -volname "UTM" "$OUTPUT/UTM.dmg"
