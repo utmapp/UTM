@@ -14,6 +14,7 @@
 // limitations under the License.
 //
 
+#import <glib.h>
 #import "UTMSpiceIO.h"
 #import "UTMQemuManager.h"
 #import "UTMLogging.h"
@@ -79,6 +80,8 @@ extern NSString *const kUTMErrorDomain;
 #ifdef SPICE_DEBUG_LOGGING
     [self.spice spiceSetDebug:YES];
 #endif
+    // do not need to encode/decode audio locally
+    g_setenv("SPICE_DISABLE_OPUS", "1", TRUE);
     if (![self.spice spiceStart]) {
         if (err) {
             *err = [NSError errorWithDomain:kUTMErrorDomain code:-1 userInfo:@{NSLocalizedDescriptionKey: NSLocalizedString(@"Failed to start SPICE client.", "UTMSpiceIO")}];
