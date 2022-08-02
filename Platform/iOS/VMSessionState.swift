@@ -329,7 +329,12 @@ extension VMSessionState {
     func start() {
         let audioSession = AVAudioSession.sharedInstance()
         do {
-            try audioSession.setCategory(.playAndRecord, options: [.mixWithOthers, .defaultToSpeaker, .allowBluetooth, .allowBluetoothA2DP, .allowAirPlay])
+            let preferDeviceMicrophone = UserDefaults.standard.bool(forKey: "PreferDeviceMicrophone")
+            var options: AVAudioSession.CategoryOptions = [.mixWithOthers, .defaultToSpeaker, .allowBluetoothA2DP, .allowAirPlay]
+            if !preferDeviceMicrophone {
+                options.insert(.allowBluetooth)
+            }
+            try audioSession.setCategory(.playAndRecord, options: options)
             try audioSession.setActive(true)
         } catch {
             logger.warning("Error starting audio session: \(error.localizedDescription)")
