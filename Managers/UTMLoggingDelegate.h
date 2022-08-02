@@ -1,5 +1,5 @@
 //
-// Copyright © 2020 osy. All rights reserved.
+// Copyright © 2022 osy. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,23 +15,15 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "UTMLoggingDelegate.h"
+
+@class UTMLogging;
 
 NS_ASSUME_NONNULL_BEGIN
 
-void UTMLog(NSString *format, ...) NS_FORMAT_FUNCTION(1,2) NS_NO_TAIL_CALL;
+@protocol UTMLoggingDelegate <NSObject>
 
-@interface UTMLogging : NSObject
-
-@property (nonatomic, readonly) NSPipe *standardOutput;
-@property (nonatomic, readonly) NSPipe *standardError;
-@property (nonatomic, weak) id<UTMLoggingDelegate> delegate;
-
-+ (UTMLogging *)sharedInstance;
-
-- (void)logToFile:(NSURL *)path;
-- (void)endLog;
-- (void)writeLine:(NSString *)line;
+- (void)logging:(UTMLogging *)logging didRecieveOutputLine:(NSString *)line;
+- (void)logging:(UTMLogging *)logging didRecieveErrorLine:(NSString *)line;
 
 @end
 

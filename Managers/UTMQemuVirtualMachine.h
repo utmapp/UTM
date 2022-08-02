@@ -15,12 +15,11 @@
 //
 
 #import "UTMVirtualMachine.h"
-#import "UTMQemuManagerDelegate.h"
 #import "UTMSpiceIODelegate.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface UTMQemuVirtualMachine : UTMVirtualMachine<UTMQemuManagerDelegate>
+@interface UTMQemuVirtualMachine : UTMVirtualMachine
 
 @property (nonatomic, weak, nullable) id<UTMSpiceIODelegate> ioDelegate;
 

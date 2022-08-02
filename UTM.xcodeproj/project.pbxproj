@@ -1658,6 +1658,7 @@
 		84A381A9268CB30C0048EE4D /* VMDrivesSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMDrivesSettingsView.swift; sourceTree = "<group>"; };
 		84B36D2427B704C200C22685 /* UTMDownloadVMTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMDownloadVMTask.swift; sourceTree = "<group>"; };
 		84B36D2827B790BE00C22685 /* DestructiveButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DestructiveButton.swift; sourceTree = "<group>"; };
+		84BB99382899AB1800DF28B2 /* UTMLoggingDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UTMLoggingDelegate.h; sourceTree = "<group>"; };
 		84C4D9012880CA8A00EC3B2B /* VMSettingsAddDeviceMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMSettingsAddDeviceMenuView.swift; sourceTree = "<group>"; };
 		84C584DC268E70F1000FCABF /* UTMVirtualMachine-Protected.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UTMVirtualMachine-Protected.h"; sourceTree = "<group>"; };
 		84C584DE268E95B3000FCABF /* UTMLegacyAppleConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMLegacyAppleConfiguration.swift; sourceTree = "<group>"; };
@@ -3005,6 +3006,7 @@
 				CE36B27E227665B7004A1435 /* UTMJSONStreamDelegate.h */,
 				CE6EDCE0241DA0E900A719DC /* UTMLogging.h */,
 				CE6EDCE1241DA0E900A719DC /* UTMLogging.m */,
+				84BB99382899AB1800DF28B2 /* UTMLoggingDelegate.h */,
 				CEDF83F8258AE24E0030E4AC /* UTMPasteboard.swift */,
 				2C6D9E122571AFE5003298E6 /* UTMQcow2.h */,
 				2C6D9E132571AFE5003298E6 /* UTMQcow2.c */,

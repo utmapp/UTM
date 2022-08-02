@@ -17,6 +17,8 @@
 #import <TargetConditionals.h>
 #import "UTMVirtualMachine-Protected.h"
 #import "UTMVirtualMachine-Private.h"
+#import "UTMLoggingDelegate.h"
+#import "UTMQemuManagerDelegate.h"
 #import "UTMQemuVirtualMachine.h"
 #import "UTMQemuVirtualMachine+Drives.h"
 #import "UTMQemuVirtualMachine+SPICE.h"
@@ -33,7 +35,7 @@ const int64_t kStopTimeout = (int64_t)30*NSEC_PER_SEC;
 extern NSString *const kUTMBundleConfigFilename;
 NSString *const kSuspendSnapshotName = @"suspend";
 
-@interface UTMQemuVirtualMachine ()
+@interface UTMQemuVirtualMachine () <UTMLoggingDelegate, UTMQemuManagerDelegate>
 
 @property (nonatomic, readwrite, nullable) UTMQemuManager *qemu;
 @property (nonatomic, readwrite, nullable) UTMQemuSystem *system;
@@ -44,6 +46,7 @@ NSString *const kSuspendSnapshotName = @"suspend";
 @property (nonatomic, nullable) dispatch_semaphore_t qemuDidExitEvent;
 @property (nonatomic, nullable) dispatch_semaphore_t qemuDidConnectEvent;
 @property (nonatomic) BOOL changeCursorRequestInProgress;
+@property (nonatomic, nullable) NSString *lastErrorLine;
 
 @end
 
@@ -147,6 +150,7 @@ NSString *const kSuspendSnapshotName = @"suspend";
     self.system = [[UTMQemuSystem alloc] initWithArguments:arguments architecture:self.config.qemuArchitecture];
     self.system.resources = resources;
     self.system.logging = self.logging;
+    self.system.logging.delegate = self;
 
     if (!self.system) {
         completion([self errorGeneric]);
@@ -198,6 +202,9 @@ NSString *const kSuspendSnapshotName = @"suspend";
             return; // outlived class
         }
         if (!success) {
+            if (!msg) {
+                msg = [NSString stringWithFormat:NSLocalizedString(@"QEMU exited from an error: %@", @"UTMQemuVirtualMachine"), self.lastErrorLine];
+            }
             qemuStartError = [_self errorWithMessage:msg];
             dispatch_semaphore_signal(spiceConnectOrErrorEvent);
             if (_self.qemu.isConnected) { // we are NOT in vmStart, so pass error to delegate
@@ -591,6 +598,15 @@ NSString *const kSuspendSnapshotName = @"suspend";
 - (void)qemuQmpDidConnect:(UTMQemuManager *)manager {
     UTMLog(@"qemuQmpDidConnect");
     dispatch_semaphore_signal(self.qemuDidConnectEvent);
+}
+
+#pragma mark - Logging delegate
+
+- (void)logging:(UTMLogging *)logging didRecieveErrorLine:(NSString *)line {
+    self.lastErrorLine = line;
+}
+
+- (void)logging:(UTMLogging *)logging didRecieveOutputLine:(NSString *)line {
 }
 
 #pragma mark - Screenshot

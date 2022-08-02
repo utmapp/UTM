@@ -153,7 +153,7 @@
                 NSString *err = [NSString stringWithUTF8String:dlerror()];
                 completion(NO, err);
             } else if (self.fatal || self.status) {
-                completion(NO, [NSString stringWithFormat:NSLocalizedString(@"QEMU exited from an error: %@", @"UTMQemu"), self.logging.lastErrorLine]);
+                completion(NO, nil);
             } else {
                 completion(YES, nil);
             }
@@ -180,9 +180,6 @@
             completion(NO, error.localizedDescription);
         }
     }] startQemu:name standardOutput:standardOutput standardError:standardError libraryBookmark:libBookmark argv:self.argv onExit:^(BOOL success, NSString *msg){
-        if (!success && !msg) {
-            msg = self.logging.lastErrorLine;
-        }
         completion(success, msg);
     }];
 }
