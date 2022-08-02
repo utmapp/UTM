@@ -15,6 +15,7 @@
 //
 
 import Foundation
+import AVFAudio
 import SwiftUI
 
 /// Represents the UI state for a single VM session.
@@ -326,6 +327,13 @@ extension VMSessionState: CSUSBManagerDelegate {
 
 extension VMSessionState {
     func start() {
+        let audioSession = AVAudioSession.sharedInstance()
+        do {
+            try audioSession.setCategory(.playAndRecord, options: [.mixWithOthers, .defaultToSpeaker, .allowBluetooth, .allowBluetoothA2DP, .allowAirPlay])
+            try audioSession.setActive(true)
+        } catch {
+            logger.warning("Error starting audio session: \(error.localizedDescription)")
+        }
         Self.currentSession = self
         NotificationCenter.default.post(name: .vmSessionCreated, object: nil, userInfo: ["Session": self])
         vm.requestVmStart()
@@ -336,6 +344,12 @@ extension VMSessionState {
     }
     
     func stop() {
+        let audioSession = AVAudioSession.sharedInstance()
+        do {
+            try audioSession.setActive(false)
+        } catch {
+            logger.warning("Error stopping audio session: \(error.localizedDescription)")
+        }
         // tell other screens to shut down
         Self.currentSession = nil
         NotificationCenter.default.post(name: .vmSessionEnded, object: nil, userInfo: ["Session": self])
