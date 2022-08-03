@@ -21,6 +21,7 @@ struct VMWindowView: View {
     @State var isInteractive = true
     @State private var state = VMWindowState()
     @EnvironmentObject private var session: VMSessionState
+    @Environment(\.scenePhase) private var scenePhase
     
     private let keyboardDidShowNotification = NotificationCenter.default.publisher(for: UIResponder.keyboardDidShowNotification)
     private let keyboardDidHideNotification = NotificationCenter.default.publisher(for: UIResponder.keyboardDidHideNotification)
@@ -165,6 +166,16 @@ struct VMWindowView: View {
             if session.activeWindow == state.id && !session.hasShownMemoryWarning {
                 session.hasShownMemoryWarning = true
                 state.alert = .memoryWarning
+            }
+        }
+        .onChange(of: scenePhase) { newValue in
+            guard session.activeWindow == state.id else {
+                return
+            }
+            if newValue == .background {
+                session.didEnterBackground()
+            } else if newValue == .active {
+                session.didEnterForeground()
             }
         }
         .onAppear {

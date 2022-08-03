@@ -62,6 +62,8 @@ import SwiftUI
     
     @Published var hasShownMemoryWarning: Bool = false
     
+    private var hasAutosave: Bool = false
+    
     init(for vm: UTMQemuVirtualMachine) {
         self.vm = vm
         super.init()
@@ -405,6 +407,38 @@ extension VMSessionState {
             vm.vmSaveState { _ in
                 // ignore error
             }
+        }
+    }
+    
+    func didEnterBackground() {
+        logger.info("Entering background")
+        let shouldAutosaveBackground = UserDefaults.standard.bool(forKey: "AutosaveBackground")
+        if shouldAutosaveBackground && vmState == .vmStarted {
+            logger.info("Saving snapshot")
+            var task: UIBackgroundTaskIdentifier = .invalid
+            task = UIApplication.shared.beginBackgroundTask {
+                logger.info("Background task end")
+                UIApplication.shared.endBackgroundTask(task)
+                task = .invalid
+            }
+            vm.vmSaveState { error in
+                if let error = error {
+                    logger.error("error saving snapshot: \(error)")
+                } else {
+                    self.hasAutosave = true
+                    logger.info("Save snapshot complete")
+                }
+                UIApplication.shared.endBackgroundTask(task)
+                task = .invalid
+            }
+        }
+    }
+    
+    func didEnterForeground() {
+        logger.info("Entering foreground!")
+        if (hasAutosave && vmState == .vmStarted) {
+            logger.info("Deleting snapshot")
+            vm.requestVmDeleteState()
         }
     }
 }

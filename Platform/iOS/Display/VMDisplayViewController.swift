@@ -23,10 +23,6 @@ private var memoryAlertOnce = false
         traitCollection.horizontalSizeClass == .regular && traitCollection.verticalSizeClass == .regular
     }
     
-    var autosaveBackground: Bool {
-        bool(forSetting: "AutosaveBackground")
-    }
-    
     var runInBackground: Bool {
         bool(forSetting: "RunInBackground")
     }
@@ -49,16 +45,6 @@ public extension VMDisplayViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(true, animated: animated)
-        
-        let nc = NotificationCenter.default
-        weak var _self = self
-        notifications = NSMutableArray()
-        notifications.add(nc.addObserver(forName: UIApplication.didEnterBackgroundNotification, object: nil, queue: .main) { _ in
-            _self?.handleEnteredBackground()
-        })
-        notifications.add(nc.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: .main) { _ in
-            _self?.handleEnteredForeground()
-        })
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -122,38 +108,3 @@ public extension VMDisplayViewController {
     }
 }
 
-// MARK: Notification handling
-extension VMDisplayViewController {
-    func handleEnteredBackground() {
-        logger.info("Entering background")
-        if autosaveBackground && delegate.vmState == .vmStarted {
-            logger.info("Saving snapshot")
-            var task: UIBackgroundTaskIdentifier = .invalid
-            task = UIApplication.shared.beginBackgroundTask {
-                logger.info("Background task end")
-                UIApplication.shared.endBackgroundTask(task)
-                task = .invalid
-            }
-            delegate.vmSaveState { error in
-                if let error = error {
-                    logger.error("error saving snapshot: \(error)")
-                } else {
-                    self.hasAutoSave = true
-                    logger.info("Save snapshot complete")
-                }
-                UIApplication.shared.endBackgroundTask(task)
-                task = .invalid
-            }
-        }
-    }
-    
-    func handleEnteredForeground() {
-        logger.info("Entering foreground!")
-        if (hasAutoSave && delegate.vmState == .vmStarted) {
-            logger.info("Deleting snapshot")
-            DispatchQueue.global(qos: .background).async {
-                self.delegate.requestVmDeleteState()
-            }
-        }
-    }
-}

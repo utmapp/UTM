@@ -116,14 +116,6 @@ struct VMDisplayHostedView: UIViewControllerRepresentable {
             }
         }
         
-        func vmSaveState(onCompletion completion: @escaping (Error?) -> Void) {
-            vm.vmSaveState(completion: completion)
-        }
-        
-        func requestVmDeleteState() {
-            vm.requestVmDeleteState()
-        }
-        
         func serialDidError(_ error: String) {
             state.alert = .nonfatalError(error)
         }
