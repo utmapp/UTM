@@ -166,6 +166,10 @@ extension VMSessionState: UTMSpiceIODelegate {
                         // prefer the primary display for the primary window
                         continue
                     }
+                    if windowId != primaryWindow && display.isPrimaryDisplay {
+                        // don't assign primary display to non-primary window either
+                        continue
+                    }
                     windowDeviceMap[windowId] = device
                 }
             }
