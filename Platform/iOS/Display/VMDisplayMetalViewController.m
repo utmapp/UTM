@@ -173,7 +173,11 @@
     UTMLog(@"resizing to (%f, %f)", size.width, size.height);
     CGRect bounds = CGRectMake(0, 0, size.width, size.height);
     if (self.delegate.qemuDisplayIsNativeResolution) {
-        CGFloat scale = [UIScreen mainScreen].scale;
+        UIScreen *screen = self.view.window.screen;
+        if (screen == nil) {
+            screen = UIScreen.mainScreen;
+        }
+        CGFloat scale = screen.scale;
         CGAffineTransform transform = CGAffineTransformMakeScale(scale, scale);
         bounds = CGRectApplyAffineTransform(bounds, transform);
     }
