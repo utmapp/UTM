@@ -24,11 +24,11 @@ private var memoryAlertOnce = false
     }
     
     var runInBackground: Bool {
-        bool(forSetting: "RunInBackground")
+        boolForSetting("RunInBackground")
     }
     
     var disableIdleTimer: Bool {
-        bool(forSetting: "DisableIdleTimer")
+        boolForSetting("DisableIdleTimer")
     }
 }
 
@@ -108,3 +108,30 @@ public extension VMDisplayViewController {
     }
 }
 
+// MARK: Helper functions
+@objc public extension VMDisplayViewController {
+    /*
+     - (void)onDelay:(float)delay action:(void (^)(void))block {
+         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC*0.1), dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), block);
+     }
+
+     - (BOOL)boolForSetting:(NSString *)key {
+         return [[NSUserDefaults standardUserDefaults] boolForKey:key];
+     }
+
+     - (NSInteger)integerForSetting:(NSString *)key {
+         return [[NSUserDefaults standardUserDefaults] integerForKey:key];
+     }
+     */
+    func onDelay(_ delay: Float, action: @escaping () -> Void) {
+        DispatchQueue.global(qos: .userInitiated).asyncAfter(deadline: .now() + .milliseconds(100), execute: action)
+    }
+    
+    func boolForSetting(_ key: String) -> Bool {
+        return UserDefaults.standard.bool(forKey: key)
+    }
+    
+    func integerForSetting(_ key: String) -> Int {
+        return UserDefaults.standard.integer(forKey: key)
+    }
+}

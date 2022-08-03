@@ -39,7 +39,6 @@
 #include "UTMQemuVirtualMachine+SPICE.h"
 #include "UTMSpiceIO.h"
 #if TARGET_OS_IPHONE
-#include "UIViewController+Extensions.h"
 #include "UTMLocationManager.h"
 #include "VMDisplayViewController.h"
 #include "VMDisplayMetalViewController.h"

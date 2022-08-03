@@ -14,13 +14,13 @@
 // limitations under the License.
 //
 
-#import "UIViewController+Extensions.h"
 #import "VMCursor.h"
 #import "VMScroll.h"
 #import "VMDisplayMetalViewController+Gamepad.h"
 #import "VMDisplayMetalViewController+Touch.h"
 #import "CSDisplay.h"
 #import "UTMLogging.h"
+#import "UTM-Swift.h"
 
 const CGFloat kThumbstickSpeedMultiplier = 1000; // in points per second
 

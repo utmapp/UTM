@@ -14,12 +14,12 @@
 // limitations under the License.
 //
 
-#import "UIViewController+Extensions.h"
 #import "VMDisplayMetalViewController+Keyboard.h"
 #import "UTMLogging.h"
 #import "UTMVirtualMachine.h"
 #import "VMKeyboardView.h"
 #import "VMKeyboardButton.h"
+#import "UTM-Swift.h"
 
 @implementation VMDisplayMetalViewController (Keyboard)
 

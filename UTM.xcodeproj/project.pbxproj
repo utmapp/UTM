@@ -576,7 +576,6 @@
 		CE2D92BD24AD46670059923A /* qapi-visit-char.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C0E923FCEC04001177D6 /* qapi-visit-char.c */; };
 		CE2D92BE24AD46670059923A /* qapi-types-error.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C11223FCEC06001177D6 /* qapi-types-error.c */; };
 		CE2D92BF24AD46670059923A /* qapi-commands-authz.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C0A423FCEC01001177D6 /* qapi-commands-authz.c */; };
-		CE2D92C124AD46670059923A /* UIViewController+Extensions.m in Sources */ = {isa = PBXBuildFile; fileRef = E2151A58241451120008E6AC /* UIViewController+Extensions.m */; };
 		CE2D92C224AD46670059923A /* qapi-types.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C0B623FCEC02001177D6 /* qapi-types.c */; };
 		CE2D92C324AD46670059923A /* qapi-events-sockets.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C0AF23FCEC01001177D6 /* qapi-events-sockets.c */; };
 		CE2D92C424AD46670059923A /* qapi-visit-sockets.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C10623FCEC05001177D6 /* qapi-visit-sockets.c */; };
@@ -936,7 +935,6 @@
 		CEA45E95263519B5002FA97D /* qapi-visit-char.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C0E923FCEC04001177D6 /* qapi-visit-char.c */; };
 		CEA45E96263519B5002FA97D /* qapi-types-error.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C11223FCEC06001177D6 /* qapi-types-error.c */; };
 		CEA45E97263519B5002FA97D /* qapi-commands-authz.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C0A423FCEC01001177D6 /* qapi-commands-authz.c */; };
-		CEA45E99263519B5002FA97D /* UIViewController+Extensions.m in Sources */ = {isa = PBXBuildFile; fileRef = E2151A58241451120008E6AC /* UIViewController+Extensions.m */; };
 		CEA45E9B263519B5002FA97D /* qapi-types.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C0B623FCEC02001177D6 /* qapi-types.c */; };
 		CEA45E9D263519B5002FA97D /* qapi-events-sockets.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C0AF23FCEC01001177D6 /* qapi-events-sockets.c */; };
 		CEA45E9E263519B5002FA97D /* qapi-visit-sockets.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C10623FCEC05001177D6 /* qapi-visit-sockets.c */; };
@@ -2184,8 +2182,6 @@
 		CEF83EC124F9C9E100557D15 /* UTMDrive.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UTMDrive.m; sourceTree = "<group>"; };
 		CEF83EC624FB1B9300557D15 /* UTMQemuVirtualMachine+SPICE.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UTMQemuVirtualMachine+SPICE.m"; sourceTree = "<group>"; };
 		CEF83EC924FB1BB200557D15 /* UTMQemuVirtualMachine+SPICE.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UTMQemuVirtualMachine+SPICE.h"; sourceTree = "<group>"; };
-		E2151A57241451120008E6AC /* UIViewController+Extensions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UIViewController+Extensions.h"; sourceTree = "<group>"; };
-		E2151A58241451120008E6AC /* UIViewController+Extensions.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UIViewController+Extensions.m"; sourceTree = "<group>"; };
 		E2D64BC7241DB24B0034E0C6 /* UTMSpiceIO.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UTMSpiceIO.h; sourceTree = "<group>"; };
 		E2D64BC8241DB24B0034E0C6 /* UTMSpiceIO.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UTMSpiceIO.m; sourceTree = "<group>"; };
 		E2D64BE0241EAEBE0034E0C6 /* UTMSpiceIODelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UTMSpiceIODelegate.h; sourceTree = "<group>"; };
@@ -3092,8 +3088,6 @@
 				CE4507D0226A5BE200A28D22 /* VMKeyboardView.h */,
 				CE4507D1226A5BE200A28D22 /* VMKeyboardView.m */,
 				CE4507D3226A5C9900A28D22 /* VMKeyboardViewDelegate.h */,
-				E2151A57241451120008E6AC /* UIViewController+Extensions.h */,
-				E2151A58241451120008E6AC /* UIViewController+Extensions.m */,
 			);
 			path = Display;
 			sourceTree = "<group>";
@@ -3634,7 +3628,6 @@
 				CE2D92BD24AD46670059923A /* qapi-visit-char.c in Sources */,
 				CE2D92BE24AD46670059923A /* qapi-types-error.c in Sources */,
 				CE2D92BF24AD46670059923A /* qapi-commands-authz.c in Sources */,
-				CE2D92C124AD46670059923A /* UIViewController+Extensions.m in Sources */,
 				84018697288B71BF0050AC51 /* BusyIndicator.swift in Sources */,
 				CE2D92C224AD46670059923A /* qapi-types.c in Sources */,
 				CE2D92C324AD46670059923A /* qapi-events-sockets.c in Sources */,
@@ -4212,7 +4205,6 @@
 				CEA45E96263519B5002FA97D /* qapi-types-error.c in Sources */,
 				84C60FBB268269D700B58C00 /* VMDisplayViewController.swift in Sources */,
 				CEA45E97263519B5002FA97D /* qapi-commands-authz.c in Sources */,
-				CEA45E99263519B5002FA97D /* UIViewController+Extensions.m in Sources */,
 				CEA45E9B263519B5002FA97D /* qapi-types.c in Sources */,
 				8443EFFB28456F3B00B2E6E2 /* UTMQemuConfigurationSharing.swift in Sources */,
 				CEA45E9D263519B5002FA97D /* qapi-events-sockets.c in Sources */,
