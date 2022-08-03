@@ -28,9 +28,13 @@
 #import "UTM-Swift.h"
 @import CocoaSpiceRenderer;
 
-@implementation VMDisplayMetalViewController {
-    CSRenderer *_renderer;
-}
+@interface VMDisplayMetalViewController ()
+
+@property (nonatomic, nullable) CSRenderer *renderer;
+
+@end
+
+@implementation VMDisplayMetalViewController
 
 - (instancetype)initWithDisplay:(CSDisplay *)display input:(CSInput *)input {
     if (self = [super initWithNibName:nil bundle:nil]) {
@@ -74,8 +78,8 @@
         return;
     }
     
-    _renderer = [[CSRenderer alloc] initWithMetalKitView:self.mtkView];
-    if (!_renderer) {
+    self.renderer = [[CSRenderer alloc] initWithMetalKitView:self.mtkView];
+    if (!self.renderer) {
         UTMLog(@"Renderer failed initialization");
         return;
     }
@@ -83,12 +87,12 @@
     // Initialize our renderer with the view size
     CGSize drawableSize = self.view.bounds.size;
     self.mtkView.drawableSize = drawableSize;
-    [_renderer mtkView:self.mtkView drawableSizeWillChange:drawableSize];
+    [self.renderer mtkView:self.mtkView drawableSizeWillChange:drawableSize];
     
-    [_renderer changeUpscaler:self.delegate.qemuDisplayUpscaler
-                   downscaler:self.delegate.qemuDisplayDownscaler];
+    [self.renderer changeUpscaler:self.delegate.qemuDisplayUpscaler
+                       downscaler:self.delegate.qemuDisplayDownscaler];
     
-    self.mtkView.delegate = _renderer;
+    self.mtkView.delegate = self.renderer;
     self.vmDisplay = self.vmDisplay; // reset renderer
     
     [self initTouch];
@@ -186,7 +190,7 @@
 
 - (void)setVmDisplay:(CSDisplay *)display {
     _vmDisplay = display;
-    _renderer.source = display;
+    self.renderer.source = display;
 }
 
 - (void)setDisplayScaling:(CGFloat)scaling origin:(CGPoint)origin {
