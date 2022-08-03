@@ -141,6 +141,11 @@ struct VMWizardSummaryView: View {
                 TextField("Initial Ramdisk", text: .constant(wizardState.linuxInitialRamdiskURL?.path ?? ""))
                 TextField("Root Image", text: .constant(wizardState.linuxRootImageURL?.path ?? ""))
                 TextField("Boot Arguments", text: $wizardState.linuxBootArguments)
+                #if arch(arm64)
+                if wizardState.useAppleVirtualization && wizardState.operatingSystem == .Linux {
+                    Toggle("Use Rosetta", isOn: $wizardState.linuxHasRosetta)
+                }
+                #endif
             case .Windows, .Other:
                 if let windowsBootVhdx = wizardState.windowsBootVhdx {
                     TextField("Disk Image", text: .constant(windowsBootVhdx.path))

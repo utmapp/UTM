@@ -100,6 +100,7 @@ enum UTMAppleConfigurationError: Error {
     case platformUnsupported
     case kernelNotSpecified
     case hardwareModelInvalid
+    case rosettaNotSupported
 }
 
 // MARK: - Conversion of old config format
@@ -142,7 +143,7 @@ extension UTMAppleConfiguration {
         if #available(macOS 12, *) {
             let fsConfig = VZVirtioFileSystemDeviceConfiguration(tag: "share")
             fsConfig.share = UTMAppleConfigurationSharedDirectory.makeDirectoryShare(from: sharedDirectories)
-            vzconfig.directorySharingDevices = [fsConfig]
+            vzconfig.directorySharingDevices.append(fsConfig)
         }
         vzconfig.storageDevices = drives.compactMap { drive in
             guard let attachment = try? drive.vzDiskImage() else {
@@ -173,7 +174,7 @@ extension UTMAppleConfiguration {
 @available(macOS 11, *)
 extension UTMAppleConfiguration {
     func prepareSave(for packageURL: URL) async throws {
-        // nothing needed
+        try await devices.prepareSave(for: packageURL)
     }
     
     func saveData(to dataURL: URL) async throws -> [URL] {

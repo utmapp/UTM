@@ -90,6 +90,7 @@ enum VMWizardOS: String, Identifiable {
     @Published var linuxInitialRamdiskURL: URL?
     @Published var linuxRootImageURL: URL?
     @Published var linuxBootArguments: String = ""
+    @Published var linuxHasRosetta: Bool = false
     @Published var windowsBootVhdx: URL?
     @Published var systemArchitecture: QEMUArchitecture = .x86_64
     @Published var systemTarget: any QEMUTarget = QEMUTarget_x86_64.pc
@@ -278,6 +279,7 @@ enum VMWizardOS: String, Identifiable {
             } else {
                 config.system.boot = try UTMAppleConfigurationBoot(for: .linux)
             }
+            config.devices.hasRosetta = linuxHasRosetta
             #endif
         case .Windows:
             config.information.iconURL = UTMConfigurationInfo.builtinIcon(named: "windows")

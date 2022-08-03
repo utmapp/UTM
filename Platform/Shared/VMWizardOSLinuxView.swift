@@ -67,6 +67,20 @@ struct VMWizardOSLinuxView: View {
                 Text("Boot Image Type")
             }
             
+            #if arch(arm64)
+            if #available(macOS 13, *), wizardState.useAppleVirtualization {
+                Section {
+                    Toggle("Enable Rosetta (x86_64 Emulation)", isOn: $wizardState.linuxHasRosetta)
+                    Link("Installation Instructions", destination: URL(string: "https://developer.apple.com/documentation/virtualization/running_intel_binaries_in_linux_vms_with_rosetta#3978496")!)
+                        .buttonStyle(.borderless)
+                    Text("Note: The file system tag for mounting the installer is 'rosetta'.")
+                        .font(.footnote)
+                } header: {
+                    Text("Additional Options")
+                }
+            }
+            #endif
+            
             if wizardState.useLinuxKernel {
                 
                 Section {

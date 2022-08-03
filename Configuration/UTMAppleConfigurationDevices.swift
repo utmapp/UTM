@@ -45,12 +45,15 @@ struct UTMAppleConfigurationDevices: Codable {
     
     var pointer: PointerDevice = .mouse
     
+    var hasRosetta: Bool?
+    
     enum CodingKeys: String, CodingKey {
         case hasAudio = "Audio"
         case hasBalloon = "Balloon"
         case hasEntropy = "Entropy"
         case hasKeyboard = "Keyboard"
         case pointer = "Pointer"
+        case rosetta = "Rosetta"
     }
     
     init() {
@@ -63,6 +66,11 @@ struct UTMAppleConfigurationDevices: Codable {
         hasEntropy = try values.decode(Bool.self, forKey: .hasEntropy)
         hasKeyboard = try values.decode(Bool.self, forKey: .hasKeyboard)
         pointer = try values.decode(PointerDevice.self, forKey: .pointer)
+        #if arch(arm64)
+        if #available(macOS 13, *) {
+            hasRosetta = try values.decodeIfPresent(Bool.self, forKey: .rosetta)
+        }
+        #endif
     }
     
     func encode(to encoder: Encoder) throws {
@@ -72,6 +80,7 @@ struct UTMAppleConfigurationDevices: Codable {
         try container.encode(hasEntropy, forKey: .hasEntropy)
         try container.encode(hasKeyboard, forKey: .hasKeyboard)
         try container.encode(pointer, forKey: .pointer)
+        try container.encodeIfPresent(hasRosetta, forKey: .rosetta)
     }
 }
 
@@ -129,6 +138,32 @@ extension UTMAppleConfigurationDevices {
                 vzconfig.pointingDevices = [device]
             }
         }
+        if #available(macOS 13, *), hasRosetta == true {
+            if let rosettaDirectoryShare = try? VZLinuxRosettaDirectoryShare() {
+                let fileSystemDevice = VZVirtioFileSystemDeviceConfiguration(tag: "rosetta")
+                fileSystemDevice.share = rosettaDirectoryShare
+                vzconfig.directorySharingDevices.append(fileSystemDevice)
+            }
+        }
         #endif
+    }
+}
+
+// MARK: prepare save
+extension UTMAppleConfigurationDevices {
+    func prepareSave(for packageURL: URL) async throws {
+        if #available(macOS 13, *), hasRosetta == true {
+            try await installRosetta()
+        }
+    }
+    
+    @available(macOS 13, *)
+    private func installRosetta() async throws {
+        let rosettaAvailability = VZLinuxRosettaDirectoryShare.availability
+        if rosettaAvailability == .notSupported {
+            throw UTMAppleConfigurationError.rosettaNotSupported
+        } else if rosettaAvailability == .notInstalled {
+            try await VZLinuxRosettaDirectoryShare.installRosetta()
+        }
     }
 }
