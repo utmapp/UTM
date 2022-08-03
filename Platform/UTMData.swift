@@ -70,7 +70,7 @@ class UTMData: ObservableObject {
     
     #if os(macOS)
     /// View controller for every VM currently active
-    var vmWindows: [UTMVirtualMachine: VMDisplayWindowController] = [:]
+    var vmWindows: [UTMVirtualMachine: Any] = [:]
     #else
     /// View controller for currently active VM
     var vmVC: Any?
@@ -301,7 +301,7 @@ class UTMData: ObservableObject {
         self.busy = busy
     }
     
-    @MainActor private func showErrorAlert(message: String) {
+    @MainActor func showErrorAlert(message: String) {
         alertMessage = AlertMessage(message)
     }
     

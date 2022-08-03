@@ -26,6 +26,11 @@ struct UTMApp: App {
                 .onAppear {
                     appDelegate.data = data
                 }
+                .onReceive(.vmSessionError) { notification in
+                    if let message = notification.userInfo?["Message"] as? String {
+                        data.showErrorAlert(message: message)
+                    }
+                }
         }.commands {
             VMCommands()
         }

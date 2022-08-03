@@ -19,8 +19,8 @@ import Carbon.HIToolbox
 
 @available(macOS 11, *)
 extension UTMData {
-    func run(vm: UTMVirtualMachine) {
-        var window: VMDisplayWindowController? = vmWindows[vm]
+    @MainActor func run(vm: UTMVirtualMachine) {
+        var window: Any? = vmWindows[vm]
         if window == nil {
             let close = { (notification: Notification) -> Void in
                 self.vmWindows.removeValue(forKey: vm)
@@ -31,6 +31,8 @@ extension UTMData {
                     if avm.appleConfig.displays.count > 0 ||
                         (avm.appleConfig.serials.count > 0 && avm.appleConfig.serials.first!.mode == .builtin) {
                         window = VMDisplayAppleWindowController(vm: avm, onClose: close)
+                    } else {
+                        window = VMHeadlessSessionState(for: avm, onStop: close)
                     }
                 }
             }
@@ -40,7 +42,7 @@ extension UTMData {
                 } else if qvm.config.qemuHasTerminal {
                     window = VMDisplayTerminalWindowController(vm: qvm, onClose: close)
                 } else {
-                    // FIXME: do headless
+                    window = VMHeadlessSessionState(for: qvm, onStop: close)
                 }
             }
             if window == nil {
@@ -49,12 +51,15 @@ extension UTMData {
                 }
             }
         }
-        if let unwrappedWindow = window {
+        if let unwrappedWindow = window as? VMDisplayWindowController {
             vmWindows[vm] = unwrappedWindow
             vm.delegate = unwrappedWindow
             unwrappedWindow.showWindow(nil)
             unwrappedWindow.window!.makeMain()
             unwrappedWindow.requestAutoStart()
+        } else if let unwrappedWindow = window as? VMHeadlessSessionState {
+            vmWindows[vm] = unwrappedWindow
+            unwrappedWindow.start()
         } else {
             logger.critical("Failed to create window controller.")
         }
@@ -70,7 +75,7 @@ extension UTMData {
     }
     
     func close(vm: UTMVirtualMachine) {
-        if let window = vmWindows.removeValue(forKey: vm) {
+        if let window = vmWindows.removeValue(forKey: vm) as? VMDisplayWindowController {
             DispatchQueue.main.async {
                 window.close()
             }
