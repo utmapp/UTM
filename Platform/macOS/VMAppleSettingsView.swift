@@ -40,7 +40,7 @@ struct VMAppleSettingsView: View {
             Label("Boot", systemImage: "power")
         }
         NavigationLink(destination: VMConfigAppleDevicesView(config: $config.devices).scrollable()) {
-            Label("Devices", systemImage: "circle")
+            Label("Devices", systemImage: "wrench.and.screwdriver")
         }
         if #available(macOS 12, *) {
             if hasVenturaFeatures || config.system.boot.operatingSystem == .macOS {
