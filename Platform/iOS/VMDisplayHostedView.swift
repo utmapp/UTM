@@ -124,6 +124,10 @@ struct VMDisplayHostedView: UIViewControllerRepresentable {
             vm.requestVmDeleteState()
         }
         
+        func serialDidError(_ error: String) {
+            state.alert = .nonfatalError(error)
+        }
+        
         func requestInputTablet(_ tablet: Bool) {
             vm.requestInputTablet(tablet)
         }

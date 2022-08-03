@@ -193,7 +193,7 @@ extension VMDisplayTerminalViewController: CSPortDelegate {
     }
     
     func port(_ port: CSPort, didError error: String) {
-        showAlert(error, actions: nil)
+        delegate.serialDidError(error)
     }
     
     func port(_ port: CSPort, didRecieveData data: Data) {

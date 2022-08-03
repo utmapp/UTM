@@ -32,5 +32,6 @@ import Foundation
     func displayDidAppear()
     func vmSaveState(onCompletion: @escaping (Error?) -> Void)
     func requestVmDeleteState()
+    func serialDidError(_ error: String)
     func requestInputTablet(_ tablet: Bool)
 }
