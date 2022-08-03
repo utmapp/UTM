@@ -103,6 +103,23 @@ enum UTMAppleConfigurationError: Error {
     case rosettaNotSupported
 }
 
+extension UTMAppleConfigurationError: LocalizedError {
+    var errorDescription: String? {
+        switch self {
+        case .notAppleConfiguration:
+            return NSLocalizedString("This is not a valid Apple Virtualization configuration.", comment: "UTMAppleConfiguration")
+        case .platformUnsupported:
+            return NSLocalizedString("This virtual machine cannot run on the current host machine.", comment: "UTMAppleConfiguration")
+        case .kernelNotSpecified:
+            return NSLocalizedString("A valid kernel image must be specified.", comment: "UTMAppleConfiguration")
+        case .hardwareModelInvalid:
+            return NSLocalizedString("This virtual machine contains an invalid hardware model. The configuration may be corrupted or is outdated.", comment: "UTMAppleConfiguration")
+        case .rosettaNotSupported:
+            return NSLocalizedString("Rosetta is not supported on the current host machine.", comment: "UTMAppleConfiguration")
+        }
+    }
+}
+
 // MARK: - Conversion of old config format
 
 extension UTMAppleConfiguration {
