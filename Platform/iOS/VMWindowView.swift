@@ -24,6 +24,7 @@ struct VMWindowView: View {
     
     private let keyboardDidShowNotification = NotificationCenter.default.publisher(for: UIResponder.keyboardDidShowNotification)
     private let keyboardDidHideNotification = NotificationCenter.default.publisher(for: UIResponder.keyboardDidHideNotification)
+    private let didReceiveMemoryWarningNotification = NotificationCenter.default.publisher(for: UIApplication.didReceiveMemoryWarningNotification)
     
     private func withOptionalAnimation<Result>(_ animation: Animation? = .default, _ body: () throws -> Result) rethrows -> Result {
         if UIAccessibility.isReduceMotionEnabled {
@@ -114,6 +115,10 @@ struct VMWindowView: View {
                         session.nonfatalError = nil
                     }
                 })
+            case .memoryWarning:
+                return Alert(title: Text("Running low on memory! UTM might soon be killed by iOS. You can prevent this by decreasing the amount of memory and/or JIT cache assigned to this VM"), dismissButton: .cancel(Text("OK")) {
+                    session.didReceiveMemoryWarning()
+                })
             }
         })
         .onChange(of: session.windowDeviceMap) { windowDeviceMap in
@@ -155,6 +160,12 @@ struct VMWindowView: View {
         .onReceive(keyboardDidHideNotification) { _ in
             state.isKeyboardShown = false
             state.isKeyboardRequested = false
+        }
+        .onReceive(didReceiveMemoryWarningNotification) { _ in
+            if session.activeWindow == state.id && !session.hasShownMemoryWarning {
+                session.hasShownMemoryWarning = true
+                state.alert = .memoryWarning
+            }
         }
         .onAppear {
             vmStateUpdated(session.vmState)

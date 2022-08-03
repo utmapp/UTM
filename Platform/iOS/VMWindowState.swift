@@ -91,6 +91,7 @@ extension VMWindowState {
             #endif
             case .nonfatalError(_): return 4
             case .fatalError(_): return 5
+            case .memoryWarning: return 6
             }
         }
         
@@ -102,6 +103,7 @@ extension VMWindowState {
         #endif
         case nonfatalError(String)
         case fatalError(String)
+        case memoryWarning
     }
 }
 

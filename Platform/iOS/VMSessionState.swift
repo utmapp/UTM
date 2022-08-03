@@ -60,6 +60,8 @@ import SwiftUI
     
     @Published var externalWindowBinding: Binding<VMWindowState>?
     
+    @Published var hasShownMemoryWarning: Bool = false
+    
     init(for vm: UTMQemuVirtualMachine) {
         self.vm = vm
         super.init()
@@ -393,6 +395,17 @@ extension VMSessionState {
     
     func reset() {
         vm.requestVmReset()
+    }
+    
+    func didReceiveMemoryWarning() {
+        let shouldAutosave = UserDefaults.standard.bool(forKey: "AutosaveLowMemory")
+        
+        if shouldAutosave {
+            logger.info("Saving VM state on low memory warning.")
+            vm.vmSaveState { _ in
+                // ignore error
+            }
+        }
     }
 }
 

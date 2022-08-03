@@ -27,10 +27,6 @@ private var memoryAlertOnce = false
         bool(forSetting: "AutosaveBackground")
     }
     
-    var autosaveLowMemory: Bool {
-        bool(forSetting: "AutosaveLowMemory")
-    }
-    
     var runInBackground: Bool {
         bool(forSetting: "RunInBackground")
     }
@@ -80,22 +76,6 @@ public extension VMDisplayViewController {
             UTMLocationManager.sharedInstance().startUpdatingLocation()
         }
         delegate.displayDidAppear()
-    }
-    
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        
-        if autosaveLowMemory {
-            logger.info("Saving VM state on low memory warning.")
-            delegate.vmSaveState { _ in
-                // ignore error
-            }
-        }
-        
-        if !memoryAlertOnce {
-            memoryAlertOnce = true
-            showAlert(NSLocalizedString("Running low on memory! UTM might soon be killed by iOS. You can prevent this by decreasing the amount of memory and/or JIT cache assigned to this VM", comment: "VMDisplayViewController"), actions: nil, completion: nil)
-        }
     }
 }
 
