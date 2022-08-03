@@ -116,6 +116,12 @@ struct VMDisplayHostedView: UIViewControllerRepresentable {
             }
         }
         
+        func display(_ display: CSDisplay, didResizeTo size: CGSize) {
+            if state.isDisplayZoomLocked {
+                state.resizeDisplayToFit(display, size: size)
+            }
+        }
+        
         func serialDidError(_ error: String) {
             state.alert = .nonfatalError(error)
         }

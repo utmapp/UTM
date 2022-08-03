@@ -30,6 +30,7 @@ import Foundation
     
     func displayDidAssertUserInteraction()
     func displayDidAppear()
+    func display(_ display: CSDisplay, didResizeTo size: CGSize)
     func serialDidError(_ error: String)
     func requestInputTablet(_ tablet: Bool)
 }

@@ -62,6 +62,8 @@ struct VMWindowState: Identifiable {
     
     var displayViewSize: CGSize = .zero
     
+    var isDisplayZoomLocked: Bool = false
+    
     var isKeyboardRequested: Bool = false
     
     var isKeyboardShown: Bool = false
@@ -114,9 +116,9 @@ extension VMWindowState {
         "stty cols $COLS rows $ROWS\\n"
     }
     
-    private mutating func resizeDisplayToFit(_ display: CSDisplay) {
+    mutating func resizeDisplayToFit(_ display: CSDisplay, size: CGSize = .zero) {
         let viewSize = displayViewSize
-        let displaySize = display.displaySize
+        let displaySize = size == .zero ? display.displaySize : size
         let scaled = CGSize(width: viewSize.width / displaySize.width, height: viewSize.height / displaySize.height)
         let viewportScale = min(scaled.width, scaled.height)
         display.viewportScale = viewportScale
@@ -148,13 +150,16 @@ extension VMWindowState {
     mutating func toggleDisplayResize(command: String? = nil) {
         if case let .display(display, _) = device {
             if isViewportChanged {
+                isDisplayZoomLocked = false
                 resetDisplay(display)
             } else {
+                isDisplayZoomLocked = true
                 resizeDisplayToFit(display)
             }
         } else if case let .serial(serial, _) = device {
             resetConsole(serial)
             isViewportChanged = false
+            isDisplayZoomLocked = false
         }
     }
 }

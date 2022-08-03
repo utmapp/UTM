@@ -40,6 +40,7 @@
     if (self = [super initWithNibName:nil bundle:nil]) {
         self.vmDisplay = display;
         self.vmInput = input;
+        [self addObserver:self forKeyPath:@"vmDisplay.displaySize" options:NSKeyValueObservingOptionNew context:nil];
     }
     return self;
 }
@@ -197,6 +198,12 @@
     self.vmDisplay.viewportOrigin = origin;
     if (scaling) { // cannot be zero
         self.vmDisplay.viewportScale = scaling;
+    }
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context {
+    if ([keyPath isEqualToString:@"vmDisplay.displaySize"]) {
+        [self.delegate display:self.vmDisplay didResizeTo:self.vmDisplay.displaySize];
     }
 }
 
