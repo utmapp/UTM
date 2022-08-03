@@ -21,6 +21,9 @@ struct UTMQemuConfigurationDisplay: Codable, Identifiable {
     /// Hardware card to emulate.
     var hardware: any QEMUDisplayDevice = QEMUDisplayDevice_x86_64.virtio_vga
     
+    /// Only used for VGA devices.
+    var vgaRamMib: Int?
+    
     /// If true, attempt to use SPICE guest agent to change the display resolution automatically.
     var isDynamicResolution: Bool = true
     
@@ -37,6 +40,7 @@ struct UTMQemuConfigurationDisplay: Codable, Identifiable {
     
     enum CodingKeys: String, CodingKey {
         case hardware = "Hardware"
+        case vgaRamMib = "VgaRamMib"
         case isDynamicResolution = "DynamicResolution"
         case upscalingFilter = "UpscalingFilter"
         case downscalingFilter = "DownscalingFilter"
@@ -49,6 +53,7 @@ struct UTMQemuConfigurationDisplay: Codable, Identifiable {
     init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         hardware = try values.decode(AnyQEMUConstant.self, forKey: .hardware)
+        vgaRamMib = try values.decodeIfPresent(Int.self, forKey: .vgaRamMib)
         isDynamicResolution = try values.decode(Bool.self, forKey: .isDynamicResolution)
         upscalingFilter = try values.decode(QEMUScaler.self, forKey: .upscalingFilter)
         downscalingFilter = try values.decode(QEMUScaler.self, forKey: .downscalingFilter)
@@ -58,6 +63,7 @@ struct UTMQemuConfigurationDisplay: Codable, Identifiable {
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(hardware.asAnyQEMUConstant(), forKey: .hardware)
+        try container.encodeIfPresent(vgaRamMib, forKey: .vgaRamMib)
         try container.encode(isDynamicResolution, forKey: .isDynamicResolution)
         try container.encode(upscalingFilter, forKey: .upscalingFilter)
         try container.encode(downscalingFilter, forKey: .downscalingFilter)

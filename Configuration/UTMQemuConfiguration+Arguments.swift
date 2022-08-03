@@ -110,6 +110,9 @@ extension UTMQemuConfiguration {
             if !displays.isEmpty {
                 f("-vga")
                 displays[0].hardware
+                if let vgaRamSize = displays[0].vgaRamMib {
+                    "vgamem_mb=\(vgaRamSize)"
+                }
                 f()
             }
         } else { // disable -vga and other default devices
@@ -125,6 +128,9 @@ extension UTMQemuConfiguration {
             for display in displays {
                 f("-device")
                 display.hardware
+                if let vgaRamSize = displays[0].vgaRamMib {
+                    "vgamem_mb=\(vgaRamSize)"
+                }
                 f()
             }
         }

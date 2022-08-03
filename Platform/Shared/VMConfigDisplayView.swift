@@ -25,6 +25,8 @@ struct VMConfigDisplayView: View {
             Form {
                 Section(header: Text("Hardware")) {
                     VMConfigConstantPicker("Emulated Display Card", selection: $config.hardware, type: system.architecture.displayDeviceType)
+                    
+                    NumberTextField("VGA Device RAM (MB)", number: $config.vgaRamMib.bound, prompt: "16")
                 }
                 
                 DetailedSection("Auto Resolution", description: "Requires SPICE guest agent tools to be installed.") {
