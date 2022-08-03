@@ -38,6 +38,8 @@ struct UTMAppleConfigurationBoot: Codable {
     var linuxKernelURL: URL?
     var linuxCommandLine: String?
     var linuxInitialRamdiskURL: URL?
+    var efiVariableStorageURL: URL?
+    var hasUefiBoot: Bool = false
     
     /// Next startup should be in recovery. Not saved.
     var startUpFromMacOSRecovery: Bool = false
@@ -47,6 +49,8 @@ struct UTMAppleConfigurationBoot: Codable {
         case linuxKernelPath = "LinuxKernelPath"
         case linuxCommandLine = "LinuxCommandLine"
         case linuxInitialRamdiskPath = "LinuxInitialRamdiskPath"
+        case efiVariableStoragePath = "EfiVariableStoragePath"
+        case hasUefiBoot = "UEFIBoot"
     }
     
     init(from decoder: Decoder) throws {
@@ -55,6 +59,7 @@ struct UTMAppleConfigurationBoot: Codable {
         }
         let container = try decoder.container(keyedBy: CodingKeys.self)
         operatingSystem = try container.decode(OperatingSystem.self, forKey: .operatingSystem)
+        hasUefiBoot = try container.decodeIfPresent(Bool.self, forKey: .hasUefiBoot) ?? false
         #if !arch(arm64)
         if #available(macOS 12, *) {
         } else {
@@ -70,13 +75,16 @@ struct UTMAppleConfigurationBoot: Codable {
         if let linuxInitialRamdiskPath = try container.decodeIfPresent(String.self, forKey: .linuxInitialRamdiskPath) {
             linuxInitialRamdiskURL = dataURL.appendingPathComponent(linuxInitialRamdiskPath)
         }
+        if let efiVariableStoragePath = try container.decodeIfPresent(String.self, forKey: .efiVariableStoragePath) {
+            efiVariableStorageURL = dataURL.appendingPathComponent(efiVariableStoragePath)
+        }
     }
     
     init(for operatingSystem: OperatingSystem, linuxKernelURL: URL? = nil) throws {
         self.operatingSystem = operatingSystem
         self.linuxKernelURL = linuxKernelURL
         if operatingSystem == .linux && linuxKernelURL == nil {
-            throw UTMAppleConfigurationError.kernelNotSpecified
+            self.hasUefiBoot = true
         }
     }
     
@@ -90,10 +98,12 @@ struct UTMAppleConfigurationBoot: Codable {
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(operatingSystem, forKey: .operatingSystem)
+        try container.encode(hasUefiBoot, forKey: .hasUefiBoot)
         if operatingSystem == .linux {
             try container.encodeIfPresent(linuxKernelURL?.lastPathComponent, forKey: .linuxKernelPath)
             try container.encodeIfPresent(linuxCommandLine, forKey: .linuxCommandLine)
             try container.encodeIfPresent(linuxInitialRamdiskURL?.lastPathComponent, forKey: .linuxInitialRamdiskPath)
+            try container.encodeIfPresent(efiVariableStorageURL?.lastPathComponent, forKey: .efiVariableStoragePath)
         }
     }
     
@@ -102,6 +112,11 @@ struct UTMAppleConfigurationBoot: Codable {
         case .none:
             return nil
         case .linux:
+            if #available(macOS 13, *), let efiVariableStorageURL = efiVariableStorageURL, hasUefiBoot {
+                let efi = VZEFIBootLoader()
+                efi.variableStore = VZEFIVariableStore(url: efiVariableStorageURL)
+                return efi
+            }
             guard let linuxKernelURL = linuxKernelURL else {
                 return nil
             }
@@ -145,7 +160,7 @@ extension UTMAppleConfigurationBoot {
 extension UTMAppleConfigurationBoot {
     @MainActor mutating func saveData(to dataURL: URL) async throws -> [URL] {
         var urls = [URL]()
-        if operatingSystem == .linux {
+        if operatingSystem == .linux && !hasUefiBoot {
             guard let linuxKernelURL = linuxKernelURL else {
                 throw UTMAppleConfigurationError.kernelNotSpecified
             }
@@ -157,6 +172,22 @@ extension UTMAppleConfigurationBoot {
                 self.linuxInitialRamdiskURL = ramdiskUrl
                 urls.append(ramdiskUrl)
             }
+            self.efiVariableStorageURL = nil
+        }
+        if hasUefiBoot {
+            guard #available(macOS 13, *) else {
+                throw UTMAppleConfigurationError.platformUnsupported
+            }
+            let fileManager = FileManager.default
+            let efiVariableStorageURL = dataURL.appendingPathComponent(QEMUPackageFileName.efiVariables.rawValue)
+            if !fileManager.fileExists(atPath: efiVariableStorageURL.path) {
+                _ = try VZEFIVariableStore(creatingVariableStoreAt: efiVariableStorageURL)
+            }
+            self.linuxKernelURL = nil
+            self.linuxInitialRamdiskURL = nil
+            self.linuxCommandLine = nil
+            self.efiVariableStorageURL = efiVariableStorageURL
+            urls.append(efiVariableStorageURL)
         }
         return urls
     }

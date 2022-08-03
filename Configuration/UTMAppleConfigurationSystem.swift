@@ -43,10 +43,9 @@ struct UTMAppleConfigurationSystem: Codable {
     
     var boot: UTMAppleConfigurationBoot = try! .init(for: .macOS)
     
-    /// IPSW for installing macOS. Not saved.
-    var macRecoveryIpswURL: URL?
-    
     var macPlatform: UTMAppleConfigurationMacPlatform?
+    
+    var genericPlatform: UTMAppleConfigurationGenericPlatform?
     
     enum CodingKeys: String, CodingKey {
         case architecture = "Architecture"
@@ -54,6 +53,7 @@ struct UTMAppleConfigurationSystem: Codable {
         case memorySize = "MemorySize"
         case boot = "Boot"
         case macPlatform = "MacPlatform"
+        case genericPlatform = "GenericPlatform"
     }
     
     init() {
@@ -66,6 +66,7 @@ struct UTMAppleConfigurationSystem: Codable {
         memorySize = try values.decode(Int.self, forKey: .memorySize)
         boot = try values.decode(UTMAppleConfigurationBoot.self, forKey: .boot)
         macPlatform = try values.decodeIfPresent(UTMAppleConfigurationMacPlatform.self, forKey: .macPlatform)
+        genericPlatform = try values.decodeIfPresent(UTMAppleConfigurationGenericPlatform.self, forKey: .genericPlatform)
     }
     
     func encode(to encoder: Encoder) throws {
@@ -76,6 +77,8 @@ struct UTMAppleConfigurationSystem: Codable {
         try container.encode(boot, forKey: .boot)
         if boot.operatingSystem == .macOS {
             try container.encodeIfPresent(macPlatform, forKey: .macPlatform)
+        } else if boot.operatingSystem == .linux {
+            try container.encodeIfPresent(genericPlatform, forKey: .genericPlatform)
         }
     }
 }
@@ -125,6 +128,11 @@ extension UTMAppleConfigurationSystem {
             }
         }
         #endif
+        if #available(macOS 12, *), let genericPlatform = genericPlatform {
+            if let platform = genericPlatform.vzGenericPlatform() {
+                vzconfig.platform = platform
+            }
+        }
     }
     
     private static func sysctlIntRead(_ name: String) -> UInt64 {
