@@ -43,6 +43,12 @@ struct VMConfigAppleBootView: View {
     var body: some View {
         Form {
             VMConfigConstantPicker("Operating System", selection: $operatingSystem)
+            Picker("Bootloader", selection: $config.boot.hasUefiBoot) {
+                Text(operatingSystem.prettyValue).tag(false)
+                if #available(macOS 13, *) {
+                    Text("UEFI").tag(true)
+                }
+            }
             .onAppear {
                 operatingSystem = currentOperatingSystem
             }
@@ -50,8 +56,14 @@ struct VMConfigAppleBootView: View {
                 guard newValue != currentOperatingSystem else {
                     return
                 }
+                config.boot.hasUefiBoot = false
                 if newValue == .linux {
-                    alertBootloaderSelection = .kernel
+                    if #available(macOS 13, *) {
+                        config.boot.hasUefiBoot = true
+                        config.boot.operatingSystem = .linux
+                    } else {
+                        alertBootloaderSelection = .kernel
+                    }
                 } else if newValue == .macOS {
                     if #available(macOS 12, *) {
                         alertBootloaderSelection = .ipsw
@@ -64,6 +76,11 @@ struct VMConfigAppleBootView: View {
                 // don't change display until AFTER file selected
                 importBootloaderSelection = nil
                 operatingSystem = currentOperatingSystem
+            }.onChange(of: config.boot.hasUefiBoot) { newValue in
+                if !newValue && operatingSystem == .linux {
+                    alertBootloaderSelection = .kernel
+                    operatingSystem = .none
+                }
             }.alert(item: $alertBootloaderSelection) { selection in
                 let okay = Alert.Button.default(Text("OK")) {
                     importBootloaderSelection = selection
@@ -80,7 +97,7 @@ struct VMConfigAppleBootView: View {
                     return Alert(title: Text("Select a file."), dismissButton: okay)
                 }
             }.fileImporter(isPresented: $importFileShown, allowedContentTypes: [.data], onCompletion: selectImportedFile)
-            if operatingSystem == .linux {
+            if operatingSystem == .linux && !config.boot.hasUefiBoot {
                 Section(header: Text("Linux Settings")) {
                     HStack {
                         TextField("Kernel Image", text: .constant(config.boot.linuxKernelURL?.lastPathComponent ?? ""))

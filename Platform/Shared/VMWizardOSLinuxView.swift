@@ -28,6 +28,14 @@ struct VMWizardOSLinuxView: View {
     @State private var isFileImporterPresented: Bool = false
     @State private var selectImage: SelectImage = .kernel
     
+    private var hasVenturaFeatures: Bool {
+        if #available(macOS 13, *) {
+            return true
+        } else {
+            return false
+        }
+    }
+    
     var body: some View {
 #if os(macOS)
         Text("Linux")
@@ -45,7 +53,7 @@ struct VMWizardOSLinuxView: View {
             Section {
                 Toggle("Boot from kernel image", isOn: $wizardState.useLinuxKernel)
                     .help("If set, boot directly from a raw kernel image and initrd. Otherwise, boot from a supported ISO.")
-                    .disabled(wizardState.useAppleVirtualization)
+                    .disabled(wizardState.useAppleVirtualization && !hasVenturaFeatures)
                 if !wizardState.useLinuxKernel {
 #if arch(arm64)
                 Link("Download Ubuntu Server for ARM", destination: URL(string: "https://ubuntu.com/download/server/arm")!)

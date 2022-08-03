@@ -68,7 +68,7 @@ enum VMWizardOS: String, Identifiable {
     }
     @Published var useAppleVirtualization: Bool = false {
         didSet {
-            if useAppleVirtualization {
+            if #unavailable(macOS 13), useAppleVirtualization {
                 useLinuxKernel = true
             }
         }
@@ -275,6 +275,8 @@ enum VMWizardOS: String, Identifiable {
                     config.drives.append(UTMAppleConfigurationDrive(existingURL: linuxRootImageURL))
                     isSkipDiskCreate = true
                 }
+            } else {
+                config.system.boot = try UTMAppleConfigurationBoot(for: .linux)
             }
             #endif
         case .Windows:
@@ -300,9 +302,7 @@ enum VMWizardOS: String, Identifiable {
         config.devices.hasBalloon = true
         config.devices.hasEntropy = true
         config.networks = [UTMAppleConfigurationNetwork()]
-        if #available(macOS 13, *) {
-            // FIXME: macOS 13 features
-        } else if operatingSystem == .Linux {
+        if operatingSystem == .Linux && useLinuxKernel {
             config.serials = [UTMAppleConfigurationSerial()]
         }
         return config
