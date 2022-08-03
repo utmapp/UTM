@@ -56,11 +56,13 @@ struct VMToolbarDisplayMenuView: View {
                     MenuLabel("External Monitor", systemImage: "rectangle.on.rectangle")
                 }
             }
-            Divider()
-            Button {
-                UIApplication.shared.requestSceneSessionActivation(nil, userActivity: nil, options: nil, errorHandler: nil)
-            } label: {
-                MenuLabel("New Window…", systemImage: "plus.rectangle.on.rectangle")
+            if UIApplication.shared.supportsMultipleScenes {
+                Divider()
+                Button {
+                    UIApplication.shared.requestSceneSessionActivation(nil, userActivity: nil, options: nil, errorHandler: nil)
+                } label: {
+                    MenuLabel("New Window…", systemImage: "plus.rectangle.on.rectangle")
+                }
             }
 
         } label: {
