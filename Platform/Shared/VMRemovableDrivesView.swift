@@ -54,7 +54,7 @@ struct VMRemovableDrivesView: View {
 
 
         Group {
-            if vm.hasShareDirectoryEnabled {
+            if vm.config.qemuConfig!.sharing.directoryShareMode != .none {
                 HStack {
                     title
                     Spacer()

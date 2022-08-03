@@ -56,10 +56,6 @@ extern const NSURLBookmarkResolutionOptions kUTMBookmarkResolutionOptions;
 
 #pragma mark - Shared Directory
 
-- (BOOL)hasShareDirectoryEnabled {
-    return self.config.qemuHasWebdavSharing;
-}
-
 - (BOOL)saveSharedDirectory:(NSURL *)url error:(NSError * _Nullable __autoreleasing *)error {
     [url startAccessingSecurityScopedResource];
     NSData *bookmark = [url bookmarkDataWithOptions:kUTMBookmarkCreationOptions
@@ -82,11 +78,13 @@ extern const NSURLBookmarkResolutionOptions kUTMBookmarkResolutionOptions;
         // if we haven't started the VM yet, save the URL for when the VM starts
         return [self saveSharedDirectory:url error:error];
     }
-    UTMSpiceIO *spiceIO = [self spiceIoWithError:error];
-    if (!spiceIO) {
-        return NO;
+    if (self.config.qemuHasWebdavSharing) {
+        UTMSpiceIO *spiceIO = [self spiceIoWithError:error];
+        if (!spiceIO) {
+            return NO;
+        }
+        [spiceIO changeSharedDirectory:url];
     }
-    [spiceIO changeSharedDirectory:url];
     return [self saveSharedDirectory:url error:error];
 }
 

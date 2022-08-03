@@ -136,6 +136,8 @@ NSString *const kSuspendSnapshotName = @"suspend";
         [self.logging logToFile:self.config.qemuDebugLogURL];
     }
     
+    [self prepareConfigurationForStart];
+    
     if (self.isRunningAsSnapshot) {
         self.config.qemuIsDisposable = self.isRunningAsSnapshot;
     } else {

@@ -682,6 +682,25 @@ extension UTMQemuConfiguration {
                 f("virtserialport,chardev=charchannel1,id=channel1,name=org.spice-space.webdav.0")
                 f("-chardev")
                 f("spiceport,name=org.spice-space.webdav.0,id=charchannel1")
+            } else if sharing.directoryShareMode == .virtfs, let url = sharing.directoryShareUrl {
+                f("-fsdev")
+                "local"
+                "id=virtfs0"
+                "path="
+                url
+                "security_model=mapped-xattr"
+                if sharing.isDirectoryShareReadOnly {
+                    "readonly=on"
+                }
+                f()
+                f("-device")
+                if system.architecture == .s390x {
+                    "virtio-9p-ccw"
+                } else {
+                    "virtio-9p-pci"
+                }
+                "fsdev=virtfs0"
+                "mount_tag=share"
             }
         }
     }

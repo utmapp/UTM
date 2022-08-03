@@ -62,7 +62,7 @@ class VMDisplayQemuWindowController: VMDisplayWindowController {
         }
         #endif
         drivesToolbarItem.isEnabled = vmQemuConfig.drives.count > 0
-        sharedFolderToolbarItem.isEnabled = qemuVM.hasShareDirectoryEnabled
+        sharedFolderToolbarItem.isEnabled = vmQemuConfig.sharing.directoryShareMode == .webdav // virtfs cannot dynamically change
         usbToolbarItem.isEnabled = qemuVM.hasUsbRedirection
         window!.title = defaultTitle
         window!.subtitle = defaultSubtitle
