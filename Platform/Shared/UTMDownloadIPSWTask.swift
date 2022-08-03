@@ -29,7 +29,7 @@ class UTMDownloadIPSWTask: UTMDownloadTask {
     
     init(for config: UTMAppleConfiguration) {
         self.config = config
-        super.init(for: config.system.macRecoveryIpswURL!, named: config.information.name)
+        super.init(for: config.system.boot.macRecoveryIpswURL!, named: config.information.name)
     }
     
     override func processCompletedDownload(at location: URL) async throws -> UTMVirtualMachine {
@@ -38,7 +38,7 @@ class UTMDownloadIPSWTask: UTMDownloadTask {
             try fileManager.removeItem(at: cacheIpsw)
         }
         try fileManager.moveItem(at: location, to: cacheIpsw)
-        config.system.macRecoveryIpswURL = cacheIpsw
+        config.system.boot.macRecoveryIpswURL = cacheIpsw
         return UTMVirtualMachine(newConfig: config, destinationURL: UTMData.defaultStorageUrl)
     }
 }

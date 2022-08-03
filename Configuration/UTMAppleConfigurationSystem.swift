@@ -100,7 +100,7 @@ extension UTMAppleConfigurationSystem {
             if let oldPlatform = oldConfig.macPlatform {
                 macPlatform = UTMAppleConfigurationMacPlatform(migrating: oldPlatform)
             }
-            macRecoveryIpswURL = oldConfig.macRecoveryIpswURL
+            boot.macRecoveryIpswURL = oldConfig.macRecoveryIpswURL
         }
         #endif
     }

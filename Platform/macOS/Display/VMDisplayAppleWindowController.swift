@@ -69,10 +69,10 @@ class VMDisplayAppleWindowController: VMDisplayWindowController {
         appleVM.screenshotDelegate = self
         window!.recalculateKeyViewLoop()
         if #available(macOS 12, *) {
-            shouldAutoStartVM = appleConfig.system.macRecoveryIpswURL == nil
+            shouldAutoStartVM = appleConfig.system.boot.macRecoveryIpswURL == nil
         }
         super.windowDidLoad()
-        if #available(macOS 12, *), let ipswUrl = appleConfig.system.macRecoveryIpswURL {
+        if #available(macOS 12, *), let ipswUrl = appleConfig.system.boot.macRecoveryIpswURL {
             showConfirmAlert(NSLocalizedString("Would you like to install macOS? If an existing operating system is already installed on the primary drive of this VM, then it will be erased.", comment: "VMDisplayAppleWindowController")) {
                 self.isInstalling = true
                 self.appleVM.requestInstallVM(with: ipswUrl)
@@ -312,7 +312,7 @@ extension VMDisplayAppleWindowController {
             self.isInstalling = false
             // delete IPSW setting
             self.enterSuspended(isBusy: true)
-            self.appleConfig.system.macRecoveryIpswURL = nil
+            self.appleConfig.system.boot.macRecoveryIpswURL = nil
             // start VM
             self.vm.requestVmStart()
         }

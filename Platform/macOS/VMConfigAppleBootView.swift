@@ -107,10 +107,10 @@ struct VMConfigAppleBootView: View {
                 #if arch(arm64)
                 Section(header: Text("macOS Settings")) {
                     HStack {
-                        TextField("IPSW Install Image", text: .constant(config.macRecoveryIpswURL?.lastPathComponent ?? ""))
+                        TextField("IPSW Install Image", text: .constant(config.boot.macRecoveryIpswURL?.lastPathComponent ?? ""))
                             .disabled(true)
                         Button("Clear") {
-                            config.macRecoveryIpswURL = nil
+                            config.boot.macRecoveryIpswURL = nil
                         }
                         Button("Browse…") {
                             importBootloaderSelection = .ipsw
@@ -143,7 +143,7 @@ struct VMConfigAppleBootView: View {
                         }
                         config.macPlatform = UTMAppleConfigurationMacPlatform(newHardware: model)
                         config.boot.operatingSystem = .macOS
-                        config.macRecoveryIpswURL = url
+                        config.boot.macRecoveryIpswURL = url
                         #endif
                     }
                 case .kernel:

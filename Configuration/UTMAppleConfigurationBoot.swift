@@ -41,6 +41,9 @@ struct UTMAppleConfigurationBoot: Codable {
     var efiVariableStorageURL: URL?
     var hasUefiBoot: Bool = false
     
+    /// IPSW for installing macOS. Not saved.
+    var macRecoveryIpswURL: URL?
+    
     /// Next startup should be in recovery. Not saved.
     var startUpFromMacOSRecovery: Bool = false
     

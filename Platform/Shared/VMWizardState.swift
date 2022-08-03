@@ -259,7 +259,7 @@ enum VMWizardOS: String, Identifiable {
             #if os(macOS) && arch(arm64)
             if #available(macOS 12, *) {
                 config.system.boot = try! UTMAppleConfigurationBoot(for: .macOS)
-                config.system.macRecoveryIpswURL = macRecoveryIpswURL
+                config.system.boot.macRecoveryIpswURL = macRecoveryIpswURL
                 config.system.macPlatform = macPlatform
             }
             #endif

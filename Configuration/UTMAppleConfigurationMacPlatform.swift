@@ -25,9 +25,9 @@ struct UTMAppleConfigurationMacPlatform: Codable {
     var auxiliaryStorageURL: URL?
     
     private enum CodingKeys: String, CodingKey {
-        case hardwareModel
-        case machineIdentifier
-        case auxiliaryStoragePath
+        case hardwareModel = "HardwareModel"
+        case machineIdentifier = "MachineIdentifier"
+        case auxiliaryStoragePath = "AuxiliaryStoragePath"
     }
     
     init(from decoder: Decoder) throws {

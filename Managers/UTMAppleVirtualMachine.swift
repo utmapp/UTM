@@ -73,7 +73,7 @@ import Virtualization
         // copy non-persistent values over
         newConfig.sharedDirectories = oldConfig.sharedDirectories
         if #available(macOS 12, *) {
-            newConfig.system.macRecoveryIpswURL = oldConfig.system.macRecoveryIpswURL
+            newConfig.system.boot.macRecoveryIpswURL = oldConfig.system.boot.macRecoveryIpswURL
         }
         config = UTMConfigurationWrapper(wrapping: newConfig)
     }
