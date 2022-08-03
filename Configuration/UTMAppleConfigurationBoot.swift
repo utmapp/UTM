@@ -39,6 +39,9 @@ struct UTMAppleConfigurationBoot: Codable {
     var linuxCommandLine: String?
     var linuxInitialRamdiskURL: URL?
     
+    /// Next startup should be in recovery. Not saved.
+    var startUpFromMacOSRecovery: Bool = false
+    
     private enum CodingKeys: String, CodingKey {
         case operatingSystem = "OperatingSystem"
         case linuxKernelPath = "LinuxKernelPath"

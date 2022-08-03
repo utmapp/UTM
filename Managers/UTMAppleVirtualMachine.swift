@@ -84,8 +84,23 @@ import Virtualization
     
     private func _vmStart() async throws {
         try createAppleVM()
-        try await withCheckedThrowingContinuation { continuation in
+        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) -> Void in
             vmQueue.async {
+                #if os(macOS) && arch(arm64)
+                let boot = self.appleConfig.system.boot
+                if #available(macOS 13, *), boot.operatingSystem == .macOS {
+                    let options = VZMacOSVirtualMachineStartOptions()
+                    options.startUpFromMacOSRecovery = boot.startUpFromMacOSRecovery
+                    self.apple.start(options: options) { result in
+                        if let result = result {
+                            continuation.resume(with: .failure(result))
+                        } else {
+                            continuation.resume()
+                        }
+                    }
+                    return
+                }
+                #endif
                 self.apple.start { result in
                     continuation.resume(with: result)
                 }

@@ -55,6 +55,17 @@ struct VMContextMenuModifier: ViewModifier {
                     Label("Run", systemImage: "play.fill")
                 }.help("Run the VM in the foreground.")
                 
+                #if os(macOS) && arch(arm64)
+                if #available(macOS 13, *), let appleConfig = vm.config.appleConfig, appleConfig.system.boot.operatingSystem == .macOS {
+                    Button {
+                        appleConfig.system.boot.startUpFromMacOSRecovery = true
+                        data.run(vm: vm)
+                    } label: {
+                        Label("Run Recovery", systemImage: "play.fill")
+                    }.help("Boot into recovery mode.")
+                }
+                #endif
+                
                 Button {
                     vm.isRunningAsSnapshot = true
                     data.run(vm: vm)
