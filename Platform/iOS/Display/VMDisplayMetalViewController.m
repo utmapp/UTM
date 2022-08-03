@@ -67,6 +67,7 @@
     self.keyboardView.inputAccessoryView = self.inputAccessoryView;
     
     // Set the view to use the default device
+    self.mtkView.frame = self.view.bounds;
     self.mtkView.device = MTLCreateSystemDefaultDevice();
     if (!self.mtkView.device) {
         UTMLog(@"Metal is not supported on this device");
@@ -80,7 +81,9 @@
     }
     
     // Initialize our renderer with the view size
-    [_renderer mtkView:self.mtkView drawableSizeWillChange:self.mtkView.drawableSize];
+    CGSize drawableSize = self.view.bounds.size;
+    self.mtkView.drawableSize = drawableSize;
+    [_renderer mtkView:self.mtkView drawableSizeWillChange:drawableSize];
     
     [_renderer changeUpscaler:self.delegate.qemuDisplayUpscaler
                    downscaler:self.delegate.qemuDisplayDownscaler];
