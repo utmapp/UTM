@@ -192,6 +192,9 @@ public extension UTMQemuVirtualMachine {
                 try changeMedium(for: legacyDrive!, url: url)
             }
         }
+        if let url = config.qemuConfig!.sharing.directoryShareUrl {
+            try changeSharedDirectory(url)
+        }
     }
     
     /// Sets up values in VM configuration corrosponding to per-device data like sharing path

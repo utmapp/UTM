@@ -341,7 +341,16 @@ enum VMWizardOS: String, Identifiable {
         config.system.memorySize = systemMemoryMib
         config.system.cpuCount = systemCpuCount
         config.qemu.hasHypervisor = useVirtualization
-        config.sharing.directoryShareMode = sharingReadOnly ? .webdav : .none
+        config.sharing.isDirectoryShareReadOnly = sharingReadOnly
+        if let sharingDirectoryURL = sharingDirectoryURL {
+            if operatingSystem == .Windows {
+                // default webdav for windows
+                config.sharing.directoryShareMode = .webdav
+            } else {
+                config.sharing.directoryShareMode = .virtfs
+            }
+            config.sharing.directoryShareUrl = sharingDirectoryURL
+        }
         if operatingSystem == .Windows {
             // only change UEFI settings for Windows
             config.qemu.hasUefiBoot = systemBootUefi
@@ -413,9 +422,6 @@ enum VMWizardOS: String, Identifiable {
             diskImage.imageType = .disk
             diskImage.interface = mainDriveInterface
             config.drives.append(diskImage)
-        }
-        if let sharingDirectoryURL = sharingDirectoryURL {
-            config.sharing.directoryShareUrl = sharingDirectoryURL
         }
         return config
     }
