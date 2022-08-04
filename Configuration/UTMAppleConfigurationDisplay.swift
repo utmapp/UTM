@@ -67,12 +67,18 @@ struct UTMAppleConfigurationDisplay: Codable, Identifiable {
     }
     
     @available(macOS 12, *)
-    func vzDisplay() -> VZMacGraphicsDisplayConfiguration {
+    func vzMacDisplay() -> VZMacGraphicsDisplayConfiguration {
         VZMacGraphicsDisplayConfiguration(widthInPixels: widthInPixels,
                                           heightInPixels: heightInPixels,
                                           pixelsPerInch: pixelsPerInch)
     }
     #endif
+    
+    @available(macOS 13, *)
+    func vzVirtioDisplay() -> VZVirtioGraphicsScanoutConfiguration {
+        VZVirtioGraphicsScanoutConfiguration(widthInPixels: widthInPixels,
+                                             heightInPixels: heightInPixels)
+    }
 }
 
 // MARK: - Conversion of old config format

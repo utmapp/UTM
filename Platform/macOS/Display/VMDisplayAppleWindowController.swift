@@ -41,6 +41,14 @@ class VMDisplayAppleWindowController: VMDisplayWindowController {
         vm?.config.appleConfig
     }
     
+    private var hasVenturaFeatures: Bool {
+        if #available(macOS 13, *) {
+            return true
+        } else {
+            return false
+        }
+    }
+    
     private var cancellable: AnyCancellable?
     
     private var isSharePathAlertShownOnce = false
@@ -50,7 +58,7 @@ class VMDisplayAppleWindowController: VMDisplayWindowController {
     @Setting("SharePathAlertShown") private var isSharePathAlertShownPersistent: Bool = false
     
     override func windowDidLoad() {
-        if !appleConfig.serials.isEmpty {
+        if (!hasVenturaFeatures || appleConfig.displays.isEmpty) && !appleConfig.serials.isEmpty {
             mainView = TerminalView()
             terminalView!.terminalDelegate = self
             cancellable = appleVM.$serialPort.sink { [weak self] serialPort in

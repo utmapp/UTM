@@ -176,12 +176,21 @@ extension UTMAppleConfiguration {
             if system.boot.operatingSystem == .macOS {
                 let graphics = VZMacGraphicsDeviceConfiguration()
                 graphics.displays = displays.map({ display in
-                    display.vzDisplay()
+                    display.vzMacDisplay()
                 })
                 vzconfig.graphicsDevices = [graphics]
             }
         }
         #endif
+        if #available(macOS 13, *) {
+            if system.boot.operatingSystem != .macOS {
+                let graphics = VZVirtioGraphicsDeviceConfiguration()
+                graphics.scanouts = displays.map({ display in
+                    display.vzVirtioDisplay()
+                })
+                vzconfig.graphicsDevices = [graphics]
+            }
+        }
         return vzconfig
     }
 }

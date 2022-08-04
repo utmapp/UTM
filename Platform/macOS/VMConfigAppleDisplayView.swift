@@ -148,6 +148,7 @@ struct VMConfigAppleDisplayView: View {
                 }
             }
             Toggle("HiDPI (Retina)", isOn: isHidpi)
+                .help("Only available on macOS virtual machines.")
         }
     }
 }
