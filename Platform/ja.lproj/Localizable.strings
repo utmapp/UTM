@@ -359,7 +359,7 @@
 "Import…" = "読み込む…";
 
 /* No comment provided by engineer. */
-"Import Virtual Machine..." = "仮想マシンを読み込み…";
+"Import Virtual Machine..." = "仮想マシンを読み込む…";
 
 /* Save VM overlay */
 "Importing %@..." = "%@を読み込み中…";
@@ -416,10 +416,10 @@
 "JIT Cache" = "JITキャッシュ";
 
 /* VMConfigSystemViewController */
-"JIT cache size cannot be larger than 2GB." = "JITキャッシュサイズは2GBを超えることはできません。";
+"JIT cache size cannot be larger than 2GB." = "JITキャッシュサイズは、2GBより大きくすることはできません。";
 
 /* VMConfigSystemViewController */
-"JIT cache size too small." = "JITキャッシュが小さすぎます。";
+"JIT cache size too small." = "JITキャッシュサイズが小さすぎます。";
 
 /* No comment provided by engineer. */
 "Legacy" = "レガシー";
@@ -946,6 +946,7 @@
 "Emulated Display Card" = "仮想ディスプレイカード";
 "Auto Resolution" = "解像度を自動的に設定";
 "Resize display to window size automatically" = "ディスプレイのサイズをウインドウサイズに自動的に変更します";
+"Resize display to screen size and orientation automatically" = "ディスプレイのサイズを画面のサイズと向きに合わせて自動的に変更します";
 
 //Settings
 "Devices" = "デバイス";
@@ -1060,3 +1061,17 @@
 "Paused" = "停止済み";
 "Resuming" = "再開中";
 "Stopping" = "停止中";
+
+//Settings
+"Application" = "アプリケーション";
+"Keep UTM running after last window is closed and all VMs are shut down" = "最後のウインドウが閉じられ、すべての仮想マシンがシャットダウンした後もUTMを実行し続ける";
+"Do not save VM screenshot to disk" = "仮想マシンのスクリーンショットをディスクに保存しない";
+"If enabled, any existing screenshot will be deleted the next time the VM is started." = "有効にすると、次回仮想マシンを開始したときに既存のスクリーンショットが削除されます。";
+"Default VM Configuration" = "デフォルト仮想マシン構成";
+"This option should not be used and will be removed in a future release." = "このオプションは使用すべきではありません。将来のリリースで削除される予定です。";
+"Force slower emulation by default (deprecated: now configured per-VM)" = "デフォルトで低速なエミュレーションを強制（非推奨: 仮想マシンごとに構成するようになりました）";
+"Use only performance cores by default (deprecated: now configured per-VM)" = "デフォルトで高性能コア（Pコア）のみを使用（非推奨: 仮想マシンごとに構成するようになりました）";
+"Use Command+Option (⌘+⌥) for input capture/release" = "入力のキャプチャ/解放にcommand+option（⌘+⌥）を使用";
+"If disabled, the default combination Control+Option (⌃+⌥) will be used." = "無効にすると、デフォルトのコンビネーションcontrol+option（⌃+⌥）が使用されます。";
+"Caps Lock (⇪) is treated as a key" = "Caps Lock（⇪）をキーとして扱う";
+"If enabled, caps lock will be handled like other keys. If disabled, it is treated as a toggle that is synchronized with the host." = "有効にすると、Caps Lockはほかのキーと同様に処理されます。無効にすると、ホストと同期するトグルとして扱われます。";
