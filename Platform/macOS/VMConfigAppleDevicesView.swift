@@ -32,6 +32,9 @@ struct VMConfigAppleDevicesView: View {
             if #available(macOS 13, *) {
                 Toggle("Enable Rosetta on Linux (x86_64 Emulation)", isOn: $config.hasRosetta.bound)
                     .help("If enabled, a virtiofs share tagged 'rosetta' will be available on the Linux guest for installing Rosetta for emulating x86_64 on ARM64.")
+                
+                Toggle("Enable Clipboard Sharing", isOn: $config.hasClipboardSharing)
+                    .help("Requires SPICE guest agent tools to be installed.")
             }
             #endif
         }

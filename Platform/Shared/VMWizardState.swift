@@ -307,6 +307,9 @@ enum VMWizardOS: String, Identifiable {
         if operatingSystem == .Linux && useLinuxKernel {
             config.serials = [UTMAppleConfigurationSerial()]
         }
+        if #available(macOS 13, *) {
+            config.devices.hasClipboardSharing = true
+        }
         return config
     }
     

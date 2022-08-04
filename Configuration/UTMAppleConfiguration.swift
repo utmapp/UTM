@@ -156,7 +156,6 @@ extension UTMAppleConfiguration {
     var appleVZConfiguration: VZVirtualMachineConfiguration {
         let vzconfig = VZVirtualMachineConfiguration()
         system.fillVZConfiguration(vzconfig)
-        devices.fillVZConfiguration(vzconfig)
         if #available(macOS 12, *) {
             let fsConfig = VZVirtioFileSystemDeviceConfiguration(tag: "share")
             fsConfig.share = UTMAppleConfigurationSharedDirectory.makeDirectoryShare(from: sharedDirectories)
@@ -168,8 +167,10 @@ extension UTMAppleConfiguration {
             }
             return VZVirtioBlockDeviceConfiguration(attachment: attachment)
         }
-        vzconfig.networkDevices = networks.compactMap({ $0.vzNetworking() })
-        vzconfig.serialPorts = serials.compactMap({ $0.vzSerial() })
+        vzconfig.networkDevices.append(contentsOf: networks.compactMap({ $0.vzNetworking() }))
+        vzconfig.serialPorts.append(contentsOf: serials.compactMap({ $0.vzSerial() }))
+        // add remaining devices
+        devices.fillVZConfiguration(vzconfig)
         #if arch(arm64)
         if #available(macOS 12, *) {
             if system.boot.operatingSystem == .macOS {

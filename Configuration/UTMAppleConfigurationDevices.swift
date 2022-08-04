@@ -47,6 +47,8 @@ struct UTMAppleConfigurationDevices: Codable {
     
     var hasRosetta: Bool?
     
+    var hasClipboardSharing: Bool = false
+    
     enum CodingKeys: String, CodingKey {
         case hasAudio = "Audio"
         case hasBalloon = "Balloon"
@@ -54,6 +56,7 @@ struct UTMAppleConfigurationDevices: Codable {
         case hasKeyboard = "Keyboard"
         case pointer = "Pointer"
         case rosetta = "Rosetta"
+        case hasClipboardSharing = "ClipboardSharing"
     }
     
     init() {
@@ -69,6 +72,7 @@ struct UTMAppleConfigurationDevices: Codable {
         #if arch(arm64)
         if #available(macOS 13, *) {
             hasRosetta = try values.decodeIfPresent(Bool.self, forKey: .rosetta)
+            hasClipboardSharing = try values.decodeIfPresent(Bool.self, forKey: .hasClipboardSharing) ?? false
         }
         #endif
     }
@@ -81,6 +85,7 @@ struct UTMAppleConfigurationDevices: Codable {
         try container.encode(hasKeyboard, forKey: .hasKeyboard)
         try container.encode(pointer, forKey: .pointer)
         try container.encodeIfPresent(hasRosetta, forKey: .rosetta)
+        try container.encode(hasClipboardSharing, forKey: .hasClipboardSharing)
     }
 }
 
@@ -138,11 +143,18 @@ extension UTMAppleConfigurationDevices {
                 vzconfig.pointingDevices = [device]
             }
         }
-        if #available(macOS 13, *), hasRosetta == true {
-            if let rosettaDirectoryShare = try? VZLinuxRosettaDirectoryShare() {
+        if #available(macOS 13, *) {
+            if hasRosetta == true, let rosettaDirectoryShare = try? VZLinuxRosettaDirectoryShare() {
                 let fileSystemDevice = VZVirtioFileSystemDeviceConfiguration(tag: "rosetta")
                 fileSystemDevice.share = rosettaDirectoryShare
                 vzconfig.directorySharingDevices.append(fileSystemDevice)
+            }
+            if hasClipboardSharing {
+                let spiceClipboardAgent = VZSpiceAgentPortAttachment()
+                spiceClipboardAgent.sharesClipboard = true
+                let serialConfig = VZVirtioConsoleDeviceSerialPortConfiguration()
+                serialConfig.attachment = spiceClipboardAgent
+                vzconfig.serialPorts.append(serialConfig)
             }
         }
         #endif
