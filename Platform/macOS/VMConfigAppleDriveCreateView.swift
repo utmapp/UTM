@@ -25,18 +25,32 @@ struct VMConfigAppleDriveCreateView: View {
     
     var body: some View {
         Form {
-            HStack {
-                NumberTextField("Size", number: Binding<Int>(get: {
-                    convertToDisplay(fromSizeMib: config.sizeMib)
-                }, set: {
-                    config.sizeMib = convertToMib(fromSize: $0)
-                }), onEditingChanged: validateSize)
-                    .multilineTextAlignment(.trailing)
-                    .help("The amount of storage to allocate for this image. An empty file of this size will be stored with the VM.")
-                Button(action: { isGiB.toggle() }, label: {
-                    Text(isGiB ? "GB" : "MB")
-                        .foregroundColor(.blue)
-                }).buttonStyle(.plain)
+            VStack {
+                Toggle(isOn: $config.isExternal.animation(), label: {
+                    Text("Removable")
+                }).help("If checked, the drive image will be stored with the VM.")
+                .onChange(of: config.isExternal) { newValue in
+                    if newValue {
+                        config.sizeMib = 0
+                    } else {
+                        config.sizeMib = 10240
+                    }
+                }
+                if !config.isExternal {
+                    HStack {
+                        NumberTextField("Size", number: Binding<Int>(get: {
+                            convertToDisplay(fromSizeMib: config.sizeMib)
+                        }, set: {
+                            config.sizeMib = convertToMib(fromSize: $0)
+                        }), onEditingChanged: validateSize)
+                        .multilineTextAlignment(.trailing)
+                        .help("The amount of storage to allocate for this image. An empty file of this size will be stored with the VM.")
+                        Button(action: { isGiB.toggle() }, label: {
+                            Text(isGiB ? "GB" : "MB")
+                                .foregroundColor(.blue)
+                        }).buttonStyle(.plain)
+                    }
+                }
             }
         }
     }

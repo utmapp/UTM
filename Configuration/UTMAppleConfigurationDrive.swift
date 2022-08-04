@@ -22,7 +22,7 @@ import Virtualization
 struct UTMAppleConfigurationDrive: UTMConfigurationDrive {
     private let bytesInMib = 1048576
     
-    var sizeMib: Int
+    var sizeMib: Int = 0
     var isReadOnly: Bool
     var isExternal: Bool
     var imageURL: URL?
@@ -35,18 +35,20 @@ struct UTMAppleConfigurationDrive: UTMConfigurationDrive {
     }
     
     private enum CodingKeys: String, CodingKey {
-        case sizeMib = "SizeMib"
         case isReadOnly = "ReadOnly"
         case imageName = "ImageName"
         case bookmark = "Bookmark"
-    }
-    
-    var sizeBytes: Int64 {
-        Int64(sizeMib) * Int64(bytesInMib)
+        case identifier = "Identifier"
     }
     
     var sizeString: String {
-        ByteCountFormatter.string(fromByteCount: sizeBytes, countStyle: .file)
+        let sizeBytes: Int64
+        if let attributes = try? imageURL?.resourceValues(forKeys: [.fileSizeKey]), let fileSize = attributes.fileSize {
+            sizeBytes = Int64(fileSize)
+        } else {
+            sizeBytes = Int64(sizeMib) * Int64(bytesInMib)
+        }
+        return ByteCountFormatter.string(fromByteCount: sizeBytes, countStyle: .file)
     }
     
     init(newSize: Int) {
@@ -59,11 +61,6 @@ struct UTMAppleConfigurationDrive: UTMConfigurationDrive {
         self.imageURL = url
         self.isReadOnly = isReadOnly
         self.isExternal = isExternal
-        if let attributes = try? url.resourceValues(forKeys: [.fileSizeKey]), let fileSize = attributes.fileSize {
-            sizeMib = fileSize / bytesInMib
-        } else {
-            sizeMib = 0
-        }
     }
     
     init(from decoder: Decoder) throws {
@@ -72,7 +69,6 @@ struct UTMAppleConfigurationDrive: UTMConfigurationDrive {
         }
         let container = try decoder.container(keyedBy: CodingKeys.self)
         isReadOnly = try container.decode(Bool.self, forKey: .isReadOnly)
-        sizeMib = try container.decode(Int.self, forKey: .sizeMib)
         if let imageName = try container.decodeIfPresent(String.self, forKey: .imageName) {
             self.imageName = imageName
             imageURL = dataURL.appendingPathComponent(imageName)
@@ -83,14 +79,16 @@ struct UTMAppleConfigurationDrive: UTMConfigurationDrive {
             imageName = imageURL?.lastPathComponent
             isExternal = true
         } else {
-            throw UTMConfigurationError.invalidDriveConfiguration
+            imageURL = nil
+            imageName = nil
+            isExternal = true
         }
+        id = try container.decode(String.self, forKey: .identifier)
     }
     
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(isReadOnly, forKey: .isReadOnly)
-        try container.encode(sizeMib, forKey: .sizeMib)
         if !isExternal {
             try container.encodeIfPresent(imageName, forKey: .imageName)
         } else {
@@ -105,6 +103,7 @@ struct UTMAppleConfigurationDrive: UTMConfigurationDrive {
             let bookmark = try imageURL?.bookmarkData(options: options)
             try container.encodeIfPresent(bookmark, forKey: .bookmark)
         }
+        try container.encode(id, forKey: .identifier)
     }
     
     func vzDiskImage() throws -> VZDiskImageStorageDeviceAttachment? {

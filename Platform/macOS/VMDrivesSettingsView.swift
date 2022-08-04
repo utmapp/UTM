@@ -85,7 +85,7 @@ struct VMDrivesSettingsView<Drive: UTMConfigurationDrive>: View {
                 HStack {
                     Spacer()
                     Button(action: { importDrivePresented.toggle() }, label: {
-                        if newDrive is UTMQemuConfigurationDrive && newDrive.isExternal {
+                        if newDrive.isExternal {
                             Text("Browse…")
                         } else {
                             Text("Import…")
