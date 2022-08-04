@@ -165,7 +165,11 @@ extension UTMAppleConfiguration {
             guard let attachment = try? drive.vzDiskImage() else {
                 return nil
             }
-            return VZVirtioBlockDeviceConfiguration(attachment: attachment)
+            if #available(macOS 13, *), drive.isExternal {
+                return VZUSBMassStorageDeviceConfiguration(attachment: attachment)
+            } else {
+                return VZVirtioBlockDeviceConfiguration(attachment: attachment)
+            }
         }
         vzconfig.networkDevices.append(contentsOf: networks.compactMap({ $0.vzNetworking() }))
         vzconfig.serialPorts.append(contentsOf: serials.compactMap({ $0.vzSerial() }))
