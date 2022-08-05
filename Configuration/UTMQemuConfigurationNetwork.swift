@@ -200,7 +200,10 @@ extension UTMQemuConfigurationNetwork {
         vlanDnsServerAddress = oldConfig.networkDnsServer
         vlanDnsServerAddressIPv6 = oldConfig.networkDnsServerIPv6
         vlanDnsSearchDomain = oldConfig.networkDnsSearch
-        portForward = oldConfig.portForwards().map({ old in UTMQemuConfigurationPortForward(migrating: old) })
+        for i in 0..<oldConfig.countPortForwards {
+            let oldPortForward = oldConfig.portForward(for: i)!
+            portForward.append(UTMQemuConfigurationPortForward(migrating: oldPortForward))
+        }
     }
     
     private func convertMode(from str: String?) -> QEMUNetworkMode? {

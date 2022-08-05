@@ -260,8 +260,4 @@ static const NSString *const kUTMConfigNetworkPortForwardGuestPortKey = @"GuestP
     [self.rootDict[kUTMConfigNetworkingKey][kUTMConfigNetworkPortForwardKey] removeObjectAtIndex:index];
 }
 
-- (NSArray<UTMLegacyQemuConfigurationPortForward *> *)portForwards {
-    return self.rootDict[kUTMConfigNetworkingKey][kUTMConfigNetworkPortForwardKey];
-}
-
 @end

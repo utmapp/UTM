@@ -46,7 +46,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable UTMLegacyQemuConfigurationPortForward *)portForwardForIndex:(NSInteger)index;
 - (void)updatePortForwardAtIndex:(NSInteger)index withValue:(UTMLegacyQemuConfigurationPortForward *)argument;
 - (void)removePortForwardAtIndex:(NSInteger)index;
-- (NSArray<UTMLegacyQemuConfigurationPortForward *> *)portForwards;
 
 @end
 
