@@ -211,11 +211,15 @@ struct Details: View {
                     .foregroundColor(.secondary)
             }
             #if os(macOS)
-            if let appleVM = vm as? UTMAppleVirtualMachine {
-                HStack {
-                    plainLabel("Serial (TTY)", systemImage: "phone.connection")
-                    Spacer()
-                    OptionalSelectableText(appleVM.serialPort?.name)
+            if let appleConfig = vm.config.appleConfig {
+                ForEach(appleConfig.serials) { serial in
+                    if serial.mode == .ptty {
+                        HStack {
+                            plainLabel("Serial (TTY)", systemImage: "phone.connection")
+                            Spacer()
+                            OptionalSelectableText(serial.interface?.name)
+                        }
+                    }
                 }
             }
             #endif

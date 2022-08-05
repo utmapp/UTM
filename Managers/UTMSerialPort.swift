@@ -16,8 +16,6 @@
 
 import Foundation
 
-private let kVMDefaultResizeCmd = "stty cols $COLS rows $ROWS\\n"
-
 @objc class UTMSerialPort: NSObject {
     let name: String
     private let readFileHandle: FileHandle
@@ -65,14 +63,5 @@ private let kVMDefaultResizeCmd = "stty cols $COLS rows $ROWS\\n"
             writeFileHandle.closeFile()
             terminalFileHandle?.closeFile()
         }
-    }
-    
-    public func writeResizeCommand(_ command: String?, columns: Int, rows: Int) {
-        let template = command ?? kVMDefaultResizeCmd
-        let cmd = template
-            .replacingOccurrences(of: "$COLS", with: String(columns))
-            .replacingOccurrences(of: "$ROWS", with: String(rows))
-            .replacingOccurrences(of: "\\n", with: "\n")
-        write(data: cmd.data(using: .ascii)!)
     }
 }

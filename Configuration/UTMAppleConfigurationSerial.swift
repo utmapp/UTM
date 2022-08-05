@@ -43,6 +43,9 @@ struct UTMAppleConfigurationSerial: Codable, Identifiable {
     /// Set to write handle before starting VM. Not saved.
     var fileHandleForWriting: FileHandle?
     
+    /// Serial interface used by the VM. Not saved.
+    var interface: UTMSerialPort?
+    
     let id = UUID()
     
     enum CodingKeys: String, CodingKey {

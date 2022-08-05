@@ -128,6 +128,9 @@
 		8453DCB6278CE5410037A0DA /* UTMQemuImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8453DCB3278CE5410037A0DA /* UTMQemuImage.swift */; };
 		845F1705289B1EEB00944904 /* UTMAppleConfigurationGenericPlatform.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845F1704289B1EEB00944904 /* UTMAppleConfigurationGenericPlatform.swift */; };
 		845F1707289B5E2600944904 /* VMAppleSettingsAddDeviceMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845F1706289B5E2600944904 /* VMAppleSettingsAddDeviceMenuView.swift */; };
+		845F1709289CA15C00944904 /* VMDisplayAppleTerminalWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845F1708289CA15C00944904 /* VMDisplayAppleTerminalWindowController.swift */; };
+		845F170B289CB07200944904 /* VMDisplayAppleDisplayWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845F170A289CB07200944904 /* VMDisplayAppleDisplayWindowController.swift */; };
+		845F170D289CB3DE00944904 /* VMDisplayTerminal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845F170C289CB3DE00944904 /* VMDisplayTerminal.swift */; };
 		8469CACA277D301300BA5601 /* qapi-types-compat.c in Sources */ = {isa = PBXBuildFile; fileRef = 8469CAC9277D301300BA5601 /* qapi-types-compat.c */; };
 		8469CACB277D301300BA5601 /* qapi-types-compat.c in Sources */ = {isa = PBXBuildFile; fileRef = 8469CAC9277D301300BA5601 /* qapi-types-compat.c */; };
 		8469CACC277D301300BA5601 /* qapi-types-compat.c in Sources */ = {isa = PBXBuildFile; fileRef = 8469CAC9277D301300BA5601 /* qapi-types-compat.c */; };
@@ -1611,6 +1614,9 @@
 		8453DCB3278CE5410037A0DA /* UTMQemuImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMQemuImage.swift; sourceTree = "<group>"; };
 		845F1704289B1EEB00944904 /* UTMAppleConfigurationGenericPlatform.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMAppleConfigurationGenericPlatform.swift; sourceTree = "<group>"; };
 		845F1706289B5E2600944904 /* VMAppleSettingsAddDeviceMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMAppleSettingsAddDeviceMenuView.swift; sourceTree = "<group>"; };
+		845F1708289CA15C00944904 /* VMDisplayAppleTerminalWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMDisplayAppleTerminalWindowController.swift; sourceTree = "<group>"; };
+		845F170A289CB07200944904 /* VMDisplayAppleDisplayWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMDisplayAppleDisplayWindowController.swift; sourceTree = "<group>"; };
+		845F170C289CB3DE00944904 /* VMDisplayTerminal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMDisplayTerminal.swift; sourceTree = "<group>"; };
 		8469CAC8277D301300BA5601 /* qapi-types-compat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-types-compat.h"; path = "$(SYSROOT_DIR)/qapi/qapi-types-compat.h"; sourceTree = SOURCE_ROOT; };
 		8469CAC9277D301300BA5601 /* qapi-types-compat.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-types-compat.c"; path = "$(SYSROOT_DIR)/qapi/qapi-types-compat.c"; sourceTree = SOURCE_ROOT; };
 		8469CACD277D345700BA5601 /* qapi-visit-compat.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-visit-compat.c"; path = "$(SYSROOT_DIR)/qapi/qapi-visit-compat.c"; sourceTree = SOURCE_ROOT; };
@@ -2473,9 +2479,12 @@
 				CE0FE12724D3B08B0086CEF0 /* VMDisplayWindow.xib */,
 				CE612AC524D3B50700FA6300 /* VMDisplayWindowController.swift */,
 				84F746B8276FF40900A20C87 /* VMDisplayAppleWindowController.swift */,
+				845F170A289CB07200944904 /* VMDisplayAppleDisplayWindowController.swift */,
+				845F1708289CA15C00944904 /* VMDisplayAppleTerminalWindowController.swift */,
 				CEBDA1D424D69DB20010B5EC /* VMDisplayMetalWindowController.swift */,
 				84F746BA276FF70700A20C87 /* VMDisplayQemuDisplayController.swift */,
 				2C6D9E02256EE454003298E6 /* VMDisplayTerminalWindowController.swift */,
+				845F170C289CB3DE00944904 /* VMDisplayTerminal.swift */,
 				CE03D0D124DCF4B600F76B84 /* VMMetalView.swift */,
 				CE03D0D324DCF6DD00F76B84 /* VMMetalViewInputDelegate.swift */,
 			);
@@ -3797,6 +3806,7 @@
 				85EC516627CC8D10004A51DE /* VMConfigAdvancedNetworkView.swift in Sources */,
 				CE020BB724B14F8400B44AB6 /* UTMVirtualMachineExtension.swift in Sources */,
 				CE0B6D4424AD584C00FE012D /* qapi-visit-block.c in Sources */,
+				845F170B289CB07200944904 /* VMDisplayAppleDisplayWindowController.swift in Sources */,
 				CE0B6D4C24AD584C00FE012D /* qapi-types-misc.c in Sources */,
 				CE772AAD25C8B0F600E4E379 /* ContentView.swift in Sources */,
 				CEBE820D26A4C8E0007AAB12 /* VMWizardSummaryView.swift in Sources */,
@@ -3857,6 +3867,7 @@
 				841619B82843226B000034B2 /* QEMUConstant.swift in Sources */,
 				84C584EB268FA6D1000FCABF /* VMConfigAppleSystemView.swift in Sources */,
 				848A98BC286A1930006F0550 /* UTMAppleConfigurationSharedDirectory.swift in Sources */,
+				845F1709289CA15C00944904 /* VMDisplayAppleTerminalWindowController.swift in Sources */,
 				CE0B6D0124AD56AE00FE012D /* UTMJSONStream.m in Sources */,
 				CE0B6D1924AD57FC00FE012D /* qapi-events-crypto.c in Sources */,
 				CE0B6D0A24AD56C300FE012D /* cf-input-visitor.c in Sources */,
@@ -4066,6 +4077,7 @@
 				CE0B6D2E24AD57FC00FE012D /* qapi-commands-migration.c in Sources */,
 				CE0B6D5324AD584C00FE012D /* qapi-types-transaction.c in Sources */,
 				CE0B6D7424AD584D00FE012D /* qapi-visit-misc.c in Sources */,
+				845F170D289CB3DE00944904 /* VMDisplayTerminal.swift in Sources */,
 				84C4D9042880CA8A00EC3B2B /* VMSettingsAddDeviceMenuView.swift in Sources */,
 				CE0B6D3624AD57FC00FE012D /* qapi-commands-common.c in Sources */,
 				8471770C27CCA60600D3A50B /* DefaultPicker.swift in Sources */,

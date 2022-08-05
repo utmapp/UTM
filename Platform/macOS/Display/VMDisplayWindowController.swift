@@ -203,6 +203,7 @@ class VMDisplayWindowController: NSWindowController {
         secondaryWindow.primaryWindow = self
         secondaryWindow.showWindow(self)
         self.showWindow(self) // show primary window on top
+        secondaryWindow.virtualMachine(vm, didTransitionTo: vm.state) // show correct starting state
     }
 }
 

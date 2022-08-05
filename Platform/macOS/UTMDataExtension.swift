@@ -28,10 +28,12 @@ extension UTMData {
             }
             if let avm = vm as? UTMAppleVirtualMachine {
                 if avm.appleConfig.system.architecture == UTMAppleConfigurationSystem.currentArchitecture {
-                    if avm.appleConfig.displays.count > 0 ||
-                        (avm.appleConfig.serials.count > 0 && avm.appleConfig.serials.first!.mode == .builtin) {
-                        window = VMDisplayAppleWindowController(vm: avm, onClose: close)
-                    } else {
+                    let primarySerialIndex = avm.appleConfig.serials.firstIndex { $0.mode == .builtin }
+                    if let primarySerialIndex = primarySerialIndex, avm.appleConfig.displays.isEmpty {
+                        window = VMDisplayAppleTerminalWindowController(primaryForIndex: primarySerialIndex, vm: avm, onClose: close)
+                    } else if #available(macOS 12, *), !avm.appleConfig.displays.isEmpty {
+                        window = VMDisplayAppleDisplayWindowController(vm: vm, onClose: close)
+                    } else if avm.appleConfig.displays.isEmpty {
                         window = VMHeadlessSessionState(for: avm, onStop: close)
                     }
                 }

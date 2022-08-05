@@ -16,9 +16,7 @@
 
 import SwiftTerm
 
-private let kVMDefaultResizeCmd = "stty cols $COLS rows $ROWS\\n"
-
-class VMDisplayTerminalWindowController: VMDisplayQemuWindowController {
+class VMDisplayTerminalWindowController: VMDisplayQemuWindowController, VMDisplayTerminal {
     private var terminalView: TerminalView!
     private var vmSerialPort: CSPort?
     
@@ -51,6 +49,7 @@ class VMDisplayTerminalWindowController: VMDisplayQemuWindowController {
     override func enterLive() {
         super.enterLive()
         captureMouseToolbarItem.isEnabled = false
+        setupTerminal(terminalView, using: serialConfig!.terminal!, for: window!)
     }
     
     override func enterSuspended(isBusy busy: Bool) {
@@ -61,13 +60,7 @@ class VMDisplayTerminalWindowController: VMDisplayQemuWindowController {
     }
     
     override func resizeConsoleButtonPressed(_ sender: Any) {
-        let cols = terminalView.getTerminal().cols
-        let rows = terminalView.getTerminal().rows
-        let template = serialConfig?.terminal?.resizeCommand ?? kVMDefaultResizeCmd
-        let cmd = template
-            .replacingOccurrences(of: "$COLS", with: String(cols))
-            .replacingOccurrences(of: "$ROWS", with: String(rows))
-            .replacingOccurrences(of: "\\n", with: "\n")
+        let cmd = resizeCommand(for: terminalView, using: serialConfig!.terminal!)
         vmSerialPort?.write(cmd.data(using: .nonLossyASCII)!)
     }
     

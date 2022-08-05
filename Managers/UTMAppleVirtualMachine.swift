@@ -61,8 +61,6 @@ import Virtualization
     
     private var progressObserver: NSKeyValueObservation?
     
-    @Published private(set) var serialPort: UTMSerialPort?
-    
     private var sharedDirectoriesChanged: AnyCancellable?
     
     weak var screenshotDelegate: UTMScreenshotProvider?
@@ -264,15 +262,15 @@ import Virtualization
     }
     
     private func createAppleVM() throws {
-        //FIXME: support multiple serial ports
-        if !appleConfig.serials.isEmpty {
+        for i in appleConfig.serials.indices {
             let (fd, sfd, name) = try createPty()
             let terminalTtyHandle = FileHandle(fileDescriptor: fd, closeOnDealloc: false)
             let slaveTtyHandle = FileHandle(fileDescriptor: sfd, closeOnDealloc: false)
-            appleConfig.serials[0].fileHandleForReading = terminalTtyHandle
-            appleConfig.serials[0].fileHandleForWriting = terminalTtyHandle
-            DispatchQueue.main.async {
-                self.serialPort = UTMSerialPort(portNamed: name, readFileHandle: slaveTtyHandle, writeFileHandle: slaveTtyHandle, terminalFileHandle: terminalTtyHandle)
+            appleConfig.serials[i].fileHandleForReading = terminalTtyHandle
+            appleConfig.serials[i].fileHandleForWriting = terminalTtyHandle
+            Task { @MainActor in
+                let serialPort = UTMSerialPort(portNamed: name, readFileHandle: slaveTtyHandle, writeFileHandle: slaveTtyHandle, terminalFileHandle: terminalTtyHandle)
+                appleConfig.serials[i].interface = serialPort
             }
         }
         let vzConfig = appleConfig.appleVZConfiguration
@@ -374,9 +372,15 @@ extension UTMAppleVirtualMachine: VZVirtualMachineDelegate {
     func guestDidStop(_ virtualMachine: VZVirtualMachine) {
         apple = nil
         sharedDirectoriesChanged = nil
-        serialPort?.close()
-        DispatchQueue.main.async {
-            self.serialPort = nil
+        for i in appleConfig.serials.indices {
+            if let serialPort = appleConfig.serials[i].interface {
+                serialPort.close()
+                Task { @MainActor in
+                    appleConfig.serials[i].interface = nil
+                    appleConfig.serials[i].fileHandleForReading = nil
+                    appleConfig.serials[i].fileHandleForWriting = nil
+                }
+            }
         }
         changeState(.vmStopped)
     }
