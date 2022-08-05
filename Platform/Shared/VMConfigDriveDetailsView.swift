@@ -16,82 +16,67 @@
 
 import SwiftUI
 
-@available(iOS 14, macOS 11, *)
+private let bytesInMib: Int64 = 1024 * 1024
+
 struct VMConfigDriveDetailsView: View {
-    @EnvironmentObject private var data: UTMData
-    @ObservedObject private var config: UTMQemuConfiguration
-    @Binding private var removable: Bool
-    @Binding private var name: String?
-    @Binding private var imageTypeString: String?
-    @Binding private var interface: String?
+    @Binding var config: UTMQemuConfigurationDrive
     let onDelete: (() -> Void)?
+    
+    @EnvironmentObject private var data: UTMData
+    @State private var isImporterPresented: Bool = false
     
     let helpMessage: LocalizedStringKey = "Reclaim disk space by re-converting the disk image."
     let confirmMessage: LocalizedStringKey = "Would you like to re-convert this disk image to reclaim unused space? Note this will require enough temporary space to perform the conversion. You are strongly encouraged to back-up this VM before proceeding."
     @State private var isConfirmConvertShown: Bool = false
     
-    var imageType: UTMDiskImageType {
-        get {
-            UTMDiskImageType.enumFromString(imageTypeString)
-        }
-        
-        set {
-            imageTypeString = newValue.description
-        }
-    }
-    
-    init(config: UTMQemuConfiguration, index: Int, onDelete: (() -> Void)?) {
-        self.onDelete = onDelete
-        self.config = config // for observing updates
-        self._removable = Binding<Bool> {
-            return config.driveRemovable(for: index)
-        } set: {
-            config.setDriveRemovable($0, for: index)
-        }
-        self._name = Binding<String?> {
-            return config.driveImagePath(for: index)
-        } set: {
-            if let name = $0 {
-                config.setImagePath(name, for: index)
-            }
-        }
-        self._imageTypeString = Binding<String?> {
-            return config.driveImageType(for: index).description
-        } set: {
-            config.setDrive(UTMDiskImageType.enumFromString($0), for: index)
-        }
-        self._interface = Binding<String?> {
-            return config.driveInterfaceType(for: index)
-        } set: {
-            if let interface = $0 {
-                config.setDriveInterfaceType(interface, for: index)
-            }
-        }
-    }
-    
     var body: some View {
         Form {
-            Toggle(isOn: $removable.animation(), label: {
+            Toggle(isOn: $config.isExternal.animation(), label: {
                 Text("Removable Drive")
             }).disabled(true)
-            if !removable {
+            if !config.isExternal {
                 HStack {
                     Text("Name")
                     Spacer()
-                    Text(name ?? "")
-                        .lineLimit(1)
-                        .multilineTextAlignment(.trailing)
+                    if let imageName = config.imageURL?.lastPathComponent ?? config.imageName {
+                        Text(imageName)
+                            .lineLimit(1)
+                            .multilineTextAlignment(.trailing)
+                    } else {
+                        Text("(new)")
+                    }
+                }
+            } else {
+                HStack {
+                    TextField("Path", text: .constant(config.imageURL?.path ?? ""))
+                        .disabled(true)
+                    Button("Clear") {
+                        config.imageURL = nil
+                    }
+                    Button("Browse…") {
+                        isImporterPresented.toggle()
+                    }.fileImporter(isPresented: $isImporterPresented, allowedContentTypes: [.item]) { result in
+                        data.busyWorkAsync {
+                            let url = try result.get()
+                            await MainActor.run {
+                                config.imageURL = url
+                            }
+                        }
+                    }
                 }
             }
-            VMConfigStringPicker("Image Type", selection: $imageTypeString, rawValues: UTMQemuConfiguration.supportedImageTypes(), displayValues: UTMQemuConfiguration.supportedImageTypesPretty())
-            if imageType == .disk || imageType == .CD {
-                VMConfigStringPicker("Interface", selection: $interface, rawValues: UTMQemuConfiguration.supportedDriveInterfaces(), displayValues: UTMQemuConfiguration.supportedDriveInterfacesPretty())
+            VMConfigConstantPicker("Image Type", selection: $config.imageType)
+            if config.imageType == .disk || config.imageType == .cd {
+                VMConfigConstantPicker("Interface", selection: $config.interface)
             }
             
-            if let name = name, let imageUrl = config.imagesPath.appendingPathComponent(name), let fileSize = data.computeSize(for: imageUrl) {
+            if let imageUrl = config.imageURL, let fileSize = data.computeSize(for: imageUrl) {
                 DefaultTextField("Size", text: .constant(ByteCountFormatter.string(fromByteCount: fileSize, countStyle: .file))).disabled(true)
+            } else if config.sizeMib > 0 {
+                DefaultTextField("Size", text: .constant(ByteCountFormatter.string(fromByteCount: Int64(config.sizeMib) * bytesInMib, countStyle: .file))).disabled(true)
             }
-
+            
+            #if os(macOS)
             HStack {
                 if let onDelete = onDelete {
                     Button(action: onDelete) {
@@ -100,8 +85,7 @@ struct VMConfigDriveDetailsView: View {
                     }.help("Delete this drive.")
                 }
                 
-                #if os(macOS)
-                if let name = name, let imageUrl = config.imagesPath.appendingPathComponent(name), FileManager.default.fileExists(atPath: imageUrl.path) {
+                if let imageUrl = config.imageURL, FileManager.default.fileExists(atPath: imageUrl.path) {
                     if #available(macOS 12, *) {
                         Button(action: { isConfirmConvertShown.toggle() }) {
                             Label("Reclaim Space", systemImage: "arrow.3.trianglepath")
@@ -120,8 +104,8 @@ struct VMConfigDriveDetailsView: View {
                         }
                     }
                 }
-                #endif
             }
+            #endif
         }
     }
     

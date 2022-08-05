@@ -16,7 +16,6 @@
 
 import SwiftUI
 
-@available(iOS 14, macOS 11, *)
 struct InListButtonStyle: ButtonStyle {
     fileprivate struct InListButtonView: View {
         let configuration: InListButtonStyle.Configuration
@@ -65,7 +64,6 @@ struct InListButtonStyle: ButtonStyle {
     }
 }
 
-@available(iOS 14, macOS 11, *)
 extension ButtonStyle where Self == InListButtonStyle {
     static var inList: InListButtonStyle {
         InListButtonStyle()

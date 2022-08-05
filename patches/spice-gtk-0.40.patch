@@ -1335,3 +1335,102 @@ index 930ae4e..7c2df7f 100644
 -- 
 2.32.0 (Apple Git-132)
 
+From b3eb04485cf4553b0e588a7ca78f7377e1c4f35e Mon Sep 17 00:00:00 2001
+From: Eli Schwartz <eschwartz93@gmail.com>
+Date: Mon, 27 Jun 2022 01:48:02 -0400
+Subject: [PATCH] fix invalid use of subprojects
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+The keycodemapdb Meson subproject provides a program and a source input.
+Since it is a subproject, Meson wants to sandbox that and requires it to
+be explicitly exported. But this never happened -- instead, we manually
+poked at files using the actual string path "subprojects/......"
+
+This was always a Meson sandbox violation, but Meson 0.63.0 started
+noticing it and erroring out.
+
+Instead, do the right thing. Update the subproject to a version that has
+a meson.build with actually meaningful contents -- namely, a files
+variable and a found program. Then use these in order to run the needed
+custom_target.
+
+In the process, it is also necessary to correct the argument ordering
+when running keymap-gen.
+
+Reviewed-by: Marc-André Lureau <marcandre.lureau@redhat.com>
+---
+ meson.build              | 7 ++++---
+ src/meson.build          | 2 +-
+ subprojects/keycodemapdb | 2 +-
+ 3 files changed, 6 insertions(+), 5 deletions(-)
+
+diff --git a/meson.build b/meson.build
+index dc7b4272..00aff30e 100644
+--- a/meson.build
++++ b/meson.build
+@@ -49,9 +49,10 @@ spice_gtk_config_data.merge_from(spice_common.get_variable('spice_common_config_
+ spice_glib_deps += spice_common.get_variable('spice_common_client_dep')
+ spice_protocol_version = spice_common.get_variable('spice_protocol_version')
+ 
+-subproject('keycodemapdb')
+-keymapgen = files('subprojects/keycodemapdb/tools/keymap-gen')
+-keymapcsv = files('subprojects/keycodemapdb/data/keymaps.csv')
++keycodemapdb = subproject('keycodemapdb')
++
++keymapgen = find_program('keymap-gen')
++keymapcsv = keycodemapdb.get_variable('keymaps_csv')
+ 
+ #
+ # check for system headers
+diff --git a/src/meson.build b/src/meson.build
+index 961779fc..32574e8e 100644
+--- a/src/meson.build
++++ b/src/meson.build
+@@ -312,7 +312,7 @@ if spice_gtk_has_gtk
+   foreach keymap : keymaps
+     varname = 'keymap_@0@2xtkbd'.format(keymap)
+     target = 'vncdisplay@0@.h'.format(varname)
+-    cmd = [python, keymapgen, '--lang', 'glib2', '--varname', varname, 'code-map', keymapcsv, keymap, 'xtkbd']
++    cmd = [python, keymapgen, 'code-map', '--lang', 'glib2', '--varname', varname, keymapcsv, keymap, 'xtkbd']
+     spice_client_gtk_sources += custom_target(target,
+                                               output : target,
+                                               capture : true,
+-- 
+GitLab
+
+From e15649b83a78f89f57205927022115536d2c1698 Mon Sep 17 00:00:00 2001
+From: Eli Schwartz <eschwartz93@gmail.com>
+Date: Tue, 21 Jun 2022 20:18:22 -0400
+Subject: [PATCH] make the meson.build stub a bit more well-rounded by
+ exporting files
+
+Provide variables for:
+- the found program keymap-gen
+- the CSV mapping table
+
+and for enhanced convenience, override keymap-gen
+
+This allows grabbing the variables from another Meson project without
+futzing with submodule paths, something that Meson doesn't really
+encourage.
+---
+ meson.build | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
+
+diff --git a/subprojects/keycodemapdb/meson.build b/subprojects/keycodemapdb/meson.build
+index eb9416b..6d263aa 100644
+--- a/subprojects/keycodemapdb/meson.build
++++ b/subprojects/keycodemapdb/meson.build
+@@ -1 +1,6 @@
+-project('keycodemapdb')
++project('keycodemapdb', meson_version: '>=0.46.0')
++
++keymap_gen = find_program('tools/keymap-gen')
++meson.override_find_program('keymap-gen', keymap_gen)
++
++keymaps_csv = files('data/keymaps.csv')
+-- 
+GitLab
+

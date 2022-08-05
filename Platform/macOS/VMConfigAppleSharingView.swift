@@ -20,28 +20,29 @@ import SwiftUI
 struct VMConfigAppleSharingView: View {
     @ObservedObject var config: UTMAppleConfiguration
     @EnvironmentObject private var data: UTMData
-    @State private var selected: SharedDirectory?
+    @State private var selectedID: UUID?
     @State private var isImporterPresented: Bool = false
     @State private var isAddReadOnly: Bool = false
     
     var body: some View {
         Form {
             Text("Note: Shared directories will not be saved and will be reset when UTM quits.")
-            Table(config.sharedDirectories, selection: $selected) {
+            Table(config.sharedDirectories, selection: $selectedID) {
                 TableColumn("Shared Path") { share in
                     Text(share.directoryURL?.path ?? "")
                 }
                 TableColumn("Read Only?") { share in
                     Toggle("", isOn: .constant(share.isReadOnly))
+                        .disabled(true)
                 }
             }.frame(minHeight: 300)
             HStack {
                 Spacer()
                 Button("Delete") {
                     config.sharedDirectories.removeAll { share in
-                        share == selected
+                        share.id == selectedID
                     }
-                }.disabled(selected == nil)
+                }.disabled(selectedID == nil)
                 Button("Add") {
                     isImporterPresented.toggle()
                 }
@@ -54,7 +55,7 @@ struct VMConfigAppleSharingView: View {
                         throw NSLocalizedString("This directory is already being shared.", comment: "VMConfigAppleSharingView")
                     }
                     await MainActor.run {
-                        config.sharedDirectories.append(SharedDirectory(directoryURL: url, isReadOnly: isAddReadOnly))
+                        config.sharedDirectories.append(UTMAppleConfigurationSharedDirectory(directoryURL: url, isReadOnly: isAddReadOnly))
                     }
                 }
             }

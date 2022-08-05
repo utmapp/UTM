@@ -19,23 +19,32 @@ import Carbon.HIToolbox
 
 @available(macOS 11, *)
 extension UTMData {
-    func run(vm: UTMVirtualMachine) {
-        var window: VMDisplayWindowController? = vmWindows[vm]
+    @MainActor func run(vm: UTMVirtualMachine) {
+        var window: Any? = vmWindows[vm]
         if window == nil {
             let close = { (notification: Notification) -> Void in
                 self.vmWindows.removeValue(forKey: vm)
                 window = nil
             }
             if let avm = vm as? UTMAppleVirtualMachine {
-                if avm.appleConfig.architecture == UTMAppleVirtualMachine.currentArchitecture {
-                    window = VMDisplayAppleWindowController(vm: avm, onClose: close)
+                if avm.appleConfig.system.architecture == UTMAppleConfigurationSystem.currentArchitecture {
+                    let primarySerialIndex = avm.appleConfig.serials.firstIndex { $0.mode == .builtin }
+                    if let primarySerialIndex = primarySerialIndex, avm.appleConfig.displays.isEmpty {
+                        window = VMDisplayAppleTerminalWindowController(primaryForIndex: primarySerialIndex, vm: avm, onClose: close)
+                    } else if #available(macOS 12, *), !avm.appleConfig.displays.isEmpty {
+                        window = VMDisplayAppleDisplayWindowController(vm: vm, onClose: close)
+                    } else if avm.appleConfig.displays.isEmpty {
+                        window = VMHeadlessSessionState(for: avm, onStop: close)
+                    }
                 }
             }
             if let qvm = vm as? UTMQemuVirtualMachine {
-                if qvm.qemuConfig.displayConsoleOnly {
-                    window = VMDisplayTerminalWindowController(vm: qvm, onClose: close)
+                if qvm.config.qemuHasDisplay {
+                    window = VMQemuDisplayMetalWindowController(vm: qvm, onClose: close)
+                } else if qvm.config.qemuHasTerminal {
+                    window = VMDisplayQemuTerminalWindowController(vm: qvm, onClose: close)
                 } else {
-                    window = VMDisplayMetalWindowController(vm: qvm, onClose: close)
+                    window = VMHeadlessSessionState(for: qvm, onStop: close)
                 }
             }
             if window == nil {
@@ -44,11 +53,15 @@ extension UTMData {
                 }
             }
         }
-        if let unwrappedWindow = window {
+        if let unwrappedWindow = window as? VMDisplayWindowController {
             vmWindows[vm] = unwrappedWindow
+            vm.delegate = unwrappedWindow
             unwrappedWindow.showWindow(nil)
             unwrappedWindow.window!.makeMain()
             unwrappedWindow.requestAutoStart()
+        } else if let unwrappedWindow = window as? VMHeadlessSessionState {
+            vmWindows[vm] = unwrappedWindow
+            unwrappedWindow.start()
         } else {
             logger.critical("Failed to create window controller.")
         }
@@ -58,13 +71,13 @@ extension UTMData {
         if vm.viewState.hasSaveState {
             vm.requestVmDeleteState()
         }
-        vm.vmStop(force: true, completion: { _ in
+        vm.vmStop(force: false, completion: { _ in
             self.close(vm: vm)
         })
     }
     
     func close(vm: UTMVirtualMachine) {
-        if let window = vmWindows.removeValue(forKey: vm) {
+        if let window = vmWindows.removeValue(forKey: vm) as? VMDisplayWindowController {
             DispatchQueue.main.async {
                 window.close()
             }
@@ -73,7 +86,7 @@ extension UTMData {
     
     func trySendTextSpice(vm: UTMQemuVirtualMachine, text: String) {
         guard text.count > 0 else { return }
-        if let vc = vmWindows[vm] as? VMDisplayMetalWindowController {
+        if let vc = vmWindows[vm] as? VMQemuDisplayMetalWindowController {
             KeyCodeMap.createKeyMapIfNeeded()
             
             func sleep() {
@@ -161,7 +174,7 @@ extension UTMData {
                     }
                 }
             }
-        } else if let vc = vmWindows[vm] as? VMDisplayTerminalWindowController {
+        } else if let vc = vmWindows[vm] as? VMDisplayQemuTerminalWindowController {
             if let data = text.data(using: .nonLossyASCII) {
                 vc.defaultSerialWrite(data: data)
             } else {
@@ -171,7 +184,7 @@ extension UTMData {
     }
     
     func tryClickAtPoint(vm: UTMQemuVirtualMachine, point: CGPoint, button: CSInputButton) {
-        if let vc = vmWindows[vm] as? VMDisplayMetalWindowController {
+        if let vc = vmWindows[vm] as? VMQemuDisplayMetalWindowController {
             vc.mouseMove(absolutePoint: point, button: [])
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.02) {
                 vc.mouseDown(button: button)

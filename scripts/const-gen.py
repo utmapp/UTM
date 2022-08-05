@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 import os
@@ -83,7 +83,7 @@ ADD_DEVICES = {
 }
 
 HEADER = '''//
-// Copyright © 2020 osy. All rights reserved.
+// Copyright © 2022 osy. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -100,9 +100,7 @@ HEADER = '''//
 
 // !! THIS FILE IS GENERATED FROM const-gen.py, DO NOT MODIFY MANUALLY !!
 
-#import "UTMQemuConfiguration+Constants.h"
-
-@implementation UTMQemuConfiguration (ConstantsGenerated)
+import Foundation
 
 '''
 
@@ -160,12 +158,9 @@ def parseCpu(listing):
             desc = '{} ({})'.format(desc, name)
         return Name(name, desc)
     def parseSparcFlags(line):
-        if line.startswith('Default CPU feature flags'):
+        if line.startswith('Default CPU feature flags') or line.startswith('Available CPU feature flags'):
             flags = line.split(':')[1].strip()
-            return [Name('-' + flag, '-' + flag) for flag in flags.split(' ')]
-        elif line.startswith('Available CPU feature flags'):
-            flags = line.split(':')[1].strip()
-            return [Name('+' + flag, '+' + flag) for flag in flags.split(' ')]
+            return [Name(flag, flag) for flag in flags.split(' ')]
         elif line.startswith('Numerical features'):
             return []
         else:
@@ -191,15 +186,18 @@ def parseCpu(listing):
         if not line:
             break
         if len(line.strip().split(' ')) == 1:
-            cpus.append(parseSingle(line))
+            cpu = parseSingle(line)
         elif line.startswith('Sparc'):
-            cpus.append(parseSparc(line))
+            cpu = parseSparc(line)
         elif line.startswith('MIPS'):
-            cpus.append(parseMips(line))
+            cpu = parseMips(line)
         elif parseSparcFlags(line) != None:
             flags += parseSparcFlags(line)
+            continue
         else:
-            cpus.append(parseStandard(line))
+            cpu = parseStandard(line)
+        if cpu.name != 'default':
+            cpus.append(cpu)
     header = next(output, None)
     if header == None:
         return (cpus, flags)
@@ -219,15 +217,12 @@ def getMachines(target, qemu_path):
     return parseListing(output)
 
 def getDefaultMachine(target, machines):
-    find = None
     if target in DEFAULTS:
-        find = DEFAULTS[target]
-    for (idx, machine) in enumerate(machines):
-        if find and find == machine.name:
-            return idx
-        elif not find and "default" in machine.desc:
-            return idx
-    return -1
+        return DEFAULTS[target]
+    for machine in machines:
+        if "default" in machine.desc:
+            return machine.name
+    return machines[0].name
 
 def getDevices(target, qemu_path):
     output = subprocess.check_output([qemu_path, '-device', 'help']).decode('utf-8')
@@ -238,58 +233,96 @@ def getCpus(target, qemu_path):
     output = subprocess.check_output([qemu_path, '-cpu', 'help']).decode('utf-8')
     return parseCpu(output)
 
-def generateArray(name, array):
-    output  = '+ (NSArray<NSString *>*){} {{\n'.format(name)
-    output += '    return @[\n'
-    for item in array:
-        output += '             @"{}",\n'.format(item)
-    output += '             ];\n'
-    output += '}\n\n'
+def sanitizeName(name):
+    sanitized = re.sub('[^0-9a-zA-Z]+', '_', name)
+    if len(sanitized) == 0:
+        sanitized = '_empty'
+    if sanitized[0].isdigit():
+        sanitized = '_' + sanitized
+    if sanitized in ['default']:
+        sanitized = '`' + sanitized + '`'
+    return sanitized
+
+def generateEmptyEnum(name):
+    output  = f'typealias {name} = AnyQEMUConstant\n'
+    output += f'\n'
     return output
 
-def generateMap(name, keyName, keys, arrays):
-    output  = '+ (NSArray<NSString *>*){}:(NSString *){} {{\n'.format(name, keyName)
-    output += '    return @{\n'
-    for key in keys:
-        output += '        @"{}":\n'.format(key)
-        output += '            @[\n'
-        for item in arrays[key]:
-            output += '                @"{}",\n'.format(item)
-        output += '            ],\n'
-    output += '    }}[{}];\n'.format(keyName)
-    output += '}\n\n'
+def generateEnum(name, values, prettyValues, baseName='QEMUConstant', defaultValue=None):
+    if len(values) == 0:
+        return generateEmptyEnum(name)
+    output  = f'enum {name}: String, CaseIterable, {baseName} {{\n'
+    for value in values:
+        sanitized = sanitizeName(value)
+        if sanitized == value:
+            output += f'    case {value}\n'
+        else:
+            output += f'    case {sanitized} = "{value}"\n'
+    output += '\n'
+    if defaultValue:
+        sanitized = sanitizeName(defaultValue)
+        output += f'    static var `default`: {name} {{\n'
+        output += f'        .{sanitized}\n'
+        output += f'    }}\n'
+        output += f'\n'
+    output += f'    var prettyValue: String {{\n'
+    output += f'        switch self {{\n'
+    for value, valuePretty in zip(values, prettyValues):
+        sanitized = sanitizeName(value)
+        output += f'        case .{sanitized}: return "{valuePretty}"\n'
+    output += f'        }}\n'
+    output += f'    }}\n'
+    output += f'}}\n'
+    output += f'\n'
     return output
 
-def generateIndexMap(name, keyName, keys, indexMap):
-    output  = '+ (NSInteger){}:(NSString *){} {{\n'.format(name, keyName)
-    output += '    return [@{\n'
-    for key in keys:
-        output += '        @"{}": @{},\n'.format(key, indexMap[key])
-    output += '    }}[{}] integerValue];\n'.format(keyName)
-    output += '}\n\n'
+def generateArchitectureAtlas(architectures, types):
+    output  = f'extension QEMUArchitecture {{\n'
+    for k, v in types.items():
+        output += f'    var {v}: any {k}.Type {{\n'
+        output += f'        switch self {{\n'
+        for a in architectures:
+            a = sanitizeName(a)
+            output += f'        case .{a}: return {k}_{a}.self\n'
+        output += f'        }}\n'
+        output += f'    }}\n'
+        output += f'\n'
+    output += f'}}\n'
+    output += f'\n'
     return output
 
-def generateMapForeachArchitecture(name, targetKeys, targetItems, isPretty=False):
-    return generateMap(name, 'architecture', targetKeys, {target.name: [item.desc if isPretty else item.name for item in sortItems(target.items)] for target in targetItems})
+def generateEnumForeachArchitecture(name, targetItems, defaults={}):
+    output = ''
+    for target in targetItems:
+        arch = target.name
+        className = name + '_' + arch
+        sortedItems = sortItems(target.items)
+        values = [item.name for item in sortedItems]
+        prettyValues = [item.desc for item in sortedItems]
+        default = defaults[arch] if arch in defaults else None
+        output += generateEnum(className, values, prettyValues, name, default)
+    return output
 
-def generate(targets, cpus, cpuFlags, machines, displayCards, networkCards, soundCards):
+def generate(targets, cpus, cpuFlags, machines, displayDevices, networkDevices, soundDevices, serialDevices):
     targetKeys = [item.name for item in targets]
     output  = HEADER
-    output += generateArray('supportedArchitectures', targetKeys)
-    output += generateArray('supportedArchitecturesPretty', [item.desc for item in targets])
-    output += generateMapForeachArchitecture('supportedCpusForArchitecture', targetKeys, cpus)
-    output += generateMapForeachArchitecture('supportedCpusForArchitecturePretty', targetKeys, cpus, isPretty=True)
-    output += generateMapForeachArchitecture('supportedCpuFlagsForArchitecture', targetKeys, cpuFlags)
-    output += generateMapForeachArchitecture('supportedTargetsForArchitecture', targetKeys, machines)
-    output += generateMapForeachArchitecture('supportedTargetsForArchitecturePretty', targetKeys, machines, isPretty=True)
-    output += generateIndexMap('defaultTargetIndexForArchitecture', 'architecture', targetKeys, {machine.name: machine.default for machine in machines})
-    output += generateMapForeachArchitecture('supportedDisplayCardsForArchitecture', targetKeys, displayCards)
-    output += generateMapForeachArchitecture('supportedDisplayCardsForArchitecturePretty', targetKeys, displayCards, isPretty=True)
-    output += generateMapForeachArchitecture('supportedNetworkCardsForArchitecture', targetKeys, networkCards)
-    output += generateMapForeachArchitecture('supportedNetworkCardsForArchitecturePretty', targetKeys, networkCards, isPretty=True)
-    output += generateMapForeachArchitecture('supportedSoundCardsForArchitecture', targetKeys, soundCards)
-    output += generateMapForeachArchitecture('supportedSoundCardsForArchitecturePretty', targetKeys, soundCards, isPretty=True)
-    output += '@end\n'
+    output += generateEnum('QEMUArchitecture', targetKeys, [item.desc for item in targets])
+    output += generateEnumForeachArchitecture('QEMUCPU', cpus)
+    output += generateEnumForeachArchitecture('QEMUCPUFlag', cpuFlags)
+    output += generateEnumForeachArchitecture('QEMUTarget', machines, {machine.name: machine.default for machine in machines})
+    output += generateEnumForeachArchitecture('QEMUDisplayDevice', displayDevices)
+    output += generateEnumForeachArchitecture('QEMUNetworkDevice', networkDevices)
+    output += generateEnumForeachArchitecture('QEMUSoundDevice', soundDevices)
+    output += generateEnumForeachArchitecture('QEMUSerialDevice', serialDevices)
+    output += generateArchitectureAtlas(targetKeys, {
+        'QEMUCPU': 'cpuType',
+        'QEMUCPUFlag': 'cpuFlagType',
+        'QEMUTarget': 'targetType',
+        'QEMUDisplayDevice': 'displayDeviceType',
+        'QEMUNetworkDevice': 'networkDeviceType',
+        'QEMUSoundDevice': 'soundDeviceType',
+        'QEMUSerialDevice': 'serialDeviceType',
+    })
     return output
 
 def transformDisplayCards(displayCards):
@@ -307,6 +340,7 @@ def main(argv):
     allDisplayCards = []
     allSoundCards = []
     allNetworkCards = []
+    allSerialCards = []
     # parse outputs
     for target in TARGETS:
         path = '{}/{}-softmmu/qemu-system-{}'.format(base, target.name, target.name)
@@ -320,15 +354,17 @@ def main(argv):
         devices = getDevices(target, path)
 
         displayCards = transformDisplayCards(devices["Display devices"])
-        allDisplayCards.append(Architecture(target.name, displayCards, 0))
-        allNetworkCards.append(Architecture(target.name, devices["Network devices"], 0))
+        allDisplayCards.append(Architecture(target.name, displayCards, None))
+        allNetworkCards.append(Architecture(target.name, devices["Network devices"], None))
         nonHdaDevices = [device for device in devices["Sound devices"] if device.bus != 'HDA']
-        allSoundCards.append(Architecture(target.name, nonHdaDevices, 0))
+        allSoundCards.append(Architecture(target.name, nonHdaDevices, None))
+        serialDevices = [device for device in devices["Input devices"] if 'serial' in device.name]
+        allSerialCards.append(Architecture(target.name, serialDevices, None))
         cpus, flags = getCpus(target, path)
         allCpus.append(Architecture(target.name, cpus, 0))
         allCpuFlags.append(Architecture(target.name, flags, 0))
     # generate constants
-    print(generate(TARGETS, allCpus, allCpuFlags, allMachines, allDisplayCards, allNetworkCards, allSoundCards))
+    print(generate(TARGETS, allCpus, allCpuFlags, allMachines, allDisplayCards, allNetworkCards, allSoundCards, allSerialCards))
 
 if __name__ == "__main__":
     main(sys.argv)

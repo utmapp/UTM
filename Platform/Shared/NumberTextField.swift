@@ -16,7 +16,6 @@
 
 import SwiftUI
 
-@available(iOS 13, macOS 11, *)
 struct NumberTextFieldOld: View {
     private var titleKey: LocalizedStringKey
     @Binding private var number: NSNumber?
@@ -96,7 +95,6 @@ struct NumberTextFieldNew: View {
     }
 }
 
-@available(iOS 13, macOS 11, *)
 struct NumberTextField: View {
     private var titleKey: LocalizedStringKey
     @Binding private var number: NSNumber?
@@ -154,7 +152,6 @@ extension NSNumber {
     }
 }
 
-@available(iOS 13, macOS 11, *)
 struct NumberTextField_Previews: PreviewProvider {
     static var previews: some View {
         NumberTextField("Test", number: .constant(NSNumber(value: 123)))

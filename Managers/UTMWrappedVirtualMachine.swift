@@ -58,7 +58,7 @@ import Foundation
         _path = path
         super.init()
         self.path = path
-        self.config = UTMWrappedVirtualMachineConfiguration()
+        self.config = UTMConfigurationWrapper(placeholderFor: name)
     }
     
     /// Create a new wrapped UTM VM from an existing UTM VM
@@ -67,10 +67,7 @@ import Foundation
         guard let bookmark = vm.bookmark else {
             return nil
         }
-        guard let path = vm.path else {
-            return nil
-        }
-        self.init(bookmark: bookmark, name: vm.detailsTitleLabel, path: path)
+        self.init(bookmark: bookmark, name: vm.detailsTitleLabel, path: vm.path)
     }
     
     /// Create a new wrapped UTM VM from a dictionary
@@ -100,43 +97,10 @@ import Foundation
             return nil
         }
         let defaultStorageUrl = UTMData.defaultStorageUrl.standardizedFileURL
-        let parentUrl = vm.path!.deletingLastPathComponent().standardizedFileURL
+        let parentUrl = vm.path.deletingLastPathComponent().standardizedFileURL
         if parentUrl != defaultStorageUrl {
             vm.isShortcut = true
         }
         return vm
     }
-}
-
-/// Dummy config since UTMVirtualMachine requires it
-fileprivate final class UTMWrappedVirtualMachineConfiguration: UTMConfigurable {
-    var isRenameDisabled: Bool = false
-    
-    var name: String = UUID().uuidString
-    
-    var iconUrl: URL?
-    
-    var selectedCustomIconPath: URL?
-    
-    var icon: String?
-    
-    var iconCustom: Bool = false
-    
-    var notes: String?
-    
-    var consoleTheme: String?
-    
-    var consoleTextColor: String?
-    
-    var consoleBackgroundColor: String?
-    
-    var consoleFont: String?
-    
-    var consoleFontSize: NSNumber?
-    
-    var consoleCursorBlink: Bool = false
-    
-    var consoleResizeCommand: String?
-    
-    var isAppleVirtualization: Bool = false
 }

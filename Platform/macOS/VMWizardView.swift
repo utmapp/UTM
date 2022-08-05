@@ -92,13 +92,14 @@ struct VMWizardView: View {
                             let config = try await wizardState.generateConfig()
                             #if arch(arm64)
                             if #available(macOS 12, *), await wizardState.isPendingIPSWDownload {
-                                await data.downloadIPSW(using: config as! UTMAppleConfiguration)
+                                await data.downloadIPSW(using: config.appleConfig!)
                                 return
                             }
                             #endif
-                            let vm = try await data.create(config: config)
-                            if let qemuVm = vm as? UTMQemuVirtualMachine {
-                                try await wizardState.qemuPostCreate(with: qemuVm)
+                            if let qemuConfig = config.qemuConfig {
+                                _ = try await data.create(config: qemuConfig)
+                            } else if let appleConfig = config.appleConfig {
+                                _ = try await data.create(config: appleConfig)
                             }
                             if await wizardState.isOpenSettingsAfterCreation {
                                 await data.showSettingsForCurrentVM()

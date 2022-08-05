@@ -16,7 +16,6 @@
 
 import SwiftUI
 
-@available(iOS 14, macOS 11, *)
 struct UTMPendingVMView: View {
     @ObservedObject var vm: UTMPendingVirtualMachine
     
@@ -30,7 +29,6 @@ struct UTMPendingVMView: View {
     }
 }
 
-@available(iOS 14, macOS 11, *)
 fileprivate struct PendingVMDetailsView: View {
     @ObservedObject var vm: UTMPendingVirtualMachine
     
@@ -73,7 +71,6 @@ fileprivate struct PendingVMDetailsView: View {
     }
 }
 
-@available(iOS 14, macOS 11, *)
 struct UTMProgressView_Previews: PreviewProvider {
     static var previews: some View {
         UTMPendingVMView(vm: UTMPendingVirtualMachine(name: "", onCancel: {}))

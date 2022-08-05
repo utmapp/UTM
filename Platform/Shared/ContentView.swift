@@ -25,7 +25,6 @@ let productName = "UTM SE"
 let productName = "UTM"
 #endif
 
-@available(iOS 14, macOS 11, *)
 struct ContentView: View {
     @State private var editMode = false
     @EnvironmentObject private var data: UTMData
@@ -254,7 +253,6 @@ fileprivate extension View {
     }
 }
 #else
-@available(iOS 14, *)
 fileprivate extension View {
     // ignore subtitle on iOS
     func navigationOptionalSubtitle<S>(_ subtitle: S) -> some View where S : StringProtocol {
@@ -273,7 +271,6 @@ fileprivate extension View {
 }
 #endif
 
-@available(iOS 14, macOS 11, *)
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         ContentView()

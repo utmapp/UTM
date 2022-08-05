@@ -17,29 +17,24 @@
 import SwiftUI
 
 @available(macOS 11, *)
-struct VMSettingsView<Config: ObservableObject & UTMConfigurable>: View {
+struct VMSettingsView<Config: UTMConfiguration>: View {
     let vm: UTMVirtualMachine?
-    let config: Config
+    @ObservedObject var config: Config
     
     @EnvironmentObject private var data: UTMData
     @Environment(\.presentationMode) private var presentationMode: Binding<PresentationMode>
     
-    @State private var selectedDriveIndex: Int?
-    
     var body: some View {
         NavigationView {
             List {
-                if let qemuConfig = config as? UTMQemuConfiguration {
-                    VMQEMUSettingsView(vm: vm, config: qemuConfig, selectedDriveIndex: $selectedDriveIndex)
-                } else if let appleConfig = config as? UTMAppleConfiguration {
-                    VMAppleSettingsView(vm: vm, config: appleConfig, selectedDriveIndex: $selectedDriveIndex)
+                if config is UTMQemuConfiguration {
+                    VMQEMUSettingsView(config: config as! UTMQemuConfiguration)
+                } else if config is UTMAppleConfiguration {
+                    VMAppleSettingsView(config: config as! UTMAppleConfiguration)
                 }
             }.listStyle(.sidebar)
         }.frame(minWidth: 800, minHeight: 400)
         .toolbar {
-            ToolbarItemGroup(placement: .automatic) {
-                VMConfigDrivesButtons(vm: vm, config: config, selectedDriveIndex: $selectedDriveIndex)
-            }
             ToolbarItemGroup(placement: .cancellationAction) {
                 Button(action: cancel) {
                     Text("Cancel")

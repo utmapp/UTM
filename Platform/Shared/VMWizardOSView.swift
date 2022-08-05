@@ -16,7 +16,6 @@
 
 import SwiftUI
 
-@available(iOS 14, macOS 11, *)
 struct VMWizardOSView: View {
     @ObservedObject var wizardState: VMWizardState
     var body: some View {
@@ -79,7 +78,6 @@ struct VMWizardOSView: View {
     }
 }
 
-@available(iOS 14, macOS 11, *)
 struct OperatingSystem: View {
     let imageName: String
     let name: String
@@ -112,7 +110,6 @@ struct OperatingSystem: View {
     }
 }
 
-@available(iOS 14, macOS 11, *)
 struct VMWizardOSView_Previews: PreviewProvider {
     @StateObject static var wizardState = VMWizardState()
     

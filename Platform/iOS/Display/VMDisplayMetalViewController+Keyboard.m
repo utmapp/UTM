@@ -14,12 +14,12 @@
 // limitations under the License.
 //
 
-#import "UIViewController+Extensions.h"
 #import "VMDisplayMetalViewController+Keyboard.h"
 #import "UTMLogging.h"
 #import "UTMVirtualMachine.h"
 #import "VMKeyboardView.h"
 #import "VMKeyboardButton.h"
+#import "UTM-Swift.h"
 
 @implementation VMDisplayMetalViewController (Keyboard)
 
@@ -27,14 +27,6 @@
 
 - (BOOL)inputViewIsFirstResponder {
     return self.keyboardView.isFirstResponder;
-}
-
-- (void)updateKeyboardAccessoryFrame {
-    if (self.inputAccessoryView.safeAreaInsets.bottom > 0) {
-        self.keyboardView.softKeyboardVisible = YES;
-    } else {
-        self.keyboardView.softKeyboardVisible = NO;
-    }
 }
 
 - (void)keyboardView:(nonnull VMKeyboardView *)keyboardView didPressKeyDown:(int)scancode {

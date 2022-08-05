@@ -21,39 +21,61 @@ private let minMemoryMib = 32
 private let baseUsageMib = 128
 private let warningThreshold = 0.9
 
-@available(iOS 14, macOS 11, *)
 struct VMConfigSystemView: View {
-    @ObservedObject var config: UTMQemuConfiguration
-    @State private var warningMessage: String? = nil
+    @Binding var config: UTMQemuConfigurationSystem
+    @Binding var isResetConfig: Bool
+    @State private var warningMessage: WarningMessage? = nil
+    
+    @State private var architecture: QEMUArchitecture = .x86_64
+    @State private var target: any QEMUTarget = QEMUTarget_x86_64.pc
     
     var body: some View {
         VStack {
             Form {
-                HardwareOptions(config: config, validateMemorySize: validateMemorySize)
+                HardwareOptions(config: $config, architecture: $architecture, target: $target, warningMessage: $warningMessage)
+                RAMSlider(systemMemory: $config.memorySize, onValidate: validateMemorySize)
                 Section(header: Text("CPU")) {
-                    VMConfigStringPicker(selection: $config.systemCPU.animation(), rawValues: UTMQemuConfiguration.supportedCpus(forArchitecture: config.systemArchitecture), displayValues: UTMQemuConfiguration.supportedCpus(forArchitecturePretty: config.systemArchitecture))
+                    VMConfigConstantPicker(selection: $config.cpu, type: config.architecture.cpuType)
                 }
-                CPUFlagsOptions(config: config)
+                CPUFlagsOptions(title: "Force Enable CPU Flags", config: $config, flags: $config.cpuFlagsAdd)
+                    .help("If checked, the CPU flag will be enabled. Otherwise, the default value will be used.")
+                CPUFlagsOptions(title: "Force Disable CPU Flags", config: $config, flags: $config.cpuFlagsRemove)
+                    .help("If checked, the CPU flag will be disabled. Otherwise, the default value will be used.")
                 DetailedSection("CPU Cores", description: "Force multicore may improve speed of emulation but also might result in unstable and incorrect emulation.") {
                     HStack {
-                        NumberTextField("", number: $config.systemCPUCount, prompt: "Default", onEditingChanged: validateCpuCount)
+                        NumberTextField("", number: $config.cpuCount, prompt: "Default", onEditingChanged: validateCpuCount)
                             .multilineTextAlignment(.trailing)
                         Text("Cores")
                     }
-                    Toggle(isOn: $config.systemForceMulticore, label: {
+                    Toggle(isOn: $config.isForceMulticore, label: {
                         Text("Force Multicore")
                     })
                 }
                 DetailedSection("JIT Cache", description: "Default is 1/4 of the RAM size (above). The JIT cache size is additive to the RAM size in the total memory usage!") {
                     HStack {
-                        NumberTextField("", number: $config.systemJitCacheSize, prompt: "Default", onEditingChanged: validateMemorySize)
+                        NumberTextField("", number: $config.jitCacheSize, prompt: "Default", onEditingChanged: validateMemorySize)
                             .multilineTextAlignment(.trailing)
                         Text("MB")
                     }
                 }
             }
         }.alert(item: $warningMessage) { warning in
-            Alert(title: Text(warning))
+            switch warning {
+            case .overallocatedRam(_, _):
+                return Alert(title: Text(warning.localizedWarningTitle), message: Text(warning.localizedWarningMessage))
+            case .resetSystem:
+                return Alert(title: Text(warning.localizedWarningTitle), message: Text(warning.localizedWarningMessage), primaryButton: .cancel(Text("Cancel"), action: {
+                    architecture = config.architecture
+                    target = config.target
+                }), secondaryButton: .destructive(Text("Reset"), action: {
+                    config.architecture = architecture
+                    if !architecture.targetType.allRawValues.contains(target.rawValue) {
+                        target = architecture.targetType.default
+                    }
+                    config.target = target
+                    isResetConfig = true
+                }))
+            }
         }.disableAutocorrection(true)
     }
     
@@ -61,12 +83,14 @@ struct VMConfigSystemView: View {
         guard !editing else {
             return
         }
-        guard let memorySizeMib = config.systemMemory?.intValue, memorySizeMib >= minMemoryMib else {
-            config.systemMemory = NSNumber(value: minMemoryMib)
+        let memorySizeMib = config.memorySize
+        guard memorySizeMib >= minMemoryMib else {
+            config.memorySize = 0
             return
         }
-        guard let jitSizeMib = config.systemJitCacheSize?.intValue, jitSizeMib >= 0 else {
-            config.systemJitCacheSize = NSNumber(value: 0)
+        let jitSizeMib = config.jitCacheSize
+        guard jitSizeMib >= 0 else {
+            config.jitCacheSize = 0
             return
         }
         var totalDeviceMemory = ProcessInfo.processInfo.physicalMemory
@@ -80,8 +104,7 @@ struct VMConfigSystemView: View {
         let jitMirrorMultiplier = jb_has_jit_entitlement() ? 1 : 2;
         let estMemoryUsage = UInt64(memorySizeMib + jitMirrorMultiplier*actualJitSizeMib + baseUsageMib) * bytesInMib
         if Double(estMemoryUsage) > Double(totalDeviceMemory) * warningThreshold {
-            let format = NSLocalizedString("Allocating too much memory will crash the VM. Your device has %llu MB of memory and the estimated usage is %llu MB.", comment: "VMConfigSystemView")
-            warningMessage = String(format: format, totalDeviceMemory / bytesInMib, estMemoryUsage / bytesInMib)
+            warningMessage = WarningMessage.overallocatedRam(totalMib: totalDeviceMemory / bytesInMib, estimatedMib: estMemoryUsage / bytesInMib)
         }
     }
 
@@ -89,92 +112,117 @@ struct VMConfigSystemView: View {
         guard !editing else {
             return
         }
-        guard let cpuCount = config.systemCPUCount?.intValue, cpuCount >= 0 else {
-            config.systemCPUCount = NSNumber(value: 0)
+        guard config.cpuCount >= 0 else {
+            config.cpuCount = 0
             return
         }
     }
 }
 
-@available(iOS 14, macOS 11, *)
-struct HardwareOptions: View {
-    @ObservedObject var config: UTMQemuConfiguration
-    let validateMemorySize: (Bool) -> Void
-    @EnvironmentObject private var data: UTMData
-    @State private var warningMessage: String? = nil
+private enum WarningMessage: Identifiable {
+    case overallocatedRam(totalMib: UInt64, estimatedMib: UInt64)
+    case resetSystem
     
-    var body: some View {
-        Section(header: Text("Hardware")) {
-            VMConfigStringPicker("Architecture", selection: $config.systemArchitecture, rawValues: UTMQemuConfiguration.supportedArchitectures(), displayValues: UTMQemuConfiguration.supportedArchitecturesPretty())
-                .onChange(of: config.systemArchitecture, perform: { value in
-                    guard let arch = value else {
-                        return
-                    }
-                    let index = UTMQemuConfiguration.defaultTargetIndex(forArchitecture: arch)
-                    let targets = UTMQemuConfiguration.supportedTargets(forArchitecture: arch)
-                    config.systemTarget = targets?[index]
-                    config.loadDefaults(forTarget: config.systemTarget, architecture: arch)
-                    // disable unsupported hardware
-                    if let displayCard = config.displayCard {
-                        if !UTMQemuConfiguration.supportedDisplayCards(forArchitecture: arch)!.contains(where: { $0.caseInsensitiveCompare(displayCard) == .orderedSame }) {
-                            if UTMQemuConfiguration.supportedDisplayCards(forArchitecture: arch)!.contains("VGA") {
-                                config.displayCard = "VGA" // most devices support VGA
-                            } else {
-                                config.displayConsoleOnly = true
-                                config.shareClipboardEnabled = false
-                                config.shareDirectoryEnabled = false
-                            }
-                        }
-                    }
-                    if let networkCard = config.networkCard {
-                        if !UTMQemuConfiguration.supportedNetworkCards(forArchitecture: arch)!.contains(where: { $0.caseInsensitiveCompare(networkCard) == .orderedSame }) {
-                            config.networkEnabled = false
-                        }
-                    }
-                    if let soundCard = config.soundCard {
-                        if !UTMQemuConfiguration.supportedSoundCards(forArchitecture: arch)!.contains(where: { $0.caseInsensitiveCompare(soundCard) == .orderedSame }) {
-                            config.soundEnabled = false
-                        }
-                    }
-                })
-            if !UTMQemuVirtualMachine.isSupported(systemArchitecture: config.systemArchitecture) {
-                Text("The selected architecture is unsupported in this version of UTM.")
-                    .foregroundColor(.red)
-            }
-            VMConfigStringPicker("System", selection: $config.systemTarget, rawValues: UTMQemuConfiguration.supportedTargets(forArchitecture: config.systemArchitecture), displayValues: UTMQemuConfiguration.supportedTargets(forArchitecturePretty: config.systemArchitecture))
-                .onChange(of: config.systemTarget, perform: { value in
-                    config.loadDefaults(forTarget: value, architecture: config.systemArchitecture)
-                })
-            RAMSlider(systemMemory: $config.systemMemory, onValidate: validateMemorySize)
+    var id: Int {
+        switch self {
+        case .overallocatedRam(_, _):
+            return 1
+        case .resetSystem:
+            return 2
+        }
+    }
+    
+    var localizedWarningTitle: String {
+        switch self {
+        case .overallocatedRam(_, _):
+            return NSLocalizedString("Allocating too much memory will crash the VM.", comment: "VMConfigSystemView")
+        case .resetSystem:
+            return NSLocalizedString("This change will reset all settings", comment: "VMConfigSystemView")
+        }
+    }
+    
+    var localizedWarningMessage: String {
+        switch self {
+        case .overallocatedRam(let totalMib, let estimatedMib):
+            let format = NSLocalizedString("Your device has %llu MB of memory and the estimated usage is %llu MB.", comment: "VMConfigSystemView")
+            return String(format: format, totalMib, estimatedMib)
+        case .resetSystem:
+            return NSLocalizedString("Any unsaved changes will be lost.", comment: "VMConfigSystemView")
         }
     }
 }
 
-@available(iOS 14, macOS 11, *)
+private struct HardwareOptions: View {
+    @Binding var config: UTMQemuConfigurationSystem
+    @Binding var architecture: QEMUArchitecture
+    @Binding var target: any QEMUTarget
+    @Binding var warningMessage: WarningMessage?
+    @EnvironmentObject private var data: UTMData
+    
+    var body: some View {
+        Section(header: Text("Hardware")) {
+            VMConfigConstantPicker("Architecture", selection: $architecture)
+                .onAppear {
+                    architecture = config.architecture
+                }
+                .onChange(of: architecture) { newValue in
+                    if newValue != config.architecture {
+                        warningMessage = .resetSystem
+                    }
+                }
+                .onChange(of: config.architecture) { newValue in
+                    if newValue != architecture {
+                        architecture = newValue
+                    }
+                }
+            if !UTMQemuVirtualMachine.isSupported(systemArchitecture: config.architecture) {
+                Text("The selected architecture is unsupported in this version of UTM.")
+                    .foregroundColor(.red)
+            }
+            VMConfigConstantPicker("System", selection: $target, type: config.architecture.targetType)
+                .onAppear {
+                    target = config.target
+                }
+                .onChange(of: target.rawValue) { newValue in
+                    if newValue != config.target.rawValue {
+                        warningMessage = .resetSystem
+                    }
+                }
+                .onChange(of: config.target.rawValue) { newValue in
+                    if newValue != target.rawValue {
+                        target = AnyQEMUConstant(rawValue: newValue)!
+                    }
+                }
+        }
+    }
+}
+
 struct CPUFlagsOptions: View {
-    @ObservedObject var config: UTMQemuConfiguration
+    let title: LocalizedStringKey
+    @Binding var config: UTMQemuConfigurationSystem
+    @Binding var flags: [any QEMUCPUFlag]
     @State private var showAllFlags: Bool = false
     
     var body: some View {
-        let allFlags = UTMQemuConfiguration.supportedCpuFlags(forArchitecture: config.systemArchitecture) ?? []
-        let activeFlags = config.systemCPUFlags ?? []
-        if config.systemCPU != "default" && allFlags.count > 0 {
-            Section(header: Text("CPU Flags")) {
-                if showAllFlags || activeFlags.count > 0 {
+        let allFlags = config.architecture.cpuFlagType.allRawValues
+        if config.cpu.rawValue != "default" && allFlags.count > 0 {
+            Section(header: Text(title)) {
+                if showAllFlags || flags.count > 0 {
                     OptionsList {
-                        ForEach(allFlags) { flag in
+                        ForEach(allFlags) { flagStr in
+                            let flag = AnyQEMUConstant(rawValue: flagStr)!
                             let isFlagOn = Binding<Bool> { () -> Bool in
-                                activeFlags.contains(flag)
+                                flags.contains(where: { $0.rawValue == flag.rawValue })
                             } set: { isOn in
                                 if isOn {
-                                    config.newCPUFlag(flag)
+                                    flags.append(flag)
                                 } else {
-                                    config.removeCPUFlag(flag)
+                                    flags.removeAll(where: { $0.rawValue == flag.rawValue })
                                 }
                             }
                             if showAllFlags || isFlagOn.wrappedValue {
                                 Toggle(isOn: isFlagOn, label: {
-                                    Text(flag)
+                                    Text(flag.prettyValue)
                                 })
                             }
                         }
@@ -184,9 +232,9 @@ struct CPUFlagsOptions: View {
                     showAllFlags.toggle()
                 } label: {
                     if (showAllFlags) {
-                        Text("Hide Unused Flags...")
+                        Text("Hide Unused…")
                     } else {
-                        Text("Show All Flags...")
+                        Text("Show All…")
                     }
                 }
 
@@ -195,7 +243,6 @@ struct CPUFlagsOptions: View {
     }
 }
 
-@available(iOS 14, macOS 11, *)
 struct OptionsList<Content>: View where Content: View {
     private var columns: [GridItem] = [
         GridItem(.fixed(150), spacing: 16),
@@ -223,11 +270,10 @@ struct OptionsList<Content>: View where Content: View {
     }
 }
 
-@available(iOS 14, macOS 11, *)
 struct VMConfigSystemView_Previews: PreviewProvider {
-    @ObservedObject static private var config = UTMQemuConfiguration()
+    @State static private var config = UTMQemuConfigurationSystem()
     
     static var previews: some View {
-        VMConfigSystemView(config: config)
+        VMConfigSystemView(config: $config, isResetConfig: .constant(false))
     }
 }

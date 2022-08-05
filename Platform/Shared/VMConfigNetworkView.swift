@@ -16,81 +16,56 @@
 
 import SwiftUI
 
-@available(iOS 14, macOS 11, *)
 struct VMConfigNetworkView: View {
-    @ObservedObject var config: UTMQemuConfiguration
+    @Binding var config: UTMQemuConfigurationNetwork
+    @Binding var system: UTMQemuConfigurationSystem
     @State private var showAdvanced: Bool = false
     
     var body: some View {
         VStack {
             Form {
                 Section(header: Text("Hardware")) {
+                    VMConfigConstantPicker("Network Mode", selection: $config.mode)
                     #if os(macOS)
-                    if #available(macOS 11.3, *) { // requires macOS 11.3 inherited sandbox fix
-                        NetworkModeSection(config: config)
-                    } else {
-                        Toggle(isOn: $config.networkEnabled.animation(), label: {
-                            Text("Enabled")
-                        })
+                    if config.mode == .bridged {
+                        DefaultTextField("Bridged Interface", text: $config.bridgeInterface.bound, prompt: "en0")
+                            .keyboardType(.asciiCapable)
                     }
-                    #else
-                    Toggle(isOn: $config.networkEnabled.animation(), label: {
-                        Text("Enabled")
-                    })
                     #endif
-                    if config.networkEnabled {
-                        VMConfigStringPicker("Emulated Network Card", selection: $config.networkCard, rawValues: UTMQemuConfiguration.supportedNetworkCards(forArchitecture: config.systemArchitecture), displayValues: UTMQemuConfiguration.supportedNetworkCards(forArchitecturePretty: config.systemArchitecture))
-                    }
-                }.disabled(UTMQemuConfiguration.supportedNetworkCards(forArchitecture: config.systemArchitecture)?.isEmpty ?? true)
+                    VMConfigConstantPicker("Emulated Network Card", selection: $config.hardware, type: system.architecture.networkDeviceType)
+                }
                 
-                if config.networkEnabled {
-                    HStack {
-                        DefaultTextField("MAC Address", text: $config.networkCardMac.bound, prompt: "00:00:00:00:00:00")
-                        Button("Random") {
-                            config.networkCardMac = UTMQemuConfiguration.generateMacAddress()
-                        }
+                HStack {
+                    DefaultTextField("MAC Address", text: $config.macAddress, prompt: "00:00:00:00:00:00")
+                    Button("Random") {
+                        config.macAddress = UTMQemuConfigurationNetwork.randomMacAddress()
                     }
+                }
 
-                    #if os(iOS)
-                    Toggle(isOn: $showAdvanced.animation(), label: {
-                        Text("Show Advanced Settings")
-                    })
+                Toggle(isOn: $showAdvanced.animation(), label: {
+                    Text("Show Advanced Settings")
+                })
 
-                    if showAdvanced {
-                        Section(header: Text("IP Configuration")) {
-                            IPConfigurationSection(config: config).multilineTextAlignment(.trailing)
-                        }
+                if showAdvanced {
+                    Section(header: Text("IP Configuration")) {
+                        IPConfigurationSection(config: $config).multilineTextAlignment(.trailing)
                     }
-                    #endif
+                }
 
-                    /// Bridged and shared networking doesn't support port forwarding
-                    if config.networkMode == "emulated" {
-                        VMConfigNetworkPortForwardView(config: config)
-                    }
+                /// Bridged and shared networking doesn't support port forwarding
+                if config.mode == .emulated {
+                    VMConfigNetworkPortForwardView(config: $config)
                 }
             }
         }
     }
 }
 
-@available(iOS 14, macOS 11, *)
-struct NetworkModeSection: View {
-    @ObservedObject var config: UTMQemuConfiguration
-    
-    var body: some View {
-        VMConfigStringPicker("Network Mode", selection: $config.networkMode, rawValues: UTMQemuConfiguration.supportedNetworkModes(), displayValues: UTMQemuConfiguration.supportedNetworkModesPretty())
-        if config.networkMode == "bridged" {
-            DefaultTextField("Bridged Interface", text: $config.networkBridgeInterface.bound, prompt: "en0")
-                .keyboardType(.asciiCapable)
-        }
-    }
-}
-
-@available(iOS 14, macOS 11, *)
 struct VMConfigNetworkingView_Previews: PreviewProvider {
-    @State static private var config = UTMQemuConfiguration()
+    @State static private var config = UTMQemuConfigurationNetwork()
+    @State static private var system = UTMQemuConfigurationSystem()
     
     static var previews: some View {
-        VMConfigNetworkView(config: config)
+        VMConfigNetworkView(config: $config, system: $system)
     }
 }

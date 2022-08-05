@@ -19,7 +19,6 @@ import SwiftUI
 import Virtualization
 #endif
 
-@available(iOS 14, macOS 11, *)
 struct VMWizardHardwareView: View {
     @ObservedObject var wizardState: VMWizardState
     
@@ -39,17 +38,17 @@ struct VMWizardHardwareView: View {
         #endif
     }
     
-    var minMemory: UInt64 {
+    var minMemoryMib: Int {
         #if canImport(Virtualization)
-        VZVirtualMachineConfiguration.minimumAllowedMemorySize
+        Int(VZVirtualMachineConfiguration.minimumAllowedMemorySize / UInt64(wizardState.bytesInMib))
         #else
-        UInt64(8 * wizardState.bytesInMib)
+        8
         #endif
     }
     
-    var maxMemory: UInt64 {
+    var maxMemoryMib: Int {
         #if canImport(Virtualization)
-        VZVirtualMachineConfiguration.maximumAllowedMemorySize
+        Int(VZVirtualMachineConfiguration.maximumAllowedMemorySize / UInt64(wizardState.bytesInMib))
         #else
         sysctlIntRead("hw.memsize")
         #endif
@@ -63,31 +62,27 @@ struct VMWizardHardwareView: View {
         List {
             if !wizardState.useVirtualization {
                 Section {
-                    VMConfigStringPicker(selection: $wizardState.systemArchitecture, rawValues: UTMQemuConfiguration.supportedArchitectures(), displayValues: UTMQemuConfiguration.supportedArchitecturesPretty())
+                    VMConfigConstantPicker(selection: $wizardState.systemArchitecture)
                         .onChange(of: wizardState.systemArchitecture) { newValue in
-                            if let newValue = newValue {
-                                wizardState.systemTarget = defaultTarget(for: newValue)
-                            } else {
-                                wizardState.systemTarget = nil
-                            }
+                            wizardState.systemTarget = newValue.targetType.default
                         }
                 } header: {
                     Text("Architecture")
                 }
                 
                 Section {
-                    VMConfigStringPicker(selection: $wizardState.systemTarget, rawValues: UTMQemuConfiguration.supportedTargets(forArchitecture: wizardState.systemArchitecture), displayValues: UTMQemuConfiguration.supportedTargets(forArchitecturePretty: wizardState.systemArchitecture))
+                    VMConfigConstantPicker(selection: $wizardState.systemTarget, type: wizardState.systemArchitecture.targetType)
                 } header: {
                     Text("System")
                 }
 
             }
             Section {
-                RAMSlider(systemMemory: $wizardState.systemMemory) { _ in
-                    if wizardState.systemMemory < minMemory {
-                        wizardState.systemMemory = minMemory
-                    } else if wizardState.systemMemory > maxMemory {
-                        wizardState.systemMemory = maxMemory
+                RAMSlider(systemMemory: $wizardState.systemMemoryMib) { _ in
+                    if wizardState.systemMemoryMib < minMemoryMib {
+                        wizardState.systemMemoryMib = minMemoryMib
+                    } else if wizardState.systemMemoryMib > maxMemoryMib {
+                        wizardState.systemMemoryMib = maxMemoryMib
                     }
                 }
             } header: {
@@ -132,38 +127,24 @@ struct VMWizardHardwareView: View {
         .onAppear {
             if wizardState.useVirtualization {
                 #if arch(arm64)
-                wizardState.systemArchitecture = "aarch64"
+                wizardState.systemArchitecture = .aarch64
                 #elseif arch(x86_64)
-                wizardState.systemArchitecture = "x86_64"
+                wizardState.systemArchitecture = .x86_64
                 #else
                 #error("Unsupported architecture.")
                 #endif
-                wizardState.systemTarget = nil
-            }
-            if wizardState.systemArchitecture == nil {
-                wizardState.systemArchitecture = "x86_64"
-            }
-            if wizardState.systemTarget == nil {
-                wizardState.systemTarget = defaultTarget(for: wizardState.systemArchitecture!)
             }
         }
     }
     
-    private func sysctlIntRead(_ name: String) -> UInt64 {
-        var value: UInt64 = 0
+    private func sysctlIntRead(_ name: String) -> Int {
+        var value: Int = 0
         var size = MemoryLayout<UInt64>.size
         sysctlbyname(name, &value, &size, nil, 0)
         return value
     }
-    
-    private func defaultTarget(for architecture: String) -> String {
-        let targets = UTMQemuConfiguration.supportedTargets(forArchitecture: architecture)
-        let index = UTMQemuConfiguration.defaultTargetIndex(forArchitecture: architecture)
-        return targets![index]
-    }
 }
 
-@available(iOS 14, macOS 11, *)
 struct VMWizardHardwareView_Previews: PreviewProvider {
     @StateObject static var wizardState = VMWizardState()
     

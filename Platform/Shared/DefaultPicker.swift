@@ -16,7 +16,6 @@
 
 import SwiftUI
 
-@available(iOS 14, macOS 11, *)
 struct DefaultPicker<SelectionValue, Content>: View where SelectionValue: Hashable, Content: View {
     private let titleKey: LocalizedStringKey?
     private let selection: Binding<SelectionValue>
@@ -56,7 +55,6 @@ struct DefaultPicker<SelectionValue, Content>: View where SelectionValue: Hashab
     }
 }
 
-@available(iOS 14, macOS 11, *)
 struct DefaultPicker_Previews: PreviewProvider {
     static var previews: some View {
         DefaultPicker("Test", selection: .constant(0)) {

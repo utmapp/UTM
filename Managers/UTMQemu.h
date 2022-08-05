@@ -19,7 +19,6 @@
 
 typedef void * _Nullable (* _Nonnull UTMQemuThreadEntry)(void * _Nullable args);
 
-@class UTMQemuConfiguration;
 @class UTMLogging;
 
 NS_ASSUME_NONNULL_BEGIN
@@ -36,7 +35,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, nullable) UTMLogging *logging;
 
 - (instancetype)init;
-- (instancetype)initWithArgv:(NSArray<NSString *> *)argv NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithArguments:(NSArray<NSString *> *)arguments NS_DESIGNATED_INITIALIZER;
 - (void)pushArgv:(nullable NSString *)arg;
 - (void)clearArgv;
 - (void)startQemu:(nonnull NSString *)name completion:(void(^)(BOOL,NSString * _Nullable))completion;

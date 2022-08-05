@@ -61,7 +61,7 @@ itunes_sign() {
 	local OUTPUT=$2
 	local TEAM_ID=$3
 	local PROFILE_NAME=$4
-	local OPTIONS="/tmp/options.plist"
+	local OPTIONS="/tmp/options.$$.plist"
 
 	if [ -z "$PROFILE_NAME" -o -z "$TEAM_ID" ]; then
 		echo "Invalid profile name or team id!"
@@ -174,7 +174,7 @@ create_fake_ipa() {
 
 case $MODE in
 deb )
-	FAKEENT="/tmp/fakeent.plist"
+	FAKEENT="/tmp/fakeent.$$.plist"
 	cat >"$FAKEENT" <<EOL
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -204,7 +204,7 @@ EOL
 	rm "$FAKEENT"
 	;;
 ipa )
-	FAKEENT="/tmp/fakeent.plist"
+	FAKEENT="/tmp/fakeent.$$.plist"
 	cat >"$FAKEENT" <<EOL
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -239,7 +239,7 @@ EOL
 	rm "$FAKEENT"
 	;;
 ipa-se )
-	FAKEENT="/tmp/fakeent.plist"
+	FAKEENT="/tmp/fakeent.$$.plist"
 	cat >"$FAKEENT" <<EOL
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">

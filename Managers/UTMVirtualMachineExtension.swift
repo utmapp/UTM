@@ -20,38 +20,17 @@ extension UTMVirtualMachine: Identifiable {
     public var id: String {
         if self.bookmark != nil {
             return bookmark!.base64EncodedString()
-        } else if self.path != nil {
-            return self.path!.path // path if we're an existing VM
-        } else if let uuid = (self.config as? UTMQemuConfiguration)?.systemUUID {
-            return uuid
         } else {
-            return UUID().uuidString
+            return self.path.path // path if we're an existing VM
         }
     }
 }
 
-@available(iOS 13, macOS 11, *)
 extension UTMVirtualMachine: ObservableObject {
     
 }
 
-@objc extension UTMVirtualMachine {
-    fileprivate static let gibInMib = 1024
-    func subscribeToConfiguration() -> [AnyObject] {
-        var s: [AnyObject] = []
-        if #available(iOS 13, macOS 11, *) {
-            s.append(viewState.objectWillChange.sink { [weak self] in
-                self?.objectWillChange.send()
-            })
-            if let config = config as? UTMQemuConfiguration {
-                s.append(config.objectWillChange.sink { [weak self] in
-                    self?.objectWillChange.send()
-                })
-            }
-        }
-        return s
-    }
-    
+@objc extension UTMViewState: ObservableObject {
     func propertyWillChange() -> Void {
         if #available(iOS 13, macOS 11, *) {
             DispatchQueue.main.async { self.objectWillChange.send() }
@@ -59,9 +38,69 @@ extension UTMVirtualMachine: ObservableObject {
     }
 }
 
+@objc extension UTMVirtualMachine {
+    fileprivate static let gibInMib = 1024
+    func subscribeToConfiguration() -> [AnyObject] {
+        var s: [AnyObject] = []
+        s.append(viewState.objectWillChange.sink { [weak self] in
+            self?.objectWillChange.send()
+        })
+        if let config = config.qemuConfig {
+            s.append(config.objectWillChange.sink { [weak self] in
+                self?.objectWillChange.send()
+            })
+        } else if let config = config.appleConfig {
+            s.append(config.objectWillChange.sink { [weak self] in
+                self?.objectWillChange.send()
+            })
+        }
+        return s
+    }
+    
+    func propertyWillChange() -> Void {
+        DispatchQueue.main.async { self.objectWillChange.send() }
+    }
+    
+    @nonobjc convenience init<Config: UTMConfiguration>(newConfig: Config, destinationURL: URL) {
+        let packageURL = UTMVirtualMachine.virtualMachinePath(newConfig.information.name, inParentURL: destinationURL)
+        let configuration = UTMConfigurationWrapper(wrapping: newConfig)
+        self.init(configuration: configuration, packageURL: packageURL)
+    }
+}
+
+@objc extension UTMVirtualMachine {
+    func reloadConfiguration() throws {
+        try config.reload(from: path)
+    }
+    
+    func saveUTM() async throws {
+        let fileManager = FileManager.default
+        let existingPath = path
+        let newPath = existingPath.deletingLastPathComponent().appendingPathComponent(config.name).appendingPathExtension("utm")
+        do {
+            try await config.save(to: existingPath)
+            try updateViewStatePostSave()
+        } catch {
+            try? reloadConfiguration()
+            throw error
+        }
+        if existingPath != newPath {
+            try await Task.detached {
+                try fileManager.moveItem(at: existingPath, to: newPath)
+            }.value
+            path = newPath
+            try reloadConfiguration()
+        }
+    }
+    
+    func updateViewStatePostSave() throws {
+        // do nothing by default
+    }
+}
+
 public extension UTMQemuVirtualMachine {
     override var detailsTitleLabel: String {
-        qemuConfig.name
+        config.qemuConfig!.information.name
     }
     
     override var detailsSubtitleLabel: String {
@@ -69,58 +108,27 @@ public extension UTMQemuVirtualMachine {
     }
     
     override var detailsNotes: String? {
-        qemuConfig.notes
+        config.qemuConfig!.information.notes
     }
     
     override var detailsSystemTargetLabel: String {
-        guard let arch = qemuConfig.systemArchitecture else {
-            return ""
-        }
-        guard let target = qemuConfig.systemTarget else {
-            return ""
-        }
-        guard let targets = UTMQemuConfiguration.supportedTargets(forArchitecture: arch) else {
-            return ""
-        }
-        guard let prettyTargets = UTMQemuConfiguration.supportedTargets(forArchitecturePretty: arch) else {
-            return ""
-        }
-        guard let index = targets.firstIndex(of: target) else {
-            return ""
-        }
-        return prettyTargets[index]
+        config.qemuConfig!.system.target.prettyValue
     }
     
     override var detailsSystemArchitectureLabel: String {
-        let archs = UTMQemuConfiguration.supportedArchitectures()
-        let prettyArchs = UTMQemuConfiguration.supportedArchitecturesPretty()
-        guard let arch = qemuConfig.systemArchitecture else {
-            return ""
-        }
-        guard let index = archs.firstIndex(of: arch) else {
-            return ""
-        }
-        return prettyArchs[index]
+        config.qemuConfig!.system.architecture.prettyValue
     }
     
     override var detailsSystemMemoryLabel: String {
-        guard let memory = qemuConfig.systemMemory else {
-            return NSLocalizedString("Unknown", comment: "UTMVirtualMachineExtension")
-        }
-        if memory.intValue > UTMVirtualMachine.gibInMib {
-            return String(format: "%.1f GB", memory.floatValue / Float(UTMVirtualMachine.gibInMib))
-        } else {
-            return String(format: "%d MB", memory.intValue)
-        }
+        let bytesInMib = Int64(1048576)
+        return ByteCountFormatter.string(fromByteCount: Int64(config.qemuConfig!.system.memorySize) * bytesInMib, countStyle: .memory)
     }
     
     /// Check if a QEMU target is supported
     /// - Parameter systemArchitecture: QEMU architecture
     /// - Returns: true if UTM is compiled with the supporting binaries
-    @objc static func isSupported(systemArchitecture: String?) -> Bool {
-        guard let arch = systemArchitecture else {
-            return true // ignore this
-        }
+    internal static func isSupported(systemArchitecture: QEMUArchitecture) -> Bool {
+        let arch = systemArchitecture.rawValue
         let bundleURL = Bundle.main.bundleURL
         #if os(macOS)
         let contentsURL = bundleURL.appendingPathComponent("Contents", isDirectory: true)
@@ -133,6 +141,72 @@ public extension UTMQemuVirtualMachine {
         let framework = frameworksURL.appendingPathComponent("qemu-" + arch + "-softmmu.framework/" + base + "qemu-" + arch + "-softmmu", isDirectory: false)
         logger.error("\(framework.path)")
         return FileManager.default.fileExists(atPath: framework.path)
+    }
+    
+    /// Check if the current VM target is supported by the host
+    @objc var isSupported: Bool {
+        return UTMQemuVirtualMachine.isSupported(systemArchitecture: config.qemuConfig!.system.architecture)
+    }
+    
+    @objc var drives: [UTMDrive] {
+        var drives: [UTMDrive] = []
+        for i in 0..<config.qemuConfig!.drives.count {
+            drives.append(legacyDrive(at: i))
+        }
+        return drives
+    }
+    
+    func legacyDrive(at index: Int) -> UTMDrive {
+        let qemuDrive = config.qemuConfig!.drives[index]
+        let drive = UTMDrive()
+        drive.index = index
+        switch qemuDrive.imageType {
+        case .disk: drive.imageType = .disk
+        case .cd: drive.imageType = .CD
+        default: drive.imageType = .none // skip other types
+        }
+        drive.interface = qemuDrive.interface.rawValue
+        drive.name = qemuDrive.id
+        if qemuDrive.isExternal {
+            // removable drive -> path stored only in viewState
+            if let path = viewState.path(forRemovableDrive: qemuDrive.id) {
+                drive.status = .inserted
+                drive.path = path
+            } else {
+                drive.status = .ejected
+                drive.path = nil
+            }
+        } else {
+            // fixed drive -> path stored in configuration
+            drive.status = .fixed
+            drive.path = qemuDrive.imageURL?.lastPathComponent
+        }
+        return drive
+    }
+    
+    override func updateViewStatePostSave() throws {
+        //FIXME: remove this once we remove viewState
+        for drive in config.qemuConfig!.drives {
+            if drive.isExternal, let url = drive.imageURL {
+                let legacyDrive = drives.first(where: { $0.name == drive.id })
+                try changeMedium(for: legacyDrive!, url: url)
+            }
+        }
+        if let url = config.qemuConfig!.sharing.directoryShareUrl {
+            try changeSharedDirectory(url)
+        }
+    }
+    
+    /// Sets up values in VM configuration corrosponding to per-device data like sharing path
+    @objc func prepareConfigurationForStart() {
+        if config.qemuConfig!.sharing.directoryShareMode != .none {
+            var stale: Bool = false
+            if let bookmark = viewState.sharedDirectory, let url = try? URL(resolvingBookmarkData: bookmark, options: kUTMBookmarkResolutionOptions, bookmarkDataIsStale: &stale) {
+                config.qemuConfig!.sharing.directoryShareUrl = url
+            } else {
+                logger.error("Cannot resolve bookmark for share path '\(viewState.sharedDirectoryPath ?? "nil")'")
+            }
+        }
     }
 }
 

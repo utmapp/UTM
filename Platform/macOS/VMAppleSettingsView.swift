@@ -17,63 +17,74 @@
 import SwiftUI
 
 struct VMAppleSettingsView: View {
-    let vm: UTMVirtualMachine?
     @ObservedObject var config: UTMAppleConfiguration
-    @Binding var selectedDriveIndex: Int?
     
     @State private var infoActive: Bool = true
     
-    var body: some View {
-        NavigationLink(destination: VMConfigInfoView(config: config).scrollable(), isActive: $infoActive) {
-            Label("Information", systemImage: "info.circle")
-        }
-        NavigationLink(destination: VMConfigAppleSystemView(config: config).scrollable()) {
-            Label("System", systemImage: "cpu")
-        }
-        NavigationLink(destination: VMConfigAppleBootView(config: config).scrollable()) {
-            Label("Boot", systemImage: "power")
-        }
-        if #available(macOS 12, *) {
-            NavigationLink(destination: VMConfigAppleDisplayView(config: config).scrollable()) {
-                Label("Display", systemImage: "rectangle.on.rectangle")
-            }
+    private var hasVenturaFeatures: Bool {
+        if #available(macOS 13, *) {
+            return true
         } else {
-            NavigationLink(destination: Form { VMConfigDisplayConsoleView(config: config) }.scrollable()) {
-                Label("Display", systemImage: "rectangle.on.rectangle")
-            }
-        }
-        NavigationLink(destination: VMConfigAppleNetworkingView(config: config).scrollable()) {
-            Label("Network", systemImage: "network")
-        }
-        if #available(macOS 12, *), config.bootLoader?.operatingSystem == .Linux {
-            NavigationLink(destination: VMConfigAppleSharingView(config: config).scrollable()) {
-                Label("Sharing", systemImage: "person.crop.circle")
-            }
-        }
-        Section(header: Text("Drives")) {
-            ForEach($config.diskImages) { $diskImage in
-                NavigationLink(destination: VMConfigAppleDriveDetailsView(diskImage: $diskImage, onDelete: {
-                    if let index = config.diskImages.firstIndex(of: diskImage) {
-                        deleteDrive(atIndex: index)
-                    }
-                }).scrollable(), tag: config.diskImages.firstIndex(of: diskImage)!, selection: $selectedDriveIndex) {
-                    Label("\(diskImage.sizeString) Image", systemImage: "externaldrive")
-                }
-            }.onMove { indicies, dest in
-                config.diskImages.move(fromOffsets: indicies, toOffset: dest)
-            }
-            VMConfigNewDriveButton(vm: vm, config: config)
-                .buttonStyle(.link)
+            return false
         }
     }
-
-    func deleteDrive(atIndex index: Int) {
-        withAnimation {
-            // FIXME: SwiftUI BUG: if this is the last item it doesn't disappear even though selectedDriveIndex is set to nil
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                config.diskImages.remove(at: index)
+    
+    var body: some View {
+        NavigationLink(destination: VMConfigInfoView(config: $config.information).scrollable(), isActive: $infoActive) {
+            Label("Information", systemImage: "info.circle")
+        }
+        NavigationLink(destination: VMConfigAppleSystemView(config: $config.system).scrollable()) {
+            Label("System", systemImage: "cpu")
+        }
+        NavigationLink(destination: VMConfigAppleBootView(config: $config.system).scrollable()) {
+            Label("Boot", systemImage: "power")
+        }
+        NavigationLink(destination: VMConfigAppleVirtualizationView(config: $config.virtualization).scrollable()) {
+            Label("Virtualization", systemImage: "wrench.and.screwdriver")
+        }
+        if #available(macOS 12, *) {
+            if hasVenturaFeatures || config.system.boot.operatingSystem == .linux {
+                NavigationLink(destination: VMConfigAppleSharingView(config: config).scrollable()) {
+                    Label("Sharing", systemImage: "person.crop.circle")
+                }
             }
-            selectedDriveIndex = nil
+        }
+        Section(header: Text("Devices")) {
+            if #available(macOS 12, *) {
+                if hasVenturaFeatures || config.system.boot.operatingSystem == .macOS {
+                    ForEach($config.displays) { $display in
+                        NavigationLink(destination: VMConfigAppleDisplayView(config: $display).scrollable()) {
+                            Label("Display", systemImage: "rectangle.on.rectangle")
+                        }.contextMenu {
+                            DestructiveButton("Remove") {
+                                config.displays.removeAll(where: { $0.id == display.id })
+                            }
+                        }
+                    }
+                }
+            }
+            ForEach($config.serials) { $serial in
+                NavigationLink(destination: VMConfigAppleSerialView(config: $serial).scrollable()) {
+                    Label("Serial", systemImage: "cable.connector")
+                }.contextMenu {
+                    DestructiveButton("Remove") {
+                        config.serials.removeAll(where: { $0.id == serial.id })
+                    }
+                }
+            }
+            ForEach($config.networks) { $network in
+                NavigationLink(destination: VMConfigAppleNetworkingView(config: $network).scrollable()) {
+                    Label("Network", systemImage: "network")
+                }.contextMenu {
+                    DestructiveButton("Remove") {
+                        config.networks.removeAll(where: { $0.id == network.id })
+                    }
+                }
+            }
+            VMAppleSettingsAddDeviceMenuView(config: config)
+        }
+        Section(header: Text("Drives")) {
+            VMDrivesSettingsView(drives: $config.drives, template: UTMAppleConfigurationDrive(newSize: 10240))
         }
     }
 }
@@ -81,6 +92,6 @@ struct VMAppleSettingsView: View {
 struct VMAppleSettingsView_Previews: PreviewProvider {
     @StateObject static var config = UTMAppleConfiguration()
     static var previews: some View {
-        VMAppleSettingsView(vm: nil, config: config, selectedDriveIndex: .constant(nil))
+        VMAppleSettingsView(config: config)
     }
 }

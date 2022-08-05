@@ -29,7 +29,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)spiceDidDestroyInput:(CSInput *)input NS_SWIFT_NAME(spiceDidDestroyInput(_:));
 - (void)spiceDidCreateDisplay:(CSDisplay *)display NS_SWIFT_NAME(spiceDidCreateDisplay(_:));
 - (void)spiceDidDestroyDisplay:(CSDisplay *)display NS_SWIFT_NAME(spiceDidDestroyDisplay(_:));
-- (void)spiceDidChangeDisplay:(CSDisplay *)display NS_SWIFT_NAME(spiceDidChangeDisplay(_:));
+- (void)spiceDidUpdateDisplay:(CSDisplay *)display NS_SWIFT_NAME(spiceDidUpdateDisplay(_:));
 - (void)spiceDidCreateSerial:(CSPort *)serial NS_SWIFT_NAME(spiceDidCreateSerial(_:));
 - (void)spiceDidDestroySerial:(CSPort *)serial NS_SWIFT_NAME(spiceDidDestroySerial(_:));
 #if !defined(WITH_QEMU_TCI)

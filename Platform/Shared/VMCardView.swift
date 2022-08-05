@@ -16,7 +16,6 @@
 
 import SwiftUI
 
-@available(iOS 14, macOS 11, *)
 struct VMCardView: View {
     @ObservedObject var vm: UTMVirtualMachine
     @EnvironmentObject private var data: UTMData
@@ -58,7 +57,7 @@ struct VMCardView: View {
                         .labelStyle(.iconOnly)
                 }
             } else if vm.isBusy {
-                BigWhiteSpinner()
+                Spinner(size: .large)
             }
         }.padding([.top, .bottom], 10)
         .buttonStyle(.plain)
@@ -92,7 +91,6 @@ struct Logo: View {
     }
 }
 #else // iOS
-@available(iOS 14, *)
 struct Logo: View {
     let logo: UIImage?
     
@@ -113,9 +111,8 @@ struct Logo: View {
 }
 #endif
 
-@available(iOS 14, macOS 11, *)
 struct VMCardView_Previews: PreviewProvider {
     static var previews: some View {
-        VMCardView(vm: UTMVirtualMachine(configuration: UTMQemuConfiguration(), withDestinationURL: URL(fileURLWithPath: "/")))
+        VMCardView(vm: UTMVirtualMachine(newConfig: UTMQemuConfiguration(), destinationURL: URL(fileURLWithPath: "/")))
     }
 }

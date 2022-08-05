@@ -37,6 +37,12 @@ class VMDisplayWindowController: NSWindowController {
     var shouldSaveOnPause: Bool { true }
     var vm: UTMVirtualMachine!
     var onClose: ((Notification) -> Void)?
+    private(set) var secondaryWindows: [VMDisplayWindowController] = []
+    private(set) weak var primaryWindow: VMDisplayWindowController?
+    
+    var isSecondary: Bool {
+        primaryWindow != nil
+    }
     
     override var windowNibName: NSNib.Name? {
         "VMDisplayWindow"
@@ -50,7 +56,6 @@ class VMDisplayWindowController: NSWindowController {
         self.init(window: nil)
         self.vm = vm
         self.onClose = onClose
-        vm.delegate = self
     }
     
     @IBAction func stopButtonPressed(_ sender: Any) {
@@ -187,6 +192,19 @@ class VMDisplayWindowController: NSWindowController {
             }
         }
     }
+    
+    // MARK: - Create a secondary window
+    
+    func showSecondaryWindow(_ secondaryWindow: VMDisplayWindowController, at index: Int? = nil) {
+        secondaryWindows.insert(secondaryWindow, at: index ?? secondaryWindows.endIndex)
+        secondaryWindow.onClose = { [weak self] _ in
+            self?.secondaryWindows.removeAll(where: { $0 == secondaryWindow })
+        }
+        secondaryWindow.primaryWindow = self
+        secondaryWindow.showWindow(self)
+        self.showWindow(self) // show primary window on top
+        secondaryWindow.virtualMachine(vm, didTransitionTo: vm.state) // show correct starting state
+    }
 }
 
 extension VMDisplayWindowController: NSWindowDelegate {
@@ -195,13 +213,16 @@ extension VMDisplayWindowController: NSWindowDelegate {
     }
     
     func windowShouldClose(_ sender: NSWindow) -> Bool {
+        guard !isSecondary else {
+            return true
+        }
         guard !(vm.state == .vmStopped || (vm.state == .vmPaused && vm.hasSaveState)) else {
             return true
         }
         let alert = NSAlert()
         alert.alertStyle = .informational
         alert.messageText = NSLocalizedString("Confirmation", comment: "VMDisplayWindowController")
-        alert.informativeText = NSLocalizedString("Closing this window will kill the VM.", comment: "VMDisplayMetalWindowController")
+        alert.informativeText = NSLocalizedString("Closing this window will kill the VM.", comment: "VMQemuDisplayMetalWindowController")
         alert.addButton(withTitle: NSLocalizedString("OK", comment: "VMDisplayWindowController"))
         alert.addButton(withTitle: NSLocalizedString("Cancel", comment: "VMDisplayWindowController"))
         alert.beginSheetModal(for: sender) { response in
@@ -216,8 +237,13 @@ extension VMDisplayWindowController: NSWindowDelegate {
     }
     
     func windowWillClose(_ notification: Notification) {
-        DispatchQueue.global(qos: .background).async {
-            self.vm.requestVmStop(force: true)
+        if !isSecondary {
+            DispatchQueue.global(qos: .background).async {
+                self.vm.requestVmStop(force: true)
+            }
+        }
+        secondaryWindows.forEach { secondaryWindow in
+            secondaryWindow.close()
         }
         onClose?(notification)
     }
@@ -256,6 +282,9 @@ extension VMDisplayWindowController: UTMVirtualMachineDelegate {
             enterLive()
         @unknown default:
             break
+        }
+        for subwindow in secondaryWindows {
+            subwindow.virtualMachine(vm, didTransitionTo: state)
         }
     }
     

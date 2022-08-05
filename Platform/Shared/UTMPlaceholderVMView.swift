@@ -16,7 +16,6 @@
 
 import SwiftUI
 
-@available(iOS 14, macOS 11, *)
 struct UTMPlaceholderVMView<Content>: View where Content: View {
     let title: String
     let subtitle: String
@@ -81,7 +80,6 @@ struct UTMPlaceholderVMView<Content>: View where Content: View {
     }
 }
 
-@available(iOS 14, macOS 11, *)
 struct MinimalProgressView: View {
     let fractionCompleted: CGFloat
     
@@ -113,7 +111,6 @@ struct MinimalProgressView: View {
     }
 }
 
-@available(iOS 14, macOS 11, *)
 struct UTMPlaceholderVMView_Previews: PreviewProvider {
     static var previews: some View {
         UTMPlaceholderVMView(title: "Title", subtitle: "Subtitle", progress: nil, imageOverlaySystemName: "arrow.down.circle.fill", popover: {
