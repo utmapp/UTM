@@ -43,30 +43,45 @@ struct VMAppleSettingsView: View {
             Label("Devices", systemImage: "wrench.and.screwdriver")
         }
         if #available(macOS 12, *) {
-            if hasVenturaFeatures || config.system.boot.operatingSystem == .macOS {
-                ForEach($config.displays) { $display in
-                    NavigationLink(destination: VMConfigAppleDisplayView(config: $display).scrollable()) {
-                        Label("Display", systemImage: "rectangle.on.rectangle")
-                    }
-                }
-            }
-        }
-        ForEach($config.serials) { $serial in
-            NavigationLink(destination: VMConfigAppleSerialView(config: $serial).scrollable()) {
-                Label("Serial", systemImage: "cable.connector")
-            }
-        }
-        ForEach($config.networks) { $network in
-            NavigationLink(destination: VMConfigAppleNetworkingView(config: $network).scrollable()) {
-                Label("Network", systemImage: "network")
-            }
-        }
-        if #available(macOS 12, *) {
             if hasVenturaFeatures || config.system.boot.operatingSystem == .linux {
                 NavigationLink(destination: VMConfigAppleSharingView(config: config).scrollable()) {
                     Label("Sharing", systemImage: "person.crop.circle")
                 }
             }
+        }
+        Section(header: Text("Devices")) {
+            if #available(macOS 12, *) {
+                if hasVenturaFeatures || config.system.boot.operatingSystem == .macOS {
+                    ForEach($config.displays) { $display in
+                        NavigationLink(destination: VMConfigAppleDisplayView(config: $display).scrollable()) {
+                            Label("Display", systemImage: "rectangle.on.rectangle")
+                        }.contextMenu {
+                            DestructiveButton("Remove") {
+                                config.displays.removeAll(where: { $0.id == display.id })
+                            }
+                        }
+                    }
+                }
+            }
+            ForEach($config.serials) { $serial in
+                NavigationLink(destination: VMConfigAppleSerialView(config: $serial).scrollable()) {
+                    Label("Serial", systemImage: "cable.connector")
+                }.contextMenu {
+                    DestructiveButton("Remove") {
+                        config.serials.removeAll(where: { $0.id == serial.id })
+                    }
+                }
+            }
+            ForEach($config.networks) { $network in
+                NavigationLink(destination: VMConfigAppleNetworkingView(config: $network).scrollable()) {
+                    Label("Network", systemImage: "network")
+                }.contextMenu {
+                    DestructiveButton("Remove") {
+                        config.networks.removeAll(where: { $0.id == network.id })
+                    }
+                }
+            }
+            VMAppleSettingsAddDeviceMenuView(config: config)
         }
         Section(header: Text("Drives")) {
             VMDrivesSettingsView(drives: $config.drives, template: UTMAppleConfigurationDrive(newSize: 10240))
