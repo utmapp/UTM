@@ -15,13 +15,12 @@
 //
 
 #import "UTMQemuVirtualMachine+SPICE.h"
-#import "UTMQemuConfiguration+Display.h"
-#import "UTMQemuConfiguration+Sharing.h"
 #import "UTMLogging.h"
 #import "UTMQemuManager.h"
 #import "UTMSpiceIO.h"
 #import "UTMViewState.h"
 #import "UTMJailbreak.h"
+#import "UTM-Swift.h"
 #if defined(WITH_QEMU_TCI)
 @import CocoaSpiceNoUsb;
 #else
@@ -57,10 +56,6 @@ extern const NSURLBookmarkResolutionOptions kUTMBookmarkResolutionOptions;
 
 #pragma mark - Shared Directory
 
-- (BOOL)hasShareDirectoryEnabled {
-    return self.qemuConfig.shareDirectoryEnabled && !self.qemuConfig.displayConsoleOnly;
-}
-
 - (BOOL)saveSharedDirectory:(NSURL *)url error:(NSError * _Nullable __autoreleasing *)error {
     [url startAccessingSecurityScopedResource];
     NSData *bookmark = [url bookmarkDataWithOptions:kUTMBookmarkCreationOptions
@@ -83,11 +78,13 @@ extern const NSURLBookmarkResolutionOptions kUTMBookmarkResolutionOptions;
         // if we haven't started the VM yet, save the URL for when the VM starts
         return [self saveSharedDirectory:url error:error];
     }
-    UTMSpiceIO *spiceIO = [self spiceIoWithError:error];
-    if (!spiceIO) {
-        return NO;
+    if (self.config.qemuHasWebdavSharing) {
+        UTMSpiceIO *spiceIO = [self spiceIoWithError:error];
+        if (!spiceIO) {
+            return NO;
+        }
+        [spiceIO changeSharedDirectory:url];
     }
-    [spiceIO changeSharedDirectory:url];
     return [self saveSharedDirectory:url error:error];
 }
 
@@ -104,7 +101,7 @@ extern const NSURLBookmarkResolutionOptions kUTMBookmarkResolutionOptions;
         }
         return NO;
     }
-    if (!self.qemuConfig.shareDirectoryEnabled) {
+    if (!self.config.qemuHasWebdavSharing) {
         return YES;
     }
     UTMSpiceIO *spiceIO = [self spiceIoWithError:error];
@@ -117,10 +114,6 @@ extern const NSURLBookmarkResolutionOptions kUTMBookmarkResolutionOptions;
     if (self.viewState.sharedDirectory) {
         UTMLog(@"found shared directory bookmark");
         bookmark = self.viewState.sharedDirectory;
-    } else if (self.qemuConfig.shareDirectoryBookmark) {
-        UTMLog(@"found shared directory bookmark (legacy)");
-        bookmark = self.qemuConfig.shareDirectoryBookmark;
-        legacy = YES;
     }
     if (bookmark) {
         BOOL stale;

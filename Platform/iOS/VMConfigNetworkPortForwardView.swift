@@ -16,26 +16,28 @@
 
 import SwiftUI
 
-@available(iOS 14, *)
 struct VMConfigNetworkPortForwardView: View {
-    @ObservedObject var config: UTMQemuConfiguration
+    @Binding var config: UTMQemuConfigurationNetwork
     
     var body: some View {
         Section(header: Text("Port Forward")) {
             List {
-                ForEach(0..<config.countPortForwards, id: \.self) { index in
-                    let configPort = config.portForward(for: index)!
+                ForEach($config.portForward) { $forward in
                     NavigationLink(
-                        destination: PortForwardEdit(config: config, index: index),
+                        destination: PortForwardEdit(forward: forward,
+                                                     onSave: { forward = $0 },
+                                                     onDelete: { config.portForward.removeAll(where: { $0 == forward }) }),
                         label: {
                             VStack(alignment: .leading) {
-                                Text(verbatim: "\(configPort.guestAddress):\(configPort.guestPort!) ➡️ \(configPort.hostAddress):\(configPort.hostPort!)")
-                                Text(configPort.protocol!).font(.subheadline)
+                                Text(verbatim: "\(forward.guestAddress ?? ""):\(forward.guestPort) ➡️ \(forward.hostAddress ?? ""):\(forward.hostPort)")
+                                Text(forward.protocol.prettyValue).font(.subheadline)
                             }
                         })
                 }.onDelete(perform: deletePortForwards)
                 NavigationLink(
-                    destination: PortForwardEdit(config: config),
+                    destination: PortForwardEdit(onSave: {
+                        config.portForward.append($0)
+                    }),
                     label: {
                         Text("New")
                 })
@@ -44,55 +46,32 @@ struct VMConfigNetworkPortForwardView: View {
     }
     
     private func deletePortForwards(offsets: IndexSet) {
-        for offset in offsets {
-            config.removePortForward(at: offset)
-        }
+        config.portForward.remove(atOffsets: offsets)
     }
 }
 
-@available(iOS 14, *)
 struct PortForwardEdit: View {
-    @StateObject private var configPort: UTMQemuConfigurationPortForward
-    private let save: () -> Void
-    private let delete: (() -> Void)?
+    @State var forward: UTMQemuConfigurationPortForward = .init()
+    var onSave: ((UTMQemuConfigurationPortForward) -> Void)
+    var onDelete: (() -> Void)? = nil
     @Environment(\.presentationMode) private var presentationMode: Binding<PresentationMode>
-    
-    init(config: UTMQemuConfiguration, index: Int? = nil) {
-        var configPort: UTMQemuConfigurationPortForward
-        if let i = index {
-            configPort = config.portForward(for: i)!
-        } else {
-            configPort = UTMQemuConfigurationPortForward()
-        }
-        self._configPort = StateObject<UTMQemuConfigurationPortForward>(wrappedValue: configPort)
-        save = {
-            config.updatePortForward(at: index ?? config.countPortForwards, withValue: configPort)
-        }
-        if let i = index {
-            delete = {
-                config.removePortForward(at: i)
-            }
-        } else {
-            delete = nil
-        }
-    }
     
     var body: some View {
         Form {
             List {
-                VMConfigPortForwardForm(configPort: configPort).multilineTextAlignment(.trailing)
+                VMConfigPortForwardForm(forward: $forward).multilineTextAlignment(.trailing)
             }
         }.navigationBarItems(trailing:
             HStack {
-                if let delete = self.delete {
-                    Button(action: { closePopup(after: delete) }, label: {
+                if let onDelete = self.onDelete {
+                    Button(action: { closePopup(after: onDelete) }, label: {
                         Text("Delete")
                     }).foregroundColor(.red)
                     .padding()
                 }
-                Button(action: { closePopup(after: save) }, label: {
+                Button(action: { closePopup(after: { onSave(forward) }) }, label: {
                     Text("Save")
-                }).disabled(configPort.guestPort?.intValue ?? 0 == 0 || configPort.hostPort?.intValue ?? 0 == 0)
+                }).disabled(forward.guestPort == 0 || forward.hostPort == 0)
             }
         )
     }
@@ -103,31 +82,30 @@ struct PortForwardEdit: View {
     }
 }
 
-@available(iOS 14, *)
 struct VMConfigNetworkPortForwardView_Previews: PreviewProvider {
-    @State static private var config = UTMQemuConfiguration()
+    @State static private var config = UTMQemuConfigurationNetwork()
     static var previews: some View {
         Group {
             Form {
-                VMConfigNetworkPortForwardView(config: config)
+                VMConfigNetworkPortForwardView(config: $config)
             }.onAppear {
-                if config.countPortForwards == 0 {
-                    let newConfigPort = UTMQemuConfigurationPortForward()
-                    newConfigPort.protocol = "tcp"
+                if config.portForward.count == 0 {
+                    var newConfigPort = UTMQemuConfigurationPortForward()
+                    newConfigPort.protocol = .tcp
                     newConfigPort.guestAddress = "1.2.3.4"
-                    newConfigPort.guestPort = NSNumber(value: 1234)
+                    newConfigPort.guestPort = 1234
                     newConfigPort.hostAddress = "4.3.2.1"
-                    newConfigPort.hostPort = NSNumber(value: 4321)
-                    config.newPortForward(newConfigPort)
-                    newConfigPort.protocol = "udp"
+                    newConfigPort.hostPort = 4321
+                    config.portForward.append(newConfigPort)
+                    newConfigPort.protocol = .udp
                     newConfigPort.guestAddress = ""
-                    newConfigPort.guestPort = NSNumber(value: 2222)
+                    newConfigPort.guestPort = 2222
                     newConfigPort.hostAddress = ""
-                    newConfigPort.hostPort = NSNumber(value: 3333)
-                    config.newPortForward(newConfigPort)
+                    newConfigPort.hostPort = 3333
+                    config.portForward.append(newConfigPort)
                 }
             }
-            PortForwardEdit(config: config, index: 0)
+            PortForwardEdit(onSave: { _ in })
         }
     }
 }

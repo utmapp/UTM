@@ -210,13 +210,7 @@ void qmp_rpc_call(CFDictionaryRef args, CFDictionaryRef *ret, Error **err, void 
             *stop = YES;
         } else if ([key isEqualToString:@"QMP"]) {
             UTMLog(@"Got QMP handshake: %@", dict);
-            NSError *error;
-            BOOL success = [self qmpEnterCommandModeWithError:&error];
-            if (success) {
-                [self.delegate qemuQmpDidConnect:self];
-            } else {
-                [self.delegate qemuError:self error:error.localizedDescription];
-            }
+            [self.delegate qemuQmpDidConnect:self];
             *stop = YES;
         }
     }];

@@ -64,7 +64,7 @@
 /* No comment provided by engineer. */
 "Argument" = "Argument";
 
-/* UTMQemuConfiguration */
+/* UTMLegacyQemuConfiguration */
 "BIOS" = "BIOS";
 
 /* No comment provided by engineer. */
@@ -180,7 +180,7 @@
    VMConfigDriveCreateViewController */
 "Disk creation failed." = "磁盘镜像创建失败";
 
-/* UTMQemuConfiguration */
+/* UTMLegacyQemuConfiguration */
 "Disk Image" = "磁盘镜像";
 
 /* VMDisplayMetalWindowController */
@@ -329,7 +329,7 @@
 "Hardware" = "硬件";
 
 /* No comment provided by engineer. */
-"Hide Unused Flags..." = "隐藏未使用的Flags...";
+"Hide Unused Flags…" = "隐藏未使用的Flags…";
 
 /* VMDisplayViewController */
 "Hint: To show the toolbar again, use a three-finger swipe down on the screen." = "提示：要再次显示工具栏，请使用三指在屏幕从上向下滑动";
@@ -359,7 +359,7 @@
 "Import…" = "导入";
 
 /* No comment provided by engineer. */
-"Import Virtual Machine..." = "导入虚拟机...";
+"Import Virtual Machine…" = "导入虚拟机…";
 
 /* Save VM overlay */
 "Importing %@..." = "导入 %@...";
@@ -433,13 +433,13 @@
 /* UTMConfiguration */
 "Linear" = "线性";
 
-/* UTMQemuConfiguration */
+/* UTMLegacyQemuConfiguration */
 "Linux Device Tree Binary" = "Linux设备树二进制文件";
 
-/* UTMQemuConfiguration */
+/* UTMLegacyQemuConfiguration */
 "Linux Kernel" = "Linux内核";
 
-/* UTMQemuConfiguration */
+/* UTMLegacyQemuConfiguration */
 "Linux RAM Disk" = "Linux RAM 磁盘";
 
 /* No comment provided by engineer. */
@@ -472,7 +472,7 @@
 /* VMConfigInfoView */
 "Name is an invalid filename." = "名称是无效的文件名";
 
-/* UTMQemuConfiguration */
+/* UTMLegacyQemuConfiguration */
 "Nearest Neighbor" = "近邻取样";
 
 /* No comment provided by engineer. */
@@ -491,7 +491,7 @@
 "New VM name" = "输入新的虚拟机的名字";
 
 /* No comment provided by engineer. */
-"New..." = "新建...";
+"New…" = "新建…";
 
 /* No button
    VMDisplayViewController
@@ -639,7 +639,7 @@
 "Show Advanced Settings" = "显示高级设置";
 
 /* No comment provided by engineer. */
-"Show All Flags..." = "显示所有Flags...";
+"Show All Flags…" = "显示所有Flags…";
 
 /* No comment provided by engineer. */
 "Size" = "大小";
@@ -883,7 +883,7 @@
 "Virtualization is not supported on your system." = "您的操作系统不支持虚拟化，原因是苹果未向iOS系统提供虚拟化支持。";
 "Emulate" = "模拟";
 "Slower, but can run other CPU architectures." = "速度较慢，但虚拟机的CPU架构不受限制";
-"Download prebuilt from UTM Gallery..." = "从UTM库下载预配置文件（可能需要手动导入安装镜像）";
+"Download prebuilt from UTM Gallery…" = "从UTM库下载预配置文件（可能需要手动导入安装镜像）";
 "Close" = "关闭";
 "Continue" = "下一步";
 "Generate Windows Installer ISO" = "获取 Windows 安装光盘";
@@ -986,8 +986,8 @@
 "Skip Boot Image" = "跳过启动镜像";
 
 //VM List
-"Clone..." = "复制";
-"Delete..." = "删除";
+"Clone…" = "复制";
+"Delete…" = "删除";
 "Other" = "其它";
 
 //VMConfigNetworkView
@@ -1051,7 +1051,7 @@
 "Preconfigured" = "预配置";
 "Prebuilt" = "预构建";
 "Some older systems do not support UEFI boot, such as Windows 7 and below." = "一些古老的操作系统不支持UEFI启动,比如Windows7及之前的操作系统";
-"Open..." = "从本地导入";
+"Open…" = "从本地导入";
 "Existing" = "导入UTM文档";
 "Advanced" = "高级";
 "Skip ISO boot" = "暂不导入光盘镜像";

@@ -17,14 +17,14 @@
 import SwiftUI
 
 struct VMConfigAppleDriveDetailsView: View {
-    @Binding var diskImage: DiskImage
+    @Binding var config: UTMAppleConfigurationDrive
     let onDelete: () -> Void
 
     var body: some View {
         Form {
-            TextField("Name", text: .constant(diskImage.imageURL?.lastPathComponent ?? NSLocalizedString("(New Drive)", comment: "VMConfigAppleDriveDetailsView")))
+            TextField("Name", text: .constant(config.imageURL?.lastPathComponent ?? NSLocalizedString("(New Drive)", comment: "VMConfigAppleDriveDetailsView")))
                 .disabled(true)
-            Toggle("Read Only?", isOn: $diskImage.isReadOnly)
+            Toggle("Read Only?", isOn: $config.isReadOnly)
             Button(action: onDelete) {
                 Label("Delete Drive", systemImage: "externaldrive.badge.minus")
                     .foregroundColor(.red)
@@ -35,6 +35,6 @@ struct VMConfigAppleDriveDetailsView: View {
 
 struct VMConfigAppleDriveDetailsView_Previews: PreviewProvider {
     static var previews: some View {
-        VMConfigAppleDriveDetailsView(diskImage: .constant(DiskImage(newSize: 100)), onDelete: {})
+        VMConfigAppleDriveDetailsView(config: .constant(UTMAppleConfigurationDrive(newSize: 100)), onDelete: {})
     }
 }

@@ -19,7 +19,6 @@ import SwiftUI
 import Virtualization
 #endif
 
-@available(iOS 14, macOS 11, *)
 struct VMWizardStartView: View {
     @ObservedObject var wizardState: VMWizardState
     
@@ -99,7 +98,7 @@ struct VMWizardStartView: View {
                     NotificationCenter.default.post(name: NSNotification.OpenVirtualMachine, object: nil)
                 } label: {
                     Label {
-                        Text("Open...")
+                        Text("Open…")
                     } icon: {
                         Image(systemName: "doc")
                     }
@@ -109,7 +108,7 @@ struct VMWizardStartView: View {
                 #endif
                 Link(destination: URL(string: "https://mac.getutm.app/gallery/")!) {
                     Label {
-                        Text("Download prebuilt from UTM Gallery...")
+                        Text("Download prebuilt from UTM Gallery…")
                     } icon: {
                         Image(systemName: "arrow.down.doc")
                     }
@@ -135,7 +134,6 @@ struct VMWizardStartView: View {
     }
 }
 
-@available(iOS 14, macOS 11, *)
 struct VMWizardStartView_Previews: PreviewProvider {
     @StateObject static var wizardState = VMWizardState()
     

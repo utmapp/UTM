@@ -16,7 +16,6 @@
 
 import SwiftUI
 
-@available(iOS 14, macOS 11, *)
 struct VMWizardSharingView: View {
     @ObservedObject var wizardState: VMWizardState
     @State private var isFileImporterPresented: Bool = false
@@ -73,7 +72,7 @@ struct VMWizardSharingView: View {
 #endif
                 
                 if wizardState.isBusy {
-                    BigWhiteSpinner()
+                    Spinner(size: .large)
                 }
             } footer: {
                 Text("Optionally select a directory to make accessible inside the VM. Note that support for shared directories varies by the guest operating system and may require additional guest drivers to be installed. See UTM support pages for more details.")
@@ -93,7 +92,6 @@ struct VMWizardSharingView: View {
     }
 }
 
-@available(iOS 14, macOS 11, *)
 struct VMWizardSharingView_Previews: PreviewProvider {
     @StateObject static var wizardState = VMWizardState()
     

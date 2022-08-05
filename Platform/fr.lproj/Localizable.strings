@@ -1,0 +1,1222 @@
+/* No comment provided by engineer. */
+"-" = "-";
+
+/* A removable drive that has no image file inserted. */
+"(empty)" = "（vide）";
+
+/* UTMQemuConfiguration+Drives */
+"%@ Drive" = "Lecteur %@";
+
+/* No comment provided by engineer. */
+"00:00:00:00:00:00" = "00:00:00:00:00:00";
+
+/* No comment provided by engineer. */
+"0.0.0.0" = "0.0.0.0";
+
+/* No comment provided by engineer. */
+"10.0.2.0/24" = "10.0.2.0/24";
+
+/* No comment provided by engineer. */
+"10.0.2.2" = "10.0.2.2";
+
+/* No comment provided by engineer. */
+"10.0.2.3" = "10.0.2.3";
+
+/* No comment provided by engineer. */
+"10.0.2.15" = "10.0.2.15";
+
+/* No comment provided by engineer. */
+"127.0.0.1" = "127.0.0.1";
+
+/* No comment provided by engineer. */
+"1234" = "1234";
+
+/* VMConfigDriveCreateViewController */
+"A file already exists for this name, if you proceed, it will be replaced." = "Un fichier portant ce nom existe déjà, si vous continuez, il sera remplacé.";
+
+/* VMListViewController */
+"A VM already exists with this name." = "Une VM portant ce nom existe déjà。";
+
+/* No comment provided by engineer. */
+"Additional Settings" = "Réglages complémentaires";
+
+/* No comment provided by engineer. */
+"Advanced: Bypass configuration and manually specify arguments" = "Avancé : Ignorer la configuration et spécifier manuellement les arguments";
+
+/* VMConfigSystemView */
+"Allocating too much memory will crash the VM. Your device has %llu MB of memory and the estimated usage is %llu MB." = "La VM va planter si vous allouez trop de mémoire. Votre appareil a %llu Mio de mmoire et l'utilisation est estimée à %llu Mio.";
+
+/* UTMData */
+"AltJIT error: (error.localizedDescription)" = "Erreur AltJIT ：(error.localizedDescription)";
+
+/* CSConnection */
+"An error occurred trying to connect to SPICE." = "Une erreur est apparue lors de la tentative de connection à SPICE.";
+
+/* UTMData */
+"An existing virtual machine already exists with this name." = "Il esiste déjà une machine vrituelle portant ce nom.";
+
+/* VMDisplayViewController */
+"An internal error has occured. UTM will terminate." = "Une erreur interne est survenue. UTM va quitter.";
+
+/* No comment provided by engineer. */
+"Architecture" = "Architecture";
+
+/* VMConfigDirectoryPickerViewController */
+"Are you sure you want to delete this directory? All files and subdirectories WILL be deleted." = "Voulez-vous vraiment supprimer ce dossier ? Tous les fichiers et sous-dossiers seront SUPPRIMÉS.";
+
+/* Delete confirmation */
+"Are you sure you want to delete this VM? Any drives associated will also be deleted." = "Voulez-vous vraiment supprimer cette VM ? Tous les lecteurs associés seront aussi supprimés.";
+
+/* VMDisplayViewController */
+"Are you sure you want to exit UTM?" = "Voulez-vous vraiment quitter UTM ?";
+
+/* VMConfigDrivePickerViewController */
+"Are you sure you want to permanently delete this disk image?" = "Êtes-vous sûr de vouloir supprimer définitivement cette image disque ?";
+
+/* VMDisplayViewController */
+"Are you sure you want to reset this VM? Any unsaved changes will be lost." = "Êtes-vous sûr de vouloir réinitialiser cette VM ? Tout changement apporté sera perdu.";
+
+/* VMDisplayViewController */
+"Are you sure you want to stop this VM and exit? Any unsaved changes will be lost." = "Êtes-vous sûr de vouloir arrêter cette VM et quitter ? Tout changement apporté sera perdu.";
+
+/* No comment provided by engineer. */
+"Argument" = "Argument";
+
+/* UTMQemuConfiguration */
+"BIOS" = "BIOS";
+
+/* No comment provided by engineer. */
+"Blinking Cursor" = "Curseur clignottant";
+
+/* No comment provided by engineer. */
+"Boot" = "Boot";
+
+/* No comment provided by engineer. */
+"Boot Arguments" = "Arguments de boot";
+
+/* No comment provided by engineer. */
+"Boot from kernel image" = "Booter depuis l'image du noyau";
+
+/* No comment provided by engineer. */
+"Boot Image" = "Image de boot (démarrage)";
+
+/* No comment provided by engineer. */
+"Boot ISO Image:" = "Image ISO de boot :";
+
+/* No comment provided by engineer. */
+"Boot VHDX Image:" = "Démarrer sur l'image VHDX :";
+
+/* UTMQemuConfiguration */
+"Bridged (Advanced)" = "Pont (Avancé)";
+
+/* No comment provided by engineer. */
+"Bridged Interface" = "Interface du pont";
+
+/* No comment provided by engineer. */
+"Browse" = "Parcourir";
+
+/* No comment provided by engineer. */
+"Browse UTM Gallery" = "Parcourir la bibliothèque d'UTM";
+
+/* VMConfigSharingViewController */
+"Browse…" = "Parcourir…";
+
+/* Cancel button
+   VMConfigDirectoryPickerViewController
+   VMConfigPortForwardingViewController
+   VMDisplayMetalWindowController
+   VMRemovableDrivesViewController */
+"Cancel" = "Annuler";
+
+/* No comment provided by engineer. */
+"Cancel download" = "Annuler le téléchargement";
+
+/* VMConfigDriveCreateViewController */
+"Cannot create directory for disk image." = "Impossible de créer le dossier pour l'image disque.";
+
+/* UTMData */
+"Cannot find AltServer for JIT enable. You cannot run VMs until JIT is enabled." = "Impossible de trouver AltServer pour activation JIT. Vous ne pouvez pas démarrer de VM tant que JIT n'est pas activé.";
+
+/* VMListViewController */
+"Cannot find VM." = "Impossible de trouver la VM";
+
+/* UTMData */
+"Cannot import this VM. Either the configuration is invalid, created in a newer version of UTM, or on a platform that is incompatible with this version of UTM." = "Impossible d'importer cette VM. La configuration est soit invalide, soit créée avec une version plus récente d'UTM, ou sur une plateforme qui n'est pas compatible avec cette version d'UTM.";
+
+/* UTMVirtualMachine+Sharing */
+"Cannot start shared directory before SPICE starts." = "Impossible de démarrer le partage de dossiers avant que SPICE n'ait démarré.";
+
+/* Configuration boot device */
+"CD/DVD" = "CD/DVD";
+
+/* UTMQemuConfiguration */
+"CD/DVD (ISO) Image" = "Image (ISO) de CD/DVD";
+
+/* VMRemovableDrivesViewController */
+"Change" = "Changer";
+
+/* No comment provided by engineer. */
+"Clear" = "Retirer";
+
+/* No comment provided by engineer. */
+"Clipboard Sharing" = "Partage du presse-papiers";
+
+/* Clone context menu */
+"Clone" = "Cloner";
+
+/* No comment provided by engineer. */
+"Clone selected VM" = "Cloner la VM sélectionnée";
+
+/* No comment provided by engineer. */
+"Clone…" = "Cloner…";
+
+/* No comment provided by engineer. */
+"Close" = "Fermer";
+
+/* No comment provided by engineer. */
+"Command to send when resizing the console. Placeholder $COLS is the number of columns and $ROWS is the number of rows." = "Commande envoyée pour redimensionner la console. La variable $COLS est pour le nombre de colonnes et $ROWS pour le nombre de lignes.";
+
+/* UTMVirtualMachine */
+"Config format incorrect." = "Format de configuration incorrect.";
+
+/* VMDisplayMetalWindowController */
+"Confirm" = "Confirmer";
+
+/* No comment provided by engineer. */
+"Confirm Delete" = "Confirmer la suppression";
+
+/* No comment provided by engineer. */
+"Console Only" = "Console uniquement";
+
+/* VMWizardSummaryView */
+"Core" = "Coeur";
+
+/* VMWizardSummaryView */
+"Cores" = "Cœurs";
+
+/* No comment provided by engineer. */
+"CPU" = "CPU";
+
+/* No comment provided by engineer. */
+"CPU Cores" = "Cœurs de CPU";
+
+/* No comment provided by engineer. */
+"CPU Flags" = "Flags de CPU";
+
+/* Create button */
+"Create" = "Créer";
+
+/* No comment provided by engineer. */
+"Create a New Virtual Machine" = "Créer une nouvelle Machine Virtuelle (VM)";
+
+/* VMConfigDirectoryPickerViewController */
+"Create Directory" = "Créer le dossier";
+
+/* VMConfigDriveCreateViewController */
+"Creating disk..." = "Création du disque…";
+
+/* No comment provided by engineer. */
+"Debug Logging" = "Enregistrement du débogage";
+
+/* No comment provided by engineer. */
+"Default" = "Par défaut";
+
+/* Delete button
+   Delete context menu
+   VMConfigDirectoryPickerViewController */
+"Delete" = "Supprimer";
+
+/* VMConfigDrivesViewController */
+"Delete Data" = "Supprimer les données";
+
+/* No comment provided by engineer. */
+"Delete selected VM" = "Supprimer la VM sélectionnée";
+
+/* No comment provided by engineer. */
+"Delete…" = "Supprimer…";
+
+/* Delete VM overlay */
+"Deleting %@..." = "Suppression de %@…";
+
+/* No comment provided by engineer. */
+"DHCP Domain Name" = "Nom de domaine DHCP";
+
+/* No comment provided by engineer. */
+"DHCP Host" = "Hôte DHCP";
+
+/* No comment provided by engineer. */
+"DHCP Start" = "Début DHCP";
+
+/* No comment provided by engineer. */
+"Directory" = "Dossier";
+
+/* VMConfigDirectoryPickerViewController */
+"Directory Name" = "Nom du dossier";
+
+/* VMDisplayTerminalViewController */
+"Disable this bar in Settings -> General -> Keyboards -> Shortcuts" = "Désactivez cette barre dans Réglages -> Général -> Claviers -> Raccourcis";
+
+/* No comment provided by engineer. */
+"Disk" = "Disque";
+
+/* UTMData
+   VMConfigDriveCreateViewController
+   VMWizardState */
+"Disk creation failed." = "La création du disque a échoué";
+
+/* UTMQemuConfiguration */
+"Disk Image" = "Image disque";
+
+/* No comment provided by engineer. */
+"Display" = "Affichage";
+
+/* No comment provided by engineer. */
+"DNS Search Domains" = "Domaine de recherche DNS";
+
+/* No comment provided by engineer. */
+"DNS Server" = "Serveur DNS";
+
+/* No comment provided by engineer. */
+"DNS Server (IPv6)" = "Serveur DNS（IPv6）";
+
+/* VMDisplayMetalWindowController */
+"Do Not Show Again" = "Ne plus afficher";
+
+/* VMConfigDrivesViewController */
+"Do you want to also delete the disk image data? If yes, the data will be lost. Otherwise, you can create a new drive with the existing data." = "Souhaitez-vous également supprimer les données du disque image ? Si oui, les données seront perdues. Sinon, vous pourrez créer un nouveau lecteur avec les données existantes.";
+
+/* No comment provided by engineer. */
+"Do you want to delete this VM and all its data?" = "Voulez-vous vraiment supprimer cette VM et toutes ses données ?";
+
+/* No comment provided by engineer. */
+"Do you want to duplicate this VM and all its data?" = "Voulez-vous dupliquer cette VM et toutes ses données ?";
+
+/* No comment provided by engineer. */
+"Do you want to force stop this VM and lose all unsaved data?" = "Voulez-vous forcer l'arrêt de cette VM et perdre toutes les données non enregistrées ?";
+
+/* VMConfigDirectoryPickerViewController
+   VMConfigPortForwardingViewController */
+"Done" = "Terminé";
+
+/* No comment provided by engineer. */
+"Download prebuilt from UTM Gallery..." = "Téléchargement d'une VM déjà prête depuis la bibliothèque d'UTM";
+
+/* No comment provided by engineer. */
+"Download Ubuntu Server for ARM" = "Télécharger Ubuntu Server pour ARM";
+
+/* No comment provided by engineer. */
+"Download Windows 11 for ARM64 Preview VHDX" = "Télécharger le VHDX de Windows 11 pour ARM64 Preview";
+
+/* No comment provided by engineer. */
+"Downscaling" = "Réduction de définition";
+
+/* VMRemovableDrivesViewController */
+"Drive Options" = "Options de lecteurs";
+
+/* No comment provided by engineer. */
+"Drives" = "Lecteurs";
+
+/* No comment provided by engineer. */
+"Edit" = "Modifier";
+
+/* No comment provided by engineer. */
+"Edit selected VM" = "Modifier la VM sélectionnée";
+
+/* VMRemovableDrivesViewController */
+"Eject" = "Éjecter";
+
+/* No comment provided by engineer. */
+"Emulate" = "Émuler";
+
+/* No comment provided by engineer. */
+"Emulated Audio Card" = "Carte son émulée";
+
+/* No comment provided by engineer. */
+"Emulated Display Card" = "Carte graphique émulée";
+
+/* No comment provided by engineer. */
+"Emulated Network Card" = "Carte réseau émulée";
+
+/* UTMQemuConfiguration */
+"Emulated VLAN" = "Émuler le VLAN";
+
+/* No comment provided by engineer. */
+"en0" = "en0";
+
+/* No comment provided by engineer. */
+"Enable Clipboard Sharing" = "Activer le partage du presse-papier";
+
+/* No comment provided by engineer. */
+"Enable Directory Sharing" = "Activer le partage de dossier";
+
+/* No comment provided by engineer. */
+"Enable hardware OpenGL acceleration (experimental)" = "Activer l'accélération matérielle OpenGL (expérimental)";
+
+/* No comment provided by engineer. */
+"Enabled" = "Activé";
+
+/* No comment provided by engineer. */
+"Engine" = "Moteur";
+
+/* UTMJSONStream */
+"Error parsing JSON." = "Erreur de traitement du fichier JSON";
+
+/* VMConfigDriveCreateViewController */
+"Error renaming file" = "Erreur de renommage du fichier";
+
+/* UTMVirtualMachine */
+"Error trying to restore removable drives: %@" = "Erreur lors de la tentative de restauration du lecteur amovible : %@";
+
+/* UTMVirtualMachine */
+"Error trying to start shared directory: %@" = "Erreur lors de la tentative de démarrage du dossier partagé ：%@";
+
+/* No comment provided by engineer. */
+"Export Debug Log" = "Exporter l'enregistrement du débogage";
+
+/* No comment provided by engineer. */
+"Export QEMU Command" = "Exporter la commande QEMU";
+
+/* UTMVirtualMachine+Drives */
+"Failed create bookmark." = "Échec de la création du signet";
+
+/* UTMVirtualMachine+Drives */
+"Failed to access drive image path." = "Impossible d'accéder au chemin de l'image du lecteur.";
+
+/* VMConfigInfoView */
+"Failed to check name." = "Impossible de vérifier le nom.";
+
+/* UTMData */
+"Failed to clone VM." = "Impossible de cloner la VM.";
+
+/* UTMSpiceIO */
+"Failed to connect to SPICE server." = "Impossible de se connecter au serveur SPICE.";
+
+/* UTMDataExtension */
+"Failed to delete saved state." = "Impossible de supprimer l'état sauvegardé.";
+
+/* VMWizardState */
+"Failed to get latest macOS version from Apple." = "Impossible d'obtenir la dernière version disponible de macOS auprès d'Apple";
+
+/* VMRemovableDrivesViewController */
+"Failed to get VM object." = "Impossible d'obtenir l'objet VM.";
+
+/* UTMVirtualMachine */
+"Failed to load plist" = "Impossible de charger la plist";
+
+/* UTMData */
+"Failed to parse imported VM." = "Impossible de traiter la VM importée.";
+
+/* VMDisplayViewController */
+"Failed to save VM snapshot. Usually this means at least one device does not support snapshots." = "Impossible de sauvegarder l'instantané de la VM. Cela veut dire habituellement qu'au moins un lecteur ne les prend pas en charge.";
+
+/* No comment provided by engineer. */
+"Faster, but can only run the native CPU architecture." = "Plus rapide, mais ne peut exécuter que les VM de la même architecture que le CPU.";
+
+/* No comment provided by engineer. */
+"fec0::/64" = "fec0::/64";
+
+/* No comment provided by engineer. */
+"fec0::2" = "fec0::2";
+
+/* No comment provided by engineer. */
+"fec0::3" = "fec0::3";
+
+/* No comment provided by engineer. */
+"Fit To Screen" = "Adapter à l'écran";
+
+/* Configuration boot device */
+"Floppy" = "Lecteur de disquettes";
+
+/* No comment provided by engineer. */
+"Font" = "Police";
+
+/* No comment provided by engineer. */
+"Font Size" = "Taille de la police";
+
+/* No comment provided by engineer. */
+"Force Multicore" = "Forcer le multicoeurs";
+
+/* No comment provided by engineer. */
+"Full Graphics" = "Graphismes complets";
+
+/* No comment provided by engineer. */
+"GB" = "Gio";
+
+/* No comment provided by engineer. */
+"Generate Windows Installer ISO" = "Générer une ISO de l'installation de Windows";
+
+/* No comment provided by engineer. */
+"Gesture and Cursor Settings" = "Réglages des gestes et du curseur";
+
+/* No comment provided by engineer. */
+"Guest Address" = "Adresse de l'invité";
+
+/* VMConfigPortForwardingViewController */
+"Guest address (optional)" = "Adresse de l'invité (optionnel)";
+
+/* No comment provided by engineer. */
+"Guest Network" = "Réseau de l'invité";
+
+/* No comment provided by engineer. */
+"Guest Network (IPv6)" = "Réseau de l'invité (IPv6)";
+
+/* UTMQemuManager */
+"Guest panic" = "Panique de l'invité";
+
+/* No comment provided by engineer. */
+"Guest Port" = "Port de l'invité";
+
+/* VMConfigPortForwardingViewController */
+"Guest port (required)" = "Port de l'invité (requis)";
+
+/* Configuration boot device */
+"Hard Disk" = "Disque dur";
+
+/* No comment provided by engineer. */
+"Hardware" = "Matériel";
+
+/* No comment provided by engineer. */
+"Hardware OpenGL Acceleration" = "Accélération matérielle d'OpenGL";
+
+/* No comment provided by engineer. */
+"Hide" = "Masquer";
+
+/* No comment provided by engineer. */
+"Hide Unused Flags..." = "Masquer les flags inutilisés…";
+
+/* VMDisplayViewController */
+"Hint: To show the toolbar again, use a three-finger swipe down on the screen." = "Astuce : pour afficher à nouveau la barre d'outils, faites glisser trois doigts vers le bas de l'écran.";
+
+/* No comment provided by engineer. */
+"Host Address" = "Adresse de l'hôte";
+
+/* No comment provided by engineer. */
+"Host Address (IPv6)" = "Adresse de l'hôte（IPv6)";
+
+/* VMConfigPortForwardingViewController */
+"Host address (optional)" = "Adresse de l'hôte (optionnel)";
+
+/* No comment provided by engineer. */
+"Host Port" = "Port hôte";
+
+/* VMConfigPortForwardingViewController */
+"Host port (required)" = "Port hôte (requis)";
+
+/* No comment provided by engineer. */
+"Hypervisor" = "Hyperviseur";
+
+/* No comment provided by engineer. */
+"I want to..." = "Je souhaite…";
+
+/* No comment provided by engineer. */
+"Icon" = "Icône";
+
+/* No comment provided by engineer. */
+"If set, boot directly from a raw kernel image and initrd. Otherwise, boot from a supported ISO." = "Si activé, démarrer directement à partir d'une image brute de noyau et initrd. Sinon, démarrer à partir d'un ISO pris en charge.";
+
+/* No comment provided by engineer. */
+"Image Type" = "Type d'image";
+
+/* Import button */
+"Import…" = "Importer…";
+
+/* No comment provided by engineer. */
+"Import Drive" = "Importer un lecteur";
+
+/* No comment provided by engineer. */
+"Import VHDX Image" = "Importer une image VHDX";
+
+/* No comment provided by engineer. */
+"Import Virtual Machine..." = "Importer une machine virtuelle…";
+
+/* Save VM overlay */
+"Importing %@..." = "Importation de %@…";
+
+/* No comment provided by engineer. */
+"Inactive" = "Inactive";
+
+/* No comment provided by engineer. */
+"Information" = "Information";
+
+/* No comment provided by engineer. */
+"Initial Ramdisk" = "Ramdisk initial";
+
+/* No comment provided by engineer. */
+"Input" = "Entrée";
+
+/* No comment provided by engineer. */
+"Interface" = "Interface";
+
+/* UTMQemu */
+"Internal error has occurred." = "Une erreur interne est apparue.";
+
+/* UTMVirtualMachine */
+"Internal error starting main loop." = "Erreur interne lors du démarrage de la boucle principale.";
+
+/* UTMVirtualMachine */
+"Internal error starting VM." = "Erreur interne lors du démarrage de la VM.";
+
+/* VMConfigSystemViewController */
+"Invalid core count." = "Nombre de cœurs invalide.";
+
+/* UTMData */
+"Invalid drive size." = "Taille du lecteur invalide.";
+
+/* VMRemovableDrivesViewController */
+"Invalid file selected." = "Fichier sélectionné non valide.";
+
+/* VMConfigSystemViewController */
+"Invalid memory size." = "Taille de la mémoire invide.";
+
+/* VMConfigDriveCreateViewController */
+"Invalid name" = "Nom invalide";
+
+/* VMConfigDriveCreateViewController */
+"Invalid size" = "Taille invalide";
+
+/* VMListViewController */
+"Invalid UTM not imported." = "UTM non valide pas importée.";
+
+/* No comment provided by engineer. */
+"Invert Mouse Scroll" = "Inverser le défilement";
+
+/* No comment provided by engineer. */
+"IP Configuration" = "Configuration adresse IP";
+
+/* No comment provided by engineer. */
+"Isolate Guest from Host" = "Isoler l'invité de l'hôte";
+
+/* No comment provided by engineer. */
+"JIT Cache" = "Cache du JIT";
+
+/* VMConfigSystemViewController */
+"JIT cache size cannot be larger than 2GB." = "La taille du cache JIT ne peut dépasser 2Gio.";
+
+/* VMConfigSystemViewController */
+"JIT cache size too small." = "La taille du cache JIT est trop petite.";
+
+/* No comment provided by engineer. */
+"Kernel" = "Noyau (Kernel)";
+
+/* No comment provided by engineer. */
+"Keyboard" = "Clavier";
+
+/* No comment provided by engineer. */
+"Legacy" = "Héritage";
+
+/* No comment provided by engineer. */
+"Legacy (PS/2) Mode" = "Mode héritage (PS/2)";
+
+/* No comment provided by engineer. */
+"License" = "Licence";
+
+/* UTMQemuConfiguration */
+"Linear" = "Linéaire";
+
+/* No comment provided by engineer. */
+"Linux" = "Linux";
+
+/* UTMQemuConfiguration */
+"Linux Device Tree Binary" = "Binaire d'arborescence de lecteurs de Linux";
+
+/* No comment provided by engineer. */
+"Linux initial ramdisk:" = "Ramdisk initial Linux ：";
+
+/* UTMQemuConfiguration */
+"Linux Kernel" = "Noyau Linux";
+
+/* No comment provided by engineer. */
+"Linux kernel (required):" = "Noyau (kernel) Linux (requis) ：";
+
+/* UTMQemuConfiguration */
+"Linux RAM Disk" = "RAM Disk de Linux";
+
+/* No comment provided by engineer. */
+"Linux Root FS Image:" = "Image Linux Root FS :";
+
+/* No comment provided by engineer. */
+"Logging" = "Journalisation";
+
+/* No comment provided by engineer. */
+"MAC Address" = "Adresse MAC";
+
+/* VMWizardState */
+"macOS is not supported with QEMU." = "macOS n'est pas pris en charge par QEMU";
+
+/* UTMQemuManager */
+"Manager being deallocated, killing pending RPC." = "Le gestionnaire a été désalloué, arrêt du RPC en attente.";
+
+/* No comment provided by engineer. */
+"Maximum Shared USB Devices" = "Max d'appareils USB partagés";
+
+/* No comment provided by engineer. */
+"MB" = "Mio";
+
+/* No comment provided by engineer. */
+"Memory" = "Mémoire";
+
+/* No comment provided by engineer. */
+"Mouse Wheel" = "Molette de la souris";
+
+/* Save VM overlay */
+"Moving %@..." = "Déplacement de %@…";
+
+/* Clone VM name prompt title */
+"Name" = "Nom";
+
+/* VMConfigInfoView */
+"Name is an invalid filename." = "Le nom du fichier est incorrect.";
+
+/* UTMQemuConfiguration */
+"Nearest Neighbor" = "Au plus proche";
+
+/* No comment provided by engineer. */
+"Network" = "Réseau";
+
+/* No comment provided by engineer. */
+"Network Mode" = "Mode du réseau";
+
+/* No comment provided by engineer. */
+"New" = "Ajouter";
+
+/* No comment provided by engineer. */
+"New Drive" = "Nouveu lecteur";
+
+/* VMConfigPortForwardingViewController */
+"New port forward" = "Nouvelle redirection de port";
+
+/* No comment provided by engineer. */
+"New Virtual Machine" = "Nouvelle machine virtuelle (VM)";
+
+/* No comment provided by engineer. */
+"New VM" = "Nouvelle VM";
+
+/* Clone VM name prompt message */
+"New VM name" = "Nouveau nom pour la VM";
+
+/* No comment provided by engineer. */
+"New..." = "Nouveau…";
+
+/* No comment provided by engineer. */
+"Open..." = "Ouvrir…";
+
+/* No comment provided by engineer. */
+"Continue" = "Continuer";
+
+/* No button
+   VMDisplayViewController
+   VMListViewController */
+"No" = "Non";
+
+/* UTMQemuManager */
+"No connection for RPC." = "Aucune connection pour RPC.";
+
+/* VMConfigExistingViewController */
+"No debug log found!" = "Aucun journal de debug trouvé !";
+
+/* No comment provided by engineer. */
+"No drives added." = "Aucun lecteur ajouté.";
+
+/* UTMData */
+"No log found!" = "Aucun journal trouvé !";
+
+/* UTMDrive */
+"none" = "aucun";
+
+/* UTMQemuConfiguration */
+"None" = "Aucun";
+
+/* No comment provided by engineer. */
+"Not running" = "Pas en cours d'exécution";
+
+/* No comment provided by engineer. */
+"Note: Boot order is as listed." = "Note : le démarrage se fait dans l'ordre listé";
+
+/* No comment provided by engineer. */
+"Note: select the path to share from the main screen." = "Note : sélectionnez le chemin à partager depuis l'écran principal.";
+
+/* No comment provided by engineer. */
+"Notes" = "Notes";
+
+/* OK button
+   OK Button */
+"OK" = "OK";
+
+/* No comment provided by engineer. */
+"Open VM Settings" = "Ouvrir les réglages de la VM";
+
+/* No comment provided by engineer. */
+"Operating System" = "Système d'exploitation";
+
+/* No comment provided by engineer. */
+"Optionally select a directory to make accessible inside the VM. Note that support for shared directories varies by the guest operating system and may require additional guest drivers to be installed. See UTM support pages for more details." = "Vous pouvez sélectionner un dossier pour qu'il soit accessible dans la VM. Notez que la prise en charge des dossiers partagés varie selon l'OS invité et peut demander l'installation de pilotes supplémentaires dans l'OS invité. Consultez les pages d'aide d'UTM pour plus de détails.";
+
+/* No comment provided by engineer. */
+"Other" = "Autre";
+
+/* No comment provided by engineer. */
+"Pause" = "Pause";
+
+/* No comment provided by engineer. */
+"Pending" = "Suspendue";
+
+/* No comment provided by engineer. */
+"Play" = "Démarrer";
+
+/* VMWizardState */
+"Please select a boot image." = "Choisissez une image de boot.";
+
+/* VMWizardState */
+"Please select a kernel file." = "Veuillez choisir un fichier de noyau.";
+
+/* VMWizardState */
+"Please select a system to emulate." = "Sélectionnez un système à émuler.";
+
+/* No comment provided by engineer. */
+"Port Forward" = "Redirection de port";
+
+/* No comment provided by engineer. */
+"Power Off" = "Éteindre";
+
+/* No comment provided by engineer. */
+"Protocol" = "Protocole";
+
+/* No comment provided by engineer. */
+"PS/2 has higher compatibility with older operating systems but does not support custom cursor settings." = "PS/2 a une plus haute compatibilité avec les anciens systèmes d'exploitation mais ne prend pas en charge les réglages personnalisés du curseur.";
+
+/* No comment provided by engineer. */
+"QEMU" = "QEMU";
+
+/* No comment provided by engineer. */
+"QEMU Arguments" = "Arguments pour QEMU";
+
+/* UTMQemu */
+"QEMU exited from an error: %@" = "QEMU a quitté avec l'erreur : %@";
+
+/* No comment provided by engineer. */
+"QEMU Machine Properties" = "Propriétés de la machine QEMU";
+
+/* No comment provided by engineer. */
+"Quit" = "Quitter";
+
+/* No comment provided by engineer. */
+"RAM" = "RAM";
+
+/* No comment provided by engineer. */
+"Random" = "Aléatoire";
+
+/* No comment provided by engineer. */
+"Read Only" = "Lecture seule";
+
+/* No comment provided by engineer. */
+"Share is read only" = "Partage en lecture seule";
+
+/* No comment provided by engineer. */
+"Removable" = "Amovible";
+
+/* VMConfigDrivesView
+   VMConfigDrivesViewController */
+"Removable Drive" = "Lecteur amovible";
+
+/* No comment provided by engineer. */
+"Requires SPICE guest agent tools to be installed." = "Requiert l'installation des outils clients SPICE dans l'OS invité.";
+
+/* No comment provided by engineer. */
+"Requires SPICE guest agent tools to be installed. Retina Mode is recommended only if the guest OS supports HiDPI." = "Requiert que le logiciel client SPICE soit installé. Le mode Retina n'est recommandé que si l'OS invité le prend en charge.";
+
+/* No comment provided by engineer. */
+"Always use native (HiDPI) resolution" = "Toujours utiliser la résolution native (HiDPI)";
+
+/* No comment provided by engineer. */
+"Requires SPICE WebDAV service to be installed." = "Requiert que le service WebDAV de SPICE soit installé.";
+
+/* No comment provided by engineer. */
+"Resize Console Command" = "Commande de redimsensionnement de la Console";
+
+/* No comment provided by engineer. */
+"Resolution" = "Résolution";
+
+/* No comment provided by engineer. */
+"Restart" = "Redémarrer";
+
+/* No comment provided by engineer. */
+"Retina Mode" = "Mode Retina";
+
+/* No comment provided by engineer. */
+"Root Image" = "Image Root";
+
+/* No comment provided by engineer. */
+"Run" = "Démarrer";
+
+/* No comment provided by engineer. */
+"Run selected VM" = "Démarre la VM sélectionnée";
+
+/* No comment provided by engineer. */
+"Running" = "En cours d'exécution";
+
+/* VMDisplayViewController */
+"Running low on memory! UTM might soon be killed by iOS. You can prevent this by decreasing the amount of memory and/or JIT cache assigned to this VM" = "Il ne reste presque plus de mémoire ! UTM peut bientôt être arrêté par iOS. Vous pouvez éviter ceci en réduisant la quantité de mémoire et/ou le cache JIT assigné à cette VM";
+
+/* No comment provided by engineer. */
+"Save" = "Enregistrer";
+
+/* Save VM overlay */
+"Saving %@..." = "Enregistrement de %@…";
+
+/* No comment provided by engineer. */
+"Scaling" = "Mise à l'échelle";
+
+/* No comment provided by engineer. */
+"Selected:" = "Sélectionné :";
+
+/* No comment provided by engineer. */
+"Set to 0 for default which is 1/4 of the allocated Memory size. This is in addition to the host memory!" = "Définitissez 0 par défaut, ce qui est 1/4 de la mémoire allouée. Ceci est en plus de la mémoire de l'hôte !";
+
+/* No comment provided by engineer. */
+"Set to 0 to use maximum supported CPUs. Force multicore might result in incorrect emulation." = "Définissez 0 pour utiliser le maximum de CPU pris en charge. Forcer le multicœurs peut entraîner des erreurs d'émulation.";
+
+/* No comment provided by engineer. */
+"Force multicore may improve speed of emulation but also might result in unstable and incorrect emulation." = "Forcer le multicœurs peut accélérer l'émulation mais également la rendre instable et incorrecte.";
+
+/* No comment provided by engineer. */
+"Default is 1/4 of the RAM size (above). The JIT cache size is additive to the RAM size in the total memory usage!" = "1/4 de la RAM est utilisé par défaut (ci-dessus). La taille du cache JIT s'ajoute à la taille de la RAM utilisée !";
+
+/* No comment provided by engineer. */
+"These are advanced settings affecting QEMU which should be kept default unless you are running into issues." = "Ce sont des réglages avancés qui affectent le fonctionnement de QEMU, à laisser par défaut sauf si vous rencontrez des soucis.";
+
+/* No comment provided by engineer. */
+"This is appended to the -machine argument." = "Ceci est ajouté à l'argument -machine.";
+
+/* No comment provided by engineer. */
+"If enabled, the default input devices will be emulated on the USB bus." = "Si activé, les appareils d'entrée par défaut seront émulés via le bus USB.";
+
+/* No comment provided by engineer. */
+"Settings" = "Réglages";
+
+/* Share context menu */
+"Share" = "Partager";
+
+/* No comment provided by engineer. */
+"Share Directory" = "Parte de dossier";
+
+/* No comment provided by engineer. */
+"Share selected VM" = "Partager la VM sélectionnée";
+
+/* No comment provided by engineer. */
+"Shared Directory" = "Dossier partagé";
+
+/* UTMQemuConfiguration */
+"Shared Network" = "Réseau partagé";
+
+/* VMConfigSharingViewController */
+"Shared path has moved. Please re-choose." = "Le chemin partagé a été déplacé. Veuillez le sélectionner à nouveau.";
+
+/* VMConfigSharingViewController */
+"Shared path is no longer valid. Please re-choose." = "Le chemin partagé n'est plus valide. Veuillez le sélectionner à nouveau.";
+
+/* No comment provided by engineer. */
+"Sharing" = "Partage";
+
+/* No comment provided by engineer. */
+"Show Advanced Settings" = "Afficher les réglages avancés";
+
+/* No comment provided by engineer. */
+"Show All Flags..." = "Afficher tous les flags...";
+
+/* No comment provided by engineer. */
+"Size" = "Taille";
+
+/* No comment provided by engineer. */
+"Skip Boot Image" = "Ignorer l'image de démarrage";
+
+/* No comment provided by engineer. */
+"Skip ISO boot (advanced)" = "Ignorer le démarrage de l'ISO (avancé)";
+
+/* No comment provided by engineer. */
+"Slower, but can run other CPU architectures." = "Plus lent, mais peut émuler un CPU d'une autre architecture.";
+
+/* No comment provided by engineer. */
+"Sound" = "Audio";
+
+/* No comment provided by engineer. */
+"Specify the size of the drive where data will be stored into." = "Définissez la taille du lecteur où seront enregistrées les données.";
+
+/* No comment provided by engineer. */
+"Stop" = "Arrêter";
+
+/* No comment provided by engineer. */
+"Stop selected VM" = "Arrête la VM sélectionnée";
+
+/* No comment provided by engineer. */
+"Stop…" = "Arrêter…";
+
+/* No comment provided by engineer. */
+"Storage" = "Stockage";
+
+/* No comment provided by engineer. */
+"stty cols $COLS rows $ROWS\n" = "stty cols $COLS rows $ROWS\n";
+
+/* No comment provided by engineer. */
+"Style" = "Style";
+
+/* No comment provided by engineer. */
+"Summary" = "Résumé";
+
+/* No comment provided by engineer. */
+"Support" = "Aide";
+
+/* No comment provided by engineer. */
+"Suspended" = "Suspendue";
+
+/* No comment provided by engineer. */
+"System" = "Système";
+
+/* VMConfigPortForwardingViewController */
+"TCP Forward" = "Redirection TCP";
+
+/* No comment provided by engineer. */
+"Test" = "Test";
+
+/* No comment provided by engineer. */
+"The selected architecture is unsupported in this version of UTM." = "L'architecture sélectionnée n'est pas disponible dans cette version d'UTM.";
+
+/* VMConfigSystemViewController */
+"The total memory usage is close to your device's limit. iOS will kill the VM if it consumes too much memory." = "La mémoire totale utilisée est proche de la limite de votre appareil. iOS va quitter la VM si elle consomme trop de mémoire.";
+
+/* No comment provided by engineer. */
+"Theme" = "Thème";
+
+/* Error shown when importing a ZIP file from web that doesn't contain a UTM Virtual Machine. */
+"There is no UTM file in the downloaded ZIP archive." = "Il n'y a aucun fichier UTM dans l'archive ZIP téléchargée.";
+
+/* No comment provided by engineer. */
+"These settings are unavailable in console display mode." = "Ces réglages ne sont pas disponibles dans le mode d'affichage Console.";
+
+/* UTMQemuSystem */
+"This version of macOS does not support audio in console mode. Please change the VM configuration or upgrade macOS." = "Cette version de macOS ne prend pas en charge l'audio en mode Console. Veuillez changer la configuration de la VM ou mettez à jour macOS.";
+
+/* UTMQemuSystem */
+"This version of macOS does not support GPU acceleration. Please change the VM configuration or upgrade macOS." = "Cette version de macOS ne prend pas en charge l'accélération du GPU. Veuillez changer la configuration de la VM ou mettez à jour macOS.";
+
+/* No comment provided by engineer. */
+"This virtual machine has been deleted." = "Cette machine virtuelle a ét supprimée.";
+
+/* UTMQemuManager */
+"Timed out waiting for RPC." = "Délai d'attente trop long du RPC.";
+
+/* No comment provided by engineer. */
+"Tweaks" = "Améliorations";
+
+/* No comment provided by engineer. */
+"Type" = "Type";
+
+/* VMConfigPortForwardingViewController */
+"UDP Forward" = "Redirection UDP";
+
+/* No comment provided by engineer. */
+"UEFI Boot" = "Boot UEFI";
+
+/* No comment provided by engineer. */
+"Should be off for older operating systems such as Windows 7 or lower." = "Devrait être désactivé pour les anciens systèmes d'exploitation tels que Windows 7 et antérieurs.";
+
+/* UTMQemuSystem */
+"UEFI is not supported with this architecture." = "L'UEFI n'est pas pris en charge avec cette architecture";
+
+/* VMWizardState */
+"Unavailable for this platform." = "Non disponible pour cette plateforme.";
+
+/* UTMVirtualMachineExtension */
+"Unknown" = "Inconnu";
+
+/* No comment provided by engineer. */
+"Upscaling" = "Augmentation de la définition (Upscaling)";
+
+/* No comment provided by engineer. */
+"USB" = "USB";
+
+/* No comment provided by engineer. */
+"USB 3.0 (XHCI) Support" = "Prise en charge de l'USB 3.0 (XHCI)";
+
+/* No comment provided by engineer. */
+"USB not supported in console display mode." = "L'USB n'est pas pris en charge dans le mode d'affichage Console";
+
+/* No comment provided by engineer. */
+"USB not supported in this build of UTM." = "L'USB n'est pas pris en charge dans cette version d'UMT.";
+
+/* No comment provided by engineer. */
+"USB Sharing" = "Partage USB";
+
+/* No comment provided by engineer. */
+"Use Hypervisor" = "Utiliser l'Hyperviseur";
+
+/* No comment provided by engineer. */
+"Only available if host architecture matches the target. Otherwise, TCG emulation is used." = "Disponible uniquement si l'architecture de l'hôte est la même que celle de l'invité. Dans le cas contraire, l'émulation TCG est utilisée.";
+
+/* No comment provided by engineer. */
+"Use Virtualization" = "Utiliser la Virtualisation";
+
+/* No comment provided by engineer. */
+"User Guide" = "Guide de l'utilisateur";
+
+/* No comment provided by engineer. */
+"Virtual Machine Gallery" = "Bibliothèque de machines virtuelles";
+
+/* No comment provided by engineer. */
+"Virtualization is not supported on your system." = "La Virtualisation n'est pas prise en charge sur votre système";
+
+/* No comment provided by engineer. */
+"Virtualize" = "Virtualiser";
+
+/* UTMVirtualMachine+Sharing */
+"VM frontend does not support shared directories." = "Le frontend de la VM ne prend pas en charge les dossiers partagés.";
+
+/* VMConfigSystemViewController */
+"Warning: iOS will kill apps that use more than 80% of the device's total memory." = "Attention : iOS va quitter les apps qui utilisent plus de 80% de la mémoire de l'appareil.";
+
+/* No comment provided by engineer. */
+"Welcome to UTM" = "Bienvenue dans UTM";
+
+/* Startup message */
+"Welcome to UTM! Due to a bug in iOS, if you force kill this app, the system will be unstable and you cannot launch UTM again until you reboot. The recommended way to terminate this app is the button on the top left." = "Bienvenue dans UTM ! À cause d'un bug dans iOS, si vous forcez à quitter cette app, le système va devenir instable et vous ne pourrez plus relancer UTM sans avoir redémarré votre appareil au préalable. Pour quitter cette app, il est recommandé d'utiliser le bouton en haut à gauche.";
+
+/* No comment provided by engineer. */
+"Windows" = "Windows";
+
+/* VMDisplayMetalWindowController */
+"Would you like to connect '%@' to this virtual machine?" = "Voulez-vous connecter '%@' à cette machine virtuelle ?";
+
+/* VMConfigDrivePickerViewController */
+"Would you like to import an existing disk image or create a new one?" = "Souhaitez-vous importer l'image disque existante ou en créer une nouvelle ?";
+
+/* VMDisplayViewController
+   VMListViewController
+   Yes button */
+"Yes" = "Oui";
+
+/* UTMData
+   VMConfigDrivePickerViewController */
+"You cannot import a .utm package as a drive. Did you mean to open the package with UTM?" = "Vous ne pouvez pas importer un paquet .utm en tant que lecteur. Souhaitiez-vous plutôt ouvrir ce paquet avec UTM ?";
+
+/* UTMData
+   VMConfigDrivePickerViewController */
+"You cannot import a directory as a drive." = "Vous ne pouvez pas importer un dossier en tant que lecteur.";
+
+/* VMConfigDriveDetailsViewController */
+"You must select a disk image." = "Vous devez sélectionner une image de disque.";
+
+/* VMDisplayViewController */
+"You must terminate the running VM before you can import a new VM." = "Vous devez arrêter la VM en cours avant de pouvoir importer une nouvelle VM.";
+
+/* ContentView */
+"Your version of iOS does not support running VMs while unmodified. You must either run UTM while jailbroken or with a remote debugger attached." = "Votre version d'iOS ne prend pas en charge l'exécution de VM tant qu'il n'est pas modifié. Soit vous devez exécuter UTM sur un appareil jailbreaké, soit vous devez y rattacher un débogeur distant.";
+
+/* No comment provided by engineer. */
+"Zoom" = "Zoomer";
+
+/* Manually added: Common > Button */
+"Go Back" = "Retour";
+
+/* Manually added: Create a New Virtual Machine > macOS  */
+"To install macOS, you need to download a recovery IPSW. If you do not select an existing IPSW, the latest macOS IPSW will be downloaded from Apple." = "Pour installer macOS, vous devez télécharger un IPSW de réinstallation. Si vous ne sélectionnez pas un IPSW existant, le dernier IPSW de macOS en date sera téléchargé depuis les serveurs d'Apple.";
+
+/* Manually added: Create a New Virtual Machine > Virtualization > Linux */
+"Use Apple Virtualization" = "Utiliser la Virtualisation d'Apple";
+
+/* Manually added: Configuration > Drive */
+"Delete Drive" = "Supprimer le lecteur";
+
+/* Manually added: Configuration > Drive */
+"Move Up" = "Monter";
+
+/* Manually added: Configuration > Drive */
+"Move Down" = "Descendre";
+
+/* Manually added: VM's Context Menu */
+"Show in Finder" = "Afficher dans le Finder";
+
+/* No comment provided by engineer. */
+"Generic" = "Générique";
+
+/* No comment provided by engineer. */
+"Custom" = "Personnalisée";
+
+/* No comment provided by engineer. */
+"Status" = "État";
+
+/* No comment provided by engineer. */
+"Stopped" = "Arrêtée";
+
+/* No comment provided by engineer. */
+"Acceleration" = "Accélération";
+
+/* No comment provided by engineer. */
+"Force PS/2 controller" = "Forcer le contrôleur PS/2";
+
+/* No comment provided by engineer. */
+"Instantiate PS/2 controller even when USB input is supported. Required for older Windows." = "Instancie le contrôleur PS/2 même lorsque l'entrée en USB est prise en charge. Requis pour les anciens Windows.";
+
+/* No comment provided by engineer. */
+"Use local time for base clock" = "Utiliser l'heure locale pour l'OS invité";
+
+/* No comment provided by engineer. */
+"If checked, use local time for RTC which is required for Windows. Otherwise, use UTC clock." = "Si coché, utiliser l'heure locale pour le RTC, ce qui est requis pour Windows. Dans le cas contraire, utiliser l'heure UTC.";
+
+/* No comment provided by engineer. */
+"RNG Device" = "Appareil RNG";
+
+/* No comment provided by engineer. */
+"Should be on always unless the guest cannot boot because of this." = "Devrait toujours être activé sauf si l'OS client ne peut démarrer à cause de celà.";
+
+/* No comment provided by engineer. */
+"Boot UEFI" = "Démarrage UEFI";
+
+/* No comment provided by engineer. */
+"Do not generate any arguments based on current configuration" = "Ne générer aucun argument basé sur la configuration actuelle";
+
+/* No comment provided by engineer. */
+"Keep UTM running after last window is closed and all VMs are shut down" = "Continuer d'exécuter UTM, même après que toutes les fenêtres soient fermées et les VM arrêtées";
+
+/* No comment provided by engineer. */
+"VM display size is fixed" = "La taille de la fenêtre de la VM est fixe";
+
+/* No comment provided by engineer. */
+"Do not save VM screenshot to disk" = "Ne pas enregistrer de capture d'écran de la VM";
+
+/* No comment provided by engineer. */
+"Default VM Configuration" = "Configuration par défaut de la VM";
+
+/* No comment provided by engineer. */
+"Force slower emulation by default (deprecated: now configured per-VM)" = "Forcer une émulation plus lente par défaut (déprécié : configuré désormais par VM)";
+
+/* No comment provided by engineer. */
+"Use only performance cores by default (deprecated: now configured per-VM)" = "Utiliser uniquement les cœurs performants par défaut (déprécié : configuré désormais par VM)";
+
+/* No comment provided by engineer. */
+"Hold Control (⌃) for right click" = "Appuyer sur Control (⌃) pour un clic droit";
+
+/* No comment provided by engineer. */
+"Use Command+Option (⌘+⌥) for input capture/release" = "Utiliser Command+Option (⌘+⌥) pour capturer ou rendre l'entrée";
+
+/* No comment provided by engineer. */
+"Caps Lock (⇪) is treated as a key" = "Verrr. Maj (⇪) est considéré comme une touche";
+
+/* No comment provided by engineer. */
+"Do not show prompt when USB device is plugged in" = "Ne rien demander lorsqu'un appareil USB est branché";
+
+/* No comment provided by engineer. */
+"USB Support" = "Prise en charge de l'USB";
+
+/* No comment provided by engineer. */
+"Auto Resolution" = "Résolution automatique";
+
+/* No comment provided by engineer. */
+"Resize display to window size automatically" = "Changer la résolution en fonction de la taille de la fenêtre";
+
+/* No comment provided by engineer. */
+"Share USB devices from host" = "Partager les appareils USB de l'hôte";
+
+/* No comment provided by engineer. */
+"Reclaim Space" = "Libérer de l'espace";
+
+/* No comment provided by engineer. */
+"Error" = "Erreur";

@@ -27,10 +27,20 @@ struct VMAppleRemovableDrivesView: View {
     @EnvironmentObject private var data: UTMData
     @State private var fileImportPresented: Bool = false
     @State private var selectType: SelectType = .sharedDirectory
-    @State private var selectedSharedDirectoryBinding: Binding<SharedDirectory>?
-    @State private var selectedDiskImageBinding: Binding<DiskImage>?
+    @State private var selectedSharedDirectoryBinding: Binding<UTMAppleConfigurationSharedDirectory>?
+    @State private var selectedDiskImageBinding: Binding<UTMAppleConfigurationDrive>?
     /// Explanation see "SwiftUI FileImporter modal bug" in `showFileImporter`
     @State private var workaroundFileImporterBug: Bool = false
+    
+    private var hasSharingFeatures: Bool {
+        if #available(macOS 13, *) {
+            return true
+        } else if #available(macOS 12, *), config.system.boot.operatingSystem == .linux {
+            return true
+        } else {
+            return false
+        }
+    }
     
     var body: some View {
         Group {
@@ -64,7 +74,7 @@ struct VMAppleRemovableDrivesView: View {
                     FilePath(url: sharedDirectory.directoryURL)
                 }
             }
-            ForEach($config.diskImages) { $diskImage in
+            ForEach($config.drives) { $diskImage in
                 HStack {
                     if diskImage.isExternal {
                         // Drive menu
@@ -96,14 +106,14 @@ struct VMAppleRemovableDrivesView: View {
             }
             HStack {
                 Spacer()
-                if #available(macOS 12, *), config.bootLoader?.operatingSystem == .Linux {
-                    Button("New Shared Directory...") {
+                if hasSharingFeatures {
+                    Button("New Shared Directory…") {
                         selectType = .sharedDirectory
                         selectedSharedDirectoryBinding = nil
                         showFileImporter()
                     }
                 }
-                Button("New External Drive...") {
+                Button("New External Drive…") {
                     selectType = .diskImage
                     selectedDiskImageBinding = nil
                     showFileImporter()
@@ -169,7 +179,7 @@ struct VMAppleRemovableDrivesView: View {
         }
     }
     
-    private func selectShareDirectory(for binding: Binding<SharedDirectory>, result: Result<URL, Error>) {
+    private func selectShareDirectory(for binding: Binding<UTMAppleConfigurationSharedDirectory>, result: Result<URL, Error>) {
         data.busyWorkAsync {
             let url = try result.get()
             binding.wrappedValue.directoryURL = url
@@ -179,20 +189,20 @@ struct VMAppleRemovableDrivesView: View {
     private func createShareDirectory(_ result: Result<URL, Error>) {
         data.busyWorkAsync {
             let url = try result.get()
-            let sharedDirectory = SharedDirectory(directoryURL: url)
+            let sharedDirectory = UTMAppleConfigurationSharedDirectory(directoryURL: url)
             await MainActor.run {
                 config.sharedDirectories.append(sharedDirectory)
             }
         }
     }
     
-    private func deleteShareDirectory(_ sharedDirectory: SharedDirectory) {
+    private func deleteShareDirectory(_ sharedDirectory: UTMAppleConfigurationSharedDirectory) {
         config.sharedDirectories.removeAll { existing in
             existing == sharedDirectory
         }
     }
     
-    private func selectRemovableImage(for binding: Binding<DiskImage>, result: Result<URL, Error>) {
+    private func selectRemovableImage(for binding: Binding<UTMAppleConfigurationDrive>, result: Result<URL, Error>) {
         data.busyWorkAsync {
             let url = try result.get()
             binding.wrappedValue.imageURL = url
@@ -202,15 +212,15 @@ struct VMAppleRemovableDrivesView: View {
     private func createRemovableImage(_ result: Result<URL, Error>) {
         data.busyWorkAsync {
             let url = try result.get()
-            let diskImage = DiskImage(importImage: url, isReadOnly: false, isExternal: true)
+            let diskImage = UTMAppleConfigurationDrive(existingURL: url, isReadOnly: false, isExternal: true)
             await MainActor.run {
-                config.diskImages.append(diskImage)
+                config.drives.append(diskImage)
             }
         }
     }
     
-    private func deleteRemovableImage(_ diskImage: DiskImage) {
-        config.diskImages.removeAll { existing in
+    private func deleteRemovableImage(_ diskImage: UTMAppleConfigurationDrive) {
+        config.drives.removeAll { existing in
             existing == diskImage
         }
     }

@@ -7,7 +7,11 @@
 
 UTM is a full featured system emulator and virtual machine host for iOS and macOS. It is based off of QEMU. In short, it allows you to run Windows, Linux, and more on your Mac, iPhone, and iPad. More information at https://getutm.app/ and https://mac.getutm.app/
 
-![Screenshot of UTM running on iPhone][2]
+<p align="center">
+  <img width="450px" alt="UTM running on an iPhone" src="screen.png">
+  <br>
+  <img width="450px" alt="UTM running on a MacBook" src="screenmac.png">
+</p>
 
 ## Features
 
@@ -61,7 +65,11 @@ Additionally, UTM frontend depends on the following MIT License components:
 * [IQKeyboardManager](https://github.com/hackiftekhar/IQKeyboardManager)
 * [SwiftTerm](https://github.com/migueldeicaza/SwiftTerm)
 * [ZIP Foundation](https://github.com/weichsel/ZIPFoundation)
-  
+
+Continuous integration hosting is provided by [MacStadium](https://www.macstadium.com/opensource)
+
+[<img src="https://uploads-ssl.webflow.com/5ac3c046c82724970fc60918/5c019d917bba312af7553b49_MacStadium-developerlogo.png" alt="MacStadium logo" width="250">](https://www.macstadium.com)
+
   [1]: https://github.com/utmapp/UTM/actions?query=event%3Arelease+workflow%3ABuild
   [2]: screen.png
   [3]: https://github.com/ktemkin/qemu/blob/with_tcti/tcg/aarch64-tcti/README.md

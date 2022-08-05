@@ -16,7 +16,6 @@
 
 import SwiftUI
 
-@available(iOS 14, *)
 struct VMWizardView: View {
     @StateObject var wizardState = VMWizardState()
     @Environment(\.presentationMode) private var presentationMode: Binding<PresentationMode>
@@ -33,7 +32,6 @@ struct VMWizardView: View {
     }
 }
 
-@available(iOS 14, *)
 fileprivate struct WizardWrapper: View {
     let page: VMWizardPage
     @ObservedObject var wizardState: VMWizardState
@@ -95,15 +93,14 @@ fileprivate struct WizardWrapper: View {
                         onDismiss()
                         data.busyWorkAsync {
                             let config = try await wizardState.generateConfig()
-                            let vm = try await data.create(config: config)
-                            if let qemuVm = vm as? UTMQemuVirtualMachine {
-                                try await wizardState.qemuPostCreate(with: qemuVm)
+                            if let qemuConfig = config.qemuConfig {
+                                _ = try await data.create(config: qemuConfig)
+                            } else {
+                                fatalError("Invalid configuration type.")
                             }
-                            /* // SwiftUI is broken here
                             if await wizardState.isOpenSettingsAfterCreation {
                                 await data.showSettingsForCurrentVM()
                             }
-                             */
                         }
                     }
                 }
@@ -122,7 +119,6 @@ fileprivate struct WizardWrapper: View {
     }
 }
 
-@available(iOS 14, *)
 struct VMWizardView_Previews: PreviewProvider {
     static var previews: some View {
         VMWizardView()

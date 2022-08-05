@@ -26,7 +26,6 @@ enum ConfirmAction: Int, Identifiable {
     var id: Int { rawValue }
 }
 
-@available(iOS 14, macOS 11, *)
 struct VMConfirmActionModifier: ViewModifier {
     let vm: UTMVirtualMachine
     @Binding var confirmAction: ConfirmAction?

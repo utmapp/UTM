@@ -16,70 +16,60 @@
 
 import SwiftUI
 
-@available(iOS 14, macOS 11, *)
-struct VMConfigDisplayConsoleView<Config: ObservableObject & UTMConfigurable>: View {
-    @ObservedObject var config: Config
+struct VMConfigDisplayConsoleView: View {
+    @Binding var config: UTMConfigurationTerminal
     
     private var textColor: Binding<Color> {
         Binding<Color> {
-            if let consoleTextColor = config.consoleTextColor,
+            if let consoleTextColor = config.foregroundColor,
                let color = Color(hexString: consoleTextColor) {
                 return color
             } else {
                 return Color.white
             }
         } set: { newValue in
-            config.consoleTextColor = newValue.cgColor!.hexString
+            config.foregroundColor = newValue.cgColor!.hexString
         }
     }
     private var backgroundColor: Binding<Color> {
         Binding<Color> {
-            if let consoleBackgroundColor = config.consoleBackgroundColor,
+            if let consoleBackgroundColor = config.backgroundColor,
                let color = Color(hexString: consoleBackgroundColor) {
                 return color
             } else {
                 return Color.black
             }
         } set: { newValue in
-            config.consoleBackgroundColor = newValue.cgColor!.hexString
+            config.backgroundColor = newValue.cgColor!.hexString
         }
     }
         
     var body: some View {
-        let fontSizeObserver = Binding<Int> {
-            Int(truncating: config.consoleFontSize ?? 1)
-        } set: {
-            config.consoleFontSize = NSNumber(value: $0)
-        }
         Section(header: Text("Style")) {
-            VMConfigStringPicker("Theme", selection: $config.consoleTheme, rawValues: UTMQemuConfiguration.supportedConsoleThemes(), displayValues: UTMQemuConfiguration.supportedConsoleThemes())
+            VMConfigConstantPicker("Theme", selection: $config.theme.bound)
             ColorPicker("Text Color", selection: textColor)
             ColorPicker("Background Color", selection: backgroundColor)
-            VMConfigStringPicker("Font", selection: $config.consoleFont, rawValues: UTMQemuConfiguration.supportedConsoleFonts(), displayValues: UTMQemuConfiguration.supportedConsoleFontsPretty())
+            VMConfigConstantPicker("Font", selection: $config.font)
             HStack {
-                Stepper(value: fontSizeObserver, in: 1...72) {
+                Stepper(value: $config.fontSize, in: 1...72) {
                         Text("Font Size")
                 }
-                NumberTextField("", number: $config.consoleFontSize, prompt: "12")
+                NumberTextField("", number: $config.fontSize, prompt: "12")
                     .frame(width: 50)
                     .multilineTextAlignment(.trailing)
             }
-            Toggle(isOn: $config.consoleCursorBlink, label: {
-                Text("Blinking Cursor")
-            })
         }
         
         DetailedSection("Resize Console Command", description: "Command to send when resizing the console. Placeholder $COLS is the number of columns and $ROWS is the number of rows.") {
-            DefaultTextField("", text: $config.consoleResizeCommand.bound, prompt: "stty cols $COLS rows $ROWS\n")
+            DefaultTextField("", text: $config.resizeCommand.bound, prompt: "stty cols $COLS rows $ROWS\n")
         }
     }
 }
 
-@available(iOS 14, macOS 11, *)
 struct VMConfigDisplayConsoleView_Previews: PreviewProvider {
-    @ObservedObject static private var config = UTMQemuConfiguration()
+    @State static private var config = UTMConfigurationTerminal()
     
     static var previews: some View {
-        VMConfigDisplayConsoleView(config: config)
+        VMConfigDisplayConsoleView(config: $config)
     }
 }

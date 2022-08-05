@@ -16,31 +16,26 @@
 
 import SwiftUI
 
-@available(iOS 14, macOS 11, *)
 struct VMConfigSoundView: View {
-    @ObservedObject var config: UTMQemuConfiguration
+    @Binding var config: UTMQemuConfigurationSound
+    @Binding var system: UTMQemuConfigurationSystem
     
     var body: some View {
         VStack {
             Form {
                 Section(header: Text("Hardware")) {
-                    Toggle(isOn: $config.soundEnabled.animation(), label: {
-                        Text("Enabled")
-                    })
-                    if config.soundEnabled {
-                        VMConfigStringPicker("Emulated Audio Card", selection: $config.soundCard, rawValues: UTMQemuConfiguration.supportedSoundCards(forArchitecture: config.systemArchitecture), displayValues: UTMQemuConfiguration.supportedSoundCards(forArchitecturePretty: config.systemArchitecture))
-                    }
-                }.disabled(UTMQemuConfiguration.supportedSoundCards(forArchitecture: config.systemArchitecture)?.isEmpty ?? true)
+                    VMConfigConstantPicker("Emulated Audio Card", selection: $config.hardware, type: system.architecture.soundDeviceType)
+                }
             }
         }
     }
 }
 
-@available(iOS 14, macOS 11, *)
 struct VMConfigSoundView_Previews: PreviewProvider {
-    @State static private var config = UTMQemuConfiguration()
+    @State static private var config = UTMQemuConfigurationSound()
+    @State static private var system = UTMQemuConfigurationSystem()
     
     static var previews: some View {
-        VMConfigSoundView(config: config)
+        VMConfigSoundView(config: $config, system: $system)
     }
 }

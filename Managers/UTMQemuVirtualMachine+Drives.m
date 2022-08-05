@@ -20,6 +20,7 @@
 #import "UTMDrive.h"
 #import "UTMQemu.h"
 #import "UTMQemuManager+BlockDevices.h"
+#import "UTM-Swift.h"
 
 extern NSString *const kUTMErrorDomain;
 
@@ -34,35 +35,6 @@ extern NSString *const kUTMErrorDomain;
 
 @implementation UTMQemuVirtualMachine (Drives)
 
-- (NSArray<UTMDrive *> *)drives {
-    NSInteger count = self.qemuConfig.countDrives;
-    id drives = [NSMutableArray<UTMDrive *> arrayWithCapacity:count];
-    for (NSInteger i = 0; i < count; i++) {
-        UTMDrive *drive = [UTMDrive new];
-        drive.index = i;
-        drive.imageType = [self.qemuConfig driveImageTypeForIndex:i];
-        drive.interface = [self.qemuConfig driveInterfaceTypeForIndex:i];
-        drive.name = [self.qemuConfig driveNameForIndex:i];
-        if ([self.qemuConfig driveRemovableForIndex:i]) {
-            // removable drive -> path stored only in viewState
-            NSString *path = [self.viewState pathForRemovableDrive:drive.name];
-            if (path.length > 0) {
-                drive.status = UTMDriveStatusInserted;
-                drive.path = path;
-            } else {
-                drive.status = UTMDriveStatusEjected;
-                drive.path = nil;
-            }
-        } else {
-            // fixed drive -> path stored in configuration
-            drive.status = UTMDriveStatusFixed;
-            drive.path = [self.qemuConfig driveImagePathForIndex:i];
-        }
-        [drives addObject:drive];
-    }
-    return drives;
-}
-
 - (BOOL)ejectDrive:(UTMDrive *)drive force:(BOOL)force error:(NSError * _Nullable __autoreleasing *)error {
     NSString *oldPath = [self.viewState pathForRemovableDrive:drive.name];
     [self.viewState removeBookmarkForRemovableDrive:drive.name];
@@ -71,7 +43,7 @@ extern NSString *const kUTMErrorDomain;
     if (!self.qemu.isConnected) {
         return YES; // not running
     }
-    return [self.qemu ejectDrive:drive.name force:force error:error];
+    return [self.qemu ejectDrive:[NSString stringWithFormat:@"drive%@", drive.name] force:force error:error];
 }
 
 - (BOOL)changeMediumForDrive:(UTMDrive *)drive url:(NSURL *)url error:(NSError * _Nullable __autoreleasing *)error {
@@ -113,7 +85,7 @@ extern NSString *const kUTMErrorDomain;
         if (success) {
             [self.viewState setBookmark:newBookmark path:path forRemovableDrive:drive.name persistent:YES];
             [self saveViewState];
-            success = [self.qemu changeMediumForDrive:drive.name path:path error:&qemuError];
+            success = [self.qemu changeMediumForDrive:[NSString stringWithFormat:@"drive%@", drive.name] path:path error:&qemuError];
         } else {
             qemuError = [NSError errorWithDomain:kUTMErrorDomain code:-1 userInfo:@{NSLocalizedDescriptionKey: NSLocalizedString(@"Failed to access drive image path.", "UTMVirtualMachine+Drives")}];
         }

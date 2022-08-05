@@ -107,9 +107,9 @@ find "$BUILT_PATH" -type d -path '*/Frameworks/*.framework' -exec codesign --for
 if [ "$PLATFORM" == "macos" ]; then
     # always build with vm entitlements, package_mac.sh can strip it later
     # this way we can import into Xcode and re-sign from there
-    UTM_ENTITLEMENTS="/tmp/utm.entitlements"
-    LAUNCHER_ENTITLEMENTS="/tmp/launcher.entitlements"
-    HELPER_ENTITLEMENTS="/tmp/helper.entitlements"
+    UTM_ENTITLEMENTS="/tmp/utm.$$.entitlements"
+    LAUNCHER_ENTITLEMENTS="/tmp/launcher.$$.entitlements"
+    HELPER_ENTITLEMENTS="/tmp/helper.$$.entitlements"
     cp "$BASEDIR/../Platform/macOS/macOS.entitlements" "$UTM_ENTITLEMENTS"
     cp "$BASEDIR/../QEMULauncher/QEMULauncher.entitlements" "$LAUNCHER_ENTITLEMENTS"
     cp "$BASEDIR/../QEMUHelper/QEMUHelper.entitlements" "$HELPER_ENTITLEMENTS"

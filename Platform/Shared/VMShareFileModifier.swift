@@ -16,7 +16,6 @@
 
 import SwiftUI
 
-@available(iOS 14, macOS 11, *)
 struct VMShareItemModifier: ViewModifier {
     @Binding var isPresented: Bool
     let shareItem: ShareItem?
@@ -50,7 +49,7 @@ struct VMShareItemModifier: ViewModifier {
             case .debugLog(let url):
                 return url
             case .utmCopy(let vm), .utmMove(let vm):
-                return vm.path!
+                return vm.path
             case .qemuCommand(let command):
                 return command
             }

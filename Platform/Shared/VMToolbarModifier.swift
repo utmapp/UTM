@@ -17,7 +17,6 @@
 import SwiftUI
 
 // Lots of dirty hacks to work around SwiftUI bugs introduced in Beta 2
-@available(iOS 14, macOS 11, *)
 struct VMToolbarModifier: ViewModifier {
     @ObservedObject var vm: UTMVirtualMachine
     let bottom: Bool

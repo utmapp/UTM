@@ -16,10 +16,9 @@
 
 import Foundation
 
-@available(iOS 13, macOS 11, *)
 @objc class UTMQemuImage: UTMQemu {
     private init() {
-        super.init(argv: [])
+        super.init(arguments: [])
     }
     
     static func convert(from url: URL, toQcow2 dest: URL, withCompression compressed: Bool = false) async throws {
@@ -29,6 +28,8 @@ import Foundation
         qemuImg.pushArgv("convert")
         if compressed {
             qemuImg.pushArgv("-c")
+            qemuImg.pushArgv("-o")
+            qemuImg.pushArgv("compression_type=zstd")
         }
         qemuImg.pushArgv("-O")
         qemuImg.pushArgv("qcow2")

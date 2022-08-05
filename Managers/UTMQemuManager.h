@@ -32,6 +32,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithPort:(CSPort *)port NS_DESIGNATED_INITIALIZER;
 
+- (BOOL)qmpEnterCommandModeWithError:(NSError * _Nullable __autoreleasing *)error;
 - (BOOL)continueBootWithError:(NSError * _Nullable __autoreleasing *)error;
 
 - (void)qemuPowerDownWithCompletion:(void (^ _Nullable)(NSError * _Nullable))completion;

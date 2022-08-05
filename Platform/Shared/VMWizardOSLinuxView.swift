@@ -16,7 +16,6 @@
 
 import SwiftUI
 
-@available(iOS 14, macOS 11, *)
 struct VMWizardOSLinuxView: View {
     private enum SelectImage {
         case kernel
@@ -28,6 +27,14 @@ struct VMWizardOSLinuxView: View {
     @ObservedObject var wizardState: VMWizardState
     @State private var isFileImporterPresented: Bool = false
     @State private var selectImage: SelectImage = .kernel
+    
+    private var hasVenturaFeatures: Bool {
+        if #available(macOS 13, *) {
+            return true
+        } else {
+            return false
+        }
+    }
     
     var body: some View {
 #if os(macOS)
@@ -46,7 +53,7 @@ struct VMWizardOSLinuxView: View {
             Section {
                 Toggle("Boot from kernel image", isOn: $wizardState.useLinuxKernel)
                     .help("If set, boot directly from a raw kernel image and initrd. Otherwise, boot from a supported ISO.")
-                    .disabled(wizardState.useAppleVirtualization)
+                    .disabled(wizardState.useAppleVirtualization && !hasVenturaFeatures)
                 if !wizardState.useLinuxKernel {
 #if arch(arm64)
                 Link("Download Ubuntu Server for ARM", destination: URL(string: "https://ubuntu.com/download/server/arm")!)
@@ -59,6 +66,20 @@ struct VMWizardOSLinuxView: View {
             } header: {
                 Text("Boot Image Type")
             }
+            
+            #if arch(arm64)
+            if #available(macOS 13, *), wizardState.useAppleVirtualization {
+                Section {
+                    Toggle("Enable Rosetta (x86_64 Emulation)", isOn: $wizardState.linuxHasRosetta)
+                    Link("Installation Instructions", destination: URL(string: "https://developer.apple.com/documentation/virtualization/running_intel_binaries_in_linux_vms_with_rosetta#3978496")!)
+                        .buttonStyle(.borderless)
+                    Text("Note: The file system tag for mounting the installer is 'rosetta'.")
+                        .font(.footnote)
+                } header: {
+                    Text("Additional Options")
+                }
+            }
+            #endif
             
             if wizardState.useLinuxKernel {
                 
@@ -218,7 +239,7 @@ struct VMWizardOSLinuxView: View {
                 }
             }
             if wizardState.isBusy {
-                BigWhiteSpinner()
+                Spinner(size: .large)
             }
             
             
@@ -247,7 +268,6 @@ struct VMWizardOSLinuxView: View {
     }
 }
 
-@available(iOS 14, macOS 11, *)
 struct VMWizardOSLinuxView_Previews: PreviewProvider {
     @StateObject static var wizardState = VMWizardState()
     

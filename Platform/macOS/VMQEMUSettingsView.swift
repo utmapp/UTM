@@ -17,77 +17,75 @@
 import SwiftUI
 
 struct VMQEMUSettingsView: View {
-    let vm: UTMVirtualMachine?
     @ObservedObject var config: UTMQemuConfiguration
-    @Binding var selectedDriveIndex: Int?
     @EnvironmentObject private var data: UTMData
 
     @State private var infoActive: Bool = true
+    @State private var isResetConfig: Bool = false
+    @State private var isNewDriveShown: Bool = false
     
     var body: some View {
-        NavigationLink(destination: VMConfigInfoView(config: config).scrollable(), isActive: $infoActive) {
+        NavigationLink(destination: VMConfigInfoView(config: $config.information).scrollable(), isActive: $infoActive) {
             Label("Information", systemImage: "info.circle")
         }
-        NavigationLink(destination: VMConfigSystemView(config: config).scrollable()) {
+        NavigationLink(destination: VMConfigSystemView(config: $config.system, isResetConfig: $isResetConfig).scrollable()) {
             Label("System", systemImage: "cpu")
+        }.onChange(of: isResetConfig) { newValue in
+            if newValue {
+                config.reset(forArchitecture: config.system.architecture, target: config.system.target)
+                isResetConfig = false
+            }
         }
-        NavigationLink(destination: VMConfigQEMUView(config: config).scrollable()) {
+        NavigationLink(destination: VMConfigQEMUView(config: $config.qemu, system: $config.system, fetchFixedArguments: { config.generatedArguments }).scrollable()) {
             Label("QEMU", systemImage: "shippingbox")
         }
-        NavigationLink(destination: VMConfigDisplayView(config: config).scrollable()) {
-            Label("Display", systemImage: "rectangle.on.rectangle")
-        }
-        NavigationLink(destination: VMConfigInputView(config: config).scrollable()) {
+        NavigationLink(destination: VMConfigInputView(config: $config.input).scrollable()) {
             Label("Input", systemImage: "keyboard")
         }
-        Group {
-            NavigationLink(destination: VMConfigNetworkView(config: config).scrollable()) {
-                Label("Network", systemImage: "network")
-            }
-            NavigationLink(destination: VMConfigAdvancedNetworkView(config: config).scrollable()) {
-                Label("IP Configuration", systemImage: "mappin.circle")
-                    .padding(.leading)
-            }
-        }
-        NavigationLink(destination: VMConfigSoundView(config: config).scrollable()) {
-            Label("Sound", systemImage: "speaker.wave.2")
-        }
-        NavigationLink(destination: VMConfigSharingView(config: config).scrollable()) {
+        NavigationLink(destination: VMConfigSharingView(config: $config.sharing).scrollable()) {
             Label("Sharing", systemImage: "person.crop.circle")
         }
-        Section(header: Text("Drives")) {
-            ForEach(0..<config.countDrives, id: \.self) { index in
-                NavigationLink(destination: VMConfigDriveDetailsView(config: config, index: index, onDelete: { deleteDrive(atIndex: index) }).scrollable(), tag: index, selection: $selectedDriveIndex) {
-                    Label(config.driveLabel(for: index), systemImage: "externaldrive")
+        Section(header: Text("Devices")) {
+            ForEach($config.displays) { $display in
+                NavigationLink(destination: VMConfigDisplayView(config: $display, system: $config.system).scrollable()) {
+                    Label("Display", systemImage: "rectangle.on.rectangle")
+                }.contextMenu {
+                    DestructiveButton("Remove") {
+                        config.displays.removeAll(where: { $0.id == display.id })
+                    }
                 }
-            }.onMove(perform: moveDrives)
-            VMConfigNewDriveButton(vm: vm, config: config)
-                .buttonStyle(.link)
+            }
+            ForEach($config.serials) { $serial in
+                NavigationLink(destination: VMConfigSerialView(config: $serial, system: $config.system).scrollable()) {
+                    Label("Serial", systemImage: "cable.connector")
+                }.contextMenu {
+                    DestructiveButton("Remove") {
+                        config.serials.removeAll(where: { $0.id == serial.id })
+                    }
+                }
+            }
+            ForEach($config.networks) { $network in
+                NavigationLink(destination: VMConfigNetworkView(config: $network, system: $config.system).scrollable()) {
+                    Label("Network", systemImage: "network")
+                }.contextMenu {
+                    DestructiveButton("Remove") {
+                        config.networks.removeAll(where: { $0.id == network.id })
+                    }
+                }
+            }
+            ForEach($config.sound) { $sound in
+                NavigationLink(destination: VMConfigSoundView(config: $sound, system: $config.system).scrollable()) {
+                    Label("Sound", systemImage: "speaker.wave.2")
+                }.contextMenu {
+                    DestructiveButton("Remove") {
+                        config.sound.removeAll(where: { $0.id == sound.id })
+                    }
+                }
+            }
+            VMSettingsAddDeviceMenuView(config: config)
         }
-    }
-
-    func deleteDrive(atIndex index: Int) {
-        withAnimation {
-            data.busyWorkAsync {
-                try await data.removeDrive(at: index, for: config)
-            }
-            selectedDriveIndex = nil
-        }
-    }
-
-
-    func moveDrives(from source: IndexSet, to destination: Int) {
-        for offset in source {
-            let realDestination: Int
-            if offset < destination {
-                realDestination = destination - 1
-            } else {
-                realDestination = destination
-            }
-            config.moveDrive(offset, to: realDestination)
-            if selectedDriveIndex == offset {
-                selectedDriveIndex = realDestination
-            }
+        Section(header: Text("Drives")) {
+            VMDrivesSettingsView(drives: $config.drives, template: UTMQemuConfigurationDrive(forArchitecture: config.system.architecture, target: config.system.target))
         }
     }
 }
@@ -96,6 +94,6 @@ struct VMQEMUSettingsView_Previews: PreviewProvider {
     @State static private var config = UTMQemuConfiguration()
     
     static var previews: some View {
-        VMQEMUSettingsView(vm: nil, config: config, selectedDriveIndex: .constant(0))
+        VMQEMUSettingsView(config: config)
     }
 }

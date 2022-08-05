@@ -16,18 +16,13 @@
 
 import SwiftUI
 
-@available(iOS 14, macOS 11, *)
 struct BusyOverlay: View {
     @EnvironmentObject private var data: UTMData
     
     var body: some View {
         Group {
             if data.busy {
-                BigWhiteSpinner()
-                    .frame(width: 100, height: 100, alignment: .center)
-                    .foregroundColor(.white)
-                    .background(Color.gray.opacity(0.5))
-                    .clipShape(RoundedRectangle(cornerRadius: 25.0, style: .continuous))
+                BusyIndicator()
             } else {
                 EmptyView()
             }
@@ -38,7 +33,6 @@ struct BusyOverlay: View {
     }
 }
 
-@available(iOS 14, macOS 11, *)
 struct BusyOverlay_Previews: PreviewProvider {
     static var previews: some View {
         BusyOverlay()

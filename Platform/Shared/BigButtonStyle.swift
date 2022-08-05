@@ -16,7 +16,6 @@
 
 import SwiftUI
 
-@available(iOS 14, macOS 11, *)
 struct BigButtonStyle: ButtonStyle {
     let width: CGFloat
     let height: CGFloat
@@ -59,7 +58,6 @@ struct BigButtonStyle: ButtonStyle {
 #if os(macOS)
 typealias BrowseButtonStyle = DefaultButtonStyle
 #else
-@available(iOS 14, *)
 struct BrowseButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         BigButtonStyle.BigButtonView(width: 150, height: 50, configuration: configuration)
