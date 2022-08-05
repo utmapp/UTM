@@ -65,6 +65,8 @@ import Virtualization
     
     weak var screenshotDelegate: UTMScreenshotProvider?
     
+    private var activeResourceUrls: [URL] = []
+    
     override func reloadConfiguration() throws {
         let newConfig = try UTMAppleConfiguration.load(from: path) as! UTMAppleConfiguration
         let oldConfig = appleConfig
@@ -112,6 +114,7 @@ import Virtualization
         }
         changeState(.vmStarting)
         do {
+            try await beginAccessingResources()
             try await _vmStart()
             if #available(macOS 12, *) {
                 sharedDirectoriesChanged = appleConfig.$sharedDirectories.sink { [weak self] newShares in
@@ -365,6 +368,38 @@ import Virtualization
         
         return (mfd, sfd, name)
     }
+    
+    @MainActor private func beginAccessingResources() throws {
+        for i in appleConfig.drives.indices {
+            let drive = appleConfig.drives[i]
+            if let url = drive.imageURL, drive.isExternal {
+                if url.startAccessingSecurityScopedResource() {
+                    activeResourceUrls.append(url)
+                } else {
+                    appleConfig.drives[i].imageURL = nil
+                    throw UTMAppleVirtualMachineError.cannotAccessResource(url)
+                }
+            }
+        }
+        for i in appleConfig.sharedDirectories.indices {
+            let share = appleConfig.sharedDirectories[i]
+            if let url = share.directoryURL {
+                if url.startAccessingSecurityScopedResource() {
+                    activeResourceUrls.append(url)
+                } else {
+                    appleConfig.sharedDirectories[i].directoryURL = nil
+                    throw UTMAppleVirtualMachineError.cannotAccessResource(url)
+                }
+            }
+        }
+    }
+    
+    @MainActor private func stopAccesingResources() {
+        for url in activeResourceUrls {
+            url.stopAccessingSecurityScopedResource()
+        }
+        activeResourceUrls.removeAll()
+    }
 }
 
 @available(macOS 11, *)
@@ -372,6 +407,9 @@ extension UTMAppleVirtualMachine: VZVirtualMachineDelegate {
     func guestDidStop(_ virtualMachine: VZVirtualMachine) {
         apple = nil
         sharedDirectoriesChanged = nil
+        Task { @MainActor in
+            stopAccesingResources()
+        }
         for i in appleConfig.serials.indices {
             if let serialPort = appleConfig.serials[i].interface {
                 serialPort.close()
@@ -395,4 +433,17 @@ extension UTMAppleVirtualMachine: VZVirtualMachineDelegate {
 
 protocol UTMScreenshotProvider: AnyObject {
     var screenshot: CSScreenshot? { get }
+}
+
+enum UTMAppleVirtualMachineError: Error {
+    case cannotAccessResource(URL)
+}
+
+extension UTMAppleVirtualMachineError: LocalizedError {
+    var errorDescription: String? {
+        switch self {
+        case .cannotAccessResource(let url):
+            return NSLocalizedString("Cannot access resource: \(url.path)", comment: "UTMAppleVirtualMachine")
+        }
+    }
 }
