@@ -794,4 +794,44 @@ class UTMData: ObservableObject {
         }
     }
 #endif
+
+    // MARK - JitStreamer
+
+#if os(iOS)
+    @available(iOS 15, *)
+    func jitStreamerAttach() async throws {
+        let urlString = String(
+            format: "http://%@/attach/%ld/",
+            UserDefaults.standard.string(forKey: "JitStreamerAddress") ?? "",
+            getpid()
+        )
+        if let url = URL(string: urlString) {
+            var request = URLRequest(url: url)
+            request.httpMethod = "POST"
+            request.httpBody = "".data(using: .utf8)
+            var attachError: Error?
+            do {
+                let (data, _) = try await URLSession.shared.data(for: request)
+                let attachResponse = try JSONDecoder().decode(AttachResponse.self, from: data)
+                if !attachResponse.success {
+                    attachError = String(format: NSLocalizedString("Failed to attach to JitStreamer:\n%@", comment: "ContentView"), attachResponse.message)
+                }
+            } catch is DecodingError {
+                throw NSLocalizedString("Failed to decode JitStreamer response.", comment: "ContentView")
+            } catch {
+                throw NSLocalizedString("Failed to attach to JitStreamer.", comment: "ContentView")
+            }
+            if let attachError = attachError {
+                throw attachError
+            }
+        } else {
+            throw String(format: NSLocalizedString("Invalid JitStreamer attach URL:\n%@", comment: "ContentView"), urlString)
+        }
+    }
+
+    private struct AttachResponse: Decodable {
+        var message: String
+        var success: Bool
+    }
+#endif
 }
