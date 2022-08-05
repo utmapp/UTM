@@ -2158,6 +2158,9 @@
 		CED814E824C79F070042F0F1 /* VMConfigDriveCreateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMConfigDriveCreateView.swift; sourceTree = "<group>"; };
 		CED814EB24C7C2850042F0F1 /* VMConfigInfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMConfigInfoView.swift; sourceTree = "<group>"; };
 		CED814EE24C7EB760042F0F1 /* ImagePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePicker.swift; sourceTree = "<group>"; };
+		CEDC9BA2288B74E50030F494 /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		CEDC9BA3288BBD130030F494 /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/Localizable.strings; sourceTree = "<group>"; };
+		CEDC9BA4288BBD6B0030F494 /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		CEDF83F8258AE24E0030E4AC /* UTMPasteboard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMPasteboard.swift; sourceTree = "<group>"; };
 		CEE0420A244117040001680F /* UTMLegacyQemuConfiguration+Display.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UTMLegacyQemuConfiguration+Display.h"; sourceTree = "<group>"; };
 		CEE0420B244117040001680F /* UTMLegacyQemuConfiguration+Display.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UTMLegacyQemuConfiguration+Display.m"; sourceTree = "<group>"; };
@@ -2192,6 +2195,8 @@
 		CEF83EC124F9C9E100557D15 /* UTMDrive.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UTMDrive.m; sourceTree = "<group>"; };
 		CEF83EC624FB1B9300557D15 /* UTMQemuVirtualMachine+SPICE.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UTMQemuVirtualMachine+SPICE.m"; sourceTree = "<group>"; };
 		CEF83EC924FB1BB200557D15 /* UTMQemuVirtualMachine+SPICE.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UTMQemuVirtualMachine+SPICE.h"; sourceTree = "<group>"; };
+		CEF84ADA2887D7D300578F41 /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/Localizable.strings; sourceTree = "<group>"; };
+		CEFC6CDC24C25697003F6962 /* VMDriveImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMDriveImage.swift; sourceTree = "<group>"; };
 		E2D64BC7241DB24B0034E0C6 /* UTMSpiceIO.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UTMSpiceIO.h; sourceTree = "<group>"; };
 		E2D64BC8241DB24B0034E0C6 /* UTMSpiceIO.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UTMSpiceIO.m; sourceTree = "<group>"; };
 		E2D64BE0241EAEBE0034E0C6 /* UTMSpiceIODelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UTMSpiceIODelegate.h; sourceTree = "<group>"; };
@@ -3405,6 +3410,7 @@
 				"zh-Hans",
 				ko,
 				"zh-Hant",
+				ja,
 				fr,
 			);
 			mainGroup = CE550BC0225947990063E575;
@@ -4416,6 +4422,7 @@
 				521F3EFA2414F73800130500 /* zh-Hans */,
 				C8958B6D243634DA002D86B4 /* ko */,
 				52873FD9247F5B1B0063E4C8 /* zh-Hant */,
+				CEF84ADA2887D7D300578F41 /* ja */,
 				84937F0C28975DCB003148F4 /* fr */,
 				84937F19289764D9003148F4 /* en */,
 			);
@@ -4439,6 +4446,7 @@
 			children = (
 				FFB02A8B266CB09C006CD71A /* zh-Hant */,
 				C03453AD2709E35100AD51AD /* zh-Hans */,
+				CEDC9BA2288B74E50030F494 /* ja */,
 				84937F0E289761C0003148F4 /* fr */,
 				84937F17289764A9003148F4 /* en */,
 			);
@@ -4450,6 +4458,7 @@
 			children = (
 				FFB02A8F266CB09C006CD71A /* zh-Hant */,
 				C03453AE2709E35100AD51AD /* zh-Hans */,
+				CEDC9BA4288BBD6B0030F494 /* ja */,
 				84937F0F289761D1003148F4 /* fr */,
 				84937F18289764CF003148F4 /* en */,
 			);
@@ -4472,6 +4481,7 @@
 			children = (
 				FFB02A95266CB09C006CD71A /* zh-Hant */,
 				C03453B02709E35200AD51AD /* zh-Hans */,
+				CEDC9BA3288BBD130030F494 /* ja */,
 				84937F1128976204003148F4 /* fr */,
 				84937F1B289764E4003148F4 /* en */,
 			);
