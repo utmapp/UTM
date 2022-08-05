@@ -78,8 +78,10 @@ struct VMConfigQEMUView: View {
                         .help("Should be on always unless the guest cannot boot because of this.")
                     Toggle("Balloon Device", isOn: $config.hasBalloonDevice)
                         .help("Should be on always unless the guest cannot boot because of this.")
+                    #if false
                     Toggle("TPM Device", isOn: $config.hasTPMDevice)
                         .help("This is required to boot Windows 11.")
+                    #endif
                     #if os(macOS)
                     Toggle("Use Hypervisor", isOn: $config.hasHypervisor)
                         .disabled(!supportsHypervisor)
