@@ -279,7 +279,7 @@ enum VMWizardOS: String, Identifiable {
             } else {
                 config.system.boot = try UTMAppleConfigurationBoot(for: .linux)
             }
-            config.devices.hasRosetta = linuxHasRosetta
+            config.virtualization.hasRosetta = linuxHasRosetta
             #endif
         case .Windows:
             config.information.iconURL = UTMConfigurationInfo.builtinIcon(named: "windows")
@@ -297,18 +297,18 @@ enum VMWizardOS: String, Identifiable {
         // some meaningful defaults
         if #available(macOS 12, *) {
             config.displays = [UTMAppleConfigurationDisplay(width: 1920, height: 1200)]
-            config.devices.hasAudio = true
-            config.devices.hasKeyboard = true
-            config.devices.pointer = .mouse
+            config.virtualization.hasAudio = true
+            config.virtualization.hasKeyboard = true
+            config.virtualization.pointer = .mouse
         }
-        config.devices.hasBalloon = true
-        config.devices.hasEntropy = true
+        config.virtualization.hasBalloon = true
+        config.virtualization.hasEntropy = true
         config.networks = [UTMAppleConfigurationNetwork()]
         if operatingSystem == .Linux && useLinuxKernel {
             config.serials = [UTMAppleConfigurationSerial()]
         }
         if #available(macOS 13, *) {
-            config.devices.hasClipboardSharing = true
+            config.virtualization.hasClipboardSharing = true
         }
         return config
     }

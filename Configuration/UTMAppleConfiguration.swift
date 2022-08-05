@@ -25,7 +25,7 @@ final class UTMAppleConfiguration: UTMConfiguration {
     
     @Published var system: UTMAppleConfigurationSystem = .init()
     
-    @Published var devices: UTMAppleConfigurationDevices = .init()
+    @Published var virtualization: UTMAppleConfigurationVirtualization = .init()
     
     @Published var sharedDirectories: [UTMAppleConfigurationSharedDirectory] = []
     
@@ -44,7 +44,7 @@ final class UTMAppleConfiguration: UTMConfiguration {
     enum CodingKeys: String, CodingKey {
         case information = "Information"
         case system = "System"
-        case devices = "Devices"
+        case virtualization = "Virtualization"
         case sharedDirectories = "SharedDirectory"
         case displays = "Display"
         case drives = "Drive"
@@ -72,7 +72,7 @@ final class UTMAppleConfiguration: UTMConfiguration {
         }
         information = try values.decode(UTMConfigurationInfo.self, forKey: .information)
         system = try values.decode(UTMAppleConfigurationSystem.self, forKey: .system)
-        devices = try values.decode(UTMAppleConfigurationDevices.self, forKey: .devices)
+        virtualization = try values.decode(UTMAppleConfigurationVirtualization.self, forKey: .virtualization)
         sharedDirectories = try values.decode([UTMAppleConfigurationSharedDirectory].self, forKey: .sharedDirectories)
         displays = try values.decode([UTMAppleConfigurationDisplay].self, forKey: .displays)
         drives = try values.decode([UTMAppleConfigurationDrive].self, forKey: .drives)
@@ -84,7 +84,7 @@ final class UTMAppleConfiguration: UTMConfiguration {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(information, forKey: .information)
         try container.encode(system, forKey: .system)
-        try container.encode(devices, forKey: .devices)
+        try container.encode(virtualization, forKey: .virtualization)
         try container.encode(sharedDirectories, forKey: .sharedDirectories)
         try container.encode(displays, forKey: .displays)
         try container.encode(drives, forKey: .drives)
@@ -127,7 +127,7 @@ extension UTMAppleConfiguration {
         self.init()
         information = .init(migrating: oldConfig, dataURL: dataURL)
         system = .init(migrating: oldConfig)
-        devices = .init(migrating: oldConfig)
+        virtualization = .init(migrating: oldConfig)
         sharedDirectories = oldConfig.sharedDirectories.map { .init(migrating: $0) }
         #if arch(arm64)
         if #available(macOS 12, *) {
@@ -174,7 +174,7 @@ extension UTMAppleConfiguration {
         vzconfig.networkDevices.append(contentsOf: networks.compactMap({ $0.vzNetworking() }))
         vzconfig.serialPorts.append(contentsOf: serials.compactMap({ $0.vzSerial() }))
         // add remaining devices
-        devices.fillVZConfiguration(vzconfig)
+        virtualization.fillVZConfiguration(vzconfig)
         #if arch(arm64)
         if #available(macOS 12, *) {
             if system.boot.operatingSystem == .macOS {
@@ -205,7 +205,7 @@ extension UTMAppleConfiguration {
 @available(macOS 11, *)
 extension UTMAppleConfiguration {
     func prepareSave(for packageURL: URL) async throws {
-        try await devices.prepareSave(for: packageURL)
+        try await virtualization.prepareSave(for: packageURL)
     }
     
     func saveData(to dataURL: URL) async throws -> [URL] {

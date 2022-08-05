@@ -20,7 +20,7 @@ import Virtualization
 /// Device settings.
 @available(iOS, unavailable, message: "Apple Virtualization not available on iOS")
 @available(macOS 11, *)
-struct UTMAppleConfigurationDevices: Codable {
+struct UTMAppleConfigurationVirtualization: Codable {
     enum PointerDevice: String, CaseIterable, QEMUConstant {
         case disabled = "Disabled"
         case mouse = "Mouse"
@@ -93,7 +93,7 @@ struct UTMAppleConfigurationDevices: Codable {
 
 @available(iOS, unavailable, message: "Apple Virtualization not available on iOS")
 @available(macOS 11, *)
-extension UTMAppleConfigurationDevices {
+extension UTMAppleConfigurationVirtualization {
     init(migrating oldConfig: UTMLegacyAppleConfiguration) {
         self.init()
         hasBalloon = oldConfig.isBalloonEnabled
@@ -110,7 +110,7 @@ extension UTMAppleConfigurationDevices {
 
 @available(iOS, unavailable, message: "Apple Virtualization not available on iOS")
 @available(macOS 11, *)
-extension UTMAppleConfigurationDevices {
+extension UTMAppleConfigurationVirtualization {
     func fillVZConfiguration(_ vzconfig: VZVirtualMachineConfiguration) {
         if hasBalloon {
             vzconfig.memoryBalloonDevices = [VZVirtioTraditionalMemoryBalloonDeviceConfiguration()]
@@ -164,7 +164,7 @@ extension UTMAppleConfigurationDevices {
 }
 
 // MARK: prepare save
-extension UTMAppleConfigurationDevices {
+extension UTMAppleConfigurationVirtualization {
     func prepareSave(for packageURL: URL) async throws {
         if #available(macOS 13, *), hasRosetta == true {
             try await installRosetta()

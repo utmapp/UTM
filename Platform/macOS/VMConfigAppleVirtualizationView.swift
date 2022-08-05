@@ -16,8 +16,8 @@
 
 import SwiftUI
 
-struct VMConfigAppleDevicesView: View {
-    @Binding var config: UTMAppleConfigurationDevices
+struct VMConfigAppleVirtualizationView: View {
+    @Binding var config: UTMAppleConfigurationVirtualization
     
     var body: some View {
         Form {
@@ -42,8 +42,8 @@ struct VMConfigAppleDevicesView: View {
 }
 
 struct VMConfigAppleDevicesView_Previews: PreviewProvider {
-    @State static private var config = UTMAppleConfigurationDevices()
+    @State static private var config = UTMAppleConfigurationVirtualization()
     static var previews: some View {
-        VMConfigAppleDevicesView(config: $config)
+        VMConfigAppleVirtualizationView(config: $config)
     }
 }
