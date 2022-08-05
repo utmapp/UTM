@@ -115,6 +115,11 @@ import Virtualization
         changeState(.vmStarting)
         do {
             try await _vmStart()
+            if #available(macOS 12, *) {
+                sharedDirectoriesChanged = appleConfig.$sharedDirectories.sink { [weak self] newShares in
+                    self?.updateSharedDirectories(with: newShares)
+                }
+            }
             changeState(.vmStarted)
         } catch {
             changeState(.vmStopped)
@@ -273,6 +278,20 @@ import Virtualization
         let vzConfig = appleConfig.appleVZConfiguration
         apple = VZVirtualMachine(configuration: vzConfig, queue: vmQueue)
         apple.delegate = self
+    }
+    
+    @available(macOS 12, *)
+    private func updateSharedDirectories(with newShares: [UTMAppleConfigurationSharedDirectory]) {
+        guard let fsConfig = apple?.directorySharingDevices.first(where: { device in
+            if let device = device as? VZVirtioFileSystemDevice {
+                return device.tag == "share"
+            } else {
+                return false
+            }
+        }) as? VZVirtioFileSystemDevice else {
+            return
+        }
+        fsConfig.share = UTMAppleConfigurationSharedDirectory.makeDirectoryShare(from: newShares)
     }
     
     @available(macOS 12, *)
