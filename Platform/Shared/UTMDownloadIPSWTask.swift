@@ -33,6 +33,10 @@ class UTMDownloadIPSWTask: UTMDownloadTask {
     }
     
     override func processCompletedDownload(at location: URL) async throws -> UTMVirtualMachine {
+        if !fileManager.fileExists(atPath: cacheUrl.path) {
+            try fileManager.createDirectory(at: cacheUrl, withIntermediateDirectories: false)
+        }
+        
         let cacheIpsw = cacheUrl.appendingPathComponent(url.lastPathComponent)
         if fileManager.fileExists(atPath: cacheIpsw.path) {
             try fileManager.removeItem(at: cacheIpsw)
