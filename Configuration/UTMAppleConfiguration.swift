@@ -78,6 +78,12 @@ final class UTMAppleConfiguration: UTMConfiguration {
         drives = try values.decode([UTMAppleConfigurationDrive].self, forKey: .drives)
         networks = try values.decode([UTMAppleConfigurationNetwork].self, forKey: .networks)
         serials = try values.decode([UTMAppleConfigurationSerial].self, forKey: .serials)
+        // remove incompatible configurations
+        if #unavailable(macOS 13), system.boot.operatingSystem != .macOS {
+            displays = []
+        } else if #unavailable(macOS 12) {
+            displays = []
+        }
     }
     
     func encode(to encoder: Encoder) throws {
@@ -182,7 +188,9 @@ extension UTMAppleConfiguration {
                 graphics.displays = displays.map({ display in
                     display.vzMacDisplay()
                 })
-                vzconfig.graphicsDevices = [graphics]
+                if graphics.displays.count > 0 {
+                    vzconfig.graphicsDevices = [graphics]
+                }
             }
         }
         #endif
@@ -192,7 +200,9 @@ extension UTMAppleConfiguration {
                 graphics.scanouts = displays.map({ display in
                     display.vzVirtioDisplay()
                 })
-                vzconfig.graphicsDevices = [graphics]
+                if graphics.scanouts.count > 0 {
+                    vzconfig.graphicsDevices = [graphics]
+                }
             }
         }
         return vzconfig

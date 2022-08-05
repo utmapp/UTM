@@ -19,6 +19,16 @@ import SwiftUI
 struct VMAppleSettingsAddDeviceMenuView: View {
     @ObservedObject var config: UTMAppleConfiguration
     
+    private var isAddDisplayEnabled: Bool {
+        if #available(macOS 13, *), config.displays.isEmpty && config.system.boot.operatingSystem != .none {
+            return true
+        } else if #available(macOS 12, *), config.displays.isEmpty && config.system.boot.operatingSystem == .macOS {
+            return true
+        } else {
+            return false
+        }
+    }
+    
     var body: some View {
         Menu {
             Button {
@@ -26,7 +36,7 @@ struct VMAppleSettingsAddDeviceMenuView: View {
                 config.displays.append(newDisplay)
             } label: {
                 Label("Display", systemImage: "rectangle.on.rectangle")
-            }.disabled(!config.displays.isEmpty)
+            }.disabled(!isAddDisplayEnabled)
             Button {
                 let newSerial = UTMAppleConfigurationSerial()
                 config.serials.append(newSerial)

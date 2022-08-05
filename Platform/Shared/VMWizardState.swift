@@ -296,10 +296,16 @@ enum VMWizardOS: String, Identifiable {
         }
         // some meaningful defaults
         if #available(macOS 12, *) {
-            config.displays = [UTMAppleConfigurationDisplay(width: 1920, height: 1200)]
-            config.virtualization.hasAudio = true
-            config.virtualization.hasKeyboard = true
-            config.virtualization.pointer = .mouse
+            var hasDisplay = operatingSystem == .macOS
+            if #available(macOS 13, *) {
+                hasDisplay = hasDisplay || (operatingSystem == .Linux)
+            }
+            if hasDisplay {
+                config.displays = [UTMAppleConfigurationDisplay(width: 1920, height: 1200)]
+                config.virtualization.hasAudio = true
+                config.virtualization.hasKeyboard = true
+                config.virtualization.pointer = .mouse
+            }
         }
         config.virtualization.hasBalloon = true
         config.virtualization.hasEntropy = true
