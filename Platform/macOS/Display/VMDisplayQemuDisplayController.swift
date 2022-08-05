@@ -247,7 +247,7 @@ extension VMDisplayQemuWindowController: UTMSpiceIODelegate {
         guard !isSecondary else {
             return
         }
-        guard let primary = self as? VMDisplayMetalWindowController else {
+        guard let primary = self as? VMQemuDisplayMetalWindowController else {
             return
         }
         DispatchQueue.main.async {
@@ -255,7 +255,7 @@ extension VMDisplayQemuWindowController: UTMSpiceIODelegate {
             guard id < self.vmQemuConfig.displays.count else {
                 return
             }
-            let secondary = VMDisplayMetalWindowController(secondaryFromDisplay: display, primary: primary, vm: self.qemuVM, id: id)
+            let secondary = VMQemuDisplayMetalWindowController(secondaryFromDisplay: display, primary: primary, vm: self.qemuVM, id: id)
             self.showSecondaryWindow(secondary)
         }
     }
@@ -303,7 +303,7 @@ extension VMDisplayQemuWindowController: UTMSpiceIODelegate {
             guard id < self.vmQemuConfig.serials.count else {
                 return
             }
-            let secondary = VMDisplayTerminalWindowController(secondaryFromSerialPort: serial, vm: self.qemuVM, id: id)
+            let secondary = VMDisplayQemuTerminalWindowController(secondaryFromSerialPort: serial, vm: self.qemuVM, id: id)
             self.showSecondaryWindow(secondary)
         }
     }
@@ -350,11 +350,11 @@ extension VMDisplayQemuWindowController: CSUSBManagerDelegate {
         }
         let alert = NSAlert()
         alert.alertStyle = .informational
-        alert.messageText = NSLocalizedString("USB Device", comment: "VMDisplayMetalWindowController")
-        alert.informativeText = NSLocalizedString("Would you like to connect '\(usbDevice.name ?? usbDevice.description)' to this virtual machine?", comment: "VMDisplayMetalWindowController")
+        alert.messageText = NSLocalizedString("USB Device", comment: "VMQemuDisplayMetalWindowController")
+        alert.informativeText = NSLocalizedString("Would you like to connect '\(usbDevice.name ?? usbDevice.description)' to this virtual machine?", comment: "VMQemuDisplayMetalWindowController")
         alert.showsSuppressionButton = true
-        alert.addButton(withTitle: NSLocalizedString("Confirm", comment: "VMDisplayMetalWindowController"))
-        alert.addButton(withTitle: NSLocalizedString("Cancel", comment: "VMDisplayMetalWindowController"))
+        alert.addButton(withTitle: NSLocalizedString("Confirm", comment: "VMQemuDisplayMetalWindowController"))
+        alert.addButton(withTitle: NSLocalizedString("Cancel", comment: "VMQemuDisplayMetalWindowController"))
         alert.beginSheetModal(for: window!) { response in
             if let suppressionButton = alert.suppressionButton,
                suppressionButton.state == .on {
@@ -397,7 +397,7 @@ extension VMDisplayQemuWindowController {
         let menu = NSMenu()
         menu.autoenablesItems = false
         let item = NSMenuItem()
-        item.title = NSLocalizedString("Querying USB devices...", comment: "VMDisplayMetalWindowController")
+        item.title = NSLocalizedString("Querying USB devices...", comment: "VMQemuDisplayMetalWindowController")
         item.isEnabled = false
         menu.addItem(item)
         DispatchQueue.global(qos: .userInitiated).async {
@@ -414,7 +414,7 @@ extension VMDisplayQemuWindowController {
         menu.removeAllItems()
         if devices.count == 0 {
             let item = NSMenuItem()
-            item.title = NSLocalizedString("No USB devices detected.", comment: "VMDisplayMetalWindowController")
+            item.title = NSLocalizedString("No USB devices detected.", comment: "VMQemuDisplayMetalWindowController")
             item.isEnabled = false
             menu.addItem(item)
         }

@@ -222,7 +222,7 @@ extension VMDisplayWindowController: NSWindowDelegate {
         let alert = NSAlert()
         alert.alertStyle = .informational
         alert.messageText = NSLocalizedString("Confirmation", comment: "VMDisplayWindowController")
-        alert.informativeText = NSLocalizedString("Closing this window will kill the VM.", comment: "VMDisplayMetalWindowController")
+        alert.informativeText = NSLocalizedString("Closing this window will kill the VM.", comment: "VMQemuDisplayMetalWindowController")
         alert.addButton(withTitle: NSLocalizedString("OK", comment: "VMDisplayWindowController"))
         alert.addButton(withTitle: NSLocalizedString("Cancel", comment: "VMDisplayWindowController"))
         alert.beginSheetModal(for: sender) { response in

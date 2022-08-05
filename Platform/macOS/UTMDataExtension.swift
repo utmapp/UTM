@@ -40,9 +40,9 @@ extension UTMData {
             }
             if let qvm = vm as? UTMQemuVirtualMachine {
                 if qvm.config.qemuHasDisplay {
-                    window = VMDisplayMetalWindowController(vm: qvm, onClose: close)
+                    window = VMQemuDisplayMetalWindowController(vm: qvm, onClose: close)
                 } else if qvm.config.qemuHasTerminal {
-                    window = VMDisplayTerminalWindowController(vm: qvm, onClose: close)
+                    window = VMDisplayQemuTerminalWindowController(vm: qvm, onClose: close)
                 } else {
                     window = VMHeadlessSessionState(for: qvm, onStop: close)
                 }
@@ -86,7 +86,7 @@ extension UTMData {
     
     func trySendTextSpice(vm: UTMQemuVirtualMachine, text: String) {
         guard text.count > 0 else { return }
-        if let vc = vmWindows[vm] as? VMDisplayMetalWindowController {
+        if let vc = vmWindows[vm] as? VMQemuDisplayMetalWindowController {
             KeyCodeMap.createKeyMapIfNeeded()
             
             func sleep() {
@@ -174,7 +174,7 @@ extension UTMData {
                     }
                 }
             }
-        } else if let vc = vmWindows[vm] as? VMDisplayTerminalWindowController {
+        } else if let vc = vmWindows[vm] as? VMDisplayQemuTerminalWindowController {
             if let data = text.data(using: .nonLossyASCII) {
                 vc.defaultSerialWrite(data: data)
             } else {
@@ -184,7 +184,7 @@ extension UTMData {
     }
     
     func tryClickAtPoint(vm: UTMQemuVirtualMachine, point: CGPoint, button: CSInputButton) {
-        if let vc = vmWindows[vm] as? VMDisplayMetalWindowController {
+        if let vc = vmWindows[vm] as? VMQemuDisplayMetalWindowController {
             vc.mouseMove(absolutePoint: point, button: [])
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.02) {
                 vc.mouseDown(button: button)

@@ -34,7 +34,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 let alert = NSAlert()
                 alert.alertStyle = .informational
                 alert.messageText = NSLocalizedString("Confirmation", comment: "VMDisplayWindowController")
-                alert.informativeText = NSLocalizedString("Quitting UTM will kill all running VMs.", comment: "VMDisplayMetalWindowController")
+                alert.informativeText = NSLocalizedString("Quitting UTM will kill all running VMs.", comment: "VMQemuDisplayMetalWindowController")
                 alert.addButton(withTitle: NSLocalizedString("OK", comment: "VMDisplayWindowController"))
                 alert.addButton(withTitle: NSLocalizedString("Cancel", comment: "VMDisplayWindowController"))
                 let confirm = { (response: NSApplication.ModalResponse) in

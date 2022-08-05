@@ -16,7 +16,7 @@
 
 import SwiftTerm
 
-class VMDisplayTerminalWindowController: VMDisplayQemuWindowController, VMDisplayTerminal {
+class VMDisplayQemuTerminalWindowController: VMDisplayQemuWindowController, VMDisplayTerminal {
     private var terminalView: TerminalView!
     private var vmSerialPort: CSPort?
     
@@ -26,7 +26,7 @@ class VMDisplayTerminalWindowController: VMDisplayQemuWindowController, VMDispla
     
     override var defaultTitle: String {
         if isSecondary {
-            return NSLocalizedString("\(vmQemuConfig.information.name) (Terminal \(id+1))", comment: "VMDisplayTerminalWindowController")
+            return NSLocalizedString("\(vmQemuConfig.information.name) (Terminal \(id+1))", comment: "VMDisplayQemuTerminalWindowController")
         } else {
             return super.defaultTitle
         }
@@ -88,7 +88,7 @@ class VMDisplayTerminalWindowController: VMDisplayQemuWindowController, VMDispla
     }
 }
 
-extension VMDisplayTerminalWindowController: TerminalViewDelegate {
+extension VMDisplayQemuTerminalWindowController: TerminalViewDelegate {
     func sizeChanged(source: TerminalView, newCols: Int, newRows: Int) {
     }
     
@@ -109,7 +109,7 @@ extension VMDisplayTerminalWindowController: TerminalViewDelegate {
     }
 }
 
-extension VMDisplayTerminalWindowController: CSPortDelegate {
+extension VMDisplayQemuTerminalWindowController: CSPortDelegate {
     func portDidDisconect(_ port: CSPort) {
     }
     
