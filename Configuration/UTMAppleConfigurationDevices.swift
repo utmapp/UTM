@@ -143,12 +143,15 @@ extension UTMAppleConfigurationDevices {
                 vzconfig.pointingDevices = [device]
             }
         }
+        #endif
         if #available(macOS 13, *) {
+            #if arch(arm64)
             if hasRosetta == true, let rosettaDirectoryShare = try? VZLinuxRosettaDirectoryShare() {
                 let fileSystemDevice = VZVirtioFileSystemDeviceConfiguration(tag: "rosetta")
                 fileSystemDevice.share = rosettaDirectoryShare
                 vzconfig.directorySharingDevices.append(fileSystemDevice)
             }
+            #endif
             if hasClipboardSharing {
                 let spiceClipboardAgent = VZSpiceAgentPortAttachment()
                 spiceClipboardAgent.sharesClipboard = true
@@ -157,7 +160,6 @@ extension UTMAppleConfigurationDevices {
                 vzconfig.serialPorts.append(serialConfig)
             }
         }
-        #endif
     }
 }
 
@@ -171,11 +173,15 @@ extension UTMAppleConfigurationDevices {
     
     @available(macOS 13, *)
     private func installRosetta() async throws {
+        #if arch(arm64)
         let rosettaAvailability = VZLinuxRosettaDirectoryShare.availability
         if rosettaAvailability == .notSupported {
             throw UTMAppleConfigurationError.rosettaNotSupported
         } else if rosettaAvailability == .notInstalled {
             try await VZLinuxRosettaDirectoryShare.installRosetta()
         }
+        #else
+        throw UTMAppleConfigurationError.rosettaNotSupported
+        #endif
     }
 }
