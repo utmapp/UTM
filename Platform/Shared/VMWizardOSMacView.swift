@@ -63,7 +63,7 @@ struct VMWizardOSMacView: View {
                 Text("Import IPSW")
             }
         }
-        .fileImporter(isPresented: $isFileImporterPresented, allowedContentTypes: [.data], onCompletion: processIpsw)
+        .fileImporter(isPresented: $isFileImporterPresented, allowedContentTypes: [.ipsw], onCompletion: processIpsw)
         .onDrop(of: [.fileURL], delegate: self)
     }
     
